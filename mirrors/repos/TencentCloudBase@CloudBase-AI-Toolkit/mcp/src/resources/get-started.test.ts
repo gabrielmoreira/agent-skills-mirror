@@ -53,18 +53,30 @@ function visibleMarkup(html: string): string {
 }
 
 describe("get-started 面板 HTML", () => {
-  it("零外链：不含 http(s)、<link、以及任何外部 src=/href=", () => {
+  it("零外链：不加载任何外部资源；地址只作为 ui/open-link 的目标出现在表里", () => {
     const html = buildGetStartedHtml("zh", sampleStatus);
 
-    expect(html).not.toContain("http://");
-    expect(html).not.toContain("https://");
+    // 面板不加载任何外部资源：没有 src= / href= / <link / @import / url()
     expect(html).not.toContain('src="//');
     expect(html).not.toContain("<link");
     expect(html).not.toMatch(/\bsrc=/);
-    expect(html).not.toMatch(/\bhref=/);
+    expect(html).not.toMatch(/\bhref="(?!#)/);
+    expect(html).not.toContain("@import");
+    expect(html).not.toMatch(/url\(/);
+    expect(html).not.toContain("http://");
+
+    // 出现 https:// 的地方只能是「请宿主打开」的地址表，且只有这两个明确的目标
+    const urls = html.match(/https:\/\/[^"\s]+/g) ?? [];
+    expect(urls.sort()).toEqual([
+      "https://docs.cloudbase.net/",
+      "https://github.com/TencentCloudBase/CloudBase-AI-Toolkit",
+    ]);
+    // 地址表只被 ui/open-link 消费：不喂给 <a>、不写进 location
+    expect(html).toContain('request("ui/open-link"');
+    expect(html).not.toContain("location.");
   });
 
-  it("含 bridge 需要的全部消息名，且只有一个 tools/call（「重新检查」）", () => {
+  it("含 bridge 需要的全部消息名，且面板发起的调用只有 auth 的 status / set_env", () => {
     const html = buildGetStartedHtml("en", sampleStatus);
 
     for (const method of [
@@ -77,8 +89,30 @@ describe("get-started 面板 HTML", () => {
       expect(html).toContain(method);
     }
 
-    // 面板只有一处 tools/call 回调，恰好对应「重新检查」
-    expect(html.split('"tools/call"').length - 1).toBe(1);
+    // Three call sites on purpose: 「重新检查」(status), and one click on an environment row
+    // (set_env followed by status so the card shows what the server actually bound). Every one of
+    // them targets the same tool, so the panel still has no other way to touch the server.
+    const calls = html.match(/\{ name: "([^"]+)", arguments: \{ action: "([^"]+)"/g) ?? [];
+    expect(calls.length).toBe(3);
+    expect(calls.every((call) => call.startsWith('{ name: "auth"'))).toBe(true);
+    expect(html.split('"tools/call"').length - 1).toBe(3);
+    expect(html).toContain('action: "set_env"');
+  });
+
+  it("可选环境只画结果里真有的候选：卡片默认隐藏，行从 env_candidates 生成", () => {
+    const zhHtml = buildGetStartedHtml("zh", sampleStatus);
+    const enHtml = buildGetStartedHtml("en", sampleStatus);
+
+    // 默认不占位：没有候选时卡片必须整块收起来，不能留一个空壳。
+    expect(zhHtml).toMatch(/id="env-card" hidden/);
+    expect(zhHtml).toContain('id="env-list"');
+    // 行由 env_candidates 现场造，不预置任何环境名。
+    expect(zhHtml).toContain("payload.env_candidates");
+    expect(zhHtml).toContain('createElement("button")');
+    // 文案走词典，两种语言不同。
+    expect(zhHtml).toContain("可选环境");
+    expect(enHtml).toContain("Environments");
+    expect(enHtml).not.toContain("可选环境");
   });
 
   it("正文不出现内部枚举（只允许在「查看原始返回」折叠区里）", () => {
@@ -93,6 +127,17 @@ describe("get-started 面板 HTML", () => {
     expect(html).toContain("ap-shanghai");
     expect(visibleMarkup(html)).toContain("Shanghai");
     expect(visibleMarkup(html)).toContain("China");
+  });
+
+  it("产物里不出现任何词典 key —— 有意留空的键不许印成 key 名", () => {
+    for (const lang of ["zh", "en"] as const) {
+      const html = buildGetStartedHtml(lang, sampleStatus);
+      // 整个产物都查（含 <script>）：初始 HTML 与运行时 setText 走的是同一个 t()，
+      // 任一处把"空值"当"取不到"，用户都会在界面上看到 mcpUi.next.why.xxx 这种 key 名。
+      for (const prefix of ["mcpUi.", "mcpUiCredits."]) {
+        expect(html, `${lang} 面板不应出现词典 key 前缀 ${prefix}`).not.toContain(prefix);
+      }
+    }
   });
 
   it("zh / en 两个实例产出不同 HTML，且各自语言文案正确", () => {

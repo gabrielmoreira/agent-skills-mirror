@@ -14,8 +14,14 @@ one shared contract; document platform exceptions instead of hiding them.
 - Keep secrets out of state where supported; document unsupported paths.
   Never rotate authentication/encryption keys by surprise. Guard existing
   deployments with explicit value preservation before conversion.
-- The managed installer consumes `openwork-aws-ecs` by local path. Check that
-  caller's provider pins and legacy-secret preservation when changing the module.
+- The managed AWS installer consumes its own frozen `openwork-aws-ecs` copy,
+  not the evolving direct-user module. Preserve its pinned source tree and
+  original AWS/random/archive pins; refresh only deliberately. Its
+  TLS/ordering overlay adds CA trust, strict mode, retained API/web revision
+  addresses and a CA-first deployment barrier. Never deregister those revisions
+  or widen bootstrap permissions. Direct migration orchestration/write-only
+  secret mode are not adopted. Further contract adoption
+  requires separate installer-owner review.
 - Keep provider/backend configuration in executable roots, not library modules.
 - Use approved branches for stacked PRs; do not rewrite or push to their bases.
   Sign commits and include a DCO sign-off (`git commit -S -s`).

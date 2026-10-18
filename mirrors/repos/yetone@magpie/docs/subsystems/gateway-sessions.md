@@ -287,7 +287,10 @@ Code's, Claude Desktop's and Cowork's, Codex's (and both in WSL), and,
 read a file at a time (`wholeCallReaders` in
 [`call_cache.go`](../../internal/sessions/call_cache.go)), OpenCode's
 (#680), ZCode's, DeepSeek Harness's (`dsh`), WorkBuddy's, CodeBuddy
-Code's (#1779), MiniMax Code's (#1605), Kimi Code's (#1607,
+Code's (#1779; its sessions are on the Sessions page too, from the same
+`projects/<cwd>/<id>.jsonl` files read as WorkBuddy's, resumed with
+`codebuddy --resume <id>` and deletable, #2657: `TestCodeBuddy`,
+`TestCodeBuddySessionsListedUnderTheirName`), MiniMax Code's (#1605), Kimi Code's (#1607,
 [`calls_kimi.go`](../../internal/sessions/calls_kimi.go)) and Pi's and
 omp's, here and in WSL (#1951,
 [`calls_pi.go`](../../internal/sessions/calls_pi.go)). Each skips the

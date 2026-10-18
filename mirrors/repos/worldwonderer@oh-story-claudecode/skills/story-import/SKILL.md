@@ -8,9 +8,9 @@ metadata: {"openclaw":{"source":"https://github.com/zenstory-ai/oh-story-claudec
 
 你是小说项目逆向工程师，把作者已有的书整理成**可续写的写作工程**，包含设定、大纲、正文及所需追踪。`拆文库/{导入书名}/` 保留为分析数据源；向作者汇报工程整理结果和续写入口。
 
-> Agent 兼容性：只检查当前运行时的 canonical 目录：Claude `.claude/agents/{agent}.md`、OpenCode `.opencode/agents/{agent}.md`、Codex `.codex/agents/{agent}.toml`、Antigravity `.agents/agents/agent-name/agent.md`（`agent-name` 为目标 agent 名），不得因其他端文件存在而误判。Codex 使用同名 `agent_type`；Antigravity 使用 `invoke_subagent` + `TypeName`。对应运行时未暴露 custom-agent registry / `invoke_subagent` 或返回未知 agent 时，必须降级 solo/direct。检测到 `.zcode/` 时同样直接 solo/direct，因为 ZCode 3.3.4 不执行项目 custom agents；报告 `Fallback: project custom agents unavailable -> solo`。Claude 用 `subagent_type`；OpenCode 用 `subagent` 工具的 `agent` 参数。
+> Agent 兼容性：只检查当前运行时的 canonical 目录：Claude `.claude/agents/{agent}.md`、OpenCode `.opencode/agents/{agent}.md`、Codex `.codex/agents/{agent}.toml`、Antigravity `.agents/agents/agent-name/agent.md`（`agent-name` 为目标 agent 名），不得因其他端文件存在而误判。Claude 用 `subagent_type`，OpenCode 用 `subagent` 工具的 `agent` 参数，Codex 用同名 `agent_type`，Antigravity 用 `invoke_subagent` + `TypeName`。运行时不暴露 custom agent、返回未知 agent，或项目有 `.zcode/`（ZCode 3.3.4 不执行项目 custom agents）时，降级 solo/direct，由主会话串行处理。
 >
-> Spawn 版本提示（不阻断 spawn）：先读取项目根 `.story-deployed` 的 `agents_version`。与本版 `agents_version: 35` 不一致时（标记缺失、字段缺失/非整数、小于或大于 35）**照常按文件存在性检查并 spawn**，同时报告 `Notice: agents bundle 版本不匹配（项目 {N}，本版 35）` 并提示重新运行 `/story-setup` 后新开会话；大于 35 时额外提示先更新 oh-story-claudecode，不要用本地旧版 setup 降级覆盖。只有 agent 文件缺失、或运行时不暴露 custom agent 时才降级 solo/direct，报告 `Fallback: ... -> solo`。
+> Spawn 版本提示（不阻断 spawn）：先读取项目根 `.story-deployed` 的 `agents_version`。与本版 `agents_version: 36` 不一致时（标记缺失、字段缺失/非整数、小于或大于 36）**照常按文件存在性检查并 spawn**，同时用一句白话提示作者「分析助手是旧版，运行 /story-setup 后新开会话」，`Notice: agents bundle 版本不匹配（项目 {N}，本版 36）` 原文写进汇报最后一行「技术备注：」；大于 36 时额外提示先更新 oh-story-claudecode，不要用本地旧版 setup 降级覆盖。只有 agent 文件缺失、或运行时不暴露 custom agent 时才降级 solo/direct，`Fallback: project custom agents unavailable -> solo` 同样只进技术备注行。
 
 ## 名词与目录边界（全流程硬约束）
 
@@ -29,14 +29,15 @@ metadata: {"openclaw":{"source":"https://github.com/zenstory-ai/oh-story-claudec
 |---|---|---|---|
 | Phase 1 确认来源与范围 | 书名、题材、平台、篇幅、残稿怎么处理、外部对标、先不先装环境 | 本文件 Phase 1；判篇幅读 [length-routing.md](references/length-routing.md) | 导入记录 |
 | Phase 2 深度分析 | 不打扰作者 | [deep-analysis.md](references/deep-analysis.md)，再照它进入拆书流程 | `拆文库/{导入书名}/` |
-| Phase 3 结构迁移 | 原文没分卷时，卷怎么分 | 长篇 [structure-mapping-long.md](references/structure-mapping-long.md)；短篇 [structure-mapping-short.md](references/structure-mapping-short.md) | 项目 `设定/`、`正文/`、`大纲/`（短篇为三个单文件） |
+| Phase 3 结构迁移 | 原文没分卷时卷怎么分；要不要存本书文风 | 长篇 [structure-mapping-long.md](references/structure-mapping-long.md)（绑了外部对标再读 [benchmark-sync.md](references/benchmark-sync.md)）；短篇 [structure-mapping-short.md](references/structure-mapping-short.md) | 项目 `设定/`、`正文/`、`大纲/`（短篇为三个单文件） |
 | 逐批反推细纲（长篇） | 不打扰作者 | 本批任务包（见 [outline-reverse.md](references/outline-reverse.md)） | `大纲/细纲_第XXX章.md` |
 | Phase 4 追踪初始化（长篇） | 不打扰作者 | [import-tracking.md](references/import-tracking.md) | `追踪/` |
 | Phase 5 汇报与激活 | 请作者核对、拍板的事 | [import-report.md](references/import-report.md) | `.active-book` |
 
-**导入记录**：`{书目录}/.story/work/导入记录.md`（书目录：长篇 `{导入书名}/`，短篇 `{短篇标题}/`），Phase 1 建立，格式见下方 Step 5。每个时刻开头先读它，不回翻对话；时刻交付前把作者在对话里新定的事（决定、偏好、红线、否掉的方案）和进度写回它，再往下走。
+**书目录**：长篇和短篇均为 `{导入书名}/`，与分析源 `拆文库/{导入书名}/` 同名；写正文守卫据此放行正文迁移，名字不一致时迁正文会被拦。
+**导入记录**：`{书目录}/.story/work/导入记录.md`，Phase 1 建立，格式见下方 Step 5。每个时刻开头先读它，不回翻对话；时刻交付前把作者在对话里新定的事（决定、偏好、红线、否掉的方案）和进度写回它，再往下走。
 **换上下文**：深度分析、每批细纲、追踪初始化读的东西多。每个时刻交付后，汇报末尾加一句「下一步建议新开一个对话，说『继续导入』，会更专注」；作者要在本对话继续也照做。作者说「继续导入」时，在项目根下找进度没勾完的 `*/.story/work/导入记录.md`，从第一个未完成的进度接着做。
-**导入续写入口顺序**：用户只问流程时先答结论再收原文——推荐先 `/story-setup`，新开对话 `/story-import`，导完 `/story-long-write 日更`；也可直接导入，缺环境时 Step 4 给选择。导入过的书、旧版追踪的书、超过 200 章的书按 [import-special-cases.md](references/import-special-cases.md) 处理。
+**导入续写入口顺序**：用户只问流程时先答结论再收原文——推荐先 `/story-setup`，新开对话 `/story-import`，导完长篇 `/story-long-write 写第N章`（N 是导入后的下一章）；也可直接导入，缺环境时 Step 4 给选择。导入过的书、追踪是旧结构的书按 [import-special-cases.md](references/import-special-cases.md) 处理。
 
 ---
 
@@ -44,7 +45,7 @@ metadata: {"openclaw":{"source":"https://github.com/zenstory-ai/oh-story-claudec
 
 ### Step 1：确认意图
 
-默认目标是可续写的写作工程。意图不明时主动问：「你是想把这本书做成可续写的写作工程（设定/大纲/正文/追踪，能接着写第 N+1 章），还是只要一份拆文库分析？」只要分析 → 直接用 `/story-long-analyze`（短篇 `/story-short-analyze`），到拆文库为止，不建导入记录、不做迁移。
+默认目标是可续写的写作工程。意图不明时主动问：「你是想把这本书做成可续写的写作工程（设定/大纲/正文/追踪，能接着往下写），还是只要一份拆文库分析？」只要分析 → 直接用 `/story-long-analyze`（短篇 `/story-short-analyze`），到拆文库为止，不建导入记录、不做迁移。
 
 ### Step 2：拿到原文
 
@@ -53,13 +54,13 @@ metadata: {"openclaw":{"source":"https://github.com/zenstory-ai/oh-story-claudec
 ### Step 3：基本信息确认
 
 1. 自动检测书名（如有）、总章数、总字数、章节格式。
-2. 请作者确认：导入书名、题材类型、目标平台（起点/番茄/晋江/其他）、是否完本（半成品写到第 N 章）、**篇幅**（长篇/短篇，按 length-routing.md 检测：用户显式声明 > 结构信号 > 字数兜底，向作者复述结果请其确认；决定 Phase 3 走 3-L 还是 3-S）、**最后一章是否完整**——残稿时告诉作者，请他决定「接着残章写」还是「先补完再导入」，本 skill 只记录决定，不替作者选。
+2. 请作者确认：导入书名、题材类型、目标平台（长篇：起点/番茄/晋江/其他；短篇：知乎盐言/番茄/七猫/黑岩/红果/小程序/未定）、是否完本（半成品写到第 N 章）、**篇幅**（长篇/短篇，按 length-routing.md 检测：用户显式声明 > 结构信号 > 字数兜底，向作者复述结果请其确认；决定结构迁移走长篇还是短篇）、**最后一章是否完整**——残稿时告诉作者，请他决定「接着残章写」还是「先补完再导入」，本 skill 只记录决定，不替作者选。
 3. 外部对标（可选、与导入源分离）：作者已明确指定时记录 `{对标书名}`，并确认 `拆文库/{对标书名}/` 是该参考作品的独立拆解产物；不得把 `{导入书名}` 或本次刚生成的拆文目录当候选。未指定时不追问，记为“未绑定”。
 4. 向作者展示检测到的章节范围、字数、篇幅、最后一章状态与“外部对标：{对标书名/未绑定}”，确认后往下走。
 
 ### Step 4：写作环境检测
 
-先读取 `.story-deployed`，按顶部说明检查版本并报告提示，版本不匹配不阻断调用。再在当前运行时的 canonical 目录检查 `chapter-extractor`（Claude/OpenCode/Antigravity 为同名 Markdown，Codex 为同名 TOML），记下 `story-architect` 是否可用，供逐批细纲使用。`.story-deployed` 的 `target_cli` 含 `zcode` 时直接串行 solo/direct 并报告 fallback，不提示重复部署。
+先读取 `.story-deployed`，按顶部说明检查版本，版本不匹配不阻断调用。再在当前运行时的 canonical 目录（见顶部）检查 `chapter-extractor`，记下 `story-architect` 是否可用，供逐批细纲使用。`.story-deployed` 的 `target_cli` 含 `zcode` 时按顶部说明串行处理，不提示重复部署。
 
 当前端 agent 不可用且不是已部署 ZCode 项目时这样问：
 
@@ -75,7 +76,7 @@ metadata: {"openclaw":{"source":"https://github.com/zenstory-ai/oh-story-claudec
 # 导入记录：《{导入书名}》
 - 原文：{源文件或目录路径；贴入文本写 .story/work/导入原文.md}
 - 篇幅：{长篇 | 短篇}（{判定依据一句}）
-- 范围：第 1–{N} 章，约 {Y} 万字；{完本 | 半成品}；首期深拆：{全书 | 第 1–50 章，其余用简化摘要（超过 200 章）}
+- 范围：第 1–{N} 章，约 {Y} 万字；{完本 | 半成品}
 - 最后一章：{完整 | 残稿：第 {N+1} 章写了一半，作者决定{接着残章写 | 先补完再导入}}
 - 题材：{题材类型}；目标平台：{平台}
 - 外部对标：{对标书名 | 未绑定}
@@ -99,7 +100,7 @@ metadata: {"openclaw":{"source":"https://github.com/zenstory-ai/oh-story-claudec
 
 ## Phase 3：结构迁移
 
-长篇（3-L）按 [structure-mapping-long.md](references/structure-mapping-long.md) 的迁移步骤把 `拆文库/{导入书名}/` 迁成 `{导入书名}/` 工程；原文没有明确卷界时，卷划分必须等作者确认，确认结果写进导入记录。细纲最后一步按 [outline-reverse.md](references/outline-reverse.md) 分批反推。短篇（3-S）按 [structure-mapping-short.md](references/structure-mapping-short.md) 迁成 `{短篇标题}/` 的三个单文件，**不产** `追踪/`、`大纲/`、`正文/` 等长篇目录，迁完直接到 Phase 5。
+长篇按 [structure-mapping-long.md](references/structure-mapping-long.md) 的迁移步骤把 `拆文库/{导入书名}/` 迁成 `{导入书名}/` 工程；原文没有明确卷界时，卷划分必须等作者确认，确认结果写进导入记录。结构迁移验收后，按 [outline-reverse.md](references/outline-reverse.md) 逐批反推细纲。短篇按 [structure-mapping-short.md](references/structure-mapping-short.md) 迁成 `{导入书名}/` 的三个单文件，**不产** `追踪/`、`大纲/`、`正文/` 等长篇目录，迁完直接到 Phase 5。
 
 ## Phase 4：追踪初始化（仅长篇）
 
@@ -115,7 +116,7 @@ metadata: {"openclaw":{"source":"https://github.com/zenstory-ai/oh-story-claudec
 
 | 时机 | 跳转到 | 命令 |
 |---|---|---|
-| 导入完想继续写 | story-long-write / story-short-write | `/story-long-write` + "日更" / `/story-short-write` |
+| 导入完想继续写 | story-long-write / story-short-write | `/story-long-write` + "写第N章"（N 是导入后的下一章） / `/story-short-write` + "补完构思" |
 | 导入完想审查质量 | story-review | `/story-review` |
 | 想拆一本外部对标书 | story-long-analyze / story-short-analyze | `/story-long-analyze` / `/story-short-analyze` |
 | 从零开新书 | story-long-write / story-short-write | `/story-long-write` + "开书" / `/story-short-write` |

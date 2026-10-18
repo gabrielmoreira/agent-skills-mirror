@@ -103,12 +103,30 @@ describe("env-credits 面板 HTML", () => {
     }
   });
 
+  it("卡片骨架：两列字段各自成组，曲线与指标表是 .t3 的直接子节点（不许被包进别人）", () => {
+    const html = buildEnvCreditsHtml("zh", sampleFallback);
+
+    // 两列各一个包装：多一个或少一个都会让字段错位成 2×N 的网格式瀑布
+    expect(html.split('class="col"').length - 1).toBe(2);
+
+    // 曲线块必须自己闭合：漏一个 </div> 会把后面的指标表吞进 flex 行里，
+    // 在宽屏上表现为「近期」两个字飘在表格左边——DOM 里看不出来，只有渲染才暴露。
+    const sparkStart = html.indexOf('<div class="spark"');
+    const tableStart = html.indexOf('<table class="mtable"');
+    expect(sparkStart).toBeGreaterThan(-1);
+    expect(tableStart).toBeGreaterThan(sparkStart);
+    const between = html.slice(sparkStart, tableStart);
+    const opened = between.split("<div").length - 1;
+    const closed = between.split("</div>").length - 1;
+    expect(closed, "曲线块内的 <div> 与 </div> 数量必须相等").toBe(opened);
+  });
+
   it("零外部资源：不含 <link、@import、src=、href=、xmlns、xlink", () => {
     const html = buildEnvCreditsHtml("zh", sampleFallback);
     expect(html).not.toContain("<link");
     expect(html).not.toContain("@import");
     expect(html).not.toMatch(/\bsrc=/);
-    expect(html).not.toMatch(/\bhref=/);
+    expect(html).not.toMatch(/\bhref="(?!#)/);
     expect(html).not.toContain("xmlns");
     expect(html).not.toContain("xlink");
     // 控制台链接在点击时才由脚本拼（主机表 + hash 都在脚本里），所以模板里不该再有**带主机**的

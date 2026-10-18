@@ -221,7 +221,7 @@ Release version is stored in the Rust workspace and the npm package manifests, a
 ```markdown
 <div align="center">
 
-[![Tokscale](https://github.com/junhoyeo/tokscale/raw/main/.github/assets/hero-v2.png)](https://github.com/junhoyeo/tokscale)
+[![Tokscale](https://github.com/junhoyeo/tokscale/raw/main/.github/assets/hero-v3.png)](https://github.com/junhoyeo/tokscale)
 
 # `tokscale@vX.Y.Z` is here!
 </div>

@@ -975,9 +975,11 @@ public final class DamengAgent extends AbstractJdbcAgent {
                     return current;
                 }
             }
-        } catch (SQLException error) {
-            // A server without SYS_CONTEXT support still resolves an unqualified name to the
-            // connected user, which is what the caller falls back to.
+        } catch (Exception error) {
+            // Current schema resolution is best-effort: any failure (including environments without
+            // SYS_CONTEXT support, query execution errors, or pathological drivers returning a null
+            // Statement) falls back to an empty string, allowing the caller to fall back to the
+            // connected username.
         }
         return "";
     }
@@ -1851,6 +1853,24 @@ public final class DamengAgent extends AbstractJdbcAgent {
             case "TYPE_BODY", "TYPE BODY" -> "TYPE BODY";
             default -> throw new IllegalArgumentException("Unsupported object type: " + objectType);
         };
+    }
+
+    @Override
+    protected boolean includeColumnCommentsInTableDdl() {
+        return true;
+    }
+
+    @Override
+    public String getTableComment(String rawSchema, String table) {
+        final String schema = normalizeSchema(rawSchema);
+        try {
+            String comment = tableComment(schema, table);
+            if (notBlank(comment)) {
+                return comment;
+            }
+        } catch (Exception ignored) {
+        }
+        return super.getTableComment(schema, table);
     }
 
     @Override
@@ -3042,16 +3062,30 @@ public final class DamengAgent extends AbstractJdbcAgent {
         return value == null ? "" : value;
     }
 
+    private boolean schemaMatchesConnectedUserOrCurrent(String schema) {
+        if (schema == null || schema.isBlank()) {
+            return true;
+        }
+        if (schemaMatchesConnectedUser(schema)) {
+            return true;
+        }
+        // Short-circuit before the SYS_CONTEXT probe: when we don't know the connected username
+        // there is nothing to compare the probe result against, so skip the extra DB round-trip.
+        if (connectedUsername == null || connectedUsername.isBlank()) {
+            return true;
+        }
+        String currentSchema = currentSchemaOrBlank();
+        if (!currentSchema.isBlank()) {
+            return schema.equalsIgnoreCase(currentSchema);
+        }
+        return false;
+    }
+
     private void fillMissingColumnComments(String schema, String table, List<ColumnInfo> columns) {
         if (columns.stream().noneMatch(column -> !notBlank(column.getComment()))) {
             return;
         }
         Map<String, String> comments = new HashMap<>();
-        queryColumnComments(
-            comments,
-            "SELECT /*+ PARALLEL(1) */ COLUMN_NAME, COMMENTS FROM USER_COL_COMMENTS WHERE TABLE_NAME = ?",
-            table
-        );
         queryColumnComments(
             comments,
             "SELECT /*+ PARALLEL(1) */ COLNAME, COMMENT$ FROM SYS.SYSCOLUMNCOMMENTS WHERE SCHNAME = ? AND TVNAME = ?",
@@ -3064,6 +3098,13 @@ public final class DamengAgent extends AbstractJdbcAgent {
             schema,
             table
         );
+        if (schemaMatchesConnectedUserOrCurrent(schema)) {
+            queryColumnComments(
+                comments,
+                "SELECT /*+ PARALLEL(1) */ COLUMN_NAME, COMMENTS FROM USER_COL_COMMENTS WHERE TABLE_NAME = ?",
+                table
+            );
+        }
         for (ColumnInfo column : columns) {
             if (notBlank(column.getComment())) {
                 continue;
@@ -3130,8 +3171,61 @@ public final class DamengAgent extends AbstractJdbcAgent {
                     }
                 }
             }
+        } catch (Exception ignored) {
+        }
+        if (result.isEmpty()) {
+            queryTableColumnComments(
+                result,
+                "SELECT /*+ PARALLEL(1) */ COLNAME, COMMENT$ FROM SYS.SYSCOLUMNCOMMENTS WHERE SCHNAME = ? AND TVNAME = ?",
+                schema,
+                table
+            );
+        }
+        if (result.isEmpty()) {
+            queryTableColumnComments(
+                result,
+                "SELECT /*+ PARALLEL(1) */ COLUMN_NAME, COMMENTS FROM ALL_COL_COMMENTS WHERE UPPER(OWNER) = UPPER(?) AND UPPER(TABLE_NAME) = UPPER(?)",
+                schema,
+                table
+            );
+        }
+        if (result.isEmpty() && schemaMatchesConnectedUserOrCurrent(schema)) {
+            queryTableColumnComments(
+                result,
+                "SELECT /*+ PARALLEL(1) */ COLUMN_NAME, COMMENTS FROM USER_COL_COMMENTS WHERE TABLE_NAME = ?",
+                table
+            );
+        }
+        if (result.isEmpty()) {
+            try {
+                for (ColumnInfo column : getColumns(schema, table)) {
+                    if (notBlank(column.getName()) && notBlank(column.getComment())) {
+                        result.put(column.getName(), column.getComment());
+                    }
+                }
+            } catch (Exception ignored) {
+            }
         }
         return result;
+    }
+
+    private void queryTableColumnComments(Map<String, String> comments, String sql, String... params) {
+        try (PreparedStatement stmt = requireConnected().prepareStatement(sql)) {
+            for (int i = 0; i < params.length; i++) {
+                stmt.setString(i + 1, params[i]);
+            }
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    String column = rs.getString(1);
+                    String comment = rs.getString(2);
+                    if (notBlank(column) && notBlank(comment)) {
+                        comments.putIfAbsent(column, comment);
+                    }
+                }
+            }
+        } catch (Exception ignored) {
+            // Some Dameng versions or users do not expose every comment view.
+        }
     }
 
     private String appendIndependentIndexDdl(String ddl, String schema, String table) throws Exception {

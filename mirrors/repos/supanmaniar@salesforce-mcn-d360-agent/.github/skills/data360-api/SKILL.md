@@ -27,8 +27,7 @@ Data 360 **tenant host**:
 ```
 
 `sf api request rest` always prefixes the org instance and ignores absolute
-URLs, so it **cannot** reach these endpoints. Use tenant mode, which reads a
-token from `sf org display` and calls the host with `curl`:
+URLs, so it **cannot** reach these endpoints. Use tenant mode:
 
 ```bash
 export DATA360_TENANT_URL=https://my-tenant.c360a.salesforce.com
@@ -39,6 +38,28 @@ If `DATA360_TENANT_URL` is unset the script fails fast with a clear message
 rather than guessing a hostname. Some orgs serve the `ssot/*` endpoints from
 the core instance host — those belong to the `data360-connect` family, not this
 one. See [data360-connect-api](../data360-connect-api/SKILL.md).
+
+### Authentication — this family needs a Connected App
+
+Unlike every other family, `data360` **cannot** run off the `sf org login`
+session. The tenant host sits behind a service mesh that only accepts an OAuth
+2.0 client-credentials **JWT**. A session token is opaque, so the mesh rejects
+it with **HTTP 400 and an empty body** — on every path, regardless of headers.
+
+Mint a client-credentials token and export it:
+
+```bash
+eval "$(./scripts/sf-tenant-token.sh --export)"
+./scripts/sf-api.sh --tenant --path /api/v1/query --method POST --body @q.json
+```
+
+This needs a Connected App with the Data 360 scopes (`cdp_query_api`,
+`cdp_profile_api`, `cdp_ingest_api`). If you do not have one yet, see
+[CONNECTED-APP-SETUP.md](../../../docs/CONNECTED-APP-SETUP.md).
+
+If you hit a 400, run `./scripts/diagnose.sh` before changing anything else. The
+400-vs-401 split identifies the cause: **400 means the credential is not a JWT;
+401 means it was parsed and rejected.** [TROUBLESHOOTING.md](../../../docs/TROUBLESHOOTING.md)
 
 ## Procedure
 

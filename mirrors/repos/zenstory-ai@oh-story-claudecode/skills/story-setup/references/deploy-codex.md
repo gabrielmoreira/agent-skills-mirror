@@ -1,12 +1,12 @@
 # Codex 部署
 
-`target_cli` 含 `codex` 时，由 SKILL.md Phase 2 完整读取并依次执行本文件。路径检查、幂等重跑、残留清理、部署标记、模板占位符、AGENTS.md 合并和报告遵循 SKILL.md 的公共规则。
+`target_cli` 含 `codex` 时，由 SKILL.md Phase 2 完整读取并依次执行本文件。路径检查、幂等重跑、残留清理、部署标记、模板占位符、项目指令合并和报告遵循 SKILL.md 的公共规则。
 
 ## 部署清单（机械可检查）
 
 | Source path | Target path | Owner class | Merge mode | Validation check |
 |-------------|-------------|-------------|------------|------------------|
-| `skills/story-setup/references/codex/AGENTS.md.tmpl` | `AGENTS.md` | user+managed | marker/section merge | contains Codex story skill routing sections |
+| `skills/story-setup/references/codex/AGENTS.md.tmpl` | `AGENTS.md` | user+managed | managed block merge | contains Codex story skill routing sections |
 | `skills/story-setup/references/codex/agents/` | `.codex/agents/` | story-setup managed | replace | 7 TOML agent files parse and contain `name`/`description`/`developer_instructions` |
 | `skills/story-setup/references/codex/hooks/hooks.json` | `.codex/hooks.json` | user+managed | replace managed registrations by stable hook identity | hook JSON valid; all stale direct/launcher registrations removed, current 6 registrations present exactly once |
 | `skills/story-setup/references/codex/hooks/{story_codex_hook.py,run-story-hook.sh,run-story-hook.cmd}` | `.codex/hooks/` 同名文件 | story-setup managed | replace | Python/shell/cmd launcher 文件齐全 |
@@ -34,7 +34,7 @@ Codex 项目 hooks 部署到 `.codex/hooks.json`；运行脚本部署到 `.codex
 
 ## AGENTS.md 与部署标记
 
-- 将 `references/codex/AGENTS.md.tmpl` 替换占位符后按 SKILL.md「AGENTS.md 合并策略」写入根 `AGENTS.md`。
+- 将 `references/codex/AGENTS.md.tmpl` 按 SKILL.md「项目指令合并」写入根 `AGENTS.md`（`--host codex`）。
 - `.story-deployed` 的 `target_cli` 写入 `codex` 或多端组合，`references_dir` 写 `.codex/skills/story-setup/references/agent-references`。
 
 ## 验证

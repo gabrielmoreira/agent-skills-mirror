@@ -55,13 +55,15 @@ The CLI follows a command pattern with two primary commands:
 3. Add plugin to OpenCode configuration (opencode.json/opencode.jsonc)
 4. Add TUI version badge (tui.json/tui.jsonc)
 5. Warm OpenCode plugin cache (for package manager installations)
-6. Disable OpenCode default agents (explore, general)
-7. Enable LSP integration by default
-8. Configure background subagents (shell integration)
-9. Install desktop companion (optional)
-10. Write oh-my-opencode-slim configuration (oh-my-opencode-slim.json)
-11. Install custom skills (if requested)
+6. Enable LSP integration by default
+7. Configure background subagents (shell integration)
+8. Install desktop companion (optional)
+9. Write oh-my-opencode-slim configuration (oh-my-opencode-slim.json)
+10. Install custom skills (if requested)
 ```
+
+OpenCode's built-in `general`/`explore` subagents are disabled at runtime by
+the plugin itself (#1582); the installer no longer writes config entries.
 
 ### Configuration Resolution Flow (paths.ts)
 

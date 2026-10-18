@@ -2,7 +2,7 @@
 
 Status: implemented
 Date: 2026-10-14
-Related: [去味单一定档](../../implemented/bug-fix/2026-09-27-deslop-one-grading.md)、[概念链路闭环](../../implemented/architecture/2026-09-25-concept-chain-closure.md)、[长篇核心文档精修](../../implemented/bug-fix/2026-10-14-long-write-doc-contract-gaps.md)
+Related: [去味单一定档](../../implemented/bug-fix/2026-09-27-deslop-one-grading.md)、[概念链路闭环](../../implemented/architecture/2026-09-25-concept-chain-closure.md)、[长篇核心文档精修](../../implemented/bug-fix/2026-10-14-long-write-doc-contract-gaps.md)、[其余 skill 按时刻重组](../architecture/2026-10-17-other-skills-by-moment.md)（其后去掉 Gate A–G 字母，改按检测类别限定范围，取代本篇「Gate 范围保持」）
 
 ## Problem
 

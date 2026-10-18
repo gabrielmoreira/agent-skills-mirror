@@ -112,6 +112,7 @@ The governing rule is: **YAML coordinates. Code computes. Agents judge.** Read [
 - Workflow execution depends on injected contracts, not on core database or adapter implementations.
 - Platform-specific parsing and authorization belong inside the owning adapter. Core receives normalized intent and identity.
 - The Web client consumes generated API types through its local API layer; it does not import server or workflow runtime packages.
+- The engine (`packages/`) and the bundled SDLC pack (`.archon/workflows`, `.archon/scripts`) don't import each other's code, in source or in tests. They meet through the workflow language, the CLI and the provider and forge contracts.
 - Shared schemas are the source of truth for persisted and API shapes. Keep OpenAPI generation and runtime validation on the same schema path.
 - Use the type system, schema validation, and package boundaries to enforce architecture before adding prose rules.
 
@@ -162,8 +163,9 @@ what you changed — a thin brief is cheaper to correct before a run than after 
 ## Tests and validation
 
 - Add tests for meaningful behavior and failure modes. Do not preserve deleted features through regression-test clutter.
+- The engine tests what it owns (the workflow language, script nodes, state, waits, resume) with its own minimal fixtures, never with a pack workflow. The pack tests only its own scripts at a tool boundary and never retests the engine's behavior.
 - Prefer deterministic, cheap tests. Remove accidental I/O and unnecessary subprocesses before increasing timeouts.
-- Remove test temp trees with `removeTempTree` or `trackTempRoots` from `@archon/paths/test-utils`.
+- Remove test temp trees with `removeTempTree` or `trackTempRoots`: from `@archon/paths/test-utils` in engine and `scripts/` tests, and from the pack's own `.archon/scripts/__tests__/temp-roots.ts` in pack tests.
 - Spawn a subprocess only when the subprocess is the subject under test. To suppress an inherited env key for a Bun child, pass it as `''`; deleting it allows `.env` loading to restore it.
 - Bun's module mocks pollute the process cache. Use the package test scripts that preserve isolation; do not run `bun test` from the repository root.
 - Run lint through `bun run lint`. Besides Biome, it runs the repository checks Biome cannot express, such as the workflow persistence boundary.

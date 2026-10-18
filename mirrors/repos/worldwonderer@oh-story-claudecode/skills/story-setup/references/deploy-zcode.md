@@ -1,12 +1,12 @@
 # ZCode 部署
 
-`target_cli` 含 `zcode` 时，由 SKILL.md Phase 2 完整读取并依次执行本文件。路径检查、幂等重跑、残留清理、部署标记、模板占位符、AGENTS.md 合并和报告遵循 SKILL.md 的公共规则。`references/zcode/` 提供 AGENTS、13 Commands、workspace config patch 与严格 JSON Hook runner。
+`target_cli` 含 `zcode` 时，由 SKILL.md Phase 2 完整读取并依次执行本文件。路径检查、幂等重跑、残留清理、部署标记、模板占位符、项目指令合并和报告遵循 SKILL.md 的公共规则。`references/zcode/` 提供 AGENTS、13 Commands、workspace config patch 与严格 JSON Hook runner。
 
 ## 部署清单（机械可检查）
 
 | Source path | Target path | Owner class | Merge mode | Validation check |
 |-------------|-------------|-------------|------------|------------------|
-| `skills/story-setup/references/zcode/AGENTS.md.tmpl` | `AGENTS.md` | user+managed | marker/section merge | contains ZCode `$story-*` routing and solo fallback |
+| `skills/story-setup/references/zcode/AGENTS.md.tmpl` | `AGENTS.md` | user+managed | managed block merge | contains ZCode `$story-*` routing and solo fallback |
 | repository `skills/{browser-cdp,story*}/` | `.zcode/skills/{browser-cdp,story*}/` | story-setup managed for known skill names | replace known skill dirs only | 13 `SKILL.md` files exist and satisfy ZCode frontmatter limits |
 | `skills/story-setup/references/zcode/commands/` | `.zcode/commands/` | story-setup managed for known command names | replace known command files only | 13 commands have valid names/frontmatter |
 | `skills/story-setup/references/zcode/hooks/story_zcode_hook.js` | `.zcode/hooks/story_zcode_hook.js` | story-setup managed | replace | Node syntax valid; hook contract tests pass |
@@ -28,7 +28,7 @@ ZCode 首版部署 Skills、Commands、AGENTS.md 和支持事件内的 Hooks；�
    - 保留用户所有未知字段、MCP、plugins、skills/commands disable overrides；
    - **hooks 互斥（避免双触发）**：若本项目经已安装的 oh-story 插件运行（marketplace 安装，仓库根 `.zcode-plugin/plugin.json` 的 `hooks.json` 已全局注册 SessionStart/PreToolUse/PostToolUse），则先从 `.zcode/config.json` 移除这批已知 oh-story hooks 注册、保留用户 hooks，再**跳过**下面的 `config.json.patch` hooks 合并——插件 manifest 已注册这批 hooks，再合并会让同一事件跑两遍（PreToolUse 拦两次、PostToolUse 注入两次）。只有未装插件（直接克隆 / 手动导入 references）时才合并 hooks。不确定时以「ZCode 是否已通过本插件注册这套 hooks」为准；skills/commands/hook 文件/AGENTS 与 config 的非 hook 字段两条路径都照常部署。
    - 合并 hooks（仅未装插件时）：设置 `hooks.enabled: true`；用户已有更大的 `timeoutMs` 时保留，否则取模板值；对 `hooks.events` 的 SessionStart、PreToolUse、PostToolUse 按 `event + matcher + process command + args` 去重追加；不复制 ZCode 不支持的 PreCompact、PostCompact、SessionEnd、SubagentStop、Notification。
-5. 将 `references/zcode/AGENTS.md.tmpl` 按 SKILL.md「AGENTS.md 合并策略」写入根 `AGENTS.md`。
+5. 将 `references/zcode/AGENTS.md.tmpl` 按 SKILL.md「项目指令合并」写入根 `AGENTS.md`（`--host zcode`）。
 6. `.story-deployed` 的 `target_cli` 写入 `zcode` 或多端组合，`references_dir` 写 `.zcode/skills/story-setup/references/agent-references`。ZCode 不创建 `.claude/.agents-pending-restart`，因为它不部署项目 agents。
 7. 安装报告明确说明：ZCode 3.3.4 的项目/plugin custom agents 不执行，所有专业角色走 solo/direct；系统需要可用的 `node` 命令运行项目 Hook。
 

@@ -55,6 +55,14 @@ The north star: **don't stop at "code compiles." Stop at "verified working in pr
 ## 0. Before you touch anything
 
 1. **Scan open issues/PRs for human claims.** If a human said "picking this up" / "working on" / "I'll take" in the last 7 days, do NOT open a competing PR. Automation is the night-shift janitor, not the day-shift engineer.
+   **Your own open PRs count as claims.** `gh pr list --search "<module>"` for the file or tab you are about
+   to touch, BEFORE cutting the worktree, and read the ones that match. Twice in three days a session wrote a
+   feature that was already sitting in a PR of its own making: ~400 lines duplicating a green PR two days old,
+   and then the Improve-to-Assistant handoff, built browser-side while draft #6351 had been carrying a
+   server-side version of the same handoff since 2026-10-05. Both times the overlap was found AFTER CI went
+   green, which is the most expensive moment to find it. A draft PR with every check red is still a claim, and
+   it is often the half you are missing: #6351 ran the candidate excerpts through `clawmetry/redaction.py`
+   first, and the version that shipped does not.
 2. **Scan the user's recent comments** on open PRs/issues and address them first.
 3. **Re-read the goal.** If invoked via `/goal`, the goal persists until the *outcome* is achieved and verified — not until the code is written.
 4. **Work in an isolated worktree.** Multiple Claude Code agents and crons run against this repo at the same time. Editing the main checkout is unsafe: another process can switch branches mid-edit and clobber uncommitted changes (burned 2026-05-28 — `feat/asset-registry` working-tree wiped when a concurrent agent checked out `release/hash-chain-2210` in the same checkout). Always start with `EnterWorktree`, or `git worktree add .claude/worktrees/<slug> -b feat/<slug> origin/main`. The worktree gives you your own branch + working tree; the shared checkout is for the human, not for parallel automation. Use `ExitWorktree` (or `git worktree remove`) once the PR is merged.
@@ -155,6 +163,14 @@ ClawMetry is open-core. There are **four repos**, each with a clear remit; agent
 6. **Core OpenClaw observability** (anything OpenClaw-shaped, NeMo governance, chat-channel adapters, the dashboard tabs that serve OpenClaw data) → **stays in OSS** (this repo). Free in every tier.
 
 ### Hard rules that fall out of the split
+
+- **Physical robot evidence is a separate adapter seam.** The free Asimov
+  connector and built-in Jumper adapter (`clawmetry/physical_ai/`) share the
+  public robotics journal, daemon-owned DuckDB and Physical AI view. Jumper is
+  explicitly OSS by the founder's direction. Its scene/skills/simulator demo may
+  be separate, but its observer must ship in ordinary `pip install clawmetry`.
+  Do not count robot adapters as LLM transcript runtimes or move their shared
+  core into a demo plugin. Other paid adapter entitlements remain unchanged.
 
 - **OSS routes for gated features must call `entitlements.allows_feature(...)`** and return HTTP 402 (`upgrade_required`) when blocked. Never silently disable — the upgrade prompt is the conversion moment.
 - **Plugin override seam.** `dashboard.py` family-adapter loop must skip when `registry.get(name) is not None` (clawmetry-pro registered it first). Tested by `tests/test_adapter_registry_override.py`. Don't reintroduce a clobber.
@@ -390,6 +406,13 @@ EVERY change:
   dev box can fail every HTTPS handshake; `curl` and `pip` carry their own CA bundle and worked in the
   same shell). A waiter must say WHY it retried, and the thing it waits for is worth checking once by
   hand before trusting a long wait.
+- **An action that only changes tabs is a dead end, and the reader will say so.** Improve shipped with one
+  button per candidate, "Open Setup". It switched to the Setup tab and stopped, landing the reader in front of
+  an unfiltered file list with nothing tying it to the card they had just pressed. It passed every test,
+  because switching tabs is exactly what it was asked to do. The founder's words were "i've no idea what to do
+  either". Walk the surface you shipped as a reader who has not read the diff: press the primary button and ask
+  what question it just answered. If the answer is "it moved you somewhere", the feature is the screen you
+  arrived at, and it is not built yet.
 - **A fold that runs per item leaves the cross-item case.** `_fold_repo_case` makes one repository
   spelled two ways one row inside a session, and the live tab still showed both spellings, because they
   came from two different sessions and the read query grouped on the exact text. Ask where the rows

@@ -79,6 +79,13 @@ providers need not expose identical state machines.
   and resource release separate. A valid process handle, successful launcher,
   or selected target establishes only its own fact. Publish available identity
   and exit observations even when launch fails; retain unknown ownership.
+- Process exit does not establish output closure. The shared process supervisor
+  retains at most 64 KiB of additional diagnostics from owned stop entry,
+  including pending cleanup and retries, and drains for up to one second after
+  verified stop. It marks output incomplete when closure cannot be
+  observed and releases owned event-loop references without changing the proven
+  process-cleanup outcome. Failed process cleanup retains capture for retry;
+  borrowed processes and streams retain their own lifetime and reference state.
 - Authenticate and capture identity through the same boundary on initial and
   recovery handshakes. Bound abandoned unauthenticated listeners where the
   protocol permits it; that deadline must not expire authenticated idle sessions

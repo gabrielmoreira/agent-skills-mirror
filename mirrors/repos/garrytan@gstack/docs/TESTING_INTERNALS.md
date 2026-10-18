@@ -1009,23 +1009,122 @@ select nothing: docs, any non-paid `*.test.ts(x)`, `FREE_ONLY_PR_FILES` (the
 free and paid duration seeds, `scripts/ubicloud/**`, every workflow that runs no
 paid evals, and free-only tools), and the fixtures in `FREE_FIXTURES`
 (`test/helpers/free-fixtures-data.ts`, each fixture with its free consumers).
-`PAID_WORKFLOW_FILES` (`evals.yml`, `evals-periodic.yml`, `evals-marathon.yml`)
-and any other unknown file restore the full gate (`prCoverage.mode =
-full-fallback`). The job summary and PR comment list each file that caused a
-fallback with one of three labels:
+Unmapped files under `DERIVABLE_PREFIXES` (bin/, lib/, scripts/, browse/,
+design/, make-pdf/, hosts/, extension/, model-overlays/, agents/, test/helpers/,
+capy/) are not unknown: `scripts/pr-dependencies.ts` derives the cases whose
+reference closure reaches them (`prCoverage.mode = dependents`), or reports that
+no paid case reaches them. The derivation scans the imports of every code file,
+including `#!`-shebang `.ts` files and extensionless Bun or Node scripts; if any
+import scan fails, every unmapped file restores the full gate (label **import
+scan failed**). `PR_FULL_GATE_FILES`, `PAID_WORKFLOW_FILES` (`evals.yml`,
+`evals-periodic.yml`, `evals-marathon.yml`) and any other unknown file restore
+the full gate (`prCoverage.mode = full-fallback`). The job summary and PR comment
+list each unmapped file that caused a fallback with one of these labels:
 
 - **needs touchfile entry**: a paid test, helper or fixture no case maps; add it
   to the owning case in `E2E_TOUCHFILES` (`test/helpers/touchfiles-data.ts`).
 - **add to FREE_ONLY_PR_FILES**: a file only free lanes read; add it to the list
   in `scripts/test-pr-profile.ts` (or a fixture to `FREE_FIXTURES`).
-- **real unknown dependency**: shared code (bin/, lib/, resolvers, hosts, setup)
-  whose dependents are not mapped; the full gate is the correct result.
+- **full-gate input**: a `PR_FULL_GATE_FILES` entry every case consumes; the
+  full gate is intended and no mapping narrows it.
+- **deleted but still referenced** and **import scan failed**: fix the named
+  reference or parse error.
+- **real unknown dependency**: a file outside the derivable directories that no
+  list classifies (for example `ETHOS.md`); map it, exempt it, or derive its
+  directory.
+
+The fallback rate is a label, not the bill: a dependents run whose derived
+closure reaches every gate case costs about what a full-fallback run does.
+`bun run test:health` leads with the cost per merged PR and reports
+`pr-cases-per-run` (mean selected gate cases and judges per PR run, per mode)
+and `pr-known-cost-per-run` (mean known trial cost per PR run, per mode) beside
+`pr-fallback-rate`.
+
+`package.json` (beyond a version-only change) and `bun.lock` stay full-gate
+inputs. Over the 225 PR runs from 2026-10-07 to 2026-10-17, no run fell back on
+them alone, dependabot PRs never reach the paid lane (`evals.yml` skips
+`github.actor == 'dependabot[bot]'`), and every runtime package's importer
+(`test/helpers/agent-sdk-runner.ts`, `test/helpers/llm-judge.ts`, `browse/src/*`,
+`make-pdf/src/*`) reaches every gate case or is in the global set, so narrowing
+them would select the same cases.
 
 `test/free-fixtures.test.ts` holds the inventory: each `test/fixtures/**` path
 belongs to a paid touchfile or `FREE_FIXTURES`, and each workflow to the paid or
 free-only list. Editing a paid test file runs its own gate cases on the PR when
 their Bun test is named by the case id; the file's other cases stay deferred with
 a reason that says to name the test by its case id.
+
+### Exercised-path map
+
+The derived closure (above) reaches almost every gate case from most bin/ and
+lib/ files, because it follows prose, string and doc-comment mentions. The
+exercised-path map is a tighter consumer set that runs in **shadow mode**: it
+is computed and reported on every PR plan, and it never changes which cases a
+PR runs. Activating it is a later decision that needs PTY command capture for
+the cases that record no commands, two weeks of shadow data with zero shadow
+misses, and Garry's call on the measured saving.
+
+A case's exercised consumers (`exercisedConsumers` in
+`scripts/pr-dependencies.ts`) are the union of its touchfile matches, the
+closure of its test file and helpers, the executable shell of its loaded skill
+(template and generated SKILL.md) and of every bin, lib and script that shell
+runs, and the bins its recorded trials invoked. Shell edges are command-position
+`gstack-*` names and repo paths, `.`/`source`, `./setup`, quoted path
+literals, `path.join` pairs, data files, `bun run` scripts and compiled outfiles
+(`browse/dist/browse`, `$B`, `design/dist/design`, `$D`, `make-pdf/dist/pdf`).
+Comments, echo/printf/die messages, case patterns, bare `VAR=gstack-x` strings
+and slash-command skill names are not edges; command substitutions are kept, an
+expanding heredoc keeps its substitutions and a heredoc an interpreter reads
+stays whole. The closure stops at `PR_FULL_GATE_FILES` and the global set, which
+stay full. `test/exercised-map.test.ts` pins that this function equals or is a
+reviewed superset of the measured prototype (`test/helpers/exercised-prototype.ts`).
+
+The observed half is `test/helpers/exercised-commands.json` (generated; per case
+the bins and compiled outfiles its recorded trials ran, observation counts, the
+source run ids and a mean known cost per run). Refreshes are union-only: an
+observation never removes a command and a missing or empty artifact never erases
+one; removing a command is a reviewed edit. While the map is in shadow mode it
+changes no selection, so a PR that changes only the map selects no paid case.
+
+Dollar figures are lower bounds. Known cost excludes PTY trials, whose cost is
+unknown: about 39% of observed case runs in the committed map. The shadow block
+and `test:health` both say so.
+
+- **Shadow block:** `prCoverage.shadow` in the paid-plan manifest lists the gate
+  cases the map would select, would drop and would add, a provenance line per
+  changed file ("selects N case(s): touchfile (k), import (k), skill bash via
+  bin/gstack-x (k), observed bin/gstack-y (k)"), the predicted saving and the
+  unknown-cost share. The coverage summary prints one line of it.
+- **Shadow misses (`bun run test:health`, metric `pr-shadow-map`):** a red case
+  (more executed failed than passed trials in the run) that the shadow would
+  drop is an activation miss unless the case passed in a later run of the same
+  branch at the same head SHA. That later pass marks it a flaky drop, which is
+  listed but not counted. The D3 activation bar counts activation misses only.
+- **MAP_GAP:** the paid report runs the same bin matcher over each executed
+  case's recorded commands and prints, and writes to `map-gaps.txt`,
+  `MAP_GAP <case> <command>: non-blocking for this PR; the next census refresh
+  widens the map (docs/TESTING_INTERNALS.md#exercised-path-map)` for a command
+  outside the case's static-plus-observed closure. It is its own result: never a
+  case verdict, a lane problem or an INFRA re-dispatch input.
+- **Census refresh:** the weekly census unions its own recorded commands into the
+  map (no REST artifact downloads), uploads it as `exercised-map-a<attempt>`,
+  reports MAP_GAP lines and the cases that recorded no commands, and prints the
+  refresh command. Run `bun run test:exercised-map --from-run <id>`, or
+  `--from-dir <dir>` on a locally downloaded `exercised-map-a<attempt>` artifact
+  when the download hits HTTP 403, and open the change as an ordinary PR.
+  `bun run test:exercised-map --check` validates the committed file.
+- **Refresh contract:** a refresh whose input is unavailable or partial writes
+  nothing, keeps the committed union and exits with a stable code that names
+  what was missing: `2` usage; `3` input unavailable (a missing directory, or a
+  failed or HTTP 403 download); `4` input incomplete (no `shards/`, no
+  `trial-outcomes.jsonl`, an executed case without a shard artifact, or a missing
+  or malformed `exercised-commands.json`). The census step reports a failed
+  refresh in its job summary and uploads no map.
+- **Replay receipt:** `bun run test:exercised-map --replay` replays the recorded
+  red PR runs in `test/fixtures/exercised-map-replay.json` (every executed failed
+  gate trial in 225 `evals.yml` pull_request runs, 2026-10-07 to 2026-10-17)
+  through today's selector and its shadow, and exits 1 on any MISS: a failed
+  gate case the shadow would not run. `test/exercised-map.test.ts` pins zero.
 
 ### PR receipts, recovery and debounce
 
@@ -1164,10 +1263,11 @@ changed. Cut or unstarted reruns are incomplete, not passes.
 ### Free suite duration seed
 
 `scripts/free-test-durations.json` drives shard packing; files missing from it
-pack at the seed's 99th percentile. Acceptable seeds come only from
-`bun run test:ubicloud --record-durations` (each file timed in its own child on a
-VM with the CI lane's environment; it needs `UBICLOUD_API_KEY` and copies the
-refreshed seed back into the checkout). A 4-core laptop or small-sandbox
+pack at the seed's 99th percentile. Acceptable seeds come only from a recording
+in the CI lane's environment, each file timed in its own child: the weekly
+`free-durations-record.yml` run, or `bun run test:ubicloud --record-durations`
+(it needs `UBICLOUD_API_KEY` and copies the refreshed seed back into the
+checkout). A 4-core laptop or small-sandbox
 recording is not acceptable: browser and display tests skip or slow down there,
 so the seed misstates them. Contributors without `UBICLOUD_API_KEY` leave the
 refresh to a maintainer.
@@ -1188,6 +1288,20 @@ refresh to a maintainer.
   `{file, reason, todo}` and the test prints it. A merge-base without the
   allowlist file counts as the first allowlist. Fix a failure by splitting the
   file, then rerun `bun run test:ubicloud --record-durations`.
+- `free-durations-record.yml` (Mondays 04:00 UTC, before test-health, and on
+  dispatch) records the Linux seed on `ubicloud-standard-8` with
+  `scripts/ubicloud/setup-free-suite.sh` and the Windows seed through
+  `windows-free-tests.yml`'s `record_durations` path. When either recording adds
+  or drops a test file, it force-updates the `bot/free-duration-seeds` branch,
+  opens or refreshes one seed PR whose body states the ratchet result, and
+  dispatches the free lanes on it. A file that fails while recording turns its
+  job red but keeps its duration, and the PR body names it; the seed PR's own
+  free checks decide whether the tree is healthy. An interrupted recording
+  uploads no seed, and more than 5 red files on either OS proposes nothing. The
+  bot never edits the allowlist: a ratchet failure is fixed on the branch by a
+  maintainer before the PR merges, and while the open seed PR holds any commit
+  besides the bot's one refresh commit, later runs leave it alone. Only runs on
+  `main` push the branch; a dispatch from another ref reports only.
 
 ### Windows free lane
 
@@ -1195,7 +1309,8 @@ refresh to a maintainer.
 runs one strict serial shard per `windows-latest` job
 (`bun run test:windows --ci-run`), and verifies every shard receipt on Linux
 (`--windows-only --ci-verify`). Packing uses Windows-measured durations from
-`scripts/free-test-durations-windows.json`; refresh them with
+`scripts/free-test-durations-windows.json`; the weekly
+`free-durations-record.yml` run refreshes them, or by hand run
 `gh workflow run windows-free-tests.yml --ref <branch> -f record_durations=true`,
 then download the `free-test-durations-windows` artifact and commit it.
 

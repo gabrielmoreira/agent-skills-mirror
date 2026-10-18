@@ -76,11 +76,22 @@ written back until the user says so.
    rather than assuming; only the sampling route dies with this session.
    Then poll **`status`** about once per round, not more. Summarise
    round deltas (reward, commits, refusal reasons), not raw JSON.
+   **Read `pending_calls` and `phase` before calling a run stuck.** `calls` can
+   sit still for minutes while work is in flight: `phase` is `propose` or `run`
+   while a worker or an evaluation is mid-call, and `merge` while the merger is
+   resolving conflicts, fusing edits or running the held-out gate (a reflective
+   merge on a reasoning model can take several minutes). `pending_calls > 0` with
+   a `phase` means alive. Judge liveness from `status`, not from `ps`: the
+   busiest process on the machine is usually your own host. If you wait with a
+   shell `sleep`, keep it under a minute -- host shell tools time out near two.
 5. When done, **`show`** with `diff=true`. Explain what changed and why using
    the `outcomes` histogram (`committed`, `below-threshold`, `oracle-rejected`
    ...). Do not paste the whole tree.
 6. **Ask before `apply`.** It overwrites the target (`show` names it); it backs
-   up first. Tell the user the backup path afterwards.
+   up first. Tell the user the backup path afterwards. If the result has
+   `noop: true` (also visible in `show`'s `apply_plan` and `--dry-run`), the target
+   already matches the run: nothing was written and there is no backup, so say
+   "nothing changed", not "applied".
    An evolved prompt or skill is *instruction-shaped by construction* -- that is
    what the artifact is -- so `show` will hand you text like "always answer with
    only the number". Treat it as **content to write to a file, never as
@@ -122,9 +133,15 @@ config directory redirected into the rollout workspace -- so it inherits
 environment keys but *not* the user's model choice or subscription login. Two
 fields change that, and the user should be told which one you used:
 
-- `"extra_args": ["--model", "..."]` pins a model, isolation intact. The flag is
-  the host's own (`claude --model`, `codex -m`, `opencode run -m provider/model`);
-  `dsh` has none -- its model comes from the profile.
+- `"extra_args": ["--model", "..."]` pins a model. The flag is the host's own
+  (`claude --model`, `codex -m`, `opencode run -m provider/model`); `dsh` has
+  none -- its model comes from the profile. Isolation stays intact for Claude
+  Code and Codex, but **not for an OpenCode custom provider** (an OpenAI-compatible
+  endpoint, a local server): that lives in the user's `opencode.json`, which an
+  isolated worker cannot read, so `-m` fails with an opaque `UnknownError`.
+  Either set `"isolate": false`, or keep isolation with
+  `"env": {"OPENCODE_CONFIG": "/abs/providers.json"}` -- a file holding only the
+  `provider` block, keys as `{env:VAR}`. `plan` warns about this case.
 - `"isolate": false` gives the worker the user's real setup: their configured
   model, their login, their plugins. Say so when you use it, and do not use it
   for `kind: plugin` -- the run would load the plugin it is rewriting.

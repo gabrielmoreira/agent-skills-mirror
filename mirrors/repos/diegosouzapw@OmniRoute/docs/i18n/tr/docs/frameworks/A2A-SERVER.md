@@ -150,25 +150,25 @@ curl -X POST http://localhost:20128/a2a \
 
 OmniRoute, `src/lib/a2a/taskExecution.ts::A2A_SKILL_HANDLERS` içinde bağlanmış 6 A2A becerisi sunar. Her beceri modülü `src/lib/a2a/skills/` içinde bulunur.
 
-| Beceri              | ID                   | Açıklama                                                                                                                                                                   | Etiketler                 | Örnekler                                     |
-| :------------------ | :------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------------ | :------------------------------------------- |
-| Akıllı Yönlendirme  | `smart-routing`      | Bir istemi, OmniRoute'un kombinasyon motoru ve puanlama sistemini kullanarak en uygun sağlayıcı/kombinasyon üzerinden yönlendirir                                          | yönlendirme, sağlayıcılar | "Bu istemi en iyi model üzerinden yönlendir" |
-| Kota Yönetimi       | `quota-management`   | Sağlayıcı başına kota durumunu bildirir ve çağrı yapanların ne zaman hız sınırlaması uygulayacağına veya sağlayıcı değiştireceğine karar vermesine yardımcı olur           | kota, sağlayıcılar        | "anthropic kotasını kontrol et"              |
-| Sağlayıcı Keşfi     | `provider-discovery` | Yüklü sağlayıcıları yetenekleri, ücretsiz katman işaretleri ve OAuth durumlarıyla birlikte listeler                                                                        | sağlayıcılar, keşif       | "Hangi sağlayıcılar kullanılabilir?"         |
-| Maliyet Analizi     | `cost-analysis`      | Kataloğa ve son kullanıma göre bir isteğin/konuşmanın maliyetini tahmin eder                                                                                               | maliyet, kullanım         | "Bu konuşmanın maliyetini tahmin et"         |
-| Sağlık Raporu       | `health-report`      | Sağlayıcı başına devre kesici, bekleme süresi ve kilitlenme durumlarını bir araya getirir                                                                                  | sağlık, dayanıklılık      | "Tüm sağlayıcıların sağlık durumunu göster"  |
-| Yetenekleri Listele | `list-capabilities`  | Bağlam ekleme amacıyla ham SKILL.md URL'lerini içeren bir markdown tablosu olarak 45 girdilik eksiksiz Agent Skills kataloğunu (23 API + 21 CLI + 1 yapılandırma) döndürür | katalog, keşif, beceriler | "Tüm OmniRoute yeteneklerini listele"        |
+| Beceri                | ID                   | Açıklama                                                                                                                                                                | Etiketler                   | Örnekler                                     |
+| :-------------------- | :------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :-------------------------- | :------------------------------------------- |
+| Akıllı Yönlendirme    | `smart-routing`      | OmniRoute'un kombinasyon motoru ve puanlamasını kullanarak bir istemi en uygun sağlayıcı/kombinasyon üzerinden yönlendirir                                              | yönlendirme, sağlayıcılar   | "Bu istemi en iyi model üzerinden yönlendir" |
+| Kota Yönetimi         | `quota-management`   | Sağlayıcı bazında kota durumunu bildirir ve çağıranların ne zaman kısıtlama yapacağına veya sağlayıcı değiştireceğine karar vermesine yardımcı olur                     | kota, sağlayıcılar          | "anthropic kotasını kontrol et"              |
+| Sağlayıcı Keşfi       | `provider-discovery` | Yüklü sağlayıcıları yetenekleri, ücretsiz katman bilgileri ve OAuth durumlarıyla birlikte listeler                                                                      | sağlayıcılar, keşif         | "Hangi sağlayıcılar kullanılabilir?"         |
+| Maliyet Analizi       | `cost-analysis`      | Kataloğu ve son kullanımı temel alarak bir isteğin/görüşmenin maliyetini tahmin eder                                                                                    | maliyet, kullanım           | "Bu görüşmenin maliyetini tahmin et"         |
+| Sistem Durumu Raporu  | `health-report`      | Sağlayıcı bazında devre kesici, bekleme süresi ve kilitlenme durumlarını bir araya getirir                                                                              | sistem durumu, dayanıklılık | "Tüm sağlayıcıların durumunu göster"         |
+| Yetenekleri Listeleme | `list-capabilities`  | Bağlam ekleme amacıyla ham SKILL.md URL'leri içeren bir markdown tablosu olarak 45 öğelik Agent Skills kataloğunun tamamını (23 API + 21 CLI + 1 yapılandırma) döndürür | katalog, keşif, beceriler   | "Tüm OmniRoute yeteneklerini listele"        |
 
-> Agent Card, canlı 352 sağlayıcılı katalogla uyumlu tutulmalıdır; sağlayıcı sayıları ve ücretsiz/kimlik doğrulamasız kullanım meta verileri çalışma zamanı kayıt defterinden alınır.
+> Agent Card, güncel 372 sağlayıcılı katalogla uyumlu tutulmalıdır; sağlayıcı sayıları ile ücretsiz/kimlik doğrulamasız kullanım meta verileri çalışma zamanı kayıt defterinden alınır.
 
 ### `list-capabilities` Becerisinin Ayrıntıları
 
-`list-capabilities` becerisi, API çağrıları göndermeden önce OmniRoute'un neler sunduğunu keşfetmesi gereken harici aracılar için özellikle kullanışlıdır. Yapılandırılmış bir markdown tablo çıktısı döndürür:
+`list-capabilities` becerisi, API çağrıları göndermeden önce OmniRoute'un neler sunduğunu keşfetmesi gereken harici aracılar için özellikle kullanışlıdır. Yapılandırılmış bir markdown tablosu artefaktı döndürür:
 
 ```
 | ID | Ad | Kategori | Alan | Uç Noktalar/Komutlar | Ham URL |
 | --- | --- | --- | --- | --- | --- |
-| omni-auth | Kimlik Doğrulama ve Oturumlar | api | kimlik doğrulama | POST /api/auth/login, ... | https://raw.githubusercontent.com/... |
+| omni-auth | Kimlik Doğrulama ve Oturumlar | api | auth | POST /api/auth/login, ... | https://raw.githubusercontent.com/... |
 ...
 ```
 

@@ -8,7 +8,7 @@
       "id": "packages",
       "name": "Packages",
       "nameZh": "扩展包",
-      "count": 122,
+      "count": 123,
       "piindexUrl": "https://piindex.dev/?category=packages"
     },
     {
@@ -80,7 +80,7 @@
       "name": "UI Enhancement",
       "nameZh": "界面增强",
       "kind": "packages",
-      "count": 11,
+      "count": 12,
       "piindexUrl": "https://piindex.dev/?category=ui-enhancement",
       "guideUrl": null
     },
@@ -287,9 +287,9 @@
     {
       "kind": "topic",
       "slug": "jev",
-      "title": "TypeSafe AI (Jev) for Pi: Plugins, Setup & Comparison",
+      "title": "TypeSafe AI (Jev) for Pi: Plugins & Comparison",
       "titleZh": "TypeSafe AI（Jev）Pi 插件：安装、配置与选型",
-      "description": "Compare five featured Jev integrations for Pi: tool-call judgments, supervision, tool discovery, skill selection and model routing. Setup, data sharing, failure behavior and reviewed source versions.",
+      "description": "Compare five featured Jev integrations for Pi: tool-call judgments, supervision, tool discovery, skill selection and model routing. Setup and data scope.",
       "descriptionZh": "比较五项主推 Pi Jev 集成：工具调用判定、会话监督、工具发现、技能选择与模型路由。说明安装配置、数据外发、故障行为与核验版本。",
       "piindexUrl": "https://piindex.dev/topics/jev/",
       "packages": [
@@ -303,9 +303,9 @@
     {
       "kind": "topic",
       "slug": "pi-durable",
-      "title": "Built on Pi Durable: Apps, Bots & Storage Backends",
+      "title": "Built on Pi Durable: Apps, Bots, Storage Backends",
       "titleZh": "基于 Pi Durable 的项目：应用、机器人与存储后端",
-      "description": "Community projects that run on Pi Durable, Earendil's experimental durable harness: multiplayer web and iOS clients, chat bots, Home Assistant, Pi extensions, Cloudflare and PostgreSQL backends. Source-reviewed with pinned commits.",
+      "description": "Community projects on Pi Durable, Earendil's experimental harness: web and iOS clients, chat bots, Home Assistant, Cloudflare and PostgreSQL backends.",
       "descriptionZh": "基于 Earendil 实验性 durable harness Pi Durable 的社区项目：多人 Web 与 iOS 客户端、聊天机器人、Home Assistant、Pi 扩展，以及 Cloudflare 与 PostgreSQL 后端。均按固定提交核验源码。",
       "piindexUrl": "https://piindex.dev/topics/pi-durable/",
       "packages": [
@@ -350,7 +350,7 @@
     {
       "kind": "package",
       "slug": "pi-web-access",
-      "title": "pi-web-access: Install, Search Fallbacks, PDF & YouTube",
+      "title": "pi-web-access: Search Fallbacks, PDF & YouTube",
       "titleZh": "pi-web-access：安装、搜索降级、PDF 与 YouTube",
       "description": "Set up pi-web-access with source-verified search routing, PDF extraction, YouTube dependencies and practical verification steps.",
       "descriptionZh": "安装 pi-web-access，了解经源码核验的搜索降级、PDF 提取、YouTube 依赖与实际验证步骤。",
@@ -362,7 +362,7 @@
     {
       "kind": "package",
       "slug": "tintinweb-pi-subagents",
-      "title": "@tintinweb/pi-subagents: Background Agents & Worktrees",
+      "title": "@tintinweb/pi-subagents: Background Subagents",
       "titleZh": "@tintinweb/pi-subagents：后台代理与 Worktree 隔离",
       "description": "Understand Tintin’s SDK child sessions, optional Git worktrees, live widgets, parallel limits and safe handoff of code changes.",
       "descriptionZh": "了解 Tintin 的 SDK 子会话、可选 Git worktree、实时组件、并行限制与代码修改交接。",
@@ -374,7 +374,7 @@
     {
       "kind": "package",
       "slug": "pi-mcp-adapter",
-      "title": "pi-mcp-adapter: MCP Setup, Lazy Servers & Token Costs",
+      "title": "pi-mcp-adapter: Lazy MCP Servers & Token Costs",
       "titleZh": "pi-mcp-adapter：MCP 配置、惰性启动与 Token 开销",
       "description": "Connect MCP servers to Pi with real configuration examples, metadata caching, selective direct tools and an honest explanation of the 200-token claim.",
       "descriptionZh": "用真实配置示例将 MCP 服务接入 Pi，了解元数据缓存、按需直连工具与“200 Token”说法的适用范围。",
@@ -424,7 +424,7 @@
         {
           "kind": "package",
           "slug": "pi-web-access",
-          "title": "pi-web-access: Install, Search Fallbacks, PDF & YouTube",
+          "title": "pi-web-access: Search Fallbacks, PDF & YouTube",
           "piindexUrl": "https://piindex.dev/packages/pi-web-access/"
         }
       ]
@@ -662,7 +662,7 @@
         {
           "kind": "topic",
           "slug": "pi-durable",
-          "title": "Built on Pi Durable: Apps, Bots & Storage Backends",
+          "title": "Built on Pi Durable: Apps, Bots, Storage Backends",
           "piindexUrl": "https://piindex.dev/topics/pi-durable/"
         }
       ]
@@ -700,7 +700,7 @@
         {
           "kind": "package",
           "slug": "pi-mcp-adapter",
-          "title": "pi-mcp-adapter: MCP Setup, Lazy Servers & Token Costs",
+          "title": "pi-mcp-adapter: Lazy MCP Servers & Token Costs",
           "piindexUrl": "https://piindex.dev/packages/pi-mcp-adapter/"
         }
       ]
@@ -813,7 +813,7 @@
         {
           "kind": "package",
           "slug": "tintinweb-pi-subagents",
-          "title": "@tintinweb/pi-subagents: Background Agents & Worktrees",
+          "title": "@tintinweb/pi-subagents: Background Subagents",
           "piindexUrl": "https://piindex.dev/packages/tintinweb-pi-subagents/"
         }
       ]
@@ -1006,7 +1006,7 @@
         {
           "kind": "topic",
           "slug": "pi-durable",
-          "title": "Built on Pi Durable: Apps, Bots & Storage Backends",
+          "title": "Built on Pi Durable: Apps, Bots, Storage Backends",
           "piindexUrl": "https://piindex.dev/topics/pi-durable/"
         }
       ]
@@ -1163,6 +1163,37 @@
       "weeklyTrendPercent": -41,
       "piindexUrl": "https://piindex.dev/?q=%40juicesharp%2Frpiv-voice",
       "directoryUrl": "https://piindex.dev/?q=%40juicesharp%2Frpiv-voice",
+      "guideUrl": null,
+      "guides": []
+    },
+    {
+      "id": "sfgartland-better-pi-voice-98f1159b",
+      "name": "@sfgartland/better-pi-voice",
+      "kind": "packages",
+      "kindName": "Packages",
+      "kindNameZh": "扩展包",
+      "descriptions": {
+        "en": [
+          "Streaming dictation with Deepgram or local Parakeet, biased by keyterms mined from your repo and session, with replay/salvage recovery so a dropped socket never loses a sentence."
+        ],
+        "zh": [
+          "流式语音输入，云端 Deepgram 或本地 Parakeet 皆可；从仓库、会话与开发者术语中挖掘 keyterm 来偏置识别结果，并带回放与抢救式恢复，断线也不丢句子。"
+        ]
+      },
+      "categories": [
+        "ui-enhancement"
+      ],
+      "searchText": " @sfgartland/better-pi-voice Streaming dictation with Deepgram or local Parakeet, biased by keyterms mined from your repo and session, with replay/salvage recovery so a dropped socket never loses a sentence. 流式语音输入，云端 Deepgram 或本地 Parakeet 皆可；从仓库、会话与开发者术语中挖掘 keyterm 来偏置识别结果，并带回放与抢救式恢复，断线也不丢句子。 UI Enhancement packages pi install npm:@sfgartland/better-pi-voice 界面增强",
+      "projectUrl": "https://github.com/sfgartland/better-pi-voice",
+      "repoUrl": "https://github.com/sfgartland/better-pi-voice",
+      "npmPackage": "@sfgartland/better-pi-voice",
+      "npmUrl": "https://www.npmjs.com/package/@sfgartland/better-pi-voice",
+      "install": "pi install npm:@sfgartland/better-pi-voice",
+      "stars": null,
+      "weeklyDownloads": null,
+      "weeklyTrendPercent": null,
+      "piindexUrl": "https://piindex.dev/?q=%40sfgartland%2Fbetter-pi-voice",
+      "directoryUrl": "https://piindex.dev/?q=%40sfgartland%2Fbetter-pi-voice",
       "guideUrl": null,
       "guides": []
     },
@@ -1447,7 +1478,7 @@
         {
           "kind": "topic",
           "slug": "jev",
-          "title": "TypeSafe AI (Jev) for Pi: Plugins, Setup & Comparison",
+          "title": "TypeSafe AI (Jev) for Pi: Plugins & Comparison",
           "piindexUrl": "https://piindex.dev/topics/jev/"
         }
       ]
@@ -1485,7 +1516,7 @@
         {
           "kind": "topic",
           "slug": "jev",
-          "title": "TypeSafe AI (Jev) for Pi: Plugins, Setup & Comparison",
+          "title": "TypeSafe AI (Jev) for Pi: Plugins & Comparison",
           "piindexUrl": "https://piindex.dev/topics/jev/"
         }
       ]
@@ -1833,7 +1864,7 @@
         {
           "kind": "topic",
           "slug": "jev",
-          "title": "TypeSafe AI (Jev) for Pi: Plugins, Setup & Comparison",
+          "title": "TypeSafe AI (Jev) for Pi: Plugins & Comparison",
           "piindexUrl": "https://piindex.dev/topics/jev/"
         }
       ]
@@ -2367,7 +2398,7 @@
         {
           "kind": "topic",
           "slug": "jev",
-          "title": "TypeSafe AI (Jev) for Pi: Plugins, Setup & Comparison",
+          "title": "TypeSafe AI (Jev) for Pi: Plugins & Comparison",
           "piindexUrl": "https://piindex.dev/topics/jev/"
         }
       ]
@@ -3552,7 +3583,7 @@
         {
           "kind": "topic",
           "slug": "jev",
-          "title": "TypeSafe AI (Jev) for Pi: Plugins, Setup & Comparison",
+          "title": "TypeSafe AI (Jev) for Pi: Plugins & Comparison",
           "piindexUrl": "https://piindex.dev/topics/jev/"
         }
       ]
@@ -5490,7 +5521,7 @@
         {
           "kind": "topic",
           "slug": "pi-durable",
-          "title": "Built on Pi Durable: Apps, Bots & Storage Backends",
+          "title": "Built on Pi Durable: Apps, Bots, Storage Backends",
           "piindexUrl": "https://piindex.dev/topics/pi-durable/"
         }
       ]
@@ -5528,7 +5559,7 @@
         {
           "kind": "topic",
           "slug": "pi-durable",
-          "title": "Built on Pi Durable: Apps, Bots & Storage Backends",
+          "title": "Built on Pi Durable: Apps, Bots, Storage Backends",
           "piindexUrl": "https://piindex.dev/topics/pi-durable/"
         }
       ]
@@ -5566,7 +5597,7 @@
         {
           "kind": "topic",
           "slug": "pi-durable",
-          "title": "Built on Pi Durable: Apps, Bots & Storage Backends",
+          "title": "Built on Pi Durable: Apps, Bots, Storage Backends",
           "piindexUrl": "https://piindex.dev/topics/pi-durable/"
         }
       ]
@@ -5604,7 +5635,7 @@
         {
           "kind": "topic",
           "slug": "pi-durable",
-          "title": "Built on Pi Durable: Apps, Bots & Storage Backends",
+          "title": "Built on Pi Durable: Apps, Bots, Storage Backends",
           "piindexUrl": "https://piindex.dev/topics/pi-durable/"
         }
       ]
@@ -5642,7 +5673,7 @@
         {
           "kind": "topic",
           "slug": "pi-durable",
-          "title": "Built on Pi Durable: Apps, Bots & Storage Backends",
+          "title": "Built on Pi Durable: Apps, Bots, Storage Backends",
           "piindexUrl": "https://piindex.dev/topics/pi-durable/"
         }
       ]
@@ -5680,7 +5711,7 @@
         {
           "kind": "topic",
           "slug": "pi-durable",
-          "title": "Built on Pi Durable: Apps, Bots & Storage Backends",
+          "title": "Built on Pi Durable: Apps, Bots, Storage Backends",
           "piindexUrl": "https://piindex.dev/topics/pi-durable/"
         }
       ]
@@ -5718,7 +5749,7 @@
         {
           "kind": "topic",
           "slug": "pi-durable",
-          "title": "Built on Pi Durable: Apps, Bots & Storage Backends",
+          "title": "Built on Pi Durable: Apps, Bots, Storage Backends",
           "piindexUrl": "https://piindex.dev/topics/pi-durable/"
         }
       ]

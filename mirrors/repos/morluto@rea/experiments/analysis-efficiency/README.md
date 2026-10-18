@@ -1,5 +1,12 @@
 # Analysis efficiency measurements
 
+For authentic old Evidence and mixed investigations, see the
+[retained-query checkpoint](retained-investigation-workflows.md).
+`retained-investigation.mjs` compares existing complete delivery with selected
+pages, including capacity-refusal recovery and original-record round trips.
+It records negative model results and separates imported-format validation work
+from the query contract.
+
 For genuine Fiddler captures, see the [SAZ selection checkpoint](saz-selection-workflows.md).
 `measure.mjs --saz-selection baseline|focused|retained` compares default complete
 delivery (including retained-reference recovery), caller-selected ordinals, and

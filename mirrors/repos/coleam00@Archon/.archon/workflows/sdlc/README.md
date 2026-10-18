@@ -21,13 +21,9 @@ A guard here must protect an action the node it lives in takes.
 **Cut** a guard when it re-asserts an invariant something else already established.
 That belongs where it is established, once — not at each node that depends on it.
 
-**The test: if this pack's fixture suite cannot exercise the guard, it is not a
-guard. It is a comment — write it as one.**
-
-That test is mechanical and settles most arguments without debating threat models.
-A node the dry run cannot execute — a composed `bash:` node, for instance, which
-never receives its caller's `with:` values — can only ever be stubbed, so no
-fixture can show the guard working or catch it breaking.
+**The test: a guard names the real run it would have saved, or it stands in front
+of an irreversible action. Otherwise it is a comment; write it as one.** A guard
+does not earn its place by having a fixture that turns it red.
 
 ### Why this rule exists
 
@@ -130,7 +126,7 @@ other value of `ARCHON_SDLC_FORGE` refuses too. A container execution receives n
 only the project's configured env, never `~/.archon/.env`, so select `gh` for it in
 the repository's `.archon/config.yaml` with `env: { ARCHON_SDLC_FORGE: gh }`.
 
-`archon-ship`, `archon-deliver`, `archon-upkeep` and `archon-pr` start with a `forge` node
+`archon-ship-block`, `archon-deliver-block`, `archon-upkeep` and `archon-pr` start with a `forge` node
 ([`.shared/forge-check.ts`](.shared/forge-check.ts)) that proves the selected source
 can act after worktree setup and before any agent spends: on `forge`, host metadata
 must advertise every operation in `REQUIRED_FORGE_OPERATIONS` in `.shared/forge-check.ts`,
@@ -146,22 +142,29 @@ The gh check first refuses a run whose `GH_TOKEN` is empty with no `GITHUB_TOKEN
 otherwise act as the host's login): per-user GitHub mode scrubbed it, or an env file
 has an empty `GH_TOKEN=` line to remove. The operations still refuse on their own. The node's typed
 `source` is what the `ci` and `update-pr-body` agents act through.
+Run `archon workflow run archon-forge-check` from a checkout to see the same check's
+result without starting delivery.
 
 ## Public writes belong to a script
 
 An agent judges and authors; the node after it performs the one public write and
 proves it landed. `publish-pr` pushes the branch and opens or reuses the pull
-request, `publish-review` upserts the one marked review comment, and deliver's
-`threads` posts the thread replies `settle-threads` declared and resolves those
-threads. Every pack
-label is declared in `.shared/labels.ts`, and every stage writes labels through its
-`writeLabels`, which adds and removes them as a delta so labels another writer adds
-survive. On the `forge` source it still writes the whole label set back, because
+request; on a pull request the run continues it only pushes, and `prepare` writes no
+body for it when the caller named the PR or selected no branch. If the caller
+selected a branch without naming a PR, prepare writes a body even if it found an
+existing PR: publish may need to open one from the selected branch. That body is
+used only when opening a PR. The description of a continued pull request belongs to `update-pr-body`
+in delivery, which brings it up to date once the rounds end; a standalone `archon-pr`
+leaves it as its author left it. `publish-review` upserts the one marked review
+comment, and deliver's `threads` posts the thread replies `settle-threads`
+declared and resolves those threads. Every pack label is declared in `.shared/labels.ts`, and every stage writes
+labels through its `writeLabels`, which adds and removes them as a delta so labels
+another writer adds survive. On the `forge` source it still writes the whole label set back, because
 the forge contract has no single-label add or remove yet. No delivery node files
 discoveries: the run's terminal report relays them to the operator, and
-[`archon-discoveries`](#discoveries) drains them where a project runs it. In `archon-deliver` and
-`archon-ship` that is the `report` node, which also runs when a node fails, so a
-workflow that includes `archon-deliver` runs after a failed delivery and must gate
+[`archon-discoveries`](#discoveries) drains them where a project runs it. In `archon-deliver-block` and
+`archon-ship-block` that is the `report` node, which also runs when a node fails, so a
+workflow that includes `archon-deliver-block` runs after a failed delivery and must gate
 on `$deliver.output.ready`. Each acts on the values the agent
 before it declared in its typed output, which the engine certified, writes through
 the selected source, and fails unless the result reads back — so "the write
@@ -202,6 +205,11 @@ is the owning configuration — `bun run type-check` compiles that project. Lint
 covers every TypeScript file under `.archon/workflows/`, so it needs no globs of its
 own. A script placed outside the type-check globs fails `pack-scripts-validation.test.ts`
 rather than going quietly unchecked.
+
+The scripts' tool-boundary tests live under `.archon/scripts/__tests__/`. CI does not run
+them on pull requests or pushes. Run `bun run test --plan pack` when you change
+`.archon/workflows/` or `.archon/scripts/`, or dispatch the Test Suite workflow with
+`pack-tests` set.
 
 Three rules, each protecting something a script cannot get back on its own:
 
@@ -284,6 +292,28 @@ the directory only; the agent chooses between the project's file and the default
 and no script opens either. The default is a file rather than text in the prompt
 because a prompt carrying the default would hold it even after a project replaced
 it.
+
+## A stage pauses where nothing takes it forward
+
+Each stage a person runs, `archon-deliver`, `archon-plan`, `archon-triage`,
+`archon-review` and `archon-ship`, is a public entry around a `-block` workflow that
+holds the stage's graph. The entry runs the block and then
+[`archon-attention`](attention/archon-attention.yaml), whose one `decide` agent judges
+whether the ending has a next step. When it has none (a delivery that ended not
+ready, a plan or triage stopped on a question for a person, a review that is Ready on
+a draft pull request), the run pauses as one `select` attention item labelled
+`stage: <workflow>`. It says what ended and why it matters, the agent's
+recommendation with its confidence and evidence, the choices and what each does, what
+waiting costs, and the links. The run continues on the answer: `rerun` runs the block
+again with the item and the person's note added to its work, `ready` takes the pull
+request out of draft, and `finish` keeps the outcome as it stands. The entry returns
+the block's typed outcome as its last pass left it. A stage that fails raises no item:
+the run fails at the failed node, as the block alone would.
+
+A workflow that composes a stage includes its `-block`: the queues, intake, upkeep,
+the review eval, and `archon-ship-block` and `archon-deliver-block` themselves. The
+composer owns what follows the stage's ending and asks through its own attention item
+when it needs a person, so one decision never raises two items.
 
 ## A node's streams are the operator's channel
 
@@ -431,7 +461,7 @@ are the operator's and stay outside the pack and the repository.
   label, and open issues the operator dispositioned (`--dispositions`, a JSON array
   of `{number, contract, route?, note?}`), each with its title and body at creation.
   It also pins which workflow judges each row: a listed maintainer's issue runs
-  through intake in eval mode; an outside author's runs through `archon-triage`
+  through intake in eval mode; an outside author's runs through `archon-triage-block`
   directly on the same creation text with `publish=false`, because eval intake never
   triages an outside item; and some maintainer issues get a second `trust: outside`
   row, which must take the outside path with no agent node. A group that finds
@@ -528,7 +558,7 @@ which a project replaces with its own `.archon/sdlc/policy/build.md`.
   browser is reproduced with the playwright-cli skill, which the prompt names rather
   than a `skills:` entry, because a provider that cannot load named skills refuses a
   whole run that declares one.
-- **Rounds.** One round is one included `archon-ship` run. The `answer` agent reads how
+- **Rounds.** One round is one included `archon-ship-block` run. The `answer` agent reads how
   it ended and decides: `done` when the pull request's latest review says Ready at its
   head commit, `continue` with a brief when the contract already answers what stopped
   it (a correctable finding, CI red the change caused, a false blocker naming a later
@@ -569,7 +599,7 @@ which a project replaces with its own `.archon/sdlc/policy/build.md`.
   now.
 
 The pack installs no binding. A schedule keeps items moving, because a run works one
-item and a continuation waits for the next run. Each run includes `archon-ship`, which
+item and a continuation waits for the next run. Each run includes `archon-ship-block`, which
 changes its checkout, so every run needs its own worktree:
 
 ```json
@@ -628,7 +658,7 @@ replaces with its own `.archon/sdlc/policy/merge.md`.
   sync and wait for their delta review and CI: a sweep merges at most one pull request. A
   push, by the sweep or anyone else, makes the verdict stale, and so does a comment
   published before verdicts were stamped: one such pull request gets a delta review in
-  the same run, through an included `archon-review` continuing from its last report,
+  the same run, through an included `archon-review-block` continuing from its last report,
   and the rest wait for the next sweep. Red CI in code a pull request does not touch
   gets one rerun of its failed jobs; the record stores the head it re-ran at and
   refuses a second rerun there. What the build queue can fix (a verdict that is
@@ -831,20 +861,3 @@ the same project gate on two pinned parts and their composed tree. Its `interact
 result remains red; delivery holds it rather than treating it as inherited or
 environmental. The report retains revision, tree and check evidence for an existing
 merger to consume. It does not install a queue or authorize a merge.
-
-## CI agent eval
-
-The fast-rerun eval runs the shipped CI command through the Claude provider with
-in-memory forge responses. A rerun returns a newer attempt that is already green,
-with a changed check-unit ID. The state read either shows it immediately or first
-returns the old failed attempt on the same revision. The agent must read through
-the stale attempt, finish green, leave the PR ready, and record the newer attempt
-in its reports within the tool-call budget.
-
-Run it explicitly with native Claude authentication (it makes paid model calls):
-
-```bash
-ARCHON_TEST_CI_AGENT=1 bun run test .archon/scripts/__tests__/ci-rerun-agent.test.ts
-```
-
-Ordinary package tests skip this live eval. It has no real forge access.

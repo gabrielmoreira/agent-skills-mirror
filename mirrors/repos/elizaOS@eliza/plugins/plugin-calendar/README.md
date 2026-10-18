@@ -30,3 +30,15 @@ Calendar components install the client methods when used.
 
 The app renderer resolves the package to `src/browser.ts`, which keeps views and
 client registration separate from runtime actions and provider storage.
+
+## Managed Google Calendar writes
+
+A host that sets `ELIZA_MANAGED_CALENDAR_READ_BROKER` to its private loopback
+endpoint also routes owner-approved create and update requests for exact
+`alpha-google:` grants through that host. Every write needs an approved owner
+review; the durable mutation ledger suppresses duplicates and never retries an
+unknown provider outcome. Deleting or cancelling a managed event depends on a
+separately owned production service, so it stays off unless the host sets
+`ELIZA_MANAGED_CALENDAR_DELETE_ENABLED=1`. Without it, a delete request is refused
+with `CALENDAR_MANAGED_DELETE_UNAVAILABLE` before an owner review is queued, and
+the mutation port refuses it again before any host call.

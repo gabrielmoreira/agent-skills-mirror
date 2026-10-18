@@ -61,6 +61,19 @@ $SPRITE_GEN_ROOT/.venv/bin/sprite-gen workflow --kind image
 
 Pass choices already stated in the request. The guide checks access, combines explicit choices with saved defaults, and returns only missing questions. Follow its start and finish stages. Always pass the resolved provider explicitly to generation tools. Deliver checked files before offering the curation view; save defaults only when the user agrees. The complete conversation and settings contract is owned by the linked document, not duplicated in individual pipeline docs.
 
+## When codex cannot run — exit 75
+
+A call that names no provider (`gen`, `logo`, `gen-set`, `video-set`'s mid-step redraw) runs on codex. When codex cannot run here — not signed in, or the codex usage of the account used up — and the user's choice for that is to ask (the default), the command generates nothing, prints one stderr line starting `sprite-gen ask codex-unavailable:` followed by JSON, and ends with **exit 75**. That is a question for the user, not a failure: never answer it yourself, never retry without the answer, never switch provider on your own.
+
+Ask it in these words, with the reason from the line's `cause` (`login`: "로그인이 없어요", `usage-limit`: "사용량을 다 썼어요"):
+
+> 지피티(codex)를 지금 쓸 수 없어요 — {이유}. 어떻게 할까요?
+> 1. OpenAI API 로 만들기 (호출당 과금)
+> 2. 그록으로 만들기
+> 3. 멈추기
+
+Then run the same command again with the answer's flag from the line's `choices` — 1: `choices.openai` (`--provider openai`; `video-set`: `--still-provider openai`), 2: `choices.grok` — or, for 3 (멈추기), stop and say nothing was generated. When the user says to do the same from now on, save it: `sprite-gen defaults save --codex-unavailable openai|grok|ask --expected-revision <revision from defaults show>`. A saved `grok` or `openai` runs without asking and says so on stderr and in the report (`provider_fallback`). The rule is [gen](docs/gen.md#when-codex-cannot-run--ask-or-what-you-chose)'s.
+
 ## Side-view facing
 
 Keep the side still, canvas placement and motion prompt facing the same direction.
@@ -113,7 +126,7 @@ hold the arms still, and check the loop with `handed-check --state walk`.
 | Typography logo, wordmark or title lettering (로고, 타이포그래피, 타이틀 글자): the title lettered into a title screen or poster first, then only its lettering redrawn on a key and cut out with its glow; the text is read back and a misspelt logo refused | `logo --text … --style …` (`--mood` to start from a picture you have, `--lettering` to cut again for nothing) | [logo](docs/logo.md) |
 | Ordinary image or edit | `gen --provider codex` or `gen --provider grok` (the subscription login first; without one grok uses `XAI_API_KEY`, and a codex signed in with an API key bills it — both per call, said on stderr) | [gen](docs/gen.md) |
 | Pixel art the model draws directly as a grid, 8–48 px (best at 32 or less): an icon, a prop, a monster, a character still, four directions, a walk draft, a tile, or a hand-drawn motion of up to 64 frames drawn four a call (`--motion`, `{name, pose}` frames, `--duration-ms`), in a style of your own (`--style`) — on your Claude subscription (`claude` signed in), or without one on `ANTHROPIC_API_KEY`, **billed per call**; `grid.txt` is the truth, `--grid` re-renders an edited one, `--resume` collects a batch instead of buying it twice | `pixel-draw` | [pixel-draw](docs/pixel-draw.md) |
-| Image generation with no login available (server, container, SaaS) | `gen --provider openai` — server/SaaS route on `OPENAI_API_KEY`, **billed per call**, never a default or a fallback | [gen](docs/gen.md#subscription-first--openai-is-named-or-it-does-not-run) |
+| Image generation with no login available (server, container, SaaS) | `gen --provider openai` — server/SaaS route on `OPENAI_API_KEY`, **billed per call**, never a default; it runs only when named, or when the user chose it for a codex that cannot run | [gen](docs/gen.md#subscription-first--openai-runs-only-when-you-chose-it) |
 | Base and direction anchors | `anchor` | [directional-anchor-workflow](docs/directional-anchor-workflow.md) |
 | Curation view or existing image candidates | `curation`, `unpack-atlas --pngs-dir` | [curation](docs/curation.md) |
 | Uniform background removal or imported sheets | `cutout`, `slice-sheet` | [sheet-slicing](docs/sheet-slicing.md) |
@@ -129,7 +142,7 @@ hold the arms still, and check the loop with `handed-check --state walk`.
 | Standalone projected shadow | `shadow` | [asset-tools](docs/asset-tools.md#projected-shadows) |
 | Duplicate poses, foot contact and stride measurement | `inspect-motion` | [asset-tools](docs/asset-tools.md#motion-and-contact-evidence) |
 | Optional scene placement, lighting, camera and render | `scene-render`, `scene-inspect` | [scene](docs/scene.md) |
-| Defaults | `defaults show`, `defaults save`, `defaults clear` | [user-workflow](docs/user-workflow.md#one-settings-owner) |
+| Defaults | `defaults show`, `defaults save` (`--codex-unavailable ask\|grok\|openai`: what to do when codex cannot run), `defaults clear` | [user-workflow](docs/user-workflow.md#one-settings-owner) |
 
 Say a thing once: what an option says, leave out of the prompt. `--direction`, `--facing`, `--handed`, the key background and `video --direction side` each add their own sentence after your text, in one place; without `--handed` every prompt is 2.22.0's, byte for byte, and only the handed sentences are left out where your text already has them. Your prompt carries the subject, its design and its pose. Text that says the opposite of an option ("facing left" with `--facing right`, the item on the other wrist) is sent as written with a warning (`extra.prompt_notes`, `video-prompt`'s `warnings`): fix the prompt, do not send it — [prompt-assembly](docs/prompt-assembly.md).
 

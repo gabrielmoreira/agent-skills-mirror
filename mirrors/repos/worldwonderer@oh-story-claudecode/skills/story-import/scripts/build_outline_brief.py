@@ -13,8 +13,9 @@
 - 本批每章：正文路径、按 visible_chars_v1 测好的历史长度（与写作时章节检查同一口径，
   story-architect 不能自己跑测量），以及从拆文库摘要里抽出的、写细纲真正要用的字段
   （关键事件、因果、局面结果、涉及、信息变化、状态变化、章尾钩子，情节点只取「标题｜类型｜基调」）；
-  拆文库没有摘要时改用 `.story/work/简化摘要/第NNN章.md`（超过 200 章的书，未深拆章节的简化摘要）；
-- 卷纲「剧情单元（反推）」表里与本批章节重叠的行（只按表头「章节范围」那一列判断重叠）。
+- 本批第一章另带上一章摘要里的章尾钩子（写章首钩子用）；
+- 卷纲里章节范围与本批重叠的剧情单元卡。单元卡用 outline_view.py 的解析识别（写正文时
+  `outline_view.py --unit` 也用它），任务包取得到的单元，写正文时也取得到。
 本书设定与作者已定的事不进包，执行者按规则定点读项目文件与 `.story/work/导入记录.md`。
 
 批大小按总量定：请求 10–20 章（全书最后一批可以更少）；执行者要读的总量（任务包 + 没有摘要、
@@ -34,11 +35,11 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+from outline_view import parse as parse_volume, unit_chapter_range  # noqa: E402
 from wordcount_core import METRIC, WordcountError, find_chapter_file, measure_wordcount  # noqa: E402
 
 RULES = Path(__file__).resolve().parent.parent / "references" / "outline-reverse-rules.md"
 WORK_DIR = (".story", "work", "排纲")
-BRIEF_SUMMARY_DIR = (".story", "work", "简化摘要")
 MIN_BATCH, MAX_BATCH = 10, 20
 LOAD_LIMIT = 25000  # 执行者一次要读的量（去空白字数）；再加上 agent 模板或 SKILL 入口仍在 35K 内
 # 摘要里写细纲要用的字段（与 story-long-analyze 摘要投影同名）；旧版摘要的同义标签放在别名里。
@@ -56,10 +57,6 @@ FIELD_NAMES = "|".join(name for field in SUMMARY_FIELDS for name in (field[0], *
 LABEL_RE = re.compile(r"^\s*(?:[-*+]\s*)?(?:\*\*([^*]+?)\*\*|(%s))\s*[：:（(]" % FIELD_NAMES)
 POINT_HEADER_RE = re.compile(r"^P(\d+)\s+\*\*(.+?)\*\*\s*[：:]\s*(.+)$")
 POINT_TAG_RE = re.compile(r"^主题标签\s*[：:]?\s*[^|｜]*?\s*[|｜]\s*基调\s*[：:]?\s*(.*?)\s*$")
-# 「章节范围」单元格的一段：第X章—第Y章 / 第X-Y章 / 第X章 / 章X-Y / X-Y。
-SPAN_CELL_RE = re.compile(
-    r"^\s*(?:第|章)?\s*(\d+)\s*章?\s*(?:(?:-|~|～|—|–|－|至|到)+\s*第?\s*(\d+)\s*章?)?\s*$"
-)
 
 
 def emit(text: str, stream) -> None:
@@ -181,76 +178,56 @@ def summary_lines(text: str) -> list[str]:
     return out
 
 
-def chapter_block(project: Path, analysis: Path, chapter: int) -> tuple[str, int, int, bool]:
+def previous_hook(analysis: Path, chapter: int) -> str | None:
+    """上一章摘要里的章尾钩子：本批第一章写「章首钩子」用，上一章不在本包里。"""
+    summary = analysis / "章节" / f"第{chapter - 1}章_摘要.md"
+    if chapter <= 1 or not summary.is_file():
+        return None
+    blocks = label_blocks(summary.read_text(encoding="utf-8-sig"))
+    keys = ("章尾钩子", *dict(SUMMARY_FIELDS)["章尾钩子"])
+    return next((flatten(blocks[key]) for key in keys if blocks.get(key)), None)
+
+
+def chapter_block(project: Path, analysis: Path, chapter: int, first: int) -> tuple[str, int, int, bool]:
     """返回（本章块、历史长度、执行者还需另读的正文量、是否缺摘要）。"""
     body, body_text, actual = measure(project, chapter)
     head = [f"### 第{chapter}章", "",
             f"- 正文：`{shown_path(body, project.parent)}`；字数目标 {actual}（{METRIC}）"]
+    hook = previous_hook(analysis, chapter) if chapter == first else None
+    if hook:
+        head.append(f"- 上一章（第{chapter - 1}章）章尾钩子：{hook}")
     summary = analysis / "章节" / f"第{chapter}章_摘要.md"
-    brief = project.joinpath(*BRIEF_SUMMARY_DIR) / f"第{chapter:03d}章.md"
     if summary.is_file():
         lines = [f"- 摘要要点（抽自 `{shown_path(summary, project.parent)}`）："] + [
             "  " + line for line in summary_lines(summary.read_text(encoding="utf-8").lstrip("﻿"))]
         return "\n".join(head + lines), actual, 0, False
-    if brief.is_file():
-        text = brief.read_text(encoding="utf-8").lstrip("﻿").strip()
-        return "\n".join(head + ["- 简化摘要（未深拆章节）：", "", text]), actual, 0, False
     note = "- 摘要：未找到，读该章正文反推，证据不足处写 [待补充]"
     return "\n".join(head + [note]), actual, weight(body_text), True
 
 
 # ---------- 卷纲剧情单元 ----------
 
-def parse_span_cell(cell: str) -> list[tuple[int, int]]:
-    """只解析「章节范围」这一格；认不出的写法返回空，不去别的列找数字。"""
-    spans = []
-    for part in re.split(r"[、，,；;/]", cell):
-        match = SPAN_CELL_RE.match(part)
-        if not match:
-            continue
-        start = int(match.group(1))
-        end = int(match.group(2) or start)
-        if start <= end:
-            spans.append((start, end))
-    return spans
-
-
-def split_row(row: str) -> list[str]:
-    return [cell.strip() for cell in row.strip().strip("|").split("|")]
-
-
-def unit_rows(project: Path, first: int, last: int) -> list[str]:
-    """从各卷纲的「剧情单元」表里取与本批章节重叠的行，连同表头。"""
+def unit_cards(project: Path, first: int, last: int) -> list[str]:
+    """从各卷纲取章节范围与本批重叠的剧情单元卡（连同卡下的子段）。"""
     volumes = sorted((project / "大纲").glob("卷纲_第*卷.md"))
     if not volumes:
         raise SystemExit("ERROR: 大纲/ 下没有卷纲，先在结构迁移时刻写定卷纲")
     out: list[str] = []
     for volume in volumes:
-        lines = volume.read_text(encoding="utf-8").splitlines()
-        start = next((i for i, line in enumerate(lines) if re.match(r"^#+\s*剧情单元", line)), None)
-        if start is None:
-            continue
-        table: list[str] = []
-        for line in lines[start + 1:]:
-            if line.lstrip().startswith("|"):
-                table.append(line)
-            elif table or line.strip():
-                break  # 表格结束，或标题下先出现了非表格内容
-        if len(table) < 3:
-            continue
-        column = next((i for i, cell in enumerate(split_row(table[0])) if "章节范围" in cell), None)
-        if column is None:
-            continue
-        hits = []
-        for row in table[2:]:
-            cells = split_row(row)
-            spans = parse_span_cell(cells[column]) if column < len(cells) else []
-            if any(a <= last and b >= first for a, b in spans):
-                hits.append(row)
-        if hits:
-            out += [f"来源：`{project.name}/大纲/{volume.name}`", "", *table[:2], *hits, ""]
+        lines, sections = parse_volume(volume.read_text(encoding="utf-8-sig"))
+        for section in sections:
+            if section.kind != "单元级" or "剧情单元" not in section.title or section.status == "已退役":
+                continue
+            span = unit_chapter_range([section], section.unit)
+            if span is None or span[0] > last or span[1] < first:
+                continue
+            end = next((other.start for other in sections
+                        if other.start > section.start and other.level <= section.level), len(lines))
+            out += [f"来源：`{project.name}/大纲/{volume.name}`", "", *lines[section.start:end], ""]
     if not out:
-        raise SystemExit(f"ERROR: 卷纲「剧情单元」表里找不到覆盖第{first}-{last}章的行（表头要有「章节范围」列，写成「第X-Y章」），先补卷纲")
+        raise SystemExit(f"ERROR: 卷纲里找不到章节范围覆盖第{first}-{last}章的剧情单元卡（卡标题下一行写"
+                         "「> 作用域：单元级 {单元ID}」，卡里写「- 章节范围：第A-B章」），先补卷纲，"
+                         "再用 outline_view.py --check --strict 核对")
     return out
 
 
@@ -265,7 +242,7 @@ def render(project: Path, first: int, last: int, blocks: list[str]) -> str:
             "证据不足标了 [待补充] 的要点（没有写「无」）。\n\n"
             "包里提到的检查由主会话在你交付后跑，你不执行命令；需要的测量结果已放进包里。")
     parts = [head, f"\n## 本批章节\n\n路径相对项目根（`{project.parent}`）。\n\n" + "\n\n".join(blocks),
-             "\n## 卷纲剧情单元（覆盖本批）\n\n" + "\n".join(unit_rows(project, first, last)).rstrip(),
+             "\n## 卷纲剧情单元（覆盖本批）\n\n" + "\n".join(unit_cards(project, first, last)).rstrip(),
              "\n---\n\n<!-- 资料：outline-reverse-rules.md -->\n\n" + RULES.read_text(encoding="utf-8").lstrip("﻿").strip()]
     return "\n".join(parts) + "\n"
 
@@ -273,13 +250,13 @@ def render(project: Path, first: int, last: int, blocks: list[str]) -> str:
 def build(project: Path, analysis: Path, first: int, last: int) -> dict:
     if not RULES.is_file():
         raise SystemExit(f"ERROR: 缺少 reference：{RULES}")
-    fixed = weight(render(project, first, last, []))  # 包头、剧情单元行与规则：章数减少只会更少
+    fixed = weight(render(project, first, last, []))  # 包头、剧情单元卡与规则：章数减少只会更少
     blocks: list[str] = []
     lengths: dict[int, int] = {}
     missing: list[int] = []
     load, extra_reading = fixed, 0
     for chapter in range(first, last + 1):
-        block, actual, extra, absent = chapter_block(project, analysis, chapter)
+        block, actual, extra, absent = chapter_block(project, analysis, chapter, first)
         cost = weight(block) + extra
         if blocks and load + cost > LOAD_LIMIT:
             break  # 包已够大：本章留给下一批

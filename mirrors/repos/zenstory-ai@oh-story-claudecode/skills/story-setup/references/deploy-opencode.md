@@ -1,6 +1,6 @@
 # OpenCode 部署
 
-`target_cli` 含 `opencode` 时，由 SKILL.md Phase 2 完整读取并依次执行本文件。路径检查、幂等重跑、残留清理、部署标记、模板占位符、AGENTS.md 合并和报告遵循 SKILL.md 的公共规则。
+`target_cli` 含 `opencode` 时，由 SKILL.md Phase 2 完整读取并依次执行本文件。路径检查、幂等重跑、残留清理、部署标记、模板占位符、项目指令合并和报告遵循 SKILL.md 的公共规则。
 
 ## 部署前置（先于下表任何 OpenCode 行执行）
 
@@ -17,7 +17,7 @@
 
 | Source path | Target path | Owner class | Merge mode | Validation check |
 |-------------|-------------|-------------|------------|------------------|
-| `skills/story-setup/references/opencode/AGENTS.md.tmpl` | `AGENTS.md` | user+managed | marker/section merge | contains story skill routing sections |
+| `skills/story-setup/references/opencode/AGENTS.md.tmpl` | `AGENTS.md` | user+managed | managed block merge | contains story skill routing sections |
 | `skills/story-setup/references/opencode/agents/` | `.opencode/agents/` | story-setup managed | replace | 7 agent files exist（replace 前按下方「保留已有模型配置」缓存现有 `model:`，避免覆盖用户已配模型） |
 | `skills/story-setup/references/opencode/plugin.ts` | `.opencode/plugins/story-hooks.ts` | story-setup managed | replace | TypeScript plugin file exists |
 | `skills/story-setup/references/opencode/story_hook_core.js` | `.opencode/plugins/lib/story_hook_core.js` | story-setup managed | replace | Node syntax valid；与 ZCode 副本字节一致；被 story-hooks.ts import |
@@ -31,7 +31,7 @@
 2. 复制 `references/opencode/agents/` 到 `.opencode/agents/`。Agent 正文以 Claude Code Markdown 为真源，这里是仓库里预生成的产物，部署只做复制。
 3. 复制 `plugin.ts` 到 `.opencode/plugins/story-hooks.ts`，`story_hook_core.js` 到 `.opencode/plugins/lib/`，`commands/` 到 `.opencode/commands/`，`pre-commit.sh` 按清单行合并进 `.git/hooks/pre-commit`。
 4. 复制 agent references 到 `skills/story-setup/references/agent-references/`。OpenCode 只使用当前规范前缀 `skills/`，不在运行时遍历历史备选路径。
-5. 将 `references/opencode/AGENTS.md.tmpl` 替换占位符后按 SKILL.md「AGENTS.md 合并策略」写入根 `AGENTS.md`。
+5. 将 `references/opencode/AGENTS.md.tmpl` 按 SKILL.md「项目指令合并」写入根 `AGENTS.md`（`--host opencode`）。
 6. 执行「配置 Agent 模型」其余步骤。
 7. `.story-deployed` 的 `references_dir` 写 `skills/story-setup/references/agent-references`（多端时与其他端逗号拼接）。
 

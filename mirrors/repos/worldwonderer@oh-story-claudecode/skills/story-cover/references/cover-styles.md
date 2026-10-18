@@ -1,99 +1,56 @@
 # 小说封面视觉风格库
-按平台和题材选择构图、色彩、字体与光效，组合成 GPT-Image-2 提示词。设计指令用英文，书名和笔名保留作者原文。
+按平台和题材选关键词，填入 Step 3 的提示词模板。设计指令用英文，书名和笔名保留作者原文。
 
 ---
 
 ## 平台风格
 
-### 番茄小说
+| 平台 | 画面特点 | 关键词串 |
+|:-----|:---------|:---------|
+| 番茄 | 高饱和、高对比，人物占画面 60% 以上且面部清晰；大头贴构图配华丽背景，书名用金、红或白色粗体加光效 | `vibrant saturated colors, eye-catching bold design, character portrait dominating frame, mass-market novel cover style, high contrast` |
+| 起点 | 细腻、偏写实的插画，色彩沉稳；人物与场景均衡，层次丰富有电影感，书名偏传统毛笔楷体 | `polished refined illustration, detailed cinematic composition, epic atmospheric, mature sophisticated style, premium quality` |
+| 晋江 | 粉、紫、浅蓝、暖白等柔和色调，人物五官精致；画面居中对称，用花瓣、光斑、丝绸和珠宝装饰，书名用优雅行书或纤细圆体 | `dreamy ethereal aesthetic, soft pastel tones, elegant romantic, delicate beauty, flower petals and bokeh` |
+| 知乎盐言 | 灰、蓝、白或暗色的极简画面，大量留白；用场景、物品或抽象意象营造氛围，少刻画人物，书名用现代简约无衬线体，接近独立电影海报 | `minimalist literary style, clean composition with negative space, subtle moody atmosphere, independent film poster aesthetic` |
+| 七猫 | 高饱和、强冲击，人物服饰华丽；用火焰、雷电和灵力特效增强海报感，书名大号发光，信息密度高 | `striking high-impact design, vivid dramatic colors, spectacular visual effects, attention-grabbing poster style` |
+| 刺猬猫 | 明亮、线稿清晰的日系二次元插画，搭配 Q 版元素和卡通手绘书名，轻松活泼 | `anime illustration style, vibrant colorful, detailed character art, Japanese light novel aesthetic` |
 
-视觉：高饱和、高对比，人物占画面60%以上且面部清晰；大头贴构图搭配华丽背景，书名用金、红或白色粗体并加光效。
-关键词：`vibrant saturated colors, eye-catching bold design, character portrait dominating frame, mass-market novel cover style, high contrast`
-
-### 起点
-
-视觉：细腻、偏写实的插画，色彩沉稳；人物与场景均衡，构图层次丰富，有电影感，书名偏传统毛笔楷体。
-关键词：`polished refined illustration, detailed cinematic composition, epic atmospheric, mature sophisticated style, premium quality`
-
-### 晋江
-
-视觉：粉、紫、浅蓝、暖白等柔和色调，人物五官精致、大眼唯美；画面居中对称，以花瓣、光斑、丝绸和珠宝装饰，书名用优雅行书或纤细圆体。
-关键词：`dreamy ethereal aesthetic, soft pastel tones, elegant romantic, delicate beauty, flower petals and bokeh`
-
-### 知乎盐言
-
-视觉：灰、蓝、白或暗色的极简画面，大量留白；用场景、物品或抽象意象营造氛围，少刻画人物细节，书名用现代简约无衬线字体，接近独立电影海报。
-关键词：`minimalist literary style, clean composition with negative space, subtle moody atmosphere, independent film poster aesthetic`
-
-### 七猫
-
-视觉：高饱和、强冲击，人物服饰华丽、装备丰富；用火焰、雷电和灵力特效增强海报感，书名大号发光，画面信息密度高。
-关键词：`striking high-impact design, vivid dramatic colors, spectacular visual effects, attention-grabbing poster style`
-
-### 刺猬猫
-
-视觉：明亮、线稿清晰的日系二次元插画，搭配 Q 版元素和卡通手绘书名，整体轻松活泼。
-关键词：`anime illustration style, vibrant colorful, detailed character art, Japanese light novel aesthetic`
+表里没有的平台不加平台关键词串。
 
 ---
 
 ## 题材推断规则
 
-| 关键词 | 题材 | 风格标签 |
-|:-------|:-----|:---------|
-| 仙/道/剑/灵/修/宗/天/帝/尊/神 | 玄幻/仙侠 | xianxia fantasy |
-| 都市/总裁/校园/重生/系统/学霸/医生/兵王 | 都市 | urban modern |
-| 妃/皇/侯/宫/嫡/庶/后/朝/凤/鸾 | 古言 | ancient romance |
-| 总裁/契约/替嫁/甜宠/娇妻/萌宝/闪婚 | 现言 | modern romance |
-| 诡/案/侦探/悬疑/推理/密室/连环 | 悬疑 | mystery thriller |
-| 星际/末世/机甲/赛博/废土/进化 | 科幻 | sci-fi |
-| 龙/骑/魔法/异世界/精灵/领主 | 西幻 | western fantasy |
-| 三国/大明/大唐/战场/将军/谋士 | 历史 | historical epic |
-| 鬼/僵尸/阴阳/风水/盗墓/咒 | 灵异 | supernatural horror |
-| 萌/喵/团宠/娇/转生 | 轻小说 | light novel |
+只在没有题材类型、或题材类型对不上风格库时用。按词匹配书名（必要时简介），不按单字。
+
+| 关键词 | 题材 |
+|:-------|:-----|
+| 修仙、修真、仙尊、仙帝、仙门、宗门、剑仙、剑尊、剑道、帝尊、神帝、灵根、飞升、渡劫、长生、玄幻 | 玄幻 / 仙侠 |
+| 都市、校园、兵王、神医、战神、赘婿、神豪、首富、学霸 | 都市 |
+| 王妃、皇后、贵妃、太子妃、嫡女、庶女、侯府、王府、宫斗、宅斗、公主、娘娘 | 古言 / 宫斗 |
+| 总裁、霸总、豪门、契约、替嫁、甜宠、娇妻、萌宝、闪婚、离婚、前夫、追妻 | 现言 / 甜宠 |
+| 命案、凶案、诡案、刑侦、法医、侦探、悬疑、推理、密室、连环 | 悬疑 / 推理 |
+| 星际、末世、末日、丧尸、天灾、机甲、赛博、废土、进化 | 科幻 / 末世 |
+| 魔法、魔王、巨龙、龙族、骑士、精灵、领主、异世界 | 西幻 |
+| 三国、大明、大唐、大宋、大秦、战场、将军、谋士 | 历史 / 军事 |
+| 鬼怪、捉鬼、诡异、僵尸、阴阳、风水、盗墓、诅咒、冥婚 | 灵异 / 恐怖 |
+| 二次元、动漫、猫娘、萌娘、转生 | 轻小说 / 二次元 |
+
+命中多个题材时按这个顺序取第一个：玄幻 / 仙侠 > 西幻 > 古言 / 宫斗 > 现言 / 甜宠 > 都市 > 悬疑 / 推理 > 科幻 / 末世 > 历史 / 军事 > 灵异 / 恐怖 > 轻小说 / 二次元。都没命中先用「都市」，给作者看方案时说明。
 
 ---
 
-## 提示词构建公式
+## 构图变体
 
-```
-[平台风格] + [文字层：书名+作者名+字体设计] + [题材风格标签] + [人物描述]
-+ [背景元素] + [色彩指令] + [光效指令] + [通用修饰]
-```
-
-通用修饰：`professional book cover design, high detail digital painting, portrait orientation 2:3 ratio, no watermark`
-
-这里和下方示例的 `2:3` 是默认竖版比例；组合最终提示词时，按入口 Step 1 替换为目标平台比例，番茄用 `3:4`。
-
-文字层写明书名和笔名的原文、位置、字体与颜色：书名在上方居中（top center），笔名在下方居中（bottom center）。
+| 构图 | 关键词 | 适合 |
+|:-----|:-------|:-----|
+| 人物特写 + 场景 | `close-up portrait, face filling upper half` | 全题材通用，强调角色 |
+| 全身像 + 动态姿势 | `full body shot, dynamic pose` | 玄幻、都市、西幻，展示服装动作 |
+| 纯场景 / 氛围 | `no human figure, landscape composition` | 悬疑、科幻、历史；知乎盐言 |
+| 双人 | `two figures facing each other` | 现言、古言等言情类 |
 
 ---
 
-## 提示词技巧
-
-### 文字渲染
-
-GPT-Image-2 可直接渲染中文书名和笔名，在英文指令中逐字写入：
-```
-Title text '书名' at top center in {字体风格}
-Author name '作者名' at bottom center in {字体风格}
-```
-
-### 人物描述要具体
-
-写清人物的服饰、发型、姿态和道具，避免只写“a man”：
-```
-a young man in flowing white silk robes with gold embroidery,
-long black hair tied in a topknot with a jade crown,
-piercing dark eyes, confident expression,
-holding a glowing blue spirit sword
-```
-
-### 背景三层
-
-前景(人物/道具) → 中景(场景：山峰/建筑/森林) → 远景(氛围：云海/星空/火焰)
-
-### 光效
+## 光效
 
 | 光效 | 关键词 | 感觉 |
 |------|--------|------|
@@ -102,22 +59,11 @@ holding a glowing blue spirit sword
 | 温暖 | `warm sunset glow backlighting the figure` | 温暖感 |
 | 科幻 | `neon blue and purple lights from below` | 科幻感 |
 
-### 避免真人照片感
-
-加 `digital painting style`，网文封面需要插画感。
-
-### 构图变体
-
-| 类型 | 关键词 | 适用 |
-|:-----|:-------|:-----|
-| 人物特写 | `close-up portrait, face filling upper half` | 强调角色 |
-| 全身像 | `full body shot, dynamic pose` | 展示服装动作 |
-| 纯场景 | `no human figure, landscape composition` | 悬疑/科幻 |
-| 双人 | `two figures facing each other` | 言情类 |
-
 ---
 
 ## 风格库
+
+每节的书名字体、笔名字体直接填进模板的文字层。
 
 ### 玄幻 / 仙侠
 
@@ -126,17 +72,19 @@ holding a glowing blue spirit sword
 **人物**：男-长发束冠/散发，持剑/法器，衣袂飘飞 | 女-仙裙飘逸，灵兽伴随，莲花装饰
 **背景**：云海、仙山、古建筑楼阁、灵力光效
 **光效**：`divine golden light rays, mystical mist, spiritual energy glow`
-**示例**：
+**书名字体**：`bold golden brush calligraphy with metallic glow and sharp strokes`
+**笔名字体**：`small refined white serif text with faint golden glow, flanked by delicate cloud-scroll ornaments on both sides, resting on a thin horizontal gold line`
+**示例**（起点，2:3）：
 ```
-Chinese web novel cover, xianxia fantasy style.
+Chinese web novel cover design, polished refined illustration, detailed cinematic composition, epic atmospheric, mature sophisticated style, premium quality.
 Title text '剑道独尊' at top center in bold golden brush calligraphy with metallic glow and sharp strokes.
 Author name '青椒炒肉' at bottom center in small refined white serif text with faint golden glow, flanked by delicate cloud-scroll ornaments, resting on a thin horizontal gold line.
+xianxia Chinese fantasy art style, ethereal atmosphere. full body shot, dynamic pose.
 A young swordsman in flowing white robes standing on a mountain peak,
 holding a glowing blue spirit sword, long black hair flowing in the wind.
-Ethereal clouds swirling below, dramatic golden divine light from above,
-spiritual energy particles. Dark misty mountain peaks in background.
-Color palette: deep blue, gold, white, black.
-Professional book cover, high detail digital painting, portrait 2:3 ratio, no watermark
+Ethereal clouds swirling below, dark misty mountain peaks in background.
+Color palette: deep blue, gold, white, black. Dramatic golden divine light from above, spiritual energy particles.
+Professional book cover, high detail digital painting, portrait 2:3 ratio, keep title and author name inside the central safe area away from edges (inner ~85%), no watermark
 ```
 
 ### 都市
@@ -146,6 +94,8 @@ Professional book cover, high detail digital painting, portrait 2:3 ratio, no wa
 **人物**：男-西装/休闲装干练轮廓分明 | 女-时尚穿搭自信表情
 **背景**：城市天际线、高端办公室、校园、霓虹街道
 **光效**：`sharp city lights, sunset glow reflecting on glass buildings, neon rim light`
+**书名字体**：`modern bold sans-serif with metallic silver finish`
+**笔名字体**：`small clean white modern text with subtle drop shadow, positioned above a thin silver horizontal divider line`
 
 ### 古言 / 宫斗
 
@@ -154,6 +104,8 @@ Professional book cover, high detail digital painting, portrait 2:3 ratio, no wa
 **人物**：女-华服盛装凤冠步摇精致妆容 | 男-帝王/将军威严或温润
 **背景**：宫殿、庭院、红墙、珠帘、屏风、灯笼
 **光效**：`warm lantern light, golden candle glow, silk fabric shimmering`
+**书名字体**：`elegant golden traditional Kai script with ornate decoration`
+**笔名字体**：`small elegant dark red traditional text inside a thin golden rectangular border frame with corner decorations`
 
 ### 现言 / 甜宠
 
@@ -162,6 +114,8 @@ Professional book cover, high detail digital painting, portrait 2:3 ratio, no wa
 **人物**：双人构图为主，甜蜜互动（拥抱/对视/牵手）
 **背景**：咖啡厅、花园、温馨室内、夕阳海滩
 **光效**：`soft warm backlighting, dreamy bokeh, gentle sunset glow`
+**书名字体**：`soft rounded handwritten style in white with pink glow`
+**笔名字体**：`small soft pink-white handwritten text with a tiny heart motif on the left side, light sparkle effect`
 
 ### 悬疑 / 推理
 
@@ -170,6 +124,8 @@ Professional book cover, high detail digital painting, portrait 2:3 ratio, no wa
 **人物**：剪影/半遮面/背影，冷静或紧张
 **背景**：雨夜街道、老旧建筑、密室、暗巷
 **光效**：`dramatic chiaroscuro, single spotlight, rain-slicked reflections`
+**书名字体**：`distorted bold cracked letters in blood red`
+**笔名字体**：`small pale grey text with slight blur effect, almost hidden in the shadows, a thin cracked line underneath`
 
 ### 科幻 / 末世
 
@@ -178,6 +134,8 @@ Professional book cover, high detail digital painting, portrait 2:3 ratio, no wa
 **人物**：机甲装/战术服/实验室服，科幻武器/全息界面
 **背景**：太空、废墟城市、实验室、空间站
 **光效**：`holographic blue glow, neon rim lighting, energy arcs`
+**书名字体**：`neon glowing futuristic font in electric blue`
+**笔名字体**：`small crisp white monospace text with subtle cyan scanline overlay, flanked by small geometric brackets`
 
 ### 西幻
 
@@ -186,6 +144,8 @@ Professional book cover, high detail digital painting, portrait 2:3 ratio, no wa
 **人物**：骑士铠甲/法师长袍/游侠皮甲，伴随龙/狮鹫
 **背景**：城堡、龙巢、魔法阵、广阔原野
 **光效**：`magic spell glow, dramatic stormy sky, firelight from torches`
+**书名字体**：`metallic embossed fantasy lettering with glow effect`
+**笔名字体**：`small bronze medieval script text with aged parchment texture, enclosed in a small decorative shield or banner shape`
 
 ### 历史 / 军事
 
@@ -194,6 +154,8 @@ Professional book cover, high detail digital painting, portrait 2:3 ratio, no wa
 **人物**：将军铠甲/谋士长袍，持兵器
 **背景**：战场、城墙、军营、烽火
 **光效**：`dramatic battlefield firelight, smoke-filled sky, sunset over war`
+**书名字体**：`heavy stone-carved seal script in deep red`
+**笔名字体**：`small dignified white Song typeface text above a double horizontal line in dark red`
 
 ### 灵异 / 恐怖
 
@@ -202,6 +164,8 @@ Professional book cover, high detail digital painting, portrait 2:3 ratio, no wa
 **人物**：道士装扮/普通人陷入诡异，鬼影/纸人/僵尸
 **背景**：墓地、古庙、暗巷、棺材
 **光效**：`eerie green glow, flickering candlelight, cold ghostly luminescence`
+**书名字体**：`eerie dripping handwritten font in sickly green`
+**笔名字体**：`small faded grey-green text slightly tilted, with a thin dripping ink line above`
 
 ### 轻小说 / 二次元
 
@@ -210,3 +174,5 @@ Professional book cover, high detail digital painting, portrait 2:3 ratio, no wa
 **人物**：Q版/萌系角色，猫耳/翅膀等萌属性
 **背景**：奇幻世界、校园、异世界、星空
 **光效**：`sparkly star effects, magical particle effects, soft luminous glow`
+**书名字体**：`colorful cartoon outlined bubbly font`
+**笔名字体**：`small playful rounded white text with pastel color outline, tiny star decorations on both sides`

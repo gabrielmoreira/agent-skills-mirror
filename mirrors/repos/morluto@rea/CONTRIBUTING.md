@@ -21,6 +21,9 @@ For analysis workflows and agent interfaces, follow the
 [performance priorities](AGENTS.md#performance). Explain the selected output
 scope, reuse/cache decisions, and relevant before/after measurements when these
 costs change.
+Use the [analysis optimization skill](.agents/skills/rea-analysis-optimization/SKILL.md)
+to locate provider and shared-workflow bottlenecks, preserve Evidence, and
+compare equivalent real tasks before claiming an improvement.
 
 When adding or changing an MCP tool, follow the [tool design guide](docs/tool-design.md) and preserve the canonical contracts and generated catalog.
 

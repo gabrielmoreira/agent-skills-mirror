@@ -81,7 +81,7 @@ function verify(projectDir) {
     '设定.md',
     settingsRead.ok ? '文件存在且非空' : (settingsRead.error || '文件为空'),
     '项目目录下存在非空的 设定.md',
-    ['references/writing-workflow.md'],
+    ['references/workflow-design.md'],
     '只补建或补全 设定.md，不改动已通过的 小节大纲.md。'
   ))
   checks.push(makeCheck(
@@ -90,7 +90,7 @@ function verify(projectDir) {
     '小节大纲.md',
     outlineRead.ok ? '文件存在且非空' : (outlineRead.error || '文件为空'),
     '项目目录下存在非空的 小节大纲.md',
-    ['references/writing-workflow.md'],
+    ['references/workflow-design.md'],
     '只补建或补全 小节大纲.md，不改动已通过的 设定.md。'
   ))
 
@@ -99,13 +99,13 @@ function verify(projectDir) {
   const settings = settingsRead.text
   const outline = outlineRead.text
 
-  const platformMatch = settings.match(/目标平台\s*[：:]\s*(知乎(?:盐选)?|小程序|番茄(?:短篇)?)/)
+  const platformMatch = settings.match(/目标平台\s*[：:]\s*(知乎(?:盐言|盐选)?|盐[言选]|七猫(?:短篇)?|黑岩|红果|小程序|点众|番茄(?:短篇)?|未定)/)
   checks.push(makeCheck(
     'phase2.platform-declared',
     Boolean(platformMatch),
     '设定.md',
     platformMatch ? `目标平台：${platformMatch[1]}` : '未找到可识别的目标平台字段',
-    '写明“目标平台：知乎盐选 / 小程序 / 番茄短篇”之一',
+    '写明“目标平台：知乎盐言 / 番茄 / 七猫 / 黑岩 / 红果 / 小程序”之一；作者没定平台写“未定”',
     ['references/submission-craft.md'],
     '只在 设定.md 的基本信息或 Phase 2 设计校验区补目标平台。'
   ))
@@ -125,7 +125,7 @@ function verify(projectDir) {
     '设定.md',
     genreEvidence,
     '写明一个真实存在的 references/genre-styles/{题材}.md；冷门题材写 references/genre-writing-formulas.md',
-    ['references/writing-workflow.md', 'references/short-craft.md'],
+    ['references/workflow-design.md', 'references/short-craft.md'],
     '只补题材参考路径与从该参考选出的 2-3 个核心招式，不重写故事框架。'
   ))
 
@@ -139,7 +139,7 @@ function verify(projectDir) {
     '设定.md',
     moves.length ? `识别到 ${moves.length} 个核心招式` : '未找到核心招式字段',
     '“核心招式：招式一；招式二[；招式三]”，共 2-3 个',
-    ['references/writing-workflow.md'],
+    ['references/workflow-design.md'],
     '只补或收敛核心招式字段到 2-3 个，并保持已选题材参考不变。'
   ))
 
@@ -168,7 +168,7 @@ function verify(projectDir) {
     '设定.md',
     placeholderLines.length ? `仍是模板占位符的行：${placeholderLines.map((entry) => entry.line).join('、')}` : '契约字段没有未填写的 {} 占位符',
     'Phase 2 契约字段写实际设计内容，不保留 {} 模板占位符',
-    ['references/writing-workflow.md'],
+    ['references/workflow-design.md'],
     '只把报告行的占位符替换成本篇的实际设计，不重写其他字段。'
   ))
 
@@ -196,7 +196,7 @@ function verify(projectDir) {
       ? `表头 ${headerCells.length} 列：${headerCells.join(' | ')}${legacyHeader ? '（兼容旧项目；新建项目使用现行列名）' : ''}`
       : '未找到以“结构段/五段功能”开头的 Markdown 表格',
     `使用固定 12 列表头：${OUTLINE_HEADERS.join(' | ')}`,
-    ['references/writing-workflow.md'],
+    ['references/workflow-design.md'],
     '只修表头和错位单元格，不改动各节已经成立的剧情内容。'
   ))
 
@@ -219,7 +219,7 @@ function verify(projectDir) {
     '小节大纲.md',
     rows.length === 0 ? '固定表头下没有数据行' : (rowShapeFailures.length ? `列数错误行：${rowShapeFailures.map((row) => row.line).join('、')}` : `识别到 ${rows.length} 节，均为 12 列`),
     '固定表头下至少一行数据，且每节恰好 12 列',
-    ['references/writing-workflow.md'],
+    ['references/workflow-design.md'],
     '只补缺失节或修复报告行的列错位。'
   ))
 
@@ -241,12 +241,17 @@ function verify(projectDir) {
           ? `所有 ${rows.length} 节均有至少一个带功能标签的真实推进`
           : `已检查 ${progressionRows.length}/${rows.length} 行；其余行由 phase2.outline-data-rows 报告列错位`),
     '每节至少一个真实推进；有先后关系时以 -> 连接，每个含 {对话/冲突/伏笔/回忆/发现/递进} 标签之一，不设固定数量',
-    ['references/writing-workflow.md', 'references/short-craft.md'],
+    ['references/workflow-design.md', 'references/short-craft.md'],
     '只修报告行的“情节推进”单元格，不重写其他列或其他节；不要为数量补事件。'
   ))
 
-  const targetMatch = settings.match(/目标字数\s*[：:]\s*(?:约\s*)?([\d,，]+)\s*(?:字)?\s*(?:[-–—~～]|到|至)\s*([\d,，]+)\s*字?/) ||
-    settings.match(/目标字数\s*[：:]\s*(?:约\s*)?([\d,，]+)\s*字?/)
+  // 「约 1-1.3 万」「1.1万字」这类写法先换成整数再解析。
+  const targetLine = (settings.match(/目标字数\s*[：:][^\n]*/) || [''])[0]
+    .replace(/(\d+(?:\.\d+)?)\s*((?:[-–—~～]|到|至)\s*)(\d+(?:\.\d+)?)\s*万/g,
+      (_, a, sep, b) => `${Math.round(Number(a) * 10000)}${sep}${Math.round(Number(b) * 10000)}`)
+    .replace(/(\d+(?:\.\d+)?)\s*万/g, (_, a) => String(Math.round(Number(a) * 10000)))
+  const targetMatch = targetLine.match(/目标字数\s*[：:]\s*(?:约\s*)?([\d,，]+)\s*(?:字)?\s*(?:[-–—~～]|到|至)\s*([\d,，]+)\s*字?/) ||
+    targetLine.match(/目标字数\s*[：:]\s*(?:约\s*)?([\d,，]+)\s*字?/)
   const toNumber = (value) => Number(String(value).replace(/[,，]/g, ''))
   const targetLow = targetMatch ? toNumber(targetMatch[1]) : null
   const targetHigh = targetMatch && targetMatch[2] !== undefined ? toNumber(targetMatch[2]) : targetLow
@@ -269,8 +274,8 @@ function verify(projectDir) {
     targetOk,
     '设定.md、小节大纲.md',
     `设定目标：${statedTarget === null ? '未识别' : (isRange ? `${targetLow}-${targetHigh}` : statedTarget)}；大纲合计：${targetSum === null ? '有非数字目标字数' : targetSum}`,
-    '设定.md 的目标字数为 1000-200000 的正整数或区间（用户明确范围优先，未指定时默认 8000-20000）；大纲每行目标字数可解析，写区间时合计落在区间内，写单值时误差不超过 5%',
-    ['references/writing-workflow.md', 'references/submission-craft.md'],
+    '设定.md 的目标字数为 1000-200000 的正整数或区间（用户明确范围优先，未指定时用所选平台的投稿区间，未定平台用 8000-12000）；大纲每行目标字数可解析，写区间时合计落在区间内，写单值时误差不超过 5%',
+    ['references/workflow-design.md', 'references/submission-craft.md'],
     '只修目标字数字段或各节“目标字数”单元格，使合计匹配；不要用增删剧情绕过数字错误。'
   ))
 
@@ -297,7 +302,7 @@ function verify(projectDir) {
     '设定.md',
     reversalEvidence,
     '有反转时写明揭穿节号、全文总节数和计算百分比；总节数须与大纲一致，计算误差不超过 0.6%。无反转时写明“反转类型：无反转”和带原因的“反转位置：不适用（…）”',
-    ['references/writing-workflow.md', 'references/short-reversal.md'],
+    ['references/workflow-design.md', 'references/short-reversal.md'],
     '只修正反转位置计算或对应节次；位置质量按 short-reversal.md 的误判决策与揭示后果功能链判断，不为跨过固定百分比而搬节。'
   ))
 
@@ -320,7 +325,7 @@ function verify(projectDir) {
     '设定.md、小节大纲.md',
     paywallEvidence,
     '设定.md 写“付费点：第 X 节末”，且小节大纲.md 第 X 行数据的“结尾承接/钩子”单元格只标一次“付费点”',
-    ['references/submission-craft.md', 'references/writing-workflow.md'],
+    ['references/submission-craft.md', 'references/workflow-design.md'],
     '只在缺失的文件补同一个付费断点，并确保它位于对应节末的钩子单元格。'
   ))
 

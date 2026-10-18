@@ -13,7 +13,7 @@ Sessions, Library, Routing and Usage), and P3 (the gateway's
 extension points: the observer, with OTel export as its first plugin; the
 router strategy, with the routings besides Smart and the user's groups; and
 the middleware point, with the JS gateway middleware and privacy masking;
-the tool point, with web search; and the budget point, with key limits). OpenCode plugins (npm packages in
+the tool point, with web search; and the budget point, with key limits), P4 (community plugins at each of those points) P5 (community panels in magpie's own pages, and a plugin's page in a built-in's place) and P6 (a plugin's items in a provider's and an agent's row menu). OpenCode plugins (npm packages in
 the plugin host) are a different thing; see
 [provider and plugin ownership](provider-plugins.md) and
 [gateway middleware](gateway-middleware.md).
@@ -26,7 +26,7 @@ the plugin host) are a different thing; see
 | Manifest | `ID`, `API` (a caret range of the host API, `"^1"`; `pluginrt.API` is `"1.0"`), `Requires` and `Provides` (services), `Essential`, `Name`/`Sub` (English; the window translates them), `One`/`Many` (what is in use, of 1 or `{n}`), `InUse`, `Apply`, `Parts` (`{Slot, Key}`: the window's parts it is), `Defaults` (its config), `Settings` (a struct of its settings, made into `Defaults` and a schema at `Register`) and `Client` (its files in the window, under `internal/gui/assets/plugins/<id>/`: scripts, its `i18n.js` and a `.css`). | [`pluginrt.go`](../../internal/pluginrt/pluginrt.go) |
 | Lifecycle | `Runtime.Reconcile(on, config)`. Off first: every plugin no longer wanted, and every one requiring a service one of those provided, is disposed newest first. Then on: each wanted plugin whose requirements are provided (by `Core`, `settings`, `providers`, `gateway`, `window`, or an active plugin) is applied, again and again until no more can be. States: `off`, `pending` (waiting for a service, logged), `active`, `failed` (Apply returned an error or panicked, or the API range doesn't match; what it registered before is undone), `disposed`. A failed plugin never stops the others. | [`pluginrt.go`](../../internal/pluginrt/pluginrt.go) |
 | Ctx | What `Apply` gets: `OnDispose(f)`, `Contribute(slot, key)`, `Provide(name, v)` (withdrawn when it goes), `Service(name)`, and its composed `Config`. Disposers run in reverse, each one's panic logged and the rest still run. | [`pluginrt.go`](../../internal/pluginrt/pluginrt.go) |
-| plugins.yml | `appdir.Config()/plugins.yml`: `preset` (`essentials` or `all`) and `plugins`, rows of `{id, enabled, config}` holding only what the user set. | [`config.go`](../../internal/pluginrt/config.go) |
+| plugins.yml | `appdir.Config()/plugins.yml`: `preset` (`essentials` or `all`; `all` unless the user picks Essentials), `settled` (the defaults the file was last brought up to) and `plugins`, rows of `{id, enabled, config}` holding only what the user set. | [`config.go`](../../internal/pluginrt/config.go) |
 | Settings schema | `SchemaOf(Settings)` makes a JSON Schema object of the struct, in its fields' order (`x-order`): each exported field with a json name is a setting, of `bool`, an int, `float64` or `string`, with tags `title` (English; the window translates it), `description`, `enum` (comma separated) and `min`/`max`. Its values are the defaults. A field a form can't draw, or a tag that doesn't parse, panics at `Register`. `Schema.Validate` takes a value only as the schema allows it (a JSON float64 or a YAML int for an integer); `SetConfig(id, config)` writes the user's row through it, and `Compose` leaves out a value edited into plugins.yml by hand that it doesn't allow, so the default stands. | [`schema.go`](../../internal/pluginrt/schema.go), [`config.go`](../../internal/pluginrt/config.go) |
 | Built-in plugins | `groups`, `library`, `otel`, `sessions`, `warmups` (P0), `gateway` (P1), the Gateway page, which is Essential and in use while a gateway key is there (`access.List`), and `routing` (P2), the Routing page, Essential and in use while the user has a routing group, since the page is where groups are made and changed. `rotation` (P3), the routings besides Smart, is Essential and in use while a provider or group is routed by one of them. `middleware` (P3), the JS gateway middleware, is Essential and in use while plugins.json has a middleware on (`middleware.On`). `redact` (P3), privacy masking, is Essential and in use while Settings → Privacy asks for any masking (`masking.Wanted`). `search` (P3), magpie's web search, is Essential and in use while a search API is set up or a searcher is picked. `budget` (P3), key limits, is Essential and in use while a gateway key has a limit. `usage` (P2), the Usage page, is Essential too, with no `InUse`: what it shows the gateway counts anyway, and the tray panel's Usage tab still shows the allowances with it off. The Gateway page's one setting, `callsPage` (10, 20, 50 or 100; 20), is how many recent calls the page shows at a time. The other five aren't Essential. Each one's `InUse` counts what the user made with it: routing groups not Auto and not hidden, library items given to agents, a collector sent to, gateway conversations recorded, warm-ups and check-ins on. | [`plugins/`](../../plugins) |
 
@@ -195,7 +195,7 @@ the core. The five other routings are the built-in plugin `rotation`'s.
 The user's own routing groups are the `groups` plugin's on this point. The
 groups magpie finds (a model two providers serve, `auto-<model>`) stay the
 core's, as Smart does: they are how a model several providers serve is one
-model with failover, which a new install has with the Essentials preset,
+model with failover, which a user has with the Essentials preset,
 where `groups` is off. `planGroup` and the walk over a group's members are
 the core's either way: a strategy only orders a pool, and a group off is
 not offered at all.
@@ -263,6 +263,110 @@ still means off; a page is its own plugin's to turn on and off.
 
 `plugins/middleware` is now "JS gateway plugins". Apply registers the chain and `usage.Observe(middleware.Points())`; off, no JS middleware, strategy or `onUsage` runs, and a pool routed by a JS strategy is its listed order. `InUse` is unchanged. ([`middleware.go`](../../plugins/middleware/middleware.go))
 
+## P5: panels in magpie's own pages, and pages that replace one
+
+P5 lets a community plugin into the pages magpie draws itself, not only a
+page of its own. Both come from package.json and are read by
+`plugin.Window` ([`page.go`](../../internal/plugin/page.go)); neither
+starts a Bun host.
+
+- **Panels.** `magpie.panels: [{slot, file, title}]`, at most 8 a plugin
+  (`maxPanels`), each `slot` one of `plugin.PanelSlots`: `agents` (the end
+  of the Agents page), `usage` (the end of Usage's Overview), `settings` (a
+  Plugins tab in Settings, shown only while a panel is in it, in the tab
+  strip and in the sidebar of a wide window) and `provider` (each saved
+  provider's editor, told `{provider: {id, name}}`). `file` is an .html in
+  the plugin's folder (`plugin.FileIn`). `GET /api/plugin-panels` lists an
+  on plugin's panels in plugins.json order, each with a token of its own
+  (`pageToken(spec + "\x00panel\x00" + i)`), served under the same policy
+  as a page ([`pluginpage.go`](../../internal/gui/pluginpage.go)). A
+  panel's frame is sandboxed to `allow-scripts` like a page's, and shares
+  its plugin's reads (`magpie.permissions`) and options through the same
+  `/api/plugin-pages/read` and `/options`. The bridge
+  ([`pagebridge.js`](../../internal/gui/pagebridge.js)) gives it
+  `magpie.context` and posts its height (`size`), which the window holds
+  to 0..2400px. A panel that throws, or doesn't say hello in 10s, is
+  replaced by its own card ("{name} stopped working", Try again); the page
+  around it and the panels beside it go on. The size watch's own
+  "ResizeObserver loop" notice, which WebKit gives a sandboxed page as a
+  bare "Script error.", is not a throw.
+- **Titles and look.** `magpie.page.titles` and a panel's `titles`, an
+  object of language code to title (`plugin.titles`: trimmed, empty ones
+  and a non-object dropped), name the tab and the panel's heading in the
+  window's language, `zh-TW` falling back to `zh` and anything else to
+  `title` (`titled` in [`pluginpages.js`](../../internal/gui/assets/pluginpages.js),
+  redrawn when `<html lang>` changes). The bridge prepends a stylesheet of
+  `:where()` rules, of no weight, for the font, colours, headings, buttons,
+  fields and tables, so a page with no stylesheet reads as the window's
+  and any rule of the page's wins. Tests: `TestWindowTitles`,
+  `plugin-page.test.cjs`.
+- **The policy's scheme.** The desktop window serves on `wails://localhost`
+  (macOS, Linux), and a sandboxed frame has an opaque origin, so a CSP
+  source without a scheme matches only http(s) there. `ownWindow` puts the
+  native scheme on the request's context and `pagePolicy` names the folder
+  under it (#2501); the web keeps a scheme-less source.
+  `TestPluginPageWindowPolicy` checks the policy, and
+  `TestPluginPageLoadsItsFilesInTheWindow` loads a page through
+  `ownWindow` in a real WKWebView; Playwright, on http, can't see it.
+- **Slots.** A page names a slot with `<div class="plugin-slot"
+  data-slot="…" hidden>` in its markup, or app.js draws one with
+  `magpie.slot(name, context)` ([`pluginpages.js`](../../internal/gui/assets/pluginpages.js)).
+  A slot is filled when the panels come, again only when they changed (a
+  panel open goes on as it is), and when the kernel writes a page's markup
+  afterwards (`magpie.fillSlots`, from `add` and Try again).
+- **Replacing a page.** `magpie.page.replaces`, one of `plugin.Replaceable`
+  (`sessions`, `library`, `routing`, `usage`), puts the plugin's page in
+  the built-in's place in the sidebar: the built-in's button is hidden
+  (`data-replaced`) and `show()` of it opens the plugin's page
+  (`magpie.replacing`). The first on plugin in plugins.json's order takes
+  a page; another asking for the same is a page of its own. The built-in
+  page is still there, and comes back when the plugin is off.
+- **The Plugins page** says, on the row, where a plugin's panels go and
+  what they read, and which page it takes the place of (`panelsLine`,
+  `pageLine` in [`plugins.js`](../../internal/gui/assets/plugins.js)),
+  with a Panels chip.
+
+Tests: `TestWindowPanels`, `TestPluginPanelsServedShutIn`,
+`TestPluginPanelsReadWhatTheyDeclared`, `TestPluginPageReplacesFirstWins`,
+`plugin-panels.test.cjs`. Example: `internal/gui/testdata/panel-plugin`.
+
+## P6: actions in magpie's menus
+
+P6 lets a plugin's page add items to the row menus magpie draws: a
+provider row's (right-click) and an agent row's (its handle, or
+right-click). An item opens the plugin's page and tells it what was picked;
+the page does the work. Read by `plugin.Window` with the rest of the window
+manifest ([`page.go`](../../internal/plugin/page.go)); no Bun host.
+
+- **The manifest.** `magpie.actions: [{id, menu, title, titles}]`. `menu`
+  is one of `plugin.ActionMenus` (`provider`, `agent`); a session's menu is
+  left out, since a session's title is the user's content. `id` matches
+  `actionID` (`^[a-z0-9][a-z0-9-]{0,39}$`), an id given twice is the
+  first's, and a plugin has 8 at most (`maxActions`). A plugin with no page
+  has no actions: an action is a way into its page. A missing title is the
+  page's, in each language (`windowParts` in
+  [`pluginpage.go`](../../internal/gui/pluginpage.go)); `/api/plugin-pages`
+  carries them on the page.
+- **The menus.** `magpie.actions(menu, context)`
+  ([`pluginpages.js`](../../internal/gui/assets/pluginpages.js)) gives the
+  items, after magpie's own and a separator, named by `titled` and drawn
+  as the plugin wrote them (`literal` in `openRowMenu`, not through `t()`).
+  `openProviderMenu` passes `{provider: {id, name}}`, `openAgentMenu`
+  `{agent: {id, name}}`, and nothing else of the row.
+- **Picking one** runs `show(key)` (an unsaved edit the reader keeps
+  stops it there), waits for the page's hello, and posts `{event:
+  "action", data: {id, ...context}}` to that frame only. The bridge
+  ([`pagebridge.js`](../../internal/gui/pagebridge.js)) hands it to
+  `magpie.onAction(fn)`; an action that came before `fn` was given waits
+  for it, and a throw in `fn` is the page's error ("stopped working").
+- **The Plugins page** says on the row which menus a plugin adds to
+  (`actionsLine` in [`plugins.js`](../../internal/gui/assets/plugins.js)),
+  from the row's `actions` ([`plugins.go`](../../internal/gui/plugins.go)),
+  said of a plugin switched off too.
+
+Tests: `TestWindowActions`, `TestPluginPageActions`,
+`plugin-actions.test.cjs`.
+
 ## Source of truth and composing
 
 What a plugin runs with is composed field by field (`Compose`), each value
@@ -282,10 +386,12 @@ remembering its layer (`Source`):
 ## Runtime paths
 
 - **Start** (`internal/cli/main.go`, after `settings.Migrate`):
-  `pluginrt.Settle(!settings.RanBefore())` writes a first plugins.yml when
-  there is none: `essentials` on a new install, `all` on a magpie that ran
-  here before (one of `settings.ranBefore`'s files is there; one that can't
-  be looked at counts as there), so an existing user keeps everything. Then
+  `pluginrt.Settle()` writes a first plugins.yml, `all`, when there is
+  none, on a new install too: a new user sees everything magpie does and
+  turns off what they don't want. A file below `settled: 1` is brought up
+  once: the `essentials` a new install was written from 10-13 to 10-17
+  becomes `all`, the user's own rows kept. Every write sets `settled`, so
+  an Essentials the user picks afterwards stays theirs. Then
   `pluginrt.Refresh` makes the process's runtime and reconciles it. An error
   is printed and magpie starts.
 - **Every read**: `Refresh` loads plugins.yml again, composes it and
@@ -334,7 +440,7 @@ remembering its layer (`Source`):
 
 - `go test ./internal/pluginrt/` (`TestReconcile`, `TestCompatible`,
   `TestPluginsImportOnlyCore`, `TestCompose`, `TestSettleAndSet`,
-  `TestBrokenFileIsKept`), `go test ./internal/settings/ -run TestRanBefore`.
+  `TestSettleBringsUpAnEssentialsInstall`, `TestBrokenFileIsKept`).
 - `go test ./internal/pluginrt/ -run 'TestSchemaOf|TestValidate|TestSetConfig'`.
 - `go test ./internal/gui/ -run 'TestBuiltin|TestBootSaysBuiltinsOff'`
   (`TestBuiltinConfig`, `TestBuiltinClientsLoaded`).
@@ -372,5 +478,16 @@ remembering its layer (`Source`):
   on; `TestMaskingOnAndOff`, `TestMaskedQueryFailsClosed` and
   `TestMiddlewareOnAndOff` turn them off: masking asked for is a 503 and
   the vendor gets nothing, middleware off sends the request as it came).
+- P5: `go test ./internal/plugin/ -run TestWindowPanels`,
+  `go test ./internal/gui/ -run 'TestPluginPanels|TestPluginPageReplaces'`
+  and `plugin-panels.test.cjs` (every slot, a broken panel and Try again,
+  the size watch's loop notice, a replaced Library, the Settings tab
+  coming and going) in Chromium and WebKit, every language, 1100 and 420
+  points (the Plugins page's rows at 980 and 420).
+- P6: `go test ./internal/plugin/ -run TestWindowActions`,
+  `go test ./internal/gui/ -run TestPluginPageActions` and
+  `plugin-actions.test.cjs` (both menus, a page that gives its handler
+  late, no plugin adding nothing, the Plugins row) in Chromium and WebKit,
+  every language, 1100 and 420 points.
 - By hand, under a sandbox HOME: `magpie plugin builtin`, `magpie plugin
   builtin on groups`, `magpie plugin dump`, and a plugins.yml broken by hand.

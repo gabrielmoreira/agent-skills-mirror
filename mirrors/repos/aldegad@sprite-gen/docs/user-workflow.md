@@ -21,10 +21,10 @@ $SPRITE_GEN_ROOT/.venv/bin/sprite-gen workflow --kind image
 The command is read-only: it checks available credentials, reads defaults and returns JSON. `status` is `ready`, `needs-input` or `blocked`; exit 0 means ready and exit 2 means read the questions or blockers. It never generates images, launches a browser, changes authentication or saves defaults.
 
 1. Check the returned access state and explain only what needs the user's attention.
-2. Ask the missing generation choices in `questions`, using their labels rather than CLI identifiers. For sprites, explain that the first provider creates the base drawing, while the motion method animates it.
+2. Ask the missing generation choices in `questions`, using their labels rather than CLI identifiers. For sprites, explain that the first provider creates the base drawing, while the motion method animates it. Until it is answered, `questions` also holds `codex_unavailable` ("지피티(codex)를 쓸 수 없을 때 — 로그인이 없거나 사용량을 다 썼을 때 — 어떻게 할까요?": stop and ask, Grok, or the OpenAI API billed per call). It is asked once: save the answer at once with `defaults save --codex-unavailable <answer> --expected-revision <settings_revision>` (the question's `save: general`, no `--kind`), and it is not asked again. `codex_unavailable` in the guide's answer says the choice in force and where it came from (`saved`, `SPRITE_GEN_CODEX_UNAVAILABLE`, or `default` = not yet answered).
 3. Run `workflow` again with the answers. Request choices override saved values without modifying them. When choices came from saved defaults, briefly announce them and do not ask again.
 4. Gather only missing creative inputs: subject, style, requested motions and output needs. Lock the base before motion generation.
-5. Only when the start stage returns `status: ready`, run the returned pipeline through the existing tools. A populated `pipeline` is a proposal, not permission to ignore unresolved questions or blockers. Always pass its explicit provider to `gen`/`gen-set`; do not rely on the low-level CLI's omitted-provider resolution. GPT rows use `codex` even when Grok made the base. No availability-driven provider switch is allowed in this workflow.
+5. Only when the start stage returns `status: ready`, run the returned pipeline through the existing tools. A populated `pipeline` is a proposal, not permission to ignore unresolved questions or blockers. Always pass its explicit provider to `gen`/`gen-set`; do not rely on the low-level CLI's omitted-provider resolution. GPT rows use `codex` even when Grok made the base. No availability-driven provider switch is allowed in this workflow. A step that still names no provider — `video-set`'s mid-step redraw for a front or back walk — follows the saved `codex_unavailable` answer when codex cannot run; when that answer is to ask, the step ends with exit 75 and the question ([gen](gen.md#when-codex-cannot-run--ask-or-what-you-chose), [SKILL](../SKILL.md#when-codex-cannot-run--exit-75)).
 6. Complete the pipeline's QA and deliver the output files. Chroma removal, extraction, placement and export are automatic stages, not user choices. Raw images are evidence, not replacements for extracted sprite frames. Follow [atlas-workflow](atlas-workflow.md), [video-pipeline](video-pipeline.md) or [gen](gen.md), as returned by the guide.
 
 ```bash
@@ -55,7 +55,7 @@ When the profile has no saved defaults, finish then offers: "이번 선택을 �
 
 ## One settings owner
 
-`preferences.json` in `~/.config/sprite-gen/` owns the `sprite` and `image` profiles separately. `SPRITE_GEN_CONFIG_DIR` explicitly relocates that directory. A profile may be partial, for example saving only motion and curation when an existing base skipped image-provider selection. Missing fields prompt when needed. This storage is independent of a project or run; a run's numeric recipe and curation edits keep their existing owners.
+`preferences.json` in `~/.config/sprite-gen/` owns the `sprite` and `image` profiles separately, and beside them the `general` settings every profile shares: so far `codex_unavailable` (`ask`, `grok` or `openai`; what a call that names no provider does when codex cannot run — the rule is [gen](gen.md#when-codex-cannot-run--ask-or-what-you-chose)'s). `SPRITE_GEN_CONFIG_DIR` explicitly relocates that directory. A profile may be partial, for example saving only motion and curation when an existing base skipped image-provider selection. Missing fields prompt when needed. This storage is independent of a project or run; a run's numeric recipe and curation edits keep their existing owners. The file is version 2 (`profiles` and `general`); a version 1 file (profiles only) still reads, with nothing chosen for codex, and the next save writes it as version 2.
 
 ```bash
 $SPRITE_GEN_ROOT/.venv/bin/sprite-gen defaults show
@@ -64,8 +64,10 @@ $SPRITE_GEN_ROOT/.venv/bin/sprite-gen defaults save --kind sprite \
   --expected-revision REVISION_FROM_SHOW
 $SPRITE_GEN_ROOT/.venv/bin/sprite-gen defaults clear --kind image \
   --expected-revision REVISION_FROM_SHOW
+$SPRITE_GEN_ROOT/.venv/bin/sprite-gen defaults save --codex-unavailable ask \
+  --expected-revision REVISION_FROM_SHOW
 ```
 
-Use the exact `settings_revision` from the guide, or `revision` from show (`missing` for no file). Save merges only supplied fields in the selected profile; clear removes only that profile. Both are explicit mutations. Reads never create or rewrite settings. Corrupt or unknown settings fail with a named error instead of resetting silently.
+Use the exact `settings_revision` from the guide, or `revision` from show (`missing` for no file). Save merges only supplied fields in the selected profile, and `--codex-unavailable` into `general` (it needs no `--kind`); clear removes only that profile. Both are explicit mutations. Reads never create or rewrite settings. Corrupt or unknown settings fail with a named error instead of resetting silently.
 
 Writes use the package's cross-platform exclusive file lock, compare the observed revision under that lock, then atomically replace the complete JSON file. Two writers with the same revision cannot overwrite each other: the first committed write wins; the second fails and must reread/reconfirm. A repeated save with the current revision and identical values leaves bytes and mtime unchanged. Atomic replacement lets read-only queries see a complete old or new snapshot without creating a lock file.

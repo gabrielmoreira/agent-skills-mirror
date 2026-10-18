@@ -57,7 +57,7 @@ HEAD_SHA=$(git rev-parse HEAD)
 
 你：让我在继续之前请求代码审查。
 
-BASE_SHA=$(git log --oneline | grep "Task 1" | head -1 | awk '{print $1}')
+BASE_SHA=$(git log --oneline | grep "Task 1" | head -1 | cut -d' ' -f1)
 HEAD_SHA=$(git rev-parse HEAD)
 
 [派遣代码审查子代理]

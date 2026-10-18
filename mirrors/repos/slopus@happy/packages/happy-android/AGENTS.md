@@ -12,15 +12,17 @@ architectures comparable (local store, delta sync, crypto layer).
   `sources/auth`) are the source of truth. Do not port legacy protocol paths:
   sessions and machines without a `dataEncryptionKey` are skipped, not
   decrypted with the account secret.
-- **No voice mode** for now.
+- **Voice** uses Happy's server-controlled allowance and RevenueCat paywalls,
+  with ElevenLabs over WebRTC. The pinned SDK source patch in
+  `vendor/elevenlabs` fixes audio focus, teardown and call-local mute.
 - **Offline first.** Everything the account has lives on the phone; the
   server is only asked for what changed since the last sync.
 - **Tool outputs are hidden by default** once the chat UI exists.
-- Built so far: crypto, account auth, the server setting, an empty home
-  screen, Settings (Account, Appearance), the local store with delta sync
-  and live updates, and onboarding and connect (restore by QR, Link Your
-  Computer, troubleshoot, terminal connect by QR, link and deep link), and
-  push notifications. Not built: chat and session UI.
+- The port includes auth, offline/live sync, home and session management,
+  chat/composer/tools, attachments, diffs/files, onboarding/connect, settings,
+  push, tablet layouts, purchases and voice. Experimental and social surfaces
+  remain excluded. Store validation needs the existing signing identity,
+  EAS build number and RevenueCat Google SDK key.
 
 ## Rules
 
@@ -374,6 +376,10 @@ banner needs.
 
 ## Build and test
 
+Run agent Android builds, unit tests and device checks on Kirill's Mac Mini
+over SSH, syncing the sources first. The commands below run there; CI keeps
+its configured Linux runner.
+
 ```
 cd packages/happy-android
 ./gradlew assembleDebug            # app/build/outputs/apk/debug/app-debug.apk
@@ -549,6 +555,48 @@ only if:
   different Firebase project needs its key uploaded to Expo);
 - the device has Play services (otherwise unsupported, as FCM has no
   token there).
+
+## Purchases
+
+`AppGraph.purchases` owns RevenueCat's optional account lifecycle. The public
+Google SDK key is supplied by `EXPO_PUBLIC_REVENUE_CAT_GOOGLE` or
+`-Phappy.revenueCatGoogleKey`; an empty key leaves purchases unavailable.
+`purchases.purchases` is the flat `StateFlow<Purchases>` from purchases.ts,
+cached per server/account and wiped on logout. Configure with the token's
+server-issued subject as appUserID. Startup/foreground and successful paywalls
+sync purchases and fetch customer info. SDK operations serialize with paywalls;
+account generations reject stale results after logout, account or server changes.
+
+`suspend purchases.presentPaywall(flow)` (also `Paywall.present`) uses the
+current offering and the `flow` custom variable, never an offering named after
+the flow. `PaywallHost` at app scope renders RevenueCat's native Compose dialog
+and dismisses on account changes. Purchased and Restored return
+`PaywallOutcome(success = true, purchased = true)` after refresh; closing returns
+success with purchased false. `hasPro()` reads the real entitlement for voice;
+Settings' Support us row additionally treats debug builds as Pro, as RN does.
+The row is inert for Pro and otherwise presents `voluntary_support`.
+
+## Voice
+
+`AppGraph.voice` owns one `VoiceEngine`. It requests microphone permission
+before allocating a server conversation, applies server denial/paywall rules,
+and connects the ElevenLabs transport. `AppGraph.purchases` provides real Pro
+state and paywalls; debug-only Support us behavior does not grant voice Pro.
+Usage and credentials re-authenticate with the account secret when voice uses
+a different server. Voice language codes come from `VoiceLanguages`.
+
+`StoreVoiceContext` forwards normalized messages, permission prompts, ready
+events and focused-session context. Histories load lazily with a 50-row cap;
+events arriving during SDK connection are buffered. Client tools validate
+their parameters and use the existing sender/permission RPCs for the bound
+account. Logout, failed start and stop invalidate callbacks and close the call.
+
+`vendor/elevenlabs/UPSTREAM.md` records the pinned MIT source archive and the
+audio lifecycle patch. LiveKit owns audio focus and device routing; call mute
+never changes global microphone mute. Room cleanup completes logically before
+stop returns, and LiveKit's audio thread releases OS focus asynchronously.
+Verify focus, recording and communication mode on a device after changes.
+`testDebugUnitTest` includes the SDK's lifecycle tests as well as app tests.
 
 ## Attachments and images
 

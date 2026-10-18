@@ -1,0 +1,1 @@
+cache/repos/github.com/apache@camel/dsl/camel-jbang/camel-jbang-core/AGENTS.md

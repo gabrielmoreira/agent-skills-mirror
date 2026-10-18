@@ -10,7 +10,9 @@ story-long-analyze 的可选后置管道：把 Stage 3 已抽象好的 EM 机制
 
 只读：各书 `剧情/情绪模块.md`（EM 完整卡＋其他机制索引）、按 EM 卡「关联节奏/证据来源」定点查证的 `剧情/节奏.md` 与剧情单元、现有 `灵感库/灵感索引.csv` 与 NM/CBA 卡。
 
-**禁止读取 `原文/`、`chapter_index.csv` 与逐章摘要正文。** 一本书没有 `剧情/情绪模块.md` 或完整卡字段不全时，停止并返回 `repair_action`：先用 `--intent enhance` 补跑 Stage 3+（从既有摘要聚合，原文读取可为 0），不得在灵感层代写机制卡。原文追加或局部变化后，先由主管道重建索引、补齐分析，并按请求更新 EM 卡，再重跑登记；`validate` 的 `ia_em_set_mismatch` 会指出未重登记的书。
+**禁止读取 `原文/`、`chapter_index.csv` 与逐章摘要正文。** 入库前先对每本书跑一次只读检查器（SKILL.md「Phase 1」），看 `classification`、`current_capabilities`、`conflicts` 和覆盖范围。缺 `剧情/情绪模块.md` 或完整卡字段不全（`check-atoms` 报 error）时停下，请作者回拆文主流程：缺文件补 Stage 3，卡不全按 SKILL.md「Phase 2」末段修卡，都不读原文；不得在灵感层代写机制卡，也不得把旧资料概括成伪造的主产物。原文追加或局部变化后，先由主管道重建索引、补齐分析，并按请求更新 EM 卡，再重跑登记；`validate` 的 `ia_em_set_mismatch` 会指出未重登记的书。
+
+各层引用拆文产物的约定：单书案例以 `剧情/*.md` 的剧情单元为准，可迁移机制以 `剧情/情绪模块.md` 的 `EM-*` 为准，`拆文报告.md` 只是阅读入口，不作第二份事实来源。客观事件、披露节点和三维节奏分别用 `EV-*`、`RV-*`、`AX-*`，机制卡通过 ID 引用，不跨层复制全文。
 
 ## 公共目录
 
@@ -36,10 +38,21 @@ story-long-analyze 的可选后置管道：把 Stage 3 已抽象好的 EM 机制
 ```
 
 - 完整卡（读者想看什么/情绪链/戏剧单元/可替换项/不可照搬 五字段齐）登记为 `grade=full`；「其他机制索引」条目登记为 `grade=index`。
-- 五字段缺失报 `em_fields_missing`，字段在而值空报 `em_field_value_empty`（多行值合法：值可写在字段名行之后、下一个字段/标题之前的列表或段落里）。机制字段（标题/读者想看什么/情绪链/戏剧单元/可替换项）的专名检查分两级：本卡「不可照搬」已点名该词却仍在抽象字段使用、或 `可替换项` 写成「专名→任意X」（报 `replaceable_antipattern`），都是高置信真引用，报 `source_specific_name_in_mechanism` error；仅角色卡文件名子串命中而无佐证的降为 `leak_suspect` warning 并列出命中字段，人工复核。都指回 Stage 3 修复；「不可照搬」字段本身例外——点名原书专名正是它的职责。
-- 专名检查使用的角色名单取自工作区 `拆文库/{书}/角色/`。工作区从 `--root` 向上探测含 `拆文库/` 的目录，探测不到报 `workspace_not_located`（可加 `--workspace` 显式指定），不得回退空名单静默通过；输出恒带 `character_roster` 数，书目录在而 `角色/` 缺失报 `character_roster_missing` warning，提示人工确认无专名。
-- 所有卡的所有问题一次收集报全（`errors` 数组），有任一 error 即整体不写盘。落盘 `剧情/情绪模块.md` 后先用只读的 `check-atoms`（与 register-atoms 同参数）自检：输出卡数、索引数、名单规模与全部问题，不写任何文件。
-- 一次原子写入、重跑逐字节幂等；多本书逐本串行登记，不要并行跑 `register-atoms`。`--module` 必须是 `拆文库/{--book}/` 下的文件（`module_book_mismatch`）；卡头须为 `### EM-xxx 名称`，缺名称报 `em_title_missing`，认不出的 EM 标题行报 `em_header_unrecognized`，同卡重复字段报 `em_field_duplicate`——三者都意味着卡被截断或并进了上一张。本步不得调用模型重新概括机制。
+- 先用只读的 `check-atoms`（与 register-atoms 同参数）自检：输出卡数、索引数、角色名单规模与全部问题，不写文件。所有卡的问题一次报全，有任一 error 就整体不写盘。
+- 一次原子写入、重跑逐字节幂等；多本书逐本串行登记，不要并行跑 `register-atoms`。本步不得调用模型重新概括机制。
+- 专名检查的角色名单取自 `拆文库/{书}/角色/`；从 `--root` 向上查找含 `拆文库/` 的工作区，输出恒带 `character_roster` 数。
+
+报错处理：error 都回 Stage 3 改 `剧情/情绪模块.md` 再登记，warning 由人工复核。
+
+| 报错 | 意思 | 怎么修 |
+|---|---|---|
+| `em_fields_missing` / `em_field_value_empty` | 五个必填字段缺失或值空 | 补齐；表格写法把整段值写进格子，`- **字段**：` 列表写法的值可以接在字段名行之后多行写 |
+| `em_title_missing` / `em_header_unrecognized` / `em_field_duplicate` | 卡头不是 `### EM-xxx 名称`、标题行认不出、同卡字段重复 | 多半是卡被截断或并进了上一张，按模板重写卡头 |
+| `source_specific_name_in_mechanism` / `replaceable_antipattern` | 本卡「不可照搬」点名的专名又出现在标题、读者想看什么、情绪链、戏剧单元或可替换项里，或可替换项写成「专名→任意X」 | 改成功能位；「不可照搬」字段本身点名专名是它的职责，不算 |
+| `leak_suspect`（warning） | 只是角色卡文件名子串命中，没有佐证 | 人工看命中字段，确认不是专名就保留 |
+| `character_roster_missing`（warning） | 书目录在但没有 `角色/` | 人工确认卡里没有专名 |
+| `workspace_not_located` | 找不到含 `拆文库/` 的工作区 | 加 `--workspace` 指定，不得用空名单放行 |
+| `module_book_mismatch` | `--module` 不在 `拆文库/{--book}/` 下 | 改对书名或路径 |
 
 ### 2. 单小说灵感合并
 

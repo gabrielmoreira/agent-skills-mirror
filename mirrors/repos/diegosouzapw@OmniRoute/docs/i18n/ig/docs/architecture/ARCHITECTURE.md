@@ -10,77 +10,77 @@ _Emelitere ikpeazụ: 2026-06-28_
 
 ## Nchịkọta Ndị Isi
 
-OmniRoute bụ ọnụ ụzọ mbufe AI nke mpaghara na dashboard e wuru n’elu Next.js.
-Ọ na-enye otu endpoint dakọtara na OpenAI (`/v1/*`) ma na-ebufe okporo ụzọ gafee ọtụtụ ndị na-eweta ọrụ upstream, tinyere ntụgharị, fallback, mmegharị token, na nsuso ojiji.
+OmniRoute bụ ọnụ ụzọ ntụgharị AI mpaghara na dashboard e wuru n’elu Next.js.
+Ọ na-enye otu endpoint kwekọrọ na OpenAI (`/v1/*`) ma na-eduzi okporo ụzọ gafee ọtụtụ ndị na-enye ọrụ upstream site na ntụgharị, fallback, imegharị token, na nsuso ojiji.
 
 Ikike ndị bụ isi:
 
-- API dakọtara na OpenAI maka CLI/ngwaọrụ (ndị na-eweta ọrụ 372, ndị mmebe iwu 148)
-- Ntụgharị arịrịọ/azịza n’etiti usoro ndị na-eweta ọrụ
-- Fallback combo model (usoro ọtụtụ model)
-- Nzọụkwụ combo ahaziri (`provider + model + connection`) nwere nhazi n’oge runtime site na `compositeTiers`
-- Fallback n’ọkwa akaụntụ (ọtụtụ akaụntụ maka onye na-eweta ọrụ ọ bụla)
-- Nlele quota tupu arịrịọ na nhọrọ akaụntụ P2C na-eburu quota n’uche n’ụzọ chat bụ isi
-- Njikwa njikọ onye na-eweta ọrụ site na OAuth + API-key (modul onye na-eweta OAuth 27)
-- Mmepụta embedding site na `/v1/embeddings` (ndị na-eweta ọrụ 18)
-- Mmepụta onyonyo site na `/v1/images/generations` (ndị na-eweta ọrụ 10+, model 20+)
-- Ntugharị ọdịyo gaa na ederede site na `/v1/audio/transcriptions` (ndị na-eweta ọrụ 18)
-- Ntugharị ederede gaa n’okwu site na `/v1/audio/speech` (ndị na-eweta ọrụ arụnyere n’ime 24)
-- Mmepụta vidio site na `/v1/videos/generations` (ComfyUI + SD WebUI)
-- Mmepụta egwu site na `/v1/music/generations` (ComfyUI)
-- Nchọgharị weebụ site na `/v1/search` (ndị na-eweta ọrụ 20)
-- Nnyocha ọdịnaya site na `/v1/moderations`
-- Nhazi ọkwa ọzọ site na `/v1/rerank`
-- Ntụgharị akara echiche (``) maka model ntụgharị uche
-- Nhicha azịza iji hụ na ndakọrịta siri ike na OpenAI SDK
-- Ịhazigharị role (developer→system, system→user) maka ndakọrịta n’etiti ndị na-eweta ọrụ
-- Ntugharị structured output (json_schema → Gemini responseSchema)
-- Nchekwa mpaghara maka ndị na-eweta ọrụ, key, alias, combo, ntọala, na ọnụahịa (modul DB 122)
-- Nsuso ojiji/ọnụahịa na ndekọ arịrịọ
+- Elu API kwekọrọ na OpenAI maka CLI/ngwaọrụ (ndị na-enye ọrụ 373, modulu executor 150)
+- Ntụgharị arịrịọ/azịza n’etiti usoro ndị na-enye ọrụ
+- Fallback ngwakọta model (usoro nwere ọtụtụ model)
+- Nzọụkwụ ngwakọta ahaziri (`provider + model + connection`) nwere nhazi oge ọrụ site na `compositeTiers`
+- Fallback n’ọkwa akaụntụ (ọtụtụ akaụntụ maka onye na-enye ọrụ ọ bụla)
+- Nnyocha quota tupu arụmọrụ na nhọrọ akaụntụ P2C na-eburu quota n’uche n’ụzọ nkata bụ isi
+- Njikwa njikọ onye na-enye ọrụ site na OAuth + API-key (modulu ndị na-enye OAuth 27)
+- Mepụta embedding site na `/v1/embeddings` (ndị na-enye ọrụ 18)
+- Mepụta onyonyo site na `/v1/images/generations` (ndị na-enye ọrụ 10+, model 20+)
+- Ntugharị ọdịyo gaa na ederede site na `/v1/audio/transcriptions` (ndị na-enye ọrụ 18)
+- Ntugharị ederede gaa n’olu site na `/v1/audio/speech` (ndị na-enye ọrụ arụnyere n’ime 24)
+- Mepụta vidiyo site na `/v1/videos/generations` (ComfyUI + SD WebUI)
+- Mepụta egwu site na `/v1/music/generations` (ComfyUI)
+- Ọchụchọ webụ site na `/v1/search` (ndị na-enye ọrụ 20)
+- Moderations site na `/v1/moderations`
+- Nhazigharị ọkwa site na `/v1/rerank`
+- Ntụgharị mkpado echiche (``) maka model na-atụgharị uche
+- Nhicha azịza maka ndakọrịta siri ike na OpenAI SDK
+- Ịhazigharị role (developer→system, system→user) maka ndakọrịta n’etiti ndị na-enye ọrụ
+- Ntughari output ahaziri (json_schema → Gemini responseSchema)
+- Nchekwa mpaghara maka ndị na-enye ọrụ, key, alias, combo, ntọala, na ọnụahịa (modulu DB 122)
+- Nsuso ojiji/ọnụ ahịa na ndekọ arịrịọ
 - Mmekọrịta cloud nhọrọ maka mmekọrịta ọtụtụ ngwaọrụ/ọnọdụ
 - IP allowlist/blocklist maka njikwa ohere API
 - Njikwa oke echiche (passthrough/auto/custom/adaptive)
-- Ntinye system prompt zuru ụwa ọnụ
+- Ịtinye system prompt zuru ụwa ọnụ
 - Nsuso session na fingerprinting
-- Rate limiting emelitere maka akaụntụ ọ bụla, nwere profaịlụ akọwapụtara maka onye na-eweta ọrụ
-- Usoro circuit breaker maka nkwụsi ike nke onye na-eweta ọrụ
+- Mmachi ọnụego emelitere maka akaụntụ ọ bụla, nwere profaịlụ pụrụ iche nke onye na-enye ọrụ
+- Usoro circuit breaker maka nkwụsi ike nke ndị na-enye ọrụ
 - Nchedo megide anti-thundering herd site na mkpọchi mutex
-- Cache iwepụ arịrịọ megharịrị nke dabere na signature
-- Domain layer: iwu ọnụahịa, amụma fallback, amụma lockout
-- Context Relay: nchịkọta nnyefe session iji hụ na ọganihu anaghị akwụsị mgbe a na-agbanwe akaụntụ
-- Nchekwa domain state (cache SQLite write-through maka fallback, budget, lockout, na circuit breaker)
-- Policy engine maka nyocha arịrịọ n’otu ebe (lockout → budget → fallback)
+- Cache iwepụ arịrịọ ugboro abụọ dabere na signature
+- Oyi akwa domain: iwu ọnụ ahịa, amụma fallback, amụma lockout
+- Context Relay: nchịkọta nnyefe session iji nọgide na-aga n’ihu mgbe a na-atụgharị akaụntụ
+- Nchekwa ọnọdụ domain (cache SQLite write-through maka fallback, budget, lockout, na circuit breaker)
+- Engine amụma maka nyocha arịrịọ n’etiti otu ebe (lockout → budget → fallback)
 - Telemetry arịrịọ nwere nchịkọta latency p50/p95/p99
-- Telemetry combo target na ahụike combo target akụkọ ihe mere eme site na `combo_execution_key` / `combo_step_id`
+- Telemetry nke ebumnuche combo na ahụike ebumnuche combo gara aga site na `combo_execution_key` / `combo_step_id`
 - Correlation ID (X-Request-Id) maka nsuso site na mmalite ruo na njedebe
-- Ndekọ audit nrube isi nwere nhọrọ ịpụ maka API key ọ bụla
-- Eval framework maka mmesi obi ike n’ịdịmma LLM
-- Dashboard ahụike nwere ọnọdụ circuit breaker nke onye na-eweta ọrụ n’oge ozugbo
+- Ndekọ audit nrubeisi nwere nhọrọ ịpụ maka API key ọ bụla
+- Framework eval maka nkwenye ogo LLM
+- Dashboard ahụike nwere ọnọdụ circuit breaker nke onye na-enye ọrụ n’oge ozugbo
 - MCP Server (ngwaọrụ 110) nwere ụzọ mbufe 3 (stdio/SSE/Streamable HTTP)
-- A2A Server (JSON-RPC 2.0 + SSE) nwere skill na lifecycle task
-- Sistemụ memory (mmịpụta, ntinye, iweghachite, nchịkọta)
-- Sistemụ skill (ndekọ, executor, sandbox, skill arụnyere n’ime)
-- Proxy MITM nwere njikwa certificate na nhazi DNS
-- Middleware nchedo prompt injection
-- Pipeline mkpakọ prompt nwere Caveman, RTK, pipeline stacked, combo mkpakọ, ngwugwu asụsụ, na analytics
-- Ndebanye ACP (Agent Communication Protocol)
-- Ndị na-eweta OAuth modular (modul nke ọ bụla 22 n’okpuru `src/lib/oauth/providers/`)
+- A2A Server (JSON-RPC 2.0 + SSE) nwere nka na usoro ndụ task
+- Sistemụ ebe nchekwa (iwepụta, ịtinye, iweghachite, nchịkọta)
+- Sistemụ nka (registry, executor, sandbox, nka arụnyere n’ime)
+- Proxy MITM nwere njikwa certificate na njikwa DNS
+- Middleware nchebe megide prompt injection
+- Pipeline mkpakọ prompt nwere Caveman, RTK, pipeline ndị a kwakọbara, combo mkpakọ, ngwugwu asụsụ, na analytics
+- Registry ACP (Agent Communication Protocol)
+- Ndị na-enye OAuth modular (modulu 22 dị iche iche n’okpuru `src/lib/oauth/providers/`)
 - Script uninstall/full-uninstall
 - Omume mmezi environment OAuth
-- Àkwà mmiri WebSocket maka ndị ahịa WS dakọtara na OpenAI (`/v1/ws`)
-- Njikwa sync token (inye/ịkagbu, nbudata config bundle nwere ụdị ETag)
-- GLM Thinking (`glmt`) dịka preset onye na-eweta ọrụ nke ọkwa mbụ
-- Ngụkọta token hybrid (`/messages/count_tokens` n’akụkụ onye na-eweta ọrụ, yana estimation fallback)
-- Ịkụ mkpụrụ model alias na-akpaghị aka (nhazi nkịtị cross-proxy dialect 30+ n’oge mmalite)
-- Outbound fetch dị nchebe nwere nchedo SSRF, mgbochi URL nkeonwe, na retry enwere ike ịhazi
-- Retry chat na-eburu cooldown n’uche, nwere `requestRetry` na `maxRetryIntervalSec` enwere ike ịhazi
-- Nkwado environment runtime site na Zod n’oge mmalite
-- Audit nrube isi v2 nwere pagination, omume CRUD nke onye na-eweta ọrụ, na ndekọ validation nke SSRF gbochiri
+- Àkwà mmiri WebSocket maka WS client kwekọrọ na OpenAI (`/v1/ws`)
+- Njikwa token mmekọrịta (inye/kagbuo, nbudata ngwugwu nhazi nwere ụdị ETag)
+- Preset onye na-enye ọrụ GLM Thinking (`glmt`) nke bụ ọkwa mbụ
+- Ngụkọta token ngwakọta (n’akụkụ onye na-enye ọrụ `/messages/count_tokens` nwere fallback atụmatụ)
+- Ịkụnye alias model na-akpaghị aka (nhazigharị olumba cross-proxy 30+ mgbe mmalite)
+- Fetch outbound dị nchebe nwere nche SSRF, mgbochi URL nzuzo, na retry enwere ike ịhazi
+- Retry nkata na-eburu cooldown n’uche, nwere `requestRetry` na `maxRetryIntervalSec` enwere ike ịhazi
+- Nkwado environment oge ọrụ site na Zod mgbe mmalite
+- Audit nrubeisi v2 nwere pagination, ihe omume CRUD nke onye na-enye ọrụ, na ndekọ nkwado nke SSRF gbochiri
 
-Ụdị runtime bụ isi:
+Model oge ọrụ bụ isi:
 
-- App route Next.js dị n’okpuru `src/app/api/*` na-emejuputa ma API dashboard ma API ndakọrịta
-- Isi SSE/routing a na-ekekọrịta na `src/sse/*` + `open-sse/*` na-ahụ maka mmejuputa onye na-eweta ọrụ, ntụgharị, streaming, fallback, na ojiji
+- Route ngwa Next.js dị n’okpuru `src/app/api/*` na-emejuputa ma API dashboard ma API ndakọrịta
+- Isi SSE/ntụgharị a na-ekekọrịta dị na `src/sse/*` + `open-sse/*` na-ahụ maka arụmọrụ onye na-enye ọrụ, ntụgharị, streaming, fallback, na ojiji
 
 ## Eserese Nrụtụaka
 

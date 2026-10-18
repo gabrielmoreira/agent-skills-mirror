@@ -287,7 +287,9 @@ body {
   background: var(--bg); color: var(--text); -webkit-font-smoothing: antialiased;
   font: 14px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
 }
-.panel { width: 100%; max-width: 460px; margin: 0 auto; padding: 16px; }
+/* The host decides how wide the card is; the panel fills it instead of pinning a narrow column
+   in the middle. 720px is the widest a single column of key/value pairs still reads well at. */
+.panel { width: 100%; max-width: 720px; margin: 0 auto; padding: 16px; }
 .brand { height: 44px; display: flex; align-items: center; justify-content: space-between; gap: 12px;
   border-bottom: 1px solid var(--line); }
 .brand-l { display: flex; align-items: center; gap: 8px; min-width: 0; }
@@ -311,11 +313,22 @@ body {
 .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-3); flex: 0 0 auto; }
 .dot.ok { background: var(--ok); } .dot.warn { background: var(--warn); } .dot.err { background: var(--err); }
 .t2 { margin: 8px 0 0; font-size: 13px; color: var(--text-2); }
-.t3 { margin-top: 12px; }
-.field { margin-top: 12px; }
+.t3 { margin-top: 12px; display: grid; gap: 12px 28px; align-items: start; }
+/* Wide hosts get two real columns instead of one narrow strip in the middle: the credit total and
+   what it is made of on the left, the plan facts on the right. A narrow host stacks them. */
+@media (min-width: 760px) { .t3 { grid-template-columns: minmax(0, 1.02fr) minmax(0, 1fr); } }
+.t3 > table, .t3 > .note, .t3 > .spark, .t3 > details { grid-column: 1 / -1; }
+.col { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.field { margin-top: 0; }
 .field .k { margin: 0 0 4px; font-size: 13px; color: var(--text-2); }
 .field .v { margin: 0; font-size: 14px; font-variant-numeric: tabular-nums; }
 .field .v.mono { font-family: var(--mono); font-size: 13px; }
+/* The share is the number people look for first, so it gets the display size and the raw figures
+   follow it in small type. With no quota there is no share: the used figure stands alone. */
+.big { display: flex; align-items: baseline; gap: 10px; margin: 0; }
+.big #k-pct { font-size: 26px; font-weight: 600; line-height: 1.15; letter-spacing: -.02em; }
+.big #k-pct:empty { display: none; }
+.big .v { font-size: 13px; color: var(--text-2); }
 .ubar { height: 6px; margin-top: 6px; border-radius: 3px; background: var(--bg); border: 1px solid var(--line); overflow: hidden; }
 .ubar i { display: block; height: 100%; background: var(--err); }
 .ubar.ok i { background: var(--ok); }
@@ -337,8 +350,11 @@ button { font: inherit; font-size: 14px; height: 32px; padding: 0 14px; border-r
   background: var(--surface); color: var(--text); border: 1px solid var(--border); cursor: pointer;
   transition: background .15s, border-color .15s, color .15s; }
 button:hover { background: var(--tint); border-color: transparent; color: var(--primary); }
-button.primary { height: 36px; flex: 1 1 100%; background: var(--primary); border-color: var(--primary); color: #fff; font-weight: 500; }
+/* A full-bleed primary is a phone pattern; on a wide card it reads as a banner. Keep it a
+   normal button and let it keep its natural width. */
+button.primary { height: 36px; flex: 0 0 auto; min-width: 200px; background: var(--primary); border-color: var(--primary); color: #fff; font-weight: 500; }
 button.primary:hover { background: var(--primary-hover); border-color: var(--primary-hover); color: #fff; }
+@media (max-width: 560px) { button.primary { flex: 1 1 100%; } }
 button[disabled] { cursor: default; opacity: .6; }
 .icon { width: 16px; height: 16px; display: block; }
 details { margin-top: 12px; }
@@ -350,9 +366,29 @@ details[open] summary::before { content: "\\25BE"; }
 pre { margin: 8px 0 0; padding: 10px; border-radius: 8px; background: var(--bg); border: 1px solid var(--line);
   font-family: var(--mono); font-size: 12px; color: var(--text-2); overflow: auto; max-height: 220px; }
 .note { margin: 8px 0 0; font-size: 12px; color: var(--text-2); }
+/* One metric, four numbers: a table puts them on one line and leaves the trailing column for the
+   time each number belongs to, instead of four stacked "label: value" rows. */
+.mtable { width: 100%; border-collapse: collapse; margin-top: 2px; font-variant-numeric: tabular-nums; }
+.mtable th, .mtable td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: baseline; }
+.mtable thead th { font-size: 12px; font-weight: 500; color: var(--text-3); padding-top: 0; padding-bottom: 6px; }
+.mtable tbody th { font-weight: 400; color: var(--text-2); font-size: 13px; white-space: nowrap; }
+.mtable td.num { font-family: var(--mono); font-size: 14px; }
+.mtable td.sub { color: var(--text-3); font-size: 12px; }
+.mtable tbody tr:last-child th, .mtable tbody tr:last-child td { border-bottom: none; }
 </style>
 </head>
 <body>
+<!-- Lucide glyphs, inline: no network, no icon font, no data URI. Buttons point a <use> at one of
+     these; swapping an icon is one attribute write. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
+<symbol id="ico-rocket" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></symbol>
+<symbol id="ico-lifebuoy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 4.24 4.24"/><path d="m14.83 9.17 4.24-4.24"/><path d="m14.83 14.83 4.24 4.24"/><path d="m9.17 14.83-4.24 4.24"/><circle cx="12" cy="12" r="4"/></symbol>
+<symbol id="ico-calendar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 7.5V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h3.5"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h5"/><path d="M17.5 17.5 16 16.3V14"/><circle cx="16" cy="16" r="6"/></symbol>
+<symbol id="ico-card" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></symbol>
+<symbol id="ico-chart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="m19 9-5 5-4-4-3 3"/></symbol>
+<symbol id="ico-log" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></symbol>
+<symbol id="ico-refresh" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></symbol>
+</defs></svg>
 <div class="panel">
   <div class="brand">
     <span class="brand-l">
@@ -382,70 +418,73 @@ pre { margin: 8px 0 0; padding: 10px; border-radius: 8px; background: var(--bg);
     </div>
     <p class="t2" id="c-hint"></p>
     <div class="t3">
-      <div class="field" id="f-credits" hidden>
-        <p class="k">${E(L("mcpUiCredits.field.credits"))}</p>
-        <p class="v mono" id="k-credits"></p>
-        <div class="ubar" id="ubar-box" hidden><i id="ubar"></i></div>
+      <div class="col" id="col-a">
+        <div class="field" id="f-credits" hidden>
+          <p class="k">${E(L("mcpUiCredits.field.credits"))}</p>
+          <p class="big"><span id="k-pct"></span><span class="v mono" id="k-credits"></span></p>
+          <div class="ubar" id="ubar-box" hidden><i id="ubar"></i></div>
+        </div>
+        <div class="field" id="f-mods" hidden>
+          <p class="k">${E(L("mcpUiCredits.field.modules"))}</p>
+          <div class="mods" id="k-mods"></div>
+        </div>
       </div>
-      <div class="field" id="f-mods" hidden>
-        <p class="k">${E(L("mcpUiCredits.field.modules"))}</p>
-        <div class="mods" id="k-mods"></div>
+      <div class="col" id="col-b">
+        <div class="field" id="f-plan" hidden>
+          <p class="k">${E(L("mcpUiCredits.field.plan"))}</p>
+          <p class="v" id="k-plan"></p>
+        </div>
+        <div class="field" id="f-balance" hidden>
+          <p class="k">${E(L("mcpUiCredits.field.balance"))}</p>
+          <p class="v mono" id="k-balance"></p>
+        </div>
+        <div class="field" id="f-place">
+          <p class="k">${E(L("mcpUiCredits.field.place"))}</p>
+          <p class="v" id="k-place">${E(placeText)}</p>
+        </div>
       </div>
-      <div class="spark" id="f-spark" hidden>
-          <span class="spark-cap">${E(L("mcpUiCredits.spark.cap"))}</span>
-          <div class="spark-box">
-            <svg class="spark-svg" viewBox="0 0 280 56" preserveAspectRatio="none" aria-hidden="true" id="spark-svg">
-              <defs>
-                <linearGradient id="g-err" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0" style="stop-color:var(--err);stop-opacity:.14"/>
-                  <stop offset="1" style="stop-color:var(--err);stop-opacity:0"/>
-                </linearGradient>
-                <linearGradient id="g-ok" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0" style="stop-color:var(--ok);stop-opacity:.14"/>
-                  <stop offset="1" style="stop-color:var(--ok);stop-opacity:0"/>
-                </linearGradient>
-              </defs>
-              <!-- Neutral initial styling on purpose: renderSpark sets both attributes in the same
-                   call, so a red initial value would only mislead whoever reads this template. -->
-              <path class="spark-area" id="spark-area" d="" fill="none"/>
-              <path class="spark-line" id="spark-line" d="" stroke="var(--text-2)"/>
-            </svg>
-            <i class="spark-dot" id="spark-dot" hidden></i>
-          </div>
+        <div class="spark" id="f-spark" hidden>
+        <span class="spark-cap">${E(L("mcpUiCredits.spark.cap"))}</span>
+        <div class="spark-box">
+          <svg class="spark-svg" viewBox="0 0 280 56" preserveAspectRatio="none" aria-hidden="true" id="spark-svg">
+            <defs>
+              <linearGradient id="g-err" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" style="stop-color:var(--err);stop-opacity:.14"/>
+                <stop offset="1" style="stop-color:var(--err);stop-opacity:0"/>
+              </linearGradient>
+              <linearGradient id="g-ok" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" style="stop-color:var(--ok);stop-opacity:.14"/>
+                <stop offset="1" style="stop-color:var(--ok);stop-opacity:0"/>
+              </linearGradient>
+            </defs>
+            <!-- Neutral initial styling on purpose: renderSpark sets both attributes in the same
+                 call, so a red initial value would only mislead whoever reads this template. -->
+            <path class="spark-area" id="spark-area" d="" fill="none"/>
+            <path class="spark-line" id="spark-line" d="" stroke="var(--text-2)"/>
+          </svg>
+          <i class="spark-dot" id="spark-dot" hidden></i>
+        </div>
       </div>
-      <div class="field" id="f-plan" hidden>
-        <p class="k">${E(L("mcpUiCredits.field.plan"))}</p>
-        <p class="v" id="k-plan"></p>
-      </div>
-      <div class="field" id="f-balance" hidden>
-        <p class="k">${E(L("mcpUiCredits.field.balance"))}</p>
-        <p class="v mono" id="k-balance"></p>
-      </div>
-      <div class="field" id="f-place">
-        <p class="k">${E(L("mcpUiCredits.field.place"))}</p>
-        <p class="v" id="k-place">${E(placeText)}</p>
-      </div>
-      <div class="field" id="f-m-latest" hidden>
-        <p class="k">${E(L("mcpUiCredits.metric.field.latest"))}</p>
-        <p class="v mono" id="k-m-latest"></p>
-      </div>
-      <div class="field" id="f-m-peak" hidden>
-        <p class="k">${E(L("mcpUiCredits.metric.field.peak"))}</p>
-        <p class="v mono" id="k-m-peak"></p>
-      </div>
-      <div class="field" id="f-m-avg" hidden>
-        <p class="k">${E(L("mcpUiCredits.metric.field.avg"))}</p>
-        <p class="v mono" id="k-m-avg"></p>
-      </div>
-      <div class="field" id="f-m-window" hidden>
-        <p class="k">${E(L("mcpUiCredits.metric.field.window"))}</p>
-        <p class="v" id="k-m-window"></p>
-      </div>
+      <table class="mtable" id="f-m-table" hidden>
+        <thead>
+          <tr>
+            <th scope="col">${E(L("mcpUiCredits.metric.field.name"))}</th>
+            <th scope="col">${E(L("mcpUiCredits.metric.field.value"))}</th>
+            <th scope="col">${E(L("mcpUiCredits.metric.field.note"))}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr id="f-m-latest" hidden><th scope="row">${E(L("mcpUiCredits.metric.field.latest"))}</th><td class="num" id="k-m-latest"></td><td class="sub" id="k-m-latest-note"></td></tr>
+          <tr id="f-m-peak" hidden><th scope="row">${E(L("mcpUiCredits.metric.field.peak"))}</th><td class="num" id="k-m-peak"></td><td class="sub" id="k-m-peak-note"></td></tr>
+          <tr id="f-m-avg" hidden><th scope="row">${E(L("mcpUiCredits.metric.field.avg"))}</th><td class="num" id="k-m-avg"></td><td class="sub" id="k-m-avg-note"></td></tr>
+          <tr id="f-m-window" hidden><th scope="row">${E(L("mcpUiCredits.metric.field.window"))}</th><td class="num" id="k-m-window"></td><td class="sub" id="k-m-window-note"></td></tr>
+        </tbody>
+      </table>
       <p class="note" id="k-expired" hidden></p>
     </div>
     <p class="note" id="k-copynote" hidden></p>
     <div class="acts">
-      <button class="primary" type="button" id="btn-main" hidden></button>
+      <button class="primary" type="button" id="btn-main" hidden><svg class="icon" aria-hidden="true"><use id="ico-main" href="#ico-rocket"/></svg><span id="btn-main-label"></span></button>
       <button type="button" id="btn-link" hidden>
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
         <span id="btn-link-label"></span>
@@ -472,11 +511,23 @@ pre { margin: 8px 0 0; padding: 10px; border-radius: 8px; background: var(--bg);
   }
   function notify(method, params) { post({ jsonrpc: "2.0", method: method, params: params }); }
   function setText(el, value) { if (el) { el.textContent = value; } }
+  /**
+   * Report the height of the card, not of the viewport.
+   *
+   * documentElement.scrollHeight is at least as tall as the frame the host gave us, so reporting it
+   * tells the host "keep this height" - and a short card then sits in a tall empty box. Measuring
+   * the panel itself lets the host shrink to the content.
+   */
   function reportSize() {
-    notify("ui/notifications/size-changed", {
-      width: document.documentElement.scrollWidth,
-      height: document.documentElement.scrollHeight
-    });
+    var width = document.documentElement.scrollWidth;
+    var height = document.documentElement.scrollHeight;
+    var root = null;
+    try { root = document.querySelector("main.panel, .panel, .screen"); } catch (error) { root = null; }
+    if (root && root.getBoundingClientRect) {
+      var rect = root.getBoundingClientRect();
+      if (rect.height > 0) { height = Math.ceil(rect.height); }
+    }
+    notify("ui/notifications/size-changed", { width: width, height: height });
   }
   function el(id) { return document.getElementById(id); }
 
@@ -493,8 +544,8 @@ pre { margin: 8px 0 0; padding: 10px; border-radius: 8px; background: var(--bg);
     copiedConsole: ${S("mcpUiCredits.action.copiedConsole")},
     copiedExpense: ${S("mcpUiCredits.action.copiedExpense")},
     copyEnvId: ${S("mcpUiCredits.brand.copyEnvId")},
-    copyConsoleLink: ${S("mcpUiCredits.action.copyConsoleLink")},
-    copyExpenseLink: ${S("mcpUiCredits.action.copyExpenseLink")},
+    openConsole: ${S("mcpUiCredits.action.openConsole")},
+    openExpense: ${S("mcpUiCredits.action.openExpense")},
     expiredNote: ${S("mcpUiCredits.expired.note")},
     stateUnknown: ${S("mcpUiCredits.state.unknown")},
     stateNormal: ${S("mcpUiCredits.state.normal")},
@@ -555,8 +606,9 @@ pre { margin: 8px 0 0; padding: 10px; border-radius: 8px; background: var(--bg);
     },
     stateNearLimit: ${S("mcpUiCredits.state.nearLimit")},
     hintNearLimit: ${S("mcpUiCredits.hint.nearLimit")},
-    metricWindow: ${S("mcpUiCredits.metric.window")},
+    hintUnknownWithUsage: ${S("mcpUiCredits.hint.unknownWithUsage")},
     metricSamples: ${S("mcpUiCredits.metric.samples")},
+    metricEvery: ${S("mcpUiCredits.metric.every")},
     // Interval (seconds -> words). An unnameable interval shows samples only, never an invented unit.
     metricPeriod: {
       "300": ${S("mcpUiCredits.metric.period.minute")},
@@ -593,23 +645,23 @@ pre { margin: 8px 0 0; padding: 10px; border-radius: 8px; background: var(--bg);
 
   // One main action per screen: an empty main means this branch has nothing to press.
   var BRANCHES = {
-    unknown: { dot: "", text: T.stateUnknown, hint: T.hintUnknown, main: "", msg: "", link: "" },
-    normal: { dot: "ok", text: T.stateNormal, hint: T.hintNormal, main: "", msg: "", link: "" },
+    unknown: { dot: "", text: T.stateUnknown, hint: T.hintUnknown, main: "", msg: "", link: "", icon: "" },
+    normal: { dot: "ok", text: T.stateNormal, hint: T.hintNormal, main: "", msg: "", link: "", icon: "" },
     trialExhausted: {
       dot: "warn", text: ${S("mcpUiCredits.state.trialExhausted")}, hint: ${S("mcpUiCredits.hint.trialExhausted")},
-      main: ${S("mcpUiCredits.action.upgrade")}, msg: ${S("mcpUiCredits.message.upgrade")}, link: "package"
+      main: ${S("mcpUiCredits.action.upgrade")}, msg: ${S("mcpUiCredits.message.upgrade")}, link: "package", icon: "rocket"
     },
     stopped: {
       dot: "err", text: ${S("mcpUiCredits.state.stopped")}, hint: ${S("mcpUiCredits.hint.stopped")},
-      main: ${S("mcpUiCredits.action.recommendRestore")}, msg: ${S("mcpUiCredits.message.restore")}, link: "package"
+      main: ${S("mcpUiCredits.action.recommendRestore")}, msg: ${S("mcpUiCredits.message.restore")}, link: "package", icon: "lifebuoy"
     },
     expired: {
       dot: "err", text: ${S("mcpUiCredits.state.expired")}, hint: ${S("mcpUiCredits.hint.expired")},
-      main: ${S("mcpUiCredits.action.renew")}, msg: ${S("mcpUiCredits.message.renew")}, link: "renew"
+      main: ${S("mcpUiCredits.action.renew")}, msg: ${S("mcpUiCredits.message.renew")}, link: "renew", icon: "calendar"
     },
     arrears: {
       dot: "err", text: ${S("mcpUiCredits.state.arrears")}, hint: ${S("mcpUiCredits.hint.arrears")},
-      main: ${S("mcpUiCredits.action.guidedTopup")}, msg: ${S("mcpUiCredits.message.topup")}, link: "expense"
+      main: ${S("mcpUiCredits.action.guidedTopup")}, msg: ${S("mcpUiCredits.message.topup")}, link: "expense", icon: "card"
     }
   };
 
@@ -619,7 +671,7 @@ pre { margin: 8px 0 0; padding: 10px; border-radius: 8px; background: var(--bg);
   var DEV_HOST = ${JSON.stringify(CONSOLE_HOST_BY_SITE)};
   var BILL_HOST = ${JSON.stringify(ENV_CREDITS_BILLING.host)};
   var BILL_PATH = ${J(ENV_CREDITS_BILLING.path)};
-  var LINK_LABEL = { package: T.copyConsoleLink, renew: T.copyConsoleLink, expense: T.copyExpenseLink };
+  var LINK_LABEL = { package: T.openConsole, renew: T.openConsole, expense: T.openExpense };
 
   // Local fallback only fills fields the tool result does not carry; live values always win.
   // FALLBACK comes from main (it carries siteCode, needed to build the console link on click).
@@ -818,9 +870,9 @@ pre { margin: 8px 0 0; padding: 10px; border-radius: 8px; background: var(--bg);
     }
   }
   /** Credits-only blocks, hidden while the metrics view renders. */
-  var CREDITS_ONLY = ["f-credits", "f-mods", "f-plan", "f-balance", "k-expired", "ubar-box"];
+  var CREDITS_ONLY = ["col-a", "col-b", "f-credits", "f-mods", "f-plan", "f-balance", "k-expired", "ubar-box"];
   /** Metrics-only blocks, hidden while the credits view renders. */
-  var METRICS_ONLY = ["f-m-latest", "f-m-peak", "f-m-avg", "f-m-window"];
+  var METRICS_ONLY = ["f-m-table", "f-m-latest", "f-m-peak", "f-m-avg", "f-m-window"];
 
   /**
    * Metrics view (single-metric trend card): one call = one metric + one resource.
@@ -857,7 +909,11 @@ pre { margin: 8px 0 0; padding: 10px; border-radius: 8px; background: var(--bg);
     el("st-dot").className = "dot";
     setText(el("c-hint"), T.metricHint[state]);
 
-    // latest / peak (+ its time)
+    // Four numbers that belong to the same metric share one table: a row each, and the third
+    // column carries what the number alone cannot say (when the peak happened, how the samples
+    // are spaced). A value the result does not carry keeps its row hidden - never a dash.
+    el("f-m-table").hidden = false;
+
     var latest = payload && typeof payload.latest === "number" ? payload.latest : null;
     var fLatest = el("f-m-latest");
     fLatest.hidden = latest === null;
@@ -868,10 +924,10 @@ pre { margin: 8px 0 0; padding: 10px; border-radius: 8px; background: var(--bg);
     var fPeak = el("f-m-peak");
     fPeak.hidden = peak === null;
     if (peak !== null) {
-      setText(el("k-m-peak"), withUnit(fmtMetricValue(peak), unit) + (peakTime ? T.modulesSep + peakTime : ""));
+      setText(el("k-m-peak"), withUnit(fmtMetricValue(peak), unit));
+      setText(el("k-m-peak-note"), peakTime);
     }
 
-    // average
     var avg = payload && typeof payload.avg === "number" ? payload.avg : null;
     var fAvg = el("f-m-avg");
     fAvg.hidden = avg === null;
@@ -883,8 +939,9 @@ pre { margin: 8px 0 0; padding: 10px; border-radius: 8px; background: var(--bg);
     var fWindow = el("f-m-window");
     fWindow.hidden = samples <= 0;
     if (!fWindow.hidden) {
-      var samplesText = T.metricSamples.replace("{n}", String(samples));
-      setText(el("k-m-window"), period ? T.metricWindow.replace("{samples}", samplesText).replace("{period}", period) : samplesText);
+      // The row label already names the unit; repeating it inside the cell says it twice.
+      setText(el("k-m-window"), String(samples));
+      setText(el("k-m-window-note"), period ? T.metricEvery.replace("{period}", period) : "");
     }
 
     // single line reusing spark: under 2 points is not a line, noData stays neutral
@@ -900,7 +957,9 @@ pre { margin: 8px 0 0; padding: 10px; border-radius: 8px; background: var(--bg);
     // The single primary action hands the follow-up to the session; the panel calls no tools itself.
     var mainBtn = el("btn-main");
     mainBtn.hidden = false;
-    setText(mainBtn, mainLabel);
+    setText(el("btn-main-label"), mainLabel);
+    // One glyph per metric state: explain the curve / go read the logs / retry the query.
+    setIcon(el("ico-main"), state === "data" ? "chart" : (state === "failed" ? "refresh" : "log"));
     mainBtn.disabled = false;
     var linkBtn = el("btn-link");
     linkBtn.hidden = true;
@@ -941,7 +1000,13 @@ pre { margin: 8px 0 0; padding: 10px; border-radius: 8px; background: var(--bg);
     var fCredits = el("f-credits");
     fCredits.hidden = used === null;
     if (!fCredits.hidden) {
+      setText(el("k-pct"), pct === null ? "" : pct + "%");
       setText(el("k-credits"), pct === null ? fmtNumber(used) : fmtNumber(used) + " / " + fmtNumber(total));
+    }
+    // "Not enough data" is only true when nothing was read. With a used figure in hand, the honest
+    // sentence names the one piece that is missing instead of denying the number on screen.
+    if (key === "unknown" && used !== null) {
+      setText(el("c-hint"), T.hintUnknownWithUsage);
     }
     var ubarBox = el("ubar-box");
     ubarBox.hidden = pct === null;
@@ -954,6 +1019,11 @@ pre { margin: 8px 0 0; padding: 10px; border-radius: 8px; background: var(--bg);
       if (pct >= 80 && (key === "normal" || key === "unknown")) {
         setText(el("st-text"), T.stateNearLimit.replace("{pct}", String(pct)));
         setText(el("c-hint"), T.hintNearLimit.replace("{pct}", String(pct)));
+        // The wording now says "near the limit", so the dot has to follow: a green dot next to a
+        // red bar reads as two different verdicts on one screen.
+        el("st-dot").className = "dot warn";
+        // The sentence offers an upgrade path; the card has to hand one over instead of naming it.
+        if (!current.link) { current.link = "package"; }
       }
     }
 
@@ -992,13 +1062,36 @@ pre { margin: 8px 0 0; padding: 10px; border-radius: 8px; background: var(--bg);
 
     var mainBtn = el("btn-main");
     mainBtn.hidden = !branch.main;
-    if (branch.main) { setText(mainBtn, branch.main); mainBtn.disabled = false; }
+    if (branch.main) {
+      // Label and glyph sit in their own nodes: writing textContent on the button would delete
+      // the icon on the next render.
+      setText(el("btn-main-label"), branch.main);
+      setIcon(el("ico-main"), branch.icon || "rocket");
+      mainBtn.disabled = false;
+    }
     var linkBtn = el("btn-link");
     linkBtn.hidden = !current.link;
     if (current.link) { setText(el("btn-link-label"), LINK_LABEL[current.link]); }
 
     var copyNote = el("k-copynote");
     if (copyNote) { copyNote.hidden = true; }
+  }
+
+  /**
+   * Leaving the sandbox is the host's call: ui/open-link asks the host to open the URL in the
+   * user's browser, and the host may refuse (scheme, allowlist, user cancel). The panel never
+   * navigates itself and never opens a window on its own.
+   */
+  function openLink(url) {
+    return request("ui/open-link", { url: url }).then(function (result) {
+      if (result && result.isError) { throw new Error("denied"); }
+      return true;
+    });
+  }
+
+  /** Swap a button glyph: one <use> plus one <symbol> per icon, so this is one attribute write. */
+  function setIcon(use, name) {
+    if (use) { use.setAttribute("href", "#ico-" + name); }
   }
 
   function copyText(text) {
@@ -1027,12 +1120,22 @@ pre { margin: 8px 0 0; padding: 10px; border-radius: 8px; background: var(--bg);
     if (!node) { return; }
     if (node.id === "btn-copy-env") { copyText(current.envId); return; }
     if (node.id === "btn-link") {
-      copyText(consoleLink(current.link));
-      var copyNote = el("k-copynote");
-      if (copyNote) {
-        setText(copyNote, current.link === "expense" ? T.copiedExpense : T.copiedConsole);
-        copyNote.hidden = false;
-      }
+      var url = consoleLink(current.link);
+      if (!url) { return; }
+      node.disabled = true;
+      openLink(url).then(function () {
+        node.disabled = false;
+      }, function () {
+        // A clicked button has to end somewhere useful even when the host refuses to open it,
+        // so the URL lands in the clipboard and the note says exactly that.
+        copyText(url);
+        node.disabled = false;
+        var copyNote = el("k-copynote");
+        if (copyNote) {
+          setText(copyNote, current.link === "expense" ? T.copiedExpense : T.copiedConsole);
+          copyNote.hidden = false;
+        }
+      });
       return;
     }
     if (node.id === "btn-main") {
@@ -1056,6 +1159,13 @@ pre { margin: 8px 0 0; padding: 10px; border-radius: 8px; background: var(--bg);
   }
 
   window.addEventListener("message", function (event) {
+    // Only the host may drive this view. Origin cannot be checked here (a sandboxed view has no
+    // comparable host origin, and the spec's own example posts with "*"), so the source window is
+    // checked instead. It has to accept how hosts actually deliver: from the parent frame, from
+    // this frame itself (a sandbox proxy that relays by posting here), and a null source (a
+    // MessagePort relay). Measured on Codex's mcp-app-sandbox: allowing the parent frame only
+    // dropped every result silently, which is why those two cases are allowed on purpose.
+    if (event.source && event.source !== window.parent && event.source !== window) { return; }
     var data = event.data;
     if (!data || typeof data !== "object") { return; }
     if (data.method === "ui/notifications/tool-result") {

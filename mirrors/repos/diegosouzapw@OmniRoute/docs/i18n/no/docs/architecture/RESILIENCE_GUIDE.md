@@ -349,20 +349,20 @@ _sperretilstanden_ er midlertidig.
 ## 4. Samtidighetskontroll for kvotedeling (v3.8.36)
 
 Abonnementskontoer (GLM, MiniMax osv.) godtar ofte bare ~1–3 samtidige
-forespørsler. Overskridelse av dette utløser 429-feil og nedkjølingsperioder. Dette er spesielt merkbart med
+forespørsler; overskridelse av dette utløser 429-feil og nedkjølingsperioder. Dette er særlig merkbart med
 **kvotedelingskombinasjoner** (`qtSd/…`), der flere API-nøkler deler én oppstrømskonto.
-Tre lag hindrer at en delt konto oversvømmes.
+Tre lag hindrer at en delt konto overbelastes.
 
 ### Samtidighetstak per tilkobling (`max_concurrent`)
 
 Hver leverandørtilkobling kan angi et `max_concurrent`-tak
 (`provider_connections.max_concurrent`, angitt i dialogboksen for tilkoblingen / API-et / databasen).
-La feltet stå tomt for ingen grense. Dette er den eneste innstillingen som styrer serialiseringslaget
-nedenfor — sett den til kontoens faktiske samtidighet (f.eks. GLM ~1, MiniMax ~2).
+La feltet stå tomt for ingen grense. Dette er den ene innstillingen som styrer serialiseringslaget
+nedenfor — sett den til kontoens reelle samtidighet (f.eks. GLM ~1, MiniMax ~2).
 
 ### Samtidighetstak per modell (`modelConcurrency`)
 
-En tilkobling kan i tillegg angi nøyaktige samtidighetstak per modell
+En tilkobling kan i tillegg angi eksakte samtidighetstak per modell
 i sitt `rateLimitOverrides`-kart:
 
 ```json
@@ -374,25 +374,26 @@ i sitt `rateLimitOverrides`-kart:
 }
 ```
 
-Angi dette i dialogboksen for tilkoblingen (**Overstyringer av hastighetsgrenser → Samtidighetstak per
+Angi det i dialogboksen for tilkoblingen (**Overstyringer av hastighetsgrenser → Samtidighetstak per
 modell**, én `model=cap` per linje) eller via
-`PATCH /api/providers/[id]` med samme JSON-struktur. Semantikk for nøkler:
+`PATCH /api/providers/[id]` med samme JSON-struktur. Nøkkelsemantikk:
 
-- **Tilkoblingsomfattende kontra modellspesifikt:** `maxConcurrent` er fortsatt det delte
+- **Tilkoblingsomfattende kontra modellspesifikk:** `maxConcurrent` forblir det delte
   tilkoblingsomfattende taket. Når begge gjelder, innhentes begge sperrene
   atomisk i den samme sammensatte sperren
   (`global → provider → account → model`); den strengeste gjeldende grensen
-  avgjør den faktiske virkemåten.
-- **Nøyaktig samsvar med modellnøkkelen:** nøkkelen er modellstrengen som sendes til
-  eksekveringsmotoren etter at rutingen er løst — normalt den rene oppstrøms modell-ID-en
-  (`glm-5`), ikke et `provider/model`-alias på klientsiden (`zai/glm-5` samsvarer ikke
+  bestemmer den effektive virkemåten.
+- **Eksakt samsvar med modellnøkkel:** nøkkelen er modellstrengen som sendes til
+  kjøringsmotoren etter at rutingen er løst — vanligvis den rene oppstrøms-ID-en for modellen
+  (`glm-5`), ikke et alias på klientsiden av typen `provider/model` (`zai/glm-5` samsvarer ikke
   med `glm-5`). Verdiene er positive heltallstak for samtidige forespørsler.
-- **Lokal kølegging, ingen automatisk oppdagelse:** overskytende forespørsler legges i lokal kø med
-  eksisterende kø-/tidsavbruddssemantikk (typede innslippsfeil av typen `SEMAPHORE_TIMEOUT` /
-  `SEMAPHORE_QUEUE_FULL`). OmniRoute oppdager eller utleder ikke oppstrømsregler
-  — det håndhever nøyaktig de takene operatøren har konfigurert. En mettet modellsperre
-  deaktiverer aldri leverandøren og oppretter aldri en permanent modellutestengelse.
-  Oppstrøms 429-/nedkjølings-/reserveløsningatferd forblir siste feilhåndtering.
+- **Lokal kølegging, ingen automatisk oppdagelse:** overskytende forespørsler legges i lokal kø med den
+  eksisterende kø-/tidsavbruddssemantikken (typede innslippsfeil av typen `SEMAPHORE_TIMEOUT` /
+  `SEMAPHORE_QUEUE_FULL`). OmniRoute oppdager eller utleder ikke oppstrømspolicyen
+  — den håndhever de eksakte takene operatøren har konfigurert.
+  En mettet modellsperre deaktiverer aldri leverandøren og oppretter aldri
+  en permanent utestengelse av modellen; oppstrøms 429-/nedkjølings-/reserveatferd
+  forblir siste sikkerhetsnett ved feil.
 - **Omfang per tilkobling og per prosess:** takene gjelder per databasetilkobling
   og lagres i minnet, så to tilkoblinger som gjenbruker den samme oppstrøms API-nøkkelen,
   koordineres ikke med hverandre.
@@ -405,31 +406,40 @@ glm-5=1
 glm-4.7=3
 ```
 
-### Serialisering av kvotedelingsforespørsler
+### Serialisering av forespørsler ved kvotedeling
 
-Når en kvotedelingsdispatch er rettet mot en tilkobling som angir en positiv
-`max_concurrent`, serialiseres samtidige forespørsler til den aktuelle **kontoen** gjennom en
+Når en kvotedelingsutsending er rettet mot en tilkobling som angir en positiv
+`max_concurrent`, serialiseres samtidige forespørsler til denne **kontoen** gjennom en
 semafor per tilkobling (nøkkel `qsconn:<connectionId>`): overskytende forespørsler **venter i
-køen** i stedet for å oversvømme kontoen. Den er **fail-open** — en mettet
-kø eller et tidsavbrudd fortsetter uten en plass fremfor noen gang å avvise en forespørsel
-som kan videresendes. Slå dette av eller på under **Innstillinger → Robusthet → Samtidighet per tilkobling
+køen** i stedet for å overbelaste kontoen. Den er **fail-open** — en mettet
+kø eller et tidsavbrudd fortsetter uten en plass i stedet for noen gang å avvise en forespørsel
+som kan sendes. Slå funksjonen av eller på under **Innstillinger → Robusthet → Samtidighet per tilkobling
 for kvotedeling** (`resilienceSettings.quotaShareConcurrencyLimit.enabled`, aktivert
 som standard). Uten et `max_concurrent`-tak er virkemåten uendret.
 
 > Rutingssperren for kvotedeling (`selectQuotaShareTarget`, DRR + P2C) er selv
 > fail-open og bare _nedprioriterer_ en tilkobling som har nådd taket — med en
-> pool med én tilkobling kan den ikke håndheve en absolutt grense, så det er denne semaforen som faktisk
-> begrenser oversvømmelsen.
+> pulje med én tilkobling kan den ikke sette en absolutt grense, så det er denne semaforen som faktisk
+> begrenser overbelastningen.
 
 ### Nedkjølingsbevisst nytt forsøk for kombinasjoner
 
 For hver kombinasjonsstrategi (når aktivert) vil en forespørsel som ellers ville resultert i en 429-feil
-på grunn av en KORT midlertidig nedkjølingsperiode, vente den ut og videresendes på nytt i stedet for
+på grunn av en KORT, forbigående nedkjølingsperiode, vente den ut og sendes på nytt i stedet for
 å returnere 429-feilen — dette dekker TPM-/RPM-vinduer i Gemini-klassen (~60s retry-after)
-for kombinasjoner med flere modeller, f.eks. når begge målene i en kombinasjon med to modeller treffer en hastighetsgrense
-per modell. Begrenses av `comboCooldownWait` (`enabled`, `maxWaitMs`, `maxAttempts`,
-`budgetMs`) under **Innstillinger → Robusthet**. Den venter aldri på `quota_exhausted`
-(låst til midnatt) eller årsaker knyttet til autentisering/ikke funnet.
+for kombinasjoner med flere modeller, f.eks. når begge målene i en kombinasjon med to modeller
+treffer en hastighetsgrense per modell. Begrenset av `comboCooldownWait` (`enabled`, `maxWaitMs`, `maxAttempts`,
+`budgetMs`) under **Innstillinger → Robusthet**. Den venter aldri ved `quota_exhausted`
+(låst frem til midnatt) eller årsaker knyttet til autentisering/ikke funnet.
+
+Den samme sperren dekker tilfellet før utsending (#16319): når hvert mål i en
+kombinasjon hoppes over før noe forsøk utføres fordi modellen er i en kortvarig,
+forbigående sperreperiode, venter banen uten forsøk til sperren utløper innenfor de samme
+grensene og sender forespørselen på nytt, i stedet for å svare med en
+`503 ALL_TARGETS_SKIPPED` uten hint. Når venting ikke er tillatt (taket, antall forsøk eller budsjettet
+er brukt opp, eller funksjonen er slått av), oppgraderes det endelige svaret til
+`429 rate_limit_error` med `retry_after` / `reset_at` fra den tidligste
+utløpstiden for en forbigående sperre; sperrer knyttet til kvote, autentisering og ikke funnet beholder 503-svaret uten hint.
 
 ```text
 #16319 · comboCooldownWait · pre-dispatch (attempts = 0)

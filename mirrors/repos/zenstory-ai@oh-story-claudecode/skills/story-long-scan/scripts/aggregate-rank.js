@@ -14,8 +14,11 @@
  *
  * 聚合：每平台按题材给本数、占比、热度中位数、字数中位数、高频标签与样本够不够；
  * 全局给标签热词、字数分布、书名常见词、多榜重合与每题材代表作。同一平台内
- * 书名+作者相同视为同一本书，只计一次。整份没有热度数字的榜（如书库按页序排）只算名次，
- * 不参与选热度口径。只读输入，除 --out 外不写文件。
+ * 书名+作者相同视为同一本书，只计一次。样本门槛默认 15 本，刺猬猫每榜只有前 10 本，默认按 10 本；
+ * 给了 --sparse 就所有平台都用它。同平台两份榜单条目逐条相同（如起点手机版两个签约榜
+ * 是同一页）只按一份计，免得多榜重合虚高。整份没有热度数字的榜（如书库按页序排）只算名次，
+ * 不参与选热度口径。文件头写了「每题材上限」的榜（番茄逐题材取前 N 本）在输出里注明本数是
+ * 采样上限。只读输入，除 --out 外不写文件。
  */
 
 "use strict";
@@ -26,6 +29,9 @@ const path = require("path");
 const OWN_OUTPUT_PREFIXES = ["扫榜聚合", "选题决策", "短篇扫榜结论"];
 const SHORT_PLATFORMS = new Set(["点众", "黑岩", "知乎盐言", "盐言", "番茄短篇", "七猫短篇"]);
 const METRIC_PRIORITY = ["在读", "热度", "收藏", "赞同", "点赞", "阅读", "月票", "总推荐", "榜单值", "营养液", "积分", "评分"];
+// 每榜条目少的小平台，样本门槛默认按这里的本数；其余平台默认 DEFAULT_SPARSE。
+const SMALL_PLATFORM_SPARSE = { "刺猬猫": 10 };
+const DEFAULT_SPARSE = 15;
 const UNRESOLVED_TITLES = new Set(["（标题待解析）", "（书名待解析）", ""]);
 
 // ---------------------------------------------------------------------------
@@ -38,7 +44,7 @@ function parseArgs(argv) {
     out: "",
     top: 3,
     desc: 30,
-    sparse: 15,
+    sparse: null,
     scale: "",
     json: false,
     sample: "",
@@ -79,7 +85,7 @@ function parseArgs(argv) {
 
 const USAGE = [
   "用法：node aggregate-rank.js <榜单文件或目录>... [--out 扫榜聚合.md] [--top 3] [--desc 30]",
-  "                            [--sparse 15] [--scale long|short] [--json]",
+  "                            [--sparse 15，刺猬猫默认 10] [--scale long|short] [--json]",
   "      node aggregate-rank.js <榜单文件或目录>... --sample <题材/标签/书名词> [--n 5]",
 ].join("\n");
 
@@ -149,6 +155,8 @@ const TITLE_RE = /^#\s+(.+?)\s*·\s*(.+?)\s*$/;
 const ENTRY_RE = /^#{2,3}\s+#(\d+)\s+(.*)$/;
 const SECTION_RE = /^##\s+(.+?)\s+—\s+(.+)$/;
 const HEADER_RE = /^-\s*([^：:]+)[：:]\s*(.*)$/;
+// 番茄文件头「- 每题材上限 ≈ 20」不带冒号，单独认。
+const CAP_RE = /^-\s*每题材上限\s*[≈约：:]?\s*(\d+)/;
 
 function parseRankFile(filePath) {
   const text = fs.readFileSync(filePath, "utf8").replace(/^﻿/, "");
@@ -184,6 +192,11 @@ function parseRankFile(filePath) {
 
   for (const line of lines) {
     if (inHeader) {
+      const cm = line.match(CAP_RE);
+      if (cm) {
+        file.header["每题材上限"] = cm[1];
+        continue;
+      }
       const hm = line.match(HEADER_RE);
       if (hm) {
         file.header[hm[1].trim()] = hm[2].trim();
@@ -261,8 +274,9 @@ function parseEntry(entry, file) {
   let author = "";
   let metaGenre = "";
   const rest = cls.rest;
-  if (file.platform === "刺猬猫") {
-    // 刺猬猫榜首条目带作者、无题材；其余条目带题材、无作者。
+  if (file.platform === "刺猬猫" && rest.length < 2) {
+    // 采集脚本写的刺猬猫条目只有一个文字字段：榜首是作者，其余是题材。
+    // 作者手动整理的「作者 · 题材」两段都有，按通用位置读。
     if (entry.rank === 1) author = rest[0] || "";
     else metaGenre = rest[0] || "";
   } else {
@@ -359,7 +373,7 @@ function wordBuckets(scale) {
 }
 
 function isNewList(list) {
-  return /新书|新人|新作|潜力/.test(list);
+  return /新书|新人|新手|新作|潜力/.test(list);
 }
 
 // 门槛的分母只算上过带热度数字的榜的书（inMetricList）。只有名次的榜（如书库按页序排）
@@ -389,10 +403,35 @@ function titleGrams(titles, minCount) {
     .slice(0, 20);
 }
 
+// 条目逐条相同（名次、书名、作者都一样）的两份榜是同一份数据。书名有没解出来的不比，
+// 免得两份都是「（标题待解析）· 未知」的榜被误判成同一份。
+function entrySignature(file) {
+  if (!file.entries.length || file.entries.some((e) => !e.resolved)) return "";
+  return file.platform + "\n" + file.entries.map((e) => `${e.rank}|${normKey(e.title)}|${normKey(e.author)}`).join("\n");
+}
+
+// 给后读到的重复榜标上 duplicateOf（重复调用结果不变）；聚合和抽样都跳过它们。
+function markDuplicateLists(parsedFiles) {
+  const firstBySignature = new Map();
+  for (const file of parsedFiles) {
+    const signature = entrySignature(file);
+    if (!signature) continue;
+    if (firstBySignature.has(signature)) file.duplicateOf = firstBySignature.get(signature).list;
+    else firstBySignature.set(signature, file);
+  }
+}
+
+function sparseFor(platform, opts) {
+  if (opts.sparse !== null && opts.sparse !== undefined) return opts.sparse;
+  return SMALL_PLATFORM_SPARSE[platform] || DEFAULT_SPARSE;
+}
+
 function aggregate(parsedFiles, opts) {
+  markDuplicateLists(parsedFiles);
+
   const byPlatform = new Map();
   for (const file of parsedFiles) {
-    if (!file.entries.length) continue;
+    if (!file.entries.length || file.duplicateOf) continue;
     if (!byPlatform.has(file.platform)) byPlatform.set(file.platform, []);
     byPlatform.get(file.platform).push(file);
   }
@@ -401,6 +440,7 @@ function aggregate(parsedFiles, opts) {
   for (const [platform, files] of byPlatform) {
     const entries = files.flatMap((f) => f.entries);
     const scale = opts.scale || (SHORT_PLATFORMS.has(platform) ? "short" : "long");
+    const sparse = sparseFor(platform, opts);
     // 整份没有一条带热度数字的榜只算名次榜，它的书不进热度口径门槛的分母（见 pickMetric）。
     const rankOnlyFiles = files.filter((f) => !f.entries.some((e) => Object.keys(e.metrics).length));
     const rankOnlyEntries = new Set(rankOnlyFiles.flatMap((f) => f.entries));
@@ -455,7 +495,7 @@ function aggregate(parsedFiles, opts) {
           wordsMedian: median(list.map((b) => b.words)),
           newCount: list.filter((b) => b.inNewList).length,
           topTags: countBy(list.flatMap((b) => b.tags)).slice(0, 3).map(([t]) => t),
-          sparse: list.length < opts.sparse,
+          sparse: list.length < sparse,
           reps: sorted.filter((b) => b.resolved).slice(0, opts.top).map((b) => ({
             title: b.title,
             author: b.author,
@@ -475,12 +515,17 @@ function aggregate(parsedFiles, opts) {
     }));
     const withMetric = metric ? uniq.filter((b) => typeof b.metrics[metric] === "number").map((b) => b.metrics[metric]).sort((a, b) => a - b) : [];
     const quantile = (q) => (withMetric.length ? withMetric[Math.min(withMetric.length - 1, Math.floor(q * (withMetric.length - 1) + 0.5))] : null);
+    const cappedFiles = files.filter((f) => parseInt(f.header["每题材上限"], 10) > 0);
 
     platforms.push({
       platform,
       scale,
+      sparse,
       metric,
       rankOnlyLists: metric ? Array.from(new Set(rankOnlyFiles.map((f) => f.list))) : [],
+      perGenreCap: cappedFiles.length
+        ? { top: Math.max(...cappedFiles.map((f) => parseInt(f.header["每题材上限"], 10))), lists: cappedFiles.map((f) => f.list) }
+        : null,
       entryCount: entries.length,
       bookCount: uniq.length,
       unresolved: entries.filter((e) => !e.resolved).length,
@@ -508,10 +553,12 @@ function aggregate(parsedFiles, opts) {
     const failed = f.sections.filter((s) => /失败/.test(s.status) || s.count === 0).map((s) => s.name);
     if (!f.entries.length) problems.push("没采到：整份榜单一本都没有");
     else if (failed.length) problems.push(`没采到：${failed.join("、")}`);
+    if (f.duplicateOf) problems.push(`和「${f.duplicateOf}」条目完全相同，是同一份数据，只按一份计`);
     return {
       name: f.name,
       platform: f.platform,
       list: f.list,
+      duplicateOf: f.duplicateOf || "",
       time: (f.header["抓取时间"] || "").slice(0, 10),
       entries: f.entries.length,
       quality: quality || "未标注",
@@ -520,7 +567,8 @@ function aggregate(parsedFiles, opts) {
   });
 
   platforms.sort((a, b) => b.bookCount - a.bookCount || a.platform.localeCompare(b.platform, "zh"));
-  return { files, platforms, options: { top: opts.top, sparse: opts.sparse } };
+  const explicitSparse = opts.sparse !== null && opts.sparse !== undefined;
+  return { files, platforms, options: { top: opts.top, sparse: explicitSparse ? opts.sparse : DEFAULT_SPARSE, sparseExplicit: explicitSparse } };
 }
 
 function truncate(text, n) {
@@ -571,7 +619,11 @@ function qualityWords(quality) {
 function renderMarkdown(result) {
   const out = ["# 扫榜聚合", ""];
   out.push(`- 来源：${result.files.length} 个榜单文件，${result.platforms.map((p) => `${p.platform} ${p.bookCount} 本`).join("，")}`);
-  out.push(`- 样本门槛：同题材少于 ${result.options.sparse} 本标「少」，不能单独撑起高可行性`);
+  const smallOnes = result.options.sparseExplicit
+    ? []
+    : result.platforms.filter((p) => p.sparse !== result.options.sparse).map((p) => `${p.platform} ${p.sparse} 本`);
+  const smallNote = smallOnes.length ? `（${smallOnes.join("、")}）` : "";
+  out.push(`- 样本门槛：同题材少于 ${result.options.sparse} 本${smallNote}标「少」，不能单独撑起高可行性`);
   out.push("");
   out.push("## 采集情况", "");
   for (const f of result.files) {
@@ -596,7 +648,7 @@ function renderMarkdown(result) {
         fmtHeatMedian(g),
         fmtNum(g.wordsMedian),
         g.topTags.join("、") || "—",
-        g.sparse ? "少" : "够",
+        g.sparse ? "少" : p.perGenreCap ? "采样" : "够",
       ];
       if (newCol) row.splice(3, 0, String(g.newCount));
       out.push(`| ${row.join(" | ")} |`);
@@ -605,6 +657,9 @@ function renderMarkdown(result) {
 
     if (p.heat) {
       out.push(`- 热度分布（${p.metric}，${p.heat.known} 本有值）：P25 ${fmtNum(p.heat.p25)} / 中位 ${fmtNum(p.heat.p50)} / P75 ${fmtNum(p.heat.p75)} / 最高 ${fmtNum(p.heat.max)}`);
+    }
+    if (p.perGenreCap) {
+      out.push(`- 每题材按上限取前 ${p.perGenreCap.top} 本（${p.perGenreCap.lists.join("、")}）：本数和占比是采样结果，不代表题材大小，样本列标「采样」不算够；同方向够不够数细分梗或标签的本数，题材冷热看热度中位`);
     }
     if (p.rankOnlyLists.length) {
       out.push(`- 没有热度数字的榜（只按名次）：${p.rankOnlyLists.join("、")}；热度中位和热度分布只算有热度的书`);
@@ -641,7 +696,9 @@ function renderMarkdown(result) {
 
 function renderSample(parsedFiles, query, n) {
   const q = query.trim();
+  markDuplicateLists(parsedFiles);
   const hits = parsedFiles
+    .filter((f) => !f.duplicateOf)
     .flatMap((f) => f.entries)
     .filter((e) => e.genre === q || e.tags.includes(q) || e.title.includes(q) || (e.section && e.section === q));
   const metricOf = (e) => {

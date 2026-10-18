@@ -328,17 +328,17 @@ lockout _အခြေအနေဒေတာ_ သည် ယာယီသာဖြ�
 
 ---
 
-## 4. Quota-Share တစ်ပြိုင်နက်တည်း လုပ်ဆောင်မှု ထိန်းချုပ်ခြင်း (v3.8.36)
+## 4. Quota-Share တစ်ပြိုင်နက်လုပ်ဆောင်မှု ထိန်းချုပ်ခြင်း (v3.8.36)
 
-Subscription account များ (GLM၊ MiniMax စသည်) သည် ပုံမှန်အားဖြင့် တစ်ပြိုင်နက်တည်း request ~1–3 ခုကိုသာ လက်ခံနိုင်သည်။ ထိုပမာဏကို ကျော်လွန်ပါက 429 များနှင့် cooldown များ ဖြစ်ပေါ်စေသည်။ API key အများအပြားက upstream account တစ်ခုတည်းကို မျှဝေသုံးစွဲသည့် **quota-share** (`qtSd/…`) combo များတွင် ဤပြဿနာသည် အထူးပြင်းထန်သည်။ မျှဝေထားသည့် account သို့ request များ အလွန်အကျွံ မဝင်ရောက်စေရန် အလွှာသုံးခုဖြင့် ထိန်းချုပ်ထားသည်။
+Subscription အကောင့်များ (GLM, MiniMax စသည်) သည် တစ်ပြိုင်နက် request ~1–3 ခုခန့်ကိုသာ လက်ခံလေ့ရှိပြီး၊ ယင်းပမာဏကို ကျော်လွန်ပါက 429 များနှင့် cooldown များ ဖြစ်ပေါ်စေသည်။ API key အများအပြားက upstream အကောင့်တစ်ခုတည်းကို မျှဝေသုံးစွဲသည့် **quota-share** (`qtSd/…`) combo များတွင် ဤပြဿနာသည် အထူးသဖြင့် ပြင်းထန်သည်။ မျှဝေထားသော အကောင့်သို့ request များ အလွန်အကျွံ မဝင်ရောက်စေရန် အလွှာသုံးလွှာဖြင့် ထိန်းချုပ်ထားသည်။
 
-### Connection တစ်ခုချင်းအလိုက် တစ်ပြိုင်နက်တည်း လုပ်ဆောင်မှု အများဆုံးကန့်သတ်ချက် (`max_concurrent`)
+### Connection တစ်ခုချင်းစီအလိုက် တစ်ပြိုင်နက်လုပ်ဆောင်မှု အများဆုံးပမာဏ (`max_concurrent`)
 
-Provider connection တစ်ခုချင်းစီသည် `max_concurrent` အများဆုံးကန့်သတ်ချက်ကို သတ်မှတ်နိုင်သည် (`provider_connections.max_concurrent`၊ connection modal / API / DB တွင် သတ်မှတ်သည်)။ ကန့်သတ်ချက်မထားလိုပါက ၎င်းကို အလွတ်ထားပါ။ ဤတစ်ခုတည်းသော setting က အောက်ပါ serialization အလွှာကို ထိန်းချုပ်သည် — account ၏ အမှန်တကယ် တစ်ပြိုင်နက်တည်း လုပ်ဆောင်နိုင်မှုပမာဏအတိုင်း သတ်မှတ်ပါ (ဥပမာ GLM ~1၊ MiniMax ~2)။
+Provider connection တစ်ခုချင်းစီတွင် `max_concurrent` အများဆုံးကန့်သတ်ချက်ကို သတ်မှတ်နိုင်သည် (`provider_connections.max_concurrent`၊ connection modal / API / DB တွင် သတ်မှတ်သည်)။ အကန့်အသတ်မထားလိုပါက ဗလာထားပါ။ ၎င်းသည် အောက်ပါ serialization layer ကို ထိန်းချုပ်သည့် တစ်ခုတည်းသော setting ဖြစ်သည် — အကောင့်၏ တကယ့်တစ်ပြိုင်နက်လုပ်ဆောင်နိုင်မှုအတိုင်း သတ်မှတ်ပါ (ဥပမာ GLM ~1၊ MiniMax ~2)။
 
-### Model တစ်ခုချင်းအလိုက် တစ်ပြိုင်နက်တည်း လုပ်ဆောင်မှု အများဆုံးကန့်သတ်ချက်များ (`modelConcurrency`)
+### Model တစ်ခုချင်းစီအလိုက် တစ်ပြိုင်နက်လုပ်ဆောင်မှု အများဆုံးပမာဏ (`modelConcurrency`)
 
-Connection တစ်ခုသည် ၎င်း၏ `rateLimitOverrides` map အတွင်း model တစ်ခုချင်းအတွက် တိကျသည့် တစ်ပြိုင်နက်တည်း လုပ်ဆောင်မှု အများဆုံးကန့်သတ်ချက်များကို ထပ်မံသတ်မှတ်နိုင်သည်-
+Connection တစ်ခုသည် ၎င်း၏ `rateLimitOverrides` map အတွင်း model တစ်ခုချင်းစီအတွက် တိကျသော တစ်ပြိုင်နက်လုပ်ဆောင်မှု အများဆုံးကန့်သတ်ချက်များကိုလည်း ထပ်မံသတ်မှတ်နိုင်သည်-
 
 ```json
 {
@@ -349,13 +349,13 @@ Connection တစ်ခုသည် ၎င်း၏ `rateLimitOverrides` map အ
 }
 ```
 
-၎င်းကို connection modal ရှိ (**Rate limit overrides → Per-model concurrency caps**၊ စာကြောင်းတစ်ကြောင်းလျှင် `model=cap` တစ်ခု) တွင်ဖြစ်စေ၊ တူညီသော JSON ပုံစံဖြင့် `PATCH /api/providers/[id]` မှတစ်ဆင့်ဖြစ်စေ သတ်မှတ်ပါ။ Key များ၏ အဓိပ္ပာယ်များ-
+၎င်းကို connection modal (**Rate limit overrides → Model တစ်ခုချင်းစီအလိုက် တစ်ပြိုင်နက်လုပ်ဆောင်မှု အများဆုံးပမာဏ**၊ တစ်ကြောင်းလျှင် `model=cap` တစ်ခု) တွင် သို့မဟုတ် တူညီသော JSON ဖွဲ့စည်းပုံဖြင့် `PATCH /api/providers/[id]` မှတစ်ဆင့် သတ်မှတ်ပါ။ Key များ၏ အဓိပ္ပာယ်မှာ-
 
-- **Connection တစ်ခုလုံးနှင့် model သီးသန့်အကြား ကွာခြားချက်-** `maxConcurrent` သည် connection တစ်ခုလုံး မျှဝေသုံးစွဲသည့် အများဆုံးကန့်သတ်ချက်အဖြစ် ဆက်လက်တည်ရှိသည်။ နှစ်ခုစလုံး သက်ရောက်သည့်အခါ gate နှစ်ခုစလုံးကို တူညီသော composite gate အတွင်း အက်တမ်နည်းဖြင့် တစ်ပြိုင်တည်း ရယူသည် (`global → provider → account → model`)။ လက်တွေ့သက်ရောက်သည့် အပြုအမူမှာ သက်ဆိုင်ရာ ကန့်သတ်ချက်များအနက် ပိုမိုတင်းကျပ်သည့် ကန့်သတ်ချက်ဖြစ်သည်။
-- **Model key အတိအကျ ကိုက်ညီမှု-** key သည် routing resolution ပြီးနောက် executor သို့ ပေးပို့သည့် model string ဖြစ်သည် — ပုံမှန်အားဖြင့် client ဘက်ရှိ `provider/model` alias မဟုတ်ဘဲ upstream model id အတိုင်း (`glm-5`) ဖြစ်သည် (`zai/glm-5` သည် `glm-5` နှင့် မကိုက်ညီပါ)။ Value များသည် တစ်ပြိုင်နက်တည်း request အရေအတွက်အတွက် အပေါင်းကိန်း အများဆုံးကန့်သတ်ချက်များဖြစ်သည်။
-- **Local queueing သာရှိပြီး အလိုအလျောက် ရှာဖွေသိရှိမှု မရှိခြင်း-** ပိုလျှံသည့် request များသည် လက်ရှိ queue/timeout အပြုအမူများအတိုင်း local တွင် တန်းစီစောင့်ဆိုင်းသည် (type သတ်မှတ်ထားသော `SEMAPHORE_TIMEOUT` / `SEMAPHORE_QUEUE_FULL` လက်ခံမှုဆိုင်ရာ error များ)။ OmniRoute သည် upstream policy ကို ရှာဖွေခြင်း သို့မဟုတ် ခန့်မှန်းသတ်မှတ်ခြင်း မပြုပါ — operator က သတ်မှတ်ထားသည့် အများဆုံးကန့်သတ်ချက်များကို အတိအကျ ကျင့်သုံးသည်။ ပြည့်နေသည့် model gate သည် provider ကို မည်သည့်အခါမျှ ပိတ်ထားမည်မဟုတ်သကဲ့သို့ model ကို အမြဲတမ်း lockout ဖြစ်စေမည်လည်း မဟုတ်ပါ။ Upstream 429/cooldown/fallback အပြုအမူသည် error များအတွက် နောက်ဆုံးအကာအကွယ်အဖြစ် ဆက်လက်တည်ရှိသည်။
-- **Connection တစ်ခုချင်း၊ process တစ်ခုချင်းအလိုက် သက်ရောက်မှု-** အများဆုံးကန့်သတ်ချက်များသည် database connection တစ်ခုချင်းအလိုက်ဖြစ်ပြီး memory အတွင်း ထိန်းသိမ်းထားသောကြောင့် upstream API key တစ်ခုတည်းကို ပြန်လည်အသုံးပြုသည့် connection နှစ်ခုသည် တစ်ခုနှင့်တစ်ခု ညှိနှိုင်းလုပ်ဆောင်မည်မဟုတ်ပါ။
-- **မသတ်မှတ်ထားပါက အပြောင်းအလဲမရှိခြင်း-** map ကို ချန်လှပ်ထားခြင်း (သို့မဟုတ် dashboard field ကို အလွတ်ထားခြင်း) သည် model gate တစ်ခုမျှ ထပ်မံထည့်သွင်းမည်မဟုတ်ပါ။ Provider အားလုံးအတွက် အကျုံးဝင်သည့် ကန့်သတ်ချက်တစ်ခုဟု မသတ်မှတ်ဘဲ ပြထားသော ဥပမာ configuration-
+- **Connection တစ်ခုလုံးနှင့် model သီးသန့် ကန့်သတ်ချက်များ:** `maxConcurrent` သည် မျှဝေထားသော connection တစ်ခုလုံးဆိုင်ရာ အများဆုံးကန့်သတ်ချက်အဖြစ် ဆက်ရှိနေသည်။ နှစ်ခုစလုံး သက်ရောက်သည့်အခါ gate နှစ်ခုစလုံးကို composite gate တစ်ခုတည်းအတွင်း atomically ရယူသည် (`global → provider → account → model`)၊ ထို့ကြောင့် လက်တွေ့အပြုအမူသည် သက်ဆိုင်ရာကန့်သတ်ချက်များအနက် ပိုမိုတင်းကျပ်သည့် ကန့်သတ်ချက်အတိုင်း ဖြစ်သည်။
+- **Model key ကို အတိအကျ တိုက်ဆိုင်စစ်ဆေးခြင်း:** key သည် routing resolution ပြီးနောက် executor သို့ ပေးပို့သည့် model string ဖြစ်သည် — ပုံမှန်အားဖြင့် upstream model id အစစ် (`glm-5`) ဖြစ်ပြီး၊ client ဘက်ရှိ `provider/model` alias မဟုတ်ပါ (`zai/glm-5` သည် `glm-5` နှင့် မကိုက်ညီပါ)။ Value များသည် အပေါင်းကိန်းဖြစ်သော တစ်ပြိုင်နက် request အများဆုံးကန့်သတ်ချက်များ ဖြစ်သည်။
+- **Local queueing သာဖြစ်ပြီး အလိုအလျောက်ရှာဖွေမှု မရှိခြင်း:** အပို request များသည် လက်ရှိ queue/timeout semantics အတိုင်း local တွင် တန်းစီစောင့်ဆိုင်းသည် (type သတ်မှတ်ထားသော `SEMAPHORE_TIMEOUT` / `SEMAPHORE_QUEUE_FULL` admission error များ)။ OmniRoute သည် upstream policy ကို ရှာဖွေခြင်း သို့မဟုတ် ခန့်မှန်းခြင်း မပြုလုပ်ဘဲ operator က သတ်မှတ်ထားသော အတိအကျကန့်သတ်ချက်များကိုသာ လိုက်နာစေသည်။ ပြည့်နေသော model gate သည် provider ကို မည်သည့်အခါမျှ disable မလုပ်သကဲ့သို့ အမြဲတမ်း model lockout ကိုလည်း မဖန်တီးပါ။ Upstream 429/cooldown/fallback အပြုအမူသည် error များအတွက် နောက်ဆုံးကာကွယ်ရေးအဖြစ် ဆက်ရှိနေသည်။
+- **Connection တစ်ခုချင်း၊ process တစ်ခုချင်းအလိုက် scope:** အများဆုံးကန့်သတ်ချက်များသည် database connection တစ်ခုချင်းစီအလိုက်ဖြစ်ပြီး memory ထဲတွင် ထိန်းသိမ်းထားသောကြောင့် upstream API key တစ်ခုတည်းကို ပြန်လည်အသုံးပြုသည့် connection နှစ်ခုသည် အချင်းချင်း ညှိနှိုင်းခြင်းမရှိပါ။
+- **မသတ်မှတ်ထားပါက မူလအတိုင်းဖြစ်ခြင်း:** map ကို ချန်လှပ်ထားခြင်း (သို့မဟုတ် dashboard field ကို ဗလာထားခြင်း) သည် model gate တစ်ခုမျှ မထည့်ပါ။ Provider အားလုံးအတွက် တစ်ပြေးညီကန့်သတ်ချက်ရှိသည်ဟု မယူဆဘဲ သတ်မှတ်ထားသည့် နမူနာ-
 
 ```text
 glm-5=1
@@ -364,17 +364,19 @@ glm-4.7=3
 
 ### Quota-share request များကို အစဉ်လိုက်လုပ်ဆောင်ခြင်း
 
-Quota-share dispatch တစ်ခုက အပေါင်းတန်ဖိုးရှိသော `max_concurrent` ကို သတ်မှတ်ထားသည့် connection တစ်ခုကို ပစ်မှတ်ထားသည့်အခါ ထို **account** သို့ တစ်ပြိုင်နက်တည်း ပေးပို့သော request များကို connection တစ်ခုချင်းအလိုက် semaphore (key `qsconn:<connectionId>`) မှတစ်ဆင့် အစဉ်လိုက်လုပ်ဆောင်သည်။ ပိုလျှံသည့် request များသည် account ကို အလွန်အကျွံ ဝင်ရောက်စေမည့်အစား **queue ထဲတွင် စောင့်ဆိုင်းသည်**။ ၎င်းသည် **fail-open** ဖြစ်သည် — queue ပြည့်နေခြင်း သို့မဟုတ် timeout ဖြစ်ခြင်းတို့တွင် dispatch လုပ်နိုင်သည့် request ကို ငြင်းပယ်မည့်အစား slot မပါဘဲ ဆက်လက်လုပ်ဆောင်သည်။ **Settings → Resilience → Quota-share per-connection concurrency** (`resilienceSettings.quotaShareConcurrencyLimit.enabled`၊ ပုံမှန်အားဖြင့် ဖွင့်ထားသည်) တွင် ဖွင့်/ပိတ်နိုင်သည်။ `max_concurrent` အများဆုံးကန့်သတ်ချက် မရှိပါက အပြုအမူသည် မပြောင်းလဲပါ။
+Quota-share dispatch တစ်ခုက အပေါင်းတန်ဖိုးရှိသော `max_concurrent` ကို သတ်မှတ်ထားသည့် connection တစ်ခုကို ပစ်မှတ်ထားသောအခါ ထို **အကောင့်** သို့ တစ်ပြိုင်နက်ပေးပို့သော request များကို connection တစ်ခုချင်းစီအလိုက် semaphore (key `qsconn:<connectionId>`) မှတစ်ဆင့် အစဉ်လိုက်လုပ်ဆောင်သည်။ အပို request များသည် အကောင့်ထဲသို့ အလွန်အကျွံ ဝင်ရောက်မည့်အစား **queue ထဲတွင် စောင့်ဆိုင်းသည်**။ ၎င်းသည် **fail-open** ဖြစ်သည် — queue ပြည့်နေခြင်း သို့မဟုတ် timeout ဖြစ်ခြင်းတွင် dispatch လုပ်နိုင်သော request တစ်ခုကို ငြင်းပယ်မည့်အစား slot မပါဘဲ ဆက်လက်လုပ်ဆောင်သည်။ **Settings → Resilience → Quota-share per-connection concurrency** (`resilienceSettings.quotaShareConcurrencyLimit.enabled`၊ ပုံမှန်အားဖြင့် ဖွင့်ထားသည်) တွင် အဖွင့်အပိတ် ပြုလုပ်နိုင်သည်။ `max_concurrent` ကန့်သတ်ချက် မရှိပါက အပြုအမူသည် မပြောင်းလဲပါ။
 
-> Quota-share routing gate (`selectQuotaShareTarget`၊ DRR + P2C) ကိုယ်တိုင်က
+> Quota-share routing gate (`selectQuotaShareTarget`, DRR + P2C) ကိုယ်တိုင်က
 > fail-open ဖြစ်ပြီး အများဆုံးကန့်သတ်ချက်သို့ ရောက်နေသည့် connection ကို
-> _ဦးစားပေးမှု လျှော့ချခြင်း_ သာ ပြုလုပ်သည် — connection တစ်ခုတည်းရှိသော pool တွင်
-> တင်းကျပ်စွာ ကန့်သတ်နိုင်ခြင်းမရှိသောကြောင့် အလွန်အကျွံ ဝင်ရောက်မှုကို အမှန်တကယ်
-> ထိန်းချုပ်ပေးသည့်အရာမှာ ဤ semaphore ဖြစ်သည်။
+> _ဦးစားပေးမှုလျှော့ချခြင်း_ သာ ပြုလုပ်သည် — connection တစ်ခုတည်းသာရှိသော pool တွင်
+> အပြည့်အဝ ကန့်သတ်မထားနိုင်သောကြောင့် ဤ semaphore ကသာ request အလွန်အကျွံ
+> ဝင်ရောက်မှုကို အမှန်တကယ် ထိန်းချုပ်ပေးသည်။
 
 ### Combo cooldown ကို ထည့်သွင်းစဉ်းစားသော retry
 
-Combo strategy တစ်ခုချင်းစီအတွက် (ဖွင့်ထားသည့်အခါ) SHORT ယာယီ cooldown ကြောင့် 429 ကို အတည်ဖြစ်ပေါ်စေမည့် request တစ်ခုသည် 429 ကို ပြန်ပေးမည့်အစား cooldown ပြီးဆုံးသည်အထိ စောင့်ဆိုင်းပြီး ပြန်လည် dispatch လုပ်သည် — ၎င်းသည် model များစွာပါဝင်သည့် combo များတွင် Gemini အမျိုးအစား TPM/RPM window များ (~60s retry-after) ကို ကိုင်တွယ်ပေးသည်။ ဥပမာ model 2 ခုပါသော combo ၏ target နှစ်ခုစလုံးသည် model တစ်ခုချင်းအလိုက် rate limit သို့ ရောက်သွားသည့်အခြေအနေဖြစ်သည်။ **Settings → Resilience** ရှိ `comboCooldownWait` (`enabled`၊ `maxWaitMs`၊ `maxAttempts`၊ `budgetMs`) ဖြင့် ကန့်သတ်ထားသည်။ `quota_exhausted` (သန်းခေါင်ယံအထိ lock လုပ်ထားခြင်း) သို့မဟုတ် auth/not-found အကြောင်းရင်းများအတွက် မည်သည့်အခါမျှ စောင့်ဆိုင်းမည်မဟုတ်ပါ။
+Combo strategy တိုင်းအတွက် (ဖွင့်ထားသည့်အခါ) ခဏတာ SHORT cooldown ကြောင့် 429 error ဖြစ်လာမည့် request သည် 429 ကို ပြန်ပို့မည့်အစား cooldown ပြီးဆုံးသည်အထိ စောင့်ဆိုင်းကာ ပြန်လည် dispatch လုပ်သည် — ဥပမာ model ၂ ခုပါ combo ၏ target နှစ်ခုစလုံးက model တစ်ခုချင်းစီအလိုက် rate limit ကို ထိမိခြင်းကဲ့သို့ multi-model combo များရှိ Gemini အမျိုးအစား TPM/RPM window များ (~60s retry-after) ကို ဤနည်းဖြင့် ကိုင်တွယ်သည်။ **Settings → Resilience** ရှိ `comboCooldownWait` (`enabled`, `maxWaitMs`, `maxAttempts`, `budgetMs`) က ၎င်းကို ကန့်သတ်ထားသည်။ `quota_exhausted` (သန်းခေါင်အထိ lock ဖြစ်နေခြင်း) သို့မဟုတ် auth/not-found အကြောင်းရင်းများအတွက် မည်သည့်အခါမျှ မစောင့်ပါ။
+
+တူညီသော gate သည် pre-dispatch ဖြစ်ရပ် (#16319) ကိုလည်း ကိုင်တွယ်သည်။ Combo တစ်ခု၏ target တိုင်းရှိ model သည် ခဏတာ transient lockout ဖြစ်နေသောကြောင့် မည်သည့် attempt မျှ မပြုလုပ်မီ target အားလုံးကို ကျော်သွားသည့်အခါ zero-attempt path သည် အရိပ်အမြွက်မပါသော `503 ALL_TARGETS_SKIPPED` ကို ပြန်ပို့မည့်အစား တူညီသော အများဆုံးကန့်သတ်ချက်များအောက်တွင် lock ပြီးဆုံးသည်အထိ စောင့်ဆိုင်းပြီး ပြန်လည် dispatch လုပ်သည်။ စောင့်ဆိုင်းခွင့်မရှိသည့်အခါ (အများဆုံးကန့်သတ်ချက်၊ attempt သို့မဟုတ် budget ကုန်သွားခြင်း၊ သို့မဟုတ် feature ပိတ်ထားခြင်း) နောက်ဆုံး response သည် အစောဆုံး transient lock သက်တမ်းကုန်ဆုံးချိန်မှ `retry_after` / `reset_at` ပါဝင်သော `429 rate_limit_error` သို့ ပြောင်းလဲသွားသည်။ Quota၊ auth နှင့် not-found lock များအတွက်မူ အရိပ်အမြွက်မပါသော 503 အဖြစ် ဆက်ရှိနေသည်။
 
 ```text
 #16319 · comboCooldownWait · pre-dispatch (attempts = 0)

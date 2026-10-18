@@ -6,7 +6,7 @@ metadata: {"openclaw":{"source":"https://github.com/zenstory-ai/oh-story-claudec
 ---
 # story-review：多视角对抗式审查
 
-> Spawn 版本提示（不阻断 spawn）：先读取项目根 `.story-deployed` 的 `agents_version`。与本版 `agents_version: 35` 不一致时（标记缺失、字段缺失/非整数、小于或大于 35）**照常按文件存在性检查并 spawn**，但只检查当前运行时的 canonical 目录；同时在「这次怎么审的」里用一句白话提示作者「审稿助手是旧版，运行 /story-setup 后新开会话」，`Notice: agents bundle 版本不匹配（项目 {N}，本版 35）` 原文写进技术备注行；大于 35 时额外提示先更新 oh-story-claudecode，不要用本地旧版 setup 降级覆盖。版本提示本身不触发降级；文件缺失或异常、工具不可用、递归限制或调用失败按 Phase 0 处理，技术备注写 `Fallback: ... -> solo`。
+> Spawn 版本提示（不阻断 spawn）：先读取项目根 `.story-deployed` 的 `agents_version`。与本版 `agents_version: 36` 不一致时（标记缺失、字段缺失/非整数、小于或大于 36）**照常按文件存在性检查并 spawn**，但只检查当前运行时的 canonical 目录；同时在「这次怎么审的」里用一句白话提示作者「审稿助手是旧版，运行 /story-setup 后新开会话」，`Notice: agents bundle 版本不匹配（项目 {N}，本版 36）` 原文写进技术备注行；大于 36 时额外提示先更新 oh-story-claudecode，不要用本地旧版 setup 降级覆盖。版本提示本身不触发降级；文件缺失或异常、工具不可用、递归限制或调用失败按 Phase 0 处理，技术备注写 `Fallback: ... -> solo`。
 
 你负责协调审查，找出小说的结构、角色、文字与设定问题，给出有原文依据的修改建议。
 
@@ -78,13 +78,9 @@ metadata: {"openclaw":{"source":"https://github.com/zenstory-ai/oh-story-claudec
 
 | 用途 | 规范路径 |
 |---|---|
-| 通用质量清单 | `story-review/references/review-quality.md` |
 | 通用内容评分 rubric | `story-review/references/quality-rubric.md` |
 | 去 AI 味方法 | `story-review/references/expression.md` · `story-review/references/narrative-focus.md` · `story-review/references/story-logic.md` |
-| 剧情循环/高潮公式 | `story-review/references/plot-core-methods.md` |
-| 角色关系/好感度 | `story-review/references/character-relations.md` |
-| 对话质量 | `story-review/references/dialogue-mastery.md` |
-| 审查禁用词 | `story-review/references/banned-words.md` |
+| 词句信号索引 | `story-review/references/banned-words.md` |
 | 平台 rubric | `story-review/references/rubrics/{fanqie,qidian,zhihu}.md` |
 | 标点预检脚本 | `story-review/scripts/normalize-punctuation.js` |
 | AI句式预检脚本 | `story-review/scripts/check-ai-patterns.js` |
@@ -119,10 +115,10 @@ metadata: {"openclaw":{"source":"https://github.com/zenstory-ai/oh-story-claudec
 - 故事：行动有什么来由、解决依据从何而来、前后改变了什么？安静场景可承载关系与认知变化，不强求冲突。
 - 处理原则：有原文证据才输出 finding，指出阅读损失、最小建议与资料限制；只报告，不落改，不默认拆短、加动作或新增剧情。
 
-平台 fallback 摘要：
-- 番茄：强开局、强冲突、高频爽点/情绪反馈、低理解门槛。
-- 起点：设定自洽、升级路径、长线期待、世界观承载力。
-- 知乎盐言：短篇钩子、反转密度、情绪兑现、信息差推进。
+平台 fallback 摘要（叠加在通用 rubric 上）：
+- 番茄长篇：强开局、强冲突、高频爽点/情绪反馈、低理解门槛。
+- 起点长篇：设定自洽、升级路径、长线期待、世界观承载力。
+- 短篇：开头钩子、反转有铺垫、情绪兑现、信息差推进。
 
 ---
 
@@ -130,21 +126,28 @@ metadata: {"openclaw":{"source":"https://github.com/zenstory-ai/oh-story-claudec
 
 1. **确定审查范围**：
    - 用户指定了章节/文件 → 只审查指定内容。
-   - 用户未指定 → 优先审查最近修改的正文文件（`git diff --name-only` 中的正文/设定/大纲相关文件），否则审查当前书的当前章节。
+   - 用户未指定 → 项目是 git 仓库时审 `git diff --name-only` 里的正文/设定/大纲文件；否则长篇审 `正文/` 下最近修改的章，短篇审 `正文.md`。报告开头写明审了哪些。
 2. **范围传递策略**：
    - 优先把文件路径、章节名、行号范围传给 reviewer，不要把整本或大量章节完整复制进每个 prompt。
    - 单文件或短片段可附 300-1200 字关键摘录。
    - 多章/整卷/整本审查必须分批：按章节或文件组拆分，每批输出独立 findings，再综合；分批前先完整读 [references/batch-review.md](references/batch-review.md)（跨批状态、连续性、乱序提醒）。
-3. **读取相关支撑材料**：正文、相关设定、角色档案、大纲、追踪/上下文、伏笔文件；缺失时在报告中标记证据不足。
-4. **识别目标平台并加载 rubric**：
-   - 优先使用用户显式指定的平台。
-   - 其次读取项目文档里的 `目标平台` / `平台` 字段，例如 `设定/题材定位.md`、`大纲/`、`拆文报告` 等。
-   - 不要把 `.active-book` 当作平台来源；它只能辅助定位当前书名目录。
-   - 番茄小说 → 优先读取 `story-review/references/rubrics/fanqie.md`；不可读时使用内置番茄 fallback 摘要。
-   - 起点 → 优先读取 `story-review/references/rubrics/qidian.md`；不可读时使用内置起点 fallback 摘要。
-   - 知乎盐言 → 优先读取 `story-review/references/rubrics/zhihu.md`；不可读时使用内置知乎 fallback 摘要。
-   - 未识别平台 → 优先读取 `story-review/references/quality-rubric.md`；不可读时使用内置通用网文内容 rubric；技术备注行写 `generic` 与 `file | embedded`。
-5. **形成审查基准包摘要**：把已加载的文件内容或内置 fallback 摘要压缩为 5-12 条审查标准，后续 solo 和子 Agent 都必须使用这份摘要。摘要必须保留一条句长标准：叙述默认是逗号长句，碎句和电报体与 AI 腔同级处理，不因「短」放行。
+3. **读取支撑材料**：solo 和分批审查时由你读正文、相关设定、角色档案、大纲、`追踪/上下文.md` 与伏笔文件；full/lean 只读定范围、定平台和分批开放项要用的文件，其余由 reviewer 按路径自己读。缺材料时在报告里标为证据不足。
+4. **识别篇幅与目标平台，加载 rubric**：
+   - 通用 rubric 每次都加载：读 `story-review/references/quality-rubric.md`，不可读时用内置通用网文内容 rubric。平台表叠加在通用 rubric 上，不替代它。
+   - 篇幅：书目录下有 `正文/` 或 `设定/` 子目录的是长篇，有 `正文.md` 或 `设定.md` 文件的是短篇（与 `/story` 路由同一口径）。
+   - 平台：用户这次指定的优先；其次长篇读 `设定/题材定位.md`、短篇读 `设定.md` 的「目标平台」。`.active-book` 只用来定位书目录，不当平台来源。
+   - 按下表叠加平台表，文件不可读时用内置平台 fallback 摘要：
+
+     | 篇幅 | 目标平台 | 叠加的平台表 |
+     |---|---|---|
+     | 长篇 | 起点 | `story-review/references/rubrics/qidian.md` |
+     | 长篇 | 番茄 | `story-review/references/rubrics/fanqie.md` |
+     | 长篇 | 晋江、其他、未定、没写 | 不叠加 |
+     | 短篇 | 知乎盐言（也写作盐选）、番茄、七猫、黑岩、红果、小程序、未定、没写 | `story-review/references/rubrics/zhihu.md` |
+
+   - 短篇另按 `设定.md`「平台基调」核对格式、引号和导语。
+   - 技术备注行的 Rubric 写叠加的平台表（`fanqie | qidian | zhihu`），不叠加写 `generic`；括号里文件可读写 `file`，用了内置摘要写 `embedded`。
+5. **形成审查基准包摘要**：把已加载的文件内容或内置 fallback 摘要压缩为 5-12 条审查标准，后续 solo 和子 Agent 都必须使用这份摘要。审查提示词要各保留一条剧情循环、高潮构建和关系进展的判断，审第 1-3 章时再加开头新鲜度。摘要必须保留一条句长标准：叙述默认是逗号长句，碎句和电报体与 AI 腔同级处理，不因「短」放行；本书文风另有约定时按文风。
 6. **确定性预检（只报告，不修改）**：当审查范围包含本地正文文件路径时，运行本 skill 自带脚本：
    ```bash
    node scripts/normalize-punctuation.js --check <正文文件...>
@@ -174,7 +177,7 @@ metadata: {"openclaw":{"source":"https://github.com/zenstory-ai/oh-story-claudec
   fix: "可执行修改建议"
 ```
 
-严重度定义（与长篇写作、检测器同一刻度：S1/S2＝必须修，S3＝建议看，S4＝仅提示）：
+严重度定义：S1–S4 的级别与长篇写作、检测器相同；审稿报告的小节标题按级别写，S1、S2 归「必须改」，S3 归「建议改」，S4 归「可以不改」：
 - **S1**：会破坏主线、角色动机、世界规则或读者信任，需优先修。
 - **S2**：明显影响章节效果、留存、节奏、人物可信度，本轮要修。
 - **S3**：局部质量问题，如措辞、轻微格式、局部节奏，可排期修。
@@ -202,7 +205,7 @@ metadata: {"openclaw":{"source":"https://github.com/zenstory-ai/oh-story-claudec
 
 ## 追踪文件维护
 
-长篇工程且 full/lean 审查收尾时读 [references/review-tracking.md](references/review-tracking.md)。
+有 `追踪/_tracking-state.json` 的长篇工程且实际模式是 full/lean 时，收尾读 [references/review-tracking.md](references/review-tracking.md) 修订追踪；solo 不改 `追踪/`，按 solo.md 第 5 步写进报告。
 
 ## 流程衔接
 
@@ -213,4 +216,3 @@ metadata: {"openclaw":{"source":"https://github.com/zenstory-ai/oh-story-claudec
 |---|---|---|
 | 要修改查出的问题 | story-long-write / story-short-write | 返回对应写作 skill 修改 |
 | 发现 AI 味需清理 | story-deslop | `/story-deslop` |
-| 需要重新拆解对标书 | story-long-analyze / story-short-analyze | `/story-long-analyze` 或 `/story-short-analyze` |

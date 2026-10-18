@@ -263,6 +263,9 @@ environment variable disables interactive/blocking hook behavior for
 non-interactive executors (Pilot-executor sessions). Load task/system/SOP docs
 on demand from `.agent/DEVELOPMENT-README.md`, not upfront.
 
+**Last Updated**: 2026-10-17
+**Navigator Version**: 8.4.4
+
 ## Forbidden Actions
 
 - ❌ No secrets in code

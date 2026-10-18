@@ -6,7 +6,7 @@
  * 采集策略：
  *   1. 默认优先读取 m.qidian.com 的 SSR pageContext JSON（不依赖 CDP，规避 PC 站风控页）。
  *   2. 移动端不可用时再回退到 Chrome CDP 采集 PC 页面。
- * 输出 Markdown 格式见 references/platform-qidian.md；aggregate-rank.js 按此格式聚合。
+ * 输出的榜单 Markdown 格式见 aggregate-rank.js 文件头，聚合按它解析。
  *
  * 用法：
  *   node qidian-rank-scraper.js --type hotsales               # 畅销榜
@@ -379,8 +379,25 @@ function cleanDesc(raw) {
   return (sentence ? sentence[0] : cut) + "...";
 }
 
+/** 排行榜条目里题材或字数缺失超过这个比例，「数据质量」标为有问题（多半是页面改版） */
+const RANK_FIELD_MISSING_RATIO = 0.5;
+
+/** 排行榜的「数据质量」「问题摘要」两行；书库新书自己算好后经 extraLines 传入，不走这里。 */
+function rankQualityLines(books) {
+  const problems = [];
+  for (const [field, label] of [["genre", "题材"], ["words", "字数"]]) {
+    const missing = books.filter((b) => !b[field]).length;
+    if (missing > books.length * RANK_FIELD_MISSING_RATIO) problems.push(`${label}缺失 ${missing} / ${books.length} 条`);
+  }
+  return [
+    `- 数据质量：${problems.length ? "[存在问题]" : "[OK]"}`,
+    `- 问题摘要：${problems.length ? problems.join("；") : "无"}`,
+  ];
+}
+
 function renderMarkdown(rt, books, url, sourceMode, extraLines = []) {
   const now = new Date().toISOString();
+  const quality = extraLines.some((line) => /^- 数据质量：/.test(line)) ? [] : rankQualityLines(books);
   const lines = [
     `# 起点 · ${rt.label}`,
     "",
@@ -389,6 +406,7 @@ function renderMarkdown(rt, books, url, sourceMode, extraLines = []) {
     `- 抓取时间：${now}`,
     `- 条目数：${books.length}`,
     ...extraLines,
+    ...quality,
     "",
     "---",
     "",
@@ -1221,6 +1239,7 @@ module.exports = {
   normalizeMobileBook,
   cleanDesc,
   renderMarkdown,
+  rankQualityLines,
   parseAntiSpiderFont,
   decodeLibraryWords,
   captchaCheckJS,

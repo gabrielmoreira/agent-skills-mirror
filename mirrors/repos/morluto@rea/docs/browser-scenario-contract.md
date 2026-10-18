@@ -144,6 +144,18 @@ distinction: it closes and deletes provider-owned profiles, but only disconnects
 from an external CDP browser. Real-browser verification checks both outcomes and
 confirms that an attached external browser remains alive.
 
+That cleanup requires REA to remain running. Abrupt termination, including
+Windows process-tree termination or POSIX `SIGKILL`, can leave the launch
+profile and Playwright artifacts behind. A profile can retain cookies, history,
+cache and origin storage. Later REA runs currently do not reclaim these paths.
+Playwright 1.58.2 can also leave an artifacts directory when launch preparation
+fails before a browser process exists, such as for a missing executable.
+POSIX wrappers can request awaited cancellation with `SIGINT` or `SIGTERM`;
+Windows process termination is not an equivalent graceful-cancellation channel.
+Do not identify owned artifacts by directory prefix or creation time alone.
+See [#4659](https://github.com/morluto/rea/issues/4659) for the remaining recovery
+and wrapper-cancellation work.
+
 Keeping that browser alive does not guarantee its emulation state survives.
 Chromium can clear caller-owned `navigator.platform` emulation when a page CDP
 session disconnects, including sessions that sent no emulation commands. REA

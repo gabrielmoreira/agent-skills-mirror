@@ -23,7 +23,7 @@ Utilisé pour les API clientes compatibles avec OpenAI/Anthropic/Gemini et quelq
 Authorization: Bearer <api-key>
 ```
 
-Validée par `isValidApiKey()` / `extractApiKey()` dans `src/sse/services/auth.ts` et réexportée via `src/shared/utils/apiAuth.ts`. Le validateur accepte également les variables d’environnement `OMNIROUTE_API_KEY` / `ROUTER_API_KEY` comme clés persistantes transmises telles quelles (ticket #1350).
+Validé par `isValidApiKey()` / `extractApiKey()` dans `src/sse/services/auth.ts` et réexporté via `src/shared/utils/apiAuth.ts`. Le validateur accepte également les variables d’environnement `OMNIROUTE_API_KEY` / `ROUTER_API_KEY` comme clés de transmission persistantes (ticket #1350).
 
 ### 2. Session du tableau de bord (cookie auth_token)
 
@@ -35,53 +35,73 @@ Cookie: auth_token=<JWT signé avec JWT_SECRET>
 
 Un cookie constitue une session uniquement lorsque le JWT est vérifié **et** contient `authenticated: true`
 (`src/shared/utils/dashboardSessionToken.ts` → `verifyDashboardSessionToken`). Chaque
-composant utilisant le cookie (garde de route du tableau de bord (`isDashboardSessionAuthenticated()`), actualisation du pipeline d’autorisation, négociation WebSocket, serveur
-en direct, `/api/settings/require-login`, `/api/auth/status`) passe par cette fonction d’assistance.
-Il existe d’autres JWT signés avec `JWT_SECRET` — la transmission directe de la CLI Cursor génère
-des jetons `iss "omniroute" / aud "cursor-cli"` pour les détenteurs de clés — qui ne constituent jamais des sessions
+consommateur du cookie (garde de route du tableau de bord (`isDashboardSessionAuthenticated()`), actualisation du pipeline d’autorisation, négociation WebSocket, serveur
+en direct, `/api/settings/require-login`, `/api/auth/status`) passe par cet utilitaire.
+D’autres JWT signés avec `JWT_SECRET` existent — la transmission de la CLI Cursor émet
+des jetons `iss "omniroute" / aud "cursor-cli"` pour les détenteurs de clés — et ne constituent jamais des sessions
 (#13298).
 
-Vérifiée par `isDashboardSessionAuthenticated()` dans `src/shared/utils/apiAuth.ts`. Le pipeline actualise automatiquement le JWT lorsqu’il reste moins de 7 jours sur sa durée de validité de 30 jours.
+Vérifié par `isDashboardSessionAuthenticated()` dans `src/shared/utils/apiAuth.ts`. Le pipeline actualise automatiquement le JWT lorsqu’il lui reste moins de 7 jours sur sa durée de vie de 30 jours.
 
-Une session peut également prendre fin avant l’expiration de ses 30 jours, car chaque émetteur passe par `mintDashboardSessionToken` (avec une heure d’émission `iat` et un identifiant `jti`) et le vérificateur contrôle deux paramètres : `sessionsValidAfter`, défini lors d’un changement de mot de passe afin que toute session émise antérieurement ne soit plus validée (le navigateur ayant modifié le mot de passe reçoit un nouveau cookie), et `revokedDashboardSessions`, auquel `POST /api/auth/logout` ajoute le `jti` de la session déconnectée. Les sessions générées par une ancienne version ne contiennent aucune de ces revendications et restent valides jusqu’au premier changement de mot de passe. Si les paramètres ne peuvent pas être lus, la session n’est pas considérée comme fiable.
+Une session peut également prendre fin avant l’expiration de ses 30 jours, car chaque émetteur passe par `mintDashboardSessionToken` (avec une heure d’émission `iat` et un identifiant `jti`) et le vérificateur contrôle deux paramètres : `sessionsValidAfter`, défini lors d’un changement de mot de passe afin que toutes les sessions émises auparavant cessent d’être validées (le navigateur ayant modifié le mot de passe reçoit un nouveau cookie), et `revokedDashboardSessions`, auquel `POST /api/auth/logout` ajoute le `jti` de la session déconnectée. Les sessions émises par une version antérieure ne comportent aucune de ces revendications et restent valides jusqu’au premier changement de mot de passe. Si les paramètres ne peuvent pas être lus, la session n’est pas considérée comme fiable.
 
-Certaines routes de gestion acceptent **l’un ou l’autre** mode : cookie OU `Bearer <key>` lorsque la clé API possède la portée `manage` (ou `admin`). C’est ce qui permet le flux de travail « configurable via des appels API » ajouté dans v3.8.
+Certaines routes de gestion acceptent **l’un ou l’autre** mode : cookie OU `Bearer <key>` lorsque la clé API possède la portée `manage` (ou `admin`). C’est ce qui permet le flux de travail « configurable via des appels d’API » ajouté dans la v3.8.
 
 #### Contrôle de connexion OIDC facultatif (#6973)
 
 La connexion d’administration au tableau de bord prend également en charge un flux OIDC (OpenID Connect) **facultatif**
-en plus de la connexion par mot de passe par défaut — la connexion par mot de passe n’est jamais supprimée, seulement
+en parallèle de la connexion par mot de passe par défaut — celle-ci n’est jamais supprimée, mais uniquement
 complétée :
 
 - Désactivé sauf si `settings.oidcEnabled === true` **et** si `oidcIssuer` /
   `oidcClientId` / `oidcClientSecret` sont tous configurés (Paramètres → Auth).
-  Sinon, `GET /api/auth/oidc/login` renvoie `400`.
+  `GET /api/auth/oidc/login` renvoie sinon `400`.
 - `GET /api/auth/oidc/login` découvre le `authorization_endpoint` à partir du
   `/.well-known/openid-configuration` de l’émetteur (avec repli sur
   `<issuer>/authorize`), construit l’URI de redirection à partir de la requête entrante
-  (en tenant compte de `x-forwarded-proto`) et redirige vers l’IdP avec une valeur `state`
-  aléatoire stockée dans un cookie `oidc_state` `httpOnly`.
+  (en tenant compte de `x-forwarded-proto`) et redirige vers l’IdP avec un `state` aléatoire
+  stocké dans un cookie `oidc_state` `httpOnly`.
 - `GET /api/auth/oidc/callback` valide `state`, échange le code d’autorisation
   et vérifie la signature du jeton d’identité via le JWKS de l’émetteur
   (`createRemoteJWKSet` de `jose`, mis en cache par URI JWKS), avec des contrôles
-  `issuer`/`audience`. Une liste d’autorisation facultative `oidcAllowedSubjects` recherche une correspondance avec la
-  revendication `sub` du jeton ou sa revendication `email` — la revendication d’adresse e-mail n’est prise en compte que lorsque
-  `email_verified === true`, de sorte qu’une adresse e-mail non vérifiée auprès de l’IdP ne puisse jamais franchir
-  le contrôle.
-- En cas de succès, il génère **exactement le même** JWT `auth_token` de 30 jours que celui émis par la connexion
-  par mot de passe (`src/app/api/auth/login/route.ts`), de sorte que le reste du
+  `issuer`/`audience`. La liste d’autorisation `oidcAllowedSubjects` est obligatoire : elle compare
+  la revendication `sub` du jeton ou sa revendication `email` — la revendication d’adresse e-mail n’est prise en compte
+  que lorsque `email_verified === true`, de sorte qu’une adresse e-mail non vérifiée auprès de l’IdP ne peut jamais
+  franchir le contrôle — et, en l’absence d’entrées, le rappel refuse toute connexion
+  (`not_configured`).
+- En cas de succès, il émet **exactement le même** JWT `auth_token` de 30 jours que celui
+  émis par la connexion par mot de passe (`src/app/api/auth/login/route.ts`), de sorte que le reste du
   pipeline de session du tableau de bord (actualisation automatique, attributs du cookie) reste inchangé —
-  OIDC remplace uniquement la manière dont le cookie est généré, et non les autorisations qu’il accorde.
+  OIDC remplace uniquement la manière dont le cookie est émis, et non les autorisations qu’il accorde.
+- Chaque paramètre `oidc*` (`oidcEnabled`, `oidcDisablePasswordLogin`,
+  `oidcIssuer`, `oidcClientId`, `oidcClientSecret`, `oidcAllowedSubjects`,
+  `oidcRedirectPath`, `oidcScopes`) figure dans `SECURITY_IMPACTING_SETTINGS_KEYS`
+  (`src/shared/constants/securityImpactingSettings.ts`) : `PATCH /api/settings`
+  répond `400 PASSWORD_REQUIRED` sauf si le corps contient le mot de passe de gestion
+  dans `currentPassword` (`401 PASSWORD_MISMATCH` lorsqu’il est incorrect).
+  `oidcDisablePasswordLogin` refuse la _connexion_ par mot de passe (`POST /api/auth/login`)
+  mais conserve le hachage du mot de passe stocké, et la réauthentification compare toujours
+  `currentPassword` à celui-ci.
+- `POST /api/settings/import-json` ignore cette réauthentification et supprime donc chaque clé de
+  `IMPORT_STRIPPED_SETTINGS_KEYS` (même fichier) avant l’écriture : le mot de passe et
+  `currentPassword`, chaque entrée de `SECURITY_IMPACTING_SETTINGS_KEYS` et l’état de
+  session du tableau de bord (`sessionsValidAfter`, `revokedDashboardSessions`).
+  L’importation d’une ancienne sauvegarde ne peut donc pas réactiver une session à laquelle un changement de mot de passe
+  ou une déconnexion a déjà mis fin.
 
 ## Classes de routes
 
-`src/server/authz/types.ts` définit trois classes ; toute route qui ne peut pas être classée de manière déterministe utilise par défaut `MANAGEMENT`.
+`src/server/authz/types.ts` définit trois classes ; toute route qui ne peut pas être classée de manière déterministe est placée par défaut dans `MANAGEMENT`.
 
-| Classe       | Description                                                                                                                                                                      | Authentification requise                                                                |
-| ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
-| `PUBLIC`     | Routes explicitement sûres — connexion, déconnexion, état, initialisation, santé, amorçage de l’intégration.                                                                     | Aucune                                                                                  |
-| `CLIENT_API` | Points de terminaison de service des modèles — `/api/v1/*`, `/api/v1beta/*`, ainsi que les alias `/v1/*`, `/v1beta/*`, `/chat/completions`, `/responses`, `/models`, `/codex/*`. | Clé Bearer lorsque l’indicateur de fonctionnalité effectif `REQUIRE_API_KEY` est activé |
-| `MANAGEMENT` | Pages du tableau de bord, paramètres, fournisseurs, clés, ainsi que points de terminaison d’administration et de diagnostic.                                                     | Session du tableau de bord OU Bearer avec la portée `manage`                            |
+| Classe       | Description                                                                                                                                                                     | Authentification requise                                                 |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| `PUBLIC`     | Routes explicitement sûres — connexion, déconnexion, état, initialisation, santé, amorçage de l’intégration.                                                                    | Aucune                                                                   |
+| `CLIENT_API` | Points de terminaison de service de modèles — `/api/v1/*`, `/api/v1beta/*`, ainsi que les alias `/v1/*`, `/v1beta/*`, `/chat/completions`, `/responses`, `/models`, `/codex/*`. | Clé Bearer lorsque le feature flag effectif `REQUIRE_API_KEY` est activé |
+| `MANAGEMENT` | Pages du tableau de bord, paramètres, fournisseurs, clés, ainsi que points de terminaison d’administration et de diagnostic.                                                    | Session du tableau de bord OU Bearer avec la portée `manage`             |
+
+Quelques actions `MANAGEMENT` sont réservées **à l’opérateur** : une clé `manage` ne suffit pas. L’exportation des identifiants stockés (`GET /api/settings/export-json`, `GET /api/db-backups/export`,
+`GET /api/db-backups/exportAll`), l’émission d’un jeton de synchronisation (`POST /api/sync/tokens`) et la création d’un jeton d’accès CLI `admin` (`POST /api/cli/tokens`) nécessitent une session du tableau de bord, le sujet CLI local ou la désactivation de la connexion ; les clés API, quelle que soit leur portée, et les jetons d’accès `oma_` reçoivent une réponse `403`. La vérification se trouve dans `src/lib/api/operatorCredential.ts` (`resolveOperatorCredential()` /
+`requireOperatorCredential()`).
 
 A few `MANAGEMENT` actions are **operator-only**: a `manage` key is not enough. Exporting stored
 credentials (`GET /api/settings/export-json`, `GET /api/db-backups/export`,

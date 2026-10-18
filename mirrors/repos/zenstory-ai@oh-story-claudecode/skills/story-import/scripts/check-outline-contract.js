@@ -111,6 +111,10 @@ function readUtf8(file) {
   }
 }
 
+// 回报里的模板出处只列本 skill 带着的文件：导入的副本没有 workflow-outline.md，细纲写法在 outline-reverse-rules.md
+const TEMPLATE_REFERENCES = ['references/workflow-outline.md', 'references/outline-reverse-rules.md']
+  .filter((rel) => fs.existsSync(path.join(__dirname, '..', rel)))
+
 function makeCheck(id, ok, file, evidence, expected, repair, severity = 'blocking') {
   return {
     id,
@@ -119,7 +123,7 @@ function makeCheck(id, ok, file, evidence, expected, repair, severity = 'blockin
     file,
     evidence,
     expected,
-    references: ['references/workflow-outline.md'],
+    references: TEMPLATE_REFERENCES,
     repair,
   }
 }

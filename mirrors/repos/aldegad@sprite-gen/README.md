@@ -176,17 +176,17 @@ python3 ~/.codex/skills/.system/skill-installer/scripts/install-skill-from-githu
   --repo aldegad/sprite-gen --path . --name sprite-gen
 ```
 
-Image generation is part of this engine (`sprite_gen.gen`, providers `codex` and `grok` on a subscription you already pay for, plus an explicit-only `openai` provider for servers and SaaS that bills per call; the general `image-gen` skill is a thin shuttle over it). Every call uses **your own** credential, the subscription login first and an API key only without one, and nothing is shipped with the repo:
+Image generation is part of this engine (`sprite_gen.gen`, providers `codex` and `grok` on a subscription you already pay for, plus an `openai` provider for servers and SaaS that bills per call and runs only when you chose it; the general `image-gen` skill is a thin shuttle over it). Every call uses **your own** credential, the subscription login first and an API key only without one, and nothing is shipped with the repo:
 
 | Calls | First | Without it | Docs |
 |---|---|---|---|
 | `gen --provider codex` | the `codex` ChatGPT login | (a codex signed in with an API key bills that key) | [gen](docs/gen.md) |
 | `gen --provider grok`, `video*` | the `grok` CLI login | `XAI_API_KEY` | [gen](docs/gen.md#direct-grok-calls-and-authentication), [video](docs/video.md) |
 | `pixel-draw` | the `claude` (Claude Code) subscription login | `ANTHROPIC_API_KEY` | [pixel-draw](docs/pixel-draw.md#which-credential-a-call-runs-on) |
-| `gen --provider openai` | — | `OPENAI_API_KEY`, named only | [gen](docs/gen.md#subscription-first--openai-is-named-or-it-does-not-run) |
+| `gen --provider openai` | — | `OPENAI_API_KEY`, only when you chose it | [gen](docs/gen.md#subscription-first--openai-runs-only-when-you-chose-it) |
 | `sound` | — | `ELEVENLABS_API_KEY` | [sound](docs/sound.md) |
 
-A call on an API key is billed per call and says so on stderr before the request leaves, also inside `gen-set` and `video-set`. `logo` makes its images and its text checks through `gen`'s providers, on the same credentials.
+A call on an API key is billed per call and says so on stderr before the request leaves, also inside `gen-set` and `video-set`. A call that names no provider runs on codex; when codex cannot run (not signed in, or its usage used up) it stops and asks (exit 75) — or runs what you chose for that with `sprite-gen defaults save --codex-unavailable grok|openai` ([gen](docs/gen.md#when-codex-cannot-run--ask-or-what-you-chose)). `logo` makes its images and its text checks through `gen`'s providers, on the same credentials.
 
 `sprite-gen` supports CPython 3.11+; CI runs only 3.14. Python 3.10 is no longer supported. The quickstart needs a Python with working `venv`/`ensurepip`.
 

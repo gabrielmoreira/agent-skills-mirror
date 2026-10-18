@@ -17,16 +17,26 @@ Stage 3、4、5 各自的时刻都读本文件。
 - 旧项目没有批次缓存时，直接复用现有剧情、节奏、情绪、关系和逐章资料，不要为了统一格式先把旧摘要重新压缩一遍；证据不足或冲突时标未知或待核；
 - Stage 3–5 不回读原文，也不各自重读同一批原文；Stage 6 可以按索引定点读取 4–6 段文风锚点，但不得重新扫描整本原文。
 
+## 证据等级
+
+剧情单元、节奏、情绪模块、角色关系等底层文件里的推断按三级标注：
+
+- `A 明确`：输入资料直接给出；
+- `B 强推断`：多个明确细节共同支持；
+- `C 暂定`：证据不足，只留作待核。
+
+给作者看的报告不写字母，按 author-facing「证据强弱说人话」转述。
+
 ## 阶段标记
 
-Stage 1 黄金三章与快速预览落盘后标 `stage1`；全书计划无待处理批次、摘要完整时标 `stage2`。Stage 3–6 各运行一次，失败后按缺口重试。文件成功原子落盘后再标记：
+Stage 3–5 各运行一次，失败后按缺口重试。文件成功落盘后再标记：
 
 ```text
 "{PYTHON}" "{story-long-analyze skill 根}/scripts/manage_analysis_run.py" mark-stage \
   --root "{拆文目录}" --stage stage3 --output "剧情/节奏.md"
 ```
 
-阶段标记检查约定产物存在且非空；语义质量仍按各阶段规则验收。`mark-stage` 会按阶段检查：Stage 1 的黄金三章与快速预览、Stage 2 的全部摘要、Stage 3 的情绪模块与节奏、Stage 4 的角色与设定、Stage 5 的报告、Stage 6 的文风。Stage 6 的单独重建见 [style-profile-generator.md](style-profile-generator.md)，允许按索引定点读取 4–6 段原文，不重扫全书，也不触发其他阶段。
+`mark-stage` 只检查约定产物存在且非空：Stage 3 要情绪模块与节奏两份都在（用上面的 `--output`），Stage 4 要至少一份角色档案（`角色关系.md` 不算）和一份设定，Stage 5 要报告。语义质量仍按各阶段规则验收。Stage 1–2 的标记见 pipeline-ops.md，Stage 6 见 style-profile-generator.md。
 
 ## 合成阶段事实保真（阶段 3-5：剧情/设定/角色/报告）
 

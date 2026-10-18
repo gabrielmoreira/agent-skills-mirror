@@ -347,20 +347,20 @@ _state_ ng lockout.
 ## 4. Pagkontrol sa Concurrency ng Quota-Share (v3.8.36)
 
 Ang mga subscription account (GLM, MiniMax, atbp.) ay kadalasang tumatanggap lamang ng ~1–3 sabay-sabay na
-request; kapag lumampas dito, nagti-trigger ito ng mga 429 at cooldown. Mas matindi ito sa
-mga **quota-share** (`qtSd/…`) combo, kung saan nagsasaluhan ang ilang API key sa iisang upstream
+request; kapag lumampas dito, nagti-trigger ito ng mga 429 at cooldown. Malubha ito sa ilalim ng
+mga combo na **quota-share** (`qtSd/…`), kung saan maraming API key ang nagbabahagi ng iisang upstream
 account. Pinipigilan ng tatlong layer na mabaha ng mga request ang isang nakabahaging account.
 
-### Limitasyon sa concurrency kada koneksyon (`max_concurrent`)
+### Limitasyon sa concurrency bawat koneksyon (`max_concurrent`)
 
-Maaaring magtakda ang bawat koneksyon ng provider ng pinakamataas na `max_concurrent`
-(`provider_connections.max_concurrent`, itinatakda sa modal ng koneksyon / API / DB).
-Iwan itong walang laman kung ayaw ng limitasyon. Ito ang nag-iisang setting na kumokontrol sa serialization
+Maaaring magtakda ang bawat provider connection ng pinakamataas na `max_concurrent`
+(`provider_connections.max_concurrent`, itinatakda sa connection modal / API / DB).
+Iwanan itong walang laman kung walang limitasyon. Ito ang nag-iisang setting na nagpapatakbo sa serialization
 layer sa ibaba — itakda ito sa aktuwal na concurrency ng account (hal. GLM ~1, MiniMax ~2).
 
-### Mga limitasyon sa concurrency kada modelo (`modelConcurrency`)
+### Mga limitasyon sa concurrency bawat modelo (`modelConcurrency`)
 
-Maaari ring magtakda ang isang koneksyon ng mga eksaktong pinakamataas na concurrency kada modelo
+Maaari ring magtakda ang isang koneksyon ng eksaktong pinakamataas na concurrency bawat modelo
 sa loob ng `rateLimitOverrides` map nito:
 
 ```json
@@ -372,62 +372,72 @@ sa loob ng `rateLimitOverrides` map nito:
 }
 ```
 
-Itakda ito sa modal ng koneksyon (**Mga override sa rate limit → Mga limitasyon sa
-concurrency kada modelo**, isang `model=cap` bawat linya) o sa pamamagitan ng
-`PATCH /api/providers/[id]` gamit ang parehong anyo ng JSON. Mga kahulugan ng key:
+Itakda ito sa connection modal (**Mga override sa rate limit → Mga limitasyon sa
+concurrency bawat modelo**, isang `model=cap` bawat linya) o sa pamamagitan ng
+`PATCH /api/providers/[id]` gamit ang parehong anyong JSON. Mga semantika ng key:
 
-- **Para sa buong koneksyon kumpara sa partikular na modelo:** Nananatiling ang `maxConcurrent` ang nakabahaging
-  pinakamataas na limitasyon para sa buong koneksyon. Kapag parehong nalalapat, parehong kinukuha ang mga gate
-  nang atomiko sa iisang composite gate
-  (`global → provider → account → model`); ang epektibong gawi ay sumusunod sa
+- **Saklaw ng buong koneksyon kumpara sa partikular na modelo:** Nananatiling nakabahaging
+  limitasyon sa buong koneksyon ang `maxConcurrent`. Kapag parehong nalalapat, parehong kinukuha
+  nang atomiko ang mga gate sa iisang composite gate
+  (`global → provider → account → model`); ang aktuwal na gawi ay sumusunod sa
   mas mahigpit na naaangkop na limitasyon.
 - **Eksaktong pagtutugma ng model key:** ang key ay ang model string na ipinapasa sa
-  executor pagkatapos malutas ang routing — karaniwang ang payak na upstream model id
-  (`glm-5`), hindi ang client-side na `provider/model` alias (`zai/glm-5` ay hindi
-  tumutugma sa `glm-5`). Ang mga value ay mga positibong integer na pinakamataas na bilang ng sabay-sabay na request.
-- **Lokal na pagpila, walang discovery:** lokal na pumipila ang mga sobrang request ayon sa
-  umiiral na queue/timeout semantics (mga typed na `SEMAPHORE_TIMEOUT` /
-  `SEMAPHORE_QUEUE_FULL` admission error). Hindi awtomatikong tinutuklas o
-  hinuhulaan ng OmniRoute ang upstream policy — ipinapatupad nito ang eksaktong mga limitasyong
-  isinaayos ng operator. Hindi kailanman dini-disable ng saturated na model gate ang provider at hindi
-  ito gumagawa ng permanenteng lockout sa modelo; nananatiling panangga laban sa error ang upstream na
-  gawi para sa 429/cooldown/fallback.
-- **Saklaw na kada koneksyon, kada proseso:** ang mga limitasyon ay para sa bawat database connection
-  at pinananatili sa memory, kaya hindi nag-uugnayan ang dalawang koneksyong muling gumagamit ng parehong upstream API key.
-- **Walang configuration ay nangangahulugang walang pagbabago:** walang idinadagdag na model gate kapag inalis ang map
-  (o iniwang blangko ang field sa dashboard). Halimbawang configuration nang
-  walang ipinapalagay na pangkalahatang limitasyon ng provider:
+  executor pagkatapos maresolba ang routing — karaniwan ay ang payak na upstream model id
+  (`glm-5`), hindi isang client-side na `provider/model` alias (hindi tumutugma ang `zai/glm-5`
+  sa `glm-5`). Ang mga value ay mga positibong integer na limitasyon sa magkakasabay na request.
+- **Lokal na pagpila, walang discovery:** lokal na pumipila ang mga sobrang request gamit ang
+  umiiral na semantika ng queue/timeout (mga typed na `SEMAPHORE_TIMEOUT` /
+  `SEMAPHORE_QUEUE_FULL` admission error). Hindi dini-discover o
+  hinihinuha ng OmniRoute ang upstream policy — ipinapatupad nito ang eksaktong mga limitasyong
+  isinaayos ng operator. Hindi kailanman dini-disable ng saturated na model gate ang provider at hindi rin
+  ito lumilikha ng permanenteng model lockout; nananatiling panghuling pananggalang sa error ang upstream
+  na 429/cooldown/fallback na gawi.
+- **Saklaw na bawat koneksyon, bawat proseso:** ang mga limitasyon ay para sa bawat database connection
+  at pinananatili sa memory, kaya hindi nakikipag-coordinate sa isa't isa ang dalawang koneksyong muling
+  gumagamit ng parehong upstream API key.
+- **Walang configuration ay nangangahulugang walang pagbabago:** ang pag-omit sa map (o pag-iwang blangko sa
+  dashboard field) ay hindi nagdaragdag ng model gate. Halimbawang configuration na hindi
+  nagtatakda ng anumang pangkalahatang limitasyon ng provider:
 
 ```text
 glm-5=1
 glm-4.7=3
 ```
 
-### Serialization ng quota-share request
+### Serialization ng mga quota-share request
 
-Kapag ang quota-share dispatch ay nakaturo sa isang koneksyong nagdeklara ng positibong
-`max_concurrent`, sine-serialize sa pamamagitan ng semaphore kada koneksyon ang mga sabay-sabay na request sa
-**account** na iyon (key na `qsconn:<connectionId>`): ang mga sobrang request ay **naghihintay sa
-queue** sa halip na bahain ang account. Isa itong **fail-open** — kapag saturated
-ang queue o nag-timeout, nagpapatuloy ito nang walang slot sa halip na tanggihan ang isang request na maaari
-namang i-dispatch. I-toggle ito sa **Mga Setting → Resilience → Quota-share na concurrency
-kada koneksyon** (`resilienceSettings.quotaShareConcurrencyLimit.enabled`, naka-on bilang default).
-Kung walang `max_concurrent` cap, hindi nagbabago ang gawi.
+Kapag ang isang quota-share dispatch ay nakaturo sa koneksyong nagtatakda ng positibong
+`max_concurrent`, ang mga sabay-sabay na request sa **account** na iyon ay isinasailalim sa serialization sa pamamagitan ng
+isang semaphore para sa bawat koneksyon (key `qsconn:<connectionId>`): ang mga sobrang request ay **naghihintay sa
+queue** sa halip na bahain ang account. Ito ay **fail-open** — kapag saturated
+ang queue o nag-timeout, nagpapatuloy ito nang walang slot sa halip na tanggihan ang isang request na maaari namang
+i-dispatch. I-toggle sa **Settings → Resilience → Quota-share per-connection
+concurrency** (`resilienceSettings.quotaShareConcurrencyLimit.enabled`, naka-on bilang default).
+Kung walang `max_concurrent` na limitasyon, hindi nagbabago ang gawi.
 
-> Ang quota-share routing gate (`selectQuotaShareTarget`, DRR + P2C) ay
-> fail-open din at _binabawasan lamang ang priyoridad_ ng isang koneksyong umabot na sa limitasyon — sa
-> pool na may iisang koneksyon, hindi ito makakapagpatupad ng mahigpit na limitasyon, kaya ang semaphore na ito ang aktuwal na
-> pumipigil sa pagdagsa.
+> Ang quota-share routing gate (`selectQuotaShareTarget`, DRR + P2C) mismo ay
+> fail-open at _binabawasan lamang ang priyoridad_ ng koneksyong nasa limitasyon na — sa isang
+> single-connection pool, hindi ito makakapagpatupad ng mahigpit na limitasyon, kaya ang semaphore na ito ang aktuwal na
+> pumipigil sa pagbaha.
 
-### Retry na isinasaalang-alang ang combo cooldown
+### Retry na isinasaalang-alang ang cooldown ng combo
 
-Para sa bawat combo strategy (kapag naka-enable), ang isang request na hahantong sa 429
-dahil sa MAIKLING pansamantalang cooldown ay naghihintay hanggang matapos ito at muling dini-dispatch sa halip na
+Para sa bawat combo strategy (kapag naka-enable), ang request na magreresulta sana sa isang 429
+para sa isang MAIKLING pansamantalang cooldown ay naghihintay na matapos ito at muling nagdi-dispatch sa halip na
 ibalik ang 429 — saklaw nito ang mga TPM/RPM window na tulad ng sa Gemini (~60s retry-after)
-sa mga multi-model combo, hal. kapag parehong tumama sa per-model
+sa mga multi-model combo, hal. kapag parehong tinamaan ng per-model
 rate limit ang mga target ng isang 2-model combo. Nililimitahan ito ng `comboCooldownWait` (`enabled`, `maxWaitMs`, `maxAttempts`,
-`budgetMs`) sa **Mga Setting → Resilience**. Hindi ito kailanman naghihintay sa `quota_exhausted`
-(naka-lock hanggang hatinggabi) o sa mga dahilang nauugnay sa auth/not-found.
+`budgetMs`) sa **Settings → Resilience**. Hindi ito kailanman naghihintay para sa `quota_exhausted`
+(naka-lock hanggang hatinggabi) o sa mga dahilang auth/not-found.
+
+Saklaw rin ng parehong gate ang pre-dispatch case (#16319): kapag nilaktawan ang bawat target ng isang
+combo bago pa magsagawa ng anumang attempt dahil ang modelo nito ay nasa maikling
+pansamantalang lockout, hinihintay ng zero-attempt path na matapos ang lockout sa ilalim ng parehong
+mga limitasyon at muling nagdi-dispatch, sa halip na sumagot ng
+`503 ALL_TARGETS_SKIPPED` na walang hint. Kapag hindi pinapayagan ang paghihintay (naabot na ang limitasyon, attempt, o budget,
+o naka-off ang feature), ina-upgrade ang terminal response sa
+`429 rate_limit_error` na naglalaman ng `retry_after` / `reset_at` mula sa pinakamaagang
+pag-expire ng pansamantalang lock; pinananatili ng mga quota, auth, at not-found lock ang 503 na walang hint.
 
 ```text
 #16319 · comboCooldownWait · pre-dispatch (attempts = 0)

@@ -350,20 +350,23 @@ DB — jintilef meta jerġa’ jinbeda l-proċess. Is-_settings_ jippersistu; l-
 
 ---
 
-## 4. Kontroll tal-Konkurrenza għal Quota-Share (v3.8.36)
+## 4. Kontroll tal-Konkorrentiżmu għall-Quota-Share (v3.8.36)
 
-Il-kontijiet b'abbonament (GLM, MiniMax, eċċ.) spiss jaċċettaw biss ~1–3 talbiet konkorrenti; jekk jinqabeż dan il-limitu, jiġu attivati żbalji 429 u perjodi ta' cooldown. Dan huwa partikolarment serju f'kombinazzjonijiet ta' **quota-share** (`qtSd/…`), fejn diversi API keys jaqsmu kont upstream wieħed. Tliet saffi jipprevjenu kont kondiviż milli jiġi mgħarraq bit-talbiet.
+Il-kontijiet b’abbonament (GLM, MiniMax, eċċ.) spiss jaċċettaw biss ~1–3 talbiet
+konkorrenti; jekk jinqabeż dan il-limitu, jiġu attivati żbalji 429 u perjodi ta’ stennija. Dan huwa partikolarment serju taħt
+kombinazzjonijiet **quota-share** (`qtSd/…`), fejn diversi kjavi tal-API jaqsmu kont upstream
+wieħed. Tliet saffi jipprevjenu li kont kondiviż jiġi mgħarraq bit-talbiet.
 
-### Limitu tal-konkurrenza għal kull konnessjoni (`max_concurrent`)
+### Limitu tal-konkorrentiżmu għal kull konnessjoni (`max_concurrent`)
 
-Kull konnessjoni ta' provider tista' tiddikjara limitu massimu `max_concurrent`
+Kull konnessjoni ta’ fornitur tista’ tiddikjara limitu massimu `max_concurrent`
 (`provider_connections.max_concurrent`, issettjat fil-modal tal-konnessjoni / API / DB).
-Ħallih vojt biex ma jkun hemm l-ebda limitu. Dan huwa l-kontroll uniku li jmexxi s-saff ta' serjalizzazzjoni
-hawn taħt — issettjah skont il-konkurrenza reali tal-kont (eż. GLM ~1, MiniMax ~2).
+Ħallih vojt biex ma jkun hemm ebda limitu. Dan huwa l-kontroll ewlieni li jmexxi s-saff tas-serjalizzazzjoni
+hawn taħt — issettjah għall-konkorrentiżmu reali tal-kont (eż. GLM ~1, MiniMax ~2).
 
-### Limiti tal-konkurrenza għal kull mudell (`modelConcurrency`)
+### Limiti tal-konkorrentiżmu għal kull mudell (`modelConcurrency`)
 
-Konnessjoni tista' wkoll tiddikjara limiti massimi eżatti tal-konkurrenza għal kull mudell
+Konnessjoni tista’ wkoll tiddikjara limiti massimi eżatti tal-konkorrentiżmu għal kull mudell
 fil-mappa `rateLimitOverrides` tagħha:
 
 ```json
@@ -375,63 +378,72 @@ fil-mappa `rateLimitOverrides` tagħha:
 }
 ```
 
-Issettjah fil-modal tal-konnessjoni (**Sovrasrizzjonijiet tal-limitu tar-rata → Limiti tal-konkurrenza
-għal kull mudell**, `model=cap` wieħed għal kull linja) jew permezz ta'
-`PATCH /api/providers/[id]` bl-istess struttura JSON. Semantika ewlenija:
+Issettjah fil-modal tal-konnessjoni (**Sovrastrutturi tal-limiti tar-rata → Limiti tal-konkorrentiżmu
+għal kull mudell**, `model=cap` wieħed għal kull linja) jew permezz ta’
+`PATCH /api/providers/[id]` bl-istess struttura JSON. Semantika tal-kjavi:
 
-- **Għall-konnessjoni kollha kontra speċifiku għall-mudell:** `maxConcurrent` jibqa' l-limitu kondiviż
-  għall-konnessjoni kollha. Meta japplikaw it-tnejn, iż-żewġ gates jinkisbu
-  atomikament fl-istess gate kompost
-  (`global → provider → account → model`); l-imġiba effettiva tkun dik tal-limitu
-  applikabbli l-aktar strett.
-- **Tqabbil eżatt taċ-ċavetta tal-mudell:** iċ-ċavetta hija s-sekwenza tal-mudell mgħoddija lill-
-  executor wara r-riżoluzzjoni tar-routing — normalment l-id bażiku tal-mudell upstream
+- **Għall-konnessjoni kollha kontra speċifiku għall-mudell:** `maxConcurrent` jibqa’ l-limitu massimu kondiviż
+  għall-konnessjoni kollha. Meta japplikaw it-tnejn, iż-żewġ gradi jinkisbu
+  atomikament fl-istess grad kompost
+  (`global → provider → account → model`); l-imġiba effettiva tkun dik tal-
+  limitu applikabbli l-aktar strett.
+- **Taqbil eżatt tal-kjavi tal-mudell:** il-kjavi hija s-sekwenza tal-mudell mgħoddija lill-
+  eżekutur wara r-riżoluzzjoni tar-routing — normalment l-id tal-mudell upstream mingħajr prefiss
   (`glm-5`), mhux alias `provider/model` min-naħa tal-klijent (`zai/glm-5` ma
-  jaqbilx ma' `glm-5`). Il-valuri huma limiti ta' numri sħaħ pożittivi għal talbiet konkorrenti.
-- **Kju lokali, mingħajr skoperta:** it-talbiet żejda jidħlu fi kju lokalment bis-
-  semantika eżistenti tal-kju/timeout (żbalji ta' ammissjoni ttajpjati `SEMAPHORE_TIMEOUT` /
+  jaqbilx ma’ `glm-5`). Il-valuri huma limiti ta’ talbiet konkorrenti espressi bħala numri sħaħ pożittivi.
+- **Kju lokali, ebda skoperta:** it-talbiet żejda jistennew lokalment fil-kju bis-
+  semantika eżistenti tal-kju/skadenza (żbalji ta’ ammissjoni ttajpjati `SEMAPHORE_TIMEOUT` /
   `SEMAPHORE_QUEUE_FULL`). OmniRoute ma jiskoprix u ma
-  jiddeduċix il-politika upstream — jinforza l-limiti eżatti li jkun
-  ikkonfigura l-operatur. Gate ta' mudell saturat qatt ma jiddiżattiva l-provider u qatt ma
-  joħloq lockout permanenti tal-mudell; l-imġiba upstream għal 429/cooldown/fallback
-  tibqa' l-aħħar linja ta' difiża kontra l-iżbalji.
+  jiddeduċix il-politika upstream — jinforza eżattament il-limiti massimi li kkonfigura l-operatur.
+  Grad ta’ mudell saturat qatt ma jiddiżattiva lill-fornitur u qatt ma
+  joħloq imblukkar permanenti tal-mudell; l-imġiba upstream ta’ 429/perjodu ta’ stennija/fallback
+  tibqa’ l-mekkaniżmu ta’ riżerva għall-iżbalji.
 - **Ambitu għal kull konnessjoni u għal kull proċess:** il-limiti japplikaw għal kull konnessjoni tad-database
-  u jinżammu fil-memorja, għalhekk żewġ konnessjonijiet li jerġgħu jużaw l-istess API key upstream
-  ma jikkoordinawx bejniethom.
-- **Mhux ikkonfigurat ifisser li ma jinbidel xejn:** jekk il-mappa titħalla barra (jew il-
-  field tad-dashboard jitħalla vojt), ma jiżdied l-ebda gate tal-mudell. Eżempju ta' konfigurazzjoni mingħajr
-  ma jiġi ddikjarat xi limitu universali tal-provider:
+  u jinżammu fil-memorja, għalhekk żewġ konnessjonijiet li jerġgħu jużaw l-istess kjavi tal-API upstream
+  ma jikkoordinawx ma’ xulxin.
+- **Mhux ikkonfigurat ifisser mingħajr tibdil:** jekk il-mappa titħalla barra (jew il-
+  kamp fid-dashboard jitħalla vojt), ma jiżdied ebda grad tal-mudell. Eżempju ta’ konfigurazzjoni mingħajr
+  ma jiġi affermat xi limitu universali tal-fornitur:
 
 ```text
 glm-5=1
 glm-4.7=3
 ```
 
-### Serjalizzazzjoni tat-talbiet ta' quota-share
+### Serjalizzazzjoni tat-talbiet quota-share
 
-Meta dispatch ta' quota-share jimmira konnessjoni li tiddikjara
-`max_concurrent` pożittiv, it-talbiet konkorrenti lejn dak il-**kont** jiġu sserjalizzati permezz ta'
-semaphore għal kull konnessjoni (ċavetta `qsconn:<connectionId>`): it-talbiet żejda **jistennew fil-
+Meta dispatch quota-share jimmira lejn konnessjoni li tiddikjara
+`max_concurrent` pożittiv, it-talbiet konkorrenti lejn dak il-**kont** jiġu sserjalizzati permezz ta’
+semaforu għal kull konnessjoni (kjavi `qsconn:<connectionId>`): it-talbiet żejda **jistennew fil-
 kju** minflok jgħarrqu l-kont. Dan huwa **fail-open** — kju saturat
-jew timeout jipproċedi mingħajr slot minflok qatt ma jirrifjuta talba li tista'
-tiġi ddispaċċjata. Aqilbu minn **Settings → Resilience → Quota-share per-connection
+jew skadenza jkomplu mingħajr slot minflok qatt ma jirrifjutaw talba li tista’
+tiġi mibgħuta. Attivah jew iddiżattivah f’**Settings → Resilience → Quota-share per-connection
 concurrency** (`resilienceSettings.quotaShareConcurrencyLimit.enabled`, attiv
-b'mod awtomatiku). Mingħajr limitu `max_concurrent`, l-imġiba ma tinbidilx.
+b’mod awtomatiku). Mingħajr limitu massimu `max_concurrent`, l-imġiba ma tinbidilx.
 
-> Il-gate tar-routing ta' quota-share (`selectQuotaShareTarget`, DRR + P2C) huwa nnifsu
-> fail-open u sempliċement _inaqqas il-prijorità_ ta' konnessjoni li tkun laħqet il-limitu — b'
-> pool ta' konnessjoni waħda ma jistax jinforza limitu strett, għalhekk dan is-semaphore huwa dak li effettivament
-> iżomm l-għargħar taħt kontroll.
+> Il-grad tar-routing quota-share (`selectQuotaShareTarget`, DRR + P2C) huwa nnifsu
+> fail-open u biss _inaqqas il-prijorità_ ta’ konnessjoni li laħqet il-limitu — b’
+> pool b’konnessjoni waħda ma jistax jinforza limitu strett, għalhekk huwa dan is-semaforu li fil-fatt
+> jikkontrolla l-għargħar.
 
-### Tentattiv mill-ġdid konxju tal-cooldown għal combos
+### Tentattiv mill-ġdid sensittiv għall-perjodu ta’ stennija tal-kombinazzjoni
 
-Għal kull strateġija ta' combo (meta tkun attivata), talba li kieku tikkristallizza żball 429
-għal cooldown temporanju QASIR tistenna li jintemm u terġa' tiġi ddispaċċjata minflok
+Għal kull strateġija ta’ kombinazzjoni (meta tkun attivata), talba li kieku tistabbilixxi 429
+għal perjodu QASIR u tranżitorju ta’ stennija tistenna li jintemm u terġa’ tintbagħat minflok
 ma tirritorna l-429 — dan ikopri twieqi TPM/RPM tal-klassi Gemini (~60s retry-after)
-fuq combos b'diversi mudelli, eż. meta ż-żewġ targets ta' combo b'2 mudelli jilħqu limitu tar-rata
-għal kull mudell. Dan huwa limitat minn `comboCooldownWait` (`enabled`, `maxWaitMs`, `maxAttempts`,
-`budgetMs`) f'**Settings → Resilience**. Qatt ma jistenna għal `quota_exhausted`
-(imsakkar sa nofsillejl) jew għal raġunijiet ta' awtentikazzjoni/ma nstabx.
+fuq kombinazzjonijiet b’diversi mudelli, eż. meta ż-żewġ miri ta’ kombinazzjoni ta’ 2 mudelli
+jolqtu limitu tar-rata għal kull mudell. Dan huwa ristrett minn `comboCooldownWait` (`enabled`, `maxWaitMs`, `maxAttempts`,
+`budgetMs`) f’**Settings → Resilience**. Qatt ma jistenna għal `quota_exhausted`
+(imblukkat sa nofsillejl) jew għal raġunijiet ta’ awtentikazzjoni/ma nstabx.
+
+L-istess grad ikopri l-każ ta’ qabel id-dispatch (#16319): meta kull mira ta’
+kombinazzjoni tinqabeż qabel ma jsir kwalunkwe tentattiv minħabba li l-mudell tagħha jkun fi
+stat ta’ mblukkar tranżitorju qasir, il-mogħdija b’ebda tentattiv tistenna li jintemm l-imblukkar taħt l-istess
+limiti massimi u terġa’ tibgħat it-talba, minflok ma twieġeb b’
+`503 ALL_TARGETS_SKIPPED` mingħajr indikazzjoni. Meta ebda stennija ma tkun permessa (il-limitu massimu, in-numru ta’ tentattivi jew il-baġit
+ikun eżawrit, jew il-funzjonalità tkun diżattivata), ir-risposta finali tiġi aġġornata għal
+`429 rate_limit_error` li tinkludi `retry_after` / `reset_at` mill-aktar
+skadenza bikrija tal-imblukkar tranżitorju; l-imblukkar minħabba quota, awtentikazzjoni u ma nstabx jibqa’ jirritorna l-503 mingħajr indikazzjoni.
 
 ```text
 #16319 · comboCooldownWait · pre-dispatch (attempts = 0)

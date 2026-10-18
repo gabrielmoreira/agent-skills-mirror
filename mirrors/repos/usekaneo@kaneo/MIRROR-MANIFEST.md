@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `usekaneo/kaneo` — 26 default patterns, 0 followed patterns, 78 file(s) materialized.
+Mirror of `usekaneo/kaneo` — 26 default patterns, 0 followed patterns, 80 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `usekaneo/kaneo` — 26 default patterns, 0 followed patterns, 78 file
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 78 |
+| Files         | 80 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -134,9 +134,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 73 | ✓ | [`.agents/skills/review-animations/SKILL.md`](.agents/skills/review-animations/SKILL.md) |
 | 74 | ✓ | [`.agents/skills/review-animations/STANDARDS.md`](.agents/skills/review-animations/STANDARDS.md) |
 | 75 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 76 | ✓ | [`apps/site/app/llms.txt/route.ts`](apps/site/app/llms.txt/route.ts) |
-| 77 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 78 | ✓ | [`skills/kaneo-cli/SKILL.md`](skills/kaneo-cli/SKILL.md) |
+| 76 | ✓ | [`apps/mobile/AGENTS.md`](apps/mobile/AGENTS.md) |
+| 77 | ✓ | [`apps/mobile/CLAUDE.md`](apps/mobile/CLAUDE.md) |
+| 78 | ✓ | [`apps/site/app/llms.txt/route.ts`](apps/site/app/llms.txt/route.ts) |
+| 79 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 80 | ✓ | [`skills/kaneo-cli/SKILL.md`](skills/kaneo-cli/SKILL.md) |
 
 ---
 

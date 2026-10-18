@@ -11,17 +11,17 @@ _Ultima actualizare: 2026-06-28_
 ## Rezumat executiv
 
 OmniRoute este un gateway local de rutare AI și un panou de control construit pe Next.js.
-Acesta oferă un singur endpoint compatibil cu OpenAI (`/v1/*`) și rutează traficul între mai mulți furnizori upstream, cu traducere, fallback, reîmprospătarea tokenurilor și monitorizarea utilizării.
+Acesta oferă un singur endpoint compatibil cu OpenAI (`/v1/*`) și rutează traficul către mai mulți furnizori upstream, cu traducere, mecanisme de rezervă, reîmprospătarea tokenurilor și urmărirea utilizării.
 
 Capabilități principale:
 
-- Suprafață API compatibilă cu OpenAI pentru CLI/instrumente (372 de furnizori, 148 de executori)
+- Suprafață API compatibilă cu OpenAI pentru CLI/instrumente (373 de furnizori, 150 de module de execuție)
 - Traducerea cererilor/răspunsurilor între formatele furnizorilor
-- Fallback pentru combinații de modele (secvență cu mai multe modele)
-- Pași structurați pentru combinații (`provider + model + connection`), cu ordonare la rulare după `compositeTiers`
-- Fallback la nivel de cont (mai multe conturi per furnizor)
-- Verificare preliminară a cotei și selectarea conturilor P2C în funcție de cotă în fluxul principal de chat
-- Gestionarea conexiunilor la furnizori prin OAuth + chei API (27 de module pentru furnizori OAuth)
+- Mecanism de rezervă pentru combinații de modele (secvență cu mai multe modele)
+- Pași structurați ai combinațiilor (`provider + model + connection`), cu ordonare la rulare prin `compositeTiers`
+- Mecanism de rezervă la nivel de cont (mai multe conturi per furnizor)
+- Verificare preliminară a cotei și selectarea contului P2C în funcție de cotă în fluxul principal de chat
+- Gestionarea conexiunilor furnizorilor prin OAuth și chei API (27 de module pentru furnizori OAuth)
 - Generarea de înglobări prin `/v1/embeddings` (18 furnizori)
 - Generarea de imagini prin `/v1/images/generations` (peste 10 furnizori, peste 20 de modele)
 - Transcriere audio prin `/v1/audio/transcriptions` (18 furnizori)
@@ -32,55 +32,55 @@ Capabilități principale:
 - Moderare prin `/v1/moderations`
 - Reranking prin `/v1/rerank`
 - Parsarea etichetelor de gândire (``) pentru modelele de raționament
-- Sanitizarea răspunsurilor pentru compatibilitate strictă cu SDK-ul OpenAI
+- Igienizarea răspunsurilor pentru compatibilitate strictă cu SDK-ul OpenAI
 - Normalizarea rolurilor (developer→system, system→user) pentru compatibilitate între furnizori
 - Conversia ieșirilor structurate (json_schema → Gemini responseSchema)
-- Persistență locală pentru furnizori, chei, aliasuri, combinații, setări și prețuri (122 de module DB)
-- Monitorizarea utilizării/costurilor și jurnalizarea cererilor
+- Persistență locală pentru furnizori, chei, aliasuri, combinații, setări și prețuri (122 de module pentru baza de date)
+- Urmărirea utilizării/costurilor și jurnalizarea cererilor
 - Sincronizare opțională în cloud pentru sincronizarea stării între mai multe dispozitive
-- Listă de permisiuni/listă de blocare IP pentru controlul accesului la API
-- Gestionarea bugetului de gândire (passthrough/auto/custom/adaptive)
-- Injectarea globală a promptului de sistem
-- Urmărirea sesiunilor și amprentare
-- Limitare îmbunătățită a ratei per cont, cu profiluri specifice furnizorilor
+- Listă de permisiuni/blocări IP pentru controlul accesului la API
+- Gestionarea bugetului de gândire (transmitere directă/automată/personalizată/adaptivă)
+- Injectarea unui prompt global de sistem
+- Urmărirea și amprentarea sesiunilor
+- Limitare avansată a ratei per cont, cu profiluri specifice furnizorilor
 - Model de întrerupător de circuit pentru reziliența furnizorilor
-- Protecție împotriva efectului „thundering herd” prin blocare cu mutex
-- Cache de deduplicare a cererilor bazat pe semnături
-- Strat de domeniu: reguli de cost, politică de fallback, politică de blocare
-- Context Relay: rezumate de transfer al sesiunii pentru continuitate la rotația conturilor
-- Persistența stării domeniului (cache SQLite cu scriere directă pentru fallback-uri, bugete, blocări și întrerupătoare de circuit)
-- Motor de politici pentru evaluarea centralizată a cererilor (blocare → buget → fallback)
-- Telemetria cererilor, cu agregarea latențelor p50/p95/p99
+- Protecție împotriva efectului de turmă cu blocare prin mutex
+- Cache pentru deduplicarea cererilor pe baza semnăturii
+- Strat de domeniu: reguli de cost, politică de rezervă, politică de blocare
+- Context Relay: rezumate pentru transferul sesiunilor, menținând continuitatea la rotația conturilor
+- Persistența stării domeniului (cache SQLite cu scriere directă pentru mecanisme de rezervă, bugete, blocări și întrerupătoare de circuit)
+- Motor de politici pentru evaluarea centralizată a cererilor (blocare → buget → mecanism de rezervă)
+- Telemetria cererilor, cu agregarea latenței p50/p95/p99
 - Telemetria țintelor combinațiilor și istoricul stării acestora prin `combo_execution_key` / `combo_step_id`
-- ID de corelare (X-Request-Id) pentru trasare de la un capăt la altul
+- ID de corelare (X-Request-Id) pentru urmărirea de la un capăt la altul
 - Jurnalizare de audit pentru conformitate, cu opțiune de dezactivare per cheie API
 - Cadru de evaluare pentru asigurarea calității LLM
-- Panou de monitorizare a stării, cu statutul în timp real al întrerupătoarelor de circuit ale furnizorilor
-- Server MCP (110 instrumente), cu 3 metode de transport (stdio/SSE/Streamable HTTP)
+- Panou de monitorizare a stării, cu starea în timp real a întrerupătoarelor de circuit ale furnizorilor
+- Server MCP (110 instrumente), cu 3 tipuri de transport (stdio/SSE/Streamable HTTP)
 - Server A2A (JSON-RPC 2.0 + SSE), cu abilități și ciclul de viață al sarcinilor
 - Sistem de memorie (extragere, injectare, regăsire, rezumare)
 - Sistem de abilități (registru, executor, sandbox, abilități integrate)
-- Proxy MITM cu gestionarea certificatelor și DNS
+- Proxy MITM, cu gestionarea certificatelor și a DNS-ului
 - Middleware de protecție împotriva injectării de prompturi
-- Flux de compresie a prompturilor cu Caveman, RTK, fluxuri suprapuse, combinații de compresie, pachete lingvistice și analize
+- Pipeline de comprimare a prompturilor, cu Caveman, RTK, pipeline-uri suprapuse, combinații de comprimare, pachete lingvistice și analize
 - Registru ACP (Agent Communication Protocol)
 - Furnizori OAuth modulari (22 de module individuale în `src/lib/oauth/providers/`)
 - Scripturi de dezinstalare/dezinstalare completă
 - Acțiune de reparare a mediului OAuth
 - Punte WebSocket pentru clienți WS compatibili cu OpenAI (`/v1/ws`)
-- Gestionarea tokenurilor de sincronizare (emitere/revocare, descărcarea pachetului de configurare versionat prin ETag)
-- Presetare de furnizor de primă clasă pentru GLM Thinking (`glmt`)
-- Numărare hibridă a tokenurilor (`/messages/count_tokens` la nivelul furnizorului, cu fallback la estimare)
+- Gestionarea tokenurilor de sincronizare (emitere/revocare, descărcarea pachetului de configurare versionat cu ETag)
+- Presetare de furnizor de prim rang pentru GLM Thinking (`glmt`)
+- Numărare hibridă a tokenurilor (`/messages/count_tokens` la nivelul furnizorului, cu estimare de rezervă)
 - Inițializarea automată a aliasurilor de modele (peste 30 de normalizări între dialectele proxy la pornire)
 - Preluare externă sigură, cu protecție SSRF, blocarea URL-urilor private și reîncercări configurabile
-- Reîncercări de chat care țin cont de perioada de așteptare, cu `requestRetry` și `maxRetryIntervalSec` configurabile
-- Validarea mediului de rulare cu Zod la pornire
+- Reîncercări pentru chat care țin cont de perioada de așteptare, cu `requestRetry` și `maxRetryIntervalSec` configurabile
+- Validarea mediului de execuție cu Zod la pornire
 - Audit de conformitate v2, cu paginare, evenimente CRUD pentru furnizori și jurnalizarea validărilor blocate de SSRF
 
-Model principal de rulare:
+Model principal de execuție:
 
 - Rutele aplicației Next.js din `src/app/api/*` implementează atât API-urile panoului de control, cât și API-urile de compatibilitate
-- Un nucleu comun SSE/de rutare din `src/sse/*` + `open-sse/*` gestionează execuția furnizorilor, traducerea, streamingul, fallback-ul și utilizarea
+- Un nucleu SSE/de rutare comun din `src/sse/*` + `open-sse/*` gestionează execuția furnizorilor, traducerea, streamingul, mecanismele de rezervă și utilizarea
 
 ## Diagrame de referință
 

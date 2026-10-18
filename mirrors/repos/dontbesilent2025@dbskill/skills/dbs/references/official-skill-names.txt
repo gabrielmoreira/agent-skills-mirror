@@ -16,6 +16,7 @@ dbs-deconstruct
 dbs-chatroom-austrian
 dbs-chatroom
 dbs-ai-check
+dbs-plain-writing
 dbs-wechat-html
 dbs-install-skill
 dbs-skill-maker

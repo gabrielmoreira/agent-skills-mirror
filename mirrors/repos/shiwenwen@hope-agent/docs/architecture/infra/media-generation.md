@@ -13,7 +13,9 @@
 > [`ha-media/src/audio_generate/`](../../../crates/ha-media/src/audio_generate/)。图/音生成唯一入口
 > `execute_image` / `execute_audio`。
 
-2026-10-05 图像目录维护：OpenAI 新建模板不再推荐已退役的 `dall-e-3`；Google 新建模板采用 `gemini-3.1-flash-image` / `gemini-3-pro-image`，移除旧 preview、2.5 Flash Image 和 Imagen 4 直连预设。仅修改内置新建目录，保留用户已存配置及其他渠道自己的 ID。`gpt-image-1` 的 2026-10-23 截止日期继续跟踪；新质量/透明/格式/压缩字段及真实输出验收仍待后续合同，不据目录更新宣称已支持。
+2026-10-05 图像目录维护：OpenAI 新建模板不再推荐已退役的 `dall-e-3`；Google 新建模板采用 `gemini-3.1-flash-image` / `gemini-3-pro-image`，移除旧 preview、2.5 Flash Image 和 Imagen 4 直连预设。仅修改内置新建目录，保留用户已存配置及其他渠道自己的 ID。新质量/透明/格式/压缩字段及真实输出验收仍待后续合同，不据目录更新宣称已支持。
+
+2026-10-17 OpenAI 图像目录维护：在 [官方公告](https://developers.openai.com/api/docs/deprecations) 的 2026-10-23 截止前移除新建模板中的 `gpt-image-1`，已有 `gpt-image-2` 成为首个图像候选，沿用现有生成/编辑适配器和能力。已保存的服务商、模型、默认链与自定义 ID 不自动迁移；`overview.rs` 中同名值仅是脱敏测试夹具，不是运行时默认值。官方 [图像迁移说明](https://developers.openai.com/api/docs/guides/image-prompting) 要求迁移前验证工作流；本次只核验本地目录与既有适配合同，不声称真实账号、图像质量、费用或新增参数已验收。新建目录可回退代码版本，但到期后不得恢复退役型号作为可用兜底。
 
 2026-10-12 鉴权请求边界：连接探测收到3xx显示失败并提示最终Base URL，POST-only探测既有405/422兼容保持。生成提交、轮询、音色列表与探测统一使用 `provider::apply_model_proxy`，禁止自动重定向，避免把密钥、提示词或上传内容重发到未核验目标。返回的图片/音频资源由 `adapters/fetch.rs` 单独逐跳核验；SiliconFlow/智谱结果链接也走此入口，不复用鉴权客户端，合法 CDN 跳转可继续下载，每跳不携 API 密钥并保留体积上限；异步任务的未决回执、Stop、费用与用量合同不因 HTTP 依赖更新而改变。
 

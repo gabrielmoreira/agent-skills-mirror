@@ -33,55 +33,77 @@ Per le pagine della dashboard e le operazioni amministrative.
 Cookie: auth_token=<JWT firmato con JWT_SECRET>
 ```
 
-Un cookie è una sessione solo quando il JWT viene verificato **e** contiene `authenticated: true`
+Un cookie costituisce una sessione solo quando il JWT viene verificato **e** contiene `authenticated: true`
 (`src/shared/utils/dashboardSessionToken.ts` → `verifyDashboardSessionToken`). Ogni
 componente che utilizza il cookie (protezione delle route della dashboard (`isDashboardSessionAuthenticated()`), aggiornamento della pipeline di autorizzazione, handshake WebSocket, server
 live, `/api/settings/require-login`, `/api/auth/status`) passa attraverso tale helper.
 Esistono altri JWT firmati con `JWT_SECRET`: il passthrough della CLI Cursor genera
-token `iss "omniroute" / aud "cursor-cli"` per i titolari di chiavi, che non vengono mai considerati sessioni
+token `iss "omniroute" / aud "cursor-cli"` per i titolari di chiavi, che non costituiscono mai sessioni
 (#13298).
 
-Verificata da `isDashboardSessionAuthenticated()` in `src/shared/utils/apiAuth.ts`. La pipeline aggiorna automaticamente il JWT quando restano meno di 7 giorni dei suoi 30 giorni di validità.
+Verificata da `isDashboardSessionAuthenticated()` in `src/shared/utils/apiAuth.ts`. La pipeline aggiorna automaticamente il JWT quando rimangono meno di 7 giorni dei suoi 30 giorni di validità.
 
-Una sessione può anche terminare prima della scadenza dei 30 giorni, perché ogni componente che genera token passa attraverso `mintDashboardSessionToken` (con un'ora di emissione `iat` e un ID `jti`) e il verificatore controlla due impostazioni: `sessionsValidAfter`, impostata in seguito a una modifica della password affinché tutte le sessioni emesse in precedenza non superino più la verifica (il browser da cui è stata modificata la password riceve un nuovo cookie), e `revokedDashboardSessions`, a cui `POST /api/auth/logout` aggiunge il `jti` della sessione disconnessa. Le sessioni generate da una versione precedente non contengono nessuna delle due dichiarazioni e restano valide fino alla prima modifica della password. Se non è possibile leggere le impostazioni, la sessione non è considerata attendibile.
+Una sessione può terminare anche prima della scadenza dei 30 giorni, perché ogni componente che genera token passa attraverso `mintDashboardSessionToken` (con un istante di emissione `iat` e un ID `jti`) e il verificatore controlla due impostazioni: `sessionsValidAfter`, impostata in seguito a una modifica della password affinché ogni sessione emessa in precedenza non superi più la verifica (il browser dal quale è stata modificata la password riceve un nuovo cookie), e `revokedDashboardSessions`, alla quale `POST /api/auth/logout` aggiunge il `jti` della sessione terminata. Le sessioni generate da una versione precedente non contengono nessuna delle due dichiarazioni e rimangono valide fino alla prima modifica della password. Se le impostazioni non possono essere lette, la sessione non viene considerata attendibile.
 
-Alcune route di gestione accettano **entrambe** le modalità: cookie OPPURE `Bearer <key>` quando la chiave API dispone dello scope `manage` (o `admin`). Ciò abilita il flusso di lavoro «configurabile tramite chiamate API» aggiunto nella v3.8.
+Alcune route di gestione accettano **entrambe** le modalità: cookie OPPURE `Bearer <key>` quando la chiave API dispone dello scope `manage` (o `admin`). Questo consente il flusso di lavoro «configurabile tramite chiamate API» aggiunto nella v3.8.
 
-#### Controllo di accesso OIDC facoltativo (#6973)
+#### Controllo di accesso OIDC opzionale (#6973)
 
-L'accesso amministrativo alla dashboard supporta anche un flusso OIDC (OpenID Connect) **opzionale**
+L'accesso amministrativo alla dashboard supporta anche un flusso OIDC (OpenID Connect) **facoltativo**
 insieme all'accesso predefinito tramite password: l'accesso tramite password non viene mai rimosso, ma solo
-integrato:
+affiancato:
 
 - È disabilitato a meno che `settings.oidcEnabled === true` **e** `oidcIssuer` /
-  `oidcClientId` / `oidcClientSecret` non siano tutti configurati (Impostazioni → Autenticazione).
+  `oidcClientId` / `oidcClientSecret` siano tutti configurati (Impostazioni → Autenticazione).
   In caso contrario, `GET /api/auth/oidc/login` restituisce `400`.
-- `GET /api/auth/oidc/login` individua l'`authorization_endpoint` tramite il
+- `GET /api/auth/oidc/login` individua l'`authorization_endpoint` dal
   `/.well-known/openid-configuration` dell'emittente (con fallback a
-  `<issuer>/authorize`), crea l'URI di reindirizzamento dalla richiesta in arrivo
+  `<issuer>/authorize`), costruisce l'URI di reindirizzamento dalla richiesta in arrivo
   (tenendo conto di `x-forwarded-proto`) e reindirizza all'IdP con uno `state` casuale
   memorizzato in un cookie `oidc_state` `httpOnly`.
 - `GET /api/auth/oidc/callback` convalida `state`, scambia il codice di autorizzazione
   e verifica la firma del token ID tramite il JWKS dell'emittente
-  (`createRemoteJWKSet` di `jose`, memorizzato nella cache per ogni URI JWKS) con controlli
-  `issuer`/`audience`. Una allowlist facoltativa `oidcAllowedSubjects` verifica la corrispondenza
-  con la dichiarazione `sub` o con la dichiarazione `email` del token: la dichiarazione email viene
-  accettata solo quando `email_verified === true`, quindi un indirizzo email non verificato presso l'IdP
-  non può mai superare il controllo.
-- In caso di successo, genera **esattamente lo stesso** JWT `auth_token` di 30 giorni emesso
-  dall'accesso tramite password (`src/app/api/auth/login/route.ts`), quindi il resto della
-  pipeline della sessione della dashboard (aggiornamento automatico, flag dei cookie) rimane invariato:
-  OIDC sostituisce solo il metodo con cui viene generato il cookie, non le autorizzazioni che concede.
+  (`createRemoteJWKSet` di `jose`, memorizzato nella cache per ogni URI JWKS), applicando
+  i controlli `issuer`/`audience`. La lista di elementi consentiti `oidcAllowedSubjects` è obbligatoria: confronta
+  la dichiarazione `sub` del token o la relativa dichiarazione `email`; la dichiarazione email viene accettata solo
+  quando `email_verified === true`, pertanto un indirizzo email non verificato presso l'IdP non può mai
+  superare il controllo; se non sono presenti voci, il callback rifiuta ogni accesso
+  (`not_configured`).
+- In caso di esito positivo, genera **esattamente lo stesso** JWT `auth_token` con validità di 30 giorni emesso dall'accesso tramite password
+  (`src/app/api/auth/login/route.ts`), pertanto il resto della
+  pipeline delle sessioni della dashboard (aggiornamento automatico, flag dei cookie) rimane invariato:
+  OIDC sostituisce soltanto il modo in cui viene generato il cookie, non le autorizzazioni che concede.
+- Ogni impostazione `oidc*` (`oidcEnabled`, `oidcDisablePasswordLogin`,
+  `oidcIssuer`, `oidcClientId`, `oidcClientSecret`, `oidcAllowedSubjects`,
+  `oidcRedirectPath`, `oidcScopes`) è inclusa in `SECURITY_IMPACTING_SETTINGS_KEYS`
+  (`src/shared/constants/securityImpactingSettings.ts`): `PATCH /api/settings`
+  risponde con `400 PASSWORD_REQUIRED` a meno che il corpo non contenga la password di gestione
+  come `currentPassword` (`401 PASSWORD_MISMATCH` quando è errata).
+  `oidcDisablePasswordLogin` impedisce l'_accesso_ tramite password (`POST /api/auth/login`),
+  ma mantiene l'hash della password memorizzato e la nuova autenticazione verifica comunque
+  `currentPassword` rispetto a tale hash.
+- `POST /api/settings/import-json` ignora questa nuova autenticazione, quindi elimina ogni chiave presente in
+  `IMPORT_STRIPPED_SETTINGS_KEYS` (nello stesso file) prima della scrittura: la password e
+  `currentPassword`, ogni voce di `SECURITY_IMPACTING_SETTINGS_KEYS` e lo
+  stato delle sessioni della dashboard (`sessionsValidAfter`, `revokedDashboardSessions`).
+  Di conseguenza, l'importazione di un backup precedente non può ripristinare una sessione già terminata
+  da una modifica della password o da una disconnessione.
 
-## Classi delle route
+## Classi di route
 
 `src/server/authz/types.ts` definisce tre classi; qualsiasi route che non possa essere classificata in modo deterministico ricade in `MANAGEMENT`.
 
-| Classe       | Descrizione                                                                                                                                                          | Autenticazione richiesta                                                     |
-| ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| `PUBLIC`     | Route esplicitamente sicure — accesso, disconnessione, stato, inizializzazione, controllo dello stato, bootstrap dell'onboarding.                                    | Nessuna                                                                      |
-| `CLIENT_API` | Endpoint per il serving dei modelli — `/api/v1/*`, `/api/v1beta/*`, oltre agli alias `/v1/*`, `/v1beta/*`, `/chat/completions`, `/responses`, `/models`, `/codex/*`. | Chiave Bearer quando il feature flag effettivo `REQUIRE_API_KEY` è abilitato |
-| `MANAGEMENT` | Pagine della dashboard, impostazioni, provider, chiavi, endpoint di amministrazione e diagnostica.                                                                   | Sessione della dashboard OPPURE Bearer con ambito `manage`                   |
+| Classe       | Descrizione                                                                                                                                                        | Autenticazione richiesta                                                     |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------- |
+| `PUBLIC`     | Route esplicitamente sicure — accesso, disconnessione, stato, inizializzazione, integrità, bootstrap dell'onboarding.                                              | Nessuna                                                                      |
+| `CLIENT_API` | Endpoint per il servizio dei modelli — `/api/v1/*`, `/api/v1beta/*`, più gli alias `/v1/*`, `/v1beta/*`, `/chat/completions`, `/responses`, `/models`, `/codex/*`. | Chiave Bearer quando il feature flag effettivo `REQUIRE_API_KEY` è abilitato |
+| `MANAGEMENT` | Pagine della dashboard, impostazioni, provider, chiavi, endpoint di amministrazione e diagnostica.                                                                 | Sessione della dashboard OPPURE Bearer con ambito `manage`                   |
+
+Alcune azioni `MANAGEMENT` sono riservate **esclusivamente all'operatore**: una chiave `manage` non è sufficiente. L'esportazione delle credenziali memorizzate (`GET /api/settings/export-json`, `GET /api/db-backups/export`,
+`GET /api/db-backups/exportAll`), l'emissione di un token di sincronizzazione (`POST /api/sync/tokens`) e la generazione di un token di accesso CLI `admin` (`POST /api/cli/tokens`) richiedono una sessione della dashboard, il soggetto CLI locale
+oppure l'accesso disabilitato; le chiavi API di qualsiasi ambito e i token di accesso `oma_` ricevono `403`. Il controllo
+si trova in `src/lib/api/operatorCredential.ts` (`resolveOperatorCredential()` /
+`requireOperatorCredential()`).
 
 A few `MANAGEMENT` actions are **operator-only**: a `manage` key is not enough. Exporting stored
 credentials (`GET /api/settings/export-json`, `GET /api/db-backups/export`,

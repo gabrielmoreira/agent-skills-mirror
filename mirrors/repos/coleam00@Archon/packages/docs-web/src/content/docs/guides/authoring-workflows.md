@@ -211,8 +211,8 @@ nodes:
 |-------|------|-------------|
 | `command` | string | Command name. Packaged workflows resolve it only from their own `commands/`; legacy workflows use shared repo → home → bundled lookup. Optional `with:` binds upstream values by name into the file's `$INPUTS.<name>` surface — see [Binding values into command and script nodes](#binding-values-into-command-and-script-nodes) |
 | `prompt` | string | Inline prompt string |
-| `bash` | string | Shell script (no AI). Stdout captured as `$nodeId.output`; successful stdout is also stored in `node_completed.data.node_output` as an audit preview capped at 32 KiB (UTF-8 bytes). Optional `timeout` (ms, default 120000); `on_timeout: skip` makes a timeout skipped instead of failed |
-| `script` | string | TypeScript/JavaScript (via `bun`) or Python (via `uv`) — inline code or named reference. Packaged workflows resolve named scripts only from their own `scripts/`; legacy workflows use shared script directories. Stdout captured as `$nodeId.output`. Requires `runtime: bun` or `runtime: uv`. Optional `deps` (uv only) and `timeout` (ms, default 120000); `on_timeout: skip` makes a timeout skipped instead of failed; optional `with:` binds upstream values by name into `INPUTS_<UPPER_SNAKE>` env vars — see [Binding values into command and script nodes](#binding-values-into-command-and-script-nodes). See [Script Nodes](/guides/script-nodes/) |
+| `bash` | string | Shell script (no AI). Stdout captured as `$nodeId.output`; successful stdout is also stored in `node_completed.data.node_output` as an audit preview capped at 32 KiB (UTF-8 bytes). Optional `timeout` (ms; without one the node runs until it exits); `on_timeout: skip` makes a timeout skipped instead of failed |
+| `script` | string | TypeScript/JavaScript (via `bun`) or Python (via `uv`) — inline code or named reference. Packaged workflows resolve named scripts only from their own `scripts/`; legacy workflows use shared script directories. Stdout captured as `$nodeId.output`. Requires `runtime: bun` or `runtime: uv`. Optional `deps` (uv only) and `timeout` (ms; without one the node runs until it exits); `on_timeout: skip` makes a timeout skipped instead of failed; optional `with:` binds upstream values by name into `INPUTS_<UPPER_SNAKE>` env vars — see [Binding values into command and script nodes](#binding-values-into-command-and-script-nodes). See [Script Nodes](/guides/script-nodes/) |
 | `loop` | object | Iterative AI prompt until a declared completion condition is met. See [Loop Nodes](/guides/loop-nodes/) |
 | `loop_group` | object | Multi-node sub-DAG body repeated per iteration until a declared completion condition is met. See [Cross-Node Loops](/guides/loop-nodes/#cross-node-loops-with-loop_group) |
 | `approval` | object | **Deprecated.** Use `wait: { attention: <message>, form: approval }` instead. See [Migrating from approval gates](/guides/approval-nodes/#migrating-from-approval-gates) |
@@ -263,12 +263,12 @@ nodes:
 When a `bash:` or `script:` node on the host reaches its `timeout`, Archon signals the node's
 whole process tree before it reports the timeout, so the real work behind a wrapper such as
 `bun run` or `uv run` stops too. On Windows it runs `taskkill /T /F` on the node's process.
-On macOS and Linux a foreground `workflow run`, `workflow resume` or `trigger execute` starts
-the node in its own process group and sends `SIGTERM` to that group. A node under
-`archon serve` or a detached run shares its owner's process group, so on macOS and Linux its
-timeout still ends only the node's own process, and work it started in the background keeps
-running. `until_bash` checks end only their own process. A container node's timeout ends only
-the local `docker exec` client, so the command inside the container may keep running.
+On macOS and Linux `archon serve` and a foreground `workflow run`, `workflow resume` or
+`trigger execute` start the node in its own process group and send `SIGTERM` to that group. A
+node of a detached run shares its owner's process group, so on macOS and Linux its timeout
+still ends only the node's own process, and work it started in the background keeps running.
+`until_bash` checks end only their own process. A container node's timeout ends only the
+local `docker exec` client, so the command inside the container may keep running.
 
 Archon does not confirm that the tree is gone, so some work outlives a reported timeout:
 
@@ -282,6 +282,14 @@ Archon does not confirm that the tree is gone, so some work outlives a reported 
 If the tree cannot be ended, Archon kills the node's own process (`SIGKILL` on macOS and
 Linux) and the node fails with the termination error instead of timing out. It does not take
 `on_timeout: skip`, and dependents follow their `trigger_rule` as for any failed node.
+
+Cancelling a run that `archon serve` executes ends the process tree of each of that run's
+running host `bash:` and `script:` nodes and `until_bash` checks within about a second
+(`SIGKILL` to the node's process group on macOS and Linux, `taskkill /T /F` on Windows), and
+records the node failed as cancelled. Other runs' processes are not touched. A process that
+left the node's group with `setsid` escapes. On Windows, background work whose node process
+already exited is not reached. A container node's command is not reached.
+Cancelling a detached run ends its owner's process group, nodes included.
 
 ### Addressable session ancestry
 
@@ -973,7 +981,7 @@ A `quota_exhausted` failure is never retried in the same window, but when the pr
 
 `misconfigured` means the setup must change before the node can succeed: a bad proxy URL, a missing or too-old CLI, an unknown model, an unreadable checkout or provider MCP config file. Fix the configuration and run again. A host-local read failure in captured home MCP config pauses the existing run for continuation on a host that can read it; see [MCP servers](/guides/mcp-servers/).
 
-Capacity failures (`overloaded`) get at least five retries: six provider attempts with delay centers of 45, 90, 180, 300 and 300 seconds. Each delay has ±50% jitter; the 300-second cap applies before jitter, so a wait can reach 450 seconds. The nominal total wait is 15 minutes 15 seconds, excluding provider execution time. Node `delay_ms` does not change this schedule, including a loop policy with zero delay. The larger budget applies only while the current failure is capacity; ordinary transient failures keep their own budget. Rate limits keep their existing five-retry minimum and flat 45-second delay with ±50% jitter; once a rate limit occurs, that larger budget remains for the rest of the iteration or node attempt sequence.
+Capacity failures (`overloaded`) get at least five retries: six provider attempts with delay centers of 45, 90, 180, 300 and 300 seconds. Each delay has ±50% jitter; the 300-second cap applies before jitter, so a wait can reach 450 seconds. The nominal total wait is 15 minutes 15 seconds, excluding provider execution time. Node `delay_ms` does not change this schedule, including a loop policy with zero delay. The larger budget applies only while the current failure is capacity; ordinary transient failures keep their own budget. Rate limits keep their existing five-retry minimum and flat 45-second delay with ±50% jitter; once a rate limit occurs, that larger budget remains for the rest of the iteration or node attempt sequence. A rate limit that still refuses the node after those retries does not fail the run: the run pauses on the provider-limit wait (attention queue kind [`usage_limit`](/guides/attention-queue/)) and continues from that node by itself.
 
 Each retry wait is logged and recorded as `node_retry_scheduled`, with the node path, class, one-based retry attempt, effective budget and delay; loop retries also record the iteration. Exhaustion preserves the provider failure and message. These are retry delays, not a deadline that ends a run.
 
@@ -2218,17 +2226,21 @@ sub-pipeline.**
 ### Gates, failure, and cost
 
 - **A child pause pauses the whole tree.** When the child pauses for an answer, the child run
-  pauses **and** the parent pauses "blocked on child". Answer the **child** by its own run
-  id (for example `/workflow approve <childRunId>`; the id is shown in the pause message). When the
-  child completes, the parent **auto-resumes** in-process, re-runs the `workflow:` node,
+  pauses **and** the parent pauses "blocked on child". Answer the **child** by its own full
+  run id (for example `archon workflow approve <childRunId>`). Read it from
+  `archon workflow get <parentRunId> --json` at `.metadata.approval.childRunId`. The stored
+  pause message contains only a short child label; a surface notice may include the full child
+  command. When the child completes, the parent **auto-resumes** in-process, re-runs the `workflow:` node,
   finds the child finished, and threads its output onward.
 - **Failure & recovery.** A failed child fails the node and the parent run. Recovery is
   resume-through-parent: `/workflow resume <parentRunId>` re-drives the failed child once.
   `retry:` is **not** allowed on a `workflow:` node (a retry would orphan the first child
   run).
 - **Cancel cascade.** Abandoning the parent cancels its non-terminal descendants
-  cooperatively (their executors abort at the next status check, within ~10s — there is no
-  hard subprocess kill yet).
+  cooperatively: their executors abort at the next status check, within ~10s. A running
+  host `bash:` or `script:` node of a run that `archon serve` executes is ended as described
+  under [Bash and script node timeouts](#bash-and-script-node-timeouts), and cancelling a
+  detached run ends its owner's process group.
 - **Cost roll-up.** The child's total cost rolls up into the `workflow:` node's cost and
   the parent's aggregate, and `parent_run_id` on the child row makes the run tree visible
   in `archon workflow runs` and the console. A run records what it spent whatever its

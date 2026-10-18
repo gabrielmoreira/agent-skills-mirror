@@ -28,6 +28,23 @@ identity. No second inbox store, per-field bridge expansion or full rewrite is
 required for the first App outcome. These are planned product consumers of
 T0–T4, not additional provider promotion or completed migration claims.
 
+Requester-scoped delegation inventory now composes page readback in
+`collaboration/delegation.ts`. Python retains bounded address scanning, requester
+registration and fresh `Delegations.read` IO, including canonical acceptance and
+artifact checks. TypeScript validates page order and item observations, selects
+the next cursor and reports completeness. The per-item projection RPC and Python
+page decisions are retired: query admission and final page projection use two
+requests per page; provider reads and validation calls remain. The existing
+private snapshot transport carries complete pages above the inline wire budget.
+CLI, MCP and Goal Chat keep their existing live-page contract. Async lifecycle
+cutover and receiver-adoption qualification remain separate.
+The same page reduction now seals actual directory/operation read times through
+the existing `projection_envelope.ts` owner. Completeness is scoped to
+`requester_page`; unreadable operations alert, while shown/available counts
+disclose remaining pages. Replay preserves the original observation time.
+Each page reuses the existing executable-revision request scope; operation
+records remain live reads, and the next page resolves the current code again.
+
 
 <a id="current-delivery-frontier-2026-10-02"></a>
 
@@ -500,8 +517,10 @@ qualify that guidance seam; avoided model retries and sustained cost remain open
 The replan obligation outcome policy now lives in
 `work_items/replan_semantics.ts`: required-outcome selection, vision-path and
 terminal consistency matching, and the matching refresh input projection share
-one owner. Python retains progress normalization/novelty and persistence adapters,
-but no longer duplicates obligation-to-outcome matching. This is a bounded rule
+one owner. `work_items/progress_delta.ts` now derives semantic dimensions,
+terminal coverage and evidence/blocker novelty inside that same qualification
+request. Python retains shared observation/fingerprint normalization, history
+codecs and persistence adapters; its delta and terminal-coverage rules are removed. This is a bounded rule
 convergence, not a settlement-writer or store migration. Existing outcome
 characterization precedes the move; the intentional correction is executable
 authoring for all vision triggers, with real bound CLI closeout/readback and
@@ -510,11 +529,23 @@ remain in their existing owners; no new capability, provider or setting is added
 
 Known blocker qualification also consumes the host-projected coverage ledger.
 Changing a Turn/work-item binding or refreshing evidence cannot make the same
-blocker a new replan outcome. Python normalizes the observations and reports
-identity reuse; the TypeScript outcome owner rejects that claim for every
-replan source while retaining independently evidenced vision paths. This
+blocker a new replan outcome. Python normalizes the observations; TypeScript
+compares the complete normalized window and rejects identity reuse for every
+replan source while retaining independently evidenced vision paths. Expanded
+qualification inputs use the existing private snapshot transport without
+truncating old claims. The qualify request count and input-error order remain
+unchanged. Shared codecs retire with refresh writers, replan history/context
+readers, external review and Explore evidence consumers. This
 corrects false advancement admission; it does not add a blocked-wait settlement
 route or certify Goal completion.
+
+The finite refresh/checkpoint CLI and standalone replan qualification reuse the
+existing managed-runtime request scope. It pins only the code revision: source
+and provider reads, canonical writes, error ordering and Turn receipts remain
+live and unchanged. Complete File/SQLite CLI qualification is required alongside
+the native request measurements; fewer fingerprint scans alone are not payoff
+evidence. Keep earlier tail failures and same-code A/A variability separate from
+the current qualification in the PR validation record.
 
 Replan decision context now follows the same boundary: `work_items/replan_context.ts`
 owns scoping, chronology, repetition reduction, result/route diversity and bounded
@@ -1049,7 +1080,23 @@ Task-graph topology now shares `work_items/planning_relations.ts` with inventory
 and horizon. One pure TS request owns relationship discovery, deterministic
 bounded traversal, edge deduplication and missing/truncated completeness; the
 Python predecessor indexes, condition parser and traversal are retired. Python
-retains status source adaptation and public-safe node/evidence/handoff rendering.
+retains status source adaptation and public-safe node/evidence/handoff rendering
+for the selected-work graph. The whole-Goal task map now composes its node kinds,
+metadata visibility, edges and public map shape inside the same typed topology
+request. Python keeps the shared renderable-source, text/state and stable-ID
+codecs; metadata is sanitized only for admitted nodes. Those codecs retire when
+the remaining selected-work graph and shared source consumers migrate together.
+One map still uses one request. Expanded complete inputs use the existing private
+snapshot transport instead of truncating the source at the ordinary wire limit.
+The HTTP delivery-review composes its existing reads in one managed-runtime code
+revision scope; provider reads and freshness checks retain their owners.
+The native map now seals actual Todo-read time, unrenderable/display omissions
+and unresolved relations through the existing projection envelope owner.
+The HTTP wrapper inherits status and map sources in one coarse sealing request;
+this adds one runtime crossing to the complete HTTP read, not per-node calls.
+The shipped reader discloses stale, unreadable, partial or unknown sources and
+preserves their envelope in exports. Original source opening and authorization
+owners remain unchanged; metadata is not a new execution or configuration gate.
 This intentionally distinguishes successor lineage from completion dependencies,
 corrects unblocks direction, includes Monitor generation conditions and preserves
 parallel/diamond edges at the node cap. See the [graph contract](../../reference/protocols/task-graph-projection-v0.md#typed-todo-topology).
@@ -1174,6 +1221,22 @@ reuses the result; re-entry projection itself adds no runtime call on a healthy 
 eligible fallback recommendation cannot hide a blocked task's real capability check before
 explicit selection. Success re-enters the same Turn; failure still allows explicit fallback
 selection. A committed receipt's Todo remains bound.
+
+Scheduler arbitration now composes with required-read projection in
+`work_items/interaction_contract.ts`. Structural diagnostics, shared consistency
+checks and disposition selection use one native owner. Quota consumes the
+private `{required_reads, arbitration}` result without adding public contract
+fields. The Python selector and standalone consistency RPC are removed. Later
+cooldown and recovery builds retain the dict API and discard unused arbitration;
+they do not replace the scheduler hint's earlier decision. Complete fact packets
+up to 64 KiB of compact ASCII JSON use inline transport. Passthrough reads,
+at most three generated reads, shell quoting and bounded diagnostics keep the
+reply within `16B + 8 KiB`, where B is the complete compact ASCII JSON byte
+count. This stays below 2 MiB for `B <= 64 KiB`. Larger facts use the existing
+private snapshot path without truncation. The 2 MiB wire and 64 MiB
+snapshot limits stay unchanged. Python retains scalar/Mapping codecs,
+the Enum/dataclass result adapter, scheduler cadence and Host IO until those
+consumers migrate. This does not close whole-scheduler or installed adoption.
 
 `agents/capability_memory.ts` now owns host-local runtime declarations, validation,
 atomic merge and idempotent persistence through the existing mutation lock and durable
@@ -1392,6 +1455,18 @@ qualify installed-host adoption or distributed execution. Cursor/checkpoint
 reduction remains a measured follow-up with complete-source parity, not a second
 Python policy. See the
 [history decision evidence](ledger/typescript-control-plane-migration-v0/2026-09-22-replan-history-policy.md).
+
+Settlement wait adapters now share the existing resume-fact projection over the
+complete dependency graph, retaining the bound Todo's resume proof and Monitor
+clocks, hash and cadence. They do not retransmit unrelated Todo prose or truncate
+canonical records. Blocked writeback, receipt-bound wait recovery and ordinary
+`quota.settlement.read` readback explicitly reuse the same-UID, digest-bound
+private snapshot channel when needed; the 2 MiB wire and 64 MiB snapshot limits
+remain unchanged. The existing TS owner still qualifies dependencies, frozen
+observations, original Turn identity, blocked closeout without spending and
+once-only accounting. Isolated File/SQLite CLI validation covers a complete
+multi-MiB Goal and replay; source validation does not establish installed-host
+adoption or whole-Goal qualification.
 
 **Checkpoint read-context transport.** A long-lived Goal can exceed the Effect
 runtime's 2 MiB socket limit even when the original Turn receipt is small:
@@ -1700,12 +1775,12 @@ facade-exit condition in §4), TS gathers the facts directly and the adapter is
 deleted.
 
 Rollout. `status` (including `--goal-id` and projection-cache hits),
-`global-summary`, `global-gates`, `global-todos` and `global-risks` now carry
-the envelope. Every other `collect_status` caller receives the status envelope
-in its payload but does not yet emit its own. Next, in order: `quota
-should-run`, `review-packet`, and Decision Context packets. A read model added
-to or migrated into TypeScript emits the envelope in the same PR; §6 makes
-this a promotion gate.
+`global-summary`, `global-gates`, `global-todos`, `global-risks`, and `quota
+should-run` now carry the envelope. Every other `collect_status` caller receives
+the status envelope in its payload but does not yet emit its own. Next, in
+order: `review-packet` and Decision Context packets. A read model added to or
+migrated into TypeScript emits the envelope in the same PR; §6 makes this a
+promotion gate.
 
 Consumers treat a missing envelope as unknown freshness, and disclose an
 alerting one before stating any conclusion that depends on it. Field
@@ -1777,7 +1852,7 @@ choice is now implemented rather than hypothetical.
 | Quota monitor-poll commit transaction | TypeScript owns monitor admission revalidation, target/event/result construction, effect replay/index CAS, provider intent, and repairable JSON/Markdown/index persistence | Python projects compact `should-run` facts, invokes the real Todo provider between at most two reductions, reloads legacy status, and holds the cross-writer index lock |
 | Runtime decoders ([#3443](https://github.com/loopx-project/loopx/pull/3443)) | Stable primitive decoding has one small shared module; domain decoders remain local | No larger schema framework is justified |
 | Transaction payoff ([#3464](https://github.com/loopx-project/loopx/pull/3464), [#3481](https://github.com/loopx-project/loopx/pull/3481), and Todo completion) | Turn settlement, quota delivery routing, and Todo completion each cross one coarse TS boundary; the Todo transaction owns identity, replay fencing, validation planning/result reduction, continuation/recovery, and completion metadata | Python still executes explicitly external providers and materializes legacy Markdown results; other domains still need their own bounded cutovers |
-| Projection envelope | TypeScript owns decoding of `loopx_projection_envelope_v0` and every freshness, alert, completeness and replay decision | Python gathers read facts for `status`, `global-summary`, `global-gates`, `global-todos` and `global-risks` until those projections migrate |
+| Projection envelope | TypeScript owns decoding of `loopx_projection_envelope_v0` and every freshness, alert, completeness and replay decision | Python gathers read facts for `status`, `global-summary`, `global-gates`, `global-todos`, `global-risks`, and quota `should-run` until those projections migrate |
 | Promoted-authority Todo claim | TypeScript owns the provider-head read, lifecycle validation, complete-record update, hard-lease check, CAS, receipt, and readback-safe result for claims after authority promotion | Default local Markdown mode remains on the legacy writer; other Todo mutations and Markdown regeneration remain bounded follow-ups |
 
 The scheduler facade exit now includes its first bounded Stage 3 route. A
@@ -2214,6 +2289,15 @@ matched durability baseline rather than the 2 ms kernel budget. A miss, or a
 tail regression hidden by a faster microbenchmark, is an owner review gate and
 cannot be silently relaxed.
 
+Default delivery applies these performance gates to the shipped default profile,
+currently SQLite for new local Goals. File performance is separate: disclose a
+File-only miss without blocking an otherwise qualified default SQLite delivery.
+Explicit File performance claims still require File qualification. Correctness,
+durability, authority, data integrity and recovery remain required for every
+affected supported backend. Declare the profile in existing review evidence;
+preserve historical failures and frozen experiment criteria when a maintainer
+changes the qualification scope. See the [validation rule](../../development/testing-and-quality.md#default-provider-performance-qualification--默认-provider-性能资格).
+
 ## 7. Install, upgrade, and rollback
 
 The migration must not ask users to manage a service. The Python-transition
@@ -2346,9 +2430,10 @@ exact diagnostic floors for wait, fallback and replan readers. One Goal-context
 reduction shares fresh counts with its nested helpers, while standalone calls
 remain fresh. Python retains fact/result codecs and original row identity;
 there is no persisted cache, new packet field or changed execution authority.
-The same real File/SQLite entrypoints must qualify functional parity and the
-original full-CLI cost gate together. Fewer crossings alone do not explain a
-whole-CLI tail regression or complete writer/backup/default-provider retirement.
+The same real File/SQLite entrypoints must qualify functional parity; full-CLI
+performance follows the default SQLite profile and explicit additional targets
+in §6. Fewer crossings alone do not explain a whole-CLI tail regression or
+complete writer/backup/default-provider retirement.
 
 Fresh public-boundary scanning retains its specialized Python regex / Host IO
 owner. Characterization covers all eleven `splitlines`

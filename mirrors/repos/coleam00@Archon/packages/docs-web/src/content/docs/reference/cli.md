@@ -131,18 +131,17 @@ For GitHub, choose a personal access token (the solo default) or a [GitHub App](
 
 ### `doctor`
 
-Verify your Archon setup. Runs a checklist of common failure points: installed provider versions and unavailable-plugin reasons, each registered provider's own diagnostics, the selected SDLC forge source (`gh` by default checks active authentication and repository read access; `ARCHON_SDLC_FORGE=forge` checks the installed plugin capabilities and repository read access; other values fail), the configured assistant's native login, OpenCode runtime SDK and executable presence, database reachability, workspace writability, bundled defaults, folder-project detection (contained repos, when run from one), telemetry state, AI credentials connected in Archon, and adapter token pings (Slack/Telegram, best-effort). Doctor exits 1 when any check fails. A warning does not change the exit code, and the summary line counts the warnings instead of reporting that all checks passed.
-
-Run `archon doctor` from a checkout with a forge remote. The SDLC forge row fails without one.
+Verify your Archon setup. Runs a checklist of common failure points: installed provider versions and unavailable-plugin reasons, each registered provider's own diagnostics, the configured assistant's native login, OpenCode runtime SDK and executable presence, database reachability, workspace writability, bundled defaults, folder-project detection (contained repos, when run from one), telemetry state, AI credentials connected in Archon, and adapter token pings (Slack/Telegram, best-effort). Doctor exits 1 when any check fails. A warning does not change the exit code, and the summary line counts the warnings instead of reporting that all checks passed.
 
 ```bash
-cd /path/to/repo
 archon doctor
 ```
 
+Doctor does not check forge access for the bundled SDLC pack. Run `archon workflow run archon-forge-check` from the checkout for that; it names the credential source it used or says why it refused. See the [SDLC pack README](https://github.com/coleam00/Archon/blob/dev/.archon/workflows/sdlc/README.md).
+
 With no registered providers, doctor fails and prints `archon provider add <claude|codex|pi>`. Stale maintained plugins fail with their installed and CLI versions and the reinstall command. The AI credentials check uses each connected credential the way a run would: it decrypts it and refreshes an expired subscription grant (saving the rotated grant). It prints one line per credential and fails when one cannot be used (it cannot be read, or the vendor rejected the refresh), naming the command that reconnects it. It warns when a credential could not be verified, for example because the vendor was unreachable. An API key is reported usable once it decrypts; only a model request proves the vendor accepts it. The assistant login check uses the merged configuration and the provider's own runtime, unless that model's vendor already has a credential connected in Archon that the assistant can use. Pi cannot use a connected Claude subscription: with no native Anthropic login, the check fails and names `provider: claude`. When Archon config names no model (Pi then uses its own default), doctor cannot tell which vendor the run uses, so a missing native login is a warning, not a failure, if you have connected a credential the assistant can use. Pi resolves its configured key during the check, so a key command runs during `archon doctor`; a command that prompts can prompt again at run start. The check builds the runtime a run builds, which runs every provider's `!command` key stored in Pi's `auth.json`, not only the configured provider's. For a model in Pi's catalog, a run resolves a `models.json` key command once when a node starts and uses that key for the whole node, so a short-lived token can expire before a long node ends; a model from an extension provider runs its key command on each request. Pi OAuth checks may refresh through Pi's runtime. Codex reads its native account through app-server and asks it to refresh the sign-in, so a revoked login fails the check (a run does not make this call); an API key is usable once resolved. When Codex is configured for a model provider that needs no OpenAI login, the check is skipped. Claude, Copilot, and OpenCode cannot check their native login without starting a model session, so the check is skipped and reports "not checked". The OpenCode check probes that the embedded runtime SDK module resolves and the `opencode` executable is available on the inherited `PATH` — it never boots the runtime (which spawns a child process and binds a port). OpenCode and Copilot are bundled but [deprecated](/getting-started/ai-assistants/#deprecated-providers): doctor runs their diagnostics only when one is your default assistant or has settings under `assistants`, and does not count them as installed providers. The provider support check warns when the default assistant is a [deprecated provider](/getting-started/ai-assistants/#deprecated-providers).
 
-In GitHub App mode, doctor validates the App ID and RSA private key from `GITHUB_APP_PRIVATE_KEY` or `GITHUB_APP_PRIVATE_KEY_PATH` locally. It reports incomplete, invalid, or conflicting App/PAT configuration as a failed check, without printing secrets. This check does not require `WEBHOOK_SECRET` and does not verify GitHub access remotely. The **SDLC forge** row runs the same preflight as the bundled SDLC pack for the current checkout, including its repository workflow `env` settings. With the default `gh` source, it checks active authentication for remote hosts, including a stored `gh auth login` with no token environment variables, then reads the repositories the remotes name with `gh api --hostname <host> repos/<path>`. One readable repository, including a readable mirror, is sufficient. This proves read access, not write access; the first write proves write access. With `ARCHON_SDLC_FORGE=forge`, it requires every pack operation before checking repository read access. It names the credential source used; a refusal fails doctor even when App configuration is valid locally.
+In GitHub App mode, doctor validates the App ID and RSA private key from `GITHUB_APP_PRIVATE_KEY` or `GITHUB_APP_PRIVATE_KEY_PATH` locally. It reports incomplete, invalid, or conflicting App/PAT configuration as a failed check, without printing secrets. This check does not require `WEBHOOK_SECRET` and does not verify GitHub access remotely.
 
 Exit code 0 if all checks pass or are skipped; 1 if any critical check fails. Adapter pings degrade to `skip` on network errors — a flaky connection does not flip the result red.
 
@@ -548,7 +547,7 @@ Workflow names are resolved using a 4-tier fallback hierarchy. This applies cons
 1. **Exact match** - `archon-investigate` matches `archon-investigate`
 2. **Case-insensitive** - `Archon-Investigate` matches `archon-investigate`
 3. **Suffix match** - `investigate` matches `archon-investigate` (looks for `-investigate` suffix)
-4. **Substring match** - `deliv` matches `archon-deliver`
+4. **Substring match** - `vestig` matches `archon-investigate`
 
 If multiple workflows match at the same tier, an error lists the candidates:
 ```
@@ -610,7 +609,7 @@ is always `null` because lifecycle events do not own a truthful declared DAG tot
 - `attention`: what the run needs from outside, if anything: `null`, or an object whose `kind`
   is `terminal`, `awaiting_response` (an approval or response gate), `attention` (a
   `wait: attention` waiting for its answer), `usage_limit` (node `nodeId` hit a provider
-  usage limit; the run continues by itself at `resumeAt`), `blocked_on_child` (the child run is the one to inspect), `blocked_on_children` (a fan-out
+  usage limit, or a rate limit that outlasted its retries; the run continues by itself at `resumeAt`), `blocked_on_child` (the child run is the one to inspect), `blocked_on_children` (a fan-out
   waiting on the listed child runs), `stalled_tool_calls` (still-running
   work with overdue provider tools or reported subtasks), or `unreadable`.
   It is read from the run row alone.
@@ -919,8 +918,9 @@ the host the run recorded and says when it is not this one.
   identifies this pause. A wait paused before attention waits took answers reports a
   `legacy:<node>` occurrence and the `message` form; it takes no answer and continues
   with `workflow resume <run-id>`.
-- `usage_limit` — node `nodeId` hit a provider usage limit. Nothing needs an answer: the
-  run continues by itself at `resumeAt`. Cancel or abandon it to stop it instead.
+- `usage_limit` — node `nodeId` hit a provider usage limit, or a rate limit that outlasted
+  its retries. Nothing needs an answer: the run continues by itself at `resumeAt`. Resume
+  it to try sooner, or cancel or abandon it to stop it.
 - `unreadable` — the run is parked but cannot describe itself (corrupt gate metadata, a
   gate type this build does not know, a sub-run pointer with no row). `detail` says which.
   It also reports `reason: source_release_not_continued` for a container paused by a
@@ -957,7 +957,7 @@ inspect the run normally with `workflow get <run-id>`.
 ### `workflow attention`
 
 List, count, stream or read the [attention queue](/guides/attention-queue/): every paused
-run that needs an answer or inspection, plus observable provider usage-limit waits.
+run that needs an answer or inspection, plus observable provider usage- and rate-limit waits.
 Branch on `kind`: `attention` and `awaiting_response` accept answers, `usage_limit`
 continues automatically after reset, and `unreadable` needs inspection. Read-only.
 
@@ -1247,7 +1247,7 @@ the option of the same id.
 
 Approve a paused workflow run. At an attention wait this is the shorthand described under [`workflow answer`](#workflow-answer). At a deprecated `approval:` gate with authored `approval.decisions`, this command requires `approve` in that list; otherwise it is refused and the run stays paused. An optional comment is available as `$<gate-id>.output.text` for authored decisions, or `$LOOP_USER_INPUT` at a deprecated interactive-loop gate.
 
-**Sub-run child gates (#2121 Phase 2):** when a `workflow:` sub-run pauses at its own gate, the parent run pauses "blocked on child". Approve (or reject) the **child** by its own run id — the id shown in the parent's block message — not the parent's; the parent auto-resumes when the child completes. A child inside a `fan_out:` expansion pauses the same way: it stays paused as its own run, and the parent pauses on a `fan_out` gate listing every unfinished child, then continues once they finish. `approve`/`reject` against the parent's id while it's blocked on a child are refused with a redirect to the child id (every listed child for a fan-out).
+**Sub-run child gates (#2121 Phase 2):** when a `workflow:` sub-run pauses at its own gate, the parent run pauses "blocked on child". Approve (or reject) the **child** by its own full run id, available from `archon workflow get <parentRunId> --json` at `.metadata.approval.childRunId`, not the parent's. The stored block message contains only a short child label; a surface notice may include the full child command. The parent auto-resumes when the child completes. A child inside a `fan_out:` expansion pauses the same way: it stays paused as its own run, and the parent pauses on a `fan_out` gate listing every unfinished child, then continues once they finish. `approve`/`reject` against the parent's id while it's blocked on a child are refused with a redirect to the child id (every listed child for a fan-out).
 
 **Deprecated interactive-loop gates — finalize vs iterate:** when the gate paused on an iteration where any declared completion channel fired (`workflow get <run-id> --json` → `.metadata.approval.completionSignaled` is `true`), approving with **no comment** accepts the completion — the node finalizes from the already-computed output on resume, with no re-run. Approving **with** a comment runs another iteration using it as `$LOOP_USER_INPUT`. When no completion condition met, both forms run another iteration. On the final iteration (`max_iterations`), only a comment runs one more; approving with no comment fails the node with `max_iterations`.
 
@@ -1778,6 +1778,7 @@ printf '{"ops":[{"op":"append","path":"/seen","value":123}]}' | archon state pat
 printf '{"ops":[{"op":"set","path":"/owner","value":"b"}]}' | archon state patch review/123 --if-revision 2
 archon state log review/123 --limit 100
 archon state list --prefix review/
+archon state list --prefix review/ --values
 archon state delete review/123 --if-revision 3
 archon state get notes --install --raw
 archon state list --project acme/widgets
@@ -1791,8 +1792,9 @@ name. `put`, `patch`, and `delete` return the scope and the new full revision. `
 returns `{scope, name, revisions}`, newest first (use a positive `--limit` to bound the
 result), including tombstones, operation, writer and timestamp. `list` returns
 `{scope, documents}`: each document's name, latest revision, `updatedAt`, writer and
-`deleted`, ordered by name and never with values. `--prefix` keeps names that start with
-the given text.
+`deleted`, ordered by name, without values. `--prefix` keeps names that start with
+the given text. `list --values` reads every live document's value in one call instead:
+each entry is `{name, revision, value}`, and deleted documents are left out.
 
 `put` requires `--if-revision`: `0` creates a new document; otherwise it replaces exactly
 that revision. `delete` accepts the same optional check. `patch` applies `{ops:[...]}` from

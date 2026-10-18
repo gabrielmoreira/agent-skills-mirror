@@ -20,6 +20,16 @@ semantics.
   `cli`, `server`, `agents`, `dsh`, `opencode`): `pnpm install`,
   `pnpm build`, `pnpm typecheck`, `pnpm test`. Rebuild the dists after a
   merge; integ and the examples import them.
+- Rust lives in `rust/`, one Cargo workspace: `mirage-rs` holds the command
+  streams both hosts run, `rust/python` is its PyO3 module (`mirage_rs`,
+  built by `uv sync`, which rebuilds it after a Rust change) and `rust/wasm`
+  the module the TypeScript core embeds
+  (`typescript/packages/core/scripts/embed-rs.mjs`, run by `prepare`,
+  `build`, `test` and `typecheck`). Both need cargo on `PATH`;
+  `rust/rust-toolchain.toml` pins it. Test: `cargo test --workspace` in
+  `rust/`. `scripts/gen_unicode_width.py` (Unicode's data files) and
+  `scripts/gen_rust_notices.py` (`cargo about` 0.9.2) regenerate their
+  outputs; CI fails when either is stale.
 - Lint everything: `./python/.venv/bin/pre-commit run --all-files` from the
   repo root (the venv binary, so `examples/` is included).
 - Examples run from the repo root with the venv interpreter:
@@ -47,6 +57,23 @@ semantics.
   A pull request runs only the integ jobs whose path filter matches (charted
   in `integ/README.md`), so adding, moving or renaming a module updates the
   filters in `test_integ.yml` and that chart.
+
+### Licensing
+
+Mirage is Apache-2.0 and may ship commercially, so all of it stays
+permissively licensed.
+
+- Dependencies are MIT, Apache-2.0, BSD, ISC, Zlib, Unicode-3.0 or alike,
+  never GPL, LGPL, AGPL or MPL. Check before adding one; `cargo deny`
+  (`rust/deny.toml`) gates the Rust tree.
+- Match GNU's behaviour, never its code: do not translate, copy or
+  paraphrase GNU, gnulib or glibc source, or any copyleft code. Work from
+  POSIX, the GNU manuals and the pinned image's output. Ship no table
+  captured from their code; derive it from the primary source, as
+  `scripts/gen_unicode_width.py` reads Unicode's data files.
+- Code adapted from a permissive project (uutils is MIT) keeps a header
+  naming the source and version, its license text in `licenses/third_party/`,
+  and for Rust an `ADAPTED` entry in `scripts/gen_rust_notices.py`.
 
 ### Patterns
 
@@ -95,19 +122,22 @@ same PR.
   field only when POSIX and argparse both already have the concept, named
   after theirs. The same grammar describes built-ins and CLI trees.
 - **CLIs (`CLI`)** are the agent's tools, dispatched by name. An account
-  CLI declares a `config_model` and consults no mount; `git` declares none
-  and reads its repository through `ctx.vfs`. `register_cli` is host-side
-  only; there is no install builtin. A CLI that mimics a real program is
-  gated against that program (`integ/ntn_conformance.ts`).
+  CLI declares a `config_model` and an `accessor` (its service client, built
+  once per install) and consults no mount; `git` declares neither, gets a
+  `NOOPAccessor` and reads its repository through `ctx.vfs`. `register_cli`
+  is host-side only; there is no install builtin. A CLI that mimics a real
+  program is gated against that program (`integ/ntn_conformance.ts`).
 - **Mount configs** are one snake_case block with one config loader per
   language, `build_vfs` and `buildVfs` (`parseConfigWithSchema`). Field sets
   are gated by live VFS manifests and `integ/config/`.
 - **YAML keys**, the `mirage` CLI output, the server API and the agent
   adapters are public. A TypeScript API change gets a changeset.
-- **Handlers** take `(accessor, paths, texts, ctx)`; a CLI leaf takes
-  `(config, paths, texts, ctx)`, the same `Context`. Read flags through a
-  spec-bound `FlagView`, never raw. Generics own flag interpretation and parse
-  once into a frozen struct; backend wrappers are wiring only.
+- **Handlers** take `(accessor, paths, texts, ctx)`; a CLI leaf takes the
+  same, with its install's accessor, and a runtime
+  `(engine, paths, texts, ctx)`: one `Context`, files only at `ctx.vfs`.
+  Read flags through a spec-bound `FlagView`, never raw. Generics own flag
+  interpretation and parse once into a frozen struct; backend wrappers are
+  wiring only.
 
 ## Design
 
@@ -121,27 +151,31 @@ only).
 
 ### VFS
 
-One backend adapter per prefix (`vfs/`, `BaseVFS`, `VFSAdapter`): object
-stores, SaaS, databases, disk, RAM. Each backend is four layers with one
-name: `accessor/x.py` (client), `core/x/` (pure functions), `ops/x/` (op
-table), `vfs/x/` (adapter and config model). `vfs/registry.py`
-(`known_vfs_names`, `build_vfs`) and the entry-point group `mirage.vfs` are
-the registry. A VFS never stores a symlink, reports leaf files only, and
-classifies an entry through `stat`, never by name.
+One backend per prefix (`vfs/`, `BaseVFS`): object stores, SaaS,
+databases, disk, RAM. Each backend is three layers with one name:
+`accessor/x.py` (client), `core/x/` (pure functions), `vfs/x/` (the
+`BaseVFS` subclass, whose methods are its ops, and its config model).
+`vfs/registry.py` (`known_vfs_names`, `build_vfs`) and the entry-point group
+`mirage.vfs` are the registry. A VFS never stores a symlink, reports leaf
+files only, and classifies an entry through `stat`, never by name.
 
 ### POSIX layer
 
-What the agent sees over every VFS. Ops (`ops/`, `OpsRegistry`) are the
-syscall-shaped table a mount answers: `read`, `write`, `append`, `stat`,
-`readdir`, `mkdir`, `rmdir`, `unlink`, `rename`, `truncate`; the dispatcher
-(`workspace/dispatcher/`) resolves a virtual path to a mount and calls them.
+What the agent sees over every VFS. Ops are the syscall-shaped methods a
+mount's `BaseVFS` declares with `vfs_call` (`vfs/call.py`): `read`, `write`,
+`append`, `stat`, `readdir`, `mkdir`, `rmdir`, `unlink`, `rename`,
+`truncate`; the dispatcher (`workspace/dispatcher/`) resolves a virtual path
+to a mount and calls them by name.
 Commands (`commands/builtin/`) are the coreutils: a generic implements a
 family once (`generic/`), `generic_bind/` binds it to a backend,
 `crossmount/` and `executor/fanout.py` handle a line that spans mounts. The
 namespace (`workspace/mount/namespace/`) sits above every backend with the
 mount table, symlinks and the attribute overlay; a handler reads links and
-mount boundaries off `ctx.vfs` (`links_of`, `mounts_of`). A `filetype` registration
-on a mount is the only renderer extension point.
+mount boundaries through `links_of` and `mounts_of`
+(`commands/builtin/utils/links`), as its session sees them: they read the
+tables off its files through the internal `namespace_of`, and `ctx.vfs`
+itself hands out neither. A `filetype` registration on a mount is the only
+renderer extension point.
 
 Pinned behavior: `find -size` rounds up and the start row is the generic's;
 `du` derives directory rows, sorts siblings, counts bytes and exits 1 on a
@@ -174,10 +208,11 @@ parser, before classification.
 
 `commands/cli/`: a `CLI` binds a `CommandSpec` tree to `CLIHandler` entries
 keyed by canonical leaf path, plus account config or script/runtime settings.
-A `CLIInstall` supplies the installed name and validated account. A leaf is
-`fn(config, paths, texts, ctx)` with the `Context` commands and runtimes get;
-`ctx.vfs` (the session's `Files`) is the only way to a mount, `ctx.session`
-the live session. `man`, `--help`, `type -t` and
+A `CLIInstall` supplies the installed name, validated account and the
+accessor `CLI.accessor` built from it (closed when the install goes). A leaf
+is `fn(accessor, paths, texts, ctx)` with the `Context` commands and runtimes
+get; `ctx.vfs` (the session's `Files`) is the only way to a mount,
+`ctx.session` the live session. `man`, `--help`, `type -t` and
 `which` derive from the spec. `ntn` is the worked example (CLAP voice, a
 serde_json-faithful scanner, exit 1 for a bad body and 5 for a bad line).
 
@@ -191,11 +226,16 @@ builtins `mount_root`, `output_cap`, `permissions`. `observe/`: a hidden
 
 ### Runtimes
 
-`runtime/`: `Runtime`, `RuntimeConfig`, `EvaluatorMixin`, reach
-`workspace | process | remote`. `WorkspaceRuntime` (default) runs inside
-mirage; `MontyRuntime` and wasm run in-process; `SSHRuntime` and
-`DaytonaRuntime` run remote. `RuntimeVFS` bridges a guest's file ops back to
-the dispatcher.
+`runtime/`: `Runtime`, `RuntimeConfig`, reach
+`workspace | process | remote`. A runtime is generic over its engine
+(`open_engine`, once per install) and runs
+`execute(paths, texts, ctx, kind=)`: code in its language
+(`LanguageRuntime.run` resolves the program, `interpret` runs it), a whole
+line (`run_line`, `sh -c` with `ctx.flags["c"]`) or a process (`run_process`,
+argv in `texts`). `WorkspaceRuntime` (default) runs inside mirage;
+`MontyRuntime` and wasm run in-process; `SSHRuntime` and `DaytonaRuntime` run
+remote. `RuntimeFiles` bridges a guest's file ops back to the dispatcher
+through `ctx.vfs`.
 
 ### FUSE and FSKit
 
@@ -229,11 +269,11 @@ flowchart TD
     Exec --> Runtime["runtime routing<br/>workspace · process · remote"]
     Exec --> Handler["command handler<br/>(accessor, paths, texts, ctx)"]
     Spec["Argument · CommandSpec · CLI · FlagView"] -.-> Handler
-    Handler --> Dispatch["op dispatcher<br/>workspace/dispatcher · ops"]
-    Runtime -. RuntimeVFS .-> Dispatch
+    Handler --> Dispatch["op dispatcher<br/>workspace/dispatcher"]
+    Runtime -. RuntimeFiles .-> Dispatch
     FUSE["FUSE · FSKit"] --> Dispatch
     Dispatch --> NS["namespace<br/>mount table · symlinks · attr overlay"]
-    NS --> VFS["VFS<br/>ops table → core → accessor"]
+    NS --> VFS["VFS<br/>BaseVFS ops → core → accessor"]
     VFS --> Backend[("backend API")]
     Events["events"] -.-> NS
     Session["session · history<br/>stores · record clients"] -.-> Exec
@@ -243,14 +283,14 @@ One backend, bottom to top:
 
 ```mermaid
 flowchart LR
-    A["accessor/x.py<br/>client"] --> C["core/x/<br/>pure functions"] --> O["ops/x/<br/>op table"] --> V["vfs/x/<br/>adapter + config"] --> M["mount at a prefix"]
+    A["accessor/x.py<br/>client"] --> C["core/x/<br/>pure functions"] --> V["vfs/x/<br/>BaseVFS ops + config"] --> M["mount at a prefix"]
     W["commands/builtin/x/<br/>backend-aware wrappers"] -.-> M
 ```
 
 Repository:
 
 ```
-python/mirage/   accessor core ops vfs commands workspace shell runtime policy
+python/mirage/   accessor core vfs commands workspace shell runtime policy
                  observe cache events mount fuse cli server agents
 typescript/packages/
   core/          runtime-agnostic twin; no Node-only or browser-only API

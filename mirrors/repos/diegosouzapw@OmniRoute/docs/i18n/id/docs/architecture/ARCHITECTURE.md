@@ -10,15 +10,15 @@ _Terakhir diperbarui: 2026-06-28_
 
 ## Ringkasan Eksekutif
 
-OmniRoute adalah gateway perutean AI lokal dan dasbor yang dibangun di atas Next.js.
+OmniRoute adalah gateway perutean AI lokal dan dasbor yang dibangun menggunakan Next.js.
 OmniRoute menyediakan satu endpoint yang kompatibel dengan OpenAI (`/v1/*`) dan merutekan lalu lintas ke beberapa penyedia upstream dengan penerjemahan, fallback, penyegaran token, dan pelacakan penggunaan.
 
 Kemampuan utama:
 
-- Permukaan API yang kompatibel dengan OpenAI untuk CLI/alat (372 penyedia, 148 eksekutor)
-- Penerjemahan permintaan/respons lintas format penyedia
+- Antarmuka API yang kompatibel dengan OpenAI untuk CLI/alat (373 penyedia, 150 modul eksekutor)
+- Penerjemahan permintaan/respons antarformat penyedia
 - Fallback kombinasi model (urutan multi-model)
-- Langkah kombinasi terstruktur (`provider + model + connection`) dengan pengurutan runtime berdasarkan `compositeTiers`
+- Langkah kombinasi terstruktur (`provider + model + connection`) dengan pengurutan saat runtime berdasarkan `compositeTiers`
 - Fallback tingkat akun (multi-akun per penyedia)
 - Pemeriksaan awal kuota dan pemilihan akun P2C yang mempertimbangkan kuota pada alur chat utama
 - Pengelolaan koneksi penyedia berbasis OAuth + kunci API (27 modul penyedia OAuth)
@@ -32,17 +32,17 @@ Kemampuan utama:
 - Moderasi melalui `/v1/moderations`
 - Pemeringkatan ulang melalui `/v1/rerank`
 - Penguraian tag pemikiran (``) untuk model penalaran
-- Sanitasi respons untuk kompatibilitas ketat dengan OpenAI SDK
+- Sanitasi respons untuk kompatibilitas ketat dengan SDK OpenAI
 - Normalisasi peran (developer→system, system→user) untuk kompatibilitas lintas penyedia
 - Konversi keluaran terstruktur (json_schema → Gemini responseSchema)
 - Persistensi lokal untuk penyedia, kunci, alias, kombinasi, pengaturan, dan harga (122 modul DB)
 - Pelacakan penggunaan/biaya dan pencatatan permintaan
-- Sinkronisasi cloud opsional untuk sinkronisasi antarperangkat/status
+- Sinkronisasi cloud opsional untuk sinkronisasi multi-perangkat/status
 - Daftar izin/daftar blokir IP untuk kontrol akses API
 - Pengelolaan anggaran pemikiran (passthrough/otomatis/kustom/adaptif)
 - Injeksi prompt sistem global
-- Pelacakan sesi dan pembuatan sidik jari
-- Pembatasan laju yang ditingkatkan per akun dengan profil khusus penyedia
+- Pelacakan dan pembuatan sidik jari sesi
+- Pembatasan laju tingkat lanjut per akun dengan profil khusus penyedia
 - Pola circuit breaker untuk ketahanan penyedia
 - Perlindungan anti-thundering herd dengan penguncian mutex
 - Cache deduplikasi permintaan berbasis tanda tangan
@@ -54,10 +54,10 @@ Kemampuan utama:
 - Telemetri target kombinasi dan riwayat kesehatan target kombinasi melalui `combo_execution_key` / `combo_step_id`
 - ID korelasi (X-Request-Id) untuk penelusuran menyeluruh
 - Pencatatan audit kepatuhan dengan opsi penolakan per kunci API
-- Kerangka kerja evaluasi untuk jaminan kualitas LLM
-- Dasbor kesehatan dengan status circuit breaker penyedia secara waktu nyata
-- MCP Server (110 alat) dengan 3 transportasi (stdio/SSE/Streamable HTTP)
-- A2A Server (JSON-RPC 2.0 + SSE) dengan keterampilan dan siklus hidup tugas
+- Kerangka kerja evaluasi untuk penjaminan kualitas LLM
+- Dasbor kesehatan dengan status circuit breaker penyedia secara real-time
+- Server MCP (110 alat) dengan 3 transportasi (stdio/SSE/Streamable HTTP)
+- Server A2A (JSON-RPC 2.0 + SSE) dengan keterampilan dan siklus hidup tugas
 - Sistem memori (ekstraksi, injeksi, pengambilan, peringkasan)
 - Sistem keterampilan (registri, eksekutor, sandbox, keterampilan bawaan)
 - Proksi MITM dengan pengelolaan sertifikat dan penanganan DNS
@@ -72,7 +72,7 @@ Kemampuan utama:
 - Preset penyedia kelas utama GLM Thinking (`glmt`)
 - Penghitungan token hibrida (`/messages/count_tokens` sisi penyedia dengan fallback estimasi)
 - Penyemaian otomatis alias model (30+ normalisasi dialek lintas proksi saat startup)
-- Pengambilan outbound yang aman dengan perlindungan SSRF, pemblokiran URL privat, dan percobaan ulang yang dapat dikonfigurasi
+- Pengambilan data keluar yang aman dengan perlindungan SSRF, pemblokiran URL privat, dan percobaan ulang yang dapat dikonfigurasi
 - Percobaan ulang chat yang mempertimbangkan cooldown dengan `requestRetry` dan `maxRetryIntervalSec` yang dapat dikonfigurasi
 - Validasi lingkungan runtime dengan Zod saat startup
 - Audit kepatuhan v2 dengan paginasi, peristiwa CRUD penyedia, dan pencatatan validasi yang diblokir SSRF
@@ -80,7 +80,7 @@ Kemampuan utama:
 Model runtime utama:
 
 - Rute aplikasi Next.js di bawah `src/app/api/*` mengimplementasikan API dasbor dan API kompatibilitas
-- Inti SSE/perutean bersama di `src/sse/*` + `open-sse/*` menangani eksekusi penyedia, penerjemahan, streaming, fallback, dan penggunaan
+- Inti SSE/perutean bersama dalam `src/sse/*` + `open-sse/*` menangani eksekusi penyedia, penerjemahan, streaming, fallback, dan penggunaan
 
 ## Diagram Referensi
 

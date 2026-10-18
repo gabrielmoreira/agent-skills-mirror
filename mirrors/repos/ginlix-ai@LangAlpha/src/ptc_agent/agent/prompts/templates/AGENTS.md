@@ -1,6 +1,6 @@
 # Prompt templates
 
-Jinja2 sources for the PTC, Flash, and subagent system prompts. Rendered by
+Jinja2 sources for the PTC and subagent system prompts. Rendered by
 `PromptLoader` (`../loader.py`); defaults live in `../config/prompts.yaml`.
 The PTC prompt renders per role: the analyst's is the base prompt, and the
 Chief of Staff's adds `components/chief_of_staff.md.j2` as a `<role>` section,
@@ -16,9 +16,9 @@ render these sections without `role`, so they read the analyst's wording.
 Preview any surface as it renders at runtime:
 
 ```bash
-uv run python scripts/utils/render_prompt.py --mode ptc --crawl --count-tokens
+uv run python scripts/utils/render_prompt.py --crawl --count-tokens
 uv run python scripts/utils/render_prompt.py --subagent equity-analyst
-uv run python scripts/utils/render_prompt.py --mode ptc --role chief_of_staff
+uv run python scripts/utils/render_prompt.py --role chief_of_staff
 ```
 
 ## Two guidance levels: lean and detailed
@@ -127,14 +127,14 @@ on why it inverts. The speed bump is deliberate.
 
 ```bash
 # What does lean drop?
-uv run python scripts/utils/render_prompt.py --mode ptc --diff
+uv run python scripts/utils/render_prompt.py --diff
 
 # Resolve the level from a real model, as runtime would
-uv run python scripts/utils/render_prompt.py --mode ptc --model claude-opus-5-5
+uv run python scripts/utils/render_prompt.py --model claude-opus-5-5
 ```
 
-`test_lean_subset_invariant.py` enforces the subset property across PTC, Flash,
-and all five subagents. If it fails, lean is rendering text detailed never
+`test_lean_subset_invariant.py` enforces the subset property across PTC and all
+five subagents. If it fails, lean is rendering text detailed never
 sees — move it outside the fence, or register it as an either/or.
 
 ## Other conventions

@@ -17,13 +17,13 @@ OmniRoute, her API isteğini denetleyen rota-farkındalıklı bir yetkilendirme 
 
 ### 1. API Anahtarı (Bearer)
 
-OpenAI/Anthropic/Gemini uyumlu istemci API'leri ve anahtarın `manage` kapsamına sahip olduğu bazı yönetim rotaları için kullanılır.
+OpenAI/Anthropic/Gemini uyumlu istemci API'leri ve anahtarın `manage` kapsamına sahip olduğu birkaç yönetim rotası için kullanılır.
 
 ```
 Authorization: Bearer <api-key>
 ```
 
-`src/sse/services/auth.ts` içindeki `isValidApiKey()` / `extractApiKey()` tarafından doğrulanır ve `src/shared/utils/apiAuth.ts` üzerinden yeniden dışa aktarılır. Doğrulayıcı, kalıcı doğrudan geçiş anahtarları olarak `OMNIROUTE_API_KEY` / `ROUTER_API_KEY` ortam değişkenlerini de kabul eder (sorun #1350).
+`src/sse/services/auth.ts` içindeki `isValidApiKey()` / `extractApiKey()` tarafından doğrulanır ve `src/shared/utils/apiAuth.ts` üzerinden yeniden dışa aktarılır. Doğrulayıcı ayrıca `OMNIROUTE_API_KEY` / `ROUTER_API_KEY` ortam değişkenlerini kalıcı doğrudan geçiş anahtarları olarak kabul eder (sorun #1350).
 
 ### 2. Pano Oturumu (auth_token çerezi)
 
@@ -33,54 +33,80 @@ Pano sayfaları ve yönetici işlemleri içindir.
 Cookie: auth_token=<JWT_SECRET ile imzalanmış JWT>
 ```
 
-Bir çerez, yalnızca JWT doğrulandığında **ve** `authenticated: true` taşıdığında oturum olarak kabul edilir
-(`src/shared/utils/dashboardSessionToken.ts` → `verifyDashboardSessionToken`). Çerezi
-kullanan her bileşen (pano rota koruması (`isDashboardSessionAuthenticated()`), yetkilendirme işlem hattı yenilemesi, WebSocket el sıkışması, canlı
+Bir çerez yalnızca JWT doğrulandığında **ve** `authenticated: true` taşıdığında bir oturumdur
+(`src/shared/utils/dashboardSessionToken.ts` → `verifyDashboardSessionToken`). Çerezin
+her tüketicisi (pano rota koruyucusu (`isDashboardSessionAuthenticated()`), yetkilendirme işlem hattı yenilemesi, WebSocket el sıkışması, canlı
 sunucu, `/api/settings/require-login`, `/api/auth/status`) bu yardımcıdan geçer.
-`JWT_SECRET` ile imzalanmış başka JWT'ler de vardır — Cursor CLI doğrudan geçişi,
-anahtar sahipleri için `iss "omniroute" / aud "cursor-cli"` belirteçleri oluşturur — ve bunlar hiçbir zaman oturum olarak kabul edilmez
+`JWT_SECRET` ile imzalanmış başka JWT'ler de vardır — Cursor CLI doğrudan geçişi, anahtar sahipleri için
+`iss "omniroute" / aud "cursor-cli"` belirteçleri üretir — ve bunlar hiçbir zaman oturum değildir
 (#13298).
 
-`src/shared/utils/apiAuth.ts` içindeki `isDashboardSessionAuthenticated()` tarafından doğrulanır. İşlem hattı, 30 günlük kullanım süresinin bitmesine 7 günden az kaldığında JWT'yi otomatik olarak yeniler.
+`src/shared/utils/apiAuth.ts` içindeki `isDashboardSessionAuthenticated()` tarafından doğrulanır. İşlem hattı, 30 günlük kullanım süresi içinde 7 günden az süre kaldığında JWT'yi otomatik olarak yeniler.
 
-Her belirteç oluşturucu `mintDashboardSessionToken` üzerinden geçtiği (bir oluşturulma zamanı `iat` ve bir kimlik `jti`) ve doğrulayıcı iki ayarı kontrol ettiği için bir oturum 30 günlük süresi dolmadan da sona erebilir: `sessionsValidAfter`, parola değişikliğiyle ayarlanır ve bu tarihten önce oluşturulan tüm oturumların artık doğrulanmamasını sağlar (parolayı değiştiren tarayıcıya yeni bir çerez verilir); `revokedDashboardSessions` ise `POST /api/auth/logout` tarafından çıkış yapılan oturumun `jti` değerinin eklendiği listedir. Daha eski bir sürüm tarafından oluşturulan oturumlar bu istemlerin hiçbirini taşımaz ve ilk parola değişikliğine kadar geçerli kalır. Ayarlar okunamazsa oturuma güvenilmez.
+Her üretici `mintDashboardSessionToken` üzerinden geçtiği (bir verilme zamanı `iat` ve bir kimlik `jti`) ve doğrulayıcı iki ayarı kontrol ettiği için bir oturum 30 günü dolmadan da sona erebilir: parola değişikliğiyle ayarlanan `sessionsValidAfter`, kendisinden önce verilmiş tüm oturumların doğrulanmasını durdurur (parolayı değiştiren tarayıcı yeni bir çerez alır) ve `POST /api/auth/logout` rotasının oturumu kapatılan oturumun `jti` değerini eklediği `revokedDashboardSessions`. Eski bir sürüm tarafından üretilen oturumlar bu iddiaların hiçbirini taşımaz ve ilk parola değişikliğine kadar geçerli kalır. Ayarlar okunamazsa oturuma güvenilmez.
 
-Bazı yönetim rotaları **iki** modu da kabul eder: çerez VEYA API anahtarı `manage` (ya da `admin`) kapsamına sahip olduğunda `Bearer <key>`. v3.8 sürümünde eklenen "API çağrılarıyla yapılandırılabilir" iş akışını mümkün kılan budur.
+Bazı yönetim rotaları **iki** moddan birini kabul eder: çerez VEYA API anahtarı `manage` (ya da `admin`) kapsamına sahip olduğunda `Bearer <key>`. v3.8'de eklenen "API çağrıları üzerinden yapılandırılabilir" iş akışını mümkün kılan budur.
 
 #### İsteğe bağlı OIDC oturum açma geçidi (#6973)
 
-Pano yönetici oturum açma işlemi, varsayılan parola ile oturum açmanın yanında **isteğe bağlı olarak etkinleştirilebilen** bir OIDC (OpenID Connect) akışını da destekler — parola ile oturum açma hiçbir zaman kaldırılmaz, yalnızca
-tamamlanır:
+Pano yöneticisi oturum açma işlemi, varsayılan parola ile oturum açmanın yanında
+**isteğe bağlı** bir OIDC (OpenID Connect) akışını da destekler — parola ile oturum açma hiçbir zaman kaldırılmaz, yalnızca
+desteklenir:
 
-- Yalnızca `settings.oidcEnabled === true` olduğunda **ve** `oidcIssuer` /
-  `oidcClientId` / `oidcClientSecret` değerlerinin tümü yapılandırıldığında etkindir (Ayarlar → Kimlik Doğrulama).
+- `settings.oidcEnabled === true` **ve** `oidcIssuer` /
+  `oidcClientId` / `oidcClientSecret` değerlerinin tümü yapılandırılmadıkça devre dışıdır (Ayarlar → Kimlik Doğrulama).
   Aksi takdirde `GET /api/auth/oidc/login`, `400` döndürür.
 - `GET /api/auth/oidc/login`, sağlayıcının
-  `/.well-known/openid-configuration` adresinden `authorization_endpoint` değerini keşfeder (bulunamazsa
-  `<issuer>/authorize` kullanılır), yönlendirme URI'sini gelen istekten
-  (`x-forwarded-proto` dikkate alınarak) oluşturur ve bir `httpOnly` `oidc_state` çerezinde saklanan rastgele bir `state`
-  ile IdP'ye yönlendirir.
+  `/.well-known/openid-configuration` adresinden `authorization_endpoint` değerini keşfeder (
+  `<issuer>/authorize` değerine geri döner), yönlendirme URI'sini gelen istekten
+  (`x-forwarded-proto` desteğiyle) oluşturur ve `httpOnly` bir `oidc_state` çerezinde
+  saklanan rastgele bir `state` ile IdP'ye yönlendirir.
 - `GET /api/auth/oidc/callback`, `state` değerini doğrular, yetkilendirme
-  kodunu takas eder ve ID belirtecinin imzasını sağlayıcının JWKS'si aracılığıyla
-  (`jose` paketinin `createRemoteJWKSet` işlevi; JWKS URI'si başına önbelleğe alınır), `issuer`/`audience`
-  kontrolleriyle doğrular. İsteğe bağlı `oidcAllowedSubjects` izin listesi, belirtecin
-  `sub` istemiyle veya `email` istemiyle eşleşir — e-posta istemi yalnızca
+  kodunu takas eder ve ID belirtecinin imzasını sağlayıcının JWKS'i aracılığıyla
+  (`jose` paketinin `createRemoteJWKSet` işlevi; JWKS URI'si başına önbelleğe alınır) `issuer`/`audience`
+  kontrolleriyle doğrular. `oidcAllowedSubjects` izin listesi zorunludur:
+  belirtecin `sub` iddiasıyla veya `email` iddiasıyla eşleşir — e-posta iddiası yalnızca
   `email_verified === true` olduğunda dikkate alınır; dolayısıyla IdP'deki doğrulanmamış bir e-posta hiçbir zaman
-  geçidi aşamaz.
-- Başarılı olduğunda, parola ile oturum açma işleminin oluşturduğu **tam olarak aynı** 30 günlük `auth_token` JWT'sini
-  oluşturur (`src/app/api/auth/login/route.ts`); böylece pano
-  oturum işlem hattının geri kalanı (otomatik yenileme, çerez bayrakları) değişmeden kalır —
-  OIDC yalnızca çerezin nasıl oluşturulduğunu değiştirir, verdiği yetkileri değil.
+  geçidi aşamaz — ve hiçbir girdi olmadığında geri çağırma her oturum açma işlemini
+  (`not_configured`) reddeder.
+- Başarılı olduğunda parola ile oturum açma işleminin verdiği (`src/app/api/auth/login/route.ts`)
+  30 günlük **tam olarak aynı** `auth_token` JWT'sini üretir; dolayısıyla
+  pano oturumu işlem hattının geri kalanı (otomatik yenileme, çerez bayrakları) değişmeden kalır —
+  OIDC yalnızca çerezin nasıl üretildiğini değiştirir, verdiği yetkileri değil.
+- Her `oidc*` ayarı (`oidcEnabled`, `oidcDisablePasswordLogin`,
+  `oidcIssuer`, `oidcClientId`, `oidcClientSecret`, `oidcAllowedSubjects`,
+  `oidcRedirectPath`, `oidcScopes`), `SECURITY_IMPACTING_SETTINGS_KEYS`
+  (`src/shared/constants/securityImpactingSettings.ts`) içindedir: gövde yönetim
+  parolasını `currentPassword` olarak taşımadığı sürece `PATCH /api/settings`,
+  `400 PASSWORD_REQUIRED` yanıtını verir (yanlış olduğunda `401 PASSWORD_MISMATCH`).
+  `oidcDisablePasswordLogin`, parola ile _oturum açmayı_ (`POST /api/auth/login`)
+  reddeder ancak saklanan parola karmasını korur ve yeniden kimlik doğrulama hâlâ
+  `currentPassword` değerini buna göre kontrol eder.
+- `POST /api/settings/import-json` bu yeniden kimlik doğrulamayı atlar; bu nedenle yazmadan önce
+  `IMPORT_STRIPPED_SETTINGS_KEYS` (aynı dosya) içindeki her anahtarı çıkarır: parola ve
+  `currentPassword`, her `SECURITY_IMPACTING_SETTINGS_KEYS` girdisi ve
+  pano oturumu durumu (`sessionsValidAfter`, `revokedDashboardSessions`).
+  Bu nedenle eski bir yedeğin içe aktarılması, bir parola değişikliğinin
+  veya oturum kapatma işleminin zaten sona erdirdiği bir oturumu yeniden canlandıramaz.
 
 ## Rota Sınıfları
 
-`src/server/authz/types.ts` üç sınıf tanımlar; deterministik olarak sınıflandırılamayan tüm rotalar varsayılan olarak `MANAGEMENT` sınıfına alınır.
+`src/server/authz/types.ts` üç sınıf tanımlar; deterministik olarak sınıflandırılamayan tüm rotalar varsayılan olarak `MANAGEMENT` sınıfına atanır.
 
-| Sınıf        | Açıklama                                                                                                                                                | Gerekli kimlik doğrulama                                        |
-| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
-| `PUBLIC`     | Açıkça güvenli rotalar — oturum açma, oturumu kapatma, durum, başlatma, sağlık kontrolü, ilk katılım önyüklemesi.                                       | Yok                                                             |
-| `CLIENT_API` | Model sunma uç noktaları — `/api/v1/*`, `/api/v1beta/*` ve `/v1/*`, `/v1beta/*`, `/chat/completions`, `/responses`, `/models`, `/codex/*` takma adları. | Etkin `REQUIRE_API_KEY` özellik bayrağı açıkken Bearer anahtarı |
-| `MANAGEMENT` | Pano sayfaları, ayarlar, sağlayıcılar, anahtarlar, yönetici ve tanılama uç noktaları.                                                                   | Pano oturumu VEYA `manage` kapsamına sahip Bearer               |
+| Sınıf        | Açıklama                                                                                                                                                | Gerekli kimlik doğrulama                                               |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| `PUBLIC`     | Açıkça güvenli rotalar — oturum açma, oturumu kapatma, durum, başlatma, sistem sağlığı, ilk kullanım kurulumu.                                          | Yok                                                                    |
+| `CLIENT_API` | Model sunma uç noktaları — `/api/v1/*`, `/api/v1beta/*` ve `/v1/*`, `/v1beta/*`, `/chat/completions`, `/responses`, `/models`, `/codex/*` takma adları. | Etkin `REQUIRE_API_KEY` özellik bayrağı açık olduğunda Bearer anahtarı |
+| `MANAGEMENT` | Pano sayfaları, ayarlar, sağlayıcılar, anahtarlar, yönetici ve tanılama uç noktaları.                                                                   | Pano oturumu VEYA `manage` kapsamına sahip Bearer                      |
+
+Bazı `MANAGEMENT` eylemleri **yalnızca operatörlere açıktır**: `manage` anahtarı yeterli değildir. Saklanan
+kimlik bilgilerinin dışa aktarılması (`GET /api/settings/export-json`, `GET /api/db-backups/export`,
+`GET /api/db-backups/exportAll`), bir eşitleme belirteci verilmesi (`POST /api/sync/tokens`) ve bir
+`admin` CLI erişim belirteci oluşturulması (`POST /api/cli/tokens`) için bir pano oturumu, yerel CLI
+öznesi veya oturum açmanın devre dışı olması gerekir; herhangi bir kapsamdaki API anahtarları ve `oma_`
+erişim belirteçleri `403` alır. Denetim,
+`src/lib/api/operatorCredential.ts` (`resolveOperatorCredential()` /
+`requireOperatorCredential()`) içinde yer alır.
 
 A few `MANAGEMENT` actions are **operator-only**: a `manage` key is not enough. Exporting stored
 credentials (`GET /api/settings/export-json`, `GET /api/db-backups/export`,

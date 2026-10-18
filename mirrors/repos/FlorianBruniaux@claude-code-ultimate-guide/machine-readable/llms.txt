@@ -7,6 +7,7 @@ Guide version 3.44.1, tracking Claude Code up to v2.1.301 (October 2026).
 ## What is covered
 
 - Getting started: installation, CLAUDE.md setup, vocabulary, first session, 7-module learning path (8-11h)
+- Concept distinctions: guide/core/ai-concept-boundaries.md compares context/window/memory, model/product/harness, assistant/workflow/agent, tool/MCP, instructions/access controls, evaluation/production evidence, and architecture/size/modality/task labels; seven original scenario checks, with attributed selective adaptation from Lexigraph (CC BY 4.0). Source limits: docs/resource-evaluations/lexigraph-ai-lexicon.md.
 - Executable learning: installable learning-path skill with prerequisite gates, local evidence, scheduled reviews, and a tested seven-module companion project
 - Context window management: 1M-token context on Sonnet 5, Opus 5.5, and Fable 5.1, context rot, /compact and /clear thresholds, auto-compact
 - Context engineering: managing what the model sees, when and in what shape; token audit workflow, compression tools, ejection discipline, maturity model
@@ -39,6 +40,9 @@ Guide version 3.44.1, tracking Claude Code up to v2.1.301 (October 2026).
 - Harness control cases: Walkinglabs and AutoHarness evaluations distinguish structural scores, test coverage, activation and observed effects. The local review-control-demo.py has 13 tests with a simulated destination, not a live merge gate.
 - WikiSkill: persistent proposal history, revisable wiki patterns, strict skill validation and executor-specific transfer. Full skill injection leaves routing untested; production gains are unmeasured. See docs/resource-evaluations/wikiskill-persistent-skill-evolution.md.
 - Human supervision: comprehension, independent judgment, usable evidence, attention and recovery exercises; proposed practices without a local human trial. Three infographic topics are available in English and French.
+
+- Architect-engineer handoffs: versioned self-contained contracts, ADRs, separate task/run/decision state, live-state reconciliation on resume, and review feedback. See guide/workflows/dual-instance-planning.md; role separation has no guaranteed cost or quality benefit, and Honkonen's eng CLI is custom tooling.
+- Harness improvement: recoverable local quality requirements, semantic ownership, MLD observations before memory promotion, isolated curation candidates and versioned publication, worker requalification and four clocks. Selectively adapted from lopopolo/harness-engineering, an anthology rather than a runtime; no local gains measured.
 
 ## Machine-readable entry points
 

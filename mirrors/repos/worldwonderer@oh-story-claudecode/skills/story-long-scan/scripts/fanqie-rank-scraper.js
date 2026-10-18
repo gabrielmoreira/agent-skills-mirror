@@ -5,7 +5,7 @@
  * 配合 browser-cdp skill 使用。先启动 Chrome CDP 环境，再运行本脚本。
  * 采集策略：从榜单页 __INITIAL_STATE__ 取结构化列表，再逐本请求详情页解码真实
  * 书名/作者/简介/题材/标签（番茄列表页有字体反爬，详情页 HTML 里是明文）。
- * 输出 Markdown 格式见 references/platform-fanqie.md；aggregate-rank.js 按此格式聚合。
+ * 输出的榜单 Markdown 格式见 aggregate-rank.js 文件头，聚合按它解析。
  *
  * 用法：
  *   node fanqie-rank-scraper.js --channel 1 --type 2              # 男频阅读榜

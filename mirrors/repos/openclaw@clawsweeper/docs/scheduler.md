@@ -19,6 +19,14 @@ The global worker budget comes from `config/automation-limits.json`; see
 [Automation Limits](limits.md) for the derived lane limits and GitHub variable
 overrides.
 
+Exact admission and publication rechecks bind the returned GitHub repository,
+number, and item URL to the requested identity. A transferred issue completes
+through the existing missing-target disposition for its former identity. It
+does not borrow the destination number for review, cache repair, or mutation;
+the destination repository's normal intake owns any subsequent review.
+Cached items that point to another identity are ignored and verified with a
+live read before use.
+
 Exact-review completion sends `review_failure_reason` for every diagnostics
 manifest with `failure.stage: agent_input_scan` and `retryable: false`, using
 `failure.reason_code` verbatim. The accepted scanner reasons are
@@ -164,6 +172,23 @@ environment, validates it, and prints the JSON body for `control_plane_curl`.
 `--review-acknowledgement-comment-id` is accepted only with `--phase status`, and
 `--generation-start` only with `--phase review`, as the queue requires. An
 invalid tuple stops the step before any request.
+
+The queue emits best-effort structured Workers Logs after committed enqueue
+outcomes and newly acknowledged review starts. `enqueue_disposition` records
+queued, deduped, replayed, shed, rejected or conflicting intake; validation
+failures before the transaction are excluded. `committed_start_acknowledgement`
+follows the first accepted generation-start heartbeat's state write, alarm
+scheduling and response preparation. Replayed heartbeats, publication work and
+terminal finalizers do not produce another review-start fact. This acknowledges
+the queue transition, not model execution or receipt by the caller.
+
+These facts and the existing source-drift park warnings contain bounded counts,
+finite trigger classes and SHA-256 hashes for target, delivery, lease and run
+joins. They omit raw identifiers, URLs, bodies and actor data. Hashes permit
+correlation; they are not anonymization. Logging/hash failures do not change
+queue outcomes. Logs may be sampled or lost and have finite retention: they
+cannot establish a lifetime review allowance, enforce cadence or prove a
+complete review history. No admission policy or durable accounting changes.
 
 After checkout, the direct lifecycle step in `event-review-apply` and the
 receipt steps in `event-review-publish` build their lifecycle bodies with
@@ -496,6 +521,10 @@ strictly newer durable review tuple for the same revision. The verified result
 travels as structured apply evidence; reason text is diagnostic only. Ambiguous
 or mixed results cannot terminalize the artifact, and legacy tupleless artifacts
 retain the existing fresh-review path.
+When command owners reuse a lease comment, equal ids require distinct known
+owners, an unambiguous complete durable identity, matching head and source
+revision, and a strictly later review time. Supersession retires the older
+artifact; it does not certify current source freshness or request another review.
 
 Legacy protocol-v1 review leases without lifecycle admission rows complete without
 writing lifecycle facts. Once a completion commits its queue transition, alarm
@@ -1057,6 +1086,12 @@ Batch review publishers hydrate only the item tuples present in their artifacts,
 publish those records, and synchronize the selected durable review comments in
 the same job. Exact issue/PR reviews likewise synchronize their selected comments
 before completing. Neither path dispatches a second broad comment scan.
+
+Review publication requires the exact comment ID, a trusted author, and the
+complete intended body. If the write response cannot verify those facts, a
+fresh byte-preserving read verifies the target. This avoids the GitHub CLI's
+display sanitization of literal Unicode escape examples. Receipt reads bypass
+the ETag cache and retain the existing credential, retry, and deadline guards.
 
 Automatic apply may close up to 40 items per run. Long apply runs commit
 checkpoints every 40 fresh closes and dispatch a

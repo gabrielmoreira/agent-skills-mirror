@@ -18,11 +18,24 @@ All requests require a valid Bearer token or session cookie. Obtain a token via 
 
 List available models
 
-Returns all models available across configured providers.
+Returns all models available across configured providers. The discovery filters (`capability`, `min_context`, `kind`, `q`) are opt-in: without them the response is unchanged. They narrow the caller's own (key-filtered) catalog and run before `limit`/`after` paging.
 
 ```bash
 curl http://localhost:20128/api/v1/models \
   -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### POST /api/v1/models/query
+
+Query a model shortlist
+
+Filtered shortlist over the same catalog as `GET /v1/models` (same auth and per-key visibility). Results are ordered by `owned_by`, then `id`, and capped by `limit` (default 20, maximum 100).
+
+```bash
+curl -X POST http://localhost:20128/api/v1/models/query \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
 ```
 
 ### GET /api/models

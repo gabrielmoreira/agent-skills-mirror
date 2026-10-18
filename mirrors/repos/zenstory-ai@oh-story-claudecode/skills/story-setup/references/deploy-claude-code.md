@@ -6,8 +6,8 @@
 
 | Source path | Target path | Owner class | Merge mode | Validation check |
 |-------------|-------------|-------------|------------|------------------|
-| `skills/story-setup/references/templates/CLAUDE.md.tmpl` | `CLAUDE.md` | user+managed | marker/section merge | contains story skill routing sections |
-| `skills/story-setup/references/templates/hooks/` | `.claude/hooks/` | story-setup managed | recursive replace | `session-*.sh`, `detect-story-gaps.sh`, `validate-story-commit.sh`, `guard-outline-before-prose.sh`, `check-prose-after-write.sh`, `story_hook_core.js`, `story_hook_cli.js`, `lib/common.sh`, `lib/sentinel.sh` exist；`story_hook_core.js` 与 OpenCode/ZCode 副本字节一致 |
+| `skills/story-setup/references/templates/CLAUDE.md.tmpl` | `CLAUDE.md` | user+managed | managed block merge | contains story skill routing sections |
+| `skills/story-setup/references/templates/hooks/` | `.claude/hooks/` | story-setup managed | recursive replace | `session-*.sh`, `detect-story-gaps.sh`, `validate-story-commit.sh`, `guard-outline-before-prose.sh`, `check-prose-after-write.sh`, `story_hook_core.js`, `story_hook_cli.js`, `lib/common.sh`, `lib/sentinel.sh` exist；`story_hook_core.js` 与 OpenCode/ZCode/Antigravity 副本字节一致 |
 | `skills/story-setup/references/templates/rules/*.md` | `.claude/rules/*.md` | story-setup managed | replace | every rule contains `paths` frontmatter |
 | `skills/story-setup/references/templates/agents/*.md` | `.claude/agents/*.md` | story-setup managed | replace | 7 agent files exist |
 | `skills/story-setup/references/agent-references/*.md` | `.claude/skills/story-setup/references/agent-references/*.md` | story-setup managed | replace | every `story-setup/references/agent-references/*.md` reference resolves |
@@ -16,23 +16,11 @@
 | `skills/story-setup/scripts/copy-path-safety.py` | 每个递归复制步骤前执行，不复制到项目专用目录 | story-setup helper | execute | JSON 仅 `copy_allowed: true` 时允许复制；symlink 同对象 no-op；target 位于 source 内时停止 |
 | generated sentinel | `.story-deployed` | story-setup managed | replace | contains `agents_version`, `setup_skill_version`, `target_cli`, `resolver_strategy`, `references_dir` |
 
-`references/templates/hooks/` 内容：8 个 hook 脚本模板 + `story_hook_core.js`（正文网/大纲守卫/连续性/commit 侦测的共享实现，与 OpenCode/ZCode 同一份）+ `story_hook_cli.js`（bash hook 调核的 node 桥）+ `lib/common.sh`/`lib/sentinel.sh`。正文兜底 `check-prose-after-write.sh` 限 PostToolUse Write/Edit；`cat>`/`tee` 等 Bash 写正文在 Claude 端仅运行写前守卫。
+`references/templates/hooks/` 内容：8 个 hook 脚本模板 + `story_hook_core.js`（正文网/大纲守卫/连续性/commit 侦测的共享实现，与 OpenCode/ZCode/Antigravity 同一份）+ `story_hook_cli.js`（bash hook 调核的 node 桥）+ `lib/common.sh`/`lib/sentinel.sh`。正文兜底 `check-prose-after-write.sh` 限 PostToolUse Write/Edit；`cat>`/`tee` 等 Bash 写正文在 Claude 端仅运行写前守卫。
 
 ## 部署 CLAUDE.md
 
-- 读取 `skills/story-setup/references/templates/CLAUDE.md.tmpl`
-- 替换占位符（见 SKILL.md「模板占位符」）
-- 写入项目根目录 `CLAUDE.md`；已存在时按下面「CLAUDE.md 合并策略」处理
-
-### CLAUDE.md 合并策略
-
-用户已有 CLAUDE.md 时，按 marker/section 合并：
-1. 优先识别 story-setup 管理块标记（如果旧项目已有标记，只替换标记内内容）
-2. 无标记时，读取用户现有 CLAUDE.md，按 `##` 标题切分为 section map
-3. 读取模板 CLAUDE.md.tmpl，同样切分
-4. 模板中的标准 section（Skill 路由表、文件结构、协作规则、与作者协作、Compact 后恢复上下文；模板有而用户文件没有的 section 直接补入）**覆盖**用户同名 section
-5. 用户独有的 section（自定义内容）**保留**不动
-6. 未知冲突用 AskUserQuestion 让用户选择保留哪个版本
+按 SKILL.md「项目指令合并」写入项目根 `CLAUDE.md`：`--host claude-code`，模板 `references/templates/CLAUDE.md.tmpl`。
 
 ## 部署 Hooks
 
@@ -51,7 +39,7 @@
 
 - 读取 `skills/story-setup/references/templates/agents/` 下所有 `.md` 文件
 - 复制到用户项目的 `.claude/agents/` 目录
-- Agent 文件属于 story-setup 管理文件，可安全覆盖；版本升级时按 `UPGRADING.md` 的版本检测结果重新部署
+- Agent 文件属于 story-setup 管理文件，可安全覆盖；只覆盖这 7 个 oh-story agent，目录里作者自己的 agent 保留
 - Agent 正文以这里的 Claude Code Markdown 为真源，其他宿主的 agent 都由它转换而来
 - **部署后必须新开会话**：agent 只在会话启动时注册；报告文案见下方「安装报告必须提示」。
 
@@ -90,5 +78,5 @@
 
 ## 安装报告必须提示
 
-- **⚠️ 重启提示（必须醒目，放进「你还需要做的事」）**：本次部署写入了 `.claude/agents/`，但这些 custom agent 只在「会话启动」时才会被 Claude Code 注册成 `subagent_type`。**请新开一个 Claude Code 会话再开始写作**，否则当前会话里 story-review / story-long-write 等想 spawn `story-architect`、`narrative-writer` 等时会拿到「subagent_type 不可用」并降级 solo（单视角，失去多 agent 协作）。判断是否生效：新会话里跑 `/story-review`，报告开头「这次怎么审的」写着几个视角（完整审或精简审）即注册成功；若写着「我一个人审」说明还在旧会话或未注册。
+- **重启提示（必须醒目，放进「你还需要做的事」第一条）**：本次部署写入了 `.claude/agents/`，但这些 custom agent 只在「会话启动」时才会被 Claude Code 注册成 `subagent_type`。**请新开一个 Claude Code 会话再开始写作**，否则当前会话里 story-review / story-long-write 等想 spawn `story-architect`、`narrative-writer` 等时会拿到「subagent_type 不可用」并降级 solo（单视角，失去多 agent 协作）。判断是否生效：新会话里跑 `/story-review`，报告开头「这次怎么审的」写着几个视角（完整审或精简审）即注册成功；若写着「我一个人审」说明还在旧会话或未注册。
 - 重启后即可使用 `/story-long-write` 或 `/story-short-write`

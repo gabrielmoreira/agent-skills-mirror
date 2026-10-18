@@ -23,7 +23,7 @@ description: dontbesilent 商业工具箱主入口，根据当前问题和反馈
 每次进入本 Skill，在判断模式和编排之前，必须先定位本 `SKILL.md` 所在目录，并执行该目录中的版本检查脚本：
 
 ```bash
-DBS_LOCAL_VERSION="2.20.0"; bash "<本 SKILL.md 所在目录>/scripts/check-update.sh" "$DBS_LOCAL_VERSION"
+DBS_LOCAL_VERSION="2.22.0"; bash "<本 SKILL.md 所在目录>/scripts/check-update.sh" "$DBS_LOCAL_VERSION"
 ```
 
 执行规则：
@@ -151,7 +151,7 @@ python3 "<本 Skill 目录>/scripts/list-official-skills.py"
 
 需要多个 Skill 时，读取 [多方法处理契约](references/composition-contract.md)，区分互补组合与对照尝试。正式目录里没有匹配方法时，承认缺口，不把相邻方法包装成缺失能力。
 
-内容类近邻候选按实际交付区分：评估整体内容表现、修改共鸣断点、解释传播机制、制作标题封面开头、提取视频文字、生成章节导航、检查发布风险各有边界。用户只说“视频上加文字”时，先澄清文字用途，不能仅凭视频格式猜测。
+内容类近邻候选按实际交付区分：评估整体内容表现、修改共鸣断点、解释传播机制、制作标题封面开头、提取视频文字、生成章节导航、检查发布风险各有边界。用户要写或修改文字标题、封面文字、视频开头，或要先确定一条内容讲给谁、讲什么再写这三样时，统一使用 `dbs-title-cover-intro`；其他内容 Skill 不代写标题、封面和开头。用户只说“视频上加文字”时，先澄清文字用途，不能仅凭视频格式猜测。
 
 ### 4．在当前对话中执行
 

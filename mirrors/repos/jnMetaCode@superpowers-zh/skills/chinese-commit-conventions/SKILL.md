@@ -286,7 +286,7 @@ npx husky init
 
 ```bash
 # .husky/commit-msg
-npx --no -- commitlint --edit "$1"
+npx --no -- commitlint --edit "${1}"
 ```
 
 ### 配置 pre-commit 钩子

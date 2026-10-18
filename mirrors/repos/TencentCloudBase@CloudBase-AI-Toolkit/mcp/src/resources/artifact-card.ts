@@ -127,7 +127,8 @@ body {
   background: var(--bg); color: var(--text); -webkit-font-smoothing: antialiased;
   font: 14px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
 }
-.screen { width: 100%; max-width: 460px; margin: 0 auto; background: var(--bg); }
+/* The host decides the width; the card fills it instead of leaving wide margins. */
+.screen { width: 100%; max-width: 720px; margin: 0 auto; background: var(--bg); }
 .brand { height: 44px; display: flex; align-items: center; justify-content: space-between; gap: 12px;
   padding: 0 16px; border-bottom: 1px solid var(--line); }
 .brand-l { display: flex; align-items: center; gap: 8px; min-width: 0; }
@@ -153,17 +154,21 @@ body {
 .field + .field { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line); }
 .field .k { font-size: 13px; color: var(--text-2); margin: 0 0 2px; }
 .field .v { font-size: 14px; margin: 0; overflow-wrap: anywhere; }
+.note { margin: 8px 0 0; font-size: 12px; color: var(--text-2); }
 .field .val { display: grid; grid-template-columns: minmax(0,1fr) auto auto; align-items: center; gap: 8px; }
 .field .url { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px;
   overflow-wrap: anywhere; user-select: all; min-width: 0; }
 .tag { font-size: 13px; line-height: 22px; height: 22px; padding: 0 8px; border-radius: 6px; white-space: nowrap;
   background: var(--bg); color: var(--text-2); }
 .tag.warn { color: var(--warn); background: rgba(247,144,9,.12); }
-.acts { margin: 16px 0 0; }
+.acts { margin: 16px 0 0; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 .btn { font: inherit; font-size: 14px; font-weight: 500; cursor: pointer; border-radius: 8px;
   display: inline-flex; align-items: center; justify-content: center; gap: 6px; white-space: nowrap;
   transition: background .15s, border-color .15s, color .15s; }
-.btn.primary { width: 100%; height: 36px; background: var(--primary); border: 1px solid var(--primary); color: #fff; }
+.btn.primary { height: 36px; padding: 0 18px; background: var(--primary); border: 1px solid var(--primary); color: #fff; }
+/* Card-width rule: full-bleed while the card is phone-shaped, natural width once it is a wide card
+   (a 700px-wide button reads as a banner, not as the one next step). */
+@media (max-width: 560px) { .btn.primary { width: 100%; } }
 .btn.primary:hover { background: var(--primary-hover); border-color: var(--primary-hover); }
 .btn.secondary { height: 32px; padding: 0 12px; background: var(--surface); border: 1px solid var(--line); color: var(--text); }
 .btn.secondary:hover { background: var(--tint); border-color: transparent; }
@@ -173,7 +178,7 @@ body {
   transition: background .15s, border-color .15s, color .15s; }
 .icon-btn:hover { background: var(--tint); border-color: transparent; color: var(--primary); }
 .icon { width: 16px; height: 16px; flex: 0 0 auto; }
-.acts-row { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; align-items: center; }
+.acts-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 .fold { margin: 16px 0 0; padding-top: 16px; border-top: 1px solid var(--line); }
 .fold summary { font-size: 13px; color: var(--text-2); cursor: pointer; list-style: none;
   display: inline-flex; align-items: center; gap: 4px; }
@@ -186,6 +191,15 @@ body {
 </style>
 </head>
 <body>
+<!-- Lucide glyphs, inline and referenced by id: no network, no icon font, no data URI. One <use>
+     per button keeps the swap to a single attribute write. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
+<symbol id="ico-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></symbol>
+<symbol id="ico-link" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></symbol>
+<symbol id="ico-log" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></symbol>
+<symbol id="ico-refresh" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></symbol>
+<symbol id="ico-share" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.59 13.51 6.83 3.98"/><path d="m15.41 6.51-6.82 3.98"/></symbol>
+</defs></svg>
 <div class="screen">
 <div class="brand">
 <span class="brand-l">
@@ -226,15 +240,18 @@ body {
 <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
 </button>
 </div>
+<p class="note" id="k-note" hidden></p>
 </div>
 </div>
 <div class="acts">
-<button class="btn primary" type="button" id="btn-main" hidden></button>
+<button class="btn primary" type="button" id="btn-main" hidden><svg class="icon" aria-hidden="true"><use id="ico-main" href="#ico-open"/></svg><span id="btn-main-label"></span></button>
 <div class="acts-row" id="acts-row">
-<button class="btn secondary" type="button" id="btn-log" hidden></button>
-<button class="btn secondary" type="button" id="btn-redeploy" hidden></button>
-<button class="icon-btn" type="button" id="btn-refresh" hidden>
+<button class="btn secondary" type="button" id="btn-log" hidden><svg class="icon" aria-hidden="true"><use href="#ico-log"/></svg><span id="btn-log-label"></span></button>
+<button class="btn secondary" type="button" id="btn-redeploy" hidden><svg class="icon" aria-hidden="true"><use href="#ico-refresh"/></svg><span id="btn-redeploy-label"></span></button>
+<button class="btn secondary" type="button" id="btn-share" hidden><svg class="icon" aria-hidden="true"><use href="#ico-share"/></svg><span id="btn-share-label"></span></button>
+<button class="btn secondary" type="button" id="btn-refresh" hidden>
 <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
+<span id="btn-refresh-label">${E(L("mcpUiArtifact.action.refresh"))}</span>
 </button>
 </div>
 </div>
@@ -258,11 +275,23 @@ body {
   function notify(method, params) { post({ jsonrpc: "2.0", method: method, params: params }); }
   function el(id) { return document.getElementById(id); }
   function setText(node, value) { if (node) { node.textContent = value; } }
+  /**
+   * Report the height of the card, not of the viewport.
+   *
+   * documentElement.scrollHeight is at least as tall as the frame the host gave us, so reporting it
+   * tells the host "keep this height" - and a short card then sits in a tall empty box. Measuring
+   * the panel itself lets the host shrink to the content.
+   */
   function reportSize() {
-    notify("ui/notifications/size-changed", {
-      width: document.documentElement.scrollWidth,
-      height: document.documentElement.scrollHeight
-    });
+    var width = document.documentElement.scrollWidth;
+    var height = document.documentElement.scrollHeight;
+    var root = null;
+    try { root = document.querySelector("main.panel, .panel, .screen"); } catch (error) { root = null; }
+    if (root && root.getBoundingClientRect) {
+      var rect = root.getBoundingClientRect();
+      if (rect.height > 0) { height = Math.ceil(rect.height); }
+    }
+    notify("ui/notifications/size-changed", { width: width, height: height });
   }
 
   var T = {
@@ -287,16 +316,21 @@ body {
     envIdLabel: ${S("mcpUiArtifact.brand.envIdLabel")},
     copyEnvId: ${S("mcpUiCredits.brand.copyEnvId")},
     actionOpenUrl: ${S("mcpUiArtifact.action.openUrl")},
+    actionOpenFailed: ${S("mcpUiArtifact.action.openFailed")},
     actionBindDomain: ${S("mcpUiArtifact.action.bindDomain")},
     actionViewLog: ${S("mcpUiArtifact.action.viewLog")},
     actionViewBuildLog: ${S("mcpUiArtifact.action.viewBuildLog")},
     actionRedeploy: ${S("mcpUiArtifact.action.redeploy")},
+    actionShareCase: ${S("mcpUiArtifact.action.shareCase")},
+    messageFailed: ${S("mcpUiArtifact.message.failed")},
+    shareOpening: ${S("mcpUiArtifact.share.opening")},
+    shareFailed: ${S("mcpUiArtifact.share.failed")},
     actionRefresh: ${S("mcpUiArtifact.action.refresh")},
-    messageOpenUrl: ${S("mcpUiArtifact.message.openUrl")},
     messageBindDomain: ${S("mcpUiArtifact.message.bindDomain")},
     messageViewLog: ${S("mcpUiArtifact.message.viewLog")},
     messageViewBuildLog: ${S("mcpUiArtifact.message.viewBuildLog")},
     messageRedeploy: ${S("mcpUiArtifact.message.redeploy")},
+    messageShareCase: ${S("mcpUiArtifact.message.shareCase")},
     messageRefresh: ${S("mcpUiArtifact.message.refresh")},
     messageTargetFallback: ${S("mcpUiArtifact.message.targetFallback")},
     plan: {
@@ -459,8 +493,10 @@ body {
     var showLog = false;
     var logLabel = "";
     var logMessage = "";
+    var openMain = false;
     var showRedeploy = false;
     var showRefresh = false;
+    var showShare = false;
 
     if (state === "deploying") {
       mainLabel = T.actionViewBuildLog;
@@ -474,8 +510,13 @@ body {
         logLabel = T.actionViewLog;
         logMessage = T.messageViewLog;
       } else if (scope === "public") {
+        // The address is live: the button opens it. Asking the conversation to "open {url}" only
+        // moves the same click one turn away from the user.
         mainLabel = T.actionOpenUrl;
-        mainMessage = T.messageOpenUrl;
+        mainMessage = "";
+        openMain = true;
+        // Sharing needs something a stranger can open, so this only exists for a public address.
+        showShare = true;
       }
       // Unknown scope: no promise is made about the address, so there is no main action at all.
       showRedeploy = true;
@@ -487,17 +528,27 @@ body {
       showRedeploy = true;
     }
 
-    setText(main, mainLabel);
+    // Labels live in their own span so the glyph beside them survives a re-render: writing
+    // textContent on the button itself would delete the icon.
+    setText(el("btn-main-label"), mainLabel);
     if (main) { main.hidden = !mainLabel; main.disabled = false; }
-    setText(log, logLabel);
+    setIcon(el("ico-main"), openMain ? "open" : (mainLabel === T.actionBindDomain ? "link" : "log"));
+    setText(el("btn-log-label"), logLabel);
     if (log) { log.hidden = !showLog; log.disabled = false; }
-    setText(redeploy, T.actionRedeploy);
+    setText(el("btn-redeploy-label"), T.actionRedeploy);
     if (redeploy) { redeploy.hidden = !showRedeploy; redeploy.disabled = false; }
+    var share = el("btn-share");
+    setText(el("btn-share-label"), T.actionShareCase);
+    if (share) { share.hidden = !showShare; share.disabled = false; }
     if (refresh) { refresh.hidden = !showRefresh; refresh.disabled = false; }
 
-    if (main) { main.setAttribute("data-message", mainMessage); }
+    if (main) {
+      main.setAttribute("data-message", mainMessage);
+      main.setAttribute("data-action", openMain ? "open" : "message");
+    }
     if (log) { log.setAttribute("data-message", logMessage); }
     if (redeploy) { redeploy.setAttribute("data-message", T.messageRedeploy); }
+    if (share) { share.setAttribute("data-message", T.messageShareCase); }
     if (refresh) { refresh.setAttribute("data-message", T.messageRefresh); }
   }
 
@@ -517,15 +568,128 @@ body {
     return text;
   }
 
+  /** Swap a button glyph: one <use> plus one <symbol> per icon, so this is a single attribute write. */
+  function setIcon(use, name) {
+    if (use) { use.setAttribute("href", "#ico-" + name); }
+  }
+
+  /**
+   * A host may accept ui/message or ui/open-link and answer late - or never. Holding the row's lock
+   * until it answers turns one click into a dead action row (seen on a real host: the link opened,
+   * no reply came back, and every later button was ignored), so the lock has its own deadline.
+   */
+  var ACTION_TIMEOUT_MS = 2500;
+  // The spec declares no capability for ui/message, and hostCapabilities.openLinks is not a reliable
+  // gate either (one host omits it and still opens links). So the panel learns from the first
+  // refusal: after that the button goes straight to the copied-text fallback instead of retrying a
+  // call the host keeps rejecting.
+  var messageBlocked = false;
+  var linkBlocked = false;
+  function noteUnderActions(text) {
+    var note = el("k-note");
+    if (note) { setText(note, text); note.hidden = false; }
+  }
+
+  function lockRow(node) {
+    busy = true;
+    if (node) { node.disabled = true; }
+    var released = false;
+    return function release() {
+      if (released) { return; }
+      released = true;
+      busy = false;
+      if (node) { node.disabled = false; }
+    };
+  }
+
   function sendMessage(node) {
     if (!node || busy) { return; }
     var message = payloadText(node.getAttribute("data-message") || "");
     if (!message) { return; }
-    busy = true;
-    node.disabled = true;
+    if (messageBlocked) { copyText(message); noteUnderActions(T.messageFailed); return; }
+    var release = lockRow(node);
+    setTimeout(release, ACTION_TIMEOUT_MS);
     request("ui/message", { role: "user", content: { type: "text", text: message } })
-      .then(function () { busy = false; node.disabled = false; })
-      .catch(function () { busy = false; node.disabled = false; });
+      .then(release)
+      .catch(function () {
+        // The text never reached the conversation: hand it over instead of failing mute, and stop
+        // asking a host that already said no.
+        messageBlocked = true;
+        copyText(message);
+        noteUnderActions(T.messageFailed);
+        release();
+      });
+  }
+
+  /**
+   * ui/open-link is the sanctioned way out of the sandbox: the host opens the URL in the user's
+   * browser and may refuse. When it refuses (or does not implement the method), the click still
+   * has to end somewhere, so the address is copied and the note under it says so.
+   */
+  function openUrl(node) {
+    if (!current.url || busy) { return; }
+    if (linkBlocked) { copyText(current.url); noteUnderActions(T.actionOpenFailed); return; }
+    var release = lockRow(node);
+    setTimeout(release, ACTION_TIMEOUT_MS);
+    request("ui/open-link", { url: current.url })
+      .then(function (result) {
+        if (result && result.isError) { throw new Error("denied"); }
+        release();
+      })
+      .catch(function () {
+        linkBlocked = true;
+        copyText(current.url);
+        noteUnderActions(T.actionOpenFailed);
+        release();
+      });
+  }
+
+  /**
+   * Sharing has two roads. A host that forwards ui/message gets the skill's full treatment (card,
+   * copy, entry). A host that refuses it - which is the one we tested - still has to end somewhere,
+   * so the button asks the server for the case-wall entry and opens that instead: deterministic,
+   * no model involved, and the user lands on the form rather than on nothing.
+   */
+  function shareCase(node) {
+    if (!node || busy) { return; }
+    var release = lockRow(node);
+    setTimeout(release, ACTION_TIMEOUT_MS);
+    request("ui/message", { role: "user", content: { type: "text", text: payloadText(T.messageShareCase) } })
+      .then(release)
+      .catch(function () {
+        messageBlocked = true;
+        release();
+        openCaseWall();
+      });
+  }
+
+  function openCaseWall() {
+    var node = el("btn-share");
+    var release = lockRow(node);
+    setTimeout(release, ACTION_TIMEOUT_MS);
+    request("tools/call", { name: "prepareFeedback", arguments: { channel: "case" } })
+      .then(function (result) {
+        var payload = parseToolJson(result);
+        if (!payload || !payload.url) { throw new Error("no case-wall url"); }
+        noteUnderActions(T.shareOpening);
+        return request("ui/open-link", { url: payload.url });
+      })
+      .then(release)
+      .catch(function () {
+        var node2 = el("k-note");
+        noteUnderActions(T.shareFailed);
+        release();
+      });
+  }
+
+  /** tools/call answers with a JSON string in content[0]; the panel only needs one field out of it. */
+  function parseToolJson(result) {
+    try {
+      var text = result && result.content && result.content[0] && result.content[0].text;
+      return text ? JSON.parse(text) : null;
+    } catch (error) {
+      return null;
+    }
   }
 
   function copyText(text) {
@@ -552,6 +716,8 @@ body {
     if (!node) { return; }
     if (node.id === "btn-copy-env") { copyText(current.envId); return; }
     if (node.id === "btn-copy-url") { copyText(current.url); return; }
+    if (node.getAttribute("data-action") === "open") { openUrl(node); return; }
+    if (node.id === "btn-share") { shareCase(node); return; }
     sendMessage(node);
   });
 
@@ -565,6 +731,13 @@ body {
   }
 
   window.addEventListener("message", function (event) {
+    // Only the host may drive this view. Origin cannot be checked here (a sandboxed view has no
+    // comparable host origin, and the spec's own example posts with "*"), so the source window is
+    // checked instead. It has to accept how hosts actually deliver: from the parent frame, from
+    // this frame itself (a sandbox proxy that relays by posting here), and a null source (a
+    // MessagePort relay). Measured on Codex's mcp-app-sandbox: allowing the parent frame only
+    // dropped every result silently, which is why those two cases are allowed on purpose.
+    if (event.source && event.source !== window.parent && event.source !== window) { return; }
     var data = event.data;
     if (!data || typeof data !== "object") { return; }
     if (data.method === "ui/notifications/tool-result") {

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ClawBio/ClawBio` — 26 default patterns, 0 followed patterns, 1328 file(s) materialized.
+Mirror of `ClawBio/ClawBio` — 26 default patterns, 0 followed patterns, 1327 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ClawBio/ClawBio` — 26 default patterns, 0 followed patterns, 1328 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 1328 |
+| Files         | 1327 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -1374,19 +1374,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1313 | ✓ | [`skills/wes-clinical-report-es/tests/test_wes_clinical_report_es.py`](skills/wes-clinical-report-es/tests/test_wes_clinical_report_es.py) |
 | 1314 | ✓ | [`skills/wes-clinical-report-es/wes_clinical_report_es.py`](skills/wes-clinical-report-es/wes_clinical_report_es.py) |
 | 1315 | ✓ | [`skills/wgs-prs/SKILL.md`](skills/wgs-prs/SKILL.md) |
-| 1316 | ✓ | [`skills/wgs-prs/tests/conftest.py`](skills/wgs-prs/tests/conftest.py) |
-| 1317 | ✓ | [`skills/wgs-prs/tests/test_repro_bundle.py`](skills/wgs-prs/tests/test_repro_bundle.py) |
-| 1318 | ✓ | [`skills/wgs-prs/tests/test_sarek.py`](skills/wgs-prs/tests/test_sarek.py) |
-| 1319 | ✓ | [`skills/wgs-prs/tests/test_vcf_qc.py`](skills/wgs-prs/tests/test_vcf_qc.py) |
-| 1320 | ✓ | [`skills/wgs-prs/tests/test_wgs_prs.py`](skills/wgs-prs/tests/test_wgs_prs.py) |
-| 1321 | ✓ | [`skills/wgs-prs/wgs_prs_repro_bundle.py`](skills/wgs-prs/wgs_prs_repro_bundle.py) |
-| 1322 | ✓ | [`skills/wgs-prs/wgs_prs.py`](skills/wgs-prs/wgs_prs.py) |
-| 1323 | ✓ | [`skills/xena-tcga-gene-query/examples/demo_output.md`](skills/xena-tcga-gene-query/examples/demo_output.md) |
-| 1324 | ✓ | [`skills/xena-tcga-gene-query/references/api.md`](skills/xena-tcga-gene-query/references/api.md) |
-| 1325 | ✓ | [`skills/xena-tcga-gene-query/references/tcga_codes.md`](skills/xena-tcga-gene-query/references/tcga_codes.md) |
-| 1326 | ✓ | [`skills/xena-tcga-gene-query/scripts/query_tcga_api.py`](skills/xena-tcga-gene-query/scripts/query_tcga_api.py) |
-| 1327 | ✓ | [`skills/xena-tcga-gene-query/SKILL.md`](skills/xena-tcga-gene-query/SKILL.md) |
-| 1328 | ✓ | [`skills/xena-tcga-gene-query/tests/test_query.py`](skills/xena-tcga-gene-query/tests/test_query.py) |
+| 1316 | ✓ | [`skills/wgs-prs/tests/test_repro_bundle.py`](skills/wgs-prs/tests/test_repro_bundle.py) |
+| 1317 | ✓ | [`skills/wgs-prs/tests/test_sarek.py`](skills/wgs-prs/tests/test_sarek.py) |
+| 1318 | ✓ | [`skills/wgs-prs/tests/test_vcf_qc.py`](skills/wgs-prs/tests/test_vcf_qc.py) |
+| 1319 | ✓ | [`skills/wgs-prs/tests/test_wgs_prs.py`](skills/wgs-prs/tests/test_wgs_prs.py) |
+| 1320 | ✓ | [`skills/wgs-prs/wgs_prs_repro_bundle.py`](skills/wgs-prs/wgs_prs_repro_bundle.py) |
+| 1321 | ✓ | [`skills/wgs-prs/wgs_prs.py`](skills/wgs-prs/wgs_prs.py) |
+| 1322 | ✓ | [`skills/xena-tcga-gene-query/examples/demo_output.md`](skills/xena-tcga-gene-query/examples/demo_output.md) |
+| 1323 | ✓ | [`skills/xena-tcga-gene-query/references/api.md`](skills/xena-tcga-gene-query/references/api.md) |
+| 1324 | ✓ | [`skills/xena-tcga-gene-query/references/tcga_codes.md`](skills/xena-tcga-gene-query/references/tcga_codes.md) |
+| 1325 | ✓ | [`skills/xena-tcga-gene-query/scripts/query_tcga_api.py`](skills/xena-tcga-gene-query/scripts/query_tcga_api.py) |
+| 1326 | ✓ | [`skills/xena-tcga-gene-query/SKILL.md`](skills/xena-tcga-gene-query/SKILL.md) |
+| 1327 | ✓ | [`skills/xena-tcga-gene-query/tests/test_query.py`](skills/xena-tcga-gene-query/tests/test_query.py) |
 
 ---
 

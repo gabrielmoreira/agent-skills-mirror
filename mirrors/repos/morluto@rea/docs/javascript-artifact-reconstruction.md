@@ -586,6 +586,21 @@ not bypass worker heap, execution deadline or parent result admission. Truncated
 coverage reports both effective node ceilings; omitted relationships remain
 unknown.
 
+Unknown records have independent defaults of 100000 across the application and
+20000 per source. Select `max_semantic_unknowns` and
+`max_semantic_unknowns_per_file` (CLI: `--max-semantic-unknowns` and
+`--max-semantic-unknowns-per-file`), each from 1 to 1000000. The parent offers the
+remaining capacity to the worker, and rejects excess records before adoption.
+Unknown admission happens before canonical identity and provenance construction.
+When capacity is exhausted, coverage is partial and truncated and names both
+effective unknown ceilings. `coverage.omitted_unknown_occurrences` counts examined
+emission occurrences by family and reason, including repeated emissions. It does
+not claim distinct discarded identities or count frontiers in unexamined source.
+Omitted unknown provenance and IDs are not retained. Existing source, node,
+execution and memory limits continue to determine examined coverage. Raising only
+a node capacity does not raise the unknown capacity. Graphs without unknown
+omissions omit this optional coverage field, preserving their existing identities.
+
 While sources remain, the sequential worker reserves one next compact static
 checkpoint at its 8 MiB bound with the same 6x retention expansion used at
 admission. Earlier checkpoints are already charged to retained bytes; the

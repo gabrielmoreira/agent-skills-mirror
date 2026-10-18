@@ -148,18 +148,18 @@ curl -X POST http://localhost:20128/a2a \
 
 ## Mövcud bacarıqlar
 
-OmniRoute `src/lib/a2a/taskExecution.ts::A2A_SKILL_HANDLERS` daxilində qoşulmuş 6 A2A bacarığını təqdim edir. Hər bir bacarıq modulu `src/lib/a2a/skills/` daxilində yerləşir.
+OmniRoute `src/lib/a2a/taskExecution.ts::A2A_SKILL_HANDLERS` daxilində əlaqələndirilmiş 6 A2A bacarığını təqdim edir. Hər bir bacarıq modulu `src/lib/a2a/skills/` daxilində yerləşir.
 
-| Bacarıq                     | ID                   | Təsvir                                                                                                                                                                              | Teqlər                         | Nümunələr                                         |
-| :-------------------------- | :------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :----------------------------- | :------------------------------------------------ |
-| Ağıllı marşrutlaşdırma      | `smart-routing`      | OmniRoute-un kombinasiya mühərriki və qiymətləndirməsindən istifadə edərək sorğunu optimal provayder/kombinasiya vasitəsilə yönləndirir                                             | marşrutlaşdırma, provayderlər  | "Bu sorğunu ən yaxşı model vasitəsilə yönləndir"  |
-| Kvotanın idarə edilməsi     | `quota-management`   | Hər provayder üzrə kvota vəziyyətini bildirir, çağıran tərəflərə sürəti nə vaxt məhdudlaşdırmaq və ya provayderi dəyişmək barədə qərar verməyə kömək edir                           | kvota, provayderlər            | "anthropic üçün kvotanı yoxla"                    |
-| Provayderlərin aşkarlanması | `provider-discovery` | Quraşdırılmış provayderləri imkanları, pulsuz səviyyə göstəriciləri və OAuth statusu ilə birlikdə sadalayır                                                                         | provayderlər, aşkarlama        | "Hansı provayderlər mövcuddur?"                   |
-| Xərc təhlili                | `cost-analysis`      | Kataloq və son istifadə məlumatları əsasında sorğunun/söhbətin xərcini təxmin edir                                                                                                  | xərc, istifadə                 | "Bu söhbətin xərcini təxmin et"                   |
-| Sağlamlıq hesabatı          | `health-report`      | Hər provayder üzrə dövrəqıranın, gözləmə müddətinin və kilidlənmə vəziyyətinin ümumi görünüşünü təqdim edir                                                                         | sağlamlıq, dayanıqlılıq        | "Bütün provayderlərin sağlamlıq statusunu göstər" |
-| İmkanların siyahısı         | `list-capabilities`  | Kontekst daxil edilməsi üçün xam SKILL.md URL-ləri ilə birlikdə 45 elementdən ibarət tam Agent Skills kataloqunu (23 API + 21 CLI + 1 konfiqurasiya) markdown cədvəli kimi qaytarır | kataloq, aşkarlama, bacarıqlar | "Bütün OmniRoute imkanlarını sadala"              |
+| Bacarıq                     | ID                   | Təsvir                                                                                                                                                          | Teqlər                         | Nümunələr                                         |
+| :-------------------------- | :------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------- | :----------------------------- | :------------------------------------------------ |
+| Ağıllı marşrutlaşdırma      | `smart-routing`      | OmniRoute-un kombinasiya mühərriki və qiymətləndirməsindən istifadə edərək sorğunu optimal provayder/kombinasiya vasitəsilə yönləndirir                         | marşrutlaşdırma, provayderlər  | "Bu sorğunu ən yaxşı model vasitəsilə yönləndir"  |
+| Kvotanın idarə edilməsi     | `quota-management`   | Hər provayder üzrə kvota vəziyyətini bildirir, çağıran tərəflərə nə vaxt məhdudlaşdırma və ya keçid etməli olduqlarını müəyyənləşdirməyə kömək edir             | kvota, provayderlər            | "anthropic üçün kvotanı yoxla"                    |
+| Provayderlərin aşkarlanması | `provider-discovery` | Quraşdırılmış provayderləri imkanları, pulsuz tarif göstəriciləri və OAuth statusu ilə birlikdə siyahıya alır                                                   | provayderlər, aşkarlama        | "Hansı provayderlər mövcuddur?"                   |
+| Xərc təhlili                | `cost-analysis`      | Kataloq və son istifadəyə əsasən sorğunun/söhbətin xərcini təxmin edir                                                                                          | xərc, istifadə                 | "Bu söhbətin xərcini təxmin et"                   |
+| Sağlamlıq hesabatı          | `health-report`      | Hər provayder üzrə dövrəqıran, gözləmə müddəti və bloklama vəziyyətini ümumiləşdirir                                                                            | sağlamlıq, dayanıqlılıq        | "Bütün provayderlərin sağlamlıq statusunu göstər" |
+| İmkanların siyahısı         | `list-capabilities`  | Tam 45 elementlik Agent Skills kataloqunu (23 API + 21 CLI + 1 konfiqurasiya) kontekst yeritməsi üçün xam SKILL.md URL-ləri olan markdown cədvəli kimi qaytarır | kataloq, aşkarlama, bacarıqlar | "Bütün OmniRoute imkanlarını siyahıya al"         |
 
-> Agent Kartı aktual 352 provayderdən ibarət kataloqla uyğun saxlanmalıdır; provayderlərin sayı və pulsuz/autentifikasiya tələb etməyən seçimlərə dair metadata icra vaxtı reyestrindən əldə edilir.
+> Agent Card aktual 372 provayderlik kataloqla uyğun saxlanılmalıdır; provayder sayları və pulsuz/autentifikasiya tələb etməyən metadata icra vaxtı reyestrindən əldə edilir.
 
 ### `list-capabilities` bacarığının təfərrüatları
 
@@ -172,7 +172,7 @@ OmniRoute `src/lib/a2a/taskExecution.ts::A2A_SKILL_HANDLERS` daxilində qoşulmu
 ...
 ```
 
-Hər sətirdə `rawUrl` sütunu var ki, agentlər tam SKILL.md faylını dərhal əldə edə bilsinlər. `metadata.totalSkills` sahəsi kataloqun ölçüsünü əks etdirir (hazırda 45). İmplementasiya: `src/lib/a2a/skills/listCapabilities.ts`. Həmçinin [AGENT-SKILLS.md](./AGENT-SKILLS.md) sənədinə baxın.
+Hər sətirdə `rawUrl` sütunu mövcuddur ki, agentlər tam SKILL.md faylını dərhal əldə edə bilsinlər. `metadata.totalSkills` sahəsi kataloqun ölçüsünü əks etdirir (hazırda 45). İcra: `src/lib/a2a/skills/listCapabilities.ts`. Həmçinin [AGENT-SKILLS.md](./AGENT-SKILLS.md) sənədinə baxın.
 
 ---
 

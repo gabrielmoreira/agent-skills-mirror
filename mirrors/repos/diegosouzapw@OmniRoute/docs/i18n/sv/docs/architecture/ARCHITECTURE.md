@@ -10,20 +10,20 @@ _Senast uppdaterad: 2026-06-28_
 
 ## Sammanfattning
 
-OmniRoute är en lokal AI-routningsgateway och kontrollpanel byggd på Next.js.
+OmniRoute är en lokal AI-routinggateway och kontrollpanel byggd med Next.js.
 Den tillhandahåller en enda OpenAI-kompatibel slutpunkt (`/v1/*`) och dirigerar trafik mellan flera uppströmsleverantörer med översättning, reservväxling, tokenförnyelse och användningsspårning.
 
-Huvudfunktioner:
+Centrala funktioner:
 
-- OpenAI-kompatibelt API-gränssnitt för CLI/verktyg (372 leverantörer, 148 exekverare)
+- OpenAI-kompatibel API-yta för CLI/verktyg (373 leverantörer, 150 exekveringsmoduler)
 - Översättning av förfrågningar och svar mellan leverantörsformat
 - Reservväxling för modellkombinationer (sekvens med flera modeller)
 - Strukturerade kombinationssteg (`provider + model + connection`) med körningsordning baserad på `compositeTiers`
 - Reservväxling på kontonivå (flera konton per leverantör)
-- Förhandskontroll av kvot och kvotmedvetet P2C-kontoval i huvudflödet för chatt
-- Hantering av leverantörsanslutningar med OAuth och API-nycklar (27 OAuth-leverantörsmoduler)
+- Förhandskontroll av kvoter och kvotmedvetet P2C-kontoval i huvudflödet för chatt
+- Hantering av leverantörsanslutningar via OAuth och API-nycklar (27 OAuth-leverantörsmoduler)
 - Generering av inbäddningar via `/v1/embeddings` (18 leverantörer)
-- Bildgenerering via `/v1/images/generations` (över 10 leverantörer, över 20 modeller)
+- Bildgenerering via `/v1/images/generations` (10+ leverantörer, 20+ modeller)
 - Ljudtranskribering via `/v1/audio/transcriptions` (18 leverantörer)
 - Text-till-tal via `/v1/audio/speech` (24 inbyggda leverantörer)
 - Videogenerering via `/v1/videos/generations` (ComfyUI + SD WebUI)
@@ -31,56 +31,56 @@ Huvudfunktioner:
 - Webbsökning via `/v1/search` (20 leverantörer)
 - Moderering via `/v1/moderations`
 - Omrangordning via `/v1/rerank`
-- Tolkning av think-taggar (``) för resonerande modeller
+- Parsning av Think-taggar (``) för resonerande modeller
 - Sanering av svar för strikt kompatibilitet med OpenAI SDK
-- Normalisering av roller (developer→system, system→user) för kompatibilitet mellan leverantörer
+- Rollnormalisering (developer→system, system→user) för kompatibilitet mellan leverantörer
 - Konvertering av strukturerade utdata (json_schema → Gemini responseSchema)
-- Lokal beständig lagring för leverantörer, nycklar, alias, kombinationer, inställningar och prissättning (122 databasmoduler)
+- Lokal persistens för leverantörer, nycklar, alias, kombinationer, inställningar och prissättning (122 databasmoduler)
 - Spårning av användning och kostnader samt loggning av förfrågningar
-- Valfri molnsynkronisering för synkronisering mellan flera enheter och av tillstånd
-- Tillåtelselista/blockeringslista för IP-adresser för åtkomstkontroll till API:et
-- Hantering av tankebudget (vidarebefordran/automatisk/anpassad/adaptiv)
+- Valfri molnsynkronisering för synkronisering av tillstånd mellan flera enheter
+- Tillåtelse- och blockeringslistor för IP-adresser för åtkomstkontroll till API:et
+- Hantering av beräkningsbudget (vidarebefordran/automatisk/anpassad/adaptiv)
 - Global injicering av systemprompt
-- Sessionsspårning och fingeravtrycksidentifiering
+- Sessionsspårning och fingeravtryck
 - Förbättrad hastighetsbegränsning per konto med leverantörsspecifika profiler
-- Circuit breaker-mönster för leverantörsresiliens
-- Skydd mot anstormningseffekten med mutex-låsning
+- Kretsbrytarmönster för leverantörsresiliens
+- Skydd mot anropsstormar med mutex-låsning
 - Signaturbaserad cache för deduplicering av förfrågningar
-- Domänlager: kostnadsregler, reservväxlingspolicy, spärrpolicy
-- Context Relay: sammanfattningar för sessionsöverlämning som bevarar kontinuitet vid kontorotation
-- Beständig lagring av domäntillstånd (genomskrivningscache i SQLite för reservväxlingar, budgetar, spärrar och circuit breakers)
-- Policymotor för centraliserad utvärdering av förfrågningar (spärr → budget → reservväxling)
+- Domänlager: kostnadsregler, reservväxlingspolicy och utlåsningspolicy
+- Context Relay: sammanfattningar för sessionsöverlämning som säkerställer kontinuitet vid kontorotation
+- Persistens av domäntillstånd (SQLite-cache med direktgenomskrivning för reservväxlingar, budgetar, utlåsningar och kretsbrytare)
+- Policymotor för centraliserad utvärdering av förfrågningar (utlåsning → budget → reservväxling)
 - Telemetri för förfrågningar med aggregering av p50-/p95-/p99-latens
-- Telemetri för kombinationsmål och historisk hälsostatus för kombinationsmål via `combo_execution_key` / `combo_step_id`
+- Telemetri för kombinationsmål och historisk status för kombinationsmål via `combo_execution_key` / `combo_step_id`
 - Korrelations-ID (X-Request-Id) för heltäckande spårning
-- Granskningsloggning för regelefterlevnad med möjlighet att välja bort per API-nyckel
-- Eval-ramverk för kvalitetssäkring av LLM:er
-- Hälsokontrollpanel med realtidsstatus för leverantörernas circuit breakers
+- Loggning för regelefterlevnadsgranskning med möjlighet att välja bort per API-nyckel
+- Utvärderingsramverk för kvalitetssäkring av LLM:er
+- Hälsokontrollpanel med status i realtid för leverantörernas kretsbrytare
 - MCP-server (110 verktyg) med 3 transporter (stdio/SSE/Streamable HTTP)
-- A2A-server (JSON-RPC 2.0 + SSE) med färdigheter och uppgiftslivscykel
-- Minnessystem (extrahering, injicering, hämtning, sammanfattning)
-- Färdighetssystem (register, exekverare, sandlåda, inbyggda färdigheter)
+- A2A-server (JSON-RPC 2.0 + SSE) med färdigheter och livscykel för uppgifter
+- Minnessystem (extrahering, injicering, hämtning och sammanfattning)
+- Färdighetssystem (register, exekverare, sandlåda och inbyggda färdigheter)
 - MITM-proxy med certifikathantering och DNS-hantering
-- Middleware för skydd mot promptinjektion
+- Middleware som skyddar mot promptinjektion
 - Pipeline för promptkomprimering med Caveman, RTK, staplade pipelines, komprimeringskombinationer, språkpaket och analys
 - ACP-register (Agent Communication Protocol)
-- Modulära OAuth-leverantörer (22 separata moduler under `src/lib/oauth/providers/`)
+- Modulära OAuth-leverantörer (22 enskilda moduler under `src/lib/oauth/providers/`)
 - Skript för avinstallation/fullständig avinstallation
 - Åtgärd för reparation av OAuth-miljön
 - WebSocket-brygga för OpenAI-kompatibla WS-klienter (`/v1/ws`)
-- Hantering av synkroniseringstoken (utfärdande/återkallning, nedladdning av ETag-versionerat konfigurationspaket)
-- GLM Thinking (`glmt`) som förstklassig leverantörsförinställning
-- Hybridräkning av token (leverantörssidan `/messages/count_tokens` med estimering som reserv)
-- Automatisk initiering av modellalias (över 30 normaliseringar mellan olika proxydialekter vid start)
+- Hantering av synkroniseringstoken (utfärdande/återkallande och nedladdning av ETag-versionshanterade konfigurationspaket)
+- GLM Thinking (`glmt`) som fullvärdig förinställning för leverantör
+- Hybridbaserad tokenräkning (leverantörssidan `/messages/count_tokens` med uppskattning som reserv)
+- Automatisk initiering av modellalias (30+ normaliseringar mellan proxydialekter vid start)
 - Säker utgående hämtning med SSRF-skydd, blockering av privata URL:er och konfigurerbara återförsök
-- Cooldown-medvetna återförsök för chatt med konfigurerbara `requestRetry` och `maxRetryIntervalSec`
+- Nedkylningsmedvetna återförsök för chatt med konfigurerbara `requestRetry` och `maxRetryIntervalSec`
 - Validering av körningsmiljön med Zod vid start
-- Regelefterlevnadsgranskning v2 med sidnumrering, CRUD-händelser för leverantörer och loggning av SSRF-blockerad validering
+- Regelefterlevnadsgranskning v2 med sidnumrering, CRUD-händelser för leverantörer och valideringsloggning för blockerad SSRF
 
 Primär körningsmodell:
 
-- Next.js-apprutter under `src/app/api/*` implementerar både API:er för kontrollpanelen och kompatibilitets-API:er
-- En gemensam SSE- och routningskärna i `src/sse/*` + `open-sse/*` hanterar leverantörskörning, översättning, strömning, reservväxling och användning
+- Next.js-appens routes under `src/app/api/*` implementerar både API:er för kontrollpanelen och kompatibilitets-API:er
+- En delad SSE-/routingkärna i `src/sse/*` + `open-sse/*` hanterar leverantörsexekvering, översättning, strömning, reservväxling och användning
 
 ## Referensdiagram
 

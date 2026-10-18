@@ -17,6 +17,7 @@ describe and review a change to a subsystem is in the
 | A failed read, parse or hash means "unknown". | It never means "empty", "none" or "equal". Keep what was read before, copy a file that doesn't parse aside before writing over it, and fix the shared reader rather than writing a strict one beside it. A list that guards access (an allow list, a key limit) fails closed when its file can't be read. Test with the file unreadable. readLogins wrote a parse error back as "no accounts" (b363327d), and agent/stash.go had the same bug two days later (270b5257). On 10-12 7a9490638's IP allow list read an unreadable settings.json as an empty list and let every address in (7d9382db2). On 10-13 #2017's patch read an unreadable codex-autoreset.json as "no reset spent" (e297a8ab2). |
 | Another app's values come from that app. | When magpie writes another app's file or speaks for it, take each field's type and value from that app's own data, binary, merge code or docs, not only its field names. 84554e57 wrote updatedAt in milliseconds and hung Claude Desktop's skills page (#863). #966 guessed Codex's limit_reached, which #996 undid after reading ChatGPT.app. On 10-13 accc8c090 copied Claude Code's OAuth client names but sent its own redirect_uri (127.0.0.1, where Claude Code sends localhost); e0ecf0161 read the binary and fixed it. |
 | Nothing that can block runs under a lock its reader needs. | Never send on a channel or call anything that can block while holding a lock the receiver takes first. Set shared state before the handoff that lets another goroutine look at it, and a struct copied by value that holds a map is not a copy. A fake server's handler runs on many goroutines: guard what it records with a lock, and count only the calls the test makes, since background reads reach it too. A change that starts a goroutine or timer runs `-race` before it is pushed. 85fd35ab hung macOS -race CI (4fb8e887). 01e66e0f's marshal wrote into a shared map (15afd988). On 10-11 7cba316b9's turn-done timer read fields on its own goroutine and went red under -race (a2afc1828). On 10-13 TestKeptLoginStandsAtItsPlace's fake Codex appended from two goroutines (a75de4c21). |
+| magpie's default never overrides a value the user set. | Before writing a key, list everywhere the agent or magpie reads that setting from, and test with a user-set value present. A migration that rewrites a setting names the users who set it themselves, and leaves their value alone or says in the release why not. CLAUDE_CODE_AUTO_COMPACT_WINDOW overrode the user's own autoCompactWindow for ~150 releases (602d4ec6). On 10-10 four fixes (603dc0c4, 5aca7d09, c65d9fb4, d9bf7c1c) each started without a test holding a user-set value. On 10-17 5a2414acd turned every unmarked Essentials preset into All, including one a user picked with `magpie plugin preset essentials` (#2749). |
 | Checks cover the edges the change touches. | For numbers, check the boundaries. For paths, check each platform (macOS, Linux, Windows). For concurrency, check races and stale state. Pick checks by risk. |
 
 ## Tests
@@ -211,3 +212,13 @@ P0, 2137 lines) put its full-suite results in "the push notes"; it had
 left two GUI tests red, found by 2dcc51417 the same evening. When a
 community commit is applied without a body, the review commit says what
 was run against that author's code.
+
+A checkout, a worktree and the logs in it belong to the session that made
+them. Work in a worktree of your own (`git worktree add --detach`), never
+check out, commit from or clean another session's, and after committing
+check that `git show --stat HEAD` lists your files and only yours. On
+10-09 2018882e carried the davsync subject but held another session's GTK
+fix, taken from a shared index. On 10-12 3e88fc09d carried the auto-mode
+subject but held the Get started card (#1825). On 10-17 another session
+checked out origin/main in 7660399a1's worktree mid-run, and another
+deleted part of 17557132c's GUI log.

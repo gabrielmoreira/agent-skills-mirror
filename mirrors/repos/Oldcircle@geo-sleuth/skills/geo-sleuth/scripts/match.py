@@ -21,6 +21,7 @@ Candidate source, pick one of three:
 Scoring:
   global descriptor DINOv2 (facebook/dinov2-small, CLS + patch mean) or CLIP (openai/clip-vit-base-patch32) cosine similarity;
   --refine sift re-ranks the top --refine-top by SIFT + RANSAC inlier count (only inliers ≥ 15 count as geometric consistency).
+  Rows below --refine-top keep inliers null and refined false: never refined, which is not the same as 0 matches.
   Final order: those with inliers by inlier count, the rest by global score. Scores are only for ordering; whether it is the same place still requires you to compare ≥3 invariant features.
 
 On first use the model downloads from HuggingFace and is cached in ~/.cache/huggingface.
@@ -331,7 +332,7 @@ def cmd_rank(args) -> None:
     for rk, i in enumerate(order):
         it = items[i]
         rows.append({"rank": rk + 1, "id": it.get("id"), "id_key": i, "file": it.get("file"), "score_global": round(float(sims[i]), 4),
-                     "inliers": None, "matches": None, "heading": it.get("heading"), "wgs": it.get("wgs"),
+                     "inliers": None, "matches": None, "refined": False, "heading": it.get("heading"), "wgs": it.get("wgs"),
                      "road": it.get("road", ""), "date": it.get("date", ""), "label": it.get("label", "")})
     t1 = time.time()
     if args.refine != "none":
@@ -340,7 +341,7 @@ def cmd_rank(args) -> None:
             return sift_inliers(q, ims[r["id_key"]], skip_b=_overlay(items[r["id_key"]].get("render")))
         with ThreadPoolExecutor(4) as ex:
             for r, (inl, mt) in zip(top, ex.map(one, top)):
-                r["inliers"], r["matches"] = inl, mt
+                r["inliers"], r["matches"], r["refined"] = inl, mt, True
         rows.sort(key=lambda r: (-(r["inliers"] or 0) if (r["inliers"] or 0) >= args.min_inliers else 0, -r["score_global"]))
         for k, r in enumerate(rows):
             r["rank"] = k + 1
@@ -355,6 +356,10 @@ def cmd_rank(args) -> None:
               f"{r['rank']:>3} {(r['inliers'] if r['inliers'] is not None else '-'):>7} {r['score_global']:>7.3f}  {r['id']} {pos}")
     strong = [r for r in out_rows if (r["inliers"] or 0) >= args.min_inliers]
     if args.refine != "none":
+        if len(rows) > args.refine_top:              # inliers null / "-" means "not refined", not "0 matches" (issue #37)
+            print(f"inliers '-' = ranked below the top {args.refine_top} by global score, so SIFT never ran on it (refined: false in --out); "
+                  f"that is not 0 matches and not a rejection. A candidate that other evidence points to can be checked with a larger "
+                  f"--refine-top or a --query-box on its stable structures")
         print(f"{len(strong)} with inliers ≥{args.min_inliers}" + (": open these first and compare invariant features" if strong else ": this does not mean none of them is right — with a season change, an old capture, or the photo taken on the sidewalk while the street view is from the middle of the road, the ground truth also often has only single-digit inliers. First open the top 10 in --sheet and compare invariant features; if none match, change heading (--spread-headings) or widen the area"))
     if args.out:
         Path(args.out).write_text(json.dumps([{k: v for k, v in r.items() if k != "id_key"} for r in rows], ensure_ascii=False, indent=1), encoding="utf-8")

@@ -137,8 +137,33 @@ Messages outside the shared inbox's source-context bounds remain intact in
 ordinary Chat, but cannot be handed off as inline context; use a scoped artifact
 for larger material. Image content is not transferred by this text ingress record.
 
-The existing worker turn-start hook exposes only a bounded pending count and
-required read command, without copying private content into status projections.
+The worker turn-start hook supplies a compact **unfinished delegation agenda** in
+its private `work_context.sources[].content.unfinished_delegations` on every
+managed Turn. It includes incoming requests after read/adoption, sent peer work
+awaiting a result, conclusions awaiting original-route delivery, and peer results
+awaiting explicit requester consumption. The same read model is returned by
+`manager-inbox read`. Discovery/status hook receipts remain content-free; the
+private agenda contains current-purpose excerpts and explicit links, not source
+transcripts, result bodies or receiver rationale.
+
+Each item names its request, receiving/source Agent where recorded, current
+revision, related Todo ids and the remaining receipt step. Counts are request
+records (`count_unit=request`), not distinct tasks: follow-up requests can link
+to the same existing Todo. A completed Todo is
+not a returned answer; a queued conclusion is not delivered; delivery is not
+requester adoption or independent acceptance. A current cancellation is omitted
+only after its active publication reservation is gone. Failed reads and scan or
+prompt overflow remain explicit rather than becoming an empty queue.
+
+The automatic agenda is a partial read (`read_complete=false`): it cannot fulfill
+the full Inbox read or replace its requirements. Before acting, read the current
+brief and independently assess its authority, evidence and constraints. The
+agenda never changes priority, wakes an Agent, claims work, acknowledges a
+request, publishes a result or grants effects. It is collected by the existing
+LoopX quota/heartbeat Turn-start path; arbitrary host Turns that do not invoke
+that path are outside this integration. Frontend/Lark conversations retain their
+existing request and return views; no new screen or setting is introduced.
+
 Read and record a decision through the installed CLI:
 
 ```sh
@@ -332,6 +357,31 @@ path; this does not add a visible settings control or launch workers. Prompt-onl
 adapters still have no interactive discovery tool. Live multi-worker adoption and
 original-conversation completion require separate qualification.
 
+Local owner managers read all registered Goals by default. A bounded Turn index
+is a summary, not an authorization list: on-demand Todo, delivery, Agent and
+portfolio reads use the current audience scope. Portfolio pagination selects the
+permitted registry page before collecting evidence, including Goals registered
+after the initial Turn. Goal conversations remain confined to their selected
+Goal; external conversations are rechecked before and after each read.
+
+New manager connections created in Settings → Lark default to **All registered
+Goals, including new ones**. This applies to the connection's authorized audience,
+including its group members. Existing connections retain their selected read
+scope. Edit the existing connection's **Goal evidence access** to opt into the
+live registered inventory or return to its selected scope. The UI reads back the
+actual policy and preserves failures; changing this read setting does not grant
+worker execution, publishing, context delivery or SSH access.
+
+The same policy is available through the existing trusted-local CLI. Omitted
+`--read-goal-scope` preserves the selected-list behavior of existing scripts;
+an empty selected list revokes the read grant. Old lists are not automatically
+widened during installation.
+
+```sh
+loopx manager-inbox configure-read-scope --channel-id manager.external.0123456789abcdef01234567 --read-goal-scope all_registered --execute
+loopx manager-inbox configure-read-scope --channel-id manager.external.0123456789abcdef01234567 --read-goal-scope selected --read-goal-id project-a --execute
+```
+
 Routine inspection excludes Goals explicitly stopped in Core, before status
 collection and detail reads. Coverage reports how many were skipped. Stale or
 unknown progress remains eligible. An explicit historical question can discover
@@ -436,8 +486,11 @@ ordered by request id; restart without a cursor to find new requests sorted
 before the last position. Peer results retain their separate consumption flow
 and are not paginated by this cursor. `status --offset/--limit` remains separate.
 
-After `acknowledge`, the request remains in the turn-start hook until the worker
-publishes a conclusion. The worker uses `link` for canonical Todo/evidence lineage
+After `acknowledge`, the request remains visible until the answer obligation is
+resolved. `pending.items` retains its existing receipt-only semantics: it stops
+including a request once its conclusion exists. The separate unfinished agenda
+keeps undelivered conclusions visible, and keeps peer work until the requester
+explicitly consumes the current result. The worker uses `link` for canonical Todo/evidence lineage
 and `report` to publish the answer intended for the original audience:
 
 ```sh

@@ -313,24 +313,25 @@ saklanır; etkin kilitleme _durumu_ geçicidir.
 
 ---
 
-## 4. Kota Paylaşımı Eşzamanlılık Denetimi (v3.8.36)
+## 4. Kota Paylaşımı Eşzamanlılık Kontrolü (v3.8.36)
 
-Abonelik hesapları (GLM, MiniMax vb.) genellikle yalnızca ~1–3 eşzamanlı
-isteği kabul eder; bu sınırın aşılması 429 yanıtlarını ve bekleme sürelerini tetikler. Bu durum,
-birden fazla API anahtarının aynı yukarı akış hesabını paylaştığı
-**kota paylaşımı** (`qtSd/…`) kombinasyonlarında özellikle belirgindir. Üç katman, paylaşılan bir hesabın
-istek akınına uğramasını önler.
+Abonelik hesapları (GLM, MiniMax vb.) genellikle yalnızca yaklaşık 1–3 eşzamanlı
+isteği kabul eder; bunun aşılması 429 yanıtlarını ve bekleme sürelerini tetikler.
+Bu durum, birden fazla API anahtarının tek bir üst sağlayıcı hesabını paylaştığı
+**kota paylaşımı** (`qtSd/…`) kombinasyonlarında özellikle belirgindir. Üç katman,
+paylaşılan bir hesabın istek yağmuruna tutulmasını önler.
 
 ### Bağlantı başına eşzamanlılık sınırı (`max_concurrent`)
 
 Her sağlayıcı bağlantısı bir `max_concurrent` üst sınırı tanımlayabilir
-(`provider_connections.max_concurrent`; bağlantı iletişim kutusu / API / DB üzerinden ayarlanır).
-Sınır olmaması için boş bırakın. Bu, aşağıdaki serileştirme katmanını yöneten tek ayardır
-— hesabın gerçek eşzamanlılık değerine ayarlayın (ör. GLM ~1, MiniMax ~2).
+(`provider_connections.max_concurrent`; bağlantı iletişim kutusu / API / DB
+üzerinden ayarlanır). Sınır olmaması için boş bırakın. Bu, aşağıdaki serileştirme
+katmanını yöneten tek ayardır — hesabın gerçek eşzamanlılık değerine ayarlayın
+(ör. GLM ~1, MiniMax ~2).
 
 ### Model başına eşzamanlılık sınırları (`modelConcurrency`)
 
-Bir bağlantı ayrıca `rateLimitOverrides` eşlemesi içinde model başına kesin
+Bir bağlantı, ayrıca `rateLimitOverrides` eşlemesi içinde model başına kesin
 eşzamanlılık üst sınırları tanımlayabilir:
 
 ```json
@@ -346,29 +347,31 @@ Bunu bağlantı iletişim kutusunda (**Hız sınırı geçersiz kılmaları → 
 eşzamanlılık sınırları**, her satırda bir `model=cap`) veya aynı JSON yapısıyla
 `PATCH /api/providers/[id]` üzerinden ayarlayın. Anahtar semantiği:
 
-- **Bağlantı geneli ile modele özgü karşılaştırması:** `maxConcurrent`, paylaşılan
-  bağlantı geneli üst sınırı olmaya devam eder. Her ikisi de geçerli olduğunda, iki geçit de
+- **Bağlantı genelinde ve modele özel:** `maxConcurrent`, bağlantı genelinde
+  paylaşılan üst sınır olmaya devam eder. Her ikisi de geçerli olduğunda iki geçit
   aynı bileşik geçit içinde atomik olarak edinilir
   (`global → provider → account → model`); etkin davranışı, geçerli sınırlar
-  arasından daha katı olanı belirler.
-- **Tam model anahtarı eşleşmesi:** anahtar, yönlendirme çözümlemesinden sonra
-  yürütücüye aktarılan model dizesidir — normalde istemci tarafındaki
-  `provider/model` diğer adı değil (`zai/glm-5`, `glm-5` ile
-  eşleşmez), yukarı akışın yalın model kimliğidir (`glm-5`). Değerler, pozitif tam sayı
-  biçiminde eşzamanlı istek üst sınırlarıdır.
-- **Yerel kuyruklama, keşif yok:** fazla istekler mevcut
-  kuyruk/zaman aşımı semantiğiyle yerel olarak kuyruğa alınır (türlü `SEMAPHORE_TIMEOUT` /
-  `SEMAPHORE_QUEUE_FULL` kabul hataları). OmniRoute, yukarı akış politikasını keşfetmez veya
-  çıkarım yoluyla belirlemez — operatörün yapılandırdığı kesin üst sınırları
-  uygular. Doymuş bir model geçidi sağlayıcıyı hiçbir zaman devre dışı bırakmaz ve
-  kalıcı bir model kilitlenmesi oluşturmaz; yukarı akış 429/bekleme süresi/yedek sisteme geçiş davranışı,
-  hatalara karşı son güvence olmaya devam eder.
-- **Bağlantı başına, işlem başına kapsam:** sınırlar veritabanı bağlantısı başınadır
-  ve bellekte tutulur; bu nedenle aynı yukarı akış API anahtarını yeniden kullanan iki bağlantı
-  birbiriyle koordinasyon sağlamaz.
-- **Yapılandırılmamış olması değişiklik olmadığı anlamına gelir:** eşlemenin atlanması (veya
-  pano alanının boş bırakılması) herhangi bir model geçidi eklemez. Evrensel bir sağlayıcı
-  sınırı öne sürmeyen örnek yapılandırma:
+  arasındaki daha katı olan belirler.
+- **Tam model anahtarı eşleşmesi:** Anahtar, yönlendirme çözümlemesinden sonra
+  yürütücüye iletilen model dizesidir — normalde istemci tarafındaki bir
+  `provider/model` takma adı değil, yalın üst sağlayıcı model kimliğidir
+  (`glm-5`); `zai/glm-5`, `glm-5` ile eşleşmez. Değerler, pozitif tam sayı
+  biçimindeki eşzamanlı istek üst sınırlarıdır.
+- **Yerel kuyruklama, keşif yok:** Fazla istekler, mevcut kuyruk/zaman aşımı
+  semantiğiyle yerel olarak kuyruğa alınır (türlü `SEMAPHORE_TIMEOUT` /
+  `SEMAPHORE_QUEUE_FULL` kabul hataları). OmniRoute, üst sağlayıcı politikasını
+  keşfetmez veya çıkarsamaz — operatörün yapılandırdığı kesin üst sınırları
+  uygular. Doymuş bir model geçidi sağlayıcıyı hiçbir zaman devre dışı bırakmaz
+  ve kalıcı bir model kilitlenmesi oluşturmaz; üst sağlayıcı kaynaklı
+  429/bekleme süresi/yedek hedef davranışı, hata durumunda son güvence olmaya
+  devam eder.
+- **Bağlantı başına, süreç başına kapsam:** Sınırlar veritabanı bağlantısı
+  başınadır ve bellekte tutulur; bu nedenle aynı üst sağlayıcı API anahtarını
+  yeniden kullanan iki bağlantı birbiriyle koordinasyon kurmaz.
+- **Yapılandırılmamış olması değişiklik olmadığı anlamına gelir:** Eşlemenin
+  atlanması (veya kontrol paneli alanının boş bırakılması) herhangi bir model
+  geçidi eklemez. Evrensel bir sağlayıcı sınırı ileri sürmeyen örnek
+  yapılandırma:
 
 ```text
 glm-5=1
@@ -377,30 +380,43 @@ glm-4.7=3
 
 ### Kota paylaşımı istek serileştirmesi
 
-Bir kota paylaşımı dağıtımı, pozitif bir `max_concurrent` değeri tanımlayan
-bir bağlantıyı hedeflediğinde, söz konusu **hesaba** yönelik eşzamanlı istekler
-bağlantı başına bir semafor (`qsconn:<connectionId>` anahtarı) üzerinden serileştirilir: fazla istekler
-hesaba akın etmek yerine **kuyrukta bekler**. Sistem **hata durumunda açık** çalışır — doymuş bir
-kuyruk veya zaman aşımı, dağıtılabilir bir isteği reddetmek yerine slot olmadan devam eder.
-**Ayarlar → Dayanıklılık → Kota paylaşımı bağlantı başına
-eşzamanlılık** (`resilienceSettings.quotaShareConcurrencyLimit.enabled`, varsayılan olarak
-açık) bölümünden açıp kapatın. `max_concurrent` sınırı olmadan davranış değişmez.
+Bir kota paylaşımı gönderimi, pozitif bir `max_concurrent` tanımlayan bağlantıyı
+hedeflediğinde, bu **hesaba** yönelik eşzamanlı istekler bağlantı başına bir
+semafor (`qsconn:<connectionId>` anahtarı) üzerinden serileştirilir: fazla
+istekler hesabı istek yağmuruna tutmak yerine **kuyrukta bekler**. Bu mekanizma
+**açık başarısızlık** ilkesini kullanır — doymuş bir kuyruk veya zaman aşımı,
+gönderilebilir bir isteği reddetmek yerine yuva olmadan devam eder. Bunu
+**Ayarlar → Dayanıklılık → Kota paylaşımı bağlantı başına eşzamanlılık**
+(`resilienceSettings.quotaShareConcurrencyLimit.enabled`, varsayılan olarak
+açıktır) bölümünden değiştirin. `max_concurrent` sınırı olmadan davranış değişmez.
 
-> Kota paylaşımı yönlendirme geçidi (`selectQuotaShareTarget`, DRR + P2C) kendi başına
-> hata durumunda açıktır ve sınırına ulaşmış bir bağlantının yalnızca _önceliğini düşürür_ —
-> tek bağlantılı bir havuzda kesin sınır uygulayamaz; dolayısıyla istek akınını fiilen
-> kontrol altında tutan bu semafordur.
+> Kota paylaşımı yönlendirme geçidi (`selectQuotaShareTarget`, DRR + P2C) de
+> açık başarısızlık ilkesini kullanır ve yalnızca sınırına ulaşmış bir bağlantının
+> _önceliğini düşürür_ — tek bağlantılı bir havuzda katı bir sınır uygulayamaz;
+> dolayısıyla istek yağmurunu fiilen sınırlayan bu semafordur.
 
 ### Kombinasyonlar için bekleme süresine duyarlı yeniden deneme
 
-Her kombinasyon stratejisinde (etkinleştirildiğinde), KISA süreli geçici bir bekleme dönemi için
-429 yanıtını kesinleştirecek bir istek, 429 yanıtını döndürmek yerine sürenin dolmasını bekler ve
-yeniden dağıtılır — bu, çok modelli kombinasyonlardaki Gemini sınıfı TPM/RPM pencerelerini
-(~60 sn. retry-after), örneğin 2 modelli bir kombinasyonun her iki hedefinin de model başına
-hız sınırına ulaşmasını kapsar. **Ayarlar → Dayanıklılık** bölümündeki
-`comboCooldownWait` (`enabled`, `maxWaitMs`, `maxAttempts`,
-`budgetMs`) ile sınırlandırılır. `quota_exhausted` (gece yarısına kadar kilitli)
-veya kimlik doğrulama/bulunamadı nedenlerinde hiçbir zaman beklemez.
+Her kombinasyon stratejisinde (etkinleştirildiğinde), KISA ve geçici bir bekleme
+süresi için 429 yanıtını kesinleştirecek bir istek, 429 yanıtını döndürmek yerine
+bu sürenin bitmesini bekler ve yeniden gönderilir — bu, çok modelli
+kombinasyonlardaki Gemini sınıfı TPM/RPM pencerelerini (yaklaşık 60 saniyelik
+retry-after) kapsar; örneğin 2 modelli bir kombinasyonun her iki hedefinin de
+model başına hız sınırına ulaşması. **Ayarlar → Dayanıklılık** bölümündeki
+`comboCooldownWait` (`enabled`, `maxWaitMs`, `maxAttempts`, `budgetMs`) ile
+sınırlandırılır. `quota_exhausted` (gece yarısına kadar kilitli) veya
+kimlik doğrulama/bulunamadı nedenlerinde hiçbir zaman beklemez.
+
+Aynı geçit, gönderim öncesi durumu da kapsar (#16319): bir kombinasyonun tüm
+hedefleri, modelleri kısa süreli geçici bir kilitlenmede olduğu için herhangi
+bir deneme yapılmadan atlandığında, sıfır denemeli yol, ipucu içermeyen bir
+`503 ALL_TARGETS_SKIPPED` yanıtı vermek yerine aynı üst sınırlar kapsamında
+kilidin kalkmasını bekler ve yeniden gönderim yapar. Beklemeye izin
+verilmediğinde (üst sınıra ulaşılması, deneme veya bütçenin tükenmesi ya da
+özelliğin kapalı olması), nihai yanıt en erken geçici kilit süresinin bitişinden
+alınan `retry_after` / `reset_at` bilgilerini taşıyan
+`429 rate_limit_error` yanıtına yükseltilir; kota, kimlik doğrulama ve bulunamadı
+kilitleri ise ipucu içermeyen 503 yanıtını korur.
 
 ```text
 #16319 · comboCooldownWait · pre-dispatch (attempts = 0)

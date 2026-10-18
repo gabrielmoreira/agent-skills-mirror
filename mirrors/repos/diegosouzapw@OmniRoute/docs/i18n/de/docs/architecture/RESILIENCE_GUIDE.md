@@ -371,21 +371,21 @@ _Sperrzustand_ ist flüchtig.
 ## 4. Quota-Share-Parallelitätssteuerung (v3.8.36)
 
 Abonnementkonten (GLM, MiniMax usw.) akzeptieren häufig nur ~1–3 gleichzeitige
-Anfragen; wird diese Anzahl überschritten, führt dies zu 429-Fehlern und Abklingzeiten. Dies ist besonders problematisch bei
-**quota-share**-Kombinationen (`qtSd/…`), bei denen sich mehrere API-Schlüssel ein vorgelagertes
-Konto teilen. Drei Ebenen verhindern, dass ein gemeinsam genutztes Konto überlastet wird.
+Anfragen; bei Überschreitung werden 429-Fehler und Abklingzeiten ausgelöst. Dies ist besonders kritisch bei
+**Quota-Share**-Kombinationen (`qtSd/…`), bei denen mehrere API-Schlüssel dasselbe vorgelagerte
+Konto gemeinsam verwenden. Drei Ebenen verhindern, dass ein gemeinsam verwendetes Konto überlastet wird.
 
 ### Parallelitätsobergrenze pro Verbindung (`max_concurrent`)
 
 Für jede Provider-Verbindung kann eine `max_concurrent`-Obergrenze festgelegt werden
-(`provider_connections.max_concurrent`, festgelegt im Verbindungsdialog / über die API / in der DB).
-Lassen Sie den Wert leer, um keine Begrenzung anzuwenden. Dies ist der zentrale Parameter für die nachfolgende
+(`provider_connections.max_concurrent`, konfigurierbar im Verbindungsdialog / über die API / in der DB).
+Lassen Sie sie leer, um keine Begrenzung festzulegen. Dies ist der zentrale Parameter für die unten beschriebene
 Serialisierungsebene — setzen Sie ihn auf die tatsächliche Parallelität des Kontos (z. B. GLM ~1, MiniMax ~2).
 
 ### Parallelitätsobergrenzen pro Modell (`modelConcurrency`)
 
-Für eine Verbindung können zusätzlich exakte Parallelitätsobergrenzen pro Modell
-innerhalb ihrer `rateLimitOverrides`-Zuordnung festgelegt werden:
+Eine Verbindung kann zusätzlich exakte Parallelitätsobergrenzen pro Modell
+innerhalb ihrer `rateLimitOverrides`-Map festlegen:
 
 ```json
 {
@@ -396,32 +396,32 @@ innerhalb ihrer `rateLimitOverrides`-Zuordnung festgelegt werden:
 }
 ```
 
-Legen Sie sie im Verbindungsdialog (**Ratenlimitüberschreibungen → Parallelitätsobergrenzen
+Legen Sie sie im Verbindungsdialog unter (**Überschreibungen für Ratenbegrenzungen → Parallelitätsobergrenzen
 pro Modell**, ein `model=cap` pro Zeile) oder über
 `PATCH /api/providers/[id]` mit derselben JSON-Struktur fest. Semantik der Schlüssel:
 
-- **Verbindungsweit gegenüber modellspezifisch:** `maxConcurrent` bleibt die gemeinsam genutzte,
-  verbindungsweite Obergrenze. Wenn beide gelten, werden beide Sperren
-  atomar in derselben zusammengesetzten Sperre belegt
-  (`global → provider → account → model`); effektiv gilt die
-  strengere anwendbare Begrenzung.
+- **Verbindungsweit gegenüber modellspezifisch:** `maxConcurrent` bleibt die gemeinsame
+  verbindungsweite Obergrenze. Wenn beide gelten, werden beide Schranken
+  atomar innerhalb derselben zusammengesetzten Schranke belegt
+  (`global → provider → account → model`); effektiv gilt das jeweils
+  strengere Limit.
 - **Exakte Übereinstimmung des Modellschlüssels:** Der Schlüssel ist die Modellzeichenfolge, die nach der
   Routing-Auflösung an den Executor übergeben wird — normalerweise die reine vorgelagerte Modell-ID
-  (`glm-5`), nicht ein clientseitiger `provider/model`-Alias (`zai/glm-5` stimmt nicht mit
-  `glm-5` überein). Werte sind positive ganzzahlige Obergrenzen für gleichzeitige Anfragen.
-- **Lokale Warteschlange, keine Erkennung:** Überschüssige Anfragen werden lokal gemäß der
+  (`glm-5`), nicht ein clientseitiger `provider/model`-Alias (`zai/glm-5` stimmt nicht
+  mit `glm-5` überein). Werte sind positive ganzzahlige Obergrenzen für gleichzeitige Anfragen.
+- **Lokale Warteschlange, keine Erkennung:** Überschüssige Anfragen werden lokal mit der
   bestehenden Warteschlangen-/Zeitüberschreitungssemantik eingereiht (typisierte Zulassungsfehler
   `SEMAPHORE_TIMEOUT` / `SEMAPHORE_QUEUE_FULL`). OmniRoute erkennt oder
-  erschließt die vorgelagerte Richtlinie nicht — es setzt exakt die vom Betreiber
-  konfigurierten Obergrenzen durch. Eine ausgelastete Modellsperre deaktiviert den Provider niemals und
-  erzeugt keine permanente Modellsperrung; das vorgelagerte Verhalten für
-  429-Fehler/Abklingzeiten/Fallbacks bleibt die letzte Fehlerabsicherung.
-- **Geltungsbereich pro Verbindung und Prozess:** Obergrenzen gelten pro Datenbankverbindung
-  und werden im Arbeitsspeicher gehalten. Daher koordinieren sich zwei Verbindungen, die denselben vorgelagerten API-Schlüssel
+  erschließt keine vorgelagerten Richtlinien — es erzwingt exakt die vom Betreiber
+  konfigurierten Obergrenzen. Eine ausgelastete Modellschranke deaktiviert niemals den Provider und
+  erzeugt niemals eine dauerhafte Modellsperre; das vorgelagerte Verhalten bei 429-Fehlern,
+  Abklingzeiten und Fallbacks bleibt die Fehlerabsicherung.
+- **Pro Verbindung und Prozess:** Die Obergrenzen gelten pro Datenbankverbindung
+  und werden im Arbeitsspeicher verwaltet. Daher koordinieren sich zwei Verbindungen, die denselben vorgelagerten API-Schlüssel
   wiederverwenden, nicht miteinander.
-- **Nicht konfiguriert bedeutet unverändert:** Wird die Zuordnung weggelassen (oder das
-  Dashboard-Feld leer gelassen), wird keine Modellsperre hinzugefügt. Beispielkonfiguration, ohne
-  eine universelle Provider-Begrenzung vorauszusetzen:
+- **Nicht konfiguriert bedeutet unverändert:** Das Weglassen der Map (oder ein leeres
+  Dashboard-Feld) fügt keine Modellschranke hinzu. Beispielkonfiguration, ohne
+  ein universelles Provider-Limit vorauszusetzen:
 
 ```text
 glm-5=1
@@ -431,29 +431,37 @@ glm-4.7=3
 ### Serialisierung von Quota-Share-Anfragen
 
 Wenn ein Quota-Share-Dispatch auf eine Verbindung abzielt, die einen positiven
-`max_concurrent`-Wert deklariert, werden gleichzeitige Anfragen an dieses **Konto** über ein
+`max_concurrent`-Wert festlegt, werden gleichzeitige Anfragen an dieses **Konto** über ein
 verbindungsspezifisches Semaphor serialisiert (Schlüssel `qsconn:<connectionId>`): Überschüssige Anfragen **warten in
-der Warteschlange**, anstatt das Konto zu überlasten. Das Verhalten ist **fail-open** — bei einer ausgelasteten
-Warteschlange oder einer Zeitüberschreitung wird ohne Slot fortgefahren, anstatt jemals eine zustellbare
+der Warteschlange**, statt das Konto zu überlasten. Das Verhalten ist **Fail-open** — bei einer ausgelasteten
+Warteschlange oder einer Zeitüberschreitung wird ohne Slot fortgefahren, statt jemals eine dispatchbare
 Anfrage abzulehnen. Umschaltbar unter **Einstellungen → Resilienz → Quota-Share-Parallelität
 pro Verbindung** (`resilienceSettings.quotaShareConcurrencyLimit.enabled`, standardmäßig
-aktiviert). Ohne eine `max_concurrent`-Obergrenze bleibt das Verhalten unverändert.
+aktiviert). Ohne `max_concurrent`-Obergrenze bleibt das Verhalten unverändert.
 
-> Die Quota-Share-Routing-Sperre (`selectQuotaShareTarget`, DRR + P2C) ist selbst
-> fail-open und stuft eine Verbindung an ihrer Kapazitätsgrenze lediglich _niedriger ein_ — bei einem
-> Pool mit nur einer Verbindung kann sie keine harte Begrenzung durchsetzen; dieses Semaphor begrenzt daher tatsächlich
-> die Anfragenflut.
+> Die Quota-Share-Routing-Schranke (`selectQuotaShareTarget`, DRR + P2C) ist selbst
+> Fail-open und stuft eine Verbindung an ihrer Obergrenze lediglich _niedriger ein_ — bei einem
+> Pool mit nur einer Verbindung kann sie keine harte Begrenzung erzwingen. Daher ist dieses Semaphor der Mechanismus, der die
+> Überlastung tatsächlich eindämmt.
 
-### Abklingzeitbewusste Wiederholungsversuche für Kombinationen
+### Abklingzeitbewusste Wiederholung für Kombinationen
 
-Bei jeder Kombinationsstrategie (sofern aktiviert) wartet eine Anfrage, die andernfalls einen 429-Fehler
-aufgrund einer KURZEN vorübergehenden Abklingzeit verfestigen würde, diese ab und wird erneut
-weitergeleitet, anstatt den 429-Fehler zurückzugeben — dies deckt TPM-/RPM-Fenster der Gemini-Klasse
-(~60 s `retry-after`) bei Kombinationen aus mehreren Modellen ab, z. B. wenn beide Ziele einer Kombination
-aus zwei Modellen auf ein Ratenlimit pro Modell treffen. Begrenzt durch `comboCooldownWait`
-(`enabled`, `maxWaitMs`, `maxAttempts`, `budgetMs`) unter **Einstellungen → Resilienz**.
-Bei `quota_exhausted` (bis Mitternacht gesperrt) oder Gründen im Zusammenhang mit Authentifizierung bzw.
-Nichtgefunden-Fehlern wird niemals gewartet.
+Für jede Kombinationsstrategie (sofern aktiviert) wartet eine Anfrage, die einen 429-Fehler
+aufgrund einer KURZEN vorübergehenden Abklingzeit festschreiben würde, diese ab und führt den Dispatch erneut aus, anstatt
+den 429-Fehler zurückzugeben — dies deckt TPM-/RPM-Zeitfenster der Gemini-Klasse (~60 s `retry-after`)
+bei Kombinationen mit mehreren Modellen ab, z. B. wenn beide Ziele einer Kombination aus zwei Modellen
+eine Ratenbegrenzung pro Modell erreichen. Begrenzt durch `comboCooldownWait` (`enabled`, `maxWaitMs`, `maxAttempts`,
+`budgetMs`) unter **Einstellungen → Resilienz**. Bei `quota_exhausted`
+(bis Mitternacht gesperrt) oder Gründen wie Authentifizierung bzw. Nicht gefunden wird niemals gewartet.
+
+Dieselbe Schranke deckt den Fall vor dem Dispatch ab (#16319): Wenn jedes Ziel einer
+Kombination vor jedem Ausführungsversuch übersprungen wird, weil sich sein Modell in einer kurzen,
+vorübergehenden Sperrphase befindet, wartet der Pfad ohne Ausführungsversuch unter denselben
+Obergrenzen das Ende der Sperre ab und führt den Dispatch erneut aus, anstatt mit einem hinweislosen
+`503 ALL_TARGETS_SKIPPED` zu antworten. Wenn kein Warten zulässig ist (Obergrenze,
+Versuchsanzahl oder Budget erschöpft oder Funktion deaktiviert), wird die abschließende Antwort auf
+`429 rate_limit_error` hochgestuft und enthält `retry_after` / `reset_at` aus dem frühesten
+Ablaufzeitpunkt einer vorübergehenden Sperre; Kontingent-, Authentifizierungs- und Nicht-gefunden-Sperren behalten den hinweislosen 503-Fehler bei.
 
 ```text
 #16319 · comboCooldownWait · pre-dispatch (attempts = 0)

@@ -483,7 +483,9 @@ def inspect(root: Path, expected_override: int | None) -> dict[str, object]:
         )
         if plot_dir.is_dir()
         else False,
-        "characters": any_nonempty((root / "角色").glob("*.md")) if (root / "角色").is_dir() else False,
+        "characters": any_nonempty(path for path in (root / "角色").glob("*.md") if path.name != "角色关系.md")
+        if (root / "角色").is_dir()
+        else False,
         "settings": any_nonempty((root / "设定").rglob("*.md")) if (root / "设定").is_dir() else False,
         "batch_cache": any_nonempty((root / "_analysis_cache").glob("批次-*.md"))
         if (root / "_analysis_cache").is_dir()

@@ -57,7 +57,10 @@ triggers or arbitrary SQL.
 Rows are optional. `table` selects one exact ordinary-table name. `columns`
 (CLI repeated `--column`) selects exact visible column names in the requested
 order; omission selects all visible columns, including generated columns.
-Unselected cells are not evaluated or projected. Column selection requires a
+Unselected cells are not evaluated or projected. Malformed column-name bytes
+cause a format refusal when all columns are requested. In inventory scope, an explicit valid subset can
+still be sampled without decoding unrelated malformed column names.
+Column selection requires a
 table and at least one name; empty-string identifiers are valid. `row_limit`
 requires `table`, defaults to 20 and accepts positive safe integers. Samples
 remain subject to the byte and worker resource limits below, regardless of row count. The result reports

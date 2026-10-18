@@ -4,7 +4,7 @@
  *
  * 配合 browser-cdp skill 使用。先启动 Chrome CDP 环境，再运行本脚本。
  * 采集策略：刺猬猫 rank-index 页面单页展示所有榜单，文本解析提取结构化数据。
- * 输出 Markdown 格式见 references/platform-ciweimao.md；aggregate-rank.js 按此格式聚合。
+ * 输出的榜单 Markdown 格式见 aggregate-rank.js 文件头，聚合按它解析。
  *
  * 用法：
  *   node ciweimao-rank-scraper.js --type click       # 点击榜
@@ -114,6 +114,49 @@ function extractBookUrls(port) {
 }
 
 // ---------------------------------------------------------------------------
+// 渲染
+// ---------------------------------------------------------------------------
+
+/** rank-index 每个榜单展示前 10 名 */
+const RANK_SIZE = 10;
+
+/**
+ * 一个榜单的 Markdown。文件头带「数据质量」「问题摘要」：条目不足 10 条、作品页链接匹配不到一半时标出来。
+ * 榜首条目只有作者、其余条目只有题材，是页面本身的样子，不算问题。
+ */
+function renderRankFile(rt, entries, urls, now) {
+  const norm = (s) => (s || "").replace(/\s+/g, "");
+  const linkOf = (entry) => urls.find((u) => norm(u.title) === norm(entry.title));
+  const linked = entries.filter((e) => linkOf(e)).length;
+  const problems = [];
+  if (entries.length < RANK_SIZE) problems.push(`只解析到 ${entries.length} 条（每榜 ${RANK_SIZE} 条）`);
+  if (linked * 2 < entries.length) problems.push(`作品页链接只匹配到 ${linked} / ${entries.length} 条`);
+  const lines = [
+    `# 刺猬猫 · ${rt.label}`,
+    "",
+    `- 来源：${RANK_URL}`,
+    `- 抓取时间：${now}`,
+    `- 条目数：${entries.length}`,
+    `- 作品页链接：${linked} / ${entries.length}`,
+    `- 数据质量：${problems.length ? "[存在问题]" : "[OK]"}`,
+    `- 问题摘要：${problems.length ? problems.join("；") : "无"}`,
+    "",
+    "---",
+    "",
+  ];
+
+  for (const entry of entries) {
+    lines.push(`### #${entry.rank} ${entry.title}`);
+    const meta = [entry.author, entry.genre, entry.metric || ""].filter(Boolean).join(" · ");
+    if (meta) lines.push(`*${meta}*`);
+    const matched = linkOf(entry);
+    if (matched) lines.push(`[作品页](${matched.url})`);
+    lines.push("", "---", "");
+  }
+  return lines.join("\n");
+}
+
+// ---------------------------------------------------------------------------
 // 主流程
 // ---------------------------------------------------------------------------
 
@@ -182,50 +225,12 @@ function main() {
         continue;
       }
 
-      const now = new Date().toISOString();
-      const norm = (s) => (s || "").replace(/\s+/g, "");
-      const linked = section.entries.filter((e) =>
-        urls.some((u) => norm(u.title) === norm(e.title))
-      ).length;
-      const lines = [
-        `# 刺猬猫 · ${rt.label}`,
-        "",
-        `- 来源：${RANK_URL}`,
-        `- 抓取时间：${now}`,
-        `- 条目数：${section.entries.length}`,
-        `- 作品页链接：${linked} / ${section.entries.length}`,
-        "",
-        "---",
-        "",
-      ];
-
-      for (const entry of section.entries) {
-        try {
-          lines.push(`### #${entry.rank} ${entry.title}`);
-          const meta = [
-            entry.author,
-            entry.genre,
-            entry.metric || "",
-          ].filter(Boolean).join(" · ");
-          if (meta) lines.push(`*${meta}*`);
-
-          // 按标题匹配书籍链接（归一后比对）
-          const matched = urls.find((u) => norm(u.title) === norm(entry.title));
-          if (matched) {
-            lines.push(`[作品页](${matched.url})`);
-          }
-
-          lines.push("", "---", "");
-        } catch (entryErr) {
-          console.error(`[ciweimao] ${rt.label} 条目处理出错（#${entry.rank} ${entry.title}）: ${entryErr.message}`);
-          lines.push("", "---", "");
-        }
-      }
+      const content = renderRankFile(rt, section.entries, urls, new Date().toISOString());
 
       const filename = `刺猬猫${rt.label}_${localDateStamp()}.md`;
       fs.mkdirSync(OUTDIR, { recursive: true });
       const filepath = path.join(OUTDIR, filename);
-      fs.writeFileSync(filepath, lines.join("\n"), "utf-8");
+      fs.writeFileSync(filepath, content, "utf-8");
       written++;
       console.log(`  ✓ ${rt.label}：${section.entries.length} 条 → ${filepath}`);
     } catch (rankErr) {
@@ -238,3 +243,5 @@ function main() {
 if (require.main === module) {
   runCli(main, "刺猬猫采集");
 }
+
+module.exports = { renderRankFile };

@@ -365,24 +365,26 @@ jẹ́ ti ìgbà díẹ̀.
 
 ---
 
-## 4. Ìṣàkóso Ìṣiṣẹ́-Pọ̀ nípasẹ̀ Quota-Share (v3.8.36)
+## 4. Ìṣàkóso Ìṣiṣẹ́-pọ̀ Quota-Share (v3.8.36)
 
-Àwọn àkọọ́lẹ̀ ìforúkọsílẹ̀ (GLM, MiniMax, àti bẹ́ẹ̀ bẹ́ẹ̀ lọ) sábà máa ń gba kìkì ~1–3 ìbéèrè
-tó ń ṣiṣẹ́ pọ̀ lẹ́ẹ̀kan náà; fífi ju ìwọ̀n yẹn lọ máa ń fa 429 àti àkókò ìsinmi. Èyí le gan-an lábẹ́
-àwọn àkópọ̀ **quota-share** (`qtSd/…`), níbi tí ọ̀pọ̀ kọ́kọ́rọ́ API ti ń pín àkọọ́lẹ̀
-upstream kan náà. Ìpele mẹ́ta ló ń dáàbò bo àkọọ́lẹ̀ tí a pín kí ọ̀pọ̀ ìbéèrè má bàa bo ó mọ́lẹ̀.
+Àwọn àkọọ́lẹ̀ ìforúkọsílẹ̀ (GLM, MiniMax, abbl.) sábà máa ń gba nǹkan bí ìbéèrè
+~1–3 péré ní ẹ̀ẹ̀kan; lílé kọjá èyí máa ń fa àwọn 429 àti àwọn àkókò ìdádúró.
+Èyí le gan-an lábẹ́ àwọn àkópọ̀ **quota-share** (`qtSd/…`), níbi tí ọ̀pọ̀ kọ́kọ́rọ́
+API ti ń pín àkọọ́lẹ̀ upstream kan náà. Àwọn ìpele mẹ́ta ló ń dènà kí àkọọ́lẹ̀
+àjọpín má bàa kún fún ìbéèrè àṣejù.
 
-### Òpin ìṣiṣẹ́-pọ̀ fún asopọ̀ kọ̀ọ̀kan (`max_concurrent`)
+### Ààlà ìṣiṣẹ́-pọ̀ fún àsopọ̀ kọ̀ọ̀kan (`max_concurrent`)
 
-Asopọ̀ olùpèsè kọ̀ọ̀kan lè ṣàlàyé òpin `max_concurrent`
-(`provider_connections.max_concurrent`, tí a ṣètò nínú modal asopọ̀ / API / DB).
-Fi sílẹ̀ ní òfo tí o kò bá fẹ́ òpin. Èyí ni ìṣàkóso kan ṣoṣo tó ń darí ìpele ìtẹ̀lé-lẹ́sẹẹsẹ
-ní ìsàlẹ̀ — ṣètò rẹ̀ sí ìwọ̀n ìṣiṣẹ́-pọ̀ gidi ti àkọọ́lẹ̀ náà (fún àpẹẹrẹ GLM ~1, MiniMax ~2).
+Àsopọ̀ olùpèsè kọ̀ọ̀kan lè sọ ààlà gíga `max_concurrent` kan
+(`provider_connections.max_concurrent`, tí a ṣètò nínú modal àsopọ̀ / API / DB).
+Fi sílẹ̀ ní òfo tí kò bá sí ààlà. Èyí ni ìṣàkóso kan ṣoṣo tó ń darí ìpele
+ìṣètẹ̀lé tó wà nísàlẹ̀ — ṣètò rẹ̀ sí iye ìṣiṣẹ́-pọ̀ gidi ti àkọọ́lẹ̀ náà
+(fún àpẹẹrẹ GLM ~1, MiniMax ~2).
 
-### Àwọn òpin ìṣiṣẹ́-pọ̀ fún model kọ̀ọ̀kan (`modelConcurrency`)
+### Àwọn ààlà ìṣiṣẹ́-pọ̀ fún model kọ̀ọ̀kan (`modelConcurrency`)
 
-Asopọ̀ kan tún lè ṣàlàyé àwọn òpin ìṣiṣẹ́-pọ̀ pàtó fún model kọ̀ọ̀kan
-ní inú àwòrán `rateLimitOverrides` rẹ̀:
+Àsopọ̀ kan tún lè sọ àwọn ààlà ìṣiṣẹ́-pọ̀ pàtó fún model kọ̀ọ̀kan
+nínú máàpù `rateLimitOverrides` rẹ̀:
 
 ```json
 {
@@ -393,62 +395,76 @@ ní inú àwòrán `rateLimitOverrides` rẹ̀:
 }
 ```
 
-Ṣètò rẹ̀ nínú modal asopọ̀ (**Àwọn ìyípadà òpin oṣùwọ̀n → Àwọn òpin
-ìṣiṣẹ́-pọ̀ fún model kọ̀ọ̀kan**, `model=cap` kan fún ìlà kọ̀ọ̀kan) tàbí nípasẹ̀
+Ṣètò rẹ̀ nínú modal àsopọ̀ (**Àwọn ìkọ̀já ààlà oṣuwọn → Àwọn ààlà
+ìṣiṣẹ́-pọ̀ fún model kọ̀ọ̀kan**, `model=cap` kan ní ìlà kọ̀ọ̀kan) tàbí nípasẹ̀
 `PATCH /api/providers/[id]` pẹ̀lú ìrísí JSON kan náà. Ìtumọ̀ àwọn kọ́kọ́rọ́:
 
-- **Gbogbo asopọ̀ ní ìfiwéra pẹ̀lú model pàtó:** `maxConcurrent` ṣì jẹ́ òpin
-  gbogbo asopọ̀ tí a pín. Nígbà tí àwọn méjèèjì bá kan, a máa gba àwọn ẹnubodè méjèèjì
-  lẹ́ẹ̀kan náà nínú ẹnubodè àkópọ̀ kan náà
-  (`global → provider → account → model`); òpin tó le jù lára àwọn tó kan ni yóò
-  pinnu ìhùwàsí tó nípa.
-- **Ìbámu kọ́kọ́rọ́ model gangan:** kọ́kọ́rọ́ náà ni ọ̀rọ̀ model tí a fi ránṣẹ́ sí
-  executor lẹ́yìn tí routing bá ti yanjú — ní gbogbo ìgbà, ó jẹ́ id model upstream lásán
-  (`glm-5`), kì í ṣe alias `provider/model` ti ẹgbẹ́ oníbàárà (`zai/glm-5` kò
-  bá `glm-5` mu). Àwọn iye jẹ́ òpin ìbéèrè tó ń ṣiṣẹ́ pọ̀ tí ó jẹ́ odidi rere.
-- **Ìtòlẹ́sẹẹsẹ abẹ́nú, kò sí ìṣàwárí:** àwọn ìbéèrè tó kọjá òpin máa dúró ní ìtòlẹ́sẹẹsẹ abẹ́nú pẹ̀lú
-  ìlànà queue/timeout tó ti wà tẹ́lẹ̀ (àwọn àṣìṣe gbígbàwọlé tó ní irú `SEMAPHORE_TIMEOUT` /
-  `SEMAPHORE_QUEUE_FULL`). OmniRoute kì í ṣàwárí tàbí fojú díwọ̀n ìlànà upstream —
-  ó máa ń fipá mú àwọn òpin gangan tí olùṣàkóso ṣètò. Ẹnubodè model tó ti kún kì í
-  pa olùpèsè náà, bẹ́ẹ̀ ni kì í ṣẹ̀dá ìdènà model tó máa wà títí láé; ìhùwàsí
-  upstream 429/cooldown/fallback ṣì jẹ́ ààbò ìkẹyìn fún àṣìṣe.
-- **Ìwọ̀n fún asopọ̀ kọ̀ọ̀kan, fún process kọ̀ọ̀kan:** àwọn òpin wà fún asopọ̀ database
-  kọ̀ọ̀kan, a sì ń tọ́jú wọn sínú memory, nítorí náà asopọ̀ méjì tó ń tún kọ́kọ́rọ́ API upstream
-  kan náà lò kì í ṣètò ara wọn pọ̀.
-- **Àìṣètò túmọ̀ sí pé kò sí ìyípadà:** fífi àwòrán náà sílẹ̀ (tàbí fífi
-  ààyè dashboard sílẹ̀ ní òfo) kò fi ẹnubodè model kankan kún un. Àpẹẹrẹ àtòjọ láì
-  sọ pé òpin gbogbo-gbòò kan wà fún olùpèsè:
+- **Gbogbo àsopọ̀ ní ìfiwéra pẹ̀lú model kan pàtó:** `maxConcurrent` ṣì jẹ́
+  ààlà àjọpín fún gbogbo àsopọ̀. Nígbà tí àwọn méjèèjì bá kan, a máa gba
+  àwọn ẹnu-ọ̀nà méjèèjì ní àkókò kan náà nínú ẹnu-ọ̀nà àkópọ̀ kan náà
+  (`global → provider → account → model`); ààlà tó le jù lára àwọn tó kàn
+  ni yóò pinnu ìhùwàsí tó gbẹ̀yìn.
+- **Ìbámu gangan ti kọ́kọ́rọ́ model:** kọ́kọ́rọ́ náà ni okùn model tí a fi ránṣẹ́
+  sí executor lẹ́yìn ìpinnu routing — ní ìgbà gbogbo, ó jẹ́ id model upstream
+  lásán (`glm-5`), kì í ṣe alias `provider/model` ti ẹgbẹ́ client
+  (`zai/glm-5` kò bá `glm-5` mu). Àwọn iye gbọdọ̀ jẹ́ àwọn odidi rere tó ń
+  ṣàlàyé ààlà àwọn ìbéèrè tó lè ṣiṣẹ́ ní ẹ̀ẹ̀kan.
+- **Títò ní àdúgbò, kò sí àwárí:** àwọn ìbéèrè àṣejù máa dúró ní ìlà ní àdúgbò
+  pẹ̀lú ìtumọ̀ queue/timeout tó ti wà tẹ́lẹ̀ (àwọn àṣìṣe ìgbàwọlé onírúurú
+  `SEMAPHORE_TIMEOUT` / `SEMAPHORE_QUEUE_FULL`). OmniRoute kì í ṣàwárí tàbí
+  fojú inú mọ ìlànà upstream — ó máa ń fipá mú àwọn ààlà gangan tí olùdarí
+  ti ṣètò. Ẹnu-ọ̀nà model tó ti kún kì í pa olùpèsè kan rí, bẹ́ẹ̀ ni kì í
+  dá ìdènà model títí láé sílẹ̀; ìhùwàsí 429/cooldown/fallback upstream
+  ṣì jẹ́ ààbò ìkẹyìn fún àṣìṣe.
+- **Ààlà fún àsopọ̀ kọ̀ọ̀kan àti process kọ̀ọ̀kan:** àwọn ààlà jẹ́ ti àsopọ̀
+  database kọ̀ọ̀kan, a sì ń pa wọ́n mọ́ sínú memory, nítorí náà àwọn àsopọ̀
+  méjì tó tún ń lo kọ́kọ́rọ́ API upstream kan náà kò ní ṣètò ara wọn pọ̀.
+- **Àìṣètò túmọ̀ sí pé kò sí ìyípadà:** fífi máàpù náà sílẹ̀ (tàbí fífi ààyè
+  dashboard sílẹ̀ ní òfo) kò fi ẹnu-ọ̀nà model kankan kún un. Àpẹẹrẹ ìṣètò
+  tí kò sọ pé ààlà gbogbo-ayé kan wà fún olùpèsè:
 
 ```text
 glm-5=1
 glm-4.7=3
 ```
 
-### Ìtẹ̀lé-lẹ́sẹẹsẹ ìbéèrè Quota-share
+### Ṣíṣètẹ̀lé àwọn ìbéèrè Quota-share
 
-Nígbà tí dispatch quota-share kan bá dojú kọ asopọ̀ tó ṣàlàyé
-`max_concurrent` rere, àwọn ìbéèrè tó ń ṣiṣẹ́ pọ̀ sí **àkọọ́lẹ̀** yẹn ni a máa ṣètò ní tẹ̀lé-lẹ́sẹẹsẹ nípasẹ̀
-semaphore kan fún asopọ̀ kọ̀ọ̀kan (kọ́kọ́rọ́ `qsconn:<connectionId>`): àwọn ìbéèrè tó pọ̀ ju máa **dúró nínú
-queue** dípò kí wọ́n bo àkọọ́lẹ̀ náà mọ́lẹ̀. Ó jẹ́ **fail-open** — queue tó ti kún
-tàbí timeout máa tẹ̀síwájú láìgba slot dípò kí ó kọ ìbéèrè tí a lè dispatch
-nígbàkigbà. Tan-an tàbí pa á ní **Ètò → Ìfaradà → Ìṣiṣẹ́-pọ̀ fún asopọ̀ kọ̀ọ̀kan ti Quota-share**
-(`resilienceSettings.quotaShareConcurrencyLimit.enabled`, ó máa ń wà ní titan
-láti ìbẹ̀rẹ̀). Láìsí òpin `max_concurrent`, ìhùwàsí náà kò ní yípadà.
+Nígbà tí ìfiránṣẹ́ quota-share bá fojú sí àsopọ̀ kan tó sọ `max_concurrent`
+rere, àwọn ìbéèrè tó ń ṣiṣẹ́ ní ẹ̀ẹ̀kan sí **àkọọ́lẹ̀** yẹn ni a máa ṣètẹ̀lé
+nípasẹ̀ semaphore kan fún àsopọ̀ kọ̀ọ̀kan (kọ́kọ́rọ́ `qsconn:<connectionId>`):
+àwọn ìbéèrè àṣejù máa **dúró nínú ìlà** dípò kí wọ́n kún àkọọ́lẹ̀ náà.
+Ó jẹ́ **fail-open** — queue tó ti kún tàbí timeout máa tẹ̀síwájú láìgba slot,
+dípò kí ó kọ ìbéèrè tó ṣeé firánṣẹ́ sílẹ̀ láéláé. Yí i padà nínú
+**Settings → Resilience → Quota-share per-connection concurrency**
+(`resilienceSettings.quotaShareConcurrencyLimit.enabled`, a máa ń tàn án
+ní àkọ́kọ́). Láìsí ààlà `max_concurrent`, ìhùwàsí náà kò yí padà.
 
-> Ẹnubodè routing quota-share (`selectQuotaShareTarget`, DRR + P2C) fúnra rẹ̀ jẹ́
-> fail-open, ó sì máa ń _dín ààyè àkọ́kọ́_ asopọ̀ tó ti dé òpin kù nìkan — pẹ̀lú
-> pool asopọ̀ kan ṣoṣo, kò lè fi òpin líle múlẹ̀, nítorí náà semaphore yìí gan-an
-> ló ń dá ìṣàn ìbéèrè tó pọ̀ dúró.
+> Ẹnu-ọ̀nà routing quota-share (`selectQuotaShareTarget`, DRR + P2C) fúnra rẹ̀
+> jẹ́ fail-open, ó sì kàn ń _sọ àsopọ̀ tó ti dé ààlà di èyí tí kò ṣe pàtàkì tó_ —
+> pẹ̀lú pool àsopọ̀ kan ṣoṣo, kò lè fi ààlà líle lélẹ̀, nítorí náà semaphore yìí
+> gan-an ni ó ń dá ìṣàn àṣejù náà dúró.
 
-### Àtúnṣe ìgbìyànjú combo tó mọ ipò cooldown
+### Àtúndánwò tó mọ̀ nípa combo cooldown
 
-Fún gbogbo ìlànà combo (nígbà tí a bá mú un ṣiṣẹ́), ìbéèrè kan tí ì bá sọ 429 di
-àbájáde fún cooldown alákòókò KÚKÚRÚ máa dúró kí ó parí, yóò sì tún dispatch dípò
-kí ó dá 429 padà — èyí bo àwọn àkókò TPM/RPM irú Gemini (~60s retry-after)
-lórí àwọn combo model púpọ̀, fún àpẹẹrẹ nígbà tí àwọn ibi-afẹ́ méjèèjì ti combo model méjì bá
-dé òpin oṣùwọ̀n fún model kọ̀ọ̀kan. `comboCooldownWait` ló fi ààlà sí i (`enabled`, `maxWaitMs`, `maxAttempts`,
-`budgetMs`) ní **Ètò → Ìfaradà**. Kì í dúró lórí `quota_exhausted`
-(tí a ti tì pa títí di ọ̀gànjọ́ òru) tàbí àwọn ìdí auth/not-found.
+Fún gbogbo ọgbọ́n combo (nígbà tí ó bá ṣiṣẹ́), ìbéèrè kan tí ì bá mú 429 dúró
+ṣinṣin fún cooldown alákòókò kúkúrú máa dúró de òpin rẹ̀, yóò sì tún fi ránṣẹ́
+dípò kí ó dá 429 padà — èyí kan àwọn fèrèsé TPM/RPM irú Gemini (~60s retry-after)
+lórí àwọn combo model púpọ̀, fún àpẹẹrẹ, nígbà tí àwọn ibi-afẹ́ méjèèjì ti combo
+model méjì bá dé ààlà oṣuwọn fún model kọ̀ọ̀kan. `comboCooldownWait`
+(`enabled`, `maxWaitMs`, `maxAttempts`, `budgetMs`) nínú
+**Settings → Resilience** ló fi ààlà sí i. Kò dúró lórí `quota_exhausted`
+(tí a ti tì pa títí di ọ̀gànjọ́ òru) tàbí àwọn ìdí auth/not-found láéláé.
+
+Ẹnu-ọ̀nà kan náà bo ipò ṣáájú ìfiránṣẹ́ (#16319): nígbà tí a bá fo gbogbo
+ibi-afẹ́ combo kan kọjá ṣáájú kí a tó ṣe ìgbìyànjú kankan nítorí pé model rẹ̀
+wà nínú ìdènà alákòókò kúkúrú, ọ̀nà ìgbìyànjú-odo náà máa dúró de òpin ìdènà
+lábẹ́ àwọn ààlà kan náà, yóò sì tún fi ránṣẹ́, dípò dídá
+`503 ALL_TARGETS_SKIPPED` tí kò ní ìtọ́kasí padà. Nígbà tí a kò bá gba ìdúró
+láàyè (nítorí pé ààlà, ìgbìyànjú tàbí budget ti parí, tàbí pé feature náà
+wà ní pípà), ìdáhùn ìkẹyìn máa yí padà sí `429 rate_limit_error` tó ní
+`retry_after` / `reset_at` láti ìparí ìdènà alákòókò tó kọ́kọ́ dé; àwọn ìdènà
+quota, auth àti not-found ṣì pa 503 tí kò ní ìtọ́kasí mọ́.
 
 ```text
 #16319 · comboCooldownWait · pre-dispatch (attempts = 0)

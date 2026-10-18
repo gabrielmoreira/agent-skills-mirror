@@ -233,6 +233,7 @@ Notification center history uses the live desktop `notificationStore` over a req
 | Read / clear / activate notification history                             | `notify inbox list`, `read`, `read-all`, `clear`, `activate`, `link`                             |
 | Dismiss one / all visible notifications                                  | `notify inbox dismiss [id]`                                                                      |
 | Expand / collapse full inbox details                                     | `notify inbox detail <id>` / `collapse`                                                          |
+| In-App Toasts switch (bell popover, palette, Toggle In-App Toasts)       | `settings set toastDuration -1` (off) / `settings set toastDuration <seconds>` (on)              |
 | Bookmark / unbookmark an agent (Cmd+Shift+B)                             | `bookmark` / `unbookmark`, or `update-agent --bookmark`                                          |
 | Create / rename / remove an agent                                        | `create-agent`, `rename-agent`, `remove-agent`                                                   |
 | Edit Agent modal fields                                                  | `update-agent`, `settings agent set`                                                             |

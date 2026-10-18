@@ -8,22 +8,22 @@
 
 _Laatst bijgewerkt: 2026-06-28_
 
-## Samenvatting voor het management
+## Samenvatting
 
-OmniRoute is een lokale AI-routeringsgateway en dashboard, gebouwd op Next.js.
-Het biedt één OpenAI-compatibel endpoint (`/v1/*`) en routeert verkeer naar meerdere upstreamproviders, met vertaling, fallback, tokenvernieuwing en gebruiksregistratie.
+OmniRoute is een lokale AI-routeringsgateway en een dashboard, gebouwd met Next.js.
+Het biedt één OpenAI-compatibel eindpunt (`/v1/*`) en routeert verkeer naar meerdere upstreamproviders, met vertaling, fallback, tokenvernieuwing en gebruiksregistratie.
 
-Kernfunctionaliteiten:
+Kernmogelijkheden:
 
-- OpenAI-compatibel API-oppervlak voor CLI's/tools (372 providers, 148 executors)
-- Vertaling van requests/responses tussen providerindelingen
-- Modelcombo-fallback (reeks met meerdere modellen)
-- Gestructureerde combostappen (`provider + model + connection`) met runtimevolgorde op basis van `compositeTiers`
+- OpenAI-compatibel API-oppervlak voor CLI/tools (373 providers, 150 uitvoeringsmodules)
+- Vertaling van verzoeken en antwoorden tussen providerindelingen
+- Fallback met modelcombinaties (reeks van meerdere modellen)
+- Gestructureerde combinatiestappen (`provider + model + connection`) met runtimevolgorde op basis van `compositeTiers`
 - Fallback op accountniveau (meerdere accounts per provider)
-- Quotum-preflight en quotumbewuste P2C-accountselectie in het hoofdpad voor chat
+- Voorafgaande quotacontrole en quotabewuste P2C-accountselectie in het primaire chatpad
 - Beheer van providerverbindingen via OAuth en API-sleutels (27 OAuth-providermodules)
 - Genereren van embeddings via `/v1/embeddings` (18 providers)
-- Genereren van afbeeldingen via `/v1/images/generations` (10+ providers, 20+ modellen)
+- Genereren van afbeeldingen via `/v1/images/generations` (meer dan 10 providers, meer dan 20 modellen)
 - Audiotranscriptie via `/v1/audio/transcriptions` (18 providers)
 - Tekst-naar-spraak via `/v1/audio/speech` (24 ingebouwde providers)
 - Genereren van video's via `/v1/videos/generations` (ComfyUI + SD WebUI)
@@ -31,55 +31,55 @@ Kernfunctionaliteiten:
 - Zoeken op het web via `/v1/search` (20 providers)
 - Moderatie via `/v1/moderations`
 - Herrangschikking via `/v1/rerank`
-- Verwerking van think-tags (``) voor redeneermodellen
-- Opschoning van responses voor strikte compatibiliteit met de OpenAI SDK
+- Parseren van denktags (``) voor redeneermodellen
+- Opschonen van antwoorden voor strikte compatibiliteit met de OpenAI SDK
 - Normalisatie van rollen (developer→system, system→user) voor compatibiliteit tussen providers
 - Conversie van gestructureerde uitvoer (json_schema → Gemini responseSchema)
-- Lokale persistente opslag voor providers, sleutels, aliassen, combo's, instellingen en prijzen (122 DB-modules)
-- Registratie van gebruik/kosten en logging van requests
+- Lokale persistente opslag voor providers, sleutels, aliassen, combinaties, instellingen en prijzen (122 DB-modules)
+- Registratie van gebruik/kosten en logboekregistratie van verzoeken
 - Optionele cloudsynchronisatie voor synchronisatie tussen meerdere apparaten en van statusgegevens
-- IP-allowlist/blocklist voor toegangsbeheer tot de API
-- Beheer van denkbudgetten (passthrough/auto/aangepast/adaptief)
+- IP-toestaanlijst/blokkeerlijst voor API-toegangsbeheer
+- Beheer van denkbudgetten (passthrough/auto/custom/adaptive)
 - Globale injectie van systeemprompts
-- Sessietracking en fingerprinting
-- Verbeterde snelheidsbegrenzing per account met providerspecifieke profielen
+- Sessietracering en fingerprinting
+- Verbeterde snelheidsbeperking per account, met providerspecifieke profielen
 - Circuitbreakerpatroon voor robuustheid van providers
 - Bescherming tegen het thundering-herd-probleem met mutexvergrendeling
-- Cache voor deduplicatie van requests op basis van handtekeningen
-- Domeinlaag: kostenregels, fallbackbeleid en lockoutbeleid
-- Context Relay: overdrachtssamenvattingen van sessies voor continuïteit bij accountrotatie
-- Persistente opslag van domeinstatus (SQLite write-through-cache voor fallbacks, budgetten, lockouts en circuitbreakers)
-- Beleidsengine voor gecentraliseerde evaluatie van requests (lockout → budget → fallback)
-- Telemetrie van requests met aggregatie van p50/p95/p99-latentie
-- Telemetrie van combodoelen en historische status van combodoelen via `combo_execution_key` / `combo_step_id`
-- Correlatie-ID (X-Request-Id) voor end-to-endtracering
-- Compliance-auditlogging met opt-out per API-sleutel
+- Cache voor deduplicatie van verzoeken op basis van handtekeningen
+- Domeinlaag: kostenregels, fallbackbeleid en vergrendelingsbeleid
+- Context Relay: samenvattingen voor sessieoverdracht om continuïteit bij accountrotatie te waarborgen
+- Persistente opslag van domeinstatus (SQLite-write-through-cache voor fallbacks, budgetten, vergrendelingen en circuitbreakers)
+- Beleidsengine voor gecentraliseerde evaluatie van verzoeken (vergrendeling → budget → fallback)
+- Verzoektelemetrie met aggregatie van p50/p95/p99-latentie
+- Telemetrie voor combinatiedoelen en historische status van combinatiedoelen via `combo_execution_key` / `combo_step_id`
+- Correlatie-ID (X-Request-Id) voor end-to-end-tracering
+- Auditlogboekregistratie voor naleving, met opt-out per API-sleutel
 - Evaluatieframework voor kwaliteitsborging van LLM's
-- Gezondheidsdashboard met realtime status van circuitbreakers van providers
-- MCP-server (110 tools) met 3 transportmethoden (stdio/SSE/Streamable HTTP)
-- A2A-server (JSON-RPC 2.0 + SSE) met vaardigheden en taaklevenscyclus
+- Statusdashboard met realtime circuitbreakerstatus van providers
+- MCP Server (110 tools) met 3 transportmethoden (stdio/SSE/Streamable HTTP)
+- A2A Server (JSON-RPC 2.0 + SSE) met vaardigheden en een taaklevenscyclus
 - Geheugensysteem (extractie, injectie, ophalen, samenvatten)
-- Vaardighedensysteem (register, executor, sandbox, ingebouwde vaardigheden)
+- Vaardighedensysteem (register, uitvoerder, sandbox, ingebouwde vaardigheden)
 - MITM-proxy met certificaatbeheer en DNS-afhandeling
-- Middleware voor bescherming tegen promptinjectie
-- Pipeline voor promptcompressie met Caveman, RTK, gestapelde pipelines, compressiecombo's, taalpakketten en analyses
+- Middleware ter bescherming tegen promptinjectie
+- Pipeline voor promptcompressie met Caveman, RTK, gestapelde pipelines, compressiecombinaties, taalpakketten en analyses
 - ACP-register (Agent Communication Protocol)
 - Modulaire OAuth-providers (22 afzonderlijke modules onder `src/lib/oauth/providers/`)
 - Scripts voor verwijderen/volledig verwijderen
-- Actie voor herstel van de OAuth-omgeving
+- Herstelactie voor de OAuth-omgeving
 - WebSocket-bridge voor OpenAI-compatibele WS-clients (`/v1/ws`)
-- Beheer van synchronisatietokens (uitgeven/intrekken, downloaden van ETag-geversioneerde configuratiebundels)
-- GLM Thinking (`glmt`) als volwaardige providerpreset
+- Beheer van synchronisatietokens (uitgeven/intrekken en downloaden van een met ETag geversioneerde configuratiebundel)
+- GLM Thinking (`glmt`) als volwaardige providervoorinstelling
 - Hybride tokentelling (`/messages/count_tokens` aan providerzijde, met schatting als fallback)
-- Automatisch initialiseren van modelaliassen (30+ normalisaties tussen proxydialecten bij het opstarten)
-- Veilig uitgaand ophalen met SSRF-bescherming, blokkering van privé-URL's en configureerbare nieuwe pogingen
-- Cooldownbewuste nieuwe chatpogingen met configureerbare `requestRetry` en `maxRetryIntervalSec`
+- Automatisch initialiseren van modelaliassen (meer dan 30 dialectnormalisaties tussen proxy's bij het opstarten)
+- Veilig uitgaand ophalen met SSRF-beveiliging, blokkering van privé-URL's en configureerbare nieuwe pogingen
+- Chatpogingen die rekening houden met afkoelperiodes, met configureerbare `requestRetry` en `maxRetryIntervalSec`
 - Validatie van de runtimeomgeving met Zod bij het opstarten
-- Compliance-audit v2 met paginering, CRUD-events voor providers en validatielogging voor door SSRF geblokkeerde requests
+- Nalevingsaudit v2 met paginering, CRUD-gebeurtenissen voor providers en logboekregistratie van door SSRF geblokkeerde validaties
 
 Primair runtimemodel:
 
-- Next.js-approutes onder `src/app/api/*` implementeren zowel dashboard-API's als compatibiliteits-API's
+- Next.js-app-routes onder `src/app/api/*` implementeren zowel dashboard-API's als compatibiliteits-API's
 - Een gedeelde SSE-/routeringskern in `src/sse/*` + `open-sse/*` verzorgt provideruitvoering, vertaling, streaming, fallback en gebruik
 
 ## Referentiediagrammen

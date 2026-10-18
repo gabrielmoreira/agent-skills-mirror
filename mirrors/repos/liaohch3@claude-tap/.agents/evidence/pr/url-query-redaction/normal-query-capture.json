@@ -1,0 +1,56 @@
+{
+  "capture_kind": "Real Claude Code interactive tmux conversation through claude-tap; no --print mode",
+  "source_commit": "f46b869492b97e85ae2943ba902bd7e46a4b6c4e",
+  "session_id": "d85a9160-18a3-4305-ae45-e6be91eeed0d",
+  "model": "deepseek-flash",
+  "backend": "https://api.deepseek.com/anthropic",
+  "submitted_user_turns": 6,
+  "captured_requests": 6,
+  "response_statuses": [
+    200,
+    200,
+    200,
+    200,
+    200,
+    200
+  ],
+  "tools_in_all_requests": [],
+  "response_tool_calls": 0,
+  "usage": {
+    "input_tokens": 1137,
+    "output_tokens": 415,
+    "cache_read_input_tokens": 768,
+    "cache_creation_input_tokens": 0
+  },
+  "viewer_input_output_tokens": 1552,
+  "dashboard_total_tokens_including_separate_cache_bucket": 2320,
+  "source_database_sha256": "a819d577d3d42561b31e29ab9ea6a36513f6d4890314a97d7b3586ca1bb1917b",
+  "raw_jsonl_filename": "trace_d85a9160-18a3-4305-ae45-e6be91eeed0d.jsonl",
+  "raw_jsonl_sha256": "b172e5e482a0a9e907757e8bc296012cbba6e8d2440d41b56fd8b0e489884321",
+  "source_database_unchanged": true,
+  "raw_jsonl_faithfully_exports_actual_database": true,
+  "normal_redaction_recovery_failures": 0,
+  "metadata_recovery_failures": 0,
+  "all_sys_hint_preserved": true,
+  "record_usage_unchanged_in_display": true,
+  "html_http_status": 200,
+  "records_http_status": 200,
+  "screenshot": "trace-viewer-normal-query-redacted-current.png",
+  "screenshot_sha256": "779faa54e1b0787b30fbf6a40fa0cda36a00d365e8f4843d5d7504f6bd4d9ac9",
+  "viewport_css": [
+    1280,
+    900
+  ],
+  "device_scale_factor": 2,
+  "browser": "installed macOS headless Chromium; fresh browser context; only local origin permitted",
+  "browser_version": "145.0.7632.6",
+  "page_errors": [],
+  "all_task_badges_normal": true,
+  "selected_display_url": "https://example.com/report?token=REDACTED&mode=slow&page=6#section",
+  "public_inputs": "Six public example.com URLs with the explicitly fictitious value evidence-only-not-a-secret and public mode/page/fragment values; request to repeat once, never visit URLs or use tools.",
+  "privacy": "Only this metadata receipt and screenshot are prepared for Git; raw database, JSONL, local configuration and terminal logs remain outside the repository.",
+  "production_sha256": {
+    "dashboard.py": "22244110f658cf7ce6230413428705bbaadcb32216adaba8827dcdc8f6aa338a",
+    "live.py": "4828410ed8174b0ee5109878f985025379f6554e10a616337d3a6a150cdb3670"
+  }
+}

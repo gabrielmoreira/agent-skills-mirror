@@ -148,31 +148,31 @@ curl -X POST http://localhost:20128/a2a \
 
 ## Pieejamās prasmes
 
-OmniRoute piedāvā 6 A2A prasmes, kas savienotas ar `src/lib/a2a/taskExecution.ts::A2A_SKILL_HANDLERS`. Katrs prasmju modulis atrodas mapē `src/lib/a2a/skills/`.
+OmniRoute nodrošina 6 A2A prasmes, kas piesaistītas `src/lib/a2a/taskExecution.ts::A2A_SKILL_HANDLERS`. Katras prasmes modulis atrodas direktorijā `src/lib/a2a/skills/`.
 
-| Prasme                          | ID                   | Apraksts                                                                                                                                              | Birkas                              | Piemēri                                                |
-| :------------------------------ | :------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------- | :---------------------------------- | :----------------------------------------------------- |
-| Viedā maršrutēšana              | `smart-routing`      | Maršrutē uzvedni caur optimālo pakalpojumu sniedzēju/kombināciju, izmantojot OmniRoute kombināciju programmu un vērtēšanu                             | maršrutēšana, pakalpojumu sniedzēji | "Maršrutēt šo uzvedni, izmantojot labāko modeli"       |
-| Kvotu pārvaldība                | `quota-management`   | Sniedz informāciju par katra pakalpojumu sniedzēja kvotas stāvokli un palīdz izsaucējiem izlemt, kad ierobežot ātrumu vai pārslēgties                 | kvota, pakalpojumu sniedzēji        | "Pārbaudīt anthropic kvotu"                            |
-| Pakalpojumu sniedzēju atklāšana | `provider-discovery` | Uzskaita instalētos pakalpojumu sniedzējus ar iespējām, bezmaksas līmeņa indikatoriem un OAuth statusu                                                | pakalpojumu sniedzēji, atklāšana    | "Kādi pakalpojumu sniedzēji ir pieejami?"              |
-| Izmaksu analīze                 | `cost-analysis`      | Aprēķina pieprasījuma/konversācijas izmaksas, ņemot vērā katalogu un neseno lietojumu                                                                 | izmaksas, lietojums                 | "Aprēķināt šīs konversācijas izmaksas"                 |
-| Veselības pārskats              | `health-report`      | Apkopo katra pakalpojumu sniedzēja ķēdes pārtraucēja, gaidīšanas perioda un bloķēšanas stāvokli                                                       | veselība, noturība                  | "Parādīt visu pakalpojumu sniedzēju veselības statusu" |
-| Iespēju uzskaitījums            | `list-capabilities`  | Atgriež pilnu 45 ierakstu Agent Skills katalogu (23 API + 21 CLI + 1 config) kā Markdown tabulu ar neapstrādātiem SKILL.md URL konteksta ievietošanai | katalogs, atklāšana, prasmes        | "Uzskaitīt visas OmniRoute iespējas"                   |
+| Prasme                  | ID                   | Apraksts                                                                                                                                                     | Birkas                       | Piemēri                                         |
+| :---------------------- | :------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------- | :--------------------------- | :---------------------------------------------- |
+| Viedā maršrutēšana      | `smart-routing`      | Maršrutē uzvedni caur optimālo nodrošinātāju/kombināciju, izmantojot OmniRoute kombināciju dzini un vērtēšanu                                                | maršrutēšana, nodrošinātāji  | "Maršrutē šo uzvedni, izmantojot labāko modeli" |
+| Kvotu pārvaldība        | `quota-management`   | Sniedz pārskatu par katra nodrošinātāja kvotu stāvokli un palīdz izsaucējiem izlemt, kad ierobežot ātrumu/pārslēgties                                        | kvotas, nodrošinātāji        | "Pārbaudi anthropic kvotu"                      |
+| Nodrošinātāju atklāšana | `provider-discovery` | Uzskaita instalētos nodrošinātājus, norādot iespējas, bezmaksas līmeņa pazīmes un OAuth statusu                                                              | nodrošinātāji, atklāšana     | "Kādi nodrošinātāji ir pieejami?"               |
+| Izmaksu analīze         | `cost-analysis`      | Novērtē pieprasījuma/sarunas izmaksas, pamatojoties uz katalogu un neseno lietojumu                                                                          | izmaksas, lietojums          | "Novērtē šīs sarunas izmaksas"                  |
+| Veselības pārskats      | `health-report`      | Apkopo ķēdes pārtraucēja, atdzišanas perioda un bloķēšanas stāvokli katram nodrošinātājam                                                                    | veselība, noturība           | "Parādi visu nodrošinātāju veselības statusu"   |
+| Iespēju saraksts        | `list-capabilities`  | Atgriež pilnu 45 ierakstu Agent Skills katalogu (23 API + 21 CLI + 1 konfigurācija) kā markdown tabulu ar neapstrādātiem SKILL.md URL konteksta ievietošanai | katalogs, atklāšana, prasmes | "Uzskaiti visas OmniRoute iespējas"             |
 
-> Agent Card ir jāuztur saskaņota ar aktuālo 352 pakalpojumu sniedzēju katalogu; pakalpojumu sniedzēju skaits un bezmaksas/bez autentifikācijas metadati tiek iegūti no izpildlaika reģistra.
+> Aģenta karte ir jāuztur saskaņota ar aktuālo 372 nodrošinātāju katalogu; nodrošinātāju skaits un bezmaksas/bezautentifikācijas metadati tiek iegūti no izpildlaika reģistra.
 
-### `list-capabilities` prasmes detalizēts apraksts
+### Prasmes `list-capabilities` detalizēts apraksts
 
-Prasme `list-capabilities` ir īpaši noderīga ārējiem aģentiem, kuriem pirms API izsaukumu nosūtīšanas jānoskaidro, ko OmniRoute nodrošina. Tā atgriež strukturētu Markdown tabulas artefaktu:
+Prasme `list-capabilities` ir īpaši noderīga ārējiem aģentiem, kuriem pirms API izsaukumu nosūtīšanas jānoskaidro, kādas iespējas OmniRoute nodrošina. Tā atgriež strukturētu markdown tabulas artefaktu:
 
 ```
-| ID | Nosaukums | Kategorija | Joma | Galapunkti/komandas | Neapstrādāts URL |
+| ID | Nosaukums | Kategorija | Joma | Galapunkti/komandas | Neapstrādātais URL |
 | --- | --- | --- | --- | --- | --- |
 | omni-auth | Autentifikācija un sesijas | api | auth | POST /api/auth/login, ... | https://raw.githubusercontent.com/... |
 ...
 ```
 
-Katrā rindā ir kolonna `rawUrl`, lai aģenti varētu nekavējoties izgūt pilnu SKILL.md. Lauks `metadata.totalSkills` atspoguļo kataloga lielumu (šobrīd 45). Implementācija: `src/lib/a2a/skills/listCapabilities.ts`. Skatiet arī [AGENT-SKILLS.md](./AGENT-SKILLS.md).
+Katrā rindā ir iekļauta kolonna `rawUrl`, lai aģenti varētu nekavējoties iegūt pilno SKILL.md. Lauks `metadata.totalSkills` atspoguļo kataloga lielumu (pašlaik 45). Implementācija: `src/lib/a2a/skills/listCapabilities.ts`. Skatiet arī [AGENT-SKILLS.md](./AGENT-SKILLS.md).
 
 ---
 
@@ -274,7 +274,7 @@ resp = requests.post("http://localhost:20128/a2a", json={
     "method": "message/send",
     "params": {
         "skill": "smart-routing",
-        "messages": [{"role": "user", "content": "Hello"}]
+        "messages": [{"role": "user", "content": "Sveiki"}]
     }
 }, headers={"Authorization": "Bearer YOUR_KEY"})
 
@@ -298,7 +298,7 @@ const resp = await fetch("http://localhost:20128/a2a", {
     method: "message/send",
     params: {
       skill: "smart-routing",
-      messages: [{ role: "user", content: "Hello" }],
+      messages: [{ role: "user", content: "Sveiki" }],
     },
   }),
 });

@@ -1,5 +1,7 @@
 # Contributing
 
+[简体中文](CONTRIBUTING.zh.md)
+
 Thanks for considering a contribution to `claude-tap`.
 
 This project is a local proxy and trace viewer for AI coding clients. Changes can affect request routing, credential handling, trace files, and generated HTML output, so small, well-scoped pull requests are easiest to review.
@@ -55,13 +57,13 @@ uv run --extra dev pytest tests/e2e/ --run-real-e2e --timeout=300
 - Explain the problem and the user-visible behavior change.
 - List validation commands and results.
 - Add or update tests when behavior changes.
-- Update `README.md`, `README_zh.md`, or `CHANGELOG.md` when user-facing behavior changes.
+- Update the relevant English and Simplified Chinese documentation together when user-facing behavior changes.
 - Include screenshots or recordings for viewer UI changes.
 - Redact private data from all trace evidence.
 
 ## Release Notes
 
-Published versions are documented in `CHANGELOG.md`. If a change should appear in the next release, add it under `## [Unreleased]` or the release section requested by maintainers.
+Published versions are documented in `CHANGELOG.md` and `CHANGELOG.zh.md`. If a change should appear in the next release, add matching English and Simplified Chinese notes under `## [Unreleased]` in both files, or in the release section requested by maintainers. The release generator promotes these curated notes together and rejects an update when only one language has notes.
 
 ## Reporting Security Issues
 

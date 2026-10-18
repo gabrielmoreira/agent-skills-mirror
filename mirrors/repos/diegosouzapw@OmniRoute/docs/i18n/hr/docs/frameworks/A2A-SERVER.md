@@ -148,31 +148,31 @@ curl -X POST http://localhost:20128/a2a \
 
 ## Dostupne vještine
 
-OmniRoute izlaže 6 A2A vještina registriranih u `src/lib/a2a/taskExecution.ts::A2A_SKILL_HANDLERS`. Svaki modul vještine nalazi se u `src/lib/a2a/skills/`.
+OmniRoute izlaže 6 A2A vještina povezanih u `src/lib/a2a/taskExecution.ts::A2A_SKILL_HANDLERS`. Svaki modul vještine nalazi se u `src/lib/a2a/skills/`.
 
-| Vještina              | ID                   | Opis                                                                                                                                                 | Oznake                     | Primjeri                                     |
-| :-------------------- | :------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------------- | :------------------------------------------- |
-| Pametno usmjeravanje  | `smart-routing`      | Usmjerava prompt kroz optimalnog pružatelja/kombinaciju koristeći OmniRoute-ov kombinirani mehanizam i bodovanje                                     | routing, providers         | "Usmjeri ovaj prompt putem najboljeg modela" |
-| Upravljanje kvotama   | `quota-management`   | Izvještava o stanju kvote po pružatelju, pomaže pozivateljima odlučiti kada usporiti/prebaciti se                                                    | quota, providers           | "Provjeri kvotu za anthropic"                |
-| Otkrivanje pružatelja | `provider-discovery` | Prikazuje instalirane pružatelje s mogućnostima, oznakama besplatnog nivoa i OAuth statusom                                                          | providers, discovery       | "Koji su pružatelji dostupni?"               |
-| Analiza troškova      | `cost-analysis`      | Procjenjuje trošak zahtjeva/razgovora na temelju kataloga i nedavne upotrebe                                                                         | cost, usage                | "Procijeni trošak za ovaj razgovor"          |
-| Izvještaj o zdravlju  | `health-report`      | Agregira stanje prekidača strujnog kruga, hlađenja i blokiranja po pružatelju                                                                        | health, resilience         | "Prikaži zdravstveni status svih pružatelja" |
-| Popis mogućnosti      | `list-capabilities`  | Vraća kompletan katalog od 45 Agent vještina (23 API + 21 CLI + 1 konfiguracija) kao markdown tablicu s raw SKILL.md URL-ovima za umetanje konteksta | catalog, discovery, skills | "Navedi sve OmniRoute mogućnosti"            |
+| Vještina              | ID                   | Opis                                                                                                                                                        | Oznake                        | Primjeri                                   |
+| :-------------------- | :------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------- | :---------------------------- | :----------------------------------------- |
+| Pametno usmjeravanje  | `smart-routing`      | Usmjerava upit optimalnom pružatelju usluga ili kombinaciji koristeći OmniRouteov mehanizam kombiniranja i bodovanja                                        | usmjeravanje, pružatelji      | "Usmjeri ovaj upit putem najboljeg modela" |
+| Upravljanje kvotama   | `quota-management`   | Izvještava o stanju kvote za svakog pružatelja i pomaže pozivateljima odlučiti kada ograničiti zahtjeve ili promijeniti pružatelja                          | kvota, pružatelji             | "Provjeri kvotu za anthropic"              |
+| Otkrivanje pružatelja | `provider-discovery` | Navodi instalirane pružatelje zajedno s mogućnostima, oznakama besplatne razine i OAuth statusom                                                            | pružatelji, otkrivanje        | "Koji su pružatelji dostupni?"             |
+| Analiza troškova      | `cost-analysis`      | Procjenjuje trošak zahtjeva ili razgovora na temelju kataloga i nedavne upotrebe                                                                            | trošak, upotreba              | "Procijeni trošak ovog razgovora"          |
+| Izvještaj o stanju    | `health-report`      | Objedinjuje stanje prekidača strujnog kruga, razdoblja čekanja i zaključavanja za svakog pružatelja                                                         | stanje, otpornost             | "Prikaži stanje svih pružatelja"           |
+| Popis mogućnosti      | `list-capabilities`  | Vraća cijeli katalog od 45 Agent Skills stavki (23 API + 21 CLI + 1 konfiguracija) kao markdown tablicu sa sirovim SKILL.md URL-ovima za umetanje konteksta | katalog, otkrivanje, vještine | "Navedi sve mogućnosti OmniRoutea"         |
 
-> Agent Card treba biti usklađen s aktivnim katalogom od 352 pružatelja; broj pružatelja i metapodaci o besplatnom pristupu/bez autentifikacije potječu iz registra u izvođenju.
+> Agent Card treba održavati usklađenom s aktivnim katalogom od 372 pružatelja; broj pružatelja i metapodaci o besplatnom pristupu/pristupu bez autentifikacije preuzimaju se iz registra za vrijeme izvođenja.
 
-### Detalji vještine `list-capabilities`
+### Pojedinosti vještine `list-capabilities`
 
-Vještina `list-capabilities` posebno je korisna za vanjske agente koji trebaju otkriti što OmniRoute izlaže prije slanja API poziva. Vraća strukturirani markdown artefakt tablice:
+Vještina `list-capabilities` posebno je korisna vanjskim agentima koji trebaju otkriti što OmniRoute izlaže prije slanja API poziva. Vraća strukturirani artefakt u obliku markdown tablice:
 
 ```
-| ID | Name | Category | Area | Endpoints/Commands | Raw URL |
+| ID | Naziv | Kategorija | Područje | Krajnje točke/naredbe | Sirovi URL |
 | --- | --- | --- | --- | --- | --- |
-| omni-auth | Auth & Sessions | api | auth | POST /api/auth/login, ... | https://raw.githubusercontent.com/... |
+| omni-auth | Autentifikacija i sesije | api | auth | POST /api/auth/login, ... | https://raw.githubusercontent.com/... |
 ...
 ```
 
-Svaki redak uključuje stupac `rawUrl` kako bi agenti mogli odmah dohvatiti cijeli SKILL.md. Polje `metadata.totalSkills` odražava veličinu kataloga (danas 45). Implementacija: `src/lib/a2a/skills/listCapabilities.ts`. Vidi također [AGENT-SKILLS.md](./AGENT-SKILLS.md).
+Svaki redak uključuje stupac `rawUrl` kako bi agenti mogli odmah dohvatiti cijeli SKILL.md. Polje `metadata.totalSkills` odražava veličinu kataloga (danas 45). Implementacija: `src/lib/a2a/skills/listCapabilities.ts`. Pogledajte i [AGENT-SKILLS.md](./AGENT-SKILLS.md).
 
 ---
 

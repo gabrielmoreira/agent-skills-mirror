@@ -58,7 +58,7 @@ metadata:
 原因：攻击者可以通过 name 参数注入 `'; DROP TABLE users; --`。
 
 建议：使用参数化查询：
-  db.query('SELECT * FROM users WHERE name = $1', [name])
+  db.query('SELECT * FROM users WHERE name = ?', [name])
 
 参考：https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html
 ```

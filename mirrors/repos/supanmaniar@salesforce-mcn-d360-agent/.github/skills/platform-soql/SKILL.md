@@ -1,6 +1,6 @@
 ---
 name: platform-soql
-description: 'Query and explore a Salesforce org from the CLI: run SOQL, paginate results, list and describe sObjects, call arbitrary REST endpoints, and check org limits. Use when you need to query records, inspect object schemas, explore the REST API, or check API and storage limits without an MCP server.'
+description: 'Query and explore a Salesforce org from the CLI: run SOQL, paginate results, list and describe sObjects, call arbitrary REST endpoints, and check org limits. Use when you need to query records, inspect object schemas, explore the REST API, or check API and storage limits without an MCP server. Note that sObject tooling does not show the whole data model — Data 360 objects (DMO __dlm, DLO __dll) are absent from EntityDefinition, and many are absent from sf sobject list even while remaining queryable, so never infer existence from a listing.'
 ---
 
 # Salesforce Platform: SOQL, Describe, REST, Limits
@@ -60,6 +60,49 @@ sf api request rest "services/data/v66.0/sobjects" -o "$SF_TARGET_ORG" \
   | python3 -c "import json,sys; d=json.load(sys.stdin); print(len(d['sobjects']))"
 ```
 
+#### sObject listing does not show the whole data model
+
+Data 360 objects do not behave like ordinary sObjects. The table below is
+measured, not assumed — and note that `list` and `describe` disagree:
+
+| Object type | Suffix | `sf sobject list` | `EntityDefinition` | `sf sobject describe` | SOQL `SELECT` |
+| --- | --- | --- | --- | --- | --- |
+| DMO, materialised | `__dlm` | ✅ | ❌ | ✅ | ✅ |
+| DMO, defined only | `__dlm` | ❌ | ❌ | — | ❌ |
+| DLO | `__dll` | ❌ | ❌ | ✅ | ✅ |
+
+Two consequences worth internalising:
+
+- **DMOs and DLOs reject every DML verb.** They are queryable, not writable:
+  `INSERT`, `UPDATE` and `DELETE` all return
+  `CANNOT_INSERT_UPDATE_ACTIVATE_ENTITY`, and `describe` reports
+  `createable/updateable/deletable = false` on all of them. This is a property of
+  the object, not a permission — an admin sees the same flags, so do not retry
+  with elevated access. Route writes to the family's own API; see
+  [records-crud](../records-crud/SKILL.md) and
+  [data360-connect-api](../data360-connect-api/SKILL.md).
+
+- **A DMO or DLO absent from `sf sobject list` may still be fully queryable.**
+  `SELECT Id FROM Account_Home__dll` works and `sf sobject describe -s
+  Account_Home__dll` returns 119 fields, yet the object appears in neither
+  `sf sobject list` nor `EntityDefinition`. Do not use a listing to conclude an
+  object does not exist — try describing it.
+
+- **`EntityDefinition` never lists Data 360 objects.** This query returns zero
+  rows, not an error, even in an org with over a thousand DMOs:
+
+  ```bash
+  sf data query -q "SELECT QualifiedApiName FROM EntityDefinition WHERE QualifiedApiName LIKE '%__dlm'" \
+    -o "$SF_TARGET_ORG" --json     # -> 0 rows, always
+  ```
+
+To enumerate definitions, use the Data 360 Connect API — see
+[data360-connect-api](../data360-connect-api/SKILL.md). To count queryable
+objects, there is no single reliable surface: check `sf sobject list` **and** the
+Data 360 listing endpoints.
+
+- **Objects in other data spaces.** A sObject listing reflects one data space.
+
 ### Describe an object
 
 ```bash
@@ -115,6 +158,31 @@ Or via REST, which returns the same data keyed by limit name:
   `INVALID_TYPE` for metadata objects.
 - **API version matters.** Pass `--api-version` to pin one; the default follows
   the org's version.
+- **An unknown query parameter is ignored, not rejected.** The Data 360 and
+  Connect APIs silently drop parameters they do not recognise and apply their own
+  default, so a typo produces a plausible but wrong result set instead of an
+  error. Sending `batchSize=200` to an endpoint whose parameter is `limit`
+  returns the default 50 rows — which reads as "there are only 50 of these".
+
+  `sf-api.sh` warns on unrecognised parameters using the catalog:
+
+  ```bash
+  ./scripts/sf-api.sh --path /ssot/data-model-objects --query 'batchSize=200'
+  # sf-api: warning: unrecognised query parameter(s) for GET /ssot/data-model-objects:
+  # sf-api:          batchSize
+  # sf-api:          declared parameters: limit, offset, orderBy
+  ```
+
+  Never trust a count that could have been truncated by a default. Confirm the
+  parameter name from the catalog first:
+
+  ```bash
+  node scripts/catalog-search.mjs describe segments.get-segments
+  ```
+
+- **Pagination parameters are inconsistent across endpoints.** Within the same
+  API family, `/ssot/segments` takes `batchSize` while `/ssot/data-model-objects`
+  takes `limit`. Do not assume a family-wide convention.
 
 ## Reference
 

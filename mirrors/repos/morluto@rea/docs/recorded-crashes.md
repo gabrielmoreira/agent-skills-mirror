@@ -61,9 +61,21 @@ The outer provider owns both processes and one stable core snapshot. An owned
 Python launcher lowers inherited soft limits before replacing itself with GDB.
 GDB starts without initfiles, auto-load, debuginfod or automatic shared-library
 loading. Owned empty library search paths and caches are used, with plugin
-updates disabled. Fixed package code verifies a core connection and no paired
-executable before querying mapping candidates. No caller GDB command language is
-exposed. The exact observed GDB/plugin version strings are retained.
+updates disabled. Debug-file lookup is also restricted to the owned empty
+search directory. GDB 16 can otherwise locate the recorded executable independently
+of these settings. While opening the core, fixed package code temporarily selects
+`/proc/self/exe` (the already running debugger) with `exec-file`, without loading
+symbols or running an inferior. This occupies GDB's executable slot and prevents
+its automatic executable discovery. The validated decoder profile selects the
+core architecture explicitly, so the placeholder cannot select it instead. The
+bridge discards that selection with `file` before querying mapping candidates,
+and verifies the core connection and absence of a main symbol file. Before launching GDB, the provider also checks
+source-bound `NT_FILE` descriptors: mapping names must be absolute Unix paths
+without dot segments. Relative names bypass GDB's sysroot, and traversal can
+escape it. Unresolved or unsafe mapping coverage refuses debugger enrichment
+while retaining the basic decoded observation and original bytes. No caller GDB
+command language is exposed. The exact observed GDB/plugin version strings are
+retained.
 
 Mapping names are producer display metadata, with unknown current file identity.
 Map permissions are derived from reported flags; zero/unfamiliar flags leave
@@ -93,4 +105,6 @@ GDB/Python/pwndbg/strace. Fixture generation explicitly launches its owned test
 program; subsequent inspection only reads the resulting core. Real acceptance
 checks recorded threads, high registers, missing/malformed notes, opaque owners,
 CLI/MCP parity, optional debugger context and historical PID collision with an
-owned live sentinel. Original inputs and host configuration remain unchanged.
+owned live sentinel. The syscall trace also rejects access to the still-present
+source executable. The CI workflow defines Ubuntu 24.04 and Debian 13 (GDB 16)
+container lanes. Original inputs and host configuration remain unchanged.

@@ -17,7 +17,7 @@ It provides a single OpenAI-compatible endpoint (`/v1/*`) and routes traffic acr
 
 Core capabilities:
 
-- OpenAI-compatible API surface for CLI/tools (372 providers, 150 executor modules)
+- OpenAI-compatible API surface for CLI/tools (374 providers, 150 executor modules)
 - Request/response translation across provider formats
 - Model combo fallback (multi-model sequence)
 - Structured combo steps (`provider + model + connection`) with runtime ordering by `compositeTiers`
@@ -546,6 +546,7 @@ Domain State DB (SQLite):
 - Runtime env validation: `src/lib/env/runtimeEnv.ts` — Zod schema for all environment variables, surfaced as startup errors/warnings
 - Sync tokens: `src/lib/db/syncTokens.ts` — scoped tokens for config bundle download endpoints; backed by `sync_tokens` SQLite table (migration `024_create_sync_tokens.sql`)
 - WebSocket handshake auth: `src/lib/ws/handshake.ts` — validates WS upgrade requests via API key or session cookie
+- Live dashboard WebSocket auth: `src/server/ws/liveServer.ts` — the sidecar (port `LIVE_WS_PORT`) accepts a dashboard session cookie or a Bearer API key holding a management scope (`manage`/`admin`); inference-only keys are refused. Its internal `POST /__omniroute_event` publisher endpoint accepts loopback peers only when no proxy-hop header (`x-forwarded-*`, `x-real-ip`, `forwarded`, `via`) is present
 
 ## 5) Cloud Sync
 

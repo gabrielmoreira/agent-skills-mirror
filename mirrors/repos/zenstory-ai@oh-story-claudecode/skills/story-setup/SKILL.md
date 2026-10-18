@@ -1,6 +1,6 @@
 ---
 name: story-setup
-version: 1.3.3
+version: 1.3.4
 description: "网文写作工具集基础设施部署与检查。为 Claude Code / OpenCode / Codex / Google Antigravity / ZCode / OpenClaw / Reasonix 提供内置适配；Web AI / 通用 Agent 可走 skills + AGENTS.md 文件模式。触发方式：/story-setup、$story-setup、「准备写书」「帮我搭一下环境」「配置写作项目」「检查写作环境」。"
 metadata: {"openclaw":{"source":"https://github.com/zenstory-ai/oh-story-claudecode"}}
 ---
@@ -21,14 +21,14 @@ metadata: {"openclaw":{"source":"https://github.com/zenstory-ai/oh-story-claudec
 
 ## Phase 1：判断宿主与项目
 
-**先自检参考目录**：以正在执行的本 `SKILL.md` 所在目录为准，列出与它同级的 `references/` 下的子目录，核对下面 9 个名字是否都在**且都非空**——`agent-references`、`templates`、`opencode`、`codex`、`antigravity`、`zcode`、`openclaw`、`reasonix`、`generic`；同级 `references/deploy-*.md`（8 份宿主部署文件）、`scripts/merge-claude-settings.py`、`scripts/merge-codex-hooks.py`、`scripts/merge-antigravity-hooks.py`、`scripts/generate-antigravity-agents.mjs`、`scripts/deploy-antigravity-skills.py` 与 `scripts/copy-path-safety.py` 也必须存在（宿主部署步骤、Claude/Codex/Antigravity hooks 合并、Antigravity Skills 物化与 agent 生成、递归复制安全检查依赖它们）。有缺即 skill 包没装全，**立即停止，不写任何部署文件**，报告里区分「缺目录」「目录为空」和「缺脚本或部署文件」，并给修复指令：「story-setup 参考资料包不完整，缺 {路径}。按你的安装方式重装 oh-story-claudecode（命令行装的重跑 `npx skills add zenstory-ai/oh-story-claudecode -y -g`，marketplace / Plugin Management 装的在面板里重装），再执行 /story-setup。」
+**先自检参考目录**：以正在执行的本 `SKILL.md` 所在目录为准，列出与它同级的 `references/` 下的子目录，核对下面 9 个名字是否都在**且都非空**——`agent-references`、`templates`、`opencode`、`codex`、`antigravity`、`zcode`、`openclaw`、`reasonix`、`generic`；同级 `references/deploy-*.md`（8 份宿主部署文件）、`scripts/merge-claude-settings.py`、`scripts/merge-codex-hooks.py`、`scripts/merge-antigravity-hooks.py`、`scripts/generate-antigravity-agents.mjs`、`scripts/deploy-antigravity-skills.py`、`scripts/merge-project-instructions.py` 与 `scripts/copy-path-safety.py` 也必须存在（宿主部署步骤、Claude/Codex/Antigravity hooks 合并、Antigravity Skills 物化与 agent 生成、项目指令合并、递归复制安全检查依赖它们）。有缺即 skill 包没装全，**立即停止，不写任何部署文件**，报告里区分「缺目录」「目录为空」和「缺脚本或部署文件」，并给修复指令：「story-setup 参考资料包不完整，缺 {路径}。按你的安装方式重装 oh-story-claudecode（命令行装的重跑 `npx skills add zenstory-ai/oh-story-claudecode -y -g`，marketplace / Plugin Management 装的在面板里重装），再执行 /story-setup。」
 
 > 判据是「有没有 `SKILL.md`」：只看正在执行的 `SKILL.md` 同级的 `references/`。项目内 `.claude/skills/story-setup/`、`.codex/skills/story-setup/` 和 OpenCode 的 `skills/story-setup/` 只有 `references/agent-references/`、不含 `SKILL.md`，不会是执行目录，也不要拿它们核对。Antigravity / ZCode / OpenClaw / Reasonix / generic 的项目副本是整份 skill 拷贝、自带 `SKILL.md`，9 个子目录本就齐全，照常核对即可。
 
 1. 检查当前目录是否已部署过（存在 `.story-deployed`）
-   - `agents_version` 缺失、非整数或小于 `35` → 标记为待更新，继续执行当前部署
-   - `agents_version: 35` → 使用 AskUserQuestion 确认是否重新部署；提示里写明重新部署只用**当前本地 skill 包**刷新项目文件，要拿 skill 本身的新版本得先更新 oh-story-claudecode（`npx skills add` 或 marketplace），再回来重跑
-   - `agents_version` 大于 `35` → 当前 story-setup 比项目部署旧；停止以避免降级覆盖，提示先更新 oh-story-claudecode，不写任何部署文件
+   - `agents_version` 缺失、非整数或小于 `36` → 标记为待更新，继续执行当前部署
+   - `agents_version: 36` → 使用 AskUserQuestion 确认是否重新部署；提示里写明重新部署只用**当前本地 skill 包**刷新项目文件，要拿 skill 本身的新版本得先更新 oh-story-claudecode（`npx skills add` 或 marketplace），再回来重跑
+   - `agents_version` 大于 `36` → 当前 story-setup 比项目部署旧；停止以避免降级覆盖，提示先更新 oh-story-claudecode，不写任何部署文件
    - 同时读 `target_cli` 字段。**已部署项目以 sentinel 里的值为准**：非空时（逗号分隔的多端组合原样保留）这些端照常重新部署，不再让作者选；第 4 步仍判断当前宿主：判断出来且不在其中（作者换了软件）→ AskUserQuestion 问「这个文件夹之前是给 {已部署宿主名} 装的，你现在用的是 {当前宿主名}，要一起装上吗？」（「一起装上（推荐）」「只更新原来的」），选前者就加进 `target_cli`；判断不出不问。字段缺失或为空才走第 4-6 步。用户明确要求增删目标端时，用 AskUserQuestion 在现有值基础上改，改完的值写回 sentinel。
    - `target_cli` 不含 opencode、但项目里有 `.opencode/plugins/story-hooks.ts` 或 `.opencode/agents/`（多端部署时 OpenCode 曾被版本门拦下）→ 用 AskUserQuestion 问是否把 OpenCode 加回来；选加回则先过 [references/deploy-opencode.md](references/deploy-opencode.md) 的「部署前置」，通过后写回 `target_cli`
 2. 检查是否有书名目录（包含 `追踪/` 子目录的目录，或用户自定义结构）
@@ -48,6 +48,7 @@ metadata: {"openclaw":{"source":"https://github.com/zenstory-ai/oh-story-claudec
    - `openclaw.json`、`.openclaw/`，或 `AGENTS.md` 中的 OpenClaw 段（标题行含 `网文写作工具集（OpenClaw）`）→ `target_cli = openclaw`
    - `.reasonix/`、`reasonix-plugin.json`、`REASONIX.md`，或 `AGENTS.md` 中的 Reasonix 段（标题行含 `网文写作工具集（Reasonix）`）→ `target_cli = reasonix`
    - `AGENTS.md` 中的通用段（标题行含 `网文写作工具集（通用 Agent / Web AI）`）→ `target_cli = generic`
+   - `CLAUDE.md` / `AGENTS.md` 里的 `<!-- oh-story:{宿主} 开始` 管理块 → `target_cli` 含该宿主
 
    > 后三类只认各端**互斥**的标记：`skills/*/SKILL.md` 的 `metadata.openclaw` 不作 OpenClaw 信号（13 个 skill 都带，三条 skills-only 路径部署出的 `skills/` 一样）；`.agents/skills/` 由 Antigravity、Codex 与 Reasonix 共用，也不单独作准。
 6. 定下 `target_cli`：
@@ -59,7 +60,7 @@ metadata: {"openclaw":{"source":"https://github.com/zenstory-ai/oh-story-claudec
 
 ## Phase 2：部署基础设施
 
-Phase 2 幂等：复制、写入与各宿主合并重复执行结果一致。工具、权限或网络问题中断后，从头重跑即可，不另清理半成品；`create only if absent` 的用户状态文件（见清单 Owner class）不会被覆盖。
+Phase 2 幂等：复制、写入与各宿主合并重复执行结果一致。受管目录中只覆盖 oh-story 自己的 13 个 skill、7 个助手、hook 与规则文件，保留同目录里作者自己的文件；不覆盖书稿、设定、大纲、追踪和 `.active-book`。工具、权限或网络问题中断后，从头重跑即可，不另清理半成品；`create only if absent` 的用户状态文件（见清单 Owner class）不会被覆盖。
 
 **两列基准目录不同**：`Source path` 是包内来源，story-setup 内的路径以当前 `SKILL.md` 所在目录定位；`Target path` 相对用户项目根。执行每一行（以及各宿主部署算法里的每个递归复制步骤）之前，先把通配符具体化为单个源/目标，再用本 `SKILL.md` 同级的 `scripts/copy-path-safety.py` 检查。该脚本按 `Path.resolve` / `realpath` 语义跟随已有 symlink，并在两侧都存在时用 `samefile` 核对文件系统对象；**只转绝对路径或比较字符串不算检查完成**。读取其 JSON：`status: same` 时 no-op，禁止复制；仅 `copy_allowed: true` 时可以复制；`source_missing`、`unsafe_target_within_source` 或 `filesystem_identity_error` 必须停止该步骤并报告。无法运行脚本时只能用当前环境的文件系统 API 做完全相同的 canonical realpath、same-object 与 target-descendant 检查；无法确认就停止，不得尝试复制。OpenClaw / Reasonix / generic 的项目副本是整份 skill 拷贝，重跑时执行的就是项目里那份；Reasonix / Codex 还可能经 `.agents/skills → ../skills` symlink 加载，路径文本不同也可能指向同一目录，照字面复制会把目录嵌进自身并撑满磁盘。
 
@@ -80,7 +81,7 @@ Phase 2 幂等：复制、写入与各宿主合并重复执行结果一致。工
 | `reasonix` | [references/deploy-reasonix.md](references/deploy-reasonix.md) |
 | `generic` | [references/deploy-generic.md](references/deploy-generic.md) |
 
-多端部署时几个宿主共用根 `AGENTS.md`，按下方「AGENTS.md 合并策略」合并成一份；某一端被自己的前置条件拦下（如 OpenCode 版本门、Antigravity 缺 Node）时，按该端部署文件的规定处理，其他端照常部署。
+多端部署时几个宿主共用根 `AGENTS.md`，各占一个管理块（见下方「项目指令合并」）；某一端被自己的前置条件拦下（如 OpenCode 版本门、Antigravity 缺 Node）时，按该端部署文件的规定处理，其他端照常部署。
 
 ### Step 2：创建部署标记
 
@@ -88,15 +89,14 @@ Phase 2 幂等：复制、写入与各宿主合并重复执行结果一致。工
 - 写入以下字段（YAML `key: value` 格式，hook 用 `references/templates/hooks/lib/sentinel.sh` 读取）：
   ```
   deployed_at: <date -u +"%Y-%m-%dT%H:%M:%SZ">
-  agents_version: 35
-  setup_skill_version: 1.3.3
+  agents_version: 36
+  setup_skill_version: 1.3.4
   target_cli: claude-code（或 opencode、codex、antigravity、zcode、openclaw、reasonix、generic，或其任意组合）
   resolver_strategy: project-local-skill-reference
   references_dir: .claude/skills/story-setup/references/agent-references（Codex 写 .codex/skills/...；Antigravity 写 .agents/skills/...；ZCode 写 .zcode/skills/...；OpenCode / OpenClaw / Reasonix / generic 写 skills/...；多端用逗号分隔）
   ```
 - 此文件供 session-start.sh 和写作 skill 检测部署状态，避免重复提示
 - 宿主部署文件里「部署标记补充」要求的额外标记一并创建（如 Claude Code 的重启确认标记）
-- 如果 `.story-deployed` 已存在但 `agents_version` 缺失、非整数或小于 `35`，按本次流程更新 hooks/agents/rules/reference bundle（具体变更见 `UPGRADING.md`）；大于 `35` 时已在 Phase 1 停止，不得降级覆盖
 
 ## Phase 3：验证安装
 
@@ -104,7 +104,7 @@ Phase 2 幂等：复制、写入与各宿主合并重复执行结果一致。工
 
 1. 对 `target_cli` 里的每个宿主，执行其部署文件的「验证」一节。
 2. 验证部署标记：
-   - 检查 `.story-deployed` 是否存在且包含时间戳、`agents_version: 35`、`setup_skill_version: 1.3.3`、`target_cli`、`resolver_strategy`、`references_dir`
+   - 检查 `.story-deployed` 存在，字段齐全，版本号与 Step 2 的字段块一致
 3. 输出安装报告。读者是不懂编程的作者，按这个顺序写：
    - **先写「现在可以做什么」**：用写书的话列本次部署后真正可用的事（如「可以开新书、续写：说 /story-long-write」「可以拆一本对标书」），端的限制如实翻译（如「这个工具里审稿由我一个人完成，没有分工助手」）。
    - **再写「你还需要做的事」**：逐条可照做，如「新开一个会话」「在 Codex 里打开 /hooks，把 oh-story 的几条信任一下」「先安装 Node」；没有就写「无需其他操作」。这两段不出现脚本名、字段名、状态名或文件路径；各宿主部署文件「安装报告必须提示」的内容先翻译进这两段。
@@ -114,30 +114,23 @@ Phase 2 幂等：复制、写入与各宿主合并重复执行结果一致。工
 
 ## 模板占位符
 
-| 占位符 | 替换规则 | 示例 |
-|--------|----------|------|
-| `{项目名}` | 用户项目名称或目录名 | 《剑来》、《暗卫》 |
-| `{书名}` | 书名目录名（与目录一致） | 与 `{项目名}` 相同，或用户自定义 |
-| `{目标平台}` | 目标发布平台 | 起点、番茄、晋江、知乎盐言 |
-| `{作者名}` | 用户笔名或昵称 | 未指定时用「作者」 |
+只替换 `{项目名}`：用作者给的书名或项目名，没给就用当前目录名，去掉花括号。模板里其余花括号写法（如 `{书名}/正文/`）表示「任意一本书的目录」，原样保留。
 
-替换时去掉花括号。未指定项目名用当前目录名；其余先按表中默认值处理，没有默认值的占位符保留原样。CLAUDE.md 的合并策略在 Claude Code 部署文件里。
+## 项目指令合并（CLAUDE.md / AGENTS.md）
 
-## AGENTS.md 合并策略（OpenCode / Codex / ZCode / OpenClaw / Reasonix / generic）
+每个宿主在项目指令文件里占一个管理块：`<!-- oh-story:{宿主} 开始 … -->` 到 `<!-- oh-story:{宿主} 结束 -->`，块里是渲染后的模板；Claude Code 写 `CLAUDE.md`，其余宿主共用根 `AGENTS.md`。按 `python3` → `python` → `py` 的顺序探测出可用的 Python 记为 `PYBIN`，运行：
 
-用户已有 AGENTS.md 时，按 marker/section 合并：
-1. 优先识别 story-setup 管理块标记（如果旧项目已有标记，只替换标记内内容）
-2. 无标记时，读取用户现有 AGENTS.md，按 `##` 标题切分为 section map
-3. OpenCode 使用 `skills/story-setup/references/opencode/AGENTS.md.tmpl`；Codex 使用 `skills/story-setup/references/codex/AGENTS.md.tmpl`；ZCode 使用 `skills/story-setup/references/zcode/AGENTS.md.tmpl`；OpenClaw 使用 `skills/story-setup/references/openclaw/AGENTS.md.tmpl`；Reasonix 使用 `skills/story-setup/references/reasonix/AGENTS.md.tmpl`；通用 Web AI / 其他 Agent 使用 `skills/story-setup/references/generic/AGENTS.md.tmpl`
-4. 模板中的标准 section（Skill 路由表、文件结构、协作规则、与作者协作、Compact 后恢复上下文；模板有而用户文件没有的 section 直接补入）覆盖同名 section；用户独有 section 保留
-5. 多端同时部署时，Codex/OpenCode/ZCode/OpenClaw/Reasonix/generic 共同可用的通用段落只保留一份；工具特有说明以小节区分，避免互相覆盖
+```text
+"$PYBIN" "{story-setup skill目录}/scripts/merge-project-instructions.py" --host {宿主} --template {该宿主模板} --existing {项目指令文件} --output {项目指令文件} --project-name {项目名}
+```
 
-## 重新部署
+规则（无法运行脚本时照此手工合并）：
+1. 文件不存在或为空 → 只写这一块。
+2. 已有本宿主的块 → 整块替换；块外文字和别的宿主的块一字不动。
+3. 没有本宿主的块、但块外有旧版「网文写作工具集」标题行（旧部署）→ 删掉本宿主的旧标题行、引言及与模板同名的节（含已退役的「协作规则」；「Skill 路由表」「文件结构」「写作约束」只在内容带 oh-story 痕迹时才删），在原位置写入这一块；作者自己的节保留在块外。已有别的宿主的块、块外没有旧标题行时，只删本宿主独有的节（如「Codex 项目约定」）。
+4. 以上都不是 → 把这一块追加到文件末尾。
 
-- `.story-deployed` 不存在 → 全新安装，Phase 2 全部执行
-- `.story-deployed` 存在且 `agents_version: 35` → 提示已部署，AskUserQuestion 确认是否重新部署；提示里写明重新部署只用当前本地 skill 包刷新项目文件，skill 本身的更新走 `npx skills add` 或 marketplace
-- `.story-deployed` 存在但 `agents_version` 缺失、非整数或小于 `35` → 提示需要更新，重新执行 Phase 2 覆盖 agents/hooks/rules/reference bundle，CLAUDE.md / AGENTS.md / settings.local.json / .codex/hooks.json / `.agents/hooks.json` / .zcode/config.json 走合并策略
-- `.story-deployed` 存在且 `agents_version` 大于 `35` → 当前 skill 版本过旧，停止并提示先更新 oh-story-claudecode；不覆盖项目中的更新部署
+把脚本输出的旧节名写进安装报告的「部署明细」。
 
 ---
 
@@ -147,7 +140,7 @@ Phase 2 幂等：复制、写入与各宿主合并重复执行结果一致。工
 |------|------|
 | references/deploy-*.md | 8 份宿主部署文件：各自的部署清单、算法、验证与安装报告提示，按 Phase 2 Step 1 只读目标宿主那份 |
 | [references/diagnostics.md](references/diagnostics.md) | 仅检查模式 |
-| UPGRADING.md | 各版本升级要点 |
+| UPGRADING.md | 写给作者：各版本要不要重跑、哪些旧数据要迁移 |
 
 ---
 

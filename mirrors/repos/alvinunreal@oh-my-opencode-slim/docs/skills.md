@@ -32,6 +32,9 @@ broader evidence only when the change's risk or uncertainty warrants it.
 | [`clonedeps`](#clonedeps) | Local dependency source cloning | `orchestrator` |
 | [`deepwork`](#deepwork) | Heavy/complex coding sessions workflow | `orchestrator` |
 | [`verification-planning`](#verification-planning) | Design project-specific evidence before implementation | `orchestrator` |
+| [`step-back`](#step-back) | Pause snowballing patches and reassess direction | `orchestrator` |
+| [`deanchor`](#deanchor) | Generalize from examples instead of copying them | `orchestrator` |
+| [`ai-estimates`](#ai-estimates) | Estimate task duration for a human working with AI | `orchestrator` |
 | [`reflect`](#reflect) | Review repeated work and suggest reusable workflow improvements | `orchestrator` |
 | [`worktrees`](#worktrees) | Safe Git worktree lane management | `orchestrator` |
 | [`oh-my-opencode-slim`](#oh-my-opencode-slim) | Plugin configuration and self-improvement guidance | `orchestrator` |
@@ -178,6 +181,55 @@ verification-only dependencies, persistent instrumentation, production debug
 surfaces, or structural changes. Temporary support is removed; durable support
 needs a clear justification. Completed work reports what was established and its
 limitations.
+
+---
+
+## step-back
+
+**Pause snowballing patches and reassess direction before continuing.**
+
+`step-back` is an orchestrator-only skill for the moment a task keeps growing
+through patches: repeated fixes, workarounds, compatibility shims, or a new path
+built beside an old one. Instead of quietly pushing on, the agent checks whether
+it would build the thing this way from scratch. If not, it briefly tells the
+user the current direction, why it is drifting, a cleaner alternative, and its
+recommendation, then lets the user decide.
+
+**When NOT to use:** small, clean, bounded edits where the current direction is
+still proportional.
+
+---
+
+## deanchor
+
+**Generalize from examples instead of copying them with light edits.**
+
+`deanchor` is an orchestrator-only skill for requests that include examples,
+samples, templates, or reference outputs. Examples weight a model's output
+heavily, so it tends to return one of them slightly reworded. This skill has
+the agent separate what the examples share (intent, constraints, taste) from
+what is incidental (phrasing, length, topic, order), then produce something
+original at that level and check it is not a light edit of any one example.
+
+**When NOT to use:** when the user explicitly wants an example's exact format
+reproduced.
+
+---
+
+## ai-estimates
+
+**Estimate task duration for a human working with AI, not alone.**
+
+`ai-estimates` is an orchestrator-only skill for questions about how long a
+task will take, whether coding, writing, research, analysis, design, or data
+work. Models learned their sense of duration from human-only work, so they
+default to estimates like "a few weeks" for work AI can draft in hours. This
+skill has the agent price AI-capable work at AI speed (plus review and fixes)
+and human or external bottlenecks (decisions, access, approvals, real-world
+testing, waiting on others) at human speed, then give a range and say which
+part dominates.
+
+**When NOT to use:** questions that are not about duration or effort.
 
 ---
 

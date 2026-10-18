@@ -17,69 +17,91 @@ OmniRoute እያንዳንዱን የAPI ጥያቄ የሚቆጣጠር፣ መንገ
 
 ### 1. API ቁልፍ (Bearer)
 
-ለOpenAI/Anthropic/Gemini-ተኳሃኝ የደንበኛ APIዎች እና ቁልፉ `manage` ወሰን ሲኖረው ለጥቂት የአስተዳደር መስመሮች ጥቅም ላይ ይውላል።
+ከOpenAI/Anthropic/Gemini ጋር ተኳሃኝ ለሆኑ የደንበኛ APIዎች እና ቁልፉ `manage` ወሰን ሲኖረው ለተወሰኑ የአስተዳደር መስመሮች ጥቅም ላይ ይውላል።
 
 ```
 Authorization: Bearer <api-key>
 ```
 
-በ`src/sse/services/auth.ts` ውስጥ ባሉት `isValidApiKey()` / `extractApiKey()` የሚረጋገጥ ሲሆን፣ በ`src/shared/utils/apiAuth.ts` በኩል እንደገና ወደ ውጭ ይላካል። አረጋጋጩ የ`OMNIROUTE_API_KEY` / `ROUTER_API_KEY` የአካባቢ ተለዋዋጮችንም እንደ ቋሚ የማሳለፊያ ቁልፎች ይቀበላል (ጉዳይ #1350)።
+በ`src/sse/services/auth.ts` ውስጥ ባሉት `isValidApiKey()` / `extractApiKey()` የሚረጋገጥ ሲሆን፣ በ`src/shared/utils/apiAuth.ts` በኩል እንደገና ወደ ውጭ ይላካል። አረጋጋጩ በተጨማሪ `OMNIROUTE_API_KEY` / `ROUTER_API_KEY` የአካባቢ ተለዋዋጮችን እንደ ቋሚ የማሳለፊያ ቁልፎች ይቀበላል (ጉዳይ #1350)።
 
-### 2. የዳሽቦርድ ክፍለ ጊዜ (auth_token cookie)
+### 2. የዳሽቦርድ ክፍለ ጊዜ (auth_token ኩኪ)
 
-ለዳሽቦርድ ገጾች እና ለአስተዳዳሪ ክንውኖች።
+ለዳሽቦርድ ገጾች እና ለአስተዳዳሪ ክዋኔዎች።
 
 ```
 Cookie: auth_token=<JWT signed with JWT_SECRET>
 ```
 
-JWTው ሲረጋገጥ **እና** `authenticated: true` ሲይዝ ብቻ cookieው ክፍለ ጊዜ ይሆናል
-(`src/shared/utils/dashboardSessionToken.ts` → `verifyDashboardSessionToken`)። እያንዳንዱ
-የcookieው ተጠቃሚ (የዳሽቦርድ መስመር ጠባቂ (`isDashboardSessionAuthenticated()`)፣ የauthz pipeline እድሳት፣ WebSocket handshake፣ live
-server፣ `/api/settings/require-login`፣ `/api/auth/status`) በዚያ helper በኩል ያልፋል።
-በ`JWT_SECRET` የተፈረሙ ሌሎች JWTዎችም አሉ — የCursor CLI passthrough ለቁልፍ ባለቤቶች
-`iss "omniroute" / aud "cursor-cli"` tokens ይፈጥራል — እነዚህም በፍጹም ክፍለ ጊዜዎች አይደሉም
+አንድ ኩኪ እንደ ክፍለ ጊዜ የሚቆጠረው JWTው ሲረጋገጥ **እና** `authenticated: true`ን ሲይዝ ብቻ ነው
+(`src/shared/utils/dashboardSessionToken.ts` → `verifyDashboardSessionToken`)። ኩኪውን የሚጠቀሙ ሁሉም
+አካላት (የዳሽቦርድ መስመር ጠባቂ (`isDashboardSessionAuthenticated()`)、የauthz ሂደት እድሳት፣ WebSocket handshake፣ ቀጥታ
+አገልጋይ፣ `/api/settings/require-login`፣ `/api/auth/status`) በዚያ ረዳት በኩል ያልፋሉ።
+በ`JWT_SECRET` የተፈረሙ ሌሎች JWTዎችም አሉ — የCursor CLI ማሳለፊያ ለቁልፍ ባለቤቶች
+`iss "omniroute" / aud "cursor-cli"` ቶከኖችን ይፈጥራል — እና እነዚህ ፈጽሞ እንደ ክፍለ ጊዜ አይቆጠሩም
 (#13298)።
 
-በ`src/shared/utils/apiAuth.ts` ውስጥ ባለው `isDashboardSessionAuthenticated()` ይረጋገጣል። በ30 ቀን የሕይወት ጊዜው ውስጥ ከ7 ቀናት ያነሰ ጊዜ ሲቀረው pipelineው JWTውን በራስ-ሰር ያድሳል።
+በ`src/shared/utils/apiAuth.ts` ውስጥ ባለው `isDashboardSessionAuthenticated()` ይረጋገጣል። ሂደቱ ከ30 ቀናት የዕድሜ ጊዜው ውስጥ ከ7 ቀናት ያነሰ ሲቀረው JWTውን በራስ-ሰር ያድሳል።
 
-እያንዳንዱ አመንጪ በ`mintDashboardSessionToken` (የተሰጠበት ጊዜ `iat` እና መለያ `jti`) በኩል ስለሚያልፍ እና አረጋጋጩ ሁለት ቅንብሮችን ስለሚፈትሽ፣ አንድ ክፍለ ጊዜ 30 ቀናቱ ከማለቃቸው በፊትም ሊያበቃ ይችላል፦ `sessionsValidAfter`፣ የይለፍ ቃል ሲቀየር የሚዘጋጅ ሲሆን ከዚያ በፊት የተሰጡ ክፍለ ጊዜዎች በሙሉ እንዳይረጋገጡ ያደርጋል (የይለፍ ቃሉን የቀየረው browser አዲስ cookie ያገኛል)፤ እና `revokedDashboardSessions`፣ `POST /api/auth/logout` ዘግቶ የወጣውን ክፍለ ጊዜ `jti` የሚጨምርበት። በቀድሞ ልቀት የተፈጠሩ ክፍለ ጊዜዎች ከእነዚህ አቤቱታዎች አንዱንም አይይዙም፣ እና የመጀመሪያው የይለፍ ቃል ለውጥ እስኪከሰት ድረስ የሚሰሩ ሆነው ይቆያሉ። ቅንብሮቹ ሊነበቡ ካልቻሉ፣ ክፍለ ጊዜው አይታመንም።
+እያንዳንዱ ቶከን ፈጣሪ `mintDashboardSessionToken`ን (የተሰጠበት ጊዜ `iat` እና መለያ `jti`) ስለሚጠቀም፣ እና አረጋጋጩ ሁለት ቅንብሮችን ስለሚፈትሽ፣ አንድ ክፍለ ጊዜ 30 ቀናቱ ከማለቃቸው በፊትም ሊያበቃ ይችላል፦ `sessionsValidAfter`፣ ይህም የይለፍ ቃል ሲቀየር የሚዘጋጅ ሲሆን ከዚያ በፊት የተሰጡ ሁሉም ክፍለ ጊዜዎች እንዳይረጋገጡ ያደርጋል (የይለፍ ቃሉን የቀየረው አሳሽ አዲስ ኩኪ ያገኛል)፤ እና `revokedDashboardSessions`፣ `POST /api/auth/logout` ዘግቶ የወጣውን ክፍለ ጊዜ `jti` ወደዚህ ያክላል። በቀድሞ ልቀት የተፈጠሩ ክፍለ ጊዜዎች ከሁለቱም claim አንዱንም አይዙም፣ እና የመጀመሪያው የይለፍ ቃል ለውጥ እስኪደረግ ድረስ የሚሰሩ ሆነው ይቆያሉ። ቅንብሮቹን ማንበብ ካልተቻለ፣ ክፍለ ጊዜው እምነት አይጣልበትም።
 
-አንዳንድ የአስተዳደር መስመሮች **ከሁለቱ አንዱን** ሁነት ይቀበላሉ፦ cookie ወይም የAPI ቁልፉ `manage` (ወይም `admin`) ወሰን ሲኖረው `Bearer <key>`። ይህም በv3.8 የታከለውን "በAPI ጥሪዎች በኩል ሊዋቀር የሚችል" የሥራ ፍሰት ያስችላል።
+አንዳንድ የአስተዳደር መስመሮች **ከሁለቱ አንዱን** ሁነት ይቀበላሉ፦ ኩኪ ወይም የAPI ቁልፉ `manage` (ወይም `admin`) ወሰን ሲኖረው `Bearer <key>`። በv3.8 የታከለውን «በAPI ጥሪዎች ሊዋቀር የሚችል» የሥራ ፍሰት የሚያስችለው ይህ ነው።
 
 #### አማራጭ የOIDC መግቢያ በር (#6973)
 
-የዳሽቦርድ አስተዳዳሪ መግቢያው ከነባሪው የይለፍ ቃል መግቢያ ጎን ለጎን **በፈቃድ የሚነቃ** OIDC (OpenID Connect) ፍሰትንም ይደግፋል — የይለፍ ቃል መግቢያው ፈጽሞ አይወገድም፣ የሚደረገው መደገፍ ብቻ ነው፦
+የዳሽቦርድ አስተዳዳሪ መግቢያው ከነባሪው የይለፍ ቃል መግቢያ ጎን ለጎን **በፍላጎት የሚነቃ** OIDC (OpenID Connect) ፍሰትንም ይደግፋል — የይለፍ ቃል መግቢያው ፈጽሞ አይወገድም፣ የሚደረገው ማሟላት ብቻ ነው፦
 
 - `settings.oidcEnabled === true` **እና** `oidcIssuer` /
   `oidcClientId` / `oidcClientSecret` ሁሉም ካልተዋቀሩ በስተቀር የተሰናከለ ነው (Settings → Auth)።
-  ካልሆነ `GET /api/auth/oidc/login` `400` ይመልሳል።
+  ካልሆነ `GET /api/auth/oidc/login` `400`ን ይመልሳል።
 - `GET /api/auth/oidc/login` `authorization_endpoint`ን ከአውጪው
-  `/.well-known/openid-configuration` ያገኛል (`<issuer>/authorize`ን
-  እንደ አማራጭ ይጠቀማል)፣ የማዞሪያ URIውን ከገቢው ጥያቄ
-  (`x-forwarded-proto`-aware) ይገነባል፣ እና በ`httpOnly` `oidc_state` cookie ውስጥ
-  የተከማቸ የዘፈቀደ `state` ይዞ ወደ IdP ያዞራል።
+  `/.well-known/openid-configuration` ይፈልግና ያገኛል (`<issuer>/authorize`ን እንደ አማራጭ ይጠቀማል)፣ የማዞሪያ URIውን ከገቢው ጥያቄ
+  (`x-forwarded-proto`ን ከግምት ውስጥ በማስገባት) ይገነባል፣ እና በ`httpOnly` `oidc_state` ኩኪ ውስጥ የተከማቸ የዘፈቀደ `state`
+  ይዞ ወደ IdPው ያዞራል።
 - `GET /api/auth/oidc/callback` `state`ን ያረጋግጣል፣ የፈቃድ
-  codeውን ይለዋውጣል፣ እና የID tokenውን ፊርማ በአውጪው JWKS
-  (`jose` የ`createRemoteJWKSet`፣ በእያንዳንዱ JWKS URI የሚሸጎጥ) አማካኝነት ከ`issuer`/`audience`
-  ፍተሻዎች ጋር ያረጋግጣል። አማራጭ የ`oidcAllowedSubjects` የተፈቀዱ ዝርዝር ከtokenው
-  `sub` አቤቱታ ወይም ከ`email` አቤቱታው ጋር ያዛምዳል — የemail አቤቱታው የሚከበረው
-  `email_verified === true` ሲሆን ብቻ ነው፤ ስለዚህ በIdP ያልተረጋገጠ email
-  በሩን ፈጽሞ ማለፍ አይችልም።
-- ሲሳካ፣ የይለፍ ቃል መግቢያው የሚሰጠውን **ትክክለኛውን ተመሳሳይ** የ30 ቀን `auth_token` JWT
-  (`src/app/api/auth/login/route.ts`) ይፈጥራል፤ ስለዚህ የተቀረው
-  የዳሽቦርድ ክፍለ ጊዜ pipeline (ራስ-ሰር እድሳት፣ የcookie ምልክቶች) ሳይለወጥ ይቆያል —
-  OIDC የሚተካው cookieው የሚፈጠርበትን መንገድ ብቻ ነው፣ የሚሰጠውን ፈቃድ አይደለም።
+  ኮዱን ይለዋውጣል፣ እና የID ቶከኑን ፊርማ በአውጪው JWKS
+  (`jose` ውስጥ ያለው `createRemoteJWKSet`፣ በእያንዳንዱ JWKS URI የተሸጎጠ) አማካኝነት ከ`issuer`/`audience`
+  ማረጋገጫዎች ጋር ያረጋግጣል። የ`oidcAllowedSubjects` የተፈቀደላቸው ዝርዝር ያስፈልጋል፦ ከቶከኑ
+  `sub` claim ወይም `email` claim ጋር ያዛምዳል — የemail claimው እውቅና የሚሰጠው
+  `email_verified === true` ሲሆን ብቻ ነው፣ ስለዚህ በIdPው ያልተረጋገጠ email
+  በሩን ፈጽሞ ማለፍ አይችልም — እና ምንም ግቤቶች ከሌሉ callbackው ሁሉንም መግቢያዎች
+  (`not_configured`) ይከለክላል።
+- ሲሳካ፣ የይለፍ ቃል መግቢያው የሚሰጠውን **በትክክል ተመሳሳይ** የ30 ቀን `auth_token` JWT
+  (`src/app/api/auth/login/route.ts`) ይፈጥራል፣ ስለዚህ የተቀረው
+  የዳሽቦርድ ክፍለ ጊዜ ሂደት (ራስ-ሰር እድሳት፣ የኩኪ ጠቋሚዎች) ሳይቀየር ይቆያል —
+  OIDC የሚተካው ኩኪው እንዴት እንደሚፈጠር ብቻ ነው፣ የሚሰጠውን ፈቃድ አይደለም።
+- እያንዳንዱ `oidc*` ቅንብር (`oidcEnabled`፣ `oidcDisablePasswordLogin`፣
+  `oidcIssuer`፣ `oidcClientId`፣ `oidcClientSecret`፣ `oidcAllowedSubjects`፣
+  `oidcRedirectPath`፣ `oidcScopes`) በ`SECURITY_IMPACTING_SETTINGS_KEYS`
+  (`src/shared/constants/securityImpactingSettings.ts`) ውስጥ ይገኛል፦ የጥያቄው አካል የአስተዳደር
+  የይለፍ ቃሉን እንደ `currentPassword` ካልያዘ፣ `PATCH /api/settings`
+  `400 PASSWORD_REQUIRED`ን ይመልሳል (ትክክል ካልሆነ `401 PASSWORD_MISMATCH`)።
+  `oidcDisablePasswordLogin` በይለፍ ቃል _መግባትን_ (`POST /api/auth/login`)
+  ይከለክላል፣ ነገር ግን የተከማቸውን የይለፍ ቃል hash ያቆያል፣ እና ዳግም ማረጋገጥ አሁንም
+  `currentPassword`ን ከእሱ ጋር ይፈትሻል።
+- `POST /api/settings/import-json` ያንን ዳግም ማረጋገጫ ይዘላል፣ ስለዚህ ከመጻፉ በፊት
+  በ`IMPORT_STRIPPED_SETTINGS_KEYS` (ተመሳሳይ ፋይል) ውስጥ ያለን እያንዳንዱን ቁልፍ ያስወግዳል፦ የይለፍ ቃሉን እና
+  `currentPassword`ን፣ እያንዳንዱን `SECURITY_IMPACTING_SETTINGS_KEYS` ግቤት፣ እና
+  የዳሽቦርድ ክፍለ ጊዜ ሁኔታን (`sessionsValidAfter`፣ `revokedDashboardSessions`)።
+  ስለዚህ የቆየ ምትኬን ማስመጣት፣ በይለፍ ቃል ለውጥ ወይም በዘግቶ መውጣት አስቀድሞ የተቋረጠ ክፍለ ጊዜን እንደገና ማስነሳት አይችልም።
 
-## የRoute ክፍሎች
+## የራውት ክፍሎች
 
-`src/server/authz/types.ts` ሦስት ክፍሎችን ይገልጻል፤ በወሳኝ ሁኔታ ሊመደብ የማይችል ማንኛውም route ወደ `MANAGEMENT` ይመለሳል።
+`src/server/authz/types.ts` ሦስት ክፍሎችን ይገልጻል፤ በወሳኝ ሁኔታ ሊመደብ የማይችል ማንኛውም ራውት ወደ `MANAGEMENT` ይመለሳል።
 
-| ክፍል          | መግለጫ                                                                                                                                              | የሚያስፈልግ ማረጋገጫ                                       |
-| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
-| `PUBLIC`     | በግልጽ ደህንነታቸው የተረጋገጠ routes — መግቢያ፣ መውጫ፣ ሁኔታ፣ ማስጀመሪያ፣ ጤና እና onboarding bootstrap።                                                                  | ምንም                                                 |
-| `CLIENT_API` | ሞዴል ማቅረቢያ endpoints — `/api/v1/*`፣ `/api/v1beta/*`፣ እንዲሁም aliases `/v1/*`፣ `/v1beta/*`፣ `/chat/completions`፣ `/responses`፣ `/models`፣ `/codex/*`። | ውጤታማው `REQUIRE_API_KEY` feature flag ሲነቃ Bearer key |
-| `MANAGEMENT` | የDashboard ገጾች፣ ቅንብሮች፣ providers፣ keys፣ admin እና የምርመራ endpoints።                                                                                 | የDashboard session ወይም `manage` scope ያለው Bearer    |
+| ክፍል          | መግለጫ                                                                                                                                              | የሚያስፈልግ ማረጋገጫ                                     |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
+| `PUBLIC`     | በግልጽ ደህንነታቸው የተረጋገጠ ራውቶች — መግቢያ፣ መውጫ፣ ሁኔታ፣ ማስጀመሪያ፣ ጤና እና የመጀመሪያ ማዋቀር ቡትስትራፕ።                                                                      | ምንም                                               |
+| `CLIENT_API` | ሞዴልን የሚያቀርቡ መዳረሻዎች — `/api/v1/*`፣ `/api/v1beta/*`፣ እንዲሁም ተለዋጭ ስሞች `/v1/*`፣ `/v1beta/*`፣ `/chat/completions`፣ `/responses`፣ `/models`፣ `/codex/*`። | ውጤታማው `REQUIRE_API_KEY` የባህሪ ሰንደቅ ሲነቃ የBearer ቁልፍ |
+| `MANAGEMENT` | የዳሽቦርድ ገጾች፣ ቅንብሮች፣ አቅራቢዎች፣ ቁልፎች፣ የአስተዳዳሪ እና የምርመራ መዳረሻዎች።                                                                                         | የዳሽቦርድ ክፍለ ጊዜ ወይም `manage` ወሰን ያለው Bearer         |
+
+ጥቂት የ`MANAGEMENT` ድርጊቶች **ለኦፕሬተር ብቻ** ናቸው፦ የ`manage` ቁልፍ ብቻ በቂ አይደለም። የተከማቹ
+ምስክርነቶችን ወደ ውጭ መላክ (`GET /api/settings/export-json`፣ `GET /api/db-backups/export`፣
+`GET /api/db-backups/exportAll`)፣ የማመሳሰያ ቶከን መስጠት (`POST /api/sync/tokens`) እና የ
+`admin` CLI መዳረሻ ቶከን መፍጠር (`POST /api/cli/tokens`) የዳሽቦርድ ክፍለ ጊዜ፣ የአካባቢው CLI
+ተገዢ ወይም መግቢያ የተሰናከለ መሆንን ይጠይቃሉ፤ የማንኛውም ወሰን API ቁልፎች እና `oma_` መዳረሻ ቶከኖች `403` ያገኛሉ። ፍተሻው
+በ`src/lib/api/operatorCredential.ts` (`resolveOperatorCredential()` /
+`requireOperatorCredential()`) ውስጥ ይገኛል።
 
 A few `MANAGEMENT` actions are **operator-only**: a `manage` key is not enough. Exporting stored
 credentials (`GET /api/settings/export-json`, `GET /api/db-backups/export`,

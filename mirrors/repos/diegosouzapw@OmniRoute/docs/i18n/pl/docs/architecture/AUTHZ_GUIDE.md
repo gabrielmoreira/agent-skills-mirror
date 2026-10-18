@@ -25,63 +25,86 @@ Authorization: Bearer <api-key>
 
 Weryfikowany przez `isValidApiKey()` / `extractApiKey()` w `src/sse/services/auth.ts` i ponownie eksportowany przez `src/shared/utils/apiAuth.ts`. Walidator akceptuje również zmienne środowiskowe `OMNIROUTE_API_KEY` / `ROUTER_API_KEY` jako trwałe klucze przekazywane bezpośrednio (zgłoszenie #1350).
 
-### 2. Sesja panelu administracyjnego (plik cookie auth_token)
+### 2. Sesja panelu administracyjnego (ciasteczko auth_token)
 
-Dla stron panelu administracyjnego i operacji administracyjnych.
+Używana na stronach panelu administracyjnego i do operacji administracyjnych.
 
 ```
-Cookie: auth_token=<JWT podpisany za pomocą JWT_SECRET>
+Cookie: auth_token=<JWT signed with JWT_SECRET>
 ```
 
-Plik cookie jest sesją tylko wtedy, gdy JWT przejdzie weryfikację **i** zawiera `authenticated: true`
+Ciasteczko jest sesją tylko wtedy, gdy JWT przejdzie weryfikację **i** zawiera `authenticated: true`
 (`src/shared/utils/dashboardSessionToken.ts` → `verifyDashboardSessionToken`). Każdy
-konsument tego pliku cookie (mechanizm ochrony tras panelu (`isDashboardSessionAuthenticated()`), odświeżanie potoku autoryzacji, uzgadnianie połączenia WebSocket, serwer
-na żywo, `/api/settings/require-login`, `/api/auth/status`) korzysta z tej funkcji pomocniczej.
-Istnieją inne tokeny JWT podpisane za pomocą `JWT_SECRET` — mechanizm bezpośredniego przekazywania Cursor CLI generuje
-dla posiadaczy kluczy tokeny z `iss "omniroute" / aud "cursor-cli"` — i nigdy nie są one sesjami
+komponent korzystający z ciasteczka (mechanizm ochrony tras panelu (`isDashboardSessionAuthenticated()`), odświeżanie potoku autoryzacji, uzgadnianie połączenia WebSocket, serwer działający na żywo, `/api/settings/require-login`, `/api/auth/status`) korzysta z tego pomocnika.
+Istnieją też inne tokeny JWT podpisane za pomocą `JWT_SECRET` — mechanizm przekazywania Cursor CLI generuje
+dla posiadaczy kluczy tokeny z `iss "omniroute" / aud "cursor-cli"` — które nigdy nie są sesjami
 (#13298).
 
 Weryfikacja odbywa się za pomocą `isDashboardSessionAuthenticated()` w `src/shared/utils/apiAuth.ts`. Potok automatycznie odświeża JWT, gdy do końca jego 30-dniowego okresu ważności pozostało mniej niż 7 dni.
 
-Sesja może również zakończyć się przed upływem 30 dni, ponieważ każdy mechanizm generujący token korzysta z `mintDashboardSessionToken` (czas wydania `iat` i identyfikator `jti`), a weryfikator sprawdza dwa ustawienia: `sessionsValidAfter`, ustawiane po zmianie hasła, dzięki czemu każda sesja wydana wcześniej przestaje przechodzić weryfikację (przeglądarka, w której zmieniono hasło, otrzymuje nowy plik cookie), oraz `revokedDashboardSessions`, do którego `POST /api/auth/logout` dodaje `jti` wylogowanej sesji. Sesje wygenerowane przez starszą wersję nie zawierają żadnego z tych pól i pozostają ważne do pierwszej zmiany hasła. Jeśli nie można odczytać ustawień, sesja nie jest uznawana za zaufaną.
+Sesja może również zakończyć się przed upływem 30 dni, ponieważ każdy mechanizm generujący korzysta z `mintDashboardSessionToken` (czasu wydania `iat` i identyfikatora `jti`), a weryfikator sprawdza dwa ustawienia: `sessionsValidAfter`, ustawiane po zmianie hasła, dzięki czemu każda sesja wydana wcześniej przestaje przechodzić weryfikację (przeglądarka, w której zmieniono hasło, otrzymuje nowe ciasteczko), oraz `revokedDashboardSessions`, do którego `POST /api/auth/logout` dodaje `jti` wylogowanej sesji. Sesje wygenerowane przez starszą wersję nie zawierają żadnego z tych oświadczeń i pozostają ważne do pierwszej zmiany hasła. Jeśli nie można odczytać ustawień, sesja nie jest uznawana za zaufaną.
 
-Niektóre trasy zarządzania akceptują **dowolny** z tych trybów: plik cookie LUB `Bearer <key>`, gdy klucz API ma zakres `manage` (lub `admin`). Umożliwia to przepływ pracy „konfigurowalny za pomocą wywołań API”, dodany w wersji v3.8.
+Niektóre trasy zarządzania akceptują **dowolny** z tych trybów: ciasteczko LUB `Bearer <key>`, gdy klucz API ma zakres `manage` (lub `admin`). Umożliwia to przepływ pracy „konfigurowalny przez wywołania API”, dodany w wersji v3.8.
 
 #### Opcjonalna brama logowania OIDC (#6973)
 
-Logowanie administratora do panelu obsługuje również **opcjonalny** przepływ OIDC (OpenID Connect)
+Logowanie administratora do panelu obsługuje także **opcjonalny** przepływ OIDC (OpenID Connect)
 obok domyślnego logowania za pomocą hasła — logowanie hasłem nigdy nie jest usuwane, a jedynie
 uzupełniane:
 
-- Funkcja jest wyłączona, chyba że `settings.oidcEnabled === true` **oraz** wszystkie wartości `oidcIssuer` /
+- Funkcja jest wyłączona, chyba że `settings.oidcEnabled === true` **oraz** wszystkie ustawienia `oidcIssuer` /
   `oidcClientId` / `oidcClientSecret` są skonfigurowane (Ustawienia → Uwierzytelnianie).
   W przeciwnym razie `GET /api/auth/oidc/login` zwraca `400`.
-- `GET /api/auth/oidc/login` wykrywa `authorization_endpoint` na podstawie
-  `/.well-known/openid-configuration` wystawcy (w razie niepowodzenia używa
+- `GET /api/auth/oidc/login` wykrywa `authorization_endpoint` z konfiguracji
+  wystawcy dostępnej pod `/.well-known/openid-configuration` (w razie niepowodzenia używa
   `<issuer>/authorize`), tworzy URI przekierowania na podstawie przychodzącego żądania
   (z uwzględnieniem `x-forwarded-proto`) i przekierowuje do IdP z losową wartością `state`
-  przechowywaną w pliku cookie `oidc_state` z flagą `httpOnly`.
+  zapisaną w ciasteczku `oidc_state` z flagą `httpOnly`.
 - `GET /api/auth/oidc/callback` weryfikuje `state`, wymienia kod autoryzacyjny
   i weryfikuje podpis tokenu ID za pomocą JWKS wystawcy
-  (`createRemoteJWKSet` z pakietu `jose`, buforowane osobno dla każdego URI JWKS), sprawdzając
-  `issuer`/`audience`. Opcjonalna lista dozwolonych `oidcAllowedSubjects` dopasowuje
-  oświadczenie `sub` tokenu lub jego oświadczenie `email` — oświadczenie adresu e-mail jest
-  uwzględniane tylko wtedy, gdy `email_verified === true`, dlatego niezweryfikowany adres
-  e-mail u IdP nigdy nie pozwala przejść przez bramę.
+  (`createRemoteJWKSet` z `jose`, buforowane osobno dla każdego URI JWKS), sprawdzając
+  `issuer`/`audience`. Lista dozwolonych wartości `oidcAllowedSubjects` jest wymagana: porównuje
+  oświadczenie `sub` tokenu lub jego oświadczenie `email` — oświadczenie e-mail jest uwzględniane
+  tylko wtedy, gdy `email_verified === true`, więc niezweryfikowany adres e-mail u IdP nigdy nie
+  przejdzie przez bramę — a w przypadku braku wpisów wywołanie zwrotne odrzuca każdą próbę logowania
+  (`not_configured`).
 - Po pomyślnym zakończeniu generowany jest **dokładnie taki sam** 30-dniowy JWT `auth_token`, jaki wystawia
-  logowanie za pomocą hasła (`src/app/api/auth/login/route.ts`), dzięki czemu pozostała część
-  potoku sesji panelu (automatyczne odświeżanie, flagi plików cookie) pozostaje bez zmian —
-  OIDC zastępuje jedynie sposób generowania pliku cookie, a nie przyznawane przez niego uprawnienia.
+  logowanie za pomocą hasła (`src/app/api/auth/login/route.ts`), więc pozostała część
+  potoku sesji panelu (automatyczne odświeżanie, flagi ciasteczek) pozostaje niezmieniona —
+  OIDC zastępuje jedynie sposób generowania ciasteczka, a nie przyznawane przez nie uprawnienia.
+- Każde ustawienie `oidc*` (`oidcEnabled`, `oidcDisablePasswordLogin`,
+  `oidcIssuer`, `oidcClientId`, `oidcClientSecret`, `oidcAllowedSubjects`,
+  `oidcRedirectPath`, `oidcScopes`) znajduje się w `SECURITY_IMPACTING_SETTINGS_KEYS`
+  (`src/shared/constants/securityImpactingSettings.ts`): `PATCH /api/settings`
+  odpowiada kodem `400 PASSWORD_REQUIRED`, chyba że treść zawiera hasło zarządzania
+  jako `currentPassword` (`401 PASSWORD_MISMATCH`, gdy jest ono nieprawidłowe).
+  `oidcDisablePasswordLogin` blokuje _logowanie_ za pomocą hasła (`POST /api/auth/login`),
+  ale zachowuje zapisany skrót hasła, a ponowne uwierzytelnianie nadal porównuje z nim
+  `currentPassword`.
+- `POST /api/settings/import-json` pomija to ponowne uwierzytelnianie, dlatego przed zapisem usuwa każdy klucz z
+  `IMPORT_STRIPPED_SETTINGS_KEYS` (ten sam plik): hasło i
+  `currentPassword`, każdy wpis z `SECURITY_IMPACTING_SETTINGS_KEYS` oraz
+  stan sesji panelu (`sessionsValidAfter`, `revokedDashboardSessions`).
+  Zaimportowanie starszej kopii zapasowej nie może więc przywrócić sesji, która została już zakończona
+  przez zmianę hasła lub wylogowanie.
 
 ## Klasy tras
 
-`src/server/authz/types.ts` definiuje trzy klasy; każda trasa, której nie da się sklasyfikować deterministycznie, spada do `MANAGEMENT`.
+Plik `src/server/authz/types.ts` definiuje trzy klasy; każda trasa, której nie można jednoznacznie sklasyfikować, domyślnie trafia do `MANAGEMENT`.
 
-| Class        | Description                                                                                                                                            | Auth required                                                     |
-| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------- |
-| `PUBLIC`     | Jawnie bezpieczne trasy — login, logout, status, init, health, bootstrap onboardingu.                                                                  | Brak                                                              |
-| `CLIENT_API` | Endpointy serwujące modele — `/api/v1/*`, `/api/v1beta/*`, plus aliasy `/v1/*`, `/v1beta/*`, `/chat/completions`, `/responses`, `/models`, `/codex/*`. | Klucz Bearer, gdy efektywna flaga `REQUIRE_API_KEY` jest włączona |
-| `MANAGEMENT` | Strony dashboardu, ustawienia, providery, klucze, endpointy admin i diagnostyczne.                                                                     | Sesja dashboardu LUB Bearer ze scope `manage`                     |
+| Klasa        | Opis                                                                                                                                                         | Wymagane uwierzytelnienie                                                 |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------- |
+| `PUBLIC`     | Trasy jawnie uznane za bezpieczne — logowanie, wylogowanie, status, inicjalizacja, kontrola kondycji, inicjalizacja wdrażania.                               | Brak                                                                      |
+| `CLIENT_API` | Punkty końcowe obsługujące modele — `/api/v1/*`, `/api/v1beta/*` oraz aliasy `/v1/*`, `/v1beta/*`, `/chat/completions`, `/responses`, `/models`, `/codex/*`. | Klucz Bearer, gdy efektywna flaga funkcji `REQUIRE_API_KEY` jest włączona |
+| `MANAGEMENT` | Strony panelu, ustawienia, dostawcy, klucze oraz punkty końcowe administracyjne i diagnostyczne.                                                             | Sesja panelu LUB token Bearer z zakresem `manage`                         |
+
+Niektóre działania `MANAGEMENT` są przeznaczone **wyłącznie dla operatora**: klucz `manage` nie wystarcza. Eksportowanie przechowywanych
+danych uwierzytelniających (`GET /api/settings/export-json`, `GET /api/db-backups/export`,
+`GET /api/db-backups/exportAll`), wydawanie tokenu synchronizacji (`POST /api/sync/tokens`) oraz generowanie
+tokenu dostępu CLI `admin` (`POST /api/cli/tokens`) wymagają sesji panelu, lokalnego podmiotu CLI
+albo wyłączonego logowania; klucze API o dowolnym zakresie oraz tokeny dostępu `oma_` otrzymują odpowiedź `403`. Mechanizm sprawdzający
+znajduje się w `src/lib/api/operatorCredential.ts` (`resolveOperatorCredential()` /
+`requireOperatorCredential()`).
 
 A few `MANAGEMENT` actions are **operator-only**: a `manage` key is not enough. Exporting stored
 credentials (`GET /api/settings/export-json`, `GET /api/db-backups/export`,

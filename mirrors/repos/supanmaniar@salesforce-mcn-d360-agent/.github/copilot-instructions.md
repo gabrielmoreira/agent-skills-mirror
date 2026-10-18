@@ -67,6 +67,14 @@ The `data360` family therefore requires tenant mode, which reads a token from
 `sf org display` and calls the host with `curl`. Tenant mode needs
 `DATA360_TENANT_URL`; if unset, ask the user rather than guessing a hostname.
 
+**Writes never go through sObject DML for the first two families.** Data 360 data
+objects (`__dlm`, `__dll`) and CMS content (`ManagedContent`) are
+`createable=false, updateable=false, deletable=false` — every insert, update and
+delete is rejected with `CANNOT_INSERT_UPDATE_ACTIVATE_ENTITY`. This is a property
+of the object, not a permission problem. Route writes to the family's own API:
+Data 360 records via the Ingestion API, CMS content via `/connect/cms/contents`.
+Ordinary objects (`Account`, `Contact`, `DataStream`) accept DML normally.
+
 ---
 
 ## 3. Discovery Workflow
@@ -115,13 +123,31 @@ Prefer native `sf` commands where they exist — they handle pagination and form
 
 ## 5. Safety
 
-- **Never run a destructive operation without explicit confirmation.** Deletes of
-  records, segments, data streams, custom objects, and custom fields are permanent.
-  The catalog marks these `destructive: true` — check with `describe`.
+- **The `destructive` flag is necessary but not sufficient.** Deletes of records,
+  segments, data streams, custom objects and custom fields are permanent. The
+  catalog marks these `destructive: true` — check with `describe`.
+
+  But `destructive: no` does **not** mean an operation is safe or reversible.
+  Creation can be irreversible when the resource has no delete route:
+
+  | Operation | Flag | Reality |
+  | --- | --- | --- |
+  | `POST /connect/cms/spaces` | `destructive: no` | **Cannot be deleted** — no DELETE route exists, and `ManagedContentSpace` is `deletable=false` |
+
+  Before any create, ask: *does a delete route exist for what I am about to
+  create?* If not, confirm first. The flag only covers destructive verbs, not
+  one-way creation.
+- **Prefer verifiable writes.** A write you can undo is safe to probe; one you
+  cannot is not. Check for a matching DELETE before creating a resource, and
+  prefer an existing disposable object over making a new one.
 - **Never hardcode or request credentials.** Reuse the `sf` session. Do not ask for
   client secrets, and never write tokens to disk or into files.
 - **Bound every polling loop.** Cap iterations and sleep between polls.
 - **Check field-level security** before assuming a field is writable.
+- **Some objects reject all DML.** Data 360 data objects (`__dlm`, `__dll`) and CMS
+  content (`ManagedContent`) are `createable/updateable/deletable = false`. This is
+  a property of the object, not your permissions — route writes to the family's own
+  API instead of retrying with elevated access.
 
 ---
 

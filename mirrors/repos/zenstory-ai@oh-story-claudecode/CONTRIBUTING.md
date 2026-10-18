@@ -79,6 +79,7 @@ PR 自动运行 `.github/workflows/cross-platform.yml`。static-check job 跑以
 - `python3 scripts/check-author-reports.py` — `<!-- author-report -->` 标记的作者报告模板不含脚本名、字段名、flag、严重度代号等工程黑话（`--self-test` 为其正反例回归）
 - `scripts/check-current-skill-contracts.sh` — 按 `scripts/current-contract.json` 校验当前版本 / Phase / schema / 主产物 / 细纲契约，并拦截历史路径与静默兼容分支
 - `python3 scripts/test-current-skill-contracts.py` — current-contract manifest 与主产物 fail-fast 语义回归
+- `python3 scripts/test-handoff-contracts.py` — 跨 skill 交接契约（拆文、扫榜、导入产物到写作端，写作端平台到审稿，派助手与派写手去味的字段和标签）：小节、字段、列名、平台取值，含反向自检
 - `scripts/check-doc-budget.sh` — 热路径 SKILL/references/agent 模板的字数预算（按 `scripts/doc-budget.json`），防每次会话都要付的规则文本无声膨胀
 - `scripts/check-hook-regex-sync.sh` — hook 伏笔状态检测行为
 - `scripts/check-shared-files.sh` — 共享 runtime 资产清单 + 跨 skill reference 副本一致性
@@ -115,6 +116,7 @@ python3 scripts/skill-numbering.py check
 bash scripts/test-skill-numbering.sh
 bash scripts/check-current-skill-contracts.sh
 python3 scripts/test-current-skill-contracts.py
+python3 scripts/test-handoff-contracts.py
 bash scripts/check-doc-budget.sh
 bash scripts/check-hook-regex-sync.sh
 bash scripts/check-shared-files.sh

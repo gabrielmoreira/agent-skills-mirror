@@ -10,17 +10,17 @@ _Son yenilənmə: 2026-06-28_
 
 ## İcraçı xülasə
 
-OmniRoute, Next.js üzərində qurulmuş lokal süni intellekt marşrutlaşdırma şlüzü və idarəetmə panelidir.
-O, vahid OpenAI-uyğun son nöqtə (`/v1/*`) təqdim edir və trafiki format çevrilməsi, alternativə keçid, token yenilənməsi və istifadə izlənməsi ilə çoxsaylı yuxarı axın provayderləri arasında marşrutlaşdırır.
+OmniRoute Next.js üzərində qurulmuş lokal süni intellekt marşrutlaşdırma şlüzü və idarəetmə panelidir.
+O, OpenAI ilə uyğun vahid son nöqtə (`/v1/*`) təqdim edir və trafiki format çevirməsi, ehtiyat keçid, token yeniləmə və istifadə izləməsi ilə çoxsaylı yuxarı axın provayderləri arasında yönləndirir.
 
 Əsas imkanlar:
 
-- CLI/alətlər üçün OpenAI-uyğun API interfeysi (372 provayder, 148 icraçı)
-- Provayder formatları arasında sorğu/cavab çevrilməsi
-- Model kombinasiyaları üzrə alternativə keçid (çoxmodelli ardıcıllıq)
+- CLI/alətlər üçün OpenAI ilə uyğun API səthi (373 provayder, 150 icraçı modul)
+- Provayder formatları arasında sorğu/cavab çevirməsi
+- Model kombinasiyası üzrə ehtiyat keçid (çoxmodelli ardıcıllıq)
 - `compositeTiers` əsasında icra zamanı sıralanan strukturlaşdırılmış kombinasiya addımları (`provider + model + connection`)
-- Hesab səviyyəsində alternativə keçid (hər provayder üçün çoxsaylı hesablar)
-- Əsas çat axınında kvotanın ilkin yoxlanması və kvotanı nəzərə alan P2C hesab seçimi
+- Hesab səviyyəsində ehtiyat keçid (hər provayder üçün bir neçə hesab)
+- Əsas söhbət axınında kvotanın ilkin yoxlanması və kvotanı nəzərə alan P2C hesab seçimi
 - OAuth + API açarı ilə provayder bağlantılarının idarə edilməsi (27 OAuth provayder modulu)
 - `/v1/embeddings` vasitəsilə embedding yaradılması (18 provayder)
 - `/v1/images/generations` vasitəsilə şəkil yaradılması (10+ provayder, 20+ model)
@@ -31,56 +31,56 @@ O, vahid OpenAI-uyğun son nöqtə (`/v1/*`) təqdim edir və trafiki format çe
 - `/v1/search` vasitəsilə veb axtarışı (20 provayder)
 - `/v1/moderations` vasitəsilə moderasiya
 - `/v1/rerank` vasitəsilə yenidən sıralama
-- Məntiqi əsaslandırma modelləri üçün düşünmə teqlərinin təhlili (``)
-- Ciddi OpenAI SDK uyğunluğu üçün cavabların sanitizasiyası
+- Düşünmə modelləri üçün düşünmə teqlərinin (``) təhlili
+- Ciddi OpenAI SDK uyğunluğu üçün cavabların təmizlənməsi
 - Provayderlərarası uyğunluq üçün rol normallaşdırması (developer→system, system→user)
 - Strukturlaşdırılmış çıxışın çevrilməsi (json_schema → Gemini responseSchema)
-- Provayderlər, açarlar, aliaslar, kombinasiyalar, parametrlər və qiymətlər üçün lokal davamlı yaddaş (122 DB modulu)
-- İstifadə/xərc izlənməsi və sorğuların jurnallaşdırılması
+- Provayderlər, açarlar, aliaslar, kombinasiyalar, parametrlər və qiymətləndirmə üçün lokal davamlı yaddaş (122 DB modulu)
+- İstifadə/xərc izləməsi və sorğuların jurnallaşdırılması
 - Çoxsaylı cihazlar/vəziyyət sinxronizasiyası üçün istəyə bağlı bulud sinxronizasiyası
 - API girişinə nəzarət üçün IP icazə siyahısı/blok siyahısı
-- Düşünmə büdcəsinin idarə edilməsi (dəyişmədən ötürmə/avtomatik/fərdi/adaptiv)
-- Qlobal sistem promptunun əlavə edilməsi
-- Sessiyaların izlənməsi və barmaq izi yaradılması
-- Provayderə xas profillərlə hər hesab üçün təkmilləşdirilmiş sürət məhdudlaşdırması
-- Provayder davamlılığı üçün dövrə açarı nümunəsi
-- Muteks kilidləməsi ilə kütləvi paralel sorğu effektinə qarşı qoruma
+- Düşünmə büdcəsinin idarə edilməsi (birbaşa ötürmə/avtomatik/fərdi/adaptiv)
+- Qlobal sistem promptunun daxil edilməsi
+- Sessiyaların izlənməsi və barmaq izinin yaradılması
+- Provayderə xas profillərlə hər hesab üzrə təkmilləşdirilmiş sürət məhdudlaşdırması
+- Provayder dayanıqlılığı üçün dövrəqıran nümunəsi
+- Mutex kilidləməsi ilə kəskin paralel sorğu axınından qorunma
 - İmza əsaslı sorğu deduplikasiyası keşi
-- Domen qatı: xərc qaydaları, alternativə keçid siyasəti, kilidləmə siyasəti
+- Domen qatı: xərc qaydaları, ehtiyat keçid siyasəti, kilidləmə siyasəti
 - Context Relay: hesab rotasiyası zamanı davamlılıq üçün sessiya ötürmə xülasələri
-- Domen vəziyyətinin davamlı saxlanması (alternativə keçidlər, büdcələr, kilidləmələr və dövrə açarları üçün SQLite birbaşa yazma keşi)
-- Sorğuların mərkəzləşdirilmiş qiymətləndirilməsi üçün siyasət mühərriki (kilidləmə → büdcə → alternativə keçid)
+- Domen vəziyyətinin davamlı saxlanması (ehtiyat keçidlər, büdcələr, kilidləmələr və dövrəqıranlar üçün SQLite üzərindən birbaşa yazılan keş)
+- Mərkəzləşdirilmiş sorğu qiymətləndirilməsi üçün siyasət mühərriki (kilidləmə → büdcə → ehtiyat keçid)
 - p50/p95/p99 gecikmə aqreqasiyası ilə sorğu telemetriyası
 - `combo_execution_key` / `combo_step_id` vasitəsilə kombinasiya hədəfi telemetriyası və kombinasiya hədəflərinin tarixi sağlamlıq vəziyyəti
-- Ucdan-uca izləmə üçün korrelyasiya ID-si (X-Request-Id)
-- Hər API açarı üzrə imtina imkanı ilə uyğunluq auditinin jurnallaşdırılması
+- Başdan sona izləmə üçün korrelyasiya ID-si (X-Request-Id)
+- Hər API açarı üzrə imtina seçimi ilə uyğunluq auditinin jurnallaşdırılması
 - LLM keyfiyyət təminatı üçün qiymətləndirmə çərçivəsi
-- Provayder dövrə açarlarının real vaxt vəziyyətini göstərən sağlamlıq paneli
-- 3 nəqliyyat mexanizminə (stdio/SSE/Streamable HTTP) malik MCP Server (110 alət)
-- Bacarıqlar və tapşırıq həyat dövrünə malik A2A Server (JSON-RPC 2.0 + SSE)
-- Yaddaş sistemi (çıxarma, əlavəetmə, axtarış, xülasələşdirmə)
-- Bacarıqlar sistemi (reyestr, icraçı, izolyasiya edilmiş mühit, daxili bacarıqlar)
+- Provayderlərin dövrəqıran vəziyyətini real vaxtda göstərən sağlamlıq paneli
+- 3 nəqliyyat üsuluna (stdio/SSE/Streamable HTTP) malik MCP Server (110 alət)
+- Bacarıqlar və tapşırıqların həyat dövrü ilə A2A Server (JSON-RPC 2.0 + SSE)
+- Yaddaş sistemi (çıxarma, daxil etmə, axtarıb tapma, ümumiləşdirmə)
+- Bacarıqlar sistemi (reyestr, icraçı, izolyasiya olunmuş mühit, daxili bacarıqlar)
 - Sertifikat idarəetməsi və DNS emalı ilə MITM proksisi
 - Prompt inyeksiyasından qoruyan ara proqram
-- Caveman, RTK, yığılmış konveyerlər, sıxılma kombinasiyaları, dil paketləri və analitika ilə prompt sıxılma konveyeri
+- Caveman, RTK, üst-üstə yığılmış konveyerlər, sıxılma kombinasiyaları, dil paketləri və analitika ilə prompt sıxılma konveyeri
 - ACP (Agent Communication Protocol) reyestri
 - Modul OAuth provayderləri (`src/lib/oauth/providers/` altında 22 ayrıca modul)
 - Silmə/tam silmə skriptləri
-- OAuth mühitinin təmiri əməliyyatı
-- OpenAI-uyğun WS klientləri üçün WebSocket körpüsü (`/v1/ws`)
-- Sinxronizasiya tokenlərinin idarə edilməsi (vermə/ləğvetmə, ETag ilə versiyalaşdırılmış konfiqurasiya paketinin endirilməsi)
-- Birinci dərəcəli provayder ilkin ayarı kimi GLM Thinking (`glmt`)
-- Hibrid token hesablanması (ehtiyat variant kimi təxminlə birlikdə provayder tərəfində `/messages/count_tokens`)
-- Model aliaslarının avtomatik ilkin doldurulması (işə salınarkən 30+ proksilərarası dialekt normallaşdırması)
-- SSRF qoruması, şəxsi URL-lərin bloklanması və konfiqurasiya edilə bilən təkrar cəhdlə təhlükəsiz xarici sorğu
-- Konfiqurasiya edilə bilən `requestRetry` və `maxRetryIntervalSec` ilə gözləmə müddətini nəzərə alan çat təkrar cəhdləri
+- OAuth mühitinin bərpası əməliyyatı
+- OpenAI ilə uyğun WS klientləri üçün WebSocket körpüsü (`/v1/ws`)
+- Sinxronizasiya tokenlərinin idarə edilməsi (yaratma/ləğv etmə, ETag ilə versiyalaşdırılmış konfiqurasiya paketinin endirilməsi)
+- Birinci dərəcəli GLM Thinking (`glmt`) provayder öncədən təyini
+- Hibrid token hesablanması (provayder tərəfində `/messages/count_tokens`, uğursuz olduqda təxmini hesablama)
+- Model aliaslarının avtomatik ilkin yaradılması (işə salınarkən 30+ proksilərarası dialekt normallaşdırması)
+- SSRF qoruması, özəl URL bloklaması və konfiqurasiya edilə bilən təkrar cəhdlə təhlükəsiz xarici sorğular
+- Konfiqurasiya edilə bilən `requestRetry` və `maxRetryIntervalSec` ilə gözləmə müddətini nəzərə alan söhbət təkrar cəhdləri
 - İşə salınarkən Zod ilə icra mühitinin yoxlanması
-- Səhifələmə, provayder CRUD hadisələri və SSRF tərəfindən bloklanmış yoxlamaların jurnallaşdırılması ilə uyğunluq auditi v2
+- Səhifələmə, provayder CRUD hadisələri və SSRF tərəfindən bloklanan yoxlamaların jurnallaşdırılması ilə uyğunluq auditi v2
 
 Əsas icra modeli:
 
 - `src/app/api/*` altındakı Next.js tətbiq marşrutları həm idarəetmə paneli API-lərini, həm də uyğunluq API-lərini həyata keçirir
-- `src/sse/*` + `open-sse/*` daxilindəki ortaq SSE/marşrutlaşdırma nüvəsi provayder icrasını, çevrilməni, axın ötürməsini, alternativə keçidi və istifadəni idarə edir
+- `src/sse/*` + `open-sse/*` daxilindəki ortaq SSE/marşrutlaşdırma nüvəsi provayder icrasını, çevirməni, axınla ötürməni, ehtiyat keçidi və istifadə uçotunu idarə edir
 
 ## İstinad Diaqramları
 

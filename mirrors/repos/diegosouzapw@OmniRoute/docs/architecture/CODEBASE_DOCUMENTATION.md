@@ -491,7 +491,7 @@ helpers (tool schemas, fetch/TTS adapters, quirk handlers). Executors include:
 (shared identity helper) and `index.ts` (registry).
 
 > Note: providers not listed here are served by `default.ts` using the generic
-> OpenAI-compatible executor. The full provider catalog (372 providers) lives in
+> OpenAI-compatible executor. The full provider catalog (374 providers) lives in
 > `src/shared/constants/providers.ts`.
 
 ### 4.3 `open-sse/translator/`
@@ -673,7 +673,11 @@ Organized into 6 subfolders by purpose.
   `v1-ws-bridge.mjs`, `smoke-electron-packaged.mjs`,
   `run-playwright-tests.mjs`, `run-ecosystem-tests.mjs`,
   `run-protocol-clients-tests.mjs`, `sync-env.mjs`, `healthcheck.mjs`,
-  `system-info.mjs`.
+  `system-info.mjs`, plus the read-only PR babysitting helpers
+  `ci-discriminate.sh` (sorts a PR's failing-check signatures into own / inherited /
+  unknown against a reference PR or the base-red issue) and `audit-worktree.sh`
+  (dirty files, protected surfaces, removed asserts, suppression counts, leftover
+  tmp tsconfigs, PR head vs local HEAD — before a worker's PR is accepted).
 - **`scripts/check/`** — `check-cycles.mjs`, `check-docs-sync.mjs`,
   `check-docs-counts-sync.mjs`, `check-env-doc-sync.mjs`,
   `check-deprecated-versions.mjs`, `check-route-validation.mjs`,

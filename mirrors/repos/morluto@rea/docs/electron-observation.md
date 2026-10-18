@@ -56,8 +56,15 @@ rea inspect-electron-page http://127.0.0.1:9223 TARGET_ID \
 
 The normalized result contains canonical local paths, frame and DOM
 structure, resource metadata, stable script/resource identities, explicit
-completeness, and content-addressed script artifacts. Script metadata
-retains its execution-context frame ID when CDP supplies one. The capture also
+completeness, and content-addressed script artifacts. Resource sizes are unknown
+when omitted or invalid; supplied invalid sizes also produce an explicit
+completeness diagnostic.
+
+DOM node indices retain their snapshot positions. Invalid rows are omitted with
+completeness diagnostics, so `total_nodes` can exceed the retained node count
+and a parent index can refer to an omitted source node.
+
+Script metadata retains its execution-context frame ID when CDP supplies one. The capture also
 inventories worker, service-worker, and shared-worker targets with
 validated opener-target and parent-frame IDs. Worker discovery uses passive
 target metadata; REA does not attach to or execute code in those targets.

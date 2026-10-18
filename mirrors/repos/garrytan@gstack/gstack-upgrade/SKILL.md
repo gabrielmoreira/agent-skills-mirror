@@ -46,6 +46,7 @@ echo "AUTO_UPGRADE=$_AUTO"
 
 **Otherwise**, use AskUserQuestion:
 - Question: "gstack **v{new}** is available (you're on v{old}). Upgrade now?"
+  Four fields (`UPGRADE_AVAILABLE <old> <old>+<n> <sha>`, main moved): ask "gstack main is **{n} commit(s)** past v{old} (at {sha}). Upgrade now?"
 - Options: ["Yes, upgrade now", "Always keep me up to date", "Not now", "Never ask again"]
 
 **If "Yes, upgrade now":** Proceed to Step 2.
@@ -73,7 +74,7 @@ _NEW_LEVEL=$((_CUR_LEVEL + 1))
 [ "$_NEW_LEVEL" -gt 3 ] && _NEW_LEVEL=3
 echo "$_REMOTE_VER $_NEW_LEVEL $(date +%s)" > "$_SNOOZE_FILE"
 ```
-Note: `{new}` is the remote version from the `UPGRADE_AVAILABLE` output — substitute it from the update check result.
+Note: `{new}` is the remote version from the `UPGRADE_AVAILABLE` output — substitute it from the update check result. On a four-field line use the SHA (fourth field) as `{new}`, so the snooze ends when main moves.
 
 Tell user the snooze duration: "Next reminder in 24h" (or 48h or 1 week, depending on level). Tip: "Set `auto_upgrade: true` in `~/.gstack/config.yaml` for automatic upgrades."
 
@@ -374,6 +375,8 @@ rm -f "$GSTACK_STATE_ROOT"/update-snoozed
 
 Read `$INSTALL_DIR/CHANGELOG.md`. Find all version entries between the old version and the new version. Summarize as 5-7 bullets grouped by theme. Don't overwhelm — focus on user-facing changes. Skip internal refactors unless they're significant.
 
+Four fields: summarize `git -C "$INSTALL_DIR" log --oneline <PRE_UPGRADE_COMMIT>..HEAD` (≤7 bullets) as "gstack v{old}, main at {sha}".
+
 Format:
 ```
 gstack v{new} — upgraded from v{old}!
@@ -403,7 +406,7 @@ When invoked directly as `/gstack-upgrade` (not from a preamble):
 ```
 Use the output to determine if an upgrade is available.
 
-2. If `UPGRADE_AVAILABLE <old> <new>`: follow Steps 2-6 above.
+2. If `UPGRADE_AVAILABLE` (three or four fields): follow Steps 2-6 above.
 
    If `CHECK_FAILED ...`: the remote version could not be read, so the update
    status is unknown. Show the line (it names the URL that failed) and tell the

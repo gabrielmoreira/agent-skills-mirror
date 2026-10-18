@@ -538,7 +538,7 @@ same number of frames, starting on the same step.
 sprite-gen video-cycle-align --loop-dir set/front-walk/loop --loop-dir set/side-walk/loop \
   --loop-dir set/back-walk/loop [--view front --view side@right --view back] [--start-foot right] \
   [--between auto|rife|nearest] [--length N] [--cycles back-walk=2] [--multi-cycle fail|warn] \
-  [--foot side-walk=left] [--state walk] [--report set/walk.cycle-align.json]
+  [--foot side-walk=left] [--state walk] [--between-cache DIR] [--report set/walk.cycle-align.json]
 ```
 
 - **A loop whose steps are counted is one cycle.** A cut two steps long — taken so a held part
@@ -896,6 +896,33 @@ sprite-gen video-cycle-align --loop-dir set/front-walk/loop --loop-dir set/side-
   none: its cut is no longer there to read. With `cells_from` it lets a follow-through whose
   regions were read on the cut be carried to the aligned loop (`video-follow --read-on`,
   docs/video-pipeline.md section 6). Neither record changes a pixel of the strip, GIF or WebP.
+- **Frames between are kept for later passes** (`--between-cache DIR`): every frame RIFE makes between
+  two source frames is stored in `DIR`. A later alignment given the same `DIR` takes a kept frame instead
+  of making it again, such as when aligning again with `--foot` or after retaking one loop. A frame is
+  taken only for identical inputs: it is keyed by the sha256 of the format, both source frames (which
+  must be RGBA: mode, size, and pixel bytes; other modes are refused), the exact fraction `t`, and the
+  interpolator identity. The identity is read again for every frame asked for, and nothing of it is
+  remembered: the RIFE binary file and each file in the model directory, by sha256; the model directory's
+  path as given to the binary (the binary reads the model's version from the directory name); the engine
+  code as loaded, which is the sha256 of `sprite_gen/video/rife.py` read once at import (`rife.py` written
+  over on disk during a run changes no code that is running, so a frame made by the loaded code is kept
+  under that code, and a later process that loads other code gets another key and makes the frames again);
+  the NumPy and Pillow versions; and the host as `os.uname()` reports it at that moment (host name,
+  OS release, build, and architecture), with the OS platform. A binary or model file that cannot be read
+  fails the alignment, as a RIFE that fails does. Any change in cycle length, `--cycles`, source pixels,
+  binary, model, engine code, or host makes the frame again. The key does not read the GPU driver or its
+  environment; a caller that changes those between passes gives each pass its own directory. Reading the
+  identity hashes 36.5 MB of binary and model files in about 17 ms on an Apple M1: once for a frame taken,
+  twice for a frame made (making a frame with RIFE takes on the order of a second). After a frame is made,
+  its key is read again; if anything it is made from changed while it was being made, the frame is handed
+  on but not kept, and counted as `not_kept`. Each kept frame is a PNG file named by its key, with its
+  pixel sha256 in a text chunk, written to a temporary file and renamed into place. A kept file that does
+  not read back as that frame is made again, written over, and counted as `unreadable`. A taken frame is
+  a new image of exactly the kept pixels, so the aligned loop is the same, byte for byte, as an alignment
+  without the directory. Nothing is kept without `--between-cache` (there is no default directory). The
+  caller gives each alignment its own directory and removes it when that alignment is done. The engine
+  creates `DIR` mode 0700 and files mode 0600, never deletes `DIR`, and records `dir`, `hits`, `misses`,
+  `unreadable`, and `not_kept` under `between_cache` in the summary and report.
 - Loops at different frame rates are refused (one length in frames would mean different
   durations), and so is a loop cut before `cell_height_cap` was recorded (cut it again). So is a
   loop never aligned whose strip as cut is missing — its `<name>.strip.png`, or `follow.source.png`

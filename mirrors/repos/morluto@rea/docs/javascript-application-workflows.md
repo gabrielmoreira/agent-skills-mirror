@@ -288,6 +288,27 @@ and the result includes its basis, candidates, changed dimensions, Evidence
 links, limitations, and a `changed_from` graph containing all compared nodes,
 their observations, and relationships.
 
+A matched pair whose only differing dimension is `location` counts as
+`unchanged` when both input graphs have complete coverage and its neighboring
+relationship identities are resolved. This includes an
+identical module shifted by an earlier bundle edit and a named IPC channel
+observed at a new offset. The item still reports `dimensions: ["location"]`
+and both node IDs; the graph retains both original observations and coordinates.
+Content, property, and complete relationship differences still count as
+`changed`. With incomplete coverage, relocation alone remains `unknown` and
+retains the location and coverage dimensions. Matching confidence is unchanged:
+an inferred pair is not promoted to exact identity by this classification.
+
+Complete inventory does not resolve ambiguous or unmatched relationship targets.
+A matched module with identical bytes can therefore remain `unknown` when a
+neighbor, including its containing chunk, has no cross-version match. The item
+retains its exact content match, coordinates, candidate inventory, and an explicit
+relationship-identity limitation. `coverage` is added to its dimensions only for
+incomplete inventory. Definite content, property, or complete topology differences
+remain `changed` while retaining any separate relationship uncertainty.
+An unknown item with no observed content, property, or relationship difference
+does not emit a `changed_from` edge; its pairing and uncertainty remain in the item.
+
 One-sided absence is `added` or `removed` only when the opposite input graph has
 complete coverage. With partial, unavailable, or truncated input, the same
 condition is `unknown`. The comparison retains every classified item and

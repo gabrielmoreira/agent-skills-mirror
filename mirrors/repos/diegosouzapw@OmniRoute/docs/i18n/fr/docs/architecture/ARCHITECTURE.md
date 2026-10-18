@@ -10,24 +10,24 @@ _Dernière mise à jour : 2026-06-28_
 
 ## Résumé exécutif
 
-OmniRoute est une passerelle locale de routage d’IA et un tableau de bord reposant sur Next.js.
-Elle fournit un point de terminaison unique compatible avec OpenAI (`/v1/*`) et achemine le trafic entre plusieurs fournisseurs en amont, avec traduction, repli, actualisation des jetons et suivi de l’utilisation.
+OmniRoute est une passerelle locale de routage d’IA et un tableau de bord basés sur Next.js.
+Il fournit un point de terminaison unique compatible avec OpenAI (`/v1/*`) et achemine le trafic entre plusieurs fournisseurs en assurant la traduction, le repli, le renouvellement des jetons et le suivi de l’utilisation.
 
 Fonctionnalités principales :
 
-- Surface d’API compatible avec OpenAI pour les CLI/outils (372 fournisseurs, 148 exécuteurs)
+- Surface d’API compatible avec OpenAI pour les CLI/outils (373 fournisseurs, 150 modules d’exécution)
 - Traduction des requêtes/réponses entre les formats des fournisseurs
-- Repli par combinaison de modèles (séquence de plusieurs modèles)
+- Repli par combinaison de modèles (séquence multimodèle)
 - Étapes de combinaison structurées (`provider + model + connection`) avec ordonnancement à l’exécution selon `compositeTiers`
-- Repli au niveau du compte (plusieurs comptes par fournisseur)
-- Vérification préalable des quotas et sélection de compte P2C tenant compte des quotas dans le flux principal de conversation
-- Gestion des connexions aux fournisseurs par OAuth et clé d’API (27 modules de fournisseurs OAuth)
+- Repli au niveau des comptes (plusieurs comptes par fournisseur)
+- Vérification préalable des quotas et sélection de compte P2C tenant compte des quotas dans le chemin principal de conversation
+- Gestion des connexions aux fournisseurs via OAuth et clé API (27 modules de fournisseurs OAuth)
 - Génération d’embeddings via `/v1/embeddings` (18 fournisseurs)
 - Génération d’images via `/v1/images/generations` (plus de 10 fournisseurs, plus de 20 modèles)
 - Transcription audio via `/v1/audio/transcriptions` (18 fournisseurs)
 - Synthèse vocale via `/v1/audio/speech` (24 fournisseurs intégrés)
-- Génération de vidéos via `/v1/videos/generations` (ComfyUI + SD WebUI)
-- Génération de musique via `/v1/music/generations` (ComfyUI)
+- Génération vidéo via `/v1/videos/generations` (ComfyUI + SD WebUI)
+- Génération musicale via `/v1/music/generations` (ComfyUI)
 - Recherche Web via `/v1/search` (20 fournisseurs)
 - Modération via `/v1/moderations`
 - Reclassement via `/v1/rerank`
@@ -37,50 +37,50 @@ Fonctionnalités principales :
 - Conversion des sorties structurées (json_schema → Gemini responseSchema)
 - Persistance locale des fournisseurs, clés, alias, combinaisons, paramètres et tarifs (122 modules de base de données)
 - Suivi de l’utilisation et des coûts, ainsi que journalisation des requêtes
-- Synchronisation cloud facultative pour la synchronisation entre plusieurs appareils et des états
-- Liste d’autorisation/liste de blocage des adresses IP pour le contrôle d’accès à l’API
+- Synchronisation cloud facultative pour synchroniser l’état entre plusieurs appareils
+- Liste d’autorisation/liste de blocage d’adresses IP pour le contrôle d’accès à l’API
 - Gestion du budget de réflexion (transmission directe/automatique/personnalisée/adaptative)
 - Injection globale d’une invite système
 - Suivi et empreinte des sessions
-- Limitation de débit améliorée par compte avec des profils propres à chaque fournisseur
+- Limitation de débit améliorée par compte avec des profils propres aux fournisseurs
 - Modèle de disjoncteur pour la résilience des fournisseurs
-- Protection contre les afflux simultanés de requêtes avec verrouillage par mutex
-- Cache de déduplication des requêtes fondé sur les signatures
+- Protection contre les effets de troupeau grâce au verrouillage par mutex
+- Cache de déduplication des requêtes basé sur les signatures
 - Couche de domaine : règles de coût, politique de repli, politique de verrouillage
-- Relais de contexte : résumés de transfert de session pour préserver la continuité lors de la rotation des comptes
-- Persistance de l’état du domaine (cache SQLite à écriture immédiate pour les replis, budgets, verrouillages et disjoncteurs)
+- Relais de contexte : résumés de transfert de session pour assurer la continuité lors de la rotation des comptes
+- Persistance de l’état du domaine (cache SQLite en écriture immédiate pour les replis, budgets, verrouillages et disjoncteurs)
 - Moteur de politiques pour l’évaluation centralisée des requêtes (verrouillage → budget → repli)
 - Télémétrie des requêtes avec agrégation des latences p50/p95/p99
 - Télémétrie des cibles de combinaison et historique de leur état via `combo_execution_key` / `combo_step_id`
-- ID de corrélation (X-Request-Id) pour le traçage de bout en bout
-- Journalisation d’audit de conformité avec possibilité de désactivation par clé d’API
+- Identifiant de corrélation (X-Request-Id) pour le traçage de bout en bout
+- Journalisation d’audit de conformité avec possibilité de désactivation pour chaque clé API
 - Cadre d’évaluation pour l’assurance qualité des LLM
-- Tableau de bord de l’état avec statut en temps réel des disjoncteurs des fournisseurs
-- Serveur MCP (110 outils) avec 3 transports (stdio/SSE/HTTP diffusable)
+- Tableau de bord de l’état de santé affichant en temps réel l’état des disjoncteurs des fournisseurs
+- Serveur MCP (110 outils) avec 3 transports (stdio/SSE/HTTP avec diffusion en continu)
 - Serveur A2A (JSON-RPC 2.0 + SSE) avec compétences et cycle de vie des tâches
-- Système de mémoire (extraction, injection, récupération, synthèse)
+- Système de mémoire (extraction, injection, récupération, résumé)
 - Système de compétences (registre, exécuteur, bac à sable, compétences intégrées)
 - Proxy MITM avec gestion des certificats et du DNS
 - Intergiciel de protection contre l’injection d’invites
-- Pipeline de compression des invites avec Caveman, RTK, pipelines empilés, combinaisons de compression, packs linguistiques et analyses
+- Pipeline de compression d’invites avec Caveman, RTK, pipelines empilés, combinaisons de compression, packs linguistiques et analyses
 - Registre ACP (Agent Communication Protocol)
 - Fournisseurs OAuth modulaires (22 modules individuels sous `src/lib/oauth/providers/`)
 - Scripts de désinstallation/désinstallation complète
 - Action de réparation de l’environnement OAuth
 - Pont WebSocket pour les clients WS compatibles avec OpenAI (`/v1/ws`)
 - Gestion des jetons de synchronisation (émission/révocation, téléchargement d’un paquet de configuration versionné par ETag)
-- Préréglage de fournisseur GLM Thinking (`glmt`) de première classe
-- Comptage hybride des jetons (`/messages/count_tokens` côté fournisseur, avec repli vers une estimation)
-- Initialisation automatique des alias de modèles (plus de 30 normalisations de dialectes interproxys au démarrage)
+- Préréglage de fournisseur de premier ordre pour GLM Thinking (`glmt`)
+- Comptage hybride des jetons (`/messages/count_tokens` côté fournisseur avec repli vers une estimation)
+- Amorçage automatique des alias de modèles (plus de 30 normalisations de dialectes entre proxys au démarrage)
 - Récupération sortante sécurisée avec protection SSRF, blocage des URL privées et nouvelles tentatives configurables
-- Nouvelles tentatives de conversation tenant compte des périodes de temporisation, avec `requestRetry` et `maxRetryIntervalSec` configurables
+- Nouvelles tentatives de conversation tenant compte du délai de récupération, avec `requestRetry` et `maxRetryIntervalSec` configurables
 - Validation de l’environnement d’exécution avec Zod au démarrage
 - Audit de conformité v2 avec pagination, événements CRUD des fournisseurs et journalisation des validations bloquées par la protection SSRF
 
-Modèle principal d’exécution :
+Modèle d’exécution principal :
 
-- Les routes de l’application Next.js sous `src/app/api/*` implémentent à la fois les API du tableau de bord et les API de compatibilité
-- Un noyau partagé de SSE/routage dans `src/sse/*` + `open-sse/*` gère l’exécution des fournisseurs, la traduction, la diffusion en continu, le repli et l’utilisation
+- Les routes d’application Next.js sous `src/app/api/*` implémentent à la fois les API du tableau de bord et les API de compatibilité
+- Un cœur SSE/de routage partagé dans `src/sse/*` + `open-sse/*` gère l’exécution des fournisseurs, la traduction, la diffusion en continu, le repli et l’utilisation
 
 ## Diagrammes de référence
 

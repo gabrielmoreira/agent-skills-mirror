@@ -2106,8 +2106,46 @@ class DamengAgentMetadataTest {
 
         Assertions.assertTrue(ddl.contains("CREATE TABLE \"APP\".\"USERS\""), ddl);
         Assertions.assertTrue(ddl.contains("\"ID\" NUMBER(10) NOT NULL"), ddl);
+        Assertions.assertTrue(ddl.contains("COMMENT ON COLUMN \"APP\".\"USERS\".\"ID\" IS 'id comment';"), ddl);
         Assertions.assertEquals(1, sqls.stream().filter(sql -> sql.contains("DBMS_METADATA.GET_DDL")).count());
         Assertions.assertTrue(sqls.stream().anyMatch(sql -> sql.contains("ALL_TAB_COLUMNS")), String.join("\n", sqls));
+    }
+
+    @Test
+    void appendsColumnCommentsFromFallbackViewsWhenAllColCommentsEmpty() {
+        DamengAgent agent = new DamengAgent();
+        List<String> sqls = new ArrayList<>();
+        TestSupport.setPrivateConnection(agent, metadataConnection(
+            null,
+            "fallback id comment",
+            false,
+            List.of(),
+            sqls
+        ));
+
+        String ddl = agent.getTableDdl("APP", "USERS");
+
+        Assertions.assertTrue(ddl.contains("COMMENT ON COLUMN \"APP\".\"USERS\".\"ID\" IS 'fallback id comment';"), ddl);
+        Assertions.assertTrue(sqls.stream().anyMatch(sql -> sql.contains("USER_COL_COMMENTS")), String.join("\n", sqls));
+    }
+
+    @Test
+    void doesNotQueryUserColCommentsWhenSchemaDiffersFromConnectedUser() {
+        DamengAgent agent = new DamengAgent();
+        setConnectedUsername(agent, "SYSDBA");
+        List<String> sqls = new ArrayList<>();
+        TestSupport.setPrivateConnection(agent, metadataConnection(
+            null,
+            "fallback id comment",
+            false,
+            List.of(),
+            sqls
+        ));
+
+        String ddl = agent.getTableDdl("APP", "USERS");
+
+        Assertions.assertFalse(sqls.stream().anyMatch(sql -> sql.contains("USER_COL_COMMENTS")), String.join("\n", sqls));
+        Assertions.assertFalse(ddl.contains("fallback id comment"), ddl);
     }
 
     @Test

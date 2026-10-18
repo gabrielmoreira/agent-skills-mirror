@@ -150,6 +150,10 @@ flowchart TD
 - Copilot 新建默认列表移除 7 月已退役的 Gemini 2.5 Pro / 3 Flash，以及 9 月 1 日将退役的 Gemini 3.1 Pro、Opus 4.6、Sonnet 4.6、Raptor mini。Sonnet 4.6 年付个人计划的例外仍可自行配置，既有配置不删除，也不把账户目录等同于全局可用性。[7 月公告](https://github.blog/changelog/2026-07-31-gemini-2-5-pro-and-gemini-3-flash-deprecated/)、[9 月退役公告](https://github.blog/changelog/2026-07-31-upcoming-august-2026-model-deprecations-in-github-copilot/)
 - OpenAI 直连的 GPT-5.6 / Sol 基础输入/输出价为每百万令牌 4/20 美元，促销至少持续至 2026-11-21；Sonnet 5 直连基础价为 2/10 美元，已转为长期定价。同步内置估算表，不覆盖用户价格或网关模板报价。缓存、长上下文阶梯、实际账单与历史价不是本表表达的内容，大盘仍是估算而非账单；促销结束前重新核验。[Sol 定价](https://developers.openai.com/api/docs/models/gpt-5.6-sol)、[Claude 定价](https://platform.claude.com/docs/en/about-claude/pricing)
 
+#### 2026-10-17 OpenAI 限期候选维护
+
+依据 [官方退役公告](https://developers.openai.com/api/docs/deprecations)，`o1`、`o1-pro`、`o3-mini`、`o4-mini` 于 2026-10-23 停用；两个 OpenAI 直连新建模板移除这些候选，保留已收录的 `gpt-5.6-sol` / `gpt-5.6-terra`。这是目录维护，不将旧型号强制映射到替代型号，也不为 `o1-pro` 自动增加 `reasoning.mode: pro`。另按 [官方深度研究说明](https://developers.openai.com/api/docs/guides/deep-research) 移除已于 2026-07-23 停用的 `o3-deep-research` / `o4-mini-deep-research` 新建候选；旧示例保留这些 ID 不代表仍可用，不新增托管研究工具或后台协议。已存配置、active/fallback 与网关目录均保持用户选择；真实账号与模型调用未验证。回退可恢复目录代码，到期后不再推荐退役型号。
+
 #### 2026-10-15 MiniMax 新用户候选维护
 
 复用依赖快检 10-15 已归档的官方[型号公告](https://platform.minimax.io/docs/guides/models-intro)和[Anthropic 兼容合同](https://platform.minimax.io/docs/api-reference/text-anthropic-api)：M2.5/M2.7 家族从 10-19 起不再对新用户开放，既有按量用户至 11-18 退役；M Plan / Token Plan 的旧名请求从 10-19 起由厂商转向 M3.1 Flash Preview。新建 `minimax` 模板仅清理 `MiniMax-M2.5`、`MiniMax-M2.7`、`MiniMax-M2.7-highspeed`，继续使用既有 M3 参数、端点与价格。模板驱动的模型补全随之更新；网关型号和已保存配置不迁移，active/fallback 不重选。Preview 套餐资格和 thinking/effort 另有合同，本次不新增。此次为静态目录维护与本地验证，不代表真实账号、流式工具、套餐路由或账单验收。

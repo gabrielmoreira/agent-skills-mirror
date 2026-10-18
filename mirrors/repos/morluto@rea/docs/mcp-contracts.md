@@ -524,6 +524,12 @@ analysis runtime. These failures are reported at the operation that needs
 them. A configured provider or an endpoint alone does not establish that a
 target is supported.
 
+Composite Hopper regex searches report failures against the accepted
+`search_strings` or `search_procedures` operation. The underlying inventory
+method and request ID remain in `details.diagnostics.provider_request`, with
+the bridge error code and diagnostic type when available. Reattribution
+preserves the failure class, captured output, and live cleanup ownership.
+
 Evidence bundles, snapshots, and extraction use the paths and output behavior
 declared by their tools. Artifact extraction materializes the selected regular
 files into a fresh REA-chosen temporary directory and reports its path.
@@ -533,6 +539,25 @@ and returns its result and Evidence inline. Its owned analysis worker and privat
 temporary source files are declared as `launchesProcess` and `writesFilesystem`,
 including for a single JavaScript source. This internal analysis does not execute
 the supplied application code.
+
+## Static Ghidra bytes and source mappings
+
+`read_bytes` returns initialized analysis memory, including loader fixups, rather
+than live process memory. Check `returned_bytes` and `complete` before decoding:
+reads stop at unmapped or uninitialized bytes. Missing bytes are unknown; do not
+pad an incomplete read with zeros and treat the result as an observation.
+
+`list_segments` reports memory-block initialization and address-space facts.
+`address_to_file_offset` maps one address through the provider's source-byte
+mapping. A successful start-address mapping does not establish that an entire
+range is contiguous in the original file, or that its bytes equal analysis
+memory after loader fixups. Uninitialized, missing, and ambiguous mappings fail
+explicitly; preserve the reported failure rather than guessing an offset.
+
+For constructor-populated pointer or resource slots, a static zero is not proof
+of a later null value. Inspect the slot's `xrefs` and the writer's assembly or
+pseudocode, retaining uncertainty about execution order and runtime values.
+These operations inspect static evidence and do not execute the target.
 
 ## Ghidra first-query deadlines and recovery
 

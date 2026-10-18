@@ -150,29 +150,29 @@ curl -X POST http://localhost:20128/a2a \
 
 Naglalantad ang OmniRoute ng 6 na A2A skill na nakakonekta sa `src/lib/a2a/taskExecution.ts::A2A_SKILL_HANDLERS`. Matatagpuan ang bawat module ng skill sa `src/lib/a2a/skills/`.
 
-| Skill                    | ID                   | Paglalarawan                                                                                                                                                                | Mga Tag                    | Mga Halimbawa                                                 |
-| :----------------------- | :------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------------- | :------------------------------------------------------------ |
-| Matalinong Pag-route     | `smart-routing`      | Dinaraanan ang isang prompt sa pinakamainam na provider/combo gamit ang combo engine at pagmamarka ng OmniRoute                                                             | routing, providers         | "I-route ang prompt na ito gamit ang pinakamahusay na modelo" |
-| Pamamahala ng Quota      | `quota-management`   | Iniuulat ang estado ng quota ng bawat provider at tinutulungan ang mga tumatawag na magpasya kung kailan maglilimita/lilipat                                                | quota, providers           | "Suriin ang quota para sa anthropic"                          |
-| Pagtuklas ng Provider    | `provider-discovery` | Inililista ang mga naka-install na provider kasama ang mga kakayahan, free-tier flag, at katayuan ng OAuth                                                                  | providers, discovery       | "Anong mga provider ang available?"                           |
-| Pagsusuri ng Gastos      | `cost-analysis`      | Tinataya ang gastos ng isang kahilingan/pag-uusap batay sa catalog at kamakailang paggamit                                                                                  | cost, usage                | "Tantiyahin ang gastos para sa pag-uusap na ito"              |
-| Ulat sa Kalagayan        | `health-report`      | Pinagsasama-sama ang estado ng circuit breaker, cooldown, at lockout ng bawat provider                                                                                      | health, resilience         | "Ipakita ang katayuan ng kalagayan ng lahat ng provider"      |
-| Ilista ang mga Kakayahan | `list-capabilities`  | Ibinabalik ang buong catalog ng Agent Skills na may 45 entry (23 API + 21 CLI + 1 config) bilang markdown table na may mga raw SKILL.md URL para sa paglalagay ng konteksto | catalog, discovery, skills | "Ilista ang lahat ng kakayahan ng OmniRoute"                  |
+| Skill                     | ID                   | Paglalarawan                                                                                                                                                          | Mga Tag                       | Mga Halimbawa                                          |
+| :------------------------ | :------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :---------------------------- | :----------------------------------------------------- |
+| Matalinong Routing        | `smart-routing`      | Niruruta ang isang prompt sa pinakamainam na provider/combo gamit ang combo engine at scoring ng OmniRoute                                                            | routing, mga provider         | "Iruta ang prompt na ito sa pinakamahusay na model"    |
+| Pamamahala ng Quota       | `quota-management`   | Inuulat ang estado ng quota ng bawat provider at tumutulong sa mga caller na magpasya kung kailan mag-throttle/lumipat                                                | quota, mga provider           | "Suriin ang quota para sa anthropic"                   |
+| Pagtuklas ng Provider     | `provider-discovery` | Inililista ang mga naka-install na provider kasama ang kanilang mga capability, free-tier flag, at status ng OAuth                                                    | mga provider, pagtuklas       | "Anong mga provider ang available?"                    |
+| Pagsusuri ng Gastos       | `cost-analysis`      | Tinatantiya ang gastos ng isang request/conversation batay sa catalog at kamakailang paggamit                                                                         | gastos, paggamit              | "Tantiyahin ang gastos ng conversation na ito"         |
+| Ulat sa Kalagayan         | `health-report`      | Pinagsasama-sama ang circuit breaker, cooldown, at lockout state ng bawat provider                                                                                    | kalagayan, katatagan          | "Ipakita ang status ng kalagayan ng lahat ng provider" |
+| Ilista ang mga Capability | `list-capabilities`  | Ibinabalik ang buong catalog ng Agent Skills na may 45 entry (23 API + 21 CLI + 1 config) bilang markdown table na may mga raw SKILL.md URL para sa context injection | catalog, pagtuklas, mga skill | "Ilista ang lahat ng capability ng OmniRoute"          |
 
-> Dapat panatilihing nakaayon ang Agent Card sa aktuwal na catalog ng 352 provider; kinukuha ang bilang ng mga provider at metadata ng libre/walang-auth mula sa runtime registry.
+> Dapat panatilihing nakaayon ang Agent Card sa aktuwal na catalog na may 372 provider; ang bilang ng mga provider at metadata ng libre/walang-auth ay kinukuha mula sa runtime registry.
 
-### Mga Detalye ng Skill na `list-capabilities`
+### Detalye ng Skill na `list-capabilities`
 
-Partikular na kapaki-pakinabang ang skill na `list-capabilities` para sa mga panlabas na agent na kailangang tuklasin kung ano ang inilalantad ng OmniRoute bago magpadala ng mga API call. Nagbabalik ito ng isang artifact na nasa anyong structured markdown table:
+Partikular na kapaki-pakinabang ang skill na `list-capabilities` para sa mga external agent na kailangang tuklasin kung ano ang inilalantad ng OmniRoute bago magpadala ng mga API call. Nagbabalik ito ng isang structured markdown table artifact:
 
 ```
-| ID | Name | Category | Area | Endpoints/Commands | Raw URL |
+| ID | Pangalan | Kategorya | Larangan | Mga Endpoint/Command | Raw URL |
 | --- | --- | --- | --- | --- | --- |
-| omni-auth | Auth & Sessions | api | auth | POST /api/auth/login, ... | https://raw.githubusercontent.com/... |
+| omni-auth | Auth at mga Session | api | auth | POST /api/auth/login, ... | https://raw.githubusercontent.com/... |
 ...
 ```
 
-Kasama sa bawat row ang column na `rawUrl` upang agad na makuha ng mga agent ang buong SKILL.md. Tinutumbasan ng field na `metadata.totalSkills` ang laki ng catalog (45 sa kasalukuyan). Implementasyon: `src/lib/a2a/skills/listCapabilities.ts`. Tingnan din ang [AGENT-SKILLS.md](./AGENT-SKILLS.md).
+Kasama sa bawat row ang column na `rawUrl` upang agad na makuha ng mga agent ang buong SKILL.md. Sinasalamin ng field na `metadata.totalSkills` ang laki ng catalog (45 sa kasalukuyan). Implementasyon: `src/lib/a2a/skills/listCapabilities.ts`. Tingnan din ang [AGENT-SKILLS.md](./AGENT-SKILLS.md).
 
 ---
 
@@ -262,7 +262,7 @@ naisumite → ginagawa → nakumpleto
 
 ---
 
-## Mga Halimbawa ng Integration
+## Mga Halimbawa ng Integrasyon
 
 ### Python (requests)
 

@@ -13,13 +13,16 @@
 
 包里只有该时刻需要的东西，三种任务都附 SKILL.md 的「新增物三级」判据（包外读不到 SKILL.md）：
 - world：workflow-setup.md 的 Phase 2 与设定模板、character-basics.md、long-genre-mechanics.md 的
-  「核心梗三层递进设计」、character-relations.md 的「人物关系类型」、reader-contract-and-progression.md。
-- volume：workflow-volume.md（卷纲流程、排纲自查、节奏锚与对标迁移）、artifact-protocols.md
-  （大纲与卷纲模板）、emotional-methods.md 的「长篇单元情绪引擎」（排纲自查第 1 项）、
-  reader-contract-and-progression.md（第 4 项契约四问）。
-- outline：workflow-outline.md（批次步骤、细纲模板与验收、补纲、设定补全、排纲底稿模板）、
-  character-basics.md 的主角卡与配角卡模板；首章在范围内时加 opening-design.md。
-流程里点名、但只在某些书才用得上的参考（多对标时的跨书召回、女频手册、弧线与反转速查、灵感库）
+  「核心梗三层递进设计」与「金手指」、character-relations.md 的「人物关系类型」、reader-contract-and-progression.md。
+- volume：workflow-volume.md 的「排纲方法」（刻度、交付、自查、关键点法、对标迁移、章节定位）、
+  artifact-protocols.md（大纲与卷纲模板）、outline-methods.md 的「卷纲排法」、
+  reader-contract-and-progression.md（排纲自查第 4 项契约四问）。
+- outline：workflow-outline.md 的「排纲方法」（批次步骤、细纲模板与验收、设定补全、排纲底稿模板）、
+  long-chapter-hooks.md 的「章尾钩子 13 式」与「章首钩子 7 式」（细纲模板要从中选；只带名称与公式，示例列不进包）、
+  character-basics.md 的主角卡与配角卡模板、plot-core-methods.md（首批整份；之后不带开篇噱头一节）；
+  首章在范围内时加 opening-design.md 的「开篇规划」。
+流程文件的主会话一节（读取清单、分工、作者汇报）不进包。流程里点名、但只在某些书才用得上的参考
+（多对标时的跨书召回、女频手册、八节点、情绪模块公式、换地图、感情线阶段、弧线与反转速查、灵感库）
 不进包，列在包末「按条件可读」，给出绝对路径与小节，条件满足才读。
 本书的方向、设定与作者口头定下的事都在 `设定/`，不进包，由执行者按包里的流程定点读。
 `--rules-only` 只拼规则部分（不取本书卷纲），供仓库的预算守卫计量每次调用的加载量。
@@ -45,11 +48,15 @@ WORK_DIR = (".story", "work", "排纲")
 # 包外按条件可读：(文件, 小节或 None=整份, 条件)。条件由执行者读 `设定/` 判断。
 CROSS_BOOK = ("cross-book-recall.md", None, "`设定/题材定位.md`「对标登记」里有 2 本及以上对标书")
 INSPIRATION = ("cross-book-recall.md", "公共灵感标签召回", "工作区有 `灵感库/`（零命中不阻塞）")
+ROMANCE = ("character-relations.md", "感情线阶段", "本书有感情线")
 CONDITIONAL = {
-    "world": [("female-audience-writing.md", None, "本书是女频"), CROSS_BOOK, INSPIRATION],
-    "volume": [CROSS_BOOK, ("emotional-arc-design.md", "六种弧线速查", "情绪弧线选型拿不准"),
-               ("long-reversal.md", "反转类型", "本卷规划了反转"), INSPIRATION],
-    "outline": [CROSS_BOOK, INSPIRATION],
+    "world": [("female-audience-writing.md", None, "本书是女频"), ROMANCE, CROSS_BOOK, INSPIRATION],
+    "volume": [CROSS_BOOK, ("outline-methods.md", "八节点故事结构", "没有主对标"),
+               ("outline-methods.md", "情绪模块公式", "卷纲里有自创单元"),
+               ("outline-methods.md", "换地图", "本卷换大地图或开新地图"),
+               ("emotional-arc-design.md", "六种弧线速查", "情绪弧线选型拿不准"),
+               ("long-reversal.md", "反转类型", "本卷规划了反转"), ROMANCE, INSPIRATION],
+    "outline": [ROMANCE, CROSS_BOOK, INSPIRATION],
 }
 
 
@@ -67,6 +74,12 @@ def section(text: str, start: str, end: str | None = None) -> str:
         raise SystemExit(f"ERROR: reference 里找不到小节「{start}」")
     stop = re.search(rf"^#+\s*{re.escape(end)}.*$", text[match.end():], re.M) if end else None
     return text[match.start(): match.end() + stop.start() if stop else len(text)].rstrip()
+
+
+def drop_last_column(text: str) -> str:
+    """表格去掉末列：钩子表的示例列不进包，免得细纲照抄示例的句子形状。"""
+    return "\n".join("|".join(line.split("|")[:-2]) + "|" if line.startswith("|") else line
+                     for line in text.splitlines())
 
 
 def new_addition_tiers() -> str:
@@ -173,7 +186,7 @@ def build(task: str, volume: int | None, chapters: tuple[int, int] | None,
                   section(setup, "Phase 2：核心设定", "Agent 调用：story-architect + character-designer") + "\n\n"
                   + section(setup, "定设定时建的文件模板")),
                  ("character-basics.md", read_reference("character-basics.md")),
-                 ("long-genre-mechanics.md（核心梗三层递进设计）",
+                 ("long-genre-mechanics.md（核心梗三层递进设计、金手指）",
                   section(read_reference("long-genre-mechanics.md"), "核心梗三层递进设计", "微创新与差异化设计")),
                  ("character-relations.md（人物关系类型）",
                   section(read_reference("character-relations.md"), "人物关系类型", "感情流人设核心法")),
@@ -181,14 +194,13 @@ def build(task: str, volume: int | None, chapters: tuple[int, int] | None,
     elif task == "volume":
         label = f"第{volume}卷" if volume else "本卷"
         head = (f"# 任务包：出{label}卷纲\n\n"
-                f"只交付全书体量与阶段总览（`大纲/大纲.md`，已有就只补本卷相关部分）和 `大纲/卷纲_第{volume or 'X'}卷.md`，"
+                f"只交付 `大纲/大纲.md` 的分卷表（已有就只补本卷那一行）和 `大纲/卷纲_第{volume or 'X'}卷.md`，"
                 "不出细纲、不写正文、不建 `追踪/`。本书方向、设定、对标登记与作者已定的事读 `设定/`（先读 "
                 f"`设定/题材定位.md`）。{outside}交付后只回：写了哪些文件、排纲自查 1–4 "
                 "的结论各一句、要作者定的事（没有写「无」）。")
-        parts = [("workflow-volume.md", read_reference("workflow-volume.md")),
+        parts = [("workflow-volume.md（排纲方法）", section(read_reference("workflow-volume.md"), "排纲方法")),
                  ("artifact-protocols.md", read_reference("artifact-protocols.md")),
-                 ("emotional-methods.md（长篇单元情绪引擎）",
-                  section(read_reference("emotional-methods.md"), "长篇单元情绪引擎", "决策路由")),
+                 ("outline-methods.md（卷纲排法）", section(read_reference("outline-methods.md"), "卷纲排法", "换地图")),
                  ("reader-contract-and-progression.md", read_reference("reader-contract-and-progression.md"))]
     else:
         first, last = chapters
@@ -198,10 +210,18 @@ def build(task: str, volume: int | None, chapters: tuple[int, int] | None,
                 f"{outside}交付后只回：写了哪些文件、"
                 "每章一句核心事件、要作者定的事（没有写「无」）。")
         basics = read_reference("character-basics.md")
-        parts = [("workflow-outline.md", read_reference("workflow-outline.md")),
+        plot = read_reference("plot-core-methods.md")
+        parts = [("workflow-outline.md（排纲方法）", section(read_reference("workflow-outline.md"), "排纲方法")),
+                 ("long-chapter-hooks.md（章尾钩子 13 式、章首钩子 7 式）",
+                  drop_last_column(section(read_reference("long-chapter-hooks.md"), "章尾钩子 13 式", "章尾实战模板"))),
                  ("character-basics.md（主角卡、配角卡）", section(basics, "第1节：主角卡", "第3节"))]
         if first <= 3:
-            parts.append(("opening-design.md", read_reference("opening-design.md")))
+            parts += [("plot-core-methods.md", plot),
+                      ("opening-design.md（开篇规划）",
+                       section(read_reference("opening-design.md"), "开篇规划", "开篇落笔"))]
+        else:
+            parts.append(("plot-core-methods.md（不含开篇噱头）",
+                          section(plot, "目标情绪与主角选择", "噱头分类与开篇流程")))
         if not rules_only:
             parts += [(f"卷纲取段：{name}", text) for name, text in unit_closures(project, first, last)]
     parts.append(("SKILL.md（新增物三级）", new_addition_tiers()))

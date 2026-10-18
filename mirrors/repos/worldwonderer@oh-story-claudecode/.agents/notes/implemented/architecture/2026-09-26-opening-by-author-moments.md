@@ -2,7 +2,7 @@
 
 Status: implemented
 Date: 2026-09-26
-Related: [35K 加载上限](2026-09-26-per-call-load-ceiling-35k.md)、[叠加语义与 solo 按时刻少读](2026-09-26-budget-stacking-and-solo-reads.md)
+Related: [35K 加载上限](2026-09-26-per-call-load-ceiling-35k.md)、[叠加语义与 solo 按时刻少读](2026-09-26-budget-stacking-and-solo-reads.md)、[规划时刻分出方法层](2026-10-17-planning-method-layer.md)
 
 ## Problem
 

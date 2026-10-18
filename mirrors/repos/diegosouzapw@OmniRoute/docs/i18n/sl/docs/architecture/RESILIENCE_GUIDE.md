@@ -361,24 +361,24 @@ _stanje_ zaklepa je začasno.
 
 ---
 
-## 4. Nadzor sočasnosti pri deljeni kvoti (v3.8.36)
+## 4. Nadzor sočasnosti quota-share (v3.8.36)
 
-Naročniški računi (GLM, MiniMax itd.) pogosto dovoljujejo le približno 1–3 sočasne
-zahteve; prekoračitev tega sproži napake 429 in obdobja ohlajanja. To je še posebej izrazito pri
-kombinacijah **quota-share** (`qtSd/…`), kjer si več ključev API deli en nadrejeni
-račun. Tri plasti preprečujejo preobremenitev skupnega računa.
+Naročniški računi (GLM, MiniMax itd.) pogosto sprejmejo le približno 1–3 sočasne
+zahteve; prekoračitev sproži napake 429 in obdobja ohlajanja. To je še posebej izrazito pri
+kombinacijah **quota-share** (`qtSd/…`), kjer si več ključev API deli en račun pri
+ponudniku. Tri plasti preprečujejo preobremenitev skupnega računa.
 
 ### Omejitev sočasnosti na povezavo (`max_concurrent`)
 
 Vsaka povezava ponudnika lahko določi zgornjo mejo `max_concurrent`
-(`provider_connections.max_concurrent`, nastavljeno v pogovornem oknu povezave / API-ju / zbirki podatkov).
-Če omejitve ne želite, pustite polje prazno. To je edina nastavitev, ki upravlja spodnjo plast
-serializacije — nastavite jo na dejansko sočasnost računa (npr. GLM ~1, MiniMax ~2).
+(`provider_connections.max_concurrent`, nastavljeno v modalnem oknu povezave / prek API-ja / v zbirki podatkov).
+Če omejitve ne želite, pustite polje prazno. To je edina nastavitev, ki upravlja spodnjo
+plast serializacije — nastavite jo na dejansko sočasnost računa (npr. GLM ~1, MiniMax ~2).
 
 ### Omejitve sočasnosti na model (`modelConcurrency`)
 
 Povezava lahko dodatno določi natančne zgornje meje sočasnosti za posamezne modele
-znotraj svojega zemljevida `rateLimitOverrides`:
+v svojem zemljevidu `rateLimitOverrides`:
 
 ```json
 {
@@ -389,64 +389,74 @@ znotraj svojega zemljevida `rateLimitOverrides`:
 }
 ```
 
-Nastavite jih v pogovornem oknu povezave (**Preglasitve omejitve hitrosti → Omejitve
-sočasnosti na model**, en `model=cap` na vrstico) ali prek
-`PATCH /api/providers/[id]` z enako strukturo JSON. Semantika ključev:
+Nastavite jih v modalnem oknu povezave (**Preglasitve omejitve hitrosti → Omejitve
+sočasnosti na model**, en vnos `model=cap` na vrstico) ali prek
+`PATCH /api/providers/[id]` z enako obliko JSON. Semantika ključev:
 
-- **Za celotno povezavo ali za posamezen model:** `maxConcurrent` ostaja skupna
-  zgornja meja za celotno povezavo. Ko veljata obe omejitvi, se obe zapori pridobita
+- **Za celotno povezavo v primerjavi s posameznim modelom:** `maxConcurrent` ostaja skupna
+  zgornja meja za celotno povezavo. Kadar veljata obe omejitvi, se obe zapori pridobita
   atomsko v isti sestavljeni zapori
-  (`global → provider → account → model`); dejansko obnašanje določa
+  (`global → provider → account → model`); dejansko vedenje določa
   strožja veljavna omejitev.
-- **Natančno ujemanje ključa modela:** ključ je niz modela, ki se po razrešitvi
-  usmerjanja posreduje izvajalniku — običajno je to goli ID nadrejenega modela
-  (`glm-5`) in ne odjemalčev vzdevek `provider/model` (`zai/glm-5` se ne
-  ujema z `glm-5`). Vrednosti so pozitivna cela števila, ki določajo zgornje meje sočasnih zahtev.
-- **Lokalno čakanje v vrsti, brez odkrivanja:** presežne zahteve čakajo v lokalni vrsti z
-  obstoječo semantiko čakalne vrste/časovne omejitve (tipizirani vstopni napaki `SEMAPHORE_TIMEOUT` /
-  `SEMAPHORE_QUEUE_FULL`). OmniRoute ne odkriva ali
-  sklepa o pravilih nadrejenega sistema — uveljavlja točno tiste omejitve, ki jih je
-  nastavil upravljavec. Zapolnjena zapora modela nikoli ne onemogoči ponudnika in nikoli
-  ne povzroči trajne blokade modela; vedenje pri nadrejenih napakah 429, ohlajanju in
-  preklopu na rezervno možnost ostaja zadnja varovalka ob napakah.
-- **Obseg na povezavo in proces:** omejitve veljajo za posamezno povezavo zbirke podatkov
-  in se hranijo v pomnilniku, zato se dve povezavi, ki ponovno uporabljata isti nadrejeni ključ API,
-  med seboj ne usklajujeta.
-- **Če ni konfigurirano, ostane nespremenjeno:** izpustitev zemljevida (ali prazno
-  polje na nadzorni plošči) ne doda zapore modela. Primer konfiguracije brez
-  predpostavljanja kakršne koli splošne omejitve ponudnika:
+- **Natančno ujemanje ključa modela:** ključ je niz modela, posredovan
+  izvajalniku po razrešitvi usmerjanja — običajno goli ID modela pri ponudniku
+  (`glm-5`), ne vzdevek `provider/model` na strani odjemalca (`zai/glm-5` se ne
+  ujema z `glm-5`). Vrednosti so pozitivna celoštevilska števila sočasnih zahtev.
+- **Lokalno čakanje v vrsti, brez odkrivanja:** presežne zahteve čakajo lokalno ob uporabi
+  obstoječe semantike čakalne vrste/časovne omejitve (tipsko določene napake pri sprejemu
+  `SEMAPHORE_TIMEOUT` / `SEMAPHORE_QUEUE_FULL`). OmniRoute ne odkriva ali
+  sklepa o pravilniku ponudnika — uveljavlja natančne omejitve, ki jih je
+  nastavil upravljavec. Zasičena zapora modela nikoli ne onemogoči ponudnika in nikoli
+  ne ustvari trajne blokade modela; vedenje ob napaki 429/ohlajanju/preklopu
+  pri ponudniku ostaja končni varnostni mehanizem za napake.
+- **Obseg na povezavo in proces:** omejitve veljajo na povezavo zbirke podatkov
+  in se hranijo v pomnilniku, zato se dve povezavi, ki ponovno uporabljata isti ključ API
+  ponudnika, medsebojno ne usklajujeta.
+- **Nenastavljeno pomeni nespremenjeno:** če zemljevid izpustite (ali pustite
+  polje na nadzorni plošči prazno), se zapora modela ne doda. Primer konfiguracije brez
+  zatrjevanja kakršne koli univerzalne omejitve ponudnika:
 
 ```text
 glm-5=1
 glm-4.7=3
 ```
 
-### Serializacija zahtev z deljeno kvoto
+### Serializacija zahtev quota-share
 
-Ko je posredovanje z deljeno kvoto usmerjeno na povezavo, ki določa pozitivno vrednost
+Ko je odprema quota-share usmerjena na povezavo, ki določa pozitivno vrednost
 `max_concurrent`, se sočasne zahteve za ta **račun** serializirajo prek
 semaforja na povezavo (ključ `qsconn:<connectionId>`): presežne zahteve **čakajo v
-vrsti**, namesto da bi preobremenile račun. Deluje po načelu **fail-open** — pri zapolnjeni
-čakalni vrsti ali časovni omejitvi se obdelava nadaljuje brez mesta, namesto da bi bila zahteva,
-ki jo je mogoče posredovati, kadar koli zavrnjena. Preklopite v **Nastavitve → Odpornost → Sočasnost
-na povezavo pri deljeni kvoti**
-(`resilienceSettings.quotaShareConcurrencyLimit.enabled`, privzeto
-vklopljeno). Brez omejitve `max_concurrent` se vedenje ne spremeni.
+vrsti**, namesto da bi preobremenile račun. Mehanizem je **fail-open** — ob zasičeni
+vrsti ali časovni omejitvi se izvajanje nadaljuje brez mesta, namesto da bi bila zahteva,
+ki jo je mogoče odpremiti, kadar koli zavrnjena. Preklopite ga v **Nastavitve → Odpornost → Sočasnost
+quota-share na povezavo** (`resilienceSettings.quotaShareConcurrencyLimit.enabled`, privzeto
+vklopljeno). Brez omejitve `max_concurrent` vedenje ostane nespremenjeno.
 
-> Zapora usmerjanja z deljeno kvoto (`selectQuotaShareTarget`, DRR + P2C) sama
-> deluje po načelu fail-open in povezavi, ki je dosegla omejitev, le _zniža prednost_ — pri
-> skupini z eno samo povezavo ne more vsiliti stroge omejitve, zato poplavo dejansko
-> zajezi ta semafor.
+> Usmerjevalna zapora quota-share (`selectQuotaShareTarget`, DRR + P2C) je sama po sebi
+> fail-open in povezavi, ki je dosegla omejitev, le _zniža prednost_ — pri
+> skladu z eno samo povezavo ne more uveljaviti stroge omejitve, zato je ta semafor tisti,
+> ki dejansko zajezi poplavo zahtev.
 
 ### Ponovni poskus kombinacije z upoštevanjem ohlajanja
 
 Pri vsaki strategiji kombinacije (ko je omogočena) zahteva, ki bi dokončno povzročila napako 429
-zaradi KRATKEGA prehodnega obdobja ohlajanja, počaka do njegovega izteka in se znova posreduje,
-namesto da bi vrnila napako 429 — to pokriva okna TPM/RPM razreda Gemini (~60-sekundni `retry-after`)
-pri kombinacijah več modelov, npr. ko oba cilja kombinacije dveh modelov dosežeta omejitev
-hitrosti za posamezni model. Omejeno je z `comboCooldownWait` (`enabled`, `maxWaitMs`, `maxAttempts`,
-`budgetMs`) v **Nastavitve → Odpornost**. Nikoli ne čaka pri razlogih `quota_exhausted`
-(zaklenjeno do polnoči) ali pri razlogih, povezanih z avtentikacijo oziroma neobstoječim virom.
+zaradi KRATKEGA prehodnega ohlajanja, počaka na njegov iztek in se znova odpremi, namesto
+da bi vrnila napako 429 — to pokriva okna TPM/RPM razreda Gemini (čas `retry-after`
+približno 60 s) pri kombinacijah več modelov, npr. ko oba cilja kombinacije dveh modelov
+dosežeta omejitev hitrosti za posamezni model. Omejeno je z `comboCooldownWait`
+(`enabled`, `maxWaitMs`, `maxAttempts`, `budgetMs`) v **Nastavitve → Odpornost**.
+Nikoli ne čaka pri razlogu `quota_exhausted` (zaklenjeno do polnoči) ali razlogih,
+povezanih s preverjanjem pristnosti oziroma z neobstoječim virom.
+
+Ista zapora pokriva primer pred odpremo (#16319): ko je vsak cilj
+kombinacije preskočen, preden je izveden kakršen koli poskus, ker je njegov model v kratki
+prehodni blokadi, pot brez poskusov v okviru istih omejitev počaka na iztek blokade
+in zahtevo znova odpremi, namesto da bi vrnila odgovor brez namiga
+`503 ALL_TARGETS_SKIPPED`. Kadar čakanje ni dovoljeno (prekoračena omejitev,
+število poskusov ali proračun oziroma izklopljena funkcija), se končni odgovor nadgradi v
+`429 rate_limit_error` ter vsebuje `retry_after` / `reset_at` najzgodnejšega
+izteka prehodne blokade; blokade zaradi kvote, preverjanja pristnosti in neobstoječega vira
+še naprej vrnejo odgovor 503 brez namiga.
 
 ```text
 #16319 · comboCooldownWait · pre-dispatch (attempts = 0)

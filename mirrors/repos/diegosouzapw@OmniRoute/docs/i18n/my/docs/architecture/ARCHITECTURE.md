@@ -8,79 +8,79 @@
 
 _နောက်ဆုံးအပ်ဒိတ်လုပ်ထားသည့်ရက်: 2026-06-28_
 
-## အကျဉ်းချုပ်
+## အနှစ်ချုပ်
 
-OmniRoute သည် Next.js ပေါ်တွင် တည်ဆောက်ထားသော local AI routing gateway နှင့် dashboard ဖြစ်သည်။
-၎င်းသည် OpenAI နှင့် ကိုက်ညီသော endpoint တစ်ခုတည်း (`/v1/*`) ကို ပံ့ပိုးပေးပြီး translation၊ fallback၊ token refresh နှင့် usage tracking တို့ဖြင့် upstream provider အများအပြားသို့ traffic ကို လမ်းကြောင်းခွဲပို့ပေးသည်။
+OmniRoute သည် Next.js ပေါ်တွင် တည်ဆောက်ထားသော local AI routing gateway နှင့် dashboard တစ်ခုဖြစ်သည်။
+၎င်းသည် OpenAI နှင့် ကိုက်ညီသော endpoint တစ်ခုတည်း (`/v1/*`) ကို ပံ့ပိုးပေးပြီး format ပြောင်းလဲခြင်း၊ fallback၊ token refresh နှင့် usage tracking တို့ဖြင့် upstream provider များစွာသို့ traffic ကို လမ်းကြောင်းခွဲပို့ပေးသည်။
 
-အဓိက လုပ်ဆောင်နိုင်စွမ်းများ-
+အဓိကစွမ်းဆောင်ရည်များ-
 
-- CLI/tool များအတွက် OpenAI နှင့် ကိုက်ညီသော API မျက်နှာပြင် (provider 372 ခု၊ executor 148 ခု)
-- Provider format များအကြား request/response ဘာသာပြန်ပြောင်းလဲခြင်း
-- Model combo fallback (model အများအပြားပါဝင်သော အစီအစဉ်)
-- `compositeTiers` ဖြင့် runtime အတွင်း အစီအစဉ်ချမှတ်ထားသော ဖွဲ့စည်းပုံကျ combo အဆင့်များ (`provider + model + connection`)
-- Account အဆင့် fallback (provider တစ်ခုလျှင် account အများအပြား)
-- အဓိက chat လမ်းကြောင်းတွင် quota preflight နှင့် quota ကို ထည့်သွင်းစဉ်းစားသော P2C account ရွေးချယ်မှု
-- OAuth + API key ဖြင့် provider connection စီမံခန့်ခွဲမှု (OAuth provider module 27 ခု)
-- `/v1/embeddings` မှတစ်ဆင့် embedding ထုတ်လုပ်ခြင်း (provider 18 ခု)
-- `/v1/images/generations` မှတစ်ဆင့် ပုံထုတ်လုပ်ခြင်း (provider 10+ ခု၊ model 20+ ခု)
+- CLI/tool များအတွက် OpenAI နှင့် ကိုက်ညီသော API မျက်နှာပြင် (provider 373 ခု၊ executor module 150 ခု)
+- Provider format များအကြား request/response ပြောင်းလဲခြင်း
+- Model combo fallback (model များစွာကို အစဉ်လိုက်အသုံးပြုခြင်း)
+- `compositeTiers` ဖြင့် runtime အစီအစဉ်သတ်မှတ်ထားသော ဖွဲ့စည်းတည်ဆောက်ပုံပါ combo အဆင့်များ (`provider + model + connection`)
+- Account အဆင့် fallback (provider တစ်ခုလျှင် account များစွာ)
+- ပင်မ chat လမ်းကြောင်းတွင် quota ကြိုတင်စစ်ဆေးခြင်းနှင့် quota ကို ထည့်သွင်းစဉ်းစားသော P2C account ရွေးချယ်ခြင်း
+- OAuth + API-key provider ချိတ်ဆက်မှု စီမံခန့်ခွဲခြင်း (OAuth provider module 27 ခု)
+- `/v1/embeddings` မှတစ်ဆင့် embedding ဖန်တီးခြင်း (provider 18 ခု)
+- `/v1/images/generations` မှတစ်ဆင့် ပုံဖန်တီးခြင်း (provider 10+ ခု၊ model 20+ ခု)
 - `/v1/audio/transcriptions` မှတစ်ဆင့် အသံကို စာသားအဖြစ် ပြောင်းလဲခြင်း (provider 18 ခု)
-- `/v1/audio/speech` မှတစ်ဆင့် စာသားမှ အသံထုတ်လုပ်ခြင်း (built-in provider 24 ခု)
-- `/v1/videos/generations` မှတစ်ဆင့် ဗီဒီယိုထုတ်လုပ်ခြင်း (ComfyUI + SD WebUI)
-- `/v1/music/generations` မှတစ်ဆင့် တေးဂီတထုတ်လုပ်ခြင်း (ComfyUI)
+- `/v1/audio/speech` မှတစ်ဆင့် စာသားမှ အသံဖန်တီးခြင်း (ထည့်သွင်းပါရှိသော provider 24 ခု)
+- `/v1/videos/generations` မှတစ်ဆင့် ဗီဒီယိုဖန်တီးခြင်း (ComfyUI + SD WebUI)
+- `/v1/music/generations` မှတစ်ဆင့် တေးဂီတဖန်တီးခြင်း (ComfyUI)
 - `/v1/search` မှတစ်ဆင့် ဝဘ်ရှာဖွေခြင်း (provider 20 ခု)
-- `/v1/moderations` မှတစ်ဆင့် အကြောင်းအရာ စိစစ်ထိန်းညှိခြင်း
+- `/v1/moderations` မှတစ်ဆင့် အကြောင်းအရာစိစစ်ခြင်း
 - `/v1/rerank` မှတစ်ဆင့် ပြန်လည်အဆင့်သတ်မှတ်ခြင်း
 - Reasoning model များအတွက် think tag ခွဲခြမ်းစိတ်ဖြာခြင်း (``)
 - တင်းကျပ်သော OpenAI SDK ကိုက်ညီမှုအတွက် response သန့်စင်ခြင်း
-- Provider အမျိုးမျိုးအကြား ကိုက်ညီမှုအတွက် role ပုံမှန်သတ်မှတ်ခြင်း (developer→system, system→user)
-- ဖွဲ့စည်းပုံကျ output ပြောင်းလဲခြင်း (json_schema → Gemini responseSchema)
-- Provider များ၊ key များ၊ alias များ၊ combo များ၊ setting များနှင့် pricing အတွက် local persistence (DB module 122 ခု)
+- Provider အချင်းချင်း ကိုက်ညီမှုအတွက် role စံညှိခြင်း (developer→system, system→user)
+- ဖွဲ့စည်းတည်ဆောက်ပုံပါ output ပြောင်းလဲခြင်း (json_schema → Gemini responseSchema)
+- Provider များ၊ key များ၊ alias များ၊ combo များ၊ setting များနှင့် pricing များအတွက် local persistence (DB module 122 ခု)
 - အသုံးပြုမှု/ကုန်ကျစရိတ် ခြေရာခံခြင်းနှင့် request မှတ်တမ်းတင်ခြင်း
-- Device အများအပြား/state synchronization အတွက် ရွေးချယ်အသုံးပြုနိုင်သော cloud sync
-- API အသုံးပြုခွင့် ထိန်းချုပ်ရန် IP allowlist/blocklist
-- Thinking budget စီမံခန့်ခွဲမှု (passthrough/auto/custom/adaptive)
+- Device များစွာအကြား/state synchronization အတွက် စိတ်ကြိုက်ရွေးချယ်နိုင်သော cloud sync
+- API access control အတွက် IP allowlist/blocklist
+- Thinking budget စီမံခန့်ခွဲခြင်း (passthrough/auto/custom/adaptive)
 - Global system prompt ထည့်သွင်းခြင်း
 - Session ခြေရာခံခြင်းနှင့် fingerprinting
-- Provider အလိုက် သတ်မှတ်ထားသော profile များဖြင့် account တစ်ခုချင်းစီအတွက် အဆင့်မြှင့် rate limiting
-- Provider ခံနိုင်ရည်ရှိမှုအတွက် circuit breaker pattern
+- Provider အလိုက် profile များပါဝင်သော account တစ်ခုချင်းစီအတွက် အဆင့်မြှင့်တင်ထားသည့် rate limiting
+- Provider ခံနိုင်ရည်ကောင်းမွန်စေရန် circuit breaker pattern
 - Mutex locking ဖြင့် anti-thundering herd ကာကွယ်မှု
-- Signature အခြေပြု request ထပ်နေမှုဖယ်ရှားရေး cache
+- Signature အခြေခံ request deduplication cache
 - Domain layer- ကုန်ကျစရိတ်စည်းမျဉ်းများ၊ fallback policy၊ lockout policy
-- Context Relay- account လှည့်လည်အသုံးပြုစဉ် ဆက်စပ်မှုမပြတ်စေရန် session handoff အကျဉ်းချုပ်များ
+- Context Relay- account ပြောင်းလဲအသုံးပြုစဉ် ဆက်လက်ချိတ်ဆက်မှုကို ထိန်းသိမ်းရန် session လွှဲပြောင်းမှုအနှစ်ချုပ်များ
 - Domain state persistence (fallback များ၊ budget များ၊ lockout များနှင့် circuit breaker များအတွက် SQLite write-through cache)
 - ဗဟိုချုပ်ကိုင်ထားသော request အကဲဖြတ်မှုအတွက် policy engine (lockout → budget → fallback)
-- p50/p95/p99 latency စုစည်းမှုပါဝင်သော request telemetry
-- `combo_execution_key` / `combo_step_id` မှတစ်ဆင့် combo target telemetry နှင့် သမိုင်းဝင် combo target အခြေအနေ
-- အစမှအဆုံး tracing အတွက် Correlation ID (X-Request-Id)
-- API key တစ်ခုချင်းစီအလိုက် opt-out လုပ်နိုင်သော compliance audit logging
+- p50/p95/p99 latency စုစည်းတွက်ချက်မှုပါဝင်သော request telemetry
+- `combo_execution_key` / `combo_step_id` မှတစ်ဆင့် combo target telemetry နှင့် ယခင် combo target အခြေအနေမှတ်တမ်း
+- အစမှအဆုံး ခြေရာခံရန် Correlation ID (X-Request-Id)
+- API key တစ်ခုချင်းစီအလိုက် ဖယ်ထုတ်နိုင်သော compliance audit logging
 - LLM အရည်အသွေးအာမခံမှုအတွက် eval framework
 - အချိန်နှင့်တစ်ပြေးညီ provider circuit breaker အခြေအနေပါဝင်သော health dashboard
 - Transport 3 မျိုး (stdio/SSE/Streamable HTTP) ပါဝင်သော MCP Server (tool 110 ခု)
 - Skill များနှင့် task lifecycle ပါဝင်သော A2A Server (JSON-RPC 2.0 + SSE)
-- Memory system (ထုတ်ယူခြင်း၊ ထည့်သွင်းခြင်း၊ ပြန်လည်ရယူခြင်း၊ အကျဉ်းချုပ်ခြင်း)
-- Skills system (registry၊ executor၊ sandbox၊ built-in skill များ)
+- Memory system (ထုတ်ယူခြင်း၊ ထည့်သွင်းခြင်း၊ ပြန်လည်ရယူခြင်း၊ အနှစ်ချုပ်ခြင်း)
+- Skills system (registry၊ executor၊ sandbox၊ ထည့်သွင်းပါရှိသော skill များ)
 - Certificate စီမံခန့်ခွဲမှုနှင့် DNS ကိုင်တွယ်မှုပါဝင်သော MITM proxy
 - Prompt injection guard middleware
-- Caveman၊ RTK၊ stacked pipeline များ၊ compression combo များ၊ language pack များနှင့် analytics ပါဝင်သော prompt compression pipeline
+- Caveman၊ RTK၊ အထပ်လိုက် pipeline များ၊ compression combo များ၊ language pack များနှင့် analytics တို့ပါဝင်သော prompt compression pipeline
 - ACP (Agent Communication Protocol) registry
 - Modular OAuth provider များ (`src/lib/oauth/providers/` အောက်ရှိ သီးခြား module 22 ခု)
 - Uninstall/full-uninstall script များ
-- OAuth environment ပြုပြင်ရေး action
+- OAuth environment ပြုပြင်မှုလုပ်ဆောင်ချက်
 - OpenAI နှင့် ကိုက်ညီသော WS client များအတွက် WebSocket bridge (`/v1/ws`)
-- Sync token စီမံခန့်ခွဲမှု (ထုတ်ပေးခြင်း/ရုပ်သိမ်းခြင်း၊ ETag version ပါသော config bundle download)
-- GLM Thinking (`glmt`) ကို အပြည့်အဝ ပထမတန်းစား provider preset အဖြစ် ပံ့ပိုးမှု
-- ပေါင်းစပ် token ရေတွက်ခြင်း (provider ဘက်ရှိ `/messages/count_tokens` နှင့် estimation fallback)
-- Model alias ကို အလိုအလျောက် seed လုပ်ခြင်း (startup တွင် cross-proxy dialect normalization 30+ ခု)
-- SSRF guard၊ private URL ပိတ်ဆို့မှုနှင့် ပြင်ဆင်သတ်မှတ်နိုင်သော retry ပါဝင်သည့် လုံခြုံသော outbound fetch
+- Sync token စီမံခန့်ခွဲမှု (ထုတ်ပေးခြင်း/ရုပ်သိမ်းခြင်း၊ ETag ဖြင့် version သတ်မှတ်ထားသော config bundle ကို download ပြုလုပ်ခြင်း)
+- ပထမတန်းစား provider preset အဖြစ် GLM Thinking (`glmt`)
+- ပေါင်းစပ် token ရေတွက်ခြင်း (provider ဘက်ရှိ `/messages/count_tokens` နှင့် ခန့်မှန်းမှု fallback)
+- Model alias အလိုအလျောက် အစပြုထည့်သွင်းခြင်း (စတင်ချိန်၌ cross-proxy dialect စံညှိမှု 30+ ခု)
+- SSRF guard၊ private URL ပိတ်ဆို့ခြင်းနှင့် ပြင်ဆင်သတ်မှတ်နိုင်သော retry ပါဝင်သည့် လုံခြုံသော outbound fetch
 - ပြင်ဆင်သတ်မှတ်နိုင်သော `requestRetry` နှင့် `maxRetryIntervalSec` ပါဝင်သည့် cooldown ကို ထည့်သွင်းစဉ်းစားသော chat retry များ
-- Startup တွင် Zod ဖြင့် runtime environment စစ်ဆေးအတည်ပြုမှု
-- Pagination၊ provider CRUD event များနှင့် SSRF ကြောင့် ပိတ်ဆို့ခံရသော validation logging ပါဝင်သည့် compliance audit v2
+- စတင်ချိန်တွင် Zod ဖြင့် runtime environment စစ်ဆေးအတည်ပြုခြင်း
+- Pagination၊ provider CRUD event များနှင့် SSRF ပိတ်ဆို့ထားသော validation logging တို့ပါဝင်သည့် compliance audit v2
 
 အဓိက runtime model-
 
-- `src/app/api/*` အောက်ရှိ Next.js app route များက dashboard API များနှင့် compatibility API များ နှစ်မျိုးလုံးကို အကောင်အထည်ဖော်ထားသည်
-- `src/sse/*` + `open-sse/*` ရှိ မျှဝေအသုံးပြုသော SSE/routing core သည် provider execution၊ translation၊ streaming၊ fallback နှင့် usage တို့ကို ကိုင်တွယ်သည်
+- `src/app/api/*` အောက်ရှိ Next.js app route များက dashboard API များနှင့် compatibility API များ နှစ်မျိုးစလုံးကို အကောင်အထည်ဖော်ထားသည်
+- `src/sse/*` + `open-sse/*` ရှိ မျှဝေသုံးစွဲသော SSE/routing core က provider execution၊ ပြောင်းလဲခြင်း၊ streaming၊ fallback နှင့် အသုံးပြုမှုတို့ကို ကိုင်တွယ်သည်
 
 ## ကိုးကားပုံကြမ်းများ
 

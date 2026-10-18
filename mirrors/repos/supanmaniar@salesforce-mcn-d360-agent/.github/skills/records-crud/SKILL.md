@@ -1,6 +1,6 @@
 ---
 name: records-crud
-description: 'Create, read, update, and delete Salesforce records from the CLI, including bulk operations and composite requests. Use when inserting or modifying sObject records, doing bulk data loads, deleting records, or batching multiple operations into one API call without an MCP server.'
+description: 'Create, read, update, and delete Salesforce records from the CLI, including bulk operations and composite requests. Use when inserting or modifying sObject records, doing bulk data loads, deleting records, or batching multiple operations into one API call without an MCP server. Note that Data 360 data objects (__dlm, __dll) and CMS content (ManagedContent) reject all DML and must be written through their own APIs instead.'
 ---
 
 # Record CRUD and Bulk Operations
@@ -95,6 +95,40 @@ Subrequests can reference each other's results with `@{referenceId.id}`.
 
 ## Gotchas
 
+- **Not every object accepts DML. Two families are read-only by design.**
+  Before attempting a write, check the describe flags:
+
+  ```bash
+  sf sobject describe -s <Object> -o "$SF_TARGET_ORG" --json \
+    | python3 -c "import json,sys; r=json.load(sys.stdin)['result']; \
+        print({k: r.get(k) for k in ('createable','updateable','deletable','queryable')})"
+  ```
+
+  | Family | Objects | Writable |
+  | --- | --- | --- |
+  | Data 360 unified data | data model objects (`__dlm`), data lake objects (`__dll`) | ❌ |
+  | CMS content | `ManagedContent`, `ManagedContentVariant` | ❌ |
+
+  Every verb is rejected server-side:
+
+  ```text
+  POST   /sobjects/ssot__Individual__dlm       -> CANNOT_INSERT_UPDATE_ACTIVATE_ENTITY
+  PATCH  /sobjects/ssot__Individual__dlm/{Id}  -> CANNOT_INSERT_UPDATE_ACTIVATE_ENTITY
+  DELETE /sobjects/ssot__Individual__dlm/{Id}  -> CANNOT_INSERT_UPDATE_ACTIVATE_ENTITY
+  ```
+
+  **This is a property of the object, not of your permissions** — an admin sees the
+  same flags, so do not retry with elevated access. Their data arrives through a
+  purpose-built API instead:
+
+  | To write | Use | Skill |
+  | --- | --- | --- |
+  | Data 360 records | Ingestion API (`/api/v1/ingest/*`) | [data360-api](../data360-api/SKILL.md) |
+  | CMS content | `/connect/cms/contents`, `/connect/cms/spaces` | [mc-next-api](../mc-next-api/SKILL.md) |
+
+  Config and setup objects behave normally: `DataStream`, `Account`, `Contact` and
+  `Lead` are all `createable/updateable/deletable = true`. So the rule is about
+  *data* objects, not about the org or the API version.
 - **`allOrNone: true` rolls back the entire batch** if any record fails. Use it
   when partial success would leave inconsistent data; leave it `false` for
   best-effort loads.

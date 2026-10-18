@@ -17,21 +17,21 @@
 |---|---|
 | [agent-quality.md](agent-quality.md) | 审查、评分或交付前检查；只提供跨体裁质量核心，必须同时加载当前 profile 的质量覆盖 |
 | [genre-readers.md](genre-readers.md) | 判断目标读者、平台与期待 |
-| [emotional-arc-design.md](emotional-arc-design.md) | 设计或审查情绪弧线、期待管理与兑现 |
-| [plot-core-methods.md](plot-core-methods.md) | 卡文、剧情循环失效、五步高潮、过渡或日纲缺推进；short 只取与总篇幅兼容的方法 |
+| [plot-core-methods.md](plot-core-methods.md) | 排或审细纲、小节大纲：目标情绪与主角选择、爽点六类、高潮构建、过渡章、开篇噱头；short 只取与总篇幅兼容的方法 |
 
 ## Long profile
 
 | 文件 | 读取条件 |
 |---|---|
-| [long-genre-catalog.md](long-genre-catalog.md) | 长篇题材定位或框架速查 |
-| [long-genre-mechanics.md](long-genre-mechanics.md) | 提炼长篇核心梗、循环机制、事业线或金手指 |
+| [long-genre-catalog.md](long-genre-catalog.md) | 长篇男频题材定位或框架速查 |
+| [female-audience-writing.md](female-audience-writing.md) | 女频长篇的题材框架、读者需求与简介；女频只读本文件，不读题材目录 |
+| [long-genre-mechanics.md](long-genre-mechanics.md) | 提炼长篇核心梗、设计金手指或微创新 |
 | [genre-prose-cards.md](genre-prose-cards.md) | 确定长篇题材声线与长线约束 |
-| [outline-methods.md](outline-methods.md) | 建大纲、卷纲或章节蓝图 |
-| [outline-conflict.md](outline-conflict.md) | 主支线、AB 线与冲突结构 |
-| [outline-rhythm.md](outline-rhythm.md) | 连载节奏、升级感与跨章兑现 |
-| [opening-design.md](opening-design.md) | 新书开篇或黄金三章 |
-| [long-emotional-methods.md](long-emotional-methods.md) | 设计跨章剧情单元的情绪发动机与兑现链 |
+| [character-relations.md](character-relations.md) | 本书有感情线：只读「感情线阶段」 |
+| [outline-methods.md](outline-methods.md) | 讨论或审查卷结构：读「卷纲排法」；没有主对标再读「八节点故事结构」，有自创单元读「情绪模块公式」，换地图读「换地图」 |
+| [opening-design.md](opening-design.md) | 新书开篇或前 3 章细纲：只读「开篇规划」 |
+| [emotional-arc-design.md](emotional-arc-design.md) | 设计或审查卷、剧情单元的情绪弧线：只读「六种弧线速查」 |
+| [long-emotional-methods.md](long-emotional-methods.md) | 设计感情桥段：三板斧、拉扯节奏与失败模式 |
 | [long-chapter-hooks.md](long-chapter-hooks.md) | 设计章首/章尾与跨章期待，不采用固定百字配额 |
 | [long-suspense.md](long-suspense.md) | 编排短期、中期、远期悬念与回收周期 |
 | [long-reversal.md](long-reversal.md) | 设计单元、卷级或全书反转，不采用全文百分比铁律 |
@@ -44,11 +44,10 @@ Long profile 禁止读取 `short-*` 文件，不得采用“6 章”“每节 50
 | 文件 | 读取条件 |
 |---|---|
 | [short-genre-formulas.md](short-genre-formulas.md) | 需要短篇题材结构骨架时 |
-| [short-paragraph-hooks.md](short-paragraph-hooks.md) | 设计段落留存、付费断点与小节内钩子 |
-| [short-chapter-hooks.md](short-chapter-hooks.md) | 设计节首/节尾钩子、主悬念承接与全文收束 |
-| [short-emotional-methods.md](short-emotional-methods.md) | 设计单篇内的羁绊、撕裂、拉扯与余韵 |
+| [short-chapter-hooks.md](short-chapter-hooks.md) | 设计节尾、节首、段落钩子、付费断点与全文悬念 |
+| [short-emotional-methods.md](short-emotional-methods.md) | 设计单篇内的羁绊、撕裂、拉扯与余韵，选整篇弧线与转折位置 |
 | [short-reversal.md](short-reversal.md) | 设计短篇线索、误导与揭示；两层反转按所选方案使用 |
 | [short-quality.md](short-quality.md) | 审查全文密度、付费点、反转证据链和结尾兑现 |
 
-Short profile 禁止读取 `long-*`、`outline-*`、`opening-design.md` 或 `genre-prose-cards.md`；不得把卷级、日更或跨十几章指标当硬门槛。
+Short profile 禁止读取 `long-*`、`outline-*`、`opening-design.md`、`emotional-arc-design.md`、`female-audience-writing.md` 或 `genre-prose-cards.md`；不得把卷级、日更或跨十几章指标当硬门槛。
 

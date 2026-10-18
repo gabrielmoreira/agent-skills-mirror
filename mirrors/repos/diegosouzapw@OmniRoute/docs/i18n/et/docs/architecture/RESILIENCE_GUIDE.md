@@ -346,17 +346,24 @@ lukustuse _olek_ on ajutine.
 
 ---
 
-## 4. Quota-share'i samaaegsuse juhtimine (v3.8.36)
+## 4. Kvoodijagamise samaaegsuse juhtimine (v3.8.36)
 
-Tellimuskontod (GLM, MiniMax jne) lubavad sageli ainult ~1–3 samaaegset päringut; selle piiri ületamine põhjustab 429 vastuseid ja ooteaegu. See probleem on eriti terav **quota-share'i** (`qtSd/…`) kombinatsioonide puhul, kus mitu API-võtit jagavad üht ülesvoolukontot. Kolm kihti takistavad jagatud konto päringutega ülekoormamist.
+Tellimuspõhised kontod (GLM, MiniMax jne) aktsepteerivad sageli ainult ~1–3 samaaegset
+päringut; selle piiri ületamine põhjustab 429-vastuseid ja ooteaegu. See probleem on eriti terav
+**kvoodijagamise** (`qtSd/…`) kombinatsioonide puhul, kus mitu API-võtit jagavad üht
+ülesvoolukontot. Kolm kihti takistavad jagatud konto ülekoormamist.
 
 ### Ühendusepõhine samaaegsuse ülempiir (`max_concurrent`)
 
-Iga teenusepakkuja ühendus saab määrata `max_concurrent` ülempiiri (`provider_connections.max_concurrent`, seadistatav ühenduse dialoogis / API-s / andmebaasis). Piirangu puudumiseks jätke see tühjaks. See on ainus seadistus, mis juhib allpool kirjeldatud jadastamiskihti — määrake selle väärtuseks konto tegelik samaaegsuse piir (nt GLM ~1, MiniMax ~2).
+Iga teenusepakkuja ühendus võib määrata `max_concurrent` ülempiiri
+(`provider_connections.max_concurrent`, seadistatav ühenduse modaalaknas / API-s / andmebaasis).
+Piirangu puudumiseks jätke see tühjaks. See on ainus säte, mis juhib allpool kirjeldatud
+serialiseerimiskihti — seadke see konto tegelikule samaaegsusele (nt GLM ~1, MiniMax ~2).
 
 ### Mudelipõhised samaaegsuse ülempiirid (`modelConcurrency`)
 
-Ühendus saab oma `rateLimitOverrides` vastenduses lisaks määrata täpsed mudelipõhised samaaegsuse ülempiirid:
+Ühendus võib lisaks määrata täpsed mudelipõhised samaaegsuse ülempiirid
+oma `rateLimitOverrides` kaardil:
 
 ```json
 {
@@ -367,31 +374,74 @@ Iga teenusepakkuja ühendus saab määrata `max_concurrent` ülempiiri (`provide
 }
 ```
 
-Seadistage see ühenduse dialoogis (**Kiiruspiirangu alistused → Mudelipõhised samaaegsuse ülempiirid**, üks `model=cap` rea kohta) või päringuga `PATCH /api/providers/[id]`, kasutades sama JSON-struktuuri. Võtmete semantika:
+Seadistage see ühenduse modaalaknas (**Kiirusepiirangu alistused → Mudelipõhised
+samaaegsuse ülempiirid**, üks `model=cap` rea kohta) või
+`PATCH /api/providers/[id]` kaudu sama JSON-struktuuriga. Võtmete semantika:
 
-- **Ühenduseülene vs mudelipõhine:** `maxConcurrent` jääb jagatud ühenduseüleseks ülempiiriks. Kui rakenduvad mõlemad, hõivatakse mõlemad tõkked atomaarselt samas liittõkkes (`global → provider → account → model`); tegeliku käitumise määrab rangem rakenduv piirang.
-- **Täpne mudelivõtme vaste:** võti on mudelistring, mis edastatakse täiturile pärast marsruutimise lahendamist — tavaliselt ülesvoolu mudeli lihtidentifikaator (`glm-5`), mitte kliendipoolne `provider/model` alias (`zai/glm-5` ei vasta väärtusele `glm-5`). Väärtused on positiivsed täisarvulised samaaegsete päringute ülempiirid.
-- **Kohalik järjekord, tuvastamist ei toimu:** üleliigsed päringud jäävad olemasolevate järjekorra- ja ajalõpusemantikate alusel kohalikku järjekorda (tüübitud vastuvõtuvead `SEMAPHORE_TIMEOUT` / `SEMAPHORE_QUEUE_FULL`). OmniRoute ei tuvasta ega tuleta ülesvoolu reegleid — see jõustab täpselt operaatori seadistatud ülempiirid. Täitunud mudelitõke ei keela kunagi teenusepakkujat ega tekita püsivat mudelilukustust; ülesvoolu 429/ooteaja/varuvariandi käitumine jääb vigade viimaseks kaitsekihiks.
-- **Ühenduse- ja protsessipõhine ulatus:** ülempiirid kehtivad iga andmebaasiühenduse kohta ning neid hoitakse mälus, mistõttu kaks sama ülesvoolu API-võtit kasutavat ühendust ei koordineeri omavahel.
-- **Seadistamata tähendab muutusteta:** vastenduse väljajätmine (või juhtpaneeli välja tühjaks jätmine) ei lisa mudelitõket. Näidiskonfiguratsioon ilma universaalset teenusepakkuja piirangut eeldamata:
+- **Ühenduseülene vs mudelipõhine:** `maxConcurrent` jääb jagatud
+  ühenduseüleseks ülempiiriks. Kui rakenduvad mõlemad, omandatakse mõlemad pääsud
+  atomaarselt samas liitpääsus
+  (`global → provider → account → model`); tegeliku käitumise määrab
+  rangem kohaldatav piirang.
+- **Täpne mudelivõtme vaste:** võti on mudeli string, mis edastatakse
+  käiturile pärast marsruutimise lahendamist — tavaliselt ülesvoolu mudeli puhas ID
+  (`glm-5`), mitte kliendipoolne `provider/model` alias (`zai/glm-5` ei
+  vasta väärtusele `glm-5`). Väärtused on positiivsed täisarvulised samaaegsete päringute ülempiirid.
+- **Kohalik järjekord, tuvastamiseta:** üleliigsed päringud pannakse kohalikku järjekorda
+  olemasoleva järjekorra-/ajalõpusemantikaga (tüübistatud `SEMAPHORE_TIMEOUT` /
+  `SEMAPHORE_QUEUE_FULL` vastuvõtuvead). OmniRoute ei tuvasta ega
+  järelda ülesvoolu reegleid — see jõustab täpselt operaatori
+  seadistatud ülempiirid. Küllastunud mudelipääs ei keela kunagi teenusepakkujat ega
+  tekita mudelile püsivat lukustust; ülesvoolu 429/ooteaja/varuvariandi käitumine
+  jääb vigade viimaseks kaitsemeetmeks.
+- **Ühenduse- ja protsessipõhine ulatus:** ülempiirid kehtivad iga andmebaasiühenduse
+  kohta ning neid hoitakse mälus, seega kaks sama ülesvoolu API-võtit kasutavat ühendust
+  ei koordineeri omavahel.
+- **Seadistamata jätmine ei muuda midagi:** kaardi väljajätmine (või
+  töölauavälja tühjaks jätmine) ei lisa mudelipääsu. Näidiskonfiguratsioon,
+  mis ei väida ühegi universaalse teenusepakkujapiirangu olemasolu:
 
 ```text
 glm-5=1
 glm-4.7=3
 ```
 
-### Quota-share'i päringute jadastamine
+### Kvoodijagamise päringute serialiseerimine
 
-Kui quota-share'i edastus sihib ühendust, mis määrab positiivse `max_concurrent` väärtuse, jadastatakse selle **konto** samaaegsed päringud ühendusepõhise semafori kaudu (võti `qsconn:<connectionId>`): üleliigsed päringud **ootavad järjekorras**, selle asemel et kontot üle koormata. See on **fail-open**-põhimõttega — täitunud järjekorra või ajalõpu korral jätkatakse ilma pesata, selle asemel et edastamiseks sobiv päring tagasi lükata. Lüliti asub jaotises **Seaded → Vastupidavus → Quota-share'i ühendusepõhine samaaegsuse piirang** (`resilienceSettings.quotaShareConcurrencyLimit.enabled`, vaikimisi sisse lülitatud). Ilma `max_concurrent` ülempiirita jääb käitumine muutumatuks.
+Kui kvoodijagamise suunamine sihib ühendust, millel on määratud positiivne
+`max_concurrent`, serialiseeritakse selle **konto** samaaegsed päringud
+ühendusepõhise semafori kaudu (võti `qsconn:<connectionId>`): üleliigsed päringud **ootavad
+järjekorras**, selle asemel et kontot üle koormata. See töötab **tõrke korral avatult** — küllastunud
+järjekorra või ajalõpu korral jätkatakse ilma kohata, selle asemel et suunatav
+päring tagasi lükata. Lüliti asub jaotises **Seaded → Töökindlus → Kvoodijagamise ühendusepõhine
+samaaegsus** (`resilienceSettings.quotaShareConcurrencyLimit.enabled`, vaikimisi
+sees). Ilma `max_concurrent` ülempiirita jääb käitumine muutumatuks.
 
-> Quota-share'i marsruutimistõke (`selectQuotaShareTarget`, DRR + P2C) toimib ise
-> fail-open-põhimõttel ja ainult _vähendab_ ülempiirini jõudnud ühenduse prioriteeti —
-> ühe ühendusega kogumi puhul ei saa see ranget piirangut kehtestada, seega ohjeldab
-> tegelikku päringutulva just see semafor.
+> Kvoodijagamise marsruutimispääs (`selectQuotaShareTarget`, DRR + P2C) töötab ise
+> tõrke korral avatult ning ainult _vähendab_ ülempiirini jõudnud ühenduse prioriteeti —
+> ühe ühendusega kogumis ei saa see ranget piirangut kehtestada, seega piirab päringute tulva
+> tegelikult just see semafor.
 
 ### Kombinatsiooni ooteajateadlik korduskatse
 
-Iga kombinatsioonistrateegia puhul (kui see on lubatud) ootab päring, mis muidu kinnistaks 429 vastuse LÜHIKESE ajutise ooteaja tõttu, ooteaja lõpuni ja edastatakse uuesti, selle asemel et 429 tagastada — see hõlmab Gemini-klassi TPM/RPM-i aknaid (~60 s `retry-after`) mitme mudeliga kombinatsioonides, näiteks kui kahe mudeliga kombinatsiooni mõlemad sihtmärgid jõuavad mudelipõhise kiiruspiiranguni. Piirangud määrab `comboCooldownWait` (`enabled`, `maxWaitMs`, `maxAttempts`, `budgetMs`) jaotises **Seaded → Vastupidavus**. See ei oota kunagi põhjuse `quota_exhausted` (lukustatud keskööni) ega autentimis- või mitteleidmise põhjuste korral.
+Iga kombinatsioonistrateegia puhul (kui see on lubatud) ootab päring LÜHIKESE
+ajutise ooteaja, mis muidu kinnistaks 429-vastuse, lõpuni ja suunatakse uuesti,
+selle asemel et tagastada 429 — see hõlmab Gemini-klassi TPM/RPM-aknaid
+(~60s retry-after) mitme mudeliga kombinatsioonides, nt kui kahe mudeliga
+kombinatsiooni mõlemad sihtmärgid jõuavad mudelipõhise kiirusepiiranguni.
+Seda piirab `comboCooldownWait` (`enabled`, `maxWaitMs`, `maxAttempts`,
+`budgetMs`) jaotises **Seaded → Töökindlus**. See ei oota kunagi põhjuse
+`quota_exhausted` (lukustatud keskööni) ega autentimis-/mitteleidmise põhjuste korral.
+
+Sama pääs hõlmab ka saatmiseelset juhtumit (#16319): kui kombinatsiooni iga
+sihtmärk jäetakse enne mis tahes katset vahele, sest selle mudel on lühiajalises
+ajutises lukustuses, ootab nullkatse tee samade ülempiiride raames lukustuse
+lõpuni ja suunab päringu uuesti, selle asemel et vastata vihjeta
+`503 ALL_TARGETS_SKIPPED`. Kui ootamine ei ole lubatud (ülempiir, katsete arv või eelarve
+on ammendunud või funktsioon on välja lülitatud), muudetakse lõplik vastus
+vastuseks `429 rate_limit_error`, mis sisaldab varaseima ajutise lukustuse aegumisest
+pärinevaid `retry_after` / `reset_at` väärtusi; kvoodi-, autentimis- ja
+mitteleidmise lukustused säilitavad vihjeta 503-vastuse.
 
 ```text
 #16319 · comboCooldownWait · pre-dispatch (attempts = 0)

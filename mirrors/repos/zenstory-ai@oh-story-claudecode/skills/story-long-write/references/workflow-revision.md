@@ -1,12 +1,12 @@
 # workflow-revision.md：大修工作流
 
-作者说「修改／回炉／重写第X章」时用本文件；只改细纲不进本流程（走 workflow-outline.md）。作者要先说清是哪一章，推断不出就问。
+作者说「修改／回炉／重写第X章」时用本文件；只改细纲走 workflow-outline.md。作者只说读者反应或感受（拖、没追读、憋屈、变味），没指出改哪儿时，先读 [revision-diagnosis.md](revision-diagnosis.md)，作者选定章后再走 Step 1；其他情况须明确章节，无法推断就问。
 
 ---
 
 ## Step 1：定位与改动范围
 
-1. 找文件：`正文/第{X}章_*.md`；作者给的是章名就按关键词找，找不到让作者确认。
+1. 找文件：`正文/第{X}章_*.md`；给的是章名就按关键词找，找不到就问。
 2. **先定范围再读东西**：从作者的话判断改多大——点到了段落或场面（「那场打斗」「结尾那段对话」）就是局部修改；说「重写」「回炉」就是整章重写。判断不了才问，给选项：
 
 <!-- author-report -->
@@ -51,14 +51,14 @@
 
 ## Step 4：级联更新与提交
 
-用一次 `mode=revision` 追踪事务更新；下面几条是修订的要点，[tracking-transaction.md](tracking-transaction.md) 只在报错时读：
+用一次 `mode=revision` 追踪事务更新，[tracking-transaction.md](tracking-transaction.md) 只在报错时读：
 
-1. **重算修订章记录**：先跑 `{PYTHON} {skill 根}/scripts/tracking_commit.py draft --project {项目根} --chapter {X}`，草稿已按本章现有记录预填；对照新正文，仍有效的保留，被推翻的改写或删掉，不清空重写。工具整份重写 `追踪/逐章记录/第{X}章.md`。
-2. **伏笔当前值**：对受影响 ID 从第 X 章检查到最后已写章 M，提交修订后的**截至 M 章当前状态**。若修订删除了埋设，但后文仍引用该 ID，先列为正文冲突，不能简单删除；确定整条线不存在时才用 `action=delete`。
+1. **重算修订章记录**：先跑 `{PYTHON} {skill 根}/scripts/tracking_commit.py draft --project {项目根} --chapter {X}`，草稿已按本章现有记录预填；对照新正文，仍有效的保留，被推翻的改写或删掉，不清空重写。
+2. **伏笔当前值**：对受影响 ID 从第 X 章检查到最后已写章 M，提交修订后的**截至 M 章当前状态**。若修订删除了埋设，但后文仍引用该 ID，先列为正文冲突；确定整条线不存在时才用 `action=delete`。
 3. **时间与读者认知**：为受影响事件提交客观事实、读者截至 M 章的当前认知、实际揭示状态/章节；删掉的事件用 `action=delete`。未来揭示计划仍留大纲。工具重建作者/读者视图，禁止手改。
 4. **角色当前快照**：对受影响核心角色从 X 检查到 M，按身份、位置、目标、能力资源、关系对象、已知信息、未结事项分别重算，提交一份截至 M 的完整快照；不得用最后一条单维度变化覆盖其它维度。
 5. **导入截止范围**：若 X ≤ `_tracking-state.json.imported_through_chapter`，事务为第 X 章新增覆盖记录；导入截止章不变，当前结构化状态按修订结果更新。
-6. **提交与重试**：跑 `{PYTHON} {skill 根}/scripts/storyctl.py chapter commit --project {项目根} --chapter {X} --input {项目根}/.story/work/第{XXX}章/tracking.json`，它重新计数并清理本章工作目录。带外时先问作者：
+6. **提交与重试**：跑 `{PYTHON} {skill 根}/scripts/storyctl.py chapter commit --project {项目根} --chapter {X} --input {项目根}/.story/work/第{XXX}章/tracking.json`。带外时先问作者：
 
 <!-- author-report -->
 ```md
@@ -86,4 +86,4 @@
 {后面受影响的章：「第{X+1}章《{章名}》里{谁/什么}还按旧说法写，要一起改吗？1. 一起改（推荐）2. 先不动」；没有就写「后面的章不受影响」}
 ```
 
-连续改多章时逐章走 Step 1-5；改完发现后续不一致，列出受影响的章由作者决定是否现在改。
+连续改多章时逐章走 Step 1-5。

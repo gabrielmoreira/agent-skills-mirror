@@ -354,24 +354,24 @@ verrouillages actifs est éphémère.
 
 ---
 
-## 4. Contrôle de la concurrence pour le partage de quota (v3.8.36)
+## 4. Contrôle de la concurrence en mode quota-share (v3.8.36)
 
-Les comptes d’abonnement (GLM, MiniMax, etc.) n’acceptent souvent qu’environ 1 à 3 requêtes
+Les comptes avec abonnement (GLM, MiniMax, etc.) n’acceptent souvent qu’environ 1 à 3 requêtes
 simultanées ; dépasser cette limite déclenche des erreurs 429 et des périodes de récupération. Ce problème est particulièrement marqué avec les
-combinaisons de **partage de quota** (`qtSd/…`), où plusieurs clés API partagent un même compte
+combos **quota-share** (`qtSd/…`), où plusieurs clés API partagent un même compte
 en amont. Trois couches empêchent la saturation d’un compte partagé.
 
 ### Plafond de concurrence par connexion (`max_concurrent`)
 
 Chaque connexion de fournisseur peut déclarer un plafond `max_concurrent`
-(`provider_connections.max_concurrent`, défini dans la fenêtre modale de connexion / l’API / la base de données).
-Laissez-le vide pour n’appliquer aucune limite. Il s’agit du paramètre unique qui pilote la couche de sérialisation
-ci-dessous — définissez-le sur la concurrence réelle du compte (par ex. GLM ~1, MiniMax ~2).
+(`provider_connections.max_concurrent`, défini dans la fenêtre modale de connexion, via l’API ou dans la base de données).
+Laissez-le vide pour n’appliquer aucune limite. Il s’agit du paramètre unique qui pilote la couche
+de sérialisation ci-dessous — définissez-le selon la concurrence réelle du compte (par exemple, GLM ~1, MiniMax ~2).
 
 ### Plafonds de concurrence par modèle (`modelConcurrency`)
 
-Une connexion peut également déclarer des plafonds de concurrence précis par modèle
-dans sa map `rateLimitOverrides` :
+Une connexion peut également déclarer des plafonds de concurrence exacts par modèle
+dans sa table `rateLimitOverrides` :
 
 ```json
 {
@@ -383,62 +383,71 @@ dans sa map `rateLimitOverrides` :
 ```
 
 Définissez-les dans la fenêtre modale de connexion (**Remplacements des limites de débit → Plafonds de
-concurrence par modèle**, une entrée `model=cap` par ligne) ou via
+concurrence par modèle**, un `model=cap` par ligne) ou via
 `PATCH /api/providers/[id]` avec la même structure JSON. Sémantique des clés :
 
 - **À l’échelle de la connexion ou spécifique au modèle :** `maxConcurrent` reste le plafond partagé
   à l’échelle de la connexion. Lorsque les deux s’appliquent, les deux verrous sont acquis
-  atomiquement dans le même verrou composite
+  de manière atomique dans le même verrou composite
   (`global → provider → account → model`) ; le comportement effectif correspond à la
   limite applicable la plus stricte.
-- **Correspondance exacte de la clé de modèle :** la clé est la chaîne du modèle transmise à
-  l’exécuteur après la résolution du routage — normalement l’identifiant brut du modèle en amont
+- **Correspondance exacte de la clé du modèle :** la clé est la chaîne du modèle transmise à
+  l’exécuteur après la résolution du routage — généralement l’identifiant brut du modèle en amont
   (`glm-5`), et non un alias `provider/model` côté client (`zai/glm-5` ne
   correspond pas à `glm-5`). Les valeurs sont des plafonds de requêtes simultanées exprimés sous forme d’entiers positifs.
-- **Mise en file d’attente locale, sans découverte :** les requêtes excédentaires sont mises en file d’attente localement selon la
+- **Mise en file d’attente locale, sans détection :** les requêtes excédentaires sont placées localement en file d’attente selon la
   sémantique existante de file d’attente et de délai d’expiration (erreurs d’admission typées `SEMAPHORE_TIMEOUT` /
-  `SEMAPHORE_QUEUE_FULL`). OmniRoute ne découvre ni
-  ne déduit la politique en amont — il applique les plafonds exacts configurés par
-  l’opérateur. La saturation du verrou d’un modèle ne désactive jamais le fournisseur et ne
-  crée jamais de blocage permanent du modèle ; le comportement de gestion des erreurs en cas d’erreur 429, de récupération ou de repli en amont
-  reste le dernier recours.
+  `SEMAPHORE_QUEUE_FULL`). OmniRoute ne détecte ni ne déduit la politique
+  en amont — il applique exactement les plafonds configurés par l’opérateur.
+  La saturation d’un verrou de modèle ne désactive jamais le fournisseur et ne
+  crée jamais de verrouillage permanent du modèle ; le comportement de repli en cas d’erreur 429, de récupération ou d’échec
+  en amont reste le dernier recours.
 - **Portée par connexion et par processus :** les plafonds s’appliquent par connexion de base de données
-  et sont conservés en mémoire ; deux connexions réutilisant la même clé API en amont
-  ne se coordonnent donc pas entre elles.
-- **L’absence de configuration ne change rien :** omettre la map (ou laisser le
+  et sont conservés en mémoire ; ainsi, deux connexions réutilisant la même clé API en amont
+  ne se coordonnent pas entre elles.
+- **Une absence de configuration ne change rien :** omettre la table (ou laisser le
   champ du tableau de bord vide) n’ajoute aucun verrou de modèle. Exemple de configuration sans
-  imposer de limite universelle au fournisseur :
+  affirmer de limite universelle du fournisseur :
 
 ```text
 glm-5=1
 glm-4.7=3
 ```
 
-### Sérialisation des requêtes de partage de quota
+### Sérialisation des requêtes quota-share
 
-Lorsqu’un envoi en partage de quota cible une connexion qui déclare une valeur
+Lorsqu’une distribution quota-share cible une connexion qui déclare une valeur
 `max_concurrent` positive, les requêtes simultanées adressées à ce **compte** sont sérialisées au moyen d’un
 sémaphore par connexion (clé `qsconn:<connectionId>`) : les requêtes excédentaires **attendent dans
-la file** au lieu de saturer le compte. Ce mécanisme est **ouvert en cas d’échec** : si la
-file est saturée ou si un délai expire, la requête est exécutée sans emplacement réservé, plutôt que de rejeter une requête
-pouvant être envoyée. Activez ou désactivez cette option dans **Paramètres → Résilience → Concurrence par connexion
-pour le partage de quota** (`resilienceSettings.quotaShareConcurrencyLimit.enabled`, activée
+la file** au lieu de saturer le compte. Le comportement est **fail-open** — une file
+saturée ou un délai expiré entraîne la poursuite sans créneau plutôt que le rejet d’une requête
+pouvant être distribuée. Activez ou désactivez cette option dans **Paramètres → Résilience → Concurrence
+quota-share par connexion** (`resilienceSettings.quotaShareConcurrencyLimit.enabled`, activée
 par défaut). En l’absence de plafond `max_concurrent`, le comportement reste inchangé.
 
-> Le verrou de routage du partage de quota (`selectQuotaShareTarget`, DRR + P2C) est lui-même
-> ouvert en cas d’échec et se contente de _déprioriser_ une connexion ayant atteint son plafond — avec un
-> pool ne comportant qu’une seule connexion, il ne peut pas imposer de limite stricte ; c’est donc ce sémaphore qui
-> contient réellement l’afflux de requêtes.
+> Le verrou de routage quota-share (`selectQuotaShareTarget`, DRR + P2C) est lui-même
+> fail-open et ne fait que _déprioriser_ une connexion ayant atteint son plafond — avec un
+> pool à connexion unique, il ne peut pas imposer une limite stricte ; c’est donc ce sémaphore qui
+> contient réellement l’afflux.
 
-### Nouvelle tentative tenant compte de la période de récupération des combinaisons
+### Nouvelle tentative tenant compte de la période de récupération des combos
 
-Pour chaque stratégie de combinaison (lorsqu’elle est activée), une requête qui conduirait définitivement à une erreur 429
-en raison d’une COURTE période de récupération transitoire attend la fin de celle-ci puis est envoyée à nouveau au lieu de
-renvoyer l’erreur 429 — cela couvre les fenêtres TPM/RPM de type Gemini (retry-after d’environ 60 s)
-pour les combinaisons multi-modèles, par exemple lorsque les deux cibles d’une combinaison à deux modèles atteignent une limite de débit
-par modèle. Ce comportement est borné par `comboCooldownWait` (`enabled`, `maxWaitMs`, `maxAttempts`,
+Pour chaque stratégie de combo (lorsqu’elle est activée), une requête qui entraînerait définitivement une erreur 429
+pour une COURTE période de récupération transitoire attend la fin de celle-ci et est redistribuée au lieu de
+renvoyer l’erreur 429 — cela couvre les fenêtres TPM/RPM de type Gemini (environ 60 s selon `retry-after`)
+sur les combos multimodèles, par exemple lorsque les deux cibles d’un combo à 2 modèles atteignent une limite de débit
+par modèle. Ce comportement est limité par `comboCooldownWait` (`enabled`, `maxWaitMs`, `maxAttempts`,
 `budgetMs`) dans **Paramètres → Résilience**. Il n’attend jamais en cas de `quota_exhausted`
-(verrouillé jusqu’à minuit) ni pour les motifs d’authentification ou de ressource introuvable.
+(verrouillé jusqu’à minuit), ni pour les motifs d’authentification ou de ressource introuvable.
+
+Le même verrou couvre le cas précédant la distribution (#16319) : lorsque chaque cible d’un
+combo est ignorée avant toute tentative parce que son modèle se trouve dans un
+court verrouillage transitoire, le chemin sans tentative attend la fin du verrouillage selon les mêmes
+plafonds, puis redistribue la requête, au lieu de répondre par un
+`503 ALL_TARGETS_SKIPPED` sans indication. Lorsqu’aucune attente n’est autorisée (plafond, nombre de tentatives ou budget
+épuisé, ou fonctionnalité désactivée), la réponse finale devient une erreur
+`429 rate_limit_error` contenant `retry_after` / `reset_at`, calculés à partir de l’expiration
+la plus proche d’un verrou transitoire ; les verrouillages liés au quota, à l’authentification et aux ressources introuvables conservent la réponse 503 sans indication.
 
 ```text
 #16319 · comboCooldownWait · pre-dispatch (attempts = 0)

@@ -72,7 +72,7 @@
   "results": {
     "style_profile_path": "对标/{书名}/文风.md",
     "style_profile_summary": "<≤200字 提取核心：标点习惯 + 对话技法 + 情绪交替模式>",
-    "selected_emotion_module": "<从 剧情/情绪模块.md 选出的读者需求/触发器/戏剧单元/可复现骨架；缺失时为 null>",
+    "selected_emotion_module": "<从 剧情/情绪模块.md 选出的读者想看什么/情绪链/戏剧单元/可替换项/不可照搬；缺失时为 null>",
     "rhythm_reference": "<从 剧情/节奏.md 选出的关键信息推进/情绪触动点/爆发节奏/冷却参考；缺失时为 null>",
     "module_source_path": "对标/{书名}/剧情/情绪模块.md",
     "rhythm_source_path": "对标/{书名}/剧情/节奏.md",

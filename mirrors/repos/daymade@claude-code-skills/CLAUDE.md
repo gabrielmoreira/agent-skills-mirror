@@ -90,6 +90,8 @@ keep discovery observations separate from final result checks.
 For research-driven evolution of a specified existing Skill, start at
 [skill-evolver](skill-evolver/SKILL.md) and follow its public stage routes; use
 local private adapters only when available.
+For verification of changed state side effects, artifact reuse or prerequisite
+handling, read `skill-evolver/references/behavior-replay-cases.md`.
 
 For evidence-based improvement of an existing application, enter
 [app-evolver](app-evolver/SKILL.md). For released-artifact or runtime evidence,
@@ -274,6 +276,8 @@ Before selecting file-event or periodic triggers, follow
 [macos-watchdog's trigger and acceptance workflow](daymade-macos/macos-watchdog/references/event-driven-observers.md).
 For loaded plist scheduling and configuration, use its
 [native readback](daymade-macos/macos-watchdog/references/native-job-readback.md).
+For stopping or persistently disabling a job, follow its
+[stop semantics](daymade-macos/macos-watchdog/SKILL.md#stop-semantics-the-deprecated-trap).
 Before choosing or changing any periodic observer's cadence, follow
 [macos-watchdog's observation contract](daymade-macos/macos-watchdog/references/probe-cost.md).
 For named macOS load/runaway alerts, follow

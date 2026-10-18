@@ -24,7 +24,7 @@
 
 如果用户没有方向：
 
-问用户：**「你想让读者什么感觉？有没有喜欢的书想对标？你的优势是什么（脑洞好/文笔好/节奏感好/生活经验丰富）？」**
+问用户：**「你想让读者什么感觉？有没有喜欢的书想对标？」**
 
 #### 对标上下文加载
 
@@ -44,11 +44,7 @@
 3. 按权威顺序读两个主产物；`拆文报告.md` 只作概览。
 4. 如果角色、普通剧情单元或设定子目录存在，写作时按需召回相关模块。
 
-根据回答做匹配（题材细分查 `references/long-genre-catalog.md`，女频长篇改读 `references/female-audience-writing.md`（已含女频题材，不再叠读题材目录）；市场与读者查 `references/genre-readers.md`，特殊题材查 `references/plot-special-topics.md` 的「决策路由表」和它指向的一节；按需各读一次）：
-- 脑洞好 → 推荐：系统文、诸天流、无限流
-- 文笔好 → 推荐：仙侠、历史、文艺向都市
-- 节奏感好 → 推荐：都市爽文、重生文、游戏文
-- 生活经验丰富 → 推荐：行业文、都市日常、种田文
+根据回答做匹配，按需各读一次：题材细分查 `references/long-genre-catalog.md`，女频长篇改读 `references/female-audience-writing.md`（含女频题材框架，女频只读这份，不读题材目录）；脑洞、同人、模拟等特殊题材只读题材目录里对应的一节；平台、赛道、书名简介、对标选择查 `references/genre-readers.md`。
 
 **定方向交付前**：还没有书目录时，用作者给的书名（没有就起暂定名，定设定时可改）建 `{书名}/`，作者指定了位置就放那里，并在工作区根写 `.active-book` 指向它；书名改了，目录与 `.active-book` 一起改。然后建 `设定/题材定位.md`，把选定的题材、卖点、对标，以及作者在对话里说过的偏好、红线和否掉的方案，写进「基本信息」「对标登记」「作者已定」（模板见文末），其余小节留到定设定补。
 
@@ -69,13 +65,13 @@
 - 影响全书的 `设定/世界观/{主题}.md`（力量体系、社会结构等一题一文件，题材定位只留骨架一句）。
 - `设定/题材正文提示卡.md` 开书时不建，写第 1 章前由写前召回生成。
 
-主会话自己定设定时读 `references/character-basics.md`、`references/character-relations.md`「人物关系类型」一节、`references/long-genre-mechanics.md`「核心梗三层递进设计」一节、`references/reader-contract-and-progression.md`；女频另读 `references/female-audience-writing.md`；对标登记 ≥2 本时读 `references/cross-book-recall.md`，副对标 anchor 入「对标分析」表附录；有 `灵感库/` 时可按它「公共灵感标签召回」以「适用阶段=设定」查 Top 8 active CBA，零命中不阻塞。
-
 **数值先问作者**：物价与收入量级、境界/力量档位、金手指上限这类影响全书的刻度，按 SKILL.md「新增物三级」属先问作者——在提案里给 1-2 个候选请作者定，确认后才写进设定，不直接写死、只在汇报里概括。
 
 #### Agent 调用：story-architect + character-designer
 
 已部署时按 [agent-calls.md](agent-calls.md) 交给它们；不可用则主会话直接执行。
+
+主会话自己定设定时读 `references/character-basics.md`、`references/character-relations.md`「人物关系类型」一节、`references/long-genre-mechanics.md`「核心梗三层递进设计」「金手指」两节、`references/reader-contract-and-progression.md`；女频另读 `references/female-audience-writing.md`；有感情线时读 `references/character-relations.md`「感情线阶段」一节；对标登记 ≥2 本时读 `references/cross-book-recall.md`，把副对标锚点写进「对标分析」表附录；有 `灵感库/` 时可按它「公共灵感标签召回」以「适用阶段=设定」查 Top 8 active CBA，零命中不阻塞。
 
 ---
 
@@ -163,7 +159,6 @@
 | {书名} | {类型} | {辅/参考} | {文风主对标/结构参考/…} |
 
 ## 题材框架（出卷纲时补）
-- 八节点位置：{当前处于哪个节点}
 - 关键转折节点：{列出}
 ```
 

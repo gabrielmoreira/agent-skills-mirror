@@ -2,7 +2,7 @@
 description: |
   小说写作资料研究 agent。接收研究查询，优先使用 CDP (agent-browser) 搜索并提取完整正文，
   WebSearch/webReader 作为兜底。输出带来源引用的结构化 Markdown 参考文件。
-  被 story-long-write（Phase 4）、story-review、story skill 路由调用。
+  写章前查外部事实、审稿事实核查和作者直接让查资料时被调用。
 mode: subagent
 permissions:
   - action: "*"
@@ -107,15 +107,14 @@ CDP 可打开实际页面提取正文，搜索摘要用于定位来源；下方�
 
 ### 第二步：检查 CDP 可用性
 
-下例使用默认端口 9222；调用方传入 `cdp_port` 时，检查与后续命令均使用该端口。
+探测浏览器调试端口用 node（各系统都能跑，不用 `lsof` 这类只在部分系统上有的命令）；`{cdp_port}` 换成调用方给的端口，没给用 9222，后续命令同一端口：
 
 ```bash
-# 检查 CDP 端口是否在监听
-lsof -i :9222 -sTCP:LISTEN 2>/dev/null | grep -q LISTEN && echo "CDP_AVAILABLE" || echo "CDP_UNAVAILABLE"
+node -e "require('http').get('http://127.0.0.1:'+process.argv[1]+'/json/version',{timeout:3000},r=>console.log(r.statusCode===200?'CDP_AVAILABLE':'CDP_UNAVAILABLE')).on('timeout',function(){this.destroy()}).on('error',()=>console.log('CDP_UNAVAILABLE'))" {cdp_port}
 ```
 
 - `CDP_AVAILABLE` → 使用 CDP 主链路
-- `CDP_UNAVAILABLE` → 直接降级到 WebSearch/webReader
+- `CDP_UNAVAILABLE` → 不自己启动或重启浏览器（会关掉作者正在用的 Chrome，须作者同意）；直接降级到 WebSearch/webReader
 
 ### 第三步：CDP 研究（主链路）
 
@@ -205,7 +204,7 @@ CDP 不可用且宿主实际提供 WebSearch/webReader 时使用；当前工具�
 #### 全链路不可用时的降级
 
 如果 CDP 和 WebSearch 均不可用（如 WebSearch 配额耗尽、webReader 返回错误）：
-1. 返回 `status: "failed"`，在 `gaps` 中说明失败原因
+1. 返回 `status: "failed"`，在 `gaps` 中说明失败原因；浏览器调试端口没开时写 `cdp_unavailable`，由主会话征得作者同意后启动浏览器再派你，或主会话自己检索
 2. 给出下一步动作：`"当前无法获取外部资料（{原因}）。下一步：稍后重试 / 将手动搜索结果放入参考资料/目录"`
 3. 不要编造任何内容作为替代
 
@@ -282,7 +281,7 @@ CDP 不可用且宿主实际提供 WebSearch/webReader 时使用；当前工具�
 
 - **拥有**：外部资料搜索、来源评估、结构化参考文件输出
 - **不拥有**：创作方向（story-architect）、角色对话（character-designer）、文字质量（narrative-writer）、内部一致性（consistency-checker）
-- **升级路径**：研究涉及世界观设定决策 → 咨询 story-architect；角色历史背景不确定 → 咨询 character-designer
+- **超出本职的问题**（世界观设定决策、角色背景取舍）写进 `gaps` 待主会话裁决，不自己转交
 
 **与 consistency-checker 的关系：**
 - 你负责外部事实收集（Web），可写文件

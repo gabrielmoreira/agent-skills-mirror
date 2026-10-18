@@ -112,13 +112,27 @@ OpenRouter Decider with completion verification enabled once outsourcing is
 configured. Compass completion uses its managed Cloud decision route by default;
 an explicitly enabled and consented D1 selection changes that decision route only.
 
-The optional experimental **D1 FP32 WebGPU** decision provider has no inference
+Each turn the user sends from the side panel also
+asks the configured decision model one `run_mode` question: the text of that
+message, the previous turn's mode and the user's earlier task in the
+conversation. No page text, title, address or screenshot is included, and the
+question is asked only when a message is sent, never while it is typed. Without
+a decision model the turn starts in Ask; only when the active model asks to
+hand the turn to Act or Dev is the same page-free question sent to the active
+model to confirm it.
+
+The experimental **in-browser chat model** decision provider (Chrome) runs
+decisions on the already downloaded WebGPU chat model in the offscreen
+worker. Its state, questions and screenshots never leave the browser, and it
+downloads nothing beyond the chat model itself.
+
+The optional experimental **D1 WebGPU** decision provider has no inference
 endpoint or API key. Its bounded text/JSON state, questions and inline screenshots
 stay in the local decision Worker. Explicit download consent permits only pinned
-ONNX/config/tokenizer downloads (about 1.9 GB) from Hugging Face, verified against
-the packaged manifest and checksums. The roughly 3.84 GB published package also
-contains a full checkpoint for external reproducibility, but the browser never
-downloads `model.safetensors`. JS/WASM stays bundled with the extension. Cache and
+ONNX/config/tokenizer downloads (about 0.95 GB) from Hugging Face, verified against
+the packaged manifest and checksums. The full FP32 checkpoint stays in the
+separate FP32 repository for external reproducibility; the browser never
+downloads it. JS/WASM stays bundled with the extension. Cache and
 consent are local and device-bound; no download is triggered by a decision call.
 Usage traces use the existing bounded model/provider/token/cost metadata, not an
 additional copy of D1 state or pixels. Existing separately configured trace and
@@ -438,6 +452,27 @@ repair can upgrade its runtime parameter to sensitive (for example, when the
 new target is a password field), but it can never downgrade that protection.
 If deterministic replay cannot safely continue, a fallback Agent receives only
 saved metadata and must ask the user again for any still-needed value.
+
+### New Tab Page
+
+The new tab page (`docs/newtab.md`) makes no network requests of its own: backgrounds
+are bundled, there are no fonts, favicons, link-title lookups, weather, quotes or
+analytics requests, and no error reporting. Custom backgrounds are images you upload;
+they are stored in the browser and never leave it. The exceptions are things you
+choose: if you give a quick link or app link a custom icon URL, enter custom CSS that
+references remote resources (`url(...)`, `@import`), or import settings that point a
+background at a URL, the page loads them from the addresses you gave, each time it is
+shown. Links without a custom icon use a local letter tile; nothing is looked up.
+
+Its settings, quick links and uploaded backgrounds stay in the browser under a separate
+`wbnt:` prefix. Text typed into its box is held briefly in extension storage (one
+record per tab) to hand it to the side panel and removed once claimed. A record that is
+never claimed is ignored by the panel once it is older than a couple of minutes, but it can
+stay in `storage.local` until the next submission from that tab replaces it, the tab is
+closed, or the browser starts again (one written in the ten seconds before a crash waits for the start after that); a task handed back to its tab (for example after a tab
+switch mid-send) is kept the same way until it is delivered. **Search** mode uses the browser's own
+default search engine, so a query typed there goes to that engine as it would from the
+address bar.
 
 ### Settings
 

@@ -1,0 +1,182 @@
+# value_connector_plan_v0
+
+Status: public-safe connector planning and starter runtime contract v0.
+
+`loopx value-connectors` is a compatibility CLI and protocol facade. Generic
+planning and the stable command surface remain here. Public GitHub probes are
+owned by `issue-fix`; the `social_browser_x` source, install, and connector-trial
+contracts are owned by `content-ops`. Existing callers still invoke the commands
+below while the facade delegates to those providers.
+
+`value_connector_plan_v0` is a compact contract for external-value connector
+calls. It sits before real connector execution so LoopX can separate useful
+business-development work from unsafe automation.
+
+The v0 goal is practical:
+
+- show how to install and run connector starters;
+- allow bounded public metadata reads;
+- keep account setup, external posting, email sends, paid services, private
+  reads, auth material, and production actions behind explicit gates;
+- require every connector call to name a money, cost, demand, or capability
+  metric plus a kill condition.
+
+## CLI
+
+Check installed starter dependencies:
+
+```bash
+loopx value-connectors install-check --format json
+```
+
+Run the first shipped connector starter without a network read:
+
+```bash
+loopx value-connectors github-public-probe \
+  --url https://github.com/owner/repo/issues/1 \
+  --format json
+```
+
+Run the same connector with a bounded public metadata read:
+
+```bash
+loopx value-connectors github-public-probe \
+  --url https://github.com/owner/repo/issues/1 \
+  --fetch-metadata \
+  --format json
+```
+
+Detect public maintainer interest after an approved LoopX comment without
+reading comment bodies or bumping the thread:
+
+```bash
+loopx value-connectors github-reply-monitor \
+  --issue-url https://github.com/owner/repo/issues/1 \
+  --after-comment-url https://github.com/owner/repo/issues/1#issuecomment-123 \
+  --fetch-metadata \
+  --format json
+```
+
+Plan a gated external write or account setup before any connector performs it:
+
+```bash
+loopx value-connectors plan \
+  --connector-id community_channel \
+  --connector-kind community_channel \
+  --channel "public community thread" \
+  --stage external_write_request \
+  --target-ref "thread asking about agent workflow operations" \
+  --external-write-requested \
+  --money-metric "qualified workflow owner asks for a LoopX audit" \
+  --success-metric "one audit or demo request" \
+  --kill-condition "channel rules reject the reply or no workflow owner appears" \
+  --format json
+```
+
+## Records
+
+| Record | Purpose |
+| --- | --- |
+| `value_connector_plan_v0` | Plan-level objective, brand boundary, connector calls, approval gates, and truth contract. |
+| `connector_call_intent_v0` | One planned connector call with channel, stage, access mode, value axis, metric, success metric, and kill condition. |
+| `connector_approval_gate_v0` | Exact-call approval gate for account setup, external writes, sends, publishing, or private expansion. |
+| `github_public_channel_probe_packet_v0` | Starter connector output for public GitHub issue/PR/discussion metadata. |
+| `github_public_reply_monitor_packet_v0` | Starter connector output for public maintainer reply detection after a LoopX comment. |
+| `content_ops_social_browser_x_provider_v0` | Content-ops-owned source, install, and metadata-only trial contract behind the compatibility facade. |
+| `value_connector_extension_migration_v0` | Compatibility tombstone mapping a retired connector id to an independently managed extension without executing the retired connector. |
+| `finance_market_snapshot_profile_v0` | Retired Finance planning profile; explicit legacy requests now return extension migration metadata. |
+| `finance_market_snapshot_probe_packet_v0` | Historical Finance probe evidence id retained only for migration lineage. |
+| `value_connector_install_check_packet_v0` | Local install/use checklist for connector starters. |
+
+## Boundaries
+
+The contract is valid only when:
+
+- external writes are never allowed directly from a plan or probe;
+- every account setup or external write request has an approval gate;
+- money/cost/demand/capability metric and kill condition are present;
+- raw bodies, comment bodies, timelines, private source content, auth material,
+  local paths, and raw provider payloads are absent;
+- `truth_contract.plan_only=true` for plans;
+- starter probes report whether a bounded external read happened.
+
+## Retired Connector Migration
+
+`finance_market_snapshot` no longer owns Finance execution and does not map to
+a LoopX capability. To keep upgrades diagnosable, the legacy `source-map`,
+`install-check`, and `plan --connector-id finance_market_snapshot` selectors
+return a `value_connector_extension_migration_v0` record pointing to
+`loopx-finance-value-discovery`.
+
+The migration record is guidance, not implicit installation. It states whether
+the provider is separately distributed, names the source-checkout package and
+manifest paths, and gives an ordered inspect, install, register, and run
+sequence. An agent may execute local environment writes only when its active
+authority permits them. If the extension source or package is unavailable, it
+must stop with `provider source required` instead of recreating the old
+connector or inventing a `finance-value-discovery` capability.
+
+## Starter Connector
+
+`github_public_channel` is the first implemented starter. It accepts public
+GitHub issue, PR, and discussion URLs. Query strings, fragments, auth material,
+non-`github.com` hosts, and non-HTTPS URLs are rejected.
+
+For issue and PR URLs, `--fetch-metadata` uses GitHub REST and copies only
+allowlisted metadata such as title, state, labels, comment count, timestamps,
+author association, and URL. It does not copy issue body, comment bodies,
+timeline events, raw provider payloads, auth material, or local paths.
+
+For discussion URLs, `--fetch-metadata` uses GitHub CLI GraphQL when `gh` is
+installed and authenticated. Without `gh`, users can still run no-fetch mode or
+use `install-check` to see the missing dependency.
+
+`github_public_reply_monitor` accepts a public issue or PR URL and an anchor
+issue-comment URL. Its live mode uses GitHub CLI REST metadata and captures only
+comment author, author association, timestamps, and URL. It detects whether a
+public maintainer/member/collaborator replied after the LoopX comment and
+returns `prepare_public_triage_note`; otherwise it returns `wait_no_bump`.
+
+## Browser Social Connector Profile
+
+`social_browser_x` is the first browser-backed value connector profile. It is
+not a headless X API client and it does not grant LoopX permission to post. It
+documents how a user's agent can use an ego-browser session for public-safe X
+work while LoopX keeps the control-plane state.
+
+Allowed before an exact approval gate:
+
+- `install-check` reporting whether `ego-browser` is available;
+- metadata-only public-handle packets through `loopx content-ops
+  observe-public-handle`;
+- no-send research notes, target-specific draft packets, image/body/link/mention
+  review packets, and reply-monitor plans;
+- value metrics and kill conditions for the planned post, reply, or monitor.
+
+Forbidden before an exact approval gate:
+
+- account creation, profile edits, posting, replies, reposts, follows used as
+  growth automation, deletion, appeals, or paid actions;
+- captcha bypass, credential collection, cookie export, raw timeline capture,
+  private DMs, or non-public material;
+- public claims outside the declared LoopX brand boundary.
+
+The connector exists because browser channels often have the highest business
+value but the highest account-health and public/private-boundary risk. A useful
+LoopX packet should let a user hand their own agent the process without handing
+over judgment:
+
+```text
+install-check -> public metadata packet -> no-send draft packet -> exact approval gate -> ego-browser execution -> compact reply/value monitor
+```
+
+## User Value
+
+This capability is valuable only when the connector output can produce one of:
+
+- revenue or paid conversion evidence;
+- measurable cost-reduction evidence;
+- a qualified workflow owner, demo request, or demand signal;
+- reusable connector capability that clearly enables the first three.
+
+Connector volume by itself is not value.

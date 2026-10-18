@@ -61,11 +61,11 @@ def synth_ridge(path: Path, f35: float, heading: float, two_layer: bool) -> None
     path.write_text(json.dumps(ridge))
 
 
-def fit(ridge: Path, out: Path, *extra: str) -> tuple[dict, str]:
+def fit(ridge: Path, out: Path, *extra: str, dem=None) -> tuple[dict, str]:
     argv = ["terrain.py", "fit", "--at", f"{LAT0},{LON0}", "--radius", "0", "--ridge", str(ridge), "--out", str(out),
             "--range", "30000", "--min-peak", "2", "--nsamp", "400", *extra]
     err = io.StringIO()
-    with patch.object(terrain, "DEM", FakeDEM), patch.object(sys, "argv", argv), contextlib.redirect_stderr(err):
+    with patch.object(terrain, "DEM", dem or FakeDEM), patch.object(sys, "argv", argv), contextlib.redirect_stderr(err):
         terrain.main()
     return json.loads(out.read_text(encoding="utf-8")), err.getvalue()
 
@@ -99,6 +99,20 @@ class FocalTests(unittest.TestCase):
         self.assertEqual(res["focal_edge"]["top1"], "long")
         res, _ = fit(self.d / "r.json", self.d / "f.json", "--f35-range", "24:80")
         self.assertIsNone(res["focal_edge"])
+
+    def test_short_edge_also_suggests_a_longer_ladder(self):
+        synth_ridge(self.d / "r.json", 13, 270, two_layer=False)
+        res, err = fit(self.d / "r.json", self.d / "f.json", "--f35-range", "16:40")
+        self.assertEqual(res["focal_edge"]["top1"], "short")
+        self.assertIn("--f35-range 8:27", err)
+        self.assertIn("--f35-range 24:40", err)
+
+    def test_short_edge_hint_on_a_narrow_ladder_stays_valid(self):
+        synth_ridge(self.d / "r.json", 13, 270, two_layer=False)
+        res, err = fit(self.d / "r.json", self.d / "f.json", "--f35-range", "16:18")
+        self.assertEqual(res["focal_edge"]["top1"], "short")
+        self.assertIn("--f35-range 24:48", err)
+        self.assertNotIn("--f35-range 24:18", err)
 
     def test_two_layer_scores_near_points(self):
         synth_ridge(self.d / "r.json", 60, 270, two_layer=True)
@@ -154,6 +168,86 @@ class FocalTests(unittest.TestCase):
                 synth_ridge(self.d / "r.json", f35, 270, two_layer=False)
                 res, _ = fit(self.d / "r.json", self.d / "f.json")
                 self.assertLess(abs((res["cams"][0]["H"] - 270 + 180) % 360 - 180), 2)
+
+
+
+class SlopeDEM(FakeDEM):
+    """FakeDEM on a hillside: about 90 m of relief within 300 m of the camera, so no point is flat by the default --cam-flat."""
+
+    def sample(self, lat, lon):
+        x = (np.asarray(lon) - LON0) * 111320 * math.cos(math.radians(LAT0))
+        return super().sample(lat, lon) + 60 * np.tanh(x / 300)
+
+
+class BumpDEM(FakeDEM):
+    """FakeDEM with a 50 m knoll 450 m east of the camera: only the grid points whose flat-test rings reach it fail --cam-flat."""
+
+    def sample(self, lat, lon):
+        y = (np.asarray(lat) - LAT0) * 110540
+        x = (np.asarray(lon) - LON0) * 111320 * math.cos(math.radians(LAT0))
+        return super().sample(lat, lon) + 50 * np.exp(-((x - 450) ** 2 + y ** 2) / 20 ** 2)
+
+
+class FlatFilterTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.d = Path(self.tmp.name)
+        synth_ridge(self.d / "r.json", 40, 270, two_layer=False)
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def _fit(self, *extra):
+        return fit(self.d / "r.json", self.d / "f.json", *extra, dem=SlopeDEM)
+
+    def test_cluster_without_flat_point_scores_its_flattest(self):
+        res, err = self._fit("--radius", "300", "--grid", "150")
+        self.assertGreater(res["n_cams"], 0)
+        self.assertEqual(res["flat_relaxed_clusters"], [0])
+        self.assertTrue(all("flat_relaxed" in c for c in res["cams"]))
+        self.assertIn("flat_relaxed", err)
+
+    def test_flat_cluster_is_unchanged(self):
+        res, _ = fit(self.d / "r.json", self.d / "f.json", "--radius", "300", "--grid", "150")
+        self.assertEqual(res["flat_relaxed_clusters"], [])
+        self.assertFalse(any("flat_relaxed" in c for c in res["cams"]))
+
+    def test_flat_warning_counts_positions_dropped_later(self):
+        # every grid point is then dropped by --min-peak; the warning must compare against all points that reached the flat test
+        res, err = fit(self.d / "r.json", self.d / "f.json", "--radius", "300", "--grid", "150", "--min-peak", "89", dem=BumpDEM)
+        self.assertEqual(res["n_cams"], 0)
+        self.assertGreater(res["n_skipped"]["not_flat"], 0)
+        self.assertGreater(res["n_skipped"]["no_peak"], res["n_skipped"]["not_flat"])
+        self.assertNotIn("larger --cam-flat", err)
+
+    def test_single_point_keeps_filter_and_warns(self):
+        res, err = self._fit()
+        self.assertEqual(res["n_cams"], 0)
+        self.assertEqual(res["n_skipped"]["not_flat"], 1)
+        self.assertIn("larger --cam-flat", err)
+
+
+class ClusterCoverageTests(unittest.TestCase):
+    def test_cluster_records_farthest_member(self):
+        hits = [{"lat": LAT0, "lon": LON0, "max_ang": 9.0}, {"lat": LAT0 + 0.02, "lon": LON0, "max_ang": 5.0},
+                {"lat": LAT0 + 0.2, "lon": LON0, "max_ang": 4.0}]
+        cl = terrain._cluster(hits, 3.5)
+        self.assertEqual([c["n"] for c in cl], [2, 1])
+        self.assertAlmostEqual(cl[0]["extent_m"], 2224, delta=2)
+        self.assertEqual(cl[1]["extent_m"], 0)
+
+    def test_fit_warns_when_cluster_is_wider_than_grid(self):
+        with tempfile.TemporaryDirectory() as t:
+            d = Path(t)
+            synth_ridge(d / "r.json", 40, 270, two_layer=False)
+            (d / "h.json").write_text(json.dumps([{"lat": LAT0, "lon": LON0, "extent_m": 5000}]))
+            argv = ["terrain.py", "fit", "--hits", str(d / "h.json"), "--radius", "0", "--ridge", str(d / "r.json"), "--out", str(d / "f.json"),
+                    "--range", "30000", "--min-peak", "2"]
+            err = io.StringIO()
+            with patch.object(terrain, "DEM", FakeDEM), patch.object(sys, "argv", argv), contextlib.redirect_stderr(err):
+                terrain.main()
+            self.assertIn("spread wider than --radius", err.getvalue())
+            self.assertEqual(json.loads((d / "f.json").read_text(encoding="utf-8"))["n_cams"], 1)
 
 
 class RidgeTests(unittest.TestCase):

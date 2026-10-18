@@ -1,45 +1,59 @@
 # 起点：采集与分析
 
-选择起点时读取。脚本默认先读 `https://m.qidian.com` 页面的 SSR 内嵌数据，失败才回退 CDP/PC；文件头 `抓取方式` 标 `mobile-ssr` 或 `cdp-pc`。书库新书只走 Chrome，先说明并用 `/browser-cdp` 启动。
+排行榜默认读手机版页面，不需要 Chrome；读不到才用 Chrome 打开电脑版。书库新书只能用 Chrome，先说明并用 `/browser-cdp` 启动。脚本采的是起点主站，以男频为主；若要看起点女频，说明脚本采不到，请作者贴起点女频的榜单（见 SKILL「作者提供」）。
 
-## 榜单与命令
-
-`node scripts/qidian-rank-scraper.js --type {榜单} --outdir {输出目录}`（`--type all` 全采；`--mode mobile|cdp` 强制方式；`--detail yes` 仅在 CDP 模式补详情）
-
-| 榜单 | --type | URL | 看什么 |
-|------|--------|-----|--------|
-| 新人签约新书榜 | newsign | qidian.com/rank/newsign/ | 新人签约作品，新风向 |
-| 签约作者新书榜 | signnewbook | qidian.com/rank/signnewbook/ | 已签约作者新作风向 |
-| 公众作者新书榜 | pubnewbook | qidian.com/rank/pubnewbook/ | 发现潜力作者 |
-| 新人作者新书榜 | newauthor | qidian.com/rank/newauthor/ | 新人赛道 |
-| 三江推荐 | sanjiang | qidian.com/sanjiang/ | 编辑精选，按周分组（非 /rank/ 路径） |
-| 月票榜 | yuepiao | qidian.com/rank/yuepiao/ | 付费认可度最高 |
-| 畅销榜 | hotsales | qidian.com/rank/hotsales/ | 真金白银投票 |
-| 阅读指数榜 | readindex | qidian.com/rank/readindex/ | 阅读量综合 |
-| 收藏榜 | collect | qidian.com/rank/collect/ | 读者关注热度 |
-| 原创推荐榜 | recom | qidian.com/rank/recom/ | 读者推荐票表现 |
-
-默认组合：新人签约新书榜 + 签约作者新书榜 + 月票榜 + 畅销榜。文件名 `起点{榜单}_{YYYYMMDD}.md`。移动端两个签约榜均取 `/rank/sign/`，`collect` 取书友榜；以文件头「移动端实际榜单」为准。
-
-### 书库新书
-
-要看「新书」「最近冒头」「什么在起量」时再加，默认组合不采。qidian.com/all/action0-size1-update1/ 筛选男生、连载、30 万字以下、三日内更新的作品，按人气排，每页 20 本，可补充已下新书榜但仍在更新的书。
+## 默认命令
 
 ```bash
-node scripts/qidian-rank-scraper.js --type library --pages 3 --outdir {输出目录}   # 默认 3 页，最多 10，不进 --type all
+node scripts/qidian-rank-scraper.js --type newsign --outdir {outdir}    # 新人签约新书榜
+node scripts/qidian-rank-scraper.js --type yuepiao --outdir {outdir}    # 月票榜
+node scripts/qidian-rank-scraper.js --type hotsales --outdir {outdir}   # 畅销榜
 ```
 
-所有页合写 `起点男频书库人气新书_{YYYYMMDD}.md`，名次连续，表示人气排名。字数由字体解码，签约/收费由移动端详情补，缺值写 `[待补]`；「新书总推荐」不进聚合热度。该筛选会拉低字数中位。跟作者说「起点最近三天还在更新的 30 万字以内新书，按人气取前 3 页，要开浏览器」。
+作者要看新书里在冒头的，再加书库新书：
 
-## 字段
+```bash
+node scripts/qidian-rank-scraper.js --type library --pages 3 --outdir {outdir}   # 默认 3 页，最多 10
+```
 
-排名、书名、作者、题材（主类·子类）、状态、签约、收费模式、字数、总推荐、标签/最新更新/简介、作品页链接；题材、字数、总推荐缺失写 `[待补]`。聚合按主类分题材、子类作标签，热度以表头口径为准；同源的两个签约榜不作独立交叉验证。
+书库新书是「男生、连载、30 万字以下、三日内更新」按人气排的前几页，名次即人气排名，会拉低字数中位。跟作者说「起点最近三天还在更新的 30 万字以内新书，按人气取前 3 页，要开浏览器」。
+
+## 可选榜单
+
+`--type` 换成下表的值；`all` 采全部排行榜（不含书库新书）。`--mode mobile|cdp` 强制读手机版或电脑版。
+
+| 榜单 | --type | 看什么 |
+|------|--------|--------|
+| 新人签约新书榜 | newsign | 新人签约作品，新风向 |
+| 签约作者新书榜 | signnewbook | 已签约作者的新作 |
+| 公众作者新书榜 | pubnewbook | 潜力作者 |
+| 新人作者新书榜 | newauthor | 新人赛道 |
+| 三江推荐 | sanjiang | 编辑精选，平台力推方向 |
+| 月票榜 | yuepiao | 付费认可度 |
+| 畅销榜 | hotsales | 订阅表现 |
+| 阅读指数榜 | readindex | 阅读量综合 |
+| 收藏榜 | collect | 手机版没有，取书友榜代替 |
+| 原创推荐榜 | recom | 推荐票表现 |
+
+手机版的两个签约榜是同一页，`newsign` 和 `signnewbook` 只采一个；都采了，聚合会按一份计。以文件头「移动端实际榜单」为准。
+
+## 字段与热度口径
+
+排名、书名、作者、题材（主类·子类）、状态、签约、收费模式、字数、总推荐、标签、简介、作品页链接；缺项写 `[待补]`。聚合按主类分题材、子类进标签，热度口径是总推荐。书库新书的总推荐另列为「新书总推荐」，不和老书混算。
+
+## 采不到时
+
+- 手机版读取失败后改用 Chrome，若遇到验证码：脚本会停下等你在 Chrome 窗口里手动完成验证，最长 120 秒。告诉作者去 Chrome 里点验证。
+- 文件头「数据质量」标了问题：看「问题摘要」。题材、字数大面积缺失多半是手机版页面改版，先 `/browser-cdp` 启动 Chrome，再加 `--mode cdp` 重采一次。
 
 ## 分析维度
 
 | 维度 | 看什么 |
 |---|---|
-| 月票榜/畅销榜 | 观察付费榜表现，不等同于订阅或追读原数 |
-| 各新书榜 | 新作者、新题材的早期信号；和月票/畅销榜的题材占比对照 |
+| 月票榜/畅销榜 | 付费榜表现，不等于订阅或追读原数；头部多是连载多年的大神老书 |
+| 新书榜、书库新书 | 新作者、新题材的早期信号；和月票、畅销榜的题材占比对照 |
 | 三江推荐 | 平台力推方向 |
-| 追读率 | 当前榜单不提供，不能由月票/畅销排名换算 |
+
+## 本平台读者
+
+付费订阅、男频为主，读者要升级、成长和长线追读，爽点偏实力碾压、智谋取胜、机缘兑现；雷区是长期憋屈、主角被动又不反击。

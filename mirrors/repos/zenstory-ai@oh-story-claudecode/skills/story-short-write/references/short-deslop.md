@@ -1,6 +1,6 @@
 # 短篇去味适配
 
-本文件只补短篇卖点与精修范围。Phase 4 沿用已读精修清单和检测提示定点修复，读 [deslop-gates.md](deslop-gates.md) 仅确定范围与权限，不展开其方法链接；本书文风及 `short-craft.md` 的情绪处理继续生效。无法据此判断的问题列出具体缺口，完整诊断按文末交接。
+本文件只补短篇卖点与精修范围。Phase 4 按精修清单和检测提示定点修复，从 [deslop-gates.md](deslop-gates.md) 只取范围与改稿权限，不去读它链到的三份方法文件；本书文风及 `short-craft.md` 的情绪处理继续生效。据此判断不了的问题列出具体缺口，完整诊断按文末交接。
 
 ## 按短篇功能保护
 
@@ -17,4 +17,4 @@
 
 核对检测候选的语义功能、详略和卖点保护，改后复读整场及小节承接。新增动机、证据、事件或改变决定、结果、揭露时机不在普通精修权限内，给出原文位置及最小设计建议；已明确授权重写的按授权执行。
 
-作者要求完整去味或深查“为何过平”时，使用独立 `/story-deslop` 流程，完整读取 [expression.md](expression.md)、[narrative-focus.md](narrative-focus.md)、[story-logic.md](story-logic.md) 三层诊断；这与本次 Phase 4 定点精修分别计加载路径，不能用少量词句信号代替完整诊断。完整去味不预读短篇构思与题材方法，所需事实从 `设定.md`、小节大纲和正文取。
+作者要求完整去味或深查“为何过平”时，使用独立 `/story-deslop` 流程，完整读取 [expression.md](expression.md)、[narrative-focus.md](narrative-focus.md)、[story-logic.md](story-logic.md) 三层诊断，不能用少量词句信号代替。完整去味不预读短篇构思与题材方法，所需事实从 `设定.md`、小节大纲和正文取。

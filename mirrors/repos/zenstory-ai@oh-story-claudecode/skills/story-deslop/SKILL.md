@@ -12,17 +12,14 @@ metadata: {"openclaw":{"source":"https://github.com/zenstory-ai/oh-story-claudec
 
 ---
 
-> Agent 兼容性：只检查当前运行时的 canonical 目录：Claude `.claude/agents/{agent}.md`、OpenCode `.opencode/agents/{agent}.md`、Codex `.codex/agents/{agent}.toml`、Antigravity `.agents/agents/agent-name/agent.md`（`agent-name` 为目标 agent 名），不得因其他端文件存在而误判。Claude 用 `subagent_type`，OpenCode 用 `subagent` 工具的 `agent` 参数，Codex 用同名 `agent_type`，Antigravity 用 `invoke_subagent` + `TypeName`。运行时未暴露 custom-agent registry / `invoke_subagent`、返回未知 agent，或检测到 `.zcode/`（ZCode 3.3.4 不执行项目 custom agents）时降级 solo/direct：报告里一句白话告诉作者「这次由我直接改」，`Fallback: project custom agents unavailable -> solo` 原文只写进报告最后一行「技术备注：」。
->
-> Spawn 版本提示（不阻断 spawn）：先读取项目根 `.story-deployed` 的 `agents_version`。与本版 `agents_version: 35` 不一致时（标记缺失、字段缺失/非整数、小于或大于 35）**照常按文件存在性检查并 spawn**，同时用一句白话提示作者「写作助手是旧版，运行 /story-setup 后新开对话」，`Notice: agents bundle 版本不匹配（项目 {N}，本版 35）` 原文写进技术备注行；大于 35 时额外提示先更新 oh-story-claudecode，不要用本地旧版 setup 降级覆盖。只有 agent 文件缺失、或运行时不暴露 custom agent 时才降级 solo/direct，`Fallback: ... -> solo` 同样只进技术备注行。
-
 ## 执行边界
 
-- 未限定范围的独立去味，完整检查表达、用笔、故事三层。三层是检查对象，不按词频分轻中重；每层可以没有问题。用户明确只查词句、某段或指定 Gate 时，尊重范围。
+- 未限定范围的独立去味，完整检查表达、用笔、故事三层。三层是检查对象，不按词频分轻中重；每层可以没有问题。用户明确只查词句、某段或某类问题时，尊重范围。
 - 普通去味可修表达、恢复已有承接、调整已定内容的详略；允许删除整段无功能内容，保护伏笔、因果、人物选择、情绪体验与揭露顺序。需要改变事件、动机、结果或新增成立条件时，按故事层区分设计提案和已授权重写。不能用新微动作、粗话、证据或冲突制造“真人感”。
 - 文风裁决只影响表达，不改变事实与信息边界。准确直写、心理活动、带立场的叙述和有功能的停顿均可保留，不机械套 Show/Tell、句长或删减率。
-- 用户只要检测或标注时，只出诊断，不修改正文；用户要求改稿或已经授权的重写，完成该范围的实际修改。作者报告用白话、原文位置与阅读后果，不把 Gate、类别名、脚本字段当评价。
-- 不推断作者身份或承诺检测分数。用户提供外部检测报告时，只提取能对应到正文的具体问题。
+- 用户只要检测或标注时，只出诊断，不修改正文。作者只说「去AI味」「这篇太AI了」时按改稿处理：表达与用笔直接改，故事层缺口给出方案，作者授权后再改。作者报告用白话、原文位置与阅读后果，不把检测类别名、脚本字段当评价。
+- 长篇项目（书目录下有 `正文/` 与 `追踪/`）需要改变事件、关系、人物所知或结果时，即使作者已授权，也带着诊断和授权转 `/story-long-write`「修改第X章」执行，由那边备份原文并同步追踪；本流程只改表达、用笔和已有依据的承接。
+- 不推断作者身份或承诺检测分数。用户提供外部检测报告或 `/story-review` 的审稿结论时，只提取能对应到正文的具体问题，作为本次范围。
 
 ### 作者偏好边界
 
@@ -32,7 +29,7 @@ metadata: {"openclaw":{"source":"https://github.com/zenstory-ai/oh-story-claudec
 
 ### Phase 1：读原文与三层扫描
 
-从正文路径确定书目录和篇幅：单个 `正文.md` 一般是短篇，`正文/` 下逐章文件一般是长篇；优先采用作者与项目的明确说明。按开头的文风裁决读本书要求，通读本次正文，按需查相关前文和已定设计，不整读无关全书。资料缺失时继续有依据的部分，标明未知。
+从正文路径确定书目录和篇幅：单个 `正文.md` 一般是短篇，`正文/` 下逐章文件一般是长篇；优先采用作者与项目的明确说明。按开头的文风裁决读本书要求，通读本次正文，按需查相关前文和已定设计，不整读无关全书。资料缺失时继续有依据的部分，标明未知。本次涉及多章时，逐章完成 Phase 1–4 再进下一章，交给写手时每章派一次。
 
 默认完整读取以下三份方法后扫描；明确限定范围时按 [references/deslop-gates.md](references/deslop-gates.md) 选择需要的方法：
 
@@ -48,13 +45,15 @@ metadata: {"openclaw":{"source":"https://github.com/zenstory-ai/oh-story-claudec
 node scripts/check-ai-patterns.js --check --fail-on=blocking <正文文件...>
 ```
 
-脚本命中是定位线索，零命中不代替三层扫描。blocking 按本书裁决优先处理，advisory 回到语境判断，不为归零机械改稿；完整词条仅在需要定位某种表达时查 [references/banned-words.md](references/banned-words.md)。
+脚本命中是定位线索，零命中不代替三层扫描。每类提示归哪层、判断什么，见 expression.md 末节的索引；blocking 要改到净或按白名单保留（见 Phase 4），advisory 回到语境判断，不为归零机械改稿。完整词条仅在需要定位某种表达时查 [references/banned-words.md](references/banned-words.md)。
+
+文件前 6 行内、章节标题下有 `<!-- 去味:跳过 -->` 而作者这次要求去味时，照常处理：blocking 清零后删掉这一行；仍有剩余阻塞时保留，并在报告里告诉作者这章仍按跳过处理。
 
 ### Phase 2：定位问题与确定改法
 
 每个实际问题记录原文位置、造成的阅读后果、所缺依据和最小改法。区分三种处置：可以直接修复；需要设计但尚未授权；资料不足不能定论。无需凑齐问题数量，也不用表层命中数决定后两层是否检查。
 
-先判断故事的成立条件，再安排场景用笔，最后处理词句。若剧情缺口暂不能改，继续完成独立可修部分，在报告中保留缺口；不要添加表情或总结句假装因果已经修好。作者已授权的剧情重写直接执行，不重复询问同一授权。
+先判断故事的成立条件，再安排场景用笔，最后处理词句。若剧情缺口暂不能改，继续完成独立可修部分，在报告中保留缺口；不要添加表情或总结句假装因果已经修好。作者已授权的剧情重写按执行边界直接执行或转交，不重复询问同一授权。
 
 仅检测时到此交付，使用下表，保持正文不变；改稿时表中内容作为执行依据，交付统一走 Phase 5。
 
@@ -74,33 +73,46 @@ node scripts/check-ai-patterns.js --check --fail-on=blocking <正文文件...>
 
 ### Phase 3：按授权改稿
 
+> Agent 兼容性：只检查当前运行时的 canonical 目录：Claude `.claude/agents/{agent}.md`、OpenCode `.opencode/agents/{agent}.md`、Codex `.codex/agents/{agent}.toml`、Antigravity `.agents/agents/agent-name/agent.md`（`agent-name` 为目标 agent 名），不得因其他端文件存在而误判。Claude 用 `subagent_type`，OpenCode 用 `subagent` 工具的 `agent` 参数，Codex 用同名 `agent_type`，Antigravity 用 `invoke_subagent` + `TypeName`。运行时未暴露 custom-agent registry / `invoke_subagent`、返回未知 agent，或检测到 `.zcode/`（ZCode 3.3.4 不执行项目 custom agents）时降级 solo/direct：报告里一句白话告诉作者「这次由我直接改」，`Fallback: project custom agents unavailable -> solo` 原文只写进报告最后一行「技术备注：」。
+>
+> Spawn 版本提示（不阻断 spawn）：先读取项目根 `.story-deployed` 的 `agents_version`。与本版 `agents_version: 36` 不一致时（标记缺失、字段缺失/非整数、小于或大于 36）**照常按文件存在性检查并 spawn**，同时用一句白话提示作者「写作助手是旧版，运行 /story-setup 后新开会话」，`Notice: agents bundle 版本不匹配（项目 {N}，本版 36）` 原文写进技术备注行；大于 36 时额外提示先更新 oh-story-claudecode，不要用本地旧版 setup 降级覆盖。只有 agent 文件缺失、或运行时不暴露 custom agent 时才降级 solo/direct，`Fallback: ... -> solo` 同样只进技术备注行。
+
+改动文件前，先把原文复制到书内 `.story/work/去味原稿/{YYYYMMDD}_{原文件名}`，Phase 4 对照它回读；作者要撤回时用它恢复。
+
 1. 已在 narrative-writer 内，按本次范围直接执行，不嵌套 spawn。
-2. 主会话找到当前运行时的 narrative-writer，按顶部兼容说明调用；只在此时读 [references/agent-calls.md](references/agent-calls.md)，传递实际诊断、原文依据、文风和授权范围。
+2. 主会话找到当前运行时的 narrative-writer，按上方兼容说明调用；只在此时读 [references/agent-calls.md](references/agent-calls.md)，传递实际诊断、原文依据、文风和授权范围。
 3. 文件缺失、运行时未暴露 custom agent 或 spawn 失败时，由主会话直接改。
 
 实际执行者按三份方法落改。用笔调整同时处理过详和过略：压缩无功能过程，演出已有的交锋和判断；缺少成立依据就按故事层处理，不凭空补条件。涉及本次要求的视角切换，也核对每项感知/认知的来源，不添加观察经历来保全信息。
 
 ### Phase 4：回读与文件收尾
 
-对照改前原文、已定设计和授权，回读完整场景：事实、人物选择、因果、情绪承接、空间方向和悬念是否保住，详写重心是否恢复，有没有引入新套式或新的剧情依据。三层各自复核；信息齐全却仍逐项播报、对白仍像提纲时，表达检查不算完成，脚本不能替代这一遍。
+对照改前原稿、已定设计和授权，回读完整场景：事实、人物选择、因果、情绪承接、空间方向和悬念是否保住，详写重心是否恢复，有没有引入新套式或新的剧情依据。三层各自复核；信息齐全却仍逐项播报、对白仍像提纲时，表达检查不算完成，脚本不能替代这一遍。
 
-文件改稿落盘后，先句式/退化复扫。只有本次获准整理整份文件标点时，才执行下面的标点写入命令；指定段落或定点 Gate 的任务仅在范围内人工整理标点，不能让全文件工具改动范围外内容。扫描到范围外问题只作提示：
+文件改稿落盘后先复扫：
 
 ```bash
 node scripts/check-ai-patterns.js --check --fail-on=blocking <正文文件...>
-node scripts/check-degeneration.js --check <正文文件...>
+node scripts/check-degeneration.js --check --fail-on=blocking <正文文件...>
+```
+
+- 两个脚本只报告；退出 1 表示有 blocking，退出 2 是命令或文件错误。
+- 句式 blocking：保留叙事功能自然改写；作者明确选择的原句按文风裁决文件登记白名单；两样都做不到就列为剩余阻塞。破折号按功能改写，不留给标点脚本机械替换。advisory 按文风和语境判断，功能性写法可以保留并说明。
+- 退化 blocking（逐字复读、打转、截断、占位符或工程词泄漏）重新生成受损段，再核对已有事实；advisory 只作提示。
+
+语义改完、复扫没有 blocking 后再整理标点。整份文件的完整去味默认整理；只改指定段落或问题时不跑，在范围内人工整理，范围外问题只作提示：
+
+```bash
 node scripts/normalize-punctuation.js <正文文件...>
 ```
 
-- 句式脚本只报告；退出 1 表示命中 `--fail-on` 范围，退出 2 是命令或文件错误。每条按严重度和文风判断，功能性写法可以保留并说明。
-- 退化脚本默认任意 finding 即退出 1，要读每条 severity；blocking 的逐字复读、打转、截断、占位符或工程词泄漏需重新生成受损段，再核对已有事实；advisory 只作提示。
-- 标点脚本保留书级白名单获准停顿，清除其余省略号、破折号、双连字符及独立分隔线；保留功能性问号和少量感叹号，默认不变引号。仅作者或项目明确要求时才加 `--quote-mode ascii` 或 `--quote-mode yan`。白名单登记按文风裁决文件执行，不因脚本报警自行放行。
+标点脚本把白名单以外的省略号、破折号、双连字符换成逗号、句号、冒号或删去，并删除独立分隔线；不动问号和感叹号，默认不改引号。仅作者或项目明确要求时才加 `--quote-mode ascii` 或 `--quote-mode yan`。白名单登记按文风裁决文件执行，不因脚本报警自行放行。
 
 完成一次改稿与复扫；仅为新发现的具体问题继续修补，全文扫描最多三轮。没有新问题即停，达到上限仍未解决的列入报告。脚本不可用时如实说明，继续可完成的语义检查，不宣称已通过。
 
 ### Phase 5：交付实际结果
 
-报告分别说明三层实际处理情况，设计缺口尚存时不能称全文问题已清除。数量与字数只报告实际核对的数据，不以删除比例或“AI味等级下降”代替质量判断。只有用户要求另存报告时才新建报告文件。
+报告分别说明三层实际处理情况，多章时逐章写一组；设计缺口尚存时不能称全文问题已清除。数量与字数只报告实际核对的数据，不以删除比例或“AI味等级下降”代替质量判断。只有用户要求另存报告时才新建报告文件。
 
 <!-- author-report -->
 ```md
@@ -116,17 +128,10 @@ node scripts/normalize-punctuation.js <正文文件...>
 {原文位置、缺什么、最小设计选项及会影响的后文；已经授权的修改应先执行，不在此重复求确认。没有则省略。}
 
 {文件模式：给修改文件路径，只附 ≤200 字代表片段，不回全文；交互贴入且无文件路径的零散片段：给改后全文。}
+{有原稿备份时：改前原文留在 {备份路径}，想撤回告诉我。}
 技术备注：{仅确有降级、版本提示或未运行的检查时保留；否则删此行}
 ```
 
-## 按需参考
-
-| 文件 | 何时读取 |
-|---|---|
-| [references/deslop-gates.md](references/deslop-gates.md) | 调用方指定定点问题或 Gate 时，确定范围与分工 |
-| [references/banned-words.md](references/banned-words.md) | 表达层需要检索词句信号时 |
-| [references/agent-calls.md](references/agent-calls.md) | 交给 narrative-writer 执行时 |
-
 ## 流程衔接
 
-表达和用笔修改按本流程完成；需要继续设计剧情时，携带具体缺口与已知约束进入 `/story-long-write` 或 `/story-short-write`，不把作者创作问题送去拆解他人作品。完整审稿可用 `/story-review`；这些跳转不替代本次已授权的改稿。
+表达和用笔修改按本流程完成；长篇剧情级改动按执行边界转 `/story-long-write`；需要继续设计剧情时，携带具体缺口与已知约束进入 `/story-long-write` 或 `/story-short-write`，不把作者创作问题送去拆解他人作品。完整审稿可用 `/story-review`；这些跳转不替代本次已授权的改稿。

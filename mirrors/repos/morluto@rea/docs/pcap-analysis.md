@@ -58,6 +58,11 @@ tools read that copy, which is hashed again after analysis. Capture metadata and
 literal field values are producer observations; address/protocol counts and DNS
 associations are derivations. Capture Evidence has historical-reference authority.
 
+`capture_start` and `capture_end` are RFC 3339 UTC instants derived from
+`capinfos -S` epoch seconds, retaining all producer fractional digits (up to
+nanoseconds). Empty captures, malformed timestamps and instants outside years
+0000–9999 remain `null`; host-local timestamps without a zone are not inferred.
+
 Addresses count once per packet, including loopback and nested IP occurrences.
 DNS addresses are associated only with one question in the same response packet;
 additional records may be included, so this does not prove final resolution.

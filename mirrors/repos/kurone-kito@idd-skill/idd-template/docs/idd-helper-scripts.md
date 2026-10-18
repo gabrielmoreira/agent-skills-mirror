@@ -373,6 +373,7 @@ for every stop of an `--apply` run after the pre-checks; it exits `1` as
 | `discover-shared-file-overlap.mjs` | missing candidates, an invalid value, a flag-combination error, or an unknown flag                                                                  | none today                                                                                                                                                  |
 | `select-desynced-index.mjs`        | a missing `--token` or `--band-size`, or an unknown flag                                                                                            | none today                                                                                                                                                  |
 | `idd-worker-budget.mjs`            | a missing or invalid `--running` / `--startable` / `--harness-limit` value, an invalid `--instructions-since` value, or an unknown flag             | none today                                                                                                                                                  |
+| `idd-load-gate.mjs`                | an unknown flag, a missing value, a non-positive or malformed `--max-load`, or a malformed `--timeout-ms` or `--poll-ms`                            | exit `3` when the timeout ends with the load still at or above the limit (the JSON line on stdout has `passed` set to `false`)                              |
 | `idd-activation.mjs`               | an unknown flag, or an empty `--cwd` value                                                                                                          | none today                                                                                                                                                  |
 | `claim-approval-gate.mjs`          | a missing `--issue`, or an unknown flag                                                                                                             | none today                                                                                                                                                  |
 | `claim-issue.mjs`                  | a missing or invalid `--issue`, `--agent-id`, or `--project-status`, `--apply` without both of the last two, or an unknown flag                     | exit `1` for every ineligible result, including a failed check, and for every stop of an `--apply` run                                                      |
@@ -450,6 +451,7 @@ outcome path.
 | `idd-issue-authoring-delegate.mjs`   | an unknown flag (exit `1`)                                                                                                                                                                                                                                                                                  | —                                                                                                                                                                                       | —                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | an unexpected exception (deterministic, network-free)                                                                                                                                                                       |
 | `idd-critique-telemetry-hook.mjs`    | an unknown flag (exit `1`)                                                                                                                                                                                                                                                                                  | —                                                                                                                                                                                       | —                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | an unexpected exception; `--invoke` always exits `0` with no envelope (fire-and-forget contract)                                                                                                                            |
 | `idd-suggest-untrusted-labelers.mjs` | an invalid `--format`, or an unknown flag (exit `1`/`2`)                                                                                                                                                                                                                                                    | a `gh` failure sweeping issue events (a rate-limit-shaped 403/429 gets an actionable message, still `transport`)                                                                        | —                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | an unexpected exception                                                                                                                                                                                                     |
+| `idd-local-admission.mjs`            | an unknown flag, or no command after `--`                                                                                                                                                                                                                                                                   | none today                                                                                                                                                                              | the command's own status; `2` for a refusal before the command starts (policy, cap, symlink, or lock); `75` with `local-admission: expired` when the wait reaches `maxWait`                                                                                                                                                                                                                                                                                                                                                                                                                                                      | an unexpected exception                                                                                                                                                                                                     |
 | `idd-worker-report.mjs`              | a missing or unknown mode, an unknown flag, a bad `--file`/`--stdin`/`--since` combination or value, or a record that is unreadable, not JSON, or fails the schema (exit `1`)                                                                                                                               | —                                                                                                                                                                                       | —                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | an unexpected exception, including a store lock that could not be acquired (network-free)                                                                                                                                   |
 
 `tests/helper-cli-contract.test.mts` (source repo only) enumerates
@@ -892,6 +894,17 @@ in this preamble, since the fallback differs per helper.
   desync band-index computation; deterministic and network-free (referenced
   in
   [kurone-kito/idd-skill#1397](https://github.com/kurone-kito/idd-skill/issues/1397))
+- `scripts/idd-load-gate.mjs` as the first step of a `&&` chain in front of
+  a heavy command (issue `#4441`, from `#4439`). It waits until the
+  one-minute load average is below `--max-load` (default: the CPU count),
+  checking every `--poll-ms` until `--timeout-ms`. It exits `0` when the load
+  passes, `3` when the timeout ends at or above the limit, and `2` on a usage
+  error. It prints one JSON line (`load1m`, `maxLoad`, `waitedMs`, `passed`,
+  `reason`) and runs no command itself. The `reason` field is `below-limit`,
+  `timeout`, or `load-unavailable`. When the platform reports no load average
+  (Windows, for example), the load cannot be read, so the gate passes at once
+  with `load1m` set to `null` and reason `load-unavailable` instead of waiting
+  out the timeout.
 - `scripts/idd-worker-budget.mjs` for a read-only per-session dispatch
   budget (issue
   [kurone-kito/idd-skill#3835](https://github.com/kurone-kito/idd-skill/issues/3835));
@@ -2566,6 +2579,82 @@ read-cache fetch. Enabling load control adds `--include` to a
 non-paginated `ghApiJson`, the same additive mode as
 `githubApi.telemetry`. The generic `ghText` and `ghTextAsync` runners
 cannot add it, so they fall back to the 60-second backoff.
+
+## Local validation admission (kurone-kito/idd-skill#4428)
+
+`scripts/idd-local-admission.mjs` runs one command after `--` under a
+host-local slot that every repository of one OS user shares (issue
+`#4426`). The slot is a `flock(1)` lock. The command after `--` is the
+child argv: the helper never parses a shell string, so a phase that needs
+a shell passes the shell as its argv.
+
+```sh
+node scripts/idd-local-admission.mjs -- <command> [args...]
+```
+
+The policy is `localExec.admission` in the repository's
+`.github/idd/config.json`, read through the repository-policy normalizer. The
+helper reads only that file, never the layered user-global config, so a
+user-global value cannot change the slot. It finds the repository root as the
+nearest ancestor that holds `.git`. With no such ancestor, or no policy file at
+that root, it uses the defaults.
+
+Behavior:
+
+- `enabled: false` runs the command directly and returns its status. No lock
+  file is created.
+- Backend `flock` with a stored `maxConcurrent` above 1 exits `2` before the
+  command starts. The rule reads the raw stored value: a number above 1, or a
+  string that reads above 1. The normalizer's clamp does not apply, so a stored
+  `9` is refused rather than run serially.
+- Backend `pueue` is accepted by the schema, but this helper does not implement
+  it yet. The run takes the flock path with one slot, prints one notice that
+  names the backend, and leaves the stored cap unchanged. The pueue child issue
+  replaces this rule when it lands.
+- Where `flock` is not on `PATH` (Windows, and macOS unless it is installed),
+  the command runs directly with one notice. Admission is off on that host.
+- The lock is `<state>/idd-skill/local-admission/validate.lock`. `<state>` is an
+  absolute `XDG_STATE_HOME`, else `~/.local/state`; on Windows, an absolute
+  `LOCALAPPDATA`, else `~/AppData/Local`. The directory is a sibling of
+  `github-api-load-control`. The helper never writes, truncates, deletes, or
+  records the file.
+- A wait that reaches `maxWait` (`PT2H` by default, at most six hours) prints
+  `local-admission: expired` and exits `75`, and the command does not start.
+  While the wait lasts, stderr gets a `local-admission: waiting` line at least
+  once a minute.
+- A child that exits `75` after the lock is acquired is returned as `75`
+  without the expiry line. Any other outcome is the command's own status.
+- SIGINT and SIGTERM are forwarded to the admitted process group. The helper
+  waits for that group to end, then exits with `128` plus the signal number. It
+  never escalates to SIGKILL, so a command that ignores the signal keeps the
+  slot.
+- The admitted command runs in its own session with no controlling terminal.
+- Setting `IDD_LOCAL_ADMISSION` in the environment makes the helper run the
+  command directly, without the lock. The helper sets that variable for the
+  admitted command, so a nested call cannot wait on the same lock.
+- The bin `idd-local-admission` runs this module in the same process instead of
+  through `run-helper`, which forwards no signals. A SIGTERM sent to the
+  registered command therefore reaches the admitted command.
+
+Refusals before the command starts exit `2`: a policy file that fails to parse,
+a raw cap above 1 under `flock`, a symlink at `idd-skill` or `local-admission`,
+a lock file that is a symlink or not a regular file, or a `flock` that fails
+before it takes the lock.
+
+Residual risks, open for the operator to accept. The helper does not mitigate
+them:
+
+- A symlink at the state base or above it.
+- A rename over the lock path after the open, or a parent-path swap between the
+  directory check and the open. A later caller that opens the path then locks a
+  different file, while the held inode stays locked.
+- A command that ignores SIGINT or SIGTERM keeps the slot after the helper
+  exits.
+- `IDD_LOCAL_ADMISSION` already set in the environment skips admission. A
+  session must not set the variable itself.
+- The slot covers one OS user. A second OS user has another slot, and a run from
+  the pueue backend, once it lands, can overlap the flock slot.
+- Admission is off where `flock` is absent (Windows, and macOS unless installed).
 
 ## Effective layered policy (kurone-kito/idd-skill#3820)
 
@@ -8211,25 +8300,25 @@ Output is one JSON document with `steps[]` , `status` , `failedStep` , and
 exits `1` . A remote branch hold reports the `delete-remote-branch` action code,
 and that helper detail is the next action.
 
-| Reason                          | Next action                                                                                                                                                                                                                   |
-| ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `symlink-path`                  | Hold. A path in the worktree or above it is a symlink, or a tracked entry resolves outside the worktree. Nothing ran in that path. The operator inspects the symlink, then fixes or removes it.                               |
-| `fetch-failed`                  | Hold. git fetch origin failed, and nothing changed. Check the network and the remote, then rerun.                                                                                                                             |
-| `lock-busy`                     | Hold. Another session holds the clone-scoped lock. Rerun after it is released.                                                                                                                                                |
-| `base-ref-unreadable`           | Hold. The base branch of the pull request could not be read as a valid branch name. Rerun. If it persists, the operator checks the pull request.                                                                              |
-| `primary-worktree-dirty`        | Hold. Local changes in the primary worktree block the fast-forward. The operator cleans those paths (never stash or discard them), then reruns steps 4 to 6.                                                                  |
-| `primary-ignored-overwrite`     | Hold. An ignored file in the primary worktree would be overwritten by the fast-forward. The operator moves that file outside the repository, then reruns steps 4 to 6.                                                        |
-| `development-branch-in-use`     | Hold. The development branch is checked out in another worktree, which the path in the detail names. Do not touch that worktree. The operator frees the branch, then reruns.                                                  |
-| `development-branch-diverged`   | Hold. The development branch cannot fast-forward to origin. Do not reset or rebase. The operator reconciles it.                                                                                                               |
-| `primary-update-failed`         | Hold. The primary worktree update failed for a reason this helper does not classify. Nothing was removed. The operator inspects the primary worktree. Do not reset or stash.                                                  |
-| `inconsistent-worktree-state`   | Hold. The worktree path, its git registration, and the claim branch disagree, or git could not read them. Nothing was removed. The operator checks git worktree list and the claim.                                           |
-| `dirty-worktree`                | Hold. The worktree holds untracked, modified, or ignored files. Nothing was removed. The F4 session preserves that content outside the worktree by hand, discarding only reproducible configured-command output, then reruns. |
-| `submodule-worktree`            | Hold. The worktree holds a populated submodule. Nothing was removed. The F4 session preserves that content outside the worktree by hand, then reruns.                                                                         |
-| `branch-tip-mismatch`           | Hold. The local branch tip does not equal the proof branch tip, or the ref is missing while its worktree exists. Nothing was removed. The operator checks the branch state.                                                   |
-| `local-branch-unmerged-commits` | Hold. git branch -d refused, and the local tip is not the proof head. The operator comments on the issue and makes a fresh claim check before any forced deletion.                                                            |
-| `worktree-remove-refused`       | Failed. git worktree remove refused after the checks passed, so the worktree may be partly changed. The operator inspects it. A rerun reads the proof again and posts nothing.                                                |
-| `delete-setting-unreadable`     | Hold. delete_branch_on_merge could not be read as a boolean. Nothing remote was deleted. Rerun once the setting is readable.                                                                                                  |
-| `remote-delete-unreadable`      | Hold. The output of the remote branch helper could not be read. Nothing remote was deleted. Rerun, and check the helper output.                                                                                               |
+| Reason                          | Next action                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| ------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `symlink-path`                  | Hold. A path in the worktree or above it is a symlink, or a tracked entry resolves outside the worktree. Nothing ran in that path. The operator inspects the symlink, then fixes or removes it.                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| `fetch-failed`                  | Hold. git fetch origin failed, and nothing changed. Check the network and the remote, then rerun.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| `lock-busy`                     | Hold. Another session holds the clone-scoped lock. Rerun after it is released.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| `base-ref-unreadable`           | Hold. The base branch of the pull request could not be read as a valid branch name. Rerun. If it persists, the operator checks the pull request.                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| `primary-worktree-dirty`        | Hold. Local changes in the primary worktree block the fast-forward. The operator cleans those paths (never stash or discard them), then reruns steps 4 to 6.                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| `primary-ignored-overwrite`     | Hold. An ignored file in the primary worktree would be overwritten by the fast-forward. The operator moves that file outside the repository, then reruns steps 4 to 6.                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| `development-branch-in-use`     | Hold. The development branch is checked out in another worktree, which the path in the detail names. Do not touch that worktree. The operator frees the branch, then reruns.                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| `development-branch-diverged`   | Hold. The development branch cannot fast-forward to origin. Do not reset or rebase. The operator reconciles it.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| `primary-update-failed`         | Hold. The primary worktree update failed for a reason this helper does not classify. Nothing was removed. The operator inspects the primary worktree. Do not reset or stash.                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| `inconsistent-worktree-state`   | Hold. The worktree path, its git registration, and the claim branch disagree, or git could not read them. Nothing was removed. The operator checks git worktree list and the claim.                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| `dirty-worktree`                | Hold. The worktree holds untracked, modified, or ignored files. Nothing was removed. The F4 session preserves that content outside the worktree by hand, including every reproducible configured-command output, then reruns.                                                                                                                                                                                                                                                                                                                                                                                   |
+| `submodule-worktree`            | Hold. The worktree holds a populated submodule. Nothing was removed. The F4 session preserves that content outside the worktree by hand. The operator then runs `git -C <issue-worktree-path> submodule deinit --all` with the worktree still registered, and the helper is rerun.                                                                                                                                                                                                                                                                                                                              |
+| `branch-tip-mismatch`           | Hold. The local branch tip does not equal the proof branch tip, or the ref is missing while its worktree exists. Nothing was removed. The operator checks the branch state.                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| `local-branch-unmerged-commits` | Hold. git branch -d refused, and the local tip is not the proof head. The operator comments on the issue and makes a fresh claim check before any forced deletion.                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| `worktree-remove-refused`       | Failed. git worktree remove refused after the checks passed, so the worktree may be partly changed. The operator inspects it. A rerun reads the proof again and posts nothing.                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| `delete-setting-unreadable`     | Hold at step 6. delete_branch_on_merge could not be read as a boolean, and nothing remote was deleted. In a dry run nothing has changed, so rerun it once the setting is readable. In an applied run, steps 4 and 5 have already run. The operator first confirms by hand that delete_branch_on_merge is false: when it is true, step 6 is skipped, because GitHub deletes the branch on merge. Only when it is false does the operator complete step 6 by hand with delete-remote-branch and the expected SHA, and the session continues from step 7 after the operator confirms. Do not rerun an applied run. |
+| `remote-delete-unreadable`      | Hold at step 6. The output of the remote branch helper could not be read, and nothing remote was deleted. In a dry run nothing has changed, so rerun it. In an applied run, steps 4 and 5 have already run. The operator first confirms by hand that delete_branch_on_merge is false: when it is true, step 6 is skipped, because GitHub deletes the branch on merge. Only when it is false does the operator complete step 6 by hand with delete-remote-branch and the expected SHA, after reading its output, and the session continues from step 7 after the operator confirms. Do not rerun an applied run. |
 
 ### Trial merge audit
 
@@ -8788,7 +8877,9 @@ and that helper detail is the next action.
   `recordedAt`.
   Optional are `vendorSessionId`, `reviewRounds`, `stalls`, `deviations`,
   `frictions` (an entry may name the instruction or doc path in `file`),
-  and `followUps`. `terminalPhase` and each `phase` take a phase id such as
+  `followUps` (issues the worker filed), and `unfiledFollowUps` (text the worker
+  identified but did not file; each entry is limited to 500 UTF-16 code units).
+  `terminalPhase` and each `phase` take a phase id such as
   `F4`, `E4`, or the canonical underscore form `F2_5` from
   `schemas/phase-graph.json` (a dot, as in `F2.5`, is accepted too). Every
   string is length-bounded. The helper stores the
@@ -8798,6 +8889,15 @@ and that helper detail is the next action.
   numeric offset, and seconds `00` to `59`, that name a real instant: a day
   that does not exist (`2026-02-30`), hour 24, or an out-of-range offset is
   rejected rather than silently normalized.
+- `reviewRounds`: the PR-wide count of review submissions by
+  `copilot-pull-request-reviewer[bot]`, across all pages and review states,
+  recorded by the orchestrator at verification and not per claim. Workers
+  omit it; the orchestrator recomputes it from GitHub and replaces any draft
+  value. Omit it when `pullRequest` is `null` or a complete count cannot be
+  read. Never store a partial count. The command requires `jq`; if `jq` is
+  unavailable, or the command exits nonzero, discard its output and omit the
+  field. Its compatible pagination forms are in the `Worker report` Fill note
+  in `idd-workflow.md`.
 - `workerHandle`: the identifier the harness returned when it started the
   worker, written by the orchestrator before the append. The dedupe key
   includes it, so a handle taken from anywhere else can make a retry look like
@@ -8828,8 +8928,11 @@ and that helper detail is the next action.
 - `summary`: read-only; it takes no lock and creates nothing. It prints
   JSON with the outcome counts (every outcome, zero-filled), the
   distribution of `reviewRounds`, the ten most frequent `frictions`
-  `file` values, and `invalidLines`, the count of lines that are not valid
-  records. `--since <ISO8601>` keeps only records whose `recordedAt` is at
+  `file` values, `unfiledFollowUps` report and entry counts, and `invalidLines`,
+  the count of lines that are not valid records. The follow-up report count
+  includes valid in-window records with at least one entry; the entry count
+  sums their entries. Both counts are zero when none match. `--since <ISO8601>`
+  keeps only records whose `recordedAt` is at
   or after that instant; it takes a real date-time with an offset, such as
   `2026-10-08T02:00:00Z` or `2026-10-08T11:00:00+09:00`, not a bare date.
 - Concurrency: the duplicate check and the write happen together under an
@@ -8909,10 +9012,13 @@ reporting `branch_outcome: retained_unmerged` (issue #2331).
   local work, so F4 holds instead of discarding it.
 - **Submodule removal** (step 5, issue `#2016`): plain `git worktree
   remove <path>` fails with `fatal: working trees containing
-  submodules cannot be moved or removed`. `git worktree remove
-  --force` is warranted only for that fatal, and only after leftovers
-  are preserved. Revalidate with `--worktree` immediately before the
-  retry (`idd-merge.instructions.md`).
+  submodules cannot be moved or removed`. Under the removal helper, a
+  populated submodule is refused (`submodule-worktree`). The operator runs
+  `git -C <issue-worktree-path> submodule deinit --all` with the worktree still
+  registered, and then reruns the helper. `git worktree remove --force` is a
+  manual operator action only, outside F4, and it unregisters the path, so the
+  helper cannot finish
+  afterward (`idd-merge.instructions.md`).
 - **`merge.autoStash=true` hides a dirty primary worktree** (step 4): F4
   holds a dirty primary worktree as `primary-worktree-dirty` and never
   stashes, but a plain `git merge --ff-only` stashes for itself when
@@ -8944,11 +9050,10 @@ reporting `branch_outcome: retained_unmerged` (issue #2331).
 - **Verified unmerged fallback** (step 4, issue `#3536`): an unmerged
   index can make `stash push` fail even though the working-tree paths
   were copied and verified outside the worktree. If the first removal
-  then fails only because the worktree is still dirty, the helper may
-  retry with `--force` only after a fresh preservation pass verifies a
-  newly copied, complete unmerged fallback. A generic dirty-removal
-  failure, or an incomplete copy, remains a hold; the dry-run plan
-  states this narrow condition explicitly.
+  then fails only because the worktree is still dirty, the helper never
+  retries with `--force`. A dirty removal failure stays a hold, including
+  when a fresh, complete preservation copy exists, and the operator decides
+  any manual removal outside F4.
 - **Removed cwd** (step 5, issue `#3189`): a later `node` call fails
   with `ENOENT` on `uv_cwd`, or `gh` / `git` fails with `Unable to
   read current working directory`, and `unclaimed-by` is skipped

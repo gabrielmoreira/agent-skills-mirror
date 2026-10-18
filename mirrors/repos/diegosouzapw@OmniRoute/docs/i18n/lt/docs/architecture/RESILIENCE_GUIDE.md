@@ -352,22 +352,22 @@ blokavimo _būsena_ yra laikina.
 
 ## 4. Kvotos bendrinimo lygiagretumo valdymas (v3.8.36)
 
-Prenumeratos paskyros (GLM, MiniMax ir kt.) dažnai leidžia tik ~1–3 lygiagrečias
-užklausas; viršijus šią ribą gaunami 429 atsakymai ir pritaikomi atvėsimo laikotarpiai. Tai ypač aktualu naudojant
-**kvotos bendrinimo** (`qtSd/…`) derinius, kai keli API raktai bendrina vieną tiekėjo
-paskyrą. Trys sluoksniai apsaugo bendrinamą paskyrą nuo užtvindymo užklausomis.
+Prenumeratos paskyros (GLM, MiniMax ir kt.) dažnai priima tik ~1–3 lygiagrečias
+užklausas; viršijus šį skaičių gaunami 429 atsakymai ir aktyvinami atvėsimo laikotarpiai. Tai ypač aktualu naudojant
+**kvotos bendrinimo** (`qtSd/…`) derinius, kai keli API raktai naudoja vieną išorinę
+paskyrą. Trys lygmenys apsaugo bendrinamą paskyrą nuo užtvindymo.
 
-### Ryšio lygiagretumo riba (`max_concurrent`)
+### Vieno ryšio lygiagretumo riba (`max_concurrent`)
 
-Kiekvienam tiekėjo ryšiui galima nurodyti `max_concurrent` viršutinę ribą
-(`provider_connections.max_concurrent`, nustatomą ryšio modaliniame lange / API / DB).
-Jei ribos nereikia, palikite lauką tuščią. Tai vienintelis parametras, valdantis toliau aprašytą
-nuoseklaus vykdymo sluoksnį — nustatykite tikrąjį paskyros lygiagretumą (pvz., GLM ~1, MiniMax ~2).
+Kiekvienam teikėjo ryšiui galima nurodyti `max_concurrent` viršutinę ribą
+(`provider_connections.max_concurrent`, nustatoma ryšio dialogo lange / API / DB).
+Jei ribos nereikia, palikite lauką tuščią. Tai vienintelis parametras, valdantis toliau aprašytą serializavimo
+lygmenį — nustatykite tikrąjį paskyros lygiagretumą (pvz., GLM ~1, MiniMax ~2).
 
-### Modelio lygiagretumo ribos (`modelConcurrency`)
+### Kiekvieno modelio lygiagretumo ribos (`modelConcurrency`)
 
 Ryšiui taip pat galima nurodyti tikslias kiekvieno modelio lygiagretumo ribas
-jo `rateLimitOverrides` atvaizdyje:
+jo `rateLimitOverrides` žemėlapyje:
 
 ```json
 {
@@ -378,63 +378,72 @@ jo `rateLimitOverrides` atvaizdyje:
 }
 ```
 
-Nustatykite tai ryšio modaliniame lange (**Spartos apribojimų perrašymai → Modelių
-lygiagretumo ribos**, po vieną `model=cap` kiekvienoje eilutėje) arba naudodami
-`PATCH /api/providers/[id]` su tokios pačios struktūros JSON. Raktų semantika:
+Nustatykite jas ryšio dialogo lange (**Spartos apribojimų perrašymai → Kiekvieno modelio
+lygiagretumo ribos**, po vieną `model=cap` kiekvienoje eilutėje) arba per
+`PATCH /api/providers/[id]`, naudodami tokią pačią JSON struktūrą. Raktų semantika:
 
-- **Viso ryšio ir konkretaus modelio ribos:** `maxConcurrent` išlieka bendra
+- **Viso ryšio ir konkretaus modelio ribos:** `maxConcurrent` lieka bendra
   viso ryšio viršutine riba. Kai taikomos abi ribos, abu leidimai gaunami
-  atomiškai tame pačiame sudėtiniame ribotuve
-  (`global → provider → account → model`); faktiškai taikoma
-  griežtesnė riba.
+  atomiškai tame pačiame sudėtiniame mechanizme
+  (`global → provider → account → model`); faktinę elgseną lemia
+  griežtesnė taikoma riba.
 - **Tikslus modelio rakto atitikimas:** raktas yra modelio eilutė, perduodama
-  vykdikliui po maršruto nustatymo — paprastai tai yra paprastas tiekėjo modelio ID
-  (`glm-5`), o ne kliento pusės `provider/model` alternatyvusis pavadinimas (`zai/glm-5`
+  vykdytojui po maršruto nustatymo — paprastai tai yra grynasis išorinio modelio ID
+  (`glm-5`), o ne kliento pusės `provider/model` alternatyvusis vardas (`zai/glm-5`
   neatitinka `glm-5`). Reikšmės yra teigiami sveikieji lygiagrečių užklausų ribų skaičiai.
-- **Vietinė eilė, be automatinio nustatymo:** perteklinės užklausos įtraukiamos į vietinę eilę pagal
+- **Vietinė eilė, be aptikimo:** perteklinės užklausos įtraukiamos į vietinę eilę pagal
   esamą eilės / skirtojo laiko semantiką (tipizuotos `SEMAPHORE_TIMEOUT` /
   `SEMAPHORE_QUEUE_FULL` priėmimo klaidos). OmniRoute neaptinka ir
-  nenustato tiekėjo politikos — jis įgyvendina tiksliai tas ribas, kurias
-  sukonfigūravo operatorius. Prisotintas modelio ribotuvas niekada neišjungia tiekėjo ir
-  niekada nesukuria nuolatinio modelio blokavimo; tiekėjo 429 / atvėsimo / atsarginio maršruto elgsena
-  išlieka galutine apsauga klaidos atveju.
-- **Kiekvienam ryšiui, kiekviename procese:** ribos taikomos kiekvienam duomenų bazės ryšiui
-  ir laikomos atmintyje, todėl du ryšiai, pakartotinai naudojantys tą patį tiekėjo API raktą,
+  nenustato išorinės sistemos politikos — jis taiko tiksliai tas ribas, kurias
+  sukonfigūravo operatorius. Užpildytas modelio ribotuvas niekada neišjungia teikėjo ir
+  niekada nesukuria nuolatinio modelio blokavimo; išorinės sistemos 429 / atvėsimo / rezervinio
+  maršruto elgsena išlieka galutine apsauga nuo klaidų.
+- **Kiekvienam ryšiui ir procesui atskira aprėptis:** ribos taikomos kiekvienam duomenų bazės ryšiui
+  ir laikomos atmintyje, todėl du ryšiai, pakartotinai naudojantys tą patį išorinį API raktą,
   tarpusavyje nekoordinuojami.
-- **Nesukonfigūruota reiškia nepakeista:** praleidus atvaizdį (arba palikus
-  prietaisų skydelio lauką tuščią), modelio ribotuvas nepridedamas. Konfigūracijos pavyzdys,
-  kuriuo netvirtinamas joks universalus tiekėjo apribojimas:
+- **Nesukonfigūravus niekas nesikeičia:** praleidus žemėlapį (arba palikus
+  valdymo skydelio lauką tuščią), modelio ribotuvas nepridedamas. Konfigūracijos pavyzdys,
+  kuriame nenustatoma jokia universali teikėjo riba:
 
 ```text
 glm-5=1
 glm-4.7=3
 ```
 
-### Kvotos bendrinimo užklausų nuoseklus vykdymas
+### Kvotos bendrinimo užklausų serializavimas
 
-Kai kvotos bendrinimo persiuntimas nukreipiamas į ryšį, kuriam nurodyta teigiama
-`max_concurrent` reikšmė, lygiagrečios užklausos tai **paskyrai** nuosekliai vykdomos naudojant
+Kai kvotos bendrinimo išsiuntimas nukreipiamas į ryšį, kuriam nustatyta teigiama
+`max_concurrent` reikšmė, lygiagrečios užklausos tai **paskyrai** serializuojamos per
 kiekvieno ryšio semaforą (raktas `qsconn:<connectionId>`): perteklinės užklausos **laukia
-eilėje**, užuot užtvindžiusios paskyrą. Taikomas **fail-open** principas — esant prisotintai
-eilei arba pasibaigus skirtajam laikui, vykdymas tęsiamas be leidimo, užuot atmetus persiunčiamą
+eilėje**, užuot užtvindžiusios paskyrą. Taikomas **fail-open** principas — užpildžius
+eilę arba pasibaigus skirtajam laikui, tęsiama negavus vietos, užuot kada nors atmetus išsiųsti tinkamą
 užklausą. Perjunkite skiltyje **Nustatymai → Atsparumas → Kvotos bendrinimo lygiagretumas
 kiekvienam ryšiui** (`resilienceSettings.quotaShareConcurrencyLimit.enabled`, pagal numatytąją
 nuostatą įjungta). Jei `max_concurrent` riba nenustatyta, elgsena nesikeičia.
 
-> Pats kvotos bendrinimo maršruto ribotuvas (`selectQuotaShareTarget`, DRR + P2C)
-> veikia pagal fail-open principą ir tik _sumažina_ ribą pasiekusio ryšio prioritetą — kai
-> telkinyje yra tik vienas ryšys, jis negali nustatyti griežtos ribos, todėl būtent šis semaforas
-> faktiškai suvaldo užklausų antplūdį.
+> Pats kvotos bendrinimo maršruto parinkimo ribotuvas (`selectQuotaShareTarget`, DRR + P2C)
+> veikia pagal fail-open principą ir tik _sumažina prioritetą_ ribą pasiekusiam ryšiui — kai
+> telkinyje yra vienintelis ryšys, jis negali nustatyti griežtos ribos, todėl būtent šis semaforas
+> iš tikrųjų sulaiko užklausų srautą.
 
-### Derinių pakartotinis bandymas, atsižvelgiant į atvėsimo laikotarpį
+### Derinio pakartotinis bandymas, atsižvelgiant į atvėsimą
 
-Taikant bet kurią įjungtą derinių strategiją, užklausa, kuri galutinai sukeltų 429 atsaką
-dėl TRUMPO laikino atvėsimo laikotarpio, palaukia, kol jis pasibaigs, ir persiunčiama iš naujo,
-užuot grąžinus 429 — tai apima Gemini klasės TPM / RPM intervalus (~60 s `retry-after`)
+Kai ši funkcija įjungta, kiekvienai derinio strategijai užklausa, kuri galutinai sukeltų 429
+dėl TRUMPO laikino atvėsimo, palaukia, kol jis baigsis, ir išsiunčiama iš naujo, užuot
+grąžinus 429 — tai apima Gemini klasės TPM/RPM langus (~60 s `retry-after`)
 kelių modelių deriniuose, pvz., kai abu 2 modelių derinio tikslai pasiekia konkretaus modelio
 spartos ribą. Ribojama naudojant `comboCooldownWait` (`enabled`, `maxWaitMs`, `maxAttempts`,
 `budgetMs`) skiltyje **Nustatymai → Atsparumas**. Niekada nelaukiama dėl `quota_exhausted`
-(užrakinta iki vidurnakčio) arba autentifikavimo / neradimo priežasčių.
+(užrakinta iki vidurnakčio) ar autentifikavimo / neradimo priežasčių.
+
+Tas pats mechanizmas apima ir atvejį prieš išsiuntimą (#16319): kai kiekvienas derinio
+tikslas praleidžiamas dar neatlikus nė vieno bandymo, nes jo modeliui taikomas trumpas
+laikinas blokavimas, nulio bandymų kelias pagal tas pačias viršutines ribas laukia, kol blokavimas
+baigsis, ir išsiunčia iš naujo, užuot pateikęs atsakymą be užuominos
+`503 ALL_TARGETS_SKIPPED`. Kai laukti neleidžiama (pasiekta viršutinė riba, išnaudoti bandymai
+ar biudžetas arba funkcija išjungta), galutinis atsakymas pakeičiamas į
+`429 rate_limit_error`, kuriame pateikiami `retry_after` / `reset_at` iš anksčiausiai
+pasibaigsiančio laikino blokavimo; kvotos, autentifikavimo ir neradimo blokavimams paliekamas 503 be užuominos.
 
 ```text
 #16319 · comboCooldownWait · pre-dispatch (attempts = 0)

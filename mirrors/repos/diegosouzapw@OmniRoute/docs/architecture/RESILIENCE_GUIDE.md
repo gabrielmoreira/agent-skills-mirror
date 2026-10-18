@@ -98,6 +98,17 @@ Regression guard: `tests/unit/provider-cooldown-window-gate.test.ts`.
 
 **Anti-thundering-herd guard:** prevents concurrent failures from over-extending cooldown or double-incrementing `backoffLevel`.
 
+**Concurrency-limit 429s do not climb the backoff ladder.** A `429` whose body reports a
+concurrency limit ("too many concurrent requests", "concurrency limit", "parallel request
+limit", GLM `并发数过高`) means the account is healthy but busy.
+`checkFallbackError()` returns reason `concurrency_limited`: fail over to the next
+connection now, cool this one for a fixed `CONCURRENCY_LIMIT_COOLDOWN_MS` (1s) or the
+upstream retry hint, keep `backoffLevel` unchanged, and set `skipProviderBreaker`.
+An explicit quota body still wins, so a body that also matches a quota pattern stays a quota
+verdict. Detection: `looksLikeConcurrencyLimit()` in `src/shared/utils/classify429.ts`;
+verdict: `open-sse/services/accountFallback/concurrencyLimit429.ts`. `classify429()` (the
+breaker's `FailureKind`) is unchanged and still reads `rate_limit` for these bodies.
+
 **Stream content stalls do not cool the account.** When the content-stall watchdog
 (`open-sse/utils/streamHandler.ts`) gives up on a stream that sent no model output in
 time, `markAccountUnavailable()` records the error on the connection but sets no
@@ -511,6 +522,23 @@ it is unit-testable without a real Bottleneck limiter.
 > change than this issue's scope; it was intentionally **not** implemented
 > here and is left as a follow-up if the CPU-saving win is worth the
 > reordering risk.
+
+### Rate-Limit Auto-Enable Safety Net & Connection Protection (`rateLimitProtection`)
+
+**Auto-enable safety net** (`resilienceSettings.requestQueue.autoEnableApiKeyProviders`, default `true`):
+By default, OmniRoute automatically enables rate-limit queue protection for all active API-key provider connections (`getProviderCategory(provider) === "apikey"`). This ensures incoming requests to rate-sensitive upstream API keys are queued and throttled through Bottleneck rather than bursting into upstream 429 errors. The safety net can be overridden via the `RATE_LIMIT_AUTO_ENABLE` environment variable (`false`/`0`/`off` disables, `true`/`1`/`on` forces on), which takes precedence over the persisted dashboard setting (**Settings → Resilience** / `PATCH /api/resilience`).
+
+**Semantics of per-connection `rateLimitProtection`:**
+Per-connection rate-limit protection is tracked via the `rateLimitProtection` boolean field on provider connections (persisted as `rate_limit_protection` in SQLite):
+
+- **Explicit on (`rateLimitProtection === true`)**: Rate-limit protection is explicitly enabled for this connection, regardless of provider category or whether the auto-enable safety net is turned on.
+- **Explicit off (`rateLimitProtection === false`)**: Disables explicit protection, but **does not** opt an active API-key connection out of the global auto-enable safety net. In `reconcileEnabledConnections` (`open-sse/services/rateLimitManager.ts`), `false` and `undefined` are equivalent: only `rateLimitProtection === true` is treated as an explicit override. If `rateLimitProtection` is `false` (or unset), an active API-key connection still matches the auto-enable condition and remains rate-limit protected.
+- **No per-connection opt-out**: An operator cannot currently express "this single active API-key connection must run without rate-limit queue protection" while keeping auto-enable active for others. To completely run API-key connections without rate-limit queues, the safety net must be turned off globally (`RATE_LIMIT_AUTO_ENABLE=false` or `resilienceSettings.requestQueue.autoEnableApiKeyProviders = false`).
+
+**Supported write paths:**
+
+- **`POST /api/rate-limits`**: The supported management write path to toggle `rateLimitProtection` for a connection (`{ connectionId: string, enabled: boolean }`). Calling this with `enabled: true` turns explicit protection on; calling this with `enabled: false` removes explicit protection (though active API-key connections remain covered under the global safety net if auto-enable is on).
+- **`PUT /api/providers/[id]`**: Deliberately does **not** accept or flip `rateLimitProtection` (#11278). Updating provider connection metadata via `PUT /api/providers/[id]` will never change the persisted rate-limit protection state.
 
 ---
 

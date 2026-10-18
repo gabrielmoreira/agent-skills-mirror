@@ -45,6 +45,8 @@ description: >-
 按其中的依赖准备、目标状态、发送与恢复流程执行。入口不另定义一套运行时参数；
 `scripts/codex_live.py` 是随本 Skill 分发的实时 adapter。
 
+选择 `--codex-delivery queued` 前，确认这条消息仍需要延迟送达：queue 会把完整信封作为用户消息送入对话，可能在协作窗口结束后才出现。接收方静默处理或 `coord finish` 都不能撤回它。实时路径不可用不构成改传 queued 的依据；短时窗口需要及时答复却无法及时投递时，报告该协调未送达，按既定有界等待与隔离推进方式继续。明确需要延迟留话的任务仍可使用 queued；不要以降噪为由吞掉有效新问题。
+
 ## 路由表
 
 | 场景 | 路由 |
@@ -57,6 +59,7 @@ description: >-
 | Claude 宿主内回复/发送给 `codex:` 目标 | **不走 SendMessage**——native guard 的 SendMessage 分支只对能解析成 Claude session 的目标放行，`codex:` 前缀必被拦；prepare→原生发送的路径对 Codex 目标不存在，直接 `scripts/peer.py send`。注意连坐：裸发被拦本身不落板（拦截早于 Board 打开），但为 `codex:` 目标跑 `coord prepare` 会留下 reserved 孤行（v1.21.3 之前的拦截文案会指引你跑 prepare），随后 `peer.py send` 同内容报 `suppressed_pending`——先 `coord commit --message-id <id> --outcome not_sent` 结清再重发（2026-10-10 实测） |
 | 多目标协调 | 明确列出目标；原生按工具契约逐个发送或广播，脚本补缺才使用 `broadcast`；禁止从单发请求推断全机广播。脚本 `broadcast` 的消息自动带 fan-out 标记，语义是「仅属主回复，其余忽略」；超出默认目标数上限须 `--contract <契约名>` 点名依据，否则脚本拒发（上限值以 CLI help/实现为准，不在文档复制）——先发证据（git/索引）收窄候选，见 `references/protocol-and-discovery.md` §5 |
 | 查找对脚本 outbound 的显式回复 | 对原发送方自己的 inbox 运行一次 `replies`；原生回传沿宿主机制，命令与证据边界见 `references/protocol-and-discovery.md` §4 |
+| 已知 Codex thread UUID 和入站信封自身 ID，需要只读查看该条原文 | 先读 [按自身 ID 只读查看入站信封](references/protocol-and-discovery.md#按自身-id-只读查看入站信封)；这条查看路径独立于接收处理和按 outbound ID 查询关联回复 |
 | 用户问对方是否收到／读到／处理，或下一步依赖对方已消费消息 | 不停在 queued；按 `references/coordination-and-learning-loop.md` §3 核对本机目标 transcript 与关联回应，区分入队、进入对话、已回应与已执行 |
 | 消息被 hold 要人工批准，或建无人值守接收端点 | 按 `references/official-feature.md` §3 的 Held 修复路径处理 inbound 策略，不重发 |
 | 共享 checkout、分支、文件或锁上有别人的在制品挡着你 | 先核实它是否真在飞；真在飞才问，且只问你列出的候选（单发或显式 broadcast 都可，上一行的禁令针对的是从一次单发推断出全机广播）；见下文「撞见别人的在制品」 |

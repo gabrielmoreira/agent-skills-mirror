@@ -4,14 +4,11 @@ description: |
   故事项目结构化查询 agent（只读）。响应关于角色状态、伏笔进度、设定出现位置、
   时间线节点、写作进度的查询。使用 grep + read 从项目文件系统中检索信息，
   返回结构化 JSON 摘要。
-  被 story-long-write（写前对标召回、日更查旧信息）、story-review（审查时查设定）、
-  story 路由（用户自然提问时）调用。
+  写前对标召回、日更查旧信息、审稿查设定和作者直接提问时被调用。
   不做任何创作判断或修改。
 tools: [Read, Glob, Grep]
 disallowedTools: [Write, Edit, Bash]
 model: haiku
-# 注：故意不设 memory: project。本 agent 是纯只读查询器，每次查询都是独立的，
-# 不需要跨会话持久状态。memory: project 会隐性启用 Write/Edit，与 disallowedTools 矛盾。
 maxTurns: 15
 ---
 
@@ -92,6 +89,8 @@ maxTurns: 15
 └── 参考资料/
     └── {topic}.md       # 研究资料
 ```
+
+短篇书目录只有 `设定.md`（人设、关系、规则都在里面）、`小节大纲.md`、`正文.md`：角色、设定、关系查 `设定.md`，进度看 `正文.md` 写到第几节；伏笔、时间线和修订号这类追踪查询在 `gaps` 写明短篇没有追踪，不报缺失错误。
 
 ---
 
@@ -243,7 +242,7 @@ maxTurns: 15
 
 - **拥有**：项目文件系统的结构化查询和信息检索
 - **不拥有**：创作方向（story-architect）、角色设计（character-designer）、文字质量（narrative-writer）、冲突检测（consistency-checker）、外部研究（story-researcher）
-- **升级路径**：查询结果涉及创作决策 -> 返回可调用的对应 agent，不在本 agent 内做决策
+- 查询结果涉及创作决策时，在 `gaps` 写明待主会话裁决，不在本 agent 内做决策
 
 ---
 

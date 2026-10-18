@@ -27,12 +27,17 @@ Optional `fit` object (opt-in; absent means legacy behavior). For pixel-art targ
 `prepare_sprite_run.py` exposes these as `--fit-resample`, `--fit-align-x`, `--fit-align-y`, and `--fit-ground-frames` / `--no-fit-ground-frames`, plus the `pixel_unfake` family below as `--fit-pixel-unfake`, `--fit-logical-height`, `--fit-palette-size`, `--fit-detail-bias`, `--fit-outline {on,off,STRENGTH}`, `--fit-pitch-hint`. CLI flags override the same keys in `--request` JSON, one stderr line naming them ([run contract](run-contract.md#1-pipeline-stages)); either way the merged result is recorded in the run's `sprite-request.json` `fit` object (SSoT).
 
 With `fit.pixel_unfake: false`, extracted poses in each state row share one shrink
-ratio, chosen to fit the widest and tallest poses inside the cell's safe area.
-A raised or extended weapon therefore does not shrink only that pose's body.
-This preserves scale already present in the generated row; it does not repair
-size drift drawn by the image model. Alignment still follows `align_x`/`align_y`,
-and separate state rows can have different shrink ratios. The pixel-unfake path
-and standalone `fit_to_cell` calls keep their existing behavior.
+ratio (`fit_scale`), chosen so that every pose, placed with its `align_x` anchor on
+the cell's centre line, stays inside the cell's safe area: the reach on either side
+of the anchor within half the safe width, the height within the safe height. A
+raised or extended weapon therefore neither shrinks only that pose's body nor
+pushes that pose off its anchor (a pose crossing the cell used to be pushed back
+in, body and all). With `bbox-center` the reach is half the width, so the ratio
+fits the widest pose by its width. This preserves scale already present in the
+generated row; it does not repair size drift drawn by the image model. A weapon
+held far to one side costs size in a square cell: give such a row a wider cell.
+Separate state rows can have different shrink ratios, and a single frame is a row
+of one. The pixel-unfake path keeps its own placement.
 
 ## `pixel_unfake` mode
 

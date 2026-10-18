@@ -1,6 +1,6 @@
 # `sprite-gen gen` — provider-backed image generation (engine SSoT)
 
-> Owns: `sprite-gen gen` / `gen-set`: providers, default resolution, transparency strategy per provider, the billed knobs (`--quality`, `--resolution`), when a refused provider request is sent again (every direct provider call), row usage · Index: [docs/README.md](README.md)
+> Owns: `sprite-gen gen` / `gen-set`: providers, default resolution and what a default codex that cannot run turns into, transparency strategy per provider, the billed knobs (`--quality`, `--resolution`), when a refused provider request is sent again (every direct provider call), row usage · Index: [docs/README.md](README.md)
 
 Generation is a first-class engine module (`sprite_gen/gen/`), not an external
 skill. One call = a prompt (+ optional reference images) → one **verified** PNG on
@@ -26,21 +26,22 @@ The strategy is declared **once**, on the adapter (`Provider.transparency`), and
 the only place that says what a backend can do. See
 [Transparent output](#transparent-output--strategy-per-provider).
 
-## Subscription first — `openai` is named or it does not run
+## Subscription first — `openai` runs only when you chose it
 
 `codex` and `grok` run on a subscription the user already pays for. `openai`
 reaches the same family of GPT image models over the REST API with nothing but a
 key — which is what a headless container (a Modal worker, CI, a SaaS backend) can
 have, and where an interactive ChatGPT login cannot exist — and every call is
-billed against that key. So it is registered, documented, and **explicit-only**
-(maintainer 확정 2026-09-20):
+billed against that key. So it is registered, documented, and runs **only when the
+user chose it** (maintainer 확정 2026-09-20, widened 2026-10-16 from "only when
+named"):
 
-- it runs only when `--provider openai` names it;
-- `SPRITE_GEN_DEFAULT_PROVIDER=openai` is **refused**, not honoured;
-- the guided flow (`sprite-gen workflow`) never offers it and never saves it as a
-  preference;
-- no availability fallback targets it — a codex outage reaches `grok`, another
-  subscription route, or it fails; it never reaches metered credit;
+- it runs when `--provider openai` names it, or when it is the user's own answer
+  for a default codex that cannot run ([below](#when-codex-cannot-run--ask-or-what-you-chose));
+- it is never a default: `SPRITE_GEN_DEFAULT_PROVIDER=openai` is **refused**, not
+  honoured, and nothing reaches it unasked;
+- the guided flow (`sprite-gen workflow`) never offers it as the image provider; it
+  offers it once, as one answer to "codex cannot run here — what now?", billing named;
 - having `OPENAI_API_KEY` in the environment changes no route by itself;
 - every call it does make prints one stderr line naming the charge *before* the
   request leaves.
@@ -54,25 +55,77 @@ precedence (maintainer 확정 2026-07-17):
 
 1. **`SPRITE_GEN_DEFAULT_PROVIDER`** env var (`codex` or `grok`) — the user override.
    An unknown value fails loud, and so does `openai`: a per-call API backend is
-   named at the call site or not used ([subscription first](#subscription-first--openai-is-named-or-it-does-not-run)).
+   never a default ([subscription first](#subscription-first--openai-runs-only-when-you-chose-it)).
 2. **`codex`** — the hard default (GPT `image_gen`).
 
-If the resolved default is `codex` but codex is unavailable here (CLI not on PATH,
-or `codex login status` reports not-logged-in), the resolution **falls back to
-`grok` — observably, never silently**: a stderr notice is printed and the report
-JSON records `provider_fallback` (`from`/`to`/`reason`/`default_source`). The
-grok default (`SPRITE_GEN_DEFAULT_PROVIDER=grok`) has no reverse fallback — a down
-grok fails loud at generation time. The fallback target is a subscription route by
-construction; `openai` is never one.
+A resolved default of `codex` that cannot run here turns into what the user chose
+for that ([below](#when-codex-cannot-run--ask-or-what-you-chose)). The grok default
+(`SPRITE_GEN_DEFAULT_PROVIDER=grok`) has no reverse fallback — a down grok fails
+loud at generation time.
 
 An **explicit `--provider`** is always honored verbatim — it is never overridden by
-the availability fallback. An explicitly named provider that is down fails loud
-(the provider adapter raises), preserving the operator's stated intent.
+the choice below. An explicitly named provider that is down fails loud (the provider
+adapter raises; a named codex whose usage is used up fails with codex's own words,
+exit 1), preserving the operator's stated intent.
 
 Every generation reports which backend actually ran: `provider` (the real
 backend), `provider_resolved_from` (`explicit` / `SPRITE_GEN_DEFAULT_PROVIDER` /
-`hard-default` / `fallback-from-codex`), and `provider_fallback` when a fallback
-happened.
+`hard-default` / `fallback-from-codex`), and `provider_fallback` when a default
+codex that could not run was switched to the provider chosen for that.
+
+## When codex cannot run — ask, or what you chose
+
+A call that names no provider (`gen`, `logo`, `gen-set`, `video-set`'s mid-step
+redraw) runs on codex. When codex **cannot run here** it does not switch on its own
+(maintainer 확정 2026-10-16; until 2.44.0 it went to `grok` unasked). Codex cannot
+run when
+
+- **it is not signed in** (`cause: login`): `codex_provider.codex_login` — the CLI is
+  not on PATH, `codex login status` fails or does not answer, or exits non-zero.
+  Known before anything is generated.
+- **its usage is used up** (`cause: usage-limit`): `codex exec` ends on one of the
+  errors codex itself classes as its usage limit, read from what it says
+  (`codex_provider.usage_limit`, below). Known only after `codex exec` ran, so the
+  same choice applies there: the call runs again on the chosen provider.
+
+What happens then is the user's choice, one of three:
+
+| Choice | What a call that names no provider does |
+|---|---|
+| `ask` (the default) | Nothing is generated. One stderr line `sprite-gen ask codex-unavailable: {…}` and **exit 75**: the line's JSON holds `cause`, `reason` (the reading's own words), `question`, and `choices` — the flag that runs each answer (`--provider openai`, `--provider grok`; `video-set`: `--still-provider …`), `stop` null. The agent asks the user ([SKILL](../SKILL.md#when-codex-cannot-run--exit-75)). |
+| `grok` | Runs on grok. One stderr line says codex could not run, why, and whose choice grok was; the report keeps `provider_fallback` (`from`, `to`, `cause`, `reason`, `default_source`, `chosen_by`). |
+| `openai` | Runs on the OpenAI API, billed per call: the same switch line and `provider_fallback`, and the charge line every `openai` call prints. |
+
+The choice is read in this order, only when codex cannot run:
+`SPRITE_GEN_CODEX_UNAVAILABLE` (`ask` / `grok` / `openai`, an unknown value fails
+loud), then the saved one (`sprite-gen defaults save --codex-unavailable …`, in the
+[one settings file](user-workflow.md#one-settings-owner); `chosen_by: saved`), then
+`ask`. The guided flow asks it once and saves it.
+
+`gen-set` and `video-set` run `gen` per row or item with its output in a log. A
+child that asked does not fail its row in silence: the set stops with the same
+question and exit 75 once the rows under way have ended (a `gen-set` starts no
+further stage; a `video-set` lets its other items finish, as they need no codex), its
+report and `table.md` keep the question (`asked`), and the line names the set's own
+flag. Rerun the set with the answer's flag; finished rows and items are reused.
+
+**The usage-limit signal** (2026-10-16, codex-rs source at `rust-v0.160.1` and
+`rust-v0.153.4`). codex classes three errors as its usage limit
+(`CodexErr::to_codex_protocol_error` → `CodexErrorInfo::UsageLimitExceeded`,
+`codex-rs/protocol/src/error.rs`): `UsageLimitReached` (an HTTP 429
+`usage_limit_reached`), `QuotaExceeded` (429 `insufficient_quota` and its billing
+codes) and `UsageNotIncluded` (429 `usage_not_included`; `codex-rs/codex-api/src/api_bridge.rs`).
+`codex exec --json` carries only their message: its `error` and `turn.failed` events
+hold `message` alone (`codex-rs/exec/src/event_processor_with_jsonl_output.rs`), the
+error event is not kept in the rollout (`codex-rs/rollout/src/policy.rs`), and codex
+exits 1. So the signal is the start of each message as codex's own tests pin it
+(`codex-rs/protocol/src/error_tests.rs`): "You've hit your usage limit" (the
+apostrophe is ASCII in 0.153.4 and U+2019 in 0.160.1), "Your workspace is out of
+credits.", "You hit your spend cap set", "Quota exceeded. Check your plan and billing
+details." and "To use Codex with your ChatGPT plan, upgrade to Plus". Any other
+failure of `codex exec` is a failure, not the question. These sentences were read
+from the source, not seen from a used-up account; a codex release that rewords them
+is a failure until this list follows it.
 
 ## Direct Grok calls and authentication
 
@@ -116,7 +169,7 @@ anywhere. Unset, the run stops naming the variable and where to get a key; set b
 empty, it says so. It never falls back to the codex ChatGPT login or to another key;
 a refusal OpenAI documents as a request not taken is sent again, nothing else is
 ([a refused request sent again](#a-refused-request-sent-again)) — and see
-[subscription first](#subscription-first--openai-is-named-or-it-does-not-run) for why
+[subscription first](#subscription-first--openai-runs-only-when-you-chose-it) for why
 nothing routes here on its own.
 
 The default model is `gpt-image-2.5-flare`; `--model` selects another gpt-image
@@ -238,7 +291,7 @@ second run on top would make every one of its POSTs a second retry loop.
 
 ```bash
 sprite-gen gen \
-  [--provider codex|grok|openai] # optional; default = SPRITE_GEN_DEFAULT_PROVIDER env → codex (observable grok fallback if codex is down). openai only when named here — it bills per call
+  [--provider codex|grok|openai] # optional; default = SPRITE_GEN_DEFAULT_PROVIDER env → codex; a codex that cannot run asks (exit 75) or runs what you chose for that. openai bills per call
   --prompt "…"            # or --prompt-file PROMPT.txt
   --out DEST.png \
   [--ref REF.png ...]     # repeatable; Grok accepts up to five references, openai up to sixteen
@@ -268,7 +321,7 @@ Backward-compatible wrapper: `$SPRITE_GEN_ROOT/.venv/bin/python $SPRITE_GEN_ROOT
   `raw_bytes`, `elapsed_seconds`, `session_id` (codex), an `alpha` block
   (`strategy` + the measured stats), the `chroma` stats when chroma keying ran, and the
   provider-resolution fields (`provider_resolved_from`, and `provider_fallback` when a
-  codex→grok default fallback occurred), plus the provider `extra` block
+  default codex that could not run was switched to the provider chosen for that), plus the provider `extra` block
   (`auth_source`, `transport`, `endpoint`, and the knobs the request actually
   carried).
 
@@ -433,7 +486,7 @@ strategy it can execute, and `--alpha-mode auto` (the default) follows it:
   Rollouts are selected by an exact session-id filename suffix.
   Missing, duplicate, or pre-existing stale matches fail rather than falling back to another root or choosing by modification time.
   The transport prompt names the skill with codex's official `$imagegen` mention, which is how a codex skill is invoked explicitly. The adapter owns that trigger alone; the caller's sprite-request prompt is passed through verbatim.
-  How codex is signed in is asked once per call by `codex_provider.codex_login` (`codex login status`), the same reading the default resolution, the facing check and the guided workflow use: signed in with ChatGPT is the subscription (`auth_source: codex-login`); signed in with an API key bills that key per call, said on stderr before `codex exec` runs (`codex-api-key`); not signed in is refused with the reason before codex runs (an omitted `--provider` falls back to grok instead, above). What `codex login status` prints is never repeated: an API-key login can name its key.
+  How codex is signed in is asked once per call by `codex_provider.codex_login` (`codex login status`), the same reading the default resolution, the facing check and the guided workflow use: signed in with ChatGPT is the subscription (`auth_source: codex-login`); signed in with an API key bills that key per call, said on stderr before `codex exec` runs (`codex-api-key`); not signed in is refused with the reason before codex runs (an omitted `--provider` asks or runs what was chosen instead, [above](#when-codex-cannot-run--ask-or-what-you-chose)). A `codex exec` that ends on codex's usage limit is `codex_provider.CodexUsageLimit`: the same failure for a named codex, the same choice for a default one. What `codex login status` prints is never repeated: an API-key login can name its key.
   A codex call is stopped after `SPRITE_GEN_GEN_TIMEOUT_SECONDS` (180) without an answer and reported as a stall (`gen-timeout`).
 
 ### When codex produces no image at all
@@ -452,8 +505,8 @@ exactly that, rather than falling back on its own.
 - **grok** — uses the [direct API contract](#direct-grok-calls-and-authentication) above.
 - **openai** — uses the [direct API contract](#direct-openai-calls-and-authentication)
   above: one HTTPS request on `OPENAI_API_KEY`, no CLI and no subprocess, which is
-  the whole reason it exists (a container has a key, not a browser). Explicit-only,
-  and billed per call.
+  the whole reason it exists (a container has a key, not a browser). Runs only when
+  chosen, and billed per call.
 
 ## Sprite-row usage
 
@@ -465,9 +518,10 @@ that choice) plus its layout guide, into `raw/<state>.png`. Each row gets
 `reports/gen-set/<state>.json`, the batch writes `reports/gen-set/table.md` and
 `set.report.json`, existing rows are reused unless `--force`, a direction run generates
 its anchors before its rows and stops when an anchor failed, and the exit code is
-non-zero when any row failed. `--provider` (`codex` or `grok`; `openai` is named on `gen`
-itself) is honoured verbatim; unspecified, it resolves exactly as `gen` does (above), and any
-codex→grok availability failover is recorded per row with the row's `auth_source`. Each row's
+non-zero when any row failed. `--provider` (`codex`, `grok` or `openai`) is honoured verbatim;
+unspecified, it resolves exactly as `gen` does (above): a switch to the provider chosen for a
+codex that cannot run is recorded per row with the row's `auth_source`, and rows that asked stop
+the set with the question ([above](#when-codex-cannot-run--ask-or-what-you-chose)). Each row's
 output goes to its log, but a row's billing line and a provider switch also print on the
 terminal as they happen (`base.run_logged`), so a metered row is never announced only in a file.
 

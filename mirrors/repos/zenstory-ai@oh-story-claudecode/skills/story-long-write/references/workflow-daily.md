@@ -1,6 +1,6 @@
 # workflow-daily.md：日更续写工作流
 
-SKILL.md 路由到「日更续写」后按本文件控制批次；每章正文走 [workflow-chapter.md](workflow-chapter.md)，缺文件按它开头停下修，召回降档不成立才读 [benchmark-recall.md](benchmark-recall.md)。适用于已有正文与追踪、作者明确要日更/续写/写第 N-M 章的项目；裸调用、只规划或只改细纲不进本流程。
+SKILL.md 路由到「日更续写」后按本文件控制批次；每章正文走 [workflow-chapter.md](workflow-chapter.md)，缺文件、缺细纲按它开头处理，召回降档不成立才读 [benchmark-recall.md](benchmark-recall.md)。适用于已有正文与追踪、作者明确要日更/续写/写第 N-M 章的项目；裸调用、只规划或只改细纲不进本流程。
 
 ---
 
@@ -12,7 +12,7 @@ SKILL.md 路由到「日更续写」后按本文件控制批次；每章正文�
 
 **缺 state 或视图不一致**：停下，按 [stop-and-fix.md](stop-and-fix.md) 修好再开始。
 
-确定范围后直接进 Step 2，不问"是否继续"；K 默认 2-3 章，作者另给按作者。章号冲突、细纲缺失、范围超纲或需改变既定故事安排时暂停确认；每章正常提交追踪不另问。
+确定范围后直接进 Step 2，不问"是否继续"；K 默认 2-3 章，作者另给按作者。章号冲突、范围超纲或需改变既定故事安排时暂停确认；每章正常提交追踪不另问。
 
 ---
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `apache/camel` — 26 default patterns, 2 followed patterns, 11 file(s) materialized.
+Mirror of `apache/camel` — 26 default patterns, 2 followed patterns, 13 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `apache/camel` — 26 default patterns, 2 followed patterns, 11 file(s
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 2 |
-| Files         | 11 |
+| Files         | 13 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -67,10 +67,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 5 | ✓ | [`archetypes/camel-archetype-java/src/main/resources/archetype-resources/AGENTS.md`](archetypes/camel-archetype-java/src/main/resources/archetype-resources/AGENTS.md) |
 | 6 | ✓ | [`archetypes/camel-archetype-main/src/main/resources/archetype-resources/AGENTS.md`](archetypes/camel-archetype-main/src/main/resources/archetype-resources/AGENTS.md) |
 | 7 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 8 | ✓ | [`dsl/camel-jbang/camel-jbang-plugin-tui/AGENTS.md`](dsl/camel-jbang/camel-jbang-plugin-tui/AGENTS.md) |
-| 9 | ✓ | [`dsl/camel-jbang/camel-jbang-plugin-tui/CLAUDE.md`](dsl/camel-jbang/camel-jbang-plugin-tui/CLAUDE.md) |
-| 10 | → | [`.oss-ai-helper-rules/project-standards.md`](.oss-ai-helper-rules/project-standards.md) |
-| 11 | → | [`SECURITY.md`](SECURITY.md) |
+| 8 | ✓ | [`dsl/camel-jbang/camel-jbang-core/AGENTS.md`](dsl/camel-jbang/camel-jbang-core/AGENTS.md) |
+| 9 | ✓ | [`dsl/camel-jbang/camel-jbang-core/CLAUDE.md`](dsl/camel-jbang/camel-jbang-core/CLAUDE.md) |
+| 10 | ✓ | [`dsl/camel-jbang/camel-jbang-plugin-tui/AGENTS.md`](dsl/camel-jbang/camel-jbang-plugin-tui/AGENTS.md) |
+| 11 | ✓ | [`dsl/camel-jbang/camel-jbang-plugin-tui/CLAUDE.md`](dsl/camel-jbang/camel-jbang-plugin-tui/CLAUDE.md) |
+| 12 | → | [`.oss-ai-helper-rules/project-standards.md`](.oss-ai-helper-rules/project-standards.md) |
+| 13 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

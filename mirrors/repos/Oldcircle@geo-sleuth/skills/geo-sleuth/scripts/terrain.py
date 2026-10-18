@@ -344,7 +344,8 @@ def _line_points(gj: dict, step: float, skip: list[tuple[str, str]], bbox: tuple
 
 
 def _cluster(hits: list[dict], km: float) -> list[dict]:
-    """Greedy clustering by max_ang from largest to smallest: the steepest point represents the cluster, points within km join it, and the representative gets n = number of points in the cluster."""
+    """Greedy clustering by max_ang from largest to smallest: the steepest point represents the cluster, points within km join it, and the representative gets
+    n = number of points in the cluster and extent_m = distance to its farthest member (fit's camera grid has to reach that far to cover the cluster)."""
     order = sorted(hits, key=lambda h: -h["max_ang"])
     used = [False] * len(order)
     out = []
@@ -352,11 +353,16 @@ def _cluster(hits: list[dict], km: float) -> list[dict]:
         if used[i]:
             continue
         n = 0
+        extent = 0.0
         for j in range(i, len(order)):
-            if not used[j] and _haversine((p["lat"], p["lon"]), (order[j]["lat"], order[j]["lon"])) <= km * 1000:
+            if used[j]:
+                continue
+            d = _haversine((p["lat"], p["lon"]), (order[j]["lat"], order[j]["lon"]))
+            if d <= km * 1000:
                 used[j] = True
                 n += 1
-        out.append({**p, "n": n})
+                extent = max(extent, d)
+        out.append({**p, "n": n, "extent_m": round(extent)})
     return out
 
 
@@ -854,6 +860,8 @@ def _cmd_fit(args) -> None:
     recs: list[dict] = []
     clusters_out: list[dict] = []
     skipped = {"not_flat": 0, "no_peak": 0, "no_line": 0, "dup": 0, "missing_dem": 0, "no_perp_line": 0}
+    relaxed_clusters = []
+    n_flat_checked = 0                                                # grid points that reached the flat test (the denominator of its WARNING)
     dem_failed = []
     grid_pts = [(dx, dy) for dy in np.arange(-args.radius, args.radius + 1e-6, args.grid)
                 for dx in np.arange(-args.radius, args.radius + 1e-6, args.grid) if dx * dx + dy * dy <= args.radius ** 2]
@@ -875,6 +883,7 @@ def _cmd_fit(args) -> None:
             sub = LP[m]
         n_c = 0
         best_c = None
+        cams = []                                                     # (dx, dy, lat, lon, ground ring) of new, fully covered grid points
         for dx, dy in grid_pts:
             dx, dy = float(dx), float(dy)
             clat = lat + dy / 110540
@@ -889,7 +898,18 @@ def _cmd_fit(args) -> None:
             if np.isnan(g).any():
                 skipped["missing_dem"] += 1
                 continue
-            if g.max() - g.min() > args.cam_flat:
+            cams.append((dx, dy, clat, clon, g))
+        # --cam-flat assumes the camera stood on open flat ground. On a mountain road or ridge no grid point of the cluster may pass, and the cluster
+        # silently dropped out; then score its flattest points (relief within --cam-flat of the cluster's minimum) and mark them flat_relaxed.
+        # A single-point cluster (--radius 0) has nothing to choose among, so it keeps the plain filter.
+        flat_lim = args.cam_flat
+        relief = [float(g.max() - g.min()) for *_, g in cams]
+        n_flat_checked += len(cams)
+        if len(cams) > 1 and min(relief) > args.cam_flat:
+            flat_lim = min(relief) + args.cam_flat
+            relaxed_clusters.append(c["src_idx"])
+        for (dx, dy, clat, clon, g), rel in zip(cams, relief):
+            if rel > flat_lim:
                 skipped["not_flat"] += 1
                 continue
             g0 = float(g[:, 0].mean())
@@ -1000,6 +1020,8 @@ def _cmd_fit(args) -> None:
                             "rms": round(float(rms[k]), 3),
                             "rms_px": round(float(rms[k]) * f * math.pi / 180, 1), "flatpen": round(float(pen[k]), 3),
                             "score": round(float(score[k]), 3)}
+                    if flat_lim > args.cam_flat:
+                        best["flat_relaxed"] = round(rel, 1)
                     if D1:
                         best.update({"D1": D1, "nclearpen": round(float(ncpen[k]), 3)})
                         if rms_near is not None:
@@ -1052,6 +1074,7 @@ def _cmd_fit(args) -> None:
                    "line_w": args.line_w, "line_min_m": args.line_min, "line_sample_m": args.line_sample, "line_reach_m": args.line_reach,
                    "photo": {"f0_px": f0, "hrow": hrow, "cx": cx, "hfov_deg_at_fs1": round(hfov, 1), "n_ridge": int(RX.size), "flat": flat}},
         "n_clusters": len(clusters_out), "n_cams": len(recs), "n_skipped": skipped, "dem_failed_clusters": dem_failed,
+        "flat_relaxed_clusters": relaxed_clusters,
         "focal_edge": focal_edge,
         "clusters": clusters_out,
         "cams": recs[:args.keep],
@@ -1060,6 +1083,18 @@ def _cmd_fit(args) -> None:
     print(f"clusters {len(clusters_out)}, camera positions {len(recs)}, skipped {skipped} → {args.out}", file=sys.stderr)
     if skipped["missing_dem"]:
         print(f"WARNING: {skipped['missing_dem']} camera positions not scored because their sight lines touch missing tiles", file=sys.stderr)
+    wide = [c for c in centers if (c.get("extent_m") or 0) > args.radius]
+    if wide:                                                          # the grid is centred on the representative only; members beyond --radius never get a camera
+        print(f"WARNING: {len(wide)}/{len(centers)} clusters spread wider than --radius {args.radius:g} m (farthest member up to "
+              f"{max(c['extent_m'] for c in wide) / 1000:.1f} km from its representative): hits beyond the camera grid were not scored. "
+              f"Raise --radius, or rerun scan with a smaller --cluster-km, before treating a cluster as checked", file=sys.stderr)
+    if relaxed_clusters:
+        print(f"NOTE: {len(relaxed_clusters)}/{len(centers)} clusters had no grid point within --cam-flat {args.cam_flat:g} m over "
+              f"{args.cam_flat_radius:g} m (slope, roadside, ridge); their flattest points were scored and marked flat_relaxed", file=sys.stderr)
+    if n_flat_checked and skipped["not_flat"] > 0.5 * n_flat_checked:
+        print(f"WARNING: {skipped['not_flat']}/{n_flat_checked} camera positions failed --cam-flat {args.cam_flat:g} m over {args.cam_flat_radius:g} m. "
+              f"If the camera may stand on a slope (mountain road, roadside pull-off, ridge), rerun with a larger --cam-flat "
+              f"(e.g. {max(60, args.cam_flat * 8):g}) before reading the ranking", file=sys.stderr)
     for x in clusters_out[:min(args.top, 10)]:
         b = x["best"]
         if b:
@@ -1080,6 +1115,15 @@ def _cmd_fit(args) -> None:
                   f"leading results{' including #1' if focal_edge['top1'] else ''}. That is a signal, not noise: the photo is probably "
                   f"{'more zoomed in' if side == 'long' else 'wider'} than the ladder. Rerun with --f35-range {wider} before trusting the ranking, "
                   f"heading or focal; only if it runs to the new edge again is the focal absorbing another error (geometry.md 7.4).", file=sys.stderr)
+            if side == "short":
+                # in pixels a short focal also shrinks the DEM error, so deep valley floors can win at 13 mm on a photo that is not ultra-wide
+                grounds = ", ".join(f"{r['g']:.0f}" for r in lead[:5])
+                lo2 = max(20, lo_mm * 1.5)
+                hi2 = hi_mm if hi_mm > lo2 else lo2 * 2              # a narrow ladder (e.g. 16:18) would otherwise suggest an empty lo > hi range
+                print(f"WARNING: a short-end pile-up can also be a false fit: in pixels a wide lens shrinks the DEM error too, and valley or canyon floors "
+                      f"(leading grounds {grounds} m) fit a ridge seen high above them. If the photo shows no "
+                      f"ultra-wide perspective, also rerun with --f35-range {lo2:.0f}:{hi2:.0f} and compare the leading places.",
+                      file=sys.stderr)
     if args.sheet:
         top = [x["best"] for x in clusters_out if x["best"]][:args.top] if len(clusters_out) > 1 else recs[:args.top]
         if not top:
@@ -1157,7 +1201,7 @@ Output JSON (--out):
    "hits":     [{"lat","lon","h0": ground elevation at the point m, "max_ang": highest horizon elevation angle °,
                  "az": that bearing °, "relief": max relative height difference at that bearing m, "flat_run_deg": length of flat horizon right next to the mountain °,
                  "name","hs"(highspeed),"elec"(electrified),"id": OSM tags of the line}, ...],
-   "clusters": [{...same as above..., "n": number of points in the cluster}, ...]}   # sorted by max_ang from largest to smallest; the cluster representative is the steepest point
+   "clusters": [{...same as above..., "n": number of points in the cluster, "extent_m": distance to the farthest member m}, ...]}   # sorted by max_ang from largest to smallest; the cluster representative is the steepest point
 --clusters-out writes a separate JSON with only the cluster list (exactly the clusters field).""")
     sc.add_argument("--lines", required=True, help="linear infrastructure GeoJSON (output of osm.py geom); only LineString is read")
     sc.add_argument("--out", required=True, help="output JSON")
@@ -1255,7 +1299,8 @@ convert ridge.json's ridge points to (bearing offset, elevation angle), and comp
   rms_px  = rms converted to pixels (rms × f × π/180), for judging whether candidates can be separated (on an f35 ladder the score itself is compared in pixels, --focal-metric): when the top few all come out about as large as
             the error of the ridge sampling itself (a few to a dozen or so pixels), the skyline can't separate them; you need a second constraint
 Camera positions first pass two filters: height difference within --cam-flat-radius ≤ --cam-flat (the camera stands on flat ground in the frame),
-highest horizon elevation angle ≥ --min-peak (there are mountains to compare).
+highest horizon elevation angle ≥ --min-peak (there are mountains to compare). A cluster with no flat grid point at all (slope, mountain road) scores its
+flattest points instead and marks them flat_relaxed; a WARNING follows when most positions fail --cam-flat.
 With --line (GeoJSON from osm.py geom), one more independent constraint is added: for each heading, the nearest distance dL/dC/dR of infrastructure sample points inside the frame's left/center/right bearing windows
 (--line-win); distances outside the --line-dist intervals are penalized by meters/--line-scale (--line-order can also penalize the order),
 total = score + --line-w × line_pen; headings where any of the three windows has no infrastructure don't count. Without --line, total = score.
@@ -1324,7 +1369,8 @@ cyan dots = photo near points.""")
     ft.add_argument("--range", type=float, default=15000, help="how far the sight line looks m (default 15000)")
     ft.add_argument("--nsamp", type=int, default=260, help="samples per sight line, dense near and sparse far (default 260; fine search 400)")
     ft.add_argument("--eye", type=float, default=1.6, help="eye height above ground m (default 1.6)")
-    ft.add_argument("--cam-flat", type=float, default=8, help="height difference limit around the camera position m; above it, it isn't a flat-ground camera position (default 8; fine search has used 6)")
+    ft.add_argument("--cam-flat", type=float, default=8, help="height difference limit around the camera position m; above it, it isn't a flat-ground camera position (default 8; fine search has used 6). "
+                         "A cluster where no grid point passes scores its flattest points, marked flat_relaxed")
     ft.add_argument("--cam-flat-radius", type=float, default=300, help="radius m for judging whether the camera position is flat (default 300; fine search has used 200)")
     ft.add_argument("--min-peak", type=float, default=6, help="minimum highest horizon elevation angle in degrees for a camera position to be scored (default 6)")
     ft.add_argument("--cc-max", type=float, default=0.7, help="limit of horizon offset cc ° (default 0.7, i.e. hrow may be off by a dozen or so pixels)")

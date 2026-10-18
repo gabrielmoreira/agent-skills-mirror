@@ -179,6 +179,20 @@ One engine, thin per-agent shells (see [`plugins/`](https://github.com/microsoft
 | **Devin** | [`plugins/devin`](https://github.com/microsoft/SkillOpt/tree/main/plugins/devin) | register `plugins/devin/mcp_server.py` as an MCP server |
 | **OpenClaw** | [`plugins/openclaw`](https://github.com/microsoft/SkillOpt/tree/main/plugins/openclaw) | adapt the reference wrapper and paths for your installation |
 
+### Configuration files
+
+Sleep reads `~/.skillopt-sleep/config.json`, falling back to `config.yaml` or
+`config.yml` when the earlier names are absent. YAML requires PyYAML.
+Save new files as UTF-8. Existing files written with the system's legacy
+encoding (for example, GBK or cp1252) are still readable under that locale:
+Sleep tries UTF-8 first, then the system encoding, and warns when the latter is
+used. Open the file with its original encoding and save it as UTF-8 before
+moving it to a machine with a different locale. Sleep does not rewrite it.
+
+An existing file that cannot be decoded, parsed, or read stops the command
+with a configuration error and exit code 2; it does not discard your settings
+and run with default budgets. Explicit CLI flags still override loaded values.
+
 ### VS Code GitHub Copilot Chat
 
 Use `--source copilot` to harvest local VS Code GitHub Copilot Chat sessions.
@@ -388,6 +402,14 @@ correctness signal; the validation gate still governs what ships.
 | `dream_rollouts` | `1` | Run each task K times → learn from the good-vs-bad contrast (contrastive reflection). |
 | `recall_k` | `0` | Associative recall — pull the K most-similar past tasks (from a persisted archive) into tonight's dream. |
 | `dream_factor` | `0` | Add N lightweight synthetic variants of each task. |
+
+The nightly cycle persists task split exposure separately from the capped recall
+archive. Once a task has entered training, re-mining it or a recorded derivative
+cannot move it into validation or test; validation exposure likewise prevents
+later claims of pristine test coverage. This also applies to small-pool fallback
+assignments across growing or shrinking nightly pools. Restored assignments emit
+a warning when they reduce holdout coverage. If no disjoint validation pool
+remains, the existing gate reports leakage and does not certify the edits.
 
 ### Paired A/B evalkit
 

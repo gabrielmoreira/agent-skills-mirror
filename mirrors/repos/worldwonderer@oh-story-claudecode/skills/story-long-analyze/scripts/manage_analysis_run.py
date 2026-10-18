@@ -898,7 +898,11 @@ def stage_required_outputs(root: Path, stage: str) -> List[str]:
     if stage == "stage3":
         return ["剧情/情绪模块.md", "剧情/节奏.md"]
     if stage == "stage4":
-        character_files = sorted(path for path in (root / "角色").glob("*.md") if path.is_file() and path.stat().st_size)
+        # 角色关系.md is the relation table, not a character profile.
+        character_files = sorted(
+            path for path in (root / "角色").glob("*.md")
+            if path.name != "角色关系.md" and path.is_file() and path.stat().st_size
+        )
         setting_files = sorted(path for path in (root / "设定").rglob("*.md") if path.is_file() and path.stat().st_size)
         missing = []
         if not character_files:

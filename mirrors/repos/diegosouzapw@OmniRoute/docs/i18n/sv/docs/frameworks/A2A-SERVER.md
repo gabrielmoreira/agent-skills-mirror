@@ -150,16 +150,16 @@ curl -X POST http://localhost:20128/a2a \
 
 OmniRoute exponerar 6 A2A-färdigheter som är kopplade i `src/lib/a2a/taskExecution.ts::A2A_SKILL_HANDLERS`. Varje färdighetsmodul finns i `src/lib/a2a/skills/`.
 
-| Färdighet                | ID                   | Beskrivning                                                                                                                                                  | Taggar                              | Exempel                                        |
-| :----------------------- | :------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------- | :---------------------------------- | :--------------------------------------------- |
-| Smart dirigering         | `smart-routing`      | Dirigerar en prompt via den optimala leverantören/kombinationen med hjälp av OmniRoutes kombinationsmotor och poängsättning                                  | dirigering, leverantörer            | "Dirigera denna prompt via den bästa modellen" |
-| Kvothantering            | `quota-management`   | Rapporterar kvotstatus per leverantör och hjälper anropare att avgöra när de ska begränsa hastigheten/byta                                                   | kvot, leverantörer                  | "Kontrollera kvoten för anthropic"             |
-| Leverantörsidentifiering | `provider-discovery` | Listar installerade leverantörer med funktioner, kostnadsfria nivåer och OAuth-status                                                                        | leverantörer, identifiering         | "Vilka leverantörer är tillgängliga?"          |
-| Kostnadsanalys           | `cost-analysis`      | Uppskattar kostnaden för en begäran/konversation utifrån katalogen och den senaste användningen                                                              | kostnad, användning                 | "Uppskatta kostnaden för denna konversation"   |
-| Hälsorapport             | `health-report`      | Sammanställer status för kretsbrytare, nedkylning och utelåsning per leverantör                                                                              | hälsa, motståndskraft               | "Visa hälsostatus för alla leverantörer"       |
-| Lista funktioner         | `list-capabilities`  | Returnerar hela Agent Skills-katalogen med 45 poster (23 API + 21 CLI + 1 konfiguration) som en markdown-tabell med råa SKILL.md-URL:er för kontextinjektion | katalog, identifiering, färdigheter | "Lista alla OmniRoute-funktioner"              |
+| Färdighet          | ID                   | Beskrivning                                                                                                                                                  | Taggar                        | Exempel                                        |
+| :----------------- | :------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------- | :---------------------------- | :--------------------------------------------- |
+| Smart dirigering   | `smart-routing`      | Dirigerar en prompt via den optimala leverantören/kombinationen med hjälp av OmniRoutes kombinationsmotor och poängsättning                                  | dirigering, leverantörer      | "Dirigera denna prompt via den bästa modellen" |
+| Kvothantering      | `quota-management`   | Rapporterar kvotstatus per leverantör och hjälper anropare att avgöra när de bör begränsa/byta                                                               | kvot, leverantörer            | "Kontrollera kvoten för anthropic"             |
+| Leverantörssökning | `provider-discovery` | Listar installerade leverantörer med funktioner, kostnadsfria nivåer och OAuth-status                                                                        | leverantörer, sökning         | "Vilka leverantörer är tillgängliga?"          |
+| Kostnadsanalys     | `cost-analysis`      | Uppskattar kostnaden för en begäran/konversation utifrån katalogen och den senaste användningen                                                              | kostnad, användning           | "Uppskatta kostnaden för denna konversation"   |
+| Hälsorapport       | `health-report`      | Sammanställer status för kretsbrytare, nedkylning och spärrning per leverantör                                                                               | hälsa, motståndskraft         | "Visa hälsostatus för alla leverantörer"       |
+| Lista funktioner   | `list-capabilities`  | Returnerar hela Agent Skills-katalogen med 45 poster (23 API + 21 CLI + 1 konfiguration) som en markdown-tabell med råa SKILL.md-URL:er för kontextinjektion | katalog, sökning, färdigheter | "Lista alla OmniRoute-funktioner"              |
 
-> Agentkortet bör hållas synkroniserat med den aktiva katalogen med 352 leverantörer. Antal leverantörer och metadata om kostnadsfri/ingen autentisering hämtas från körningsregistret.
+> Agent Card bör hållas synkroniserat med den aktiva katalogen med 372 leverantörer; leverantörsantal och metadata om kostnadsfrihet/ingen autentisering hämtas från körningsregistret.
 
 ### Detaljer om färdigheten `list-capabilities`
 
@@ -274,7 +274,7 @@ resp = requests.post("http://localhost:20128/a2a", json={
     "method": "message/send",
     "params": {
         "skill": "smart-routing",
-        "messages": [{"role": "user", "content": "Hello"}]
+        "messages": [{"role": "user", "content": "Hej"}]
     }
 }, headers={"Authorization": "Bearer YOUR_KEY"})
 
@@ -298,7 +298,7 @@ const resp = await fetch("http://localhost:20128/a2a", {
     method: "message/send",
     params: {
       skill: "smart-routing",
-      messages: [{ role: "user", content: "Hello" }],
+      messages: [{ role: "user", content: "Hej" }],
     },
   }),
 });

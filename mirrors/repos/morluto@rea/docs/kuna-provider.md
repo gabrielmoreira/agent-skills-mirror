@@ -22,6 +22,8 @@ Select it explicitly with `--provider kuna`, MCP's `open_binary.provider_id: "ku
 | `REA_KUNA_TIMEOUT_MS`         | 120 s                                                                                                                                   | Deadline for one single-function decompile, and for the inventory run REA makes when the export ends without one.                                                                        |
 | `REA_KUNA_JOBS`               | 1                                                                                                                                       | `decompile-project --jobs`. 1 is Kuna's reference answer; more jobs finish sooner but lose callee-first prototypes, and change about 40–60% of function bodies on the measured binaries. |
 
+A single-function decompile, inventory, string, graph or xref run that exceeds its deadline fails as `provider_timeout`, naming the setting that owns the deadline and that raising it takes a restart. A project export that exceeds `REA_KUNA_PROJECT_TIMEOUT_MS` is an export failure instead: requests that need the export report `capability_unavailable` with the export's own retry guidance.
+
 Windows is not supported yet. Supported targets are ELF and thin Mach-O executables for x86-64, AArch64 and ARM; PE and universal Mach-O are rejected with a typed reason.
 
 ## What Kuna answers
@@ -68,7 +70,7 @@ Single-function subprocess output and each cached source facet share a 16 MiB bu
 
 Results keep exact u64 virtual addresses, decoded text, native encoding, terminator status and byte length including any terminator. Kuna scans mapped sections or segments for runs of at least five characters; unterminated fragments can include instruction bytes. `all` includes ASCII, UTF-8 and the engine's Latin-range UTF-16LE reading. Other text, including short strings, non-Latin wide text and UTF-16BE, can remain undiscovered. An empty result does not prove absence.
 
-Use `search_strings` for the matching rows or `list_strings` with an exact address for that location. Literal and regex matching run in REA, preserving the existing case and ECMAScript Unicode semantics instead of substituting Kuna's different regex dialect. Procedure and string regex queries share one worker slot per session. Input projections are materialized only after admission, so queued queries retain no per-query inventory arrays. Close cancels and drains matching. Native metadata queries also share one admission slot, including references; a failed stop retains admission until cleanup is proven.
+Use `search_strings` for the matching rows or `list_strings` with an exact address for that location. The validated inventory is sorted by numeric address and encoding. Once cached, exact-address reads use binary search and return every encoding at that address without scanning the full inventory or retaining another lookup index. Literal and regex matching run in REA, preserving the existing case and ECMAScript Unicode semantics instead of substituting Kuna's different regex dialect. Procedure and string regex queries share one worker slot per session. Input projections are materialized only after admission, so queued queries retain no per-query inventory arrays. Close cancels and drains matching. Native metadata queries also share one admission slot, including references; a failed stop retains admission until cleanup is proven.
 
 `raw_result.strings` reports the source JSON digest/size, scanned scope, extraction policy, complete inventory count and selected count without copying unrequested text into the answer. Omit the address from `list_strings` to retrieve the complete inventory as Evidence; normal session retention and bundle export apply, including transport-capacity errors for oversized inline replies. These operations preserve their complete-result contracts and do not add paging. Function-referenced string facets in `analyze_function` remain unavailable; call `xrefs` explicitly when references to one returned string are needed.
 
@@ -81,6 +83,24 @@ The first call query runs `kuna decompile-graph --functions ''`, admitting no C 
 REA parses the graph as Kuna writes it, like the string scan, so the graph has no fixed size: a 53 MB Raycast binary produces 157 MB (180k functions, 773k edges), which REA retains in about 93 MB after a whole-program walk of about a minute. Unrequested bodies are refused before any of their text is assembled, and edges are indexed as they arrive, so retained rows and their indexes are admitted against live heap headroom. Xref JSON admits at most 16 MiB before parsing. Output or Kuna diagnostics beyond a buffer are reported as a `memory` resource constraint with `retryable: false`, because the same target and executable produce the same output. The session remembers such a graph failure, so later call queries fail at once instead of repeating the whole-program walk. The graph is cached for the selected target and executable profile within one session. Xref reuse is an LRU charged by source bytes plus metadata, limited to 16 MiB and 128 entries; at most eight distinct native xref queries may be pending. Reference commands run one at a time per session and share the provider's foreground budget with single-function decompiles. An unproven process stop retains its admission slots until cleanup succeeds. Concurrent callers share work, individual cancellation releases only that waiter, and the last departing waiter cancels its producer and receives any unproven cleanup. Session close aborts and drains producers, releases parsed caches and retries any retained process/file cleanup.
 
 Evidence includes only selected addresses or dossier neighbors, the producing JSON's SHA-256/byte count, coverage and relevant function facts; unrequested program-wide JSON and instruction text are omitted. Reference caches are in memory and expire on close: a fresh CLI process or MCP server rebuilds them. A first call query therefore costs a whole-program reference walk even when a C export is warm. These operations do not establish full Ghidra/IDA feature parity.
+
+Failures from shared installation or inventory work identify the operation the
+caller requested. `diagnostics.producer_operation` retains the internal producer
+name when it differs. Caller-specific failures keep the producer's typed outcome,
+captured output, partial facts and live cleanup dependencies; cleanup retry
+updates every projection rather than preserving an independent stale marker.
+Installation acquisition is shared, with independently cancellable caller waits.
+The final departing caller stops the probe and joins its cleanup; session close
+also stops and joins acquisition. A cleanly cancelled acquisition can be retried,
+while a retained cleanup failure blocks replacement until its owner is closed.
+Shared string and reference queries preserve caller cancellation reasons and
+join the final departing caller's command cleanup. A command cleanup error keeps
+its typed primary failure and captured output. Its live resource list follows
+both process and workspace ownership: proving process exit does not prove that
+the private workspace was removed, and retry updates earlier caller errors.
+If workspace setup fails, an unsuccessful rollback retains the original target
+or read failure together with its cleanup owner. Replacement stays blocked until
+that rollback is resolved; a clean rollback permits another setup attempt.
 
 ## Provenance and limitations
 

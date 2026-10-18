@@ -146,33 +146,33 @@ curl -X POST http://localhost:20128/a2a \
 
 ---
 
-## Käytettävissä olevat taidot
+## Saatavilla olevat taidot
 
-OmniRoute tarjoaa 6 A2A-taitoa, jotka on kytketty käsittelijöihin tiedostossa `src/lib/a2a/taskExecution.ts::A2A_SKILL_HANDLERS`. Kukin taitomoduuli sijaitsee hakemistossa `src/lib/a2a/skills/`.
+OmniRoute tarjoaa 6 A2A-taitoa, jotka on kytketty tiedostossa `src/lib/a2a/taskExecution.ts::A2A_SKILL_HANDLERS`. Kukin taitomoduuli sijaitsee hakemistossa `src/lib/a2a/skills/`.
 
-| Taito                   | ID                   | Kuvaus                                                                                                                                                                          | Tunnisteet                  | Esimerkit                                      |
-| :---------------------- | :------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | :-------------------------- | :--------------------------------------------- |
-| Älykäs reititys         | `smart-routing`      | Reitittää kehotteen optimaalisen palveluntarjoajan tai yhdistelmän kautta käyttämällä OmniRouten yhdistelmämoottoria ja pisteytystä                                             | reititys, palveluntarjoajat | "Reititä tämä kehote parhaan mallin kautta"    |
-| Kiintiöiden hallinta    | `quota-management`   | Raportoi palveluntarjoajakohtaisen kiintiötilan ja auttaa kutsujia päättämään, milloin pyyntöjä tulee rajoittaa tai palveluntarjoajaa vaihtaa                                   | kiintiö, palveluntarjoajat  | "Tarkista palveluntarjoajan anthropic kiintiö" |
-| Palveluntarjoajien haku | `provider-discovery` | Luettelee asennetut palveluntarjoajat sekä niiden ominaisuudet, ilmaistason tiedot ja OAuth-tilan                                                                               | palveluntarjoajat, haku     | "Mitä palveluntarjoajia on käytettävissä?"     |
-| Kustannusanalyysi       | `cost-analysis`      | Arvioi pyynnön tai keskustelun kustannukset luettelon ja viimeaikaisen käytön perusteella                                                                                       | kustannukset, käyttö        | "Arvioi tämän keskustelun kustannukset"        |
-| Terveysraportti         | `health-report`      | Koostaa palveluntarjoajakohtaisesti piirikatkaisijan, jäähdytysajan ja lukituksen tilan                                                                                         | tila, vikasietoisuus        | "Näytä kaikkien palveluntarjoajien tila"       |
-| Ominaisuuksien luettelo | `list-capabilities`  | Palauttaa koko 45 kohdan Agent Skills -luettelon (23 API + 21 CLI + 1 määritys) markdown-taulukkona sekä SKILL.md-tiedostojen suorat URL-osoitteet kontekstin lisäämistä varten | luettelo, haku, taidot      | "Luettele kaikki OmniRouten ominaisuudet"      |
+| Taito                   | ID                   | Kuvaus                                                                                                                                                                                  | Tunnisteet                    | Esimerkit                                       |
+| :---------------------- | :------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :---------------------------- | :---------------------------------------------- |
+| Älykäs reititys         | `smart-routing`      | Reitittää kehotteen optimaalisen palveluntarjoajan tai yhdistelmän kautta käyttämällä OmniRouten yhdistelmämoottoria ja pisteytystä                                                     | reititys, palveluntarjoajat   | "Reititä tämä kehote parhaan mallin kautta"     |
+| Kiintiöiden hallinta    | `quota-management`   | Raportoi palveluntarjoajakohtaisen kiintiötilan ja auttaa kutsujia päättämään, milloin käyttöä tulee rajoittaa tai palveluntarjoajaa vaihtaa                                            | kiintiö, palveluntarjoajat    | "Tarkista anthropicin kiintiö"                  |
+| Palveluntarjoajien haku | `provider-discovery` | Luettelee asennetut palveluntarjoajat sekä niiden ominaisuudet, ilmaistason tiedot ja OAuth-tilan                                                                                       | palveluntarjoajat, haku       | "Mitä palveluntarjoajia on saatavilla?"         |
+| Kustannusanalyysi       | `cost-analysis`      | Arvioi pyynnön tai keskustelun kustannukset luettelon ja viimeaikaisen käytön perusteella                                                                                               | kustannukset, käyttö          | "Arvioi tämän keskustelun kustannukset"         |
+| Terveysraportti         | `health-report`      | Koostaa palveluntarjoajakohtaiset piirikatkaisijan, jäähdytysajan ja lukituksen tilat                                                                                                   | toimintakunto, vikasietoisuus | "Näytä kaikkien palveluntarjoajien terveystila" |
+| Ominaisuuksien luettelo | `list-capabilities`  | Palauttaa koko 45 kohdan Agent Skills -luettelon (23 API + 21 CLI + 1 määritys) markdown-taulukkona sekä kontekstin lisäämiseen käytettävät raakojen SKILL.md-tiedostojen URL-osoitteet | luettelo, haku, taidot        | "Luettele kaikki OmniRouten ominaisuudet"       |
 
-> Agent-kortti tulee pitää yhdenmukaisena ajantasaisen 352 palveluntarjoajan luettelon kanssa. Palveluntarjoajien määrät sekä maksuttomuutta ja todennuksen tarpeettomuutta koskevat metatiedot saadaan suorituksenaikaisesta rekisteristä.
+> Agent Card tulee pitää yhdenmukaisena ajantasaisen 372 palveluntarjoajan luettelon kanssa. Palveluntarjoajien määrät sekä maksuttomuutta ja tunnistautumattomuutta koskevat metatiedot saadaan ajonaikaisesta rekisteristä.
 
 ### `list-capabilities`-taidon tiedot
 
-`list-capabilities`-taito on erityisen hyödyllinen ulkoisille agenteille, joiden on selvitettävä, mitä OmniRoute tarjoaa, ennen API-kutsujen lähettämistä. Se palauttaa jäsennellyn markdown-taulukkoartefaktin:
+`list-capabilities`-taito on erityisen hyödyllinen ulkoisille agenteille, joiden on selvitettävä OmniRouten tarjoamat ominaisuudet ennen API-kutsujen lähettämistä. Se palauttaa jäsennellyn markdown-taulukkoartefaktin:
 
 ```
-| ID | Nimi | Luokka | Alue | Päätepisteet/komennot | Suora URL |
+| ID | Nimi | Luokka | Alue | Päätepisteet/komennot | Raaka URL |
 | --- | --- | --- | --- | --- | --- |
-| omni-auth | Todennus ja istunnot | api | auth | POST /api/auth/login, ... | https://raw.githubusercontent.com/... |
+| omni-auth | Tunnistautuminen ja istunnot | api | auth | POST /api/auth/login, ... | https://raw.githubusercontent.com/... |
 ...
 ```
 
-Jokainen rivi sisältää `rawUrl`-sarakkeen, jotta agentit voivat hakea täydellisen SKILL.md-tiedoston välittömästi. `metadata.totalSkills`-kenttä vastaa luettelon kokoa (tällä hetkellä 45). Toteutus: `src/lib/a2a/skills/listCapabilities.ts`. Katso myös [AGENT-SKILLS.md](./AGENT-SKILLS.md).
+Jokainen rivi sisältää `rawUrl`-sarakkeen, jotta agentit voivat noutaa koko SKILL.md-tiedoston välittömästi. `metadata.totalSkills`-kenttä vastaa luettelon kokoa (tällä hetkellä 45). Toteutus: `src/lib/a2a/skills/listCapabilities.ts`. Katso myös [AGENT-SKILLS.md](./AGENT-SKILLS.md).
 
 ---
 
@@ -262,7 +262,7 @@ lähetetty → käsittelyssä → valmis
 
 ---
 
-## Integraatioesimerkit
+## Integrointiesimerkit
 
 ### Python (requests)
 
@@ -274,7 +274,7 @@ resp = requests.post("http://localhost:20128/a2a", json={
     "method": "message/send",
     "params": {
         "skill": "smart-routing",
-        "messages": [{"role": "user", "content": "Hello"}]
+        "messages": [{"role": "user", "content": "Hei"}]
     }
 }, headers={"Authorization": "Bearer YOUR_KEY"})
 
@@ -298,7 +298,7 @@ const resp = await fetch("http://localhost:20128/a2a", {
     method: "message/send",
     params: {
       skill: "smart-routing",
-      messages: [{ role: "user", content: "Hello" }],
+      messages: [{ role: "user", content: "Hei" }],
     },
   }),
 });

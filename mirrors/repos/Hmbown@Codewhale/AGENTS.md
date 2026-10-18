@@ -238,11 +238,14 @@ Community reports, PRs, logs, and reviews are evidence.
 
 **Harvested contributor credit is still a rule** (the fallback path above —
 prefer merging the contributor's PR itself). When a contributor's work
-lands as our commit, that commit carries `Harvested from PR #N by @handle` and a
-`Co-authored-by` naming them at their GitHub-linked address, so
-`auto-close-harvested.yml` closes their PR with credit and the contribution
-graph reflects reality. Canonical human identities come from
-`.github/AUTHOR_MAP`.
+lands as our commit, the contributor is that commit's **author** (`git commit
+--author` with their GitHub-linked address), it carries `Harvested from PR #N by
+@handle`, and maintainers or agents go in `Co-authored-by`. GitHub's contributor
+list counts commit authors only: about 200 harvested commits authored by
+maintainer identities left their contributors off it, which is why
+`docs/CONTRIBUTORS.md` carries the full wall (`scripts/contributor-wall.py`).
+`auto-close-harvested.yml` closes their PR with credit. Canonical human
+identities come from `.github/AUTHOR_MAP`.
 
 Leave unrelated work intact and keep new enforcement dry-run unless explicitly
 approved.

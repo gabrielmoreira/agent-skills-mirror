@@ -60,6 +60,15 @@ states that absence is unknown. Component arrays remain complete when candidate
 hypotheses are omitted; component arrays still include every component from
 the supplied inventory pages, and overall coverage is `partial` in that case.
 
+Inventoried files whose bytes were not read, such as encrypted archive members,
+are listed in `unavailable_components` with their original path, format,
+encryption flag, limitations, and null content identity. The same application-root
+and AppleDouble attribution rules apply. These files make overall coverage
+`partial`; component absence is unknown even when `inventory_complete` is true.
+Directories have no file bytes and symlinks remain in `symlinks`, so neither is
+an unavailable file component. The additive field participates in `projection_id`,
+including when empty, so Apple projection identifiers change.
+
 ## Application roots
 
 | Inventory root                         | Application root                                    |
@@ -67,6 +76,15 @@ the supplied inventory pages, and overall coverage is `partial` in that case.
 | IPA                                    | Each `Payload/<Name>.app`                           |
 | `.app` directory                       | `.`, the inventoried bundle itself                  |
 | Directory, ZIP, or DMG containing apps | Each outermost `<Name>.app` followed by `Contents/` |
+
+File and slice occurrences supply component endpoints. Directory tree identities
+remain in source inventory and bundle anatomy, and links remain in `symlinks`.
+
+Root and layout discovery use known directories and ancestors implied by deeper
+inventory paths. A leaf file or symlink named `*.app`, `Contents`, or `Versions`
+does not establish that directory. Directory and authenticated-file identity are
+selected before applying anatomy case preferences, so a file cannot shadow a
+folded directory name or a directory shadow a metadata/signature file.
 
 ZIP archives made with `ditto -c -k --keepParent` report `<Name>.app`. A DMG
 reports `<image>.dmg/<Volume>/<Name>.app`; DMG child inventory needs the native

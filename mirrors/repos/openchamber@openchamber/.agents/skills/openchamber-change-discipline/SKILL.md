@@ -94,11 +94,23 @@ For type-only shared contracts, validate compile-time consumers. Add runtime ser
 - Keep refactor tests resilient to equivalent internal implementations.
 - For behavior-preserving refactors, establish the current behavior before changing structure.
 
+## Module Documentation
+
+A module's `DOCUMENTATION.md` lives in its folder and holds what the code cannot show the next agent: what the module owns, what must stay true, and why it is built this way. A module gets its own document when it owns a contract other code relies on, an invariant, or a non-obvious design choice; a folder without any of these is covered by its parent's document.
+
+The document has three parts:
+
+- **Ownership.** What the module owns and where its boundary is: what belongs here and which neighbouring module owns the rest.
+- **Invariants.** What must stay true, each stated so a change can be checked against it.
+- **Decisions.** One `### Why X and not Y` entry per non-obvious choice: the chosen approach, the alternative it was weighed against or replaced, and the reason in one or two sentences. A choice is non-obvious when a later reader could reasonably "fix" it back: a simpler design that was rejected, a deliberate workaround, a measured trade-off.
+
+The document describes the module as it is now. When a decision changes, rewrite its entry around the new choice and keep the old approach as the rejected alternative, so the file stays current and carries no history to unwind. Spend its lines on reasons and contracts; file listings and function-by-function walkthroughs restate the code and go stale first.
+
 ## Completion Standard
 
 - Implement the behavior end to end, including rollback and cleanup.
 - Run focused regression tests for the changed contract; when no test can cover it, say so in the report.
 - Preserve unrelated changes encountered in shared files.
-- Re-read the owning docs and update them when the implementation changed their truth.
+- The owning `DOCUMENTATION.md` is true of the new code and has a decision entry for every non-obvious choice the change made; a new module that meets the bar in *Module Documentation* has its own document.
 - Perform a final simplification pass over your own diff, hardest after a rework or a removal: every branch, condition, prop, parameter, export, key, and helper the change made unreachable, always-true, or single-valued is gone, along with speculative branches, shallow wrappers, stale compatibility, and names that do not clarify intent.
 - Before a commit, the pre-commit gate passes.

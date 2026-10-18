@@ -238,26 +238,34 @@ GENRE_CARD_DIR = Path(__file__).resolve().parent.parent / "references" / "genre-
 def match_genre_cards(project: Path):
     """题材正文提示卡缺失时，按「题材类型」原文匹配题材卡（卡头的 genre 与 aliases），替主会话省掉整读索引。
 
-    按在题材类型里出现得越靠前越优先（主题材在前），同位置按置信度高→低；最多返回主、辅两张：[(路径, 置信度)]。"""
+    最长匹配优先：一张卡命中的词落在另一张卡命中的更长的词里面（「玄幻言情」里的「玄幻」）时不算这张卡命中。
+    按在题材类型里出现得越靠前越优先（主题材在前），同位置按命中词更长、再按置信度高→低；
+    最多返回主、辅两张：[(路径, 置信度)]。"""
     raw = genre_line(project).casefold()
     if not raw or not GENRE_CARD_DIR.is_dir():
         return []
     rank = {"high": 0, "medium": 1, "low": 2}
-    hits = []
+    spans = []  # (起点, 终点, 卡, 置信度)：每张卡每个命中词在题材类型里的每处出现
     for card in sorted(GENRE_CARD_DIR.glob("*.md")):
         head = (read_text(card) or "").split("---")
         meta = head[1] if len(head) > 2 else ""
         genre = re.search(r"^genre:\s*(.+)$", meta, re.M)
         aliases = re.search(r"^aliases:\s*\[(.*)\]", meta, re.M)
         confidence = re.search(r"^confidence:\s*(\w+)", meta, re.M)
+        level = confidence.group(1) if confidence else "low"
         names = [genre.group(1).strip()] if genre else [card.stem]
         names += [a.strip() for a in aliases.group(1).split(",")] if aliases else []
-        where = [raw.find(name.casefold()) for name in names if name and name.casefold() in raw]
-        if where:
-            level = confidence.group(1) if confidence else "low"
-            hits.append((min(where), rank.get(level, 2), card, level))
-    hits.sort(key=lambda row: (row[0], row[1], row[2].name))
-    return [(card, level) for _, _, card, level in hits[:2]]
+        for name in {n.casefold() for n in names if n}:
+            spans += [(m.start(), m.end(), card, level) for m in re.finditer(re.escape(name), raw)]
+    best = {}
+    for start, end, card, level in spans:
+        if any(c != card and s <= start and end <= e and e - s > end - start for s, e, c, _ in spans):
+            continue
+        key = (start, -(end - start), rank.get(level, 2), card.name)
+        if card not in best or key < best[card][0]:
+            best[card] = (key, level)
+    hits = sorted((key, card, level) for card, (key, level) in best.items())
+    return [(card, level) for _, card, level in hits[:2]]
 
 
 def author_decided(project: Path):
@@ -439,7 +447,7 @@ def build(project: Path, chapter: int, report: list):
         parts.append(f"文风路径：{style_file}（书级权威文风，写作与去味均读全文；摘要只作索引）")
         parts.append(
             "文风优先裁决：`设定/文风.md` 对句段／句法／对话落法／标点形态与删改取向的规定"
-            "按 style-resolution.md 裁决：当前请求 > 本书文风 > active 作者记忆 > 对标 > 通用参考；不覆盖细纲事实、信息边界、调用方所选 Gate 范围及文件结构。"
+            "按 style-resolution.md 裁决：当前请求 > 本书文风 > active 作者记忆 > 对标 > 通用参考；不覆盖细纲事实、信息边界、调用方限定的检查范围及文件结构。"
             "风格冲突按文风写，交付摘要列出「因文风优先而未执行的通用条款」。")
         report.append("文风：custom_style=true，表达冲突按维度裁决；reference 读取仍按任务条件")
     else:
@@ -490,8 +498,12 @@ def build(project: Path, chapter: int, report: list):
     needs = {"题材正文提示卡": card_text, "目标情绪": target_emotion,
              "单元情绪引擎": engine, "单元节拍/章功能分配": tempo}
     why = [name + "缺有效内容" for name, value in needs.items() if not substantive(value)]
-    # 无对标（项目与工作区都没有对标书）时文风本就没有对标可召回：不因 custom_style 缺失拒绝降档
-    no_benchmark = not any(d.is_dir() for base in (project / "对标", project / "拆文库", project.parent / "拆文库")
+    # 无对标（项目与工作区都没有对标书）时文风本就没有对标可召回：不因 custom_style 缺失拒绝降档。
+    # 导入的书在拆文库里留有与书目录同名的拆文目录，那是本书自己，不算对标。
+    def is_benchmark(base: Path, d: Path) -> bool:
+        return d.is_dir() and not (base.name == "拆文库" and d.name == project.name)
+    no_benchmark = not any(is_benchmark(base, d)
+                           for base in (project / "对标", project / "拆文库", project.parent / "拆文库")
                            if base.is_dir() for d in base.iterdir())
     if not custom_style and not no_benchmark:
         why.append("custom_style=false")

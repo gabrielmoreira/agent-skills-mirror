@@ -40,8 +40,9 @@ type ShimmedElement = {
   click(): void;
 };
 
-interface PanelHarness {
-  dispatch(params: unknown): void;
+  interface PanelHarness {
+    /** `source` 缺省是宿主（父窗口）；传别的对象即模拟"另一个窗口"塞消息 */
+    dispatch(params: unknown, source?: unknown): void;
   el(id: string): ShimmedElement;
   /** 模拟一次 document 级点击（面板用 `event.target.closest("button")` 取按钮） */
   clickDocument(id: string): void;
@@ -49,6 +50,8 @@ interface PanelHarness {
   posted: Array<Record<string, unknown>>;
   /** 取某方法的最后一次请求参数（如 ui/message 的 params）——本分支 */
   lastRequest(method: string): Record<string, unknown> | undefined;
+  /** 模拟宿主对面板某次请求的应答（result 或 error），用于验证「宿主拒绝」的回落分支 */
+  respond(method: string, outcome: { result?: unknown; error?: unknown }): void;
   /** 垫片里剪贴板不可用 ⇒ copyText 走 textarea 兜底；这里读回它实际要复制的文本 —— main（#1180 链接断言用） */
   copiedText(): string | null;
 }
@@ -91,7 +94,7 @@ function loadPanel(html: string): PanelHarness {
     });
   }
 
-  const messageListeners: Array<(event: { data: unknown }) => void> = [];
+  const messageListeners: Array<(event: { data: unknown; source?: unknown }) => void> = [];
   const clickListeners: Array<(event: unknown) => void> = [];
   let copied: string | null = null;
   const sandbox: Record<string, unknown> = {
@@ -152,8 +155,8 @@ function loadPanel(html: string): PanelHarness {
   vm.runInNewContext(script, sandbox, { filename: "env-credits.html#script" });
 
   return {
-    dispatch(params) {
-      messageListeners.forEach((fn) => fn({ data: { method: "ui/notifications/tool-result", params } }));
+    dispatch(params, source: unknown = sandbox.parent) {
+      messageListeners.forEach((fn) => fn({ data: { method: "ui/notifications/tool-result", params }, source }));
     },
     el(id) {
       const element = elements.get(id);
@@ -176,6 +179,17 @@ function loadPanel(html: string): PanelHarness {
         if (message.method === method) { return message.params as Record<string, unknown> | undefined; }
       }
       return undefined;
+    },
+    respond(method, outcome) {
+      for (let i = posted.length - 1; i >= 0; i--) {
+        const message = posted[i] as { id?: number; method?: string };
+        if (message.method === method) {
+          messageListeners.forEach((fn) =>
+            fn({ data: { jsonrpc: "2.0", id: message.id, ...outcome }, source: sandbox.parent }),
+          );
+          return;
+        }
+      }
     },
     /** main（#1180）：读回 textarea 兜底实际复制出去的文本 */
     copiedText() {
@@ -218,6 +232,8 @@ describe("env-credits 面板脚本运行时", () => {
       branch: string;
       main?: string;
       link?: string;
+      /** 覆盖默认的 hint.<branch>：同一分支在「有数 / 无数」时说的不是同一句话 */
+      hint?: string;
     }> = [
       {
         name: "normal",
@@ -233,6 +249,8 @@ describe("env-credits 面板脚本运行时", () => {
         name: "unknown（到期字段缺失 ⇒ 不下结论）",
         payload: buildEnvCreditsPayload({ ...BASE, planRaw: "baas_free", usages: [usage("SCF", 10)] }),
         branch: "unknown",
+        // 读到了用量、只是套餐状态缺失：说明句要点出缺的是哪一块，而不是否认屏幕上的数字
+        hint: "hint.unknownWithUsage",
       },
       {
         name: "trialExhausted",
@@ -244,7 +262,7 @@ describe("env-credits 面板脚本运行时", () => {
         }),
         branch: "trialExhausted",
         main: "action.upgrade",
-        link: "action.copyConsoleLink",
+        link: "action.openConsole",
       },
       {
         name: "stopped",
@@ -256,7 +274,7 @@ describe("env-credits 面板脚本运行时", () => {
         }),
         branch: "stopped",
         main: "action.recommendRestore",
-        link: "action.copyConsoleLink",
+        link: "action.openConsole",
       },
       {
         name: "expired",
@@ -269,7 +287,7 @@ describe("env-credits 面板脚本运行时", () => {
         }),
         branch: "expired",
         main: "action.renew",
-        link: "action.copyConsoleLink",
+        link: "action.openConsole",
       },
       {
         name: "arrears",
@@ -282,7 +300,7 @@ describe("env-credits 面板脚本运行时", () => {
         }),
         branch: "arrears",
         main: "action.guidedTopup",
-        link: "action.copyExpenseLink",
+        link: "action.openExpense",
       },
     ];
 
@@ -292,12 +310,14 @@ describe("env-credits 面板脚本运行时", () => {
 
       const panel = render(item.payload);
       expect(panel.el("st-text").textContent, `${item.name} 状态词`).toBe(L(`mcpUiCredits.state.${item.branch}`));
-      expect(panel.el("c-hint").textContent, `${item.name} 说明句`).toBe(L(`mcpUiCredits.hint.${item.branch}`));
+      expect(panel.el("c-hint").textContent, `${item.name} 说明句`).toBe(
+        L(`mcpUiCredits.${item.hint ?? `hint.${item.branch}`}`),
+      );
 
       const main = panel.el("btn-main");
       if (item.main) {
         expect(main.hidden, `${item.name} 主行动应显示`).toBe(false);
-        expect(main.textContent, `${item.name} 主行动文案`).toBe(L(`mcpUiCredits.${item.main}`));
+        expect(panel.el("btn-main-label").textContent, `${item.name} 主行动文案`).toBe(L(`mcpUiCredits.${item.main}`));
       } else {
         expect(main.hidden, `${item.name} 无主行动`).toBe(true);
       }
@@ -496,7 +516,7 @@ describe("env-credits 面板脚本运行时", () => {
     expect(panel.el("ubar-box").hidden).toBe(true);
   });
 
-  it("复制提示写在独立一行，且不覆盖分支说明句（费用中心 vs 控制台各说各的）", () => {
+  it("链接按钮先请宿主打开；宿主拒绝时才把地址落到剪贴板并说明", async () => {
     const stopped = buildEnvCreditsPayload({
       ...BASE,
       planRaw: "baas_personal",
@@ -506,10 +526,23 @@ describe("env-credits 面板脚本运行时", () => {
     const panel = render(stopped); // link = package → 控制台
     const hintBefore = panel.el("c-hint").textContent;
     expect(panel.el("k-copynote").hidden).toBe(true);
+
     panel.clickDocument("btn-link");
+    expect(panel.lastRequest("ui/open-link")).toEqual({
+      url: "https://tcb.cloud.tencent.com/dev?envId=env-demo#/env/package-usage",
+    });
+    expect(panel.el("k-copynote").hidden, "宿主打开成功时不该多写一行字").toBe(true);
+
+    // 宿主拒绝 / 不支持 ui/open-link：按钮不能就此无声无息，地址落到剪贴板
+    panel.respond("ui/open-link", { error: { code: -32000, message: "denied" } });
+    await Promise.resolve();
+    await Promise.resolve();
     expect(panel.el("k-copynote").hidden).toBe(false);
     expect(panel.el("k-copynote").textContent).toBe(L("mcpUiCredits.action.copiedConsole"));
-    expect(panel.el("c-hint").textContent, "分支说明句不应被复制提示覆盖").toBe(hintBefore);
+    expect(panel.copiedText()).toBe(
+      "https://tcb.cloud.tencent.com/dev?envId=env-demo#/env/package-usage",
+    );
+    expect(panel.el("c-hint").textContent, "分支说明句不应被打开失败的提示覆盖").toBe(hintBefore);
 
     const arrears = buildEnvCreditsPayload({
       ...BASE,
@@ -520,11 +553,17 @@ describe("env-credits 面板脚本运行时", () => {
     });
     const panel2 = render(arrears); // link = expense → 费用中心
     panel2.clickDocument("btn-link");
+    expect(panel2.lastRequest("ui/open-link")).toEqual({
+      url: "https://console.cloud.tencent.com/expense/recharge",
+    });
+    panel2.respond("ui/open-link", { result: { isError: true } });
+    await Promise.resolve();
+    await Promise.resolve();
     expect(panel2.el("k-copynote").textContent).toBe(L("mcpUiCredits.action.copiedExpense"));
     expect(panel2.el("c-hint").textContent).toBe(L("mcpUiCredits.hint.arrears"));
   });
 
-  it("复制出去的是完整控制台地址：带本次载荷的 envId，且站点决定主机", () => {
+  it("请求打开的是完整控制台地址：带本次载荷的 envId，且站点决定主机", () => {
     // 环境级（package / renew）→ 云开发控制台「套餐用量」页，必须带本环境的 envId
     const exhausted = buildEnvCreditsPayload({
       ...BASE,
@@ -534,9 +573,9 @@ describe("env-credits 面板脚本运行时", () => {
     });
     const pkg = render(exhausted);
     pkg.clickDocument("btn-link");
-    expect(pkg.copiedText()).toBe(
-      "https://tcb.cloud.tencent.com/dev?envId=env-demo#/env/package-usage",
-    );
+    expect(pkg.lastRequest("ui/open-link")).toEqual({
+      url: "https://tcb.cloud.tencent.com/dev?envId=env-demo#/env/package-usage",
+    });
 
     // 载荷带另一个站点 ⇒ 换主机（不是本地兜底的 domestic）
     const intlExpired = buildEnvCreditsPayload({
@@ -550,9 +589,9 @@ describe("env-credits 面板脚本运行时", () => {
     });
     const renew = render(intlExpired);
     renew.clickDocument("btn-link");
-    expect(renew.copiedText()).toBe(
-      "https://tcb.tencentcloud.com/dev?envId=env-intl#/env/package-usage",
-    );
+    expect(renew.lastRequest("ui/open-link")).toEqual({
+      url: "https://tcb.tencentcloud.com/dev?envId=env-intl#/env/package-usage",
+    });
 
     // 账户级（arrears）→ 充值页，主机同样随站点走，且不带 envId
     const arrears = buildEnvCreditsPayload({
@@ -567,7 +606,9 @@ describe("env-credits 面板脚本运行时", () => {
     });
     const expense = render(arrears);
     expense.clickDocument("btn-link");
-    expect(expense.copiedText()).toBe("https://console.intl.cloud.tencent.com/expense/recharge");
+    expect(expense.lastRequest("ui/open-link")).toEqual({
+      url: "https://console.intl.cloud.tencent.com/expense/recharge",
+    });
 
     // 载荷明确说「没有 envId」（空串）⇒ 地址里就不带查询串，绝不编一个环境出来
     const noEnv = render(
@@ -581,7 +622,9 @@ describe("env-credits 面板脚本运行时", () => {
       }),
     );
     noEnv.clickDocument("btn-link");
-    expect(noEnv.copiedText()).toBe("https://tcb.cloud.tencent.com/dev#/env/package-usage");
+    expect(noEnv.lastRequest("ui/open-link")).toEqual({
+      url: "https://tcb.cloud.tencent.com/dev#/env/package-usage",
+    });
   });
 
   it("没有链接可复制的分支，点了复制按钮也不会写出半截地址", () => {
@@ -793,7 +836,14 @@ describe("监控指标卡：同一资源按 kind 分派", () => {
     // 指标数值保留小数（控制台不抹小数、服务端本来就给浮点）：2.75 就是 2.75，不再取整成 3
     expect(panel.el("k-m-avg").textContent).toBe("2.75" + L("mcpUiCredits.metric.unit.count"));
     expect(panel.el("f-m-window").hidden).toBe(false);
-    expect(panel.el("k-m-window").textContent).toContain(L("mcpUiCredits.metric.period.minute"));
+    // 表格把「多少个样本」（数值列）与「多久一个点」（说明列）拆开：两列各说一件事
+    expect(panel.el("k-m-window").textContent).toBe("4");
+    expect(panel.el("k-m-window-note").textContent).toBe(
+      L("mcpUiCredits.metric.every", { period: L("mcpUiCredits.metric.period.minute") }),
+    );
+    // 峰值的时间落在说明列，不再和数值挤在同一个字符串里
+    expect(panel.el("f-m-table").hidden).toBe(false);
+    expect(panel.el("k-m-latest-note").textContent).toBe("");
 
     // 单线曲线：四个点足以成线
     expect(panel.el("f-spark").hidden).toBe(false);
@@ -801,7 +851,7 @@ describe("监控指标卡：同一资源按 kind 分派", () => {
 
     // 一屏一个主行动：交给会话深挖（标签来自词典）
     expect(panel.el("btn-main").hidden).toBe(false);
-    expect(panel.el("btn-main").textContent).toBe(L("mcpUiCredits.metric.action.data"));
+    expect(panel.el("btn-main-label").textContent).toBe(L("mcpUiCredits.metric.action.data"));
     // ① 绿在这张卡上不携带健康含义：有数据也只是中性圆点 + 默认曲线样式
     expect(panel.el("st-dot").className).toBe("dot");
     expect(panel.el("spark-line").getAttribute("stroke")).toBe("var(--text-2)");
@@ -1063,6 +1113,11 @@ describe("监控指标卡：同一资源按 kind 分派", () => {
     // 同一条用例里两头都断：红色（提前警告保住）与文案（跟上）同时出现
     expect(near.el("ubar-box").className).not.toContain(" ok");
     expect(near.el("spark-line").getAttribute("stroke")).toBe("var(--err)");
+    // 圆点也得跟着改：红条 + 绿点是同一屏上两个相反的结论
+    expect(near.el("st-dot").className).toContain("warn");
+    // 说明句里提到的「升级套餐」必须有去处：链接按钮在此刻出现（分支本身还是 normal）
+    expect(near.el("btn-link").hidden).toBe(false);
+    expect(near.el("btn-link-label").textContent).toBe(L("mcpUiCredits.action.openConsole"));
 
     // 对照：未到 80% 时文案不动（原 normal 话术）
     const below = render(
@@ -1080,7 +1135,7 @@ describe("监控指标卡：同一资源按 kind 分派", () => {
   it("主按钮三态各自的动作：文案互不相同、noData 不含「异常」、消息也按态给", () => {
     const seen: Array<{ name: string; label: string; message: string }> = [];
     const collect = (name: string, panel: PanelHarness) => {
-      const label = panel.el("btn-main").textContent;
+      const label = panel.el("btn-main-label").textContent;
       panel.clickDocument("btn-main");
       const text = String(
         (panel.lastRequest("ui/message")?.content as { text?: unknown } | undefined)?.text ?? "",
@@ -1139,8 +1194,45 @@ describe("监控指标卡：同一资源按 kind 分派", () => {
   it("守卫：两个分支的渲染入口都在面板脚本里（缺一即红）", () => {
     expect(HTML).toContain('id="f-credits"');
     expect(HTML).toContain('id="f-m-latest"');
-    // 判别式与两条 render 路径都必须在脚本里出现
-    expect(HTML).toContain('payload.kind === "metrics"');
-    expect(HTML).toContain("renderMetrics(");
+      // 判别式与两条 render 路径都必须在脚本里出现
+      expect(HTML).toContain('payload.kind === "metrics"');
+      expect(HTML).toContain("renderMetrics(");
+    });
+
+    it("只认宿主：别的窗口塞进来的用量结果不改卡片、也不发任何消息", () => {
+      const stranger = { postMessage() {} };
+      const panel = loadPanel(HTML);
+      const before = {
+        title: panel.el("c-title").textContent,
+        credits: panel.el("k-credits").textContent,
+        hint: panel.el("c-hint").textContent,
+        main: panel.el("btn-main-label").textContent,
+      };
+      const posted = panel.posted.length;
+
+      const expired = buildEnvCreditsPayload({
+        ...BASE,
+        planRaw: "baas_free",
+        usages: [usage("SCF", 40000)],
+        expired: true,
+      });
+
+      panel.dispatch({ structuredContent: expired }, stranger);
+      expect(panel.el("c-title").textContent).toBe(before.title);
+      expect(panel.el("k-credits").textContent).toBe(before.credits);
+      expect(panel.el("c-hint").textContent).toBe(before.hint);
+      expect(panel.el("btn-main-label").textContent).toBe(before.main);
+      expect(panel.posted.length).toBe(posted);
+
+      // null 来源必须放行：沙箱代理 / MessagePort 中转就是这样投递的（Codex 的 mcp-app-sandbox
+      // 实测如此），挡掉它面板会静默收不到任何结果。
+      panel.dispatch({ structuredContent: expired }, null);
+      expect(panel.el("btn-main-label").textContent).not.toBe(before.main);
+      expect(panel.el("btn-main").hidden).toBe(false);
+
+      // 对照：同一份载荷由宿主发，卡片确实会变（否则上面五条是虚假通过）
+      panel.dispatch({ structuredContent: expired });
+      expect(panel.el("btn-main-label").textContent).not.toBe(before.main);
+      expect(panel.el("btn-main-label").textContent).not.toBe("");
+    });
   });
-});

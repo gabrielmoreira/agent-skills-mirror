@@ -17,70 +17,94 @@ OmniRoute 拥有一个路由感知的授权管道，用于守卫每个 API 请�
 
 ### 1. API 密钥（Bearer）
 
-用于与 OpenAI/Anthropic/Gemini 兼容的客户端 API，以及 API 密钥具有 `manage` 作用域时的少数管理路由。
+用于与 OpenAI/Anthropic/Gemini 兼容的客户端 API，以及当密钥具有 `manage` 作用域时的少数管理路由。
 
 ```
 Authorization: Bearer <api-key>
 ```
 
-由 `src/sse/services/auth.ts` 中的 `isValidApiKey()` / `extractApiKey()` 验证，并通过 `src/shared/utils/apiAuth.ts` 重新导出。验证器还接受 `OMNIROUTE_API_KEY` / `ROUTER_API_KEY` 环境变量作为持久直通密钥（问题 #1350）。
+由 `src/sse/services/auth.ts` 中的 `isValidApiKey()` / `extractApiKey()` 验证，并通过 `src/shared/utils/apiAuth.ts` 重新导出。验证器还接受 `OMNIROUTE_API_KEY` / `ROUTER_API_KEY` 环境变量作为持久的透传密钥（issue #1350）。
 
 ### 2. 仪表板会话（auth_token cookie）
 
 用于仪表板页面和管理操作。
 
 ```
-Cookie: auth_token=<JWT signed with JWT_SECRET>
+Cookie: auth_token=<使用 JWT_SECRET 签名的 JWT>
 ```
 
-仅当 JWT 验证通过**且**携带 `authenticated: true` 时，cookie 才会被视为会话
+只有当 JWT 验证通过**并且**包含 `authenticated: true` 时，cookie 才是会话
 （`src/shared/utils/dashboardSessionToken.ts` → `verifyDashboardSessionToken`）。cookie 的每个
 使用方（仪表板路由守卫（`isDashboardSessionAuthenticated()`）、授权管道刷新、WebSocket 握手、实时
-服务器、`/api/settings/require-login`、`/api/auth/status`）都会通过该辅助函数。
-还存在其他使用 `JWT_SECRET` 签名的 JWT——Cursor CLI 直通功能会为密钥持有者签发
-`iss "omniroute" / aud "cursor-cli"` 令牌——但它们永远不会被视为会话
+服务器、`/api/settings/require-login`、`/api/auth/status`）都通过该辅助函数处理。
+还存在其他使用 `JWT_SECRET` 签名的 JWT——Cursor CLI 透传会为密钥持有者签发
+`iss "omniroute" / aud "cursor-cli"` 令牌——但它们绝不会被视为会话
 （#13298）。
 
-由 `src/shared/utils/apiAuth.ts` 中的 `isDashboardSessionAuthenticated()` 验证。当 JWT 的 30 天有效期剩余不足 7 天时，管道会自动刷新它。
+由 `src/shared/utils/apiAuth.ts` 中的 `isDashboardSessionAuthenticated()` 验证。当 JWT 在其 30 天有效期内剩余时间不足 7 天时，管道会自动刷新该 JWT。
 
-会话也可能在 30 天有效期结束前终止，因为每个签发方都会通过 `mintDashboardSessionToken`（包含签发时间 `iat` 和 ID `jti`），而验证器会检查两项设置：`sessionsValidAfter`，该值会在密码更改时设置，因此此前签发的所有会话都会停止通过验证（更改密码的浏览器会获得新的 cookie）；以及 `revokedDashboardSessions`，`POST /api/auth/logout` 会将已退出会话的 `jti` 添加到其中。由旧版本签发的会话不包含这两个声明，并会一直有效到首次更改密码为止。如果无法读取这些设置，则不会信任该会话。
+会话也可能在 30 天到期之前结束，因为每个签发方都会通过 `mintDashboardSessionToken`（包含签发时间 `iat` 和 ID `jti`），而验证器会检查两项设置：`sessionsValidAfter`，该值会在密码更改时设置，从而使此前签发的所有会话停止通过验证（更改密码的浏览器会获得新的 cookie）；以及 `revokedDashboardSessions`，`POST /api/auth/logout` 会将已登出会话的 `jti` 添加到其中。由旧版本签发的会话不包含这两个声明，因此在首次更改密码之前仍然有效。如果无法读取这些设置，则不会信任该会话。
 
-部分管理路由接受**任一**模式：cookie，或者当 API 密钥具有 `manage`（或 `admin`）作用域时使用 `Bearer <key>`。这使 v3.8 中新增的“可通过 API 调用进行配置”工作流成为可能。
+某些管理路由接受**任一**模式：cookie，或者当 API 密钥具有 `manage`（或 `admin`）作用域时使用 `Bearer <key>`。这正是 v3.8 中新增的“可通过 API 调用进行配置”工作流得以实现的方式。
 
-#### 可选的 OIDC 登录门禁（#6973）
+#### 可选的 OIDC 登录门控（#6973）
 
-除了默认的密码登录外，仪表板管理员登录还支持**选择启用**的 OIDC（OpenID Connect）流程——密码登录永远不会被移除，只会得到
-补充：
+仪表板管理员登录除了默认的密码登录外，还支持**选择启用**的 OIDC（OpenID Connect）流程——密码登录绝不会被移除，只会
+得到补充：
 
-- 除非 `settings.oidcEnabled === true`，**并且** `oidcIssuer` /
+- 除非 `settings.oidcEnabled === true` **并且** `oidcIssuer` /
   `oidcClientId` / `oidcClientSecret` 均已配置（设置 → 身份验证），否则该功能处于禁用状态。
   否则，`GET /api/auth/oidc/login` 返回 `400`。
 - `GET /api/auth/oidc/login` 从签发者的
-  `/.well-known/openid-configuration` 中发现 `authorization_endpoint`（找不到时回退到
+  `/.well-known/openid-configuration` 发现 `authorization_endpoint`（回退到
   `<issuer>/authorize`），根据传入请求构建重定向 URI
-  （支持识别 `x-forwarded-proto`），并使用存储在 `httpOnly` `oidc_state` cookie 中的随机 `state`
+  （可识别 `x-forwarded-proto`），然后使用存储在 `httpOnly` `oidc_state` cookie 中的随机 `state`
   重定向到 IdP。
-- `GET /api/auth/oidc/callback` 验证 `state`，交换授权
+- `GET /api/auth/oidc/callback` 验证 `state`、交换授权
   代码，并通过签发者的 JWKS 验证 ID 令牌的签名
   （使用 `jose` 的 `createRemoteJWKSet`，按 JWKS URI 缓存），同时执行 `issuer`/`audience`
-  检查。可选的 `oidcAllowedSubjects` 允许列表会匹配令牌的
-  `sub` 声明或其 `email` 声明——仅当
-  `email_verified === true` 时才接受 email 声明，因此 IdP 中未经验证的 email 永远无法通过
-  该门禁。
-- 成功后，它会签发与密码
-  登录（`src/app/api/auth/login/route.ts`）所签发的**完全相同**的 30 天期 `auth_token` JWT，因此仪表板
-  会话管道的其余部分（自动刷新、cookie 标志）保持不变——
-  OIDC 仅替换 cookie 的签发方式，而不会改变它授予的权限。
+  检查。必须配置 `oidcAllowedSubjects` 允许列表：它会匹配
+  令牌的 `sub` 声明或其 `email` 声明——只有当
+  `email_verified === true` 时才会接受电子邮件声明，因此 IdP 中未经验证的电子邮件绝不可能
+  通过门控——如果没有任何条目，回调会拒绝所有登录
+  （`not_configured`）。
+- 成功后，它会签发与密码登录
+  （`src/app/api/auth/login/route.ts`）所签发的**完全相同**的 30 天 `auth_token` JWT，因此仪表板会话管道的其余部分
+  （自动刷新、cookie 标志）保持不变——
+  OIDC 仅取代 cookie 的签发方式，而不会改变它授予的权限。
+- 每个 `oidc*` 设置（`oidcEnabled`、`oidcDisablePasswordLogin`、
+  `oidcIssuer`、`oidcClientId`、`oidcClientSecret`、`oidcAllowedSubjects`、
+  `oidcRedirectPath`、`oidcScopes`）都包含在 `SECURITY_IMPACTING_SETTINGS_KEYS`
+  （`src/shared/constants/securityImpactingSettings.ts`）中：除非请求正文通过 `currentPassword` 携带管理
+  密码，否则 `PATCH /api/settings`
+  会返回 `400 PASSWORD_REQUIRED`（密码错误时返回 `401 PASSWORD_MISMATCH`）。
+  `oidcDisablePasswordLogin` 会拒绝密码_登录_（`POST /api/auth/login`），
+  但会保留存储的密码哈希，并且重新身份验证仍会使用它来检查
+  `currentPassword`。
+- `POST /api/settings/import-json` 会跳过该重新身份验证，因此会在写入之前移除
+  `IMPORT_STRIPPED_SETTINGS_KEYS`（同一文件）中的每个键：密码和
+  `currentPassword`、`SECURITY_IMPACTING_SETTINGS_KEYS` 中的每个条目，以及
+  仪表板会话状态（`sessionsValidAfter`、`revokedDashboardSessions`）。
+  因此，导入较旧的备份无法恢复已因密码更改
+  或登出而结束的会话。
 
 ## 路由类别
 
-`src/server/authz/types.ts` 定义了三个类别；任何无法确定性分类的路由都会回退到 `MANAGEMENT`。
+`src/server/authz/types.ts` 定义了三个类别；任何无法确定归类的路由都会回退到 `MANAGEMENT`。
 
-| 类别         | 描述                                                                                                                                  | 所需认证                                                  |
-| ------------ | ------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------- |
-| `PUBLIC`     | 明确安全的路由——登录、登出、状态、初始化、健康检查、引导初始化。                                                                      | 无                                                        |
-| `CLIENT_API` | 模型服务端点——`/api/v1/*`、`/api/v1beta/*`，以及别名 `/v1/*`、`/v1beta/*`、`/chat/completions`、`/responses`、`/models`、`/codex/*`。 | 当有效的 `REQUIRE_API_KEY` 功能标志启用时需要 Bearer 密钥 |
-| `MANAGEMENT` | 控制面板页面、设置、提供者、密钥、管理和诊断端点。                                                                                    | 控制面板会话，或具有 `manage` 作用域的 Bearer             |
+| 类别         | 描述                                                                                                                                  | 所需身份验证                                            |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
+| `PUBLIC`     | 明确安全的路由——登录、登出、状态、初始化、健康检查、引导初始化。                                                                      | 无                                                      |
+| `CLIENT_API` | 模型服务端点——`/api/v1/*`、`/api/v1beta/*`，以及别名 `/v1/*`、`/v1beta/*`、`/chat/completions`、`/responses`、`/models`、`/codex/*`。 | 有效的 `REQUIRE_API_KEY` 功能标志启用时需要 Bearer 密钥 |
+| `MANAGEMENT` | 仪表板页面、设置、提供者、密钥、管理和诊断端点。                                                                                      | 仪表板会话，或带有 `manage` 作用域的 Bearer             |
+
+少数 `MANAGEMENT` 操作**仅限操作员**：仅有 `manage` 密钥并不足够。导出已存储的
+凭据（`GET /api/settings/export-json`、`GET /api/db-backups/export`、
+`GET /api/db-backups/exportAll`）、签发同步令牌（`POST /api/sync/tokens`）以及创建
+`admin` CLI 访问令牌（`POST /api/cli/tokens`）需要仪表板会话、本地 CLI
+主体，或者禁用登录；任何作用域的 API 密钥和 `oma_` 访问令牌都会收到 `403`。相关检查
+位于 `src/lib/api/operatorCredential.ts`（`resolveOperatorCredential()` /
+`requireOperatorCredential()`）。
 
 A few `MANAGEMENT` actions are **operator-only**: a `manage` key is not enough. Exporting stored
 credentials (`GET /api/settings/export-json`, `GET /api/db-backups/export`,

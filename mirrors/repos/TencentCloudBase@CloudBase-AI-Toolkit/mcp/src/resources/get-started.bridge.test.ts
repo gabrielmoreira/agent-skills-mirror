@@ -63,15 +63,20 @@ interface ShimmedElement {
   className: string;
   textContent: string;
   getAttribute(name: string): string | null;
+  setAttribute(name: string, value: string): void;
   addEventListener(type: string, fn: () => void): void;
   click(): void;
+  readonly firstChild: ShimmedElement | null;
+  appendChild(child: ShimmedElement): void;
+  removeChild(child: ShimmedElement): void;
 }
 
 interface PanelHarness {
   /** 记录 View → Host 发出的每一条消息及其 targetOrigin */
   sent: Array<{ message: { jsonrpc?: string; id?: number; method?: string; params?: any; result?: any }; origin: string }>;
   /** 模拟 Host → View 的一条消息 */
-  dispatch(message: unknown): void;
+  /** `source` 缺省是宿主（父窗口）；传别的对象即模拟"另一个窗口"塞消息 */
+  dispatch(message: unknown, source?: unknown): void;
   /** 触发所有尚未执行的 setTimeout 回调（面板的超时兜底靠它） */
   fireTimers(): void;
   element(id: string): ShimmedElement;
@@ -98,6 +103,7 @@ function loadPanel(html: string): PanelHarness {
   for (const id of html.matchAll(/\bid="([^"]+)"/g)) {
     const elementId = id[1];
     const handlers: Record<string, Array<() => void>> = {};
+    const children: ShimmedElement[] = [];
     elements.set(elementId, {
       id: elementId,
       hidden: true,
@@ -107,17 +113,28 @@ function loadPanel(html: string): PanelHarness {
       getAttribute(name) {
         return attributes.get(elementId)?.[name.replace(/^data-/, "")] ?? null;
       },
+      setAttribute() {},
       addEventListener(type, fn) {
         (handlers[type] ||= []).push(fn);
       },
       click() {
         (handlers.click ?? []).forEach((fn) => fn());
       },
+      get firstChild() {
+        return children[0] ?? null;
+      },
+      appendChild(child: ShimmedElement) {
+        children.push(child);
+      },
+      removeChild(child: ShimmedElement) {
+        const at = children.indexOf(child);
+        if (at >= 0) { children.splice(at, 1); }
+      },
     });
   }
 
   const sent: PanelHarness["sent"] = [];
-  const messageListeners: Array<(event: { data: unknown }) => void> = [];
+  const messageListeners: Array<(event: { data: unknown; source?: unknown }) => void> = [];
   // 可控的假定时器：面板的超时兜底需要能"手动到点"，而不是真等 10s
   let timerSeq = 0;
   let timers = new Map<number, () => void>();
@@ -126,8 +143,26 @@ function loadPanel(html: string): PanelHarness {
       // 与浏览器一致：不存在的 id 返回 null，避免掩盖"按钮丢了"这类问题
       getElementById: (id: string) => elements.get(id) ?? null,
       documentElement: { scrollWidth: 480, scrollHeight: 320 },
+      // 面板高度要按内容算，不是按宿主给的视口：这个假的 panel 只有 120 高
+      querySelector: () => ({ getBoundingClientRect: () => ({ height: 120, width: 480 }) }),
       body: {},
       addEventListener() {},
+      // 面板用 createElement 造环境行；垫片只需要这几种属性，别假装是个完整 DOM。
+      createElement(tag: string) {
+        const node: Record<string, unknown> = {
+          tagName: tag.toUpperCase(),
+          className: "",
+          textContent: "",
+          type: "",
+          children: [] as unknown[],
+          setAttribute() {},
+          addEventListener() {},
+          appendChild(child: { textContent?: string }) {
+            (node.children as unknown[]).push(child);
+          },
+        };
+        return node;
+      },
     },
     setTimeout: (fn: () => void) => {
       const id = ++timerSeq;
@@ -164,8 +199,8 @@ function loadPanel(html: string): PanelHarness {
 
   return {
     sent,
-    dispatch(message) {
-      messageListeners.forEach((fn) => fn({ data: message }));
+    dispatch(message, source: unknown = sandbox.parent) {
+      messageListeners.forEach((fn) => fn({ data: message, source }));
     },
     fireTimers() {
       const pendingTimers = [...timers.values()];
@@ -247,8 +282,11 @@ describe("get-started 面板 bridge（vm 垫片驱动）", () => {
     await flush();
 
     expect(panel.sent.some((entry) => entry.message.method === "tools/call")).toBe(false);
-    // 加载时没有实时结果：只给一个次级「重新检查」入口，主行动不瞎猜
-    expect(panel.element("btn-main").hidden).toBe(true);
+    // 加载时没有实时结果：主行动是「连接 CloudBase」（会走授权/绑定），不是一个只能读的检查
+    expect(panel.element("btn-main").hidden).toBe(false);
+    expect(panel.element("btn-main-label").textContent).toBe(
+      t("mcpUi.next.action.connect", undefined, "en"),
+    );
   });
 
   it("吃 ui/notifications/tool-result 的 structuredContent：状态卡与主行动跟着变", async () => {
@@ -266,8 +304,150 @@ describe("get-started 面板 bridge（vm 垫片驱动）", () => {
     expect(panel.element("k-place").textContent).toBe("Shanghai (China)");
     expect(panel.element("k-scope").textContent).toBe("Current environment only");
     expect(panel.element("btn-main").hidden).toBe(false);
-    expect(panel.element("btn-main").textContent).toBe(t("mcpUi.next.action.deploy", undefined, "en"));
+    expect(panel.element("btn-main-label").textContent).toBe(t("mcpUi.next.action.deploy", undefined, "en"));
     expect(panel.element("nx-label").textContent).toBe(t("mcpUi.next.label.ready", undefined, "en"));
+  });
+
+  it("上报的高度是卡片自身高度，不是宿主给的视口高度", async () => {
+    const panel = loadPanel(buildGetStartedHtml("en", sampleStatus));
+    panel.dispatch(HOST_INITIALIZE_RESULT);
+    await flush();
+
+    const sizeChanged = panel.sent.filter((entry) => entry.message.method === "ui/notifications/size-changed");
+    expect(sizeChanged.length).toBeGreaterThan(0);
+    // 视口是 320，卡片只有 120：报 320 会让宿主留一大片空白
+    expect(sizeChanged[sizeChanged.length - 1].message.params?.height).toBe(120);
+  });
+
+  it("环境多于一屏：默认给前 5 个，「显示全部」就地展开，不向宿主发任何请求", async () => {
+    const panel = loadPanel(buildGetStartedHtml("zh", sampleStatus));
+    const candidates = Array.from({ length: 8 }, (_, i) => ({
+      envId: `env-${i}`,
+      alias: `env-${i}`,
+      region: "ap-shanghai",
+      status: i < 8 ? "NORMAL" : "UNAVAILABLE",
+    }));
+    panel.dispatch(
+      TOOL_RESULT({
+        structuredContent: {
+          ...READY_STATUS,
+          current_env_id: null,
+          env_status: "MULTIPLE",
+          env_candidates: candidates,
+          env_candidates_summary: { total: 8, returned: 8, truncated: false },
+        },
+      }),
+    );
+    await flush();
+
+    // 收起态：说明还剩多少，并给出一个能按的入口（不是干写着"只显示了前 5 个"）
+    expect(panel.element("env-toggle").hidden).toBe(false);
+    expect(panel.element("env-toggle-label").textContent).toBe(
+      t("mcpUi.env.showAll", { n: 8 }, "zh"),
+    );
+    expect(panel.element("env-more").textContent).toBe(t("mcpUi.env.allShown", { total: 8 }, "zh"));
+
+    const before = panel.sent.length;
+    panel.element("env-toggle").click();
+    await flush();
+
+    // 展开态：按钮翻成「收起」，句子改成总数；展开前后都不该多出 tool 调用
+    expect(panel.element("env-toggle-label").textContent).toBe(t("mcpUi.env.collapse", undefined, "zh"));
+    expect(panel.element("env-more").textContent).toBe(t("mcpUi.env.allShown", { total: 8 }, "zh"));
+    const after = panel.methodsFrom(before);
+    expect(after).not.toContain("tools/call");
+    expect(after.every((m) => m === "ui/notifications/size-changed")).toBe(true);
+
+    // 再点一次收回，且换一份新结果时回到收起态（用户要的是"下一步"，不是四十行）
+    panel.element("env-toggle").click();
+    await flush();
+    expect(panel.element("env-toggle-label").textContent).toBe(t("mcpUi.env.showAll", { n: 8 }, "zh"));
+  });
+
+  it("完整候选走 _meta：面板列出全部，摘要仍是模型看到的那份", async () => {
+    const panel = loadPanel(buildGetStartedHtml("zh", sampleStatus));
+    const all = Array.from({ length: 8 }, (_, i) => ({
+      envId: `env-${i}`,
+      alias: `env-${i}`,
+      region: "ap-shanghai",
+      status: "NORMAL",
+    }));
+    panel.dispatch(
+      TOOL_RESULT({
+        // 模型看到的那份只有 2 个 + 摘要
+        structuredContent: {
+          ...READY_STATUS,
+          current_env_id: null,
+          env_status: "MULTIPLE",
+          env_candidates: all.slice(0, 2),
+          env_candidates_summary: { total: 8, returned: 2, truncated: true },
+        },
+        // 面板要的那份是全部
+        _meta: { "cloudbase/ui": { env_candidates: all } },
+      }),
+    );
+    await flush();
+
+    // 列表按 8 个算：按钮说 8，摘要说 8，而不是 2 / 37
+    expect(panel.element("env-toggle-label").textContent).toBe(
+      t("mcpUi.env.showAll", { n: 8 }, "zh"),
+    );
+    expect(panel.element("env-more").textContent).toBe(t("mcpUi.env.allShown", { total: 8 }, "zh"));
+  });
+
+  it("接口只回了 5 个、但总共 37 个：没有可展开的，就直接说清其余的在哪", async () => {
+    const panel = loadPanel(buildGetStartedHtml("zh", sampleStatus));
+    panel.dispatch(
+      TOOL_RESULT({
+        structuredContent: {
+          ...READY_STATUS,
+          current_env_id: null,
+          env_status: "MULTIPLE",
+          env_candidates: Array.from({ length: 5 }, (_, i) => ({
+            envId: `env-${i}`,
+            alias: `env-${i}`,
+            region: "ap-shanghai",
+            status: "NORMAL",
+          })),
+          env_candidates_summary: { total: 37, returned: 5, truncated: true },
+        },
+      }),
+    );
+    await flush();
+
+    // 没有可展开的 → 不给按钮；但不能只说"只显示了前 5 个"就没了下文
+    expect(panel.element("env-toggle").hidden).toBe(true);
+    expect(panel.element("env-foot").hidden).toBe(false);
+    expect(panel.element("env-more").textContent).toBe(
+      t("mcpUi.env.restHidden", { n: 32 }, "zh"),
+    );
+    // 出路给在会话里（说环境名就能切），不是把人赶去控制台
+    expect(panel.element("env-more").textContent).toContain("环境名");
+  });
+
+  it("只认宿主：别的窗口塞进来的结果不改状态卡，也不发任何消息", async () => {
+    const panel = loadPanel(buildGetStartedHtml("en", sampleStatus));
+    await flush();
+    const unknown = panel.element("st-text").textContent;
+    const sentBefore = panel.sent.length;
+
+    // 别的窗口（同页其它 frame、或被别人套进来的一层）塞一份"已连接"的假结果：
+    // 面板既不改状态，也不能因此向宿主发任何消息。
+    panel.dispatch(TOOL_RESULT({ structuredContent: READY_STATUS }), { postMessage() {} });
+    await flush();
+    expect(panel.element("st-text").textContent).toBe(unknown);
+    expect(panel.sent.length).toBe(sentBefore);
+
+    // null 来源必须放行：沙箱代理 / MessagePort 中转就是这样投递的（Codex 的 mcp-app-sandbox
+    // 实测如此），挡掉它面板会静默收不到任何结果。
+    panel.dispatch(TOOL_RESULT({ structuredContent: READY_STATUS }), null);
+    await flush();
+    expect(panel.element("st-text").textContent).toBe(t("mcpUi.status.connected", undefined, "en"));
+
+    // 对照：宿主发同样内容，状态卡确实变（否则上面两条是虚假通过）
+    panel.dispatch(TOOL_RESULT({ structuredContent: READY_STATUS }));
+    await flush();
+    expect(panel.element("st-text").textContent).toBe(t("mcpUi.status.connected", undefined, "en"));
   });
 
   it("一屏一个主行动：未登录给登录、已登录未绑定给选环境，其余不并列", async () => {
@@ -276,7 +456,7 @@ describe("get-started 面板 bridge（vm 垫片驱动）", () => {
     panel.dispatch(TOOL_RESULT({ structuredContent: { auth_status: "REQUIRED" } }));
     await flush();
     expect(panel.element("st-text").textContent).toBe(t("mcpUi.status.loggedOut", undefined, "en"));
-    expect(panel.element("btn-main").textContent).toBe(t("mcpUi.next.action.login", undefined, "en"));
+    expect(panel.element("btn-main-label").textContent).toBe(t("mcpUi.next.action.login", undefined, "en"));
     // 这次结果没带位置/环境字段 → 本地兜底（实时值优先，但缺失的字段仍要有个值）
     expect(panel.element("k-place").textContent).toBe("Shanghai (China)");
     expect(panel.element("k-env").textContent).toBe("env-abc123");
@@ -287,7 +467,7 @@ describe("get-started 面板 bridge（vm 垫片驱动）", () => {
     panel.dispatch(TOOL_RESULT({ structuredContent: UNBOUND_STATUS }));
     await flush();
     expect(panel.element("st-text").textContent).toBe(t("mcpUi.status.loggedIn", undefined, "en"));
-    expect(panel.element("btn-main").textContent).toBe(t("mcpUi.next.action.selectEnv", undefined, "en"));
+    expect(panel.element("btn-main-label").textContent).toBe(t("mcpUi.next.action.selectEnv", undefined, "en"));
     // 实时结果里 current_env_id 显式为 null → 「未绑定」，不能被本地缓存的环境 ID 顶掉
     expect(panel.element("k-env").textContent).toBe(t("mcpUi.status.unset", undefined, "en"));
     expect(panel.element("k-scope").textContent).toBe(t("mcpUi.scope.account", undefined, "en"));
@@ -327,7 +507,7 @@ describe("get-started 面板 bridge（vm 垫片驱动）", () => {
     panel.dispatch(TOOL_RESULT({ structuredContent: { ok: true, code: "AUTH_REQUIRED" } }));
     await flush();
     expect(panel.element("st-text").textContent).toBe(t("mcpUi.status.loggedOut", undefined, "en"));
-    expect(panel.element("btn-main").textContent).toBe(t("mcpUi.next.action.login", undefined, "en"));
+    expect(panel.element("btn-main-label").textContent).toBe(t("mcpUi.next.action.login", undefined, "en"));
   });
 
   it("structuredContent 优先于 content 文本（两者冲突时以结构化结果为准）", async () => {
@@ -381,7 +561,7 @@ describe("get-started 面板 bridge（vm 垫片驱动）", () => {
     expect(calls[0].message.params).toEqual({ name: "auth", arguments: { action: "status" } });
     // pending 就落在按钮上（禁用 + 文案变「正在检查…」），不另起一行
     expect(panel.element("btn-refresh").disabled).toBe(true);
-    expect(panel.element("btn-refresh").textContent).toBe(t("mcpUi.action.pending", undefined, "en"));
+    expect(panel.element("btn-refresh-label").textContent).toBe(t("mcpUi.action.pending", undefined, "en"));
 
     // 服务端把结果放在 content[0].text 的 JSON 里，面板要能回落到解析它
     panel.dispatch({
@@ -392,11 +572,11 @@ describe("get-started 面板 bridge（vm 垫片驱动）", () => {
     await flush();
 
     expect(panel.element("btn-refresh").disabled).toBe(false);
-    expect(panel.element("btn-refresh").textContent).toBe(
+    expect(panel.element("btn-refresh-label").textContent).toBe(
       t("mcpUi.next.action.refresh", undefined, "en"),
     );
     expect(panel.element("st-text").textContent).toBe(t("mcpUi.status.loggedIn", undefined, "en"));
-    expect(panel.element("btn-main").textContent).toBe(t("mcpUi.next.action.selectEnv", undefined, "en"));
+    expect(panel.element("btn-main-label").textContent).toBe(t("mcpUi.next.action.selectEnv", undefined, "en"));
   });
 
   it("点主行动：只发 ui/message，且不发 tools/call", async () => {
@@ -437,8 +617,11 @@ describe("get-started 面板 bridge（vm 垫片驱动）", () => {
     expect(panel.element("k-scope").textContent).toBe(
       t("mcpUi.status.scopeAfterLogin", undefined, "en"),
     );
-    // 唯一还能按下去的是「重新检查」（vm 垫片不反映 HTML 的静态文案与"默认不隐藏"，所以直接点它来验）
-    expect(panel.element("btn-main").hidden).toBe(true);
+    // 读不懂的结果 ⇒ 回到尚未确认，但主行动仍是「连接 CloudBase」：用户不该被卡在只能"再查一次"
+    expect(panel.element("btn-main").hidden).toBe(false);
+    expect(panel.element("btn-main-label").textContent).toBe(
+      t("mcpUi.next.action.connect", undefined, "en"),
+    );
     // 原文只落在折叠区里（且原样保留、没有被解析成元素）
     expect(panel.element("raw-box").hidden).toBe(false);
     expect(panel.element("raw-out").textContent).toBe(junk);
@@ -452,7 +635,7 @@ describe("get-started 面板 bridge（vm 垫片驱动）", () => {
     const calls = panel.sent.slice(before).filter((entry) => entry.message.method === "tools/call");
     expect(calls).toHaveLength(1);
     expect(calls[0].message.params).toEqual({ name: "auth", arguments: { action: "status" } });
-    expect(panel.element("btn-refresh").textContent).toBe(t("mcpUi.action.pending", undefined, "en"));
+    expect(panel.element("btn-refresh-label").textContent).toBe(t("mcpUi.action.pending", undefined, "en"));
   });
 
   it("「重新检查」拿回一段读不懂的文本：给失败态与出路，同样不摊原文", async () => {
@@ -497,7 +680,7 @@ describe("get-started 面板 bridge（vm 垫片驱动）", () => {
     expect(err.textContent).not.toBe(t("mcpUi.action.pending", undefined, "en"));
     // 按钮从 loading 态恢复，可以再点
     expect(panel.element("btn-refresh").disabled).toBe(false);
-    expect(panel.element("btn-refresh").textContent).toBe(
+    expect(panel.element("btn-refresh-label").textContent).toBe(
       t("mcpUi.next.action.refresh", undefined, "en"),
     );
   });

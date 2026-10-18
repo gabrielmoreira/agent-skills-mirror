@@ -340,24 +340,24 @@ DB አይቀመጡም — ዳግም ሲጀመር ይጠፋሉ። _ቅንብሮ�
 
 ---
 
-## 4. የኮታ-መጋራት ተመሳሳይ ጊዜ መቆጣጠሪያ (v3.8.36)
+## 4. የQuota-Share በአንድ ጊዜ ማስኬድ ቁጥጥር (v3.8.36)
 
-የደንበኝነት ምዝገባ መለያዎች (GLM፣ MiniMax፣ ወዘተ) ብዙውን ጊዜ ~1–3 ተመሳሳይ ጊዜ
-ጥያቄዎችን ብቻ ይቀበላሉ፤ ከዚያ ማለፍ 429 ስህተቶችን እና የመጠበቂያ ጊዜዎችን ያስከትላል። ይህ
-በተለይ በ**quota-share** (`qtSd/…`) ጥምረቶች ሥር ከባድ ነው፤ በዚያም በርካታ API ቁልፎች አንድ upstream
-መለያ ይጋራሉ። ሦስት የቁጥጥር ደረጃዎች የጋራ መለያው በጥያቄዎች እንዳይጥለቀለቅ ያደርጋሉ።
+የደንበኝነት ምዝገባ መለያዎች (GLM፣ MiniMax፣ ወዘተ) ብዙውን ጊዜ ~1–3 በአንድ ጊዜ
+የሚላኩ ጥያቄዎችን ብቻ ይቀበላሉ፤ ይህን ማለፍ 429ዎችን እና የcooldown ጊዜዎችን ያስነሳል። ይህ
+በተለይ በ**quota-share** (`qtSd/…`) combos ስር ከባድ ነው፤ በዚህም በርካታ API keys አንድ upstream
+መለያ ይጋራሉ። ሶስት ንብርብሮች የጋራ መለያው በጥያቄዎች እንዳይጥለቀለቅ ያደርጋሉ።
 
-### የእያንዳንዱ ግንኙነት ተመሳሳይ ጊዜ ገደብ (`max_concurrent`)
+### የእያንዳንዱ connection በአንድ ጊዜ ማስኬድ ገደብ (`max_concurrent`)
 
-እያንዳንዱ የአቅራቢ ግንኙነት የ`max_concurrent` ከፍተኛ ገደብ ሊያውጅ ይችላል
-(`provider_connections.max_concurrent`፣ በግንኙነት ሞዳሉ / API / DB ውስጥ ይዋቀራል)።
-ገደብ እንዳይኖር ባዶውን ይተዉት። ከታች ያለውን ተከታታይ ማስኬጃ የሚቆጣጠረው ብቸኛው ቅንብር
-ይህ ነው — የመለያውን እውነተኛ ተመሳሳይ ጊዜ አቅም ያዋቅሩበት (ለምሳሌ GLM ~1፣ MiniMax ~2)።
+እያንዳንዱ provider connection የ`max_concurrent` ከፍተኛ ገደብ ሊያውጅ ይችላል
+(`provider_connections.max_concurrent`፣ በconnection modal / API / DB ውስጥ የሚዋቀር)።
+ገደብ እንዳይኖር ባዶ ይተዉት። ከታች ያለውን serialization
+ንብርብር የሚቆጣጠረው ዋና ማስተካከያ ይህ ነው — ወደ መለያው እውነተኛ የአንድ ጊዜ ማስኬድ አቅም ያዋቅሩት (ለምሳሌ GLM ~1፣ MiniMax ~2)።
 
-### የእያንዳንዱ ሞዴል ተመሳሳይ ጊዜ ገደቦች (`modelConcurrency`)
+### የእያንዳንዱ model በአንድ ጊዜ ማስኬድ ገደቦች (`modelConcurrency`)
 
-አንድ ግንኙነት በ`rateLimitOverrides` ካርታው ውስጥ ትክክለኛ የእያንዳንዱ ሞዴል
-ተመሳሳይ ጊዜ ከፍተኛ ገደቦችን በተጨማሪ ሊያውጅ ይችላል፦
+አንድ connection በ`rateLimitOverrides` map ውስጥ ለእያንዳንዱ model ትክክለኛ የአንድ ጊዜ ማስኬድ ገደቦችን
+በተጨማሪ ሊያውጅ ይችላል፦
 
 ```json
 {
@@ -368,64 +368,70 @@ DB አይቀመጡም — ዳግም ሲጀመር ይጠፋሉ። _ቅንብሮ�
 }
 ```
 
-በግንኙነት ሞዳሉ (**የፍጥነት ገደብ ማሻሻያዎች → የእያንዳንዱ ሞዴል
-ተመሳሳይ ጊዜ ገደቦች**፣ በእያንዳንዱ መስመር አንድ `model=cap`) ውስጥ ወይም ተመሳሳይ JSON ቅርጽ
-ባለው `PATCH /api/providers/[id]` በኩል ያዋቅሩት። የቁልፍ ትርጉሞች፦
+በconnection modal (**Rate limit overrides → Per-model
+concurrency caps**፣ በእያንዳንዱ መስመር አንድ `model=cap`) ውስጥ ወይም ተመሳሳይ JSON ቅርጽን በመጠቀም
+`PATCH /api/providers/[id]` በኩል ያዋቅሩት። የkey ትርጉሞች፦
 
-- **ግንኙነት-አቀፍ እና ሞዴል-ተኮር፦** `maxConcurrent` የጋራ
-  ግንኙነት-አቀፍ ከፍተኛ ገደብ ሆኖ ይቆያል። ሁለቱም ሲተገበሩ ሁለቱም በሮች
-  በአንድ የተቀናጀ በር ውስጥ እንደ አንድ ክዋኔ ይያዛሉ
-  (`global → provider → account → model`)፤ ተግባራዊ ባህሪው ይበልጥ
-  ጥብቅ በሆነው የሚተገበር ገደብ ይወሰናል።
-- **ትክክለኛ የሞዴል ቁልፍ ማዛመድ፦** ቁልፉ የማዘዋወር መፍትሔ ከተከናወነ በኋላ ወደ
-  አስፈጻሚው የሚተላለፈው የሞዴል ሕብረቁምፊ ነው — በተለምዶ ተጨማሪ ቅጥያ የሌለው upstream ሞዴል id
-  (`glm-5`) እንጂ የደንበኛ-ወገን `provider/model` ተለዋጭ ስም አይደለም (`zai/glm-5` ከ
-  `glm-5` ጋር አይዛመድም)። እሴቶቹ አዎንታዊ ኢንቲጀር የተመሳሳይ ጊዜ ጥያቄ ከፍተኛ ገደቦች ናቸው።
-- **አካባቢያዊ ወረፋ፣ ያለ ራስ-ሰር ፍለጋ፦** ከመጠን በላይ የሆኑ ጥያቄዎች ነባሩን
-  የወረፋ/ጊዜ ማብቂያ ትርጉም በመከተል በአካባቢው ወረፋ ይይዛሉ (ዓይነት ያላቸው `SEMAPHORE_TIMEOUT` /
-  `SEMAPHORE_QUEUE_FULL` የመቀበያ ስህተቶች)። OmniRoute የupstream ፖሊሲን አይፈልግም ወይም
-  አይገምትም — ኦፕሬተሩ ያዋቀራቸውን ትክክለኛ ከፍተኛ ገደቦች ያስፈጽማል።
-  የሞላ የሞዴል በር አቅራቢውን ፈጽሞ አያሰናክልም፣ እንዲሁም ቋሚ የሞዴል መቆለፍን
-  አይፈጥርም፤ የupstream 429/የመጠበቂያ ጊዜ/የአማራጭ መንገድ ባህሪ
-  የስህተት የመጨረሻ መከላከያ ሆኖ ይቆያል።
-- **የእያንዳንዱ ግንኙነት፣ የእያንዳንዱ ሂደት ወሰን፦** ገደቦቹ ለእያንዳንዱ የውሂብ ጎታ ግንኙነት
-  የተለዩ ሲሆኑ በማህደረ ትውስታ ውስጥ ይያዛሉ፤ ስለዚህ ተመሳሳዩን upstream API ቁልፍ እንደገና
-  የሚጠቀሙ ሁለት ግንኙነቶች እርስ በርሳቸው አይቀናጁም።
-- **ያልተዋቀረ ማለት ያልተለወጠ ማለት ነው፦** ካርታውን መተው (ወይም የዳሽቦርዱን
-  መስክ ባዶ መተው) ምንም የሞዴል በር አይጨምርም። ምንም አለምአቀፍ የአቅራቢ ገደብ ሳይገልጽ
-  የተዘጋጀ የምሳሌ ውቅር፦
+- **ለconnection አጠቃላይ ከሆነው ገደብ ጋር ለmodel የተወሰነው፦** `maxConcurrent` የጋራ
+  የconnection አጠቃላይ ከፍተኛ ገደብ ሆኖ ይቆያል። ሁለቱም ሲተገበሩ፣ ሁለቱም gates በተመሳሳይ composite gate ውስጥ
+  በአንድ ክዋኔ ይያዛሉ
+  (`global → provider → account → model`)፤ በተግባር የሚሠራው ይበልጥ
+  ጥብቅ የሆነው ተፈጻሚ ገደብ ነው።
+- **ትክክለኛ የmodel-key ማዛመድ፦** keyው የrouting resolution ከተጠናቀቀ በኋላ ለ
+  executor የሚተላለፈው የmodel string ነው — በመደበኛነት ባዶው upstream model id
+  (`glm-5`) እንጂ በclient በኩል ያለ `provider/model` alias አይደለም (`zai/glm-5` ከ
+  `glm-5` ጋር አይዛመድም)። Values የአዎንታዊ ኢንቲጀር በአንድ ጊዜ የሚከናወኑ ጥያቄዎች ገደቦች ናቸው።
+- **አካባቢያዊ queueing፣ discovery የለም፦** ከመጠን በላይ የሆኑ ጥያቄዎች በነባሩ
+  የqueue/timeout አሠራር መሠረት በአካባቢው queue ውስጥ ይጠብቃሉ (type ያላቸው `SEMAPHORE_TIMEOUT` /
+  `SEMAPHORE_QUEUE_FULL` የadmission ስህተቶች)። OmniRoute የupstream policyን አያገኝም ወይም
+  አይገምትም — ኦፕሬተሩ ያዋቀራቸውን ትክክለኛ ገደቦች ያስፈጽማል። የሞላ model gate providerን ፈጽሞ አያሰናክልም እንዲሁም
+  ቋሚ የmodel lockout አይፈጥርም፤ የupstream 429/cooldown/fallback ባህሪ
+  እንደ የስህተት የመጨረሻ መከላከያ ይቆያል።
+- **የእያንዳንዱ connection፣ የእያንዳንዱ process ወሰን፦** caps ለእያንዳንዱ database connection የተለዩ ሲሆኑ
+  በmemory ውስጥ ይያዛሉ፤ ስለዚህ ተመሳሳዩን upstream API key ዳግም የሚጠቀሙ ሁለት connections
+  እርስ በርሳቸው አይቀናጁም።
+- **ያልተዋቀረ ማለት ምንም ለውጥ የለም፦** mapን አለማካተት (ወይም የdashboard fieldን ባዶ መተው)
+  ምንም model gate አይጨምርም። ምንም ዓለም አቀፍ የprovider ገደብ ሳይወሰን የሚደረግ የምሳሌ configuration፦
 
 ```text
 glm-5=1
 glm-4.7=3
 ```
 
-### የኮታ-መጋራት ጥያቄን ተከታታይ ማስኬድ
+### የQuota-share ጥያቄ serialization
 
-የኮታ-መጋራት ማሰራጨት አዎንታዊ `max_concurrent` ያወጀ ግንኙነትን ሲያነጣጥር፣
-ወደዚያ **መለያ** የሚላኩ ተመሳሳይ ጊዜ ጥያቄዎች በእያንዳንዱ ግንኙነት semaphore
-(ቁልፍ `qsconn:<connectionId>`) በኩል በተከታታይ ይከናወናሉ፦ ከመጠን በላይ የሆኑ ጥያቄዎች
-መለያውን ከማጥለቅለቅ ይልቅ **በወረፋው ውስጥ ይጠብቃሉ**። ይህ **fail-open** ነው —
-የሞላ ወረፋ ወይም የጊዜ ማብቂያ ሊሰራጭ የሚችልን ጥያቄ ከመቀበል ይልቅ ያለ ቦታ ወደፊት
-ይቀጥላል። በ**ቅንብሮች → የመቋቋም አቅም → የኮታ-መጋራት የእያንዳንዱ ግንኙነት
-ተመሳሳይ ጊዜ ገደብ** (`resilienceSettings.quotaShareConcurrencyLimit.enabled`፣ በነባሪ
-በርቷል) ውስጥ ያብሩት ወይም ያጥፉት። የ`max_concurrent` ገደብ ከሌለ ባህሪው ሳይለወጥ ይቆያል።
+የquota-share dispatch አዎንታዊ
+`max_concurrent` ያወጀ connectionን ሲያነጣጥር፣ ወደዚያ **account** በአንድ ጊዜ የሚላኩ ጥያቄዎች በ
+የእያንዳንዱ connection semaphore (key `qsconn:<connectionId>`) በኩል በተራ ይስተናገዳሉ፦ ከመጠን በላይ የሆኑ ጥያቄዎች መለያውን ከማጥለቅለቅ ይልቅ **በ
+queue ውስጥ ይጠብቃሉ**። ይህ **fail-open** ነው — የሞላ
+queue ወይም timeout ሊላክ የሚችልን
+ጥያቄ ፈጽሞ ከመከልከል ይልቅ ያለ slot እንዲቀጥል ያደርገዋል። በ**Settings → Resilience → Quota-share per-connection
+concurrency** (`resilienceSettings.quotaShareConcurrencyLimit.enabled`፣ በነባሪ ክፍት
+ነው) ውስጥ ያብሩት ወይም ያጥፉት። የ`max_concurrent` cap ከሌለ ባህሪው አይቀየርም።
 
-> የኮታ-መጋራት ማዘዋወሪያ በር (`selectQuotaShareTarget`፣ DRR + P2C) ራሱ
-> fail-open ሲሆን ገደቡ ላይ ያለን ግንኙነት _ቅድሚያውን ብቻ ዝቅ ያደርጋል_ — አንድ
-> ግንኙነት ብቻ ባለው ስብስብ ውስጥ ጠንካራ ገደብ ማድረግ አይችልም፤ ስለዚህ የጥያቄዎቹን ጎርፍ በተግባር
-> የሚቆጣጠረው ይህ semaphore ነው።
+> የquota-share routing gate (`selectQuotaShareTarget`፣ DRR + P2C) ራሱ
+> fail-open ሲሆን ገደቡ ላይ የደረሰ connectionን _ቅድሚያ ብቻ ይቀንስለታል_ — አንድ
+> connection ብቻ ባለበት pool ውስጥ ጠንካራ ገደብ ማድረግ አይችልም፤ ስለዚህ ፍሰቱን በእውነት
+> የሚይዘው ይህ semaphore ነው።
 
-### የጥምረት የመጠበቂያ ጊዜን ያገናዘበ ዳግም ሙከራ
+### Combo cooldownን ያገናዘበ retry
 
-ለእያንዳንዱ የጥምረት ስትራቴጂ (ሲነቃ)፣ አጭር ጊዜያዊ የመጠበቂያ ጊዜ ያለውን 429
-የመጨረሻ ውጤት የሚያደርግ ጥያቄ 429ን ከመመለስ ይልቅ ጊዜው እስኪያልፍ ይጠብቃል እና እንደገና
-ይሰራጫል — ይህም በባለብዙ ሞዴል ጥምረቶች ላይ ያሉ የGemini-ደረጃ TPM/RPM መስኮቶችን
-(~60s retry-after) ይሸፍናል፤ ለምሳሌ፣ ባለ2-ሞዴል ጥምረት ሁለቱም ዒላማዎች የእያንዳንዱ ሞዴል
-ፍጥነት ገደብ ሲደርሱ። ይህ በ**ቅንብሮች → የመቋቋም አቅም** ውስጥ ባለው
-`comboCooldownWait` (`enabled`፣ `maxWaitMs`፣ `maxAttempts`፣
-`budgetMs`) ይገደባል። `quota_exhausted` (እስከ እኩለ ሌሊት የተቆለፈ) ወይም
-የማረጋገጫ/አልተገኘም ምክንያቶች ሲኖሩ ፈጽሞ አይጠብቅም።
+ለእያንዳንዱ combo strategy (ሲነቃ)፣ ለአጭር ጊዜ በሚቆይ transient cooldown 429ን
+የሚያረጋግጥ ጥያቄ 429ን ከመመለስ ይልቅ cooldownው እስኪያልፍ ይጠብቃል እና እንደገና
+dispatch ያደርጋል — ይህ በmulti-model combos ላይ ያሉ Gemini-class TPM/RPM windowsን (~60s retry-after)
+ይሸፍናል፤ ለምሳሌ የ2-model combo ሁለቱም targets የእያንዳንዱ model
+rate limit ላይ ሲደርሱ። በ**Settings → Resilience** ውስጥ ባለው `comboCooldownWait` (`enabled`፣ `maxWaitMs`፣ `maxAttempts`፣
+`budgetMs`) የተገደበ ነው። በ`quota_exhausted`
+(እስከ እኩለ ሌሊት locked) ወይም auth/not-found reasons ላይ ፈጽሞ አይጠብቅም።
+
+ተመሳሳዩ gate ከdispatch በፊት ያለውን ሁኔታ (#16319) ይሸፍናል፦ ምንም ሙከራ ከመደረጉ በፊት የአንድ combo
+እያንዳንዱ target የእሱ model በአጭር
+transient lockout ውስጥ ስላለ ሲዘለል፣ zero-attempt path ምንም hint የሌለውን
+`503 ALL_TARGETS_SKIPPED` ከመመለስ ይልቅ በተመሳሳዩ
+ገደቦች ስር lockoutው እስኪያልፍ ይጠብቃል እና እንደገና dispatch ያደርጋል። መጠበቅ በማይፈቀድበት ጊዜ (ገደብ፣ ሙከራ ወይም budget
+ካለቀ፣ ወይም featureው ከጠፋ)፣ terminal responseው ከመጀመሪያው
+transient lock ማብቂያ `retry_after` / `reset_at`ን ይዞ ወደ
+`429 rate_limit_error` ይሻሻላል፤ quota፣ auth እና not-found locks ምንም hint የሌለውን 503 ይዘው ይቆያሉ።
 
 ```text
 #16319 · comboCooldownWait · pre-dispatch (attempts = 0)

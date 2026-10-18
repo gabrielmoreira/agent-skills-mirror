@@ -5,8 +5,6 @@ Core AI agent service of the Ginlix financial research platform. One agent, the 
 - **Analyst** (default): the agent inside a workspace. Does the R&D and produces the deliverables, which stay in that workspace.
 - **Chief of Staff**: the agent for work in no particular workspace ("All workspaces" in the UI). Runs in a `Home` folder on the user's computer beside the workspace folders, where everything it produces is kept. It answers quick questions and anything the workspaces already hold itself, reading their folders and past threads, and hands new work to the workspace's analyst, which reports back when done.
 
-The Chief of Staff sits behind the `all_workspaces_agent` flag, on by default: a user turns it off in Settings, a deployment in `config.yaml`. Without it, work outside a workspace runs on the **Flash agent**, a fast no-sandbox assistant (external tools only, plus any MCP tool bound to the direct path), which the Chief of Staff replaces.
-
 > Single source of truth for AI coding agents. `CLAUDE.md` imports this via `@AGENTS.md`; Codex/Cursor/Copilot read it directly. Edit here, not there.
 
 ## Common Commands
@@ -56,8 +54,7 @@ Electron wrapper around the hosted web app. It carries **no web bundle**, only a
 Built with `create_agent()` from **`langchain.agents`** (not a hand-written `StateGraph`), wrapped in a custom middleware stack (some middleware from `deepagents`). `PTCAgent.create_agent()` in `src/ptc_agent/agent/agent.py` assembles the tools (`execute_code`, `bash`, filesystem ops, `show_widget`, web search/fetch, SEC/market), the middleware, and a `BackgroundSubagentOrchestrator` for parallel background tasks.
 
 - **Subagents** (`agent/subagents/`): five built-in (`research`, `general-purpose`, `data-prep`, `equity-analyst`, `report-builder`), all enabled by default; more user-defined ones from `agent_config.yaml`.
-- **Roles** (`AgentRole` in `agent/roles.py`): `analyst` or `chief_of_staff`. The role adds the `<role>` prompt section (`prompts/templates/components/chief_of_staff.md.j2`), the coordination tools (`src/tools/secretary/chief_of_staff.py`: `manage_workspaces`, `delegate_to_analyst`, `agent_output`, `manage_threads`), and the `<activity>` baseline block (`src/tools/secretary/activity.py`: recent workspaces and threads, today's automation runs, holdings), on the main agent only, and withholds the `equity-analyst` subagent, since new analysis goes to a workspace's analyst. `resolve_turn_route` (`src/server/services/turn_runtime.py`) picks the role per turn, `chief_of_staff` in the user's Home, and decides whether work outside a workspace goes to Home or to Flash.
-- **Flash agent** (`agent/flash/`): the assistant path with the flag off. It skips subagents and the sandbox, so it reaches MCP only through directly bound tools.
+- **Roles** (`AgentRole` in `agent/roles.py`): `analyst` or `chief_of_staff`. The role adds the `<role>` prompt section (`prompts/templates/components/chief_of_staff.md.j2`), the coordination tools (`src/tools/secretary/chief_of_staff.py`: `manage_workspaces`, `delegate_to_analyst`, `agent_output`, `manage_threads`), and the `<activity>` baseline block (`src/tools/secretary/activity.py`: recent workspaces and threads, today's automation runs, holdings), on the main agent only, and withholds the `equity-analyst` subagent, since new analysis goes to a workspace's analyst. `turn_route` (`src/server/services/turn_runtime.py`) picks the role per turn from the workspace row the turn names: `chief_of_staff` for work outside a workspace, which runs in the user's Home, and `analyst` inside one.
 
 ### PTC pattern
 

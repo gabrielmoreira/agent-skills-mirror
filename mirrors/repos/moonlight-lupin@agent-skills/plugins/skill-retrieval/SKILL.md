@@ -8,7 +8,7 @@ description: >-
   skills is a concern, or when skill discovery quality matters.
 license: MIT
 metadata:
-  version: 0.6.1
+  version: 0.7.0
   author: moonlight-lupin
   platforms: [linux, macos, windows]
   tags: [bm25, skill-retrieval, system-prompt, token-optimization, plugin]
@@ -120,6 +120,7 @@ pip install pyyaml
 | BM25 `k1` | `1.5` | Constant in `scripts/bm25_retriever.py` |
 | BM25 `b` | `0.75` | Constant in `scripts/bm25_retriever.py` |
 | Jev rerank | off | Set `SKILL_RETRIEVAL_RERANK=jev` to enable; key in `TYPESAFE_API_KEY` (legacy `TYPESAFE_KEY` accepted), read from `os.environ` |
+| Rerank provider | `typesafe` | `SKILL_RETRIEVAL_RERANK_PROVIDER=openrouter` uses `https://openrouter.ai/api/v1/systemone` with `OPENROUTER_API_KEY` |
 | Rerank log path | `$HERMES_HOME/data/jev-trial/rerank_ab_log.jsonl` (rotates past 5 MB) | Env var `SKILL_RETRIEVAL_RERANK_LOG` |
 
 ```bash
@@ -137,7 +138,9 @@ model `jev-latest`). Behavior:
 - **Fail-soft** — 3.0 s timeout, no retries; on any error the request logs a
   warning and BM25's original order stands. Retrieval never blocks on Jev.
 - **Env-only config** — all settings come from `os.environ` (never a file
-  read): `TYPESAFE_API_KEY` (legacy `TYPESAFE_KEY` accepted). Hermes loads
+  read): `TYPESAFE_API_KEY` (legacy `TYPESAFE_KEY` accepted), or
+  `OPENROUTER_API_KEY` with `SKILL_RETRIEVAL_RERANK_PROVIDER=openrouter`
+  (same contract, served through OpenRouter). Hermes loads
   the active profile's `.env` into environ at startup, so no cross-profile
   file is ever read.
 - **A/B log** — every query records the timestamp, session id, a 200-char
@@ -168,9 +171,19 @@ silently empty. After restart, check the Hermes logs.
 ## How it works
 
 - **Tokenizer** — lowercases text, strips punctuation, splits on whitespace.
+  Tokens with CJK-script characters are split into bigrams (for CJK-script
+  runs; a 3+-character run is replaced by its bigrams): CJK Unified Ideographs
+  incl. Extension A and B, Japanese kana (fullwidth and halfwidth), and hangul
+  syllables — so Chinese, Japanese and Korean queries can match non-English
+  corpus text, and a mixed token like `用python写` keeps the `python` term.
 - **Corpus** — each skill becomes `"name: description"` plus its frontmatter
-  `triggers:` list and `metadata.hermes.tags` (when present) from SKILL.md YAML.
-  Trigger phrases and tags participate in retrieval scoring but only the
+  `triggers:` list and `metadata.hermes.tags` (when present) and — when the
+  SKILL.md body contains CJK-script characters — the space-joined CJK runs of
+  the body's first ~3000 characters, capped at 200 characters total. With the
+  body in
+  the corpus a CJK query can match skill *content*, not just the (usually
+  English) description. Trigger phrases, tags and the CJK runs participate in
+  retrieval scoring but only the
   description is injected into the prompt. Disabled skills from
   `~/.hermes/config.yaml` are skipped.
 - **Index** — BM25 Okapi TF saturation + Lucene IDF

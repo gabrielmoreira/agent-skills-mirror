@@ -54,10 +54,10 @@ description: 多对标跨书召回
 
 | 拆文字段 | 含义 | 写作参考 |
 |---------|------|---------|
-| `beats` | 结构段（开端/发展/高潮/结局） | `outline-methods.md` + 当前 `genre-prose-cards/` 题材卡 |
+| `beats` | 结构段（开端/发展/高潮/结局） | `outline-methods.md`「卷纲排法」+ 当前 `genre-prose-cards/` 题材卡 |
 | `hooks` | 钩子数 | `long-chapter-hooks.md` / `long-suspense.md` |
 | `setup_clues` | 反转铺垫线索 | `long-reversal.md` |
-| `character_archetypes` | 反差人物 | `character-basics.md` / `character-design-methods.md` + 当前题材卡 |
+| `character_archetypes` | 反差人物 | `character-basics.md`「反差设计」+ 当前题材卡 |
 | `reusable_structures` | 可复用手法 | `outline-methods.md` / `plot-core-methods.md`，按结构功能选择 |
 | `reversal_type` | 反转类型（7 枚举） | `long-reversal.md` 对应骨架 |
 

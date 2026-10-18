@@ -267,7 +267,7 @@ def main():
             return 1
         if args.stage == "write":
             # 写作档不给批次底稿：它是排纲期的工作底稿，其中有写作期约束力的条目
-            # 必须已经下沉到单元级段或细纲（见 artifact-protocols.md 段位契约纪律④）
+            # 必须已经下沉到单元级段或细纲（见 artifact-protocols.md 段位契约「排纲底稿不进卷纲」）
             live = [s for s in owned if s.kind == "单元级"]
         else:
             live = [s for s in owned

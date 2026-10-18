@@ -288,6 +288,8 @@ curl http://localhost:20128/api/provider-nodes \
 
 Create provider node
 
+Optional `providerIdSuffix` (letters, digits, `-`, `_`, `.`; max 64; must start with a letter or digit) replaces the random UUID in the generated node id (`openai-compatible-<apiType>-<suffix>`, `anthropic-compatible-<suffix>`, `anthropic-compatible-cc-<suffix>`). Blank keeps the UUID.
+
 ```bash
 curl -X POST http://localhost:20128/api/provider-nodes \
   -H "Authorization: Bearer $OMNIROUTE_TOKEN" \

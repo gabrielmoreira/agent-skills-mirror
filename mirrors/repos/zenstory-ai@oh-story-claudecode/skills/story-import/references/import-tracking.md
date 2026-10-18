@@ -1,6 +1,6 @@
 # 追踪初始化时刻（仅长篇）
 
-Phase 4 完整读取本文件、[tracking-initialization.md](tracking-initialization.md) 的事务骨架与 [character-state-reverse.md](character-state-reverse.md) 的快照规则。截止章、残稿决定与卷划分取自导入记录；证据取自已落盘的拆文库、项目 `大纲/`，以及未深拆章节的 `.story/work/简化摘要/`，不重读原文。
+Phase 4 完整读取本文件、[tracking-initialization.md](tracking-initialization.md) 的事务骨架与 [character-state-reverse.md](character-state-reverse.md) 的快照规则。截止章、残稿决定与卷划分取自导入记录；证据取自已落盘的拆文库和项目 `大纲/`，不重读原文。
 
 导入项目必须通过本 skill 自带的 `scripts/tracking_commit.py init` 一次性生成追踪状态，禁止模型分别写最终文件。
 
@@ -50,7 +50,7 @@ Phase 4 完整读取本文件、[tracking-initialization.md](tracking-initializa
 - `context` 在 init 时收六项：`position`、`long_term_constraints`、`active_character_names`、`continuity_risks`、`recent_chapters`（最多 3 章，按章号升序）、`next_chapter_commitments`。
 - `character_snapshots` 里的角色就是核心角色；四个列表不限条数，单角色文件目标 ≤4096 字节，硬上限 8192 字节，超过在任何写入前拒绝。`active_character_names` 最多 6 人且必须已有快照；`long_term_constraints` 最多 6 条。
 - `上下文.md` ≤12288 字节，只含 7 个顶层区块：当前位置、长期约束、核心角色状态、活跃伏笔（最多 8 条）、近三章速记、下一章承诺、连贯性风险。
-- 报错按提示改事务本身再跑；排查字段全集时才查 [tracking-transaction.md](tracking-transaction.md)。导入后续写时角色状态怎么更新见 [state-tracking.md](state-tracking.md)，本时刻不读。
+- 报错按提示改事务本身再跑，字段形状以 tracking-initialization.md 的骨架和本节为准。
 
 ## 伏笔提取
 

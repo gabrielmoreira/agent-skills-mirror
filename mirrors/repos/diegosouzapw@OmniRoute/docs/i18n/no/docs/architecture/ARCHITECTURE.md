@@ -11,71 +11,71 @@ _Sist oppdatert: 2026-06-28_
 ## Sammendrag
 
 OmniRoute er en lokal AI-rutingsgateway og et kontrollpanel bygget på Next.js.
-Den tilbyr ett enkelt OpenAI-kompatibelt endepunkt (`/v1/*`) og ruter trafikk mellom flere oppstrømsleverandører med oversettelse, reservehåndtering, tokenfornyelse og bruksregistrering.
+Den tilbyr ett enkelt OpenAI-kompatibelt endepunkt (`/v1/*`) og ruter trafikk på tvers av flere oppstrømsleverandører med oversettelse, reservehåndtering, tokenfornyelse og bruksregistrering.
 
 Kjernefunksjoner:
 
-- OpenAI-kompatibelt API-grensesnitt for CLI/verktøy (372 leverandører, 148 eksekveringsmotorer)
+- OpenAI-kompatibelt API-grensesnitt for CLI/verktøy (373 leverandører, 150 eksekveringsmoduler)
 - Oversettelse av forespørsler/svar mellom leverandørformater
-- Reservehåndtering med modellkombinasjoner (sekvens med flere modeller)
-- Strukturerte kombinasjonstrinn (`leverandør + modell + tilkobling`) med kjøretidsrekkefølge etter `compositeTiers`
-- Reservehåndtering på kontonivå (flere kontoer per leverandør)
+- Reserveløsning med modellkombinasjoner (sekvens med flere modeller)
+- Strukturerte kombinasjonstrinn (`provider + model + connection`) med kjøretidsrekkefølge basert på `compositeTiers`
+- Reserveløsning på kontonivå (flere kontoer per leverandør)
 - Forhåndskontroll av kvoter og kvotebevisst P2C-kontovalg i hovedflyten for chat
-- Administrasjon av leverandørtilkoblinger med OAuth og API-nøkler (27 OAuth-leverandørmoduler)
+- Administrasjon av leverandørtilkoblinger med OAuth + API-nøkkel (27 OAuth-leverandørmoduler)
 - Generering av innebygginger via `/v1/embeddings` (18 leverandører)
 - Bildegenerering via `/v1/images/generations` (10+ leverandører, 20+ modeller)
-- Lydtranskripsjon via `/v1/audio/transcriptions` (18 leverandører)
+- Lydtranskribering via `/v1/audio/transcriptions` (18 leverandører)
 - Tekst-til-tale via `/v1/audio/speech` (24 innebygde leverandører)
 - Videogenerering via `/v1/videos/generations` (ComfyUI + SD WebUI)
 - Musikkgenerering via `/v1/music/generations` (ComfyUI)
 - Nettsøk via `/v1/search` (20 leverandører)
 - Moderering via `/v1/moderations`
 - Omrangering via `/v1/rerank`
-- Tolking av tenkemarkører (``) for resonneringsmodeller
+- Tolking av tenketagger (``) for resonneringsmodeller
 - Rensing av svar for streng kompatibilitet med OpenAI SDK
 - Normalisering av roller (developer→system, system→user) for kompatibilitet på tvers av leverandører
 - Konvertering av strukturerte utdata (json_schema → Gemini responseSchema)
 - Lokal persistens for leverandører, nøkler, aliaser, kombinasjoner, innstillinger og priser (122 DB-moduler)
-- Sporing av bruk/kostnader og logging av forespørsler
-- Valgfri skysynkronisering for synkronisering mellom flere enheter og av tilstand
-- Tillatelsesliste/blokkeringsliste for IP-adresser for tilgangskontroll til API-et
-- Administrasjon av tenkebudsjett (direktevideresending/automatisk/egendefinert/adaptivt)
-- Global innsetting av systeminstruks
-- Øktsporing og fingeravtrykksgenerering
+- Registrering av bruk/kostnader og logging av forespørsler
+- Valgfri skysynkronisering for synkronisering av tilstand mellom flere enheter
+- Tillatelsesliste/blokkeringsliste for IP-adresser til tilgangskontroll for API-et
+- Administrasjon av tenkebudsjett (direkteoverføring/automatisk/egendefinert/adaptivt)
+- Global injisering av systeminstruks
+- Øktsporing og fingeravtrykksidentifisering
 - Forbedret hastighetsbegrensning per konto med leverandørspesifikke profiler
-- Kretsbrytermønster for økt robusthet hos leverandører
-- Beskyttelse mot samtidighetsstormer med mutex-låsing
+- Kretsbrytermønster for robusthet hos leverandører
+- Beskyttelse mot samtidige masseforespørsler med mutex-låsing
 - Signaturbasert hurtigbuffer for deduplisering av forespørsler
 - Domenelag: kostnadsregler, reservepolicy, utestengingspolicy
 - Context Relay: sammendrag for overlevering av økter for å opprettholde kontinuitet ved kontorotasjon
-- Persistens av domenetilstand (SQLite-hurtigbuffer med direkte skriving for reservevalg, budsjetter, utestenginger og kretsbrytere)
-- Policymotor for sentralisert evaluering av forespørsler (utestenging → budsjett → reservevalg)
+- Persistens av domenetilstand (SQLite-hurtigbuffer med gjennomskriving for reserveløsninger, budsjetter, utestenginger og kretsbrytere)
+- Policymotor for sentralisert evaluering av forespørsler (utestenging → budsjett → reserveløsning)
 - Forespørselstelemetri med aggregering av p50/p95/p99-latens
-- Telemetri for kombinasjonsmål og historisk helsetilstand for kombinasjonsmål via `combo_execution_key` / `combo_step_id`
+- Telemetri for kombinasjonsmål og historisk tilstand for kombinasjonsmål via `combo_execution_key` / `combo_step_id`
 - Korrelasjons-ID (X-Request-Id) for ende-til-ende-sporing
 - Revisjonslogging for samsvar med mulighet for reservasjon per API-nøkkel
 - Evalueringsrammeverk for kvalitetssikring av LLM-er
-- Helsekontrollpanel med sanntidsstatus for leverandørenes kretsbrytere
-- MCP-server (110 verktøy) med 3 transportmekanismer (stdio/SSE/Streamable HTTP)
+- Tilstandskontrollpanel med sanntidsstatus for leverandørenes kretsbrytere
+- MCP-server (110 verktøy) med 3 transporter (stdio/SSE/strømmbar HTTP)
 - A2A-server (JSON-RPC 2.0 + SSE) med ferdigheter og oppgavelivssyklus
-- Minnesystem (uttrekking, innsetting, gjenfinning, oppsummering)
+- Minnesystem (uttrekking, injisering, gjenfinning, oppsummering)
 - Ferdighetssystem (register, eksekveringsmotor, sandkasse, innebygde ferdigheter)
 - MITM-proxy med sertifikatadministrasjon og DNS-håndtering
-- Mellomvare for beskyttelse mot promptinjeksjon
-- Pipeline for promptkomprimering med Caveman, RTK, stablede pipelines, komprimeringskombinasjoner, språkpakker og analyse
+- Mellomvare for beskyttelse mot instruksjonsinjeksjon
+- Pipeline for instruksjonskomprimering med Caveman, RTK, stablede pipelines, komprimeringskombinasjoner, språkpakker og analyse
 - ACP-register (Agent Communication Protocol)
 - Modulære OAuth-leverandører (22 individuelle moduler under `src/lib/oauth/providers/`)
 - Skript for avinstallering/fullstendig avinstallering
-- Handling for reparasjon av OAuth-miljøet
+- Handling for reparasjon av OAuth-miljø
 - WebSocket-bro for OpenAI-kompatible WS-klienter (`/v1/ws`)
 - Administrasjon av synkroniseringstokener (utstedelse/tilbakekalling, nedlasting av ETag-versjonert konfigurasjonspakke)
 - GLM Thinking (`glmt`) som fullverdig leverandørforhåndsinnstilling
-- Hybrid tokenopptelling (`/messages/count_tokens` hos leverandøren med estimering som reserve)
-- Automatisk forhåndsoppretting av modellaliaser (30+ normaliseringer på tvers av proxy-dialekter ved oppstart)
+- Hybrid tokenopptelling (leverandørsiden `/messages/count_tokens` med estimat som reserveløsning)
+- Automatisk oppretting av modellaliaser (30+ normaliseringer på tvers av proxy-dialekter ved oppstart)
 - Sikker utgående henting med SSRF-beskyttelse, blokkering av private URL-er og konfigurerbare nye forsøk
 - Nedkjølingsbevisste nye chatforsøk med konfigurerbare `requestRetry` og `maxRetryIntervalSec`
-- Validering av kjøretidsmiljøet med Zod ved oppstart
-- Samsvarsrevisjon v2 med paginering, CRUD-hendelser for leverandører og logging av validering blokkert av SSRF-beskyttelsen
+- Validering av kjøretidsmiljø med Zod ved oppstart
+- Samsvarsrevisjon v2 med paginering, CRUD-hendelser for leverandører og logging av validering blokkert av SSRF
 
 Primær kjøretidsmodell:
 

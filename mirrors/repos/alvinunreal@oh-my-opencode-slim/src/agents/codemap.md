@@ -89,11 +89,11 @@ The council agent is a synthesis-only specialist:
 - Has NO tools - cannot read, glob, grep, or run shell commands
 - Follows mandatory Synthesis Process steps before producing output
 - Formats output with Council Response, Per-Councillor Details, and Council Summary sections
-- `ensureCouncilSynthesisReinforcement()` re-applies the dual-track synthesis
-  reinforcement (lean pointer when the base keeps the report format; compact
-  fallback when a custom prompt override dropped it) to the final effective
-  prompt; `ensureCouncilCompactionException()` keeps the host-template
-  exception idempotently
+- `ensureCouncilSynthesisReinforcement()` re-applies the fallback-only
+  synthesis reinforcement (compact fallback when a custom prompt override
+  dropped the report format) to the final effective prompt;
+  `ensureCouncilCompactionException()` keeps the host-template exception
+  idempotently
 
 ### Model Resolution and Fallback
 

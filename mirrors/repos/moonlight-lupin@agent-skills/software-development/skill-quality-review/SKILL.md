@@ -3,11 +3,11 @@ name: skill-quality-review
 description: "Use when auditing or reviewing skill quality — batch checks across a library, deep per-skill grep methodology, usage stats, efficacy testing, or fix planning. Single consolidated home for the writing-for-agents review framework and the 3-surface review methodology."
 license: MIT
 metadata:
-  version: 1.2.1
+  version: 1.4.1
   author: moonlight-lupin
   hermes:
     tags: [skills, review, audit, quality, batch]
-    related_skills: [hermes-agent-skill-authoring, skill-curation, plan]
+    related_skills: [hermes-agent-skill-authoring, skill-curation, plan-mode]
 ---
 
 # Skill Quality Review
@@ -72,7 +72,7 @@ Format as a table: finding, severity, skills affected. Include the key metrics (
 
 #### 4. Plan fixes
 
-Write an actionable plan to the repo's plans folder (create one if none exists, e.g. `plans/`), one task per finding. Include exact patch old/new strings for each fix. For bulk fixes (34+ files), include a script-based approach.
+Write an actionable plan to the repo's plans folder (create one if none exists, e.g. `plans/`), one task per finding. Include exact patch old/new strings for each fix. For bulk fixes (34+ files), include a script-based approach. For a local skill library with no repo, write the plan to `~/.hermes/plans/` named by skill and change, and mark which classification decisions are user-locked: resolve those with ONE clarify batch (all questions in a single call) BEFORE execution, write them into the plan, and execute only on the user's go when the edits are destructive — the executing pass must not re-ask settled questions.
 
 #### 5. Execute
 
@@ -89,13 +89,39 @@ Re-run all checks. Confirm all findings resolved. Run repo tests.
 
 When one SKILL.md fails the sprawl test — a single section over ~50% of the file, or a flat list of 60+ items — refactor that skill alone. The batch workflow does not apply.
 
-1. **Map section sizes.** Regex every heading, compute the char span of each section. The dominant section is the refactor target. A `skill_view` result over ~100KB persists to a spillover cache file whose content is ONE JSON line — parse it with `json.load` and navigate by character offsets; line-based reads see a single giant line.
-2. **Cluster the flat list.** Classify every item: keep (fires every run) / tool-mechanics (CLI flags, polling, env quirks) / domain sediment (finished-project specifics). Classify by list POSITION, never the printed number — hand-maintained numbered lists drift (duplicate and skipped numbers), so the ordinal is not a stable identifier and a position-keyed bucketing with a coverage assert catches drift.
+1. **Map section sizes.** Regex every heading, compute the char span of each section. The dominant section is the refactor target. Measure the whole file before promising an end-state size: a target computed from the dominant section alone misses the untouched remainder (43K of unchanged body is a common surprise after a big Pitfalls split), and a plan whose arithmetic cannot be met forces mid-execution re-scoping. A `skill_view` result over ~100KB persists to a spillover cache file whose content is ONE JSON line — parse it with `json.load` and navigate by character offsets; line-based reads see a single giant line.
+2. **Cluster the flat list.** Classify every item: keep (fires every run) / tool-mechanics (CLI flags, polling, env quirks) / domain sediment (finished-project specifics). Classify by list POSITION, never the printed number — hand-maintained numbered lists drift (duplicate and skipped numbers), so the ordinal is not a stable identifier and a position-keyed bucketing with a coverage assert catches drift. Before the split, grep SKILL.md and every reference file for ordinal citations of the list (e.g. `pitfall #N`, `rule #N`); convert them to rule-TITLE citations in the same split pass — the print numbers drift, so numeric citations break under renumbering, and stale citations often already point at ordinals that no longer exist.
 3. **Split by branch, not by date.** Write each displaced cluster to `references/<topic>.md` named by its TOPIC (tool mechanics, past-project findings), renumber the kept items, and give each disclosed file a pointer line stating WHEN to read it. SKILL.md keeps only what every run needs.
 4. **Dedupe symptom lists.** Red Flags / Rationalizations / Remember sections usually restate workflow rules. Keep the checklist as a symptom index that points at each rule's governing section; a rule lives once, in the section that uses it.
 5. **Archive before deleting.** The skills tree is not a git repo — write removed content verbatim to `references/retired-<topic>-archive.md` BEFORE the destructive edit, never after. If a destructive edit lands without a prior archive, recover the original from the session's earlier `skill_view` spillover cache (see step 1) — it holds the verbatim pre-edit text.
 6. **Verify structurally.** Even ``` fence count, heading inventory intact, no stale references to removed sections, every new reference file exists with the expected item count. Expect count-based checks to over-flag: an in-body mention of a section name or reference path is a valid second occurrence — inspect the context instead of trusting the count.
-7. **Bump the skill's version** (minor) and preserve any user-mandated content rules — nothing leaves the skill without approval and an archive.
+7. **Sediment prune: principles stay, records go — with user approval.** A standing preference against project specifics supersedes any no-trim archive precedent: with the user's go, distill each archived record into project-agnostic principles and fold them into the TOPICAL reference files that already exist (review-conduct principles into the adjudication/review file, data-layer lessons into the database file, repo hygiene into the CI file) — do not keep a 'past project' archive file as the home. Then DELETE the record files, update every SKILL.md pointer (case table, Reference Files rows, 'session record' sentences), and re-run the coverage probe. The probe must use the EXACT original rule title (see Common Pitfalls 20) — a paraphrased fold fails it, which forces the fold to keep the verbatim rule sentence.
+8. **Bump the skill's version** (minor) and preserve any user-mandated content rules — nothing leaves the skill without approval and an archive.
+
+#### 7b. Batched split campaign (several oversized skills at once)
+
+When an audit produces N oversized SKILL.md files (say 8-11), run it as a
+builder-dispatched campaign, not as N serial deep passes:
+
+1. Map the H2 structure and char spans of every target into one file
+   (e.g. `split-structure-maps.md`); write ONE shared-rules file (archive
+   first, script the split, position-keyed buckets, coverage assert,
+   frontmatter untouched, no commits) plus a short per-batch brief naming
+   targets and destination buckets.
+2. Dispatch 2-3 builder batches in parallel; queue the rest behind them
+   (a 4th dispatch can fail to start under CLI load — a builder that exits
+   with ZERO disk changes is a FAILED dispatch: re-brief and re-dispatch, and
+   never report it as work).
+3. Verify each batch yourself — do not trust the builder's coverage output:
+   extract the rule titles from the per-skill pre-split archive and grep the
+   CURRENT tree for them (0 missing = pass); run `check_references.py` per
+   skill dir; compare frontmatter byte-identity. Verify the fix exists at the
+   call-site before trusting either copy's claim (this caught a 'fixed'
+   pitfall whose fix lived only in the stale copy).
+4. Sort targets first by pitfalls-share (mechanical extraction, highest
+   savings) and skip poor cost/benefit files: dead skills (use_count = 0)
+   and asset-bundled low-use bundles need an archive-review decision, not a
+   split.
 
 ### 8. Efficacy A/B test (does the refactor change behavior?)
 
@@ -228,13 +254,13 @@ See `references/batch-checks.md` for the script template. For fix-phase dispatch
     - **Literal duplicate content from copy-paste (3/12 skills).** Duplicate table rows, verbatim-copied pitfall bullets, broken pitfall numbering (duplicate "8", missing "10").
     - **Description retrieval regression (3/3 skills, second-pass review).** Rewriting descriptions to add "Use when" trigger prefixes dropped capability nouns. The BM25 tokenizer has no stemming — "onboard" does not match "onboarding". Descriptions must carry both trigger words AND capability words as literal surface forms. Test against the repo's BM25 index before shipping. See `references/recurring-failure-patterns.md` pattern 12.
 
-14. **Fix scripts that mutate a section must parse by position, not printed ordinal.** Hand-maintained numbered lists contain duplicate and skipped numbers; keying classification or dedupe on the printed number mis-buckets items and can silently drop content. Enumerate matches in order, assert full position coverage, and diff item counts before writing.
+14. **Fix scripts that mutate a section must parse by position, not printed ordinal.** Hand-maintained numbered lists contain duplicate and skipped numbers; keying classification or dedupe on the printed number mis-buckets items and can silently drop content. Enumerate matches in order, assert full position coverage AND no bucket overlap (an item assigned to two buckets fails later no-coverage style asserts with a confusing origin), and diff item counts before writing.
 
-15. **Check for literal near-duplicate items before splitting a list.** A long accumulated list often carries the same finding written twice under one number (paraphrase, not verbatim — similarity ~0.55 still counts). Compare candidates by normalized text before distributing to reference files; keep the fuller copy and note the merge.
+15. **Check for literal near-duplicate items before splitting a list.** A long accumulated list often carries the same finding written twice under one number (paraphrase, not verbatim — similarity ~0.55 still counts). Compare candidates by normalized text before distributing to reference files; keep the fuller copy and note the merge. Adjudicate borderline pairs by the measured body similarity, not by title resemblance: similar titles with low body overlap are two real rules — keep both; the same worked example plus overlapping remedy means the two bodies restate one rule — merge into the fuller copy.
 
 16. **Heading extraction without fence tracking indexes code comments.** Fenced examples carry `## ` comment lines and `- **Label**:` bullets that look like document structure. Toggle fence state on every ``` line and extract structure only outside fences — a generated Contents list built from code samples corrupts the doc silently.
 
-17. **Bulk text writers must end files with exactly one trailing newline.** A missing final newline makes git report the last line as deleted plus re-added: the commit diff reads as content loss and costs a false investigation before push. Write `"\n".join(lines) + "\n"`. Applies to this skill's own files too — a structural sweep (trailing newline, fence parity, dead-pointer check over rglob) is part of final verification.
+17. **Bulk text writers must end files with exactly one trailing newline.** A missing final newline makes git report the last line as deleted plus re-added: the commit diff reads as content loss and costs a false investigation before push. Write `"\n".join(lines) + "\n"`. Applies to this skill's own files too — a structural sweep (trailing newline, CRLF absence, fence parity, dead-pointer check over rglob) is part of final verification.
 
 18. **Fix-phase orchestration (multi-agent batches).** Eight pitfalls from a real 5-agent run over 52 skills (pere-toolkit, Oct 2026). Full detail and the batch-sequencing template: `references/fix-phase-pitfalls.md`. The load-bearing ones:
     - **Conciseness LAST.** Callability fixes add lines; a trim over unsettled text deletes the call lines the fix phase just added. Run conciseness on settled text, then prove nothing load-bearing was lost: script-check that every code span and CLI command in the previous commit still exists in the new one.
@@ -244,6 +270,14 @@ See `references/batch-checks.md` for the script template. For fix-phase dispatch
     - **Announce new lint rules before agents run tests**, or land them after the batch — a mid-batch rule breaks every agent's "suite green" gate.
     - **Partition by file; the orchestrator stays out of agents' files mid-run** — mechanical cross-cutting edits (boilerplate, TOCs) go before or after an agent batch, never during.
     - **Verify reviewer findings before fixing** — each finding needs a quoted locator and a spot-check; counts come from scripts, not reviewer estimates (two independent reviewers still produced three false findings).
+
+19. **add_toc.py placement and idempotency quirks.** It takes a directory, not a single file (single-file runs exit 2 "not a directory"). On a flat numbered-list file with one H1 it generates from H2 headings only — if a merged archive block contributed its own `## Contents` and `## Background`-style H2s, the generated list mirrors the merge, not the file's own content. Report counts can disagree across dry-run/apply/re-check, so verify by reading the file after `--apply`.
+    **Verify ONE Contents block per file after every `--apply` — grep `## Contents` counts over the touched tree.** A pre-existing `## Contents` inside the file IS a heading, so a re-generated list can end up listing "Contents" itself, and a later apply over a parent chain can stack multiple generated blocks — recursive Contents blocks are how one pass silently mangled an 800-line reference until verification with `check_references.py` flagged all its no-contents lines again. Repair pattern: strip EVERY generated block (they sit consecutively), then hand-place ONE correct block; confirm count == 1, fence parity, and that the heading text matches the file's own sections.
+    Hand-place one Contents near the top, demote merged-block H2s to H3s before generating, and strip stacked duplicate Contents blocks afterwards.
+
+20. **No-loss probes must use the rule's exact title, and folded copies must keep the original rule sentence.** Verify a split/consolidation by grepping for the EXACT original rule title string. Paraphrasing a rule while folding it ('plus a domain concept' instead of '+ a user domain concept') made the coverage check fail twice in one pass — the failure is useful (it caught silent rewording), so keep it sharp: write each folded bullet so the canonical rule sentence appears verbatim once, followed by the generalization, and probe by the verbatim title. Probe on a ~40-char prefix of the title; shorter prefixes collide, longer ones break on reworded suffixes.
+
+21. **Project specifics are user-removable at any time; keep the distillation extract mechanical.** When the user orders 'remove the project specifics', the work is editorial distillation, not deletion: drop project names, commit hashes, phase/episode numbers, session-record framing, and 'Validated <date> on <project>' provenance tags, while each underlying rule survives in a topical file with its exact title intact. Run a project-term grep across the whole skill before AND after the pass and report remaining counts per file — the after-list is the NEXT scope decision for the user, not something to scrub unprompted beyond the approved file set.
 
 ## Verification Checklist
 

@@ -124,6 +124,26 @@ operation's full ordered list. Candidate capabilities describe possible
 providers. Top-level session capabilities describe the current route, and
 `analysis_provider_binding` identifies the selected provider.
 
+## Static memory and original file bytes
+
+For Ghidra, `read_bytes` reads initialized analysis memory, including loader
+fixups; it does not read a running process. Check `returned_bytes` and `complete`
+before decoding a table. An incomplete read is missing coverage, not a zero-filled
+tail. Use `list_segments` to inspect the selected block's initialization and address-space
+facts, and retain unavailable facts as unknown.
+
+Use `address_to_file_offset` to anchor one observed address to original file
+bytes. A mapping for the first address does not establish a contiguous mapping
+for an entire table, and loader fixups can make analysis bytes differ from source
+bytes. Keep source ranges and analysis-memory observations separate.
+
+A pointer table can refer to writable slots populated by a constructor rather
+than directly to immutable resources. An uninitialized block or an observed zero
+does not establish the slot's later runtime value. Follow `xrefs` and the relevant
+writer's assembly or pseudocode; distinguish recorded assignments from inferred
+execution order. Do not replace unreadable bytes with zeros or conclude that a
+resource is absent without the necessary initialization evidence.
+
 ## DOS MZ with Ghidra
 
 For an admitted DOS MZ target, use `inspect_native_load_image` to check measured
@@ -133,10 +153,8 @@ reported static image, not runtime DOS or PC-98 hardware behavior.
 
 For Ghidra decompilation, `procedure_pseudo_code` also accepts `procedure: "file-offset:0x..."`; CLI `rea decompile <path> --file-offset=0x... --provider ghidra` resolves the source byte offset internally. An unresolved 0x-prefixed numeric procedure selector also falls back to a unique file mapping. Existing symbols and analysis addresses win; multiple mappings fail as ambiguous. Preserve the returned file-offset and address locations and raw selection observations. ELF virtual addresses are distinct from file offsets; never assume an arbitrary offset plus image base is an analysis address.
 
-Use `read_bytes` for initialized analysis memory and `address_to_file_offset` to
-anchor one observed address to original file bytes. Loader fixups can change a
-word; a source offset does not imply byte equality. Complete function body ranges
-use inclusive ends and can contain gaps. Do not treat the enclosing span as code.
+Complete function body ranges use inclusive ends and can contain gaps. Do not
+treat the enclosing span as code.
 For packed targets, retain the original and separately derived artifact identities;
 decompiling an unpacking stub does not recover the unpacked program.
 

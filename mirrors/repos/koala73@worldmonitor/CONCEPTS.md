@@ -94,7 +94,7 @@ Two rules make a shadow comparable rather than merely reassuring. The candidate 
 
 ### Alert Rule
 
-A per-user notification subscription that decides which published events reach that user's channels. A rule combines a sensitivity floor, a delivery mode (realtime or a digest cadence), and optional scopes — countries and tickers. Rules are fan-out targets: one published event is tested against every enabled rule independently. See also: Country Scope, Event Attribution.
+A per-user notification subscription that decides which published events reach that user's channels. A rule combines a sensitivity floor, a delivery mode (realtime or a digest cadence), and optional scopes — countries, tickers, and chokepoints (which narrow only chokepoint disruption alerts). Rules are fan-out targets: one published event is tested against every enabled rule independently. See also: Country Scope, Event Attribution.
 
 ### Country Scope
 
@@ -1040,7 +1040,7 @@ The explicit state a derived reading reports when its reference window has not y
 
 A 0-100 reading of current pressure on a maritime chokepoint, published as a green/yellow/red badge. It is a risk signal and never an operational declaration: a waterway with a high score has not been reported closed, and one with a low score has not been certified open. The score sums a configured Threat Baseline with observed navigational-warning and AIS-congestion evidence and a Transit Anomaly bonus, then caps.
 
-The baseline term is what makes the score legible in a crisis and illegible without it: a waterway in an active conflict can carry a red score while every observed input reads calm, because the standing geopolitical weight alone clears the top band. A page that publishes the observed inputs without the baseline shows a reader numbers that cannot produce the score they are looking at. See also: Score Input, Context Metric, Threat Baseline.
+The baseline term is what makes the score legible in a crisis and illegible without it: a waterway in an active conflict can carry a red score while every observed input reads calm, because the standing geopolitical weight alone clears the top band. A page that publishes the observed inputs without the baseline shows a reader numbers that cannot produce the score they are looking at. The same term means an alert cannot trigger on the score alone: a waterway whose baseline already clears the red band never crosses it, so disruption alerts trigger on the live evidence above the baseline. See also: Score Input, Context Metric, Threat Baseline.
 
 ### Threat Baseline
 
