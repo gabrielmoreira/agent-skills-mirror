@@ -61,7 +61,9 @@ the two happened — a reader cannot tell from a green result.
 Read the art bible's Asset Standards section (`design/art/art-bible.md`) and any
 asset standards in the relevant design docs — size budgets and format rules come
 from there. The naming patterns are the ones in Phase 3 below, unless the art
-bible states its own.
+bible states its own. Read the art bible by section: find the heading with
+the Grep tool (pattern `^#`, content mode) and Read that range with offset
+and limit.
 
 If neither states a size budget — or there is no art bible — the Size section is
 `NOT ASSESSED — no size budget set`, and the report names `/art-bible`, whose

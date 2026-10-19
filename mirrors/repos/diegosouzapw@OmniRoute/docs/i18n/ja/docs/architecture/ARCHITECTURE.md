@@ -10,70 +10,70 @@ _最終更新日: 2026-06-28_
 
 ## エグゼクティブサマリー
 
-OmniRoute は、Next.js 上に構築されたローカル AI ルーティングゲートウェイ兼ダッシュボードです。
-単一の OpenAI 互換エンドポイント（`/v1/*`）を提供し、変換、フォールバック、トークン更新、使用量追跡を行いながら、複数のアップストリームプロバイダー間でトラフィックをルーティングします。
+OmniRoute は、Next.js 上に構築されたローカル AI ルーティングゲートウェイおよびダッシュボードです。
+単一の OpenAI 互換エンドポイント（`/v1/*`）を提供し、変換、フォールバック、トークン更新、使用量追跡を行いながら、複数の上流プロバイダーへトラフィックをルーティングします。
 
 主な機能：
 
-- CLI/ツール向けの OpenAI 互換 API サーフェス（373 プロバイダー、150 エグゼキュターモジュール）
+- CLI/ツール向けの OpenAI 互換 API サーフェス（374 プロバイダー、150 エグゼキューターモジュール）
 - プロバイダー形式間のリクエスト/レスポンス変換
-- モデルコンボフォールバック（複数モデルのシーケンス）
-- 構造化されたコンボステップ（`provider + model + connection`）と、`compositeTiers` に基づくランタイム順序付け
+- モデルコンボのフォールバック（複数モデルのシーケンス）
+- 構造化されたコンボステップ（`provider + model + connection`）と、`compositeTiers` によるランタイム順序制御
 - アカウントレベルのフォールバック（プロバイダーごとに複数アカウント）
-- メインチャットパスでのクォータ事前チェックと、クォータを考慮した P2C アカウント選択
+- メインチャットパスにおけるクォータの事前チェックと、クォータを考慮した P2C アカウント選択
 - OAuth + API キーによるプロバイダー接続管理（27 個の OAuth プロバイダーモジュール）
-- `/v1/embeddings` を介した埋め込み生成（18 プロバイダー）
-- `/v1/images/generations` を介した画像生成（10 以上のプロバイダー、20 以上のモデル）
-- `/v1/audio/transcriptions` を介した音声文字起こし（18 プロバイダー）
-- `/v1/audio/speech` を介したテキスト読み上げ（24 個の組み込みプロバイダー）
-- `/v1/videos/generations` を介した動画生成（ComfyUI + SD WebUI）
-- `/v1/music/generations` を介した音楽生成（ComfyUI）
-- `/v1/search` を介したウェブ検索（20 プロバイダー）
-- `/v1/moderations` を介したモデレーション
-- `/v1/rerank` を介した再ランキング
+- `/v1/embeddings` による埋め込み生成（18 プロバイダー）
+- `/v1/images/generations` による画像生成（10 以上のプロバイダー、20 以上のモデル）
+- `/v1/audio/transcriptions` による音声文字起こし（18 プロバイダー）
+- `/v1/audio/speech` によるテキスト読み上げ（24 の組み込みプロバイダー）
+- `/v1/videos/generations` による動画生成（ComfyUI + SD WebUI）
+- `/v1/music/generations` による音楽生成（ComfyUI）
+- `/v1/search` によるウェブ検索（20 プロバイダー）
+- `/v1/moderations` によるモデレーション
+- `/v1/rerank` による再ランキング
 - 推論モデル向けの Think タグ解析（``）
 - 厳密な OpenAI SDK 互換性のためのレスポンスサニタイズ
 - プロバイダー間の互換性を確保するためのロール正規化（developer→system、system→user）
 - 構造化出力の変換（json_schema → Gemini responseSchema）
 - プロバイダー、キー、エイリアス、コンボ、設定、価格情報のローカル永続化（122 個の DB モジュール）
-- 使用量/コスト追跡およびリクエストロギング
-- 複数デバイス間/状態同期のためのオプションのクラウド同期
+- 使用量/コスト追跡とリクエストログ記録
+- 複数デバイス/状態同期のためのオプションのクラウド同期
 - API アクセス制御用の IP 許可リスト/ブロックリスト
-- 思考バジェット管理（パススルー/自動/カスタム/適応型）
+- Thinking バジェット管理（パススルー/自動/カスタム/適応型）
 - グローバルシステムプロンプトの注入
-- セッション追跡およびフィンガープリンティング
-- プロバイダー固有のプロファイルを使用したアカウント単位の強化されたレート制限
+- セッション追跡とフィンガープリンティング
+- プロバイダー固有のプロファイルを使用したアカウント単位の強化レート制限
 - プロバイダーの耐障害性を高めるサーキットブレーカーパターン
 - ミューテックスロックによるサンダリングハード対策
-- シグネチャベースのリクエスト重複排除キャッシュ
+- 署名ベースのリクエスト重複排除キャッシュ
 - ドメインレイヤー：コストルール、フォールバックポリシー、ロックアウトポリシー
-- Context Relay：アカウントローテーション時の継続性を確保するセッション引き継ぎサマリー
-- ドメイン状態の永続化（フォールバック、バジェット、ロックアウト、サーキットブレーカー向けの SQLite ライトスルーキャッシュ）
-- リクエストを一元評価するポリシーエンジン（ロックアウト → バジェット → フォールバック）
+- Context Relay：アカウント切り替え時の継続性を確保するセッション引き継ぎ要約
+- ドメイン状態の永続化（フォールバック、バジェット、ロックアウト、サーキットブレーカー向け SQLite ライトスルーキャッシュ）
+- 一元化されたリクエスト評価のためのポリシーエンジン（ロックアウト → バジェット → フォールバック）
 - p50/p95/p99 レイテンシ集計を備えたリクエストテレメトリ
-- `combo_execution_key` / `combo_step_id` を介したコンボターゲットのテレメトリおよび履歴ヘルス情報
+- `combo_execution_key` / `combo_step_id` を使用したコンボターゲットのテレメトリと履歴ヘルス情報
 - エンドツーエンドトレーシング用の相関 ID（X-Request-Id）
-- API キー単位でオプトアウト可能なコンプライアンス監査ログ
-- LLM 品質保証用の評価フレームワーク
-- プロバイダーのサーキットブレーカー状態をリアルタイムで表示するヘルスダッシュボード
-- 3 つのトランスポート（stdio/SSE/Streamable HTTP）を備えた MCP Server（110 ツール）
+- API キーごとのオプトアウトに対応したコンプライアンス監査ログ
+- LLM 品質保証のための評価フレームワーク
+- プロバイダーのサーキットブレーカー状態をリアルタイム表示するヘルスダッシュボード
+- 3 種類のトランスポート（stdio/SSE/Streamable HTTP）を備えた MCP Server（110 ツール）
 - スキルとタスクライフサイクルを備えた A2A Server（JSON-RPC 2.0 + SSE）
 - メモリシステム（抽出、注入、検索、要約）
 - スキルシステム（レジストリ、エグゼキューター、サンドボックス、組み込みスキル）
 - 証明書管理と DNS 処理を備えた MITM プロキシ
 - プロンプトインジェクション防御ミドルウェア
-- Caveman、RTK、スタック型パイプライン、圧縮コンボ、言語パック、分析機能を備えたプロンプト圧縮パイプライン
+- Caveman、RTK、スタック型パイプライン、圧縮コンボ、言語パック、分析を備えたプロンプト圧縮パイプライン
 - ACP（Agent Communication Protocol）レジストリ
-- モジュール式 OAuth プロバイダー（`src/lib/oauth/providers/` 配下の 22 個の個別モジュール）
+- モジュール化された OAuth プロバイダー（`src/lib/oauth/providers/` 配下の 22 個の個別モジュール）
 - アンインストール/完全アンインストールスクリプト
 - OAuth 環境修復アクション
-- OpenAI 互換 WS クライアント向け WebSocket ブリッジ（`/v1/ws`）
-- 同期トークン管理（発行/失効、ETag バージョン管理された構成バンドルのダウンロード）
+- OpenAI 互換 WS クライアント向けの WebSocket ブリッジ（`/v1/ws`）
+- 同期トークン管理（発行/失効、ETag でバージョン管理された設定バンドルのダウンロード）
 - GLM Thinking（`glmt`）のファーストクラスプロバイダープリセット
 - ハイブリッドトークンカウント（プロバイダー側の `/messages/count_tokens` と推定フォールバック）
 - モデルエイリアスの自動シード（起動時に 30 以上のクロスプロキシ方言を正規化）
-- SSRF ガード、プライベート URL ブロック、設定可能な再試行を備えた安全な外部フェッチ
-- 設定可能な `requestRetry` および `maxRetryIntervalSec` を使用する、クールダウンを考慮したチャット再試行
+- SSRF ガード、プライベート URL ブロック、設定可能な再試行を備えた安全なアウトバウンド fetch
+- 設定可能な `requestRetry` と `maxRetryIntervalSec` を備えた、クールダウンを考慮するチャット再試行
 - 起動時の Zod によるランタイム環境検証
 - ページネーション、プロバイダー CRUD イベント、SSRF ブロック検証ログを備えたコンプライアンス監査 v2
 
@@ -260,9 +260,9 @@ flowchart LR
 
 ## 2) SSE + 翻訳コア
 
-メインフローモジュール:
+メインフローのモジュール:
 
-- エントリーポイント: `src/sse/handlers/chat.ts`
+- エントリ: `src/sse/handlers/chat.ts`
 - コアオーケストレーション: `open-sse/handlers/chatCore.ts`
 - プロバイダー実行アダプター: `open-sse/executors/*`
 - フォーマット検出/プロバイダー設定: `open-sse/services/provider.ts`
@@ -271,7 +271,7 @@ flowchart LR
 - 翻訳レジストリ: `open-sse/translator/index.ts`
 - ストリーム変換: `open-sse/utils/stream.ts`, `open-sse/utils/streamHandler.ts`
 - 使用量の抽出/正規化: `open-sse/utils/usageTracking.ts`
-- Thinkタグパーサー: `open-sse/utils/thinkTagParser.ts`
+- thinkタグパーサー: `open-sse/utils/thinkTagParser.ts`
 - 埋め込みハンドラー: `open-sse/handlers/embeddings.ts`
 - 埋め込みプロバイダーレジストリ: `open-sse/config/embeddingRegistry.ts`
 - 画像生成ハンドラー: `open-sse/handlers/imageGeneration.ts`
@@ -286,25 +286,25 @@ flowchart LR
 - IPフィルターの適用: `open-sse/services/ipFilter.ts`
 - セッション追跡: `open-sse/services/sessionManager.ts`
 - リクエストの重複排除: `open-sse/services/signatureCache.ts`
-- システムプロンプトの挿入: `open-sse/services/systemPrompt.ts`
-- 思考バジェット管理: `open-sse/services/thinkingBudget.ts`
-- ワイルドカードモデルルーティング: `open-sse/services/wildcardRouter.ts`
-- レート制限管理: `open-sse/services/rateLimitManager.ts`
+- システムプロンプトの注入: `open-sse/services/systemPrompt.ts`
+- 思考バジェットの管理: `open-sse/services/thinkingBudget.ts`
+- ワイルドカードモデルのルーティング: `open-sse/services/wildcardRouter.ts`
+- レート制限の管理: `open-sse/services/rateLimitManager.ts`
 - サーキットブレーカー: `src/shared/utils/circuitBreaker.ts`
-- コンテキスト引き継ぎ: `open-sse/services/contextHandoff.ts` — コンテキストリレー戦略向けの引き継ぎ要約の生成と挿入
-- 圧縮: `open-sse/services/compression/*` — プロバイダー変換前のプロアクティブな圧縮。
-  Cavemanルール、RTKフィルター、スタック型パイプライン、圧縮の組み合わせ、統計、検証を含む
-- Codexクォータ取得: `open-sse/services/codexQuotaFetcher.ts` — コンテキストリレーの引き継ぎ判定用にCodexクォータを取得
-- クールダウン対応リトライ: `src/sse/services/cooldownAwareRetry.ts` — 設定可能な`requestRetry` / `maxRetryIntervalSec`を使用するモデル単位のクールダウンリトライ
-- 安全なアウトバウンドフェッチ: `src/shared/network/safeOutboundFetch.ts` — SSRFガード、プライベートURLのブロック、リトライ、タイムアウトを備えた、保護されたプロバイダー/モデルフェッチ
-- アウトバウンドURLガード: `src/shared/network/outboundUrlGuard.ts` — プロバイダーURLのホストチェック。`src/shared/network/outboundUrlGuardPolicy.ts`は、`OMNIROUTE_ALLOW_LOCAL_PROVIDER_URLS`、`OMNIROUTE_ALLOW_PRIVATE_PROVIDER_URLS`、およびそれらのダッシュボードトグルからモードを選択（`docs/reference/ENVIRONMENT.md`を参照）
+- コンテキストの引き継ぎ: `open-sse/services/contextHandoff.ts` — コンテキストリレー戦略向けの引き継ぎ要約の生成と注入
+- 圧縮: `open-sse/services/compression/*` — プロバイダー変換前のプロアクティブな圧縮;
+  Cavemanルール、RTKフィルター、スタックパイプライン、圧縮の組み合わせ、統計、検証を含む
+- Codexクォータ取得機能: `open-sse/services/codexQuotaFetcher.ts` — コンテキストリレーの引き継ぎ判断に使用するCodexクォータを取得
+- クールダウン対応リトライ: `src/sse/services/cooldownAwareRetry.ts` — 設定可能な`requestRetry` / `maxRetryIntervalSec`を使用したモデル単位のクールダウンリトライ
+- 安全なアウトバウンドfetch: `src/shared/network/safeOutboundFetch.ts` — SSRFガード、プライベートURLのブロック、リトライ、タイムアウトを備えた、保護されたプロバイダー/モデル取得
+- アウトバウンドURLガード: `src/shared/network/outboundUrlGuard.ts` — プロバイダーURLのホストチェック; `src/shared/network/outboundUrlGuardPolicy.ts`は`OMNIROUTE_ALLOW_LOCAL_PROVIDER_URLS`、`OMNIROUTE_ALLOW_PRIVATE_PROVIDER_URLS`、およびそれぞれのダッシュボードトグルからモードを選択（`docs/reference/ENVIRONMENT.md`を参照）
 - プロバイダーリクエストのデフォルト値: `open-sse/services/providerRequestDefaults.ts` — プロバイダー単位の`maxTokens`、`temperature`、`thinkingBudgetTokens`のデフォルト値
 - GLMプロバイダー定数: `open-sse/config/glmProvider.ts` — 共有GLMモデル、クォータURL、GLMTのタイムアウト/デフォルト値
-- Antigravityアップストリーム: `open-sse/config/antigravityUpstream.ts` — ベースURLおよび検出パスの定数
-- Codexクライアント定数: `open-sse/config/codexClient.ts` — バージョン付きユーザーエージェントおよびクライアントバージョンの値
+- Antigravityアップストリーム: `open-sse/config/antigravityUpstream.ts` — ベースURLと検出パスの定数
+- Codexクライアント定数: `open-sse/config/codexClient.ts` — バージョン付きユーザーエージェントとクライアントバージョンの値
 - モデルエイリアスのシード: `src/lib/modelAliasSeed.ts` — 起動時に30以上のクロスプロキシ方言エイリアスをシード
 
-ドメインレイヤーモジュール:
+ドメインレイヤーのモジュール:
 
 - コストルール/バジェット: `src/domain/costRules.ts`
 - フォールバックポリシー: `src/domain/fallbackPolicy.ts`
@@ -313,17 +313,17 @@ flowchart LR
 - ポリシーエンジン: `src/domain/policyEngine.ts` — ロックアウト → バジェット → フォールバックの評価を一元化
 - エラーコードカタログ: `src/shared/constants/errorCodes.ts`
 - リクエストID: `src/shared/utils/requestId.ts`
-- フェッチタイムアウト: `src/shared/utils/fetchTimeout.ts`
+- fetchタイムアウト: `src/shared/utils/fetchTimeout.ts`
 - リクエストテレメトリ: `src/shared/utils/requestTelemetry.ts`
 - コンプライアンス/監査: `src/lib/compliance/index.ts`
 - 評価ランナー: `src/lib/evals/evalRunner.ts`
-- ドメイン状態の永続化: `src/lib/db/domainState.ts` — フォールバックチェーン、バジェット、コスト履歴、ロックアウト状態、サーキットブレーカーに対するSQLite CRUD
+- ドメイン状態の永続化: `src/lib/db/domainState.ts` — フォールバックチェーン、バジェット、コスト履歴、ロックアウト状態、サーキットブレーカー用のSQLite CRUD
 
-OAuthプロバイダーモジュール（`src/lib/oauth/providers/`配下の個別ファイル27個）:
+OAuthプロバイダーモジュール（`src/lib/oauth/providers/`配下の27個の個別ファイル）:
 
 - レジストリインデックス: `src/lib/oauth/providers/index.ts`
 - 個別プロバイダー: `agy.ts`, `antigravity.ts`, `claude.ts`, `cline.ts`, `codebuddy-cn.ts`, `codebuddy-intl.ts`, `codex.ts`, `cursor.ts`, `devin-desktop.ts`, `ghe-copilot.ts`, `github.ts`, `gitlab-duo.ts`, `grok-cli-oauth.ts`, `grok-cli.ts`, `kilocode.ts`, `kimi-coding.ts`, `kiro.ts`, `muse-code.ts`, `openference.ts`, `qoder.ts`, `trae.ts`, `workbuddy.ts`, `xai-oauth.ts`, `zed-hosted.ts`, `zed.ts`
-- 共有ヘルパー: `codebuddyDeviceAuth.ts`（CodeBuddy CN/intlデバイスフロー）、`museCodeDeviceResponse.ts`
+- 共有ヘルパー: `codebuddyDeviceAuth.ts`（CodeBuddy CN/intlのデバイスフロー）、`museCodeDeviceResponse.ts`
 - 薄いラッパー: `src/lib/oauth/providers.ts` — 個別モジュールから再エクスポート
 
 ## 5) 組み込みサービス (v3.8.4)
@@ -505,16 +505,17 @@ FSM の遷移は Auto Combo のスコアリングに反映され、バックグ�
 - テーブル（`src/lib/db/core.ts` で作成）: `domain_fallback_chains`、`domain_budgets`、`domain_cost_history`、`domain_lockout_state`、`domain_circuit_breakers`
 - ライトスルーキャッシュパターン: 実行時はインメモリの Map が信頼できる情報源となり、変更は SQLite に同期的に書き込まれ、コールドスタート時に DB から状態が復元される
 
-## 4) 認証 + セキュリティ境界
+## 4) 認証 + セキュリティサーフェス
 
-- ダッシュボードの Cookie 認証: `src/proxy.ts`、`src/app/api/auth/login/route.ts`
-- API キーの生成/検証: `src/shared/utils/apiKey.ts`
-- プロバイダーのシークレットは `providerConnections` エントリに永続化
-- `open-sse/utils/proxyFetch.ts`（環境変数）および `open-sse/utils/networkProxy.ts`（プロバイダーごと、またはグローバルに設定可能）によるアウトバウンドプロキシのサポート
-- SSRF / アウトバウンド URL ガード: `src/shared/network/outboundUrlGuard.ts` — すべてのプロバイダー呼び出しに対してプライベート/ループバック/リンクローカル範囲をブロック
-- 実行時の環境変数検証: `src/lib/env/runtimeEnv.ts` — すべての環境変数に対する Zod スキーマ。起動時のエラー/警告として表示
-- 同期トークン: `src/lib/db/syncTokens.ts` — 設定バンドルのダウンロードエンドポイント用のスコープ付きトークン。`sync_tokens` SQLite テーブル（マイグレーション `024_create_sync_tokens.sql`）で管理
-- WebSocket ハンドシェイク認証: `src/lib/ws/handshake.ts` — API キーまたはセッション Cookie を使用して WS アップグレードリクエストを検証
+- ダッシュボードのCookie認証: `src/proxy.ts`、`src/app/api/auth/login/route.ts`
+- APIキーの生成/検証: `src/shared/utils/apiKey.ts`
+- プロバイダーのシークレットは`providerConnections`エントリに永続化
+- `open-sse/utils/proxyFetch.ts`（環境変数）および`open-sse/utils/networkProxy.ts`（プロバイダーごと、またはグローバルに設定可能）によるアウトバウンドプロキシのサポート
+- SSRF / アウトバウンドURLガード: `src/shared/network/outboundUrlGuard.ts` — プロバイダー呼び出しとWebhookターゲットに対するホストチェック。モードは`src/shared/network/outboundUrlGuardPolicy.ts`から取得（フラグは`docs/reference/ENVIRONMENT.md`を参照）
+- ランタイム環境変数の検証: `src/lib/env/runtimeEnv.ts` — すべての環境変数に対するZodスキーマ。起動時のエラー/警告として表示
+- 同期トークン: `src/lib/db/syncTokens.ts` — 設定バンドルのダウンロードエンドポイント向けのスコープ付きトークン。`sync_tokens` SQLiteテーブル（マイグレーション`024_create_sync_tokens.sql`）を使用
+- WebSocketハンドシェイク認証: `src/lib/ws/handshake.ts` — APIキーまたはセッションCookieを使用してWSアップグレードリクエストを検証
+- ライブダッシュボードのWebSocket認証: `src/server/ws/liveServer.ts` — サイドカー（ポート`LIVE_WS_PORT`）は、ダッシュボードのセッションCookie、または管理スコープ（`manage`/`admin`）を持つBearer APIキーを受け付けます。推論専用キーは拒否されます。内部の`POST /__omniroute_event`パブリッシャーエンドポイントは、プロキシホップヘッダー（`x-forwarded-*`、`x-real-ip`、`forwarded`、`via`）が存在しない場合に限り、ループバックピアを受け付けます
 
 ## 5) クラウド同期
 
@@ -1062,11 +1063,11 @@ flowchart LR
 - 起動時の SQLite スキーママイグレーションおよび自動アップグレードフック
 - レガシー JSON → SQLite マイグレーションの互換パス
 
-## 6) SSRF／送信先 URL ガード
+## 6) SSRF / 外向き URL ガード
 
-- `src/shared/network/outboundUrlGuard.ts` は、プロバイダーエグゼキューターに到達する前に、すべてのプライベート／ループバック／リンクローカルのターゲット URL をブロックします
-- プロバイダーモデルの検出および検証ルートでは、すべての送信リクエストの前にガードを適用する `src/shared/network/safeOutboundFetch.ts` を使用します
-- ガードエラーは HTTP 422 の `URL_GUARD_BLOCKED` として通知され、`providerAudit.ts` を介してコンプライアンス監査証跡に記録されます
+- `BaseExecutor.assertOutboundUrlAllowed` (`open-sse/executors/base.ts`) は、`BaseExecutor.execute()` を通じて送信されるチャットリクエストに `src/shared/network/outboundUrlGuard.ts` を適用します。公開先のみに許可するモード（`OMNIROUTE_ALLOW_LOCAL_PROVIDER_URLS=false` かつプライベートフラグがオフ）では、プライベートホスト、ループバックホスト、および 169.254.0.0/16 をブロックします。それ以外のすべてのモードでは、クラウドメタデータホストをブロックします。DNS ルックアップの前に、記述されたままのホスト名または IP リテラルをチェックします。組み込みのローカルプロバイダーでは、このチェックはスキップされます。
+- プロバイダーモデルの検出および検証ルートでは、各外向きリクエストの前にガードを適用する `src/shared/network/safeOutboundFetch.ts` を使用します
+- ガードエラーは、HTTP 503 とともに `URL_GUARD_BLOCKED` として通知されます（`getSafeOutboundFetchErrorStatus`。モデル検出ルートは 400 を返します）。検証中の実際の SSRF ブロックは、`provider.validation.ssrf_blocked` イベントとして監査証跡に記録されます
 
 ## オブザーバビリティと運用シグナル
 

@@ -111,7 +111,7 @@ to load the skill. The two such rules (an explicit yes before moving funds or
 executing a swap, bridge or contract call, and an explicit yes before
 stopping, shutting down, uninstalling or updating OpenHuman's service) live
 in the orchestrator prompt's `## Skills` section
-(`agent/registry/agents/orchestrator/prompt.md`). Lookup detail and the step
+(`agent_registry/agents/orchestrator/prompt.md`). Lookup detail and the step
 by step loop belong in the guide.
 
 [`toolpacks_tests.rs`](./toolpacks_tests.rs) keeps guides honest: every guided pack must carry a
@@ -141,7 +141,7 @@ listing offers the hand-off beside the raw registry tools.
   exist; [`mod.rs`](./mod.rs) calls `scope_use_skill_spec` so the advertised `use_skill`
   spec lists only packs this session can call something in, and drops the
   spec entirely when that is none.
-- `agent/session_host/turn/tools.rs`: rebinds the synthesized registry
+- `integrations/prelude_integrations.rs`: rebinds the synthesized registry
   after every delegation refresh and re-strips packed names;
   `agent/session_host/runtime/accessors.rs` re-strips after
   materializing the visible set.
@@ -158,7 +158,7 @@ listing offers the hand-off beside the raw registry tools.
   tool-policy session lets that tool run (`blocks_execution()` is false), and
   never on a turn without a session (sub-agent, channel/CLI), where an
   unregistered name was excluded by the registration allowlist.
-- `agent/registry/agents/orchestrator/prompt.rs`: `pack_for_tool` to tell
+- `agent_registry/agents/orchestrator/prompt.rs`: `pack_for_tool` to tell
   the orchestrator which pack a withheld delegate lives in.
 - `crates/openhuman-embed/`: re-exports `GroupMode` and `ToolGroups` and
   exposes `Harness::builder().tool_groups(..)`.

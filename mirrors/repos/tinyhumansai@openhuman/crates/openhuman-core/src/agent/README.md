@@ -76,17 +76,16 @@ the bus path because they keep their own history.
  tinyagents_runtime::Session::turn
    |-- OpenHumanSessionHooks::before_turn     prompt, memory pack, tools
    |-- OpenHumanSessionDriver::execute        session_host/driver.rs
+   |     | construct one TurnSpec and call TurnSpec::run_hosted
    |     v
-   |   run_chat_turn_graph                    session_host/turn/graph.rs
-   |     v
-   |   TurnSpec::run_hosted         tinyagents/turn_exec.rs
+   |   TurnDriver::drive_turn        tinyagents/turn_exec.rs
    |     | TurnDriver::prepare: models + tools; install_turn_middleware
    |     v
    |   AgentHarness loop  <---------------------------------+
    |     model call -> tool calls -> middleware -> results --+
    |     |  events -> OpenhumanEventBridge -> AgentProgress -> on_progress
    |     v
-   |   grounded close if the loop hit its cap
+   |   grounded close if the loop hit its cap (host adapter)
    |-- OpenHumanTranscriptCodec              durable rows, commit
    |-- after_commit                          memory, BUS, dual-write
    v
@@ -97,8 +96,8 @@ In order:
 
 1. The caller builds a session host. `from_config_for_agent` resolves the
    `AgentDefinition` for the agent id, picks its model and provider role,
-   assembles the tool registry, and wires the `ContextManager`,
-   `ToolPolicy`, run queue and progress sender. Web chat caches one host per
+   assembles the tool registry, and wires `ToolPolicy`, the run queue,
+   progress sender, and TinyAgents context middleware settings. Web chat caches one host per
    thread ([`web_chat/session.rs`](../web_chat/session.rs)); cron builds one per job.
 2. The caller scopes an `AgentTurnOrigin` ([`turn_origin.rs`](./turn_origin.rs)) and calls
    `run_single_with_origin`. The origin (`WebChat`, `ExternalChannel`,
@@ -111,7 +110,7 @@ In order:
    resumes the conversation if it is bound to a `SessionRef` with
    `ResumeMode::Session`. On resume it adopts the recorded tool list so
    Composio actions the thread used before are rebuilt as deferred executors
-   ([`session_host/recorded_tools.rs`](./session_host/recorded_tools.rs)).
+   ([`../integrations/recorded_tools.rs`](./../integrations/recorded_tools.rs)).
 4. TinyAgents' `Session::turn` runs the lifecycle. Its `before_turn` hook
    (`OpenHumanSessionHooks`) prepares the request: system prompt (frozen
    for a resumed thread), per-turn memory pack, integration, MCP and skill
@@ -120,9 +119,10 @@ In order:
    schema the model sees and the authority the driver enforces cannot drift.
 5. The session calls `OpenHumanSessionDriver::execute` with the full
    history and the tool snapshot. The driver builds this turn's tiered
-   `ChatModel` set from `TurnModelSource`, resolves the context window, and
-   calls `run_chat_turn_graph`, which calls
-   `TurnSpec::run_hosted`.
+   `ChatModel` set from `TurnModelSource`, resolves the context window, maps
+   the request-scoped tool, context and run-queue controls into one `TurnSpec`,
+   and calls `TurnSpec::run_hosted` directly. The same boxed future covers
+   hosted-authority validation, cancellation and accepted-round recovery.
 6. `TurnDriver::prepare` plans the turn ([`tinyagents/turn_plan.rs`](./tinyagents/turn_plan.rs)) and `install_turn_middleware` ([`tinyagents/turn_middleware.rs`](./tinyagents/turn_middleware.rs)) registers the
    models, the tools (through `CanonicalSharedToolAdapter`) and the
    middleware stack: approval and security gating, tool policy, cost
@@ -170,7 +170,7 @@ one with the sealed one as parent, so nothing is erased.
 
 By default transcripts, journals, goals and todos are files under the
 workspace. A host that keeps them in its own database installs a
-`SessionStoreProvider` once through `session_store/` (re-exported from
+`SessionStoreProvider` once through [`storage/sessions/`](../storage/sessions/) (re-exported from
 `tinyagents_session::port`), and every agent then reads and writes through
 its `AgentStores`. See [session_host/README.md](session_host/README.md).
 
@@ -218,27 +218,27 @@ coding workers, and background completion delivery. See
 
 ### Agent definitions, registry and prompts
 
-An `AgentDefinition` ([`harness/host_definition.rs`](./harness/host_definition.rs), vocabulary in `tinyagents-definition`) is an archetype: id, tier,
+An `AgentDefinition` ([`../agent_registry/host_definition.rs`](../agent_registry/host_definition.rs), vocabulary in `tinyagents-definition`) is an archetype: id, tier,
 prompt source, model spec, `ToolScope`, `SandboxMode`, iteration policy and
-allowed sub-agents. Built-ins live in `registry/agents/<id>/` as an
+allowed sub-agents. Built-ins live in `../agent_registry/agents/<id>/` as an
 `agent.toml` plus `prompt.md` (orchestrator, planner, critic, summarizer,
 trigger_triage, trigger_reactor, vision_agent and others). Custom
 definitions are TOML files under `<workspace>/agents/*.toml`, with
-`~/.openhuman/agents/*.toml` as a fallback (`tinyagents_definition::DefinitionSet::load_dirs`, driven from [`harness/host_definition.rs`](./harness/host_definition.rs)).
+`~/.openhuman/agents/*.toml` as a fallback (`tinyagents_definition::DefinitionSet::load_dirs`, driven from [`../agent_registry/host_definition.rs`](../agent_registry/host_definition.rs)).
 `AgentDefinitionRegistry` holds the merged set; `agent.reload_definitions`
 rebuilds it.
 
-`registry/` is the user-facing layer over those definitions: enable and
+`../agent_registry/` is the user-facing layer over those definitions: enable and
 disable, custom agents, model pins, tool allow and deny lists, and sub-agent
 policy, persisted at `Config.agent_registry` and exposed as the
-`agent_registry` RPC namespace. `library/` projects definitions into a
+`agent_registry` RPC namespace. `../agent_registry/library/` projects definitions into a
 display-safe `AgentDefinitionDisplay` for the UI.
 
 `prompts/` holds the bundled identity files (`SOUL.md`, `IDENTITY.md`,
-`ROLE.md`, `STYLE.md`, `USER.md`) and `SystemPromptBuilder`, which renders
-ordered `PromptSection`s into the system prompt, optionally as a
-`TieredPrompt` with cache breakpoints. `context/` keeps per-session
-`ContextManager` state and the byte-stable channel prompt builder. `debug/`
+`ROLE.md`, `STYLE.md`, `USER.md`) and `SystemPromptBuilder`, which selects
+OpenHuman product content and delegates tier assembly to TinyAgents,
+optionally returning a `TieredPrompt` with cache breakpoints. `context/` holds
+the shared default for TinyAgents microcompact configuration. `debug/`
 renders the exact prompt a live session would send, by building a real
 session host and calling `build_system_prompt`.
 
@@ -278,15 +278,15 @@ Turn execution:
 | [`turn_env.rs`](./turn_env.rs) | `HostTurnEnv`: the explicit per-turn host values (budget, depth, cancellation, deadline, hooks, tool-belt authority) an entry point hands the session |
 | [`progress_tracing.rs`](./progress_tracing.rs), `progress_tracing/` | OpenTelemetry/Langfuse-style spans built from the progress stream ([README](progress_tracing/README.md)) |
 | `turn_origin.rs` | `AgentTurnOrigin` task-local, the trust and routing label the approval gate reads |
-| [`stop_hooks.rs`](./stop_hooks.rs) | `StopHook` mid-turn halts and the `tool_call_limit` budget |
+| [`tinyagents/turn_policy.rs`](./tinyagents/turn_policy.rs) | The OpenHuman `tool_call_limit` turn budget |
 | [`tool_policy.rs`](./tool_policy.rs) | `ToolPolicy`, the pre-execution allow/deny hook installed through the builder |
-| [`hooks.rs`](./hooks.rs) | `PostTurnHook` background hooks, including ones registered by embedders |
+| [`hooks.rs`](./hooks.rs) | Process-wide embedder hook registries and the `OpenHumanRunContext` identity implementation for upstream hook contracts |
 | [`queued_turn.rs`](./queued_turn.rs) | `QueuedTurn`, the payload for a message sent while a turn is running |
 | [`cost.rs`](./cost.rs) | Per-turn token and cost accounting (`TurnCost`) |
 | [`message_convert.rs`](./message_convert.rs), [`messages.rs`](./messages.rs) | Conversions between `TranscriptMessage` rows and TinyAgents `Message`s; the `history_wire` adapter for host-owned files |
-| `attachments/`, [`multimodal.rs`](./multimodal.rs) | Durable user uploads and provider-side attachment resolution; legacy marker compatibility ([README](attachments/README.md)) |
-| [`host_runtime.rs`](./host_runtime.rs) | Native and Docker shell `RuntimeAdapter`s; the shell flavor is the contract's `tinybox_bus::ShellFlavor` and execution is TinyBox's |
-| `session_store/` | Process-wide `SessionStoreProvider` slot for hosts with their own database |
+| [`attachments/`](../attachments/), [`multimodal.rs`](./multimodal.rs) | Durable user uploads and provider-side attachment resolution; legacy marker compatibility ([README](../attachments/README.md)) |
+| [`host_runtime.rs`](../modules/tinybox/host_runtime.rs) | Host-side native and Docker shell `RuntimeAdapter`s; TinyBox owns execution |
+| [`../storage/sessions/`](../storage/sessions/) | Process-wide `SessionStoreProvider` slot for hosts with their own database |
 
 Delegation and coordination:
 
@@ -297,27 +297,27 @@ Delegation and coordination:
 | `triage/` | Classifies `TriggerEnvelope`s and escalates ([README](triage/README.md)) |
 | `goals/` | Host adapters around `tinyagents_graph::goals` and the `goal_*` tools ([README](goals/README.md)) |
 | `todos/` | Session-scoped todo list over the TinyAgents todo store ([README](todos/README.md)) |
-| `plan_review/` | `request_plan_review` gate that parks a web-chat turn until the user decides |
+| [`../plan_review/`](../plan_review/) | `request_plan_review` gate that parks a web-chat turn until the user decides |
 | [`tools.rs`](./tools.rs), `tools/` | Loop control tools: `delegate`, `plan_exit`, `todo`, `run_workflow`/`await_workflow` (with `skills`) ([README](tools/README.md)) |
 
 Definitions, prompts and context:
 
 | Path | What it does |
 | --- | --- |
-| `registry/` | `agent_registry` RPC; built-in archetypes under [`registry/agents/`](./registry/agents/) ([README](registry/README.md)) |
+| [`../agent_registry/`](../agent_registry/) | `agent_registry` RPC; built-in archetypes under [`agents/`](../agent_registry/agents/) ([README](../agent_registry/README.md)) |
 | `prompts/` | Bundled identity files, `SystemPromptBuilder`, prompt sections ([README](prompts/README.md)) |
-| `context/` | `ContextManager` per session and the channel prompt builder ([README](context/README.md)) |
+| `context/` | Shared TinyAgents context defaults ([README](context/README.md)) |
 | [`context_breakdown.rs`](./context_breakdown.rs) | `agent.context_breakdown`: system/tools/history split of prompt size for the UI |
 | `debug/` | Dumps the exact system prompt and prompt-size report for an agent |
-| `library/` | Display-safe projection of definitions (`AgentDefinitionDisplay`) |
+| [`../agent_registry/library/`](../agent_registry/library/) | Display-safe projection of definitions (`AgentDefinitionDisplay`) |
 
 Persistence, setup and RPC:
 
 | Path | What it does |
 | --- | --- |
 | `artifacts/` | Agent-generated artifact storage and the `ai` RPC namespace ([README](artifacts/README.md)) |
-| `session_db/` | `run_ledger` RPC over `tinyagents_session::run_ledger` |
-| `session_import/` | The `session_import.run` retry of the boot-time legacy-session import, and the agent's key-value store on each turn's `RunContext` ([README](session_import/README.md)) |
+| [`../sessions/`](../sessions/) | `run_ledger` RPC over `tinyagents_session::run_ledger` |
+| [`../storage/import/`](../storage/import/) | The `session_import.run` retry of the boot-time legacy-session import, and the agent's key-value store on each turn's `RunContext` ([README](../storage/import/README.md)) |
 | [`schemas.rs`](./schemas.rs) | The `agent` namespace controllers |
 
 ## Key types and entry points
@@ -331,7 +331,7 @@ Persistence, setup and RPC:
 - `AgentTurnRequest` / `AgentTurnResponse` and `AGENT_RUN_TURN_METHOD`
   (`bus.rs`): the stateless turn over `BUS.native()`.
   `register_agent_handlers` installs it at startup.
-- `TurnModelSource` ([`tinyagents/turn_models.rs`](./tinyagents/turn_models.rs)): builds a turn's primary,
+- `TurnModelSource` ([`inference/turn_models.rs`](../inference/turn_models.rs)): builds a turn's primary,
   tier-routed and summarizer `ChatModel`s from `(role, config)`.
 - `TurnSpec::run` and `TurnSpec::run_hosted`
   ([`tinyagents/turn_exec.rs`](./tinyagents/turn_exec.rs)): the only places a harness is invoked.
@@ -341,14 +341,14 @@ Persistence, setup and RPC:
 - `AgentProgress` (`progress.rs`): turn, iteration, tool, text and thinking
   deltas, cost updates and the `Subagent*` family.
 - `AgentDefinition`, `AgentDefinitionRegistry`, `ToolScope`, `SandboxMode`
-  (`harness/host_definition.rs` + `tinyagents-definition`): what an agent is.
+  (`../agent_registry/host_definition.rs` + `tinyagents-definition`): what an agent is.
 - `ParentExecutionContext` ([`harness/fork_context.rs`](./harness/fork_context.rs)): explicit parent
   state a sub-agent reads from the run context (`parent`); `orchestration::parent_context::build_root_parent`
   builds one for runs with no parent turn.
 - `run_subagent`, `run_subagent_with_parent`, `SubagentRunOptions`
   ([`subagent_host/lifecycle.rs`](./subagent_host/lifecycle.rs), [`subagent_host/types.rs`](./subagent_host/types.rs)).
 - `run_triage`, `apply_decision`, `TriggerEnvelope` (`triage/`).
-- `SystemPromptBuilder` ([`prompts/builder.rs`](./prompts/builder.rs)).
+- `SystemPromptBuilder` ([`crate::prompts::composition`](../prompts/composition.rs)) is the product adapter over TinyAgents prompt composition.
 - `AgentTurnOrigin` and `with_origin` (`turn_origin.rs`).
 
 ## RPC surface
@@ -359,12 +359,12 @@ All controllers register under `DomainGroup::Agent` in [`core/all.rs`](../core/a
 | --- | --- | --- |
 | `agent` | `schemas.rs` | `chat`, `chat_simple`, `server_status`, `list_definitions`, `get_definition`, `reload_definitions`, `triage_evaluate`, `graph_topologies`, `registry_snapshot`, `context_breakdown` |
 | `agent` | [`tinyagents/replay/`](./tinyagents/replay/) | `runs_active`, `run_status`, `run_events` (read-only journal replay) |
-| `agent` | [`tinyagents/run_mode.rs`](./tinyagents/run_mode.rs) | `set_run_mode`, `get_run_mode` |
+| `agent` | [`../threads/run_mode.rs`](./../threads/run_mode.rs) | `set_run_mode`, `get_run_mode` |
 | `agent_registry` | `registry/` | `list`, `available_tools`, `get`, `upsert_custom`, `create_custom`, `update`, `set_enabled`, `remove` |
-| `plan_review` | `plan_review/` | `decide` |
+| `plan_review` | `../plan_review/` | `decide` |
 | `ai` | `artifacts/` | `list_artifacts`, `get_artifact`, `delete_artifact`, `regenerate` |
-| `run_ledger` | `session_db/` | `list`, `get`, `events` |
-| `session_import` | `session_import/` | `run` |
+| `run_ledger` | `../sessions/` | `list`, `get`, `events` |
+| `session_import` | `../storage/import/` | `run` |
 | `agent_work` | [`orchestration/command_center`](./orchestration/command_center/) | `list`, `control` |
 | `workflow_run` | [`orchestration/workflow_runs`](./orchestration/workflow_runs/) | `list_definitions`, `list`, `get`, `start`, `stop`, `resume` |
 | `agent_team` | [`orchestration/agent_teams`](./orchestration/agent_teams/) | `create`, `list`, `get`, `assign_task`, `claim_task`, `message_member`, `list_messages`, `complete_task`, `shutdown_member`, `close`, `start_member` |
@@ -411,7 +411,7 @@ What lives elsewhere:
   `Unknown` and the approval gate fails closed. Recursive execution passes
   `OpenHumanRunContext` explicitly for this reason.
 - The tool surface is all or nothing. An empty visible-tool set is deny-all,
-  not "every tool"; `run_chat_turn_graph` deliberately keeps `Some(empty)`.
+  not "every tool"; `OpenHumanSessionDriver` deliberately keeps `Some(empty)`.
 - A resumed thread's prompt and tools are frozen. Testing a prompt change
   needs a new thread.
 - `agent.run_turn` must be registered before channels dispatch.

@@ -168,8 +168,12 @@ def main() -> int:
         if short_match and not 25 <= len(short_match.group(1)) <= 64:
             errors.append("agents/openai.yaml 的 short_description 应为 25～64 个字符")
         display_match = re.search(r'^\s+display_name:\s*["\'](.*)["\']\s*$', openai_text, re.MULTILINE)
-        if display_match and name and display_match.group(1) != name:
-            errors.append("agents/openai.yaml 的 display_name 与 frontmatter name 不一致")
+        display_name = display_match.group(1) if display_match else ""
+        # 允许 `name` 或 `name（附加名称）` 两种写法。
+        if display_match and name and not re.fullmatch(
+            re.escape(name) + r"(?:\s*[（(][^）)]+[）)])?", display_name
+        ):
+            errors.append("agents/openai.yaml 的 display_name 应为 name 或「name（附加名称）」")
 
     scripts_dir = root / "scripts"
     if scripts_dir.is_dir():

@@ -32,15 +32,12 @@ every file write follows `.claude/docs/automation-modes.md`
 Resolved above — use as-is. No block → defaults in
 `.claude/docs/config-resolution.md`.
 
-> **Resolve the tier — do not assume it.** Saying "surface gaps per the **resolved** workflow
-> tier" without resolving it — no bootstrap, no helper call — leaves
-> the tier as whatever the model assumed. The tier decides what counts as a gap
+> **Resolve the tier — do not assume it.** The tier decides what counts as a gap
 > at all: at `full` every missing doc is one; at `minimal` none of them are,
 > because a brief plus an engine is the normal state and code is the expected
 > next step. Guessing high tells a jam project it is missing GDDs, an art bible
 > and ADRs — the exact "process feels mismatched to my project" experience
-> `modes.rigor` exists to prevent. A missing bootstrap is invisible to a static
-> read — the config block simply does not render — so verify it by running.
+> `modes.rigor` exists to prevent.
 
 **`workflow`** (per `.claude/docs/workflow-modes.md`). The tier governs
 which absent documents count as gaps (step 3) — below `full`, optional docs are
@@ -76,7 +73,9 @@ track, and the judgement calls.
 - Count GDD files in `design/gdd/*.md`
 - Check for game-concept.md (or `design/game-brief.md` at `minimal`), game-pillars.md, systems-index.md
 - If systems-index.md exists, count total systems vs. designed systems
-- Analyze completeness (Overview, Detailed Design, Edge Cases, etc.)
+- Analyze completeness (Overview, Detailed Design, Edge Cases, etc.). Read GDDs
+  by section: find the headings you need with the Grep tool (pattern `^#`, content
+  mode) and Read those ranges with offset and limit.
 - Count narrative docs in `design/narrative/`
 - Count level designs in `design/levels/`
 
@@ -270,6 +269,9 @@ resolved workflow tier surfaces** (step 3). At `standard`/`minimal`, do not
 suggest authoring optional docs (e.g. don't suggest `/reverse-document` for an
 absent GDD at `minimal`, where code is the expected next step):
 
+- **No `design/game-brief.md` at `minimal`?** → `/reverse-document design <code root>`
+  when the code root already holds the game (10 or more source files): it writes
+  the brief from what is built. With little or no code, `/brainstorm`.
 - **Concept exists but no systems index?** → `/map-systems` to decompose into systems
 - **Missing design docs?** → `/reverse-document design <code root>/[system]`
 - **Missing architecture docs?** → `/architecture-decision` or `/reverse-document architecture`

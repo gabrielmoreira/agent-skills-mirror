@@ -289,24 +289,26 @@ layered on top of the distributed IDD defaults:
   carries a `round <r>/5` clause. See
   [docs/idd-design-rationale.md](docs/idd-design-rationale.md#e4e5-adopt-now-urgency-defer)
   for the baseline and the severity-tiered matrix.
-- **Triage record opt-in (deferred)**: This source repository sets
-  `critiqueLoop.triageRecord` to `"off"` explicitly, which is also the
-  distributed default that `idd-template/` keeps. The opt-in to `"record"`
-  is deferred because `advisory-convergence` prints
+- **Triage record opt-in**: This source repository sets
+  `critiqueLoop.triageRecord` to `"record"` as a local IDD dogfooding
+  policy (applies only to `kurone-kito/idd-skill`), since pull
+  request `#4508` (issue `#4461`), merged 2026-10-18; `idd-template/`
+  keeps the distributed default `"off"`, so adopters are unchanged. The
+  opt-in was first deferred because `advisory-convergence` printed
   `resolve-review-thread --apply` pointers without the `--tier` and
   `--urgency` flags that `record` requires for an Accepted or Rejected
-  reply, so `resolve-review-thread` refuses those pointers. Observed
+  reply, so `resolve-review-thread` refused those pointers. Observed
   2026-10-16 on pull request `#4405` (Copilot discussion `r4288841711`).
-  The opt-in depends on an `advisory-convergence` change that emits those
-  flags. Until that change lands, the value stays `"off"`; after it lands,
-  set the value to `"record"`. With `record`,
+  Pull request `#4500` (issue `#4481`), merged 2026-10-18, made
+  `advisory-convergence` add both flags to those pointers when the value
+  is `record` or `enforce`, which unblocked the opt-in. With `record`,
   `resolve-review-thread` requires `--tier` and `--urgency` on each
   applied Accepted or Rejected PATH A reply, except a `--path-b` reply or
   a `**Rejection confirmed by maintainer**` reply. The helper writes a
   `Triage:` line for
   each reply that carries both flags, in any mode. The switch to
   `"enforce"` waits for the weekly audit data and is decided in issue
-  `#4208`. Evidence for the later opt-in: among the 100
+  `#4208`. Evidence for the `record` opt-in: among the 100
   pull requests that were merged at or before 2026-10-13T06:58:55Z and
   are numbered `#3936` to `#4158`, six
   deferral-form replies appeared on four pull requests, and one of 535
@@ -378,6 +380,24 @@ layered on top of the distributed IDD defaults:
   `orchestrator` field and the `orchestrator-worker-cap-dogfood` rule together,
   because the rule pins the value to exactly 4 and the field alone is not
   enough (refs `#3839`).
+- **Live status digest**: This source repository also records, as a
+  local IDD dogfooding policy (applies only to `kurone-kito/idd-skill`),
+  that every A5 issue claim and the pull request opened for it use a live
+  status digest. This is the repository's choice under the
+  [Live Status Digest Contract](docs/idd-comment-minimization.md#live-status-digest-contract).
+  It adds no digest step to a phase that has none, so the coordination
+  claims taken before A5 (A0-C draft-carrier, A1.5 roadmap-audit, and
+  A4.5 suitability-close) keep their current behavior. `idd-template/` is
+  unchanged, so adopters keep the distributed behavior.
+  Pull request `#4505` (issue `#4494`), merged 2026-10-18, added the
+  digest-use paragraph to that contract and listed recording this
+  repository's choice here as a follow-up. Before that merge, each of the
+  18 issues numbered `#4455` to `#4505` that were claimed before it
+  carried exactly one digest comment (checked 2026-10-18). After it, the
+  claim on issue `#4502` (2026-10-18) found no digest and created none,
+  and that issue and its pull request `#4507` closed without one. Without
+  this bullet, this repository records no choice, and the linked contract
+  decides what applies.
 
 ## Branch strategy
 

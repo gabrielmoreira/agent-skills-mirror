@@ -132,6 +132,12 @@ is null. `total` counts all matching heads; each page preserves complete records
 in stable unknown ID order. Filters apply before paging. Pages reflect current
 session state, so keep the unknown ledger unchanged while traversing it.
 
+Automatically retained workflow questions include their immutable result
+Evidence ID. Distinct results retain independent questions and source links;
+repeating the same result does not create another unknown. Workflow Evidence
+keeps the original residual question text. Explicit `record_unknown` requests
+keep caller-selected identity and reject duplicate creation.
+
 For a portable exported bundle, the CLI shares this projection:
 `rea inspect-evidence-bundle '{"path":"/tmp/evidence.json","detail":"summary","filters":{"operation":"analyze_function"}}' --format json`.
 The CLI validates and materializes that local bundle under its existing memory
@@ -209,6 +215,14 @@ segments are inferences. Because paging follows the full grouping, every page is
 inferred Evidence whenever any group is templated, and derived Evidence only when
 no group was templated.
 See [derived API surfaces](web-network-captures.md#derived-api-surface).
+
+`inspect_analysis_view` also accepts `environment-manifest` for retained HAR capture
+Evidence, projecting the primary origin's request lines into named tools with path
+templates, parameters, observed query names, value-free body shapes and record
+pointers, plus excluded groups and three fixed unknowns. Templates, parameters and
+names are inferences; the Evidence is inferred whenever any tool or excluded group
+is templated, and derived otherwise.
+See [environment manifests](web-network-captures.md#environment-manifest).
 
 `inspect_analysis_view` projects a caller-selected view of already completed
 `inspect_binary_layout`, `analyze_javascript_application`, or `analyze_function`
@@ -354,6 +368,17 @@ client requirements. Compare the union of group names with `tools/list` when
 checking that a client received the full catalog. An operation absent from all
 groups is missing from the complete inventory; it is not an implicit
 unavailable entry.
+
+`get_call_graph` and `trace_call_path` report `forward` and `backward` modes.
+Each requires `procedure_address` plus `procedure_callees` or `procedure_callers`,
+respectively. The tool is available when either traversal mode is supported;
+`default_mode_available` describes the default forward direction. Read each mode's
+missing operations and remediation before selecting a direction. These facts
+describe traversal prerequisites, not relationship completeness or a guarantee
+for every selector. A trace whose start and goal resolve to the same address can
+finish without reading relationships, even when neither traversal mode is
+available. Discovery does not block that direct invocation or replace its typed
+partial/error outcomes.
 
 The `effects` and `annotations` arrays list the true members of their fixed
 vocabularies. A known member omitted from either array is false. This applies
@@ -856,6 +881,21 @@ retain limitations from the selected dimension; an overall function claim
 includes all dimension limitations. Equal CFGs establish only equal observed
 block sizes and successor relationships. Text from different provider
 identities remains unknown.
+
+The `references` dimension preserves each edge's direction, endpoint identity
+and available kind facts. Within one artifact it compares exact raw endpoint
+coordinates, including the address space; hexadecimal case and zero padding
+do not change identity. Resolving an endpoint to a containing procedure does
+not replace the raw coordinate. Unparseable coordinates stay unknown.
+
+Across artifacts, reference endpoints use stable procedure names. Missing or
+address-generated names remain unknown. A name observed at multiple procedure
+entries retains its label constraint but cannot establish equal endpoints.
+Pairing preserves duplicate counts and considers alternative compatible
+pairings; array order never identifies an edge. Compatible records with
+unknown endpoint identity or kind facts remain `unknown`. Independent known
+facts that contradict every possible pairing still establish `changed`.
+Source Evidence retains the original addresses, names and unavailable facts.
 
 ### Comparison input shapes
 

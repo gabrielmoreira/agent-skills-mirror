@@ -37,7 +37,9 @@ This flow produces `design/assets/entity-inventory.md` — the master list of ev
 the game needs visually. Run once before asset spec work begins.
 
 ### Step 1 — Gather from docs
-Read all available source material in parallel:
+Read all available source material in parallel, each doc by section: find the
+headings you need with the Grep tool (pattern `^#`, content mode) and Read those
+ranges with offset and limit.
 - `design/gdd/systems-index.md` — extract every system listed
 - GDD asset content — do **not** full-read every GDD. The two wanted sections are
   standard headings, and named entities live in the registry:
@@ -148,7 +150,9 @@ run only.
 
 ## Phase 1: Gather Context
 
-Read all source material **before** asking the user anything.
+Read all source material **before** asking the user anything. Read the art bible and
+the GDD by section: find the headings you need with the Grep tool (pattern `^#`,
+content mode) and Read those ranges with offset and limit.
 
 ### Required reads:
 - **Art bible**: Read `design/art/art-bible.md` — fail if missing:

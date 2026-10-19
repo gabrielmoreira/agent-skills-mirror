@@ -3,7 +3,7 @@ name: smoke-check
 description: "Critical-path smoke gate before QA hand-off — runs the automated suite. A failed check means the build is not QA-ready."
 argument-hint: "[sprint | quick | --platform pc|console|mobile|all]"
 user-invocable: true
-allowed-tools: Read, Glob, Grep, Bash, Write, AskUserQuestion, Bash(bash "*/.claude/skills/smoke-check/../../hooks/yaml-helper.sh" resolve_config *)
+allowed-tools: Read, Glob, Grep, Write, AskUserQuestion, Bash(bash "*/.claude/skills/smoke-check/../../hooks/yaml-helper.sh" resolve_config *), Bash(bash .claude/scripts/project-coherence.sh*), Bash(command -v *), Bash(uname -s), Bash(godot --headless --path . --import), Bash(timeout 900 godot --headless *), Bash(timeout 1800 godot --headless *), Bash(grep -q 'com.unity.test-framework' Packages/manifest.json), Bash(echo present), Bash(echo ABSENT)
 model: sonnet
 ---
 
@@ -87,8 +87,7 @@ describe what collaborative mode requires, not universal behavior.
 
 - **Never treat NOT RUN as automatic FAIL** — record it as NOT RUN and let
   the developer confirm status manually. Unconfirmed NOT RUN yields **NOT
-  ASSESSED**, not FAIL — and not a pass verdict either, which is what it used to
-  yield.
+  ASSESSED**, not FAIL — and not a pass verdict either.
 - **Never auto-fix failures** — report them and state what must be resolved.
   Do not attempt to edit source code or test files.
 - **PASS WITH WARNINGS does not block QA hand-off** — it records advisory

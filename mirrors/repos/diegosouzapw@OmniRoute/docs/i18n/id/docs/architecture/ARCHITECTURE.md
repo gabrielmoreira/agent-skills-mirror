@@ -10,18 +10,18 @@ _Terakhir diperbarui: 2026-06-28_
 
 ## Ringkasan Eksekutif
 
-OmniRoute adalah gateway perutean AI lokal dan dasbor yang dibangun menggunakan Next.js.
+OmniRoute adalah gateway perutean AI lokal dan dasbor yang dibangun di atas Next.js.
 OmniRoute menyediakan satu endpoint yang kompatibel dengan OpenAI (`/v1/*`) dan merutekan lalu lintas ke beberapa penyedia upstream dengan penerjemahan, fallback, penyegaran token, dan pelacakan penggunaan.
 
 Kemampuan utama:
 
-- Antarmuka API yang kompatibel dengan OpenAI untuk CLI/alat (373 penyedia, 150 modul eksekutor)
-- Penerjemahan permintaan/respons antarformat penyedia
+- Antarmuka API yang kompatibel dengan OpenAI untuk CLI/alat (374 penyedia, 150 modul eksekutor)
+- Penerjemahan permintaan/respons di antara berbagai format penyedia
 - Fallback kombinasi model (urutan multi-model)
-- Langkah kombinasi terstruktur (`provider + model + connection`) dengan pengurutan saat runtime berdasarkan `compositeTiers`
+- Langkah kombinasi terstruktur (`provider + model + connection`) dengan pengurutan runtime berdasarkan `compositeTiers`
 - Fallback tingkat akun (multi-akun per penyedia)
-- Pemeriksaan awal kuota dan pemilihan akun P2C yang mempertimbangkan kuota pada alur chat utama
-- Pengelolaan koneksi penyedia berbasis OAuth + kunci API (27 modul penyedia OAuth)
+- Pemeriksaan awal kuota dan pemilihan akun P2C berbasis kuota pada alur chat utama
+- Pengelolaan koneksi penyedia OAuth + kunci API (27 modul penyedia OAuth)
 - Pembuatan embedding melalui `/v1/embeddings` (18 penyedia)
 - Pembuatan gambar melalui `/v1/images/generations` (10+ penyedia, 20+ model)
 - Transkripsi audio melalui `/v1/audio/transcriptions` (18 penyedia)
@@ -32,32 +32,32 @@ Kemampuan utama:
 - Moderasi melalui `/v1/moderations`
 - Pemeringkatan ulang melalui `/v1/rerank`
 - Penguraian tag pemikiran (``) untuk model penalaran
-- Sanitasi respons untuk kompatibilitas ketat dengan SDK OpenAI
+- Sanitasi respons untuk kompatibilitas ketat dengan OpenAI SDK
 - Normalisasi peran (developer→system, system→user) untuk kompatibilitas lintas penyedia
 - Konversi keluaran terstruktur (json_schema → Gemini responseSchema)
 - Persistensi lokal untuk penyedia, kunci, alias, kombinasi, pengaturan, dan harga (122 modul DB)
 - Pelacakan penggunaan/biaya dan pencatatan permintaan
 - Sinkronisasi cloud opsional untuk sinkronisasi multi-perangkat/status
-- Daftar izin/daftar blokir IP untuk kontrol akses API
-- Pengelolaan anggaran pemikiran (passthrough/otomatis/kustom/adaptif)
+- Daftar izin/blokir IP untuk kontrol akses API
+- Pengelolaan anggaran pemikiran (passthrough/auto/custom/adaptive)
 - Injeksi prompt sistem global
-- Pelacakan dan pembuatan sidik jari sesi
-- Pembatasan laju tingkat lanjut per akun dengan profil khusus penyedia
-- Pola circuit breaker untuk ketahanan penyedia
+- Pelacakan sesi dan pembuatan sidik jari
+- Pembatasan laju yang ditingkatkan per akun dengan profil khusus penyedia
+- Pola pemutus sirkuit untuk ketahanan penyedia
 - Perlindungan anti-thundering herd dengan penguncian mutex
 - Cache deduplikasi permintaan berbasis tanda tangan
 - Lapisan domain: aturan biaya, kebijakan fallback, kebijakan penguncian
-- Context Relay: ringkasan serah terima sesi untuk kontinuitas rotasi akun
-- Persistensi status domain (cache write-through SQLite untuk fallback, anggaran, penguncian, dan circuit breaker)
+- Context Relay: ringkasan serah terima sesi untuk menjaga kesinambungan saat rotasi akun
+- Persistensi status domain (cache write-through SQLite untuk fallback, anggaran, penguncian, dan pemutus sirkuit)
 - Mesin kebijakan untuk evaluasi permintaan terpusat (penguncian → anggaran → fallback)
 - Telemetri permintaan dengan agregasi latensi p50/p95/p99
 - Telemetri target kombinasi dan riwayat kesehatan target kombinasi melalui `combo_execution_key` / `combo_step_id`
-- ID korelasi (X-Request-Id) untuk penelusuran menyeluruh
-- Pencatatan audit kepatuhan dengan opsi penolakan per kunci API
+- ID korelasi (X-Request-Id) untuk penelusuran ujung-ke-ujung
+- Pencatatan audit kepatuhan dengan opsi menolak per kunci API
 - Kerangka kerja evaluasi untuk penjaminan kualitas LLM
-- Dasbor kesehatan dengan status circuit breaker penyedia secara real-time
-- Server MCP (110 alat) dengan 3 transportasi (stdio/SSE/Streamable HTTP)
-- Server A2A (JSON-RPC 2.0 + SSE) dengan keterampilan dan siklus hidup tugas
+- Dasbor kesehatan dengan status pemutus sirkuit penyedia secara real-time
+- MCP Server (110 alat) dengan 3 transportasi (stdio/SSE/Streamable HTTP)
+- A2A Server (JSON-RPC 2.0 + SSE) dengan keterampilan dan siklus hidup tugas
 - Sistem memori (ekstraksi, injeksi, pengambilan, peringkasan)
 - Sistem keterampilan (registri, eksekutor, sandbox, keterampilan bawaan)
 - Proksi MITM dengan pengelolaan sertifikat dan penanganan DNS
@@ -65,14 +65,14 @@ Kemampuan utama:
 - Pipeline kompresi prompt dengan Caveman, RTK, pipeline bertumpuk, kombinasi kompresi, paket bahasa, dan analitik
 - Registri ACP (Agent Communication Protocol)
 - Penyedia OAuth modular (22 modul individual di bawah `src/lib/oauth/providers/`)
-- Skrip penghapusan instalasi/penghapusan instalasi penuh
+- Skrip penghapusan/penghapusan penuh
 - Tindakan perbaikan lingkungan OAuth
-- Bridge WebSocket untuk klien WS yang kompatibel dengan OpenAI (`/v1/ws`)
+- Jembatan WebSocket untuk klien WS yang kompatibel dengan OpenAI (`/v1/ws`)
 - Pengelolaan token sinkronisasi (penerbitan/pencabutan, pengunduhan bundel konfigurasi berversi ETag)
 - Preset penyedia kelas utama GLM Thinking (`glmt`)
-- Penghitungan token hibrida (`/messages/count_tokens` sisi penyedia dengan fallback estimasi)
+- Penghitungan token hibrida (`/messages/count_tokens` di sisi penyedia dengan fallback estimasi)
 - Penyemaian otomatis alias model (30+ normalisasi dialek lintas proksi saat startup)
-- Pengambilan data keluar yang aman dengan perlindungan SSRF, pemblokiran URL privat, dan percobaan ulang yang dapat dikonfigurasi
+- Fetch keluar yang aman dengan perlindungan SSRF, pemblokiran URL privat, dan percobaan ulang yang dapat dikonfigurasi
 - Percobaan ulang chat yang mempertimbangkan cooldown dengan `requestRetry` dan `maxRetryIntervalSec` yang dapat dikonfigurasi
 - Validasi lingkungan runtime dengan Zod saat startup
 - Audit kepatuhan v2 dengan paginasi, peristiwa CRUD penyedia, dan pencatatan validasi yang diblokir SSRF
@@ -80,7 +80,7 @@ Kemampuan utama:
 Model runtime utama:
 
 - Rute aplikasi Next.js di bawah `src/app/api/*` mengimplementasikan API dasbor dan API kompatibilitas
-- Inti SSE/perutean bersama dalam `src/sse/*` + `open-sse/*` menangani eksekusi penyedia, penerjemahan, streaming, fallback, dan penggunaan
+- Inti SSE/perutean bersama di `src/sse/*` + `open-sse/*` menangani eksekusi penyedia, penerjemahan, streaming, fallback, dan penggunaan
 
 ## Diagram Referensi
 
@@ -298,11 +298,11 @@ Layanan (logika bisnis):
 - Percobaan ulang yang mempertimbangkan cooldown: `src/sse/services/cooldownAwareRetry.ts` — percobaan ulang cooldown per model dengan `requestRetry` / `maxRetryIntervalSec` yang dapat dikonfigurasi
 - Fetch keluar yang aman: `src/shared/network/safeOutboundFetch.ts` — fetch penyedia/model yang dilindungi dengan perlindungan SSRF, pemblokiran URL privat, percobaan ulang, dan batas waktu
 - Perlindungan URL keluar: `src/shared/network/outboundUrlGuard.ts` — pemeriksaan host pada URL penyedia; `src/shared/network/outboundUrlGuardPolicy.ts` memilih mode dari `OMNIROUTE_ALLOW_LOCAL_PROVIDER_URLS`, `OMNIROUTE_ALLOW_PRIVATE_PROVIDER_URLS`, dan toggle dasbornya (lihat `docs/reference/ENVIRONMENT.md`)
-- Default permintaan penyedia: `open-sse/services/providerRequestDefaults.ts` — default tingkat penyedia untuk `maxTokens`, `temperature`, `thinkingBudgetTokens`
-- Konstanta penyedia GLM: `open-sse/config/glmProvider.ts` — model GLM bersama, URL kuota, batas waktu/default GLMT
+- Nilai default permintaan penyedia: `open-sse/services/providerRequestDefaults.ts` — nilai default `maxTokens`, `temperature`, `thinkingBudgetTokens` pada tingkat penyedia
+- Konstanta penyedia GLM: `open-sse/config/glmProvider.ts` — model GLM bersama, URL kuota, batas waktu/nilai default GLMT
 - Upstream Antigravity: `open-sse/config/antigravityUpstream.ts` — URL dasar dan konstanta jalur penemuan
-- Konstanta klien Codex: `open-sse/config/codexClient.ts` — nilai user-agent dan versi klien yang berversi
-- Seed alias model: `src/lib/modelAliasSeed.ts` — menginisialisasi 30+ alias dialek lintas proksi saat startup
+- Konstanta klien Codex: `open-sse/config/codexClient.ts` — nilai agen pengguna dan versi klien berversi
+- Seed alias model: `src/lib/modelAliasSeed.ts` — menyemai lebih dari 30 alias dialek lintas-proxy saat startup
 
 Modul lapisan domain:
 
@@ -534,16 +534,17 @@ DB Status Domain (SQLite):
 - Tabel (dibuat di `src/lib/db/core.ts`): `domain_fallback_chains`, `domain_budgets`, `domain_cost_history`, `domain_lockout_state`, `domain_circuit_breakers`
 - Pola cache write-through: Map dalam memori menjadi sumber otoritatif saat runtime; mutasi ditulis secara sinkron ke SQLite; status dipulihkan dari DB saat cold start
 
-## 4) Permukaan Autentikasi + Keamanan
+## 4) Autentikasi + Permukaan Keamanan
 
 - Autentikasi cookie dasbor: `src/proxy.ts`, `src/app/api/auth/login/route.ts`
 - Pembuatan/verifikasi kunci API: `src/shared/utils/apiKey.ts`
 - Rahasia penyedia disimpan dalam entri `providerConnections`
 - Dukungan proksi keluar melalui `open-sse/utils/proxyFetch.ts` (variabel lingkungan) dan `open-sse/utils/networkProxy.ts` (dapat dikonfigurasi per penyedia atau secara global)
-- Perlindungan SSRF/URL keluar: `src/shared/network/outboundUrlGuard.ts` — memblokir rentang privat/loopback/link-local untuk semua panggilan penyedia
-- Validasi lingkungan runtime: `src/lib/env/runtimeEnv.ts` — skema Zod untuk semua variabel lingkungan, ditampilkan sebagai kesalahan/peringatan saat startup
+- Perlindungan SSRF / URL keluar: `src/shared/network/outboundUrlGuard.ts` — pemeriksaan host pada panggilan penyedia dan target webhook; modenya berasal dari `src/shared/network/outboundUrlGuardPolicy.ts` (flag dalam `docs/reference/ENVIRONMENT.md`)
+- Validasi lingkungan runtime: `src/lib/env/runtimeEnv.ts` — skema Zod untuk semua variabel lingkungan, yang ditampilkan sebagai kesalahan/peringatan saat startup
 - Token sinkronisasi: `src/lib/db/syncTokens.ts` — token dengan cakupan tertentu untuk endpoint pengunduhan bundel konfigurasi; didukung oleh tabel SQLite `sync_tokens` (migrasi `024_create_sync_tokens.sql`)
-- Autentikasi handshake WebSocket: `src/lib/ws/handshake.ts` — memvalidasi permintaan peningkatan WS melalui kunci API atau cookie sesi
+- Autentikasi handshake WebSocket: `src/lib/ws/handshake.ts` — memvalidasi permintaan upgrade WS melalui kunci API atau cookie sesi
+- Autentikasi WebSocket dasbor langsung: `src/server/ws/liveServer.ts` — sidecar (port `LIVE_WS_PORT`) menerima cookie sesi dasbor atau kunci API Bearer yang memiliki cakupan pengelolaan (`manage`/`admin`); kunci khusus inferensi ditolak. Endpoint penerbit internal `POST /__omniroute_event` hanya menerima peer loopback jika tidak terdapat header lompatan proksi (`x-forwarded-*`, `x-real-ip`, `forwarded`, `via`)
 
 ## 5) Sinkronisasi Cloud
 
@@ -1092,11 +1093,11 @@ kompatibilitas lama. Kontrak runtime saat ini menggunakan:
 - migrasi skema SQLite dan hook peningkatan otomatis saat startup
 - jalur kompatibilitas migrasi JSON lama → SQLite
 
-## 6) Pelindung SSRF / URL Keluar
+## 6) SSRF / Perlindungan URL Keluar
 
-- `src/shared/network/outboundUrlGuard.ts` memblokir semua URL target privat/loopback/link-local sebelum mencapai eksekutor penyedia
-- Rute penemuan dan validasi model penyedia menggunakan `src/shared/network/safeOutboundFetch.ts` yang menerapkan pelindung sebelum setiap permintaan keluar
-- Kesalahan pelindung ditampilkan sebagai `URL_GUARD_BLOCKED` dengan HTTP 422 dan dicatat ke jejak audit kepatuhan melalui `providerAudit.ts`
+- `BaseExecutor.assertOutboundUrlAllowed` (`open-sse/executors/base.ts`) menerapkan `src/shared/network/outboundUrlGuard.ts` pada permintaan chat yang dikirim melalui `BaseExecutor.execute()`. Dalam mode khusus publik (`OMNIROUTE_ALLOW_LOCAL_PROVIDER_URLS=false` dengan flag privat dinonaktifkan), fungsi ini memblokir host privat dan loopback serta 169.254.0.0/16; dalam semua mode lainnya, fungsi ini memblokir host metadata cloud. Fungsi ini memeriksa hostname atau literal IP sebagaimana dituliskan, sebelum pencarian DNS apa pun. Penyedia lokal bawaan tidak menjalani pemeriksaan ini.
+- Rute penemuan dan validasi model penyedia menggunakan `src/shared/network/safeOutboundFetch.ts`, yang menerapkan perlindungan sebelum setiap permintaan keluar
+- Error perlindungan ditampilkan sebagai `URL_GUARD_BLOCKED` dengan HTTP 503 (`getSafeOutboundFetchErrorStatus`; rute penemuan model mengembalikan 400), dan pemblokiran SSRF yang sebenarnya selama validasi dicatat ke jejak audit sebagai peristiwa `provider.validation.ssrf_blocked`
 
 ## Observabilitas dan Sinyal Operasional
 

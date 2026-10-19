@@ -69,3 +69,11 @@ When the connected schema advertises `include_query_parameter_names`, select
 it in the view for distinct observed names with original record ordinals. Query
 values are omitted; the names establish neither required parameters nor a
 complete server schema. Keep the original parent Evidence for exact URLs.
+
+Use `inspect_analysis_view` with `view: {kind: "environment-manifest"}` on the
+same retained HAR Evidence to project the primary origin's request lines into
+named tools with path templates, parameters, observed query names, value-free
+body shapes and record pointers for an agent environment. Opt into
+`template_rules` only when recorded identifiers need them; every template,
+parameter and merged sibling is an inference, no header, cookie or body value is
+copied, and the three stated unknowns stay unresolved.

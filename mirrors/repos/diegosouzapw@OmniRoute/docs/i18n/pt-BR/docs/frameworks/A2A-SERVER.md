@@ -146,29 +146,29 @@ curl -X POST http://localhost:20128/a2a \
 
 ---
 
-## Habilidades Disponíveis
+## Habilidades disponíveis
 
-O OmniRoute disponibiliza 6 habilidades A2A conectadas em `src/lib/a2a/taskExecution.ts::A2A_SKILL_HANDLERS`. Cada módulo de habilidade está localizado em `src/lib/a2a/skills/`.
+O OmniRoute expõe 6 habilidades A2A conectadas em `src/lib/a2a/taskExecution.ts::A2A_SKILL_HANDLERS`. Cada módulo de habilidade está localizado em `src/lib/a2a/skills/`.
 
-| Habilidade               | ID                   | Descrição                                                                                                                                                                                     | Tags                              | Exemplos                                                |
-| :----------------------- | :------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :-------------------------------- | :------------------------------------------------------ |
-| Roteamento Inteligente   | `smart-routing`      | Encaminha um prompt pelo provedor/combo ideal usando o mecanismo de combos + pontuação do OmniRoute                                                                                           | roteamento, provedores            | "Encaminhe este prompt pelo melhor modelo"              |
-| Gerenciamento de Cotas   | `quota-management`   | Informa o estado da cota por provedor e ajuda os chamadores a decidir quando limitar/trocar                                                                                                   | cota, provedores                  | "Verifique a cota da anthropic"                         |
-| Descoberta de Provedores | `provider-discovery` | Lista os provedores instalados com recursos, indicadores de nível gratuito e status do OAuth                                                                                                  | provedores, descoberta            | "Quais provedores estão disponíveis?"                   |
-| Análise de Custos        | `cost-analysis`      | Estima o custo de uma solicitação/conversa com base no catálogo + uso recente                                                                                                                 | custo, uso                        | "Estime o custo desta conversa"                         |
-| Relatório de Integridade | `health-report`      | Agrega o estado do disjuntor, do período de espera e do bloqueio por provedor                                                                                                                 | integridade, resiliência          | "Mostre o status de integridade de todos os provedores" |
-| Listar Recursos          | `list-capabilities`  | Retorna o catálogo completo de 45 entradas de Habilidades do Agente (23 de API + 21 de CLI + 1 de configuração) como uma tabela markdown com URLs brutas de SKILL.md para injeção de contexto | catálogo, descoberta, habilidades | "Liste todos os recursos do OmniRoute"                  |
+| Habilidade               | ID                   | Descrição                                                                                                                                                                                  | Tags                              | Exemplos                                        |
+| :----------------------- | :------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :-------------------------------- | :---------------------------------------------- |
+| Roteamento inteligente   | `smart-routing`      | Encaminha um prompt pelo provedor/combo ideal usando o mecanismo de combos e a pontuação do OmniRoute                                                                                      | roteamento, provedores            | "Encaminhe este prompt pelo melhor modelo"      |
+| Gerenciamento de cotas   | `quota-management`   | Informa o estado da cota por provedor e ajuda os chamadores a decidir quando limitar ou trocar                                                                                             | cota, provedores                  | "Verifique a cota da anthropic"                 |
+| Descoberta de provedores | `provider-discovery` | Lista os provedores instalados com seus recursos, indicadores de camada gratuita e status do OAuth                                                                                         | provedores, descoberta            | "Quais provedores estão disponíveis?"           |
+| Análise de custos        | `cost-analysis`      | Estima o custo de uma solicitação/conversa com base no catálogo e no uso recente                                                                                                           | custo, uso                        | "Estime o custo desta conversa"                 |
+| Relatório de integridade | `health-report`      | Agrega o estado do disjuntor, do período de espera e do bloqueio por provedor                                                                                                              | integridade, resiliência          | "Mostre o status de integridade dos provedores" |
+| Listar recursos          | `list-capabilities`  | Retorna o catálogo completo de 45 entradas de Habilidades do Agente (23 de API + 21 de CLI + 1 de configuração) como uma tabela markdown com URLs SKILL.md brutas para injeção de contexto | catálogo, descoberta, habilidades | "Liste todos os recursos do OmniRoute"          |
 
-> O Cartão do Agente deve ser mantido alinhado com o catálogo ativo de 372 provedores; as contagens de provedores e os metadados de gratuidade/sem autenticação são obtidos do registro em tempo de execução.
+> O Cartão do Agente deve ser mantido alinhado ao catálogo ativo de 374 provedores; as contagens de provedores e os metadados de gratuidade/ausência de autenticação são obtidos do registro em tempo de execução.
 
-### Detalhes da Habilidade `list-capabilities`
+### Detalhes da habilidade `list-capabilities`
 
-A habilidade `list-capabilities` é particularmente útil para agentes externos que precisam descobrir o que o OmniRoute disponibiliza antes de enviar chamadas de API. Ela retorna um artefato de tabela markdown estruturada:
+A habilidade `list-capabilities` é particularmente útil para agentes externos que precisam descobrir o que o OmniRoute expõe antes de enviar chamadas de API. Ela retorna um artefato estruturado em forma de tabela markdown:
 
 ```
-| ID | Nome | Categoria | Área | Endpoints/Comandos | URL Bruta |
+| ID | Nome | Categoria | Área | Endpoints/Comandos | URL bruta |
 | --- | --- | --- | --- | --- | --- |
-| omni-auth | Autenticação e Sessões | api | auth | POST /api/auth/login, ... | https://raw.githubusercontent.com/... |
+| omni-auth | Autenticação e sessões | api | autenticação | POST /api/auth/login, ... | https://raw.githubusercontent.com/... |
 ...
 ```
 

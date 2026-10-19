@@ -12,21 +12,29 @@ not enable Apocalypse Mode, query the Kiwix catalog, or store article text.
 Open the **☢ Apocalypse Mode** link beside **Support** in the Settings header to
 opt in.
 
-On supported Chromium browsers, WebBrain VL 2 450M is an optional local vision fallback.
-Apocalypse Mode never enables or downloads it. The dedicated **Use local
-fallback** control in **Settings → Assistive Models → Vision** checks WebGPU support,
-records explicit consent, and starts caching the approximately 810 MB model
-from Hugging Face. The download continues in the background, but screenshot
-operations report its status and never wait for it. Wikipedia archives still
-require their own confirmation. The default local **text** model is Compass
+On supported Chromium browsers, local vision is optional and has two
+in-browser models: WebBrain VL 2 450M and Ternary Bonsai 2 2B Vision. The
+**Vision Model** card here and **Settings → Assistive Models → Vision** share
+one choice: **Auto** (the default), either model, or **Off**. Auto uses Ternary
+Bonsai 2 2B Vision once it is downloaded and is off until then. When the
+selected Text Model is Ternary Bonsai 2 2B Vision, the card says so: that model
+already reads images, so there is nothing more to download. Apocalypse Mode
+never enables or downloads a vision model. A Bonsai download is the chat
+preset's own transfer and starts only from a click on **Download** (here or in
+Settings). WebBrain VL 2 450M first needs the explicit consent step in Settings
+→ Assistive Models → Vision, which checks WebGPU support, records consent and
+starts caching the approximately 810 MB model from Hugging Face. Downloads
+continue in the background, but screenshot operations report their status and
+never wait for them. Wikipedia archives still require their own confirmation.
+The default local **text** model is Compass
 Tiny v2.1 (`webbrain-one/webbrain-compass-tiny-v2.1`, about 1.87 GB, 32k
 context window); the picker also offers Ternary Bonsai 2 2B Vision. The other
 Bonsai 2 presets ship but are hidden from the pickers for now. The selected model's download starts automatically when Apocalypse
 Mode is enabled. Once downloaded,
 Compass works without Apocalypse Mode enabled: it is selectable as a chat
 provider under Settings → Providers and through the standalone chat control.
-Disabling
-local vision preserves its cache and any configured remote vision provider.
+Turning local vision off (or leaving WebBrain VL 2 450M for another choice)
+preserves its cache and any configured remote vision provider.
 
 Archive language is selected independently from WebBrain's interface language.
 The management page reads Kiwix's current OPDS catalog and offers a language plus

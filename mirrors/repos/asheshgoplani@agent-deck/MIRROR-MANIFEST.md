@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `asheshgoplani/agent-deck` — 26 default patterns, 0 followed patterns, 67 file(s) materialized.
+Mirror of `asheshgoplani/agent-deck` — 26 default patterns, 0 followed patterns, 69 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `asheshgoplani/agent-deck` — 26 default patterns, 0 followed pattern
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 67 |
+| Files         | 69 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -86,46 +86,48 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 25 | ✓ | [`skills/agent-deck/scripts/goal/manager.py`](skills/agent-deck/scripts/goal/manager.py) |
 | 26 | ✓ | [`skills/agent-deck/scripts/goal/prompts/worker.md`](skills/agent-deck/scripts/goal/prompts/worker.md) |
 | 27 | ✓ | [`skills/agent-deck/scripts/goal/tests/test_manager.py`](skills/agent-deck/scripts/goal/tests/test_manager.py) |
-| 28 | ✓ | [`skills/agent-deck/scripts/goal/tests/test_worker_prompt.py`](skills/agent-deck/scripts/goal/tests/test_worker_prompt.py) |
-| 29 | ✓ | [`skills/agent-deck/scripts/launch-subagent.sh`](skills/agent-deck/scripts/launch-subagent.sh) |
-| 30 | ✓ | [`skills/agent-deck/scripts/self-improvement/analyze-all-conductors.sh`](skills/agent-deck/scripts/self-improvement/analyze-all-conductors.sh) |
-| 31 | ✓ | [`skills/agent-deck/scripts/self-improvement/build_manifest.py`](skills/agent-deck/scripts/self-improvement/build_manifest.py) |
-| 32 | ✓ | [`skills/agent-deck/scripts/self-improvement/distill.py`](skills/agent-deck/scripts/self-improvement/distill.py) |
-| 33 | ✓ | [`skills/agent-deck/scripts/self-improvement/file_issue.py`](skills/agent-deck/scripts/self-improvement/file_issue.py) |
-| 34 | ✓ | [`skills/agent-deck/scripts/self-improvement/file-issues.sh`](skills/agent-deck/scripts/self-improvement/file-issues.sh) |
-| 35 | ✓ | [`skills/agent-deck/scripts/self-improvement/list_candidates.py`](skills/agent-deck/scripts/self-improvement/list_candidates.py) |
-| 36 | ✓ | [`skills/agent-deck/scripts/self-improvement/prompts/analyzer.md`](skills/agent-deck/scripts/self-improvement/prompts/analyzer.md) |
-| 37 | ✓ | [`skills/agent-deck/scripts/self-improvement/prompts/auditor.md`](skills/agent-deck/scripts/self-improvement/prompts/auditor.md) |
-| 38 | ✓ | [`skills/agent-deck/scripts/self-improvement/prompts/issue-drafter.md`](skills/agent-deck/scripts/self-improvement/prompts/issue-drafter.md) |
-| 39 | ✓ | [`skills/agent-deck/scripts/self-improvement/prompts/sanitizer.md`](skills/agent-deck/scripts/self-improvement/prompts/sanitizer.md) |
-| 40 | ✓ | [`skills/agent-deck/scripts/self-improvement/prompts/synthesizer.md`](skills/agent-deck/scripts/self-improvement/prompts/synthesizer.md) |
-| 41 | ✓ | [`skills/agent-deck/scripts/self-improvement/rules.json`](skills/agent-deck/scripts/self-improvement/rules.json) |
-| 42 | ✓ | [`skills/agent-deck/scripts/self-improvement/run-analyzers.sh`](skills/agent-deck/scripts/self-improvement/run-analyzers.sh) |
-| 43 | ✓ | [`skills/agent-deck/scripts/self-improvement/sanitize.py`](skills/agent-deck/scripts/self-improvement/sanitize.py) |
-| 44 | ✓ | [`skills/agent-deck/SKILL.md`](skills/agent-deck/SKILL.md) |
-| 45 | ✓ | [`skills/deck-repro/evals/evals.json`](skills/deck-repro/evals/evals.json) |
-| 46 | ✓ | [`skills/deck-repro/references/contract.md`](skills/deck-repro/references/contract.md) |
-| 47 | ✓ | [`skills/deck-repro/scripts/run.py`](skills/deck-repro/scripts/run.py) |
-| 48 | ✓ | [`skills/deck-repro/scripts/test_validate.py`](skills/deck-repro/scripts/test_validate.py) |
-| 49 | ✓ | [`skills/deck-repro/scripts/validate.py`](skills/deck-repro/scripts/validate.py) |
-| 50 | ✓ | [`skills/deck-repro/SKILL.md`](skills/deck-repro/SKILL.md) |
-| 51 | ✓ | [`skills/deck-retro/evals/evals.json`](skills/deck-retro/evals/evals.json) |
-| 52 | ✓ | [`skills/deck-retro/references/config.example.json`](skills/deck-retro/references/config.example.json) |
-| 53 | ✓ | [`skills/deck-retro/references/metrics.md`](skills/deck-retro/references/metrics.md) |
-| 54 | ✓ | [`skills/deck-retro/scripts/measure.py`](skills/deck-retro/scripts/measure.py) |
-| 55 | ✓ | [`skills/deck-retro/scripts/test_measure.py`](skills/deck-retro/scripts/test_measure.py) |
-| 56 | ✓ | [`skills/deck-retro/scripts/wakes.py`](skills/deck-retro/scripts/wakes.py) |
-| 57 | ✓ | [`skills/deck-retro/SKILL.md`](skills/deck-retro/SKILL.md) |
-| 58 | ✓ | [`skills/fleet/evals/evals.json`](skills/fleet/evals/evals.json) |
-| 59 | ✓ | [`skills/fleet/evals/RUNNER.md`](skills/fleet/evals/RUNNER.md) |
-| 60 | ✓ | [`skills/fleet/SKILL.md`](skills/fleet/SKILL.md) |
-| 61 | ✓ | [`skills/session-share/evals/evals.json`](skills/session-share/evals/evals.json) |
-| 62 | ✓ | [`skills/session-share/evals/RUNNER.md`](skills/session-share/evals/RUNNER.md) |
-| 63 | ✓ | [`skills/session-share/scripts/export.sh`](skills/session-share/scripts/export.sh) |
-| 64 | ✓ | [`skills/session-share/scripts/import.sh`](skills/session-share/scripts/import.sh) |
-| 65 | ✓ | [`skills/session-share/scripts/utils.sh`](skills/session-share/scripts/utils.sh) |
-| 66 | ✓ | [`skills/session-share/SKILL.md`](skills/session-share/SKILL.md) |
-| 67 | ✓ | [`skills/session-share/tests/test_export_895_regression.sh`](skills/session-share/tests/test_export_895_regression.sh) |
+| 28 | ✓ | [`skills/agent-deck/scripts/goal/tests/test_progress_gate.py`](skills/agent-deck/scripts/goal/tests/test_progress_gate.py) |
+| 29 | ✓ | [`skills/agent-deck/scripts/goal/tests/test_run_budget.py`](skills/agent-deck/scripts/goal/tests/test_run_budget.py) |
+| 30 | ✓ | [`skills/agent-deck/scripts/goal/tests/test_worker_prompt.py`](skills/agent-deck/scripts/goal/tests/test_worker_prompt.py) |
+| 31 | ✓ | [`skills/agent-deck/scripts/launch-subagent.sh`](skills/agent-deck/scripts/launch-subagent.sh) |
+| 32 | ✓ | [`skills/agent-deck/scripts/self-improvement/analyze-all-conductors.sh`](skills/agent-deck/scripts/self-improvement/analyze-all-conductors.sh) |
+| 33 | ✓ | [`skills/agent-deck/scripts/self-improvement/build_manifest.py`](skills/agent-deck/scripts/self-improvement/build_manifest.py) |
+| 34 | ✓ | [`skills/agent-deck/scripts/self-improvement/distill.py`](skills/agent-deck/scripts/self-improvement/distill.py) |
+| 35 | ✓ | [`skills/agent-deck/scripts/self-improvement/file_issue.py`](skills/agent-deck/scripts/self-improvement/file_issue.py) |
+| 36 | ✓ | [`skills/agent-deck/scripts/self-improvement/file-issues.sh`](skills/agent-deck/scripts/self-improvement/file-issues.sh) |
+| 37 | ✓ | [`skills/agent-deck/scripts/self-improvement/list_candidates.py`](skills/agent-deck/scripts/self-improvement/list_candidates.py) |
+| 38 | ✓ | [`skills/agent-deck/scripts/self-improvement/prompts/analyzer.md`](skills/agent-deck/scripts/self-improvement/prompts/analyzer.md) |
+| 39 | ✓ | [`skills/agent-deck/scripts/self-improvement/prompts/auditor.md`](skills/agent-deck/scripts/self-improvement/prompts/auditor.md) |
+| 40 | ✓ | [`skills/agent-deck/scripts/self-improvement/prompts/issue-drafter.md`](skills/agent-deck/scripts/self-improvement/prompts/issue-drafter.md) |
+| 41 | ✓ | [`skills/agent-deck/scripts/self-improvement/prompts/sanitizer.md`](skills/agent-deck/scripts/self-improvement/prompts/sanitizer.md) |
+| 42 | ✓ | [`skills/agent-deck/scripts/self-improvement/prompts/synthesizer.md`](skills/agent-deck/scripts/self-improvement/prompts/synthesizer.md) |
+| 43 | ✓ | [`skills/agent-deck/scripts/self-improvement/rules.json`](skills/agent-deck/scripts/self-improvement/rules.json) |
+| 44 | ✓ | [`skills/agent-deck/scripts/self-improvement/run-analyzers.sh`](skills/agent-deck/scripts/self-improvement/run-analyzers.sh) |
+| 45 | ✓ | [`skills/agent-deck/scripts/self-improvement/sanitize.py`](skills/agent-deck/scripts/self-improvement/sanitize.py) |
+| 46 | ✓ | [`skills/agent-deck/SKILL.md`](skills/agent-deck/SKILL.md) |
+| 47 | ✓ | [`skills/deck-repro/evals/evals.json`](skills/deck-repro/evals/evals.json) |
+| 48 | ✓ | [`skills/deck-repro/references/contract.md`](skills/deck-repro/references/contract.md) |
+| 49 | ✓ | [`skills/deck-repro/scripts/run.py`](skills/deck-repro/scripts/run.py) |
+| 50 | ✓ | [`skills/deck-repro/scripts/test_validate.py`](skills/deck-repro/scripts/test_validate.py) |
+| 51 | ✓ | [`skills/deck-repro/scripts/validate.py`](skills/deck-repro/scripts/validate.py) |
+| 52 | ✓ | [`skills/deck-repro/SKILL.md`](skills/deck-repro/SKILL.md) |
+| 53 | ✓ | [`skills/deck-retro/evals/evals.json`](skills/deck-retro/evals/evals.json) |
+| 54 | ✓ | [`skills/deck-retro/references/config.example.json`](skills/deck-retro/references/config.example.json) |
+| 55 | ✓ | [`skills/deck-retro/references/metrics.md`](skills/deck-retro/references/metrics.md) |
+| 56 | ✓ | [`skills/deck-retro/scripts/measure.py`](skills/deck-retro/scripts/measure.py) |
+| 57 | ✓ | [`skills/deck-retro/scripts/test_measure.py`](skills/deck-retro/scripts/test_measure.py) |
+| 58 | ✓ | [`skills/deck-retro/scripts/wakes.py`](skills/deck-retro/scripts/wakes.py) |
+| 59 | ✓ | [`skills/deck-retro/SKILL.md`](skills/deck-retro/SKILL.md) |
+| 60 | ✓ | [`skills/fleet/evals/evals.json`](skills/fleet/evals/evals.json) |
+| 61 | ✓ | [`skills/fleet/evals/RUNNER.md`](skills/fleet/evals/RUNNER.md) |
+| 62 | ✓ | [`skills/fleet/SKILL.md`](skills/fleet/SKILL.md) |
+| 63 | ✓ | [`skills/session-share/evals/evals.json`](skills/session-share/evals/evals.json) |
+| 64 | ✓ | [`skills/session-share/evals/RUNNER.md`](skills/session-share/evals/RUNNER.md) |
+| 65 | ✓ | [`skills/session-share/scripts/export.sh`](skills/session-share/scripts/export.sh) |
+| 66 | ✓ | [`skills/session-share/scripts/import.sh`](skills/session-share/scripts/import.sh) |
+| 67 | ✓ | [`skills/session-share/scripts/utils.sh`](skills/session-share/scripts/utils.sh) |
+| 68 | ✓ | [`skills/session-share/SKILL.md`](skills/session-share/SKILL.md) |
+| 69 | ✓ | [`skills/session-share/tests/test_export_895_regression.sh`](skills/session-share/tests/test_export_895_regression.sh) |
 
 ---
 

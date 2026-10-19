@@ -12,77 +12,77 @@ _Viimati uuendatud: 2026-06-28_
 
 ## Kokkuvõte
 
-OmniRoute on Next.js-il põhinev kohalik tehisintellekti päringute marsruutimise lüüs ja juhtpaneel.
-See pakub ühtset OpenAI-ga ühilduvat lõpp-punkti (`/v1/*`) ning marsruudib liiklust mitme ülesvoolupakkuja vahel, toetades teisendamist, varuvalikuid, pääsulubade värskendamist ja kasutuse jälgimist.
+OmniRoute on Next.js-il põhinev kohalik tehisintellekti marsruutimisvärav ja juhtpaneel.
+See pakub üht OpenAI-ga ühilduvat lõpp-punkti (`/v1/*`) ning marsruudib liiklust mitme ülesvoolu teenusepakkuja vahel, toetades teisendamist, varuvariandile lülitumist, pääsutõendite värskendamist ja kasutuse jälgimist.
 
-Põhivõimekused:
+Põhivõimalused:
 
-- OpenAI-ga ühilduv API-liides CLI-dele ja tööriistadele (373 pakkujat, 150 käivitusmoodulit)
-- Päringute ja vastuste teisendamine eri pakkujate vormingute vahel
-- Mudelikombinatsioonide varuvalik (mitme mudeli järjestus)
-- Struktureeritud kombinatsioonisammud (`provider + model + connection`) koos käitusaegse järjestamisega `compositeTiers` alusel
-- Kontotaseme varuvalik (mitu kontot ühe pakkuja kohta)
-- Kvoodi eelkontroll ja kvooditeadlik P2C-konto valimine peamises vestlusvoos
-- OAuthi ja API-võtmega pakkujaühenduste haldus (27 OAuthi pakkujamoodulit)
-- Manuste genereerimine lõpp-punkti `/v1/embeddings` kaudu (18 pakkujat)
-- Piltide genereerimine lõpp-punkti `/v1/images/generations` kaudu (üle 10 pakkuja, üle 20 mudeli)
-- Heli transkribeerimine lõpp-punkti `/v1/audio/transcriptions` kaudu (18 pakkujat)
-- Tekst-kõneks teisendus lõpp-punkti `/v1/audio/speech` kaudu (24 sisseehitatud pakkujat)
-- Video genereerimine lõpp-punkti `/v1/videos/generations` kaudu (ComfyUI + SD WebUI)
-- Muusika genereerimine lõpp-punkti `/v1/music/generations` kaudu (ComfyUI)
-- Veebiotsing lõpp-punkti `/v1/search` kaudu (20 pakkujat)
-- Sisu modereerimine lõpp-punkti `/v1/moderations` kaudu
-- Ümberjärjestamine lõpp-punkti `/v1/rerank` kaudu
-- Mõtlemismärgendite (``) parsimine arutlusmudelite jaoks
+- OpenAI-ga ühilduv API-liides CLI-dele/tööriistadele (374 teenusepakkujat, 150 täiturimoodulit)
+- Päringute/vastuste teisendamine teenusepakkujate vormingute vahel
+- Mudelikombinatsioonide varuvariandid (mitme mudeli jada)
+- Struktureeritud kombinatsioonisammud (`provider + model + connection`) käitusaegse järjestamisega `compositeTiers` alusel
+- Kontotaseme varuvariandid (mitu kontot teenusepakkuja kohta)
+- Kvoodi eelkontroll ja kvooditeadlik P2C-konto valimine vestluse põhitöövoos
+- OAuthi + API-võtme põhine teenusepakkuja ühenduste haldus (27 OAuthi teenusepakkuja moodulit)
+- Manuste genereerimine `/v1/embeddings` kaudu (18 teenusepakkujat)
+- Piltide genereerimine `/v1/images/generations` kaudu (üle 10 teenusepakkuja, üle 20 mudeli)
+- Heli transkribeerimine `/v1/audio/transcriptions` kaudu (18 teenusepakkujat)
+- Tekst-kõneks teisendamine `/v1/audio/speech` kaudu (24 sisseehitatud teenusepakkujat)
+- Videote genereerimine `/v1/videos/generations` kaudu (ComfyUI + SD WebUI)
+- Muusika genereerimine `/v1/music/generations` kaudu (ComfyUI)
+- Veebiotsing `/v1/search` kaudu (20 teenusepakkujat)
+- Modereerimine `/v1/moderations` kaudu
+- Ümberjärjestamine `/v1/rerank` kaudu
+- Mõtlemismudelite mõtlemismärgendite (``) parsimine
 - Vastuste puhastamine range ühilduvuse tagamiseks OpenAI SDK-ga
-- Rollide normaliseerimine (developer→system, system→user) pakkujateülese ühilduvuse tagamiseks
+- Rollide normaliseerimine (developer→system, system→user) teenusepakkujatevahelise ühilduvuse tagamiseks
 - Struktureeritud väljundi teisendamine (json_schema → Gemini responseSchema)
-- Pakkujate, võtmete, aliaste, kombinatsioonide, seadete ja hinnastuse kohalik püsimälu (122 andmebaasimoodulit)
-- Kasutuse ja kulude jälgimine ning päringute logimine
-- Valikuline pilvesünkroonimine mitme seadme ja oleku sünkroonimiseks
-- IP-aadresside lubamis- ja blokeerimisloend API juurdepääsu juhtimiseks
-- Mõtlemiseelarve haldus (muutmata edastamine / automaatne / kohandatud / adaptiivne)
+- Teenusepakkujate, võtmete, aliaste, kombinatsioonide, sätete ja hinnastuse kohalik püsimälu (122 andmebaasimoodulit)
+- Kasutuse/kulude jälgimine ja päringute logimine
+- Valikuline pilvesünkroonimine mitme seadme/oleku sünkroonimiseks
+- IP-aadresside lubatud/blokeeritud loend API juurdepääsu juhtimiseks
+- Mõtlemiseelarve haldus (muutmata edastamine/automaatne/kohandatud/adaptiivne)
 - Globaalse süsteemiviiba sisestamine
 - Seansside jälgimine ja sõrmejäljestamine
-- Täiustatud kontopõhine kiirusepiirang koos pakkujapõhiste profiilidega
-- Kaitselüliti muster pakkujate töökindluse tagamiseks
-- Päringutulva vastane kaitse mutex-lukustusega
-- Allkirjapõhine päringute deduplikeerimise vahemälu
-- Domeenikiht: kulureeglid, varuvalikupoliitika, lukustuspoliitika
-- Konteksti edastamine: seansi üleandmise kokkuvõtted järjepidevuse säilitamiseks kontode vahetamisel
-- Domeenioleku püsimälu (SQLite'i läbikirjutusega vahemälu varuvalikute, eelarvete, lukustuste ja kaitselülitite jaoks)
-- Poliitikamootor päringute tsentraliseeritud hindamiseks (lukustus → eelarve → varuvalik)
+- Täiustatud kontopõhine kiiruse piiramine teenusepakkujapõhiste profiilidega
+- Kaitselüliti muster teenusepakkujate töökindluse tagamiseks
+- Kaitse päringutulva eest mutex-lukustusega
+- Allkirjapõhine päringute dubleerimise vältimise vahemälu
+- Domeenikiht: kulureeglid, varuvariandi poliitika, lukustuspoliitika
+- Konteksti edastus: seansi üleandmise kokkuvõtted järjepidevuse säilitamiseks kontode roteerimisel
+- Domeeni oleku püsimälu (SQLite'i läbikirjutav vahemälu varuvariantide, eelarvete, lukustuste ja kaitselülitite jaoks)
+- Poliitikamootor päringute tsentraliseeritud hindamiseks (lukustus → eelarve → varuvariant)
 - Päringute telemeetria p50/p95/p99 latentsuse koondamisega
-- Kombinatsiooni sihtmärkide telemeetria ja nende ajalooline seisund väljade `combo_execution_key` / `combo_step_id` kaudu
+- Kombinatsiooni sihtmärkide telemeetria ja kombinatsiooni sihtmärkide ajalooline seisund `combo_execution_key` / `combo_step_id` kaudu
 - Korrelatsiooni-ID (X-Request-Id) läbivaks jälgimiseks
-- Vastavusauditi logimine koos API-võtme põhise loobumisvõimalusega
+- Nõuetele vastavuse auditilogimine koos API-võtme põhise loobumisvõimalusega
 - Hindamisraamistik LLM-ide kvaliteedi tagamiseks
-- Seisundi juhtpaneel pakkujate kaitselülitite reaalajas olekuga
-- MCP-server (110 tööriista) kolme transpordiviisiga (stdio/SSE/Streamable HTTP)
-- A2A-server (JSON-RPC 2.0 + SSE) koos oskuste ja ülesannete elutsükliga
-- Mälusüsteem (eraldamine, sisestamine, otsimine, kokkuvõtete tegemine)
-- Oskuste süsteem (register, käivitaja, liivakast, sisseehitatud oskused)
-- MITM-puhverserver sertifikaatide halduse ja DNS-i käsitlusega
+- Seisundi juhtpaneel teenusepakkujate kaitselülitite reaalajas olekuga
+- MCP-server (110 tööriista) 3 transpordiviisiga (stdio/SSE/voogedastatav HTTP)
+- A2A-server (JSON-RPC 2.0 + SSE) oskuste ja ülesannete elutsükliga
+- Mälusüsteem (eraldamine, sisestamine, otsimine, kokkuvõtete loomine)
+- Oskuste süsteem (register, täitur, liivakast, sisseehitatud oskused)
+- MITM-puhverserver sertifikaatide halduse ja DNS-i käsitlemisega
 - Viibasüstide vastane vahevara
-- Viipade tihendamise konveier Cavemani, RTK, virnastatud konveierite, tihenduskombinatsioonide, keelepakettide ja analüütikaga
+- Viipade tihendamise konveier Cavemani, RTK, virnastatud konveierite, tihendamiskombinatsioonide, keelepakettide ja analüütikaga
 - ACP (Agent Communication Protocol) register
-- Modulaarsed OAuthi pakkujad (22 eraldiseisvat moodulit kataloogis `src/lib/oauth/providers/`)
-- Desinstallimise ja täieliku desinstallimise skriptid
+- Modulaarsed OAuthi teenusepakkujad (22 eraldi moodulit kataloogis `src/lib/oauth/providers/`)
+- Desinstallimise/täieliku desinstallimise skriptid
 - OAuthi keskkonna parandamise toiming
-- WebSocketi sild OpenAI-ga ühilduvate WS-klientide jaoks (`/v1/ws`)
-- Sünkroonimislubade haldus (väljastamine/tühistamine, ETag-versioonitud konfiguratsioonipaketi allalaadimine)
-- GLM Thinking (`glmt`) kui esmaklassiline pakkuja eelseadistus
-- Hübriidne lubade loendamine (pakkujapoolne `/messages/count_tokens` koos hinnangulise varumeetodiga)
-- Mudelialiaste automaatne algväärtustamine (üle 30 puhverserveriüleste dialektide normaliseeringu käivitamisel)
-- Turvaline väljaminev päringumehhanism koos SSRF-kaitse, privaatsete URL-ide blokeerimise ja seadistatavate korduskatsetega
-- Jahutusperioodi arvestavad vestluspäringute korduskatsed seadistatavate `requestRetry` ja `maxRetryIntervalSec` väärtustega
+- WebSocketi sild OpenAI-ga ühilduvatele WS-klientidele (`/v1/ws`)
+- Sünkroonimispääsutõendite haldus (väljastamine/tühistamine, ETag-versioonitud konfiguratsioonipaketi allalaadimine)
+- GLM Thinking (`glmt`) esimese klassi teenusepakkuja eelseadistus
+- Hübriidne sõnede loendamine (teenusepakkuja poolne `/messages/count_tokens` koos hinnangulise varuvariandiga)
+- Mudelialiaste automaatne algväärtustamine (üle 30 puhverserveritevahelise dialekti normaliseeringu käivitamisel)
+- Turvaline väljaminev andmehange SSRF-kaitse, privaatsete URL-ide blokeerimise ja seadistatavate korduskatsetega
+- Ooteajateadlikud vestluse korduskatsed seadistatavate `requestRetry` ja `maxRetryIntervalSec` väärtustega
 - Käituskeskkonna valideerimine Zodiga käivitamisel
-- Vastavusauditi v2 koos lehekülgjaotuse, pakkujate CRUD-sündmuste ja SSRF-i tõttu blokeeritud valideerimiste logimisega
+- Nõuetele vastavuse audit v2 leheküljestamise, teenusepakkujate CRUD-sündmuste ja SSRF-i tõttu blokeeritud valideerimise logimisega
 
 Peamine käitusmudel:
 
-- Next.js-i rakenduse marsruudid kataloogis `src/app/api/*` rakendavad nii juhtpaneeli API-sid kui ka ühilduvus-API-sid
-- Jagatud SSE- ja marsruutimistuumik kataloogides `src/sse/*` + `open-sse/*` haldab pakkujate käivitamist, teisendamist, voogedastust, varuvalikuid ja kasutust
+- Next.js-i rakenduse marsruudid kataloogis `src/app/api/*` teostavad nii juhtpaneeli API-sid kui ka ühilduvus-API-sid
+- Jagatud SSE/marsruutimise tuum kataloogides `src/sse/*` + `open-sse/*` haldab teenusepakkujate käitamist, teisendamist, voogedastust, varuvariantidele lülitumist ja kasutust
 
 ## Viitediagrammid
 
@@ -260,19 +260,19 @@ Haldusdomeenid:
 
 ## 2) SSE + tõlketuum
 
-Põhivoo moodulid:
+Põhilise voo moodulid:
 
 - Sisenemispunkt: `src/sse/handlers/chat.ts`
-- Põhivoo orkestreerimine: `open-sse/handlers/chatCore.ts`
+- Põhiorkestreerimine: `open-sse/handlers/chatCore.ts`
 - Pakkuja käivitamise adapterid: `open-sse/executors/*`
 - Vormingu tuvastamine / pakkuja konfiguratsioon: `open-sse/services/provider.ts`
-- Mudeli parsimine / lahendamine: `src/sse/services/model.ts`, `open-sse/services/model.ts`
+- Mudeli parsimine/lahendamine: `src/sse/services/model.ts`, `open-sse/services/model.ts`
 - Konto varuvariandi loogika: `open-sse/services/accountFallback.ts`
 - Tõlkeregister: `open-sse/translator/index.ts`
 - Voo teisendused: `open-sse/utils/stream.ts`, `open-sse/utils/streamHandler.ts`
-- Kasutusandmete eraldamine / normaliseerimine: `open-sse/utils/usageTracking.ts`
+- Kasutusandmete eraldamine/normaliseerimine: `open-sse/utils/usageTracking.ts`
 - Mõtlemissildi parser: `open-sse/utils/thinkTagParser.ts`
-- Manustamispäringu töötleja: `open-sse/handlers/embeddings.ts`
+- Manustamispäringute töötleja: `open-sse/handlers/embeddings.ts`
 - Manustamispakkujate register: `open-sse/config/embeddingRegistry.ts`
 - Pildiloome töötleja: `open-sse/handlers/imageGeneration.ts`
 - Pildipakkujate register: `open-sse/config/imageRegistry.ts`
@@ -281,32 +281,32 @@ Põhivoo moodulid:
 
 Teenused (äriloogika):
 
-- Kontode valimine / hindamine: `open-sse/services/accountSelector.ts`
+- Konto valimine/hindamine: `open-sse/services/accountSelector.ts`
 - Konteksti elutsükli haldus: `open-sse/services/contextManager.ts`
 - IP-filtri jõustamine: `open-sse/services/ipFilter.ts`
 - Seansside jälgimine: `open-sse/services/sessionManager.ts`
 - Päringute duplikaatide eemaldamine: `open-sse/services/signatureCache.ts`
 - Süsteemiviiba sisestamine: `open-sse/services/systemPrompt.ts`
 - Mõtlemiseelarve haldus: `open-sse/services/thinkingBudget.ts`
-- Metamärkidega mudelite marsruutimine: `open-sse/services/wildcardRouter.ts`
-- Päringusageduse piirangute haldus: `open-sse/services/rateLimitManager.ts`
+- Metamärgiga mudelite marsruutimine: `open-sse/services/wildcardRouter.ts`
+- Kiirusepiirangute haldus: `open-sse/services/rateLimitManager.ts`
 - Kaitselüliti: `src/shared/utils/circuitBreaker.ts`
-- Konteksti üleandmine: `open-sse/services/contextHandoff.ts` — üleandmise kokkuvõtte genereerimine ja sisestamine konteksti edastamise strateegia jaoks
+- Konteksti üleandmine: `open-sse/services/contextHandoff.ts` — üleandmiskokkuvõtte loomine ja sisestamine konteksti edastamise strateegia jaoks
 - Tihendamine: `open-sse/services/compression/*` — ennetav tihendamine enne pakkujale tõlkimist;
-  hõlmab Cavemani reegleid, RTK-filtreid, virnastatud konveiereid, tihenduskombinatsioone, statistikat ja valideerimist
+  hõlmab Cavemani reegleid, RTK filtreid, virnastatud konveiereid, tihenduskombinatsioone, statistikat ja valideerimist
 - Codexi kvoodi hankija: `open-sse/services/codexQuotaFetcher.ts` — hangib Codexi kvoodi konteksti edastamise üleandmisotsuste jaoks
-- Jahtumisaega arvestav korduskatse: `src/sse/services/cooldownAwareRetry.ts` — mudelipõhised jahtumisaja korduskatsed seadistatavate väärtustega `requestRetry` / `maxRetryIntervalSec`
+- Jahutusperioodi arvestav korduskatse: `src/sse/services/cooldownAwareRetry.ts` — mudelipõhised jahutusperioodiga korduskatsed seadistatavate `requestRetry` / `maxRetryIntervalSec` väärtustega
 - Turvaline väljaminev päring: `src/shared/network/safeOutboundFetch.ts` — kaitstud pakkuja-/mudelipäring SSRF-kaitse, privaatsete URL-ide blokeerimise, korduskatsete ja ajalõpuga
-- Väljaminevate URL-ide kaitse: `src/shared/network/outboundUrlGuard.ts` — pakkujate URL-ide hostikontrollid; `src/shared/network/outboundUrlGuardPolicy.ts` valib režiimi muutujate `OMNIROUTE_ALLOW_LOCAL_PROVIDER_URLS`, `OMNIROUTE_ALLOW_PRIVATE_PROVIDER_URLS` ja nende töölaual olevate lülitite põhjal (vt `docs/reference/ENVIRONMENT.md`)
-- Pakkuja päringute vaikeväärtused: `open-sse/services/providerRequestDefaults.ts` — pakkuja taseme `maxTokens`, `temperature`, `thinkingBudgetTokens` vaikeväärtused
-- GLM-i pakkuja konstandid: `open-sse/config/glmProvider.ts` — jagatud GLM-i mudelid, kvoodi-URL-id ning GLMT ajalõpp/vaikeväärtused
-- Antigravity ülesvool: `open-sse/config/antigravityUpstream.ts` — baas-URL-i ja tuvastustee konstandid
+- Väljaminevate URL-ide kaitse: `src/shared/network/outboundUrlGuard.ts` — pakkujate URL-ide hostikontrollid; `src/shared/network/outboundUrlGuardPolicy.ts` valib režiimi muutujate `OMNIROUTE_ALLOW_LOCAL_PROVIDER_URLS`, `OMNIROUTE_ALLOW_PRIVATE_PROVIDER_URLS` ja nende juhtpaneelil olevate lülitite põhjal (vt `docs/reference/ENVIRONMENT.md`)
+- Pakkujapäringu vaikeväärtused: `open-sse/services/providerRequestDefaults.ts` — pakkujataseme `maxTokens`, `temperature`, `thinkingBudgetTokens` vaikeväärtused
+- GLM-i pakkuja konstandid: `open-sse/config/glmProvider.ts` — ühised GLM-i mudelid, kvoodi-URL-id ning GLMT ajalõpu- ja vaikeväärtused
+- Antigravity ülesvooluteenus: `open-sse/config/antigravityUpstream.ts` — baas-URL-i ja tuvastustee konstandid
 - Codexi kliendi konstandid: `open-sse/config/codexClient.ts` — versioonitud kasutajaagendi ja kliendiversiooni väärtused
-- Mudelialiaste algandmed: `src/lib/modelAliasSeed.ts` — lisab käivitamisel üle 30 puhverserveriülest dialektialiase
+- Mudelialiase lähteandmed: `src/lib/modelAliasSeed.ts` — lisab käivitamisel üle 30 eri puhverserveridialekti hõlmava aliase
 
 Domeenikihi moodulid:
 
-- Kulureeglid / eelarved: `src/domain/costRules.ts`
+- Kulureeglid/-eelarved: `src/domain/costRules.ts`
 - Varuvariandi poliitika: `src/domain/fallbackPolicy.ts`
 - Kombinatsioonide lahendaja: `src/domain/comboResolver.ts`
 - Lukustuspoliitika: `src/domain/lockoutPolicy.ts`
@@ -314,17 +314,17 @@ Domeenikihi moodulid:
 - Veakoodide kataloog: `src/shared/constants/errorCodes.ts`
 - Päringu ID: `src/shared/utils/requestId.ts`
 - Päringu ajalõpp: `src/shared/utils/fetchTimeout.ts`
-- Päringu telemeetria: `src/shared/utils/requestTelemetry.ts`
-- Vastavus / audit: `src/lib/compliance/index.ts`
+- Päringute telemeetria: `src/shared/utils/requestTelemetry.ts`
+- Vastavus/audit: `src/lib/compliance/index.ts`
 - Hindamiste käitaja: `src/lib/evals/evalRunner.ts`
-- Domeenioleku püsisalvestus: `src/lib/db/domainState.ts` — SQLite CRUD varuahelate, eelarvete, kuluajaloo, lukustusoleku ja kaitselülitite jaoks
+- Domeeni oleku püsiv salvestamine: `src/lib/db/domainState.ts` — SQLite CRUD varuahelate, eelarvete, kuluajaloo, lukustusoleku ja kaitselülitite jaoks
 
-OAuth-pakkujate moodulid (27 eraldi faili kataloogis `src/lib/oauth/providers/`):
+OAuthi pakkujamoodulid (27 eraldi faili kataloogis `src/lib/oauth/providers/`):
 
 - Registri indeks: `src/lib/oauth/providers/index.ts`
 - Üksikud pakkujad: `agy.ts`, `antigravity.ts`, `claude.ts`, `cline.ts`, `codebuddy-cn.ts`, `codebuddy-intl.ts`, `codex.ts`, `cursor.ts`, `devin-desktop.ts`, `ghe-copilot.ts`, `github.ts`, `gitlab-duo.ts`, `grok-cli-oauth.ts`, `grok-cli.ts`, `kilocode.ts`, `kimi-coding.ts`, `kiro.ts`, `muse-code.ts`, `openference.ts`, `qoder.ts`, `trae.ts`, `workbuddy.ts`, `xai-oauth.ts`, `zed-hosted.ts`, `zed.ts`
-- Jagatud abifunktsioonid: `codebuddyDeviceAuth.ts` (CodeBuddy CN/intl seadmevoog), `museCodeDeviceResponse.ts`
-- Õhuke ümbris: `src/lib/oauth/providers.ts` — reekspordib üksikutest moodulitest
+- Ühised abifunktsioonid: `codebuddyDeviceAuth.ts` (CodeBuddy CN/intl seadmevoog), `museCodeDeviceResponse.ts`
+- Õhuke ümbrismoodul: `src/lib/oauth/providers.ts` — reekspordib üksikutest moodulitest
 
 ## 5) Manustatud teenused (v3.8.4)
 
@@ -536,16 +536,17 @@ Domeenioleku andmebaas (SQLite):
 - Tabelid (loodud failis `src/lib/db/core.ts`): `domain_fallback_chains`, `domain_budgets`, `domain_cost_history`, `domain_lockout_state`, `domain_circuit_breakers`
 - Läbikirjutava vahemälu (write-through cache) muster: mällu paigutatud Map-id on käitusajal autoriteetsed; muudatused kirjutatakse sünkroonselt SQLite'i; olek taastatakse andmebaasist külmkäivitusel
 
-## 4) Autentimise ja turvalisuse pinnad
+## 4) Autentimine + turvapinnad
 
-- Töölaua küpsisepõhine autentimine: `src/proxy.ts`, `src/app/api/auth/login/route.ts`
-- API-võtme genereerimine/kontrollimine: `src/shared/utils/apiKey.ts`
-- Pakkuja saladused salvestatakse `providerConnections` kirjetesse
-- Väljuva liikluse proksitugi läbi `open-sse/utils/proxyFetch.ts` (keskkonnamuutujad) ja `open-sse/utils/networkProxy.ts` (konfigureeritav pakkuja kaupa või globaalselt)
-- SSRF / väljuva URL-i kaitse: `src/shared/network/outboundUrlGuard.ts` — blokeerib privaatsed/loopback/link-local vahemikud kõikide pakkuja kõnede puhul
-- Käitusaja keskkonnamuutujate valideerimine: `src/lib/env/runtimeEnv.ts` — Zod-skeem kõigi keskkonnamuutujate jaoks, mis kuvatakse käivituse vigade/hoiatustena
-- Sünkroonimistoetused (sync tokens): `src/lib/db/syncTokens.ts` — piiratud ulatusega toetused konfiguratsioonipaketi allalaadimise lõpp-punktide jaoks; toetatud `sync_tokens` SQLite tabeliga (migratsioon `024_create_sync_tokens.sql`)
-- WebSocketi käepigistuse (handshake) autentimine: `src/lib/ws/handshake.ts` — valideerib WS-i uuenduspäringuid API-võtme või seansiküpsise abil
+- Juhtpaneeli küpsisepõhine autentimine: `src/proxy.ts`, `src/app/api/auth/login/route.ts`
+- API-võtmete genereerimine/kontrollimine: `src/shared/utils/apiKey.ts`
+- Teenusepakkujate saladused talletatakse `providerConnections` kirjetes
+- Väljamineva puhverserveri tugi `open-sse/utils/proxyFetch.ts` (keskkonnamuutujad) ja `open-sse/utils/networkProxy.ts` (seadistatav teenusepakkuja kohta või globaalselt) kaudu
+- SSRF-i / väljaminevate URL-ide kaitse: `src/shared/network/outboundUrlGuard.ts` — teenusepakkuja päringute ja veebihaagi sihtmärkide hostide kontroll; režiim pärineb failist `src/shared/network/outboundUrlGuardPolicy.ts` (lipud failis `docs/reference/ENVIRONMENT.md`)
+- Käitusaegsete keskkonnamuutujate valideerimine: `src/lib/env/runtimeEnv.ts` — Zodi skeem kõigi keskkonnamuutujate jaoks; vead ja hoiatused kuvatakse käivitamisel
+- Sünkroonimistõendid: `src/lib/db/syncTokens.ts` — piiratud ulatusega tõendid konfiguratsioonipakettide allalaadimise lõpp-punktide jaoks; neid toetab SQLite'i tabel `sync_tokens` (migratsioon `024_create_sync_tokens.sql`)
+- WebSocketi käepigistuse autentimine: `src/lib/ws/handshake.ts` — valideerib WS-i täiendamise päringuid API-võtme või seansiküpsise abil
+- Juhtpaneeli reaalajas WebSocketi autentimine: `src/server/ws/liveServer.ts` — külgprotsess (port `LIVE_WS_PORT`) aktsepteerib juhtpaneeli seansiküpsist või Beareri API-võtit, millel on haldusulatus (`manage`/`admin`); ainult inferentsiks mõeldud võtmetest keeldutakse. Selle sisemine avaldamise lõpp-punkt `POST /__omniroute_event` aktsepteerib tagasisideaadressi kaudu ühenduvaid partnereid ainult siis, kui puudub puhverserveri hüpet tähistav päis (`x-forwarded-*`, `x-real-ip`, `forwarded`, `via`)
 
 ## 5) Pilvesünkroonimine
 
@@ -1094,11 +1095,11 @@ Vanem failipõhine päringulogija (`open-sse/utils/requestLogger.ts`) on säilit
 - SQLite skeemi migratsioonid ja automaatse uuendamise hoogud käivitamisel
 - vana JSON → SQLite migratsiooni ühilduvustee
 
-## 6) SSRF / väljuva URL-i kaitse
+## 6) SSRF / väljamineva URL-i kaitse
 
-- `src/shared/network/outboundUrlGuard.ts` blokeerib kõik privaatsed/loopback/link-local sihtmärk-URL-id enne, kui need jõuavad pakkuja täitjatesse
-- Pakkuja mudeli avastamise ja valideerimise rajad kasutavad `src/shared/network/safeOutboundFetch.ts`, mis rakendab kaitset enne igat väljuvat päringut
-- Kaitse vead ilmuvad kui `URL_GUARD_BLOCKED` koos HTTP 422 staatusega ning logitakse vastavuse auditi rajale `providerAudit.ts` kaudu
+- `BaseExecutor.assertOutboundUrlAllowed` (`open-sse/executors/base.ts`) rakendab `src/shared/network/outboundUrlGuard.ts`-i vestluspäringutele, mis saadetakse `BaseExecutor.execute()` kaudu. Ainult avalikus režiimis (`OMNIROUTE_ALLOW_LOCAL_PROVIDER_URLS=false`, kui privaatne lipp on välja lülitatud) blokeerib see privaatsed ja tagasisideaadressiga hostid ning vahemiku 169.254.0.0/16; kõigis teistes režiimides blokeerib see pilveteenuste metaandmete hostid. See kontrollib hostinime või IP-literaali kirjapandud kujul enne mis tahes DNS-i otsingut. Sisseehitatud kohalikud teenusepakkujad jätavad selle vahele.
+- Teenusepakkuja mudelite tuvastamise ja valideerimise marsruudid kasutavad faili `src/shared/network/safeOutboundFetch.ts`, mis rakendab kaitset enne iga väljaminevat päringut
+- Kaitsevead tagastatakse koodiga `URL_GUARD_BLOCKED` ja HTTP-olekuga 503 (`getSafeOutboundFetchErrorStatus`; mudelite tuvastamise marsruut tagastab oleku 400) ning valideerimise käigus tuvastatud tegelikud SSRF-i blokeerimised logitakse auditijälge sündmustena `provider.validation.ssrf_blocked`
 
 ## Vaadeldavus ja operatiivsed signaalid
 

@@ -6,7 +6,7 @@ This repository contains agent-agnostic `SKILL.md` skills. Use this file when yo
 
 - Available skills live under `skills/<skill-name>/SKILL.md`.
 - Read each skill's YAML frontmatter `name` and `description` to decide whether it applies.
-- Prefer explicit user invocation such as `$task-clarifier`, `$task-forest`, `$pause-and-resume`, `$session-handoff-prompt`, `$user-profile-keeper`, `$run-history-skill-builder`, `$run-history-skill-upgrader`, or `$assess-interview-candidate`.
+- Prefer explicit user invocation such as `$task-clarifier`, `$task-forest`, `$pause-and-resume`, `$session-handoff-prompt`, `$user-profile-keeper`, `$run-history-skill-builder`, `$run-history-skill-upgrader`, `$clear-communication`, or `$assess-interview-candidate`.
 - If no skill clearly applies, continue normally; do not force a skill.
 
 ## Loading Protocol
@@ -29,6 +29,7 @@ Use $session-handoff-prompt to create a continuation prompt for a fresh session.
 Use $user-profile-keeper to initialize or update my local profile.
 Use $run-history-skill-builder to turn this completed workflow into a new skill package.
 Use $run-history-skill-upgrader to plan a safe upgrade for this existing skill from recent run evidence.
+Use $clear-communication to explain the supplied material for the current reader while preserving facts, conditions, uncertainty, and verification state.
 Use $assess-interview-candidate to turn an authorized resume and job description into an auditable local interview report.
 ```
 
@@ -40,6 +41,7 @@ Use $assess-interview-candidate to turn an authorized resume and job description
 - `user-profile-keeper` writes profile data under the local user home: `.compass-skills/user-profiles/v1/`.
 - `run-history-skill-builder` writes new skill packages only to a user-approved local directory.
 - `run-history-skill-upgrader` is plan-only by default and edits existing skills only after explicit approval.
+- `clear-communication` provides writing instructions and references; it has no runtime script or fixed output directory. Follow the current task's authorization when reading material or writing a document.
 - `assess-interview-candidate` writes case data and reports only below a user-approved local case root; generated candidate records stay outside this repository.
 - Set `COMPASS_USER_PROFILE_HOME` to override the profile directory.
 - Set `COMPASS_AGENT_NAME` to label task-forest changes by agent, for example `codex`, `claude-code`, `opencode`, or `openclaw`.

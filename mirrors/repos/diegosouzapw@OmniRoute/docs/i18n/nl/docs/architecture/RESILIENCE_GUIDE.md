@@ -66,111 +66,121 @@ exponentiële back-off `minRetryCooldownMs → maxRetryCooldownMs` gebruiken. Ov
 `OMNIROUTE_PROVIDER_BREAKER_{OAUTH,API_KEY}_{FAILURE_THRESHOLD,FAILURE_WINDOW_MS,COOLDOWN_MS}`.
 Regressiebeveiliging: `tests/unit/provider-cooldown-window-gate.test.ts`.
 
-## 2. Afkoelperiode voor verbindingen
+## 2. Cooldown van verbinding
 
 **Bereik:** één providerverbinding/account/sleutel.
 
-**Doel:** één ongeldige sleutel overslaan terwijl andere verbindingen voor dezelfde provider verzoeken blijven verwerken.
+**Doel:** één ongeldige sleutel overslaan terwijl andere verbindingen voor dezelfde provider aanvragen blijven afhandelen.
 
 **Implementatie:**
 
 - Als niet beschikbaar markeren: `src/sse/services/auth.ts::markAccountUnavailable()`
 - Selectie: `getProviderCredentials*` in hetzelfde bestand
-- Berekening van afkoelperiode: `open-sse/services/accountFallback.ts::checkFallbackError()`
+- Cooldownberekening: `open-sse/services/accountFallback.ts::checkFallbackError()`
 - Instellingen: `src/lib/resilience/settings.ts`
 
 **Velden per verbinding:**
 
-- `rateLimitedUntil` — tijdstempel tot wanneer de afkoelperiode duurt
+- `rateLimitedUntil` — tijdstempel tot wanneer de cooldown duurt
 - `testStatus: "unavailable"`
 - `lastError`, `lastErrorType`, `errorCode`
 - `backoffLevel` — teller voor exponentiële back-off
 
-**Standaardafkoelperioden:**
+**Standaardcooldowns:**
 
 - OAuth-basis: 5 s
 - API-sleutelbasis: 3 s
-- API-sleutel 429: geeft de voorkeur aan bovenstroomse `Retry-After`-/resetheaders/parseerbare resettekst
+- API-sleutel bij 429: geeft de voorkeur aan upstream-headers voor `Retry-After`/reset of parseerbare resettekst
 - Back-off: `baseCooldownMs * 2 ** failureIndex`
 
-**Bescherming tegen het thundering-herd-probleem:** voorkomt dat gelijktijdige fouten de afkoelperiode overmatig verlengen of `backoffLevel` dubbel verhogen.
+**Beveiliging tegen een thundering herd:** voorkomt dat gelijktijdige fouten de cooldown te veel verlengen of `backoffLevel` dubbel verhogen.
 
-**Vastgelopen streaminhoud leidt niet tot een afkoelperiode voor het account.** Wanneer de watchdog voor vastgelopen inhoud
-(`open-sse/utils/streamHandler.ts`) een stream opgeeft die niet tijdig modeluitvoer heeft verzonden,
-registreert `markAccountUnavailable()` de fout voor de verbinding, maar stelt deze geen
-afkoelperiode in: het vastlopen hoort bij dat verzoek en betreft meestal een lange redeneerstap zonder
-dat er al uitvoer is. Beheerders kunnen dit weer inschakelen met `resilienceSettings.streamStallCooldown.enabled`
+**429-fouten door gelijktijdigheidslimieten verhogen de back-off niet.** Een `429` waarvan de body een
+gelijktijdigheidslimiet meldt ("too many concurrent requests", "concurrency limit", "parallel request
+limit", GLM `并发数过高`) betekent dat het account gezond maar bezet is.
+`checkFallbackError()` retourneert de reden `concurrency_limited`: schakel nu over naar de volgende
+verbinding, geef deze een vaste cooldown van `CONCURRENCY_LIMIT_COOLDOWN_MS` (1 s) of gebruik de
+upstream-hint voor opnieuw proberen, laat `backoffLevel` ongewijzigd en stel `skipProviderBreaker` in.
+Een expliciete quotabody heeft nog steeds voorrang, dus een body die ook overeenkomt met een quotapatroon
+blijft als quota geclassificeerd. Detectie: `looksLikeConcurrencyLimit()` in
+`src/shared/utils/classify429.ts`; oordeel: `open-sse/services/accountFallback/concurrencyLimit429.ts`. `classify429()` (de
+`FailureKind` van de breaker) blijft ongewijzigd en leest voor deze bodies nog steeds `rate_limit`.
+
+**Vastgelopen streaminhoud geeft het account geen cooldown.** Wanneer de watchdog voor vastgelopen inhoud
+(`open-sse/utils/streamHandler.ts`) een stream opgeeft die niet tijdig modeluitvoer heeft
+verzonden, registreert `markAccountUnavailable()` de fout voor de verbinding, maar stelt deze geen
+cooldown in: het vastlopen hoort bij die aanvraag en betreft meestal een lange redeneerstap zonder
+uitvoer tot dan toe. Operators kunnen dit opnieuw inschakelen met `resilienceSettings.streamStallCooldown.enabled`
 (standaard `false`).
 
-**Redeneerframes starten het budget voor vastgelopen inhoud opnieuw.** Een redeneermodel kan
-minutenlang nadenken voordat het eerste zichtbare token verschijnt: Claude streamt `thinking_delta`-frames waarvan
-de redeneertekst leeg kan zijn, en de Responses API streamt het ene redeneeritem na
-het andere. `isReasoningProgressFrame()` (`open-sse/utils/streamReadiness.ts`) herkent
-deze frames en de watchdog start zijn budget bij elk frame opnieuw in plaats van de
-beurt te annuleren. Ze gelden nog steeds niet als modeluitvoer, dus een beurt die alleen met redenering eindigt, wordt nog steeds
+**Redeneringsframes starten het budget voor vastgelopen inhoud opnieuw.** Een redeneermodel kan minutenlang
+nadenken vóór het eerste zichtbare token: Claude streamt `thinking_delta`-frames waarvan de
+denktekst leeg kan zijn, en de Responses API streamt het ene redeneringsitem na het
+andere. `isReasoningProgressFrame()` (`open-sse/utils/streamReadiness.ts`) herkent
+deze frames en de watchdog start bij elk frame zijn budget opnieuw in plaats van de
+beurt te annuleren. Ze zijn nog steeds geen modeluitvoer, dus een beurt die alleen met redenering eindigt, wordt nog steeds
 als leeg gerapporteerd, en een beurt die stopt met redeneren en alleen heartbeats verzendt, activeert nog steeds
 de watchdog.
 
 Kiro's binaire `reasoningContentEvent`-frames met een niet-lege handtekening behouden deze
-redeneeractiviteit via de executor als een lege `reasoning_content`-delta. De handtekening wordt
+redeneringsactiviteit via de executor als een lege `reasoning_content`-delta. De handtekening wordt
 niet doorgestuurd. Metadata, onvolledige frames en lege handtekeningen starten het
 inhoudsbudget niet opnieuw; de onafhankelijke time-out voor actieve streams en annulering door de client blijven
 van toepassing (`open-sse/executors/kiro/reasoning.ts`).
 
-**Terminale statussen (GEEN afkoelperioden):**
+**Terminale statussen (GEEN cooldowns):**
 
-- `banned` — ingesteld door detectie van verboden trefwoorden/accountblokkering (zie [BAN_DETECTION](../security/BAN_DETECTION.md)), en door drie opeenvolgende bovenstroomse weigeringen per verzoek (`request_rejected`, bijvoorbeeld Anthropic OAuth 403 "Request not allowed" — `open-sse/services/requestRejectedStreak.ts`); één weigering leidt alleen tot een afkoelperiode voor de verbinding
-- `expired` (gaat na een begrensd aantal nieuwe pogingen over naar terminaal — `EXPIRED_RETRY_MAX = 3` met exponentiële back-off — zodat tijdelijke OAuth-fouten zichzelf kunnen herstellen voordat het account permanent wordt gedeactiveerd)
+- `banned` — ingesteld door detectie van verboden trefwoorden/accountblokkering (zie [BAN_DETECTION](../security/BAN_DETECTION.md)), en door drie opeenvolgende upstream-weigeringen per aanvraag (`request_rejected`, bijvoorbeeld Anthropic OAuth 403 "Request not allowed" — `open-sse/services/requestRejectedStreak.ts`); één weigering geeft de verbinding alleen een cooldown
+- `expired` (gaat na een begrensd aantal pogingen over naar terminaal — `EXPIRED_RETRY_MAX = 3` met exponentiële back-off — zodat tijdelijke OAuth-fouten zichzelf kunnen herstellen voordat het account permanent wordt gedeactiveerd)
 - `credits_exhausted`
 
-Deze blijven bestaan totdat de referenties veranderen of een beheerder ze opnieuw instelt. Overschrijf terminale statussen niet met een tijdelijke afkoelstatus.
+Deze blijven bestaan totdat de inloggegevens veranderen of een operator ze opnieuw instelt. Overschrijf terminale statussen niet met een tijdelijke cooldownstatus.
 
-**Lui herstel:** wanneer `rateLimitedUntil` is verstreken, komt de verbinding weer in aanmerking. Na succesvol gebruik wist `clearAccountError()` alle foutvelden.
+**Lazy herstel:** zodra `rateLimitedUntil` is verstreken, komt de verbinding weer in aanmerking. Na succesvol gebruik wist `clearAccountError()` alle foutvelden.
 
-### Claude OAuth-gebruikslimiet: baan met lagere prioriteit + reset van sessielimiet
+### Claude OAuth-gebruikslimiet: lane met lagere prioriteit + reset van sessielimiet
 
-**Bereik:** één Claude-abonnementsverbinding (OAuth). Beide functies zijn **optioneel per
-verbinding** (Verbinding bewerken → Claude-sectie → `lowPriorityMode` / `autoLimitReset` in
-`providerSpecificData`, beide standaard uitgeschakeld) en komen overeen met de `/low-priority`- en
-`/limit-reset`-opdrachten van Claude Code (wire-contract vastgelegd vanuit Claude Code 2.1.263).
+**Bereik:** één Claude-abonnementsverbinding (OAuth). Beide functies zijn **per
+verbinding opt-in** (Verbinding bewerken → Claude-sectie → `lowPriorityMode` / `autoLimitReset` in
+`providerSpecificData`, beide standaard uitgeschakeld) en weerspiegelen Claude Code's `/low-priority`- en
+`/limit-reset`-opdrachten (wire-contract vastgelegd vanuit Claude Code 2.1.263).
 
 **Implementatie:**
 
-- Statusmachine + classificatie van antwoorden: `open-sse/services/claudeLowPriority.ts`
-- Client voor resetstatus/claim: `open-sse/services/claudeLimitReset.ts`
-- Executor-hook (headerinjectie + nieuwe poging met hetzelfde account): `open-sse/executors/base.ts::execute()`
+- Statusmachine + responsclassificatie: `open-sse/services/claudeLowPriority.ts`
+- Client voor resetstatus/-claim: `open-sse/services/claudeLimitReset.ts`
+- Executor-hook (headerinjectie + opnieuw proberen met hetzelfde account): `open-sse/executors/base.ts::execute()`
 - Persistentie van opt-in: `src/lib/providers/requestDefaults.ts::normalizeProviderSpecificData()`
 
 **Trigger:** de gebruikslimiet van 5 uur — een `429` waarvan de headers
-`anthropic-ratelimit-unified-status: rejected` bevatten en, wanneer het account in aanmerking komt,
+`anthropic-ratelimit-unified-status: rejected` bevatten en, wanneer het account hiervoor in aanmerking komt,
 `anthropic-ratelimit-unified-slow-offer: treatment`. Er wordt niets verzonden vóór die eerste
-429 voor de gebruikslimiet; een kortstondige piek van 429-responsen zonder uniforme headers doorloopt het normale afkoelpad.
+429 bij het bereiken van de limiet; een burst-429 zonder unified-headers volgt het normale cooldownpad.
 
-**Baan met lagere prioriteit** (`lowPriorityMode`):
+**Lane met lagere prioriteit** (`lowPriorityMode`):
 
 - Bij de wall-429 accepteert de executor het aanbod en probeert deze onmiddellijk **hetzelfde**
   account opnieuw met `anthropic-usage-limit: slow`; de lane blijft actief tot de aangekondigde
-  `anthropic-ratelimit-unified-reset` (+60 s respijt) en elk verzoek binnen dat venster bevat
+  `anthropic-ratelimit-unified-reset` (+60 s respijt) en elk verzoek binnen dat tijdvenster bevat
   de header. De onderschepte 429 bereikt `handleChatCore` nooit, waardoor de verbinding
   **niet** in cooldown wordt geplaatst en er niet van wordt weggeroteerd.
 - `anthropic-ratelimit-unified-slow-status` bij latere antwoorden: `active` / `not_needed`
-  behouden de lane; `slot_busy` (429) of een `529` wacht gedurende de door de server opgegeven
-  `anthropic-ratelimit-unified-slow-retry-after` (standaard 20 s, begrensd op 5–600 s, ±30% jitter)
-  en probeert het opnieuw, begrensd door `anthropic-ratelimit-unified-slow-max-wait` (standaard 20 min, begrensd
+  behouden de lane; bij `slot_busy` (429) of een `529` wordt de door de server opgegeven
+  `anthropic-ratelimit-unified-slow-retry-after` afgewacht (standaard 20 s, begrensd op 5–600 s, ±30% jitter)
+  en wordt het verzoek opnieuw geprobeerd, begrensd door `anthropic-ratelimit-unified-slow-max-wait` (standaard 20 min, begrensd
   op 1 min–6 u) — daarna eindigt de lane en blokkeert een afkoelperiode van 10 minuten het opnieuw accepteren. De
-  wachttijd wordt bovendien begrensd door wat resteert van de eigen upstream-starttimeout van het verzoek
-  (`resolveFetchStartTimeout`, standaard 10 min) minus een marge van 5 s: zonder die begrenzing zou
-  de standaard maximale wachttijd van 20 minuten langer duren dan het verzoek en zou de slaapstand
-  halverwege het wachten worden afgebroken, waarbij een `TimeoutError` naar buiten komt in plaats van het
-  nette `max_wait`-einde + afkoelperiode.
-- `weekly_limit` / `budget_exhausted` / `off` / `ineligible`, het omslaan van een 5-uursvenster, of
-  `ineligible` + `anthropic-ratelimit-unified-overage-in-use: true` (waardoor de lane bij elke
-  status als `extra_usage` eindigt, aangezien betaalde overschrijding nu de wall dekt) beëindigen de lane; het
-  antwoord stroomt vervolgens door naar het normale cooldown-pad. `budget_exhausted` wordt onthouden tot
+  wachttijd wordt daarnaast begrensd door de resterende tijd van de eigen upstream-starttime-out
+  van het verzoek (`resolveFetchStartTimeout`, standaard 10 min), minus een marge van 5 s: zonder die begrenzing zou de
+  standaard maximale wachttijd van 20 minuten langer duren dan het verzoek en zou de slaapstand
+  halverwege worden afgebroken, waardoor een `TimeoutError` zichtbaar wordt in plaats van de nette beëindiging met `max_wait` + afkoelperiode.
+- `weekly_limit` / `budget_exhausted` / `off` / `ineligible`, het opnieuw beginnen van een 5-uursvenster, of
+  `ineligible` + `anthropic-ratelimit-unified-overage-in-use: true` (waardoor de lane bij
+  elke status als `extra_usage` eindigt, omdat betaalde overschrijding nu de wall afdekt) beëindigen de lane; het
+  antwoord doorloopt vervolgens het normale cooldownpad. `budget_exhausted` wordt onthouden tot
   de aangekondigde budgetreset (≤ 8 dagen).
-- De wall-controle wordt uitgevoerd na de eigen door 400 aangestuurde retries binnen dezelfde poging van de executor (context-
-  bewerking, begrenzing van thinking/effort, automatisch aanleren van parameters), zodat een wall-429 die pas bij
-  een van die retries zichtbaar wordt, nog steeds wordt onderschept in plaats van het cooldown-pad te bereiken.
+- De wall-controle wordt uitgevoerd na de eigen door 400 aangestuurde nieuwe pogingen binnen dezelfde poging van de executor (contextbewerking,
+  begrenzingen voor thinking/effort, automatisch aanleren van parameters), zodat een wall-429 die pas bij
+  een van die nieuwe pogingen optreedt, nog steeds wordt onderschept in plaats van het cooldownpad te bereiken.
 - De status wordt per verbinding in het geheugen bewaard (een herstart kost één extra wall-429 om opnieuw te accepteren).
 
 **Reset van sessielimiet** (`autoLimitReset`, wordt vóór de lane geprobeerd wanneer beide zijn ingeschakeld):
@@ -181,8 +191,8 @@ verbinding** (Verbinding bewerken → Claude-sectie → `lowPriorityMode` / `aut
   `{ "program": "juniper_tide" }` (organisatie-UUID uit
   `providerSpecificData.organizationUUID`, met bootstrap als fallback).
 - `result: reset|not_limited` → het verzoek wordt op volle snelheid opnieuw geprobeerd (zonder slow-header).
-  `already_used` / `not_offered` slaan `next_available_at` op (standaard één week);
-  elke fout leidt tot een back-off van 15 minuten. De reset kan eenmaal per week worden uitgevoerd en telt nog steeds mee voor de
+  `already_used` / `not_offered` slaan `next_available_at` op (standaard één week); bij
+  elke fout wordt 15 minuten gewacht. De reset kan eenmaal per week worden uitgevoerd en telt nog steeds mee voor de
   wekelijkse limiet.
 
 Regressiebeveiligingen: `tests/unit/claude-low-priority-mode.test.ts`,
@@ -190,55 +200,55 @@ Regressiebeveiligingen: `tests/unit/claude-low-priority-mode.test.ts`,
 
 ### Sessieaffiniteit (#7274)
 
-**Bereik:** één clientsessie (`X-Session-Id` / `x-codex-session-id` / `x-omniroute-session`-header) vastgekoppeld aan één verbinding, voor **elke** provider.
+**Bereik:** één clientsessie (`X-Session-Id` / `x-codex-session-id` / `x-omniroute-session`-header) vastgezet op één verbinding, voor **elke** provider.
 
-**Doel:** een agent met meerdere beurten (Claude Code, aider, aangepaste agents) bij alle verzoeken op hetzelfde account houden, waardoor contextverlies tussen accounts en herhaalde 429's bij een koude start worden verminderd bij providers met sessiestatus per account.
+**Doel:** een agent met meerdere beurten (Claude Code, aider, aangepaste agents) tussen verzoeken op hetzelfde account houden, waardoor contextverlies tussen accounts en herhaalde 429-fouten bij een koude start afnemen bij providers met sessiestatus per account.
 
 **Implementatie:**
 
 - TTL-bepaling: `src/sse/services/sessionAffinityPin.ts::resolveSessionAffinityTtlMs()`
-- Pinselectie/-aanmaak: `src/sse/services/sessionAffinityPin.ts::selectSessionAffinityConnection()`
+- Selectie/aanmaak van pin: `src/sse/services/sessionAffinityPin.ts::selectSessionAffinityConnection()`
 - Headerextractie (generiek, elke provider): `src/sse/services/auth.ts::extractSessionAffinityKey()`
 - Persistente pintabel: `sessionAccountAffinity` (`src/lib/db/sessionAccountAffinity.ts`)
-- Instelling: `sessionAffinityTtlMs` (globale TTL in ms, `0` schakelt deze uit) — `src/lib/db/settings.ts`. Hernoemd van het uitsluitend voor Codex bedoelde `codexSessionAffinityTtlMs` door migratie `124_generic_session_affinity_ttl.sql`, die een eventueel eerder geconfigureerde Codex-TTL overdraagt als de nieuwe standaardwaarde.
+- Instelling: `sessionAffinityTtlMs` (globale TTL in ms, `0` schakelt dit uit) — `src/lib/db/settings.ts`. Hernoemd van de uitsluitend voor Codex bedoelde `codexSessionAffinityTtlMs` via migratie `124_generic_session_affinity_ttl.sql`, die een eventueel eerder geconfigureerde Codex-TTL overneemt als de nieuwe standaardwaarde.
 
-Vóór #7274 stopte `resolveSessionAffinityTtlMs()` voor elke provider behalve `codex` onmiddellijk met `0`, waardoor de TTL-instelling (en de sessieheaders) nergens anders effect hadden, hoewel het pinmechanisme en de headerextractie al provideragnostisch waren. De oplossing verwijderde die vroegtijdige return; de TTL geldt nu uniform voor elke provider zodra deze globaal op een waarde hoger dan `0` is ingesteld.
+Vóór #7274 stopte `resolveSessionAffinityTtlMs()` direct met `0` voor elke provider behalve `codex`, waardoor de TTL-instelling (en de sessieheaders) nergens anders effect hadden, hoewel het pinmechanisme en de headerextractie al provideronafhankelijk waren. De oplossing verwijderde die vroege return; de TTL is nu uniform van toepassing op elke provider zodra deze globaal op een waarde hoger dan `0` is ingesteld.
 
-De drie sessieaffiniteitsheaders worden nooit upstream doorgestuurd — executors bouwen hun eigen upstream-headers volledig opnieuw op in plaats van clientheaders door te geven, zodat dit uitsluitend een interne correlatie-id blijft.
+De drie sessieaffiniteitsheaders worden nooit upstream doorgestuurd — executors bouwen hun eigen upstreamheaders volledig opnieuw op in plaats van clientheaders door te geven, zodat dit uitsluitend een interne correlatie-ID blijft.
 
-### Exclusieve leases voor verbindingen van beheerde sessies
+### Exclusieve verbindingsleases voor beheerde sessies
 
-**Bereik:** één actieve beheerde HTTP-client/sessie is eigenaar van één geschikte OmniRoute-verbinding.
+**Bereik:** één actieve beheerde HTTP-client/sessie is eigenaar van één in aanmerking komende OmniRoute-verbinding.
 
-**Doel:** duurzaam exclusief verbindingseigendom bieden aan clients die tussen verzoeken een harde routeringsgrens
-nodig hebben. Dit verschilt van sessieaffiniteit, dat een zachte continuïteitsvoorkeur is:
-een exclusieve lease bewaart de levenscyclusstatus in SQLite, dwingt wereldwijde uniciteit van actieve eigenaars en
-actieve verbindingen af en weigert een verouderde generatie vóór dispatch naar de provider.
+**Doel:** duurzame, exclusieve eigendom van een verbinding bieden aan clients die een harde routeringsgrens
+tussen verzoeken nodig hebben. Dit verschilt van sessieaffiniteit, die een zachte continuïteitsvoorkeur is:
+een exclusieve lease bewaart de levenscyclusstatus in SQLite, dwingt globale uniekheid van de actieve eigenaar en
+actieve verbinding af en weigert een verouderde generatie vóór dispatch naar de provider.
 
-De functie moet per API-sleutel expliciet worden ingeschakeld. Een beheerde sleutel moet het bereik `lease:exclusive` en een
+De functie is per API-sleutel opt-in. Een beheerde sleutel moet het bereik `lease:exclusive` en een
 expliciete, niet-lege lijst `allowedConnections` hebben. Elke HTTP-client kan het levenscycluseindpunt gebruiken; er is geen
 clientnaam, user-agent, provider, OAuth-methode of model vereist. De lease bezit een verbinding,
-geen model, zodat bij een modelwijziging de koppeling behouden blijft zolang de verbinding normaal gesproken
-geschikt blijft. De normale regels voor model, quota, status, cooldown en allowlist blijven bepalend en kunnen
-dezelfde generatie overzetten naar een andere vrije, geschikte verbinding.
+geen model, zodat een modelwijziging de koppeling behoudt zolang de verbinding normaal
+in aanmerking blijft komen. De normale regels voor model, quota, status, cooldown en allowlist blijven leidend en kunnen
+dezelfde generatie overzetten naar een andere vrije, in aanmerking komende verbinding.
 
 De levenscyclus verloopt via `POST /api/v1/session-leases` met de JSON-acties `acquire`, `renew` en `release`.
-Beheerde inferentieverzoeken bevatten de niet-transparante waarde `X-OmniRoute-Lease-Owner` en de exacte
+Beheerde inferentieverzoeken bevatten de ondoorzichtige waarde `X-OmniRoute-Lease-Owner` en de exacte
 `X-OmniRoute-Lease-Generation`. De eigenaar gebruikt `vlo_`, gevolgd door 43 base64url-tekens; alleen
-de SHA-256-hash ervan wordt opgeslagen. Elke definitieve dispatch-fence wordt ook gekoppeld aan de ID van de geauthenticeerde API-sleutel en
-de ID van de actieve verbinding. Headers voor leasebeheer worden verwijderd uit logboeken, bewaarde snapshots van verzoeken en
+de SHA-256-hash ervan wordt opgeslagen. Elke definitieve dispatch-fence wordt tevens gekoppeld aan de ID van de geauthenticeerde API-sleutel en
+de ID van de actieve verbinding. Headers voor leasebeheer worden verwijderd uit logboeken, bewaarde momentopnamen van verzoeken en
 headers voor upstream-executors.
 
-Als reguliere routering geschikte beheerde kandidaten heeft, maar elke beschikbare kandidaat bezet is door een
-externe actieve lease, retourneert OmniRoute HTTP `429`, de code lease-capacity-unavailable, de status
-waiting-for-capacity en een begrensde `Retry-After` die is afgeleid van de vroegste relevante vervaldatum.
-Een regulier gebrek aan geschikte kandidaten is geen leaseconflict en behoudt de bestaande foutsemantiek voor routering.
+Als normale routering geschikte beheerde kandidaten heeft, maar elke beschikbare kandidaat bezet is door een
+externe actieve lease, retourneert OmniRoute HTTP `429`, de code lease-capacity-unavailable, een
+status waiting-for-capacity en een begrensde `Retry-After` die is afgeleid van de vroegste relevante vervaldatum.
+Normale lege geschiktheid is geen leaseconflict en behoudt de bestaande semantiek voor routeringsfouten.
 
 Gerelateerde mechanismen blijven gescheiden:
 
-- Bezetting van OAuth-sessies is proceslokale, niet-bindende distributie voor OAuth-accounts.
-- Accountsemaforen verlenen machtigingen voor gelijktijdige verzoeken en eindigen wanneer een verzoek is voltooid.
-- Exclusieve beheerde sessieleases bieden duurzaam eigenaarschap gedurende de levenscyclus, met een generatie-fence.
+- OAuth-sessiebezetting is proceslokale zachte distributie voor OAuth-accounts.
+- Accountsemaforen verlenen permits voor gelijktijdige verzoeken en eindigen wanneer een verzoek is voltooid.
+- Exclusieve beheerde sessieleases bieden duurzaam eigenaarschap gedurende de levenscyclus met een generatie-fence.
 
 ---
 

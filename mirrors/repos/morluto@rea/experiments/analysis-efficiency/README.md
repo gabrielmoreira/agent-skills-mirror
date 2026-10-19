@@ -1,5 +1,28 @@
 # Analysis efficiency measurements
 
+For Hopper literal string queries, see the [decoded-record checkpoint](hopper-string-records.md).
+It measures record reuse through real Linux CLI/MCP workflows, preserving
+native recognition gaps, guard-stopped attempts and negative whole-task costs.
+
+The [Linux embedding-runtime follow-up](hopper-linux-python-runtime.md) checks
+actual clean setup, dependency repair and normal-user analysis, retaining
+failed attempts and distinguishing prerequisite correctness from speedups.
+
+For JEB on Linux, see the [CE native audit](jeb-linux-native.md). It qualifies
+the direct headless launch route and measures selected function reads through
+real CLI and production stdio MCP, preserving timeout attempts and the limits
+of wrapper-cache and token claims.
+
+For Apktool locale queries, see the
+[shared-decode and table-only checkpoint](apktool-string-tables.md). It separates
+the existing decode reuse from duplicate string delivery, with three real APKs,
+CLI/MCP parity, whole-task estimates and negative timing results.
+
+For immutable imported native/JavaScript parents, see the
+[validation-reuse checkpoint](immutable-parent-validation.md). It measures the
+owning format change with the existing retained-query driver, including first
+view costs, small cases, unchanged token estimates, and noisy whole-task results.
+
 For authentic old Evidence and mixed investigations, see the
 [retained-query checkpoint](retained-investigation-workflows.md).
 `retained-investigation.mjs` compares existing complete delivery with selected

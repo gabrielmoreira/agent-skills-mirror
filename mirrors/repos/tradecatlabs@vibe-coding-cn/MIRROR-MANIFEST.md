@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `tradecatlabs/vibe-coding-cn` — 26 default patterns, 0 followed patterns, 166 file(s) materialized.
+Mirror of `tradecatlabs/vibe-coding-cn` — 26 default patterns, 0 followed patterns, 160 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `tradecatlabs/vibe-coding-cn` — 26 default patterns, 0 followed patt
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 166 |
+| Files         | 160 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -204,27 +204,21 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 143 | ✓ | [`.github/context/research/wendy7756-vibe-coding-guide/AGENTS.md`](.github/context/research/wendy7756-vibe-coding-guide/AGENTS.md) |
 | 144 | ✓ | [`.github/context/research/wendy7756-vibe-coding-guide/raw/AGENTS.md`](.github/context/research/wendy7756-vibe-coding-guide/raw/AGENTS.md) |
 | 145 | ✓ | [`.github/extensions/AGENTS.md`](.github/extensions/AGENTS.md) |
-| 146 | ✓ | [`.github/extensions/chat-vault/AGENTS.md`](.github/extensions/chat-vault/AGENTS.md) |
-| 147 | ✓ | [`.github/extensions/chat-vault/CLAUDE.md`](.github/extensions/chat-vault/CLAUDE.md) |
-| 148 | ✓ | [`.github/extensions/codex-config/.codex/AGENTS.md`](.github/extensions/codex-config/.codex/AGENTS.md) |
-| 149 | ✓ | [`.github/extensions/codex-config/AGENTS.md`](.github/extensions/codex-config/AGENTS.md) |
-| 150 | ✓ | [`.github/extensions/my-nvim/nvim-config/AGENTS.md`](.github/extensions/my-nvim/nvim-config/AGENTS.md) |
-| 151 | ✓ | [`.github/extensions/prompts-library/AGENTS.md`](.github/extensions/prompts-library/AGENTS.md) |
-| 152 | ✓ | [`.github/extensions/prompts-library/docs/AGENTS.md`](.github/extensions/prompts-library/docs/AGENTS.md) |
-| 153 | ✓ | [`.github/extensions/prompts-library/scripts/AGENTS.md`](.github/extensions/prompts-library/scripts/AGENTS.md) |
-| 154 | ✓ | [`.github/ISSUE_TEMPLATE/AGENTS.md`](.github/ISSUE_TEMPLATE/AGENTS.md) |
-| 155 | ✓ | [`.github/lib/AGENTS.md`](.github/lib/AGENTS.md) |
-| 156 | ✓ | [`.github/skills/AGENTS.md`](.github/skills/AGENTS.md) |
-| 157 | ✓ | [`.github/skills/auto-skill/AGENTS.md`](.github/skills/auto-skill/AGENTS.md) |
-| 158 | ✓ | [`.github/skills/auto-skill/assets/AGENTS.md`](.github/skills/auto-skill/assets/AGENTS.md) |
-| 159 | ✓ | [`.github/skills/auto-skill/references/AGENTS.md`](.github/skills/auto-skill/references/AGENTS.md) |
-| 160 | ✓ | [`.github/skills/auto-skill/SKILL.md`](.github/skills/auto-skill/SKILL.md) |
-| 161 | ✓ | [`.github/skills/auto-tmux/AGENTS.md`](.github/skills/auto-tmux/AGENTS.md) |
-| 162 | ✓ | [`.github/skills/auto-tmux/assets/AGENTS.md`](.github/skills/auto-tmux/assets/AGENTS.md) |
-| 163 | ✓ | [`.github/skills/auto-tmux/references/AGENTS.md`](.github/skills/auto-tmux/references/AGENTS.md) |
-| 164 | ✓ | [`.github/skills/auto-tmux/SKILL.md`](.github/skills/auto-tmux/SKILL.md) |
-| 165 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 166 | ✓ | [`llms.txt`](llms.txt) |
+| 146 | ✓ | [`.github/extensions/prompts-library/AGENTS.md`](.github/extensions/prompts-library/AGENTS.md) |
+| 147 | ✓ | [`.github/extensions/prompts-library/docs/AGENTS.md`](.github/extensions/prompts-library/docs/AGENTS.md) |
+| 148 | ✓ | [`.github/extensions/prompts-library/scripts/AGENTS.md`](.github/extensions/prompts-library/scripts/AGENTS.md) |
+| 149 | ✓ | [`.github/ISSUE_TEMPLATE/AGENTS.md`](.github/ISSUE_TEMPLATE/AGENTS.md) |
+| 150 | ✓ | [`.github/skills/AGENTS.md`](.github/skills/AGENTS.md) |
+| 151 | ✓ | [`.github/skills/auto-skill/AGENTS.md`](.github/skills/auto-skill/AGENTS.md) |
+| 152 | ✓ | [`.github/skills/auto-skill/assets/AGENTS.md`](.github/skills/auto-skill/assets/AGENTS.md) |
+| 153 | ✓ | [`.github/skills/auto-skill/references/AGENTS.md`](.github/skills/auto-skill/references/AGENTS.md) |
+| 154 | ✓ | [`.github/skills/auto-skill/SKILL.md`](.github/skills/auto-skill/SKILL.md) |
+| 155 | ✓ | [`.github/skills/auto-tmux/AGENTS.md`](.github/skills/auto-tmux/AGENTS.md) |
+| 156 | ✓ | [`.github/skills/auto-tmux/assets/AGENTS.md`](.github/skills/auto-tmux/assets/AGENTS.md) |
+| 157 | ✓ | [`.github/skills/auto-tmux/references/AGENTS.md`](.github/skills/auto-tmux/references/AGENTS.md) |
+| 158 | ✓ | [`.github/skills/auto-tmux/SKILL.md`](.github/skills/auto-tmux/SKILL.md) |
+| 159 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 160 | ✓ | [`llms.txt`](llms.txt) |
 
 ---
 

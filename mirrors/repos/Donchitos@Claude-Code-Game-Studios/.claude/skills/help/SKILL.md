@@ -143,8 +143,8 @@ against the working tree and reports one line per step. Map its statuses:
 | `NO_CHECK` | **MANUAL** if the step carries a `note=`, else **UNKNOWN** — completion is not trackable (e.g. repeatable implementation work) |
 
 Do not re-derive any of this with Glob/Grep. `any_of` in particular is a list of
-**alternatives** — one match is enough — and hand-evaluating it has already
-produced a false "incomplete" once: `engine-setup` is satisfied by `engine.name`
+**alternatives** — one match is enough — and hand-evaluating it risks a false
+"incomplete": `engine-setup` is satisfied by `engine.name`
 in `project.yaml` **or** by the legacy `Engine:` line in
 `.claude/docs/technical-preferences.md`, and the script reports which alternative
 matched (`alt=`/`match=`).
@@ -189,7 +189,11 @@ Map the statuses exactly as in Step 4. `implement` and `story-done` are
 step is the first of these that applies:
 
 1. `engine-setup` not PRESENT → `/setup-engine`
-2. `game-brief` not PRESENT → `/brainstorm` (at `minimal` it writes the one-page brief)
+2. `game-brief` not PRESENT → `/reverse-document design [code root]` when the
+   code root already holds the game (10 or more source files, the test Step 2
+   uses for `production`): at `minimal` it writes `design/game-brief.md` from
+   what is built. Otherwise `/brainstorm` (at `minimal` it writes the one-page
+   brief), which on a built game would start a new idea.
 3. `create-stories` not PRESENT → `/create-stories` with no argument (at
    `minimal` it builds the stories straight from the brief's MVP list)
 4. Stories exist → the list below was printed by `.claude/scripts/story-status.sh`

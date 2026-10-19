@@ -175,8 +175,10 @@ The scheduled run stages proposals unless `--auto-adopt` is explicitly selected.
 - **Read-only** harvest of `~/.claude`. `mock` replay has no side effects.
 - Proposals are **staged**, never auto-applied (unless you opt in with `--auto-adopt`).
 - Every adopt writes a backup under the staging dir's `backup/`.
-- `--max-sessions` and `--max-tasks` bound work, but the main CLI does not enforce
-  a hard token or wall-clock budget.
+- `--max-sessions` and `--max-tasks` bound work. `max_tokens_per_night` in
+  `~/.skillopt-sleep/config.json` stops a night from starting new steps once its
+  token count reaches the budget; a started step finishes, so it is not a hard
+  cap, and there is no wall-clock budget.
 - Real backends share truncated session/task content with the selected provider;
   do not assume outbound prompts have been fully redacted.
 

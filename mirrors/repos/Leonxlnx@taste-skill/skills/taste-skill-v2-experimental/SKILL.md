@@ -1,6 +1,7 @@
 ---
 name: design-taste-frontend-v2-experimental
-description: Old v2 (experimental) of taste-skill, the single-file dial-driven version, preserved for projects depending on its exact behavior. The current default is `design-taste-frontend` (v2). Use this install name only if you need the earlier behavior. Anti-slop frontend rules for landing pages, portfolios, and redesigns, with real design systems when applicable, audit-first redesigns and a strict pre-flight check.
+description: "The single-file, dial-driven taste-skill that was the default before v2, kept for projects that depend on its exact behaviour. Opt-in: it runs only when called by name."
+disable-model-invocation: true
 ---
 
 # tasteskill: Anti-Slop Frontend Skill

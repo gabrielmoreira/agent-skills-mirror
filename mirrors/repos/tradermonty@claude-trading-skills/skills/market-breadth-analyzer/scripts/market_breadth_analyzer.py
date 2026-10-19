@@ -26,7 +26,8 @@ Output:
 import argparse
 import os
 import sys
-from datetime import datetime
+from datetime import datetime, timezone
+from uuid import uuid4
 
 # Add parent directory to path for imports
 sys.path.insert(0, os.path.dirname(__file__))
@@ -45,6 +46,7 @@ from csv_client import (
     fetch_summary_csv,
 )
 from history_tracker import append_history, get_trend_summary
+from provenance_contract import build_provenance, safe_source_url
 from report_generator import generate_json_report, generate_markdown_report
 from scorer import calculate_composite_score
 
@@ -70,6 +72,7 @@ def parse_arguments():
         help="Output directory for reports (default: current directory)",
     )
 
+    parser.add_argument("--run-id", default=None, help="Shared workflow run identifier")
     return parser.parse_args()
 
 
@@ -94,6 +97,18 @@ def main():
         sys.exit(1)
 
     summary = fetch_summary_csv(args.summary_url)
+
+    provenance = build_provenance(
+        provider="trader-monty" if args.detail_url == DEFAULT_DETAIL_URL else "custom-csv",
+        endpoint=safe_source_url(args.detail_url),
+        retrieved_at=datetime.now(timezone.utc).isoformat(),
+        as_of=detail_rows[-1].get("Date"),
+        run_id=args.run_id or uuid4().hex,
+    )
+
+    provenance["auxiliary_sources"] = [
+        {"endpoint": safe_source_url(args.summary_url), "as_of_verified": False}
+    ]
 
     freshness = check_data_freshness(detail_rows)
     if freshness.get("warning"):
@@ -215,6 +230,7 @@ def main():
     print("-" * 70)
 
     analysis = {
+        "data_provenance": provenance,
         "metadata": {
             "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             "data_source": "TraderMonty Market Breadth CSV",

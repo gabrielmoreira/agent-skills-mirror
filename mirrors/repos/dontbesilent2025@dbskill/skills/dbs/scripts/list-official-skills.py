@@ -45,6 +45,36 @@ def read_frontmatter_description(skill_path: Path) -> str:
     return ""
 
 
+def read_frontmatter_handoff(skill_path: Path) -> str:
+    """读取 metadata.dbs-handoff；没有时返回空字符串。"""
+    lines = skill_path.read_text(encoding="utf-8").splitlines()
+    if not lines or lines[0] != "---":
+        return ""
+    in_metadata = False
+    for index, line in enumerate(lines[1:], start=1):
+        if line == "---":
+            break
+        if line.startswith("metadata:"):
+            in_metadata = True
+            continue
+        if in_metadata and line and not line[0].isspace():
+            in_metadata = False
+        if not in_metadata or line.strip() != "dbs-handoff: |":
+            continue
+        key_indent = len(line) - len(line.lstrip())
+        entries: list[str] = []
+        for continuation in lines[index + 1 :]:
+            if continuation == "---":
+                break
+            if not continuation.strip():
+                continue
+            if len(continuation) - len(continuation.lstrip()) <= key_indent:
+                break
+            entries.append(continuation.strip())
+        return "\n".join(entries)
+    return ""
+
+
 def locate_installed_skill(name: str, search_roots: list[Path]) -> Path | None:
     """按 search_roots 的优先级返回第一份有效副本。
 
@@ -131,6 +161,7 @@ def main() -> int:
                 "name": name,
                 "description": read_frontmatter_description(skill_path)
                 or entry.get("description", ""),
+                "handoff": read_frontmatter_handoff(skill_path),
                 "source": str(skill_dir_path),
             }
         )

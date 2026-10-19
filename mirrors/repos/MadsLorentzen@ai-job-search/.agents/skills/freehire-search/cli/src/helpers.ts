@@ -16,7 +16,11 @@ export function writeError(error: string, code: string): void {
   process.stderr.write(JSON.stringify({ error, code }) + "\n")
 }
 
-const UA = "freehire-search-skill/1.0 (+https://freehire.me)"
+// Names this project, the shape freehire's API docs ask for (owner/project/version
+// plus a contact URL), so the API's operators can reach the maintainer before a
+// limit or a field changes. The old value linked to freehire.me itself, which
+// identified the API, not the caller.
+const UA = "MadsLorentzen/ai-job-search/1.0 (+https://github.com/MadsLorentzen/ai-job-search; freehire-search)"
 
 /** The shared API response envelope: {data, meta, error}. */
 export interface Envelope<T> {
@@ -113,8 +117,10 @@ export interface FreehireJob {
 
 /**
  * A search result in the portal-skill contract shape. `id` is the public_slug
- * (what `detail <slug>` consumes) and `date` is the posting date; missing values
- * are `null`, never omitted. The extra facet fields are a permitted superset.
+ * (what `detail <slug>` consumes) and `date` is the posting date as `YYYY-MM-DD`
+ * (the contract shape every portal CLI emits; the API's ISO timestamp is cut to
+ * its date part); missing values are `null`, never omitted. The extra facet
+ * fields are a permitted superset.
  *
  * `description` is the posting's full text in the format the search asked the API
  * for — the agent search endpoint hydrates it server-side, so it arrives already
@@ -150,6 +156,18 @@ export interface JobDetailResult extends JobResult {
  * from the source ATS as indexed, which can carry HTML entities and stray
  * whitespace ("Intern - Fullstack &amp; AI Innovation "), so it is decoded and trimmed.
  */
+/**
+ * The portal-contract date (`YYYY-MM-DD`) from the API's `posted_at`, which is
+ * an ISO timestamp (`2026-07-06T00:00:00Z`). Every other portal CLI emits the
+ * date part only, and `/scrape` stores it as `posted_date: "YYYY-MM-DD"`; the
+ * table and plain renderers already cut it, so only JSON consumers saw the raw
+ * timestamp. Null when absent or not a date.
+ */
+export function contractDate(value: string | null | undefined): string | null {
+  const m = /^(\d{4}-\d{2}-\d{2})/.exec(value ?? "")
+  return m ? m[1] : null
+}
+
 export function toResult(j: FreehireJob): JobResult {
   return {
     id: j.public_slug,
@@ -157,7 +175,7 @@ export function toResult(j: FreehireJob): JobResult {
     company: j.company || null,
     company_slug: j.company_slug || null,
     location: j.location || null,
-    date: j.posted_at,
+    date: contractDate(j.posted_at),
     url: j.url,
     work_mode: j.work_mode || null,
     regions: j.regions,

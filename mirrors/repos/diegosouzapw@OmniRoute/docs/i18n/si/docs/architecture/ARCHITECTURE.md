@@ -10,77 +10,77 @@ _අවසන් වරට යාවත්කාලීන කළේ: 2026-06-28_
 
 ## විධායක සාරාංශය
 
-OmniRoute යනු Next.js මත ගොඩනගා ඇති දේශීය AI මාර්ගගත කිරීමේ ද්වාරයක් සහ උපකරණ පුවරුවකි.
-එය තනි OpenAI-අනුකූල අන්ත ලක්ෂ්යයක් (`/v1/*`) සපයන අතර, පරිවර්තනය, විකල්ප මාර්ගගත කිරීම, ටෝකන නැවුම් කිරීම සහ භාවිතය හඹා යාම සමඟ බහු upstream සපයන්නන් හරහා ගමනාගමනය මාර්ගගත කරයි.
+OmniRoute යනු Next.js මත ගොඩනැගූ දේශීය AI මාර්ගගත කිරීමේ ද්වාරයක් සහ උපකරණ පුවරුවකි.
+එය තනි OpenAI-අනුකූල අන්ත ලක්ෂ්යයක් (`/v1/*`) සපයන අතර, පරිවර්තනය, විකල්ප වෙත මාරුවීම, ටෝකන නැවුම් කිරීම සහ භාවිතය නිරීක්ෂණය කිරීම සමඟ බහු upstream සපයන්නන් හරහා ගමනාගමනය මාර්ගගත කරයි.
 
 මූලික හැකියාවන්:
 
-- CLI/මෙවලම් සඳහා OpenAI-අනුකූල API මතුපිටක් (සපයන්නන් 373ක්, executor මොඩියුල 150ක්)
+- CLI/මෙවලම් සඳහා OpenAI-අනුකූල API පෘෂ්ඨය (සපයන්නන් 374ක්, executor මොඩියුල 150ක්)
 - සපයන්නන්ගේ ආකෘති අතර ඉල්ලීම්/ප්රතිචාර පරිවර්තනය
-- ආකෘති සංයෝජන විකල්ප මාර්ගගත කිරීම (බහු-ආකෘති අනුක්රමය)
-- `compositeTiers` අනුව runtime අනුපිළිවෙළ සහිත ව්යුහගත සංයෝජන පියවර (`provider + model + connection`)
-- ගිණුම් මට්ටමේ විකල්ප මාර්ගගත කිරීම (එක් සපයන්නෙකුට ගිණුම් කිහිපයක්)
-- ප්රධාන කතාබස් මාර්ගය තුළ කෝටා පූර්ව පරීක්ෂාව සහ කෝටා-සැලකිලිමත් P2C ගිණුම් තේරීම
-- OAuth + API-key සපයන්නන්ගේ සම්බන්ධතා කළමනාකරණය (OAuth සපයන්නන්ගේ මොඩියුල 27ක්)
+- ආකෘති සංයෝජන විකල්ප මාරුව (බහු-ආකෘති අනුක්රමය)
+- `compositeTiers` අනුව ධාවන කාලයේ අනුපිළිවෙළ සැකසීම සහිත ව්යුහගත සංයෝජන පියවර (`provider + model + connection`)
+- ගිණුම් මට්ටමේ විකල්ප මාරුව (එක් සපයන්නෙකුට බහු ගිණුම්)
+- ප්රධාන කතාබස් මාර්ගයේ කෝටා පූර්ව පරීක්ෂාව සහ කෝටා-සංවේදී P2C ගිණුම් තේරීම
+- OAuth + API-key සපයන්නාගේ සම්බන්ධතා කළමනාකරණය (OAuth සපයන්නාගේ මොඩියුල 27ක්)
 - `/v1/embeddings` හරහා embedding ජනනය (සපයන්නන් 18ක්)
-- `/v1/images/generations` හරහා රූප ජනනය (සපයන්නන් 10කට වැඩි සංඛ්යාවක්, ආකෘති 20කට වැඩි සංඛ්යාවක්)
+- `/v1/images/generations` හරහා රූප ජනනය (සපයන්නන් 10+, ආකෘති 20+)
 - `/v1/audio/transcriptions` හරහා ශ්රව්ය පිටපත්කරණය (සපයන්නන් 18ක්)
-- `/v1/audio/speech` හරහා පෙළ-සිට-කථනය (අන්තර්ගත සපයන්නන් 24ක්)
+- `/v1/audio/speech` හරහා පාඨයෙන් කථනයට පරිවර්තනය (අන්තර්ගත සපයන්නන් 24ක්)
 - `/v1/videos/generations` හරහා වීඩියෝ ජනනය (ComfyUI + SD WebUI)
 - `/v1/music/generations` හරහා සංගීත ජනනය (ComfyUI)
-- `/v1/search` හරහා වෙබ් සෙවුම (සපයන්නන් 20ක්)
+- `/v1/search` හරහා වෙබ් සෙවීම (සපයන්නන් 20ක්)
 - `/v1/moderations` හරහා අන්තර්ගත පාලනය
 - `/v1/rerank` හරහා නැවත ශ්රේණිගත කිරීම
-- තර්කන ආකෘති සඳහා Think tag විග්රහ කිරීම (``)
+- තර්කන ආකෘති සඳහා think ටැග් විග්රහ කිරීම (``)
 - දැඩි OpenAI SDK අනුකූලතාව සඳහා ප්රතිචාර පිරිසිදු කිරීම
-- සපයන්නන් අතර අනුකූලතාව සඳහා භූමිකා සාමාන්යකරණය (developer→system, system→user)
+- විවිධ සපයන්නන් අතර අනුකූලතාව සඳහා භූමිකා සාමාන්යකරණය (developer→system, system→user)
 - ව්යුහගත ප්රතිදාන පරිවර්තනය (json_schema → Gemini responseSchema)
 - සපයන්නන්, යතුරු, අන්වර්ථ නාම, සංයෝජන, සැකසුම් සහ මිලකරණය සඳහා දේශීය ස්ථායී ගබඩාකරණය (DB මොඩියුල 122ක්)
-- භාවිතය/පිරිවැය හඹා යාම සහ ඉල්ලීම් ලොග් කිරීම
-- බහු උපාංග/තත්ත්ව සමමුහුර්තකරණය සඳහා විකල්ප cloud සමමුහුර්තකරණය
+- භාවිතය/පිරිවැය නිරීක්ෂණය සහ ඉල්ලීම් ලොග් කිරීම
+- බහු-උපාංග/තත්ත්ව සමමුහුර්තකරණය සඳහා විකල්ප cloud සමමුහුර්තකරණය
 - API ප්රවේශ පාලනය සඳහා IP අවසර ලැයිස්තුව/අවහිර ලැයිස්තුව
-- Thinking budget කළමනාකරණය (passthrough/auto/custom/adaptive)
+- සිතීමේ අයවැය කළමනාකරණය (passthrough/ස්වයංක්රීය/අභිරුචි/අනුවර්තී)
 - ගෝලීය system prompt ඇතුළත් කිරීම
-- සැසි හඹා යාම සහ ඇඟිලි සලකුණුකරණය
-- සපයන්නාට විශේෂිත පැතිකඩ සහිත එක් එක් ගිණුම සඳහා වැඩිදියුණු කළ වේග සීමාකරණය
-- සපයන්නන්ගේ ප්රත්යස්ථතාව සඳහා circuit breaker රටාව
+- සැසි නිරීක්ෂණය සහ ඇඟිලි සලකුණුකරණය
+- සපයන්නාට විශේෂිත පැතිකඩ සහිත එක් එක් ගිණුම සඳහා වැඩිදියුණු කළ අනුපාත සීමාකරණය
+- සපයන්නාගේ ඔරොත්තු දීමේ හැකියාව සඳහා circuit breaker රටාව
 - mutex අගුලු දැමීම සහිත anti-thundering herd ආරක්ෂාව
-- අත්සන-පදනම් වූ ඉල්ලීම් අනුපිටපත් ඉවත් කිරීමේ cache
-- Domain ස්තරය: පිරිවැය රීති, විකල්ප මාර්ගගත කිරීමේ ප්රතිපත්තිය, lockout ප්රතිපත්තිය
+- අත්සන මත පදනම් වූ ඉල්ලීම් අනුපිටපත් ඉවත් කිරීමේ cache එක
+- Domain ස්තරය: පිරිවැය රීති, විකල්ප මාරු ප්රතිපත්තිය, lockout ප්රතිපත්තිය
 - Context Relay: ගිණුම් මාරු කිරීමේ අඛණ්ඩතාව සඳහා සැසි භාරදීමේ සාරාංශ
-- Domain තත්ත්ව ස්ථායී ගබඩාකරණය (fallbacks, budgets, lockouts සහ circuit breakers සඳහා SQLite write-through cache)
-- මධ්යගත ඉල්ලීම් ඇගයීම සඳහා ප්රතිපත්ති එන්ජිම (lockout → budget → fallback)
-- p50/p95/p99 latency එකතුව සමඟ ඉල්ලීම් telemetry
+- Domain තත්ත්ව ස්ථායී ගබඩාකරණය (විකල්ප මාරු, අයවැය, lockout සහ circuit breaker සඳහා SQLite write-through cache එක)
+- මධ්යගත ඉල්ලීම් ඇගයීම සඳහා policy engine එක (lockout → budget → fallback)
+- p50/p95/p99 ප්රමාද සමුච්චය සහිත ඉල්ලීම් telemetry
 - `combo_execution_key` / `combo_step_id` හරහා සංයෝජන ඉලක්ක telemetry සහ ඓතිහාසික සංයෝජන ඉලක්ක සෞඛ්යය
-- අන්තයේ සිට අන්තය දක්වා tracing සඳහා Correlation ID (X-Request-Id)
-- එක් එක් API key සඳහා ඉවත් වීමේ විකල්පය සහිත අනුකූලතා විගණන ලොග්කරණය
-- LLM තත්ත්ව සහතිකකරණය සඳහා Eval රාමුව
-- තත්ය කාලීන සපයන්නන්ගේ circuit breaker තත්ත්වය සහිත සෞඛ්ය උපකරණ පුවරුව
-- ප්රවාහන ක්රම 3ක් (stdio/SSE/Streamable HTTP) සහිත MCP Server (මෙවලම් 110ක්)
-- කුසලතා සහ කාර්ය ජීවන චක්රය සහිත A2A Server (JSON-RPC 2.0 + SSE)
-- මතක පද්ධතිය (උකහා ගැනීම, ඇතුළත් කිරීම, නැවත ලබා ගැනීම, සාරාංශකරණය)
+- අන්තයේ සිට අන්තය දක්වා අනුරේඛනය සඳහා Correlation ID (X-Request-Id)
+- එක් එක් API යතුර අනුව ඉවත් වීමේ විකල්පය සහිත අනුකූලතා විගණන ලොග්කරණය
+- LLM තත්ත්ව සහතික කිරීම සඳහා Eval රාමුව
+- තත්ය කාලීන සපයන්නාගේ circuit breaker තත්ත්වය සහිත සෞඛ්ය උපකරණ පුවරුව
+- ප්රවාහන ක්රම 3ක් (stdio/SSE/Streamable HTTP) සහිත MCP Server එක (මෙවලම් 110ක්)
+- කුසලතා සහ කාර්ය ජීවන චක්රය සහිත A2A Server එක (JSON-RPC 2.0 + SSE)
+- මතක පද්ධතිය (නිස්සාරණය, ඇතුළත් කිරීම, නැවත ලබාගැනීම, සාරාංශකරණය)
 - කුසලතා පද්ධතිය (registry, executor, sandbox, අන්තර්ගත කුසලතා)
-- සහතික කළමනාකරණය සහ DNS හැසිරවීම සහිත MITM proxy
+- සහතික කළමනාකරණය සහ DNS හැසිරවීම සහිත MITM proxy එක
 - Prompt injection guard middleware
-- Caveman, RTK, stacked pipelines, compression combos, language packs සහ analytics සහිත prompt compression pipeline
-- ACP (Agent Communication Protocol) registry
-- මොඩියුලීය OAuth සපයන්නන් (`src/lib/oauth/providers/` යටතේ තනි මොඩියුල 22ක්)
-- Uninstall/full-uninstall scripts
+- Caveman, RTK, stacked pipelines, සම්පීඩන සංයෝජන, භාෂා ඇසුරුම් සහ විශ්ලේෂණ සහිත prompt සම්පීඩන නළ මාර්ගය
+- ACP (Agent Communication Protocol) registry එක
+- මොඩියුලර් OAuth සපයන්නන් (`src/lib/oauth/providers/` යටතේ තනි මොඩියුල 22ක්)
+- අස්ථාපනය/සම්පූර්ණ අස්ථාපනය සඳහා scripts
 - OAuth පරිසරය අලුත්වැඩියා කිරීමේ ක්රියාව
-- OpenAI-අනුකූල WS clients සඳහා WebSocket bridge (`/v1/ws`)
-- සමමුහුර්ත ටෝකන කළමනාකරණය (නිකුත් කිරීම/අවලංගු කිරීම, ETag-versioned config bundle බාගැනීම)
-- GLM Thinking (`glmt`) පළමු පන්තියේ සපයන්නන්ගේ preset
-- දෙමුහුන් ටෝකන ගණනය (ඇස්තමේන්තු fallback එකක් සහිත සපයන්නාගේ `/messages/count_tokens`)
-- ආකෘති අන්වර්ථ නාම ස්වයංක්රීයව මූලික දත්ත ලෙස ඇතුළත් කිරීම (ආරම්භයේදී cross-proxy dialect සාමාන්යකරණ 30කට වැඩි සංඛ්යාවක්)
-- SSRF guard, පෞද්ගලික URL අවහිර කිරීම සහ වින්යාස කළ හැකි retry සහිත ආරක්ෂිත outbound fetch
-- වින්යාස කළ හැකි `requestRetry` සහ `maxRetryIntervalSec` සහිත cooldown-සැලකිලිමත් කතාබස් නැවත උත්සාහ
-- ආරම්භයේදී Zod සමඟ runtime පරිසර වලංගුකරණය
-- pagination, provider CRUD events සහ SSRF-blocked වලංගුකරණ ලොග්කරණය සහිත compliance audit v2
+- OpenAI-අනුකූල WS clients සඳහා WebSocket bridge එක (`/v1/ws`)
+- සමමුහුර්තකරණ ටෝකන කළමනාකරණය (නිකුත් කිරීම/අවලංගු කිරීම, ETag-versioned config bundle බාගත කිරීම)
+- GLM Thinking (`glmt`) පළමු පන්තියේ සපයන්නාගේ preset එක
+- දෙමුහුන් ටෝකන ගණනය කිරීම (ඇස්තමේන්තු fallback එකක් සහිත සපයන්නා-පාර්ශ්වීය `/messages/count_tokens`)
+- ආකෘති අන්වර්ථ නාම ස්වයංක්රීයව ආරම්භක දත්ත ලෙස එක් කිරීම (ආරම්භයේදී cross-proxy dialect සාමාන්යකරණ 30+)
+- SSRF guard, private URL අවහිර කිරීම සහ වින්යාස කළ හැකි නැවත උත්සාහ කිරීම සහිත ආරක්ෂිත outbound fetch
+- වින්යාස කළ හැකි `requestRetry` සහ `maxRetryIntervalSec` සහිත cooldown-සංවේදී කතාබස් නැවත උත්සාහ
+- ආරම්භයේදී Zod සමඟ ධාවන කාල පරිසරය වලංගු කිරීම
+- pagination, සපයන්නාගේ CRUD සිදුවීම් සහ SSRF-අවහිර කළ වලංගුකරණ ලොග්කරණය සහිත compliance audit v2
 
-ප්රධාන runtime ආකෘතිය:
+ප්රධාන ධාවන කාල ආකෘතිය:
 
-- `src/app/api/*` යටතේ ඇති Next.js app routes මඟින් උපකරණ පුවරු API සහ අනුකූලතා API යන දෙකම ක්රියාත්මක කරයි
-- `src/sse/*` + `open-sse/*` හි ඇති බෙදාගත් SSE/routing core එකක් සපයන්නන්ගේ ක්රියාත්මක කිරීම, පරිවර්තනය, streaming, fallback සහ භාවිතය හසුරුවයි
+- `src/app/api/*` යටතේ ඇති Next.js යෙදුම් මාර්ග මඟින් උපකරණ පුවරු API සහ අනුකූලතා API යන දෙකම ක්රියාත්මක කරයි
+- `src/sse/*` + `open-sse/*` තුළ ඇති හවුල් SSE/මාර්ගගත කිරීමේ හරය සපයන්නාගේ ක්රියාත්මක කිරීම, පරිවර්තනය, streaming, fallback සහ භාවිතය හසුරුවයි
 
 ## යොමු රූප සටහන්
 
@@ -258,73 +258,73 @@ flowchart LR
 - වින්යාස bundle: `src/app/api/sync/bundle` (GET, සැකසුම්/සපයන්නන්/සංයෝජන/යතුරු පිළිබඳ ETag අනුවාදගත snapshot එකක්)
 - WebSocket: `src/app/api/v1/ws/route.ts` — OpenAI-අනුකූල WS clients සඳහා Upgrade handler එකක්
 
-## 2) SSE + පරිවර්තන මූලිකාංගය
+## 2) SSE + පරිවර්තන හරය
 
 ප්රධාන ප්රවාහ මොඩියුල:
 
 - ප්රවේශය: `src/sse/handlers/chat.ts`
 - මූලික සම්බන්ධීකරණය: `open-sse/handlers/chatCore.ts`
-- සපයන්නා ක්රියාත්මක කිරීමේ ඇඩැප්ටර: `open-sse/executors/*`
-- ආකෘති හඳුනාගැනීම/සපයන්නාගේ වින්යාසය: `open-sse/services/provider.ts`
-- මොඩල විග්රහය/විසඳීම: `src/sse/services/model.ts`, `open-sse/services/model.ts`
-- ගිණුම් පසුබැසීමේ තර්කනය: `open-sse/services/accountFallback.ts`
+- සැපයුම්කරු ක්රියාත්මක කිරීමේ ඇඩැප්ටර: `open-sse/executors/*`
+- ආකෘති හඳුනාගැනීම/සැපයුම්කරු වින්යාසය: `open-sse/services/provider.ts`
+- මාදිලි විග්රහය/විසඳීම: `src/sse/services/model.ts`, `open-sse/services/model.ts`
+- ගිණුම් විකල්ප තර්කනය: `open-sse/services/accountFallback.ts`
 - පරිවර්තන රෙජිස්ට්රිය: `open-sse/translator/index.ts`
 - ප්රවාහ පරිවර්තන: `open-sse/utils/stream.ts`, `open-sse/utils/streamHandler.ts`
-- භාවිත දත්ත උකහා ගැනීම/ප්රමිතිකරණය: `open-sse/utils/usageTracking.ts`
-- Think ටැග් විග්රහකය: `open-sse/utils/thinkTagParser.ts`
-- Embedding හැසිරවුම: `open-sse/handlers/embeddings.ts`
-- Embedding සපයන්නාගේ රෙජිස්ට්රිය: `open-sse/config/embeddingRegistry.ts`
-- රූප උත්පාදන හැසිරවුම: `open-sse/handlers/imageGeneration.ts`
-- රූප සපයන්නාගේ රෙජිස්ට්රිය: `open-sse/config/imageRegistry.ts`
-- ප්රතිචාර පවිත්රකරණය: `open-sse/handlers/responseSanitizer.ts`
-- භූමිකා ප්රමිතිකරණය: `open-sse/services/roleNormalizer.ts`
+- භාවිත දත්ත උකහා ගැනීම/සාමාන්යකරණය: `open-sse/utils/usageTracking.ts`
+- Think ටැග් විග්රාහකය: `open-sse/utils/thinkTagParser.ts`
+- Embedding හසුරුවනය: `open-sse/handlers/embeddings.ts`
+- Embedding සැපයුම්කරු රෙජිස්ට්රිය: `open-sse/config/embeddingRegistry.ts`
+- රූප ජනන හසුරුවනය: `open-sse/handlers/imageGeneration.ts`
+- රූප සැපයුම්කරු රෙජිස්ට්රිය: `open-sse/config/imageRegistry.ts`
+- ප්රතිචාර පිරිසිදු කිරීම: `open-sse/handlers/responseSanitizer.ts`
+- භූමිකා සාමාන්යකරණය: `open-sse/services/roleNormalizer.ts`
 
 සේවා (ව්යාපාරික තර්කනය):
 
-- ගිණුම් තේරීම/ලකුණුකරණය: `open-sse/services/accountSelector.ts`
+- ගිණුම් තේරීම/ලකුණු කිරීම: `open-sse/services/accountSelector.ts`
 - සන්දර්භ ජීවන චක්ර කළමනාකරණය: `open-sse/services/contextManager.ts`
 - IP පෙරහන් බලාත්මක කිරීම: `open-sse/services/ipFilter.ts`
 - සැසි ලුහුබැඳීම: `open-sse/services/sessionManager.ts`
 - ඉල්ලීම් අනුපිටපත් ඉවත් කිරීම: `open-sse/services/signatureCache.ts`
-- පද්ධති ප්රේරක ඇතුළු කිරීම: `open-sse/services/systemPrompt.ts`
+- පද්ධති ප්රේරක ඇතුළත් කිරීම: `open-sse/services/systemPrompt.ts`
 - චින්තන අයවැය කළමනාකරණය: `open-sse/services/thinkingBudget.ts`
-- Wildcard මොඩල මාර්ගගත කිරීම: `open-sse/services/wildcardRouter.ts`
+- Wildcard මාදිලි මාර්ගගත කිරීම: `open-sse/services/wildcardRouter.ts`
 - අනුපාත සීමා කළමනාකරණය: `open-sse/services/rateLimitManager.ts`
 - පරිපථ බිඳිනය: `src/shared/utils/circuitBreaker.ts`
-- සන්දර්භ භාරදීම: `open-sse/services/contextHandoff.ts` — context-relay උපායමාර්ගය සඳහා භාරදීමේ සාරාංශ උත්පාදනය සහ ඇතුළු කිරීම
-- සම්පීඩනය: `open-sse/services/compression/*` — සපයන්නාගේ පරිවර්තනයට පෙර පූර්වක්රියාකාරී සම්පීඩනය;
-  Caveman රීති, RTK පෙරහන්, ගොඩගැසූ නලමාර්ග, සම්පීඩන සංයෝජන, සංඛ්යාලේඛන සහ වලංගුකරණය ඇතුළත් වේ
+- සන්දර්භ භාරදීම: `open-sse/services/contextHandoff.ts` — context-relay උපායමාර්ගය සඳහා භාරදීමේ සාරාංශ ජනනය සහ ඇතුළත් කිරීම
+- සම්පීඩනය: `open-sse/services/compression/*` — සැපයුම්කරු පරිවර්තනයට පෙර පූර්වක්රියාකාරී සම්පීඩනය;
+  Caveman රීති, RTK පෙරහන්, ස්ථරගත නළමාර්ග, සම්පීඩන සංයෝජන, සංඛ්යාලේඛන සහ වලංගුකරණය ඇතුළත් වේ
 - Codex කෝටා ලබාගැනීම: `open-sse/services/codexQuotaFetcher.ts` — context-relay භාරදීමේ තීරණ සඳහා Codex කෝටාව ලබාගනී
-- සිසිලන කාලය පිළිබඳ දැනුවත් නැවත උත්සාහය: `src/sse/services/cooldownAwareRetry.ts` — වින්යාස කළ හැකි `requestRetry` / `maxRetryIntervalSec` සමඟ එක් එක් මොඩලයට සිසිලන කාල නැවත උත්සාහ
-- ආරක්ෂිත පිටතට යන fetch: `src/shared/network/safeOutboundFetch.ts` — SSRF ආරක්ෂණය, පෞද්ගලික URL අවහිර කිරීම, නැවත උත්සාහය සහ කාල සීමාව සමඟ ආරක්ෂිත සපයන්නා/මොඩල fetch
-- පිටතට යන URL ආරක්ෂණය: `src/shared/network/outboundUrlGuard.ts` — සපයන්නාගේ URL මත ධාරක පරීක්ෂා; `src/shared/network/outboundUrlGuardPolicy.ts` විසින් `OMNIROUTE_ALLOW_LOCAL_PROVIDER_URLS`, `OMNIROUTE_ALLOW_PRIVATE_PROVIDER_URLS` සහ ඒවායේ උපකරණ පුවරු ටොගල් මඟින් ප්රකාරය තෝරයි (`docs/reference/ENVIRONMENT.md` බලන්න)
-- සපයන්නාගේ ඉල්ලීම් පෙරනිමි: `open-sse/services/providerRequestDefaults.ts` — සපයන්නා මට්ටමේ `maxTokens`, `temperature`, `thinkingBudgetTokens` පෙරනිමි
-- GLM සපයන්නාගේ නියත: `open-sse/config/glmProvider.ts` — හවුල් GLM මොඩල, කෝටා URL, GLMT කාල සීමාව/පෙරනිමි
-- Antigravity උඩුගං සේවාව: `open-sse/config/antigravityUpstream.ts` — මූලික URL සහ සොයාගැනීමේ මාර්ග නියත
-- Codex සේවාලාභී නියත: `open-sse/config/codexClient.ts` — අනුවාදගත user-agent සහ සේවාලාභී අනුවාද අගයන්
-- මොඩල අන්වර්ථ නාම ආරම්භක දත්ත: `src/lib/modelAliasSeed.ts` — ආරම්භයේදී proxy උපභාෂා හරහා අන්වර්ථ නාම 30+ ක් සකසයි
+- විරාම කාලය පිළිබඳ දැනුවත් නැවත උත්සාහය: `src/sse/services/cooldownAwareRetry.ts` — වින්යාස කළ හැකි `requestRetry` / `maxRetryIntervalSec` සහිත එක් එක් මාදිලිය සඳහා විරාම කාල නැවත උත්සාහ
+- ආරක්ෂිත පිටතට යන fetch: `src/shared/network/safeOutboundFetch.ts` — SSRF ආරක්ෂණය, පෞද්ගලික URL අවහිර කිරීම, නැවත උත්සාහය සහ කාල සීමාව සහිතව ආරක්ෂිත කළ සැපයුම්කරු/මාදිලි fetch
+- පිටතට යන URL ආරක්ෂකය: `src/shared/network/outboundUrlGuard.ts` — සැපයුම්කරු URL මත ධාරක පරීක්ෂා; `src/shared/network/outboundUrlGuardPolicy.ts` විසින් `OMNIROUTE_ALLOW_LOCAL_PROVIDER_URLS`, `OMNIROUTE_ALLOW_PRIVATE_PROVIDER_URLS` සහ ඒවායේ උපකරණ පුවරු ටොගල් වෙතින් මාදිලිය තෝරයි (`docs/reference/ENVIRONMENT.md` බලන්න)
+- සැපයුම්කරු ඉල්ලීම් පෙරනිමි: `open-sse/services/providerRequestDefaults.ts` — සැපයුම්කරු මට්ටමේ `maxTokens`, `temperature`, `thinkingBudgetTokens` පෙරනිමි
+- GLM සැපයුම්කරු නියතයන්: `open-sse/config/glmProvider.ts` — හවුල් GLM මාදිලි, කෝටා URL, GLMT කාල සීමාව/පෙරනිමි
+- Antigravity උඩුගං සේවාව: `open-sse/config/antigravityUpstream.ts` — මූලික URL සහ සොයාගැනීමේ මාර්ග නියතයන්
+- Codex සේවාලාභී නියතයන්: `open-sse/config/codexClient.ts` — අනුවාදගත user-agent සහ සේවාලාභී-අනුවාද අගයන්
+- මාදිලි අන්වර්ථ මූලික දත්ත: `src/lib/modelAliasSeed.ts` — ආරම්භයේදී ප්රොක්සි අතර භාවිත වන උපභාෂා අන්වර්ථ 30+ක් ඇතුළත් කරයි
 
 වසම් ස්තර මොඩියුල:
 
 - පිරිවැය රීති/අයවැය: `src/domain/costRules.ts`
-- පසුබැසීමේ ප්රතිපත්තිය: `src/domain/fallbackPolicy.ts`
-- සංයෝජන විසඳුම: `src/domain/comboResolver.ts`
+- විකල්ප ප්රතිපත්තිය: `src/domain/fallbackPolicy.ts`
+- සංයෝජන විසඳනය: `src/domain/comboResolver.ts`
 - අගුලු දැමීමේ ප්රතිපත්තිය: `src/domain/lockoutPolicy.ts`
-- ප්රතිපත්ති එන්ජිම: `src/domain/policyEngine.ts` — මධ්යගත අගුලු දැමීම → අයවැය → පසුබැසීම ඇගයීම
+- ප්රතිපත්ති එන්ජිම: `src/domain/policyEngine.ts` — මධ්යගත අගුලු දැමීම → අයවැය → විකල්ප ඇගයීම
 - දෝෂ කේත නාමාවලිය: `src/shared/constants/errorCodes.ts`
 - ඉල්ලීම් ID: `src/shared/utils/requestId.ts`
 - Fetch කාල සීමාව: `src/shared/utils/fetchTimeout.ts`
-- ඉල්ලීම් දුරමිතිය: `src/shared/utils/requestTelemetry.ts`
+- ඉල්ලීම් දුරමිතික: `src/shared/utils/requestTelemetry.ts`
 - අනුකූලතාව/විගණනය: `src/lib/compliance/index.ts`
 - ඇගයීම් ධාවකය: `src/lib/evals/evalRunner.ts`
-- වසම් තත්ත්ව ස්ථායීකරණය: `src/lib/db/domainState.ts` — පසුබැසීමේ දාම, අයවැය, පිරිවැය ඉතිහාසය, අගුලු දැමීමේ තත්ත්වය සහ පරිපථ බිඳින සඳහා SQLite CRUD
+- වසම් තත්ත්ව ස්ථායීකරණය: `src/lib/db/domainState.ts` — විකල්ප දාම, අයවැය, පිරිවැය ඉතිහාසය, අගුලු දැමීමේ තත්ත්වය සහ පරිපථ බිඳින සඳහා SQLite CRUD
 
-OAuth සපයන්නාගේ මොඩියුල (`src/lib/oauth/providers/` යටතේ තනි ගොනු 27ක්):
+OAuth සැපයුම්කරු මොඩියුල (`src/lib/oauth/providers/` යටතේ තනි ගොනු 27ක්):
 
 - රෙජිස්ට්රි දර්ශකය: `src/lib/oauth/providers/index.ts`
-- තනි සපයන්නන්: `agy.ts`, `antigravity.ts`, `claude.ts`, `cline.ts`, `codebuddy-cn.ts`, `codebuddy-intl.ts`, `codex.ts`, `cursor.ts`, `devin-desktop.ts`, `ghe-copilot.ts`, `github.ts`, `gitlab-duo.ts`, `grok-cli-oauth.ts`, `grok-cli.ts`, `kilocode.ts`, `kimi-coding.ts`, `kiro.ts`, `muse-code.ts`, `openference.ts`, `qoder.ts`, `trae.ts`, `workbuddy.ts`, `xai-oauth.ts`, `zed-hosted.ts`, `zed.ts`
+- තනි සැපයුම්කරුවන්: `agy.ts`, `antigravity.ts`, `claude.ts`, `cline.ts`, `codebuddy-cn.ts`, `codebuddy-intl.ts`, `codex.ts`, `cursor.ts`, `devin-desktop.ts`, `ghe-copilot.ts`, `github.ts`, `gitlab-duo.ts`, `grok-cli-oauth.ts`, `grok-cli.ts`, `kilocode.ts`, `kimi-coding.ts`, `kiro.ts`, `muse-code.ts`, `openference.ts`, `qoder.ts`, `trae.ts`, `workbuddy.ts`, `xai-oauth.ts`, `zed-hosted.ts`, `zed.ts`
 - හවුල් සහායක: `codebuddyDeviceAuth.ts` (CodeBuddy CN/intl උපාංග ප්රවාහය), `museCodeDeviceResponse.ts`
-- සැහැල්ලු ආවරණකය: `src/lib/oauth/providers.ts` — තනි මොඩියුලවලින් නැවත නිර්යාත කරයි
+- සැහැල්ලු ආවරණය: `src/lib/oauth/providers.ts` — තනි මොඩියුලවලින් නැවත නිර්යාත කරයි
 
 ## 5) කාවැද්දූ සේවා (v3.8.4)
 
@@ -536,14 +536,15 @@ FSM සංක්රාන්ති Auto Combo හි ලකුණුකරණය
 
 ## 4) සත්යාපනය + ආරක්ෂක මතුපිට
 
-- උපකරණ පුවරුවේ cookie සත්යාපනය: `src/proxy.ts`, `src/app/api/auth/login/route.ts`
-- API key ජනනය/සත්යාපනය: `src/shared/utils/apiKey.ts`
-- සැපයුම්කරුගේ රහස් `providerConnections` ඇතුළත් කිරීම් තුළ ස්ථායීව ගබඩා කෙරේ
-- `open-sse/utils/proxyFetch.ts` (env vars) හරහා සහ `open-sse/utils/networkProxy.ts` (එක් එක් සැපයුම්කරු සඳහා හෝ ගෝලීයව වින්යාස කළ හැකි) හරහා පිටතට යන proxy සහාය
-- SSRF / පිටතට යන URL ආරක්ෂකය: `src/shared/network/outboundUrlGuard.ts` — සියලු සැපයුම්කරු ඇමතුම් සඳහා private/loopback/link-local පරාස අවහිර කරයි
-- ධාවනකාල env වලංගුකරණය: `src/lib/env/runtimeEnv.ts` — සියලු environment variables සඳහා Zod schema එකක් වන අතර, ආරම්භක දෝෂ/අනතුරු ඇඟවීම් ලෙස පෙන්වයි
-- සමමුහුර්ත කිරීමේ ටෝකන: `src/lib/db/syncTokens.ts` — config bundle බාගැනීමේ endpoints සඳහා විෂයපථයට සීමා කළ ටෝකන; `sync_tokens` SQLite වගුව මඟින් අනුබල සපයයි (migration `024_create_sync_tokens.sql`)
-- WebSocket handshake සත්යාපනය: `src/lib/ws/handshake.ts` — API key එකක් හෝ session cookie එකක් හරහා WS upgrade ඉල්ලීම් වලංගු කරයි
+- Dashboard cookie සත්යාපනය: `src/proxy.ts`, `src/app/api/auth/login/route.ts`
+- API යතුරු ජනනය/සත්යාපනය: `src/shared/utils/apiKey.ts`
+- සැපයුම්කරුගේ රහස් `providerConnections` ඇතුළත් කිරීම්වල ස්ථිරව ගබඩා කෙරේ
+- `open-sse/utils/proxyFetch.ts` (පරිසර විචල්ය) සහ `open-sse/utils/networkProxy.ts` (එක් එක් සැපයුම්කරු සඳහා හෝ ගෝලීයව වින්යාස කළ හැකි) හරහා පිටතට යන proxy සහාය
+- SSRF / පිටතට යන URL ආරක්ෂකය: `src/shared/network/outboundUrlGuard.ts` — සැපයුම්කරු ඇමතුම් සහ webhook ඉලක්ක සඳහා host පරීක්ෂා කරයි; ප්රකාරය `src/shared/network/outboundUrlGuardPolicy.ts` වෙතින් ලැබේ (`docs/reference/ENVIRONMENT.md` හි flags)
+- Runtime පරිසර සත්යාපනය: `src/lib/env/runtimeEnv.ts` — සියලු පරිසර විචල්ය සඳහා Zod schema එකක් වන අතර, දෝෂ/අනතුරු ඇඟවීම් ලෙස ආරම්භයේදී පෙන්වයි
+- Sync tokens: `src/lib/db/syncTokens.ts` — config bundle බාගැනීමේ endpoints සඳහා විෂයපථගත tokens; `sync_tokens` SQLite වගුව මඟින් සහාය දක්වයි (migration `024_create_sync_tokens.sql`)
+- WebSocket handshake සත්යාපනය: `src/lib/ws/handshake.ts` — API යතුරක් හෝ session cookie එකක් භාවිතයෙන් WS upgrade ඉල්ලීම් සත්යාපනය කරයි
+- සජීවී dashboard WebSocket සත්යාපනය: `src/server/ws/liveServer.ts` — sidecar එක (`LIVE_WS_PORT` port එක) dashboard session cookie එකක් හෝ කළමනාකරණ විෂයපථයක් (`manage`/`admin`) සහිත Bearer API යතුරක් පිළිගනී; inference සඳහා පමණක් වන යතුරු ප්රතික්ෂේප කෙරේ. එහි අභ්යන්තර `POST /__omniroute_event` ප්රකාශක endpoint එක, proxy-hop header එකක් (`x-forwarded-*`, `x-real-ip`, `forwarded`, `via`) නොමැති විට පමණක් loopback peers පිළිගනී
 
 ## 5) Cloud සමමුහුර්තකරණය
 
@@ -1093,9 +1094,9 @@ flowchart LR
 
 ## 6) SSRF / පිටතට යන URL ආරක්ෂකය
 
-- `src/shared/network/outboundUrlGuard.ts` මඟින් සියලු private/loopback/link-local ඉලක්ක URL, provider executors වෙත ළඟා වීමට පෙර අවහිර කරයි
-- Provider model සොයාගැනීමේ සහ තහවුරු කිරීමේ routes සෑම පිටතට යන ඉල්ලීමකටම පෙර ආරක්ෂකය යොදන `src/shared/network/safeOutboundFetch.ts` භාවිත කරයි
-- ආරක්ෂක දෝෂ HTTP 422 සමඟ `URL_GUARD_BLOCKED` ලෙස පෙන්වන අතර `providerAudit.ts` හරහා අනුකූලතා විගණන සටහනට ලොග් කරනු ලැබේ
+- `BaseExecutor.assertOutboundUrlAllowed` (`open-sse/executors/base.ts`) මඟින් `BaseExecutor.execute()` හරහා යවන කතාබස් ඉල්ලීම් සඳහා `src/shared/network/outboundUrlGuard.ts` යොදයි. public-only ප්රකාරයේදී (`OMNIROUTE_ALLOW_LOCAL_PROVIDER_URLS=false` සහ private ධජය අක්රියව ඇති විට), එය private සහ loopback සත්කාරක මෙන්ම 169.254.0.0/16 ද අවහිර කරයි; අනෙකුත් සෑම ප්රකාරයකදීම එය cloud-metadata සත්කාරක අවහිර කරයි. කිසියම් DNS සෙවීමකට පෙර, ලියා ඇති ආකාරයටම සත්කාරක නාමය හෝ IP literal එක එය පරීක්ෂා කරයි. ඇතුළත් local providers මෙය මඟ හරියි.
+- Provider model සොයාගැනීමේ සහ වලංගුකරණයේ routes, පිටතට යන සෑම ඉල්ලීමකටම පෙර ආරක්ෂකය යොදන `src/shared/network/safeOutboundFetch.ts` භාවිත කරයි
+- ආරක්ෂක දෝෂ HTTP 503 සමඟ `URL_GUARD_BLOCKED` ලෙස මතු වේ (`getSafeOutboundFetchErrorStatus`; model-discovery route එක 400 ආපසු ලබා දෙයි), සහ වලංගුකරණය අතරතුර සිදුවන සැබෑ SSRF අවහිර කිරීම් `provider.validation.ssrf_blocked` events ලෙස විගණන සටහනට ලොග් කෙරේ
 
 ## නිරීක්ෂණ හැකියාව සහ මෙහෙයුම් සංඥා
 

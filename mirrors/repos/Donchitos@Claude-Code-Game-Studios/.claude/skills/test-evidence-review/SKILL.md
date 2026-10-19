@@ -3,7 +3,7 @@ name: test-evidence-review
 description: "Quality review of test files and evidence — goes beyond existence, evaluates assertion coverage. ADEQUATE/INCOMPLETE/MISSING/NOT ASSESSED per story."
 argument-hint: "[story-path | sprint | system-name]"
 user-invocable: true
-allowed-tools: Read, Glob, Grep, Write, Bash(bash "*/.claude/skills/test-evidence-review/../../hooks/yaml-helper.sh" resolve_config *)
+allowed-tools: Read, Glob, Grep, Write, Bash(bash "*/.claude/skills/test-evidence-review/../../hooks/yaml-helper.sh" resolve_config *), Bash(bash .claude/scripts/review-receipts.sh check *)
 model: sonnet
 ---
 
@@ -86,10 +86,6 @@ the list of story file paths from the sprint plan.
 > all fine*. This skill gates story closure, and `coding-standards.md` marks Logic,
 > Integration, Visual/Feel and UI evidence BLOCKING, so a false-clean closes stories nobody
 > reviewed.
->
-> This is a recurring shape: the sophisticated inner rule present, the outer
-> boundary unguarded. Ask it of any skill that aggregates —
-> **what does this emit when the set is empty?**
 
 For the resulting story set, collect the fields below with **targeted section
 greps, not a full read of each story**:
@@ -121,7 +117,7 @@ contains the story slug or its system. Test files are named per
 
 **Integration stories**: the same, under the integration root (`tests/integration/[system]/`,
 `Assets/Tests/PlayMode/`, or Unreal's test root)
-  - Also check `production/session-logs/` for playtest records mentioning the story
+  - Also check `production/qa/playtests/` for playtest records mentioning the story
 
 **Visual/Feel and UI stories**: Glob `production/qa/evidence/` for a retained image
 (`*.png`, `*.jpg`, `*.gif`) belonging to this story, and for
@@ -219,6 +215,14 @@ default, and a description is an assertion rather than evidence.
 For UI stories: require the same retained screenshot of each screen touched.
 A walkthrough log is welcome but not required.
 
+### Evidence older than its code
+
+For each story with a retained image, run
+`bash .claude/scripts/review-receipts.sh check production/qa/evidence/[story-slug]/stamp.txt`.
+List each `CHANGED:` or `GONE:` file as POTENTIALLY STALE — it changed after the
+evidence was captured. `RECEIPT: NONE`: say "no stamp" and use the date check
+below. A report line only: it never changes the story's verdict.
+
 ### Date coverage
 
 Evidence doc should have a date. If the date is earlier than the story's
@@ -265,7 +269,7 @@ and demoting a real failure behind an access problem would bury it. `WAIVED`
 ranks below `ADEQUATE`: the overall verdict reads WAIVED only when every story
 in scope was waived, and the report names each waived story either way.
 
-> Why this needed saying: evidence review **gates story completion**, and
+> Why this matters: evidence review **gates story completion**, and
 > `coding-standards.md` makes Logic, Integration, Visual/Feel and UI evidence BLOCKING. A verdict
 > vocabulary with no way to express "I could not check" forces every unknown
 > into one of three claims about the story — which is how a story nobody

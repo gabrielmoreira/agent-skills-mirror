@@ -8,24 +8,23 @@ lower-level `agent::harness` remains the execution engine: prompt
 construction, policy-filtered tools, model selection, and the sub-agent run
 loop itself.
 
-The generic durable coordination model lives in
-`tinyagents-orchestration`: team/workflow types, validation, run-ledger
-services, graph composition, member prompt construction, message watermark
-delivery, and diagnostic workflow topology. OpenHuman imports those APIs
-directly. This module retains the product adapters: Config and root-parent
-construction, model/tool selection, `run_subagent`, progress and BUS events,
-RPC/tool formatting, and OpenHuman's worktree policy.
+The generic coordination model lives in `tinyagents-orchestration`: team and
+workflow types, validation, run-ledger services, workflow execution, member
+prompt construction, message watermark delivery, and parallel task
+staging/fanout. OpenHuman imports those APIs directly. This module retains the
+product adapters: Config and root-parent construction, model/tool selection,
+`run_subagent`, progress and BUS events, RPC/tool formatting, and OpenHuman's
+worktree policy.
 
 ## Responsibilities
 
 - Register, wait on, and cancel child agent runs ([`ops.rs`](./ops.rs),
   `AgentOrchestrationSession`) as thin wrappers over TinyAgents'
-  `DetachedTaskRegistry`.
+  `DetachedTaskRegistry`, including its ordered batch wait and shared deadline.
 - Host adapters for durable teams and workflows: RPC schemas, root-parent
-  worker execution, model selection, cancellation policy, and BUS/progress
-  integration. Their host-neutral types, storage services, scheduling graphs,
-  prompt composition, and delivery bookkeeping are in
-  `tinyagents-orchestration`.
+  worker execution, model selection, durable lifecycle CAS, and BUS/progress
+  integration. Their host-neutral types, storage services, workflow scheduling,
+  prompt composition, and delivery bookkeeping are in `tinyagents-orchestration`.
 - A read-only command-center view over background agent runs plus stop/retry/
   continue/follow-up control verbs (`command_center/`).
 - OpenHuman's `OpenHumanWorktreeIsolation` adapter and RPC surface; generic
@@ -36,8 +35,15 @@ RPC/tool formatting, and OpenHuman's worktree policy.
   finished background results back into chat, and settling run-ledger rows
   from the global bus regardless of the parent turn's lifecycle
   (`running_subagents*.rs`, [`background_completions.rs`](./background_completions.rs),
+  [`background_completions/store_adapter.rs`](./background_completions/store_adapter.rs),
   [`completion_notice.rs`](./completion_notice.rs),
-  [`background_delivery.rs`](./background_delivery.rs), [`run_ledger_finalize.rs`](./run_ledger_finalize.rs)). The delivery turn runs
+  [`background_delivery.rs`](./background_delivery.rs),
+  [`delivery_events.rs`](./delivery_events.rs)). Generic retry,
+  give-up, replay, and router caching belong to TinyAgents' completion owner;
+  OpenHuman keeps its thread session delivery and synchronous durable give-up
+  writer. AgentRun status projection lives in
+  [`agent_runs/subagent_finalize.rs`](../../agent_runs/subagent_finalize.rs),
+  because that product ledger is separate from TinyAgents' task store. The delivery turn runs
   on the originating thread's cached chat session via
   `web_chat::run_system_turn_on_thread`, never on a throwaway host.
 - A shared root `ParentExecutionContext` builder for surfaces that spawn real
@@ -50,21 +56,29 @@ RPC/tool formatting, and OpenHuman's worktree policy.
 - `ops.rs` / [`types.rs`](./types.rs): `AgentOrchestrationSession`, `OrchestrationError`,
   `AgentSnapshot`, `OrchestrationTaskStatus`, `SpawnAgentRequest`/`Response`,
   `WaitAgentOptions`/`Response`.
-- `agent_teams/`: OpenHuman's live member-worker adapter for the generic
-  `tinyagents_orchestration::teams` service: it supplies Config, the root
-  parent context, model/tool execution, progress tracing, and BUS-facing
-  lifecycle behavior.
+- `agent_teams/`: OpenHuman's member-worker adapter for TinyAgents'
+  `TeamService::start_member_with_started`. The host supplies Config, the root
+  parent context, model/tool execution and product failure events; the owner
+  handles claim, active state, completion, and token-scoped cleanup.
 - `command_center/`: read-only grouped view of background agent runs
   (`ops.rs`) plus stop/retry/continue/follow-up transitions (`control.rs`).
-- `workflow_runs/`: OpenHuman's live workflow execution and RPC adapters;
-  workflow definitions, durable state, validation, graphs, and neutral engine
-  mechanics are imported directly from `tinyagents_orchestration::workflow`.
+- `workflow_runs/`: OpenHuman's workflow RPC and executor adapters. The
+  `WorkflowRunSupervisor` owns live generation/cancellation state; OpenHuman
+  commits durable revision-CAS lifecycle transitions inside the owner's
+  generation handoff, while retaining policy admission, root-parent
+  construction and origin propagation. Pre-drive setup errors use the captured
+  lifecycle revision; drive errors rely on engine lease-fenced lifecycle writes.
 - [`delegation.rs`](./delegation.rs): production worker for TinyAgents' durable
   plan→execute⇄review→finalize graph; every stage runs through `run_subagent`.
-- `spawn_parallel_agents` uses `tinyagents_graph::parallel::map_reduce` with
-  OpenHuman-owned request validation, worktree policy, dispatch, workers, and
-  result formatting. The former parallel coordinator/request graph modules
-  were removed; there is no OpenHuman forwarding layer around the graph API.
+- `spawn_parallel_agents` stages through
+  `tinyagents_orchestration::parallel::Plan::stage_with_preflight` and fans out
+  through the crate's `parallel::run`. OpenHuman owns identity/tool/workspace
+  policy and its async progress and result projections. Staging only resolves
+  definitions and trims prompts before admission; worktree creation and spawn
+  events happen after policy and batch arbitration. Results are projected in
+  input order after the worker batch completes. The sync-only `RunHooks` cannot
+  carry these awaited host callbacks, so the adapter keeps them at the async
+  preflight/execution and ordered-collection boundaries.
 - [`subagent_events.rs`](./subagent_events.rs): the single owner that constructs and publishes
   `DomainEvent::Subagent{Spawned,Completed,Failed,AwaitingUser}`.
 - `subagent_control.rs`: manual cancel/steer of detached background
@@ -84,11 +98,12 @@ RPC/tool formatting, and OpenHuman's worktree policy.
   detached sub-agent host glue (registry instance and metadata, store path,
   steering, boot reconcile). The status type, wait, ledger helpers, roster and
   session resolution live in `tinyagents_orchestration::subagent`
-  (`DetachedSubagentStatus`, `wait_detached`, `SubagentIdentity`, ...).
+  (`DetachedSubagentStatus`, `wait_detached`, `SubagentIdentity`, ...); batch
+  waits call the owner's ordered `wait_many` API.
   `background_completions.rs` is the host adapter over the harness
-  `tinyagents_tasks::CompletionRouter` (one durable `JsonlCompletionStore` per
-  workspace at `.openhuman/background_completions.jsonl`, parent key = chat
-  thread id): the router owns the queue, dedupe, tombstones (collected inline,
+  `tinyagents_tasks::CompletionRouter` and its owner pool, with a durable
+  `DriverCompletionStore` in the storage backend scoped by profile/workspace;
+  the router owns the queue, dedupe, tombstones (collected inline,
   stopped, cancelled thread), attempt counting and give-up, so a completion that
   was never delivered is redelivered after a restart
   (`background_delivery::recover_on_boot`, wired next to the orphaned-task
@@ -96,10 +111,10 @@ RPC/tool formatting, and OpenHuman's worktree policy.
   `<background_agent_*>` wording (a `CompletionFormatter`) and the
   `[BACKGROUND_DELIVERY_FAILED]` give-up notice. `background_delivery.rs` keeps
   the host policy: idle-gated, debounced (3s), batched delivery of finished
-  background runs back into chat, the system turn, and the give-up writer fed by
-  `mark_failed`. `run_ledger_finalize.rs` is the
-  global-bus subscriber that settles ledger rows for runs that outlive their
-  spawning turn.
+  background runs back into chat and the system turn; its synchronous error
+  callback writes the give-up notice before the owner releases its lease. The
+  `agent_runs` domain separately subscribes to terminal sub-agent events to
+  settle the product ledger for runs that outlive their spawning turn.
 - [`fleet_tools.rs`](./fleet_tools.rs): decides which fleet-control tools (`wait_subagent`,
   `steer_subagent`, `wait_loop`, `close_subagent`) a given parent agent's
   definition actually exposes, so the delegation prompts and the
@@ -107,6 +122,42 @@ RPC/tool formatting, and OpenHuman's worktree policy.
   (#5701).
 - [`tools.rs`](./tools.rs): declares the LLM-callable tool files under `tools/` (see
   [Agent tools](#agent-tools)).
+
+## Owner call-site map
+
+The host calls the owner's lifecycle APIs directly; the old generic loops are
+removed rather than kept under new names:
+
+- `AgentOrchestrationSession::wait_agents` uses `DetachedTaskRegistry::wait_many`
+  for input ordering, one shared deadline and first-error behavior.
+- Background delivery uses `CompletionDelivery::recover_on_boot_with_error`
+  and `deliver_once_with_error`. TinyAgents owns retry, lease, replay, and
+  give-up transitions. OpenHuman's synchronous failure callback appends the
+  final notice before the lease is released. The rich awaited completion
+  callback still writes workflow-proposal and incomplete-run framing; the plain
+  owner status watcher is the sole generic TaskStore mirror.
+- `start_member_run` keeps product active-member and claimable-task prechecks,
+  then `TeamService::start_member_with_started` owns claim, active state,
+  completion and token-scoped cleanup. The host returns the owner's receipt
+  over a oneshot before continuing its real worker executor.
+- Workflow start/resume/stop use `WorkflowRunSupervisor` generation APIs.
+  OpenHuman commits durable start/resume transitions inside
+  `start_scoped_with_commit` / `resume_scoped_with_commit`, so the durable CAS
+  and generation handoff are serialized by the owner. Policy admission,
+  root-parent construction and origin propagation remain host responsibilities.
+  Stop captures the current handle before its revision CAS and cancels only
+  that generation after the CAS succeeds. Pre-drive setup failures may update
+  only their captured revision; once drive begins, the engine's lease-fenced
+  lifecycle writes own durable errors, and the host only logs drive failures.
+- Parallel dispatch uses `Plan::stage_with_preflight` and `parallel::run`.
+  Preflight only resolves definitions and trims prompts; worktree creation and
+  spawn events follow admission. Awaited host progress and results stay in the
+  adapter, with result projection in input order after collection. Sync-only
+  `RunHooks` cannot carry those awaited callbacks or preserve that order.
+- The old `run_ledger_finalize` subscriber moved to
+  [`agent_runs/subagent_finalize.rs`](../../agent_runs/subagent_finalize.rs):
+  it is the product AgentRun projection over bus events, not a TinyAgents task
+  status mirror.
 
 ## Public surface
 
@@ -126,11 +177,11 @@ Five controller pairs are registered in `crate::core::all`:
 
 | Namespace | Source | Methods |
 | --- | --- | --- |
-| `agent_team` | `agent_teams::{all_agent_team_controller_schemas, all_agent_team_registered_controllers}` | `create`, `list`, `get`, `assign_task`, `claim_task`, `message_member`, `list_messages`, `complete_task`, `shutdown_member`, `close`, `start_member` |
-| `agent_work` | `command_center::{all_command_center_controller_schemas, all_command_center_registered_controllers}` | `list`, `control` |
-| `workflow_run` | `workflow_runs::{all_workflow_run_controller_schemas, all_workflow_run_registered_controllers}` | `list_definitions`, `list`, `get`, `start`, `stop`, `resume` |
-| `worktree` | `worktree_schemas::{all_controller_schemas, all_registered_controllers}` | `list`, `status`, `diff`, `remove` |
-| `subagent` | `subagent_control::{all_controller_schemas, all_registered_controllers}` | `cancel`, `steer` |
+| `agent_team` | `agent_runs::agent_teams::{all_agent_team_controller_schemas, all_agent_team_registered_controllers}` | `create`, `list`, `get`, `assign_task`, `claim_task`, `message_member`, `list_messages`, `complete_task`, `shutdown_member`, `close`, `start_member` |
+| `agent_work` | `agent_runs::command_center::{all_command_center_controller_schemas, all_command_center_registered_controllers}` | `list`, `control` |
+| `workflow_run` | `agent_runs::workflow_runs::{all_workflow_run_controller_schemas, all_workflow_run_registered_controllers}` | `list_definitions`, `list`, `get`, `start`, `stop`, `resume` |
+| `worktree` | `agent_runs::worktree_schemas::{all_controller_schemas, all_registered_controllers}` | `list`, `status`, `diff`, `remove` |
+| `subagent` | `agent_runs::subagent_control::{all_controller_schemas, all_registered_controllers}` | `cancel`, `steer` |
 
 ## Agent tools
 
@@ -152,7 +203,7 @@ name:
 
 `dispatch.rs` (the shared spawn path every tool above
 calls), `awaiting_user.rs` (the awaiting-user envelope), and
-`worker_thread.rs` (worker thread creation) are `pub(crate)` helpers, not
+`threads/worker_thread.rs` (worker thread creation) are `pub(crate)` helpers, not
 tools. Live harness registrations use typed `ToolDispatch<(),
 OpenHumanRunContext>` wrappers and fork the parent carrier for every child,
 so cancellation, origin, progress, dispatch state, thread, and workspace stay
@@ -169,10 +220,10 @@ races it against the inherited cancellation token. Execution itself routes throu
 - `tinyagents_session::run_ledger`: the `agent_runs`,
   `agent_teams`/`agent_team_members`/`agent_team_tasks`, and `workflow_runs`
   tables plus the shared `run_events` log, backed by
-  `{workspace}/session_db/sessions.db` (see [`agent/session_db/mod.rs`](../session_db/mod.rs)). Every
+  `{workspace}/session_db/sessions.db` (see [`sessions/mod.rs`](../../sessions/mod.rs)). Every
   spawn path (`spawn_subagent`, `spawn_async_subagent`,
   `spawn_parallel_agents`, `continue_subagent`, `dispatch`) writes a `running`
-  `agent_runs` row; `run_ledger_finalize.rs` settles it from the global event
+  `agent_runs` row; the `agent_runs` domain settles it from the global event
   bus so detached runs that outlive their spawning turn are not left `running`
   forever.
 - `subagent_sessions/`: `SubagentSessionStore` writes
@@ -209,7 +260,7 @@ what the harness exposes to the child.
 - `core::bus::BUS`: `DomainEvent::AgentOrchestration*` /
   `Subagent*` publication and subscription.
 - `web_chat::progress_bridge`: the per-turn progress-channel counterpart to
-  `run_ledger_finalize.rs`'s global-bus settlement.
+  `agent_runs::subagent_finalize`'s global-bus settlement.
 
 ## Used by
 

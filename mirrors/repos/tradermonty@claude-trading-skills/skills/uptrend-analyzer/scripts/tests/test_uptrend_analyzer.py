@@ -90,7 +90,9 @@ def _run_main(output_dir, sector_summary=None):
     full_ts = _build_full_timeseries(all_rows, sector_summary)
     mock_instance = _make_mock_fetcher(full_ts, sector_summary)
 
-    with mock.patch("data_fetcher.UptrendDataFetcher", return_value=mock_instance):
+    import uptrend_analyzer
+
+    with mock.patch("uptrend_analyzer.UptrendDataFetcher", return_value=mock_instance):
         with mock.patch("sys.argv", ["uptrend_analyzer.py", "--output-dir", output_dir]):
             import uptrend_analyzer
 
@@ -153,7 +155,9 @@ class TestMainWithNoSectorSummary:
             all_rows = make_all_timeseries(n=25, base_ratio=0.28, slope=0.001)
             mock_instance = _make_mock_fetcher(all_rows, [])
 
-            with mock.patch("data_fetcher.UptrendDataFetcher", return_value=mock_instance):
+            import uptrend_analyzer
+
+            with mock.patch("uptrend_analyzer.UptrendDataFetcher", return_value=mock_instance):
                 with mock.patch("sys.argv", ["uptrend_analyzer.py", "--output-dir", tmpdir]):
                     import uptrend_analyzer
 

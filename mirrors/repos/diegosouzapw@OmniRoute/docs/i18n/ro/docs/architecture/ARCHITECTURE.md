@@ -10,76 +10,76 @@ _Ultima actualizare: 2026-06-28_
 
 ## Rezumat executiv
 
-OmniRoute este un gateway local de rutare AI și un panou de control construit pe Next.js.
+OmniRoute este un gateway local de rutare AI și un tablou de bord construit pe Next.js.
 Acesta oferă un singur endpoint compatibil cu OpenAI (`/v1/*`) și rutează traficul către mai mulți furnizori upstream, cu traducere, mecanisme de rezervă, reîmprospătarea tokenurilor și urmărirea utilizării.
 
 Capabilități principale:
 
-- Suprafață API compatibilă cu OpenAI pentru CLI/instrumente (373 de furnizori, 150 de module de execuție)
+- Suprafață API compatibilă cu OpenAI pentru CLI/instrumente (374 de furnizori, 150 de module de execuție)
 - Traducerea cererilor/răspunsurilor între formatele furnizorilor
 - Mecanism de rezervă pentru combinații de modele (secvență cu mai multe modele)
-- Pași structurați ai combinațiilor (`provider + model + connection`), cu ordonare la rulare prin `compositeTiers`
+- Pași structurați pentru combinații (`provider + model + connection`), cu ordonare în timpul execuției prin `compositeTiers`
 - Mecanism de rezervă la nivel de cont (mai multe conturi per furnizor)
-- Verificare preliminară a cotei și selectarea contului P2C în funcție de cotă în fluxul principal de chat
-- Gestionarea conexiunilor furnizorilor prin OAuth și chei API (27 de module pentru furnizori OAuth)
-- Generarea de înglobări prin `/v1/embeddings` (18 furnizori)
-- Generarea de imagini prin `/v1/images/generations` (peste 10 furnizori, peste 20 de modele)
+- Verificare preliminară a cotei și selecție P2C a contului în funcție de cotă, în fluxul principal de chat
+- Gestionarea conexiunilor la furnizori prin OAuth + chei API (27 de module de furnizori OAuth)
+- Generarea încorporărilor prin `/v1/embeddings` (18 furnizori)
+- Generarea imaginilor prin `/v1/images/generations` (peste 10 furnizori, peste 20 de modele)
 - Transcriere audio prin `/v1/audio/transcriptions` (18 furnizori)
-- Conversia textului în vorbire prin `/v1/audio/speech` (24 de furnizori integrați)
-- Generarea de videoclipuri prin `/v1/videos/generations` (ComfyUI + SD WebUI)
-- Generarea de muzică prin `/v1/music/generations` (ComfyUI)
+- Sinteză vocală din text prin `/v1/audio/speech` (24 de furnizori integrați)
+- Generare video prin `/v1/videos/generations` (ComfyUI + SD WebUI)
+- Generare de muzică prin `/v1/music/generations` (ComfyUI)
 - Căutare web prin `/v1/search` (20 de furnizori)
 - Moderare prin `/v1/moderations`
-- Reranking prin `/v1/rerank`
+- Rerangare prin `/v1/rerank`
 - Parsarea etichetelor de gândire (``) pentru modelele de raționament
 - Igienizarea răspunsurilor pentru compatibilitate strictă cu SDK-ul OpenAI
 - Normalizarea rolurilor (developer→system, system→user) pentru compatibilitate între furnizori
 - Conversia ieșirilor structurate (json_schema → Gemini responseSchema)
-- Persistență locală pentru furnizori, chei, aliasuri, combinații, setări și prețuri (122 de module pentru baza de date)
+- Persistență locală pentru furnizori, chei, aliasuri, combinații, setări și prețuri (122 de module DB)
 - Urmărirea utilizării/costurilor și jurnalizarea cererilor
 - Sincronizare opțională în cloud pentru sincronizarea stării între mai multe dispozitive
-- Listă de permisiuni/blocări IP pentru controlul accesului la API
-- Gestionarea bugetului de gândire (transmitere directă/automată/personalizată/adaptivă)
-- Injectarea unui prompt global de sistem
-- Urmărirea și amprentarea sesiunilor
-- Limitare avansată a ratei per cont, cu profiluri specifice furnizorilor
-- Model de întrerupător de circuit pentru reziliența furnizorilor
-- Protecție împotriva efectului de turmă cu blocare prin mutex
+- Listă de permisiuni/listă de blocare pentru adrese IP, pentru controlul accesului la API
+- Gestionarea bugetului de gândire (transmitere directă/automat/personalizat/adaptiv)
+- Injectarea globală a promptului de sistem
+- Urmărirea sesiunilor și amprentare
+- Limitare îmbunătățită a ratei per cont, cu profiluri specifice furnizorilor
+- Model de disjunctor pentru reziliența furnizorilor
+- Protecție împotriva efectului „turmă dezlănțuită”, cu blocare mutex
 - Cache pentru deduplicarea cererilor pe baza semnăturii
 - Strat de domeniu: reguli de cost, politică de rezervă, politică de blocare
-- Context Relay: rezumate pentru transferul sesiunilor, menținând continuitatea la rotația conturilor
-- Persistența stării domeniului (cache SQLite cu scriere directă pentru mecanisme de rezervă, bugete, blocări și întrerupătoare de circuit)
+- Context Relay: rezumate de transfer al sesiunilor pentru continuitate la rotația conturilor
+- Persistența stării domeniului (cache SQLite cu scriere directă pentru mecanisme de rezervă, bugete, blocări și disjunctoare)
 - Motor de politici pentru evaluarea centralizată a cererilor (blocare → buget → mecanism de rezervă)
 - Telemetria cererilor, cu agregarea latenței p50/p95/p99
-- Telemetria țintelor combinațiilor și istoricul stării acestora prin `combo_execution_key` / `combo_step_id`
-- ID de corelare (X-Request-Id) pentru urmărirea de la un capăt la altul
-- Jurnalizare de audit pentru conformitate, cu opțiune de dezactivare per cheie API
+- Telemetrie pentru țintele combinațiilor și starea istorică a acestora prin `combo_execution_key` / `combo_step_id`
+- ID de corelare (X-Request-Id) pentru urmărire de la un capăt la altul
+- Jurnalizare de audit pentru conformitate, cu posibilitatea de dezactivare per cheie API
 - Cadru de evaluare pentru asigurarea calității LLM
-- Panou de monitorizare a stării, cu starea în timp real a întrerupătoarelor de circuit ale furnizorilor
-- Server MCP (110 instrumente), cu 3 tipuri de transport (stdio/SSE/Streamable HTTP)
-- Server A2A (JSON-RPC 2.0 + SSE), cu abilități și ciclul de viață al sarcinilor
+- Tablou de bord pentru starea de funcționare, cu starea în timp real a disjunctoarelor furnizorilor
+- Server MCP (110 instrumente), cu 3 transporturi (stdio/SSE/HTTP cu streaming)
+- Server A2A (JSON-RPC 2.0 + SSE), cu competențe și ciclul de viață al sarcinilor
 - Sistem de memorie (extragere, injectare, regăsire, rezumare)
-- Sistem de abilități (registru, executor, sandbox, abilități integrate)
-- Proxy MITM, cu gestionarea certificatelor și a DNS-ului
+- Sistem de competențe (registru, executor, sandbox, competențe integrate)
+- Proxy MITM, cu gestionarea certificatelor și procesarea DNS
 - Middleware de protecție împotriva injectării de prompturi
-- Pipeline de comprimare a prompturilor, cu Caveman, RTK, pipeline-uri suprapuse, combinații de comprimare, pachete lingvistice și analize
+- Flux de compresie a prompturilor cu Caveman, RTK, fluxuri stivuite, combinații de compresie, pachete lingvistice și analiză
 - Registru ACP (Agent Communication Protocol)
 - Furnizori OAuth modulari (22 de module individuale în `src/lib/oauth/providers/`)
 - Scripturi de dezinstalare/dezinstalare completă
 - Acțiune de reparare a mediului OAuth
 - Punte WebSocket pentru clienți WS compatibili cu OpenAI (`/v1/ws`)
-- Gestionarea tokenurilor de sincronizare (emitere/revocare, descărcarea pachetului de configurare versionat cu ETag)
-- Presetare de furnizor de prim rang pentru GLM Thinking (`glmt`)
+- Gestionarea tokenurilor de sincronizare (emitere/revocare, descărcarea pachetului de configurare versionat prin ETag)
+- Presetare de furnizor de primă clasă pentru GLM Thinking (`glmt`)
 - Numărare hibridă a tokenurilor (`/messages/count_tokens` la nivelul furnizorului, cu estimare de rezervă)
-- Inițializarea automată a aliasurilor de modele (peste 30 de normalizări între dialectele proxy la pornire)
+- Inițializare automată a aliasurilor de modele (peste 30 de normalizări între dialectele proxy la pornire)
 - Preluare externă sigură, cu protecție SSRF, blocarea URL-urilor private și reîncercări configurabile
-- Reîncercări pentru chat care țin cont de perioada de așteptare, cu `requestRetry` și `maxRetryIntervalSec` configurabile
+- Reîncercări de chat adaptate perioadei de așteptare, cu `requestRetry` și `maxRetryIntervalSec` configurabile
 - Validarea mediului de execuție cu Zod la pornire
 - Audit de conformitate v2, cu paginare, evenimente CRUD pentru furnizori și jurnalizarea validărilor blocate de SSRF
 
 Model principal de execuție:
 
-- Rutele aplicației Next.js din `src/app/api/*` implementează atât API-urile panoului de control, cât și API-urile de compatibilitate
+- Rutele aplicației Next.js din `src/app/api/*` implementează atât API-urile tabloului de bord, cât și API-urile de compatibilitate
 - Un nucleu SSE/de rutare comun din `src/sse/*` + `open-sse/*` gestionează execuția furnizorilor, traducerea, streamingul, mecanismele de rezervă și utilizarea
 
 ## Diagrame de referință
@@ -269,9 +269,9 @@ Modulele fluxului principal:
 - Parsarea/rezolvarea modelului: `src/sse/services/model.ts`, `open-sse/services/model.ts`
 - Logica de rezervă pentru conturi: `open-sse/services/accountFallback.ts`
 - Registrul de traducere: `open-sse/translator/index.ts`
-- Transformări ale fluxurilor: `open-sse/utils/stream.ts`, `open-sse/utils/streamHandler.ts`
+- Transformări ale fluxului: `open-sse/utils/stream.ts`, `open-sse/utils/streamHandler.ts`
 - Extragerea/normalizarea utilizării: `open-sse/utils/usageTracking.ts`
-- Parser pentru eticheta de gândire: `open-sse/utils/thinkTagParser.ts`
+- Parser pentru eticheta de raționament: `open-sse/utils/thinkTagParser.ts`
 - Gestionarul pentru încorporări: `open-sse/handlers/embeddings.ts`
 - Registrul furnizorilor de încorporări: `open-sse/config/embeddingRegistry.ts`
 - Gestionarul pentru generarea imaginilor: `open-sse/handlers/imageGeneration.ts`
@@ -287,44 +287,44 @@ Servicii (logică de business):
 - Urmărirea sesiunilor: `open-sse/services/sessionManager.ts`
 - Deduplicarea cererilor: `open-sse/services/signatureCache.ts`
 - Injectarea promptului de sistem: `open-sse/services/systemPrompt.ts`
-- Gestionarea bugetului de gândire: `open-sse/services/thinkingBudget.ts`
+- Gestionarea bugetului de raționament: `open-sse/services/thinkingBudget.ts`
 - Rutarea modelelor cu metacaractere: `open-sse/services/wildcardRouter.ts`
 - Gestionarea limitelor de rată: `open-sse/services/rateLimitManager.ts`
 - Întrerupător de circuit: `src/shared/utils/circuitBreaker.ts`
 - Transferul contextului: `open-sse/services/contextHandoff.ts` — generarea și injectarea rezumatului de transfer pentru strategia de retransmitere a contextului
 - Comprimare: `open-sse/services/compression/*` — comprimare proactivă înainte de traducerea pentru furnizor;
-  include reguli Caveman, filtre RTK, conducte suprapuse, combinații de comprimare, statistici și validare
-- Preluarea cotei Codex: `open-sse/services/codexQuotaFetcher.ts` — preia cota Codex pentru deciziile de transfer prin retransmiterea contextului
-- Reîncercări care țin cont de perioada de așteptare: `src/sse/services/cooldownAwareRetry.ts` — reîncercări în funcție de model, cu `requestRetry` / `maxRetryIntervalSec` configurabile
-- Preluare externă sigură: `src/shared/network/safeOutboundFetch.ts` — preluare protejată a furnizorului/modelului, cu protecție SSRF, blocarea URL-urilor private, reîncercare și expirare
-- Protecția URL-urilor externe: `src/shared/network/outboundUrlGuard.ts` — verificări ale gazdei pentru URL-urile furnizorilor; `src/shared/network/outboundUrlGuardPolicy.ts` selectează modul pe baza `OMNIROUTE_ALLOW_LOCAL_PROVIDER_URLS`, `OMNIROUTE_ALLOW_PRIVATE_PROVIDER_URLS` și a comutatoarelor lor din panoul de control (consultați `docs/reference/ENVIRONMENT.md`)
+  include reguli Caveman, filtre RTK, conducte stivuite, combinații de comprimare, statistici și validare
+- Preluarea cotei Codex: `open-sse/services/codexQuotaFetcher.ts` — preia cota Codex pentru deciziile privind transferul prin retransmiterea contextului
+- Reîncercare care ține cont de perioada de așteptare: `src/sse/services/cooldownAwareRetry.ts` — reîncercări în funcție de model, cu perioade de așteptare configurabile prin `requestRetry` / `maxRetryIntervalSec`
+- Preluare externă sigură: `src/shared/network/safeOutboundFetch.ts` — preluare protejată de la furnizor/model, cu protecție SSRF, blocarea URL-urilor private, reîncercare și expirare
+- Protecție pentru URL-urile externe: `src/shared/network/outboundUrlGuard.ts` — verificări ale gazdei pentru URL-urile furnizorilor; `src/shared/network/outboundUrlGuardPolicy.ts` selectează modul din `OMNIROUTE_ALLOW_LOCAL_PROVIDER_URLS`, `OMNIROUTE_ALLOW_PRIVATE_PROVIDER_URLS` și comutatoarele corespunzătoare din panoul de control (consultați `docs/reference/ENVIRONMENT.md`)
 - Valori implicite pentru cererile către furnizori: `open-sse/services/providerRequestDefaults.ts` — valori implicite la nivel de furnizor pentru `maxTokens`, `temperature`, `thinkingBudgetTokens`
-- Constantele furnizorului GLM: `open-sse/config/glmProvider.ts` — modele GLM partajate, URL-uri pentru cote, expirarea și valorile implicite GLMT
-- Serviciul upstream Antigravity: `open-sse/config/antigravityUpstream.ts` — constante pentru URL-ul de bază și calea de descoperire
-- Constantele clientului Codex: `open-sse/config/codexClient.ts` — valori cu versiuni pentru agentul utilizator și versiunea clientului
-- Inițializarea aliasurilor de modele: `src/lib/modelAliasSeed.ts` — inițializează la pornire peste 30 de aliasuri pentru dialecte între proxy-uri
+- Constante pentru furnizorul GLM: `open-sse/config/glmProvider.ts` — modele GLM partajate, URL-uri pentru cote, expirări/valori implicite GLMT
+- Serviciul sursă Antigravity: `open-sse/config/antigravityUpstream.ts` — constante pentru URL-ul de bază și calea de descoperire
+- Constante pentru clientul Codex: `open-sse/config/codexClient.ts` — valori cu versiune pentru agentul utilizatorului și versiunea clientului
+- Inițializarea aliasurilor de modele: `src/lib/modelAliasSeed.ts` — inițializează la pornire peste 30 de aliasuri între dialectele proxy-urilor
 
 Modulele stratului de domeniu:
 
 - Reguli de cost/bugete: `src/domain/costRules.ts`
 - Politica de rezervă: `src/domain/fallbackPolicy.ts`
-- Rezolvitorul de combinații: `src/domain/comboResolver.ts`
+- Rezolvarea combinațiilor: `src/domain/comboResolver.ts`
 - Politica de blocare: `src/domain/lockoutPolicy.ts`
-- Motorul de politici: `src/domain/policyEngine.ts` — evaluare centralizată blocare → buget → rezervă
+- Motor de politici: `src/domain/policyEngine.ts` — evaluare centralizată blocare → buget → rezervă
 - Catalogul codurilor de eroare: `src/shared/constants/errorCodes.ts`
 - ID-ul cererii: `src/shared/utils/requestId.ts`
 - Expirarea preluării: `src/shared/utils/fetchTimeout.ts`
 - Telemetria cererilor: `src/shared/utils/requestTelemetry.ts`
 - Conformitate/audit: `src/lib/compliance/index.ts`
-- Executorul de evaluări: `src/lib/evals/evalRunner.ts`
+- Executor de evaluări: `src/lib/evals/evalRunner.ts`
 - Persistența stării domeniului: `src/lib/db/domainState.ts` — operațiuni CRUD SQLite pentru lanțuri de rezervă, bugete, istoricul costurilor, starea blocărilor și întrerupătoare de circuit
 
 Modulele furnizorilor OAuth (27 de fișiere individuale în `src/lib/oauth/providers/`):
 
 - Indexul registrului: `src/lib/oauth/providers/index.ts`
 - Furnizori individuali: `agy.ts`, `antigravity.ts`, `claude.ts`, `cline.ts`, `codebuddy-cn.ts`, `codebuddy-intl.ts`, `codex.ts`, `cursor.ts`, `devin-desktop.ts`, `ghe-copilot.ts`, `github.ts`, `gitlab-duo.ts`, `grok-cli-oauth.ts`, `grok-cli.ts`, `kilocode.ts`, `kimi-coding.ts`, `kiro.ts`, `muse-code.ts`, `openference.ts`, `qoder.ts`, `trae.ts`, `workbuddy.ts`, `xai-oauth.ts`, `zed-hosted.ts`, `zed.ts`
-- Funcții auxiliare partajate: `codebuddyDeviceAuth.ts` (fluxul pe dispozitiv CodeBuddy CN/internațional), `museCodeDeviceResponse.ts`
-- Înveliș minimal: `src/lib/oauth/providers.ts` — reexportă din modulele individuale
+- Utilitare partajate: `codebuddyDeviceAuth.ts` (fluxul pentru dispozitive CodeBuddy CN/internațional), `museCodeDeviceResponse.ts`
+- Wrapper minimal: `src/lib/oauth/providers.ts` — reexportă din modulele individuale
 
 ## 5) Servicii încorporate (v3.8.4)
 
@@ -538,14 +538,15 @@ Baza de date pentru starea domeniului (SQLite):
 
 ## 4) Suprafețe de autentificare + securitate
 
-- Autentificarea cu cookie pentru panoul de control: `src/proxy.ts`, `src/app/api/auth/login/route.ts`
+- Autentificare în dashboard prin cookie: `src/proxy.ts`, `src/app/api/auth/login/route.ts`
 - Generarea/verificarea cheilor API: `src/shared/utils/apiKey.ts`
-- Secretele furnizorilor sunt stocate persistent în intrările `providerConnections`
+- Secretele furnizorilor sunt stocate în intrările `providerConnections`
 - Suport pentru proxy de ieșire prin `open-sse/utils/proxyFetch.ts` (variabile de mediu) și `open-sse/utils/networkProxy.ts` (configurabil per furnizor sau global)
-- Protecție SSRF / pentru URL-urile de ieșire: `src/shared/network/outboundUrlGuard.ts` — blochează intervalele private/loopback/link-local pentru toate apelurile către furnizori
-- Validarea mediului în timpul execuției: `src/lib/env/runtimeEnv.ts` — schemă Zod pentru toate variabilele de mediu, cu erori/avertismente afișate la pornire
-- Tokenuri de sincronizare: `src/lib/db/syncTokens.ts` — tokenuri cu domeniu de aplicare limitat pentru endpointurile de descărcare a pachetelor de configurare; susținute de tabelul SQLite `sync_tokens` (migrarea `024_create_sync_tokens.sql`)
+- Protecție SSRF / pentru URL-uri de ieșire: `src/shared/network/outboundUrlGuard.ts` — verificări ale gazdei pentru apelurile către furnizori și destinațiile webhook-urilor; modul provine din `src/shared/network/outboundUrlGuardPolicy.ts` (fanioane în `docs/reference/ENVIRONMENT.md`)
+- Validarea variabilelor de mediu în timpul rulării: `src/lib/env/runtimeEnv.ts` — schemă Zod pentru toate variabilele de mediu, cu erorile/avertismentele afișate la pornire
+- Tokenuri de sincronizare: `src/lib/db/syncTokens.ts` — tokenuri cu domeniu limitat pentru endpoint-urile de descărcare a pachetelor de configurare; susținute de tabelul SQLite `sync_tokens` (migrarea `024_create_sync_tokens.sql`)
 - Autentificarea negocierii WebSocket: `src/lib/ws/handshake.ts` — validează cererile de upgrade WS printr-o cheie API sau un cookie de sesiune
+- Autentificarea WebSocket pentru dashboard-ul live: `src/server/ws/liveServer.ts` — serviciul sidecar (portul `LIVE_WS_PORT`) acceptă un cookie de sesiune pentru dashboard sau o cheie API Bearer care deține un domeniu de gestionare (`manage`/`admin`); cheile destinate exclusiv inferenței sunt refuzate. Endpoint-ul său intern de publicare `POST /__omniroute_event` acceptă participanți loopback numai când nu este prezent niciun antet de salt prin proxy (`x-forwarded-*`, `x-real-ip`, `forwarded`, `via`)
 
 ## 5) Sincronizare în cloud
 
@@ -1094,11 +1095,11 @@ compatibilitate cu sistemele vechi. Contractul curent al mediului de execuție u
 - migrări ale schemei SQLite și mecanisme de actualizare automată la pornire
 - cale de compatibilitate pentru migrarea din JSON moștenit → SQLite
 
-## 6) Protecție SSRF / pentru URL-uri de ieșire
+## 6) Protecție SSRF / URL-uri de ieșire
 
-- `src/shared/network/outboundUrlGuard.ts` blochează toate URL-urile țintă private/loopback/link-local înainte ca acestea să ajungă la executorii furnizorilor
-- Rutele de descoperire și validare a modelelor furnizorilor utilizează `src/shared/network/safeOutboundFetch.ts`, care aplică protecția înainte de fiecare solicitare de ieșire
-- Erorile protecției sunt semnalate ca `URL_GUARD_BLOCKED` cu HTTP 422 și sunt înregistrate în jurnalul de audit pentru conformitate prin `providerAudit.ts`
+- `BaseExecutor.assertOutboundUrlAllowed` (`open-sse/executors/base.ts`) aplică `src/shared/network/outboundUrlGuard.ts` solicitărilor de chat trimise prin `BaseExecutor.execute()`. În modul exclusiv public (`OMNIROUTE_ALLOW_LOCAL_PROVIDER_URLS=false` cu indicatorul pentru rețele private dezactivat), blochează gazdele private și de loopback, precum și 169.254.0.0/16; în orice alt mod, blochează gazdele de metadate cloud. Verifică numele gazdei sau literalul IP exact așa cum este scris, înaintea oricărei interogări DNS. Furnizorii locali integrați îl omit.
+- Rutele de descoperire și validare a modelelor furnizorilor utilizează `src/shared/network/safeOutboundFetch.ts`, care aplică protecția înaintea fiecărei solicitări de ieșire
+- Erorile protecției sunt expuse drept `URL_GUARD_BLOCKED` cu HTTP 503 (`getSafeOutboundFetchErrorStatus`; ruta de descoperire a modelelor returnează 400), iar blocările SSRF autentice din timpul validării sunt înregistrate în jurnalul de audit drept evenimente `provider.validation.ssrf_blocked`
 
 ## Observabilitate și semnale operaționale
 

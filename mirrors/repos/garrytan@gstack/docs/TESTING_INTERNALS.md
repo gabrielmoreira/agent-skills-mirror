@@ -1126,7 +1126,7 @@ and `test:health` both say so.
   through today's selector and its shadow, and exits 1 on any MISS: a failed
   gate case the shadow would not run. `test/exercised-map.test.ts` pins zero.
 
-### PR receipts, recovery and debounce
+### PR receipts, recovery, readiness and verdict reuse
 
 Passes and failures of single-trial shards are written as receipts at the
 execution boundary, so a cancelled run's finished work survives. The
@@ -1139,13 +1139,98 @@ unresolved run. `plan-slices` turns reuse off when recovery degraded, the
 checkpoint is missing or a cancelled run is still unresolved; recovery itself
 never fails the run, and the job summary names the reason (rate limit with its
 reset time, `gh auth status`, the 60-second budget). The whole store is saved by
-`slices-report`.
+`slices-report`. Both the restore and the save run on GitHub-hosted runners: an
+Ubicloud runner sends `actions/cache` to Ubicloud's transparent cache, which a
+GitHub-hosted restore never sees (until GSTA-48 every restore missed).
 
-On a `synchronize` push, when another run for the same PR started in the last 15
-minutes, the debounce job waits 90 seconds before planning; a run that outlives
-the wait reports "superseded by <sha>". PR labels: `evals-no-debounce` skips the
-wait and `evals-fresh` turns receipt reuse off. Labels apply from the next push,
-because adding a label does not start `evals.yml`.
+**Readiness (R1).** Paid slices for a PR head start only when the PR has been
+quiet for the window (repository variable `EVALS_QUIET_MINUTES`, default 10,
+measured from the run's creation) and Free Tests has concluded success on the
+same head SHA. The `readiness` job (`scripts/eval-readiness.ts`) sleeps out the
+window with no API calls, since a newer push cancels the run anyway, then polls
+Free Tests every minute for up to 80 minutes. Free Tests red on the head fails
+the run without paid work; re-run Free Tests, then re-run this workflow (a
+re-run keeps the creation time, so it does not wait out the window again). A
+head that is no longer the PR's head reports "superseded by <sha>" and plans
+nothing. Selection, trials and verdict rules do not change. Version Gate is not
+an input, so a stamp push waits only for its own Free Tests and always gets a
+gate. Dispatches (`eval:bg`, the census) never wait.
+
+**Verdict reuse (R2a restamp-only, R2 main moved; a gate edit).** A PR head
+reuses the verdict of the newest executed gate of the same PR instead of
+running one only when all of these hold. Every newer run of the PR either bound
+a verdict or provably ran no paid slice (superseded, readiness-blocked, a reuse,
+or cancelled before a slice finished); a newer run that is still running,
+finished a slice, or holds a `paid-slice-*` artifact without a bound verdict
+blocks reuse, so a newer red or partial result is never skipped. The gate is
+GREEN with reconcile exit 0, a successful run and no manually accepted
+(unscored) case; it ran the PR profile on a different head. Then either:
+
+- **R2a, restamp-only:** it ran on the same base (the tested merge commit's
+  first parent), the tree receipt (`lib/tree-receipt.ts` under the base's ship
+  policy) prints `TREE: same-modulo-stamps`, and every differing file is the
+  version file, `package.json`, the CHANGELOG or a release output (the agents
+  digest); or
+- **R2, main moved:** the base moved, and the PR's own diff from its
+  merge-base, excluding stamp files, is byte-identical to the gated head's
+  (`git diff --binary --full-index`, so pre-image blob ids are compared and a
+  main change to a file the PR also changes is a difference; `package.json`
+  compared without its version; release outputs with each revision's version
+  replaced; the CHANGELOG by its preamble and the sections the PR added and
+  removed, dropping only version or `[Unreleased]` headings).
+
+Finally this head's own plan must have the same selection fingerprint (cases,
+statuses, trial plans, profile), so a main move that changes what the PR gate
+selects runs the full gate. `recover-receipts` proposes the candidate from
+base-ref code (`scripts/gate-reuse.ts find`), `plan-slices` confirms the
+selection, `eval-slices` is skipped, and the report and PR comment say
+`PASS (reused: restamp-only, R2a)` or `PASS (reused: main moved, R2)` with
+the reused run, its head, why, and the receipt digest or own-diff signature.
+Free Tests and every other check still run on the new head. Executed runs
+upload a `gate-binding-a<attempt>` artifact (base, verdict, reconcile exit,
+manual count, selection); reused runs bind nothing, so reuse never chains off a
+reuse. Any other case (a changed own diff, a non-stamp byte including CHANGELOG
+entry text or a file mode, a missing binding, receipt or merge-base, a gh or git
+error, `evals-fresh`) runs the full gate. For a restamp to qualify, write the
+CHANGELOG entry before the gated push (under `## [Unreleased]` or the
+tentative version) so the stamp only re-heads it.
+
+PR labels: `evals-no-debounce` sets the quiet window to 0 (Free Tests is still
+required) and `evals-fresh` turns receipt reuse and verdict reuse off. Labels
+apply from the next push, because adding a label does not start `evals.yml`.
+
+### Replay gate cost
+
+`bun run scripts/gate-cost-replay.ts --runs <id,...> [--since YYYY-MM-DD --until YYYY-MM-DD | --prs 3201,3202] [--json]`
+measures the paid PR gate's bill from recorded artifacts, for free. `--runs`
+names complete full-gate runs; their `paid-slice-*` and `trial-outcomes`
+artifacts are downloaded read-only with `gh` into `.context/gate-cost-cache`
+once and reused from there. It prints:
+
+- recorded $ per gate (mean, min, max), split by model and by token class
+  (cache write, output including thinking, cache read, uncached input), priced
+  through `lib/pricing.ts`;
+- a per-case mean cost table (`--cases` prints all of it); a case whose runs
+  record no cost (PTY sessions) is estimated from its duration and marked
+  estimated, at recorded dollars per recorded session-second unless
+  `--usd-per-second` pins the rate;
+- for each squash merge on origin/main's first-parent history in the window
+  (bare dates are UTC days, `--until` inclusive), the selection cost under
+  today's selector, R4's exercised-map shadow and the screening rule, and the
+  mean, median and mean case count per merged PR over every merged PR in the
+  window, zeros included;
+- a seeded merge-train model (every merged PR lands in a train; screened and
+  unscreened defect rates, outside reds, a $6 bisect per red, culprits
+  requeued, one rebuild per unattributed red) for each screening policy, with
+  $ per week and per merged PR and the multiple against $9,950 and $8,400 a week.
+
+Screening figures are labelled `screen-provisional`: the rule's preamble
+detector is a line-commonality heuristic, not T2's hunk classifier, so they
+stay heuristic until T2 lands. A `package.json` change that only moves the
+version is neither selected nor a canary trigger, and all 24 judges always run.
+The selectors are this checkout's, so an old merge is replayed against today's
+maps. A shallow checkout says which `git fetch --shallow-since` to run. Logic:
+`lib/gate-cost.ts`; tests: `test/gate-cost.test.ts`.
 
 ## Free suite runner, judge reuse and engine skips
 

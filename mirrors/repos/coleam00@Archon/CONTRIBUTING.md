@@ -41,10 +41,13 @@ Git still normalizes text through the existing `.gitattributes`. `.archon/**` re
 excluded from formatting while its TypeScript scripts remain linted. Markdown and HTML
 are hand-formatted. After resolving conflicts in an in-flight PR, run `bun run format`.
 
-The ratchet (`bun run check:ratchet`) refuses a change that raises the cognitive complexity
-of a function in a file it touches, or makes a touched source file longer, compared with the
-merge base with `origin/dev` (fetch it locally). It scores the TS/JS files Biome lints. To
-land an increase on purpose, add a trailer to one of the change's commits:
+The ratchet (`bun run check:ratchet`) lets code grow up to a ceiling and holds what is above
+it, compared with the merge base with `origin/dev` (fetch it locally). A touched function is
+refused when it ends above cognitive complexity 15 and scores higher than at the merge base. A
+touched source file is refused when it ends above 800 lines and has more lines than at the
+merge base. Test files have no line ceiling. It scores the TS/JS files
+Biome lints. To land an increase above a ceiling on purpose, add a trailer to one of the
+change's commits:
 `Ratchet-Allow: <path>` for a file's length, `Ratchet-Allow: <path>:<function>` for a function,
 using the names the failure prints.
 
@@ -64,7 +67,7 @@ is excluded with the provider package; `generate:codex-protocol` owns it.
 bun run validate                            # optional local checks
 bun run validate --only generated-files     # generated artifacts
 bun run validate --only format              # formatting, also run by the staged-file hook
-bun run validate --only workflow-fixtures   # when changing pack or fixture execution
+bun run validate --only workflow-fixtures   # when changing a workflow or its fixtures
 bun run test --plan pack                    # when changing .archon/workflows or .archon/scripts
 ```
 
@@ -73,24 +76,26 @@ CI runs formatting and every default check on ready pull requests, except that a
 touching only prose or files no check reads skips the test, service and binary jobs.
 `scripts/should-run-test-suite.ts` decides which files those are: Markdown and the docs site
 count as prose unless `BUILD_INPUTS` or `isPackPrompt` names them (pack `commands/` and
-`.shared/`, `.claude/skills/`, the generated provider-capability page, the docs manifest), and `INERT_PATHS`
+`.shared/` documents). `BUILD_INPUTS` is the authoritative list of other exceptions, including
+Markdown read by tests, bundled skills, generated docs, and the docs manifest. A conformance test
+requires every tracked Markdown path with a directory named in a test file to run the suite,
+even when the mention is only in a comment. Bare filenames such as `README.md` are excluded.
+`INERT_PATHS`
 lists the non-prose files no check reads. On a pull request, `workspaceTestInputs` in the same
 file decides whether the `cli` and `packages` legs of the `test` job run: a change limited to
 root `scripts/` files that no package test or CI entry point reads skips them, the
 `test-scripts` job still runs, and the `test-suite` check accepts the skip because the gate
 said so. A push to `dev` or `main` skips those jobs only when
 a pull request run already passed every job on the same tree, and otherwise runs them, so a
-prose change's test-visible effects are checked on `dev`. Workflow fixtures run
-when `.archon/workflows/sdlc/`, `packages/workflows/src/`, or
-`packages/cli/src/commands/workflow.ts` changes; both fixture jobs still report success
-when their execution steps skip. Dispatch runs fixtures regardless of paths.
+prose change's test-visible effects are checked on `dev`.
 
-CI does not run the tests under `.archon/scripts/` (the SDLC pack's script tests) on pull
-requests or pushes. Run them with `bun run test --plan pack` when you change
-`.archon/workflows/` or `.archon/scripts/`; a single file runs with
+CI does not run the tests under `.archon/scripts/` (the SDLC pack's script tests) or the
+workflow fixtures on pull requests or pushes. Run them with `bun run test --plan pack` and
+`bun run validate --only workflow-fixtures` when you change `.archon/workflows/` or
+`.archon/scripts/`; a single test file runs with
 `bun run test .archon/scripts/__tests__/<file>.test.ts`. To run them in CI, dispatch the
-Test Suite workflow with `pack-tests` set:
-`gh workflow run test.yml --ref <branch> -f pack-tests=true`.
+Test Suite workflow with `pack-tests` or `pack-fixtures` set:
+`gh workflow run test.yml --ref <branch> -f pack-tests=true -f pack-fixtures=true`.
 
 Local validation has no fixed duration: tests and typed analysis dominate, and machine
 load matters. The audit for [#3985](https://github.com/coleam00/Archon/issues/3985)

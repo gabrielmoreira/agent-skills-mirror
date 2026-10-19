@@ -64,7 +64,10 @@ open, so the round ends `threads_open` instead of ready. The next round's
 implementer judges each thread like a blocking finding, fixing it or declining it
 with evidence; `settle-threads` checks each disposition at the pushed head and
 writes the reply, and `threads` posts the replies, resolves those threads, and reads
-the pull request back. A thread no agent can settle ends the run `needs_human`.
+the pull request back. A thread about code the pull request doesn't change or make
+reachable, such as one that arrived with a merge of the default branch, is settled
+with a reply saying so; it belongs in its own issue. A thread no agent can settle
+ends the run `needs_human`.
 `settle-threads` runs before CI and a failed one skips it, so the pull request stays
 the draft the previous round left; a failed `threads` node puts it back to draft
 before the run fails. The
@@ -106,8 +109,10 @@ same shapes from either source:
 The released GitHub plugin v0.11.1 lacks eight required operations and refuses preflight.
 Keep `gh` as the default until a compatible release passes a real-PR check.
 
-The merge queue reads through `gh` alone and refuses `forge`: its gate needs a pull
-request's unresolved review threads, which the forge contract does not report.
+The merge queue reads through `gh` alone and refuses `forge`: its sweep judges a pull
+request's unresolved review threads, which the forge contract does not report. The gate
+itself doesn't refuse over threads; the sweep holds a merge only for a thread that
+raises a defect in code the pull request changes or makes reachable.
 Delivery reads, answers and resolves review threads through `gh` alone for the same
 reason. On the `forge` source it never calls `gh` for them: its `threads` node does
 not run, and the report records `threads_checked: false` and says the threads were
@@ -209,7 +214,8 @@ rather than going quietly unchecked.
 The scripts' tool-boundary tests live under `.archon/scripts/__tests__/`. CI does not run
 them on pull requests or pushes. Run `bun run test --plan pack` when you change
 `.archon/workflows/` or `.archon/scripts/`, or dispatch the Test Suite workflow with
-`pack-tests` set.
+`pack-tests` set. The workflow fixtures likewise run only locally
+(`bun run validate --only workflow-fixtures`) or on a dispatch with `pack-fixtures` set.
 
 Three rules, each protecting something a script cannot get back on its own:
 
@@ -228,9 +234,8 @@ Three rules, each protecting something a script cannot get back on its own:
   the pack and the standard library are the whole surface, which is what keeps
   these workflows runnable against a project in any language.
 
-A vocabulary a node declares in YAML has exactly one owner. A script that routes on
-one imports it from `.shared/verdict.ts`; a script that merely consumes another
-node's certified value does not restate the list at all.
+A vocabulary a node declares in YAML has exactly one owner, its `output_format`. A
+script that consumes another node's certified value does not restate the list.
 
 ## Evidence never carries credentials
 
@@ -581,8 +586,10 @@ which a project replaces with its own `.archon/sdlc/policy/build.md`.
   labelled `build: route`, `build: stop` or `build: scope`. It says what the decision
   is, why it matters, the agent's recommendation with its evidence, confidence and
   what would change it, the choices and what each does, what happens if nobody
-  answers, and the links to the evidence. The answer is one declared choice, so the
-  queue never reads the answer's prose for a decision. The `ruling` script writes the
+  answers, and the links to the evidence. The answer is one declared choice, or
+  `other`, which every item offers: its text says what to do instead and becomes the
+  ruling, and the item continues from it. The queue never reads the answer's prose for
+  a decision. The `ruling` script writes the
   choice's ruling and the person's words into the issue body as one dated "Current
   scope" section, reads it back, and records the answer: a `continue` choice launches
   the next round from it, and a `park` choice stops working the item until a
@@ -666,8 +673,8 @@ replaces with its own `.archon/sdlc/policy/merge.md`.
   brief. A clear pull request whose gate passes is merged.
 - **Gate.** The sweep merges only through
   [`gate.ts`](merge-queue/scripts/gate.ts), which reads the pull request fresh and
-  refuses unless the verdict says Ready at the head, CI is green there and no review
-  thread is unresolved, and the pull request is open, not a draft, into the default
+  refuses unless the verdict says Ready at the head and CI is green there (open review
+  threads are the sweep's judgment), and the pull request is open, not a draft, into the default
   branch, at the head the sweep named, and that head contains the default branch's
   head, so CI and the review judged the composed result before the merge. It merges with `--match-head-commit`,
   writes a receipt as soon as the forge accepts the merge, and reads it back. A pull
@@ -678,14 +685,18 @@ replaces with its own `.archon/sdlc/policy/merge.md`.
   not touch once; red after that is raised to a maintainer.
 - **Record.** The `record` script refuses, before it writes anything, a sweep that
   left a claimed pull request undecided, decided one twice, offered an attention item
-  a person could not answer, says it merged a pull request without the gate's receipt
-  at that head, declared anything else for one the gate merged, merged a pull request
-  it did not claim, merged without checking the default branch afterwards, or raised
-  the default branch without merging. It reads every pull request back: the forge, not
-  the sweep, says what merged, and a merge with no receipt is recorded as made outside
-  the run. A pull request that cannot be read waits for the next sweep, and is parked
-  when it could not be read the sweep before either; a work item that cannot be
-  written is reported, so one bad item never loses the rest of the batch's record.
+  a person could not answer, merged a pull request it did not claim, merged without
+  checking the default branch afterwards, or raised the default branch without
+  merging. It reads every pull request back: the forge, not the sweep or the gate's
+  receipts, says what merged, at the head the forge merged, and a merge with no
+  receipt is recorded as made outside the run. A sweep that says it merged a pull
+  request the forge does not show merged fails the record after every other decision
+  is written: that pull request is recorded as waiting, or parked if it was closed,
+  and the failure names a red default branch the run could not raise and any work
+  item it could not write. A pull
+  request that cannot be read waits for the next sweep, and is parked when it could not
+  be read the sweep before either; a work item that cannot be written is reported, so one bad item never loses
+  the rest of the batch's record.
   It runs even when the delta review failed. It writes one decision per item under
   `facts.merge` (status `waiting`, `asking`, `merged`, `returned` or `parked`, any
   approval pinned to the head it approved, and
@@ -696,7 +707,9 @@ replaces with its own `.archon/sdlc/policy/merge.md`.
   asked about, labelled `merge: dev` or `merge: pr`. It carries the build queue's
   fields: what it is, why it matters, the recommendation with its evidence, confidence
   and what would change it, the declared choices, what happens if nobody answers, and
-  links. On a pull request, `merge` approves it at the head that was asked about, and
+  links. Every pull-request item also offers `other`, which returns the pull request to
+  the build queue with the answer's text as the ruling. A red default branch is only
+  ever held, so its item offers `hold` alone. On a pull request, `merge` approves it at the head that was asked about, and
   a later sweep merges it once the gate passes there; `return` writes the choice's
   ruling into the issue body as a dated "Current scope" section and hands the item
   back to the build queue; `park` stops working it until the build queue readies it
@@ -853,11 +866,3 @@ pass every few hours:
   "schedule": { "intervalSeconds": 21600, "runAtLoad": false }
 }
 ```
-
-## Composition validation
-
-[archon-validate](validate/README.md) accepts an explicit composition request to run
-the same project gate on two pinned parts and their composed tree. Its `interaction`
-result remains red; delivery holds it rather than treating it as inherited or
-environmental. The report retains revision, tree and check evidence for an existing
-merger to consume. It does not install a queue or authorize a merge.

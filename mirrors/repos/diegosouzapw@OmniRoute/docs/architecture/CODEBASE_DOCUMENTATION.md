@@ -491,7 +491,7 @@ helpers (tool schemas, fetch/TTS adapters, quirk handlers). Executors include:
 (shared identity helper) and `index.ts` (registry).
 
 > Note: providers not listed here are served by `default.ts` using the generic
-> OpenAI-compatible executor. The full provider catalog (374 providers) lives in
+> OpenAI-compatible executor. The full provider catalog (375 providers) lives in
 > `src/shared/constants/providers.ts`.
 
 ### 4.3 `open-sse/translator/`
@@ -524,7 +524,7 @@ Highlights (full list under `open-sse/services/`):
 
 | Concern              | Files                                                                                                                                                                                                                                                    |
 | -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Combo routing        | `combo.ts` (19 strategies), `comboConfig.ts`, `comboMetrics.ts`, `comboManifestMetrics.ts`, `comboAgentMiddleware.ts`                                                                                                                                    |
+| Combo routing        | `combo.ts` (20 strategies), `comboConfig.ts`, `comboMetrics.ts`, `comboManifestMetrics.ts`, `comboAgentMiddleware.ts`                                                                                                                                    |
 | Auto Combo engine    | `autoCombo/` — `engine.ts`, `scoring.ts`, `taskFitness.ts`, `virtualFactory.ts`, `modePacks.ts`, `autoPrefix.ts`, `persistence.ts`, `providerDiversity.ts`, `providerRegistryAccessor.ts`, `routerStrategy.ts`, `selfHealing.ts`, `index.ts`             |
 | Resilience           | `accountFallback.ts` (cooldown + lockout), `errorClassifier.ts`, `requestRejectedStreak.ts`, `emergencyFallback.ts`, `rateLimitManager.ts`, `rateLimitSemaphore.ts`, `accountSemaphore.ts`, `accountSelector.ts`                                         |
 | Quotas               | `quotaMonitor.ts`, `quotaPreflight.ts`, `bailianQuotaFetcher.ts`, `codexQuotaFetcher.ts`, `deepseekQuotaFetcher.ts`, `openrouterQuotaFetcher.ts`, `openrouterFreeWindow.ts`, `llmgatewayQuotaFetcher.ts`, `crofUsageFetcher.ts`, `antigravityCredits.ts` |

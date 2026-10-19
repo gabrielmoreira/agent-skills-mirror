@@ -847,6 +847,24 @@ class PhotoPreparationScriptTests(unittest.TestCase):
 
 
 class TimelineAgeScriptTests(unittest.TestCase):
+    def test_cli_displays_one_assumption_based_age_instead_of_wide_range(self) -> None:
+        for start, expected_age in (("2011-09", 33), ("2020-09", 24)):
+            with self.subTest(start=start):
+                completed = subprocess.run(
+                    [sys.executable, str(SCRIPTS_DIR / "derive_timeline_age.py"),
+                     "--report-date", "2026-09-26", "--undergraduate-start", start,
+                     "--source-locator", "normalized/resume.md：教育背景"],
+                    text=True, capture_output=True, check=False, env=NO_BYTECODE_ENV,
+                )
+                self.assertEqual(0, completed.returncode, completed.stderr)
+                payload = json.loads(completed.stdout)
+                self.assertEqual(
+                    f"约{expected_age}岁（按{start}本科入学、入学时18岁假设推算；非候选人自述）",
+                    payload["display"],
+                )
+                self.assertLessEqual(payload["min_years"], expected_age)
+                self.assertGreaterEqual(payload["max_years"], expected_age)
+
     def test_cli_derives_year_precision_range(self) -> None:
         completed = subprocess.run(
             [

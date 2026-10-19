@@ -21,7 +21,6 @@ dbs-wechat-html
 dbs-install-skill
 dbs-skill-maker
 dbs-human-dispatch
-dbs-agent-migration
 dbs-save
 dbs-restore
 dbs-report

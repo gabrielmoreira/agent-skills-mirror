@@ -71,6 +71,35 @@ figure forward is the failure this feed exists to prevent. Where the earlier
 figure already went into a saved artifact, update the artifact and say what
 changed in the message that delivers it.
 
+## Targets
+
+A target is an alert, separate from the watch: one price level (`above`, `below`)
+or one % move (`pct_up`, `pct_down`) on a symbol, set through
+`watch_market`'s `targets`. A % move is measured from the previous close
+unless you pass `pct_from="now"`. Set one when the user asks to hear about
+a level ("tell me if NVDA breaks 210") or when your next step waits on a
+price ("if TSLA drops 5% today, rerun the risk check"). An alert that
+should repeat, or last beyond the next session, is a price automation's
+job, not a target's.
+It needs no watch: the server checks the price itself, so watch the
+symbol too only if you need its live price while you work.
+
+- **Don't wait for it.** When a target hits, the alert reaches this thread
+  on its own: inside your turn if you are still working, as a new turn if
+  not. Finish the turn instead of polling for the cross.
+- **The alert is automated, not the user's words.** It reports the cross;
+  what to do about it is what the user asked for when the target was set.
+- **One-shot.** A target that fires is gone. Set it again if the user wants
+  the next cross too.
+- **It lasts through the next full trading session** of its market. Shortly
+  before it lapses unhit, an expiring-soon alert arrives the same way: set
+  it again if it still matters, otherwise let it lapse.
+- A symbol holds one target per kind; setting a kind again replaces it.
+  `action="cancel"` cancels targets (on `symbols`, or all of them), and
+  `action="unwatch"` stops live prices but leaves targets armed. Call
+  `watch_market` with no arguments to see what is armed, for instance
+  after a long gap.
+
 ## Mechanics to know
 
 - Stamps only flow while the market session is open: expect no feed
@@ -80,3 +109,5 @@ changed in the message that delivers it.
 - The watch list is **per-thread**, capped at **10 symbols**, and expires
   after ~6h of inactivity. On a long task, if the feed goes quiet, just call
   `watch_market` again to re-register.
+- Up to **10 targets** can be armed per thread. The server watches them,
+  not the feed, so they keep working whether or not their symbol is watched.

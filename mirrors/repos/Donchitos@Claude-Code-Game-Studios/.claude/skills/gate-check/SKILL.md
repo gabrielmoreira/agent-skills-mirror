@@ -3,7 +3,7 @@ name: gate-check
 description: "Ready to advance between development phases? PASS/CONCERNS/NOT ASSESSED/FAIL with blockers and required artifacts. 'Can we move to production?'"
 argument-hint: "[target-phase: systems-design | technical-setup | pre-production | production | polish | release] [--review full|lean|solo]"
 user-invocable: true
-allowed-tools: Read, Glob, Grep, Bash, Write, Edit, Agent, AskUserQuestion, Bash(bash "*/.claude/skills/gate-check/../../hooks/yaml-helper.sh" resolve_config *)
+allowed-tools: Read, Glob, Grep, Write, Edit, Agent, AskUserQuestion, Bash(bash "*/.claude/skills/gate-check/../../hooks/yaml-helper.sh" resolve_config *), Bash(bash .claude/scripts/artifact-check.sh *), Bash(bash .claude/scripts/gdd-structure-check.sh*), Bash(bash .claude/scripts/adr-dep-graph.sh*), Bash(bash .claude/scripts/set-stage.sh *)
 model: opus
 ---
 
@@ -75,7 +75,7 @@ width is `workflow`'s axis (Section 4b). This value affects only the
 **specialist depth within each director's review**.
 `individual` uses the core specialist set; `small` the standard set; `studio`
 adds engine sub-specialists. It never skips a director — skipping directors is
-`review_mode`'s job. Both `review_mode` and `team.size` are now fronted by
+`review_mode`'s job. Both `review_mode` and `team.size` are set by
 `modes.rigor` — one rigor choice sets both — and each still overrides that axis
 when set explicitly (a full-rigor project gets the `studio` set; lighter tiers
 get `individual`).

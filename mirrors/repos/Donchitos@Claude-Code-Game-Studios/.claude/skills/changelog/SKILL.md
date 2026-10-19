@@ -3,7 +3,7 @@ name: changelog
 description: "Auto-generate a changelog from git commits and sprint data. Internal and player-facing versions."
 argument-hint: "[version|sprint-number]"
 user-invocable: true
-allowed-tools: Read, Glob, Grep, Bash, Write, Bash(bash "*/.claude/skills/changelog/../../hooks/yaml-helper.sh" resolve_config *)
+allowed-tools: Read, Glob, Grep, Write, Bash(bash "*/.claude/skills/changelog/../../hooks/yaml-helper.sh" resolve_config *), Bash(git log *), Bash(git tag --list*), Bash(git rev-parse *)
 model: sonnet
 ---
 
@@ -47,9 +47,8 @@ check governs is whether that output is usable, not whether it is fetched.
 
 > **Filter per commit; a repo containing maintenance work is not a wrong repo.**
 > Every project on this framework accumulates commits touching hooks, CI and
-> skills — the game repo *is* the framework repo. Listing those as a hard STOP
-> fires on virtually every real project and contradicts step 2 whenever the
-> history is mostly the game's. The harm is those commits becoming release copy,
+> skills — the game repo *is* the framework repo, so stopping on them would fire
+> on virtually every real project. The harm is those commits becoming release copy,
 > and excluding them prevents that precisely.
 >
 > This rule is kept identical to `/patch-notes`' on purpose — the two read the
@@ -69,13 +68,11 @@ If **no** commit in the range is this game's, say so and stop:
 
 Verdict: **BLOCKED** — stop here without generating a changelog.
 
-**Why this is a hard stop, not a warning.** This exact failure is real, not
-hypothetical: a batch of framework-internal commits produced player-facing copy
-reading *"Fixed an issue where progress from your last session could be lost on
-launch"* — a
-session-hook timeout rendered as a gameplay fix for a game with **no save
-system**. It was fluent, plausible, and entirely false. A reader cannot tell the
-difference; only this check can.
+**Why this is a hard stop, not a warning.** Framework-internal commits rendered
+as player copy read as real changes: a session-hook timeout becomes *"Fixed an
+issue where progress from your last session could be lost on launch"* in a game
+with **no save system**. That copy is fluent, plausible, and entirely false. A
+reader cannot tell the difference; only this check can.
 
 **Do not treat the preamble's existence as evidence.** Injected output means the
 command ran, never that its subject is your game.
@@ -118,7 +115,7 @@ rather than widening blindly.
 
 Read sprint reports from `production/sprints/` for the relevant period to understand planned work and context behind changes.
 
-Read completed design documents from `design/gdd/` for any new features implemented during this period.
+Read completed design documents from `design/gdd/` for any new features implemented during this period. Read them by section: find the headings you need with the Grep tool (pattern `^#`, content mode) and Read those ranges with offset and limit.
 
 ---
 

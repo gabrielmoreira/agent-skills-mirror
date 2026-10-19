@@ -10,22 +10,22 @@
 
 _Posljednje ažurirano: 2026-06-28_
 
-## Sažetak
+## Izvršni sažetak
 
-OmniRoute je lokalni pristupnik za usmjeravanje umjetne inteligencije i nadzorna ploča izgrađena na Next.js-u.
-Pruža jedinstvenu krajnju točku kompatibilnu s OpenAI-jem (`/v1/*`) i usmjerava promet kroz više nadređenih pružatelja uz prevođenje, prebacivanje na pričuvnu opciju, osvježavanje tokena i praćenje upotrebe.
+OmniRoute je lokalni pristupnik za usmjeravanje AI zahtjeva i nadzorna ploča izgrađena na Next.js-u.
+Pruža jednu krajnju točku kompatibilnu s OpenAI-jem (`/v1/*`) i usmjerava promet između više vanjskih pružatelja uz prevođenje, zamjenske opcije, osvježavanje tokena i praćenje upotrebe.
 
 Ključne mogućnosti:
 
-- API sučelje kompatibilno s OpenAI-jem za CLI/alate (373 pružatelja, 150 izvršnih modula)
+- API sučelje kompatibilno s OpenAI-jem za CLI/alate (374 pružatelja, 150 izvršnih modula)
 - Prevođenje zahtjeva/odgovora između formata pružatelja
-- Pričuvne kombinacije modela (slijed više modela)
-- Strukturirani koraci kombinacija (`provider + model + connection`) s redoslijedom tijekom izvođenja prema `compositeTiers`
-- Prebacivanje na pričuvnu opciju na razini računa (više računa po pružatelju)
-- Prethodna provjera kvote i P2C odabir računa koji uzima u obzir kvotu u glavnoj putanji razgovora
+- Zamjenski slijed kombinacije modela (slijed više modela)
+- Strukturirani koraci kombinacije (`provider + model + connection`) s određivanjem redoslijeda tijekom izvođenja prema `compositeTiers`
+- Zamjenski odabir na razini računa (više računa po pružatelju)
+- Prethodna provjera kvote i odabir P2C računa koji uzima kvotu u obzir u glavnom toku razgovora
 - Upravljanje vezama s pružateljima putem OAutha i API ključeva (27 OAuth modula pružatelja)
 - Generiranje ugradnji putem `/v1/embeddings` (18 pružatelja)
-- Generiranje slika putem `/v1/images/generations` (više od 10 pružatelja, više od 20 modela)
+- Generiranje slika putem `/v1/images/generations` (10+ pružatelja, 20+ modela)
 - Transkripcija zvuka putem `/v1/audio/transcriptions` (18 pružatelja)
 - Pretvaranje teksta u govor putem `/v1/audio/speech` (24 ugrađena pružatelja)
 - Generiranje videozapisa putem `/v1/videos/generations` (ComfyUI + SD WebUI)
@@ -34,55 +34,55 @@ Ključne mogućnosti:
 - Moderiranje putem `/v1/moderations`
 - Ponovno rangiranje putem `/v1/rerank`
 - Raščlanjivanje oznaka za razmišljanje (``) za modele zaključivanja
-- Sanitizacija odgovora radi stroge kompatibilnosti s OpenAI SDK-om
-- Normalizacija uloga (developer→system, system→user) radi kompatibilnosti među pružateljima
+- Pročišćavanje odgovora radi stroge kompatibilnosti s OpenAI SDK-om
+- Normalizacija uloga (developer→system, system→user) radi kompatibilnosti između pružatelja
 - Pretvorba strukturiranog izlaza (json_schema → Gemini responseSchema)
-- Lokalna trajna pohrana pružatelja, ključeva, pseudonima, kombinacija, postavki i cijena (122 DB modula)
-- Praćenje upotrebe/troškova i bilježenje zahtjeva
-- Neobavezna sinkronizacija s oblakom za sinkronizaciju između više uređaja/stanja
+- Lokalna pohrana pružatelja, ključeva, pseudonima, kombinacija, postavki i cijena (122 DB modula)
+- Praćenje upotrebe/troškova i zapisivanje zahtjeva
+- Neobavezna sinkronizacija s oblakom radi sinkronizacije stanja između više uređaja
 - Popis dopuštenih/blokiranih IP adresa za kontrolu pristupa API-ju
-- Upravljanje proračunom za razmišljanje (izravno prosljeđivanje/automatski/prilagođeni/adaptivni)
+- Upravljanje proračunom za razmišljanje (izravno prosljeđivanje/automatski/prilagođeni/prilagodljivi)
 - Umetanje globalnog sistemskog upita
 - Praćenje sesija i izrada otisaka
-- Poboljšano ograničavanje učestalosti zahtjeva po računu s profilima specifičnima za pružatelja
+- Poboljšano ograničavanje brzine po računu s profilima specifičnima za pružatelje
 - Obrazac prekidača strujnog kruga za otpornost pružatelja
-- Zaštita od lavine istodobnih zahtjeva s pomoću zaključavanja mutexom
-- Predmemorija za deduplikaciju zahtjeva na temelju potpisa
-- Sloj domene: pravila troškova, pravila prebacivanja na pričuvnu opciju, pravila zaključavanja
-- Context Relay: sažeci primopredaje sesije radi kontinuiteta pri rotaciji računa
-- Trajna pohrana stanja domene (SQLite predmemorija s neposrednim zapisivanjem za pričuvne opcije, proračune, zaključavanja i prekidače strujnog kruga)
-- Mehanizam pravila za centraliziranu procjenu zahtjeva (zaključavanje → proračun → pričuvna opcija)
+- Zaštita od lavine istodobnih zahtjeva zaključavanjem putem mutexa
+- Predmemorija za uklanjanje dupliciranih zahtjeva na temelju potpisa
+- Domena: pravila troškova, pravila zamjenskog odabira, pravila zaključavanja
+- Context Relay: sažeci za prijenos sesije radi kontinuiteta pri rotaciji računa
+- Pohrana stanja domene (SQLite predmemorija s izravnim zapisivanjem za zamjenske opcije, proračune, zaključavanja i prekidače strujnog kruga)
+- Mehanizam pravila za centraliziranu evaluaciju zahtjeva (zaključavanje → proračun → zamjenska opcija)
 - Telemetrija zahtjeva s agregiranjem latencije p50/p95/p99
 - Telemetrija ciljeva kombinacije i povijesno stanje ciljeva kombinacije putem `combo_execution_key` / `combo_step_id`
 - ID korelacije (X-Request-Id) za praćenje od početka do kraja
-- Bilježenje revizije usklađenosti uz mogućnost isključivanja po API ključu
-- Okvir za evaluaciju radi osiguranja kvalitete LLM-a
-- Nadzorna ploča stanja sa statusom prekidača strujnog kruga pružatelja u stvarnom vremenu
+- Evidentiranje revizije usklađenosti uz mogućnost isključivanja po API ključu
+- Eval radni okvir za osiguranje kvalitete LLM-a
+- Nadzorna ploča stanja s prikazom stanja prekidača strujnog kruga pružatelja u stvarnom vremenu
 - MCP poslužitelj (110 alata) s 3 načina prijenosa (stdio/SSE/Streamable HTTP)
 - A2A poslužitelj (JSON-RPC 2.0 + SSE) s vještinama i životnim ciklusom zadataka
 - Sustav memorije (izdvajanje, umetanje, dohvaćanje, sažimanje)
 - Sustav vještina (registar, izvršitelj, izolirano okruženje, ugrađene vještine)
-- MITM proxy s upravljanjem certifikatima i obradom DNS-a
-- Posrednički sloj za zaštitu od umetanja upita
-- Cjevovod za kompresiju upita s Cavemanom, RTK-om, složenim cjevovodima, kombinacijama kompresije, jezičnim paketima i analitikom
+- MITM proxy s upravljanjem certifikatima i DNS-om
+- Posrednički softver za zaštitu od umetanja zlonamjernih upita
+- Cjevovod za sažimanje upita s komponentama Caveman, RTK, složenim cjevovodima, kombinacijama sažimanja, jezičnim paketima i analitikom
 - Registar ACP-a (Agent Communication Protocol)
 - Modularni OAuth pružatelji (22 pojedinačna modula u `src/lib/oauth/providers/`)
 - Skripte za deinstalaciju/potpunu deinstalaciju
-- Radnja popravka OAuth okruženja
+- Radnja za popravak OAuth okruženja
 - WebSocket most za WS klijente kompatibilne s OpenAI-jem (`/v1/ws`)
-- Upravljanje tokenima za sinkronizaciju (izdavanje/opoziv, preuzimanje konfiguracijskog paketa s verzijama temeljenima na ETagu)
-- GLM Thinking (`glmt`) kao punopravna unaprijed postavljena konfiguracija pružatelja
-- Hibridno brojanje tokena (`/messages/count_tokens` na strani pružatelja uz procjenu kao pričuvnu opciju)
-- Automatsko početno popunjavanje pseudonima modela (više od 30 normalizacija dijalekata među proxyjima pri pokretanju)
-- Sigurno odlazno dohvaćanje sa zaštitom od SSRF-a, blokiranjem privatnih URL-ova i podesivim ponovnim pokušajima
-- Ponovni pokušaji razgovora koji uzimaju u obzir razdoblje čekanja, uz podesive `requestRetry` i `maxRetryIntervalSec`
+- Upravljanje tokenima za sinkronizaciju (izdavanje/opoziv, preuzimanje konfiguracijskog paketa s verzijama temeljenima na ETag-u)
+- GLM Thinking (`glmt`) kao unaprijed postavljeni pružatelj prve klase
+- Hibridno brojanje tokena (poziv `/messages/count_tokens` na strani pružatelja uz rezervnu procjenu)
+- Automatsko početno stvaranje pseudonima modela (30+ normalizacija dijalekata između proxyja pri pokretanju)
+- Sigurno dohvaćanje vanjskih resursa sa zaštitom od SSRF-a, blokiranjem privatnih URL-ova i podesivim ponovnim pokušajima
+- Ponovni pokušaji razgovora koji uzimaju u obzir vrijeme čekanja, s podesivim `requestRetry` i `maxRetryIntervalSec`
 - Provjera valjanosti okruženja izvođenja pomoću Zoda pri pokretanju
-- Revizija usklađenosti v2 sa straničenjem, CRUD događajima pružatelja i bilježenjem provjera valjanosti blokiranih zbog SSRF-a
+- Revizija usklađenosti v2 sa straničenjem, CRUD događajima pružatelja i zapisivanjem provjera blokiranih SSRF zahtjeva
 
 Primarni model izvođenja:
 
-- Rute aplikacije Next.js u `src/app/api/*` implementiraju i API-je nadzorne ploče i API-je kompatibilnosti
-- Zajednička jezgra za SSE/usmjeravanje u `src/sse/*` + `open-sse/*` upravlja izvršavanjem kod pružatelja, prevođenjem, strujanjem, prebacivanjem na pričuvnu opciju i upotrebom
+- Next.js rute aplikacije u `src/app/api/*` implementiraju API-je nadzorne ploče i API-je za kompatibilnost
+- Zajednička jezgra za SSE/usmjeravanje u `src/sse/*` + `open-sse/*` obrađuje izvršavanje pružatelja, prevođenje, strujanje, zamjenski odabir i upotrebu
 
 ## Referentni dijagrami
 
@@ -262,17 +262,17 @@ Domene upravljanja:
 
 ## 2) SSE + jezgra prevođenja
 
-Glavni moduli toka:
+Glavni moduli tijeka:
 
 - Ulazna točka: `src/sse/handlers/chat.ts`
 - Temeljna orkestracija: `open-sse/handlers/chatCore.ts`
-- Adapteri za izvršavanje pružatelja usluga: `open-sse/executors/*`
-- Otkrivanje formata/konfiguracija pružatelja usluga: `open-sse/services/provider.ts`
+- Prilagodnici za izvršavanje pružatelja: `open-sse/executors/*`
+- Otkrivanje formata/konfiguracija pružatelja: `open-sse/services/provider.ts`
 - Raščlanjivanje/razrješavanje modela: `src/sse/services/model.ts`, `open-sse/services/model.ts`
 - Logika prijelaza na pričuvni račun: `open-sse/services/accountFallback.ts`
 - Registar prevođenja: `open-sse/translator/index.ts`
 - Transformacije toka: `open-sse/utils/stream.ts`, `open-sse/utils/streamHandler.ts`
-- Izdvajanje/normalizacija podataka o upotrebi: `open-sse/utils/usageTracking.ts`
+- Izdvajanje/normalizacija upotrebe: `open-sse/utils/usageTracking.ts`
 - Parser oznake za razmišljanje: `open-sse/utils/thinkTagParser.ts`
 - Rukovatelj ugrađivanjima: `open-sse/handlers/embeddings.ts`
 - Registar pružatelja ugrađivanja: `open-sse/config/embeddingRegistry.ts`
@@ -286,46 +286,46 @@ Usluge (poslovna logika):
 - Odabir/bodovanje računa: `open-sse/services/accountSelector.ts`
 - Upravljanje životnim ciklusom konteksta: `open-sse/services/contextManager.ts`
 - Provedba IP filtra: `open-sse/services/ipFilter.ts`
-- Praćenje sesije: `open-sse/services/sessionManager.ts`
+- Praćenje sesija: `open-sse/services/sessionManager.ts`
 - Deduplikacija zahtjeva: `open-sse/services/signatureCache.ts`
 - Umetanje sistemskog upita: `open-sse/services/systemPrompt.ts`
 - Upravljanje proračunom za razmišljanje: `open-sse/services/thinkingBudget.ts`
 - Usmjeravanje modela sa zamjenskim znakovima: `open-sse/services/wildcardRouter.ts`
 - Upravljanje ograničenjem brzine: `open-sse/services/rateLimitManager.ts`
 - Prekidač strujnog kruga: `src/shared/utils/circuitBreaker.ts`
-- Predaja konteksta: `open-sse/services/contextHandoff.ts` — generiranje i umetanje sažetka predaje za strategiju prosljeđivanja konteksta
-- Kompresija: `open-sse/services/compression/*` — proaktivna kompresija prije prevođenja za pružatelja usluga;
-  uključuje pravila Caveman, filtre RTK, složene cjevovode, kombinacije kompresije, statistiku i provjeru valjanosti
-- Dohvatitelj kvote za Codex: `open-sse/services/codexQuotaFetcher.ts` — dohvaća kvotu za Codex radi odluka o predaji pri prosljeđivanju konteksta
-- Ponovni pokušaji koji uzimaju u obzir razdoblje hlađenja: `src/sse/services/cooldownAwareRetry.ts` — ponovni pokušaji po modelu nakon razdoblja hlađenja, s podesivim vrijednostima `requestRetry` / `maxRetryIntervalSec`
-- Sigurno izlazno dohvaćanje: `src/shared/network/safeOutboundFetch.ts` — zaštićeno dohvaćanje pružatelja usluga/modela sa zaštitom od SSRF-a, blokiranjem privatnih URL-ova, ponovnim pokušajima i vremenskim ograničenjem
-- Zaštita izlaznih URL-ova: `src/shared/network/outboundUrlGuard.ts` — provjere glavnog računala u URL-ovima pružatelja usluga; `src/shared/network/outboundUrlGuardPolicy.ts` odabire način rada iz `OMNIROUTE_ALLOW_LOCAL_PROVIDER_URLS`, `OMNIROUTE_ALLOW_PRIVATE_PROVIDER_URLS` i njihovih preklopnika na nadzornoj ploči (pogledajte `docs/reference/ENVIRONMENT.md`)
-- Zadane vrijednosti zahtjeva prema pružatelju usluga: `open-sse/services/providerRequestDefaults.ts` — zadane vrijednosti `maxTokens`, `temperature`, `thinkingBudgetTokens` na razini pružatelja usluga
-- Konstante pružatelja GLM-a: `open-sse/config/glmProvider.ts` — zajednički GLM modeli, URL-ovi kvota te vremensko ograničenje/zadane vrijednosti za GLMT
+- Primopredaja konteksta: `open-sse/services/contextHandoff.ts` — generiranje i umetanje sažetka primopredaje za strategiju prosljeđivanja konteksta
+- Kompresija: `open-sse/services/compression/*` — proaktivna kompresija prije prevođenja za pružatelja;
+  uključuje pravila Caveman, filtre RTK, ulančane cjevovode, kombinacije kompresije, statistiku i provjeru valjanosti
+- Dohvaćanje kvote za Codex: `open-sse/services/codexQuotaFetcher.ts` — dohvaća kvotu za Codex radi donošenja odluka o primopredaji pri prosljeđivanju konteksta
+- Ponovni pokušaji koji uzimaju u obzir razdoblje čekanja: `src/sse/services/cooldownAwareRetry.ts` — ponovni pokušaji po modelu nakon razdoblja čekanja, uz podesive `requestRetry` / `maxRetryIntervalSec`
+- Sigurno odlazno dohvaćanje: `src/shared/network/safeOutboundFetch.ts` — zaštićeno dohvaćanje podataka pružatelja/modela sa zaštitom od SSRF-a, blokiranjem privatnih URL-ova, ponovnim pokušajima i vremenskim ograničenjem
+- Zaštita odlaznih URL-ova: `src/shared/network/outboundUrlGuard.ts` — provjere glavnog računala u URL-ovima pružatelja; `src/shared/network/outboundUrlGuardPolicy.ts` odabire način rada na temelju `OMNIROUTE_ALLOW_LOCAL_PROVIDER_URLS`, `OMNIROUTE_ALLOW_PRIVATE_PROVIDER_URLS` i njihovih preklopnika na nadzornoj ploči (pogledajte `docs/reference/ENVIRONMENT.md`)
+- Zadane vrijednosti zahtjeva pružatelja: `open-sse/services/providerRequestDefaults.ts` — zadane vrijednosti `maxTokens`, `temperature`, `thinkingBudgetTokens` na razini pružatelja
+- Konstante pružatelja GLM: `open-sse/config/glmProvider.ts` — zajednički GLM modeli, URL-ovi kvota te vremenska ograničenja/zadane vrijednosti za GLMT
 - Nadređena usluga Antigravity: `open-sse/config/antigravityUpstream.ts` — osnovni URL i konstante putanje za otkrivanje
 - Konstante klijenta Codex: `open-sse/config/codexClient.ts` — verzionirane vrijednosti korisničkog agenta i verzije klijenta
-- Početni skup pseudonima modela: `src/lib/modelAliasSeed.ts` — pri pokretanju postavlja više od 30 pseudonima dijalekata između proxy poslužitelja
+- Početni skup pseudonima modela: `src/lib/modelAliasSeed.ts` — pri pokretanju postavlja više od 30 pseudonima različitih dijalekata među proxyjima
 
 Moduli domenskog sloja:
 
 - Pravila troškova/proračuni: `src/domain/costRules.ts`
-- Pravila prijelaza na pričuvnu opciju: `src/domain/fallbackPolicy.ts`
-- Razrješivač kombinacija: `src/domain/comboResolver.ts`
+- Pravila pričuvnog postupanja: `src/domain/fallbackPolicy.ts`
+- Razrješavanje kombinacija: `src/domain/comboResolver.ts`
 - Pravila zaključavanja: `src/domain/lockoutPolicy.ts`
-- Mehanizam pravila: `src/domain/policyEngine.ts` — centralizirana procjena zaključavanje → proračun → pričuvna opcija
+- Mehanizam pravila: `src/domain/policyEngine.ts` — centralizirana procjena redoslijedom zaključavanje → proračun → pričuvno postupanje
 - Katalog kodova pogrešaka: `src/shared/constants/errorCodes.ts`
 - ID zahtjeva: `src/shared/utils/requestId.ts`
 - Vremensko ograničenje dohvaćanja: `src/shared/utils/fetchTimeout.ts`
 - Telemetrija zahtjeva: `src/shared/utils/requestTelemetry.ts`
 - Usklađenost/revizija: `src/lib/compliance/index.ts`
 - Pokretač evaluacija: `src/lib/evals/evalRunner.ts`
-- Trajno spremanje stanja domene: `src/lib/db/domainState.ts` — SQLite CRUD operacije za lance pričuvnih opcija, proračune, povijest troškova, stanje zaključavanja i prekidače strujnog kruga
+- Trajna pohrana stanja domene: `src/lib/db/domainState.ts` — SQLite CRUD za lance pričuvnog postupanja, proračune, povijest troškova, stanje zaključavanja i prekidače strujnog kruga
 
-Moduli OAuth pružatelja usluga (27 zasebnih datoteka u `src/lib/oauth/providers/`):
+Moduli OAuth pružatelja (27 zasebnih datoteka u `src/lib/oauth/providers/`):
 
-- Indeks registra: `src/lib/oauth/providers/index.ts`
-- Pojedinačni pružatelji usluga: `agy.ts`, `antigravity.ts`, `claude.ts`, `cline.ts`, `codebuddy-cn.ts`, `codebuddy-intl.ts`, `codex.ts`, `cursor.ts`, `devin-desktop.ts`, `ghe-copilot.ts`, `github.ts`, `gitlab-duo.ts`, `grok-cli-oauth.ts`, `grok-cli.ts`, `kilocode.ts`, `kimi-coding.ts`, `kiro.ts`, `muse-code.ts`, `openference.ts`, `qoder.ts`, `trae.ts`, `workbuddy.ts`, `xai-oauth.ts`, `zed-hosted.ts`, `zed.ts`
-- Zajedničke pomoćne funkcije: `codebuddyDeviceAuth.ts` (tijek autentifikacije uređaja za CodeBuddy CN/intl), `museCodeDeviceResponse.ts`
+- Kazalo registra: `src/lib/oauth/providers/index.ts`
+- Pojedinačni pružatelji: `agy.ts`, `antigravity.ts`, `claude.ts`, `cline.ts`, `codebuddy-cn.ts`, `codebuddy-intl.ts`, `codex.ts`, `cursor.ts`, `devin-desktop.ts`, `ghe-copilot.ts`, `github.ts`, `gitlab-duo.ts`, `grok-cli-oauth.ts`, `grok-cli.ts`, `kilocode.ts`, `kimi-coding.ts`, `kiro.ts`, `muse-code.ts`, `openference.ts`, `qoder.ts`, `trae.ts`, `workbuddy.ts`, `xai-oauth.ts`, `zed-hosted.ts`, `zed.ts`
+- Zajedničke pomoćne funkcije: `codebuddyDeviceAuth.ts` (tijek autorizacije uređaja za CodeBuddy CN/intl), `museCodeDeviceResponse.ts`
 - Tanki omotač: `src/lib/oauth/providers.ts` — ponovno izvozi iz pojedinačnih modula
 
 ## 5) Ugrađene usluge (v3.8.4)
@@ -538,14 +538,15 @@ Baza podataka stanja domene (SQLite):
 
 ## 4) Površine za autentifikaciju i sigurnost
 
-- Autentifikacija kolačićem nadzorne ploče: `src/proxy.ts`, `src/app/api/auth/login/route.ts`
-- Generiranje/provjera API ključa: `src/shared/utils/apiKey.ts`
-- Tajni podaci pružatelja usluge trajno se pohranjuju u zapisima `providerConnections`
-- Podrška za izlazni proxy putem `open-sse/utils/proxyFetch.ts` (varijable okoline) i `open-sse/utils/networkProxy.ts` (konfigurabilno po pružatelju usluge ili globalno)
-- SSRF / zaštita izlaznog URL-a: `src/shared/network/outboundUrlGuard.ts` — blokira privatne/loopback/link-local raspone za sve pozive pružatelja usluge
-- Provjera valjanosti varijabli okoline u vrijeme izvođenja: `src/lib/env/runtimeEnv.ts` — Zod shema za sve varijable okoline, prikazana kao greške/upozorenja pri pokretanju
-- Tokeni za sinkronizaciju: `src/lib/db/syncTokens.ts` — ograničeni tokeni za krajnje točke preuzimanja paketa konfiguracije; podržani SQLite tablicom `sync_tokens` (migracija `024_create_sync_tokens.sql`)
-- Autentifikacija WebSocket handshakea: `src/lib/ws/handshake.ts` — provjerava valjanost zahtjeva za WS nadogradnju putem API ključa ili kolačića sesije
+- Autentifikacija nadzorne ploče putem kolačića: `src/proxy.ts`, `src/app/api/auth/login/route.ts`
+- Generiranje/provjera API ključeva: `src/shared/utils/apiKey.ts`
+- Tajne pružatelja pohranjene u zapisima `providerConnections`
+- Podrška za izlazni proxy putem `open-sse/utils/proxyFetch.ts` (varijable okruženja) i `open-sse/utils/networkProxy.ts` (podesivo po pružatelju ili globalno)
+- Zaštita od SSRF-a / provjera izlaznih URL-ova: `src/shared/network/outboundUrlGuard.ts` — provjere hosta pri pozivima pružatelja i ciljevima webhookova; način rada dolazi iz `src/shared/network/outboundUrlGuardPolicy.ts` (zastavice u `docs/reference/ENVIRONMENT.md`)
+- Provjera varijabli okruženja tijekom izvođenja: `src/lib/env/runtimeEnv.ts` — Zod shema za sve varijable okruženja, pri čemu se pogreške/upozorenja prikazuju pri pokretanju
+- Tokeni za sinkronizaciju: `src/lib/db/syncTokens.ts` — tokeni ograničenog opsega za krajnje točke za preuzimanje konfiguracijskog paketa; pohranjeni u SQLite tablici `sync_tokens` (migracija `024_create_sync_tokens.sql`)
+- Autentifikacija pri uspostavi WebSocket veze: `src/lib/ws/handshake.ts` — provjerava zahtjeve za nadogradnju na WS putem API ključa ili kolačića sesije
+- Autentifikacija WebSocketa nadzorne ploče uživo: `src/server/ws/liveServer.ts` — pomoćni servis (priključak `LIVE_WS_PORT`) prihvaća kolačić sesije nadzorne ploče ili Bearer API ključ koji ima upravljački opseg (`manage`/`admin`); ključevi namijenjeni samo za inferenciju odbijaju se. Njegova interna krajnja točka izdavača `POST /__omniroute_event` prihvaća lokalne (loopback) klijente samo kada nije prisutno zaglavlje koje označava prolazak kroz proxy (`x-forwarded-*`, `x-real-ip`, `forwarded`, `via`)
 
 ## 5) Sinkronizacija u oblaku
 
@@ -1096,9 +1097,9 @@ kompatibilnosti sa starijim verzijama. Trenutni ugovor za vrijeme izvođenja kor
 
 ## 6) SSRF / zaštita izlaznih URL-ova
 
-- `src/shared/network/outboundUrlGuard.ts` blokira sve privatne/loopback/link-local ciljne URL-ove prije nego što dođu do izvršitelja pružatelja usluge
-- Rute za otkrivanje i validaciju modela pružatelja usluge koriste `src/shared/network/safeOutboundFetch.ts` koji primjenjuje zaštitu prije svakog izlaznog zahtjeva
-- Greške zaštite prikazuju se kao `URL_GUARD_BLOCKED` s HTTP 422 statusom i bilježe se u revizijski trag usklađenosti putem `providerAudit.ts`
+- `BaseExecutor.assertOutboundUrlAllowed` (`open-sse/executors/base.ts`) primjenjuje `src/shared/network/outboundUrlGuard.ts` na zahtjeve za razgovor poslane putem `BaseExecutor.execute()`. U načinu rada samo za javne adrese (`OMNIROUTE_ALLOW_LOCAL_PROVIDER_URLS=false` uz isključenu privatnu zastavicu) blokira privatne i povratne hostove te raspon 169.254.0.0/16; u svakom drugom načinu rada blokira hostove metapodataka u oblaku. Provjerava naziv hosta ili doslovno navedenu IP adresu u zapisanom obliku, prije bilo kakvog DNS upita. Ugrađeni lokalni pružatelji preskaču ovu provjeru.
+- Rute za otkrivanje i provjeru valjanosti modela pružatelja koriste `src/shared/network/safeOutboundFetch.ts`, koji primjenjuje zaštitu prije svakog izlaznog zahtjeva
+- Pogreške zaštite prikazuju se kao `URL_GUARD_BLOCKED` s HTTP statusom 503 (`getSafeOutboundFetchErrorStatus`; ruta za otkrivanje modela vraća 400), a stvarne blokade SSRF-a tijekom provjere valjanosti bilježe se u revizijski trag kao događaji `provider.validation.ssrf_blocked`
 
 ## Vidljivost i operativni signali
 

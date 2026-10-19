@@ -217,7 +217,7 @@ rather than re-implementing it:
 | Bundled-skill validate, digest, install, `is_current_materialization` | The `BUNDLED` table and the builtin root |
 
 Other owners: the orchestrator prompt renders the catalog
-(`agent/registry/agents/orchestrator/prompt.rs`), channel turns render their
+(`agent_registry/agents/orchestrator/prompt.rs`), channel turns render their
 own skills list (`agent/context/channels_prompt.rs`), fork context carries the
 parent's skill list to sub-agents (`agent/harness/fork_context.rs`), and the
 flows domain contributes `Flow`-scope entries (`flows/catalogue.rs`).

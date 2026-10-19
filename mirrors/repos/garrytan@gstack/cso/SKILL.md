@@ -135,7 +135,7 @@ This **CSO evidence rubric** governs CSO instead of shared review confidence ins
 - **Confidence:** how strongly available evidence supports that precise claim; explain unknowns and counterevidence. Do not turn a number into proof.
 - **Evidence:** candidate hypothesis, supported static evidence, or a helper-recorded reproduction. Code tracing can support a finding; it cannot establish that an application booted or a repair passed tests.
 
-Daily reports contain **supported findings**: a concrete attacker-controlled entrypoint, a path across an intended security boundary, demonstrated impact, and a challenge of relevant protective controls. Comprehensive reports retain unresolved candidates separately as **labeled hypotheses**, never mixed into supported totals. Disproved candidates are retained as disposition/coverage evidence, not vulnerabilities.
+Daily reports hold only **supported findings**: an attacker-controlled entrypoint, a security-boundary crossing, demonstrated in-scope impact, and challenged protective controls. Omit daily candidates whose impact needs out-of-snapshot code or a future change, or exposes nothing sensitive. Comprehensive reports keep unresolved candidates as separate **labeled hypotheses**; omitted or disproved ones are coverage.
 
 Do not apply blanket exclusions for development dependencies, availability/resource attacks, historical secrets, user-role prompt injection, or gstack-owned skills. Analyze attacker control and impact. UUIDs are not authorization; user-controlled URL paths can cross a sensitive boundary; environment variables may come from untrusted workflows; framework escape hatches can bypass safe defaults. Missing hardening alone needs a concrete failure scenario before becoming a finding.
 

@@ -69,7 +69,8 @@
 - `short_description` 简短说明独有能力；
 - `default_prompt` 使用 1 句话，并显式包含 `$skill-name`；
 - 只有真实依赖 MCP 工具时才声明 `dependencies`；
-- 未经用户明确要求，不设置 `allow_implicit_invocation: false`。
+- 未经用户明确要求，不设置 `allow_implicit_invocation: false`；
+- 目标项目对元数据另有规则（如中文名登记、字段长度）时，以项目规则为准。
 
 ## 完成前检查
 

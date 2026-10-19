@@ -1,8 +1,8 @@
 # Skill Catalog
 
-Generated at: 2026-10-16T11:41:20.000Z
+Generated at: 2026-10-18T21:53:06.000Z
 
-Total skills: 2705
+Total skills: 2712
 
 ## agent-behavior (5)
 
@@ -297,14 +297,16 @@ Total skills: 2705
 | `10-andruia-skill-smith` | Usar para crear o mejorar una skill de Andru.ia: define entradas y resultados, redacta SKILL.md con ejemplos y límites, valida la estructura y prepara una PR. | safe | personal | 10, andruia, skill, smith | 10, andruia, skill, smith, usar, para, crear, mejorar, una, de, andru, ia |
 | `20-andruia-niche-intelligence` | Usar tras definir el sector de un proyecto: prepara un dossier en español con contexto, normas aplicables, patrones UX y riesgos, distinguiendo fuentes verif... | safe | personal | 20, andruia, niche, intelligence | 20, andruia, niche, intelligence, usar, tras, definir, el, sector, de, un, proyecto |
 
-## api-integration (42)
+## api-integration (44)
 
 | Skill | Description | Risk | Source | Tags | Triggers |
 | --- | --- | --- | --- | --- | --- |
 | `2slides-ppt-generator` | AI-powered presentation generation via the 2slides API — create slides from text, match a reference image style, summarize documents into decks, add AI voice... | safe | 2slides/slides-generation-2slides-skills | presentations, slides, powerpoint, ai, api-integration, pdf, narration, document-summarization | presentations, slides, powerpoint, ai, api-integration, pdf, narration, document-summarization, 2slides, ppt, generator, powered |
 | `adhx` | Fetch any X/Twitter post as clean LLM-friendly JSON. Converts x.com, twitter.com, or adhx.com links into structured data with full article content, author in... | safe | community | adhx | adhx, fetch, any, twitter, post, clean, llm, friendly, json, converts, com, links |
+| `aident-loadout` | Run multi-step work across apps the user connected in Aident Loadout: live action schemas, connection checks, cost preflight, and approval before side effects. | critical | Aident-AI/aident-skill | mcp, integrations, oauth, vault, audit, agent-tools | mcp, integrations, oauth, vault, audit, agent-tools, aident, loadout, run, multi, step, work |
 | `algolia-search` | Expert patterns for Algolia search implementation, indexing strategies, React InstantSearch, and relevance tuning | critical | vibeship-spawner-skills (Apache 2.0) | algolia, search | algolia, search, indexing, react, instantsearch, relevance, tuning |
 | `connection-auth-rules` | Build a Connection Auth Rules for a Monte Carlo connection type. Fetches live connector schemas and transform steps from the apollo-agent repo. | unknown | monte-carlo-data/mc-agent-toolkit | connection, auth, rules | connection, auth, rules, monte, carlo, type, fetches, live, connector, schemas, transform, steps |
+| `curlshot` | Capture web page screenshots, PDFs and scrolling videos, or render HTML/Markdown to images, with the hosted CurlShot API. | safe | SergiuPogor/curlshot-mcp | screenshot, pdf, html-to-image, headless-browser, api, mcp | screenshot, pdf, html-to-image, headless-browser, api, mcp, curlshot, capture, web, page, screenshots, pdfs |
 | `daily` | Documentation and capabilities reference for Daily | safe | community | daily | daily, documentation, capabilities, reference |
 | `discord-automation` | Automate Discord tasks via Rube MCP (Composio): messages, channels, roles, webhooks, reactions. Always search tools first for current schemas. | critical | community | discord | discord, automation, automate, tasks, via, rube, mcp, composio, messages, channels, roles, webhooks |
 | `famulor-skill` | Operate Famulor assistants, communication history, campaigns, knowledge, automations, telephony, and workspace administration through its hosted MCP server. | critical | bekservice/Famulor-Skill | famulor, mcp, voice-ai, communication, automation | famulor, mcp, voice-ai, communication, automation, skill, operate, assistants, history, campaigns, knowledge, automations |
@@ -544,7 +546,7 @@ Total skills: 2705
 | `reverse-browser-automation` | Automate browsers (Playwright) and Windows desktop applications (UI automation) for reverse-engineering evidence collection, UI-driven workflows, and network... | safe | zhaoxuya520/reverse-skill | reverse, browser | reverse, browser, automation, automate, browsers, playwright, windows, desktop, applications, ui, engineering, evidence |
 | `skyvern-browser-automation` | AI-powered browser automation — navigate sites, fill forms, extract structured data, log in with stored credentials, and build reusable workflows. | safe | Skyvern-AI/skyvern | browser-automation, mcp, web-scraping, form-filling, ai-agents, workflow-automation | browser-automation, mcp, web-scraping, form-filling, ai-agents, workflow-automation, skyvern, browser, automation, ai, powered, navigate |
 
-## business (177)
+## business (178)
 
 | Skill | Description | Risk | Source | Tags | Triggers |
 | --- | --- | --- | --- | --- | --- |
@@ -659,6 +661,7 @@ Total skills: 2705
 | `okr-system` | OKR register: objective, owner and level, department, quarter and year, up to three key results with progress percentages, parent OKR and overall progress. U... | safe | WHOISABHISHEKADHIKARI/sme-ops-system-builder | sme, business, operations, database, csv, notion, sql, manage | sme, business, operations, database, csv, notion, sql, manage, okr, register, objective, owner |
 | `onboarding-playbook` | Onboarding checklist: step, phase and order, department, owner, linked SOP and required flag. Use for joiner onboarding. | safe | WHOISABHISHEKADHIKARI/sme-ops-system-builder | sme, business, operations, database, csv, notion, sql, onboard | sme, business, operations, database, csv, notion, sql, onboard, onboarding, playbook, checklist, step |
 | `organization-design` | Org structure register: department, type, parent, head, location, approved against actual headcount, annual budget, cost centre code and establishment date. ... | safe | WHOISABHISHEKADHIKARI/sme-ops-system-builder | sme, business, operations, database, csv, notion, sql, foundation | sme, business, operations, database, csv, notion, sql, foundation, organization, org, structure, register |
+| `outreachgenie-list-audit` | Audit saved OutreachGenie prospect lists against an outreach flow for missing template values, text limits and incomplete collection, using read-only MCP sna... | safe | Outreachgenie/outreachgenie-linkedin-mcp | crm, prospecting, personalization, mcp, data-quality | crm, prospecting, personalization, mcp, data-quality, outreachgenie, list, audit, saved, prospect, lists, against |
 | `party-ledger-reconciliation` | Party ledger reconciliation: party type, name and PAN/VAT, ledger against statement balance, difference and reason, duplicates, confirmation status and adjus... | safe | WHOISABHISHEKADHIKARI/sme-ops-system-builder | sme, accounting, audit, finance, database, csv, notion, sql, reconciliation | sme, accounting, audit, finance, database, csv, notion, sql, reconciliation, party, ledger, type |
 | `payment-accounting` | Payment voucher register: payment number and date, paid to and purpose, mode, gross amount, TDS rate and deducted, net paid, invoice allocation, ledger and r... | safe | WHOISABHISHEKADHIKARI/sme-ops-system-builder | sme, accounting, audit, finance, database, csv, notion, sql, payments, tds | sme, accounting, audit, finance, database, csv, notion, sql, payments, tds, payment, voucher |
 | `payments-received` | Payments received log: reference, client and invoice, amount and currency, payment date and method, withholding tax, bank account, received-by and receipt-se... | safe | WHOISABHISHEKADHIKARI/sme-ops-system-builder | sme, business, operations, database, csv, notion, sql, operate | sme, business, operations, database, csv, notion, sql, operate, payments, received, log, reference |
@@ -1089,7 +1092,7 @@ Total skills: 2705
 | `liuguang-banlan-ui` | Builds two parameterized UI modes—流光溢彩白 (iridescent white) and 五彩斑斓黑 (colorful black)—with OKLCH, WebGL/CSS fallback, vision gating, screenshot QA, and total... | critical | self | ui, frontend, oklch, webgl, accessibility | ui, frontend, oklch, webgl, accessibility, liuguang, banlan, two, parameterized, modes, iridescent, white |
 | `modellix` | Integrate the Modellix API/CLI for async AI image, video, and speech generation or transcription (model run --wait, task download). | critical | Modellix/modellix-plugin | image-generation, video-generation, audio-generation, text-to-speech, speech-to-text, speech-to-speech, modellix, cli, api | image-generation, video-generation, audio-generation, text-to-speech, speech-to-text, speech-to-speech, modellix, cli, api, integrate, async, ai |
 
-## data (45)
+## data (46)
 
 | Skill | Description | Risk | Source | Tags | Triggers |
 | --- | --- | --- | --- | --- | --- |
@@ -1122,6 +1125,7 @@ Total skills: 2705
 | `nexrad-product-access` | Discover and access NEXRAD data for a selected radar site, time, product, or Level II moment using completed archive volumes, real-time chunks, or supported ... | safe | self | weather, nexrad, level-ii, level-iii, radar-products, single-site, aws-s3 | weather, nexrad, level-ii, level-iii, radar-products, single-site, aws-s3, product, access, discover, data, selected |
 | `noaa-radar-satellite-fetching` | Retrieve NOAA NEXRAD and GOES products from public cloud archives using verified site, product, channel, sector, and scan-time selection. | safe | self | weather, noaa, nexrad, goes, radar, satellite, aws-s3 | weather, noaa, nexrad, goes, radar, satellite, aws-s3, fetching, retrieve, products, public, cloud |
 | `optim-agent` | Guide agent-driven parameter optimization for configurable systems with measurable objectives. Use for HPO, inference tuning, simulations, or RL/control expe... | safe | Optim-Agent/optim-agent | optimization, hyperparameter-optimization, experiments, tuning | optimization, hyperparameter-optimization, experiments, tuning, optim, agent, driven, parameter, configurable, measurable, objectives, hpo |
+| `pangolinfo-amazon-data-research` | Plan and run read-only Amazon product, review, category, seller, and market research through Pangolinfo's documented MCP bridge. | safe | Pangolin-spg/openclaw-skills | amazon, ecommerce, product-research, reviews, market-research, mcp, data | amazon, ecommerce, product-research, reviews, market-research, mcp, data, pangolinfo, research, plan, run, read |
 | `postgres-readonly-queries` | Execute safe read-only SQL queries against PostgreSQL databases with multi-connection support and defense-in-depth write protection. | safe | sanjay3290/ai-skills | postgres, sql, database, read-only | postgres, sql, database, read-only, readonly, queries, execute, safe, read, against, postgresql, databases |
 | `posthog-automation` | Automate PostHog tasks via Rube MCP (Composio): events, feature flags, projects, user profiles, annotations. Always search tools first for current schemas. | critical | community | posthog | posthog, automation, automate, tasks, via, rube, mcp, composio, events, feature, flags, user |
 | `segment-automation` | Automate Segment tasks via Rube MCP (Composio): track events, identify users, manage groups, page views, aliases, batch operations. Always search tools first... | critical | community | segment | segment, automation, automate, tasks, via, rube, mcp, composio, track, events, identify, users |
@@ -1584,7 +1588,7 @@ Total skills: 2705
 | `systematic-debugging` | Use when encountering any bug, test failure, or unexpected behavior, before proposing fixes | critical | community | systematic, debugging | systematic, debugging, encountering, any, bug, test, failure, unexpected, behavior, before, proposing, fixes |
 | `test-fixing` | Systematically identify and fix all failing tests using smart grouping strategies. Use when explicitly asks to fix tests ("fix these tests", "make tests pass... | safe | community | fixing | fixing, test, systematically, identify, fix, all, failing, tests, smart, grouping, explicitly, asks |
 
-## devops (165)
+## devops (166)
 
 | Skill | Description | Risk | Source | Tags | Triggers |
 | --- | --- | --- | --- | --- | --- |
@@ -1594,7 +1598,7 @@ Total skills: 2705
 | `ai-pipeline-orchestration` | Orchestrate AI/ML pipelines for data ingestion, model training, batch inference, and RAG indexing using Prefect, Airflow, or Dagster. | critical | BagelHole/DevOps-Security-Agent-Skills | ai, pipeline | ai, pipeline, orchestration, orchestrate, ml, pipelines, data, ingestion, model, training, batch, inference |
 | `ai-sre-incident-response` | Build AI-focused SRE incident response practices for LLM outages, degraded quality, runaway cost events, and safety regressions. | critical | BagelHole/DevOps-Security-Agent-Skills | ai, sre, incident, response | ai, sre, incident, response, llm, outages, degraded, quality, runaway, cost, events, safety |
 | `alerting-oncall` | Set up alerting rules, configure on-call rotations, and manage incident response workflows. | critical | BagelHole/DevOps-Security-Agent-Skills | alerting, oncall | alerting, oncall, set, up, rules, configure, call, rotations, incident, response |
-| `antigravity-maintainer-batch-release` | Run protected AAS maintainer sweeps, PR merge batches, canonical sync, Core preview checks, and scripted releases. Use for repository maintenance, main align... | critical | self | antigravity, maintainer, batch, release | antigravity, maintainer, batch, release, run, protected, aas, sweeps, pr, merge, batches, canonical |
+| `antigravity-maintainer-batch-release` | Run protected AAS maintainer sweeps, PR merge batches, resumable review, immutable distribution, Core checks, and scripted releases. Use for repository maint... | critical | self | antigravity, maintainer, batch, release | antigravity, maintainer, batch, release, run, protected, aas, sweeps, pr, merge, batches, resumable |
 | `apple-container` | Build, run, and manage OCI/Linux containers as lightweight per-container VMs on Apple-silicon macOS using Apple's open-source container CLI, no Docker daemon... | critical | sanjay3290/ai-skills | macos, containers, oci, apple-silicon | macos, containers, oci, apple-silicon, apple, container, run, linux, lightweight, per, vms, silicon |
 | `argocd-gitops` | Implement GitOps with ArgoCD for declarative Kubernetes deployments. | critical | BagelHole/DevOps-Security-Agent-Skills | argocd, gitops | argocd, gitops, declarative, kubernetes, deployments |
 | `arm-templates` | Deploy Azure resources with ARM templates and Bicep. Create modular deployments and manage dependencies. Use when deploying Azure-native IaC. | critical | BagelHole/DevOps-Security-Agent-Skills | arm | arm, deploy, azure, resources, bicep, modular, deployments, dependencies, deploying, native, iac |
@@ -1731,6 +1735,7 @@ Total skills: 2705
 | `service-mesh` | Implement Istio and Linkerd service meshes. Configure mTLS, traffic management, and observability. Use when managing microservices communication. | critical | BagelHole/DevOps-Security-Agent-Skills | service, mesh | service, mesh, istio, linkerd, meshes, configure, mtls, traffic, observability, managing, microservices, communication |
 | `service-mesh-observability` | Complete guide to observability patterns for Istio, Linkerd, and service mesh deployments. | critical | community | service, mesh, observability | service, mesh, observability, complete, istio, linkerd, deployments |
 | `shipping-and-launch` | Prepares production launches. Use when preparing to deploy to production. Use when you need a pre-launch checklist, when setting up monitoring, when planning... | critical | addyosmani/agent-skills | shipping, and, launch | shipping, and, launch, prepares, launches, preparing, deploy, pre, checklist, setting, up, monitoring |
+| `solidping` | Run SolidPing uptime monitoring through its hosted MCP server: list and diagnose checks, read results and incidents, create checks across 40+ types, and mana... | critical | fclairamb/solidping-plugin | monitoring, uptime, mcp, incidents, status-page, devops | monitoring, uptime, mcp, incidents, status-page, devops, solidping, run, through, hosted, server, list |
 | `sre-dashboards` | Design and operationalize SRE dashboards that surface reliability, latency, error, saturation, and capacity signals across services. | critical | BagelHole/DevOps-Security-Agent-Skills | sre, dashboards | sre, dashboards, operationalize, surface, reliability, latency, error, saturation, capacity, signals |
 | `ssh-configuration` | Configure SSH servers and clients securely. Manage keys, tunnels, and config files. Use when setting up secure remote access. | critical | BagelHole/DevOps-Security-Agent-Skills | ssh, configuration | ssh, configuration, configure, servers, clients, securely, keys, tunnels, config, files, setting, up |
 | `sshepherd` | Zero-knowledge SSH ops CLI — server health checks, docker/systemd control, log tailing, Postgres introspection, and declarative deploys, without ever exposin... | critical | Antheurus/sshepherd | ssh, devops, cli, server-ops, postgres, deploy, zero-knowledge | ssh, devops, cli, server-ops, postgres, deploy, zero-knowledge, sshepherd, zero, knowledge, ops, server |
@@ -1822,13 +1827,14 @@ Total skills: 2705
 | `web3-transaction-relayer-pool` | Gasless transaction relayer node pool register: fee sponsorship limits, nonce synchronization, and balance replenishment alerts. | safe | Ranjeet2063/agentic-awesome-skills | web3, relayer, gasless, meta-transactions, stellar, infrastructure | web3, relayer, gasless, meta-transactions, stellar, infrastructure, transaction, pool, node, register, fee, sponsorship |
 | `zk-proof-verification-pipeline` | Zero-knowledge cryptographic verification pipeline register: proving system, circuit verification keys, public inputs, and gas costs. | safe | Ranjeet2063/agentic-awesome-skills | zk, zero-knowledge, snark, cryptography, privacy, soroban, web3 | zk, zero-knowledge, snark, cryptography, privacy, soroban, web3, proof, verification, pipeline, zero, knowledge |
 
-## finance (19)
+## finance (20)
 
 | Skill | Description | Risk | Source | Tags | Triggers |
 | --- | --- | --- | --- | --- | --- |
 | `axonx` | Develop AxonX research plugins and operate quantitative research tasks through CLI or MCP, inspecting execution status, logs, artifacts, and lineage. | critical | FlowLLM-AI/AxonX | quantitative-research, mcp, backtesting, python | quantitative-research, mcp, backtesting, python, axonx, develop, research, plugins, operate, quantitative, tasks, through |
 | `equibles` | Query Equibles for US stock market data: SEC filing search, XBRL financial statements, earnings call transcripts, insider and 13F holdings, and daily prices. | safe | self | finance, stocks, sec-filings, earnings-calls, insider-trading, 13f, rest-api, mcp | finance, stocks, sec-filings, earnings-calls, insider-trading, 13f, rest-api, mcp, equibles, query, us, stock |
 | `fxmacrodata` | Query FXMacroData for official-source macro indicators, release calendars, central-bank policy rates, FX rates and CFTC positioning across 22 currencies. | safe | self | macroeconomics, forex, central-banks, economic-calendar, cot, rest-api | macroeconomics, forex, central-banks, economic-calendar, cot, rest-api, fxmacrodata, query, official, source, macro, indicators |
+| `krexa` | Turn a trading idea, post or video into fixed rules, backtest and paper-trade them, and request a user-approved live agent through Krexa's MCP server. Cannot... | critical | Krexa-xyz/skills | krexa, crypto, trading, backtesting, paper-trading, mcp, solana, hyperliquid, polymarket | krexa, crypto, trading, backtesting, paper-trading, mcp, solana, hyperliquid, polymarket, turn, idea, post |
 | `longbridge` | Guide to using a separately installed Longbridge integration — real-time quotes, charts, fundamentals, portfolio analysis, options, and more for HK/US/A-shar... | critical | longbridge/skills | finance, stocks, trading, portfolio, market-data | finance, stocks, trading, portfolio, market-data, longbridge, separately, installed, integration, real, time, quotes |
 | `longbridge-content` | Latest news articles, regulatory filings, community discussion topics for listed stocks, and SEC EDGAR filing analysis (10-K/10-Q/8-K/proxy/Form 4) via Longb... | critical | longbridge/skills | longbridge, content | longbridge, content, latest, news, articles, regulatory, filings, community, discussion, topics, listed, stocks |
 | `longbridge-derivatives` | Curated upstream guidance for Longbridge Derivatives; use when the workflow matches the user goal. | unknown | longbridge/skills | longbridge, derivatives | longbridge, derivatives, curated, upstream, guidance, matches, user, goal |
@@ -2439,7 +2445,7 @@ Total skills: 2705
 | --- | --- | --- | --- | --- | --- |
 | `idea-os` | Five-phase pipeline (triage → clarify → research → PRD → plan) that turns a raw idea into four linked files: clarifying questions, deep research, a PRD with ... | safe | Slashworks-biz/idea-os | product-management, prd, market-research, mvp, idea-validation, jtbd, swot, competitor-analysis, founder, non-technical | product-management, prd, market-research, mvp, idea-validation, jtbd, swot, competitor-analysis, founder, non-technical, idea, os |
 
-## productivity (52)
+## productivity (53)
 
 | Skill | Description | Risk | Source | Tags | Triggers |
 | --- | --- | --- | --- | --- | --- |
@@ -2486,6 +2492,7 @@ Total skills: 2705
 | `obsidian-markdown` | Create and edit Obsidian Flavored Markdown with wikilinks, embeds, callouts, properties, and other Obsidian-specific syntax. Use when working with .md files ... | critical | https://github.com/kepano/obsidian-skills | obsidian, markdown | obsidian, markdown, edit, flavored, wikilinks, embeds, callouts, properties, other, specific, syntax, working |
 | `office-productivity` | Office productivity workflow covering document creation, spreadsheet automation, presentation generation, and integration with LibreOffice and Microsoft Offi... | safe | personal | office, productivity | office, productivity, covering, document, creation, spreadsheet, automation, presentation, generation, integration, libreoffice, microsoft |
 | `one-drive-automation` | Automate OneDrive file management, search, uploads, downloads, sharing, permissions, and folder operations via Rube MCP (Composio). Always search tools first... | critical | community | one, drive | one, drive, automation, automate, onedrive, file, search, uploads, downloads, sharing, permissions, folder |
+| `project-memory-log` | Maintain one operation log and one deduplicated document catalog for long-running projects. Use when resuming project work or tracing durable document change... | critical | self | project-memory, document-catalog, traceability, local-workflow | project-memory, document-catalog, traceability, local-workflow, memory, log, maintain, one, operation, deduplicated, document, catalog |
 | `read-all-adrs` | Read every ADR in a project before summarizing architectural context or decisions. | safe | davidondrej/skills | adr, documentation, architecture | adr, documentation, architecture, read, all, adrs, every, before, summarizing, architectural, context, decisions |
 | `rich-elicitation` | Asks clarifying questions in multiple rounds before starting ambiguous tasks. Fires when 2+ task dimensions each have 3+ viable answers. | none | self | elicitation, clarifying-questions, ambiguity, multi-round, prompt-engineering | elicitation, clarifying-questions, ambiguity, multi-round, prompt-engineering, rich, asks, clarifying, questions, multiple, rounds, before |
 | `session-handoff` | Use when context approaches capacity, before /clear or /compact, when switching tasks, or when ending a coding session: produces a structured handoff artifac... | safe | alapha888/session-handoff-kit | context-management, session-handoff, coding-agents, workflow | context-management, session-handoff, coding-agents, workflow, session, handoff, context, approaches, capacity, before, clear, compact |

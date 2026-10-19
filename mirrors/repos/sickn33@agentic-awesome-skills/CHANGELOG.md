@@ -7,6 +7,79 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [19.10.1] - 2026-10-18 - "Verified Cross-Platform Distribution"
+
+The catalog remains at **2,712 skills**, with no new skills in this patch. This corrects the distribution checks that blocked npm and Pages publication of 19.10.0; its tag is preserved unchanged.
+
+### Fixed
+
+- Linux and Windows candidate jobs now use the functional verifier's supported platform and Node identifiers.
+- Release provenance binds the committed lockfile bytes, avoiding false integrity failures caused by Windows checkout line endings. Package and site artifact integrity checks remain exact.
+
+## [19.10.0] - 2026-10-18 - "Independent Catalog Revisions"
+
+The **2,712-skill catalog** can now be distributed independently of compatible runtime releases. Existing pinned runtimes retain their embedded catalogs; independent revisions require this compatible runtime and an explicit revision/integrity selection.
+
+### Added
+
+- Independent catalog archives with source commit, schema, runtime compatibility, content digest and archive integrity. Offline import, explicit catalog rollback, cached stack planning and read-only MCP startup support the pinned catalog.
+- Complete support-file verification before catalog promotion or installation; imported archives never execute skill content.
+
+### Changed
+
+- Maintenance validates the affected component, persists authenticated review/evidence receipts and resumes independent PRs after interruptions.
+- Ordinary source merges no longer require a generated-state PR. Prepared releases refresh distribution snapshots together and publish the exact package/site bytes tested by the immutable candidate across Linux/Windows and Node 22/24.
+- The maintainer skill uses a short operating sequence with bundled detailed references. Public release completion is separate from personal MCP client reload status.
+
+### Compatibility
+
+- Existing embedded catalogs keep their exact runtime-version checks. Independent catalogs require an explicitly compatible cached runtime; stack apply retains its experimental approval gate.
+- No new catalog skills are introduced in this release. Performance claims are reported separately from measured maintenance runs.
+
+## [19.9.0] - 2026-10-18 - "Seven Reviewed Additions And A Safer Maintainer Flow"
+
+> Installable skill library update for Claude Code, Cursor, Codex CLI, Gemini CLI, Antigravity, and related AI coding assistants. Adds **7** catalog skills, ships **2,712** skills, and hardens the protected maintainer and release flow.
+
+### Start here
+
+- Install: `npx agentic-awesome-skills@19.9.0`
+- [Choose your tool](README.md#choose-your-tool)
+- [Best skills by tool](README.md#best-skills-by-tool)
+- [Bundles](docs/users/bundles.md)
+- [Workflows](docs/users/workflows.md)
+
+### Added
+
+- **curlshot** - capture a public web page as a PNG/JPEG/WebP screenshot, a PDF, or a scrolling video, or render your own HTML/Markdown to an image, through the hosted CurlShot API or MCP server. Requires a `CURLSHOT_API_KEY`; local and private addresses are refused.
+- **aident-loadout** - search the apps a user connected in Aident Loadout, read live action schemas, check connections and cost, and require acknowledgement before any side effect, through the hosted Aident MCP server.
+- **outreachgenie-list-audit** - read-only audit of saved OutreachGenie prospect lists against a saved flow, reporting missing template values, text-limit problems and incomplete collection with local Python reports. Ships an offline fictional fixture and all 26 bundled tests.
+- **krexa** - turn a trading idea, post or video into fixed rules, backtest and paper-trade them, and request a user-approved live agent through Krexa's MCP server. The key cannot move funds; every deploy needs the owner's wallet approval.
+- **project-memory-log** - keep long-running local projects traceable with one operation log and one deduplicated document catalog, reusing the current canonical document before creating another. Instruction-only; no background hook or external service.
+- **solidping** - run SolidPing uptime monitoring through its hosted MCP server: list and diagnose checks, read results and incidents, and create checks across 40+ types, confirming every write first.
+- **pangolinfo-amazon-data-research** - plan and run read-only Amazon product, review, category, seller and market research through Pangolinfo's documented MCP bridge, with marketplace, provenance and retrieval-time evidence.
+
+### Changed
+
+- **antigravity-maintainer-batch-release** now documents exact-head batch preparation, bounded one-hour convergence leases with scheduled recovery, the textual skill-root `LICENSE` contract, generated source attribution, complete local preflight, review dossiers, and fresh release-plan/verification reports.
+- Maintainer flow now distinguishes failed, missing, running, approval-wait and manual-review states, prepares selected exact-head workflows before ordered merges, and stops if evaluator policy changes mid-batch.
+- Local preflight includes docs security and source attribution; source-only PRs no longer fail against stale generated indexes, and text-only skill-root `LICENSE` files receive bounded blob validation while bundle dossiers preserve explicit review requirements.
+- README **Official Sources** and **Community Contributors** are generated from reviewed frontmatter plus the editorial `data/source-credits.json` ledger, converging through the protected canonical PR instead of hand-edited source diffs.
+- Raised `@supabase/supabase-js` to `2.117.2` in the catalog app.
+
+### Fixed
+
+- Release completion now requires fresh observations bound to the exact released commit, including publication identity, exact-commit CI/CodeQL, release-tag Pages, live catalog, the full legacy redirect set, and every already-configured local AAS MCP host.
+- Local preflight includes docs security and immutable-head attribution, and generates preview state in an isolated checkout so source-only PRs no longer fail against stale generated indexes.
+- README source-credit repairs are source changes in `data/source-credits.json` or skill provenance; generated README output stays with canonical sync.
+
+### Review scope
+
+Each new skill was reviewed in full at its exact content, including bundled scripts, references and assets. Every external contribution in this release went through an individual maintainer review bound to its exact head. The new skills declare their own provider, cost, credential and host limits; none was exercised against a live third-party paid service during review. The broader catalog audit remains unfinished.
+
+### Thanks
+
+Thanks to **@SergiuPogor** for `curlshot`, **@ljhskyso** for `aident-loadout`, **@moez552** for `outreachgenie-list-audit`, **@evadsh3ll** for `krexa`, **@JaclynFitzpatrick** for `project-memory-log`, **@fclairamb** for `solidping`, and **@Pangolin-spg** for `pangolinfo-amazon-data-research`, and to the upstream authors whose licensed material is included.
+
 ## [19.8.0] - 2026-10-16 - "Fifteen Reviewed Additions And A Healthier Review Lane"
 
 > Adds **15** catalog skills, updates **mmx-cli**, and ships **2,705** skills. Every external contribution in this release went through an individual maintainer review bound to its exact content, and the fork review lane records eight additional explicitly reviewed skill bundles.

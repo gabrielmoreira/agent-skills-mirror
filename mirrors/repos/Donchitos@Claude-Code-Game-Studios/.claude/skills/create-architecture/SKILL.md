@@ -3,7 +3,7 @@ name: create-architecture
 description: "Author the architecture blueprint before code is written. Validates decisions against the pinned engine, flags knowledge gaps."
 argument-hint: "[focus-area: full | layers | data-flow | api-boundaries | adr-audit] [--review full|lean|solo]"
 user-invocable: true
-allowed-tools: Read, Glob, Grep, Write, Edit, Bash, AskUserQuestion, Agent, Bash(bash "*/.claude/skills/create-architecture/../../hooks/yaml-helper.sh" resolve_config *)
+allowed-tools: Read, Glob, Grep, Write, Edit, AskUserQuestion, Agent, Bash(bash "*/.claude/skills/create-architecture/../../hooks/yaml-helper.sh" resolve_config *), Bash(bash .claude/scripts/registry.sh *)
 model: sonnet
 ---
 
@@ -118,7 +118,7 @@ unsure, present 2-4 options with pros/cons before asking them to decide.
 ## Recommended Next Steps
 
 - Run `/architecture-decision [title]` for each required ADR listed in Phase 6 — Foundation layer ADRs first
-- Run `/architecture-review` — bootstraps the Requirements Traceability Matrix and TR registry from the ADRs just written. Required before the Pre-Production gate.
+- Run `/architecture-review` — bootstraps the Requirements Traceability Matrix and TR registry from the ADRs just written, and gives each provisional TR-ID its permanent one. Required before the Pre-Production gate.
 - Run `/test-setup` to scaffold `tests/unit/`, `tests/integration/`, CI workflow, and an example test (required for gate-check)
 - Run `/ux-design` to initialize `design/ux/interaction-patterns.md` and `design/accessibility-requirements.md` (required for gate-check)
 - Run `/create-control-manifest` once the required ADRs are written to produce the layer rules manifest

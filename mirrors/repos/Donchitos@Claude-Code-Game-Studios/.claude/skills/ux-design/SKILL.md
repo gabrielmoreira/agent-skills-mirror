@@ -64,7 +64,7 @@ Four authoring modes exist based on the argument:
 > Polish gates, and `/architecture-review` all check
 > `design/accessibility-requirements.md` at that exact path. Do not "tidy" it
 > under `design/ux/`: every one of those checks would stop matching, and the
-> Technical Setup → Pre-Production gate would become unpassable again.
+> Technical Setup → Pre-Production gate would become unpassable.
 
 **If no argument is provided**, do not fail — ask instead. Use `AskUserQuestion`:
 - "What are we designing today?"

@@ -54,8 +54,37 @@ through TinyAgents' `legacy` importer, which owns those formats: the run ledger
 from a `VACUUM INTO` snapshot of `session_db/sessions.db`, each
 `session_raw` transcript into the scope of the agent its stem names (matched
 against the known definitions, else the default agent), and the turn-state
-JSON into the default agent. Each importer keeps a marker per workspace, so a
+JSON into the default agent. Each importer records a `tsd.migrations` entry per workspace, so a
 record deleted afterwards is not resurrected from the untouched legacy file.
+
+## Runtime state values
+
+Small pieces of runtime state that used to be one JSON file each live in
+`tsd.kv` through `state_kv::StateKv` (one `(owner, namespace)` per domain, one
+entry per value, in the acting scope): the memory domain's `jobs`,
+`channel_threads`, `pending_deletions`, `sources_state`, `import_state`,
+`conversations_backfill`, `layout_migration`, `local_root` and tool-write
+outbox partitions (`memory::state_store`), the sub-agent lifecycle records
+(`agent::subagent_host::lifecycle_store`) and the computer site memory
+(`modules::site_memory_host`). The first read in a backend copies the legacy
+file once (`StateKv::import_file` / `import_once`: an existing entry wins, a
+`tsd.migrations` entry stops a re-import from resurrecting a deleted value, the
+file stays in place for the legacy archive step). A value a damaged file must
+not reset (`layout_migration`, `local_root`, the tool-write outbox) uses the
+strict import, which fails closed on an unparsable file.
+
+## Layout migration
+
+`layout/` moves a layout-v1 profile (`users/<id>/workspace/`) to v2
+(`users/<id>/storage.db` + `files/`): lock, import the legacy files, migrate
+the schema, `VACUUM INTO` the database (counts verified), move user files into
+`files/`, write and verify `<root>/backups/<user>-<ts>.tar.zst`, then write the
+`.layout` marker and delete only the archived originals. Progress is in
+`users/<id>/.layout.state`; every step is idempotent, so a crash resumes.
+Controllers: `storage.migrate {dry_run}`, `storage.status`,
+`storage.restore {archive}`. `[storage] auto_migrate_layout = true` runs it at
+boot. No-op for SaaS, an explicit storage URL (including MongoDB) and v2. Run
+it with the core stopped.
 
 ## Entry points
 
@@ -63,7 +92,7 @@ record deleted afterwards is not resurrected from the untouched legacy file.
 - `open(url)`: parse and open a backend (credentials are redacted in logs).
 - `install(backend)` / `installed()` / `clear()`: the process slot domains
   read the backend from.
-- `scope_for_agent(agent_id)`: the storage scope an agent's records live
+- `scope_for_agent(agent_id)`: the storage scope (`local/agent:<id>`) an agent's records live
   under, the same mapping TinyAgents' `DriverSessionStores` uses, so every
   domain agrees.
 - `driver_is_shared(driver)` / `installed_is_shared()`: whether other
@@ -75,7 +104,7 @@ record deleted afterwards is not resurrected from the untouched legacy file.
   within one process.
 - `blob_sweep`: reclaims expired blobs (`StorageBackend::sweep_expired_blobs`)
   for `local`, each known agent scope and each provisioned SaaS profile
-  (`profile:<id>` plus the blob-owning modules' scopes for it) every hour,
+  (`u:<id>` plus the blob-owning modules' scopes for it) every hour,
   spawned with the cron `ServiceSet` switch (`core::runtime::services`; not
   gated on `[cron] enabled`, since it reclaims storage rather than running
   jobs). Each scope's sweep is bounded by `SCOPE_SWEEP_TIMEOUT`; a timeout
@@ -83,7 +112,7 @@ record deleted afterwards is not resurrected from the untouched legacy file.
 - `fence` / `fenced_backend`: lease-epoch write fencing (see
   [Write fencing](#write-fencing)).
 - `scope_for_profile(profile_id)`: the scope a SaaS profile's records live
-  under (`profile:<id>`, hashed when that is not a valid scope).
+  under (`u:<id>`; tsd hashes the segment when it is not valid).
 - `current_scope()` / `current_scoped()`: the tenant's scope — its profile's
   when it serves one, else the acting agent's, else `local` on a single-user
   host; an error in SaaS mode without a profile — and the installed backend
@@ -92,8 +121,21 @@ record deleted afterwards is not resurrected from the untouched legacy file.
   one shared runtime thread.
 - `documents::Repo` and `documents::compare_and_swap`: the base the domain
   stores build on. A `Repo` holds one domain's scoped document handle,
-  declares its collections and runs each call; `compare_and_swap` is the
-  guarded-`UPDATE` loop.
+  declares its collections and runs each call on the blocking bridge;
+  `compare_and_swap` is tsd's `Repo::update` with its default `RetryPolicy`,
+  so the host keeps no retry loop of its own.
+- `import_state`: where a one-time importer records that it finished
+  (`tsd.migrations`, `Migrations::mark_done`) and the claim that serialises
+  two processes (`Leases` on `tsd.leases`). `migrate_legacy_markers` turns the
+  marker rows older builds wrote (`storage_import`, `threads_import`,
+  `subagent_sessions_import`, `composio_state_import`, `*_host_import`) into
+  the same entries at boot, so an installed profile is not imported again.
+- `schema_support`: owner, time and id helpers the host domains' v1 -> v2
+  steps share. Each host domain declares its own `storage_schema()` (owners
+  `approvals`, `devices`, `notifications`, `task_sources`, `artifacts`, `cost`,
+  `config`, `profiles`, `threads`, `subagents`, `agents`), composed in
+  `schema.rs`. `host_importers` moves the v1 data whose v2 home is another
+  owner's collection (`composio_state` into `tsd.kv`).
 
 ## Storage for loadable modules
 
@@ -127,10 +169,10 @@ so the rules never read the wall clock:
   (`retry_after_ms`) when to retry. Epochs start at 1 and every acquisition
   except a re-entrant one (the same store instance re-acquiring the epoch it
   holds) writes `epoch + 1`.
-- `renew(grant, now_ms)` extends the grant by CAS on its record version; any
-  write since (a takeover, a release) makes it `LeaseError::Lost`.
-- `release(grant)` writes `released = true` under the same CAS and keeps the
-  record.
+- `renew(grant, now_ms)` extends the latest grant its holder was issued at
+  that epoch; a takeover, a release or a newer grant makes it
+  `LeaseError::Lost`.
+- `release(grant)` marks the record `released` and keeps it.
 - `holder(key)` returns the stored record, live or not (`is_live(now_ms)`).
 
 A grant's `previous_unclean` is set exactly when the acquisition replaced a
@@ -141,8 +183,12 @@ unique among live processes.
 
 | Store | Where | Use |
 | --- | --- | --- |
-| `DocumentLeases` | one document per key, scope `cluster`, collection `leases`; every write carries `Precondition::Absent` or `Version` | clustered nodes on a driver with cross-process CAS |
+| `DocumentLeases` | a thin adapter over tinystoragedrivers' `Leases` (`tsd.leases`, owner `profiles`, scope `cluster`); the record, CAS loop, epoch rules and fence are tsd's | clustered nodes on a driver with cross-process CAS |
 | `LocalLeases` | an exclusive `fs2` flock on `<root>/<sha256(key) hex>/.lease`, record in `.lease.json` beside it; no expiry, the OS drops the lock when the process dies | hosts without a backend |
+
+The move from the v1 `leases` collection runs once per cluster scope
+(`profiles::storage_schema::migrate_legacy_leases`) and is a stop-the-world
+cutover like the rest of schema v2: every node must run this version.
 
 Keys are 1 to 200 bytes of ASCII letters, digits and `- _ . @`, not starting
 with `.`, so they are safe as directory names and document ids. The scope
@@ -175,8 +221,8 @@ change. A scope with one runs `LeaseFence::check` first:
 
 A write the host check admits then goes to the driver through
 `StorageBackend::for_scope_fenced` with `LeaseFence::driver_fence`: the lease
-record (`cluster` scope, `leases` collection, id = the profile) must still
-match `epoch`, `owner` = this node and `released = false`. The driver checks
+record (`cluster` scope, `tsd.leases` collection, id = `Key::of(["profiles", <profile>])`)
+must still match `epoch`, `holder` = this node and no `released` field. The driver checks
 it in the same statement or transaction as the write (tinystoragedrivers
 v0.5.0, `Capability::Fencing`), so a holder paused between its check and
 its write cannot land the write after a takeover. The driver answers
@@ -246,6 +292,15 @@ without fencing).
   (`OPENHUMAN_KEYRING_MASTER_KEY` / `_FILE`, else the OS keychain); with no
   master key they fail closed. The config encryption key stays on the
   process keyring, because `config.toml` is loaded before any agent acts.
+  The layout migration (`storage/layout/credentials.rs`) imports the profile's
+  `auth-profiles.json` and `http-credentials.json` into the `local` scope's
+  secrets, verifies the read-back, archives them (`profile/` in the archive,
+  restored beside `config.toml`) and deletes them. It skips them (files stay,
+  adopted lazily) when no master key is resolvable without minting one, or
+  the file is not JSON; a stored record that does not decrypt with the current
+  key fails the migration. The shared `secrets.enc`, `keyring/master.key` and
+  `dev-keychain.json` are process-level, outside every profile's plan, and are
+  never written into `storage.db`.
 
 ## Background work and agent scopes
 
@@ -290,3 +345,11 @@ the session store over them is `tinyagents-session`. This domain only
 resolves the URL, opens the backend, and holds it for the process. The
 `[storage]` section is bootstrap configuration and is never read from
 storage itself.
+
+## Schema, scopes and boot
+
+- `scope.rs`: the one scope grammar (`tenant_scope`, `scope_for_profile`, `scope_for_agent`, `scope_for_module`), built on tsd's `Scope::tenant/local/agent/module`.
+- `schema.rs`: `owner_schemas()` and the composed `registry()`; `module_items(owner)` feeds the generated module grants.
+- `boot.rs`: `prepare_and_migrate`, called by `open`: prepare, scope move, then per scope the importers and `Registry::migrate`.
+- `scope_move.rs`: the resumable copy of v1 scopes (`profile:`, `<profile>~<agent>`, raw agent ids, `module:<id>@<base>`, the `*-sha256:` fallbacks) into the v2 scopes.
+- The generated reference is `docs/storage-schema.md`; `node scripts/ci/check-storage-schema.mjs` lints it.

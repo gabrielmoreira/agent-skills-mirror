@@ -74,7 +74,9 @@ every section you author.
 ## Phase 1: Read Concept (Required Context)
 
 Read the game concept and any existing design work. This provides the raw material
-for systems decomposition.
+for systems decomposition. Read each doc by section: find the headings you need with
+the Grep tool (pattern `^#`, content mode) and Read those ranges with offset and
+limit.
 
 **Required:**
 - Read `design/gdd/game-concept.md` (at `minimal`, read `design/game-brief.md`
@@ -151,12 +153,6 @@ Then use `AskUserQuestion` to capture feedback:
 **At `guided`** — ask once, apply the answer, and proceed; do not loop.
 **At `autonomous`** — do not ask. Record the enumeration and its inferred systems
 via `log_decision` and proceed.
-
-> **The loop needed an exit that does not depend on being asked.**
-> `automation-modes.md:56` defines `autonomous` as *"No `AskUserQuestion`"*, so a
-> loop terminating on "the user approves" has no termination path there at all.
-> Same class as Step 5b, one level up: that was an unconditional *write* gate,
-> this is an unconditional *control-flow loop* around the question.
 
 ---
 
@@ -256,10 +252,8 @@ both, and cites the pillar it serves:
   costs before any of the choices built on top of it mean anything"
 
 > **Fill the brackets from *this* project.** The bracketed slots are not
-> decoration. Worked examples from another genre (a tower-defense "Ballista's
-> punch-through identity… what makes it feel different from Archer", "Pillar 2:
-> Placement is the Puzzle") get reproduced verbatim by a run against a different
-> game, which then carries that game's vocabulary instead of its own.
+> decoration. Reasoning copied from another game's worked example carries that
+> game's vocabulary instead of this one's.
 
 **Review mode check** — apply before spawning PR-SCOPE:
 - `solo` → skip. Note: "PR-SCOPE skipped — Solo mode." Proceed to Step 4c.
@@ -320,12 +314,6 @@ question, because `.claude/docs/automation-modes.md` has `guided` ask "May I
 write?" for new files. When the index already exists, present the summary above,
 name the destination (`design/gdd/systems-index.md`), and write the update without
 waiting for an explicit "yes". Say what you wrote afterwards.
-
-> **Keep this line scoped to its mode.** `automation-modes.md` says `guided`
-> *"proceeds after a short summary, does not wait for explicit yes"* and asks
-> "May I write?" *"for new files only"*, and this skill's own Collaborative
-> Protocol section is scoped to `collaborative`. An unconditional "wait for
-> approval" here collides with both.
 
 **Review mode check** — apply before spawning CD-SYSTEMS:
 - `solo` → skip. Note: "CD-SYSTEMS skipped — Solo mode." Proceed to Step 5c.

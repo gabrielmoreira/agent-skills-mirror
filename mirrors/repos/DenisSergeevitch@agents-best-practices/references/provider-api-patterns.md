@@ -215,6 +215,26 @@ application event store: harness stores full operational history
 
 Even when provider state is used, maintain an application event store for audit, replay, approvals, and evals.
 
+## Native generation-state adapters
+
+Some models interleave discrete text with continuous latent computation inside one generation. Learned hidden-state adapters, changed model weights, and specialized decoding are model/training/serving mechanisms; they are distinct from [harness refinement](self-refining-recursive-harnesses.md#taxonomy), programmable context, and [per-request routing](agentic-loop.md#per-request-model-routing). Keep this an optional post-MVP backend integration after a measured ordinary executor. A prompt or a nominally compatible chat endpoint does not establish these capabilities.
+
+This section owns the harness-facing continuation contract, not a model-training recipe. Establish the backend's actual capabilities before admitting it:
+
+| Boundary | Adapter requirement |
+|---|---|
+| Generation modes | Verify supported text/latent transitions, entry/exit rules, per-span and total generation limits, tool yielding, and cancellation. Count computation even when no text is emitted; mode transitions do not authorize actions. |
+| Semantic state | Identify whether continuation requires complete native state or recorded nontext inputs. Carry compatible state across tool-result ingestion without reconstructing earlier latent positions from text or diagnostic labels. |
+| State identity | Scope handles to tenant/session/branch and bind them to the model, learned adapter, tokenizer, generation rules, runtime/state format, and relevant position/mask settings. Reuse the [routing compatibility checks](agentic-loop.md#per-request-model-routing); a matching public model name is insufficient. |
+| Continuation outcome | Distinguish accepted native resume, missing/expired state, incompatible state, and an explicitly restarted generation. Require a tested native restore/replay path for equivalence claims; otherwise stop or use a permitted restart with its lost context declared. |
+| Tool handoff | Convert complete text-mode tool requests into the existing typed call/result protocol. Latent vectors, mode markers, and readable projections are not executable calls or approvals; reuse [tool validation and permission enforcement](tools-and-permissions.md). |
+
+**Semantic state is not merely a prompt-cache optimization.** Ordinary prefix caching may be discarded when the exact inputs can be reconstructed. A text log omits continuous positions in a hybrid trajectory; losing their native state can change the continuation even if every visible message is retained. Full-history KV continuation may preserve computation under fixed model/adapter parameters, complete state, and consistent causal/positional settings. That does not establish crash durability, bounded memory growth, cross-model portability, or equivalence after eviction, quantization, or summarization.
+
+Keep native inference state separate from the [application's durable records](always-on-agents.md#records-and-atomic-publication). A continuation handle is not an audit trail or a durable task checkpoint. Preserve operational events and tool-effect receipts outside it; loss of model state must not replay an unknown external effect. Use the existing [retry and reconciliation rules](agentic-loop.md#retry-policy) rather than a second retry policy here.
+
+Readable pseudo-text or nearest-token projections are derived diagnostics. Geometric alignment, lexical relevance, and fluent labels do not prove a complete or faithful causal explanation, confidentiality, or correct task execution. Do not substitute them for native state, source evidence, or authorization. Follow [operational tracing](security-observability.md#observability) without making private hidden reasoning a required log or user-facing artifact; evaluate diagnostic usefulness and computation cost in [hybrid serving evals](evals.md#native-generation-state-and-hybrid-serving-evals).
+
 ## OpenAI-compatible provider caveats
 
 OpenAI-compatible APIs vary in:

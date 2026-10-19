@@ -54,10 +54,9 @@ lists one, else the project `workflow` value. It sets how much document is
 generated — see Phase 5. Semantics of each tier are in
 `.claude/docs/workflow-modes.md`.
 
-> **Resolve the tier — do not assume it.** "Resolve the tier per
-> `workflow-modes.md`" with no bootstrap names a resolution it gives no way to
-> perform: that document defines what each tier *means*, but it cannot say what
-> *this project* is set to. The consequence is large here — at `full` this skill
+> **Resolve the tier — do not assume it.** `workflow-modes.md` defines what each
+> tier *means*, but it cannot say what *this project* is set to; take that from
+> the block above. The consequence is large here — at `full` this skill
 > writes an 8-section GDD and at `minimal` a one-page brief, so a wrong tier
 > produces the wrong artifact entirely.
 
@@ -208,8 +207,9 @@ Based on type, use appropriate template:
   Dependencies, Acceptance Criteria; + Formulas when the recovered system defines
   numeric rules). Skip Player Fantasy and Tuning Knobs.
 - **`minimal`** — generate a **game brief** in the one-page format
-  (`.claude/docs/templates/game-brief.md`), not a GDD. For the whole game write
-  `design/game-brief.md`; for a single reverse-engineered system write
+  (`.claude/docs/templates/game-brief.md`), not a GDD. For the whole game
+  (the path is the code root itself) write `design/game-brief.md`; for a single
+  reverse-engineered system write
   `design/[system-name]-brief.md`.
 
 (`architecture` and `concept` outputs are tier-independent.)
@@ -275,11 +275,6 @@ writing. **At `guided`** — this is a *new* file, so `automation-modes.md:81`
 still has it asked ("May I write?" is asked for new files only); if the target
 already exists, present the diff and proceed without waiting for an explicit
 "yes". **At `autonomous`** — write and log the decision.
-
-> **Keep this line scoped to its mode.** The skill header defers every file
-> write to `automation-modes.md`, so an unconditional "wait for approval" here
-> collides with it at both `guided` and `autonomous`. Same class as
-> `/map-systems` Step 5b.
 
 ## Phase 7: Write Document with Metadata
 

@@ -526,9 +526,12 @@
           photoPanel.hidden = true;
         }
       }
-      const ageNote = personal.age.source_status === "candidate_provided"
-        ? "出生信息：" + personal.birth_information.value + "；截至 " + personal.age.as_of
-        : "候选人材料未提供出生信息";
+      const selfReportedAge = personal.age.source_status === "candidate_provided" && personal.age.normalized_birth === null;
+      const ageNote = selfReportedAge
+        ? "候选人自述年龄；未按出生信息或履历推算"
+        : personal.age.source_status === "candidate_provided"
+          ? "出生信息：" + personal.birth_information.value + "；截至 " + personal.age.as_of
+          : "候选人材料未提供年龄或出生信息";
       const infoGrid = makeElement("div", { className: "info-grid" });
       const infoRows = [
         ["姓名", data.case.candidate_name, "候选人材料"],
@@ -542,7 +545,7 @@
       ];
       const timelineEstimate = overview.timeline_age_estimate;
       if (timelineEstimate && timelineEstimate.status !== "not_needed") {
-        infoRows.splice(2, 0, ["履历推算年龄区间", timelineEstimate.display, "非候选人自述；只作材料展示，不进入岗位匹配、评分或排序"]);
+        infoRows.splice(2, 0, ["履历推算年龄", timelineEstimate.display, "非候选人自述；只作材料展示，不进入岗位匹配、评分或排序"]);
       }
       if (photo && photo.status === "ambiguous") {
         infoRows.push(["简历照片", "未展示", "简历中存在疑似照片，但无法可靠确认是候选人个人头像"]);

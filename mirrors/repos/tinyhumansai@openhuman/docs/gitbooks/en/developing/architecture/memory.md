@@ -45,9 +45,9 @@ The behavior is specified in [`docs/specs/memory-v2.md`](https://github.com/tiny
 
 | Hook | File |
 | --- | --- |
-| Pre-turn (take cached pack, queue logging and refresh) | `agent/session_host/runtime_session/memory_ingest.rs`, from `before_turn` in `runtime_session.rs` |
+| Pre-turn (take cached pack, queue logging and refresh) | `memory/lifecycle/session_hooks.rs`, from `before_turn` in `runtime_session.rs` |
 | Pack injection, ephemeral, every model request of the turn | `agent/tinyagents/middleware/memory_pack.rs` |
-| Post-turn (log the reply, queue builds), after the durable commit | `memory_ingest.rs`, from `finalize_after_durable_commit` |
+| Post-turn (log the reply, queue builds), after the durable commit | `session_hooks.rs`, from `finalize_after_durable_commit` |
 | Compaction enrichment from completed cache, with background refresh | `agent/tinyagents/memory_summarizer.rs`, wrapped around the summarizer in `context_wiring.rs` (ladder order and sizing live in `tinyagents-harness` `ContextLadder`) |
 
 Automatic packs are keyed by CoreContext, workspace, config fingerprint, resolved memory identity and thread. They expire after 60 seconds. The cache holds at most 64 entries per context and 64 KiB per pack; eight workers globally process bounded queues of at most 16 pending operations per entry, with a 120-second deadline per operation. Saturation skips best-effort automatic work rather than waiting. Packs identify themselves as results of an earlier lookup, not authoritative answers to the current question.

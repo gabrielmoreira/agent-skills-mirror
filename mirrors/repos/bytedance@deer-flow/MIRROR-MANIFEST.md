@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `bytedance/deer-flow` — 26 default patterns, 46 followed patterns, 233 file(s) materialized.
+Mirror of `bytedance/deer-flow` — 26 default patterns, 47 followed patterns, 235 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `bytedance/deer-flow` — 26 default patterns, 46 followed patterns, 2
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 46 |
-| Files         | 233 |
+| Followed pats | 47 |
+| Files         | 235 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -79,6 +79,7 @@ Mirror of `bytedance/deer-flow` — 26 default patterns, 46 followed patterns, 2
 - `docker/lark-cli-broker/README.md`
 - `docs/plans/2026-07-10-pluggable-authorization-rfc.md`
 - `examples/deerflow-extension-jev-screening/README.md`
+- `docs/skill-evolution-host.md`
 - `docs/full-stack-plugins.md`
 - `examples/deerflow-extension-bookmarks/README.md`
 - `examples/deerflow-extension-retrieval/README.md`
@@ -224,119 +225,121 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 118 | ✓ | [`skills/public/claude-to-deerflow/SKILL.md`](skills/public/claude-to-deerflow/SKILL.md) |
 | 119 | ✓ | [`skills/public/code-documentation/SKILL.md`](skills/public/code-documentation/SKILL.md) |
 | 120 | ✓ | [`skills/public/consulting-analysis/SKILL.md`](skills/public/consulting-analysis/SKILL.md) |
-| 121 | ✓ | [`skills/public/data-analysis/scripts/analyze.py`](skills/public/data-analysis/scripts/analyze.py) |
-| 122 | ✓ | [`skills/public/data-analysis/SKILL.md`](skills/public/data-analysis/SKILL.md) |
-| 123 | ✓ | [`skills/public/deep-research/SKILL.md`](skills/public/deep-research/SKILL.md) |
-| 124 | ✓ | [`skills/public/find-skills/scripts/install-skill.sh`](skills/public/find-skills/scripts/install-skill.sh) |
-| 125 | ✓ | [`skills/public/find-skills/SKILL.md`](skills/public/find-skills/SKILL.md) |
-| 126 | ✓ | [`skills/public/frontend-design/LICENSE.txt`](skills/public/frontend-design/LICENSE.txt) |
-| 127 | ✓ | [`skills/public/frontend-design/SKILL.md`](skills/public/frontend-design/SKILL.md) |
-| 128 | ✓ | [`skills/public/github-deep-research/assets/report_template.md`](skills/public/github-deep-research/assets/report_template.md) |
-| 129 | ✓ | [`skills/public/github-deep-research/scripts/github_api.py`](skills/public/github-deep-research/scripts/github_api.py) |
-| 130 | ✓ | [`skills/public/github-deep-research/SKILL.md`](skills/public/github-deep-research/SKILL.md) |
-| 131 | ✓ | [`skills/public/image-generation/scripts/generate.py`](skills/public/image-generation/scripts/generate.py) |
-| 132 | ✓ | [`skills/public/image-generation/SKILL.md`](skills/public/image-generation/SKILL.md) |
-| 133 | ✓ | [`skills/public/image-generation/templates/doraemon.md`](skills/public/image-generation/templates/doraemon.md) |
-| 134 | ✓ | [`skills/public/music-generation/scripts/generate.py`](skills/public/music-generation/scripts/generate.py) |
-| 135 | ✓ | [`skills/public/music-generation/SKILL.md`](skills/public/music-generation/SKILL.md) |
-| 136 | ✓ | [`skills/public/newsletter-generation/SKILL.md`](skills/public/newsletter-generation/SKILL.md) |
-| 137 | ✓ | [`skills/public/podcast-generation/scripts/generate.py`](skills/public/podcast-generation/scripts/generate.py) |
-| 138 | ✓ | [`skills/public/podcast-generation/SKILL.md`](skills/public/podcast-generation/SKILL.md) |
-| 139 | ✓ | [`skills/public/podcast-generation/templates/tech-explainer.md`](skills/public/podcast-generation/templates/tech-explainer.md) |
-| 140 | ✓ | [`skills/public/ppt-generation/scripts/generate.py`](skills/public/ppt-generation/scripts/generate.py) |
-| 141 | ✓ | [`skills/public/ppt-generation/SKILL.md`](skills/public/ppt-generation/SKILL.md) |
-| 142 | ✓ | [`skills/public/skill-creator/agents/analyzer.md`](skills/public/skill-creator/agents/analyzer.md) |
-| 143 | ✓ | [`skills/public/skill-creator/agents/comparator.md`](skills/public/skill-creator/agents/comparator.md) |
-| 144 | ✓ | [`skills/public/skill-creator/agents/grader.md`](skills/public/skill-creator/agents/grader.md) |
-| 145 | ✓ | [`skills/public/skill-creator/assets/eval_review.html`](skills/public/skill-creator/assets/eval_review.html) |
-| 146 | ✓ | [`skills/public/skill-creator/eval-viewer/generate_review.py`](skills/public/skill-creator/eval-viewer/generate_review.py) |
-| 147 | ✓ | [`skills/public/skill-creator/eval-viewer/viewer.html`](skills/public/skill-creator/eval-viewer/viewer.html) |
-| 148 | ✓ | [`skills/public/skill-creator/LICENSE.txt`](skills/public/skill-creator/LICENSE.txt) |
-| 149 | ✓ | [`skills/public/skill-creator/references/output-patterns.md`](skills/public/skill-creator/references/output-patterns.md) |
-| 150 | ✓ | [`skills/public/skill-creator/references/schemas.md`](skills/public/skill-creator/references/schemas.md) |
-| 151 | ✓ | [`skills/public/skill-creator/references/workflows.md`](skills/public/skill-creator/references/workflows.md) |
-| 152 | ✓ | [`skills/public/skill-creator/scripts/aggregate_benchmark.py`](skills/public/skill-creator/scripts/aggregate_benchmark.py) |
-| 153 | ✓ | [`skills/public/skill-creator/scripts/generate_report.py`](skills/public/skill-creator/scripts/generate_report.py) |
-| 154 | ✓ | [`skills/public/skill-creator/scripts/improve_description.py`](skills/public/skill-creator/scripts/improve_description.py) |
-| 155 | ✓ | [`skills/public/skill-creator/scripts/init_skill.py`](skills/public/skill-creator/scripts/init_skill.py) |
-| 156 | ✓ | [`skills/public/skill-creator/scripts/package_skill.py`](skills/public/skill-creator/scripts/package_skill.py) |
-| 157 | ✓ | [`skills/public/skill-creator/scripts/quick_validate.py`](skills/public/skill-creator/scripts/quick_validate.py) |
-| 158 | ✓ | [`skills/public/skill-creator/scripts/run_eval.py`](skills/public/skill-creator/scripts/run_eval.py) |
-| 159 | ✓ | [`skills/public/skill-creator/scripts/run_loop.py`](skills/public/skill-creator/scripts/run_loop.py) |
-| 160 | ✓ | [`skills/public/skill-creator/scripts/utils.py`](skills/public/skill-creator/scripts/utils.py) |
-| 161 | ✓ | [`skills/public/skill-creator/SKILL.md`](skills/public/skill-creator/SKILL.md) |
-| 162 | ✓ | [`skills/public/skill-reviewer/evals/evals.json`](skills/public/skill-reviewer/evals/evals.json) |
-| 163 | ✓ | [`skills/public/skill-reviewer/evals/fixtures/blocked/SKILL.md`](skills/public/skill-reviewer/evals/fixtures/blocked/SKILL.md) |
-| 164 | ✓ | [`skills/public/skill-reviewer/evals/fixtures/needs-revision/SKILL.md`](skills/public/skill-reviewer/evals/fixtures/needs-revision/SKILL.md) |
-| 165 | ✓ | [`skills/public/skill-reviewer/evals/fixtures/partial-package/SKILL.md`](skills/public/skill-reviewer/evals/fixtures/partial-package/SKILL.md) |
-| 166 | ✓ | [`skills/public/skill-reviewer/evals/fixtures/prompt-injection/SKILL.md`](skills/public/skill-reviewer/evals/fixtures/prompt-injection/SKILL.md) |
-| 167 | ✓ | [`skills/public/skill-reviewer/evals/fixtures/publish-candidate/SKILL.md`](skills/public/skill-reviewer/evals/fixtures/publish-candidate/SKILL.md) |
-| 168 | ✓ | [`skills/public/skill-reviewer/evals/fixtures/zh-output/SKILL.md`](skills/public/skill-reviewer/evals/fixtures/zh-output/SKILL.md) |
-| 169 | ✓ | [`skills/public/skill-reviewer/references/effect-verification.md`](skills/public/skill-reviewer/references/effect-verification.md) |
-| 170 | ✓ | [`skills/public/skill-reviewer/references/eval-design.md`](skills/public/skill-reviewer/references/eval-design.md) |
-| 171 | ✓ | [`skills/public/skill-reviewer/references/report-rendering.md`](skills/public/skill-reviewer/references/report-rendering.md) |
-| 172 | ✓ | [`skills/public/skill-reviewer/references/review-checklist.md`](skills/public/skill-reviewer/references/review-checklist.md) |
-| 173 | ✓ | [`skills/public/skill-reviewer/references/review-rubric.md`](skills/public/skill-reviewer/references/review-rubric.md) |
-| 174 | ✓ | [`skills/public/skill-reviewer/SKILL.md`](skills/public/skill-reviewer/SKILL.md) |
-| 175 | ✓ | [`skills/public/surprise-me/SKILL.md`](skills/public/surprise-me/SKILL.md) |
-| 176 | ✓ | [`skills/public/systematic-literature-review/evals/evals.json`](skills/public/systematic-literature-review/evals/evals.json) |
-| 177 | ✓ | [`skills/public/systematic-literature-review/evals/trigger_eval_set.json`](skills/public/systematic-literature-review/evals/trigger_eval_set.json) |
-| 178 | ✓ | [`skills/public/systematic-literature-review/scripts/arxiv_search.py`](skills/public/systematic-literature-review/scripts/arxiv_search.py) |
-| 179 | ✓ | [`skills/public/systematic-literature-review/SKILL.md`](skills/public/systematic-literature-review/SKILL.md) |
-| 180 | ✓ | [`skills/public/systematic-literature-review/templates/apa.md`](skills/public/systematic-literature-review/templates/apa.md) |
-| 181 | ✓ | [`skills/public/systematic-literature-review/templates/bibtex.md`](skills/public/systematic-literature-review/templates/bibtex.md) |
-| 182 | ✓ | [`skills/public/systematic-literature-review/templates/ieee.md`](skills/public/systematic-literature-review/templates/ieee.md) |
-| 183 | ✓ | [`skills/public/vercel-deploy/scripts/deploy.sh`](skills/public/vercel-deploy/scripts/deploy.sh) |
-| 184 | ✓ | [`skills/public/vercel-deploy/SKILL.md`](skills/public/vercel-deploy/SKILL.md) |
-| 185 | ✓ | [`skills/public/video-generation/scripts/generate.py`](skills/public/video-generation/scripts/generate.py) |
-| 186 | ✓ | [`skills/public/video-generation/SKILL.md`](skills/public/video-generation/SKILL.md) |
-| 187 | ✓ | [`skills/public/web-design-guidelines/SKILL.md`](skills/public/web-design-guidelines/SKILL.md) |
-| 188 | → | [`.github/pull_request_template.md`](.github/pull_request_template.md) |
-| 189 | → | [`backend/docs/CONFIGURATION.md`](backend/docs/CONFIGURATION.md) |
-| 190 | → | [`backend/docs/extension-model-invocation.md`](backend/docs/extension-model-invocation.md) |
-| 191 | → | [`backend/docs/FILE_UPLOAD.md`](backend/docs/FILE_UPLOAD.md) |
-| 192 | → | [`backend/docs/IM_CHANNEL_CONNECTIONS.md`](backend/docs/IM_CHANNEL_CONNECTIONS.md) |
-| 193 | → | [`backend/docs/KNOWLEDGE.md`](backend/docs/KNOWLEDGE.md) |
-| 194 | → | [`backend/docs/MCP_SERVER.md`](backend/docs/MCP_SERVER.md) |
-| 195 | → | [`backend/docs/MEMORY_SETTINGS_REVIEW.md`](backend/docs/MEMORY_SETTINGS_REVIEW.md) |
-| 196 | → | [`backend/docs/summarization.md`](backend/docs/summarization.md) |
-| 197 | → | [`backend/docs/TUI.md`](backend/docs/TUI.md) |
-| 198 | → | [`backend/packages/harness/deerflow/agents/memory/backends/honcho/README.md`](backend/packages/harness/deerflow/agents/memory/backends/honcho/README.md) |
-| 199 | → | [`backend/packages/harness/deerflow/agents/memory/backends/mem0/README.md`](backend/packages/harness/deerflow/agents/memory/backends/mem0/README.md) |
-| 200 | → | [`backend/packages/harness/deerflow/community/tenki/README.md`](backend/packages/harness/deerflow/community/tenki/README.md) |
-| 201 | → | [`backend/README.md`](backend/README.md) |
-| 202 | → | [`backend/scripts/benchmark/context_snapshot/README.md`](backend/scripts/benchmark/context_snapshot/README.md) |
-| 203 | → | [`backend/scripts/benchmark/deermem_scope_isolation/README.md`](backend/scripts/benchmark/deermem_scope_isolation/README.md) |
-| 204 | → | [`backend/scripts/benchmark/sandbox/README.md`](backend/scripts/benchmark/sandbox/README.md) |
-| 205 | → | [`CHANGELOG.md`](CHANGELOG.md) |
-| 206 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 207 | → | [`docker/lark-cli-broker/README.md`](docker/lark-cli-broker/README.md) |
-| 208 | → | [`docker/lark-cli-init/README.md`](docker/lark-cli-init/README.md) |
-| 209 | → | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) |
-| 210 | → | [`docs/capability-center.md`](docs/capability-center.md) |
-| 211 | → | [`docs/database-forward-revision-recovery.md`](docs/database-forward-revision-recovery.md) |
-| 212 | → | [`docs/full-stack-plugins.md`](docs/full-stack-plugins.md) |
-| 213 | → | [`docs/OPENVIKING.md`](docs/OPENVIKING.md) |
-| 214 | → | [`docs/plans/2026-07-10-pluggable-authorization-rfc.md`](docs/plans/2026-07-10-pluggable-authorization-rfc.md) |
-| 215 | → | [`docs/plans/2026-08-24-subagent-batch-capacity-implementation.md`](docs/plans/2026-08-24-subagent-batch-capacity-implementation.md) |
-| 216 | → | [`docs/task-continuity.md`](docs/task-continuity.md) |
-| 217 | → | [`examples/deerflow-extension-agent-teams/README.md`](examples/deerflow-extension-agent-teams/README.md) |
-| 218 | → | [`examples/deerflow-extension-bookmarks/README.md`](examples/deerflow-extension-bookmarks/README.md) |
-| 219 | → | [`examples/deerflow-extension-jev-screening/README.md`](examples/deerflow-extension-jev-screening/README.md) |
-| 220 | → | [`examples/deerflow-extension-knowledge/README.md`](examples/deerflow-extension-knowledge/README.md) |
-| 221 | → | [`examples/deerflow-extension-retrieval/README.md`](examples/deerflow-extension-retrieval/README.md) |
-| 222 | → | [`examples/deerflow-extension-weknora/README.md`](examples/deerflow-extension-weknora/README.md) |
-| 223 | → | [`examples/deerflow-extension-workflows/README.md`](examples/deerflow-extension-workflows/README.md) |
-| 224 | → | [`Install.md`](Install.md) |
-| 225 | → | [`README_fr.md`](README_fr.md) |
-| 226 | → | [`README_ja.md`](README_ja.md) |
-| 227 | → | [`README_ko.md`](README_ko.md) |
-| 228 | → | [`README_pt.md`](README_pt.md) |
-| 229 | → | [`README_ru.md`](README_ru.md) |
-| 230 | → | [`README_zh.md`](README_zh.md) |
-| 231 | → | [`README.md`](README.md) |
-| 232 | → | [`RELEASING.md`](RELEASING.md) |
-| 233 | → | [`SECURITY.md`](SECURITY.md) |
+| 121 | ✓ | [`skills/public/data-analysis/AGENTS.md`](skills/public/data-analysis/AGENTS.md) |
+| 122 | ✓ | [`skills/public/data-analysis/scripts/analyze.py`](skills/public/data-analysis/scripts/analyze.py) |
+| 123 | ✓ | [`skills/public/data-analysis/SKILL.md`](skills/public/data-analysis/SKILL.md) |
+| 124 | ✓ | [`skills/public/deep-research/SKILL.md`](skills/public/deep-research/SKILL.md) |
+| 125 | ✓ | [`skills/public/find-skills/scripts/install-skill.sh`](skills/public/find-skills/scripts/install-skill.sh) |
+| 126 | ✓ | [`skills/public/find-skills/SKILL.md`](skills/public/find-skills/SKILL.md) |
+| 127 | ✓ | [`skills/public/frontend-design/LICENSE.txt`](skills/public/frontend-design/LICENSE.txt) |
+| 128 | ✓ | [`skills/public/frontend-design/SKILL.md`](skills/public/frontend-design/SKILL.md) |
+| 129 | ✓ | [`skills/public/github-deep-research/assets/report_template.md`](skills/public/github-deep-research/assets/report_template.md) |
+| 130 | ✓ | [`skills/public/github-deep-research/scripts/github_api.py`](skills/public/github-deep-research/scripts/github_api.py) |
+| 131 | ✓ | [`skills/public/github-deep-research/SKILL.md`](skills/public/github-deep-research/SKILL.md) |
+| 132 | ✓ | [`skills/public/image-generation/scripts/generate.py`](skills/public/image-generation/scripts/generate.py) |
+| 133 | ✓ | [`skills/public/image-generation/SKILL.md`](skills/public/image-generation/SKILL.md) |
+| 134 | ✓ | [`skills/public/image-generation/templates/doraemon.md`](skills/public/image-generation/templates/doraemon.md) |
+| 135 | ✓ | [`skills/public/music-generation/scripts/generate.py`](skills/public/music-generation/scripts/generate.py) |
+| 136 | ✓ | [`skills/public/music-generation/SKILL.md`](skills/public/music-generation/SKILL.md) |
+| 137 | ✓ | [`skills/public/newsletter-generation/SKILL.md`](skills/public/newsletter-generation/SKILL.md) |
+| 138 | ✓ | [`skills/public/podcast-generation/scripts/generate.py`](skills/public/podcast-generation/scripts/generate.py) |
+| 139 | ✓ | [`skills/public/podcast-generation/SKILL.md`](skills/public/podcast-generation/SKILL.md) |
+| 140 | ✓ | [`skills/public/podcast-generation/templates/tech-explainer.md`](skills/public/podcast-generation/templates/tech-explainer.md) |
+| 141 | ✓ | [`skills/public/ppt-generation/scripts/generate.py`](skills/public/ppt-generation/scripts/generate.py) |
+| 142 | ✓ | [`skills/public/ppt-generation/SKILL.md`](skills/public/ppt-generation/SKILL.md) |
+| 143 | ✓ | [`skills/public/skill-creator/agents/analyzer.md`](skills/public/skill-creator/agents/analyzer.md) |
+| 144 | ✓ | [`skills/public/skill-creator/agents/comparator.md`](skills/public/skill-creator/agents/comparator.md) |
+| 145 | ✓ | [`skills/public/skill-creator/agents/grader.md`](skills/public/skill-creator/agents/grader.md) |
+| 146 | ✓ | [`skills/public/skill-creator/assets/eval_review.html`](skills/public/skill-creator/assets/eval_review.html) |
+| 147 | ✓ | [`skills/public/skill-creator/eval-viewer/generate_review.py`](skills/public/skill-creator/eval-viewer/generate_review.py) |
+| 148 | ✓ | [`skills/public/skill-creator/eval-viewer/viewer.html`](skills/public/skill-creator/eval-viewer/viewer.html) |
+| 149 | ✓ | [`skills/public/skill-creator/LICENSE.txt`](skills/public/skill-creator/LICENSE.txt) |
+| 150 | ✓ | [`skills/public/skill-creator/references/output-patterns.md`](skills/public/skill-creator/references/output-patterns.md) |
+| 151 | ✓ | [`skills/public/skill-creator/references/schemas.md`](skills/public/skill-creator/references/schemas.md) |
+| 152 | ✓ | [`skills/public/skill-creator/references/workflows.md`](skills/public/skill-creator/references/workflows.md) |
+| 153 | ✓ | [`skills/public/skill-creator/scripts/aggregate_benchmark.py`](skills/public/skill-creator/scripts/aggregate_benchmark.py) |
+| 154 | ✓ | [`skills/public/skill-creator/scripts/generate_report.py`](skills/public/skill-creator/scripts/generate_report.py) |
+| 155 | ✓ | [`skills/public/skill-creator/scripts/improve_description.py`](skills/public/skill-creator/scripts/improve_description.py) |
+| 156 | ✓ | [`skills/public/skill-creator/scripts/init_skill.py`](skills/public/skill-creator/scripts/init_skill.py) |
+| 157 | ✓ | [`skills/public/skill-creator/scripts/package_skill.py`](skills/public/skill-creator/scripts/package_skill.py) |
+| 158 | ✓ | [`skills/public/skill-creator/scripts/quick_validate.py`](skills/public/skill-creator/scripts/quick_validate.py) |
+| 159 | ✓ | [`skills/public/skill-creator/scripts/run_eval.py`](skills/public/skill-creator/scripts/run_eval.py) |
+| 160 | ✓ | [`skills/public/skill-creator/scripts/run_loop.py`](skills/public/skill-creator/scripts/run_loop.py) |
+| 161 | ✓ | [`skills/public/skill-creator/scripts/utils.py`](skills/public/skill-creator/scripts/utils.py) |
+| 162 | ✓ | [`skills/public/skill-creator/SKILL.md`](skills/public/skill-creator/SKILL.md) |
+| 163 | ✓ | [`skills/public/skill-reviewer/evals/evals.json`](skills/public/skill-reviewer/evals/evals.json) |
+| 164 | ✓ | [`skills/public/skill-reviewer/evals/fixtures/blocked/SKILL.md`](skills/public/skill-reviewer/evals/fixtures/blocked/SKILL.md) |
+| 165 | ✓ | [`skills/public/skill-reviewer/evals/fixtures/needs-revision/SKILL.md`](skills/public/skill-reviewer/evals/fixtures/needs-revision/SKILL.md) |
+| 166 | ✓ | [`skills/public/skill-reviewer/evals/fixtures/partial-package/SKILL.md`](skills/public/skill-reviewer/evals/fixtures/partial-package/SKILL.md) |
+| 167 | ✓ | [`skills/public/skill-reviewer/evals/fixtures/prompt-injection/SKILL.md`](skills/public/skill-reviewer/evals/fixtures/prompt-injection/SKILL.md) |
+| 168 | ✓ | [`skills/public/skill-reviewer/evals/fixtures/publish-candidate/SKILL.md`](skills/public/skill-reviewer/evals/fixtures/publish-candidate/SKILL.md) |
+| 169 | ✓ | [`skills/public/skill-reviewer/evals/fixtures/zh-output/SKILL.md`](skills/public/skill-reviewer/evals/fixtures/zh-output/SKILL.md) |
+| 170 | ✓ | [`skills/public/skill-reviewer/references/effect-verification.md`](skills/public/skill-reviewer/references/effect-verification.md) |
+| 171 | ✓ | [`skills/public/skill-reviewer/references/eval-design.md`](skills/public/skill-reviewer/references/eval-design.md) |
+| 172 | ✓ | [`skills/public/skill-reviewer/references/report-rendering.md`](skills/public/skill-reviewer/references/report-rendering.md) |
+| 173 | ✓ | [`skills/public/skill-reviewer/references/review-checklist.md`](skills/public/skill-reviewer/references/review-checklist.md) |
+| 174 | ✓ | [`skills/public/skill-reviewer/references/review-rubric.md`](skills/public/skill-reviewer/references/review-rubric.md) |
+| 175 | ✓ | [`skills/public/skill-reviewer/SKILL.md`](skills/public/skill-reviewer/SKILL.md) |
+| 176 | ✓ | [`skills/public/surprise-me/SKILL.md`](skills/public/surprise-me/SKILL.md) |
+| 177 | ✓ | [`skills/public/systematic-literature-review/evals/evals.json`](skills/public/systematic-literature-review/evals/evals.json) |
+| 178 | ✓ | [`skills/public/systematic-literature-review/evals/trigger_eval_set.json`](skills/public/systematic-literature-review/evals/trigger_eval_set.json) |
+| 179 | ✓ | [`skills/public/systematic-literature-review/scripts/arxiv_search.py`](skills/public/systematic-literature-review/scripts/arxiv_search.py) |
+| 180 | ✓ | [`skills/public/systematic-literature-review/SKILL.md`](skills/public/systematic-literature-review/SKILL.md) |
+| 181 | ✓ | [`skills/public/systematic-literature-review/templates/apa.md`](skills/public/systematic-literature-review/templates/apa.md) |
+| 182 | ✓ | [`skills/public/systematic-literature-review/templates/bibtex.md`](skills/public/systematic-literature-review/templates/bibtex.md) |
+| 183 | ✓ | [`skills/public/systematic-literature-review/templates/ieee.md`](skills/public/systematic-literature-review/templates/ieee.md) |
+| 184 | ✓ | [`skills/public/vercel-deploy/scripts/deploy.sh`](skills/public/vercel-deploy/scripts/deploy.sh) |
+| 185 | ✓ | [`skills/public/vercel-deploy/SKILL.md`](skills/public/vercel-deploy/SKILL.md) |
+| 186 | ✓ | [`skills/public/video-generation/scripts/generate.py`](skills/public/video-generation/scripts/generate.py) |
+| 187 | ✓ | [`skills/public/video-generation/SKILL.md`](skills/public/video-generation/SKILL.md) |
+| 188 | ✓ | [`skills/public/web-design-guidelines/SKILL.md`](skills/public/web-design-guidelines/SKILL.md) |
+| 189 | → | [`.github/pull_request_template.md`](.github/pull_request_template.md) |
+| 190 | → | [`backend/docs/CONFIGURATION.md`](backend/docs/CONFIGURATION.md) |
+| 191 | → | [`backend/docs/extension-model-invocation.md`](backend/docs/extension-model-invocation.md) |
+| 192 | → | [`backend/docs/FILE_UPLOAD.md`](backend/docs/FILE_UPLOAD.md) |
+| 193 | → | [`backend/docs/IM_CHANNEL_CONNECTIONS.md`](backend/docs/IM_CHANNEL_CONNECTIONS.md) |
+| 194 | → | [`backend/docs/KNOWLEDGE.md`](backend/docs/KNOWLEDGE.md) |
+| 195 | → | [`backend/docs/MCP_SERVER.md`](backend/docs/MCP_SERVER.md) |
+| 196 | → | [`backend/docs/MEMORY_SETTINGS_REVIEW.md`](backend/docs/MEMORY_SETTINGS_REVIEW.md) |
+| 197 | → | [`backend/docs/summarization.md`](backend/docs/summarization.md) |
+| 198 | → | [`backend/docs/TUI.md`](backend/docs/TUI.md) |
+| 199 | → | [`backend/packages/harness/deerflow/agents/memory/backends/honcho/README.md`](backend/packages/harness/deerflow/agents/memory/backends/honcho/README.md) |
+| 200 | → | [`backend/packages/harness/deerflow/agents/memory/backends/mem0/README.md`](backend/packages/harness/deerflow/agents/memory/backends/mem0/README.md) |
+| 201 | → | [`backend/packages/harness/deerflow/community/tenki/README.md`](backend/packages/harness/deerflow/community/tenki/README.md) |
+| 202 | → | [`backend/README.md`](backend/README.md) |
+| 203 | → | [`backend/scripts/benchmark/context_snapshot/README.md`](backend/scripts/benchmark/context_snapshot/README.md) |
+| 204 | → | [`backend/scripts/benchmark/deermem_scope_isolation/README.md`](backend/scripts/benchmark/deermem_scope_isolation/README.md) |
+| 205 | → | [`backend/scripts/benchmark/sandbox/README.md`](backend/scripts/benchmark/sandbox/README.md) |
+| 206 | → | [`CHANGELOG.md`](CHANGELOG.md) |
+| 207 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 208 | → | [`docker/lark-cli-broker/README.md`](docker/lark-cli-broker/README.md) |
+| 209 | → | [`docker/lark-cli-init/README.md`](docker/lark-cli-init/README.md) |
+| 210 | → | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) |
+| 211 | → | [`docs/capability-center.md`](docs/capability-center.md) |
+| 212 | → | [`docs/database-forward-revision-recovery.md`](docs/database-forward-revision-recovery.md) |
+| 213 | → | [`docs/full-stack-plugins.md`](docs/full-stack-plugins.md) |
+| 214 | → | [`docs/OPENVIKING.md`](docs/OPENVIKING.md) |
+| 215 | → | [`docs/plans/2026-07-10-pluggable-authorization-rfc.md`](docs/plans/2026-07-10-pluggable-authorization-rfc.md) |
+| 216 | → | [`docs/plans/2026-08-24-subagent-batch-capacity-implementation.md`](docs/plans/2026-08-24-subagent-batch-capacity-implementation.md) |
+| 217 | → | [`docs/skill-evolution-host.md`](docs/skill-evolution-host.md) |
+| 218 | → | [`docs/task-continuity.md`](docs/task-continuity.md) |
+| 219 | → | [`examples/deerflow-extension-agent-teams/README.md`](examples/deerflow-extension-agent-teams/README.md) |
+| 220 | → | [`examples/deerflow-extension-bookmarks/README.md`](examples/deerflow-extension-bookmarks/README.md) |
+| 221 | → | [`examples/deerflow-extension-jev-screening/README.md`](examples/deerflow-extension-jev-screening/README.md) |
+| 222 | → | [`examples/deerflow-extension-knowledge/README.md`](examples/deerflow-extension-knowledge/README.md) |
+| 223 | → | [`examples/deerflow-extension-retrieval/README.md`](examples/deerflow-extension-retrieval/README.md) |
+| 224 | → | [`examples/deerflow-extension-weknora/README.md`](examples/deerflow-extension-weknora/README.md) |
+| 225 | → | [`examples/deerflow-extension-workflows/README.md`](examples/deerflow-extension-workflows/README.md) |
+| 226 | → | [`Install.md`](Install.md) |
+| 227 | → | [`README_fr.md`](README_fr.md) |
+| 228 | → | [`README_ja.md`](README_ja.md) |
+| 229 | → | [`README_ko.md`](README_ko.md) |
+| 230 | → | [`README_pt.md`](README_pt.md) |
+| 231 | → | [`README_ru.md`](README_ru.md) |
+| 232 | → | [`README_zh.md`](README_zh.md) |
+| 233 | → | [`README.md`](README.md) |
+| 234 | → | [`RELEASING.md`](RELEASING.md) |
+| 235 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

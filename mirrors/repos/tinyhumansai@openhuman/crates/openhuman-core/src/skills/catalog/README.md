@@ -95,7 +95,7 @@ LLM-callable tools (`SkillRegistryBrowseTool`, `SkillRegistrySearchTool`,
 `setup_skills`) whose tool belt is the five tools above plus
 `list_workflows`, `describe_workflow`, `install_workflow_from_url`,
 `uninstall_workflow`, and `ask_user_clarification`. It is registered in
-`crates/openhuman-core/src/agent/registry/agents/loader.rs` behind
+`crates/openhuman-core/src/agent_registry/agents/loader.rs` behind
 `#[cfg(feature = "skills")]`, which embeds [`agent/skill_setup/agent.toml`](./agent/skill_setup/agent.toml) via
 `include_str!` and wires `agent/skill_setup/prompt.rs::build` as its prompt
 builder.

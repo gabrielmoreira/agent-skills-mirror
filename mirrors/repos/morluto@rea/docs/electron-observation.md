@@ -193,8 +193,25 @@ Caller-defined `.listener` properties can change the identity exposed by
 wrapper recognition. Re-registering a raw recording wrapper on another channel
 retains the original registration's channel attribution.
 Mutating `.listener` on a raw recording wrapper can also prevent removal through
-application decorators; the reproduced identity conflict is tracked in
-[#4513](https://github.com/morluto/rea/issues/4513).
+application decorators that bypass the hook's removal methods. When a removal
+request reaches the hook's methods and its registration order is known, private
+callback ownership preserves removal by the original function and the newest
+matching registration when public metadata is changed or deleted. Native removal
+still determines getter execution, exceptions and removal meta-events.
+
+If registration or removal methods differ from the Node methods captured at hook
+initialization, the hook leaves listener callbacks unwrapped and records a
+`listener-registration` observation gap. The application keeps its original
+callback and receiver; callback execution remains unobserved. This comparison
+assumes Node's EventEmitter prototype has not itself been globally decorated
+before hook initialization. The provider loads the hook before the application
+and excludes `NODE_OPTIONS` from the child environment.
+
+An opaque later listener or unsupported emitter state can prevent proof of
+removal order. The hook then delegates removal
+to the native method and records a `listener-removal` gap rather than claiming
+which registration was removed. These gaps are distinct from dropped records
+and do not establish IPC delivery or successful removal.
 
 ### Target fuse prerequisites
 

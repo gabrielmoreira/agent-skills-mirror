@@ -3,7 +3,7 @@ name: patch-notes
 description: "Player-facing patch notes from git history and changelogs. Translates developer language into player communication."
 argument-hint: "[version] [--style brief|detailed|full]"
 user-invocable: true
-allowed-tools: Read, Glob, Grep, Write, Bash, Bash(bash "*/.claude/skills/patch-notes/../../hooks/yaml-helper.sh" resolve_config *)
+allowed-tools: Read, Glob, Grep, Write, Bash(bash "*/.claude/skills/patch-notes/../../hooks/yaml-helper.sh" resolve_config *), Bash(git log *)
 model: sonnet
 ---
 
@@ -40,13 +40,10 @@ before Phase 2 and stop if it fails.
 
 > **Filter per commit; do not stop on a repo that merely contains maintenance
 > work.** Every project built on this framework accumulates commits touching
-> hooks, CI and skills — the game repo *is* the framework repo. An earlier
-> version of this check listed "subjects naming the framework, its skills, hooks,
-> agents or test plan" as a hard STOP, which fires on virtually every real
-> project and contradicted its own step 2 whenever a history was mostly the
-> game's. The danger was never that such commits *exist*; it is that they get
-> **rendered as player-facing copy**. Excluding them addresses that exactly, and
-> a repo-level stop does not.
+> hooks, CI and skills — the game repo *is* the framework repo, so a repo-level
+> stop fires on virtually every real project. The danger is not that such
+> commits *exist*; it is that they get **rendered as player-facing copy**.
+> Excluding them addresses that exactly, and a repo-level stop does not.
 
 Corroborate before you proceed, cheaply: the Game commits should name systems
 that appear in `design/` and the code root (`src/`, `Assets/` or `Source/`). If
@@ -62,12 +59,11 @@ If **no** commit in the range is this game's, say so and stop:
 
 Verdict: **BLOCKED** — stop here without generating notes.
 
-**Why this is a hard stop, not a warning.** This exact failure is real, not
-hypothetical: a batch of framework-internal commits produced player-facing copy
-reading *"Fixed an issue where progress from your last session could be lost on launch"*
-— a session-hook timeout rendered as a gameplay fix for a game with **no save
-system**. It was fluent, plausible, and entirely false. A reader cannot tell the
-difference; only this check can.
+**Why this is a hard stop, not a warning.** Framework-internal commits rendered
+as player copy read as real changes: a session-hook timeout becomes *"Fixed an
+issue where progress from your last session could be lost on launch"* in a game
+with **no save system**. That copy is fluent, plausible, and entirely false. A
+reader cannot tell the difference; only this check can.
 
 ---
 

@@ -10,18 +10,18 @@ _Nuashonraithe an uair dheireanach: 2026-06-28_
 
 ## Achoimre Feidhmiúcháin
 
-Is geata ródaithe AI áitiúil agus deais é OmniRoute atá tógtha ar Next.js.
-Soláthraíonn sé críochphointe aonair atá comhoiriúnach le OpenAI (`/v1/*`) agus ródálann sé trácht thar roinnt soláthraithe réamhtheachtacha, le haistriúchán, cúltaca, athnuachan comharthaí agus rianú úsáide.
+Is geata ródaithe AI áitiúil agus painéal rialaithe é OmniRoute atá tógtha ar Next.js.
+Soláthraíonn sé críochphointe aonair atá comhoiriúnach le OpenAI (`/v1/*`) agus ródálann sé trácht thar sholáthraithe réamhtheachtacha iomadúla, le haistriúchán, cúltaca, athnuachan comharthaí agus rianú úsáide.
 
 Príomhchumais:
 
-- Dromchla API atá comhoiriúnach le OpenAI do CLI/uirlisí (373 soláthraí, 150 modúl forghníomhaithe)
-- Aistriú iarratais/freagartha idir formáidí soláthraithe
+- Dromchla API atá comhoiriúnach le OpenAI le haghaidh CLI/uirlisí (374 soláthraí, 150 modúl rite)
+- Aistriú iarrataí/freagairtí thar fhormáidí soláthraithe
 - Cúltaca teaglama samhlacha (seicheamh ilsamhla)
 - Céimeanna struchtúrtha teaglama (`provider + model + connection`) le hordú ag am rite de réir `compositeTiers`
-- Cúltaca ar leibhéal an chuntais (ilchuntais in aghaidh an tsoláthraí)
-- Réamhsheiceáil cuóta agus roghnú cuntais P2C atá feasach ar chuóta sa phríomhchonair chomhrá
-- Bainistiú nasc soláthraithe trí OAuth + eochair API (27 modúl soláthraí OAuth)
+- Cúltaca ar leibhéal cuntais (ilchuntais in aghaidh an tsoláthraí)
+- Réamhsheiceáil cuóta agus roghnú cuntais P2C atá feasach ar chuóta sa phríomhchonair comhrá
+- Bainistíocht nasc soláthraithe OAuth + eochair-API (27 modúl soláthraí OAuth)
 - Giniúint leabuithe trí `/v1/embeddings` (18 soláthraí)
 - Giniúint íomhánna trí `/v1/images/generations` (10+ soláthraí, 20+ samhail)
 - Tras-scríobh fuaime trí `/v1/audio/transcriptions` (18 soláthraí)
@@ -31,56 +31,56 @@ Príomhchumais:
 - Cuardach gréasáin trí `/v1/search` (20 soláthraí)
 - Modhnóireacht trí `/v1/moderations`
 - Athrangú trí `/v1/rerank`
-- Parsáil clibe smaointeoireachta (``) do shamhlacha réasúnaíochta
-- Sláintiú freagartha ar mhaithe le comhoiriúnacht dhocht le OpenAI SDK
-- Normalú ról (developer→system, system→user) ar mhaithe le comhoiriúnacht idir soláthraithe
+- Parsáil clibeanna smaointeoireachta (``) le haghaidh samhlacha réasúnaíochta
+- Sláintiú freagairtí ar mhaithe le comhoiriúnacht dhocht le OpenAI SDK
+- Normalú ról (developer→system, system→user) ar mhaithe le comhoiriúnacht tras-soláthraí
 - Tiontú aschuir struchtúrtha (json_schema → Gemini responseSchema)
-- Marthanacht áitiúil do sholáthraithe, eochracha, ailiasanna, teaglamaí, socruithe agus praghsáil (122 modúl DB)
-- Rianú úsáide/costais agus logáil iarratas
-- Sioncronú néil roghnach le haghaidh sioncronú ilghléasanna/staide
-- Liosta ceadaithe/liosta coiscthe IP le haghaidh rialú rochtana API
-- Bainistiú buiséid smaointeoireachta (pas tríd/uathoibríoch/saincheaptha/oiriúnaitheach)
+- Marthanacht áitiúil le haghaidh soláthraithe, eochracha, ailiasanna, teaglamaí, socruithe agus praghsála (122 modúl DB)
+- Rianú úsáide/costais agus logáil iarrataí
+- Sioncronú néil roghnach le haghaidh sioncronú ilghléasanna/stáit
+- Liosta ceadaithe/liosta bactha IP le haghaidh rialú rochtana API
+- Bainistíocht buiséid smaointeoireachta (pasáil tríd/uathoibríoch/saincheaptha/oiriúnaitheach)
 - Instealladh leid chórais dhomhanda
-- Rianú seisiúin agus méarlorgaireacht
-- Teorannú feabhsaithe ráta in aghaidh an chuntais le próifílí a bhaineann go sonrach le soláthraithe
-- Patrún scoradáin chiorcaid ar mhaithe le hathléimneacht soláthraithe
-- Cosaint ar thréadluascadh le glasáil mutex
-- Taisce dí-dhúblála iarratas bunaithe ar shíniú
-- Ciseal fearainn: rialacha costais, beartas cúltaca, beartas frithdhúnadh
-- Context Relay: achoimrí aistrithe seisiúin ar mhaithe le leanúnachas agus cuntais á rothlú
-- Marthanacht staide fearainn (taisce SQLite le scríobh tríd do chúltacaí, buiséid, frithdhúnadh agus scoradáin chiorcaid)
+- Rianú seisiún agus méarlorgaireacht
+- Teorannú ráta feabhsaithe in aghaidh an chuntais le próifílí a bhaineann go sonrach le soláthraithe
+- Patrún scoradáin chiorcaid le haghaidh athléimneacht soláthraithe
+- Cosaint ar thréad toirní le glasáil mutex
+- Taisce dídhúblála iarrataí bunaithe ar shíniú
+- Sraith fearainn: rialacha costais, beartas cúltaca, beartas frithdhúnadh
+- Context Relay: achoimrí aistrithe seisiúin le haghaidh leanúnachais agus cuntais á rothlú
+- Marthanacht stáit fearainn (taisce SQLite le scríobh tríd le haghaidh cúltacaí, buiséad, frithdhúnadh agus scoradán ciorcaid)
 - Inneall beartais le haghaidh meastóireacht láraithe ar iarratais (frithdhúnadh → buiséad → cúltaca)
-- Teiliméadracht iarratas le comhiomlánú aga folaigh p50/p95/p99
-- Teiliméadracht spriocanna teaglama agus sláinte stairiúil spriocanna teaglama trí `combo_execution_key` / `combo_step_id`
-- Aitheantas comhghaolúcháin (X-Request-Id) le haghaidh rianú ó cheann ceann
+- Teiliméadracht iarrataí le comhiomlánú aga folaigh p50/p95/p99
+- Teiliméadracht sprice teaglama agus sláinte stairiúil spriocanna teaglama trí `combo_execution_key` / `combo_step_id`
+- Aitheantas comhghaolmhaireachta (X-Request-Id) le haghaidh rianú ó cheann ceann
 - Logáil iniúchta comhlíontachta le rogha díliostála in aghaidh na heochrach API
 - Creat meastóireachta le haghaidh dearbhú cáilíochta LLM
-- Deais sláinte le stádas fíor-ama scoradáin chiorcaid soláthraithe
-- Freastalaí MCP (110 uirlis) le 3 mhodh iompair (stdio/SSE/Streamable HTTP)
+- Painéal sláinte le stádas fíor-ama scoradán ciorcaid soláthraithe
+- Freastalaí MCP (110 uirlis) le 3 mheán iompair (stdio/SSE/Streamable HTTP)
 - Freastalaí A2A (JSON-RPC 2.0 + SSE) le scileanna agus saolré tascanna
-- Córas cuimhne (eastóscadh, instealladh, aisghabháil, achoimriú)
-- Córas scileanna (clárlann, forghníomhaitheoir, bosca gainimh, scileanna ionsuite)
-- Seachfhreastalaí MITM le bainistiú teastas agus láimhseáil DNS
-- Meánearra cosanta ar instealladh leide
-- Píblíne comhbhrúite leid le Caveman, RTK, píblínte cruachta, teaglamaí comhbhrúite, pacáistí teanga agus anailísíocht
+- Córas cuimhne (asbhaint, instealladh, aisghabháil, achoimriú)
+- Córas scileanna (clárlann, riteoir, bosca gainimh, scileanna ionsuite)
+- Seachfhreastalaí MITM le bainistíocht teastas agus láimhseáil DNS
+- Meánearra cosanta ar instealladh leid
+- Píblíne comhbhrúite leideanna le Caveman, RTK, píblínte cruachta, teaglamaí comhbhrúite, pacáistí teanga agus anailísíocht
 - Clárlann ACP (Agent Communication Protocol)
 - Soláthraithe modúlacha OAuth (22 modúl aonair faoi `src/lib/oauth/providers/`)
 - Scripteanna díshuiteála/díshuiteála iomláine
-- Gníomh deisithe timpeallachta OAuth
-- Droichead WebSocket do chliaint WS atá comhoiriúnach le OpenAI (`/v1/ws`)
-- Bainistiú comharthaí sioncronaithe (eisiúint/cúlghairm, íoslódáil cuachta cumraíochta le leaganacha ETag)
-- GLM Thinking (`glmt`) mar réamhshocrú soláthraí den chéad scoth
+- Gníomh deisiúcháin timpeallachta OAuth
+- Droichead WebSocket le haghaidh cliant WS atá comhoiriúnach le OpenAI (`/v1/ws`)
+- Bainistíocht comharthaí sioncronaithe (eisiúint/cúlghairm, íoslódáil birt cumraíochta le leaganú ETag)
+- Réamhshocrú soláthraí den chéad scoth GLM Thinking (`glmt`)
 - Comhaireamh hibrideach comharthaí (`/messages/count_tokens` ar thaobh an tsoláthraí le meastachán mar chúltaca)
-- Réamhshíolú uathoibríoch ailiasanna samhlacha (30+ normalú canúna tras-seachfhreastalaí ag am tosaithe)
+- Réamhshíolú uathoibríoch ailiasanna samhlacha (30+ normalú canúintí tras-seachfhreastalaí ag am tosaithe)
 - Aisghabháil shlán amach le cosaint SSRF, blocáil URLanna príobháideacha agus atriail inchumraithe
-- Atrialacha comhrá atá feasach ar thréimhse mharbhánta le `requestRetry` agus `maxRetryIntervalSec` inchumraithe
-- Bailíochtú timpeallachta ag am rite le Zod ag am tosaithe
-- Iniúchadh comhlíontachta v2 le huimhriú leathanach, teagmhais CRUD soláthraithe agus logáil bailíochtaithe a cuireadh bac air mar gheall ar SSRF
+- Atrialacha comhrá atá feasach ar thréimhse shuaimhnithe le `requestRetry` agus `maxRetryIntervalSec` inchumraithe
+- Bailíochtú timpeallachta ama rite le Zod ag am tosaithe
+- Iniúchadh comhlíontachta v2 le huimhriú leathanach, teagmhais CRUD soláthraithe agus logáil bailíochtaithe blocáilte ag SSRF
 
 Príomhshamhail ama rite:
 
-- Cuireann bealaí feidhmchláir Next.js faoi `src/app/api/*` APIanna na deaise agus APIanna comhoiriúnachta araon i bhfeidhm
-- Láimhseálann croílár comhroinnte SSE/ródaithe in `src/sse/*` + `open-sse/*` forghníomhú soláthraithe, aistriú, sruthú, cúltaca agus úsáid
+- Cuireann bealaí feidhmchláir Next.js faoi `src/app/api/*` APIanna painéil rialaithe agus APIanna comhoiriúnachta araon i bhfeidhm
+- Láimhseálann croílár comhroinnte SSE/ródaithe in `src/sse/*` + `open-sse/*` rith soláthraithe, aistriú, sruthú, cúltaca agus úsáid
 
 ## Léaráidí Tagartha
 
@@ -258,19 +258,19 @@ Fearainn bhainistíochta:
 - Beart cumraíochta: `src/app/api/sync/bundle` (GET, seat den leagan arna shainaithint le ETag de shocruithe/soláthraithe/teaglamaí/eochracha)
 - WebSocket: `src/app/api/v1/ws/route.ts` — láimhseálaí Upgrade do chliaint WS atá comhoiriúnach le OpenAI
 
-## 2) SSE + Croí an Aistriúcháin
+## 2) SSE + Croílár Aistriúcháin
 
 Príomh-mhodúil an tsreafa:
 
 - Pointe iontrála: `src/sse/handlers/chat.ts`
-- Croí-cheolfhoirniú: `open-sse/handlers/chatCore.ts`
+- Croí-cheolfhoireannú: `open-sse/handlers/chatCore.ts`
 - Cuibheoirí forghníomhaithe soláthraithe: `open-sse/executors/*`
 - Brath formáide/cumraíocht soláthraí: `open-sse/services/provider.ts`
 - Parsáil/réiteach samhla: `src/sse/services/model.ts`, `open-sse/services/model.ts`
 - Loighic chúltaca cuntais: `open-sse/services/accountFallback.ts`
 - Clárlann aistriúcháin: `open-sse/translator/index.ts`
-- Claochluithe srutha: `open-sse/utils/stream.ts`, `open-sse/utils/streamHandler.ts`
-- Eastóscadh/normalú úsáide: `open-sse/utils/usageTracking.ts`
+- Trasfhoirmíochtaí srutha: `open-sse/utils/stream.ts`, `open-sse/utils/streamHandler.ts`
+- Baint/normalú úsáide: `open-sse/utils/usageTracking.ts`
 - Parsálaí clibe smaointeoireachta: `open-sse/utils/thinkTagParser.ts`
 - Láimhseálaí leabaithe: `open-sse/handlers/embeddings.ts`
 - Clárlann soláthraithe leabaithe: `open-sse/config/embeddingRegistry.ts`
@@ -282,27 +282,27 @@ Príomh-mhodúil an tsreafa:
 Seirbhísí (loighic ghnó):
 
 - Roghnú/scóráil cuntas: `open-sse/services/accountSelector.ts`
-- Bainistiú shaolré an chomhthéacs: `open-sse/services/contextManager.ts`
+- Bainistíocht shaolré an chomhthéacs: `open-sse/services/contextManager.ts`
 - Forfheidhmiú scagaire IP: `open-sse/services/ipFilter.ts`
-- Rianú seisiún: `open-sse/services/sessionManager.ts`
+- Rianú seisiúin: `open-sse/services/sessionManager.ts`
 - Dí-dhúbailt iarratas: `open-sse/services/signatureCache.ts`
 - Instealladh leid chórais: `open-sse/services/systemPrompt.ts`
-- Bainistiú buiséid smaointeoireachta: `open-sse/services/thinkingBudget.ts`
-- Ródú samhlacha saoróige: `open-sse/services/wildcardRouter.ts`
-- Bainistiú teorann ráta: `open-sse/services/rateLimitManager.ts`
+- Bainistíocht buiséid smaointeoireachta: `open-sse/services/thinkingBudget.ts`
+- Ródú samhlacha saoróg: `open-sse/services/wildcardRouter.ts`
+- Bainistíocht teorann ráta: `open-sse/services/rateLimitManager.ts`
 - Scoradán ciorcaid: `src/shared/utils/circuitBreaker.ts`
 - Aistriú comhthéacs: `open-sse/services/contextHandoff.ts` — achoimre aistrithe a ghiniúint agus a instealladh don straitéis athsheachadta comhthéacs
-- Comhbhrú: `open-sse/services/compression/*` — comhbhrú réamhghníomhach roimh aistriúchán an tsoláthraí;
+- Comhbhrú: `open-sse/services/compression/*` — comhbhrú réamhghníomhach roimh aistriú an tsoláthraí;
   áirítear rialacha Caveman, scagairí RTK, píblínte cruachta, teaglamaí comhbhrúcháin, staitisticí agus bailíochtú
 - Aisghabhálaí cuóta Codex: `open-sse/services/codexQuotaFetcher.ts` — aisghabhann sé cuóta Codex le haghaidh cinntí aistrithe athsheachadta comhthéacs
-- Atriail atá feasach ar thréimhse shuaimhnithe: `src/sse/services/cooldownAwareRetry.ts` — atrialacha tréimhse suaimhnithe de réir samhla le `requestRetry` / `maxRetryIntervalSec` inchumraithe
+- Atriail atá feasach ar thréimhse mharbhánta: `src/sse/services/cooldownAwareRetry.ts` — atrialacha in aghaidh na samhla le tréimhsí marbhánta agus `requestRetry` / `maxRetryIntervalSec` inchumraithe
 - Aisghabháil shlán amach: `src/shared/network/safeOutboundFetch.ts` — aisghabháil chosanta soláthraí/samhla le cosaint SSRF, blocáil URLanna príobháideacha, atriail agus teorainn ama
-- Cosaint URLanna amach: `src/shared/network/outboundUrlGuard.ts` — seiceálacha óstach ar URLanna soláthraithe; roghnaíonn `src/shared/network/outboundUrlGuardPolicy.ts` an mód ó `OMNIROUTE_ALLOW_LOCAL_PROVIDER_URLS`, `OMNIROUTE_ALLOW_PRIVATE_PROVIDER_URLS`, agus a lascáin deais (féach `docs/reference/ENVIRONMENT.md`)
+- Cosaint URLanna amach: `src/shared/network/outboundUrlGuard.ts` — seiceálacha óstaigh ar URLanna soláthraithe; roghnaíonn `src/shared/network/outboundUrlGuardPolicy.ts` an mód ó `OMNIROUTE_ALLOW_LOCAL_PROVIDER_URLS`, `OMNIROUTE_ALLOW_PRIVATE_PROVIDER_URLS`, agus óna lascáin deaise (féach `docs/reference/ENVIRONMENT.md`)
 - Réamhshocruithe iarratais soláthraí: `open-sse/services/providerRequestDefaults.ts` — réamhshocruithe `maxTokens`, `temperature`, `thinkingBudgetTokens` ar leibhéal an tsoláthraí
 - Tairisigh soláthraí GLM: `open-sse/config/glmProvider.ts` — samhlacha comhroinnte GLM, URLanna cuóta, teorainn ama/réamhshocruithe GLMT
-- Réamhtheagmhas Antigravity: `open-sse/config/antigravityUpstream.ts` — URL bonn agus tairisigh chonair aimsithe
-- Tairisigh chliaint Codex: `open-sse/config/codexClient.ts` — luachanna gníomhaire úsáideora agus leagain cliaint a bhfuil leagan sonraithe acu
-- Síol ailias samhla: `src/lib/modelAliasSeed.ts` — síolraíonn sé 30+ ailias tras-seachfhreastalaí ag an am tosaithe
+- Réamhtheagmháil Antigravity: `open-sse/config/antigravityUpstream.ts` — bun-URL agus tairisigh chonair na fionnachtana
+- Tairisigh chliaint Codex: `open-sse/config/codexClient.ts` — luachanna gníomhaire úsáideora agus leagan cliaint a bhfuil leagan sonraithe acu
+- Síol ailias samhla: `src/lib/modelAliasSeed.ts` — síolraíonn sé 30+ ailias canúna tras-seachfhreastalaí ag an tosú
 
 Modúil na sraithe fearainn:
 
@@ -310,20 +310,20 @@ Modúil na sraithe fearainn:
 - Beartas cúltaca: `src/domain/fallbackPolicy.ts`
 - Réiteoir teaglamaí: `src/domain/comboResolver.ts`
 - Beartas frithdhúnadh: `src/domain/lockoutPolicy.ts`
-- Inneall beartais: `src/domain/policyEngine.ts` — meastóireacht láraithe ar fhrithdhúnadh → buiséad → cúltaca
+- Inneall beartais: `src/domain/policyEngine.ts` — meastóireacht láraithe frithdhúnadh → buiséad → cúltaca
 - Catalóg cód earráide: `src/shared/constants/errorCodes.ts`
 - Aitheantas iarratais: `src/shared/utils/requestId.ts`
 - Teorainn ama aisghabhála: `src/shared/utils/fetchTimeout.ts`
 - Teiliméadracht iarratais: `src/shared/utils/requestTelemetry.ts`
 - Comhlíonadh/iniúchadh: `src/lib/compliance/index.ts`
-- Reathaí meastóireachta: `src/lib/evals/evalRunner.ts`
-- Marthanacht staid fearainn: `src/lib/db/domainState.ts` — CRUD SQLite le haghaidh slabhraí cúltaca, buiséad, stair chostais, staid frithdhúnadh agus scoradáin chiorcaid
+- Riteoir meastóireachta: `src/lib/evals/evalRunner.ts`
+- Marthanacht staid fearainn: `src/lib/db/domainState.ts` — oibríochtaí CRUD SQLite do shlabhraí cúltaca, buiséid, stair costais, staid frithdhúnadh agus scoradáin chiorcaid
 
 Modúil soláthraithe OAuth (27 comhad aonair faoi `src/lib/oauth/providers/`):
 
-- Innéacs clárlainne: `src/lib/oauth/providers/index.ts`
+- Innéacs na clárlainne: `src/lib/oauth/providers/index.ts`
 - Soláthraithe aonair: `agy.ts`, `antigravity.ts`, `claude.ts`, `cline.ts`, `codebuddy-cn.ts`, `codebuddy-intl.ts`, `codex.ts`, `cursor.ts`, `devin-desktop.ts`, `ghe-copilot.ts`, `github.ts`, `gitlab-duo.ts`, `grok-cli-oauth.ts`, `grok-cli.ts`, `kilocode.ts`, `kimi-coding.ts`, `kiro.ts`, `muse-code.ts`, `openference.ts`, `qoder.ts`, `trae.ts`, `workbuddy.ts`, `xai-oauth.ts`, `zed-hosted.ts`, `zed.ts`
-- Cúntóirí comhroinnte: `codebuddyDeviceAuth.ts` (sreabhadh gléis CodeBuddy CN/idirnáisiúnta), `museCodeDeviceResponse.ts`
+- Cúntóirí comhroinnte: `codebuddyDeviceAuth.ts` (sreabhadh gléis CodeBuddy CN/intl), `museCodeDeviceResponse.ts`
 - Fillteán tanaí: `src/lib/oauth/providers.ts` — athonnmhairíonn sé ó mhodúil aonair
 
 ## 5) Seirbhísí Leabaithe (v3.8.4)
@@ -538,12 +538,13 @@ Bunachar Sonraí Staide Fearainn (SQLite):
 
 - Fíordheimhniú painéil trí fhianán: `src/proxy.ts`, `src/app/api/auth/login/route.ts`
 - Giniúint/fíorú eochracha API: `src/shared/utils/apiKey.ts`
-- Rúin soláthraithe a mharthanaítear in iontrálacha `providerConnections`
+- Rúin soláthraithe á stóráil go marthanach in iontrálacha `providerConnections`
 - Tacaíocht do sheachfhreastalaí amach trí `open-sse/utils/proxyFetch.ts` (athróga timpeallachta) agus `open-sse/utils/networkProxy.ts` (inchumraithe de réir soláthraí nó go domhanda)
-- Garda SSRF / URL amach: `src/shared/network/outboundUrlGuard.ts` — blocálann sé raonta príobháideacha/aislúbtha/nasc-áitiúla do gach glao soláthraí
-- Bailíochtú timpeallachta ag am rite: `src/lib/env/runtimeEnv.ts` — scéimre Zod do gach athróg timpeallachta, a léirítear mar earráidí/rabhaidh tosaithe
-- Comharthaí sioncronaithe: `src/lib/db/syncTokens.ts` — comharthaí scópáilte do chríochphointí íoslódála beart cumraíochta; tacaítear leo leis an tábla SQLite `sync_tokens` (ascnamh `024_create_sync_tokens.sql`)
-- Fíordheimhniú cumarsáide tosaigh WebSocket: `src/lib/ws/handshake.ts` — bailíochtaíonn sé iarrataí uasghrádaithe WS trí eochair API nó fianán seisiúin
+- Garda SSRF / URL amach: `src/shared/network/outboundUrlGuard.ts` — seiceálacha óstaigh ar ghlaonna soláthraithe agus ar spriocanna crúca gréasáin; tagann an mód ó `src/shared/network/outboundUrlGuardPolicy.ts` (bratacha in `docs/reference/ENVIRONMENT.md`)
+- Bailíochtú timpeallachta ag am rite: `src/lib/env/runtimeEnv.ts` — scéimre Zod do gach athróg timpeallachta, a nochtar mar earráidí/rabhaidh tosaithe
+- Comharthaí sioncronaithe: `src/lib/db/syncTokens.ts` — comharthaí a bhfuil raon feidhme leo le haghaidh críochphointí íoslódála cuachta cumraíochta; tá tábla SQLite `sync_tokens` mar bhonn taca leo (aistriú `024_create_sync_tokens.sql`)
+- Fíordheimhniú croitheadh láimhe WebSocket: `src/lib/ws/handshake.ts` — bailíochtaíonn sé iarratais uasghrádaithe WS trí eochair API nó fianán seisiúin
+- Fíordheimhniú WebSocket beo an phainéil: `src/server/ws/liveServer.ts` — glacann an taobhcharr (port `LIVE_WS_PORT`) le fianán seisiúin painéil nó le heochair API Bearer a bhfuil raon feidhme bainistíochta aici (`manage`/`admin`); diúltaítear d’eochracha tátail amháin. Ní ghlacann a chríochphointe inmheánach foilsitheora `POST /__omniroute_event` le piaraí ais-lúibe ach amháin nuair nach bhfuil aon cheanntásc léime seachfhreastalaí (`x-forwarded-*`, `x-real-ip`, `forwarded`, `via`) i láthair
 
 ## 5) Sioncronú Néalríomhaireachta
 
@@ -1092,11 +1093,11 @@ comhoiriúnacht leagáide amháin. Úsáideann an conradh reatha ama rite:
 - ascnaimh scéimre SQLite agus crúcaí uathuasghrádaithe ag an am tosaithe
 - conair chomhoiriúnachta ascnaimh ó JSON leagáide → SQLite
 
-## 6) Garda SSRF / URL Amach
+## 6) SSRF / Cosaint URLanna Amach
 
-- cuireann `src/shared/network/outboundUrlGuard.ts` bac ar gach sprioc-URL príobháideach/aischasta/nasc-áitiúil sula sroicheann siad seiceadóirí soláthraí
-- úsáideann bealaí aimsithe agus bailíochtaithe samhlacha soláthraí `src/shared/network/safeOutboundFetch.ts`, a chuireann an garda i bhfeidhm roimh gach iarratas amach
-- taispeántar earráidí garda mar `URL_GUARD_BLOCKED` le HTTP 422 agus logáiltear iad sa rian iniúchta comhlíontachta trí `providerAudit.ts`
+- Cuireann `BaseExecutor.assertOutboundUrlAllowed` (`open-sse/executors/base.ts`) `src/shared/network/outboundUrlGuard.ts` i bhfeidhm ar iarratais chomhrá a sheoltar trí `BaseExecutor.execute()`. Sa mhód poiblí amháin (`OMNIROUTE_ALLOW_LOCAL_PROVIDER_URLS=false` agus an bhratach phríobháideach múchta), cuireann sé bac ar óstaigh phríobháideacha agus lúb-ais, agus ar 169.254.0.0/16; i ngach mód eile, cuireann sé bac ar óstaigh mheiteashonraí néil. Seiceálann sé an t-óstainm nó an litriúl IP mar atá scríofa, roimh aon chuardach DNS. Déanann soláthraithe áitiúla ionsuite é a sheachaint.
+- Úsáideann bealaí aimsithe agus bailíochtaithe samhlacha soláthraithe `src/shared/network/safeOutboundFetch.ts`, a chuireann an chosaint i bhfeidhm roimh gach iarratas amach
+- Taispeántar earráidí cosanta mar `URL_GUARD_BLOCKED` le HTTP 503 (`getSafeOutboundFetchErrorStatus`; filleann an bealach aimsithe samhlacha 400), agus logáiltear fíorbhaic SSRF le linn bailíochtaithe sa rian iniúchta mar theagmhais `provider.validation.ssrf_blocked`
 
 ## Inbhraiteacht agus Comharthaí Oibríochtúla
 

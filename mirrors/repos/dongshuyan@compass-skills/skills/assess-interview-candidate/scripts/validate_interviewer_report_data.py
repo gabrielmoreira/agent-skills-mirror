@@ -23,6 +23,7 @@ from validate_case_contract import (
 )
 from derive_timeline_age import (
     AGE_ASSUMPTIONS,
+    calculate_timeline_age_point,
     calculate_timeline_age_range,
     chronology_status,
     parse_partial_date,
@@ -183,11 +184,10 @@ def calculate_age(normalized_birth: str, report_date: str) -> tuple[int, bool, s
         years = as_of.year - born.year - ((as_of.month, as_of.day) < (born.month, born.day))
         return years, False, "day"
     if re.fullmatch(r"\d{4}-\d{2}", normalized_birth):
-        year, month = (int(part) for part in normalized_birth.split("-"))
-        if not 1 <= month <= 12:
-            raise ValueError("birth month must be from 01 to 12")
-        years = as_of.year - year - (as_of.month < month)
-        return years, True, "month"
+        earliest, latest, _ = parse_partial_date(normalized_birth)
+        years = as_of.year - earliest.year - ((as_of.month, as_of.day) < (earliest.month, earliest.day))
+        youngest = as_of.year - latest.year - ((as_of.month, as_of.day) < (latest.month, latest.day))
+        return years, years != youngest, "month"
     if re.fullmatch(r"\d{4}", normalized_birth):
         return as_of.year - int(normalized_birth), True, "year"
     raise ValueError("normalized_birth must be YYYY, YYYY-MM, or YYYY-MM-DD")
@@ -314,6 +314,7 @@ def _check_candidate_photo(photo: dict[str, Any], path: str, errors: list[str]) 
 def _check_timeline_age_estimate(
     estimate: dict[str, Any],
     birth_information: dict[str, Any],
+    age: dict[str, Any],
     report_date: str,
     path: str,
     errors: list[str],
@@ -325,17 +326,24 @@ def _check_timeline_age_estimate(
     status = estimate.get("status")
     anchor = estimate.get("anchor")
     checks = estimate.get("consistency_checks", [])
-    birth_provided = birth_information.get("source_status") == "candidate_provided"
-    if birth_provided:
+    direct_self_reported_age = (
+        age.get("source_status") == "candidate_provided"
+        and age.get("normalized_birth") is None
+    )
+    age_fact_provided = (
+        birth_information.get("source_status") == "candidate_provided"
+        or direct_self_reported_age
+    )
+    if age_fact_provided:
         if status != "not_needed":
-            errors.append(f"{path}.status: birth information is provided, so timeline estimate must be not_needed")
+            errors.append(f"{path}.status: candidate-provided age information exists, so timeline estimate must be not_needed")
         if anchor is not None or estimate.get("min_years") is not None or estimate.get("max_years") is not None:
-            errors.append(f"{path}: birth information takes precedence over timeline inference")
+            errors.append(f"{path}: candidate-provided age information takes precedence over timeline inference")
         if checks or estimate.get("consistency_status") != "not_checked":
             errors.append(f"{path}: not_needed estimate must not retain timeline checks")
         return
     if status == "not_needed":
-        errors.append(f"{path}.status: not_needed is allowed only when candidate birth information is provided")
+        errors.append(f"{path}.status: not_needed is allowed only when candidate-provided age information exists")
         return
     if status == "insufficient_evidence":
         if anchor is not None or estimate.get("min_years") is not None or estimate.get("max_years") is not None:
@@ -393,8 +401,12 @@ def _check_timeline_age_estimate(
     display = str(estimate.get("display", ""))
     if "推算" not in display or "非候选人自述" not in display:
         errors.append(f"{path}.display: inferred age must be clearly labeled as non-self-reported")
-    if str(expected_min) not in display or str(expected_max) not in display:
-        errors.append(f"{path}.display: inferred age bounds are missing")
+    expected_point = calculate_timeline_age_point(start, report_date)
+    point_display = re.match(rf"^约\s*{expected_point}\s*岁", display)
+    # Existing range reports remain valid; new reports use the explicit age-18 point estimate.
+    legacy_range = re.match(rf"^约\s*{expected_min}\s*[–至-]\s*{expected_max}\s*岁", display)
+    if not legacy_range and not (point_display and "18岁" in display and "假设" in display):
+        errors.append(f"{path}.display: expected approximate age {expected_point} with the age-18 assumption, or legacy bounds")
 
 
 def _check_order(items: list[dict[str, Any]], path: str, errors: list[str]) -> None:
@@ -522,6 +534,7 @@ def validate_interviewer_report_data(data: dict[str, Any]) -> tuple[list[str], l
         _check_timeline_age_estimate(
             overview["timeline_age_estimate"],
             personal["birth_information"],
+            personal["age"],
             case["report_date"],
             "candidate_overview.timeline_age_estimate",
             errors,
@@ -531,7 +544,34 @@ def validate_interviewer_report_data(data: dict[str, Any]) -> tuple[list[str], l
     birth_information = personal["birth_information"]
     if age["as_of"] != case["report_date"]:
         errors.append("candidate_overview.personal_info.age.as_of must equal case.report_date")
-    if birth_information["source_status"] == "not_provided":
+    direct_self_reported_age = (
+        age["source_status"] == "candidate_provided"
+        and age["normalized_birth"] is None
+    )
+    if direct_self_reported_age:
+        if not nonempty(age["source_locator"]):
+            errors.append("candidate_overview.personal_info.age: self-reported age must retain candidate-provided provenance")
+        expected = {
+            "approximate": False,
+            "normalized_birth": None,
+            "precision": "not_provided",
+        }
+        for field, expected_value in expected.items():
+            if age.get(field) != expected_value:
+                errors.append(
+                    f"candidate_overview.personal_info.age.{field}: must be {expected_value!r} for a self-reported age"
+                )
+        years = age.get("years")
+        if not isinstance(years, int) or isinstance(years, bool):
+            errors.append("candidate_overview.personal_info.age.years: self-reported age must be an integer")
+        else:
+            display = str(age.get("display", ""))
+            stated_years = re.findall(r"(?<![\d.])([+-]?\d+)\s*(?:周)?岁", display)
+            if not stated_years or any(value != str(years) for value in stated_years):
+                errors.append("candidate_overview.personal_info.age.display: self-reported age must display the stated years")
+            if "约" in display:
+                errors.append("candidate_overview.personal_info.age.display: self-reported age must not be marked approximate")
+    elif birth_information["source_status"] == "not_provided":
         expected = {
             "display": "未提供",
             "years": None,

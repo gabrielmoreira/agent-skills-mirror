@@ -142,7 +142,7 @@ SQL cascade). With no backend configured (the desktop default)
 - `crate::core::bus` (`BUS`) + `crate::core::events::DomainEvent`: `BUS.publish`/`BUS.subscribe` for event publish/subscribe.
 - `crate::config` (+ `config::rpc`), `Config`, `load_config_with_timeout`; reads the `[task_sources]` block for defaults and the master switch.
 - `crate::integrations::composio::contract`: `NormalizedTask`, `TaskContainer`, `TaskFetchFilter`, `TaskKind` (contract types re-exported from `tinymemory_api::composio::tasks`). The old `get_provider` / `ProviderContext` / `ComposioProvider::fetch_tasks` registry no longer exists; `mod.rs`'s intra-doc link to `fetch_tasks` is stale.
-- `crate::agent::triage`: `run_triage`, `apply_decision`, `TriageOutcome`, `TriggerEnvelope`; dispatches the proactive agent turn for `AgentTodoProactive` sources.
+- `crate::triage`: `run_triage`, `apply_decision`, `TriageOutcome`, `TriggerEnvelope`; dispatches the proactive agent turn for `AgentTodoProactive` sources.
 - `crate::platform::llm_gate`: `wait_for_capacity` capacity semaphore; gates proactive triage turns behind background-AI throttling.
 
 ## Used by

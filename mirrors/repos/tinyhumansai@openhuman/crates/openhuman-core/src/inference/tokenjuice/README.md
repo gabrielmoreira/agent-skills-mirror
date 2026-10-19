@@ -23,7 +23,7 @@ OpenHuman-owned files:
 | [`repl_tools.rs`](./repl_tools.rs) | The three REPL tools (`juice_find`, `juice_extract`, `juice_summarize`) over a stored result. Declarations come from `tinyjuice-bus`; operations execute over `Query` inside the module CCR store. Registered by [`tools/ops.rs`](../../tools/ops.rs) only while `repl_handle_active(config)`. |
 | [`tools.rs`](./tools.rs) | OpenHuman agent tool implementation for the retrieve tool (`tinyjuice_bus::tools::RETRIEVE` (`"juice_retrieve"`); `"tokenjuice_retrieve"` is a recognized recovery-tool alias, not the tool's registered name, see `RECOVERY_TOOL_NAMES`). |
 | Plain text | Compressed with TinyJuice's deterministic TextCrusher. |
-| [`savings.rs`](./savings.rs) | Thin adapter: attribution model and `agent::cost` price per input token; the module (`RecordSavings`, `SavingsStats`, `ResetSavings`) does the aggregate math and persists `state/tokenjuice_savings.json`. |
+| [`savings.rs`](./savings.rs) | Thin adapter: attribution model and `agent::cost` price per input token; the module (`RecordSavings`, `SavingsStats`, `ResetSavings`) does the aggregate math and persists the `juice.savings` document in its storage (a legacy `state/tokenjuice_savings.json` is imported once). |
 
 TinyJuice-owned engine pieces:
 

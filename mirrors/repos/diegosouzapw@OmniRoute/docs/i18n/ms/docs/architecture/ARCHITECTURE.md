@@ -10,13 +10,13 @@ _Kemas kini terakhir: 2026-06-28_
 
 ## Ringkasan Eksekutif
 
-OmniRoute ialah gerbang penghalaan AI tempatan dan papan pemuka yang dibina menggunakan Next.js.
-Ia menyediakan satu titik akhir yang serasi dengan OpenAI (`/v1/*`) dan menghalakan trafik merentasi berbilang penyedia huluan dengan terjemahan, sandaran, penyegaran token dan penjejakan penggunaan.
+OmniRoute ialah get laluan AI setempat dan papan pemuka yang dibina berasaskan Next.js.
+Ia menyediakan satu titik akhir serasi OpenAI (`/v1/*`) dan menghalakan trafik merentasi berbilang penyedia huluan dengan penterjemahan, sandaran, penyegaran token dan penjejakan penggunaan.
 
 Keupayaan teras:
 
-- Permukaan API yang serasi dengan OpenAI untuk CLI/alat (373 penyedia, 150 modul pelaksana)
-- Terjemahan permintaan/respons merentasi format penyedia
+- Permukaan API serasi OpenAI untuk CLI/alat (374 penyedia, 150 modul pelaksana)
+- Penterjemahan permintaan/respons merentasi format penyedia
 - Sandaran kombo model (jujukan berbilang model)
 - Langkah kombo berstruktur (`provider + model + connection`) dengan susunan masa jalan berdasarkan `compositeTiers`
 - Sandaran peringkat akaun (berbilang akaun bagi setiap penyedia)
@@ -25,31 +25,31 @@ Keupayaan teras:
 - Penjanaan pembenaman melalui `/v1/embeddings` (18 penyedia)
 - Penjanaan imej melalui `/v1/images/generations` (10+ penyedia, 20+ model)
 - Transkripsi audio melalui `/v1/audio/transcriptions` (18 penyedia)
-- Teks ke pertuturan melalui `/v1/audio/speech` (24 penyedia terbina dalam)
+- Teks kepada pertuturan melalui `/v1/audio/speech` (24 penyedia terbina dalam)
 - Penjanaan video melalui `/v1/videos/generations` (ComfyUI + SD WebUI)
 - Penjanaan muzik melalui `/v1/music/generations` (ComfyUI)
 - Carian web melalui `/v1/search` (20 penyedia)
 - Penyederhanaan melalui `/v1/moderations`
 - Penyusunan semula kedudukan melalui `/v1/rerank`
 - Penghuraian tag pemikiran (``) untuk model penaakulan
-- Sanitasi respons untuk keserasian ketat dengan OpenAI SDK
+- Sanitasi respons untuk keserasian ketat dengan SDK OpenAI
 - Penormalan peranan (developer→system, system→user) untuk keserasian merentas penyedia
 - Penukaran output berstruktur (json_schema → Gemini responseSchema)
 - Penyimpanan setempat untuk penyedia, kunci, alias, kombo, tetapan dan harga (122 modul DB)
 - Penjejakan penggunaan/kos dan pengelogan permintaan
 - Penyegerakan awan pilihan untuk penyegerakan berbilang peranti/keadaan
-- Senarai dibenarkan/senarai disekat IP untuk kawalan akses API
+- Senarai benarkan/sekat IP untuk kawalan akses API
 - Pengurusan belanjawan pemikiran (laluan terus/automatik/tersuai/adaptif)
-- Penyuntikan gesaan sistem global
+- Suntikan gesaan sistem global
 - Penjejakan sesi dan pencapjarian
 - Pengehadan kadar dipertingkat bagi setiap akaun dengan profil khusus penyedia
 - Corak pemutus litar untuk daya tahan penyedia
-- Perlindungan anti-deruman serentak dengan penguncian mutex
+- Perlindungan daripada limpahan permintaan serentak dengan penguncian mutex
 - Cache penyahduplikasian permintaan berasaskan tandatangan
-- Lapisan domain: peraturan kos, dasar sandaran, dasar penguncian
-- Context Relay: ringkasan penyerahan sesi untuk kesinambungan penggiliran akaun
-- Penyimpanan keadaan domain (cache tulis tembus SQLite untuk sandaran, belanjawan, penguncian dan pemutus litar)
-- Enjin dasar untuk penilaian permintaan berpusat (penguncian → belanjawan → sandaran)
+- Lapisan domain: peraturan kos, dasar sandaran, dasar sekatan
+- Context Relay: ringkasan serah tugas sesi untuk kesinambungan semasa penggiliran akaun
+- Penyimpanan keadaan domain (cache tulis terus SQLite untuk sandaran, belanjawan, sekatan dan pemutus litar)
+- Enjin dasar untuk penilaian permintaan berpusat (sekatan → belanjawan → sandaran)
 - Telemetri permintaan dengan pengagregatan kependaman p50/p95/p99
 - Telemetri sasaran kombo dan sejarah kesihatan sasaran kombo melalui `combo_execution_key` / `combo_step_id`
 - ID korelasi (X-Request-Id) untuk penjejakan hujung ke hujung
@@ -57,30 +57,30 @@ Keupayaan teras:
 - Rangka kerja penilaian untuk jaminan kualiti LLM
 - Papan pemuka kesihatan dengan status pemutus litar penyedia masa nyata
 - Pelayan MCP (110 alat) dengan 3 pengangkutan (stdio/SSE/Streamable HTTP)
-- Pelayan A2A (JSON-RPC 2.0 + SSE) dengan kemahiran dan kitaran hayat tugas
-- Sistem memori (pengekstrakan, penyuntikan, perolehan semula, peringkasan)
+- Pelayan A2A (JSON-RPC 2.0 + SSE) dengan kemahiran dan kitar hayat tugas
+- Sistem memori (pengekstrakan, suntikan, pemerolehan semula, peringkasan)
 - Sistem kemahiran (daftar, pelaksana, kotak pasir, kemahiran terbina dalam)
 - Proksi MITM dengan pengurusan sijil dan pengendalian DNS
-- Perisian tengah perlindungan penyuntikan gesaan
+- Perisian tengah pengawal suntikan gesaan
 - Saluran pemampatan gesaan dengan Caveman, RTK, saluran bertindan, kombo pemampatan, pek bahasa dan analitik
 - Daftar ACP (Agent Communication Protocol)
 - Penyedia OAuth modular (22 modul individu di bawah `src/lib/oauth/providers/`)
 - Skrip nyahpasang/nyahpasang penuh
 - Tindakan pembaikan persekitaran OAuth
-- Jambatan WebSocket untuk klien WS yang serasi dengan OpenAI (`/v1/ws`)
-- Pengurusan token penyegerakan (pengeluaran/pembatalan, muat turun berkas konfigurasi berversi ETag)
+- Jambatan WebSocket untuk klien WS serasi OpenAI (`/v1/ws`)
+- Pengurusan token penyegerakan (pengeluaran/pembatalan, muat turun berkas konfigurasi dengan versi ETag)
 - GLM Thinking (`glmt`) sebagai pratetap penyedia kelas pertama
-- Pengiraan token hibrid (`/messages/count_tokens` pada sisi penyedia dengan sandaran anggaran)
-- Penyemaian automatik alias model (30+ penormalan dialek merentas proksi ketika permulaan)
-- Pengambilan keluar yang selamat dengan perlindungan SSRF, penyekatan URL peribadi dan percubaan semula boleh dikonfigurasikan
-- Percubaan semula sembang yang mengambil kira tempoh bertenang dengan `requestRetry` dan `maxRetryIntervalSec` yang boleh dikonfigurasikan
-- Pengesahan persekitaran masa jalan dengan Zod ketika permulaan
+- Pengiraan token hibrid (`/messages/count_tokens` pada sisi penyedia dengan anggaran sebagai sandaran)
+- Penyemaian automatik alias model (30+ penormalan dialek merentas proksi semasa permulaan)
+- Pengambilan keluar yang selamat dengan pengawal SSRF, penyekatan URL peribadi dan percubaan semula boleh dikonfigurasi
+- Percubaan semula sembang yang mengambil kira tempoh bertenang dengan `requestRetry` dan `maxRetryIntervalSec` yang boleh dikonfigurasi
+- Pengesahan persekitaran masa jalan dengan Zod semasa permulaan
 - Audit pematuhan v2 dengan penomboran halaman, peristiwa CRUD penyedia dan pengelogan pengesahan yang disekat SSRF
 
 Model masa jalan utama:
 
-- Laluan aplikasi Next.js di bawah `src/app/api/*` melaksanakan kedua-dua API papan pemuka dan API keserasian
-- Teras SSE/penghalaan dikongsi dalam `src/sse/*` + `open-sse/*` mengendalikan pelaksanaan penyedia, terjemahan, penstriman, sandaran dan penggunaan
+- Laluan aplikasi Next.js di bawah `src/app/api/*` melaksanakan API papan pemuka dan juga API keserasian
+- Teras SSE/penghalaan dikongsi dalam `src/sse/*` + `open-sse/*` mengendalikan pelaksanaan penyedia, penterjemahan, penstriman, sandaran dan penggunaan
 
 ## Rajah Rujukan
 
@@ -281,43 +281,43 @@ Modul aliran utama:
 
 Perkhidmatan (logik perniagaan):
 
-- Pemilihan/penskoran akaun: `open-sse/services/accountSelector.ts`
+- Pemilihan/pemarkahan akaun: `open-sse/services/accountSelector.ts`
 - Pengurusan kitar hayat konteks: `open-sse/services/contextManager.ts`
 - Penguatkuasaan penapis IP: `open-sse/services/ipFilter.ts`
 - Penjejakan sesi: `open-sse/services/sessionManager.ts`
 - Penyahduplikasian permintaan: `open-sse/services/signatureCache.ts`
-- Penyuntikan prom sistem: `open-sse/services/systemPrompt.ts`
-- Pengurusan belanjawan pemikiran: `open-sse/services/thinkingBudget.ts`
+- Penyuntikan gesaan sistem: `open-sse/services/systemPrompt.ts`
+- Pengurusan bajet pemikiran: `open-sse/services/thinkingBudget.ts`
 - Penghalaan model kad bebas: `open-sse/services/wildcardRouter.ts`
 - Pengurusan had kadar: `open-sse/services/rateLimitManager.ts`
 - Pemutus litar: `src/shared/utils/circuitBreaker.ts`
-- Penyerahan konteks: `open-sse/services/contextHandoff.ts` — penjanaan dan penyuntikan ringkasan penyerahan untuk strategi geganti konteks
+- Penyerahan konteks: `open-sse/services/contextHandoff.ts` — penjanaan dan penyuntikan ringkasan penyerahan untuk strategi penyampaian konteks
 - Pemampatan: `open-sse/services/compression/*` — pemampatan proaktif sebelum terjemahan penyedia;
-  merangkumi peraturan Caveman, penapis RTK, saluran paip bertindan, gabungan pemampatan, statistik dan pengesahan
-- Pengambil kuota Codex: `open-sse/services/codexQuotaFetcher.ts` — mengambil kuota Codex untuk keputusan penyerahan geganti konteks
-- Percubaan semula peka tempoh bertenang: `src/sse/services/cooldownAwareRetry.ts` — percubaan semula tempoh bertenang bagi setiap model dengan `requestRetry` / `maxRetryIntervalSec` yang boleh dikonfigurasikan
-- Pengambilan keluar yang selamat: `src/shared/network/safeOutboundFetch.ts` — pengambilan penyedia/model yang dilindungi dengan perlindungan SSRF, penyekatan URL peribadi, percubaan semula dan tamat masa
+  termasuk peraturan Caveman, penapis RTK, saluran bertindan, gabungan pemampatan, statistik dan pengesahan
+- Pengambil kuota Codex: `open-sse/services/codexQuotaFetcher.ts` — mengambil kuota Codex untuk keputusan penyerahan penyampaian konteks
+- Percubaan semula peka tempoh bertenang: `src/sse/services/cooldownAwareRetry.ts` — percubaan semula tempoh bertenang bagi setiap model dengan `requestRetry` / `maxRetryIntervalSec` yang boleh dikonfigurasi
+- Pengambilan keluar selamat: `src/shared/network/safeOutboundFetch.ts` — pengambilan penyedia/model yang dilindungi dengan perlindungan SSRF, penyekatan URL persendirian, percubaan semula dan tamat masa
 - Perlindungan URL keluar: `src/shared/network/outboundUrlGuard.ts` — semakan hos pada URL penyedia; `src/shared/network/outboundUrlGuardPolicy.ts` memilih mod daripada `OMNIROUTE_ALLOW_LOCAL_PROVIDER_URLS`, `OMNIROUTE_ALLOW_PRIVATE_PROVIDER_URLS` dan togol papan pemuka masing-masing (lihat `docs/reference/ENVIRONMENT.md`)
-- Lalai permintaan penyedia: `open-sse/services/providerRequestDefaults.ts` — lalai peringkat penyedia bagi `maxTokens`, `temperature`, `thinkingBudgetTokens`
-- Pemalar penyedia GLM: `open-sse/config/glmProvider.ts` — model GLM dikongsi, URL kuota, tamat masa/lalai GLMT
+- Lalai permintaan penyedia: `open-sse/services/providerRequestDefaults.ts` — nilai lalai `maxTokens`, `temperature`, `thinkingBudgetTokens` pada peringkat penyedia
+- Pemalar penyedia GLM: `open-sse/config/glmProvider.ts` — model GLM, URL kuota dan tamat masa/nilai lalai GLMT yang dikongsi
 - Huluan Antigravity: `open-sse/config/antigravityUpstream.ts` — URL asas dan pemalar laluan penemuan
-- Pemalar klien Codex: `open-sse/config/codexClient.ts` — nilai agen pengguna dan versi klien yang mempunyai versi
-- Benih alias model: `src/lib/modelAliasSeed.ts` — menyemai 30+ alias dialek rentas proksi semasa permulaan
+- Pemalar klien Codex: `open-sse/config/codexClient.ts` — nilai ejen pengguna dan versi klien yang berversi
+- Benih alias model: `src/lib/modelAliasSeed.ts` — menyemai lebih 30 alias dialek merentas proksi semasa permulaan
 
 Modul lapisan domain:
 
-- Peraturan kos/belanjawan: `src/domain/costRules.ts`
+- Peraturan kos/bajet: `src/domain/costRules.ts`
 - Dasar sandaran: `src/domain/fallbackPolicy.ts`
 - Penyelesai gabungan: `src/domain/comboResolver.ts`
 - Dasar penguncian: `src/domain/lockoutPolicy.ts`
-- Enjin dasar: `src/domain/policyEngine.ts` — penilaian penguncian → belanjawan → sandaran secara berpusat
+- Enjin dasar: `src/domain/policyEngine.ts` — penilaian penguncian → bajet → sandaran secara berpusat
 - Katalog kod ralat: `src/shared/constants/errorCodes.ts`
 - ID permintaan: `src/shared/utils/requestId.ts`
 - Tamat masa pengambilan: `src/shared/utils/fetchTimeout.ts`
 - Telemetri permintaan: `src/shared/utils/requestTelemetry.ts`
 - Pematuhan/audit: `src/lib/compliance/index.ts`
 - Pelaksana penilaian: `src/lib/evals/evalRunner.ts`
-- Pengekalan keadaan domain: `src/lib/db/domainState.ts` — CRUD SQLite untuk rantaian sandaran, belanjawan, sejarah kos, keadaan penguncian dan pemutus litar
+- Pengekalan keadaan domain: `src/lib/db/domainState.ts` — CRUD SQLite untuk rantaian sandaran, bajet, sejarah kos, keadaan penguncian dan pemutus litar
 
 Modul penyedia OAuth (27 fail individu di bawah `src/lib/oauth/providers/`):
 
@@ -539,11 +539,12 @@ DB Keadaan Domain (SQLite):
 - Pengesahan kuki papan pemuka: `src/proxy.ts`, `src/app/api/auth/login/route.ts`
 - Penjanaan/pengesahan kunci API: `src/shared/utils/apiKey.ts`
 - Rahsia penyedia disimpan dalam entri `providerConnections`
-- Sokongan proksi keluar melalui `open-sse/utils/proxyFetch.ts` (pemboleh ubah persekitaran) dan `open-sse/utils/networkProxy.ts` (boleh dikonfigurasikan bagi setiap penyedia atau secara global)
-- Perlindungan SSRF / URL keluar: `src/shared/network/outboundUrlGuard.ts` — menyekat julat peribadi/gelung balik/pautan setempat untuk semua panggilan penyedia
+- Sokongan proksi keluar melalui `open-sse/utils/proxyFetch.ts` (pemboleh ubah persekitaran) dan `open-sse/utils/networkProxy.ts` (boleh dikonfigurasikan mengikut penyedia atau secara global)
+- Perlindungan SSRF / URL keluar: `src/shared/network/outboundUrlGuard.ts` — semakan hos pada panggilan penyedia dan sasaran webhook; mod diperoleh daripada `src/shared/network/outboundUrlGuardPolicy.ts` (bendera dalam `docs/reference/ENVIRONMENT.md`)
 - Pengesahan persekitaran masa jalan: `src/lib/env/runtimeEnv.ts` — skema Zod untuk semua pemboleh ubah persekitaran, dipaparkan sebagai ralat/amaran permulaan
 - Token penyegerakan: `src/lib/db/syncTokens.ts` — token berskop untuk titik akhir muat turun berkas konfigurasi; disokong oleh jadual SQLite `sync_tokens` (migrasi `024_create_sync_tokens.sql`)
 - Pengesahan jabat tangan WebSocket: `src/lib/ws/handshake.ts` — mengesahkan permintaan naik taraf WS melalui kunci API atau kuki sesi
+- Pengesahan WebSocket papan pemuka langsung: `src/server/ws/liveServer.ts` — sidecar (port `LIVE_WS_PORT`) menerima kuki sesi papan pemuka atau kunci API Bearer yang mempunyai skop pengurusan (`manage`/`admin`); kunci inferens sahaja ditolak. Titik akhir penerbit dalaman `POST /__omniroute_event` hanya menerima rakan gelung balik apabila tiada pengepala lompatan proksi (`x-forwarded-*`, `x-real-ip`, `forwarded`, `via`) hadir
 
 ## 5) Penyegerakan Awan
 
@@ -1092,11 +1093,11 @@ keserasian legasi. Kontrak masa jalan semasa menggunakan:
 - migrasi skema SQLite dan cangkuk naik taraf automatik semasa permulaan
 - laluan keserasian migrasi JSON legasi → SQLite
 
-## 6) SSRF / Pengawal URL Keluar
+## 6) SSRF / Perlindungan URL Keluar
 
-- `src/shared/network/outboundUrlGuard.ts` menyekat semua URL sasaran peribadi/gelung balik/pautan setempat sebelum URL tersebut sampai kepada pelaksana penyedia
-- Laluan penemuan dan pengesahan model penyedia menggunakan `src/shared/network/safeOutboundFetch.ts` yang menerapkan pengawal sebelum setiap permintaan keluar
-- Ralat pengawal dipaparkan sebagai `URL_GUARD_BLOCKED` dengan HTTP 422 dan direkodkan ke dalam jejak audit pematuhan melalui `providerAudit.ts`
+- `BaseExecutor.assertOutboundUrlAllowed` (`open-sse/executors/base.ts`) menggunakan `src/shared/network/outboundUrlGuard.ts` pada permintaan sembang yang dihantar melalui `BaseExecutor.execute()`. Dalam mod awam sahaja (`OMNIROUTE_ALLOW_LOCAL_PROVIDER_URLS=false` dengan bendera peribadi dinyahaktifkan), ia menyekat hos peribadi dan gelung balik serta 169.254.0.0/16; dalam setiap mod lain, ia menyekat hos metadata awan. Ia menyemak nama hos atau literal IP sebagaimana ditulis, sebelum sebarang carian DNS. Penyedia tempatan terbina dalam tidak melalui semakan ini.
+- Laluan penemuan dan pengesahan model penyedia menggunakan `src/shared/network/safeOutboundFetch.ts` yang menggunakan perlindungan tersebut sebelum setiap permintaan keluar
+- Ralat perlindungan dipaparkan sebagai `URL_GUARD_BLOCKED` dengan HTTP 503 (`getSafeOutboundFetchErrorStatus`; laluan penemuan model mengembalikan 400), dan sekatan SSRF sebenar semasa pengesahan direkodkan dalam jejak audit sebagai peristiwa `provider.validation.ssrf_blocked`
 
 ## Kebolehcerapan dan Isyarat Operasi
 

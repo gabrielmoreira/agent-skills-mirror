@@ -34,7 +34,7 @@ in order:
    |                               a host credential becomes Cli
    |- install the session store provider (before boot: recovery runs)
    |- CoreBuilder::new(host_kind).domains.tool_groups.services
-   |      .token(EnvOrFile).config(..)[.backend_transport(..)].build()
+   |      .token(EnvOrFile).config(..).build()
    |- store the Session through auth, if given
    v
  Runtime { guard: Arc<CoreGuard>, base_config, domains, tool_groups, ... }
@@ -79,7 +79,7 @@ every later `Runtime::builder().build()` would fail with `AlreadyRunning`.
 
 - `RuntimeBuilder` ([`builder.rs`](builder.rs)): `workspace`, `workspace_dir`,
   `action_dir`, `config_source`, `api_key`, `backend_url`,
-  `backend_transport`, `memory_engine`, `session_store`, `provider`,
+  `memory_engine`, `session_store`, `provider`,
   `access`, `services`, `domains`, `tool_groups`, `host_kind`, `token`,
   `listen` (`listen_host`, `listen_port`), `session`, `config`, the seam
   options ([`seams.rs`](seams.rs)), then `build` or `run_from_args`. Presets
@@ -118,7 +118,7 @@ crate README's "Still process-owned" list names what agents share, and its
   builder and installs the SDK transport on `build()`; see
   [`docs/gitbooks/en/developing/tinyhumans-api-key.md`](../../../../docs/gitbooks/en/developing/tinyhumans-api-key.md).
 - The session store port (`SessionStoreProvider`) is defined by
-  [`vendor/tinyagents`](../../../../vendor/tinyagents/) and the core's `agent::session_store`; the classic
+  [`vendor/tinyagents`](../../../../vendor/tinyagents/) and the core's `storage::sessions`; the classic
   on-disk provider lives in `openhuman-rpc`'s `session_store`.
 
 ## Gotchas

@@ -44,6 +44,13 @@ Lower priority numbers run **first**.
 
 ### Vision Bridge (`visionBridge.ts`) — Modality Bridge PR-1
 
+The GLM 5.3 base model and `glm-5.3-{low,high,max}` have explicit
+`supportsVision:false` registry/spec metadata. The GLM 5.3 Flash variants
+remain native-vision models. Claude Code's `/v1/messages` route enters the
+shared `handleChat` pre-call guardrail chain **before** Claude-to-OpenAI
+translation; nested `Read` tool-result images must be described or handled
+before that translation lifts them into OpenAI `image_url` content (#17069).
+
 Intercepts image-bearing requests aimed at **non-vision models** and either
 reroutes the whole request to a vision-capable model or replaces the image
 parts with text descriptions produced by a configurable vision model before
@@ -58,11 +65,13 @@ Flow:
    (`visionBridgeHelpers.ts`), which delegates to the **unified media
    detector** `detectMediaParts()` in `open-sse/utils/mediaParts.ts` — the
    single source of truth shared with the combo compatibility filter.
-   Extraction is allowlisted to top-level parts of the shapes
-   `replaceImageParts` can splice back (the extract↔replace contract): OpenAI
-   `image_url`, Anthropic base64 `source.type:"base64"`, Anthropic URL
-   `source.type:"url"`, and Responses API `input_image`. Nested hits and
-   indicator-only shapes are combo-filter material and are never extracted.
+   Extraction is allowlisted to the shapes `replaceImageParts` can splice
+   back (the extract↔replace contract): OpenAI `image_url`, Anthropic base64
+   `source.type:"base64"`, Anthropic URL `source.type:"url"`, and Responses
+   API `input_image`. Matching images nested inside Claude Code
+   `tool_result.content` and Responses tool outputs are also extracted and
+   replaced at their original paths; indicator-only shapes are combo-filter
+   material and are not extracted.
    Skip if none found.
 3. Resolve runtime config via `resolveVisionBridgeRuntimeSettings()`
    (`src/shared/constants/modalityBridgeDefaults.ts`): new `modalityBridge*`
@@ -75,20 +84,23 @@ Flow:
 5. Describe path: cap images at `maxImages`, compose the task-aware prompt,
    consult the describe cache, call the vision model **in parallel**
    (`Promise.allSettled`), and inject `[Image N]: <description>` text parts in
-   their place. A failed describe yields `null` and the original image part is
-   **preserved** (#4012) — except on the combo describe path when every
-   describe failed, where a confirmed non-vision upstream gets an
-   `(unavailable — no vision-capable provider connected)` stub instead (#8430).
+   their place. A failed describe yields `null`: the raw image is preserved for
+   unknown/vision-capable targets (#4012), but a **confirmed text-only direct
+   target** or zero-vision combo gets an explicit
+   `(unavailable — no vision-capable provider connected)` text stub for
+   every undescribed image, including partial failures and images beyond the
+   describe-call cap (#17069). The existing all-failed combo describe fallback
+   remains in place (#8430).
 6. Return `modifiedPayload` + meta (`imagesProcessed`, `descriptions`,
    `processingTimeMs`, `visionModel`).
 
 #### Mode selector (`modalityBridgeVisionMode`)
 
-| Mode       | Default | Behavior                                                                                                                                                                                                                                                |
-| ---------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `auto`     | ✔       | Legacy heuristic, untouched (#6640/#7204): non-combo/`auto/` models reroute to the best vision model unless the original model already has usable credentials (then describe); combo targets always describe.                                           |
-| `describe` |         | Always describe — the reroute block is skipped entirely; the user's chosen model always answers.                                                                                                                                                        |
-| `reroute`  |         | Force reroute: the keep-credentialed-model guard is bypassed. The reroute-**target** credential guard still applies — when no usable vision target exists, the request falls through to describe so raw images never reach a text-only backend (#8430). |
+| Mode       | Default | Behavior                                                                                                                                                                                                                                                            |
+| ---------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `auto`     | ✔       | Legacy heuristic, untouched (#6640/#7204): non-combo/`auto/` models reroute to the best vision model unless the original model already has usable credentials (then describe); combo targets always describe.                                                       |
+| `describe` |         | Always describe — the reroute block is skipped entirely; the user's chosen model always answers.                                                                                                                                                                    |
+| `reroute`  |         | Force reroute: the keep-credentialed-model guard is bypassed. The reroute-**target** credential guard still applies — when no usable vision target exists, the bridge blocks with a clear error rather than describing or sending raw images to a text-only target. |
 
 Forced modes short-circuit **before** the auto heuristic runs; `auto` behavior
 is byte-identical to the pre-PR-1 guardrail.
@@ -105,9 +117,11 @@ enforces that key's connection and model policy again. `enforceApiKeyPolicy()`
 honors that header only together with the self-loop bearer, so it can only
 narrow access, and an id that does not resolve is rejected.
 
-If no vision model is permitted for the key, the describe path steps aside and
-the request passes through unchanged, the same fail-open behavior as a disabled
-guardrail (meta `{ skipped: true, reason: "no_permitted_vision_model" }`).
+If no vision model is permitted for the key, a **confirmed text-only
+target** rejects the image request locally with a clear HTTP 400 instead of
+forwarding image bytes to an incapable upstream (#17069). For targets with
+unknown or native vision capability, the describe path retains its previous
+fail-open behavior (meta `{ skipped: true, reason: "no_permitted_vision_model" }`).
 Requests without a key, and keys without these restrictions, behave exactly as
 before.
 
@@ -870,12 +884,12 @@ to the registry, which skips matching guardrails (`skipped: true` in `results`).
 
 The disable list only affects the **registry**. Prompt-injection `block` mode is
 a mandatory boundary: the injection-guard middleware
-(`src/middleware/promptInjectionGuard.ts`) builds a body-only disable list with
-`resolveDisabledGuardrails({ body })` and hands it to `evaluatePromptInjection()`,
-but `evaluatePromptInjection()` never reads `context.disabledGuardrails`, so the
-list has no effect and a request that disables `prompt-injection` is still
-rejected in `block` mode (removing that dead call is tracked in
-[#16934](https://github.com/diegosouzapw/OmniRoute/pull/16934)). This is by design. The disable channels are caller-controlled (request body,
+(`src/middleware/promptInjectionGuard.ts`) calls `evaluatePromptInjection()`
+without any caller-controlled disable list (the dead
+`resolveDisabledGuardrails({ body })` call it used to make was removed in
+[#16934](https://github.com/diegosouzapw/OmniRoute/pull/16934)), so a request
+that disables `prompt-injection` is still rejected in `block` mode. This is by
+design. The disable channels are caller-controlled (request body,
 metadata, headers), and a caller must not be able to switch off a security
 control the operator set
 ([#16413](https://github.com/diegosouzapw/OmniRoute/issues/16413)). The header
@@ -936,9 +950,9 @@ deliberately when the behavior changes.
   transform applies (when `PII_RESPONSE_SANITIZATION` is on). A credential
   echoed back in a streamed response is not redacted.
 - **Disable channels vs. the middleware (by design):** the middleware evaluates
-  prompt injection with its own call to `evaluatePromptInjection()`, which
-  ignores the body-only disable list the middleware passes it. `block` mode is a mandatory boundary that
-  caller-controlled disables cannot bypass, on chat-family routes included
+  prompt injection with its own call to `evaluatePromptInjection()`, without
+  passing any caller-controlled disable list. `block` mode is a mandatory
+  boundary that caller-controlled disables cannot bypass, including on chat-family routes
   ([#16413](https://github.com/diegosouzapw/OmniRoute/issues/16413)). Disabling
   `prompt-injection` only skips the registry guardrail.
 

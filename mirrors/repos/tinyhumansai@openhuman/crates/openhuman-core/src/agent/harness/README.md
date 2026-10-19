@@ -39,7 +39,6 @@ used here (not defined here) by [`fork_context.rs`](./fork_context.rs).
 
 | Module | Role |
 | --- | --- |
-| [`host_definition.rs`](./host_definition.rs), [`builtin_definitions.rs`](./builtin_definitions.rs) | The host side of agent definitions: `AgentExt` (prompt omissions, TokenJuice profile, MCP flag, prompt builder) over `tinyagents_definition::AgentDefinition<X>`, plus `AgentDefinitionRegistry` (a `DefinitionSet<AgentExt>` with the process/context singleton) and user-definition path resolution. The vocabulary (`ModelSpec`, `ToolScope`, `SandboxMode`, `AgentTier`, `PromptSource`, ...) and the TOML directory loader live in `tinyagents-definition`. Built-ins come from `crate::agent::registry::agents`. |
 | `fork_context.rs` | The `ParentExecutionContext` snapshot a spawning agent hands to sub-agents, carried explicitly on the run context. `fork_context.rs` also carries the `RunQueue` handle (from `tinyagents_harness::run_queue`) down to a forked turn. |
 | `graph.rs` | `run_channel_turn_via_graph` (`pub(crate)`): the channel/CLI turn graph, thin over `TurnSpec::run`; called by the `agent.run_turn` native-bus handler in [`agent/bus.rs`](../bus.rs). |
 | `artifact_offload/` | The `outputs/` / `workspace/` convention under `action_dir`: prompt half (`contract.rs`) and host policy half (`policy.rs`); mechanics (thresholds, path resolution, pointer rendering, the writer) live in `tinyagents_harness::artifacts` and are re-exported here. |
@@ -78,8 +77,8 @@ turn lifecycle are in `../session_host/`; `run_subagent`,
   (`<tool_call>` tags, fenced blocks, bare JSON, `<invoke>` XML, GLM grammar,
   p-format). This crate is a test-only dependency of `harness/`; the parsers
   are not called from production code here.
-- `crate::agent::registry::agents`: built-in agent archetype TOML/prompt
-  bundles loaded by `tinyagents_definition` (user TOML) and `builtin_definitions`.
+- `crate::agent_registry::agents`: built-in agent archetype TOML/prompt
+  bundles; custom bundles are loaded by `tinyagents_definition`.
 - `crate::security::SecurityPolicy`: workspace containment policy plumbed
   into `artifact_offload::new_artifact_offload`.
 - `tinymemory-api`: provenance classification and untrusted-context wrapping,
@@ -120,7 +119,7 @@ turn lifecycle are in `../session_host/`; `run_subagent`,
   onto TinyAgents primitives. That file is not checked into this repo, so the
   plan itself is not documented here, only the citations to it.
 - `artifact_offload` deliberately has no flat `ArtifactKind` re-export at the
-  `harness` level. It would shadow `agent::artifacts::ArtifactKind` for glob
+  `harness` level. It would shadow `artifacts::ArtifactKind` for glob
   importers, so use the `artifact_offload::` path instead.
 - The `Agent` struct, its turn lifecycle, and transcript persistence used to
   live under `harness/session/`. That code has moved to `../session_host/`;

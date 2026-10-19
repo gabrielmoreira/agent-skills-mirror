@@ -2,7 +2,7 @@
 
 ## Status and scope
 
-A self-refining recursive harness is an advanced, post-MVP architecture profile. It combines a persistent program environment, recursive full-agent sessions, versioned supplemental harness state, and a resident runtime that can resume work after the initiating turn.
+A self-refining recursive harness is an advanced, post-MVP architecture profile. Its combined form uses a persistent program environment, recursive full-agent sessions, versioned supplemental harness state, and a resident runtime that can resume work after the initiating turn. For a standalone task-local search, start at [task-local contrastive refinement](#task-local-contrastive-refinement).
 
 This profile is not a new autonomy or maturity level. A read-only research agent and a policy-bounded actor can both use it. Authority still comes from the permission model, not from persistence, recursion, or self-refinement.
 
@@ -33,6 +33,7 @@ This reference owns only the composition-specific contracts. Reuse the existing 
 - [Recursive child-session protocol](#recursive-child-session-protocol)
 - [Supplemental harness ledger](#supplemental-harness-ledger)
 - [Two-loop operating model](#two-loop-operating-model)
+- [Task-local contrastive refinement](#task-local-contrastive-refinement)
 - [Immutable authority boundary](#immutable-authority-boundary)
 - [Resident lifecycle and scheduled wakeups](#resident-lifecycle-and-scheduled-wakeups)
 - [Safe build sequence](#safe-build-sequence)
@@ -65,9 +66,11 @@ When several approach-owning teams use these children, [adaptive agent teams](ad
 
 ### Self-refining harness
 
-A self-refining harness runs an outer adaptation loop that proposes and evaluates changes to versioned supplemental harness state while the ordinary action loop continues serving tasks.
+A self-refining harness runs an outer adaptation loop that proposes and evaluates changes to versioned supplemental harness state. Adaptation may search for a harness for the current task or retain validated guidance across tasks; it need not run concurrently with task execution.
 
 “Self-refining” means changing harness configuration or reusable guidance. It does not imply model-weight training. If a system also updates model weights, treat that as a separate training pipeline with its own data governance, evaluations, and release controls.
+
+Task-local refinement can use an ordinary executor without a persistent program environment, recursive children, or resident operation. The combined profile above remains optional; use only the dimensions the task requires.
 
 The combined profile can therefore be described without conflating its dimensions:
 
@@ -355,6 +358,49 @@ Use this transaction:
 
 Validation should be independent of the proposer for consequential changes. At minimum, use deterministic validators plus held-out cases the proposing model did not select.
 
+### Task-local contrastive refinement
+
+Use this advanced, post-MVP specialization when an unfamiliar task warrants bounded execution-harness search and no reliable task-answer verifier is available. A task-local harness is a candidate configuration, not a reusable improvement merely because one deliverable was selected. Reuse the [supplemental ledger](#supplemental-harness-ledger) and [refinement transaction](#refinement-transaction) for versions and application; the contracts below own only the search-specific delta.
+
+Keep two objects distinct: the **execution harness** runs the task, while **improvement guidance** helps propose and compose changes. Freeze the improvement-guidance snapshot during a task so all branches see the same prior experience. Updating that guidance after the task is a separate, scope-gated refinement transaction; it cannot change the immutable evaluator or authority boundary.
+
+#### Contrastive cycle
+
+1. **Reference.** Execute the current harness on the task and retain its trajectory and deliverable. Record the task/input snapshot, harness version, executor configuration, environment, and execution status. A reference run exposes behavior; it is not a correct answer by definition.
+2. **Propose.** Create bounded candidate diffs with a targeted deficiency and expected behavioral change. An optional diversity policy separates cross-domain mechanisms from domain/task-specific guidance. Labels alone do not prove diversity, and task-specific facts still require current evidence.
+3. **Probe.** Run candidates on the same request and input snapshot under matched executor and environment conditions. Compare trajectories as well as deliverables. Record helped, hurt, no observed effect, or confounded at the changed-component level; stochastic executions and coupled edits often prevent causal attribution.
+4. **Compose.** Read the parent snapshot, candidate diffs, and observed contrasts. Retain supported edits, revise conflicts, adopt one candidate, or keep the current harness. Record each decision against evidence. Combining two apparently useful edits creates a new candidate; their benefits do not automatically compose.
+5. **Execute.** Validate and execute the exact composed snapshot before considering its deliverable. An unexecuted merge, a successful tool process, or an editor's predicted gain cannot establish task completion. Preserve the output-to-harness mapping for any later selection.
+
+Counterfactual probes require independent, resettable execution state. Branches must not read one another's generated outputs or commit repeated real-world effects. Use the existing [sandbox and draft/commit controls](tools-and-permissions.md); if an environment cannot be reset or safely simulated, declare the comparison confounded or omit the probe. Do not replay live writes to obtain a comparison.
+
+A minimal search record links:
+
+```text
+task_snapshot_ref, execution_config_ref, improvement_guidance_version
+parent_harness_version, candidate_id, candidate_diff_ref, targeted_deficiency
+reference_run_refs, probe_run_ref, trajectory_refs, deliverable_refs, run_status
+component_observations, confounders, composition_decisions, supporting_evidence_refs
+composed_harness_version, composed_run_ref, output_to_harness_mapping
+selection_status, adopted_candidate_id, usage, stop_reason
+```
+
+Keep the host's typed run/result and effect semantics canonical in [tools and permissions](tools-and-permissions.md). Use [task-local search evals](evals.md#task-local-harness-search-evals) to define the comparison rubric and acceptance gates. Behavioral contrasts can guide provisional local adoption without proving correctness; no ground-truth feedback does not mean no validation.
+
+#### Width, depth, and final adoption
+
+**Parallel search** proposes multiple candidates against one frozen execution-harness version, then composes from their pooled evidence. Several independent compositions provide width; this alone is not a deeper recursive update. **Sequential search** carries each composed harness and accumulated task-local evidence into the next step. Preserve parentage so later steps can revise earlier changes rather than treating them as proven improvements.
+
+Declare the final selection pool: terminal compositions, intermediate compositions, and unchanged references are different policies. When comparing several outputs, hide originating candidate labels and select an existing deliverable against the request and source evidence. If selection synthesizes content, it creates a new artifact requiring its own validation and cannot inherit an existing execution receipt. Keep a policy-defined unchanged-baseline or no-adoption path when candidates fail or evidence is inconclusive; never silently choose the last run after selection failure.
+
+Charge reference executions, candidate probes, compositions, selectors, reflection, retries, and failed runs to the search budget. Concurrency can reduce latency without reducing total work. Use the existing [child resource limits](#resource-limits) and [workflow budgets](workflow-orchestration.md) rather than allocating a fresh full task budget to every candidate. Stop on exhausted limits or insufficient supported change and retain the last admissible result with its uncertainty.
+
+#### Experience for future refiners
+
+Distinguish an adopted execution harness from a lesson about **how to improve** a harness. A useful lesson records an applicability cue, the attempted edit, observed contrast and confounders, and supporting run/diff references. Output preference alone cannot establish which edit helped or that the tactic transfers. Record no transferable lesson when evidence is insufficient; do not save task answers as general prescriptions.
+
+Start subsequent tasks from an explicit common baseline and retrieve relevant prior experience to propose or adapt candidates, rather than silently making the last winner the next task's default. Promote a new default only through the existing [ledger scope and promotion gate](#supplemental-harness-ledger). Bound and deduplicate this experience using the existing [memory lifecycle](context-memory-compaction.md), and evaluate transfer separately from same-task adaptation.
+
 ## Immutable authority boundary
 
 Self-refinement must not be self-authorization. The editable ledger cannot modify:
@@ -379,7 +425,7 @@ Generic resident ownership, recovery fencing, and bounded scheduled wakeups are 
 
 ## Safe build sequence
 
-Add the profile incrementally and keep each step disabled until its focused evals pass:
+For the combined runtime, add the profile incrementally and keep each step disabled until its focused evals pass. For task-local search alone, use the [contrastive cycle](#contrastive-cycle) with the existing ledger and transaction; the program-environment, child, and resident stages below are optional:
 
 ```text
 1. reliable request-scoped single-agent loop

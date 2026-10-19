@@ -17,20 +17,20 @@ _最後更新：2026-06-28_
 
 ## 執行摘要
 
-OmniRoute 是一個以 Next.js 建置的本機 AI 路由閘道與儀表板。
-它提供單一的 OpenAI 相容端點（`/v1/*`），並透過格式轉換、備援、權杖重新整理與用量追蹤，將流量路由至多個上游提供者。
+OmniRoute 是一個以 Next.js 建構的本機 AI 路由閘道與儀表板。
+它提供單一的 OpenAI 相容端點（`/v1/*`），並透過格式轉換、備援、權杖重新整理及用量追蹤，將流量路由至多個上游提供者。
 
 核心功能：
 
-- 為 CLI／工具提供 OpenAI 相容的 API 介面（373 個提供者、150 個執行器模組）
-- 在不同提供者格式之間轉換請求／回應
+- 提供適用於 CLI／工具的 OpenAI 相容 API 介面（374 個提供者、150 個執行器模組）
+- 在各種提供者格式之間進行請求／回應轉換
 - 模型組合備援（多模型序列）
-- 結構化組合步驟（`provider + model + connection`），並於執行階段依 `compositeTiers` 排序
-- 帳戶層級備援（每個提供者可設定多個帳戶）
-- 主要聊天路徑中的配額預檢，以及可感知配額的 P2C 帳戶選擇
-- OAuth + API 金鑰提供者連線管理（27 個 OAuth 提供者模組）
+- 結構化組合步驟（`provider + model + connection`），並依 `compositeTiers` 在執行階段排序
+- 帳戶層級備援（每個提供者可使用多個帳戶）
+- 在主要聊天流程中進行配額預檢，以及具配額感知能力的 P2C 帳戶選擇
+- OAuth 與 API 金鑰提供者連線管理（27 個 OAuth 提供者模組）
 - 透過 `/v1/embeddings` 產生嵌入向量（18 個提供者）
-- 透過 `/v1/images/generations` 產生圖片（10+ 個提供者、20+ 個模型）
+- 透過 `/v1/images/generations` 產生影像（10 多個提供者、20 多個模型）
 - 透過 `/v1/audio/transcriptions` 進行音訊轉錄（18 個提供者）
 - 透過 `/v1/audio/speech` 進行文字轉語音（24 個內建提供者）
 - 透過 `/v1/videos/generations` 產生影片（ComfyUI + SD WebUI）
@@ -39,55 +39,55 @@ OmniRoute 是一個以 Next.js 建置的本機 AI 路由閘道與儀表板。
 - 透過 `/v1/moderations` 進行內容審核
 - 透過 `/v1/rerank` 進行重新排序
 - 為推理模型解析思考標籤（``）
-- 清理回應，以嚴格相容 OpenAI SDK
-- 正規化角色（developer→system、system→user），以實現跨提供者相容性
+- 清理回應，以確保嚴格相容於 OpenAI SDK
+- 角色正規化（developer→system、system→user），以實現跨提供者相容性
 - 結構化輸出轉換（json_schema → Gemini responseSchema）
-- 對提供者、金鑰、別名、組合、設定與定價進行本機持久化（122 個資料庫模組）
+- 提供者、金鑰、別名、組合、設定與定價的本機持久化（122 個資料庫模組）
 - 用量／成本追蹤與請求記錄
 - 可選的雲端同步，用於多裝置／狀態同步
 - 用於 API 存取控制的 IP 允許清單／封鎖清單
-- 思考預算管理（直通／自動／自訂／自適應）
-- 全域系統提示詞注入
+- 思考預算管理（直接傳遞／自動／自訂／自適應）
+- 全域系統提示注入
 - 工作階段追蹤與指紋辨識
-- 每帳戶增強型速率限制，並支援提供者專屬設定檔
-- 用於提升提供者韌性的斷路器模式
-- 使用互斥鎖防止驚群效應
-- 基於簽章的請求去重快取
-- 領域層：成本規則、備援原則、鎖定原則
-- Context Relay：工作階段交接摘要，確保帳戶輪替時的連續性
-- 領域狀態持久化（用於備援、預算、鎖定與斷路器的 SQLite 寫入穿透快取）
-- 用於集中式請求評估的原則引擎（鎖定 → 預算 → 備援）
-- 請求遙測，支援 p50／p95／p99 延遲彙總
+- 每帳戶增強型速率限制，並具備提供者特定設定檔
+- 提升提供者韌性的斷路器模式
+- 使用互斥鎖定防止驚群效應
+- 以簽章為基礎的請求去重複快取
+- 領域層：成本規則、備援政策、鎖定政策
+- Context Relay：工作階段交接摘要，用於維持帳戶輪替時的上下文連續性
+- 領域狀態持久化（針對備援、預算、鎖定及斷路器的 SQLite 直寫式快取）
+- 用於集中式請求評估的政策引擎（鎖定 → 預算 → 備援）
+- 請求遙測，具備 p50／p95／p99 延遲彙總
 - 透過 `combo_execution_key`／`combo_step_id` 提供組合目標遙測與歷史組合目標健康狀態
 - 用於端對端追蹤的關聯 ID（X-Request-Id）
-- 合規稽核記錄，支援依 API 金鑰選擇退出
+- 合規稽核記錄，且每個 API 金鑰均可選擇停用
 - 用於 LLM 品質保證的評估框架
-- 健康狀態儀表板，即時顯示提供者斷路器狀態
+- 健康狀態儀表板，可即時顯示提供者斷路器狀態
 - MCP Server（110 個工具），支援 3 種傳輸方式（stdio／SSE／Streamable HTTP）
-- A2A Server（JSON-RPC 2.0 + SSE），支援技能與任務生命週期
+- A2A Server（JSON-RPC 2.0 + SSE），具備技能與任務生命週期
 - 記憶系統（擷取、注入、檢索、摘要）
-- 技能系統（註冊表、執行器、沙箱、內建技能）
-- MITM 代理，支援憑證管理與 DNS 處理
-- 提示詞注入防護中介軟體
-- 提示詞壓縮管線，支援 Caveman、RTK、堆疊式管線、壓縮組合、語言套件與分析
-- ACP（Agent Communication Protocol）註冊表
-- 模組化 OAuth 提供者（`src/lib/oauth/providers/` 下有 22 個獨立模組）
+- 技能系統（登錄、執行器、沙箱、內建技能）
+- MITM Proxy，具備憑證管理與 DNS 處理功能
+- 提示注入防護中介軟體
+- 提示壓縮管線，支援 Caveman、RTK、堆疊式管線、壓縮組合、語言套件及分析
+- ACP（Agent Communication Protocol）登錄機制
+- 模組化 OAuth 提供者（`src/lib/oauth/providers/` 下的 22 個獨立模組）
 - 解除安裝／完整解除安裝指令碼
-- OAuth 環境修復操作
+- OAuth 環境修復動作
 - 適用於 OpenAI 相容 WS 用戶端的 WebSocket 橋接器（`/v1/ws`）
-- 同步權杖管理（發行／撤銷、下載以 ETag 版本控管的設定套件）
+- 同步權杖管理（簽發／撤銷、下載採用 ETag 版本控制的設定套件）
 - GLM Thinking（`glmt`）一級提供者預設
-- 混合式權杖計數（提供者端 `/messages/count_tokens`，並提供估算備援）
-- 自動植入模型別名（啟動時正規化 30+ 種跨代理方言）
-- 安全的對外擷取，具備 SSRF 防護、私人 URL 封鎖與可設定的重試機制
-- 可感知冷卻時間的聊天重試，支援設定 `requestRetry` 與 `maxRetryIntervalSec`
+- 混合權杖計數（提供者端 `/messages/count_tokens`，並以估算作為備援）
+- 模型別名自動植入（啟動時進行 30 多種跨代理方言正規化）
+- 安全的對外擷取，具備 SSRF 防護、私有 URL 封鎖及可設定的重試機制
+- 可感知冷卻時間的聊天重試，並可設定 `requestRetry` 與 `maxRetryIntervalSec`
 - 啟動時使用 Zod 驗證執行階段環境
-- 合規稽核 v2，支援分頁、提供者 CRUD 事件，以及 SSRF 封鎖驗證記錄
+- 合規稽核 v2，具備分頁、提供者 CRUD 事件，以及 SSRF 封鎖驗證記錄
 
 主要執行階段模型：
 
-- `src/app/api/*` 下的 Next.js 應用程式路由同時實作儀表板 API 與相容性 API
-- `src/sse/*` + `open-sse/*` 中的共用 SSE／路由核心負責提供者執行、格式轉換、串流、備援與用量處理
+- `src/app/api/*` 下的 Next.js App Routes 同時實作儀表板 API 與相容性 API
+- `src/sse/*` + `open-sse/*` 中的共用 SSE／路由核心負責處理提供者執行、格式轉換、串流、備援及用量
 
 ## 參考圖表
 
@@ -276,16 +276,16 @@ flowchart LR
 - 帳戶備援邏輯：`open-sse/services/accountFallback.ts`
 - 翻譯器登錄表：`open-sse/translator/index.ts`
 - 串流轉換：`open-sse/utils/stream.ts`、`open-sse/utils/streamHandler.ts`
-- 使用量擷取／正規化：`open-sse/utils/usageTracking.ts`
-- Think 標籤剖析器：`open-sse/utils/thinkTagParser.ts`
+- 用量擷取／正規化：`open-sse/utils/usageTracking.ts`
+- Think 標籤解析器：`open-sse/utils/thinkTagParser.ts`
 - 嵌入處理器：`open-sse/handlers/embeddings.ts`
 - 嵌入提供者登錄表：`open-sse/config/embeddingRegistry.ts`
-- 圖像生成處理器：`open-sse/handlers/imageGeneration.ts`
-- 圖像提供者登錄表：`open-sse/config/imageRegistry.ts`
+- 影像生成處理器：`open-sse/handlers/imageGeneration.ts`
+- 影像提供者登錄表：`open-sse/config/imageRegistry.ts`
 - 回應清理：`open-sse/handlers/responseSanitizer.ts`
 - 角色正規化：`open-sse/services/roleNormalizer.ts`
 
-服務（業務邏輯）：
+服務（商業邏輯）：
 
 - 帳戶選擇／評分：`open-sse/services/accountSelector.ts`
 - 上下文生命週期管理：`open-sse/services/contextManager.ts`
@@ -297,39 +297,39 @@ flowchart LR
 - 萬用字元模型路由：`open-sse/services/wildcardRouter.ts`
 - 速率限制管理：`open-sse/services/rateLimitManager.ts`
 - 斷路器：`src/shared/utils/circuitBreaker.ts`
-- 上下文移交：`open-sse/services/contextHandoff.ts` — 為上下文中繼策略產生並注入移交摘要
-- 壓縮：`open-sse/services/compression/*` — 在提供者翻譯前主動壓縮；
+- 上下文交接：`open-sse/services/contextHandoff.ts` — 為上下文中繼策略產生並注入交接摘要
+- 壓縮：`open-sse/services/compression/*` — 在提供者轉譯之前主動壓縮；
   包含 Caveman 規則、RTK 篩選器、堆疊管線、壓縮組合、統計資料及驗證
-- Codex 配額擷取器：`open-sse/services/codexQuotaFetcher.ts` — 擷取 Codex 配額，以供上下文中繼移交決策使用
-- 感知冷卻時間的重試：`src/sse/services/cooldownAwareRetry.ts` — 依模型執行冷卻重試，並可透過 `requestRetry`／`maxRetryIntervalSec` 設定
-- 安全對外擷取：`src/shared/network/safeOutboundFetch.ts` — 受保護的提供者／模型擷取，具備 SSRF 防護、私有 URL 封鎖、重試及逾時機制
-- 對外 URL 防護：`src/shared/network/outboundUrlGuard.ts` — 檢查提供者 URL 的主機；`src/shared/network/outboundUrlGuardPolicy.ts` 會根據 `OMNIROUTE_ALLOW_LOCAL_PROVIDER_URLS`、`OMNIROUTE_ALLOW_PRIVATE_PROVIDER_URLS` 及其儀表板切換設定選擇模式（請參閱 `docs/reference/ENVIRONMENT.md`）
+- Codex 配額擷取器：`open-sse/services/codexQuotaFetcher.ts` — 擷取 Codex 配額，供上下文中繼交接決策使用
+- 感知冷卻時間的重試：`src/sse/services/cooldownAwareRetry.ts` — 依模型執行冷卻重試，並可設定 `requestRetry` / `maxRetryIntervalSec`
+- 安全的對外擷取：`src/shared/network/safeOutboundFetch.ts` — 受保護的提供者／模型擷取，具備 SSRF 防護、私有 URL 封鎖、重試及逾時機制
+- 對外 URL 防護：`src/shared/network/outboundUrlGuard.ts` — 檢查提供者 URL 的主機；`src/shared/network/outboundUrlGuardPolicy.ts` 會根據 `OMNIROUTE_ALLOW_LOCAL_PROVIDER_URLS`、`OMNIROUTE_ALLOW_PRIVATE_PROVIDER_URLS` 及其儀表板切換設定來選擇模式（請參閱 `docs/reference/ENVIRONMENT.md`）
 - 提供者請求預設值：`open-sse/services/providerRequestDefaults.ts` — 提供者層級的 `maxTokens`、`temperature`、`thinkingBudgetTokens` 預設值
-- GLM 提供者常數：`open-sse/config/glmProvider.ts` — 共用的 GLM 模型、配額 URL、GLMT 逾時及預設值
-- Antigravity 上游：`open-sse/config/antigravityUpstream.ts` — 基礎 URL 與探索路徑常數
-- Codex 用戶端常數：`open-sse/config/codexClient.ts` — 帶版本的使用者代理程式與用戶端版本值
-- 模型別名種子：`src/lib/modelAliasSeed.ts` — 在啟動時植入 30 多個跨代理方言別名
+- GLM 提供者常數：`open-sse/config/glmProvider.ts` — 共用的 GLM 模型、配額 URL、GLMT 逾時／預設值
+- Antigravity 上游：`open-sse/config/antigravityUpstream.ts` — 基礎 URL 及探索路徑常數
+- Codex 用戶端常數：`open-sse/config/codexClient.ts` — 帶版本的使用者代理及用戶端版本值
+- 模型別名種子：`src/lib/modelAliasSeed.ts` — 啟動時植入 30 多個跨代理方言別名
 
 領域層模組：
 
 - 成本規則／預算：`src/domain/costRules.ts`
-- 備援政策：`src/domain/fallbackPolicy.ts`
+- 備援原則：`src/domain/fallbackPolicy.ts`
 - 組合解析器：`src/domain/comboResolver.ts`
-- 鎖定政策：`src/domain/lockoutPolicy.ts`
-- 政策引擎：`src/domain/policyEngine.ts` — 集中進行鎖定 → 預算 → 備援評估
+- 鎖定原則：`src/domain/lockoutPolicy.ts`
+- 原則引擎：`src/domain/policyEngine.ts` — 集中式鎖定 → 預算 → 備援評估
 - 錯誤代碼目錄：`src/shared/constants/errorCodes.ts`
 - 請求 ID：`src/shared/utils/requestId.ts`
 - 擷取逾時：`src/shared/utils/fetchTimeout.ts`
 - 請求遙測：`src/shared/utils/requestTelemetry.ts`
 - 合規／稽核：`src/lib/compliance/index.ts`
 - 評估執行器：`src/lib/evals/evalRunner.ts`
-- 領域狀態持久化：`src/lib/db/domainState.ts` — 對備援鏈、預算、成本歷程、鎖定狀態及斷路器執行 SQLite CRUD
+- 領域狀態持久化：`src/lib/db/domainState.ts` — 針對備援鏈、預算、成本歷程、鎖定狀態及斷路器的 SQLite CRUD
 
 OAuth 提供者模組（`src/lib/oauth/providers/` 下的 27 個獨立檔案）：
 
 - 登錄表索引：`src/lib/oauth/providers/index.ts`
 - 個別提供者：`agy.ts`、`antigravity.ts`、`claude.ts`、`cline.ts`、`codebuddy-cn.ts`、`codebuddy-intl.ts`、`codex.ts`、`cursor.ts`、`devin-desktop.ts`、`ghe-copilot.ts`、`github.ts`、`gitlab-duo.ts`、`grok-cli-oauth.ts`、`grok-cli.ts`、`kilocode.ts`、`kimi-coding.ts`、`kiro.ts`、`muse-code.ts`、`openference.ts`、`qoder.ts`、`trae.ts`、`workbuddy.ts`、`xai-oauth.ts`、`zed-hosted.ts`、`zed.ts`
-- 共用輔助工具：`codebuddyDeviceAuth.ts`（CodeBuddy CN／intl 裝置流程）、`museCodeDeviceResponse.ts`
+- 共用輔助程式：`codebuddyDeviceAuth.ts`（CodeBuddy CN／國際版裝置流程）、`museCodeDeviceResponse.ts`
 - 輕量包裝器：`src/lib/oauth/providers.ts` — 從個別模組重新匯出
 
 ## 5) 嵌入式服務（v3.8.4）
@@ -514,16 +514,17 @@ FSM 轉換結果饋入自動組合的評分，對背景/自動化任務偏向較
 - 表格（在 `src/lib/db/core.ts` 中建立）：`domain_fallback_chains`、`domain_budgets`、`domain_cost_history`、`domain_lockout_state`、`domain_circuit_breakers`
 - 寫穿透快取模式：記憶體中的 Maps 在執行時期具有權威性；變更同步寫入 SQLite；冷啟動時從 DB 恢復狀態
 
-## 4) 驗證 + 安全表面
+## 4) 驗證 + 安全介面
 
 - 儀表板 Cookie 驗證：`src/proxy.ts`、`src/app/api/auth/login/route.ts`
-- API 金鑰生成/驗證：`src/shared/utils/apiKey.ts`
-- 提供者秘密儲存在 `providerConnections` 項目中
-- 透過 `open-sse/utils/proxyFetch.ts`（環境變數）與 `open-sse/utils/networkProxy.ts`（可針對每個提供者或全域設定）支援外送代理
-- SSRF / 外送 URL 防護：`src/shared/network/outboundUrlGuard.ts` — 封鎖所有提供者呼叫的私人/迴路/鏈結本地範圍
-- 執行時期環境驗證：`src/lib/env/runtimeEnv.ts` — 所有環境變數的 Zod 架構，以啟動錯誤/警告形式呈現
-- 同步令牌：`src/lib/db/syncTokens.ts` — 用於設定套件下載端點的範圍限定令牌；由 `sync_tokens` SQLite 表格支援（遷移 `024_create_sync_tokens.sql`）
-- WebSocket 握手驗證：`src/lib/ws/handshake.ts` — 透過 API 金鑰或工作階段 Cookie 驗證 WS 升級請求
+- API 金鑰產生／驗證：`src/shared/utils/apiKey.ts`
+- 提供者密鑰持久化儲存於 `providerConnections` 項目中
+- 透過 `open-sse/utils/proxyFetch.ts`（環境變數）與 `open-sse/utils/networkProxy.ts`（可依提供者或全域設定）支援對外代理
+- SSRF／對外 URL 防護：`src/shared/network/outboundUrlGuard.ts` — 對提供者呼叫與 Webhook 目標執行主機檢查；模式來自 `src/shared/network/outboundUrlGuardPolicy.ts`（旗標記載於 `docs/reference/ENVIRONMENT.md`）
+- 執行階段環境變數驗證：`src/lib/env/runtimeEnv.ts` — 使用 Zod 結構描述驗證所有環境變數，並以啟動錯誤／警告形式呈現
+- 同步權杖：`src/lib/db/syncTokens.ts` — 用於設定套件下載端點的具範圍權杖；由 `sync_tokens` SQLite 資料表支援（遷移檔案 `024_create_sync_tokens.sql`）
+- WebSocket 交握驗證：`src/lib/ws/handshake.ts` — 透過 API 金鑰或工作階段 Cookie 驗證 WS 升級要求
+- 即時儀表板 WebSocket 驗證：`src/server/ws/liveServer.ts` — Sidecar（連接埠 `LIVE_WS_PORT`）接受儀表板工作階段 Cookie，或具有管理範圍（`manage`／`admin`）的 Bearer API 金鑰；僅限推論的金鑰會遭拒絕。其內部 `POST /__omniroute_event` 發布者端點僅在不存在代理躍點標頭（`x-forwarded-*`、`x-real-ip`、`forwarded`、`via`）時接受迴路位址對等端連線
 
 ## 5) 雲端同步
 
@@ -1072,11 +1073,11 @@ flowchart LR
 - SQLite 架構遷移與啟動時的自動升級鉤子
 - 舊版 JSON → SQLite 遷移相容性路徑
 
-## 6) SSRF / 外送 URL 防護
+## 6) SSRF / 對外 URL 防護
 
-- `src/shared/network/outboundUrlGuard.ts` 在請求到達提供者執行器前封鎖所有私人/迴路/鏈結本地目標 URL
-- 提供者模型探索與驗證路由使用 `src/shared/network/safeOutboundFetch.ts`，該函數在每個外送請求前應用防護
-- 防護錯誤以 `URL_GUARD_BLOCKED` 呈現，附 HTTP 422，並透過 `providerAudit.ts` 記錄到合規稽核軌跡
+- `BaseExecutor.assertOutboundUrlAllowed` (`open-sse/executors/base.ts`) 會將 `src/shared/network/outboundUrlGuard.ts` 套用至透過 `BaseExecutor.execute()` 發送的聊天請求。在僅限公開網路模式下（`OMNIROUTE_ALLOW_LOCAL_PROVIDER_URLS=false` 且私人旗標關閉），它會封鎖私人與迴路主機，以及 169.254.0.0/16；在其他所有模式下，它會封鎖雲端中繼資料主機。它會在進行任何 DNS 查詢前，依照原樣檢查所寫的主機名稱或 IP 常值。內建的本機提供者會略過此檢查。
+- 提供者模型探索與驗證路由使用 `src/shared/network/safeOutboundFetch.ts`，其會在每個對外請求之前套用防護
+- 防護錯誤會以 `URL_GUARD_BLOCKED` 呈現，並回傳 HTTP 503（`getSafeOutboundFetchErrorStatus`；模型探索路由則回傳 400）；驗證期間真正的 SSRF 封鎖會以 `provider.validation.ssrf_blocked` 事件記錄至稽核軌跡
 
 ## 可觀測性與操作訊號
 

@@ -4,6 +4,26 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+#### [2.1.303](https://github.com/Piebald-AI/claude-code-system-prompts/commit/58997eb)
+
+<sub>_No changes to the system prompts in v2.1.303._</sub>
+
+# [2.1.302](https://github.com/Piebald-AI/claude-code-system-prompts/commit/3f1ffe5)
+
+_+1,759 tokens_
+
+- **NEW:** Tool Description: Easel chart — Draws charts from small tables already in context without guessing ambiguous columns; feature-gated, off by default, Linux/macOS only, and unavailable to HIPAA/ZDR organizations.
+- **NEW:** Tool Description: Artifact publish-edits resubmission merge guidance and Artifact publish-edits resend clause — Require merging newer content into the file with Edit or Write before resending, omitting edit pairs that would add those lines again.
+- **NEW:** Tool Description: Artifact resubmission refetch confirmation clause — Preserves the shared requirement to freshly fetch the artifact and fully read any required saved source before confirming newer changes are already included.
+- **REMOVED:** Tool Description: Artifact identical resubmission refusal — Consolidates live-version recovery into Artifact known-version resubmission guidance, parameterized for live or known newer source; identical-content refusal behavior remains.
+- Agent Prompt: Claude Test author and Claude Test explorer — Expand explicit tool denials to additional Claude Test browser helpers, including installation, saving, status, progress, logging, finishing, and reading.
+- System Prompt: Agent Summary Generation — Adds notes-based third-person summaries, omitting the tool ban and allowing the previous label to remain while the agent continues the same work.
+- System Prompt: Fork usage guidelines and Forked agent guidance; Tool Description: Agent (usage notes) — Make background-execution claims conditional and scope notification/no-peeking guidance to background forks; retain anti-fabrication warnings for background agents when forks run synchronously.
+- System Prompt: Project coordinator relay trust boundary, Project timeline user message provenance, and Project thread in-thread message provenance — Name available Project read/reply tools, including alternate names, when explaining untrusted fetched content and which messages can establish consent.
+- Tool Description: Artifact quickstart type guidance and Artifact type discovery guidance (including app wording) — Route data dashboards through the Dashboard type when offered, using quickstart intent `other`; distinguish visual mock-ups and honor requests for files.
+- Tool Description: Artifact stale publish saved-source guidance — Adds recovery for publishes carrying edits: merge saved-source lines into the file with Edit or Write, then resend using old strings from that merged file.
+- Tool Description: DesignSync — Adds notice that standalone Claude Design closes by December 14, 2026; requires relaying closure or relocation refusals verbatim and stopping.
+
 # [2.1.301](https://github.com/Piebald-AI/claude-code-system-prompts/commit/30cba4d)
 
 _+10,251 tokens_

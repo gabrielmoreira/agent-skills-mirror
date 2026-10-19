@@ -697,6 +697,16 @@ Classify unfinished workflow state:
 
 ## Phase 2 — Resume or rerun workflows
 
+For drain execution and recovery, follow
+[drain-dispatch.md](./references/drain-dispatch.md). Verify the complete installed
+suite before starting, maintain a private per-PR next-action ledger, and execute
+`Get-PrReviewDispatchPlan.ps1` after each completion or due cloud check.
+An idle historical worker or an unchanged stale queue must never suppress
+runnable work. Normal schedules include CmdPal; a scoped PR-only drain uses
+`Get-StalePrReviewQueue.ps1 -ExcludeCmdPal` without expanding into issue designs.
+While a drain is active, scheduled ticks service the same run rather than
+starting a competing bounded refresh.
+
 PR inventory is exhaustive. Normal execution is bounded to the run plan:
 process only the selected batch, with at most three active workers by default.
 The default batch contains sixteen PRs so cloud waits can release slots and let
@@ -713,7 +723,8 @@ freshly requested Copilot review has zero new comments, zero unresolved threads,
 the required local build has passed, and that build covers the exact upstream
 head rather than a divergent fork tree. A Copilot-clean result with a pending
 build, context review, spelling check, or timed-out fresh request remains
-`review_in_progress` and must get a `Re-run review`/`Continue review` action.
+`review_in_progress` with a concrete private next action, not a clickable
+`Re-run review`/`Continue review` proposal.
 
 In normal mode, each worker receives the run-plan deadline and must stop
 initiating new review rounds or builds 10 minutes before it. If it cannot
@@ -806,7 +817,9 @@ skill itself, using a general-purpose worker when parallel background execution
 is needed. That worker must not delegate to another agent.
 
 - PR: `powertoys-pr-review` must reach zero new Copilot comments and zero
-  unresolved Copilot threads before a new artifact is emitted. For stale-review
+  unresolved Copilot threads before a review-ready artifact is emitted.
+  Resumable checkpoints and independently justified terminal manual blockers
+  must still be emitted without claiming that convergence. For stale-review
   queue items, the emitted artifact must include `head_sha` and any
   `post_review` action `review.head_sha` pinned to the live upstream head.
 - Issue: `powertoys-issue-to-design` must reach a converged adversary-reviewed

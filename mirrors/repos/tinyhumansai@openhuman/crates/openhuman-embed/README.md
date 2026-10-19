@@ -61,7 +61,7 @@ The agent and turn hooks are never installed in the global registry, so
 concurrent workers and later turns do not pick up one another's callbacks.
 Post-turn callbacks run asynchronously with an owned session snapshot.
 Independently spawned tasks that build sessions must explicitly inherit
-`openhuman_core::agent::hooks::HookScope` to carry scoped hooks.
+`tinyagents_hooks::scope::HookScope` to carry scoped hooks.
 
 Gateway attribution headers can be attached to `Route::header(name, value)`
 and used with `Turn::route`, or with `Provider::routed(route)` on an agent.

@@ -1,6 +1,6 @@
 # langalpha
 
-Core AI agent service of the Ginlix financial research platform. One agent, the **PTC agent**, wired with a full Daytona sandbox and the complete toolset (code execution, MCP financial-data tools, charts, subagent orchestration), in one of two roles per turn. PTC = **Programmatic Tool Calling** (see [PTC pattern](#ptc-pattern)); it names the technique, not a product.
+Core AI agent service of the Ginlix financial research platform. One agent, the **PTC agent**, wired with a full Daytona, E2B or Docker sandbox and the complete toolset (code execution, MCP financial-data tools, charts, subagent orchestration), in one of two roles per turn. PTC = **Programmatic Tool Calling** (see [PTC pattern](#ptc-pattern)); it names the technique, not a product.
 
 - **Analyst** (default): the agent inside a workspace. Does the R&D and produces the deliverables, which stay in that workspace.
 - **Chief of Staff**: the agent for work in no particular workspace ("All workspaces" in the UI). Runs in a `Home` folder on the user's computer beside the workspace folders, where everything it produces is kept. It answers quick questions and anything the workspaces already hold itself, reading their folders and past threads, and hands new work to the workspace's analyst, which reports back when done.
@@ -66,7 +66,7 @@ A tool may instead be bound to the **direct** path, where the model calls it as 
 
 - Request path: `POST /api/v1/threads/{id}/messages` → resolve LLM + admission → build sandbox-backed graph → stream SSE events, **buffered in Redis** for reconnection and **replayed from the LangGraph checkpoint** (contract in `src/server/AGENTS.md`).
 - **No ORM** — raw `psycopg3` async (`AsyncConnectionPool`); Alembic migrations use raw SQL via `op.execute()`. **Two separate pools**: app data + LangGraph checkpointer.
-- Hierarchy: **User → Computer → Workspace → Thread → Turns**. A computer owns one Daytona or Docker sandbox; each workspace owns a folder on it named after the workspace, which follows a rename the next time the computer is acquired. Start, stop, resource tier, and always-on apply to the computer and every workspace bound to it. Workspaces on the same computer are mutually trusted: their code shares an OS user and can access sibling files and MCP credentials. Workspace tool selection is a routing convention, not a security boundary; use separate computers for isolation. MCP servers and vault secrets are per user, so a secret reaches every computer the user owns; keeping one away from another workspace takes a separate account.
+- Hierarchy: **User → Computer → Workspace → Thread → Turns**. A computer owns one Daytona, E2B or Docker sandbox; each workspace owns a folder on it named after the workspace, which follows a rename the next time the computer is acquired. Start, stop, resource tier, and always-on apply to the computer and every workspace bound to it. Workspaces on the same computer are mutually trusted: their code shares an OS user and can access sibling files and MCP credentials. Workspace tool selection is a routing convention, not a security boundary; use separate computers for isolation. MCP servers and vault secrets are per user, so a secret reaches every computer the user owns; keeping one away from another workspace takes a separate account.
 
 ### Prompts, memory & memos
 

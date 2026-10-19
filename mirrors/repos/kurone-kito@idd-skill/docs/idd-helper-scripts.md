@@ -444,7 +444,7 @@ outcome path.
 | `idd-doctor.mjs`                     | an unknown flag (exit `1`)                                                                                                                                                                                                                                                                                  | a `gh` failure reached during a live check                                                                                                                                              | the report contains at least one error (exit `1`)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | an unexpected exception                                                                                                                                                                                                     |
 | `idd-delete-remote-branch.mjs`       | missing/empty `--branch`, missing/invalid `--expected-sha`, or an unknown flag (exit `1`)                                                                                                                                                                                                                   | —                                                                                                                                                                                       | invalid ref, unreadable remote/default-branch state, expected-SHA mismatch, refused default branch, failed delete, or unconfirmed deletion (exit `1`)                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | an unexpected exception                                                                                                                                                                                                     |
 | `idd-f4-worktree-branch-cleanup.mjs` | missing `--issue`, `--claim-id`, `--nonce`, or `--agent-id`, a relative `--worktree`, a run outside the primary worktree, or an unknown flag (exit `1`)                                                                                                                                                     | a failed `gh` read, reported as a hold (exit `1`)                                                                                                                                       | a hold or failed verdict (exit `1`), such as `claim-lost`, `proof-missing`, or `dirty-worktree`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | an exception from a dependency, reported as a failed step (exit `1`)                                                                                                                                                        |
-| `idd-claimed-push.mjs`               | missing or invalid `--issue`, missing `--claim-id`, an empty `--nonce`, or an unknown flag (exit `1`)                                                                                                                                                                                                       | —                                                                                                                                                                                       | a refused or failed step: the claim assert, the location check, a dirty tree, the gate, the second assert, or the push (exit `1`)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | an unexpected exception                                                                                                                                                                                                     |
+| `idd-claimed-push.mjs`               | missing or invalid `--issue`, missing `--claim-id`, an empty `--nonce`, or an unknown flag (exit `1`)                                                                                                                                                                                                       | —                                                                                                                                                                                       | a refused or failed step: the claim assert, the location check, the scope check, a dirty tree, the gate, the second assert, or the push (exit `1`)                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | an unexpected exception                                                                                                                                                                                                     |
 | `idd-onboard.mjs`                    | missing/conflicting mode flags, a stage-foreign flag, `--import`/`--verify` missing `--source`, `--record-policy` missing `--transcript`, `--install-user-global`/`--uninstall` with a flag outside their whitelist or an invalid `--harness` list, an unknown argument, or a missing flag value (exit `2`) | a `gh` failure reached during any stage (exit `2`)                                                                                                                                      | `--substitute`/`--import`/`--verify` report a blocking verdict, `--hear`/`--record-policy` report a schema-invalid transcript, or `--install-user-global`/`--uninstall` refuse or fail (exit `1`)                                                                                                                                                                                                                                                                                                                                                                                                                                | an environment/config issue (e.g. `--substitute`'s own core file set resolution, path confinement) or any other unexpected exception (exit `2`)                                                                             |
 | `helper-runtime-manifest.mjs`        | an unknown flag (exit `1`)                                                                                                                                                                                                                                                                                  | —                                                                                                                                                                                       | —                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | an unexpected exception                                                                                                                                                                                                     |
 | `idd-critique-delegate.mjs`          | an unknown flag (exit `1`)                                                                                                                                                                                                                                                                                  | —                                                                                                                                                                                       | —                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | an unexpected exception (deterministic, network-free)                                                                                                                                                                       |
@@ -806,7 +806,11 @@ in this preamble, since the fallback differs per helper.
   `missing_refs_line`, `ambiguous_refs_line`, or `unresolvable:#N` (the last
   also lists the origin in the top-level `unresolvable` array), or
   `needs_decision_label_conflicts_with_authoring_label` when the configured
-  authoring and needs-decision labels collide (issue #4065)
+  authoring and needs-decision labels collide (issue #4065).
+  Repeatable `--exclude-issue <positive-number>` excludes matching open issues
+  before classification and claim annotation, reporting them under
+  `filtered.excluded_roadmap_leaf`. Values are deduplicated for the hint-cache
+  key, including the empty set; this option is rejected with `--draft-carriers`.
   Default-on (not opt-in): the output's `draftCarriers` lists the draft
   carriers, which are the open issues that carry the authoring-only label and
   the carrier marker outside code (issue `#4257`). Each carrier is `held` (it
@@ -2612,7 +2616,8 @@ Behavior:
   names the backend, and leaves the stored cap unchanged. The pueue child issue
   replaces this rule when it lands.
 - Where `flock` is not on `PATH` (Windows, and macOS unless it is installed),
-  the command runs directly with one notice. Admission is off on that host.
+  the command runs directly with one notice before the fallback resolves its
+  state root. Admission is off on that host.
 - The lock is `<state>/idd-skill/local-admission/validate.lock`. `<state>` is an
   absolute `XDG_STATE_HOME`, else `~/.local/state`; on Windows, an absolute
   `LOCALAPPDATA`, else `~/AppData/Local`. The directory is a sibling of
@@ -2636,10 +2641,347 @@ Behavior:
   through `run-helper`, which forwards no signals. A SIGTERM sent to the
   registered command therefore reaches the admitted command.
 
+### Full-profile validation command order
+
+The full-profile instructions in `idd-overview-core.instructions.md` map
+`commands.fix-validate` to B3/C5, `commands.pre-push-validate` to D2, and
+`commands.post-fix-validate` to E12/Esync. If nonblank
+`localExec.admission.testCommand` is not already run by a named command, admit
+it separately after that command. Inspect, stage, and commit formatter changes
+from `fix-validate` or `post-fix-validate` before publishing the branch.
+
+### Helper-free fallback
+
+Use this only when helper runtime is absent. Set `shell` and `command` to the
+exact child argv that would follow `--`; keep the complete command string in
+one value. If `IDD_LOCAL_ADMISSION` is already present, supervise the child
+without taking a lock; the helper sets it for admitted children so a nested
+call uses this same bypass. Direct paths forward signals and reap the child,
+using an isolated process group when the host has the required tools. Review
+of issue `#4430` found on 2026-10-18 that helper-free direct paths
+could refuse when `ps` was unavailable or unusable (PR `#4485`, review
+comments 4305232738 and 4305235845). Read
+`enabled`, `backend`, and raw `maxConcurrent` from
+`localExec.admission` in the repository's `.github/idd/config.json` (defaults:
+`true`, `flock`, and `1`). If repo
+policy sets `enabled: false`, run the command the same way. Set `wait_seconds`
+from repository `maxWait` (ISO duration, rounded
+up to seconds).
+Omitted, invalid, or above-maximum values use the default 7200 seconds
+(`PT2H`); the maximum valid value is 21600 seconds (`PT6H`). If `backend` is
+`pueue`, print the helper's one notice that it is not implemented and continue
+with the one-slot `flock` path. If `flock` is absent, print the helper's notice
+and run directly before checking the raw cap or resolving the state root. If
+`flock` is present and `backend` is `flock`, refuse with exit `2` when the
+stored raw `maxConcurrent` is above `1`; the normalizer's clamp does not apply.
+This raw-cap check requires `awk`; if it is unavailable or returns an
+unexpected status, refuse with exit `2` before starting the command. If
+`flock` is present but `setsid` is not, refuse with exit `2` before starting
+the command. The locked path also requires `env --default-signal`; refuse with
+exit `2` if that option is unavailable. Otherwise resolve
+`state` to absolute `XDG_STATE_HOME`, or
+`$HOME/.local/state` when that variable is relative or unset; if neither gives
+an absolute path, refuse with exit `2`. The following Bash-compatible shell
+fragment opens the same per-user lock file as the helper. It installs signal
+handlers before waiting for the lock, then terminates and reaps the active
+`flock` waiter or validation child when cancelled. The locked path disables
+job control before starting `setsid`, so that command can create a new session
+without forking; if the running shell cannot disable job control, it refuses
+before starting the command. It resets the admitted child's SIGINT and SIGTERM
+dispositions before `setsid` so the child does not inherit the background
+shell's ignored SIGINT. Direct paths use the same supervisor and isolate the
+process group when the shell can disable job control, `setsid` is available,
+and the process-state probe succeeds; otherwise they use the non-group
+supervisor.
+
+The process-state check treats a group as drained when it is absent or every
+remaining member is in state Z or X. It polls every second. If `ps` later fails
+or emits malformed output, the wait stays active and the lock stays held. This
+is preventive; no observed incident yet.
+Before starting an admitted command, refuse with exit 2 when ps is unavailable
+or its output is not a successful, well-formed process listing. For a direct
+run, use process-group isolation only when that probe succeeds; otherwise
+continue without group isolation.
+
+```sh
+child_pid=
+child_group=false
+child_reset_signals=false
+flock_pid=
+pending_signal=
+lock_fd_open=false
+group_has_live_member() {
+  process_list=$(ps -A -o pgid=,stat= 2>/dev/null) || return 0
+  [ -n "$process_list" ] || return 0
+  while IFS=' ' read -r member_group member_state extra; do
+    [ -n "$member_group" ] || return 0
+    case $member_group in *[!0-9]*) return 0 ;; esac
+    [ -n "$member_state" ] || return 0
+    [ -z "$extra" ] || return 0
+    case $member_state in
+      Z*|z*|X*|x*) ;;
+      [A-Za-z?]*) [ "$member_group" = "$1" ] && return 0 ;;
+      *) return 0 ;;
+    esac
+  done <<EOF
+$process_list
+EOF
+  return 1
+}
+process_state_ready() {
+  if ! command -v ps >/dev/null 2>&1; then return 1; fi
+  if group_has_live_member -1; then return 1; fi
+  return 0
+}
+forward_signal() {
+  signal=$1
+  case $signal in
+    INT) signal_status=130 ;;
+    TERM) signal_status=143 ;;
+  esac
+  trap '' INT TERM
+  if [ -n "$flock_pid" ]; then
+    kill -TERM -- "$flock_pid" 2>/dev/null || :
+    wait "$flock_pid" 2>/dev/null || :
+    flock_pid=
+  fi
+  if [ -n "$child_pid" ]; then
+    child_signal=$signal
+    if [ "$signal" = INT ] && [ "$child_reset_signals" != true ]; then
+      child_signal=TERM
+    fi
+    if [ "$child_group" = true ]; then
+      kill -"$child_signal" -- "-$child_pid" 2>/dev/null || :
+    else
+      kill -"$child_signal" -- "$child_pid" 2>/dev/null || :
+    fi
+    wait "$child_pid" 2>/dev/null || :
+    if [ "$child_group" = true ]; then
+      while group_has_live_member "$child_pid"; do sleep 1; done
+    fi
+    child_pid=
+  fi
+  if [ "$lock_fd_open" = true ]; then
+    flock --unlock 9 || { printf 'local-admission: cannot release lock\n' >&2; exit 2; }
+  fi
+  exit "$signal_status"
+}
+handle_signal() {
+  signal=$1
+  if [ -n "$flock_pid" ] || [ -n "$child_pid" ]; then
+    forward_signal "$signal"
+  else
+    pending_signal=$signal
+  fi
+}
+trap 'handle_signal INT' INT
+trap 'handle_signal TERM' TERM
+run_child() {
+  run_mode=$1
+  if [ -n "$pending_signal" ]; then forward_signal "$pending_signal"; fi
+  child_pid=
+  child_group=false
+  child_reset_signals=false
+  if [ "$run_mode" = admitted ]; then
+    if ! process_state_ready; then
+      printf 'local-admission: ps is not available or returned unusable process-state output; command not started\n' >&2
+      exit 2
+    fi
+    child_group=true
+    child_reset_signals=true
+    IDD_LOCAL_ADMISSION=1 env --default-signal=INT --default-signal=TERM setsid "$shell" -c "$command" &
+  elif command -v setsid >/dev/null 2>&1; then
+    group_ready=false
+    if set +m 2>/dev/null; then
+      case $- in *m*) ;; *) group_ready=true ;; esac
+    fi
+    if [ "$group_ready" = true ] && process_state_ready; then
+      child_group=true
+      if command -v env >/dev/null 2>&1 &&
+         env --default-signal=INT --default-signal=TERM >/dev/null 2>&1; then
+        child_reset_signals=true
+        env --default-signal=INT --default-signal=TERM setsid "$shell" -c "$command" &
+      else
+        setsid "$shell" -c "$command" &
+      fi
+    elif command -v env >/dev/null 2>&1 &&
+         env --default-signal=INT --default-signal=TERM >/dev/null 2>&1; then
+      child_reset_signals=true
+      env --default-signal=INT --default-signal=TERM "$shell" -c "$command" &
+    else
+      "$shell" -c "$command" &
+    fi
+  elif command -v env >/dev/null 2>&1 &&
+       env --default-signal=INT --default-signal=TERM >/dev/null 2>&1; then
+    child_reset_signals=true
+    env --default-signal=INT --default-signal=TERM "$shell" -c "$command" &
+  else
+    "$shell" -c "$command" &
+  fi
+  child_pid=$!
+  if [ -n "$pending_signal" ]; then forward_signal "$pending_signal"; fi
+  if wait "$child_pid"; then status=0; else status=$?; fi
+  child_pid=
+  return "$status"
+}
+run_direct() {
+  run_child direct
+  status=$?
+  exit "$status"
+}
+if [ "${IDD_LOCAL_ADMISSION+x}" = x ]; then run_direct; fi
+# Set these to the values read from repository localExec.admission.
+enabled=true
+backend=flock
+raw_max_concurrent=1
+wait_seconds=7200 # Replace with the validated repository maxWait when set.
+if [ "$enabled" = false ]; then
+  run_direct
+fi
+if [ "$backend" = pueue ]; then
+  printf 'local-admission: backend "pueue" is not implemented yet; this run takes the flock path with one slot\n' >&2
+fi
+if ! command -v flock >/dev/null 2>&1; then
+  printf 'local-admission: flock is not available on this host; running the command without admission\n' >&2
+  run_direct
+fi
+if [ "$backend" = flock ]; then
+  if ! command -v awk >/dev/null 2>&1; then
+    printf 'local-admission: awk is not available for the raw maxConcurrent check; command not started\n' >&2
+    exit 2
+  fi
+  if awk -v cap="$raw_max_concurrent" 'BEGIN { exit !(cap + 0 > 1) }'; then
+    printf 'local-admission: the flock backend admits one command at a time, but localExec.admission.maxConcurrent is %s; command not started\n' "$raw_max_concurrent" >&2
+    exit 2
+  else
+    cap_check_status=$?
+    if [ "$cap_check_status" -ne 1 ]; then
+      printf 'local-admission: could not verify raw maxConcurrent; command not started\n' >&2
+      exit 2
+    fi
+  fi
+fi
+if ! command -v setsid >/dev/null 2>&1; then
+  printf 'local-admission: setsid is not available on this host; command not started\n' >&2
+  exit 2
+fi
+if ! command -v env >/dev/null 2>&1 ||
+   ! env --default-signal=INT --default-signal=TERM >/dev/null 2>&1; then
+  printf 'local-admission: env cannot reset child signal dispositions; command not started\n' >&2
+  exit 2
+fi
+case ${XDG_STATE_HOME:-} in
+  /*) state=$XDG_STATE_HOME ;;
+  *) case ${HOME:-} in
+       /*) state=$HOME/.local/state ;;
+       *) printf 'local-admission: no absolute state root; command not started\n' >&2; exit 2 ;;
+     esac ;;
+esac
+original_umask=$(umask)
+umask 077
+lock_dir="$state/idd-skill/local-admission"
+for dir in "$state/idd-skill" "$lock_dir"; do
+  if [ -L "$dir" ] || { [ -e "$dir" ] && [ ! -d "$dir" ]; }; then
+    printf 'local-admission: unsafe lock directory; command not started\n' >&2
+    exit 2
+  fi
+done
+mkdir -p "$lock_dir" || {
+  printf 'local-admission: cannot create lock directory; command not started\n' >&2
+  exit 2
+}
+for dir in "$state/idd-skill" "$lock_dir"; do
+  if [ -L "$dir" ] || [ ! -d "$dir" ]; then
+    printf 'local-admission: unsafe lock directory; command not started\n' >&2
+    exit 2
+  fi
+done
+lock="$lock_dir/validate.lock"
+if [ -L "$lock" ] || { [ -e "$lock" ] && [ ! -f "$lock" ]; }; then
+  printf 'local-admission: unsafe lock file; command not started\n' >&2
+  exit 2
+fi
+if [ ! -e "$lock" ]; then
+  (set -C; : > "$lock") 2>/dev/null || {
+    if [ ! -e "$lock" ]; then
+      printf 'local-admission: cannot create lock; command not started\n' >&2
+      exit 2
+    fi
+  }
+fi
+if [ -L "$lock" ] || [ ! -f "$lock" ]; then
+  printf 'local-admission: unsafe lock file; command not started\n' >&2
+  exit 2
+fi
+exec 9<"$lock" || { printf 'local-admission: cannot open lock; command not started\n' >&2; exit 2; }
+lock_fd_open=true
+umask "$original_umask" || { printf 'local-admission: cannot restore umask; command not started\n' >&2; exit 2; }
+if ! set +m 2>/dev/null; then
+  printf 'local-admission: this shell cannot disable job control; command not started\n' >&2
+  flock --unlock 9 || { printf 'local-admission: cannot release lock\n' >&2; exit 2; }
+  exit 2
+fi
+case $- in
+  *m*)
+    printf 'local-admission: job control remains enabled; command not started\n' >&2
+    flock --unlock 9 || { printf 'local-admission: cannot release lock\n' >&2; exit 2; }
+    exit 2
+    ;;
+  *)
+    ;;
+esac
+if [ -n "$pending_signal" ]; then forward_signal "$pending_signal"; fi
+waited_seconds=0
+while :; do
+  remaining_seconds=$((wait_seconds - waited_seconds))
+  if [ "$remaining_seconds" -le 0 ]; then
+    printf 'local-admission: expired (waited %s seconds); command not started\n' "$wait_seconds" >&2
+    exit 75
+  fi
+  interval_seconds=60
+  if [ "$remaining_seconds" -lt "$interval_seconds" ]; then
+    interval_seconds=$remaining_seconds
+  fi
+  flock --timeout "$interval_seconds" --conflict-exit-code 75 9 &
+  flock_pid=$!
+  if [ -n "$pending_signal" ]; then forward_signal "$pending_signal"; fi
+  if wait "$flock_pid"; then
+    flock_pid=
+    break
+  else
+    status=$?
+  fi
+  flock_pid=
+  if [ -n "$pending_signal" ]; then forward_signal "$pending_signal"; fi
+  if [ "$status" -ne 75 ]; then
+    printf 'local-admission: flock stopped with status %s before acquiring the lock; command not started\n' "$status" >&2
+    exit 2
+  fi
+  waited_seconds=$((waited_seconds + interval_seconds))
+  if [ "$waited_seconds" -ge "$wait_seconds" ]; then
+    printf 'local-admission: expired (waited %s seconds); command not started\n' "$wait_seconds" >&2
+    exit 75
+  fi
+  printf 'local-admission: waiting (waited %s of %s seconds)\n' "$waited_seconds" "$wait_seconds" >&2
+done
+run_child admitted
+status=$?
+flock --unlock 9 || { printf 'local-admission: cannot release lock\n' >&2; exit 2; }
+lock_fd_open=false
+exit "$status"
+```
+
+The timeout branch prints the same expiry line and exits `75` before the child
+starts. A child exit `75` is returned without that line. Other `flock` failures
+before acquisition print a diagnostic and exit `2` without starting the child.
+
 Refusals before the command starts exit `2`: a policy file that fails to parse,
-a raw cap above 1 under `flock`, a symlink at `idd-skill` or `local-admission`,
+a raw cap above 1 under `flock`, unavailable signal-reset support, a symlink at
+`idd-skill` or `local-admission`,
 a lock file that is a symlink or not a regular file, or a `flock` that fails
 before it takes the lock.
+The helper also refuses before starting a process-group-supervised command
+when the ps process-state utility is unavailable or returns unusable output.
 
 Residual risks, open for the operator to accept. The helper does not mitigate
 them:
@@ -2648,8 +2990,12 @@ them:
 - A rename over the lock path after the open, or a parent-path swap between the
   directory check and the open. A later caller that opens the path then locks a
   different file, while the held inode stays locked.
-- A command that ignores SIGINT or SIGTERM keeps the slot after the helper
-  exits.
+- Review finding 4305110564 on pull request #4485 (issue #4430), posted
+  2026-10-18: a descendant that ignores SIGTERM can become a PID-1-owned
+  zombie in a container whose PID 1 does not reap it; a `kill -0` poll can
+  then keep the admission lock held although no group member remains live.
+  The helper and fallback drain groups containing only Z/X members; a live
+  member or unknown process-state result keeps the lock held.
 - `IDD_LOCAL_ADMISSION` already set in the environment skips admission. A
   session must not set the variable itself.
 - The slot covers one OS user. A second OS user has another slot, and a run from
@@ -3305,14 +3651,23 @@ The adopted helper boundaries are intentionally narrow:
   Codex status row for the current HEAD that is not Completed, Failed
   included), `codex-no-result-for-head` (a Codex status table with no
   row for the current HEAD, an unparseable table or no table, or a Codex
-  no-find result for an older HEAD), and `unrecognized-notice-body`
-  (any other handled comment, for example a CodeRabbit acknowledgement
-  or a regular Copilot or Codex comment). A `codex-no-result-for-head`
+  no-find result for an older HEAD),
+  `codex-old-head-no-find-summary` (a completed Codex Code Review for an
+  older commit whose state block and table agree, both finding flags are
+  false, and whose table has no row for the current HEAD), and
+  `unrecognized-notice-body` (any other handled comment, for example a
+  CodeRabbit acknowledgement or a regular Copilot or Codex comment). A
+  `codex-no-result-for-head`
   comment is reported, not dispositioned, because Codex can still add a
   row for the current HEAD; the manual E4 `**Rejected**` stays its
   route. The helper does not track that manual reply, so it keeps
   reporting the comment after one is posted: check `pre-merge-readiness`
   `dispositionEvidence.missingRegularComments` before replying. A
+  `codex-old-head-no-find-summary` comment needs no disposition and
+  receives no reply. Missing, malformed, mismatched, finding-bearing,
+  failed, or current-HEAD evidence stays on the existing path; pull
+  request [#4405](https://github.com/kurone-kito/idd-skill/pull/4405)
+  records a failed review with findings that must remain blocking. A
   `codex-review-running` comment whose row for the current HEAD is
   `Failed` is not a completed review, so the helper does not post for it,
   and when `pre-merge-readiness` still lists the comment in
@@ -3466,9 +3821,9 @@ With `--tier` and `--urgency` both given, the helper writes one `Triage:`
 line before the reply-identity stamp, so the E4 tier, the E4 urgency, the
 relax step, and the E5 verdict travel with the reply. The other triage
 flags feed that line. Without the pair they have no line to carry them and
-change nothing, except two flags that are refused with a usage error:
-`--path-b`, when combined with any other triage flag, and `--override`,
-which needs the pair. The line is written
+change nothing, except three flags that are refused with a usage error:
+`--path-b`, when combined with any other triage flag, and `--override` and
+`--adopt-now`, which need the pair. The line is written
 whenever the pair is given. `critiqueLoop.triageRecord` (default `off`)
 decides only whether the pair is required, whether an `enforce` refusal
 applies, and whether `--override` is accepted.
@@ -3503,6 +3858,10 @@ Flags, one line each:
   reviewer. This blocks a deferral.
 - `--accepted-mid-fix`: the item was Accepted in an earlier E5 pass, and its
   fix is still in progress. This blocks a deferral.
+- `--adopt-now`: adopt-now condition (d) of the E5 Defer rule holds: another
+  item in the same E5 pass is already Accepted, so a push is certain, and this
+  fix stays within that push's files. It turns a `defer` verdict into `keep`
+  with `blocked adopt-now`. See the rules below.
 - `--override <reason>`: posts an Accepted reply that the defer matrix
   refuses, and records the reason as the line's last part, after
   `override:`. See the rules below.
@@ -3524,6 +3883,13 @@ Rules:
   check names the missing flag. It accepts no `--override`. A refused input
   exits `1` with kind `usage`. It reads GitHub only under `severity-tiered`
   without `--lite`.
+- **Adopt-now.** `--adopt-now` needs `deferByUrgency` `severity-tiered` and
+  the pair, and cannot combine with `--lite` or `--path-b`. A refused input
+  exits `1` with kind `usage` and a message that names `--adopt-now`. The
+  matrix decides first, and the flag changes only a `defer` verdict: a `keep`
+  from the matrix or from a blocking flag such as `--scope-fence` keeps its
+  own `blocked` reason. An Accepted reply with the flag needs no `--override`,
+  since its verdict is `keep`.
 - **Override.** `--override` needs `record` or `enforce`, `deferByUrgency`
   `severity-tiered`, the pair, an `**Accepted**` body, and a `defer` verdict.
   A `keep` verdict is refused with a usage error. The reason must be one
@@ -4222,6 +4588,22 @@ closes its bootstrap issue but is never claimed. A Groom-hearing
 ruling recorded a maintainer decision: recognize the bootstrap PR as
 out-of-loop-authorized only with explicit, dedicated marker evidence,
 never merely an absent claim.
+
+#### Issue-mediated bootstrap and authoring hold
+
+The bootstrap guide can create a held issue before the core import. Its
+configured `issueAuthoring.authoringLabelName` (default
+`status:authoring`) suppresses Discover only after activation. The label
+does not activate the payload or provide the durable journal and publisher
+prerequisites; removing it alone is not release evidence. This boundary was
+observed on 2026-10-17 in [PR 3](https://github.com/kurone-kito/DDMMHBC/pull/3)
+and rechecked on 2026-10-17 after [PR 20](https://github.com/kurone-kito/DDMMHBC/pull/20).
+
+For a full-template import, keep the policy and core import in the single
+reviewed issue described by the onboarding guide's
+[one-issue scope](https://github.com/kurone-kito/idd-skill/blob/main/idd-template/docs/onboarding/issue-mediated-bootstrap.md#scope-exactly-one-issue).
+The separate policy-only/global-only first-journal procedure does not replace
+that full-import process.
 
 `classifyPrLoopMembership()` (`protocol-helpers.mts`) is the single
 shared classifier both consumers now call. It returns one of three
@@ -9327,8 +9709,9 @@ issue #3285; the field report is tracked in issue #3552.
 ## Claimed push (kurone-kito/idd-skill#4375)
 
 `scripts/claimed-push.mjs` (bin `idd-claimed-push`) pushes the claimed
-branch only after the claim, the worktree location, and the configured
-`commands.pre-push-validate` gate have passed, in that order. The
+branch only after the claim, the worktree location, the B3 scope check,
+and the configured `commands.pre-push-validate` gate have passed, in that
+order. The
 overview's [claim revalidation gate](../.github/instructions/idd-overview-core.instructions.md#claim-revalidation-gate)
 and its rule to judge a command set by its own exit status say the same
 thing in prose; nothing enforced the order. Observed in the 2026-10-14 to
@@ -9340,6 +9723,12 @@ worker brief had told each of them not to. The pushed head commits were
 pushes, and the failed gate and the semicolon chain are recorded only in
 the operator's worker reports, which live outside this repository.
 
+The scope check is the pre-push stop of the work phase's "Scope overrun"
+rule, which nothing in the push path ran. On issue `#4375` it did not run
+before the first push (pull request `#4399`); it ran at F2 and tripped
+(effort M, 15 candidate files, limit 8) after the branch was published.
+Issue `#4480` added it as the `scope` step.
+
 ```sh
 node scripts/claimed-push.mjs --issue <n> --claim-id <id> [--nonce <nonce>] [--apply]
 ```
@@ -9350,10 +9739,20 @@ node scripts/claimed-push.mjs --issue <n> --claim-id <id> [--nonce <nonce>] [--a
   of the working directory (a failure there is reported under `assert`,
   with the next action to run the helper from the claimed worktree) and the
   branch is `active_claim.branch` of the assert's output.
-- **Dry run**: without `--apply`, the claim assert and the location check
-  run and the other three steps are reported `skipped`; the report says
-  `mode: "dry-run"` and `pushed: false`, and the exit is `0` when both
-  steps pass. With `--apply`, all five steps run.
+- **Inputs of the scope step**, all read-only: the issue title and body
+  (`gh issue view <n> --json title,body`); the layered effective policy of
+  the primary checkout, the first record of `git worktree list --porcelain`,
+  never the branch's own copy (its `markerPrefix`, normalized as the audit
+  normalizes its own `--marker-prefix`, and its `developmentBranch`); the
+  default branch (`gh repo view --json defaultBranchRef --jq
+  .defaultBranchRef.name`), read only when `developmentBranch` is absent;
+  and the git reads named in step 3. Its `gh` reads go through the
+  repository's `gh` layer, and any other `gh` argument list is refused
+  without starting a process.
+- **Dry run**: without `--apply`, the claim assert, the location check,
+  and the scope check run and the other three steps are reported
+  `skipped`; the report says `mode: "dry-run"` and `pushed: false`, and the
+  exit is `0` when the three steps pass. With `--apply`, all six steps run.
 - **Steps**, in order, each stopping the run at its first failure (the
   steps after it are reported `skipped`). The helper runs the existing
   helpers as child processes through an injectable runner and never
@@ -9373,7 +9772,69 @@ node scripts/claimed-push.mjs --issue <n> --claim-id <id> [--nonce <nonce>] [--a
    claimed worktree), and that the current branch is the claimed branch
    and HEAD is not detached (next action: switch the worktree to the
    claimed branch).
-3. `gate`: requires a clean tree by `git status --porcelain
+3. `scope`: the B3 scope check; it only reads. The base is the policy's
+   `developmentBranch`, else the live default branch; a malformed value
+   or a default name that fails the development-branch character check
+   refuses. The base must be listed by
+   `git ls-remote --heads origin <base>` and exist as
+   `refs/remotes/origin/<base>`; the step never fetches. The branch point
+   is `git merge-base refs/remotes/origin/<base> HEAD`. The canonical
+   paths are the union of
+   `git diff --no-renames --name-only -z <branch point>` (committed,
+   staged, and unstaged changes, and both sides of a rename) and
+   `git ls-files --others --exclude-standard -z`, minus two kinds of path,
+   both read at the branch point with `git ls-tree` (a literal pathspec)
+   and `git show` so that a branch cannot exclude its own files: a file
+   whose first
+   `// idd-generated-from:` banner, read from its first 200 bytes as the
+   build reads it, names a different path, and a
+   `syncPairs` target of `audit/sync-manifest.json` (a missing manifest
+   gives none). A file absent at the branch point is never a generated
+   copy, and a deleted path counts unless it is one of the two. An empty
+   set refuses. The step then runs `audit-authored-issue` with
+   `--shape child --stdin --marker-prefix <prefix> --title <title>`
+   twice, in the primary checkout: on the issue body, and on a copy that
+   is the body with a leading `## Candidate files` section of one
+   backticked bullet per canonical path. It first refuses a body with no
+   heading after its first line (an ATX heading, or a Setext heading as the
+   candidate parser reads one), a canonical path that holds a backtick, a
+   line break, or bytes that are not UTF-8 (a bullet cannot carry it
+   faithfully), and a copy whose section the
+   candidate parser does not read exactly as the section alone. The
+   verdict of each
+   run is its `effort-candidate-file-limit` finding; the audit exits `1`
+   whenever any finding fails, so its exit status is not read. A run that
+   cannot start (next action: check the helper installation, then rerun),
+   ends by signal, prints anything but one JSON object with a `findings`
+   array, or has no such finding refuses. The step fails when either
+   finding fails. Its reason names the canonical paths, how many the audit
+   counts, and the counting rule: distinct parsed keys, and a token
+   without `/` or `.`, or with whitespace, is not counted. The next action
+   is to stop without pushing and follow the Scope overrun rule in
+   `idd-work.instructions.md`. When `refs/remotes/origin/<base>` is
+   missing or differs from the SHA `git ls-remote` printed, the base is
+   stale, and the step refuses before it reads the branch point, whatever
+   the audits would say: a ref behind `origin` adds paths to the diff,
+   and a ref ahead of or diverged from it after a force-push hides paths.
+   The reason names both SHAs, and the next action is to run the fetch
+   below (see [Clone-scoped lock](#clone-scoped-lock)) and rerun the
+   helper once, then stop and report both SHAs without a push if it is
+   still stale. A body without a coherent `S`
+   or `M` effort marker passes the finding as not applicable, so the step
+   passes with the audit's detail as its reason. A failed git read refuses
+   with the next action to read the git error in the worktree and fix it,
+   then rerun; a `gh` that cannot start has the next action to check the
+   helper installation, then rerun; every other refusal of this step (a
+   failed `gh` read, including one that GitHub API load control refused
+   before it started, an unreadable policy, an unusable base, an empty
+   title or body, a malformed audit result) has the next action to stop
+   and report.
+
+   ```sh
+   node scripts/clone-lock.mjs --exec --agent-id <your agent id> -- git fetch origin +refs/heads/<base>:refs/remotes/origin/<base>
+   ```
+
+4. `gate`: requires a clean tree by `git status --porcelain
    --untracked-files=all --ignore-submodules=none`, so a user-level
    `status.showUntrackedFiles` setting cannot hide files and a
    `diff.ignoreSubmodules` or `submodule.<name>.ignore` setting cannot hide
@@ -9385,14 +9846,14 @@ node scripts/claimed-push.mjs --issue <n> --claim-id <id> [--nonce <nonce>] [--a
    refuses with the next action to fix the failure, commit, and rerun; a
    gate that is not configured or cannot start refuses with the next
    action to configure the command or run the written gate by hand.
-4. `reassert`: runs the `assert` step again immediately before the push,
+5. `reassert`: runs the `assert` step again immediately before the push,
    because the gate can run for minutes (next action: stop and re-read the
    claim, or, when the second assert cannot start, check the helper
    installation, then rerun; the assert must also still name the same
    branch), then requires `git rev-parse HEAD` and the branch tip to equal
    the recorded value (next action: rerun the helper so the gate sees the
    new HEAD).
-5. `push`: runs `git push -u origin <branch>` when the branch has no
+6. `push`: runs `git push -u origin <branch>` when the branch has no
    upstream yet, else `git push origin <branch>`, once. A push that git
    rejects (non-fast-forward, hook, missing remote) fails with git's
    message (next action: read git's message, fetch and inspect
@@ -9431,15 +9892,21 @@ node scripts/claimed-push.mjs --issue <n> --claim-id <id> [--nonce <nonce>] [--a
   `worktree`, and `steps`. Every step has an `id`, a `status` (`passed`,
   `failed`, or `skipped`), and a `reason`. A step that ran a command
   carries that command's `exitStatus`: `0` on every passed step (assert,
-  location, reassert, gate, and push; location decides by its last git
-  read, `git branch --show-current`). On a failed step the status is that
-  of the command whose result decided it, and `null` when that command
-  ended without one. A refusal that judges a value a command printed
-  (a branch the assert named, a URL or path git printed, a moved HEAD, a
-  dirty tree) carries that command's `0`. Two refusals carry none because
-  no command decided them: a path that cannot be resolved (the expected
-  sibling path or the worktree), and a gate command that is unconfigured
-  or whose policy cannot be read. Every `failed` step has a non-empty
+  location, scope, reassert, gate, and push; location decides by its last
+  git read, `git branch --show-current`). On a failed step the status is
+  that of the command whose result decided it, and `null` when that
+  command ended without one. A refusal that judges a value a command
+  printed (a branch the assert named, a URL or path git printed, a moved
+  HEAD, a dirty tree, an issue body) carries that command's `0`. Two
+  refusals carry none because no command decided them: a path that cannot
+  be resolved (the expected sibling path or the worktree), and a gate
+  command that is unconfigured or whose policy cannot be read. The scope
+  step always states its `exitStatus`: `0` when it passes, the audit's
+  status for a failed finding, the status of the command that decided any
+  other refusal, and `null` when no command decided it (an unreadable
+  policy, a malformed `developmentBranch`, a branch-point read or manifest
+  that cannot be used, or a copy whose section does not read back). Every
+  `failed` step has a non-empty
   `nextAction`. `pushed` is `true` after a push (the report then adds
   `pushedSha`, the recorded HEAD, and `pushMessage`), `false` when no push
   ran or git rejected it, and `null` when the push ended without an exit
@@ -9447,10 +9914,11 @@ node scripts/claimed-push.mjs --issue <n> --claim-id <id> [--nonce <nonce>] [--a
 - **Exit codes**: `0` when no step refused or failed, `1` for a refusal or
   failure, and `1` with kind `usage` for an argument error.
 - **Limits**: the helper never retries, never passes a force flag, and never
-  creates a commit. The `--force-with-lease` route that D2 allows after
-  publication stays a manual route. Adopting the helper in the D2 push step
-  and the E-phase push steps is a separate change, because those bundles
-  are size-budgeted.
+  creates a commit. D2 runs its normal push through the helper; the
+  `--force-with-lease` route that D2 allows after publication stays a
+  manual route, which checks `assert`, `location`, and `scope` with the
+  helper's dry run first. Adopting the helper in the E-phase push steps is
+  a separate change, because those bundles are size-budgeted.
 - **Known limit**: git resolves the branch argument of the push when the
   push starts, after the `reassert` step has compared HEAD and the branch
   tip. The helper keeps the branch argument because a SHA source does not

@@ -15,7 +15,7 @@ This repository publishes an installable library of agent skills and plugin bund
 - `npm run app:dev`: start the local Vite catalog app.
 - `npm run app:build`: build and prerender the catalog app.
 
-Before PRs, run `npm run validate && npm run test && npm run security:docs`.
+Before PRs, run `npm run pr:preflight -- --base origin/main --head HEAD` from the clean committed source head. It runs the component policy in an isolated checkout; unknown and policy changes require the full suite.
 
 ## Coding Style & Naming Conventions
 
@@ -43,11 +43,9 @@ Every command, script, reviewer, or gate described as mandatory must exist on th
 
 For every repository maintenance sweep, PR merge batch, maintainer-side PR repair, canonical synchronization, combined Security/Quality cleanup and merge, or tag/release request, **always invoke and follow the `antigravity-maintainer-batch-release` skill before triage or mutation**. If the client has not installed or discovered that skill, read and follow the repository-canonical copy at `skills/antigravity-maintainer-batch-release/SKILL.md`. This is a hard gate, including when the user asks for direct merges or a direct update to `main`; do not substitute a generic Git or GitHub workflow.
 
-Treat `main` as pull-request-only. Perform maintainer edits on a topic branch or in a clean temporary clone, merge accepted source PRs with `npm run merge:batch`, and let the protected canonical-sync PR own generated state and contributor-credit drift. Never retry a rejected direct push to `main` and never use a generic push helper for releases.
+Treat `main` as pull-request-only; use `npm run merge:batch` with strict protection and no admin bypass. Follow [the maintenance contract](docs/maintainers/maintenance-contract.md) for resumable review, release-only snapshots, immutable artifact publication and independent catalog revisions. Ordinary merges generate ephemeral validation data; only protected release PRs refresh tracked distribution state.
 
-Use the skill's end-to-end sequence: complete triage, repair mergeable source PRs, run checks in parallel, merge source PRs in conflict-aware order, perform one canonical synchronization after the source batch, use the scripted protected-release flow when requested, and verify final `main`, tag, GitHub Release, npm package, CI, and live public surfaces. For changed `SKILL.md` files, distinguish a real Tessl `review` from `manual-review-required`; the latter means Tessl was unavailable or did not produce a passing result and requires a maintainer review attested to the exact full head SHA. If neither an installed skill nor the repository-canonical copy is available and readable, stop before making repository changes and report that blocker explicitly.
-
-Every stable or prerelease version must finish with the full-release-alignment gate in the maintainer skill. Do not declare a release complete until clean local `main` equals `origin/main`; canonical generated state is drift-free; every Codex and Claude plugin mirror, editorial bundle, manifest, compatibility report, and marketplace is regenerated and version-aligned; the tag, GitHub Release, npm version and intended dist-tag agree; CI, CodeQL, and the release-tag Pages deployment for the exact released commit are green; live catalog and legacy-bridge surfaces match; and every already-configured local AAS MCP host is pinned to and actually running the released version. A release request authorizes updating existing AAS host entries only, never creating an absent host configuration.
+Every stable or prerelease version must finish with the full-release-alignment gate. Verify the immutable released commit and public bytes even if main advances. Report personal MCP host updates and actual session reload separately. Only authorized existing host entries may be changed.
 
 #### Skill Content Review Gate
 
@@ -75,3 +73,7 @@ or PR-controlled ledger is authorized.
 - `npm run maintainer:jev-hints` evaluates skill content from the `--head` git ref via `git show`; pass `--repo` with a PR worktree when changed skills are not present on the current checkout.
 - Jev hints default to five skills per run, exit 0 with a skip message when `TYPESAFE_API_KEY` is unset, and never satisfy Tessl or `--reviewed-head` skill review.
 - Maintainer documentation for Jev lives in `docs/maintainers/jev-hints.md`; the upstream TypeSafe agent skill is installed under `.agents/skills/typesafe-ai/` via `npx skills add typesafe-ai/skills --skill typesafe-ai`.
+
+### Maintainer state and attribution
+
+Use private external review receipts and batch journals as described in the maintenance contract. They never replace current protection or exact-head evidence. Update code, rules, canonical skill, installed skill and negative regressions together when the user requests a workflow change.

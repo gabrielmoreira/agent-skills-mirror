@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `MengTo/Skills` — 26 default patterns, 0 followed patterns, 218 file(s) materialized.
+Mirror of `MengTo/Skills` — 26 default patterns, 0 followed patterns, 219 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `MengTo/Skills` — 26 default patterns, 0 followed patterns, 218 file
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 218 |
+| Files         | 219 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -214,69 +214,70 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 153 | ✓ | [`agent-skills/web-design/gsap/SKILL.md`](agent-skills/web-design/gsap/SKILL.md) |
 | 154 | ✓ | [`agent-skills/web-design/high-contrast-skeuomorphic-clean/SKILL.md`](agent-skills/web-design/high-contrast-skeuomorphic-clean/SKILL.md) |
 | 155 | ✓ | [`agent-skills/web-design/horizontal-scroll-scenes/SKILL.md`](agent-skills/web-design/horizontal-scroll-scenes/SKILL.md) |
-| 156 | ✓ | [`agent-skills/web-design/image-first-grid-layout/SKILL.md`](agent-skills/web-design/image-first-grid-layout/SKILL.md) |
-| 157 | ✓ | [`agent-skills/web-design/landing-page/REFERENCES.md`](agent-skills/web-design/landing-page/REFERENCES.md) |
-| 158 | ✓ | [`agent-skills/web-design/landing-page/SKILL.md`](agent-skills/web-design/landing-page/SKILL.md) |
-| 159 | ✓ | [`agent-skills/web-design/light-mode-paper-technical/SKILL.md`](agent-skills/web-design/light-mode-paper-technical/SKILL.md) |
-| 160 | ✓ | [`agent-skills/web-design/liquid-metal-border/REFERENCES.md`](agent-skills/web-design/liquid-metal-border/REFERENCES.md) |
-| 161 | ✓ | [`agent-skills/web-design/liquid-metal-border/SKILL.md`](agent-skills/web-design/liquid-metal-border/SKILL.md) |
-| 162 | ✓ | [`agent-skills/web-design/marquee-loop/SKILL.md`](agent-skills/web-design/marquee-loop/SKILL.md) |
-| 163 | ✓ | [`agent-skills/web-design/masked-reveal/SKILL.md`](agent-skills/web-design/masked-reveal/SKILL.md) |
-| 164 | ✓ | [`agent-skills/web-design/matterjs/SKILL.md`](agent-skills/web-design/matterjs/SKILL.md) |
-| 165 | ✓ | [`agent-skills/web-design/mesh-gradient-dark-blue-clean/SKILL.md`](agent-skills/web-design/mesh-gradient-dark-blue-clean/SKILL.md) |
-| 166 | ✓ | [`agent-skills/web-design/nested-container-clean-agency/SKILL.md`](agent-skills/web-design/nested-container-clean-agency/SKILL.md) |
-| 167 | ✓ | [`agent-skills/web-design/nested-container-frames/SKILL.md`](agent-skills/web-design/nested-container-frames/SKILL.md) |
-| 168 | ✓ | [`agent-skills/web-design/number-details/SKILL.md`](agent-skills/web-design/number-details/SKILL.md) |
-| 169 | ✓ | [`agent-skills/web-design/operational-enterprise-ai/REFERENCES.md`](agent-skills/web-design/operational-enterprise-ai/REFERENCES.md) |
-| 170 | ✓ | [`agent-skills/web-design/operational-enterprise-ai/SKILL.md`](agent-skills/web-design/operational-enterprise-ai/SKILL.md) |
-| 171 | ✓ | [`agent-skills/web-design/orange-clean-paper-saas/SKILL.md`](agent-skills/web-design/orange-clean-paper-saas/SKILL.md) |
-| 172 | ✓ | [`agent-skills/web-design/paper-cinder-transition/SKILL.md`](agent-skills/web-design/paper-cinder-transition/SKILL.md) |
-| 173 | ✓ | [`agent-skills/web-design/pointer-trail-emitter/SKILL.md`](agent-skills/web-design/pointer-trail-emitter/SKILL.md) |
-| 174 | ✓ | [`agent-skills/web-design/pricing-page/REFERENCES.md`](agent-skills/web-design/pricing-page/REFERENCES.md) |
-| 175 | ✓ | [`agent-skills/web-design/pricing-page/SKILL.md`](agent-skills/web-design/pricing-page/SKILL.md) |
-| 176 | ✓ | [`agent-skills/web-design/product-proof-saas/REFERENCES.md`](agent-skills/web-design/product-proof-saas/REFERENCES.md) |
-| 177 | ✓ | [`agent-skills/web-design/product-proof-saas/SKILL.md`](agent-skills/web-design/product-proof-saas/SKILL.md) |
-| 178 | ✓ | [`agent-skills/web-design/progressive-blur/SKILL.md`](agent-skills/web-design/progressive-blur/SKILL.md) |
-| 179 | ✓ | [`agent-skills/web-design/reveal-hover-effect/REFERENCES.md`](agent-skills/web-design/reveal-hover-effect/REFERENCES.md) |
-| 180 | ✓ | [`agent-skills/web-design/reveal-hover-effect/SKILL.md`](agent-skills/web-design/reveal-hover-effect/SKILL.md) |
-| 181 | ✓ | [`agent-skills/web-design/scroll-progress-timeline/REFERENCES.md`](agent-skills/web-design/scroll-progress-timeline/REFERENCES.md) |
-| 182 | ✓ | [`agent-skills/web-design/scroll-progress-timeline/SKILL.md`](agent-skills/web-design/scroll-progress-timeline/SKILL.md) |
-| 183 | ✓ | [`agent-skills/web-design/scroll-scrubbed-visual-sequence/REFERENCES.md`](agent-skills/web-design/scroll-scrubbed-visual-sequence/REFERENCES.md) |
-| 184 | ✓ | [`agent-skills/web-design/scroll-scrubbed-visual-sequence/SKILL.md`](agent-skills/web-design/scroll-scrubbed-visual-sequence/SKILL.md) |
-| 185 | ✓ | [`agent-skills/web-design/scroll-scrubbed-word-reveal/REFERENCES.md`](agent-skills/web-design/scroll-scrubbed-word-reveal/REFERENCES.md) |
-| 186 | ✓ | [`agent-skills/web-design/scroll-scrubbed-word-reveal/SKILL.md`](agent-skills/web-design/scroll-scrubbed-word-reveal/SKILL.md) |
-| 187 | ✓ | [`agent-skills/web-design/scroll-world-storytelling/REFERENCES.md`](agent-skills/web-design/scroll-world-storytelling/REFERENCES.md) |
-| 188 | ✓ | [`agent-skills/web-design/scroll-world-storytelling/SKILL.md`](agent-skills/web-design/scroll-world-storytelling/SKILL.md) |
-| 189 | ✓ | [`agent-skills/web-design/shaders-cursor-ripples/REFERENCES.md`](agent-skills/web-design/shaders-cursor-ripples/REFERENCES.md) |
-| 190 | ✓ | [`agent-skills/web-design/shaders-cursor-ripples/SKILL.md`](agent-skills/web-design/shaders-cursor-ripples/SKILL.md) |
-| 191 | ✓ | [`agent-skills/web-design/skeuomorphic-ui/SKILL.md`](agent-skills/web-design/skeuomorphic-ui/SKILL.md) |
-| 192 | ✓ | [`agent-skills/web-design/solar-duotone-bold/SKILL.md`](agent-skills/web-design/solar-duotone-bold/SKILL.md) |
-| 193 | ✓ | [`agent-skills/web-design/split-layout-technical/SKILL.md`](agent-skills/web-design/split-layout-technical/SKILL.md) |
-| 194 | ✓ | [`agent-skills/web-design/staggered-word-reveal/SKILL.md`](agent-skills/web-design/staggered-word-reveal/SKILL.md) |
-| 195 | ✓ | [`agent-skills/web-design/tailwindcss/REFERENCES.md`](agent-skills/web-design/tailwindcss/REFERENCES.md) |
-| 196 | ✓ | [`agent-skills/web-design/tailwindcss/SKILL.md`](agent-skills/web-design/tailwindcss/SKILL.md) |
-| 197 | ✓ | [`agent-skills/web-design/tech-green-dark-mode-modern/SKILL.md`](agent-skills/web-design/tech-green-dark-mode-modern/SKILL.md) |
-| 198 | ✓ | [`agent-skills/web-design/technical-wireframe-info-layout/SKILL.md`](agent-skills/web-design/technical-wireframe-info-layout/SKILL.md) |
-| 199 | ✓ | [`agent-skills/web-design/thinking-orbs/REFERENCES.md`](agent-skills/web-design/thinking-orbs/REFERENCES.md) |
-| 200 | ✓ | [`agent-skills/web-design/thinking-orbs/SKILL.md`](agent-skills/web-design/thinking-orbs/SKILL.md) |
-| 201 | ✓ | [`agent-skills/web-design/threejs-landscape/SKILL.md`](agent-skills/web-design/threejs-landscape/SKILL.md) |
-| 202 | ✓ | [`agent-skills/web-design/threejs-towers/SKILL.md`](agent-skills/web-design/threejs-towers/SKILL.md) |
-| 203 | ✓ | [`agent-skills/web-design/threejs-weather/SKILL.md`](agent-skills/web-design/threejs-weather/SKILL.md) |
-| 204 | ✓ | [`agent-skills/web-design/threejs/REFERENCES.md`](agent-skills/web-design/threejs/REFERENCES.md) |
-| 205 | ✓ | [`agent-skills/web-design/threejs/SKILL.md`](agent-skills/web-design/threejs/SKILL.md) |
-| 206 | ✓ | [`agent-skills/web-design/unicorn-studio/REFERENCES.md`](agent-skills/web-design/unicorn-studio/REFERENCES.md) |
-| 207 | ✓ | [`agent-skills/web-design/unicorn-studio/SKILL.md`](agent-skills/web-design/unicorn-studio/SKILL.md) |
-| 208 | ✓ | [`agent-skills/web-design/vantajs/REFERENCES.md`](agent-skills/web-design/vantajs/REFERENCES.md) |
-| 209 | ✓ | [`agent-skills/web-design/vantajs/SKILL.md`](agent-skills/web-design/vantajs/SKILL.md) |
-| 210 | ✓ | [`agent-skills/web-design/webgl-3d-object/SKILL.md`](agent-skills/web-design/webgl-3d-object/SKILL.md) |
-| 211 | ✓ | [`agent-skills/web-design/webgl-landing-steering/REFERENCES.md`](agent-skills/web-design/webgl-landing-steering/REFERENCES.md) |
-| 212 | ✓ | [`agent-skills/web-design/webgl-landing-steering/SKILL.md`](agent-skills/web-design/webgl-landing-steering/SKILL.md) |
-| 213 | ✓ | [`agent-skills/web-design/webgl-laser/SKILL.md`](agent-skills/web-design/webgl-laser/SKILL.md) |
-| 214 | ✓ | [`agent-skills/workflow/workflow-progress-screenshots/SKILL.md`](agent-skills/workflow/workflow-progress-screenshots/SKILL.md) |
-| 215 | ✓ | [`agent-skills/workflow/workflow-score-to-target/SKILL.md`](agent-skills/workflow/workflow-score-to-target/SKILL.md) |
-| 216 | ✓ | [`agent-skills/workflow/workflow-ship-change/SKILL.md`](agent-skills/workflow/workflow-ship-change/SKILL.md) |
-| 217 | ✓ | [`agent-skills/workflow/workflow-threads-manager/SKILL.md`](agent-skills/workflow/workflow-threads-manager/SKILL.md) |
-| 218 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 156 | ✓ | [`agent-skills/web-design/html-demo/SKILL.md`](agent-skills/web-design/html-demo/SKILL.md) |
+| 157 | ✓ | [`agent-skills/web-design/image-first-grid-layout/SKILL.md`](agent-skills/web-design/image-first-grid-layout/SKILL.md) |
+| 158 | ✓ | [`agent-skills/web-design/landing-page/REFERENCES.md`](agent-skills/web-design/landing-page/REFERENCES.md) |
+| 159 | ✓ | [`agent-skills/web-design/landing-page/SKILL.md`](agent-skills/web-design/landing-page/SKILL.md) |
+| 160 | ✓ | [`agent-skills/web-design/light-mode-paper-technical/SKILL.md`](agent-skills/web-design/light-mode-paper-technical/SKILL.md) |
+| 161 | ✓ | [`agent-skills/web-design/liquid-metal-border/REFERENCES.md`](agent-skills/web-design/liquid-metal-border/REFERENCES.md) |
+| 162 | ✓ | [`agent-skills/web-design/liquid-metal-border/SKILL.md`](agent-skills/web-design/liquid-metal-border/SKILL.md) |
+| 163 | ✓ | [`agent-skills/web-design/marquee-loop/SKILL.md`](agent-skills/web-design/marquee-loop/SKILL.md) |
+| 164 | ✓ | [`agent-skills/web-design/masked-reveal/SKILL.md`](agent-skills/web-design/masked-reveal/SKILL.md) |
+| 165 | ✓ | [`agent-skills/web-design/matterjs/SKILL.md`](agent-skills/web-design/matterjs/SKILL.md) |
+| 166 | ✓ | [`agent-skills/web-design/mesh-gradient-dark-blue-clean/SKILL.md`](agent-skills/web-design/mesh-gradient-dark-blue-clean/SKILL.md) |
+| 167 | ✓ | [`agent-skills/web-design/nested-container-clean-agency/SKILL.md`](agent-skills/web-design/nested-container-clean-agency/SKILL.md) |
+| 168 | ✓ | [`agent-skills/web-design/nested-container-frames/SKILL.md`](agent-skills/web-design/nested-container-frames/SKILL.md) |
+| 169 | ✓ | [`agent-skills/web-design/number-details/SKILL.md`](agent-skills/web-design/number-details/SKILL.md) |
+| 170 | ✓ | [`agent-skills/web-design/operational-enterprise-ai/REFERENCES.md`](agent-skills/web-design/operational-enterprise-ai/REFERENCES.md) |
+| 171 | ✓ | [`agent-skills/web-design/operational-enterprise-ai/SKILL.md`](agent-skills/web-design/operational-enterprise-ai/SKILL.md) |
+| 172 | ✓ | [`agent-skills/web-design/orange-clean-paper-saas/SKILL.md`](agent-skills/web-design/orange-clean-paper-saas/SKILL.md) |
+| 173 | ✓ | [`agent-skills/web-design/paper-cinder-transition/SKILL.md`](agent-skills/web-design/paper-cinder-transition/SKILL.md) |
+| 174 | ✓ | [`agent-skills/web-design/pointer-trail-emitter/SKILL.md`](agent-skills/web-design/pointer-trail-emitter/SKILL.md) |
+| 175 | ✓ | [`agent-skills/web-design/pricing-page/REFERENCES.md`](agent-skills/web-design/pricing-page/REFERENCES.md) |
+| 176 | ✓ | [`agent-skills/web-design/pricing-page/SKILL.md`](agent-skills/web-design/pricing-page/SKILL.md) |
+| 177 | ✓ | [`agent-skills/web-design/product-proof-saas/REFERENCES.md`](agent-skills/web-design/product-proof-saas/REFERENCES.md) |
+| 178 | ✓ | [`agent-skills/web-design/product-proof-saas/SKILL.md`](agent-skills/web-design/product-proof-saas/SKILL.md) |
+| 179 | ✓ | [`agent-skills/web-design/progressive-blur/SKILL.md`](agent-skills/web-design/progressive-blur/SKILL.md) |
+| 180 | ✓ | [`agent-skills/web-design/reveal-hover-effect/REFERENCES.md`](agent-skills/web-design/reveal-hover-effect/REFERENCES.md) |
+| 181 | ✓ | [`agent-skills/web-design/reveal-hover-effect/SKILL.md`](agent-skills/web-design/reveal-hover-effect/SKILL.md) |
+| 182 | ✓ | [`agent-skills/web-design/scroll-progress-timeline/REFERENCES.md`](agent-skills/web-design/scroll-progress-timeline/REFERENCES.md) |
+| 183 | ✓ | [`agent-skills/web-design/scroll-progress-timeline/SKILL.md`](agent-skills/web-design/scroll-progress-timeline/SKILL.md) |
+| 184 | ✓ | [`agent-skills/web-design/scroll-scrubbed-visual-sequence/REFERENCES.md`](agent-skills/web-design/scroll-scrubbed-visual-sequence/REFERENCES.md) |
+| 185 | ✓ | [`agent-skills/web-design/scroll-scrubbed-visual-sequence/SKILL.md`](agent-skills/web-design/scroll-scrubbed-visual-sequence/SKILL.md) |
+| 186 | ✓ | [`agent-skills/web-design/scroll-scrubbed-word-reveal/REFERENCES.md`](agent-skills/web-design/scroll-scrubbed-word-reveal/REFERENCES.md) |
+| 187 | ✓ | [`agent-skills/web-design/scroll-scrubbed-word-reveal/SKILL.md`](agent-skills/web-design/scroll-scrubbed-word-reveal/SKILL.md) |
+| 188 | ✓ | [`agent-skills/web-design/scroll-world-storytelling/REFERENCES.md`](agent-skills/web-design/scroll-world-storytelling/REFERENCES.md) |
+| 189 | ✓ | [`agent-skills/web-design/scroll-world-storytelling/SKILL.md`](agent-skills/web-design/scroll-world-storytelling/SKILL.md) |
+| 190 | ✓ | [`agent-skills/web-design/shaders-cursor-ripples/REFERENCES.md`](agent-skills/web-design/shaders-cursor-ripples/REFERENCES.md) |
+| 191 | ✓ | [`agent-skills/web-design/shaders-cursor-ripples/SKILL.md`](agent-skills/web-design/shaders-cursor-ripples/SKILL.md) |
+| 192 | ✓ | [`agent-skills/web-design/skeuomorphic-ui/SKILL.md`](agent-skills/web-design/skeuomorphic-ui/SKILL.md) |
+| 193 | ✓ | [`agent-skills/web-design/solar-duotone-bold/SKILL.md`](agent-skills/web-design/solar-duotone-bold/SKILL.md) |
+| 194 | ✓ | [`agent-skills/web-design/split-layout-technical/SKILL.md`](agent-skills/web-design/split-layout-technical/SKILL.md) |
+| 195 | ✓ | [`agent-skills/web-design/staggered-word-reveal/SKILL.md`](agent-skills/web-design/staggered-word-reveal/SKILL.md) |
+| 196 | ✓ | [`agent-skills/web-design/tailwindcss/REFERENCES.md`](agent-skills/web-design/tailwindcss/REFERENCES.md) |
+| 197 | ✓ | [`agent-skills/web-design/tailwindcss/SKILL.md`](agent-skills/web-design/tailwindcss/SKILL.md) |
+| 198 | ✓ | [`agent-skills/web-design/tech-green-dark-mode-modern/SKILL.md`](agent-skills/web-design/tech-green-dark-mode-modern/SKILL.md) |
+| 199 | ✓ | [`agent-skills/web-design/technical-wireframe-info-layout/SKILL.md`](agent-skills/web-design/technical-wireframe-info-layout/SKILL.md) |
+| 200 | ✓ | [`agent-skills/web-design/thinking-orbs/REFERENCES.md`](agent-skills/web-design/thinking-orbs/REFERENCES.md) |
+| 201 | ✓ | [`agent-skills/web-design/thinking-orbs/SKILL.md`](agent-skills/web-design/thinking-orbs/SKILL.md) |
+| 202 | ✓ | [`agent-skills/web-design/threejs-landscape/SKILL.md`](agent-skills/web-design/threejs-landscape/SKILL.md) |
+| 203 | ✓ | [`agent-skills/web-design/threejs-towers/SKILL.md`](agent-skills/web-design/threejs-towers/SKILL.md) |
+| 204 | ✓ | [`agent-skills/web-design/threejs-weather/SKILL.md`](agent-skills/web-design/threejs-weather/SKILL.md) |
+| 205 | ✓ | [`agent-skills/web-design/threejs/REFERENCES.md`](agent-skills/web-design/threejs/REFERENCES.md) |
+| 206 | ✓ | [`agent-skills/web-design/threejs/SKILL.md`](agent-skills/web-design/threejs/SKILL.md) |
+| 207 | ✓ | [`agent-skills/web-design/unicorn-studio/REFERENCES.md`](agent-skills/web-design/unicorn-studio/REFERENCES.md) |
+| 208 | ✓ | [`agent-skills/web-design/unicorn-studio/SKILL.md`](agent-skills/web-design/unicorn-studio/SKILL.md) |
+| 209 | ✓ | [`agent-skills/web-design/vantajs/REFERENCES.md`](agent-skills/web-design/vantajs/REFERENCES.md) |
+| 210 | ✓ | [`agent-skills/web-design/vantajs/SKILL.md`](agent-skills/web-design/vantajs/SKILL.md) |
+| 211 | ✓ | [`agent-skills/web-design/webgl-3d-object/SKILL.md`](agent-skills/web-design/webgl-3d-object/SKILL.md) |
+| 212 | ✓ | [`agent-skills/web-design/webgl-landing-steering/REFERENCES.md`](agent-skills/web-design/webgl-landing-steering/REFERENCES.md) |
+| 213 | ✓ | [`agent-skills/web-design/webgl-landing-steering/SKILL.md`](agent-skills/web-design/webgl-landing-steering/SKILL.md) |
+| 214 | ✓ | [`agent-skills/web-design/webgl-laser/SKILL.md`](agent-skills/web-design/webgl-laser/SKILL.md) |
+| 215 | ✓ | [`agent-skills/workflow/workflow-progress-screenshots/SKILL.md`](agent-skills/workflow/workflow-progress-screenshots/SKILL.md) |
+| 216 | ✓ | [`agent-skills/workflow/workflow-score-to-target/SKILL.md`](agent-skills/workflow/workflow-score-to-target/SKILL.md) |
+| 217 | ✓ | [`agent-skills/workflow/workflow-ship-change/SKILL.md`](agent-skills/workflow/workflow-ship-change/SKILL.md) |
+| 218 | ✓ | [`agent-skills/workflow/workflow-threads-manager/SKILL.md`](agent-skills/workflow/workflow-threads-manager/SKILL.md) |
+| 219 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

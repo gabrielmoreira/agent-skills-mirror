@@ -26,7 +26,7 @@ A thread has three separate records on disk, all under the workspace:
   threads/<hex(thread_id)>.jsonl     the thread's message log (what the UI lists)
   turn_states/<hex(thread)>/<hex(request)>.json
                                      snapshot of one turn's progress
-session store (agent::session_store) model-facing transcript (agent session host)
+session store (storage::sessions) model-facing transcript (agent session host)
 ```
 
 The message log is the user-facing history: one row per user message and
@@ -133,7 +133,7 @@ its tools act in another. `web_chat::run_task` reads the binding through
 
 `web_chat::progress_bridge` drives a `tinyagents_session::turn_state::TurnStateMirror`
 for each web turn. `turn_state::mirror::ObserveProgress` (`mirror/observe.rs`)
-is the host projection: it turns each `agent::progress::AgentProgress` event
+is the host projection: it turns each `progress::AgentProgress` event
 into a `TurnState` mutation. Streaming deltas only update memory; the mirror
 flushes at iteration and tool boundaries. A finished turn is kept as
 `Completed` so the UI can replay it. A turn whose bridge exits without

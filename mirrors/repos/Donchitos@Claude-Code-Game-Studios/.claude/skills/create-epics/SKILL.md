@@ -1,369 +1,267 @@
 ---
 name: create-epics
-description: "Turn GDDs plus architecture into epics — one per architectural module, with untraced requirements. Then /create-stories [epic-slug]."
+description: "Turns the GDDs and architecture into epics, one per architectural module. Use when the user wants to break the game into epics or plan the work before writing stories. Not for splitting one epic into stories."
 argument-hint: "[system-name | layer: foundation|core|feature|presentation | all] [--review full|lean|solo]"
 user-invocable: true
-allowed-tools: Read, Glob, Grep, Write, Edit, Agent, AskUserQuestion, Bash(bash "*/.claude/skills/create-epics/../../hooks/yaml-helper.sh" resolve_config *)
+allowed-tools: Read, Glob, Grep, Write, Edit, Agent, AskUserQuestion, Bash(bash "*/.claude/skills/create-epics/../../hooks/yaml-helper.sh" resolve_config *), Bash(bash .claude/scripts/gdd-structure-check.sh*), Bash(bash .claude/scripts/adr-status.sh*), Bash(bash .claude/scripts/md-section.sh *), Bash(bash .claude/scripts/write-guard.sh overwrite *)
 model: sonnet
 ---
 
-!`bash "${CLAUDE_SKILL_DIR}/../../hooks/yaml-helper.sh" resolve_config --keys review_mode,automation,workflow,docs.density,story_granularity,system_overrides`
+!`bash "${CLAUDE_SKILL_DIR}/../../hooks/yaml-helper.sh" resolve_config --keys review_mode,review_gate,automation,workflow,docs.density,engine_values,system_overrides`
 
 Resolved above — use as-is; `--review` overrides `review_mode`. No block →
 defaults in `.claude/docs/config-resolution.md`.
 
+Ask with the question tool. Without one, list the options numbered and end your turn
+to wait. A skipped or dismissed question is not an answer: ask again in plain text.
 
 # Create Epics
 
-An epic is a named, bounded body of work that maps to one architectural module.
-It defines **what** needs to be built and **who owns it architecturally**. It
-does not prescribe implementation steps — that is the job of stories.
+An epic is a bounded body of work for one architectural module: **what** gets built
+and which decisions govern it. How to build it is for the stories. Run it once per
+layer as development reaches that layer: Feature epics written before Core is
+nearly done describe a design that will have changed.
 
-**Run this skill once per layer** as you approach that layer in development.
-Do not create Feature layer epics until Core is nearly complete — the design
-will have changed.
+**Writes:** `production/epics/[epic-slug]/EPIC.md` per epic and its row in
+`production/epics/index.md`, each after its own yes.
+**Next:** `/create-stories [epic-slug]` per epic. This skill never writes a story.
 
-**Output:** `production/epics/[epic-slug]/EPIC.md` + `production/epics/index.md`
+Asks follow `.claude/docs/automation-modes.md` (collaborative always asks, guided
+asks on major choices, autonomous logs and goes on; `automation_always_ask`
+categories always ask).
 
-**Next step after each epic:** `/create-stories [epic-slug]`
-
-**When to run:** After `/create-control-manifest` and `/architecture-review` pass
-(at `full`). At `standard`, critical ADRs suffice, and a control manifest is
-read if present. At
-`minimal`, this skill is **optional and not part of the path** — `/create-stories`
-synthesizes the epic from `design/game-brief.md` itself (Option A). If run anyway,
-it decomposes directly from the brief with no GDD/ADR/manifest prerequisite.
-
-> **At `minimal`, this skill is optional — `/create-stories` synthesizes the epic**
-> (Option A). At that tier `/create-stories` reads `design/game-brief.md`
-> directly, writes a lightweight implicit `production/epics/<slug>/EPIC.md`, and
-> generates stories from the MVP list — so the path is `/brainstorm` →
-> `/create-stories` → `/dev-story`, with no separate `/create-epics` or
-> `/sprint-plan` step. **At `standard`/`full` an epic IS required**:
-> `/create-stories` reads `production/epics/[slug]/EPIC.md`, and skipping this
-> skill there leaves `/dev-story` with no story to implement — a dead end, not a
-> shortcut.
-
----
-
-## 1. Parse Arguments
-
-
-See `.claude/docs/director-gates.md` for the full check pattern. Individual gate definitions live in `.claude/docs/director-gates/[gate-id].md` — the spawned agent reads its own gate file; do not read it in the parent session.
-
-
-Every `AskUserQuestion` call follows `.claude/docs/automation-modes.md`
-(collaborative asks always · guided major-only · autonomous logs and proceeds;
-`automation_always_ask` categories always prompt).
-
-**`workflow`** (per `.claude/docs/workflow-modes.md`):
-
-create-epics runs project-wide: it uses the project-level tier for its
-prerequisite expectations and consults
-`workflow_overrides.system_overrides.<system>` per-system when reading each
-in-scope GDD. See "Workflow tier adjustment" in Step 2.
-
-**`story_granularity`** — it sizes the
-epic's story breakdown: expect **3–5** child stories per epic at `coarse` (the default, via `rigor: minimal`), **5–10**
-at `balanced` (`rigor: standard`), **10–20** at `fine`.
-
-**`docs.density`** — it controls the *depth* of each epic's written scope and
-rationale, not the story count (that is `story_granularity`). `modes.rigor` sets
-it alongside `workflow`; set `docs.density` explicitly to vary epic prose alone:
-`terse` (the default, via `rigor: minimal`) = scope as bullets, one-line rationale; `balanced` = a scope paragraph
-with light rationale (`rigor: standard`); `thorough` = full scope prose with governing-ADR
-rationale and risk discussion. The EPIC.md tables (GDD requirements, governing
-ADRs) are structural and stay whole at every density.
-
-**Modes:**
-- `/create-epics all` — process all systems in layer order
-- `/create-epics layer: foundation` — Foundation layer only
-- `/create-epics layer: core` — Core layer only
-- `/create-epics layer: feature` — Feature layer only
-- `/create-epics layer: presentation` — Presentation layer only
-- `/create-epics [system-name]` — one specific system
-- No argument — ask: "Which layer or system would you like to create epics for?"
-
----
-
-## 2. Load Inputs
-
-### Step 2a — Summary scan (fast, fail-open)
-
-**At `minimal`, skip Steps 2a and 2b** — that tier decomposes from
-`design/game-brief.md` and has no GDDs by design (see the tier note below). Read
-the brief instead; if it is missing, report "No `design/game-brief.md` — run
-`/start` or `/brainstorm` first" and stop.
-
-**At `standard` and `full`, establish the denominator first.** Glob `design/gdd/*.md`, excluding the
-non-system docs — `game-concept.md`, `systems-index.md`, `game-pillars.md`,
-`gameplay-tags.md`, `entity-registry.md`, `fixture-swap-ledger.md`, any
-`gdd-cross-review-*.md`, `sound-bible.md` — the set `gdd-structure-check.sh`
-skips (the sound bible belongs in `design/audio/`; it is listed for projects
-that still keep it at the earlier location). Call the
-count **N**. If N is 0, there are no system GDDs — report "No system GDDs found
-in `design/gdd/` — run `/design-system` first" and stop.
-
-Scan for Summary sections:
+Checklist (copy it and tick as you go):
 
 ```
-Grep pattern="^## Summary" glob="design/gdd/*.md" output_mode="content" -A 5
+- [ ] Phase 1: scope and tier
+- [ ] Phase 2: inputs loaded and reported
+- [ ] Phase 3: each epic shown, "Shall I create Epic: …?" asked one at a time
+- [ ] Phase 4: producer review run, or its skip noted
+- [ ] Phase 5: each EPIC.md and index row written after its own yes
+- [ ] Phase 6: closing block printed
 ```
 
-Interpret the **M** matches against N. These are three different outcomes, and
-a zero-match scan is **never** the same as "nothing in scope":
+## Phase 1: Scope and tier
 
-| Result | Meaning | Action |
-|---|---|---|
-| **M = N** | Every GDD has a Summary. | For `layer:`/`[system-name]` modes, use the Summary Quick-reference (Layer/Priority) to pick the in-scope set; skip full-reading the rest. |
-| **0 < M < N** | Partial adoption — older GDDs predate `## Summary`. | Scope the M by their Summaries; determine the scope of the **N − M** unmatched from `systems-index.md` (layer/priority) and full-read those. |
-| **0 matches, N > 0** | Expected for GDDs authored before `/design-system` emitted `## Summary`. | Determine scope for **all N** from `systems-index.md` and full-read the in-scope set. This is the pre-optimization behaviour — correct, only more expensive. Note once: "No `## Summary` sections found across [N] GDDs — scoping from `systems-index.md` instead of Summary." |
+The text typed after the skill name, with any `--review <mode>` pair removed:
 
-**Never treat an absent `## Summary` as an absent system.** The scan narrows the
-*read* set when it succeeds; it never shrinks the *in-scope* set. In `all` mode
-every system is in scope regardless of Summary, so the scan is a convenience
-only — never a filter.
+- `all`: every system, in layer order.
+- `layer: foundation` (or `core`, `feature`, `presentation`): that layer only.
+- a system name: that system only.
+- nothing: the request's own words when they name a layer or system ("foundation
+  and core"); else ask "Which layer or system would you like epics for?"
 
-### Step 2b — Full document load (in-scope systems only)
+**Tier.** The project's `workflow` value sets what is required (Phase 2). Each
+in-scope system's own GDD bar comes from its `system_overrides` row, when it has one.
 
-Using the Step 2a grep results, identify which systems are in scope. Read full documents **only for in-scope systems** — do not read GDDs or ADRs for out-of-scope systems or layers.
+**At `minimal`, tell the user first:** this step is optional at this tier, because
+`/create-stories` builds the epic from `design/game-brief.md` by itself. Then go on
+when they asked for epics.
 
-Read for in-scope systems:
+## Phase 2: Load the inputs
 
-- `design/gdd/systems-index.md` — authoritative system list, layers, priority
-- In-scope GDDs only (Approved or Designed status, filtered by Step 2a results)
-- `docs/architecture/architecture.md` — module ownership and API boundaries
-- Accepted ADRs **whose domains cover in-scope systems only** — skip ADRs for
-  unrelated domains entirely. For each in-scope ADR, load only the "GDD
-  Requirements Addressed", "Decision", and "Engine Compatibility" sections —
-  never an unbounded full read:
-  ```
-  Grep pattern="^## (GDD Requirements Addressed|Decision|Engine Compatibility)" path="docs/architecture/[adr-file].md" output_mode="content" -n
-  ```
-  then `Read(offset, limit)` bounded to each match through the next `## `
-  heading (or to end of file for the last match). This matters most on a
-  large ADR.
-- `docs/architecture/control-manifest.md` — manifest version date from header
-- `docs/architecture/tr-registry.yaml` — for tracing requirements to ADR coverage
-- `docs/engine-reference/[engine]/VERSION.md` — engine name, version, risk levels
+### `minimal`: the brief
 
-Report: "Loaded [N] GDDs, [M] ADRs, engine: [name + version]."
+Read `design/game-brief.md`. None: stop, "No `design/game-brief.md` — run `/start`
+or `/brainstorm` first." Never ask for GDDs, a systems index, an architecture
+document, ADRs, a TR registry or a control manifest, and never send the user to
+`/design-system`, `/map-systems` or `/create-architecture` first: this tier has none
+by design.
 
-> **Workflow tier adjustment** (resolved in Step 1; per-system via
-> `system_overrides`). The inputs above are the `full` baseline:
-> - **`full`** — every in-scope GDD must be Approved with all 8 sections; TR
->   registry + control manifest are required inputs; untraced requirements
->   (Step 4) are flagged before proceeding.
-> - **`standard`** — GDDs need the 5 required sections (+ conditional Formulas)
->   approved; only **critical (Foundation-layer) ADRs** are expected; the control
->   manifest is read if present, not required. A system pinned higher via
->   `system_overrides` must still meet its higher bar.
-> - **`minimal`** — decompose against `design/game-brief.md` +
->   acceptance criteria. Do not require GDDs, ADRs, the TR registry, or the
->   manifest; skip the untraced-requirement gate. If run, the epic is still
->   produced — but note `/create-stories` also synthesizes one from the brief when
->   this skill is skipped (the default `minimal` path).
+Report first, word for word:
 
----
+```
+Loaded: design/game-brief.md · engine [name version from the engine_values line]
+At minimal this step is optional: /create-stories builds the epic from the brief by itself.
+```
 
-## 3. Processing Order
+The epics come from the brief's MVP feature list, in its **Build order**. A short
+brief is one epic, slugged from the brief's working title (the slug `/create-stories`
+uses when nothing is typed). When the user asks for the work grouped, make one epic
+per group of MVP features that ship together. Every epic names its slug, since
+`/create-stories` needs it typed.
 
-Process in dependency-safe layer order:
-1. **Foundation** (no dependencies)
-2. **Core** (depends on Foundation)
-3. **Feature** (depends on Core)
-4. **Presentation** (depends on Feature + Core)
+### `standard` and `full`: the design and the architecture
 
-Within each layer, use the order from `systems-index.md`.
+1. **The system GDDs.** `bash .claude/scripts/gdd-structure-check.sh` lists every
+   system GDD; the game concept, systems index, pillars, cross-reviews and the other
+   non-system documents are left out for you. Their count is **N**. N is 0: stop,
+   "No system GDDs found in `design/gdd/` — run `/design-system` first."
+2. **What is in scope.** Each GDD's `## Summary` quick reference gives its layer and
+   priority. A GDD with no Summary (older GDDs predate it) takes its layer from
+   `design/gdd/systems-index.md`. Never treat an absent `## Summary` as an absent system:
+   it never drops one from scope.
+3. **The architecture.** `docs/architecture/architecture.md` is required at both
+   tiers: missing, stop with
+   "No `docs/architecture/architecture.md` — run `/create-architecture` first." Never invent module boundaries.
+4. **For in-scope systems only**, by section, never whole:
+   - each GDD's Overview and Acceptance Criteria
+     (`bash .claude/scripts/md-section.sh extract design/gdd/<file>.md "Overview"`);
+   - `bash .claude/scripts/adr-status.sh` for every ADR's status, layer and missing
+     sections; then the GDD Requirements Addressed, Decision and Engine
+     Compatibility sections of the ADRs that cover in-scope systems;
+   - `docs/architecture/tr-registry.yaml`: the entries whose `system:` is an
+     in-scope system;
+   - the control manifest's `Manifest Version` line (read if present at `standard`,
+     required at `full`);
+   - `docs/engine-reference/<engine>/VERSION.md` for the engine's risk levels.
 
-> **At `minimal` there is no `systems-index.md`** — `/map-systems` is not required
-> at that tier, so nothing has produced one. Derive the layer split and ordering
-> from `design/game-brief.md` instead: its **Build order** field names what must
-> exist first. Do not stop, and do not send the user to `/map-systems` to satisfy
-> an ordering hint — the tier deliberately skips it.
+Report before defining anything, with the real state:
 
----
+```
+Loaded: [N] system GDDs, [n] in scope ([names]) · [M] ADRs ([A] Accepted, [P] Proposed) · manifest v[date | absent] · engine [name version from the engine_values line]
+```
 
-## 4. Define Each Epic
+At `full`, every in-scope GDD needs all 8 sections and Approved status, and the TR
+registry and control manifest are required. At `standard`, the GDDs need their 5
+required sections, and only critical (Foundation-layer) ADRs are expected.
 
-For each system, map it to an architectural module from `architecture.md`.
+## Phase 3: Define each epic, ask one at a time
 
-Check ADR coverage against the TR registry **per the resolved tier** (Step 1):
-- **`full`** — trace every TR-ID; warn on each untraced requirement (below).
-- **`standard`** — only **critical (Foundation-layer) ADRs** are expected; trace
-  those. Treat untraced non-critical requirements as informational (list them, do
-  not block or emit the untraced-requirements warning).
-- **`minimal`** — skip this check entirely (no TR registry / ADR expected).
+Process by layer: Foundation, then Core, Feature, Presentation; within a layer, the
+systems index order (at `minimal`, the brief's Build order). For each system, its
+module from `architecture.md` (at `minimal`, the brief's feature group).
 
-- **Traced requirements**: TR-IDs that have an Accepted ADR covering them
-- **Untraced requirements**: TR-IDs with no ADR — warn before proceeding (full only)
+**Requirement coverage** (not at `minimal`). Each TR-ID of the system is:
 
-Present to user before writing anything:
+- **covered** when an **Accepted** ADR addresses it;
+- **untraced** otherwise. A requirement whose only ADR is `Proposed` (or any other
+  status) is untraced, never covered: its row reads `❌ No ADR (ADR-NNNN Proposed)`,
+  so `/create-stories` still sees that ADR and blocks its story.
+
+Untraced requirements are listed under **Untraced Requirements**. The ⚠️ warning
+below is for each untraced requirement at `full`, and only for untraced
+Foundation-layer requirements at `standard`; any other untraced requirement at
+`standard` is listed as information, with no warning.
 
 ```
 ## Epic: [System Name]
-
-**Layer**: [Foundation / Core / Feature / Presentation]
-**GDD**: design/gdd/[filename].md
-**Architecture Module**: [module name from architecture.md]
-**Governing ADRs**: [ADR-NNNN, ADR-MMMM]
-**Engine Risk**: [LOW / MEDIUM / HIGH — highest risk among governing ADRs]
-**GDD Requirements Covered by ADRs**: [N / total]
-**Untraced Requirements**: [list TR-IDs with no ADR, or "None"]
+**Layer**: [Foundation | Core | Feature | Presentation]
+**GDD**: design/gdd/[file].md   (at minimal: design/game-brief.md, MVP features [list])
+**Architecture Module**: [module]
+**Governing ADRs**: [Accepted ADRs, or "none"]
+**Engine Risk**: [LOW | MEDIUM | HIGH — the highest among governing ADRs, else VERSION.md's]
+**Requirements covered by Accepted ADRs**: [n / total]
+**Untraced Requirements**: [TR-IDs with why, or "None"]
 ```
 
-If there are untraced requirements:
-> "⚠️ [N] requirements in [system] have no ADR. The epic can be created, but
-> `/create-stories` will write their stories with no governing ADR (`ADR: N/A`)
-> and `Status: Ready` — nothing downstream blocks them, so they would be
-> implemented without architectural guidance. Run `/architecture-decision` first
-> if they need a decision, or proceed and accept the gap."
+The warning, when it applies: "⚠️ [N] requirements in [system] have no Accepted ADR.
+Their stories will be written with no governing ADR, or Blocked on a Proposed one.
+Run `/architecture-decision` first if they need a decision, or go on and accept the
+gap."
 
-Use `AskUserQuestion`:
-- Prompt: "Shall I create Epic: [name]?"
-- Options:
-  - `[A] Yes, create it`
-  - `[B] Skip this epic`
-  - `[C] Pause — I need to write ADRs first`
+Then ask, **for this epic alone**: "Shall I create Epic: [name]?" Options: Yes,
+create it / Skip this epic / Pause — I need to write ADRs first. Show and ask the
+next epic only after this answer. Never fold several epics into one question.
 
----
+A yes covers the epic it answers, and only that one, even when it is worded for all
+("all of it", "go ahead with everything"): an epic is approved on sight. Show the
+next epic's block and ask again, until every epic in scope has been shown and
+answered.
 
-## 4b. Producer Epic Structure Gate
+## Phase 4: Producer review
 
-**Review mode check** — apply before spawning PR-EPIC:
-- `solo` → skip. Note: "PR-EPIC skipped — Solo mode." Proceed to Step 5 (write epic files).
-- `lean` → skip (not a PHASE-GATE). Note: "PR-EPIC skipped — Lean mode." Proceed to Step 5 (write epic files).
-- `full` → spawn as normal.
+Read the `review_gate` line above. `skill-gates=skip` (solo or lean): no agent; note
+`PR-EPIC skipped — [Solo | Lean] mode` in the reply and the closing block.
+`skill-gates=run`: read `references/pr-epic-gate.md` and
+`.claude/docs/director-gates.md`, and run it now, after every epic in scope is
+defined and before any write. On a skip, do not load it.
 
-After all epics for the current layer are defined (Step 4 completed for all in-scope systems), and before writing any files, spawn `producer` via `Agent` using gate **PR-EPIC** (`.claude/docs/director-gates/pr-epic.md`).
+## Phase 5: Write each epic
 
-Pass: the full epic structure summary (all epics, their scope summaries, governing ADR counts), the layer being processed, milestone timeline and team capacity.
+For each epic the user said yes to, in order:
 
-Present the producer's assessment.
+**Already has an `EPIC.md`:** never overwrite it. Ask "An EPIC.md already exists for
+[name]. Update it in place, or skip it?" Options: Update in place / Skip this epic.
+An update edits only what this skill owns (the header fields other than Stories,
+Overview, Governing ADRs, GDD Requirements, Definition of Done) and leaves the
+`**Stories**` line and any `## Stories` table as they are: `/create-stories` wrote
+them, and resetting them orphans the stories already there.
 
-If UNREALISTIC: offer to revise epic boundaries (split overscoped or merge underscoped epics). Revise, present the revised epics again, and re-run the gate before writing.
+**New:** ask "May I write `production/epics/[epic-slug]/EPIC.md` and add its row to
+`production/epics/index.md`[, creating it]?" This is its own ask, one per epic, after
+the Phase 3 yes: that yes approved the epic, not the write. Write only on an explicit
+yes to it. Right
+before writing, run `bash .claude/scripts/write-guard.sh overwrite
+production/epics/[epic-slug]/EPIC.md`. It always prints a `checked` row; an
+`OVERWRITE` row back means the file exists after all, so write nothing and ask the
+update question instead.
 
-If CONCERNS, use `AskUserQuestion`:
-- Prompt: "Producer raised concerns about the epic structure. How do you want to proceed?"
-- Options:
-  - `[A] Proceed as planned — I accept the producer's concerns`
-  - `[B] Revise epic boundaries — split or merge as recommended`
-  - `[C] Stop — I want to reconsider the scope`
-
-If [A]: proceed to Step 5.
-If [B]: revise epic definitions from Step 4, present the revised epics to the user again, then re-run the producer gate.
-If [C]: stop. Verdict: **BLOCKED** — user wants to reconsider epic scope.
-
-If NOT ASSESSED [missing input] — e.g. no milestone timeline or team capacity — it
-is not a REALISTIC (`.claude/docs/director-gates.md`): name what was missing, then
-supply it and re-run the gate, or, if the user chooses to go on without it,
-proceed to Step 5 and state `PR-EPIC: NOT ASSESSED — [input]` in the output and
-the final Verdict line.
-
-Do not write epic files until the producer gate resolves.
-
----
-
-## 5. Write Epic Files
-
-**If `production/epics/[epic-slug]/EPIC.md` already exists, never overwrite it.**
-Ask instead: "An EPIC.md already exists for [name]. Update it in place, or skip
-it?" — `[A] Update in place — keep its Stories table, and update its index.md row` / `[B] Skip this epic`. An
-update rewrites only what this skill owns — the header fields other than
-`Stories`, `## Overview`, `## Governing ADRs`, `## GDD Requirements` and
-`## Definition of Done` — and leaves the `**Stories**` header line and any
-`## Stories` table exactly as they are: `/create-stories` wrote them, and
-resetting them to "Not yet created" orphans every story already in the directory.
-
-For a new epic, after approval, ask: "May I write `production/epics/[epic-slug]/EPIC.md` and add its row to `production/epics/index.md` (creating it if absent)?"
-
-After user confirms, write:
-
-### `production/epics/[epic-slug]/EPIC.md`
+`docs.density` sets the depth of the Overview (`terse` bullets, `balanced` a short
+paragraph, `thorough` full prose with ADR rationale and risks); the tables stay
+whole at every density.
 
 ```markdown
 # Epic: [System Name]
 
-> **Layer**: [Foundation / Core / Feature / Presentation]
-> **GDD**: design/gdd/[filename].md
-> **Architecture Module**: [module name]
+> **Layer**: [Foundation | Core | Feature | Presentation]
+> **GDD**: design/gdd/[file].md
+> **Architecture Module**: [module]
 > **Status**: Ready
 > **Stories**: Not yet created — run `/create-stories [epic-slug]`
 
 ## Overview
 
-[1 paragraph describing what this epic implements, derived from the GDD Overview
-and the architecture module's stated responsibilities]
+[What this epic implements, from the GDD Overview and the module's responsibilities]
 
 ## Governing ADRs
 
 | ADR | Decision Summary | Engine Risk |
-|-----|-----------------|-------------|
-| ADR-NNNN: [title] | [1-line summary] | LOW/MEDIUM/HIGH |
+|-----|------------------|-------------|
+| ADR-NNNN: [title] | [one line] | LOW/MEDIUM/HIGH |
 
 ## GDD Requirements
 
 | TR-ID | Requirement | ADR Coverage |
 |-------|-------------|--------------|
-| TR-[system]-001 | [requirement text from registry] | ADR-NNNN ✅ |
-| TR-[system]-002 | [requirement text] | ❌ No ADR |
+| TR-[system]-001 | [requirement text from the registry] | ADR-NNNN ✅ |
+| TR-[system]-002 | [requirement text] | ❌ No ADR (ADR-NNNN Proposed) |
 
 ## Definition of Done
 
-This epic is complete when:
-- All stories are implemented, reviewed, and closed via `/story-done`
-- All acceptance criteria from `design/gdd/[filename].md` are verified
-- All Logic and Integration stories have passing test files in [the test root — `tests/` on Godot, `Assets/Tests/` on Unity, `Source/<Module>/Private/Tests/` on Unreal]
-- All Visual/Feel and UI stories have retained screenshots in `production/qa/evidence/` — each screen touched for UI, plus a lead sign-off for Visual/Feel
-
-## Next Step
-
-Run `/create-stories [epic-slug]` to break this epic into implementable stories.
+- Every story implemented, reviewed and closed with `/story-done`
+- Every acceptance criterion of design/gdd/[file].md verified
+- Logic and Integration stories have passing tests in the test root
+- Visual/Feel and UI stories have retained screenshots in `production/qa/evidence/`
+  (a lead sign-off too for Visual/Feel)
 ```
 
-### Update `production/epics/index.md`
+At `minimal`, the GDD line names `design/game-brief.md`, the Governing ADRs and GDD
+Requirements tables are left out, and a **Scope** list holds the epic's MVP
+features in Build order.
 
-Create or update the master index. An epic that already has a row keeps it:
-update that row in place and keep its `Stories` value — never append a second
-row, and never reset `Stories` to `Not yet created`:
+**`production/epics/index.md`:** one row per epic. An epic that already has a row
+keeps it: update it in place, never add a second row, never reset its Stories cell.
 
 ```markdown
 # Epics Index
 
 Last Updated: [date]
-Engine: [name + version]
+Engine: [name version]
 
 | Epic | Layer | System | GDD | Stories | Status |
 |------|-------|--------|-----|---------|--------|
-| [name] | Foundation | [system] | [file] | Not yet created | Ready |
+| [name] | [layer] | [system] | [file] | Not yet created | Ready |
 ```
 
----
+## Phase 6: Close
 
-## 6. Gate-Check Reminder
+At `standard` and `full`, once Foundation and Core epics exist, add: "Foundation and
+Core epics are what the Pre-Production → Production gate needs. `/gate-check
+production` checks readiness." Never at `minimal`.
 
-After writing all epics for the requested scope:
+Every epic's content comes from the GDDs, ADRs and architecture docs (the brief at
+`minimal`); none is invented.
 
-- **Foundation + Core complete**: These are required for the Pre-Production →
-  Production gate. Run `/gate-check production` to check readiness.
-- **Reminder**: Epics define scope. Stories define implementation steps. Run
-  `/create-stories [epic-slug]` for each epic before developers can pick up work.
+**The run's last reply ends with this block** (repeat it if you showed it earlier):
 
----
+```
+Verdict: COMPLETE — [N] epics written: [slugs]
+Review: [PR-EPIC skipped — Solo mode | skipped — Lean mode | its verdict]
+Index: production/epics/index.md [created | updated]
+Next step: /create-stories [first-epic-slug]
+```
 
-## Collaborative Protocol
-
-**Applies in `collaborative` mode (the default).** For `guided` and
-`autonomous` modes, see `.claude/docs/automation-modes.md` — the rules below
-describe what collaborative mode requires, not universal behavior.
-
-1. **One epic at a time** — present each epic definition before asking to create it
-2. **Warn on gaps** — flag untraced requirements before proceeding
-3. **Ask before writing** — per-epic approval before writing any file
-4. **No invention** — all content comes from GDDs, ADRs, and architecture docs
-5. **Never create stories** — this skill stops at the epic level
-
-After all requested epics are processed:
-
-- **Verdict: COMPLETE** — [N] epic(s) written. Run `/create-stories [epic-slug]` per epic.
-- **Verdict: BLOCKED** — user declined all epics, or no eligible systems found.
+When the user skipped or declined every epic: `Verdict: BLOCKED — no epic written
+([why])`. No in-scope system found: `Verdict: BLOCKED — no eligible systems in
+[scope]`.

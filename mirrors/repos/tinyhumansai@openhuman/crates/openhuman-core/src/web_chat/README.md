@@ -53,7 +53,7 @@ subscriber all listen to.
    model, temperature, locale or queue-mode overrides.
 
 2. `start_chat` stages `[FILE:...]` and `[IMAGE:...]` markers through
-   `agent::attachments::stage` first. A multi-megabyte base64 blob must never
+   `attachments::stage` first. A multi-megabyte base64 blob must never
    reach prompt-injection scanning or persistence. It then runs
    `security::prompt_injection::enforce_prompt_input`; a block comes back as
    `StartChatError::Guardrail` with a verdict, score and reasons so the

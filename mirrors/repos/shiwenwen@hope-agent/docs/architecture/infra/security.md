@@ -332,9 +332,15 @@ pub fn status() -> DangerousModeStatus;
 | 多窗口 Channel | Tauri 2.11.6；响应队列按所属 webview 隔离，关闭时清理；不放宽 CSP/capability | 依赖源码与 workspace 检查；真实多窗口交互另列待证 |
 | PDF 文本 | ha-core/ha-design 的 pdf-extract 0.12.1 → lopdf 0.42.0 | 合成深嵌套输入在子进程返回错误，正常两页/空页验证通过；按真实页树逐页传播错误，内容流严格语法检查拒绝后页损坏，不返回已读前页作为完整成功；不使用用户 PDF，不把 catch_unwind 当作 abort 隔离 |
 | XML/Excel | 自有 quick-xml 0.41.0，calamine 0.36.1 → quick-xml 0.41.0；属性解码使用 XML 1.0 归一化 API | 原有大小/深度/属性/实体/ZIP 上限继续生效；xcb 构建链的 0.30.0 仍需上游 ABI 兼容路线，不宣称彻底去重 |
-| HTTP/TLS/取消 | 直接 reqwest 0.13.5（native-tls 保留）、rustls 0.23.45、h2 0.4.16、Tokio 1.53.2 | 禁止重定向不取代 SSRF；Telegram 适配器保留 SDK 所需的 reqwest 0.12.28；平台运行证据分别报告 |
+| HTTP/TLS/取消 | 直接 reqwest 0.13.5（native-tls 保留）、rustls 0.23.46（10-18 补丁）、h2 0.4.16、Tokio 1.53.2 | 禁止重定向不取代 SSRF；Telegram 适配器保留 SDK 所需的 reqwest 0.12.28；平台运行证据分别报告 |
 | 内存缓存与脚本 | lru 0.18.5；ha-core/ha-workflow 的 rquickjs 0.14.0 + serde 0.8.0 成对 | 不新增 unsafe 字节借用，保留原容量/超时/内存/取消语义 |
 | Markdown/图表清洗 | DOMPurify override 下限 3.4.16，实际锁 3.4.16 | 不放宽标签或新增 IN_PLACE/hook；依赖有补丁不表示所有嵌入入口已完成真实攻击验收 |
 | 桌面更新 | updater Rust/JS 2.12.0，应用 `allowDowngrades=false` | 不接触生产更新源，不安装真实应用更新；签名/重启审批保持 |
 
 Tauri [GHSA-w28w-mhc8-qvjv](https://github.com/tauri-apps/tauri/security/advisories/GHSA-w28w-mhc8-qvjv)、PDF [RUSTSEC-2026-0187](https://rustsec.org/advisories/RUSTSEC-2026-0187.html)、XML [0194](https://rustsec.org/advisories/RUSTSEC-2026-0194.html)/[0195](https://rustsec.org/advisories/RUSTSEC-2026-0195.html)、TLS [0285](https://rustsec.org/advisories/RUSTSEC-2026-0285.html) 和 HTTP/2 [0258](https://rustsec.org/advisories/RUSTSEC-2026-0258.html) 为当前范围的原始来源。GTK/glib 与维护停更告警仍需按平台/调用链裁决；未取得兼容替代时不强塞跨 ABI patch。
+
+### 2026-10-18 rustls 安全补丁
+
+共享锁文件仅将 rustls 0.23.45 提升到 [0.23.46 正式版](https://github.com/rustls/rustls/releases/tag/v%2F0.23.46)，覆盖 [RUSTSEC-2026-0346](https://rustsec.org/advisories/RUSTSEC-2026-0346.html)、[0347](https://rustsec.org/advisories/RUSTSEC-2026-0347.html)、[0348](https://rustsec.org/advisories/RUSTSEC-2026-0348.html)、[0349](https://rustsec.org/advisories/RUSTSEC-2026-0349.html) 的修复下限。四项分别涉及会话 Debug 泄密、ECH 拒绝后发送缓冲数据、Brotli 证书解压分配和后续连接的密钥交换降级，不能笼统称为证书验证绕过。
+
+直接 reqwest 的 native-tls 路线及 Telegram 兼容客户端不变；共享 rustls 由 chromiumoxide/reqwest 等传递依赖引入，跨目标特征解析仍为 ring/std/tls12，未启用 rustls 的 Brotli 证书解压（与 reqwest 的 HTTP Brotli 压缩不同）。项目未直接配置 ECH、自定义 rustls 会话存储或输出其会话 Debug。版本范围命中与这些调用条件分开记录，普通编译/CI不替代畸形握手、跨平台运行或真实 Provider 验收；回滚不得退回已知受影响的 rustls 版本。

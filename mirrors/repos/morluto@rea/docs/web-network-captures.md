@@ -315,6 +315,94 @@ parent envelope, capture and examined records are deduplicated onto the view.
 Portable captures must retain unique ordinals within their declared total;
 caller-selected subsets can preserve any requested ordinal order.
 
+## Environment manifest
+
+Pass retained HAR Evidence to `inspect_analysis_view` with
+`view: {"kind":"environment-manifest"}` to project one application's recorded
+request lines into a replayable tool surface: the environment manifest that an
+agent environment later serves from retained Evidence. The view reuses the
+api-surface grouping, then keeps the groups on the primary origin, the origin
+with the most JSON-like records (`application/json`, `application/*+json`,
+`text/plain`, `text/markdown`), whose path starts with `/api/` or `/apis/` or
+whose content types are JSON-like. Every other group is listed under
+`excluded` with reason `other-origin`, `ui-page-or-asset` or `non-json`, and
+retained records without a usable request line are counted in a limitation.
+
+```json
+{
+  "name": "inspect_analysis_view",
+  "arguments": {
+    "source": { "kind": "retained-evidence", "evidence_id": "ev_..." },
+    "view": {
+      "kind": "environment-manifest",
+      "template_rules": [
+        "after-uid-literal",
+        "opaque-token",
+        "sibling-variance"
+      ],
+      "include_query_parameter_names": true
+    }
+  }
+}
+```
+
+`origin` and `name` identify the environment; the name is the kebab-case
+primary host with dots and ports replaced by hyphens, `grafana-example` for
+`http://grafana.example`. Each tool carries a deterministic `name`, `method`,
+`path_template`, `api_surface_template` (the four-rule template of its
+earliest record), `params`, `query_parameter_names`, `body_shape`,
+`statuses`, `content_types` and `record_ordinals`. `records` lists one pointer
+`{ordinal, method, path, status, content_type}` per record a tool cites and
+never a header, cookie or body. Tools sort by template then method.
+
+Without `template_rules`, every `path_template` equals the api-surface
+template and `params` carry the four format rules with names `id`, `uuid`,
+`hash` and `date`; a repeated name gets a numeric suffix. Opt-in rules apply
+only when listed, each at most once (a repeated rule is an `invalid_request`),
+in this order:
+
+| Rule                | Applies to                                                                                                                                                                                                                                                                                      | Parameter                                       |
+| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------- |
+| `after-uid-literal` | The literal segment right after a literal `uid`, unless it is a stop word                                                                                                                                                                                                                       | `uid`                                           |
+| `opaque-token`      | A lowercase alphanumeric segment of twelve or more characters mixing letters and digits that is not a `v1`-style version                                                                                                                                                                        | `uid`                                           |
+| `sibling-variance`  | Groups equal in method, origin and segment count that differ in one literal at index 2 or later; the siblings whose literal is identifier-like (a digit or `:`, or three or more hyphenated names under a plural literal) merge, never a stop word, and the other literals stay their own tools | singular previous literal plus `_id`, else `id` |
+
+With `sibling-variance` selected, literal siblings within its comparison scope
+fold into existing opt-in parameters as observed values unless they are stop words.
+For example, select both `opaque-token` and `sibling-variance` so
+`/api/folders/{uid}` lists `general` beside the recorded token. With only
+`opaque-token`, `/api/folders/general` stays a separate literal tool.
+A position templated by one of the four format rules
+absorbs no literal, so `/api/teams/{numeric}` keeps its exact-format meaning
+and `/api/teams/search` stays its own tool. Opt-in placeholders use the
+parameter name; format-rule placeholders keep their api-surface spelling. Tool names are
+`<method>_<literals>` with `api`, `apis`, `namespaces`, `default`, `v`-prefixed
+version tokens and a `uid` literal before a parameter dropped, dotted literals
+cut to their first label, `_by_<params>` appended when parameters exist,
+sanitized to `[a-z0-9_]`, at most 60 characters and made unique with numeric
+suffixes: `get_dashboards_by_uid`, `get_plugins_settings_by_plugin_id`.
+
+`sibling-variance` compares routes of at most 32 segments; longer routes keep
+their grouped templates and the manifest says so in a limitation. `body_shape`
+is derived for `POST`, `PUT` and `PATCH` from the tool's earliest record when it
+carries an `application/json` or `application/*+json` request body: top-level
+keys and their JSON type names, never values and never nested structure; a body
+on a later record adds nothing. `unknowns` always states three facts: the authorization model, response
+semantics and state transitions are not established by a capture.
+`templated_groups` counts tools and excluded groups with a templated segment;
+whenever it is nonzero the Evidence is inferred, otherwise derived. The view
+performs no network activity and replays nothing. Native mitmproxy, SAZ and
+qlog captures, and parents inspected with `sensitive_values`, return the same
+typed unsupported errors as the api-surface view, including the canonical
+token `sensitive_values_unretained`.
+
+The manifest accumulator shares the api-surface admission model: the capture
+clone, the inline envelope, record pointers, groups, every route part, observed
+values, query names and body-shape keys are admitted before allocation, and each
+recorded body is charged as temporary bytes before it is parsed. Retained state and
+temporary work must fit together within the 96 MiB projection representation
+budget; exceeding it returns `resource_constraint` without a partial manifest.
+
 ## Resource and lifecycle boundaries
 
 Complete evidence has a 32 MiB input, 96 MiB decoder reply and 64-level nesting

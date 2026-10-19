@@ -73,7 +73,9 @@ Otherwise: proceed with the selected type.
 
 ## 2. Context Scan
 
-Before drafting anything, read the relevant context:
+Before drafting anything, read the relevant context. Read the GDD and the systems
+index by section: find the headings you need with the Grep tool (pattern `^#`,
+content mode) and Read those ranges with offset and limit.
 
 - Search `design/gdd/` for the GDD most relevant to this change. Read the
   sections that this change would affect. If no GDD covers this system — usually

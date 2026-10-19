@@ -75,6 +75,8 @@ connector state
 
 Do not treat all memory as equally authoritative. A user preference can shape formatting; it cannot override safety policy.
 
+Model-native continuation state can contain nontext positions that a transcript or compacted summary cannot reconstruct equivalently. Keep it distinct from user memory and use the [native generation-state contract](provider-api-patterns.md#native-generation-state-adapters) for semantic-state/cache boundaries, compatibility, and explicit restart behavior.
+
 ## User-memory lifecycle
 
 Persistent facts about a person need a separate data-handling contract from session history or reusable harness instructions. Make persistence optional per deployment, and keep current user constraints available in the active conversation even when persistence is disabled or unavailable.

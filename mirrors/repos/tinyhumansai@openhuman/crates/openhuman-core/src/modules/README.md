@@ -434,7 +434,7 @@ loadable:
   `resolve` and `RuntimeCallError` from `modules::runtime` so `runtime/`
   compiles without the gate; wallet, Web3, and x402 adapters use `wallet.rs`;
   `tools/impl/document`, `tools/impl/presentation`,
-  `agent/multimodal.rs` and `agent/attachments/` use `documents.rs`;
+  `agent/multimodal.rs` and `attachments/` use `documents.rs`;
   `voice/always_on` and `voice/streaming.rs` use `voice.rs`;
   `tools/impl/browser/` and `desktop/control/` use the TinyComputer files;
   `integrations/composio/module_client.rs` uses [`connectors.rs`](./connectors.rs);

@@ -3,7 +3,7 @@ name: perf-profile
 description: "Performance profiling — find bottlenecks, measure against budgets, produce ranked optimization recommendations."
 argument-hint: "[system-name or 'full']"
 user-invocable: true
-allowed-tools: Read, Glob, Grep, Write, Bash, Bash(bash "*/.claude/skills/perf-profile/../../hooks/yaml-helper.sh" resolve_config *)
+allowed-tools: Read, Glob, Grep, Write, Bash(bash "*/.claude/skills/perf-profile/../../hooks/yaml-helper.sh" resolve_config *), Bash(bash "*/.claude/skills/perf-profile/../../hooks/yaml-helper.sh" get_effective_yaml_key *)
 model: sonnet
 ---
 
@@ -82,28 +82,21 @@ Read the argument:
 record of what it agreed to, and design docs are the fallback, not the source:
 
 ```bash
-(cd "${CLAUDE_SKILL_DIR}/../../.." && source .claude/hooks/yaml-helper.sh 2>/dev/null &&
-  echo "performance.target_framerate: $(get_effective_yaml_key performance.target_framerate)" &&
-  echo "performance.frame_budget_ms: $(get_effective_yaml_key performance.frame_budget_ms)" &&
-  echo "performance.draw_call_limit: $(get_effective_yaml_key performance.draw_call_limit)" &&
-  echo "performance.memory_ceiling_mb: $(get_effective_yaml_key performance.memory_ceiling_mb)")
+bash "${CLAUDE_SKILL_DIR}/../../hooks/yaml-helper.sh" get_effective_yaml_key performance.target_framerate
+bash "${CLAUDE_SKILL_DIR}/../../hooks/yaml-helper.sh" get_effective_yaml_key performance.frame_budget_ms
+bash "${CLAUDE_SKILL_DIR}/../../hooks/yaml-helper.sh" get_effective_yaml_key performance.draw_call_limit
+bash "${CLAUDE_SKILL_DIR}/../../hooks/yaml-helper.sh" get_effective_yaml_key performance.memory_ceiling_mb
 ```
 
-Run it as one command: it loads the helper from the project root, so it works
-when the session was started in a subfolder. An empty value after a key means
-that budget is not set.
-
-> Written as four literal keys rather than a loop over leaf names, deliberately.
-> The dead-settings audit matches the **full dotted key**, so a loop building
-> `performance.$k` leaves three of the four spelled nowhere and the audit
-> reports them DEAD while this skill reads them. Spell each key out in full.
+Run each line as its own plain command, one key per call: the helper moves to
+the project root itself, so it works when the session was started in a
+subfolder, and this skill pre-approves that form only (a `source` or `cd ... &&`
+wrapper asks the user every time). Empty output means that budget is not set.
 
 > **Resolve these budgets from `project.yaml`, not from prose.** Phase 0 above
-> states these four budgets "are profiled the same way at every level". Sending
-> the reader to *"design docs or CLAUDE.md"* instead means a user who set
-> `performance.target_framerate: 60` in `project.yaml` has it ignored by the one
-> skill that profiles against budgets. The keys resolve correctly — this phase
-> has to actually ask for them.
+> states these four budgets "are profiled the same way at every level". A user
+> who set `performance.target_framerate: 60` in `project.yaml` has it ignored if
+> the budget is read from design docs or CLAUDE.md instead.
 
 Then fall back to design docs or CLAUDE.md for anything config does not carry:
 

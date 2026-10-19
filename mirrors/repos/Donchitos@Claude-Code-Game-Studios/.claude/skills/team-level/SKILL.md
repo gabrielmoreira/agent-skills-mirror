@@ -3,7 +3,7 @@ name: team-level
 description: "Orchestrate the level team — level-designer, narrative-director, world-builder, art-director, systems-designer, qa-tester — for complete area creation."
 argument-hint: "[level name or area to design] [--review full|lean|solo]"
 user-invocable: true
-allowed-tools: Read, Glob, Grep, Write, Edit, Bash, Agent, AskUserQuestion, TaskCreate, TaskGet, TaskList, TaskUpdate, Bash(bash "*/.claude/skills/team-level/../../hooks/yaml-helper.sh" resolve_config *)
+allowed-tools: Read, Glob, Grep, Write, Edit, Agent, AskUserQuestion, TaskCreate, TaskGet, TaskList, TaskUpdate, Bash(bash "*/.claude/skills/team-level/../../hooks/yaml-helper.sh" resolve_config *)
 model: sonnet
 ---
 
@@ -73,7 +73,9 @@ enforced.**
 1. **Read the argument** for the target level or area (e.g., `tutorial`,
    `forest dungeon`, `hub town`, `final boss arena`).
 
-2. **Gather context**:
+2. **Gather context** (read each design doc by section: find the headings you need
+   with the Grep tool with pattern `^#` in content mode, and Read those ranges
+   with offset and limit):
    - Read the game concept at `design/gdd/game-concept.md` — or `design/game-brief.md`,
      the one-page brief that replaces it at `rigor: minimal` — if either exists
    - Read game pillars at `design/gdd/game-pillars.md`
@@ -137,7 +139,7 @@ Spawn the `art-director` agent to:
 - Define the color temperature and lighting mood for this area (how does it differ from adjacent areas?)
 - Specify shape language direction (angular fortress? organic cave? decayed grandeur?)
 - Name the primary visual landmarks that will orient the player
-- Read `design/art/art-bible.md` if it exists — anchor all direction in the established art bible
+- Read `design/art/art-bible.md` if it exists — anchor all direction in the established art bible. Read it by section: find the headings you need with the Grep tool (pattern `^#`, content mode) and Read those ranges with offset and limit.
 
 **The art-director's visual targets from Step 1 must be passed to the level-designer in Step 2** as explicit constraints. Layout decisions happen within the visual direction, not before it.
 

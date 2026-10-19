@@ -212,6 +212,19 @@ instead sets `closeout_kind=typed_blocked_writeback_no_spend` and settles the
 Turn without a quota debit. Todo completion and Goal acceptance retain their
 separate checks in both cases.
 
+An autonomous-replan binding can also close without debit after its existing
+replan owner accepts a concrete blocker or evidence-linked path disposition.
+Readback must match the original selected obligation, Goal/Agent/Turn, typed
+blocked observation and fingerprint, accepted semantic delta, satisfied semantic
+checkpoint, and durable receipt. It uses the same
+`typed_blocked_writeback_no_spend` result; it does not invent a Todo binding or
+retry timer. A later spend request for that exact closed Turn is a no-op.
+This corrects the prior spend-required result for a qualified blocked replan.
+Canonical waits, source observations, ordinary outcome/checkpoint gates and
+selection of independent work remain unchanged. A previously committed debit
+is retained, and neither a bare blocker declaration nor an unqualified ACK
+closes the Turn.
+
 An accepted `vision_checkpoint_v0` for `outcome_progress` also closes its exact
 Todo-bound Turn after the matching writeback and spend receipts commit. Both
 `in_flight_continuation` and `semantic_closeout` use their corresponding typed
@@ -440,7 +453,7 @@ eligible for exact Todo-bound Turn settlement only when it includes a
 `evidence_ids`. Missing schemas, prose-only blockers, malformed evidence, and
 Todo identity mismatches remain fail-closed.
 
-New Turn-bound blocked writebacks also require a bounded retry on the same
+New Todo-bound blocked writebacks also require a bounded retry on the same
 unfinished advancement Todo. A legacy Todo must have a pending
 `resume_when=resume_at:<timezone-aware-time>` due in 1–30 minutes. With promoted
 File/SQLite authority, an open Todo without its own resume condition can use
@@ -837,6 +850,17 @@ leases this resumes unchanged work without granting execution authority; the
 worker must then acquire a fresh lease. Bundling `--note`, evidence or other
 execution edits into that command remains subject to the normal lease fence.
 
+A receipt initially admitted for `successor_replan_required` retains that
+bounded lifecycle duty on replay while the same canonical, claim-scoped resume
+condition remains ready. It must not become a quiet skip merely because the
+worker has not reopened it yet. Reopening permits ordinary same-Todo
+qualification under the original Turn identity; it neither substitutes another
+Todo nor imports a newly discovered semantic replan obligation into an explicit
+empty original guard. A later future wait, changed owner or completed
+settlement still closes this resume path. This differs from executable work
+which became deferred after admission: that existing no-execution/no-spend
+boundary remains intact, and independent work is selected under a fresh Turn.
+
 Priority remains authoritative across the resume boundary. When a ready
 current-agent or unclaimed deferred successor has strictly higher priority than
 the selected open advancement todo, quota also returns
@@ -983,6 +1007,20 @@ instead of another quiet skip. Automatic `quota should-run` heartbeat liveness
 receipts have no concrete executed-monitor identity and do not count toward
 this threshold; distinct heartbeat turn ids are idempotency evidence, not
 monitor execution evidence.
+
+The current Todo `consecutive_no_change` detector shares the Monitor lifetime
+rule with scheduling. At one explicit runtime observation, `expires_at` at or
+before that instant excludes that Monitor from `monitor_no_change_streak`.
+The recorded Todo, counters, observation hash/generation and pending successor
+remain unchanged. An active Monitor whose next poll is in the future can still
+require a streak review; expiry and due time have different meanings.
+Goal-frontier and status callers use the same TypeScript expiry/selection owner
+while preserving their existing trigger shape, scope and tie order. Historical
+requests without a current clock retain their previous replay behavior;
+independent progress and periodic-review triggers remain effective. Quiet
+heartbeat liveness receipts can still be recorded without polling the source
+or spending a slot. This source repair does not establish installed adoption,
+full Goal acceptance or CI qualification.
 
 After that bounded replan slice is acknowledged by a compact state run carrying
 `autonomous_replan_ack_v0` and `repair_delta_contract_v0` with
@@ -1465,8 +1503,19 @@ That hint is not a delivery permission. It is the cross-runtime wait policy:
 `run_now` keeps the active cadence for required work; `backoff_waiting_for_user`
 slows Codex App and stops CLI/Claude loops after repeated unchanged polls;
 `backoff_until_reassigned` handles peer reassignment waits without dropping
-agent-to-agent handoff cadence too quickly;
-`backoff_until_material_transition` handles monitor-only quiet polls; and
+agent-to-agent handoff cadence too quickly.
+
+`backoff_until_state_change` also keeps a verified, automatically resumable
+`resume_at` successor alive through quiet rechecks. The scheduler bounds its
+backoff by the remaining scheduled wait, subject to host cadence floors, and
+does not apply the ordinary three-unchanged-poll stop to this clock-backed wait.
+This requires the current agent's exact pending successor and an unbound Turn;
+missing or invalid clock evidence, another agent's claim, and manual/dependency
+waits retain their existing supervision. A fresh due-time guard still owns
+admission; keeping the host alive grants no model wake, quota spend, new time
+budget or permission. Explicit stop, pause and user gates still take precedence.
+
+`backoff_until_material_transition` handles monitor-only quiet polls, and
 `backoff_until_fresh_evidence` handles mapped or post-handoff no-op waits.
 `preserve_current_schedule` handles `heartbeat_settled_skip`: settlement closes
 one Turn, not the Goal or its remaining Todos. Replay keeps the installed host
@@ -1544,7 +1593,20 @@ advances through `progression_minutes` only after the applied RRULE has had one
 real interval to run. An immediate post-ACK reconciliation therefore verifies
 the settled target instead of manufacturing the next backoff target in the
 same turn. A changed `reset_policy.reset_token`
-returns to the current profile's initial interval. This gives hosts a compact
+returns to the current profile's initial interval. A deadline-constrained wait
+binds its effective progression buckets into that reset token. For example,
+when the same monitor's remaining horizon shrinks from `[15, 30]` to `[15]`,
+the generated ACK starts a new identity at index zero; it does not bypass the
+native same-identity regression guard. Time passing within the same buckets
+keeps the identity stable. Host readback, receipt freshness, CAS and replay
+checks still apply, including when the host already uses the tighter RRULE.
+
+受截止时间约束的等待会将实际可用的节奏档位纳入重置令牌。同一监控的档位从
+`[15, 30]` 缩为 `[15]` 时，生成的 ACK 以新身份从索引零开始；同档位内的时间流逝
+保持身份稳定。原生同身份防倒退、宿主回读、回执时效、CAS 和重放校验仍然有效，
+包括宿主已经采用较短 RRULE 的情况。
+
+This gives hosts a compact
 post-update ack protocol instead of requiring them to own or diff the whole
 quota state. If `apply_needed=false` and `ack_needed=true`, the same command
 records an exact matching host readback without calling `automation_update`.

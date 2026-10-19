@@ -3,7 +3,7 @@ name: adopt
 description: "Brownfield audit — do existing artifacts actually work? Numbered migration plan. Unlike /project-stage-detect, checks compliance not existence."
 argument-hint: "[focus: full | gdds | adrs | stories | infra]"
 user-invocable: true
-allowed-tools: Read, Glob, Grep, Bash, Write, AskUserQuestion, Bash(bash "*/.claude/skills/adopt/../../hooks/yaml-helper.sh" resolve_config *)
+allowed-tools: Read, Glob, Grep, Write, AskUserQuestion, Bash(bash "*/.claude/skills/adopt/../../hooks/yaml-helper.sh" resolve_config *), Bash(bash .claude/scripts/gdd-structure-check.sh *), Bash(bash .claude/scripts/migrate-v1-config.sh --dry-run*)
 model: sonnet
 ---
 

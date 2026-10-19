@@ -41,7 +41,7 @@ With a storage backend (`storage_url` / `OPENHUMAN_STORAGE_URL`):
 | Where | What |
 | --- | --- |
 | scope `cluster`, collection `profiles` | the profile registry (replaces `profile.toml`) |
-| scope `cluster`, collection `leases` | the profile leases (replace the file locks) |
+| scope `cluster`, collection `tsd.leases` (owner `profiles`) | the profile leases (replace the file locks) |
 | scope `profile:<id>` (`storage::scope_for_profile`) | that profile's records on the storage ports: secrets and auth profiles, approvals, cron, flows, ... |
 | session key `<id>~<agent or default>` (`tenant::session_key`) | its session store: transcripts, turn states |
 

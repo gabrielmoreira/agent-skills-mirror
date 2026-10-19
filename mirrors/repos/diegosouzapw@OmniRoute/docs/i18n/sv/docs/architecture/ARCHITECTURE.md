@@ -15,13 +15,13 @@ Den tillhandahåller en enda OpenAI-kompatibel slutpunkt (`/v1/*`) och dirigerar
 
 Centrala funktioner:
 
-- OpenAI-kompatibel API-yta för CLI/verktyg (373 leverantörer, 150 exekveringsmoduler)
-- Översättning av förfrågningar och svar mellan leverantörsformat
+- OpenAI-kompatibelt API-gränssnitt för CLI/verktyg (374 leverantörer, 150 exekveringsmoduler)
+- Översättning av förfrågningar/svar mellan leverantörsformat
 - Reservväxling för modellkombinationer (sekvens med flera modeller)
 - Strukturerade kombinationssteg (`provider + model + connection`) med körningsordning baserad på `compositeTiers`
 - Reservväxling på kontonivå (flera konton per leverantör)
-- Förhandskontroll av kvoter och kvotmedvetet P2C-kontoval i huvudflödet för chatt
-- Hantering av leverantörsanslutningar via OAuth och API-nycklar (27 OAuth-leverantörsmoduler)
+- Förhandskontroll av kvoter och kvotmedvetet P2C-kontoval i det huvudsakliga chattflödet
+- Hantering av leverantörsanslutningar med OAuth och API-nycklar (27 OAuth-leverantörsmoduler)
 - Generering av inbäddningar via `/v1/embeddings` (18 leverantörer)
 - Bildgenerering via `/v1/images/generations` (10+ leverantörer, 20+ modeller)
 - Ljudtranskribering via `/v1/audio/transcriptions` (18 leverantörer)
@@ -30,56 +30,56 @@ Centrala funktioner:
 - Musikgenerering via `/v1/music/generations` (ComfyUI)
 - Webbsökning via `/v1/search` (20 leverantörer)
 - Moderering via `/v1/moderations`
-- Omrangordning via `/v1/rerank`
-- Parsning av Think-taggar (``) för resonerande modeller
+- Omrankning via `/v1/rerank`
+- Tolkning av think-taggar (``) för resonemangsmodeller
 - Sanering av svar för strikt kompatibilitet med OpenAI SDK
 - Rollnormalisering (developer→system, system→user) för kompatibilitet mellan leverantörer
 - Konvertering av strukturerade utdata (json_schema → Gemini responseSchema)
-- Lokal persistens för leverantörer, nycklar, alias, kombinationer, inställningar och prissättning (122 databasmoduler)
-- Spårning av användning och kostnader samt loggning av förfrågningar
-- Valfri molnsynkronisering för synkronisering av tillstånd mellan flera enheter
-- Tillåtelse- och blockeringslistor för IP-adresser för åtkomstkontroll till API:et
-- Hantering av beräkningsbudget (vidarebefordran/automatisk/anpassad/adaptiv)
+- Lokal beständig lagring av leverantörer, nycklar, alias, kombinationer, inställningar och priser (122 databasmoduler)
+- Spårning av användning/kostnader och loggning av förfrågningar
+- Valfri molnsynkronisering för synkronisering mellan flera enheter och av tillstånd
+- Lista över tillåtna/blockerade IP-adresser för åtkomstkontroll till API:et
+- Hantering av budget för tänkande (direktvidarebefordran/automatisk/anpassad/adaptiv)
 - Global injicering av systemprompt
 - Sessionsspårning och fingeravtryck
 - Förbättrad hastighetsbegränsning per konto med leverantörsspecifika profiler
 - Kretsbrytarmönster för leverantörsresiliens
-- Skydd mot anropsstormar med mutex-låsning
-- Signaturbaserad cache för deduplicering av förfrågningar
-- Domänlager: kostnadsregler, reservväxlingspolicy och utlåsningspolicy
-- Context Relay: sammanfattningar för sessionsöverlämning som säkerställer kontinuitet vid kontorotation
-- Persistens av domäntillstånd (SQLite-cache med direktgenomskrivning för reservväxlingar, budgetar, utlåsningar och kretsbrytare)
-- Policymotor för centraliserad utvärdering av förfrågningar (utlåsning → budget → reservväxling)
-- Telemetri för förfrågningar med aggregering av p50-/p95-/p99-latens
-- Telemetri för kombinationsmål och historisk status för kombinationsmål via `combo_execution_key` / `combo_step_id`
+- Skydd mot anhopning av samtidiga förfrågningar med mutex-låsning
+- Signaturbaserad dedupliceringscache för förfrågningar
+- Domänlager: kostnadsregler, reservväxlingspolicy, utelåsningspolicy
+- Context Relay: sammanfattningar för sessionsöverlämning som bevarar kontinuitet vid kontorotation
+- Beständig lagring av domäntillstånd (SQLite-cache med direktgenomskrivning för reservväxlingar, budgetar, utelåsningar och kretsbrytare)
+- Policymotor för centraliserad utvärdering av förfrågningar (utelåsning → budget → reservväxling)
+- Förfrågningstelemetri med aggregering av p50/p95/p99-latens
+- Telemetri för kombinationsmål och historisk hälsa för kombinationsmål via `combo_execution_key` / `combo_step_id`
 - Korrelations-ID (X-Request-Id) för heltäckande spårning
-- Loggning för regelefterlevnadsgranskning med möjlighet att välja bort per API-nyckel
+- Granskningsloggning för regelefterlevnad med möjlighet att välja bort per API-nyckel
 - Utvärderingsramverk för kvalitetssäkring av LLM:er
-- Hälsokontrollpanel med status i realtid för leverantörernas kretsbrytare
+- Hälsokontrollpanel med realtidsstatus för leverantörernas kretsbrytare
 - MCP-server (110 verktyg) med 3 transporter (stdio/SSE/Streamable HTTP)
 - A2A-server (JSON-RPC 2.0 + SSE) med färdigheter och livscykel för uppgifter
-- Minnessystem (extrahering, injicering, hämtning och sammanfattning)
-- Färdighetssystem (register, exekverare, sandlåda och inbyggda färdigheter)
+- Minnessystem (extrahering, injicering, hämtning, sammanfattning)
+- Färdighetssystem (register, exekverare, sandlåda, inbyggda färdigheter)
 - MITM-proxy med certifikathantering och DNS-hantering
 - Middleware som skyddar mot promptinjektion
 - Pipeline för promptkomprimering med Caveman, RTK, staplade pipelines, komprimeringskombinationer, språkpaket och analys
 - ACP-register (Agent Communication Protocol)
 - Modulära OAuth-leverantörer (22 enskilda moduler under `src/lib/oauth/providers/`)
 - Skript för avinstallation/fullständig avinstallation
-- Åtgärd för reparation av OAuth-miljön
+- Åtgärd för reparation av OAuth-miljö
 - WebSocket-brygga för OpenAI-kompatibla WS-klienter (`/v1/ws`)
-- Hantering av synkroniseringstoken (utfärdande/återkallande och nedladdning av ETag-versionshanterade konfigurationspaket)
-- GLM Thinking (`glmt`) som fullvärdig förinställning för leverantör
-- Hybridbaserad tokenräkning (leverantörssidan `/messages/count_tokens` med uppskattning som reserv)
-- Automatisk initiering av modellalias (30+ normaliseringar mellan proxydialekter vid start)
+- Hantering av synkroniseringstoken (utfärdande/återkallande, nedladdning av ETag-versionerade konfigurationspaket)
+- GLM Thinking (`glmt`) som fullvärdig förinställd leverantör
+- Hybridräkning av token (leverantörssidan `/messages/count_tokens` med uppskattning som reserv)
+- Automatisk initiering av modellalias (30+ normaliseringar mellan olika proxydialekter vid start)
 - Säker utgående hämtning med SSRF-skydd, blockering av privata URL:er och konfigurerbara återförsök
 - Nedkylningsmedvetna återförsök för chatt med konfigurerbara `requestRetry` och `maxRetryIntervalSec`
 - Validering av körningsmiljön med Zod vid start
-- Regelefterlevnadsgranskning v2 med sidnumrering, CRUD-händelser för leverantörer och valideringsloggning för blockerad SSRF
+- Regelefterlevnadsgranskning v2 med paginering, CRUD-händelser för leverantörer och valideringsloggning av SSRF-blockeringar
 
 Primär körningsmodell:
 
-- Next.js-appens routes under `src/app/api/*` implementerar både API:er för kontrollpanelen och kompatibilitets-API:er
+- Next.js-apprutter under `src/app/api/*` implementerar både kontrollpanels-API:er och kompatibilitets-API:er
 - En delad SSE-/routingkärna i `src/sse/*` + `open-sse/*` hanterar leverantörsexekvering, översättning, strömning, reservväxling och användning
 
 ## Referensdiagram
@@ -260,10 +260,10 @@ Hanteringsområden:
 
 ## 2) SSE + översättningskärna
 
-Huvudflödesmoduler:
+Huvudsakliga flödesmoduler:
 
-- Ingångspunkt: `src/sse/handlers/chat.ts`
-- Kärnorkestrering: `open-sse/handlers/chatCore.ts`
+- Ingång: `src/sse/handlers/chat.ts`
+- Central orkestrering: `open-sse/handlers/chatCore.ts`
 - Körningsadaptrar för leverantörer: `open-sse/executors/*`
 - Formatidentifiering/leverantörskonfiguration: `open-sse/services/provider.ts`
 - Tolkning/matchning av modell: `src/sse/services/model.ts`, `open-sse/services/model.ts`
@@ -281,50 +281,50 @@ Huvudflödesmoduler:
 
 Tjänster (affärslogik):
 
-- Val/poängsättning av konton: `open-sse/services/accountSelector.ts`
-- Livscykelhantering för kontext: `open-sse/services/contextManager.ts`
+- Val och poängsättning av konton: `open-sse/services/accountSelector.ts`
+- Hantering av kontextens livscykel: `open-sse/services/contextManager.ts`
 - Tillämpning av IP-filter: `open-sse/services/ipFilter.ts`
 - Sessionsspårning: `open-sse/services/sessionManager.ts`
-- Deduplicering av förfrågningar: `open-sse/services/signatureCache.ts`
-- Infogning av systemprompt: `open-sse/services/systemPrompt.ts`
-- Hantering av tänkandebudget: `open-sse/services/thinkingBudget.ts`
+- Dubbletteliminering av förfrågningar: `open-sse/services/signatureCache.ts`
+- Injektion av systemprompt: `open-sse/services/systemPrompt.ts`
+- Hantering av tankebudget: `open-sse/services/thinkingBudget.ts`
 - Modellroutning med jokertecken: `open-sse/services/wildcardRouter.ts`
-- Hantering av hastighetsbegränsningar: `open-sse/services/rateLimitManager.ts`
+- Hantering av frekvensbegränsning: `open-sse/services/rateLimitManager.ts`
 - Kretsbrytare: `src/shared/utils/circuitBreaker.ts`
-- Kontextöverlämning: `open-sse/services/contextHandoff.ts` — generering och infogning av överlämningssammanfattningar för kontextrelästrategin
+- Kontextöverlämning: `open-sse/services/contextHandoff.ts` — generering och injektion av överlämningssammanfattning för strategin med kontextvidarebefordran
 - Komprimering: `open-sse/services/compression/*` — proaktiv komprimering före leverantörsöversättning;
   omfattar Caveman-regler, RTK-filter, staplade pipelines, komprimeringskombinationer, statistik och validering
-- Hämtare för Codex-kvot: `open-sse/services/codexQuotaFetcher.ts` — hämtar Codex-kvoten för beslut om kontextreläöverlämning
-- Cooldown-medvetna återförsök: `src/sse/services/cooldownAwareRetry.ts` — återförsök per modell efter cooldown med konfigurerbara `requestRetry` / `maxRetryIntervalSec`
-- Säker utgående hämtning: `src/shared/network/safeOutboundFetch.ts` — skyddad hämtning från leverantör/modell med SSRF-skydd, blockering av privata URL:er, återförsök och tidsgräns
-- Skydd för utgående URL:er: `src/shared/network/outboundUrlGuard.ts` — värdkontroller av leverantörs-URL:er; `src/shared/network/outboundUrlGuardPolicy.ts` väljer läge från `OMNIROUTE_ALLOW_LOCAL_PROVIDER_URLS`, `OMNIROUTE_ALLOW_PRIVATE_PROVIDER_URLS` och deras växlingsalternativ i instrumentpanelen (se `docs/reference/ENVIRONMENT.md`)
-- Standardvärden för leverantörsförfrågningar: `open-sse/services/providerRequestDefaults.ts` — standardvärden på leverantörsnivå för `maxTokens`, `temperature`, `thinkingBudgetTokens`
-- GLM-leverantörskonstanter: `open-sse/config/glmProvider.ts` — delade GLM-modeller, kvot-URL:er samt GLMT-tidsgräns/standardvärden
-- Antigravity-uppströms: `open-sse/config/antigravityUpstream.ts` — konstanter för bas-URL och identifieringssökväg
-- Codex-klientkonstanter: `open-sse/config/codexClient.ts` — versionshanterade värden för användaragent och klientversion
-- Startdata för modellalias: `src/lib/modelAliasSeed.ts` — initierar fler än 30 dialektalias över olika proxyservrar vid uppstart
+- Hämtare för Codex-kvot: `open-sse/services/codexQuotaFetcher.ts` — hämtar Codex-kvoten för beslut om kontextöverlämning
+- Nedkylningsmedvetna återförsök: `src/sse/services/cooldownAwareRetry.ts` — modellspecifika återförsök efter nedkylning med konfigurerbara `requestRetry` / `maxRetryIntervalSec`
+- Säker utgående hämtning: `src/shared/network/safeOutboundFetch.ts` — skyddad leverantörs-/modellhämtning med SSRF-skydd, blockering av privata URL:er, återförsök och tidsgräns
+- Skydd för utgående URL:er: `src/shared/network/outboundUrlGuard.ts` — värdkontroller av leverantörs-URL:er; `src/shared/network/outboundUrlGuardPolicy.ts` väljer läge från `OMNIROUTE_ALLOW_LOCAL_PROVIDER_URLS`, `OMNIROUTE_ALLOW_PRIVATE_PROVIDER_URLS` och deras växlingsalternativ på kontrollpanelen (se `docs/reference/ENVIRONMENT.md`)
+- Standardvärden för leverantörsförfrågningar: `open-sse/services/providerRequestDefaults.ts` — leverantörsspecifika standardvärden för `maxTokens`, `temperature`, `thinkingBudgetTokens`
+- GLM-leverantörskonstanter: `open-sse/config/glmProvider.ts` — gemensamma GLM-modeller, kvot-URL:er samt GLMT-tidsgränser och -standardvärden
+- Antigravity-uppström: `open-sse/config/antigravityUpstream.ts` — konstanter för bas-URL och identifieringssökväg
+- Codex-klientkonstanter: `open-sse/config/codexClient.ts` — versionshanterade värden för user-agent och klientversion
+- Startdata för modellalias: `src/lib/modelAliasSeed.ts` — initierar fler än 30 dialektalias för olika proxyservrar vid start
 
-Domänlagermoduler:
+Moduler i domänlagret:
 
 - Kostnadsregler/budgetar: `src/domain/costRules.ts`
 - Reservpolicy: `src/domain/fallbackPolicy.ts`
 - Kombinationsmatchare: `src/domain/comboResolver.ts`
-- Utelåsningspolicy: `src/domain/lockoutPolicy.ts`
-- Policymotor: `src/domain/policyEngine.ts` — centraliserad utvärdering av utelåsning → budget → reserv
+- Spärrpolicy: `src/domain/lockoutPolicy.ts`
+- Policymotor: `src/domain/policyEngine.ts` — centraliserad utvärdering av spärr → budget → reserv
 - Katalog över felkoder: `src/shared/constants/errorCodes.ts`
 - Förfrågnings-ID: `src/shared/utils/requestId.ts`
 - Tidsgräns för hämtning: `src/shared/utils/fetchTimeout.ts`
-- Telemetri för förfrågningar: `src/shared/utils/requestTelemetry.ts`
-- Regelefterlevnad/granskning: `src/lib/compliance/index.ts`
-- Utvärderingskörare: `src/lib/evals/evalRunner.ts`
-- Beständig lagring av domäntillstånd: `src/lib/db/domainState.ts` — SQLite CRUD för reservkedjor, budgetar, kostnadshistorik, utelåsningstillstånd och kretsbrytare
+- Förfrågningstelemetri: `src/shared/utils/requestTelemetry.ts`
+- Efterlevnad/revision: `src/lib/compliance/index.ts`
+- Utvärderingskörning: `src/lib/evals/evalRunner.ts`
+- Beständig lagring av domäntillstånd: `src/lib/db/domainState.ts` — SQLite-CRUD för reservkedjor, budgetar, kostnadshistorik, spärrtillstånd och kretsbrytare
 
-OAuth-leverantörsmoduler (27 enskilda filer under `src/lib/oauth/providers/`):
+OAuth-leverantörsmoduler (27 separata filer under `src/lib/oauth/providers/`):
 
 - Registerindex: `src/lib/oauth/providers/index.ts`
 - Enskilda leverantörer: `agy.ts`, `antigravity.ts`, `claude.ts`, `cline.ts`, `codebuddy-cn.ts`, `codebuddy-intl.ts`, `codex.ts`, `cursor.ts`, `devin-desktop.ts`, `ghe-copilot.ts`, `github.ts`, `gitlab-duo.ts`, `grok-cli-oauth.ts`, `grok-cli.ts`, `kilocode.ts`, `kimi-coding.ts`, `kiro.ts`, `muse-code.ts`, `openference.ts`, `qoder.ts`, `trae.ts`, `workbuddy.ts`, `xai-oauth.ts`, `zed-hosted.ts`, `zed.ts`
-- Delade hjälpfunktioner: `codebuddyDeviceAuth.ts` (CodeBuddy CN/intl-enhetsflöde), `museCodeDeviceResponse.ts`
-- Tunt omslag: `src/lib/oauth/providers.ts` — återexporterar från enskilda moduler
+- Gemensamma hjälpfunktioner: `codebuddyDeviceAuth.ts` (CodeBuddy-enhetsflöde för CN/intl), `museCodeDeviceResponse.ts`
+- Tunn omslagmodul: `src/lib/oauth/providers.ts` — återexporterar från enskilda moduler
 
 ## 5) Inbäddade tjänster (v3.8.4)
 
@@ -534,16 +534,17 @@ Domäntillståndsdatabas (SQLite):
 - Tabeller (skapade i `src/lib/db/core.ts`): `domain_fallback_chains`, `domain_budgets`, `domain_cost_history`, `domain_lockout_state`, `domain_circuit_breakers`
 - Genomskrivningscache: minnesbaserade Maps är auktoritativa under körning; ändringar skrivs synkront till SQLite; tillståndet återställs från databasen vid kallstart
 
-## 4) Ytor för autentisering och säkerhet
+## 4) Autentisering + säkerhetsytor
 
 - Cookie-autentisering för kontrollpanelen: `src/proxy.ts`, `src/app/api/auth/login/route.ts`
 - Generering/verifiering av API-nycklar: `src/shared/utils/apiKey.ts`
-- Leverantörshemligheter lagras i poster i `providerConnections`
+- Leverantörshemligheter sparas i poster i `providerConnections`
 - Stöd för utgående proxy via `open-sse/utils/proxyFetch.ts` (miljövariabler) och `open-sse/utils/networkProxy.ts` (konfigurerbart per leverantör eller globalt)
-- SSRF-/URL-skydd för utgående trafik: `src/shared/network/outboundUrlGuard.ts` — blockerar privata intervall, loopback-intervall och länklokala intervall för alla leverantörsanrop
-- Validering av körmiljön: `src/lib/env/runtimeEnv.ts` — Zod-schema för alla miljövariabler, presenteras som fel/varningar vid uppstart
-- Synkroniseringstoken: `src/lib/db/syncTokens.ts` — avgränsade token för slutpunkter som laddar ned konfigurationspaket; stöds av SQLite-tabellen `sync_tokens` (migrering `024_create_sync_tokens.sql`)
-- Autentisering vid WebSocket-handskakning: `src/lib/ws/handshake.ts` — validerar WS-uppgraderingsförfrågningar via API-nyckel eller sessionscookie
+- SSRF-/URL-skydd för utgående trafik: `src/shared/network/outboundUrlGuard.ts` — värdkontroller för leverantörsanrop och webhook-mål; läget hämtas från `src/shared/network/outboundUrlGuardPolicy.ts` (flaggor i `docs/reference/ENVIRONMENT.md`)
+- Validering av körningsmiljön: `src/lib/env/runtimeEnv.ts` — Zod-schema för alla miljövariabler, som visas som fel/varningar vid start
+- Synkroniseringstoken: `src/lib/db/syncTokens.ts` — avgränsade token för slutpunkter för hämtning av konfigurationspaket; stöds av SQLite-tabellen `sync_tokens` (migrering `024_create_sync_tokens.sql`)
+- Autentisering vid WebSocket-handskakning: `src/lib/ws/handshake.ts` — validerar WS-uppgraderingsbegäranden via API-nyckel eller sessionscookie
+- WebSocket-autentisering för kontrollpanelen i realtid: `src/server/ws/liveServer.ts` — sidoprocessen (port `LIVE_WS_PORT`) accepterar en sessionscookie för kontrollpanelen eller en Bearer-API-nyckel med hanteringsbehörighet (`manage`/`admin`); nycklar som endast är avsedda för inferens nekas. Dess interna publiceringsslutpunkt `POST /__omniroute_event` accepterar endast lokala peers när inget proxyhopp-huvud (`x-forwarded-*`, `x-real-ip`, `forwarded`, `via`) finns närvarande
 
 ## 5) Molnsynkronisering
 
@@ -1092,11 +1093,11 @@ bakåtkompatibilitet. Det aktuella körningskontraktet använder:
 - SQLite-schemamigreringar och krokar för automatisk uppgradering vid start
 - kompatibilitetsväg för migrering från äldre JSON-format till SQLite
 
-## 6) SSRF-/skydd för utgående URL:er
+## 6) SSRF-/utgående URL-skydd
 
-- `src/shared/network/outboundUrlGuard.ts` blockerar alla privata, lokala och länklokala mål-URL:er innan de når leverantörsexekverarna
+- `BaseExecutor.assertOutboundUrlAllowed` (`open-sse/executors/base.ts`) tillämpar `src/shared/network/outboundUrlGuard.ts` på chattförfrågningar som skickas via `BaseExecutor.execute()`. I läget endast offentligt (`OMNIROUTE_ALLOW_LOCAL_PROVIDER_URLS=false` med flaggan för privata adresser avstängd) blockerar det privata värdar, loopback-värdar och 169.254.0.0/16. I alla andra lägen blockerar det värdar för molnmetadata. Det kontrollerar värdnamnet eller den ordagranna IP-adressen så som den angetts, före DNS-uppslagning. Inbyggda lokala leverantörer kringgår kontrollen.
 - Rutter för identifiering och validering av leverantörsmodeller använder `src/shared/network/safeOutboundFetch.ts`, som tillämpar skyddet före varje utgående förfrågan
-- Skyddsfel exponeras som `URL_GUARD_BLOCKED` med HTTP 422 och loggas i efterlevnadsgranskningsloggen via `providerAudit.ts`
+- Skyddsfel visas som `URL_GUARD_BLOCKED` med HTTP 503 (`getSafeOutboundFetchErrorStatus`; rutten för modellidentifiering returnerar 400), och faktiska SSRF-blockeringar under validering loggas i granskningsloggen som `provider.validation.ssrf_blocked`-händelser
 
 ## Observerbarhet och driftssignaler
 

@@ -208,11 +208,23 @@ For geometry and layout changes, use the smallest redacted JSON reproduction, re
 
 A visual PR must provide enough evidence to evaluate whether the intended user value was achieved, using screenshots, recordings, or reproducible steps. Keep viewport, theme, preset, diagram mode, zoom, and page state comparable. Report automated or browser evidence separately from perceptual review. Non-visual changes may omit the Visual evidence section.
 
-Static SVG/XML checks cannot establish browser layout, font settling, or interaction behavior. When the adaptive reader or Viewer layout changes, run the real browser test with Chrome available:
+Static SVG/XML checks cannot establish browser layout, font settling, or interaction behavior. When the adaptive reader or Viewer layout changes, run the real browser test from the repository root with Chrome available:
+
+In a POSIX shell:
 
 ```sh
 ARCHIFY_CHROME="/path/to/chrome" npm run test:browser -- test/desktop-reader-browser.test.mjs
 ```
+
+In Windows PowerShell:
+
+```powershell
+$env:ARCHIFY_CHROME = 'C:\Program Files\Google\Chrome\Application\chrome.exe'
+npm run test:browser -- test/desktop-reader-browser.test.mjs
+```
+
+Replace the example Chrome path with your installed executable's path. In
+PowerShell, the environment variable remains set for the current session.
 
 A browser test skipped because Chrome was unavailable is **skipped**, not passed. Follow [the delivery contract](archify/references/delivery-contract.md) for visual evidence, receipts, and failure stages. Successful validation, atomic delivery, browser checks, and perceptual review establish different claims.
 

@@ -40,7 +40,9 @@ rationale per choice. Apply it to every section you author.
 - `minimal` — not required. Can still be run voluntarily.
 
 Read `design/gdd/game-concept.md` — or `design/game-brief.md`, the one-page brief
-that replaces it at `rigor: minimal`. If neither exists, fail with:
+that replaces it at `rigor: minimal`. Read it by section: find the headings you need
+with the Grep tool (pattern `^#`, content mode) and Read those ranges with offset
+and limit. If neither exists, fail with:
 > "No game concept found. Run `/brainstorm` first — the art bible is authored after the game concept is approved."
 
 Extract from game-concept.md (from the brief: working title, pitch, "Who it's for /
@@ -151,9 +153,9 @@ These four sections define the core visual language. **All other sections flow f
 > else can build on it. Sections 2–4 are then delegated in **one** `art-director`
 > call, not three: they are the same agent receiving the same inputs (Visual
 > Identity Statement + pillars), and mood, shape and colour are interdependent —
-> an art director defines them together, not in isolation. Three separate calls
-> re-sent the same context three times and asked the agent to reason about
-> colour without knowing the shape language it had just written.
+> an art director defines them together, not in isolation. Separate calls would
+> ask the agent to reason about colour without knowing the shape language it
+> had just written.
 >
 > **This is not reduced specialist involvement** — every section is still
 > authored by the specialist, which is the point `.claude/docs/effects-map.md`
@@ -245,10 +247,9 @@ These sections translate the visual identity into concrete production rules. The
 ### Section 5: Character Design Direction
 
 **Agent delegation for Sections 5–6 — one call, issued here.** Both sections
-were separate spawns of the **same agent with the same input** (`sections 1–4`),
-which is pure duplication: the second call re-sent the whole visual identity to
-an agent that had just been given it. Spawn `art-director` once with sections
-1–4 and ask for both:
+need the **same agent with the same input** (`sections 1–4`), so a second call
+would only re-send the whole visual identity. Spawn `art-director` once with
+sections 1–4 and ask for both:
 
 1. **Character design direction** — "Cover: visual archetype for the player character (if any), distinguishing feature rules per character type (how do players tell enemies/NPCs/allies apart at a glance?), expression/pose style targets (stiff/expressive/realistic/exaggerated), and LOD philosophy (how much detail is preserved at game camera distance?)."
 2. **Environment design language** — "Cover: architectural style and its relationship to the world's culture/history, texture philosophy (painted vs. PBR vs. stylized — why this choice for this game?), prop density rules (sparse/dense — what drives the choice per area type?), and environmental storytelling guidelines (what visual details should tell the story without text?)."

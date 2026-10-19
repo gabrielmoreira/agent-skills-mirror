@@ -44,11 +44,10 @@ trains the reader to skip the list, which defeats the gate:
   - `console` — full platform certification (TRC / XR / Lotcheck), save-data
     rules, controller-mapping rules, age-rating boards. The heaviest tier.
 
-  > **Branch on the `cert_tier` values above, not on platform names.** "Emit
-  > console/mobile certification items only for the platforms the project targets"
-  > is the wrong test: it treats an `itch` project and a `steam` project
-  > identically, conflates `none` with unset, and keys on `mobile`, which is not a
-  > `cert_tier` value at all. Use the vocabulary the config defines.
+  > **Branch on the `cert_tier` values above, not on platform names.** A test on
+  > target platforms treats an `itch` project and a `steam` project identically,
+  > conflates `none` with unset, and keys on `mobile`, which is not a `cert_tier`
+  > value at all. Use the vocabulary the config defines.
 
 If an item cannot be scoped because the config is absent, mark it
 **`NOT ASSESSED — platform/stage unknown`**. Do not silently include it: a
@@ -58,8 +57,6 @@ ratings, of which ~140 are unassessable.
 
 ---
 
-
-> **Explicit invocation only**: This skill should only run when the user explicitly requests it with `/release-checklist`. Do not auto-invoke based on context matching.
 
 ## Phase 1: Parse Arguments
 
@@ -96,10 +93,6 @@ certification track.
 > **`NOT ASSESSED — code root unresolved`**, and when it is absent or holds no
 > source files, **`NOT ASSESSED — no source files found to scan`**. A bare `0` is
 > not a result.
->
-> `/launch-checklist` scans the same way and is most often run beside this one.
-> Keep the two consistent: changing the rule in one and not the other leaves a
-> route to the same misleading `0`.
 
 Scan for outstanding issues:
 
@@ -159,8 +152,7 @@ Generated: [Date]
 
 Add **device** sections based on the argument. These carry no certification or
 storefront-SDK items — those are gated on `platform.cert_tier` in the next
-subsection, and duplicating them here is what let an `itch` project receive
-Steamworks rows.
+subsection, and repeating them here would hand an `itch` project Steamworks rows.
 
 **For `pc`:**
 ```markdown
@@ -252,11 +244,11 @@ emitting every track; if it cannot be determined, emit
 `none`** — `none` is a decision and unset is a missing one.
 
 > **Certification rows belong here, in one `cert_tier`-gated subsection.** Do not
-> spread them back through the PC, Console and Mobile device blocks: those are
-> selected by the command argument and default to `all`, so an `itch` project
-> running `/release-checklist` with no argument would be handed the Steamworks SDK
-> rows *and* the Lotcheck rows — exactly what the `cert_tier` rule at the top of
-> this skill forbids.
+> put them in the PC, Console and Mobile device blocks: those are selected by the
+> command argument and default to `all`, so an `itch` project running
+> `/release-checklist` with no argument would be handed the Steamworks SDK rows
+> *and* the Lotcheck rows, which the `cert_tier` rule at the top of this skill
+> forbids.
 >
 > **`console` means two different things in this file.** It is a device-block
 > argument value *and* a `cert_tier` value, colliding on one word out of four. A

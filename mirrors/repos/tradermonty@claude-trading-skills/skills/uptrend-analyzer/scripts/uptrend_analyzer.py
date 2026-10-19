@@ -24,7 +24,8 @@ Output:
 import argparse
 import os
 import sys
-from datetime import datetime
+from datetime import datetime, timezone
+from uuid import uuid4
 
 # Add parent directory to path for imports
 sys.path.insert(0, os.path.dirname(__file__))
@@ -34,7 +35,13 @@ from calculators.market_breadth_calculator import calculate_market_breadth
 from calculators.momentum_calculator import calculate_momentum
 from calculators.sector_participation_calculator import calculate_sector_participation
 from calculators.sector_rotation_calculator import calculate_sector_rotation
-from data_fetcher import WORKSHEET_TO_DISPLAY, UptrendDataFetcher
+from data_fetcher import (
+    SECTOR_SUMMARY_URL,
+    TIMESERIES_URL,
+    WORKSHEET_TO_DISPLAY,
+    UptrendDataFetcher,
+)
+from provenance_contract import build_provenance
 from report_generator import generate_json_report, generate_markdown_report
 from scorer import calculate_composite_score
 
@@ -46,6 +53,7 @@ def parse_arguments():
     parser.add_argument(
         "--output-dir", default="reports/", help="Output directory for reports (default: reports/)"
     )
+    parser.add_argument("--run-id", default=None, help="Shared workflow run identifier")
     return parser.parse_args()
 
 
@@ -86,6 +94,16 @@ def main():
     all_timeseries = fetcher.get_all_timeseries()
     latest_all = fetcher.get_latest_all()
     sector_latest = fetcher.get_all_sector_latest()
+
+    provenance = build_provenance(
+        provider="trader-monty",
+        endpoint=TIMESERIES_URL,
+        retrieved_at=datetime.now(timezone.utc).isoformat(),
+        as_of=latest_all.get("date") if latest_all else None,
+        run_id=args.run_id or uuid4().hex,
+    )
+
+    provenance["auxiliary_sources"] = [{"endpoint": SECTOR_SUMMARY_URL, "as_of_verified": False}]
 
     # Build sector -> (count, total) mapping from timeseries latest rows
     count_total_map = {}
@@ -205,6 +223,7 @@ def main():
 
     # Build full analysis
     analysis = {
+        "data_provenance": provenance,
         "metadata": {
             "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             "data_source": "Monty's Uptrend Ratio Dashboard (GitHub CSV)",

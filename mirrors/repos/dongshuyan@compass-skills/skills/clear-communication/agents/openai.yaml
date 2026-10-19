@@ -1,0 +1,4 @@
+interface:
+  display_name: "Clear Communication"
+  short_description: "Explain clearly while preserving facts and conditions"
+  default_prompt: "Use $clear-communication to organize the supplied material for the current reader. Preserve facts, important conditions, uncertainty, and verification status."

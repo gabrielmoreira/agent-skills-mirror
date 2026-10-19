@@ -3,7 +3,7 @@ name: team-audio
 description: "Orchestrate the audio team — audio-director, sound-designer, technical-artist, gameplay-programmer — direction through implementation."
 argument-hint: "[feature or area to design audio for] [--review full|lean|solo]"
 user-invocable: true
-allowed-tools: Read, Glob, Grep, Write, Edit, Bash, Agent, AskUserQuestion, TaskCreate, TaskGet, TaskList, TaskUpdate, Bash(bash "*/.claude/skills/team-audio/../../hooks/yaml-helper.sh" resolve_config *)
+allowed-tools: Read, Glob, Grep, Write, Edit, Agent, AskUserQuestion, TaskCreate, TaskGet, TaskList, TaskUpdate, Bash(bash "*/.claude/skills/team-audio/../../hooks/yaml-helper.sh" resolve_config *)
 model: sonnet
 ---
 
@@ -74,7 +74,9 @@ enforced.**
    `main menu`, `forest biome`, `boss encounter`).
 
 2. **Gather context**:
-   - Read relevant design docs in `design/gdd/` for the feature
+   - Read relevant design docs in `design/gdd/` for the feature, by section: find the
+     headings you need with the Grep tool (pattern `^#`, content mode) and Read
+     those ranges with offset and limit
    - Read the sound bible at `design/audio/sound-bible.md` if it exists. If only
      `design/gdd/sound-bible.md` exists (where earlier versions put it), read that
      and recommend moving it to `design/audio/` — in `design/gdd/` the GDD checks
@@ -179,7 +181,7 @@ Spawn the `gameplay-programmer` agent to:
 5. **Save to** `design/audio/audio-[feature].md` — **but ask first.** `design/` is
    NOT one of the three directories the bounded write exception covers
    (`production/`, `docs/`, `tests/`), so a sub-agent handed this path must
-   prompt, and one has done exactly that. Do not
+   prompt. Do not
    resolve that by widening the exception. Instead, follow the same pattern
    `team-level` uses: **you** already hold every sub-agent's output, so compile
    the document yourself and ask directly via `AskUserQuestion` — "May I write the

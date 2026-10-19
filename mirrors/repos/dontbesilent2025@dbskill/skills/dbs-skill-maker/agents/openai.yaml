@@ -1,4 +1,4 @@
 interface:
-  display_name: "dbs-skill-maker（Skill 制作）"
-  short_description: "把反复问题制作成可安装、可分级验证的单个 Skill"
-  default_prompt: "使用 $dbs-skill-maker 和我一起分析反复遇到的问题，并制作成可安装、验证等级清楚的单个 Skill。"
+  display_name: "dbs-skill-maker（Skill 制作与改进）"
+  short_description: "制作新 Skill 或改进已有 Skill，先给方案再改，并用真实任务对比验证"
+  default_prompt: "使用 $dbs-skill-maker 帮我把反复遇到的问题做成 Skill，或根据真实问题改进已有 Skill。"

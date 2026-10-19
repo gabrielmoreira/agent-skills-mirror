@@ -3,7 +3,7 @@ name: kimi-webbridge
 description: |
   Kimi Browser Extension（Kimi 浏览器扩展，原 Kimi WebBridge）lets AI control the user's real browser — navigate, click, type, read, screenshot, and interact with any website using the user's actual login sessions. Use this skill whenever the user wants to interact with websites, automate browser tasks, scrape web content, or perform any action requiring a real browser. Also use when the user mentions "browser", "webpage", "open URL", "screenshot", asks to read/interact with any website, or wants a reusable CLI tool or script that automates a specific website. Use even for simple-sounding browser requests — the daemon handles all complexity.
 metadata:
-  version: "2.0.22"
+  version: "2.0.24"
 ---
 
 # Kimi Browser Extension (formerly Kimi WebBridge)
@@ -23,7 +23,7 @@ When the user asks to build a reusable CLI tool or script for a website (rather 
 |------|------|---------|------|
 | `navigate` | `url`, `newTab`(bool), `group_title` | `{success, url, tabId}` | First call opens a tab — see [Tabs](#tabs-and-the-current-tab). `group_title` sets the group's visible label |
 | `find_tab` | `url`, `active`(bool) | `{success, url, tabId, borrowed}` | Re-select a tab **this session** opened; `active:true` borrows the tab the **user** is viewing — see [Tabs](#tabs-and-the-current-tab) |
-| `snapshot` | — | `{url, title, tree}` with `@e` refs | **Accessibility tree** (text) — use this to read page content and locate elements |
+| `snapshot` | optional `ref`; `format:"aria"` opts into text with optional `max_chars` (1–60000), or `cursor` to continue | Default `{url, title, tree}`; ARIA `{url, title, tree_text}` | **Accessibility tree** (text) — use this to read page content and locate elements |
 | `click` | `selector` (@e ref or CSS) | `{success, tag, text}` | Synthetic `el.click()` |
 | `fill` | `selector`, `value` | `{success, tag, mode}` | Works on `<input>`/`<textarea>` AND `[contenteditable]` (ProseMirror/Lexical/Slate). `mode` is `"value"` or `"contenteditable"` |
 | `evaluate` | `code` (for `await`, wrap it in an async IIFE — top-level `await` is a SyntaxError) | `{type, value}` | |
@@ -33,16 +33,18 @@ When the user asks to build a reusable CLI tool or script for a website (rather 
 | `upload` | `selector`, `files`(string[]) | `{success, fileCount}` | |
 | `save_as_pdf` | `paper_format`, `landscape`, `scale`, `print_background`, optional `path` | `{path, sizeBytes, mimeType, pageTitle}` | Render current page → PDF, returns a file path — see [Save as PDF](#save-the-current-page-as-pdf) |
 | `list_tabs` | — | `{success, tabs:[{tabId, url, title, active, groupTitle}]}` | Inspect tabs in the current session |
+| `list_browser_tabs` | — | `{success, tabs:[{tabId, windowId, url, title, active}]}` | Inspect all tabs visible to this WebBridge connection, across windows; does not attach or focus a tab |
+| `attach_tab` | `tabId` | `{success, tabId, url, title, borrowed}` | Attach a specific existing tab to this session without focusing it; borrowed tabs survive `close_session` |
 | `close_tab` | — | `{success, closed: bool}` | Close the current tab in the session |
-| `close_session` | — | `{success, closed: int}` | Close all tabs in the session — `closed` is the count. See [Sessions](#sessions) for when to call |
+| `close_session` | — | `{success, closed: int}` | Close tabs opened by this session; borrowed tabs stay open. `closed` is the count. See [Sessions](#sessions) for when to call |
 
 ### Tabs and the current tab
 
-Single-tab tools (`snapshot`, `click`, `fill`, `screenshot`, `save_as_pdf`) act on the **current tab** — the one you most recently opened with `navigate` or selected with `find_tab`.
+Single-tab tools (`snapshot`, `click`, `fill`, `screenshot`, `save_as_pdf`) act on the **current tab** — the one you most recently opened with `navigate`, selected with `find_tab`, or attached with `attach_tab`.
 
 - **Opening pages**: use `newTab:true` when pages should coexist (comparing, cross-referencing); omit it to send the current tab to a new URL.
 - **Going back to an earlier tab**: call `find_tab` to make a tab **you opened earlier in this session** the current one again. Pass the tab's URL — take it from `list_tabs` or the earlier `navigate` result. Matching is by host: `kimi.com` also finds a `www.kimi.com` tab, and the path is ignored. By default `find_tab` searches **only this session's own tabs** — it never reaches into the user's other tabs or windows.
-- **Acting on a page the user already has open**: pass `active:true` ("use my open X tab" / "the X page I'm viewing"). It **borrows** the tab the user is currently viewing (returns `borrowed:true`); the borrowed tab is operated in place — it is not pulled into the session's tab group.
+- **Acting on a page the user already has open**: call `list_browser_tabs`, choose the tab by its URL/title and `tabId`, then call `attach_tab` with that ID. This also works for tabs in other windows and does not change the user's foreground tab. The attached tab is borrowed and remains open after `close_session`. For the particular tab the user is currently viewing, `find_tab` with `active:true` still works.
 - If `find_tab` errors with "no tab matching … in this session", the page isn't open in this session — `navigate` with `newTab:true` instead.
 
 ```bash
@@ -120,7 +122,9 @@ A caller-supplied `path` is honored verbatim (parent dirs created, existing file
 
 ## Prefer snapshot over CSS/JS selectors
 
-`snapshot` returns interactive elements with `@e` refs based on semantic role/name. Use them directly with click/fill — they survive CSS class hash changes that break manually-written selectors.
+`snapshot` returns interactive elements with `@e` refs bound to the observed DOM nodes. Copy refs as opaque strings into click/fill. Re-reading a page preserves refs for the same nodes; a removed node or changed document/connection requires a fresh snapshot. Refs never automatically select a replacement by name.
+
+For bounded text reads, call `snapshot` with `format:"aria"` and optionally `max_chars` (default 60000). This bounds `tree_text`, not metadata. If `truncated:true`, pass `next_cursor` back as `cursor` (without `ref`) to continue the same saved observation; `continued:true` identifies subsequent chunks. Concatenate `tree_text` without extra separators: chunks can split long lines, and budgets count UTF-16 code units without splitting surrogate pairs (a budget of 1 errors when the next character needs 2). Cursors expire after five minutes, cache eviction, navigation or connection reset; start a new snapshot on an expired-cursor error. Same-document content edits do not refresh saved text. The cache holds at most eight snapshots / eight million code units; observations above four million fail explicitly, so narrow the read. Alternatively, use `find` with a specific `query` to search the full main-document accessibility tree, then `snapshot` with the chosen match's `ref` to read its subtree. Search results carry ancestor paths to distinguish same-name matches. Scope and budget do not reassign existing refs; iframe content is not included in this search.
 
 Fall back to `evaluate` (JS) only when:
 - The target has no `@e` ref in the snapshot

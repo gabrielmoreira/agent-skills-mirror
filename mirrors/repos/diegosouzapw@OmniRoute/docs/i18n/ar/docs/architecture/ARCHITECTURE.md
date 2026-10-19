@@ -10,77 +10,77 @@ _آخر تحديث: 2026-06-28_
 
 ## الملخص التنفيذي
 
-OmniRoute هو بوابة محلية لتوجيه الذكاء الاصطناعي ولوحة معلومات مبنية على Next.js.
-يوفّر نقطة نهاية واحدة متوافقة مع OpenAI (`/v1/*`) ويوجّه حركة البيانات عبر عدة مزوّدين خارجيين مع الترجمة، والانتقال الاحتياطي، وتجديد الرموز، وتتبع الاستخدام.
+OmniRoute هو بوابة محلية لتوجيه الذكاء الاصطناعي ولوحة معلومات مبنيتان على Next.js.
+يوفّر نقطة نهاية واحدة متوافقة مع OpenAI (`/v1/*`)، ويوجّه حركة البيانات عبر عدة مزوّدين خارجيين مع الترجمة، والتراجع الاحتياطي، وتحديث الرموز، وتتبع الاستخدام.
 
 القدرات الأساسية:
 
-- واجهة API متوافقة مع OpenAI لأدوات CLI/الأدوات الأخرى (373 مزوّدًا، و150 وحدة تنفيذ)
-- ترجمة الطلبات/الاستجابات بين تنسيقات المزوّدين
-- الانتقال الاحتياطي لمجموعة نماذج (تسلسل متعدد النماذج)
+- واجهة API متوافقة مع OpenAI لأدوات CLI والأدوات الأخرى (374 مزوّدًا، و150 وحدة تنفيذ)
+- ترجمة الطلبات والاستجابات بين تنسيقات المزوّدين
+- التراجع الاحتياطي عبر مجموعة نماذج (تسلسل متعدد النماذج)
 - خطوات مجموعة منظّمة (`provider + model + connection`) مع ترتيب وقت التشغيل حسب `compositeTiers`
-- الانتقال الاحتياطي على مستوى الحساب (حسابات متعددة لكل مزوّد)
+- التراجع الاحتياطي على مستوى الحساب (حسابات متعددة لكل مزوّد)
 - فحص مسبق للحصة واختيار حساب P2C مع مراعاة الحصة في مسار الدردشة الرئيسي
-- إدارة اتصالات المزوّدين عبر OAuth + مفاتيح API ‏(27 وحدة لمزوّدي OAuth)
-- إنشاء التضمينات عبر `/v1/embeddings` ‏(18 مزوّدًا)
-- إنشاء الصور عبر `/v1/images/generations` ‏(أكثر من 10 مزوّدين، وأكثر من 20 نموذجًا)
-- نسخ الصوت عبر `/v1/audio/transcriptions` ‏(18 مزوّدًا)
-- تحويل النص إلى كلام عبر `/v1/audio/speech` ‏(24 مزوّدًا مدمجًا)
-- إنشاء الفيديو عبر `/v1/videos/generations` ‏(ComfyUI + SD WebUI)
-- إنشاء الموسيقى عبر `/v1/music/generations` ‏(ComfyUI)
-- البحث على الويب عبر `/v1/search` ‏(20 مزوّدًا)
+- إدارة اتصالات المزوّدين عبر OAuth ومفاتيح API (27 وحدة لمزوّدي OAuth)
+- إنشاء التضمينات عبر `/v1/embeddings` (18 مزوّدًا)
+- إنشاء الصور عبر `/v1/images/generations` (أكثر من 10 مزوّدين وأكثر من 20 نموذجًا)
+- نسخ الصوت إلى نص عبر `/v1/audio/transcriptions` (18 مزوّدًا)
+- تحويل النص إلى كلام عبر `/v1/audio/speech` (24 مزوّدًا مدمجًا)
+- إنشاء الفيديو عبر `/v1/videos/generations` (ComfyUI + SD WebUI)
+- إنشاء الموسيقى عبر `/v1/music/generations` (ComfyUI)
+- البحث على الويب عبر `/v1/search` (20 مزوّدًا)
 - الإشراف على المحتوى عبر `/v1/moderations`
 - إعادة الترتيب عبر `/v1/rerank`
 - تحليل وسوم التفكير (``) لنماذج الاستدلال
 - تنقية الاستجابات لضمان التوافق الصارم مع OpenAI SDK
 - توحيد الأدوار (developer→system، وsystem→user) لتحقيق التوافق بين المزوّدين
 - تحويل المخرجات المنظّمة (json_schema → Gemini responseSchema)
-- تخزين محلي دائم للمزوّدين، والمفاتيح، والأسماء المستعارة، والمجموعات، والإعدادات، والتسعير (122 وحدة لقاعدة البيانات)
-- تتبع الاستخدام/التكلفة وتسجيل الطلبات
+- تخزين محلي دائم للمزوّدين والمفاتيح والأسماء المستعارة والمجموعات والإعدادات والتسعير (122 وحدة لقاعدة البيانات)
+- تتبع الاستخدام والتكلفة وتسجيل الطلبات
 - مزامنة سحابية اختيارية لمزامنة الحالة عبر أجهزة متعددة
 - قائمة سماح/حظر لعناوين IP للتحكم في الوصول إلى API
-- إدارة ميزانية التفكير (التمرير المباشر/التلقائي/المخصص/التكيفي)
-- حقن مطالبة نظام عامة
-- تتبع الجلسات وإنشاء بصماتها
-- تحديد محسّن لمعدل الطلبات لكل حساب باستخدام ملفات تعريف خاصة بالمزوّد
+- إدارة ميزانية التفكير (التمرير المباشر/التلقائي/المخصص/التكيّفي)
+- حقن موجّه نظام عام
+- تتبع الجلسات وأخذ البصمات
+- تحديد محسّن لمعدل الطلبات لكل حساب باستخدام ملفات تعريف خاصة بكل مزوّد
 - نمط قاطع الدائرة لتعزيز مرونة المزوّدين
-- حماية من اندفاع الطلبات المتزامنة باستخدام قفل mutex
+- حماية من التدافع المفاجئ للطلبات باستخدام القفل المتبادل
 - ذاكرة تخزين مؤقت لإزالة تكرار الطلبات استنادًا إلى التوقيع
-- طبقة المجال: قواعد التكلفة، وسياسة الانتقال الاحتياطي، وسياسة الإقفال
+- طبقة المجال: قواعد التكلفة، وسياسة التراجع الاحتياطي، وسياسة القفل
 - ترحيل السياق: ملخصات تسليم الجلسات للحفاظ على الاستمرارية عند تدوير الحسابات
-- استمرارية حالة المجال (ذاكرة تخزين مؤقت SQLite للكتابة المتزامنة لعمليات الانتقال الاحتياطي، والميزانيات، وعمليات الإقفال، وقواطع الدائرة)
-- محرك سياسات لتقييم الطلبات مركزيًا (الإقفال → الميزانية → الانتقال الاحتياطي)
-- قياس بيانات الطلبات عن بُعد مع تجميع زمن الاستجابة وفق p50/p95/p99
-- قياس بيانات أهداف المجموعة عن بُعد وسجل سلامة أهداف المجموعة عبر `combo_execution_key` / `combo_step_id`
-- معرّف ارتباط (X-Request-Id) للتتبع من البداية إلى النهاية
+- تخزين دائم لحالة المجال (ذاكرة تخزين مؤقت SQLite بالكتابة المباشرة لحالات التراجع الاحتياطي والميزانيات وعمليات القفل وقواطع الدائرة)
+- محرك سياسات لتقييم الطلبات مركزيًا (القفل → الميزانية → التراجع الاحتياطي)
+- قياس طلبات المعالجة عن بُعد مع تجميع زمن الاستجابة وفق p50/p95/p99
+- قياس أهداف المجموعة عن بُعد والسجل التاريخي لصحة أهداف المجموعة عبر `combo_execution_key` / `combo_step_id`
+- معرّف ارتباط (X-Request-Id) للتتبع من طرف إلى طرف
 - تسجيل تدقيق الامتثال مع إمكانية إلغاء الاشتراك لكل مفتاح API
 - إطار تقييم لضمان جودة LLM
-- لوحة معلومات السلامة مع حالة قاطع دائرة المزوّد في الوقت الفعلي
+- لوحة معلومات للصحة تعرض حالة قاطع الدائرة للمزوّدين في الوقت الفعلي
 - خادم MCP ‏(110 أدوات) مع 3 وسائل نقل (stdio/SSE/Streamable HTTP)
 - خادم A2A ‏(JSON-RPC 2.0 + SSE) مع المهارات ودورة حياة المهام
 - نظام ذاكرة (الاستخراج، والحقن، والاسترجاع، والتلخيص)
-- نظام مهارات (السجل، والمنفّذ، والبيئة المعزولة، والمهارات المدمجة)
+- نظام مهارات (السجل، والمنفّذ، وبيئة العزل، والمهارات المدمجة)
 - وكيل MITM مع إدارة الشهادات ومعالجة DNS
-- برمجية وسيطة للحماية من حقن المطالبات
-- مسار لمعالجة ضغط المطالبات باستخدام Caveman، وRTK، والمسارات المكدسة، ومجموعات الضغط، وحزم اللغات، والتحليلات
+- برنامج وسيط للحماية من حقن الموجّهات
+- مسار ضغط الموجّهات مع Caveman وRTK والمسارات المكدّسة ومجموعات الضغط وحزم اللغات والتحليلات
 - سجل ACP ‏(Agent Communication Protocol)
 - مزوّدو OAuth معياريون (22 وحدة منفردة ضمن `src/lib/oauth/providers/`)
-- نصوص برمجية لإلغاء التثبيت/إلغاء التثبيت الكامل
+- برامج نصية لإلغاء التثبيت وإلغاء التثبيت الكامل
 - إجراء لإصلاح بيئة OAuth
-- جسر WebSocket لعملاء WS المتوافقين مع OpenAI ‏(`/v1/ws`)
-- إدارة رموز المزامنة (الإصدار/الإلغاء، وتنزيل حزمة الإعدادات ذات الإصدارات المستندة إلى ETag)
-- إعداد مسبق من الفئة الأولى لمزوّد GLM Thinking ‏(`glmt`)
-- عدّ هجين للرموز (عبر `/messages/count_tokens` من جانب المزوّد مع الرجوع إلى التقدير)
-- تهيئة تلقائية للأسماء المستعارة للنماذج (أكثر من 30 عملية توحيد للهجات الوكلاء المتقاطعة عند بدء التشغيل)
+- جسر WebSocket لعملاء WS المتوافقين مع OpenAI (`/v1/ws`)
+- إدارة رموز المزامنة (الإصدار/الإلغاء، وتنزيل حزمة إعدادات ذات إصدارات ETag)
+- إعداد مسبق من الدرجة الأولى لمزوّد GLM Thinking ‏(`glmt`)
+- عدّ هجين للرموز (باستخدام `/messages/count_tokens` من جهة المزوّد مع الرجوع إلى التقدير احتياطيًا)
+- التهيئة التلقائية للأسماء المستعارة للنماذج (أكثر من 30 عملية توحيد لصيغ الوكلاء المختلفة عند بدء التشغيل)
 - جلب خارجي آمن مع حماية من SSRF، وحظر عناوين URL الخاصة، وإعادة محاولة قابلة للتهيئة
-- عمليات إعادة محاولة للدردشة تراعي فترة التهدئة مع `requestRetry` و`maxRetryIntervalSec` قابلين للتهيئة
+- إعادة محاولات الدردشة مع مراعاة فترة التهدئة باستخدام `requestRetry` و`maxRetryIntervalSec` القابلين للتهيئة
 - التحقق من بيئة وقت التشغيل باستخدام Zod عند بدء التشغيل
-- تدقيق الامتثال v2 مع ترقيم الصفحات، وأحداث CRUD للمزوّد، وتسجيل عمليات التحقق المحظورة بسبب SSRF
+- تدقيق الامتثال v2 مع تقسيم إلى صفحات، وأحداث CRUD للمزوّدين، وتسجيل عمليات التحقق المحظورة بسبب SSRF
 
 نموذج وقت التشغيل الأساسي:
 
-- تنفّذ مسارات تطبيق Next.js ضمن `src/app/api/*` كلًا من واجهات API للوحة المعلومات وواجهات API للتوافق
-- تتولى نواة مشتركة لـ SSE/التوجيه ضمن `src/sse/*` + `open-sse/*` تنفيذ المزوّد، والترجمة، والبث، والانتقال الاحتياطي، والاستخدام
+- تنفّذ مسارات تطبيق Next.js ضمن `src/app/api/*` كلاً من واجهات API الخاصة بلوحة المعلومات وواجهات API الخاصة بالتوافق
+- تتولى نواة مشتركة لـ SSE والتوجيه ضمن `src/sse/*` + `open-sse/*` تنفيذ المزوّدين، والترجمة، والبث، والتراجع الاحتياطي، والاستخدام
 
 ## المخططات المرجعية
 
@@ -266,18 +266,18 @@ flowchart LR
 - التنسيق الأساسي: `open-sse/handlers/chatCore.ts`
 - محوّلات تنفيذ المزوّدين: `open-sse/executors/*`
 - اكتشاف التنسيق/إعداد المزوّد: `open-sse/services/provider.ts`
-- تحليل/حلّ النموذج: `src/sse/services/model.ts`، `open-sse/services/model.ts`
+- تحليل النموذج/حله: `src/sse/services/model.ts`، `open-sse/services/model.ts`
 - منطق الرجوع إلى حساب بديل: `open-sse/services/accountFallback.ts`
-- سجلّ الترجمة: `open-sse/translator/index.ts`
+- سجل الترجمة: `open-sse/translator/index.ts`
 - تحويلات التدفق: `open-sse/utils/stream.ts`، `open-sse/utils/streamHandler.ts`
-- استخراج/تطبيع الاستخدام: `open-sse/utils/usageTracking.ts`
-- محلّل وسم التفكير: `open-sse/utils/thinkTagParser.ts`
+- استخراج الاستخدام/توحيده: `open-sse/utils/usageTracking.ts`
+- محلل وسم التفكير: `open-sse/utils/thinkTagParser.ts`
 - معالج التضمين: `open-sse/handlers/embeddings.ts`
-- سجلّ مزوّدي التضمين: `open-sse/config/embeddingRegistry.ts`
+- سجل مزوّدي التضمين: `open-sse/config/embeddingRegistry.ts`
 - معالج توليد الصور: `open-sse/handlers/imageGeneration.ts`
-- سجلّ مزوّدي الصور: `open-sse/config/imageRegistry.ts`
+- سجل مزوّدي الصور: `open-sse/config/imageRegistry.ts`
 - تنقية الاستجابة: `open-sse/handlers/responseSanitizer.ts`
-- تطبيع الأدوار: `open-sse/services/roleNormalizer.ts`
+- توحيد الأدوار: `open-sse/services/roleNormalizer.ts`
 
 الخدمات (منطق الأعمال):
 
@@ -289,42 +289,42 @@ flowchart LR
 - حقن موجّه النظام: `open-sse/services/systemPrompt.ts`
 - إدارة ميزانية التفكير: `open-sse/services/thinkingBudget.ts`
 - توجيه النماذج باستخدام أحرف البدل: `open-sse/services/wildcardRouter.ts`
-- إدارة حدود المعدّل: `open-sse/services/rateLimitManager.ts`
-- قاطع الدائرة: `src/shared/utils/circuitBreaker.ts`
-- تسليم السياق: `open-sse/services/contextHandoff.ts` — توليد ملخّص التسليم وحقنه لاستراتيجية ترحيل السياق
-- الضغط: `open-sse/services/compression/*` — ضغط استباقي قبل الترجمة إلى صيغة المزوّد؛
-  يتضمن قواعد Caveman، ومرشّحات RTK، ومسارات المعالجة المكدّسة، وتركيبات الضغط، والإحصاءات، والتحقق
+- إدارة حدود المعدل: `open-sse/services/rateLimitManager.ts`
+- قاطع الدارة: `src/shared/utils/circuitBreaker.ts`
+- تسليم السياق: `open-sse/services/contextHandoff.ts` — توليد ملخص التسليم وحقنه لاستراتيجية ترحيل السياق
+- الضغط: `open-sse/services/compression/*` — ضغط استباقي قبل الترجمة إلى تنسيق المزوّد؛
+  يتضمن قواعد Caveman، ومرشحات RTK، ومسارات المعالجة المتراكبة، وتركيبات الضغط، والإحصاءات، والتحقق
 - جالب حصة Codex: `open-sse/services/codexQuotaFetcher.ts` — يجلب حصة Codex لاتخاذ قرارات تسليم ترحيل السياق
-- إعادة المحاولة المراعية لفترة التهدئة: `src/sse/services/cooldownAwareRetry.ts` — عمليات إعادة محاولة لكل نموذج خلال فترة التهدئة باستخدام `requestRetry` / `maxRetryIntervalSec` القابلين للتهيئة
+- إعادة المحاولة مع مراعاة فترة التهدئة: `src/sse/services/cooldownAwareRetry.ts` — عمليات إعادة محاولة لكل نموذج مع فترات تهدئة و`requestRetry` / `maxRetryIntervalSec` قابلة للتهيئة
 - الجلب الصادر الآمن: `src/shared/network/safeOutboundFetch.ts` — جلب محمي للمزوّد/النموذج مع حماية من SSRF، وحظر عناوين URL الخاصة، وإعادة المحاولة، والمهلة الزمنية
-- حارس عناوين URL الصادرة: `src/shared/network/outboundUrlGuard.ts` — عمليات تحقق من المضيف لعناوين URL الخاصة بالمزوّد؛ يختار `src/shared/network/outboundUrlGuardPolicy.ts` الوضع من `OMNIROUTE_ALLOW_LOCAL_PROVIDER_URLS` و`OMNIROUTE_ALLOW_PRIVATE_PROVIDER_URLS` ومفاتيح التبديل الخاصة بهما في لوحة المعلومات (راجع `docs/reference/ENVIRONMENT.md`)
-- الإعدادات الافتراضية لطلبات المزوّد: `open-sse/services/providerRequestDefaults.ts` — القيم الافتراضية `maxTokens` و`temperature` و`thinkingBudgetTokens` على مستوى المزوّد
-- ثوابت مزوّد GLM: `open-sse/config/glmProvider.ts` — نماذج GLM المشتركة، وعناوين URL للحصة، ومهلة GLMT وقيمها الافتراضية
-- المنبع لـ Antigravity: `open-sse/config/antigravityUpstream.ts` — ثوابت عنوان URL الأساسي ومسار الاكتشاف
+- حارس عناوين URL الصادرة: `src/shared/network/outboundUrlGuard.ts` — عمليات تحقق من المضيف على عناوين URL الخاصة بالمزوّدين؛ يختار `src/shared/network/outboundUrlGuardPolicy.ts` الوضع من `OMNIROUTE_ALLOW_LOCAL_PROVIDER_URLS` و`OMNIROUTE_ALLOW_PRIVATE_PROVIDER_URLS` وخيارات التبديل الخاصة بهما في لوحة المعلومات (راجع `docs/reference/ENVIRONMENT.md`)
+- القيم الافتراضية لطلبات المزوّد: `open-sse/services/providerRequestDefaults.ts` — القيم الافتراضية `maxTokens` و`temperature` و`thinkingBudgetTokens` على مستوى المزوّد
+- ثوابت مزوّد GLM: `open-sse/config/glmProvider.ts` — نماذج GLM المشتركة، وعناوين URL للحصص، والمهلة الزمنية/القيم الافتراضية لـ GLMT
+- المنبع الخاص بـ Antigravity: `open-sse/config/antigravityUpstream.ts` — ثوابت عنوان URL الأساسي ومسار الاكتشاف
 - ثوابت عميل Codex: `open-sse/config/codexClient.ts` — قيم وكيل المستخدم وإصدار العميل المرتبطة بالإصدار
-- البيانات الأولية للأسماء البديلة للنماذج: `src/lib/modelAliasSeed.ts` — يهيّئ أكثر من 30 اسمًا بديلًا للهجات عبر الوكلاء عند بدء التشغيل
+- بيانات أسماء النماذج البديلة الأولية: `src/lib/modelAliasSeed.ts` — يضيف عند بدء التشغيل أكثر من 30 اسمًا بديلًا عبر لهجات الوكلاء المختلفة
 
-وحدات طبقة النطاق:
+وحدات طبقة المجال:
 
 - قواعد التكلفة/الميزانيات: `src/domain/costRules.ts`
 - سياسة الرجوع: `src/domain/fallbackPolicy.ts`
-- محلّل التركيبات: `src/domain/comboResolver.ts`
-- سياسة الحظر: `src/domain/lockoutPolicy.ts`
-- محرّك السياسات: `src/domain/policyEngine.ts` — تقييم مركزي للتسلسل: الحظر ← الميزانية ← الرجوع
-- فهرس رموز الأخطاء: `src/shared/constants/errorCodes.ts`
+- محلل التركيبات: `src/domain/comboResolver.ts`
+- سياسة الإقفال: `src/domain/lockoutPolicy.ts`
+- محرك السياسات: `src/domain/policyEngine.ts` — تقييم مركزي للتسلسل: الإقفال ← الميزانية ← الرجوع
+- دليل رموز الأخطاء: `src/shared/constants/errorCodes.ts`
 - معرّف الطلب: `src/shared/utils/requestId.ts`
 - مهلة الجلب: `src/shared/utils/fetchTimeout.ts`
-- قياس طلبات المعالجة عن بُعد: `src/shared/utils/requestTelemetry.ts`
+- قياسات الطلب عن بُعد: `src/shared/utils/requestTelemetry.ts`
 - الامتثال/التدقيق: `src/lib/compliance/index.ts`
 - مشغّل التقييمات: `src/lib/evals/evalRunner.ts`
-- استمرارية حالة النطاق: `src/lib/db/domainState.ts` — عمليات CRUD في SQLite لسلاسل الرجوع، والميزانيات، وسجلّ التكلفة، وحالة الحظر، وقواطع الدائرة
+- استمرارية حالة المجال: `src/lib/db/domainState.ts` — عمليات CRUD في SQLite لسلاسل الرجوع، والميزانيات، وسجل التكلفة، وحالة الإقفال، وقواطع الدارة
 
 وحدات مزوّدي OAuth ‏(27 ملفًا منفردًا ضمن `src/lib/oauth/providers/`):
 
-- فهرس السجلّ: `src/lib/oauth/providers/index.ts`
-- المزوّدون الفرديون: `agy.ts`، `antigravity.ts`، `claude.ts`، `cline.ts`، `codebuddy-cn.ts`، `codebuddy-intl.ts`، `codex.ts`، `cursor.ts`، `devin-desktop.ts`، `ghe-copilot.ts`، `github.ts`، `gitlab-duo.ts`، `grok-cli-oauth.ts`، `grok-cli.ts`، `kilocode.ts`، `kimi-coding.ts`، `kiro.ts`، `muse-code.ts`، `openference.ts`، `qoder.ts`، `trae.ts`، `workbuddy.ts`، `xai-oauth.ts`، `zed-hosted.ts`، `zed.ts`
-- الأدوات المساعدة المشتركة: `codebuddyDeviceAuth.ts` (تدفق جهاز CodeBuddy لـ CN/intl)، `museCodeDeviceResponse.ts`
-- غلاف خفيف: `src/lib/oauth/providers.ts` — يعيد التصدير من الوحدات الفردية
+- فهرس السجل: `src/lib/oauth/providers/index.ts`
+- المزوّدون المنفردون: `agy.ts`، `antigravity.ts`، `claude.ts`، `cline.ts`، `codebuddy-cn.ts`، `codebuddy-intl.ts`، `codex.ts`، `cursor.ts`، `devin-desktop.ts`، `ghe-copilot.ts`، `github.ts`، `gitlab-duo.ts`، `grok-cli-oauth.ts`، `grok-cli.ts`، `kilocode.ts`، `kimi-coding.ts`، `kiro.ts`، `muse-code.ts`، `openference.ts`، `qoder.ts`، `trae.ts`، `workbuddy.ts`، `xai-oauth.ts`، `zed-hosted.ts`، `zed.ts`
+- الأدوات المساعدة المشتركة: `codebuddyDeviceAuth.ts` (تدفق جهاز CodeBuddy للإصدارين CN/intl)، `museCodeDeviceResponse.ts`
+- غلاف خفيف: `src/lib/oauth/providers.ts` — يعيد التصدير من الوحدات المنفردة
 
 ## 5) الخدمات المضمّنة (v3.8.4)
 
@@ -534,16 +534,17 @@ flowchart LR
 - الجداول (المنشأة في `src/lib/db/core.ts`): `domain_fallback_chains`، و`domain_budgets`، و`domain_cost_history`، و`domain_lockout_state`، و`domain_circuit_breakers`
 - نمط ذاكرة التخزين المؤقت ذات الكتابة المباشرة: تُعد خرائط الذاكرة المرجع المعتمد في وقت التشغيل؛ وتُكتب التغييرات بشكل متزامن إلى SQLite؛ وتُستعاد الحالة من قاعدة البيانات عند بدء التشغيل البارد
 
-## 4) أسطح المصادقة والأمان
+## 4) المصادقة + أسطح الأمان
 
-- مصادقة لوحة التحكم عبر ملفات تعريف الارتباط: `src/proxy.ts`، و`src/app/api/auth/login/route.ts`
+- مصادقة لوحة التحكم عبر ملفات تعريف الارتباط: `src/proxy.ts`، `src/app/api/auth/login/route.ts`
 - إنشاء مفاتيح API والتحقق منها: `src/shared/utils/apiKey.ts`
-- تُخزَّن أسرار موفّري الخدمة في إدخالات `providerConnections`
-- دعم الوكيل الصادر عبر `open-sse/utils/proxyFetch.ts` (متغيرات البيئة) و`open-sse/utils/networkProxy.ts` (قابل للتهيئة لكل موفّر أو بشكل عام)
-- حماية SSRF / عناوين URL الصادرة: `src/shared/network/outboundUrlGuard.ts` — تحظر النطاقات الخاصة/الحلقية/المحلية للرابط لجميع استدعاءات الموفّرين
-- التحقق من بيئة وقت التشغيل: `src/lib/env/runtimeEnv.ts` — مخطط Zod لجميع متغيرات البيئة، وتظهر نتائجه كأخطاء/تحذيرات عند بدء التشغيل
-- رموز المزامنة: `src/lib/db/syncTokens.ts` — رموز محددة النطاق لنقاط نهاية تنزيل حزم التهيئة؛ مدعومة بجدول SQLite المسمى `sync_tokens` (عملية الترحيل `024_create_sync_tokens.sql`)
-- مصادقة مصافحة WebSocket: `src/lib/ws/handshake.ts` — تتحقق من طلبات ترقية WS عبر مفتاح API أو ملف تعريف ارتباط الجلسة
+- تُحفَظ أسرار موفّري الخدمة ضمن إدخالات `providerConnections`
+- دعم الوكيل للاتصالات الصادرة عبر `open-sse/utils/proxyFetch.ts` (متغيرات البيئة) و`open-sse/utils/networkProxy.ts` (قابل للتهيئة لكل موفّر أو على المستوى العام)
+- الحماية من SSRF / التحقق من عناوين URL الصادرة: `src/shared/network/outboundUrlGuard.ts` — فحوصات المضيف في استدعاءات موفّري الخدمة ووجهات خطافات الويب؛ يُحدَّد الوضع من `src/shared/network/outboundUrlGuardPolicy.ts` (العلامات في `docs/reference/ENVIRONMENT.md`)
+- التحقق من بيئة وقت التشغيل: `src/lib/env/runtimeEnv.ts` — مخطط Zod لجميع متغيرات البيئة، وتظهر نتائجه على شكل أخطاء/تحذيرات عند بدء التشغيل
+- رموز المزامنة: `src/lib/db/syncTokens.ts` — رموز مقيّدة النطاق لنقاط نهاية تنزيل حزمة الإعدادات؛ مدعومة بجدول SQLite المسمّى `sync_tokens` (الترحيل `024_create_sync_tokens.sql`)
+- مصادقة مصافحة WebSocket: `src/lib/ws/handshake.ts` — تتحقق من طلبات ترقية WS عبر مفتاح API أو ملف تعريف ارتباط للجلسة
+- مصادقة WebSocket المباشرة للوحة التحكم: `src/server/ws/liveServer.ts` — تقبل الخدمة الجانبية (المنفذ `LIVE_WS_PORT`) ملف تعريف ارتباط لجلسة لوحة التحكم أو مفتاح Bearer API يحمل نطاق إدارة (`manage`/`admin`)؛ وتُرفض المفاتيح المخصصة للاستدلال فقط. لا تقبل نقطة نهاية الناشر الداخلية `POST /__omniroute_event` إلا النظراء على واجهة الاسترجاع، وذلك فقط عند عدم وجود ترويسة تدل على المرور عبر وكيل (`x-forwarded-*`، `x-real-ip`، `forwarded`، `via`)
 
 ## 5) المزامنة السحابية
 
@@ -1094,9 +1095,9 @@ flowchart LR
 
 ## 6) حماية SSRF / عناوين URL الصادرة
 
-- يحظر `src/shared/network/outboundUrlGuard.ts` جميع عناوين URL المستهدفة الخاصة/المرتدة/المحلية للرابط قبل وصولها إلى منفّذات المزوّد
-- تستخدم مسارات اكتشاف نماذج المزوّد والتحقق منها `src/shared/network/safeOutboundFetch.ts`، الذي يطبّق الحماية قبل كل طلب صادر
-- تظهر أخطاء الحماية بصيغة `URL_GUARD_BLOCKED` مع HTTP 422، ويتم تسجيلها في سجل تدقيق الامتثال عبر `providerAudit.ts`
+- تطبّق `BaseExecutor.assertOutboundUrlAllowed` ‏(`open-sse/executors/base.ts`) الملف `src/shared/network/outboundUrlGuard.ts` على طلبات الدردشة المُرسلة عبر `BaseExecutor.execute()`. في وضع السماح بالعناوين العامة فقط (`OMNIROUTE_ALLOW_LOCAL_PROVIDER_URLS=false` مع تعطيل علامة السماح بالعناوين الخاصة)، تحظر المضيفين الخاصين ومضيفي الاسترجاع الذاتي والنطاق 169.254.0.0/16؛ وفي جميع الأوضاع الأخرى تحظر مضيفي بيانات تعريف السحابة. وتتحقق من اسم المضيف أو عنوان IP الحرفي كما هو مكتوب، قبل أي عملية بحث في DNS. يتجاوز الموفّرون المحليون المضمّنون هذا الفحص.
+- تستخدم مسارات اكتشاف نماذج الموفّرين والتحقق منها الملف `src/shared/network/safeOutboundFetch.ts`، الذي يطبّق الحماية قبل كل طلب صادر.
+- تظهر أخطاء الحماية بالرمز `URL_GUARD_BLOCKED` مع حالة HTTP 503 (`getSafeOutboundFetchErrorStatus`؛ بينما يعيد مسار اكتشاف النماذج الحالة 400)، وتُسجَّل عمليات حظر SSRF الفعلية أثناء التحقق في سجل التدقيق كأحداث `provider.validation.ssrf_blocked`.
 
 ## قابلية الرصد والإشارات التشغيلية
 

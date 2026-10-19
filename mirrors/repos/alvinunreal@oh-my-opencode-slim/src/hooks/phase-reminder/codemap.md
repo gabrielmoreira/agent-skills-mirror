@@ -27,12 +27,14 @@ Orchestrates phase reminder injection into user messages for the orchestrator ag
 ## Flow
 
 1. **Hook Invocation**: OpenCode calls the `experimental.chat.messages.transform` hook before sending messages to API
-2. **Message Analysis**: Iterates backward through messages to find the last user message
-3. **Agent Validation**: Confirms the message is from the orchestrator agent
-4. **Text Part Detection**: Locates the text part in the message
-5. **Duplicate Prevention**: Checks for existing phase reminder injection
-6. **Injection**: Appends phase reminder as a new text message part
-7. **Transmission**: Messages proceed to API with injected reminder (not visible in UI)
+2. **Session Selection**: Finds the latest user message and uses its orchestrator/session identity as the eligibility scope
+3. **Forward Scan**: Scans messages from oldest to newest within that session view
+4. **Eligibility Check**: Skips non-orchestrator messages, session mismatches, internal-initiator parts, and messages without usable text
+5. **Single Anchor Selection**: The first eligible message becomes the anchor
+6. **Idempotent Injection**: Appends the tagged phase reminder only if the anchor does not already carry it, then stops scanning
+7. **Stable Carry**: Later eligible messages receive no reminder, keeping exactly one anchored copy per view
+8. **Re-Anchor on Prefix Rewrite**: If compaction, trimming, or a fork removes the anchor from the visible prefix, the next first eligible message becomes the anchor for the rewritten view
+9. **Transmission**: Messages proceed to API with the anchored reminder (not visible in UI)
 
 ## Integration
 

@@ -44,9 +44,9 @@ instead of registering them as disabled.
   free-form preference into either the `general` or `situational` lane.
   `RunWorkflowTool` and `AwaitWorkflowTool` spawn a `crate::skills::runtime`
   workflow run and wait on its outcome.
-- `TodoTool` is the model-facing side of the session's todo list; storage and
-  status transitions belong to `crate::agent::todos`, which wraps the
-  TinyAgents todo store.
+- `TodoTool` is the model-facing side of the session's todo list; TinyAgents
+  owns its schema and store operations, while the host adapter selects the
+  thread key and publishes the product event.
 
 ## Where next
 
@@ -55,7 +55,7 @@ instead of registering them as disabled.
 - `crate::agent::orchestration` for the sub-agent spawn tools, which sit next
   to these conceptually but live separately because they carry more
   lifecycle state.
-- `crate::agent::todos` for the store `TodoTool` reads and writes.
+- `tinyagents_graph::todos` for the todo store and tool behavior.
 
 ## Further reading
 

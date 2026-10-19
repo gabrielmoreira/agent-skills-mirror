@@ -86,12 +86,6 @@ for one missing file.
 > QA plan.** This skill gates the hand-off to manual QA, so a false-clean here
 > sends a build to QA on the strength of a plan that tested nothing.
 >
-> Note the shape, because this skill already had the harder half of the rule.
-> Phase 2 states **"Never treat an absent section as an absent story"** — the
-> sophisticated inner case, correctly handled. The outer boundary, no stories at
-> all, had nothing. The same shape appears in `/story-readiness`, where `NOT ASSESSED`
-> existed for per-story failures and the empty scope could not reach it.
->
 > The rule at the top of this block still stands: one missing file among several
 > is MISSING-and-continue. This is the different case where there is no *several*.
 
@@ -135,8 +129,9 @@ After reading stories, load supporting context once (not per story):
   (**Acceptance Criteria** and **Edge Cases** always, plus **Formulas** for any
   system that defines numeric rules); at `minimal`, **Acceptance
   Criteria only**. Do not load the full GDD
-  text. These sections contain the testable requirements, the math to verify, and
-  the boundary conditions tests must cover. If an Edge Cases section is absent (or
+  text. Find the section headings with the Grep tool (pattern `^#`, content mode) and Read
+  those ranges with offset and limit. These sections contain the testable requirements, the math
+  to verify, and the boundary conditions tests must cover. If an Edge Cases section is absent (or
   not expected at minimal), note per GDD: "No Edge Cases section found — edge case
   coverage will be inferred from acceptance criteria only."
 - `docs/architecture/control-manifest.md` — scan for forbidden patterns that
@@ -267,8 +262,8 @@ list when running that skill.*
 |-------|--------------|--------------|-------------------|
 | [story] | [What question must the session answer?] | [N] | [new player / experienced] |
 
-**Sign-off requirement**: Playtest notes must be written to
-`production/session-logs/playtest-[sprint]-[story-slug].md` and reviewed by
+**Sign-off requirement**: Playtest notes must be written with `/playtest-report` to
+`production/qa/playtests/` (naming the story) and reviewed by
 the [designer / qa-lead] before the story can be marked COMPLETE.
 
 If no stories require playtest validation: *No playtest sessions required for

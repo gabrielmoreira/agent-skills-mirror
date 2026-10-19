@@ -3,7 +3,7 @@ name: bug-report
 description: "Structured bug report from a description, or analyze code for potential bugs. Reproduction steps, severity."
 argument-hint: "[description] | analyze [path-to-file] | verify [BUG-ID] | close [BUG-ID]"
 user-invocable: true
-allowed-tools: Read, Glob, Grep, Bash, Write, Edit, AskUserQuestion, Bash(bash "*/.claude/skills/bug-report/../../hooks/yaml-helper.sh" resolve_config *)
+allowed-tools: Read, Glob, Grep, Write, Edit, AskUserQuestion, Bash(bash "*/.claude/skills/bug-report/../../hooks/yaml-helper.sh" resolve_config *)
 model: sonnet
 ---
 
@@ -16,6 +16,11 @@ every file write follows `.claude/docs/automation-modes.md`
 `automation_always_ask` categories always prompt).
 
 # Bug Report
+
+**Drafts only.** This skill writes reports to `production/qa/bugs/`. When the
+cause is in the engine, a plugin or another vendor's code, add a draft for their
+tracker under **Notes** and stop there: never file, open or comment on an issue
+or pull request in their repository. The user submits it.
 
 ## Phase 1: Parse Arguments
 
@@ -122,6 +127,10 @@ Read that file. Extract the reproduction steps and expected result.
 4. **Manual verification** — when no related test ran (none covers the bug — the usual case where `qa.level` waives tests — `commands.test` is unset, or the run did not complete), or the bug's Category is Visual or UI, whose look no automated test checks, ask via `AskUserQuestion`: "Did you play the reproduction steps in [bug file] on a build with the fix? Which build?" —
    `[No longer occurs]` / `[Still occurs]` / `[Not played yet]`.
    Record the answer and the build as the user gives them; a changed code path is never taken as their answer.
+   **Run as a subagent?** `qa-lead` preloads this skill, and a subagent has no
+   `AskUserQuestion`. End your reply with the question and its three options as
+   a short list, and give no verdict yet: whoever called you asks the user, and
+   the verdict waits for the answer.
 
 Produce a verification verdict:
 

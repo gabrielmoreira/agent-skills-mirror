@@ -40,7 +40,12 @@ by its prompt. `passOnCaller` sends the mark on to a remote magpie beside
 the session, and no vendor is sent either (`TestDshMarksSessionAndCompaction`).
 
 When the same identity is present in a native session, the native session wins
-and the gateway projection is omitted. Gateway projections have no path,
+and the gateway projection is omitted. On `/api/sessions/manage`, in its
+counts as in its list, and on `/api/sessions/delete`, a native session is any
+session file the agent keeps, one nothing was said in too, with no limit
+(`sessions.NativeIDs`); one pass over the agents' files (`sessions.Manage`)
+reads only the agent shown and the agents with gateway sessions (#2776).
+Gateway projections have no path,
 resume command or terminal action: the agent's own files of them are not on
 this computer. Their rows carry `gateway: true`; the Sessions page groups them
 under "Seen through the gateway" rather than "No folder", and their size is the

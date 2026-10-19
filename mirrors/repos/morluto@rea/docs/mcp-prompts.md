@@ -108,11 +108,13 @@ list does not establish that the target has no procedures.
 | Artifact occurrence | Occurrence IDs present in schema-valid retained artifact inventory pages.                                                                            |
 | Residual unknown    | Current non-resolved unknown heads only.                                                                                                             |
 
-Suggestions are Unicode-normalized, case-insensitive prefix matches. The server
-deduplicates them and sorts by code point for deterministic results. Procedure
-completion derives candidates from the complete inventory, so a name is offered
-only when it identifies one address in that inventory. A completion reply
-carries at most 100 values, the MCP limit. `total` counts every match and
+Prefix matching is Unicode-normalized and case-insensitive; suggestions retain
+their original spelling. The server deduplicates them and sorts by code point
+for deterministic results. Procedure completion derives candidates from the
+complete inventory, so a name is offered only when it identifies one address in
+that inventory. Every name at a shared address participates in this check,
+including later rows that establish ambiguity. A completion reply carries at
+most 100 values, the MCP limit. `total` counts every match and
 `hasMore` is `true` when values were omitted. Completion has no paging
 controls. A longer prefix reaches an omitted value only when it excludes other
 matches; matching uses normalized, case-insensitive forms, so a value can stay

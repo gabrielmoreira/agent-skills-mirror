@@ -26,12 +26,14 @@ AAS MCP does not scan the repository and does not decide which skills are best. 
 > [!IMPORTANT]
 > Structural and identity validity does not certify semantic fit, compatibility, setup correctness, operational safety, or safety to apply.
 
+For independent catalog updates, explicit offline pins and rollback, see [catalog revisions](catalog-revisions.md).
+
 ## Configure the local MCP
 
 > **Release boundary:** AAS Core landed after release 14.6.0. Use an exact Core-capable release rather than an unreviewed moving tag.
 
 ```bash
-npm exec --yes --ignore-scripts --package=agentic-awesome-skills@19.8.0 -- aas mcp configure \
+npm exec --yes --ignore-scripts --package=agentic-awesome-skills@19.10.1 -- aas mcp configure \
   --host codex \
   --scope user \
   --config /absolute/path/to/codex/config.toml \

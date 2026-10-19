@@ -473,6 +473,38 @@ RUN retry git clone https://github.com/0xacb/viewgen.git /opt/viewgen \
     && chmod +x /opt/viewgen/viewgen \
     && ln -s /opt/viewgen/viewgen /usr/local/bin/viewgen
 
+# -------------------------------------------------------------------------
+# Accelerators for the @Shafranpackeer community Agent Skills (api_testing,
+# request_smuggling). Each skill documents a manual execute_code / execute_curl
+# fallback, so these are accelerators, not hard dependencies. All three are
+# pinned: tests/test_t17_build_pins.py and agentic/tests/test_community_skills.py
+# fail the build-pin check if a pin is dropped.
+# -------------------------------------------------------------------------
+
+# clairvoyance: recovers a GraphQL schema when introspection is disabled, by
+# walking field-suggestion error messages (api_testing GraphQL track).
+# Source: https://github.com/nikitastupin/clairvoyance (MIT).
+RUN retry pip install --no-cache-dir clairvoyance==2.5.5
+
+# smuggler: HTTP request smuggling detection (CL.TE/TE.CL/TE.TE) over raw
+# sockets (request_smuggling). Stdlib plus its own bundled lib/.
+# Source: https://github.com/defparam/smuggler (MIT).
+RUN retry git clone https://github.com/defparam/smuggler.git /opt/smuggler \
+    && git -C /opt/smuggler -c advice.detachedHead=false checkout 2be871e6151ce85167a277fab21c74c851d8b20b \
+    && chmod +x /opt/smuggler/smuggler.py \
+    && ln -s /opt/smuggler/smuggler.py /usr/local/bin/smuggler.py \
+    && ln -s /opt/smuggler/smuggler.py /usr/local/bin/smuggler
+
+# h2csmuggler: HTTP/2 cleartext (h2c) upgrade smuggling, used by the
+# request_smuggling HTTP/2 downgrade track. Its only dependency, `h2`, already
+# comes with httpx[http2] in /opt/venv (see the HTTP/2 smoke test below), and
+# its `#!/usr/bin/env python3` shebang resolves to that venv.
+# Source: https://github.com/BishopFox/h2csmuggler (MIT).
+RUN retry git clone https://github.com/BishopFox/h2csmuggler.git /opt/h2csmuggler \
+    && git -C /opt/h2csmuggler -c advice.detachedHead=false checkout 7ea573a9b13bfce6d0f5d4a96a82e637a9dafe2e \
+    && chmod +x /opt/h2csmuggler/h2csmuggler.py \
+    && ln -s /opt/h2csmuggler/h2csmuggler.py /usr/local/bin/h2csmuggler
+
 # Ensure ProjectDiscovery Go httpx wins over Python httpx CLI wrapper in PATH
 RUN ln -sf /root/go/bin/httpx /opt/venv/bin/httpx
 

@@ -128,7 +128,7 @@ disabled (the default), most policy checks are inert; see the project
    `start_cron_turn_clean` sets `suppress_transcript_autoload`. A cron agent has
    no thread, so without this its first turn would resume whatever unthreaded
    transcript was newest for that agent name.
-6. The turn runs inside `agent::turn_origin::with_origin` with the origin from
+6. The turn runs inside `security::turn_origin::with_origin` with the origin from
    `origin::turn_origin_for_job_run`. The morning briefing job also runs under a
    24 hour task-recency window so task-fetch tools only return recent tasks.
 

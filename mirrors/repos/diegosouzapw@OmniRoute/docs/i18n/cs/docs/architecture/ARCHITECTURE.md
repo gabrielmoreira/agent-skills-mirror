@@ -10,18 +10,18 @@ _Naposledy aktualizováno: 2026-06-28_
 
 ## Shrnutí pro vedení
 
-OmniRoute je lokální směrovací brána a řídicí panel pro AI postavený na Next.js.
-Poskytuje jednotný koncový bod kompatibilní s OpenAI (`/v1/*`) a směruje provoz mezi více upstream poskytovateli s podporou převodu formátů, záložního přepínání, obnovování tokenů a sledování využití.
+OmniRoute je lokální směrovací brána a ovládací panel pro AI postavený na Next.js.
+Poskytuje jednotný koncový bod kompatibilní s OpenAI (`/v1/*`) a směruje provoz mezi více upstream poskytovatelů s překladem, záložním přepínáním, obnovováním tokenů a sledováním využití.
 
 Klíčové funkce:
 
-- Rozhraní API kompatibilní s OpenAI pro nástroje CLI a další nástroje (373 poskytovatelů, 150 spouštěcích modulů)
-- Převod požadavků a odpovědí mezi formáty jednotlivých poskytovatelů
+- Rozhraní API kompatibilní s OpenAI pro CLI/nástroje (374 poskytovatelů, 150 spouštěcích modulů)
+- Překlad požadavků a odpovědí mezi formáty poskytovatelů
 - Záložní přepínání kombinací modelů (sekvence více modelů)
-- Strukturované kroky kombinací (`provider + model + connection`) s řazením za běhu podle `compositeTiers`
-- Záložní přepínání na úrovni účtů (více účtů na poskytovatele)
-- Předběžná kontrola kvóty a výběr účtu metodou P2C s ohledem na kvótu v hlavním toku chatu
-- Správa připojení k poskytovatelům pomocí OAuth a API klíčů (27 modulů poskytovatelů OAuth)
+- Strukturované kroky kombinací (`provider + model + connection`) s pořadím za běhu podle `compositeTiers`
+- Záložní přepínání na úrovni účtů (více účtů pro každého poskytovatele)
+- Předběžná kontrola kvóty a výběr účtu P2C zohledňující kvótu v hlavní cestě chatu
+- Správa připojení k poskytovatelům prostřednictvím OAuth a API klíčů (27 modulů poskytovatelů OAuth)
 - Generování embeddingů prostřednictvím `/v1/embeddings` (18 poskytovatelů)
 - Generování obrázků prostřednictvím `/v1/images/generations` (10+ poskytovatelů, 20+ modelů)
 - Přepis zvuku prostřednictvím `/v1/audio/transcriptions` (18 poskytovatelů)
@@ -30,30 +30,30 @@ Klíčové funkce:
 - Generování hudby prostřednictvím `/v1/music/generations` (ComfyUI)
 - Vyhledávání na webu prostřednictvím `/v1/search` (20 poskytovatelů)
 - Moderování prostřednictvím `/v1/moderations`
-- Přerovnávání výsledků prostřednictvím `/v1/rerank`
-- Zpracování značek pro přemýšlení (``) u modelů s odůvodňováním
+- Změna pořadí výsledků prostřednictvím `/v1/rerank`
+- Zpracování tagů pro uvažování (``) u modelů zaměřených na reasoning
 - Sanitizace odpovědí pro striktní kompatibilitu se sadou OpenAI SDK
-- Normalizace rolí (developer→system, system→user) pro kompatibilitu napříč poskytovateli
+- Normalizace rolí (developer→system, system→user) pro kompatibilitu mezi poskytovateli
 - Převod strukturovaného výstupu (json_schema → Gemini responseSchema)
-- Lokální perzistence poskytovatelů, klíčů, aliasů, kombinací, nastavení a cen (122 databázových modulů)
+- Lokální ukládání poskytovatelů, klíčů, aliasů, kombinací, nastavení a cen (122 databázových modulů)
 - Sledování využití a nákladů a protokolování požadavků
-- Volitelná cloudová synchronizace pro synchronizaci stavu mezi více zařízeními
-- Seznam povolených a blokovaných IP adres pro řízení přístupu k API
-- Správa rozpočtu na přemýšlení (přímé předání/automatický/vlastní/adaptivní)
-- Globální vkládání systémového promptu
-- Sledování relací a tvorba otisků
-- Rozšízené omezování rychlosti na úrovni jednotlivých účtů s profily specifickými pro poskytovatele
+- Volitelná cloudová synchronizace pro synchronizaci mezi více zařízeními a synchronizaci stavu
+- Seznam povolených/blokovaných IP adres pro řízení přístupu k API
+- Správa rozpočtu pro uvažování (předání beze změny/automatický/vlastní/adaptivní)
+- Vkládání globálního systémového promptu
+- Sledování relací a vytváření otisků
+- Rozšířené omezování rychlosti pro jednotlivé účty s profily specifickými pro poskytovatele
 - Vzor circuit breaker pro odolnost vůči výpadkům poskytovatelů
-- Ochrana proti efektu hromadného souběžného zatížení pomocí mutexového zamykání
-- Mezipaměť pro deduplikaci požadavků založená na signaturách
-- Doménová vrstva: pravidla nákladů, zásady záložního přepínání, zásady blokování
-- Context Relay: souhrny předávání relací pro zachování návaznosti při střídání účtů
-- Perzistence doménového stavu (průběžně zapisovaná mezipaměť SQLite pro záložní přepínání, rozpočty, blokování a circuit breakery)
-- Modul zásad pro centralizované vyhodnocování požadavků (blokování → rozpočet → záložní přepínání)
+- Ochrana proti souběžné lavině požadavků pomocí zamykání mutexem
+- Mezipaměť pro deduplikaci požadavků na základě podpisu
+- Doménová vrstva: pravidla nákladů, zásady záložního přepínání, zásady uzamčení
+- Context Relay: souhrny pro předávání relací zajišťující kontinuitu při rotaci účtů
+- Perzistence doménového stavu (průběžně zapisovaná mezipaměť SQLite pro záložní přepínání, rozpočty, uzamčení a circuit breakery)
+- Modul zásad pro centralizované vyhodnocování požadavků (uzamčení → rozpočet → záložní přepnutí)
 - Telemetrie požadavků s agregací latence p50/p95/p99
 - Telemetrie cílů kombinací a historický stav cílů kombinací prostřednictvím `combo_execution_key` / `combo_step_id`
-- ID korelace (X-Request-Id) pro komplexní trasování
-- Protokolování auditů dodržování předpisů s možností odhlášení pro jednotlivé API klíče
+- ID korelace (X-Request-Id) pro sledování napříč celým procesem
+- Protokolování auditů souladu s možností deaktivace pro jednotlivé API klíče
 - Evaluační framework pro zajištění kvality LLM
 - Panel stavu s informacemi o stavu circuit breakerů poskytovatelů v reálném čase
 - Server MCP (110 nástrojů) se 3 transporty (stdio/SSE/Streamable HTTP)
@@ -61,26 +61,26 @@ Klíčové funkce:
 - Paměťový systém (extrakce, vkládání, načítání, sumarizace)
 - Systém dovedností (registr, spouštěcí modul, sandbox, vestavěné dovednosti)
 - Proxy MITM se správou certifikátů a obsluhou DNS
-- Middleware na ochranu před vkládáním promptů
+- Middleware chránící před injektáží promptů
 - Pipeline pro kompresi promptů s Caveman, RTK, skládanými pipeline, kombinacemi komprese, jazykovými balíčky a analytikou
 - Registr ACP (Agent Communication Protocol)
 - Modulární poskytovatelé OAuth (22 samostatných modulů v `src/lib/oauth/providers/`)
-- Skripty pro odinstalaci a úplnou odinstalaci
+- Skripty pro odinstalaci/úplnou odinstalaci
 - Akce pro opravu prostředí OAuth
-- Most WebSocket pro klienty WS kompatibilní s OpenAI (`/v1/ws`)
-- Správa synchronizačních tokenů (vydávání/odvolávání, stahování konfiguračního balíčku verzovaného pomocí ETag)
-- GLM Thinking (`glmt`) jako plnohodnotná předvolba poskytovatele
-- Hybridní počítání tokenů (poskytovatelův koncový bod `/messages/count_tokens` se záložním odhadem)
-- Automatické předvyplnění aliasů modelů (30+ normalizací dialektů napříč proxy při spuštění)
+- WebSocket bridge pro klienty WS kompatibilní s OpenAI (`/v1/ws`)
+- Správa synchronizačních tokenů (vydávání/odvolávání, stahování verzovaných konfiguračních balíčků pomocí ETag)
+- Přednastavení GLM Thinking (`glmt`) jako plnohodnotného poskytovatele
+- Hybridní počítání tokenů (`/messages/count_tokens` na straně poskytovatele se záložním odhadem)
+- Automatické počáteční naplnění aliasů modelů (30+ normalizací dialektů mezi proxy při spuštění)
 - Bezpečné odchozí načítání s ochranou proti SSRF, blokováním privátních URL a konfigurovatelným opakováním
-- Opakování požadavků chatu s ohledem na dobu cooldownu a konfigurovatelnými hodnotami `requestRetry` a `maxRetryIntervalSec`
-- Ověřování běhového prostředí pomocí Zod při spuštění
-- Audit dodržování předpisů v2 se stránkováním, událostmi CRUD poskytovatelů a protokolováním ověření blokovaných požadavků SSRF
+- Opakování požadavků chatu zohledňující cooldown s konfigurovatelnými parametry `requestRetry` a `maxRetryIntervalSec`
+- Validace běhového prostředí pomocí Zod při spuštění
+- Audit souladu v2 se stránkováním, událostmi CRUD poskytovatelů a protokolováním validací zablokovaných kvůli SSRF
 
 Primární běhový model:
 
-- Trasy aplikace Next.js v `src/app/api/*` implementují API řídicího panelu i API pro zajištění kompatibility
-- Sdílené jádro pro SSE a směrování v `src/sse/*` + `open-sse/*` zajišťuje provádění požadavků poskytovateli, převod formátů, streamování, záložní přepínání a sledování využití
+- Trasy aplikace Next.js v `src/app/api/*` implementují jak API ovládacího panelu, tak API pro kompatibilitu
+- Sdílené jádro SSE/směrování v `src/sse/*` + `open-sse/*` zajišťuje spouštění poskytovatelů, překlad, streamování, záložní přepínání a sledování využití
 
 ## Referenční diagramy
 
@@ -266,15 +266,15 @@ Hlavní moduly toku:
 - Základní orchestrace: `open-sse/handlers/chatCore.ts`
 - Adaptéry pro spouštění poskytovatelů: `open-sse/executors/*`
 - Detekce formátu / konfigurace poskytovatele: `open-sse/services/provider.ts`
-- Parsování / překlad modelu: `src/sse/services/model.ts`, `open-sse/services/model.ts`
-- Logika přechodu na záložní účet: `open-sse/services/accountFallback.ts`
+- Analýza / překlad modelu: `src/sse/services/model.ts`, `open-sse/services/model.ts`
+- Logika záložního účtu: `open-sse/services/accountFallback.ts`
 - Registr překladů: `open-sse/translator/index.ts`
 - Transformace streamů: `open-sse/utils/stream.ts`, `open-sse/utils/streamHandler.ts`
 - Extrakce / normalizace využití: `open-sse/utils/usageTracking.ts`
 - Parser značek pro přemýšlení: `open-sse/utils/thinkTagParser.ts`
-- Obsluha embeddingů: `open-sse/handlers/embeddings.ts`
-- Registr poskytovatelů embeddingů: `open-sse/config/embeddingRegistry.ts`
-- Obsluha generování obrázků: `open-sse/handlers/imageGeneration.ts`
+- Obslužná rutina vkládání: `open-sse/handlers/embeddings.ts`
+- Registr poskytovatelů vkládání: `open-sse/config/embeddingRegistry.ts`
+- Obslužná rutina generování obrázků: `open-sse/handlers/imageGeneration.ts`
 - Registr poskytovatelů obrázků: `open-sse/config/imageRegistry.ts`
 - Sanitizace odpovědí: `open-sse/handlers/responseSanitizer.ts`
 - Normalizace rolí: `open-sse/services/roleNormalizer.ts`
@@ -283,48 +283,48 @@ Služby (obchodní logika):
 
 - Výběr / hodnocení účtů: `open-sse/services/accountSelector.ts`
 - Správa životního cyklu kontextu: `open-sse/services/contextManager.ts`
-- Vynucování filtrování IP adres: `open-sse/services/ipFilter.ts`
+- Vynucování IP filtru: `open-sse/services/ipFilter.ts`
 - Sledování relací: `open-sse/services/sessionManager.ts`
 - Deduplikace požadavků: `open-sse/services/signatureCache.ts`
-- Vkládání systémového promptu: `open-sse/services/systemPrompt.ts`
-- Správa rozpočtu pro přemýšlení: `open-sse/services/thinkingBudget.ts`
+- Vkládání systémových výzev: `open-sse/services/systemPrompt.ts`
+- Správa rozpočtu na přemýšlení: `open-sse/services/thinkingBudget.ts`
 - Směrování modelů pomocí zástupných znaků: `open-sse/services/wildcardRouter.ts`
-- Správa omezení rychlosti: `open-sse/services/rateLimitManager.ts`
+- Správa limitů přenosové rychlosti: `open-sse/services/rateLimitManager.ts`
 - Jistič: `src/shared/utils/circuitBreaker.ts`
-- Předání kontextu: `open-sse/services/contextHandoff.ts` — generování a vkládání souhrnu předání pro strategii předávání kontextu
+- Předávání kontextu: `open-sse/services/contextHandoff.ts` — generování a vkládání souhrnu předání pro strategii přenosu kontextu
 - Komprese: `open-sse/services/compression/*` — proaktivní komprese před překladem poskytovatele;
-  zahrnuje pravidla Caveman, filtry RTK, zřetězené pipeline, kombinace komprese, statistiky a validaci
-- Načítání kvóty Codex: `open-sse/services/codexQuotaFetcher.ts` — načítá kvótu Codex pro rozhodování o předání kontextu
-- Opakování zohledňující dobu blokování: `src/sse/services/cooldownAwareRetry.ts` — opakované pokusy pro jednotlivé modely s konfigurovatelnými hodnotami `requestRetry` / `maxRetryIntervalSec`
-- Bezpečné odchozí načítání: `src/shared/network/safeOutboundFetch.ts` — chráněné načítání poskytovatele / modelu s ochranou proti SSRF, blokováním privátních URL, opakováním a časovým limitem
-- Ochrana odchozích URL: `src/shared/network/outboundUrlGuard.ts` — kontroly hostitelů v URL poskytovatelů; `src/shared/network/outboundUrlGuardPolicy.ts` vybírá režim z `OMNIROUTE_ALLOW_LOCAL_PROVIDER_URLS`, `OMNIROUTE_ALLOW_PRIVATE_PROVIDER_URLS` a jejich přepínačů na řídicím panelu (viz `docs/reference/ENVIRONMENT.md`)
+  zahrnuje pravidla Caveman, filtry RTK, zřetězené kanály zpracování, kombinace komprese, statistiky a validaci
+- Načítání kvóty Codex: `open-sse/services/codexQuotaFetcher.ts` — načítá kvótu Codex pro rozhodování o předání při přenosu kontextu
+- Opakování zohledňující interval vychladnutí: `src/sse/services/cooldownAwareRetry.ts` — opakované pokusy s intervalem vychladnutí pro jednotlivé modely a konfigurovatelnými hodnotami `requestRetry` / `maxRetryIntervalSec`
+- Bezpečné odchozí načítání: `src/shared/network/safeOutboundFetch.ts` — zabezpečené načítání poskytovatele / modelu s ochranou proti SSRF, blokováním privátních URL, opakováním a časovým limitem
+- Ochrana odchozích URL: `src/shared/network/outboundUrlGuard.ts` — kontroly hostitelů v URL poskytovatelů; `src/shared/network/outboundUrlGuardPolicy.ts` vybírá režim z `OMNIROUTE_ALLOW_LOCAL_PROVIDER_URLS`, `OMNIROUTE_ALLOW_PRIVATE_PROVIDER_URLS` a jejich přepínačů na ovládacím panelu (viz `docs/reference/ENVIRONMENT.md`)
 - Výchozí hodnoty požadavků poskytovatele: `open-sse/services/providerRequestDefaults.ts` — výchozí hodnoty `maxTokens`, `temperature`, `thinkingBudgetTokens` na úrovni poskytovatele
 - Konstanty poskytovatele GLM: `open-sse/config/glmProvider.ts` — sdílené modely GLM, URL kvót, časový limit a výchozí hodnoty GLMT
-- Upstream Antigravity: `open-sse/config/antigravityUpstream.ts` — konstanty základní URL a cesty pro zjišťování
-- Konstanty klienta Codex: `open-sse/config/codexClient.ts` — verzované hodnoty user-agent a verze klienta
-- Počáteční aliasy modelů: `src/lib/modelAliasSeed.ts` — při spuštění inicializuje více než 30 aliasů napříč dialekty proxy
+- Nadřazená služba Antigravity: `open-sse/config/antigravityUpstream.ts` — základní URL a konstanty cest pro zjišťování
+- Konstanty klienta Codex: `open-sse/config/codexClient.ts` — verzované hodnoty identifikátoru uživatelského agenta a verze klienta
+- Počáteční data aliasů modelů: `src/lib/modelAliasSeed.ts` — při spuštění inicializuje více než 30 aliasů dialektů napříč proxy
 
 Moduly doménové vrstvy:
 
 - Pravidla nákladů / rozpočty: `src/domain/costRules.ts`
-- Zásady přechodu na záložní variantu: `src/domain/fallbackPolicy.ts`
+- Zásady záložního postupu: `src/domain/fallbackPolicy.ts`
 - Překladač kombinací: `src/domain/comboResolver.ts`
 - Zásady uzamčení: `src/domain/lockoutPolicy.ts`
-- Modul zásad: `src/domain/policyEngine.ts` — centralizované vyhodnocení uzamčení → rozpočtu → záložní varianty
+- Modul zásad: `src/domain/policyEngine.ts` — centralizované vyhodnocování uzamčení → rozpočtu → záložního postupu
 - Katalog chybových kódů: `src/shared/constants/errorCodes.ts`
 - ID požadavku: `src/shared/utils/requestId.ts`
 - Časový limit načítání: `src/shared/utils/fetchTimeout.ts`
 - Telemetrie požadavků: `src/shared/utils/requestTelemetry.ts`
 - Dodržování předpisů / audit: `src/lib/compliance/index.ts`
 - Spouštěč vyhodnocení: `src/lib/evals/evalRunner.ts`
-- Perzistence stavu domény: `src/lib/db/domainState.ts` — operace CRUD v SQLite pro řetězce záložních variant, rozpočty, historii nákladů, stav uzamčení a jističe
+- Perzistence stavu domény: `src/lib/db/domainState.ts` — operace SQLite CRUD pro řetězce záložních postupů, rozpočty, historii nákladů, stav uzamčení a jističe
 
 Moduly poskytovatelů OAuth (27 samostatných souborů v `src/lib/oauth/providers/`):
 
 - Index registru: `src/lib/oauth/providers/index.ts`
 - Jednotliví poskytovatelé: `agy.ts`, `antigravity.ts`, `claude.ts`, `cline.ts`, `codebuddy-cn.ts`, `codebuddy-intl.ts`, `codex.ts`, `cursor.ts`, `devin-desktop.ts`, `ghe-copilot.ts`, `github.ts`, `gitlab-duo.ts`, `grok-cli-oauth.ts`, `grok-cli.ts`, `kilocode.ts`, `kimi-coding.ts`, `kiro.ts`, `muse-code.ts`, `openference.ts`, `qoder.ts`, `trae.ts`, `workbuddy.ts`, `xai-oauth.ts`, `zed-hosted.ts`, `zed.ts`
-- Sdílené pomocné moduly: `codebuddyDeviceAuth.ts` (tok zařízení CodeBuddy CN / mezinárodní verze), `museCodeDeviceResponse.ts`
-- Tenká obálka: `src/lib/oauth/providers.ts` — znovu exportuje obsah jednotlivých modulů
+- Sdílené pomocné moduly: `codebuddyDeviceAuth.ts` (tok ověřování zařízení CodeBuddy CN / intl), `museCodeDeviceResponse.ts`
+- Tenká obálka: `src/lib/oauth/providers.ts` — znovu exportuje z jednotlivých modulů
 
 ## 5) Vestavěné služby (v3.8.4)
 
@@ -535,16 +535,17 @@ DB stavu domén (SQLite):
 - Tabulky (vytvořené v `src/lib/db/core.ts`): `domain_fallback_chains`, `domain_budgets`, `domain_cost_history`, `domain_lockout_state`, `domain_circuit_breakers`
 - Vzor mezipaměti s průběžným zápisem: mapy v paměti jsou za běhu autoritativní; změny se zapisují synchronně do SQLite; při studeném startu se stav obnoví z DB
 
-## 4) Rozhraní pro ověřování a zabezpečení
+## 4) Autentizace + bezpečnostní rozhraní
 
-- Ověřování řídicího panelu pomocí cookies: `src/proxy.ts`, `src/app/api/auth/login/route.ts`
-- Generování/ověřování klíčů API: `src/shared/utils/apiKey.ts`
-- Tajné údaje poskytovatelů jsou uloženy v záznamech `providerConnections`
+- Autentizace řídicího panelu pomocí cookie: `src/proxy.ts`, `src/app/api/auth/login/route.ts`
+- Generování/ověřování API klíčů: `src/shared/utils/apiKey.ts`
+- Tajné údaje poskytovatelů uložené v položkách `providerConnections`
 - Podpora odchozího proxy prostřednictvím `open-sse/utils/proxyFetch.ts` (proměnné prostředí) a `open-sse/utils/networkProxy.ts` (konfigurovatelné pro jednotlivé poskytovatele nebo globálně)
-- Ochrana proti SSRF / kontrola odchozích URL: `src/shared/network/outboundUrlGuard.ts` — blokuje privátní rozsahy, loopback a link-local rozsahy pro všechna volání poskytovatelů
-- Ověřování běhového prostředí: `src/lib/env/runtimeEnv.ts` — schéma Zod pro všechny proměnné prostředí, jehož chyby a varování se zobrazují při spuštění
-- Synchronizační tokeny: `src/lib/db/syncTokens.ts` — tokeny s omezeným rozsahem oprávnění pro koncové body stahování konfiguračních balíčků; ukládají se v tabulce SQLite `sync_tokens` (migrace `024_create_sync_tokens.sql`)
-- Ověřování navázání spojení WebSocket: `src/lib/ws/handshake.ts` — ověřuje požadavky na upgrade WS pomocí klíče API nebo cookie relace
+- Ochrana proti SSRF / kontrola odchozích URL: `src/shared/network/outboundUrlGuard.ts` — kontroly hostitelů při volání poskytovatelů a cílů webhooků; režim pochází z `src/shared/network/outboundUrlGuardPolicy.ts` (příznaky v `docs/reference/ENVIRONMENT.md`)
+- Ověřování proměnných prostředí za běhu: `src/lib/env/runtimeEnv.ts` — schéma Zod pro všechny proměnné prostředí, přičemž chyby a varování se zobrazují při spuštění
+- Synchronizační tokeny: `src/lib/db/syncTokens.ts` — tokeny s omezeným rozsahem oprávnění pro koncové body stahování konfiguračních balíčků; uložené v tabulce SQLite `sync_tokens` (migrace `024_create_sync_tokens.sql`)
+- Autentizace při navazování spojení WebSocket: `src/lib/ws/handshake.ts` — ověřuje požadavky na upgrade WS pomocí API klíče nebo cookie relace
+- Autentizace živého připojení řídicího panelu přes WebSocket: `src/server/ws/liveServer.ts` — doprovodná služba (port `LIVE_WS_PORT`) přijímá cookie relace řídicího panelu nebo Bearer API klíč s rozsahem oprávnění pro správu (`manage`/`admin`); klíče určené pouze pro inferenci jsou odmítnuty. Její interní publikační koncový bod `POST /__omniroute_event` přijímá partnery ze zpětné smyčky pouze tehdy, když není přítomna žádná hlavička průchodu přes proxy (`x-forwarded-*`, `x-real-ip`, `forwarded`, `via`)
 
 ## 5) Synchronizace s cloudem
 
@@ -1093,11 +1094,11 @@ zpětné kompatibilitě. Aktuální běhový kontrakt používá:
 - migrace schématu SQLite a mechanismy automatického upgradu při spuštění
 - cesta kompatibility pro migraci ze staršího formátu JSON → SQLite
 
-## 6) Ochrana před SSRF / odchozími URL
+## 6) SSRF / Ochrana odchozích URL
 
-- `src/shared/network/outboundUrlGuard.ts` blokuje všechny soukromé, loopback a link-local cílové adresy URL dříve, než se dostanou k vykonavatelům poskytovatele
-- trasy pro vyhledávání a ověřování modelů poskytovatelů používají `src/shared/network/safeOutboundFetch.ts`, který aplikuje ochranu před každým odchozím požadavkem
-- chyby ochrany jsou hlášeny jako `URL_GUARD_BLOCKED` s HTTP 422 a zaznamenávány do auditní stopy souladu prostřednictvím `providerAudit.ts`
+- `BaseExecutor.assertOutboundUrlAllowed` (`open-sse/executors/base.ts`) aplikuje `src/shared/network/outboundUrlGuard.ts` na požadavky chatu odesílané prostřednictvím `BaseExecutor.execute()`. V režimu pouze pro veřejné adresy (`OMNIROUTE_ALLOW_LOCAL_PROVIDER_URLS=false` s vypnutým příznakem pro soukromé adresy) blokuje privátní hostitele, hostitele zpětné smyčky a rozsah 169.254.0.0/16; ve všech ostatních režimech blokuje hostitele cloudových metadat. Kontroluje název hostitele nebo IP literál v zadané podobě ještě před jakýmkoli vyhledáním DNS. Vestavění místní poskytovatelé tuto kontrolu přeskakují.
+- Trasy pro zjišťování a ověřování modelů poskytovatelů používají `src/shared/network/safeOutboundFetch.ts`, který aplikuje ochranu před každým odchozím požadavkem.
+- Chyby ochrany se projeví jako `URL_GUARD_BLOCKED` se stavovým kódem HTTP 503 (`getSafeOutboundFetchErrorStatus`; trasa pro zjišťování modelů vrací 400) a skutečná blokování SSRF během ověřování se zaznamenávají do auditní stopy jako události `provider.validation.ssrf_blocked`.
 
 ## Pozorovatelnost a provozní signály
 

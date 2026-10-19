@@ -20,76 +20,76 @@ _最后更新：2026-06-28_
 ## 执行摘要
 
 OmniRoute 是一个基于 Next.js 构建的本地 AI 路由网关和仪表板。
-它提供单一的 OpenAI 兼容端点（`/v1/*`），并通过格式转换、回退、令牌刷新和用量跟踪，在多个上游提供者之间路由流量。
+它提供单一的 OpenAI 兼容端点 (`/v1/*`)，并通过格式转换、故障转移、令牌刷新和用量跟踪，将流量路由到多个上游提供者。
 
 核心功能：
 
-- 面向 CLI/工具的 OpenAI 兼容 API 接口（373 个提供者、150 个执行器模块）
+- 为 CLI/工具提供 OpenAI 兼容的 API 接口（374 个提供者、150 个执行器模块）
 - 跨提供者格式的请求/响应转换
-- 模型组合回退（多模型序列）
+- 模型组合故障转移（多模型序列）
 - 结构化组合步骤（`provider + model + connection`），运行时按 `compositeTiers` 排序
-- 账户级回退（每个提供者支持多个账户）
-- 主聊天路径中的配额预检和配额感知型 P2C 账户选择
+- 账户级故障转移（每个提供者支持多个账户）
+- 主聊天路径中的配额预检和配额感知 P2C 账户选择
 - OAuth + API 密钥提供者连接管理（27 个 OAuth 提供者模块）
 - 通过 `/v1/embeddings` 生成嵌入向量（18 个提供者）
 - 通过 `/v1/images/generations` 生成图像（10+ 个提供者、20+ 个模型）
 - 通过 `/v1/audio/transcriptions` 进行音频转录（18 个提供者）
-- 通过 `/v1/audio/speech` 将文本转换为语音（24 个内置提供者）
+- 通过 `/v1/audio/speech` 实现文本转语音（24 个内置提供者）
 - 通过 `/v1/videos/generations` 生成视频（ComfyUI + SD WebUI）
 - 通过 `/v1/music/generations` 生成音乐（ComfyUI）
-- 通过 `/v1/search` 进行 Web 搜索（20 个提供者）
+- 通过 `/v1/search` 进行网页搜索（20 个提供者）
 - 通过 `/v1/moderations` 进行内容审核
 - 通过 `/v1/rerank` 进行重排序
-- 为推理模型解析思考标签（``）
-- 响应净化，确保与严格的 OpenAI SDK 兼容
+- 为推理模型解析思考标签 (``)
+- 响应净化，确保严格兼容 OpenAI SDK
 - 角色规范化（developer→system、system→user），实现跨提供者兼容
 - 结构化输出转换（json_schema → Gemini responseSchema）
 - 提供者、密钥、别名、组合、设置和定价的本地持久化（122 个数据库模块）
 - 用量/成本跟踪和请求日志记录
-- 可选的云同步，用于多设备/状态同步
+- 可选的云端同步，用于多设备/状态同步
 - 用于 API 访问控制的 IP 允许列表/阻止列表
 - 思考预算管理（透传/自动/自定义/自适应）
 - 全局系统提示词注入
 - 会话跟踪和指纹识别
-- 账户级增强速率限制，并支持特定于提供者的配置
-- 用于提高提供者韧性的断路器模式
-- 使用互斥锁防止惊群效应
+- 具有提供者专用配置文件的增强型账户级速率限制
+- 用于增强提供者韧性的断路器模式
+- 通过互斥锁实现防惊群保护
 - 基于签名的请求去重缓存
-- 领域层：成本规则、回退策略、锁定策略
-- 上下文中继：用于在账户轮换时保持连续性的会话交接摘要
-- 领域状态持久化（用于回退、预算、锁定和断路器的 SQLite 直写缓存）
-- 用于集中式请求评估的策略引擎（锁定 → 预算 → 回退）
+- 领域层：成本规则、故障转移策略、锁定策略
+- 上下文中继：会话交接摘要，用于保持账户轮换时的连续性
+- 领域状态持久化（针对故障转移、预算、锁定和断路器的 SQLite 直写式缓存）
+- 用于集中式请求评估的策略引擎（锁定 → 预算 → 故障转移）
 - 请求遥测，支持 p50/p95/p99 延迟聚合
-- 组合目标遥测，以及通过 `combo_execution_key` / `combo_step_id` 记录的历史组合目标健康状态
-- 用于端到端追踪的关联 ID（X-Request-Id）
+- 通过 `combo_execution_key` / `combo_step_id` 实现组合目标遥测和历史组合目标健康状态跟踪
+- 用于端到端追踪的关联 ID (X-Request-Id)
 - 合规审计日志记录，支持按 API 密钥选择退出
 - 用于 LLM 质量保证的评估框架
-- 健康状态仪表板，实时显示提供者断路器状态
+- 实时显示提供者断路器状态的健康仪表板
 - MCP Server（110 个工具），支持 3 种传输方式（stdio/SSE/Streamable HTTP）
 - A2A Server（JSON-RPC 2.0 + SSE），支持技能和任务生命周期
 - 记忆系统（提取、注入、检索、摘要）
 - 技能系统（注册表、执行器、沙箱、内置技能）
-- 具有证书管理和 DNS 处理功能的 MITM 代理
+- 支持证书管理和 DNS 处理的 MITM 代理
 - 提示词注入防护中间件
-- 提示词压缩管线，支持 Caveman、RTK、堆叠管线、压缩组合、语言包和分析
-- ACP（Agent Communication Protocol）注册表
+- 提示词压缩流水线，支持 Caveman、RTK、堆叠流水线、压缩组合、语言包和分析功能
+- ACP (Agent Communication Protocol) 注册表
 - 模块化 OAuth 提供者（`src/lib/oauth/providers/` 下的 22 个独立模块）
 - 卸载/完全卸载脚本
 - OAuth 环境修复操作
-- 面向 OpenAI 兼容 WS 客户端的 WebSocket 桥接（`/v1/ws`）
-- 同步令牌管理（签发/撤销、下载使用 ETag 进行版本控制的配置包）
-- 一流的 GLM Thinking（`glmt`）提供者预设
-- 混合令牌计数（提供者侧 `/messages/count_tokens`，并在失败时回退到估算）
-- 模型别名自动初始化（启动时进行 30+ 种跨代理方言规范化）
-- 具有 SSRF 防护、私有 URL 阻止和可配置重试机制的安全出站请求
-- 可感知冷却时间的聊天重试，支持配置 `requestRetry` 和 `maxRetryIntervalSec`
+- 用于 OpenAI 兼容 WS 客户端的 WebSocket 桥接器 (`/v1/ws`)
+- 同步令牌管理（签发/撤销、下载使用 ETag 版本控制的配置包）
+- GLM Thinking (`glmt`) 一等提供者预设
+- 混合令牌计数（提供者侧 `/messages/count_tokens`，估算作为回退方案）
+- 模型别名自动播种（启动时执行 30+ 种跨代理方言规范化）
+- 带有 SSRF 防护、私有 URL 阻止和可配置重试机制的安全出站 fetch
+- 冷却感知聊天重试，支持配置 `requestRetry` 和 `maxRetryIntervalSec`
 - 启动时使用 Zod 进行运行时环境验证
 - 合规审计 v2，支持分页、提供者 CRUD 事件和 SSRF 阻止验证日志记录
 
 主要运行时模型：
 
 - `src/app/api/*` 下的 Next.js 应用路由同时实现仪表板 API 和兼容性 API
-- `src/sse/*` + `open-sse/*` 中的共享 SSE/路由核心负责提供者执行、格式转换、流式传输、回退和用量处理
+- `src/sse/*` + `open-sse/*` 中的共享 SSE/路由核心负责提供者执行、格式转换、流式传输、故障转移和用量跟踪
 
 ## 参考架构图
 
@@ -269,15 +269,15 @@ flowchart LR
 
 ## 2) SSE + 翻译核心
 
-主要流程模块：
+主流程模块：
 
 - 入口：`src/sse/handlers/chat.ts`
 - 核心编排：`open-sse/handlers/chatCore.ts`
 - 提供者执行适配器：`open-sse/executors/*`
 - 格式检测/提供者配置：`open-sse/services/provider.ts`
-- 模型解析/解析映射：`src/sse/services/model.ts`、`open-sse/services/model.ts`
+- 模型解析/解析到具体模型：`src/sse/services/model.ts`、`open-sse/services/model.ts`
 - 账户回退逻辑：`open-sse/services/accountFallback.ts`
-- 翻译器注册表：`open-sse/translator/index.ts`
+- 翻译注册表：`open-sse/translator/index.ts`
 - 流转换：`open-sse/utils/stream.ts`、`open-sse/utils/streamHandler.ts`
 - 用量提取/标准化：`open-sse/utils/usageTracking.ts`
 - Think 标签解析器：`open-sse/utils/thinkTagParser.ts`
@@ -285,7 +285,7 @@ flowchart LR
 - 嵌入提供者注册表：`open-sse/config/embeddingRegistry.ts`
 - 图像生成处理程序：`open-sse/handlers/imageGeneration.ts`
 - 图像提供者注册表：`open-sse/config/imageRegistry.ts`
-- 响应清理：`open-sse/handlers/responseSanitizer.ts`
+- 响应净化：`open-sse/handlers/responseSanitizer.ts`
 - 角色标准化：`open-sse/services/roleNormalizer.ts`
 
 服务（业务逻辑）：
@@ -300,15 +300,15 @@ flowchart LR
 - 通配符模型路由：`open-sse/services/wildcardRouter.ts`
 - 速率限制管理：`open-sse/services/rateLimitManager.ts`
 - 熔断器：`src/shared/utils/circuitBreaker.ts`
-- 上下文移交：`open-sse/services/contextHandoff.ts` — 为上下文中继策略生成并注入移交摘要
-- 压缩：`open-sse/services/compression/*` — 在提供者转换之前主动压缩；
+- 上下文交接：`open-sse/services/contextHandoff.ts` — 为上下文中继策略生成并注入交接摘要
+- 压缩：`open-sse/services/compression/*` — 在提供者转换前进行主动压缩；
   包括 Caveman 规则、RTK 过滤器、堆叠管道、压缩组合、统计和验证
-- Codex 配额获取器：`open-sse/services/codexQuotaFetcher.ts` — 获取 Codex 配额，用于上下文中继的移交决策
+- Codex 配额获取器：`open-sse/services/codexQuotaFetcher.ts` — 获取 Codex 配额，用于上下文中继交接决策
 - 冷却感知重试：`src/sse/services/cooldownAwareRetry.ts` — 按模型执行冷却重试，可通过 `requestRetry` / `maxRetryIntervalSec` 配置
-- 安全出站请求：`src/shared/network/safeOutboundFetch.ts` — 受保护的提供者/模型请求，具备 SSRF 防护、私有 URL 阻止、重试和超时功能
-- 出站 URL 防护：`src/shared/network/outboundUrlGuard.ts` — 检查提供者 URL 的主机；`src/shared/network/outboundUrlGuardPolicy.ts` 根据 `OMNIROUTE_ALLOW_LOCAL_PROVIDER_URLS`、`OMNIROUTE_ALLOW_PRIVATE_PROVIDER_URLS` 及其仪表板开关选择模式（参见 `docs/reference/ENVIRONMENT.md`）
+- 安全出站获取：`src/shared/network/safeOutboundFetch.ts` — 受保护的提供者/模型获取，包含 SSRF 防护、私有 URL 阻止、重试和超时
+- 出站 URL 防护：`src/shared/network/outboundUrlGuard.ts` — 对提供者 URL 执行主机检查；`src/shared/network/outboundUrlGuardPolicy.ts` 根据 `OMNIROUTE_ALLOW_LOCAL_PROVIDER_URLS`、`OMNIROUTE_ALLOW_PRIVATE_PROVIDER_URLS` 及其控制面板开关选择模式（参见 `docs/reference/ENVIRONMENT.md`）
 - 提供者请求默认值：`open-sse/services/providerRequestDefaults.ts` — 提供者级别的 `maxTokens`、`temperature`、`thinkingBudgetTokens` 默认值
-- GLM 提供者常量：`open-sse/config/glmProvider.ts` — 共享的 GLM 模型、配额 URL、GLMT 超时和默认值
+- GLM 提供者常量：`open-sse/config/glmProvider.ts` — 共享的 GLM 模型、配额 URL、GLMT 超时/默认值
 - Antigravity 上游：`open-sse/config/antigravityUpstream.ts` — 基础 URL 和发现路径常量
 - Codex 客户端常量：`open-sse/config/codexClient.ts` — 带版本的用户代理和客户端版本值
 - 模型别名种子：`src/lib/modelAliasSeed.ts` — 启动时植入 30 多个跨代理方言别名
@@ -322,7 +322,7 @@ flowchart LR
 - 策略引擎：`src/domain/policyEngine.ts` — 集中执行锁定 → 预算 → 回退评估
 - 错误代码目录：`src/shared/constants/errorCodes.ts`
 - 请求 ID：`src/shared/utils/requestId.ts`
-- 请求超时：`src/shared/utils/fetchTimeout.ts`
+- 获取超时：`src/shared/utils/fetchTimeout.ts`
 - 请求遥测：`src/shared/utils/requestTelemetry.ts`
 - 合规/审计：`src/lib/compliance/index.ts`
 - 评估运行器：`src/lib/evals/evalRunner.ts`
@@ -332,7 +332,7 @@ OAuth 提供者模块（`src/lib/oauth/providers/` 下的 27 个独立文件）�
 
 - 注册表索引：`src/lib/oauth/providers/index.ts`
 - 各个提供者：`agy.ts`、`antigravity.ts`、`claude.ts`、`cline.ts`、`codebuddy-cn.ts`、`codebuddy-intl.ts`、`codex.ts`、`cursor.ts`、`devin-desktop.ts`、`ghe-copilot.ts`、`github.ts`、`gitlab-duo.ts`、`grok-cli-oauth.ts`、`grok-cli.ts`、`kilocode.ts`、`kimi-coding.ts`、`kiro.ts`、`muse-code.ts`、`openference.ts`、`qoder.ts`、`trae.ts`、`workbuddy.ts`、`xai-oauth.ts`、`zed-hosted.ts`、`zed.ts`
-- 共享辅助程序：`codebuddyDeviceAuth.ts`（CodeBuddy CN/intl 设备流程）、`museCodeDeviceResponse.ts`
+- 共享辅助程序：`codebuddyDeviceAuth.ts`（CodeBuddy 中国版/国际版设备流程）、`museCodeDeviceResponse.ts`
 - 轻量封装：`src/lib/oauth/providers.ts` — 从各个模块重新导出
 
 ## 5) 嵌入式服务（v3.8.4）
@@ -536,16 +536,17 @@ FSM 状态转换反馈到 Auto Combo 的评分中，使后台/自动化任务偏
 - 表（在 `src/lib/db/core.ts` 中创建）：`domain_fallback_chains`、`domain_budgets`、`domain_cost_history`、`domain_lockout_state`、`domain_circuit_breakers`
 - 写穿式缓存模式：运行时以内存 Map 为权威数据源；变更同步写入 SQLite；冷启动时从数据库恢复状态
 
-## 4) 认证与安全界面
+## 4) 身份验证 + 安全边界
 
-- 控制台 Cookie 认证：`src/proxy.ts`、`src/app/api/auth/login/route.ts`
-- API Key 生成/验证：`src/shared/utils/apiKey.ts`
-- 服务商密钥持久化存储在 `providerConnections` 条目中
-- 出站代理支持：`open-sse/utils/proxyFetch.ts`（环境变量）和 `open-sse/utils/networkProxy.ts`（可按服务商或全局配置）
-- SSRF / 出站 URL 守卫：`src/shared/network/outboundUrlGuard.ts` — 拦截所有服务商调用的私有/loopback/本地链路范围目标
-- 运行时环境校验：`src/lib/env/runtimeEnv.ts` — 用于所有环境变量的 Zod Schema，在启动时以错误/警告形式呈现
-- 同步 Token：`src/lib/db/syncTokens.ts` — 为配置包下载端点签发的带权限域 Token；后端使用 `sync_tokens` SQLite 表（迁移文件 `024_create_sync_tokens.sql`）
-- WebSocket 握手认证：`src/lib/ws/handshake.ts` — 通过 API Key 或会话 Cookie 校验 WS 升级请求
+- 仪表板 Cookie 身份验证：`src/proxy.ts`、`src/app/api/auth/login/route.ts`
+- API 密钥生成/验证：`src/shared/utils/apiKey.ts`
+- 提供者密钥持久化存储在 `providerConnections` 条目中
+- 出站代理支持：通过 `open-sse/utils/proxyFetch.ts`（环境变量）和 `open-sse/utils/networkProxy.ts`（可按提供者配置或全局配置）
+- SSRF / 出站 URL 防护：`src/shared/network/outboundUrlGuard.ts` — 对提供者调用和 Webhook 目标执行主机检查；其模式来自 `src/shared/network/outboundUrlGuardPolicy.ts`（标志位见 `docs/reference/ENVIRONMENT.md`）
+- 运行时环境验证：`src/lib/env/runtimeEnv.ts` — 针对所有环境变量的 Zod schema，并将验证结果呈现为启动错误/警告
+- 同步令牌：`src/lib/db/syncTokens.ts` — 用于配置包下载端点的限定作用域令牌；由 `sync_tokens` SQLite 表支持（迁移文件 `024_create_sync_tokens.sql`）
+- WebSocket 握手身份验证：`src/lib/ws/handshake.ts` — 通过 API 密钥或会话 Cookie 验证 WS 升级请求
+- 实时仪表板 WebSocket 身份验证：`src/server/ws/liveServer.ts` — sidecar（端口 `LIVE_WS_PORT`）接受仪表板会话 Cookie，或持有管理作用域（`manage`/`admin`）的 Bearer API 密钥；仅限推理的密钥会被拒绝。其内部 `POST /__omniroute_event` 发布端点仅在不存在代理跳转标头（`x-forwarded-*`、`x-real-ip`、`forwarded`、`via`）时接受来自回环地址的对等端请求
 
 ## 5) 云端同步
 
@@ -1094,11 +1095,11 @@ flowchart LR
 - SQLite Schema 迁移和启动时自动升级钩子
 - 旧 JSON → SQLite 迁移兼���路径
 
-## 6) SSRF / 出站 URL 守卫
+## 6) SSRF / 出站 URL 防护
 
-- `src/shared/network/outboundUrlGuard.ts` 在请求到达服务商执行器之前拦截所有私有/loopback/本地链路目标 URL
-- 服务商模型发现和校验路由使用 `src/shared/network/safeOutboundFetch.ts`，每次出站请求前施加守卫
-- 守卫错误以 `URL_GUARD_BLOCKED` + HTTP 422 呈现，并通过 `providerAudit.ts` 记录到合规审计追踪中
+- `BaseExecutor.assertOutboundUrlAllowed`（`open-sse/executors/base.ts`）将 `src/shared/network/outboundUrlGuard.ts` 应用于通过 `BaseExecutor.execute()` 分派的聊天请求。在仅允许公共地址的模式下（`OMNIROUTE_ALLOW_LOCAL_PROVIDER_URLS=false` 且私有标志关闭），它会阻止私有主机、环回主机以及 169.254.0.0/16；在其他所有模式下，它都会阻止云元数据主机。它会在执行任何 DNS 查询之前，按原样检查所写的主机名或 IP 字面量。内置本地提供者会跳过此检查。
+- 提供者模型发现和验证路由使用 `src/shared/network/safeOutboundFetch.ts`，该文件会在每次出站请求前应用此防护
+- 防护错误会以 `URL_GUARD_BLOCKED` 和 HTTP 503 的形式呈现（`getSafeOutboundFetchErrorStatus`；模型发现路由返回 400），验证期间真正的 SSRF 阻止事件会以 `provider.validation.ssrf_blocked` 事件记录到审计跟踪中
 
 ## 可观测性与运维信号
 

@@ -54,7 +54,11 @@ The user chooses their provider in Settings. Options include:
   LocalAI, GPT4All, and Unsloth Studio — inference requests stay on the user's
   machine when Studio is configured with its loopback URL
 - **WebGPU (In-browser), Chromium only**: the selected text model runs in an extension
-  Worker with no API key, base URL, localhost server, or model endpoint
+  Worker with no API key, base URL, localhost server, or model endpoint. In Ask,
+  a model that reads images also gets a screenshot of the visible page when its
+  own on-device readout says the question needs it (not in Strict Secret Mode);
+  it stays in the browser and is not saved with the chat (the stored question
+  only notes that one was used, so a follow-up can look again)
 - **Local OpenAI-compatible Proxy**: WebBrain connects only to the configured
   local gateway, but the gateway may forward the request context to an upstream
   account. Its configuration and privacy policy determine where data goes.
@@ -377,6 +381,11 @@ counts, outcome categories, and safety-status booleans. URL, target labels,
 accessibility references, and other page content are excluded in both tiers,
 including lossless traces.
 
+`predispatch_timing` trace notes retain only bounded per-stage milliseconds of
+one tool call's pre-dispatch pipeline, the tool name and an outcome category.
+`publication_prefetch` notes retain only a status label and a duration. Page,
+draft and model content are excluded in both tiers, including lossless traces.
+
 `done_timing` trace notes retain only the milliseconds a completion check spent
 preparing its evidence, reading the page's status texts and reaching a verdict,
 with the verdict's outcome and engine names. Completion verification attempts
@@ -462,7 +471,7 @@ they are stored in the browser and never leave it. The exceptions are things you
 choose: if you give a quick link or app link a custom icon URL, enter custom CSS that
 references remote resources (`url(...)`, `@import`), or import settings that point a
 background at a URL, the page loads them from the addresses you gave, each time it is
-shown. Links without a custom icon use a local letter tile; nothing is looked up.
+shown. Links without a custom icon use a local letter tile; nothing is looked up. Whether the page is shown is a single local flag (`newTabEnabled`), off until the user ticks the onboarding checkbox or turns it on in Settings; it is never sent anywhere.
 
 Its settings, quick links and uploaded backgrounds stay in the browser under a separate
 `wbnt:` prefix. Text typed into its box is held briefly in extension storage (one

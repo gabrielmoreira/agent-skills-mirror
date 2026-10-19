@@ -233,7 +233,7 @@ The settings surface (`get_sandbox_settings`, `[security.sandbox]` and
   default install the sandbox and the `is_always_forbidden` floor are what
   bound an agent.
 - Shell selection and the child environment for each platform are TinyBox's
-  (`SelectShell` / `StartNativeShellExec`); `agent::host_runtime::host_shell_flavor`
+  (`SelectShell` / `StartNativeShellExec`); `modules::tinybox::host_runtime::host_shell_flavor`
   only tells the model which family that is.
 - The agent's `SandboxMode` is declared in its definition
   (`tinyagents_definition::SandboxMode`) and read per call through

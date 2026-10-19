@@ -234,6 +234,32 @@ Canonical guidance lives in [tools and permissions](tools-and-permissions.md#rec
 - Speculative Interaction Agents paper, arXiv v2: https://arxiv.org/abs/2605.13360v2
 - AsyncFC paper, arXiv v1: https://arxiv.org/abs/2605.15077v1
 
+## Hybrid latent/text generation and native continuation
+
+- Paper: Zou et al., [Hybrid Reasoning Agents, arXiv:2610.18861v1](https://arxiv.org/html/2610.18861v1), October 13, 2026; methods, analyses, and appendices inspected October 19. The paper is licensed CC BY 4.0.
+- Official implementation: [togethercomputer/HybridAgent at `1b41cebbd2388d083ee1820af421b7f9e24affb5`](https://github.com/togethercomputer/HybridAgent/tree/1b41cebbd2388d083ee1820af421b7f9e24affb5), committed October 18, 2026; README, generation, readout, tool, SFT, and RL paths inspected October 19. No tracked test/CI files were found. Training, inference, and benchmarks were not executed; performance claims were not independently reproduced.
+- Runtime evidence: [persistent KV/position/mask handling](https://github.com/togethercomputer/HybridAgent/blob/1b41cebbd2388d083ee1820af421b7f9e24affb5/hybrid_agent/engine.py#L215), [latent transitions](https://github.com/togethercomputer/HybridAgent/blob/1b41cebbd2388d083ee1820af421b7f9e24affb5/hybrid_agent/engine.py#L328), and [backbone/logit computation](https://github.com/togethercomputer/HybridAgent/blob/1b41cebbd2388d083ee1820af421b7f9e24affb5/hybrid_agent/sampling.py#L39).
+- Inspection and training evidence: [nearest-token projection](https://github.com/togethercomputer/HybridAgent/blob/1b41cebbd2388d083ee1820af421b7f9e24affb5/hybrid_agent/readout.py#L15), [inspector](https://github.com/togethercomputer/HybridAgent/blob/1b41cebbd2388d083ee1820af421b7f9e24affb5/interpretable_latent_mode/trace.py#L77), [self-conditioned SFT](https://github.com/togethercomputer/HybridAgent/blob/1b41cebbd2388d083ee1820af421b7f9e24affb5/hybrid_sft/model.py#L96), [recorded-latent replay](https://github.com/togethercomputer/HybridAgent/blob/1b41cebbd2388d083ee1820af421b7f9e24affb5/hybrid_rl/replay.py#L95), and [replay-agreement logging](https://github.com/togethercomputer/HybridAgent/blob/1b41cebbd2388d083ee1820af421b7f9e24affb5/hybrid_rl/train.py#L253).
+- Published [8B](https://huggingface.co/togethercomputer/HybridAgent-8B-Agentic) and [14B](https://huggingface.co/togethercomputer/HybridAgent-14B-Agentic) model cards were checked October 19. They require the custom runtime for hybrid generation; ordinary Transformers loading provides text-only behavior. Weights were not downloaded or tested.
+
+This is a model-generation, serving, and post-training contribution, with lineage in continuous latent reasoning and cached autoregressive continuation. A learned residual HybridLink maps last-layer hidden states into the input-embedding space; HybridSFT coordinates the link/backbone, and HybridRL trains the backbone while keeping the link fixed. It is not frozen-weight harness editing, strict RLM context programming, or a new autonomy level. Its reusable harness-facing delta belongs in [native generation-state adapters](provider-api-patterns.md#native-generation-state-adapters) and [serving evals](evals.md#native-generation-state-and-hybrid-serving-evals), not a second recursive-harness profile or a training manual.
+
+| Area | Paper claim and checked release boundary |
+|---|---|
+| Cross-turn working memory | The release prefills the prompt once, retains KV state with per-row positions/masks, and embeds tool observations into that continuing state. It does not reconstruct previous latent positions through text. Appendix A's equivalence argument requires complete state, fixed components, and consistent causal/positional operations; it is not a durability, eviction, or cross-model portability result. |
+| Latent exit and vocabulary work | Paper section 3.1 / equation 5 uses cosine-nearest token alignment of the link output for exit and describes bypassing the LM head in latent mode. The pinned engine instead uses LM-head logit argmax for exit, with minimum/maximum span guards; its causal-LM forward path still returns vocabulary logits each step. Cosine-nearest projection is optional inspection. The paper's bypass is not established for this released path. |
+| Readable latent diagnostics | The inspector projects actual link-generated latent inputs to nearest token embeddings; raw vectors still drive continuation. Appendix F's readability and specificity scores measure geometric alignment and lexical relevance. Section 6's interventions show dependence on latent computation in the tested setup; neither result proves that pseudo-text is a complete faithful causal explanation or a confidentiality boundary. |
+| Training/replay | Replay substitutes fixed recorded latent inputs and scores sampled text positions. Appendix C's gradient equality is stated at rollout parameters with recorded latent inputs fixed; it is not a general result about differentiating through recomputed latent recurrence after updates. The release logs rollout/replay agreement before an informative update without enforcing a numerical-tolerance rejection gate. |
+| Efficiency | Each latent step still incurs a backbone forward pass. Appendix G.2 estimates decoding compute and monetary cost under hardware-price/utilization assumptions, explicitly excluding prefill, context-dependent attention, and external tools. These estimates are not full-task billing or independently measured deployment savings. |
+
+Additional reproduction and deployment limits:
+
+- [Released inference defaults](https://github.com/togethercomputer/HybridAgent/blob/1b41cebbd2388d083ee1820af421b7f9e24affb5/hybrid_inference/run_batch.py#L41) use 4–200 latent steps per span; [RL presets](https://github.com/togethercomputer/HybridAgent/blob/1b41cebbd2388d083ee1820af421b7f9e24affb5/hybrid_rl/config.py#L8) differ by task and from the paper's 16–256. Checkpoints, budgets, and generation rules must be matched before claiming reproduction.
+- The [Python tool](https://github.com/togethercomputer/HybridAgent/blob/1b41cebbd2388d083ee1820af421b7f9e24affb5/hybrid_agent/tools/python_tool.py#L81) explicitly runs with current-user filesystem/network access; its subprocess is not a security sandbox. Valid tool formatting and error-free execution do not demonstrate permission enforcement or task correctness.
+- Section 8 proposes KV-level context management, mode-aware workflow scheduling, and hybrid trajectories as inter-agent messages as future directions. Do not present those as implemented generic harness contracts or assume opaque latent state provides confidentiality.
+
+The generic adapter requirements for scoped/versioned continuation, explicit loss/restart outcomes, host tool authority, computation limits, and calibrated diagnostics are this skill's stronger recommended integration contract. Reuse existing context, routing, recovery, permissions, tracing, and measurement owners by link rather than restating them.
+
 ## Recursive and continually refining harnesses
 
 - Recursive Language Models paper: https://arxiv.org/abs/2512.24601
@@ -242,6 +268,34 @@ Canonical guidance lives in [tools and permissions](tools-and-permissions.md#rec
 - Continual Harness official implementation: https://github.com/sethkarten/continual-harness
 - Recursive Agent Harnesses paper: https://arxiv.org/abs/2606.13643
 - Voyager paper: https://arxiv.org/abs/2305.16291
+
+### Harness²: task-local contrastive search and improvement experience
+
+- Paper: [Harness²: Recursive Agent Harnessing for an Open World, arXiv:2610.14224v1](https://arxiv.org/html/2610.14224v1), submitted October 9, 2026; sections 2.1–2.3 and experimental setup inspected October 19.
+- Implementation: [google-research/harness2 at `1cfe254e8d25b15f37048c3730134686abe60335`](https://github.com/google-research/harness2/tree/1cfe254e8d25b15f37048c3730134686abe60335), committed October 14, 2026 UTC; README, experiment documentation, relevant source, and workflow tests inspected October 19. Upstream tests and model-backed benchmarks were not executed; reported performance gains were not independently reproduced.
+- Search evidence: [recursion scheduling and proposal validation](https://github.com/google-research/harness2/blob/1cfe254e8d25b15f37048c3730134686abe60335/harness2/core/recursion.py), [rollout/stage ledger](https://github.com/google-research/harness2/blob/1cfe254e8d25b15f37048c3730134686abe60335/harness2/core/ledger.py), and [anonymous selection](https://github.com/google-research/harness2/blob/1cfe254e8d25b15f37048c3730134686abe60335/harness2/core/selection.py).
+- Retention evidence: [reflection prompts](https://github.com/google-research/harness2/blob/1cfe254e8d25b15f37048c3730134686abe60335/harness2/core/prompts.py#L1106), [library eligibility and storage](https://github.com/google-research/harness2/blob/1cfe254e8d25b15f37048c3730134686abe60335/harness2/core/library.py#L106), and [task sequencing/resume](https://github.com/google-research/harness2/blob/1cfe254e8d25b15f37048c3730134686abe60335/harness2/core/schedule.py).
+- Validation scope: [workflow tests](https://github.com/google-research/harness2/blob/1cfe254e8d25b15f37048c3730134686abe60335/tests/test_workflow.py), [experiment and contamination notes](https://github.com/google-research/harness2/blob/1cfe254e8d25b15f37048c3730134686abe60335/docs/EXPERIMENTS.md), [grader tripwires](https://github.com/google-research/harness2/blob/1cfe254e8d25b15f37048c3730134686abe60335/harness2/core/context.py#L454), and [Codex executor options](https://github.com/google-research/harness2/blob/1cfe254e8d25b15f37048c3730134686abe60335/harness2/substrate/codex.py#L149).
+
+This is a composition of known test-time search, harness editing, execution comparison, and continual experience mechanisms with frozen model weights. Its useful addition here is task-local behavioral contrast followed by selective harness composition, plus experience about future refinement. It does not establish a new model architecture, training method, autonomy level, or a requirement for recursive child agents.
+
+Observed implementation contracts:
+
+| Mechanism | Pinned behavior |
+|---|---|
+| Contrastive refinement | General/invariant and domain-specific proposals edit component files; each is executed on the same task. Composition reads diffs, trajectories, deliverables, and decision history, then the composed harness is executed. |
+| Width versus depth | Parallel mode probes `k` candidates per lane and makes `k` independent compositions from the full pool. Sequential mode carries the current composition and accumulated evidence through `k` steps. Both schedule `k` references, `2k` candidate probes, and `k` composed executions; retries, selection, and reflection add work beyond that `4k` rollout identity. |
+| Adoption | Only composed outputs enter selection: all parallel compositions or all sequential checkpoints, excluding reference and raw candidate outputs. At `k=1`, the sole composition is delivered directly; larger pools use anonymous deliverable selection. This is adoption, not verified optimality or baseline superiority. |
+| Attribution and retention | Reflection requests component effects and confounders and permits no experience entry. Storage requires nonempty applicability cue, lesson, and evidence; an adopted output alone does not guarantee library retention. Eligible entries retain the full adopted harness and experience. |
+| Cross-task state | Each new task starts from the original execution harness; earlier same-domain entries guide proposals/composition. Ordered task prefixes and run namespaces limit reuse; the prior winner is not automatically the next task's installed default. |
+
+Important limits and failure semantics:
+
+- Invalid proposed trees receive one correction attempt before inheriting the current harness. Structural acceptance does not verify behavioral improvement. Tests exercise budgeting, correction feedback, reflection eligibility, temporal library access, resume, and failed-selection exclusion; they do not establish real-model efficacy or transfer.
+- The final pool has no reference-output abstention option, even though a composer can retain the current harness. Failed selection can record the first final as a fallback while remaining unsuccessful; unsuccessful selection is excluded from grading and retention. The generic unchanged-baseline/no-adoption recommendation is stronger guidance, not an implemented release gate.
+- Refinement uses unscored execution views; benchmark scoring runs separately. Known grader paths/strings are screened as tripwires. Executor networking remains unrestricted and the Codex adapter disables its sandbox and approvals; the experiment guide reports a validation rollout retrieving a public task rubric. “Without ground-truth feedback” describes the intended information flow, not a proven contamination barrier.
+
+Canonical additions live in [task-local contrastive refinement](self-refining-recursive-harnesses.md#task-local-contrastive-refinement) and [search evals](evals.md#task-local-harness-search-evals). Probe isolation, explicit baseline/no-adoption gates, independently calibrated judgments, complete cost accounting, and broader promotion controls are this skill's recommended safeguards; do not attribute them all to the release. Reuse the existing ledger, workflow, memory, permissions, security, and general refinement owners instead of a second architecture profile.
 
 ## Adaptive agent teams
 

@@ -22,7 +22,7 @@ A cache key whose only writer is a dedicated seeder or relay process; edge endpo
 
 ### Seed-Meta Record
 
-The small freshness record a seeder writes beside a data key after each publish — when it ran and how many records it published — under a namespace of its own, so that health can grade staleness without reading the payload. It vouches only for the key it was written for: a canonical key's record says nothing about a sibling per-item key, and a reader whose key has no record in the health table is unmonitored however fresh the canonical one is. The record and the payload it describes must live at distinct keys; if a producer names the data key as the record's location, the record overwrites the payload on every run while every consumer of the record still reports fresh — the payload is erased, not stale, and no freshness alarm can fire. See also: Seed-Owned Key, Content-Age Contract, Activation Marker.
+The small freshness record a seeder writes beside a data key after each publish — when it ran and how many records it published — under a namespace of its own, so that health can grade staleness without reading the payload. It vouches only for the key it was written for: a canonical key's record says nothing about a sibling per-item key, and a reader whose key has no record in the health table is unmonitored however fresh the canonical one is. A failed run can also write a record, with a current timestamp and an error mark, while the last good payload keeps serving; its timestamp then dates the attempt, not the data, so every reader that grades freshness must treat an error record as stale regardless of age. The record and the payload it describes must live at distinct keys; if a producer names the data key as the record's location, the record overwrites the payload on every run while every consumer of the record still reports fresh — the payload is erased, not stale, and no freshness alarm can fire. See also: Seed-Owned Key, Content-Age Contract, Activation Marker.
 
 ### Deployment Key Prefix
 
@@ -35,6 +35,12 @@ The freshness clock a seeder declares over the *observation dates inside* the pa
 Two rules follow from what the contract reduces to. It reports a single newest timestamp, so a payload assembled from *several independently-failing sources* must derive one clock per source and report the **oldest** of them; reducing all their dates together takes the newest, and the still-living source then hides the dead one indefinitely — an alarm that can only fire when every source dies at once. And an undatable payload must report nothing rather than a default, because "we cannot date this" and "this is stale" warrant the same response, while a fabricated recent date warrants none.
 
 Sizing the budget belongs to the source's own publication calendar, measured rather than assumed: the widest gap the source routinely takes — a holiday cluster, a non-working period, a weekend either side — plus room for one missed run. A budget guessed generously enough to never false-alarm has usually also stopped detecting the freeze it exists for. See also: Seed-Owned Key, Activation Marker, Content Clock, Superseded Failure.
+
+### Source Release
+
+The publication and update dates an upstream attaches to the dataset a value came from, kept per indicator and distinct from the value's observation period, the time it was fetched or seeded, and any named edition.
+
+Publication marks when the dataset was formally issued; the update date moves with later revisions, so an unchanged publication date does not mean unchanged data. A release is known only when the upstream supplied it in the same response as the values. An absent, malformed or ambiguous date stays unknown and is shown as not supplied, never filled from fetch or seed time. A date does not identify an edition, so a named edition needs an edition-specific source rather than a date match. See also: Content-Age Contract, Reference Period.
 
 ### Activation Marker
 
@@ -115,6 +121,18 @@ The dispatcher must not encode an origin in a Click Target. The product is serve
 Detaching a path from its origin is where this turns dangerous. A target can be first-party by host and still carry an authority-shaped path that resolves straight back off-origin — onto the dashboard tab, the exact outcome the rule exists to prevent — and the laundering spellings collapse together, because a URL parser normalizes a backslash to a slash. Each half therefore re-resolves and compares origins rather than inspecting the string's shape, and each emits the re-resolved path rather than the string it validated.
 
 Scheme is a separate axis, and its ordering is load-bearing: the scheme must be rejected *before* any origin comparison, because a blob URL reports its inner origin and would otherwise satisfy a same-origin test that the opaque schemes fail. Enforcement is asymmetric: the dispatcher refuses to put a target that is not plain https, or that carries embedded credentials, into the *push* payload, and the client independently refuses to act on one, so neither of those layers depends on the other being correct — but the text channels still render the raw target in their message body, where it is equally clickable and unchecked. A scheme guard on the push path is therefore not a guarantee about the target as a whole. See also: Alert Rule, Event Attribution, Variant Host.
+
+### Threshold Event
+
+A push event the webhook worker produces by re-evaluating a condition against a feed every tick (chokepoint disruption, country risk surge). The unit of delivery is a crossing: the worker keeps the crossing pending, under one delivery id, while the condition holds and a send has not succeeded, and re-arms by hysteresis once it subsides. Nothing is queued; a crossing that re-arms before it is delivered is simply gone, and the next crossing gets a new id. Its scope fields are top-level registration fields. See also: Occurrence Event, Event Id.
+
+### Occurrence Event
+
+A push event that happened once and has no condition to re-check (a breaking headline, a large market move, a natural hazard). The worker drains a copy of the producer's stream (for natural hazards, diffs the seeded feeds against the ids it has already seen, so a first read only records them), matches each occurrence against every subscription's stored `scope`, and gives each subscription one delivery id per Event Id, from the first copy that matches that subscription's scope: the per-subscriber state remembers the Event Id as pending (with the body as first built, resent unchanged on retry) until it is delivered, then as a day-long tombstone so a replayed or republished copy is a no-op. Delivery stays at-least-once. A pending delivery older than the event's retry window is dropped, not delivered late, and leaves the same tombstone. Per-subscription hour and day caps count every event sent in the bucket, retries included; new events over a cap are dropped and counted rather than queued or batched. Its scope fields travel in the registration body's `scope` object, validated against the event's registry `inputSchema`. See also: Threshold Event, Event Id, Alert Rule.
+
+### Event Id
+
+The producer-side identity of an Occurrence Event, carried in every delivery beside the per-subscription delivery id. It is derived from what makes two copies the same event, not from the message that carried them: a story's canonical link (so the five site-variant copies and a reworded headline collapse), a market move's coalesce key per UTC day (so the relay's hourly republish of a sustained move is one event), a hazard feed's own record id (a hurricane advisory number stripped, so a new advisory is the same storm). Two subscriptions on the same event receive the same Event Id under different delivery ids, which is what lets a receiver dedupe across subscriptions. A title hash is the fallback only when a story carries no link. See also: Occurrence Event.
 
 ## Product Analytics Collection
 

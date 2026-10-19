@@ -3,7 +3,7 @@ name: vertical-slice
 description: "Pre-production validation — end-to-end build to confirm the full loop is achievable before committing to Production. After GDDs, architecture, UX specs."
 argument-hint: "[--review full|lean|solo]"
 user-invocable: true
-allowed-tools: Read, Glob, Grep, Write, Edit, Bash, Agent, AskUserQuestion, Bash(bash "*/.claude/skills/vertical-slice/../../hooks/yaml-helper.sh" resolve_config *)
+allowed-tools: Read, Glob, Grep, Write, Edit, Agent, AskUserQuestion, Bash(bash "*/.claude/skills/vertical-slice/../../hooks/yaml-helper.sh" resolve_config *)
 model: sonnet
 ---
 
@@ -51,7 +51,10 @@ Every `AskUserQuestion` call follows `.claude/docs/automation-modes.md`
 (collaborative asks always · guided major-only · autonomous logs and proceeds;
 `automation_always_ask` categories always prompt).
 
-Read the following files to understand the full design intent:
+Read the following files to understand the full design intent. Read each GDD, ADR
+and the control manifest by section: find the headings you need with
+the Grep tool (pattern `^#`, content mode) and Read those ranges with offset
+and limit.
 - `CLAUDE.md` — tech stack and engine
 - `design/gdd/game-concept.md` — core fantasy and game pillars (or
   `design/game-brief.md`, the one-page brief that replaces it at `rigor: minimal` —

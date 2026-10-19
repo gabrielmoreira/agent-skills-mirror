@@ -37,7 +37,7 @@
 
 | 触发 | 技能 |
 |------|------|
-| 请求读取、抓取、引用、转换或保存网页链接或 PDF / "看一下这个", "读一下这个" | `skills/read/SKILL.md` |
+| 请求读取、抓取、引用、转换或保存网页链接或 PDF / "看一下这个", "读一下这个" / 内置搜索结果单薄时换 DeepSeek 搜索 | `skills/read/SKILL.md` |
 | 写作 / 改稿 / 润色 / 去 AI 味（中英文） / 本地化文案 / 多语言产品文案 / 推特推文 / 社交媒体文案 / launch copy / release notes 文案 | `skills/write/SKILL.md` |
 | 文档审阅 / 白皮书 / release notes prose 审核 / "审稿" / "check this document" | `skills/write/SKILL.md` (Document Review Mode) |
 | 技术说明改写 / 指令消歧 / 安装步骤、错误提示、工具描述的措辞 / "clarify instructions" / "technical writing" | `skills/write/SKILL.md` 加载 `references/write-technical.md`，只处理文字，提示词设计与代码行为不在此模式内 |

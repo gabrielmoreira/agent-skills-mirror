@@ -71,7 +71,7 @@ Pelindung regresi: `tests/unit/provider-cooldown-window-gate.test.ts`.
 
 **Skop:** satu sambungan/akaun/kunci penyedia.
 
-**Tujuan:** melangkau satu kunci yang bermasalah sementara sambungan lain bagi penyedia yang sama terus memberikan perkhidmatan.
+**Tujuan:** langkau satu kunci yang bermasalah sementara sambungan lain bagi penyedia yang sama terus memberikan perkhidmatan.
 
 **Pelaksanaan:**
 
@@ -91,49 +91,60 @@ Pelindung regresi: `tests/unit/provider-cooldown-window-gate.test.ts`.
 
 - Asas OAuth: 5s
 - Asas kunci API: 3s
-- Kunci API 429: mengutamakan pengepala huluan `Retry-After`/tetapan semula/teks tetapan semula yang boleh dihuraikan
+- 429 kunci API: mengutamakan pengepala `Retry-After`/tetapan semula huluan/teks tetapan semula yang boleh dihuraikan
 - Undur: `baseCooldownMs * 2 ** failureIndex`
 
-**Pelindung anti-kumpulan-serentak:** menghalang kegagalan serentak daripada memanjangkan tempoh bertenang secara berlebihan atau menaikkan `backoffLevel` sebanyak dua kali.
+**Pelindung antipusu:** menghalang kegagalan serentak daripada memanjangkan tempoh bertenang secara berlebihan atau menaikkan `backoffLevel` dua kali.
 
-**Kandungan strim yang tersekat tidak mengenakan tempoh bertenang pada akaun.** Apabila pemantau sekatan kandungan
-(`open-sse/utils/streamHandler.ts`) menghentikan strim yang tidak menghantar output model dalam
+**429 had keserentakan tidak menaiki tangga undur.** `429` yang badannya melaporkan
+had keserentakan ("too many concurrent requests", "concurrency limit", "parallel request
+limit", GLM `并发数过高`) bermaksud akaun tersebut sihat tetapi sibuk.
+`checkFallbackError()` mengembalikan sebab `concurrency_limited`: beralih kepada
+sambungan seterusnya sekarang, tenangkan sambungan ini selama `CONCURRENCY_LIMIT_COOLDOWN_MS` (1s) yang tetap atau mengikut
+petunjuk cuba semula huluan, kekalkan `backoffLevel` tanpa perubahan, dan tetapkan `skipProviderBreaker`.
+Badan kuota yang jelas masih diutamakan, maka badan yang turut sepadan dengan corak kuota kekal sebagai keputusan
+kuota. Pengesanan: `looksLikeConcurrencyLimit()` dalam `src/shared/utils/classify429.ts`;
+keputusan: `open-sse/services/accountFallback/concurrencyLimit429.ts`. `classify429()` (`FailureKind`
+pemutus) tidak berubah dan masih membaca `rate_limit` untuk badan ini.
+
+**Kebuntuan kandungan strim tidak mengenakan tempoh bertenang pada akaun.** Apabila pemantau kebuntuan kandungan
+(`open-sse/utils/streamHandler.ts`) menyerah terhadap strim yang tidak menghantar output model dalam
 tempoh yang ditetapkan, `markAccountUnavailable()` merekodkan ralat pada sambungan tetapi tidak menetapkan
-tempoh bertenang: sekatan itu berkaitan dengan permintaan tersebut, dan lazimnya merupakan giliran penaakulan panjang yang masih belum
-menghasilkan output. Pengendali boleh memilih untuk mengaktifkannya semula melalui `resilienceSettings.streamStallCooldown.enabled`
+tempoh bertenang: kebuntuan tersebut adalah milik permintaan itu, lazimnya giliran penaakulan panjang yang belum
+menghasilkan output. Pengendali boleh mengaktifkannya semula melalui `resilienceSettings.streamStallCooldown.enabled`
 (lalai `false`).
 
-**Bingkai penaakulan memulakan semula peruntukan masa sekatan kandungan.** Model penaakulan boleh berfikir selama
-beberapa minit sebelum token pertamanya yang kelihatan: Claude menstrim bingkai `thinking_delta` yang
-teks pemikirannya mungkin kosong, dan Responses API menstrim satu item penaakulan demi satu.
-`isReasoningProgressFrame()` (`open-sse/utils/streamReadiness.ts`) mengenal pasti
-bingkai ini, dan pemantau memulakan semula peruntukan masanya pada setiap bingkai dan bukannya membatalkan
-giliran. Bingkai tersebut masih bukan output model, maka giliran yang berakhir dengan penaakulan sahaja masih
-dilaporkan sebagai kosong, manakala giliran yang berhenti menaakul dan hanya menghantar degupan jantung masih akan mencetuskan
+**Bingkai penaakulan memulakan semula belanjawan kebuntuan kandungan.** Model penaakulan boleh berfikir selama
+beberapa minit sebelum token pertama yang kelihatan: Claude menstrim bingkai `thinking_delta` yang
+teks pemikirannya mungkin kosong, dan Responses API menstrim satu item penaakulan selepas
+item yang lain. `isReasoningProgressFrame()` (`open-sse/utils/streamReadiness.ts`) mengenal pasti
+bingkai ini, dan pemantau memulakan semula belanjawannya bagi setiap bingkai dan bukannya membatalkan
+giliran tersebut. Bingkai ini masih bukan output model, maka giliran yang berakhir dengan penaakulan sahaja masih
+dilaporkan sebagai kosong, dan giliran yang berhenti menaakul lalu hanya menghantar denyutan jantung masih mencetuskan
 pemantau.
 
-Bingkai binari `reasoningContentEvent` Kiro dengan tandatangan yang tidak kosong mengekalkan
-aktiviti penaakulan ini melalui pelaksana sebagai delta `reasoning_content` kosong. Tandatangan tersebut
+Bingkai perduaan `reasoningContentEvent` Kiro dengan tandatangan yang tidak kosong mengekalkan
+aktiviti penaakulan ini melalui pelaksana sebagai delta `reasoning_content` yang kosong. Tandatangan tersebut
 tidak dimajukan. Metadata, bingkai tidak lengkap dan tandatangan kosong tidak memulakan semula
-peruntukan masa kandungan; tamat masa strim aktif yang bebas dan pembatalan klien masih
-terpakai (`open-sse/executors/kiro/reasoning.ts`).
+belanjawan kandungan; tamat masa strim aktif bebas dan pembatalan klien masih
+digunakan (`open-sse/executors/kiro/reasoning.ts`).
 
 **Keadaan terminal (BUKAN tempoh bertenang):**
 
-- `banned` — ditetapkan oleh pengesanan kata kunci larangan / sekatan akaun (lihat [PENGESANAN SEKATAN](../security/BAN_DETECTION.md)), dan oleh tiga penolakan huluan berturut-turut bagi setiap permintaan (`request_rejected`, contohnya Anthropic OAuth 403 "Permintaan tidak dibenarkan" — `open-sse/services/requestRejectedStreak.ts`); satu penolakan hanya mengenakan tempoh bertenang pada sambungan
+- `banned` — ditetapkan oleh pengesanan kata kunci larangan / larangan akaun (lihat [BAN_DETECTION](../security/BAN_DETECTION.md)), dan oleh tiga penolakan huluan bagi setiap permintaan secara berturut-turut (`request_rejected`, contohnya Anthropic OAuth 403 "Request not allowed" — `open-sse/services/requestRejectedStreak.ts`); satu penolakan hanya mengenakan tempoh bertenang pada sambungan
 - `expired` (beralih kepada terminal selepas percubaan semula terhad — `EXPIRED_RETRY_MAX = 3` dengan undur eksponen — supaya ralat OAuth sementara boleh pulih sendiri sebelum akaun dinyahaktifkan secara kekal)
 - `credits_exhausted`
 
-Keadaan ini kekal sehingga kelayakan berubah atau pengendali menetapkannya semula. Jangan timpa keadaan terminal dengan keadaan tempoh bertenang sementara.
+Keadaan ini berterusan sehingga kelayakan berubah atau pengendali menetapkannya semula. Jangan timpa keadaan terminal dengan keadaan tempoh bertenang sementara.
 
-**Pemulihan malas:** apabila `rateLimitedUntil` telah berlalu, sambungan kembali layak. Selepas berjaya digunakan, `clearAccountError()` mengosongkan semua medan ralat.
+**Pemulihan malas:** apabila `rateLimitedUntil` telah berlalu, sambungan kembali layak digunakan. Selepas penggunaan berjaya, `clearAccountError()` mengosongkan semua medan ralat.
 
-### Had penggunaan Claude OAuth: laluan keutamaan lebih rendah + tetapan semula had sesi
+### Dinding penggunaan Claude OAuth: lorong keutamaan lebih rendah + tetapan semula had sesi
 
 **Skop:** satu sambungan langganan Claude (OAuth). Kedua-dua ciri adalah **pilihan ikut serta bagi setiap
-sambungan** (Edit sambungan → bahagian Claude → `lowPriorityMode` / `autoLimitReset` dalam
-`providerSpecificData`, kedua-duanya dilumpuhkan secara lalai) dan mencerminkan perintah `/low-priority` dan
-`/limit-reset` Claude Code (kontrak protokol dirakam daripada Claude Code 2.1.263).
+sambungan** (Edit connection → Claude section → `lowPriorityMode` / `autoLimitReset` dalam
+`providerSpecificData`, kedua-duanya dimatikan secara lalai) dan mencerminkan perintah `/low-priority` dan
+`/limit-reset` Claude Code (kontrak wayar dirakam daripada Claude Code 2.1.263).
 
 **Pelaksanaan:**
 
@@ -142,117 +153,108 @@ sambungan** (Edit sambungan → bahagian Claude → `lowPriorityMode` / `autoLim
 - Cangkuk pelaksana (suntikan pengepala + percubaan semula akaun yang sama): `open-sse/executors/base.ts::execute()`
 - Pengekalan pilihan ikut serta: `src/lib/providers/requestDefaults.ts::normalizeProviderSpecificData()`
 
-**Pencetus:** had penggunaan 5 jam — `429` yang pengepalanya mengandungi
-`anthropic-ratelimit-unified-status: rejected` dan, apabila akaun layak,
-`anthropic-ratelimit-unified-slow-offer: treatment`. Tiada apa-apa dihantar sebelum 429 had
-pertama itu; 429 berkelompok tanpa pengepala bersepadu melalui laluan tempoh bertenang biasa.
+**Pencetus:** dinding penggunaan 5 jam — `429` yang pengepalanya membawa
+`anthropic-ratelimit-unified-status: rejected` dan, apabila akaun tersebut layak,
+`anthropic-ratelimit-unified-slow-offer: treatment`. Tiada apa-apa dihantar sebelum 429 dinding pertama itu;
+429 lonjakan tanpa pengepala disatukan melalui laluan tempoh bertenang biasa.
 
-**Laluan keutamaan lebih rendah** (`lowPriorityMode`):
+**Lorong keutamaan lebih rendah** (`lowPriorityMode`):
 
-- Pada dinding 429, pelaksana menerima tawaran tersebut dan segera mencuba semula akaun yang **sama**
+- Pada 429 dinding, pelaksana menerima tawaran tersebut dan segera mencuba semula akaun yang **sama**
   dengan `anthropic-usage-limit: slow`; lorong kekal aktif sehingga
-  `anthropic-ratelimit-unified-reset` yang diumumkan (+60s tempoh ihsan) dan setiap permintaan dalam
-  tetingkap tersebut membawa pengepala itu. 429 yang dipintas tidak pernah sampai kepada
-  `handleChatCore`, maka sambungan **tidak** diletakkan dalam tempoh bertenang dan tidak ditukar keluar.
+  `anthropic-ratelimit-unified-reset` yang diumumkan (+60s tempoh ihsan), dan setiap permintaan
+  dalam tetingkap tersebut membawa pengepala itu. 429 yang dipintas tidak pernah sampai kepada
+  `handleChatCore`, jadi sambungan **tidak** diletakkan dalam tempoh bertenang dan tidak dialihkan
+  melalui penggiliran.
 - `anthropic-ratelimit-unified-slow-status` pada respons berikutnya: `active` / `not_needed`
-  mengekalkan lorong; `slot_busy` (429) atau `529` menunggu tempoh
-  `anthropic-ratelimit-unified-slow-retry-after` pelayan (lalai 20s, diapit kepada 5–600s, hingar
-  ±30%) dan mencuba semula, tertakluk pada `anthropic-ratelimit-unified-slow-max-wait` (lalai 20 min,
-  diapit kepada 1 min–6 h) — selepas itu lorong ditamatkan dan tempoh bertenang selama 10 minit
-  menyekat penerimaan semula. Tempoh menunggu turut dihadkan kepada baki tamat masa permulaan huluan
-  permintaan itu sendiri (`resolveFetchStartTimeout`, lalai 10 min) ditolak margin 5 s: tanpa had
-  tersebut, masa tunggu maksimum lalai 20 minit akan melebihi hayat permintaan dan tidur akan
-  dibatalkan ketika sedang menunggu, lalu memaparkan `TimeoutError` dan bukannya penamatan
-  `max_wait` yang terkawal + tempoh bertenang.
+  mengekalkan lorong; `slot_busy` (429) atau `529` menunggu selama
+  `anthropic-ratelimit-unified-slow-retry-after` daripada pelayan (lalai 20s, dihadkan kepada
+  5–600s, hingar rawak ±30%) dan mencuba semula, tertakluk pada
+  `anthropic-ratelimit-unified-slow-max-wait` (lalai 20 min, dihadkan kepada
+  1 min–6 h) — selepas tempoh itu, lorong ditamatkan dan tempoh bertenang selama 10 minit
+  menyekat penerimaan semula. Tempoh menunggu juga dihadkan oleh baki masa tamat mula-huluan
+  permintaan itu sendiri (`resolveFetchStartTimeout`, lalai 10 min) ditolak margin 5 s:
+  tanpa had tersebut, masa tunggu maksimum lalai 20 minit akan melebihi hayat permintaan
+  dan tidur akan dibatalkan ketika sedang menunggu, lalu memaparkan `TimeoutError` dan bukannya
+  penamatan `max_wait` yang lancar + tempoh bertenang.
 - `weekly_limit` / `budget_exhausted` / `off` / `ineligible`, pertukaran tetingkap 5h, atau
   `ineligible` + `anthropic-ratelimit-unified-overage-in-use: true` (yang menamatkannya sebagai
-  `extra_usage` pada sebarang status, kerana lebihan berbayar kini meliputi dinding tersebut)
-  menamatkan lorong; respons kemudian mengalir ke laluan tempoh bertenang biasa. `budget_exhausted`
-  diingati sehingga tetapan semula belanjawan yang diumumkan (≤ 8 hari).
-- Semakan dinding dijalankan selepas percubaan semula dalam percubaan milik pelaksana sendiri yang
-  didorong oleh 400 (penyuntingan konteks, pengapitan pemikiran/usaha, pembelajaran automatik
-  parameter), maka 429 dinding yang hanya muncul pada salah satu percubaan semula tersebut masih
-  dipintas dan bukannya sampai ke laluan tempoh bertenang.
-- Keadaan disimpan dalam memori bagi setiap sambungan (mula semula mengakibatkan satu 429 dinding
+  `extra_usage` pada sebarang status, kerana lebihan penggunaan berbayar kini meliputi dinding)
+  menamatkan lorong; respons kemudian mengalir ke laluan tempoh bertenang biasa.
+  `budget_exhausted` diingati sehingga penetapan semula belanjawan yang diumumkan (≤ 8 hari).
+- Semakan dinding dijalankan selepas percubaan semula dalam percubaan pelaksana sendiri yang
+  dicetuskan oleh 400 (penyuntingan konteks, had pemikiran/usaha, pembelajaran automatik parameter),
+  jadi 429 dinding yang hanya muncul pada salah satu percubaan semula tersebut masih dipintas
+  dan bukannya sampai ke laluan tempoh bertenang.
+- Keadaan disimpan dalam memori bagi setiap sambungan (mula semula menyebabkan satu 429 dinding
   tambahan untuk penerimaan semula).
 
-**Tetapan semula had sesi** (`autoLimitReset`, dicuba sebelum lorong apabila kedua-duanya dihidupkan):
+**Penetapan semula had sesi** (`autoLimitReset`, dicuba sebelum lorong apabila kedua-duanya diaktifkan):
 
 - `GET https://api.anthropic.com/api/oauth/usage?at_wall=1&skip_spend=1` → blok `juniper_tide`;
   apabila `arm: "reset"` dan `available: true`,
   `POST https://api.anthropic.com/api/organizations/{orgUUID}/reset_rate_limits` dengan
   `{ "program": "juniper_tide" }` (UUID organisasi daripada
-  `providerSpecificData.organizationUUID`, sandaran pemula).
-- `result: reset|not_limited` → permintaan dicuba semula pada kelajuan penuh (tanpa pengepala
-  perlahan). `already_used` / `not_offered` mengingati `next_available_at` (lalai satu minggu);
-  sebarang kegagalan berundur selama 15 minit. Tetapan semula adalah sekali seminggu dan masih
-  diambil kira dalam had mingguan.
+  `providerSpecificData.organizationUUID`, dengan sandaran pemula).
+- `result: reset|not_limited` → permintaan dicuba semula pada kelajuan penuh (tanpa pengepala perlahan).
+  `already_used` / `not_offered` mengingat `next_available_at` (lalai satu minggu); sebarang
+  kegagalan berundur selama 15 minit. Penetapan semula hanya sekali seminggu dan masih dikira
+  dalam had mingguan.
 
 Pengawal regresi: `tests/unit/claude-low-priority-mode.test.ts`,
 `tests/unit/claude-limit-reset.test.ts`, `tests/unit/claude-low-priority-executor.test.ts`.
 
 ### Afiniti sesi (#7274)
 
-**Skop:** satu sesi klien (`X-Session-Id` / `x-codex-session-id` / `x-omniroute-session` header)
-disematkan kepada satu sambungan, untuk **mana-mana** penyedia.
+**Skop:** satu sesi klien (pengepala `X-Session-Id` / `x-codex-session-id` / `x-omniroute-session`) dipinkan kepada satu sambungan, untuk **mana-mana** penyedia.
 
-**Tujuan:** mengekalkan agen berbilang giliran (Claude Code, aider, agen tersuai) pada akaun yang sama
-merentas permintaan, sekali gus mengurangkan kehilangan konteks merentas akaun dan 429 mula dingin
-berulang pada penyedia dengan keadaan sesi bagi setiap akaun.
+**Tujuan:** mengekalkan ejen berbilang giliran (Claude Code, aider, ejen tersuai) pada akaun yang sama merentasi permintaan, mengurangkan kehilangan konteks rentas akaun dan 429 mula sejuk berulang pada penyedia dengan keadaan sesi bagi setiap akaun.
 
 **Pelaksanaan:**
 
 - Peleraian TTL: `src/sse/services/sessionAffinityPin.ts::resolveSessionAffinityTtlMs()`
-- Pemilihan/penciptaan sematan: `src/sse/services/sessionAffinityPin.ts::selectSessionAffinityConnection()`
+- Pemilihan/penciptaan pin: `src/sse/services/sessionAffinityPin.ts::selectSessionAffinityConnection()`
 - Pengekstrakan pengepala (generik, mana-mana penyedia): `src/sse/services/auth.ts::extractSessionAffinityKey()`
-- Jadual sematan tersimpan: `sessionAccountAffinity` (`src/lib/db/sessionAccountAffinity.ts`)
-- Tetapan: `sessionAffinityTtlMs` (TTL global dalam ms, `0` menyahdayakan) — `src/lib/db/settings.ts`. Dinamakan semula daripada `codexSessionAffinityTtlMs` khusus Codex oleh migrasi `124_generic_session_affinity_ttl.sql`, yang memindahkan sebarang TTL Codex yang dikonfigurasikan sebelum ini sebagai nilai lalai baharu.
+- Jadual pin tersimpan: `sessionAccountAffinity` (`src/lib/db/sessionAccountAffinity.ts`)
+- Tetapan: `sessionAffinityTtlMs` (TTL global dalam ms, `0` menyahaktifkan) — `src/lib/db/settings.ts`. Dinamakan semula daripada `codexSessionAffinityTtlMs` khusus Codex melalui migrasi `124_generic_session_affinity_ttl.sql`, yang memindahkan sebarang TTL Codex yang telah dikonfigurasikan sebelum ini sebagai nilai lalai baharu.
 
-Sebelum #7274, `resolveSessionAffinityTtlMs()` terus mengembalikan `0` untuk setiap penyedia kecuali
-`codex`, maka tetapan TTL (dan pengepala sesi) tidak berkesan di tempat lain walaupun mekanisme
-penyematan dan pengekstrakan pengepala sudah pun tidak bergantung pada penyedia. Pembaikan tersebut
-menghapuskan pengembalian awal itu; TTL kini digunakan secara seragam pada setiap penyedia setelah
-ditetapkan secara global kepada nilai melebihi `0`.
+Sebelum #7274, `resolveSessionAffinityTtlMs()` terus mengembalikan `0` untuk setiap penyedia kecuali `codex`, jadi tetapan TTL (dan pengepala sesi) tidak memberikan kesan di tempat lain walaupun mekanisme pin dan pengekstrakan pengepala sudah pun bersifat agnostik penyedia. Pembaikan itu mengalih keluar pengembalian awal tersebut; TTL kini digunakan secara seragam pada setiap penyedia sebaik sahaja ditetapkan secara global melebihi `0`.
 
-Ketiga-tiga pengepala afiniti sesi tidak pernah dimajukan ke huluan — pelaksana membina pengepala
-huluan mereka sendiri dari awal dan bukannya meneruskan pengepala klien, maka ini kekal sebagai ID
-korelasi dalaman sahaja.
+Ketiga-tiga pengepala afiniti sesi tidak pernah dimajukan ke huluan — pelaksana membina pengepala huluan mereka sendiri dari awal dan bukannya meneruskan pengepala klien, jadi ini kekal sebagai ID korelasi dalaman sahaja.
 
 ### Pajakan sambungan sesi terurus eksklusif
 
 **Skop:** satu klien/sesi HTTP terurus yang aktif memiliki satu sambungan OmniRoute yang layak.
 
-**Tujuan:** menyediakan pemilikan sambungan eksklusif yang tahan lama untuk klien yang memerlukan
-sempadan penghalaan tegas merentas permintaan. Ini berbeza daripada afiniti sesi, yang merupakan
-keutamaan kesinambungan lembut: pajakan eksklusif mengekalkan keadaan kitar hayat dalam SQLite,
-menguatkuasakan keunikan global bagi pemilik aktif dan sambungan aktif, serta menolak generasi lapuk
-sebelum penghantaran kepada penyedia.
+**Tujuan:** menyediakan pemilikan sambungan eksklusif yang tahan lama untuk klien yang memerlukan sempadan penghalaan mutlak
+merentasi permintaan. Ini berbeza daripada afiniti sesi, yang merupakan keutamaan kesinambungan lembut:
+pajakan eksklusif mengekalkan keadaan kitar hayat dalam SQLite, menguatkuasakan keunikan global pemilik aktif dan
+sambungan aktif, serta menolak generasi lapuk sebelum penghantaran kepada penyedia.
 
-Ciri ini perlu dipilih secara eksplisit bagi setiap kunci API. Kunci terurus mesti mempunyai skop
-`lease:exclusive` dan senarai `allowedConnections` yang dinyatakan secara jelas dan tidak kosong.
-Mana-mana klien HTTP boleh menggunakan titik akhir kitar hayat; nama klien, agen pengguna, penyedia,
-kaedah OAuth atau model tidak diperlukan. Pajakan memiliki sambungan, bukan model, maka perubahan
-model mengekalkan pengikatan selagi sambungan itu kekal layak seperti biasa. Peraturan biasa bagi
-model, kuota, kesihatan, tempoh bertenang dan senarai benarkan kekal berkuasa serta boleh memindahkan
-generasi yang sama kepada sambungan layak lain yang bebas.
+Ciri ini ialah pilihan ikut serta bagi setiap kunci API. Kunci terurus mesti mempunyai skop `lease:exclusive` dan
+senarai `allowedConnections` eksplisit yang tidak kosong. Mana-mana klien HTTP boleh menggunakan titik akhir kitar hayat; tiada
+nama klien, ejen pengguna, penyedia, kaedah OAuth atau model diperlukan. Pajakan memiliki sambungan,
+bukan model, jadi perubahan model mengekalkan pengikatan selagi sambungan itu masih layak
+seperti biasa. Peraturan model, kuota, kesihatan, tempoh bertenang dan senarai dibenarkan yang biasa kekal berkuasa dan boleh
+mengalihkan generasi yang sama kepada sambungan layak lain yang masih bebas.
 
-Kitaran hayatnya ialah `POST /api/v1/session-leases` dengan tindakan JSON `acquire`, `renew`, dan `release`.
+Kitaran hayat ialah `POST /api/v1/session-leases` dengan tindakan JSON `acquire`, `renew`, dan `release`.
 Permintaan inferens terurus mengemukakan nilai legap `X-OmniRoute-Lease-Owner` dan
 `X-OmniRoute-Lease-Generation` yang tepat. Pemilik menggunakan `vlo_` diikuti oleh 43 aksara base64url; hanya
-cincangan SHA-256nya disimpan. Setiap pagar penghantaran akhir turut mengikat ID kunci API yang disahkan dan
+cincangan SHA-256 bagi nilai tersebut disimpan. Setiap pagar penghantaran akhir turut mengikat ID kunci API yang disahkan dan
 ID sambungan aktif. Pengepala kawalan pajakan dialih keluar daripada log, petikan permintaan yang disimpan, dan
 pengepala pelaksana huluan.
 
-Jika penghalaan biasa mempunyai calon terurus yang layak tetapi setiap calon yang tersedia diduduki oleh
-pajakan aktif asing, OmniRoute mengembalikan HTTP `429`, kod lease-capacity-unavailable, keadaan
-waiting-for-capacity, dan `Retry-After` terhad yang diperoleh daripada masa tamat relevan yang paling awal.
-Ketiadaan kelayakan biasa bukanlah pertikaian pajakan dan mengekalkan semantik ralat penghalaan sedia ada.
+Jika penghalaan biasa mempunyai calon terurus yang layak tetapi setiap calon yang bebas sedang diduduki oleh
+pajakan aktif asing, OmniRoute mengembalikan HTTP `429`, kod lease-capacity-unavailable,
+keadaan menunggu-kapasiti, dan `Retry-After` terhad yang diperoleh daripada tamat tempoh berkaitan yang paling awal.
+Ketiadaan kelayakan biasa bukan pertikaian pajakan dan mengekalkan semantik ralat penghalaannya yang sedia ada.
 
-Mekanisme yang berkaitan kekal berasingan:
+Mekanisme berkaitan kekal berasingan:
 
 - Penghunian sesi OAuth ialah pengagihan lembut setempat proses untuk akaun OAuth.
-- Semafor akaun memberikan permit konkurensi permintaan dan tamat apabila sesuatu permintaan selesai.
-- Pajakan sesi terurus eksklusif ialah pemilikan kitaran hayat tahan lama dengan pagar generasi.
+- Semafor akaun memberikan permit kekonkurenan permintaan dan tamat apabila sesuatu permintaan selesai.
+- Pajakan sesi terurus eksklusif ialah pemilikan kitaran hayat tahan lama dengan pagar penjanaan.
 
 ---
 

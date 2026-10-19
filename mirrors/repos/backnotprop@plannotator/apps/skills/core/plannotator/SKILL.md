@@ -176,7 +176,7 @@ plannotator inbox [--background | --no-open] [--tailscale]
 plannotator inbox mcp
 ```
 
-The Plannotator Inbox is one local window per machine where you leave the person messages, `:::question` blocks they answer with a click, files to annotate, decisions and guided reviews. Nothing blocks: you send, then keep working or end your turn.
+The Plannotator Inbox is one local window per machine where you leave the person messages, `:::question` blocks they answer with a click, files to annotate and guided reviews. Nothing blocks: you send, then keep working or end your turn.
 
 - Use it when the person may not be watching this chat: a decision only they can make (a `:::question` block, then go on with work that does not depend on it), long work you finished (one short summary, with the files to look at in `attachments`), or when they ask. Ask in the chat when they are there, and do not send routine progress. Use a review (plan review, `annotate`, `review`) when you need a decision on this document or diff before you go on.
 - If you have a `plannotator_inbox` tool, use it; otherwise use the stdio MCP server `plannotator inbox mcp`. With the tool, the person's reply arrives in your session by itself, so end your turn instead of waiting.

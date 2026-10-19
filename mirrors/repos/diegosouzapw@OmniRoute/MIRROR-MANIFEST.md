@@ -7,7 +7,7 @@ ref: release/v3.8.52
 
 # Mirror Manifest
 
-Mirror of `diegosouzapw/OmniRoute` — 26 default patterns, 12 followed patterns, 1077 file(s) materialized.
+Mirror of `diegosouzapw/OmniRoute` — 26 default patterns, 15 followed patterns, 1080 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `diegosouzapw/OmniRoute` — 26 default patterns, 12 followed patterns
 | Ref Type      | `branch` |
 | Ref           | `release/v3.8.52` |
 | Default pats  | 26 |
-| Followed pats | 12 |
-| Files         | 1077 |
+| Followed pats | 15 |
+| Files         | 1080 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,6 +51,10 @@ Mirror of `diegosouzapw/OmniRoute` — 26 default patterns, 12 followed patterns
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
+- `docs/architecture/MODIFICATION_SCENARIOS.md`
+- `docs/ops/WORKTREE_ISOLATION.md`
+- `docs/architecture/QUALITY_GATES.md`
+- `docs/ops/HARD_RULES_DETAIL.md`
 - `docs/architecture/ARCHITECTURE.md`
 - `docs/architecture/CODEBASE_DOCUMENTATION.md`
 - `docs/routing/AUTO-COMBO.md`
@@ -62,7 +66,6 @@ Mirror of `diegosouzapw/OmniRoute` — 26 default patterns, 12 followed patterns
 - `docs/architecture/AUTHZ_GUIDE.md`
 - `docs/ops/TUNNELS_GUIDE.md`
 - `docs/guides/ELECTRON_GUIDE.md`
-- `docs/architecture/QUALITY_GATES.md`
 
 ## File Index
 
@@ -1138,15 +1141,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1066 | → | [`docs/architecture/ARCHITECTURE.md`](docs/architecture/ARCHITECTURE.md) |
 | 1067 | → | [`docs/architecture/AUTHZ_GUIDE.md`](docs/architecture/AUTHZ_GUIDE.md) |
 | 1068 | → | [`docs/architecture/CODEBASE_DOCUMENTATION.md`](docs/architecture/CODEBASE_DOCUMENTATION.md) |
-| 1069 | → | [`docs/architecture/QUALITY_GATES.md`](docs/architecture/QUALITY_GATES.md) |
-| 1070 | → | [`docs/frameworks/A2A-SERVER.md`](docs/frameworks/A2A-SERVER.md) |
-| 1071 | → | [`docs/frameworks/AGENT_PROTOCOLS_GUIDE.md`](docs/frameworks/AGENT_PROTOCOLS_GUIDE.md) |
-| 1072 | → | [`docs/frameworks/MCP-SERVER.md`](docs/frameworks/MCP-SERVER.md) |
-| 1073 | → | [`docs/frameworks/SKILLS.md`](docs/frameworks/SKILLS.md) |
-| 1074 | → | [`docs/guides/ELECTRON_GUIDE.md`](docs/guides/ELECTRON_GUIDE.md) |
-| 1075 | → | [`docs/ops/TUNNELS_GUIDE.md`](docs/ops/TUNNELS_GUIDE.md) |
-| 1076 | → | [`docs/routing/AUTO-COMBO.md`](docs/routing/AUTO-COMBO.md) |
-| 1077 | → | [`docs/security/GUARDRAILS.md`](docs/security/GUARDRAILS.md) |
+| 1069 | → | [`docs/architecture/MODIFICATION_SCENARIOS.md`](docs/architecture/MODIFICATION_SCENARIOS.md) |
+| 1070 | → | [`docs/architecture/QUALITY_GATES.md`](docs/architecture/QUALITY_GATES.md) |
+| 1071 | → | [`docs/frameworks/A2A-SERVER.md`](docs/frameworks/A2A-SERVER.md) |
+| 1072 | → | [`docs/frameworks/AGENT_PROTOCOLS_GUIDE.md`](docs/frameworks/AGENT_PROTOCOLS_GUIDE.md) |
+| 1073 | → | [`docs/frameworks/MCP-SERVER.md`](docs/frameworks/MCP-SERVER.md) |
+| 1074 | → | [`docs/frameworks/SKILLS.md`](docs/frameworks/SKILLS.md) |
+| 1075 | → | [`docs/guides/ELECTRON_GUIDE.md`](docs/guides/ELECTRON_GUIDE.md) |
+| 1076 | → | [`docs/ops/HARD_RULES_DETAIL.md`](docs/ops/HARD_RULES_DETAIL.md) |
+| 1077 | → | [`docs/ops/TUNNELS_GUIDE.md`](docs/ops/TUNNELS_GUIDE.md) |
+| 1078 | → | [`docs/ops/WORKTREE_ISOLATION.md`](docs/ops/WORKTREE_ISOLATION.md) |
+| 1079 | → | [`docs/routing/AUTO-COMBO.md`](docs/routing/AUTO-COMBO.md) |
+| 1080 | → | [`docs/security/GUARDRAILS.md`](docs/security/GUARDRAILS.md) |
 
 ---
 

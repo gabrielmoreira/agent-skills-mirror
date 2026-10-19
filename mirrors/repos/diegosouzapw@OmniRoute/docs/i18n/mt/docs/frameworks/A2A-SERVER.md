@@ -148,22 +148,22 @@ curl -X POST http://localhost:20128/a2a \
 
 ## Ħiliet Disponibbli
 
-OmniRoute jesponi 6 ħiliet A2A ikkonnettjati f’`src/lib/a2a/taskExecution.ts::A2A_SKILL_HANDLERS`. Kull modulu ta’ ħila jinsab f’`src/lib/a2a/skills/`.
+OmniRoute jesponi 6 ħiliet A2A konnessi f’`src/lib/a2a/taskExecution.ts::A2A_SKILL_HANDLERS`. Kull modulu ta’ ħila jinsab f’`src/lib/a2a/skills/`.
 
-| Ħila                  | ID                   | Deskrizzjoni                                                                                                                                                                               | Tikketti                  | Eżempji                                      |
-| :-------------------- | :------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------------ | :------------------------------------------- |
-| Rotot Intelliġenti    | `smart-routing`      | Jgħaddi prompt mill-aħjar fornitur/kombinazzjoni permezz tal-magna tal-kombinazzjonijiet u s-sistema ta’ punteġġ ta’ OmniRoute                                                             | rotot, fornituri          | "Għaddi dan il-prompt mill-aħjar mudell"     |
-| Ġestjoni tal-Kwota    | `quota-management`   | Jirrapporta l-istat tal-kwota għal kull fornitur u jgħin lil min jagħmel is-sejħa jiddeċiedi meta jillimita/jaqleb                                                                         | kwota, fornituri          | "Iċċekkja l-kwota għal anthropic"            |
-| Sejbien ta’ Fornituri | `provider-discovery` | Jelenka l-fornituri installati bil-kapaċitajiet, l-indikaturi tal-livell bla ħlas, u l-istat ta’ OAuth                                                                                     | fornituri, sejbien        | "Liema fornituri huma disponibbli?"          |
-| Analiżi tal-Ispejjeż  | `cost-analysis`      | Jistma l-ispiża ta’ talba/konverżazzjoni abbażi tal-katalogu u l-użu reċenti                                                                                                               | spiża, użu                | "Stima l-ispiża għal din il-konverżazzjoni"  |
-| Rapport dwar is-Saħħa | `health-report`      | Jagħti stampa aggregata tas-circuit breaker, il-cooldown, u l-istat ta’ lockout għal kull fornitur                                                                                         | saħħa, reżiljenza         | "Uri l-istat tas-saħħa tal-fornituri kollha" |
-| Elenka l-Kapaċitajiet | `list-capabilities`  | Jirritorna l-katalogu sħiħ ta’ 45 entrata ta’ Agent Skills (23 API + 21 CLI + konfigurazzjoni waħda) bħala tabella markdown b’URLs SKILL.md mhux ipproċessati għall-injezzjoni tal-kuntest | katalogu, sejbien, ħiliet | "Elenka l-kapaċitajiet kollha ta’ OmniRoute" |
+| Ħila                   | ID                   | Deskrizzjoni                                                                                                                                                                              | Tikketti                  | Eżempji                                      |
+| :--------------------- | :------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------------ | :------------------------------------------- |
+| Rotot Intelliġenti     | `smart-routing`      | Jgħaddi prompt mill-aħjar fornitur/kombinazzjoni bl-użu tal-magna tal-kombinazzjonijiet u l-punteġġi ta’ OmniRoute                                                                        | rotot, fornituri          | "Għaddi dan il-prompt mill-aħjar mudell"     |
+| Ġestjoni tal-Kwoti     | `quota-management`   | Jirrapporta l-istat tal-kwota għal kull fornitur u jgħin lil min isejjaħ jiddeċiedi meta jillimita/jaqleb                                                                                 | kwota, fornituri          | "Iċċekkja l-kwota għal anthropic"            |
+| Skoperta tal-Fornituri | `provider-discovery` | Jelenka l-fornituri installati bil-kapaċitajiet, l-indikaturi tal-livell bla ħlas u l-istat ta’ OAuth                                                                                     | fornituri, skoperta       | "Liema fornituri huma disponibbli?"          |
+| Analiżi tal-Ispejjeż   | `cost-analysis`      | Jistma l-ispiża ta’ talba/konverżazzjoni abbażi tal-katalgu u l-użu reċenti                                                                                                               | spiża, użu                | "Stima l-ispiża għal din il-konverżazzjoni"  |
+| Rapport dwar is-Saħħa  | `health-report`      | Jagħmel aggregazzjoni tal-istat tas-circuit breaker, tal-cooldown u tal-lockout għal kull fornitur                                                                                        | saħħa, reżiljenza         | "Uri l-istat tas-saħħa tal-fornituri kollha" |
+| Elenka l-Kapaċitajiet  | `list-capabilities`  | Jirritorna l-katalgu sħiħ ta’ 45 entrata ta’ Agent Skills (23 API + 21 CLI + konfigurazzjoni waħda) bħala tabella markdown b’URLs SKILL.md mhux ipproċessati għall-injezzjoni tal-kuntest | katalgu, skoperta, ħiliet | "Elenka l-kapaċitajiet kollha ta’ OmniRoute" |
 
-> L-Agent Card għandha tinżamm allinjata mal-katalogu attiv ta’ 372 fornitur; l-għadd tal-fornituri u l-metadata dwar dawk bla ħlas/mingħajr awtentikazzjoni jittieħdu mir-reġistru tar-runtime.
+> L-Agent Card għandha tinżamm allinjata mal-katalgu attiv ta’ 374 fornitur; l-għadd tal-fornituri u l-metadata dwar dawk bla ħlas/mingħajr awtentikazzjoni jinkisbu mir-reġistru waqt it-tħaddim.
 
 ### Dettalji tal-Ħila `list-capabilities`
 
-Il-ħila `list-capabilities` hija partikolarment utli għal aġenti esterni li jeħtieġu jiskopru x’jesponi OmniRoute qabel jibagħtu sejħiet API. Din tirritorna artifact ta’ tabella markdown strutturata:
+Il-ħila `list-capabilities` hija partikolarment utli għal aġenti esterni li jeħtieġu jiskopru x’jesponi OmniRoute qabel jibagħtu sejħiet API. Hija tirritorna artifact strutturat bħala tabella markdown:
 
 ```
 | ID | Isem | Kategorija | Qasam | Endpoints/Kmandi | URL Mhux Ipproċessat |
@@ -172,7 +172,7 @@ Il-ħila `list-capabilities` hija partikolarment utli għal aġenti esterni li j
 ...
 ```
 
-Kull ringiela tinkludi l-kolonna `rawUrl` sabiex l-aġenti jkunu jistgħu jiksbu minnufih il-fajl SKILL.md sħiħ. Il-field `metadata.totalSkills` jirrifletti d-daqs tal-katalogu (45 illum). Implimentazzjoni: `src/lib/a2a/skills/listCapabilities.ts`. Ara wkoll [AGENT-SKILLS.md](./AGENT-SKILLS.md).
+Kull ringiela tinkludi l-kolonna `rawUrl` sabiex l-aġenti jkunu jistgħu minnufih iniżżlu l-SKILL.md sħiħ. Il-qasam `metadata.totalSkills` jirrifletti d-daqs tal-katalgu (45 illum). Implimentazzjoni: `src/lib/a2a/skills/listCapabilities.ts`. Ara wkoll [AGENT-SKILLS.md](./AGENT-SKILLS.md).
 
 ---
 

@@ -3,7 +3,7 @@ name: localize
 description: "Localization pipeline — find hardcoded strings, extract string tables, cultural review, VO, RTL, enforce string freeze."
 argument-hint: "[scan|extract|validate|status|brief|cultural-review|vo-pipeline|rtl-check|freeze|qa]"
 user-invocable: true
-allowed-tools: Read, Glob, Grep, Write, Bash, Agent, AskUserQuestion, Bash(bash "*/.claude/skills/localize/../../hooks/yaml-helper.sh" resolve_config *)
+allowed-tools: Read, Glob, Grep, Write, Agent, AskUserQuestion, Bash(bash "*/.claude/skills/localize/../../hooks/yaml-helper.sh" resolve_config *)
 model: sonnet
 ---
 
@@ -140,7 +140,9 @@ Generate a translator context briefing document. This document is sent to the
 external translation team or localisation vendor alongside the string table export.
 
 Read:
-- `design/gdd/` — extract game genre, tone, setting, character names
+- `design/gdd/` — extract game genre, tone, setting, character names. Read the
+  GDDs by section: find the headings you need with the Grep tool (pattern `^#`,
+  content mode) and Read those ranges with offset and limit.
 - `assets/data/strings/strings-en.json` — the source string table
 - Any existing lore or narrative documents in `design/narrative/`
 

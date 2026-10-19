@@ -3,7 +3,7 @@ name: skill-improve
 description: "Improve a skill via a test-fix-retest loop — static checks, targeted fixes, keep or revert on score change."
 argument-hint: "[skill-name]"
 user-invocable: true
-allowed-tools: Read, Glob, Grep, Write, Bash, Bash(bash "*/.claude/skills/skill-improve/../../hooks/yaml-helper.sh" resolve_config *)
+allowed-tools: Read, Glob, Grep, Write, Bash(bash "*/.claude/skills/skill-improve/../../hooks/yaml-helper.sh" resolve_config *)
 model: sonnet
 ---
 
@@ -20,6 +20,11 @@ every file write follows `.claude/docs/automation-modes.md`
 Runs an improvement loop on a single skill:
 test → fix → retest → keep or revert.
 
+Its score comes from `/skill-test` static and category checks, which read the
+skill rather than run it: a better score means a better-written skill, not proof
+that it behaves better. To check behaviour, run the skill on a real request
+before and after the change.
+
 ---
 
 ## Phase 1: Parse Argument
@@ -33,6 +38,11 @@ Example: /skill-improve tech-debt
 
 Verify `.claude/skills/[name]/SKILL.md` exists. If not, stop with:
 "Skill '[name]' not found."
+
+Glob `CCGS Skill Testing Framework/catalog.yaml`. When it exists, say so first:
+"`CCGS Skill Testing Framework/` was renamed `studio-tests/` in 1.2.0, and this
+skill reads only `studio-tests/`. Move any specs you wrote there; UPGRADING.md
+(v1.1.3 → v1.2.0, `studio-tests/`) says how." Then go on.
 
 ---
 
@@ -57,7 +67,7 @@ If baseline is 0 FAILs and 0 WARNs, note it and proceed to Phase 2b.
 
 ### Phase 2b: Category Baseline
 
-Look up the skill's `category:` field in `CCGS Skill Testing Framework/catalog.yaml`.
+Look up the skill's `category:` field in `studio-tests/catalog.yaml`.
 
 If no `category:` field is found, display:
 "Category: not yet assigned — skipping category checks."

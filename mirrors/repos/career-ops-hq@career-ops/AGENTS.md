@@ -15,6 +15,8 @@ Two layers — full list in `DATA_CONTRACT.md`:
 
 **THE RULE: When the user asks to customize facts or targeting (archetypes, narrative, negotiation scripts, proof points, location policy, comp targets), ALWAYS write to `modes/_profile.md` or `config/profile.yml`. When they ask for procedural house rules, custom workflows, output preferences, or automations, write to `modes/_custom.md` (copy it from `modes/_custom.template.md` if missing). NEVER edit `modes/_shared.md` for user-specific content.** This ensures system updates don't overwrite their customizations.
 
+**Read `modes/_custom.md` (if it exists) after `modes/_profile.md` and honor its house rules in every mode, in every language, and in every batch item.** It holds the user's standing procedural and style instructions. It can override workflow, style, and procedural defaults, but it never introduces factual claims about the candidate.
+
 **Path Resolution Override & Precedence:**
 The User Layer location (Data Root) is resolved dynamically using the following precedence order:
 1. **Environment Variables:** `CAREER_OPS_ROOT` or `CAREER_OPS_DATA_DIR` overrides the root path (resolved relative to the repository root if it is a relative path).
@@ -154,6 +156,7 @@ AI-powered, CLI-agnostic job search automation: pipeline tracking, offer evaluat
 | `check-table-freshness.mjs` | Staleness validator for jurisdiction data tables — flags `expired` rows (past `next_effective` without re-verification, exit 1) and `review-due` rows (`as_of` older than 12 months, soft); discovers any `templates/*.yml` with `as_of` rows automatically (JSON or `--summary` table output) |
 | `process-quality.mjs` | Per-company recruiting-friction rate from `[process-friction]` tags in `data/active-interviews.md` Notes (JSON or `--summary`) |
 | `rejection-latency.mjs` | Post-interview response-latency signal — flags companies still in `Interview` state whose silence since the last `data/active-interviews.md` round exceeds a courtesy (30d default, configurable) threshold, with a ready-to-copy `data/blacklist.md` suggestion row; suggestion-only, never writes (JSON or `--summary` table output) |
+| `closing-soon.mjs` | Read-only, zero-LLM closing-date surfacer — reads closing dates typed into tracker Notes (`closes 2026-10-22`, `deadline Nov 4`; or the `jds/` capture when Notes have no marker) and lists rows within `--within N` days (default 7), soonest first, with a separate `overdue` group and an `unparsed` list; `--status` (default `Evaluated`), `--today` for deterministic runs; never writes (JSON or `--summary` table output) |
 | `tracker-sync-check.mjs` | Status-drift checker between `data/applications.md` and `data/active-interviews.md` — matches rows via a `#N in tracker` Notes reference or fuzzy Company+Role, then two-tier resolves mismatches (auto-tier1 via canonical lifecycle order, needs-review-tier2 via `git blame` timestamps). Read-only/reporting in this version — does not write status fixes. Wired into `verify-pipeline.mjs`'s health check. |
 | `salary-gap.mjs` | Desired/advertised/actual comp gap analyzer — folds report `advertised_comp` + `data/salary-observations.tsv` (JSON or `--summary`) |
 | `negotiation-roi.mjs` | Salary-negotiation talking-point generator — anchors an ask in a quantified `interview-prep/story-bank.md` achievement, kept only if the same number also appears verbatim in `cv.md` (v1 safety gate), converted to an estimated annualized dollar value from an explicit wage/frequency input (never guessed); read-only, draft-only (JSON or `--summary`) |
@@ -234,6 +237,8 @@ If `cv.md` is missing, ask:
 Create `cv.md` from whatever they provide — clean markdown with standard sections (Summary, Experience, Projects, Education, Skills). The CV checks (`cv-title-check.mjs`, `verify-cv-structure.mjs`, `jd-skill-gap.mjs`) find jobs and skills by heading, so keep the shape `examples/cv-example.md` uses: an Experience section named `## Experience`, `## Work Experience`, `## Professional Experience`, `## Employment History` or `## Work History`; each job as `### Company — Location`, then a bold `**Title**` line, then a dates line; skills under a heading containing "Skills". Pandoc output converted from a .docx (`## **[Experience]{.smallcaps}**`, `---` dashes, trailing `\` hard breaks) is read too (#4879). `node doctor.mjs` warns when it cannot find the Experience section.
 
 #### Step 2: Profile (required)
+If `node doctor.mjs --json` `warnings` says the data-root `.env` sets `CAREER_OPS_PROFILE`, do not copy the example profile. Ask the user to export that variable in the shell (or shell profile) that starts the agent, then restart the session from it, or to remove the line from `.env`. A shell export does not reach an agent session that is already running, so run doctor again only after that.
+
 If `config/profile.yml` is missing, copy from `config/profile.example.yml` and ask:
 > "I need a few details to personalize the system:
 > - Your full name and email

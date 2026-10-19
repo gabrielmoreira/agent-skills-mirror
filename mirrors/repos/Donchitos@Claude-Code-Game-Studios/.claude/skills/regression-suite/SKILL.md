@@ -115,6 +115,10 @@ scope the scan by each system's workflow tier (resolved above):
 
 (Tier affects `audit` mode only; `update` and `report` modes are tier-independent.)
 
+Read each GDD by section: find the headings you need with the Grep tool (pattern
+`^#`, content mode) and Read those ranges with offset and limit. At `full` that
+is every section, read in ranges, since a whole-file Read over 40 KB is refused.
+
 For each in-scope MVP-tier system's GDD, extract:
 - Acceptance Criteria (these define the critical paths)
 - Formulas section (formulas must have regression tests)
@@ -238,10 +242,6 @@ Check for drift indicators:
 > same defect `/scope-check` carries a Phase 4 guard against, in the same words:
 > *"a percentage computed from no baseline items is not a small number; it is not
 > a number."*
->
-> **A hand-written list of skills required to carry `NOT ASSESSED` pins what was
-> known when it was written**, so a skill added later inherits no obligation and
-> nothing notices. Derive that set rather than enumerating it.
 
 The manifest is a curated index — not the tests themselves, but a registry
 of which tests should always pass before a release:

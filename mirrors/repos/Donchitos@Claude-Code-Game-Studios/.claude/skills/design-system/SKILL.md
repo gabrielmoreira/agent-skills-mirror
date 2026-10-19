@@ -3,7 +3,7 @@ name: design-system
 description: "Section-by-section GDD authoring for one system — walks through each required section, cross-references dependencies."
 argument-hint: "<system-name> [--review full|lean|solo]"
 user-invocable: true
-allowed-tools: Read, Glob, Grep, Write, Edit, Agent, AskUserQuestion, TaskCreate, TaskGet, TaskList, TaskUpdate, Bash(bash "*/.claude/skills/design-system/../../hooks/yaml-helper.sh" resolve_config *)
+allowed-tools: Read, Glob, Grep, Write, Edit, Agent, AskUserQuestion, TaskCreate, TaskGet, TaskList, TaskUpdate, Bash(bash "*/.claude/skills/design-system/../../hooks/yaml-helper.sh" resolve_config *), Bash(bash .claude/scripts/registry.sh *)
 model: sonnet
 ---
 
@@ -94,7 +94,9 @@ If the session is interrupted (compaction, crash, new session):
 1. Read `production/session-state/active.md` — it records the current system and
    which sections are complete
 2. Read `design/gdd/[system-name].md` — sections with real content are done;
-   sections with `[To be designed]` still need work
+   sections with `[To be designed]` still need work. Read it by section: find the
+   headings with the Grep tool (pattern `^#`, content mode) and Read those
+   ranges with offset and limit.
 3. Resume from the next incomplete section — no need to re-discuss completed ones
 
 This is why incremental writing matters: every approved section survives any

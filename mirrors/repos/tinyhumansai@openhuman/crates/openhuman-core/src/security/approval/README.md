@@ -102,7 +102,7 @@ stored as JSON strings. With no backend configured (the desktop default)
 - `crates/openhuman-core/src/core/all.rs`: registers the controller schemas.
 - `crates/openhuman-core/src/agent/tinyagents/middleware.rs` (`ApprovalSecurityMiddleware`, a `wrap_tool` middleware on every turn path): routes external-effect tool calls through the gate before `execute()` and records the terminal audit row.
 - `crates/openhuman-core/src/web_chat/`: hands each turn its chat `ApprovalTurnContext`, hosts `ApprovalSurfaceSubscriber`, and routes typed yes/no replies to `approval_decide`.
-- `crates/openhuman-core/src/channels/proactive.rs`, `crates/openhuman-core/src/agent/triage/escalation.rs`, `crates/openhuman-core/src/tools/impl/system/install_tool.rs`, `crates/openhuman-core/src/web3/wallet/execution.rs`: interact with the gate / approval types.
+- `crates/openhuman-core/src/channels/proactive.rs`, `crates/openhuman-core/src/triage/escalation.rs`, `crates/openhuman-core/src/tools/impl/system/install_tool.rs`, `crates/openhuman-core/src/web3/wallet/execution.rs`: interact with the gate / approval types.
 
 ## Notes / gotchas
 

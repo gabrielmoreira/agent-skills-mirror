@@ -48,6 +48,12 @@ The import columns are each package's declared `@archon/*` dependencies, and `ch
 
 Details: [publishing plugins](../packages/docs-web/src/content/docs/guides/publishing-plugins.md), [building a community provider](../packages/docs-web/src/content/docs/contributing/adding-a-community-provider.mdx), [database](../packages/docs-web/src/content/docs/reference/database.md), [isolation](direction.md#isolation).
 
+### Module layout
+
+- **DAG execution.** [`workflows/src/dag-executor.ts`](../packages/workflows/src/dag-executor.ts) keeps the `executeDagWorkflow` entry. The layer walker, node dispatch and shared execution code live in [`workflows/src/dag/`](../packages/workflows/src/dag/), with one folder per node type under [`dag/nodes/`](../packages/workflows/src/dag/nodes/). Each module's tests sit beside it.
+- **Chat turn.** [`core/src/orchestrator/orchestrator-agent.ts`](../packages/core/src/orchestrator/orchestrator-agent.ts) keeps the `handleMessage` entry. Request preparation, conversation context, project commands, the slash-command scan, workflow dispatch and the AI turn itself live in sibling modules under [`core/src/orchestrator/`](../packages/core/src/orchestrator/). Each module's tests sit beside it, sharing mocks from [`core/src/test/orchestrator-agent-harness.ts`](../packages/core/src/test/orchestrator-agent-harness.ts).
+- **HTTP API.** [`server/src/routes/api.ts`](../packages/server/src/routes/api.ts) is an ordered list of per-area registrars, each in an `api.<area>.ts` module beside it.
+
 ## Target state
 
 Each item is a direction, not a fact about today's code. The why is in [`direction.md §standalone-core`](direction.md#aspirational-architecture-a-standalone-core).
@@ -58,7 +64,7 @@ Each item is a direction, not a fact about today's code. The why is in [`directi
 - **Isolation beyond worktrees is plugins.** Containers, VMs and remote execution attach behind `IIsolationBackend`.
 - **Lifecycle has pluggable hosts.** Continuations, schedules and triggers are core surfaces that the server, the CLI, an OS timer or a third party can drive.
 - **One owner per plugin's config.** Chat and forge plugins follow the single config owner providers already have.
-- **Large modules split along their seams.** `dag-executor.ts` becomes one file or folder per node type with shared execution code beside them, following existing patterns rather than a new architecture. `orchestrator-agent.ts` and `server/src/routes/api.ts` split the same way when work touches them.
+- **Large modules split along their seams** when work touches them, the way the modules under [Module layout](#module-layout) did, following existing patterns rather than a new architecture.
 
 ## Boundaries
 

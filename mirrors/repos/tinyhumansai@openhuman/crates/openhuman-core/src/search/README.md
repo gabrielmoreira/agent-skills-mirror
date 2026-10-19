@@ -171,7 +171,7 @@ read and written through `config/ops/search.rs`.
 - Loading the module, its bus proxy, and reinitialization belong to
   `modules/search/`.
 - Resumed threads keep their recorded search role tools even when no provider
-  is usable now. That rehydration is in `agent/session_host/recorded_tools.rs`.
+  is usable now. That rehydration is in `integrations/recorded_tools.rs`.
 - The user-facing description is in
   [`docs/gitbooks/en/features/native-tools/web-search.md`](../../../../docs/gitbooks/en/features/native-tools/web-search.md).
 

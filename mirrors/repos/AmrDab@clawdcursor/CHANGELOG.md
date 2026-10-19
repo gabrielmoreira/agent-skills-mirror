@@ -2,6 +2,36 @@
 
 All notable changes to Clawd Cursor will be documented in this file.
 
+## [1.5.17] - 2026-10-18 — non-ASCII typing and pasting on macOS; copy_all_text never selects an editor
+
+### Fixed
+
+- **macOS: text outside ASCII is typed as itself (#242).** System Events'
+  `keystroke` types key code 0 ("a") for any character the keyboard layout
+  has no key for, so "café 日本語" came out as "cafa aaa" — and every tool
+  reported success. Typing that does not paste (the `type` fallback,
+  `set_field_value`'s keyboard fallback, find-and-replace, the Spotlight
+  launch, `key_press "é"`) now sends such text through the accessibility
+  helper as Unicode key events. Without the helper it is refused with an
+  explanation instead of typed as "a"s; a non-ASCII key with modifiers
+  (`cmd+é`, which pressed ⌘A) is refused. ASCII typing is unchanged.
+- **macOS: pasted text outside ASCII no longer comes out garbled.**
+  `pbcopy` / `pbpaste` encode by the locale, and clawdcursor started by an
+  app (the Claude desktop app) has none, so they used MacRoman: `type`,
+  `type_text` and `smart_type` pasted "café 日本語" as "caf√© Êó•Êú¨Ë™û"
+  while reporting success, and restoring the user's clipboard turned CJK
+  into "?". Both now run with a UTF-8 locale.
+- **`copy_all_text` no longer selects an editor's content or a list (#249).**
+  It pressed Ctrl+A on whatever had focus and left it selected: in an
+  editor (Notepad, Word, VS Code, a form field) the agent's next keystroke
+  replaced the whole document; in a mail list or file view every item was
+  selected. It now presses select-all only on page content: with focus in
+  an editable field, an editor document, a list/tree/table, or an Electron
+  app that won't say what has focus, it returns the window's accessibility
+  text instead. After a select-all copy the result says the content is
+  selected. Verified live in Edge (caret in a text box: untouched; page:
+  copied exactly).
+
 ## [1.5.16] - 2026-10-16 — pause for the user at a roadblock; blind mode on every OS
 
 ### Changed

@@ -193,7 +193,7 @@ above.
 
 Two built-in sub-agents live under `agents/`, each with an `agent.toml` and a
 `prompt::build`, registered by path from the `BUILTINS` slice in
-[`agent/registry/agents/loader.rs`](../agent/registry/agents/loader.rs):
+[`agent_registry/agents/loader.rs`](../agent_registry/agents/loader.rs):
 
 - `workflow_builder` is the authoring copilot. `flows_build` (in
   [`ops/builder.rs`](./ops/builder.rs)) runs one turn of it from a structured request (create,

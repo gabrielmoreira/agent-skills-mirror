@@ -22,7 +22,7 @@ NO_BYTECODE_ENV = {**os.environ, "PYTHONDONTWRITEBYTECODE": "1"}
 sys.dont_write_bytecode = True
 sys.path.insert(0, str(SCRIPTS_DIR))
 
-from validate_interviewer_report_data import validate_interviewer_report_data  # noqa: E402
+from validate_interviewer_report_data import calculate_age, validate_interviewer_report_data  # noqa: E402
 
 
 def provided(value: str, locator: str = "normalized/resume.md：基本信息") -> dict[str, str]:
@@ -96,7 +96,7 @@ def included_candidate_photo() -> dict[str, object]:
 def no_timeline_estimate() -> dict[str, object]:
     return {
         "status": "not_needed",
-        "display": "候选人已提供出生信息，不进行履历年龄推算",
+        "display": "候选人已提供年龄信息，不进行履历年龄推算",
         "as_of": "2026-08-23",
         "min_years": None,
         "max_years": None,
@@ -291,6 +291,39 @@ def sample_report_data() -> dict[str, object]:
 
 
 class InterviewerReportDataTests(unittest.TestCase):
+    def test_birth_month_only_is_exact_when_all_possible_birthdays_agree(self) -> None:
+        for birth, report_date, expected in (
+            ("2001-05", "2026-09-26", (25, False, "month")),
+            ("1997-10", "2026-09-26", (28, False, "month")),
+            ("2001-05", "2026-05-15", (25, True, "month")),
+            ("2001-05", "2026-05-31", (25, False, "month")),
+        ):
+            with self.subTest(birth=birth, report_date=report_date):
+                self.assertEqual(expected, calculate_age(birth, report_date))
+
+    def test_timeline_point_estimate_is_validated_without_erasing_internal_bounds(self) -> None:
+        data = sample_report_data()
+        overview = data["candidate_overview"]
+        overview["personal_info"]["birth_information"] = not_provided()
+        overview["personal_info"]["age"].update({
+            "display": "未提供", "years": None, "approximate": False,
+            "normalized_birth": None, "precision": "not_provided",
+            "source_status": "not_provided", "source_locator": None,
+        })
+        estimate = estimated_from_undergraduate_start()
+        estimate["display"] = "约32岁（按2012本科入学、入学时18岁假设推算；非候选人自述）"
+        overview["timeline_age_estimate"] = estimate
+        errors, _ = validate_interviewer_report_data(data)
+        self.assertEqual([], errors)
+        for invalid_display in (
+            "约33岁（按2012本科入学、入学时18岁假设推算；非候选人自述）",
+            "32岁（按2012本科入学、入学时18岁假设推算；非候选人自述）",
+        ):
+            with self.subTest(display=invalid_display):
+                estimate["display"] = invalid_display
+                errors, _ = validate_interviewer_report_data(data)
+                self.assertTrue(any("timeline_age_estimate.display" in item for item in errors), errors)
+
     def test_valid_data_passes(self) -> None:
         errors, warnings = validate_interviewer_report_data(sample_report_data())
         self.assertEqual([], errors)
@@ -326,6 +359,64 @@ class InterviewerReportDataTests(unittest.TestCase):
         data["candidate_overview"]["timeline_age_estimate"] = estimated_from_undergraduate_start()
         errors, _ = validate_interviewer_report_data(data)
         self.assertEqual([], errors)
+
+    def test_explicit_self_reported_age_disables_timeline_inference(self) -> None:
+        data = sample_report_data()
+        data["candidate_overview"]["personal_info"]["birth_information"] = not_provided()
+        data["candidate_overview"]["personal_info"]["age"] = {
+            "display": "27岁",
+            "years": 27,
+            "approximate": False,
+            "as_of": "2026-08-23",
+            "normalized_birth": None,
+            "precision": "not_provided",
+            "source_status": "candidate_provided",
+            "source_locator": "normalized/resume.md：基本信息",
+        }
+        data["candidate_overview"]["timeline_age_estimate"] = no_timeline_estimate()
+        for display in ("27岁", "候选人自述：27岁", "27周岁"):
+            with self.subTest(display=display):
+                data["candidate_overview"]["personal_info"]["age"]["display"] = display
+                errors, _ = validate_interviewer_report_data(data)
+                self.assertEqual([], errors)
+
+    def test_self_reported_age_display_rejects_conflicting_or_partial_numbers(self) -> None:
+        data = sample_report_data()
+        personal = data["candidate_overview"]["personal_info"]
+        personal["birth_information"] = not_provided()
+        personal["age"] = {
+            "display": "27岁",
+            "years": 27,
+            "approximate": False,
+            "as_of": "2026-08-23",
+            "normalized_birth": None,
+            "precision": "not_provided",
+            "source_status": "candidate_provided",
+            "source_locator": "normalized/resume.md：基本信息",
+        }
+        data["candidate_overview"]["timeline_age_estimate"] = no_timeline_estimate()
+        for display in ("127岁", "28岁（原记录27岁）", "27.5岁", "-27岁"):
+            with self.subTest(display=display):
+                personal["age"]["display"] = display
+                errors, _ = validate_interviewer_report_data(data)
+                self.assertTrue(any("personal_info.age.display" in item for item in errors), errors)
+
+    def test_explicit_self_reported_age_cannot_keep_timeline_inference(self) -> None:
+        data = sample_report_data()
+        data["candidate_overview"]["personal_info"]["birth_information"] = not_provided()
+        data["candidate_overview"]["personal_info"]["age"] = {
+            "display": "27岁",
+            "years": 27,
+            "approximate": False,
+            "as_of": "2026-08-23",
+            "normalized_birth": None,
+            "precision": "not_provided",
+            "source_status": "candidate_provided",
+            "source_locator": "normalized/resume.md：基本信息",
+        }
+        data["candidate_overview"]["timeline_age_estimate"] = estimated_from_undergraduate_start()
+        errors, _ = validate_interviewer_report_data(data)
+        self.assertTrue(any("not_needed" in item for item in errors), errors)
 
     def test_timeline_estimate_cannot_be_used_for_scoring(self) -> None:
         data = sample_report_data()
@@ -620,7 +711,7 @@ class RenderedReportTests(unittest.TestCase):
         rendered = output.read_text(encoding="utf-8")
         self.assertIn("candidate-photo", rendered)
         self.assertIn(PHOTO_DATA_URI, rendered)
-        self.assertIn("履历推算年龄区间", rendered)
+        self.assertIn("履历推算年龄", rendered)
 
     def test_legacy_v10_html_without_photo_placeholder_still_validates(self) -> None:
         temp_dir = tempfile.TemporaryDirectory()

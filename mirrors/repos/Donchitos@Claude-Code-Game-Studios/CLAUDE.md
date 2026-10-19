@@ -36,7 +36,7 @@ naming, platform, performance, modes. Skills resolve it via `resolve_config`
 (see `.claude/docs/config-resolution.md`).
 
 `.claude/docs/technical-preferences.md` is the **legacy fallback**, read on demand
-when a key is absent from `project.yaml`. It is no longer imported here: before
+when a key is absent from `project.yaml`. It is not imported here: before
 `/setup-engine` runs it is almost entirely `[TO BE CONFIGURED]` placeholders, and
 after it runs `project.yaml` holds the real values.
 

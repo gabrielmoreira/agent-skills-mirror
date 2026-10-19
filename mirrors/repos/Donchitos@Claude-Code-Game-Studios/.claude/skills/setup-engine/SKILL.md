@@ -3,7 +3,7 @@ name: setup-engine
 description: "Configure engine and version. Pins it in CLAUDE.md; WebSearch fills reference docs when the version is beyond LLM training data."
 argument-hint: "[engine] | [engine version] | refresh | upgrade [old-version] [new-version] | no args for guided selection"
 user-invocable: true
-allowed-tools: Read, Glob, Grep, Write, Edit, Bash, WebSearch, WebFetch, Agent, AskUserQuestion, Bash(bash "*/.claude/skills/setup-engine/../../hooks/yaml-helper.sh" resolve_config *)
+allowed-tools: Read, Glob, Grep, Write, Edit, WebSearch, WebFetch, Agent, AskUserQuestion, Bash(bash "*/.claude/skills/setup-engine/../../hooks/yaml-helper.sh" resolve_config *), Bash(godot --version), Bash(godot --headless --path . --import), Bash(command -v godot), Bash(uname -s), Bash(bash .claude/scripts/project-coherence.sh*)
 model: sonnet
 ---
 
@@ -28,7 +28,7 @@ If the block did not render (shell preprocessing disabled), assume `minimal` (th
 
 Four modes:
 
-- **Full spec**: `/setup-engine godot 4.6` — engine and version provided
+- **Full spec**: `/setup-engine godot 4.7` — engine and version provided
 - **Engine only**: `/setup-engine unity` — engine provided, version will be looked up
 - **No args**: `/setup-engine` — fully guided mode (engine recommendation + version)
 - **Refresh**: `/setup-engine refresh` — update reference docs (see Section 10)

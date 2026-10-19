@@ -160,12 +160,10 @@ Spawn all applicable specialists simultaneously via `Agent` — do not wait for 
 > promoted to a defect on the strength of confident phrasing.
 >
 > **Why this is mandatory.** Agents are reliable when deriving and unreliable when
-> diagnosing existing code. In practice, three separate agents
-> produced three different **wrong** claims about the same six-line function,
-> every one fluent enough to pass a skim — including a spawned specialist here
-> alleging a float-precision bug that enumerating the inputs disproves. Without
-> this step the parent review is a laundering channel: a guess enters as a
-> specialist finding and leaves as a reviewed defect.
+> diagnosing existing code: a **wrong** claim about a short function can be fluent
+> enough to pass a skim, and a claimed bug can fall apart once you enumerate the
+> inputs. Without this step the parent review is a laundering channel: a guess
+> enters as a specialist finding and leaves as a reviewed defect.
 
 ### Engine Specialists
 

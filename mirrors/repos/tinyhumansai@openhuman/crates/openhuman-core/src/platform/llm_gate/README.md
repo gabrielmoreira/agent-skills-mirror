@@ -58,7 +58,7 @@ No dependency on any other `openhuman` domain or on `crate::core::*`.
 
 Consumed in-process across the codebase (discoverable via `grep llm_gate`):
 
-- Background workers / pipelines: `autocomplete/core/engine.rs`, `task_sources/route.rs`, [`agent/triage/evaluator.rs`](../../agent/triage/evaluator.rs).
+- Background workers / pipelines: `autocomplete/core/engine.rs`, `task_sources/route.rs`, [`triage/evaluator.rs`](../../triage/evaluator.rs).
 - Inference layer: `inference/provider/openhuman_backend.rs`, [`inference/provider/factory.rs`](../../inference/provider/factory.rs), `inference/local/service/{vision_embed.rs,public_infer.rs}`, `inference/voice/postprocess.rs`.
 - Credentials lifecycle (signed-out kill switch): `credentials/ops.rs`, `credentials/bus.rs`.
 - Bootstrap / transport: [`core/runtime/subscribers.rs`](../../core/runtime/subscribers.rs) (calls `init_global` during server bootstrap), [`core/observability.rs`](../../core/observability.rs), plus the domain wiring in `openhuman/mod.rs` and config schema in [`config/schema/scheduler_gate.rs`](../../config/schema/scheduler_gate.rs).

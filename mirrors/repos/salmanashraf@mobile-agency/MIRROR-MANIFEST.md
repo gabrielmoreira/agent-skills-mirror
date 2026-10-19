@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `salmanashraf/mobile-agency` — 26 default patterns, 0 followed patterns, 188 file(s) materialized.
+Mirror of `salmanashraf/mobile-agency` — 26 default patterns, 0 followed patterns, 189 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `salmanashraf/mobile-agency` — 26 default patterns, 0 followed patte
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 188 |
+| Files         | 189 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -213,40 +213,41 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 152 | ✓ | [`skills/cross-platform/release-prep.md`](skills/cross-platform/release-prep.md) |
 | 153 | ✓ | [`skills/cross-platform/security-audit.md`](skills/cross-platform/security-audit.md) |
 | 154 | ✓ | [`skills/cross-platform/store-listing.md`](skills/cross-platform/store-listing.md) |
-| 155 | ✓ | [`skills/flutter/dart-modernize.md`](skills/flutter/dart-modernize.md) |
-| 156 | ✓ | [`skills/flutter/flutter-review.md`](skills/flutter/flutter-review.md) |
-| 157 | ✓ | [`skills/flutter/flutter-tdd.md`](skills/flutter/flutter-tdd.md) |
-| 158 | ✓ | [`skills/flutter/README.md`](skills/flutter/README.md) |
-| 159 | ✓ | [`skills/flutter/widget-extract.md`](skills/flutter/widget-extract.md) |
-| 160 | ✓ | [`skills/flutter/widget-gen.md`](skills/flutter/widget-gen.md) |
-| 161 | ✓ | [`skills/gaming/blueprint-to-cpp.md`](skills/gaming/blueprint-to-cpp.md) |
-| 162 | ✓ | [`skills/gaming/game-perf.md`](skills/gaming/game-perf.md) |
-| 163 | ✓ | [`skills/gaming/shader-gen.md`](skills/gaming/shader-gen.md) |
-| 164 | ✓ | [`skills/gaming/unity-tdd.md`](skills/gaming/unity-tdd.md) |
-| 165 | ✓ | [`skills/ios/data-persistence.md`](skills/ios/data-persistence.md) |
-| 166 | ✓ | [`skills/ios/ios-tdd.md`](skills/ios/ios-tdd.md) |
-| 167 | ✓ | [`skills/ios/networking.md`](skills/ios/networking.md) |
-| 168 | ✓ | [`skills/ios/performance.md`](skills/ios/performance.md) |
-| 169 | ✓ | [`skills/ios/README.md`](skills/ios/README.md) |
-| 170 | ✓ | [`skills/ios/swift-concurrency.md`](skills/ios/swift-concurrency.md) |
-| 171 | ✓ | [`skills/ios/swift-review.md`](skills/ios/swift-review.md) |
-| 172 | ✓ | [`skills/ios/swiftui-review.md`](skills/ios/swiftui-review.md) |
-| 173 | ✓ | [`skills/ios/swiftui-state.md`](skills/ios/swiftui-state.md) |
-| 174 | ✓ | [`skills/ios/unit-testing.md`](skills/ios/unit-testing.md) |
-| 175 | ✓ | [`skills/ios/xcode-warnings.md`](skills/ios/xcode-warnings.md) |
-| 176 | ✓ | [`skills/react-native/bridge-audit.md`](skills/react-native/bridge-audit.md) |
-| 177 | ✓ | [`skills/react-native/expo-optimize.md`](skills/react-native/expo-optimize.md) |
-| 178 | ✓ | [`skills/react-native/new-arch-migrate.md`](skills/react-native/new-arch-migrate.md) |
-| 179 | ✓ | [`skills/react-native/performance.md`](skills/react-native/performance.md) |
-| 180 | ✓ | [`skills/react-native/README.md`](skills/react-native/README.md) |
-| 181 | ✓ | [`skills/react-native/rn-review.md`](skills/react-native/rn-review.md) |
-| 182 | ✓ | [`skills/react-native/rn-tdd.md`](skills/react-native/rn-tdd.md) |
-| 183 | ✓ | [`skills/shared/accessibility-audit.md`](skills/shared/accessibility-audit.md) |
-| 184 | ✓ | [`skills/shared/crash-analysis.md`](skills/shared/crash-analysis.md) |
-| 185 | ✓ | [`skills/shared/README.md`](skills/shared/README.md) |
-| 186 | ✓ | [`skills/shared/security-scan.md`](skills/shared/security-scan.md) |
-| 187 | ✓ | [`skills/unity/README.md`](skills/unity/README.md) |
-| 188 | ✓ | [`skills/unity/shader-review.md`](skills/unity/shader-review.md) |
+| 155 | ✓ | [`skills/cross-platform/web-network-to-mobile.md`](skills/cross-platform/web-network-to-mobile.md) |
+| 156 | ✓ | [`skills/flutter/dart-modernize.md`](skills/flutter/dart-modernize.md) |
+| 157 | ✓ | [`skills/flutter/flutter-review.md`](skills/flutter/flutter-review.md) |
+| 158 | ✓ | [`skills/flutter/flutter-tdd.md`](skills/flutter/flutter-tdd.md) |
+| 159 | ✓ | [`skills/flutter/README.md`](skills/flutter/README.md) |
+| 160 | ✓ | [`skills/flutter/widget-extract.md`](skills/flutter/widget-extract.md) |
+| 161 | ✓ | [`skills/flutter/widget-gen.md`](skills/flutter/widget-gen.md) |
+| 162 | ✓ | [`skills/gaming/blueprint-to-cpp.md`](skills/gaming/blueprint-to-cpp.md) |
+| 163 | ✓ | [`skills/gaming/game-perf.md`](skills/gaming/game-perf.md) |
+| 164 | ✓ | [`skills/gaming/shader-gen.md`](skills/gaming/shader-gen.md) |
+| 165 | ✓ | [`skills/gaming/unity-tdd.md`](skills/gaming/unity-tdd.md) |
+| 166 | ✓ | [`skills/ios/data-persistence.md`](skills/ios/data-persistence.md) |
+| 167 | ✓ | [`skills/ios/ios-tdd.md`](skills/ios/ios-tdd.md) |
+| 168 | ✓ | [`skills/ios/networking.md`](skills/ios/networking.md) |
+| 169 | ✓ | [`skills/ios/performance.md`](skills/ios/performance.md) |
+| 170 | ✓ | [`skills/ios/README.md`](skills/ios/README.md) |
+| 171 | ✓ | [`skills/ios/swift-concurrency.md`](skills/ios/swift-concurrency.md) |
+| 172 | ✓ | [`skills/ios/swift-review.md`](skills/ios/swift-review.md) |
+| 173 | ✓ | [`skills/ios/swiftui-review.md`](skills/ios/swiftui-review.md) |
+| 174 | ✓ | [`skills/ios/swiftui-state.md`](skills/ios/swiftui-state.md) |
+| 175 | ✓ | [`skills/ios/unit-testing.md`](skills/ios/unit-testing.md) |
+| 176 | ✓ | [`skills/ios/xcode-warnings.md`](skills/ios/xcode-warnings.md) |
+| 177 | ✓ | [`skills/react-native/bridge-audit.md`](skills/react-native/bridge-audit.md) |
+| 178 | ✓ | [`skills/react-native/expo-optimize.md`](skills/react-native/expo-optimize.md) |
+| 179 | ✓ | [`skills/react-native/new-arch-migrate.md`](skills/react-native/new-arch-migrate.md) |
+| 180 | ✓ | [`skills/react-native/performance.md`](skills/react-native/performance.md) |
+| 181 | ✓ | [`skills/react-native/README.md`](skills/react-native/README.md) |
+| 182 | ✓ | [`skills/react-native/rn-review.md`](skills/react-native/rn-review.md) |
+| 183 | ✓ | [`skills/react-native/rn-tdd.md`](skills/react-native/rn-tdd.md) |
+| 184 | ✓ | [`skills/shared/accessibility-audit.md`](skills/shared/accessibility-audit.md) |
+| 185 | ✓ | [`skills/shared/crash-analysis.md`](skills/shared/crash-analysis.md) |
+| 186 | ✓ | [`skills/shared/README.md`](skills/shared/README.md) |
+| 187 | ✓ | [`skills/shared/security-scan.md`](skills/shared/security-scan.md) |
+| 188 | ✓ | [`skills/unity/README.md`](skills/unity/README.md) |
+| 189 | ✓ | [`skills/unity/shader-review.md`](skills/unity/shader-review.md) |
 
 ---
 

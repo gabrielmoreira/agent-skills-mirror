@@ -11,19 +11,19 @@ _সর্বশেষ হালনাগাদ: 2026-06-28_
 ## নির্বাহী সারসংক্ষেপ
 
 OmniRoute হলো Next.js-এর ওপর নির্মিত একটি স্থানীয় AI রাউটিং গেটওয়ে ও ড্যাশবোর্ড।
-এটি একটি একক OpenAI-সামঞ্জস্যপূর্ণ এন্ডপয়েন্ট (`/v1/*`) প্রদান করে এবং অনুবাদ, ফলব্যাক, টোকেন রিফ্রেশ ও ব্যবহার ট্র্যাকিংসহ একাধিক আপস্ট্রিম প্রোভাইডারের মধ্যে ট্রাফিক রাউট করে।
+এটি একটি একক OpenAI-সামঞ্জস্যপূর্ণ এন্ডপয়েন্ট (`/v1/*`) প্রদান করে এবং অনুবাদ, ফলব্যাক, টোকেন রিফ্রেশ ও ব্যবহার ট্র্যাকিংসহ একাধিক আপস্ট্রিম প্রোভাইডারজুড়ে ট্র্যাফিক রাউট করে।
 
 মূল সক্ষমতাসমূহ:
 
-- CLI/টুলের জন্য OpenAI-সামঞ্জস্যপূর্ণ API পৃষ্ঠতল (373টি প্রোভাইডার, 150টি এক্সিকিউটর মডিউল)
+- CLI/টুলের জন্য OpenAI-সামঞ্জস্যপূর্ণ API সারফেস (374টি প্রোভাইডার, 150টি এক্সিকিউটর মডিউল)
 - প্রোভাইডার ফরম্যাটগুলোর মধ্যে অনুরোধ/প্রতিক্রিয়া অনুবাদ
 - মডেল কম্বো ফলব্যাক (একাধিক মডেলের ক্রম)
 - `compositeTiers` অনুযায়ী রানটাইম ক্রমসহ কাঠামোবদ্ধ কম্বো ধাপ (`provider + model + connection`)
 - অ্যাকাউন্ট-স্তরের ফলব্যাক (প্রতি প্রোভাইডারে একাধিক অ্যাকাউন্ট)
-- মূল চ্যাট প্রবাহে কোটা প্রিফ্লাইট এবং কোটা-সচেতন P2C অ্যাকাউন্ট নির্বাচন
-- OAuth + API কী-ভিত্তিক প্রোভাইডার সংযোগ ব্যবস্থাপনা (27টি OAuth প্রোভাইডার মডিউল)
-- `/v1/embeddings`-এর মাধ্যমে এম্বেডিং তৈরি (18টি প্রোভাইডার)
-- `/v1/images/generations`-এর মাধ্যমে ছবি তৈরি (10টির বেশি প্রোভাইডার, 20টির বেশি মডেল)
+- প্রধান চ্যাট পাথে কোটা প্রিফ্লাইট এবং কোটা-সচেতন P2C অ্যাকাউন্ট নির্বাচন
+- OAuth + API-কি প্রোভাইডার সংযোগ ব্যবস্থাপনা (27টি OAuth প্রোভাইডার মডিউল)
+- `/v1/embeddings`-এর মাধ্যমে এমবেডিং তৈরি (18টি প্রোভাইডার)
+- `/v1/images/generations`-এর মাধ্যমে ছবি তৈরি (10+টি প্রোভাইডার, 20+টি মডেল)
 - `/v1/audio/transcriptions`-এর মাধ্যমে অডিও ট্রান্সক্রিপশন (18টি প্রোভাইডার)
 - `/v1/audio/speech`-এর মাধ্যমে টেক্সট-টু-স্পিচ (24টি বিল্ট-ইন প্রোভাইডার)
 - `/v1/videos/generations`-এর মাধ্যমে ভিডিও তৈরি (ComfyUI + SD WebUI)
@@ -31,55 +31,55 @@ OmniRoute হলো Next.js-এর ওপর নির্মিত একটি 
 - `/v1/search`-এর মাধ্যমে ওয়েব অনুসন্ধান (20টি প্রোভাইডার)
 - `/v1/moderations`-এর মাধ্যমে মডারেশন
 - `/v1/rerank`-এর মাধ্যমে পুনঃর্যাঙ্কিং
-- রিজনিং মডেলের জন্য থিঙ্ক ট্যাগ পার্সিং (``)
+- রিজনিং মডেলের জন্য Think ট্যাগ পার্সিং (``)
 - কঠোর OpenAI SDK সামঞ্জস্যের জন্য প্রতিক্রিয়া স্যানিটাইজেশন
 - আন্তঃপ্রোভাইডার সামঞ্জস্যের জন্য রোল স্বাভাবিকীকরণ (developer→system, system→user)
 - কাঠামোবদ্ধ আউটপুট রূপান্তর (json_schema → Gemini responseSchema)
-- প্রোভাইডার, কী, অ্যালিয়াস, কম্বো, সেটিংস ও মূল্যতথ্যের স্থানীয় পারসিস্টেন্স (122টি DB মডিউল)
-- ব্যবহার/ব্যয় ট্র্যাকিং ও অনুরোধ লগিং
+- প্রোভাইডার, কি, অ্যালিয়াস, কম্বো, সেটিংস ও মূল্য নির্ধারণের জন্য স্থানীয় স্থায়ী সংরক্ষণ (122টি DB মডিউল)
+- ব্যবহার/খরচ ট্র্যাকিং এবং অনুরোধ লগিং
 - একাধিক ডিভাইস/স্টেট সিঙ্কের জন্য ঐচ্ছিক ক্লাউড সিঙ্ক
-- API অ্যাক্সেস নিয়ন্ত্রণের জন্য IP অ্যালাওলিস্ট/ব্লকলিস্ট
-- থিঙ্কিং বাজেট ব্যবস্থাপনা (পাসথ্রু/অটো/কাস্টম/অ্যাডাপ্টিভ)
+- API অ্যাক্সেস নিয়ন্ত্রণের জন্য IP অনুমতিতালিকা/ব্লকতালিকা
+- থিংকিং বাজেট ব্যবস্থাপনা (passthrough/auto/custom/adaptive)
 - গ্লোবাল সিস্টেম প্রম্পট ইনজেকশন
 - সেশন ট্র্যাকিং ও ফিঙ্গারপ্রিন্টিং
 - প্রোভাইডার-নির্দিষ্ট প্রোফাইলসহ প্রতি-অ্যাকাউন্ট উন্নত রেট লিমিটিং
 - প্রোভাইডারের স্থিতিস্থাপকতার জন্য সার্কিট ব্রেকার প্যাটার্ন
 - মিউটেক্স লকিংসহ অ্যান্টি-থান্ডারিং হার্ড সুরক্ষা
 - স্বাক্ষর-ভিত্তিক অনুরোধ ডিডুপ্লিকেশন ক্যাশ
-- ডোমেইন স্তর: ব্যয়ের নিয়ম, ফলব্যাক নীতি, লকআউট নীতি
-- কনটেক্সট রিলে: অ্যাকাউন্ট রোটেশনের ধারাবাহিকতার জন্য সেশন হ্যান্ডঅফ সারাংশ
-- ডোমেইন স্টেট পারসিস্টেন্স (ফলব্যাক, বাজেট, লকআউট ও সার্কিট ব্রেকারের জন্য SQLite রাইট-থ্রু ক্যাশ)
+- ডোমেইন স্তর: খরচের নিয়ম, ফলব্যাক নীতি, লকআউট নীতি
+- Context Relay: অ্যাকাউন্ট রোটেশনের ধারাবাহিকতার জন্য সেশন হ্যান্ডঅফ সারসংক্ষেপ
+- ডোমেইন স্টেটের স্থায়ী সংরক্ষণ (ফলব্যাক, বাজেট, লকআউট ও সার্কিট ব্রেকারের জন্য SQLite রাইট-থ্রু ক্যাশ)
 - কেন্দ্রীভূত অনুরোধ মূল্যায়নের জন্য পলিসি ইঞ্জিন (লকআউট → বাজেট → ফলব্যাক)
-- p50/p95/p99 ল্যাটেন্সি অ্যাগ্রিগেশনসহ অনুরোধ টেলিমেট্রি
-- `combo_execution_key` / `combo_step_id`-এর মাধ্যমে কম্বো টার্গেট টেলিমেট্রি ও ঐতিহাসিক কম্বো টার্গেটের স্বাস্থ্য
+- p50/p95/p99 লেটেন্সি অ্যাগ্রিগেশনসহ অনুরোধ টেলিমেট্রি
+- `combo_execution_key` / `combo_step_id`-এর মাধ্যমে কম্বো টার্গেট টেলিমেট্রি এবং ঐতিহাসিক কম্বো টার্গেটের স্বাস্থ্য
 - এন্ড-টু-এন্ড ট্রেসিংয়ের জন্য কোরিলেশন ID (X-Request-Id)
-- প্রতি API কীতে অপ্ট-আউট সুবিধাসহ কমপ্লায়েন্স অডিট লগিং
-- LLM গুণমান নিশ্চয়তার জন্য ইভ্যাল ফ্রেমওয়ার্ক
-- রিয়েল-টাইম প্রোভাইডার সার্কিট ব্রেকার স্ট্যাটাসসহ স্বাস্থ্য ড্যাশবোর্ড
+- প্রতি API কিতে অপ্ট-আউটসহ কমপ্লায়েন্স অডিট লগিং
+- LLM-এর মান নিশ্চিতকরণের জন্য Eval ফ্রেমওয়ার্ক
+- রিয়েল-টাইম প্রোভাইডার সার্কিট ব্রেকার স্ট্যাটাসসহ হেলথ ড্যাশবোর্ড
 - 3টি ট্রান্সপোর্টসহ (stdio/SSE/Streamable HTTP) MCP Server (110টি টুল)
-- দক্ষতা ও টাস্ক লাইফসাইকেলসহ A2A Server (JSON-RPC 2.0 + SSE)
-- মেমোরি সিস্টেম (এক্সট্র্যাকশন, ইনজেকশন, রিট্রিভাল, সারসংক্ষেপ)
+- স্কিল ও টাস্ক লাইফসাইকেলসহ A2A Server (JSON-RPC 2.0 + SSE)
+- মেমরি সিস্টেম (এক্সট্র্যাকশন, ইনজেকশন, রিট্রিভাল, সারসংক্ষেপ)
 - স্কিলস সিস্টেম (রেজিস্ট্রি, এক্সিকিউটর, স্যান্ডবক্স, বিল্ট-ইন স্কিল)
 - সার্টিফিকেট ব্যবস্থাপনা ও DNS হ্যান্ডলিংসহ MITM প্রক্সি
 - প্রম্পট ইনজেকশন গার্ড মিডলওয়্যার
 - Caveman, RTK, স্ট্যাকড পাইপলাইন, কম্প্রেশন কম্বো, ল্যাঙ্গুয়েজ প্যাক ও অ্যানালিটিক্সসহ প্রম্পট কম্প্রেশন পাইপলাইন
 - ACP (Agent Communication Protocol) রেজিস্ট্রি
-- মডুলার OAuth প্রোভাইডার (`src/lib/oauth/providers/`-এর অধীনে 22টি স্বতন্ত্র মডিউল)
+- মডিউলার OAuth প্রোভাইডার (`src/lib/oauth/providers/`-এর অধীনে 22টি পৃথক মডিউল)
 - আনইনস্টল/সম্পূর্ণ-আনইনস্টল স্ক্রিপ্ট
 - OAuth এনভায়রনমেন্ট মেরামত অ্যাকশন
 - OpenAI-সামঞ্জস্যপূর্ণ WS ক্লায়েন্টের জন্য WebSocket ব্রিজ (`/v1/ws`)
-- সিঙ্ক টোকেন ব্যবস্থাপনা (ইস্যু/রিভোক, ETag-সংস্করণযুক্ত কনফিগারেশন বান্ডল ডাউনলোড)
+- সিঙ্ক টোকেন ব্যবস্থাপনা (ইস্যু/রিভোক, ETag-ভার্সনযুক্ত কনফিগ বান্ডেল ডাউনলোড)
 - GLM Thinking (`glmt`) প্রথম-শ্রেণির প্রোভাইডার প্রিসেট
-- হাইব্রিড টোকেন গণনা (আনুমানিক ফলব্যাকসহ প্রোভাইডার-পার্শ্বের `/messages/count_tokens`)
-- মডেল অ্যালিয়াস অটো-সিডিং (স্টার্টআপে 30টির বেশি ক্রস-প্রক্সি ডায়ালেক্ট স্বাভাবিকীকরণ)
+- হাইব্রিড টোকেন গণনা (প্রোভাইডার-সাইড `/messages/count_tokens`, সঙ্গে অনুমানভিত্তিক ফলব্যাক)
+- মডেল অ্যালিয়াস অটো-সিডিং (স্টার্টআপে 30+টি ক্রস-প্রক্সি ডায়ালেক্ট স্বাভাবিকীকরণ)
 - SSRF গার্ড, ব্যক্তিগত URL ব্লকিং ও কনফিগারযোগ্য রিট্রাইসহ নিরাপদ আউটবাউন্ড ফেচ
 - কনফিগারযোগ্য `requestRetry` ও `maxRetryIntervalSec`-সহ কুলডাউন-সচেতন চ্যাট রিট্রাই
-- স্টার্টআপে Zod ব্যবহার করে রানটাইম এনভায়রনমেন্ট যাচাইকরণ
+- স্টার্টআপে Zod-এর মাধ্যমে রানটাইম এনভায়রনমেন্ট যাচাইকরণ
 - পেজিনেশন, প্রোভাইডার CRUD ইভেন্ট এবং SSRF-ব্লকড যাচাইকরণ লগিংসহ কমপ্লায়েন্স অডিট v2
 
 প্রাথমিক রানটাইম মডেল:
 
-- `src/app/api/*`-এর অধীন Next.js অ্যাপ রুটগুলো ড্যাশবোর্ড API এবং সামঞ্জস্য API—উভয়ই বাস্তবায়ন করে
+- `src/app/api/*`-এর অধীনে থাকা Next.js অ্যাপ রুটগুলো ড্যাশবোর্ড API এবং সামঞ্জস্য API—উভয়ই বাস্তবায়ন করে
 - `src/sse/*` + `open-sse/*`-এর একটি শেয়ার্ড SSE/রাউটিং কোর প্রোভাইডার এক্সিকিউশন, অনুবাদ, স্ট্রিমিং, ফলব্যাক ও ব্যবহার পরিচালনা করে
 
 ## রেফারেন্স ডায়াগ্রাম
@@ -269,8 +269,8 @@ flowchart LR
 - মডেল পার্স/রিজলভ: `src/sse/services/model.ts`, `open-sse/services/model.ts`
 - অ্যাকাউন্ট ফলব্যাক লজিক: `open-sse/services/accountFallback.ts`
 - অনুবাদ রেজিস্ট্রি: `open-sse/translator/index.ts`
-- স্ট্রিম ট্রান্সফরমেশন: `open-sse/utils/stream.ts`, `open-sse/utils/streamHandler.ts`
-- ব্যবহার-সংক্রান্ত তথ্য এক্সট্রাকশন/স্বাভাবিকীকরণ: `open-sse/utils/usageTracking.ts`
+- স্ট্রিম রূপান্তর: `open-sse/utils/stream.ts`, `open-sse/utils/streamHandler.ts`
+- ব্যবহার নির্ণয়/স্বাভাবিকীকরণ: `open-sse/utils/usageTracking.ts`
 - Think ট্যাগ পার্সার: `open-sse/utils/thinkTagParser.ts`
 - এমবেডিং হ্যান্ডলার: `open-sse/handlers/embeddings.ts`
 - এমবেডিং প্রোভাইডার রেজিস্ট্রি: `open-sse/config/embeddingRegistry.ts`
@@ -287,44 +287,44 @@ flowchart LR
 - সেশন ট্র্যাকিং: `open-sse/services/sessionManager.ts`
 - অনুরোধ ডিডুপ্লিকেশন: `open-sse/services/signatureCache.ts`
 - সিস্টেম প্রম্পট ইনজেকশন: `open-sse/services/systemPrompt.ts`
-- থিঙ্কিং বাজেট ব্যবস্থাপনা: `open-sse/services/thinkingBudget.ts`
+- চিন্তার বাজেট ব্যবস্থাপনা: `open-sse/services/thinkingBudget.ts`
 - ওয়াইল্ডকার্ড মডেল রাউটিং: `open-sse/services/wildcardRouter.ts`
 - রেট লিমিট ব্যবস্থাপনা: `open-sse/services/rateLimitManager.ts`
 - সার্কিট ব্রেকার: `src/shared/utils/circuitBreaker.ts`
 - কনটেক্সট হ্যান্ডঅফ: `open-sse/services/contextHandoff.ts` — কনটেক্সট-রিলে কৌশলের জন্য হ্যান্ডঅফ সারাংশ তৈরি ও ইনজেকশন
 - কম্প্রেশন: `open-sse/services/compression/*` — প্রোভাইডার অনুবাদের আগে সক্রিয় কম্প্রেশন;
   এর মধ্যে রয়েছে Caveman নিয়ম, RTK ফিল্টার, স্ট্যাকড পাইপলাইন, কম্প্রেশন কম্বো, পরিসংখ্যান এবং যাচাইকরণ
-- Codex কোটা ফেচার: `open-sse/services/codexQuotaFetcher.ts` — কনটেক্সট-রিলে হ্যান্ডঅফ সিদ্ধান্তের জন্য Codex কোটা সংগ্রহ করে
-- কুলডাউন-সচেতন পুনঃচেষ্টা: `src/sse/services/cooldownAwareRetry.ts` — কনফিগারযোগ্য `requestRetry` / `maxRetryIntervalSec` সহ প্রতি-মডেল কুলডাউন পুনঃচেষ্টা
-- নিরাপদ আউটবাউন্ড ফেচ: `src/shared/network/safeOutboundFetch.ts` — SSRF সুরক্ষা, ব্যক্তিগত URL ব্লকিং, পুনঃচেষ্টা এবং টাইমআউটসহ সুরক্ষিত প্রোভাইডার/মডেল ফেচ
-- আউটবাউন্ড URL গার্ড: `src/shared/network/outboundUrlGuard.ts` — প্রোভাইডার URL-এ হোস্ট যাচাই; `src/shared/network/outboundUrlGuardPolicy.ts` `OMNIROUTE_ALLOW_LOCAL_PROVIDER_URLS`, `OMNIROUTE_ALLOW_PRIVATE_PROVIDER_URLS` এবং তাদের ড্যাশবোর্ড টগল থেকে মোড নির্বাচন করে (`docs/reference/ENVIRONMENT.md` দেখুন)
-- প্রোভাইডার অনুরোধের ডিফল্ট: `open-sse/services/providerRequestDefaults.ts` — প্রোভাইডার-স্তরের `maxTokens`, `temperature`, `thinkingBudgetTokens` ডিফল্ট
-- GLM প্রোভাইডার ধ্রুবক: `open-sse/config/glmProvider.ts` — শেয়ার করা GLM মডেল, কোটা URL, GLMT টাইমআউট/ডিফল্ট
+- Codex কোটা ফেচার: `open-sse/services/codexQuotaFetcher.ts` — কনটেক্সট-রিলে হ্যান্ডঅফ সিদ্ধান্তের জন্য Codex কোটা নিয়ে আসে
+- কুলডাউন-সচেতন রিট্রাই: `src/sse/services/cooldownAwareRetry.ts` — কনফিগারযোগ্য `requestRetry` / `maxRetryIntervalSec`-সহ প্রতি-মডেল কুলডাউন রিট্রাই
+- নিরাপদ আউটবাউন্ড ফেচ: `src/shared/network/safeOutboundFetch.ts` — SSRF গার্ড, ব্যক্তিগত URL ব্লকিং, রিট্রাই এবং টাইমআউটসহ সুরক্ষিত প্রোভাইডার/মডেল ফেচ
+- আউটবাউন্ড URL গার্ড: `src/shared/network/outboundUrlGuard.ts` — প্রোভাইডার URL-এ হোস্ট পরীক্ষা; `src/shared/network/outboundUrlGuardPolicy.ts` `OMNIROUTE_ALLOW_LOCAL_PROVIDER_URLS`, `OMNIROUTE_ALLOW_PRIVATE_PROVIDER_URLS` এবং সেগুলোর ড্যাশবোর্ড টগল থেকে মোড নির্বাচন করে (`docs/reference/ENVIRONMENT.md` দেখুন)
+- প্রোভাইডার অনুরোধের ডিফল্ট মান: `open-sse/services/providerRequestDefaults.ts` — প্রোভাইডার-স্তরের `maxTokens`, `temperature`, `thinkingBudgetTokens` ডিফল্ট মান
+- GLM প্রোভাইডার ধ্রুবক: `open-sse/config/glmProvider.ts` — শেয়ার্ড GLM মডেল, কোটা URL, GLMT টাইমআউট/ডিফল্ট মান
 - Antigravity আপস্ট্রিম: `open-sse/config/antigravityUpstream.ts` — বেস URL এবং ডিসকভারি পাথের ধ্রুবক
 - Codex ক্লায়েন্ট ধ্রুবক: `open-sse/config/codexClient.ts` — সংস্করণযুক্ত ইউজার-এজেন্ট এবং ক্লায়েন্ট-সংস্করণ মান
-- মডেল অ্যালিয়াস সিড: `src/lib/modelAliasSeed.ts` — স্টার্টআপে 30+ ক্রস-প্রক্সি ডায়ালেক্ট অ্যালিয়াস সিড করে
+- মডেল অ্যালিয়াস সিড: `src/lib/modelAliasSeed.ts` — স্টার্টআপের সময় 30+ ক্রস-প্রক্সি ডায়ালেক্ট অ্যালিয়াস সিড করে
 
-ডোমেইন স্তরের মডিউলসমূহ:
+ডোমেইন লেয়ার মডিউলসমূহ:
 
 - খরচের নিয়ম/বাজেট: `src/domain/costRules.ts`
 - ফলব্যাক নীতি: `src/domain/fallbackPolicy.ts`
 - কম্বো রিজলভার: `src/domain/comboResolver.ts`
 - লকআউট নীতি: `src/domain/lockoutPolicy.ts`
-- নীতি ইঞ্জিন: `src/domain/policyEngine.ts` — কেন্দ্রীভূত লকআউট → বাজেট → ফলব্যাক মূল্যায়ন
+- পলিসি ইঞ্জিন: `src/domain/policyEngine.ts` — কেন্দ্রীভূত লকআউট → বাজেট → ফলব্যাক মূল্যায়ন
 - ত্রুটি কোড ক্যাটালগ: `src/shared/constants/errorCodes.ts`
 - অনুরোধ ID: `src/shared/utils/requestId.ts`
 - ফেচ টাইমআউট: `src/shared/utils/fetchTimeout.ts`
 - অনুরোধ টেলিমেট্রি: `src/shared/utils/requestTelemetry.ts`
 - কমপ্লায়েন্স/অডিট: `src/lib/compliance/index.ts`
 - ইভ্যাল রানার: `src/lib/evals/evalRunner.ts`
-- ডোমেইন স্টেট পারসিস্টেন্স: `src/lib/db/domainState.ts` — ফলব্যাক চেইন, বাজেট, খরচের ইতিহাস, লকআউট স্টেট এবং সার্কিট ব্রেকারের জন্য SQLite CRUD
+- ডোমেইন স্টেট পারসিস্টেন্স: `src/lib/db/domainState.ts` — ফলব্যাক চেইন, বাজেট, খরচের ইতিহাস, লকআউট স্টেট ও সার্কিট ব্রেকারের জন্য SQLite CRUD
 
 OAuth প্রোভাইডার মডিউলসমূহ (`src/lib/oauth/providers/`-এর অধীনে 27টি স্বতন্ত্র ফাইল):
 
 - রেজিস্ট্রি ইনডেক্স: `src/lib/oauth/providers/index.ts`
-- স্বতন্ত্র প্রোভাইডারসমূহ: `agy.ts`, `antigravity.ts`, `claude.ts`, `cline.ts`, `codebuddy-cn.ts`, `codebuddy-intl.ts`, `codex.ts`, `cursor.ts`, `devin-desktop.ts`, `ghe-copilot.ts`, `github.ts`, `gitlab-duo.ts`, `grok-cli-oauth.ts`, `grok-cli.ts`, `kilocode.ts`, `kimi-coding.ts`, `kiro.ts`, `muse-code.ts`, `openference.ts`, `qoder.ts`, `trae.ts`, `workbuddy.ts`, `xai-oauth.ts`, `zed-hosted.ts`, `zed.ts`
-- শেয়ার করা সহায়কসমূহ: `codebuddyDeviceAuth.ts` (CodeBuddy CN/intl ডিভাইস ফ্লো), `museCodeDeviceResponse.ts`
-- হালকা র্যাপার: `src/lib/oauth/providers.ts` — স্বতন্ত্র মডিউলগুলো থেকে পুনরায় এক্সপোর্ট করে
+- স্বতন্ত্র প্রোভাইডার: `agy.ts`, `antigravity.ts`, `claude.ts`, `cline.ts`, `codebuddy-cn.ts`, `codebuddy-intl.ts`, `codex.ts`, `cursor.ts`, `devin-desktop.ts`, `ghe-copilot.ts`, `github.ts`, `gitlab-duo.ts`, `grok-cli-oauth.ts`, `grok-cli.ts`, `kilocode.ts`, `kimi-coding.ts`, `kiro.ts`, `muse-code.ts`, `openference.ts`, `qoder.ts`, `trae.ts`, `workbuddy.ts`, `xai-oauth.ts`, `zed-hosted.ts`, `zed.ts`
+- শেয়ার্ড হেল্পার: `codebuddyDeviceAuth.ts` (CodeBuddy CN/intl ডিভাইস ফ্লো), `museCodeDeviceResponse.ts`
+- পাতলা র্যাপার: `src/lib/oauth/providers.ts` — স্বতন্ত্র মডিউলগুলো থেকে পুনরায় এক্সপোর্ট করে
 
 ## 5) এমবেডেড সার্ভিসসমূহ (v3.8.4)
 
@@ -528,16 +528,17 @@ FSM ট্রানজিশনগুলো Auto Combo-এর স্কোরি
 - টেবিলসমূহ (`src/lib/db/core.ts`-এ তৈরি): `domain_fallback_chains`, `domain_budgets`, `domain_cost_history`, `domain_lockout_state`, `domain_circuit_breakers`
 - রাইট-থ্রু ক্যাশ প্যাটার্ন: রানটাইমে ইন-মেমরি Maps-ই কর্তৃত্বপূর্ণ; পরিবর্তনগুলো সিঙ্ক্রোনাসভাবে SQLite-এ লেখা হয়; কোল্ড স্টার্টে DB থেকে স্টেট পুনরুদ্ধার করা হয়
 
-## 4) অথেন্টিকেশন + নিরাপত্তা সারফেস
+## 4) Auth + নিরাপত্তা ক্ষেত্রসমূহ
 
-- ড্যাশবোর্ড কুকি অথেন্টিকেশন: `src/proxy.ts`, `src/app/api/auth/login/route.ts`
+- ড্যাশবোর্ড কুকি প্রমাণীকরণ: `src/proxy.ts`, `src/app/api/auth/login/route.ts`
 - API কী তৈরি/যাচাইকরণ: `src/shared/utils/apiKey.ts`
-- প্রোভাইডার সিক্রেটগুলো `providerConnections` এন্ট্রিতে সংরক্ষিত থাকে
-- `open-sse/utils/proxyFetch.ts` (এনভায়রনমেন্ট ভেরিয়েবল) এবং `open-sse/utils/networkProxy.ts` (প্রতি-প্রোভাইডার বা গ্লোবালভাবে কনফিগারযোগ্য)-এর মাধ্যমে আউটবাউন্ড প্রক্সি সমর্থন
-- SSRF / আউটবাউন্ড URL গার্ড: `src/shared/network/outboundUrlGuard.ts` — সব প্রোভাইডার কলের জন্য প্রাইভেট/লুপব্যাক/লিংক-লোকাল রেঞ্জ ব্লক করে
-- রানটাইম এনভায়রনমেন্ট যাচাইকরণ: `src/lib/env/runtimeEnv.ts` — সব এনভায়রনমেন্ট ভেরিয়েবলের জন্য Zod স্কিমা, যা স্টার্টআপ ত্রুটি/সতর্কতা হিসেবে প্রকাশিত হয়
-- সিঙ্ক টোকেন: `src/lib/db/syncTokens.ts` — কনফিগ বান্ডেল ডাউনলোড এন্ডপয়েন্টের জন্য স্কোপযুক্ত টোকেন; `sync_tokens` SQLite টেবিল দ্বারা সমর্থিত (মাইগ্রেশন `024_create_sync_tokens.sql`)
-- WebSocket হ্যান্ডশেক অথেন্টিকেশন: `src/lib/ws/handshake.ts` — API কী বা সেশন কুকির মাধ্যমে WS আপগ্রেড রিকোয়েস্ট যাচাই করে
+- প্রোভাইডারের গোপন তথ্য `providerConnections` এন্ট্রিগুলোতে সংরক্ষিত থাকে
+- `open-sse/utils/proxyFetch.ts`-এর মাধ্যমে (env vars) এবং `open-sse/utils/networkProxy.ts`-এর মাধ্যমে (প্রতি-প্রোভাইডার বা গ্লোবালভাবে কনফিগারযোগ্য) আউটবাউন্ড প্রক্সি সমর্থন
+- SSRF / আউটবাউন্ড URL সুরক্ষা: `src/shared/network/outboundUrlGuard.ts` — প্রোভাইডার কল ও ওয়েবহুক টার্গেটে হোস্ট যাচাই; মোডটি `src/shared/network/outboundUrlGuardPolicy.ts` থেকে আসে (`docs/reference/ENVIRONMENT.md`-এ ফ্ল্যাগসমূহ)
+- রানটাইম env যাচাইকরণ: `src/lib/env/runtimeEnv.ts` — সব পরিবেশ ভেরিয়েবলের জন্য Zod স্কিমা, যা স্টার্টআপ ত্রুটি/সতর্কতা হিসেবে প্রদর্শিত হয়
+- সিঙ্ক টোকেন: `src/lib/db/syncTokens.ts` — কনফিগ বান্ডেল ডাউনলোড এন্ডপয়েন্টের জন্য সীমিত-স্কোপের টোকেন; `sync_tokens` SQLite টেবিল দ্বারা সমর্থিত (মাইগ্রেশন `024_create_sync_tokens.sql`)
+- WebSocket হ্যান্ডশেক প্রমাণীকরণ: `src/lib/ws/handshake.ts` — API কী বা সেশন কুকির মাধ্যমে WS আপগ্রেড অনুরোধ যাচাই করে
+- লাইভ ড্যাশবোর্ড WebSocket প্রমাণীকরণ: `src/server/ws/liveServer.ts` — সাইডকারটি (পোর্ট `LIVE_WS_PORT`) একটি ড্যাশবোর্ড সেশন কুকি বা ম্যানেজমেন্ট স্কোপ (`manage`/`admin`) ধারণকারী Bearer API কী গ্রহণ করে; কেবল-ইনফারেন্স কী প্রত্যাখ্যান করা হয়। এর অভ্যন্তরীণ `POST /__omniroute_event` পাবলিশার এন্ডপয়েন্ট কোনো প্রক্সি-হপ হেডার (`x-forwarded-*`, `x-real-ip`, `forwarded`, `via`) উপস্থিত না থাকলেই কেবল লুপব্যাক পিয়ার গ্রহণ করে
 
 ## 5) ক্লাউড সিঙ্ক
 
@@ -1086,11 +1087,11 @@ flowchart LR
 - স্টার্টআপে SQLite স্কিমা মাইগ্রেশন এবং স্বয়ংক্রিয় আপগ্রেড হুক
 - লিগ্যাসি JSON → SQLite মাইগ্রেশনের সামঞ্জস্য পাথ
 
-## 6) SSRF / আউটবাউন্ড URL গার্ড
+## 6) SSRF / আউটবাউন্ড URL সুরক্ষা
 
-- `src/shared/network/outboundUrlGuard.ts` প্রোভাইডার এক্সিকিউটরের কাছে পৌঁছানোর আগেই সব ব্যক্তিগত/লুপব্যাক/লিংক-লোকাল টার্গেট URL ব্লক করে
-- প্রোভাইডার মডেল আবিষ্কার ও যাচাইকরণ রুটগুলো `src/shared/network/safeOutboundFetch.ts` ব্যবহার করে, যা প্রতিটি আউটবাউন্ড অনুরোধের আগে গার্ড প্রয়োগ করে
-- গার্ড ত্রুটিগুলো HTTP 422 সহ `URL_GUARD_BLOCKED` হিসেবে প্রকাশিত হয় এবং `providerAudit.ts`-এর মাধ্যমে কমপ্লায়েন্স অডিট ট্রেইলে লগ করা হয়
+- `BaseExecutor.assertOutboundUrlAllowed` (`open-sse/executors/base.ts`) `BaseExecutor.execute()`-এর মাধ্যমে পাঠানো চ্যাট অনুরোধগুলিতে `src/shared/network/outboundUrlGuard.ts` প্রয়োগ করে। শুধুমাত্র-পাবলিক মোডে (`OMNIROUTE_ALLOW_LOCAL_PROVIDER_URLS=false`, যখন প্রাইভেট ফ্ল্যাগ বন্ধ থাকে) এটি প্রাইভেট ও লুপব্যাক হোস্ট এবং 169.254.0.0/16 ব্লক করে; অন্য সব মোডে এটি ক্লাউড-মেটাডেটা হোস্ট ব্লক করে। কোনো DNS লুকআপের আগে, যেভাবে লেখা হয়েছে ঠিক সেভাবেই এটি হোস্টনেম বা IP লিটারেল পরীক্ষা করে। বিল্ট-ইন লোকাল প্রোভাইডারগুলি এটি এড়িয়ে যায়।
+- প্রোভাইডার মডেল ডিসকভারি ও ভ্যালিডেশন রুটগুলি `src/shared/network/safeOutboundFetch.ts` ব্যবহার করে, যা প্রতিটি আউটবাউন্ড অনুরোধের আগে সুরক্ষা প্রয়োগ করে
+- সুরক্ষা-সংক্রান্ত ত্রুটিগুলি HTTP 503 সহ `URL_GUARD_BLOCKED` হিসেবে প্রকাশিত হয় (`getSafeOutboundFetchErrorStatus`; মডেল-ডিসকভারি রুট 400 ফেরত দেয়), এবং ভ্যালিডেশনের সময় প্রকৃত SSRF ব্লকগুলি অডিট ট্রেইলে `provider.validation.ssrf_blocked` ইভেন্ট হিসেবে লগ করা হয়
 
 ## পর্যবেক্ষণযোগ্যতা এবং অপারেশনাল সংকেত
 

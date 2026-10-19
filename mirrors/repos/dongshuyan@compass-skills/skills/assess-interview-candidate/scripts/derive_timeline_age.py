@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Derive a conservative display-only age range from an undergraduate timeline."""
+"""Derive a display-only age estimate, retaining conservative bounds for audit."""
 
 from __future__ import annotations
 
@@ -71,6 +71,12 @@ def subtract_years(value: str, years: int) -> str:
     earliest, _, _ = parse_partial_date(value)
     target_year = earliest.year - years
     return f"{target_year:04d}"
+
+
+def calculate_timeline_age_point(anchor_start: str, report_date: str) -> int:
+    """Estimate by year under the stated age-18 enrollment assumption, not a birthday."""
+    earliest, _, _ = parse_partial_date(anchor_start)
+    return date.fromisoformat(report_date).year - earliest.year + AGE_ASSUMPTIONS["undergraduate_start_age_typical"]
 
 
 def chronology_status(anchor_start: str, checks: Iterable[dict[str, Any]]) -> str:
@@ -170,8 +176,8 @@ def build_estimate(
     return {
         "status": "estimated",
         "display": (
-            f"约{min_years}–{max_years}岁（按{start}本科入学、"
-            "入学年龄18±2岁推算；非候选人自述）"
+            f"约{calculate_timeline_age_point(start, report_date)}岁（按{start}本科入学、"
+            "入学时18岁假设推算；非候选人自述）"
         ),
         "as_of": report_date,
         "min_years": min_years,
@@ -192,7 +198,7 @@ def build_estimate(
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Derive a conservative, display-only age range from explicit undergraduate dates."
+        description="Derive a display-only age estimate from explicit undergraduate dates, with audit bounds."
     )
     parser.add_argument("--report-date", required=True, help="Report date in YYYY-MM-DD format")
     anchor_group = parser.add_mutually_exclusive_group(required=True)

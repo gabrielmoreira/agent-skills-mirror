@@ -5,6 +5,21 @@ description: Three.js and WebGL adapter patterns for HyperFrames. Use when creat
 
 # Three.js for HyperFrames
 
+## Contents
+
+- [Contract](#contract)
+- [Basic Pattern](#basic-pattern)
+- [Loading Addons (`GLTFLoader`, `OrbitControls`, etc.)](#loading-addons-gltfloader-orbitcontrols-etc)
+- [Heavy Setup (Large Meshes, Shader Compiles)](#heavy-setup-large-meshes-shader-compiles)
+- [AnimationMixer Pattern](#animationmixer-pattern)
+- [Camera Cuts Inside One Canvas](#camera-cuts-inside-one-canvas)
+- [Lighting Lit Meshes](#lighting-lit-meshes)
+- [Shader Numeric Domains](#shader-numeric-domains)
+- [Good Uses](#good-uses)
+- [Avoid](#avoid)
+- [Validation](#validation)
+- [Credits And References](#credits-and-references)
+
 HyperFrames supports Three.js through its `three` runtime adapter. The adapter does not own your scene. It publishes HyperFrames time and dispatches a seek event so your composition can render the exact frame.
 
 ## Contract

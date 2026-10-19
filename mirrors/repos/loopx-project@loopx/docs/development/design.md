@@ -126,6 +126,16 @@ source, method and limitation paragraphs before adding another note.
 - Preserve actual unknowns, denominators, negative results and evidence links.
   Reduce explanatory noise without replacing missing evidence with a reassuring
   summary. Keep chart keys that are necessary to decode the marks visible.
+- When a metric applies to fewer items than the displayed sample, identify
+  explicitly ineligible items in its existing detail and show their count beside
+  the metric. Unknown eligible judgments stay in the denominator. Missing item
+  metadata or an arithmetic count gap cannot establish ineligibility.
+- Review a metric group as one composition: prominent values, body-size names,
+  one shared unit/denominator explanation and only nonzero exceptions beside
+  the affected value. Avoid six repeated status lines, all-zero qualifiers and
+  per-cell footnotes. On wide screens, use a compact value band so the related
+  graph or result remains nearby; reflow on narrower screens. Merge optional
+  source, method and cost material into the existing disclosure where practical.
 
 For example, research metrics can show “19 episodes · purposive sample ·
 uncalibrated” once, with a nearby explanation of yes/eligible counts and unknowns.

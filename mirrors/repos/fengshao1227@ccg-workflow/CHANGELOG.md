@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.7.2] - 2026-10-18
+
+### ✨ 新功能
+
+- **x6.ai 成为赞助商，并可直接用作 API 提供方** — 中英文 README 赞助区新增 x6.ai Banner + 介绍，位于 PackyCode、APIMart 之下。`init` Step 1 与菜单 API 配置新增 x6.ai 选项，自动填 `ANTHROPIC_BASE_URL=https://api.x6.ai`（**不带** `/v1`），用户只填 Key。
+- **Codex CLI 接入 x6.ai** — `codex-mode install` 静默注册 `[model_providers.x6ai]`（`base_url=https://api.x6.ai/v1`，**带** `/v1`；`env_key=X6AI_API_KEY`）。注册与启用分离，启用默认否；卸载只摘自己那张表。
+
+### 🗑️ 移除
+
+- **Gamma Remover 下架** — README Banner 与 `assets/sponsors/gamma-remover.webp` 移除。
+
 ## [3.7.1] - 2026-10-12
 
 ### 🐛 修复

@@ -8,23 +8,23 @@
 
 _Huling na-update: 2026-06-28_
 
-## Buod para sa mga Ehekutibo
+## Ehekutibong Buod
 
 Ang OmniRoute ay isang lokal na AI routing gateway at dashboard na binuo gamit ang Next.js.
-Nagbibigay ito ng iisang endpoint na compatible sa OpenAI (`/v1/*`) at niruruta ang trapiko sa maraming upstream provider na may pagsasalin, fallback, pag-refresh ng token, at pagsubaybay sa paggamit.
+Nagbibigay ito ng iisang endpoint na compatible sa OpenAI (`/v1/*`) at nagruruta ng trapiko sa maraming upstream provider gamit ang pagsasalin, fallback, pag-refresh ng token, at pagsubaybay sa paggamit.
 
 Mga pangunahing kakayahan:
 
-- API surface na compatible sa OpenAI para sa CLI/mga tool (373 provider, 150 executor module)
+- API surface na compatible sa OpenAI para sa CLI/mga tool (374 provider, 150 executor module)
 - Pagsasalin ng request/response sa iba't ibang format ng provider
 - Fallback ng model combo (pagkakasunod-sunod ng maraming modelo)
-- Mga structured combo step (`provider + model + connection`) na may runtime ordering ayon sa `compositeTiers`
-- Fallback sa antas ng account (maraming account sa bawat provider)
-- Paunang pagsusuri ng quota at pagpili ng P2C account na isinasaalang-alang ang quota sa pangunahing chat path
+- Mga naka-structure na hakbang ng combo (`provider + model + connection`) na may runtime ordering ayon sa `compositeTiers`
+- Fallback sa antas ng account (maraming account bawat provider)
+- Quota preflight at quota-aware na pagpili ng P2C account sa pangunahing chat path
 - Pamamahala ng koneksyon sa provider gamit ang OAuth + API key (27 OAuth provider module)
 - Pagbuo ng embedding sa pamamagitan ng `/v1/embeddings` (18 provider)
 - Pagbuo ng larawan sa pamamagitan ng `/v1/images/generations` (10+ provider, 20+ modelo)
-- Transkripsyon ng audio sa pamamagitan ng `/v1/audio/transcriptions` (18 provider)
+- Transkripsiyon ng audio sa pamamagitan ng `/v1/audio/transcriptions` (18 provider)
 - Text-to-speech sa pamamagitan ng `/v1/audio/speech` (24 built-in na provider)
 - Pagbuo ng video sa pamamagitan ng `/v1/videos/generations` (ComfyUI + SD WebUI)
 - Pagbuo ng musika sa pamamagitan ng `/v1/music/generations` (ComfyUI)
@@ -32,55 +32,55 @@ Mga pangunahing kakayahan:
 - Mga moderation sa pamamagitan ng `/v1/moderations`
 - Muling pagraranggo sa pamamagitan ng `/v1/rerank`
 - Pag-parse ng think tag (``) para sa mga reasoning model
-- Paglilinis ng response para sa mahigpit na compatibility sa OpenAI SDK
+- Sanitization ng response para sa mahigpit na compatibility sa OpenAI SDK
 - Normalisasyon ng role (developer→system, system→user) para sa compatibility sa iba't ibang provider
-- Pag-convert ng structured output (json_schema → Gemini responseSchema)
-- Lokal na persistence para sa mga provider, key, alias, combo, setting, at pagpepresyo (122 DB module)
+- Conversion ng structured output (json_schema → Gemini responseSchema)
+- Lokal na persistence para sa mga provider, key, alias, combo, setting, at pricing (122 DB module)
 - Pagsubaybay sa paggamit/gastos at pag-log ng request
-- Opsyonal na cloud sync para sa pag-sync ng maraming device/state
+- Opsyonal na cloud sync para sa pag-sync sa maraming device/state
 - IP allowlist/blocklist para sa pagkontrol ng access sa API
 - Pamamahala ng thinking budget (passthrough/auto/custom/adaptive)
 - Global na pag-inject ng system prompt
 - Pagsubaybay sa session at fingerprinting
-- Pinahusay na rate limiting sa bawat account na may mga profile na partikular sa provider
-- Pattern na circuit breaker para sa katatagan ng provider
-- Proteksiyon laban sa thundering herd gamit ang mutex locking
-- Cache para sa pag-deduplicate ng request batay sa signature
+- Pinahusay na rate limiting kada account na may mga profile na partikular sa provider
+- Circuit breaker pattern para sa katatagan ng provider
+- Proteksyon laban sa thundering herd gamit ang mutex locking
+- Cache para sa deduplication ng request batay sa signature
 - Domain layer: mga panuntunan sa gastos, patakaran sa fallback, patakaran sa lockout
-- Context Relay: mga buod ng paglilipat ng session para mapanatili ang continuity kapag nagpapalit ng account
+- Context Relay: mga buod ng session handoff para sa pagpapatuloy sa panahon ng pag-rotate ng account
 - Persistence ng domain state (SQLite write-through cache para sa mga fallback, budget, lockout, at circuit breaker)
 - Policy engine para sa sentralisadong pagsusuri ng request (lockout → budget → fallback)
-- Telemetry ng request na may pagsasama-sama ng latency na p50/p95/p99
-- Telemetry ng combo target at historikal na kalagayan ng combo target sa pamamagitan ng `combo_execution_key` / `combo_step_id`
+- Telemetry ng request na may p50/p95/p99 latency aggregation
+- Telemetry ng combo target at makasaysayang kalagayan ng combo target sa pamamagitan ng `combo_execution_key` / `combo_step_id`
 - Correlation ID (X-Request-Id) para sa end-to-end tracing
-- Pag-log ng compliance audit na may opsyong mag-opt out sa bawat API key
-- Eval framework para sa quality assurance ng LLM
+- Compliance audit logging na may opt-out para sa bawat API key
+- Eval framework para sa pagtiyak ng kalidad ng LLM
 - Health dashboard na may real-time na status ng circuit breaker ng provider
 - MCP Server (110 tool) na may 3 transport (stdio/SSE/Streamable HTTP)
 - A2A Server (JSON-RPC 2.0 + SSE) na may mga skill at lifecycle ng task
 - Memory system (extraction, injection, retrieval, summarization)
 - Skills system (registry, executor, sandbox, mga built-in na skill)
-- MITM proxy na may pamamahala ng certificate at paghawak ng DNS
-- Middleware na panangga laban sa prompt injection
+- MITM proxy na may pamamahala ng certificate at pangangasiwa ng DNS
+- Middleware na pananggalang laban sa prompt injection
 - Pipeline ng prompt compression na may Caveman, RTK, mga stacked pipeline, compression combo, language pack, at analytics
 - Registry ng ACP (Agent Communication Protocol)
 - Mga modular na OAuth provider (22 indibidwal na module sa ilalim ng `src/lib/oauth/providers/`)
 - Mga script para sa uninstall/full-uninstall
-- Aksiyon para sa pagkukumpuni ng OAuth environment
+- Aksyon sa pagkukumpuni ng OAuth environment
 - WebSocket bridge para sa mga WS client na compatible sa OpenAI (`/v1/ws`)
 - Pamamahala ng sync token (pag-isyu/pagbawi, pag-download ng config bundle na may ETag versioning)
-- First-class na provider preset para sa GLM Thinking (`glmt`)
-- Hybrid na pagbibilang ng token (`/messages/count_tokens` sa panig ng provider na may estimation fallback)
-- Awtomatikong pag-seed ng model alias (30+ normalisasyon ng cross-proxy dialect sa startup)
-- Ligtas na outbound fetch na may SSRF guard, pag-block sa pribadong URL, at nako-configure na retry
-- Mga chat retry na isinasaalang-alang ang cooldown, na may nako-configure na `requestRetry` at `maxRetryIntervalSec`
+- GLM Thinking (`glmt`) bilang first-class na preset ng provider
+- Hybrid na pagbibilang ng token (provider-side na `/messages/count_tokens` na may estimation fallback)
+- Awtomatikong pag-seed ng model alias (30+ normalization ng cross-proxy dialect sa startup)
+- Ligtas na outbound fetch na may SSRF guard, pag-block ng pribadong URL, at configurable na retry
+- Cooldown-aware na mga retry sa chat na may configurable na `requestRetry` at `maxRetryIntervalSec`
 - Pag-validate ng runtime environment gamit ang Zod sa startup
-- Compliance audit v2 na may pagination, mga provider CRUD event, at pag-log ng validation na na-block ng SSRF
+- Compliance audit v2 na may pagination, mga event ng provider CRUD, at pag-log ng validation na na-block ng SSRF
 
 Pangunahing runtime model:
 
-- Ipinapatupad ng mga Next.js app route sa ilalim ng `src/app/api/*` ang mga dashboard API at compatibility API
-- Isang shared na SSE/routing core sa `src/sse/*` + `open-sse/*` ang nangangasiwa sa pagpapatakbo ng provider, pagsasalin, streaming, fallback, at paggamit
+- Ipinapatupad ng mga Next.js app route sa ilalim ng `src/app/api/*` ang parehong mga dashboard API at compatibility API
+- Pinangangasiwaan ng nakabahaging SSE/routing core sa `src/sse/*` + `open-sse/*` ang pagpapatupad ng provider, pagsasalin, streaming, fallback, at paggamit
 
 ## Mga Reference Diagram
 
@@ -260,32 +260,32 @@ Mga domain ng pamamahala:
 
 ## 2) SSE + Ubod ng Pagsasalin
 
-Mga pangunahing module ng daloy:
+Mga module ng pangunahing daloy:
 
 - Entry point: `src/sse/handlers/chat.ts`
 - Pangunahing orkestrasyon: `open-sse/handlers/chatCore.ts`
 - Mga adapter sa pagpapatupad ng provider: `open-sse/executors/*`
-- Pagtukoy ng format/config ng provider: `open-sse/services/provider.ts`
-- Pag-parse/paglutas ng model: `src/sse/services/model.ts`, `open-sse/services/model.ts`
+- Pagtukoy ng format/configuration ng provider: `open-sse/services/provider.ts`
+- Pag-parse/paglutas ng modelo: `src/sse/services/model.ts`, `open-sse/services/model.ts`
 - Lohika ng fallback ng account: `open-sse/services/accountFallback.ts`
 - Registry ng pagsasalin: `open-sse/translator/index.ts`
 - Mga transpormasyon ng stream: `open-sse/utils/stream.ts`, `open-sse/utils/streamHandler.ts`
-- Pagkuha/normalisasyon ng usage: `open-sse/utils/usageTracking.ts`
+- Pagkuha/normalisasyon ng paggamit: `open-sse/utils/usageTracking.ts`
 - Parser ng think tag: `open-sse/utils/thinkTagParser.ts`
 - Handler ng embedding: `open-sse/handlers/embeddings.ts`
 - Registry ng embedding provider: `open-sse/config/embeddingRegistry.ts`
-- Handler ng pagbuo ng image: `open-sse/handlers/imageGeneration.ts`
+- Handler ng pagbuo ng larawan: `open-sse/handlers/imageGeneration.ts`
 - Registry ng image provider: `open-sse/config/imageRegistry.ts`
-- Paglilinis ng response: `open-sse/handlers/responseSanitizer.ts`
+- Paglilinis ng tugon: `open-sse/handlers/responseSanitizer.ts`
 - Normalisasyon ng role: `open-sse/services/roleNormalizer.ts`
 
 Mga serbisyo (lohika ng negosyo):
 
 - Pagpili/pagmamarka ng account: `open-sse/services/accountSelector.ts`
-- Pamamahala sa lifecycle ng context: `open-sse/services/contextManager.ts`
+- Pamamahala ng lifecycle ng context: `open-sse/services/contextManager.ts`
 - Pagpapatupad ng IP filter: `open-sse/services/ipFilter.ts`
 - Pagsubaybay sa session: `open-sse/services/sessionManager.ts`
-- Pag-aalis ng mga dobleng request: `open-sse/services/signatureCache.ts`
+- Pag-aalis ng mga duplikadong request: `open-sse/services/signatureCache.ts`
 - Pag-inject ng system prompt: `open-sse/services/systemPrompt.ts`
 - Pamamahala ng thinking budget: `open-sse/services/thinkingBudget.ts`
 - Pagruruta ng wildcard model: `open-sse/services/wildcardRouter.ts`
@@ -293,37 +293,37 @@ Mga serbisyo (lohika ng negosyo):
 - Circuit breaker: `src/shared/utils/circuitBreaker.ts`
 - Pag-handoff ng context: `open-sse/services/contextHandoff.ts` — pagbuo at pag-inject ng buod ng handoff para sa estratehiyang context-relay
 - Compression: `open-sse/services/compression/*` — maagap na compression bago ang pagsasalin ng provider;
-  kasama ang mga panuntunan ng Caveman, mga filter ng RTK, mga naka-stack na pipeline, mga kumbinasyon ng compression, mga estadistika, at validation
-- Tagakuha ng quota ng Codex: `open-sse/services/codexQuotaFetcher.ts` — kinukuha ang quota ng Codex para sa mga desisyon sa context-relay handoff
-- Retry na may pagsasaalang-alang sa cooldown: `src/sse/services/cooldownAwareRetry.ts` — mga retry ng cooldown bawat model na may nako-configure na `requestRetry` / `maxRetryIntervalSec`
+  kabilang ang mga panuntunan ng Caveman, mga filter ng RTK, mga stacked pipeline, mga kumbinasyon ng compression, mga estadistika, at validation
+- Tagakuha ng quota ng Codex: `open-sse/services/codexQuotaFetcher.ts` — kumukuha ng quota ng Codex para sa mga desisyon sa handoff ng context-relay
+- Retry na isinasaalang-alang ang cooldown: `src/sse/services/cooldownAwareRetry.ts` — mga retry sa cooldown kada modelo na may nako-configure na `requestRetry` / `maxRetryIntervalSec`
 - Ligtas na outbound fetch: `src/shared/network/safeOutboundFetch.ts` — protektadong pag-fetch ng provider/model na may SSRF guard, pag-block ng pribadong URL, retry, at timeout
-- Guard ng outbound URL: `src/shared/network/outboundUrlGuard.ts` — mga pagsusuri sa host ng mga URL ng provider; pinipili ng `src/shared/network/outboundUrlGuardPolicy.ts` ang mode mula sa `OMNIROUTE_ALLOW_LOCAL_PROVIDER_URLS`, `OMNIROUTE_ALLOW_PRIVATE_PROVIDER_URLS`, at sa mga toggle ng mga ito sa dashboard (tingnan ang `docs/reference/ENVIRONMENT.md`)
-- Mga default ng request ng provider: `open-sse/services/providerRequestDefaults.ts` — mga default na `maxTokens`, `temperature`, `thinkingBudgetTokens` sa antas ng provider
-- Mga constant ng GLM provider: `open-sse/config/glmProvider.ts` — mga pinagsasaluhang GLM model, quota URL, GLMT timeout/default
+- Guard ng outbound URL: `src/shared/network/outboundUrlGuard.ts` — mga pagsusuri sa host ng mga URL ng provider; pinipili ng `src/shared/network/outboundUrlGuardPolicy.ts` ang mode mula sa `OMNIROUTE_ALLOW_LOCAL_PROVIDER_URLS`, `OMNIROUTE_ALLOW_PRIVATE_PROVIDER_URLS`, at mga toggle ng mga ito sa dashboard (tingnan ang `docs/reference/ENVIRONMENT.md`)
+- Mga default ng request sa provider: `open-sse/services/providerRequestDefaults.ts` — mga default na `maxTokens`, `temperature`, `thinkingBudgetTokens` sa antas ng provider
+- Mga constant ng GLM provider: `open-sse/config/glmProvider.ts` — mga shared na modelo ng GLM, mga URL ng quota, timeout/default ng GLMT
 - Antigravity upstream: `open-sse/config/antigravityUpstream.ts` — mga constant ng base URL at discovery path
 - Mga constant ng Codex client: `open-sse/config/codexClient.ts` — mga value ng user-agent at client-version na may bersyon
-- Seed ng model alias: `src/lib/modelAliasSeed.ts` — nagse-seed ng 30+ alias ng mga cross-proxy dialect sa pagsisimula
+- Seed ng model alias: `src/lib/modelAliasSeed.ts` — nagse-seed ng 30+ alias ng cross-proxy dialect sa startup
 
 Mga module ng domain layer:
 
-- Mga panuntunan sa gastos/budget: `src/domain/costRules.ts`
+- Mga panuntunan/badyet sa gastos: `src/domain/costRules.ts`
 - Patakaran sa fallback: `src/domain/fallbackPolicy.ts`
 - Resolver ng combo: `src/domain/comboResolver.ts`
 - Patakaran sa lockout: `src/domain/lockoutPolicy.ts`
-- Policy engine: `src/domain/policyEngine.ts` — sentralisadong pagsusuri ng lockout → budget → fallback
+- Policy engine: `src/domain/policyEngine.ts` — sentralisadong pagsusuri ng lockout → badyet → fallback
 - Catalog ng mga error code: `src/shared/constants/errorCodes.ts`
 - Request ID: `src/shared/utils/requestId.ts`
 - Timeout ng fetch: `src/shared/utils/fetchTimeout.ts`
 - Telemetry ng request: `src/shared/utils/requestTelemetry.ts`
 - Compliance/audit: `src/lib/compliance/index.ts`
-- Runner ng eval: `src/lib/evals/evalRunner.ts`
-- Persistence ng state ng domain: `src/lib/db/domainState.ts` — SQLite CRUD para sa mga fallback chain, budget, history ng gastos, state ng lockout, at mga circuit breaker
+- Eval runner: `src/lib/evals/evalRunner.ts`
+- Persistence ng domain state: `src/lib/db/domainState.ts` — SQLite CRUD para sa mga fallback chain, badyet, history ng gastos, estado ng lockout, at mga circuit breaker
 
 Mga module ng OAuth provider (27 indibidwal na file sa ilalim ng `src/lib/oauth/providers/`):
 
 - Index ng registry: `src/lib/oauth/providers/index.ts`
 - Mga indibidwal na provider: `agy.ts`, `antigravity.ts`, `claude.ts`, `cline.ts`, `codebuddy-cn.ts`, `codebuddy-intl.ts`, `codex.ts`, `cursor.ts`, `devin-desktop.ts`, `ghe-copilot.ts`, `github.ts`, `gitlab-duo.ts`, `grok-cli-oauth.ts`, `grok-cli.ts`, `kilocode.ts`, `kimi-coding.ts`, `kiro.ts`, `muse-code.ts`, `openference.ts`, `qoder.ts`, `trae.ts`, `workbuddy.ts`, `xai-oauth.ts`, `zed-hosted.ts`, `zed.ts`
-- Mga pinagsasaluhang helper: `codebuddyDeviceAuth.ts` (daloy ng device ng CodeBuddy CN/intl), `museCodeDeviceResponse.ts`
+- Mga shared helper: `codebuddyDeviceAuth.ts` (device flow ng CodeBuddy CN/intl), `museCodeDeviceResponse.ts`
 - Manipis na wrapper: `src/lib/oauth/providers.ts` — muling nag-e-export mula sa mga indibidwal na module
 
 ## 5) Mga Naka-embed na Serbisyo (v3.8.4)
@@ -534,16 +534,17 @@ Domain State DB (SQLite):
 - Mga table (ginagawa sa `src/lib/db/core.ts`): `domain_fallback_chains`, `domain_budgets`, `domain_cost_history`, `domain_lockout_state`, `domain_circuit_breakers`
 - Pattern ng write-through cache: ang mga in-memory Map ang awtoritatibo habang runtime; sabayang isinusulat sa SQLite ang mga pagbabago; ibinabalik mula sa DB ang state sa cold start
 
-## 4) Mga Surface ng Auth + Seguridad
+## 4) Auth + Mga Bahaging Pangseguridad
 
-- Auth ng dashboard cookie: `src/proxy.ts`, `src/app/api/auth/login/route.ts`
+- Auth gamit ang cookie ng dashboard: `src/proxy.ts`, `src/app/api/auth/login/route.ts`
 - Pagbuo/pag-verify ng API key: `src/shared/utils/apiKey.ts`
-- Naka-persist ang mga provider secret sa mga entry ng `providerConnections`
-- Suporta sa outbound proxy sa pamamagitan ng `open-sse/utils/proxyFetch.ts` (mga env var) at `open-sse/utils/networkProxy.ts` (maaaring i-configure kada provider o sa pangkalahatan)
-- Guard para sa SSRF / outbound URL: `src/shared/network/outboundUrlGuard.ts` — bina-block ang mga private/loopback/link-local range para sa lahat ng tawag sa provider
-- Runtime na validation ng env: `src/lib/env/runtimeEnv.ts` — Zod schema para sa lahat ng environment variable, na inilalantad bilang mga error/babala sa startup
-- Mga sync token: `src/lib/db/syncTokens.ts` — mga scoped token para sa mga endpoint sa pag-download ng config bundle; sinusuportahan ng SQLite table na `sync_tokens` (migration na `024_create_sync_tokens.sql`)
-- Auth para sa WebSocket handshake: `src/lib/ws/handshake.ts` — vina-validate ang mga kahilingan sa pag-upgrade ng WS sa pamamagitan ng API key o session cookie
+- Ang mga lihim ng provider ay iniimbak sa mga entry ng `providerConnections`
+- Suporta para sa outbound proxy sa pamamagitan ng `open-sse/utils/proxyFetch.ts` (mga env var) at `open-sse/utils/networkProxy.ts` (maaaring i-configure para sa bawat provider o sa pangkalahatan)
+- Guard laban sa SSRF / outbound URL: `src/shared/network/outboundUrlGuard.ts` — mga pagsusuri sa host para sa mga tawag sa provider at mga target ng webhook; nagmumula ang mode sa `src/shared/network/outboundUrlGuardPolicy.ts` (mga flag sa `docs/reference/ENVIRONMENT.md`)
+- Pagpapatunay ng runtime env: `src/lib/env/runtimeEnv.ts` — Zod schema para sa lahat ng environment variable, na ipinapakita bilang mga error/babala sa pagsisimula
+- Mga sync token: `src/lib/db/syncTokens.ts` — mga token na may saklaw para sa mga endpoint sa pag-download ng config bundle; sinusuportahan ng `sync_tokens` SQLite table (migration na `024_create_sync_tokens.sql`)
+- Auth sa WebSocket handshake: `src/lib/ws/handshake.ts` — pinapatunayan ang mga kahilingan sa pag-upgrade ng WS sa pamamagitan ng API key o session cookie
+- Auth sa WebSocket ng live dashboard: `src/server/ws/liveServer.ts` — tumatanggap ang sidecar (port na `LIVE_WS_PORT`) ng session cookie ng dashboard o Bearer API key na may management scope (`manage`/`admin`); tinatanggihan ang mga key na para lamang sa inference. Tumatanggap lamang ang internal na `POST /__omniroute_event` publisher endpoint nito ng mga loopback peer kapag walang proxy-hop header (`x-forwarded-*`, `x-real-ip`, `forwarded`, `via`)
 
 ## 5) Cloud Sync
 
@@ -1092,11 +1093,11 @@ compatibility sa mga legacy na sistema. Ginagamit ng kasalukuyang runtime contra
 - Mga migration ng SQLite schema at mga hook para sa awtomatikong pag-upgrade sa startup
 - Compatibility path para sa migration mula sa legacy JSON → SQLite
 
-## 6) SSRF / Guard ng Outbound URL
+## 6) SSRF / Proteksiyon sa Outbound URL
 
-- Hinaharang ng `src/shared/network/outboundUrlGuard.ts` ang lahat ng pribado/loopback/link-local na target URL bago makarating ang mga ito sa mga provider executor
-- Gumagamit ang mga route para sa pagtuklas at validation ng provider model ng `src/shared/network/safeOutboundFetch.ts`, na inilalapat ang guard bago ang bawat outbound na kahilingan
-- Lumalabas ang mga error ng guard bilang `URL_GUARD_BLOCKED` na may HTTP 422 at nilo-log sa compliance audit trail sa pamamagitan ng `providerAudit.ts`
+- Inilalapat ng `BaseExecutor.assertOutboundUrlAllowed` (`open-sse/executors/base.ts`) ang `src/shared/network/outboundUrlGuard.ts` sa mga kahilingan sa chat na ipinapadala sa pamamagitan ng `BaseExecutor.execute()`. Sa public-only mode (`OMNIROUTE_ALLOW_LOCAL_PROVIDER_URLS=false` habang naka-off ang private flag), bina-block nito ang mga private at loopback host at ang 169.254.0.0/16; sa lahat ng iba pang mode, bina-block nito ang mga cloud-metadata host. Sinusuri nito ang hostname o literal na IP ayon sa pagkakasulat, bago ang anumang DNS lookup. Nilalaktawan ito ng mga built-in na local provider.
+- Ginagamit ng mga ruta para sa pagtuklas at pagpapatunay ng provider model ang `src/shared/network/safeOutboundFetch.ts`, na naglalapat ng proteksiyon bago ang bawat outbound request
+- Lumalabas ang mga error ng proteksiyon bilang `URL_GUARD_BLOCKED` na may HTTP 503 (`getSafeOutboundFetchErrorStatus`; nagbabalik ng 400 ang ruta para sa pagtuklas ng model), at ang mga tunay na pag-block sa SSRF habang nagpapatunay ay itinatala sa audit trail bilang mga event na `provider.validation.ssrf_blocked`
 
 ## Observability at Mga Signal sa Operasyon
 

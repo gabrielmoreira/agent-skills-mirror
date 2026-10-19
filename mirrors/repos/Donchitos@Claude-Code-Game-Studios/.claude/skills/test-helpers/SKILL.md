@@ -115,7 +115,9 @@ generic template.
 
 Also read:
 - `design/gdd/systems-index.md` — to know which systems exist
-- In-scope GDD(s) — to understand what data types and values need testing
+- In-scope GDD(s) — to understand what data types and values need testing. Read
+  them by section: find the headings you need with the Grep tool (pattern `^#`,
+  content mode) and Read those ranges with offset and limit.
 - `docs/architecture/tr-registry.yaml` — to map requirements to tested systems
 
 ---

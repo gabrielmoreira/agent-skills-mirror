@@ -35,6 +35,20 @@ reference-based clicking over coordinates for anything smaller than a large
 button — coordinates are for canvas, maps, and drag paths, where no element
 reference exists.
 
+For a long request or title inside a fixed reading pane, keep the **same full
+input and normal viewport**. Inspect the actual content height and clipping
+ancestors: a positive outer height can consist entirely of padding. Use ordinary
+scrolling until the source entry and at least one complete body line are readable,
+then click normally and follow the existing
+[source identity and return contract](journey-and-page-contracts.md). A short-input
+pass or hit-test is auxiliary evidence; a click attempted before scrolling the
+entry into view cannot refute the candidate repair. The repository-only synthetic
+control is `evals/files/nested-source-return-fixture.html`; from an existing
+Playwright project, run `node --test <skill-source>/tests/test_nested_source_return.mjs`.
+These development files are excluded from the installed bundle; obtain them from
+this Skill's public source checkout. This control covers long faulty, long repaired
+and short healthy inputs; it does not verify a live product or physical device.
+
 ## 2. The page you are looking at may not be the page you just changed
 
 For a source-change or deployment claim, visual verification is a chain:
@@ -124,6 +138,33 @@ Compare outerWidth, innerWidth, visualViewport, and clientWidth before blaming
 CSS for blank space or mobile layout. Reset stale zoom/device emulation and
 re-capture after display or scale changes. Restore the user's expected viewport
 when finished.
+
+### Separate freshness checks from performance comparisons
+
+When the task includes loading speed, name the user-visible endpoint before measuring: for example,
+the requested task's readable body, rather than a successful HTML request or an empty shell. Record
+the route/action, device/browser, build identity and cache conditions with that observation. Keep
+those conditions comparable across runs; for a version comparison, identify the intended build
+difference explicitly. A cache-disabled freshness check is a different condition from ordinary use.
+
+Inspect the whole resource path needed to reach that endpoint, including the main application and
+later lazy-loaded reader resources. Retain observed transferred bytes and the browser/tool's cache
+indicators when available; missing timing/cache evidence stays unknown. A warm reader resource says
+nothing about whether the main application was fetched over the network. A fresh browser context
+also does not establish that intermediary or server caches were cold.
+
+Separate measured application/resource timings from total automation wall time, which can include
+operator delays, polling and tool waits. Keep the first failure or timeout alongside a later success;
+do not replace it with the fastest retry or infer its cause without a discriminating observation.
+Stop at the measured condition: do not claim an all-cold journey or a release speedup from unlike
+cache states, devices, routes or timing endpoints.
+
+Synthetic counterexample: the application script is fetched over the network, then a reader module
+is served from browser cache and its body becomes readable. Report that mixed journey and its
+observed body-ready time. Do not label the whole visit warm/cold or compare its reader-only time
+with another visit's application startup time. If both visits instead measure the same body-ready
+endpoint under matched, evidenced conditions, report that scoped comparison without requiring
+unrelated performance experiments.
 
 ## 3. `file://` is not drivable by browser-extension tooling
 
@@ -215,6 +256,26 @@ with no replacement is; "uses the default scrollbar" is not). Misfiring on healt
 input trains people to ignore the whole gate, which is worse than not having it.
 
 ## 7. Mid-run state is not final state
+
+### Establish the view and request before waiting
+
+Before timing a load, record the selected object, active tab/read mode and the
+request that this view is supposed to issue. A report tab showing “No report”
+may be a healthy empty state; it does not establish that the full conversation
+failed to load. Use the ordinary control for the required view, then observe its
+request and rendered content. Keep no-request, failed-request and successful
+empty-response observations distinct; a missing request alone does not identify
+a server defect.
+
+For a claimed in-flight screenshot, arm request observation before the action
+and retain the request identity plus a common-clock ordering:
+`requestStart < capture < responseEnd`. If capture spans an interval, keep that
+interval inside the request interval. A screenshot during debounce, before the
+request starts, is only pre-request evidence. If the response wins the race,
+retain the settled result and leave the in-flight state unverified; use an
+authorized isolated delay only as diagnostic evidence, not as the live journey.
+Inspect both the captured state and the settled content; neither replaces the
+other when a stale-result transition is the behavior under test.
 
 When a multi-step process is running (a batch sweep, a sync, a queued render),
 reading its state file or its output directory *while it runs* shows whichever

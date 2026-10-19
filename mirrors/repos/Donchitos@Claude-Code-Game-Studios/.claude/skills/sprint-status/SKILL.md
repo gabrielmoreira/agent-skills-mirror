@@ -138,10 +138,10 @@ After collecting status for all stories, check each IN PROGRESS story for stalen
 
 > **The `\*{0,2}` wrappers are why this works at all.** `/create-stories` emits
 > `> **Last Updated**: …`, so a pattern requiring `:` immediately after the word
-> matched no story ever written. Combined with the "no match = never stamped"
-> rule directly above — which is correct in itself — the failure was completely
-> silent: every in-progress story reported as never stamped, and stale-story
-> detection never once fired. A bare `Updated:` anchor will regress it.
+> matches no story. Combined with the "no match = never stamped" rule directly
+> above, that failure is silent: every in-progress story reports as never
+> stamped and stale-story detection never fires. Do not use a bare `Updated:`
+> anchor.
 - Calculate days since that date using today's date.
 - If the date is more than 4 days ago, flag the story as **STALE**. (4-day threshold accounts for weekends — a story last touched on Friday won't appear stale until Wednesday.)
 - If no date field is found in the story file, note "no timestamp — cannot check staleness."

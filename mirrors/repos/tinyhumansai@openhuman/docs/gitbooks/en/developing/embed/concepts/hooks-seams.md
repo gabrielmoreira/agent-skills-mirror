@@ -6,13 +6,13 @@ description: "Host seams replace infrastructure ports; hooks observe or control 
 
 Runtime builders accept host-owned ports for storage, sessions, memory, tools and controller extensions. These are composition seams: the host supplies an implementation of the owning library's contract, while OpenHuman retains access policy, approvals and lifecycle.
 
-Post-turn and tool hooks can be registered runtime-wide or on one agent. Agent hooks compose with parent runtime hooks and do not leak into sibling contexts. Use stable hook names to replace or remove runtime registrations through the live API; changes apply to subsequent turns.
+Learning sinks and tool hooks can be registered runtime-wide or on one agent. Agent hooks compose with parent runtime hooks and do not leak into sibling contexts. Use the live API's registration key to replace or remove runtime registrations; changes apply to subsequent turns. Learning sinks receive the upstream `TurnSummary`, while tool hooks receive the turn's `OpenHumanRunContext` and tool event.
 
 ## Runtime and agent scope
 
 | Runtime responsibility | Agent or call responsibility |
 | --- | --- |
-| Shared port implementations and named global hook registrations | Scoped hooks and host overrides inherited by recursive child contexts |
+| Shared port implementations and keyed global hook registrations | Scoped hooks and host overrides inherited by recursive child contexts |
 
 ## Verified example
 

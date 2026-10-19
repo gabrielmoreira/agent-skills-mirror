@@ -70,12 +70,12 @@ OmniRoute 有三種彼此獨立但相關的韌性機制。每種機制都有不�
 
 **範圍：** 單一提供者連線／帳戶／金鑰。
 
-**目的：** 略過一個有問題的金鑰，同時讓相同提供者的其他連線繼續提供服務。
+**目的：** 略過一個有問題的金鑰，同時讓同一提供者的其他連線繼續提供服務。
 
 **實作：**
 
 - 標記為不可用：`src/sse/services/auth.ts::markAccountUnavailable()`
-- 選取：相同檔案中的 `getProviderCredentials*`
+- 選取：同一檔案中的 `getProviderCredentials*`
 - 冷卻計算：`open-sse/services/accountFallback.ts::checkFallbackError()`
 - 設定：`src/lib/resilience/settings.ts`
 
@@ -93,146 +93,151 @@ OmniRoute 有三種彼此獨立但相關的韌性機制。每種機制都有不�
 - API 金鑰遇到 429：優先採用上游的 `Retry-After`／重設標頭／可解析的重設文字
 - 退避：`baseCooldownMs * 2 ** failureIndex`
 
-**防止驚群的保護機制：** 防止並行失敗過度延長冷卻時間，或重複遞增 `backoffLevel`。
+**防止驚群效應的保護機制：** 防止並行失敗過度延長冷卻時間，或重複遞增 `backoffLevel`。
 
-**串流內容停滯不會讓帳戶進入冷卻。** 當內容停滯監控程式
-（`open-sse/utils/streamHandler.ts`）放棄未在時限內傳送任何模型輸出的串流時，
-`markAccountUnavailable()` 會在連線上記錄錯誤，但不設定冷卻：
-停滯屬於該次請求，通常是尚未產生輸出的長時間推理回合。營運人員可透過
-`resilienceSettings.streamStallCooldown.enabled` 選擇重新啟用此行為
+**並行限制所造成的 429 不會提升退避層級。** 若 `429` 的本文回報並行限制（「too many concurrent requests」、「concurrency limit」、「parallel request
+limit」、GLM `并发数过高`），表示帳戶狀態正常，但目前繁忙。
+`checkFallbackError()` 會傳回原因 `concurrency_limited`：立即容錯移轉至下一個
+連線、將此連線固定冷卻 `CONCURRENCY_LIMIT_COOLDOWN_MS`（1 秒）或依上游重試提示冷卻、維持 `backoffLevel` 不變，並設定 `skipProviderBreaker`。
+明確的配額本文仍具有優先權，因此同時符合配額模式的本文仍會判定為配額問題。
+偵測：`src/shared/utils/classify429.ts` 中的 `looksLikeConcurrencyLimit()`；
+判定：`open-sse/services/accountFallback/concurrencyLimit429.ts`。`classify429()`（斷路器的 `FailureKind`）維持不變，對這些本文仍會判讀為 `rate_limit`。
+
+**串流內容停滯不會讓帳戶進入冷卻。** 當內容停滯監看程式
+（`open-sse/utils/streamHandler.ts`）因串流未在時限內送出任何模型輸出而放棄時，`markAccountUnavailable()` 會在連線上記錄錯誤，但不設定
+冷卻：停滯僅屬於該次請求，通常是因為較長的推理階段尚未產生輸出。
+運維人員可透過 `resilienceSettings.streamStallCooldown.enabled` 選擇重新啟用此行為
 （預設為 `false`）。
 
-**推理影格會重新啟動內容停滯時間額度。** 推理模型可能在第一個可見權杖出現前
-思考數分鐘：Claude 會串流傳送 `thinking_delta` 影格，其中的思考文字可能為空，
-而 Responses API 則會逐一串流傳送推理項目。`isReasoningProgressFrame()`
-（`open-sse/utils/streamReadiness.ts`）會辨識這些影格，而監控程式會在每個影格出現時
-重新啟動其時間額度，而非取消該回合。它們仍不算模型輸出，因此僅有推理內容便結束的
-回合仍會回報為空，而停止推理後只傳送心跳訊號的回合仍會觸發監控程式。
+**推理影格會重新開始計算內容停滯時限。** 推理模型可能會在產生第一個可見權杖前思考數分鐘：Claude 會串流傳送 `thinking_delta` 影格，其中的
+思考文字可能為空；Responses API 則會逐一串流傳送推理項目。
+`isReasoningProgressFrame()`（`open-sse/utils/streamReadiness.ts`）會辨識
+這些影格，而監看程式會在收到每個影格時重新開始計算時限，而不是取消該次
+處理。這些影格仍不屬於模型輸出，因此僅以推理結束的處理仍會被回報為
+空白；若處理停止推理，之後只傳送心跳訊號，仍會觸發監看程式。
 
-Kiro 的二進位 `reasoningContentEvent` 影格若具有非空簽章，會透過執行器將此
-推理活動保留為空的 `reasoning_content` 增量。簽章不會被轉送。中繼資料、不完整的
-影格及空簽章不會重新啟動內容時間額度；獨立的作用中串流逾時和用戶端取消仍然
-適用（`open-sse/executors/kiro/reasoning.ts`）。
+Kiro 的二進位 `reasoningContentEvent` 影格若帶有非空白簽章，會以空白的 `reasoning_content` 差異內容形式，透過執行器保留此
+推理活動。簽章不會被轉送。中繼資料、不完整的影格及空白簽章不會重新開始計算
+內容時限；獨立的作用中串流逾時與用戶端取消仍然適用
+（`open-sse/executors/kiro/reasoning.ts`）。
 
-**終止狀態（並非冷卻）：**
+**終止狀態（不是冷卻）：**
 
-- `banned` — 由禁用關鍵字／帳戶封禁偵測設定（請參閱 [BAN_DETECTION](../security/BAN_DETECTION.md)），也會由連續三次上游的逐請求拒絕所設定（`request_rejected`，例如 Anthropic OAuth 403「Request not allowed」— `open-sse/services/requestRejectedStreak.ts`）；單次拒絕只會讓連線進入冷卻
-- `expired`（在有限次數的重試後轉為終止狀態 — `EXPIRED_RETRY_MAX = 3`，並採用指數退避 — 因此暫時性的 OAuth 錯誤可在帳戶遭永久停用前自行復原）
+- `banned` — 由禁用關鍵字／帳戶封鎖偵測設定（請參閱 [BAN_DETECTION](../security/BAN_DETECTION.md)），也會在連續三次上游單次請求遭拒（`request_rejected`，例如 Anthropic OAuth 403「Request not allowed」— `open-sse/services/requestRejectedStreak.ts`）後設定；單次拒絕只會使連線進入冷卻
+- `expired`（經過有限次數的重試後轉為終止狀態 — `EXPIRED_RETRY_MAX = 3`，搭配指數退避 — 讓暫時性的 OAuth 錯誤可在帳戶永久停用前自行恢復）
 - `credits_exhausted`
 
-這些狀態會持續存在，直到憑證變更或營運人員將其重設。請勿以暫時性冷卻狀態覆寫終止狀態。
+這些狀態會持續存在，直到憑證變更或運維人員將其重設為止。請勿以暫時性的冷卻狀態覆寫終止狀態。
 
-**延遲復原：** 當 `rateLimitedUntil` 已過期，連線便會再次符合使用資格。成功使用後，`clearAccountError()` 會清除所有錯誤欄位。
+**延遲恢復：** 當 `rateLimitedUntil` 已過期，連線便會再次符合使用資格。成功使用後，`clearAccountError()` 會清除所有錯誤欄位。
 
-### Claude OAuth 用量牆：較低優先級通道 + 工作階段限制重設
+### Claude OAuth 用量牆：較低優先權通道 + 工作階段限制重設
 
-**範圍：** 一個 Claude 訂閱（OAuth）連線。這兩項功能皆需**針對每個連線選擇啟用**
-（編輯連線 → Claude 區段 → `providerSpecificData` 中的 `lowPriorityMode`／
-`autoLimitReset`，兩者預設皆為關閉），並仿效 Claude Code 的 `/low-priority` 和
-`/limit-reset` 命令（傳輸協定取自 Claude Code 2.1.263）。
+**範圍：** 一個 Claude 訂閱（OAuth）連線。這兩項功能都必須**針對每個
+連線選擇啟用**（編輯連線 → Claude 區段 → `providerSpecificData` 中的 `lowPriorityMode`／`autoLimitReset`，兩者預設皆為關閉），並仿照 Claude Code 的 `/low-priority` 與
+`/limit-reset` 命令（通訊協定擷取自 Claude Code 2.1.263）。
 
 **實作：**
 
 - 狀態機 + 回應分類：`open-sse/services/claudeLowPriority.ts`
-- 重設狀態／申領用戶端：`open-sse/services/claudeLimitReset.ts`
-- 執行器掛鉤（標頭注入 + 相同帳戶重試）：`open-sse/executors/base.ts::execute()`
-- 選擇啟用狀態的持久化：`src/lib/providers/requestDefaults.ts::normalizeProviderSpecificData()`
+- 重設狀態／宣告用戶端：`open-sse/services/claudeLimitReset.ts`
+- 執行器掛鉤（標頭注入 + 同帳戶重試）：`open-sse/executors/base.ts::execute()`
+- 選擇啟用狀態持久化：`src/lib/providers/requestDefaults.ts::normalizeProviderSpecificData()`
 
-**觸發條件：** 5 小時用量牆 — 一個標頭包含
-`anthropic-ratelimit-unified-status: rejected`，且當帳戶符合資格時還包含
-`anthropic-ratelimit-unified-slow-offer: treatment` 的 `429`。在首次遇到該用量牆
-429 前不會傳送任何內容；不含統一標頭的突發 429 會走一般冷卻路徑。
+**觸發條件：** 5 小時用量牆 — 一個 `429`，其標頭包含
+`anthropic-ratelimit-unified-status: rejected`，且當帳戶符合資格時，也包含
+`anthropic-ratelimit-unified-slow-offer: treatment`。在第一次遇到該用量牆
+429 之前不會傳送任何內容；不含 unified 標頭的突發 429 會經由一般冷卻流程處理。
 
-**較低優先級通道**（`lowPriorityMode`）：
+**較低優先權通道**（`lowPriorityMode`）：
 
 - 遇到配額牆 429 時，執行器會接受提議，並立即使用 `anthropic-usage-limit: slow` 重試**相同的**
-  帳戶；通道會持續處於作用中，直到已公布的
-  `anthropic-ratelimit-unified-reset`（另加 60 秒寬限期）為止，且該時段內的每個請求都會攜帶
-  此標頭。遭攔截的 429 永遠不會到達 `handleChatCore`，因此連線**不會**進入冷卻狀態，
-  也不會被輪替掉。
+  帳戶；通道會持續保持啟用，直到公告的
+  `anthropic-ratelimit-unified-reset`（另加 60 秒寬限期）為止，且該時間範圍內的每個請求都會帶有
+  此標頭。被攔截的 429 絕不會到達 `handleChatCore`，因此連線
+  **不會**進入冷卻，也不會被輪替掉。
 - 後續回應中的 `anthropic-ratelimit-unified-slow-status`：`active` / `not_needed`
   會保留通道；`slot_busy`（429）或 `529` 會依伺服器的
-  `anthropic-ratelimit-unified-slow-retry-after` 等待（預設 20 秒，限制於 5–600 秒，±30% 抖動）
-  並重試，且受 `anthropic-ratelimit-unified-slow-max-wait` 限制（預設 20 分鐘，限制於
-  1 分鐘–6 小時）——超過該時間後，通道便會結束，並進入 10 分鐘的冷卻期以阻止再次接受。
-  等待時間還會受請求本身剩餘的上游啟動逾時限制
-  （`resolveFetchStartTimeout`，預設 10 分鐘），並扣除 5 秒餘裕：若沒有此限制，
-  預設 20 分鐘的最大等待時間會比請求存續時間更長，睡眠也會在等待途中遭到中止，
-  導致浮現 `TimeoutError`，而不是正常以 `max_wait` 結束並進入冷卻期。
+  `anthropic-ratelimit-unified-slow-retry-after` 等待（預設 20 秒，限制在 5–600 秒，±30% 抖動）
+  後重試，並受 `anthropic-ratelimit-unified-slow-max-wait` 限制（預設 20 分鐘，限制在
+  1 分鐘–6 小時）——超過此時間後，通道會結束，並進入 10 分鐘的冷卻期以阻止重新接受。
+  等待時間還會額外受限於請求本身剩餘的上游啟動逾時時間
+  （`resolveFetchStartTimeout`，預設 10 分鐘）減去 5 秒的餘裕：若沒有此上限，
+  預設 20 分鐘的最長等待時間會超出請求生命週期，導致休眠在等待途中被中止，
+  並浮現 `TimeoutError`，而不是正常結束於 `max_wait` 並進入冷卻期。
 - `weekly_limit` / `budget_exhausted` / `off` / `ineligible`、5 小時視窗輪替，或
-  `ineligible` + `anthropic-ratelimit-unified-overage-in-use: true`（由於付費超額用量現已涵蓋配額牆，
-  無論任何狀態都會以 `extra_usage` 結束）都會終止通道；之後回應會流向一般冷卻流程。
-  `budget_exhausted` 會持續被記錄到已公布的預算重設時間為止（≤ 8 天）。
-- 配額牆檢查會在執行器本身由 400 觸發的單次嘗試內重試之後執行（內容編輯、
-  thinking/effort 限制、參數自動學習），因此即使配額牆 429 僅在其中一次重試時出現，
-  仍會被攔截，而不會進入冷卻流程。
-- 狀態會依每個連線儲存於記憶體中（重新啟動會多付出一次配額牆 429，以便重新接受）。
+  `ineligible` + `anthropic-ratelimit-unified-overage-in-use: true`（由於付費超額用量現在可涵蓋配額牆，
+  因此無論任何狀態都會以 `extra_usage` 結束）會終止通道；接著回應會流入一般冷卻路徑。
+  `budget_exhausted` 會被記錄到公告的預算重設時間為止（≤ 8 天）。
+- 配額牆檢查會在執行器自身由 400 驅動的單次嘗試內重試之後執行（內容編輯、
+  思考／努力程度限制、參數自動學習），因此即使配額牆 429 只在其中一次重試時出現，
+  仍會被攔截，而不會到達冷卻路徑。
+- 狀態依連線儲存在記憶體中（重新啟動會多付出一次配額牆 429，才能重新接受）。
 
 **工作階段限制重設**（`autoLimitReset`，兩者皆啟用時會在通道之前嘗試）：
 
 - `GET https://api.anthropic.com/api/oauth/usage?at_wall=1&skip_spend=1` → `juniper_tide`
   區塊；當 `arm: "reset"` 且 `available: true` 時，
-  使用 `{ "program": "juniper_tide" }` 對
+  以 `{ "program": "juniper_tide" }` 呼叫
   `POST https://api.anthropic.com/api/organizations/{orgUUID}/reset_rate_limits`
-  發出請求（組織 UUID 取自 `providerSpecificData.organizationUUID`，並以啟動程序作為備援）。
+  （組織 UUID 來自 `providerSpecificData.organizationUUID`，並以啟動程序取得的值作為備援）。
 - `result: reset|not_limited` → 以全速重試請求（不含慢速標頭）。
-  `already_used` / `not_offered` 會記住 `next_available_at`（預設一週）；
-  任何失敗都會退避 15 分鐘。重設每週僅能執行一次，且仍會計入每週限制。
+  `already_used` / `not_offered` 會記憶 `next_available_at`（預設一週）；
+  任何失敗都會退避 15 分鐘。每週只能重設一次，且仍會計入每週限制。
 
 迴歸防護：`tests/unit/claude-low-priority-mode.test.ts`、
 `tests/unit/claude-limit-reset.test.ts`、`tests/unit/claude-low-priority-executor.test.ts`。
 
-### 工作階段親和性 (#7274)
+### 工作階段親和性（#7274）
 
 **範圍：**一個用戶端工作階段（`X-Session-Id` / `x-codex-session-id` / `x-omniroute-session` 標頭）固定至一個連線，適用於**任何**提供者。
 
-**目的：**讓多輪代理（Claude Code、aider、自訂代理）在不同請求間維持使用相同帳戶，減少跨帳戶的上下文遺失，並降低在具有每帳戶工作階段狀態之提供者上重複發生的冷啟動 429。
+**目的：**讓多輪代理（Claude Code、aider、自訂代理）在各次請求間維持使用相同帳戶，減少跨帳戶的上下文遺失，以及在具有每帳戶工作階段狀態的提供者上反覆出現冷啟動 429。
 
 **實作：**
 
 - TTL 解析：`src/sse/services/sessionAffinityPin.ts::resolveSessionAffinityTtlMs()`
-- 固定連線的選取／建立：`src/sse/services/sessionAffinityPin.ts::selectSessionAffinityConnection()`
-- 標頭擷取（通用，適用於任何提供者）：`src/sse/services/auth.ts::extractSessionAffinityKey()`
-- 持久化固定連線表：`sessionAccountAffinity`（`src/lib/db/sessionAccountAffinity.ts`）
-- 設定：`sessionAffinityTtlMs`（以毫秒為單位的全域 TTL，`0` 表示停用）— `src/lib/db/settings.ts`。由僅限 Codex 的 `codexSessionAffinityTtlMs` 經移轉 `124_generic_session_affinity_ttl.sql` 重新命名而來；該移轉會將先前已設定的 Codex TTL 沿用為新的預設值。
+- 固定連線的選擇／建立：`src/sse/services/sessionAffinityPin.ts::selectSessionAffinityConnection()`
+- 標頭擷取（通用，適用任何提供者）：`src/sse/services/auth.ts::extractSessionAffinityKey()`
+- 持久化的固定連線資料表：`sessionAccountAffinity`（`src/lib/db/sessionAccountAffinity.ts`）
+- 設定：`sessionAffinityTtlMs`（全域 TTL，單位為毫秒；`0` 代表停用）— `src/lib/db/settings.ts`。由遷移 `124_generic_session_affinity_ttl.sql` 從僅限 Codex 的 `codexSessionAffinityTtlMs` 重新命名而來，該遷移會將先前已設定的 Codex TTL 沿用為新的預設值。
 
-在 #7274 之前，`resolveSessionAffinityTtlMs()` 會對 `codex` 以外的每個提供者直接提前返回 `0`，因此即使固定機制和標頭擷取已與提供者無關，TTL 設定（以及工作階段標頭）在其他地方仍不會生效。修正移除了該提前返回；現在只要全域設定為大於 `0`，TTL 就會一致套用至所有提供者。
+在 #7274 之前，`resolveSessionAffinityTtlMs()` 會對 `codex` 以外的所有提供者直接提早傳回 `0`，因此即使固定連線機制與標頭擷取早已不限定提供者，TTL 設定（以及工作階段標頭）在其他任何地方仍不會生效。此修正移除了該提早傳回；現在只要全域設定為大於 `0`，TTL 就會統一套用至所有提供者。
 
-這三個工作階段親和性標頭絕不會轉送至上游——執行器會從頭自行建立上游標頭，而不是直接傳遞用戶端標頭，因此這些標頭只會作為內部關聯 ID。
+這三個工作階段親和性標頭絕不會轉送至上游——執行器會從頭建立自己的上游標頭，而不是直接傳遞用戶端標頭，因此這些標頭只會作為內部關聯 ID。
 
-### 專屬受管理工作階段連線租約
+### 獨佔受管理工作階段連線租約
 
 **範圍：**一個作用中的受管理 HTTP 用戶端／工作階段擁有一個符合資格的 OmniRoute 連線。
 
-**目的：**為需要跨請求硬性路由隔離的用戶端提供持久的專屬連線擁有權。
-這與作為軟性連續性偏好的工作階段親和性不同：
-專屬租約會將生命週期狀態持久化至 SQLite、強制執行全域作用中擁有者與
-作用中連線的唯一性，並在分派至提供者之前拒絕過期的世代。
+**目的：**為需要在各次請求間建立嚴格路由邊界的用戶端，提供持久且獨佔的連線所有權。這與作為軟性連續性偏好的工作階段親和性不同：
+獨佔租約會將生命週期狀態持久化至 SQLite、強制執行全域作用中擁有者與
+作用中連線的唯一性，並在分派至提供者之前拒絕過期世代。
 
-此功能依每個 API 金鑰選擇性啟用。受管理金鑰必須具有 `lease:exclusive` 範圍，
-以及明確且非空的 `allowedConnections` 清單。任何 HTTP 用戶端都可使用生命週期端點；
-不需要用戶端名稱、使用者代理、提供者、OAuth 方法或模型。租約擁有的是連線，
-而不是模型，因此只要連線仍正常符合資格，變更模型後仍會保留繫結。
-一般的模型、配額、健康狀態、冷卻和允許清單規則仍具有最高權威，
-並可能將同一世代轉移至另一個可用且符合資格的連線。
+此功能需針對每個 API 金鑰選擇性啟用。受管理金鑰必須具有 `lease:exclusive` 範圍，且有
+明確、非空的 `allowedConnections` 清單。任何 HTTP 用戶端都能使用生命週期端點；不需要
+用戶端名稱、使用者代理、提供者、OAuth 方法或模型。租約擁有的是連線，
+而非模型，因此只要連線仍符合一般資格，變更模型時仍會保留綁定。
+一般的模型、配額、健康狀態、冷卻及允許清單規則仍具最終決定權，且可能會將
+同一世代轉移至另一個可用且符合資格的連線。
 
-生命週期是透過 `POST /api/v1/session-leases` 搭配 JSON 動作 `acquire`、`renew` 和 `release` 來管理。
-受管理的推論請求會提供不透明的 `X-OmniRoute-Lease-Owner` 值與確切的
-`X-OmniRoute-Lease-Generation`。擁有者值以 `vlo_` 開頭，後接 43 個 base64url 字元；系統只會
+生命週期透過 `POST /api/v1/session-leases` 管理，並使用 JSON 動作 `acquire`、`renew` 與 `release`。
+受管理的推論請求會提供不透明的 `X-OmniRoute-Lease-Owner` 值及確切的
+`X-OmniRoute-Lease-Generation`。擁有者值以 `vlo_` 開頭，後接 43 個 base64url 字元；系統僅
 儲存其 SHA-256 雜湊。每個最終分派柵欄也會繫結已驗證的 API 金鑰 ID 與
-作用中的連線 ID。租約控制標頭會從日誌、保留的請求快照與
+作用中的連線 ID。租約控制標頭會從日誌、保留的請求快照及
 上游執行器標頭中移除。
 
-如果一般路由具有符合資格的受管理候選項目，但所有可用候選項目都被
-其他擁有者的有效租約占用，OmniRoute 會傳回 HTTP `429`、lease-capacity-unavailable 程式碼、
-waiting-for-capacity 狀態，以及根據最早相關到期時間計算且設有上限的 `Retry-After`。
-一般的資格集合為空並不屬於租約爭用，仍會維持其既有的路由錯誤語意。
+若一般路由具有符合資格的受管理候選項目，但所有可用候選項目皆由
+外部的有效租約占用，OmniRoute 會傳回 HTTP `429`、lease-capacity-unavailable 錯誤碼、
+等待容量狀態，以及根據最早相關到期時間得出的有界 `Retry-After`。
+一般的資格集合為空並非租約競爭，因此會維持其既有的路由錯誤語意。
 
-相關機制仍彼此分離：
+相關機制仍彼此獨立：
 
-- OAuth 工作階段占用是針對 OAuth 帳戶的處理程序本機軟性分配。
-- 帳戶信號量會授予請求並行處理許可，並在請求完成時結束。
-- 獨占式受管理工作階段租約是具有世代柵欄的持久生命週期所有權。
+- OAuth 工作階段占用是 OAuth 帳戶在行程內的軟性分配機制。
+- 帳戶號誌會授予請求並行處理許可，並在請求完成時結束。
+- 專屬受管理工作階段租約是一種具有世代柵欄的持久生命週期所有權。
 
 ---
 

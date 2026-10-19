@@ -69,9 +69,9 @@ Kontroll kontra rigressjonijiet: `tests/unit/provider-cooldown-window-gate.test.
 
 ## 2. Perjodu ta' Stennija tal-Konnessjoni
 
-**Ambitu:** konnessjoni/kont/ċavetta waħda tal-fornitur.
+**Ambitu:** konnessjoni/kont/ċavetta waħda ta' fornitur.
 
-**Għan:** taqbeż ċavetta waħda problematika filwaqt li konnessjonijiet oħra għall-istess fornitur jibqgħu jipprovdu s-servizz.
+**Għan:** taqbeż ċavetta ħażina waħda filwaqt li konnessjonijiet oħra għall-istess fornitur ikomplu jaqdu t-talbiet.
 
 **Implimentazzjoni:**
 
@@ -89,162 +89,174 @@ Kontroll kontra rigressjonijiet: `tests/unit/provider-cooldown-window-gate.test.
 
 **Perjodi ta' stennija predefiniti:**
 
-- Bażi OAuth: 5s
-- Bażi API-key: 3s
-- API-key 429: jippreferi l-headers upstream `Retry-After`/reset/test tar-reset li jista' jiġi pparsjat
+- Bażi għal OAuth: 5s
+- Bażi għal ċavetta tal-API: 3s
+- 429 għal ċavetta tal-API: jippreferi `Retry-After` mill-upstream/intestaturi ta' reset/test ta' reset li jista' jiġi pproċessat
 - Backoff: `baseCooldownMs * 2 ** failureIndex`
 
-**Protezzjoni kontra thundering herd:** tipprevjeni fallimenti konkorrenti milli jestendu żżejjed il-perjodu ta' stennija jew iżidu `backoffLevel` darbtejn.
+**Protezzjoni kontra t-thundering herd:** tipprevjeni milli fallimenti konkorrenti jestendu żżejjed il-perjodu ta' stennija jew iżidu `backoffLevel` darbtejn.
+
+**L-iżbalji 429 tal-limitu tal-konkorrenza ma javvanzawx fuq is-sellum tal-backoff.** `429` li l-body tiegħu jirrapporta
+limitu tal-konkorrenza ("wisq talbiet konkorrenti", "limitu tal-konkorrenza", "limitu ta'
+talbiet paralleli", GLM `并发数过高`) ifisser li l-kont huwa tajjeb iżda okkupat.
+`checkFallbackError()` jirritorna r-raġuni `concurrency_limited`: aqleb għall-konnessjoni
+li jmiss issa, poġġi lil din f'perjodu ta' stennija fiss ta' `CONCURRENCY_LIMIT_COOLDOWN_MS` (1s) jew skont
+l-indikazzjoni tal-upstream dwar meta terġa' tipprova, żomm `backoffLevel` mhux mibdul, u ssettja `skipProviderBreaker`.
+Body espliċitu dwar il-kwota xorta jieħu preċedenza, għalhekk body li jaqbel ukoll ma' mudell ta' kwota jibqa' verdett
+ta' kwota. Sejbien: `looksLikeConcurrencyLimit()` f'`src/shared/utils/classify429.ts`;
+verdett: `open-sse/services/accountFallback/concurrencyLimit429.ts`. `classify429()` (il-
+`FailureKind` tal-breaker) ma jinbidilx u xorta jaqra `rate_limit` għal dawn il-bodies.
 
 **Waqfiet fil-kontenut tal-stream ma jpoġġux il-kont f'perjodu ta' stennija.** Meta l-watchdog tal-waqfien tal-kontenut
-(`open-sse/utils/streamHandler.ts`) jaqta' qalbu minn stream li ma jkun bagħat ebda output tal-mudell
-fil-ħin, `markAccountUnavailable()` jirreġistra l-iżball fuq il-konnessjoni iżda ma jistabbilixxi ebda
-perjodu ta' stennija: il-waqfien jappartjeni għal dik it-talba, u ħafna drabi jkun turn twil ta' reasoning mingħajr
-output s'issa. L-operaturi jistgħu jerġgħu jattivaw din l-imġiba permezz ta' `resilienceSettings.streamStallCooldown.enabled`
-(predefinit `false`).
+(`open-sse/utils/streamHandler.ts`) jieqaf jipprova fuq stream li ma bagħat ebda output tal-mudell
+fil-ħin, `markAccountUnavailable()` jirreġistra l-iżball fuq il-konnessjoni iżda ma jissettja ebda
+perjodu ta' stennija: il-waqfien jappartjeni għal dik it-talba, u ħafna drabi jkun pass twil ta' raġunament li għadu ma ta
+ebda output. L-operaturi jistgħu jerġgħu jattivaw dan b'`resilienceSettings.streamStallCooldown.enabled`
+(il-valur predefinit huwa `false`).
 
-**Il-frames tar-reasoning jerġgħu jibdew il-baġit tal-waqfien tal-kontenut.** Mudell tar-reasoning jista' jaħseb għal
-minuti qabel l-ewwel token viżibbli tiegħu: Claude jixxandar frames `thinking_delta` li t-test
-tar-reasoning tagħhom jista' jkun vojt, u l-Responses API jixxandar element ta' reasoning wara
+**Il-frames tar-raġunament jerġgħu jibdew il-baġit tal-waqfien tal-kontenut.** Mudell ta' raġunament jista' jaħseb għal
+minuti qabel l-ewwel token viżibbli tiegħu: Claude jibgħat bħala stream frames `thinking_delta` li t-test
+tal-ħsieb tagħhom jista' jkun vojt, u l-Responses API tibgħat bħala stream element ta' raġunament wara
 ieħor. `isReasoningProgressFrame()` (`open-sse/utils/streamReadiness.ts`) jagħraf
-dawn il-frames, u l-watchdog jerġa' jibda l-baġit tiegħu ma' kull wieħed minnhom minflok jikkanċella t-
-turn. Xorta waħda mhumiex output tal-mudell, għalhekk turn li jintemm b'reasoning biss xorta jiġi
-rrappurtat bħala vojt, u turn li jieqaf jirraġuna u jibgħat biss heartbeats xorta jattiva
+dawn il-frames, u l-watchdog jerġa' jibda l-baġit tiegħu ma' kull wieħed minnhom minflok jikkanċella l-
+pass. Xorta mhumiex output tal-mudell, għalhekk pass li jintemm b'raġunament biss xorta jiġi
+rrapportat bħala vojt, u pass li jieqaf jirraġuna u jibgħat biss heartbeats xorta jattiva
 l-watchdog.
 
 Il-frames binarji `reasoningContentEvent` ta' Kiro b'firma mhux vojta jippreservaw din
-l-attività ta' reasoning permezz tal-executor bħala delta `reasoning_content` vojta. Il-firma ma
-tiġix mgħoddija. Il-metadata, il-frames mhux kompluti u l-firem vojta ma jerġgħux jibdew il-
+l-attività ta' raġunament permezz tal-executor bħala delta `reasoning_content` vojta. Il-firma ma
+tintbagħatx. Metadata, frames mhux kompluti u firem vojta ma jerġgħux jibdew il-
 baġit tal-kontenut; it-timeout indipendenti tal-stream attiv u l-kanċellazzjoni mill-klijent xorta
 japplikaw (`open-sse/executors/kiro/reasoning.ts`).
 
 **Stati terminali (MHUX perjodi ta' stennija):**
 
-- `banned` — stabbilit mid-detezzjoni ta' keyword ta' projbizzjoni / projbizzjoni tal-kont (ara [BAN_DETECTION](../security/BAN_DETECTION.md)), u minn tliet rifjuti upstream konsekuttivi għal kull talba (`request_rejected`, eż. Anthropic OAuth 403 "Request not allowed" — `open-sse/services/requestRejectedStreak.ts`); rifjut wieħed ipoġġi biss il-konnessjoni f'perjodu ta' stennija
-- `expired` (jgħaddi għal stat terminali wara għadd limitat ta' tentattivi mill-ġdid — `EXPIRED_RETRY_MAX = 3` b'backoff esponenzjali — sabiex żbalji OAuth temporanji jkunu jistgħu jirkupraw waħedhom qabel ma l-kont jiġi diżattivat b'mod permanenti)
+- `banned` — issettjat mis-sejbien ta' kelma pprojbita / projbizzjoni tal-kont (ara [BAN_DETECTION](../security/BAN_DETECTION.md)), u minn tliet rifjuti konsekuttivi għal kull talba mill-upstream (`request_rejected`, eż. Anthropic OAuth 403 "Talba mhux permessa" — `open-sse/services/requestRejectedStreak.ts`); rifjut wieħed ipoġġi biss il-konnessjoni f'perjodu ta' stennija
+- `expired` (jgħaddi għal stat terminali wara għadd limitat ta' tentattivi mill-ġdid — `EXPIRED_RETRY_MAX = 3` b'backoff esponenzjali — sabiex żbalji temporanji ta' OAuth ikunu jistgħu jirkupraw waħedhom qabel ma l-kont jiġi diżattivat b'mod permanenti)
 - `credits_exhausted`
 
-Dawn jippersistu sakemm il-kredenzjali jinbidlu jew operatur jirrisettjahom. Tissostitwixxix stati terminali bi stat temporanju ta' perjodu ta' stennija.
+Dawn jippersistu sakemm jinbidlu l-kredenzjali jew operatur jirrisettjahom. Tiktibx fuq stati terminali bi stat temporanju ta' perjodu ta' stennija.
 
-**Irkupru għażżien:** meta `rateLimitedUntil` ikun għadda, il-konnessjoni terġa' ssir eliġibbli. Wara użu b'suċċess, `clearAccountError()` ineħħi l-oqsma kollha tal-iżbalji.
+**Irkupru għażżien:** meta `rateLimitedUntil` ikun għadda, il-konnessjoni terġa' ssir eliġibbli. Wara użu b'suċċess, `clearAccountError()` ineħħi l-oqsma kollha tal-iżball.
 
-### Limitu tal-użu ta' Claude OAuth: kanal bi prijorità aktar baxxa + reset tal-limitu tas-sessjoni
+### Limitu tal-użu ta' Claude OAuth: korsija bi prijorità aktar baxxa + reset tal-limitu tas-sessjoni
 
-**Ambitu:** konnessjoni waħda ta' abbonament Claude (OAuth). Iż-żewġ funzjonalitajiet huma **opt-in għal kull
-konnessjoni** (Editja l-konnessjoni → sezzjoni Claude → `lowPriorityMode` / `autoLimitReset` fi
+**Ambitu:** konnessjoni waħda ta' abbonament Claude (OAuth). Iż-żewġ funzjonalitajiet huma **attivati b'għażla għal kull
+konnessjoni** (Editja l-konnessjoni → sezzjoni Claude → `lowPriorityMode` / `autoLimitReset` f'
 `providerSpecificData`, it-tnejn diżattivati b'mod predefinit) u jirriflettu l-kmandi `/low-priority` u
-`/limit-reset` ta' Claude Code (il-kuntratt tal-wire maqbud minn Claude Code 2.1.263).
+`/limit-reset` ta' Claude Code (il-kuntratt tal-wire inqabad minn Claude Code 2.1.263).
 
 **Implimentazzjoni:**
 
 - Magna tal-istati + klassifikazzjoni tar-rispons: `open-sse/services/claudeLowPriority.ts`
-- Klijent tal-istatus/talba tar-reset: `open-sse/services/claudeLimitReset.ts`
+- Klijent tal-istatus/talba għar-reset: `open-sse/services/claudeLimitReset.ts`
 - Hook tal-executor (injezzjoni tal-header + tentattiv mill-ġdid bl-istess kont): `open-sse/executors/base.ts::execute()`
-- Persistenza tal-opt-in: `src/lib/providers/requestDefaults.ts::normalizeProviderSpecificData()`
+- Persistenza tal-attivazzjoni b'għażla: `src/lib/providers/requestDefaults.ts::normalizeProviderSpecificData()`
 
-**Attivatur:** il-limitu tal-użu ta' 5 sigħat — `429` li l-headers tiegħu jkollhom
+**Attivatur:** il-limitu ta' użu ta' 5 sigħat — `429` li l-headers tiegħu jinkludu
 `anthropic-ratelimit-unified-status: rejected` u, meta l-kont ikun eliġibbli,
-`anthropic-ratelimit-unified-slow-offer: treatment`. Ma jintbagħat xejn qabel dak l-ewwel
-429 tal-limitu; burst 429 mingħajr headers unifikati jgħaddi mill-fluss normali tal-perjodu ta' stennija.
+`anthropic-ratelimit-unified-slow-offer: treatment`. Ma jintbagħat xejn qabel dak l-ewwel 429 tal-limitu;
+429 f'daqqa mingħajr headers unifikati jgħaddi mill-fluss normali tal-perjodu ta' stennija.
 
-**Kanal bi prijorità aktar baxxa** (`lowPriorityMode`):
+**Korsija bi prijorità aktar baxxa** (`lowPriorityMode`):
 
-- Meta jintlaħaq il-limitu u jirritorna 429, l-eżekutur jaċċetta l-offerta u immedjatament jerġa’ jipprova bl-**istess**
-  kont b’`anthropic-usage-limit: slow`; il-korsija tibqa’ attiva sal-ħin imħabbar f’
+- Mal-429 tal-limitu, l-eżekutur jaċċetta l-offerta u immedjatament jerġa’ jipprova l-**istess**
+  kont b’`anthropic-usage-limit: slow`; il-korsija tibqa’ attiva sal-ħin imħabbar minn
   `anthropic-ratelimit-unified-reset` (+60s ta’ marġni) u kull talba f’dak il-perjodu jkollha
   l-header. Il-429 interċettat qatt ma jasal għand `handleChatCore`, għalhekk il-konnessjoni
-  **ma** titqiegħedx f’cooldown u ma tinbidilx ma’ oħra.
+  **ma** titqegħidx fi stat ta’ cooldown u ma tinbidilx ma’ oħra.
 - `anthropic-ratelimit-unified-slow-status` fuq tweġibiet sussegwenti: `active` / `not_needed`
   jżommu l-korsija; `slot_busy` (429) jew `529` jistennew għal
   `anthropic-ratelimit-unified-slow-retry-after` tas-server (20s b’mod awtomatiku, limitat għal
   5–600s, b’jitter ta’ ±30%) u jerġgħu jippruvaw, sal-limitu ta’
-  `anthropic-ratelimit-unified-slow-max-wait` (20 min b’mod awtomatiku, limitat għal
-  1 min–6 h) — wara dan il-korsija tintemm u perjodu ta’ mistrieħ ta’ 10 minuti jimblokka
-  l-aċċettazzjoni mill-ġdid. Barra minn hekk, l-istennija hija limitata għal dak li jkun fadal
-  mit-timeout upstream-start tat-talba nnifisha (`resolveFetchStartTimeout`, 10 min b’mod
-  awtomatiku) nieqes marġni ta’ 5 s: mingħajr dak il-limitu, il-max-wait predefinit ta’
-  20 minuta jdum aktar mit-talba u l-istennija tiġi abortita waqt li tkun għaddejja,
-  u b’hekk jidher `TimeoutError` minflok tmiem gradwali b’`max_wait` + perjodu ta’ mistrieħ.
-- `weekly_limit` / `budget_exhausted` / `off` / `ineligible`, bidla għal ċiklu ġdid tat-tieqa
-  ta’ 5h, jew `ineligible` + `anthropic-ratelimit-unified-overage-in-use: true` (li jtemmha
-  bħala `extra_usage` bi kwalunkwe status, peress li l-użu żejjed bi ħlas issa jkopri l-limitu)
-  itemmu l-korsija; imbagħad it-tweġiba tgħaddi għall-fluss normali tal-cooldown.
+  `anthropic-ratelimit-unified-slow-max-wait` (20 minuta b’mod awtomatiku, limitat għal
+  minuta–6 sigħat) — wara dan il-korsija tintemm u perjodu ta’ waqfien ta’ 10 minuti jimblokka
+  aċċettazzjoni mill-ġdid. Barra minn hekk, l-istennija hija limitata għal kemm ikun fadal
+  mit-timeout tal-istess talba għall-bidu upstream (`resolveFetchStartTimeout`, 10 minuti
+  b’mod awtomatiku) nieqes marġni ta’ 5 s: mingħajr dak il-limitu, il-ħin massimu ta’ stennija
+  awtomatiku ta’ 20 minuta jdum aktar mit-talba u l-istennija tiġi abortita f’nofsha,
+  u b’hekk jidher `TimeoutError` minflok tmiem ikkontrollat b’`max_wait` + perjodu ta’ waqfien.
+- `weekly_limit` / `budget_exhausted` / `off` / `ineligible`, qlib ta’ tieqa ta’ 5h, jew
+  `ineligible` + `anthropic-ratelimit-unified-overage-in-use: true` (li jtemmha bħala
+  `extra_usage` bi kwalunkwe status, peress li l-użu żejjed imħallas issa jkopri l-limitu)
+  itemmu l-korsija; it-tweġiba mbagħad tgħaddi għall-fluss normali tal-cooldown.
   `budget_exhausted` jinżamm fil-memorja sal-ħin imħabbar għar-reset tal-baġit (≤ 8 ijiem).
-- Il-verifika tal-limitu ssir wara t-tentattivi mill-ġdid interni tal-eżekutur fl-istess tentattiv
-  ikkawżati minn 400 (editjar tal-kuntest, limiti fuq thinking/effort, tagħlim awtomatiku
-  tal-parametri), għalhekk 429 tal-limitu li jidher biss f’wieħed minn dawk it-tentattivi
-  mill-ġdid xorta jiġi interċettat minflok ma jasal fil-fluss tal-cooldown.
-- L-istat jinżamm fil-memorja għal kull konnessjoni (restart jiswa 429 tal-limitu ieħor biex
-  jerġa’ jiġi aċċettat).
+- Il-kontroll tal-limitu jitħaddem wara t-tentattivi mill-ġdid interni tal-eżekutur fl-istess
+  tentattiv, skattati minn 400 (editjar tal-kuntest, limiti fuq thinking/effort, tagħlim
+  awtomatiku tal-parametri), għalhekk 429 tal-limitu li jidher biss waqt wieħed minn dawk
+  it-tentattivi mill-ġdid xorta jiġi interċettat minflok ma jasal sal-fluss tal-cooldown.
+- L-istat jinżamm fil-memorja għal kull konnessjoni (restart jiswa 429 tal-limitu addizzjonali
+  wieħed biex jerġa’ jiġi aċċettat).
 
 **Reset tal-limitu tas-sessjoni** (`autoLimitReset`, ippruvat qabel il-korsija meta t-tnejn ikunu attivi):
 
 - `GET https://api.anthropic.com/api/oauth/usage?at_wall=1&skip_spend=1` → blokka `juniper_tide`;
   meta `arm: "reset"` u `available: true`,
   `POST https://api.anthropic.com/api/organizations/{orgUUID}/reset_rate_limits` b’
-  `{ "program": "juniper_tide" }` (l-UUID tal-organizzazzjoni minn
-  `providerSpecificData.organizationUUID`, b’fallback tal-bootstrap).
-- `result: reset|not_limited` → it-talba terġa’ tiġi ppruvata b’veloċità sħiħa (mingħajr l-header
-  slow). `already_used` / `not_offered` iżommu `next_available_at` fil-memorja (ġimgħa b’mod
-  awtomatiku); kwalunkwe falliment jattiva backoff ta’ 15-il minuta. Ir-reset isir darba
-  fil-ġimgħa u xorta jgħodd mal-limitu ta’ kull ġimgħa.
+  `{ "program": "juniper_tide" }` (UUID tal-organizzazzjoni minn
+  `providerSpecificData.organizationUUID`, b’bootstrap bħala riżerva).
+- `result: reset|not_limited` → it-talba terġa’ tiġi ppruvata b’veloċità sħiħa (mingħajr
+  slow header). `already_used` / `not_offered` iżommu fil-memorja `next_available_at`
+  (ġimgħa b’mod awtomatiku); kwalunkwe falliment japplika backoff ta’ 15-il minuta.
+  Ir-reset isir darba fil-ġimgħa u xorta jgħodd mal-limitu ta’ kull ġimgħa.
 
-Kontrolli kontra r-rigressjonijiet: `tests/unit/claude-low-priority-mode.test.ts`,
+Kontrolli kontra rigressjonijiet: `tests/unit/claude-low-priority-mode.test.ts`,
 `tests/unit/claude-limit-reset.test.ts`, `tests/unit/claude-low-priority-executor.test.ts`.
 
 ### Affinità tas-sessjoni (#7274)
 
 **Ambitu:** sessjoni waħda tal-klijent (header `X-Session-Id` / `x-codex-session-id` / `x-omniroute-session`) marbuta ma’ konnessjoni waħda, għal **kwalunkwe** fornitur.
 
-**Għan:** li aġent b’diversi interazzjonijiet (Claude Code, aider, aġenti personalizzati) jinżamm fuq l-istess kont bejn it-talbiet, biex jitnaqqsu t-telf tal-kuntest bejn kontijiet u l-429s ripetuti ta’ cold-start fuq fornituri bi stat tas-sessjoni għal kull kont.
+**Għan:** iżżomm aġent b’diversi dawriet (Claude Code, aider, aġenti personalizzati) fuq l-istess kont bejn it-talbiet, biex tnaqqas it-telf ta’ kuntest bejn il-kontijiet u 429s ripetuti ta’ cold start fuq fornituri bi stat tas-sessjoni għal kull kont.
 
 **Implimentazzjoni:**
 
 - Riżoluzzjoni tat-TTL: `src/sse/services/sessionAffinityPin.ts::resolveSessionAffinityTtlMs()`
-- Għażla/ħolqien tal-pin: `src/sse/services/sessionAffinityPin.ts::selectSessionAffinityConnection()`
+- Għażla/ħolqien tal-irbit: `src/sse/services/sessionAffinityPin.ts::selectSessionAffinityConnection()`
 - Estrazzjoni tal-header (ġenerika, għal kwalunkwe fornitur): `src/sse/services/auth.ts::extractSessionAffinityKey()`
-- Tabella persistenti tal-pins: `sessionAccountAffinity` (`src/lib/db/sessionAccountAffinity.ts`)
-- Setting: `sessionAffinityTtlMs` (TTL globali f’ms, `0` jiddiżattivah) — `src/lib/db/settings.ts`. Ingħata isem ġdid mill-`codexSessionAffinityTtlMs`, li kien għal Codex biss, permezz tal-migrazzjoni `124_generic_session_affinity_ttl.sql`, li tittrasferixxi kwalunkwe TTL ta’ Codex ikkonfigurat qabel bħala l-valur predefinit il-ġdid.
+- Tabella persistenti tal-irbit: `sessionAccountAffinity` (`src/lib/db/sessionAccountAffinity.ts`)
+- Issettjar: `sessionAffinityTtlMs` (TTL globali f’ms, `0` jiddiżattivah) — `src/lib/db/settings.ts`. Ingħata isem ġdid minn `codexSessionAffinityTtlMs`, li kien biss għal Codex, permezz tal-migrazzjoni `124_generic_session_affinity_ttl.sql`, li tittrasferixxi kwalunkwe TTL ta’ Codex ikkonfigurat qabel bħala l-valur awtomatiku l-ġdid.
 
-Qabel #7274, `resolveSessionAffinityTtlMs()` kien immedjatament jirritorna `0` għal kull fornitur ħlief `codex`, għalhekk is-setting tat-TTL (u l-headers tas-sessjoni) ma kellhom ebda effett imkien ieħor minkejja li l-mekkaniżmu tal-pinning u l-estrazzjoni tal-header kienu diġà indipendenti mill-fornitur. It-tiswija neħħiet dak ir-ritorn bikri; issa t-TTL japplika b’mod uniformi għal kull fornitur ladarba jiġi ssettjat globalment għal aktar minn `0`.
+Qabel #7274, `resolveSessionAffinityTtlMs()` kien immedjatament jirritorna `0` għal kull fornitur ħlief `codex`, għalhekk l-issettjar tat-TTL (u l-headers tas-sessjoni) ma kellhom ebda effett imkien ieħor, minkejja li l-mekkaniżmu tal-irbit u l-estrazzjoni tal-header kienu diġà indipendenti mill-fornitur. It-tiswija neħħiet dak ir-ritorn bikri; it-TTL issa japplika b’mod uniformi għal kull fornitur ladarba jiġi ssettjat globalment għal aktar minn `0`.
 
-It-tliet headers tal-affinità tas-sessjoni qatt ma jintbagħtu upstream — l-eżekuturi jibnu l-headers upstream tagħhom mill-bidu minflok jgħaddu l-headers tal-klijent, għalhekk dan jibqa’ biss id ta’ korrelazzjoni interna.
+It-tliet headers tal-affinità tas-sessjoni qatt ma jintbagħtu upstream — l-eżekuturi jibnu l-headers upstream tagħhom mill-bidu minflok jgħaddu l-headers tal-klijent, għalhekk dan jibqa’ biss ID intern għall-korrelazzjoni.
 
-### Leases esklużivi ta’ konnessjonijiet għal sessjonijiet ġestiti
+### Leases esklużivi tal-konnessjoni għal sessjonijiet immaniġġjati
 
-**Ambitu:** klijent/sessjoni HTTP ġestita u attiva waħda jkollha konnessjoni OmniRoute eliġibbli waħda.
+**Ambitu:** klijent/sessjoni HTTP immaniġġjata u attiva waħda tkun is-sid ta’ konnessjoni OmniRoute eliġibbli waħda.
 
-**Għan:** li jipprovdi sjieda esklużiva u persistenti ta’ konnessjoni għal klijenti li jeħtieġu
-konfini stretti tar-routing bejn it-talbiet. Dan huwa differenti mill-affinità tas-sessjoni, li hija
-preferenza flessibbli għall-kontinwità: lease esklużiv jippersisti l-istat taċ-ċiklu tal-ħajja
+**Għan:** jipprovdi sjieda esklużiva u dejjiema tal-konnessjoni għal klijenti li jeħtieġu
+separazzjoni stretta tar-routing bejn it-talbiet. Dan huwa differenti mill-affinità tas-sessjoni,
+li hija preferenza ratba għall-kontinwità: lease esklużiv jippersisti l-istat taċ-ċiklu tal-ħajja
 f’SQLite, jinforza l-uniċità globali tas-sid attiv u tal-konnessjoni attiva, u jirrifjuta
-ġenerazzjoni skaduta qabel id-dispatch lejn il-fornitur.
+ġenerazzjoni skaduta qabel id-dispaċċ lill-fornitur.
 
-Il-karatteristika hija opt-in għal kull API key. Key ġestita jrid ikollha l-iskop `lease:exclusive`
-u lista `allowedConnections` espliċita u mhux vojta. Kwalunkwe klijent HTTP jista’ juża l-endpoint
-taċ-ċiklu tal-ħajja; mhu meħtieġ ebda isem tal-klijent, user-agent, fornitur, metodu OAuth, jew
-mudell. Il-lease jkollu konnessjoni, mhux mudell, għalhekk bidla fil-mudell iżżomm ir-rabta sakemm
-il-konnessjoni tibqa’ eliġibbli skont ir-regoli normali. Ir-regoli normali tal-mudell, tal-kwota,
-tas-saħħa, tal-cooldown u tal-allowlist jibqgħu awtorevoli u jistgħu jittrasferixxu l-istess
-ġenerazzjoni għal konnessjoni eliġibbli u ħielsa oħra.
+Il-karatteristika trid tiġi attivata espliċitament għal kull API key. Key immaniġġjata jrid
+ikollha l-ambitu `lease:exclusive` u lista espliċita u mhux vojta `allowedConnections`.
+Kwalunkwe klijent HTTP jista’ juża l-endpoint taċ-ċiklu tal-ħajja; ma huma meħtieġa ebda
+isem tal-klijent, user-agent, fornitur, metodu OAuth jew mudell. Il-lease jkun sid ta’
+konnessjoni, mhux ta’ mudell, għalhekk bidla fil-mudell iżżomm l-irbit sakemm il-konnessjoni
+tibqa’ eliġibbli b’mod normali. Ir-regoli normali tal-mudell, tal-kwota, tas-saħħa,
+tal-cooldown u tal-allowlist jibqgħu awtorevoli u jistgħu jgħaddu l-istess ġenerazzjoni għal
+konnessjoni eliġibbli u ħielsa oħra.
 
 Iċ-ċiklu tal-ħajja huwa `POST /api/v1/session-leases` b’azzjonijiet JSON `acquire`, `renew`, u `release`.
-It-talbiet ta’ inferenza ġestiti jippreżentaw il-valur opak `X-OmniRoute-Lease-Owner` u l-valur eżatt
+It-talbiet ta’ inferenza mmaniġġjata jippreżentaw il-valur opak `X-OmniRoute-Lease-Owner` u l-valur eżatt
 `X-OmniRoute-Lease-Generation`. Is-sid juża `vlo_` segwit minn 43 karattru base64url; jinħażen biss
 il-hash SHA-256 tiegħu. Kull ċint finali tad-dispaċċ jorbot ukoll l-ID taċ-ċavetta API awtentikata u
-l-ID tal-konnessjoni attiva. L-headers tal-kontroll tal-kiri jitneħħew mil-logs, mill-istampi istantanji miżmuma tat-talbiet, u
+l-ID tal-konnessjoni attiva. L-headers tal-kontroll tal-kiri jitneħħew mil-logs, mill-istampi miżmuma tat-talbiet, u
 mill-headers tal-eżekutur upstream.
 
-Jekk ir-routing ordinarju jkollu kandidati ġestiti eliġibbli iżda kull kandidat liberu jkun okkupat minn
-kiri attiv barrani, OmniRoute jirritorna HTTP `429`, il-kodiċi lease-capacity-unavailable, stat ta’
-stennija għall-kapaċità, u `Retry-After` limitat derivat mill-aktar skadenza rilevanti bikrija.
-Nuqqas ordinarju ta’ eliġibbiltà mhuwiex kontenzjoni għall-kiri u jżomm is-semantika eżistenti tal-iżbalji tar-routing.
+Jekk ir-routing ordinarju jkollu kandidati mmaniġġjati eliġibbli iżda kull kandidat disponibbli jkun okkupat minn
+kirja attiva barranija, OmniRoute jirritorna HTTP `429`, il-kodiċi lease-capacity-unavailable, stat
+waiting-for-capacity, u `Retry-After` limitat derivat mill-aktar skadenza rilevanti bikrija.
+L-eliġibbiltà vojta ordinarja mhijiex kunflitt ta’ kiri u żżomm is-semantika eżistenti tagħha tal-iżbalji tar-routing.
 
 Il-mekkaniżmi relatati jibqgħu separati:
 
-- L-okkupanza tas-sessjoni OAuth hija distribuzzjoni ratba lokali għall-proċess għall-kontijiet OAuth.
-- Is-semafori tal-kontijiet jagħtu permessi għall-konkorrenza tat-talbiet u jintemmu meta titlesta talba.
-- Il-kirjiet esklussivi ta’ sessjonijiet ġestiti huma sjieda durabbli taċ-ċiklu tal-ħajja b’ċint tal-ġenerazzjoni.
+- L-okkupazzjoni tas-sessjoni OAuth hija distribuzzjoni mhux stretta u lokali għall-proċess għall-kontijiet OAuth.
+- Is-semafori tal-kont jagħtu permessi għall-konkorrenza tat-talbiet u jintemmu meta talba titlesta.
+- Il-kirjiet esklużivi ta’ sessjonijiet immaniġġjati huma sjieda durabbli taċ-ċiklu tal-ħajja b’ċint tal-ġenerazzjoni.
 
 ---
 

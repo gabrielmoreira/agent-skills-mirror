@@ -3,7 +3,7 @@ name: consistency-check
 description: "Scan GDDs against the entity registry for cross-document conflicts. Grep-first approach targets conflicting sections, different stats."
 argument-hint: "[full | since-last-review | entity:<name> | item:<name>]"
 user-invocable: true
-allowed-tools: Read, Glob, Grep, Write, Edit, Bash, AskUserQuestion, Bash(bash "*/.claude/skills/consistency-check/../../hooks/yaml-helper.sh" resolve_config *)
+allowed-tools: Read, Glob, Grep, Write, Edit, AskUserQuestion, Bash(bash "*/.claude/skills/consistency-check/../../hooks/yaml-helper.sh" resolve_config *), Bash(git log *), Bash(bash .claude/scripts/registry.sh validate*)
 model: sonnet
 ---
 
@@ -194,6 +194,9 @@ Read path="design/gdd/[conflicting_gdd].md"
 ```
 (Or use Grep with wider context if the file is large)
 
+Read it by section: find the conflicting section's heading with the Grep tool
+(pattern `^#`, content mode) and Read that range with offset and limit.
+
 Confirm the conflict with full context. Determine:
 1. **Which GDD is correct?** Check the `source:` field in the registry — the
    source GDD is the authoritative owner. Any other GDD that contradicts it
@@ -293,6 +296,13 @@ Only add entries that appear in more than one GDD (true cross-system facts).
 
 **Never delete registry entries.** Set `status: deprecated` if an entry is removed
 from all GDDs.
+
+After writing, run `bash .claude/scripts/registry.sh validate` and fix every row
+about an entry this write added or changed (a DUPLICATE, STATUS or LAYOUT row,
+or a PATH_MISSING row for a path it named) before the verdict; name rows about
+other entries to the user rather than fixing them unasked. If the script is
+missing or prints nothing, say the registry check did not run, then re-read the
+entries you wrote against the rules in the file's header.
 
 After writing: Verdict: **COMPLETE** — consistency check finished.
 If conflicts remain unresolved: Verdict: **BLOCKED** — [N] conflicts need manual resolution before architecture begins.

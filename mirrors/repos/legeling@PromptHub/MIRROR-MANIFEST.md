@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `legeling/PromptHub` — 26 default patterns, 6 followed patterns, 28 file(s) materialized.
+Mirror of `legeling/PromptHub` — 26 default patterns, 6 followed patterns, 30 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `legeling/PromptHub` — 26 default patterns, 6 followed patterns, 28 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 6 |
-| Files         | 28 |
+| Files         | 30 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -83,15 +83,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 17 | ✓ | [`.agents/skills/spec-init/scripts/spec-init.sh`](.agents/skills/spec-init/scripts/spec-init.sh) |
 | 18 | ✓ | [`.agents/skills/spec-init/SKILL.md`](.agents/skills/spec-init/SKILL.md) |
 | 19 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 20 | ✓ | [`spec/knowledge/behavior/skills.md`](spec/knowledge/behavior/skills.md) |
-| 21 | ✓ | [`spec/rules/storage-evolution-rules.md`](spec/rules/storage-evolution-rules.md) |
-| 22 | ✓ | [`spec/rules/submission-traceability-rules.md`](spec/rules/submission-traceability-rules.md) |
-| 23 | → | [`docs/README.md`](docs/README.md) |
-| 24 | → | [`spec/README.md`](spec/README.md) |
-| 25 | → | [`spec/rules/document-routing-rules.md`](spec/rules/document-routing-rules.md) |
-| 26 | → | [`spec/rules/issue-management-rules.md`](spec/rules/issue-management-rules.md) |
-| 27 | → | [`spec/rules/testing-standards.md`](spec/rules/testing-standards.md) |
-| 28 | → | [`spec/workflow/04-verification/README.md`](spec/workflow/04-verification/README.md) |
+| 20 | ✓ | [`docs/cloudflare-workers.md`](docs/cloudflare-workers.md) |
+| 21 | ✓ | [`docs/web-self-hosted.md`](docs/web-self-hosted.md) |
+| 22 | ✓ | [`spec/knowledge/behavior/skills.md`](spec/knowledge/behavior/skills.md) |
+| 23 | ✓ | [`spec/rules/storage-evolution-rules.md`](spec/rules/storage-evolution-rules.md) |
+| 24 | ✓ | [`spec/rules/submission-traceability-rules.md`](spec/rules/submission-traceability-rules.md) |
+| 25 | → | [`docs/README.md`](docs/README.md) |
+| 26 | → | [`spec/README.md`](spec/README.md) |
+| 27 | → | [`spec/rules/document-routing-rules.md`](spec/rules/document-routing-rules.md) |
+| 28 | → | [`spec/rules/issue-management-rules.md`](spec/rules/issue-management-rules.md) |
+| 29 | → | [`spec/rules/testing-standards.md`](spec/rules/testing-standards.md) |
+| 30 | → | [`spec/workflow/04-verification/README.md`](spec/workflow/04-verification/README.md) |
 
 ---
 

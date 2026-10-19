@@ -3,7 +3,7 @@ name: settings
 description: "View or change project config — effective merged values, or set locally in project.local.yaml."
 argument-hint: "[key | key=value | --local key=value]"
 user-invocable: true
-allowed-tools: Read, Glob, Grep, Write, Edit, Bash, AskUserQuestion
+allowed-tools: Read, Glob, Grep, Write, Edit, AskUserQuestion, Bash(bash "*/.claude/skills/settings/../../hooks/yaml-helper.sh" resolve_setting *), Bash(bash "*/.claude/skills/settings/../../hooks/yaml-helper.sh" get_yaml_key *), Bash(bash "*/.claude/skills/settings/../../hooks/yaml-helper.sh" validate_yaml_enum *), Bash(bash "*/.claude/skills/settings/../../hooks/yaml-helper.sh" validate_enum_value *), Bash(bash "*/.claude/skills/settings/../../hooks/yaml-helper.sh" is_locally_overridable *), Bash(bash .claude/scripts/config-set.sh *), Bash(grep -B14 '^> ### RESERVED' .claude/docs/effects-map.md), Bash(grep -E '^## ')
 model: sonnet
 ---
 
@@ -46,19 +46,21 @@ Anything else that doesn't match the four forms above → Phase 6 (usage).
 
 ## Phase 1: Load Helper
 
-All four subcommands need `yaml-helper.sh`. Each Bash call starts a fresh
-shell, so load it **in the same command as every helper call**, from the project
-root, in parentheses so the session's working directory does not change:
+All four subcommands need `yaml-helper.sh`. Run each helper call as its own
+plain command:
 
 ```bash
-(cd "${CLAUDE_SKILL_DIR}/../../.." && source .claude/hooks/yaml-helper.sh && <helper call>)
+bash "${CLAUDE_SKILL_DIR}/../../hooks/yaml-helper.sh" <helper call>
 ```
 
 `<helper call>` is the function each phase below names, for example
-`resolve_setting modes.review_mode` or `validate_yaml_enum project.yaml`.
-Running from the root is what makes those `project.yaml` and
+`resolve_setting modes.review_mode` or `validate_yaml_enum project.yaml`. The
+helper moves to the project root itself, so those `project.yaml` and
 `project.local.yaml` arguments resolve when the session was started in a
-subfolder.
+subfolder, and it keeps the function's exit status. `is_locally_overridable`
+also prints its `0` or `1`. Run the call exactly as shown: do not `source` the
+file, wrap it in `cd ... &&` or append `; echo $?`. This skill pre-approves the
+plain form only, and a compound command asks the user every time.
 
 If `.claude/hooks/yaml-helper.sh` is missing, this is not a CCGS project.
 Report the error and exit.
@@ -193,7 +195,7 @@ Schema validation: ok
 Effective config:
 
 framework:
-  version: 1.1.3            (project.yaml, locked)
+  version: 1.2.0            (project.yaml, locked)
 
 modes:
   review_mode: lean         (project.yaml)
@@ -210,7 +212,7 @@ qa:
 
 engine:
   name: Godot               (project.yaml, locked)
-  version: 4.6              (project.yaml, locked)
+  version: 4.7              (project.yaml, locked)
 
 testing:
   strict:
@@ -310,6 +312,16 @@ When the effective value is empty (key not set anywhere), print just:
    exits without writing. If it returns 0, the value is either valid
    or the key has no enum constraint — proceed.
 
+1b. **Known-key check**: run, from the project root as in Phase 1,
+   `bash .claude/scripts/config-set.sh <key> <value> --dry-run` and read its
+   `known` row. If it says `yes`, proceed. If it says `no`, nothing in CCGS reads
+   that key, so writing it changes nothing; it is most often a typo. Do not
+   write yet: say so, and ask via `AskUserQuestion` with the options
+   `Use <nearest> instead` (only when the row ends `nearest: <key>`),
+   `Write <key> anyway`, `Cancel`. Continue only on an explicit choice; with
+   `Use <nearest> instead`, start this phase again with that key. A skipped or
+   empty answer cancels.
+
 2. **Reserved warning**: if `<key>` is in `RESERVED_SET` (Phase 1b), print
    BEFORE the approval prompt:
    > "Note: `<key>` is RESERVED — no skill or hook reads it, so setting it will
@@ -390,6 +402,10 @@ When the effective value is empty (key not set anywhere), print just:
 2. **Schema validation**: call `validate_enum_value <key> <value>`. If
    it returns 1, show the stderr message verbatim and exit without
    writing.
+
+2a. **Known-key check**: as in Phase 4 step 1b, with `--local` before
+   `<key>`: if the `known` row says `no`, ask before writing, offering the `nearest:` key
+   when the row names one.
 
 2b. **Reserved warning**: if `<key>` is in `RESERVED_SET` (Phase 1b), print
    BEFORE the approval prompt:

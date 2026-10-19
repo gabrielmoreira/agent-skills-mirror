@@ -3,7 +3,7 @@ name: sprint-plan
 description: "New or updated sprint plan from the current milestone, completed work, and available capacity."
 argument-hint: "[new|update|status] [--review full|lean|solo]"
 user-invocable: true
-allowed-tools: Read, Glob, Grep, Write, Edit, Agent, AskUserQuestion, Bash(bash "*/.claude/skills/sprint-plan/../../hooks/yaml-helper.sh" resolve_config *)
+allowed-tools: Read, Glob, Grep, Write, Edit, Agent, AskUserQuestion, Bash(bash "*/.claude/skills/sprint-plan/../../hooks/yaml-helper.sh" resolve_config *), Bash(ls production/sprints/*)
 model: sonnet
 ---
 
@@ -92,7 +92,9 @@ smaller than the range is planned whole — never padded with invented stories.
    which do not exist cannot be implemented. Verdict: **BLOCKED** — no stories to plan.
 
 4. **Scan design documents** in `design/gdd/` for additional context on the
-   features those stories implement. At `workflow: minimal` there are no
+   features those stories implement. Read each by section: find the headings you
+   need with the Grep tool (pattern `^#`, content mode) and Read those ranges
+   with offset and limit. At `workflow: minimal` there are no
    per-system GDDs — use `design/game-brief.md` instead, and do not treat the
    absent GDDs as missing work. (Note: `/sprint-plan` is **optional** at
    `minimal` — the brief's Build order already is the plan.)
@@ -116,6 +118,10 @@ For `new`:
 
 ## Sprint Goal
 [One sentence describing what this sprint achieves toward the milestone]
+
+## Goal Prerequisites
+| Needed to show the goal | Status |
+|-------------------------|--------|
 
 ## Capacity
 - Total days: [X]
@@ -159,6 +165,45 @@ For `new`:
 - [ ] Code reviewed and merged
 ```
 
+### Check the goal's prerequisites
+
+Before you present a `new` plan, check that its goal can be shown working by the
+sprint's end. A goal can need something no story builds: a playtest needs a
+scene to run in. This check reports and never blocks. It adds no question and no
+story of its own.
+
+1. **Settle the goal.** Quote the milestone's goal when there is one; otherwise
+   write one sentence from the stories picked.
+2. **List what showing it needs.** A goal the player can see or play (a playable
+   loop, a feature working end to end, a playtest) needs the scene or level it
+   runs in and the setting that starts it: `run/main_scene` in `project.godot`,
+   the scene list in Unity's `ProjectSettings/EditorBuildSettings.asset`, or
+   `GameDefaultMap` in Unreal's `Config/DefaultEngine.ini`. Add any file, scene
+   or system that a picked story's acceptance criteria, notes or dependencies
+   name and no picked story creates. A goal with nothing to run or show (logic
+   and tests only) needs none.
+3. **Check each one.** It is covered when it exists in the project or a picked
+   story builds it. Find scenes by the engine's scene files (`engine.name` in
+   `project.yaml`): `*.tscn` for Godot, `Assets/**/*.unity` for Unity,
+   `Content/**/*.umap` for Unreal. Find anything else by the path or name the
+   stories use. With no engine set, check by name only and say the scene search
+   did not run.
+4. **Fill in the Goal Prerequisites section**: each need with `exists`,
+   `built by [story ID]` or **missing**, or the single row "None: the goal has
+   nothing to run or show". Copy each missing one into Risks. When you present
+   the plan, name each missing one and the three fixes open to the user: pull in
+   the Ready story that builds it (name it, and say if that takes the sprint past
+   its `story_granularity` range or needs stories it depends on), write a story
+   for it first with `/create-stories`, or reword the goal to promise only what
+   the sprint can show. Give them as part of the plan,
+   not as a question: the write ask stays the only question, and a user who
+   wants a fix says so in reply to it. **Report the gap; do not solve it.** A
+   missing prerequisite stays missing in this plan, however small it looks (a
+   flat test level, an input map): plan no task for it and put none of its work
+   into a picked story, not even as setup. Its work needs a story first, which
+   is `/create-stories`' job. Never add a story the backlog does not
+   hold, and never widen a picked story or edit a story file to cover the gap.
+
 For `update`:
 
 **Update an existing sprint plan**:
@@ -166,7 +211,8 @@ For `update`:
 1. Read the most recent sprint plan from `production/sprints/`.
 2. Present the current story list with their current statuses from `production/sprint-status.yaml`.
 3. Ask the user what to change: stories to add, remove, reprioritize, or re-estimate. Use `AskUserQuestion` to gather changes.
-4. Apply the changes and re-present the full revised plan for review.
+4. Apply the changes and re-present the full revised plan for review. If the
+   goal or the Must Have stories changed, check the goal's prerequisites again first.
 5. Re-run the producer feasibility gate (Phase 4) on the revised plan.
 6. Write the updated markdown plan and yaml together (same approval as `new` mode).
 
@@ -268,7 +314,7 @@ stories that haven't changed, add new stories, remove dropped ones.
 
 Before finalising the sprint plan, spawn `producer` via `Agent` using gate **PR-SPRINT** (`.claude/docs/director-gates/pr-sprint.md`).
 
-Pass: proposed story list (titles, estimates, dependencies), total team capacity in hours/days, any carryover from the previous sprint, milestone constraints and deadline.
+Pass: proposed story list (titles, estimates, dependencies), total team capacity in hours/days, any carryover from the previous sprint, milestone constraints and deadline, and any missing goal prerequisite.
 
 Present the producer's assessment.
 
@@ -313,6 +359,8 @@ Use `AskUserQuestion`:
   - `[B] Skip for now — I understand QA sign-off will be blocked at the Production → Polish gate`
 
 Wait for this answer before the write ask below — the two are separate questions.
+An answer here is never approval to write, even "yes, go ahead" or "once the plan is written":
+ask the write question next and write only after a yes to it.
 
 If [A]: note in the plan "QA plan: run `/qa-plan sprint` before implementation begins."
 If [B]: add a warning block to the sprint plan document:
@@ -326,7 +374,7 @@ If [B]: add a warning block to the sprint plan document:
 ### Write the plan
 
 Ask: "May I write the sprint plan to `production/sprints/sprint-NNN.md` (`[N]` zero-padded to three digits) and
-`production/sprint-status.yaml`?" If yes, write both files (creating directories as
+`production/sprint-status.yaml`?" Ask it even when an earlier answer sounded like a yes. If yes, write both files (creating directories as
 needed). Verdict: **COMPLETE** — sprint plan and status file created. If no:
 Verdict: **BLOCKED** — user declined write.
 

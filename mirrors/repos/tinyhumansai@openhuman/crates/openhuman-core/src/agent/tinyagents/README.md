@@ -18,7 +18,7 @@ The adapter seam between OpenHuman and the vendored [`tinyagents`](../../../../.
 
 | File / group | Role |
 | --- | --- |
-| [`mod.rs`](./mod.rs) | Module root: declares submodules and re-exports (`TurnContextMiddleware`, `TranscriptSnapshotSink`, `SubagentScope`, `ToolPolicyEnforcement`, `TinyagentsTurnOutcome`, `TurnModelSource`/`TurnModels`, `TurnSpec::run`). |
+| [`mod.rs`](./mod.rs) | Module root: declares submodules and re-exports (`TurnContextMiddleware`, `TranscriptSnapshotSink`, `SubagentScope`, `ToolPolicyEnforcement`, `TinyagentsTurnOutcome`, `TurnModelSource`, `TurnSpec::run`). |
 | [`turn_policy.rs`](./turn_policy.rs) | `ToolPolicyEnforcement`, provider locality and the `OPENHUMAN_*` overrides feeding `tinyagents_harness::turn_policy::run_policy`. |
 | `turn_runner.rs` | `TurnSpec::run`, the single entry point every production caller uses, plus the `#[cfg(test)]`-only `run_turn_via_tinyagents`. |
 | `turn_models.rs` | `TurnModels` (primary + tier routes + summarizer) and `TurnModelSource`, whose `build`/`build_summarizer` construct crate-native models from `(role, config)` via `build_turn_models_crate`. |
@@ -32,7 +32,7 @@ The adapter seam between OpenHuman and the vendored [`tinyagents`](../../../../.
 | `replay/` | Read-only agent-run replay/status RPC (`mod.rs`, `ops.rs`, `schemas.rs`): three `agent`-namespace controllers; `ops.rs` is a workspace adapter over `tinyagents_harness::observability::replay`. |
 | `journal.rs` | `TurnJournal` and `attach_turn_journal`: a crate `StoreEventJournal` over a JSONL append store plus a `HarnessStatusStore` writer (`FileStatusStore`, `mint_run_id` and the env-secret redaction seed are upstream in `tinyagents_harness::observability`) under `{workspace}/tinyagents_store`. Attached alongside the live `observability` bridge as an independent `EventSink` subscriber, wrapped in `RedactingSink`; best-effort and non-fatal. |
 | `reaper.rs` | `reap_orphaned_runs`: workspace adapter over the upstream sweep (`tinyagents_harness::observability::reap_orphaned_runs`) that marks non-terminal runs `Cancelled` in the durable status store. The only writer over the status seam that `replay/` reads. |
-| [`middleware.rs`](./middleware.rs) + `middleware/` | The named OpenHuman middleware stack. `turn_context.rs`: `TurnContextMiddleware` (bundles config and installs the enabled hooks), `TranscriptSnapshotMiddleware`/`TranscriptSnapshotSink`. `tool_output.rs`: `ToolOutputMiddleware` (per-result byte cap and optional payload summarizer). `approval.rs`: `ApprovalSecurityMiddleware`. `tool_policy.rs`: the `ToolPolicyMiddleware` struct and impl (records blocks into `crate::tools::registry::denials`). `tool_outcome_capture.rs`: `ToolOutcomeCaptureMiddleware`. `embedder_hooks.rs`: `EmbedderToolHooksMiddleware`. `memory_protocol.rs`: the OpenHuman tool vocabulary (`memory_protocol_spec()`) for the upstream `MemoryProtocolMiddleware`. `cost_budget.rs`: `CostBudgetMiddleware`. `repeated_failure.rs`: `RepeatedToolFailureMiddleware` (class-specific recovery budgets before the next model call; equivalent failures share a stable resource scope even when arguments differ). `loop_guards.rs`: `TerminalInferenceFailure`. `credential_scrub.rs`: the browser confirmation-token exemption and `credential_scrub_middleware()`, which wires the harness `CredentialScrubMiddleware`. The generic context-ladder and loop-guard middleware live in `tinyagents-harness` (`middleware::library`) and are installed by [`context_wiring.rs`](./context_wiring.rs) / `harness_assembly.rs`: `ImageAwareMessageTrimMiddleware`, `FinalCallWrapUpMiddleware` (host passes the `file_write`/`apply_patch` deliverable tools and `CLEARED_PLACEHOLDER`), `ArtifactIndexTocMiddleware` (issue #6014), `RepeatProgressMiddleware`/`RepeatEvictionObserver` (host passes the `wait_subagent` exemption), and `ArgRecoveryMiddleware`. |
+| [`middleware.rs`](./middleware.rs) + `middleware/` | The named OpenHuman middleware stack. `turn_context.rs`: `TurnContextMiddleware` (bundles config and installs the enabled hooks), `TranscriptSnapshotMiddleware`/`TranscriptSnapshotSink`. `tool_output.rs`: `ToolOutputMiddleware` (per-result byte cap and optional payload summarizer). `approval.rs`: `ApprovalSecurityMiddleware`. `tool_policy.rs`: the `ToolPolicyMiddleware` struct and impl (records blocks into `crate::tools::registry::denials`). `tool_outcome_capture.rs`: `ToolOutcomeCaptureMiddleware`. `memory_protocol.rs`: the OpenHuman tool vocabulary (`memory_protocol_spec()`) for the upstream `MemoryProtocolMiddleware`. `cost_budget.rs`: `CostBudgetMiddleware`. `repeated_failure.rs`: `RepeatedToolFailureMiddleware` (class-specific recovery budgets before the next model call; equivalent failures share a stable resource scope even when arguments differ). `loop_guards.rs`: `TerminalInferenceFailure`. `credential_scrub.rs`: the browser confirmation-token exemption and `credential_scrub_middleware()`, which wires the harness `CredentialScrubMiddleware`. The generic context-ladder and loop-guard middleware live in `tinyagents-harness` (`middleware::library`) and are installed by [`context_wiring.rs`](./context_wiring.rs) / `harness_assembly.rs`: `ImageAwareMessageTrimMiddleware`, `FinalCallWrapUpMiddleware` (host passes the `file_write`/`apply_patch` deliverable tools and `CLEARED_PLACEHOLDER`), `ArtifactIndexTocMiddleware` (issue #6014), `RepeatProgressMiddleware`/`RepeatEvictionObserver` (host passes the `wait_subagent` exemption), and `ArgRecoveryMiddleware`. |
 | [`middleware/research_budget.rs`](./middleware/research_budget.rs) | Withdraws the web tools from a top-level turn after eight successful search or fetch calls (forcing an answer only when no other tool remains), and notes once when consecutive web calls fail. |
 | `model.rs` | Helpers and wrappers over native crate `ChatModel` values: message/response translation, usage merging, stream-delta forwarding, `MaxTokensModel`, `ProfileOverrideModel`. |
 | [`tools.rs`](./tools.rs) | `CanonicalSharedToolAdapter`: resolves an OpenHuman shared tool registry and forwards the canonical `tinytools::Tool` contract; `EarlyExitHook` pauses successful `ask_user_clarification`-style calls. |
@@ -44,7 +44,6 @@ The adapter seam between OpenHuman and the vendored [`tinyagents`](../../../../.
 | [`policy_denial.rs`](./policy_denial.rs) | `maybe_enrich_policy_block`: rewrites `[policy-blocked]` tool results into structured what/why/workaround messages that tell the model to relay the denial rather than fabricate output. Called from `ToolOutcomeCaptureMiddleware`. |
 | [`host/run_context.rs`](./host/run_context.rs) + typed tool dispatch | `OpenHumanRunContext` owns one root `CancellationToken`; child contexts share it and recursive tools receive it from their typed parent `RunContext`. |
 | [`steering_forwarder.rs`](./steering_forwarder.rs) | Host adapter over `tinyagents_harness::run_queue::SteeringForwarderGuard` (forwards `RunQueue` steer/collect messages into the harness `SteeringHandle`; abort-on-drop so drop-based cancellation always deregisters it, issue #4456): `QueuedMessage for QueuedTurn`, the `RunQueue*` domain-event sink and the steering-registry cleanup hook. |
-| [`stop_hooks.rs`](./stop_hooks.rs) | Host accounting and halt-summary projection for the TinyAgents stop-hook middleware; budget and goal policies remain in OpenHuman. |
 | `summarize.rs` | `ModelSummarizer` / `FaultTolerantCachingSummarizer` plus a context-window-aware `SummarizationPolicy` driving the crate's `ContextCompressionMiddleware`. |
 | [`embeddings.rs`](./embeddings.rs) | `ProviderEmbeddingModel`: cost-recording binding over the host-built `tinyinference_embeddings::EmbeddingModel`. |
 | [`todos.rs`](./todos.rs) | `todos_store` / `scratch_todos_store` (the crate `Store` behind per-thread agent todos, `tinyagents_graph::todos`). |
@@ -61,7 +60,7 @@ ranker when a decision-model credential is present. `discovery_policy` reads
 that installed ranker together with `agent.tool_search`
 (`ToolSearchConfig` in `crate::config::schema`) and builds the
 `ToolDiscoveryPolicy` the harness runs with for that turn. The slot is
-process-wide, like the backend transport, because the credential a
+process-wide, like the other host registrations, because the credential a
 decision-model ranker needs belongs to the process's signed-in user rather
 than to any one agent config. See
 [the Jev page](../../../../../docs/gitbooks/en/developing/jev.md) for the ranking
@@ -74,7 +73,7 @@ Most of the module is `pub(crate)` or private. The `pub` items, per `mod.rs`:
 - `config::*`: the host half of the generic-harness config seam.
 - `payload_summarizer::*`: `pub` since issue #6014 so an embedder can pass its own `Arc<dyn PayloadSummarizer>` to `AgentBuilder::payload_summarizer` (the default dispatches a sub-agent, which some embedders cannot do).
 - `routes::ResolvedRouteMiddleware`: records canonical response metadata in the explicit run context; `TinyagentsTurnOutcome` carries it to the bus.
-- `todos::*`, `host::*` (all ten `OpenHuman*` adapter structs), and `TurnModelSource`.
+- `host::*` (the `OpenHuman*` adapter structs) and `TurnModelSource`.
 
 Within the crate the entry point is `TurnSpec::run` (`pub(crate)`); `run_turn_via_tinyagents` is `#[cfg(test)]` only.
 
@@ -101,13 +100,13 @@ Responses project the crate's own `AgentObservation` and `HarnessRunStatus` serd
 
 ## Used by
 
-- [`agent/session_host/turn/graph.rs`](../session_host/turn/graph.rs): the chat-turn route into `TurnSpec::run`.
+- [`agent/session_host/runtime_session/`](../session_host/runtime_session/): the chat-turn route into `TurnSpec::run`.
 - [`agent/harness/graph.rs`](../harness/graph.rs): the channel/CLI bus turn route.
 - [`agent/subagent_host/`](../subagent_host/): the sub-agent spawn route. It and the session route both build their context-window summarizer through `TurnModelSource::build_summarizer`.
 - [`agent/session_host/builder/setters.rs`](../session_host/builder/setters.rs), `agent/subagent_host/ops/{provider,runner}.rs`, `channels/`: construct `TurnModelSource`.
 - [`agent/bus.rs`](../bus.rs): reads `TinyagentsTurnOutcome::resolved_route` after a turn.
 - `core/all.rs` (replay controllers) and [`core/runtime/builder.rs`](../../core/runtime/builder.rs) (`reaper::reap_orphaned_runs`).
-- [`agent/todos/`](../todos/): `todos::*` stores.
+- [`agent/tools/todo.rs`](../tools/todo.rs): the host adapter for TinyAgents' todo tool, which selects the thread scope and emits `ThreadTodosChanged`.
 - `flows/tinyflows/caps/{llm,prompt}.rs`: the message-conversion re-exports and `model::usage_info_from_response`.
 - [`tools/README.md`](../../tools/README.md) names `CanonicalSharedToolAdapter` and `ToolPolicyMiddleware` as the primary tinyagents-side tool consumers.
 

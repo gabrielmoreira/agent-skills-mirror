@@ -80,14 +80,11 @@ report whole:
 Grep pattern="^## (Sprint Goal|Capacity|Tasks|Carryover|Risks|Progress|Burndown Assessment|Emerging Risks|Definition of Done)" glob="production/sprints/sprint-*.md" output_mode="content" -A 12
 ```
 
-> **These alternates are copied from `/sprint-plan`'s emitted headings — keep
-> them in sync with it, not with what a milestone review wishes existed.** The
-> previous pattern asked for `Summary|Goal|Velocity|Completed|Blockers|
-> Retrospective`, none of which `/sprint-plan` writes (it emits `## Sprint
-> Goal`, not `## Goal`). Only `Carryover` matched — and that was the trap: a
-> non-zero match count meant the zero-match escape hatch below could never
-> fire, so every milestone review silently aggregated carryover tables and
-> nothing else while reporting full coverage.
+> **These alternates are the headings `/sprint-plan` emits** (`## Sprint Goal`,
+> not `## Goal`) — not what a milestone review might expect. A pattern that
+> matches only one real heading still returns a non-zero count, so the
+> zero-match escape hatch below never fires and the review aggregates a fraction
+> of each report while reporting full coverage.
 
 Full-read a single sprint report when its scanned sections point outside
 themselves, or when it matched nothing — a zero-match report predates the

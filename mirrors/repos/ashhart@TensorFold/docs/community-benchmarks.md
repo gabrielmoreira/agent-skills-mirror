@@ -13,7 +13,7 @@ The command starts its own single-request `serve` on a loopback port, disables p
 
 An engine that decodes greedily only refuses the sampled cells, so it cannot complete community-v1; the run prints the server's reason, and `--temperatures 0` gives a local run. A large checkpoint may need its engine's own load limit raised (`GLM_LOAD_LIMIT_GB` for GLM-5.3-Flash) and a longer `--startup-timeout`: without the flag, the run waits up to 600 s plus 6 s per GB of weights past 20 GB, at most 3600 s.
 
-Results are saved locally in `~/.tensorfold/benchmarks/RUN_ID.json`; `--output FILE` chooses another location. Files contain public hardware and model metadata and individual attempts, never prompt text, generated output, machine names, serial numbers, GPU UUIDs, addresses or local model paths. Local model directories can be benchmarked but cannot be published, and a drafter directory is never named. Managed runs record `python_version` as `"none"`, because no Python runs in the client or the server; attached runs record `"unknown"`.
+Results are saved locally in `~/.tensorfold/benchmarks/RUN_ID.json`; `--output FILE` chooses another location. Files contain public hardware and model metadata and individual attempts, never prompt text, generated output, machine names, serial numbers, GPU UUIDs, addresses or local model paths. Local model directories can be benchmarked but cannot be published, and a drafter directory is never named. Managed native runs record `python_version` as `"none"`. An attached manifest may attest the same value; an unattested attached run records `"unknown"`.
 
 ## Commands
 
@@ -33,7 +33,7 @@ tensorfold serve example-org/public-checkpoint --name local-model
 tensorfold benchmark example-org/public-checkpoint --server http://127.0.0.1:8080 --model-id local-model --backend mlx
 ```
 
-Attached-server results do not claim the client's hardware is the server's hardware. They carry unknown hardware, versions and checkpoint revisions and remain unranked. An attached run records the backend, model and context you declare, unchecked against the server. The runner does not clear or restart an attached server's caches.
+Attached-server results do not claim the client's hardware is the server's hardware. The client reads `GET /v1/benchmark/manifest` from the server it attached to. A manifest that passes the receipt checks fills the version, hardware, checkpoint hashes, revision and rank count (1 or 2). Without that document, or if any field fails those checks, the receipt keeps unknown hardware and an unknown revision and remains unranked. An attached run records the backend, model and context you declare, unchecked against the server. The runner does not clear or restart an attached server's caches.
 
 The runner records failures, incomplete streams, missing usage, early EOS and cancellations. Exit code 0 means every measured attempt completed its requested output with a delivery interval; 1 means an error, and with `--publish` the receipt is still saved when the run finished; 2 means incomplete attempts remain in the saved receipt; 130 means the run was cancelled with Ctrl-C: an attempt in flight is kept in the receipt, and a cancel during server startup saves nothing. SIGTERM and SIGHUP exit 143 and 129 without a receipt. Errors never silently disappear from an average.
 
@@ -59,7 +59,7 @@ Open [the benchmark board](https://tensorfold.dev/benchmarks), choose **Upload r
 
 That browser profile keeps later submissions together, with up to 20 uploads per day. Clearing browser data or using another browser creates a separate profile. Display names are self-chosen and do not verify an identity; matching names do not merge profiles. New-profile limits apply to reduce spam.
 
-Complete standard community-v1 submissions publish automatically after quota checks, strict receipt validation, public-checkpoint lookup and server-side statistics/completeness checks. A complete standard run includes both workloads at the suite temperatures and seeds, five successful repetitions per cell, 256 output tokens, a managed single-rank execution, a checkpoint revision/configuration digest and reported GPU hardware. A published submission returns its public result URL.
+Complete standard community-v1 submissions publish automatically after quota checks, strict receipt validation, public-checkpoint lookup and server-side statistics/completeness checks. A complete standard run includes both workloads at the suite temperatures and seeds, five successful repetitions per cell, 256 output tokens, a native managed run or a validated attached manifest, an attested rank count of one or two, a checkpoint revision/configuration digest and reported GPU hardware. Attached runs without accepted manifest facts remain unranked. A published submission returns its public result URL.
 
 If the website's model-checkpoint service is temporarily unavailable, a valid receipt is saved privately and its public-checkpoint check is retried automatically. A complete standard run becomes public only after that check passes. You do not need to rerun the benchmark or upload the same receipt again. Private or inaccessible checkpoints are never published automatically. Valid incomplete or nonstandard runs remain pending review after public-checkpoint verification; invalid receipts are rejected.
 

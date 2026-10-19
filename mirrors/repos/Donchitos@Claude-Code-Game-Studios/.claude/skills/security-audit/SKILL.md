@@ -3,7 +3,7 @@ name: security-audit
 description: "Security audit — save tampering, cheat vectors, network exploits, data exposure, input validation. Before public or multiplayer release."
 argument-hint: "[full | network | save | input | quick]"
 user-invocable: true
-allowed-tools: Read, Glob, Grep, Bash, Write, Agent, Bash(bash "*/.claude/skills/security-audit/../../hooks/yaml-helper.sh" resolve_config *)
+allowed-tools: Read, Glob, Grep, Write, Agent, Bash(bash "*/.claude/skills/security-audit/../../hooks/yaml-helper.sh" resolve_config *)
 model: sonnet
 ---
 
@@ -144,12 +144,10 @@ platform.online are false`).
 
 ### Engine pattern sets — read this before any Category below
 
-**Every pattern list in Categories 1–3 was written for Godot.** On a Unity or
-Unreal project they match nothing, and this skill already states what a zero-hit
-scan means: it renders the report clean, "the most dangerous possible failure for
-a security audit". That warning was earned along the **version** axis
-(`File.open` vs `FileAccess`) and the identical hole along the **engine** axis
-shipped anyway. Use the table for `engine.name` resolved in Phase 1.
+**Every pattern list in Categories 1–3 is written for Godot.** On a Unity or
+Unreal project they match nothing, and a zero-hit scan renders the report clean,
+"the most dangerous possible failure for a security audit". Use the table for
+`engine.name` resolved in Phase 1.
 
 | Category | Godot | Unity | Unreal |
 |---|---|---|---|

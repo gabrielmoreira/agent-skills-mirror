@@ -2,7 +2,7 @@
 
 > [根目录](../CLAUDE.md) > **skills-v2**
 
-**Last Updated**: 2026-10-12 (v3.7.1)
+**Last Updated**: 2026-10-18 (v3.7.2)
 
 > ⚠ 本文档主体仍停留在 v2.1.16 架构描述（v3.0 引擎重构后未全量同步）。下方变更记录保留 v3.x 修复轨迹，完整历史见 [CHANGELOG.md](./CHANGELOG.md)。
 
@@ -11,6 +11,10 @@
 ## 变更记录 (Changelog)
 
 > 完整变更历史请查看 [CHANGELOG.md](./CHANGELOG.md)
+
+### 2026-10-18 (v3.7.2)
+- ✨ **x6.ai 赞助商**：README Banner（置于 PackyCode / APIMart 之下）+ `init` Step 1 / 菜单 API 配置新选项，`ANTHROPIC_BASE_URL=https://api.x6.ai`（**不带** `/v1`）。Codex `[model_providers.x6ai]`，`base_url=https://api.x6.ai/v1`（**带** `/v1`），`env_key=X6AI_API_KEY`，注册与启用分离。只在 `src/utils/sponsors.ts` 加了一项，其余全部遍历注册表。
+- 🗑️ **Gamma Remover 下架**：README Banner 与 `assets/sponsors/gamma-remover.webp` 移除。
 
 ### 2026-10-12 (v3.7.1)
 - 🐛 **新装 CLI 的 JSON 输出**：显式关闭兼容 i18next 新版的 support notice，避免赞助 banner 污染 `skills --json`、`doctor --json` 和版本输出。

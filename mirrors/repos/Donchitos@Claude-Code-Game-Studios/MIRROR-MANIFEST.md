@@ -133,11 +133,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 72 | ✓ | [`.claude/skills/ux-design/SKILL.md`](.claude/skills/ux-design/SKILL.md) |
 | 73 | ✓ | [`.claude/skills/ux-review/SKILL.md`](.claude/skills/ux-review/SKILL.md) |
 | 74 | ✓ | [`.claude/skills/vertical-slice/SKILL.md`](.claude/skills/vertical-slice/SKILL.md) |
-| 75 | ✓ | [`CCGS Skill Testing Framework/CLAUDE.md`](CCGS%20Skill%20Testing%20Framework/CLAUDE.md) |
-| 76 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 77 | ✓ | [`design/CLAUDE.md`](design/CLAUDE.md) |
-| 78 | ✓ | [`docs/CLAUDE.md`](docs/CLAUDE.md) |
-| 79 | ✓ | [`src/CLAUDE.md`](src/CLAUDE.md) |
+| 75 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 76 | ✓ | [`design/CLAUDE.md`](design/CLAUDE.md) |
+| 77 | ✓ | [`docs/CLAUDE.md`](docs/CLAUDE.md) |
+| 78 | ✓ | [`src/CLAUDE.md`](src/CLAUDE.md) |
+| 79 | ✓ | [`studio-tests/CLAUDE.md`](studio-tests/CLAUDE.md) |
 
 ---
 

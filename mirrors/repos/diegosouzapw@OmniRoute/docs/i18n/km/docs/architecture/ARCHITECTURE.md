@@ -10,77 +10,77 @@ _បានធ្វើបច្ចុប្បន្នភាពចុងក្�
 
 ## សេចក្តីសង្ខេបសម្រាប់ថ្នាក់ដឹកនាំ
 
-OmniRoute គឺជាច្រកបញ្ជូន AI និងផ្ទាំងគ្រប់គ្រងមូលដ្ឋាន ដែលបង្កើតឡើងលើ Next.js។
-វាផ្តល់ endpoint តែមួយដែលត្រូវគ្នាជាមួយ OpenAI (`/v1/*`) និងបញ្ជូនចរាចរណ៍ឆ្លងកាត់អ្នកផ្តល់សេវា upstream ច្រើន ដោយមានការបម្លែងទម្រង់ ការប្ដូរទៅជម្រើសបម្រុង ការធ្វើឱ្យ token ស្រស់ឡើងវិញ និងការតាមដានការប្រើប្រាស់។
+OmniRoute គឺជាច្រកបញ្ជូន AI មូលដ្ឋាន និងផ្ទាំងគ្រប់គ្រងដែលបង្កើតឡើងលើ Next.js។
+វាផ្តល់ endpoint តែមួយដែលឆបគ្នាជាមួយ OpenAI (`/v1/*`) និងបញ្ជូនចរាចរណ៍ឆ្លងកាត់អ្នកផ្តល់សេវាខាងលើជាច្រើន ដោយមានការបម្លែង ការប្ដូរទៅជម្រើសបម្រុង ការធ្វើឱ្យ token ថ្មីឡើងវិញ និងការតាមដានការប្រើប្រាស់។
 
 សមត្ថភាពស្នូល៖
 
-- ផ្ទៃ API ដែលត្រូវគ្នាជាមួយ OpenAI សម្រាប់ CLI/ឧបករណ៍ (អ្នកផ្តល់សេវា 373, ម៉ូឌុលប្រតិបត្តិ 150)
-- ការបម្លែង request/response រវាងទម្រង់របស់អ្នកផ្តល់សេវា
-- ការប្ដូរទៅជម្រើសបម្រុងនៃបន្សំម៉ូដែល (លំដាប់ពហុម៉ូដែល)
-- ជំហានបន្សំដែលមានរចនាសម្ព័ន្ធ (`provider + model + connection`) ជាមួយការតម្រៀបលំដាប់ពេលដំណើរការដោយ `compositeTiers`
-- ការប្ដូរទៅគណនីបម្រុងនៅកម្រិតគណនី (ពហុគណនីសម្រាប់អ្នកផ្តល់សេវានីមួយៗ)
-- ការត្រួតពិនិត្យ quota ជាមុន និងការជ្រើសរើសគណនី P2C ដោយគិតគូរពី quota នៅក្នុងផ្លូវ chat ចម្បង
-- ការគ្រប់គ្រងការតភ្ជាប់ទៅអ្នកផ្តល់សេវាតាម OAuth + API-key (ម៉ូឌុលអ្នកផ្តល់សេវា OAuth 27)
+- ផ្ទៃ API ដែលឆបគ្នាជាមួយ OpenAI សម្រាប់ CLI/ឧបករណ៍ (អ្នកផ្តល់សេវា 374 និងម៉ូឌុលប្រតិបត្តិ 150)
+- ការបម្លែងសំណើ/ការឆ្លើយតបឆ្លងកាត់ទម្រង់របស់អ្នកផ្តល់សេវា
+- ជម្រើសបម្រុងជាបន្សំម៉ូដែល (លំដាប់ពហុម៉ូដែល)
+- ជំហានបន្សំដែលមានរចនាសម្ព័ន្ធ (`provider + model + connection`) ជាមួយការរៀបលំដាប់ពេលដំណើរការតាម `compositeTiers`
+- ជម្រើសបម្រុងកម្រិតគណនី (ពហុគណនីក្នុងអ្នកផ្តល់សេវានីមួយៗ)
+- ការត្រួតពិនិត្យកូតាជាមុន និងការជ្រើសរើសគណនី P2C ដោយគិតគូរពីកូតា នៅក្នុងផ្លូវជជែកចម្បង
+- ការគ្រប់គ្រងការតភ្ជាប់អ្នកផ្តល់សេវាតាម OAuth + API key (ម៉ូឌុលអ្នកផ្តល់សេវា OAuth ចំនួន 27)
 - ការបង្កើត embedding តាមរយៈ `/v1/embeddings` (អ្នកផ្តល់សេវា 18)
 - ការបង្កើតរូបភាពតាមរយៈ `/v1/images/generations` (អ្នកផ្តល់សេវា 10+ និងម៉ូដែល 20+)
 - ការចម្លងសំឡេងទៅជាអត្ថបទតាមរយៈ `/v1/audio/transcriptions` (អ្នកផ្តល់សេវា 18)
 - ការបម្លែងអត្ថបទទៅជាសំឡេងតាមរយៈ `/v1/audio/speech` (អ្នកផ្តល់សេវាភ្ជាប់មកជាមួយ 24)
 - ការបង្កើតវីដេអូតាមរយៈ `/v1/videos/generations` (ComfyUI + SD WebUI)
 - ការបង្កើតតន្ត្រីតាមរយៈ `/v1/music/generations` (ComfyUI)
-- ការស្វែងរកតាមបណ្ដាញតាមរយៈ `/v1/search` (អ្នកផ្តល់សេវា 20)
-- ការត្រួតពិនិត្យមាតិកាតាមរយៈ `/v1/moderations`
+- ការស្វែងរកលើបណ្ដាញតាមរយៈ `/v1/search` (អ្នកផ្តល់សេវា 20)
+- ការត្រួតពិនិត្យខ្លឹមសារតាមរយៈ `/v1/moderations`
 - ការរៀបចំណាត់ថ្នាក់ឡើងវិញតាមរយៈ `/v1/rerank`
-- ការញែក think tag (``) សម្រាប់ម៉ូដែលដែលមានការវែកញែក
-- ការសម្អាត response ដើម្បីឱ្យត្រូវគ្នាយ៉ាងតឹងរ៉ឹងជាមួយ OpenAI SDK
-- ការធ្វើឱ្យ role មានទម្រង់ស្តង់ដារ (developer→system, system→user) ដើម្បីឱ្យត្រូវគ្នារវាងអ្នកផ្តល់សេវា
-- ការបម្លែង structured output (json_schema → Gemini responseSchema)
-- ការរក្សាទុកក្នុងមូលដ្ឋានសម្រាប់អ្នកផ្តល់សេវា keys, aliases, combos, settings និង pricing (ម៉ូឌុល DB 122)
-- ការតាមដានការប្រើប្រាស់/ថ្លៃចំណាយ និងការកត់ត្រា request
-- ការធ្វើសមកាលកម្ម cloud ជាជម្រើស សម្រាប់ការធ្វើសមកាលកម្មពហុឧបករណ៍/ស្ថានភាព
+- ការញែកស្លាកគិត (``) សម្រាប់ម៉ូដែលផ្តល់ហេតុផល
+- ការសម្អាតការឆ្លើយតប ដើម្បីឱ្យឆបគ្នាយ៉ាងតឹងរ៉ឹងជាមួយ OpenAI SDK
+- ការធ្វើឱ្យតួនាទីមានស្តង់ដារ (developer→system, system→user) សម្រាប់ភាពឆបគ្នាឆ្លងអ្នកផ្តល់សេវា
+- ការបម្លែងលទ្ធផលមានរចនាសម្ព័ន្ធ (json_schema → Gemini responseSchema)
+- ការរក្សាទុកមូលដ្ឋានសម្រាប់អ្នកផ្តល់សេវា key ឈ្មោះក្លែងក្លាយ បន្សំ ការកំណត់ និងតម្លៃ (ម៉ូឌុល DB ចំនួន 122)
+- ការតាមដានការប្រើប្រាស់/ចំណាយ និងការកត់ត្រាសំណើ
+- ការធ្វើសមកាលកម្មជាមួយ cloud ជាជម្រើស សម្រាប់ការធ្វើសមកាលកម្មឧបករណ៍ច្រើន/ស្ថានភាព
 - បញ្ជីអនុញ្ញាត/បញ្ជីទប់ស្កាត់ IP សម្រាប់ការគ្រប់គ្រងសិទ្ធិចូលប្រើ API
-- ការគ្រប់គ្រង thinking budget (passthrough/auto/custom/adaptive)
-- ការបញ្ចូល system prompt ជាសកល
-- ការតាមដាន session និងការកំណត់ fingerprint
-- ការកំណត់អត្រាកម្រិតខ្ពស់សម្រាប់គណនីនីមួយៗ ជាមួយ profile ជាក់លាក់តាមអ្នកផ្តល់សេវា
+- ការគ្រប់គ្រងថវិកាសម្រាប់ការគិត (passthrough/auto/custom/adaptive)
+- ការបញ្ចូល system prompt សកល
+- ការតាមដាន session និងការកំណត់ស្នាមសម្គាល់
+- ការកំណត់អត្រាប្រើប្រាស់កម្រិតខ្ពស់ក្នុងមួយគណនី ជាមួយប្រូហ្វាល់ជាក់លាក់តាមអ្នកផ្តល់សេវា
 - លំនាំ circuit breaker សម្រាប់ភាពធន់របស់អ្នកផ្តល់សេវា
-- ការការពារបាតុភូត anti-thundering herd ដោយប្រើ mutex locking
-- ឃ្លាំងសម្ងាត់សម្រាប់ការលុប request ស្ទួនដោយផ្អែកលើ signature
-- ស្រទាប់ domain៖ ច្បាប់ថ្លៃចំណាយ គោលការណ៍ fallback និងគោលការណ៍ lockout
+- ការការពារការសម្រុកសំណើក្នុងពេលតែមួយ ដោយប្រើ mutex locking
+- ឃ្លាំងសម្ងាត់សម្រាប់លុបសំណើស្ទួនដោយផ្អែកលើ signature
+- ស្រទាប់ដែន៖ ច្បាប់ចំណាយ គោលការណ៍ជម្រើសបម្រុង និងគោលការណ៍ចាក់សោ
 - Context Relay៖ សេចក្តីសង្ខេបសម្រាប់ផ្ទេរ session ដើម្បីរក្សាភាពបន្តនៅពេលប្ដូរគណនី
-- ការរក្សាទុកស្ថានភាព domain (ឃ្លាំងសម្ងាត់ SQLite write-through សម្រាប់ fallbacks, budgets, lockouts និង circuit breakers)
-- ម៉ាស៊ីនគោលការណ៍សម្រាប់ការវាយតម្លៃ request ជាកណ្ដាល (lockout → budget → fallback)
-- ទិន្នន័យ telemetry របស់ request ជាមួយការប្រមូលផ្ដុំ latency p50/p95/p99
-- ទិន្នន័យ telemetry របស់ combo target និងប្រវត្តិសុខភាព combo target តាមរយៈ `combo_execution_key` / `combo_step_id`
+- ការរក្សាទុកស្ថានភាពដែន (ឃ្លាំងសម្ងាត់ SQLite ដែលសរសេរឆ្លងកាត់ សម្រាប់ជម្រើសបម្រុង ថវិកា ការចាក់សោ និង circuit breaker)
+- ម៉ាស៊ីនគោលការណ៍សម្រាប់វាយតម្លៃសំណើជាមជ្ឈការ (ការចាក់សោ → ថវិកា → ជម្រើសបម្រុង)
+- ទិន្នន័យ telemetry របស់សំណើ ជាមួយការបូកសរុប latency p50/p95/p99
+- ទិន្នន័យ telemetry របស់គោលដៅបន្សំ និងសុខភាពប្រវត្តិសាស្ត្ររបស់គោលដៅបន្សំ តាមរយៈ `combo_execution_key` / `combo_step_id`
 - Correlation ID (X-Request-Id) សម្រាប់ការតាមដានពីដើមដល់ចប់
-- ការកត់ត្រាសវនកម្មការអនុលោមតាមបទប្បញ្ញត្តិ ជាមួយជម្រើសបដិសេធសម្រាប់ API key នីមួយៗ
-- ក្របខណ្ឌ Eval សម្រាប់ការធានាគុណភាព LLM
-- ផ្ទាំងព័ត៌មានសុខភាព ជាមួយស្ថានភាព circuit breaker របស់អ្នកផ្តល់សេវាក្នុងពេលជាក់ស្ដែង
-- MCP Server (ឧបករណ៍ 110) ជាមួយ transport 3 ប្រភេទ (stdio/SSE/Streamable HTTP)
-- A2A Server (JSON-RPC 2.0 + SSE) ជាមួយ skills និងវដ្តជីវិត task
-- ប្រព័ន្ធ memory (ការស្រង់ចេញ ការបញ្ចូល ការទាញយក និងការសង្ខេប)
-- ប្រព័ន្ធ skills (registry, executor, sandbox និង skills ភ្ជាប់មកជាមួយ)
-- MITM proxy ជាមួយការគ្រប់គ្រង certificate និងការដោះស្រាយ DNS
-- Middleware ការពារ prompt injection
-- Pipeline បង្ហាប់ prompt ជាមួយ Caveman, RTK, stacked pipelines, compression combos, language packs និង analytics
-- Registry របស់ ACP (Agent Communication Protocol)
-- អ្នកផ្តល់សេវា OAuth បែបម៉ូឌុល (ម៉ូឌុលនីមួយៗ 22 នៅក្រោម `src/lib/oauth/providers/`)
-- Script សម្រាប់ uninstall/full-uninstall
-- សកម្មភាពជួសជុល environment របស់ OAuth
-- ស្ពាន WebSocket សម្រាប់ client WS ដែលត្រូវគ្នាជាមួយ OpenAI (`/v1/ws`)
-- ការគ្រប់គ្រង sync token (ចេញ/ដកហូត និងការទាញយក config bundle ដែលកំណត់កំណែដោយ ETag)
-- Preset អ្នកផ្តល់សេវាថ្នាក់ទីមួយសម្រាប់ GLM Thinking (`glmt`)
-- ការរាប់ token បែប hybrid (`/messages/count_tokens` នៅខាងអ្នកផ្តល់សេវា ជាមួយការប៉ាន់ស្មានជាជម្រើសបម្រុង)
-- ការបង្កើត model alias ដោយស្វ័យប្រវត្តិ (ការធ្វើឱ្យ dialect ឆ្លងកាត់ proxy មានទម្រង់ស្តង់ដារ 30+ នៅពេលចាប់ផ្ដើម)
-- ការទាញយកទិន្នន័យចេញដោយសុវត្ថិភាព ជាមួយការការពារ SSRF ការទប់ស្កាត់ URL ឯកជន និងការព្យាយាមឡើងវិញដែលអាចកំណត់រចនាសម្ព័ន្ធបាន
-- ការព្យាយាម chat ឡើងវិញដោយគិតគូរពី cooldown ជាមួយ `requestRetry` និង `maxRetryIntervalSec` ដែលអាចកំណត់រចនាសម្ព័ន្ធបាន
-- ការផ្ទៀងផ្ទាត់ runtime environment ជាមួយ Zod នៅពេលចាប់ផ្ដើម
-- សវនកម្មការអនុលោមតាមបទប្បញ្ញត្តិ v2 ជាមួយ pagination, ព្រឹត្តិការណ៍ CRUD របស់អ្នកផ្តល់សេវា និងការកត់ត្រាការផ្ទៀងផ្ទាត់ដែលត្រូវបានទប់ស្កាត់ដោយ SSRF
+- ការកត់ត្រាសវនកម្មអនុលោមភាព ជាមួយជម្រើសបិទក្នុង API key នីមួយៗ
+- ក្របខណ្ឌវាយតម្លៃសម្រាប់ការធានាគុណភាព LLM
+- ផ្ទាំងគ្រប់គ្រងសុខភាព ជាមួយស្ថានភាព circuit breaker របស់អ្នកផ្តល់សេវាតាមពេលវេលាជាក់ស្តែង
+- MCP Server (ឧបករណ៍ 110) ជាមួយមធ្យោបាយដឹកជញ្ជូន 3 (stdio/SSE/Streamable HTTP)
+- A2A Server (JSON-RPC 2.0 + SSE) ជាមួយជំនាញ និងវដ្តជីវិតកិច្ចការ
+- ប្រព័ន្ធអង្គចងចាំ (ការស្រង់ចេញ ការបញ្ចូល ការទាញយក និងការសង្ខេប)
+- ប្រព័ន្ធជំនាញ (បញ្ជីចុះឈ្មោះ កម្មវិធីប្រតិបត្តិ sandbox និងជំនាញភ្ជាប់មកជាមួយ)
+- MITM proxy ជាមួយការគ្រប់គ្រងវិញ្ញាបនបត្រ និងការដោះស្រាយ DNS
+- middleware ការពារការចាក់បញ្ចូល prompt
+- pipeline បង្ហាប់ prompt ជាមួយ Caveman, RTK, pipeline ដាក់ជាជាន់ៗ បន្សំបង្ហាប់ កញ្ចប់ភាសា និងការវិភាគ
+- បញ្ជីចុះឈ្មោះ ACP (Agent Communication Protocol)
+- អ្នកផ្តល់សេវា OAuth ជាម៉ូឌុល (ម៉ូឌុលដាច់ដោយឡែក 22 នៅក្រោម `src/lib/oauth/providers/`)
+- ស្គ្រីបលុបការដំឡើង/លុបការដំឡើងទាំងស្រុង
+- សកម្មភាពជួសជុលបរិស្ថាន OAuth
+- ស្ពាន WebSocket សម្រាប់កម្មវិធី WS ដែលឆបគ្នាជាមួយ OpenAI (`/v1/ws`)
+- ការគ្រប់គ្រង token សមកាលកម្ម (ចេញ/ដកហូត និងការទាញយកកញ្ចប់កំណត់រចនាសម្ព័ន្ធដែលកំណត់កំណែដោយ ETag)
+- ការកំណត់ជាមុនសម្រាប់អ្នកផ្តល់សេវា GLM Thinking (`glmt`) កម្រិតទីមួយ
+- ការរាប់ token បែបកូនកាត់ (`/messages/count_tokens` ខាងអ្នកផ្តល់សេវា ជាមួយការប៉ាន់ស្មានជាជម្រើសបម្រុង)
+- ការបង្កើតឈ្មោះក្លែងក្លាយរបស់ម៉ូដែលដោយស្វ័យប្រវត្តិ (ការធ្វើឱ្យគ្រាមភាសាឆ្លង proxy ជាង 30 មានលក្ខណៈស្តង់ដារ នៅពេលចាប់ផ្ដើម)
+- ការទាញយកទៅខាងក្រៅដោយសុវត្ថិភាព ជាមួយរបាំង SSRF ការទប់ស្កាត់ URL ឯកជន និងការសាកល្បងឡើងវិញដែលអាចកំណត់រចនាសម្ព័ន្ធបាន
+- ការសាកល្បងសំណើជជែកឡើងវិញដោយគិតគូរពីរយៈពេលសម្រាក ជាមួយ `requestRetry` និង `maxRetryIntervalSec` ដែលអាចកំណត់រចនាសម្ព័ន្ធបាន
+- ការផ្ទៀងផ្ទាត់បរិស្ថានពេលដំណើរការជាមួយ Zod នៅពេលចាប់ផ្ដើម
+- សវនកម្មអនុលោមភាព v2 ជាមួយការបែងចែកទំព័រ ព្រឹត្តិការណ៍ CRUD របស់អ្នកផ្តល់សេវា និងការកត់ត្រាការផ្ទៀងផ្ទាត់ដែលត្រូវបានទប់ស្កាត់ដោយ SSRF
 
-គំរូ runtime ចម្បង៖
+ម៉ូដែលដំណើរការចម្បង៖
 
-- App routes របស់ Next.js នៅក្រោម `src/app/api/*` អនុវត្តទាំង API របស់ផ្ទាំងគ្រប់គ្រង និង API សម្រាប់ភាពត្រូវគ្នា
-- ស្នូល SSE/routing ដែលប្រើរួមគ្នានៅក្នុង `src/sse/*` + `open-sse/*` គ្រប់គ្រងការប្រតិបត្តិរបស់អ្នកផ្តល់សេវា ការបម្លែងទម្រង់ streaming, fallback និងការប្រើប្រាស់
+- ផ្លូវកម្មវិធី Next.js នៅក្រោម `src/app/api/*` អនុវត្តទាំង API របស់ផ្ទាំងគ្រប់គ្រង និង API សម្រាប់ភាពឆបគ្នា
+- ស្នូល SSE/ការបញ្ជូនដែលប្រើរួមគ្នានៅក្នុង `src/sse/*` + `open-sse/*` គ្រប់គ្រងការប្រតិបត្តិរបស់អ្នកផ្តល់សេវា ការបម្លែង streaming ជម្រើសបម្រុង និងការប្រើប្រាស់
 
 ## ដ្យាក្រាមយោង
 
@@ -264,67 +264,67 @@ flowchart LR
 
 - ចំណុចចូល៖ `src/sse/handlers/chat.ts`
 - ការសម្របសម្រួលស្នូល៖ `open-sse/handlers/chatCore.ts`
-- អាដាប់ទ័រប្រតិបត្តិរបស់អ្នកផ្តល់សេវា៖ `open-sse/executors/*`
-- ការរកឃើញទម្រង់/ការកំណត់រចនាសម្ព័ន្ធអ្នកផ្តល់សេវា៖ `open-sse/services/provider.ts`
-- ការញែក/ដោះស្រាយម៉ូដែល៖ `src/sse/services/model.ts`, `open-sse/services/model.ts`
-- ឡូជីខលបម្រុងទុកគណនី៖ `open-sse/services/accountFallback.ts`
-- បញ្ជីចុះឈ្មោះកម្មវិធីបកប្រែ៖ `open-sse/translator/index.ts`
-- ការបំប្លែងស្ទ្រីម៖ `open-sse/utils/stream.ts`, `open-sse/utils/streamHandler.ts`
-- ការស្រង់ចេញ/ការធ្វើឱ្យការប្រើប្រាស់មានស្តង់ដារ៖ `open-sse/utils/usageTracking.ts`
-- កម្មវិធីញែកស្លាក Think៖ `open-sse/utils/thinkTagParser.ts`
+- អាដាប់ទ័រសម្រាប់ដំណើរការ Provider៖ `open-sse/executors/*`
+- ការរកឃើញទម្រង់/ការកំណត់រចនាសម្ព័ន្ធ Provider៖ `open-sse/services/provider.ts`
+- ការញែក/ដោះស្រាយ Model៖ `src/sse/services/model.ts`, `open-sse/services/model.ts`
+- តក្កវិជ្ជា Account fallback៖ `open-sse/services/accountFallback.ts`
+- បញ្ជីចុះឈ្មោះការបកប្រែ៖ `open-sse/translator/index.ts`
+- ការបំប្លែង Stream៖ `open-sse/utils/stream.ts`, `open-sse/utils/streamHandler.ts`
+- ការស្រង់ចេញ/ការធ្វើឱ្យ Usage មានស្តង់ដារ៖ `open-sse/utils/usageTracking.ts`
+- កម្មវិធីញែក Think tag៖ `open-sse/utils/thinkTagParser.ts`
 - កម្មវិធីដោះស្រាយ Embedding៖ `open-sse/handlers/embeddings.ts`
-- បញ្ជីចុះឈ្មោះអ្នកផ្តល់សេវា Embedding៖ `open-sse/config/embeddingRegistry.ts`
+- បញ្ជីចុះឈ្មោះ Embedding provider៖ `open-sse/config/embeddingRegistry.ts`
 - កម្មវិធីដោះស្រាយការបង្កើតរូបភាព៖ `open-sse/handlers/imageGeneration.ts`
-- បញ្ជីចុះឈ្មោះអ្នកផ្តល់សេវារូបភាព៖ `open-sse/config/imageRegistry.ts`
-- ការសម្អាតចម្លើយ៖ `open-sse/handlers/responseSanitizer.ts`
-- ការធ្វើឱ្យតួនាទីមានស្តង់ដារ៖ `open-sse/services/roleNormalizer.ts`
+- បញ្ជីចុះឈ្មោះ Image provider៖ `open-sse/config/imageRegistry.ts`
+- ការសម្អាត Response៖ `open-sse/handlers/responseSanitizer.ts`
+- ការធ្វើឱ្យ Role មានស្តង់ដារ៖ `open-sse/services/roleNormalizer.ts`
 
-សេវាកម្ម (ឡូជីខលអាជីវកម្ម)៖
+សេវាកម្ម (តក្កវិជ្ជាអាជីវកម្ម)៖
 
-- ការជ្រើសរើស/ការដាក់ពិន្ទុគណនី៖ `open-sse/services/accountSelector.ts`
-- ការគ្រប់គ្រងវដ្តជីវិតបរិបទ៖ `open-sse/services/contextManager.ts`
-- ការអនុវត្តតម្រង IP៖ `open-sse/services/ipFilter.ts`
-- ការតាមដានសម័យ៖ `open-sse/services/sessionManager.ts`
+- ការជ្រើសរើស/ដាក់ពិន្ទុ Account៖ `open-sse/services/accountSelector.ts`
+- ការគ្រប់គ្រងវដ្តជីវិត Context៖ `open-sse/services/contextManager.ts`
+- ការអនុវត្ត IP filter៖ `open-sse/services/ipFilter.ts`
+- ការតាមដាន Session៖ `open-sse/services/sessionManager.ts`
 - ការលុបសំណើស្ទួន៖ `open-sse/services/signatureCache.ts`
-- ការបញ្ចូលប្រអប់បញ្ចូលប្រព័ន្ធ៖ `open-sse/services/systemPrompt.ts`
-- ការគ្រប់គ្រងថវិកាគិត៖ `open-sse/services/thinkingBudget.ts`
-- ការកំណត់ផ្លូវម៉ូដែលដោយតួអក្សរជំនួស៖ `open-sse/services/wildcardRouter.ts`
-- ការគ្រប់គ្រងដែនកំណត់អត្រា៖ `open-sse/services/rateLimitManager.ts`
-- ឧបករណ៍ផ្តាច់សៀគ្វី៖ `src/shared/utils/circuitBreaker.ts`
-- ការផ្ទេរបរិបទ៖ `open-sse/services/contextHandoff.ts` — ការបង្កើត និងការបញ្ចូលសេចក្តីសង្ខេបនៃការផ្ទេរ សម្រាប់យុទ្ធសាស្ត្របញ្ជូនបន្តបរិបទ
-- ការបង្ហាប់៖ `open-sse/services/compression/*` — ការបង្ហាប់ជាមុន មុនការបកប្រែដោយអ្នកផ្តល់សេវា;
-  រួមមានច្បាប់ Caveman, តម្រង RTK, ខ្សែដំណើរការដាក់ជាន់គ្នា, បន្សំការបង្ហាប់, ស្ថិតិ និងការធ្វើសុពលកម្ម
-- កម្មវិធីទាញយកកូតា Codex៖ `open-sse/services/codexQuotaFetcher.ts` — ទាញយកកូតា Codex សម្រាប់ការសម្រេចចិត្តផ្ទេរបរិបទ
-- ការព្យាយាមឡើងវិញដោយគិតគូរពីរយៈពេលរង់ចាំ៖ `src/sse/services/cooldownAwareRetry.ts` — ការព្យាយាមឡើងវិញតាមម៉ូដែលនីមួយៗ ដោយមានរយៈពេលរង់ចាំ និងអាចកំណត់ `requestRetry` / `maxRetryIntervalSec`
-- ការទាញយកទៅខាងក្រៅដោយសុវត្ថិភាព៖ `src/shared/network/safeOutboundFetch.ts` — ការទាញយកអ្នកផ្តល់សេវា/ម៉ូដែលដែលមានការការពារ ដោយមានរបាំងការពារ SSRF, ការទប់ស្កាត់ URL ឯកជន, ការព្យាយាមឡើងវិញ និងពេលកំណត់
-- របាំងការពារ URL ចេញក្រៅ៖ `src/shared/network/outboundUrlGuard.ts` — ការត្រួតពិនិត្យម៉ាស៊ីនបង្ហោះលើ URL របស់អ្នកផ្តល់សេវា; `src/shared/network/outboundUrlGuardPolicy.ts` ជ្រើសរើសរបៀបពី `OMNIROUTE_ALLOW_LOCAL_PROVIDER_URLS`, `OMNIROUTE_ALLOW_PRIVATE_PROVIDER_URLS` និងប៊ូតុងបិទបើករបស់ពួកវានៅលើផ្ទាំងគ្រប់គ្រង (សូមមើល `docs/reference/ENVIRONMENT.md`)
-- តម្លៃលំនាំដើមនៃសំណើអ្នកផ្តល់សេវា៖ `open-sse/services/providerRequestDefaults.ts` — តម្លៃលំនាំដើមកម្រិតអ្នកផ្តល់សេវាសម្រាប់ `maxTokens`, `temperature`, `thinkingBudgetTokens`
-- ថេររបស់អ្នកផ្តល់សេវា GLM៖ `open-sse/config/glmProvider.ts` — ម៉ូដែល GLM, URL កូតា និងពេលកំណត់/តម្លៃលំនាំដើម GLMT ដែលប្រើរួមគ្នា
-- ប្រភពខាងលើ Antigravity៖ `open-sse/config/antigravityUpstream.ts` — URL មូលដ្ឋាន និងថេរផ្លូវស្វែងរក
-- ថេររបស់ម៉ាស៊ីនភ្ញៀវ Codex៖ `open-sse/config/codexClient.ts` — តម្លៃ user-agent និង client-version ដែលមានកំណែ
-- ទិន្នន័យដំបូងសម្រាប់ឈ្មោះក្លែងក្លាយរបស់ម៉ូដែល៖ `src/lib/modelAliasSeed.ts` — បញ្ចូលឈ្មោះក្លែងក្លាយឆ្លងកាត់គ្រាមភាសាប្រូកស៊ីជាង 30 នៅពេលចាប់ផ្តើម
+- ការបញ្ចូល System prompt៖ `open-sse/services/systemPrompt.ts`
+- ការគ្រប់គ្រង Thinking budget៖ `open-sse/services/thinkingBudget.ts`
+- ការបញ្ជូន Model ដោយប្រើ Wildcard៖ `open-sse/services/wildcardRouter.ts`
+- ការគ្រប់គ្រង Rate limit៖ `open-sse/services/rateLimitManager.ts`
+- Circuit breaker៖ `src/shared/utils/circuitBreaker.ts`
+- ការផ្ទេរ Context៖ `open-sse/services/contextHandoff.ts` — ការបង្កើត និងបញ្ចូលសេចក្តីសង្ខេបនៃការផ្ទេរសម្រាប់យុទ្ធសាស្ត្រ context-relay
+- ការបង្ហាប់៖ `open-sse/services/compression/*` — ការបង្ហាប់ជាមុន មុនពេលបកប្រែសម្រាប់ Provider;
+  រួមមានច្បាប់ Caveman, តម្រង RTK, pipeline ដែលដាក់ជាជាន់ៗ, បន្សំនៃការបង្ហាប់, ស្ថិតិ និងការផ្ទៀងផ្ទាត់
+- កម្មវិធីទាញយកកូតា Codex៖ `open-sse/services/codexQuotaFetcher.ts` — ទាញយកកូតា Codex សម្រាប់ការសម្រេចចិត្តលើការផ្ទេរ context-relay
+- ការព្យាយាមឡើងវិញដោយគិតគូរពី Cooldown៖ `src/sse/services/cooldownAwareRetry.ts` — ការព្យាយាមឡើងវិញតាម Model នីមួយៗជាមួយ Cooldown ដែលអាចកំណត់រចនាសម្ព័ន្ធបានតាមរយៈ `requestRetry` / `maxRetryIntervalSec`
+- ការទាញយកទៅខាងក្រៅដោយសុវត្ថិភាព៖ `src/shared/network/safeOutboundFetch.ts` — ការទាញយក Provider/Model ដែលមានការការពារ ដោយមានរបាំងការពារ SSRF, ការទប់ស្កាត់ URL ឯកជន, ការព្យាយាមឡើងវិញ និង Timeout
+- របាំងការពារ URL ចេញក្រៅ៖ `src/shared/network/outboundUrlGuard.ts` — ការត្រួតពិនិត្យ Host លើ URL របស់ Provider; `src/shared/network/outboundUrlGuardPolicy.ts` ជ្រើសរើស Mode ពី `OMNIROUTE_ALLOW_LOCAL_PROVIDER_URLS`, `OMNIROUTE_ALLOW_PRIVATE_PROVIDER_URLS` និងជម្រើសបិទបើករបស់វានៅលើ Dashboard (សូមមើល `docs/reference/ENVIRONMENT.md`)
+- តម្លៃលំនាំដើមនៃសំណើ Provider៖ `open-sse/services/providerRequestDefaults.ts` — តម្លៃលំនាំដើមកម្រិត Provider សម្រាប់ `maxTokens`, `temperature`, `thinkingBudgetTokens`
+- ថេររបស់ GLM provider៖ `open-sse/config/glmProvider.ts` — GLM models, URL កូតា, GLMT timeout/តម្លៃលំនាំដើម ដែលប្រើរួមគ្នា
+- Antigravity upstream៖ `open-sse/config/antigravityUpstream.ts` — URL គោល និងថេរនៃផ្លូវស្វែងរក
+- ថេររបស់ Codex client៖ `open-sse/config/codexClient.ts` — តម្លៃ User-Agent ដែលមានកំណែ និងតម្លៃ Client-version
+- ទិន្នន័យដើមនៃ Model alias៖ `src/lib/modelAliasSeed.ts` — បញ្ចូល Alias នៃ dialect ឆ្លង Proxy ចំនួន 30+ នៅពេលចាប់ផ្តើម
 
-ម៉ូឌុលស្រទាប់ដែន៖
+ម៉ូឌុលស្រទាប់ Domain៖
 
-- ច្បាប់ចំណាយ/ថវិកា៖ `src/domain/costRules.ts`
-- គោលការណ៍បម្រុងទុក៖ `src/domain/fallbackPolicy.ts`
-- កម្មវិធីដោះស្រាយបន្សំ៖ `src/domain/comboResolver.ts`
-- គោលការណ៍ចាក់សោ៖ `src/domain/lockoutPolicy.ts`
-- ម៉ាស៊ីនគោលការណ៍៖ `src/domain/policyEngine.ts` — ការវាយតម្លៃការចាក់សោ → ថវិកា → ការបម្រុងទុក ដែលបានផ្តុំជាកណ្តាល
+- ច្បាប់តម្លៃ/ថវិកា៖ `src/domain/costRules.ts`
+- គោលការណ៍ Fallback៖ `src/domain/fallbackPolicy.ts`
+- កម្មវិធីដោះស្រាយ Combo៖ `src/domain/comboResolver.ts`
+- គោលការណ៍ Lockout៖ `src/domain/lockoutPolicy.ts`
+- ម៉ាស៊ីនគោលការណ៍៖ `src/domain/policyEngine.ts` — ការវាយតម្លៃ lockout → budget → fallback ដែលបានធ្វើមជ្ឈការ
 - កាតាឡុកកូដកំហុស៖ `src/shared/constants/errorCodes.ts`
-- លេខសម្គាល់សំណើ៖ `src/shared/utils/requestId.ts`
-- ពេលកំណត់សម្រាប់ការទាញយក៖ `src/shared/utils/fetchTimeout.ts`
-- ទិន្នន័យតេឡេមេទ្រីរបស់សំណើ៖ `src/shared/utils/requestTelemetry.ts`
-- ការអនុលោម/សវនកម្ម៖ `src/lib/compliance/index.ts`
-- កម្មវិធីដំណើរការវាយតម្លៃ៖ `src/lib/evals/evalRunner.ts`
-- ការរក្សាទុកស្ថានភាពដែន៖ `src/lib/db/domainState.ts` — ប្រតិបត្តិការ SQLite CRUD សម្រាប់ខ្សែសង្វាក់បម្រុងទុក, ថវិកា, ប្រវត្តិចំណាយ, ស្ថានភាពចាក់សោ និងឧបករណ៍ផ្តាច់សៀគ្វី
+- Request ID៖ `src/shared/utils/requestId.ts`
+- Fetch timeout៖ `src/shared/utils/fetchTimeout.ts`
+- ទិន្នន័យ Telemetry នៃសំណើ៖ `src/shared/utils/requestTelemetry.ts`
+- អនុលោមភាព/សវនកម្ម៖ `src/lib/compliance/index.ts`
+- កម្មវិធីដំណើរការ Eval៖ `src/lib/evals/evalRunner.ts`
+- ការរក្សាទុកស្ថានភាព Domain៖ `src/lib/db/domainState.ts` — SQLite CRUD សម្រាប់ Fallback chain, Budget, ប្រវត្តិតម្លៃ, ស្ថានភាព Lockout និង Circuit breaker
 
-ម៉ូឌុលអ្នកផ្តល់សេវា OAuth (ឯកសារដាច់ដោយឡែកចំនួន 27 ក្រោម `src/lib/oauth/providers/`)៖
+ម៉ូឌុល OAuth provider (ឯកសារដាច់ដោយឡែកចំនួន 27 នៅក្រោម `src/lib/oauth/providers/`)៖
 
 - លិបិក្រមបញ្ជីចុះឈ្មោះ៖ `src/lib/oauth/providers/index.ts`
-- អ្នកផ្តល់សេវានីមួយៗ៖ `agy.ts`, `antigravity.ts`, `claude.ts`, `cline.ts`, `codebuddy-cn.ts`, `codebuddy-intl.ts`, `codex.ts`, `cursor.ts`, `devin-desktop.ts`, `ghe-copilot.ts`, `github.ts`, `gitlab-duo.ts`, `grok-cli-oauth.ts`, `grok-cli.ts`, `kilocode.ts`, `kimi-coding.ts`, `kiro.ts`, `muse-code.ts`, `openference.ts`, `qoder.ts`, `trae.ts`, `workbuddy.ts`, `xai-oauth.ts`, `zed-hosted.ts`, `zed.ts`
-- មុខងារជំនួយរួម៖ `codebuddyDeviceAuth.ts` (លំហូរឧបករណ៍ CodeBuddy CN/intl), `museCodeDeviceResponse.ts`
-- ស្រោមរុំស្តើង៖ `src/lib/oauth/providers.ts` — នាំចេញឡើងវិញពីម៉ូឌុលនីមួយៗ
+- Provider នីមួយៗ៖ `agy.ts`, `antigravity.ts`, `claude.ts`, `cline.ts`, `codebuddy-cn.ts`, `codebuddy-intl.ts`, `codex.ts`, `cursor.ts`, `devin-desktop.ts`, `ghe-copilot.ts`, `github.ts`, `gitlab-duo.ts`, `grok-cli-oauth.ts`, `grok-cli.ts`, `kilocode.ts`, `kimi-coding.ts`, `kiro.ts`, `muse-code.ts`, `openference.ts`, `qoder.ts`, `trae.ts`, `workbuddy.ts`, `xai-oauth.ts`, `zed-hosted.ts`, `zed.ts`
+- Helper ដែលប្រើរួមគ្នា៖ `codebuddyDeviceAuth.ts` (លំហូរ Device របស់ CodeBuddy CN/intl), `museCodeDeviceResponse.ts`
+- Wrapper ស្រាល៖ `src/lib/oauth/providers.ts` — នាំចេញឡើងវិញពីម៉ូឌុលនីមួយៗ
 
 ## 5) សេវាដែលបានបង្កប់ (v3.8.4)
 
@@ -533,16 +533,17 @@ Provider មួយចំនួនផ្តល់មកជាមួយ module ព
 - តារាង (បង្កើតនៅក្នុង `src/lib/db/core.ts`)៖ `domain_fallback_chains`, `domain_budgets`, `domain_cost_history`, `domain_lockout_state`, `domain_circuit_breakers`
 - លំនាំឃ្លាំងសម្ងាត់ write-through៖ Maps ក្នុងអង្គចងចាំជាប្រភពត្រឹមត្រូវនៅពេលដំណើរការ; ការផ្លាស់ប្ដូរត្រូវបានសរសេរទៅ SQLite ជាសមកាលកម្ម; ស្ថានភាពត្រូវបានស្ដារពី DB នៅពេលចាប់ផ្ដើមត្រជាក់
 
-## 4) ផ្ទៃផ្ទៀងផ្ទាត់អត្តសញ្ញាណ + សុវត្ថិភាព
+## 4) ផ្ទៃ Auth + សុវត្ថិភាព
 
-- ការផ្ទៀងផ្ទាត់អត្តសញ្ញាណ cookie របស់ផ្ទាំងគ្រប់គ្រង៖ `src/proxy.ts`, `src/app/api/auth/login/route.ts`
+- ការផ្ទៀងផ្ទាត់តាម cookie របស់ Dashboard៖ `src/proxy.ts`, `src/app/api/auth/login/route.ts`
 - ការបង្កើត/ផ្ទៀងផ្ទាត់ API key៖ `src/shared/utils/apiKey.ts`
-- ព័ត៌មានសម្ងាត់របស់ provider ត្រូវបានរក្សាទុកក្នុងធាតុ `providerConnections`
-- ការគាំទ្រ proxy ចេញតាមរយៈ `open-sse/utils/proxyFetch.ts` (env vars) និង `open-sse/utils/networkProxy.ts` (អាចកំណត់រចនាសម្ព័ន្ធតាម provider នីមួយៗ ឬជាសកល)
-- របាំងការពារ SSRF / URL ចេញ៖ `src/shared/network/outboundUrlGuard.ts` — ទប់ស្កាត់ជួរអាសយដ្ឋាន private/loopback/link-local សម្រាប់ការហៅទៅ provider ទាំងអស់
-- ការផ្ទៀងផ្ទាត់ env នៅពេលដំណើរការ៖ `src/lib/env/runtimeEnv.ts` — Zod schema សម្រាប់អថេរបរិស្ថានទាំងអស់ ដែលបង្ហាញជាកំហុស/ការព្រមានពេលចាប់ផ្ដើម
-- ថូខឹនសមកាលកម្ម៖ `src/lib/db/syncTokens.ts` — ថូខឹនដែលកំណត់វិសាលភាពសម្រាប់ endpoints ទាញយកកញ្ចប់កំណត់រចនាសម្ព័ន្ធ; គាំទ្រដោយតារាង SQLite `sync_tokens` (migration `024_create_sync_tokens.sql`)
-- ការផ្ទៀងផ្ទាត់អត្តសញ្ញាណ WebSocket handshake៖ `src/lib/ws/handshake.ts` — ផ្ទៀងផ្ទាត់សំណើដំឡើងកម្រិត WS តាមរយៈ API key ឬ session cookie
+- ទិន្នន័យសម្ងាត់របស់ Provider ត្រូវបានរក្សាទុកក្នុងធាតុ `providerConnections`
+- ការគាំទ្រ proxy ចេញក្រៅតាមរយៈ `open-sse/utils/proxyFetch.ts` (អថេរបរិស្ថាន) និង `open-sse/utils/networkProxy.ts` (អាចកំណត់រចនាសម្ព័ន្ធតាម Provider នីមួយៗ ឬជាសកល)
+- ការការពារ SSRF / URL ចេញក្រៅ៖ `src/shared/network/outboundUrlGuard.ts` — ពិនិត្យ host លើការហៅទៅ Provider និងគោលដៅ webhook; mode មកពី `src/shared/network/outboundUrlGuardPolicy.ts` (flags នៅក្នុង `docs/reference/ENVIRONMENT.md`)
+- ការផ្ទៀងផ្ទាត់អថេរបរិស្ថានពេលដំណើរការ៖ `src/lib/env/runtimeEnv.ts` — Zod schema សម្រាប់អថេរបរិស្ថានទាំងអស់ ដែលបង្ហាញជាកំហុស/ការព្រមាននៅពេលចាប់ផ្ដើម
+- Sync tokens៖ `src/lib/db/syncTokens.ts` — token ដែលមានដែនកំណត់សម្រាប់ endpoint ទាញយក config bundle; គាំទ្រដោយតារាង SQLite `sync_tokens` (migration `024_create_sync_tokens.sql`)
+- ការផ្ទៀងផ្ទាត់ WebSocket handshake៖ `src/lib/ws/handshake.ts` — ផ្ទៀងផ្ទាត់សំណើ WS upgrade តាមរយៈ API key ឬ session cookie
+- ការផ្ទៀងផ្ទាត់ WebSocket របស់ Dashboard ផ្ទាល់៖ `src/server/ws/liveServer.ts` — sidecar (port `LIVE_WS_PORT`) ទទួលយក session cookie របស់ Dashboard ឬ Bearer API key ដែលមាន management scope (`manage`/`admin`); key ដែលសម្រាប់តែ inference ត្រូវបានបដិសេធ។ endpoint បោះពុម្ពផ្សាយ `POST /__omniroute_event` ខាងក្នុងរបស់វាទទួលយកតែ peer ពី loopback ប៉ុណ្ណោះ នៅពេលគ្មាន proxy-hop header (`x-forwarded-*`, `x-real-ip`, `forwarded`, `via`) វត្តមាន
 
 ## 5) ការធ្វើសមកាលកម្ម Cloud
 
@@ -1091,11 +1092,11 @@ Provider នីមួយៗមាន executor ឯកទេសមួយដែល�
 - migration របស់ schema SQLite និង hook ដំឡើងកំណែដោយស្វ័យប្រវត្តិនៅពេលចាប់ផ្តើម
 - ផ្លូវភាពឆបគ្នាសម្រាប់ migration ពី JSON ចាស់ → SQLite
 
-## 6) របាំង SSRF / URL ចេញក្រៅ
+## 6) ការការពារ SSRF / URL ចេញក្រៅ
 
-- `src/shared/network/outboundUrlGuard.ts` រារាំង URL គោលដៅ private/loopback/link-local ទាំងអស់ មុនពេលពួកវាទៅដល់ executor របស់អ្នកផ្តល់សេវា
-- route សម្រាប់ការស្វែងរក និងផ្ទៀងផ្ទាត់ model របស់អ្នកផ្តល់សេវា ប្រើ `src/shared/network/safeOutboundFetch.ts` ដែលអនុវត្ត guard មុនរាល់សំណើចេញក្រៅ
-- កំហុស guard ត្រូវបានបង្ហាញជា `URL_GUARD_BLOCKED` ជាមួយ HTTP 422 ហើយត្រូវបានកត់ត្រាទៅក្នុងប្រវត្តិសវនកម្មអនុលោមភាពតាមរយៈ `providerAudit.ts`
+- `BaseExecutor.assertOutboundUrlAllowed` (`open-sse/executors/base.ts`) អនុវត្ត `src/shared/network/outboundUrlGuard.ts` ចំពោះសំណើជជែកដែលត្រូវបានបញ្ជូនតាមរយៈ `BaseExecutor.execute()`។ នៅក្នុងរបៀបសាធារណៈតែប៉ុណ្ណោះ (`OMNIROUTE_ALLOW_LOCAL_PROVIDER_URLS=false` ដោយបិទទង់ឯកជន) វារារាំងម៉ាស៊ីនមេឯកជន និងម៉ាស៊ីនមេ loopback ព្រមទាំង 169.254.0.0/16។ នៅគ្រប់របៀបផ្សេងទៀត វារារាំងម៉ាស៊ីនមេ metadata របស់ cloud។ វាពិនិត្យឈ្មោះម៉ាស៊ីនមេ ឬអាសយដ្ឋាន IP ដូចដែលបានសរសេរ មុនពេលស្វែងរក DNS ណាមួយ។ អ្នកផ្តល់សេវាមូលដ្ឋានដែលមានស្រាប់រំលងការពារនេះ។
+- ផ្លូវស្វែងរក និងផ្ទៀងផ្ទាត់ម៉ូដែលរបស់អ្នកផ្តល់សេវា ប្រើ `src/shared/network/safeOutboundFetch.ts` ដែលអនុវត្តការការពារមុនរាល់សំណើចេញក្រៅ
+- កំហុសរបស់ការការពារត្រូវបានបង្ហាញជា `URL_GUARD_BLOCKED` ជាមួយ HTTP 503 (`getSafeOutboundFetchErrorStatus`; ផ្លូវស្វែងរកម៉ូដែលត្រឡប់ 400) ហើយការរារាំង SSRF ពិតប្រាកដក្នុងអំឡុងពេលផ្ទៀងផ្ទាត់ ត្រូវបានកត់ត្រាក្នុងកំណត់ហេតុសវនកម្មជាព្រឹត្តិការណ៍ `provider.validation.ssrf_blocked`
 
 ## ភាពអាចសង្កេតបាន និងសញ្ញាប្រតិបត្តិការ
 

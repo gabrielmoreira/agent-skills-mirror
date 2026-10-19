@@ -3,7 +3,7 @@ name: architecture-decision
 description: "Create an ADR documenting a technical decision: context, alternatives considered, consequences."
 argument-hint: "[title | retrofit <path> | accept <ADR-id>] [--review full|lean|solo]"
 user-invocable: true
-allowed-tools: Read, Glob, Grep, Write, Edit, Agent, AskUserQuestion, Bash(wc -c *), Bash(bash "*/.claude/skills/architecture-decision/../../hooks/yaml-helper.sh" resolve_config *)
+allowed-tools: Read, Glob, Grep, Write, Edit, Agent, AskUserQuestion, Bash(wc -c *), Bash(bash "*/.claude/skills/architecture-decision/../../hooks/yaml-helper.sh" resolve_config *), Bash(bash .claude/scripts/registry.sh *)
 model: sonnet
 ---
 
@@ -91,7 +91,7 @@ Scan `docs/architecture/` for existing ADRs to find the next number.
 After the ADR is written (and registry optionally updated), close with `AskUserQuestion`.
 
 Before generating the widget:
-1. Read `docs/registry/architecture.yaml` — check if any priority ADRs are still unwritten (look for ADRs flagged in technical-preferences.md or systems-index.md as prerequisites)
+1. Read the `## Required ADRs` section of `docs/architecture/architecture.md` (by section) and list `docs/architecture/adr-*.md`: a required ADR with no file is still unwritten. Without `architecture.md`, look for ADRs flagged in technical-preferences.md or systems-index.md as prerequisites
 2. Check if all prerequisite ADRs are now written. If yes, include a "Start writing GDDs" option.
 3. List ALL remaining priority ADRs as individual options — not just the next one or two.
 
@@ -117,9 +117,8 @@ If there are no remaining priority ADRs and no undesigned GDD systems, offer onl
 
 **Do NOT unblock stories here.** This ADR is `Proposed` — Step 5 guarantees it,
 and a story blocked *pending this decision* is still pending it. Unblocking on
-authoring is how the deadlock stayed invisible: it defeated the guard at the
-moment the guard became relevant, so the pipeline appeared to flow while running
-on decisions nobody had accepted.
+authoring defeats the guard at the moment it becomes relevant: the pipeline
+appears to flow while running on decisions nobody has accepted.
 
 Instead, tell the user what is now waiting on acceptance:
 

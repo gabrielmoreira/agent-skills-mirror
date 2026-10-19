@@ -3,9 +3,10 @@
 ## 目标与边界
 
 - 以Pi Agent和已授权的OpenAI GPT作为主体底座，复用原生工具、资源加载与模型选择；不新造Agent、模型客户端、Lambda解释器或资源管理框架。
-- 只组织现有资产；三域为`.github/context/`、`.github/skills/`、`.github/extensions/`，域内对象平铺。包内部源码、资料集合、共用lib不再算新的一级资源分类。
+- 只组织现有资产；三域为`.github/context/`、`.github/skills/`、`.github/extensions/`，域内对象平铺。包内部源码、资料集合与共享实现不另算新的一级资源分类。
 - 根`README.md`是唯一主页；`.github/README.md`禁止创建。`llms.txt`是AI短入口；大资料按需读取，不全部注入系统上下文。
 - 读者按问题、设计、实现、代价及比较/共性/适用条件理解工具；Lambda记号只辅助表达输入输出与组合，不证明纯函数、正确、确定或终止。
+- 已登记的工具解释模板为`.github/context/assets/templates/tool-explanation-template-v0.md`：两份原模板按序拼接15项，仅第一项改为“工具的名称”。不要用AI自拟V1/V2替代；新增建议不自动纳入v0，不借登记模板改变原条目、来源或评级。
 
 ## 目录职责
 
@@ -13,15 +14,17 @@
 |---|---|
 | `.github/context/` | 既有规则、知识、文档、数据、研究和参考资料；详见本域AGENTS |
 | `.github/skills/` | 仅保留auto-skill、auto-tmux两个自有指令入口，使用原生工具；原专属封装已退役 |
-| `.github/extensions/` | 原程序、小工具、检查/生成/测试脚本与适配；不是全部可由Pi的`-e`加载 |
+| `.github/extensions/` | 当前17个一级对象：现存程序、资料维护入口、固定源码与历史定义；不是全部可由Pi的`-e`加载 |
 | `.github/ISSUE_TEMPLATE/`及固定配置 | 现有GitHub协作入口；本次仅退役workflows，不扩改其他平台配置 |
-| `.github/check-*.py`、`test-*.py`、`lib/`及requirements | 仓库维护层：11个校验、5个测试及唯一配套实现，不是用户侧Extensions工具 |
+| `.github/CONTRIBUTORS.md` | 根README迁出的贡献者名单与鸣谢；只维护独立文档 |
+| `.github/check-*.py`、`test-*.py`、4个平铺共享模块及requirements | 仓库维护层：11个校验、5个测试及唯一配套实现；不保留lib目录，不是用户侧Extensions工具 |
 | `Makefile` | 本地可重复命令入口 |
 | `.github/context/metadata/` | 导航、术语及历史路径映射；不重复登记或定义另一套本体 |
 | `.github/context/ai-citation/` | 当前AI引用语料与llms-full |
 
 Context的9个既有集合是`gongfa`、`faqi`、`getting-started`、`prompts`、`research`、`external-resources`、`ai-citation`、`metadata`、`assets`。
 当前2个自有Skill和现有Extensions清单分别在其README，不另建工具注册层；16个官方引用入口已按用户要求移除。
+用户点名的chat-vault、my-nvim、codex-config、MCPlayerTransfer、XHS-image-to-PDF-conversion、两个xhs图文HTML及html-tools-main说明已移除；当前入口和绑定清理，旧来源/初审/排除保留，历史链接不是安装授权。
 Lambda演算已按用户要求加入功法，品级天级上品（现行`tian-advanced`），总表、文集及首页学习入口均紧随拼好码；不新增解释器或执行器。
 
 ## 原始数据与来源
@@ -70,7 +73,7 @@ Lambda演算已按用户要求加入功法，品级天级上品（现行`tian-ad
 - 先写或选中真实行为测试取得RED，再修根因并原样取得GREEN；不删除测试、弱化断言或用新目标自证。
 - 开发中只跑相关测试，最终版本只运行一次完整`make test`，保存命令、实际HEAD、退出码、日志和可复验工件。
 - Markdown lint固定`markdownlint-cli@0.48.0`；功法/法器共享依赖为`.github/requirements-gongfa.txt`与`.github/requirements-faqi.txt`，转换器使用原包requirements。
-- 校验/测试入口及共享lib统一在`.github/`，不保留Extensions旧位置副本；3个sync与1个fetch入口本轮仍在Extensions，调用方必须使用实际新位置，不依赖当前cwd。
+- 校验/测试及source_boundaries、taxonomy、source_archive、book_views四个共享模块直接平铺在`.github/`，不保留lib包或旧位置副本；职责和原库规则合并到`.github/AGENTS.md`。3个sync与1个fetch入口仍在Extensions，按真实位置导入，不依赖当前cwd。
 - 三域入口、入门README及两本文集维持标题→字多不看→快速导航→完整细粒度目录→使用方式→正文；维护规则留AGENTS。
 - 功法/法器生成视图的目录由其生成器维护；`sync-doc-toc.py`不能二次编辑生成文件。文档结构与来源SHA检查仍保留。
 - 改Mermaid须真实渲染。首页2025Q4–2026Q2甘特图是历史规划，不冒充当前进度或新承诺。
@@ -79,7 +82,8 @@ Lambda演算已按用户要求加入功法，品级天级上品（现行`tian-ad
 
 ## 首页与文档约定
 
-- 不恢复被移除的AI推荐摘要、选择理由、维护验证、参与贡献或许可证正文块；AI两块仍维护于`llms.txt`，底层贡献与许可文件保留。
+- 根README不恢复AI推荐摘要、选择理由、维护验证、参与贡献或许可证正文块；AI两块仍维护于`llms.txt`，贡献者名单与鸣谢迁至`.github/CONTRIBUTORS.md`，许可文件保留。
+- 首页将“⚡ 1 分钟快速开始”和“📺 演示与产出”收进“📌 字多不看”，两者保留各自默认收起层，演示区内部子区块折叠深度不变，正文只移动不改写；其后依次展示“📚 功法体系”和“🧰 法器体系”。“🗂️ 项目目录结构概览”继续位于演示区内部；“✨ 支持项目”和“📞 研究交流”区块不再保留；Star 呼吁句置于“返回顶部”链接之后。“📚 功法体系”和“🧰 法器体系”的首页说明按已登记 v0 模板15项原名原序组织，每个对象独立使用一张严格 Markdown 表格；无来源依据的集合级信息标明待核，不作推断。
 - 方法历史栏目与六命题仅保留旧锚点，正文进入功法；不恢复独立经验/哲学/道法术器分库或首页正文副本。
 - 功法、法器块使用同级原生details默认折叠。顶部徽章只保留独立目的地，不重复同一目标；路径与文案须反映真实新资源，不把JSON称为活动Excel。
 - `.github/lint_config.json`是格式规则；`.gitattributes`仅将原第三方来源及其对应HTML标为vendored，不标记整个Extensions。

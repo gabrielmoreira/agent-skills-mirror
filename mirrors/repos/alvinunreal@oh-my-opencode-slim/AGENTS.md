@@ -215,4 +215,4 @@ submissions use the `community-preset` label (see `docs/maintainers.md`).
 
 ### Domain docs
 
-Single-context repo: `CONTEXT.md` and `docs/adr/` at the root, plus `codemap.md`. See `docs/agents/domain.md`.
+Single glossary at the root: `GLOSSARY.md`, plus `docs/adr/` and `codemap.md`. See `docs/agents/domain.md`.

@@ -25,7 +25,7 @@ Several common traps need different fixes:
 
 ### Reproduce the reported denial first
 
-The executing agent repeats the named protected read through the actual failing requester and execution context before changing permissions. A file listing, another terminal, SSH access or a foreground run cannot substitute for the denied file read or background job. Record the path/resource, requester, context and result; this is a diagnostic step, not a mechanical permission classifier.
+The executing agent first inspects the original protected operation through its task-owned handle and any retained result. Reuse current evidence for the same resource, requester and execution context. Keep a still-running request within its existing deadline; do not launch a replacement while its terminal state is unknown. When current evidence is missing or stale, issue one bounded read through the actual failing requester and context before choosing a permission repair. A file listing, another terminal, SSH access or a foreground run cannot substitute for that operation. Record the path/resource, requester, context and result; this is a diagnostic step, not a mechanical permission classifier.
 
 If that read now succeeds, report **currently accessible; earlier cause unknown** and stop permission changes unless a specific required read still fails. Do not call the cause repaired without evidence of the cause and its correction, or add Full Disk Access, change ACLs, reconnect shared mounts or restart a shared host merely to clear a historical error. If it still fails, follow the attribution checks below; `Operation not permitted` alone does not establish TCC as the cause.
 
@@ -50,6 +50,9 @@ sudo -n sqlite3 '/Library/Application Support/com.apple.TCC/TCC.db' \
 Use `from Sub:` to identify a candidate requester, then verify its exact path and a real
 protected read before choosing what to authorize. An unreadable TCC.db leaves grant state
 unknown; its FDA bootstrap is in `references/tcc-mechanics.md`.
+When interpreting preflight logs or an allowed grant row, first load
+[Correlate preflight and grant evidence](references/tcc-mechanics.md#correlate-preflight-and-grant-evidence)
+before choosing a permission repair.
 
 ## Decision tree
 
@@ -78,8 +81,32 @@ unknown; its FDA bootstrap is in `references/tcc-mechanics.md`.
   `sys.addaudithook` to log `open` events aligned to the tccd timestamp — not `fs_usage`.
 - **SIP protects the system TCC.db read-only.** You cannot `INSERT`/`UPDATE` a grant from the
   command line — authorization must go through the GUI. `auth_value` is readable, writable is not.
-- **After granting, restart the requesting process.** Grants are read at launch; a running process
-  keeps its old (denied) state until relaunched.
+- **After granting, verify the request before considering a restart.** Follow
+  [the request lifecycle below](#after-a-grant-or-reset); restart requirements depend on
+  the permission and application, not on the presence of an Allow click.
+
+## After a grant or reset
+
+The executing agent checks the original request through its task-owned process/tool handle
+and repeats the named protected operation in the same requester and execution context.
+These are operator checks; this Skill does not automatically manage process lifecycles.
+
+1. If the original request is still running, keep it alive and wait within its existing
+   deadline for its actual result. An Automation/AppleEvent request can complete after Allow
+   without restarting its requester. A dismissed dialog or an enabled switch is not success.
+2. If a wait expires, inspect the original request's terminal result before retrying. A tool
+   wait ending does not itself prove the underlying request ended; keep its state unknown
+   when no result is available. A late Allow cannot make an expired request succeed. Once
+   the original request has ended, issue one new bounded, read-only query when needed to
+   verify access; check for any completed side effect before repeating the business action.
+3. If access still fails, check the exact requester, permission and application-specific
+   relaunch requirement. Restart only when that requirement or the observed failure makes
+   it necessary, and only a task-owned process or an explicitly authorized target whose work
+   is preserved. Before terminating another session's process or restarting a shared service,
+   verify explicit authorization for that exact operation and preservation of its in-flight
+   work. Without both, keep that repair pending while continuing independent diagnosis.
+4. After any required relaunch, repeat the protected operation in its real context. Stop
+   permission changes when it succeeds; a grant record alone does not prove the job works.
 
 ## Scope
 

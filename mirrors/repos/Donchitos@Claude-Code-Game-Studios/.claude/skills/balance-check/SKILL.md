@@ -84,7 +84,9 @@ populates it), skip this and use the GDD alone.
 
 Then read the GDD for the system from `design/gdd/` to understand intended design
 targets, tuning knobs, and expected value ranges — for anything the registry did
-not already supply. This is the baseline for "correct" behaviour.
+not already supply. This is the baseline for "correct" behaviour. Read it by section:
+find the headings you need with the Grep tool (pattern `^#`, content mode) and
+Read those ranges with offset and limit.
 
 If the data files are FOUND but neither source gives targets for this domain,
 the sections that judge against targets (Outliers Detected, and Progression
@@ -185,6 +187,11 @@ After presenting the report, use `AskUserQuestion`:
   - `[A] Fix highest-priority issue now — walk me through it`
   - `[B] Save report to design/balance/balance-check-[system]-[date].md`
   - `[C] Stop here — I'll review the findings manually`
+
+**Run as a subagent?** `game-designer` preloads this skill, and a subagent has
+no `AskUserQuestion`. End your reply with the question and these three options
+as a short list, and stop: whoever called you asks the user and passes the
+answer back.
 
 If [A]:
 - Ask which issue to address first (refer to the Recommendations table by priority row)

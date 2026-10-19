@@ -13,6 +13,9 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from provenance_contract import validate_market_inputs
+
 # Component weights for composite score
 WEIGHTS = {
     "regime": 0.25,
@@ -619,7 +622,13 @@ def main():
     )
     parser.add_argument("--json-only", action="store_true", help="Output JSON only, skip markdown")
 
+    parser.add_argument("--require-provenance", action="store_true")
+    parser.add_argument("--run-id")
+    parser.add_argument("--as-of", help="Timezone-aware evaluation timestamp")
+    parser.add_argument("--max-age-days", type=int, default=3)
     args = parser.parse_args()
+    if args.require_provenance and (not args.run_id or not args.as_of):
+        parser.error("strict mode requires --run-id and --as-of")
 
     # Load all inputs
     breadth_data = load_json_file(args.breadth)
@@ -630,6 +639,19 @@ def main():
     theme_data = load_json_file(args.theme)
     sector_data = load_json_file(args.sector)
     institutional_data = load_json_file(args.institutional)
+
+    lineage = None
+    if args.require_provenance:
+        try:
+            lineage = validate_market_inputs(
+                breadth_data,
+                uptrend_data,
+                run_id=args.run_id,
+                evaluation=args.as_of,
+                max_age_days=args.max_age_days,
+            )
+        except ValueError as exc:
+            parser.error(str(exc))
 
     # Extract scores
     scores: dict[str, Optional[int]] = {
@@ -676,6 +698,9 @@ def main():
         "inputs_missing": missing,
         "rationale": rationale,
     }
+
+    if lineage is not None:
+        result["input_lineage"] = lineage
 
     # Ensure output directory exists
     args.output_dir.mkdir(parents=True, exist_ok=True)

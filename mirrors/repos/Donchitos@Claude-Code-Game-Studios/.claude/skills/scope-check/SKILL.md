@@ -27,7 +27,9 @@ Locate the baseline scope document for the given argument:
 - **Milestone** → read `production/milestones/[name].md`
 
 If the document is not found, report the missing file and stop. Do not proceed without
-a baseline to compare against.
+a baseline to compare against. Read a GDD by section: find the headings you need with
+the Grep tool (pattern `^#`, content mode) and Read those ranges with offset and
+limit.
 
 ---
 

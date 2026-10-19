@@ -153,6 +153,12 @@ then publishes `minutes-cli`. Every publish is idempotent for safe workflow
 reruns. See [Trusted publishing setup](trusted-publishing.md) for the one-time
 registry configuration.
 
+npm may accept a signed publish while continuing to process the package. The
+visibility check allows ten minutes of backoff and verifies the exact tarball
+integrity before dependent publication. If processing outlasts that window,
+inspect the accepted publish and registry state, then rerun the failed job;
+never replace the version or tag to retry a delayed registry response.
+
 ### 11. Wait for release assets and registry publishes, then publish the draft
 
 ```bash
