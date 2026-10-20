@@ -82,7 +82,7 @@ never the inventory. Normal manager questions no longer silently use a limited
 frontend projection; explicitly choosing status-only still uses that projection.
 
 The manager channel's model and reasoning effort follow its executor. On the
-interactive CLI endpoint the defaults are `gpt-6-astra` with `high` reasoning; on
+interactive CLI endpoint the defaults are `gpt-6.1-sol` with `xhigh` reasoning; on
 the managed host they are the managed execution profile
 (`deepseek-official` / `deepseek-flash` / `high`). The machine's
 `steward_executor` machine configuration decides the executor, the model and the
@@ -93,6 +93,18 @@ configuration means that field keeps resolving from the layers below it. Thread
 start, resume and turn start explicitly carry the settings; worker configuration
 is unchanged. Capabilities expose the manager defaults, their source, and the
 status and revision of the machine document they were read from.
+
+When a Codex context or model migration needs a fresh upstream thread, the
+adapter preserves all nonempty visible user/assistant messages, in order and
+with their original text, through native
+[`thread/inject_items`](https://developers.openai.com/codex/app-server/#inject-items-into-a-thread).
+It persists this history before Core publishes the replacement binding, without
+starting a model turn. Later requests carry the stable objective and fresh Core
+evidence; they do not reattach the migrated transcript. Native resume reuses the
+stored history, including after a restart before the first request. An injection
+failure closes the new adapter without publishing it or replaying the operation;
+older hosts that lack this RPC must be upgraded. Existing failed requests remain
+failed and are not automatically retried by this context transfer.
 
 The managed profile reaches the channel as the same one-line readback the
 governed Turn publishes (`deepseek-flash@high`), so the channel and the

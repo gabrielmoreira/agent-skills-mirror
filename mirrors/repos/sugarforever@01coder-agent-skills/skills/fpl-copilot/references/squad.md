@@ -1,6 +1,6 @@
 # FPL Squad Management
 
-Squads are stored as markdown files in `~/.fplcopilot/squads/` — one file per squad.
+Persist squads as Markdown documents, one per squad, under the `squads/` location resolved in SKILL.md. Use the available document read, enumeration, and write capabilities. Verify writes before claiming a squad was saved.
 
 ---
 
@@ -103,7 +103,7 @@ The agent MUST follow these rules — squad persistence is not optional:
 
 | Trigger | Action |
 |---------|--------|
-| User says "my squad/team" | List files in `~/.fplcopilot/squads/`, load the one with `owner: me` (or ask if multiple) |
+| User says "my squad/team" | List documents in the resolved `squads/` location, load the one with `owner: me` (or ask if multiple) |
 | User names a specific squad | Load that squad file |
 | User asks for analysis/advice | Load relevant squad file to provide personalized recommendations |
 | Conversation starts with FPL context | Check for existing squads proactively |

@@ -5,6 +5,17 @@ description: "Turn a vague research direction into a problem-anchored, elegant, 
 
 # Research Refine: Problem-Anchored, Elegant, Frontier-Aware Plan Refinement
 
+> **Before each reviewer slot**, follow [Selectable Reviewers](../shared-references/reviewer-backends.md):
+> resolve invocation → `.aris/reviewer.json` → Codex default (fresh native reviewer)
+> with `reviewer_route.py` through the canonical helper resolver, preserving this
+> slot's tier, fresh contexts, source/image inputs and deterministic gates.
+> Codex examples/pins below apply only to `backend=codex`; other routes use their
+> own first-call/reply contract. Save the route and actual returned identity;
+> unavailable selections are `REVIEW_UNAVAILABLE`. Classify acceptance from actual
+> families/completion/scope. Forward invocation reviewer/model/effort overrides
+> to reviewer-bearing children. Generation workers are unchanged.
+
+
 Refine and concretize: **$ARGUMENTS**
 
 ## Overview
@@ -291,6 +302,8 @@ Use this structure:
 
 Send the full proposal to GPT-6-Astra for an **elegance-first, frontier-aware, method-first** review. The reviewer should spend most of the critique budget on the method itself, not on expanding the experiment menu.
 
+> Resolve this reviewer slot first; the following is the `backend=codex` example.
+
 ```
 spawn_agent:
   model: REVIEWER_MODEL
@@ -475,6 +488,8 @@ Save to `refine-logs/round-N-refinement.md`:
 ### Phase 4: Re-evaluation (Round 2+)
 
 Send the revised proposal back to GPT-6-Astra in the **same agent**:
+
+> Resolve this reviewer slot first; the following is the `backend=codex` example.
 
 ```
 send_input:

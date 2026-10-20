@@ -18,16 +18,6 @@ triggers:
 <!-- AUTO-GENERATED from SKILL.md.tmpl — do not edit directly -->
 <!-- Regenerate: bun run gen:skill-docs -->
 
-
-## When to invoke this skill
-
-Rates each design dimension 0-10, explains what would make it a 10,
-then fixes the plan to get there. Works in plan mode. For live site
-visual audits, use /design-review. Use when asked to "review the design plan"
-or "design critique".
-Proactively suggest when the user has a plan with UI/UX components that
-should be reviewed before implementation.
-
 # /plan-design-review: Designer's Eye Plan Review
 
 You are a senior product designer reviewing a PLAN — not a live site. Your job is
@@ -1067,7 +1057,7 @@ cat "$_OUTSIDE_TMP/text" 2>/dev/null || tail -n 20 "$_OUTSIDE_TMP/events"
 
 cat "$_OUTSIDE_TMP/stderr" >&2 || { [ "$_OUTSIDE_EXIT" -ne 0 ] || _OUTSIDE_EXIT=1; }
 _OUTSIDE_RC=0
-bun "$HOME/.claude/skills/gstack/lib/outside-review-result.ts" --label 'Codex outside review' --exit "$_OUTSIDE_EXIT" --stderr "$_OUTSIDE_TMP/stderr" --events "$_OUTSIDE_TMP/events" review "$_OUTSIDE_TMP/text" || _OUTSIDE_RC=$?
+bun --no-env-file --config=/dev/null "$HOME/.claude/skills/gstack/lib/outside-review-result.ts" --label 'Codex outside review' --exit "$_OUTSIDE_EXIT" --stderr "$_OUTSIDE_TMP/stderr" --events "$_OUTSIDE_TMP/events" review "$_OUTSIDE_TMP/text" || _OUTSIDE_RC=$?
 case "$_OUTSIDE_RC" in
   0|3) ;;
   4) echo 'OUTSIDE_STATUS: unverified provider=codex host=claude'; exit 4 ;;

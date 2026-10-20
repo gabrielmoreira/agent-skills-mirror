@@ -1,16 +1,16 @@
 ---
 name: water-service-pareto
-description: Create or refresh a verified Pareto Chart of Northstar water-service overdue backlog by a requested grouping column.
+description: Use when I ask for a Pareto chart, an 80/20 or failure-mode analysis, or the vital few categories in a work-order table column.
 ---
 # Water-service Pareto Chart
-## Required inputs
-Require the actual source table, report date, selected scope, grouping column and count metric. Ask for missing inputs. In this course use tblWorkOrders, Control!B2 (2026-09-30), all sites and overdue-backlog count grouped by Job_Category or Site. Do not assume access to a web chat or another workbook.
-## Source and workbook rules
-Read the visible .Rules worksheet in column A. Preserve Work_Orders, Technicians, Control, Prompt_Log, .Rules, source IDs, statuses, owners and unrelated sheets. Resolve conflicting requirements explicitly; do not promise a universal precedence order or treat instructions as a security boundary.
+## Inputs
+Use the table and the column I name, for example tblWorkOrders and Failure_Mode, Job_Category or Site. Count all work orders unless I ask for a subset: backlog means Status is neither Closed nor Cancelled; overdue means backlog with Due_Date before the date in Control!B2. If I do not name a table or column, ask me. Never change the source table or unrelated sheets.
 ## Method
-Count rows where Status is neither Closed nor Cancelled and Due_Date is strictly before the report date. Group by the requested column. Sort count descending, then group label alphabetically for ties. Build a formula-backed Count, Cumulative_Count, Share and Cumulative_Percent summary. The last cumulative percentage is 100% when the total is positive; for zero total show N/A and explain there is no Pareto distribution.
-## Output
-Create only Pareto_<grouping column>, for example Pareto_Job_Category or Pareto_Site. Ask before replacing an existing matching output. Rebuild that output after review without duplicating summaries or charts. Preserve all other sheets and source records.
-Create an editable Excel combo chart: descending count columns on the left axis and cumulative percentage line on the right axis fixed at 0%-100%. Label both axes, grouping, metric, date and scope. If the combo UI is unavailable, supply the correct summary and explain the manual combo-chart route; do not claim the chart exists.
+1) Count the rows for each value of the column and sort from highest to lowest; break ties alphabetically.
+2) Create a sheet named Pareto_<column name> (add _Overdue or _Backlog for a subset). If it exists, replace only its contents.
+3) Build a summary table with formulas that read the source table: Category, Count, Share %, Cumulative %, and a Total row.
+4) Create one combo chart: Count as columns, highest first, and Cumulative % as a dark grey line with markers on a secondary axis from 0% to 100%.
+5) Give the columns the Northstar colours (navy #1F4E79, blue #2E75B6, teal #2A9D8F), add data labels and axis titles, no legend, and a title that states the finding, for example "3 failure modes cause 78% of all work orders".
+6) Under the table, list the vital few: the categories needed to reach 80% and their combined share.
 ## Checks
-Reconcile the summary count to the eligible source rows. Check stable tie ordering, monotonic cumulative percentages and final 100%. Identify the first category set that reaches at least 80%; do not force a literal 80/20 split. Counts show contribution, not root cause, safety priority or approved actions. A rerun must preserve source records and unrelated outputs.
+The Count total must equal the number of rows counted. The last Cumulative % must be 100%. Report the row count, the top category and how many categories reach 80%. A Pareto shows where work concentrates; confirm the root cause on site before acting.

@@ -232,7 +232,7 @@ nodes:
 | `context` | `'fresh'` \| `'shared'` \| `{ resume: node-id }` | — | `fresh` = new session; `shared` = inherit the ambient prior session in a sequential layer; `resume` = fork the exact completed upstream node's session. Parallel layers require named resume or fresh context |
 | `idle_timeout` | number | — | Kill node after this many milliseconds without a provider chunk. Any chunk counts as progress, thinking included. Reported live background work suspends the timer |
 | `retry` | object | — | Per-node retry configuration. See [Retry Configuration](#retry-configuration) |
-| `mutates_checkout` | boolean | — | `false` asserts this node leaves the git checkout untouched. The engine compares `git status` before and after the node and fails it, naming the changed paths, if anything outside the run's artifacts, state, and log directories changed. Enforced on `command`, `prompt`, `bash`, and `script` nodes; the check is skipped outside a git repository. A layer whose parallel nodes all declare it still runs in parallel, and a violation there also names the guarded siblings that ran in the same layer, since the change may not be the failing node's alone. Since one snapshot covers the whole checkout, every guarded node running when the write lands fails, not only the writer. A layer that mixes guarded nodes with any node that isn't checkout-guarded (a node of another kind, or one without `mutates_checkout: false`) runs one node at a time, so a sibling's write is never blamed on a guarded node. Distinct from the workflow-level [`mutates_checkout`](#running-sub-runs-side-by-side), which controls the path lock |
+| `mutates_checkout` | boolean | — | `false` asserts this node leaves the git checkout untouched. The engine compares before/after Git status and content fingerprints of Git-visible dirty and individually listed untracked paths, excluding the run's artifacts, state, and log directories. It fails the node naming changed paths, including edits to already-dirty files and additions inside already-untracked directories. Dirty checkout cost scales with the visible dirty/untracked bytes read. This observation does not prevent writes or detect changes restored before the final snapshot; ignored paths and recursive submodule contents are not fingerprinted. Enforced on `command`, `prompt`, `bash`, and `script` nodes; the check is skipped outside a git repository or when Git or required filesystem reads fail. This includes Git status output exceeding the subprocess buffer limit (1 MiB on stdout or stderr); a large untracked tree can skip the entire assertion, even when those paths would be excluded from fingerprinting. A layer whose parallel nodes all declare it still runs in parallel, and a violation there also names the guarded siblings that ran in the same layer, since the change may not be the failing node's alone. Since one snapshot covers the whole checkout, every guarded node running when the write lands fails, not only the writer. A layer that mixes guarded nodes with any node that isn't checkout-guarded (a node of another kind, or one without `mutates_checkout: false`) runs one node at a time, so a sibling's write is never blamed on a guarded node. Distinct from the workflow-level [`mutates_checkout`](#running-sub-runs-side-by-side), which controls the path lock |
 | `always_run` | boolean | `false` | Not a scheduling field: it does not change whether the node runs in a normal pass (use `when:` and `trigger_rule` for that). It opts the node out of the resume cache, so on resume it is evaluated again instead of replaying a prior completion, and still runs only if its `when:` and `trigger_rule` allow it. See [Opting Out of Resume Caching](#opting-out-of-resume-caching) |
 | `output_type` | string | — | Semantic label for this node's output (e.g. `'plan'`, `'findings'`, `'code'`). When set, the executor writes a typed output + metadata pair after the node completes (best-effort). Top-level nodes use `$ARTIFACTS_DIR/nodes/<id>.md` + `<id>.meta.json`; loop-body executions use [iteration-specific paths](#the-artifact-chain). |
 
@@ -696,7 +696,7 @@ allowed to run (`trigger_rule: all_done`).
 In `bash:` and `until_bash:`, Archon injects `$nodeId.output`, `$nodeId.output.field`, and `$LOOP_PREV.nodeId.output[.field]` using two forms:
 
 - Small string outputs are single-quoted inline, such as `'a b   c *'`.
-- Outputs exceeding 32 KB spill to the run-owned `$ARTIFACTS_DIR/.archon/node-output-spills/<node>[.<field>].nodeoutput` file and become `$(cat '<path>')`. These files follow the [run-artifact retention lifecycle](/reference/archon-directories/#user-level-archon).
+- Outputs exceeding 32,768 UTF-16 code units (JavaScript `string.length`) spill to the run-owned `$ARTIFACTS_DIR/.archon/node-output-spills/<write-id>.<node>[.<field>].nodeoutput` file and become `$(cat '<path>')`. These files follow the [run-artifact retention lifecycle](/reference/archon-directories/#user-level-archon).
 
 A bare argument such as `printf '%s' $emit.output` works with the inline form, but the unquoted command substitution in the spill form splits words and expands globs. Wrapping the reference in double quotes breaks the inline form instead: `value="$emit.output"` becomes `value="'a b   c *'"`, preserving the single quotes as data. Single quotes around a reference also produce the wrong value.
 
@@ -1127,7 +1127,7 @@ When a `nodes:` (DAG) workflow fails, the prior run stays in the database as a c
 **What happens on resume:**
 
 1. The CLI / orchestrator looks up the resumable run, loads its `node_completed` events and private addressable-session handles, then transitions the row back to `running`.
-2. Completed nodes are skipped; only failed and not-yet-run nodes are executed.
+2. Completed nodes are skipped; only failed and not-yet-run nodes are executed. Failed nodes are retried when the failures are what stopped the run: resuming a **failed** run, or continuing after a provider-limit pause or a released source. A run that paused at a node that waits on purpose (an attention, time or event wait, an approval gate, or a child it is blocked on) instead replays the failures from before that pause when it continues, so a node the run had already moved past does not run again.
 3. You receive a platform message like: `Resuming workflow — skipping 3 already-completed node(s).`
 
 > **Why opt-in?** Earlier versions silently auto-resumed on plain `archon workflow run`, which caused state from prior failed runs (e.g. cached node outputs with stale inputs) to bleed into new invocations of the same workflow at the same path. See #1392 for the bug; now resume is always a user-driven decision.
@@ -1473,7 +1473,7 @@ This works on **every** node type, `bash`/`script` included. The write is **best
 
 #### Reading typed artifacts by type
 
-Every executable invocation receives a typed-artifact listing at `$TYPED_ARTIFACTS_FILE`: a JSON file inside the run's artifact directory, recreated before the node runs. It has the shape `{ "runId", "artifactsByType": { "<outputType>": [ …metadata ] }, "errors": [ … ] }`, so a script or agent selects a type without knowing `nodes/`, sidecar names, or loop filename rules. Each entry is the same metadata the sidecar holds (`nodeId`, `outputType`, `path`, `runId`, `producedAt`, `size`, and optional `loopGroupPath`), and `path` is relative to `$ARTIFACTS_DIR`.
+Executable nodes receive a typed-artifact listing at `$TYPED_ARTIFACTS_FILE`: a JSON observation file inside the run's artifact directory. Each agent attempt receives a fresh listing before it starts, including transient retries. Plain `loop` structured-output reasks also receive fresh listings. Ordinary agent structured-output reasks (including agents in a `loop_group` body) reuse their attempt's listing. `bash:` and `script:` nodes receive one before execution. Each `until_bash` check receives a separate listing after the iteration's work. It has the shape `{ "runId", "artifactsByType": { "<outputType>": [ …metadata ] }, "errors": [ … ] }`, so a script or agent selects a type without knowing `nodes/`, sidecar names, or loop filename rules. Each entry is the same metadata the sidecar holds (`nodeId`, `outputType`, `path`, `runId`, `producedAt`, `size`, and optional `loopGroupPath`), and `path` is relative to `$ARTIFACTS_DIR`.
 
 ```ts
 // A script: read the listing the same way in host or container runs.
@@ -1493,7 +1493,7 @@ In an agent prompt, point at the listing rather than the layout: "Read `$TYPED_A
 
 Properties worth knowing:
 
-- **Observation, not a ledger.** Entries of a type are ordered by `producedAt` ascending, with ties broken by content path. The listing freezes which artifacts existed when the invocation started (each attempt, loop iteration, and `until_bash` check gets its own) and their metadata; it is not an execution history or a completion-order log, and re-running the same node owner overwrites its sidecar. An invocation sees artifacts published **before it started**, never a running sibling's — declare `depends_on` to order a producer ahead of its consumer. A `loop_group`'s `until_bash` runs after its body, so it sees what that iteration's body published.
+- **Observation, not a ledger.** Entries of a type are ordered by `producedAt` ascending, with ties broken by content path. Each listing freezes the artifacts and metadata observed when it was written; it is not an execution history or a completion-order log, and re-running the same node owner overwrites its sidecar. An agent attempt sees artifacts published **before that attempt started**. Concurrent siblings have no publication-order guarantee; declare `depends_on` to order a producer ahead of its consumer. A plain `loop`'s `until_bash` runs after its agent work, and a `loop_group`'s runs after its body, so each sees the typed artifacts published during that iteration.
 - **Failures stay visible.** `errors` lists every record the read could not turn into an artifact (malformed or foreign-run sidecar, unsafe path, missing or unreadable content). A corrupt sidecar has no trustworthy type, so it never disappears into an empty type list. An absent key means no matching readable metadata; `runId` lets a consumer reject a listing handed to it out of scope.
 - **Everywhere an invocation runs.** The path is delivered in `bash:` and `script:` nodes (as both `$TYPED_ARTIFACTS_FILE` and the `TYPED_ARTIFACTS_FILE` environment variable), agent prompts, loop attempts, and deprecated `approval.on_reject` rework prompts. A prompt that references it in a context with no listing fails rather than substituting an empty string. A `--dry-run` preview has no artifacts and substitutes an empty string instead, so it cannot detect a reference made from a context that never receives a listing.
 
@@ -2129,17 +2129,25 @@ map goes through — so a map accepted when composing is accepted here:
 
 One consequence worth knowing on **chat, the run route, and the console** — the surfaces that reuse a
 conversation. Invoking a workflow there when a resumable run of it already exists in that
-conversation *continues that run* rather than starting a new one, without any resume vocabulary
+conversation normally *continues that run* rather than starting a new one, without any resume vocabulary
 (see [DAG Resume on Failure](#dag-resume-on-failure)). New `inputs` values passed on such a call are
 **not applied** — the continued run keeps what it started with, and Archon says so, naming the
 values it ignored. To run fresh with different values, abandon the existing run first
 (`/workflow abandon <id>`) and invoke again. The CLI has no such implicit continuation: a plain
 `archon workflow run` always starts fresh, and `--input` with `--resume` is rejected outright.
 
-Chat platforms (Slack, Telegram, Discord, GitHub) have **no** channel for inputs yet: they carry
-only a trigger message, so a required-input workflow invoked there still refuses up front and
-points at the CLI and console. That gap is tracked in
-[#2555](https://github.com/coleam00/Archon/issues/2555).
+Adoption and supersede declarations are exceptions: if the dispatch would continue an existing run,
+Archon refuses the declaration before continuation or its fresh fallback. The refusal names the
+existing run and tells you to resume or abandon it first, or use a conversation with no open run.
+An accepted fresh supersede records the replaced run ID and `supersede` continuation mode on the
+new run. Adoption and supersede cannot be declared together.
+
+In chat (Slack, Telegram, Discord, GitHub, Web UI), the assistant sees each workflow's declared
+inputs, asks you for missing required values in conversation, and passes them through its
+`invoke_workflow` tool. The same validation and pre-cost refusal apply. Assistants without
+[in-process native tools](/reference/provider-capabilities/) launch workflows by writing
+`/invoke-workflow` lines, which carry no inputs, so a required-input workflow launched that way
+still refuses up front and points at the CLI and console.
 
 ---
 
@@ -2236,8 +2244,9 @@ sub-pipeline.**
   resume-through-parent: `/workflow resume <parentRunId>` re-drives the failed child once.
   `retry:` is **not** allowed on a `workflow:` node (a retry would orphan the first child
   run).
-- **Cancel cascade.** Abandoning the parent cancels its non-terminal descendants
-  cooperatively: their executors abort at the next status check, within ~10s. A running
+- **Cancel cascade.** Abandoning the parent attempts to cancel discovered descendants except completed
+  and cancelled runs, within the [500-parent expansion bound](#max_parallel-bounds-concurrency-not-count).
+  Cancellation is cooperative: their executors abort at the next status check, within ~10s. A running
   host `bash:` or `script:` node of a run that `archon serve` executes is ended as described
   under [Bash and script node timeouts](#bash-and-script-node-timeouts), and cancelling a
   detached run ends its owner's process group.
@@ -2299,6 +2308,9 @@ Archon logs `claude.query_tokens_unknown`. Tokens remain unknown for the rest of
 even if later results supply usable totals. The node's tokens also remain absent across
 structured-output reasks and later loop iterations after an unknown interval; cost
 subtraction continues independently.
+OpenCode prices each model step as its own assistant message, so an OpenCode node's cost and
+tokens sum every assistant message its prompt produced, such as the steps before and after a
+tool call.
 An incomplete count is recorded, not dropped: the node's `execution.spend.tokens` (persisted
 as `data.spend.tokens`) is `{ "source": "unavailable", "reason": "incomplete" }` and the row
 carries no `tokens`. Every total containing that node, through retries, loops, fan-outs,
@@ -2518,17 +2530,19 @@ written.
 #### `max_parallel` bounds concurrency, not count
 
 `max_parallel` is a sliding window, not a limit on how many children exist. `items` is
-**unbounded**: a 400-element array produces 400 child runs regardless of the window. Two
-consequences worth planning for:
+**unbounded**: a 400-element array produces 400 child runs regardless of the window.
+Consequences worth planning for:
 
 - Cost scales with `items.length`, not with `max_parallel`. Bound the list in the producer
   node, not here.
 - A child that pauses keeps its slot until it finishes, so unanswered children can hold
   the whole window and later items wait. Paused children use no process or provider, so
   raising `max_parallel` costs nothing while they wait.
-- Abandoning the parent cascade-cancels at most 500 descendant runs (`MAX_CASCADE_RUNS`).
-  A fan-out wider than that can leave children uncancelled and still billing; they have to
-  be abandoned individually. A run-tree-wide budget ceiling is tracked in
+- Abandoning the parent expands at most 500 parents (`MAX_CASCADE_RUNS`), considering
+  every discovered child for cancellation even in a wide fan-out. One final aggregate
+  lookup checks beneath the remaining queue, excluding completed and cancelled leaves. Deeper subtrees may remain
+  unvisited; a warning means those descendants need individual inspection. This bounds
+  lookup rounds, not cancellation count or total work. A run-tree-wide budget ceiling is tracked in
   [#1961](https://github.com/coleam00/Archon/issues/1961).
 
 #### Join semantics
@@ -3097,11 +3111,22 @@ model: medium        # Tier, alias, or literal model override
 
 ### Portable Model References
 
-`model:` accepts three shapes:
+`model:` accepts four shapes:
 
 - `small`, `medium`, or `large` - portable tier refs resolved from `tiers:` in `~/.archon/config.yaml` and `.archon/config.yaml`, with built-in defaults for claude and codex only
-- `@name` - custom aliases from `aliases:`; use these for project workflows, not bundled or global workflows, because aliases are project-specific
+- `@name` - custom aliases from `aliases:`. A bare alias fails on an install that doesn't define it, so bundled and global workflows can't use one on its own
 - Any other string - a literal model id passed through to the resolved provider's SDK
+- A preference list of `@name` aliases ending in a tier or literal model id, such as `['@reviewer', medium]`. The first alias the run's config defines wins. When none is defined, the final entry is used, so the list is portable. Validation checks the final entry too, so the list works on an install that defines none of its aliases
+
+```yaml
+nodes:
+  - id: seams
+    command: review-seams
+    # The lens's own alias, then the reviewer concern, then the tier used today.
+    model: ['@review-seams', '@reviewer', medium]
+```
+
+A list is how a bundled workflow names the concern each node serves without requiring the user to configure it. Set the alias persistently with `archon ai alias set @reviewer codex gpt-5.5`, or for one run with `archon workflow run ... --model @reviewer=codex/gpt-5.5`. A run binding of an alias that no config defines must name its provider.
 
 Tier and alias refs resolve to a provider, model, and optional `effort`. If a workflow or node sets both `provider:` and a model ref that resolves to a different provider, Archon warns and uses the provider from the resolved preset. Literal model strings keep the normal provider chain (`node.provider ?? workflow.provider ?? config.assistant`).
 
@@ -3184,18 +3209,26 @@ To validate that all referenced command files, MCP config files, and skill direc
 archon validate workflows <name>
 ```
 
-This checks resource resolution beyond what load-time validation covers. Bundled and global workflows also reject `@custom` model aliases because those refs are not portable across projects. Use `--json` for machine-readable output. See the [CLI Reference](/reference/cli/) for details.
+This checks resource resolution beyond what load-time validation covers. Bundled and global workflows also reject a bare `@custom` model alias, because it isn't portable across projects; a preference list that ends in a tier or model id is. Use `--json` for machine-readable output. See the [CLI Reference](/reference/cli/) for details.
 
 ### Unknown Keys Are Reported, Not Rejected
 
-A key Archon does not recognise is dropped from the parsed workflow — the YAML still loads and the workflow still runs. Because a dropped key can be one an author believed was doing something (the classic case is `interactive: true` on a command node, which reads like a pause and is not one), Archon reports every dropped key as a **warning** naming the key, where it was found, and what to write instead:
+A key Archon does not recognise is dropped from the parsed workflow — the YAML still loads and the workflow still runs. Because a dropped key can be one an author believed was doing something, Archon reports every dropped key as a **warning** naming the key, where it was found, and, when it can tell, what to write instead:
 
 ```text
-WARNING [parse_warning] Node 'plan': unknown key 'interactive' will be ignored.
-  Nothing on this node pauses. To ask for an answer, add a 'wait: { attention:
-  <message> }' node; to ask on each iteration of a loop, use a 'loop_group' whose
-  body ends in one.
+WARNING [parse_warning] Node 'plan': unknown key 'contxt' will be ignored.
 ```
+
+A key that belongs to a different node type is not dropped: it is a **load error** naming the node, the key and the node types that support it, because the node would silently not do what the key says. That covers `runtime:` and `deps:` off a `script:` node; `timeout:` off `bash:`, `script:`, `loop:` and `loop_group:`; `on_timeout:` off `bash:` and `script:`; `with:` off `command:`, `script:`, `include:` and `workflow:`; `input:` and `isolation:` off `workflow:`; and `fan_out:` off `workflow:` and `include:`. A loop setting such as `until_bash:`, `max_iterations:` or `interactive:` written at the top level of a node, instead of inside `loop:` or `loop_group:`, is a load error too. A node-level `interactive: true` reads like a pause and is not one:
+
+```text
+Node 'plan': 'interactive' 'interactive' is only honoured inside 'loop:' or 'loop_group:';
+  at the top level of node 'plan' nothing reads it. Nothing on this node pauses. To ask
+  for an answer, add a 'wait: { attention: <message> }' node; to ask on each iteration
+  of a loop, use a 'loop_group' whose body ends in one.
+```
+
+An AI field on a node that runs no AI (`model:` on a `bash:` node, for example) still only warns: the node does what it says, the field is simply unread.
 
 (The `WARNING [parse_warning]` prefix is `archon validate workflows` formatting; the other surfaces below render the same message text differently.)
 

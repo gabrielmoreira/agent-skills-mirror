@@ -30,20 +30,20 @@ RULES = [
 ]
 PARETO_SKILL = '''---
 name: water-service-pareto
-description: Create or refresh a verified Pareto Chart of Northstar water-service overdue backlog by a requested grouping column.
+description: Use when I ask for a Pareto chart, an 80/20 or failure-mode analysis, or the vital few categories in a work-order table column.
 ---
 # Water-service Pareto Chart
-## Required inputs
-Require the actual source table, report date, selected scope, grouping column and count metric. Ask for missing inputs. In this course use tblWorkOrders, Control!B2 (2026-09-30), all sites and overdue-backlog count grouped by Job_Category or Site. Do not assume access to a web chat or another workbook.
-## Source and workbook rules
-Read the visible .Rules worksheet in column A. Preserve Work_Orders, Technicians, Control, Prompt_Log, .Rules, source IDs, statuses, owners and unrelated sheets. Resolve conflicting requirements explicitly; do not promise a universal precedence order or treat instructions as a security boundary.
+## Inputs
+Use the table and the column I name, for example tblWorkOrders and Failure_Mode, Job_Category or Site. Count all work orders unless I ask for a subset: backlog means Status is neither Closed nor Cancelled; overdue means backlog with Due_Date before the date in Control!B2. If I do not name a table or column, ask me. Never change the source table or unrelated sheets.
 ## Method
-Count rows where Status is neither Closed nor Cancelled and Due_Date is strictly before the report date. Group by the requested column. Sort count descending, then group label alphabetically for ties. Build a formula-backed Count, Cumulative_Count, Share and Cumulative_Percent summary. The last cumulative percentage is 100% when the total is positive; for zero total show N/A and explain there is no Pareto distribution.
-## Output
-Create only Pareto_<grouping column>, for example Pareto_Job_Category or Pareto_Site. Ask before replacing an existing matching output. Rebuild that output after review without duplicating summaries or charts. Preserve all other sheets and source records.
-Create an editable Excel combo chart: descending count columns on the left axis and cumulative percentage line on the right axis fixed at 0%-100%. Label both axes, grouping, metric, date and scope. If the combo UI is unavailable, supply the correct summary and explain the manual combo-chart route; do not claim the chart exists.
+1) Count the rows for each value of the column and sort from highest to lowest; break ties alphabetically.
+2) Create a sheet named Pareto_<column name> (add _Overdue or _Backlog for a subset). If it exists, replace only its contents.
+3) Build a summary table with formulas that read the source table: Category, Count, Share %, Cumulative %, and a Total row.
+4) Create one combo chart: Count as columns, highest first, and Cumulative % as a dark grey line with markers on a secondary axis from 0% to 100%.
+5) Give the columns the Northstar colours (navy #1F4E79, blue #2E75B6, teal #2A9D8F), add data labels and axis titles, no legend, and a title that states the finding, for example "3 failure modes cause 78% of all work orders".
+6) Under the table, list the vital few: the categories needed to reach 80% and their combined share.
 ## Checks
-Reconcile the summary count to the eligible source rows. Check stable tie ordering, monotonic cumulative percentages and final 100%. Identify the first category set that reaches at least 80%; do not force a literal 80/20 split. Counts show contribution, not root cause, safety priority or approved actions. A rerun must preserve source records and unrelated outputs.
+The Count total must equal the number of rows counted. The last Cumulative % must be 100%. Report the row count, the top category and how many categories reach 80%. A Pareto shows where work concentrates; confirm the root cause on site before acting.
 '''
 DASHBOARD_SKILL = '''---
 name: water-service-dashboard
@@ -104,4 +104,25 @@ Read the visible .Rules sheet and follow it. Find the named source table (for ex
 5. Style: white text on navy #1F4E79, blue #2E75B6 or teal #2A9D8F tiles; chart titles that state the finding from a cell formula; data labels; no gridlines; rates as % with one decimal.
 ## Verify before you finish
 Compare every KPI with an independent COUNTIFS/SUMIFS with all slicers cleared, then for one slicer selection and one empty selection (show N/A for zero denominators). Confirm each chart total equals the selected total. Report each KPI value and which checks passed. Rerunning must replace only Dashboard and Dashboard_Summaries after asking.
+'''
+
+
+DECK_DESIGN_SKILL = '''---
+name: northstar-deck-design
+description: Use when I ask to make a presentation look professional, apply the Northstar brand or redesign plain slides.
+---
+# Northstar deck design
+## Rules
+1) Keep every slide, number, chart value and fact. Change only the design; never add facts.
+2) Fonts: Segoe UI Semibold for titles (28-32 pt) and Segoe UI for body text (16-20 pt).
+3) Colours: navy #1F4E79 for the header bar and titles, blue #2E75B6 and teal #2A9D8F for accents, light grey #F2F4F7 for cards, dark grey #404040 for body text, white slide background.
+## Steps
+1) Make slide 1 a title slide: navy background, large white title, a teal subtitle line, "Northstar Water Services" and the date.
+2) Give every other slide a navy header bar across the top with the title in white and a thin teal line under it.
+3) Turn key numbers into KPI cards: rounded light-grey rectangles with a big bold navy number and a short label under it.
+4) Cut long text to at most 4 short bullets, or turn it into 2-4 icon cards. Leave plenty of white space and use the same margins on every slide.
+5) Recolour charts to navy, blue and teal, with data labels and no gridlines.
+6) Add a footer to every slide except slide 1: "Northstar Water Services | 30 September 2026" on the left and the slide number on the right.
+## Checks
+Check every slide: same fonts and colours, nothing overlaps or runs off the slide, and every number is unchanged. List any slide you could not fix.
 '''

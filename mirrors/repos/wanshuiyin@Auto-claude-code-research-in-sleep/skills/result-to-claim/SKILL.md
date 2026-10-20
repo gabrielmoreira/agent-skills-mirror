@@ -2,10 +2,21 @@
 name: result-to-claim
 description: Use when experiments complete to judge what claims the results support, what they don't, and what evidence is still missing. Codex MCP evaluates results against intended claims and routes to next action (pivot, supplement, or confirm). Use after experiments finish — before writing the paper or running ablations.
 argument-hint: "[experiment-description-or-wandb-run]"
-allowed-tools: Bash(*), Read, Grep, Glob, Write, Edit, mcp__codex__codex, mcp__codex__codex-reply
+allowed-tools: Bash(*), Read, Grep, Glob, Write, Edit, mcp__codex__codex, mcp__codex__codex-reply, mcp__antigravity__antigravity, mcp__antigravity__antigravity-reply, mcp__grok__grok, mcp__grok__grok-reply, mcp__claude-review__review, mcp__claude-review__review_reply, mcp__claude-review__review_start, mcp__claude-review__review_reply_start, mcp__claude-review__review_status
 ---
 
 # Result-to-Claim Gate
+
+> **Before each reviewer slot**, follow [Selectable Reviewers](../shared-references/reviewer-backends.md):
+> resolve invocation → `.aris/reviewer.json` → Claude Code default (Codex MCP)
+> with `reviewer_route.py` through the canonical helper resolver, preserving this
+> slot's tier, fresh contexts, source/image inputs and deterministic gates.
+> Codex examples/pins below apply only to `backend=codex`; other routes use their
+> own first-call/reply contract. Save the route and actual returned identity;
+> unavailable selections are `REVIEW_UNAVAILABLE`. Classify acceptance from actual
+> families/completion/scope. Forward invocation reviewer/model/effort overrides
+> to reviewer-bearing children. Generation workers are unchanged.
+
 
 > 🔒 **Do not wrap this skill in `/loop`, `/schedule`, or `CronCreate`.** It is
 > verdict-bearing — it judges whether results support a claim. Re-running that
@@ -113,6 +124,8 @@ gate DRIVES, it does not ACQUIT).
 ### Step 2: Codex Judgment
 
 Send the collected results to Codex for objective evaluation. Include ONLY claims that passed the Step 1.5 pre-check — claims already terminally rejected (`evidence_not_found`) keep their deterministic verdict and are NOT re-litigated here:
+
+> Resolve this reviewer slot first; the following is the `backend=codex` example.
 
 ```
 mcp__codex__codex:

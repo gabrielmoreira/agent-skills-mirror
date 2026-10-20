@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `langgenius/dify` — 26 default patterns, 0 followed patterns, 38 file(s) materialized.
+Mirror of `langgenius/dify` — 26 default patterns, 0 followed patterns, 48 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `langgenius/dify` — 26 default patterns, 0 followed patterns, 38 fil
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 38 |
+| Files         | 48 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -93,10 +93,20 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 32 | ✓ | [`e2e/features/agent-v2/AGENTS.md`](e2e/features/agent-v2/AGENTS.md) |
 | 33 | ✓ | [`e2e/fixtures/test-materials/e2e-summary-skill/SKILL.md`](e2e/fixtures/test-materials/e2e-summary-skill/SKILL.md) |
 | 34 | ✓ | [`packages/dify-ui/AGENTS.md`](packages/dify-ui/AGENTS.md) |
-| 35 | ✓ | [`skills/difyctl/SKILL.md`](skills/difyctl/SKILL.md) |
-| 36 | ✓ | [`skills/README.md`](skills/README.md) |
-| 37 | ✓ | [`web/AGENTS.md`](web/AGENTS.md) |
-| 38 | ✓ | [`web/features/agent-v2/AGENTS.md`](web/features/agent-v2/AGENTS.md) |
+| 35 | ✓ | [`skills/difyctl/references/build-workflow.md`](skills/difyctl/references/build-workflow.md) |
+| 36 | ✓ | [`skills/difyctl/references/build-workflow/build.md`](skills/difyctl/references/build-workflow/build.md) |
+| 37 | ✓ | [`skills/difyctl/references/build-workflow/change.md`](skills/difyctl/references/build-workflow/change.md) |
+| 38 | ✓ | [`skills/difyctl/references/build-workflow/dsl.md`](skills/difyctl/references/build-workflow/dsl.md) |
+| 39 | ✓ | [`skills/difyctl/references/build-workflow/handover.md`](skills/difyctl/references/build-workflow/handover.md) |
+| 40 | ✓ | [`skills/difyctl/references/build-workflow/plan.md`](skills/difyctl/references/build-workflow/plan.md) |
+| 41 | ✓ | [`skills/difyctl/references/build-workflow/spec.md`](skills/difyctl/references/build-workflow/spec.md) |
+| 42 | ✓ | [`skills/difyctl/references/operations.md`](skills/difyctl/references/operations.md) |
+| 43 | ✓ | [`skills/difyctl/references/plugins.md`](skills/difyctl/references/plugins.md) |
+| 44 | ✓ | [`skills/difyctl/references/setup.md`](skills/difyctl/references/setup.md) |
+| 45 | ✓ | [`skills/difyctl/SKILL.md`](skills/difyctl/SKILL.md) |
+| 46 | ✓ | [`skills/README.md`](skills/README.md) |
+| 47 | ✓ | [`web/AGENTS.md`](web/AGENTS.md) |
+| 48 | ✓ | [`web/features/agent-v2/AGENTS.md`](web/features/agent-v2/AGENTS.md) |
 
 ---
 

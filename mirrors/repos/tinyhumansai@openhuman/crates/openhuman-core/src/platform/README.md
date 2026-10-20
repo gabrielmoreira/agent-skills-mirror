@@ -20,7 +20,6 @@ startup, and two are driven by events rather than calls. In boot order:
 ```text
  core/runtime/bootstrap.rs
    |- platform::cost::init_global(cfg.cost, workspace)    cost ledger singleton
-   |- platform::startup::run_workspace_migrations(ws)     one-shot migrations
    |- platform::socket::set_global_socket_manager(..)    SocketManager singleton
  core/runtime/subscribers.rs
    |- platform::health::bus::register_health_subscriber()

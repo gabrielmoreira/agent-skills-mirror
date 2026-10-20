@@ -84,6 +84,7 @@ gotcha that most often explains a failure. Open every DB read-only.
 - Entry: `chat_engine/engine.rs`, `chat_engine/stop.rs`, `chat_engine/finalize/`, `session/db.rs`, `session/autonomy_pause.rs`, `tools/session_continue.rs`, `context_compact/compact.rs`, `memory/sqlite/`, `memory_extract.rs`.
 - State: `sessions.db` (`context_json` snapshot, `messages.stream_status`, `messages.is_side_snapshot`, `chat_turns`, `session_autonomy_pauses`, session-free `runtime_control_epochs`), `memory.db`. Config: `compact.*` (`cacheTtlSecs=300`, override at usage ≥0.95), `memoryExtract.*`, `memory_embedding`.
 - Grep: `category IN ('chat_engine','memory')`; compaction logs under `category='context'` (source `compact`) plus `category='agent'` (`reactive_microcompact`).
+- 摘要正文为空或推理档位失败 → 检查 `compact.summaryReasoningEffort`（null 保持默认）；仅摘要请求应用显式覆盖，不改变主对话推理或输出上限。不支持的档位/关闭参数以 request-contract 终态停止且保留原历史；先核对摘要专用模型、协议和错误类型，不自动切换模型或扩预算，第三方网关需单独验收。
 - Codex 本地记录导入：入口 `session/codex_import.rs`，台账 `sessions.db.session_import_sources`；`category='session' AND source='codex_import'` 只记录汇总计数。`SELECT source_id,session_id FROM session_import_sources WHERE provider='codex'` 可检查去重关系；这些会话故意只读，`TurnKernel` 和消息插入触发器均拒绝续写。检查失败时不要读取或贴出 JSONL 正文、凭据与工作目录。
 - 主对话关闭镜像后侧聊无法自动打开 → 检查浏览器与 Mac 是否都经 `useMirrorPanelSessionScope` 绑定当前对话面，显示与关闭状态不能再由父会话工作台缓存覆盖。
 - 侧聊宠物提示点击无效 → 检查所属主会话是否仍符合 `regular_session_scope_sql`、侧聊自身是否未归档；归档或恢复应触发 `pet:activity_changed`，不能为不可打开的主会话继续投影侧聊活动。
@@ -121,6 +122,7 @@ gotcha that most often explains a failure. Open every DB read-only.
 - Skill installation: `skills/ha-skill-installer/scripts/install_skill.py` prepares a temporary snapshot, verifies its digest, and atomically publishes without replacement. The installed `.hope-skill-install.json` records source and file hashes. Use `skill({name, action:"inspect"})` to refresh the catalog and compare `baseDir` with the intended destination; inspect never activates the skill. Trace `category='skills'`, `source='inspect'`. Missing prerequisites or a different winning source are distinct from failed file installation.
 
 - Entry: `tools/dispatch.rs` (visibility), `tools/execution.rs`, `tool_defs/` (kernel-shared contract: `TOOL_*` names, `ToolDefinition`/tier, `ToolExecContext`, scope predicates), `permission/engine.rs` (`resolve_async`), `ha-mcp/src/invoke.rs` (runtime; kernel facade `ha-core/src/mcp/`), ha-channel 的 `channel/worker/dispatcher.rs`, ha-skills 的 `skills/discovery.rs`·`skills/author.rs`·`tools/skill/`（阶段 5 第七刀迁出；kernel 回调面 `skills_hooks.rs` 九槽，契约 `skills/types.rs` + 台账 `skills/activation.rs` 仍在 ha-core）, `logging/db.rs`, `async_jobs/manager.rs` (`JobManager`).
+- 企业微信首版入口 `ha-channel/src/channel/wecom/{mod,connection}.rs`，配置 `channels.accounts[*]` 的 `channelId=wecom`。健康页分开看 worker 存活与 probe_ok；poll 仅读缓存。鉴权拒绝后同凭据不自动重连，被其它客户端替换后也不竞争重连；同一 Bot 更改 Secret 时先停止本机运行账户，再显式校验新值；校验不会为不同凭据的同 Bot 建第二条连接。被替换时先停止其它客户端再重启。`category='channel' AND source='wecom'` 拒绝日志只含脱敏 ID、每账号最多30秒一条，可核对 `single:<userid>` / `group:<chatid>` 与 allowlist；不要打印正文、Secret、完整 credentials/frame。无原始锚点、超过10分钟/512项容量/重连后的锚点、已用锚点、媒体/主动投递都拒绝；ACK 未知不可重发。新群 requireMention=false 需 owner 明确加入，已有 mention-only 不迁移放行。审批/提问从应用界面处理，未作真实租户验收。
 - State: `sessions.db` (`channel_conversations`, `sessions.permission_mode`, `learning_events`), `background_jobs.db`, `permission/*.json`, `credentials/mcp/{id}.json`. Config: `mcp_global.enabled`, `permission.global_yolo`, `deferredTools.enabled`.
 - Grep: `category IN ('tool','mcp','channel','skills','permission','async_jobs')` (permission decisions log under `permission`; background-job lifecycle logs under `async_jobs`).
 - 免 Key 搜索：`tools/web_search/keyless.rs` 先尝试 Brave 网页、再回退 360 网页搜索，日志仍用 `category='tool'` / `source='web_search'`，用量操作为 `keyless_search`。403 / 429 后该引擎冷却 60 秒；上游限流、页面变更和确实没有结果须区分。360 网页入口不支持时效过滤，指定 `freshness` 时跳过；不能把免 Key 当作始终可用的保证。
@@ -219,7 +221,7 @@ gotcha that most often explains a failure. Open every DB read-only.
 - 模型/媒体/嵌入收到 3xx 时先核对显式配置的端点，禁止通过重新发送原密钥/输入来探测目标；模型客户端禁止重定向，资源 GET 的逐跳 SSRF 是另一条路径。参见 Provider、媒体与安全文档。
 - PDF 解析失败沿文本回退处理；深层输入的受控错误与进程 abort 分别记录。quick-xml 自有/Excel 为 0.41，xcb 旧构建链与 GTK/glib 平台债不冒称已消除。
 - 客户端 MP4 导出分别定位编码、异步封装与清理错误；成功须有最终 MP4 bytes，不能以抓帧数或 encoder flush 完成认定已交付。Mediabunny 仅为隔离候选，合成读回不证明平台 H.264 编码/播放可用，生产默认未切换。
-- 桌面 updater 2.12.0 的降级开关来自应用配置且固定 false；不通过 renderer 参数覆盖版本门，不关闭验签/重启确认。
+- 桌面 updater 的 Rust/JS 两端固定 2.14.0（2026-10-19 配对维护）；降级开关来自应用配置且固定 false，不通过 renderer 参数覆盖版本门，不关闭验签/重启确认。
 
 ### Kimi Basic 搜索迁移
 

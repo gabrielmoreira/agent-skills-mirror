@@ -2,10 +2,21 @@
 name: paper-slides
 description: "Generate conference presentation slides (beamer LaTeX → PDF + editable PPTX) from a compiled paper, with speaker notes and full talk script. Use when user says \"做PPT\", \"做幻灯片\", \"make slides\", \"conference talk\", \"presentation slides\", \"生成slides\", \"写演讲稿\", or wants beamer slides for a conference talk."
 argument-hint: "[paper-directory-or-talk-length] [— style-ref: <source>]"
-allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, mcp__codex__codex, mcp__codex__codex-reply
+allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, mcp__codex__codex, mcp__codex__codex-reply, mcp__antigravity__antigravity, mcp__antigravity__antigravity-reply, mcp__grok__grok, mcp__grok__grok-reply, mcp__claude-review__review, mcp__claude-review__review_reply, mcp__claude-review__review_start, mcp__claude-review__review_reply_start, mcp__claude-review__review_status
 ---
 
 # Paper Slides: From Paper to Conference Talk
+
+> **Before each reviewer slot**, follow [Selectable Reviewers](../shared-references/reviewer-backends.md):
+> resolve invocation → `.aris/reviewer.json` → Claude Code default (Codex MCP)
+> with `reviewer_route.py` through the canonical helper resolver, preserving this
+> slot's tier, fresh contexts, source/image inputs and deterministic gates.
+> Codex examples/pins below apply only to `backend=codex`; other routes use their
+> own first-call/reply contract. Save the route and actual returned identity;
+> unavailable selections are `REVIEW_UNAVAILABLE`. Classify acceptance from actual
+> families/completion/scope. Forward invocation reviewer/model/effort overrides
+> to reviewer-bearing children. Generation workers are unchanged.
+
 
 Generate conference presentation slides from: **$ARGUMENTS**
 
@@ -362,6 +373,8 @@ If page count differs significantly from outline (>2 slides off), investigate.
 
 Send the slide outline + selected LaTeX frames to GPT-6-Astra xhigh:
 
+> Resolve this reviewer slot first; the following is the `backend=codex` example.
+
 ```
 mcp__codex__codex:
   model: gpt-6-astra
@@ -393,7 +406,7 @@ mcp__codex__codex:
 
 Apply fixes. Recompile if LaTeX was changed.
 
-> ⚠️ If `mcp__codex__codex` is not available (no OpenAI API key), skip external review and proceed to Phase 6. Note the skip in `SLIDES_STATE.json`.
+> If the selected reviewer is unavailable, record `REVIEW_UNAVAILABLE` in `SLIDES_STATE.json`. Preserve the existing draft-only continuation to Phase 6; do not label it reviewed or change providers.
 
 Save review to `slides/SLIDES_REVIEW.md`.
 

@@ -17,14 +17,6 @@ triggers:
 <!-- AUTO-GENERATED from SKILL.md.tmpl — do not edit directly -->
 <!-- Regenerate: bun run gen:skill-docs -->
 
-
-## When to invoke this skill
-
-Merges the PR, waits for CI and deploy,
-verifies production health via canary checks. Takes over after /ship
-creates the PR. Use when: "merge", "land", "deploy", "merge and verify",
-"land it", "ship it to production".
-
 ## Preamble (run first)
 
 ```bash
@@ -721,7 +713,7 @@ Check that another workspace has not claimed this PR's VERSION since `/ship`.
 ```bash
 BRANCH_VERSION=$(git show "$PR_HEAD:VERSION" 2>/dev/null | tr -d '\r\n[:space:]')
 BASE_VERSION=$(git show "$BASE_SHA:VERSION" 2>/dev/null | tr -d '\r\n[:space:]')
-QUEUE_JSON=$(bun run ~/.claude/skills/gstack/bin/gstack-next-version \
+QUEUE_JSON=$(bun --no-env-file --config=/dev/null run ~/.claude/skills/gstack/bin/gstack-next-version \
   --base "$BASE_BRANCH" \
   --exclude-pr "$PR_NUMBER" \
   --bump patch \

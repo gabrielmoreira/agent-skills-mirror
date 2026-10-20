@@ -2,10 +2,21 @@
 name: experiment-bridge
 description: "Workflow 1.5: Bridge between idea discovery and auto review. Reads EXPERIMENT_PLAN.md, implements experiment code, deploys to GPU, collects initial results. Use when user says \"实现实验\", \"implement experiments\", \"bridge\", \"从计划到跑实验\", \"deploy the plan\", or has an experiment plan ready to execute."
 argument-hint: "[experiment-plan-path-or-topic]"
-allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Skill, mcp__codex__codex, mcp__codex__codex-reply
+allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Skill, mcp__codex__codex, mcp__codex__codex-reply, mcp__antigravity__antigravity, mcp__antigravity__antigravity-reply, mcp__grok__grok, mcp__grok__grok-reply, mcp__claude-review__review, mcp__claude-review__review_reply, mcp__claude-review__review_start, mcp__claude-review__review_reply_start, mcp__claude-review__review_status
 ---
 
 # Workflow 1.5: Experiment Bridge
+
+> **Before each reviewer slot**, follow [Selectable Reviewers](../shared-references/reviewer-backends.md):
+> resolve invocation → `.aris/reviewer.json` → Claude Code default (Codex MCP)
+> with `reviewer_route.py` through the canonical helper resolver, preserving this
+> slot's tier, fresh contexts, source/image inputs and deterministic gates.
+> Codex examples/pins below apply only to `backend=codex`; other routes use their
+> own first-call/reply contract. Save the route and actual returned identity;
+> unavailable selections are `REVIEW_UNAVAILABLE`. Classify acceptance from actual
+> families/completion/scope. Forward invocation reviewer/model/effort overrides
+> to reviewer-bearing children. Generation workers are unchanged.
+
 
 Implement and deploy experiments from plan: **$ARGUMENTS**
 
@@ -114,6 +125,8 @@ For each milestone (in order), write the experiment scripts:
 **Skip this step if `CODE_REVIEW` is `false`.**
 
 Before deploying, send the experiment code to GPT-6-Astra xhigh for review:
+
+> Resolve this reviewer slot first; the following is the `backend=codex` example.
 
 ```
 mcp__codex__codex:

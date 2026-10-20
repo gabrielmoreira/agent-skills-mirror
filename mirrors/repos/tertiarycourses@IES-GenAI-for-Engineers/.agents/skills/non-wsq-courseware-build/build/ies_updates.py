@@ -29,6 +29,11 @@ TEXT = [
     (1, 'copy your verified evidence table plus data/Northstar_Maintenance_Context.txt into the document and select that text',
         'paste your verified evidence table plus the definitions from the Control sheet into the document and select that text'),
     (2, 'Read data/Northstar_Email_Thread.txt.', 'Read the synthetic email thread quoted in the Step 4 prompt.'),
+    # Word Copilot stops and asks when the prompt says "selected" but nothing is selected: use the whole open brief.
+    (2, 'From this selected verified Northstar Water Services operations brief, extract a handoff table',
+        'Use this whole open document, the verified Northstar Water Services operations brief, as the source; no text is selected. Extract a handoff table'),
+    (2, 'Keep every value traceable to the supplied brief.', 'Keep every value traceable to the brief. Show the table here in chat; do not edit the document.'),
+    (2, 'against the selected verified operations brief.', 'against the verified Northstar Word brief uploaded in this chat.'),
     (2, 'Save a reconciled CSV using data/templates/Evidence_Register.csv: one row per claim and a source link.',
         'Record the reconciliation in the Evidence_Log sheet: one row per claim and a source link.'),
     (3, 'temporarily use the four lines in data/Personalisation_Preferences.txt: S$ two decimals, DD-MMM-YYYY, structured references and short explanations.',
@@ -149,8 +154,104 @@ def apply(labs, factory):
         a['prerequisites'] = [p.replace('Download this whole lab folder. All files are synthetic; work-c027 is your own learner output folder.',
                                         f'Download this whole lab folder. All files are synthetic; {WORK_DIR} is your own learner output folder.') for p in a['prerequisites']]
     labs[:] = _work_dir(labs)
-    assert [a['num'] for a in labs] == list(range(1, 13))
+    _local_files(labs)
+    # v2.4: short, self-contained steps for every lab (each lab works on its own data folder); runs last so it wins.
+    import simple_labs
+    simple_labs.apply(labs, THREAD, RULES_PROMPT, AGENT_INSTRUCTIONS)
+    simple_labs.insert_design_lab(labs, factory)
+    assert [a['num'] for a in labs] == list(range(1, 14))
     return labs
+
+
+# v2.4: desktop Excel works on locally stored workbooks (Copilot Chat from Jan 2026, Edit with Copilot
+# from Mar 2026), so every working file stays in a local work-genai folder. Only the app-created Excel
+# Skills folder (Labs 5-7) and the Agent Builder knowledge files (Lab 11) live in OneDrive.
+LOCAL_DIR = f'a local {WORK_DIR} folder on your computer (for example Documents/{WORK_DIR})'
+LOCAL_PRE = (f'Use desktop Excel on Windows or Mac and keep every working file in {LOCAL_DIR}; nothing needs to be uploaded to '
+             'OneDrive. Excel for the web cannot open local files. If Copilot offers to save to OneDrive or turn on AutoSave, keep '
+             'the local file (choose Continue without saving if asked). Do not overwrite the supplied input.')
+LOCAL_TROUBLE = ('Excel Copilot works on the workbook open in desktop Excel, saved locally; if it asks to save to OneDrive, choose '
+                 'Continue without saving and keep the local file (update Microsoft 365 if Copilot stays unavailable). Word, PowerPoint and Outlook Copilot cannot see your local workbook or another '
+                 'app’s chat. Word, PowerPoint and Outlook Copilot see a local file only after you upload it with + > Upload images and files '
+                 '(/ and @ list only OneDrive and SharePoint files); re-upload after you change it, or paste the verified snapshot.')
+SKILLS_NOTE = ' This app-created folder holds only the Skill; your workbooks stay local.'
+LOCAL = [
+    (0, 'Desktop Excel on Windows or Mac is recommended; save working copies to your assigned OneDrive course folder with AutoSave on. Do not overwrite the supplied input.', LOCAL_PRE),
+    (0, f'{WORK_DIR} is your own learner output folder.', f'{WORK_DIR} is your own local learner output folder.'),
+    (0, 'Use the app file picker to select the actual OneDrive file. A typed local path or a different app chat is not shared context. If needed copy only the verified snapshot into the current app.', LOCAL_TROUBLE),
+    (1, f'Copy data/Northstar_Work_Orders.xlsx to your OneDrive {WORK_DIR} folder as Northstar_Clean_Work_Orders.xlsx. Open it in Excel,',
+        f'Create {LOCAL_DIR} and copy data/Northstar_Work_Orders.xlsx into it as Northstar_Clean_Work_Orders.xlsx; no OneDrive upload is needed. Open it in desktop Excel,'),
+    (1, 'save as Northstar_Operations_Brief.docx in OneDrive. In Copilot select the verified source file using Reference a file or /. If Word cannot use the workbook, paste',
+        f'save as Northstar_Operations_Brief.docx in {WORK_DIR}. In the Word Copilot pane select + > Upload images and files and upload your saved '
+        f'{WORK_DIR}/Northstar_Clean_Work_Orders.xlsx; a local file cannot be found with / or @, which list only OneDrive and SharePoint files. '
+        'If the upload is unavailable or Copilot cannot read it, paste'),
+    (1, 'Add the OneDrive source link and all-filters scope.', f'Add the source file name ({WORK_DIR}/Northstar_Clean_Work_Orders.xlsx) and all-filters scope.'),
+    (1, 'Identify missing source links as UNKNOWN.', 'Identify missing source references as UNKNOWN.'),
+    (2, 'Open Copilot and select your Word brief with Reference a file; if the command is unavailable, paste the reviewed brief into the prompt.',
+        f'Open Copilot and upload the reviewed Word brief from {WORK_DIR} with + > Upload images and files (or paste it into the prompt); / and Reference a file list only OneDrive and SharePoint files.'),
+    (2, 'one row per claim and a source link.', 'one row per claim and its source file.'),
+    (2, 'Keep all four source links with the reconciliation record;', 'Keep all four source file names with the reconciliation record;'),
+    (5, 'Create OneDrive folder if needed > Open skills folder. Copy water-service-pareto/SKILL.md into that app-created location, Refresh and enable it.',
+        'Create OneDrive folder if needed > Open skills folder. Copy water-service-pareto/SKILL.md into that app-created location, Refresh and enable it.' + SKILLS_NOTE),
+    (7, '(Create OneDrive folder if needed). Copy the reviewed water-service-dashboard folder into that app-created location, Refresh, enable and verify its exact name in Choose plugins & skills.',
+        '(Create OneDrive folder if needed). Copy the reviewed water-service-dashboard folder into that app-created location, Refresh, enable and verify its exact name in Choose plugins & skills.' + SKILLS_NOTE),
+    (6, 'In PowerPoint select the reviewed Word snapshot and open your four-slide update from Lab 2.',
+        'In PowerPoint open your four-slide update from Lab 2 and upload the reviewed Word snapshot with + > Upload images and files (or paste it into the prompt).'),
+    (7, 'save as Northstar_Dashboard.xlsx in OneDrive.', f'save as Northstar_Dashboard.xlsx in {WORK_DIR}.'),
+    (8, 'source workbook link and limitations', 'source workbook file name and limitations'),
+    (9, 'plus the OneDrive workbook link. Save as Northstar_Presentation_Brief.docx. Copilot must see selected files or pasted evidence; the link alone and the Excel conversation do not guarantee accessible context.',
+        f'plus the source workbook file name ({WORK_DIR}/Northstar_Dashboard.xlsx). Save as Northstar_Presentation_Brief.docx in {WORK_DIR}. Upload Northstar_Dashboard.xlsx to Word Copilot with + > Upload images and files, or paste the verified values; Copilot cannot read the Excel conversation.'),
+    (9, 'Choose Create presentation from file if offered, or reference the Word brief while editing the existing deck. Select your reviewed OneDrive Word brief; direct workbook-to-deck creation is not assumed.',
+        'Your files are local, so do not use Create presentation from file: upload Northstar_Presentation_Brief.docx with + > Upload images and files, or paste the brief text after the prompt below. Direct workbook-to-deck creation is not assumed.'),
+    (9, 'from the selected Northstar_Presentation_Brief.docx.', 'from the uploaded or pasted verified Northstar_Presentation_Brief.'),
+    (10, 'with accurate artifact links.', 'with the final files attached.'),
+    (10, 'Provide the reviewed brief and the actual OneDrive links to the dashboard/deck. Ask Copilot to draft a handoff email; it may not invent shared links or claim a sent attachment.',
+         f'Paste the reviewed brief and attach the final deck PDF and Northstar_Dashboard.xlsx from {WORK_DIR}. Ask Copilot to draft a handoff email; it may not invent shared links or claim the email was sent.'),
+    (10, 'using this verified brief and the links I provide.', 'using this verified brief; the final deck PDF and dashboard workbook are attached to this draft.'),
+    (10, 'Leave missing links UNKNOWN.', 'Name only the attached files and invent no links.'),
+    (11, f'Create a OneDrive folder {WORK_DIR}/agent-knowledge and upload',
+         'This is the only lab that stores data files in OneDrive, because an agent can search only knowledge stored in Microsoft 365. Create a OneDrive folder agent-knowledge and upload'),
+    (12, f'in your OneDrive {WORK_DIR} folder.', f'in your local {WORK_DIR} folder.'),
+    (1, 'Draft a one-page Northstar operations brief from the verified evidence supplied here.',
+        'Draft a one-page Northstar operations brief from the uploaded Northstar_Clean_Work_Orders.xlsx (Checks and Control sheets) or the verified evidence supplied here.'),
+    (8, 'and insert the reviewed summary and chart values.', 'and insert the reviewed summary and chart values. You can also upload Northstar_Dashboard.xlsx with + > Upload images and files so Word Copilot can check them.'),
+    (8, 'Using only the verified baseline dashboard evidence I paste here,', 'Using only the verified baseline dashboard evidence I paste or upload here,'),
+    (2, 'If your Outlook offers reference attachments, attach the verified Word brief and choose it as context. Otherwise paste the reviewed metrics into the drafting prompt.',
+        f'Attach the verified Word brief from {WORK_DIR} as a normal file attachment and paste the reviewed metrics into the drafting prompt.'),
+    (10, 'Open the same reviewed brief in the file picker;', f'Upload the same reviewed brief from {WORK_DIR} with + > Upload images and files (or paste its text);'),
+    (11, 'nothing needs to be uploaded to OneDrive.', 'only the two Step 1 agent knowledge files go to OneDrive.'),
+    (11, 'in Microsoft Copilot Chat with both files attached;', 'in Microsoft Copilot Chat with both files attached from this lab’s data/knowledge folder;'),
+]
+
+
+def _replace_all(v, old, new, hit):
+    if isinstance(v, str):
+        if old in v: hit[0] = True; return v.replace(old, new)
+        return v
+    if isinstance(v, list): return [_replace_all(x, old, new, hit) for x in v]
+    if isinstance(v, tuple): return tuple(_replace_all(x, old, new, hit) for x in v)
+    if isinstance(v, dict): return {k: _replace_all(x, old, new, hit) for k, x in v.items()}
+    return v
+
+
+def _local_files(labs):
+    for n, old, new in LOCAL:
+        hit = [False]
+        for a in labs:
+            if n in (0, a['num']):
+                a.update(_replace_all({k: v for k, v in a.items() if k != 'extra_files'}, old, new, hit))
+        assert hit[0], (n, old[:60])
+    for a in labs:
+        if a['num'] in (5, 6, 7):
+            a['services'] = a['services'].replace(' · OneDrive', ' · OneDrive (Skills folder only)')
+        elif a['num'] != 11:
+            a['services'] = a['services'].replace(' · OneDrive', '')
+    allowed = ('Create OneDrive folder', 'uploaded to OneDrive', 'save to OneDrive', 'no OneDrive upload', 'OneDrive (Skills folder only)', 'only OneDrive and SharePoint files')
+    for a in labs:
+        if a['num'] == 11: continue
+        text = ' '.join(str(v) for k, v in a.items() if k != 'extra_files')
+        for s in allowed: text = text.replace(s, '')
+        assert 'OneDrive' not in text, a['num']
 
 
 AGENT_INSTRUCTIONS = '''# Role

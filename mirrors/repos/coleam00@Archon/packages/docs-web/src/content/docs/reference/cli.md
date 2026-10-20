@@ -13,30 +13,11 @@ Run AI-powered workflows from your terminal.
 
 ## Prerequisites
 
-1. Clone the repository and install dependencies:
-   ```bash
-   git clone https://github.com/coleam00/Archon
-   cd Archon
-   bun install
-   ```
-
-2. Make CLI globally available (recommended):
-   ```bash
-   cd packages/cli
-   bun link
-   ```
-   This creates an `archon` command available from anywhere.
-
-3. Authenticate with Claude:
-   ```bash
-   claude /login
-   ```
-
-**Note:** Examples below use `archon` (after `bun link`). If you skip step 2, use `bun run cli` from the repo directory instead.
+Install Archon and add a provider; see the [Quickstart](/getting-started/quick-start/). From a source checkout, run `bun run cli` in the repository, or `bun link` inside `packages/cli` to put `archon` on your PATH; see [Installation](/getting-started/installation/#from-source).
 
 ## Forge operations
 
-Use `archon forge resolve --data <json>` for an explicit remote, `archon forge checks --data <json>` for a qualified PR, and `workitem.view`, `workitem.list`, `workitem.create`, `workitem.labels.set`, `workitem.label.add`, `workitem.label.remove`, `workitem.comment.upsert`, `workitem.close`, `repo.labels.list`, `repo.label.ensure`, `pr.view`, `pr.create`, `pr.edit-body`, `pr.ready`, `pr.draft`, `pr.merge`, `checks.rerun`, `pr.reviews` or `comment.upsert` for the rest. Reads return structured observations; writes report whether they were applied and verified, refused, applied but unverified, or left with an unknown outcome. Pass a request carrying authored text with `--data-file <path>` so it stays out of argv. See [Forge operations](/reference/forge/) for request shapes, plugin configuration, credentials and audit behavior. The bundled SDLC pack uses `gh` by default; set `ARCHON_SDLC_FORGE=forge` to opt into a plugin with every required pack operation. Host-only `archon forge metadata --data '{"host":"github.com"}' --json` inspects the selected plugin's capabilities without credentials or a forge operation. See [Use the forge path in the SDLC pack](/reference/forge/#use-the-forge-path-in-the-sdlc-pack).
+Use `archon forge resolve --data <json>` for an explicit remote, `archon forge checks --data <json>` for a qualified PR, and `workitem.view`, `workitem.list`, `workitem.create`, `workitem.labels.set`, `workitem.label.add`, `workitem.label.remove`, `workitem.comment.upsert`, `workitem.close`, `repo.labels.list`, `repo.label.ensure`, `pr.view`, `pr.create`, `pr.edit-body`, `pr.ready`, `pr.draft`, `pr.merge`, `checks.rerun`, `pr.reviews`, `pr.threads`, `pr.thread.reply`, `pr.thread.resolve`, `workitem.edit-body` or `comment.upsert` for the rest. Reads return structured observations; writes report whether they were applied and verified, refused, applied but unverified, or left with an unknown outcome. Pass a request carrying authored text with `--data-file <path>` so it stays out of argv. See [Forge operations](/reference/forge/) for request shapes, plugin configuration, credentials and audit behavior. The bundled SDLC pack uses `gh` by default; set `ARCHON_SDLC_FORGE=forge` to opt into a plugin with every required pack operation. Host-only `archon forge metadata --data '{"host":"github.com"}' --json` inspects the selected plugin's capabilities without credentials or a forge operation. See [Use the forge path in the SDLC pack](/reference/forge/#use-the-forge-path-in-the-sdlc-pack).
 
 ## Users and roles
 
@@ -54,6 +35,17 @@ Linking requires an existing full user id and a valid platform id. The first col
 
 Roles must be `admin` or `member`; unknown ids and invalid roles fail with a non-zero exit code. New users are members, while upgrades preserve existing roles. There is no last-admin restriction because the CLI is the operator. Only a run's starter or an admin can act on it; the local operator can always act through the CLI. See [Who can act on a run](/reference/security/#who-can-act-on-a-run) for the action policy and [Users and roles](/reference/security/#users-and-roles) for the upgrade policy and Docker commands.
 
+## Projects
+
+`archon project list` lists every registered project in the install, from any directory, without a server.
+
+```bash
+archon project list          # ID, KIND, NAME, KEY and PATH per project
+archon project list --json   # { "projects": [ { ...project row, "key" } ] }
+```
+
+`key` is the value `workflow attention --project` and `archon state --project` accept. The list is read-only; register and remove projects through the Web UI or chat.
+
 ## Quick Start
 
 ```bash
@@ -70,7 +62,7 @@ archon workflow run plan --cwd /path/to/repo --branch feature-auth "Add OAuth su
 archon workflow run investigate --cwd /path/to/repo --no-worktree "Why does the nightly build fail?"
 ```
 
-**Note:** Workflow and isolation commands normally require running from within a git repository (running from subdirectories automatically resolves to the repo root). A non-git directory also works if it's a registered [folder project](/getting-started/concepts/#folder-projects) — or on first use by passing `--folder`, which registers it and runs in place. The `version`, `help`, `chat`, `setup`, and `serve` commands and `workflow attention` work anywhere.
+**Note:** Workflow and isolation commands normally require running from within a git repository (running from subdirectories automatically resolves to the repo root). A non-git directory also works if it's a registered [folder project](/guides/multi-repo-projects/) — or on first use by passing `--folder`, which registers it and runs in place. The `version`, `help`, `chat`, `setup`, and `serve` commands and `workflow attention` work anywhere.
 
 ## Commands
 
@@ -139,7 +131,9 @@ archon doctor
 
 Doctor does not check forge access for the bundled SDLC pack. Run `archon workflow run archon-forge-check` from the checkout for that; it names the credential source it used or says why it refused. See the [SDLC pack README](https://github.com/coleam00/Archon/blob/dev/.archon/workflows/sdlc/README.md).
 
-With no registered providers, doctor fails and prints `archon provider add <claude|codex|pi>`. Stale maintained plugins fail with their installed and CLI versions and the reinstall command. The AI credentials check uses each connected credential the way a run would: it decrypts it and refreshes an expired subscription grant (saving the rotated grant). It prints one line per credential and fails when one cannot be used (it cannot be read, or the vendor rejected the refresh), naming the command that reconnects it. It warns when a credential could not be verified, for example because the vendor was unreachable. An API key is reported usable once it decrypts; only a model request proves the vendor accepts it. The assistant login check uses the merged configuration and the provider's own runtime, unless that model's vendor already has a credential connected in Archon that the assistant can use. Pi cannot use a connected Claude subscription: with no native Anthropic login, the check fails and names `provider: claude`. When Archon config names no model (Pi then uses its own default), doctor cannot tell which vendor the run uses, so a missing native login is a warning, not a failure, if you have connected a credential the assistant can use. Pi resolves its configured key during the check, so a key command runs during `archon doctor`; a command that prompts can prompt again at run start. The check builds the runtime a run builds, which runs every provider's `!command` key stored in Pi's `auth.json`, not only the configured provider's. For a model in Pi's catalog, a run resolves a `models.json` key command once when a node starts and uses that key for the whole node, so a short-lived token can expire before a long node ends; a model from an extension provider runs its key command on each request. Pi OAuth checks may refresh through Pi's runtime. Codex reads its native account through app-server and asks it to refresh the sign-in, so a revoked login fails the check (a run does not make this call); an API key is usable once resolved. When Codex is configured for a model provider that needs no OpenAI login, the check is skipped. Claude, Copilot, and OpenCode cannot check their native login without starting a model session, so the check is skipped and reports "not checked". The OpenCode check probes that the embedded runtime SDK module resolves and the `opencode` executable is available on the inherited `PATH` — it never boots the runtime (which spawns a child process and binds a port). OpenCode and Copilot are bundled but [deprecated](/getting-started/ai-assistants/#deprecated-providers): doctor runs their diagnostics only when one is your default assistant or has settings under `assistants`, and does not count them as installed providers. The provider support check warns when the default assistant is a [deprecated provider](/getting-started/ai-assistants/#deprecated-providers).
+With no registered providers, doctor fails and prints `archon provider add <claude|codex|pi>`. Stale maintained plugins fail with their installed and CLI versions and the reinstall command. The AI credentials check uses each connected credential the way a database-store run would: it decrypts it and refreshes an expired subscription grant (saving the rotated grant). It prints one line per credential and fails when one cannot be used (it cannot be read, or the vendor rejected the refresh), naming the command that reconnects it. It warns when a credential could not be verified, for example because the vendor was unreachable. An API key is reported usable once it decrypts; only a model request proves the vendor accepts it. The assistant login check uses the merged configuration and the provider's own runtime, unless that model's vendor already has a credential connected in Archon that the assistant can use. Pi cannot use a connected Claude subscription: with no native Anthropic login, the check fails and names `provider: claude`. When Archon config names no model (Pi then uses its own default), doctor cannot tell which vendor the run uses, so a missing native login is a warning, not a failure, if you have connected a credential the assistant can use. Pi resolves its configured key during the check, so a key command runs during `archon doctor`; a command that prompts can prompt again at run start. The check builds the runtime a run builds, which runs every provider's `!command` key stored in Pi's `auth.json`, not only the configured provider's. For a model in Pi's catalog, a run resolves a `models.json` key command once when a node starts and uses that key for the whole node, so a short-lived token can expire before a long node ends; a model from an extension provider runs its key command on each request. Pi OAuth checks may refresh through Pi's runtime. Codex reads its native account through app-server and asks it to refresh the sign-in, so a revoked login fails the check (a run does not make this call); an API key is usable once resolved. When Codex is configured for a model provider that needs no OpenAI login, the check is skipped. Claude reads account information through its SDK without sending a model request. Copilot, OpenCode and Claude cloud backends with externally resolved credentials report "not checked". The OpenCode check probes that the embedded runtime SDK module resolves and the `opencode` executable is available on the inherited `PATH` — it never boots the runtime (which spawns a child process and binds a port). OpenCode and Copilot are bundled but [deprecated](/getting-started/ai-assistants/#deprecated-providers): doctor runs their diagnostics only when one is your default assistant or has settings under `assistants`, and does not count them as installed providers. The provider support check warns when the default assistant is a [deprecated provider](/getting-started/ai-assistants/#deprecated-providers).
+
+`doctor` still inspects SQL credentials and may skip a native login check when a stored credential covers that vendor. Its stored-credential results do not describe authentication for `store: files`: file-store runs ignore stored credentials and check the native or environment account at launch.
 
 In GitHub App mode, doctor validates the App ID and RSA private key from `GITHUB_APP_PRIVATE_KEY` or `GITHUB_APP_PRIVATE_KEY_PATH` locally. It reports incomplete, invalid, or conflicting App/PAT configuration as a failed check, without printing secrets. This check does not require `WEBHOOK_SECRET` and does not verify GitHub access remotely.
 
@@ -339,8 +333,9 @@ Note that a real `run` emits a JSON payload **only** under `--detach`. Without i
 | `--folder` | Register the current directory (with or without git) as a folder project (first use) and run in place -- no worktree. Rejects `--branch`/`--from`/`--base`. |
 | `--container` | Run a **folder project** inside an overlay-isolated Docker container instead of in place (writes land in an overlay, not the live root, until an approval-gated write-back). Folder-only; a repo project errors. Requires the runner image (`bun run build:runner-image`). Pauses `docker stop` the container; `--resume`/`approve`/`reject` rediscover and restart it. See the [Container isolation guide](/guides/container-isolation/) and [configuration](/reference/configuration/#container-isolation-folder-projects). |
 | `--input <name>=<value>` | Supply one value for the workflow's declared `inputs:`. **Repeat the flag per input.** Splits on the first `=`, so the value may itself contain `=`; `--input name=` supplies an empty string. Omitted inputs take their declared `default:`. A missing **required** input or an **undeclared** name is refused before any worktree, clone, or AI cost, through the same contract a composing `with:` map goes through. Works with `--dry-run` (inputs resolve exactly as in a real run). Rejected with `--resume` (a resume replays the inputs recorded on the run). See [Running a workflow that declares inputs](/guides/authoring-workflows/#running-a-workflow-that-declares-inputs). |
-| `--model <name>=<spec>` | Rebind one `small`, `medium`, `large`, or existing `@alias` for this run. **Repeat the flag per binding.** An Archon agent prefix selects that agent (`codex/gpt-5.6-sol`); another valid vendor/model ref selects Pi (`openai/gpt-5.6`); an unqualified model keeps the binding's current provider; a tier or alias RHS copies that preset. Unspecified names keep their user → repo → global → built-in values. Literal `model:` pins and nodes that never reference the rebound name do not change. Bare `--model <spec>` is invalid, there is no run-wide `--provider`, and the flag is rejected with `--resume`. Works with `--dry-run`. |
+| `--model <name>=<spec>` | Rebind one `small`, `medium`, `large`, or `@alias` for this run. **Repeat the flag per binding.** An Archon agent prefix selects that agent (`codex/gpt-5.6-sol`); another valid vendor/model ref selects Pi (`openai/gpt-5.6`); an unqualified model keeps the binding's current provider, so binding an `@alias` no config defines (one a workflow's model preference list names, such as `@reviewer`) needs a prefixed model, a tier, or another alias; a tier or alias RHS copies that preset. Unspecified names keep their user → repo → global → built-in values. Literal `model:` pins and nodes that never reference the rebound name do not change. Bare `--model <spec>` is invalid, there is no run-wide `--provider`, and the flag is rejected with `--resume`. Works with `--dry-run`. |
 | `--config <path>` | Load one sparse YAML config layer for this fresh run. Relative paths resolve from the directory named by `--cwd`, even when it is a repository subdirectory. Values in the file override persistent config and user AI preferences; explicit `--model` flags then replace only their named bindings. Works with `--dry-run` and `--detach`; the parent validates and seals the layer before handing it to a detached child, so later file edits cannot change that launch. Rejected with `--resume` because a continuation restores the sealed layer recorded when the run started. |
+| `--config-from-run <run-id>` | Start this fresh run with the run config layer the named run was started with, as if its `--config` file were passed again. A run started without `--config` contributes nothing, so the new run uses the install's config alone. Use it when one workflow launches another to continue the same work, so the continuation keeps the provider configuration it started on. Exclusive with `--config`, and rejected with `--resume`. Works with `--detach`. |
 | `--resume` | Resume from last failed run at the working path, skipping completed nodes and reusing its recorded AI configuration when present. |
 | `--adopt <run-id>` | Start a new run in a terminal run's exact worktree or branch, with `adopted_from_run_id` provenance and `$ADOPTED_RUN_DIR` access. Inherits its recorded AI configuration; conflicting AI config or model overrides are rejected. Run-id selection is exact; adoption never infers a run from workflow name or prompt text. |
 | `--supersedes <run-id>` | Start in a fresh estate while recording that this run replaces a terminal prior run. Unlike `--adopt`, it inherits no checkout. |
@@ -518,7 +513,7 @@ archon workflow run implement --from origin/release/2.0 --base dev "Backport the
 copy of the start point may be stale.
 
 **Where `--base` is rejected** (rather than half-applied): with `--no-worktree`,
-against a [folder project](/getting-started/concepts/#folder-projects),
+against a [folder project](/guides/multi-repo-projects/),
 and against a workflow pinning `worktree.enabled: false`. None of these create a
 worktree, so the flag could only move the PR target -- which would report a base
 no worktree was ever cut from.
@@ -617,7 +612,7 @@ is always `null` because lifecycle events do not own a truthful declared DAG tot
 The node events for every listed run are read in one query, so the cost does not grow with
 one query per run.
 
-The listing shows short 8-character run ids. Every `<run-id>` command below (`get`, `logs`, `wait`, `resume`, `cancel`, `abandon`, `approve`, `reject`) accepts these short ids when run from the project directory: a unique prefix resolves to the full id, an ambiguous prefix errors, and full ids keep working from any directory. Short ids from `--all` rows belonging to *other* projects can't be resolved — use the full id from `--json` for those.
+The listing shows short 8-character run ids. Every `<run-id>` command below (`get`, `artifacts`, `logs`, `wait`, `resume`, `cancel`, `abandon`, `approve`, `reject`) accepts these short ids when run from the project directory: a unique prefix resolves to the full id, an ambiguous prefix errors, and full ids keep working from any git repository or registered project folder. Short ids from `--all` rows belonging to *other* projects can't be resolved — use the full id from `--json` for those.
 
 ### `workflow get`
 
@@ -779,6 +774,23 @@ worktree when the run used one.
 Add `--events` to `--json --verbose` to return raw `events` rows instead of `nodes` for
 debugging. Raw events are not the recommended integration surface.
 
+### `workflow artifacts`
+
+List the files a run left in `$ARTIFACTS_DIR`, or print one of them. Reads the store and filesystem directly; no server needs to be running.
+
+```bash
+archon workflow artifacts <run-id>                 # list every artifact file
+archon workflow artifacts <run-id> --json
+archon workflow artifacts <run-id> review/report.md # print one file's bytes
+archon workflow artifacts <run-id> review/report.md --json
+```
+
+`<run-id>` accepts the same short ids as `workflow get`: a unique prefix from the project directory, or the full id from any git repository or registered project folder.
+
+The list is uncapped. Files under the engine's own `.archon` child are counted, not listed. `--json` returns `{ "runId", "artifactsDir", "files", "internalFiles", "unreadable" }`, where `artifactsDir` is the absolute directory and `unreadable` names directories the walk could not read. A run that wrote nothing lists no files and exits `0`. A run whose output location cannot be resolved exits `1` instead, so an empty list always means the run wrote nothing.
+
+With a path, the command writes the file's exact bytes to stdout. `--json` returns `{ "runId", "path", "content" }` with the content as UTF-8 text, and fails for a file that is not valid UTF-8; read that one without `--json`. A path that does not exist, names a directory, or resolves outside the run's artifacts (`..`, or a symlink pointing elsewhere) exits `1`. Under `--json` every failure is one `{ "ok": false, "runId", "error" }` document.
+
 ### `workflow logs`
 
 Print the run's existing JSONL transcript, or follow it as rows are appended:
@@ -851,8 +863,10 @@ The answer a pause is waiting for does not have to come from a person. An
 orchestrating agent can supply it with `workflow respond` or `workflow answer` just as a
 reviewer can; the engine only reports that one is owed, and who answers is the waiting
 host's business. Pass the reported `attention.occurrence` back with `--occurrence` on
-`approve`, `reject`, `respond` or `answer`. The answer is then refused, naming the current
-occurrence, if the run has moved to a different pause in the meantime.
+`approve`, `reject`, `respond` or `answer`. The answer is then refused if the run has moved
+to a different pause in the meantime. If the diagnostic read succeeds and the run is
+awaiting another answer, the refusal names the current occurrence. Otherwise, fetch the
+current item again before retrying.
 For an attention wait, the output carries `attention.kind: "attention"`, the authored
 message, the paused node id, the `form` and the `options` an answer may choose from.
 Answer it with [`workflow answer`](#workflow-answer); use `archon workflow abandon
@@ -896,6 +910,10 @@ PostgreSQL database shared by several machines, or the run records no owner, the
 cannot tell whether the owner is alive. It says so on its `waiting` line and keeps
 watching the run's stored state until it changes or `--timeout` passes. `abandon` prints
 the host the run recorded and says when it is not this one.
+
+The console applies the same rule from the server's host and user: a running run whose
+owner is gone shows "Running · owner not answering", and one the server cannot observe
+shows "Running · owner unknown". Neither is shown as live progress.
 
 `--json` emits one document. On a wake it carries the attention value:
 
@@ -974,7 +992,8 @@ archon workflow attention --watch --json --after <cursor>          # resume a st
 
 - **Scope.** The default is the current project, resolved from the working directory as
   [`state`](#state) resolves it. `--project` takes a codebase id, a codebase name, or a
-  project key such as `_cwd/scratch`; `--all` covers the install. A run is in scope when
+  project key such as `@cwd/scratch-<digest>`; copy the exact key from
+  `items[].project.key` in `archon workflow attention --all --json`. `--all` covers the install. A run is in scope when
   its codebase id matches, when both sides have one, and otherwise when its project key
   matches, so a run paused before its codebase was renamed is still listed under the new
   name.
@@ -1026,9 +1045,11 @@ archon workflow attention label <run-id> --occurrence <id> --set class=ci-other 
 archon workflow attention label <run-id> --occurrence <id> --unset urgency --json
 ```
 
-A set key replaces the same key; every other label stays. The write is refused, naming
-the current occurrence, when the run has moved to another pause, and refused for a gate or
-an answered wait: only `wait: attention` pauses carry labels. Each write bumps the item's
+A set key replaces the same key; every other label stays. The write is refused when the
+run has moved to another pause. If the diagnostic read succeeds and the run is awaiting
+another answer, the refusal names the current occurrence. Otherwise, fetch the current
+item again before retrying. The write is also refused for a gate or an answered wait:
+only `wait: attention` pauses carry labels. Each write bumps the item's
 `revision` and commits an `attention_labeled` event, in the same transaction, carrying the
 occurrence, the keys set and unset, the surface as `via`, and the new revision. Who may
 write is the same as who may answer.
@@ -1143,8 +1164,9 @@ any other run's. Only a `running` run can be
 cancelled; abandon a paused or failed run instead.
 
 After termination is confirmed, `cancel` records cancellation through the same run-tree
-operation as `abandon`. Cancelling a parent therefore cancels every non-terminal
-descendant and can report the same cascade failures or blocked parent described below.
+operation as `abandon`. Cancelling a parent therefore attempts descendant cancellation within the
+[500-parent expansion bound](/guides/authoring-workflows/#max_parallel-bounds-concurrency-not-count)
+and can report the same cascade failures or blocked parent described below.
 
 For a detached container run, cancel must also confirm container teardown after stopping
 the owner and before recording cancellation. If that teardown fails, cancel fails and
@@ -1211,7 +1233,7 @@ Successful `--json` responses include an optional `cleanupWarnings` array of war
 strings when reclamation fails; the field is omitted when there are no cleanup
 warnings. A cleanup warning does not change `ok: true`.
 
-**Sub-run trees (#2121 Phase 2):** abandoning a parent that spawned `workflow:` sub-runs cascade-cancels every non-terminal descendant (children and grandchildren; already-terminal runs are left alone). These are database transitions, not process termination; an in-flight host command can continue until it returns. If part of the tree could not be reached, the command reports the count so you know descendants may still be alive. Conversely, abandoning a **child** that its parent is paused-and-blocked on strands that parent (nothing re-fires the auto-resume hook); the command surfaces the blocked parent's run id so you can `resume` it (which fails the sub-run node cleanly) or abandon it too.
+**Sub-run trees (#2121 Phase 2):** abandoning a parent that spawned `workflow:` sub-runs attempts to cancel discovered descendants except completed and cancelled runs, within the [500-parent expansion bound](/guides/authoring-workflows/#max_parallel-bounds-concurrency-not-count). Completed and cancelled runs are left alone, but the walk still inspects beneath them. These are database transitions, not process termination; an in-flight host command can continue until it returns. The command reports cascade failures for failed child cancellations, failed lookups, or unresolved subtrees beyond the bound, so you know descendants may still be alive. Conversely, abandoning a **child** that its parent is paused-and-blocked on strands that parent (nothing re-fires the auto-resume hook); the command surfaces the blocked parent's run id so you can `resume` it (which fails the sub-run node cleanly) or abandon it too.
 
 ### `workflow respond`
 
@@ -1542,7 +1564,7 @@ archon validate workflows my-workflow     # Validate a single workflow
 archon validate workflows my-workflow --json  # Machine-readable JSON output
 ```
 
-Checks: YAML syntax, DAG structure (cycles, dependency refs), command file existence, MCP config files, skill directories, provider compatibility, tier/alias model refs, and supported static environment reads in inline or named exec sources. An unprovided `INPUTS_*` read is an error when the workflow declares an input contract; other unprovided Python or JavaScript/TypeScript environment reads warn. See [Variables](/reference/variables/#shell-quoting-in-bash-vs-script) for the supported forms and fixes. For bundled and global workflows, validation rejects `@custom` model aliases because they are not portable across projects; use `small`, `medium`, `large`, or a literal provider model string instead. Returns actionable error messages with "did you mean?" suggestions for typos.
+Checks: YAML syntax, DAG structure (cycles, dependency refs), command file existence, MCP config files, skill directories, provider compatibility, tier/alias model refs, and supported static environment reads in inline or named exec sources. An unprovided `INPUTS_*` read is an error when the workflow declares an input contract; other unprovided Python or JavaScript/TypeScript environment reads warn. See [Variables](/reference/variables/#shell-quoting-in-bash-vs-script) for the supported forms and fixes. For bundled and global workflows, validation rejects a bare `@custom` model alias because it isn't portable across projects; use `small`, `medium`, `large`, a literal provider model string, or a preference list that ends in one, such as `['@reviewer', medium]`. Returns actionable error messages with "did you mean?" suggestions for typos.
 
 Exit code: 0 = all valid, 1 = errors found.
 
@@ -1651,8 +1673,9 @@ archon skill add
 archon skill add /path/to/project
 ```
 
-The unified skill covers workflow execution, run management, setup, configuration,
-authoring, and prompt guidance. It is also installed automatically during
+The unified skill covers running and watching workflows, answering runs that need a
+decision, driving the SDLC pack's queues, setup and configuration, authoring, and
+prompt guidance. It is also installed automatically during
 `archon setup`.
 
 ### `version`
@@ -1670,7 +1693,7 @@ archon version
 | `--cwd <path>` | Override working directory (default: current directory) |
 | `--quiet`, `-q` | Log warnings and errors only (the default for every command except `archon serve`) |
 | `--verbose`, `-v` | Show debug-level logs on stderr (on stdout for `archon serve`) |
-| `--json` | Output machine-readable JSON (workflow `list`, `status`, `runs`, `get`, `wait`, `attention`, and the write commands `approve`/`reject`/`abandon`/`resume`). Implies log suppression so stdout is exactly the JSON payload. |
+| `--json` | Output machine-readable JSON (workflow `list`, `status`, `runs`, `get`, `artifacts`, `wait`, `attention`, `project list`, and the write commands `approve`/`reject`/`abandon`/`resume`). Implies log suppression so stdout is exactly the JSON payload. |
 | `--after <cursor>` | For `workflow attention --watch`: replay readable feed events strictly after this cursor, excluding all lines at that cursor. A `degraded` warning means coverage may have gaps; see [repair and replay](/guides/attention-queue/#stream-the-queue). |
 | `--timeout <seconds>` | For `workflow wait`: give up after N seconds and exit `3`. Omitted means wait indefinitely. |
 | `--follow` | For `workflow logs`: wait for the transcript and stream appended rows until the run ends. |

@@ -124,8 +124,9 @@ release. 1.14.2 was cut this way on 2026-09-28.
 8. **Run the browser leg on the release head before the tag.** In `web/`, with `COLLIE_RIG_KEY_FILE`
    set: `bunx playwright test -c e2e/rig/playwright.config.ts` (*Browser tests*; the prerequisites are
    in `web/e2e/rig/README.md`). It starts a scratch bridge and Herdr with real Claude Code, pi and omp,
-   and takes about 5 minutes. All fifteen cases must pass on the first tap. A failed case holds the
-   tag, and so does a case that was not reached.
+   and takes about 5 minutes. Then run the crew leg, `bunx playwright test -c e2e/rig/crew.config.ts`:
+   a lead and a member, about 4 minutes. All thirty-four cases (twenty-seven solo, seven on the crew leg)
+   must pass on the first tap. A failed case holds the tag, and so does a case that was not reached.
 
 **A PR from a fork is the exception: leave all four files alone.** Bump nothing, add no CHANGELOG
 line — send the functional commits only. The version is the maintainer's to pick, because it depends
@@ -395,9 +396,12 @@ component, not a spec. On 2026-10-17 the specs that did not pass that test moved
   running real Claude Code, pi and omp. It is not a tier of the CI suite and not the VM lab. It lives
   under `web/e2e/rig/` with its own config (`cd web && bunx playwright test -c
   e2e/rig/playwright.config.ts`, the provider key file named by `COLLIE_RIG_KEY_FILE`), it spends
-  model turns (about 5 minutes and a few cents a run), and it never runs in CI. It is **the gate before
+  model turns (about 5 minutes and a few cents a run), and it never runs in CI. Beside it runs **the
+  crew leg** (`-c e2e/rig/crew.config.ts`): the same phone against a lead and a member, for the walky
+  talky cases that need a crew. It is **the gate before
   every release tag**, and **the proof for a change to a harness reader, the Surface, the Send
-  Protocol or the ask code**: run it on the branch, and all fifteen cases pass on the first tap. A
+  Protocol or the ask code**: run it on the branch, and all thirty-four cases (twenty-seven solo, seven
+  on the crew leg) pass on the first tap. A
   unit test cannot show that a tap works on a real screen. `web/e2e/rig/nightly.ts` also runs it every
   night on `origin/main`, once for each main commit and set of agent versions. The README beside it
   (*When it runs*) has the rules and the cost.
@@ -697,7 +701,9 @@ don't drop a `-c` there without reading the module header. The Files view (`brid
 root comes off the snapshot, never the request, and its real path must pass the same bound; the
 client's path is relative, refused on its shape before any disk call, and its real path must sit
 inside the root's through `containedRealpath`; `.git` and the bridge's state and config folders are
-denied on top. It needs an authorised device (`device-read`), and its bytes go out as JSON, never as
+denied on top. The New page's folder browser (`bridge/folder-browse.ts`, #467) is the same place
+with home as the root: folder names only, the same shape check, containment, deny list, refusal and
+gate, and no new rule. It needs an authorised device (`device-read`), and its bytes go out as JSON, never as
 a document, with one exception: `files/image` ([ADR 0090](./.adr/0090-files-shows-images.md)) sends a
 picture's raw bytes, typed by `sniffImageType` from the bytes alone (PNG, JPEG, GIF, WebP, AVIF; no
 SVG), with `no-store` and a `default-src 'none'; sandbox` CSP, through the same `readFile` checks. `GET /api/fonts/<basename>` does not become a fourth such place: the request's name is **looked up** in the rows the operator's own

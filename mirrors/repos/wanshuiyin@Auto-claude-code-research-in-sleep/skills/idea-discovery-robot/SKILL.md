@@ -7,6 +7,17 @@ allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, WebSearch, WebFetch, Skil
 
 # Robotics Idea Discovery Pipeline
 
+> **Before each reviewer slot**, follow [Selectable Reviewers](../shared-references/reviewer-backends.md):
+> resolve invocation → `.aris/reviewer.json` → Claude Code default (Codex MCP)
+> with `reviewer_route.py` through the canonical helper resolver, preserving this
+> slot's tier, fresh contexts, source/image inputs and deterministic gates.
+> Codex examples/pins below apply only to `backend=codex`; other routes use their
+> own first-call/reply contract. Save the route and actual returned identity;
+> unavailable selections are `REVIEW_UNAVAILABLE`. Classify acceptance from actual
+> families/completion/scope. Forward invocation reviewer/model/effort overrides
+> to reviewer-bearing children. Generation workers are unchanged.
+
+
 Orchestrate a robotics-specific idea discovery workflow for: **$ARGUMENTS**
 
 ## Overview

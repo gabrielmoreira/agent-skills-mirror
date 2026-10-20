@@ -16,15 +16,6 @@ allowed-tools:
 <!-- AUTO-GENERATED from SKILL.md.tmpl — do not edit directly -->
 <!-- Regenerate: bun run gen:skill-docs -->
 
-
-## When to invoke this skill
-
-Shows which VERSION slots
-are currently claimed by open PRs, which sibling Conductor workspaces have
-WIP work likely to ship soon, and what slot /ship would pick next. No
-mutations — just a snapshot. Use when asked to "landing report", "what's in
-the queue", "show me open PRs", or "which version do I claim next".
-
 # /landing-report — Version Queue Dashboard
 
 ## Preamble (run first)
@@ -399,7 +390,7 @@ what each level would claim.
 
 ```bash
 for LEVEL in micro patch minor major; do
-  bun run ~/.claude/skills/gstack/bin/gstack-next-version \
+  bun --no-env-file --config=/dev/null run ~/.claude/skills/gstack/bin/gstack-next-version \
     --base "$BASE_BRANCH" \
     --bump "$LEVEL" \
     --current-version "$BASE_VERSION" \

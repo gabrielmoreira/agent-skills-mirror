@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `espressif/esp-claw` — 26 default patterns, 0 followed patterns, 26 file(s) materialized.
+Mirror of `espressif/esp-claw` — 26 default patterns, 3 followed patterns, 31 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `espressif/esp-claw` — 26 default patterns, 0 followed patterns, 26 
 | Ref Type      | `branch` |
 | Ref           | `master` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 26 |
+| Followed pats | 3 |
+| Files         | 31 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,9 @@ Mirror of `espressif/esp-claw` — 26 default patterns, 0 followed patterns, 26 
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `components/common/skill_builder/skills/skill_creator/references/skill-package-spec.md`
+- `components/common/skill_builder/COMPONENT_SKILL_BUILD.md`
+- `components/claw_capabilities/cap_app_mgr/skills/app_creator/references/app-package-spec.md`
 
 ## File Index
 
@@ -62,29 +64,34 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`.agents/design.md`](.agents/design.md) |
 | 2 | ✓ | [`.agents/docs.md`](.agents/docs.md) |
 | 3 | ✓ | [`.agents/gotchas.md`](.agents/gotchas.md) |
-| 4 | ✓ | [`.agents/spec/claw-skill-spec.md`](.agents/spec/claw-skill-spec.md) |
-| 5 | ✓ | [`.agents/spec/lua-module-spec.md`](.agents/spec/lua-module-spec.md) |
-| 6 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 7 | ✓ | [`application/edge_agent/fatfs_image/storage/skills/light_switch/SKILL.md`](application/edge_agent/fatfs_image/storage/skills/light_switch/SKILL.md) |
-| 8 | ✓ | [`application/edge_agent/fatfs_image/storage/skills/plan_mode/SKILL.md`](application/edge_agent/fatfs_image/storage/skills/plan_mode/SKILL.md) |
-| 9 | ✓ | [`application/edge_agent/fatfs_image/storage/skills/scheduled_task/SKILL.md`](application/edge_agent/fatfs_image/storage/skills/scheduled_task/SKILL.md) |
-| 10 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 4 | ✓ | [`.agents/spec/lua-module-spec.md`](.agents/spec/lua-module-spec.md) |
+| 5 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 6 | ✓ | [`application/edge_agent/fatfs_image/storage/skills/light_switch/SKILL.md`](application/edge_agent/fatfs_image/storage/skills/light_switch/SKILL.md) |
+| 7 | ✓ | [`application/edge_agent/fatfs_image/storage/skills/plan_mode/SKILL.md`](application/edge_agent/fatfs_image/storage/skills/plan_mode/SKILL.md) |
+| 8 | ✓ | [`application/edge_agent/fatfs_image/storage/skills/scheduled_task/SKILL.md`](application/edge_agent/fatfs_image/storage/skills/scheduled_task/SKILL.md) |
+| 9 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 10 | ✓ | [`components/claw_capabilities/cap_app_mgr/skills/app_creator/SKILL.md`](components/claw_capabilities/cap_app_mgr/skills/app_creator/SKILL.md) |
 | 11 | ✓ | [`components/claw_capabilities/cap_http_request/skills/cap_http_request/SKILL.md`](components/claw_capabilities/cap_http_request/skills/cap_http_request/SKILL.md) |
 | 12 | ✓ | [`components/claw_capabilities/cap_im_platform/skills/cap_im_platform/SKILL.md`](components/claw_capabilities/cap_im_platform/skills/cap_im_platform/SKILL.md) |
 | 13 | ✓ | [`components/claw_capabilities/cap_llm_inspect/skills/cap_llm_inspect_image/SKILL.md`](components/claw_capabilities/cap_llm_inspect/skills/cap_llm_inspect_image/SKILL.md) |
 | 14 | ✓ | [`components/claw_capabilities/cap_router_mgr/skills/cap_router_mgr/SKILL.md`](components/claw_capabilities/cap_router_mgr/skills/cap_router_mgr/SKILL.md) |
 | 15 | ✓ | [`components/claw_capabilities/cap_scheduler/skills/cap_scheduler/SKILL.md`](components/claw_capabilities/cap_scheduler/skills/cap_scheduler/SKILL.md) |
-| 16 | ✓ | [`components/claw_capabilities/cap_web_search/skills/cap_web_search/SKILL.md`](components/claw_capabilities/cap_web_search/skills/cap_web_search/SKILL.md) |
-| 17 | ✓ | [`components/claw_modules/claw_memory/skills/memory_ops/SKILL.md`](components/claw_modules/claw_memory/skills/memory_ops/SKILL.md) |
-| 18 | ✓ | [`components/claw_modules/claw_memory/skills/profile_memory_ops/SKILL.md`](components/claw_modules/claw_memory/skills/profile_memory_ops/SKILL.md) |
-| 19 | ✓ | [`components/common/skill_builder/skills/skill_creator/SKILL.md`](components/common/skill_builder/skills/skill_creator/SKILL.md) |
-| 20 | ✓ | [`components/common/skill_builder/skills/skills_lab_downloader/SKILL.md`](components/common/skill_builder/skills/skills_lab_downloader/SKILL.md) |
-| 21 | ✓ | [`components/common/skill_builder/skills/skills_lab_search/SKILL.md`](components/common/skill_builder/skills/skills_lab_search/SKILL.md) |
-| 22 | ✓ | [`components/lua_modules/lua_driver_touch/skills/read_touch/SKILL.md`](components/lua_modules/lua_driver_touch/skills/read_touch/SKILL.md) |
-| 23 | ✓ | [`components/lua_modules/lua_module_ble_hid/skills/ble_hid/SKILL.md`](components/lua_modules/lua_module_ble_hid/skills/ble_hid/SKILL.md) |
-| 24 | ✓ | [`components/lua_modules/lua_module_ble/skills/ble/SKILL.md`](components/lua_modules/lua_module_ble/skills/ble/SKILL.md) |
-| 25 | ✓ | [`components/lua_modules/lua_module_camera/skills/take_picture/SKILL.md`](components/lua_modules/lua_module_camera/skills/take_picture/SKILL.md) |
-| 26 | ✓ | [`components/lua_modules/lua_module_http_server/skills/http_server_lua_demo/SKILL.md`](components/lua_modules/lua_module_http_server/skills/http_server_lua_demo/SKILL.md) |
+| 16 | ✓ | [`components/claw_capabilities/cap_skill_mgr/skills/skills_lab_downloader/SKILL.md`](components/claw_capabilities/cap_skill_mgr/skills/skills_lab_downloader/SKILL.md) |
+| 17 | ✓ | [`components/claw_capabilities/cap_skill_mgr/skills/skills_lab_search/SKILL.md`](components/claw_capabilities/cap_skill_mgr/skills/skills_lab_search/SKILL.md) |
+| 18 | ✓ | [`components/claw_capabilities/cap_web_search/skills/cap_web_search/SKILL.md`](components/claw_capabilities/cap_web_search/skills/cap_web_search/SKILL.md) |
+| 19 | ✓ | [`components/claw_modules/claw_memory/skills/memory_ops/SKILL.md`](components/claw_modules/claw_memory/skills/memory_ops/SKILL.md) |
+| 20 | ✓ | [`components/claw_modules/claw_memory/skills/profile_memory_ops/SKILL.md`](components/claw_modules/claw_memory/skills/profile_memory_ops/SKILL.md) |
+| 21 | ✓ | [`components/common/lua_module_builder/skills/lua_package_authoring/SKILL.md`](components/common/lua_module_builder/skills/lua_package_authoring/SKILL.md) |
+| 22 | ✓ | [`components/common/skill_builder/skills/skill_creator/SKILL.md`](components/common/skill_builder/skills/skill_creator/SKILL.md) |
+| 23 | ✓ | [`components/lua_modules/lua_driver_touch/skills/read_touch/SKILL.md`](components/lua_modules/lua_driver_touch/skills/read_touch/SKILL.md) |
+| 24 | ✓ | [`components/lua_modules/lua_module_ble_hid/skills/ble_hid/SKILL.md`](components/lua_modules/lua_module_ble_hid/skills/ble_hid/SKILL.md) |
+| 25 | ✓ | [`components/lua_modules/lua_module_ble/skills/ble/SKILL.md`](components/lua_modules/lua_module_ble/skills/ble/SKILL.md) |
+| 26 | ✓ | [`components/lua_modules/lua_module_camera/skills/take_picture/SKILL.md`](components/lua_modules/lua_module_camera/skills/take_picture/SKILL.md) |
+| 27 | ✓ | [`components/lua_modules/lua_module_display/skills/bdf_font_converter/SKILL.md`](components/lua_modules/lua_module_display/skills/bdf_font_converter/SKILL.md) |
+| 28 | ✓ | [`components/lua_modules/lua_module_http_server/skills/http_server_lua_demo/SKILL.md`](components/lua_modules/lua_module_http_server/skills/http_server_lua_demo/SKILL.md) |
+| 29 | → | [`components/claw_capabilities/cap_app_mgr/skills/app_creator/references/app-package-spec.md`](components/claw_capabilities/cap_app_mgr/skills/app_creator/references/app-package-spec.md) |
+| 30 | → | [`components/common/skill_builder/COMPONENT_SKILL_BUILD.md`](components/common/skill_builder/COMPONENT_SKILL_BUILD.md) |
+| 31 | → | [`components/common/skill_builder/skills/skill_creator/references/skill-package-spec.md`](components/common/skill_builder/skills/skill_creator/references/skill-package-spec.md) |
 
 ---
 

@@ -43,15 +43,6 @@ gbrain:
 <!-- AUTO-GENERATED from SKILL.md.tmpl — do not edit directly -->
 <!-- Regenerate: bun run gen:skill-docs -->
 
-
-## When to invoke this skill
-
-Creates DESIGN.md as your project's design source
-of truth. For existing sites, use /plan-design-review to infer the system instead.
-Use when asked to "design system", "brand guidelines", or "create DESIGN.md".
-Proactively suggest when starting a new project's UI with no existing
-design system or DESIGN.md.
-
 ## Preamble (run first)
 
 ```bash
@@ -436,12 +427,12 @@ All conversion, marker and design writes wait for Q-final; Phase 0 only reads an
 **Update-only gate:** Only **Update** with DESIGN.md enters this block (command and all result branches). **Start fresh**, **No existing file**, or a lone design-system.md: skip to **Gather product context from the codebase**. **Cancel** has already stopped the skill.
 
 ```bash
-bun --no-env-file run $HOME/.claude/skills/gstack/bin/gstack-design-md.ts check DESIGN.md
+bun --no-env-file --config=/dev/null run $HOME/.claude/skills/gstack/bin/gstack-design-md.ts check DESIGN.md
 ```
 
-- `DESIGN_MD_FORMAT: spec` → already the open format; `bun --no-env-file run $HOME/.claude/skills/gstack/bin/gstack-design-md.ts tokens DESIGN.md` prints the flat token map. Update tokens in the front matter, rationale in the sections.
-- `legacy` with `DESIGN_MD_MARKER: none` → ask once (AskUserQuestion): **A) Convert** (recommended; preview with `bun --no-env-file run $HOME/.claude/skills/gstack/bin/gstack-design-md.ts convert`, without `--write`) **B) Keep legacy** (retain its prose structure) **C) Start fresh** (take Phase 0's fresh path). Record the choice for Q-final. Obey an existing marker silently.
-- **Convert/Keep legacy:** After Q-final approval outside plan mode, `bun --no-env-file run $HOME/.claude/skills/gstack/bin/gstack-design-md.ts convert --write` keeps a `.legacy.bak` and every section, or `bun --no-env-file run $HOME/.claude/skills/gstack/bin/gstack-design-md.ts mark legacy-keep` persists the choice. In plan mode, record the chosen format in Proposed DESIGN.md instead.
+- `DESIGN_MD_FORMAT: spec` → already the open format; `bun --no-env-file --config=/dev/null run $HOME/.claude/skills/gstack/bin/gstack-design-md.ts tokens DESIGN.md` prints the flat token map. Update tokens in the front matter, rationale in the sections.
+- `legacy` with `DESIGN_MD_MARKER: none` → ask once (AskUserQuestion): **A) Convert** (recommended; preview with `bun --no-env-file --config=/dev/null run $HOME/.claude/skills/gstack/bin/gstack-design-md.ts convert`, without `--write`) **B) Keep legacy** (retain its prose structure) **C) Start fresh** (take Phase 0's fresh path). Record the choice for Q-final. Obey an existing marker silently.
+- **Convert/Keep legacy:** After Q-final approval outside plan mode, `bun --no-env-file --config=/dev/null run $HOME/.claude/skills/gstack/bin/gstack-design-md.ts convert --write` keeps a `.legacy.bak` and every section, or `bun --no-env-file --config=/dev/null run $HOME/.claude/skills/gstack/bin/gstack-design-md.ts mark legacy-keep` persists the choice. In plan mode, record the chosen format in Proposed DESIGN.md instead.
 - `unknown` → preserve its prose shape for Update; disclose `DESIGN_MD_REASON`. `DESIGN_MD_CONVERT_REFUSED` → leave unchanged, ask whether to keep its shape or start fresh, then resume the proposal.
 - `missing` → Phase 6 writes one. Exit 3 (`DESIGN_MD_INTERNAL_ERROR`) is a gstack bug: report it, do not retry.
 

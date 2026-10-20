@@ -92,7 +92,7 @@ without serial scheduling. Pure domain/service, composition, conformance,
 evaluation, CLI boundary, and MCP boundary projects share module graphs. Their
 tests avoid process-global state and keep resource cleanup test-scoped. Each
 MCP session still owns its resources, and CLI cases retain fresh command
-instances or subprocesses. CLI module mocks belong in `tests/process-global/`
+instances or subprocesses. CLI and MCP module mocks belong in `tests/process-global/`
 so they keep per-file isolation. Product catalog verification stays with the
 isolated filesystem boundary tests because it loads both source and compiled
 module graphs. Adapter, other boundary, acceptance, and process-global projects
@@ -250,6 +250,15 @@ opaque rejection reasons, cancellation during failed finalization, and missing
 lineage followed by a confirmed passive family census. Windows controls require
 a fresh lineage observation and do not signal cached descendant PIDs after root
 termination. Simulated Windows controls do not establish native Windows behavior.
+
+Native process-ownership controls distinguish start identity, zombie lifecycle,
+current parent/group relation, and token-read evidence. Retain generation-bound
+candidates through smaller lineage observations, table omissions, reparenting,
+group changes, and failed cleanup retries. A readable token with unavailable
+identity stays unresolved. Native UID facts, rather than an earlier process-table
+row, determine whether a token denial concerns another user. Darwin tests compile
+the helper and exercise snapshot growth, absence, lifecycle, and UID observations;
+controlled Linux procfs tests do not establish real Linux exit or PID-reuse behavior.
 
 For atomic writes, exercise cancellation on both sides of the documented commit
 point and preserve any publication receipt. A late interruption does not prove
@@ -1168,6 +1177,16 @@ identifiable; unknown or shared script changes select everything. Android
 build-script edits retain the Linux suite and workflow validation; real Android
 verification stays manual. Renames account for both paths.
 
+The `agentenv` scope owns the environment application and server modules, the
+`environment-serve` and `environment-export` command registration, the shared
+streamable HTTP listener, `scripts/verify-agentenv-environment.mjs` and its
+workflow `real-agentenv.yml`. The lane exports a bundle from the source-owned
+Grafana-shaped capture through the built CLI, packs the checkout into the
+bundle's image and runs `agent-env run` on the hosted runner's Docker with the
+pinned `agentenv-framework` release; it passes when the smoke task passes and
+no container remains. It claims nothing about any hosted platform or another
+framework version.
+
 This narrower selection trades PR-time coverage for runner capacity. A change to
 unowned shared runtime code that fails only on arm64, macOS, Windows, the Apple
 artifact lane, or a provider lane that does not own the file is not caught on
@@ -1316,9 +1335,9 @@ Portable owner-based test selection remains observational. Its reports compare
 proposed omissions with the full run; incomplete or skipped observations do not
 establish that fewer tests would preserve regression detection.
 
-The eight automatic browser, binary-layout, EVM, JavaScript-recovery,
-recorded-crash, and web provider lanes download `rea-build-cache` from their own
-run after the build and static jobs succeed. Their existing build commands still
+The nine automatic browser, binary-layout, EVM, JavaScript-recovery,
+recorded-crash, web and environment-bundle provider lanes download
+`rea-build-cache` from their own run after the build and static jobs succeed. Their existing build commands still
 validate task hashes and rebuild mismatched inputs; provider observations always
 run. Provider-workflow-only edits also admit the build without enabling source
 test shards. Direct provider dispatches retain the cross-run restore-only cache.
@@ -1544,6 +1563,58 @@ version lookup) and REA ownership inspection separately from target execution.
 This is fixture evidence, not a sandbox claim. Inputs remain unchanged and the
 sentinel must stay alive; owned cleanup and empty verifier descendants are required. Pass an
 installed package entrypoint as the script's first argument for package coverage.
+
+### Exported environment bundles
+
+`npm run verify:agentenv:environment` is the `real-agentenv` lane. It requires
+the host's Docker CLI named by absolute `REA_DOCKER_COMMAND`, Python 3.12 with
+`agentenv-framework==0.9.1334` installed in a virtual environment whose
+`agent-env` binary is named by absolute `REA_AGENT_ENV_COMMAND`, and outbound
+network for `pip` on the runner and for `npm` inside the image build. Both
+variables are required; neither upstream executable is resolved from `PATH`,
+and the verifier installs nothing. Packing uses the shared npm helper, honoring
+`npm_execpath` from the caller's selected npm. Direct Node invocations without
+that value use the helper's platform fallback, so configure the pinned toolchain
+on `PATH` for those runs. It checks the supplied runner's `--version` against the pin before
+using Docker and retains the observed version in both passing and failing receipts.
+Its disposable CI runner creates the virtual environment in runner
+storage, exports both paths and uses the runner's own Docker; no developer host
+configuration changes. `agent-env run` attempts share one 22-minute budget
+inside the 30-minute job (the first attempt at most 15 minutes), so a hung or
+retried run ends with the verifier's failed receipt rather than the runner's
+kill. The framework builds its gateway and service-db
+images from `public.ecr.aws` on every fresh runner, and hosted runners share
+that registry's anonymous pull quota, so the lane first pulls the base images
+the pinned framework's Dockerfiles name from `mirror.gcr.io`, which serves the
+same Docker official images under the same digests, and names them as those
+Dockerfiles do (on Docker's containerd image store, so digest-pinned names
+resolve), as the framework's own CI does. The quota handling below covers
+anything still pulled from that registry. The receipt's `agent_env_run` records the
+last run whether it passed or failed, with `public_ecr_quota` set to
+`data_limit` or `rate` when that registry's `429 Too Many Requests` ended it.
+The data-transfer cap (`toomanyrequests: Data limit exceeded`) is counted per
+source IP, so it fails the lane at once: a pause on the same runner cannot lift
+it. When a rate refusal ends the run and at least five minutes of the budget
+would remain after the pause, the verifier waits 90 seconds and runs once more,
+recording `attempts: 2` and `retried_for` in the receipt. Any other failure
+ends the lane at once.
+
+The verifier writes the Grafana-shaped HAR the view tests own, inspects it and
+projects the `environment-manifest` view with all three template rules through
+the built CLI, packs the checkout with `npm pack`, exports the bundle with
+`--package-tarball` so the image installs this checkout rather than the
+registry package, and runs `agent-env run` on the bundle. It checks that the
+export reports the planned file set with the inputs copied byte-exact, that
+the runner exits `0` with `tasks/smoke.json` reported as passed and the
+verifier's description naming the tool count, and that no container exists
+after the run that did not exist before; the container inventory runs even when
+the run fails or times out, so a failed receipt still lists what it left. The one exception is the framework's
+own image-store helper, `agentenv-registry` (or `agentenv-registry-<port>`),
+a `registry:2` container the local provider starts on first use and keeps
+running across runs; a first run on a fresh host creates it, so the receipt
+lists it under `image_store_helpers` instead of counting it as a leak. Images
+built by the run remain and are counted in the receipt. Pass an installed
+package entrypoint as the script's first argument for package coverage.
 
 ## Agent evaluation and conformance records
 

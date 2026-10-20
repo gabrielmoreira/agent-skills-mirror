@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `lemomo-ai/lemo-opuscar` — 26 default patterns, 5 followed patterns, 9 file(s) materialized.
+Mirror of `lemomo-ai/lemo-opuscar` — 26 default patterns, 6 followed patterns, 10 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `lemomo-ai/lemo-opuscar` — 26 default patterns, 5 followed patterns,
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 5 |
-| Files         | 9 |
+| Followed pats | 6 |
+| Files         | 10 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -54,6 +54,7 @@ Mirror of `lemomo-ai/lemo-opuscar` — 26 default patterns, 5 followed patterns,
 - `DIRECTOR.md`
 - `TECHNIQUE.md`
 - `core/README.md`
+- `MY-STYLES.md`
 - `MAINTAINING.md`
 - `styles/README.md`
 
@@ -70,8 +71,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 5 | → | [`core/README.md`](core/README.md) |
 | 6 | → | [`DIRECTOR.md`](DIRECTOR.md) |
 | 7 | → | [`MAINTAINING.md`](MAINTAINING.md) |
-| 8 | → | [`styles/README.md`](styles/README.md) |
-| 9 | → | [`TECHNIQUE.md`](TECHNIQUE.md) |
+| 8 | → | [`MY-STYLES.md`](MY-STYLES.md) |
+| 9 | → | [`styles/README.md`](styles/README.md) |
+| 10 | → | [`TECHNIQUE.md`](TECHNIQUE.md) |
 
 ---
 

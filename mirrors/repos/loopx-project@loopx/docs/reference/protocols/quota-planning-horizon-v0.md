@@ -79,6 +79,30 @@ context independently. TurnEnvelope, stride, execution permission and quota are
 not enabled by this setting. Context/signature changes are observable input
 changes, not evidence of improved model decisions.
 
+## Agent Decision Authority
+
+Use the horizon to choose a coherent outcome across related work, considering
+current user direction, evidence, dependencies, expected value, switching cost
+and remaining budget. Priority ranks the default recommendation; a ready
+higher-priority deferred successor does not veto an explicitly chosen eligible
+open Todo. It stays visible for planning and retains its lifecycle state.
+If choosing another route matters to the plan, record why in the existing Todo
+note or vision/path-delta writeback. Do not manufacture priority changes or
+extra-small Todos merely to satisfy the ordering.
+
+The horizon itself grants no execution authority. Select through the existing
+explicit selection/re-entry flow, which still checks scope, capabilities,
+claims, resume conditions, workspace and real blocking lanes. A successor link
+alone is not a dependency. A selected deferred Todo still requires its resume
+transition before execution.
+
+A committed Turn binds one execution identity, not the Todo until completion.
+At an appropriate checkpoint, preserve progress, settle that original Turn and
+release its lease before selecting another Todo in a new Turn. Re-entry of an
+unsettled Turn preserves its original identity; it cannot silently account
+unrelated work or restart a completed effect. Unbound suggestions and pending
+choices have no such execution identity to protect.
+
 ## Shape
 
 ```json

@@ -2,7 +2,7 @@
 
 All formulas match the fpl-bot web app. Use these exact calculations for consistent analysis across all agents.
 
-All SQL queries run against: `sqlite3 ~/.fplcopilot/fplcopilot.db`
+Query the resolved SQLite 3 database through the available CLI, library, or native tool. SQL examples target `schema.sql`; preserve their calculation semantics.
 
 ---
 
@@ -394,7 +394,7 @@ LIMIT 10;
 
 ### Player Match History
 
-Requires `sync.sh player <id>` first:
+Requires a verified, fresh history snapshot for the resolved player; follow `sync.md` first:
 
 ```sql
 SELECT pgs.gameweek_id AS gw, t.short_name AS opponent,

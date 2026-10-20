@@ -33,7 +33,7 @@ pre-commit run --all-files
 4. **link-check** — Доступність зовнішніх URL (Python-скрипт)
 5. **markdown-rendering** — Markdown рендериться без помилок (Python-скрипт)
 
-Збірка EPUB **не є** pre-commit хуком — вона виконується лише в CI (джоб `build-epub` у `.github/workflows/test.yml`), бо потребує локального бінарника `mmdc`, для якого немає робочої збірки під arm64.
+Збірка EPUB **не є** pre-commit хуком — вона виконується лише в CI (джоб `build-epub` у `.github/workflows/test.yml`), бо це повільна збірка всієї книги; хук mermaid-syntax уже рендерить кожну діаграму тим самим бандлом Pele.
 
 ### Налаштування середовища розробки
 
@@ -46,9 +46,11 @@ uv venv
 source .venv/bin/activate
 uv pip install -r scripts/requirements-dev.txt
 
-# Install Node.js tools (markdown linter and Mermaid validator)
+# Install Node.js tools (markdown linter)
 npm install -g markdownlint-cli
-npm install -g @mermaid-js/mermaid-cli
+
+# Mermaid diagrams render with Pele: needs Node.js >= 20, no global package
+node --version
 
 # Install pre-commit hooks
 uv pip install pre-commit
@@ -87,11 +89,11 @@ mypy scripts/ --ignore-missing-imports
 ### Збірка EPUB
 
 ```bash
-# Generate ebook (renders Mermaid diagrams with the local mmdc CLI — no network)
+# Generate ebook (renders Mermaid diagrams with Pele — needs Node.js >= 20; the pinned bundle downloads once)
 uv run scripts/build_epub.py
 
 # With options
-uv run scripts/build_epub.py --verbose --output custom-name.epub --mmdc-path ./node_modules/.bin/mmdc
+uv run scripts/build_epub.py --verbose --output custom-name.epub
 ```
 
 ## Структура каталогів
@@ -108,7 +110,7 @@ uv run scripts/build_epub.py --verbose --output custom-name.epub --mmdc-path ./n
 ├── 09-advanced-features/   # Планування, мислення, фони
 ├── 10-cli/                 # Довідник CLI
 ├── scripts/
-│   ├── build_epub.py           # Генератор EPUB (рендерить Mermaid через локальний mmdc)
+│   ├── build_epub.py           # Генератор EPUB (рендерить Mermaid через Pele)
 │   ├── check_cross_references.py   # Валідація внутрішніх посилань
 │   ├── check_links.py          # Перевірка зовнішніх URL
 │   ├── check_mermaid.py        # Валідація синтаксису Mermaid
@@ -127,7 +129,7 @@ uv run scripts/build_epub.py --verbose --output custom-name.epub --mmdc-path ./n
 
 ### Mermaid-діаграми
 - Усі діаграми повинні успішно парситися (перевіряється pre-commit хуком)
-- Збірка EPUB рендерить діаграми через локальний `mmdc` CLI (інтернет не потрібен, але потрібен `mmdc`)
+- Збірка EPUB рендерить діаграми через Pele (потрібен Node.js >= 20; закріплений бандл завантажується лише під час першого запуску, далі все працює офлайн)
 - Використовуйте Mermaid для блок-схем, діаграм послідовностей та архітектурних візуалізацій
 
 ### Перехресні посилання
@@ -148,7 +150,7 @@ uv run scripts/build_epub.py --verbose --output custom-name.epub --mmdc-path ./n
 
 3. **Pre-commit — привратник** — Усі перевірки якості повинні пройти перед прийняттям PR. CI-конвеєр запускає ці ж перевірки як другий прохід.
 
-4. **Рендеринг Mermaid потребує локального `mmdc`** — Збірка EPUB викликає локальний `mmdc` CLI для рендерингу діаграм (мережа не потрібна). Помилки збірки тут зазвичай пов'язані з відсутнім `mmdc` або невалідним синтаксисом Mermaid. Сама збірка EPUB не виконується у pre-commit — лише в CI.
+4. **Рендеринг Mermaid потребує Node.js >= 20** — Збірка EPUB запускає закріплений бандл Pele через Node.js для рендерингу діаграм (бандл завантажується лише під час першого запуску, перевіряється за sha256 і кешується). Помилки збірки тут зазвичай пов'язані з відсутнім Node.js >= 20, невдалим завантаженням бандла або невалідним синтаксисом Mermaid. Хуки mermaid у pre-commit працюють у суворому режимі з Node.js 22, який надає сам pre-commit, тож вони падають, а не пропускають перевірку. Сама збірка EPUB не виконується у pre-commit — лише в CI.
 
 5. **Це туторіал, а не бібліотека** — При додаванні контенту зосереджуйтесь на чітких поясненнях, готових прикладах та візуальних діаграмах. Цінність — у навчанні концепцій, а не у наданні повторно використовуваного коду.
 

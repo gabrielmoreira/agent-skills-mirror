@@ -2,10 +2,21 @@
 name: patent-review
 description: "Get an external patent examiner review of a patent application. Use when user says \"专利审查\", \"patent review\", \"审查意见\", \"examiner review\", or wants critical feedback on patent claims and specification."
 argument-hint: "[patent-directory-or-scope]"
-allowed-tools: Bash(*), Read, Grep, Glob, Write, Edit, mcp__codex__codex, mcp__codex__codex-reply
+allowed-tools: Bash(*), Read, Grep, Glob, Write, Edit, mcp__codex__codex, mcp__codex__codex-reply, mcp__antigravity__antigravity, mcp__antigravity__antigravity-reply, mcp__grok__grok, mcp__grok__grok-reply, mcp__claude-review__review, mcp__claude-review__review_reply, mcp__claude-review__review_start, mcp__claude-review__review_reply_start, mcp__claude-review__review_status
 ---
 
 # Patent Examiner Review via Codex MCP (xhigh reasoning)
+
+> **Before each reviewer slot**, follow [Selectable Reviewers](../shared-references/reviewer-backends.md):
+> resolve invocation → `.aris/reviewer.json` → Claude Code default (Codex MCP)
+> with `reviewer_route.py` through the canonical helper resolver, preserving this
+> slot's tier, fresh contexts, source/image inputs and deterministic gates.
+> Codex examples/pins below apply only to `backend=codex`; other routes use their
+> own first-call/reply contract. Save the route and actual returned identity;
+> unavailable selections are `REVIEW_UNAVAILABLE`. Classify acceptance from actual
+> families/completion/scope. Forward invocation reviewer/model/effort overrides
+> to reviewer-bearing children. Generation workers are unchanged.
+
 
 Get a multi-round patent examiner review of the patent application based on: **$ARGUMENTS**
 
@@ -45,6 +56,8 @@ Before calling the external reviewer, compile a comprehensive briefing:
 ### Step 2: Round 1 — Full Examiner Review
 
 Send to `REVIEWER_MODEL` via `mcp__codex__codex` with xhigh reasoning:
+
+> Resolve this reviewer slot first; the following is the `backend=codex` example.
 
 ```
 mcp__codex__codex:
@@ -130,6 +143,8 @@ For each fix:
 ### Step 4: Round 2 — Follow-Up Review
 
 Use `mcp__codex__codex-reply` with the threadId from Round 1:
+
+> Resolve this reviewer slot first; the following is the `backend=codex` example.
 
 ```
 mcp__codex__codex-reply:

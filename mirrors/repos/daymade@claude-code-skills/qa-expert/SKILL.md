@@ -79,6 +79,11 @@ For payment, procurement, fulfillment or refund recovery, load
 [transaction recovery acceptance](references/transaction-recovery-acceptance.md)
 before selecting cases. For schema upgrades, accounting views or integration
 fixtures, load [migration and fixture acceptance](references/migration-fixture-acceptance.md).
+For file-backed state, snapshot dependency checks, recovery or CLI output/read-cost
+changes, load [file persistence and CLI acceptance](references/file-persistence-cli-acceptance.md).
+For responses, normalization or suggested edits that race with user changes,
+load [asynchronous editing and conflict acceptance](references/async-edit-conflict-acceptance.md)
+before selecting timing, session and related-object cases.
 Bind these recipes to the application's existing contract and test harness;
 retain the general AAA, tracking and reporting workflow.
 

@@ -177,6 +177,28 @@ live 部署验收。操作 regular file 前会验证 provider 目录与 CLI 的 
 旧文件仍可只读回查，但必须离线核对后才能恢复追加；方案说明了升级和回退步骤，
 归属不明确时须暂停删除。冻结 writer 后一起升级 CLI 与插件。
 
+## 测量 observer 开销
+
+`packages/dsh-loopx-plugin/bench/observer-overhead.ts` 在确定性的 synthetic DSH 事件流上
+测量 observer 组件开销：observer 关闭/开启两臂、CPU（user+system）、RSS、经 shipped writer
+的 ledger append 延迟、每条 envelope 的 ledger 字节与每次 flush 的 stats 字节、逐试验的
+event loss 与 buffer 峰值，以及 clock source 构成和完整分母；并校验计划记录与 envelope kind
+构成是否被完整消费。丢弃或拒绝事件、append 失败、persisted 少于 accepted、或未覆盖计划记录构成
+的试验会从计时汇总中排除；报告标记为不可用并列出警告，因此有丢失或未完整消费的运行不会被读成
+干净结果。输出 public-safe 的 JSON + Markdown 报告，并声明限制；不测量真实
+DSH host、模型、网络或 Cordis dispatch，也不构成 C1 资格。见
+[bench README](../../../packages/dsh-loopx-plugin/bench/README.md)。
+
+在 `packages/dsh-loopx-plugin` 下运行：
+
+```bash
+node --experimental-strip-types bench/observer-overhead.ts --events 10000
+```
+
+`--events` 会向下归一化为 6 事件 turn cycle 的整数倍（5,000 → 4,998；10,000 → 9,996），
+报告同时给出请求值与归一化值。bench 对 synthetic 突发使用 4,096 buffer bound；传
+`--buffer-bound 256` 可对齐 observer 的产品默认值。
+
 ## 验证
 
 ```bash
@@ -195,5 +217,5 @@ projection 报告 `read` 上的重复、一次已恢复的错误、无 stall。
 
 不做 dashboard、不做 L2 建议、不做自动恢复、不回写 goal / todo / gate / session runtime、
 不改 `loopx status` 首屏。适配器要求外部固定 goal/session/run identity；不会通过 Driver
-或 LoopX CLI 发现绑定。本原型也不提供 matched native/L1 执行、observer CPU/I/O/延迟/
-存储开销测量，或一次合格 C1 实跑。
+或 LoopX CLI 发现绑定。本原型也不提供 matched native/L1 执行、真实 DSH host 测量，或一次合格 C1 实跑。
+bench 工具只在 synthetic 事件流上测量 observer 组件开销，不构成 live 资格。

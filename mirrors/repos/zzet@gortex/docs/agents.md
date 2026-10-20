@@ -135,12 +135,13 @@ lives in per-repo instruction files because it is workspace-specific.
 
 ## Compact MCP surface
 
-Every MCP connection with a non-empty `clientInfo.name` receives the
-same 21-tool compact surface in `hide` mode by default. The complete
-static roster is documented in [`mcp.md`](mcp.md#compact-mcp-surface).
-Empty and pre-initialize sessions retain the server default. Explicit
-forwarded, operator, or instruction-profile policy wins over the
-named-client default. Wire-format negotiation is independent, so an
+Every MCP client connection receives the same 21-tool compact surface
+in `hide` mode by default, whether or not its `initialize` carried a
+`clientInfo.name`. The complete static roster is documented in
+[`mcp.md`](mcp.md#compact-mcp-surface). Only internal session-less
+callers (the HTTP dashboard and `/v1` REST routes) retain the server
+default. Explicit forwarded, operator, or instruction-profile policy
+wins over the client default. Wire-format negotiation is independent, so an
 unknown named client remains on JSON unless it is separately
 GCX-capable.
 
@@ -294,8 +295,8 @@ The primary integration, split across the two commands.
 - `.claude/skills/generated/<DirName>/SKILL.md` — one per detected
   community, regenerated each run so the content tracks the graph
 
-Hooks installed today: **PreToolUse**, **PostToolUse**, **PreCompact**,
-**Stop**, **SessionStart**, **UserPromptSubmit**, **SubagentStart**,
+Hooks installed today: **PreToolUse**, **PostToolUse**, **Stop**,
+**SessionStart**, **UserPromptSubmit**, **SubagentStart**,
 **SubagentStop**.
 
 SessionStart carries the orientation block. It is registered with no
@@ -306,8 +307,11 @@ rebuilds a compacted window from the summary, the most recent exchanges,
 and up to five recently-read files that it re-reads and re-injects as
 `system-reminder` blocks, and SessionStart is the only compaction-adjacent
 event that can inject context to say so. PreCompact cannot — its output
-contract is `decision: "block"` only — so gortex's PreCompact handler
-records telemetry and deliberately emits nothing.
+contract is `decision: "block"` only — so gortex no longer installs a
+PreCompact hook, and re-running `gortex init` / `gortex install` removes
+the one older releases wrote (PreCompact hooks of your own are kept). The
+`gortex hook` handler still accepts the event from an install that has not
+been refreshed; it records telemetry and deliberately emits nothing.
 
 > **Daemon outage = per-call enforcement stands down.** Every per-call
 > surface (PreToolUse denies and graph advisories, PostToolUse follow-ups,
@@ -369,6 +373,13 @@ To tell the two states apart, run `gortex doctor`. It correlates the Codex
 config, the hook-invocation log, the Codex session transcripts, and the savings
 ledger into one verdict — *hooks configured but none has run* is the
 untrusted-hook signature, reported as a blocker with the `/hooks` remedy.
+A single event that never ran while its siblings did is a different
+diagnosis: the siblings prove the hooks run, so it is never a blocker.
+Codex's `Stop` fires only when a session ends cleanly — long-lived sessions
+that are killed or still open never reach it — so its silence is reported as
+INFO. Any other silent event is a WARN pointing at that event's entry, with a
+hint to re-trust that one entry via `/hooks`, since Codex records trust per
+hook and an upgrade that changes one definition lapses only its trust.
 `--redact` hashes repo paths and branch names so the report can be pasted into
 an issue, `--json` emits it machine-readably, and the exit status is non-zero
 when a blocker is found.
@@ -435,7 +446,7 @@ coverage:
 | Surface | Intentional status |
 | ------- | ------------------ |
 | `PreCompact` / `PostCompact` | Not installed. `SessionStart(source="compact")` restores the mandatory workflow after compaction without paying for two more lifecycle hooks. |
-| `Stop` | Not installed. A Stop hook can continue a turn, so adding it is a separate policy decision rather than implicit mutation handling. |
+| `Stop` | Installed. The post-turn working-tree diagnostics ride a top-level `systemMessage`, because Codex's Stop output schema has no `hookSpecificOutput`; the hook continues a turn (`decision: block`) only when a localization claim check fails. |
 | Native output-suppression fields | Not emitted while Codex rejects `suppressOutput` and `updatedMCPToolOutput`; the opt-in `suppress` posture uses supported PostToolUse result replacement. |
 
 `apply_patch` mutation handling and opt-in deny/rewrite/suppress postures are

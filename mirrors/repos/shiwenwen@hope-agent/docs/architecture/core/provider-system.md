@@ -144,6 +144,16 @@ flowchart TD
 
 选择候选会填入模型 ID、显示名、输入模态、上下文窗口、最大输出和推理能力；当前服务商的端点、API 类型、凭据及模型推理参数格式保持不变。模型 ID 输入关闭系统自动纠错、自动大写和拼写检查。目录保留各来源的币种与报价，只提供当前服务商币种一致的首个报价，不作汇率转换；价格不同则先弹出来源与单价确认，取消保留原价，确认才覆盖输入与输出单价（`null` 与 `0` 语义不变）。自定义向导可选择 USD / CNY，测试与保存使用同一币种。
 
+#### 运行时模型发现
+
+`provider::discovery::discover_provider_models` 是 GUI 显式触发的只读列表操作，Tauri 命令与已鉴权的 `POST /api/providers/discover-models` 共用实现。OpenAI Chat / Responses 及 Anthropic 使用 API 基础地址下的 `GET /v1/models`；前两者使用 Bearer，Anthropic 保留既有密钥档案和工作区绑定请求头。按稳定 Provider / profile ID 在请求局部恢复打码密钥，选第一个已启用档案；不轮换、不尝试替代鉴权、不调用推理端点，不持久化任何结果。Codex 与完整推理 URL 不支持该入口。
+
+请求经过现有 SSRF 策略、显式私网选择和可信主机列表，固定已核准解析地址，禁止重定向。响应每页上限 2 MiB、总计最多 2000 个模型和 10 页；Anthropic 只在同一端点以 `last_id` / `after_id` 翻页，总发现操作有 30 秒超时。其它分页形式、重复/缺失游标或上限命中标为 `truncated`，不跟随厂商返回的任意 URL。错误不回显响应正文、地址或凭据，候选反射当前密钥时拒绝结果。
+
+列表仅投影模型 ID 与显示名，不把第三方自定义预算、能力或价格字段直接当配置。`ModelDiscovery` 默认不选候选，过滤已有的大小写敏感 ID，要求用户填写正整数上下文/输出上限（输出不超过上下文）并确认文本对话与工具兼容性；修改选择或上限会撤销确认。加入仅追加到当前表单，沿既有 `provider/crud.rs` 的普通保存路径生效，active/fallback 不由发现操作改写。新模型明确文本输入、推理关闭、价格未标价；能力可继续由用户编辑。端点/凭据/档案变化或取消会使在途结果失效，旧响应不能写入新表单。
+
+接口契约依据 [OpenAI 模型列表](https://developers.openai.com/api/reference/resources/models/methods/list)与 [Anthropic 模型列表](https://platform.claude.com/docs/en/api/models/list)。列表成功不等于真实账号的聊天、工具调用或模型能力验收；隔离 fixture 不调用真实服务商。
+
 #### 2026-08-31 模板核验与迁移边界
 
 - Cloudflare 新建模板使用账户 REST 路径 `https://api.cloudflare.com/client/v4/accounts/{accountId}/ai/v1`，第三方模型带 `anthropic/` 前缀，用户须填写账户 ID 与适用的 Cloudflare Token。已有网关配置不自动改写；Workers AI 还需网关标识请求头，不在该第三方模型模板中冒充支持。[官方 REST 说明](https://developers.cloudflare.com/ai-gateway/usage/rest-api/)

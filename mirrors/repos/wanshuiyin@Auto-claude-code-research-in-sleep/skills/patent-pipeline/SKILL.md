@@ -7,6 +7,17 @@ allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, WebSearch, WebFetch, Skil
 
 # Patent Pipeline: From Invention to Filing
 
+> **Before each reviewer slot**, follow [Selectable Reviewers](../shared-references/reviewer-backends.md):
+> resolve invocation → `.aris/reviewer.json` → Claude Code default (Codex MCP)
+> with `reviewer_route.py` through the canonical helper resolver, preserving this
+> slot's tier, fresh contexts, source/image inputs and deterministic gates.
+> Codex examples/pins below apply only to `backend=codex`; other routes use their
+> own first-call/reply contract. Save the route and actual returned identity;
+> unavailable selections are `REVIEW_UNAVAILABLE`. Classify acceptance from actual
+> families/completion/scope. Forward invocation reviewer/model/effort overrides
+> to reviewer-bearing children. Generation workers are unchanged.
+
+
 Draft a complete patent application based on: **$ARGUMENTS**
 
 ## Overview
@@ -323,7 +334,7 @@ This compiles the application into the target jurisdiction format(s).
 - Large file handling: if a Write operation fails, retry with Bash `cat <<'EOF'` heredoc.
 - Never include experimental results or empirical evaluations in the specification.
 - Consistent terminology is mandatory -- same word for the same concept throughout.
-- If `mcp__codex__codex` is not available (no OpenAI API key), skip external cross-model review and note it in the output. The pipeline must not fail due to missing reviewer access.
+- If the selected reviewer is unavailable, record `REVIEW_UNAVAILABLE`; the draft pipeline may continue explicitly unreviewed, without switching providers.
 
 ## Composing with Other Workflows
 

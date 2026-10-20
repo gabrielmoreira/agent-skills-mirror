@@ -25,7 +25,8 @@ even before a dedicated UI exists.
 Customer-cloud managed installation architecture lives in
 `infra/managed-deployments/README.md` and `docs/managed-deployments.md`. AWS
 uses CloudFormation/CodeBuild; GCP uses customer-approved Cloud Shell and
-impersonated Terraform behind `managedDeploymentsGcp` (cloud only, off).
+impersonated Terraform behind `managedDeployments` (cloud only, off), the same
+switch as AWS and the deployment agent tools.
 Installer publication/configuration is an operator action, not CLI sign-in or a
 feature rollout. Never fake readiness; local tests do not prove a live install.
 Killing a rollout blocks launches without deleting customer resources or

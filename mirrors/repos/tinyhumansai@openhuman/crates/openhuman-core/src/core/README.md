@@ -155,7 +155,7 @@ and the host is the one that knows `E`. [`events.rs`](./events.rs) is the event 
 `DomainEvent`, a `#[non_exhaustive]` enum whose `domain()` value is appended
 to `EVENTS_ROOT` (`/ai/tinyhumans/openhuman/events`) as the routing key.
 The catalog is published under `EVENTS_INTERFACE`
-(`ai.tinyhumans.openhuman.Events`) at `EVENTS_VERSION`, currently `1.10.0`.
+(`ai.tinyhumans.openhuman.Events`) at `EVENTS_VERSION`, currently `2.0.0`.
 
 `bus::init()` starts the in-process broker and announces a peer manifest
 (advisory; failure only logs). Every accessor is safe before `init`:
@@ -178,8 +178,9 @@ must be `Send + 'static` and need no serialization.
 
 Adding an event takes four steps: add the variant to `DomainEvent`, extend
 the `domain()` match, register its subscriber at startup, and bump
-`EVENTS_VERSION`. Bump the minor for an added variant or field; for a change
-an older subscriber cannot parse, bump the major and rename the interface.
+`EVENTS_VERSION`. Bump the minor for an added variant or field; bump the major
+for a removed variant or a change an older subscriber cannot parse, and rename
+the interface when needed.
 Each subscribing domain owns a `bus.rs`, and subscriber names use
 `<domain>::<purpose>`.
 

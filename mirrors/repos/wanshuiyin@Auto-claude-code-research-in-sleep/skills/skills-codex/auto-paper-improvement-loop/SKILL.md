@@ -2,10 +2,21 @@
 name: auto-paper-improvement-loop
 description: "Autonomously improve a generated paper via GPT-6-Astra xhigh review → implement fixes → recompile, for 2 rounds. Use when user says \"改论文\", \"improve paper\", \"论文润色循环\", \"auto improve\", or wants to iteratively polish a generated paper."
 argument-hint: "[paper-directory] [— edit-whitelist <path>]"
-allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob
+allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, mcp__antigravity__antigravity, mcp__antigravity__antigravity-reply, mcp__grok__grok, mcp__grok__grok-reply, mcp__claude-review__review, mcp__claude-review__review_reply, mcp__claude-review__review_start, mcp__claude-review__review_reply_start, mcp__claude-review__review_status
 ---
 
 # Auto Paper Improvement Loop: Review → Fix → Recompile
+
+> **Before each reviewer slot**, follow [Selectable Reviewers](../shared-references/reviewer-backends.md):
+> resolve invocation → `.aris/reviewer.json` → Codex default (fresh native reviewer)
+> with `reviewer_route.py` through the canonical helper resolver, preserving this
+> slot's tier, fresh contexts, source/image inputs and deterministic gates.
+> Codex examples/pins below apply only to `backend=codex`; other routes use their
+> own first-call/reply contract. Save the route and actual returned identity;
+> unavailable selections are `REVIEW_UNAVAILABLE`. Classify acceptance from actual
+> families/completion/scope. Forward invocation reviewer/model/effort overrides
+> to reviewer-bearing children. Generation workers are unchanged.
+
 
 Autonomously improve the paper at: **$ARGUMENTS**
 
@@ -193,6 +204,8 @@ done > /tmp/paper_full_text.txt
 
 Send the full paper text AND compiled PDF to GPT-6-Astra xhigh:
 
+> Resolve this reviewer slot first; the following is the `backend=codex` example.
+
 ```text
 spawn_agent:
   model: gpt-6-astra
@@ -346,6 +359,8 @@ PY
 ### Step 5: Round 2 Review
 
 If `REVIEWER_BIAS_GUARD = true` (default), use a **fresh** `spawn_agent` reviewer for Round 2. Do not ask the reviewer to reward the Round 1 fix summary for prompting. Save the returned agent_id only for recovery bookkeeping.
+
+> Resolve this reviewer slot first; the following is the `backend=codex` example.
 
 ```text
 spawn_agent:

@@ -5,11 +5,22 @@ description: "Draft LaTeX paper section by section from an outline. Use when use
 
 # Paper Write: Section-by-Section LaTeX Generation
 
+> **Before each reviewer slot**, follow [Selectable Reviewers](../shared-references/reviewer-backends.md):
+> resolve invocation → `.aris/reviewer.json` → Codex default (fresh native reviewer)
+> with `reviewer_route.py` through the canonical helper resolver, preserving this
+> slot's tier, fresh contexts, source/image inputs and deterministic gates.
+> Codex examples/pins below apply only to `backend=codex`; other routes use their
+> own first-call/reply contract. Save the route and actual returned identity;
+> unavailable selections are `REVIEW_UNAVAILABLE`. Classify acceptance from actual
+> families/completion/scope. Forward invocation reviewer/model/effort overrides
+> to reviewer-bearing children. Generation workers are unchanged.
+
+
 Draft a LaTeX paper based on: **$ARGUMENTS**
 
 ## Constants
 
-- **REVIEWER_MODEL = `gpt-6-astra`** — Model used via a secondary Codex agent for section review. Must be an OpenAI model.
+- **REVIEWER_MODEL = `gpt-6-astra`** — Model used via a secondary Codex agent for section review. For `backend=codex`, use an OpenAI model.
 - **TARGET_VENUE = `ICLR`** — Default venue. Supported: `ICLR`, `NeurIPS`, `ICML`, `CVPR` (also ICCV/ECCV), `ACL` (also EMNLP/NAACL), `AAAI`, `ACM` (ACM MM, SIGIR, KDD, CHI, etc.), `IEEE_JOURNAL` (IEEE Transactions / Letters, e.g., T-PAMI, JSAC, TWC, TCOM, TSP, TIP), `IEEE_CONF` (IEEE conferences, e.g., ICC, GLOBECOM, INFOCOM, ICASSP). Determines style file and formatting.
 - **ANONYMOUS = true** — If true, use anonymous author block. Set `false` for camera-ready. Note: most IEEE venues do NOT use anonymous submission — set `false` for IEEE.
 - **MAX_PAGES = 9** — Main body page limit. For ML conferences: counts from first page to end of Conclusion section, references and appendix NOT counted. **For IEEE venues: references ARE counted toward the page limit.** Typical limits: IEEE journal = no strict limit (but 12-14 pages typical for Transactions, 4-5 for Letters), IEEE conference = 5-8 pages including references.
@@ -316,6 +327,8 @@ First apply the sentence-level clarity rules from `../shared-references/writing-
 ### Step 6: Cross-Review with REVIEWER_MODEL
 
 Send the complete draft to GPT-6-Astra xhigh:
+
+> Resolve this reviewer slot first; the following is the `backend=codex` example.
 
 ```
 spawn_agent:

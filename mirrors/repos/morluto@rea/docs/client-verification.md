@@ -457,7 +457,9 @@ disposable HOME and CODEX_HOME under `~/.cache/rea-agent-evaluations/`. Set
 `REA_AGENT_EVAL_ROOT` to choose another parent directory outside the OS temporary
 directory: current Codex refuses helper aliases under `/tmp`, preventing shell
 commands and skill reads even if MCP works. Each owned run directory is removed
-after verification unless fixture retention is requested. The lane
+after verification unless fixture retention is requested. Cleanup attempts the
+remaining run tree even if auth removal fails, and reports unresolved cleanup
+together with the original verification failure. The lane
 installs the packaged skill and MCP registration through public `rea setup`,
 rather than copying a skill into a project that also inherits the caller's
 skills and configuration. Only authentication is copied, when present, and it

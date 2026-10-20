@@ -5,7 +5,7 @@ description: >
   (LinkedIn, local job boards, and any skills added with /add-portal). Deduplicates
   across runs. Triggers on: job scrape, find jobs, search jobs, new jobs, job search,
   scrape jobs, /scrape
-allowed-tools: Read, Write, Edit, Glob, Grep, Bash(bun --version), Bash(bun run .agents/skills/*/cli/src/cli.ts *), Bash(python tools/job_key.py:*), Bash(python3 tools/job_key.py:*), WebFetch, WebSearch, Agent, AskUserQuestion
+allowed-tools: Read, Write, Edit, Glob, Grep, Bash(bun --version), Bash(python tools/job_key.py:*), Bash(python3 tools/job_key.py:*), WebFetch, WebSearch, Agent, AskUserQuestion
 ---
 
 # Job Scraper
@@ -105,7 +105,7 @@ ghost report self-triaging. `isActive: true` is only the absence of that banner,
 proof the posting is open; deadlines and dead URLs remain `/rank`'s job.
 
 **From WebSearch results:** Use `WebFetch` on the posting URL and extract the same
-fields manually. If it returns HTTP 403, retry with browser headers via curl per
+fields manually. If it returns HTTP 403, retry with browser headers via `python3 tools/fetch_page.py` per
 `.claude/skills/job-application-assistant/09-web-research.md` before giving up — most
 bank and corporate sites reject WebFetch's user agent while serving browsers normally.
 

@@ -6,7 +6,7 @@ as a library and runs the core's HTTP/JSON-RPC server as a tokio task inside
 the GUI process. The React frontend in [`app/`](../../app/) runs in the main webview and
 talks to that core over loopback HTTP. Everything else in this crate is
 platform glue the webview cannot do on its own: windows and tray, deep links,
-native notifications, global hotkeys, auto-update, login, and process
+native notifications, auto-update, login, and process
 recovery.
 
 Three names refer to this crate. The Cargo package is `openhuman-app`, the
@@ -30,7 +30,7 @@ For the user-facing tour of windows, tray and data flow, see
 |   |   fetch(url, Bearer token)|<----------|   -> (url, token)          |  |
 |   +-------------+-------------+           | session::commands (auth_*) |  |
 |                 |                         | gateway::commands          |  |
-|                 | HTTP POST /rpc          | hotkeys, windows, update   |  |
+|                 | HTTP POST /rpc          | windows, updater  |  |
 |                 v                         +-------------+--------------+  |
 |   +---------------------------+                         |                 |
 |   | embedded core server      |<------------------------+                 |
@@ -88,8 +88,8 @@ TinyHumans backend transport (the core carries none of its own).
 5. Builds the Tauri app: the macOS app menu, `tauri-plugin-single-instance`
    (skipped on Linux when the D-Bus session bus is unreachable, because the
    plugin panics there), the opener, `external_navigation`, deep-link,
-   notification, global-shortcut and updater plugins, and managed state for
-   hotkeys, the staged app update and the iMessage scanner registry.
+   notification and updater plugins, and managed state for the staged app
+   update and the iMessage scanner registry.
 6. `setup()`: points the core at the installer's [`bundled-modules/`](bundled-modules/) resource
    directory, verifies `openhuman://` registration (Windows registry
    read-back, Linux xdg-utils), drains deep links that arrived early, removes
@@ -185,9 +185,7 @@ Platform integration:
 | [`src/external_navigation.rs`](src/external_navigation.rs) | Plugin that cancels top-level `http(s)` navigation away from the app origin and opens the URL in the default browser. |
 | [`src/native_notifications/`](src/native_notifications/) | Notification permission and delivery, real on macOS. See [`src/native_notifications/`](src/native_notifications/README.md). |
 | [`src/imessage_scanner/`](src/imessage_scanner/) | macOS: reads `chat.db` and ingests conversations into memory. See [`src/imessage_scanner/`](src/imessage_scanner/README.md). |
-| [`src/dictation_hotkeys.rs`](src/dictation_hotkeys.rs), [`src/ptt_hotkeys.rs`](src/ptt_hotkeys.rs) | Global shortcut parsing and state for dictation and push-to-talk. |
-| [`src/ptt_overlay.rs`](src/ptt_overlay.rs) | Borderless always-on-top window for push-to-talk, rendering the `/ptt-overlay` route. |
-| [`src/mascot_native_window.rs`](src/mascot_native_window.rs), [`src/notch_window.rs`](src/notch_window.rs) | macOS: native NSPanel plus WKWebView hosts for the floating mascot and the notch activity pill. |
+| [`src/mascot_native_window.rs`](src/mascot_native_window.rs) | macOS: native NSPanel plus WKWebView host for the floating mascot. |
 | [`src/window_state.rs`](src/window_state.rs) | Saves and restores main window position and size, with a DPI guard and work-area clamping. |
 | [`src/directory_picker.rs`](src/directory_picker.rs) | Native folder chooser for the folder memory source. |
 | [`src/workspace_paths.rs`](src/workspace_paths.rs) | Open, reveal or preview a file, only after resolving it inside the active workspace. |
@@ -215,7 +213,7 @@ Configuration and packaging:
 | Path | What it does |
 | --- | --- |
 | [`tauri.conf.json`](tauri.conf.json) | Windows, bundle resources (agent prompts and `bundled-modules`), updater and installer settings. |
-| [`capabilities/`](capabilities/) | The capability granted to the `main` and `overlay` windows. See [`capabilities/`](capabilities/README.md). |
+| [`capabilities/`](capabilities/) | The capability granted to the `main` window. See [`capabilities/`](capabilities/README.md). |
 | [`permissions/`](permissions/) | App permission sets referenced by the capability. See [`permissions/`](permissions/README.md). |
 | [`bundled-modules/`](bundled-modules/) | Installer resource directory for native module releases. Empty in git (only `.gitkeep`; everything else is ignored). Release builds fill it with [`scripts/release/stage-modules.mjs`](../../scripts/release/stage-modules.mjs), laid out as `<id>/<version>/<host_key>/<archive>`, and `setup()` hands it to `openhuman_rpc::embed::modules::set_bundled_releases_dir`. Its contents still pass the core's digest and TinyBus admission checks. On macOS, [`scripts/release/macos-bundled-modules.sh`](../../scripts/release/macos-bundled-modules.sh) signs and checks it. |
 | [`build.rs`](build.rs) | Runs `tauri_build`, and empties `bundle.resources` for non-release builds. |
@@ -229,13 +227,12 @@ The authoritative list is the `tauri::generate_handler!` call near the end of
 
 | Group | Commands |
 | --- | --- |
-| Core endpoint | `core_rpc_endpoint`, `core_rpc_url`, `core_rpc_token`, `relay_http_rpc`, `overlay_parent_rpc_url` |
+| Core endpoint | `core_rpc_endpoint`, `core_rpc_url`, `core_rpc_token`, `relay_http_rpc` |
 | Core lifecycle | `start_core_process`, `restart_core_process`, `recover_port_conflict`, `force_quit_port_owner`, `process_diagnostics_list_owned` |
 | Gateways (feature `gateways`) | `gateway_list`, `gateway_save`, `gateway_delete`, `gateway_activate`, `gateway_active`, `gateway_status` |
 | Session | `auth_login_with_token`, `auth_store_session`, `auth_logout`, `auth_state`, `auth_current_user`, `get_active_user_id` |
 | Updates | `check_app_update`, `download_app_update`, `install_app_update`, `apply_app_update`, `check_core_update`, `apply_core_update` |
-| App and windows | `app_quit`, `restart_app`, `activate_main_window`, `set_titlebar_for_sidebar`, `mascot_window_show`, `mascot_window_hide`, `notch_window_show`, `notch_window_hide` |
-| Hotkeys and voice | `register_dictation_hotkey`, `unregister_dictation_hotkey`, `register_ptt_hotkey`, `unregister_ptt_hotkey`, `show_ptt_overlay` |
+| App and windows | `app_quit`, `restart_app`, `set_titlebar_for_sidebar`, `mascot_window_show`, `mascot_window_hide` |
 | Notifications | `notification_permission_state`, `notification_permission_request`, `show_native_notification` |
 | Files and logs | `open_workspace_path`, `reveal_workspace_path`, `preview_workspace_text`, `download_artifact_to_downloads`, `pick_directory_via_dialog`, `reveal_logs_folder`, `logs_folder_path`, `reset_local_data` |
 | Integrations | `start_loopback_oauth_listener`, `stop_loopback_oauth_listener`, `mcp_resolve_binary_path`, `mcp_open_client_config`, `claude_code_login_launch` |
@@ -348,7 +345,7 @@ These are shell-local and unrelated to the core feature forwarding above.
   `claude_code_login_launch`, `mascot_window_*`, `set_titlebar_for_sidebar`,
   `recover_port_conflict`, `force_quit_port_owner`, `check_core_update`,
   `apply_core_update`, `process_diagnostics_list_owned`,
-  `overlay_parent_rpc_url`). See [`permissions/`](permissions/README.md).
+  `process_diagnostics_list_owned`). See [`permissions/`](permissions/README.md).
 - Tests for this crate do not run under `pnpm test:rust`, which only covers the
   root workspace.
 

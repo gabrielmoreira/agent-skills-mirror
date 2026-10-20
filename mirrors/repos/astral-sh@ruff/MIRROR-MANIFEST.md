@@ -64,8 +64,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3 | ✓ | [`.agents/skills/adding-ty-diagnostics/SKILL.md`](.agents/skills/adding-ty-diagnostics/SKILL.md) |
 | 4 | ✓ | [`.agents/skills/minimizing-ty-ecosystem-changes/references/advanced-minimization.md`](.agents/skills/minimizing-ty-ecosystem-changes/references/advanced-minimization.md) |
 | 5 | ✓ | [`.agents/skills/minimizing-ty-ecosystem-changes/SKILL.md`](.agents/skills/minimizing-ty-ecosystem-changes/SKILL.md) |
-| 6 | ✓ | [`.agents/skills/review-ty-pr/agents/openai.yaml`](.agents/skills/review-ty-pr/agents/openai.yaml) |
-| 7 | ✓ | [`.agents/skills/review-ty-pr/SKILL.md`](.agents/skills/review-ty-pr/SKILL.md) |
+| 6 | ✓ | [`.agents/skills/review-ty-changes/agents/openai.yaml`](.agents/skills/review-ty-changes/agents/openai.yaml) |
+| 7 | ✓ | [`.agents/skills/review-ty-changes/SKILL.md`](.agents/skills/review-ty-changes/SKILL.md) |
 | 8 | ✓ | [`.agents/skills/summarise-ecosystem-results/assets/report-template.md`](.agents/skills/summarise-ecosystem-results/assets/report-template.md) |
 | 9 | ✓ | [`.agents/skills/summarise-ecosystem-results/references/evidence-acquisition.md`](.agents/skills/summarise-ecosystem-results/references/evidence-acquisition.md) |
 | 10 | ✓ | [`.agents/skills/summarise-ecosystem-results/references/subagent-handoff.md`](.agents/skills/summarise-ecosystem-results/references/subagent-handoff.md) |

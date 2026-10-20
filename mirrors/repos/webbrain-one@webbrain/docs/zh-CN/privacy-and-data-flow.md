@@ -24,7 +24,7 @@
 
 ### 哪个提供商接收数据？
 
-用户在设置中选择他们的提供商。选项包括：
+用户在提供商页面中选择他们的提供商。选项包括：
 
 - **WebBrain Compass**：请求会经过 `api.webbrain.one`；“帮助改进 WebBrain”默认启用，在其保持启用期间，部分交互可能会被保留并用于评估、改进、微调和训练
 - **用户自带的云提供商**：OpenAI、Anthropic、Google Gemini、Mistral、DeepSeek、xAI、Groq、OpenRouter 等——请求使用用户凭据直接发送给提供商，WebBrain 不会收集这些请求
@@ -46,7 +46,7 @@
 
 ### 追踪记录器
 
-启用时（设置 → 显示 → "记录追踪"），每次代理运行都会写入一个 IndexedDB 数据库（`webbrain_traces`）：
+启用时（设置 → 高级 → "记录轨迹"），每次代理运行都会写入一个 IndexedDB 数据库（`webbrain_traces`）：
 
 - **`runs` 存储**：模型、提供商、令牌总数、时间戳、用户消息、最终内容
 - **`events` 存储**：每一步的 LLM 请求/响应、工具调用及其参数和结果

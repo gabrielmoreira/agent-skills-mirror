@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Birfy/agentdescent` — 26 default patterns, 0 followed patterns, 2 file(s) materialized.
+Mirror of `Birfy/agentdescent` — 26 default patterns, 6 followed patterns, 12 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `Birfy/agentdescent` — 26 default patterns, 0 followed patterns, 2 f
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 2 |
+| Followed pats | 6 |
+| Files         | 12 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,12 @@ Mirror of `Birfy/agentdescent` — 26 default patterns, 0 followed patterns, 2 f
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `CONTRIBUTING.md`
+- `LESSONS.md`
+- `CODE_STANDARDS.md`
+- `.github/pull_request_template.md`
+- `changelog.d/README.md`
+- `docs/porting-checklist.md`
 
 ## File Index
 
@@ -59,8 +64,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`agentdescent/integrations/SKILL.md`](agentdescent/integrations/SKILL.md) |
-| 2 | ✓ | [`integrations/claude-code/skills/agentdescent/SKILL.md`](integrations/claude-code/skills/agentdescent/SKILL.md) |
+| 1 | ✓ | [`.claude/skills/fix-issue/SKILL.md`](.claude/skills/fix-issue/SKILL.md) |
+| 2 | ✓ | [`.claude/skills/review-pr/SKILL.md`](.claude/skills/review-pr/SKILL.md) |
+| 3 | ✓ | [`agentdescent/integrations/SKILL.md`](agentdescent/integrations/SKILL.md) |
+| 4 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 5 | ✓ | [`docs/porting-methodpolicy.md`](docs/porting-methodpolicy.md) |
+| 6 | ✓ | [`integrations/claude-code/skills/agentdescent/SKILL.md`](integrations/claude-code/skills/agentdescent/SKILL.md) |
+| 7 | → | [`.github/pull_request_template.md`](.github/pull_request_template.md) |
+| 8 | → | [`changelog.d/README.md`](changelog.d/README.md) |
+| 9 | → | [`CODE_STANDARDS.md`](CODE_STANDARDS.md) |
+| 10 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 11 | → | [`docs/porting-checklist.md`](docs/porting-checklist.md) |
+| 12 | → | [`LESSONS.md`](LESSONS.md) |
 
 ---
 

@@ -98,7 +98,7 @@
 
 | 文档                                     | 说明                                            | 关联源码                   |
 | -------------------------------------- | --------------------------------------------- | ---------------------- |
-| [IM 渠道系统](architecture/integration/im-channel.md)  | 12 个渠道插件（Telegram/WeChat/Discord 等）、消息路由、媒体管道 | `channel/`             |
+| [IM 渠道系统](architecture/integration/im-channel.md)  | 13 个渠道插件（Telegram/WeChat/WeCom 等，WeCom 首版仅文本）、消息路由、媒体管道 | `channel/`             |
 | [ACP 协议](architecture/integration/acp.md)          | IDE 直连（NDJSON over stdio）、会话生命周期、事件映射         | `crates/ha-acp/` |
 | [斜杠命令](architecture/integration/slash-commands.md) | 6 类命令、双派发路径（UI/IM）、CommandAction 副作用          | `slash_defs/`, `slash_hooks.rs`, `slash_commands/` |
 | [MCP 客户端](architecture/integration/mcp.md)         | 四种 transport（stdio/HTTP/SSE/WebSocket）、OAuth 2.1+PKCE、Resources/Prompts、凭据 0600、SSRF 硬约束、Learning 埋点 | `crates/ha-mcp/`（kernel 面 `ha-core/src/mcp/`） |

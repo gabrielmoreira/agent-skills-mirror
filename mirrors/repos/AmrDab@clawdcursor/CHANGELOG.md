@@ -2,6 +2,56 @@
 
 All notable changes to Clawd Cursor will be documented in this file.
 
+## [1.5.19] - 2026-10-19 — typing never pastes the user's own clipboard
+
+### Security
+
+- **Typing never pastes the user's own clipboard.** `type` / `type_text` /
+  `smart_type` type by writing the text to the clipboard and pressing
+  Ctrl+V. On Windows the clipboard write is a fresh PowerShell with a 2 s
+  budget whose failures were ignored, so on a busy machine Ctrl+V pasted
+  whatever the user had copied — seen live: typing a URL + Enter into
+  Edge's address bar submitted the user's clipboard as a web search, twice.
+  Every paste path now reads the clipboard back first and pastes only when
+  it holds the text; otherwise it types the text key by key and says so.
+
+## [1.5.18] - 2026-10-19 — "Something else" on the pause prompt; copy_all_text without Ctrl+A; tool annotations
+
+### Added
+
+- **"Something else" on the pause prompt.** When the agent pauses for you
+  (blue glow), the prompt now has a third button between Resume and End
+  task: type an answer instead of doing the step — "use the test account
+  instead", a code, a change of plan — and press Enter. The agent continues
+  from what you wrote. The prompt takes the keyboard only after your click
+  on "Something else"; Esc goes back. Windows, macOS and Linux. Over MCP,
+  `pause_for_user` returns `{status:"replied", reply}`; `POST /resume`
+  accepts `{reply}`.
+- **MCP tool annotations** (title, read-only, destructive, idempotent,
+  open-world hints) on every tool — the 7 compound tools explicitly, the
+  granular ones derived from their safety tier.
+
+### Changed
+
+- **`window` and `system` describe every action**: when to use them rather
+  than the other tools, which parameters go with which action, what changes
+  the system (`close` can lose unsaved work and needs confirmation,
+  `relaunch_with_cdp` restarts the app, `clipboard_write` overwrites the
+  clipboard, `report` sends nothing) and what comes back. `accessibility`
+  documents its aliases and the shape of what `read_tree` / `find` return.
+- **Catalog size, measured:** the 7 compound tools are about 7,000 tokens of
+  `tools/list` (schemas included) and the granular surface about 20,000.
+  The README, site and skill said "~1,500 tokens, ~12× smaller".
+
+### Fixed
+
+- **`copy_all_text` no longer highlights the page (Windows).** It read
+  pages with Ctrl+A / Ctrl+C, so every page an agent read stayed selected.
+  It now reads the document's text through UI Automation (TextPattern, what
+  a screen reader reads): exact text, no keystrokes, nothing selected, the
+  clipboard untouched. Select-all remains only as the fallback where no
+  document can be read (and still never in an editor or a list, #249).
+
 ## [1.5.17] - 2026-10-18 — non-ASCII typing and pasting on macOS; copy_all_text never selects an editor
 
 ### Fixed

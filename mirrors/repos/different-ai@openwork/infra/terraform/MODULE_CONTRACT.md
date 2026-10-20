@@ -95,10 +95,10 @@ mock coverage alone does not certify an external database live.
 - Require `>= 1.11, < 2.0` and test Terraform and OpenTofu independently.
 - Stay on the common language/test subset: no tool-specific `enabled`, Actions,
   Stacks, or `override_during` options.
-- Declare provider minimums with pessimistic (`~>`) constraints. The direct AWS
-  module uses the tested 6.x line; the managed installer has a separate frozen
-  implementation and keeps its own provider pins. Do not configure providers or
-  backends inside reusable modules; those belong to the executable root.
+- Declare provider minimums with pessimistic (`~>`) constraints. The shared AWS
+  module uses the tested 6.x line; the managed executable root commits its own
+  exact provider lock. Do not configure providers or backends inside reusable
+  modules; those belong to the executable root.
 - Keep registry-specific dependency lock files only in executable examples/roots,
   with explicit instructions to select or regenerate the correct tool's lock.
   Do not combine registry namespaces or ship a reusable-module lock.
@@ -210,18 +210,16 @@ OAuth/protocol-handler handoff. Screenshots illustrate results, not decide them.
 - **Azure custom-domain certificate:** optional PFX material can be stored in
   state through the provider's certificate arguments. Protect state or manage
   certificates externally; core state-free credentials do not cover this path.
-- **AWS managed-installer boundary:** the installer uses a frozen pre-contract
-  module with its original AWS/random/archive pins. A TLS-only overlay
-  adds certificate verification/CA trust and the HTTP provider. Managed API/web
-  definitions use new retained addresses; CA-enabled services must settle before
-  strict secret promotion and a forced deployment. No bootstrap IAM widening or
-  deregistration is used; manual legacy RunTask remains outside the guarantee.
-  It is not certified by direct-module conformance. No migration lifecycle,
-  secret-mode or IAM adoption is included. The prior cross-major compatibility
-  exception is removed; the
-  direct module uses AWS `~> 6.69`. Future managed adoption needs supporting-file
-  packaging, migration IAM/log permissions and customer re-approval, a legacy
-  maintenance fence, and explicit update/version semantics.
+- **AWS managed-installer boundary:** the installer consumes the shared AWS 6.x
+  module but explicitly retains state-backed secrets for existing and fresh
+  managed installs. Its runner drains migration-capable legacy tasks, disables
+  legacy rollback, replans desired counts and verifies a completed forced strict
+  redeployment. CA definitions precede strict promotion, which precedes the native
+  single migration and application rollout. Bootstrap migration grants require
+  customer re-approval. Historical revisions are retained without deregistration;
+  manual legacy RunTask remains unsupported. Native synthetic state tests and
+  direct-module conformance are not a live managed version-increasing Update
+  receipt; see the managed installer README for the separate proof gate.
 - **AWS database TLS:** the tested RDS path verifies the certificate chain;
   separate MySQL hostname-identity enforcement is not claimed by that run.
 - **Database privileges:** automatic separate DDL/DML users remain a follow-up

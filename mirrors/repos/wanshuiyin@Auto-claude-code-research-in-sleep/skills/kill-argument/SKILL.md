@@ -2,10 +2,21 @@
 name: kill-argument
 description: "Two-thread adversarial review: a fresh reviewer constructs the strongest 200-word rejection memo, then a second fresh reviewer defends the paper point-by-point and surfaces still-unresolved critical issues. Use when user says \"kill argument\", \"adversarial review\", \"hostile review\", \"rebuttal preparation\", \"reviewer-2 simulation\", or before submitting a theory paper that has already passed standard review rounds."
 argument-hint: "[paper-directory]"
-allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, mcp__codex__codex
+allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, mcp__codex__codex, mcp__antigravity__antigravity, mcp__antigravity__antigravity-reply, mcp__grok__grok, mcp__grok__grok-reply, mcp__claude-review__review, mcp__claude-review__review_reply, mcp__claude-review__review_start, mcp__claude-review__review_reply_start, mcp__claude-review__review_status
 ---
 
 # Kill Argument Exercise: Adversarial Attack-Defense Review
+
+> **Before each reviewer slot**, follow [Selectable Reviewers](../shared-references/reviewer-backends.md):
+> resolve invocation → `.aris/reviewer.json` → Claude Code default (Codex MCP)
+> with `reviewer_route.py` through the canonical helper resolver, preserving this
+> slot's tier, fresh contexts, source/image inputs and deterministic gates.
+> Codex examples/pins below apply only to `backend=codex`; other routes use their
+> own first-call/reply contract. Save the route and actual returned identity;
+> unavailable selections are `REVIEW_UNAVAILABLE`. Classify acceptance from actual
+> families/completion/scope. Forward invocation reviewer/model/effort overrides
+> to reviewer-bearing children. Generation workers are unchanged.
+
 
 > 🔒 **Do not wrap this skill in `/loop`, `/schedule`, or `CronCreate`.** It is
 > verdict-bearing — it produces an adversarial accept/reject verdict (attack →
@@ -85,6 +96,8 @@ If a compiled PDF is missing, the skill should still run on .tex source alone, b
 ### Step 2: Attack memo (Thread 1, fresh codex)
 
 Invoke `mcp__codex__codex` (NOT `codex-reply`) with the following prompt structure:
+
+> Resolve this reviewer slot first; the following is the `backend=codex` example.
 
 ```
 mcp__codex__codex:
@@ -185,6 +198,8 @@ ids. The committed attack memo, not the six probes, is what Step 3 consumes.
 ### Step 3: Adjudication memo (Thread 2, fresh codex with attack + paper)
 
 Invoke a second `mcp__codex__codex` call (still NOT `codex-reply` — Thread 2 is independent of Thread 1's codex history):
+
+> Resolve this reviewer slot first; the following is the `backend=codex` example.
 
 ```
 mcp__codex__codex:

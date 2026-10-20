@@ -7,7 +7,7 @@ ref: canary
 
 # Mirror Manifest
 
-Mirror of `lobehub/lobehub` — 26 default patterns, 4 followed patterns, 475 file(s) materialized.
+Mirror of `lobehub/lobehub` — 26 default patterns, 4 followed patterns, 476 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `lobehub/lobehub` — 26 default patterns, 4 followed patterns, 475 fi
 | Ref           | `canary` |
 | Default pats  | 26 |
 | Followed pats | 4 |
-| Files         | 475 |
+| Files         | 476 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -524,19 +524,20 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 460 | ✓ | [`packages/file-loaders/README.md`](packages/file-loaders/README.md) |
 | 461 | ✓ | [`packages/file-loaders/README.zh-CN.md`](packages/file-loaders/README.zh-CN.md) |
 | 462 | ✓ | [`packages/heterogeneous-agents/src/codex/protocol/README.md`](packages/heterogeneous-agents/src/codex/protocol/README.md) |
-| 463 | ✓ | [`packages/memory-user-memory/benchmarks/locomo/README.md`](packages/memory-user-memory/benchmarks/locomo/README.md) |
-| 464 | ✓ | [`packages/model-runtime/CLAUDE.md`](packages/model-runtime/CLAUDE.md) |
-| 465 | ✓ | [`packages/prompts/README.md`](packages/prompts/README.md) |
-| 466 | ✓ | [`packages/replica/README.md`](packages/replica/README.md) |
-| 467 | ✓ | [`packages/sdk/README.md`](packages/sdk/README.md) |
-| 468 | ✓ | [`packages/secret-channel/README.md`](packages/secret-channel/README.md) |
-| 469 | ✓ | [`packages/web-crawler/README.md`](packages/web-crawler/README.md) |
-| 470 | ✓ | [`packages/web-crawler/README.zh-CN.md`](packages/web-crawler/README.zh-CN.md) |
-| 471 | ✓ | [`src/features/CommandMenu/README.md`](src/features/CommandMenu/README.md) |
-| 472 | → | [`DESIGN.dark.md`](DESIGN.dark.md) |
-| 473 | → | [`DESIGN.md`](DESIGN.md) |
-| 474 | → | [`README.md`](README.md) |
-| 475 | → | [`README.zh-CN.md`](README.zh-CN.md) |
+| 463 | ✓ | [`packages/i18n-extractor/README.md`](packages/i18n-extractor/README.md) |
+| 464 | ✓ | [`packages/memory-user-memory/benchmarks/locomo/README.md`](packages/memory-user-memory/benchmarks/locomo/README.md) |
+| 465 | ✓ | [`packages/model-runtime/CLAUDE.md`](packages/model-runtime/CLAUDE.md) |
+| 466 | ✓ | [`packages/prompts/README.md`](packages/prompts/README.md) |
+| 467 | ✓ | [`packages/replica/README.md`](packages/replica/README.md) |
+| 468 | ✓ | [`packages/sdk/README.md`](packages/sdk/README.md) |
+| 469 | ✓ | [`packages/secret-channel/README.md`](packages/secret-channel/README.md) |
+| 470 | ✓ | [`packages/web-crawler/README.md`](packages/web-crawler/README.md) |
+| 471 | ✓ | [`packages/web-crawler/README.zh-CN.md`](packages/web-crawler/README.zh-CN.md) |
+| 472 | ✓ | [`src/features/CommandMenu/README.md`](src/features/CommandMenu/README.md) |
+| 473 | → | [`DESIGN.dark.md`](DESIGN.dark.md) |
+| 474 | → | [`DESIGN.md`](DESIGN.md) |
+| 475 | → | [`README.md`](README.md) |
+| 476 | → | [`README.zh-CN.md`](README.zh-CN.md) |
 
 ---
 

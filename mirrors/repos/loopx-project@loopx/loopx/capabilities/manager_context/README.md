@@ -164,6 +164,20 @@ LoopX quota/heartbeat Turn-start path; arbitrary host Turns that do not invoke
 that path are outside this integration. Frontend/Lark conversations retain their
 existing request and return views; no new screen or setting is introduced.
 
+The local Inbox read transaction now lives in
+`loopx/control_plane/collaboration/inbox_read.ts`. It reuses the typed receipt,
+Goal-instance, request-revision and agenda owners inside one runtime request.
+The Turn hook remains read-only. CLI/MCP reads record the supplied requests and
+peer-return read receipts; they do not adopt requests or consume peer results.
+Python releases the initial Goal lifetime guard for provider enrichment.
+Core Todo and workspace inputs retain their actual IO adapters and provider
+fences. The Host reacquires the Goal guard before native finalization.
+Operation-ticket observations retain their existing provider. Complete large
+pages use the shared private snapshot transport. Existing return-display file
+IO remains in its Python adapter. Existing storage addresses, source records and public
+response shapes remain compatible. Normal runtime IPC, installed HTTP journeys
+and complete CLI performance require separate qualification.
+
 Read and record a decision through the installed CLI:
 
 ```sh

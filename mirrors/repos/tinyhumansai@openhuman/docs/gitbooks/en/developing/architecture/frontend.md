@@ -175,7 +175,6 @@ Authoritative list = the `reducer` map in `store/index.ts`. One-line purposes:
 | `mascot`              | Mascot appearance / voice selection                                               | `color`, `voiceId`, `customMascotGifUrl`, `selectedMascotId`    |
 | `notifications`       | Notification items + preferences                                                  | `items`, `preferences`                                          |
 | `persona`             | Cosmetic persona display name + description (SOUL.md lives in the core)           | `displayName`, `description`                                    |
-| `ptt`                 | Push-to-talk hotkey + session prefs (`isHeld` deliberately excluded)              | `shortcut`, `speakReplies`, `showOverlay`                        |
 | `queue`               | The core's per-thread run queue plus the composer's pending follow-up messages    | no (in-memory only)                                              |
 | `runMode`             | Per-thread plan/build run mode                                                    | no (in-memory only)                                              |
 | `socket`              | Per-user socket connection status / socket ids                                    | no (reconnects on boot)                                          |
@@ -488,7 +487,6 @@ The application uses HashRouter with protected and public route guards. Desktop 
 | `/invites` | `Invites` | `ProtectedRoute` |
 | `/notifications` | `Notifications` | `ProtectedRoute` |
 | `/settings/*` | `Settings` | `ProtectedRoute` |
-| `/ptt-overlay` | `PttOverlayPage`, the push-to-talk overlay window | none |
 | `/dev/agent-insights` | `AgentInsightsPreview` | dev only |
 | `/dev/ui` | `UiGallery`, every shared UI primitive in the active theme | dev only |
 | `/dev/tools` | `ToolCallGallery`, every tool-call state and the whole core catalog | dev only |
@@ -619,7 +617,6 @@ Conventions:
 - `useBackendUrl` resolves the backend URL at runtime (see [Runtime config precedence](#runtime-config-precedence)).
 - `useThreadQueries` fetches chat threads.
 - `useDaemonHealth` / `useDaemonLifecycle` track core service health.
-- `useDictationHotkey` / `usePttHotkey` manage global hotkeys.
 - `useDeveloperMode`, `useMediaQuery`, `useEscapeKey` are general UI utilities.
 - Feature hooks: `useFlowRunProgress`, `useWorkflowBuilderChat`, `useConsciousItems`, `useIntelligenceStats`, `useCostDashboard`, ….
 
@@ -666,7 +663,7 @@ Typed wrappers around `invoke(...)`, including the bridge-gap-aware `isTauri()` 
 
 ### Polyfills (`polyfills.ts`)
 
-Node.js globals (`Buffer`, `process`, `util`) are polyfilled for the browser. Several browser-side modules use Node APIs, including voice/PTT audio encoding (`features/voice/pttAudio.ts`, `wavEncoder.ts`), mascot Rive asset caching (`features/human/Mascot/`), and tool-timeline formatting.
+Node.js globals (`Buffer`, `process`, `util`) are polyfilled for the browser. Several browser-side modules use Node APIs, including voice audio encoding (`features/human/voice/wavEncoder.ts`), mascot Rive asset caching (`features/human/Mascot/`), and tool-timeline formatting.
 
 Two layers provide them:
 

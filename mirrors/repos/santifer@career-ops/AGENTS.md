@@ -87,7 +87,7 @@ If `{"status": "update-available", "local": ..., "remote": ..., "changelog": ...
 
 > "career-ops update available (v{local} → v{remote}). Your data (CV, profile, tracker, reports) will NOT be touched. Want me to update?"
 
-If yes → `node update-system.mjs apply --confirm`. If no → `node update-system.mjs dismiss --version {remote}`: that quiets v{remote} only, and a newer release asks again. Every other status (`up-to-date`, `dismissed`, `offline`, `no-remote-version`, `worktree-without-main`) → say nothing. The user can check anytime, even after saying no ("check for updates" / "update career-ops") → `node update-system.mjs check --force`. To follow every merge on `main` instead of releases: `node update-system.mjs apply --channel main --confirm`. Rollback: `node update-system.mjs rollback`. From a linked git worktree, all of these run in the checkout that has `main` checked out, so the update lands on `main`; afterwards suggest `git merge main` in the worktree.
+If yes → `node update-system.mjs apply --confirm`. If no → `node update-system.mjs dismiss --version {remote}`: that quiets v{remote} only, and a newer release asks again. Every other status (`up-to-date`, `dismissed`, `offline`, `no-remote-version`, `worktree-without-main`) → say nothing. In an unattended run (`modes/_shared.md` → **Unattended runs**), say nothing about any update and apply none. The user can check anytime, even after saying no ("check for updates" / "update career-ops") → `node update-system.mjs check --force`. To follow every merge on `main` instead of releases: `node update-system.mjs apply --channel main --confirm`. Rollback: `node update-system.mjs rollback`. From a linked git worktree, all of these run in the checkout that has `main` checked out, so the update lands on `main`; afterwards suggest `git merge main` in the worktree.
 
 ## What is career-ops
 
@@ -260,6 +260,25 @@ If `portals.yml` is missing:
 
 Copy `templates/portals.example.yml` → `portals.yml`; if they gave target roles in Step 2, update `title_filter.positive`.
 
+Then tighten the filters to what they said, so the first scan does not fill the pipeline with roles they ruled out:
+
+- **Location.** When they name only countries ("remote in the US", "anywhere in Canada"), list those countries under both `always_allow` and `allow`. `allow` turns the filter into an allow-list, so a city you did not think to block (Paris, Manila) is dropped. A `block` list alone drops only the places it names. For the United States, `always_allow` also admits "City, ST" locations. For other countries, add the main cities too, since a posting may name only the city. When they name cities, list the cities under `allow` and leave country names out of `always_allow`, since a country there admits every city in it. Leave "Remote" out of `allow`, since it would admit remote roles in any country.
+- **Posting age.** Set `max_posting_age_days: 45` unless they ask for older postings. Tell them it also hides long-open roles on a company's own board.
+- **Excluded titles.** Add their exclusions to `title_filter.negative`. Never replace the list. Replacing it drops the template's junior, intern and German student entries (Werkstudent, Praktikant).
+
+For "remote or hybrid in the US", the result looks like this:
+
+```yaml
+location_filter:
+  always_allow:
+    - "United States"
+    - "USA"
+  allow:
+    - "United States"
+    - "USA"
+max_posting_age_days: 45
+```
+
 #### Step 4: Tracker
 If `data/applications.md` doesn't exist, create it:
 ```markdown
@@ -286,7 +305,13 @@ Store insights in `config/profile.yml` (narrative), `modes/_profile.md`, or `art
 **After every evaluation, learn.** "This score is too high" or "you missed my experience in X" → update `modes/_profile.md`, `config/profile.yml`, or `article-digest.md`. The system gets smarter with every interaction without putting personalization into system-layer files.
 
 #### Step 6: Ready
-Once all files exist, confirm:
+Once all files exist, record the agent CLI you are running in, so `doctor.mjs`, `rank-pipeline.mjs` and the web UI use it instead of guessing:
+
+```bash
+node remember-cli.mjs <cli>   # claude, codex, opencode, gemini, grok, ...
+```
+
+It writes `CAREER_OPS_CLI=<cli>` to the data root's `.env` and keeps every other line. Skip it if the user already set `CAREER_OPS_CLI`. Then confirm:
 > "You're all set! You can now:
 > - Paste a job URL to evaluate it
 > - Run the scan entrypoint for your CLI to search portals: `/career-ops scan`, `/career-ops-scan`, or ask Codex to run `scan`
@@ -449,6 +474,17 @@ A single-string `modes_dir` (today's default, ~90% of users) behaves exactly as 
 
 ---
 
+## Apply scope
+
+Apply reads and searches only this checkout, plus the data root when `CAREER_OPS_ROOT` or `CAREER_OPS_DATA_DIR` is set. Run `node apply-scope.mjs root` and use only the directories it prints.
+
+- Do not search `$HOME`. Do not grep or open another career-ops install.
+- Open forms in a Playwright browser this project launches. Run `node apply-scope.mjs launch-options` and pass that object to `chromium.launch`. Do not call `chromium.connect` or `connectOverCDP`. Do not read `DevToolsActivePort`. Do not pass a remote-debugging port or a Chrome user-data directory.
+- If Playwright is unavailable, ask the candidate to paste the questions or share a screenshot.
+- Do not submit the form. Ethical Use still holds. Stop before Submit, Send, or Apply until the candidate confirms they submitted it.
+
+---
+
 ## Offer Verification -- MANDATORY
 
 **NEVER decide whether an offer is active from a bare WebSearch/WebFetch snippet.** Start with `node check-liveness.mjs <url>`: it checks free public ATS APIs first, then falls back to Playwright only when the API returns `null`. A non-null `uncertain` result does not trigger Playwright; it remains unconfirmed.
@@ -528,8 +564,8 @@ Headless worker command per CLI:
 
 | Writer | Filename |
 |--------|----------|
-| `archive-posting.mjs` | `{YYYY-MM-DD}_{company}_{role}.pdf` |
-| `archive-posting.mjs --report=N` | `{NNN}-{YYYY-MM-DD}_{company}_{role}.pdf` |
+| `archive-posting.mjs` | `{YYYY-MM-DD}_{company}_{role}_{sha256(url)[0:16]}.pdf` (then `-2`, `-3`, etc. before `.pdf` on collision) |
+| `archive-posting.mjs --report=N` | `{NNN}-{YYYY-MM-DD}_{company}_{role}_{sha256(url)[0:16]}.pdf` (same collision suffix) |
 | `plugins/apify/index.mjs` | `{company}-{role}-{sha1(url)[0:10]}.md` |
 | `scan` mode (manual save) | `{company}-{role-slug}.md` |
 

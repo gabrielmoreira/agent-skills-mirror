@@ -195,6 +195,17 @@ earlier read or captured alias. Unproved ordering across branches or function
 activations remains conservative. Returned-reference effects use the same
 read-position facts as call resolution.
 
+Returned-reference effects share one property-projection state per source read.
+When several paths reach that read, differing keys at the same depth become
+wildcards; differing depths become an unknown-depth selection. This retains a
+conservative superset of the represented local targets rather than enumerating
+every alias history or dropping paths at a query cap. It can add possible effects,
+including for finite projection cycles. Static limitations disclose this loss of
+precision; semantic graphs retain `dynamic-property` unknowns at the affected
+callee coordinates, and captured web bundles identify the affected script keys.
+These candidates do not prove runtime calls or mutations. Existing source-worker
+and result-admission limits still apply.
+
 Mutation tracking covers explicit member assignments, updates, deletion, and
 loop assignment targets, including the supported local aliases and shared
 nested references. Calls conservatively invalidate exposed mutable references;

@@ -2,10 +2,21 @@
 name: patent-novelty-check
 description: "Assess patent novelty and non-obviousness against prior art. Use when user says \"专利查新\", \"patent novelty\", \"可专利性评估\", \"patentability check\", or wants to evaluate if an invention is patentable."
 argument-hint: "[invention-description-or-brief-path]"
-allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, WebSearch, WebFetch, mcp__codex__codex
+allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, WebSearch, WebFetch, mcp__codex__codex, mcp__antigravity__antigravity, mcp__antigravity__antigravity-reply, mcp__grok__grok, mcp__grok__grok-reply, mcp__claude-review__review, mcp__claude-review__review_reply, mcp__claude-review__review_start, mcp__claude-review__review_reply_start, mcp__claude-review__review_status
 ---
 
 # Patent Novelty and Non-Obviousness Check
+
+> **Before each reviewer slot**, follow [Selectable Reviewers](../shared-references/reviewer-backends.md):
+> resolve invocation → `.aris/reviewer.json` → Claude Code default (Codex MCP)
+> with `reviewer_route.py` through the canonical helper resolver, preserving this
+> slot's tier, fresh contexts, source/image inputs and deterministic gates.
+> Codex examples/pins below apply only to `backend=codex`; other routes use their
+> own first-call/reply contract. Save the route and actual returned identity;
+> unavailable selections are `REVIEW_UNAVAILABLE`. Classify acceptance from actual
+> families/completion/scope. Forward invocation reviewer/model/effort overrides
+> to reviewer-bearing children. Generation workers are unchanged.
+
 
 Assess patentability of: **$ARGUMENTS**
 
@@ -77,6 +88,8 @@ Format as a matrix:
 ### Step 4: Cross-Model Examiner Verification
 
 Call `REVIEWER_MODEL` via `mcp__codex__codex` with xhigh reasoning:
+
+> Resolve this reviewer slot first; the following is the `backend=codex` example.
 
 ```
 mcp__codex__codex:
@@ -150,4 +163,4 @@ Write `patent/NOVELTY_ASSESSMENT.md`:
 - Obviousness requires BOTH: (1) a combination of references AND (2) a motivation to combine them.
 - Never assume the invention is patentable just because no identical patent exists.
 - The assessment is advisory only -- actual prosecution may reveal different prior art.
-- If `mcp__codex__codex` is not available, skip cross-model examiner review and note it in the output.
+- If the selected reviewer is unavailable, record `REVIEW_UNAVAILABLE`; continue only as an explicitly unreviewed draft, without switching providers.

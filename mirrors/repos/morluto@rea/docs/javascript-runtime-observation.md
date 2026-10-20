@@ -152,6 +152,15 @@ and uncollected scripts, but scripts collected before attachment may be
 missing. Absence from the observation window never proves that a script or
 behavior does not occur.
 
+Cancellation stops new target-file authorization after the current filesystem
+operation settles. Cancellation diagnostics retain the examined target prefix;
+unexamined targets remain unknown. Observation cancellation keeps its original
+reason and any completed Evidence. Finalization waits for REA's bounded socket
+close (up to two seconds for graceful and forced confirmation). A failed close
+retains its exact transport owner and blocks replacement connections until
+cleanup succeeds; CLI finalization and MCP shutdown also retry retained cleanup.
+Closing REA's connection does not stop the caller-owned runtime.
+
 ## Static correlation
 
 Pass the resulting observation Evidence and an

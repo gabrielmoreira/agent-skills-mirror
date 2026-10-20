@@ -1,0 +1,313 @@
+# The zero-token direction
+
+**Zero-token** is the name for work XERJ does locally, inside the engine, so
+that a person or an agent spends no model tokens *finding*, *judging*,
+*watching for* or *handing over* an answer. Plain search already works that
+way: no model runs to answer a query, and nothing leaves the machine.
+
+This page is the long form of the *zero-token direction* section in
+[ROADMAP.md](../ROADMAP.md). The roadmap is authoritative for status; this page
+holds the reasoning, the measured baseline and the design constraints. It is a
+plan and a status report, **not a feature list** — each section says what
+exists today and what does not, first.
+
+Every "today" statement below was checked against `main` on 2026-09-18
+(`4d8dadbf`, 32 commits after `v1.0.0-rc.74`) by reading the file named beside
+it, and the status lines changed since were re-verified on 2026-09-26 against
+the releases and issues they name. The baseline numbers come from runs whose harness and
+literal output are in
+[`benchmarks/neural-path-triage/`](../benchmarks/neural-path-triage/); the
+rerank and ingest numbers added later name their own sources beside them.
+
+## Status at a glance
+
+| Item | On `main` today | State |
+|---|---|---|
+| Judged search (rerank stage) | the opt-in `rerank` block on `_search`, provider-key gated, on top of ES `rescore` and the `hybrid` query type | on `main` since v1.0.0-rc.75 |
+| Share links, guest reading room | `xerj share`: scoped, expiring links and a guest reading room over one index | on `main` since v1.0.0-rc.75 |
+| Mail ingest | `.eml` / MIME extraction and streaming `mbox` / extracted Google Takeout ingest with reply edges, in `xerj autoindex` | shipped in v1.0.0-rc.75; the ingest-memory limit ([#948](https://github.com/xerj-org/xerj/issues/948)) fixed in v1.0.0-rc.76 by PR [#1002](https://github.com/xerj-org/xerj/pull/1002); residual per-segment caches tracked in [#1032](https://github.com/xerj-org/xerj/issues/1032) |
+| `autoindex` resilience | a refused dataset is skipped and reported instead of aborting the run, an over-size catalog is split, a throttling node is waited out for 600 s, and `--fresh` adopts old state | fixed in v1.0.0-rc.75 ([#934](https://github.com/xerj-org/xerj/pull/934), closing [#929](https://github.com/xerj-org/xerj/issues/929), [#930](https://github.com/xerj-org/xerj/issues/930) and [#931](https://github.com/xerj-org/xerj/issues/931)) |
+| Semantic detections | `percolate` works; `_watcher` stores and never evaluates; alert rules have schemas and no evaluator | planned |
+| Object-storage backend | `storage.backend = "s3"` puts the index in the bucket: one immutable ZBM1 bundle object per segment family, `snapshot.json` as the publication point, a fresh node adopts the bucket | shipped in v1.0.0-rc.77 ([#965](https://github.com/xerj-org/xerj/issues/965) closed by PR [#1008](https://github.com/xerj-org/xerj/pull/1008)) |
+| Block index mode for logs | `xerj-logs` crate is compiled in and called from no non-test code | planned |
+| User-code ingest plugins | built-in native plugins run; no wasmtime backend in the tree | planned |
+| Corpus hub (signed packs) | nothing | planned |
+
+"In flight" means a pushed branch exists and nothing of it is on `main`.
+"Planned" means no code exists.
+
+## 1. Judged search
+
+Retrieval answers "which documents mention this". Judged search adds a second
+stage that answers "which of these actually answer it", over the top *N* only.
+
+**Today.** The ES `rescore` block (a query rescorer), the `hybrid` query
+type with `rrf` or `linear` fusion, and — on `main` since v1.0.0-rc.75 — a
+`rerank` block on `_search` that hands the top hits to an external relevance
+judge: opt-in per request and inert until an operator configures a provider
+key. Its quality is measured, not assumed: this project's own integration
+defect was found and fixed (SciFact pilot 0.3822 → 0.8299), and the full run
+scored 0.7410 SciFact / 0.3312 NFCorpus / 0.3638 FiQA over 1,271 judged
+queries, the TypeSafe/Jev reranker ranked off a XERJ node — the runs are
+published in
+[`benchmarks/beir-hybrid/results/2026-09-20-rerank-pilot`](../benchmarks/beir-hybrid/results/2026-09-20-rerank-pilot)
+and
+[`-rerank-full`](../benchmarks/beir-hybrid/results/2026-09-20-rerank-full).
+It is the only *search-time*
+feature that sends document text off the node, not the only feature that does:
+proxy embeddings (`[embedding] default_endpoint`) and the WAL tap send text off
+the node too, and all three are off by default. `docs/RERANK.md` lists every
+outbound connection a node can open, and `xerj-rerank/tests/egress_inventory.rs`
+holds that list against the engine's outbound clients. That a query-time stage
+sends the text of whatever a query matched is exactly why a *local* judge is on
+this list.
+
+**The bar a local model has to clear.** Before building one we measured what
+already ships. BEIR test splits, `--embed-mode neural` (all-MiniLM-L6-v2, CPU),
+nDCG@10:
+
+| Arm | SciFact (300 queries, 5,183 docs) | NFCorpus (323 queries, 3,633 docs) |
+|---|---|---|
+| BM25 (`multi_match` over `title`, `text`) | 0.657 | 0.302 |
+| MiniLM vectors only (`semantic`) | 0.676 | 0.329 |
+| BM25 top-30 re-ordered by the same bi-encoder | 0.686 | 0.332 |
+| **`hybrid`, RRF, server-side** | **0.699–0.704** (three runs) | **0.345** |
+
+Two conclusions. Re-ordering a BM25 shortlist with the embedder XERJ already
+ships is *worse* than the hybrid query XERJ already ships, on both corpora, so
+that is not worth building. And **a local cross-encoder ships only if it beats
+0.699 / 0.345 on this harness** by more than the run-to-run spread described
+below; if it does not, it does not ship.
+
+Read these numbers with their limits. They are with the opt-in neural
+embedder; the **default embedder is lexical feature hashing** and was not part
+of this run. They are two small public corpora on one machine. At the time of these runs
+the hybrid figure moved between runs of unchanged indices — 0.6993, 0.7023 and
+0.7044 on SciFact; 0.3448, 0.3446 and 0.3450 on NFCorpus — because documents
+with an equal fused score were ordered by a per-process hash seed. That was a
+bug with its own issue,
+[#940](https://github.com/xerj-org/xerj/issues/940), closed 2026-09-21. The
+other three arms reproduce to four decimals every time.
+
+On NFCorpus, BM25 returns no hits at all for 25 of the 323 queries. That is
+legitimate: in all 25, no query token occurs in any document (18 absent terms
+such as `Zoloft`, 7 plurals whose singular is present, such as `bagels`). The
+`standard` analyzer does not stem. The defect found there is a different one —
+see *What the measuring found* below.
+
+## 2. Share links and a guest reading room
+
+Hand one person a link to one corpus or one document, read-only, without
+creating them an account.
+
+**Today.** Shipped, in v1.0.0-rc.75. `xerj share` hands out scoped,
+expiring links — a link, a passcode and an expiry — and a guest reading room
+serves them: read-only search, highlighted snippets and a document view over
+the one shared index and nothing else on the node. Every statement the feature
+makes is pinned to the code and the tests that make it true in
+[SHARING.md](SHARING.md). Reading anything else on the node still needs an
+account session or an API key.
+
+Design constraints that are not negotiable: a link grants read access to the
+named scope and nothing else; it expires; it can be revoked; opening one is
+audited; and a guest never receives a credential that works anywhere else.
+
+## 3. Mail ingest
+
+**Today, shipped in v1.0.0-rc.75.** `xerj autoindex` parses `.eml` / MIME
+messages: one record for the message with decoded header fields and the
+plain-text body, and separate records per attachment linked back to the parent
+message — a PDF attachment goes through the PDF extractor
+(`engine/crates/xerj-autoindex/src/extract/eml.rs`).
+
+**Since [#949](https://github.com/xerj-org/xerj/pull/949), in the same
+release.** Streaming `mbox` (Takeout, Thunderbird,
+Apple Mail, mutt), extracted Google Takeout exports — archives are never
+opened; the run names each one with the command to extract it — and the
+`email-thread@1` detector's `replies_to` / `attachment_of` edges. Measured on
+synthetic mailboxes (`benchmarks/mbox-ingest/README.md`). The ingest-memory
+runaway that was [#948](https://github.com/xerj-org/xerj/issues/948) is
+fixed: since v1.0.0-rc.76 and PR
+[#1002](https://github.com/xerj-org/xerj/pull/1002), a 1 GB synthetic mailbox
+completes under the node's default 16 GiB cap in 407.7 s, and a 300 MB
+mailbox fits an 8 GiB cap at 7,963.6 MiB. What remains is
+[#1032](https://github.com/xerj-org/xerj/issues/1032) (filed 2026-09-26):
+three per-segment caches (`stored_value_cache`, `dv_cache`, `id_pos_cache`)
+stay unbounded until a merge retires their segment — the fixed 1 GB run's
+peak is still 21,405.3 MiB, 1.3× that run's 16 GiB cap, per #1002's own
+close-out.
+
+## 4. Semantic detections
+
+A standing question asked of every incoming document, in three stages:
+
+1. **Prefilter** — a `percolate` query selects the few stored detections a
+   document could possibly match. Cheap, lexical, no model.
+2. **Typed judgment** — for the survivors only, a judge returns one of a small
+   closed set of outcomes. Not free text.
+3. **Alert with a calibrated probability** — *calibrated* means measured on
+   held-out labelled data and published with its reliability curve. An
+   uncalibrated score is not shipped as a probability.
+
+**Today.** Stage 1 is real: `percolate` is a dispatched query type and matches
+stored queries against a supplied document. Stages 2 and 3 do not exist, and
+**XERJ has no alerting**:
+
+- `PUT /_watcher/watch/{id}` stores the body in an in-memory map and answers
+  `"condition": {"met": true, "type": "always"}`. `GET` and `DELETE` work on
+  that map. No scheduler exists and no watch is ever evaluated
+  (`engine/crates/xerj-api/src/es_compat.rs`, `put_watch`; nothing else reads
+  `engine.watches`).
+- The console owns `.xerj_alert_rules` and `.xerj_alert_fires`. Both have
+  schemas and are created at bootstrap
+  (`engine/crates/xerj-console-api/src/indices.rs`). No evaluator reads the
+  first or writes the second.
+
+So the first piece of work here is not new: `_watcher` must either run watches
+or refuse them. Today it is an accepted-and-ignored surface.
+
+## 5. A real object-storage backend
+
+**Today.** The client is real. `engine/crates/xerj-storage/src/s3.rs`
+implements `StorageBackend` over `aws-sdk-s3`: ranged `GetObject`,
+`PutObject`, paginated `ListObjectsV2`, `HeadObject`, `DeleteObject`, with an
+endpoint override so one type covers Cloudflare R2, MinIO and AWS S3. It is
+tested against both MinIO and R2, and it counts every billed request by class
+so an operator can see what it spends. `SegmentCache` serves byte ranges
+through it with a bounded local cache. The old local-directory simulation is
+kept as `SimulatedObjectStore`, a test double, because unit tests want a
+backend with no network and no cost.
+
+**Wired since v1.0.0-rc.77, and the on-purpose refusal is gone.**
+[#965](https://github.com/xerj-org/xerj/issues/965) was closed by PR
+[#1008](https://github.com/xerj-org/xerj/pull/1008) on 2026-09-21: an index
+can live in a bucket. A segment family publishes as **one immutable ZBM1
+bundle object** — not one PUT per file, which on a real 25-field segment
+means 104 — and `snapshot.json` is the publication point, so a fresh node
+pointed at the bucket adopts it instead of seeing zero segments. Merges
+publish the bundle before retiring their inputs. The only startup error left
+is `storage.backend = "s3" requires storage.s3_bucket to name a bucket`
+(`engine/crates/xerj-common/src/config.rs`). One object per segment family
+rather than 104 PUTs is also the cost story: the free-tier arithmetic in
+[docs/OBJECT_STORAGE.md](OBJECT_STORAGE.md) puts those two shapes at 9% and
+899% of Cloudflare R2's monthly Class A allowance.
+
+## 6. A block index mode for logs
+
+An index mode for log-shaped data: rows live in time-partitioned columnar
+blocks, and a query skips whole blocks using their min/max metadata, instead
+of building a per-term inverted index over every field.
+
+**Today.** The `xerj-logs` crate implements that design — columnar encoding,
+log-template extraction, time-range queries with block skipping, retention. It
+is compiled into `xerj-engine` and `xerj-server` as a dependency and **called
+from no non-test code**. Log-shaped analytics run through the general columnar
+segment format and the aggregation suite.
+
+**Planned.** Wire it behind an explicit index setting, measured against the
+general path on the same data, or remove the crate.
+
+## 7. User-code ingest plugins
+
+**Today.** Ingest-pipeline transforms are built-in native Rust plugins —
+rename, drop, add, JSON parse, timestamp parse, PII redaction, grok, route —
+and they do run on `_bulk`. The crate is called `xerj-wasm`, but **the wasmtime
+backend is not in the tree**: `engine/crates/xerj-wasm/Cargo.toml` has no
+`wasmtime` dependency and no `wasm` feature; `lib.rs` only notes that one could
+be added behind the same trait. A pipeline naming a processor this build does
+not implement is stored as unrunnable, and every ingest through it is refused
+— it is never quietly run as a shorter pipeline.
+
+**Planned.** A sandboxed runtime for user-supplied transforms: fuel and memory
+limits per document, no ambient filesystem or network access, and the same
+refuse-loudly rule when a module cannot be loaded.
+
+## 8. A corpus hub of signed, pre-indexed packs
+
+Download a reference corpus — a standard library, a specification set —
+already indexed, and mount it, instead of every user spending the same CPU
+hours indexing the same public text.
+
+**Today.** Nothing. No pack code exists.
+
+**The pack format is the design work.** A pack is a directory or archive with
+a manifest carrying:
+
+- a **format version**. A reader that does not know the version refuses the
+  pack. Segment headers already follow this rule
+  (`engine/crates/xerj-storage/src/segment.rs`: a header whose `format_version`
+  is not the reader's returns `StorageError::UnsupportedVersion`).
+- **per-file checksums** for every file in the pack.
+- a **detached signature** over the manifest, which in turn covers the
+  checksums.
+- **licence and provenance on every record**: where the text came from, at
+  which revision, under which licence — so a hit can say so.
+
+**Three risks decide whether this ships at all.**
+
+- **Redistribution licence.** An index is a derived copy of its source text. A
+  pack may carry only what its licence lets the project redistribute, and that
+  excludes much of what people most want pre-indexed.
+- **Pack safety.** A pack is untrusted input to the segment readers. It needs
+  the fuzzing the on-disk formats get. A signature proves who built a pack; it
+  does not prove the pack is safe to open.
+- **Format stability.** A published pack outlives the release that built it.
+  The pack format therefore needs a compatibility promise that the internal
+  segment format has never had to make.
+
+## What the measuring found
+
+Measuring the baseline for section 1 turned up four defects. Each is a filed
+issue with a literal reproduction; the harness and the raw output are in
+[`benchmarks/neural-path-triage/`](../benchmarks/neural-path-triage/). Stage 1
+as a whole is tracked in [#941](https://github.com/xerj-org/xerj/issues/941).
+All four are closed: [#937](https://github.com/xerj-org/xerj/issues/937),
+[#938](https://github.com/xerj-org/xerj/issues/938) and
+[#939](https://github.com/xerj-org/xerj/issues/939) were fixed before the
+v1.0.0-rc.77 tag (2026-09-21) by PRs
+[#991](https://github.com/xerj-org/xerj/pull/991),
+[#995](https://github.com/xerj-org/xerj/pull/995) and
+[#979](https://github.com/xerj-org/xerj/pull/979) respectively, and
+[#940](https://github.com/xerj-org/xerj/issues/940) was closed 2026-09-21.
+The descriptions below are the defects as found and measured.
+
+- **A declared analyzer stops applying at flush**
+  ([#937](https://github.com/xerj-org/xerj/issues/937)). A default analyzer declared
+  in `settings.analysis` is honoured by the in-memory table only; after a
+  flush the segment is written and queried with `standard`, so the same
+  `match` query returns a different hit set. A per-field `analyzer` in the
+  mapping is accepted, echoed back and ignored, and an unknown analyzer name
+  is accepted. At the time, this is why stemming could not be turned on. Fixed
+  by PR [#991](https://github.com/xerj-org/xerj/pull/991): the declared
+  default analyzer is honoured at flush, at segment query and at merge, and
+  stemming can be turned on. As of #1059 `xerj autoindex` turns it on by
+  default: every dataset index it CREATES for profiler-marked semantic prose
+  (the measured `word_ratio`/`mean_tokens` election) declares the built-in
+  Snowball `stemmer` analyzer as `analysis.analyzer.default`; indexes created
+  by earlier builds are untouched.
+- **Neural ingest leaves the machine idle**
+  ([#938](https://github.com/xerj-org/xerj/issues/938)). One `_bulk` stream into a
+  `semantic_text` field runs at 6.1 documents per second on ~1,470-character
+  abstracts while the server keeps 3.4 of 32 hardware threads busy. The same
+  node reaches 29.5 documents per second when eight clients send concurrently,
+  for the same total CPU. Fixed by PR
+  [#995](https://github.com/xerj-org/xerj/pull/995): bounded window
+  concurrency for neural `_bulk` embedding.
+- **A `semantic` query over multi-passage documents is an exact scan that
+  copies every stored document**
+  ([#939](https://github.com/xerj-org/xerj/issues/939)). ~410 ms p50 on 5,183 documents, of which the
+  model's forward pass is ~14 ms. The same query on a 10,003-document index of
+  one-sentence documents is ~14 ms in total. Fixed by PR
+  [#979](https://github.com/xerj-org/xerj/pull/979): the exact scan ranks
+  addresses and hydrates only the winners — the `vector_column.rs` header
+  records the cost below as one it "used to" pay.
+- **Tied RRF scores are ordered by a per-process hash seed**
+  ([#940](https://github.com/xerj-org/xerj/issues/940)). After a restart
+  on unchanged data, 32 of 40 SciFact queries returned a different order and
+  21 of 40 a different top 10, with identical hit sets. Closed 2026-09-21.
+
+All four were measured on a shared 32-thread machine under load from other
+jobs. The proportions are the finding; the absolute milliseconds are
+conservative.
+
+XERJ is single-node. Every figure on this page is one process on one host.

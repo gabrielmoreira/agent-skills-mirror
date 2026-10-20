@@ -22,9 +22,10 @@ WebBrain separates **model tier** from **conversation mode**.
 Tier defaults and resolution rules are documented in
 [providers and models](providers-and-models.md#prompttool-tiers-and-modes).
 
-In **lean mode** (Settings → General → Lean mode), an Act run gets 17 of these
+In **lean mode** (Settings → Advanced → Lean mode), an Act run gets 17 of these
 tools instead of its tier's set, with the same schemas, and a short prompt; see
-[lean mode](lean-mode.md).
+[lean mode](lean-mode.md). On WhatsApp Web and Telegram Web it also gets
+`chat_observe` and `chat_send`, which the recipient guard there relies on.
 
 ## Accessibility read budgets
 
@@ -198,7 +199,7 @@ loaded. See [skills](skills.md).
 
 **WebMCP (experimental, on by default).** The `list_webmcp_tools` /
 `execute_webmcp_tool` rows apply when **Experimental WebMCP** is enabled
-under Settings → General → Advanced. The setting is on by default; while off,
+under Settings → Bridge. The setting is on by default; while off,
 the tools and their prompt guidance are omitted from model requests. WebMCP
 annotations such as `readOnly` are page-authored hints, not a security boundary.
 Every invocation requires Act or Dev, fresh per-call confirmation, and the

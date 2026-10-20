@@ -25,11 +25,11 @@
 Context的9个既有集合是`gongfa`、`faqi`、`getting-started`、`prompts`、`research`、`external-resources`、`ai-citation`、`metadata`、`assets`。
 当前2个自有Skill和现有Extensions清单分别在其README，不另建工具注册层；16个官方引用入口已按用户要求移除。
 用户点名的chat-vault、my-nvim、codex-config、MCPlayerTransfer、XHS-image-to-PDF-conversion、两个xhs图文HTML及html-tools-main说明已移除；当前入口和绑定清理，旧来源/初审/排除保留，历史链接不是安装授权。
-Lambda演算已按用户要求加入功法，品级天级上品（现行`tian-advanced`），总表、文集及首页学习入口均紧随拼好码；不新增解释器或执行器。
+Lambda演算已按用户要求加入功法，品级天级上品（现行`tian-advanced`），总表及首页学习入口列在拼好码之前；冻结原文与既有评级不变，不新增解释器或执行器。
 
 ## 原始数据与来源
 
-- 功法、法器各只有`data.json`原始资料源和生成的`README.md`。不能手改生成视图、增加第二本登记或恢复旧目录兼容壳。
+- 功法、法器各以`data.json`为唯一原始资料源；生成轻量`README.md`导航页和天、地、玄、黄四阶Markdown正文。`data.json.explanations_v0`按对象身份保存v0的15项说明并绑定模板SHA；分阶正文中每个对象仍独立使用严格三列表格。无明确品级的功法留在黄阶文档的“暂不可判”附录且不归黄阶。不能手改生成视图、增加第二本登记或恢复旧目录兼容壳。
 - `documents`保存原始字节、模式、SHA及历史路径身份；二进制显式Base64。解析结果是派生数据，不与原文双写。
 - `locations`及`live_sources`分别记录当前位置和当前实现摘要，不替代原SHA、固定选区、历史意见或源码初审，不提升许可、运行、独立审查和效果状态。
 - 功法ID、版本、候选、原初评、十二级词表和正式评级分开；法器原实现、运行观察、依赖类别、外部资源与9项排除不相加或自动合并。
@@ -73,7 +73,7 @@ Lambda演算已按用户要求加入功法，品级天级上品（现行`tian-ad
 - 先写或选中真实行为测试取得RED，再修根因并原样取得GREEN；不删除测试、弱化断言或用新目标自证。
 - 开发中只跑相关测试，最终版本只运行一次完整`make test`，保存命令、实际HEAD、退出码、日志和可复验工件。
 - Markdown lint固定`markdownlint-cli@0.48.0`；功法/法器共享依赖为`.github/requirements-gongfa.txt`与`.github/requirements-faqi.txt`，转换器使用原包requirements。
-- 校验/测试及source_boundaries、taxonomy、source_archive、book_views四个共享模块直接平铺在`.github/`，不保留lib包或旧位置副本；职责和原库规则合并到`.github/AGENTS.md`。3个sync与1个fetch入口仍在Extensions，按真实位置导入，不依赖当前cwd。
+- 校验/测试及source_boundaries、taxonomy、source_archive、book_views、tool_explanations五个共享模块直接平铺在`.github/`，不保留lib包或旧位置副本；职责和原库规则合并到`.github/AGENTS.md`。3个sync与1个fetch入口仍在Extensions，按真实位置导入，不依赖当前cwd。
 - 三域入口、入门README及两本文集维持标题→字多不看→快速导航→完整细粒度目录→使用方式→正文；维护规则留AGENTS。
 - 功法/法器生成视图的目录由其生成器维护；`sync-doc-toc.py`不能二次编辑生成文件。文档结构与来源SHA检查仍保留。
 - 改Mermaid须真实渲染。首页2025Q4–2026Q2甘特图是历史规划，不冒充当前进度或新承诺。

@@ -55,6 +55,12 @@ it as inline Evidence to `inspect-analysis-view`; the same summary and capture
 page contracts apply. Large complete records can still exceed MCP's response
 budget; export the retained Evidence when a single record cannot fit.
 
+If decoding completes before cancellation or private-root cleanup fails, the
+failure retains the completed capture as Evidence with the requested record
+selection and explicit sensitivity exclusions. Earlier decode failures remain
+primary. Failed cleanup stays linked to its exact owner, including through
+redaction, and its live status clears only after a confirmed retry.
+
 ## Formats and upstream profiles
 
 HAR uses unchanged `har-schema@2.0.0` draft-06 schemas, `ajv@8.20.0`,
@@ -294,7 +300,15 @@ exclusions and deduplicated limitations. It scans path spans without splitting
 literal paths into arrays. Before schema parsing, it reserves the capture clone
 and validation scratch by walking the parent without cloning it. Inline requests
 borrow the Evidence value through CLI/MCP envelope validation; the application
-admits the entire portable envelope before authenticated parsing or hashing.
+admits the entire portable envelope before authenticated parsing or hashing. An
+`evidence-file` source is read and authenticated first and then admitted like
+retained Evidence, so its strings are not charged as inline envelope text: a
+capture too large to project inline can be projected from its file. Before
+authentication REA checks that live heap headroom holds its copies of the parsed
+Evidence, and over MCP the read follows the request's cancellation.
+An invalid Evidence file returns `EvidenceFileError` with the selected `path`
+and `content_issues` relative to the file's JSON root; those locations do not
+refer to the request's `source.path` string.
 The envelope clone, hash scratch and capture clone stay charged during grouping.
 Temporary URL/path/MIME/query work and retained state must
 fit together within a 96 MiB projection representation budget. A whole group or
@@ -327,6 +341,13 @@ with the most JSON-like records (`application/json`, `application/*+json`,
 whose content types are JSON-like. Every other group is listed under
 `excluded` with reason `other-origin`, `ui-page-or-asset` or `non-json`, and
 retained records without a usable request line are counted in a limitation.
+
+The parent may instead be `capture_browser_scenario` Evidence whose scenario
+selected response bodies or header values: each network transaction is then
+one record, in request order, and the result names
+`parent_operation: "capture_browser_scenario"` with an empty `artifact`, since
+a scenario records no file. See
+[agent environments](agent-environments.md#from-a-browser-scenario).
 
 ```json
 {
@@ -361,11 +382,12 @@ template and `params` carry the four format rules with names `id`, `uuid`,
 only when listed, each at most once (a repeated rule is an `invalid_request`),
 in this order:
 
-| Rule                | Applies to                                                                                                                                                                                                                                                                                      | Parameter                                       |
-| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------- |
-| `after-uid-literal` | The literal segment right after a literal `uid`, unless it is a stop word                                                                                                                                                                                                                       | `uid`                                           |
-| `opaque-token`      | A lowercase alphanumeric segment of twelve or more characters mixing letters and digits that is not a `v1`-style version                                                                                                                                                                        | `uid`                                           |
-| `sibling-variance`  | Groups equal in method, origin and segment count that differ in one literal at index 2 or later; the siblings whose literal is identifier-like (a digit or `:`, or three or more hyphenated names under a plural literal) merge, never a stop word, and the other literals stay their own tools | singular previous literal plus `_id`, else `id` |
+| Rule                    | Applies to                                                                                                                                                                                                                                                                                                         | Parameter                                               |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------- |
+| `after-uid-literal`     | The literal segment right after a literal `uid`, unless it is a stop word                                                                                                                                                                                                                                          | `uid`                                                   |
+| `opaque-token`          | A lowercase alphanumeric segment of twelve or more characters mixing letters and digits that is not a `v1`-style version                                                                                                                                                                                           | `uid`                                                   |
+| `sibling-pair-variance` | Groups equal in method, origin and segment count that differ in two adjacent literals right after a plural literal at index 2 or later and followed by a literal, with at least three distinct pairs and both positions varying (`/repos/{owner}/{repo}/issues`); stop words and `v1`-style versions never qualify | singular plural literal plus `_namespace`, then `_name` |
+| `sibling-variance`      | Groups equal in method, origin and segment count that differ in one literal at index 2 or later; the siblings whose literal is identifier-like (a digit or `:`, or three or more hyphenated names under a plural literal) merge, never a stop word, and the other literals stay their own tools                    | singular previous literal plus `_id`, else `id`         |
 
 With `sibling-variance` selected, literal siblings within its comparison scope
 fold into existing opt-in parameters as observed values unless they are stop words.
@@ -382,7 +404,7 @@ cut to their first label, `_by_<params>` appended when parameters exist,
 sanitized to `[a-z0-9_]`, at most 60 characters and made unique with numeric
 suffixes: `get_dashboards_by_uid`, `get_plugins_settings_by_plugin_id`.
 
-`sibling-variance` compares routes of at most 32 segments; longer routes keep
+`sibling-variance` and `sibling-pair-variance` compare routes of at most 32 segments; longer routes keep
 their grouped templates and the manifest says so in a limitation. `body_shape`
 is derived for `POST`, `PUT` and `PATCH` from the tool's earliest record when it
 carries an `application/json` or `application/*+json` request body: top-level
@@ -394,14 +416,22 @@ whenever it is nonzero the Evidence is inferred, otherwise derived. The view
 performs no network activity and replays nothing. Native mitmproxy, SAZ and
 qlog captures, and parents inspected with `sensitive_values`, return the same
 typed unsupported errors as the api-surface view, including the canonical
-token `sensitive_values_unretained`.
+token `sensitive_values_unretained`. A `capture_browser_scenario` parent is not
+refused for declaring secrets: the capture redacted them as it recorded, a
+transaction whose URL was redacted is left unrepresented, and a response body
+keeps the capture's redaction markers, which a manifest limitation counts.
 
 The manifest accumulator shares the api-surface admission model: the capture
-clone, the inline envelope, record pointers, groups, every route part, observed
+clone, the inline envelope (for an inline source), record pointers, groups, every route part, observed
 values, query names and body-shape keys are admitted before allocation, and each
 recorded body is charged as temporary bytes before it is parsed. Retained state and
 temporary work must fit together within the 96 MiB projection representation
 budget; exceeding it returns `resource_constraint` without a partial manifest.
+Name a large capture with `{"kind": "evidence-file", "path": "/abs/capture.json"}`
+rather than inline: response bodies the manifest never reads are then charged
+once per value in the capture clone, not per character. A
+`capture_browser_scenario` parent is also charged, before validation, for
+checking its largest body and for the decoded text of its request bodies.
 
 ## Resource and lifecycle boundaries
 

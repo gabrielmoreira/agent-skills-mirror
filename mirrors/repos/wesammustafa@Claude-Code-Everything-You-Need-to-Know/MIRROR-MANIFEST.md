@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `wesammustafa/Claude-Code-Everything-You-Need-to-Know` — 26 default patterns, 62 followed patterns, 152 file(s) materialized.
+Mirror of `wesammustafa/Claude-Code-Everything-You-Need-to-Know` — 26 default patterns, 65 followed patterns, 155 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `wesammustafa/Claude-Code-Everything-You-Need-to-Know` — 26 default 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 62 |
-| Files         | 152 |
+| Followed pats | 65 |
+| Files         | 155 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -54,6 +54,9 @@ Mirror of `wesammustafa/Claude-Code-Everything-You-Need-to-Know` — 26 default 
 - `CONTRIBUTING.md`
 - `CHANGELOG.md`
 - `SECURITY.md`
+- `docs/agents/issue-tracker.md`
+- `docs/agents/triage-labels.md`
+- `docs/agents/domain.md`
 - `README.md`
 - `.github/PULL_REQUEST_TEMPLATE.md`
 - `docs/intermediate/README.md`
@@ -228,50 +231,53 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 106 | → | [`docs/advanced/electives/goal-loop-routines.md`](docs/advanced/electives/goal-loop-routines.md) |
 | 107 | → | [`docs/advanced/electives/publish-a-plugin.md`](docs/advanced/electives/publish-a-plugin.md) |
 | 108 | → | [`docs/advanced/README.md`](docs/advanced/README.md) |
-| 109 | → | [`docs/beginner/01-install-and-look-around.md`](docs/beginner/01-install-and-look-around.md) |
-| 110 | → | [`docs/beginner/02-permission-modes-and-plan-mode.md`](docs/beginner/02-permission-modes-and-plan-mode.md) |
-| 111 | → | [`docs/beginner/03-first-change.md`](docs/beginner/03-first-change.md) |
-| 112 | → | [`docs/beginner/04-keep-a-session-on-track.md`](docs/beginner/04-keep-a-session-on-track.md) |
-| 113 | → | [`docs/beginner/05-project-memory.md`](docs/beginner/05-project-memory.md) |
-| 114 | → | [`docs/beginner/capstone.md`](docs/beginner/capstone.md) |
-| 115 | → | [`docs/beginner/electives/built-in-teachers.md`](docs/beginner/electives/built-in-teachers.md) |
-| 116 | → | [`docs/beginner/electives/ide-extensions.md`](docs/beginner/electives/ide-extensions.md) |
-| 117 | → | [`docs/beginner/electives/screenshots-and-images.md`](docs/beginner/electives/screenshots-and-images.md) |
-| 118 | → | [`docs/beginner/README.md`](docs/beginner/README.md) |
-| 119 | → | [`docs/intermediate/01-first-skill.md`](docs/intermediate/01-first-skill.md) |
-| 120 | → | [`docs/intermediate/02-organize-memory.md`](docs/intermediate/02-organize-memory.md) |
-| 121 | → | [`docs/intermediate/03-model-and-effort.md`](docs/intermediate/03-model-and-effort.md) |
-| 122 | → | [`docs/intermediate/04-permissions-and-sandbox.md`](docs/intermediate/04-permissions-and-sandbox.md) |
-| 123 | → | [`docs/intermediate/05-hooks.md`](docs/intermediate/05-hooks.md) |
-| 124 | → | [`docs/intermediate/06-subagents.md`](docs/intermediate/06-subagents.md) |
-| 125 | → | [`docs/intermediate/07-mcp.md`](docs/intermediate/07-mcp.md) |
-| 126 | → | [`docs/intermediate/08-plugins.md`](docs/intermediate/08-plugins.md) |
-| 127 | → | [`docs/intermediate/capstone.md`](docs/intermediate/capstone.md) |
-| 128 | → | [`docs/intermediate/electives/claude-in-chrome.md`](docs/intermediate/electives/claude-in-chrome.md) |
-| 129 | → | [`docs/intermediate/electives/fast-mode.md`](docs/intermediate/electives/fast-mode.md) |
-| 130 | → | [`docs/intermediate/electives/skill-patterns.md`](docs/intermediate/electives/skill-patterns.md) |
-| 131 | → | [`docs/intermediate/electives/status-line.md`](docs/intermediate/electives/status-line.md) |
-| 132 | → | [`docs/intermediate/README.md`](docs/intermediate/README.md) |
-| 133 | → | [`docs/reference/changelog.md`](docs/reference/changelog.md) |
-| 134 | → | [`docs/reference/commands.md`](docs/reference/commands.md) |
-| 135 | → | [`docs/reference/faq.md`](docs/reference/faq.md) |
-| 136 | → | [`docs/reference/feature-map.md`](docs/reference/feature-map.md) |
-| 137 | → | [`docs/reference/further-reading.md`](docs/reference/further-reading.md) |
-| 138 | → | [`docs/reference/glossary.md`](docs/reference/glossary.md) |
-| 139 | → | [`docs/reference/models.md`](docs/reference/models.md) |
-| 140 | → | [`docs/reference/README.md`](docs/reference/README.md) |
-| 141 | → | [`docs/topics/automation.md`](docs/topics/automation.md) |
-| 142 | → | [`docs/topics/hooks.md`](docs/topics/hooks.md) |
-| 143 | → | [`docs/topics/mcp.md`](docs/topics/mcp.md) |
-| 144 | → | [`docs/topics/memory-and-context.md`](docs/topics/memory-and-context.md) |
-| 145 | → | [`docs/topics/models-effort-and-cost.md`](docs/topics/models-effort-and-cost.md) |
-| 146 | → | [`docs/topics/permissions-and-safety.md`](docs/topics/permissions-and-safety.md) |
-| 147 | → | [`docs/topics/plugins.md`](docs/topics/plugins.md) |
-| 148 | → | [`docs/topics/README.md`](docs/topics/README.md) |
-| 149 | → | [`docs/topics/subagents-and-parallel-work.md`](docs/topics/subagents-and-parallel-work.md) |
-| 150 | → | [`examples/README.md`](examples/README.md) |
-| 151 | → | [`README.md`](README.md) |
-| 152 | → | [`SECURITY.md`](SECURITY.md) |
+| 109 | → | [`docs/agents/domain.md`](docs/agents/domain.md) |
+| 110 | → | [`docs/agents/issue-tracker.md`](docs/agents/issue-tracker.md) |
+| 111 | → | [`docs/agents/triage-labels.md`](docs/agents/triage-labels.md) |
+| 112 | → | [`docs/beginner/01-install-and-look-around.md`](docs/beginner/01-install-and-look-around.md) |
+| 113 | → | [`docs/beginner/02-permission-modes-and-plan-mode.md`](docs/beginner/02-permission-modes-and-plan-mode.md) |
+| 114 | → | [`docs/beginner/03-first-change.md`](docs/beginner/03-first-change.md) |
+| 115 | → | [`docs/beginner/04-keep-a-session-on-track.md`](docs/beginner/04-keep-a-session-on-track.md) |
+| 116 | → | [`docs/beginner/05-project-memory.md`](docs/beginner/05-project-memory.md) |
+| 117 | → | [`docs/beginner/capstone.md`](docs/beginner/capstone.md) |
+| 118 | → | [`docs/beginner/electives/built-in-teachers.md`](docs/beginner/electives/built-in-teachers.md) |
+| 119 | → | [`docs/beginner/electives/ide-extensions.md`](docs/beginner/electives/ide-extensions.md) |
+| 120 | → | [`docs/beginner/electives/screenshots-and-images.md`](docs/beginner/electives/screenshots-and-images.md) |
+| 121 | → | [`docs/beginner/README.md`](docs/beginner/README.md) |
+| 122 | → | [`docs/intermediate/01-first-skill.md`](docs/intermediate/01-first-skill.md) |
+| 123 | → | [`docs/intermediate/02-organize-memory.md`](docs/intermediate/02-organize-memory.md) |
+| 124 | → | [`docs/intermediate/03-model-and-effort.md`](docs/intermediate/03-model-and-effort.md) |
+| 125 | → | [`docs/intermediate/04-permissions-and-sandbox.md`](docs/intermediate/04-permissions-and-sandbox.md) |
+| 126 | → | [`docs/intermediate/05-hooks.md`](docs/intermediate/05-hooks.md) |
+| 127 | → | [`docs/intermediate/06-subagents.md`](docs/intermediate/06-subagents.md) |
+| 128 | → | [`docs/intermediate/07-mcp.md`](docs/intermediate/07-mcp.md) |
+| 129 | → | [`docs/intermediate/08-plugins.md`](docs/intermediate/08-plugins.md) |
+| 130 | → | [`docs/intermediate/capstone.md`](docs/intermediate/capstone.md) |
+| 131 | → | [`docs/intermediate/electives/claude-in-chrome.md`](docs/intermediate/electives/claude-in-chrome.md) |
+| 132 | → | [`docs/intermediate/electives/fast-mode.md`](docs/intermediate/electives/fast-mode.md) |
+| 133 | → | [`docs/intermediate/electives/skill-patterns.md`](docs/intermediate/electives/skill-patterns.md) |
+| 134 | → | [`docs/intermediate/electives/status-line.md`](docs/intermediate/electives/status-line.md) |
+| 135 | → | [`docs/intermediate/README.md`](docs/intermediate/README.md) |
+| 136 | → | [`docs/reference/changelog.md`](docs/reference/changelog.md) |
+| 137 | → | [`docs/reference/commands.md`](docs/reference/commands.md) |
+| 138 | → | [`docs/reference/faq.md`](docs/reference/faq.md) |
+| 139 | → | [`docs/reference/feature-map.md`](docs/reference/feature-map.md) |
+| 140 | → | [`docs/reference/further-reading.md`](docs/reference/further-reading.md) |
+| 141 | → | [`docs/reference/glossary.md`](docs/reference/glossary.md) |
+| 142 | → | [`docs/reference/models.md`](docs/reference/models.md) |
+| 143 | → | [`docs/reference/README.md`](docs/reference/README.md) |
+| 144 | → | [`docs/topics/automation.md`](docs/topics/automation.md) |
+| 145 | → | [`docs/topics/hooks.md`](docs/topics/hooks.md) |
+| 146 | → | [`docs/topics/mcp.md`](docs/topics/mcp.md) |
+| 147 | → | [`docs/topics/memory-and-context.md`](docs/topics/memory-and-context.md) |
+| 148 | → | [`docs/topics/models-effort-and-cost.md`](docs/topics/models-effort-and-cost.md) |
+| 149 | → | [`docs/topics/permissions-and-safety.md`](docs/topics/permissions-and-safety.md) |
+| 150 | → | [`docs/topics/plugins.md`](docs/topics/plugins.md) |
+| 151 | → | [`docs/topics/README.md`](docs/topics/README.md) |
+| 152 | → | [`docs/topics/subagents-and-parallel-work.md`](docs/topics/subagents-and-parallel-work.md) |
+| 153 | → | [`examples/README.md`](examples/README.md) |
+| 154 | → | [`README.md`](README.md) |
+| 155 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

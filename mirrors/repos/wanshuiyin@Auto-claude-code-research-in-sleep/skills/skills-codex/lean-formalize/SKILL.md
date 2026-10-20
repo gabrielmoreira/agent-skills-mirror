@@ -5,6 +5,17 @@ description: "Develop and verify a mathematical proof in Lean, continue an incom
 
 # Lean Formalize
 
+> **Before each reviewer slot**, follow [Selectable Reviewers](../shared-references/reviewer-backends.md):
+> resolve invocation → `.aris/reviewer.json` → Codex default (fresh native reviewer)
+> with `reviewer_route.py` through the canonical helper resolver, preserving this
+> slot's tier, fresh contexts, source/image inputs and deterministic gates.
+> Codex examples/pins below apply only to `backend=codex`; other routes use their
+> own first-call/reply contract. Save the route and actual returned identity;
+> unavailable selections are `REVIEW_UNAVAILABLE`. Classify acceptance from actual
+> families/completion/scope. Forward invocation reviewer/model/effort overrides
+> to reviewer-bearing children. Generation workers are unchanged.
+
+
 Turn the user's mathematical statement into a checked Lean theorem with its
 meaning preserved. A compiled conditional lemma is progress; completion concerns
 the original statement and the trust basis actually used.
@@ -217,8 +228,8 @@ separate paper-audit workflow. Where installed, use
 the current host's reviewer routing.
 
 For direct model consultations, use available authorized tools and their actual
-contracts. A Grok or Antigravity MCP consultation is not automatically an ARIS
-reviewer overlay. Do not hard-code vendor availability, quotas, retry counts,
+contracts. A Grok or Antigravity MCP consultation is not automatically a completed
+review or proof certificate. Do not hard-code vendor availability, quotas, retry counts,
 proxy settings, or a particular model into the portable workflow.
 
 Ask concrete questions: translate this declaration; discharge these caller
@@ -257,16 +268,16 @@ review; record `review_independence: same-family` and
 `acceptance_status: provisional`. It does not fulfill a requested cross-family
 checkpoint.
 
-For A/B/C, use the user's selected authorized cross-family reviewer, or an
-already configured cross-family route: Claude review MCP, Grok MCP, or Gemini
-through its review bridge or Antigravity. An installed `research-review` overlay
-may carry the packet if its review contract fits; the base Codex version remains
-same-family. Existing overlays cover only their listed skills and do not
-implicitly override `lean-formalize`. Direct checkpoint calls need no new overlay;
-read [review transport notes](references/adversarial-review.md#review-transport-and-source-access)
-for the actual file-access and continuation rules. Do not invent new global
-reviewer flag values. If no cross-family route is available, continue useful
-local Lean work and record the affected checkpoint as pending.
+Before each A/B/C checkpoint, resolve the selected route through
+[Selectable Reviewers](../shared-references/reviewer-backends.md). Use the same
+mathematical packet and primary files through that route's actual tool contract;
+no overlay is needed. Verify actual executor and reviewer model families: a
+same-family result remains provisional and cannot discharge an A/C or explicit
+cross-family requirement. Honor explicitly requested Grok/Gemini checkpoints
+separately. Read [review transport notes](references/adversarial-review.md#review-transport-and-source-access)
+for source-access obligations; the selected route's current first-call/reply
+contract governs transport. If a required reviewer is unavailable, continue
+useful local Lean work and leave that checkpoint pending.
 
 ## 5. Verify the actual final target
 

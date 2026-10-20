@@ -2,10 +2,21 @@
 name: citation-audit
 description: "Zero-context verification that every bibliographic entry in the paper is real, correctly attributed, and used in a context the cited paper actually supports — catching hallucinated authors, wrong years, fabricated venues, version mismatches, and wrong-context citations. Use when user says \"审查引用\", \"check citations\", \"citation audit\", \"verify references\", \"引用核对\", or before submission to ensure bibliography integrity."
 argument-hint: "[paper-directory-or-bib-file] [--uncited] [— soft-only]"
-allowed-tools: Bash(*), Read, Grep, Glob, Edit, Write, mcp__codex__codex, WebSearch, WebFetch
+allowed-tools: Bash(*), Read, Grep, Glob, Edit, Write, mcp__codex__codex, WebSearch, WebFetch, mcp__antigravity__antigravity, mcp__antigravity__antigravity-reply, mcp__grok__grok, mcp__grok__grok-reply, mcp__claude-review__review, mcp__claude-review__review_reply, mcp__claude-review__review_start, mcp__claude-review__review_reply_start, mcp__claude-review__review_status
 ---
 
 # Citation Audit
+
+> **Before each reviewer slot**, follow [Selectable Reviewers](../shared-references/reviewer-backends.md):
+> resolve invocation → `.aris/reviewer.json` → Claude Code default (Codex MCP)
+> with `reviewer_route.py` through the canonical helper resolver, preserving this
+> slot's tier, fresh contexts, source/image inputs and deterministic gates.
+> Codex examples/pins below apply only to `backend=codex`; other routes use their
+> own first-call/reply contract. Save the route and actual returned identity;
+> unavailable selections are `REVIEW_UNAVAILABLE`. Classify acceptance from actual
+> families/completion/scope. Forward invocation reviewer/model/effort overrides
+> to reviewer-bearing children. Generation workers are unchanged.
+
 
 > 🔒 **Do not wrap this skill in `/loop`, `/schedule`, or `CronCreate`.** It is
 > verdict-bearing — it judges bibliographic correctness. Re-running that verdict
@@ -83,6 +94,8 @@ Save the extracted contexts to `paper/.aris/citation-audit/contexts.txt` so the 
 ### Step 3: Send each entry to fresh cross-model reviewer
 
 For each **cited** bib entry — i.e., each key in `cited_keys` with at least one extracted citation context — invoke `mcp__codex__codex` (NOT `codex-reply` — fresh thread per entry, or batch with explicit per-entry isolation). Do **not** send entries in `bib_keys \ cited_keys` to the reviewer; those are detect-only and surface only when `--uncited` is explicitly enabled (see "Uncited Entry Detection" below).
+
+> Resolve this reviewer slot first; the following is the `backend=codex` example.
 
 ```
 mcp__codex__codex:

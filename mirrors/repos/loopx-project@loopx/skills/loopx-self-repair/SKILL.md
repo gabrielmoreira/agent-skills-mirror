@@ -141,6 +141,15 @@ replan, or terminal closeout must return to the strict semantic checkpoint.
 - Do not solve contradictory payloads by guessing. If `recommended_action`,
   `goal_boundary.write_scope`, todos, and interaction contract disagree, treat
   that as a projection bug or state authoring bug first.
+- Separate priority advice from authority. Use the planning horizon and current
+  user direction to choose useful in-scope work; do not treat P0/P1 order as a
+  permission gate or relabel every task to escape it. Before explaining a
+  refusal as recovery protection, check whether a settlement identity is
+  actually bound. Priority-only rejection of an eligible explicit choice is a
+  control-plane defect. Preserve real gates and record the changed route in
+  existing Todo/vision state. A committed Turn may finish with progress while
+  its Todo stays open; settle and release before switching, rather than treating
+  the binding as an obligation to finish that entire Todo first.
 - Do not let fallback work hide the primary blocker. When a higher-priority
   path is gated but safe fallback is valid, report both the concrete gate and
   the fallback progress.

@@ -32,19 +32,6 @@ hooks:
 <!-- AUTO-GENERATED from SKILL.md.tmpl — do not edit directly -->
 <!-- Regenerate: bun run gen:skill-docs -->
 
-
-## When to invoke this skill
-
-Surfaces
-taste decisions (close approaches, borderline scope, outside-review disagreements) at a final
-approval gate. One command, fully reviewed plan out.
-Use when asked to "auto review", "autoplan", "run all reviews", "review this plan
-automatically", or "make the decisions for me".
-Proactively suggest when the user has a plan file and wants to run the full review
-gauntlet without answering 15-30 intermediate questions.
-
-Voice triggers (speech-to-text aliases): "auto plan", "automatic review".
-
 ## Preamble (run first)
 
 ```bash
@@ -676,7 +663,7 @@ Send phase announcements and the final approval request (the brief) in the conve
 Resolve SNAPSHOT_TOOL once:
 ```bash
 
-bun -e 'console.log(require("fs").realpathSync(process.argv[1]))' "$HOME/.claude/skills/gstack/bin/gstack-autoplan-snapshot.ts"
+bun --no-env-file --config=/dev/null -e 'console.log(require("fs").realpathSync(process.argv[1]))' "$HOME/.claude/skills/gstack/bin/gstack-autoplan-snapshot.ts"
 ```
 
 Fresh RESTORE_PATH, beside its phase artifacts in the git-excluded `.gstack/tmp/autoplan/`:

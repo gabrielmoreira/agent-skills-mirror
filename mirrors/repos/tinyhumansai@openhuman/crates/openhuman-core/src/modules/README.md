@@ -298,7 +298,7 @@ download, its `dlopen`, or its resident memory.
 | --- | --- | --- |
 | [`documents.rs`](documents.rs) | `tinydocs` | `generate_docx`, `generate_pptx`, `extract_text`, bounded `extract_document`, complete `convert_markdown`, `inspect_image`, and `render_pdf`. Inbound bytes ride a TinyBus stream; held results are pulled with `ReadOutput` and released. Feature `documents`. |
 | [`wallet.rs`](wallet.rs) | `tinywallet` | Typed wallet, Web3, ERC-20 encoding, and x402 calls. Key material goes only to confidential calls to an attested module whose digest is pinned by the registry (`attested_proxy`). Feature `web3`. |
-| [`voice.rs`](voice.rs) | `tinyvoice` | Intent routing, command extraction, wake-word and hallucination checks, capture preparation, WAV encoding, frame energies, and a `VadSession` driven from the always-on capture loop. Every call returns a `VoiceCallError` the caller falls back from. Feature `voice`. |
+| [`voice.rs`](voice.rs) | `tinyvoice` | Transcript hallucination screening for speech-to-text results. An unavailable module lets the transcript pass through. Feature `voice`. |
 | [`desktop.rs`](desktop.rs) | `tinycomputer` | The shared proxy for TinyComputer: loads it with an 8 second bound, reinitializes it when its configuration fingerprint changes, and exposes `call`, `permissions`, `state`, `jev_ready`. |
 | [`computer_config.rs`](computer_config.rs) | `tinycomputer` | The private configuration: `jev` (decision model), `planner` (planner, rescue and output models), `browser` (Chrome path), `trace_path`. Rebuilt from `[computer]` and stored credentials on every call; `OPENHUMAN_COMPUTER_TRACE` turns tracing on. |
 | [`computer.rs`](computer.rs) | `tinycomputer` | `status` for the Computer settings page: lifecycle state, configured routes, and optionally what the module reports through `Describe`. |
@@ -435,7 +435,6 @@ loadable:
   compiles without the gate; wallet, Web3, and x402 adapters use `wallet.rs`;
   `tools/impl/document`, `tools/impl/presentation`,
   `agent/multimodal.rs` and `attachments/` use `documents.rs`;
-  `voice/always_on` and `voice/streaming.rs` use `voice.rs`;
   `tools/impl/browser/` and `desktop/control/` use the TinyComputer files;
   `integrations/composio/module_client.rs` uses [`connectors.rs`](./connectors.rs);
   `search/tools.rs` and `search/bus.rs` use [`search/`](./search/); and
@@ -497,4 +496,4 @@ configuration and direct reads use attested confidential calls.
 
 ## `[components] computer`
 
-`computer = false` is a ceiling over TinyComputer: desktop and browser tools are not registered, `ensure_loaded("tinycomputer")` refuses, `AccessibilityClient` (Globe hotkey, permissions, paste) answers `COMPONENT_DISABLED:computer`, and the `desktop.*` and `modules.browser_*` / `modules.computer_status` RPC methods answer `COMPONENT_DISABLED`. Effective desktop control is the flag AND the local consent file (`desktop::control::ops::enabled`); the flag never grants consent.
+`computer = false` is a ceiling over TinyComputer: desktop and browser tools are not registered, `ensure_loaded("tinycomputer")` refuses, and `AccessibilityClient` permission reads and requests answer `COMPONENT_DISABLED:computer`. The `desktop.*` and `modules.browser_*` / `modules.computer_status` RPC methods answer `COMPONENT_DISABLED`. Effective desktop control is the flag AND the local consent file (`desktop::control::ops::enabled`); the flag never grants consent.

@@ -1379,7 +1379,10 @@ refresh to a maintainer.
   `windows-free-tests.yml`'s `record_durations` path. When either recording adds
   or drops a test file, it force-updates the `bot/free-duration-seeds` branch,
   opens or refreshes one seed PR whose body states the ratchet result, and
-  dispatches the free lanes on it. A file that fails while recording turns its
+  dispatches Free Tests, Windows Free Tests and Quality gate on it. Those
+  dispatched runs are the seed PR's checks, and Free Tests supplies the required
+  `free-tests` check. GitHub holds the pull_request runs of a token-opened PR as
+  "action required" until someone approves them. A file that fails while recording turns its
   job red but keeps its duration, and the PR body names it; the seed PR's own
   free checks decide whether the tree is healthy. An interrupted recording
   uploads no seed, and more than 5 red files on either OS proposes nothing. The

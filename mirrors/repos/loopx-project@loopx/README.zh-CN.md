@@ -1,22 +1,23 @@
 <div align="center">
 
-<h1 align="center">LoopX</h1>
+<h1 align="center">LoopX 2.0</h1>
 
-**给 Agent 一个目标，让工作持续向前。**
+**长程研究工作台**
 
-面向长程 Agent 与个人 Agent 团队的开源、本地优先控制面。<br>
-<sub>跨会话保留目标、决策与证据，连接 Codex、Claude Code、DeepSeek Harness 等已有运行时。</sub>
+面向企业、研究机构与超级个体。<br>
+<sub>围绕复杂研究目标，协调多个 Agent 持续推进，跨会话保留研究过程、决策与证据，检查结果和成本，并将发现用于下一步工作。开源、本地优先，连接 Codex、Claude Code、DeepSeek Harness 等已有运行时。</sub><br>
+<sub>TypeScript 控制面 · 有证据的研究 · 可恢复的 Agent 协作</sub>
 
-[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE) [![Release](https://img.shields.io/github/v/release/loopx-project/loopx?filter=v*&display_name=tag)](https://github.com/loopx-project/loopx/releases/latest) [![GitHub 贡献者](https://img.shields.io/github/contributors-anon/loopx-project/loopx?color=blue)](https://github.com/loopx-project/loopx/graphs/contributors) [![Discord](https://img.shields.io/badge/Discord-Join-5865F2?logo=discord&logoColor=white)](https://discord.gg/XmGgQyCFZd) [![TypeScript core](https://img.shields.io/badge/core-TypeScript-3178C6?logo=typescript&logoColor=white)](docs/architecture/rfcs/typescript-control-plane-migration-v0.zh-CN.md) [![Python](https://img.shields.io/badge/python-3.11%2B-blue.svg)](pyproject.toml) [![Local first](https://img.shields.io/badge/control--plane-local--first-brightgreen.svg)](docs/public-private-boundary.md) [![Loop Agents](https://img.shields.io/badge/status-loop%20agents%20supported-brightgreen.svg)](docs/product/release-readiness.md)
+[![Release](https://img.shields.io/github/v/release/loopx-project/loopx?color=181717)](https://github.com/loopx-project/loopx/releases/latest) [![License](https://img.shields.io/badge/license-Apache--2.0-181717)](LICENSE) [![TypeScript core](https://img.shields.io/badge/core-TypeScript-3178C6?logo=typescript&logoColor=white)](docs/architecture/rfcs/typescript-control-plane-migration-v0.zh-CN.md) [![Discord](https://img.shields.io/badge/Discord-Join-5865F2?logo=discord&logoColor=white)](https://discord.gg/XmGgQyCFZd)
 
 <a href="https://trendshift.io/repositories/102379"><img src="https://trendshift.io/api/badge/repositories/102379" alt="loopx-project/loopx 在 Trendshift 的趋势排名" width="220" height="48"></a>
 
-[开始使用](#试用-loopx) · [个人工作区](#认识个人-agent-工作区) · [LHTB 结果](#lhtb-results) · [文档](https://loopx-project.github.io/loopx/docs/) · [English](README.md)
+[开始使用](#试用-loopx) · [2.0 升级指南](docs/product/releases/v2.0.0.md#中文指南) · [研究工作台](#research-workbench) · [LHTB 结果](#lhtb-results) · [文档](https://loopx-project.github.io/loopx/docs/) · [English](README.md)
 
-<a href="docs/assets/personal-workspace/loopx-dashboard-launch.mp4"><img src="docs/assets/personal-workspace/workspace-hero.zh-CN.webp" alt="LoopX 个人 Agent 工作区：工作地图展示任务依赖、负责 Agent、进展与等待用户处理的决策" width="960"></a><br>
-<sub>源码构建的 App 运行预设的 <a href="demo/workspace/README.md">Workspace 场景回放</a>，未执行实时 Agent 任务 · <a href="docs/assets/personal-workspace/loopx-dashboard-launch.mp4">观看 32 秒完整演示</a></sub>
+<a href="https://github.com/user-attachments/assets/543af0b1-c3d4-4cfb-aedd-a68563a20601"><img src="docs/assets/personal-workspace/research-workbench-hero.zh-CN.webp" alt="LoopX 2.0，面向企业、研究机构与超级个体的长程研究工作台；应用画框内保留真实研究历史与来源范围，状态条按原计数校正比例" width="960"></a><br>
+<sub><a href="https://github.com/user-attachments/assets/543af0b1-c3d4-4cfb-aedd-a68563a20601">观看研究工作台影片 · 86秒</a> · <a href="docs/assets/personal-workspace/loopx-research-films.zh-CN.md">双语文字稿、字幕与来源</a>。App 实录、合成示例与机制示意分别标注。</sub>
 
-**两步在 Codex App 里用上 LoopX。** 先安装一次：
+**两步在 Codex App 里用上 LoopX。** 需要 Python 3.11+、Node.js 22.22.3+（推荐 Node 24 LTS）。先安装一次：
 
 ```bash
 python3 -m pip install --upgrade loopx && loopx workflow-skills --install
@@ -49,13 +50,34 @@ LoopX 管理下一步工作、验收依据，以及什么时候需要你判断�
 | 在一个入口管理个人项目、定时任务与待决事项 | [个人 Agent 工作区](#认识个人-agent-工作区) |
 | 让多个 Agent 分工协作，交付可验收的结果 | [Agent 协作指南](docs/product/use-cases/cross-runtime/README.md#中文指南) |
 
+## LoopX 2.0
+
+| 共享控制面 | 长程研究工作台 |
+| --- | --- |
+| 已迁移事务、权威与恢复规则由 TypeScript 统一拥有；Python 保留真实宿主 / provider IO 和专业计算。 | 从研究问题出发，串起任务委派、Explore 历史、产物、轨迹分析与下一轮决策。 |
+| [两个月的重构历史、技术细节与核心研发统计](https://loopx-project.github.io/loopx/blog/zh/typescript-control-plane-refactor/) | [86 秒产品影片](https://github.com/user-attachments/assets/543af0b1-c3d4-4cfb-aedd-a68563a20601) · [轨迹分析合同](docs/reference/trajectory-assessment.md) |
+
+**从 1.x 升级？** 2.0 停止对未迁移 Markdown Goal 的普通写入。
+继续这些 Goal 前先看[迁移与恢复指南](docs/product/releases/v2.0.0.md#中文指南)；
+安装新版不会静默转换既有状态。
+
+<a id="research-workbench"></a>
+
+## 让研究接得下去
+
+打开 Goal 查看任务归属、Agent 与已记录的 Explore 历史。通过 **深度分析 / Deep analysis**
+检查已登记轨迹的引用、原生结果读回，以及单独测量的成本。Agent 准备来源；
+打开页面、刷新和读取结果不会启动模型，执行分析需要显式操作及已配置的宿主和账号。
+
+保留支持、反驳与未知，核对新证据为什么改变了路线，或为什么值得继续，再进入下一轮。
+
 ## 认识个人 Agent 工作区
 
 把长程目标收进同一个 local-first 工作区。Goal、待关注事项、对话、任务、
 文件、定时计划与恢复状态跨天数、跨重启、跨 harness 保持持久。重新打开项目时，
 可以检查上一轮的状态与证据，再继续下一项允许执行的工作。
 
-LoopX 1.0 将这些长程控制状态汇入 Personal Workspace。你可以在一个页面中：
+LoopX 将这些长程控制状态汇入 Personal Workspace。你可以在一个页面中：
 
 - 看清哪些事项正在等你、执行中、观察中、已安排或已停止；
 - 配置 Goal 的 Capability，区分机器默认值与 Goal 覆盖，预览变更后再应用；
@@ -71,7 +93,7 @@ loopx dashboard
 ```
 
 `loopx dashboard` 是受支持的浏览器 / PWA 启动方式。也可从
-[1.0 Release](https://github.com/loopx-project/loopx/releases/tag/v1.0.0) 下载桌面预览版，
+[最新 Release](https://github.com/loopx-project/loopx/releases/latest) 下载桌面预览版，
 复用同一组 loopback 服务与 Goal 状态。Apple Silicon macOS 支持签名 App 更新，
 将桌面壳与内置运行时配套升级，并提供修复与恢复入口；需要 Python 3.11+，
 App 为 ad-hoc 签名，尚未 notarize。Windows 预览版目前手动更新，需单独安装 CLI。
@@ -701,7 +723,7 @@ raw benchmark task/log/trajectory/verifier output、credentials、token、私有
 
 ## 当前状态
 
-LoopX 1.0 已经是一套可用的长程 Agent 本地控制面，正在进入更广泛的采用阶段。
+LoopX 已经是一套可用的长程 Agent 本地控制面，正在进入更广泛的采用阶段。
 LoopX 不是完整 agent platform，不是 agent runtime，也不是自治生产控制器。
 
 目前 LoopX 已交付围绕 goal、typed todo / decision scope、平级 claim / lease、

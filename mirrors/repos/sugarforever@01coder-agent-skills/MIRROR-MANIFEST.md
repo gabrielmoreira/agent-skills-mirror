@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `sugarforever/01coder-agent-skills` — 26 default patterns, 0 followed patterns, 160 file(s) materialized.
+Mirror of `sugarforever/01coder-agent-skills` — 26 default patterns, 0 followed patterns, 161 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `sugarforever/01coder-agent-skills` — 26 default patterns, 0 followe
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 160 |
+| Files         | 161 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -142,83 +142,84 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 81 | ✓ | [`skills/fpl-copilot/references/html-output.md`](skills/fpl-copilot/references/html-output.md) |
 | 82 | ✓ | [`skills/fpl-copilot/references/schema.sql`](skills/fpl-copilot/references/schema.sql) |
 | 83 | ✓ | [`skills/fpl-copilot/references/squad.md`](skills/fpl-copilot/references/squad.md) |
-| 84 | ✓ | [`skills/fpl-copilot/references/sync.sh`](skills/fpl-copilot/references/sync.sh) |
-| 85 | ✓ | [`skills/fpl-copilot/SKILL.md`](skills/fpl-copilot/SKILL.md) |
-| 86 | ✓ | [`skills/fpl-copilot/templates/captain-ranking.html`](skills/fpl-copilot/templates/captain-ranking.html) |
-| 87 | ✓ | [`skills/fpl-copilot/templates/fixture-matrix.html`](skills/fpl-copilot/templates/fixture-matrix.html) |
-| 88 | ✓ | [`skills/fpl-copilot/templates/gameweek-report.html`](skills/fpl-copilot/templates/gameweek-report.html) |
-| 89 | ✓ | [`skills/fpl-copilot/templates/squad-view.html`](skills/fpl-copilot/templates/squad-view.html) |
-| 90 | ✓ | [`skills/fpl-copilot/templates/transfer-comparison.html`](skills/fpl-copilot/templates/transfer-comparison.html) |
-| 91 | ✓ | [`skills/interactive-input/references/schema.md`](skills/interactive-input/references/schema.md) |
-| 92 | ✓ | [`skills/interactive-input/SKILL.md`](skills/interactive-input/SKILL.md) |
-| 93 | ✓ | [`skills/mining-session-skills/references/drafting-quality-bars.md`](skills/mining-session-skills/references/drafting-quality-bars.md) |
-| 94 | ✓ | [`skills/mining-session-skills/references/friction-signals.md`](skills/mining-session-skills/references/friction-signals.md) |
-| 95 | ✓ | [`skills/mining-session-skills/references/worth-it-gate.md`](skills/mining-session-skills/references/worth-it-gate.md) |
-| 96 | ✓ | [`skills/mining-session-skills/scripts/extract_session_signals.py`](skills/mining-session-skills/scripts/extract_session_signals.py) |
-| 97 | ✓ | [`skills/mining-session-skills/scripts/test_extract_session_signals.py`](skills/mining-session-skills/scripts/test_extract_session_signals.py) |
-| 98 | ✓ | [`skills/mining-session-skills/SKILL.md`](skills/mining-session-skills/SKILL.md) |
-| 99 | ✓ | [`skills/nextjs-security-scan/assets/report-template.md`](skills/nextjs-security-scan/assets/report-template.md) |
-| 100 | ✓ | [`skills/nextjs-security-scan/references/auth-vulnerabilities.md`](skills/nextjs-security-scan/references/auth-vulnerabilities.md) |
-| 101 | ✓ | [`skills/nextjs-security-scan/references/injection-patterns.md`](skills/nextjs-security-scan/references/injection-patterns.md) |
-| 102 | ✓ | [`skills/nextjs-security-scan/references/nextjs-specific.md`](skills/nextjs-security-scan/references/nextjs-specific.md) |
-| 103 | ✓ | [`skills/nextjs-security-scan/references/owasp-top-10.md`](skills/nextjs-security-scan/references/owasp-top-10.md) |
-| 104 | ✓ | [`skills/nextjs-security-scan/references/xss-patterns.md`](skills/nextjs-security-scan/references/xss-patterns.md) |
-| 105 | ✓ | [`skills/nextjs-security-scan/scripts/dependency-audit.sh`](skills/nextjs-security-scan/scripts/dependency-audit.sh) |
-| 106 | ✓ | [`skills/nextjs-security-scan/scripts/pattern-scanner.py`](skills/nextjs-security-scan/scripts/pattern-scanner.py) |
-| 107 | ✓ | [`skills/nextjs-security-scan/scripts/secret-scanner.py`](skills/nextjs-security-scan/scripts/secret-scanner.py) |
-| 108 | ✓ | [`skills/nextjs-security-scan/SKILL.md`](skills/nextjs-security-scan/SKILL.md) |
-| 109 | ✓ | [`skills/personal-chinese-writing-style/references/article-structure.md`](skills/personal-chinese-writing-style/references/article-structure.md) |
-| 110 | ✓ | [`skills/personal-chinese-writing-style/references/punctuation.md`](skills/personal-chinese-writing-style/references/punctuation.md) |
-| 111 | ✓ | [`skills/personal-chinese-writing-style/references/social-media-style.md`](skills/personal-chinese-writing-style/references/social-media-style.md) |
-| 112 | ✓ | [`skills/personal-chinese-writing-style/references/voice-and-phrasing.md`](skills/personal-chinese-writing-style/references/voice-and-phrasing.md) |
-| 113 | ✓ | [`skills/personal-chinese-writing-style/SKILL.md`](skills/personal-chinese-writing-style/SKILL.md) |
-| 114 | ✓ | [`skills/producing-video/scripts/srt-cues.mjs`](skills/producing-video/scripts/srt-cues.mjs) |
-| 115 | ✓ | [`skills/producing-video/SKILL.md`](skills/producing-video/SKILL.md) |
-| 116 | ✓ | [`skills/promote-post/SKILL.md`](skills/promote-post/SKILL.md) |
-| 117 | ✓ | [`skills/publish-substack-article/SKILL.md`](skills/publish-substack-article/SKILL.md) |
-| 118 | ✓ | [`skills/publish-x-article/scripts/copy_to_clipboard.py`](skills/publish-x-article/scripts/copy_to_clipboard.py) |
-| 119 | ✓ | [`skills/publish-x-article/scripts/parse_markdown.py`](skills/publish-x-article/scripts/parse_markdown.py) |
-| 120 | ✓ | [`skills/publish-x-article/scripts/table_to_image.py`](skills/publish-x-article/scripts/table_to_image.py) |
-| 121 | ✓ | [`skills/publish-x-article/SKILL.md`](skills/publish-x-article/SKILL.md) |
-| 122 | ✓ | [`skills/publish-zsxq-article/scripts/copy_to_clipboard.py`](skills/publish-zsxq-article/scripts/copy_to_clipboard.py) |
-| 123 | ✓ | [`skills/publish-zsxq-article/SKILL.md`](skills/publish-zsxq-article/SKILL.md) |
-| 124 | ✓ | [`skills/python-security-scan/assets/report-template.md`](skills/python-security-scan/assets/report-template.md) |
-| 125 | ✓ | [`skills/python-security-scan/references/deserialization.md`](skills/python-security-scan/references/deserialization.md) |
-| 126 | ✓ | [`skills/python-security-scan/references/django-security.md`](skills/python-security-scan/references/django-security.md) |
-| 127 | ✓ | [`skills/python-security-scan/references/fastapi-security.md`](skills/python-security-scan/references/fastapi-security.md) |
-| 128 | ✓ | [`skills/python-security-scan/references/flask-security.md`](skills/python-security-scan/references/flask-security.md) |
-| 129 | ✓ | [`skills/python-security-scan/references/injection-patterns.md`](skills/python-security-scan/references/injection-patterns.md) |
-| 130 | ✓ | [`skills/python-security-scan/references/owasp-top-10.md`](skills/python-security-scan/references/owasp-top-10.md) |
-| 131 | ✓ | [`skills/python-security-scan/references/python-vulnerabilities.md`](skills/python-security-scan/references/python-vulnerabilities.md) |
-| 132 | ✓ | [`skills/python-security-scan/scripts/dependency-audit.sh`](skills/python-security-scan/scripts/dependency-audit.sh) |
-| 133 | ✓ | [`skills/python-security-scan/scripts/pattern-scanner.py`](skills/python-security-scan/scripts/pattern-scanner.py) |
-| 134 | ✓ | [`skills/python-security-scan/scripts/secret-scanner.py`](skills/python-security-scan/scripts/secret-scanner.py) |
-| 135 | ✓ | [`skills/python-security-scan/SKILL.md`](skills/python-security-scan/SKILL.md) |
-| 136 | ✓ | [`skills/share-reading/SKILL.md`](skills/share-reading/SKILL.md) |
-| 137 | ✓ | [`skills/slides-video/references/overflow-audit.md`](skills/slides-video/references/overflow-audit.md) |
-| 138 | ✓ | [`skills/slides-video/references/planning.md`](skills/slides-video/references/planning.md) |
-| 139 | ✓ | [`skills/slides-video/references/publishing-method.md`](skills/slides-video/references/publishing-method.md) |
-| 140 | ✓ | [`skills/slides-video/references/research-method.md`](skills/slides-video/references/research-method.md) |
-| 141 | ✓ | [`skills/slides-video/references/script-method.md`](skills/slides-video/references/script-method.md) |
-| 142 | ✓ | [`skills/slides-video/SKILL.md`](skills/slides-video/SKILL.md) |
-| 143 | ✓ | [`skills/subtitle-correction/references/srt-format.md`](skills/subtitle-correction/references/srt-format.md) |
-| 144 | ✓ | [`skills/subtitle-correction/references/terminology.md`](skills/subtitle-correction/references/terminology.md) |
-| 145 | ✓ | [`skills/subtitle-correction/scripts/subtitle_tool.py`](skills/subtitle-correction/scripts/subtitle_tool.py) |
-| 146 | ✓ | [`skills/subtitle-correction/SKILL.md`](skills/subtitle-correction/SKILL.md) |
-| 147 | ✓ | [`skills/tweet-insight/SKILL.md`](skills/tweet-insight/SKILL.md) |
-| 148 | ✓ | [`skills/video-planner/references/blog-guidelines.md`](skills/video-planner/references/blog-guidelines.md) |
-| 149 | ✓ | [`skills/video-planner/references/examples-tutorial.md`](skills/video-planner/references/examples-tutorial.md) |
-| 150 | ✓ | [`skills/video-planner/references/examples.md`](skills/video-planner/references/examples.md) |
-| 151 | ✓ | [`skills/video-planner/references/fact-audit.md`](skills/video-planner/references/fact-audit.md) |
-| 152 | ✓ | [`skills/video-planner/references/platform-differences.md`](skills/video-planner/references/platform-differences.md) |
-| 153 | ✓ | [`skills/video-planner/references/script-guidelines.md`](skills/video-planner/references/script-guidelines.md) |
-| 154 | ✓ | [`skills/video-planner/SKILL.md`](skills/video-planner/SKILL.md) |
-| 155 | ✓ | [`skills/video-planner/templates/bilibili.md`](skills/video-planner/templates/bilibili.md) |
-| 156 | ✓ | [`skills/video-planner/templates/blog.md`](skills/video-planner/templates/blog.md) |
-| 157 | ✓ | [`skills/video-planner/templates/fact-check.md`](skills/video-planner/templates/fact-check.md) |
-| 158 | ✓ | [`skills/video-planner/templates/script.md`](skills/video-planner/templates/script.md) |
-| 159 | ✓ | [`skills/video-planner/templates/x.md`](skills/video-planner/templates/x.md) |
-| 160 | ✓ | [`skills/video-planner/templates/youtube.md`](skills/video-planner/templates/youtube.md) |
+| 84 | ✓ | [`skills/fpl-copilot/references/sync.md`](skills/fpl-copilot/references/sync.md) |
+| 85 | ✓ | [`skills/fpl-copilot/references/sync.sh`](skills/fpl-copilot/references/sync.sh) |
+| 86 | ✓ | [`skills/fpl-copilot/SKILL.md`](skills/fpl-copilot/SKILL.md) |
+| 87 | ✓ | [`skills/fpl-copilot/templates/captain-ranking.html`](skills/fpl-copilot/templates/captain-ranking.html) |
+| 88 | ✓ | [`skills/fpl-copilot/templates/fixture-matrix.html`](skills/fpl-copilot/templates/fixture-matrix.html) |
+| 89 | ✓ | [`skills/fpl-copilot/templates/gameweek-report.html`](skills/fpl-copilot/templates/gameweek-report.html) |
+| 90 | ✓ | [`skills/fpl-copilot/templates/squad-view.html`](skills/fpl-copilot/templates/squad-view.html) |
+| 91 | ✓ | [`skills/fpl-copilot/templates/transfer-comparison.html`](skills/fpl-copilot/templates/transfer-comparison.html) |
+| 92 | ✓ | [`skills/interactive-input/references/schema.md`](skills/interactive-input/references/schema.md) |
+| 93 | ✓ | [`skills/interactive-input/SKILL.md`](skills/interactive-input/SKILL.md) |
+| 94 | ✓ | [`skills/mining-session-skills/references/drafting-quality-bars.md`](skills/mining-session-skills/references/drafting-quality-bars.md) |
+| 95 | ✓ | [`skills/mining-session-skills/references/friction-signals.md`](skills/mining-session-skills/references/friction-signals.md) |
+| 96 | ✓ | [`skills/mining-session-skills/references/worth-it-gate.md`](skills/mining-session-skills/references/worth-it-gate.md) |
+| 97 | ✓ | [`skills/mining-session-skills/scripts/extract_session_signals.py`](skills/mining-session-skills/scripts/extract_session_signals.py) |
+| 98 | ✓ | [`skills/mining-session-skills/scripts/test_extract_session_signals.py`](skills/mining-session-skills/scripts/test_extract_session_signals.py) |
+| 99 | ✓ | [`skills/mining-session-skills/SKILL.md`](skills/mining-session-skills/SKILL.md) |
+| 100 | ✓ | [`skills/nextjs-security-scan/assets/report-template.md`](skills/nextjs-security-scan/assets/report-template.md) |
+| 101 | ✓ | [`skills/nextjs-security-scan/references/auth-vulnerabilities.md`](skills/nextjs-security-scan/references/auth-vulnerabilities.md) |
+| 102 | ✓ | [`skills/nextjs-security-scan/references/injection-patterns.md`](skills/nextjs-security-scan/references/injection-patterns.md) |
+| 103 | ✓ | [`skills/nextjs-security-scan/references/nextjs-specific.md`](skills/nextjs-security-scan/references/nextjs-specific.md) |
+| 104 | ✓ | [`skills/nextjs-security-scan/references/owasp-top-10.md`](skills/nextjs-security-scan/references/owasp-top-10.md) |
+| 105 | ✓ | [`skills/nextjs-security-scan/references/xss-patterns.md`](skills/nextjs-security-scan/references/xss-patterns.md) |
+| 106 | ✓ | [`skills/nextjs-security-scan/scripts/dependency-audit.sh`](skills/nextjs-security-scan/scripts/dependency-audit.sh) |
+| 107 | ✓ | [`skills/nextjs-security-scan/scripts/pattern-scanner.py`](skills/nextjs-security-scan/scripts/pattern-scanner.py) |
+| 108 | ✓ | [`skills/nextjs-security-scan/scripts/secret-scanner.py`](skills/nextjs-security-scan/scripts/secret-scanner.py) |
+| 109 | ✓ | [`skills/nextjs-security-scan/SKILL.md`](skills/nextjs-security-scan/SKILL.md) |
+| 110 | ✓ | [`skills/personal-chinese-writing-style/references/article-structure.md`](skills/personal-chinese-writing-style/references/article-structure.md) |
+| 111 | ✓ | [`skills/personal-chinese-writing-style/references/punctuation.md`](skills/personal-chinese-writing-style/references/punctuation.md) |
+| 112 | ✓ | [`skills/personal-chinese-writing-style/references/social-media-style.md`](skills/personal-chinese-writing-style/references/social-media-style.md) |
+| 113 | ✓ | [`skills/personal-chinese-writing-style/references/voice-and-phrasing.md`](skills/personal-chinese-writing-style/references/voice-and-phrasing.md) |
+| 114 | ✓ | [`skills/personal-chinese-writing-style/SKILL.md`](skills/personal-chinese-writing-style/SKILL.md) |
+| 115 | ✓ | [`skills/producing-video/scripts/srt-cues.mjs`](skills/producing-video/scripts/srt-cues.mjs) |
+| 116 | ✓ | [`skills/producing-video/SKILL.md`](skills/producing-video/SKILL.md) |
+| 117 | ✓ | [`skills/promote-post/SKILL.md`](skills/promote-post/SKILL.md) |
+| 118 | ✓ | [`skills/publish-substack-article/SKILL.md`](skills/publish-substack-article/SKILL.md) |
+| 119 | ✓ | [`skills/publish-x-article/scripts/copy_to_clipboard.py`](skills/publish-x-article/scripts/copy_to_clipboard.py) |
+| 120 | ✓ | [`skills/publish-x-article/scripts/parse_markdown.py`](skills/publish-x-article/scripts/parse_markdown.py) |
+| 121 | ✓ | [`skills/publish-x-article/scripts/table_to_image.py`](skills/publish-x-article/scripts/table_to_image.py) |
+| 122 | ✓ | [`skills/publish-x-article/SKILL.md`](skills/publish-x-article/SKILL.md) |
+| 123 | ✓ | [`skills/publish-zsxq-article/scripts/copy_to_clipboard.py`](skills/publish-zsxq-article/scripts/copy_to_clipboard.py) |
+| 124 | ✓ | [`skills/publish-zsxq-article/SKILL.md`](skills/publish-zsxq-article/SKILL.md) |
+| 125 | ✓ | [`skills/python-security-scan/assets/report-template.md`](skills/python-security-scan/assets/report-template.md) |
+| 126 | ✓ | [`skills/python-security-scan/references/deserialization.md`](skills/python-security-scan/references/deserialization.md) |
+| 127 | ✓ | [`skills/python-security-scan/references/django-security.md`](skills/python-security-scan/references/django-security.md) |
+| 128 | ✓ | [`skills/python-security-scan/references/fastapi-security.md`](skills/python-security-scan/references/fastapi-security.md) |
+| 129 | ✓ | [`skills/python-security-scan/references/flask-security.md`](skills/python-security-scan/references/flask-security.md) |
+| 130 | ✓ | [`skills/python-security-scan/references/injection-patterns.md`](skills/python-security-scan/references/injection-patterns.md) |
+| 131 | ✓ | [`skills/python-security-scan/references/owasp-top-10.md`](skills/python-security-scan/references/owasp-top-10.md) |
+| 132 | ✓ | [`skills/python-security-scan/references/python-vulnerabilities.md`](skills/python-security-scan/references/python-vulnerabilities.md) |
+| 133 | ✓ | [`skills/python-security-scan/scripts/dependency-audit.sh`](skills/python-security-scan/scripts/dependency-audit.sh) |
+| 134 | ✓ | [`skills/python-security-scan/scripts/pattern-scanner.py`](skills/python-security-scan/scripts/pattern-scanner.py) |
+| 135 | ✓ | [`skills/python-security-scan/scripts/secret-scanner.py`](skills/python-security-scan/scripts/secret-scanner.py) |
+| 136 | ✓ | [`skills/python-security-scan/SKILL.md`](skills/python-security-scan/SKILL.md) |
+| 137 | ✓ | [`skills/share-reading/SKILL.md`](skills/share-reading/SKILL.md) |
+| 138 | ✓ | [`skills/slides-video/references/overflow-audit.md`](skills/slides-video/references/overflow-audit.md) |
+| 139 | ✓ | [`skills/slides-video/references/planning.md`](skills/slides-video/references/planning.md) |
+| 140 | ✓ | [`skills/slides-video/references/publishing-method.md`](skills/slides-video/references/publishing-method.md) |
+| 141 | ✓ | [`skills/slides-video/references/research-method.md`](skills/slides-video/references/research-method.md) |
+| 142 | ✓ | [`skills/slides-video/references/script-method.md`](skills/slides-video/references/script-method.md) |
+| 143 | ✓ | [`skills/slides-video/SKILL.md`](skills/slides-video/SKILL.md) |
+| 144 | ✓ | [`skills/subtitle-correction/references/srt-format.md`](skills/subtitle-correction/references/srt-format.md) |
+| 145 | ✓ | [`skills/subtitle-correction/references/terminology.md`](skills/subtitle-correction/references/terminology.md) |
+| 146 | ✓ | [`skills/subtitle-correction/scripts/subtitle_tool.py`](skills/subtitle-correction/scripts/subtitle_tool.py) |
+| 147 | ✓ | [`skills/subtitle-correction/SKILL.md`](skills/subtitle-correction/SKILL.md) |
+| 148 | ✓ | [`skills/tweet-insight/SKILL.md`](skills/tweet-insight/SKILL.md) |
+| 149 | ✓ | [`skills/video-planner/references/blog-guidelines.md`](skills/video-planner/references/blog-guidelines.md) |
+| 150 | ✓ | [`skills/video-planner/references/examples-tutorial.md`](skills/video-planner/references/examples-tutorial.md) |
+| 151 | ✓ | [`skills/video-planner/references/examples.md`](skills/video-planner/references/examples.md) |
+| 152 | ✓ | [`skills/video-planner/references/fact-audit.md`](skills/video-planner/references/fact-audit.md) |
+| 153 | ✓ | [`skills/video-planner/references/platform-differences.md`](skills/video-planner/references/platform-differences.md) |
+| 154 | ✓ | [`skills/video-planner/references/script-guidelines.md`](skills/video-planner/references/script-guidelines.md) |
+| 155 | ✓ | [`skills/video-planner/SKILL.md`](skills/video-planner/SKILL.md) |
+| 156 | ✓ | [`skills/video-planner/templates/bilibili.md`](skills/video-planner/templates/bilibili.md) |
+| 157 | ✓ | [`skills/video-planner/templates/blog.md`](skills/video-planner/templates/blog.md) |
+| 158 | ✓ | [`skills/video-planner/templates/fact-check.md`](skills/video-planner/templates/fact-check.md) |
+| 159 | ✓ | [`skills/video-planner/templates/script.md`](skills/video-planner/templates/script.md) |
+| 160 | ✓ | [`skills/video-planner/templates/x.md`](skills/video-planner/templates/x.md) |
+| 161 | ✓ | [`skills/video-planner/templates/youtube.md`](skills/video-planner/templates/youtube.md) |
 
 ---
 

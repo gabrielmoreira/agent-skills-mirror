@@ -132,13 +132,21 @@ gate, receives a primary `advisory-wait` marker, or consumes the primary's
 request cap, and each one's output is ordinary advisory input (classified
 PATH A / PATH B by the snapshot and triage rules). Leaving
 `advisoryWait.secondaryBotLogin` unset (or a value that normalizes to an
-empty list, for example every entry equal to the primary) keeps single-bot
-behavior. Pick each secondary from a requestable reviewer whose
+empty list, for example every entry equal to the primary) sends no secondary
+request. Pick each secondary from a requestable reviewer whose
 `--add-reviewer` request appears on the PR timeline so the once-per-HEAD
 guard can observe it. A configured `advisoryWait.secondaryQuietWindow`
-(F2's quiet-window wait) folds every configured secondary's own settlement
-before it applies — see [IDD policy constants](policy-constants.md) for the
-exact fold rule.
+(F2's quiet-window wait) settles on its window set, which differs from the
+request list: every non-primary advisory bot in `advisoryBotLogins` (the two
+default review bots, CodeRabbit and Codex, when none is resolved), plus the
+explicit `advisoryWait.secondaryBotLogin` entries, minus both identities of
+the primary bot (its `advisoryWait.primaryBotLogin` login and its REST
+login). The window set is empty only when every listed login is a primary
+identity, for example when `advisoryBotLogins` lists only the primary and
+`advisoryWait.secondaryBotLogin` is unset. Then no bot can settle or decline
+the window, and it runs its full length from the last substantive review
+activity (with no such activity to anchor on, it reports elapsed). See
+[IDD policy constants](policy-constants.md) for the exact fold rule.
 
 ## PR Review Profile Edit Surfaces
 
@@ -645,7 +653,13 @@ safety-class Low-tier finding still defers at step 0 as it does today,
 and a pull request whose field is absent changes nothing. The consequence
 to keep in mind is that from step 1 on, a Medium-tier finding of `high`
 urgency that rests on adopt-now condition (a), (b) or (c) but is not
-safety class defers to the bundled follow-up.
+safety class defers to the bundled follow-up. At any step under
+`"severity-tiered"`, the agent reports adopt-now condition (d) with
+`resolve-review-thread --adopt-now`, which turns a `defer` verdict into
+`keep`; the helper refuses the flag when `critiqueLoop.deferByUrgency` is
+not `"severity-tiered"`, with `--path-b`, and when `--tier` or `--urgency`
+is missing (see the Adopt-now rule under
+[Triage record flags](idd-helper-scripts.md#triage-record-flags)).
 
 **Reply and follow-up.** The reply keeps its form:
 `**Rejected** — deferred to follow-up issue #<n> ({clause}): {reason}`.

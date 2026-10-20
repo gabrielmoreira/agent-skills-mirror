@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `apify/apify-mcp-server` — 26 default patterns, 6 followed patterns, 22 file(s) materialized.
+Mirror of `apify/apify-mcp-server` — 26 default patterns, 7 followed patterns, 24 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `apify/apify-mcp-server` — 26 default patterns, 6 followed patterns,
 | Ref Type      | `branch` |
 | Ref           | `master` |
 | Default pats  | 26 |
-| Followed pats | 6 |
-| Files         | 22 |
+| Followed pats | 7 |
+| Files         | 24 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,6 +51,7 @@ Mirror of `apify/apify-mcp-server` — 26 default patterns, 6 followed patterns,
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
+- `tests/UNIT_TESTING_GUIDE.md`
 - `CONTRIBUTING.md`
 - `TOOL_GUIDELINES.md`
 - `DEVELOPMENT.md`
@@ -80,12 +81,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 14 | ✓ | [`src/resources/AGENTS.md`](src/resources/AGENTS.md) |
 | 15 | ✓ | [`src/tools/AGENTS.md`](src/tools/AGENTS.md) |
 | 16 | ✓ | [`src/web/AGENTS.md`](src/web/AGENTS.md) |
-| 17 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 18 | → | [`DEVELOPMENT.md`](DEVELOPMENT.md) |
-| 19 | → | [`README.md`](README.md) |
-| 20 | → | [`res/index.md`](res/index.md) |
-| 21 | → | [`src/web/DESIGN_SYSTEM_AGENT_INSTRUCTIONS.md`](src/web/DESIGN_SYSTEM_AGENT_INSTRUCTIONS.md) |
-| 22 | → | [`TOOL_GUIDELINES.md`](TOOL_GUIDELINES.md) |
+| 17 | ✓ | [`tests/AGENTS.md`](tests/AGENTS.md) |
+| 18 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 19 | → | [`DEVELOPMENT.md`](DEVELOPMENT.md) |
+| 20 | → | [`README.md`](README.md) |
+| 21 | → | [`res/index.md`](res/index.md) |
+| 22 | → | [`src/web/DESIGN_SYSTEM_AGENT_INSTRUCTIONS.md`](src/web/DESIGN_SYSTEM_AGENT_INSTRUCTIONS.md) |
+| 23 | → | [`tests/UNIT_TESTING_GUIDE.md`](tests/UNIT_TESTING_GUIDE.md) |
+| 24 | → | [`TOOL_GUIDELINES.md`](TOOL_GUIDELINES.md) |
 
 ---
 

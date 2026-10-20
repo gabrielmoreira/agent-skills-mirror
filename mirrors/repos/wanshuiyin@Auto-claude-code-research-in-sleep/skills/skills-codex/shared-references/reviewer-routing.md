@@ -2,6 +2,11 @@
 
 ## Default Reviewer Contract
 
+Resolve invocation directives, `.aris/reviewer.json`, then the host default via
+[reviewer-backends.md](reviewer-backends.md). That shared contract governs the
+selectable routes and their session/completion rules. The default below applies
+when no override is selected.
+
 All reviewer-heavy Codex base skills use the same default contract:
 
 - executor: current Codex main agent
@@ -28,19 +33,45 @@ This is the base default for `skills/skills-codex/`. No ARIS `— effort:` level
 > acceptance_status: provisional
 > ```
 >
-> It must never be described as cross-model acceptance. Install the
-> **`skills-codex-claude-review`** or **`skills-codex-gemini-review`** overlay
-> for `review_independence: cross-family` and `acceptance_status: accepted`.
-> A deterministic verifier may also record accepted. `oracle-pro` is GPT family,
-> so it remains provisional for a Codex executor.
+> It must never be described as cross-model acceptance. To select another
+> reviewer, use the complete pack's `antigravity`, `grok`, or `claude-code` route
+> under [reviewer-backends.md](reviewer-backends.md); a partial overlay is not
+> required. Acceptance still requires a completed, in-scope, positive review
+> with known different actual model families. A deterministic verifier can
+> accept only what it actually checks. `oracle-pro` is GPT family, so it remains
+> provisional for a Codex executor.
 
-## Optional direct Grok / Antigravity consultation
+## Selectable external reviewers
 
-When explicitly requested by the user, separately registered Grok or Antigravity MCP tools can read files and discuss a question: `grok` / `grok-reply` (default `grok-4.7` + `xhigh`) and `antigravity` / `antigravity-reply` (default `gemini-3.8-flash-high` + `high`). Pass `prompt` and an explicit `cwd` on the first call; use that service's saved `threadId` and `prompt` for follow-ups. See [grok-exec](../../../mcp-servers/grok-exec/README.md) and [antigravity-exec](../../../mcp-servers/antigravity-exec/README.md) for installation and tool contracts.
+The complete Codex pack supports `— reviewer: antigravity` (alias `gemini`),
+`grok`, and `claude-code` (aliases `claude` and `claude-review`), selected once
+per review session by invocation → project configuration → host default.
+[reviewer-backends.md](reviewer-backends.md) defines first-call/reply parameters,
+actual model/effort evidence, success checks and the local resolver. Antigravity
+and Grok use their own saved thread ids; local Claude Code replies repeat
+cwd/tools and any explicit model override. They do not use native Codex ids.
 
-These are direct consultation tools, not additional `— reviewer:` values. Installing them does not replace a skill's reviewer calls or satisfy its acceptance gate automatically. The existing mainline `— reviewer: agy` route remains `gemini-review`; the Codex base retains `spawn_agent` / `send_input`, and the Gemini overlay retains `review*`. Follow each skill's current reviewer contract for formal reviews.
+These are formal reviewer routes at existing review steps. They preserve the
+review task, primary evidence, fresh-context requirements and verdict schema.
+Antigravity defaults to `gemini-4-argon-high` / `high`, Grok to `grok-4.7` /
+`xhigh`, and Claude Code uses the CLI's configured provider without an effort
+argument. Antigravity can return Claude; Claude Code can return DeepSeek.
+Derive families from actual returned model identities, not route names.
+Completed same-family positive review remains provisional; known cross-family
+positive review can be accepted only after successful completion within the
+required scope. Unknown identity, errors and incomplete scope remain
+unavailable/provisional. A trace classification does not replace the skill's
+substantive audit or submission gate.
+
+The old partial overlays remain for existing installations and receive no new
+workflow features. Their installation does not automatically confer acceptance.
+The legacy `agy` route still means **gemini-review MCP**, not the separate
+Antigravity MCP. Preserve the legacy Oracle and main-pack Copilot contracts below.
 
 ## Default Pattern
+
+These examples apply when the resolved backend is `codex`. Other selections use
+their transport parameters from [reviewer-backends.md](reviewer-backends.md).
 
 Single-round review:
 
@@ -74,15 +105,15 @@ send_input:
 
 ## Oracle Pro Override
 
-When the user explicitly passes `--reviewer: oracle-pro`, switch only the reviewer route:
+When invocation or project selection resolves to `oracle-pro`, switch only the reviewer route:
 
-- default reviewer remains Codex at the call's declared tier (deep-audit: ultra / regular: xhigh) if no reviewer is specified
+- default reviewer remains Codex at the call's declared tier (deep-audit: ultra / regular: xhigh) if no invocation or project override is selected
 - `oracle-pro` is optional, not the base default
 
 Routing rule:
 
 ```text
-If reviewer is omitted or reviewer=codex:
+If the resolved backend is codex:
   use spawn_agent / send_input with the Codex reviewer at the call's declared tier
 
 If reviewer=oracle-pro:
@@ -98,11 +129,12 @@ If reviewer=oracle-pro:
 
 - Base skills do not use the legacy Codex MCP thread path as the default reviewer route.
 - Reviewer independence still applies: pass file paths and task framing, not executor summaries.
-- Overlay packages may replace only the reviewer route.
-- Overlay packages do not change executor semantics.
-- Every trace and audit artifact records `review_independence` and
+- Reviewer selection changes only the review transport; executor semantics and
+  the skill's evidence/verdict requirements stay in force. Legacy overlays are
+  retained for existing installations, not required for new route selection.
+- Every per-call trace and audit artifact records `review_independence` and
   `acceptance_status`; missing metadata is treated as provisional.
-- If `spawn_agent` is unavailable or fails, emit `BLOCKED` /
+- When the selected route is `codex`, if `spawn_agent` is unavailable or fails, emit `BLOCKED` /
   `REVIEW_UNAVAILABLE`; never fabricate a provisional PASS.
 - Do not wrap verdict-bearing skills in `/loop`, cron, or wall-clock retries.
   Schedule only external-world waits, then invoke the reviewer once after the
@@ -111,8 +143,8 @@ If reviewer=oracle-pro:
 
 ## Copilot CLI reviewer behavior in the main skill set
 
-The main `skills/shared-references/reviewer-routing.md` defaults
-`/auto-review-loop` to Copilot CLI's native complementary `rubber-duck`
+After invocation/project selection, the main
+`skills/shared-references/reviewer-routing.md` defaults `/auto-review-loop` to Copilot CLI's native complementary `rubber-duck`
 subagent when a host-session marker binds. Its stop gate requires revalidated
 native lifecycle/model/response evidence and a known cross-family pair. The
 older `--reviewer: copilot` custom-agent subprocess remains an explicit

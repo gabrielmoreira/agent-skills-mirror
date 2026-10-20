@@ -24,7 +24,7 @@ make a request explicit.
 
 ## Completion contract
 
-A retrieval pass is complete only when all five are true:
+A retrieval pass is complete only when all conditions below are true:
 
 1. The task's real business outcome is written as one sentence.
 2. Every relevant carrier declared in the manifest reports `searched`,
@@ -50,21 +50,35 @@ cannot override a newer explicit decision.
 ### 2. Validate the explicit source manifest
 
 The manifest is the only discovery scope. No directory exists merely because a
-convention says it should. Default path:
+convention says it should. Validate the selected manifest:
+
+Run the commands below from the actual installed Skill directory. When invoking
+them from a project directory, use the bundled scripts' absolute paths.
 
 ```bash
 uv run --no-project python scripts/prior_work.py \
   --manifest <path> validate-manifest
 ```
 
-The default is `~/.config/daymade/prior-work/sources.json`; a project may pin
-another path. Global options precede the subcommand. The schema and carrier
-examples are in `references/source-manifest.md`.
+The CLI's `--manifest` override applies only to that invocation. Hooks use
+`PRIOR_WORK_MANIFEST` inherited by their host, or
+`~/.config/daymade/prior-work/sources.json` when unset. Keep CLI operations and
+hooks on the active requirement's required-source contract and recorded state;
+manifest paths may differ when that contract agrees and the hooks can read the
+requirement and receipt.
+
+An `export` in a child shell does not change an already running parent host's
+environment. Complete that host's legitimate current contract. Bind the intended
+manifest for a future host before its hooks activate; do not replace required
+sources mid-task to make a receipt pass.
+
+Place global options before the subcommand. The schema and carrier examples are
+in `references/source-manifest.md`.
 
 ### 3. Retrieve across declared carriers
 
 Write the user-world outcome separately from the proposed implementation. Then
-provide two term sets:
+provide:
 
 - `--outcome-term`: 1–5 artifact/event/entity/date terms that could locate an
   already-finished result (accepted deliverable, canonical transcript, deployed
@@ -89,9 +103,8 @@ uv run --no-project python scripts/prior_work.py retrieve \
   --session-id "$CODEX_SESSION_ID"
 ```
 
-Do NOT redirect the output (`> /tmp/run.txt`) to save it: by design
-(2026-08-27, regression-locked in `test_unquoted_redirection_even_after_
-route_stays_gated`) a file redirection trips the write gate even on a
+Do NOT redirect the output (`> /tmp/run.txt`) to save it: a file
+redirection trips the write gate even on a
 read-only route command, so a redirected retrieve is blocked and the run
 JSON never lands where you aimed. Let the output print and read it from the
 transcript; the durable copy is the run JSON under the manifest's `state_dir`
@@ -205,12 +218,12 @@ reported as "none exists" by paraphrase either. Check index provider coverage
 and freshness, refine indexed terms, and report the remaining gap. Do not run
 an unindexed whole-history label census.
 
-**Results at low confidence are not zero results.** When a carrier reports
+**Returned results need inspection.** When a carrier reports
 `result_count > 0` alongside `terms_passed: false`, expand those ranked results
-before writing the receipt. `terms_passed: false` says only that the query words
-did not appear in their literal form inside the top-K; it does not say the results
-are irrelevant, and under hybrid or BM25 ranking the leading hit is often exactly
-the synonym you were looking for. Write the receipt only after reading them.
+before writing the receipt. Interpret that adapter field through the
+[command-source contract](references/source-manifest.md#source-fields), not as
+a literal-match, ranking-confidence or relevance verdict. Write the receipt only
+after reading the results.
 
 That requirement is about what the receipt must be able to show. A
 `no_reuse_reason` has to point at named results and say why each one does not
@@ -226,6 +239,20 @@ rejects legacy or hand-built receipts that omit either field. Receipt freshness
 is bound to the definitions of **required** carriers. Editing an optional carrier
 does not invalidate already verified required coverage; changing a required root,
 route, mode, authority, or limit does. The full manifest hash remains provenance.
+Between `retrieve` and `complete`, required Git-backed filesystem sources and
+optional sources with a reuse/adapt/reject decision retain their search scope
+and selected file bytes. An unrelated commit or a pure rebase
+does not require retrieval again when those inputs agree. Changes within the
+source's include/exclude scope (including new, deleted or unselected candidates),
+working files, or ignore dependencies require another search. The CLI checks
+this scope with ripgrep's glob rules; legacy runs retain the stricter HEAD and
+mtime checks. Non-Git and command adapters do not acquire a Git scope proof.
+This comparison completes the original retrieval; it does not continuously
+refresh a completed receipt or exempt a new user requirement.
+Gitlink changes do not qualify for this narrow rebinding proof.
+If completion reports changed source evidence or scope, retrieve again for the
+current requirement, inspect the affected results and complete the new run.
+Do not edit saved runs or old receipts to make stale evidence pass.
 Then verify:
 
 ```bash
@@ -347,7 +374,7 @@ path remain possible so the agent can repair the gate without bypassing it.
 ## Surface contract
 
 First use in a session: run `python3 scripts/surface_version.py` once and note
-the 12-char fingerprint — the sha256 of this skill's `scripts/**/*.py` code
+the fingerprint — the sha256 of this skill's `scripts/**/*.py` code
 surface. If it differs from the fingerprint you last saw for this skill, the
 code changed under you: re-read this SKILL.md and the references from disk
 before acting on in-context echoes of them. The fingerprint covers code only;

@@ -50,6 +50,12 @@ The equivalent MCP input is:
 `input_path` must be absolute. `format` accepts `auto`, `asar`, or `directory`.
 `integrity_policy` accepts `fail` or `record-and-continue`; both CLI routes and
 the MCP tool default to `fail`.
+Evidence parameters retain the caller-selected `input_path`, including a
+symlink alias. Both CLI routes anchor relative inputs to their working
+directory without resolving symlinks. The subject and normalized result use
+the resolved path for artifact identity; the selected path remains a separate
+request fact. Older Evidence can omit this parameter; retained records are
+validated without resolving their paths against the live filesystem.
 The result retains the canonical local path, root artifact digest, artifact
 manifest and graph commitments, JavaScript Application Graph, static
 Electron summary, reconstruction statistics, and explicit limitations. It does

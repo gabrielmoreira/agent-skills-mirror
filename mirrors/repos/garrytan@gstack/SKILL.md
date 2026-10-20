@@ -16,14 +16,6 @@ triggers:
 <!-- AUTO-GENERATED from SKILL.md.tmpl — do not edit directly -->
 <!-- Regenerate: bun run gen:skill-docs -->
 
-
-## When to invoke this skill
-
-Sends any gstack request to the right skill
-(planning, review, QA, shipping, debugging, docs, security, design). Routes QA by
-intent and browser interaction to /browse. Use when you invoke gstack without a specific
-skill, or ask "which gstack skill fits this?".
-
 ## Preamble (run first)
 
 ```bash
@@ -230,6 +222,27 @@ Generic “second opinion”, “outside review”, or “cross-model review” 
 - User asks what gstack has learned, "show learnings" → invoke `/learn`
 - User asks to tune question sensitivity, "stop asking me that" → invoke `/plan-tune`
 - User asks for code quality dashboard, "health check" → invoke `/health`
+- Voice trigger "auto plan", "automatic review" → invoke `/autoplan`
+- Voice trigger "speed test", "check performance" → invoke `/benchmark`
+- Voice trigger "compare models", "model shootout", "which model is best" → invoke `/benchmark-models`
+- Voice trigger "open the browser", "look at this page" → invoke `/browse`
+- Voice trigger "code x", "code ex", "get another opinion" → invoke `/codex`
+- Voice trigger "see-so", "see so", "security review", "security check", "vulnerability scan", "run security" → invoke `/cso`
+- Voice trigger "build the design", "code the mockup", "make it real" → invoke `/design-html`
+- Voice trigger "dx audit", "test the developer experience", "try the onboarding", "developer experience test" → invoke `/devex-review`
+- Voice trigger "upgrade the tools", "update the tools", "gee stack upgrade", "g stack upgrade" → invoke `/gstack-upgrade`
+- Voice trigger "clean the iOS debug bridge", "remove DebugBridge", "strip the gstack iOS instrumentation" → invoke `/ios-clean`
+- Voice trigger "review the iOS design", "audit the iPhone app's visuals", "design QA the iPhone app" → invoke `/ios-design-review`
+- Voice trigger "fix the iOS bug", "patch the iPhone app", "auto-fix the iOS issue" → invoke `/ios-fix`
+- Voice trigger "iOS quality check", "test the iPhone app", "test the iPad app", "run iOS QA" → invoke `/ios-qa`
+- Voice trigger "resync the iOS debug bridge", "regenerate iOS accessors", "update the gstack iOS instrumentation" → invoke `/ios-sync`
+- Voice trigger "make this a pdf", "make it a pdf", "export to pdf", "turn this into a pdf", "turn this markdown into a pdf", "generate a pdf", "make a pdf from", "pdf this markdown" → invoke `/make-pdf`
+- Voice trigger "show me the browser" → invoke `/open-gstack-browser`
+- Voice trigger "pair agent", "connect agent", "share my browser", "remote browser access" → invoke `/pair-agent`
+- Voice trigger "dx review", "developer experience review", "devex review", "devex audit", "API design review", "onboarding review" → invoke `/plan-devex-review`
+- Voice trigger "tech review", "technical review", "plan engineering review" → invoke `/plan-eng-review`
+- Voice trigger "quality check", "test the app", "run QA" → invoke `/qa`
+- Voice trigger "bug report", "just check for bugs" → invoke `/qa-only`
 
 **Route only to skills in your available-skills list.** A rule above whose skill is
 not listed there is turned off on this install; skip it, never try to invoke it.

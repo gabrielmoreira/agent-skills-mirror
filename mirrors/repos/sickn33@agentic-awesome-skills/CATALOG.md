@@ -1,8 +1,8 @@
 # Skill Catalog
 
-Generated at: 2026-10-18T21:53:06.000Z
+Generated at: 2026-10-19T08:27:36.000Z
 
-Total skills: 2712
+Total skills: 2715
 
 ## agent-behavior (5)
 
@@ -985,7 +985,7 @@ Total skills: 2712
 | --- | --- | --- | --- | --- | --- |
 | `web-project-brainstorming` | Masterclass framework for brainstorming web development projects and page designs. Outlines structural phases for concept, UX flow, styling aesthetics, techn... | safe | self | brainstorming, project-planning, web-development, product-scoping, design-system, architecture | brainstorming, project-planning, web-development, product-scoping, design-system, architecture, web, masterclass, framework, development, page, designs |
 
-## content (76)
+## content (77)
 
 | Skill | Description | Risk | Source | Tags | Triggers |
 | --- | --- | --- | --- | --- | --- |
@@ -1051,6 +1051,7 @@ Total skills: 2712
 | `seo-snippet-hunter` | Formats content to be eligible for featured snippets and SERP features. Creates snippet-optimized content blocks based on best practices. Use PROACTIVELY for... | none | community | seo, snippet, hunter | seo, snippet, hunter, formats, content, eligible, featured, snippets, serp, features, creates, optimized |
 | `seo-structure-architect` | Analyzes and optimizes content structure including header hierarchy, suggests schema markup, and internal linking opportunities. Creates search-friendly cont... | safe | community | seo, structure | seo, structure, architect, analyzes, optimizes, content, including, header, hierarchy, suggests, schema, markup |
 | `slideops` | Turn a repository into a cited HTML slide deck and detect the day it drifts from the code. Citations record file, lines, and hash; a stdlib check reports CUR... | critical | glukicov/slideops | slides, presentations, documentation, docs-as-code, drift-detection, citations, html | slides, presentations, documentation, docs-as-code, drift-detection, citations, html, slideops, turn, repository, cited, slide |
+| `story-bible-continuity` | Deterministic continuity check for long manuscripts against a story bible: name drift, age arithmetic, era anachronisms, unpaid foreshadowing, POV leaks. Use... | safe | self | writing, novel, continuity, fiction, consistency, manuscript, story-bible | writing, novel, continuity, fiction, consistency, manuscript, story-bible, story, bible, deterministic, check, long |
 | `technical-tutorials` | When the user wants to create step-by-step technical tutorials, quickstarts, or code walkthroughs. Trigger phrases include "tutorial," "quickstart," "getting... | critical | jonathimer/devmarketing-skills | technical, tutorials | technical, tutorials, user, wants, step, quickstarts, code, walkthroughs, trigger, phrases, include, tutorial |
 | `tutorial-engineer` | Creates step-by-step tutorials and educational content from code. Transforms complex concepts into progressive learning experiences with hands-on examples. | safe | community | tutorial | tutorial, engineer, creates, step, tutorials, educational, content, code, transforms, complex, concepts, progressive |
 | `unslop-file` | Humanize natural-language memory files (CLAUDE.md, todos, preferences, docs) by removing AI-isms and adding burstiness while preserving every code block, URL... | critical | MohamedAbdallah-14/unslop | unslop, file | unslop, file, humanize, natural, language, memory, files, claude, md, todos, preferences, docs |
@@ -2186,12 +2187,13 @@ Total skills: 2712
 | `xiaohongshu-content-strategist` | Create viral Xiaohongshu (小红书) content with platform-native strategy, save-rate optimization, trending formats, and search SEO for China's #1 lifestyle platf... | safe | demo112/yunqu-ai-skills | xiaohongshu, chinese-market, content-strategy, social-media, marketing, 红书, 小红书 | xiaohongshu, chinese-market, content-strategy, social-media, marketing, 红书, 小红书, content, strategist, viral, platform, native |
 | `youtube-automation` | Automate YouTube tasks via Rube MCP (Composio): upload videos, manage playlists, search content, get analytics, and handle comments. Always search tools firs... | critical | community | youtube | youtube, automation, automate, tasks, via, rube, mcp, composio, upload, videos, playlists, search |
 
-## mcp (7)
+## mcp (8)
 
 | Skill | Description | Risk | Source | Tags | Triggers |
 | --- | --- | --- | --- | --- | --- |
 | `ai-dev-jobs-mcp` | Search indexed AI and ML jobs, inspect listings and employers, match roles, and view salary and market stats via AI Dev Jobs MCP | safe | https://aidevboard.com | mcp, jobs, ai-jobs, ml-jobs, recruiting, job-search, career | mcp, jobs, ai-jobs, ml-jobs, recruiting, job-search, career, ai, dev, search, indexed, ml |
 | `cowork-to-code-bridge` | Use an already-installed, independently verified cowork-to-code bridge to run narrowly approved actions on the user's own macOS, Linux, or WSL2 machine throu... | critical | abhinaykrupa/cowork-to-code-bridge | cowork, to, code, bridge | cowork, to, code, bridge, already, installed, independently, verified, run, narrowly, approved, actions |
+| `keenable-search-mcp` | Search the public web with site and date filters, and read pages with an extraction prompt, through Keenable's keyless MCP server. Use when the user chooses ... | safe | self | mcp, web-search, research, citations | mcp, web-search, research, citations, keenable, search, public, web, site, date, filters, read |
 | `mercury-mcp` | Cheatsheet for the Mercury (proton) MCP tools. Use when connected to the Mercury MCP server to look up which mercury_* tool to call for messaging teammates, ... | critical | community | mercury, mcp | mercury, mcp, cheatsheet, proton, connected, server, look, up, which, call, messaging, teammates |
 | `not-human-search-mcp` | Search AI-ready websites, inspect indexed site details, verify MCP endpoints, and discover tools and APIs using the Not Human Search MCP server | safe | https://nothumansearch.ai | mcp, search, ai-discovery, api-discovery, mcp-verification, agent-tools | mcp, search, ai-discovery, api-discovery, mcp-verification, agent-tools, human, ai, websites, inspect, indexed, site |
 | `parallel-search-mcp` | Search the public web and verify sources with Parallel's free Search MCP. Use when the user chooses Parallel or its connected tools for current information a... | safe | self | mcp, web-search, research, citations | mcp, web-search, research, citations, parallel, search, public, web, verify, sources, free, user |
@@ -2445,7 +2447,7 @@ Total skills: 2712
 | --- | --- | --- | --- | --- | --- |
 | `idea-os` | Five-phase pipeline (triage → clarify → research → PRD → plan) that turns a raw idea into four linked files: clarifying questions, deep research, a PRD with ... | safe | Slashworks-biz/idea-os | product-management, prd, market-research, mvp, idea-validation, jtbd, swot, competitor-analysis, founder, non-technical | product-management, prd, market-research, mvp, idea-validation, jtbd, swot, competitor-analysis, founder, non-technical, idea, os |
 
-## productivity (53)
+## productivity (54)
 
 | Skill | Description | Risk | Source | Tags | Triggers |
 | --- | --- | --- | --- | --- | --- |
@@ -2492,6 +2494,7 @@ Total skills: 2712
 | `obsidian-markdown` | Create and edit Obsidian Flavored Markdown with wikilinks, embeds, callouts, properties, and other Obsidian-specific syntax. Use when working with .md files ... | critical | https://github.com/kepano/obsidian-skills | obsidian, markdown | obsidian, markdown, edit, flavored, wikilinks, embeds, callouts, properties, other, specific, syntax, working |
 | `office-productivity` | Office productivity workflow covering document creation, spreadsheet automation, presentation generation, and integration with LibreOffice and Microsoft Offi... | safe | personal | office, productivity | office, productivity, covering, document, creation, spreadsheet, automation, presentation, generation, integration, libreoffice, microsoft |
 | `one-drive-automation` | Automate OneDrive file management, search, uploads, downloads, sharing, permissions, and folder operations via Rube MCP (Composio). Always search tools first... | critical | community | one, drive | one, drive, automation, automate, onedrive, file, search, uploads, downloads, sharing, permissions, folder |
+| `ppl-personal-crm` | Uses the ppl personal CRM over MCP to prepare for conversations, recall facts about people, log interactions and manage relationship follow-ups. | critical | self | crm, contacts, relationship-memory, mcp | crm, contacts, relationship-memory, mcp, ppl, personal, uses, prepare, conversations, recall, facts, about |
 | `project-memory-log` | Maintain one operation log and one deduplicated document catalog for long-running projects. Use when resuming project work or tracing durable document change... | critical | self | project-memory, document-catalog, traceability, local-workflow | project-memory, document-catalog, traceability, local-workflow, memory, log, maintain, one, operation, deduplicated, document, catalog |
 | `read-all-adrs` | Read every ADR in a project before summarizing architectural context or decisions. | safe | davidondrej/skills | adr, documentation, architecture | adr, documentation, architecture, read, all, adrs, every, before, summarizing, architectural, context, decisions |
 | `rich-elicitation` | Asks clarifying questions in multiple rounds before starting ambiguous tasks. Fires when 2+ task dimensions each have 3+ viable answers. | none | self | elicitation, clarifying-questions, ambiguity, multi-round, prompt-engineering | elicitation, clarifying-questions, ambiguity, multi-round, prompt-engineering, rich, asks, clarifying, questions, multiple, rounds, before |

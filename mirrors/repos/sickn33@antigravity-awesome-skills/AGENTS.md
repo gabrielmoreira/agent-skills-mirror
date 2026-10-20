@@ -77,3 +77,5 @@ or PR-controlled ledger is authorized.
 ### Maintainer state and attribution
 
 Use private external review receipts and batch journals as described in the maintenance contract. They never replace current protection or exact-head evidence. Update code, rules, canonical skill, installed skill and negative regressions together when the user requests a workflow change.
+
+Use `maintenance:cycle start/intake/merge/verify` for a measured source batch (its merge delegates to `merge:batch`); finish this no-release cycle before any authorized release preparation; read `docs/maintainers/maintenance-cycle.md`. Record blockers once, continue independent PRs and reuse the existing host verifier. Do not run release steps when no release was requested.

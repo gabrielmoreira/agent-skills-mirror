@@ -64,11 +64,11 @@ Query parameters used by the skill:
 
 | Param | Maps to CLI flag | Notes |
 |-------|------------------|-------|
-| `q` | `--query` / `-q` | Keyword full-text query. |
+| `q` | `--query` / `-q` | Keyword full-text query. Uppercase `OR` separates up to 5 alternatives (more is a 400); a leading `title:` restricts an alternative to the title. |
 | `limit` | `--limit` / `-n` | Page size. Default 25 in the CLI. |
 | `offset` | (derived) | `offset = (page - 1) * limit`. |
 | `posted_within_days` | `--jobage` | Restrict to postings from the last N days. |
-| `regions` | `--region` | Repeatable; OR within the facet. Values like `global`, `eu`, `us`, `apac`, `latam`, `cis`. |
+| `regions` | `--region` | Repeatable; OR within the facet. Values: `global`, `eu`, `uk`, `north_america`, `latam`, `apac`, `mena`, `africa`, `cis`. `us` is a country (`countries`), not a region. |
 | `countries` | `--country` | Repeatable; ISO-3166 alpha-2 (lowercased). |
 | `cities` | `--city` | Repeatable; display-name city. |
 | `seniority` | `--seniority` | Repeatable; `junior`, `middle`, `senior`, `staff`, … |

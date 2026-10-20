@@ -7,6 +7,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [19.11.0] - 2026-10-19 - "Three Reviewed Additions And A Continuity Checker"
+
+> Installable skill library update for Claude Code, Cursor, Codex CLI, Gemini CLI, Antigravity, and related AI coding assistants. Adds **3** catalog skills and ships **2,715** skills.
+
+### Start here
+
+- Install: `npx agentic-awesome-skills@19.11.0`
+- [Choose your tool](README.md#choose-your-tool)
+- [Best skills by tool](README.md#best-skills-by-tool)
+- [Bundles](docs/users/bundles.md)
+- [Workflows](docs/users/workflows.md)
+
+### Added
+
+- **ppl-personal-crm** - use the ppl personal CRM over MCP to prepare for conversations, recall facts about people, log interactions and manage follow-ups. Resolves the exact person first, reads only what the task needs, writes only on explicit request, and never describes a draft as sent. `risk: critical` because it can write to personal records.
+- **story-bible-continuity** - deterministically check a long manuscript against a story bible for name drift, age arithmetic, era anachronisms, unpaid foreshadowing and POV leaks, with `file:line` evidence and a manuscript-bug / stale-bible / retcon verdict per hit. Ships its stdlib-only Python checker as reviewable source in `references/sbc-checker.md`; no model, no network.
+- **keenable-search-mcp** - search the public web with enforced `site` and `published_after`/`published_before` parameters, and read pages with an extraction prompt, through Keenable's keyless MCP server. States that queries, URLs and prompts go to Keenable, warns that extraction output is model-written rather than a quote, and never switches provider silently.
+
+### Merge batch
+
+- Six open PRs were triaged, all of them touching catalog skills. Three merged: `ppl-personal-crm`, `story-bible-continuity` and `keenable-search-mcp`, each refreshed onto current `main` with its complete skill tree byte-identical to the reviewed head.
+- Where the automated review did not produce a passing result, approval used the exact-head maintainer attestation path, bound to the full 40-character head SHA. `manual-review-required` is recorded as such and is not a Tessl pass.
+- Three PRs remain open with one exact blocker each, and none of them was merged or bypassed: `goal-instruction-writer` carries `skills/<id>/agents/openai.yaml` and `walkthrough.md`, which the fork intake classifies as unapproved paths; `taasky` is an official skill whose source is published only as a docs-site well-known file, so the changed-skill evaluator rejects it for a missing `source_repo`; `krexa` 1.3.3 bumps the pinned `source:` field, which the provenance-identity gate blocks because the trusted ledger records `source_repo` renames only.
+
+### Review scope
+
+Every new skill was reviewed in full at its exact submitted bytes, including bundled references and the embedded checker source in `story-bible-continuity`. The embedded checker was extracted, compiled and run against a two-chapter fixture to confirm it reports the intended findings and exits non-zero. `ppl-personal-crm` and `keenable-search-mcp` were reviewed statically; neither was exercised against its live hosted service during review. The broader catalog audit remains unfinished.
+
+### Thanks
+
+Thanks to **@dbhurley** for `ppl-personal-crm`, **@jiawood2006** for `story-bible-continuity`, and **@keenableai** for `keenable-search-mcp`, and to the upstream authors whose licensed material is included.
+
 ## [19.10.1] - 2026-10-18 - "Verified Cross-Platform Distribution"
 
 The catalog remains at **2,712 skills**, with no new skills in this patch. This corrects the distribution checks that blocked npm and Pages publication of 19.10.0; its tag is preserved unchanged.

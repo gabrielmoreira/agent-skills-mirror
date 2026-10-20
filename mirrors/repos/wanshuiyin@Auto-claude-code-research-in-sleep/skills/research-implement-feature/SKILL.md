@@ -2,10 +2,21 @@
 name: research-implement-feature
 description: "Build a working artifact from a plain \"implement X for me\" request: a running end-to-end spine first, then one feature per rung, with every under-determined decision written to an assumption ledger BEFORE the code that depends on it and a cross-model sweep for the ones that slipped through undeclared. Use when user says \"给我实现\", \"implement X\", \"帮我做一个能跑的\", \"先搭个原型再加功能\", \"build this feature\", \"prototype then extend\", or hands over a capability description rather than an experiment plan."
 argument-hint: "[what-to-build] [— effort: lite|balanced|max|beast] [— ask: never|semantic] [— base repo: <url>]"
-allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Skill, AskUserQuestion, mcp__codex__codex, mcp__codex__codex-reply
+allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Skill, AskUserQuestion, mcp__codex__codex, mcp__codex__codex-reply, mcp__antigravity__antigravity, mcp__antigravity__antigravity-reply, mcp__grok__grok, mcp__grok__grok-reply, mcp__claude-review__review, mcp__claude-review__review_reply, mcp__claude-review__review_start, mcp__claude-review__review_reply_start, mcp__claude-review__review_status
 ---
 
 # Research Implement: Feature
+
+> **Before each reviewer slot**, follow [Selectable Reviewers](../shared-references/reviewer-backends.md):
+> resolve invocation → `.aris/reviewer.json` → Claude Code default (Codex MCP)
+> with `reviewer_route.py` through the canonical helper resolver, preserving this
+> slot's tier, fresh contexts, source/image inputs and deterministic gates.
+> Codex examples/pins below apply only to `backend=codex`; other routes use their
+> own first-call/reply contract. Save the route and actual returned identity;
+> unavailable selections are `REVIEW_UNAVAILABLE`. Classify acceptance from actual
+> families/completion/scope. Forward invocation reviewer/model/effort overrides
+> to reviewer-bearing children. Generation workers are unchanged.
+
 
 Build: **$ARGUMENTS**
 

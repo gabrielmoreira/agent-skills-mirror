@@ -349,7 +349,7 @@ covers it in both engines, every language and a narrow window.
 
 ### Shared UI rules
 
-- Settings → General is laid out as macOS System Settings is (1ooogle on X): a row says its name alone when that says enough (Appearance, Colorblind mode, Language, Text size, the fonts, the tray click, the Codex model rows, Open at login, Show in Dock), and keeps one short line where the setting isn't clear from its name or has a consequence (Long conversations, Lightweight mode, Prevent sleep, Session terminal, Codex subagents). A font row's line shows only while its fonts load or fail; the text size keys are the choices' tooltip, and Colorblind mode's note is its Off/On control's (`#colorblindSegs`). Colorblind mode (`settings.Colorblind`, `data-colorblind="1"` on `:root`, #2073) switches the chart series (`--c1`…`--c7`) in both light and dark themes to an Okabe–Ito palette where adjacent series differ in hue and lightness. On a quota curve each window (`data-series`, its index mod 7, set by `drawQuotaPlot` and `quotaCurve`'s legend only) gets a dash of its own on `path.qc-line`, its legend key shows a sample of that line (`.qc-sample`) for the dot, and the even paces (`line.qc-even`) are dotted; the curve's tooltip says so. The balance curve sets no `data-series` and keeps its solid line, dashed fit and dot. The Context tab's "good" grade, which takes `--c2` as a colour rather than a series, keeps a blue (`--c1`). Language is one menu button showing the language picked, opened in the app's menu (`renderLangPick`). See `settings-general.test.cjs` and `quota-curve.test.cjs`.
+- Settings → General is laid out as macOS System Settings is (1ooogle on X): a row says its name alone when that says enough (Appearance, Colorblind mode, Language, Text size, the fonts, the tray click, the Codex model rows, Open at login, Show in Dock), and keeps one short line where the setting isn't clear from its name or has a consequence (Long conversations, Lightweight mode, Prevent sleep, Session terminal, Codex subagents). A font row's line shows only while its fonts load or fail; the text size keys are the choices' tooltip, and Colorblind mode's note is its Off/On control's (`#colorblindSegs`). Colorblind mode (`settings.Colorblind`, `data-colorblind="1"` on `:root`, #2073) switches the chart series (`--c1`…`--c7`) in both light and dark themes to an Okabe–Ito palette where adjacent series differ in hue and lightness. On a quota curve each window (`data-series`, its index mod 7, set by `drawQuotaPlot` and `quotaCurve`'s legend only) gets a dash of its own on `path.qc-line`, its legend key shows a sample of that line (`.qc-sample`) for the dot, and the even paces (`line.qc-even`) are dotted; the curve's tooltip says so. The balance curve sets no `data-series` and keeps its solid line, dashed fit and dot. The Context tab's "good" grade, which takes `--c2` as a colour rather than a series, keeps a blue (`--c1`). Language is one menu button showing the language picked, opened in the app's menu (`renderLangPick`). See `settings-general.test.cjs` and `quota-curve.test.cjs`. Open at login reads `autostart.Enabled`, which on macOS 13 and later also asks Background Task Management about magpie's launch agent (`SMAppService.statusForLegacyURL:`, matched by the plist's Label, not its path); a record the user switched off in System Settings › General › Login Items reads as needing allowing, and the row keeps On with one line saying so and a button that opens Login Items (`/api/open` allows that one `x-apple.systempreferences` URL). The status read again when the window comes back to the front clears the line. On macOS 12, in a build without cgo, or when the system can't be asked, the plist alone decides, as before (#2120, `login-allow.test.cjs`, `login_allow_test.go`).
 - Settings' search-provider picker offers **Off**, saved as `searcher: "off"`. Its help explains API-only search and suppresses provider fallback/own-search hints while off; the search priority row is hidden because no provider competes with the APIs. See [gateway search behavior](gateway-routing.md#turning-provider-search-off), [`renderSearcher`](../../internal/gui/assets/app.js), `TestSettingsSearchProviderOff` and `searcher-pick.test.cjs`.
 - Settings' search APIs are asked in their listed order: each API's row (with its keys' row) is dragged as one, or moved with Alt+↑/↓, and has a switch that turns it off without removing its key (#2286). See [the search APIs' order](gateway-routing.md#the-search-apis-order-and-one-switched-off), `searchArrange` in [`app.js`](../../internal/gui/assets/app.js) and `search-order.test.cjs`.
 - Settings' Search APIs add row has a base URL field under the key for every API (#1580): the vendor's own address is its placeholder, picking an API already added fills in its saved URL so a new key alone keeps it, and Add with no key changes only the URL. See [a search API's base URL](gateway-routing.md#a-search-apis-base-url), [`renderSearch`](../../internal/gui/assets/app.js) and `search-api.test.cjs`.
@@ -396,6 +396,38 @@ The Plugins page updates the npm search-results section when a search answers,
 leaving suggested plugin cards in place so a click begun before the answer still
 opens the intended plugin. `plugin-market.test.cjs` holds the search response
 between pointerdown and pointerup to check this in Chromium and WebKit.
+
+### Routing shown by the magpie that serves the gateway
+
+A magpie on this computer that does not serve the gateway shows the serving
+one's routing in its Routing page, instead of the notice that its routing
+cannot be watched here (#2606). The trigger is `served.Load()` being nil while
+a magpie answers at the gateway's address. Then `/api/gateway/trace` reads
+the serving magpie's `GET /v1/magpie/trace` over loopback
+([`OwnerTrace`](../../internal/gateway/trace.go)) and answers with it as its
+own (`mine` true, so the page plays it), and `/api/lanes` reads
+`GET /v1/magpie/concurrency` ([`OwnerLanes`](../../internal/gateway/trace.go))
+so a provider's rows show the same pills. Both are read on loopback alone
+(`ownerURL`): a gateway address on another interface or host is never asked,
+whatever `MAGPIE_ADDR` says, and one listening everywhere is read at
+127.0.0.1. `OwnerTrace` lets a hung magpie go 5s past the 25s long poll, or
+when the page stops asking; `OwnerLanes` waits 700ms, as `ServedBy` does, and
+is asked only when a magpie answers. The state read carries the serving
+magpie's `serves` and `pid` ([`gatewayJSON`](../../internal/gui/providers.go)),
+and the trace carries them as `by`. The Routing page's heading names the
+magpie from `by` ("serve (pid 49217) is routing · 127.0.0.1:3525"), so the
+name goes with the trace: when the page's trace comes from another magpie
+than before (a takeover, either way), it drops the routes it had and reads
+the new one's whole trace. Nothing is written; serving and takeover are
+unchanged. A
+magpie that serves the gateway keeps its own trace, and one older than the
+endpoint keeps the notice as before (a refused or unreadable read is unknown,
+never empty: `OwnerTrace` says so with its second result). See
+`TestConsoleShowsTheServingMagpiesRouting` and
+`TestConsoleKeepsTheNoticeFromAnOlderGateway` in
+[`trace_peer_test.go`](../../internal/gui/trace_peer_test.go), and
+`TestGatewayTraceIsLoopbackOnly` in
+[`trace_peer_test.go`](../../internal/gateway/trace_peer_test.go).
 
 ## Verification
 

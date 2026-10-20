@@ -20,15 +20,6 @@ allowed-tools:
 <!-- AUTO-GENERATED from SKILL.md.tmpl — do not edit directly -->
 <!-- Regenerate: bun run gen:skill-docs -->
 
-
-## When to invoke this skill
-
-Wraps the gstack-gbrain-sync orchestrator with
-state probing, native code-surface registration, capability checks,
-and a verdict block. Re-runnable, idempotent. Use when: "sync gbrain",
-"refresh gbrain", "re-index this repo", "gbrain search isn't finding
-things".
-
 ## Preamble (run first)
 
 ```bash
@@ -554,8 +545,8 @@ once. Count first (`--sources transcript` counts sessions that are not
 consented yet):
 
 ```bash
-bun run ~/.claude/skills/gstack/bin/gstack-memory-ingest.ts --probe --sources transcript
-bun run ~/.claude/skills/gstack/bin/gstack-memory-ingest.ts --probe --sources transcript --all-history
+bun --no-env-file --config=/dev/null run ~/.claude/skills/gstack/bin/gstack-memory-ingest.ts --probe --sources transcript
+bun --no-env-file --config=/dev/null run ~/.claude/skills/gstack/bin/gstack-memory-ingest.ts --probe --sources transcript --all-history
 ```
 
 If both report `Total files in window: 0`, ask yes/no: "Ingest coding-agent
@@ -603,7 +594,7 @@ lowercase memory types (or `all`). Any other value is not used: do not run the
 command; tell the user which value was rejected.
 
 ```bash
-bun run ~/.claude/skills/gstack/bin/gstack-gbrain-sync.ts <user-args>
+bun --no-env-file --config=/dev/null run ~/.claude/skills/gstack/bin/gstack-gbrain-sync.ts <user-args>
 ```
 
 The orchestrator runs three stages: code → memory → brain-sync. Each stage failure is non-fatal; subsequent stages
@@ -618,7 +609,7 @@ tmp-file + atomic rename. Concurrent runs are blocked by a lock file at
 After the sync run, verify the cwd source registration and its page count:
 
 ```bash
-SOURCE_JSON=$(bun run ~/.claude/skills/gstack/bin/gstack-gbrain-read-capability.ts --source-only 2>/dev/null)
+SOURCE_JSON=$(bun --no-env-file --config=/dev/null run ~/.claude/skills/gstack/bin/gstack-gbrain-read-capability.ts --source-only 2>/dev/null)
 SOURCE_ID=$(printf '%s' "$SOURCE_JSON" | jq -er 'if .status=="source" then .source_id else empty end' 2>/dev/null)
 PAGES=$(printf '%s' "$SOURCE_JSON" | jq -er 'if .status=="source" and (.page_count | type)=="number" then .page_count else empty end' 2>/dev/null)
 echo "cwd source: $SOURCE_ID, page_count: $PAGES"
@@ -678,7 +669,7 @@ check, matching the cwd `SOURCE_ID` literally. `doctor --fast` skips the DB
 checks that carry it, so this reads `--scope=brain` (DB checks, no skill walk):
 
 ```bash
-SOURCE_JSON=$(bun run ~/.claude/skills/gstack/bin/gstack-gbrain-read-capability.ts --source-only 2>/dev/null)
+SOURCE_JSON=$(bun --no-env-file --config=/dev/null run ~/.claude/skills/gstack/bin/gstack-gbrain-read-capability.ts --source-only 2>/dev/null)
 SOURCE_ID=$(printf '%s' "$SOURCE_JSON" | jq -er 'if .status=="source" then .source_id else empty end' 2>/dev/null)
 CYCLE=unknown
 CYCLE_WHY=""
@@ -756,7 +747,7 @@ only that a cycle has run, not that edges exist (a non-code-aware pack reports
 Capability check:
 
 ```bash
-bun run ~/.claude/skills/gstack/bin/gstack-gbrain-read-capability.ts <user-args>
+bun --no-env-file --config=/dev/null run ~/.claude/skills/gstack/bin/gstack-gbrain-read-capability.ts <user-args>
 ```
 
 `<user-args>` are the same checked flags this /sync-gbrain invocation passed to

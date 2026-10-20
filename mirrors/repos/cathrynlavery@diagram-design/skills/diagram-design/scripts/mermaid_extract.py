@@ -1163,6 +1163,15 @@ def _parse_er(
 def parse_block(block: SourceBlock) -> Diagram:
     lines = _prepared_lines(block)
     kind, direction, header_position = _kind_and_direction(lines)
+    if kind == "flowchart":
+        # `graph TD; A-->B;` is valid: statements may follow the header's
+        # semicolon on the same line, so keep them as the first statement.
+        line_number, header = lines[header_position]
+        rest = re.match(r"^\s*(?:flowchart|graph)\s+(?:TD|TB|LR|RL|BT)\b", header, re.I)
+        tail = header[rest.end() :].lstrip() if rest else ""
+        if tail.startswith(";"):
+            lines[header_position] = (line_number, header[: rest.end()])
+            lines.insert(header_position + 1, (line_number, tail[1:]))
     diagram = Diagram(block.index, kind, block.source_line, direction=direction)
     if kind == "flowchart":
         _parse_flowchart(diagram, lines, header_position)

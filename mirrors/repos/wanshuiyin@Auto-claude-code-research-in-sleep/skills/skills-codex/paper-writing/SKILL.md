@@ -2,15 +2,27 @@
 name: paper-writing
 description: "Workflow 3: Full paper writing pipeline that goes from a narrative report to a polished, submission-ready PDF. Use when user says \"写论文全流程\", \"write paper pipeline\", \"从报告到PDF\", \"paper writing\", or wants the complete paper generation workflow."
 argument-hint: "[narrative-report-path-or-topic]"
-allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Skill
+allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Skill, mcp__antigravity__antigravity, mcp__antigravity__antigravity-reply, mcp__grok__grok, mcp__grok__grok-reply, mcp__claude-review__review, mcp__claude-review__review_reply, mcp__claude-review__review_start, mcp__claude-review__review_reply_start, mcp__claude-review__review_status
 ---
 
 # Workflow 3: Paper Writing Pipeline
 
-> **Codex assurance:** every base semantic audit is same-family provisional.
-> The pipeline still completes when all mandatory audits are green, but the
-> Final Report must say `Submission-ready: provisional`; only cross-family or
-> deterministic accepted audit coverage may say `yes`.
+> **Before each reviewer slot**, follow [Selectable Reviewers](../shared-references/reviewer-backends.md):
+> resolve invocation → `.aris/reviewer.json` → Codex default (fresh native reviewer)
+> with `reviewer_route.py` through the canonical helper resolver, preserving this
+> slot's tier, fresh contexts, source/image inputs and deterministic gates.
+> Codex examples/pins below apply only to `backend=codex`; other routes use their
+> own first-call/reply contract. Save the route and actual returned identity;
+> unavailable selections are `REVIEW_UNAVAILABLE`. Classify acceptance from actual
+> families/completion/scope. Forward invocation reviewer/model/effort overrides
+> to reviewer-bearing children. Generation workers are unchanged.
+
+
+> **Review assurance:** same-family semantic audits remain provisional. The
+> pipeline may finish with `Submission-ready: provisional` when its mandatory
+> audits pass provisionally. Use `yes` only when the deterministic assurance
+> verifier confirms accepted coverage, including completed positive reviews
+> with known different model families where semantic review is required.
 
 Orchestrate a complete paper writing workflow for: **$ARGUMENTS**
 
@@ -435,7 +447,7 @@ After the final paper-claim-audit passes, run `/citation-audit` to verify every 
 ```
 if paper/references.bib (or paper.bib) exists and contains entries cited from sec/*.tex:
     Run /citation-audit "paper/"
-    Fresh Codex reviewer (`spawn_agent`, same-family provisional) with web/DBLP/arXiv lookup
+    Fresh selected reviewer with web/DBLP/arXiv lookup (same-family stays provisional)
     verifies each entry:
       (i)   EXISTENCE — paper resolves at claimed arXiv ID / DOI / venue
       (ii)  METADATA — author names, year, venue, title match canonical sources

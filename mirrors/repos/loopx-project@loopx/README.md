@@ -1,22 +1,23 @@
 <div align="center">
 
-<h1 align="center">LoopX</h1>
+<h1 align="center">LoopX 2.0</h1>
 
-**Give your agents a goal. Keep the work moving.**
+**The workbench for long-horizon research.**
 
-The open, local-first control plane for long-horizon agents and personal agent teams.<br>
-<sub>Keep goals, decisions and evidence across sessions. Work with Codex, Claude Code, DeepSeek Harness and other supported runtimes.</sub>
+For enterprise teams, research organizations, and independent builders.<br>
+<sub>Coordinate agents around complex research goals, preserve decisions and evidence across sessions, inspect outcomes and costs, and carry findings into the next step. Open source and local first, with support for Codex, Claude Code, DeepSeek Harness, and other supported runtimes.</sub><br>
+<sub>TypeScript control plane · evidence-bound research · recoverable agent collaboration</sub>
 
-[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE) [![Release](https://img.shields.io/github/v/release/loopx-project/loopx?filter=v*&display_name=tag)](https://github.com/loopx-project/loopx/releases/latest) [![GitHub contributors](https://img.shields.io/github/contributors-anon/loopx-project/loopx?color=blue)](https://github.com/loopx-project/loopx/graphs/contributors) [![Discord](https://img.shields.io/badge/Discord-Join-5865F2?logo=discord&logoColor=white)](https://discord.gg/XmGgQyCFZd) [![TypeScript core](https://img.shields.io/badge/core-TypeScript-3178C6?logo=typescript&logoColor=white)](docs/architecture/rfcs/typescript-control-plane-migration-v0.md) [![Python](https://img.shields.io/badge/python-3.11%2B-blue.svg)](pyproject.toml) [![Local first](https://img.shields.io/badge/control--plane-local--first-brightgreen.svg)](docs/public-private-boundary.md) [![Loop Agents](https://img.shields.io/badge/status-loop%20agents%20supported-brightgreen.svg)](docs/product/release-readiness.md)
+[![Release](https://img.shields.io/github/v/release/loopx-project/loopx?color=181717)](https://github.com/loopx-project/loopx/releases/latest) [![License](https://img.shields.io/badge/license-Apache--2.0-181717)](LICENSE) [![TypeScript core](https://img.shields.io/badge/core-TypeScript-3178C6?logo=typescript&logoColor=white)](docs/architecture/rfcs/typescript-control-plane-migration-v0.md) [![Discord](https://img.shields.io/badge/Discord-Join-5865F2?logo=discord&logoColor=white)](https://discord.gg/XmGgQyCFZd)
 
 <a href="https://trendshift.io/repositories/102379"><img src="https://trendshift.io/api/badge/repositories/102379" alt="loopx-project/loopx on Trendshift" width="220" height="48"></a>
 
-[Get started](#try-loopx) · [Workspace](#meet-the-personal-agent-workspace) · [LHTB results](#lhtb-results) · [Docs](https://loopx-project.github.io/loopx/docs/) · [简体中文](README.zh-CN.md)
+[Get started](#try-loopx) · [2.0 upgrade guide](docs/product/releases/v2.0.0.md) · [Research workbench](#research-workbench) · [LHTB results](#lhtb-results) · [Docs](https://loopx-project.github.io/loopx/docs/) · [简体中文](README.zh-CN.md)
 
-<a href="docs/assets/personal-workspace/loopx-dashboard-launch.mp4"><img src="docs/assets/personal-workspace/workspace-hero.webp" alt="LoopX Personal Agent Workspace: a Work map showing task dependencies, responsible agents, progress and decisions waiting for the owner" width="960"></a><br>
-<sub>Source-built App on an authored <a href="demo/workspace/README.md">Workspace stories replay</a>; no live Agent execution · <a href="docs/assets/personal-workspace/loopx-dashboard-launch.mp4">watch the 32-second walkthrough</a></sub>
+<a href="https://github.com/user-attachments/assets/543af0b1-c3d4-4cfb-aedd-a68563a20601"><img src="docs/assets/personal-workspace/research-workbench-hero.webp" alt="LoopX 2.0, the long-horizon research workbench for enterprise teams, research organizations and independent builders; recorded research history with count ribbons redrawn to scale in a labelled App frame" width="960"></a><br>
+<sub><a href="https://github.com/user-attachments/assets/543af0b1-c3d4-4cfb-aedd-a68563a20601">Watch the research-workbench film · 86s</a> · <a href="docs/assets/personal-workspace/loopx-research-films.md">transcripts, subtitles and sources</a>. Recorded App excerpts, synthetic examples and illustrations are labelled.</sub>
 
-**Start in Codex App in two steps.** Install once:
+**Start in Codex App in two steps.** Python 3.11+ and Node.js 22.22.3+ are required (Node 24 LTS recommended). Install once:
 
 ```bash
 python3 -m pip install --upgrade loopx && loopx workflow-skills --install
@@ -37,8 +38,9 @@ $loopx fix the open PR review feedback and keep the patch reviewable
 
 ---
 
-**More verified work. Less human attention.** LoopX gives agents durable goals,
-bounded continuation, peer ownership and recoverable handoffs. Your runtime
+**More verified work. Less human attention.** A control plane for long-horizon agents
+and personal agent teams gives LoopX durable goals, bounded continuation, peer
+ownership and recoverable handoffs. Your runtime
 provides the model and tools; LoopX keeps track of what to do next, what is
 accepted, and when to ask you.
 
@@ -50,6 +52,30 @@ accepted, and when to ask you.
 | Manage personal projects, schedules and decisions in one place | [Personal Agent Workspace](#meet-the-personal-agent-workspace) |
 | Let agents collaborate and deliver verifiable results | [Agent collaboration guide](docs/product/use-cases/cross-runtime/README.md) |
 
+## LoopX 2.0
+
+| A shared control plane | A long-horizon research workbench |
+| --- | --- |
+| TypeScript owns the migrated transactions, authority and recovery rules. Python retains real host/provider IO and specialized computation. | Follow a research question through delegated work, Explore history, artifacts, trajectory analysis and the next decision. |
+| [Two months of engineering, source history and core statistics](https://loopx-project.github.io/loopx/blog/typescript-control-plane-refactor/) | [Watch the 86-second film](https://github.com/user-attachments/assets/543af0b1-c3d4-4cfb-aedd-a68563a20601) · [Read the analysis contract](docs/reference/trajectory-assessment.md) |
+
+**Upgrading from 1.x?** 2.0 retires ordinary writes to unpromoted Markdown Goals.
+Review the [migration and recovery guide](docs/product/releases/v2.0.0.md) before
+continuing those Goals. Installation does not silently convert existing state.
+
+<a id="research-workbench"></a>
+
+## Research that can continue
+
+Open a Goal to inspect its work, responsible Agents and recorded Explore history.
+Use **Deep analysis** to inspect a registered trajectory, its citations, native
+outcome readback and separately measured costs. An Agent prepares the source;
+opening a page or reading a result does not start a model call. Explicit analysis
+uses the configured host and account.
+
+Keep supported, refuted and unknown findings visible. Inspect why an approach
+changed or continued, then carry the evidence into the next attempt.
+
 ## Meet the Personal Agent Workspace
 
 Keep long-horizon goals in one local-first workspace. Goals, attention,
@@ -57,7 +83,7 @@ conversations, tasks, files, schedules, and recovery stay durable across days,
 restarts, and harnesses. Reopen a project, inspect the previous turn’s state
 and evidence, and continue the next permitted action.
 
-LoopX 1.0 brings these long-horizon control states into the Personal Workspace. It gives you one place to:
+LoopX brings these long-horizon control states into the Personal Workspace. It gives you one place to:
 
 - see what needs you, what is running, what is being watched, and what is
   scheduled or stopped;
@@ -80,7 +106,7 @@ loopx dashboard
 ```
 
 `loopx dashboard` is the supported browser/PWA launch path. You can also download
-native desktop previews from the [1.0 release](https://github.com/loopx-project/loopx/releases/tag/v1.0.0);
+native desktop previews from the [current release](https://github.com/loopx-project/loopx/releases/latest);
 they reuse the same loopback services and Goal state. Apple Silicon macOS supports
 signed App updates that pair the shell with its bundled runtime, plus repair and
 recovery. Python 3.11+ is required; the App is ad-hoc signed, not notarized.
@@ -781,7 +807,7 @@ traces, credentials, private logs, or operator artifacts.
 
 ## Current Status
 
-LoopX 1.0 is a usable local control plane for long-running agent work and is
+LoopX is a usable local control plane for long-running agent work and is
 entering broader adoption. It is not a full agent platform, an agent runtime, or
 an autonomous production controller.
 

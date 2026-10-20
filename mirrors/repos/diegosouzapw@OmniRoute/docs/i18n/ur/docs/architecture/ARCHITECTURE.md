@@ -11,56 +11,56 @@ _آخری بار اپ ڈیٹ کیا گیا: 2026-06-28_
 ## انتظامی خلاصہ
 
 OmniRoute ایک مقامی AI روٹنگ گیٹ وے اور ڈیش بورڈ ہے جو Next.js پر بنایا گیا ہے۔
-یہ ایک واحد OpenAI-مطابق اینڈ پوائنٹ (`/v1/*`) فراہم کرتا ہے اور ترجمے، فال بیک، ٹوکن ریفریش، اور استعمال کی ٹریکنگ کے ساتھ ٹریفک کو متعدد اپ اسٹریم فراہم کنندگان کے درمیان روٹ کرتا ہے۔
+یہ ایک واحد OpenAI-مطابق اینڈ پوائنٹ (`/v1/*`) فراہم کرتا ہے اور ترجمے، فال بیک، ٹوکن ریفریش، اور استعمال کی ٹریکنگ کے ساتھ متعدد اپ اسٹریم فراہم کنندگان کے درمیان ٹریفک روٹ کرتا ہے۔
 
 بنیادی صلاحیتیں:
 
-- CLI/ٹولز کے لیے OpenAI-مطابق API سطح (374 فراہم کنندگان، 150 ایگزیکیوٹر ماڈیولز)
+- CLI/ٹولز کے لیے OpenAI-مطابق API سطح (375 فراہم کنندگان، 154 ایگزیکیوٹر ماڈیولز)
 - فراہم کنندگان کے فارمیٹس کے درمیان درخواست/جواب کا ترجمہ
 - ماڈل کومبو فال بیک (متعدد ماڈلز کی ترتیب)
-- رن ٹائم میں `compositeTiers` کے مطابق ترتیب کے ساتھ ساختی کومبو مراحل (`provider + model + connection`)
+- منظم کومبو مراحل (`provider + model + connection`) مع `compositeTiers` کے ذریعے رن ٹائم ترتیب
 - اکاؤنٹ کی سطح پر فال بیک (ہر فراہم کنندہ کے لیے متعدد اکاؤنٹس)
-- مرکزی چیٹ پاتھ میں کوٹا پری فلائٹ اور کوٹا سے آگاہ P2C اکاؤنٹ انتخاب
-- OAuth + API-key فراہم کنندہ کنکشن مینجمنٹ (27 OAuth فراہم کنندہ ماڈیولز)
-- `/v1/embeddings` کے ذریعے ایمبیڈنگ کی تخلیق (18 فراہم کنندگان)
-- `/v1/images/generations` کے ذریعے تصویر کی تخلیق (10+ فراہم کنندگان، 20+ ماڈلز)
+- مرکزی چیٹ پاتھ میں کوٹہ پری فلائٹ اور کوٹہ سے آگاہ P2C اکاؤنٹ انتخاب
+- OAuth + API کلید کے ذریعے فراہم کنندہ کنکشن کا انتظام (27 OAuth فراہم کنندہ ماڈیولز)
+- `/v1/embeddings` کے ذریعے ایمبیڈنگ جنریشن (18 فراہم کنندگان)
+- `/v1/images/generations` کے ذریعے تصویر جنریشن (10+ فراہم کنندگان، 20+ ماڈلز)
 - `/v1/audio/transcriptions` کے ذریعے آڈیو ٹرانسکرپشن (18 فراہم کنندگان)
-- `/v1/audio/speech` کے ذریعے متن سے آواز کی تخلیق (24 بلٹ اِن فراہم کنندگان)
-- `/v1/videos/generations` کے ذریعے ویڈیو کی تخلیق (ComfyUI + SD WebUI)
-- `/v1/music/generations` کے ذریعے موسیقی کی تخلیق (ComfyUI)
+- `/v1/audio/speech` کے ذریعے متن سے تقریر (24 بلٹ اِن فراہم کنندگان)
+- `/v1/videos/generations` کے ذریعے ویڈیو جنریشن (ComfyUI + SD WebUI)
+- `/v1/music/generations` کے ذریعے موسیقی جنریشن (ComfyUI)
 - `/v1/search` کے ذریعے ویب تلاش (20 فراہم کنندگان)
 - `/v1/moderations` کے ذریعے مواد کی نگرانی
 - `/v1/rerank` کے ذریعے دوبارہ درجہ بندی
 - استدلالی ماڈلز کے لیے تھنک ٹیگ پارسنگ (``)
-- سخت OpenAI SDK مطابقت کے لیے جواب کی سینیٹائزیشن
-- مختلف فراہم کنندگان کے درمیان مطابقت کے لیے کرداروں کی نارملائزیشن (developer→system، system→user)
-- ساختی آؤٹ پٹ کی تبدیلی (json_schema → Gemini responseSchema)
+- سخت OpenAI SDK مطابقت کے لیے جواب کی صفائی
+- مختلف فراہم کنندگان کے درمیان مطابقت کے لیے کرداروں کی معیار بندی (developer→system، system→user)
+- منظم آؤٹ پٹ کی تبدیلی (json_schema → Gemini responseSchema)
 - فراہم کنندگان، کلیدوں، عرفی ناموں، کومبوز، ترتیبات، اور قیمتوں کے لیے مقامی مستقل ذخیرہ (122 DB ماڈیولز)
-- استعمال/لاگت کی ٹریکنگ اور درخواستوں کی لاگنگ
+- استعمال/لاگت کی ٹریکنگ اور درخواست لاگنگ
 - متعدد ڈیوائسز/حالت کی ہم وقت سازی کے لیے اختیاری کلاؤڈ سنک
 - API رسائی کے کنٹرول کے لیے IP اجازت فہرست/بلاک فہرست
-- تھنکنگ بجٹ مینجمنٹ (پاس تھرو/خودکار/حسبِ ضرورت/تطبیقی)
+- تھنکنگ بجٹ کا انتظام (پاس تھرو/خودکار/حسبِ ضرورت/موافق)
 - عالمی سسٹم پرامپٹ کا اندراج
 - سیشن ٹریکنگ اور فنگر پرنٹنگ
-- فراہم کنندہ سے مخصوص پروفائلز کے ساتھ فی اکاؤنٹ بہتر شرح بندی
+- فراہم کنندہ کے مخصوص پروفائلز کے ساتھ فی اکاؤنٹ بہتر شرح کی تحدید
 - فراہم کنندہ کی لچک کے لیے سرکٹ بریکر پیٹرن
-- میوٹیکس لاکنگ کے ساتھ اینٹی تھنڈرنگ ہرڈ تحفظ
+- میوٹیکس لاکنگ کے ساتھ تھنڈرنگ ہرڈ سے تحفظ
 - دستخط پر مبنی درخواست ڈی ڈپلیکیشن کیش
 - ڈومین لیئر: لاگت کے قواعد، فال بیک پالیسی، لاک آؤٹ پالیسی
-- Context Relay: اکاؤنٹ روٹیشن میں تسلسل کے لیے سیشن ہینڈ آف خلاصے
-- ڈومین اسٹیٹ کا مستقل ذخیرہ (فال بیکس، بجٹس، لاک آؤٹس، اور سرکٹ بریکرز کے لیے SQLite رائٹ تھرو کیش)
+- Context Relay: اکاؤنٹ روٹیشن کے تسلسل کے لیے سیشن ہینڈ آف خلاصے
+- ڈومین حالت کا مستقل ذخیرہ (فال بیکس، بجٹس، لاک آؤٹس، اور سرکٹ بریکرز کے لیے SQLite رائٹ تھرو کیش)
 - مرکزی درخواست کی جانچ کے لیے پالیسی انجن (لاک آؤٹ → بجٹ → فال بیک)
-- p50/p95/p99 تاخیر کی مجموعی پیمائش کے ساتھ درخواست ٹیلی میٹری
-- `combo_execution_key` / `combo_step_id` کے ذریعے کومبو ٹارگٹ ٹیلی میٹری اور تاریخی کومبو ٹارگٹ صحت
-- ابتدا سے انتہا تک ٹریسنگ کے لیے کوریلیشن ID (X-Request-Id)
+- p50/p95/p99 لیٹنسی کے مجموعی حساب کے ساتھ درخواست ٹیلی میٹری
+- `combo_execution_key` / `combo_step_id` کے ذریعے کومبو ہدف ٹیلی میٹری اور کومبو اہداف کی تاریخی صحت
+- اینڈ ٹو اینڈ ٹریسنگ کے لیے کوریلیشن ID (X-Request-Id)
 - فی API کلید آپٹ آؤٹ کے ساتھ تعمیلی آڈٹ لاگنگ
 - LLM معیار کی یقین دہانی کے لیے ایول فریم ورک
-- فراہم کنندہ کے سرکٹ بریکر کی حقیقی وقت کی حالت کے ساتھ صحت ڈیش بورڈ
+- فراہم کنندہ کے سرکٹ بریکر کی حقیقی وقت کی حالت کے ساتھ صحت کا ڈیش بورڈ
 - MCP Server (110 ٹولز) مع 3 ٹرانسپورٹس (stdio/SSE/Streamable HTTP)
 - A2A Server (JSON-RPC 2.0 + SSE) مع مہارتیں اور ٹاسک لائف سائیکل
-- میموری سسٹم (اخذ کرنا، اندراج، بازیافت، خلاصہ سازی)
+- میموری سسٹم (اخذ، اندراج، بازیافت، خلاصہ سازی)
 - مہارتوں کا نظام (رجسٹری، ایگزیکیوٹر، سینڈ باکس، بلٹ اِن مہارتیں)
-- سرٹیفکیٹ مینجمنٹ اور DNS ہینڈلنگ کے ساتھ MITM پراکسی
+- سرٹیفکیٹ کے انتظام اور DNS ہینڈلنگ کے ساتھ MITM پراکسی
 - پرامپٹ انجیکشن گارڈ مڈل ویئر
 - Caveman، RTK، اسٹیکڈ پائپ لائنز، کمپریشن کومبوز، لینگویج پیکس، اور تجزیات کے ساتھ پرامپٹ کمپریشن پائپ لائن
 - ACP (Agent Communication Protocol) رجسٹری
@@ -68,19 +68,19 @@ OmniRoute ایک مقامی AI روٹنگ گیٹ وے اور ڈیش بورڈ ہ�
 - اَن انسٹال/مکمل اَن انسٹال اسکرپٹس
 - OAuth ماحول کی مرمت کی کارروائی
 - OpenAI-مطابق WS کلائنٹس کے لیے WebSocket برج (`/v1/ws`)
-- سنک ٹوکن مینجمنٹ (اجرا/منسوخی، ETag-ورژن شدہ کنفیگ بنڈل ڈاؤن لوڈ)
+- سنک ٹوکن کا انتظام (اجرا/تنسیخ، ETag-ورژن شدہ کنفیگریشن بنڈل ڈاؤن لوڈ)
 - GLM Thinking (`glmt`) بطور فرسٹ کلاس فراہم کنندہ پری سیٹ
-- ہائبرڈ ٹوکن گنتی (تخمینی فال بیک کے ساتھ فراہم کنندہ کی جانب `/messages/count_tokens`)
-- ماڈل عرفی ناموں کی خودکار سیڈنگ (اسٹارٹ اپ پر 30+ کراس پراکسی بولی نارملائزیشنز)
-- SSRF گارڈ، نجی URL بلاکنگ، اور قابلِ ترتیب دوبارہ کوشش کے ساتھ محفوظ آؤٹ باؤنڈ فیچ
+- ہائبرڈ ٹوکن گنتی (تخمینی فال بیک کے ساتھ فراہم کنندہ کی جانب سے `/messages/count_tokens`)
+- ماڈل عرفی ناموں کی خودکار سیڈنگ (آغاز کے وقت 30+ کراس پراکسی ڈائلیکٹ کی معیار بندی)
+- SSRF گارڈ، نجی URLs کی بلاکنگ، اور قابلِ ترتیب دوبارہ کوشش کے ساتھ محفوظ آؤٹ باؤنڈ فیچ
 - قابلِ ترتیب `requestRetry` اور `maxRetryIntervalSec` کے ساتھ کول ڈاؤن سے آگاہ چیٹ کی دوبارہ کوششیں
-- اسٹارٹ اپ پر Zod کے ساتھ رن ٹائم ماحول کی توثیق
-- صفحہ بندی، فراہم کنندہ CRUD ایونٹس، اور SSRF سے بلاک شدہ توثیق کی لاگنگ کے ساتھ تعمیلی آڈٹ v2
+- آغاز کے وقت Zod کے ساتھ رن ٹائم ماحول کی توثیق
+- صفحہ بندی، فراہم کنندہ CRUD واقعات، اور SSRF کی وجہ سے بلاک شدہ توثیق کی لاگنگ کے ساتھ تعمیلی آڈٹ v2
 
 بنیادی رن ٹائم ماڈل:
 
 - `src/app/api/*` کے تحت Next.js ایپ روٹس ڈیش بورڈ APIs اور مطابقتی APIs دونوں کو نافذ کرتے ہیں
-- `src/sse/*` + `open-sse/*` میں مشترکہ SSE/روٹنگ کور فراہم کنندہ کی عمل درآمد، ترجمہ، اسٹریمنگ، فال بیک، اور استعمال کو سنبھالتا ہے
+- `src/sse/*` + `open-sse/*` میں مشترکہ SSE/روٹنگ کور فراہم کنندہ کے نفاذ، ترجمے، اسٹریمنگ، فال بیک، اور استعمال کو سنبھالتا ہے
 
 ## حوالہ جاتی خاکے
 
@@ -258,23 +258,23 @@ flowchart LR
 - کنفیگریشن بنڈل: `src/app/api/sync/bundle` (GET، ترتیبات/پرووائیڈرز/کومبوز/کیز کا ETag-ورژن شدہ اسنیپ شاٹ)
 - WebSocket: `src/app/api/v1/ws/route.ts` — OpenAI سے مطابقت رکھنے والے WS کلائنٹس کے لیے اپ گریڈ ہینڈلر
 
-## 2) SSE + ترجمے کا بنیادی نظام
+## 2) SSE + ترجمہ کور
 
 مرکزی فلو ماڈیولز:
 
-- نقطۂ آغاز: `src/sse/handlers/chat.ts`
+- انٹری: `src/sse/handlers/chat.ts`
 - بنیادی آرکیسٹریشن: `open-sse/handlers/chatCore.ts`
 - پرووائیڈر ایگزیکیوشن اڈاپٹرز: `open-sse/executors/*`
 - فارمیٹ کی شناخت/پرووائیڈر کنفیگریشن: `open-sse/services/provider.ts`
-- ماڈل پارس/ریزولو: `src/sse/services/model.ts`, `open-sse/services/model.ts`
+- ماڈل پارس/ریزولو: `src/sse/services/model.ts`، `open-sse/services/model.ts`
 - اکاؤنٹ فال بیک منطق: `open-sse/services/accountFallback.ts`
 - ترجمہ رجسٹری: `open-sse/translator/index.ts`
-- اسٹریم ٹرانسفارمیشنز: `open-sse/utils/stream.ts`, `open-sse/utils/streamHandler.ts`
+- اسٹریم ٹرانسفارمیشنز: `open-sse/utils/stream.ts`، `open-sse/utils/streamHandler.ts`
 - استعمال کا اخذ/نارملائزیشن: `open-sse/utils/usageTracking.ts`
 - تھنک ٹیگ پارسر: `open-sse/utils/thinkTagParser.ts`
 - ایمبیڈنگ ہینڈلر: `open-sse/handlers/embeddings.ts`
 - ایمبیڈنگ پرووائیڈر رجسٹری: `open-sse/config/embeddingRegistry.ts`
-- امیج جنریشن ہینڈلر: `open-sse/handlers/imageGeneration.ts`
+- تصویر تخلیق کرنے کا ہینڈلر: `open-sse/handlers/imageGeneration.ts`
 - امیج پرووائیڈر رجسٹری: `open-sse/config/imageRegistry.ts`
 - ریسپانس سینیٹائزیشن: `open-sse/handlers/responseSanitizer.ts`
 - رول نارملائزیشن: `open-sse/services/roleNormalizer.ts`
@@ -285,44 +285,44 @@ flowchart LR
 - کانٹیکسٹ لائف سائیکل مینجمنٹ: `open-sse/services/contextManager.ts`
 - IP فلٹر کا نفاذ: `open-sse/services/ipFilter.ts`
 - سیشن ٹریکنگ: `open-sse/services/sessionManager.ts`
-- ریکویسٹ ڈی ڈپلیکیشن: `open-sse/services/signatureCache.ts`
+- درخواستوں کی نقل ختم کرنا: `open-sse/services/signatureCache.ts`
 - سسٹم پرامپٹ انجیکشن: `open-sse/services/systemPrompt.ts`
 - تھنکنگ بجٹ مینجمنٹ: `open-sse/services/thinkingBudget.ts`
-- وائلڈ کارڈ ماڈل روٹنگ: `open-sse/services/wildcardRouter.ts`
+- وائلڈ کارڈ ماڈل راؤٹنگ: `open-sse/services/wildcardRouter.ts`
 - ریٹ لمٹ مینجمنٹ: `open-sse/services/rateLimitManager.ts`
 - سرکٹ بریکر: `src/shared/utils/circuitBreaker.ts`
-- کانٹیکسٹ ہینڈ آف: `open-sse/services/contextHandoff.ts` — کانٹیکسٹ ریلے حکمتِ عملی کے لیے ہینڈ آف خلاصے کی تخلیق اور انجیکشن
+- کانٹیکسٹ ہینڈ آف: `open-sse/services/contextHandoff.ts` — کانٹیکسٹ-ریلے حکمت عملی کے لیے ہینڈ آف خلاصے کی تخلیق اور انجیکشن
 - کمپریشن: `open-sse/services/compression/*` — پرووائیڈر ترجمے سے پہلے پیشگی کمپریشن؛
-  اس میں Caveman قواعد، RTK فلٹرز، اسٹیکڈ پائپ لائنز، کمپریشن کومبوز، اعداد و شمار، اور توثیق شامل ہیں
-- Codex کوٹہ فیچر: `open-sse/services/codexQuotaFetcher.ts` — کانٹیکسٹ ریلے ہینڈ آف کے فیصلوں کے لیے Codex کوٹہ حاصل کرتا ہے
-- کول ڈاؤن سے آگاہ ری ٹرائی: `src/sse/services/cooldownAwareRetry.ts` — قابلِ ترتیب `requestRetry` / `maxRetryIntervalSec` کے ساتھ فی ماڈل کول ڈاؤن ری ٹرائیز
+  اس میں Caveman اصول، RTK فلٹرز، اسٹیکڈ پائپ لائنز، کمپریشن امتزاج، اعداد و شمار، اور توثیق شامل ہیں
+- Codex کوٹا فیچر: `open-sse/services/codexQuotaFetcher.ts` — کانٹیکسٹ-ریلے ہینڈ آف کے فیصلوں کے لیے Codex کوٹا حاصل کرتا ہے
+- کول ڈاؤن سے آگاہ ری ٹرائی: `src/sse/services/cooldownAwareRetry.ts` — قابلِ کنفیگریشن `requestRetry` / `maxRetryIntervalSec` کے ساتھ فی ماڈل کول ڈاؤن ری ٹرائز
 - محفوظ آؤٹ باؤنڈ فیچ: `src/shared/network/safeOutboundFetch.ts` — SSRF گارڈ، نجی URL بلاکنگ، ری ٹرائی، اور ٹائم آؤٹ کے ساتھ محفوظ پرووائیڈر/ماڈل فیچ
 - آؤٹ باؤنڈ URL گارڈ: `src/shared/network/outboundUrlGuard.ts` — پرووائیڈر URLs پر ہوسٹ کی جانچ؛ `src/shared/network/outboundUrlGuardPolicy.ts`، `OMNIROUTE_ALLOW_LOCAL_PROVIDER_URLS`، `OMNIROUTE_ALLOW_PRIVATE_PROVIDER_URLS`، اور ان کے ڈیش بورڈ ٹوگلز سے موڈ منتخب کرتا ہے (`docs/reference/ENVIRONMENT.md` دیکھیں)
-- پرووائیڈر ریکویسٹ ڈیفالٹس: `open-sse/services/providerRequestDefaults.ts` — پرووائیڈر سطح کی `maxTokens`، `temperature`، `thinkingBudgetTokens` ڈیفالٹ اقدار
-- GLM پرووائیڈر مستقلات: `open-sse/config/glmProvider.ts` — مشترکہ GLM ماڈلز، کوٹہ URLs، GLMT ٹائم آؤٹ/ڈیفالٹس
-- Antigravity اپ اسٹریم: `open-sse/config/antigravityUpstream.ts` — بنیادی URL اور ڈسکوری پاتھ کے مستقلات
-- Codex کلائنٹ مستقلات: `open-sse/config/codexClient.ts` — ورژن شدہ یوزر ایجنٹ اور کلائنٹ ورژن کی اقدار
-- ماڈل الیاس سیڈ: `src/lib/modelAliasSeed.ts` — آغاز کے وقت 30+ کراس پراکسی ڈائلیکٹ الیاسز سیڈ کرتا ہے
+- پرووائیڈر درخواست کی ڈیفالٹ اقدار: `open-sse/services/providerRequestDefaults.ts` — پرووائیڈر سطح کی `maxTokens`، `temperature`، `thinkingBudgetTokens` ڈیفالٹ اقدار
+- GLM پرووائیڈر کانسٹنٹس: `open-sse/config/glmProvider.ts` — مشترکہ GLM ماڈلز، کوٹا URLs، GLMT ٹائم آؤٹ/ڈیفالٹس
+- Antigravity اپ اسٹریم: `open-sse/config/antigravityUpstream.ts` — بنیادی URL اور ڈسکوری پاتھ کانسٹنٹس
+- Codex کلائنٹ کانسٹنٹس: `open-sse/config/codexClient.ts` — ورژن شدہ یوزر ایجنٹ اور کلائنٹ ورژن اقدار
+- ماڈل عرف سیڈ: `src/lib/modelAliasSeed.ts` — آغاز پر 30+ کراس پراکسی ڈائلیکٹ عرف سیڈ کرتا ہے
 
 ڈومین لیئر ماڈیولز:
 
-- لاگت کے قواعد/بجٹس: `src/domain/costRules.ts`
+- لاگت کے اصول/بجٹس: `src/domain/costRules.ts`
 - فال بیک پالیسی: `src/domain/fallbackPolicy.ts`
-- کومبو ریزولوَر: `src/domain/comboResolver.ts`
+- کومبو ریزولور: `src/domain/comboResolver.ts`
 - لاک آؤٹ پالیسی: `src/domain/lockoutPolicy.ts`
 - پالیسی انجن: `src/domain/policyEngine.ts` — مرکزی لاک آؤٹ → بجٹ → فال بیک جائزہ
-- ایرر کوڈز کی فہرست: `src/shared/constants/errorCodes.ts`
-- ریکویسٹ ID: `src/shared/utils/requestId.ts`
+- ایرر کوڈز کیٹلاگ: `src/shared/constants/errorCodes.ts`
+- درخواست ID: `src/shared/utils/requestId.ts`
 - فیچ ٹائم آؤٹ: `src/shared/utils/fetchTimeout.ts`
-- ریکویسٹ ٹیلی میٹری: `src/shared/utils/requestTelemetry.ts`
-- کمپلائنس/آڈٹ: `src/lib/compliance/index.ts`
-- ایول رنر: `src/lib/evals/evalRunner.ts`
+- درخواست ٹیلی میٹری: `src/shared/utils/requestTelemetry.ts`
+- تعمیل/آڈٹ: `src/lib/compliance/index.ts`
+- ایویل رنر: `src/lib/evals/evalRunner.ts`
 - ڈومین اسٹیٹ پرسسٹنس: `src/lib/db/domainState.ts` — فال بیک چینز، بجٹس، لاگت کی تاریخ، لاک آؤٹ اسٹیٹ، اور سرکٹ بریکرز کے لیے SQLite CRUD
 
 OAuth پرووائیڈر ماڈیولز (`src/lib/oauth/providers/` کے تحت 27 انفرادی فائلیں):
 
 - رجسٹری انڈیکس: `src/lib/oauth/providers/index.ts`
-- انفرادی پرووائیڈرز: `agy.ts`, `antigravity.ts`, `claude.ts`, `cline.ts`, `codebuddy-cn.ts`, `codebuddy-intl.ts`, `codex.ts`, `cursor.ts`, `devin-desktop.ts`, `ghe-copilot.ts`, `github.ts`, `gitlab-duo.ts`, `grok-cli-oauth.ts`, `grok-cli.ts`, `kilocode.ts`, `kimi-coding.ts`, `kiro.ts`, `muse-code.ts`, `openference.ts`, `qoder.ts`, `trae.ts`, `workbuddy.ts`, `xai-oauth.ts`, `zed-hosted.ts`, `zed.ts`
+- انفرادی پرووائیڈرز: `agy.ts`، `antigravity.ts`، `claude.ts`، `cline.ts`، `codebuddy-cn.ts`، `codebuddy-intl.ts`، `codex.ts`، `cursor.ts`، `devin-desktop.ts`، `ghe-copilot.ts`، `github.ts`، `gitlab-duo.ts`، `grok-cli-oauth.ts`، `grok-cli.ts`، `kilocode.ts`، `kimi-coding.ts`، `kiro.ts`، `muse-code.ts`، `openference.ts`، `qoder.ts`، `trae.ts`، `workbuddy.ts`، `xai-oauth.ts`، `zed-hosted.ts`، `zed.ts`
 - مشترکہ ہیلپرز: `codebuddyDeviceAuth.ts` (CodeBuddy CN/intl ڈیوائس فلو)، `museCodeDeviceResponse.ts`
 - ہلکا ریپر: `src/lib/oauth/providers.ts` — انفرادی ماڈیولز سے دوبارہ ایکسپورٹ کرتا ہے
 
@@ -353,164 +353,159 @@ OmniRoute مقامی طور پر چلنے والے AI ٹول پراسیسز کو
 
 ### A. آٹو کومبو انجن
 
-آٹو کومبو کسی جامد کومبو تعریف پر انحصار کرنے کے بجائے،
-درخواست کے وقت روٹنگ اہداف کو متحرک طور پر اسکور کرتا اور منتخب کرتا ہے۔ یہ `auto/*` ماڈل سابقہ فیملی کو تقویت دیتا ہے۔
+آٹو کومبو درخواست کے وقت روٹنگ اہداف کو متحرک طور پر اسکور کرکے منتخب کرتا ہے، بجائے اس کے کہ
+کسی جامد کومبو تعریف پر انحصار کرے۔ یہ `auto/*` ماڈل پری فکس فیملی کو تقویت دیتا ہے۔
 
 - انجن کا نقطۂ آغاز: `open-sse/services/autoCombo/` (`autoComboEngine.ts`,
   `scoringEngine.ts`, `virtualFactory.ts`, `modePacks.ts`)
-- ریزالور: `src/domain/comboResolver.ts` (`auto/` سابقے کی خودکار شناخت)
+- ریزالور: `src/domain/comboResolver.ts` (`auto/` پری فکس کی خودکار شناخت)
 - ڈیش بورڈ: `/dashboard/auto-combo`
 - ٹیلی میٹری: `auto_combo_decisions` SQLite ٹیبل
 
 اہم صلاحیتیں:
 
-- **19 روٹنگ حکمتِ عملیاں** (ترجیح، وزنی، پہلے پُر کرنا، راؤنڈ رابن، P2C، بے ترتیب،
-  کم ترین استعمال، لاگت کے لحاظ سے بہتر، ری سیٹ سے باخبر، ری سیٹ ونڈو، اضافی گنجائش، سخت بے ترتیب،
-  **auto**، lkgp، سیاق کے لحاظ سے بہتر، سیاق ریلے، **fusion**، نیز ایک فال بیک راستہ) —
-  auto، v3.8.0 میں نمایاں اضافہ ہے؛ `fusion` (پینل فین آؤٹ + جج ترکیب،
+- **20 روٹنگ حکمتِ عملیاں** (priority, weighted, fill-first, round-robin, P2C, random,
+  least-used, cost-optimized, reset-aware, reset-window, headroom, quota-weighted,
+  strict-random, **auto**, lkgp, context-optimized, cache-optimized, context-relay, **fusion**,
+  pipeline) —
+  auto، v3.8.0 میں نمایاں اضافہ ہے؛ `fusion` (پینل فین آؤٹ + جج سنتھیسس،
   `open-sse/services/fusion.ts`) v3.8.36 میں نیا ہے۔
 - **16 عوامل پر مبنی اسکورنگ**: کوٹا، صحت، معکوس لاگت، معکوس تاخیر، کام سے مطابقت اور
-  مزید دس عوامل۔ عوامل اور ان کے ڈیفالٹ اوزان کی مستند جدول
+  مزید دس عوامل۔ عوامل اور ان کے طے شدہ اوزان کی مستند جدول
   [`docs/routing/AUTO-COMBO.md`](../routing/AUTO-COMBO.md) میں موجود ہے — اسے یہاں دوبارہ بیان کرنے سے
-  اس کے متروک ہونے کا ایک دوسرا مقام بن جائے گا۔
-- **ورچوئل فیکٹری** اس وقت عارضی کومبوز تشکیل دیتی ہے جب کوئی مماثل نام زد کومبو
-  موجود نہ ہو، اور امیدواروں کو صحت مند فعال پرووائیڈر کنکشنز سے حاصل کرتی ہے۔
-- **آٹو سابقے**: `auto/coding`، `auto/cheap`، `auto/fast`، `auto/offline`،
-  `auto/smart`، `auto/lkgp` — ہر ایک کو مخصوص طور پر ٹیون کردہ وزن پروفائل کی معاونت حاصل ہے۔
-- **6 موڈ پیکس**: `ship-fast`، `cost-saver`، `quality-first`، `offline-friendly`،
-  `reliability-first` اور `chaos-mode` — پہلے سے طے شدہ وزن کنفیگریشنز جنہیں
-  ڈیش بورڈ سے استعمال کیا جا سکتا ہے۔ (انہیں اوپر موجود `auto/*` سابقوں کے ساتھ خلط ملط نہ کریں، جو
-  درخواست کے وقت استعمال ہونے والی مختلف حالتیں ہیں۔)
+  اس کے متروک ہونے کے لیے ایک دوسری جگہ بن جائے گی۔
+- **ورچوئل فیکٹری** اس وقت عارضی کومبوز تخلیق کرتی ہے جب کوئی مماثل نام والا کومبو
+  موجود نہ ہو، اور امیدوار صحت مند فعال پرووائیڈر کنکشنز سے حاصل کیے جاتے ہیں۔
+- **آٹو پری فکسز**: `auto/coding`, `auto/cheap`, `auto/fast`, `auto/offline`,
+  `auto/smart`, `auto/lkgp` — ہر ایک کو حسبِ ضرورت ترتیب دیے گئے وزن کے پروفائل کی معاونت حاصل ہے۔
+- **6 موڈ پیکس**: `ship-fast`, `cost-saver`, `quality-first`, `offline-friendly`,
+  `reliability-first` اور `chaos-mode` — پہلے سے طے شدہ وزن کی کنفیگریشنز جنہیں
+  ڈیش بورڈ سے استعمال کیا جا سکتا ہے۔ (انہیں اوپر دیے گئے `auto/*` پری فکسز کے ساتھ خلط ملط نہ کریں، جو
+  درخواست کے وقت کی مختلف صورتیں ہیں۔)
 
-الگورتھم کی مکمل تفصیلات (عوامل کے فارمولے، وزن کی ٹیوننگ) کے لیے،
+الگورتھم کی مکمل تفصیل (عوامل کے فارمولے، وزن کی ٹیوننگ) کے لیے،
 [`docs/routing/AUTO-COMBO.md`](../routing/AUTO-COMBO.md) دیکھیں۔
 
 ### B. کلاؤڈ ایجنٹس
 
 کلاؤڈ ایجنٹس فریقِ ثالث کے ہوسٹ کردہ کوڈ ایجنٹ پلیٹ فارمز (Codex Cloud، Devin،
-Jules) کو یکساں، DB کی پشت پناہی والے ٹاسک لائف سائیکل میں ریپ کرتا ہے۔ ٹاسک بنانے/معائنہ کرنے والے
-تمام اینڈ پوائنٹس کے لیے انتظامی توثیق درکار ہے۔
+Jules) کو یکساں، DB سے تقویت یافتہ ٹاسک لائف سائیکل کے پیچھے یکجا کرتا ہے۔ ٹاسک بنانے/معائنہ کرنے کے
+تمام اینڈ پوائنٹس کے لیے مینجمنٹ توثیق درکار ہے۔
 
-- ماڈیول روٹ: `src/lib/cloudAgent/` (`baseAgent.ts`، `registry.ts`، `api.ts`،
-  `types.ts`، `db.ts`، نیز `agents/` کے تحت ہر ایجنٹ کی ذیلی ڈائریکٹریاں)
-- ہر ایجنٹ کے نفاذ: `agents/codex/`، `agents/devin/`، `agents/jules/`
+- ماڈیول روٹ: `src/lib/cloudAgent/` (`baseAgent.ts`, `registry.ts`, `api.ts`,
+  `types.ts`, `db.ts`، نیز `agents/` کے تحت ہر ایجنٹ کی ذیلی ڈائریکٹریاں)
+- ہر ایجنٹ کے نفاذ: `agents/codex/`, `agents/devin/`, `agents/jules/`
 - عوامی اینڈ پوائنٹس: `/api/v1/agents/tasks/*` (فہرست/تخلیق/حصول/منسوخی)
-- انتظامی اینڈ پوائنٹس: `/api/cloud/*` (فراہمی، حیثیت، بیچ)
+- مینجمنٹ اینڈ پوائنٹس: `/api/cloud/*` (فراہمی، حیثیت، بیچ)
 - ڈیش بورڈ: `/dashboard/cloud-agents`
 - اسٹوریج: `cloud_agent_tasks` ٹیبل
 
-ہر ایجنٹ کی فراہمی اور OAuth کی تفصیلات کے لیے،
+ہر ایجنٹ کی فراہمی اور OAuth کی مخصوص تفصیلات کے لیے،
 [`docs/frameworks/CLOUD_AGENT.md`](../frameworks/CLOUD_AGENT.md) دیکھیں۔
 
 ### C. حفاظتی پابندیاں
 
-حفاظتی پابندیوں کا ماڈیول ایک ہاٹ ری لوڈ ہونے والی مڈل ویئر تہہ ہے جو PII، پرامپٹ انجیکشن،
+حفاظتی پابندیوں کا ماڈیول ایک ہاٹ ری لوڈ ہونے والی مڈل ویئر پرت ہے جو PII، پرامپٹ انجیکشن،
 اور غیر محفوظ بصری مواد کے لیے درخواستوں اور جوابات کا معائنہ کرتی ہے۔ خلاف ورزیاں
-ایک منظم ایرر کوڈ کے ساتھ HTTP **503** واپس کر کے درخواست کو فوری طور پر روک دیتی ہیں، جس سے
+HTTP **503** اور ایک منظم ایرر کوڈ کے ساتھ درخواست کو فوری طور پر روک دیتی ہیں، جس سے
 بعد کے کالرز دوبارہ کوشش یا متبادل شاخ اختیار کر سکتے ہیں۔
 
-- ماڈیول روٹ: `src/lib/guardrails/` (`base.ts`، `registry.ts`، `piiMasker.ts`،
-  `promptInjection.ts`، `visionBridge.ts`، `visionBridgeHelpers.ts`)
-- ہاٹ ری لوڈ: رجسٹری کنفیگریشن کی تبدیلیوں کی نگرانی کرتی اور چین کو وہیں دوبارہ تشکیل دیتی ہے
-- انضمام کے مقامات: چیٹ ہینڈلر کا نقطۂ آغاز، تصویر بنانے والا ہینڈلر، رسپانس سینیٹائزر
-- HTTP معاہدہ: خلاف ورزیاں `503` کے طور پر ظاہر ہوتی ہیں، جس میں `error.code = "GUARDRAIL_VIOLATION"` ہوتا ہے
+- ماڈیول روٹ: `src/lib/guardrails/` (`base.ts`, `registry.ts`, `piiMasker.ts`,
+  `promptInjection.ts`, `visionBridge.ts`, `visionBridgeHelpers.ts`)
+- ہاٹ ری لوڈ: رجسٹری کنفیگریشن میں تبدیلیوں پر نظر رکھتی ہے اور اسی جگہ چین کو دوبارہ بناتی ہے
+- انضمام کے مقامات: چیٹ ہینڈلر کا آغاز، امیج جنریشن ہینڈلر، ریسپانس سینیٹائزر
+- HTTP معاہدہ: خلاف ورزیاں `503` کی صورت میں `error.code = "GUARDRAIL_VIOLATION"` کے ساتھ ظاہر ہوتی ہیں
 
-رول سیٹ لکھنے اور حد کی ٹیوننگ کے لیے،
+قواعد مرتب کرنے اور حدوں کی ٹیوننگ کے لیے،
 [`docs/security/GUARDRAILS.md`](../security/GUARDRAILS.md) دیکھیں۔
 
-### D. ڈومین تہہ
+### D. ڈومین پرت
 
 `src/domain/` نیم اسپیس پالیسی کے فیصلوں کو مرکزی بناتی ہے تاکہ روٹ ہینڈلرز کو
-لاک آؤٹ/بجٹ/فال بیک منطق خود ترتیب نہ دینی پڑے۔
+لاک آؤٹ/بجٹ/فال بیک منطق خود یکجا نہ کرنی پڑے۔
 
-- پالیسی انجن: `src/domain/policyEngine.ts` — نفاذ سے پہلے کی
-  جانچ کے لیے واحد نقطۂ آغاز (لاک آؤٹ → بجٹ → فال بیک ترتیب)
-- لاگت کے اصول: `src/domain/costRules.ts`
+- پالیسی انجن: `src/domain/policyEngine.ts` — عمل درآمد سے پہلے
+  جائزے کے لیے واحد نقطۂ آغاز (لاک آؤٹ → بجٹ → فال بیک ترتیب)
+- لاگت کے قواعد: `src/domain/costRules.ts`
 - فال بیک پالیسی: `src/domain/fallbackPolicy.ts`
 - لاک آؤٹ پالیسی: `src/domain/lockoutPolicy.ts`
 - ٹیگ پر مبنی روٹنگ: `src/domain/tagRouter.ts`
 - کومبو ریزالور: `src/domain/comboResolver.ts` — کومبو ناموں، auto/\*
-  سابقوں، اور وائلڈ کارڈ ماڈل اہداف کو ٹھوس نفاذی منصوبوں میں ریزالو کرتا ہے
+  پری فکسز، اور وائلڈ کارڈ ماڈل اہداف کو ٹھوس عملی منصوبوں میں حل کرتا ہے
 - کنکشن/ماڈل رول جوائنر: `src/domain/connectionModelRules.ts`
 - ماڈل دستیابی کے اسنیپ شاٹس: `src/domain/modelAvailability.ts`
 - پرووائیڈر کی میعاد ختم ہونے کی ٹریکنگ: `src/domain/providerExpiration.ts`
 - کوٹا کیش: `src/domain/quotaCache.ts`
 - تنزلی کی حالت: `src/domain/degradation.ts`
 - کنفیگریشن آڈٹ: `src/domain/configAudit.ts`
-- OmniRoute رسپانس میٹا ڈیٹا بلڈر: `src/domain/omnirouteResponseMeta.ts`
-- تشخیصی ذیلی نظام: `src/domain/assessment/` — وقتاً فوقتاً چلنے والے تشخیصی جابز
+- OmniRoute ریسپانس میٹا ڈیٹا بلڈر: `src/domain/omnirouteResponseMeta.ts`
+- اسیسمنٹ ذیلی نظام: `src/domain/assessment/` — متواتر جائزے کے جابز
 
 ### E. اجازت دہی پائپ لائن
 
-اجازت دہی کی پائپ لائن ہر آنے والی درخواست کی درجہ بندی کرتی ہے اور اسے آگے بھیجنے سے پہلے
+اجازت دہی پائپ لائن ہر آنے والی درخواست کی درجہ بندی کرتی ہے اور اسے روانہ کرنے سے پہلے
 مناسب پالیسی چین لاگو کرتی ہے۔
 
 - پائپ لائن کا نقطۂ آغاز: `src/server/authz/pipeline.ts`
 - درخواست کی درجہ بندی کرنے والا: `src/server/authz/classify.ts` — عوامی
-  مطابقتی روٹس کو انتظامی روٹس سے ممتاز کرتا ہے
+  مطابقتی روٹس کو مینجمنٹ روٹس سے ممتاز کرتا ہے
 - عوامی روٹس کی فہرست: `src/shared/constants/publicApiRoutes.ts`
 - پالیسیاں: `src/server/authz/policies/` — قابلِ ترکیب شرائط
-  (`requireApiKey`, `requireManagement`, `requireFreshAuth`، وغیرہ)
-- ہیڈر کی سہولیات: `src/server/authz/headers.ts`
-- تصدیقی معاون: `src/server/authz/assertAuth.ts`
+  (`requireApiKey`, `requireManagement`, `requireFreshAuth` وغیرہ)
+- ہیڈر یوٹیلیٹیز: `src/server/authz/headers.ts`
+- اسیرشن ہیلپر: `src/server/authz/assertAuth.ts`
 - درخواست کا سیاق: `src/server/authz/context.ts`
 
-عوامی اور انتظامی روٹس کے درمیان سخت حد بندی ہے: ایجنٹ/کول ڈاؤن APIs اور
-فراہم کنندہ کی تبدیلیوں کے لیے انتظامی توثیق درکار ہے (موجود نہ ہو تو HTTP 401)۔
+عوامی اور مینجمنٹ روٹس کے درمیان ایک قطعی حد ہے: ایجنٹ/کول ڈاؤن APIs اور
+پرووائیڈر میں تبدیلیوں کے لیے مینجمنٹ توثیق درکار ہے (موجود نہ ہونے پر HTTP 401)۔
 
 روٹس کی درجہ بندی کے مکمل قواعد کے لیے،
 [`docs/architecture/AUTHZ_GUIDE.md`](./AUTHZ_GUIDE.md) دیکھیں۔
 
 ### F. ورک فلو FSM اور ٹاسک سے آگاہ راؤٹر
 
-کومبو کے انتخاب کے اوپر موجود ایک finite-state-machine سے چلنے والا راؤٹر، جو
+کومبو انتخاب کے اوپر موجود ایک محدود حالت مشین سے چلنے والا راؤٹر، جو
 شناخت شدہ ورک فلو مرحلے (منصوبہ بندی، عمل درآمد،
-جائزہ) اور پس منظر کے ٹاسک سے وابستگی کی بنیاد پر ٹریفک کو ہدایت دیتا ہے۔
+جائزہ) اور پس منظر کے ٹاسک سے وابستگی کی بنیاد پر ٹریفک کی سمت متعین کرتا ہے۔
 
 - ورک فلو FSM: `open-sse/services/workflowFSM.ts`
 - ٹاسک سے آگاہ راؤٹر: `open-sse/services/taskAwareRouter.ts`
-- پس منظر کے ٹاسک کا شناخت کنندہ: `open-sse/services/backgroundTaskDetector.ts`
+- پسِ منظر ٹاسک ڈیٹیکٹر: `open-sse/services/backgroundTaskDetector.ts`
 - ارادے کی درجہ بندی کرنے والا: `open-sse/services/intentClassifier.ts`
 
-FSM کی حالتوں میں تبدیلیاں Auto Combo کی اسکورنگ میں شامل ہوتی ہیں، جس سے پس منظر/خودکاری
-کے ٹاسکس کے لیے کم لاگت والے ماڈلز اور تعاملی منصوبہ بندی/جائزے کے مراحل کے لیے
-زیادہ طاقتور ماڈلز کی جانب ترجیح بڑھتی ہے۔
+FSM کی منتقلیاں Auto Combo کی اسکورنگ میں شامل ہوتی ہیں، جو پسِ منظر/خودکاری کے ٹاسکس کے لیے کم قیمت ماڈلز اور انٹرایکٹو منصوبہ بندی/جائزے کے مراحل کے لیے زیادہ طاقتور ماڈلز کی جانب ترجیح بڑھاتی ہیں۔
 
-### G. فراہم کنندہ کے لیے مخصوص لچک پذیری
+### G. پرووائیڈر کے لحاظ سے لچک پذیری
 
-متعدد فراہم کنندگان خصوصی لچک پذیری اور مخفی طرزِ عمل کے ماڈیولز فراہم کرتے ہیں، جو
-عالمی سرکٹ بریکر / کنکشن کول ڈاؤن / ماڈل لاک آؤٹ تہوں سے منسلک ہوتے ہیں:
+کئی پرووائیڈرز مخصوص لچک پذیری اور اسٹیلتھ ماڈیولز فراہم کرتے ہیں جو عالمی سرکٹ بریکر / کنکشن کول ڈاؤن / ماڈل لاک آؤٹ تہوں کے ساتھ منسلک ہو کر کام کرتے ہیں:
 
-- Antigravity 429 انجن: `open-sse/services/antigravity429Engine.ts` (شناخت تبدیل کرتا ہے،
-  جوابی ہیڈرز صاف کرتا ہے، اور کریڈٹس/ورژن کی نگرانی
-  `antigravityCredits.ts`, `antigravityHeaderScrub.ts`, `antigravityHeaders.ts`,
-  `antigravityIdentity.ts`, `antigravityVersion.ts` کے ذریعے چلاتا ہے)
-- ModelScope کوٹا پالیسی: `open-sse/services/modelscopePolicy.ts`
-- Claude Code CCH (مطابقتی چینل ہینڈ شیک): `open-sse/services/claudeCodeCCH.ts`,
-  نیز `claudeCodeCompatible.ts`, `claudeCodeConstraints.ts`, `claudeCodeExtraRemap.ts`,
+- Antigravity 429 انجن: `open-sse/services/antigravity429Engine.ts` (شناخت تبدیل کرتا ہے، ریسپانس ہیڈرز صاف کرتا ہے، اور کریڈٹس/ورژن کی ٹریکنگ کو
+  `antigravityCredits.ts`، `antigravityHeaderScrub.ts`، `antigravityHeaders.ts`،
+  `antigravityIdentity.ts`، `antigravityVersion.ts` کے ذریعے چلاتا ہے)
+- ModelScope کوٹہ پالیسی: `open-sse/services/modelscopePolicy.ts`
+- Claude Code CCH (مطابقتی چینل ہینڈ شیک): `open-sse/services/claudeCodeCCH.ts`،
+  نیز `claudeCodeCompatible.ts`، `claudeCodeConstraints.ts`، `claudeCodeExtraRemap.ts`،
   `claudeCodeToolRemapper.ts`
-- Claude Code فنگر پرنٹ کی تشکیل: `open-sse/services/claudeCodeFingerprint.ts`
-- Claude Code کی مبہم کاری: `open-sse/services/claudeCodeObfuscation.ts`
+- Claude Code فنگرپرنٹ کی تشکیل: `open-sse/services/claudeCodeFingerprint.ts`
+- Claude Code ابہام سازی: `open-sse/services/claudeCodeObfuscation.ts`
 
-مخفی طرزِ عمل کی مکمل عملی کتاب اور آپریشنل رہنمائی کے لیے،
+مکمل اسٹیلتھ حکمتِ عملی اور عملی رہنمائی کے لیے
 `docs/security/STEALTH_GUIDE.md` دیکھیں (git؛ `/docs` میں کمپائل نہیں کی گئی)۔
 
-### H. ویب ہکس، استدلالی کیش، مطالعاتی کیش
+### H. ویب ہُکس، استدلالی کیش، ریڈ کیش
 
-- **ویب ہکس** — فراہم کنندہ/اکاؤنٹ/ٹاسک ایونٹس کی بیرونی ترسیل۔
+- **ویب ہُکس** — پرووائیڈر/اکاؤنٹ/ٹاسک ایونٹس کی بیرونی ترسیل۔
   - ڈسپیچر: `src/lib/webhookDispatcher.ts`
-  - ذخیرہ: `webhooks` SQLite ٹیبل (`src/lib/db/webhooks.ts` کے ذریعے)
-  - ڈیش بورڈ: `/dashboard/webhooks` (سبسکرپشنز، راز، دوبارہ کوشش کی تاریخ)
-  - ایونٹس کی درجہ بندی اور دوبارہ کوشش کے قواعد کے لیے، [`docs/frameworks/WEBHOOKS.md`](../frameworks/WEBHOOKS.md) دیکھیں۔
-- **استدلالی کیش** — ایسے فراہم کنندگان کے لیے دوبارہ چلائے جا سکنے والے استدلالی بلاکس جو
-  سوچ کے ٹوکنز (Claude، GLMT، وغیرہ) خارج کرتے ہیں، تاکہ مسلسل مراحل میں دوبارہ سوچنے سے بچا جا سکے۔
+  - اسٹوریج: `webhooks` SQLite ٹیبل (`src/lib/db/webhooks.ts` کے ذریعے)
+  - ڈیش بورڈ: `/dashboard/webhooks` (سبسکرپشنز، سیکرٹس، دوبارہ کوشش کی سرگزشت)
+  - ایونٹس کی درجہ بندی اور دوبارہ کوشش کے اصولوں کے لیے [`docs/frameworks/WEBHOOKS.md`](../frameworks/WEBHOOKS.md) دیکھیں۔
+- **استدلالی کیش** — ایسے پرووائیڈرز کے لیے دوبارہ چلائے جا سکنے والے استدلالی بلاکس جو تفکری ٹوکنز خارج کرتے ہیں (Claude، GLMT، وغیرہ)، تاکہ مسلسل مراحل میں دوبارہ سوچنے کی ضرورت نہ رہے۔
   - DB تہہ: `src/lib/db/reasoningCache.ts`
   - سروس تہہ: `open-sse/services/reasoningCache.ts`
-  - دوبارہ چلانے کے قواعد کے لیے، [`docs/routing/REASONING_REPLAY.md`](../routing/REASONING_REPLAY.md) دیکھیں۔
-- **مطالعاتی کیش** — دستخط کے لحاظ سے کلید بند مختصر مدتی جوابی کیش، جو
-  خراب اپ اسٹریم SDKs کی یکساں دوبارہ کوششوں کو یکجا کرنے کے لیے استعمال ہوتی ہے۔
+  - دوبارہ چلانے کے اصولوں کے لیے [`docs/routing/REASONING_REPLAY.md`](../routing/REASONING_REPLAY.md) دیکھیں۔
+- **ریڈ کیش** — مختصر مدتی ریسپانس کیش جس کی کلید سگنیچر پر مبنی ہوتی ہے اور جسے خراب upstream SDKs سے آنے والی یکساں دوبارہ کوششوں کو یکجا کرنے کے لیے استعمال کیا جاتا ہے۔
   - DB تہہ: `src/lib/db/readCache.ts`
-  - شماریات کا اینڈ پوائنٹ: `GET /api/cache/stats`، ڈیش بورڈ `/dashboard/cache` پر ہے
+  - اعدادوشمار کا اینڈپوائنٹ: `GET /api/cache/stats`، ڈیش بورڈ `/dashboard/cache` پر ہے
 
 ## 3) مستقل ذخیرہ کاری کی تہہ
 
@@ -534,17 +529,17 @@ FSM کی حالتوں میں تبدیلیاں Auto Combo کی اسکورنگ م�
 - ٹیبلز (`src/lib/db/core.ts` میں تخلیق کردہ): `domain_fallback_chains`، `domain_budgets`، `domain_cost_history`، `domain_lockout_state`، `domain_circuit_breakers`
 - Write-through cache پیٹرن: runtime کے دوران in-memory Maps مستند ماخذ ہوتے ہیں؛ تبدیلیاں ہم وقت طور پر SQLite میں لکھی جاتی ہیں؛ cold start پر اسٹیٹ DB سے بحال کی جاتی ہے
 
-## 4) توثیق + سیکیورٹی کی سطحیں
+## 4) توثیق + سیکیورٹی سطحیں
 
 - ڈیش بورڈ کوکی توثیق: `src/proxy.ts`، `src/app/api/auth/login/route.ts`
 - API کلید کی تخلیق/تصدیق: `src/shared/utils/apiKey.ts`
 - فراہم کنندہ کے راز `providerConnections` اندراجات میں محفوظ کیے جاتے ہیں
-- آؤٹ باؤنڈ پراکسی کی معاونت `open-sse/utils/proxyFetch.ts` (ماحولیاتی متغیرات) اور `open-sse/utils/networkProxy.ts` (ہر فراہم کنندہ کے لیے یا عالمی طور پر قابلِ ترتیب) کے ذریعے
-- SSRF / آؤٹ باؤنڈ URL محافظ: `src/shared/network/outboundUrlGuard.ts` — فراہم کنندہ کالز اور webhook اہداف پر میزبان کی جانچ؛ موڈ `src/shared/network/outboundUrlGuardPolicy.ts` سے آتا ہے (`docs/reference/ENVIRONMENT.md` میں فلیگز)
-- رن ٹائم ماحول کی توثیق: `src/lib/env/runtimeEnv.ts` — تمام ماحولیاتی متغیرات کے لیے Zod اسکیما، جس کی خرابیاں/تنبیہات آغاز کے وقت ظاہر کی جاتی ہیں
-- مطابقت پذیری ٹوکنز: `src/lib/db/syncTokens.ts` — کنفیگریشن بنڈل ڈاؤن لوڈ اینڈ پوائنٹس کے لیے محدود دائرۂ کار والے ٹوکنز؛ `sync_tokens` SQLite جدول کے ذریعے تقویت یافتہ (مائیگریشن `024_create_sync_tokens.sql`)
+- آؤٹ باؤنڈ پراکسی کی معاونت `open-sse/utils/proxyFetch.ts` (ماحولیاتی متغیرات) اور `open-sse/utils/networkProxy.ts` (ہر فراہم کنندہ کے لیے یا عالمی سطح پر قابلِ ترتیب) کے ذریعے
+- SSRF / آؤٹ باؤنڈ URL حفاظتی جانچ: `src/shared/network/outboundUrlGuard.ts` — فراہم کنندہ کی کالز اور ویب ہُک اہداف پر ہوسٹ کی جانچ؛ موڈ `src/shared/network/outboundUrlGuardPolicy.ts` سے آتا ہے (`docs/reference/ENVIRONMENT.md` میں فلیگز)
+- رن ٹائم ماحول کی توثیق: `src/lib/env/runtimeEnv.ts` — تمام ماحولیاتی متغیرات کے لیے Zod اسکیما، جس کے مسائل آغاز کے وقت خرابیوں/انتباہات کے طور پر ظاہر کیے جاتے ہیں
+- سنک ٹوکنز: `src/lib/db/syncTokens.ts` — کنفیگریشن بنڈل ڈاؤن لوڈ اینڈ پوائنٹس کے لیے محدود دائرۂ کار والے ٹوکنز؛ `sync_tokens` SQLite جدول پر مبنی (مائیگریشن `024_create_sync_tokens.sql`)
 - WebSocket ہینڈ شیک توثیق: `src/lib/ws/handshake.ts` — API کلید یا سیشن کوکی کے ذریعے WS اپ گریڈ درخواستوں کی توثیق کرتا ہے
-- لائیو ڈیش بورڈ WebSocket توثیق: `src/server/ws/liveServer.ts` — سائیڈ کار (پورٹ `LIVE_WS_PORT`) ڈیش بورڈ سیشن کوکی یا انتظامی دائرۂ کار (`manage`/`admin`) رکھنے والی Bearer API کلید قبول کرتا ہے؛ صرف استدلال کے لیے مختص کلیدیں مسترد کر دی جاتی ہیں۔ اس کا اندرونی `POST /__omniroute_event` ناشر اینڈ پوائنٹ لوپ بیک ہم سروں کو صرف اس وقت قبول کرتا ہے جب کوئی پراکسی ہاپ ہیڈر (`x-forwarded-*`، `x-real-ip`، `forwarded`، `via`) موجود نہ ہو
+- لائیو ڈیش بورڈ WebSocket توثیق: `src/server/ws/liveServer.ts` — سائیڈ کار (پورٹ `LIVE_WS_PORT`) ڈیش بورڈ سیشن کوکی یا انتظامی دائرۂ کار (`manage`/`admin`) رکھنے والی Bearer API کلید قبول کرتا ہے؛ صرف استدلال کے لیے مخصوص کلیدیں مسترد کر دی جاتی ہیں۔ اس کا داخلی `POST /__omniroute_event` پبلشر اینڈ پوائنٹ صرف اسی وقت لوپ بیک پیئرز قبول کرتا ہے جب کوئی پراکسی ہاپ ہیڈر (`x-forwarded-*`، `x-real-ip`، `forwarded`، `via`) موجود نہ ہو
 
 ## 5) کلاؤڈ سنک
 
@@ -1093,9 +1088,9 @@ flowchart LR
 
 ## 6) SSRF / آؤٹ باؤنڈ URL گارڈ
 
-- `BaseExecutor.assertOutboundUrlAllowed` (`open-sse/executors/base.ts`)، `BaseExecutor.execute()` کے ذریعے بھیجی گئی چیٹ درخواستوں پر `src/shared/network/outboundUrlGuard.ts` لاگو کرتا ہے۔ صرف عوامی موڈ میں (`OMNIROUTE_ALLOW_LOCAL_PROVIDER_URLS=false` جبکہ پرائیویٹ فلیگ بند ہو)، یہ پرائیویٹ اور لوپ بیک ہوسٹس، نیز 169.254.0.0/16 کو بلاک کرتا ہے؛ ہر دوسرے موڈ میں یہ کلاؤڈ میٹا ڈیٹا ہوسٹس کو بلاک کرتا ہے۔ یہ کسی بھی DNS لُک اَپ سے پہلے، ہوسٹ نیم یا IP لِٹرل کو اسی طرح چیک کرتا ہے جیسے وہ لکھا گیا ہو۔ بلٹ اِن مقامی پرووائیڈرز اسے نظر انداز کرتے ہیں۔
-- پرووائیڈر ماڈل کی دریافت اور توثیق کے روٹس `src/shared/network/safeOutboundFetch.ts` استعمال کرتے ہیں، جو ہر آؤٹ باؤنڈ درخواست سے پہلے گارڈ لاگو کرتا ہے۔
-- گارڈ کی خرابیاں HTTP 503 کے ساتھ `URL_GUARD_BLOCKED` کے طور پر ظاہر ہوتی ہیں (`getSafeOutboundFetchErrorStatus`؛ ماڈل ڈسکوری روٹ 400 واپس کرتا ہے)، اور توثیق کے دوران حقیقی SSRF بلاکس کو آڈٹ ٹریل میں `provider.validation.ssrf_blocked` ایونٹس کے طور پر لاگ کیا جاتا ہے۔
+- `src/shared/network/outboundUrlGuard.ts` تمام نجی/لوپ بیک/لنک-لوکل ہدف URLs کو فراہم کنندہ کے ایگزیکیوٹرز تک پہنچنے سے پہلے بلاک کرتا ہے
+- فراہم کنندہ کے ماڈل کی دریافت اور توثیقی روٹس `src/shared/network/safeOutboundFetch.ts` استعمال کرتے ہیں، جو ہر آؤٹ باؤنڈ درخواست سے پہلے گارڈ لاگو کرتا ہے
+- گارڈ کی خرابیاں HTTP 422 کے ساتھ `URL_GUARD_BLOCKED` کے طور پر ظاہر ہوتی ہیں اور `providerAudit.ts` کے ذریعے تعمیلی آڈٹ ٹریل میں لاگ کی جاتی ہیں
 
 ## مشاہدہ پذیری اور آپریشنل اشارے
 

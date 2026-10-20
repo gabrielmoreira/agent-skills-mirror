@@ -9,7 +9,7 @@
 
 <p align="center">
   <strong>Agent 的所有权、审批权与审计权，归于使用它的组织。</strong><br/>
-  OMA（Open Multi-Agent）是自托管的 TypeScript Agent 运行时：关键操作要等一条持久化、防篡改的审批，每次运行留下一份可离线逐字节核验的记录。
+  OMA（Open Multi-Agent）是自托管的 TypeScript Agent 运行时，支持多 Agent 编排、人工审批与离线运行分析。
 </p>
 
 <p align="center">
@@ -84,36 +84,6 @@ const result = await orchestrator.runTeam(team, 'Compare three approaches and re
 console.log(result.agentResults.get('coordinator')?.output)
 ```
 
-<details>
-<summary>让有副作用的工具调用挂起等待审批</summary>
-
-```typescript
-import { FileStore, OpenMultiAgent } from '@open-multi-agent/core'
-
-// 密钥与端点都是你自己的：托管模型，或通过 baseURL 接本地服务。
-const oma = new OpenMultiAgent({
-  defaultProvider: 'openai',
-  defaultModel: 'gpt-5.4',
-  // 有实际副作用的工具调用（写文件、执行 shell）挂起，等待人工决定。
-  onToolCall: ({ consequential }) => (consequential ? { action: 'suspend' } : { action: 'allow' }),
-})
-
-const team = oma.createTeam('ops', {
-  name: 'ops',
-  agents: [{ name: 'operator', systemPrompt: '核对逾期发票。', toolPreset: 'readwrite' }],
-})
-
-// Coordinator 从目标规划任务 DAG；checkpoint store 让整次运行可持久化。
-const result = await oma.runTeam(team, '找出逾期发票并起草催款提醒。', {
-  checkpoint: { store: new FileStore('./.oma/run.json') },
-})
-
-// 在审批人处理 result.pendingApprovals 之前，result.status?.code 保持为 'suspended'；
-// 每条待审批请求都绑定审批人实际看到内容的哈希。
-```
-
-</details>
-
 该示例需要设置 `OPENAI_API_KEY`。其他云端或本地模型见 [Provider](#provider)。
 
 ## 执行模式
@@ -136,21 +106,7 @@ const result = await oma.runTeam(team, '找出逾期发票并起草催款提醒�
 
 ### 声明式治理角色
 
-当应用必须强制使用具名的独立角色时，直接声明治理意图，而不是依赖目标里的措辞：
-
-```typescript
-const governed = await orchestrator.runTeam(team, 'Review the evidence and assess the risk.', {
-  governanceIntent: 'required',
-  requiredRoles: ['researcher', 'analyst'],
-  requiredOrder: ['researcher', 'analyst'],
-})
-
-if (governed.governanceConclusion !== 'satisfied') {
-  throw new Error('Required governance was not satisfied by the executed topology.')
-}
-```
-
-拓扑只来自这些结构化字段，因此不同语言的等价目标会得到相同的角色与顺序。`governanceConclusion` 来自结构化执行回执，而不是模型回答中的角色名称或批准措辞，对治理有要求的应用必须将它与 `success` 分开检查。详见[声明式治理角色](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/tool-configuration.md#declared-governance-roles-in-runteam)。
+通过 `governanceIntent: 'required'`、`requiredRoles` 与 `requiredOrder` 声明必须参与的角色和执行顺序。应用必须单独检查 `governanceConclusion`，运行成功并不代表治理要求已满足。[配置与示例](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/tool-configuration.md#declared-governance-roles-in-runteam)
 
 ## 调度
 
@@ -279,11 +235,11 @@ Core 已提供运行标识、trace sink、执行回执、可查询的内存/文�
 
 ### Run store 与执行租约
 
-checkpoint 说明的是一次运行可以从哪里恢复，而不是谁有权恢复它，因此两个 worker 可能加载同一份快照并同时推进。可选的 `runStore` 补上这层权威：每次运行对应一条权威记录，保存生命周期状态、执行租约和单调递增的 fencing token。worker 必须先取得租约才能派发任务，每次 checkpoint 写入都携带该 token 做 fencing，被其他 worker 接管的运行会停止而不会覆盖新持有者的状态。挂起的运行不再依赖存活进程，运维方也可以在 worker 之外取消或恢复它。该能力默认关闭，关闭时行为不变，详见 [run store 指南](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/run-store.md)。
+多个 worker 可能恢复同一次运行时，启用 `runStore`，通过执行租约与受保护的 checkpoint 写入协调运行归属。应用也可以在 worker 外取消或恢复运行；该功能默认关闭。[使用指南](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/run-store.md)
 
 ### 运行事件日志
 
-长时间运行出问题时，最缺的记录往往是每个 Agent 在被调用那一刻究竟看到了什么。可选的运行事件日志会把这部分保留下来：每条消息和工具结果都作为追加事件写入，上下文策略替换掉若干轮次后放进去的那个块也原样保存，运行结束后可以直接读回，而不必靠推测还原。`verifyRun()` 随后离线校验模型看到的每个块都能从日志中复现，而不是采信日志对自身的陈述，该校验确认的是执行顺序与血缘，并不使日志具备防篡改能力；`restore()` 也可以从最后一条追加事件恢复，而不再局限于最后一次快照。该能力默认关闭，关闭时没有额外开销，详见[运行事件日志指南](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/run-journal.md)。
+启用运行日志，保存模型输入、工具结果与上下文改写，便于排查长时间运行的问题。`verifyRun()` 离线检查记录的来源与内容一致性；恢复时可在 checkpoint 基础上回放兼容的后续事件。该功能默认关闭，校验不证明日志未被篡改。[使用指南](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/run-journal.md)
 
 ## 文档
 

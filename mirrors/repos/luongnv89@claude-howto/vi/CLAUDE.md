@@ -29,7 +29,7 @@ Năm kiểm tra là:
 4. **link-check** — Các URL bên ngoài có thể truy cập được (Python script)
 5. **markdown-rendering** — Markdown render không lỗi (Python script)
 
-Việc build EPUB **không phải** là một pre-commit hook — nó chỉ chạy trong CI (job `build-epub` trong `.github/workflows/test.yml`), vì nó cần binary `mmdc` cục bộ, vốn không có bản build hoạt động trên arm64.
+Việc build EPUB **không phải** là một pre-commit hook — nó chỉ chạy trong CI (job `build-epub` trong `.github/workflows/test.yml`), vì đây là bản build toàn bộ sách, chạy chậm; hook mermaid-syntax đã render mọi sơ đồ bằng cùng bundle Pele.
 
 ### Thiết Lập Môi Trường Phát Triển
 
@@ -42,9 +42,11 @@ uv venv
 source .venv/bin/activate
 uv pip install -r scripts/requirements-dev.txt
 
-# Cài đặt Node.js tools (markdown linter và Mermaid validator)
+# Cài đặt Node.js tools (markdown linter)
 npm install -g markdownlint-cli
-npm install -g @mermaid-js/mermaid-cli
+
+# Sơ đồ Mermaid được render bằng Pele: cần Node.js >= 20, không cần cài package toàn cục
+node --version
 
 # Cài đặt pre-commit hooks
 uv pip install pre-commit
@@ -83,7 +85,7 @@ mypy scripts/ --ignore-missing-imports
 ### Build EPUB
 
 ```bash
-# Tạo ebook (render Mermaid diagrams bằng mmdc CLI cục bộ — không cần mạng)
+# Tạo ebook (render Mermaid diagrams bằng Pele — cần Node.js >= 20; bundle cố định chỉ tải về một lần)
 uv run scripts/build_epub.py
 
 # Với các tùy chọn
@@ -104,7 +106,7 @@ uv run scripts/build_epub.py --verbose --output custom-name.epub --lang vi
 ├── 09-advanced-features/   # Lập kế hoạch, suy nghĩ, background tasks
 ├── 10-cli/                 # Tham chiếu CLI
 ├── scripts/
-│   ├── build_epub.py           # EPUB generator (render Mermaid bằng mmdc cục bộ)
+│   ├── build_epub.py           # EPUB generator (render Mermaid bằng Pele)
 │   ├── check_cross_references.py   # Xác thực liên kết nội bộ
 │   ├── check_links.py          # Kiểm tra các URL bên ngoài
 │   ├── check_mermaid.py        # Xác thực cú pháp Mermaid
@@ -124,7 +126,7 @@ Mỗi thư mục đánh số tuân theo pattern:
 
 ### Sơ Đồ Mermaid
 - Tất cả sơ đồ phải parse thành công (được kiểm tra bởi pre-commit hook)
-- EPUB build render sơ đồ bằng `mmdc` CLI cục bộ (không cần internet, nhưng cần cài `mmdc`)
+- EPUB build render sơ đồ bằng Pele (cần Node.js >= 20; bundle cố định chỉ tải về trong lần chạy đầu tiên, sau đó chạy offline)
 - Sử dụng Mermaid cho flowcharts, sequence diagrams, và architecture visuals
 
 ### Cross-References
@@ -145,7 +147,7 @@ Mỗi thư mục đánh số tuân theo pattern:
 
 3. **Pre-commit là người gác cổng** — Tất cả năm kiểm tra chất lượng phải pass trước khi PR được chấp nhận. CI pipeline chạy các kiểm tra tương tự như lần thứ hai.
 
-4. **Mermaid rendering cần `mmdc` cục bộ** — EPUB build gọi `mmdc` CLI cục bộ để render diagrams (không cần network). Các lỗi build ở đây thường là do chưa cài `mmdc` hoặc cú pháp Mermaid không hợp lệ. Bản thân EPUB build không chạy trong pre-commit — nó chỉ chạy trong CI.
+4. **Mermaid rendering cần Node.js >= 20** — EPUB build chạy bundle Pele cố định bằng Node.js để render diagrams (bundle chỉ tải về trong lần chạy đầu tiên, được kiểm tra sha256 và lưu cache). Các lỗi build ở đây thường là do chưa cài Node.js >= 20, tải bundle thất bại, hoặc cú pháp Mermaid không hợp lệ. Các hook mermaid của pre-commit chạy ở chế độ strict với Node.js 22 do pre-commit cung cấp, nên chúng sẽ báo lỗi thay vì bỏ qua. Bản thân EPUB build không chạy trong pre-commit — nó chỉ chạy trong CI.
 
 5. **Đây là tutorial, không phải thư viện** — Khi thêm nội dung, tập trung vào giải thích rõ ràng, ví dụ copy-paste, và sơ đồ trực quan. Giá trị nằm ở việc dạy các khái niệm, không cung cấp code có thể tái sử dụng.
 

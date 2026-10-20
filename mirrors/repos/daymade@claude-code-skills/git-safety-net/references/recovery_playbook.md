@@ -1,0 +1,286 @@
+# Recovery Playbook — get lost work back, then make it un-loseable
+
+## Contents
+- Mental model: nothing is gone until gc runs
+- The authoritative "is anything at risk" check
+- Linked worktrees and detached worktree HEADs
+- Ladder step 1 — `git reflog` (first move, ~90% of recoveries)
+- Ladder step 2 — dropped stashes
+- Ladder step 3 — detached-HEAD work
+- Ladder step 4 — `git fsck` for true orphans
+- Preserve: pin danglers so gc can never take them
+- Triple-backup a critical commit
+- Widen the safety window (config)
+- Destructive-operation safety (reset/force-push/rewrite)
+- Sources
+
+## Mental model: nothing is gone until gc runs
+
+A commit is an immutable object in `.git/objects`. Deleting a branch, `reset --hard`, a bad
+rebase, or `stash drop` only removes a *reference* to the commit — the object itself survives
+until `git gc` prunes unreachable objects. The reflog keeps a ref alive for **~90 days**
+(reachable) / **~30 days** (already unreachable), which is why same-day recovery almost always
+works. So the recovery mindset is: **find the dangling object, point a ref at it, done.** The
+one thing that permanently loses work is `gc` running while nothing references it — which is why
+"preserve before cleanup" (below) matters.
+
+**Deleting a branch is the exception to that rule.** `git branch -D <name>` deletes the branch's own
+reflog (`logs/refs/heads/<name>`) along with the ref, so the "~90 days" window quoted above does
+**not** cover the deleted branch's tip. What keeps it alive afterwards is only whatever *other* reflog
+happens to mention it — HEAD's own, or a checkout record — and that is luck, not a window you can
+plan around. Measured 2026-09-22 on a scratch repo: after deleting a checked-out branch,
+`git gc --prune=now` still kept the tip (HEAD's reflog was a reachability root), and only
+`git reflog expire --expire-unreachable=now --all` followed by `gc --prune=now` took it.
+**So "gc has not taken it yet" is not a safety signal — the object is one expire away.**
+**Criterion: before `-D`, capture the tip with `git rev-parse <branch>` and run
+`git cat-file -e "<sha>^{commit}"`; 0 means the object is in the local store, and that is the case worth
+preserving.** Non-zero is genuinely ambiguous *for this form*, so do not read it as a verdict either
+way: its stderr is always `fatal: Not a valid object name <whatever-you-typed>^{commit}`, so a
+mistyped SHA and an object `gc` already collected print the same words (measured 2026-09-22). What
+settles it in practice — if the SHA came straight from `git rev-parse` moments ago, non-zero means the
+local object is already gone and the only copies left are whatever you pinned or pushed earlier.
+**Which is why the pin/push below happens *before* the delete, not after reading this probe.** (The
+`… -e <branch>:<path>` form has the richer stderr — it distinguishes a missing path from a bad branch
+— but it answers a different question; see [../SKILL.md](../SKILL.md) § Troubleshooting.) Nor are a
+successful probe plus a completed preserve deletion authority: worktree-removal authority does not
+authorize branch deletion ([merge_verification.md](merge_verification.md) § Worktree retirement) —
+`-D` still needs the verified backup and explicit authorization.
+
+## The authoritative "is anything at risk" check
+
+Before anything else, answer the only question that matters — *is any committed or uncommitted
+state present only locally?* When every worktree/ref/tag/reflog/stash/dangler enumerated by the full audit
+is inside the declared evidence scope, check every place local work hides:
+
+```bash
+scripts/git_loss_audit.sh
+```
+
+If any enumerated surface is excluded, the script is out of scope because it has no exclusion flag.
+Use the authorized checkout/ref's own `status`, `HEAD`, `git log HEAD --not --remotes`, and exact
+remote-ref lookup instead, and state that other worktrees/refs/tags/reflogs/stashes/danglers were not audited.
+
+- **The zero-risk verdict requires completed scans and no pending local state.** That means no
+  local-only commits, dirty/unavailable worktrees, stashes, reflog-only/dangling commits, or non-commit refs
+  awaiting manual object-preservation review. An incomplete scan cannot establish this verdict.
+- **Any reported item = inspect it before cleanup.** Local-only commits and dirty/unavailable
+  worktrees, failed content scans, and Git scan diagnostics make the script exit 1;
+  stashes, reflog-only/dangling commits and non-commit refs stay exit 0 but still need triage or preservation before
+  branch, stash, or worktree deletion.
+
+The audit reads every worktree's reflogs as well as its current HEAD. Default `fsck --dangling`
+does not report commits retained only by reflogs. Preserve an authorized reflog-only SHA with the
+targeted pin below before expiring its log or retiring worktree metadata; the whole-set
+`git_preserve_danglers.sh` helper scans true danglers only and does not pin reflog-only commits.
+
+Why the script instead of only `git log HEAD --branches --tags --not --remotes`: that command
+catches the current detached HEAD and tag-only commits, but misses a detached HEAD in a different
+linked worktree and every uncommitted tracked/untracked file. The script enumerates all worktree
+HEADs and inspects each checkout directly.
+
+Do **not** substitute `git status` or ahead/behind counts for this — they answer different
+questions. To confirm a single commit is safe on a remote:
+
+```bash
+git branch -r --contains <sha>       # lists remote branches that contain it (empty = local-only)
+```
+
+## Linked worktrees and detached worktree HEADs
+
+Treat each authorized path from `git worktree list --porcelain` as a separate working tree. Run
+status with `git -C <path>` only against paths inside the evidence scope. A detached linked worktree
+can carry a unique commit even when every named branch is on a remote; the full loss audit includes
+those HEADs explicitly, so do not run it when another linked path is excluded.
+
+Before removal, require empty tracked/untracked status **and a separate ignored-file inventory**,
+exact HEAD capture, content containment proof against a fresh base, a verified targeted bundle of
+the worktree's branch or collision-checked recovery ref, and current-session deletion authority.
+Only then try normal `git worktree remove`, followed by path/registration/ref postcondition
+checks. Its clean-submodule exception in the complete gate below permits one force flag only after
+a specific submodule refusal and independent module preservation; it does not permit removal of
+dirty, unknown, locked, occupied or incompletely preserved state. The bundle preserves the
+superproject's objects, not module-private objects or ignored files; copy any ignored item that is not
+proven reproducible and verify it against a recorded pre-removal
+content hash. Freeze the complete ignored path/type/hash-or-link-target manifest, including
+disposable entries. After authority, repeat both status checks and rebuild that manifest; any
+added, missing, or changed entry aborts, and the removal command must come next. Recheck every
+surviving copy afterward. The complete gate lives in
+[merge_verification.md](merge_verification.md) § Worktree retirement.
+
+## Ladder step 1 — `git reflog` (first move)
+
+Any "I lost a commit / reset too far / bad rebase" starts here:
+
+```bash
+git reflog --date=iso | head -40
+```
+
+Each line is a past HEAD position with its sha and what moved it (`commit`, `checkout`, `reset`,
+`rebase -i (finish)`, …). Find the sha of the state you want back, **confirm it**, then recover
+onto a *new* branch (never reset your live branch onto it):
+
+```bash
+git show <sha>                       # CONFIRM: is this the content you want?
+git switch -c rescue/<name> <sha>    # or: git branch rescue/<name> <sha>
+```
+
+Branch-specific reflogs exist too: `git reflog show <branch>` recovers where a specific branch
+tip used to point (e.g. before a force-push clobbered it).
+
+## Ladder step 2 — dropped stashes
+
+`git stash drop` / `git stash pop` (which drops on success) removes the stash ref but leaves the
+underlying commit dangling. `git stash list` won't show it; find it via fsck:
+
+```bash
+git fsck --no-reflogs --unreachable | grep commit    # or: git fsck --dangling
+git show <stash-sha>                                 # verify it's the stash you lost
+git stash apply <stash-sha>                           # re-apply it, or:
+git branch rescue/stash <stash-sha>                   # park it on a branch
+```
+
+Stash commits have a distinctive message (`WIP on <branch>: …`), which helps identify them among
+fsck output.
+
+**The third parent — untracked files a stash silently carries.** A stash made with
+`git stash -u` (or `-a`) stores untracked files in a **third parent commit** (`stash@{N}^3`),
+and `git stash show -p` **does not display them** — it only shows the tracked diff. Two
+consequences that bite in real recoveries:
+
+- **Inspecting**: judging a stash by `stash show -p` alone under-reports what it holds. Check for
+  the third parent explicitly, and list what's inside:
+
+  ```bash
+  git rev-parse -q --verify 'stash@{0}^3' && git ls-tree -r --name-only 'stash@{0}^3'
+  ```
+
+- **Exporting**: a `.patch` backup of the stash loses the untracked half. Export both parts —
+  patch for the tracked diff, `git archive` for the third-parent tree:
+
+  ```bash
+  git stash show -p --binary 'stash@{0}' > stash0.patch
+  git archive 'stash@{0}^3' -o stash0-untracked.tar     # only if ^3 exists
+  ```
+
+  `scripts/git_export_before_drop.sh` does both automatically for every stash it exports.
+  (Real case: a "finish later" stash carried 10 untracked files — 929 insertions including a
+  545-line test file — that a patch-only backup would have dropped without a word.)
+
+**Index-shift trap when dropping several stashes**: indices renumber on every drop —
+after `drop stash@{0}`, the old `stash@{1}` *becomes* `stash@{0}`. Drop from the **highest
+index down** so each name still means what your backups say it means.
+
+## Ladder step 3 — detached-HEAD work
+
+Committing while on a detached HEAD (after `git checkout <sha>`), then switching away, orphans
+those commits — they belong to no branch. Reflog remembers them:
+
+```bash
+git reflog | grep -i 'HEAD@'         # find the detached commits you made
+git switch -c saved-work <sha>        # give them a home
+```
+
+**Prevent the loss entirely:** the moment you make a commit you care about on a detached HEAD,
+`git switch -c <branch> HEAD` before doing anything else.
+
+## Ladder step 4 — `git fsck` for true orphans
+
+When reflog doesn't reach it (reflog expired, or the commit was never HEAD on this clone), fsck
+walks the object store directly:
+
+```bash
+git fsck --dangling                  # dangling commits/blobs/trees not reachable from any ref
+```
+
+Inspect candidates with `git show <sha>`. Dangling *blobs* can be a single lost file:
+`git show <blob-sha> > recovered_file`.
+
+**One more place to check before declaring a deleted branch gone: the hosting platform, not
+just this local clone.** If the branch had an open or merged pull request, GitHub keeps that
+PR's head addressable at `refs/pull/<N>/head` even after the source branch itself is deleted
+(verified on a real repository: `refs/pull/<N>/head` still resolved to the original head SHA
+after the branch was deleted). Check read-only first, then fetch and recover:
+
+```bash
+git ls-remote origin "refs/pull/<N>/head"                  # read-only: does it still resolve?
+git fetch origin "refs/pull/<N>/head"
+git branch restored/pr-<N> FETCH_HEAD
+```
+
+Other hosting platforms expose this under different ref names — check what the platform
+actually serves before assuming this exact path works there too.
+
+## Preserve: pin authorized danglers so gc can never take them
+
+Dangling commits are recoverable **only until gc runs**. For a specific inspected commit that is
+inside the preservation scope, pin exactly that SHA under a hidden ref namespace—a referenced
+object is never collected:
+
+```bash
+git update-ref refs/dangling-backup/<sha> <sha> 0000000000000000000000000000000000000000
+git show refs/dangling-backup/<sha>       # confirm the exact object that was pinned
+```
+
+Use `scripts/git_preserve_danglers.sh` only when the Outcome contract explicitly includes every
+dangling commit it will enumerate; it is a whole-set helper, not the default. Why a hidden
+`refs/dangling-backup/*` and not `git stash store`? These refs don't appear in `git branch` or
+`git stash list`, so they protect the authorized objects without turning branch/stash lists into
+noise, and you can delete them once their content is verified safe elsewhere.
+
+Bundling that same commit needs a ref too — `git bundle create` refuses a bare SHA with
+`fatal: Refusing to create empty bundle` even though the commit exists (measured). Bundle the
+`refs/dangling-backup/<sha>` ref just pinned above by name; a commit with no ref at all needs one
+created first (`git update-ref refs/backup/<name> <sha>`) before it can be bundled.
+
+**The same error string names more than one cause, and one of them is a trap.** Above: "the positive
+revision has no ref" (a bare SHA) — create a ref first. Below: "the negation range is empty", meaning
+`<sha>`'s content is **already in** the ref you excluded and there is no increment to preserve; measured
+2026-09-22 across three repos, it fired on exactly the branches the patch-id set comparison had already
+confirmed contained. The trap: `git bundle create out.bundle ^<ref> <bare-sha-not-in-<ref>>` prints the
+*identical* message while the real cause is still "no ref" — building that SHA into a ref first makes
+the bundle succeed. **Criterion: never branch on the error string. Create the ref first
+(`git update-ref refs/backup/<name> <sha>`), retry, and only an empty result *then* means "nothing to
+preserve". The cross-check is `git format-patch <merge-base>..<head>`, read as "no output **and exit
+0**" — an empty stdout with a non-zero exit is a malformed range, not containment.**
+
+## Triple-backup a critical commit
+
+For a specific commit you must not lose (e.g. real unpushed work found by the at-risk check), one
+copy isn't enough — a single disk failure or a single `gc` shouldn't be able to take it. Give it
+three independent homes:
+
+```bash
+git branch backup/<name> <sha>                                   # 1) local branch
+git push origin backup/<name>                                    # 2) remote branch (survives disk loss)
+git format-patch -1 <sha> --stdout > <name>.patch                # 3) patch file (survives repo loss)
+```
+
+Now the commit survives losing any one of: the working tree, the remote, or the whole repo.
+
+## Widen the safety window (config)
+
+The default reflog window is generous but finite. For repos where recovery matters, extend it:
+
+```bash
+git config --global gc.reflogExpire "180 days"
+git config --global gc.reflogExpireUnreachable "90 days"
+```
+
+## Destructive-operation safety (reset / force-push / rewrite)
+
+Recovery is easiest when the operation that "lost" the work was itself reversible. Prefer:
+
+- **On already-pushed history, `git revert`, not `git reset`.** Revert adds an inverse commit;
+  reset abandons commits that teammates may have based work on.
+- **If you must force-push, use `git push --force-with-lease`, not `--force`.** `--force-with-lease`
+  refuses the push if the remote moved since you last fetched — it won't silently clobber a
+  teammate's (or another agent's) commits.
+- **Before any history rewrite (`rebase`, `filter-repo`, `reset --hard`), snapshot first:**
+  `git branch backup/pre-rewrite` (and run the at-risk check). Ten seconds; fully reversible.
+
+## Sources
+
+- Pro Git — Data Recovery (reflog / fsck / dangling objects): <https://git-scm.com/book/en/v2/Git-Internals-Maintenance-and-Data-Recovery>
+- Git `worktree` documentation: <https://git-scm.com/docs/git-worktree>
+- Git `bundle` documentation: <https://git-scm.com/docs/git-bundle>
+- Git `merge-tree` documentation: <https://git-scm.com/docs/git-merge-tree>

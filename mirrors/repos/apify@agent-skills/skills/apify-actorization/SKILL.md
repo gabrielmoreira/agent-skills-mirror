@@ -9,11 +9,12 @@ Actorization converts existing software into reusable serverless applications co
 
 ## Quick start
 
-1. Run `apify init --user-agent apify-agent-skills/apify-actorization` in project root
-2. Wrap code with SDK lifecycle (see language-specific section below)
-3. Configure `.actor/input_schema.json`
-4. Test with `apify run --input '{"key": "value"}' --user-agent apify-agent-skills/apify-actorization`
-5. Deploy with `apify push --user-agent apify-agent-skills/apify-actorization`
+1. Run `apify init <actor-name> --user-agent apify-agent-skills/apify-actorization` in project root
+2. Create a `Dockerfile` for the project's language
+3. Wrap code with SDK lifecycle (see language-specific section below)
+4. Configure `.actor/input_schema.json`
+5. Test with `apify run --input '{"key": "value"}' --user-agent apify-agent-skills/apify-actorization`
+6. Deploy with `apify push --user-agent apify-agent-skills/apify-actorization`
 
 ## When to use this skill
 
@@ -77,7 +78,7 @@ apify push --user-agent apify-agent-skills/apify-actorization
 Copy this checklist to track progress:
 
 - [ ] Step 1: Analyze project (language, entry point, inputs, outputs)
-- [ ] Step 2: Run `apify init --user-agent apify-agent-skills/apify-actorization` to create Actor structure
+- [ ] Step 2: Run `apify init <actor-name> --user-agent apify-agent-skills/apify-actorization` and create a `Dockerfile`
 - [ ] Step 3: Apply language-specific SDK integration
 - [ ] Step 4: Configure `.actor/input_schema.json`
 - [ ] Step 5: Configure `.actor/output_schema.json` (if applicable)
@@ -98,16 +99,15 @@ Before making changes, understand the project:
 
 ## Step 2: Initialize Actor structure
 
-Run in the project root:
+Run in the project root, passing a DNS-friendly Actor name (e.g. `my-scraper`):
 
 ```bash
-apify init --user-agent apify-agent-skills/apify-actorization
+apify init <actor-name> --user-agent apify-agent-skills/apify-actorization
 ```
 
-This creates:
-- `.actor/actor.json` - Actor configuration and metadata
-- `.actor/input_schema.json` - Input definition for Apify Console
-- `Dockerfile` (if not present) - Container image definition
+The name passed as an argument keeps `apify init` from prompting; without it, the command waits for input and hangs in non-interactive shells.
+
+`apify init` sets up `.actor/actor.json` and local `storage/`, but no `Dockerfile`. Without one, the platform builds on its default Node.js image, so a Python Actor builds cleanly and then fails at runtime. Create a `Dockerfile` whose base image matches the project's language (`apify/actor-python` for Python, `apify/actor-node` for JavaScript/TypeScript) at `.actor/Dockerfile`, in the project root, or at the path set in the `dockerfile` field of `.actor/actor.json`.
 
 ## Step 3: Apply language-specific changes
 

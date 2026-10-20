@@ -47,21 +47,6 @@ gbrain:
 <!-- AUTO-GENERATED from SKILL.md.tmpl — do not edit directly -->
 <!-- Regenerate: bun run gen:skill-docs -->
 
-
-## When to invoke this skill
-
-Startup mode: six forcing questions that expose
-demand reality, status quo, desperate specificity, narrowest wedge, observation,
-and future-fit. Builder mode: design thinking brainstorming for side projects,
-hackathons, learning, and open source. Saves a design doc.
-Use when asked to "brainstorm this", "I have an idea", "help me think through
-this", "office hours", or "is this worth building".
-Proactively invoke this skill (do NOT answer directly) when the user describes
-a new product idea, asks whether something is worth building, wants to think
-through design decisions for something that doesn't exist yet, or is exploring
-a concept before any code is written.
-Use before /plan-ceo-review or /plan-eng-review.
-
 ## Preamble (run first)
 
 ```bash
@@ -858,7 +843,7 @@ cat "$_OUTSIDE_TMP/text" 2>/dev/null || tail -n 20 "$_OUTSIDE_TMP/events"
 
 cat "$_OUTSIDE_TMP/stderr" >&2 || { [ "$_OUTSIDE_EXIT" -ne 0 ] || _OUTSIDE_EXIT=1; }
 _OUTSIDE_RC=0
-bun "$HOME/.claude/skills/gstack/lib/outside-review-result.ts" --label 'Codex outside review' --exit "$_OUTSIDE_EXIT" --stderr "$_OUTSIDE_TMP/stderr" --events "$_OUTSIDE_TMP/events" review "$_OUTSIDE_TMP/text" || _OUTSIDE_RC=$?
+bun --no-env-file --config=/dev/null "$HOME/.claude/skills/gstack/lib/outside-review-result.ts" --label 'Codex outside review' --exit "$_OUTSIDE_EXIT" --stderr "$_OUTSIDE_TMP/stderr" --events "$_OUTSIDE_TMP/events" review "$_OUTSIDE_TMP/text" || _OUTSIDE_RC=$?
 case "$_OUTSIDE_RC" in
   0|3) ;;
   4) echo 'OUTSIDE_STATUS: unverified provider=codex host=claude'; exit 4 ;;
@@ -1128,7 +1113,7 @@ in gstack's own headless browser (its first line says which: `ENGINE=aside` or
 `ENGINE=browse`) — and screenshots it:
 
 ```bash
-bun run $HOME/.claude/skills/gstack/bin/gstack-render.ts <sketch-dir>/sketch.html --screenshot <sketch-dir>/sketch.png --width 1280
+bun --no-env-file --config=/dev/null run $HOME/.claude/skills/gstack/bin/gstack-render.ts <sketch-dir>/sketch.html --screenshot <sketch-dir>/sketch.png --width 1280
 ```
 
 Only if it prints `NEEDS_ASIDE` or `ASIDE_NOT_RUNNING` followed by `ERROR: no browser
@@ -1220,7 +1205,7 @@ cat "$_OUTSIDE_TMP/text" 2>/dev/null || tail -n 20 "$_OUTSIDE_TMP/events"
 
 cat "$_OUTSIDE_TMP/stderr" >&2 || { [ "$_OUTSIDE_EXIT" -ne 0 ] || _OUTSIDE_EXIT=1; }
 _OUTSIDE_RC=0
-bun "$HOME/.claude/skills/gstack/lib/outside-review-result.ts" --label 'Codex outside review' --exit "$_OUTSIDE_EXIT" --stderr "$_OUTSIDE_TMP/stderr" --events "$_OUTSIDE_TMP/events" proposal "$_OUTSIDE_TMP/text" || _OUTSIDE_RC=$?
+bun --no-env-file --config=/dev/null "$HOME/.claude/skills/gstack/lib/outside-review-result.ts" --label 'Codex outside review' --exit "$_OUTSIDE_EXIT" --stderr "$_OUTSIDE_TMP/stderr" --events "$_OUTSIDE_TMP/events" proposal "$_OUTSIDE_TMP/text" || _OUTSIDE_RC=$?
 case "$_OUTSIDE_RC" in
   0|3) ;;
   4) echo 'OUTSIDE_STATUS: unverified provider=codex host=claude'; exit 4 ;;

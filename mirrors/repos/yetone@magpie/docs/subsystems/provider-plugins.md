@@ -178,6 +178,8 @@ What a plugin writes with `console.log`, `console.warn` and the rest goes to the
 
 A plugin's account whose sign-in its vendor refused (`lapsed`, or an allowance read saying so) keeps Sign in again and Remove on its row, whether it is in use or the agent's own (`signedOut` in `renderAccounts`, `app.js`).
 
+A plugin sign-in's page is opened once. An `authorize` result may say `opened: true` (not OpenCode's field): the plugin's own CLI opened the page already. Grok's `grok login --device-auth` does this on macOS and Windows, where nothing turns it off, and magpie's opening it too showed two pages (andyfmyth on X; plugin 0.1.17, which on other systems gives grok a `BROWSER` that opens nothing instead). `host.js` passes it on as `Authorization.Opened`, then `SignInState.Opened`, and the desktop's `/api/plugin-signin`, `magpie plugin login` and the window in a browser tab (`startPluginSignIn`, and `followSignIn` after an install) then open nothing; the page's link is still shown (`TestPluginSignInPageOpensOnce`, `plugin-signin-opened.test.cjs`).
+
 The GUI's plugin integration includes `subOf`, `pluginSubs`, and `startPluginSignIn`. A change to sign-in or provider presentation must follow these paths as well as the built-in paths it affects.
 
 ## Verification

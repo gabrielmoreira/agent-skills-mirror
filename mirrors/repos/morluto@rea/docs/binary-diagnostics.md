@@ -160,7 +160,12 @@ launch builder. It is a configuration fact, not measured memory use or proof of
 the effective JVM limit; JVM environment options may affect that limit.
 When a Windows script wrapper selects the JVM, this value remains unknown.
 Historical stdout and stderr remain available, but classification uses only the
-failing operation's `failure_output`. Output draining waits at most one second,
+failing operation's `failure_output`. Retained stdout and stderr share an 8 MiB
+budget, but every drained byte is scanned for `java.lang.OutOfMemoryError`:
+`failure_output.observed_oome` records the latest confirmed token's bounded line per stream from
+the failing operation, with its byte offset, even after the budget is spent. These observations own OOME detection; retained text that ends at a class-name prefix cannot confirm a complete token. `line_complete` distinguishes a known line end from an incomplete trailing context; `invalid_utf8` marks replacement-decoded context.
+Incomplete operation output without an observed OOME keeps the original failure code and explains that a memory cause cannot be ruled out. Incompleteness alone does not confirm a memory constraint or justify heap-specific advice. Token context stays within the failing operation's checkpoint; a class-name prefix in a different identifier is not OOME evidence. A trailing bare token requires an observed stream EOF to establish its boundary.
+Output draining waits at most one second,
 subject to earlier cancellation or the startup deadline. `output_incomplete`
 marks a snapshot taken before stream closure; cleanup ownership remains with
 the session until release succeeds.

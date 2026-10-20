@@ -18,7 +18,7 @@ fn, which returns `Outcome<T>`.
 | [`model.rs`](./model.rs) | AI-provider, memory, runtime, local-AI, and Composio-trigger settings. |
 | [`privacy.rs`](./privacy.rs) | Privacy Mode (`[privacy]`) get/set. |
 | [`sandbox.rs`](./sandbox.rs) | Sandbox / Docker runtime (`[sandbox]`, `[runtime.docker]`) settings. |
-| [`ui.rs`](./ui.rs) | Browser, analytics, dictation, voice-server, and onboarding-flag settings. |
+| [`ui.rs`](./ui.rs) | Browser, analytics, and onboarding-flag settings. |
 | [`search.rs`](./search.rs) | Search settings: providers, routes, role order, keys, limits, and the web-access allowlist. |
 
 Each submodule follows the same shape: a `*SettingsPatch` struct with
@@ -27,7 +27,6 @@ that mutates the given config, calls `Config::save()`, and returns the
 settings or snapshot; a `load_and_apply_*(patch)` wrapper that calls
 `load_config_with_timeout` first; and a `get_*` fn that reads the relevant
 section back out, usually as `Outcome<serde_json::Value>`. `ui.rs`'s
-dictation and voice-server mutators exist only in `load_and_apply_*` form.
 
 ## Key entry points
 
@@ -51,8 +50,6 @@ dictation and voice-server mutators exist only in `load_and_apply_*` form.
 - `search.rs`: `apply_search_settings` / `get_search_settings`,
   `search_settings_json`.
 - `ui.rs`: `apply_browser_settings`, `apply_analytics_settings`,
-  `load_and_apply_voice_server_settings` / `get_voice_server_settings`,
-  `load_and_apply_dictation_settings` / `get_dictation_settings`,
   `set_onboarding_completed` / `get_onboarding_completed`,
   `workspace_onboarding_flag_exists` / `workspace_onboarding_flag_set` /
   `workspace_onboarding_flag_resolve`.

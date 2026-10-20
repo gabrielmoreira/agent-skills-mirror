@@ -9,7 +9,7 @@
 
 <p align="center">
   <strong>Agents your organization can own, approve, and audit.</strong><br/>
-  OMA (Open Multi-Agent) is a self-hosted TypeScript agent runtime: consequential actions wait for durable, tamper-evident approvals, and every run leaves a record you can verify offline, byte for byte.
+  OMA (Open Multi-Agent) is a self-hosted TypeScript agent runtime for coordinating agents, adding human approval gates, and inspecting runs offline.
 </p>
 
 <p align="center">
@@ -86,36 +86,6 @@ const result = await orchestrator.runTeam(team, 'Compare three approaches and re
 console.log(result.agentResults.get('coordinator')?.output)
 ```
 
-<details>
-<summary>Pause consequential tool calls for approval</summary>
-
-```typescript
-import { FileStore, OpenMultiAgent } from '@open-multi-agent/core'
-
-// Your keys and your endpoint: a hosted provider, or a local server through baseURL.
-const oma = new OpenMultiAgent({
-  defaultProvider: 'openai',
-  defaultModel: 'gpt-5.4',
-  // Consequential tool calls (file writes, shell) pause for a human decision.
-  onToolCall: ({ consequential }) => (consequential ? { action: 'suspend' } : { action: 'allow' }),
-})
-
-const team = oma.createTeam('ops', {
-  name: 'ops',
-  agents: [{ name: 'operator', systemPrompt: 'Reconcile overdue invoices.', toolPreset: 'readwrite' }],
-})
-
-// The coordinator plans the task DAG from the goal; the checkpoint store keeps the run durable.
-const result = await oma.runTeam(team, 'Find overdue invoices and draft the reminders.', {
-  checkpoint: { store: new FileStore('./.oma/run.json') },
-})
-
-// result.status?.code === 'suspended' until a reviewer decides result.pendingApprovals,
-// each bound to a hash of exactly what the reviewer was shown.
-```
-
-</details>
-
 Set `OPENAI_API_KEY` for this example. For other hosted or local models, see [Providers](#providers).
 
 ## Execution Modes
@@ -138,21 +108,7 @@ Use `planOnly` to inspect a generated task graph before execution, then `createP
 
 ### Declared governance roles
 
-When an application must enforce named independent roles, declare that governance intent instead of relying on wording in the goal:
-
-```typescript
-const governed = await orchestrator.runTeam(team, 'Review the evidence and assess the risk.', {
-  governanceIntent: 'required',
-  requiredRoles: ['researcher', 'analyst'],
-  requiredOrder: ['researcher', 'analyst'],
-})
-
-if (governed.governanceConclusion !== 'satisfied') {
-  throw new Error('Required governance was not satisfied by the executed topology.')
-}
-```
-
-The topology comes only from these structured fields, so equivalent goals in different languages produce the same roles and order. `governanceConclusion` comes from the structured execution receipt rather than from role names or approval wording in the model answer, so governance-sensitive applications must check it separately from `success`. See [declared governance roles](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/tool-configuration.md#declared-governance-roles-in-runteam).
+Use `governanceIntent: 'required'`, `requiredRoles`, and `requiredOrder` to declare the roles and execution order a run must follow. Applications must check `governanceConclusion` separately from `success`. [Configuration and example](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/tool-configuration.md#declared-governance-roles-in-runteam)
 
 ## Scheduling
 
@@ -296,11 +252,11 @@ See the [observability guide](https://github.com/open-multi-agent/open-multi-age
 
 ### Run store and execution leases
 
-A checkpoint says what a run can resume from; it does not say who is allowed to resume it, so two workers can load the same snapshot and both advance it. The opt-in `runStore` adds the missing authority: one authoritative record per run holding its lifecycle status, an execution lease, and a monotonic fencing token. A worker acquires the lease before it dispatches anything, every checkpoint write is fenced with its token, and a run taken over by another worker stops instead of overwriting the new owner's state. Suspended runs stop depending on a live process, and an operator can cancel or resume one from outside the worker. Off by default, unchanged behavior when off, and documented in the [run store guide](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/run-store.md).
+Enable `runStore` when multiple workers may resume the same run. Execution leases and fenced checkpoint writes coordinate ownership, and applications can cancel or resume runs from outside a worker. This feature is off by default. [Guide](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/run-store.md)
 
 ### Run journal
 
-When a long run goes wrong, the record usually missing is what each agent actually saw at the moment it was asked. The opt-in run journal keeps it: every message and tool result as an appended event, plus the exact block a context strategy put in place of the turns it dropped, so a finished run can be read back instead of reconstructed by guesswork. `verifyRun()` then checks offline that every block the model saw is reproducible from the log rather than trusting the log's own account of itself, which establishes order and lineage rather than tamper-evidence, and `restore()` can resume from the last appended event instead of the last snapshot. It is off by default, costs nothing when off, and is documented in the [run journal guide](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/run-journal.md).
+Enable the run journal to retain model inputs, tool results, and context rewrites for debugging long runs. `verifyRun()` checks source and content consistency offline, and restore can replay compatible events after the checkpoint. The feature is off by default; verification does not prove the journal was never edited. [Guide](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/run-journal.md)
 
 ## Documentation
 

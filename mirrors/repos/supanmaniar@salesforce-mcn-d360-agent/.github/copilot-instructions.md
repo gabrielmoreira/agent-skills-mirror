@@ -35,8 +35,25 @@ server exposed is available here through the **Salesforce CLI** and the scripts 
 │   └── ENDPOINT-INDEX.md                # Condensed markdown index
 └── scripts/
     ├── catalog-search.mjs               # Discover and describe endpoints
-    └── sf-api.sh                        # Authenticated REST calls via the CLI
+    ├── sf-api.sh                        # Authenticated REST calls via the CLI
+    ├── d360-snapshot.mjs                # Capture Data 360 config to one JSON file
+    └── d360-diff.mjs                    # Compare two captures for config drift
 ```
+
+The agent can therefore answer **"what changed in this org?"** without an MCP:
+capture with `d360-snapshot.mjs`, compare with `d360-diff.mjs`. Use this instead of
+diffing API responses by hand.
+
+```bash
+node scripts/d360-snapshot.mjs --out snap.json     # capture
+node scripts/d360-diff.mjs old-snap.json snap.json # compare
+```
+
+Add `--redact` before sharing a capture — it hides literal filter values while
+keeping objects, fields and operators, so a shared file still shows logic. Add
+`--fail-on-change` to make the diff a CI gate; it exits 1 on drift *or* on a
+comparison that is not conclusive (different org, data space or redaction, a
+module captured on one side only, an incomplete capture).
 
 ---
 

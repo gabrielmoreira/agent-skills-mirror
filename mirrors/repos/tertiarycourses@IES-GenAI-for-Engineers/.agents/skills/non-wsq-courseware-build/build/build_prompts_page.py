@@ -3,6 +3,7 @@ from pathlib import Path
 from html import escape
 import re
 import course_data as C
+from lab_prompts import INFO_LINE
 from maintenance_labs import LABS
 
 import os
@@ -38,7 +39,7 @@ def split_prompts(command):
     return [(hit.group(1),command[hit.end():(hits[i+1].start() if i+1<len(hits) else len(command))].strip()) for i,hit in enumerate(hits)]
 
 def build_page(labs):
-    parts=['<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">',f'<title>Lab Prompts | {escape(C.TITLE)}</title>',f'<meta name="description" content="Copy-ready prompts for {escape(C.TITLE)}: step-by-step lab instructions with one-click Copy buttons."><style>{CSS}</style></head><body><main class="wrap">',f'<p class="eyebrow">{escape(getattr(C,"PROMPTS_EYEBROW",C.COURSE_CODE))} · Microsoft 365 Copilot · {C.VERSION}</p><h1>Lab Prompts</h1>',f'<p class="sub">{escape(C.TITLE)}. {escape(getattr(C,"PROMPTS_TAGLINE",""))}<br>Pick your lab, follow each step in order, click <b>Copy</b> on the step\'s prompt and paste it into the app named on the card. Verify every result.</p>', '<nav aria-label="Labs">'+''.join(f'<a href="#lab-{a["num"]}" aria-label="Lab {a["num"]}">Lab {a["num"]}</a>' for a in labs)+'</nav><p id="copy-status" class="status" role="status" aria-live="polite"></p>', '<div id="pick" class="pick"><b>Which lab are you on?</b><p>Choose a lab number. Each lab has an instruction PDF and a data folder. Use the PDF for the complete procedure.</p><p><b>One coherent theme:</b> Northstar Water Services, a fictional water-pipe maintenance and service company. Carry the same work orders from Excel cleaning into a Word brief, reusable skill, interactive dashboard and PowerPoint decision deck.</p>'+getattr(C,'PROMPTS_DAY_NOTE','')+'']
+    parts=['<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">',f'<title>Lab Prompts | {escape(C.TITLE)}</title>',f'<meta name="description" content="Copy-ready prompts for {escape(C.TITLE)}: step-by-step lab instructions with one-click Copy buttons."><style>{CSS}</style></head><body><main class="wrap">',f'<p class="eyebrow">{escape(getattr(C,"PROMPTS_EYEBROW",C.COURSE_CODE))} · Microsoft 365 Copilot · {C.VERSION}</p><h1>Lab Prompts</h1>',f'<p class="sub">{escape(C.TITLE)}. {escape(getattr(C,"PROMPTS_TAGLINE",""))}<br>Pick your lab, follow each step in order, click <b>Copy</b> on the step\'s prompt and paste it into the app named on the card. Verify every result.</p>', '<nav aria-label="Labs">'+''.join(f'<a href="#lab-{a["num"]}" aria-label="Lab {a["num"]}">Lab {a["num"]}</a>' for a in labs)+'</nav><p id="copy-status" class="status" role="status" aria-live="polite"></p>', '<div id="pick" class="pick"><b>Which lab are you on?</b><p>Choose a lab number. Each lab has an instruction PDF and a data folder. Use the PDF for the complete procedure.</p><p><b>One coherent theme:</b> Northstar Water Services, a fictional water-pipe maintenance and service company. Every lab is self-contained: its data folder already has every file you need, so you can start any lab.</p>'+getattr(C,'PROMPTS_DAY_NOTE','')+'']
     for topic in C.TOPICS:
         parts.append(f'<h3>Topic {topic["num"]} · {escape(topic["title"])}</h3><ul>')
         parts.extend(f'<li><a href="#lab-{a["num"]}">Lab {a["num"]} · {escape(a["title"])}</a></li>' for a in labs if a['topic']==topic['num'])
@@ -47,13 +48,18 @@ def build_page(labs):
     md=[f'# {C.TITLE} - Prompt Library\n',f'[Open the prompts page with Copy buttons]({C.PROMPTS_PAGE})\n']
     for lab in labs:
         n=lab['num'];folder='lab-'+f'{n:02d}-'+re.sub(r'-+', '-', re.sub(r'[^a-z0-9]+', '-', lab['theme'].lower())).strip('-');path=f'labs/{folder}';pdf=f'{path}/Lab-{n:02d}-Instructions.pdf'
-        parts.extend([f'<section class="lab" data-lab="{n}" id="lab-{n}" hidden><p class="eyebrow">Lab {n} · Topic {lab["topic"]} · {lab["duration"]} min</p><h2>{escape(lab["title"])}</h2>', f'<p class="use">{escape(lab["services"])}</p>',f'<p class="files"><a href="{RAW}/{pdf}">Instructions PDF</a> · <a href="{TREE}/{path}/data/">Data folder</a> · <a href="{TREE}/{path}/">Lab folder</a></p>',f'<p class="open">{escape(lab["goal"])}<br>Provide the actual source file or verified evidence in each app. App chats do not share context.</p>'])
+        parts.extend([f'<section class="lab" data-lab="{n}" id="lab-{n}" hidden><p class="eyebrow">Lab {n} · Topic {lab["topic"]} · {lab["duration"]} min</p><h2>{escape(lab["title"])}</h2>', f'<p class="use">{escape(lab["services"])}</p>',f'<p class="files"><a href="{RAW}/{pdf}">Instructions PDF</a> · <a href="{TREE}/{path}/data/">Data folder</a> · <a href="{TREE}/{path}/">Lab folder</a></p>',f'<p class="open">{escape(lab["goal"])}<br>Open the files straight from this lab’s data folder. Each lab stands on its own.</p>'])
         md.extend([f'\n## Lab {n}: {lab["title"]}\n',f'[Instruction PDF](../../{pdf}) · [Data folder](../../{path}/data/) · [Copy buttons]({C.PROMPTS_PAGE}#lab-{n})\n'])
         for i,(instr,cmd) in enumerate(lab['steps'],1):
             parts.append(f'<div class="step" id="lab-{n}-step-{i}"><h4>Step {i}</h4><p>{escape(instr)}</p>')
             md.extend([f'### Step {i}\n',f'{instr}\n'])
-            if cmd:
+            info=cmd and not re.search(r'(?m)^[A-Z0-9 -]+:\s*$',cmd) and all(INFO_LINE.match(l) for l in cmd.strip().split('\n'))
+            if info:  # a "Key : value" checklist box: what to click or what you should see; nothing to copy
+                parts.append(f'<article class="prompt"><header><div><b>Check</b><span class="ptool">What you should see</span></div></header><pre>{escape(cmd.strip())}</pre></article>')
+                md.append(f'```text\n{cmd}\n```\n')
+            elif cmd:
                 for part,(app,prompt) in enumerate(split_prompts(cmd),1):
+                    if app=='Copilot' and prompt.startswith('='):app='Type this formula yourself'
                     label=f'Lab {n} · Step {i} · Prompt {part}';pid=f'prompt-{n}-{i}-{part}'
                     parts.append(f'<article class="prompt"><header><div><b>{label}</b><span class="ptool">{escape(app)}</span></div><button type="button" class="copy" data-copy="{pid}" data-label="{label}" aria-label="Copy {label}">Copy</button></header><pre id="{pid}">{escape(prompt)}</pre></article>')
                 md.append(f'```text\n{cmd}\n```\n')

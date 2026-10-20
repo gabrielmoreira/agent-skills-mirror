@@ -4,7 +4,7 @@
 - Supersedes / closes: none
 - Proposed by: LoopX maintainers
 - Date: 2026-08-15
-- Last revised: 2026-10-16
+- Last revised: 2026-10-19
 - Scope: an incremental, replacement-first migration of the LoopX control-plane
   core from Python to TypeScript without maintaining two semantic
   implementations
@@ -16,6 +16,25 @@
 ---
 
 ### Product conversations and asynchronous inbox
+
+**Receiver Inbox read transaction (2026-10-19).**
+`loopx/control_plane/collaboration/inbox_read.ts` now composes local source scans, pagination,
+Goal-instance admission, receiver and peer-return read receipts, and unfinished
+delegation context through the existing typed owners. Turn-start observation
+uses a read-only request. Receiver reads without a pending Host provider commit
+their local read receipts in that request. Actual Core Todo, workspace-input and
+operation-ticket providers remain explicit Python IO; finalization reacquires
+the Goal lifetime guard and rereads entries under the shared request fence.
+Reading still grants neither adoption, consumption nor execution authority.
+The old Python scan/composition loops and five fine-grained RPC registrations
+are removed. The legacy Inbox read imports and tracking/presentation receipt
+views retain thin native facades; their exit is migration of those remaining
+Python consumers. Existing return-display file IO retains its Python adapter
+and the shared persisted delivery vocabulary. Large pages reuse the shared
+private snapshot transport. Normal runtime IPC, installed
+HTTP caller parity and complete default-SQLite CLI performance remain separate
+qualification gates. This source cutover does not certify R1–R3 or the complete
+asynchronous collaboration lifecycle.
 
 R1–R3 also consume the typed kernel through the App, not only CLI settlement.
 The [App/inbox integration plan](app-conversation-and-async-inbox-v0.md#ts-and-generic-async-inbox-migrate-with-the-user-path)

@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `vinta/awesome-python` — 26 default patterns, 3 followed patterns, 10 file(s) materialized.
+Mirror of `vinta/awesome-python` — 26 default patterns, 4 followed patterns, 11 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `vinta/awesome-python` — 26 default patterns, 3 followed patterns, 1
 | Ref Type      | `branch` |
 | Ref           | `master` |
 | Default pats  | 26 |
-| Followed pats | 3 |
-| Files         | 10 |
+| Followed pats | 4 |
+| Files         | 11 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -54,6 +54,7 @@ Mirror of `vinta/awesome-python` — 26 default patterns, 3 followed patterns, 1
 - `README.md`
 - `CONTRIBUTING.md`
 - `SPONSORSHIP.md`
+- `DESIGN.md`
 
 ## File Index
 
@@ -69,8 +70,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 6 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 7 | ✓ | [`website/templates/llms.txt`](website/templates/llms.txt) |
 | 8 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 9 | → | [`README.md`](README.md) |
-| 10 | → | [`SPONSORSHIP.md`](SPONSORSHIP.md) |
+| 9 | → | [`DESIGN.md`](DESIGN.md) |
+| 10 | → | [`README.md`](README.md) |
+| 11 | → | [`SPONSORSHIP.md`](SPONSORSHIP.md) |
 
 ---
 

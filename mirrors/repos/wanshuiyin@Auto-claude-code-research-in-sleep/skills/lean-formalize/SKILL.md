@@ -2,10 +2,21 @@
 name: lean-formalize
 description: "Develop and verify a mathematical proof in Lean, continue an incomplete Lean project, or audit whether it proves the original statement. Connect actual inputs to intermediate lemmas, assemble the target theorem, check its transitive axioms, and provide a reproducible handoff. Use when Lean is requested or a specific proof obligation benefits from formal verification; use proof-writer for ordinary mathematical drafting."
 argument-hint: "[statement, proof file, Lean project, or audit request]"
-allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Agent, Skill, mcp__codex__codex, mcp__codex__codex-reply
+allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Agent, Skill, mcp__codex__codex, mcp__codex__codex-reply, mcp__antigravity__antigravity, mcp__antigravity__antigravity-reply, mcp__grok__grok, mcp__grok__grok-reply, mcp__claude-review__review, mcp__claude-review__review_reply, mcp__claude-review__review_start, mcp__claude-review__review_reply_start, mcp__claude-review__review_status
 ---
 
 # Lean Formalize
+
+> **Before each reviewer slot**, follow [Selectable Reviewers](../shared-references/reviewer-backends.md):
+> resolve invocation → `.aris/reviewer.json` → Claude Code default (Codex MCP)
+> with `reviewer_route.py` through the canonical helper resolver, preserving this
+> slot's tier, fresh contexts, source/image inputs and deterministic gates.
+> Codex examples/pins below apply only to `backend=codex`; other routes use their
+> own first-call/reply contract. Save the route and actual returned identity;
+> unavailable selections are `REVIEW_UNAVAILABLE`. Classify acceptance from actual
+> families/completion/scope. Forward invocation reviewer/model/effort overrides
+> to reviewer-bearing children. Generation workers are unchanged.
+
 
 Turn the user's mathematical statement into a checked Lean theorem with its
 meaning preserved. A compiled conditional lemma is progress; completion concerns
@@ -262,7 +273,9 @@ contexts for A and C; B repair checks may continue the reviewer that found the
 issue. Verify the executor/reviewer families rather than assuming that every
 host running this mainline skill is Claude.
 
-Honor an explicitly selected authorized reviewer. Direct Claude, Grok and Gemini
+For every A/B/C checkpoint, resolve the selected route through
+[Selectable Reviewers](../shared-references/reviewer-backends.md). Honor explicit
+family requirements and leave unmet checkpoints pending. Direct Claude, Grok and Gemini
 transports have different file-access and continuation contracts; read
 [review transport notes](references/adversarial-review.md#review-transport-and-source-access)
 when using them. These Lean consultations do not change another skill's reviewer

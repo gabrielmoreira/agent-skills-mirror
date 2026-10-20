@@ -2,14 +2,22 @@
 
 ## Default Routing
 
-The default reviewer backend depends on the skill AND the execution environment:
+The selectable-reviewer contract is authoritative in
+[reviewer-backends.md](reviewer-backends.md): resolve **invocation directive →
+`.aris/reviewer.json` → host default** with `reviewer_route.py`. It supplies the
+Antigravity, Grok and local Claude Code protocols, session rules, and acceptance
+requirements. The defaults and legacy routes below apply after that selection.
+A project or invocation choice takes precedence over Copilot host detection.
+
+When no invocation or project override is selected, the default reviewer backend
+depends on the skill and execution environment:
 
 | Skill | Default backend | Opt-in override |
 |-------|----------------|-----------------|
-| `/auto-review-loop` | **`copilot-native`** when the marker protocol binds the current Copilot CLI root session; otherwise **`codex`** | `--reviewer: codex` / `oracle-pro` / `agy` / `manual`; `--reviewer: copilot` retains the legacy custom-agent drive mode |
-| All other reviewer skills | **Codex MCP** (`mcp__codex__codex`), model **`gpt-6-astra`** | `--reviewer: oracle-pro` / `agy` / `manual` |
+| `/auto-review-loop` | **`copilot-native`** when the marker protocol binds the current Copilot CLI root session; otherwise **`codex`** | `codex` / `antigravity` (`gemini`) / `grok` / `claude-code` (`claude`, `claude-review`), plus the legacy routes below; `copilot` retains the custom-agent drive mode |
+| All other reviewer skills | **Codex MCP** (`mcp__codex__codex`), model **`gpt-6-astra`** | `antigravity` / `grok` / `claude-code`, plus `oracle-pro` / `agy` / `manual` |
 
-When no reviewer is specified, `/auto-review-loop` first attempts the
+When neither invocation nor project selects a reviewer, `/auto-review-loop` first attempts the
 [native marker protocol](#copilot-cli-native-rubber-duck-default-for-auto-review-loop).
 It does not depend on the proposed `COPILOT_CLI` environment variable. Two
 separate root Bash calls bind a fresh run token to Copilot's persisted session
@@ -25,11 +33,11 @@ different families. Missing, unknown, same-family, malformed, or stale evidence
 fails closed. Explicit reviewer directives continue to select their requested
 external backend.
 
-See the [native Copilot section](#copilot-cli-native-rubber-duck-default-for-auto-review-loop), the [legacy custom-agent section](#copilot-cli-custom-agent-profiles-reviewer-copilot-compatibility-drive-mode), and the [Codex section](#codex-capability-fallback-new-reviewer-sessions-only).
+See the [native Copilot section](#copilot-cli-native-rubber-duck-default-for-auto-review-loop), the [legacy custom-agent section](#copilot-cli-custom-agent-profiles---reviewer-copilot-compatibility-drive-mode), and the [Codex section](#codex-capability-fallback-new-reviewer-sessions-only).
 
 ### Codex MCP Tiered Reasoning-Effort Policy
 
-When Codex MCP is the active backend (default for all non-auto-review-loop skills, or explicit `--reviewer: codex`), model **`gpt-6-astra`** (GPT-6-Astra) is used with a **two-tier reasoning-effort policy** (since 2026-07-10; `ultra`/`max` need codex-cli ≥ 0.144.1):
+When Codex MCP is the resolved backend (the Claude Code host default outside the bound Copilot case), model **`gpt-6-astra`** (GPT-6-Astra) is used with a **two-tier reasoning-effort policy** (since 2026-07-10; `ultra`/`max` need codex-cli ≥ 0.144.1):
 
 | Tier | `model_reasoning_effort` | Which calls |
 |------|--------------------------|-------------|
@@ -88,8 +96,8 @@ reviewer fallback safety rule:
 
 This boundary is deliberately narrower than "Codex returned any error." Users
 who explicitly want a different reviewer regardless of Codex state should pick
-that backend directly (`oracle-pro`, `agy`, or `manual`) instead of relying on
-fallback.
+that backend directly (`antigravity`, `grok`, `claude-code`, or a supported legacy
+route) instead of relying on fallback.
 
 #### HTTP fallback call contract
 
@@ -180,19 +188,21 @@ MCP servers are spawned per session: after upgrading codex-cli (e.g. to 0.144.1 
 
 ## Optional: GPT-5.5 Pro via Oracle
 
-When the user explicitly passes `— reviewer: oracle-pro`, route the review through Oracle MCP instead of Codex MCP.
+When the resolved selection is `oracle-pro`, route the review through Oracle
+MCP instead of Codex MCP. This legacy route retains its warning/fallback behavior
+below; the new MCP routes follow [reviewer-backends.md](reviewer-backends.md).
 
 ### Routing Logic (add to any reviewer-invoking skill)
 
 ```
-Parse $ARGUMENTS for `— reviewer:` directive.
+Resolve invocation, project configuration and host default as described above.
 
-If not specified OR `— reviewer: codex`:
+If the resolved backend is `codex`:
     → Use mcp__codex__codex with model: gpt-6-astra at the tier's effort
       (deep-audit: ultra / regular: xhigh — see the Default table above).
     → This is the DEFAULT. No change from current behavior.
 
-If `— reviewer: oracle-pro`:
+If the resolved backend is `oracle-pro`:
     → Check if mcp__oracle__consult tool is available
     → If available:
         Use mcp__oracle__consult with:
@@ -208,7 +218,7 @@ If `— reviewer: oracle-pro`:
 
 ### Invariants
 
-- `— reviewer: oracle-pro` ONLY takes effect when explicitly passed
+- `oracle-pro` is opt-in through invocation or project selection; it is not the host default
 - Reviewer independence protocol still applies (pass file paths, not summaries)
 - `effort` and `difficulty` are orthogonal — they don't change reviewer backend
 - `beast` mode may RECOMMEND oracle-pro but never requires it
@@ -265,22 +275,41 @@ If Oracle is not installed, `— reviewer: oracle-pro` gracefully falls back to 
 
 Oracle MCP is maintained at [`steipete/oracle`](https://github.com/steipete/oracle). When you invoke `— reviewer: oracle-pro` (and especially the `o3-deep-research` / `gpt-5.5-pro` paths), it's worth checking the **[open PRs](https://github.com/steipete/oracle/pulls)** for in-flight fixes that may affect your run — e.g., model routing changes, browser-mode auth fixes, rate-limit handling, or new model alias support. ARIS does not vendor Oracle MCP; you're running the published version from `npm install -g @steipete/oracle`. If a behavior surprises you, the upstream PR queue is the first place to check before opening an issue here.
 
-## Optional direct Grok / Antigravity consultation
+## Selectable Antigravity, Grok and Claude Code reviewers
 
-When explicitly requested by the user, separately registered Grok or Antigravity MCP tools can read files and discuss a question: `grok` / `grok-reply` (default `grok-4.7` + `xhigh`) and `antigravity` / `antigravity-reply` (default `gemini-3.8-flash-high` + `high`). Pass `prompt` and an explicit `cwd` on the first call; use that service's saved `threadId` and `prompt` for follow-ups. See [grok-exec](../../mcp-servers/grok-exec/README.md) and [antigravity-exec](../../mcp-servers/antigravity-exec/README.md) for installation and tool contracts.
+Select `— reviewer: antigravity` (alias `gemini`), `grok`, or `claude-code`
+(aliases `claude` and `claude-review`) at an existing review step, or configure
+its project default. These are formal reviewer routes in the complete skill
+packs. Follow [reviewer-backends.md](reviewer-backends.md) for the resolver,
+first-call and reply parameters, local file access, success signals and tracing.
+No partial overlay installation is required.
 
-These are direct consultation tools, not additional `— reviewer:` values. Installing them does not replace a skill's reviewer calls or satisfy its acceptance gate automatically. The existing mainline `— reviewer: agy` route remains `gemini-review`; the Codex base retains `spawn_agent` / `send_input`, and the Gemini overlay retains `review*`. Follow each skill's current reviewer contract for formal reviews.
+A transport name does not establish family: Antigravity can run Claude, and the
+local Claude Code CLI can use DeepSeek. Record the actual returned model and
+its source; missing values stay unknown. A completed, in-scope, positive review
+can be `cross-family / accepted` only when the actual executor and reviewer
+families are known and differ. Same-family review stays provisional and may
+stop a drive loop. Failed or incomplete calls cannot supply a positive verdict.
+The selected new backend's unavailability is `REVIEW_UNAVAILABLE`, without
+silently changing providers. Existing legacy fallbacks below retain their own
+contracts.
+
+`antigravity` is the separate Antigravity MCP, with default
+`gemini-4-argon-high` / `high`; `grok` defaults to `grok-4.7` / `xhigh`.
+`claude-code` uses its configured CLI provider unless a model is explicitly
+selected, and its bridge has no effort argument. The older `agy` route below
+continues to mean **gemini-review MCP**, not the separate Antigravity MCP.
 
 ## Optional: Gemini via Antigravity CLI (`— reviewer: agy`)
 
-When the user explicitly passes `— reviewer: agy`, route the review through the **gemini-review MCP** with the Antigravity (`agy`) backend — a native cross-model reviewer for Antigravity users who don't run Codex MCP / Oracle. Added in [#267](https://github.com/wanshuiyin/Auto-claude-code-research-in-sleep/pull/267).
+When the resolved selection is `agy`, route the review through the **gemini-review MCP** with the Antigravity (`agy`) backend — a native cross-model reviewer for Antigravity users who don't run Codex MCP / Oracle. Added in [#267](https://github.com/wanshuiyin/Auto-claude-code-research-in-sleep/pull/267).
 
 ### Routing Logic (add to any reviewer-invoking skill)
 
 ```
-Parse $ARGUMENTS for `— reviewer:` directive.
+Resolve invocation, project configuration and host default as described above.
 
-If `— reviewer: agy`:
+If the resolved backend is `agy`:
     → Check if the gemini-review MCP tool is available (mcp__gemini-review__review).
     → If available (server configured with GEMINI_REVIEW_BACKEND=agy):
         Use mcp__gemini-review__review with:
@@ -295,7 +324,7 @@ If `— reviewer: agy`:
 
 ### Invariants
 
-- `— reviewer: agy` ONLY takes effect when explicitly passed.
+- `agy` is opt-in through invocation or project selection; it is not the host default.
 - **Cross-model family holds by construction.** The `agy` backend is fail-closed on ARIS's invariant: it recovers the *actual* Gemini-family model id from the current invocation's Antigravity transcript, **refuses** to return a verdict if the routed model is non-Gemini (no `"agy-cli"` placeholder), and binds the recovered transcript to *this* call via a **user-event nonce** (a model echo can't spoof the binding). So when the executor is Claude, `— reviewer: agy` (Gemini) satisfies the cross-model gate.
 - Reviewer independence still applies — pass prompt context only (the `tools` arg is accepted for compatibility but ignored).
 - `effort` and `difficulty` are orthogonal — they don't change the reviewer backend.
@@ -314,16 +343,16 @@ If the gemini-review (agy) MCP isn't configured, `— reviewer: agy` gracefully 
 
 ## Optional: Manual Review (any classifiable model, zero API cost)
 
-When the user explicitly passes `— reviewer: manual`, route the review through the manual-review MCP server. Instead of calling an API, it opens a browser page (or writes a file on headless Linux) where the user copies the prompt to a model of their choice and pastes the response back. The reviewer model must be one ARIS can classify by family (OpenAI, Anthropic, Google, DeepSeek, Moonshot/Kimi, Qwen); an unclassifiable name cannot be shown to differ from the executor's.
+When the resolved selection is `manual`, route the review through the manual-review MCP server. Instead of calling an API, it opens a browser page (or writes a file on headless Linux) where the user copies the prompt to a model of their choice and pastes the response back. The reviewer model must be one ARIS can classify by family (OpenAI, Anthropic, Google, DeepSeek, Moonshot/Kimi, Qwen); an unclassifiable name cannot be shown to differ from the executor's.
 
 **Zero API cost. Works with any text-capable model.**
 
 ### Routing Logic
 
 ```
-Parse $ARGUMENTS for `— reviewer:` directive.
+Resolve invocation, project configuration and host default as described above.
 
-If `— reviewer: manual`:
+If the resolved backend is `manual`:
     → Check if mcp__manual_review__review tool is available
     → If available:
         Use mcp__manual_review__review with:
@@ -343,7 +372,7 @@ If `— reviewer: manual`:
 
 ### Invariants
 
-- `— reviewer: manual` ONLY takes effect when explicitly passed
+- `manual` is opt-in through invocation or project selection; it is not the host default
 - **Cross-model family is mandatory, not optional.** "a model of their choice" above means any *classifiable, non-executor-family* model, determined dynamically from the actual executor model — not merely "non-Claude." Every verdict-bearing response must start with `Reviewer-Model: <exact-model-id>`; derive its family and compare it with the model-derived executor family. Missing, unknown, ambiguous, or same-family identity is `REVIEW_UNAVAILABLE` for an acceptance gate. The UI warning is advisory; the traced model identities and derivation are the gate.
 - Prompt fidelity: the review task text is exactly what Codex would receive; the manual transport wrapper may add only the model-identity response-format line used by the provenance gate
 - `config.model_reasoning_effort` is shown as a recommendation badge, not embedded in the prompt
@@ -383,7 +412,10 @@ The following skills are wired for manual review (Claude Code only):
 
 > `/research-lit` supports `oracle-pro` only; manual review is not wired because the skill has no reviewer call blocks.
 
-> **Platform note**: Manual review requires MCP tools (available only in Claude Code). Mirrored skill packs under `skills/skills-codex/` and `skills/skills-codex-*-review/` do NOT include manual-review wiring — they target Codex CLI and other platforms that lack MCP support. Oracle-pro support in those mirrors is unaffected.
+> **Platform note**: This legacy manual-review recipe documents the main Claude
+> Code skills. It does not limit the selectable Antigravity, Grok or Claude Code
+> MCP routes, which are available in both complete host packs. Follow the active
+> host's routing reference for its legacy manual/Oracle behavior.
 
 ### Nightmare mode (Codex-only)
 
@@ -420,7 +452,7 @@ Parse `--reviewer:` before probing the host:
   external backend directly. Do not run the native probe first.
 - Explicit `copilot` retains the compatibility custom-agent drive described
   later in this file.
-- With no directive, resolve `copilot_native_evidence.py` through the canonical
+- With no invocation or project selection, resolve `copilot_native_evidence.py` through the canonical
   four-layer helper chain. Run `marker` and `challenge` as **two separate root
   Bash tool calls**. Exit 3 from `challenge` means no current Copilot root
   session was bound; continue with the existing Codex default.
@@ -694,7 +726,7 @@ If `--reviewer: copilot` (explicit opt-in):
     → Use `copilot --agent` with the selected profile, the parsed model,
       `--effort xhigh`, and read-only tool permission for each review round.
 
-If no `--reviewer:` specified:
+If neither invocation nor project selects a reviewer:
     → Use the native marker/challenge protocol documented above.
     → Bound Copilot session: use `copilot-native` rubber-duck.
     → No bound Copilot session: use Codex MCP (`codex` backend), preserving
@@ -831,9 +863,9 @@ copilot --agent "$REVIEWER_PROFILE" --model "$REVIEWER_MODEL" \
 
 ### Invariants
 
-- With no reviewer directive, a bound Copilot root session defaults to
-  `copilot-native`; an unbound/non-Copilot host defaults to Codex. Explicit
-  reviewer directives always win.
+- With no invocation or project reviewer selection, a bound Copilot root session
+  defaults to `copilot-native`; an unbound/non-Copilot host defaults to Codex.
+  Explicit and project reviewer selection take precedence.
 - `--reviewer: copilot` is an **explicit compatibility drive mode**. It is not
   the native default and its positive verdict still requires a finalizer.
 - `--executor-model` is **MANDATORY** when `--reviewer: copilot` is used. Fail closed if missing.
@@ -842,7 +874,8 @@ copilot --agent "$REVIEWER_PROFILE" --model "$REVIEWER_MODEL" \
   remain drive-only. This restriction does not apply to verified native
   rubber-duck calls, whose actual model pair comes from host events.
 - Custom agent profile models are repeated with subprocess `--model`; do not rely on profile-only pinning under an Auto session.
-- Explicit reviewer directives (`codex`, `oracle-pro`, `agy`, `manual`) are separate from copilot.
+- Selected external routes (`codex`, `antigravity`, `grok`, `claude-code`,
+  `oracle-pro`, `agy`, `manual`) are separate from compatibility Copilot drive mode.
 - Reviewer independence protocol still applies (pass file paths, not summaries).
 - `effort` and `difficulty` are orthogonal — they don't change the reviewer backend.
 - If `copilot` CLI is unavailable → `REVIEW_UNAVAILABLE` for an explicitly

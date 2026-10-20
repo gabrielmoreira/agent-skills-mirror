@@ -238,3 +238,7 @@ An integrator therefore supplies three things:
 See the no-key runnable
 [`durable-approval`](../packages/core/examples/patterns/durable-approval.ts)
 example for the complete suspend/decide/fresh-orchestrator flow.
+
+## Implementation and tests
+
+[Approval ledger](../packages/core/src/approval/durable.ts) · [Lifecycle tests](../packages/core/tests/durable-approval.test.ts) · [Validation tests](../packages/core/tests/durable-approval-validation.test.ts)

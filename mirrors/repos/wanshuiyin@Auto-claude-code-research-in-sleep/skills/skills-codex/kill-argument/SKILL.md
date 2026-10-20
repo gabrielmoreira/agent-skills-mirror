@@ -2,15 +2,27 @@
 name: kill-argument
 description: "Two-thread adversarial review: a fresh reviewer constructs the strongest 200-word rejection memo, then a second fresh reviewer defends the paper point-by-point and surfaces still-unresolved critical issues. Use when user says \"kill argument\", \"adversarial review\", \"hostile review\", \"rebuttal preparation\", \"reviewer-2 simulation\", or before submitting a theory paper that has already passed standard review rounds."
 argument-hint: "[paper-directory]"
-allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, spawn_agent
+allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, spawn_agent, mcp__antigravity__antigravity, mcp__antigravity__antigravity-reply, mcp__grok__grok, mcp__grok__grok-reply, mcp__claude-review__review, mcp__claude-review__review_reply, mcp__claude-review__review_start, mcp__claude-review__review_reply_start, mcp__claude-review__review_status
 ---
 
 # Kill Argument Exercise: Adversarial Attack-Defense Review
 
-> **Codex assurance:** both fresh agents are OpenAI-family, so the base JSON
-> records `review_independence: same-family` and
-> `acceptance_status: provisional`. The mechanical count mapping may drive the
-> next step, but it is not cross-family acceptance. Call failure emits ERROR.
+> **Before each reviewer slot**, follow [Selectable Reviewers](../shared-references/reviewer-backends.md):
+> resolve invocation → `.aris/reviewer.json` → Codex default (fresh native reviewer)
+> with `reviewer_route.py` through the canonical helper resolver, preserving this
+> slot's tier, fresh contexts, source/image inputs and deterministic gates.
+> Codex examples/pins below apply only to `backend=codex`; other routes use their
+> own first-call/reply contract. Save the route and actual returned identity;
+> unavailable selections are `REVIEW_UNAVAILABLE`. Classify acceptance from actual
+> families/completion/scope. Forward invocation reviewer/model/effort overrides
+> to reviewer-bearing children. Generation workers are unchanged.
+
+
+> **Review assurance:** with the default native Codex reviewers, record
+> `review_independence: same-family` and `acceptance_status: provisional`.
+> With another selected route, derive these fields from actual identities and
+> completed scope. Keep Attack and Defense in separate fresh sessions; the
+> mechanical count mapping grants no independent acceptance. Call failure emits ERROR.
 
 Stress-test the headline claims of a paper against the strongest possible rejection argument: **$ARGUMENTS**
 
@@ -60,8 +72,8 @@ This skill is most valuable for **theory papers** with ≥5 theorem-class enviro
 
 The attack and adjudication calls are fresh, read-only Codex shards. They return
 structured per-point records with stable `dedup_key` identifiers; neither call
-writes the paper or emits cross-family acceptance. The parent computes the
-top-level mapping mechanically and records a same-family provisional verdict.
+writes the paper or decides acceptance. The parent computes the top-level
+mapping mechanically and records the review class from actual model identities.
 If `spawn_agent` is unavailable, use fresh sequential contexts where supported;
 otherwise emit `BLOCKED` rather than inventing a verdict. See
 [`fan-out-pattern.md`](../shared-references/fan-out-pattern.md).
@@ -90,6 +102,8 @@ If a compiled PDF is missing, the skill should still run on .tex source alone, b
 ### Step 2: Attack memo (Thread 1, fresh codex)
 
 Invoke `spawn_agent` (NOT `send_input`) with the following prompt structure. Use absolute or paper-directory-relative paths inside the prompt; do not rely on a `cwd` parameter.
+
+> Resolve this reviewer slot first; the following is the `backend=codex` example.
 
 ```
 spawn_agent:
@@ -148,6 +162,8 @@ Save the returned `agent_id` for the trace; do NOT pass it to Thread 2.  Save th
 ### Step 3: Adjudication memo (Thread 2, fresh codex with attack + paper)
 
 Invoke a second `spawn_agent` call (still NOT `send_input` — Thread 2 is independent of Thread 1's Codex agent history):
+
+> Resolve this reviewer slot first; the following is the `backend=codex` example.
 
 ```
 spawn_agent:
@@ -283,8 +299,8 @@ ARIS Audit Artifact Schema (`shared-references/assurance-contract.md`):
   "executor_family": "openai",
   "reviewer_model": "gpt-6-astra",
   "reviewer_family": "openai",
-  "review_independence": "same-family",
-  "acceptance_status": "provisional",
+  "review_independence": "<actual family comparison>",
+  "acceptance_status": "<actual acceptance status>",
   "reviewer_reasoning": "ultra",
   "generated_at": "<UTC ISO-8601>",
   "details": {

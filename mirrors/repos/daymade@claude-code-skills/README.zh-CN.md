@@ -1,0 +1,4148 @@
+# Claude Code 技能市场
+
+<div align="center">
+
+[![English](https://img.shields.io/badge/Language-English-blue)](./README.md)
+[![简体中文](https://img.shields.io/badge/语言-简体中文-red)](./README.zh-CN.md)
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Claude Code](https://img.shields.io/badge/Claude%20Code-2.0.13+-purple.svg)](https://claude.com/code)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](./CONTRIBUTING.md)
+[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/daymade/claude-code-skills/graphs/commit-activity)
+
+</div>
+
+专业的 Claude Code 技能市场，提供生产就绪的技能，用于增强开发工作流。
+
+---
+
+## 🌟 必备技能：skill-creator
+
+**⭐ 如果你想创建自己的技能，从这里开始！**
+
+`skill-creator` 是一个**元技能**，它使你能够构建、验证和打包自己的 Claude Code 技能。它是这个市场中最重要的工具，因为它赋予你用自己的专业工作流扩展 Claude Code 的能力。
+
+### 为什么选这个 skill-creator？
+
+这是 [Anthropic 官方 skill-creator](https://github.com/anthropics/skills/tree/main/skills/skill-creator) 的**生产强化版 fork**——从真实 skill 开发中踩过的坑里长出来的。
+
+**官方告诉你"做什么"。我们还告诉你"别试什么"——以及为什么。**
+
+| 你想要... | 官方版 | 本 Fork |
+|----------|--------|---------|
+| 造之前先调研 | "Check available MCPs" | 有序搜索协议 + Adopt/Extend/Build 决策矩阵 |
+| 交互式创建 skill | 纯文字指令 | 结构化 AskUserQuestion 检查点——用户永远不丢上下文 |
+| 按风险匹配验证成本 | 一套完整创建-测试-审阅循环 | 风险分级与评测开销分开：先跑定向证据；配对基准需用户明确授权，或先证明能改变决策再获得同意 |
+| 避免常见错误 | 无指引 | 缓存编辑警告、前置依赖检查、安全扫描门禁 |
+| 了解架构选项 | 未提及 | Inline vs Fork 决策指南（选错会静默破坏你的 skill） |
+| 发布前验证 | 基本 YAML 检查 | 扩展结构校验 + 带来源核验的现有 skill 新旧能力审计；打包时重验完整 review，不信任 marker 自证 |
+| 安全审查 | 无工具 | `security_scan.py` + gitleaks 集成——打包前硬门禁 |
+| 从真实失败中学习 | 无失败案例 | 实战方法论 + 文档化的失败模式和踩坑记录 |
+| 安全蒸馏历史对话 | 未覆盖 | 显式本地 manifest、消息级时间窗、先脱敏后落盘、匿名 source ID、默认忽略 `.enrich/`，候选只能人工晋升进 references/scripts |
+| 用证据锚定知识型 skill | 泛化建议 | 从真实调用和机器可读规范到生产代码的权威源阶梯，加上可执行示例冒烟与证据边界规则 |
+| 与官方版同时安装 | 抛硬币——两者描述几乎一字不差 | 触发时检测冲突，提供一条命令可装可卸的 SessionStart 路由 hook（仅在两者共存时才会安装）；显式点名时官方版仍可用 |
+| 你自己的 skill 与已装插件撞名 | 未覆盖 | `generate_supersede_kit.py` 把同款条件路由 kit 生成进你的 skill，附实测优先级决策指南（改名 → description 声明 → hook → disable） |
+
+> 完整方法论：[skill-creator/references/skill-development-methodology.md](./daymade-skill/skill-creator/references/skill-development-methodology.md)
+
+### 快速安装
+
+**在 Claude Code 内（应用内）：**
+```text
+/plugin marketplace add daymade/claude-code-skills
+```
+
+然后：
+1. 选择 **Browse and install plugins**
+2. 选择 **daymade/claude-code-skills**
+3. 选择 **daymade-skill**（包含 skill-creator）
+4. 选择 **Install now**
+
+**在终端（CLI）：**
+```bash
+claude plugin marketplace add https://github.com/daymade/claude-code-skills
+# Marketplace 名称：daymade-skills（来自 marketplace.json）
+claude plugin install daymade-skill@daymade-skills
+```
+
+### 你可以做什么
+
+安装 skill-creator 后，只需向 Claude Code 提问：
+
+```
+"在 ~/my-skills 中创建一个名为 my-awesome-skill 的新技能"
+
+"验证 ~/my-skills/my-awesome-skill 中的技能"
+
+"打包 ~/my-skills/my-awesome-skill 技能以便分发"
+```
+
+加载了 skill-creator 的 Claude Code 将引导你完成整个技能创建过程——从理解你的需求到打包最终技能。
+
+📚 **完整文档**：[daymade-skill/skill-creator/SKILL.md](./daymade-skill/skill-creator/SKILL.md)
+
+### 实时演示
+
+**📝 初始化新技能**
+
+![初始化技能演示](./demos/skill-creator/init-skill.gif)
+
+**✅ 验证技能结构**
+
+![验证技能演示](./demos/skill-creator/validate-skill.gif)
+
+**📦 打包技能用于分发**
+
+![打包技能演示](./demos/skill-creator/package-skill.gif)
+
+---
+
+## 🚀 快速安装
+
+### 在 Claude Code 内安装（应用内）
+
+```text
+/plugin marketplace add daymade/claude-code-skills
+```
+
+然后：
+1. 选择 **Browse and install plugins**
+2. 选择 **daymade/claude-code-skills**
+3. 选择你需要的插件
+4. 选择 **Install now**
+
+### 生成安装命令
+
+以下脚本会打印安装命令，请将生成的命令放到终端执行。
+下载脚本后在本地运行，可使用精选插件菜单或自定义选择。
+
+**macOS/Linux：**
+```bash
+curl -fsSL https://raw.githubusercontent.com/daymade/claude-code-skills/main/scripts/install.sh | bash
+```
+
+**Windows (PowerShell)：**
+```powershell
+iwr -useb https://raw.githubusercontent.com/daymade/claude-code-skills/main/scripts/install.ps1 | iex
+```
+
+### 手动安装
+
+添加市场：
+```bash
+claude plugin marketplace add https://github.com/daymade/claude-code-skills
+```
+
+Marketplace 名称是 `daymade-skills`（来自 marketplace.json），安装插件时请使用 `@daymade-skills`。
+不要把仓库路径当成 marketplace 名称（例如 `@daymade/claude-code-skills` 会失败）。
+在 Claude Code 内使用 `/plugin ...` 斜杠命令，在终端中使用 `claude plugin ...`。
+
+**必备技能**（推荐首先安装）：
+```bash
+# skill-creator 是 daymade-skill 套件的成员
+claude plugin install daymade-skill@daymade-skills
+```
+
+**文档套件**（为文档工作流提供统一命名空间）：
+```bash
+claude plugin install daymade-docs@daymade-skills
+```
+
+这个套件会在同一个命名空间下暴露相关技能：
+
+```text
+/daymade-docs:docs-router
+/daymade-docs:doc-to-markdown
+/daymade-docs:mermaid-tools
+/daymade-docs:pdf-creator
+/daymade-docs:ppt-creator
+/daymade-docs:docs-cleaner
+/daymade-docs:excel-automation
+/daymade-docs:read-docx-review
+```
+
+这些技能以套件形式整体发布，不再提供单独的单技能插件。所有文档技能都在 `daymade-docs/` 下，随套件一起安装。
+自动选择由 `docs-router` 负责；各专业技能的原有命令仍可手动调用。
+使用保留的 PPT 命令前，先读[兼容通告](./daymade-docs/ppt-creator/SKILL.md)。
+
+**Apple 平台套件**（为 macOS/iOS 开发与运维提供统一命名空间）：
+```bash
+claude plugin install daymade-macos@daymade-skills
+```
+
+```text
+/daymade-macos:capture-screen
+/daymade-macos:developing-ios-apps
+/daymade-macos:macos-cleaner
+/daymade-macos:macos-load-doctor
+/daymade-macos:macos-permissions
+/daymade-macos:macos-watchdog
+```
+
+这些技能仅作为 `daymade-macos` 套件成员发布。
+
+**Codex 套件**（为 Codex 工作站配置、辅助编码与视觉探索提供统一命名空间）：
+```bash
+claude plugin install daymade-codex@daymade-skills
+```
+
+Codex CLI 与 Desktop 用户也可以直接通过 Codex 插件市场安装同一套件：
+
+```bash
+codex plugin marketplace add daymade/claude-code-skills
+codex plugin add daymade-codex@daymade-skills
+```
+
+```text
+/daymade-codex:codex-image-gallery
+/daymade-codex:local-codex
+/daymade-codex:design-style-picker
+/daymade-codex:interaction-design-board
+/daymade-codex:codex-1m-context-window-setup
+```
+
+这些技能仅作为 `daymade-codex` 套件成员发布。
+
+**Claude Code 操作套件**（为 Claude Code 本体扩展工作流提供统一命名空间）：
+```bash
+claude plugin install daymade-claude-code@daymade-skills
+```
+
+一次安装即可获得扩展 Claude Code 本体的全部 power-user 技能——跨代码、项目文档、Skill/SOP、会议、微信归档与对话历史的已有工作检索；跨 Claude Code/Codex 的快速本地对话发现；会话恢复；CLAUDE.md 调优；随 lark-cli 版本同步的飞书路由；故障诊断；statusline 配置；导出修复；marketplace 开发与 suite 收敛；终端截图渲染；用量分析；以及多 Provider 模型切换：
+
+```text
+/daymade-claude-code:claude-code-ops-router
+/daymade-claude-code:local-conversation-history
+/daymade-claude-code:read-claude-code-history
+/daymade-claude-code:read-codex-history
+/daymade-claude-code:continue-claude-code-work
+/daymade-claude-code:continue-codex-work
+/daymade-claude-code:claude-skills-troubleshooting
+/daymade-claude-code:claude-md-progressive-disclosurer
+/daymade-claude-code:statusline-generator
+/daymade-claude-code:fixing-claude-export-conversations
+/daymade-claude-code:marketplace-dev
+/daymade-claude-code:terminal-screenshot
+/daymade-claude-code:claude-usage-analyst
+/daymade-claude-code:claude-switch-models-setup
+/daymade-claude-code:read-claude-web-conversation
+/daymade-claude-code:claude-migrate-memory-to-doc
+/daymade-claude-code:claude-code-hooks
+/daymade-claude-code:prior-work-retrieval
+/daymade-claude-code:lark-cli-router
+/daymade-claude-code:claude-code-ping-start-5h-quota
+/daymade-claude-code:agent-web-search-setup
+/daymade-claude-code:tech-selection
+```
+
+安装后调用统一显示为 `daymade-claude-code:<skill>`，共享同一命名空间。这些技能仅作为套件发布——安装套件即可获得全部技能。
+
+**金融数据套件**（为投研与金融数据工作流提供统一命名空间）：
+```bash
+claude plugin install daymade-financial@daymade-skills
+```
+
+一次安装即可获得完整的金融数据与投研技能——Bigdata.com（RavenPack）结构化财务与情绪数据、美股基本面数据（yfinance）、Gangtise（岗底斯）OpenAPI 投研套件安装与编排、A 股消息面与政策聚合、A 股医药板块日报、投资论点的结构化「魔鬼代言人」压力测试，以及对成功样板宣传水分与可复制性的对抗尽调：
+
+```text
+/daymade-financial:financial-router
+/daymade-financial:bigdata-skill
+/daymade-financial:financial-data-collector
+/daymade-financial:gangtise-copilot
+/daymade-financial:ashare-news-fetcher
+/daymade-financial:daymade-sector-research
+/daymade-financial:pharma-daily-report
+/daymade-financial:devils-advocate
+/daymade-financial:benchmark-due-diligence
+```
+
+安装后调用统一显示为 `daymade-financial:<skill>`，共享同一命名空间。这些技能仅作为套件发布——安装套件即可获得全部技能。
+
+**安装其他技能：**
+```bash
+# 研究驱动地优化指定现有 Skill
+claude plugin install skill-evolver@daymade-skills
+
+# GitHub 操作
+claude plugin install github-ops@daymade-skills
+
+# Teams 通信
+claude plugin install teams-channel-post-writer@daymade-skills
+
+# 本机 Claude/Codex Agent 通讯
+claude plugin install peer-message@daymade-skills
+
+# Repomix 提取
+claude plugin install repomix-unmixer@daymade-skills
+
+# AI/LLM 图标
+claude plugin install llm-icon-finder@daymade-skills
+
+# CLI 演示生成
+claude plugin install cli-demo-generator@daymade-skills
+
+# Cloudflare 诊断
+claude plugin install cloudflare-troubleshooting@daymade-skills
+
+# UI 设计系统提取
+claude plugin install ui-designer@daymade-skills
+
+# YouTube 视频/音频下载
+claude plugin install youtube-downloader@daymade-skills
+
+# 安全 Repomix 打包
+claude plugin install repomix-safe-mixer@daymade-skills
+
+# 完整语音套件（ASR + 转录校正 + 会议纪要 + TTS）
+claude plugin install daymade-audio@daymade-skills
+
+
+# 视频比较和质量分析
+claude plugin install video-comparer@daymade-skills
+
+# QA 测试基础设施和自主执行
+claude plugin install qa-expert@daymade-skills
+
+# 使用 EARS 方法论优化提示词
+claude plugin install prompt-optimizer@daymade-skills
+
+# CCPM 技能注册表搜索和管理
+claude plugin install daymade-skill@daymade-skills
+
+# Promptfoo LLM 评测框架
+claude plugin install promptfoo-evaluation@daymade-skills
+
+# Twitter/X 内容获取
+claude plugin install twitter-reader@daymade-skills
+
+# 技能质量审查与改进
+claude plugin install daymade-skill@daymade-skills
+
+# GitHub 贡献策略
+claude plugin install github-contributor@daymade-skills
+
+# Windows 远程桌面 / AVD 连接诊断
+claude plugin install windows-remote-desktop-connection-doctor@daymade-skills
+
+# 产品审计与优化
+claude plugin install product-analysis@daymade-skills
+
+# Scrapling CLI 抽取与故障排查
+claude plugin install scrapling-skill@daymade-skills
+
+# 腾讯 IMA 知识库伴侣与安装器
+claude plugin install ima-copilot@daymade-skills
+
+# 导出豆瓣书影音游戏收藏到 CSV
+claude plugin install douban-skill@daymade-skills
+
+# Terraform 实操陷阱与多环境可靠性模式
+claude plugin install terraform-skill@daymade-skills
+
+# 跨速度、并发、协议、质量四个维度评测任意 LLM 端点
+claude plugin install llm-eval-harness@daymade-skills
+
+# 视频/GIF 梗图：贴图随画面运动逐帧跟踪
+claude plugin install meme-creator@daymade-skills
+```
+
+独立插件可以单独安装；套件成员会随所属套件一起安装。
+
+---
+
+## 🇨🇳 中国用户指南
+
+### 推荐工具
+
+**CC-Switch - Claude Code 配置管理器**
+
+对于中国用户，我们强烈推荐使用 [CC-Switch](https://github.com/farion1231/cc-switch) 来管理 Claude Code 的 API 提供商配置。
+
+CC-Switch 的主要功能：
+- ✅ 快速切换不同的 API 供应商（DeepSeek、Qwen、GLM 等）
+- ✅ 测试端点响应时间，自动选择最快的提供商
+- ✅ 管理 MCP 服务器配置
+- ✅ 自动备份和导入/导出配置
+- ✅ 跨平台支持（Windows、macOS、Linux）
+
+**安装方法：**
+
+1. 从 [Releases](https://github.com/farion1231/cc-switch/releases) 下载对应系统的安装包
+2. 安装并启动应用
+3. 添加你的 API 配置
+4. 通过界面或系统托盘切换配置
+
+**系统要求：** Windows 10+、macOS 10.15+ 或 Linux (Ubuntu 22.04+)
+
+### 常见的中国 API 提供商
+
+CC-Switch 支持以下中国 AI 服务提供商：
+- **DeepSeek**：高性价比的深度学习模型
+- **Qwen（通义千问）**：阿里云的大语言模型
+- **GLM（智谱清言）**：智谱 AI 的对话模型
+- 以及其他兼容 OpenAI API 格式的提供商
+
+### 网络问题解决
+
+如果你在中国遇到网络问题：
+1. 使用 CC-Switch 配置国内 API 提供商
+2. 确保你的代理设置正确
+3. 使用 CC-Switch 的响应时间测试功能找到最快的端点
+
+---
+
+## 📦 其他可用技能
+
+### **github-ops** - GitHub 操作套件
+
+通过 gh CLI 和 GitHub API 操作 GitHub；每次变更明确目标、影响范围，并独立读回状态。
+
+**使用场景：**
+- 创建、查看或管理拉取请求
+- 管理问题和仓库设置
+- 管理协作者、团队、组织权限与 2FA 要求
+- 查询 GitHub API 端点
+- 使用 GitHub Actions 工作流
+- 自动化 GitHub 操作
+
+**主要功能：**
+- PR、问题、仓库与 Actions 的可验证变更流程
+- 并行或被替代 PR 的收敛
+- 组织访问、成员权限与 2FA 影响预检
+- REST、GraphQL 与 GitHub 设置页面的通道路由
+- 企业 GitHub 支持
+
+**🎬 实时演示**
+
+![GitHub 操作演示](./demos/github-ops/create-pr.gif)
+
+---
+
+### **docs-router** - Daymade 文档路由
+
+> **安装**：`claude plugin install daymade-docs@daymade-skills`（套件成员，调用方式 `daymade-docs:docs-router`）
+
+按输入和交付格式选择套件内的专业技能，读取该技能的完整说明及当前任务所需参考资料。
+覆盖文档转换、Word/PDF 制作、Mermaid 图片、macOS Excel 自动化、扫描件、DOCX 审阅提取和文档整理。
+专业技能的原命令保留手动调用；使用旧 PPT 命令前，先读[兼容通告](./daymade-docs/ppt-creator/SKILL.md)。
+
+---
+
+### **doc-to-markdown** - 文档转换套件
+
+> **安装**：`claude plugin install daymade-docs@daymade-skills`（仅作为套件成员发布，调用方式 `daymade-docs:doc-to-markdown`）
+
+将文档转换为 markdown，支持 Windows/WSL 路径处理和 PDF 图片提取。
+
+**使用场景：**
+- 转换 .doc/.docx/PDF/PPTX 为 markdown
+- 转换已保存的 HTML/HTM，核对源链接并显式调整标题层级
+- 从 PDF 文件中提取图片
+- 处理 Confluence 导出
+- 处理 Windows/WSL 路径转换
+
+**主要功能：**
+- 多格式文档转换
+- PDF 图片提取（使用 PyMuPDF）
+- Windows/WSL 路径自动化
+- Confluence 导出处理
+- 路径转换和图片提取辅助脚本
+
+---
+
+### **mermaid-tools** - 图表生成
+
+> **安装**：`claude plugin install daymade-docs@daymade-skills`（仅作为套件成员发布，调用方式 `daymade-docs:mermaid-tools`）
+
+从 markdown 中提取 Mermaid 图表并生成高质量的 PNG 图像。
+
+**使用场景：**
+- 将 Mermaid 图表转换为 PNG
+- 从 markdown 文件中提取图表
+- 处理包含嵌入图表的文档
+- 创建演示用的可视化图形
+
+**主要功能：**
+- 自动图表提取
+- 高分辨率 PNG 生成
+- 基于图表类型的智能尺寸调整
+- 可自定义的尺寸和缩放
+- WSL2 Chrome/Puppeteer 支持
+
+**🎬 实时演示**
+
+![Mermaid 工具演示](./demos/mermaid-tools/extract-diagrams.gif)
+
+---
+
+### **claude-code-ops-router** - Claude Code 配置与运维路由
+
+> **安装**：`claude plugin install daymade-claude-code@daymade-skills`（仅作为套件成员发布，调用方式 `daymade-claude-code:claude-code-ops-router`）
+
+按任务读取一个专用 Skill：插件和 Skill 故障、marketplace、状态栏、模型 Profile 与源码同步、1M 上下文提前压缩、用量和额度定时器、memory 迁移、导出 `.txt` 修复。原有专用斜杠命令仍可手动调用。
+
+---
+
+### **statusline-generator** - 状态栏定制
+
+> **安装**：`claude plugin install daymade-claude-code@daymade-skills`（仅作为套件成员发布，调用方式 `daymade-claude-code:statusline-generator`）
+
+配置 Claude Code 状态栏，支持多行布局和成本跟踪。
+
+**使用场景：**
+- 自定义 Claude Code 状态栏
+- 添加成本跟踪（会话/每日）
+- 显示 git 状态
+- 窄屏幕的多行布局
+- 颜色自定义
+
+**主要功能：**
+- 多行状态栏布局
+- ccusage 成本集成
+- Git 分支状态指示器
+- 可自定义的颜色
+- 竖屏优化
+
+**🎬 实时演示**
+
+![状态栏生成器演示](./demos/statusline-generator/customize-statusline.gif)
+
+---
+
+### **teams-channel-post-writer** - Teams 通信
+
+创建用于内部知识分享的教育性 Teams 频道帖子。
+
+**使用场景：**
+- 编写关于功能的 Teams 帖子
+- 分享 Claude Code 最佳实践
+- 记录经验教训
+- 创建内部公告
+- 教授有效的提示模式
+
+**主要功能：**
+- 带有经过验证结构的帖子模板
+- 高质量内容的写作指南
+- "正常 vs 更好"示例模式
+- 强调基本原则
+- 即用型 markdown 模板
+
+**🎬 实时演示**
+
+![Teams 频道帖子编写器演示](./demos/teams-channel-post-writer/write-post.gif)
+
+---
+
+### **peer-message** - 本机 Claude/Codex Agent 通讯
+
+内置本机共享协调记录，维护任务与资源声明、重复请求抑制和短时窗口有效期。
+首次调用自动初始化，不依赖 Agent Fleet 或常驻进程；原生通信仍走原生工具，
+按[协调流程](peer-message/references/local-coordination.md)执行发送前检查与收件分流。
+
+实验性的[配对网络入口](peer-message/references/network-preview.md)支持邀请、联系人和获准文档问答，通过现有 Claude/Codex 宿主返回带引用的答案。预览需要操作者提供 relay，不代表公共托管网络已经上线或用户采用已获验证。
+
+> **安装**：`claude plugin install peer-message@daymade-skills`
+
+当前宿主原生工具能覆盖目标时，直接使用其发现、发送、回传和等待机制。仅为原生工具未覆盖的本机 Claude Code/Codex 目标补齐脚本通信，或在协调证据需要核实时加载本 Skill。
+
+**使用场景：**
+- 向已确认、原生工具未覆盖的独立目标发送依赖、暂停、交接或完成通知
+- 按原消息查询对应回复，无需手工检查本地消息存储
+- 从脚本或其他产品访问原生工具未覆盖的 Claude inbox；第三方 provider 本身不是使用补缺通道的依据
+- 共享 checkout 上别人的未提交改动、锁或分支挡住了你——先核实它是否真在飞，再问属主，别自己停手或绕开
+- 向经过确认的目标清单广播同一条协调消息
+
+📚 **文档与命令**：[peer-message/SKILL.md](./peer-message/SKILL.md) 拥有路由、稳定运行前置与“peer 不得代替用户授权”的边界；`peer-message/scripts/peer.py --help` 拥有 CLI 语法；[protocol-and-discovery.md](./peer-message/references/protocol-and-discovery.md) 拥有寻址、信封与送达证据；[official-feature.md](./peer-message/references/official-feature.md) 拥有会随产品变化的运行要求与具体机制；[coordination-and-learning-loop.md](./peer-message/references/coordination-and-learning-loop.md) 拥有回传寻址、正文与送达状态措辞、发现共享资源上有别人在制品时怎么核实、怎么开口、等多久、等不到怎么继续，判定一条 peer 断言与一组 peer 否认各值多少的两份核验合同，以及证据闸门下的改进循环。
+
+---
+
+### **ghostty-use** - Ghostty 终端会话快照与恢复
+
+通过[规范 Skill](ghostty-use/SKILL.md)保存和恢复已记录的 Ghostty CLI 会话。
+定期元数据备份、未覆盖项和运行前提见
+[自动快照流程](ghostty-use/references/automatic-snapshots.md)。
+
+```bash
+claude plugin install ghostty-use@daymade-skills
+
+# 然后自然对话
+"我要重启电脑更新，把终端会话都保存一下"
+"恢复之前的 ghostty 窗口和会话"
+"restore my ghostty tabs after the update"
+"检查一下有没有会话丢了"
+```
+
+---
+
+### **repomix-unmixer** - 仓库提取
+
+从 repomix 打包的仓库中提取文件并恢复目录结构。
+
+**使用场景：**
+- 解混 repomix 输出文件
+- 提取打包的仓库
+- 恢复文件结构
+- 审查 repomix 内容
+- 将 repomix 转换为可用文件
+
+**主要功能：**
+- 多格式支持（XML、Markdown、JSON）
+- 自动格式检测
+- 目录结构保留
+- UTF-8 编码支持
+- 全面的验证工作流
+
+**🎬 实时演示**
+
+![Repomix Unmixer 演示](./demos/repomix-unmixer/extract-repo.gif)
+
+---
+
+### **llm-icon-finder** - AI/LLM 品牌图标查找器
+
+从 lobe-icons 库访问 100+ AI 模型和 LLM 提供商品牌图标。
+
+**使用场景：**
+- 查找 AI 模型/提供商的品牌图标
+- 下载 Claude、GPT、Gemini 等的徽标
+- 获取多种格式的图标（SVG/PNG/WEBP）
+- 构建 AI 工具文档
+- 创建关于 LLM 的演示文稿
+
+**主要功能：**
+- 100+ AI/LLM 模型图标
+- 多格式支持（SVG、PNG、WEBP）
+- 直接访问的 URL 生成
+- 本地下载功能
+- 可搜索的图标目录
+
+**🎬 实时演示**
+
+![LLM 图标查找器演示](./demos/llm-icon-finder/find-icons.gif)
+
+---
+
+### **cli-demo-generator** - CLI 演示生成器
+
+使用 VHS 自动化生成专业的 CLI 动画演示和终端录制。
+
+**使用场景：**
+- 为文档创建演示
+- 将终端工作流录制为 GIF
+- 生成动画教程
+- 批量生成多个演示
+- 展示 CLI 工具
+
+**主要功能：**
+- 从命令列表自动生成演示
+- 使用 YAML/JSON 配置批处理
+- 使用 asciinema 进行交互式录制
+- 基于命令复杂度的智能时序
+- 多种输出格式（GIF、MP4、WebM）
+- VHS tape 文件模板
+
+**🎬 实时演示**
+
+![CLI 演示生成器演示](./demos/cli-demo-generator/generate-demo.gif)
+
+---
+
+### **cloudflare-troubleshooting** - Cloudflare 诊断
+
+使用 API 驱动的证据收集来调查和解决 Cloudflare 配置问题。
+
+**使用场景：**
+- 网站显示 ERR_TOO_MANY_REDIRECTS
+- SSL/TLS 配置错误
+- DNS 解析问题
+- Email Routing 别名、目标邮箱验证与转发收件
+- Cloudflare 相关问题
+
+**主要功能：**
+- 基于证据的调查方法
+- 全面的 Cloudflare API 参考
+- SSL/TLS 模式故障排除（Flexible、Full、Strict）
+- DNS、缓存和防火墙诊断
+- 代理方法，配有可选的辅助脚本
+
+---
+
+### **ui-designer** - UI 设计系统提取器
+
+从参考 UI 图像中提取设计系统，并生成可实施的设计提示。
+
+**使用场景：**
+- 拥有需要分析的 UI 截图/模型
+- 需要提取色板、排版、间距
+- 构建与参考美学匹配的 MVP UI
+- 创建一致的设计系统
+- 生成多个 UI 变体
+
+**主要功能：**
+- 从图像系统化提取设计系统
+- 色板、排版、组件分析
+- 交互式 MVP PRD 生成
+- 模板驱动的工作流（设计系统 → PRD → 实施提示）
+- 多变体 UI 生成（3 个移动端，2 个网页端）
+- React + Tailwind CSS + Lucide 图标
+
+**🎬 实时演示**
+
+![UI 设计器演示](./demos/ui-designer/extract-design-system.gif)
+
+---
+
+
+### **ppt-creator** - 兼容通告
+
+使用旧 `daymade-docs:ppt-creator` 命令前，先读[退役与安装兼容通告](./daymade-docs/ppt-creator/SKILL.md)。
+
+---
+
+### **youtube-downloader** - YouTube 视频和音频下载器
+
+使用 yt-dlp 下载 YouTube 视频和音频，具有强大的错误处理功能。
+
+要视频文字时，先复用现成稿，再取原字幕；已检查的文字路线未取得结果时才下载音轨转录。原视频文件下载仍沿原流程。
+
+**使用场景：**
+- 下载 YouTube 视频和播放列表
+- 提取音频并转换为 MP3
+- 处理 yt-dlp 下载问题（nsig 提取失败、网络错误）
+- 在受限环境中下载视频
+
+**主要功能：**
+- 自动 PO Token 提供器（优先 Docker，失败自动切换浏览器方案）
+- 通过浏览器 Cookie 处理“不是机器人”验证（更友好）
+- 仅音频下载并转换为 MP3
+- 格式列表和自定义格式选择
+- 输出目录自定义
+- 代理/受限环境的下载支持
+
+**示例用法：**
+```bash
+# 下载视频
+python3 scripts/download_video.py "https://www.youtube.com/watch?v=VIDEO_ID"
+
+# 仅下载音频（MP3）
+python3 scripts/download_video.py "https://www.youtube.com/watch?v=VIDEO_ID" --audio-only
+```
+
+**🎬 实时演示**
+
+![YouTube 下载器演示](./demos/youtube-downloader/download-video.gif)
+
+📚 **文档**：参见 [youtube-downloader/SKILL.md](./youtube-downloader/SKILL.md) 了解使用示例和故障排除
+
+**要求**：Python 3.8+，yt-dlp（`brew install yt-dlp` 或 `pip install yt-dlp`）
+
+---
+
+### **repomix-safe-mixer** - 安全 Repomix 打包
+
+通过在打包前自动检测和删除硬编码凭据来安全地打包代码库。
+
+**使用场景：**
+- 使用 repomix 打包代码以供分发
+- 创建参考包
+- 对共享代码的安全问题有顾虑
+- 防止意外泄露密钥/令牌/凭据
+
+**主要功能：**
+- 自动凭据检测（API 密钥、密码、令牌）
+- 打包前凭据删除
+- 安全扫描报告
+- Repomix 集成
+- 检测到凭据时的阻止机制
+
+**示例用法：**
+```bash
+# 安全打包代码库
+python3 scripts/safe_mix.py /path/to/codebase
+```
+
+**🎬 实时演示**
+
+*即将推出*
+
+📚 **文档**：参见 [repomix-safe-mixer/references/common_secrets.md](./repomix-safe-mixer/references/common_secrets.md) 了解检测到的凭据模式
+
+**要求**：Python 3.8+，repomix
+
+---
+
+### **transcript-fixer** - ASR 转录校正
+
+> **安装**：`claude plugin install daymade-audio@daymade-skills`（仅作为套件成员发布，调用方式 `daymade-audio:transcript-fixer`）
+
+用 Stage 1 字典预处理、必须执行的 Native AI 全文通读，以及带原始音频的人审门，纠正语音转文本（ASR/STT）中的措辞、人名、数字和实体错误。
+
+**使用场景：**
+- 纠正会议记录、讲座录音、访谈中的转录错误
+- 修复中英文同音、术语和专名错误
+- 只打开当前这份逐字稿的待审项，并直接听对应时间片段
+- 让稳定错误复用，同时把一次性误识留在当前文件
+
+**主要功能：**
+- Stage 1 + Native AI 完整纠错；Stage 1 单独运行不算完成
+- 分段或续跑时冻结复核文件清单，校验结果与覆盖范围，只补缺失或失败的复核段
+- 精确文件审核队列、deep link、时间戳音频播放和机器可读的 zero-pending 读回
+- file-only / dictionary / roster / context 四种沉淀边界，避免一次性错误污染长期规则
+- SQLite 审计、批处理和团队知识协作
+
+**示例用法：**
+```bash
+# 执行完整纠错
+uv run scripts/fix_transcription.py --input meeting.md --stage 3
+
+# 只打开这份逐字稿并听音频裁定
+uv run scripts/review-dashboard/server.py --file "/absolute/meeting.md"
+
+# 人审结束后精确读回；pending_total 必须为 0
+uv run scripts/fix_transcription.py \
+  --list-review --review-file "/absolute/meeting.md" \
+  --review-status all --json
+```
+
+📚 **文档**：参见 [daymade-audio/transcript-fixer/references/workflow_guide.md](./daymade-audio/transcript-fixer/references/workflow_guide.md) 了解分步工作流
+
+**要求**：Python 3.10+ 与 uv。Native AI 使用当前 Agent；只有可选的无 Agent API 路线需要外部 API key。
+
+---
+
+### **video-comparer** - 视频比较和质量分析
+
+比较两个视频并生成带有质量指标和逐帧视觉比较的交互式 HTML 报告。
+
+**使用场景：**
+- 比较原始和压缩视频
+- 分析视频压缩质量和效率
+- 评估编解码器性能或比特率降低影响
+- 评估压缩前后结果
+- 视频编码工作流的质量分析
+
+**主要功能：**
+- 质量指标计算（PSNR、SSIM）
+- 逐帧视觉比较，提供三种查看模式：
+  - 滑块模式：拖动以显示差异
+  - 并排模式：同时显示
+  - 网格模式：紧凑的 2 列布局
+- 视频元数据提取（编解码器、分辨率、比特率、时长、文件大小）
+- 自包含的 HTML 报告（无需服务器，可离线工作）
+- 安全功能（路径验证、资源限制、超时控制）
+- 多平台 FFmpeg 支持（macOS、Linux、Windows）
+
+**示例用法：**
+```bash
+# 基本比较
+python3 scripts/compare.py original.mp4 compressed.mp4
+
+# 自定义输出和帧间隔
+python3 scripts/compare.py original.mp4 compressed.mp4 -o report.html --interval 10
+```
+
+**🎬 实时演示**
+
+*即将推出*
+
+📚 **文档**：参见 [video-comparer/references/](./video-comparer/references/) 了解质量指标解释、FFmpeg 命令和配置选项
+
+**要求**：Python 3.8+，FFmpeg/FFprobe（`brew install ffmpeg`、`apt install ffmpeg` 或 `winget install ffmpeg`）
+
+---
+
+### **qa-expert** - 综合 QA 测试基础设施
+
+使用自主 LLM 执行、Google 测试标准和 OWASP 安全最佳实践建立世界级 QA 测试流程。
+
+**使用场景：**
+- 为新项目或现有项目设置 QA 基础设施
+- 编写遵循 Google 测试标准（AAA 模式）的标准化测试用例
+- 实施安全测试（OWASP Top 10 覆盖）
+- 执行具有自动进度跟踪的综合测试计划
+- 使用适当的 P0-P4 严重性分类提交错误
+- 计算质量指标和执行质量门禁
+- 启用自主 LLM 驱动的测试执行（100 倍加速）
+- 为第三方团队交接准备 QA 文档
+
+**主要功能：**
+- **一键初始化**：使用模板、CSV 和文档完成 QA 基础设施
+- **自主执行**：主提示使 LLM 能够自动执行所有测试、自动跟踪结果、自动提交错误
+- **Google 测试标准**：AAA 模式合规性、90% 覆盖率目标、快速失败验证
+- **OWASP 安全测试**：90% Top 10 覆盖，具有特定攻击向量
+- **质量门禁执行**：100% 执行、≥80% 通过率、0 个 P0 错误、≥80% 代码覆盖率
+- **基本事实原则**：防止文档/CSV 同步问题（测试文档 = 权威来源）
+- **错误跟踪**：P0-P4 分类，详细重现步骤和环境信息
+- **第 1 天入职**：新 QA 工程师的 5 小时指南
+- **30+ LLM 提示**：用于特定 QA 任务的即用型提示
+- **指标仪表板**：测试执行进度、通过率、错误分析、质量门禁状态
+
+**示例用法：**
+```bash
+# 初始化 QA 项目（创建完整基础设施）
+python3 scripts/init_qa_project.py my-app ./
+
+# 计算质量指标和门禁状态
+python3 scripts/calculate_metrics.py tests/TEST-EXECUTION-TRACKING.csv
+
+# 对于自主执行，从以下位置复制主提示：
+# references/master_qa_prompt.md → 粘贴到 LLM → 在 5 周内自动执行 342 个测试
+```
+
+**🎬 实时演示**
+
+*即将推出*
+
+📚 **文档**：参见 [qa-expert/references/](./qa-expert/references/)：
+- `master_qa_prompt.md` - 自主执行的单一命令（100 倍加速）
+- `google_testing_standards.md` - AAA 模式、覆盖率阈值、OWASP 测试
+- `day1_onboarding.md` - 新 QA 工程师的 5 小时入职时间表
+- `ground_truth_principle.md` - 防止文档/CSV 同步问题
+- `llm_prompts_library.md` - 30+ 即用型 QA 提示
+
+**要求**：Python 3.8+
+
+**💡 创新**：自主执行能力（通过主提示）使 LLM 能够以比手动执行快 100 倍的速度执行整个测试套件，跟踪零人为错误。非常适合第三方 QA 交接 - 只需提供主提示，他们就可以立即开始测试。
+
+---
+
+### **prompt-optimizer** - 使用 EARS 方法论进行提示词工程
+
+使用 EARS（简易需求语法）将模糊的提示词转换为精确、结构化的规范 - 这是罗尔斯·罗伊斯公司创建的一种将自然语言转换为可测试需求的方法论。
+
+**方法论灵感来源：** [阿星AI工作室](https://mp.weixin.qq.com/s/yUVX-9FovSq7ZGChkHpuXQ)，他们开创性地将 EARS 与领域理论基础相结合，实现了实用的提示词增强。
+
+**使用场景：**
+- 将松散的需求转换为结构化规范
+- 优化 AI 代码生成或内容创作的提示词
+- 将模糊的功能请求分解为原子化、可测试的陈述
+- 为技术需求添加领域理论基础
+- 将"构建 X"请求转换为详细的实施规范
+- 通过经过验证的框架学习提示词工程最佳实践
+
+**主要功能：**
+- **EARS 转换**：5 种句式模式（普适、事件驱动、状态驱动、条件、不期望行为）
+- **6 步优化工作流**：分析 → 转换 → 识别理论 → 提取示例 → 增强 → 呈现
+- **领域理论目录**：40+ 框架映射到 10 个领域（生产力、UX、游戏化、学习、电商、安全）
+- **结构化提示框架**：角色/技能/工作流/示例/格式模板
+- **高级技术**：多利益相关者需求、非功能性规范、复杂条件逻辑
+- **完整示例**：拖延症应用、电商产品页、学习平台、密码重置
+- **理论基础**：GTD、BJ Fogg 行为模型、格式塔原则、AIDA、零信任等
+- **渐进式披露**：捆绑参考文档（ears_syntax.md、domain_theories.md、examples.md）
+
+**示例用法：**
+```markdown
+# 之前（模糊）
+"帮我构建一个密码重置功能"
+
+# EARS 转换后（7 个原子需求）
+1. 当用户点击"忘记密码"时，系统应显示邮箱输入框
+2. 当用户提交有效邮箱时，系统应发送有效期为 1 小时的密码重置链接
+3. 当用户点击重置链接时，系统应验证令牌是否未过期
+4. 当令牌有效时，系统应显示密码创建表单，要求最少 12 个字符、1 个大写字母、1 个数字、1 个特殊字符
+5. 当用户提交符合要求的新密码时，系统应使用 bcrypt 哈希密码并使令牌失效
+6. 当用户在 1 小时内尝试密码重置超过 3 次时，系统应阻止进一步尝试 1 小时
+7. 如果重置令牌已过期，系统应显示错误消息和请求新链接的选项
+
+# 使用领域理论增强
+- 零信任架构（每步验证）
+- 纵深防御（速率限制 + 令牌过期 + 密码复杂性）
+- 渐进式披露（多步骤 UX 流程）
+
+# 完整提示包括角色、技能、工作流、示例、格式
+```
+
+**🎬 实时演示**
+
+*即将推出*
+
+📚 **文档**：参见 [prompt-optimizer/references/](./prompt-optimizer/references/)：
+- `ears_syntax.md` - 完整的 EARS 模式和转换规则
+- `domain_theories.md` - 40+ 理论映射到领域并提供选择指导
+- `examples.md` - 包含前后对比的完整转换示例
+
+**💡 创新**：EARS 方法论通过强制明确条件、触发器和可测量标准来消除歧义。结合领域理论基础（GTD、BJ Fogg、格式塔等），它将"构建一个待办事项应用"转换为包含行为心理学原则、UX 最佳实践和具体测试用例的完整规范 - 从第一天起就支持测试驱动开发。
+
+---
+
+### **local-conversation-history** - 跨 provider 历史统一入口
+
+> **安装**：`claude plugin install daymade-claude-code@daymade-skills`（仅作为套件成员发布，调用方式 `daymade-claude-code:local-conversation-history`）
+
+历史检索、中断续做和对话备份体检的用法与路由，见
+[Skill 的执行合同](daymade-claude-code/local-conversation-history/SKILL.md)。
+
+---
+
+### **read-claude-code-history** - 读取本地 Claude Code 历史
+
+> **安装**：`claude plugin install daymade-claude-code@daymade-skills`（仅作为套件成员发布，调用方式 `daymade-claude-code:read-claude-code-history`）
+
+回查已有工作，不恢复旧任务执行。先进入
+[结果路由](./daymade-claude-code/read-claude-code-history/SKILL.md#route-by-the-requested-result)，
+读取当前操作流程、前置条件和覆盖边界。
+
+**按所需结果进入：**
+
+- 会话未知或只记得主题：[索引发现](./daymade-claude-code/read-claude-code-history/SKILL.md#indexed-content-search)
+- 已知会话：[按时间读取原始上下文](./daymade-claude-code/read-claude-code-history/SKILL.md#exact-session-evidence)
+- 原始命令及其回执：[工具调用与结果证据](./daymade-claude-code/read-claude-code-history/SKILL.md#original-tool-callresult-evidence)
+- 人类原话：[输入导出](./daymade-claude-code/read-claude-code-history/SKILL.md#human-input-export)
+- 已删除或被覆盖文件：[恢复流程](./daymade-claude-code/read-claude-code-history/SKILL.md#deleted-content-recovery)
+
+执行命令以这些入口为准，README 不另维护操作配方。
+
+---
+
+### **docs-cleaner** - 文档整合
+
+> **安装**：`claude plugin install daymade-docs@daymade-skills`（仅作为套件成员发布，调用方式 `daymade-docs:docs-cleaner`）
+
+整合冗余文档的同时保留所有有价值的内容。
+
+**使用场景：**
+- 清理项目中的文档膨胀
+- 合并涵盖相同主题的冗余文档
+- 减少快速开发后的文档扩散
+- 将多个文件整合为权威来源
+
+**主要功能：**
+- **内容保留**：清理过程中永不丢失有价值的信息
+- **冗余检测**：识别重叠的文档
+- **智能合并**：在保持结构的同时合并相关文档
+- **验证**：确保整合后的文档完整准确
+
+**🎬 实时演示**
+
+*即将推出*
+
+---
+
+### **skills-search** - 本地仓库优先与 CCPM 搜索
+
+优先检索可配置的本地 Skill 仓库，再逐层扩展至认可的来源和 CCPM 注册表；保留原有安装与管理命令。
+
+**使用场景：**
+- 为特定任务查找技能（例如"查找 PDF 技能"）
+- 按名称安装技能
+- 列出当前已安装的技能
+- 获取技能的详细信息
+- 管理你的 Claude Code 技能集合
+
+**主要功能：**
+- **本地优先**：仓库目录与可信层级持久化在用户目录；完整检索当前层的所有自有仓库
+- **渐进读取**：先查名称与描述缓存，再读取候选 Skill 的精确 Git 版本
+- **注册表搜索**：使用 `ccpm search <query>` 搜索 CCPM 注册表
+- **技能安装**：使用 `ccpm install <skill-name>` 安装技能
+- **版本支持**：使用 `@version` 语法安装特定版本
+- **批量安装**：安装预配置的技能包（web-dev、content-creation、developer-tools）
+- **多种格式**：支持注册表名称、GitHub owner/repo 和完整 URL
+- **技能信息**：使用 `ccpm info <skill-name>` 获取详细的技能信息
+
+**示例用法：**
+```bash
+# 先检索配置的本地仓库（<skill-dir> 是当前加载的 Skill）
+uv run --script <skill-dir>/scripts/local_sources.py search pdf --tier owned
+
+# 需要时再扩展到外部注册表
+ccpm search pdf              # 查找 PDF 相关技能
+ccpm search "code review"    # 查找代码审查技能
+
+# 安装技能
+ccpm install skill-creator                # 从注册表安装
+ccpm install daymade/skill-creator        # 从 GitHub 安装
+ccpm install skill-creator@1.0.0          # 安装特定版本
+
+# 列出和管理
+ccpm list                    # 列出已安装的技能
+ccpm info skill-creator      # 获取技能详情
+ccpm uninstall pdf-processor # 删除技能
+
+# 安装技能包
+ccpm install-bundle web-dev  # 安装 Web 开发技能包
+```
+
+**🎬 实时演示**
+
+*即将推出*
+
+📚 **文档**：参见 [daymade-skill/skills-search/SKILL.md](./daymade-skill/skills-search/SKILL.md) 了解配置、覆盖范围及命令
+
+**要求**：本地检索使用 Python 3.10+、Git 和 uv；外部注册表及安装管理才需要 CCPM CLI
+
+---
+
+### **pdf-creator** - PDF 生成（中文字体支持）
+
+> **安装**：`claude plugin install daymade-docs@daymade-skills`（仅作为套件成员发布，调用方式 `daymade-docs:pdf-creator`）
+
+使用 WeasyPrint 将 markdown 转换为专业 PDF，并提供完善的中文字体支持。
+
+**使用场景：**
+- 将 markdown 转换为可分享/可打印的 PDF
+- 生成正式文档（法律文件、报告）
+- 需要正确的中文排版
+
+**主要功能：**
+- WeasyPrint + Markdown 转换管道
+- 内置中文字体回退
+- 主题系统（default 正式文档、cjk-auto 内容自适应表格、warm-terra 培训材料、mobile 手机阅读）
+- A4 版式与打印友好边距
+- 批量转换脚本
+
+**示例用法：**
+```bash
+uv run --with weasyprint --with markdown scripts/md_to_pdf.py input.md output.pdf
+```
+
+**🎬 实时演示**
+
+*即将推出*
+
+📚 **文档**：参见 [daymade-docs/pdf-creator/SKILL.md](./daymade-docs/pdf-creator/SKILL.md) 了解设置与工作流。
+
+**要求**：Python 3.8+，`weasyprint`、`markdown`
+
+---
+
+### **claude-md-progressive-disclosurer** - CLAUDE.md 优化
+
+> **安装**：`claude plugin install daymade-claude-code@daymade-skills`（仅作为套件成员发布，调用方式 `daymade-claude-code:claude-md-progressive-disclosurer`）
+
+使用渐进式披露原则优化 CLAUDE.md，减少上下文负担但保留关键规则。
+
+**使用场景：**
+- CLAUDE.md 过长或重复
+- 需要将详细流程移至 references
+- 希望把可复用工作流抽成技能
+
+**主要功能：**
+- 章节分类（保留/迁移/提取/移除）
+- 变更前后行数对比
+- references 指针格式与最佳实践
+
+**示例用法：**
+```
+"请用渐进式披露优化我的 ~/.claude/CLAUDE.md，并给出方案"
+```
+
+**🎬 实时演示**
+
+*即将推出*
+
+📚 **文档**：参见 [claude-md-progressive-disclosurer/SKILL.md](./daymade-claude-code/claude-md-progressive-disclosurer/SKILL.md)。
+
+---
+
+### **promptfoo-evaluation** - Promptfoo LLM 评测
+
+使用 Promptfoo 配置并运行 LLM 评测，进行提示词测试与模型对比。
+
+**使用场景：**
+- 搭建 prompt 测试与评测配置
+- 对比不同模型输出
+- 编写自定义断言或 LLM-as-judge 评分
+
+**主要功能：**
+- promptfooconfig.yaml 模板
+- Python 自定义断言
+- llm-rubric 评分指引
+- echo provider 预览流程
+
+**示例用法：**
+```bash
+npx promptfoo@latest init
+npx promptfoo@latest eval
+npx promptfoo@latest view
+```
+
+**🎬 实时演示**
+
+*即将推出*
+
+📚 **文档**：参见 [promptfoo-evaluation/references/promptfoo_api.md](./promptfoo-evaluation/references/promptfoo_api.md)。
+
+**要求**：Node.js（Promptfoo 通过 `npx promptfoo@latest`）
+
+---
+
+### **developing-ios-apps** - iOS 应用开发
+
+> **安装**：`claude plugin install daymade-macos@daymade-skills`（仅作为套件成员发布，调用方式 `daymade-macos:developing-ios-apps`）
+
+使用 XcodeGen、SwiftUI 与 SPM 构建、配置和调试 iOS 应用。
+
+**使用场景：**
+- 配置 XcodeGen `project.yml`
+- 修复 SPM 依赖或嵌入问题
+- 处理签名与真机部署错误
+- 调试相机/AVFoundation
+
+**主要功能：**
+- XcodeGen 项目模板
+- SPM 动态框架嵌入修复
+- 代码签名与配置指导
+- 真机部署与故障排查清单
+
+**示例用法：**
+```bash
+xcodegen generate
+xcodebuild -destination 'platform=iOS Simulator,name=iPhone 17' build
+```
+
+**🎬 实时演示**
+
+*即将推出*
+
+📚 **文档**：参见 [developing-ios-apps/references/xcodegen-full.md](./daymade-macos/developing-ios-apps/references/xcodegen-full.md)。
+
+**要求**：macOS + Xcode，XcodeGen
+
+---
+
+### **twitter-reader** - Twitter/X 内容获取
+
+使用 Jina.ai API 获取 Twitter/X 帖子内容，无需 JavaScript 渲染或身份验证即可绕过限制。
+
+**使用场景：**
+- 检索推文内容用于分析或文档记录
+- 获取话题回复与对话上下文
+- 从帖子中提取图片和媒体
+- 批量下载多条推文作为参考
+
+**主要功能：**
+- 无需 JavaScript 渲染或浏览器自动化
+- 无需 Twitter 身份验证
+- 返回带元数据的 Markdown 格式内容
+- 支持单条和批量获取
+- 包含作者、时间戳、帖子文本、图片和回复
+- 环境变量配置实现安全的 API 密钥管理
+
+**示例用法：**
+```bash
+# 设置你的 Jina API 密钥（从 https://jina.ai/ 获取）
+export JINA_API_KEY="your_api_key_here"
+
+# 获取单条推文
+curl "https://r.jina.ai/https://x.com/USER/status/TWEET_ID" \
+  -H "Authorization: Bearer ${JINA_API_KEY}"
+
+# 批量获取多条推文
+scripts/fetch_tweets.sh \
+  "https://x.com/user/status/123" \
+  "https://x.com/user/status/456"
+
+# 使用 Python 脚本获取到文件
+python scripts/fetch_tweet.py https://x.com/user/status/123 output.md
+```
+
+**🎬 实时演示**
+
+*即将推出*
+
+📚 **文档**：参见 [twitter-reader/SKILL.md](./twitter-reader/SKILL.md) 了解完整细节和 URL 格式支持。
+
+**要求**：
+- **Jina.ai API 密钥**（从 https://jina.ai/ 获取 - 提供免费套餐）
+- **curl**（大多数系统预装）
+- **Python 3.6+**（用于 Python 脚本）
+
+---
+
+### **macos-cleaner** - 智能 macOS 磁盘空间恢复
+
+> **安装**：`claude plugin install daymade-macos@daymade-skills`（仅作为套件成员发布，调用方式 `daymade-macos:macos-cleaner`）
+
+📚 **文档**：[macOS Cleaner](./daymade-macos/macos-cleaner/SKILL.md)；uv 缓存诊断或清退进入该 Skill 的 [uv 目标语义](./daymade-macos/macos-cleaner/references/cleanup_targets.md#uv-cache-retirement)。
+
+**示例用法：**
+```text
+我的 Mac 快没空间了，帮我分析一下是什么在占用存储空间
+```
+
+---
+
+### **fact-checker** - 文档事实核查
+
+使用网络搜索和权威来源验证文档中的事实声明，然后提议更正并等待用户确认。
+
+**使用场景：**
+- 核实文档准确性
+- 验证 AI 模型规格和技术文档
+- 更新文档中的过时信息
+- 验证统计声明和基准测试
+- 检查 API 功能和版本号
+
+**主要功能：**
+- 集成权威来源的网络搜索
+- AI 模型规格验证
+- 技术文档准确性检查
+- 统计数据验证
+- 自动更正报告（需用户确认）
+- 支持一般事实声明和技术声明
+
+**示例用法：**
+```bash
+# 安装技能
+claude plugin install fact-checker@daymade-skills
+
+# 核实文档
+"请核查这部分关于 AI 模型功能的内容"
+
+# 验证技术规格
+"检查这些 Claude 模型规格是否仍然准确"
+
+# 更新过时信息
+"验证并更新此文档中的版本号"
+```
+
+**🎬 实时演示**
+
+*即将推出*
+
+📚 **文档**：参见 [fact-checker/SKILL.md](./fact-checker/SKILL.md) 了解完整的工作流程和声明类型。
+
+**要求**：
+- 网络搜索访问（通过 Claude Code）
+
+---
+
+### **skill-reviewer** - 技能质量审查与改进
+
+以三种强大模式审查和改进 Claude Code 技能，确保符合官方最佳实践。
+
+**使用场景：**
+- 发布前验证你自己的技能
+- 评估他人的技能仓库
+- 通过 auto-PR 为开源技能贡献改进
+- 确保技能符合市场标准
+
+**主要功能：**
+- **自检模式**：运行内置 reviewer，并复用 skill-creator 的权威校验逻辑
+- **外部审查模式**：克隆、分析并生成改进报告
+- **Auto-PR 模式**：Fork → 改进 → 提交 PR（仅添加性更改）
+- **评估清单**：验证 frontmatter、说明、资源
+- **仅添加原则**：贡献他人项目时绝不删除文件
+- **PR 指南**：语气建议和专业模板
+- **可靠自动化**：用结构化 JSON 和独立退出码区分审查发现与调用/运行故障
+- **有据可查的设计评分**：按六个维度评分并逐项引用原文，区分文档设计质量与实测任务收益
+- **只读批量审查**：按声明的宿主契约盘点技能集合，准备完整的选定资料包，导出 JSON/CSV/Markdown，并明确覆盖范围、隔离无效评分
+
+**示例用法：**
+```bash
+# 安装技能
+claude plugin install daymade-skill@daymade-skills
+
+# 自检你的技能
+"验证 ~/my-skills/my-awesome-skill 的技能"
+
+# 审查外部技能仓库
+"审查 https://github.com/user/skill-repo 的技能"
+
+# Auto-PR 改进
+"Fork、改进并为 https://github.com/user/skill-repo 提交 PR"
+```
+
+**🎬 实时演示**
+
+*即将推出*
+
+📚 **文档**：参见 [daymade-skill/skill-reviewer/references/](./daymade-skill/skill-reviewer/references/) 了解：
+- `evaluation_checklist.md` - 完整的技能评估标准
+- `pr_template.md` - 专业 PR 描述模板
+
+---
+
+### **github-contributor** - GitHub 贡献策略
+
+成为高效 GitHub 贡献者并建立开源声誉的战略指南。
+
+**使用场景：**
+- 寻找可贡献的项目
+- 学习贡献最佳实践
+- 建立你的 GitHub 影响力和声誉
+- 了解如何撰写高质量 PR
+
+**主要功能：**
+- **四种贡献类型**：文档、代码质量、Bug 修复、功能开发
+- **项目选择标准**：优质首选项目 vs 危险信号
+- **PR 卓越工作流**：提交前 → 撰写中 → 提交后清单
+- **声誉建设阶梯**：文档 → Bug 修复 → 功能开发 → 维护者
+- **GitHub CLI 命令**：fork、PR、issue 操作快速参考
+- **约定式提交格式**：type、scope、description 结构
+- **常见错误**：需要避免的问题和最佳实践
+
+**贡献类型解释：**
+```
+Level 1: 文档修复（门槛最低，影响力高）
+    ↓ (建立熟悉度)
+Level 2: 代码质量（中等努力，展示技能）
+    ↓ (理解代码库)
+Level 3: Bug 修复（高影响力，建立信任）
+    ↓ (受信任的贡献者)
+Level 4: 功能添加（最高可见度）
+    ↓ (潜在维护者)
+```
+
+**示例用法：**
+```bash
+# 安装技能
+claude plugin install github-contributor@daymade-skills
+
+# 找到好的首次贡献机会
+"帮我找一些 Python 项目中有 good first issue 的项目"
+
+# 撰写高质量 PR
+"指导我为这个 bug 修复创建一个 PR"
+
+# 制定贡献策略
+"帮我规划一个建立 GitHub 档案的贡献策略"
+```
+
+**🎬 实时演示**
+
+*即将推出*
+
+📚 **文档**：参见 [github-contributor/references/](./github-contributor/references/) 了解：
+- `pr_checklist.md` - 完整的 PR 质量清单
+- `project_evaluation.md` - 如何评估可贡献的项目
+- `communication_templates.md` - Issue 和 PR 沟通模板
+
+---
+
+### **i18n-expert** - 国际化与本地化
+
+为 UI 代码库提供完整的国际化/本地化设置和审计。配置 i18n 框架、将硬编码字符串替换为翻译键、确保 en-US 和 zh-CN 之间的语言环境一致性，并验证复数形式和格式设置。
+
+**使用场景：**
+- 为新的 React/Next.js/Vue 应用程序设置 i18n
+- 审计现有 i18n 实现的键一致性和完整性
+- 将硬编码字符串替换为翻译键
+- 确保错误代码正确映射到本地化消息
+- 验证跨语言环境的复数形式、日期/时间/数字格式设置
+- 实现语言切换和 SEO 元数据本地化
+
+**主要功能：**
+- 库选择和设置（react-i18next、next-intl、vue-i18n）
+- 键架构和语言环境文件组织（JSON、YAML、PO、XLIFF）
+- 翻译生成策略（AI、专业、手动）
+- 路由和语言检测/切换
+- SEO 和元数据本地化
+- 适用语言环境的 RTL 支持
+- en-US 和 zh-CN 之间的键一致性验证
+- 复数形式和格式设置验证
+- 错误代码映射到本地化消息
+- 捆绑的 i18n_audit.py 脚本用于键使用提取
+
+**示例用法：**
+```bash
+# 安装技能
+claude plugin install i18n-expert@daymade-skills
+
+# 为新项目设置 i18n
+"为我的 React 应用设置支持英文和中文的 i18n"
+
+# 审计现有 i18n 实现
+"审计 i18n 设置并查找缺失的翻译键"
+
+# 替换硬编码字符串
+"将此组件中的所有硬编码字符串替换为 i18n 键"
+```
+
+**🎬 实时演示**
+
+*即将推出*
+
+📚 **文档**：参见 [i18n-expert/SKILL.md](./i18n-expert/SKILL.md) 了解完整的工作流程和架构指导。
+
+**要求**：
+- **Python 3.6+**（用于审计脚本）
+- **React/Next.js/Vue**（框架特定的 i18n 库）
+
+---
+
+### **claude-skills-troubleshooting** - 插件与技能故障排除
+
+> **安装**：`claude plugin install daymade-claude-code@daymade-skills`（仅作为套件成员发布，调用方式 `daymade-claude-code:claude-skills-troubleshooting`）
+
+诊断和解决 Claude Code 插件和技能配置问题。通过系统化工作流程调试插件安装、启用和激活问题。
+
+**使用场景：**
+- 插件已安装但未显示在可用技能列表中
+- 尽管已安装，技能仍未按预期激活
+- 调试 settings.json 中的 enabledPlugins 配置
+- 调试"插件不工作"或"技能未显示"问题
+- 了解插件状态架构和生命周期
+
+**主要功能：**
+- 通过诊断脚本快速诊断（检测已安装但未启用的不匹配）
+- 插件状态架构文档（installed_plugins.json vs settings.json）
+- 市场缓存新鲜度检测和更新指导
+- 已知 GitHub 问题跟踪（#17832、#19696、#17089、#13543、#16260）
+- 用于批量启用市场缺失插件的脚本
+- 技能与命令架构解释
+- 全面的诊断命令参考
+
+**示例用法：**
+```bash
+# 运行诊断
+python3 scripts/diagnose_plugins.py
+
+# 批量启用缺失的插件
+python3 scripts/enable_all_plugins.py daymade-skills
+```
+
+**🎬 实时演示**
+
+*即将推出*
+
+📚 **文档**：参见 [claude-skills-troubleshooting/SKILL.md](./daymade-claude-code/claude-skills-troubleshooting/SKILL.md) 了解完整的故障排除工作流程和架构指导。
+
+**要求**：无（使用 Claude Code 内置 Python）
+
+---
+
+### **audio-router** - 阶跃语音与会议纪要路由
+
+> **安装**：`claude plugin install daymade-audio@daymade-skills`（仅作为套件成员发布，调用方式 `daymade-audio:audio-router`）
+
+按任务读取 StepFun ASR、StepFun TTS 或现成转录稿转会议纪要的完整专用说明。原斜杠命令仍可手动调用；通用音视频转录和转录纠错保持自动直达。
+
+---
+
+### **meeting-minutes-taker** - 会议纪要生成器
+
+> **安装**：`claude plugin install daymade-audio@daymade-skills`（仅作为套件成员发布，调用方式 `daymade-audio:meeting-minutes-taker`）
+
+将会议录音转写稿转换为高保真、结构化的会议纪要，支持迭代式人工审核。
+
+**使用场景：**
+- 提供会议转写稿，需要生成会议纪要/笔记/摘要
+- 多个版本的会议纪要需要合并且不丢失内容
+- 现有纪要需要对照原始转写稿审核是否遗漏
+
+**主要功能：**
+- 多轮并行生成与 UNION 合并策略
+- 基于证据的记录，附带发言者引用
+- 用于架构讨论的 Mermaid 图表
+- 迭代式人机协作优化流程
+- 跨 AI 对比以减少偏差
+- 完整性检查清单用于系统化审核
+
+**示例用法：**
+```bash
+# 安装完整语音套件（包含 meeting-minutes-taker）
+claude plugin install daymade-audio@daymade-skills
+
+# 然后提供会议转写稿并请求生成纪要
+```
+
+**🎬 实时演示**
+
+*即将推出*
+
+📚 **文档**：参见 [daymade-audio/meeting-minutes-taker/SKILL.md](./daymade-audio/meeting-minutes-taker/SKILL.md) 了解完整的工作流程和模板指导。
+
+**要求**：无
+
+---
+
+### **deep-research** - 深度调研报告生成器
+
+生成可追溯的调研报告。每次研究都保存原始来源、断言与此前研究的关联；需要多渠道时，由现有供应商 Skill 分别执行并保留原件。
+
+**使用场景：**
+- 需要结构化调研报告、文献综述或行业/市场分析
+- 需要严格的章节格式或模板约束
+- 需要证据映射、引用与来源质量审查
+- 需要多轮综合以避免遗漏关键发现
+
+**主要功能：**
+- 报告规格与格式合约工作流
+- 证据表与来源质量评级
+- 多轮完整草稿与 UNION 合并
+- 引用校验与冲突处理
+- 单路或多路研究都建立来源与断言记录，供下一次研究检索和复核
+- 给各渠道交接指定原文；会话跳转可追溯，旧研究检索优先显示已核原件
+- 即用型报告模板与格式规则
+
+**示例用法：**
+```bash
+# 安装技能
+claude plugin install deep-research@daymade-skills
+
+# 然后提供报告规格或模板并请求生成调研报告
+```
+
+**🎬 实时演示**
+
+*即将推出*
+
+📚 **文档**：参见 [deep-research/SKILL.md](./deep-research/SKILL.md)、[research-asset-contract.md](./deep-research/references/research-asset-contract.md) 与 [research_report_template.md](./deep-research/references/research_report_template.md)。
+
+**要求**：无
+
+---
+
+### **competitors-analysis** - 证据驱动的竞品情报
+
+发现、克隆、更新并分析竞品仓库，产出可审计的竞争情报。仓库技术结论必须来自本地克隆代码；市场格局结论必须标注来源和易变性。
+
+**使用场景：**
+- 追踪和分析竞品产品或技术
+- 为某个产品或市场发现 GitHub 竞品
+- 创建基于证据的竞品档案
+- 生成竞品格局和机会报告
+- 检查竞品代码是否有最新变化
+- 需要以引用来源记录技术决策
+
+**主要功能：**
+- 按 `$HOME/workspace/competitors/{product}/` 组织长期竞品源码
+- GitHub 发现流程，用于筛选相关仓库
+- 仓库 ingest/update 流程，记录 remote 和 commit
+- 仓库事实必须使用 `文件:行号` 引用
+- 输出定位、优劣势、机会、风险的竞品格局总结
+- 支持 Node.js、Python、Rust 项目的技术栈分析指南
+- 内置模板：竞品档案模板、分析检查清单
+- 管理脚本支持 discover/clone-url/clone/pull/status
+
+**示例用法：**
+```bash
+# 安装技能
+claude plugin install competitors-analysis@daymade-skills
+
+# 然后让 Claude 分析竞品
+"分析竞品 https://github.com/org/repo"
+"添加竞品到 flowzero 产品的竞品列表"
+"看看 claude-flow-viewer 这个方向最近有哪些竞品更新"
+```
+
+**🎬 实时演示**
+
+*即将推出*
+
+📚 **文档**：参见 [competitors-analysis/SKILL.md](./competitors-analysis/SKILL.md) 与 [competitors-analysis/references/](./competitors-analysis/references/) 了解模板。
+
+**要求**：Git（用于克隆仓库）
+
+---
+
+### **tunnel-doctor** - Tailscale + 代理/VPN 冲突修复
+
+诊断和修复 macOS 上 Tailscale 与代理/VPN 工具（Shadowrocket、Clash、Surge）的冲突。覆盖四个独立冲突层，特别针对 SSH 访问 WSL 实例的场景。
+
+**使用场景：**
+- Tailscale ping 正常但 SSH/TCP 连接超时
+- 代理工具劫持了 Tailscale CGNAT 网段（100.64.0.0/10）
+- 浏览器返回 HTTP 503 但 curl 和 SSH 正常
+- `git push/pull` 失败并报 "failed to begin relaying via HTTP"
+- 设置 Tailscale SSH 到 WSL 时遇到 `operation not permitted`
+- 需要让 Tailscale 和 Shadowrocket/Clash/Surge 在 macOS 上共存
+
+**主要功能：**
+- 四层诊断模型：路由劫持、HTTP 环境变量、系统代理绕过、SSH ProxyCommand 双重隧道
+- 针对 Shadowrocket、Clash、Surge 的逐工具修复指南
+- SSH ProxyCommand 双重隧道检测与修复（git push/pull 失败）
+- Tailscale SSH ACL 配置（`check` vs `accept`）
+- WSL snap vs apt 安装 Tailscale（snap 沙箱导致 SSH 失败）
+- 远程开发 SOP 与代理安全的 Makefile 模式
+
+**示例用法：**
+```bash
+# 安装技能
+claude plugin install tunnel-doctor@daymade-skills
+
+# 然后让 Claude 诊断
+"Tailscale ping 正常但 SSH 超时"
+"修复 macOS 上 Tailscale 和 Shadowrocket 的路由冲突"
+"git push 失败 failed to begin relaying via HTTP"
+"设置 Tailscale SSH 到我的 WSL 实例"
+```
+
+**🎬 实时演示**
+
+*即将推出*
+
+📚 **文档**：参见 [tunnel-doctor/references/proxy_conflict_reference.md](./tunnel-doctor/references/proxy_conflict_reference.md) 了解各工具配置与冲突架构。
+
+---
+
+### **windows-remote-desktop-connection-doctor** - AVD/W365 连接质量诊断
+
+诊断 macOS 上 Windows App（Microsoft Remote Desktop / Azure Virtual Desktop / W365）连接质量问题，专注于传输协议优化（UDP Shortpath vs WebSocket 回退）。
+
+**使用场景：**
+- VDI 连接缓慢，RTT 高（>100ms）
+- 传输协议显示 WebSocket 而非 UDP
+- RDP Shortpath 无法建立
+- 更换网络位置后连接质量下降
+- 需要识别 VPN/代理对 STUN/TURN 的干扰
+
+**主要功能：**
+- 5 步诊断流程：从连接信息收集到修复验证
+- 传输协议分析（UDP Shortpath > TCP > WebSocket 优先级）
+- VPN/代理干扰检测（ShadowRocket TUN 模式、Tailscale 出口节点）
+- Windows App 日志解析：健康检查失败、证书错误、FetchClientOptions 超时
+- ISP UDP 限制测试与 STUN 连通性检查
+- 中国 ISP UDP 限速的专门指导
+- 正常 vs 异常日志对比方法论
+
+**示例用法：**
+```bash
+# 安装技能
+claude plugin install windows-remote-desktop-connection-doctor@daymade-skills
+
+# 然后让 Claude 诊断
+"我的 VDI 连接显示 WebSocket 而不是 UDP，RTT 165ms"
+"诊断为什么 RDP Shortpath 不工作"
+"Windows App 传输协议一直是 WebSocket"
+```
+
+**🎬 实时演示**
+
+*即将推出*
+
+📚 **文档**：参见 [windows-remote-desktop-connection-doctor/references/](./windows-remote-desktop-connection-doctor/references/) 了解日志分析模式和 AVD 传输协议详情。
+
+---
+
+### **product-analysis** - 多路径产品审计与优化
+
+通过并行探索与有证据的综合判断，审计 UX、API、架构及选定竞品的实现。
+
+**使用场景：**
+- 上线前审核或定期产品健康度检查
+- 需要一份覆盖用户体验、接口与架构的综合审计报告
+- 发版前发现未使用接口、重复入口或导航复杂度问题
+- 结合 `competitors-analysis` 做竞品对比
+
+**主要功能：**
+- 自动识别项目类型和 `codex` 可用性
+- 按任务选择[审计范围](product-analysis/SKILL.md#scope-modes)
+- Claude 与可选 Codex 代理并行探索
+- 按[综合判断方法](product-analysis/references/synthesis_methodology.md)核对证据和选择优先级
+- 输出可落地的优化方案（行动项 + 依据）
+
+**示例用法：**
+```bash
+# 安装技能
+claude plugin install product-analysis@daymade-skills
+
+# 然后请求审计
+"用 full 模式做一轮产品上线前审计"
+"审计 UX 导航，并验证它对用户任务的影响"
+"追踪 API 消费者，识别可以安全退役的接口"
+"用 compare 模式和竞品进行对标"
+```
+
+**🎬 实时演示**
+
+*即将推出*
+
+📚 **文档**：参见 [product-analysis/SKILL.md](./product-analysis/SKILL.md) 与 [product-analysis/references/analysis_dimensions.md](./product-analysis/references/analysis_dimensions.md) 了解审计维度与工作流。
+
+**要求**：可选 `codex` CLI（用于多模型并行模式）。未安装时自动降级为纯 Claude 分析。
+
+---
+
+### **financial-data-collector** - 美股金融数据采集
+
+> **安装**：`claude plugin install daymade-financial@daymade-skills`（仅作为套件成员发布，调用方式 `daymade-financial:financial-data-collector`）
+
+从免费公开数据源（yfinance）采集美股上市公司的实时金融数据，输出结构化 JSON，包含市场数据、历史财务报表（利润表、现金流量表、资产负债表）、WACC 输入参数和分析师一致预期——可直接用于下游 DCF 建模、可比公司分析或财报复盘。
+
+**使用场景：**
+- 构建 DCF 或估值模型前采集结构化金融数据
+- 拉取任意美股 ticker 的市场数据（股价、流通股、beta、市值）
+- 获取历史利润表、现金流量表、资产负债表数据
+- 获取无风险利率（10Y Treasury）和分析师一致预期
+
+**主要功能：**
+- 健壮的 yfinance 字段映射，使用别名链（应对 API 跨版本不稳定）
+- NaN 年份检测与透明报告（从不用估计值填充）
+- 9 项校验：字段完整性、市值交叉验证、资本支出符号约定、净负债一致性
+- NO FALLBACK 原则：缺失数据返回 `null` 并附 `_source` 溯源，绝不使用默认值
+- FCF 定义差异标记（yfinance FCF 不扣除 SBC，与投行 FCF 有 ~30% 差距）
+
+**示例用法：**
+```bash
+# 安装套件
+claude plugin install daymade-financial@daymade-skills
+
+# 然后请求数据采集
+"采集 META 的金融数据"
+"获取 AAPL 最近 3 年的财务数据"
+"拉取 NVDA 的 DCF 输入数据"
+```
+
+**🎬 实时演示**
+
+*即将推出*
+
+📚 **文档**：参见 [financial-data-collector/SKILL.md](./daymade-financial/financial-data-collector/SKILL.md)、[output-schema.md](./daymade-financial/financial-data-collector/references/output-schema.md) 和 [yfinance-pitfalls.md](./daymade-financial/financial-data-collector/references/yfinance-pitfalls.md)。
+
+**要求**：Python 3.11+、`yfinance`、`pandas`（通过 uv 内联依赖自动安装）。
+
+---
+
+### **excel-automation** - Excel 创建、解析与 macOS 控制
+
+> **安装**：`claude plugin install daymade-docs@daymade-skills`（仅作为套件成员发布，调用方式 `daymade-docs:excel-automation`）
+
+用于创建专业格式化 Excel、通过标准库 XML/ZIP 解析复杂 `.xlsm` 模型，并在 macOS 上通过 AppleScript 控制 Excel 窗口。
+
+**使用场景：**
+- 需要按投研规范批量生成格式化工作簿
+- `openpyxl` 无法读取复杂券商/投行 `.xlsm` 模型
+- 需要在不完整加载大文件的情况下抽取目标工作表与单元格
+- 在 macOS 上自动执行 Excel 缩放、滚动、选区等窗口操作
+
+**主要功能：**
+- 提供可复用的 `openpyxl` 格式化模板脚本
+- 使用 `zipfile` + `xml.etree` 解析复杂工作簿（轻依赖）
+- 内置损坏 `definedNames` 修复流程
+- 提供带超时保护的 AppleScript 命令模式
+- 附带格式规范参考（颜色、数字格式、表格样式）
+
+**示例用法：**
+```bash
+# 安装文档套件
+claude plugin install daymade-docs@daymade-skills
+
+# 然后请求 Claude 自动化 Excel 工作流
+"创建一个格式化的估值模板工作簿"
+"解析这个 .xlsm 并提取 DCF 工作表"
+"生成 Excel 缩放和滚动后截图的 AppleScript 流程"
+```
+
+**🎬 实时演示**
+
+*即将推出*
+
+📚 **文档**：参见 [excel-automation/SKILL.md](./daymade-docs/excel-automation/SKILL.md) 和 [formatting-reference.md](./daymade-docs/excel-automation/references/formatting-reference.md)。
+
+**要求**：Python 3.8+、`uv`、`openpyxl`（通过 `uv run --with openpyxl` 自动安装）；AppleScript 窗口控制需要 macOS。
+
+---
+
+### **capture-screen** - macOS 程序化截图
+
+> **安装**：`claude plugin install daymade-macos@daymade-skills`（仅作为套件成员发布，调用方式 `daymade-macos:capture-screen`）
+
+通过三步法实现稳定的窗口截图自动化：Swift 获取 CGWindowID、AppleScript 控制应用状态、`screencapture` 输出截图文件。
+
+**使用场景：**
+- 为文档或审计流程自动化生成可重复截图
+- 只捕获目标应用窗口而非整屏
+- 在脚本化滚动/缩放后分段截图
+- 构建 macOS 视觉证据采集流水线
+
+**主要功能：**
+- 内置 Swift 脚本获取准确窗口 ID（`CGWindowListCopyWindowInfo`）
+- 提供已验证的 AppleScript 激活与预处理命令模式
+- 支持窗口级静默截图、延时截图与格式控制
+- 提供分段多图采集工作流模板
+- 明确列出在 macOS 上不可用的错误方案，避免踩坑
+
+**示例用法：**
+```bash
+# 安装 Apple 平台套件
+claude plugin install daymade-macos@daymade-skills
+
+# 然后请求 Claude 执行程序化截图
+"找到 Excel 窗口 ID 并静默截图"
+"为这个工作簿生成分段截图工作流"
+"通过脚本滚动后抓取 Chrome 窗口多个区域"
+```
+
+**🎬 实时演示**
+
+*即将推出*
+
+📚 **文档**：参见 [capture-screen/SKILL.md](./daymade-macos/capture-screen/SKILL.md)。
+
+### **macos-permissions** - 诊断并修复 macOS 隐私权限
+
+> **安装**：`claude plugin install daymade-macos@daymade-skills`（仅作为套件成员发布，调用方式 `daymade-macos:macos-permissions`）
+
+用于排查反复弹出的 TCC 权限提示、静默拒绝，以及后台任务无法读取受保护文件的问题。Skill 会定位实际请求权限的进程，检查现有授权能否复用，并通过真实后台读取验收；诊断和完全磁盘访问权限的修复步骤以 Skill 正文为准。
+
+📚 **文档**：参见 [macos-permissions/SKILL.md](./daymade-macos/macos-permissions/SKILL.md)。
+
+**要求**：macOS。读取 TCC.db 时，执行读取的进程还需具备完全磁盘访问权限。
+
+---
+
+### **continue-claude-code-work** - 续做中断的 Claude 工作
+
+> **安装**：`claude plugin install daymade-claude-code@daymade-skills`（仅作为套件成员发布，调用方式 `daymade-claude-code:continue-claude-code-work`）
+
+在不重新打开旧交互会话的前提下，续做一个已经核实的 Claude Code
+Session。续做层先消费 `read-claude-code-history`，再恢复原始业务结果、
+尚未完成的要求、用户纠正、已验证资产，以及一个直接推进目标的下一步。
+
+**使用场景：**
+- 用户提供 Claude 会话 ID，希望继续上次的任务
+- 需要直接检查本地 `.claude` JSONL 文件，而不是运行 `claude --resume`
+- 上一次会话被中断，需要重建下一步具体动作
+- 多 agent 工作流被中断，需要了解哪些 subagent 已完成
+
+**主要功能：**
+- 强制先获得按时间交替的读取回执，不再把用户和 Assistant 分栏错配
+- 恢复原始目标、剩余工作、被否决路线与以前成功的资产
+- 动手前验证当前文件、Git、外部写入与后台任务，避免重复执行
+- 以业务结果作为完成单位，而不是解析器、审阅或进程完成
+
+**示例用法：**
+```bash
+# 然后让 Claude 基于本地产物续做
+"continue work from session 123e4567-e89b-12d3-a456-426614174000"
+"不用真的 resume，去 .claude 里找上下文继续做"
+"查看上次会话做了什么，然后继续"
+```
+
+📚 **文档**：参见 [continue-claude-code-work/SKILL.md](./daymade-claude-code/continue-claude-code-work/SKILL.md)。
+
+**要求**：Python 3.8+，用于工作区核对的 `git`。
+
+---
+
+### **scrapling-skill** - 可靠的 Scrapling CLI 工作流
+
+围绕 Scrapling CLI 提供经过验证的安装、排障与网页抽取工作流，用于从网页输出 HTML、Markdown 或纯文本。内置诊断脚本，可检查 extras 安装问题、Playwright 浏览器运行时，以及真实 URL 的烟测结果。
+
+**使用场景：**
+- 用户提到 Scrapling、`uv tool install scrapling` 或 `scrapling extract`
+- 需要判断应该使用静态抓取还是浏览器抓取
+- 需要从微信公众号页面（`mp.weixin.qq.com`）提取正文
+- Scrapling 安装看似成功，但在 extras、浏览器运行时或 TLS 校验上失败
+
+**主要功能：**
+- 内置 `diagnose_scrapling.py`，检查 CLI、浏览器运行时与真实 URL 烟测
+- 经过验证的默认路径：先用 `extract get`，只有必要时再升级到 `extract fetch`
+- 针对微信公众号文章的 `#js_content` 提取模式
+- 覆盖缺少 `click`、Playwright 运行时缺失、`curl: (60)` 证书问题等真实故障
+- 用文件大小和内容验证结果，而不是只看退出码
+
+**示例用法：**
+```bash
+# 安装技能
+claude plugin install scrapling-skill@daymade-skills
+
+# 然后让 Claude 代你跑 Scrapling
+"安装 Scrapling CLI 并验证配置"
+"用 Scrapling 把这篇微信公众号文章提取成 Markdown"
+"判断这个页面应不应该走浏览器抓取"
+```
+
+**🎬 实时演示**
+
+*即将推出*
+
+📚 **文档**：参见 [scrapling-skill/SKILL.md](./scrapling-skill/SKILL.md) 和 [scrapling-skill/references/troubleshooting.md](./scrapling-skill/references/troubleshooting.md)。
+
+**要求**：Python 3.6+、`uv`、Scrapling CLI；如需浏览器抓取，还需要 Playwright 浏览器运行时。
+
+---
+
+### **ima-copilot** - 腾讯 IMA 伴侣与安装器
+
+围绕官方腾讯 IMA skill（`ima.qq.com`）的一站式包装层。通过 `npx skills add` 把官方 `ima-skill` 一键安装到 Claude Code、Codex、OpenClaw 三个平台；引导用户配置 API 凭据；在用户授权下检测并修复上游已知问题；提供按知识库置顶的个人化扇出搜索策略。
+
+**使用场景：**
+- 用户提到 IMA、腾讯 IMA、ima.qq.com，或需要安装官方 ima-skill
+- 用户遇到 `Skipped loading skill(s) due to invalid SKILL.md` 这类 ima-skill 加载告警
+- 需要跨 IMA 知识库搜索并把某些精选库置顶
+- 需要配置或轮换 IMA API 凭据
+- 上游 ima-skill 发布了带 bug 的新版（例如子模块 SKILL.md 缺少 YAML frontmatter）
+
+**主要功能：**
+- 通过 [vercel-labs/skills](https://github.com/vercel-labs/skills) 实现对 Claude Code / Codex / OpenClaw 三个目标的零配置安装，自动探测已安装的 agent，默认走 symlink 模式——修一次或升级一次，所有共享同一 canonical install 的 agent 自动同步
+- 凭据管理走 XDG 风格：`~/.config/ima/{client_id, api_key}`，同时支持 `IMA_OPENAPI_CLIENTID` / `IMA_OPENAPI_APIKEY` 环境变量兜底
+- 内置只读诊断脚本 `scripts/diagnose.sh`，用结构化 `✅/⚠️/❌` 报告覆盖安装状态、凭据 liveness、以及所有已知上游问题
+- 内置 `scripts/search_fanout.py`，实现客户端跨知识库扇出搜索，支持优先库置顶、子集库过滤、100 条静默截断检测，以及订阅只读库的权限差异分组
+- 严格的包装层架构：永不 vendor 上游文件，永不 fork，每一次修复都是运行时指令 + 明确用户授权 + 自动带时间戳的 `/tmp` 备份
+- 针对 frontmatter 缺失问题提供两种可选修复策略：A 策略（把子模块改名为 `MODULE.md` 并 patch 根 SKILL.md 引用，尊重上游设计意图）或 B 策略（仅追加最小 frontmatter，最小化差异）
+- 个人化偏好通过 `~/.config/ima/copilot.json` 声明，仓库只提供示例模板 `config-template/copilot.json.example`，不预设任何真实知识库名
+
+**示例用法：**
+```bash
+# 安装技能
+claude plugin install ima-copilot@daymade-skills
+
+# 然后让 Claude 代你跑完整个流程
+"装一下 ima-skill 并配置我的 IMA API key"
+"对我的 ima-skill 做一次诊断，有问题就修"
+"在我的 IMA 知识库里搜 embedding 模型对比，精选库置顶"
+```
+
+**🎬 实时演示**
+
+*即将推出*
+
+📚 **文档**：参见 [ima-copilot/SKILL.md](./ima-copilot/SKILL.md) 和 [ima-copilot/references/known_issues.md](./ima-copilot/references/known_issues.md)。
+
+**要求**：Node.js 18+（`npx skills` 在按需拉取）、`curl`、`unzip`、Python 3.6+；从 [https://ima.qq.com/agent-interface](https://ima.qq.com/agent-interface) 获取 IMA OpenAPI 凭据。
+
+---
+
+### **claude-export-txt-better** - 修复 Claude Code 导出文件的断行
+
+> **安装**：`claude plugin install daymade-claude-code@daymade-skills`（仅作为套件成员发布，调用方式 `daymade-claude-code:fixing-claude-export-conversations`）
+
+重建 Claude Code 导出的 `.txt` 对话文件中被硬换行切坏的表格、段落、路径和工具调用输出。附带 53 项自动校验套件（文件无关，能捕捉 over-/under-merge 回归）。
+
+**使用场景：**
+- 用户的 Claude Code 导出文件被固定列宽换行搞坏了表格、路径或工具输出
+- 用户提到"修复导出""修复对话""让导出可读"
+- 用户有匹配 `YYYY-MM-DD-HHMMSS-*.txt` 的文件
+- 用户想在分享或归档前后处理 `/export` 的输出
+
+**主要功能：**
+- 确定性的 Python 脚本（`fix-claude-export.py`），带 `--stats` 模式查看前后指标
+- 53 项自动校验器（`validate-claude-export-fix.py`），捕捉回归
+- evals 目录带真实 fixture 案例
+- 零外部依赖，只需 `uv` 和 Python 3.8+
+
+**示例用法：**
+```bash
+# 修复并显示统计
+uv run daymade-claude-code/claude-export-txt-better/scripts/fix-claude-export.py broken.txt --stats
+
+# 自定义输出路径
+uv run daymade-claude-code/claude-export-txt-better/scripts/fix-claude-export.py broken.txt -o fixed.txt
+
+# 校验修复结果
+uv run daymade-claude-code/claude-export-txt-better/scripts/validate-claude-export-fix.py broken.txt fixed.txt
+```
+
+**🎬 实时演示**
+
+*即将推出*
+
+📚 **文档**：参见 [claude-export-txt-better/SKILL.md](./daymade-claude-code/claude-export-txt-better/SKILL.md) 和打包在内的 `evals/` fixture。
+
+**要求**：Python 3.8+、`uv` 包管理器。
+
+---
+
+### **douban-skill** - 豆瓣收藏导出与同步
+
+通过逆向的 Frodo API 导出和同步豆瓣书影音游戏收藏到本地 CSV 文件。全量导出覆盖所有历史，RSS 增量同步保持每日更新。无需登录、无需 cookies、无需浏览器——只要一个用户 ID 就能跑通。
+
+**使用场景：**
+- 用户想备份自己的豆瓣读书/观影/听歌/游戏历史
+- 用户提到 豆瓣、douban、读书记录、观影记录、书影音
+- 用户需要增量同步最近的豆瓣动态
+- 用户想要 Excel 兼容的 CSV 输出（UTF-8 BOM）
+
+**主要功能：**
+- 全量导出全部 4 类（书/影/音/游）通过 Frodo API
+- RSS 增量同步每日更新（每个 feed 最近约 10 条）
+- 预检查用户 ID 有效性（错误 ID 立刻失败）
+- UTF-8 BOM CSV 输出，Excel 兼容，跨平台
+- 内置故障日志，记录 7 种被测试过的抓取方案以及每种为什么失败（豆瓣的 PoW 挑战封锁所有网页抓取——只有 Frodo API 可行）
+- `.gitleaks.toml` allowlist 处理公开的 Android APK 凭据
+
+**示例用法：**
+```bash
+# 全量导出用户收藏
+uv run douban-skill/scripts/douban-frodo-export.py <douban-user-id>
+
+# RSS 增量同步（每类最近 10 条左右）
+uv run douban-skill/scripts/douban-rss-sync.py <douban-user-id>
+```
+
+**🎬 实时演示**
+
+*即将推出*
+
+📚 **文档**：参见 [douban-skill/SKILL.md](./douban-skill/SKILL.md) 和 [douban-skill/references/troubleshooting.md](./douban-skill/references/troubleshooting.md) 查看所有被拒方案的完整故障日志。
+
+**要求**：Python 3.8+、`uv` 包管理器。无需登录或 cookies。
+
+---
+
+### **terraform-skill** - Terraform 实操陷阱
+
+设计并诊断安全的 Terraform 发布，同时保留来自真实事故的 provisioner 陷阱。它要求 staging 和 production 使用同一份必填配置 schema，在修改 live 文件或重启前，用最终 Compose 环境与不可变运行镜像验证精确候选产物，并把 saved plan、staging 实测凭据、远端源码 provenance、明确生产授权和独立读回串成一条链。
+
+**使用场景：**
+- 写 `null_resource` provisioner 或 `remote-exec` SSH 到新实例
+- 做多环境（prod/staging/dev）Terraform + 共享模块
+- 调试 `terraform apply` 后一直 Restarting/unhealthy 的容器
+- 遇到 remote-exec 的 "docker: not found"、local-exec 的 rsync connection drops、或 TLS 证书错误
+- 重跑时遇到 drift 或 provisioner 失败
+- 配置 Caddy/网关资源和 Cloudflare 凭据
+- 审查一个可能顺带改写共享网关的 saved plan 或宽部署资源
+- 修复 staging/production 配置、receipt、provenance 或生产授权不一致
+
+**主要功能：**
+- 所有环境共用一份必填键契约：值可以不同，必填性不能不同
+- 每个正常/恢复写入路径在 live mutation 前都做 exact-bundle 预验证
+- saved plan、staging receipt、远端 main provenance、生产授权和 live readback 闭环
+- 覆盖 cloud-init、Docker、DNS、TLS、快照与 fresh host 的已纠正模式
+
+**示例用法：**
+```bash
+# 在 Terraform 工作中自然触发这个 skill
+"我的 null_resource provisioner apply 后报 'docker: not found'"
+"我的 rsync local-exec 报 'connection unexpectedly closed'"
+"帮我写一个多环境 Terraform setup，避免快照跨环境污染"
+"staging 有这个 Caddy 变量，但 production 留空了，怎么安全验证两边？"
+```
+
+**🎬 实时演示**
+
+*即将推出*
+
+📚 **文档**：参见 [terraform-skill/SKILL.md](./terraform-skill/SKILL.md) 和打包在内的 `references/` 查看详细修复模式。
+
+**要求**：无（只需要 Terraform 相关知识；无运行时依赖）。
+
+---
+
+### **slides-creator** - 兼容通告
+
+使用旧 `slides-creator` 入口前，先读[退役与安装兼容通告](./slides-creator/SKILL.md)。
+
+---
+
+### **excalidraw-use** - 把图片批量放上 Excalidraw 白板
+
+把已有图片批量放进 Excalidraw 白板，按大间距网格排好，不用再手动拖开。也能先把 slide deck 转成逐页干净截图，以及盘点一个 `.excalidraw` 文件里有什么。现有的 Excalidraw MCP 与 skill 覆盖了元素 CRUD 和导出，但都没有 image 元素类型、没有 `dataURL`、没有 `files` map——嵌入自己的图片正是这块空缺。
+
+**适用场景：**
+- 把截图、图库或 deck 页面放上白板
+- 大量图片一次排好，间距不用再调
+- 把 Vite/React slide deck 转成可以在上面手绘的图片
+- 盘点场景文件：元素分布、内嵌负载大小、占用范围
+
+**核心特性：**
+- 按内容哈希去重，`--exclude` 跳过已在白板上的图
+- `--template-from` 从你自己的白板深拷贝 image 元素字段集——Excalidraw 公开的 schema 并未列出 `fileId`/`status`/`scale`/`crop`
+- 回读验收：文件条目缺失、长宽比失真、任意重叠都会失败
+- Deck 截图会隐藏讲师专用元素、展开分步显示，并报告始终没有渲染出来的 fragment
+- 记录了两个会静默毁掉工作的坑：*Open* 与拖放会**取代**整个场景（只有剪贴板是合并），以及旧构建会让源码里的功能消失、而 `innerText` 仍把隐藏的 fragment 读成存在
+
+**使用示例：**
+```bash
+# 自然触发
+"把这些截图放到我的 Excalidraw 白板上"
+"把以前 workshop 的图都加到画板里，间距大一点"
+"把这个 deck 转成我能在上面画的图片"
+```
+
+**注意**：不负责从文字描述生成图表——那是另一件事。
+
+---
+
+### **debugging-network-issues** - 证据驱动的网络问题排查
+
+针对网络、流式、协议层 bug 的"先证伪、再下结论"方法论。源自一次真实的 5 小时 SSE 生产事故——堆假设浪费的几个小时，10 分钟分层实验就能解决。
+
+**使用场景：**
+- 连接重置（`ECONNRESET`、HTTP/2 `RST_STREAM`、`INTERNAL_ERROR`）
+- SSE / 长轮询挂起或定时断开（60s、100s、130s）
+- CDN / 代理 / CGNAT 空闲超时事件
+- 客户端代理 / VPN / TUN 错路由（如 `ERR_CONNECTION_CLOSED`、`SSL_ERROR_SYSCALL`、假 TUN DNS IP、CNAME 规则覆盖）
+- 证书校验错误（`UNKNOWN_CERTIFICATE_VERIFICATION_ERROR`、证书发错站点）
+- "时灵时不灵 / N 秒后必断"模式
+- LAN 层谜题：识别局域网里的未知设备、换网段后失联的设备、在一个网段"死了"却在另一个网段活着的主机
+- 多跳系统（client → CDN → LB → reverse proxy → app → upstream）症状可能来自多层
+
+**主要功能：**
+- 分层隔离实验：让同一逻辑请求走三条以上、每条仅差一跳的路径
+- 环境变量门控的运行时埋点（不污染生产代码）
+- 反审查四问过滤器，挑战单因果假设
+- 内置探针脚本（`layered-isolation-probe.sh`、`mock-idle-upstream.py`）
+- 真实案例：CGNAT 130s 空闲超时导致的 SSE RST_STREAM；代理/TUN CNAME 规则覆盖导致的 `ERR_CONNECTION_CLOSED`
+
+**要求**：无（方法论 + 可移植的 shell/Python 探针）。
+
+---
+
+### **stepfun-tts** - 阶跃 StepAudio 2.5 Contextual TTS
+
+> **安装**：`claude plugin install daymade-audio@daymade-skills`（仅作为套件成员发布，调用方式 `daymade-audio:stepfun-tts`）
+
+用 `stepaudio-2.5-tts` 做中文 / 日语语音合成。封装了 TTS 部分两个会浪费时间的非显然坑：`voice_label` 被移除（改用自然语言 `instruction`）以及 2.5 时代更严格的审查（死/消失/政治敏感词）。
+
+**使用场景：**
+- 带情感和韵律控制的中 / 日语 TTS（耳语、停顿、加重、句中情绪转折）
+- 批量生成游戏 / 应用语音条目，每条单独处理 `censorship_block` 兜底
+- 从 `step-tts-2` 迁移到 `stepaudio-2.5-tts`（`voice_label` → `instruction` 是破坏性变更）
+- 之前能合成的内容现在被审查拦截
+
+**主要功能：**
+- `stepaudio-2.5-tts`：用 `instruction`（≤200 字自然语言情绪）+ 文中 `()` 行内韵律
+- 内置 `tts_generate.py`（含 `--batch <jsonl>`）、`ab_compare.sh`
+- API key 解析顺序：`$STEPFUN_API_KEY` → `${CLAUDE_PLUGIN_DATA}/config.json` 兜底
+- `references/migration_from_v2.md` 给出审查拦截的改写策略
+
+**要求**：StepFun API key 的 "Normal" 等级（https://platform.stepfun.com/）。如需 ASR / 转写，使用下方的姊妹技能 `stepfun-asr`。
+
+---
+
+### **stepfun-asr** - 阶跃 StepAudio 2.5 ASR（SSE 端点）
+
+> **安装**：`claude plugin install daymade-audio@daymade-skills`（仅作为套件成员发布，调用方式 `daymade-audio:stepfun-asr`）
+
+用 `stepaudio-2.5-asr` 转写中 / 英文音频。封装 2.5 ASR 系列最坑的一点：模型**不在** `/v1/audio/transcriptions`——错端点返回的 `model stepaudio-2.5-asr not supported` 看起来跟权限被拒一模一样，会让人浪费几小时排查。
+
+**使用场景：**
+- 长音频转写（单次最长 ~30 分钟、32K context、~85-101× RTF、无需客户端切片）
+- 从 `step-asr` / `step-asr-1.1` 迁移（端点不同、请求体不同、响应是 SSE 流）
+- 遇到误导性的 `model stepaudio-2.5-asr not supported` 错误（= 端点用错了，不是权限问题）
+- 调音频端点遭遇无声 4xx 鉴权失败（= 用了 "Plan" key 而不是 "Normal" key）
+
+**主要功能：**
+- `/v1/audio/asr/sse` SSE 流 + base64 音频 + 嵌套 JSON 请求体（脚本一并处理四个坑）
+- 内置 `asr_transcribe.py`——纯 stdlib CLI，按扩展名自动识别 mp3/wav/ogg/opus/pcm
+- 处理 SSE `error` 事件（审查在 ASR 端也会触发——罕见但真实存在）
+- API key 解析顺序：`$STEPFUN_API_KEY` → `${CLAUDE_PLUGIN_DATA}/config.json` 兜底
+- 推荐 `transcript-fixer`（ASR 纠错）和 `meeting-minutes-taker`（结构化纪要）作为下游技能
+
+**要求**：StepFun API key 的 "Normal" 等级（https://platform.stepfun.com/）。Plan key 调不通音频端点。
+
+---
+
+### **terminal-screenshot** - 看见终端输出的真实视觉效果
+
+把终端 CLI 程序的彩色输出渲染成 PNG，让 Claude 真正"看见"渲染后的效果——颜色对比、对齐、背景色块、高亮——而不是只读到纯文本和原始 ANSI 转义码。读 hex 值是猜，看真实终端背景上渲染出的对比才是验证。
+
+**何时使用：**
+- 改完任何 CLI 配色（delta / bat / 主题 / lazygit pager）后，立即视觉确认效果
+- 验证 git diff（delta）增删对比、bat 语法高亮、starship prompt、eza/ls 配色、ripgrep 匹配
+- 任何需要判断"这配色对不对 / 对比够不够"而不是从 hex 码瞎猜的场景
+
+**核心特性：**
+- **先捕获再渲染的纪律**：先在正常 shell 捕获完整 ANSI，再渲染——绝不让渲染器代跑复杂 CLI（它们在子 pty 里会降级、丢背景块）
+- **freeze 优先 + 零依赖兜底**：优先用 charmbracelet/freeze 忠实渲染；没有时回退到内置的纯 stdlib ANSI→HTML 转换器 + headless Chrome
+- **真实终端背景**：用终端实际背景色渲染，深色主题才能判断准确
+- **各 CLI 捕获模板**：delta、git、bat、eza、ls、ripgrep，以及通用强制着色路径
+- **内置脚本**：`render_ansi.sh`（自动选 freeze/Chrome）、`ansi2html.py`（stdlib 渲染器）
+
+**使用示例：**
+```bash
+# terminal-screenshot 属于 daymade-claude-code 套件
+claude plugin install daymade-claude-code@daymade-skills
+
+# 然后自然地让 Claude 做
+"verify my delta diff colors"
+"看一下这个终端配色的真实效果"
+"git diff 的增删对比够明显吗"
+```
+
+**要求**：macOS。`charmbracelet/freeze`（首选渲染器）或 Google Chrome（兜底）。兜底渲染器需要 Python 3。
+
+---
+
+### **pdf-to-html** - 把 PDF 读成保真 HTML（可选翻译）
+
+把 PDF 转成单文件、可阅读的 HTML，保留图片、图表和阅读顺序——还可选翻译成另一种语言，同时保住每一张图。PDF 是版面而不只是文本流，所以流程会先渲染每一页让你"看"清布局再组装，交付前再渲染 HTML 做视觉验证。
+
+**何时使用：**
+- 想把 PDF 当干净网页/文档阅读（尤其在手机上）
+- 把报告/白皮书 PDF 转成有排版的 HTML 而不丢图表
+- 把 PDF 翻译成另一种语言，同时让图片、图表、表格留在原位
+
+**核心特性：**
+- **结构化提取**（PyMuPDF）：带字号的文本块 + 图片，自动识别并丢弃装饰图（页脚 logo、分隔线）
+- **数据驱动组装**：按字号推断标题层级，内容图压缩后 base64 内嵌成单一可移植文件
+- **可选并行翻译**：用 Dynamic Workflow 并行翻译各页、为数据图表生成译注、统稿统一术语——带忠实度铁律（不给真人编译名，数字与专名照搬）
+- **强制视觉验证**：自适应 headless-Chrome 截图并切成可读分段（绕开 Chrome ~16384px 截图上限）
+- **内置失败案例参考**：把真实踩过的坑（验证、渲染限制、忠实度）固化，别人不必重踩
+
+**使用示例：**
+```bash
+# pdf-to-html 属于 daymade-docs 套件
+claude plugin install daymade-docs@daymade-skills
+
+# 然后自然地让 Claude 做
+"把这个 PDF 转成中文网页版"
+"make this report readable as HTML"
+"把这份 PDF 翻成英文但保留图表"
+```
+
+**要求**：`uv`、Google Chrome 或 Chromium（视觉验证）。Python 依赖（PyMuPDF、Pillow、numpy）通过 `uv run --with` 自动安装。
+
+---
+
+### **asr-transcribe-to-text** - 用 Qwen3-ASR 把音视频转文字
+
+> **安装**：`claude plugin install daymade-audio@daymade-skills`（仅作为套件成员发布，调用方式 `daymade-audio:asr-transcribe-to-text`）
+
+用 Qwen3-ASR 把音视频文件转成文字，提供两条可互换的推理路径：macOS Apple Silicon 上的本地 MLX（无需 API key，15-27 倍实时）或任意平台的远端 vLLM/OpenAI 兼容 API。自动检测平台并推荐最佳路径，配置持久化在 `${CLAUDE_PLUGIN_DATA}/config.json`。
+
+**使用场景：**
+- 转写会议录音、讲座、访谈、播客或屏幕录制
+- 把任意音视频文件转成文字（语音转文字）
+- 在 Apple Silicon Mac 上做本地免费转写，或本地不可用时走远端 API
+- 作为「转写 → 纠错 → 纪要」流水线的第一步
+
+**主要功能：**
+- 双推理路径——本地 MLX（15-27 倍实时、免费）与远端 API，自动检测平台
+- 内置 `transcribe_local_mlx.py`：只加载一次模型并顺序处理多个文件（无 GPU 争用）
+- 采用约 20 分钟的低能量切块、单块 8192 token 上限、原子 checkpoint/续跑与完整进程树回收，避免单个异常块演变成无边界 GPU 任务
+- 远端兜底 `overlap_merge_transcribe.py`：切成 18 分钟片段、2 分钟重叠、模糊合并
+- ffmpeg 视频→16kHz 单声道 WAV 提取、截断校验与代理绕过处理
+- 主动建议用 `transcript-fixer` 清理输出中的 ASR 识别错误
+
+**示例用法：**
+```bash
+# asr-transcribe-to-text 属于 daymade-audio 套件
+claude plugin install daymade-audio@daymade-skills
+
+# 然后自然地让 Claude 做
+"transcribe this meeting recording to text"
+"把这个录音转成文字"
+"convert lecture.mp4 to a transcript"
+```
+
+**要求**：`uv`、ffmpeg/ffprobe。本地 MLX 路径需要 macOS Apple Silicon；远端路径需要可达的 vLLM/OpenAI 兼容 ASR 端点。本地模式无需 API key。
+
+---
+
+### **marketplace-dev** - 把技能仓库变成插件市场
+
+> **安装**：`claude plugin install daymade-claude-code@daymade-skills`（仅作为套件成员发布，调用方式 `daymade-claude-code:marketplace-dev`）
+
+创建并维护 Claude Code 插件市场：把仓库转换为 marketplace、将 standalone skills 收敛进新建或既有 suite、在 suite 之间迁移 skill、验证真实安装与缓存边界，并通过 PR 完成发布。
+
+**使用场景：**
+- 让技能仓库可通过 `claude plugin install` 安装
+- 生成或修复 `marketplace.json`（插件分发、一键安装、自动更新）
+- 向已有市场新增插件并正确 bump 版本
+- 把已有 skills 放进 suite、在 suite 之间迁移，或改成 suite-only 发布
+- 排查 schema 报错，如 `Unrecognized key: "$schema"` 或插件名重复
+
+**主要功能：**
+- 证据采集阶段：挖掘文档与本地会话历史，而不是凭模板猜
+- 固化非显然的 schema 规则：`$schema` 被拒、`metadata` 只有 3 个有效字段、`strict: false` 语义、单技能 vs 套件的 `source`/`skills` 模式
+- 内置 `check_marketplace.sh` 跑四道检查（JSON 语法 → `claude plugin validate` → source/skills 解析 → 反向同步），任一必需项失败即非零退出
+- 安装测试、缓存足迹测试与 GitHub 安装测试配方，确认 `source` 产出的快照符合预期
+- 专门的 suite consolidation workflow，覆盖 canonical move、字节/权限保真、全仓安装路径漂移、已有用户迁移、隔离真实安装与不可变 ref 审阅
+- 两个 PostToolUse hook（编辑 `marketplace.json` 时校验；改了 `SKILL.md` 但没 bump 版本时告警），随插件启用自动生效
+
+**示例用法：**
+```bash
+# marketplace-dev 属于 daymade-claude-code 套件
+claude plugin install daymade-claude-code@daymade-skills
+
+# 然后自然地让 Claude 做
+"turn this skills repo into a plugin marketplace"
+"给这个仓库生成 marketplace.json 并校验"
+"把我的新 skill 加进市场并提一个 PR"
+"把这些 standalone skills 挪进 daymade-macos 并改成 suite-only"
+```
+
+**要求**：`claude` CLI（用于 `claude plugin validate` / 安装测试）、`jq`。若要提上游 PR，需配置好 git remote。
+
+---
+
+### **skill-creator** - 创建、改进与基准测试技能
+
+> **安装**：`claude plugin install daymade-skill@daymade-skills`（仅作为套件成员发布，调用方式 `daymade-skill:skill-creator`）
+
+构建你自己技能的核心元技能。它会按改动风险匹配验证深度：局部修正走定向校验，窄范围行为变化走抽样回放，大改/高风险任务只获得使用重证据的资格，不会自动启动。配对 baseline、grader、benchmark 和 viewer 需用户明确授权，或先证明它会改变决策再获得同意。也支持用户明确要求的基准测试，并能优化技能的 `description` 以提升触发准确率。
+
+**使用场景：**
+- 从零创建技能，或编辑/优化已有技能
+- 跑 eval 测试技能，或做带方差分析的性能基准测试
+- 改进技能 description，让 Claude 更可靠地触发它
+- 把刚调通的第三方 CLI 工具包装成可复用的伴侣技能
+
+**主要功能：**
+- 基于当前对话、用户明确授权的过往会话、本地 SOP、已装插件/MCP、skills.sh、官方插件、npm/PyPI 做先验调研——复用基础设施，只把用户独有的方法论编码进技能
+- inline vs `context: fork` 决策指引（subagent 不能 spawn subagent 或调 skill）与可组合/正交的技能设计
+- `init_skill.py` 脚手架、`package_skill.py`（自动校验）、`security_scan.py`（基于 gitleaks 的密钥/PII 检测）
+- 现有 skill 迁移闸门：工具签发的快照或已核验 Git commit 基线、区分运行时可达性的能力审计、逐项 disposition，以及无法被 clean commit 或手写 marker 绕过的打包时重验
+- 风险分级验证路由：Tier 1 定向校验、Tier 2 抽样行为回放、Tier 3 标记大改/高风险但不自动扇出
+- 单独授权的完整 Eval 工具链：用户明确要求，或能改变决策的证据计划获得同意后，才运行带技能 + baseline、断言、评分、聚合基准和 HTML viewer
+- 面向公开技能的强制语义通读——抓住扫描器漏掉的「无关键词」泄漏
+- description 优化循环（60/40 训练/测试切分，按 held-out 分数选最优 description）
+
+**示例用法：**
+```bash
+# skill-creator 属于 daymade-skill 套件
+claude plugin install daymade-skill@daymade-skills
+
+# 然后自然地让 Claude 做
+"create a skill that does X"
+"优化这个 skill 的 description，让它更可靠地触发"
+"把这个 skill 和无技能 baseline 做基准对比"
+```
+
+**要求**：Python 3、`uv`、PyYAML（校验/打包）、gitleaks（安全扫描）。只有 agent eval 与 description 优化需要 `claude` CLI。
+
+---
+
+### **feishu-doc-scraper** - 飞书/Lark → 保真 Markdown
+
+把飞书（Lark）文档、Wiki 页面/合集、表格（含单元格附件文件下载）以及妙记转写提取成保真的本地 Markdown。首选路径用 `lark-cli` API——以编程方式提取正文（不经模型改写）、递归跟随合集的引用图、从错误码读取权限边界；浏览器 DOM 路径只在 lark-cli 触达不到内容时作为兜底。
+
+**使用场景：**
+- 源是飞书/Lark URL 且要求保真（导出飞书文档/合集/妙记转写）
+- 把飞书 wiki/知识库转成 Markdown，或归档一个飞书合集
+- 导出飞书妙记转写
+- 把文档所有者导出的 `.docx` 转成保真 Markdown 并恢复标题/高亮
+
+**主要功能：**
+- lark-cli API 提取通过 `jq` 把正文落盘（绝不经模型转抄——最重要的保真铁律）
+- 用 `feishu_extract_refs.py` 做递归引用图遍历（BFS），并设残留富媒体标签验收闸，确保没有被引用的文档被静默漏掉
+- 妙记原生转写导出（绝不对下载的媒体重跑 ASR）
+- 权限被拒路径：所有者导出 `.docx` → Markdown，恢复字号→标题、`w:shd`→高亮，再做视觉验证
+- 对 `*.feishu.cn` 强制 `LARK_CLI_NO_PROXY=1`（避免凭据泄漏/DNS 劫持），并做 U+FFFD 编码损坏终检
+- 同时支持飞书（feishu.cn）与 Lark（larkoffice.com）
+
+**示例用法：**
+```bash
+# 安装技能
+claude plugin install feishu-doc-scraper@daymade-skills
+
+# 然后自然地让 Claude 做
+"把这个飞书合集导出成 markdown"
+"export this Feishu Minutes transcript"
+"把这个 Lark wiki 页面存成 Markdown"
+```
+
+**要求**：已认证到目标租户的 `lark-cli` 二进制（npm `@larksuite/cli`）、`jq`。兜底路径需要浏览器自动化环境；docx 路径需要 `python-docx` 和一个 docx→md 转换器（内置的 doc-to-markdown 技能或 pandoc）。
+
+---
+
+### **financial-router** - 金融数据路由
+
+> **安装**：`claude plugin install daymade-financial@daymade-skills`（仅作为套件成员发布，调用方式 `daymade-financial:financial-router`）
+
+按任务读取 Bigdata/RavenPack、美股免费基本面、A 股消息、行业 Top N 与公告、Gangtise 安装诊断的专用 Skill。医药日报和通用论证审查保持直接入口，专用斜杠命令仍可手动调用。
+
+---
+
+### **bigdata-skill** - Bigdata.com（RavenPack）SDK + REST 工具箱
+
+> **安装**：`claude plugin install daymade-financial@daymade-skills`（仅作为套件成员发布，调用方式 `daymade-financial:bigdata-skill`）
+
+通过官方 `bigdata-client` SDK 及其公开的 `/v1/*` REST 端点拉取 Bigdata.com（RavenPack）的金融与新闻数据——触达 Bigdata MCP 服务器不提供的结构化底层数据。MCP 只返回散文片段和预合成的 tearsheet；本工具箱触达结构化财务、行情、分析师预期、按日的实体情绪序列、带情绪 + 实体跨度的标注片段检索，以及选股器。
+
+**使用场景：**
+- 在用 Bigdata.com / RavenPack 而 MCP 结果太单薄（"情绪分在哪"、"我要实体级数据"、"日历"）
+- 拉取前瞻/结构化财务：分析师预期、财报/事件日历、超预期、评级、目标价、三大报表、TTM 指标、选股器
+- 想要带数值情绪 + 实体跨度的标注新闻片段、情绪时序，或共现图
+- 提到 `bd_v2_` API key、`rp_entity_id`、`query_unit`/chunk 计费、`bigdata-client`，或"bigdata MCP 不够用"
+
+**主要功能：**
+- 一个 `BigdataClient` 同时暴露 SDK（检索 + 知识图谱）与 REST 逃生舱（`bd._api.http`），触达 SDK 从未封装的每个 `/v1/*` 端点
+- 路由表把每类问题映射到正确模块；`fields_values_to_records()` 把 `{fields, values}` 响应拍平
+- 成本纪律：`1 query_unit = 10 chunks`、仅片段检索计费、用 `ChunkLimit`（绝不用裸 `int`）、rerank 阈值、便宜 50% 的批量检索，以及 `CostModel`/`CostTracker` 预算否决
+- "两张数据面"指引——结构化财务（A 股可经英文名/ISIN 触达）vs 非结构化中文 NLP（数据源级死路）
+- 针对常见首次握手 `SSL: UNEXPECTED_EOF` 的 `rc()` 重试包装，以及带复现与修复的已知坑参考
+- `BIGDATA_API_KEY` 缺失即 fail-fast（无明文兜底）；只读，绝不写入/上传
+
+**示例用法：**
+```bash
+# 安装套件
+claude plugin install daymade-financial@daymade-skills
+export BIGDATA_API_KEY=bd_v2_xxxxxxxx
+
+# 然后自然地让 Claude 做
+"pull NVIDIA's forward analyst estimates and last earnings surprise from Bigdata"
+"给我这个标的按日的实体情绪序列"
+"bigdata MCP 只给了 tearsheet——我要结构化字段"
+```
+
+**要求**：一个 `bd_v2_` Bigdata.com API key（用环境变量，绝不硬编码）、`uv`、隔离 venv 中的官方 `bigdata-client` SDK。仅当网络需要时才配出站/WSS 代理以触达 `api.bigdata.com`。
+
+---
+
+### **gangtise-copilot** - Gangtise 投研技能套件安装器
+
+> **安装**：`claude plugin install daymade-financial@daymade-skills`（仅作为套件成员发布，调用方式 `daymade-financial:gangtise-copilot`）
+
+为完整的 Gangtise（岗底斯投研）OpenAPI 技能套件提供一键安装器、凭据配置器和诊断层。安装全部 19 个官方 Gangtise 技能（数据、研究、工具类），用一次实时鉴权校验配置 accessKey/secretAccessKey，并跑只读健康诊断——解决该套件的核心可发现性问题（无公开 manifest、禁列目录的 OBS bucket、两条并行命名线）。
+
+**使用场景：**
+- 用户提到 Gangtise / 岗底斯，或任意 `gangtise-*` 技能
+- 配置 Gangtise 凭据（accessKey / secretAccessKey）
+- 报错如 `token is invalid` / `接口地址错误`，或"我的 gangtise 装得不对"
+- 把数据问题（研报、首席观点、OHLC、估值）路由到正确的 Gangtise 技能
+
+**主要功能：**
+- `install_gangtise.sh` 下载 4 个 OBS bundle → 解出 19 个技能目录 → 软链进检测到的 agent 技能目录（Claude Code、OpenClaw、Codex），含 `minimal`/`workshop`/`full`/`--only` 预设
+- `configure_auth.sh` 写一份共享 XDG 凭据文件（mode 600），跑实时鉴权调用，并把每个技能的 `.authorization` 软链到它（轮换改一份文件，而非 19 份）
+- 只读 `diagnose.sh` 报告安装状态、凭据有效性与作用域能力分层（auth 作用域 vs RAG 作用域）
+- 技能注册表把数据问题路由到 19 个技能构成的二维（数据层 × 操作类型）矩阵
+- 包装契约：绝不 vendor/fork 上游文件，始终重新下载规范 OBS 制品，改动任何已装技能前必先询问
+
+**示例用法：**
+```bash
+# 安装套件
+claude plugin install daymade-financial@daymade-skills
+
+# 然后自然地让 Claude 做
+"装一下 gangtise 的所有 skill 并配置好凭据"
+"my gangtise skills report token is invalid — diagnose it"
+"宁德时代的研报用哪个 gangtise skill 查"
+```
+
+**要求**：一组 Gangtise accessKey + secretAccessKey；`bash`、`curl`、能访问官方 OBS bucket 和 `open.gangtise.com` 的网络。兼容 Claude Code、OpenClaw、Codex 的 agent 布局。
+
+---
+
+### **llm-wiki-setup** - 共创个人投研 LLM Wiki
+
+共创一个个人投研 LLM Wiki（Andrej Karpathy 模式），让用户自己的分析框架长成一份活的 CLAUDE.md——靠访谈用户而不是塞给他一份模板。纯 markdown + `[[wikilink]]`，不用 RAG / 向量库（Karpathy 的核心思想——别过度工程化）。其价值在于把用户的个人投资偏好提炼进他自己的 schema，而非强加一份标准 schema。
+
+**使用场景：**
+- 搭建随用复利的研究知识库（投研第二大脑 / 投研知识库 / 个人投研 wiki）
+- 为金融/投资实例化 Karpathy 的 LLM Wiki 模式
+- 把选股、分析师跟踪或财报观察的工作流变成结构化 markdown 库
+- 把研报 / 电话会 / 专家纪要 ingest 进已有 wiki，或做财报后「预测→兑现」复盘
+
+**主要功能：**
+- 清晰的机制层 vs 规则层切分：三层目录 + wikilink + lint + git hook 脚手架可照抄；分析 schema 由访谈长出，绝不套模板
+- `init_vault.py` 只 scaffold 机制层（不写 schema），再由 8 维访谈用用户自己的话写出他专属的 CLAUDE.md
+- 防腐：git hook + `lint-vault.py` 保持库一致并对抗派生值漂移
+- ingest 真实源（HITL 5 卡点流程）与财报后兑现复盘的 SOP
+- inline 运行（调 `analyst-track-record` 技能与 Bash），并链入 `analyst-track-record` 做分析师回测——而不重造它
+
+**示例用法：**
+```bash
+# 安装技能
+claude plugin install llm-wiki-setup@daymade-skills
+
+# 然后自然地让 Claude 做
+"帮我搭一个投研第二大脑"
+"build me a personal investment-research wiki in Karpathy's style"
+"把这场电话会 ingest 进我的研究库"
+```
+
+**要求**：Python 3、`uv`（用于 `init_vault.py` / lint）、`git`。只用 markdown + wikilink——无向量库或 embedding 服务。与 `analyst-track-record` 技能配合做回测。
+
+---
+
+### **benchmark-due-diligence** - 对标对象的对抗式尽调拆解
+
+> **安装**：`claude plugin install daymade-financial@daymade-skills`（仅作为套件成员发布，调用方式 `daymade-financial:benchmark-due-diligence`）
+
+对一个你眼红的对标对象——创始人、KOL、公司或产品，其宣称的成功看着虚高——做对抗式尽调，把营销泡沫与真实信号分开，再把验证过的打法映射到你自己的资源上。它是 `deep-research` 的对抗式、决策导向版本：默认这幅图是注水的，直到被证明，并以「这对我意味着什么」收尾，而不是一份中立报告。
+
+**使用场景：**
+- 想尽调/对标/拆解一个竞争对手或榜样，或抄/偷师某人的打法
+- 怀疑某人宣称里有水分/泡沫（Product Hunt #1、0 到 100 万用户、融资、估值几个亿）
+- 追问那些战绩是真本事还是运气/时机，或说某人太成功了、想知道真相
+- 相比 `deep-research` 的中立简报，更想要一份「祛魅 + 可复制打法」
+
+**主要功能：**
+- 两条严格隔离的注入通道——公开 FACTS 发给每个 agent；私有 COMMISSIONER_CONTEXT 只到达最后的映射 agent（这样委托方的客户名绝不泄漏进公网检索）
+- Phase 0 以证据立地基：在任何 fan-out 之前核实对标对象的真实实体图与头条声明归属（别从名字/域名推断）
+- 四阶段编排——采集 → 对抗式核验（L1-L4 分级，`坐实/存疑/证伪-水分` 裁决）→ 尽调结论（泡沫拆穿表 + 归因拆解）→ 委托方资源映射
+- 复用现有管线而非重造（`deep-research` 扇出、`osint-investigate` 身份核查、`qcc` 系列查工商、`agent-reach` 取社媒数据）
+- inline 运行（它是编排器——`context: fork` 会静默打断扇出）
+
+**示例用法：**
+```bash
+# 安装金融投研套件
+claude plugin install daymade-financial@daymade-skills
+
+# 然后自然地让 Claude 做
+"帮我尽调一下这个创始人，他到底有没有水分"
+"tear down this competitor's playbook and tell me what I can actually copy"
+"这个 KOL 号称 0 到 100 万用户——是真的吗，对我可复制吗"
+```
+
+**要求**：采集/核验 agent 需要联网。可选与 `deep-research`、`osint-investigate`、`qcc` 技能系列、`agent-reach` 组合；通过 `pdf-creator` 渲染可分享报告。
+
+---
+
+### **auto-repo-setup** - 自动化仓库配置与环境修复
+
+让仓库真正跑起来并可交接，同时不猜技术栈、不改变协作者正常的工作方式。先读项目权威来源，再修已验证的缺口；把启动指令、生命周期 hook 和 Git 状态变更视为三种不同机制。
+
+**使用场景：**
+- 有人说"跑不起来"、"怎么启动"、"环境怎么配"或"帮我设置代码库"
+- 配置新机器，或为协作者建立可持续的仓库交接
+- 为 Claude Code/Codex 增加启动同步，同时不自动 stash 本地工作
+- 重复出现 SessionStart 输出时，先查触发来源再改配置
+- 只有行为必须发生在首条消息前时才配置生命周期 hook
+- 误泄漏密钥/路径后清理 git 历史
+- 在明确安全闸门下处理合并冲突或 git push 失败
+
+**主要功能：**
+- **按目的分流**：区分环境修复、日常同步、仓库交接、hook 诊断和明确的首条消息前自动化
+- **技术栈感知审计**：`check_env.py` 只根据 manifest/lockfile 检查已声明工具，不默认要求 ffmpeg、uv、Python 或 .env
+- **启动边界**：稳定规则默认写 AGENTS.md/CLAUDE.md 或直接告诉 Agent；Claude hook 管理器可预览、幂等、只改自己的配置并可卸载
+- **安全护栏**：Push Safety（任何 push 前验证可见性）、PII Guard（4 层密钥扫描）、环境变量的 NO FALLBACK 原则、Git Hook Bypass 禁令
+- **对抗审查边界**：只对共享配置、安全策略或破坏性 Git 变更启用，不为普通 setup 强行开多 agent
+- **内置脚本**：技术栈感知审计、受控 Claude 启动提醒管理器、只读历史候选扫描
+
+**示例用法：**
+```bash
+# 安装技能
+claude plugin install auto-repo-setup@daymade-skills
+
+# 然后自然地让 Claude 做
+"我跑不起来这个仓库"
+"帮我设置一下这个项目的环境"
+"进入项目先同步远端；本地有改动不要自动 stash"
+"为什么同一个 SessionStart 输出了三次？先查清来源"
+"只有首条消息前必须注入动态提醒时，才帮我装 hook"
+"git push 被拒了"
+```
+
+**要求**：方法本身无运行时依赖；内置 Python 工具要求 Python 3.10+。技能本身无需外部 API key。
+
+---
+
+### **bilibili-source** - 免登录 B站视频数据 + 弹幕抓取
+
+一次 `view/detail` 调用、免登录地拉取任意 B站视频的可引用数据——标题、UP 粉丝数、发布时间、标签、分区、各分P 的 cid、实时互动数据（播放/点赞/投币/收藏/转发/评论/弹幕），以及完整弹幕全文。设计目标：让互动数字"取数便宜、无法伪造"，而不是手敲进文档里慢慢烂掉。
+
+**使用场景：**
+- 把 B站视频吸收进知识库，或做"它为什么火"的案例拆解
+- 核实创作者宣称的播放/点赞/收藏数，或要把任何 B站指标写进文档时
+- 想要弹幕全文（观众的定性反应），而不只是一个评论数
+- 粘贴 BVID、`av` 号、`b23.tv` 短链或完整 URL——全部自动识别
+
+**主要功能：**
+- 一个 `bili-fetch.sh` 返回全量元数据 + 实时互动 + UP 粉丝 + 标签 + 每个分P 的 cid；互动数带 `fetched_at` 时间戳（因为实时漂移）
+- `bili-danmaku.sh` 拉取并解压弹幕全文；`bili-subs.sh` 处理需登录的字幕轨（动浏览器 cookie 前会先问你）
+- `bili-selftest.sh` 健康自检对着真实 API 验每个端点，API 一漂移就报一行清晰 FAIL，而非静默给错数据
+- NO-FABRICATION 纪律：拿不到的数字标"未核实"，绝不估算
+- 自动剥离本地代理（B站是国内服务）、带 UA+Referer（防 HTTP 412）、失败退避重试
+- API 参考含需登录的收藏夹枚举端点（`x/v3/fav/*`，实测免 WBI）、已验证的 SESSDATA 字幕路径，以及 `space/wbi/*` 扩展所需的 WBI 签名算法
+
+**示例用法：**
+```bash
+# 安装技能
+claude plugin install bilibili-source@daymade-skills
+
+# 然后自然地让 Claude 做
+"把这个 B站 视频的真实播放/点赞/收藏数拉出来，我要引用"
+"这个 B站 视频弹幕里大家在说什么？"
+"帮我抓这个 bilibili 视频的字幕逐字稿做总结"
+```
+
+**要求**：`curl`、`jq`、`python3`（弹幕解压）。`yt-dlp` 仅用于需登录的字幕路径。stats/元数据/弹幕均无需登录。
+
+---
+
+### **claude-usage-analyst** - 解释 Claude Code Token 用量与额度消耗
+
+> **安装**：`claude plugin install daymade-claude-code@daymade-skills`（套件专用——通过 `daymade-claude-code:claude-usage-analyst` 调用）
+
+把本地 `ccusage` 数据变成有证据、说人话的用量解释，讲清你的 Claude Code / Claude Desktop 的 token、成本、额度都花在哪了——把"观测到的数字"和"解读"分开，而不是靠猜。
+
+**使用场景：**
+- 想知道 Claude 额度或 5 小时块为什么被用光
+- 怀疑某个模型（`fable` / `opus` / `sonnet`）对你的工作负载是不是格外贵
+- 需要今天或某段历史窗口的 token/成本明细，含 cache 读写压力
+- 要给非技术读者解释用量，不堆没解释的术语
+
+**主要功能：**
+- 内置 `analyze_claude_usage.py` 按任意日期窗口和时区汇总 token、成本、输入/输出、cache 创建/读取
+- 模型对比模式（`--model-a` / `--model-b`）同时权衡 token 量和估算成本——一个模型可能单 token 便宜但总体更贵
+- 额度耗尽问题给出 5 小时块表格
+- 证据纪律：每条数值主张都以 `ccusage` 输出为准；cache 读取压力即使你没敲那些 token 也计入
+- 明确范围：`ccusage claude` 测的是本地 Claude Code 日志，不是完整的 Claude.ai 聊天账单
+
+**示例用法：**
+```bash
+# 安装套件
+claude plugin install daymade-claude-code@daymade-skills
+
+# 然后自然地让 Claude 做
+"我今天的 Claude 额度为什么用光了？"
+"做我这些活，opus 是不是比 sonnet 贵？"
+"把我这个月的 Claude Code token 用量拆解一下"
+```
+
+**要求**：`ccusage`（用 `npm i -g ccusage` 或 `npx ccusage@latest`）、`python3`。
+
+---
+
+### **marketplace-health-check** - 仓库 6 维度全面健康体检
+
+```bash
+claude plugin install marketplace-health-check@daymade-skills
+```
+
+用并行 fan-out 的 Dynamic Workflow 对这个 skills marketplace 仓库做全面、有证据的健康检查——六个 inspector 同时覆盖代码/脚本安全、文档/SSOT 一致性、安全/PII 泄露、open-PR 分类、open-issue 分类、marketplace 清单完整性——然后对严重发现先做 Counter-Review 再报告。
+
+**使用场景：**
+- 发版前，或任何想对仓库做一次"整体是否健康"全面扫描时
+- 检查文档/版本是否一致、PR/issue 是否已分类、PII 是否泄露进了 public skill
+- 全面体检 / 检查仓库状态 / 审计一下仓库
+
+**主要功能：**
+- 通过 Dynamic Workflow 六个并行 inspector（每维度一个）——快且聚焦（约 15-20 分钟）
+- Counter-Review：每条 high/critical 发现都先手工验证再进报告（agent 发现是假设不是结论）——既抓误报也抓错误的修复建议
+- 按优先级分级报告：必修 / backlog / 可选 / 关键洞察，每项标注真问题 vs 误报
+- 内置已验证的 workflow 脚本 + 方法论 reference（反靶子 PII 原则、当前版本 vs 历史、scan marker necessary-not-sufficient、坏 install 命令 bug 类）
+- inline orchestrator——驱动 Workflow 工具，绝不 forked 运行
+
+**示例用法：**
+```bash
+# 安装
+claude plugin install marketplace-health-check@daymade-skills
+
+# 然后自然地让 Claude 做
+"发版前帮我对这个仓库做一次全面健康检查"
+"审计一下 marketplace——代码、文档、PII、PR、issue，全都查"
+"全面体检一下这个仓库"
+```
+
+**要求**：`gh` CLI（已认证）、`git`、`jq`、`python3`；需 opt-in Workflow 工具（让我跑健康检查就是 opt-in）。
+
+---
+
+### **claude-switch-models-setup** - 多 Provider Claude Code 配置
+
+```bash
+claude plugin install daymade-claude-code@daymade-skills
+```
+
+设置多个互相隔离的 Claude Code CLI profile，让你可以在不同终端窗口同时运行不同的 LLM provider（Kimi、MiniMax、GLM、DeepSeek、StepFun、Anthropic）——每个 profile 拥有独立的 `.claude.json` 状态，同时共享 skills、projects、hooks 和 agents。
+
+**使用场景：**
+- 想在一个终端跑 Kimi、另一个终端跑 DeepSeek
+- 需要在 Anthropic 和第三方模型之间切换，且不希望配置互相污染
+- 为学员配置课后环境，复现同样的多 provider 工作流
+
+**主要功能：**
+- 一键安装器把声明的运行脚本链接到 `~/.config/claude-switch-models-setup/`，且只在激活清单不存在时创建空模板
+- 内置 provider 专用的 `~/.claude/settings/<provider>.json` 模板，并带上必要的隔离标志
+- `claude-profiles-init` 创建隔离目录 `~/.claude-profiles/<provider>/`，其余资源通过 symlink 共享
+- profile 同步会镜像默认 Claude profile 的 enabled plugins，并共享 installed plugin state
+- 本地源码同步让 Claude plugin cache 保持源码直连，但只把显式选择的 Codex Skill 链入 `~/.agents/skills`；必要时可为已激活子集保留旧 `~/.codex/skills` 兼容链接
+- maintainer LaunchAgent 监听激活清单及 marketplace／安装拓扑；其余旧兼容链接只报告给人工审核，不自动删除
+- 每次启动 profile 时自动修复 marketplace 路径污染
+- 内置学生安装指南和故障排查参考
+
+**示例用法：**
+```bash
+# 安装套件
+claude plugin install daymade-claude-code@daymade-skills
+
+# 然后自然地让 Claude 做
+"帮我配置 Kimi 和 DeepSeek 的 Claude Code profile"
+"我想在两个独立终端分别跑 Kimi 和 Anthropic"
+"安装 workshop 上的多 provider 配置"
+```
+
+**要求**：`claude` CLI、`zsh` 或 `bash`、`python3`，以及你想使用的 provider 的 API key。
+
+---
+
+### **llm-eval-harness** - 四维度 LLM 端点评测
+
+```bash
+claude plugin install llm-eval-harness@daymade-skills
+```
+
+评测任意位于 OpenAI 兼容或 Anthropic 兼容端点背后的 LLM，跨四个维度衡量它是否真的够快、够稳、协议正确、质量够好——而不是轻信厂商给出的标称数字，并在汇报时把实测值与推断值明确分开。
+
+**使用场景：**
+- 给某个模型跑基准，或核验厂商宣称的 tokens/秒
+- 在完全一致的条件下对两个模型做正面对比
+- 在采用一个新发布或"号称 Anthropic 兼容"的端点之前先验货
+- 在 workshop 或批量任务前探测并发上限
+
+**主要功能：**
+- **四维度、四脚本**：速度（`speed_probe.py`——TTFT + thinking-aware tokens/秒）、并发/稳定性（`concurrency_probe.py`——成功率、p50/p90、崩溃临界点）、Anthropic 协议合规（`protocol_probe.py`——thinking 块触发率，N≥10）、质量回归（`usecase_runner.py` + 独立盲审）
+- **thinking-aware 吞吐**：单独捕获 `reasoning_content`，避免推理 token 把 tokens/秒虚高（正是这个陷阱曾把约 750 tokens/秒的模型读成 4700）
+- **概率化协议判定**：三态 `fully-implemented` / `intermittent (k/N)` / `not-implemented`，绝不靠单次采样下结论，并强制 `Connection: close`，防止负载均衡把所有采样钉在同一副本上
+- **盲审质量评估**：每个用例 3 名独立评委、多数通过，并给出分类别 precision，暴露系统性偏弱的类别
+- **key 仅按环境变量名传入**（`--key-env MY_KEY`）——key 永不出现在 `ps`、shell 历史或落盘的报告里
+- **你的用例库放在 bundle 之外**（如 `~/.llm-eval/usecases.json`），从而在技能更新后依然保留，且永不进入公开仓库
+
+**示例用法：**
+```bash
+export MY_KEY=sk-...   # the key never appears in a command below
+
+# Speed: real-task throughput + sustained decode ceiling
+uv run --with openai python scripts/speed_probe.py \
+  --base-url https://api.example.com/v1 --model some-model --key-env MY_KEY --mode both
+
+# Concurrency: ramp until it breaks
+uv run --with aiohttp python scripts/concurrency_probe.py \
+  --url https://api.example.com/v1/chat/completions --model some-model \
+  --key-env MY_KEY --format openai --concurrency 10 20 40 60
+```
+
+**🎬 演示**
+
+*即将推出*
+
+📚 **文档**：参见 [llm-eval-harness/references/evaluation_disciplines.md](./llm-eval-harness/references/evaluation_disciplines.md) 了解每条纪律背后的推理，以及 [llm-eval-harness/references/quality_blind_judge.md](./llm-eval-harness/references/quality_blind_judge.md) 了解独立盲审质量方法。
+
+**要求**：Python 3.8+、`uv`；`openai` 和 `aiohttp`（通过 `uv run --with` 自动安装）；被测端点的 API key。可与 **promptfoo-evaluation** 组合，用于基于 rubric 的门控。
+
+---
+
+### **read-claude-web-conversation** - 提取 Claude.ai 网页会话
+
+> **安装**：`claude plugin install daymade-claude-code@daymade-skills`（套件专用——通过 `daymade-claude-code:read-claude-web-conversation` 调用）
+
+通过 Claude Code operations 套件提取 Claude.ai 当前有效会话分支的全部内容：
+消息正文、真实工具调用与结果、上传文件、生成图片和沙箱交付物。可在本地渲染
+忠实 Markdown、从工具历史重建文件，或借助已登录的浏览器下载原始字节。
+
+**使用场景：**
+- 需要读取本地 Claude Code 日志里没有的 Claude.ai 网页会话
+- 为交接、审计或归档恢复完整网页线程
+- 对比浏览器可见内容、导出文件和本地 session artifact
+- 保留普通导出会折叠掉的 agent 工具调用与分析过程
+- 下载当前有效会话分支中的上传文件和助手生成交付物
+- Chrome 扩展因账号不一致无法配对时，在 macOS 使用 AppleScript 通道
+
+**要求**：已安装 `daymade-claude-code` 套件，并有已登录的 Chrome 会话。
+AppleScript fallback 需要 macOS，以及由用户手动开启一次 Chrome 开发者菜单开关。
+
+---
+
+### **setup-notifications-via-wecom** - 可复用企微通知配置
+
+```bash
+claude plugin install setup-notifications-via-wecom@daymade-skills
+```
+
+配置可复用的企业微信/WeCom webhook 通知，用于技术状态报告、告警和任务完成消息。收件目标必须显式分类：用户本人通道可自动发送，其他目标必须经人类确认。
+
+复用已有 SLS 管道发送定期报告时，按随 Skill 提供的适配参考处理字段截断、当次日期、收件人冲突和原生派发验收。
+
+**使用场景：**
+- 配置可复用的企业微信 / WeCom 通知通道
+- 发送结构化状态通知、备份报告或告警
+- 把一次性 webhook 变成可复用通知流程
+
+**要求**：企业微信机器人 webhook URL 和 shell 环境。
+
+---
+
+### **notify-wecom** - 发送一次性企微消息
+
+```bash
+claude plugin install notify-wecom@daymade-skills
+```
+
+按显式收件目标发送单条企业微信群机器人消息：`self` 直接发送，`others` 必须经人类确认。
+
+**使用场景：**
+- `/notify-wecom`
+- 临时发一条企业微信 / 企微通知一下
+- 不需要模板或持久配置的一次性提醒
+
+**要求**：企业微信机器人 webhook URL，以及由配置命令写入的显式收件范围、标签和规范 sender 绑定。
+
+---
+
+### **github-sensitive-data-cleanup** - GitHub 敏感数据清理
+
+```bash
+claude plugin install github-sensitive-data-cleanup@daymade-skills
+```
+
+扫描并清理 GitHub 仓库历史里的敏感数据，带备份、可见性检查和 force-push 安全门。
+
+**使用场景：**
+- 仓库泄露了 secrets、私有域名/IP、API key 或 PII
+- 公开暴露前后需要清理 git 历史
+- 对公共仓库 force push 前做安全验证
+
+**要求**：`git`、GitHub 访问权限，以及目标仓库所需的扫描/历史重写工具。
+
+---
+
+### **codex-image-gallery** - Codex 生成图片本地浏览器
+
+> **安装**：`claude plugin install daymade-codex@daymade-skills`（仅作为套件成员发布，调用方式 `daymade-codex:codex-image-gallery`）
+
+启动一个自包含的本地网页 gallery 浏览 Codex 生成图片。Skill 自带 Node server 和 HTML UI，默认扫描 `~/.codex/generated_images`，也可用 `GALLERY_ROOT` 指向其他目录。
+
+**使用场景：**
+- 用本地 UI 浏览 Codex 生成图片
+- 查看 `~/.codex/generated_images`
+- 用搜索、批次分组和详情视图检查自定义图片输出目录
+
+**主要功能：**
+- 内置 `scripts/server.mjs` 和 `assets/index.html`
+- 动态 `/api/images` 扫描，不维护手写 manifest
+- `/images/<relative-path>` 图片路由带路径穿越保护
+- 支持可选 `GALLERY_ROOT`、`PORT`、`HOST`
+
+**要求**：Node.js 18+，并能访问目标图片目录。
+
+### **frontend-visual-qa** - 渲染后前端与浏览器输出视觉 QA 门禁
+
+```bash
+claude plugin install frontend-visual-qa@daymade-skills
+```
+
+审计用户真正看到的界面，明确区分证据等级，并默认只审查、不修改源码。
+
+**使用场景：**
+- 实现后审计已经渲染的 Web 或桌面 UI
+- 排查字体、换行、裁切、溢出、响应式、route/state、overlay、地图或瞬时状态缺陷
+- 将渲染结果与指定参考图或设计系统 SSOT 做实证对比
+- 在 Obsidian 或其他实际接收方阅读器的正文视图中核对转换后的 Markdown 图文及会议逐字稿、笔记的图片显示尺寸
+- 按结论所需证据等级验证导出、下载、分享、popup、打印/PDF 或 Electron shell
+- 补足 `ui-designer`/设计阶段与 `qa-expert` 全局 QA 流程之间的渲染验收
+
+**主要功能：**
+- 默认 audit-only，按 profile 控制范围，并输出 verified / partial / blocked
+- A–D 证据阶梯，禁止用 headless、renderer 或 handler 结果冒充真实 GUI 验证
+- 先确认 state/viewport（含已登录但无角色状态与精确投影/演示画布），再结合已打开的截图与 DOM 几何取证
+- 加固后的 Playwright 机械扫描：HTTP/final URL、有效移动端视口、溢出、裁切、自定义控件焦点候选、图片和 section 证据
+- 核心视觉、复杂旅程/页面类型、data-viz 三类按需 reference，覆盖单位/来源/时间/新鲜度、密集碰撞、runtime 文案真实性和真实文件选择器边界
+- 自包含公开 fixture 的行为 eval 与触发 eval
+
+### **openclaw** - OpenClaw (龙虾) 配置管理器
+
+```bash
+claude plugin install openclaw@daymade-skills
+```
+
+管理 OpenClaw (龙虾) 实例配置 —— 在 `openclaw.json` 文件间审计、对比、复制、加模型、列出和切换模型。
+
+**使用场景：**
+- 管理多个 OpenClaw / Claude Code wrapper 实例
+- 给实例打 DeepSeek 模型补丁
+- 在实例间审计、对比、复制 provider/模型配置
+- 管理默认模型和别名，或校验配置
+
+**主要功能：**
+- 统一 CLI：audit / diff / copy / add-model / list / switch
+- 变更命令自动审计，带 `--no-audit` 逃生口
+- 昵称注册表支持跨配置操作
+
+### **download-gemini-images** - 从 Gemini 对话下载图片
+
+```bash
+claude plugin install download-gemini-images@daymade-skills
+```
+
+用你已登录的 Chrome session 从 Google Gemini 对话页下载图片（上传的或生成的预览），按顺序重命名后打包成 ZIP。
+
+**使用场景：**
+- 保存 Gemini 对话页里的图片（上传的或生成的预览）
+- 需要更大的 lightbox 大图，而非缩略图
+- 把下载的图片按顺序重命名并打包成 ZIP
+
+**主要功能：**
+- 通过 Chrome 插件优先下载 lightbox 大图（用你现有的 Google session）
+- lightbox 自动化失败时回退到 `pageAssets`
+- 有序 ZIP 打包 + 完整性校验
+
+### **wps-doc-scraper** - 归档公开 WPS/KDocs 文档
+
+```bash
+claude plugin install wps-doc-scraper@daymade-skills
+```
+
+忠实归档公开的 WPS / KDocs / 金山文档链接 —— 尤其是内嵌的 ProcessOn 思维导图和画布 —— 保存为原始源数据、原版 SVG/PNG 和 Markdown，无需登录。
+
+**使用场景：**
+- 给一个 `kdocs.cn` 或 `wps.processon.com` 链接，要抓取、保存、下载或转 Markdown
+- 归档内嵌的 ProcessOn 思维导图或画布，保持源保真度
+- 需要原始 payload + 原版视觉产物，而不只是渲染后的文本
+
+**主要功能：**
+- 优先用免登录数据 API 提取（不登录、不存到账号）
+- 画布和思维导图的原版 SVG/PNG 捕获
+- Markdown 作为源的结构化表示
+
+### **ashare-news-fetcher** - A 股消息面情报聚合
+
+> **安装**：`claude plugin install daymade-financial@daymade-skills`（仅作为套件成员发布，调用方式 `daymade-financial:ashare-news-fetcher`）
+
+从公开来源聚合 A 股新闻、政策和市场情绪 —— 财联社、华尔街见闻、金十、新浪 7x24、东财快讯、证监会/央行/上交所政策公告、东方财富股吧 —— 输出结构化 JSON 或 Markdown。
+
+**使用场景：**
+- 需要某只 A 股个股或整个市场近期的新闻/政策/情绪
+- 一次性从多个中文财经源聚合消息面情报
+- 生成结构化 JSON 或 Markdown 新闻摘要
+
+**主要功能：**
+- 多源公开 feed 聚合（免登录）
+- 按个股或全市场过滤
+- 结构化 JSON / Markdown 输出
+
+### **local-codex** - 本地 OpenAI Codex CLI Agent
+
+> **安装**：`claude plugin install daymade-codex@daymade-skills`（仅作为套件成员发布，调用方式 `daymade-codex:local-codex`）
+
+通过 ChatGPT Pro OAuth 固定费率订阅，把编码任务委托给本地 OpenAI Codex CLI agent。封装 `codex exec` / `codex review`，用于代码生成、重构和 review，无逐 token API 计费。
+
+**使用场景：**
+- 把编码任务委托给 Codex 做生成、重构或 review
+- 运行 `codex exec` 执行非交互式编码任务
+- 通过本地 CLI 使用 Codex 的 GPT-5.5 agent 能力
+
+**主要功能：**
+- ChatGPT Pro OAuth 固定费率计费，通过 `~/.codex/auth.json` 认证（不用 API key）
+- 自动检测 Codex CLI：桌面 app / Homebrew / npm / PATH
+- JSONL 输出解析，提取最终 assistant 消息
+- 可配置沙箱级别：read-only / workspace-write / danger-full-access
+
+### **openclaw-model-switch** - OpenClaw 模型切换器
+
+```bash
+claude plugin install openclaw-model-switch@daymade-skills
+```
+
+安全地编辑 `openclaw.json` 来切换 OpenClaw 实例的默认 AI 模型（如 Kimi K2.6 → K2.7），包含自动备份、模型校验和可选的 gateway 重启。
+
+**使用场景：**
+- 升级到新发布的模型
+- 根据不同任务切换模型
+- 测试新模型后回滚
+
+**主要功能：**
+- 修改前自动备份配置
+- 根据 provider 的模型列表做校验
+- 切换后可选择是否重启 gateway
+- 支持 Kimi K2.x 模型家族及上下文窗口规格
+
+### **pharma-daily-report** - A 股医药板块日报
+
+> **安装**：`claude plugin install daymade-financial@daymade-skills`（仅作为套件成员发布，调用方式 `daymade-financial:pharma-daily-report`）
+
+生成 A 股医药行业日报 —— 从新浪财经抓取核心医药股实时行情，按 7 大细分赛道排名、涨跌榜、资金流向分析，然后可选通过飞书发送富文本日报。
+
+**使用场景：**
+- 需要 A 股医药板块的每日快照（行情、赛道排名、资金流向）
+- 想要飞书富文本推送医药市场数据
+- 跟踪一个可自定义的核心医药股池
+
+**主要功能：**
+- 新浪财经实时行情管线（免登录）
+- 7 大细分赛道分类 + 涨跌榜 + 资金流向估算
+- 可选飞书富文本推送；默认 20 只医药标的，可自定义增减
+
+### **gemini-history-analyzer** - 分析 Gemini 对话历史
+
+> **安装**：`claude plugin install gemini-history-analyzer@daymade-skills`
+
+分析 Google Takeout 导出的 Gemini 对话历史 —— 提取并归类转录文本和附件、用上下文核验的关键词搜索挖掘特定领域洞察，并可选地蒸馏进个人知识库。
+
+**使用场景：**
+- 有一个 Gemini Takeout 压缩包，想知道里面有什么（主题、对话类型、有价值的文档）
+- 想在 Gemini 历史里挖掘某个领域（金融、法律等）又不被关键词假阳性淹没
+- 把 Gemini 对话数据蒸馏进项目 memory 或个人 wiki
+
+**主要功能：**
+- 处理中文/Unicode 文件名（用 `unar`，而非会损坏文件名的 macOS `unzip`）
+- 会议转录 vs 提问-回答 识别；主题归类；PII 标记
+- 上下文核验的关键词搜索（grep 只是第一步，不是答案）+ 可选的 memory 文件生成
+
+### **skill-governance** - 真实 Skill 加载面治理
+
+> **安装**：`claude plugin install daymade-skill@daymade-skills`（仅作为套件成员发布，调用方式 `daymade-skill:skill-governance`）
+
+治理 Claude Code 与 Codex 实际暴露给模型的 Skill 加载面，同时不丢失冷能力。它把权威源码、磁盘安装清单、发现策略、干净会话中的模型目录，以及 router 依赖的运行资源分开处理。
+
+**使用场景：**
+- Codex 出现大量 Skill、描述截断、身份重复，或应该保留的 router 不可见
+- 某个 Skill 看起来过期、缺失、重复，或来自异常 source/version/scope
+- 需要收敛 `~/.agents/skills` 下的自有源码链接，但不能把所有磁盘 bundle 都误当成激活项
+- suite 迁移已经合并，但本机仍保留旧 standalone plugin identity
+- 第三方 bundle 必须为运行资源留在磁盘上，但 Codex 只能看见它的 router
+
+**主要功能：**
+- 用 Codex 自己的 `skills/list` 完整元数据核对干净 prompt，检测描述截断、已启用但被省略的入口、身份/源码冲突、禁用路径漂移、扫描错误和直接激活入口缺失
+- 把自有源码视为权威来源、plugin cache 视为派生运行态，并保留当前安装 scope
+- 把自有源码激活交给显式 manifest 的 owner，不把第三方磁盘库存混入其中
+- 从 manifest 动态发现 suite，并在按原 scope 退役 standalone 安装前先验证替代 suite
+- 通过精确路径的 Codex 发现策略把第三方 bundle 保留为磁盘冷库存，并同时验证干净 prompt catalog 与底层运行资源
+- 让 Claude 自己管理版本化 orphan cache 生命周期；手工清缓存只作为可恢复的异常修复，不再当常规治理
+
+### **photo-to-scanned-pdf** - 手机文档照片转扫描件 PDF
+
+> **安装**：`claude plugin install daymade-docs@daymade-skills`（仅作为套件成员发布，
+> 调用方式 `daymade-docs:photo-to-scanned-pdf`）
+
+把合同、票据、表单、证书或手写页的手机照片转换成干净的 A4 扫描件 PDF。
+流程包含透视矫正、扫描风格背景清理、彩纸处理、按内容明确排序，以及强制的
+全册联览核验。
+
+### **github-review-pr** - 基于当前 Base 的贡献者 PR 评审
+
+```bash
+claude plugin install github-review-pr@daymade-skills
+```
+
+以仓库维护者视角 review 或重新 review 一个点名的贡献者 PR（包括正在重新考虑
+的 closed PR），或把全部 open PR 从新到旧逐个审核；始终以实时 base 为准，
+而不是沿用已经过时的 PR 快照。
+
+**使用场景：**
+- 上次 review 后 main/base 已变化，需要重新判断
+- 某个明确点名的 closed PR 需要回溯审核或重新考虑
+- 需要区分 PR 新引入的问题和 base 已有旧债
+- 需要知道当前三方合并真正会落下什么内容
+- 需要为全部 open PR 生成从新到旧、逐项独立的决策账本
+- 需要先 review 再修复或合并，并对每个 GitHub 写操作单独授权
+- 显式启用个人维护者政策，从历史关闭 PR 学习原则、执行策展门槛，并判断
+  值得保留的原贡献者 PR 是否应由维护者修复而不是重开
+
+**主要功能：**
+- 分开记录 PR 原 base、当前 base 和 head OID，并在结论前重新核验
+- 干净合并时审查 prospective merge tree；冲突时审查独立贡献意图和冲突 stage，并明确不存在 landing tree
+- 区分普通 base 漂移和历史断裂，再把污染分支历史与经证据确认的贡献 patch 分开判断
+- 可把确认过的 patch 投影到当前 base 供分析，但明确标为合成结果、不可直接落地
+- finding 必须由目标代码、测试、运行行为、日志或仓库规范支撑；审查者共识只提高置信度，不提高严重性
+- 每条 finding 先归因 `PR`、`BASE` 或 `SHARED`，再决定谁负责修
+- 区分策展意义上的 `DECLINE`、需要修改和真正已被 main 取代
+- 默认完全只读；修复、发 review、关闭、合并、admin、auto-merge 和删分支分别授权
+- 外部贡献者项目目标只能在内容过门槛后影响优先级，不能降低接受标准
+- 个人维护者模式下，每次只展示一个 PR 的最终快照并重新取得上下文绑定确认；
+  “继续”等明确肯定回复可确认当前 PR，但绝不把权限传给下一个 PR
+
+**示例：**
+```text
+/github-review-pr --personal-maintainer https://github.com/<owner>/<repo>/pull/<number>
+/github-review-pr --personal-maintainer --all-open
+main 在上次 review 后变了，重新告诉我现在真正会合进去什么
+把我们所有 open PR 从新到旧审核一遍，并按我以前的维护者原则判断
+这个贡献能不能先合，剩余的仓库记账问题我们自己修？
+```
+
+**依赖**：已认证的 `gh` CLI、支持 `merge-tree --write-tree` 的 `git`、`jq`。
+
+### **read-codex-history** - 读取本地 Codex 历史
+
+> **安装**：`claude plugin install daymade-claude-code@daymade-skills`
+>（仅作为套件成员发布，调用方式 `daymade-claude-code:read-codex-history`）
+
+读取、搜索和导出本地 Codex 历史，但不续做旧任务。它把 prompt ledger、
+状态数据库与 rollout JSONL 保持为三种不同的证据面，避免把用户原始输入、
+会话元数据和 Agent 行为互相偷换。
+
+**主要能力：**
+- 列出 Codex Session、内部时间范围和 active/archive 来源
+- 从 prompt ledger 精确读取用户输入，从新到旧且只按 Session 分组
+- 自动核对整段会话及精确继承范围内的原话与条数；明确报告未决归属，注入消息的排除须绑定已核实记录及其指纹
+- 把一个 rollout 重建为按时间交替的用户／Assistant 时间线，并保留 fork 精确字节边界与 compaction
+- Codex-only 搜索不会再把 Claude 命中混进来
+- 通过 schema 检查选择兼容的 Codex 状态数据库
+- 数据库不可用时明确告警，再读取原始 Codex rollout JSONL
+- 强制校验内部 `session_meta.id`，遇 fused／缺失 rollout 时显式报缺口而不是猜
+- 检查范围内每条 Codex 会话；精确的规范 writer-lock 文件被占用时才加标记，
+  即使位于最近条数限制之外也会补入。标记只证明锁状态，不证明持锁者身份或
+  agent 正在运行；无标记不会被解释为已停止或可以注销
+- 支持内部时间日期范围、精确单目录诊断、Codex 归档会话、递归/全部项目、Windows 路径归一化和 JSON
+- 仅使用 Python 标准库，不联网、不写入本地历史
+
+**示例：**
+```text
+/daymade-claude-code:read-codex-history
+列出当前文件夹最近的 Codex 对话
+按 Session 列出我最近 200 条 Codex 原始输入
+按时间读取 Codex Session 01abc... 并显示 fork lineage
+显示当前工作区哪些 Codex 会话的规范 writer-lock 文件被持有
+把包含归档会话的 Codex 记录输出成 JSON
+```
+
+📚 **文档**：参见
+[storage_and_portability.md](./daymade-claude-code/read-codex-history/references/storage_and_portability.md)
+了解数据源选择、路径归一化、隐私边界和诊断方法。
+
+**依赖**：Python 3.10+；无需第三方包或网络。
+
+---
+
+### **continue-codex-work** - 续做中断的 Codex 工作
+
+> **安装**：`claude plugin install daymade-claude-code@daymade-skills`
+>（仅作为套件成员发布，调用方式 `daymade-claude-code:continue-codex-work`）
+
+在不使用 `codex resume` 重放旧会话的前提下续做 Codex 任务。该 Skill 先要求
+`read-codex-history` 证明所选 rollout 身份、fork lineage、时间顺序、compaction
+与证据缺口，再恢复原始业务结果、尚未完成的要求、用户纠正、既有成功资产和
+一个直接推进目标的下一步。
+它只用于新会话/不同 Agent 接手旧 rollout。若 Codex 自己原生恢复的是同一个
+会话，且旧 turns 或 compaction 已在当前上下文中，就直接继续，不触发本 Skill。
+
+```text
+/daymade-claude-code:continue-codex-work 019f66...
+Codex 上次做到一半中断了，读取 rollout 后把工作做完
+```
+
+📚 **文档**：参见
+[continue-codex-work/SKILL.md](./daymade-claude-code/continue-codex-work/SKILL.md)。
+
+**依赖**：Python 3.10+ 与本地 Codex rollout 文件。
+
+---
+
+### **git-safety-net** - 预防与恢复本地 Git 灾难
+
+> **安装**：`claude plugin install git-safety-net@daymade-skills`
+
+预防和恢复让本地提交、detached/脏 worktree 滞留或难以确认是否已合并的
+分支/stash/rebase 混乱。每个命令默认非破坏性或只增加保护性产物，破坏性步骤会显式标注。
+
+**主要能力：**
+- 通过 `git reflog` 和 `git fsck` 恢复误删的提交、分支、stash（约 90 天窗口）
+- 审计每个 worktree HEAD、脏 checkout、本地独有提交、stash 与悬空提交
+- 在清理前把悬空提交钉到 `refs/dangling-backup/`、避免被 gc 回收
+- 按内容验证分支是否已合并，破解 squash-merge 后“100 commits ahead”的幻觉
+- 删除 linked worktree 前证明其 HEAD 已被吸收，并把全部 refs 导出为校验过的 bundle
+- 高风险“是否真的全部合并了”场景可选对抗性多 agent 验证
+- 在开 PR 前抓出并行 session 的提交混入自己分支——分支级检查全绿也照样发生
+- 网络吞掉 push/merge 回执时，按内容而不是「远端 ref 动了」判定自己的写入是否落地
+- 预防习惯：切分支前先提交、尽早 push WIP、删除前审计每一个 checkout
+
+**示例：**
+```text
+/git-safety-net
+刚才切了那么多分支，我有没有丢提交？
+main 真的全部合并了吗，还是还有东西被滞留在某个分支？
+帮我恢复那个 bad rebase 后不见的提交
+证明这个 worktree 可以删除而且不会丢东西
+```
+
+📚 **文档**：参见 [recovery_playbook.md](./git-safety-net/references/recovery_playbook.md)、[merge_verification.md](./git-safety-net/references/merge_verification.md) 和 [prevention_practices.md](./git-safety-net/references/prevention_practices.md)。
+
+**依赖**：Git 与标准 Bash shell；无需第三方包。核对最新远端状态时需要网络，离线审计则使用缓存的远端跟踪 refs。
+
+---
+
+### **design-style-picker** - 批量生成并对比视觉设计方向
+
+> **安装**：`claude plugin install daymade-codex@daymade-skills`（仅作为套件成员发布，调用方式 `daymade-codex:design-style-picker`）
+
+把说不清的审美偏好变成具体的视觉选项。不再靠猜一个"最终设计"，而是批量生成
+一组结构化的设计方向，让用户亲眼挑出真正想要的风格——目标是快速摸清审美边界。
+
+**主要能力：**
+- 批量生成多个设计方向并并排对比
+- 面向"没法用语言描述抽象视觉风格"的用户
+- 基于生成的 UI / 设计系统图片工作；"太花哨 / 太死气 / 太通用"就再给一批方向
+- 在现有 UI / 设计系统上演进，不抛弃已有资产
+- 附带选型 playbook 与可复用的 prompt 模式
+
+**示例：**
+```text
+/daymade-codex:design-style-picker
+我说不清想要什么风格，给我一批选项看看
+这版太花哨也太通用了，再生成一些方向
+在现有设计系统基础上演进，别丢掉已有资产
+```
+
+📚 **文档**：参见 [selection-playbook.md](./daymade-codex/design-style-picker/references/selection-playbook.md)。
+
+---
+
+### **claude-migrate-memory-to-doc** - 把 Claude 记忆迁移为工具无关文档
+
+> **安装**：`claude plugin install daymade-claude-code@daymade-skills`
+> （仅随套件提供 — 以 `daymade-claude-code:claude-migrate-memory-to-doc` 调用）
+
+把 Claude Code 的个人记忆（每个项目的 `memory/` 目录）迁移为工具无关的 reference
+文档，让在同一目录工作的其他 AI CLI（主要是会自动加载 `AGENTS.md` 的 Codex；该架构
+同样适用于 Cursor 等）也能读到同一份用户画像与协作偏好，而不是对它们一无所知。
+
+**主要能力：**
+- 解决工具锁定：memory 不受版本控制，对 Claude 之外的所有工具不可见
+- 两层架构：`references/` + CLAUDE.md 内联 + AGENTS.md symlink，按各工具真实的
+  自动加载机制设计（纯文本指针在两个工具里都只是按需加载）
+- 完整流程：诊断、多 agent 评审、用 `codex` 实测验证、memory 清理
+- 两个目标：解决工具锁定，memory 只留作薄薄的交接缓存；或整体退役某个项目的 auto memory，
+  每条迁进文档、关掉这个项目的开关，再用对照探针确认 memory 不再加载
+- 内联运行，直接编排评审 subagent 并调用 `codex`
+
+**示例：**
+```text
+/daymade-claude-code:claude-migrate-memory-to-doc
+迁移我的记忆——Codex 不知道我是谁
+我的 memory 被锁在 Claude Code 里，让它工具无关
+memory 膨胀了，把该共享的内容迁到文档里
+把这个项目的 auto memory 关掉，内容都迁进文档
+```
+
+---
+
+### **docx-creator** - 生成生产级 Word 文档
+
+> **安装**：`claude plugin install daymade-docs@daymade-skills`
+> （仅随套件提供 — 以 `daymade-docs:docx-creator` 调用）
+
+`minimax-skills:minimax-docx` OpenXML 引擎之上的薄增量层——本身不是文档
+引擎。补上底层引擎没提供的那一层：面向中文正式文档、经过验证的
+markdown-to-docx 生成器,阻止两端对齐把甲方/乙方信息块和签字栏拉散的对齐
+分层规则,列表编号分组重启,中英文双字体槽位设置,以及强制的
+LibreOffice→PDF→PNG 视觉验证链（禁止用 qlmanage 缩略图——它恰恰会把真正
+要命的问题藏起来）。
+
+**核心能力：**
+- 职责划分：OpenXML SDK 引擎留在 `minimax-docx`，本 skill 只管中文正式文档排版规则和 CLI-vs-C# 路径选择
+- 经过验证的 markdown-to-docx 生成器（`scripts/Program.cs`），适用于带甲乙方信息块、编号条款、签字栏、表格的合同/协议/公文
+- 强制的真实渲染视觉验证（LibreOffice → PDF → PNG），不是 Quick Look 缩略图
+- 纯文字类文档路由给 minimax-docx CLI，不重复造轮子
+
+**使用示例：**
+```text
+/daymade-docs:docx-creator
+生成 Word 文档
+写合同 docx
+把 markdown 转成 Word
+给我一份劳动合同的 docx
+```
+
+---
+
+### **read-docx-review** - 读取 Word/WPS 审阅批注与修订
+
+> **安装**：`claude plugin install daymade-docs@daymade-skills`
+>（仅作为套件成员发布，调用方式 `daymade-docs:read-docx-review`）
+
+读取审阅后的 docx（Word/WPS），把批注与修订提取成可逐条裁决的对账表（markdown 或
+JSON）：谁批的、批在哪段、批了什么，外加修订模式的逐段增删。修订感知引擎走 OpenXML
+SDK——python-docx 裸读会漏掉修订插入（w:ins）、认不出整段删除（w:del），本 skill
+不漏。只读，不改对方文件。
+
+**核心能力：**
+- 逐条对账表自带空白「处置」列，为逐条裁决而生
+- 捕获 python-docx 静默漏掉的 w:ins / w:del 修订
+- WPS 仅引用式批注锚点有 fallback，每条批注都可定位
+- 零批注文件显式提示「无审阅痕迹」，不给静默空表
+- 边界：生成／排版 docx → docx-creator 或 minimax-docx；PDF 批注不在范围
+
+**使用示例：**
+```text
+提取这份 docx 的批注
+对方批注完的合同回来了，读一下审阅意见
+读一下修订，谁批了什么、批在哪
+```
+
+---
+
+### **claude-code-hooks** - 编写、测试、调试 Claude Code Hook
+
+> **安装**：`claude plugin install daymade-claude-code@daymade-skills`
+> （仅随套件提供 — 以 `daymade-claude-code:claude-code-hooks` 调用）
+
+如何编写、测试、注册、调试 Claude Code hook——PreToolUse / PostToolUse /
+SessionStart / Stop 这几类会强制执行某条规则的 Bash 守卫，用来管那些光靠
+提示词、模型自己讲着讲着就会绕过去的规则。CLAUDE.md 里的散文规则只是建议，
+completion drive 随时能盖过它；hook 才是一堵墙。
+
+**核心能力：**
+- 五套可直接运行的模式骨架（PreToolUse 拦截、带人工确认放行闸的 PreToolUse、SessionStart 健康检查、PostToolUse 上下文注入、对模型自己输出做反应的 Stop hook），外加 token 级命令匹配的 shlex 位置遍历器
+- 用真实事故换来的铁律，例如：shlex 而非 awk 拆分（绝不误杀健康命令）、注册前必须 `bash -n` + 真实 JSON 端到端测试、版本化源码与安装器负责恢复、按 profile 逐个收敛注册 + 人工确认放行闸
+- 已归档的失败模式（症状→根因→修法），包括 UserPromptSubmit 与 Stop 选错事件这类范畴性错误（只有 Stop 能看到模型自己写的内容），以及嵌入的 `python3 -c` 代码块里一个字面引号/反引号（哪怕藏在注释里）会怎样悄悄把逻辑改坏
+- 自带端到端测试脚手架（`scripts/test_hook.sh`）
+
+**使用示例：**
+```text
+/daymade-claude-code:claude-code-hooks
+写一个拦截 git push --force 的 hook
+把这条我老是忘记的规则做成硬性拦截
+我的 hook 把正常命令也误杀了
+调试这个把 session 搞坏的 hook
+```
+
+
+### **macos-watchdog** - 设计与纪律化 macOS launchd 看门狗
+
+> **安装**：`claude plugin install daymade-macos@daymade-skills`（仅作为套件成员发布，调用方式 `daymade-macos:macos-watchdog`）
+
+设计、部署、纪律化 macOS launchd 看门狗——检测复发问题并自动修复的
+LaunchAgent / LaunchDaemon，同时不让看门狗自己变成干扰源。
+
+📚 **文档**：[macOS Watchdog](./daymade-macos/macos-watchdog/SKILL.md)；常驻 Python 的部署进入 [持久运行时](./daymade-macos/macos-watchdog/SKILL.md#persistent-python-runtime)。
+
+**使用示例：**
+```text
+做一个 VPN 掉线自动重连的 launchd 看门狗
+我的看门狗总是把我退掉的 app 又拉起来——让它停
+审查我现有的 LaunchAgent 有没有噪音和崩溃循环
+```
+
+### **macos-load-doctor** - 诊断 macOS 系统级负载与进程泄漏
+
+> **安装**：`claude plugin install daymade-macos@daymade-skills`（仅作为套件成员发布，调用方式 `daymade-macos:macos-load-doctor`）
+
+找出是什么让 Mac 变慢、发烫，归因到属主，并在共享机器边界内行动。
+先查负载均值，再做三路进程普查、父链归因与形态分类——这个 skill 的
+产出是正确、有据的归因，不是进程清理。
+
+**核心能力：**
+- 全体性症状法则——当互不相干的 app/hook/agent 同时超时，嫌疑犯是机器而不是其中任何一个：先 `vm.loadavg`，再谈个体排查
+- 三路普查（附带 `load_census.sh`）——按父进程聚合（孤儿回收永远清不到的泄漏）、累计 CPU 时间（被瞬时 %CPU 稀释的忙循环）、瞬时 %CPU（正在发生的风暴）
+- 形态分类对症修复——泄漏 / fork 风暴 / 忙循环 / 级联，并带一条硬边界：共享机器上 agent 只读诊断 + 报告，终止动作归属主（「daemon 重启」也算终止）
+- 事故 playbook 实战案例（load 243 的逐线程 MCP 泄漏、无限速回放 fork 风暴、守卫舰队 fork 开销、GUI 忙循环）与报告写作契约
+
+**使用示例：**
+```text
+这台 Mac 全都变慢了，每个 agent 的 hook 都在超时
+机器烫得不行但看不出为什么
+几百个 node 进程——都是从哪来的？
+```
+
+### **devils-advocate** - 压力测试你的投资论点
+
+> **安装**：`claude plugin install daymade-financial@daymade-skills>`
+> （仅随套件提供 — 以 `daymade-financial:devils-advocate` 调用）
+
+针对你提供的证据材料，对投资论点做结构化的「魔鬼代言人」压力测试——
+基于证据的反对意见，而不是角色扮演的抬杠（每个反方观点都必须逐字引用出处）。
+
+**核心能力：**
+- 把论点拆成显式断言与隐式假设（事实/预测/机制分型，承重性测试）
+- 按来源可信度阶梯为每条假设检索反证（逐字引用），并叠加 Mauboussin 基准率外部视角（不超出你的材料范围）
+- 产出可审计的 findings JSON + 按主题分组的分析师叙事，并把批评转成 RAND 式路标监控清单
+
+**使用示例：**
+```text
+/daymade-financial:devils-advocate
+用这三份研报压力测试我看多 <股票> 的逻辑
+这个论点要错的话，需要发生什么？
+```
+
+### **daymade-sector-research** - A股行业投研工作流
+
+> **安装**：`claude plugin install daymade-financial@daymade-skills`
+> （仅随套件提供 — 以 `daymade-financial:daymade-sector-research` 调用）
+
+A 股行业投研工作流：全板块成分股 Top N 涨幅计算、公告窗口检索、
+按证据分级判断市场情绪——由 Agent Team 并行执行 + fresh-context 对抗验证。
+全部公开免登录数据源。
+
+**核心能力：**
+- 全板块成分股 Top N 涨幅管线（东财 push2 + 新浪实时快照双源交叉）
+- 按个股检索公告窗口（周/月），覆盖沪深北三所（巨潮 + 东财）
+- 情绪结论按证据等级分级——L1 一手行情 / L2 带时间戳媒体 / L3 未核实标题——常驻纪律是「宁可标注不确定，不可给错误答案」
+
+**使用示例：**
+```text
+/daymade-financial:daymade-sector-research
+医药行业今天的 Top 10 标的
+这些标的最近一个月发过哪些公告
+判断医药板块现在的市场情绪
+```
+
+### **kimi-use** - 查询 Kimi 桌面客户端内置数据插件
+
+通过 computer-use 驱动已登录的 Kimi 桌面客户端，调用其内置的企业、
+金融、市场、学术与法律数据插件，无需另外配置 API key。查询结果必须标明
+来源；承重数据在落盘前仍需独立通道复核。
+
+**核心能力：**
+- 路由到天眼查、同花顺 iFinD、SEC、IMF、学术/法律数据库等已安装插件
+- 同时覆盖 Claude Code computer-use 与 Codex computer control
+- 提供强制逐项标来源、查不到就明确说未知的查询模式
+- 防止列表截断、屏幕识别错人名和财务口径混淆
+- Work 自主任务发出前核对接口积分，重试保留每次原始返回；Chat 深度研究单独导出原件
+
+**使用示例：**
+```text
+/kimi-use
+用 Kimi 查这家公司的股东和最新财务数据，并逐项标明来源
+操作 Kimi 客户端，用已安装插件核对这组市场数据
+```
+
+### **tibo-reset-codex** - ChatGPT/Codex 额度重置速查
+
+> **安装**：`claude plugin install tibo-reset-codex@daymade-skills`
+
+查询重置公告，核实多个 Pro 账号的剩余额度与备用重置；有时间依据时预测下一轮，记录预测、核验与撤回，供后续判断调整。
+
+[操作说明](tibo-reset-codex/SKILL.md)
+
+```text
+ChatGPT 什么时候重置额度
+几个 Pro 账号都用完了吗，哪个还有额度
+banked reset 到了吗
+```
+
+### **prior-work-retrieval** - 产出前检索并核实已有成功工作
+
+> **安装**：`claude plugin install daymade-claude-code@daymade-skills`
+>（仅作为套件成员发布，调用方式 `daymade-claude-code:prior-work-retrieval`）
+
+只有用户明确要求查找或复用以前工作时，才检索并核实已有代码、决策、
+Skill／SOP、会议、微信归档、项目文档与对话历史。提到当前／现有测试、
+README、文件、实现、行为或验证，不会触发检索。真正运行时会留下可审计的
+复用／适配／淘汰回执；排序检索零命中不会被偷换成「不存在」。
+
+**核心能力：**
+- 显式来源清单与逐载体覆盖状态
+- 回到原始来源核对权威性与时效性
+- 围绕当前业务结果作复用／适配／淘汰决策
+- 大规模产出前可用确定性命令检查回执
+
+**使用示例：**
+```text
+/daymade-claude-code:prior-work-retrieval
+我们以前解决过，先找到已有代码和成功路径再改
+先检查现有 Skill、SOP 和历史，不要重新造工作流
+```
+
+### **lark-cli-router** - 单一、随版本同步的飞书路由
+
+> **安装**：`claude plugin install daymade-claude-code@daymade-skills`
+>（仅作为套件成员发布，调用方式 `daymade-claude-code:lark-cli-router`）
+
+把飞书／Lark／豆包请求路由到当前 `lark-cli` 内嵌的对应指南，无需把每个
+飞书领域 Skill 都放进模型目录。腾讯 IMA 继续独立使用 `ima-skill`。
+
+**核心能力：**
+- 从 `lark-cli skills list` 选择最小匹配的领域或工作流指南
+- 通过 `lark-cli skills read` 读取与 CLI 版本同步的指令和 reference
+- 用内嵌／磁盘指南哈希闸门保留未内嵌 scripts/assets 的可达性
+- 保留各领域自己的认证、确认、成功判断和写后验证契约
+
+**使用示例：**
+```text
+读取这个飞书文档
+查一下这条妙记的逐字稿
+lark-cli 提示 user 身份缺少 scope
+```
+
+### **claude-code-ping-start-5h-quota** - 额度重置后定时戳 Claude，开启新的 5 小时窗口
+
+> **安装**：`claude plugin install daymade-claude-code@daymade-skills`
+>（仅作为套件成员发布，调用方式 `daymade-claude-code:claude-code-ping-start-5h-quota`）
+
+设置一次性本机定时器（macOS），在订阅额度重置后自动发一条极简 `claude -p` 消息，
+让新的 5 小时用量窗口从你睡着时就开始计时，而不是从睡醒后。双保险设计：detached
+进程不怕会话或终端被关；会话若还开着，到点会被唤醒并回读 `ok` 回执确认结果。
+
+**核心能力：**
+- 跨零点的绝对时刻判定，显式的分钟→秒换算公式（含 5 分钟缓冲）
+- `caffeinate -is` 撑住等待期不进入闲置睡眠；`ps` 独立读回验证定时链
+- 触发时刻与 output 路径写入对话持久化，唤醒通知丢失也能找回现场
+- 特征串 `pkill` 取消命令（已实测）——禁止按 sleep 秒数匹配误杀无关进程
+- 诚实失败：本地无法确认时明说，不猜测
+
+**使用示例：**
+```text
+还有 1 小时 20 分钟重置额度，帮我定时戳一下 Claude
+我去睡觉了，额度重置后帮我 ping 一下开启新窗口
+```
+
+### **agent-web-search-setup** - 模型后端跑不了搜索时，给 Agent 装上能用的联网搜索
+
+> **安装**：`claude plugin install daymade-claude-code@daymade-skills`
+>（仅作为套件成员发布，调用方式 `daymade-claude-code:agent-web-search-setup`）
+
+中转站或代理把 Claude、Codex 转发到别的云（Vertex AI、Bedrock 或 OpenAI 兼容层）
+之后，Anthropic 服务端执行的 `web_search` 与 `web_fetch` 跑不起来。请求本身是成功的，
+不报任何错——模型只是拿不到结果，于是断定最近发生的事情不存在，看起来像「模型变笨了」
+而不像工具坏了。本 Skill 先探测端点、确认哪些内置工具真的是死的，把它们从客户端摘掉
+让模型不再去够，再装一个客户端执行、模型真调得动的替代品，最后用一条实时查询验证。
+它是去配置 Agent 的，本身不提供搜索。
+
+**核心能力：**
+- `diagnose.py`（纯标准库，在装任何东西之前就能跑）看回包结构不看正文：`server_tool_use` 表示工具真的执行了，裸 `tool_use` 表示被甩回客户端、从未执行，HTTP 400 表示这层翻译连工具定义都表达不了
+- Codex 和 Claude Code 都覆盖：`--api openai` 去 OpenAI Responses API 问同一个问题（真执行时回包里有 `web_search_call`），`--api both` 应付一个网关同时提供两种形状的常见情况
+- 市面上多数「给 Agent 加联网能力」的包，是在编排模型**自己已声明**的那些工具——在坏掉的中转站上它们继承的正是同一个故障，还在上面盖了一层看着很像在工作的东西；本 Skill 给出判据：只有真正走本地进程（CLI / curl / 脚本）的那种才免疫
+- 注册进 CI 的测试套件重心压在代价更大的那一侧——不许把好端端的端点判成坏的。只回文本、空回包、超时、路由不存在，四种情况各有用例要求它报「无法判定」，因为其中任何一种误判都会让调用方去删掉一个本来能用的工具
+- 真正会出事的是授权那一步，所以它也由测试钉住：项目共享的 `.claude/settings.json` 里的 `permissions.allow`，在未接受过信任对话框的工作区会被直接丢弃，而客户端只在 stderr 上说这件事——读 `--output-format json` 的 agent 只看得到一条没有理由的拒绝，模型则告诉用户它在等授权
+- 从 tool id 前缀认出真实后端（`toolu_vrtx_` 是 Vertex AI，`toolu_bdrk_` 是 Bedrock）——能力属于后端不属于模型，所以同一端点换模型不解决问题
+- 摘掉坏工具是前置条件不是可选项：`WebSearch` 还留在菜单上时，实测模型调它 21 次、调已装好的替代品 0 次，哪怕替代品的说明里写明内置的已经坏了
+- 替代品菜单给一个免注册、免本地安装的默认项，其余实测可用的保留为真选项，排除掉的逐条写明原因
+- 慢不判死——实测同一网关在两个模型 id 上约 15 秒、在第三个上约 146 秒，所以超时只报「无法判定」
+- 验证时只留新装的那一个后端可用：装了两个时，能用的那个会替坏的那个作答，让一份并不工作的配置显示为绿
+
+**使用示例：**
+```text
+搜索返回空的，模型说这东西不存在
+我用的是中转站的 key，联网搜索好像坏了
+给这个 agent 加上联网搜索能力
+```
+
+### **tech-selection** - 技术选型闸门清单
+
+> **安装**：`claude plugin install daymade-claude-code@daymade-skills`
+>（仅作为套件成员发布，调用方式 `daymade-claude-code:tech-selection`）
+
+一套在承诺之前（而非事后）跑的技术选型清单，覆盖库、框架、存储、数据格式、
+模型、自建 vs 采购、架构选择。判据是**过滤器不是排序器**——杀掉违反原则的候选，
+幸存者由业务结果锚定决定，绝不靠打分排名。当两个及以上候选幸存时，输出是
+候选 + 取舍 + 一个推荐，不是单选。
+
+**核心功能：**
+- 触发建在场景句（用哪个 / 选什么框架 / 要不要自建 / 先看看有没有现成的）与特征性否定句（别闭门造车 / 不要过度工程）上，不依赖「技术选型」这个字面词——用户自己的语料里几乎不出现这个词
+- `unknown` 不是 `pass`——带未验证轴的候选不进入幸存集合
+- 两次停下来交还用户：多候选人为取舍（≥2 幸存）与声称完成但未验证
+- Prior-art 盘点是第一步——内部/付费资产 → 外部方案 → 自建（最后手段）；推荐落在自建层而一、二层无记录理由即判闭门造车
+- 仅接受探针取证——README、厂商页面、源码声明一律降级；唯一可接受证据是你跑了并观察到的行为
+- 「为什么这不是垃圾」自辩位必须可独立核对，不能自证
+- 委派契约含域归属表、三段式自主阈值与 5 处已裁定边界
+- Agent 编排按任务形状（四问框架），不设固定默认值
+- 13 条核心决策轴 + 13 条范围限定判据 + 16 条拒绝模式，每条配机械测试而非态度
+- 4 个 references：decision-axes、scoped-criteria、rejection-modes、delegation-contract
+
+**使用示例：**
+```text
+用哪个框架？React 还是 Vue？
+这个爬虫用 requests 还是 playwright
+数据存哪里？SQLite 还是 Postgres？
+要不要自建，还是用现成的？
+别闭门造车，先看看有没有现成的
+which library should we use for this?
+build or buy — evaluate the options
+```
+
+### **codex-1m-context-window-setup** - 为 Codex 设置模型感知的长上下文
+
+> **安装**：`claude plugin install daymade-codex@daymade-skills`
+>（仅作为套件成员发布，调用方式 `daymade-codex:codex-1m-context-window-setup`）
+
+为 Codex CLI 与 Desktop 共用的基础配置写入当前模型真实支持的最大上下文，
+请求上限为 100 万 token。该 Skill 会读取实时模型契约、解释常见的约 258K
+默认值、把自动压缩阈值设为可达窗口的 60%，同时保留无关 TOML；若 Codex
+严格配置校验失败，则精确回滚。
+
+**核心功能：**
+- 按模型上限计算，不把「1M」硬说成每个模型都能达到
+- 提供只读 `doctor`、事务式 `apply` 与漂移检测 `verify`
+- 变更前备份、无变化不重复写入，并支持 macOS 与 Windows
+- 只修改 `model_context_window` 和 `model_auto_compact_token_limit`
+
+**使用示例：**
+```text
+/daymade-codex:codex-1m-context-window-setup doctor
+把 Codex CLI 和 Desktop 配成当前模型可验证的最大上下文
+验证长上下文设置在升级或切换模型后是否仍然正确
+```
+
+---
+
+### **interaction-design-board** - 实现前对比可运行交互方案
+
+> **安装**：`claude plugin install daymade-codex@daymade-skills`
+>（仅作为套件成员发布，调用方式 `daymade-codex:interaction-design-board`）
+
+在业务事实和现有设计语言保持不变的前提下，为一个有边界的产品界面生成多种真正
+不同的 HTML 交互架构。自带的构建器会把自包含候选组合成支持键盘操作的 Design Board，
+提供 Focus／Compare、任务反馈、remix 请求和内容绑定的批准交接；用户实际操作并拍板前，
+不修改正式产品代码。
+
+**核心能力：**
+- 明确区分交互架构探索与静态视觉风格赛马
+- 多个隔离候选共用一份冻结的业务／任务合同
+- 拒绝字节完全相同的候选、路径越界、未声明状态和外部资源依赖
+- 兼容 gstack 本地反馈 daemon，并支持直接打开时下载 JSON
+- 把原型内容身份和运行期 Board 实例身份分开保存
+
+**使用示例：**
+```text
+/daymade-codex:interaction-design-board
+先给我三个可点击的审核工作流方案，不要直接改正式页面
+视觉风格没问题，但把队列优先、对象优先和账本优先做成可操作版本比较
+用 Design Board 让我试完每种渐进式披露，再决定是否 remix
+```
+
+📚 **文档**：参见
+[interaction-design-method.md](./daymade-codex/interaction-design-board/references/interaction-design-method.md)
+与 [board-contract.md](./daymade-codex/interaction-design-board/references/board-contract.md)。
+
+---
+
+### **meme-creator** - 视频/GIF 梗图：贴图跟随画面运动
+
+把 logo、头像、贴纸贴到视频里运动的对象上，逐帧跟随，导出 MP4 + GIF。半监督跟踪：在网格图上读坐标框，OpenCV CSRT 负责搬运；跟踪器必死的场景（镜头切换、走近镜头的尺度爆炸、长距离平稳远去）用重锚点或手工关键帧接管。
+
+**何时使用：**
+- 把一段视频名场面做成梗图、表情包或 GIF
+- 给视频里的人脸/猫头盖 logo 或头像，且要跟着动
+- 任何「贴个图进去，跟着画面动」的需求
+
+**核心特性：**
+- 身份消歧闸：先把名字绑到正确的账号/头像/logo，再抓素材（不含猜测 handle 的开放搜索枚举候选，同列实体是最强判别信号）
+- 用平铺拼图选段，不靠拖进度条
+- CSRT 跟踪含反向跟踪、分段重锚、平滑；平稳长镜头可切手工关键帧线性插值
+- 可见性窗口 + 速度外推淡出：贴图随目标一起出画，不停在空画面上
+- GIF 双通道调色板编码，体积旋钮有顺序（先降帧率，再降宽度，再降色数）
+
+**使用示例：**
+```text
+"把这段视频里三只猫的头分别换成这三个 logo，做成梗图视频和 GIF"
+"把 6:30 到 6:50 这段做成 GIF，把我的头像贴在主角头上"
+```
+
+📚 **文档**：参见 [meme-creator/SKILL.md](./meme-creator/SKILL.md) 及随包 `references/`（跟踪手册与素材绑定闸）。
+
+**运行要求**：`ffmpeg`；`uv`（随包 Python 脚本自带内联依赖）。源是 URL 时才需要 `yt-dlp`。
+
+---
+
+### **data-visualization-discipline** - 图表与看板的判断层
+
+> **安装**：`claude plugin install data-visualization-discipline@daymade-skills`
+
+动手画图之前先定这张图该不该存在、该怎么画：每张图要让读者得出的那一个结论、用均值还是中位数、分段能否聚合、堆叠还是折线、能不能上双轴、几个颜色、同一实体跨图是否同色、表格留几列。介质无关——HTML 报告、React/Vue 看板、PPT 原生图表、matplotlib/plotly/ECharts/D3 一律适用。
+
+**核心特性：**
+- 五个阶段（意图 → 数据 → 选形 → 编码 → 交付）：前四段各有一个交接检查，第五段是交付闸
+- 九条交付闸，含遮字渲染自测与可见条长的比例量测
+- 可评审既有图表（"这几张图有什么问题"、"图例为什么不一致"）
+
+- [`data-visualization-discipline`](./data-visualization-discipline/SKILL.md)——完整说明。与 `report-with-html` 成对使用，后者负责报告页本身。
+
+---
+
+### **report-with-html** - 有证据支撑的 HTML 报告
+
+> **安装**：`claude plugin install report-with-html@daymade-skills`
+
+产出面向读者的 HTML 制品——报告、看板、架构或旅程视图、数据浏览器、审阅工作台。页面骨架跟着读者的问题走，每个数字可追溯，交付前在真实浏览器里验证。
+
+**核心特性：**
+- 按读者的问题选骨架（怎么运作 / 要定什么 / 为什么发生 / 哪个更好 / 翻看一批数据）
+- 决策卡契约、可复用的交互组件、暖纸起手模板
+- 交付闸脚本：遮字渲染、整页分段截图、零上下文的独立读者审阅
+
+- [`report-with-html`](./report-with-html/SKILL.md)——完整说明。画图的判断交给 `data-visualization-discipline`。
+
+**运行要求**：Google Chrome 或 Chromium；`uv`；Python 3.10+。
+
+---
+
+### **skill-evolver** - 研究驱动的 Skill 优化
+
+> **安装**：`claude plugin install skill-evolver@daymade-skills`
+
+Daymade Skill Evolver 组装已有 Skills，为指定现有 Skill 完成一轮取证、机制取舍
+和授权实施。复用成功与失败经验，核对相关竞品源码，通过目标的真实消费者验证
+改动；证据支持保持现状时，可以不改。
+
+**适用场景**：根据工作历史、收藏资料或竞品机制优化指定 Skill。普通创建和编辑
+使用 Skill Creator。
+
+**使用示例：**
+```text
+用 skill-evolver 优化我的批量导出 Skill。保留已成功的导出能力，调查批次中断问题，
+实施有依据的修复。
+```
+
+**运行要求**：宿主能读取目标源码，并具备编辑和验证所需工具。按阶段查找、加载
+并执行宿主可用的公开 Skills；本地私有集成仅为可选。必需来源或数据缺失时，
+只暂停依赖它的工作。
+
+**依赖说明**：此插件只包含流程编排。执行模块缺失时，按[公开目录](#-其他可用技能)
+告知对应插件包的安装入口，或说明替代执行路径及其证据边界。
+
+📚 **文档**：[skill-evolver](./skill-evolver/SKILL.md)。
+
+---
+
+### **app-evolver** - 有证据的应用优化
+
+> **安装**：`claude plugin install app-evolver@daymade-skills`
+
+结合应用当前代码与产品合同、已授权的成功和失败经验、竞品机制，判断哪些
+值得借鉴，落实授权范围内的改进，并通过实际用户结果验证。
+
+**适用场景**：参考竞品取长补短、从历史经验优化应用，或在分别核对产品合同后
+协调多个应用的改进。目标是 Skill 时使用 `skill-evolver`。
+
+```text
+用 app-evolver 参考这个竞品优化我的文档应用。保留来源证据，落实有依据的改进，
+验证失败后的恢复路径。
+```
+
+📚 **文档**：[app-evolver](./app-evolver/SKILL.md)。
+
+**逆向 Skill 组合**：[专项选择与交接](./app-evolver/references/skill-composition.md)。
+
+---
+
+### **product-growth** - 有证据的产品增长诊断
+
+> **安装**：`claude plugin install product-growth@daymade-skills`
+
+主动发现真实反馈，结合业务数据分析增长来源、指标缺口与改进机会。区分统计口径、
+渠道归因和因果效应，把建议落实为可验证的用户价值与业务结果；按 SaaS、电商、
+双边市场、开发工具等产品的实际价值和使用周期选择指标。
+
+**适用场景**：自然增长来源、遗漏渠道或指标、激活与留存、收入质量、生态采用和行动复盘。
+
+```text
+用 product-growth 分析我们的自然增长，主动查找遗漏的反馈渠道，给出有证据、
+能检验结果的下一项改进。
+```
+
+**要求**：宿主能读取和分析所给数据；实时公开反馈需要获授权的网页/API 通道。
+专项 Skill 为可选适配器。
+
+📚 **文档**：[product-growth](./product-growth/SKILL.md)。
+
+---
+
+### **floorplan-finder** - 查找并核对住宅户型原图
+
+> **安装**：`claude plugin install floorplan-finder@daymade-skills`
+
+从网上查找现成户型原图，核对房间连接、入户朝向、左右镜像与图源。
+区分用户确认的同款户型和有房号记录对应的原始图纸。
+
+**适用场景**：按小区、楼栋或房号找图；比较同款候选；继续受限页面或模糊图纸造成的未完成搜索。
+
+```text
+用 floorplan-finder 找与这套房实际格局相同的现成户型图。
+面积只记得大概值，请保留原图并展示候选差异。
+```
+
+**要求**：获授权的网页检索、读取和看图工具；需要网页交互的来源另需浏览器。
+网页获取和视频专项 Skill 为可选能力，无随包运行时依赖。
+
+📚 **文档**：[floorplan-finder](./floorplan-finder/SKILL.md)。
+
+---
+
+## 🎬 交互式演示画廊
+
+想要在一个地方查看所有演示并具有点击放大功能？访问我们的[交互式演示画廊](./demos/index.html)或浏览[演示目录](./demos/)。
+
+## 🎯 使用场景
+
+### GitHub 工作流
+使用 **github-ops** 完成可验证的 PR、问题、Actions、仓库、组织访问和 API 操作。维护者要对一个现有
+贡献者 PR 或完整 open PR 队列做基于当前 base 的代码 review、责任归因或
+review 后修复/落地时，使用 **github-review-pr**。
+
+### 产品增长
+使用 **product-growth** 把真实反馈与业务数据连到增长机制、可比指标和可验证行动。
+已授权的应用实现可交给 **app-evolver**。
+
+### 文档处理
+结合 **doc-to-markdown** 进行文档转换和 **mermaid-tools** 进行图表生成，创建全面的文档。使用 **llm-icon-finder** 添加品牌图标。
+
+### 调研与分析
+使用 **floorplan-finder** 查找住宅户型原图，按已知格局逐项核对候选。
+
+使用 **deep-research** 生成格式可控的调研报告，包含证据表与引用。与 **fact-checker** 结合用于验证关键结论，或与 **twitter-reader** 结合收集社媒资料。
+
+### 技术决策
+选择技术方案时（库、框架、存储、数据格式、模型、自建 vs 采购、架构）使用 **tech-selection**。它跑一道闸门清单——按业务结果锚定、prior-art 盘点与探针取证过滤候选，多候选幸存时输出候选 + 取舍 + 推荐，不是单选。需要先对格局做调研再决策时，结合 **deep-research**。
+
+### 竞争情报
+使用 **competitors-analysis** 发现、持久化、更新并分析竞品仓库，仓库结论必须带源码引用。需要更宽的市场、定价或叙事研究时，再结合 **deep-research**。
+
+### PDF 与可打印文档
+使用 **pdf-creator** 将 markdown 转换为适合打印的 PDF，并提供中文字体支持，适用于正式报告和归档材料。
+
+### 团队通信
+使用 **teams-channel-post-writer** 分享知识，使用 **statusline-generator** 在工作时跟踪成本。
+
+### 本机 Agent 协调
+联系当前原生工具能覆盖的 agent 或 session 时，直接使用宿主通信机制。只有未覆盖的本机目标、跨产品／脚本通信，或需要核实协调证据时，才使用 **peer-message**；详见其[路由合同](./peer-message/SKILL.md)。消息被拒绝或 Held 不构成换通道的理由。
+
+### 仓库管理与安全
+使用 **repomix-unmixer** 提取和验证 repomix 打包的技能或仓库。使用 **repomix-safe-mixer** 安全地打包代码库，在分发前自动检测和阻止硬编码凭据。
+
+### 技能开发
+使用 **skill-creator**（参见上面的[必备技能](#-必备技能skill-creator)部分）构建、验证和打包你自己的 Claude Code 技能，遵循最佳实践。
+使用 **skill-evolver** 完成指定现有 Skill 的研究驱动优化，从相关证据和机制取舍
+推进到授权改动与实际结果验证。
+
+### 视频质量分析
+使用 **video-comparer** 分析压缩结果、评估编解码器性能并生成交互式比较报告。与 **youtube-downloader** 结合使用以比较不同质量的下载。
+
+### 媒体与内容下载
+使用 **youtube-downloader** 下载 YouTube 视频并从视频中提取音频，自动解决常见下载问题。
+
+### 转录与 ASR 校正
+使用 **transcript-fixer** 通过基于字典的规则和 AI 驱动的校正自动学习，纠正会议记录、讲座和访谈中的语音转文本错误。
+
+### 金融数据与投研
+使用 **daymade-financial** 套件完成完整投研数据管线。**bigdata-skill** 通过官方 SDK 拉取 Bigdata.com（RavenPack）结构化财务与情绪数据。**financial-data-collector** 从 yfinance 采集美股基本面数据并遵循 NO FALLBACK 纪律。**gangtise-copilot** 安装并编排完整 Gangtise（岗底斯）OpenAPI 投研套件。**ashare-news-fetcher** 聚合 A 股新闻、政策与市场情绪。**pharma-daily-report** 生成医药板块日报，含实时行情与资金流向分析。
+
+### Excel 与财务模型自动化
+使用 **excel-automation** 创建格式化工作簿、解析复杂 `.xlsm` 模型，并自动化 Excel 窗口操作以提升分析效率。
+
+### macOS 视觉采集自动化
+使用 **capture-screen** 脚本化执行可重复窗口截图。可与 **excel-automation** 结合生成可直接用于汇报的表格可视化截图。
+
+### 会议文档
+使用 **meeting-minutes-taker** 将原始会议转写稿转换为结构化、基于证据的会议纪要。与 **transcript-fixer** 结合使用可在生成纪要前清理 ASR 错误。特点是多轮生成配合 UNION 合并以避免内容丢失。
+
+### QA 测试与质量保证
+使用 **qa-expert** 建立具有自主 LLM 执行、Google 测试标准和 OWASP 安全测试的综合 QA 测试基础设施。非常适合项目启动、第三方 QA 交接和执行质量门禁（100% 执行、≥80% 通过率、0 个 P0 错误）。主提示可实现 100 倍更快的测试执行，零跟踪错误。
+
+### 提示词工程与需求工程
+使用 **prompt-optimizer** 将模糊的功能请求转换为具有领域理论基础的精确 EARS 规范。非常适合产品需求文档、AI 辅助编码和学习提示词工程最佳实践。与 **skill-creator** 结合使用以创建结构良好的技能提示。
+
+### 会话历史与文件恢复
+使用 **read-claude-code-history** 从之前的 Claude Code 会话中恢复已删除的文件、在对话历史中搜索特定实现，或跟踪文件随时间的演变。对于恢复意外删除的代码或查找你记得但找不到的功能实现至关重要。
+
+### 产出前复用已有工作
+只有用户明确要求查找、复用或核对以前的工作时，才使用 **prior-work-retrieval**；提到当前／现有测试、README、文件、实现、行为或验证，本身不构成触发。真正的历史复用请求会按显式清单检索当前代码、项目决策、Skill/SOP、会议、微信归档与对话历史，再要求回到原始来源核验，并留下可审计的复用／适配／淘汰回执；排序检索零命中不会被偷换成「不存在」。
+
+### Codex 工作站配置
+当 Codex CLI 或 Desktop 只显示约 258K 上下文、过早自动压缩，或需要给课堂／
+工作站复制同一套长上下文策略时，使用 **codex-1m-context-window-setup**。
+它读取当前模型的实时目录项，请求最多 100 万 raw token，并核验基础配置的
+精确值；不会顺手修改模型、sandbox、审批、插件或其他个人设置。
+
+### 续做中断的 Claude 会话
+使用 **continue-claude-code-work** 从本地 `~/.claude` 产物中恢复最后一个可执行请求，并在不重新打开原始会话的情况下继续实现。若还需要跨会话搜索、统计分析或恢复已删除文件，可与 **read-claude-code-history** 配合使用。
+
+若旧工作来自 Codex CLI，则改用 **continue-codex-work**；它从本地 Codex
+rollout 重建简报，不会把完整旧会话重新灌入上下文。
+
+### 本地对话证据
+Claude Code 的会话清单、精确时间线、中途排队的人类输入、全事件搜索与文件
+恢复使用 **read-claude-code-history**；Codex 的会话清单、prompt ledger 原话、
+rollout 身份、fork／compaction lineage 与 Codex-only 搜索使用
+**read-codex-history**。两者都只读取证；只有用户明确要求续做时，才进入对应的
+**continue-claude-code-work** 或 **continue-codex-work**。
+
+### 网页提取与微信公众号文章
+使用 **scrapling-skill** 安装并验证 Scrapling CLI，判断应使用静态抓取还是浏览器抓取，并从 `mp.weixin.qq.com` 等页面提取干净的 Markdown。可与 **deep-research** 配合，将抓取内容整理为结构化报告，或与 **docs-cleaner** 配合清理抽取后的文章内容。
+
+### 文档维护
+使用 **docs-cleaner** 在保留有价值内容的同时整合冗余文档。非常适合在快速开发阶段后清理文档扩散或将重叠的文档合并为权威来源。
+
+### CLAUDE.md 优化
+使用 **claude-md-progressive-disclosurer** 通过渐进式披露减少 CLAUDE.md 体积，同时保留关键规则。
+
+### LLM 评测与模型对比
+使用 **promptfoo-evaluation** 运行提示词测试、对比模型输出并执行自定义断言评测。使用 **llm-eval-harness** 从速度（thinking-aware tokens/秒）、并发/稳定性、Anthropic 协议合规、以及针对你自己用例的质量回归四个维度给端点跑基准——核验厂商宣称的 tokens/秒，或在采用新发布的模型前先验货。两者可组合：promptfoo 负责快速的逐用例 rubric 门控，llm-eval-harness 负责盲审 precision 与原始的速度/并发探测。
+
+### iOS 应用开发
+使用 **developing-ios-apps** 配置 XcodeGen 项目，处理 SPM 依赖、签名与部署问题。
+
+### Twitter/X 内容研究
+使用 **twitter-reader** 无需 JavaScript 渲染或身份验证即可获取推文内容。非常适合记录社交媒体讨论、归档话题、分析推文内容或从 Twitter/X 收集参考资料。与 **doc-to-markdown** 结合可将获取的内容转换为其他格式，或与 **repomix-safe-mixer** 结合安全地打包研究集合。
+
+### macOS 系统维护与磁盘空间恢复
+[macOS Cleaner](./daymade-macos/macos-cleaner/SKILL.md)。
+
+### 技能发现与管理
+使用 **skills-search** 优先发现并复用已配置本地仓库里的 Skill；必要时再进入 CCPM 注册表，保留外部检索、安装和管理能力。
+
+### 技能质量与开源贡献
+使用 **skill-reviewer** 在发布前验证你的技能是否符合最佳实践，或审查并改进他人的技能仓库。与 **github-contributor** 结合使用，寻找高影响力的开源项目、创建专业的 PR，并系统性地建立贡献者声誉。非常适合希望为 Claude Code 生态系统或任何 GitHub 项目做出贡献的开发者。
+
+### 国际化与本地化
+使用 **i18n-expert** 为 React/Next.js/Vue 应用程序设置完整的 i18n 基础设施、审计现有实现中缺失的翻译键，并确保 en-US 和 zh-CN 之间的语言环境一致性。非常适合向全球市场推出产品的团队、维护多语言 UI，或将硬编码字符串替换为正确的 i18n 键。与 **skill-creator** 结合使用可创建支持语言环境的技能，或与 **docs-cleaner** 结合使用可整合多种语言的文档。
+
+### 网络与 VPN 故障排查
+使用 **tunnel-doctor** 诊断和修复 macOS 上 Tailscale 与代理/VPN 工具的多层冲突（路由劫持、HTTP 环境变量、系统代理、SSH ProxyCommand、VM/容器代理传播、DNS 解析器卡死）。当 Tailscale ping 正常但 TCP 连接失败、git push 报 "failed to begin relaying via HTTP"，或在使用 Shadowrocket、Clash、Surge 的同时设置 Tailscale SSH 到 WSL 实例时特别有用。还覆盖 **TUN 测量污染**——开着全局代理时，裸探针（`nc -z` 显示 0.00s、`ping`、国外 `ip-api` 查询）为什么会撒谎，以及该信什么。
+
+### 产品审计与优化
+使用 [product-analysis](./product-analysis/SKILL.md) 进行上线、UX、API、架构审计及基于源码的竞品对比。
+
+### 远程桌面与 VDI 优化
+使用 **windows-remote-desktop-connection-doctor** 诊断 macOS 上 Azure Virtual Desktop / W365 连接质量问题。当传输协议显示 WebSocket 而非 UDP Shortpath、RTT 异常高，或更换网络位置后 RDP Shortpath 失败时特别有用。结合网络证据收集与 Windows App 日志分析，系统性定位根因。
+
+### 插件与技能故障排除
+使用 **claude-skills-troubleshooting** 诊断和解决 Claude Code 插件和技能配置问题。调试为什么插件显示已安装但未显示在可用技能列表中、了解 installed_plugins.json 与 settings.json enabledPlugins 架构，以及批量启用市场中缺失的插件。非常适合市场维护者调试安装问题、开发者调试技能激活，或任何对 GitHub #17832 自动启用 bug 感到困惑的人。
+
+### 腾讯 IMA 知识库工作流
+使用 **ima-copilot** 把官方腾讯 IMA skill 一键装到 Claude Code / Codex / OpenClaw 三个平台，引导配置 API 凭据，在用户授权下检测与修复上游已知问题，并在所有 IMA 知识库上跑带优先级置顶的个人化扇出搜索。因为整个架构是包装层而不是 fork，上游升级永远不会和你的修复冲突——每一次修复都是运行时指令，不是 shipped patch。特别适合同时使用多个 coding agent 的 IMA 重度用户，或遇到过 "Skipped loading skill(s) due to invalid SKILL.md" 告警的人。
+
+### Claude Code 导出后处理
+使用 **claude-export-txt-better** 在归档或分享前清理 `/export` 的输出。默认导出格式在固定列宽硬换行，表格、路径、工具调用块一打开就散架。这个 skill 重建原始结构，并用 53 项自动校验立刻抓到回归。
+
+### 个人数据备份（豆瓣）
+使用 **douban-skill** 把豆瓣书影音历史备份到 CSV。豆瓣没有官方导出——2018 年公共 API 就关停了，所有网页抓取都被 PoW 挑战卡住。这个 skill 用官方 Android app 同一套 Frodo API，不需要登录也不需要 cookies。内置 7 个被拒方案的完整故障日志，省掉你几个小时的弯路。
+
+### Terraform 与 IaC 故障排查
+使用 **terraform-skill** 当 `terraform apply` 在 provisioner 步骤失败、新实例遇到 "docker: not found"、或多环境 setup 意外共享快照时。Skill 里每一条都是*确切报错 → 根本原因 → 复制粘贴修复*三元组，来自真实事故。特别适合曾经被 cloud-init 的时序竞争、local-exec 里 rsync 连接断开、或者 Caddyfile 里硬编码域名搞掉一个周末的人。
+
+### 网络、流式与协议层调试
+使用 **debugging-network-issues** 应对症状和"显然原因"对不上的场景：HTTP/2 `RST_STREAM`、SSE 在 60s/100s/130s 整点卡死、"时灵时不灵"故障、客户端代理/VPN/TUN 错路由导致的 `ERR_CONNECTION_CLOSED` 或 `SSL_ERROR_SYSCALL`、或 CDN / 代理 / CGNAT / TUN 链路上的空闲超时/规则覆盖事件。Skill 用**分层隔离实验**（同一逻辑请求走三条以上、每条仅差一跳的路径）替代假设堆叠，再加一套反审查模式——只在假设被**证伪**而不是单纯被"证实"之后才上 fix。认知陷阱清单含反向路径/方向不对称，以及代理节点 DNS ≠ 客户端 DNS。
+
+### 中文 TTS（StepFun 阶跃 StepAudio 2.5）
+使用 **stepfun-tts** 进行中 / 日语语音合成（通过 `instruction` + 行内 `()` 控制情绪与韵律）。封装了让 StepAudio 2.5 新用户必踩的两个 TTS 破坏性变更：`voice_label` 移除和 2.5 时代更严的审查规则。可把 `step-tts-2` 作为单条审查兜底来组合使用。
+
+### 长音频转写（StepFun 阶跃 StepAudio 2.5）
+使用 **stepfun-asr** 单次 SSE 调用转写最长 30 分钟的中 / 英文音频（32K context、~85-101× RTF、无需客户端切片）。封装了 #1 大坑——模型**不在** `/v1/audio/transcriptions`，错端点返回误导性的 "model not supported" 错误。可与 **transcript-fixer** 组合做 ASR 纠错，或与 **meeting-minutes-taker** 把长录音变成结构化纪要。
+
+### 梗图与 GIF 制作
+使用 **meme-creator** 把 logo、头像或贴纸贴到视频里运动的对象上（逐帧跟踪），导出 MP4 和控制体积的 GIF。源视频还在线上时，配合 **youtube-downloader**（或直接用 yt-dlp）先抓取。
+
+## 📚 文档
+
+每个技能包括：
+- **SKILL.md**：核心说明和工作流
+- **scripts/**：可执行工具（Python/Bash）
+- **references/**：详细文档
+- **assets/**：模板和资源（如适用）
+
+### 快速链接
+
+- **floorplan-finder**：[户型原图查找与核对](./floorplan-finder/SKILL.md)
+
+- **github-ops**：参见 `github-ops/references/api_reference.md` 了解 API 文档
+- **github-review-pr**：参见 `github-review-pr/SKILL.md` 了解当前 base 评审工作流；显式个人政策见 `github-review-pr/references/personal_maintainer_context.md`
+- **doc-to-markdown**：参见 `daymade-docs/doc-to-markdown/references/conversion-examples.md` 了解转换场景
+- **mermaid-tools**：参见 `daymade-docs/mermaid-tools/references/setup_and_troubleshooting.md` 了解设置指南
+- **statusline-generator**：参见 `daymade-claude-code/statusline-generator/references/color_codes.md` 了解自定义
+- **teams-channel-post-writer**：参见 `teams-channel-post-writer/references/writing-guidelines.md` 了解质量标准
+- **peer-message**：参见 `peer-message/SKILL.md` 了解路由、稳定运行前置与安全边界；运行 `peer-message/scripts/peer.py --help` 查看 CLI 语法；参见 `peer-message/references/protocol-and-discovery.md` 了解传输与验证；参见 `peer-message/references/official-feature.md` 了解会变化的产品要求与机制；参见 `peer-message/references/coordination-and-learning-loop.md` 了解 parent/worker 回传与证据闸门下的改进循环
+- **repomix-unmixer**：参见 `repomix-unmixer/references/repomix-format.md` 了解格式规范
+- **skill-creator**：参见 `daymade-skill/skill-creator/SKILL.md` 了解完整的技能创建工作流
+- **skill-evolver**：参见 [skill-evolver/SKILL.md](./skill-evolver/SKILL.md) 了解针对指定目标的研究、实施与结果验证
+- **llm-icon-finder**：参见 `llm-icon-finder/references/icons-list.md` 了解可用图标
+- **cli-demo-generator**：参见 `cli-demo-generator/references/vhs_syntax.md` 了解 VHS 语法和 `cli-demo-generator/references/best_practices.md` 了解演示指南
+- **cloudflare-troubleshooting**：参见 `cloudflare-troubleshooting/references/api_overview.md` 了解 API 文档
+- **ui-designer**：参见 `ui-designer/SKILL.md` 了解完整的设计系统提取工作流
+- **youtube-downloader**：参见 `youtube-downloader/SKILL.md` 了解使用示例和故障排除
+- **repomix-safe-mixer**：参见 `repomix-safe-mixer/references/common_secrets.md` 了解检测到的凭据模式
+- **video-comparer**：参见 `video-comparer/references/video_metrics.md` 了解质量指标解释和 `video-comparer/references/configuration.md` 了解自定义选项
+- **transcript-fixer**：参见 `daymade-audio/transcript-fixer/references/workflow_guide.md` 了解分步工作流和 `daymade-audio/transcript-fixer/references/team_collaboration.md` 了解协作模式
+- **qa-expert**：参见 `qa-expert/references/master_qa_prompt.md` 了解自主执行（100 倍加速）和 `qa-expert/references/google_testing_standards.md` 了解 AAA 模式和 OWASP 测试
+- **prompt-optimizer**：参见 `prompt-optimizer/references/ears_syntax.md` 了解 EARS 转换模式、`prompt-optimizer/references/domain_theories.md` 了解理论目录和 `prompt-optimizer/references/examples.md` 了解完整转换示例
+- **read-codex-history**：参见 `daymade-claude-code/read-codex-history/references/storage_and_portability.md` 了解本地数据源选择、跨平台路径、隐私边界和诊断方法
+- **read-claude-code-history**：参见 `daymade-claude-code/read-claude-code-history/references/session_file_format.md` 了解 JSONL 结构和 `daymade-claude-code/read-claude-code-history/references/workflow_examples.md` 了解恢复工作流
+- **prior-work-retrieval**：参见 `daymade-claude-code/prior-work-retrieval/SKILL.md` 了解检索／核验工作流，参见 `daymade-claude-code/prior-work-retrieval/references/source-manifest.md` 了解显式载体清单契约
+- **codex-1m-context-window-setup**：参见 `daymade-codex/codex-1m-context-window-setup/SKILL.md` 了解 doctor/apply/verify 工作流，参见 `daymade-codex/codex-1m-context-window-setup/references/context_window_contract.md` 了解模型上限、可用窗口和压缩语义
+- **docs-cleaner**：参见 `daymade-docs/docs-cleaner/SKILL.md` 了解整合工作流
+- **deep-research**：参见 `deep-research/references/research_report_template.md` 了解报告结构，并参见 `deep-research/references/source_quality_rubric.md` 了解来源分级标准
+- **tech-selection**：参见 `daymade-claude-code/tech-selection/references/decision-axes.md` 了解 13 条核心过滤轴，`daymade-claude-code/tech-selection/references/scoped-criteria.md` 了解范围限定补充判据，`daymade-claude-code/tech-selection/references/rejection-modes.md` 了解拒绝模式与反模式，以及 `daymade-claude-code/tech-selection/references/delegation-contract.md` 了解域归属与自主阈值
+- **pdf-creator**：参见 `daymade-docs/pdf-creator/SKILL.md` 了解 PDF 转换与字体设置
+- **claude-md-progressive-disclosurer**：参见 `daymade-claude-code/claude-md-progressive-disclosurer/SKILL.md` 了解 CLAUDE.md 优化工作流
+- **skills-search**：参见 `daymade-skill/skills-search/SKILL.md` 了解 CCPM CLI 命令和注册表操作
+- **promptfoo-evaluation**：参见 `promptfoo-evaluation/references/promptfoo_api.md` 了解评测模式
+- **developing-ios-apps**：参见 `daymade-macos/developing-ios-apps/references/xcodegen-full.md` 了解 XcodeGen 选项与 project.yml 细节
+- **twitter-reader**：参见 `twitter-reader/SKILL.md` 了解 API 密钥设置和 URL 格式支持
+- [macos-cleaner](./daymade-macos/macos-cleaner/SKILL.md)
+- **skill-reviewer**：参见 `daymade-skill/skill-reviewer/references/evaluation_checklist.md` 了解完整评估标准、`daymade-skill/skill-reviewer/references/pr_template.md` 了解 PR 模板
+- **github-contributor**：参见 `github-contributor/references/pr_checklist.md` 了解 PR 质量清单、`github-contributor/references/project_evaluation.md` 了解项目评估标准、`github-contributor/references/communication_templates.md` 了解 issue/PR 沟通模板
+- **i18n-expert**：参见 `i18n-expert/SKILL.md` 了解完整的 i18n 设置工作流程、键架构指导和审计程序
+- **claude-skills-troubleshooting**：参见 `daymade-claude-code/claude-skills-troubleshooting/SKILL.md` 了解插件故障排除工作流程和架构
+- **fact-checker**：参见 `fact-checker/SKILL.md` 了解事实核查工作流程和声明验证过程
+- **competitors-analysis**：参见 `competitors-analysis/SKILL.md` 了解 discover/ingest/profile/landscape 工作流，参见 `competitors-analysis/references/profile_template.md` 了解竞品档案模板
+- **windows-remote-desktop-connection-doctor**：参见 `windows-remote-desktop-connection-doctor/references/windows_app_log_analysis.md` 了解日志解析模式和 `windows-remote-desktop-connection-doctor/references/avd_transport_protocols.md` 了解传输协议详情
+- **product-analysis**：参见[工作流](product-analysis/SKILL.md)与[证据综合方法](product-analysis/references/synthesis_methodology.md)，核对原始来源并形成建议
+- **excel-automation**：参见 `daymade-docs/excel-automation/SKILL.md` 了解创建/解析/控制工作流，参见 `daymade-docs/excel-automation/references/formatting-reference.md` 了解格式规范
+- **capture-screen**：参见 `daymade-macos/capture-screen/SKILL.md` 了解基于 CGWindowID 的 macOS 截图流程
+- **continue-claude-code-work**：参见 `daymade-claude-code/continue-claude-code-work/SKILL.md` 了解本地会话产物恢复、漂移检查与续做流程
+- **continue-codex-work**：参见 `daymade-claude-code/continue-codex-work/SKILL.md` 了解 Codex rollout 定位、结束原因诊断与续做流程
+- **scrapling-skill**：参见 `scrapling-skill/SKILL.md` 了解 CLI 工作流，参见 `scrapling-skill/references/troubleshooting.md` 了解已验证的 Scrapling 故障模式
+- **ima-copilot**：参见 `ima-copilot/SKILL.md` 了解包装层架构与路由规则，参见 `ima-copilot/references/installation_flow.md` 了解安装流程细节，参见 `ima-copilot/references/known_issues.md` 了解已知问题清单与修复命令，参见 `ima-copilot/references/search_best_practices.md` 了解扇出搜索策略与 100 条截断处理
+- **claude-export-txt-better**：参见 `daymade-claude-code/claude-export-txt-better/SKILL.md` 了解工作流，参见 `daymade-claude-code/claude-export-txt-better/scripts/fix-claude-export.py` 了解重建算法，参见 `daymade-claude-code/claude-export-txt-better/evals/` 查看真实回归 fixture
+- **douban-skill**：参见 `douban-skill/SKILL.md` 了解导出工作流，参见 `douban-skill/references/troubleshooting.md` 查看 7 种被测抓取方案及失败原因的完整日志
+- **terraform-skill**：参见 `terraform-skill/SKILL.md` 查看按确切报错 → 根本原因 → 复制粘贴修复组织的实操陷阱完整目录
+- **debugging-network-issues**：参见 `debugging-network-issues/SKILL.md` 了解证伪优先工作流，参见 `debugging-network-issues/references/layered-isolation-experiment.md` 了解多跳隔离模式，参见 `debugging-network-issues/references/case-sse-rst-130s.md` 查看 SSE 生产案例，参见 `debugging-network-issues/references/case-proxy-tun-cname-override.md` 查看客户端代理/TUN CNAME 规则覆盖案例
+- **stepfun-tts**：参见 `stepfun-tts/SKILL.md` 了解 Contextual TTS 决策树，参见 `stepfun-tts/references/migration_from_v2.md` 查看 `voice_label` → `instruction` 迁移手册和审查改写清单
+- **stepfun-asr**：参见 `stepfun-asr/SKILL.md` 了解 SSE 端点工作流和 ASR 侧四个坑（错端点、Plan vs Normal key、重复幻觉、SSE `error` 事件）。`stepfun-asr/references/api_reference.md` 给出原始 HTTP 集成所需的 JSON 请求体和 SSE 事件契约
+- **llm-eval-harness**：参见 `llm-eval-harness/references/evaluation_disciplines.md` 了解每条纪律背后的推理（环境变量传 key、thinking-aware 吞吐、代理隔离、概率化协议判定），以及 `llm-eval-harness/references/quality_blind_judge.md` 了解独立盲审质量方法
+- **meme-creator**：参见 `meme-creator/SKILL.md` 了解完整流程，及 `meme-creator/references/tracking-playbook.md` 了解 CSRT 失效分类与手工关键帧接管
+
+## 🛠 系统要求
+
+- **floorplan-finder**：获授权的网页读取和看图工具；来源需要交互时另需浏览器，无随包运行时依赖。
+
+- **product-growth**：宿主文件读取与分析工具；实时反馈需要获授权的网页/API 通道，无随包运行时依赖。
+
+
+
+- **Claude Code** 2.0.13 或更高版本
+- **支持 `doctor --json` 与 `debug models` 的 Codex CLI + uv/Python 3.11+**（用于 codex-1m-context-window-setup）
+- **gh CLI**（用于 github-ops 和 github-review-pr）
+- **支持 `merge-tree --write-tree` 的 git + jq**（用于 github-review-pr）
+- **markitdown**（用于 doc-to-markdown）
+- **mermaid-cli**（用于 mermaid-tools）
+- **VHS**（用于 cli-demo-generator）：`brew install vhs`
+- **asciinema**（可选，用于 cli-demo-generator 交互式录制）
+- **ccusage**（可选，用于状态栏成本跟踪）
+- **yt-dlp**（用于 youtube-downloader）：`brew install yt-dlp` 或 `pip install yt-dlp`
+- **FFmpeg/FFprobe**（用于 video-comparer）：`brew install ffmpeg`、`apt install ffmpeg` 或 `winget install ffmpeg`
+- **weasyprint、markdown**（用于 pdf-creator）
+- **CCPM CLI**（用于 skills-search）：`npm install -g @daymade/ccpm`
+- **Promptfoo**（用于 promptfoo-evaluation）：`npx promptfoo@latest`
+- **macOS + Xcode、XcodeGen**（用于 developing-ios-apps）
+- **Jina.ai API 密钥**（用于 twitter-reader）：https://jina.ai/ 提供免费套餐
+- **Codex CLI**（可选，用于 product-analysis 多模型并行模式）
+- **Mole**（可选，用于 macos-cleaner 可视化清理）：从 https://github.com/tw93/Mole 下载
+- **uv + openpyxl**（用于 excel-automation）：`uv run --with openpyxl ...`
+- **Bigdata.com API 密钥**（用于 `daymade-financial:bigdata-skill`）：从 [https://www.bigdata.com/](https://www.bigdata.com/) 获取 `bd_v2_` 密钥
+- **Gangtise 凭据**（用于 `daymade-financial:gangtise-copilot`）：从 [https://open.gangtise.com/](https://open.gangtise.com/) 获取 accessKey + secretAccessKey
+- **macOS**（用于 capture-screen 与 excel-automation 的 AppleScript 控制流程）
+- **Python 3.10+**（用于四个本地历史读取／续做 Skill）：内置标准库 reader 与 validator
+- **uv + Scrapling CLI**（用于 scrapling-skill）：`uv tool install 'scrapling[shell]'`，浏览器抓取前运行 `scrapling install`
+- **Node.js 18+ + curl + unzip**（用于 ima-copilot）：`npx skills` 按需从 npm registry 拉取；IMA OpenAPI 凭据从 [https://ima.qq.com/agent-interface](https://ima.qq.com/agent-interface) 获取
+- **StepFun API key**（用于 stepfun-tts 和 stepfun-asr——必须是 "Normal" 等级，Plan key 调音频端点会无声失败）：在 [https://platform.stepfun.com/](https://platform.stepfun.com/) → API Keys 获取
+- **uv + 被测端点的 API key**（用于 llm-eval-harness）：`openai` 和 `aiohttp` 通过 `uv run --with` 自动安装；key 仅按环境变量名传入
+- **FFmpeg + uv**（用于 meme-creator）：`brew install ffmpeg`；随包脚本通过 `uv run` 自行解析 Python 依赖；源是 URL 时才需要 `yt-dlp`
+
+## ❓ 常见问题
+
+### 我如何知道应该安装哪些技能？
+
+如果你想创建自己的技能，从 **skill-creator** 开始。否则，浏览[其他可用技能](#-其他可用技能)部分，安装与你的工作流匹配的技能。
+
+### 没有 Claude Code 可以使用这些技能吗？
+
+大多数 marketplace 技能面向 Claude Code。`daymade-codex` 套件中明确标注支持
+Codex 的技能也可以通过 Codex 插件市场安装；使用前请查看对应 Skill 的要求。
+
+### 如何更新技能？
+
+按[插件更新流程](./daymade-skill/skill-governance/references/skill-surface-governance.md#supported-repair)
+刷新市场元数据，并在原有安装范围内更新插件。技能已迁入套件时，按[套件迁移流程](./daymade-skill/skill-governance/references/skill-surface-governance.md#8-reconcile-a-suite-migration)
+安装并验证替代套件后，再移除旧插件。
+
+### 我可以贡献自己的技能吗？
+
+新 Skill 的建议与提交范围见[贡献政策](./CONTRIBUTING.md#what-we-dont-accept)；修改现有 Skill 时按 [bug 修复流程](./CONTRIBUTING.md#-bug-fixes-to-existing-skills)执行。
+
+### 这些技能使用安全吗？
+
+开源便于检查，但不能证明安全。审查方法见 [skill-reviewer](./daymade-skill/skill-reviewer/SKILL.md) 与[安全检查清单](./daymade-skill/skill-creator/references/sanitization_checklist.md)。
+
+### 中国用户如何处理 API 访问？
+
+我们建议使用 [CC-Switch](https://github.com/farion1231/cc-switch) 来管理 API 提供商配置。查看上面的[中国用户指南](#-中国用户指南)部分。
+
+### skill-creator 和其他技能有什么区别？
+
+**skill-creator** 是一个元技能 - 它帮助你创建其他技能。其他技能是面向最终用户的技能，提供特定功能（GitHub 操作、文档转换等）。如果你想用自己的工作流扩展 Claude Code，从 skill-creator 开始。
+
+---
+
+## 🤝 贡献
+
+本仓库是我们自己的精选 skill 合集——完整政策见 [CONTRIBUTING.md](./CONTRIBUTING.md)。简言之：
+
+1. **欢迎 bug 报告和 bug 修复 PR**——先开 issue 确认，再提交最小化修复
+2. **不接受新 skill PR**——格式是开放的，欢迎发布你自己的 marketplace
+3. 随时欢迎对 skill 质量的反馈
+
+### 技能质量标准
+
+此市场中的所有技能遵循：
+- 祈使句/不定式写作风格
+- 渐进式披露模式
+- 适当的资源组织
+- 全面的文档
+- 经过测试和验证
+
+## 📄 许可证
+
+此市场根据 MIT 许可证授权 - 详见 [LICENSE](LICENSE) 文件。
+
+## ⭐ 支持
+
+如果你觉得这些技能有用，请：
+- ⭐ 给这个仓库加星
+- 🐛 报告问题
+- 💡 提出改进建议
+- 📢 与你的团队分享
+
+## 🔗 相关资源
+
+- [Claude Code 文档](https://docs.claude.com/en/docs/claude-code)
+- [Agent 技能指南](https://docs.claude.com/en/docs/claude-code/skills)
+- [插件市场](https://docs.claude.com/en/docs/claude-code/plugin-marketplaces)
+- [Anthropic 技能仓库](https://github.com/anthropics/skills)
+
+## 📞 联系方式
+
+- **GitHub**：[@daymade](https://github.com/daymade)
+- **Email**：[daymadev89@gmail.com](mailto:daymadev89@gmail.com)
+- **仓库**：[daymade/claude-code-skills](https://github.com/daymade/claude-code-skills)
+
+---
+
+**使用 skill-creator 技能为 Claude Code 精心打造 ❤️**

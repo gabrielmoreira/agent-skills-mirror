@@ -1,7 +1,7 @@
 # desktop
 
 Core-side logic that exists to serve the desktop client: the app-state
-snapshot the shell polls, the notification center, overlay attention bubbles,
+snapshot the shell polls, the notification center,
 the model-health dashboard, the provider respond queue, and opt-in native
 desktop control. A headless or embedded host has little use for any of it,
 which is why these domains are grouped here and tagged `DomainGroup::Desktop`.
@@ -18,23 +18,23 @@ The members are independent. They share a host-facing role, not a data model.
 Each one meets the frontend in one of two ways:
 
 ```text
-             React shell / notch window / browser SPA
+             React shell / mascot window / browser SPA
                |                         ^
      JSON-RPC  |                         |  Socket.IO
   (openhuman.*)|                         |  (openhuman-rpc server/socketio.rs)
                v                         |
  +--------------------------+   +-------------------------------+
  | controllers (core/all.rs)|   | in-process broadcast channels |
- |  app_state_*             |   |  overlay::subscribe_attention |
- |  notification_*          |   |    _events                    |
- |  dashboard_*             |   |  notifications::subscribe_    |
- |  provider_surfaces_*     |   |    core_notifications         |
+ |  app_state_*             |   |  notifications::subscribe_    |
+ |  notification_*          |   |    core_notifications         |
+ |  dashboard_*             |   |                               |
+ |  provider_surfaces_*     |   |                               |
  |  desktop_* (internal)    |   +-------------------------------+
  +--------------------------+               ^
                |                            | publish
                v                            |
       peer domains (config, auth,   DomainEvent bus -> notifications::bridge
-      local AI, service, keyring)   any caller -> overlay::publish_attention
+      local AI, service, keyring)
 ```
 
 Request and response flows (the app-state snapshot, the notification list,
@@ -44,8 +44,7 @@ process-global `tokio::sync::broadcast` channels that the Socket.IO server in
 [`crates/openhuman-rpc`](../../../openhuman-rpc/) subscribes to and forwards. Notifications get onto
 their channel through `NotificationBridgeSubscriber` (`notifications::bridge`),
 which translates selected `DomainEvent`s; it is registered at startup from
-[`core/runtime/subscribers.rs`](../core/runtime/subscribers.rs). Overlay attention events are published
-directly by any caller.
+[`core/runtime/subscribers.rs`](../core/runtime/subscribers.rs).
 
 ### Desktop control
 
@@ -81,7 +80,6 @@ action budget still apply. The agent-facing instructions are in
 | `control/` | Opt-in native desktop control: enablement and status (`ops.rs`), pending-action decisions (`confirmation.rs`), the `desktop_*` agent tools (`tools.rs`), and internal-only controllers (`schemas.rs`). `modules` feature only. Agent guidance in `WORKFLOW.md`. |
 | [`dashboard/`](dashboard/README.md) | Read-only per-model health table for Settings, built from `model_registry` and the `dashboard.model_health` thresholds. Also the `dashboard_model_health` agent tool. |
 | [`notifications/`](notifications/README.md) | Two pipelines: the event bridge that turns `DomainEvent`s into `CoreNotificationEvent`s, and the integration-notification store (SQLite) with background triage and per-provider settings. |
-| [`overlay/`](overlay/README.md) | One broadcast channel for short attention messages shown in the notch or overlay window. No RPC, no persistence. |
 | [`provider_surfaces/`](provider_surfaces/README.md) | An early scaffold: a normalized `ProviderEvent` model and an in-memory respond queue (soft cap 500) over embedded provider webviews. |
 
 ## Key types and entry points
@@ -92,8 +90,6 @@ action budget still apply. The agent-facing instructions are in
 - `notifications::register_notification_bridge_subscriber(config)` and
   `notifications::publish_core_notification` / `subscribe_core_notifications`
   ([`notifications/bus.rs`](./notifications/bus.rs)) are the push path for the notification center.
-- `overlay::publish_attention(OverlayAttentionEvent)` returns how many
-  subscribers received the event (zero means it was dropped).
 - `control::status`, `control::set_enabled`, and `control::probe`
   ([`control/ops.rs`](./control/ops.rs)) back the Connections page.
 - `DesktopTool` and `DesktopToolKind` ([`control/tools.rs`](./control/tools.rs)) are the desktop
@@ -113,9 +109,9 @@ Method names are `openhuman.<namespace>_<function>`.
 
 ## Boundaries
 
-- Windows, tray, notch window, and OS integration belong to the Tauri shell
-  (`crates/openhuman-app/`). The notch window host is
-  [`crates/openhuman-app/src/notch_window.rs`](../../../openhuman-app/src/notch_window.rs).
+- Windows, tray, mascot window, and OS integration belong to the Tauri shell
+  (`crates/openhuman-app/`). The mascot window host is
+  [`crates/openhuman-app/src/mascot_native_window.rs`](../../../openhuman-app/src/mascot_native_window.rs).
 - Socket.IO forwarding belongs to [`crates/openhuman-rpc/src/server/socketio.rs`](../../../openhuman-rpc/src/server/socketio.rs).
 - OS accessibility (AX and IOKit FFI, the Swift helper, focus, permissions,
   the Globe key) executes inside the compiled TinyComputer module in
@@ -124,8 +120,6 @@ Method names are `openhuman.<namespace>_<function>`.
   module; this folder calls it through `tinycomputer-bus`.
 - The live current user belongs to the host's session owner
   (`openhuman_tinyhumans::session`), not to `app_state`.
-- Dictation overlay activation is driven by `voice::dictation_listener`, not
-  by `overlay`.
 
 ## Gotchas
 
@@ -138,8 +132,8 @@ Method names are `openhuman.<namespace>_<function>`.
 - `control` checks loopback on every tool call and every confirmation, not
   just at enable time. A core bound to a non-loopback address reports
   `supported: false`.
-- The overlay and notification channels drop events when no one is
-  subscribed. They are notifications, not a queue.
+- The notification channel drops events when no one is subscribed. It is not
+  a queue.
 - `provider_surfaces` keeps its queue in process memory, so it is empty after
   a restart.
 

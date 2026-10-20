@@ -1000,7 +1000,7 @@ username, hostname, home path or real project path appears in any file: the sess
 | `claude-lab--statusline-numbered-rows--w82.txt` | 82 × 49 | statusline rows holding '1. ' items and the words 'Esc to'; still a statusline, box is live |
 | `claude-lab--statusline-prompt-row--w82.txt` | 82 × 49 | statusline whose first row starts with '❯ ' — a frame mark below the box [2.1.291: the box holds a ghost suggestion (draft null).] |
 | `claude-lab--statusline-rule-row--w82.txt` | 82 × 49 | statusline whose first row is '─ main ─────' — a rule below the box [2.1.291: the box holds a ghost suggestion (draft null).] |
-| `claude-lab--survey-rating-above-box--w82.txt` | 82 × 49 | session rating prompt ('1: Bad 2: Fine 3: Good 0: Dismiss') sits ABOVE a live box; digits go to the survey [2026-10-06: not reproduced on 2.1.291; the 2.1.278 bytes stay.] |
+| `claude-lab--survey-rating-above-box--w82.txt` | 82 × 49 | session rating prompt ('1: Bad 2: Fine 3: Good 0: Dismiss') sits ABOVE a live box; digits go to the survey [2026-10-06: not reproduced on 2.1.291; the 2.1.278 bytes stay.] [2026-10-19: a notice since the ADR 0109 addendum: reads free, lifts a card with four buttons; labelled `idle`.] |
 | `claude-lab--tasks-panel--w40.txt` | 40 × 49 | /tasks background-task panel (new in Claude Code 2.1.277): ▔ top rule, 'Background' title, empty-state row, key-hint footer wrapped onto two rows |
 | `claude-lab--tasks-panel--w82.txt` | 82 × 49 | /tasks background-task panel (new in Claude Code 2.1.277): ▔ top rule, 'Background' title, empty-state row, one-line key-hint footer [2026-10-06: kept at its 2.1.278 bytes because other suites pin them; the 2.1.291 capture is `claude-lab--tasks-panel-v2291--w82.txt`.] |
 | `claude-lab--tasks-panel-v2291--w82.txt` | 82 × 49 | /tasks panel on 2.1.291 (82 columns): the ▔ top edge is now a ─ rule and rows are indented two spaces (were three); the 'Background' title, empty-state row and one-line footer are unchanged. |
@@ -2339,6 +2339,30 @@ captured.
 |---|---|
 | `claude--v2302-notice-over-agents-panel--w69.txt` | A running turn (`✶ Hashing… · tool use (4s · thinking with high effort)`) at 69 columns with the `✦ You should know · ` notice above the box, its three wrapped rows and the key row `1: Learn more   2: Knew this already   0: Dismiss`, then the box, two status rows, and the agents panel (`● main`, three `◯ general-purpose` rows) under them. The notice and the agents panel are vanilla Claude Code; the spinner's ` · tool use` suffix, the `[-]` row over the notice and the reply boxes come from a theme plugin (ui-themes). The panel is the footer run the Claude profile names (`frame.volatile.named`), so it is not counted against the six-row tail and the notice lifts its card (ADR 0109). Labelled `running` |
 
+## Cursor CLI input box (captured 2026-10-17, Cursor CLI 2026.10.14 and 2026.10.16, Herdr)
+
+Read through `GET /api/pane/:id` with `scripts/capture-fixture.sh` from a throwaway pane in
+`/tmp/collie-cursor-lab`, then scrubbed: the shell prompt and the CLI's tracing line above the agent
+were cut off the top, and the user skills in the slash list were replaced by neutral example rows with
+the same styling. The two rows under the box (`📁 … · ⎇ … · <model>` and `ctx N% · …`) are the
+operator's own statusline. The captures back the `cursor` input profile.
+
+| Fixture | State / what's in it |
+|---|---|
+| `cursor--trust-prompt.txt` | The folder trust prompt in a `╭` box, `▶ [a] Trust this workspace`, before the input box is drawn. Labelled `dialog` |
+| `cursor--fresh-idle.txt` | A new session: the `▄` rule, `→ Plan, search, build anything` in grey with the cursor on the first letter, the `▀` rule. Labelled `idle` |
+| `cursor--draft.txt`, `cursor--draft-wrapped.txt`, `cursor--draft-multiline.txt` | A one-row draft, a draft wrapped onto a row indented four columns, and a draft with a Ctrl+J newline. Labelled `draft` |
+| `cursor--slash-popup.txt` | The box holds `/`; the command list under it, the pointer `   → /model [filter]` at three columns, entries at five, `↓ more below` last. Labelled `popup` |
+| `cursor--slash-exact.txt` | The box holds `/model` and the list points at `/model`: the command's own typeahead. Labelled `popup` |
+| `cursor--working.txt`, `cursor--working-draft.txt` | A running turn: a braille spinner row `⠀⠞ Running  203 tokens` above the box, `1 task` under it. The first still shows the sent text in the box (Enter came too soon after the text); the second holds a new draft. Labelled `running` |
+| `cursor--working-queued.txt` | Enter in a turn queued the draft: a `┌─ follow-ups` box above the input box with `│ ○ queued note` and `│ enter steer · ↑ select/edit · esc cancel`, and `ctrl+c to stop` at the right end of the `→` row. Labelled `running` |
+| `cursor--ask-question.txt`, `cursor--ask-question-moved.txt` | The agent's question in a `┌` box that replaces the input box, with the pointer on the first and the second option. Labelled `dialog` |
+| `cursor--idle-after-turn.txt` | The turn is over: `→ Add a follow-up` in grey. Labelled `idle` |
+| `cursor--permission-shell.txt` | A shell command approval (Run Everything off) that replaces the box: `Run this command?`, `→ Run (once) (y)` and three more options. A probe character and a Backspace typed here changed nothing. Labelled `dialog` |
+| `cursor--after-skip.txt` | Escape on that approval: a box with `→ Tell the agent what to do instead (Enter to send, empty to skip, Esc to cancel)` and no statusline under it. The profile does not list that hint, so the box reads as a draft and a send stops. Labelled `other` |
+| `cursor--shell-mode-empty.txt`, `cursor--shell-mode-draft.txt` | `!` turned the box into a shell prompt: a yellow `!` and the grey hint `Run a command — e.g., git status`, then `! echo hi`. The hint is not a placeholder of the profile, so an empty shell prompt reads as a draft and a message never goes into it. Labelled `draft` |
+| `cursor--v20261016-idle-after-queued.txt` | 2026.10.16: a send held during a turn went out when the turn ended (`queued note from collie` in the transcript), and the box is empty again. Labelled `idle` |
+
 ## The slash list under the box, 2.1.302 (reconstructed 2026-10-17, not captured)
 
 Rebuilt by hand from a masked field capture (letters read `a`, digits `0`), the screen of the
@@ -2428,6 +2452,28 @@ grammar now claims it with `pointer: "field"`, and a toggle first moves the poin
 |---|---|
 | `claude--v2302-multiselect-field-focused--w160.txt` | Stepper `←  ☒ Next step  ✔ Submit  →`, four `[✔]` options, `❯ 5. [ ] Type something`, `Submit`, a rule, `6. Chat about this`, footer `Enter to select · ↑/↓ to navigate · ctrl+g to edit in nano · Esc to cancel`. Lifts `multi-select` with the pointer on the field; the Surface reads `modal: ask`. Labelled `dialog` |
 
+## A session name in the box's top edge, 2.1.303 (captured 2026-10-19, lane 8788, Herdr)
+
+Claude Code 2.1.30x writes a named session's name into the right end of the box's top edge:
+`──────…──────── 1.23.0 ─`. Read with `herdr pane read <pane> --source visible --format ansi --raw`
+from a live session (160 columns), CRLF line ends and escapes kept, cut to the last tool call above the
+spinner. The two `●` rows and their tool rows have every letter replaced by neutral words of the same
+width; every escape, glyph, digit, space and row is kept. The right-aligned `✔ Update installed · Restart
+to update` row, the operator's three-row statusline and the agents panel are as captured. The profile's
+top edge already reads a label (`(?<label>…)` in claude.json, `isInputBoxTopBorder` in the chrome
+reader), so all four read their box with the label `1.23.0`, and the name is never draft or transcript.
+The field case: every send to that pane was refused `unconfirmed` with `modal: "unreadable"`. The cause
+was the rating survey, not the name: its key row stood on the update row right over the edge, one run of
+rows with it, so the single-key cue read it. The same day the survey became a notice (ADR 0109 addendum)
+and the update row a notice gap, so the screen now reads free and lifts the survey's card.
+
+| Fixture | State / what's in it |
+|---|---|
+| `claude--v2303-titled-edge-working--w160.txt` | As captured: `✻ Zigzagging… (3m 21s · ↓ 11.6k tokens · still thinking with high effort)`, the update row, the titled edge, an empty `❯`, the bottom rule, three statusline rows, a blank row, and the agents panel (`● main`, three `◯ general-purpose` rows). Reads `running`, free of any modal. Labelled `running` |
+| `claude--v2303-titled-edge-idle--w160.txt` | **Derived**: the spinner row replaced by the field screen's own `✻ Brewed for 4m 14s · done 6:51 AM · 1 shell still running`. Reads idle and free. Labelled `idle` |
+| `claude--v2303-titled-edge-draft--w160.txt` | **Derived** from the idle file: the box holds `ok merge the five, running the crew update now`. Reads the draft without the name. Labelled `draft` |
+| `claude--v2303-titled-edge-survey--w160.txt` | **Derived** from the idle file to the layout of the field read (the masked rows in the lane's refusal example): a blank row, `● How is Claude doing this session? (optional)` and `  1: Bad    2: Fine   3: Good   0: Dismiss` right on the update row. The field receipt read `idle`, `unreadable`, `empty`; since the ADR 0109 addendum it reads `idle`, `none`, `empty`, the same with a plain edge or a blank row under the keys, and lifts a card with Bad, Fine, Good and Dismiss. Labelled `idle` |
+
 ## The slash list under pi's and omp's box (captured 2026-10-17, pi 1.3.0, pi 0.87.1, omp 18.6.1, isolated Herdr)
 
 Read through a scratch bridge's `GET /api/pane/:id` (ANSI kept, CRLF rows) from an isolated Herdr
@@ -2502,3 +2548,103 @@ Nerd Font glyph, so the box's top edge (`╭── ⠋ 13s …`, `1m` past a min
 | `omp--v18-11-nerd-running-tool-minute--w130.txt`, `--w80.txt` | The same turn past a minute: the top edge reads `⠋ 1m`. Labelled `running` |
 | `omp--v18-11-nerd-ghost-word--w130.txt`, `--w80.txt` | The box holds `please push` with the ghost `ed` after it. Labelled `draft` |
 | `omp--v18-11-ghost-word--w130.txt` | The same with the `unicode` preset. Labelled `draft` |
+
+## omp 18.12 band composer, nerd preset (captured 2026-10-18, oh-my-pi `omp` v18.12.1, scratch tmux, issue 505)
+
+Read with `tmux capture-pane -p -e` from a scratch tmux server on its own socket. omp ran stock
+(`--no-extensions`) under `env -i` with a scratch `HOME`, in a fresh `git init` sandbox at
+`/tmp/collie-band/project`, with `PI_CODING_AGENT_DIR` on a scratch folder whose `config.yml` set only
+`setupVersion`, `composer.shape: band` (omp's default shape) and the `nerd` symbol preset, or no preset for the
+`unicode` control. The running captures took one model turn (`anthropic/claude-haiku-4-5`, a bash call to
+`sleep 75`). The width is in the name (`--w130`, `--w80`). No home path, host or account appears.
+
+The band draws the status line as the composer's top row, with no `╭──` edge, and the prompt row `╰─` under it.
+Under the `unicode` preset that row is ` π > … ▶─4%───…200K─`, which the profile's top pattern already read.
+Under the `nerd` preset it opens on the powerline cap U+E0B6 and the pi glyph U+F0D57, separates segments with
+U+E0B1 and closes them with U+E0B0 before the context meter, so no `π` and no `▶`: the frame was never found and
+every send was refused `unconfirmed` ("Collie cannot read this screen"). A running turn puts the spinner and
+its time where the pi glyph sits (`U+E0B6 ⠏ 14s U+E0B1 …`).
+
+| Fixture | State / what's in it |
+|---|---|
+| `omp--v18-12-nerd-band-idle--w130.txt`, `--w80.txt` | A fresh session, the empty `╰─` row under the band. Labelled `idle` |
+| `omp--v18-12-band-idle--w130.txt` | The same with the `unicode` preset, the shape the profile already read. Labelled `idle` |
+| `omp--v18-12-nerd-band-draft--w130.txt`, `--w80.txt` | The box holds `please check the build`. Labelled `draft` |
+| `omp--v18-12-nerd-band-two-lines--w130.txt`, `--w80.txt` | A two-line draft, the second line `and report back` with omp's ghost `end` after it. Labelled `draft` |
+| `omp--v18-12-nerd-band-wrapped--w130.txt`, `--w80.txt` | A 169-character line wrapped over two or three rows. Labelled `draft` |
+| `omp--v18-12-nerd-band-running--w130.txt`, `--w80.txt` | A bash call runs: the band reads `⠋ 14s` where the pi glyph sits. Labelled `running` |
+| `omp--v18-12-nerd-band-running-minute--w130.txt` | The same turn past a minute: `⠼ 1m`. Labelled `running` |
+| `omp--v18-12-nerd-band-done--w130.txt`, `--w80.txt` | The turn ended (`Done.`), the empty box under the band: the follow-up send's screen. Labelled `idle` |
+
+## omp 18.11.1 band, any status line style (captured 2026-10-19, oh-my-pi `omp` v18.11.1, scratch Herdr pane, issue 505)
+
+Read with `herdr pane read <id> --source recent --format ansi` from a scratch Herdr tab, 120 columns, CRLF
+normalised to LF. omp ran stock (`--no-extensions`) under `env -i` from an isolated npm prefix, with a scratch
+`HOME` and `PI_CODING_AGENT_DIR` whose `config.yml` set `setupVersion: 2`, `startup.checkUpdate: false` and the
+style in the name. The project folder is a fresh `git init` at `/tmp/omp-18-11/project`. No model is set up,
+so the band reads `no-model`. No home path, host or account appears.
+
+The composer is omp's default `band`. The stock row (`nerd` preset, `powerline-thin` separator) closes its
+segments with U+E0B0 before the `─` run, which the profile already read. `statusLine.transparent: true` drops
+the caps: no U+E0B6 in front and no U+E0B0 before the `─` run, the shape the issue's row shows. The `slash`
+separator draws U+E0BB and no closer. The `minimal` preset has no pi glyph and opens on the folder icon. The
+`ascii` preset writes ` pi > … >---`. Before this fix only the stock row was read as the top edge.
+
+| Fixture | State / what's in it |
+|---|---|
+| `omp--v18.11.1-powerline-idle--w120.txt` | Stock band, empty `╰─` row. Labelled `idle` |
+| `omp--v18.11.1-powerline-draft--w120.txt` | Stock band, the box holds `please check the build` with the ghost `ing`. Labelled `draft` |
+| `omp--v18.11.1-powerline-transparent-idle--w120.txt` | `statusLine.transparent: true`, empty box. Labelled `idle` |
+| `omp--v18.11.1-powerline-transparent-draft--w120.txt` | The same with `please check the build` and the ghost `ing`. Labelled `draft` |
+| `omp--v18.11.1-slash-idle--w120.txt` | `statusLine.separator: slash`, empty box. Labelled `idle` |
+| `omp--v18.11.1-minimal-idle--w120.txt` | `statusLine.preset: minimal`, empty box. Labelled `idle` |
+| `omp--v18.11.1-ascii-idle--w120.txt` | `symbolPreset: ascii`, empty box. Labelled `idle` |
+## Hermes corpus (captured 2026-10-16, Hermes Agent v0.22.2 classic CLI, Herdr 0.9.1, sandbox pane)
+
+`hermes--*.txt` come from one disposable Herdr pane running the installed `hermes --cli` with a
+scratch `HERMES_HOME` and a local zero-inference model endpoint that answers a keyword with a
+scripted tool call (`clarify`, or a `terminal` call that Hermes flags as dangerous). The panels are
+Hermes's own rendering of those calls; no provider was called. Read through a second Collie bridge
+on loopback (`GET /api/pane/:id?lines=40`, `scripts/capture-fixture.sh`), so the bytes are what the
+phone reads: SGR kept, CRLF as Herdr returns it. Herdr named the pane `agent: hermes`. The pane was
+120 columns; the `-w60` files ran under `stty cols 60`, below the 64-column line where Hermes drops
+the spinner row and the rule under the input. Six files began inside Hermes's startup banner, whose
+last rows name the scratch path and session id; those rows were cut off the top, which is what a
+smaller `lines=` read returns. Nothing else was changed. The Ink TUI (`hermes --tui`) is not in
+this corpus. Recipes: [`hermes/CLARIFY_NOTES.md`](../../lib/harness/hermes/CLARIFY_NOTES.md) and
+[`hermes/APPROVAL_NOTES.md`](../../lib/harness/hermes/APPROVAL_NOTES.md).
+
+| Fixture | State | Reads as |
+| --- | --- | --- |
+| `hermes--idle` | Idle input, italic placeholder, status bar above the rules | composer, no draft |
+| `hermes--idle-w60` | The same at 60 columns: no rule under the input | composer, no draft |
+| `hermes--draft` | `CLARIFY-OPEN` typed, not sent | composer, draft read back |
+| `hermes--draft-w60` | `CLARIFY-ONE` typed at 60 columns | composer, draft read back |
+| `hermes--draft-wrapped` | One long line wrapped onto a second row | composer, rows joined |
+| `hermes--draft-multiline` | Three lines typed with raw newlines, none submitted | composer, newlines kept |
+| `hermes--draft-six-lines` | Six lines typed in one write: no paste placeholder | composer, all six read back |
+| `hermes--running` | A turn streaming, `☤ ❯` and the busy placeholder | composer, turn running (a send is held) |
+| `hermes--done` | The turn finished after a clarify answer | composer |
+| `hermes--slash-popup` | `/mo` typed, grey auto-suggestion `a`, completion menu under the input | composer, draft `/mo` |
+| `hermes--model-picker` | `/model`, the model list; status slot blank, input still idle | picker, Ctrl+C card |
+| `hermes--palette` | Ctrl+P palette; status slot blank, input still idle | picker, Ctrl+C card |
+| `hermes--exited` | The shell after `/exit` | no input, no card |
+| `hermes--clarify-choices` | One question, three choices and Other, `❯` on 1, countdown `(3547s)` | digits 1 to 4 |
+| `hermes--clarify-choices-moved` | The same after Down, `❯` on 2 | digits 1 to 4 |
+| `hermes--clarify-choices-w60` | The same at 60 columns, prompt `?` | digits 1 to 4 |
+| `hermes--clarify-four` | Four choices and Other | digits 1 to 5 |
+| `hermes--clarify-long` | A question and a choice that wrap inside the panel | digits 1 to 3 |
+| `hermes--clarify-two` | Two questions, the first active, the second pending | digits for the first |
+| `hermes--clarify-two-second` | The first locked as `Green`, the second active | digits for the second |
+| `hermes--clarify-multi` | A multi-select question, nothing toggled | raw, Keys pad, no card |
+| `hermes--clarify-multi-toggled` | The same after `2` toggled `Tests` | raw, Keys pad, no card |
+| `hermes--clarify-other` | After `4`: `Other (type below)`, prompt `✎ ❯` | composer: a send answers the question |
+| `hermes--clarify-other-draft` | `CockroachDB 23.2` typed as the answer, not sent | composer, draft read back |
+| `hermes--clarify-other-w60` | The typed-answer screen at 60 columns, prompt `✎` | composer |
+| `hermes--clarify-other-draft-w60` | `Firebird` typed at 60 columns | composer, draft read back |
+| `hermes--clarify-open` | A question with no choices: typed answer from the start | composer |
+| `hermes--approval` | `rm -rf` on a scratch path, four choices, `❯` on Allow once | Allow once, Deny |
+| `hermes--approval-moved` | The same after Down, `❯` on Allow for this session | Allow once, Deny |
+| `hermes--approval-w60` | The same at 60 columns, prompt `⚠` | Allow once, Deny |
+| `hermes--approval-long` | A 120-character command, `5. Show full command` | Allow once, Show full command, Deny |
+| `hermes--approval-long-full` | After `5`: row 5 gone, `❯` on Deny | Allow once, Deny |

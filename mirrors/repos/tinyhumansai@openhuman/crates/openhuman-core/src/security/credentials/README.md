@@ -7,7 +7,7 @@ Credential management for the backend credential the core authenticates with and
 ## Responsibilities
 
 - Install a backend credential (`set_credential`): a session JWT (with the user id / payload the host resolved, or the JWT's subject claim), a TinyHumans API key, or the offline local token. A JWT whose `exp` is already past is refused; a session with no resolvable user id is refused.
-- On install: activate the user-scoped openhuman directory, purge pre-login (anonymous) conversation threads on first activation, bind memory/conversation persistence, start the credential-gated services (local AI, voice server, dictation listener, always-on voice), open the scheduler gate, scope Sentry and the prompt-layer identity. A repeat install with the **same token and user** is a cheap refresh of the stored user payload (this is how a host replaces a `pendingBackendValidation` placeholder with its later `/auth/me` answer); a **different user** is signed out first.
+- On install: activate the user-scoped openhuman directory, purge pre-login (anonymous) conversation threads on first activation, bind memory/conversation persistence, start credential-gated services, open the scheduler gate, scope Sentry and the prompt-layer identity. A repeat install with the **same token and user** is a cheap refresh of the stored user payload (this is how a host replaces a `pendingBackendValidation` placeholder with its later `/auth/me` answer); a **different user** is signed out first.
 - On removal / session-expiry (`clear_credential`): remove the profile, clear the active-user marker, stop the gated services, rebind process globals to the signed-out workspace, and close the scheduler-gate override.
 - Boot seeding for headless hosts: `OPENHUMAN_BACKEND_API_KEY` / `OPENHUMAN_BACKEND_SESSION_TOKEN` install a credential on a fresh store (never overwrite one).
 - Persist arbitrary provider credentials (token + metadata fields) as named auth profiles; list/remove/set-active; prefix-list profiles for grouped namespaces (e.g. `channel:*`).
@@ -109,7 +109,7 @@ across processes; the local file lock still serializes one host.
 - `crate::platform::llm_gate`: signed-out override flipped on install/removal/expiry.
 - `crate::memory::conversations`: purge pre-login threads, bind conversation persistence after activation.
 - `crate::memory`: bind memory client to the active workspace after activation.
-- `crate::inference::host_runtime`, `crate::voice::{server,dictation_listener,always_on}`: credential-gated services started/stopped.
+- `crate::inference::host_runtime`: the local runtime probe is reset on logout.
 - [`jwt.rs`](./jwt.rs): JWT `exp` decode and `user_id_from_profile_payload`.
 - `crate::core::all` (`ControllerFuture`, `RegisteredController`), `crate::core` (`ControllerSchema`/`FieldSchema`/`TypeSchema`), `crate::core::events::DomainEvent` + `tinybus::EventHandler`, `crate::rpc::RpcOutcome`: controller registry + RPC envelope + event bus.
 

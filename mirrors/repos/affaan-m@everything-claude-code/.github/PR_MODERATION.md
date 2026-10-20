@@ -10,13 +10,22 @@ judge whether a patch is useful. Existing open PRs are not bulk-closed on rollou
 | --- | --- | --- |
 | Burst allowance | Five creations per author in 20 minutes | Close and lock excess PRs |
 | Severe burst | More than ten creations in 20 minutes | Attempt account block; alert maintainers |
+| Open-PR cap | Ten open PRs per author at any time | Close the newest PRs above the cap with an explanatory comment; no lock, no alert |
 | Known denied account | User ID `108231307`, currently `dajiaohuang` | Close and lock its incoming/reopened PR |
 | Trusted contributors | Live repository write, maintain, or admin permission | Exempt from the burst guard |
 | Notifications | `@affaan-m @haelyra` | One bot-authored issue per author per UTC day, plus one escalation comment |
 
 Edit `pr-burst-policy.json` to change thresholds, notification recipients or
-denied numeric IDs. This policy limits submission rate, with no limit on the
-total number of open PRs a contributor can accumulate over time.
+denied numeric IDs, or `maxOpen` to change the open-PR cap.
+
+The open-PR cap is evaluated on the same opened and reopened events, after any
+burst closures in that run, against a full paginated list of the repository's
+open PRs. The author's oldest `maxOpen` PRs stay open; newer ones are closed with
+a bot comment that names the count and the limit. Closing is reversible: once
+the author is under the cap, reopening a closed PR passes. A PR the burst guard
+already closed and locked in the same run is never touched again by the cap. The
+cap does not bulk-close PRs that were already open when it shipped; it applies
+as each author opens or reopens their next PR.
 
 Closed and draft PRs count toward burst detection. Counting uses stable author
 IDs and paginated REST creation metadata, without the search index. A run checks

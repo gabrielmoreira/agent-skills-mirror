@@ -18,16 +18,17 @@ the rest of the core (sub-agents, web-channel sessions, turn snapshots).
 
 ### Three kinds of per-thread data
 
-A thread has three separate records on disk, all under the workspace:
+A thread has three separate records, resolved through the configured storage
+backend:
 
 ```text
-<workspace>/memory/conversations/
-  threads.jsonl                      thread metadata, append-only upsert/delete log
-  threads/<hex(thread_id)>.jsonl     the thread's message log (what the UI lists)
-  turn_states/<hex(thread)>/<hex(request)>.json
-                                     snapshot of one turn's progress
-session store (storage::sessions) model-facing transcript (agent session host)
+conversation store                  thread metadata and messages
+turn-state store                    snapshot of one turn's progress
+session store (storage::sessions)   model-facing transcript (agent session host)
 ```
+
+Legacy `<workspace>/memory/conversations/` files are read once into the
+configured backend; they remain as an import source and are not the live store.
 
 The message log is the user-facing history: one row per user message and
 agent reply, which `threads.messages_list` returns. The transcript is what
@@ -151,20 +152,11 @@ inbound and processed channel turns into the store, using
 and `security/credentials/ops/user_scope.rs` (when the user dir activates).
 See [store/README.md](store/README.md).
 
-### Welcome migration
-
-`welcome_migration::migrate_welcome_agent_artifacts` is a one-shot cleanup for
-the removed welcome-agent onboarding: it strips the obsolete `"onboarding"`
-label from threads and renames `welcome*` session transcripts to
-`orchestrator*`. It is idempotent, guarded by
-`state/migrations/welcome_to_orchestrator_v1.done`, and called from
-`platform/startup/ops.rs`.
-
 ## Layout
 
 | Path | What it does |
 | --- | --- |
-| [`mod.rs`](./mod.rs) | Module declarations, re-exports of the RPC models, error type, controller aggregators and the welcome migration. |
+| [`mod.rs`](./mod.rs) | Module declarations, re-exports of the RPC models, error type and controller aggregators. |
 | [`rpc_models.rs`](./rpc_models.rs) | Serde request and response types for the namespace (`ConversationThreadSummary`, `ConversationMessageRecord`, the `*Request` types). |
 | [`error.rs`](./error.rs) | `ThreadsError` (`NotFound`, `Message`) and its structured RPC error with kind `ThreadNotFound`, so the frontend can drop a stale thread. |
 | [`ops.rs`](./ops.rs) | Re-exports the operations from [`ops/`](./ops/). |
@@ -182,7 +174,6 @@ label from threads and renames `welcome*` session transcripts to
 | [`schemas/`](./schemas/) | `schema_defs.rs` (controller schemas), `handlers.rs` (param parsing, thin handlers), `registry.rs` (the controller list). |
 | [`store/`](./store/) | Re-export of `tinyagents_session::threads`, the `blocking` wrappers and the channel bus subscriber. See [store/README.md](store/README.md). |
 | [`turn_state/`](./turn_state/) | `mirror/observe.rs` (progress projection) and `rpc_types.rs` (turn-state RPC payloads). |
-| [`welcome_migration.rs`](./welcome_migration.rs) | The one-shot welcome-agent migration. |
 
 ## Key types and entry points
 

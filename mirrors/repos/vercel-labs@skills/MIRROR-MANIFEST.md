@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `vercel-labs/skills` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
+Mirror of `vercel-labs/skills` — 26 default patterns, 1 followed patterns, 5 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `vercel-labs/skills` — 26 default patterns, 0 followed patterns, 4 f
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 4 |
+| Followed pats | 1 |
+| Files         | 5 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,7 @@ Mirror of `vercel-labs/skills` — 26 default patterns, 0 followed patterns, 4 f
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `.vc/automations/README.md`
 
 ## File Index
 
@@ -59,10 +59,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.factory/workflows/pr-labeling/skills/pr-labeling/SKILL.md`](.factory/workflows/pr-labeling/skills/pr-labeling/SKILL.md) |
-| 2 | ✓ | [`.factory/workflows/triage/skills/triage/SKILL.md`](.factory/workflows/triage/skills/triage/SKILL.md) |
+| 1 | ✓ | [`.vc/automations/workflows/pr-labeling/skills/pr-labeling/SKILL.md`](.vc/automations/workflows/pr-labeling/skills/pr-labeling/SKILL.md) |
+| 2 | ✓ | [`.vc/automations/workflows/triage/skills/triage/SKILL.md`](.vc/automations/workflows/triage/skills/triage/SKILL.md) |
 | 3 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 4 | ✓ | [`skills/find-skills/SKILL.md`](skills/find-skills/SKILL.md) |
+| 5 | → | [`.vc/automations/README.md`](.vc/automations/README.md) |
 
 ---
 

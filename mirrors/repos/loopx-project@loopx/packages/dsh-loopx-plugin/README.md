@@ -36,9 +36,10 @@ deferred atomicity limit are specified in the versioned
 
 ## Install
 
-Requirements are Node.js 22.19+, `pnpm`, Python 3.11+ with `pip`, and network
-access for the first DSH start when no compatible LoopX CLI is already
-installed. LoopX itself is deliberately not a prerequisite. The initializer
+Requirements are stable Node.js 22.22.3+ (excluding Node.js 23), `pnpm`,
+Python 3.11+ with `pip`, and network access for the first DSH start when no
+compatible LoopX CLI is already installed. LoopX itself is deliberately not a
+prerequisite. The initializer
 honors an explicit `PYTHON_BIN`; otherwise it tries `python3`, then discovers
 `python3.<minor>` executables on the supplied `PATH` in descending numeric
 order, then tries the bare name `python`. The last name is what a python.org

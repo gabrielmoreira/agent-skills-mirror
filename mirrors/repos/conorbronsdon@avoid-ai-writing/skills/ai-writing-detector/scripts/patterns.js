@@ -2276,13 +2276,18 @@ const AIDetector = (() => {
     };
   }
 
+  // The analysis contexts and source modes analyzeText() accepts. The CLIs
+  // import these lists instead of keeping their own copies.
+  const CONTEXT_MODES = Object.freeze(['general', 'technical', 'marketing', 'personal']);
+  const SOURCE_MODES = Object.freeze(['plain', 'rendered-markdown']);
+
   function analyzeText(text, options = {}) {
 
     if (typeof text !== 'string') {
       throw new TypeError('analyzeText(text): argument must be a string');
     }
 
-    const VALID_CONTEXT_MODES = new Set(['general', 'technical', 'marketing', 'personal']);
+    const VALID_CONTEXT_MODES = new Set(CONTEXT_MODES);
     const requestedMode = options.contextMode === undefined ? 'general' : options.contextMode;
     const contextMode = VALID_CONTEXT_MODES.has(requestedMode) ? requestedMode : 'general';
     const contextModeFallback = requestedMode !== contextMode ? requestedMode : null;
@@ -2291,7 +2296,7 @@ const AIDetector = (() => {
     // Plain remains the compatibility default. Rendered Markdown masks only
     // initial YAML frontmatter and HTML comments; source-hygiene checks for
     // hidden TODO/placeholder comments remain available through plain mode.
-    const VALID_SOURCE_MODES = new Set(['plain', 'rendered-markdown']);
+    const VALID_SOURCE_MODES = new Set(SOURCE_MODES);
     const requestedSourceMode = options.sourceMode === undefined ? 'plain' : options.sourceMode;
     const sourceMode = VALID_SOURCE_MODES.has(requestedSourceMode) ? requestedSourceMode : 'plain';
     const sourceModeFallback = requestedSourceMode !== sourceMode ? requestedSourceMode : undefined;
@@ -3580,6 +3585,8 @@ const AIDetector = (() => {
     getColor,
     SEVERITY_LABELS,
     TYPE_LABELS,
+    CONTEXT_MODES,
+    SOURCE_MODES,
   };
 })();
 

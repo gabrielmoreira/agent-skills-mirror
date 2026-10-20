@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `shinpr/claude-code-workflows` — 26 default patterns, 0 followed patterns, 177 file(s) materialized.
+Mirror of `shinpr/claude-code-workflows` — 26 default patterns, 0 followed patterns, 176 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `shinpr/claude-code-workflows` — 26 default patterns, 0 followed pat
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 177 |
+| Files         | 176 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -206,36 +206,35 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 145 | ✓ | [`skills/external-resource-context/SKILL.md`](skills/external-resource-context/SKILL.md) |
 | 146 | ✓ | [`skills/frontend-ai-guide/SKILL.md`](skills/frontend-ai-guide/SKILL.md) |
 | 147 | ✓ | [`skills/implementation-approach/SKILL.md`](skills/implementation-approach/SKILL.md) |
-| 148 | ✓ | [`skills/integration-e2e-testing/references/e2e-design.md`](skills/integration-e2e-testing/references/e2e-design.md) |
-| 149 | ✓ | [`skills/integration-e2e-testing/SKILL.md`](skills/integration-e2e-testing/SKILL.md) |
-| 150 | ✓ | [`skills/llm-friendly-context/SKILL.md`](skills/llm-friendly-context/SKILL.md) |
-| 151 | ✓ | [`skills/recipe-add-integration-tests/SKILL.md`](skills/recipe-add-integration-tests/SKILL.md) |
-| 152 | ✓ | [`skills/recipe-build/SKILL.md`](skills/recipe-build/SKILL.md) |
-| 153 | ✓ | [`skills/recipe-design/SKILL.md`](skills/recipe-design/SKILL.md) |
-| 154 | ✓ | [`skills/recipe-diagnose/SKILL.md`](skills/recipe-diagnose/SKILL.md) |
-| 155 | ✓ | [`skills/recipe-front-adjust/SKILL.md`](skills/recipe-front-adjust/SKILL.md) |
-| 156 | ✓ | [`skills/recipe-front-build/SKILL.md`](skills/recipe-front-build/SKILL.md) |
-| 157 | ✓ | [`skills/recipe-front-design/SKILL.md`](skills/recipe-front-design/SKILL.md) |
-| 158 | ✓ | [`skills/recipe-front-plan/SKILL.md`](skills/recipe-front-plan/SKILL.md) |
-| 159 | ✓ | [`skills/recipe-front-review/SKILL.md`](skills/recipe-front-review/SKILL.md) |
-| 160 | ✓ | [`skills/recipe-fullstack-build/SKILL.md`](skills/recipe-fullstack-build/SKILL.md) |
-| 161 | ✓ | [`skills/recipe-fullstack-implement/SKILL.md`](skills/recipe-fullstack-implement/SKILL.md) |
-| 162 | ✓ | [`skills/recipe-implement/SKILL.md`](skills/recipe-implement/SKILL.md) |
-| 163 | ✓ | [`skills/recipe-plan/SKILL.md`](skills/recipe-plan/SKILL.md) |
-| 164 | ✓ | [`skills/recipe-quality-profile/SKILL.md`](skills/recipe-quality-profile/SKILL.md) |
-| 165 | ✓ | [`skills/recipe-reverse-engineer/SKILL.md`](skills/recipe-reverse-engineer/SKILL.md) |
-| 166 | ✓ | [`skills/recipe-review/SKILL.md`](skills/recipe-review/SKILL.md) |
-| 167 | ✓ | [`skills/recipe-update-doc/SKILL.md`](skills/recipe-update-doc/SKILL.md) |
-| 168 | ✓ | [`skills/requirement-convergence/references/criteria.md`](skills/requirement-convergence/references/criteria.md) |
-| 169 | ✓ | [`skills/requirement-convergence/SKILL.md`](skills/requirement-convergence/SKILL.md) |
-| 170 | ✓ | [`skills/subagents-orchestration-guide/references/lite-mode.md`](skills/subagents-orchestration-guide/references/lite-mode.md) |
-| 171 | ✓ | [`skills/subagents-orchestration-guide/references/monorepo-flow.md`](skills/subagents-orchestration-guide/references/monorepo-flow.md) |
-| 172 | ✓ | [`skills/subagents-orchestration-guide/references/review-resolution.md`](skills/subagents-orchestration-guide/references/review-resolution.md) |
-| 173 | ✓ | [`skills/subagents-orchestration-guide/SKILL.md`](skills/subagents-orchestration-guide/SKILL.md) |
-| 174 | ✓ | [`skills/testing-principles/references/e2e.md`](skills/testing-principles/references/e2e.md) |
-| 175 | ✓ | [`skills/testing-principles/references/frontend.md`](skills/testing-principles/references/frontend.md) |
-| 176 | ✓ | [`skills/testing-principles/SKILL.md`](skills/testing-principles/SKILL.md) |
-| 177 | ✓ | [`skills/typescript-rules/SKILL.md`](skills/typescript-rules/SKILL.md) |
+| 148 | ✓ | [`skills/integration-e2e-testing/SKILL.md`](skills/integration-e2e-testing/SKILL.md) |
+| 149 | ✓ | [`skills/llm-friendly-context/SKILL.md`](skills/llm-friendly-context/SKILL.md) |
+| 150 | ✓ | [`skills/recipe-add-integration-tests/SKILL.md`](skills/recipe-add-integration-tests/SKILL.md) |
+| 151 | ✓ | [`skills/recipe-build/SKILL.md`](skills/recipe-build/SKILL.md) |
+| 152 | ✓ | [`skills/recipe-design/SKILL.md`](skills/recipe-design/SKILL.md) |
+| 153 | ✓ | [`skills/recipe-diagnose/SKILL.md`](skills/recipe-diagnose/SKILL.md) |
+| 154 | ✓ | [`skills/recipe-front-adjust/SKILL.md`](skills/recipe-front-adjust/SKILL.md) |
+| 155 | ✓ | [`skills/recipe-front-build/SKILL.md`](skills/recipe-front-build/SKILL.md) |
+| 156 | ✓ | [`skills/recipe-front-design/SKILL.md`](skills/recipe-front-design/SKILL.md) |
+| 157 | ✓ | [`skills/recipe-front-plan/SKILL.md`](skills/recipe-front-plan/SKILL.md) |
+| 158 | ✓ | [`skills/recipe-front-review/SKILL.md`](skills/recipe-front-review/SKILL.md) |
+| 159 | ✓ | [`skills/recipe-fullstack-build/SKILL.md`](skills/recipe-fullstack-build/SKILL.md) |
+| 160 | ✓ | [`skills/recipe-fullstack-implement/SKILL.md`](skills/recipe-fullstack-implement/SKILL.md) |
+| 161 | ✓ | [`skills/recipe-implement/SKILL.md`](skills/recipe-implement/SKILL.md) |
+| 162 | ✓ | [`skills/recipe-plan/SKILL.md`](skills/recipe-plan/SKILL.md) |
+| 163 | ✓ | [`skills/recipe-quality-profile/SKILL.md`](skills/recipe-quality-profile/SKILL.md) |
+| 164 | ✓ | [`skills/recipe-reverse-engineer/SKILL.md`](skills/recipe-reverse-engineer/SKILL.md) |
+| 165 | ✓ | [`skills/recipe-review/SKILL.md`](skills/recipe-review/SKILL.md) |
+| 166 | ✓ | [`skills/recipe-update-doc/SKILL.md`](skills/recipe-update-doc/SKILL.md) |
+| 167 | ✓ | [`skills/requirement-convergence/references/criteria.md`](skills/requirement-convergence/references/criteria.md) |
+| 168 | ✓ | [`skills/requirement-convergence/SKILL.md`](skills/requirement-convergence/SKILL.md) |
+| 169 | ✓ | [`skills/subagents-orchestration-guide/references/lite-mode.md`](skills/subagents-orchestration-guide/references/lite-mode.md) |
+| 170 | ✓ | [`skills/subagents-orchestration-guide/references/monorepo-flow.md`](skills/subagents-orchestration-guide/references/monorepo-flow.md) |
+| 171 | ✓ | [`skills/subagents-orchestration-guide/references/review-resolution.md`](skills/subagents-orchestration-guide/references/review-resolution.md) |
+| 172 | ✓ | [`skills/subagents-orchestration-guide/SKILL.md`](skills/subagents-orchestration-guide/SKILL.md) |
+| 173 | ✓ | [`skills/testing-principles/references/e2e.md`](skills/testing-principles/references/e2e.md) |
+| 174 | ✓ | [`skills/testing-principles/references/frontend.md`](skills/testing-principles/references/frontend.md) |
+| 175 | ✓ | [`skills/testing-principles/SKILL.md`](skills/testing-principles/SKILL.md) |
+| 176 | ✓ | [`skills/typescript-rules/SKILL.md`](skills/typescript-rules/SKILL.md) |
 
 ---
 

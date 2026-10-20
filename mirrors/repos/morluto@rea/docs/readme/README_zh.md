@@ -150,6 +150,7 @@ REA 需要 Node.js 22.x（>=22.19）、24.x（>=24.11）或 26+，以及 npm。�
 | EVM 字节码            | 分派选择器、字节偏移、推断的参数和状态可变性                  | Linux x64 上的本地原始字节/十六进制输入载体；[离线 EVM 指南](../evm-bytecode.md)                                   |
 | Rust binaries         | Embedded cargo-auditable dependency list                      | [Rust binaries](../rust-binaries.md)                                                                               |
 | 已记录的 Linux 崩溃   | 原始 note 记录、每个已记录线程的寄存器/信号及可选的映射候选项 | Linux x64 上由调用方提供的 pwntools；可选的 GDB/pwndbg；[已记录崩溃](../recorded-crashes.md)                       |
+| 桌面安装目录          | 运行时候选、支持文件、组件标记和后续操作                      | 有界的目录与文件头检查；[桌面应用](../desktop-applications.md)                                                     |
 | JavaScript / Electron | 模块、导入、source map、路由、IPC 和原生扩展关系              | Node.js 和 npm；[应用分析](../javascript-application-workflows.md)                                                 |
 | 网站                  | 页面结构、脚本、网络观察结果和按请求获取的截图                | Chrome 系浏览器；[浏览器分析](../browser-observation.md)                                                           |
 | 已保存的网络捕获      | 请求、响应、可访问的载荷和来源位置                            | HAR；原生 mitmproxy 捕获需要 Linux 上的 mitmdump；[捕获指南](../web-network-captures.md)                           |

@@ -1,0 +1,181 @@
+{
+  "version": "1.0",
+  "note": "21 hook formulas. Line 1 of a LinkedIn post is the whole game - the feed truncates at roughly 210 characters on desktop and 140 on mobile before 'see more', so the hook has to survive alone. Every formula here has a template, a filled example, what it is for, and the way it usually gets ruined.",
+  "rules": [
+    "One idea per hook. If it needs a comma splice, it needs two posts.",
+    "Line 2 is not a hook, it is the payoff of line 1. Never waste it on setup.",
+    "No question marks in line 1 unless the question is specific enough that only you could ask it.",
+    "Numbers beat adjectives. '$4,200' beats 'a lot of money' every time.",
+    "If the hook works with any other person's name on it, it is not your hook."
+  ],
+  "hooks": [
+    {
+      "id": 1,
+      "name": "Contrarian Take",
+      "template": "Everyone says {common advice}. After {specific experience}, I think that is wrong.",
+      "example": "Everyone says post daily. I posted 4x a week for a year and beat every daily poster in my niche.",
+      "best_for": "Establishing a point of view. Highest comment rate of any formula.",
+      "trap": "Being contrarian about something nobody believes. The belief has to be genuinely common."
+    },
+    {
+      "id": 2,
+      "name": "Number Reveal",
+      "template": "I {did thing} for {N} {days/weeks}. Here is what actually happened.",
+      "example": "I sent 400 cold DMs in 30 days. 11 replied. 2 became clients.",
+      "best_for": "Experiments, challenges, anything with a countable result.",
+      "trap": "Burying the number. Put it in line 1 or the formula does nothing."
+    },
+    {
+      "id": 3,
+      "name": "Mistake Confession",
+      "template": "{Specific cost} is what {one mistake} cost me.",
+      "example": "$18,000 is what not having a contract cost me last March.",
+      "best_for": "Trust. People forward the posts where you look bad.",
+      "trap": "A fake-humble mistake. 'I care too much' reads as a brag and kills the post."
+    },
+    {
+      "id": 4,
+      "name": "Before / After",
+      "template": "{Time ago} I was {low state}. Today I {high state}. The difference was {one thing}.",
+      "example": "18 months ago I was writing proposals at 2am. Today I send them in 6 minutes. One template did it.",
+      "best_for": "Proof you have travelled the distance your reader wants to travel.",
+      "trap": "Three-part transformations. Name one lever or the reader stops believing you."
+    },
+    {
+      "id": 5,
+      "name": "The List Promise",
+      "template": "{N} things I wish someone had told me before {milestone}.",
+      "example": "7 things I wish someone had told me before I hired my first employee.",
+      "best_for": "Saves. Highest save rate of the 21, which LinkedIn weights heavily.",
+      "trap": "N above 10. The reader does not believe you have 15 good ones, and you do not."
+    },
+    {
+      "id": 6,
+      "name": "Insider Secret",
+      "template": "After {N} years {doing thing}, here is the part nobody puts in the {job posting/course/pitch}.",
+      "example": "After 9 years in agency sales, here is the part nobody puts in the job posting.",
+      "best_for": "Credentialed takes. Works only if the years are real.",
+      "trap": "Promising a secret and delivering common knowledge. The comments will say so."
+    },
+    {
+      "id": 7,
+      "name": "The Callout",
+      "template": "If you are still {doing outdated thing}, stop.",
+      "example": "If you are still writing your LinkedIn posts in the LinkedIn composer, stop.",
+      "best_for": "Short posts with one instruction. Fastest to write of the 21.",
+      "trap": "Calling out something nobody does. Or worse, calling out your own audience with contempt."
+    },
+    {
+      "id": 8,
+      "name": "Question Trap",
+      "template": "{Specific scenario with a real cost}. What do you do?",
+      "example": "Your best client asks for a 40% discount and hints they will leave without it. What do you do?",
+      "best_for": "Comment volume. People answer scenarios, they ignore 'thoughts?'.",
+      "trap": "A question with an obvious right answer. There has to be a real fork."
+    },
+    {
+      "id": 9,
+      "name": "Story Cold Open",
+      "template": "\"{Line of dialogue}\"\\n\\n{Who said it, when, and why it mattered}.",
+      "example": "\"We are going with someone cheaper.\"\\n\\nThat email arrived 40 minutes after I sent my best proposal of the year.",
+      "best_for": "Long-form storytelling posts. Highest dwell time.",
+      "trap": "Dialogue nobody would actually say. Use the real line, including the ugly parts."
+    },
+    {
+      "id": 10,
+      "name": "The Receipt",
+      "template": "{Screenshot or hard number}. {One sentence of context}.",
+      "example": "3 clients, 11 days, zero calls booked. Here is the exact sequence that did it.",
+      "best_for": "Anything you can prove. Pair with an image and reach roughly doubles.",
+      "trap": "A receipt with no story attached. The number opens the door, the story is the room."
+    },
+    {
+      "id": 11,
+      "name": "Myth Bust",
+      "template": "{Popular explanation} is not why {bad outcome} is happening to you.",
+      "example": "The algorithm is not why your posts are dying.",
+      "best_for": "Reframing. Sets you up to deliver the real cause in line 3.",
+      "trap": "Busting the myth and never naming the replacement. Always name it."
+    },
+    {
+      "id": 12,
+      "name": "The Comparison",
+      "template": "{Expensive option} vs {cheap option}. {Surprising verdict}.",
+      "example": "A $12,000 brand agency vs a $20 tool and a weekend. The weekend won.",
+      "best_for": "Tool and process posts. Very high share rate.",
+      "trap": "An unfair comparison. Concede what the expensive option genuinely does better."
+    },
+    {
+      "id": 13,
+      "name": "Permission Slip",
+      "template": "You are allowed to {thing the reader feels guilty about}.",
+      "example": "You are allowed to turn down work that pays well and makes you miserable.",
+      "best_for": "Reach beyond your niche. These travel further than tactical posts.",
+      "trap": "Generic self-care. It has to be specific to the working life of your reader."
+    },
+    {
+      "id": 14,
+      "name": "Pattern Interrupt",
+      "template": "{One word or three-word line, full stop.}",
+      "example": "I got fired.",
+      "best_for": "Stopping the scroll cold. Whitespace does the work.",
+      "trap": "Overuse. Once a month. Every post starting this way reads as a tic."
+    },
+    {
+      "id": 15,
+      "name": "The Warning",
+      "template": "{Common practice} is quietly costing you {specific thing they care about}.",
+      "example": "Your 'quick call to align' is quietly costing you six hours a week.",
+      "best_for": "Problem-aware audiences who have not connected cause to cost.",
+      "trap": "Fear with no exit. Give the fix in the same post or you have just made someone anxious."
+    },
+    {
+      "id": 16,
+      "name": "Good vs Great",
+      "template": "Good {role} {do X}. Great {role} {do Y}.",
+      "example": "Good salespeople answer the question. Great salespeople ask why it was asked.",
+      "best_for": "Quotable one-liners. Screenshot bait.",
+      "trap": "A distinction that is really just 'try harder'. Y has to be a different action, not more effort."
+    },
+    {
+      "id": 17,
+      "name": "Time Anchor",
+      "template": "{Task} used to take me {long time}. It now takes {short time}.",
+      "example": "Writing a week of posts used to take me 5 hours. It now takes 20 minutes.",
+      "best_for": "Tool, system and automation posts. The strongest hook shape for a how-to.",
+      "trap": "An unbelievable ratio. 5 hours to 20 minutes lands. 5 hours to 8 seconds does not."
+    },
+    {
+      "id": 18,
+      "name": "The Unpopular Rule",
+      "template": "I do not {widely accepted practice}. Ever. Here is why.",
+      "example": "I do not take discovery calls. Ever.",
+      "best_for": "Positioning. Attracts the right clients by repelling the wrong ones.",
+      "trap": "A rule you break constantly. Someone in the comments will know."
+    },
+    {
+      "id": 19,
+      "name": "Curiosity Gap",
+      "template": "The {superlative} {thing} I ever {verb} {broke the obvious rule}.",
+      "example": "The best hire I ever made failed the interview.",
+      "best_for": "Openers that force the 'see more' tap.",
+      "trap": "A gap you never close. Pay it off by line 4 or you have written clickbait."
+    },
+    {
+      "id": 20,
+      "name": "The Walk-Away",
+      "template": "I {fired/quit/deleted/cancelled} {valuable thing}. {Result}.",
+      "example": "I fired my highest-paying client in January. Revenue is up 30%.",
+      "best_for": "Values posts with a business result attached. Very high engagement.",
+      "trap": "Walking away with no cost. Name what it actually cost you or it reads as theatre."
+    },
+    {
+      "id": 21,
+      "name": "The Direct Value",
+      "template": "Here is the exact {artifact} I used to {specific outcome}. Steal it.",
+      "example": "Here is the exact 4-line email I used to reopen 3 dead deals. Steal it.",
+      "best_for": "Lead magnets and comment-for-link posts. Highest conversion of the 21.",
+      "trap": "Making them ask for something you could have just posted. Give the artifact away in the post."
+    }
+  ]
+}

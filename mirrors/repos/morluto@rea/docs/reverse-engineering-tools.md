@@ -18,8 +18,11 @@ can run.
 
 For DWARF, REA does not follow local debug links by default. Set `follow_debug_links` to `true` to pass `-WK`; external debug-file identities are not bound to Evidence when following links is enabled. The CLI flag is `--follow-debug-links`; `--no-follow-debug-links` or `--follow-debug-links=false` keeps the default. A separate `true` or `false` word after the flag is not its value. REA clears `DEBUGINFOD_URLS` in the objdump child environment to disable debuginfod network access on GNU binutils versions that do not support `-WE`. The complete raw output is authoritative; REA does not normalize it into a version-independent disassembly schema.
 
+For a known native symbol, use `operation: "disassemble", symbol: "my_function"` in MCP or `--symbol my_function` in CLI. REA passes `--disassemble=my_function` to objdump before collecting output, rather than producing the whole disassembly and filtering it afterward. Omit `symbol` to keep full code-section disassembly. Other operations reject this selector. Use a nonempty, NUL-free name with well-formed Unicode; unsupported values are rejected before reading the artifact or starting objdump. Symbol names are passed unchanged; matching, versioned symbols, aliases and the end of the disassembly follow the installed GNU objdump's semantics. Evidence records the selector and actual arguments. An empty match does not establish artifact-wide absence, and the selected observation does not contain the omitted disassembly; request the complete operation when needed.
+
 ```sh
 rea inspect-with-objdump ./program disassemble
+rea inspect-with-objdump ./program disassemble --symbol my_function
 rea inspect-with-objdump ./program dwarf
 rea inspect-with-objdump ./program dwarf --follow-debug-links
 ```
@@ -42,15 +45,17 @@ close_gdb_session {"session_id":"…"}
 
 ## Rizin
 
-`start_rizin_debug_session` and `rea debug-with-rizin` require an explicit `inferior_tty` on Linux. Rizin launches the target with stdout and stderr routed to that caller-selected TTY and `dbg.exitkills=false`; the target can therefore continue running and writing to the TTY after REA closes the debugger. This is a visible target output effect, and the caller is responsible for selecting a suitable terminal that remains available. Before closing, REA serializes after the active command, parses the structured `olj` descriptor list, detaches only a unique `ptrace://` descriptor, confirms its absence, reads back `dbg.exitkills=false`, and verifies `/proc/<pid>/fd/1` and `/proc/<pid>/fd/2` still identify the selected TTY by device and inode. Any malformed or ambiguous readback keeps the Rizin session owned for retry. Persistent Rizin debugger sessions are unavailable outside Linux because this verification depends on `/proc`.
+`start_rizin_debug_session` and `rea debug-with-rizin` require an explicit `inferior_tty` on Linux. Rizin launches the target with stdout and stderr routed to that caller-selected TTY and `dbg.exitkills=false`; the target can therefore continue running and writing to the TTY after REA closes the debugger. This is a visible target output effect, and the caller is responsible for selecting a suitable terminal that remains available. Before closing, REA serializes after the active command, parses the structured `olj` descriptor list, detaches only a unique `ptrace://` descriptor, confirms its absence, reads back `dbg.exitkills=false`, and verifies `/proc/<pid>/fd/1` and `/proc/<pid>/fd/2` still identify the selected TTY by device and inode. If a previously identified inferior exits after Rizin confirms detach, REA verifies that the original process has ended instead of requiring output descriptors from an exited process. Unresolved identity or ambiguous readback keeps the Rizin session owned for retry. Persistent Rizin debugger sessions are unavailable outside Linux because this verification depends on `/proc`.
 
 Persistent command Evidence retains the caller-selected and resolved startup paths in `parameters.launch_provenance`. These paths describe launch provenance, not the current target after unrestricted commands. `rizin_debug_session_status.output_invalid_utf8` reports whether lossy frame decoding has been observed during the session. Command Evidence sets `output_invalid_utf8` only when loss was observed in frames collected for that command, including retained partial output; earlier startup or command frames do not mark later valid output as lossy.
+
+Session status retains up to 64 recent protocol frames. Each history entry keeps a complete-character UTF-8 prefix of at most 16 KiB, plus a truncation marker when needed; `recent_output_truncated` reports omitted history. This history budget also accounts for replacement characters from invalid UTF-8. It does not shorten command Evidence, which has its own 16 MiB output budget.
 
 ```sh
 rea debug-with-rizin --inferior-tty /dev/pts/7 ./program dr
 ```
 
-`execute_rizin_command` and `rea execute-rizin-command` run one selected command against a local artifact. The one-shot profile uses `-N -q -c`, suppressing user settings and scripts while leaving plugins available. Commands and plugins run with the REA process user's security context and may access files, the network, or perform other actions. REA preserves raw output and does not claim that command-specific JSON has one universal schema.
+`execute_rizin_command` and `rea execute-rizin-command` run one selected command against a local artifact. The one-shot profile uses `-N -q -e scr.color=0 -c`, suppressing user settings and scripts while leaving plugins available. Native terminal presentation defaults to plain text; the caller can explicitly enable colour with `e scr.color=1` in the selected command. REA preserves raw output, including literal ANSI bytes, and does not claim that command-specific JSON has one universal schema. Commands and plugins run with the REA process user's security context and may access files, the network, or perform other actions.
 
 ```sh
 rea execute-rizin-command ./program iI

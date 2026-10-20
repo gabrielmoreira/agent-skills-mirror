@@ -74,7 +74,7 @@ For user-selected collection destinations, load the
 [collection destination route](competitors-analysis/references/collection_destination.md).
 For running an original application demo, follow that Skill's
 [original-app demo recipe](competitors-analysis/references/original-app-demo.md).
-For transaction recovery tests or financial migration/fixture acceptance, enter
+For file-backed persistence and CLI acceptance, transaction recovery tests, or financial migration/fixture acceptance, enter
 [qa-expert](qa-expert/SKILL.md); its test-case routes select the detailed recipes.
 
 For choosing or reviewing a library, framework, storage, data format, model,
@@ -90,14 +90,21 @@ keep discovery observations separate from final result checks.
 For research-driven evolution of a specified existing Skill, start at
 [skill-evolver](skill-evolver/SKILL.md) and follow its public stage routes; use
 local private adapters only when available.
+Before presenting an improvement diagnosis, follow its
+[mechanism decision step](skill-evolver/SKILL.md#decide-every-important-mechanism).
 For verification of changed state side effects, artifact reuse or prerequisite
 handling, read `skill-evolver/references/behavior-replay-cases.md`.
+
+For product-audit confidence, API consumer coverage and recommendation priority,
+enter [product-analysis's synthesis method](product-analysis/references/synthesis_methodology.md).
 
 For evidence-based improvement of an existing application, enter
 [app-evolver](app-evolver/SKILL.md). For released-artifact or runtime evidence,
 load its [Skill composition route](app-evolver/references/skill-composition.md);
 keep specialist selection and handoff boundaries in that owner.
-When a repair batch ends or the user questions its direction, load its
+When the user corrects premises, research focus or scope, return first to its
+[task binding](app-evolver/SKILL.md#1-bind-the-application-and-unfinished-result).
+For next-increment selection after that reconciliation or a completed repair batch, use its
 [increment-selection contract](app-evolver/references/evidence-and-fit.md#make-the-disposition-operational).
 
 For permission-sensitive fixtures, use Skill Creator's
@@ -163,8 +170,9 @@ For HTML report images and explanatory diagrams, enter
 source verification, placement and review. Keep report-specific assets with the report.
 
 Treat [packaging_policy.py](daymade-skill/skill-creator/scripts/packaging_policy.py)
-as the canonical inclusion policy for packaging, security attestation, source
-audits, and version checks. Keep consumers on this shared implementation. Preserve the recorded policy
+as the canonical inclusion policy for packaged content, security attestation and
+source audits. Version progression and shipped-change review use their owning
+gates under **Updating Existing Skills** below. Preserve the recorded policy
 when verifying an existing baseline; consult
 [source snapshot archives](daymade-skill/skill-creator/references/source-snapshot-archives.md)
 before archiving or restoring it.
@@ -194,6 +202,9 @@ profile-converger registration live in their respective Skills rather than
 being copied here. An owning installer may support an already authorized
 launcher; that does not make a package-manager dispatcher the default for
 Python hooks.
+
+For persistent Python service installation, environment reuse or startup, follow
+[macos-watchdog's persistent runtime procedure](daymade-macos/macos-watchdog/SKILL.md#persistent-python-runtime).
 
 ### Rendered UI delivery acceptance
 
@@ -259,6 +270,9 @@ recovery, or capacity checks before necessary backup/copy/extraction, use
 [macos-cleaner](daymade-macos/macos-cleaner/SKILL.md) and its
 [necessary-copy capacity preflight](daymade-macos/macos-cleaner/references/safety_rules.md#necessary-copy-capacity-preflight).
 When changing measurement, run the SOP's targeted regression suite before shipping.
+For uv cache diagnosis or retirement, enter
+[macos-cleaner](daymade-macos/macos-cleaner/SKILL.md) and its
+[uv target semantics](daymade-macos/macos-cleaner/references/cleanup_targets.md#uv-cache-retirement).
 
 ### Automated Test Suites (CI)
 
@@ -366,8 +380,11 @@ reuse, or history request. Ordinary implementation, reports, and read-only
 inspection do not arm it; PreToolUse and Stop may enforce only a requirement
 already created by the current prompt. Artifact selection and runtime-read
 comparison are owned by that Skill; a receipt about a locator is not proof of
-the delivered artifact. Detailed retrieval mechanics remain in
-`daymade-claude-code/prior-work-retrieval/SKILL.md`.
+the delivered artifact. For retrieval freshness, changed-source recovery and
+receipt lifetime, follow the [Prior Work operating contract](daymade-claude-code/prior-work-retrieval/SKILL.md).
+
+For CLI/hook manifest selection or continuation in an already-running host, read
+[the manifest-selection contract](daymade-claude-code/prior-work-retrieval/SKILL.md#2-validate-the-explicit-source-manifest).
 
 ### Local Conversation History Boundary
 
@@ -753,7 +770,7 @@ The marketplace is configured in `.claude-plugin/marketplace.json`:
    - The registered plugin owns the release version. Suite members share their suite's
      version; a standalone Skill uses its own plugin entry.
    - Follow [skill-creator's versioning contract](daymade-skill/skill-creator/SKILL.md)
-     for shipped-file changes and change classification.
+     for change classification and release identity.
 
 ### ⚠️ Updating Existing Skills (MANDATORY)
 
@@ -763,47 +780,18 @@ decide which changed files ship. Do not infer a separate member version from its
 
 For pre-commit release progression, use the existing
 [version checker](scripts/ci/check_version_progression.py) through the
-[mainline guard](scripts/git-mainline-guard.mjs). Its registered-plugin mapping and
-the packaging owner above determine which release identity must advance.
+[mainline guard](scripts/git-mainline-guard.mjs). That checker owns registered-plugin
+mapping and version-increment eligibility; package exclusion alone is not a version
+exemption. Select shipped-change review eligibility through
+[release readiness](daymade-skill/skill-creator/references/release-readiness.md).
 
 **Read the baseline version from an immutable ref, never from the working tree.**
-In a shared checkout `marketplace.json` may already carry a parallel session's
-in-flight bump — staged or merely saved — and `git status` looks normal either
-way, so a version computed from the working copy silently inherits their number
-as its starting point:
+A shared checkout's `marketplace.json` may already carry another session's staged
+or saved version bump; that working copy cannot establish the baseline.
 
-```bash
-git show origin/main:.claude-plugin/marketplace.json   # baseline to bump FROM
-```
-
-This is what makes the check above decidable. `git diff --name-only` tells you
-*which* skills changed; only an immutable ref tells you what their versions were
-before anyone started editing.
-
-**When the pre-commit guard blocks with "marketplace release state is stale or
-incomplete"**: the staged `marketplace.json` diverges from current `origin/main`
-in plugins you did *not* touch — someone merged after you branched, and the
-guard's progression check compares your index against *current* main, not your
-branch point. Recovery:
-
-1. Rebuild `marketplace.json` from `origin/main`'s state plus **only** your
-   changes, programmatically — assert the base values before mutating, never
-   text-merge or hand-edit two versions:
-   ```bash
-   git show origin/main:.claude-plugin/marketplace.json   # the ONLY baseline
-   # then apply your bump(s)/skills-array addition onto THAT content,
-   # and preserve the file's trailing newline (json.dump drops it)
-   ```
-2. If the guard then reports a *foreign* plugin's "content changed but version
-   did not increase": your branch is missing that plugin's merge entirely —
-   bring the branch current with `origin/main`. On a contended shared checkout
-   where `git merge` (ort) refuses your staged files: merge in a temporary
-   worktree, copy the merged file back so staged content equals the merge
-   result byte-for-byte, then `git merge --ff-only <merge-sha>` — a
-   fast-forward accepts staged content that equals the target; ort never does.
-3. Commit as a standalone command — `git add … && git commit` in one line trips
-   the scope guard's unknown-domain branch regardless of
-   content.
+For a stale marketplace guard, a foreign plugin's apparent version regression,
+or a release candidate missing current main, follow
+[integration before review binding](daymade-skill/skill-creator/references/release-readiness.md#integrate-current-main-before-binding-review).
 
 **CHANGELOG.md merges as a union** (`.gitattributes`). Merging `origin/main`
 into a branch locally, or rebasing onto it, keeps parallel additions under
@@ -842,6 +830,14 @@ All Python scripts in this repository:
 - Follow PEP 8 style guidelines
 
 ## Quality Standards
+
+For public first-use instructions, follow [QUICKSTART.md](QUICKSTART.md) or
+[QUICKSTART.zh-CN.md](QUICKSTART.zh-CN.md). For reporter environment fields, use
+the [bug report template](.github/ISSUE_TEMPLATE/bug_report.md) rather than copying
+a Skill list or assuming the reporter's host.
+
+For a blocked packaging attempt, follow the
+[packaging recovery procedure](daymade-skill/skill-creator/references/publishing-and-packaging.md#step-7-packaging-a-skill).
 
 For changes to scripts, importable API contracts, configuration, or operating procedures, use
 [docs-cleaner](daymade-docs/docs-cleaner/SKILL.md) for scoped documentation delivery:

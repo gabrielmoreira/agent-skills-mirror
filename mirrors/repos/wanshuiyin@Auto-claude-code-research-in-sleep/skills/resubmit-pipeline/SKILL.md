@@ -7,6 +7,17 @@ allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Skill, mcp__codex__codex,
 
 # Resubmit Pipeline: Text-Only Microedit Mode
 
+> **Before each reviewer slot**, follow [Selectable Reviewers](../shared-references/reviewer-backends.md):
+> resolve invocation → `.aris/reviewer.json` → Claude Code default (Codex MCP)
+> with `reviewer_route.py` through the canonical helper resolver, preserving this
+> slot's tier, fresh contexts, source/image inputs and deterministic gates.
+> Codex examples/pins below apply only to `backend=codex`; other routes use their
+> own first-call/reply contract. Save the route and actual returned identity;
+> unavailable selections are `REVIEW_UNAVAILABLE`. Classify acceptance from actual
+> families/completion/scope. Forward invocation reviewer/model/effort overrides
+> to reviewer-bearing children. Generation workers are unchanged.
+
+
 Compose a polished paper into a new venue under text-only constraints: **$ARGUMENTS**
 
 ## Why This Exists
@@ -35,7 +46,7 @@ Existing skills cover adjacent territory but none of this exact composition: `/r
 
 ## Constants
 
-- **REVIEWER_MODEL** = inherits from `/auto-paper-improvement-loop`'s default (`gpt-6-astra` via Codex MCP) unless the user passes `— reviewer-model: gpt-5.4` (legacy) or another OpenAI model. Codex reasoning effort is fixed at `xhigh` for all reviewer calls per the existing skill convention.
+- **REVIEWER_MODEL** = inherits from `/auto-paper-improvement-loop`'s default (`gpt-6-astra` via Codex MCP) unless the user passes `— reviewer-model: gpt-5.4` (legacy) or another model valid for the selected backend. For `backend=codex`, reasoning effort is fixed at `xhigh` for all reviewer calls per the existing skill convention.
 - **ROUNDS** = 2 (default; matches `/auto-paper-improvement-loop`'s diminishing-returns line). A 3rd round only fires if Phase 2 reports non-convergence AND the user explicitly approves at the round-2 checkpoint.
 - **EFFORT** = `max` (default for resubmit; resubmit is high-stakes). The user can override with `— effort: balanced` if time is extremely tight.
 - **EDIT_WHITELIST_PATH** = `<paper-base-dir>/../<NewVenue>/.aris/edit_whitelist.yaml` (auto-generated in Phase 0; user can override with a custom path).

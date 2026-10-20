@@ -39,8 +39,11 @@ the App can render this projection without inventing a second health model.
 control-plane request. Validate Node before installing or upgrading LoopX.
 Upgrading from an older Node 22 installation requires restarting the managed
 runtime with `loopx doctor --restart-runtime` after the new Node is on `PATH`.
-SQLite remains opt-in and checks the actual embedded SQLite version before
-opening authority state.
+New unconfigured Goals use canonical SQLite with hard leases. Explicit choices
+and existing Goals retain their own configuration; installing the package does
+not migrate their authority. SQLite checks the actual embedded SQLite version
+before opening authority state. See the [2.0 upgrade guide](../product/releases/v2.0.0.md)
+before updating a Goal that still uses the old Markdown writer.
 
 A managed runtime that cannot publish its startup locator returns the existing
 safe filesystem/lock diagnostic code, such as `mutation_lock_timeout`,

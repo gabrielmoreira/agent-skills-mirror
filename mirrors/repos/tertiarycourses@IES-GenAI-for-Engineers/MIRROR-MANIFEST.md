@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `tertiarycourses/IES-GenAI-for-Engineers` — 26 default patterns, 0 followed patterns, 46 file(s) materialized.
+Mirror of `tertiarycourses/IES-GenAI-for-Engineers` — 26 default patterns, 0 followed patterns, 49 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `tertiarycourses/IES-GenAI-for-Engineers` — 26 default patterns, 0 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 46 |
+| Files         | 49 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -93,18 +93,21 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 32 | ✓ | [`.agents/skills/non-wsq-courseware-build/build/mock_data.py`](.agents/skills/non-wsq-courseware-build/build/mock_data.py) |
 | 33 | ✓ | [`.agents/skills/non-wsq-courseware-build/build/northstar_dashboard.py`](.agents/skills/non-wsq-courseware-build/build/northstar_dashboard.py) |
 | 34 | ✓ | [`.agents/skills/non-wsq-courseware-build/build/prodoc.py`](.agents/skills/non-wsq-courseware-build/build/prodoc.py) |
-| 35 | ✓ | [`.agents/skills/non-wsq-courseware-build/build/validate_courseware.py`](.agents/skills/non-wsq-courseware-build/build/validate_courseware.py) |
-| 36 | ✓ | [`.agents/skills/non-wsq-courseware-build/SKILL.md`](.agents/skills/non-wsq-courseware-build/SKILL.md) |
-| 37 | ✓ | [`archive/20261018-v2.2-superseded/labs/lab-05-custom-pareto-chart-skill/data/templates/water-service-pareto/SKILL.md`](archive/20261018-v2.2-superseded/labs/lab-05-custom-pareto-chart-skill/data/templates/water-service-pareto/SKILL.md) |
-| 38 | ✓ | [`archive/20261018-v2.2-superseded/labs/lab-06-reporting-skill/data/templates/maintenance-reporting/SKILL.md`](archive/20261018-v2.2-superseded/labs/lab-06-reporting-skill/data/templates/maintenance-reporting/SKILL.md) |
-| 39 | ✓ | [`archive/20261018-v2.2-superseded/labs/lab-07-custom-dashboard-skill/data/templates/water-service-dashboard/SKILL.md`](archive/20261018-v2.2-superseded/labs/lab-07-custom-dashboard-skill/data/templates/water-service-dashboard/SKILL.md) |
-| 40 | ✓ | [`archive/20261018-v2.2-superseded/labs/lab-08-interactive-filters-and-refresh/data/templates/water-service-dashboard/SKILL.md`](archive/20261018-v2.2-superseded/labs/lab-08-interactive-filters-and-refresh/data/templates/water-service-dashboard/SKILL.md) |
-| 41 | ✓ | [`labs/lab-05-custom-pareto-chart-skill/data/templates/water-service-pareto/SKILL.md`](labs/lab-05-custom-pareto-chart-skill/data/templates/water-service-pareto/SKILL.md) |
-| 42 | ✓ | [`labs/lab-06-reporting-skill/data/templates/maintenance-reporting/SKILL.md`](labs/lab-06-reporting-skill/data/templates/maintenance-reporting/SKILL.md) |
-| 43 | ✓ | [`labs/lab-07-custom-dashboard-skill/data/templates/water-service-dashboard/SKILL.md`](labs/lab-07-custom-dashboard-skill/data/templates/water-service-dashboard/SKILL.md) |
-| 44 | ✓ | [`labs/lab-08-interactive-filters-and-refresh/data/templates/water-service-dashboard/SKILL.md`](labs/lab-08-interactive-filters-and-refresh/data/templates/water-service-dashboard/SKILL.md) |
-| 45 | ✓ | [`labs/lab-11-copilot-agent-builder/data/templates/work-order-qa/SKILL.md`](labs/lab-11-copilot-agent-builder/data/templates/work-order-qa/SKILL.md) |
-| 46 | ✓ | [`labs/lab-12-mini-capstone/data/templates/interactive-dashboard/SKILL.md`](labs/lab-12-mini-capstone/data/templates/interactive-dashboard/SKILL.md) |
+| 35 | ✓ | [`.agents/skills/non-wsq-courseware-build/build/simple_labs.py`](.agents/skills/non-wsq-courseware-build/build/simple_labs.py) |
+| 36 | ✓ | [`.agents/skills/non-wsq-courseware-build/build/validate_courseware.py`](.agents/skills/non-wsq-courseware-build/build/validate_courseware.py) |
+| 37 | ✓ | [`.agents/skills/non-wsq-courseware-build/SKILL.md`](.agents/skills/non-wsq-courseware-build/SKILL.md) |
+| 38 | ✓ | [`archive/20261018-v2.2-superseded/labs/lab-05-custom-pareto-chart-skill/data/templates/water-service-pareto/SKILL.md`](archive/20261018-v2.2-superseded/labs/lab-05-custom-pareto-chart-skill/data/templates/water-service-pareto/SKILL.md) |
+| 39 | ✓ | [`archive/20261018-v2.2-superseded/labs/lab-06-reporting-skill/data/templates/maintenance-reporting/SKILL.md`](archive/20261018-v2.2-superseded/labs/lab-06-reporting-skill/data/templates/maintenance-reporting/SKILL.md) |
+| 40 | ✓ | [`archive/20261018-v2.2-superseded/labs/lab-07-custom-dashboard-skill/data/templates/water-service-dashboard/SKILL.md`](archive/20261018-v2.2-superseded/labs/lab-07-custom-dashboard-skill/data/templates/water-service-dashboard/SKILL.md) |
+| 41 | ✓ | [`archive/20261018-v2.2-superseded/labs/lab-08-interactive-filters-and-refresh/data/templates/water-service-dashboard/SKILL.md`](archive/20261018-v2.2-superseded/labs/lab-08-interactive-filters-and-refresh/data/templates/water-service-dashboard/SKILL.md) |
+| 42 | ✓ | [`labs/lab-05-custom-pareto-chart-skill/data/templates/water-service-pareto/SKILL.md`](labs/lab-05-custom-pareto-chart-skill/data/templates/water-service-pareto/SKILL.md) |
+| 43 | ✓ | [`labs/lab-06-reporting-skill/data/templates/maintenance-reporting/SKILL.md`](labs/lab-06-reporting-skill/data/templates/maintenance-reporting/SKILL.md) |
+| 44 | ✓ | [`labs/lab-06-reporting-skill/data/templates/water-service-pareto/SKILL.md`](labs/lab-06-reporting-skill/data/templates/water-service-pareto/SKILL.md) |
+| 45 | ✓ | [`labs/lab-07-powerpoint-design-skill/data/templates/northstar-deck-design/SKILL.md`](labs/lab-07-powerpoint-design-skill/data/templates/northstar-deck-design/SKILL.md) |
+| 46 | ✓ | [`labs/lab-08-custom-dashboard-skill/data/templates/water-service-dashboard/SKILL.md`](labs/lab-08-custom-dashboard-skill/data/templates/water-service-dashboard/SKILL.md) |
+| 47 | ✓ | [`labs/lab-09-interactive-filters-and-refresh/data/templates/water-service-dashboard/SKILL.md`](labs/lab-09-interactive-filters-and-refresh/data/templates/water-service-dashboard/SKILL.md) |
+| 48 | ✓ | [`labs/lab-12-copilot-agent-builder/data/templates/work-order-qa/SKILL.md`](labs/lab-12-copilot-agent-builder/data/templates/work-order-qa/SKILL.md) |
+| 49 | ✓ | [`labs/lab-13-mini-capstone/data/templates/interactive-dashboard/SKILL.md`](labs/lab-13-mini-capstone/data/templates/interactive-dashboard/SKILL.md) |
 
 ---
 

@@ -84,6 +84,7 @@ scanning a chronological list.
 - [`content_ops_item_v0`](content-ops-item-lifecycle-v0.md): provider-neutral content item lifecycle v0
 - [`content_ops_queue_projection_v0`](content-ops-queue-v0.md): read-only managed content queue projection v0
 - [`content_ops_layout_plan_v0`](content-ops-layout-v0.md): typed content layout plan, template library, and acceptance check v0
+- [`content_ops_media_plan_v0`](content-ops-media-v0.md): private source-bound composition, optional rendering and packaged result readback
 
 ## Quality, Review, And Release
 

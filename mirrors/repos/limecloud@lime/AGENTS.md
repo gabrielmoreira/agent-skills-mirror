@@ -8,7 +8,7 @@
 2. 根文件只保留仓库级约束和导航；领域规则放在 `internal/aiprompts/`，执行进度放在 `internal/exec-plans/`。
 3. 每种能力只能有一个继续演进的 owner。`current` 可扩展；`compat` 只能委托；`deprecated` 只能迁出；`dead` 应删除并补回流守卫。
 4. Agent runtime 的唯一业务主链是 `Product Surface -> App Server JSON-RPC -> RuntimeCore -> Thread/Turn/Item projection`。当前 Product Surface 包括 `Electron Desktop Host -> GUI` 与 `CLI/TUI Host -> tui`；两者共享协议、runtime、持久化与工具 owner，不建立第二套业务后端。未来 Cloud 只能通过认证 transport 接入同一 App Server 边界，不预建平行 runtime。
-5. Agent loop、状态机、Thread/Turn/Item、工具生命周期、MCP、Skills、Multi-Agent、历史恢复和 GUI 护栏对齐 `/Users/coso/Documents/dev/rust/codex`。多模型控制面的 catalog、默认选择、model switch、provider capability/readiness、retry/circuit breaker 与多模态 sampling 对齐 `/Users/coso/Documents/dev/rust/grok-build`；provider wire、canonical content 与媒体 lowering 可辅助参考 `/Users/coso/Documents/dev/js/opencode`。
+5. Codex 是唯一主对标：Agent loop、状态机、Thread/Turn/Item、工具生命周期、MCP、Skills、Multi-Agent 和历史恢复直接读 `/Users/coso/Documents/dev/rust/codex` 源码；Desktop 行为使用 REA 安装包证据。保留 Lime 多模型、多协议；catalog、默认选择、model switch、provider capability/readiness、retry/circuit breaker 与多模态 sampling 仅参考 `/Users/coso/Documents/dev/rust/grok-build` 的适用机制，不能替代 Codex 的 runtime、harness 或产品语义。provider wire、canonical content 与媒体 lowering 可辅助参考 `/Users/coso/Documents/dev/js/opencode`。
 6. Rust 后端只能落在 `lime-rs/crates/**` 的既有领域 owner。
 7. Provider 网络边界归 `model-provider`；工具定义、权限和执行归 `tool-runtime`；会话/回合编排归 `agent-runtime` 与 App Server；投影和持久化归 App Server、`thread-store` 与对应 repository。
 8. 新命名使用短的领域词。禁止把产品品牌、已退役 runtime 名称或冗长实现词带进新的 crate、命令、API、类型、模块和脚本。

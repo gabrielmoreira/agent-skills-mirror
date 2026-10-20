@@ -212,7 +212,7 @@ details[open] summary { margin-bottom: 0.5rem; }
 
 ## Output mechanics
 
-- **Path**: `~/.fplcopilot/reports/{YYYY-MM-DD}-{slug}.html`
-- **Slug**: kebab-case derived from the report subject (e.g. `gw14-strategy`, `salah-vs-haaland`, `wildcard-draft-v2`)
-- **Create the directory** if it doesn't exist: `mkdir -p ~/.fplcopilot/reports`
-- **After saving**, tell the user the path. On macOS, offer `open <path>`.
+- **Location**: the `reports/` location resolved in SKILL.md, with filename `{YYYY-MM-DD}-{slug}.html`.
+- **Slug**: kebab-case derived from the report subject (e.g. `gw14-strategy`, `salah-vs-haaland`, `wildcard-draft-v2`).
+- Ensure the destination exists using available persistence capabilities.
+- Verify the saved report, then deliver its supported preview, attachment, share link, or accessible file path. Select a viewing operation appropriate to the actual environment. If presentation is unavailable, state that limitation and include the substantive answer in chat.

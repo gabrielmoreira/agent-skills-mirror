@@ -106,7 +106,7 @@ Tauri v2 compiles the Rust core into native binaries per platform, embedding the
 |  Redux Toolkit  |  coreRpcClient (fetch)  |  Socket.IO client  |  UI |
 +------------------------------------------------------------------+
       |  HTTP JSON-RPC (loopback)   |  Socket.IO (loopback)
-      |  Tauri IPC (windows, hotkeys, relay_http_rpc fallback)
+      |  Tauri IPC (windows, relay_http_rpc fallback)
 +------------------------------------------------------------------+
 |                        Rust Core (openhuman_core)                  |
 |                                                                  |
@@ -133,7 +133,7 @@ Tauri v2 compiles the Rust core into native binaries per platform, embedding the
      (Socket.IO + REST)        (Telegram, etc.)
 ```
 
-The frontend talks to the Rust core in two ways. Tauri IPC carries shell commands (windows, hotkeys, and the `relay_http_rpc` HTTP relay used only for non-loopback plain-`http://` runtimes). HTTP JSON-RPC over loopback carries business logic and tools. The core also serves a Socket.IO bridge for live events such as chat streaming and notifications.
+The frontend talks to the Rust core in two ways. Tauri IPC carries shell commands (window management and the `relay_http_rpc` HTTP relay used only for non-loopback plain-`http://` runtimes). HTTP JSON-RPC over loopback carries business logic and tools. The core also serves a Socket.IO bridge for live events such as chat streaming and notifications.
 
 The core owns the outbound persistent connection to the TinyHumans backend, the memory engine binding (memory items are stored in CortexDB, not on the device) and tool execution. Agent turns run through the `tinyagents` harness. Tools dispatch through native Rust handlers and the shell tool, which runs host commands such as Node.js and Python under the `security/` sandbox policy. Skills do not execute in-process. The `crates/openhuman-core/src/skills/` domain contributes metadata and tool descriptors that get injected into agent prompts. External MCP clients (Claude Desktop, Cursor, Zed) reach the same tool surface over a separate stdio MCP server. See [MCP server](mcp-server.md).
 

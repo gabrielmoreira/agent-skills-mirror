@@ -21,13 +21,6 @@ allowed-tools:
 <!-- AUTO-GENERATED from SKILL.md.tmpl — do not edit directly -->
 <!-- Regenerate: bun run gen:skill-docs -->
 
-
-## When to invoke this skill
-
-One command from zero to "gbrain is running, and this agent
-can call it." Use when: "setup gbrain", "connect gbrain", "start
-gbrain", "install gbrain", "configure gbrain for this machine".
-
 ## Preamble (run first)
 
 ```bash
@@ -457,7 +450,7 @@ continue immediately with Step 2:
 
 ```bash
 [ -f ~/.claude/skills/gstack/bin/gstack-code-intelligence ] \
-  && bun ~/.claude/skills/gstack/bin/gstack-code-intelligence select gbrain 2>/dev/null \
+  && bun --no-env-file --config=/dev/null ~/.claude/skills/gstack/bin/gstack-code-intelligence select gbrain 2>/dev/null \
   || true
 ```
 

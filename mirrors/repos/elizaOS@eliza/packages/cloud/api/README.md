@@ -77,7 +77,10 @@ is the existing broad user/organization capability, not a narrower permission cl
 The release workflow publishes the registry from the protected
 `ELIZA_MOBILE_APP_AUTH_CLIENTS_JSON` environment secret. The
 `Mobile App Auth Registration Admin` workflow diagnoses or repairs a client's
-`apps` row: choose the client (`ai.elizaresearch.alphaphone` for Alpha Phone);
+`apps` row: choose the client (`ai.elizaresearch.alphaphone` for Alpha Phone,
+`ai.elizaresearch.seniorcare` for Senior Care, whose callback is
+`https://cloud.eliza.app/auth/senior-care/callback`, staging:
+`https://cloud-staging.eliza.app/auth/senior-care/callback`);
 additional clients take their app UUID from the same registry entry, which must
 be enabled and bound to that environment's callback.
 

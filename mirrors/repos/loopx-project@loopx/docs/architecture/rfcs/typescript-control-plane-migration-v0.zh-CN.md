@@ -4,7 +4,7 @@
 - 替代 / 关闭：无
 - Proposed by：LoopX maintainers
 - Date：2026-08-15
-- Last revised：2026-10-16
+- Last revised：2026-10-19
 - Scope：LoopX 控制面核心从 Python 到 TypeScript 的增量、replacement-first
   迁移；不长期维护两份语义实现
 - Tracking issue：[#3225](https://github.com/loopx-project/loopx/issues/3225)
@@ -16,6 +16,21 @@
 
 
 ### 产品对话与通用异步 inbox
+
+**接收方 Inbox 读取事务（2026-10-19）。**
+`loopx/control_plane/collaboration/inbox_read.ts` 现在通过既有 typed owner 组合本地源扫描、分页、
+Goal-instance 准入、接收方及 peer-return 读取回执和未完成委派上下文。
+Turn-start 观察使用只读请求。没有待处理 Host provider 的接收读取，在同一个请求中
+提交本地读取回执。实际 Core Todo、工作区输入和操作票据 provider 仍是显式 Python IO；
+finalize 重新取得 Goal lifetime guard，并在共享 request fence 内重读 entry。
+读取仍不授予 adoption、consumption 或执行权限。
+旧 Python 扫描与组合循环及五个细粒度 RPC 注册已删除。
+旧 Inbox 读取 import 和 tracking/presentation 回执视图保留薄 native facade；
+这些层在剩余 Python 消费者迁移后退出。既有 return 展示文件 IO 保留 Python adapter，
+复用同一份持久化 delivery 词汇。大页面复用共享私有 snapshot 传输。
+正常 runtime IPC、已安装 HTTP 调用者一致性、
+完整默认 SQLite CLI 性能仍是独立资格门。本次源码切换不证明 R1–R3 或完整异步协作
+生命周期已通过验收。
 
 R1–R3 的 TS 消费者包括 App 产品路径，不只 CLI 结算。
 [App/inbox 融合设计](app-conversation-and-async-inbox-v0.md#ts-and-generic-async-inbox-migrate-with-the-user-path)

@@ -93,7 +93,7 @@ Trong CLAUDE.md, tham khảo các file này với các hướng dẫn như:
 
 Khi tạo hoặc cập nhật CLAUDE.md:
 
-1. **Độ Dài Mục Tiêu**: Dưới 300 dòng (lý tưởng dưới 100)
+1. **Độ Dài Mục Tiêu**: Dưới 200 dòng
 2. **Không Quy Tắc Phong Cách**: Loại bỏ bất kỳ hướng dẫn linting/formatting nào
 3. **Không Hướng Dẫn Cụ Theo Tác Vụ**: Di chuyển sang các file riêng
 4. **Không Đoạn Code**: Sử dụng tham chiếu file thay thế
@@ -150,7 +150,7 @@ Mô tả ngắn một dòng.
 
 Trước khi hoàn thành, xác minh:
 
-- [ ] Dưới 300 dòng (lý tưởng dưới 100)
+- [ ] Dưới 200 dòng
 - [ ] Mọi dòng áp dụng cho TẤT CẢ các phiên
 - [ ] Không quy tắc phong cách/formatting
 - [ ] Không đoạn code (sử dụng tham chiếu file)
@@ -217,7 +217,7 @@ Subagents được định nghĩa riêng, trong `.claude/agents/*.md` — không
 
 ---
 
-**Cập Nhật Lần Cuối**: Ngày 15 tháng 10 năm 2026
-**Phiên Bản Claude Code**: 2.1.300
+**Cập Nhật Lần Cuối**: Ngày 18 tháng 10 năm 2026
+**Phiên Bản Claude Code**: 2.1.302
 **Nguồn**:
 - https://code.claude.com/docs/en/memory

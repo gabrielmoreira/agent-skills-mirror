@@ -1,0 +1,711 @@
+# Production deployment: TLS, auth, air-gapped models, and migration
+
+**Use case:** Every other recipe boots XERJ with `--insecure` — no TLS, no
+auth — because that is the fastest way to try something. This one shows the
+opposite: the hardened posture you actually run in production. It covers the
+secure quickstart (TLS + API-key auth), the health-probe and gRPC posture, how
+to stage the neural embedder on an air-gapped host, the interim path for
+copying data out of a live Elasticsearch, and the single-node-vs-cluster
+production stance.
+
+Everything below was verified against a live XERJ binary. The exact `curl`
+status codes and log lines quoted are real captured output from that run.
+
+> **Honesty first.** XERJ secures *some* things in the engine (TLS in transit,
+> API-key auth, a set of resource circuit-breakers) and deliberately delegates
+> others (encryption at rest, RBAC, SSO, tamper-evident audit) to your
+> surrounding environment. This recipe is explicit about which is which — see
+> [What XERJ does and does not secure](#2-what-xerj-does-and-does-not-secure-itself).
+
+---
+
+## 1. Secure quickstart — TLS + auth in one config file
+
+XERJ is configured by a single TOML file passed with `--config`. The secure
+posture is two blocks: `[auth]` (on by default) and `[tls]`.
+
+Create `xerj.toml`:
+
+```toml
+[server]
+es_compat_port = 9200          # Elasticsearch-wire clients point here
+data_dir       = "/var/lib/xerj"
+
+# The default is "127.0.0.1" — loopback only, so a node you have not thought
+# about cannot be reached from the network. Exposing it is deliberate. With
+# tls.enabled = false a non-loopback bind refuses to start unless you also set
+# server.allow_insecure_network_bind = true; the TLS block below is what makes
+# it unnecessary here.
+bind_address   = "0.0.0.0"
+
+[auth]
+enabled = true                 # this is already the default
+# admin_api_key = ""           # leave empty → auto-generated on first run
+
+[tls]
+enabled   = true
+cert_path = "/var/lib/xerj/xerj.crt"
+key_path  = "/var/lib/xerj/xerj.key"
+
+# TLS covers REST and ES-compat only — :8081 stays cleartext h2c. On a
+# non-loopback bind that combination refuses to start unless you say the
+# exposure is intended. See "gRPC posture" below before keeping this line.
+allow_insecure_grpc_h2c = true
+```
+
+Boot it:
+
+```bash
+xerj --config /etc/xerj/xerj.toml
+```
+
+On first start the admin key is written **once** to `<data_dir>/admin.key`
+(mode 0600). The banner names that path and does not print the key:
+
+```
+First-run: admin API key auto-generated.
+The key is not printed here. Read it from (owner-only, mode 0600):
+/var/lib/xerj/admin.key
+Keep that file secret. Clients send it as `Authorization: ApiKey $(cat /var/lib/xerj/admin.key)`.
+```
+
+…followed by the deployment-posture banner (verbatim from a real TLS+auth boot;
+listener lines shown, the Data-dir/Console lines between them elided with `…`):
+
+```
+ Native REST  :8080 [TLS ]
+ ES-compat    :9200 [TLS ]
+ gRPC         :8081 [h2c — plaintext, no TLS]
+ …
+ ┌─ Deployment posture (see PATH_TO_100_PCT_v0.6.0_to_v1.0.md) ──
+ │ ✓  TLS:    in-process rustls termination active (REST + ES-compat)
+ │           (self-signed by default — supply a CA cert for production)
+ │ ⚠  gRPC:   :8081 is NOT covered by TLS — cleartext h2c on a non-loopback
+ │           bind, allowed by tls.allow_insecure_grpc_h2c (issue #229).
+ │           Terminate TLS for it at your proxy/mesh, or bind loopback.
+ │ ✓  Auth:   single API-key (no RBAC; per-doc / per-field controls roadmap v0.9)
+ │ ⚠  Audit:  request tracing only — tamper-evident WORM audit log v0.9
+ │ ⚠  Encryption-at-rest: not engine-level — use OS FDE or S3 SSE for now
+ └────────────────────────────────────────────────────────────────
+```
+
+That banner prints on every start and cannot be suppressed — it is a running
+statement of what the engine does and does not cover. The `[TLS ]` tags on the
+REST/ES lines and `[h2c]` on gRPC reflect the actual transport of each listener.
+The `v0.9` labels are the engine's internal roadmap milestone for those
+delegated controls (encryption-at-rest, RBAC, WORM audit); none of them is in
+this build — provide them at the layers described in
+[section 2](#2-what-xerj-does-and-does-not-secure-itself).
+
+### How auth behaves
+
+* **On by default.** `[auth] enabled` defaults to `true`. Leave `admin_api_key`
+  empty and XERJ generates a 64-hex-character key on first run and writes it to
+  `<data_dir>/admin.key` with `0600` permissions. The startup notice prints the
+  path, not the key. Or set `admin_api_key` yourself (then no file is written —
+  protect the config file with `chmod 600`).
+* **One key, full access.** Every request must carry the key; there is **no
+  RBAC** — any authenticated caller can read and write every index. Both header
+  schemes work:
+
+  ```bash
+  curl -k -H "Authorization: ApiKey  $KEY"  https://localhost:9200/_cluster/health   # 200
+  curl -k -H "Authorization: Bearer  $KEY"  https://localhost:9200/_cluster/health   # 200
+  curl -k                                    https://localhost:9200/_cluster/health   # 401
+  curl -k -H "Authorization: ApiKey  wrong"  https://localhost:9200/_cluster/health   # 401
+  ```
+
+* **Per-client keys.** `POST /_security/api_key` mints additional keys
+  (presented as `ApiKey <base64(id:secret)>`) that can carry an expiry and be
+  invalidated. They authenticate as the same superuser — the `role_descriptors`
+  in the request are accepted but not enforced.
+
+### How TLS behaves
+
+XERJ terminates TLS **in-process** with rustls on the REST and ES-compat
+listeners — there is no separate proxy required just to get HTTPS. Two things
+are worth knowing:
+
+1. **You must name `cert_path` and `key_path` when `tls.enabled = true`.**
+   Config validation rejects a TLS block with empty paths:
+
+   ```
+   Error: config error: tls.cert_path is required when tls.enabled = true
+   ```
+
+2. **Self-signed on first run, if the named files don't exist yet.** With TLS
+   enabled and the cert/key files absent, XERJ generates a self-signed
+   certificate for `localhost` at `<data_dir>/xerj.crt` and
+   `<data_dir>/xerj.key` (the private key `0600`) and logs a warning:
+
+   ```
+   INFO  generating self-signed TLS certificate for localhost
+   WARN  self-signed certificate generated — replace with a real cert for production
+   ```
+
+   This is fine for a smoke test but a self-signed `localhost` cert is **not**
+   production TLS.
+
+**For production, supply a real certificate.** Put a CA-signed (or internal-CA)
+PEM cert and key at the paths you named. XERJ loads them on boot and — if TLS
+is enabled but the cert or key is missing or unparseable — **fails loud** and
+aborts startup rather than silently downgrading your HTTPS port to cleartext.
+A cleartext request to a TLS port simply fails to connect; the port never
+answers in plaintext.
+
+> `--insecure` (or `-k`) is the escape hatch every other recipe uses: it forces
+> **both** `tls.enabled = false` **and** `auth.enabled = false`. Never pass it
+> in production. There is no separate flag that enables TLS — TLS is turned on
+> only through the config file.
+
+### Health probes: exempt from auth, *not* from TLS
+
+`/health/live` and `/health/ready` are exempt from authentication so a
+Kubernetes kubelet or a Docker `HEALTHCHECK` can probe a hardened node without
+credentials — otherwise the moment you set `auth.enabled = true` every probe
+gets a 401 and the pod crashloops. Verified against a live auth-on node:
+
+```bash
+curl -k https://localhost:9200/health/ready     # 200  (no key needed)
+curl -k https://localhost:9200/health/live      # 200  (no key needed)
+curl -k https://localhost:9200/_cluster/health  # 401  (every data route still needs the key)
+```
+
+The exemption is auth-only. The probe endpoints are still served over whatever
+transport the listener uses, so **when TLS is on, probes must speak HTTPS.**
+The shipped `Dockerfile` HEALTHCHECK is:
+
+```dockerfile
+HEALTHCHECK … CMD curl -fsS http://127.0.0.1:9200/health/ready || exit 1
+```
+
+That `http://` probe works as-is for the default (TLS-off, proxy-terminated)
+container. If you enable in-process TLS, change the probe to
+`https://127.0.0.1:9200/health/ready` and add `-k` for a self-signed cert, or
+your container is marked unhealthy forever. Same for a Kubernetes probe: set
+`scheme: HTTPS` on the `httpGet`.
+
+### What readiness actually means
+
+`/health/ready` answers **"can this node serve?"**, not "is every index
+perfect". A node with 200 healthy indices and one that will not open stays
+`200` and keeps taking traffic, with the degradation named in the body:
+
+```text
+ready (degraded): 200 of 201 indices serving, 1 failed to open; see GET /_cluster/indices/failed
+```
+
+The body carries counts only — this path is exempt from authentication, so it
+must not enumerate index names to anything that can reach the port. The names
+and reasons live behind auth on `GET /_cluster/indices/failed`.
+
+It returns `503` only when there is genuinely nothing to serve — every index
+the node holds failed to open. This is deliberate: readiness used to hard-fail
+on any red status, so one bad index directory removed the whole pod from
+service permanently and took the 200 working indices down with it. The red
+status itself is untouched — `/v1/health`, `/v1/cluster/health`,
+`_cluster/health` and `_cat/health` all still report `red`, so alert on those,
+not on the probe.
+
+### Recovering an index that will not open
+
+An index directory that fails to open at boot is quarantined rather than
+silently dropped, and it is a state you can act on without stopping the
+server. All four moves work on a live node:
+
+```bash
+# 1. What failed, and why — the verbatim open error, not just a name
+curl -s localhost:9200/_cluster/indices/failed | jq .
+
+# 2. It is visible in the surfaces you already watch
+curl -s localhost:9200/_cat/indices          # → red open broken <uuid> 1 0 0 0 0b 0b 0b
+curl -s "localhost:9200/_cluster/health?level=indices" | jq '.indices.broken'
+
+# 3. Fix the cause the error names (e.g. restore snapshot.json from a
+#    backup or from an interrupted-write `.tmp.*` sibling), then retry
+curl -s -XPOST localhost:9200/_cluster/indices/failed/broken/_retry
+
+# 4. Or give up on it and remove it
+curl -s -XDELETE localhost:9200/broken
+```
+
+A retry that does not work returns `503` with the *current* reason, not the
+one recorded at boot. While an index is in this state, searches and writes to
+it return `503 no_shard_available_action_exception` naming the open error —
+**not** `404 index_not_found`, which would be a lie: the name is taken and the
+data is still on disk. Creating an index over that name is refused for the
+same reason.
+
+Existence is answered separately from data, the way ES answers it: `GET
+/broken`, `HEAD /broken` (the `indices.exists()` your client library calls),
+`GET /broken/_mapping` and `GET /broken/_settings` all return `200` and report
+the index as existing, because those read metadata and never touch a shard. So
+a client that probes before writing gets one consistent answer — the name is
+taken — instead of a `404` from `HEAD` followed by a `503` from the `PUT`.
+
+Watch for the failure on the health surfaces, not the existence probes:
+`_cat/health` and `_cluster/health` both report `red` with
+`unassigned_primary_shards: 1`, and the two conditions that gate on it are
+honoured — `wait_for_status=green` and `wait_for_active_shards=all` answer
+`408` with `"timed_out": true` rather than reporting success on a red node, so
+a startup gate written against real ES behaves the same here.
+
+### gRPC posture
+
+The gRPC `XerjSearch` service (default `:8081`) always speaks **plaintext
+h2c** — the in-process rustls termination covers the REST and ES-compat
+listeners only, and tonic is built without its TLS feature. gRPC is **not**
+unauthenticated, though: every RPC runs through the same API-key check as the
+HTTP surface (credential in the `authorization` metadata, `ApiKey <key>` or
+`Bearer <key>`). With `auth.enabled = true`, an unauthenticated or wrong-key
+RPC returns `UNAUTHENTICATED`.
+
+Because the gRPC port carries cleartext frames, **terminate TLS in front of
+`:8081` at a reverse proxy** (or keep it on a trusted network / mesh) if
+clients reach it over an untrusted link. If you don't use gRPC, don't expose
+the port.
+
+**XERJ refuses to start rather than let that gap pass unnoticed.** With
+`tls.enabled = true` and a `server.bind_address` that is not loopback, startup
+aborts non-zero before binding anything:
+
+```
+Error: tls.enabled = true but the gRPC listener on 0.0.0.0:8081 speaks
+cleartext h2c — TLS covers the REST and ES-compat listeners only, and
+server.bind_address = "0.0.0.0" is not loopback, so gRPC traffic (including
+API keys) would cross the network unencrypted while the node reports itself
+as TLS-enabled. Refusing to start. Fix by binding to loopback
+(server.bind_address = "127.0.0.1"), or terminate TLS for the gRPC port at a
+proxy, sidecar or service mesh and declare it:
+tls.allow_insecure_grpc_h2c = true.
+```
+
+Three ways out, in the order you should prefer them:
+
+1. **Bind loopback** (`server.bind_address = "127.0.0.1"`) and let a proxy on
+   the same host own every public port. No opt-out needed.
+2. **Terminate TLS for `:8081`** at your proxy, sidecar or mesh, then set
+   `tls.allow_insecure_grpc_h2c = true` to record that you did. This is what
+   the quickstart config in
+   [section 1](#1-secure-quickstart--tls--auth-in-one-config-file) does,
+   because it binds `0.0.0.0`.
+3. **Accept plaintext gRPC on a trusted network** — same setting, and the
+   startup banner will keep saying `:8081` is uncovered on every boot.
+
+`--insecure` never trips *this* check: it clears `tls.enabled`, so nothing is
+claiming the port is encrypted in the first place. This one only fires when TLS
+is on, which is exactly when the mismatch is invisible.
+
+It trips the other one instead. See
+[cleartext exposure](#cleartext-exposure-issue-228) below: with TLS off, a
+non-loopback bind refuses to start for a broader reason — not one uncovered
+listener but all of them.
+
+### Cleartext exposure (issue #228)
+
+`server.bind_address` defaults to `127.0.0.1`. A node started without a config
+file is reachable only from its own host, because TLS is off by default and a
+world-facing cleartext node would publish its admin API key to every interface.
+
+Exposing the node is therefore two statements, not one:
+
+```toml
+[server]
+bind_address = "0.0.0.0"
+# Required whenever bind_address is not loopback AND tls.enabled = false.
+# Unnecessary in the section-1 config above, which enables TLS.
+allow_insecure_network_bind = true
+```
+
+Without the second line, startup aborts non-zero before creating the data
+directory or minting a first-run admin key:
+
+```
+Error: server.bind_address = "0.0.0.0" is not loopback and tls.enabled = false,
+so every listener (8080, 9200, 8081) would serve plain HTTP on a
+network-reachable interface — the API key in every Authorization header, and
+every document body, would cross the network in cleartext. Refusing to start.
+```
+
+Three ways out, in the order you should prefer them:
+
+1. **Enable TLS** (section 1). Then this check is not consulted at all.
+2. **Bind loopback** and let a proxy on the same host own the public ports.
+3. **Declare the exposure** with `allow_insecure_network_bind = true` when
+   something in front of the node already terminates TLS — ingress, sidecar,
+   mesh — or when the boundary is a container network namespace. The startup
+   banner keeps naming it on every boot.
+
+Two conveniences exist because the default is loopback: `--bind 0.0.0.0` /
+`XERJ_BIND_ADDRESS`, and `XERJ_ALLOW_INSECURE_NETWORK_BIND`, so a container can
+express both without shipping a TOML file. The Docker image and the Helm chart
+set exactly these.
+
+### Behind a reverse proxy: `server.trusted_proxies`
+
+XERJ derives client identity — the per-IP auth rate-limit bucket on the
+console's login / magic-link endpoints, and the audit-log source address —
+from the **TCP peer address**, which a caller cannot forge. `X-Forwarded-For`
+is written by the caller and is **ignored by default**.
+
+That default is safe but it is not what you want behind a proxy: the peer is
+then always the proxy, so every user collapses into one bucket (ten login
+attempts a minute for the whole company). Declare the proxy:
+
+```toml
+[server]
+# Addresses or CIDR blocks. Empty by default — believe nobody.
+trusted_proxies = ["10.0.0.7"]          # or ["10.0.0.0/8", "::1"]
+```
+
+Rules worth knowing before you set it:
+
+- **List only proxies you operate.** Anything named here can claim to be any
+  client, and so can side-step per-IP throttling. `0.0.0.0/0` re-opens the
+  exact hole this setting exists to close.
+- **The chain is read right-to-left.** `X-Forwarded-For` is appended
+  left-to-right, so the left end is whatever the original caller sent. XERJ
+  takes the right-most entry that is not itself a listed proxy — the one your
+  own outermost proxy just wrote. A caller who pre-seeds the header cannot
+  pick their own bucket.
+- **`X-Real-IP` is honoured only when there is no `X-Forwarded-For`**, and
+  only from a listed peer.
+- **A bad entry fails startup.** `trusted_proxies = ["10.0.0.0/99"]` refuses
+  to boot rather than quietly trusting nothing (or everything).
+- Make sure the proxy actually **overwrites** rather than appends blindly —
+  nginx `proxy_set_header X-Forwarded-For $proxy_add_forwarded_for` is
+  correct; passing the client's header through verbatim is not.
+
+---
+
+## 2. What XERJ does and does not secure itself
+
+Run XERJ **secure by deployment**: the engine covers transport auth and
+transport encryption; your platform provides the rest.
+
+**Engine-level in this build:**
+
+| Control | Status |
+|---|---|
+| TLS in transit (REST + ES-compat), in-process rustls | ✅ `tls.enabled = true` |
+| API-key authentication (single admin key; created keys with expiry/invalidate) | ✅ `auth.enabled = true` |
+| gRPC auth (same key, plaintext h2c transport) | ✅ |
+| Body-size / `from+size` / `_mget` / agg-bucket caps (`[limits]`); fixed query-nesting depth cap | ✅ |
+| Memtable + RSS + disk-flood circuit breakers (429 before OOM/ENOSPC) | ✅ (`[limits]`) |
+| Restrictive CORS by default (no cross-origin reads unless allow-listed) | ✅ (`[cors]`) |
+| Secrets written `0600` (admin key, auto-generated TLS key) | ✅ |
+| Client identity from the TCP peer, not `X-Forwarded-For` | ✅ (`server.trusted_proxies`, empty by default) |
+
+### Bound retained segment hydration
+
+Every index shares one process-wide admission authority for the seven
+immutable segment hydration caches (stored bytes/slices, decoded doc values,
+parsed stored JSON, sort shadows, id positions, row sequences). By default it
+retains at most 20% of the effective cgroup memory limit:
+
+```toml
+[limits]
+# 0 = automatic: effective cgroup/system memory / 5, with no minimum floor.
+max_segment_hydration_cache_mb = 0
+```
+
+An explicit value is clamped to 50% of the effective limit. For a diagnostic
+run, `XERJ_SEGMENT_HYDRATION_CACHE_MB=off|auto|<positive MiB>` overrides the
+file. Admission refusal does not change query results: the current query uses
+the decoded value without retaining it, while publish-time warming drops an
+unadmitted value.
+
+`GET /_nodes/stats` reports
+`indices.segment_hydration_cache.{limit_in_bytes,current_in_bytes,peak_in_bytes,admission_refusals}` and
+per-category gauges/table capacities. These are conservative retained-payload
+and key estimates, **not an RSS limit**. Query-owned materialization, decode
+scratch, mmaps, allocator fragmentation, FTS state, and other caches remain
+outside this ceiling. A single highly compressed segment can therefore create
+a transient decode peak before post-build admission; bounded/streaming decode
+is a separate follow-up.
+
+**Delegated to your environment (not engine-level in this build):**
+
+| Control | Do it with |
+|---|---|
+| Encryption at rest (segments, WAL are cleartext on disk) | OS FDE (dm-crypt/LUKS, BitLocker), ZFS native encryption, encrypted EBS/PD/Azure Disk, or S3 SSE-KMS |
+| RBAC / per-index / field- & document-level security | API gateway (Kong, Apigee, Cloudflare Access) in front of XERJ |
+| OAuth / OIDC / SAML / SSO | An OIDC reverse proxy (e.g. oauth2-proxy) |
+| mTLS / client-cert validation | Terminate/validate at the proxy |
+| Tamper-evident (WORM, hash-chained) audit log | Ship structured logs to an external SIEM (ELK, Splunk, Datadog, Loki) |
+| Per-key rate-limiting / rotation / TTL beyond created-key expiry | Reverse proxy / API gateway |
+
+The [deployment-security model](../../engine/reports/SECURITY_DEPLOYMENT_MODEL.md)
+report has the full threat model, reference architectures, and compliance
+status for these delegated controls. (Note: that report predates the
+in-process TLS described here — its "TLS is plain TCP / terminate at a proxy"
+lines are the *option*, not the only path; enabling `[tls]` gives you HTTPS
+directly. Everything it says about encryption-at-rest, RBAC, and audit is
+current.)
+
+A reference single-node topology:
+
+```
+Client ──TLS──> [XERJ :9200, tls.enabled=true] ──> [LUKS/EBS-encrypted data_dir]
+                     └── or terminate TLS at nginx/Envoy/ALB, run XERJ with
+                         tls.enabled=false behind it (keep auth.enabled=true for
+                         defense-in-depth, or enforce auth at the gateway)
+                     └── RBAC / OIDC / rate-limits enforced at an API gateway if you need them
+```
+
+Either enable in-process TLS **or** terminate at a proxy — you don't need both.
+Note `--insecure` disables auth *as well as* TLS, so behind a proxy prefer
+`tls.enabled = false` with `auth.enabled = true` rather than `--insecure` if you
+want XERJ to keep checking the API key.
+
+---
+
+## 3. Air-gapped neural embedder pre-seed
+
+The standard `xerj` binary ships the built-in **neural** embedder — a real
+in-process BERT sentence encoder (default `all-MiniLM-L6-v2`, 384-dim, ~90 MB),
+no Python, no external service. Select it per node with `[embedding] mode =
+"neural"` (or `--embed-mode neural`, or `XERJ_EMBED_MODE=neural`).
+
+On a connected host the model is downloaded from the HuggingFace Hub and loaded
+**at startup**, then cached for every later start. If that load fails the
+process **refuses to start** with one error that names the cause, the command
+`xerj --embed-mode lexical`, `embedding.local_model_dir`, and `HF_ENDPOINT`
+(a Hub mirror). It does not stay up and fail every ingest, and it does not
+substitute lexical vectors — those are not comparable with neural vectors.
+Explicit `proxy` already fails closed the same way. On an **air-gapped** host
+there is no Hub to reach, so stage the model files yourself before starting.
+
+### Step 1 — download the three files on a connected machine
+
+`candle` (XERJ's inference runtime) needs exactly three files, and the weights
+**must be safetensors** — it cannot read PyTorch `.bin` weights:
+
+```
+config.json
+tokenizer.json
+model.safetensors
+```
+
+Pull them from the model repo (`sentence-transformers/all-MiniLM-L6-v2`) — via
+`huggingface-cli download`, `git lfs`, or plain `curl` against
+`https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/<file>`.
+Verify you have the safetensors file, not `pytorch_model.bin`:
+
+```bash
+ls staged-model/
+# config.json  model.safetensors  tokenizer.json
+```
+
+### Step 2 — copy the folder into the enclave and point XERJ at it
+
+Transfer `staged-model/` to the air-gapped host, then set `local_model_dir`:
+
+```toml
+[embedding]
+mode            = "neural"
+local_model_dir = "/opt/xerj/models/all-MiniLM-L6-v2"   # holds the 3 files above
+# neural_model  = "sentence-transformers/all-MiniLM-L6-v2"  # only affects the Hub path
+# model_cache_dir = "/opt/xerj/hf-cache"                    # Hub cache dir (unused when local_model_dir is set)
+```
+
+When `local_model_dir` is set it takes precedence over the Hub — XERJ makes
+**no outbound network call** for the model. The weights load at startup, before
+the data directory is opened. A correct staging just works and makes no network
+call. A **missing or wrong file refuses startup** with the offending path:
+
+```
+embedding.mode=neural failed to load model sentence-transformers/all-MiniLM-L6-v2: local model dir /opt/xerj/models/... is missing tokenizer.json
+… has no model.safetensors (candle requires safetensors, not pytorch_model.bin).
+Refusing to start. …
+To index without a model, restart with: xerj --embed-mode lexical
+```
+
+(The `neural embedder: model ready` log line is the *Hub-download* path's
+completion message; the offline `local_model_dir` path does not print it.
+After a successful load, opening a semantic index logs
+`embedding backend: built-in neural BERT (loaded)`.)
+
+> **Slim builds.** A `--no-default-features` build omits the neural backend;
+> `mode = "neural"` on such a binary logs a warning and falls back to the
+> lexical embedder. Use the standard release binary for neural. (The lexical
+> default is honest lexical feature-hashing, **not** semantic understanding — see
+> the [semantic search recipe](./semantic-search-rag.md) for what each backend
+> buys you.)
+
+---
+
+## 4. Interim ES → XERJ migration: scroll + bulk
+
+XERJ speaks the Elasticsearch wire protocol, so for most apps migration is
+["change the URL, not your app"](./migrate-from-elasticsearch.md). That covers
+pointing a *live client* at XERJ. To **copy existing data out of a running
+Elasticsearch**, use the scroll + bulk pattern below.
+
+**Reindex-from-remote is intentionally not supported** — XERJ has no
+`reindex.remote.whitelist`, so `POST /_reindex` with a `source.remote` block
+**fails loud** instead of silently doing the wrong thing (verified):
+
+```bash
+curl -k -H "Authorization: ApiKey $KEY" -X POST https://xerj:9200/_reindex -d '{
+  "source": { "remote": { "host": "http://old-es:9200" }, "index": "src" },
+  "dest":   { "index": "dst" } }'
+# HTTP 400
+# {"error":{"type":"illegal_argument_exception",
+#   "reason":"[old-es:9200] not whitelisted in reindex.remote.whitelist
+#             (reindex from remote is not supported by this XERJ version)"}, "status":400}
+```
+
+The working path reads from the source ES with the **scroll** API and writes to
+XERJ with **`_bulk`** — both are standard ES calls, and XERJ implements both
+ends (a within-XERJ `POST /_reindex` with a local `source.index` also works and
+is the right tool once data is already in XERJ).
+
+```bash
+#!/usr/bin/env bash
+# migrate_scroll_bulk.sh — copy one index from a live Elasticsearch into XERJ.
+# stdlib only: bash + curl + python3 (for NDJSON assembly).
+set -euo pipefail
+
+SRC=${SRC:-http://old-es:9200}            # source Elasticsearch
+SRC_AUTH=${SRC_AUTH:-}                     # simple source auth, e.g. -u elastic:changeme
+                                          # (for an ApiKey header with spaces, hardcode it in src() below)
+DST=${DST:-https://xerj:9200}             # target XERJ
+DST_KEY=${DST_KEY:?set DST_KEY to the XERJ admin key}
+INDEX=${INDEX:?set INDEX to the index name}
+PAGE=${PAGE:-1000}
+
+src() { curl -s $SRC_AUTH "$@"; }
+dst() { curl -sk -H "Authorization: ApiKey $DST_KEY" "$@"; }
+
+# 1. Open a scroll on the source (sorted by _doc = fastest, stable).
+resp=$(src -H 'Content-Type: application/json' \
+  "$SRC/$INDEX/_search?scroll=5m" \
+  -d "{\"size\":$PAGE,\"sort\":[\"_doc\"],\"query\":{\"match_all\":{}}}")
+
+sid=$(printf '%s' "$resp" | python3 -c 'import sys,json;print(json.load(sys.stdin)["_scroll_id"])')
+total=0
+
+while :; do
+  # Turn this page's hits into an NDJSON bulk body for XERJ.
+  ndjson=$(printf '%s' "$resp" | python3 -c '
+import sys, json
+d = json.load(sys.stdin)
+hits = d["hits"]["hits"]
+out = []
+for h in hits:
+    out.append(json.dumps({"index": {"_index": h["_index"], "_id": h["_id"]}}))
+    out.append(json.dumps(h["_source"]))
+sys.stdout.write("\n".join(out) + ("\n" if out else ""))
+')
+  n=$(printf '%s' "$resp" | python3 -c 'import sys,json;print(len(json.load(sys.stdin)["hits"]["hits"]))')
+  [ "$n" -eq 0 ] && break
+
+  # Bulk-load the page into XERJ.
+  dst -H 'Content-Type: application/x-ndjson' \
+      -X POST "$DST/_bulk" --data-binary "$ndjson" >/dev/null
+  total=$((total + n))
+  echo "copied $total docs…"
+
+  # Advance the scroll.
+  resp=$(src -H 'Content-Type: application/json' -X POST "$SRC/_search/scroll" \
+    -d "{\"scroll\":\"5m\",\"scroll_id\":\"$sid\"}")
+  sid=$(printf '%s' "$resp" | python3 -c 'import sys,json;print(json.load(sys.stdin)["_scroll_id"])')
+done
+
+# 3. Release the scroll on the source and refresh the target.
+src -H 'Content-Type: application/json' -X DELETE "$SRC/_search/scroll" \
+    -d "{\"scroll_id\":[\"$sid\"]}" >/dev/null
+dst -X POST "$DST/$INDEX/_refresh" >/dev/null
+echo "done: $total docs → $DST/$INDEX"
+```
+
+Notes for a real migration:
+
+* **Create the mapping first** if you rely on specific field types — copy it
+  from the source (`GET $SRC/$INDEX/_mapping`) and `PUT` it on XERJ before the
+  bulk load, otherwise XERJ infers types from the first documents.
+* **Idempotent & resumable.** Each page carries the source `_id`, so re-running
+  overwrites rather than duplicates. For huge indices, checkpoint the last
+  `_id`/offset and use `search_after` keyset paging instead of a long-lived
+  scroll.
+* **XERJ's scroll works too — up to the snapshot cap.** The same three calls
+  (`_search?scroll=`, `POST /_search/scroll`, `DELETE /_search/scroll`) are
+  implemented on XERJ, so you can point this script at a XERJ source for
+  XERJ→XERJ copies. But XERJ's scroll is a bounded up-front snapshot, not a
+  segment-walking cursor: a query whose exact total exceeds the snapshot window
+  is refused with a `400` naming the ceiling, rather than paged and silently
+  truncated. Whole-index copies are normally over it, so for a XERJ source reach
+  for the `search_after` keyset paging the previous bullet describes — take each
+  cursor from the previous page's last `sort` value, and mind that `_id` sorts
+  lexicographically (`"1000" < "999"`), so a cursor computed from the page
+  number walks off into the wrong part of the sort order and ends the copy
+  early with a 200. See
+  [the cap](https://xerj.org/docs/api-es-compat.html#scroll-cap).
+
+---
+
+## 5. Single-node vs. cluster: the production posture
+
+**Run single-node in production.** That is the supported, hardened topology,
+and it's the default (`[cluster] enabled = false` → no Raft, no inter-node
+transport). Scale it *vertically* — XERJ's ingest and search pipelines
+parallelize across cores (`[engine]` shards/workers) — and get durability from
+the WAL + segment flush plus filesystem-level backups/snapshots.
+
+**Multi-node cluster mode is experimental — do not use it for production over
+an untrusted network.** When you set `[cluster] enabled = true`, XERJ starts a
+Raft state machine and a TCP transport on `cluster.port` (default `9300`) for
+inter-node consensus and search:
+
+```toml
+[cluster]
+enabled     = true
+port        = 9300
+peers       = ["10.0.0.2:9300=10.0.0.2:9300", "10.0.0.3:9300=10.0.0.3:9300"]  # label = address (#1171)
+tick_ms     = 50
+auth_secret = "…"   # or XERJ_CLUSTER_AUTH_SECRET; same value on every node
+```
+
+`auth_secret` is **mandatory** when `enabled = true`. Every control frame on
+`cluster.port` carries an HMAC-SHA256 tag over a per-connection random
+challenge, so a peer that does not hold the secret cannot inject Raft messages
+and a captured frame cannot be replayed. A node started with cluster mode on
+and no secret — from either the config file or `XERJ_CLUSTER_AUTH_SECRET` —
+**refuses to start** rather than open an unauthenticated control port. Generate
+one with `openssl rand -hex 32` (minimum 16 characters) and use the identical
+value on every node; a node with the wrong secret is simply not admitted.
+
+Two limits to be clear about. First, the HMAC **authenticates, it does not
+encrypt**: cluster traffic is still plaintext JSON, so `cluster.port` still
+belongs on a trusted, isolated network segment, and the API-key auth and TLS
+described above still cover only the client-facing listeners (REST/ES/gRPC).
+Second, the secret is cluster-*wide*, so it proves "this peer is a cluster
+member", not "this peer is node n2" — a compromised member can impersonate any
+other member. Per-node identity needs mTLS, which is not implemented.
+
+Cluster mode remains experimental — cross-cluster replication and disaster
+recovery are out of scope. For production HA today, mirror via snapshot/restore
+on a schedule, or dual-write to two independent single nodes at the application
+layer.
+
+---
+
+## Verification
+
+Every status code, banner line, and log message in this recipe is real output
+captured from a live `xerj` binary booted with `--config` and a TLS+auth TOML:
+HTTPS readiness `200`, auth `401`→`200` with `ApiKey`/`Bearer`, health-probe
+exemption under auth, cleartext-against-TLS refusal, `0600` key permissions,
+remote-`_reindex` `400`, local reindex success, and a boot that parses the
+`[embedding]`/`[cluster]` blocks shown here. The `migrate_scroll_bulk.sh` script
+above was run verbatim between two nodes (`PAGE=2` over a 5-doc index → three
+scroll pages) and copied all five documents, `_id`s and sources intact, into a
+target index that did not previously exist — exit `0`. Reproduce with your own
+config; the flows are deterministic.
+
+---
+
+*Verified end-to-end against a live XERJ (merged `main` binary). Claims are
+scoped to what this build does today — controls listed as delegated are not
+engine-level and must be provided by your deployment environment.*

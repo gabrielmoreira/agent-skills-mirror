@@ -23,21 +23,6 @@ allowed-tools:
 <!-- AUTO-GENERATED from SKILL.md.tmpl — do not edit directly -->
 <!-- Regenerate: bun run gen:skill-docs -->
 
-
-## When to invoke this skill
-
-Review which AskUserQuestion prompts fire across gstack skills, set per-question preferences
-(never-ask / always-ask / ask-only-for-one-way), inspect the dual-track
-profile (what you declared vs what your behavior suggests), and enable/disable
-question tuning. Conversational interface — no CLI syntax required.
-
-Use when asked to "tune questions", "stop asking me that", "too many questions",
-"show my profile", "what questions have I been asked", "show my vibe",
-"developer profile", or "turn off question tuning". 
-
-Proactively suggest when the user says the same gstack question has come up before,
-or when they explicitly override a recommendation for the Nth time.
-
 ## Preamble (run first)
 
 ```bash
@@ -552,7 +537,7 @@ explicit.
    # Update declared dimensions atomically
    GSTACK_STATE_ROOT=$(~/.claude/skills/gstack/bin/gstack-paths --get GSTACK_STATE_ROOT); : "${GSTACK_STATE_ROOT:?gstack-paths failed; reinstall with ./setup or /gstack-upgrade}"
    _PROFILE="$GSTACK_STATE_ROOT/developer-profile.json"
-   bun -e "
+   bun --no-env-file --config=/dev/null -e "
      const fs = require('fs');
      const p = JSON.parse(fs.readFileSync('$_PROFILE','utf-8'));
      p.declared = p.declared || {};
@@ -632,7 +617,7 @@ _LOG="$GSTACK_STATE_ROOT/projects/$SLUG/question-log.jsonl"
 if [ ! -f "$_LOG" ]; then
   echo "NO_LOG"
 else
-  bun -e "
+  bun --no-env-file --config=/dev/null -e "
     const lines = require('fs').readFileSync('$_LOG','utf-8').trim().split('\n').filter(Boolean);
     const byId = {};
     for (const l of lines) {
@@ -726,7 +711,7 @@ is a trust boundary.
    ```bash
    GSTACK_STATE_ROOT=$(~/.claude/skills/gstack/bin/gstack-paths --get GSTACK_STATE_ROOT); : "${GSTACK_STATE_ROOT:?gstack-paths failed; reinstall with ./setup or /gstack-upgrade}"
    _PROFILE="$GSTACK_STATE_ROOT/developer-profile.json"
-   bun -e "
+   bun --no-env-file --config=/dev/null -e "
      const fs = require('fs');
      const p = JSON.parse(fs.readFileSync('$_PROFILE','utf-8'));
      p.declared = p.declared || {};
@@ -772,7 +757,7 @@ SLUG=$(~/.claude/skills/gstack/bin/gstack-slug --get SLUG 2>/dev/null)
 GSTACK_STATE_ROOT=$(~/.claude/skills/gstack/bin/gstack-paths --get GSTACK_STATE_ROOT); : "${GSTACK_STATE_ROOT:?gstack-paths failed; reinstall with ./setup or /gstack-upgrade}"
 _LOG="$GSTACK_STATE_ROOT/projects/$SLUG/question-log.jsonl"
 if [ -f "$_LOG" ]; then
-  bun -e "
+  bun --no-env-file --config=/dev/null -e "
     const lines = require('fs').readFileSync('$_LOG','utf-8').trim().split('\n').filter(Boolean);
     const events = [];
     for (const l of lines) { try { events.push(JSON.parse(l)); } catch {} }
@@ -793,7 +778,7 @@ if [ -f "$_LOG" ]; then
 else
   echo 'TOTAL_LOGGED: 0'
 fi
-~/.claude/skills/gstack/bin/gstack-developer-profile --profile | bun -e "
+~/.claude/skills/gstack/bin/gstack-developer-profile --profile | bun --no-env-file --config=/dev/null -e "
   const p = JSON.parse(await Bun.stdin.text());
   const d = p.inferred?.diversity || {};
   console.log('SKILLS_COVERED: ' + (d.skills_covered ?? 0));
@@ -828,7 +813,7 @@ any that misfired via `always-ask`.
 SLUG=$(~/.claude/skills/gstack/bin/gstack-slug --get SLUG 2>/dev/null)
 GSTACK_STATE_ROOT=$(~/.claude/skills/gstack/bin/gstack-paths --get GSTACK_STATE_ROOT); : "${GSTACK_STATE_ROOT:?gstack-paths failed; reinstall with ./setup or /gstack-upgrade}"
 _LOG="$GSTACK_STATE_ROOT/projects/$SLUG/question-log.jsonl"
-[ ! -f "$_LOG" ] && echo 'NO_LOG' || bun -e "
+[ ! -f "$_LOG" ] && echo 'NO_LOG' || bun --no-env-file --config=/dev/null -e "
   const lines = require('fs').readFileSync('$_LOG','utf-8').trim().split('\n').filter(Boolean);
   const auto = [];
   for (const l of lines) {
@@ -860,7 +845,7 @@ adoption: high-traffic unmarked questions are the next candidates to retrofit.
 SLUG=$(~/.claude/skills/gstack/bin/gstack-slug --get SLUG 2>/dev/null)
 GSTACK_STATE_ROOT=$(~/.claude/skills/gstack/bin/gstack-paths --get GSTACK_STATE_ROOT); : "${GSTACK_STATE_ROOT:?gstack-paths failed; reinstall with ./setup or /gstack-upgrade}"
 _LOG="$GSTACK_STATE_ROOT/projects/$SLUG/question-log.jsonl"
-[ ! -f "$_LOG" ] && echo 'NO_LOG' || bun -e "
+[ ! -f "$_LOG" ] && echo 'NO_LOG' || bun --no-env-file --config=/dev/null -e "
   const lines = require('fs').readFileSync('$_LOG','utf-8').trim().split('\n').filter(Boolean);
   const counts = {};
   const summaries = {};

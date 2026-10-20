@@ -1,11 +1,11 @@
-"""IES GenAI for Engineers v2.3 (from the C27 Northstar pipeline): one connected maintenance scenario,
+"""IES GenAI for Engineers v2.4 (from the C27 Northstar pipeline): one connected maintenance scenario,
 an Agent Builder lab and a group mini capstone, branded for IES Academy."""
 TITLE=SHORT_TITLE='GenAI for Engineers'
 COURSE_CODE=''
 COURSE_PAGE=''
 GITHUB_REPO='tertiarycourses/IES-GenAI-for-Engineers'
 PROMPTS_PAGE='https://tertiarycourses.github.io/IES-GenAI-for-Engineers/prompts/'
-VERSION='v2.3';VERSION_DATE='18 October 2026'
+VERSION='v2.4';VERSION_DATE='19 October 2026'
 ORG='IES Academy';UEN=''
 # Client branding consumed by the engine (defaults are the Tertiary house values).
 COVER_TAG='IES ACADEMY  •  ENGINEERING';FOOTER_TAG=TITLE;COPYRIGHT_SHORT='© IES Academy'
@@ -16,7 +16,7 @@ PROMPTS_RELATIVE=False;PROMPTS_EYEBROW='IES Academy';PROMPTS_TAGLINE='One day ·
 PROMPTS_DAY_NOTE='<p><b>One day:</b> 09:30–18:30, 7.5 instructional hours: 375 minutes of guided labs (including the agent lab and the group capstone), 55 minutes of concept demonstrations, 20 minutes of briefing and recap, plus lunch and two tea breaks.</p>'
 TRAINER='IES Academy Trainer';DAYS=1;DAY_MINUTES=480;INSTRUCTIONAL_MINUTES=450
 MODE='Instructor-led, hands-on practical labs';DAILY_TIMING='9:30 am - 6:30 pm (1-hour lunch; two 15-minute tea breaks; 7.5 instructional hours)';DARK_THEME=False
-VERSION_HISTORY=[('2.3',VERSION_DATE,'Lab 11 Agent Builder work-order agent; Lab 12 group mini capstone; Copilot interface, AI security and Agent Builder pages; corrected key concepts; built-in @chart-design demo; dashboard with KPI tiles and slicers; lean lab folders; step-by-step prompts page.','IES Academy'),('2.2','14 October 2026','Ten connected labs: account Personalisation, visible .Rules, create/apply Pareto and reporting Skills, custom interactive-dashboard Skill, filters and controlled refresh.','IES Academy'),('2.1','13 October 2026','Water-pipe service scenario; expanded coherent prompts, pure-text Copy buttons, linked PDFs and simple data/PDF labs.','IES Academy'),('1.0','29 July 2026','Previous cross-app scenario; retained in archive.','IES Academy'),('2.0','13 October 2026','Four maintenance topics; eight connected labs, custom Excel/PowerPoint skills, interactive dashboard and management presentation.','IES Academy')]
+VERSION_HISTORY=[('2.4',VERSION_DATE,'Simple, self-contained labs: short steps with one prompt each, and every lab works directly on the files in its own lab folder (no extra folder, no copying, no dependence on earlier labs); files stay local with no OneDrive upload; new Lab 7 PowerPoint design skill (plain to professional deck); Failure_Mode column and failure-mode Pareto in Labs 5-6; slides on Copilot as the agentic AI interface and on SKILL.md anatomy; Word, PowerPoint and Outlook steps upload the local file with + > Upload images and files (paste as fallback); new slide compares local upload with OneDrive / reference. OneDrive remains only for the Excel Skills folder and Agent Builder knowledge.','IES Academy'),('2.3','18 October 2026','Lab 11 Agent Builder work-order agent; Lab 12 group mini capstone; Copilot interface, AI security and Agent Builder pages; corrected key concepts; built-in @chart-design demo; dashboard with KPI tiles and slicers; lean lab folders; step-by-step prompts page.','IES Academy'),('2.2','14 October 2026','Ten connected labs: account Personalisation, visible .Rules, create/apply Pareto and reporting Skills, custom interactive-dashboard Skill, filters and controlled refresh.','IES Academy'),('2.1','13 October 2026','Water-pipe service scenario; expanded coherent prompts, pure-text Copy buttons, linked PDFs and simple data/PDF labs.','IES Academy'),('1.0','29 July 2026','Previous cross-app scenario; retained in archive.','IES Academy'),('2.0','13 October 2026','Four maintenance topics; eight connected labs, custom Excel/PowerPoint skills, interactive dashboard and management presentation.','IES Academy')]
 LEARNING_OUTCOMES=[
 'LO1: Integrate Word, Excel, PowerPoint and Outlook Copilot in a coherent maintenance workflow with explicit source grounding and verified prompts.',
 'LO2: Distinguish account Personalisation, workbook .Rules and reusable Skills; configure, create, apply and verify Pareto and maintenance-reporting Skills using water-service evidence.',
@@ -27,8 +27,8 @@ LO_TITLES=['Connected Copilot workflow','Reusable maintenance skills','Interacti
 ICE_BREAKER=['Your name, role and one maintenance reporting task.','Which app holds the work-order source?','Which date and status definitions determine overdue work?','Check which Copilot buttons and skills menus are available in your assigned apps.']
 LAB_NOTE='Northstar Water Services is a fictional water-pipe maintenance and service company. All service hubs, staff and work orders are synthetic. Use the fixed reporting date 2026-09-30; missing facts remain UNKNOWN. Proposals do not change real assignments. Training email drafts are never sent.'
 LG_INTRO='This masterclass follows Northstar Water Services, a fictional water-pipe maintenance and service company, from a dirty service-work-order export to a reviewed management decision pack. Work-order IDs, categories, sites, current assignments and status definitions stay consistent across every app. The purpose is to make evidence travel accurately through the workflow, while using Copilot for drafting, analysis, reusable instructions and visual communication.'
-LG_INTRO2='Study each topic’s concepts before its connected labs. Topic 2 has four labs; Topics 1, 3 and 4 have two each; Topic 5 has the agent lab and the group mini capstone. Each lab has its own instruction PDF and a lean data folder: the lab workbook and only the templates that lab uses. Copy-ready prompts are on the linked web page, step by step. Carry your own verified outputs forward. The detailed procedures are here and in labs; the slides teach concepts and show outcomes.'
-LG_SETUP=dict(needs=['Assigned Microsoft 365 account with Copilot in Word, Excel, PowerPoint and Outlook; licence and tenant settings checked before class.','Excel desktop Windows or Mac recommended; current apps, English display language for Excel custom skills, assigned OneDrive and AutoSave.','Complete lab folder downloads and a personal work-genai output folder; all sample data is synthetic.','Copilot skills access in both Excel and PowerPoint. If unavailable, the lab supplies a clearly labelled manual-instruction practice route.'],verify_text='Open one workbook and one Word/PowerPoint template; find each Copilot button. Confirm that the app can select the intended OneDrive reference file. Use the app-created custom skills folder rather than guessing a path. Keep Formulas > Calculation Options > Automatic. Never paste account passwords into a prompt.',conventions=['App-labelled prompts run in the named app; a prompt in one app is not automatically visible to another.','Use Chat only for inspection, Plan for reviewed proposals, and Allow editing for authorised workbook changes when these modes are available.','Log Word, Outlook, PowerPoint and web prompts manually in Prompt_Log.','All comparisons use the same source table, reporting date and filter scope. Missing values remain UNKNOWN; zero closed denominator is N/A.'])
+LG_INTRO2='Study each topic’s concepts before its connected labs. Topic 2 has five labs; Topics 1, 3 and 4 have two each; Topic 5 has the agent lab and the group mini capstone. Each lab has its own instruction PDF and a lean data folder: the lab workbook and only the templates that lab uses. Copy-ready prompts are on the linked web page, step by step. Every lab is self-contained: work directly on the files in its own data folder, so you can start any lab without finishing the one before. The detailed procedures are here and in labs; the slides teach concepts and show outcomes.'
+LG_SETUP=dict(needs=['Assigned Microsoft 365 account with Copilot in Word, Excel, PowerPoint and Outlook; licence and tenant settings checked before class.','Desktop Excel on Windows or Mac (current version) with English display language for Excel custom skills; workbooks stay in the downloaded lab folders, with no OneDrive upload.','The downloaded lab folders; you work directly on the files in each lab’s data folder. All sample data is synthetic.','Copilot skills access in both Excel and PowerPoint. If unavailable, the lab supplies a clearly labelled manual-instruction practice route.'],verify_text='Open one workbook and one Word/PowerPoint template; find each Copilot button. Open a lab workbook from its data folder and confirm Excel Copilot answers on it; in Word Copilot confirm + > Upload images and files can upload it (a local file cannot be found with / or @). Use the app-created custom skills folder rather than guessing a path. Keep Formulas > Calculation Options > Automatic. Never paste account passwords into a prompt.',conventions=['App-labelled prompts run in the named app; a prompt in one app is not automatically visible to another.','Use Chat only for inspection, Plan for reviewed proposals, and Allow editing for authorised workbook changes when these modes are available.','All comparisons use the same source table, reporting date and filter scope. Missing values remain UNKNOWN; zero closed denominator is N/A.'])
 S_PERSONAL='https://support.microsoft.com/en-us/excel/copilot/copilot-in-excel-personalization'
 S_RULES='https://support.microsoft.com/en-us/excel/copilot/copilot-in-excel-rules'
 S_EXCEL='https://support.microsoft.com/en-us/excel/copilot/copilot-in-excel-skills'
@@ -63,7 +63,7 @@ sec(1,'Work-Order Grain and Reporting Measures',
 sec(2,'Prompts and Verified App Handoffs',
 'A useful prompt combines the intended goal, operational context, named source and output expectations. The handoff object is a verified artifact, such as a Word brief with a checked metric table and source links. It is not an assumption that another app can remember the preceding conversation. For maintenance, expectations should specify exact dates, status vocabulary, current versus proposed assignments and missing-value behaviour.',
 'The same number may have different meaning when a chart counts all work orders while an email calls it open backlog. A cross-app evidence register records the claim, value, source table, filter scope and date. This provides a small reproducible contract for each output and lets a reviewer identify a mismatch before it becomes a management decision.',
-['Write the goal and audience.','Attach or select the actual source.','Specify definitions and missing-value behaviour.','Reconcile the returned claims.'],
+['Write the goal and audience.','Upload the local file or paste the verified source.','Specify definitions and missing-value behaviour.','Reconcile the returned claims.'],
 ['Goal: draft a maintenance update for the operations manager.','Source: reviewed Northstar operations brief, all filters All, 30 September.','Expectation: label assignment suggestions as proposals and leave unknown approvals UNKNOWN.'],
 ['A reviewed brief can be selected or its checked text pasted.'],['Only an unverified summary is available.'],[S_WORD,S_SLIDE,S_FILES]),
 sec(2,'Outlook Drafting and Operational Decisions',
@@ -129,7 +129,7 @@ sec(7,'From Dashboard Evidence to a Decision Story',
 sec(7,'Charts, Templates and Source Provenance',
 'A template supplies slide layouts, typography and colours; it does not supply correct facts. PowerPoint Copilot can draft slides from selected supported files. Reviewed Word briefs are a reliable narrative input for this course. Excel charts may be embedded for editing or pasted as images; both are copies of a reporting state unless a separate supported link is deliberately configured and tested.',
 'Approximate AI-generated charts can contradict source values while looking plausible. Replace them with reviewed charts or verified tables and keep source/date notes. Distinguish all-work-order counts from backlog-only counts. A professional presentation uses consistent units and chart semantics, not just a consistent palette.',
-['Select the reviewed brief.','Apply the existing template.','Insert verified charts or tables.','Record source and snapshot scope.'],
+['Upload or paste the reviewed brief.','Apply the existing template.','Insert verified charts or tables.','Record source and snapshot scope.'],
 ['An editable embedded chart remains a copy rather than a tested live link.','An image is labelled as a snapshot at 30 September.','All eight slides use one reviewed baseline.'],
 ['The chart object or image can be verified against the register.'],['A visual is assumed accurate because Copilot produced it.'],[S_SLIDE,S_FILES]),
 sec(8,'Professional Refinement and Rehearsal',
@@ -161,12 +161,12 @@ sec(4,'Visible Workbook .Rules and Formula Results',
 ['Name the visible sheet exactly .Rules.','Place one instruction per column-A cell.','Recalculate a formula-driven rule.','Check the next output and copied workbook.'],
 ['The date rule returns Reporting date: 2026-09-30 from Control!B2.','Hidden .Rules is not used; keep the final sheet visible.','No universal precedence among rules, preferences and Skills is assumed.'],
 ['Conventions belong to this workbook and should travel with it.'],['You need a security boundary or are assuming hidden rules apply.'],[S_RULES,S_PERSONAL,S_EXCEL]),
-sec(5,'Pareto Skill: Counts, Sorting and Cumulative Share',
-'A Pareto contribution chart orders category counts from largest to smallest and adds a cumulative-percentage line. The population here is overdue backlog, not all work orders: nonterminal statuses with Due_Date strictly before the reporting date. Alphabetical tie sorting keeps equal counts in a repeatable order.',
-'The Skill turns a recurring grouping-and-charting method into reusable instructions. Counts and cumulative formulas must reconcile to the same eligible source rows. A right-hand percentage axis from zero to 100% prevents interpreting the line as another count series. Category concentration describes contribution rather than establishing root cause.',
-['Define source, population, date and grouping.','Count and sort with stable ties.','Calculate cumulative count / eligible total.','Build and verify an editable dual-axis chart.'],
-['Pump 18; Meter 12; Leak 8; Valve 8; Pipe 4: total 50.','Cumulative percentages are 36%, 60%, 76%, 92%, 100%.','Four of five categories first reach 80%; do not force an 80/20 conclusion.'],
-['The count population and grouping are defined and auditable.'],['Categories are being called causes or zero-total shares treated as measured 0%.'],[S_EXCEL]),
+sec(5,'Pareto Skill: Find the Vital Few Failure Modes',
+'A Pareto chart sorts categories from highest to lowest count and adds a cumulative-percentage line. Engineers use it to find the vital few failure modes or root-cause categories that account for most of the work, so improvement effort goes where it matters most. Here each Northstar work order records its Failure_Mode.',
+'The water-service-pareto Skill turns the method into reusable instructions: count, sort high to low, add Share % and Cumulative %, chart it and list the categories needed to reach 80%. Counts must reconcile to the source rows. A Pareto shows where work concentrates; the engineer still confirms the root cause on site before acting.',
+['Choose the table and the column to analyse.','Count and sort from highest to lowest.','Add Share % and Cumulative %.','List the vital few that reach 80%.'],
+['All 120 work orders: Corrosion 42, Joint seal leak 30, Valve seat wear 22.','These 3 of 8 failure modes cause 78% of the work.','Overdue jobs only: Joint seal leak moves to the top (14 of 50).'],
+['You need to decide which failure modes to tackle first.'],['A count is treated as a proven cause without checking on site.'],[S_EXCEL]),
 sec(7,'Custom Dashboard Skill as a Reusable Contract',
 'water-service-dashboard is a separate custom Skill whose instructions define inputs, six KPI formulas, four shared filter selectors, three editable charts and controlled output boundaries. Visible .Rules carries workbook conventions. The request still supplies the actual source, fixed date and chosen scope. Installing another reporting Skill does not install this dashboard method.',
 'A reusable contract makes every KPI and chart obey the same AND filter logic and allows a safe refresh using table references. Input and replacement guards protect the source and existing Pareto evidence. Rerun evidence includes sheet/chart inventory and source checks, not just a claim that the Skill ran successfully.',
@@ -175,6 +175,16 @@ sec(7,'Custom Dashboard Skill as a Reusable Contract',
 ['A recurring dashboard needs consistent measures and review guards.'],['Tenant Skill access or source preservation is being assumed.'],[S_EXCEL,S_DASH])]
 
 
+# ---- The big picture (deck opening): Copilot is the agentic AI interface; the Office apps are its tools.
+COPILOT_HUB=dict(title='Copilot: One Agentic AI Interface, Four Tools',kicker='THE BIG PICTURE',
+  center=('Microsoft 365 Copilot','Agentic AI interface: understands your request, plans the steps and acts in each app'),
+  apps=[('Excel','Cleans data, writes formulas, builds charts and dashboards.','217346'),
+        ('Word','Drafts and checks reports and briefs from your files.','2B579A'),
+        ('PowerPoint','Builds and redesigns decks from a brief.','C43E1C'),
+        ('Outlook','Drafts emails and replies for you to review.','0F6CBD')],
+  flow='You ask in plain English   →   Copilot plans and acts in the app   →   You review and approve')
+S_PPT_SKILLS='https://support.microsoft.com/en-us/powerpoint/copilot/copilot-in-powerpoint-skills'
+
 # ---- IES v2.3 concept pages -------------------------------------------------
 def _with_tiles(section, title, items, cols=2, kicker='KEY POINTS', size=15):
     section['tiles'] = dict(title=title, items=items, cols=cols, kicker=kicker, size=size); return section
@@ -182,18 +192,26 @@ INTERFACE = _with_tiles(sec(1,'The Microsoft 365 Copilot Interface',
 'Copilot in the browser and in each Office app shares one set of controls. Microsoft Copilot (copilot.cloud.microsoft) and the Copilot pane in Word, Excel, PowerPoint and Outlook offer a model selector, new chat and chat history, a + menu to reference files and choose skills, settings for Personalization and Manage plugins & skills, and in Excel a mode switch between Chat only, Plan and Allow editing. Agents & Skills in the left pane opens your agents and Agent Builder.',
 'Knowing where each control lives lets you choose how much reasoning, context and authority Copilot gets for a task. A new chat starts a clean context; a reference adds a specific file; a mode decides whether Copilot only answers, proposes a plan or edits the file. The green shield confirms enterprise data protection for work data.',
 ['Pick the model and start a new chat.','Reference the file or choose a skill.','Choose Chat only, Plan or Allow editing.','Review history, settings and skills.'],
-['Auto is the default model; Think deeper suits multi-step analysis.','Use / or + to reference the OneDrive workbook in Word.','Chat only for inspection, Plan before edits, Allow editing to apply.'],
+['Auto is the default model; Think deeper suits multi-step analysis.','Local file: upload it with +. OneDrive file: reference it with /.','Chat only for inspection, Plan before edits, Allow editing to apply.'],
 ['You need to control context, reasoning depth or edit permissions.'],['You assume a chat in one app is visible in another.'],[S_OVERVIEW,S_EXCEL]),
 'The Microsoft 365 Copilot Interface',[
 ('Model selection','Auto, Quick response or Think deeper; Auto chooses for you.'),
 ('New chat','Starts a clean conversation; each chat is its own context.'),
 ('History','Earlier chats in the left pane to reopen or continue.'),
 ('Mode','Excel/Word: Chat only, Plan or Allow editing (Edit).'),
-('+ Add content','Reference a file with / or +, or choose skills to apply.'),
+('+ Add content','Upload a local file, / a OneDrive file, or choose a skill.'),
 ('Personalisation','Settings (...) > Personalization: your account preferences.'),
 ('Skills & plugins','Settings (...) > Manage plugins & skills; call one with @.'),
 ('Agents','Agents & Skills in the left pane; build with Agent Builder.'),
 ('Data protection','The green shield shows enterprise data protection is on.')],cols=3,kicker='INTERFACE',size=13)
+INTERFACE['compare']=dict(title='Two Ways to Give Copilot a File: Local or OneDrive',
+  headers=['Aspect','Local file (this course)','OneDrive / SharePoint file'],rows=[
+  ('Where it lives','Your computer, e.g. the downloaded lab folder.','OneDrive or SharePoint in Microsoft 365.'),
+  ('In Excel','Desktop Excel Copilot works on the open workbook; no upload needed.','Excel desktop or web; AutoSave keeps the cloud copy current.'),
+  ('In Word, PowerPoint, Outlook','+ > Upload images and files, then pick the file on your device.','Type / or use + > Attach cloud files and pick the file.'),
+  ('/ or @ mention','Not available: / lists only cloud files; @ calls skills and agents.','/ lists the OneDrive and SharePoint files you can open.'),
+  ('After you edit','The upload is a copy: upload again after changing the file.','The reference reads the latest saved cloud version.'),
+  ('Use it for','Training labs and files you do not want in the cloud.','Shared team files, agent knowledge and folder references.')])
 AI_SECURITY = _with_tiles(sec(2,'AI Security: Five Principles',
 'AI security is the set of habits and controls that keep data, decisions and systems safe when people work with AI assistants and agents. Five principles apply to every Copilot task in this course: data control, permission control, human in the loop, traceability, and using a well-tested model rather than the newest one for important work.',
 'Copilot only surfaces data a user can already access and does not use prompts to train its foundation models, but people can still overshare, give an agent too much access, accept an unchecked draft or lose track of what was used. The principles turn those risks into checks you can perform before work leaves your hands.',
@@ -210,7 +228,7 @@ BUILTIN = sec(5,'Built-in and Custom Skills',
 'Copilot in Excel ships with built-in skills you call with @, such as @chart-design for charts. @chart-design applies the Excel design team’s chart guidance and @theme-design handles workbook formatting. Built-in skills are turned on in Settings (...) > Manage plugins & skills; chart-design sits under Visualization and is off by default. A custom skill is your own SKILL.md for a method Excel does not know, such as the water-service Pareto or dashboard.',
 'Start with a built-in skill when the task is generic, such as making a clear chart. Write a custom skill when the method carries your own rules: which rows count, how ties sort, which outputs may be replaced and which checks must pass. Both are reusable; only the custom one knows Northstar.',
 ['Turn on chart-design under Visualization.','Call @chart-design for a generic chart.','Spot the rules it cannot know.','Write a custom SKILL.md for those rules.'],
-['@chart-design draws a clean overdue-by-category bar chart.','It does not know the overdue population or Pareto tie order.','water-service-pareto adds the cumulative line and named output.'],
+['@chart-design draws a clean bar chart of work orders by failure mode.','It does not add the cumulative line or the vital-few list.','water-service-pareto adds both, the same way every time.'],
 ['A generic design task or your own repeatable method.'],['You expect a built-in skill to know your business rules.'],[S_BUILTIN,S_EXCEL])
 AGENT_BUILDER = _with_tiles(sec(11,'What Is Agent Builder?',
 'Agent Builder is the no-code tool in Microsoft Copilot for creating your own specialist agent. An agent is a focused version of Copilot with its own name, instructions, knowledge, skills, capabilities and starter prompts. You open it from Agents & Skills > New agent, describe the agent in plain English or fill in Configure, test it in Try it, then create and share it.',
@@ -238,6 +256,37 @@ LG_WRAPUP=dict(title='Closing: 5 Principles of AI Security',intro=AI_SECURITY['d
                sections=[dict(title=t,text=d) for t,d in AI_SECURITY['tiles']['items']]+[dict(title='Put the principles into practice',bullets=AI_SECURITY['how']+AI_SECURITY['example'])])
 SECTIONS.insert(next(i for i,x in enumerate(SECTIONS) if x['title'].startswith('Pareto Skill')),BUILTIN)
 SECTIONS += [AGENT_BUILDER, CAPSTONE]
+SKILL_ANATOMY = _with_tiles(sec(5,'What Is a Skill? Inside SKILL.md',
+'A skill is a folder with a SKILL.md file. The file starts with metadata between two --- lines: a name, which must match the folder name, and a description that says when to use the skill. The body below it holds the steps and procedure Copilot follows. The folder can also hold reference files, such as a template, an example or a data list, that the steps point to.',
+'Skills are triggered on demand: Copilot reads a skill only when you call it with @name or your request matches its description, so skills do not crowd every chat. Write a method once, install it once, and it runs the same way in every file. Excel and PowerPoint both use this format.',
+['Name the skill and describe when to use it.','Write the steps, rules and checks.','Add reference files to the folder if needed.','Install it, then call it with @name.'],
+['name: water-service-pareto (the same as its folder name).','description: Use when I ask for a Pareto chart or failure-mode analysis.','Steps: count, sort high to low, add Cumulative %, list the vital few.'],
+['You repeat the same method in many files.'],['The task is a one-off question a single prompt can answer.'],[S_EXCEL,S_PPT_SKILLS]),
+'Anatomy of a Skill',[
+('Triggered on demand','Loaded only when you @mention it or your request matches its description.'),
+('Metadata','Between --- lines: name (same as the folder) and description (when to use it).'),
+('Steps and procedure','The body: numbered steps, rules and the checks Copilot must run.'),
+('Reference files','The folder can also hold templates, examples or data the steps refer to.'),
+('One folder per skill','skills > pareto-chart > SKILL.md, plus any reference files.'),
+('Install once, reuse','Works in every file; turn it on or off in Manage skills.')],cols=3,kicker='SKILLS',size=14)
+SECTIONS.insert(next(i for i,x in enumerate(SECTIONS) if x is BUILTIN),SKILL_ANATOMY)
+# A new Lab 7 (PowerPoint design skill) follows Lab 6: later labs move up by one.
+for section in SECTIONS:
+    if section['lab']>=7: section['lab']+=1
+LAB_TOPIC={1:1,2:1,3:2,4:2,5:2,6:2,7:2,8:3,9:3,10:4,11:4,12:5,13:5}
+SECTIONS.insert(next(i for i,x in enumerate(SECTIONS) if x['lab']>7),_with_tiles(sec(7,'PowerPoint Design Skill: From Plain to Professional',
+'A design skill holds your brand rules, fonts, colours, header bar, footer, KPI cards and spacing, as steps Copilot in PowerPoint follows. Called on a plain deck, it redesigns every slide the same way while keeping every slide, number and fact.',
+'Most decks start plain: black text, no header, no branding. Restyling slide by slide is slow and inconsistent. A design skill makes a professional look one prompt away and the same for every deck the team produces.',
+['Write the brand rules as a SKILL.md.','Add it with + > Choose skills > Manage skills > Add skill.','Call it on a plain deck.','Check every number is unchanged.'],
+['Title slide: navy background, white title, teal subtitle.','Content slides: navy header bar, KPI cards, footer with slide number.','Numbers such as 120 work orders and 50 overdue stay the same.'],
+['Many decks need the same professional look.'],['The skill is allowed to change numbers or add facts.'],[S_PPT_SKILLS]),
+'Northstar Deck Design Rules',[
+('Fonts','Segoe UI Semibold titles; Segoe UI body text.'),
+('Colours','Navy #1F4E79, blue #2E75B6, teal #2A9D8F, light grey cards.'),
+('Header and footer','Navy title bar on every slide; footer with date and slide number.'),
+('KPI cards','Big bold numbers with a short label instead of long sentences.'),
+('Space','At most 4 short bullets; the same margins on every slide.'),
+('Keep the facts','Every slide, number and chart value stays the same.')],cols=3,kicker='DESIGN SKILL',size=14))
 _scope=next(x for x in SECTIONS if x['title']=='One Filter Scope for Every Visual')
 _scope['definition']=('Interactive means a learner-controlled selection changes the evidence shown. This dashboard has two controls that work together: four dropdowns in B2:B5 and four table slicers. All bypasses one dimension only; selections combine with AND. Every KPI tile and chart summary multiplies the dropdown mask by SUBTOTAL row visibility, so a slicer that hides source rows changes every measure too.')
 _scope['why']=('A dashboard can appear interactive while only one chart changes. Test a single-site selection with the dropdown and with the slicer, a combined category/owner selection and an empty selection. Check the scope line and the D3 slicer banner, and compare every chart total with the selected total.')
@@ -255,13 +304,13 @@ DAY_THEMES={1:'Maintenance workflow, custom skills, interactive dashboard, manag
 def SCHEDULE(lab_titles):
  from datetime import datetime,timedelta
  blocks=[(10,'admin','Welcome, learning outcomes, app access and Northstar scenario')]
- durations=[30,30,20,30,30,30,35,35,30,30,30,45]
- demonstrations={1:(10,1),3:(25,2),7:(10,3),9:(5,4),11:(5,5)}
+ durations=[30,30,20,20,30,30,30,35,25,25,25,30,45]
+ demonstrations={1:(10,1),3:(25,2),8:(10,3),10:(5,4),12:(5,5)}
  for n,d in enumerate(durations,1):
   if n in demonstrations:
    mins,topic=demonstrations[n];blocks.append((mins,'topic',f'Topic {topic}: concepts and demonstration'))
   blocks.append((d,'lab',lab_titles([n])))
-  if n in (2,7):blocks.append((15,'break','Tea break'))
+  if n in (2,8):blocks.append((15,'break','Tea break'))
   if n==5:blocks.append((60,'lunch','Lunch'))
  blocks.append((10,'recap','LO1-LO5 recap, capstone reflections and questions'))
  now=datetime(2026,10,14,9,30);rows=[]

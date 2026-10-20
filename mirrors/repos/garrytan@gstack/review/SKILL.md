@@ -22,14 +22,6 @@ triggers:
 <!-- AUTO-GENERATED from SKILL.md.tmpl — do not edit directly -->
 <!-- Regenerate: bun run gen:skill-docs -->
 
-
-## When to invoke this skill
-
-Analyzes diff against the base branch for SQL safety, LLM trust
-boundary violations, conditional side effects, and other structural issues. Use when
-asked to "review this PR", "code review", "pre-landing review", or "check my diff".
-Proactively suggest when the user is about to merge or land code changes.
-
 ## Preamble (run first)
 
 ```bash
@@ -536,7 +528,7 @@ Check the claimed VERSION's queue slot. This landing-order advice never blocks r
 BRANCH_VERSION=$(git show HEAD:VERSION 2>/dev/null | tr -d '\r\n[:space:]' || echo "")
 BASE_BRANCH="<base>"
 BASE_VERSION=$(git show origin/$BASE_BRANCH:VERSION 2>/dev/null | tr -d '\r\n[:space:]' || echo "")
-QUEUE_JSON=$(bun run ~/.claude/skills/gstack/bin/gstack-next-version \
+QUEUE_JSON=$(bun --no-env-file --config=/dev/null run ~/.claude/skills/gstack/bin/gstack-next-version \
   --base "$BASE_BRANCH" \
   --bump patch \
   --current-version "$BASE_VERSION" 2>/dev/null || echo '{"offline":true}')
@@ -783,7 +775,7 @@ The core pass owns optional extraction advice. Zero proposals is valid; prefer a
 
 ```bash
 GSTACK_SHARED_LIB=~/.claude/skills/gstack/lib/review-evidence.ts
-bun -e 'const { sharedLibsFingerprint } = await import(process.argv[1]); const value = sharedLibsFingerprint(JSON.parse(await Bun.stdin.text())); if (!value) process.exit(1); console.log(value);' "$GSTACK_SHARED_LIB" <<'GSTACK_SHARED_LIBS_JSON'
+bun --no-env-file --config=/dev/null -e 'const { sharedLibsFingerprint } = await import(process.argv[1]); const value = sharedLibsFingerprint(JSON.parse(await Bun.stdin.text())); if (!value) process.exit(1); console.log(value);' "$GSTACK_SHARED_LIB" <<'GSTACK_SHARED_LIBS_JSON'
 {"evidence_paths":["src/caller-a.ts","src/caller-b.ts"],"helper_target":{"path":"src/shared.ts","symbol":"sharedHelper"}}
 GSTACK_SHARED_LIBS_JSON
 ```

@@ -1,0 +1,126 @@
+# Research assets for every study
+
+Apply this contract whenever `deep-research` is invoked, whether the task uses one route or several. The project that owns the research chooses an explicit, durable study directory and catalog path. A temporary directory can hold downloads during work, but it is not the delivered source archive.
+
+The useful unit for later research is a **source-bound claim with a date and limit**, not a model's report. Keep provider outputs unchanged; a prior model conclusion stays a lead until its underlying source is reopened. The source, research activity and resulting claim have separate identities, following the provenance distinction in [W3C PROV](https://www.w3.org/TR/prov-o/). An explicit catalog and source metadata make studies findable and reusable, as described by the [FAIR principles](https://www.go-fair.org/fair-principles/). This Skill uses small local files; it does not require a graph database or a fixed provider.
+
+## Files and meaning
+
+```text
+<study>/
+  study.json                business question, source-traced request mode inventory, exact prompts and execution lanes
+  prior-research.json       explicit catalog search, prior candidates and reuse/adapt/reject reasons
+  run-events.jsonl          append-only provider task states, origins and collected export hashes
+  source-ledger.jsonl       every opened source and provider-surfaced URL, including rejected/failed leads
+  claims.jsonl              claims, source IDs, exact locators, status and evidence limits
+  sources/                  unmodified provider exports and original-source snapshots
+  report.md                 reader-facing synthesis with [C1] claim IDs and linked source URLs
+<project-catalog>.jsonl     append-only study locators, search terms and registration history
+```
+
+`source-ledger.jsonl` records source identity, URL or local content URN, title, type, accessibility, evidence family, publication date, capture time, source status, originating lane, original bytes or a concrete reason why no snapshot could be retained, and an exact page/section/record locator. Record every source actually opened; record every URL surfaced in a collected textual provider report as a `candidate`, then approve, reject or leave it as a lead. If a provider finds an already recorded URL, update its `surfaced_by` lanes without changing the original's evidence status. Also record unavailable sources and why access failed. A candidate is not a citation.
+
+`claims.jsonl` binds a specific claim to approved source IDs and locators, marks it supported/contested/unknown, and states what the source cannot establish. In `report.md`, place `[C1]` and links to **all originals bound to C1** in the same paragraph or table row; a local original links to its archived relative path. A later study can reuse the original source or challenge the old claim without replacing the old record. Multiple model reports quoting one disclosure still form one evidence family.
+
+## Start before external retrieval
+
+The catalog retains chosen study/report locators, user search terms, registration
+time/kind, explicit bounded or legacy reasons and predecessor bindings. New rows
+do not copy current study metadata, source/claim indices or completion coverage.
+Keep old copied fields and numbered revisions as historical bytes, not current
+evidence. Search follows only the catalog's latest explicit locators; do not
+recursively scan research or history directories.
+
+`search` derives matches from current study/source/claim records and projects
+run-event metadata into `recorded_lane_coverage`. Top-level `coverage` is
+`recorded-only`, never a current completion claim; artifact/report integrity is
+`not-checked`. Search does not rehash provider exports/source snapshots or validate
+reports; the existing study loader still verifies archived request-basis originals.
+Missing, unreadable or invalid current metadata yields `coverage: unknown` and
+`current_gaps`, without old copied-index fallback. A `query_match: unknown` entry
+is a coverage gap, not a confirmed relevant hit or proof of no relevant study.
+Reopen selected originals and run the existing `validate`/`check` gates before
+reuse or claiming completion.
+
+1. Choose the owning project, durable study path and explicit project catalog. Run `search` on entity names, aliases and the business question. By default it searches approved originals, labeled legacy sources and claim text; an `unknown` claim is a **question to reopen**, not a verified finding. Use `--include-leads` when candidate or rejected source URLs may help discovery, and inspect their status before reuse. Open any relevant prior original or claim before deciding reuse; search hits are locators. If this is the first study, an empty catalog is a valid recorded result.
+2. Write a `study.json` spec with one or more decision questions and **one lane for each selected provider × actual mode**. Set `dispatch_context` to the exact user-supplied URL, named subjects, verified codes/identifiers and date window needed to distinguish this case. Copy that context into every lane's exact prompt. `start` refuses a spec if any prompt omits it; this catches a generic “four funds” or “specified stocks” prompt before it reaches an isolated provider workspace. For a route that needs extra inputs, name those explicitly in its prompt. Give a direct original-source route its own lane. Include every mode the user explicitly requested or a prior accepted project workflow requires; if a route cannot run or adds no decision value, keep it in the plan and record `deferred` with the reason. A paid lane needs its own authorization. Do not turn ordinary chat into a native Deep Research lane by naming it so.
+3. Use schema 2 and the [independent request inventory](provider-run-contract.md#request-inventory-independent-of-execution), including archived original request/workflow bytes. Missing named modes must fail before dispatch; an empty required-mode list is valid only with a source-traced interpretation that none was specified. `start --request-source <original-request.txt>` copies that file into `sources/requests/<filename>` before validation; repeat for other originals. Run `start`, read the prior matches, and record a reasoned `reuse`, `adapt` or `reject` decision for each. Capture a user-named seed article or document as an original before external provider dispatch; [Seed source handoff](provider-run-contract.md#seed-source-handoff) owns its transfer and target check. Run `provider_runs.py plan` even for one lane. For several modes sharing an app, follow [parallel-provider-ops.md](parallel-provider-ops.md) and keep one UI owner.
+
+```bash
+python3 <skill>/scripts/research_assets.py search --catalog <project-catalog.jsonl> --query '<entity and question>'
+python3 <skill>/scripts/research_assets.py start <study-dir> --spec <prepared-study.json> --request-source <original-request.txt> --catalog <project-catalog.jsonl> --query '<entity and question>'
+python3 <skill>/scripts/research_assets.py decide <study-dir> <prior-study-id> reuse --reason '<what source or claim remains useful and what must be refreshed>'
+python3 <skill>/scripts/provider_runs.py plan <study-dir>
+```
+
+If a previous task is already running, preserve its original task ID and query that task. `start` refuses to overwrite an existing study directory; resume it through `plan` and inspect its source records.
+
+## Incremental follow-up
+
+When the user continues the same research question, the lead agent restores the latest accepted
+question and relevant prior originals before dispatch. Read the existing claims, report and
+project state to separate supported conclusions, resolved questions, corrections, remaining
+unknowns and the evidence or user correction that would reopen a closed question. Carry this
+context into the exact follow-up prompt, with its source locators and dates. Use the existing
+study records or owning project state; do not create a second cumulative ledger or change
+the asset schema to satisfy this instruction.
+
+Do not repeat a resolved search without new evidence, a freshness need or a user correction
+that could change its answer. Preserve unresolved claims as unknown; one neighboring question
+being resolved does not settle them. For example, a documented explanation for a closed bug
+does not prove that a separate performance issue is fixed. New contradictory evidence or an
+expired freshness horizon can reopen the relevant conclusion while the other resolved questions stay closed.
+
+In the follow-up report, lead with new evidence, corrected conclusions, unchanged conclusions
+and remaining unknowns, each with the decisive source or access limit and its effect on the
+question. Keep the full original report and prior conclusions available through the existing
+archive. A failed or inaccessible retrieval is not evidence of no change. If nothing changed,
+say which questions were checked and which were not; do not repeat the entire background
+as if it were a new finding. One-off research retains the requested report format and does not
+need a cumulative-state artifact.
+
+Before closing the follow-up, the lead agent compares its prompt and result with the prior
+originals: were applicable corrections carried forward, were resolved and unknown questions
+kept distinct, and is every claimed change supported? The local scripts check file and record
+consistency; they do not establish this semantic continuity or a reduction in the user's work.
+
+## Capture sources and claims during the run
+
+For a public or authorized original that can be retained, pass its actual downloaded file to `source`. The command copies bytes to `sources/originals/`, hashes the copy and appends a source event. It never promotes a model report to an original source. When an original cannot be retained, use `--no-snapshot-reason` and preserve the stable URL, date and exact locator. A rejected or unavailable source requires a reason.
+
+```bash
+python3 <skill>/scripts/research_assets.py source <study-dir> --url '<actual-source-url>' --title '<title>' --status approved --source-type official --accessibility public --family '<filing-or-dataset-id>' --published-at YYYY-MM-DD --locator '<page/section/table>' --lane-id <lane-id> --file <downloaded-original>
+python3 <skill>/scripts/research_assets.py source <study-dir> --title '<local-original-title>' --status approved --source-type other --accessibility exclusive-user-provided --family '<document-family>' --locator '<page/section>' --lane-id <lane-id> --file <local-original>
+python3 <skill>/scripts/research_assets.py claim <study-dir> --claim-id C1 --text '<precise claim>' --status supported --source-id <source-id-from-source-command> --locator '<page/section/table>' --boundary '<what this source does not establish>'
+python3 <skill>/scripts/research_assets.py harvest <study-dir>
+```
+
+`harvest` records URLs in collected Markdown, text and JSON exports; for HTML, it reads citation anchors and visible text while ignoring script, style and asset attributes such as favicons. Every added URL remains an unverified candidate. For a ZIP or other binary export, preserve the original and separately extract its source list or text report into `sources/`; inspect and record every cited source before synthesis. The tool cannot infer source truth from a ZIP, a model citation or a URL.
+
+As you reopen sources, append a newer `approved`, `rejected` or `unavailable` event for the same source ID. Keep the earlier lead and original provider output. Do not place credentials or access tokens in public URLs, the catalog or the Skill.
+
+## Finish and make the next run able to find this one
+
+The report cites claim IDs such as `[C1]` and links its source URLs. Run both checks, then register the study in the project catalog:
+
+```bash
+python3 <skill>/scripts/provider_runs.py validate <study-dir>
+python3 <skill>/scripts/research_assets.py check <study-dir> --report <study-dir>/report.md
+python3 <skill>/scripts/research_assets.py register <study-dir> --catalog <project-catalog.jsonl> --report <study-dir>/report.md --term '<entity>' --term '<topic>'
+```
+
+`check` fails when there is no study, a final report outside the study, an unfinished lane, an undecided prior match, no approved original, a missing or changed snapshot, an unrecorded provider URL, an unapproved report URL, a report claim ID absent from the claim registry, or a claim placed beside the wrong original links. It checks records and file integrity; it cannot identify every unmarked consequential sentence, prove the UI really selected a native mode, or prove that a source supports a claim. Use the selected provider Skill's mode readback and P6–P7 original-source checks for those facts.
+
+Schema-2 `check` also checks every required mode against execution lanes and the submission/import's original actual-mode receipt. A reasoned `deferred` route can complete with coverage `finalized-with-deferred-modes`; it has not run. A `failed_unknown` route or schema-1 request inventory cannot be called full completion. To archive an otherwise valid bounded report, pass `--bounded-reason '<missing perspective and consequence>'` to `check` and `register`; registration retains that explicit reason, while coverage is computed from current records. Missing/blank reasons fail. This option never bypasses source/claim integrity, request/lane mismatch, an active lane or a missing actual-mode receipt on schema 2. Old schema-1 studies remain readable and discoverable through `import-legacy`; do not resend historical tasks to manufacture coverage. Source-traced fields check consistency, not whether the coordinator understood every sentence of the request.
+
+`start` records the catalog path relative to the study, so the project tree can move without breaking `check` or `register`. For an older study whose receipt contains an absolute temporary path, move the study and catalog together, then run:
+
+```bash
+python3 <skill>/scripts/research_assets.py relink-catalog <study-dir> --catalog <project-catalog.jsonl> --reason '<why the tree moved>'
+```
+
+Relinking requires the target catalog to preserve the receipt's search-time snapshot as an append-only prefix. If that snapshot was empty, the target must still be empty or contain a matching registration for this study; a changed catalog with no study entry cannot establish continuity and is rejected. The registered locator must resolve to the same study directory and actual study identity; old copied metadata is not current identity evidence. The receipt retains each prior path and reason in `catalog_relink_history`. Run `check` afterward; register when explicit registration facts change.
+
+The source ledger retains every source status for audit, but default **source** search exposes approved originals and explicitly labeled legacy sources; candidate, rejected and unavailable links need `--include-leads`. Claim text remains searchable at every status, so an `unknown` or contested claim can locate an unresolved question but never establishes its answer. A later run reopens decisive originals, compares as-of dates and keeps prior conclusions separate from new evidence. Current study/source/claim edits become searchable without reregistering; final acceptance still requires `check`. Changed explicit registration terms/locators/conditions append a predecessor-bound event; revision counts are computed for command output, not persisted. Repeating `register` on unchanged registration facts adds nothing. Keep earlier rows and search-time catalog snapshots unchanged. A copied source counts as reuse only when the next study records why its scope and date still fit. Source count, route count and catalog size are diagnostics; the research outcome is a better-supported judgment or a clearly bounded unknown.
+
+An older multi-provider study may have valid `study.json` and collected exports but no universal source ledger. Run `python3 <skill>/scripts/research_assets.py import-legacy <old-study> --catalog <catalog> --reason '<coverage limit>' --term '<subject>'` to make its selected evidence discoverable **without** marking it finalized under this new contract. Open and reverify its originals before citing them in a new run. Do not backfill fabricated source snapshots or convert old model claims into verified facts.

@@ -10,16 +10,16 @@ OmniRoute bir-biri ilə əlaqəli, lakin fərqli üç dayanıqlılıq mexanizmin
 
 > Mənbə: [diagrams/resilience-3layers.mmd](../diagrams/resilience-3layers.mmd)
 
-## 1. Provayder dövrə açarı
+## 1. Provayder Dövrə Qoruyucusu
 
-**Əhatə dairəsi:** bütün provayder (məsələn, `glm`, `openai`, `anthropic`).
+**Əhatə dairəsi:** bütöv provayder (məs., `glm`, `openai`, `anthropic`).
 
 **Məqsəd:** yuxarı axın/xidmət səviyyəsində təkrar-təkrar uğursuz olan provayderə trafik göndərilməsini dayandırmaq.
 
-**Reallaşdırma:**
+**İcra:**
 
 - Əsas sinif: `src/shared/utils/circuitBreaker.ts`
-- Əlaqələndirmə: `src/sse/handlers/chatHelpers.ts`, `src/sse/handlers/chat.ts`
+- Qoşulma: `src/sse/handlers/chatHelpers.ts`, `src/sse/handlers/chat.ts`
 - Status API-si: `GET /api/monitoring/health`
 - Sıfırlama API-si: `POST /api/resilience/reset`
 - Örtüklər: `open-sse/services/accountFallback.ts`
@@ -28,144 +28,172 @@ OmniRoute bir-biri ilə əlaqəli, lakin fərqli üç dayanıqlılıq mexanizmin
 **Vəziyyətlər:**
 
 - `CLOSED` — normal trafikə icazə verilir
-- `DEGRADED` — trafikə hələ də icazə verilir, lakin provayder uğursuzluqlarının artması izlənilir
-- `OPEN` — provayder müvəqqəti bloklanıb; kombinasiya marşrutlaşdırması onu ötürür
-- `HALF_OPEN` — sıfırlama gözləmə müddəti bitib; yoxlama sorğusuna icazə verilir
+- `DEGRADED` — trafikə hələ də icazə verilir, lakin provayder uğursuzluqlarının artması izlənilir; kifayət qədər uğurlu nəticədən, etibarlı bağlantı testindən və ya yeni uğursuzluq olmadan son uğursuzluq növü üçün ən uzun `OPEN` saxlama müddətindən (onun `cooldownByKind` dəyəri, əks halda `resetTimeout`, × `maxBackoffMultiplier`, ən azı bir soyuma müddəti) sonra `CLOSED` vəziyyətinə qayıdır
+- `OPEN` — provayder müvəqqəti bloklanır; kombinə edilmiş marşrutlaşdırma onu ötürür
+- `HALF_OPEN` — sıfırlama vaxtı bitib; sınaq sorğusuna icazə verilir
 
 **Konfiqurasiya edilə bilən standart dəyərlər (`open-sse/config/constants.ts`, İdarəetmə paneli → Parametrlər → Dayanıqlılıq bölməsində təqdim olunur):**
 
-| Sinif     | Deqradasiya həddi | Açılma həddi  | Sıfırlama gözləmə müddəti |
-| --------- | ----------------- | ------------- | ------------------------- |
-| OAuth     | 5 uğursuzluq      | 8 uğursuzluq  | 60s                       |
-| API açarı | 7 uğursuzluq      | 12 uğursuzluq | 30s                       |
-| Lokal     | hesablanır        | 2 uğursuzluq  | 15s                       |
+| Sinif     | Deqradasiya həddi | Açılma həddi  | Sıfırlama vaxtı |
+| --------- | ----------------- | ------------- | --------------- |
+| OAuth     | 5 uğursuzluq      | 8 uğursuzluq  | 60s             |
+| API açarı | 7 uğursuzluq      | 12 uğursuzluq | 30s             |
+| Lokal     | hesablanır        | 2 uğursuzluq  | 15s             |
 
-`degradationThreshold` provayderin nə zaman `DEGRADED` vəziyyətinə keçməsini, `failureThreshold` isə nə zaman açılmasını və ötürülməsini idarə edir. Lokal provayder profilləri hələ Dayanıqlılıq parametrləri səhifəsində təqdim edilmir.
+`degradationThreshold` provayderin nə zaman `DEGRADED` vəziyyətinə keçdiyini; `failureThreshold` isə onun nə zaman açıldığını və ötürüldüyünü idarə edir. Lokal provayder profilləri hələlik Dayanıqlılıq parametrləri səhifəsində təqdim edilmir.
 
-**İşə düşmə kodları:** yalnız provayder səviyyəli `[408, 500, 502, 503, 504]` statusları. Hesab səviyyəli xətalar üçün (əksər 401/403/429 — bunlar soyuma müddətinə və ya bloklanmaya aiddir) işə salmayın.
+**Aktivləşdirmə kodları:** yalnız provayder səviyyəli statuslar `[408, 500, 502, 503, 504]`. Hesab səviyyəli xətalarda (əksər 401/403/429 — bunlar soyuma və ya bloklanmaya aiddir) dövrə qoruyucusunu aktivləşdirməyin.
 
-**Tənbəl bərpa:** `OPEN` müddəti bitdikdə `getStatus()`, `canExecute()`, `getRetryAfterMs()` vəziyyəti `HALF_OPEN` olaraq yeniləyir. Fon taymerinə ehtiyac yoxdur.
+**Tənbəl bərpa:** `OPEN` müddəti bitdikdə `getStatus()`, `canExecute()`, `getRetryAfterMs()` vəziyyəti `HALF_OPEN` olaraq yeniləyir. Eyni oxuma əməliyyatları (və növbəti uğursuzluq) köhnəlmiş `DEGRADED` vəziyyətini yenidən `CLOSED` vəziyyətinə endirir. Fon taymerinə ehtiyac yoxdur.
 
 ---
 
-### İstəyə bağlı qlobal Provayder Soyuma Müddəti (pəncərə keçidi)
+### Könüllü qlobal Provayder Soyuması (pəncərə keçidi)
 
-Dördüncü, **istəyə bağlı** qat (`PROVIDER_COOLDOWN_ENABLED`, standart olaraq **söndürülüb**) uğursuz provayderlər haqqında sorğulararası yaddaşı
-`open-sse/services/providerCooldownTracker.ts` daxilində saxlayır və kombinasiya hədəflərinin
-müəyyənləşdirilməsi zamanı bu yaddaşa müraciət edilir ki, ardıcıl kombinasiya sorğuları indicə
+Dördüncü, **könüllü** qat (`PROVIDER_COOLDOWN_ENABLED`, standart olaraq **söndürülüb**) uğursuz provayderlərin
+sorğulararası yaddaşını
+`open-sse/services/providerCooldownTracker.ts` daxilində saxlayır və kombinə edilmiş hədəfin
+müəyyənləşdirilməsi zamanı ona müraciət edilir ki, ardıcıl kombinə edilmiş sorğular indicə
 uğursuz olmuş provayderi yenidən yoxlamasın. Provayder səviyyəli qeydlər `PROVIDER_PROFILES` pəncərə keçidinə tabedir:
 
-| Profil    | bundan sonra işə düşür (`providerFailureThreshold`) | bu müddət ərzində (`providerFailureWindowMs`) | bu qədər soyuyur (`providerCooldownMs`) |
-| --------- | --------------------------------------------------: | --------------------------------------------: | --------------------------------------: |
-| OAuth     |                                                `10` |                                       `15min` |                                  `5min` |
-| API açarı |                                                `15` |                                       `30min` |                                 `10min` |
+| Profil    | aktivləşmə həddi (`providerFailureThreshold`) | müddət (`providerFailureWindowMs`) | soyuma müddəti (`providerCooldownMs`) |
+| --------- | --------------------------------------------: | ---------------------------------: | ------------------------------------: |
+| OAuth     |                                          `10` |                            `15min` |                                `5min` |
+| API açarı |                                          `15` |                            `30min` |                               `10min` |
 
 Həddən aşağı olduqda provayder **soyuma vəziyyətində** hesab edilmir; uğurlu nəticə
 pəncərəni təmizləyir. Bağlantı səviyyəli qeydlər (`provider:connectionId`) isə
-eksponensial `minRetryCooldownMs → maxRetryCooldownMs` geri çəkilməsini saxlayır. Əvəzləmələr:
+eksponensial `minRetryCooldownMs → maxRetryCooldownMs` geriçəkilməsini saxlayır. Əvəzləmələr:
 `OMNIROUTE_PROVIDER_BREAKER_{OAUTH,API_KEY}_{FAILURE_THRESHOLD,FAILURE_WINDOW_MS,COOLDOWN_MS}`.
 Reqressiyadan qorunma testi: `tests/unit/provider-cooldown-window-gate.test.ts`.
 
-## 2. Bağlantının gözləmə müddəti
+## 2. Bağlantının soyuma müddəti
 
 **Əhatə dairəsi:** tək provayder bağlantısı/hesabı/açarı.
 
-**Məqsəd:** eyni provayderin digər bağlantıları xidmət göstərməyə davam edərkən nasaz açarı ötürmək.
+**Məqsəd:** eyni provayderin digər bağlantıları xidmət göstərməyə davam edərkən bir nasaz açarı ötürmək.
 
-**Tətbiq:**
+**Reallaşdırma:**
 
 - Əlçatmaz kimi işarələmə: `src/sse/services/auth.ts::markAccountUnavailable()`
 - Seçim: eyni fayldakı `getProviderCredentials*`
-- Gözləmə müddətinin hesablanması: `open-sse/services/accountFallback.ts::checkFallbackError()`
+- Soyuma müddətinin hesablanması: `open-sse/services/accountFallback.ts::checkFallbackError()`
 - Parametrlər: `src/lib/resilience/settings.ts`
 
-**Hər bağlantı üzrə sahələr:**
+**Hər bağlantı üçün sahələr:**
 
-- `rateLimitedUntil` — gözləmə müddətinin bitəcəyi vaxt nişanı
+- `rateLimitedUntil` — soyuma müddətinin bitdiyi vaxt damğası
 - `testStatus: "unavailable"`
 - `lastError`, `lastErrorType`, `errorCode`
-- `backoffLevel` — eksponensial geriçəkilmə sayğacı
+- `backoffLevel` — eksponensial geri çəkilmə sayğacı
 
-**Standart gözləmə müddətləri:**
+**Defolt soyuma müddətləri:**
 
-- OAuth bazası: 5s
-- API açarı bazası: 3s
-- API açarı üçün 429: yuxarı axından gələn `Retry-After`/sıfırlama başlıqlarına/ayrışdırıla bilən sıfırlama mətninə üstünlük verir
-- Geriçəkilmə: `baseCooldownMs * 2 ** failureIndex`
+- OAuth üçün baza: 5s
+- API açarı üçün baza: 3s
+- API açarı üçün 429: yuxarı axından gələn `Retry-After`/sıfırlama başlıqlarına/təhlil edilə bilən sıfırlama mətninə üstünlük verir
+- Geri çəkilmə: `baseCooldownMs * 2 ** failureIndex`
 
-**Kütləvi eyni vaxtlı təkrar cəhdlərdən qoruma:** paralel xətaların gözləmə müddətini həddindən artıq uzatmasının və ya `backoffLevel` dəyərini iki dəfə artırmasının qarşısını alır.
+**Kütləvi eyni vaxtlı sorğu axınına qarşı qoruma:** paralel xətaların soyuma müddətini həddən artıq uzatmasının və ya `backoffLevel` dəyərini iki dəfə artırmasının qarşısını alır.
 
-**Paralellik limiti ilə bağlı 429 xətaları geriçəkilmə pillələrini artırmır.** Cavab gövdəsi paralellik limitini ("too many concurrent requests", "concurrency limit", "parallel request limit", GLM `并发数过高`) bildirən `429`, hesabın işlək, lakin məşğul olduğunu göstərir.
-`checkFallbackError()` `concurrency_limited` səbəbini qaytarır: dərhal növbəti bağlantıya keçin, bu bağlantı üçün sabit `CONCURRENCY_LIMIT_COOLDOWN_MS` (1s) müddətində və ya yuxarı axının təkrar cəhd göstərişinə uyğun gözləmə tətbiq edin, `backoffLevel` dəyərini dəyişməz saxlayın və `skipProviderBreaker` təyin edin.
-Açıq kvota cavab gövdəsi yenə də üstünlük təşkil edir; buna görə də kvota nümunəsinə də uyğun gələn cavab gövdəsi kvota qərarı kimi qalır. Aşkarlama: `src/shared/utils/classify429.ts` daxilində `looksLikeConcurrencyLimit()`; qərar: `open-sse/services/accountFallback/concurrencyLimit429.ts`. `classify429()` funksiyası (`FailureKind` açarı üçün) dəyişməz qalır və bu cavab gövdələri üçün yenə də `rate_limit` oxuyur.
+**Paralellik limiti ilə bağlı 429 xətaları geri çəkilmə pillələrini artırmır.** Gövdəsində
+paralellik limitinin ("too many concurrent requests", "concurrency limit", "parallel request
+limit", GLM `并发数过高`) bildirildiyi `429` hesabın sağlam, lakin məşğul olduğunu göstərir.
+`checkFallbackError()` `concurrency_limited` səbəbini qaytarır: dərhal növbəti
+bağlantıya keçin, cari bağlantı üçün sabit `CONCURRENCY_LIMIT_COOLDOWN_MS` (1s) müddəti və ya
+yuxarı axının təkrar cəhd göstərişi qədər soyuma müddəti təyin edin, `backoffLevel` dəyərini dəyişmədən saxlayın və `skipProviderBreaker` təyin edin.
+Açıq şəkildə kvotanı bildirən gövdə yenə də üstünlük təşkil edir; buna görə də kvota nümunəsinə uyğun gələn gövdə kvota
+hökmü olaraq qalır. Aşkarlama: `src/shared/utils/classify429.ts` daxilində `looksLikeConcurrencyLimit()`;
+hökm: `open-sse/services/accountFallback/concurrencyLimit429.ts`. `classify429()` (kəsicinin
+`FailureKind` dəyəri) dəyişməyib və bu gövdələr üçün hələ də `rate_limit` oxuyur.
 
-**Axın məzmununun dayanması hesaba gözləmə müddəti tətbiq etmir.** Məzmun dayanması nəzarətçisi
-(`open-sse/utils/streamHandler.ts`) vaxtında heç bir model çıxışı göndərməyən axından imtina etdikdə, `markAccountUnavailable()` xətanı bağlantıda qeydə alır, lakin gözləmə müddəti təyin etmir: dayanma həmin sorğuya aiddir və əksər hallarda hələ çıxış verməmiş uzun əsaslandırma mərhələsidir. Operatorlar `resilienceSettings.streamStallCooldown.enabled` vasitəsilə bunu yenidən aktivləşdirə bilər (standart olaraq `false`).
+**Axın məzmununun dayanması hesab üçün soyuma müddəti təyin etmir.** Məzmun dayanmasına nəzarət mexanizmi
+(`open-sse/utils/streamHandler.ts`) vaxtında heç bir model çıxışı göndərməyən
+axından imtina etdikdə, `markAccountUnavailable()` bağlantıdakı xətanı qeydə alır, lakin
+soyuma müddəti təyin etmir: dayanma həmin sorğuya aiddir və əksər hallarda hələ çıxış verməyən
+uzun əsaslandırma mərhələsidir. Operatorlar `resilienceSettings.streamStallCooldown.enabled`
+vasitəsilə bunu yenidən aktivləşdirə bilərlər (defolt `false`).
 
-**Əsaslandırma freymləri məzmun dayanması büdcəsini yenidən başladır.** Əsaslandırma modeli ilk görünən tokeni verməzdən əvvəl dəqiqələrlə düşünə bilər: Claude, düşünmə mətni boş ola bilən `thinking_delta` freymlərini yayımlayır, Responses API isə bir əsaslandırma elementindən sonra digərini yayımlayır. `isReasoningProgressFrame()` (`open-sse/utils/streamReadiness.ts`) bu freymləri tanıyır və nəzarətçi gedişi ləğv etmək əvəzinə hər birində büdcəni yenidən başladır. Bunlar yenə də model çıxışı deyil; buna görə yalnız əsaslandırma ilə bitən gediş hələ də boş kimi bildirilir, əsaslandırmanı dayandırıb yalnız aktivlik siqnalları göndərən gediş isə yenə də nəzarətçini işə salır.
+**Əsaslandırma freymləri məzmun dayanması büdcəsini yenidən başladır.** Əsaslandırma modeli ilk
+görünən tokenini yaratmazdan əvvəl dəqiqələrlə düşünə bilər: Claude, düşünmə mətni boş ola bilən
+`thinking_delta` freymlərini yayımlayır, Responses API isə bir əsaslandırma elementini
+digərinin ardınca yayımlayır. `isReasoningProgressFrame()` (`open-sse/utils/streamReadiness.ts`) bu
+freymləri tanıyır və nəzarət mexanizmi gedişi ləğv etmək əvəzinə hər freymdə büdcəsini yenidən başladır.
+Bunlar yenə də model çıxışı deyil; buna görə yalnız əsaslandırma ilə bitən gediş hələ də
+boş kimi bildirilir, əsaslandırmanı dayandırıb yalnız nəbz siqnalları göndərən gediş isə yenə də
+nəzarət mexanizmini işə salır.
 
-Kiro-nun boş olmayan imzaya malik binar `reasoningContentEvent` freymləri bu əsaslandırma fəaliyyətini icraçıdan boş `reasoning_content` deltası kimi keçirərək qoruyur. İmza ötürülmür. Metaməlumatlar, natamam freymlər və boş imzalar məzmun büdcəsini yenidən başlatmır; müstəqil aktiv axın taymautu və müştəri tərəfindən ləğvetmə qüvvədə qalır (`open-sse/executors/kiro/reasoning.ts`).
+Kiro-nun boş olmayan imzaya malik binar `reasoningContentEvent` freymləri bu
+əsaslandırma fəaliyyətini icra mexanizmindən boş `reasoning_content` deltası kimi keçirərək qoruyur. İmza
+ötürülmür. Metaməlumatlar, natamam freymlər və boş imzalar məzmun
+büdcəsini yenidən başlatmır; müstəqil aktiv axın taym-autu və müştəri tərəfindən ləğv hələ də
+tətbiq olunur (`open-sse/executors/kiro/reasoning.ts`).
 
-**Terminal vəziyyətlər (gözləmə müddətləri DEYİL):**
+**Terminal vəziyyətlər (soyuma müddəti DEYİL):**
 
-- `banned` — qadağan olunmuş açar sözün / hesab qadağasının aşkarlanması ilə (baxın: [BAN_DETECTION](../security/BAN_DETECTION.md)) və yuxarı axının sorğu üzrə ardıcıl üç imtinası ilə təyin edilir (`request_rejected`, məsələn, Anthropic OAuth 403 "Request not allowed" — `open-sse/services/requestRejectedStreak.ts`); tək imtina yalnız bağlantıya gözləmə müddəti tətbiq edir
-- `expired` (məhdud sayda təkrar cəhddən sonra terminal vəziyyətə keçir — eksponensial geriçəkilmə ilə `EXPIRED_RETRY_MAX = 3` — beləliklə, keçici OAuth xətaları hesab daimi deaktiv edilməzdən əvvəl öz-özünə düzələ bilər)
+- `banned` — qadağan olunmuş açar sözün / hesab qadağasının aşkarlanması ilə (baxın: [BAN_DETECTION](../security/BAN_DETECTION.md)) və yuxarı axından hər sorğu üzrə ardıcıl üç rədd cavabından sonra (`request_rejected`, məsələn, Anthropic OAuth 403 "Request not allowed" — `open-sse/services/requestRejectedStreak.ts`) təyin edilir; tək bir rədd cavabı yalnız bağlantı üçün soyuma müddəti təyin edir
+- `expired` (məhdud sayda təkrar cəhddən sonra terminal vəziyyətə keçir — eksponensial geri çəkilmə ilə `EXPIRED_RETRY_MAX = 3` — beləliklə, keçici OAuth xətaları hesab daimi olaraq deaktiv edilməzdən əvvəl öz-özünə düzələ bilər)
 - `credits_exhausted`
 
-Bunlar etimadnamələr dəyişənə və ya operator onları sıfırlayana qədər qüvvədə qalır. Terminal vəziyyətləri keçici gözləmə vəziyyəti ilə əvəz etməyin.
+Bunlar etimadnamələr dəyişənə və ya operator onları sıfırlayana qədər qalır. Terminal vəziyyətləri keçici soyuma vəziyyəti ilə əvəz etməyin.
 
-**Tənbəl bərpa:** `rateLimitedUntil` keçdikdə bağlantı yenidən uyğun olur. Uğurlu istifadə zamanı `clearAccountError()` bütün xəta sahələrini təmizləyir.
+**Tənbəl bərpa:** `rateLimitedUntil` vaxtı keçdikdə bağlantı yenidən uyğun vəziyyətə gəlir. Uğurlu istifadədən sonra `clearAccountError()` bütün xəta sahələrini təmizləyir.
 
-### Claude OAuth istifadə həddi: daha aşağı prioritetli kanal + sessiya limitinin sıfırlanması
+### Claude OAuth istifadə həddi: aşağı prioritetli zolaq + sessiya limitinin sıfırlanması
 
-**Əhatə dairəsi:** bir Claude abunəlik (OAuth) bağlantısı. Hər iki funksiya **hər bağlantı üçün ayrıca aktivləşdirilir** (Bağlantını redaktə et → Claude bölməsi → `providerSpecificData` daxilində `lowPriorityMode` / `autoLimitReset`, hər ikisi standart olaraq deaktivdir) və Claude Code-un `/low-priority` və `/limit-reset` əmrlərini təkrarlayır (şəbəkə müqaviləsi Claude Code 2.1.263 versiyasından götürülüb).
+**Əhatə dairəsi:** bir Claude abunəlik (OAuth) bağlantısı. Hər iki funksiya **hər bağlantı üçün ayrıca
+aktivləşdirilir** (Bağlantını redaktə et → Claude bölməsi → `providerSpecificData` daxilində `lowPriorityMode` / `autoLimitReset`;
+hər ikisi defolt olaraq deaktivdir) və Claude Code-un `/low-priority` və
+`/limit-reset` komandalarını təkrarlayır (şəbəkə protokolu Claude Code 2.1.263 versiyasından qeydə alınıb).
 
-**Tətbiq:**
+**Reallaşdırma:**
 
-- Vəziyyət avtomatı + cavabın təsnifatı: `open-sse/services/claudeLowPriority.ts`
-- Sıfırlama statusu/iddia müştərisi: `open-sse/services/claudeLimitReset.ts`
-- İcraçı qarmağı (başlıq əlavə edilməsi + eyni hesabla təkrar cəhd): `open-sse/executors/base.ts::execute()`
+- Vəziyyət maşını + cavab təsnifatı: `open-sse/services/claudeLowPriority.ts`
+- Sıfırlama statusu/tələb müştərisi: `open-sse/services/claudeLimitReset.ts`
+- İcra mexanizmi qarmağı (başlıq əlavə edilməsi + eyni hesabda təkrar cəhd): `open-sse/executors/base.ts::execute()`
 - Aktivləşdirmə seçiminin saxlanması: `src/lib/providers/requestDefaults.ts::normalizeProviderSpecificData()`
 
-**Tətikləyici:** 5 saatlıq istifadə həddi — başlıqlarında `anthropic-ratelimit-unified-status: rejected` və hesab uyğun olduqda `anthropic-ratelimit-unified-slow-offer: treatment` olan `429`. İlk hədd `429` cavabından əvvəl heç nə göndərilmir; vahid başlıqları olmayan kəskin `429` adi gözləmə müddəti yolundan keçir.
+**Tətikləyici:** 5 saatlıq istifadə həddi — başlıqlarında
+`anthropic-ratelimit-unified-status: rejected` və hesab uyğun olduqda
+`anthropic-ratelimit-unified-slow-offer: treatment` olan `429`. İlk belə hədd
+429-u yaranmazdan əvvəl heç nə göndərilmir; vahid başlıqları olmayan ani 429 normal soyuma yolundan keçir.
 
-**Daha aşağı prioritetli kanal** (`lowPriorityMode`):
+**Aşağı prioritetli zolaq** (`lowPriorityMode`):
 
-- Divar 429 cavabında icraçı təklifi qəbul edir və dərhal **eyni**
+- Divar 429-u zamanı icraçı təklifi qəbul edir və dərhal **eyni**
   hesabı `anthropic-usage-limit: slow` ilə yenidən sınayır; elan edilmiş
-  `anthropic-ratelimit-unified-reset` vaxtına qədər (+60 san güzəşt müddəti) zolaq aktiv qalır və həmin
-  pəncərədəki hər sorğu bu başlığı daşıyır. Tutulmuş 429 cavabı heç vaxt `handleChatCore`-a çatmır, buna görə də bağlantı
-  gözləmə rejiminə **salınmır** və başqa bağlantı ilə əvəz edilmir.
-- Sonrakı cavablardakı `anthropic-ratelimit-unified-slow-status`: `active` / `not_needed`
-  zolağı saxlayır; `slot_busy` (429) və ya `529` serverin göstərdiyi
-  `anthropic-ratelimit-unified-slow-retry-after` müddətini (standart olaraq 20 san, 5–600 san aralığında məhdudlaşdırma, ±30% təsadüfi yayınma)
-  gözləyib yenidən sınayır və bu proses `anthropic-ratelimit-unified-slow-max-wait` ilə məhdudlaşdırılır (standart olaraq 20 dəq, 1 dəq–6 saat
-  aralığında məhdudlaşdırma) — bu müddət keçdikdən sonra zolaq bitir və 10 dəqiqəlik fasilə yenidən qəbulu bloklayır. Gözləmə müddəti
+  `anthropic-ratelimit-unified-reset` vaxtına qədər (+60s güzəşt müddəti) zolaq aktiv qalır
+  və həmin intervaldakı hər sorğu bu başlığı daşıyır. Tutulmuş 429 `handleChatCore`-a
+  heç vaxt çatmır, buna görə də bağlantı soyutma rejiminə **salınmır** və başqa bağlantı ilə əvəz edilmir.
+- Sonrakı cavablarda `anthropic-ratelimit-unified-slow-status`: `active` / `not_needed`
+  zolağı saxlayır; `slot_busy` (429) və ya `529` serverin
+  `anthropic-ratelimit-unified-slow-retry-after` müddətini (standart olaraq 20s, 5–600s aralığında məhdudlaşdırma, ±30% təsadüfi yayınma)
+  gözləyir və yenidən sınayır; bu proses `anthropic-ratelimit-unified-slow-max-wait` ilə məhdudlaşdırılır (standart olaraq 20 min, 1 min–6 h
+  aralığında məhdudlaşdırma) — bu müddət keçdikdə zolaq bitir və 10 dəqiqəlik soyuma müddəti yenidən qəbulu bloklayır. Gözləmə müddəti
   əlavə olaraq sorğunun öz yuxarı axın başlanğıc taymautundan qalan müddətlə
-  (`resolveFetchStartTimeout`, standart olaraq 10 dəq) 5 san ehtiyat çıxılmaqla məhdudlaşdırılır: bu məhdudiyyət olmasa,
-  standart 20 dəqiqəlik maksimum gözləmə sorğunun müddətini keçər və yuxu gözləmənin
-  ortasında dayandırılaraq normal `max_wait` sonlanması + fasilə əvəzinə
-  `TimeoutError` üzə çıxarardı.
-- `weekly_limit` / `budget_exhausted` / `off` / `ineligible`, 5 saatlıq pəncərənin yenilənməsi və ya
-  `ineligible` + `anthropic-ratelimit-unified-overage-in-use: true` (ödənişli limit aşımı artıq divarı qarşıladığı üçün istənilən statusda
-  bunu `extra_usage` kimi sonlandırır) zolağı bitirir; bundan sonra
-  cavab adi gözləmə rejimi yoluna keçir. `budget_exhausted` elan edilmiş büdcə sıfırlanmasına qədər
-  (≤ 8 gün) yadda saxlanılır.
-- Divar yoxlaması icraçının 400 cavabının səbəb olduğu cəhd-daxili təkrarlarından (kontekst
-  redaktəsi, düşünmə/səy məhdudiyyətləri, parametrin avtomatik öyrənilməsi) sonra işləyir, buna görə yalnız
-  həmin təkrarlardan birində üzə çıxan divar 429 cavabı da gözləmə rejimi yoluna çatmaq əvəzinə tutulur.
-- Vəziyyət hər bağlantı üçün yaddaşda saxlanılır (yenidən başlatma təkrar qəbul üçün bir əlavə divar 429 cavabına səbəb olur).
+  (`resolveFetchStartTimeout`, standart olaraq 10 min) mənfi 5 s ehtiyatla məhdudlaşdırılır: bu məhdudiyyət olmasa,
+  standart 20 dəqiqəlik maksimum gözləmə sorğunun ömrünü aşar və gözləmə
+  prosesin ortasında dayandırılaraq normal `max_wait` sonlanması + soyuma əvəzinə
+  `TimeoutError` göstərərdi.
+- `weekly_limit` / `budget_exhausted` / `off` / `ineligible`, 5h pəncərəsinin yenilənməsi və ya
+  `ineligible` + `anthropic-ratelimit-unified-overage-in-use: true` (ödənişli limit aşımı artıq divarı əhatə etdiyindən istənilən statusda bunu
+  `extra_usage` kimi sonlandırır) zolağı bitirir; bundan sonra cavab normal soyutma yoluna keçir. `budget_exhausted` elan edilmiş
+  büdcə sıfırlanmasına qədər (≤ 8 gün) yadda saxlanılır.
+- Divar yoxlaması icraçının 400 ilə başladılan cəhddaxili təkrarlarından (kontekst
+  redaktəsi, düşünmə/səy məhdudiyyətləri, parametrin avtomatik öyrənilməsi) sonra işləyir, buna görə də yalnız
+  həmin təkrarlardan birində üzə çıxan divar 429-u soyutma yoluna çatmaq əvəzinə yenə də tutulur.
+- Vəziyyət hər bağlantı üçün yaddaşda saxlanılır (yenidən başlatma yenidən qəbul üçün bir əlavə divar 429-u tələb edir).
 
 **Sessiya limitinin sıfırlanması** (`autoLimitReset`, hər ikisi aktiv olduqda zolaqdan əvvəl sınanır):
 
 - `GET https://api.anthropic.com/api/oauth/usage?at_wall=1&skip_spend=1` → `juniper_tide`
   bloku; `arm: "reset"` və `available: true` olduqda,
-  `{ "program": "juniper_tide" }` ilə
-  `POST https://api.anthropic.com/api/organizations/{orgUUID}/reset_rate_limits`
-  (`providerSpecificData.organizationUUID`-dən təşkilat UUID-si, ilkin yükləmə ehtiyat variantı).
-- `result: reset|not_limited` → sorğu tam sürətlə yenidən sınanır (yavaş başlıq olmadan).
-  `already_used` / `not_offered`, `next_available_at` dəyərini yadda saxlayır (standart olaraq bir həftə);
-  istənilən uğursuzluq 15 dəqiqəlik geri çəkilməyə səbəb olur. Sıfırlama həftədə bir dəfədir və yenə də
+  `POST https://api.anthropic.com/api/organizations/{orgUUID}/reset_rate_limits` sorğusu
+  `{ "program": "juniper_tide" }` ilə göndərilir (təşkilat UUID-si
+  `providerSpecificData.organizationUUID`-dən, ehtiyat variant kimi ilkin yükləmədən götürülür).
+- `result: reset|not_limited` → sorğu tam sürətlə yenidən sınanır (yavaş rejim başlığı olmadan).
+  `already_used` / `not_offered` `next_available_at` dəyərini yadda saxlayır (standart olaraq bir həftə);
+  istənilən xəta 15 dəqiqəlik geri çəkilməyə səbəb olur. Sıfırlama həftədə bir dəfədir və yenə də
   həftəlik limitə daxil edilir.
 
 Reqressiya qoruyucuları: `tests/unit/claude-low-priority-mode.test.ts`,
@@ -175,17 +203,17 @@ Reqressiya qoruyucuları: `tests/unit/claude-low-priority-mode.test.ts`,
 
 **Əhatə dairəsi:** **istənilən** provayder üçün bir bağlantıya bərkidilmiş bir klient sessiyası (`X-Session-Id` / `x-codex-session-id` / `x-omniroute-session` başlığı).
 
-**Məqsəd:** çoxgedişli agenti (Claude Code, aider, fərdi agentlər) sorğular boyunca eyni hesabda saxlamaq, hesablararası kontekst itkisini və hər hesab üzrə sessiya vəziyyəti olan provayderlərdə təkrarlanan soyuq başlanğıc 429 cavablarını azaltmaq.
+**Məqsəd:** çoxaddımlı agenti (Claude Code, aider, fərdi agentlər) sorğular boyunca eyni hesabda saxlamaq, bununla da hesablararası kontekst itkisini və hər hesab üzrə sessiya vəziyyəti olan provayderlərdə təkrarlanan soyuq başlanğıc 429-larını azaltmaq.
 
-**Gerçəkləşdirmə:**
+**Reallaşdırma:**
 
 - TTL-in müəyyənləşdirilməsi: `src/sse/services/sessionAffinityPin.ts::resolveSessionAffinityTtlMs()`
 - Bərkitmənin seçilməsi/yaradılması: `src/sse/services/sessionAffinityPin.ts::selectSessionAffinityConnection()`
 - Başlığın çıxarılması (ümumi, istənilən provayder): `src/sse/services/auth.ts::extractSessionAffinityKey()`
-- Saxlanılan bərkitmə cədvəli: `sessionAccountAffinity` (`src/lib/db/sessionAccountAffinity.ts`)
-- Parametr: `sessionAffinityTtlMs` (ms ilə qlobal TTL, `0` deaktiv edir) — `src/lib/db/settings.ts`. Yalnız Codex üçün olan `codexSessionAffinityTtlMs` adından `124_generic_session_affinity_ttl.sql` miqrasiyası ilə dəyişdirilib; bu miqrasiya əvvəlcədən konfiqurasiya edilmiş istənilən Codex TTL-ni yeni standart dəyər kimi köçürür.
+- Davamlı saxlanılan bərkitmə cədvəli: `sessionAccountAffinity` (`src/lib/db/sessionAccountAffinity.ts`)
+- Parametr: `sessionAffinityTtlMs` (ms ilə qlobal TTL, `0` deaktiv edir) — `src/lib/db/settings.ts`. Yalnız Codex üçün olan `codexSessionAffinityTtlMs` adından `124_generic_session_affinity_ttl.sql` miqrasiyası ilə dəyişdirilib; bu miqrasiya əvvəllər konfiqurasiya edilmiş istənilən Codex TTL-ni yeni standart dəyər kimi daşıyır.
 
-#7274-dən əvvəl `resolveSessionAffinityTtlMs()`, `codex` istisna olmaqla hər provayder üçün dərhal `0` qaytarırdı, buna görə də bərkitmə mexanizmi və başlıq çıxarılması artıq provayderdən asılı olmasa da, TTL parametri (və sessiya başlıqları) başqa heç bir yerdə təsir göstərmirdi. Düzəliş həmin erkən qayıdışı aradan qaldırdı; TTL qlobal şəkildə `0`-dan yuxarı təyin edildikdən sonra bütün provayderlərə eyni qaydada tətbiq olunur.
+#7274-dən əvvəl `resolveSessionAffinityTtlMs()` `codex` istisna olmaqla hər provayder üçün dərhal `0` qaytarırdı, buna görə də bərkitmə mexanizmi və başlığın çıxarılması artıq provayderdən asılı olmasa belə, TTL parametri (və sessiya başlıqları) başqa heç bir yerdə təsir göstərmirdi. Düzəliş həmin erkən qaytarmanı aradan qaldırdı; TTL qlobal şəkildə `0`-dan yuxarı təyin edildikdən sonra artıq bütün provayderlərə bərabər şəkildə tətbiq olunur.
 
 Üç sessiya bağlılığı başlığı heç vaxt yuxarı axına ötürülmür — icraçılar klient başlıqlarını olduğu kimi ötürmək əvəzinə öz yuxarı axın başlıqlarını sıfırdan qururlar, buna görə də bu, yalnız daxili korrelyasiya identifikatoru olaraq qalır.
 
@@ -193,34 +221,35 @@ Reqressiya qoruyucuları: `tests/unit/claude-low-priority-mode.test.ts`,
 
 **Əhatə dairəsi:** bir aktiv idarə olunan HTTP klienti/sessiyası bir uyğun OmniRoute bağlantısına sahib olur.
 
-**Məqsəd:** sorğular boyunca sərt marşrutlaşdırma sərhədinə ehtiyac duyan klientlər üçün davamlı eksklüziv bağlantı sahibliyi təmin etmək. Bu, yumşaq davamlılıq üstünlüyü olan sessiya bağlılığından fərqlənir:
+**Məqsəd:** sorğular arasında sərt marşrutlaşdırma
+sərhədinə ehtiyacı olan klientlər üçün davamlı eksklüziv bağlantı sahibliyi təmin etmək. Bu, yumşaq davamlılıq üstünlüyü olan sessiya bağlılığından fərqlənir:
 eksklüziv icarə həyat dövrü vəziyyətini SQLite-da saxlayır, qlobal aktiv sahib və
-aktiv bağlantı unikallığını təmin edir və provayderə göndərilməzdən əvvəl köhnəlmiş nəsli rədd edir.
+aktiv bağlantı unikallığını təmin edir və provayderə yönləndirmədən əvvəl köhnəlmiş nəsli rədd edir.
 
-Funksiya hər API açarı üçün ayrıca seçimlə aktivləşdirilir. İdarə olunan açarda `lease:exclusive` əhatə dairəsi və
-açıq şəkildə göstərilmiş boş olmayan `allowedConnections` siyahısı olmalıdır. İstənilən HTTP klienti həyat dövrü son nöqtəsindən istifadə edə bilər;
-heç bir klient adı, user-agent, provayder, OAuth metodu və ya model tələb olunmur. İcarə modelə deyil, bağlantıya sahib olur,
-buna görə bağlantı adi qaydada uyğun qaldığı müddətdə model dəyişikliyi bağlılığı saxlayır.
-Normal model, kvota, sağlamlıq, gözləmə rejimi və icazə siyahısı qaydaları qüvvədə qalır və
-eyni nəsli başqa sərbəst uyğun bağlantıya keçirə bilər.
+Funksiya hər API açarı üçün ayrıca aktivləşdirilir. İdarə olunan açar `lease:exclusive` əhatə dairəsinə və
+açıq şəkildə göstərilmiş, boş olmayan `allowedConnections` siyahısına malik olmalıdır. İstənilən HTTP klienti həyat dövrü son nöqtəsindən istifadə edə bilər;
+klient adı, user-agent, provayder, OAuth metodu və ya model tələb olunmur. İcarə modelə deyil, bağlantıya sahib olur,
+buna görə də bağlantı adi qaydada uyğun qaldığı müddətdə model dəyişikliyi bağlanmanı saxlayır.
+Normal model, kvota, sağlamlıq, soyutma və icazə siyahısı qaydaları əsas qüvvədə qalır və
+eyni nəsli başqa bir boş uyğun bağlantıya keçirə bilər.
 
-Həyat dövrü JSON `acquire`, `renew` və `release` əməliyyatları ilə `POST /api/v1/session-leases` sorğusudur.
+Həyat dövrü `acquire`, `renew` və `release` JSON əməliyyatları ilə `POST /api/v1/session-leases` sorğusudur.
 İdarə olunan inferensiya sorğuları qeyri-şəffaf `X-OmniRoute-Lease-Owner` dəyərini və dəqiq
-`X-OmniRoute-Lease-Generation` dəyərini təqdim edir. Sahib identifikatoru `vlo_` prefiksindən və ardınca gələn 43 base64url simvolundan ibarətdir; yalnız
-onun SHA-256 heşi saxlanılır. Hər bir yekun yönləndirmə baryeri həmçinin autentifikasiya edilmiş API açarı ID-sini və
-aktiv bağlantı ID-sini əlaqələndirir. İcarəyə nəzarət başlıqları jurnallardan, saxlanılan sorğu anlıq görüntülərindən və
+`X-OmniRoute-Lease-Generation` dəyərini təqdim edir. Sahib identifikatoru `vlo_` prefiksindən və onun ardınca gələn 43 base64url simvolundan ibarətdir; yalnız
+onun SHA-256 heşi saxlanılır. Hər bir yekun göndəriş səddi həmçinin autentifikasiya edilmiş API açarı ID-sini və
+aktiv bağlantı ID-sini əlaqələndirir. İcarə idarəetmə başlıqları jurnallardan, saxlanılan sorğu anlıq görüntülərindən və
 yuxarı axın icraçısının başlıqlarından silinir.
 
-Adi marşrutlaşdırmada uyğun idarə olunan namizədlər mövcuddursa, lakin bütün sərbəst namizədlər
-başqasına məxsus aktiv icarə ilə tutulubsa, OmniRoute HTTP `429`, lease-capacity-unavailable kodu,
-waiting-for-capacity vəziyyəti və ən erkən müvafiq bitmə vaxtına əsasən hesablanan, məhdudlaşdırılmış `Retry-After` qaytarır.
-Uyğun namizədlərin adi qaydada olmaması icarə mübahisəsi deyil və mövcud marşrutlaşdırma xətası semantikasını saxlayır.
+Adi marşrutlaşdırmada uyğun idarə olunan namizədlər varsa, lakin bütün boş namizədlər
+başqa sahibə məxsus aktiv icarə ilə tutulubsa, OmniRoute HTTP `429`, lease-capacity-unavailable kodu,
+waiting-for-capacity vəziyyəti və aidiyyəti olan ən erkən bitmə vaxtından hesablanan, məhdudlaşdırılmış `Retry-After` qaytarır.
+Uyğunluq siyahısının adi qaydada boş olması icarə münaqişəsi deyil və mövcud marşrutlaşdırma xətası semantikasını saxlayır.
 
 Əlaqəli mexanizmlər ayrı qalır:
 
-- OAuth sessiyasının tutulması OAuth hesabları üçün proses daxilində yumşaq paylamadır.
-- Hesab semaforları sorğu paralelliyi icazələri verir və sorğu tamamlandıqda sona çatır.
-- Eksklüziv idarə olunan sessiya icarələri nəsil baryeri ilə davamlı həyat dövrü sahibliyidir.
+- OAuth sessiya məşğulluğu OAuth hesabları üçün proses daxilində yumşaq paylamadır.
+- Hesab semaforları sorğu paralelliyi icazələri verir və sorğu tamamlandıqda başa çatır.
+- Eksklüziv idarə olunan sessiya icarələri nəsil səddi ilə davamlı həyat dövrü sahibliyidir.
 
 ---
 
@@ -448,77 +477,117 @@ quota_exhausted / auth_error / not_found / not_found_local:
 ## 5. Sorğu Növbəsinə Qəbul Nəzarəti (v3.8.49 · məsələ #6593)
 
 **Əhatə dairəsi**: yuxarıdakı üç mexanizmdən bir səviyyə aşağıda yerləşən, hər provider+connection üçün lokal sürət məhdudiyyəti növbəsi (`open-sse/services/rateLimitManager.ts`,
-Bottleneck əsasında).
+Bottleneck əsasında işləyir).
 
 **`maxWaitMs` növbədə gözləmə müddətini, `executionMaxWaitMs` isə icra müddətini məhdudlaşdırır.**
-Bu ikisi qəsdən ayrıdır və heç biri digərinə təsir etmir.
+Bu ikisi qəsdən ayrı saxlanılır və heç biri digərinə təsir etmir.
 
-`resilienceSettings.requestQueue.maxWaitMs` **növbədə gözləmə büdcəsidir**: o,
-provider slotunun boşalmasını gözləməyi və sonra QUEUED vəziyyətində qalmağı
-əhatə edir; tapşırıq QUEUED vəziyyətindən çıxıb icraya başlayan kimi onun
-taymeri silinir (`rateLimitManager.ts`, `wrappedFn`). Bu müddəti aşan sorğu
-heç vaxt yuxarı axındakı xidmətə çatmır. Defolt dəyər 30000ms-dir,
+`resilienceSettings.requestQueue.maxWaitMs` **növbədə gözləmə büdcəsidir**: bu,
+provider slotunun gözlənilməsini və daha sonra QUEUED vəziyyətində qalmağı əhatə edir; tapşırıq
+QUEUED vəziyyətindən çıxıb icraya başlayan kimi onun taymeri
+təmizlənir (`rateLimitManager.ts`, `wrappedFn`). Bu müddəti aşan sorğu
+upstream-ə heç vaxt çatmır. Standart dəyər 30000ms-dir, bu dəyər
 `src/lib/resilience/settings.ts` daxilindəki `DEFAULT_REQUEST_QUEUE_MAX_WAIT_MS`
-tərəfindən təmin edilir və
-`tests/unit/ratelimit-admission-control-6593.test.ts` tərəfindən sabitlənir;
-beləliklə, onun dəyişdirilməsi bu paraqrafı səssizcə köhnəlmiş saxlamaq əvəzinə
-həmin testi uğursuz edir.
+tərəfindən verilir və
+`tests/unit/ratelimit-admission-control-6593.test.ts` tərəfindən təsbit edilir; beləliklə, dəyərin dəyişdirilməsi
+bu paraqrafın səssizcə köhnəlməsi əvəzinə həmin testi uğursuz edir.
 
-`resilienceSettings.requestQueue.executionMaxWaitMs` Bottleneck-ə tapşırığın
-`expiration` dəyəri kimi ötürülür və onun taymeri yalnız yönləndirmədən sonra
-işə düşür. Bu, öz yuxarı axın taymautu olmayan icraçılar üçün ehtiyat
-mexanizmidir və icraçının öz fetch-start taymautu daha uzun olduqda həmin
-dəyərə yüksəldilir; beləliklə, normal şəkildə davam edən cavabı yarıda kəsə
-bilməz. Defolt dəyər 600000ms-dir (10 dəq).
+`resilienceSettings.requestQueue.executionMaxWaitMs` Bottleneck-in
+tapşırıq `expiration` dəyəri kimi aldığı parametrdir və onun taymeri yalnız göndərişdən sonra başlayır. Bu,
+öz upstream taymautu olmayan icraçılar üçün qoruyucu mexanizmdir və icraçının öz fetch-başlama taymautu
+daha uzundursa, həmin müddətə qədər artırılır; buna görə də normal işləyən, icra prosesindəki cavabı
+yarımçıq dayandıra bilməz. Standart dəyər 600000ms-dir (10 dəq).
 
 Növbə büdcəsinin `expiration` parametrinə ötürülməsi əvvəllər qeyri-inkremental
-şlüzləri icranın ortasında dayandırırdı — onlar ilk baytları göndərməzdən əvvəl
-haqlı olaraq bir neçə dəqiqə işləyə bilərlər — və buna görə də müddətin bitməsi
-`code: "RATE_LIMIT_EXECUTION_TIMEOUT"` (HTTP 504) kimi təqdim olunur, növbə
-büdcəsi isə növbə taymautu kodunu daşıyır. Hər iki dəyəri
-`RATE_LIMIT_MAX_WAIT_MS` / `RATE_LIMIT_EXECUTION_MAX_WAIT_MS` (mühit dəyişəni)
-və ya idarə paneli (**Settings → Resilience**) vasitəsilə dəyişdirin.
-Normallaşdırılarkən hər ikisi 1ms–24h aralığı ilə məhdudlaşdırılır.
+şlüzləri icranın ortasında dayandırırdı — onlar ilk baytları göndərməzdən əvvəl qanuni olaraq dəqiqələrlə işləyə bilər —
+və məhz buna görə expiration xətası `code:
+"RATE_LIMIT_EXECUTION_TIMEOUT"` (HTTP 504) kimi təqdim olunur, növbə büdcəsi isə
+növbə taymautu kodunu daşıyır. Hər iki dəyəri `RATE_LIMIT_MAX_WAIT_MS` /
+`RATE_LIMIT_EXECUTION_MAX_WAIT_MS` (env) vasitəsilə və ya idarəetmə panelində
+(**Parametrlər → Dayanıqlılıq**) dəyişə bilərsiniz. Normallaşdırılarkən hər ikisi 1ms–24h aralığı ilə məhdudlaşdırılır.
 
-**Hər ikisi üçün prioritet:** mühit dəyişəni yalnız _defolt_ dəyəri təmin edir.
-`resilienceSettings.requestQueue` daxilində saxlanılmış dəyər (idarə paneli /
-API patch, `key_value` daxilində saxlanılır) onu üstələyir, hər connection üçün
-`rateLimitOverrides.maxWaitMs` / `.executionMaxWaitMs` isə həmin dəyəri də
-üstələyir. Buna görə də artıq saxlanılmış dəyəri olan yerləşdirmədə mühit
-dəyişəninin təyin edilməsi heç nəyi dəyişmir — bunun əvəzinə saxlanılmış
-parametri silin və ya yeniləyin.
+**Hər ikisi üçün prioritet sırası:** env dəyişəni yalnız _standart_ dəyəri təmin edir.
+`resilienceSettings.requestQueue` daxilində saxlanılan dəyər (idarəetmə paneli / API patch vasitəsilə, `key_value`
+daxilində saxlanılır) onu üstələyir, hər connection üçün təyin edilmiş
+`rateLimitOverrides.maxWaitMs` / `.executionMaxWaitMs` isə bundan da üstündür. Buna görə də
+artıq saxlanılmış dəyəri olan deployment-da env dəyişəninin təyin edilməsi
+heç nəyi dəyişmir — bunun əvəzinə saxlanılmış parametri silin və ya yeniləyin.
 
-Növbədə qalma müddəti `maxWaitMs` ilə məhdudlaşdırılır; aşağıdakı
-`maxQueueDepth` isə eyni vaxtda neçə çağırışçının növbədə ola biləcəyini
-məhdudlaşdırır.
+Növbədə qalma müddəti `maxWaitMs` ilə məhdudlaşdırılır; aşağıdakı `maxQueueDepth` isə
+eyni anda neçə çağırışın növbədə ola biləcəyini məhdudlaşdırır.
 
-**`maxQueueDepth` — aktivləşdirilməsi seçimə bağlı qəbul limiti (yeni).** `resilienceSettings.requestQueue.maxQueueDepth`
-bir provider+connection üçün eyni vaxtda neçə sorğunun növbədə (hələ
-yönləndirilməmiş) qala biləcəyini məhdudlaşdırır. Növbədə artıq
-`maxQueueDepth` sayda sorğu olduqda yeni sorğu `limiter.schedule()` metoduna
-çatmamışdan **əvvəl** tipli `code: "RATE_LIMIT_QUEUE_FULL"` xətası ilə dərhal
-rədd edilir — beləliklə, rəddetmə az resurs tələb edir və həmin sorğu üçün hər
-hansı aşağı axın prompt sıxışdırması / tərcümə işi başlamazdan əvvəl baş verir.
-Defolt `0` = deaktivdir və mövcud məhdudiyyətsiz növbə davranışını qoruyur;
-0–100000 aralığı ilə məhdudlaşdırılır. Dəyəri `RATE_LIMIT_MAX_QUEUE_DEPTH`
-(mühit dəyişəni) və ya `resilienceSettings.requestQueue.maxQueueDepth`
-(idarə paneli/API patch) vasitəsilə dəyişdirin.
+**Cavab gövdəsində göstərilən təkrar cəhdlər: tempin tənzimlənməsi və bloklama.** 429 cavabının gövdəsi öz gözləmə
+müddətini göstərə bilər (Gemini `RetryInfo.retryDelay`, "retry after Ns" mətni) və
+`updateFromResponseBody` bunu oxuyur. Connection-un `maxWaitMs` həddinə uyğun gələn gözləmə
+tempin tənzimlənməsidir: limiter həmin müddət ərzində öz rezervuarını boşaldır və növbədəki çağırışlar
+rezervuar yenidən dolduqda göndərilir. `maxWaitMs` dəyərindən uzun gözləmə müddəti növbənin
+gözləyib başa vuracağı bir hal deyil — Gemini tükənmiş gündəlik kvotaya
+`retryDelay: "86399s"` ilə cavab verir. Yenidən qurulmuş 429-da (#16528) ötürülən `Retry-After`
+artıq ehtiyat mexanizmin həmin müddət üçün modeli bloklamasına səbəb olur, lakin limiter-in də bu müddətə
+dayandırılması yenə də açara erkən çatan istənilən çağırışı (məsələn, dayanıqlılığın sıfırlanmasından sonra)
+bütün `maxWaitMs` müddəti ərzində ləngidərdi. Belə bir gözləmə typed Google `RetryInfo`
+detalından (`google_rpc_retry_info` mənşəyi) gəldikdə və açarın limiter-i
+artıq model üzrə əhatələndikdə (`getLimiterKey`-ə baxın), 429 əvəzinə həmin connection-da modelin
+bloklanmasına çevrilir (`open-sse/services/rateLimitManager/bodyRetryPause.ts` daxilindəki
+`lockModelForLongBodyRetry`, maksimum 24h) və limiter dayandırılmamış qalır.
+Account seçimi `isModelLocked()` vasitəsilə bu bloklamanı ötürür; connection-a sabitlənmiş hədəflər üçün
+combo-nun göndərişdən əvvəlki qapısı da eyni davranışı göstərir. Limiter-i hər kvota ailəsi üzrə olan
+antigravity-də bloklama, digər kvota bloklamalarında olduğu kimi, konkret modelə tətbiq edilir. Alias modeli
+həll etdikdə müştərinin istədiyi ad da bloklanır, çünki həmin yoxlamalar sorğuda göstərilən addan istifadə edir;
+bloklama dəqiq şəkildə (`lockExactModel`) aparılır, buna görə antigravity kvota ailəsini və ya codex əhatəsini
+keçən alias heç vaxt özünü bloklamır. Mətn şəklində ipucu, typed olmayan `retryDelay` və ya
+bütün connection tərəfindən paylaşılan limiter dayandırmanı saxlayır. 429 emal yolu ilə yenicə yenidən qurulmuş
+limiter dayandırıldıqda, qalan növbə vaxtı dayandırma bitməzdən əvvəl başa çatacaq çağırış həmin müddəti
+gözləmək əvəzinə növbə taymautu kodu ilə dərhal rədd edilir (`checkLimiterPause`); qeydə alınmış bitmə vaxtı
+limiter qurulmazdan əvvəlki məqama bağlanır, çünki Bottleneck yeniləmə saatını burada işə salır və rezervuarda
+sonradan edilən istənilən dəyişiklik bu vaxtı unudur. Bu davranış
+`tests/unit/rate-limit-long-body-retry-lockout.test.ts` və
+`tests/unit/rate-limit-body-retry-pause.test.ts` ilə əhatə olunur.
+
+**`maxQueueDepth` — seçim əsasında aktivləşdirilən qəbul həddi (yeni).** `resilienceSettings.requestQueue.maxQueueDepth`
+eyni provider+connection üçün neçə sorğunun növbədə (hələ göndərilməmiş) qala biləcəyini
+məhdudlaşdırır. Növbədə artıq `maxQueueDepth` sayda sorğu olduqda,
+yeni sorğu `limiter.schedule()`-ə çatmazdan **əvvəl** typed
+`code: "RATE_LIMIT_QUEUE_FULL"` xətası ilə dərhal rədd edilir
+— beləliklə, rəddetmə az resurs tələb edir və həmin sorğu üçün istənilən sonrakı
+prompt sıxışdırma / tərcümə işindən əvvəl baş verir. Standart `0` =
+deaktivdir və mövcud məhdudiyyətsiz növbə davranışını qoruyur; 0–100000 aralığı ilə məhdudlaşdırılır.
+Dəyəri `RATE_LIMIT_MAX_QUEUE_DEPTH` (env) və ya
+`resilienceSettings.requestQueue.maxQueueDepth` (idarəetmə paneli/API patch) vasitəsilə dəyişə bilərsiniz.
 
 Qəbul yoxlamasının özü saf funksiyadır
-(`open-sse/services/rateLimitManager/admission.ts::checkQueueAdmission`), buna
-görə də real Bottleneck məhdudlaşdırıcısı olmadan vahid testlərlə yoxlana bilər.
+(`open-sse/services/rateLimitManager/admission.ts::checkQueueAdmission`), buna görə
+real Bottleneck limiter-i olmadan unit test edilə bilər.
 
-> #6593 məsələsini açan RFC həmçinin `bypassCompressionOnRateLimit`
-> bayrağını təklif edirdi. Bu repozitorinin `open-sse/services/compression/`
-> konveyeri sintez edilmiş 429 gövdələrində HTTP cavab sıxışdırması deyil,
-> çıxan LLM sorğusunun prompt/kontekst sıxışdırılmasıdır (`chatCore.ts`,
-> `resolveCompressionSettings`/`selectCompressionStrategy` bloku ətrafında)
-> — hərfi bypass bayrağına uyğun kod yolu yoxdur. Həmin prompt sıxışdırma
-> addımı hazırda sorğu konveyerində `withRateLimit()` çağırışından _əvvəl_ də
-> icra olunur; buna görə də növbə dolu olduqda rəddetmə zamanı onu ötürmək üçün
-> ardıcıllığın dəyişdirilməsi bu məsələnin əhatə dairəsindən ayrı və daha böyük
-> dəyişiklikdir. Bu, burada qəsdən **həyata keçirilməyib** və CPU qənaəti
-> ardıcıllığın dəyişdirilməsi riskinə dəyərsə, sonrakı iş kimi saxlanılıb.
+> #6593 nömrəli məsələnin açılmasına səbəb olan RFC həmçinin `bypassCompressionOnRateLimit`
+> bayrağını təklif edirdi. Bu repozitoriyanın `open-sse/services/compression/` konveyeri
+> sintez edilmiş 429 cavab gövdələrində HTTP cavab sıxılması deyil, çıxış LLM sorğusunda
+> prompt/kontekst sıxılmasıdır (`chatCore.ts`, təxminən
+> `resolveCompressionSettings`/`selectCompressionStrategy` bloku).
+> Buna görə də, literal yan keçmə bayrağına uyğun gələn kod yolu yoxdur. Həmin
+> prompt-sıxılma addımı həmçinin hazırda sorğu konveyerində `withRateLimit()`-dən
+> _əvvəl_ icra olunur; buna görə də növbə dolu olduğu üçün imtina zamanı onu
+> keçmək məqsədilə ardıcıllığın dəyişdirilməsi bu məsələnin əhatə dairəsindən
+> kənar, ayrıca və daha böyük bir dəyişiklikdir. Bu, qəsdən burada tətbiq
+> **edilməyib** və CPU-ya qənaətdən əldə olunan fayda ardıcıllığın dəyişdirilməsi
+> riskinə dəyərsə, sonrakı iş kimi saxlanılıb.
+
+### Sürət Məhdudiyyətinin Avtomatik Aktivləşdirilməsi üçün Təhlükəsizlik Mexanizmi və Qoşulma Qorunması (`rateLimitProtection`)
+
+**Avtomatik aktivləşdirmə təhlükəsizlik mexanizmi** (`resilienceSettings.requestQueue.autoEnableApiKeyProviders`, standart olaraq `true`):
+OmniRoute standart olaraq bütün aktiv API açarlı provayder qoşulmaları (`getProviderCategory(provider) === "apikey"`) üçün sürət məhdudiyyəti növbəsi qorunmasını avtomatik aktivləşdirir. Bu, sürətə həssas yuxarı axın API açarlarına gələn sorğuların yuxarı axında ardıcıl 429 xətalarına səbəb olmaq əvəzinə Bottleneck vasitəsilə növbəyə alınmasını və sürətinin məhdudlaşdırılmasını təmin edir. Təhlükəsizlik mexanizmi yadda saxlanılmış idarəetmə paneli parametrindən (**Settings → Resilience** / `PATCH /api/resilience`) üstün olan `RATE_LIMIT_AUTO_ENABLE` mühit dəyişəni vasitəsilə dəyişdirilə bilər (`false`/`0`/`off` deaktiv edir, `true`/`1`/`on` aktiv olmağa məcbur edir).
+
+**Hər qoşulma üzrə `rateLimitProtection` semantikası:**
+Hər qoşulma üzrə sürət məhdudiyyəti qorunması provayder qoşulmalarındakı `rateLimitProtection` məntiqi sahəsi vasitəsilə izlənilir (SQLite-da `rate_limit_protection` kimi saxlanılır):
+
+- **Açıq şəkildə aktiv (`rateLimitProtection === true`)**: Provayder kateqoriyasından və ya avtomatik aktivləşdirmə təhlükəsizlik mexanizminin aktiv olub-olmamasından asılı olmayaraq, bu qoşulma üçün sürət məhdudiyyəti qorunması açıq şəkildə aktivləşdirilib.
+- **Açıq şəkildə qeyri-aktiv (`rateLimitProtection === false`)**: Açıq şəkildə təyin edilmiş qorunmanı deaktiv edir, lakin aktiv API açarlı qoşulmanı qlobal avtomatik aktivləşdirmə təhlükəsizlik mexanizmindən **kənarlaşdırmır**. `reconcileEnabledConnections` daxilində (`open-sse/services/rateLimitManager.ts`) `false` və `undefined` ekvivalentdir: yalnız `rateLimitProtection === true` açıq şəkildə təyin edilmiş əvəzləmə kimi qəbul olunur. `rateLimitProtection` dəyəri `false` olarsa (və ya təyin edilməzsə), aktiv API açarlı qoşulma yenə də avtomatik aktivləşdirmə şərtinə uyğun gəlir və sürət məhdudiyyəti ilə qorunmağa davam edir.
+- **Hər qoşulma üzrə istisna yoxdur**: Operator hazırda avtomatik aktivləşdirməni digərləri üçün aktiv saxlayaraq «bu konkret aktiv API açarlı qoşulma sürət məhdudiyyəti növbəsi qorunması olmadan işləməlidir» tələbini ifadə edə bilməz. API açarlı qoşulmaları sürət məhdudiyyəti növbələri olmadan tam şəkildə işlətmək üçün təhlükəsizlik mexanizmi qlobal səviyyədə söndürülməlidir (`RATE_LIMIT_AUTO_ENABLE=false` və ya `resilienceSettings.requestQueue.autoEnableApiKeyProviders = false`).
+
+**Dəstəklənən yazma yolları:**
+
+- **`POST /api/rate-limits`**: Qoşulma üçün `rateLimitProtection` parametrini dəyişdirmək məqsədilə dəstəklənən idarəetmə yazma yolu (`{ connectionId: string, enabled: boolean }`). Bunun `enabled: true` ilə çağırılması açıq qorunmanı aktivləşdirir; `enabled: false` ilə çağırılması isə açıq qorunmanı aradan qaldırır (lakin avtomatik aktivləşdirmə aktivdirsə, aktiv API açarlı qoşulmalar qlobal təhlükəsizlik mexanizmi ilə qorunmağa davam edir).
+- **`PUT /api/providers/[id]`**: Qəsdən `rateLimitProtection` parametrini qəbul **etmir** və ya dəyişdirmir (#11278). Provayder qoşulması metadatasının `PUT /api/providers/[id]` vasitəsilə yenilənməsi saxlanılmış sürət məhdudiyyəti qorunması vəziyyətini heç vaxt dəyişməyəcək.
 
 ---
 
@@ -730,11 +799,11 @@ reached") olan 429, `status_429` qaydasına çatmamışdan əvvəl kvota mətni 
 
 ## Digər Dayanıqlılıq Xüsusiyyətləri
 
-- **19 marşrutlaşdırma strategiyası** (prioritet, çəkili, dövri, kontekst ötürülməsi, əvvəlcə doldurma, p2c, təsadüfi, ən az istifadə olunan, xərc baxımından optimallaşdırılmış, sıfırlanmanı nəzərə alan, sıfırlama pəncərəsi, ehtiyat tutumu, ciddi təsadüfi, avtomatik, lkgp, kontekst üçün optimallaşdırılmış, keş üçün optimallaşdırılmış, birləşmə, konveyer) — [AUTO-COMBO.md](../routing/AUTO-COMBO.md) sənədinə baxın.
+- **20 marşrutlaşdırma strategiyası** (prioritet, çəkili, növbəli, kontekst ötürülməsi, əvvəlcə doldurma, p2c, təsadüfi, ən az istifadə olunan, xərc baxımından optimallaşdırılmış, sıfırlanmanı nəzərə alan, sıfırlama pəncərəsi, ehtiyat tutum, kvota üzrə çəkili, sərt təsadüfi, avtomatik, lkgp, kontekst baxımından optimallaşdırılmış, keş baxımından optimallaşdırılmış, birləşdirmə, konveyer) — baxın: [AUTO-COMBO.md](../routing/AUTO-COMBO.md).
 - **Sıfırlanmanı nəzərə alan marşrutlaşdırma** (v3.8.0) — bağlantıları kvotanın sıfırlanma vaxtına görə prioritetləşdirir.
-- **Fon rejiminin aşağı salınması** — Responses API üçün `background: true` xəbərdarlıqla sinxron rejimə keçirilir.
-- **Dinamik alət limiti aşkarlanması** — alət sayı limitlərinə çatıldıqda provayderlərdən geri çəkilir.
-- **Fövqəladə alternativə keçid** — `OMNIROUTE_EMERGENCY_FALLBACK` tərəfindən idarə olunur; operatorlar sistemi yenidən başlatmadan Funksiya Bayraqları səhifəsindən bunu dəyişə bilərlər.
+- **Fon rejiminin zəiflədilməsi** — Responses API `background: true` xəbərdarlıqla sinxron rejimə keçirilir.
+- **Dinamik alət limiti aşkarlanması** — alət sayı limitinə çatdıqda provayderlərdən istifadənin intensivliyini azaldır.
+- **Fövqəladə ehtiyat mexanizmi** — `OMNIROUTE_EMERGENCY_FALLBACK` ilə idarə olunur; operatorlar onu yenidən başlatmadan Feature Flags səhifəsindən dəyişə bilərlər.
 
 ---
 

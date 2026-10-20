@@ -50,7 +50,7 @@ LABS = os.path.join(REPO, "labs")
 os.makedirs(LABS, exist_ok=True)
 
 # Labs whose steps include prompts for a web chat (Copilot on the web) as well as for Excel
-WEB_LABS = set(range(1, 13))
+WEB_LABS = set(range(1, 14))
 
 # ---- collect labs from every data_domainN.py, in domain order
 labs = []
@@ -233,7 +233,8 @@ def build_pdf(lab, topic, path):
                             ("BOTTOMPADDING", (0, 0), (-1, -1), 3)]))
     S += [Spacer(1, 4), mt]
     S += [Paragraph("Goal", ST["h2"]), P(lab.get("goal", lab["desc"]))]
-    S += [Paragraph("What You Will Do", ST["h2"]), P(lab["desc"])]
+    if lab["desc"] != lab.get("goal", lab["desc"]):  # no duplicate section when the goal already says it
+        S += [Paragraph("What You Will Do", ST["h2"]), P(lab["desc"])]
     S += [Paragraph("What You Will Build", ST["h2"]), P(lab["build"])]
     if lab.get("prerequisites"):
         S += [Paragraph("Prerequisites", ST["h2"]), bullets(lab["prerequisites"])]
@@ -253,16 +254,20 @@ def build_pdf(lab, topic, path):
             lead = 2 if i == 1 else 1
             S += [KeepTogether(block[:lead])] + block[lead:]
 
-    S.append(Paragraph("Sample Prompts", ST["h2"]))
-    S.append(P(("Use the app labelled for each prompt (or adapt it). " if n in WEB_LABS else "Use these prompts in the Copilot pane (or adapt them). ")
-               + "Name the table and columns, state the output, and "
-               "always verify the result. Use the linked prompts web page for one-click Copy buttons."))
     url = f"{C.PROMPTS_PAGE}#lab-{n}"
-    S.append(Paragraph(f'<b>Copy-ready prompts:</b> <link href="{url}" color="#1F6FEB"><u>{escape(url)}</u></link>',
-                       ST["body"]))
     sp = lab.get("sample_prompts", [])
-    S.append(grid(["#", "Purpose", "Prompt"], [(str(i), lbl, pr) for i, (lbl, pr) in enumerate(sp, 1)],
-                  [8 * mm, 28 * mm, 134 * mm]))
+    if sp:
+        S.append(Paragraph("Sample Prompts", ST["h2"]))
+        S.append(P(("Use the app labelled for each prompt (or adapt it). " if n in WEB_LABS else "Use these prompts in the Copilot pane (or adapt them). ")
+                   + "Name the table and columns, state the output, and "
+                   "always verify the result. Use the linked prompts web page for one-click Copy buttons."))
+        S.append(Paragraph(f'<b>Copy-ready prompts:</b> <link href="{url}" color="#1F6FEB"><u>{escape(url)}</u></link>',
+                           ST["body"]))
+        S.append(grid(["#", "Purpose", "Prompt"], [(str(i), lbl, pr) for i, (lbl, pr) in enumerate(sp, 1)],
+                      [8 * mm, 28 * mm, 134 * mm]))
+    else:  # the prompts page link alone: every prompt already sits under its step
+        S.append(Paragraph(f'<b>Copy buttons for every prompt:</b> <link href="{url}" color="#1F6FEB"><u>{escape(url)}</u></link>',
+                           ST["body"]))
 
     # Keep each short closing section with its heading so no heading is orphaned.
     if lab.get("checks"):
@@ -326,8 +331,9 @@ import northstar_dashboard
 written=[]
 for lab in labs:
     n=lab['num'];fname=folder_name(lab);folder=Path(LABS)/fname
-    mock_data.build_lab_data(n,folder)
-    if n==7:mock_data.workbook(folder/'data/templates/Northstar_Dashboard_Starter.xlsx',dashboard=True,blank=True,rules=True)
+    key=lab.get('key',n)  # data is keyed by the lab's original number (labs after the new Lab 7 shifted by one)
+    mock_data.build_lab_data(key,folder)
+    if key==7:mock_data.workbook(folder/'data/templates/Northstar_Dashboard_Starter.xlsx',dashboard=True,blank=True,rules=True)
     for rel,body,_ in lab.get('extra_files',[]):
         p=folder/rel;p.parent.mkdir(parents=True,exist_ok=True);p.write_text(body)
     log=[(f'Step {i}',cmd.split(':',1)[0],cmd) for i,(_,cmd) in enumerate(lab['steps'],1) if cmd]
@@ -338,7 +344,8 @@ for lab in labs:
             for col,value in enumerate(values,1):ws.cell(row,col,value).alignment=Alignment(wrap_text=True,vertical='top')
         ws.column_dimensions['C'].width=90;wb.save(x)
     # Repair-safe workbooks, current .Rules and the interactive dashboard (tiles, charts, slicers).
-    for x in sorted(folder.rglob('*.xlsx')):northstar_dashboard.process(x)
+    for x in sorted(folder.rglob('*.xlsx')):
+        if not x.name.startswith('~$'):northstar_dashboard.process(x)  # skip Excel lock files
     build_pdf(lab,TOPICS[lab['topic']],str(folder/pdf_name(lab)))
     written.append((n,fname,lab))
 build_page(labs)

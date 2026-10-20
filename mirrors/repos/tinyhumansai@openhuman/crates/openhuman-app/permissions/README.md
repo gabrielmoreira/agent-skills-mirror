@@ -4,7 +4,7 @@ Tauri v2 permission sets for the app's own commands (the ones registered in
 `generate_handler!` in [`src/lib.rs`](../src/lib.rs)). Each `.toml` file defines one
 `[[permission]]` with an `identifier` and a `[permission.commands] allow`
 list. The capability in [`../capabilities/default.json`](../capabilities/README.md)
-grants all of them to the `main` and `overlay` windows by identifier.
+grants all of them to the `main` window by identifier.
 
 ## How it works
 
@@ -21,7 +21,7 @@ renderer invoke('gateway_list')
    |
    v
 RuntimeAuthority::resolve_access
-   |  capability "default" (windows: main, overlay)
+   |  capability "default" (window: main)
    |    -> allow-core-process, allow-app-update, ... (these files)
    |  command listed in one of them?  yes -> run handler
    v                                   no  -> "not allowed. Command not found"
@@ -31,7 +31,7 @@ RuntimeAuthority::resolve_access
 
 | File | Identifier | Commands |
 | --- | --- | --- |
-| [`allow-core-process.toml`](allow-core-process.toml) | `allow-core-process` | Core endpoint and lifecycle (`core_rpc_*`, `relay_http_rpc`, `relay_remote_socket`, `start_core_process`, `restart_core_process`, `reset_local_data`), app control (`restart_app`, `app_quit`), session (`get_active_user_id`, `auth_*`), dictation and push-to-talk hotkeys, `show_ptt_overlay`, `activate_main_window`, notch window, native notifications, and log folder commands. |
+| [`allow-core-process.toml`](allow-core-process.toml) | `allow-core-process` | Core endpoint and lifecycle (`core_rpc_*`, `relay_http_rpc`, `relay_remote_socket`, `start_core_process`, `restart_core_process`, `reset_local_data`), app control (`restart_app`, `app_quit`), session (`get_active_user_id`, `auth_*`), native notifications, and log folder commands. |
 | [`allow-app-update.toml`](allow-app-update.toml) | `allow-app-update` | `check_app_update`, `apply_app_update`, `download_app_update`, `install_app_update`. |
 | [`allow-workspace-files.toml`](allow-workspace-files.toml) | `allow-workspace-files` | `open_workspace_path`, `reveal_workspace_path`, `preview_workspace_text`. |
 | [`allow-artifact-download.toml`](allow-artifact-download.toml) | `allow-artifact-download` | `download_artifact_to_downloads`, `save_artifact_as`. |
@@ -57,7 +57,7 @@ Registered commands that no permission lists, so the webview cannot call them:
 `mcp_open_client_config`, `claude_code_login_launch`, `mascot_window_show`,
 `mascot_window_hide`, `set_titlebar_for_sidebar`, `recover_port_conflict`,
 `force_quit_port_owner`, `check_core_update`, `apply_core_update`,
-`process_diagnostics_list_owned`, `overlay_parent_rpc_url`.
+`process_diagnostics_list_owned`.
 
 Listed commands that are no longer registered, which are harmless but stale:
 `service_install_direct`, `service_start_direct`, `service_stop_direct`,

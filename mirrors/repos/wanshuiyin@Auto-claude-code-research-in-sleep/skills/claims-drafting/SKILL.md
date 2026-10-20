@@ -2,10 +2,21 @@
 name: claims-drafting
 description: "Draft patent claims for an invention. Use when user says \"撰写权利要求\", \"draft claims\", \"写权利要求书\", \"claim drafting\", or wants to create patent claims. The core skill of the patent pipeline."
 argument-hint: "[invention-disclosure-path]"
-allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, WebSearch, WebFetch, mcp__codex__codex, mcp__codex__codex-reply
+allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, WebSearch, WebFetch, mcp__codex__codex, mcp__codex__codex-reply, mcp__antigravity__antigravity, mcp__antigravity__antigravity-reply, mcp__grok__grok, mcp__grok__grok-reply, mcp__claude-review__review, mcp__claude-review__review_reply, mcp__claude-review__review_start, mcp__claude-review__review_reply_start, mcp__claude-review__review_status
 ---
 
 # Claims Drafting: The Core Patent Skill
+
+> **Before each reviewer slot**, follow [Selectable Reviewers](../shared-references/reviewer-backends.md):
+> resolve invocation → `.aris/reviewer.json` → Claude Code default (Codex MCP)
+> with `reviewer_route.py` through the canonical helper resolver, preserving this
+> slot's tier, fresh contexts, source/image inputs and deterministic gates.
+> Codex examples/pins below apply only to `backend=codex`; other routes use their
+> own first-call/reply contract. Save the route and actual returned identity;
+> unavailable selections are `REVIEW_UNAVAILABLE`. Classify acceptance from actual
+> families/completion/scope. Forward invocation reviewer/model/effort overrides
+> to reviewer-bearing children. Generation workers are unchanged.
+
 
 Draft patent claims based on: **$ARGUMENTS**
 
@@ -134,6 +145,8 @@ If any element lacks specification support, add it to the specification requirem
 
 Call `REVIEWER_MODEL` via `mcp__codex__codex` with xhigh reasoning:
 
+> Resolve this reviewer slot first; the following is the `backend=codex` example.
+
 ```
 mcp__codex__codex:
   model: gpt-6-astra
@@ -224,4 +237,4 @@ Write `patent/CLAIMS.md`:
 - Never include result-to-be-achieved language in claims ("configured to achieve high accuracy").
 - Never fabricate claim language -- every element must come from the actual invention.
 - If drafting for ALL jurisdictions, produce separate claim sets for CN, US, and EP.
-- If `mcp__codex__codex` is not available, skip cross-model examiner review and note it in the output.
+- If the selected reviewer is unavailable, record `REVIEW_UNAVAILABLE`; continue only as an explicitly unreviewed draft, without switching providers.

@@ -150,7 +150,12 @@ says one of its words, which goes back to i18n.js.
   it, `refresh(again)` is `load()`'s read of it (coming back to the
   Overview is opening the allowances, #1588), `reload` is Refresh now,
   `costs` draws the costs again when Settings' currency changes, and
-  `tab` says which tab it is on, for `focusQuotaCard`. Still in app.js,
+  `tab` says which tab it is on, for `focusQuotaCard`, and `leave`, which
+  `show()` calls on the page it leaves, gives back what a click lent the
+  Requests (`ledLeave`, TJHHHH on Discord): a filter a ranking or chart
+  click set, or one brought in by the address or Routing's View usage,
+  goes when the reader leaves the Requests for another page or tab. One
+  picked in its own menu or typed stays. Still in app.js,
   since the tray panel draws them too: the allowance cards,
   `quotasOpened`, `panelQuotaFocus` and `panelUseFocus`. With the plugin
   off, its nav tab goes, and so do the ways to the page
@@ -193,7 +198,7 @@ the core. The five other routings are the built-in plugin `rotation`'s.
 | `plugins/rotation` | Requires `providers` and `gateway`, `Essential`. Apply registers every `routes.Builtin` and removes them when turned off. `InUse` counts the providers and groups providers.json routes by one of them (`provider.Routings`, the file alone, not the catalog); an unreadable providers.json is an error, so it stays on. The gateway's `KeepFresh` watches providers.json too, so a routing set from the CLI or the TUI turns it on within 2s. Off, the window's routing pickers (the provider editor, the Routing page's pools and groups) offer Smart alone: their options are marked `data-feature="rotation"` (`routingSegs`). | [`rotation.go`](../../plugins/rotation/rotation.go), [`provider.go`](../../internal/provider/provider.go), [`app.js`](../../internal/gui/assets/app.js) |
 
 The user's own routing groups are the `groups` plugin's on this point. The
-groups magpie finds (a model two providers serve, `auto-<model>`) stay the
+groups magpie finds (a model two providers serve, `auto/<model>`) stay the
 core's, as Smart does: they are how a model several providers serve is one
 model with failover, which a user has with the Essentials preset,
 where `groups` is off. `planGroup` and the walk over a group's members are

@@ -1212,6 +1212,7 @@ new-project-prompt      generate a Codex prompt for project connection
 demo                    create a disposable local demo goal
 doctor                  diagnose installation and import health
 update [check|plan|apply] inspect or apply through the active install owner
+upgrade                 upgrade the CLI and the installed macOS App in one command
 registry                inspect registered goals
 registry-boundary       classify registry local/public boundary and push policy
 status                  show first-screen operator status

@@ -52,7 +52,7 @@ the runtime it owns) to drop before it spawns the next one.
 1. Web UI. Load the Vite build from `app/dist` (or dev server on port 1420).
 2. IPC. Expose an explicit set of Tauri commands (see [Tauri IPC commands](#tauri-ipc-commands-cratesopenhuman-app)).
 3. Core lifecycle. Run the core JSON-RPC server as an in-process tokio task (`core_process.rs`) and hand the renderer its URL/bearer via `core_rpc_url` / `core_rpc_token`.
-4. Window and tray. Desktop window behavior (main, mascot, notch, overlay windows) and system tray (see `lib.rs`).
+4. Window and tray. Desktop window behavior (main and mascot windows) and system tray (see `lib.rs`).
 5. Session ownership. Log the user in and keep the current user fresh (`session/`, backed by `openhuman_tinyhumans::session`): exchange the login token, validate the JWT against `GET /auth/me`, cache `/auth/me`, and hand the resulting credential to the core with `auth.set_credential`. The core never talks to the backend's auth endpoints itself.
 
 ## Core process model
@@ -90,8 +90,7 @@ crates/openhuman-app/src/
 │                           # over SSH / both (tinybox). types · store · ops · registry ·
 │                           # commands
 ├── imessage_scanner/       # macOS-only: reads ~/Library/Messages/chat.db directly
-├── mascot_native_window.rs / notch_window.rs / window_state.rs
-├── dictation_hotkeys.rs / ptt_hotkeys.rs / ptt_overlay.rs
+├── mascot_native_window.rs / window_state.rs
 ├── native_notifications/
 ├── artifact_commands.rs    # Artifact export (copy into Downloads)
 ├── directory_picker.rs     # Native folder picker for the folder memory source
@@ -233,13 +232,6 @@ A JWT accepted while the backend is unreachable (live `exp`, subject claim) is i
 
 `check_core_update` / `apply_core_update` (embedded core) and `check_app_update` / `download_app_update` / `install_app_update` / `apply_app_update` (desktop app, via the updater plugin).
 
-### Hotkeys (dictation, PTT)
-
-| Command                                                                            | Purpose                                                                       |
-| ---------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
-| `register_dictation_hotkey` / `unregister_dictation_hotkey`                        | Global dictation shortcuts (`dictation_hotkeys.rs`)                           |
-| `register_ptt_hotkey` / `unregister_ptt_hotkey` / `show_ptt_overlay`               | Push-to-talk: see the [PTT section](#push-to-talk-ptt-hotkey-and-overlay) below |
-
 ### Notifications
 
 `notification_permission_state` / `notification_permission_request` / `show_native_notification` provide the OS-level notification surface. They are implemented in `native_notifications`.
@@ -251,7 +243,6 @@ A JWT accepted while the backend is unreachable (live `exp`, subject claim) is i
 | `activate_main_window`                             | Show + focus the main window                   |
 | `set_titlebar_for_sidebar`                         | macOS only: switch the main window's title bar style when the sidebar collapses, so the webview keeps spanning the full window |
 | `mascot_window_show` / `mascot_window_hide`        | Toggle the mascot native window                |
-| `notch_window_show` / `notch_window_hide`          | Toggle the notch window                        |
 
 Hide-to-tray / reopen behavior is not an IPC command: it lives in the `RunEvent` handlers in `lib.rs` (see [Window and tray behavior](#window-and-tray-behavior)).
 
@@ -275,20 +266,6 @@ From `workspace_paths.rs` . These commands accept workspace-relative paths only.
 | `open_workspace_path`             | Open an existing workspace file or directory with the OS default app.  |
 | `reveal_workspace_path`           | Reveal an existing workspace file or directory in the OS file manager. |
 | `preview_workspace_text`          | Read a capped UTF-8 text preview from an existing workspace file.      |
-
-### Push-to-talk (PTT) hotkey and overlay
-
-Registered in `lib.rs` (`ptt_hotkeys.rs` + `ptt_overlay.rs`). These commands manage the global push-to-talk shortcut and the floating overlay window.
-
-| Command                 | Signature                                  | Purpose                                                                                                                                                                                                                                                                                                                        |
-| ----------------------- | ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `register_ptt_hotkey`   | `(shortcut: String) -> Result<(), String>` | Register (or re-register) a global hotkey for push-to-talk. Emits Tauri events `ptt://start { session_id }` (key pressed) and `ptt://stop { session_id }` (key released). Returns an error string if the shortcut conflicts with dictation or if the OS rejects it (e.g. Wayland, Accessibility permission required on macOS). |
-| `unregister_ptt_hotkey` | `() -> Result<(), String>`                 | Unregister the current PTT hotkey and tear down the overlay window.                                                                                                                                                                                                                                                            |
-| `show_ptt_overlay`      | `(active: bool, session_id: u64) -> ()`    | Show (`active: true`) or hide (`active: false`) the floating PTT overlay window. The window is focus-stealing-free (`focus: false`). Called by `PttHotkeyManager.tsx` via `app/src/utils/tauriCommands/ptt.ts`.                                                                                                                |
-
-Event flow: `register_ptt_hotkey` wires the OS hotkey to fire `ptt://start` / `ptt://stop` Tauri events that `PttHotkeyManager.tsx` subscribes to via `@tauri-apps/api/event`. The manager forwards them into the `pttService` state machine which drives the audio capture → transcribe → chat-send pipeline.
-
-Conflict detection: `register_ptt_hotkey` checks for overlap with the active dictation shortcuts before registering. If a conflict is detected it returns `"ConflictsWithDictation(<shortcut>)"` without registering anything, and the settings panel surfaces this as `pttSettings.errorConflictsWithDictation`.
 
 ### Synthetic input main-thread executor (native registry, not `invoke`)
 

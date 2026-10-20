@@ -43,6 +43,13 @@ MSF_EXPLOIT_QUIET_PERIOD = float(os.getenv("MSF_EXPLOIT_QUIET_PERIOD", "20"))
 MSF_DEFAULT_TIMEOUT = int(os.getenv("MSF_DEFAULT_TIMEOUT", "120"))
 MSF_DEFAULT_QUIET_PERIOD = float(os.getenv("MSF_DEFAULT_QUIET_PERIOD", "3"))
 
+# msfconsole reads stdin line by line and runs any line it does not recognise
+# as a LOCAL shell command (AllowCommandPassthru defaults on; this container is
+# root). A newline in a session command would end the `sessions -c` line and run
+# the rest here, not on the target; other control bytes (^C, ^Z, ESC) can drive
+# the console itself. Tab is the one control byte a command legitimately carries.
+_SESSION_CMD_CONTROL_RE = re.compile(r"[\x00-\x08\x0a-\x1f\x7f]")
+
 mcp = FastMCP(SERVER_NAME)
 
 
@@ -653,6 +660,10 @@ class PersistentMsfConsole:
         meterpreter commands (sysinfo, upload, migrate, etc.) require the
         meterpreter prompt context. `background` works reliably for meterpreter.
         """
+        if _SESSION_CMD_CONTROL_RE.search(command):
+            return {"busy": False,
+                    "output": "[ERROR] Command must be a single line without control characters"}
+
         acquired = self.lock.acquire(timeout=8)
         if not acquired:
             return {"busy": True, "message": "Agent is executing a command, try again shortly"}
@@ -683,7 +694,10 @@ class PersistentMsfConsole:
 
             # ─── SHELL SESSIONS: non-interactive via `sessions -c` ───
             if session_type != "meterpreter":
-                escaped_cmd = command.replace('"', '\\"')
+                # msfconsole splits the line with Shellwords rules, where a
+                # backslash inside double quotes escapes the next character: an
+                # unescaped trailing backslash would swallow the closing quote.
+                escaped_cmd = command.replace('\\', '\\\\').replace('"', '\\"')
 
                 # Clear pending output
                 while not self.output_queue.empty():
@@ -1167,7 +1181,7 @@ class SessionProgressHandler(BaseHTTPRequestHandler):
 
             if resource == 'sessions' and res_id is not None and action == 'interact':
                 command = body.get("command", "")
-                if not command:
+                if not command or not isinstance(command, str):
                     self._send_json(400, {"error": "Missing 'command' in request body"})
                     return
                 result = msf.interact_session(res_id, command)

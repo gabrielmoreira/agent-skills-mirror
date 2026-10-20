@@ -9,6 +9,7 @@ This repository is a library of film styles. Each style has a `styles/<slug>/STY
 | Directing: story, sound, rhythm, camera, checks, delivery | [`DIRECTOR.md`](DIRECTOR.md) |
 | Building: install, pages, voice, music, mix | [`TECHNIQUE.md`](TECHNIQUE.md) |
 | Tool commands and flags | [`core/README.md`](core/README.md) |
+| The user wants to change a style and keep it as their own, or names a style in `~/lemo-my-styles/` | [`MY-STYLES.md`](MY-STYLES.md) |
 | Adding a style to the library (owner only) | [`MAINTAINING.md`](MAINTAINING.md) |
 
 **Films outside `styles/` are the user's: no LemoLab credit, no watermark.**
@@ -49,7 +50,7 @@ All 51 styles · 全部风格:
 
 1. **Brief.** Make sure the style and the topic are clear, then ask the user once, in a single message (DIRECTOR.md §1):
    - anything about the topic you can't decide yourself (facts; names, logos or products that must appear);
-   - whether they have material of their own: a voice recording or a preferred voice, music, photos, logos, fonts;
+   - whether they have material of their own: a voice recording or a preferred voice, music, photos, logos, fonts, and for a style built from real material, their own data or scans;
    - the film's language, if it isn't obvious (default: the language they write in, for voice and subtitles);
    - whether they want to review a storyboard first (default: no);
    - anything missing on their machine: first run `sh plugin/skills/lemo-opuscar/scripts/setup.sh deps` from the library root (core only) and include what it reports. Add the voice and music tiers later, only if the film needs them (TECHNIQUE.md §1).

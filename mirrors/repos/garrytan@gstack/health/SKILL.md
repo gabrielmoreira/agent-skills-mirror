@@ -19,15 +19,6 @@ allowed-tools:
 <!-- AUTO-GENERATED from SKILL.md.tmpl — do not edit directly -->
 <!-- Regenerate: bun run gen:skill-docs -->
 
-
-## When to invoke this skill
-
-Wraps existing project tools (type checker, linter,
-test runner, dead code detector, shell linter), computes a weighted composite
-0-10 score, and tracks trends over time. Use when: "health check",
-"code quality", "how healthy is the codebase", "run all checks",
-"quality score".
-
 ## Preamble (run first)
 
 ```bash
@@ -527,7 +518,7 @@ gbrain is not installed); skipped weight is redistributed proportionally among
 the scored categories:
 
 ```bash
-bun -e '
+bun --no-env-file --config=/dev/null -e '
 const w = { typecheck: 0.22, lint: 0.18, test: 0.28, deadcode: 0.13, shell: 0.09, gbrain: 0.10 };
 const s = { typecheck: <N|null>, lint: <N|null>, test: <N|null>, deadcode: <N|null>, shell: <N|null>, gbrain: <N|null> };
 const scored = Object.keys(w).filter(k => s[k] !== null);

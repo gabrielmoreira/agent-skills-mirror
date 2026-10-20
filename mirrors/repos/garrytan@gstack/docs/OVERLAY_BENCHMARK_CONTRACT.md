@@ -14,8 +14,10 @@ Selection IDs for the six retained paid cases stay unchanged.
 ## Blocking checks
 
 Both arms use the real Claude Code preset; ON appends the resolved overlay and
-OFF does not. Each retained fixture runs ten samples per arm, separately for
-`claude-opus-4-7` and `claude-sonnet-4-6`. Each model keeps its own results.
+OFF does not. Each retained fixture runs ten samples per arm on its pinned
+model: `claude-opus-5-5`, plus `claude-sonnet-5-5` for the dedicated-tools `-sonnet` case.
+Each model keeps its own results. The `opus-4-7-*` cases keep their overlay
+(`model-overlays/opus-4-7.md`) but run on Opus 5.5 since GSTA-49.
 
 Every planned sample in both arms must execute successfully, produce exactly
 one successful native terminal result without an error flag, preserve workspace
@@ -38,7 +40,7 @@ are not reinterpreted.
 | `opus-4-7-effort-match-trivial` | Read-only workspace; native final JSON contains the exact version string | Correct answer in every ON sample | Native `usage.output_tokens_details.thinking_tokens` |
 | `opus-4-7-literal-interpretation` | Only `src/auth.ts`, `src/billing.ts`, and `src/notifications.ts` may change; public tests stay frozen; independent behavior checks run outside the writable fixture | All three target behaviors pass in every ON sample | Correct target behaviors, 0..3 |
 
-Each family also has a `-sonnet` case. Output validation checks the native final
+The dedicated-tools family also has `-sonnet` and `-opus-5-5` cases. Output validation checks the native final
 answer, so a correct word mentioned earlier cannot conceal a wrong final answer.
 The read-only prompts explicitly request the JSON shape. These exact-answer
 prompts are new in v2: compare ON/OFF within the same contract and fixture, not

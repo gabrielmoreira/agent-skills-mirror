@@ -21,7 +21,7 @@ Requests that only change the plan:
 
 - **No voice, or no subtitles.** Drop those steps and say so in the treatment.
 - **Their own voice recording.** Use it as it is; transcribe it with faster-whisper for word timings.
-- **Their logos, photos or footage**: see section 12.
+- **Their own material**: logos, photos, footage, and for styles built from real material (the Evidence Films) their own data, scans, imagery or CAD. Ask whether they have any; what they give comes first, and the sources in the `STYLE.md` are the fallback. Rights: section 12.
 
 ## 2. Find a benchmark first
 

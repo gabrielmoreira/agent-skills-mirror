@@ -19,15 +19,6 @@ allowed-tools:
 <!-- AUTO-GENERATED from SKILL.md.tmpl — do not edit directly -->
 <!-- Regenerate: bun run gen:skill-docs -->
 
-
-## When to invoke this skill
-
-Review, search, prune, and export what gstack
-has learned across sessions. Use when asked to "what have we learned",
-"show learnings", "prune stale learnings", or "export learnings".
-Proactively suggest when the user asks about past patterns or wonders
-"didn't we fix this before?"
-
 ## Preamble (run first)
 
 ```bash
@@ -479,7 +470,7 @@ if [ -f "$LEARN_FILE" ]; then
   TOTAL=$(wc -l < "$LEARN_FILE" | tr -d ' ')
   echo "TOTAL: $TOTAL entries"
   # Count by type (after dedup)
-  cat "$LEARN_FILE" | bun -e "
+  cat "$LEARN_FILE" | bun --no-env-file --config=/dev/null -e "
     const lines = (await Bun.stdin.text()).trim().split('\n').filter(Boolean);
     const seen = new Map();
     for (const line of lines) {

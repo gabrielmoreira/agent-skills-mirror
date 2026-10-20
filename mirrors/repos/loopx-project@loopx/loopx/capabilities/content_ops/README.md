@@ -4,9 +4,9 @@ The content-ops capability is the product path for creator/operator workflows:
 public handles, private connector gates, source items, angle candidates, draft
 states, feedback signals, and publish gates.
 
-Current implementation remains preview-level. It is useful because it gives real
-connector and review surfaces a safe packet format before raw material is copied
-or published.
+Connector packets remain preview-level. Local item lifecycle, reference
+preparation and optional video composition have their own delivery boundaries;
+none grants publication authority.
 
 The capability also ships a provider-neutral item lifecycle for real local
 operations queues. It preserves stable item identity, revision-bound approval,
@@ -29,11 +29,20 @@ or role-incomplete page sets. See
 
 ## Implemented Surface
 
+`loopx content-ops media` prepares source-bound private compositions and renders
+them through the optional local `loopx-media` extension. The packaged
+**Settings → Capabilities → a Goal → Content production** workbench renders,
+cancels and reads the same compositions, video, captions, transcript and source
+checks. It reuses existing layout tokens and content-item revision/approval,
+while keeping heavy image/audio/video computation in the optional distribution.
+See the [composition contract](../../../docs/reference/protocols/content-ops-media-v0.md)
+and [renderer installation and recovery](../../../packages/loopx-media/README.md).
+
 `loopx content-ops reference` reads an existing private source/style catalog,
 prepares version-checked capture/correction artifacts, retrieves topic/structure
 references, and prepares outlines with original credit and reuse conditions.
-The same TypeScript owner runs in the packaged **Capabilities → Goal → Reference
-styles** workbench. Imports stay in browser page memory; downloads are private
+The same TypeScript owner runs in the packaged **Content production → Source
+style references** workbench. Imports stay in browser page memory; downloads are private
 review artifacts. This preview does not write the original catalog or activate
 a source. Inventory reuses Material Lifecycle, while managed apply/rollback
 still requires that owner's qualified source provider. See

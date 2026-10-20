@@ -282,3 +282,7 @@ A writer that can edit the journal can edit an event and recompute the `contentH
 The separation is structural, not conventional: the `journal/` module does not import from `observability/`, so trace loss cannot imply journal loss and neither can the reverse. It runs to the failure signals too. A trace delivery failure and a `journal_append_failed` progress event report on separate records, and neither implies the other.
 
 Events carry `traceId`/`spanId` when a trace runtime is active, which is enough to join the two streams after the fact without coupling them. Reach for traces when the question is where the time and tokens went, and for the journal when it is why the model saw what it saw.
+
+## Implementation and tests
+
+[Journal verification](../packages/core/src/journal/verify.ts) · [Content hashing](../packages/core/src/journal/hash.ts) · [Verification tests](../packages/core/tests/verify-run.test.ts)

@@ -114,8 +114,12 @@ Rules:
 
 ## Documentation
 
-- `docs/` is the MkDocs source and is **English-only**. A new page must also be added to
-  the `nav:` tree in `mkdocs.yml`, or it will not be published.
+- `docs/` is the English source of truth; translations use matching paths under
+  `docs-i18n/<language>/`. Preserve technical literals and English heading IDs.
+- Add published pages to `mkdocs.yml` navigation; translate labels in
+  `docs-i18n/mkdocs/<language>.yml`.
+- See [Updating Documentation](docs/contributing.md#updating-documentation) for
+  translation status, multilingual builds, deployment and live preview.
 - `README.md` is canonical; `README_CN.md` and `README_JP.md` are translations — if you
   change one meaningfully, note in the PR that the others need updating.
 

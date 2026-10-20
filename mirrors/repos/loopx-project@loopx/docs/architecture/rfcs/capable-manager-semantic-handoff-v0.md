@@ -107,7 +107,7 @@ The baseline already has substantial reusable machinery:
 
 | Existing owner | Source / fact | Consequence |
 | --- | --- | --- |
-| Manager identity/config | `loopx/chat_manager.py`: `open_manager_session`, `manager_workspace`, `manager_model_config` | Stable global role, audience-derived private workspace, `resume_latest`; default Codex model is `gpt-6-astra` / `high` |
+| Manager identity/config | `loopx/chat_manager.py`: `open_manager_session`, `manager_workspace`, `manager_model_config` | Stable global role, audience-derived private workspace, `resume_latest`; default Codex model is `gpt-6.1-sol` / `xhigh` |
 | Host execution | `loopx/chat_agent.py`: `_turn_prompt`, `CodexChatAgentSession.start`; `loopx/chat_runtime.py`: adapter creation/restoration | Codex app-server start/resume exists. Planning uses read-only sandbox and never approvals; only the manager read dynamic tool is added by this path |
 | Manager behavioral restriction | `MANAGER_AGENT_OBJECTIVE` and the planning prompt | Shell/arbitrary repository reads and mutations are restricted; outside intent delegation, durable changes become preview/apply proposals |
 | Session restoration | `loopx/chat_runtime.py` | Saved upstream identity is resumed when compatible; context-version and audience changes can force a new thread. This is not evidence that every deployed request resumes successfully |

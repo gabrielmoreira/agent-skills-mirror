@@ -1,0 +1,5 @@
+interface:
+  display_name: "Implement"
+  short_description: "基于 spec 或 tickets 构建工作"
+policy:
+  allow_implicit_invocation: false

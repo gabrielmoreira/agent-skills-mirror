@@ -1,8 +1,7 @@
 # threads/store
 
-Workspace-backed chat thread and message storage: transcript persistence, not
-memory. The store itself (on-disk format, locking, warm trigram/CJK-bigram
-index for cross-thread search, CRUD) is `tinyagents_session::threads` in
+Chat thread and message storage: transcript persistence, not memory. The store
+API, indexing and CRUD are `tinyagents_session::threads` in
 `vendor/tinyagents`; this directory keeps only the host wiring and re-exports
 the store so callers name `crate::threads::store::{...}`. Memory v2
 (`crate::memory`) is separate: it only ingests committed turns through its own
@@ -27,16 +26,12 @@ bus subscriber (see [`memory/`](../../memory/)).
   the subscriber is not registered and a claim is a no-op, so the untenanted
   `(channel, message_id)` key never spans profiles.
 
-## On-disk layout
+## Persistence
 
-Unchanged from before the move:
-
-```text
-<workspace>/memory/conversations/
-├── threads.jsonl              # append-only upsert/delete log of thread metadata
-└── threads/
-    └── <hex(thread_id)>.jsonl # one file per thread, its messages in order
-```
+The runtime installs `tinyagents_session::threads` with the configured
+session store. Local profiles use the workspace-backed driver; shared storage
+uses the installed backend. This host module does not choose a filesystem
+layout.
 
 ## Tests
 

@@ -26,7 +26,6 @@ is mounted as a submodule of [`load/dirs.rs`](./load/dirs.rs) via `#[path]`.
 | `[context]` | [`context.rs`](./context.rs) | `ContextConfig` |
 | `[cost]` | [`identity_cost.rs`](./identity_cost.rs) | `CostConfig`, `ModelPricing` |
 | `[dashboard]` | [`dashboard.rs`](./dashboard.rs) | `DashboardConfig`, `DiagramViewerConfig`, `EventStreamConfig`, `ModelHealthConfig` |
-| `[dictation]` | [`dictation.rs`](./dictation.rs) | `DictationConfig`, `DictationActivationMode` |
 | `[ephemeral_route]` | [`ephemeral_route.rs`](./ephemeral_route.rs) | `EphemeralRoute` |
 | `[cron]` | [`cron.rs`](./cron.rs) | `CronConfig` |
 | `[hooks]` | [`hooks.rs`](./hooks.rs) | `HooksConfig` |
@@ -46,7 +45,7 @@ is mounted as a submodule of [`load/dirs.rs`](./load/dirs.rs) via `#[path]`.
 | `[tokenjuice]` | [`tokenjuice.rs`](./tokenjuice.rs) | `TokenjuiceConfig` |
 | tool-related sections (see below) | `tools/` | (multiple structs) |
 | `[update]` | [`update.rs`](./update.rs) | `UpdateConfig`, `UpdateRestartStrategy` |
-| `[voice_server]` | [`voice_server.rs`](./voice_server.rs) | `VoiceServerConfig`, `SttEngine`, `VoiceActivationMode` |
+| `[voice_server]` | [`voice_server.rs`](./voice_server.rs) | `VoiceServerConfig`, `SttEngine` |
 | `[[voice_providers]]`, `stt_provider` / `tts_provider` | [`voice_providers.rs`](./voice_providers.rs) | `VoiceProviderCreds`, `BuiltinVoiceProvider`, `BUILTIN_VOICE_PROVIDERS` |
 | top-level `Config` and its scalar keys | `types.rs` (+ `types/config.rs`, `types/model_ids.rs`) | `Config`, `ModelRegistryEntry`, `MODEL_*` / `DEFAULT_MODEL` constants |
 | built-in defaults | [`defaults.rs`](./defaults.rs) | `impl Default for Config` and per-field `default_*` fns |
@@ -110,7 +109,7 @@ sandbox policy contract described under Workspace/identity helpers below.
    (`migrate_legacy_inference_url`, `migrate_cloud_provider_slugs`).
 4. Apply environment-variable overrides through `Config::apply_env_overrides_from`
    in [`load/env_overlay.rs`](./load/env_overlay.rs), split into submodules under [`load/env_overlay/`](./load/env_overlay/)
-   (`dictation_context.rs`, `learning_memory.rs`, `observability.rs`,
+   (`context.rs`, `learning_memory.rs`, `observability.rs`,
    `proxy.rs`, `runtime.rs`, `search.rs`);
    [`load/env.rs`](./load/env.rs) is only the `EnvLookup` seam that lets tests supply a fake
    environment.

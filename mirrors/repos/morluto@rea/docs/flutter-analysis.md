@@ -23,7 +23,9 @@ rea inspect-dart-aot /targets/Example.apk --abi armeabi-v7a
 The equivalent MCP methods are `identify_flutter_build` (with `path`) and
 `inspect_dart_aot` (with `path` and an optional `abi`; the default prefers
 arm64-v8a, then x86_64, then x86, then armeabi-v7a, then the remaining
-ABIs alphabetically).
+ABIs alphabetically). An explicit `abi` is the directory label exactly as
+`identify_flutter_build` reports it, so a payload under a nonstandard label
+stays selectable and keeps that label in the result.
 
 ## Optional retained AOT delivery
 

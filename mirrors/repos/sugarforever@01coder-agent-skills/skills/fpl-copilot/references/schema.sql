@@ -147,6 +147,6 @@ CREATE TABLE IF NOT EXISTS sync_metadata (
 INSERT OR IGNORE INTO sync_metadata (id) VALUES ('singleton');
 
 -- ============================================
--- User squads are stored as markdown files in ~/.fplcopilot/squads/
+-- User squads are Markdown documents in the resolved squads/ location
 -- See references/squad.md for the format specification.
 -- ============================================

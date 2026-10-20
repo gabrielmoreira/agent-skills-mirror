@@ -93,7 +93,7 @@ For detailed build instructions, refer to `agent_docs/building_the_project.md`
 
 When creating or updating CLAUDE.md:
 
-1. **Target Length**: Keep it under a few hundred lines; shorter is better
+1. **Target Length**: Keep it under 200 lines; shorter is better
 2. **No Style Rules**: Remove any linting/formatting instructions
 3. **No Task-Specific Instructions**: Move to separate files
 4. **No Code Snippets**: Use file references instead
@@ -150,7 +150,7 @@ Brief one-line description.
 
 Before finalizing, verify:
 
-- [ ] Kept under a few hundred lines; shorter is better
+- [ ] Kept under 200 lines; shorter is better
 - [ ] Every line applies to ALL sessions
 - [ ] No style/formatting rules
 - [ ] No code snippets (use file references)
@@ -217,8 +217,8 @@ Apply similar principles:
 
 ---
 
-**Last Updated**: October 15, 2026
-**Claude Code Version**: 2.1.300
+**Last Updated**: October 18, 2026
+**Claude Code Version**: 2.1.302
 **Sources**:
 - https://code.claude.com/docs/en/skills
 - https://code.claude.com/docs/en/memory#agents-md

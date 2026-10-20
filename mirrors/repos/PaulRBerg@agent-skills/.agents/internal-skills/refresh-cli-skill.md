@@ -65,8 +65,10 @@ skills whose watched upstream sources changed.
    - Do not create or advance a version marker for an upstream-only review.
 6. Edit only the requested skill directories. Never edit generated lockfiles, unrelated skills, installed copies under
    `~/.agents`, or global Claude/Codex configuration.
-7. Run `just prettier-write <changed Markdown files>`. Then run `just prettier-check <changed files>` and
-   `just skill-check`. Complete the local gate for any changed helper or behavior.
+7. Run `just prettier-write <changed files> --ignore-unknown`. Then run `just skill-check` and
+   `just prettier-check skills/<name> ...` for every selected skill directory. If a selected directory has an existing
+   formatting failure, format and validate the affected file within that directory. Do not report success while a
+   selected-directory check fails. Complete the local gate for any changed helper or behavior.
 8. If the scheduled weekly job invoked you, stop without committing or publishing. The job performs both steps.
    Otherwise, commit and publish per `AGENTS.md`.
 9. Report evidence sources, compatible documentation changes, newer upstream releases, and configuration

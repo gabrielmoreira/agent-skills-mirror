@@ -1,0 +1,67 @@
+{
+  "version": "1.0",
+  "total": 100,
+  "note": "Twelve items. Score each honestly - a generous score helps nobody. Most first-pass profiles land in the 30s and 40s.",
+  "items": [
+    {
+      "id": "headline",
+      "points": 12,
+      "full_marks": "States who you help and what changes for them, carries one piece of proof, and is not the job title. Uses the 220 characters, not 60."
+    },
+    {
+      "id": "about_open",
+      "points": 10,
+      "full_marks": "First two lines - everything visible before 'see more' - name the reader's problem. No 'passionate about', no third-person bio, no opening with your own name."
+    },
+    {
+      "id": "about_body",
+      "points": 10,
+      "full_marks": "Written to one person in second person: their problem, what you do, one number as proof, what to do next. Under 1,400 characters."
+    },
+    {
+      "id": "featured",
+      "points": 8,
+      "full_marks": "Three items: best-performing post, a proof asset, and the way to contact you. Nothing empty, nothing stale."
+    },
+    {
+      "id": "banner",
+      "points": 6,
+      "full_marks": "One line of positioning and one way to reach you. Not the default gradient, not a stock skyline."
+    },
+    {
+      "id": "photo",
+      "points": 6,
+      "full_marks": "Face fills roughly 60% of the frame, eyes visible, shot in the last two years, background not distracting."
+    },
+    {
+      "id": "current_role",
+      "points": 10,
+      "full_marks": "One line of scope, then two to three outcome bullets with numbers. Duties are not outcomes."
+    },
+    {
+      "id": "experience_depth",
+      "points": 8,
+      "full_marks": "Last two roles detailed, everything older than ten years compressed to a single line each."
+    },
+    {
+      "id": "skills",
+      "points": 6,
+      "full_marks": "Top three skills are the three you want to be hired for and are endorsed. The other 47 are noise."
+    },
+    {
+      "id": "recommendations",
+      "points": 8,
+      "full_marks": "At least three received in the last two years, each naming a specific outcome rather than character."
+    },
+    {
+      "id": "activity",
+      "points": 10,
+      "full_marks": "Posted or commented in the last seven days. An empty activity feed reads as an abandoned profile."
+    },
+    {
+      "id": "contact",
+      "points": 6,
+      "full_marks": "Custom URL, a working email or booking link in contact info, and the same handle as your other platforms."
+    }
+  ]
+}

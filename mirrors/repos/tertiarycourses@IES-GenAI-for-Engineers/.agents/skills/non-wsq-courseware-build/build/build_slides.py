@@ -680,6 +680,30 @@ def shot_pair(title,shots,kicker=None,accent=BLUE):
         txt(s,cx,y+H+Inches(0.12),cw,Inches(0.72),[[(label,14,_ink(),True)],[(cap,12,_grey(),False)]],
             align=PP_ALIGN.CENTER,space=2)
     footer(s); return s
+def hub(title,center,spokes,flow=None,kicker=None,accent=BLUE):
+    """Hub-and-spoke relationship diagram: a central circle linked to four corner cards.
+    center=(name,caption); spokes=[(name,caption,hex colour)] x4 in TL,TR,BL,BR order; flow=optional strip text."""
+    from pptx.enum.shapes import MSO_CONNECTOR
+    s=head(slide(),title,kicker,kcolor=accent)
+    cx,cy,d=int(SW/2),Inches(4.2),Inches(2.7)
+    cw,ch=Inches(3.75),Inches(1.45)
+    pos=[(Inches(0.85),Inches(1.95)),(SW-Inches(0.85)-cw,Inches(1.95)),(Inches(0.85),Inches(4.95)),(SW-Inches(0.85)-cw,Inches(4.95))]
+    for (x,y),(_n,_c,col) in zip(pos,spokes):           # connectors first so they sit behind the shapes
+        ex=x+cw if x<cx else x; ey=y+ch//2
+        ln=s.shapes.add_connector(MSO_CONNECTOR.STRAIGHT,cx,cy,int(ex),int(ey))
+        ln.line.color.rgb=RGBColor.from_string(col); ln.line.width=Pt(3)
+    oval(s,cx-d//2-Inches(0.12),cy-d//2-Inches(0.12),d+Inches(0.24),d+Inches(0.24),_line())
+    oval(s,cx-d//2,cy-d//2,d,d,accent)
+    txt(s,cx-d//2+Inches(0.15),cy-d//2,d-Inches(0.3),d,[[(center[0],22,WHITE,True)],[(center[1],14,WHITE,False)]],
+        align=PP_ALIGN.CENTER,anchor=MSO_ANCHOR.MIDDLE,space=6)
+    for (x,y),(name,cap,col) in zip(pos,spokes):
+        c=RGBColor.from_string(col)
+        rect(s,int(x),int(y),cw,ch,_panel()); rect(s,int(x),int(y),Inches(0.12),ch,c)
+        txt(s,int(x+Inches(0.3)),int(y+Inches(0.1)),cw-Inches(0.45),ch-Inches(0.2),[[(name,20,c,True)],[(cap,14,_grey(),False)]],
+            anchor=MSO_ANCHOR.MIDDLE,space=3)
+    if flow:
+        txt(s,Inches(0.85),Inches(6.5),SW-Inches(1.7),Inches(0.4),[[(flow,15,_ink(),True)]],align=PP_ALIGN.CENTER,anchor=MSO_ANCHOR.MIDDLE)
+    footer(s); return s
 def compare_table(title,headers,rows,kicker=None,accent=BLUE):
     """Side-by-side comparison: a label column plus one coloured column per option."""
     s=head(slide(),title,kicker,kcolor=accent)
@@ -887,9 +911,6 @@ def _lab_extras(num):
 # section is taught right before lab n, else 'TOPIC nn'.
 def _render_section(t,sec,accent,tag):
     _b=sec.get("brief")
-    if _b and sec.get("compare"):
-        _c=sec["compare"]
-        compare_table(_c.get("title",sec["title"]),_c["headers"],_c["rows"],kicker=f"{tag} · COMPARE",accent=accent)
     if _b:
         # Slide-ready brief: one 3-card concept slide + one "Try it" slide.
         # The full definition/why/how/example text lives in the Learner Guide.
@@ -904,6 +925,9 @@ def _render_section(t,sec,accent,tag):
             _t=sec["tiles"]
             tile_grid(_t["title"],_t["items"],kicker=f"{tag} · {_t.get('kicker','KEY POINTS')}",
                       cols=_t.get("cols",2),size=_t.get("size",15),accent=accent)
+        if sec.get("compare"):   # side-by-side comparison after the key-point tiles
+            _c=sec["compare"]
+            compare_table(_c.get("title",sec["title"]),_c["headers"],_c["rows"],kicker=f"{tag} · COMPARE",accent=accent)
         if _b.get("flow"):
             flow_h(_b["flow"]["title"],_b["flow"]["steps"],kicker=f"{tag} · HOW IT WORKS",color=accent)
         _chars=sum(len(x) for x in _b["prompts"])
@@ -1021,6 +1045,10 @@ def _render_lab(t,a):
 for t in C.TOPICS:
     accent=TOPIC_THEME.get(t["num"],BLUE)
     section(f"TOPIC {t['code']}", t["title"], t["code"], t["subtitle"], accent=accent)
+    # The big picture opens Topic 1: Copilot is the agentic AI interface, the Office apps are its tools.
+    _hub=getattr(C,"COPILOT_HUB",None)
+    if _hub and t is C.TOPICS[0]:
+        hub(_hub["title"],_hub["center"],_hub["apps"],flow=_hub.get("flow"),kicker=_hub.get("kicker","THE BIG PICTURE"),accent=TEAL)
     if _MOVED and t is C.TOPICS[0]:
         _overview_parts([p for p in _PARTS if p in _MOVED])
     # concept slide(s) — visual tile grid instead of a bullet list (topic-accented)

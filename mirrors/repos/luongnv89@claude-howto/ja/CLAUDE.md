@@ -33,7 +33,7 @@ pre-commit run --all-files
 4. **link-check** — 外部 URL が到達可能か（Python スクリプト）
 5. **markdown-rendering** — Markdown が壊れずにレンダリングされるか（Python スクリプト）
 
-EPUB ビルドは pre-commit フック **ではない** — CI のみで実行される（`.github/workflows/test.yml` の `build-epub` ジョブ）。ローカルの `mmdc` バイナリが必要であり、arm64 で動作するビルドが存在しないためである。
+EPUB ビルドは pre-commit フック **ではない** — CI のみで実行される（`.github/workflows/test.yml` の `build-epub` ジョブ）。本全体をビルドするため時間がかかるからである。mermaid-syntax フックが同じ Pele バンドルですべての図をすでにレンダリングしている。
 
 ### 開発環境のセットアップ
 
@@ -46,9 +46,11 @@ uv venv
 source .venv/bin/activate
 uv pip install -r scripts/requirements-dev.txt
 
-# Node.js ツール（Markdown リンタと Mermaid バリデータ）をインストール
+# Node.js ツール（Markdown リンタ）をインストール
 npm install -g markdownlint-cli
-npm install -g @mermaid-js/mermaid-cli
+
+# Mermaid 図は Pele でレンダリングする（Node.js >= 20 が必要。グローバルインストールは不要）
+node --version
 
 # pre-commit フックをインストール
 uv pip install pre-commit
@@ -87,7 +89,7 @@ mypy scripts/ --ignore-missing-imports
 ### EPUB ビルド
 
 ```bash
-# 電子書籍を生成（Mermaid 図はローカルの mmdc CLI でレンダリング／ネットワーク不要）
+# 電子書籍を生成（Mermaid 図は Pele でレンダリング／Node.js >= 20 が必要。固定バンドルは初回のみダウンロード）
 uv run scripts/build_epub.py
 
 # オプション付き
@@ -108,7 +110,7 @@ uv run scripts/build_epub.py --verbose --output custom-name.epub --lang ja
 ├── 09-advanced-features/   # プランニング、シンキング、バックグラウンド
 ├── 10-cli/                 # CLI リファレンス
 ├── scripts/
-│   ├── build_epub.py           # EPUB ジェネレータ（Mermaid をローカル mmdc でレンダリング）
+│   ├── build_epub.py           # EPUB ジェネレータ（Mermaid を Pele でレンダリング）
 │   ├── check_cross_references.py   # 内部リンクを検証
 │   ├── check_links.py          # 外部 URL を検証
 │   ├── check_mermaid.py        # Mermaid 構文を検証
@@ -127,7 +129,7 @@ uv run scripts/build_epub.py --verbose --output custom-name.epub --lang ja
 
 ### Mermaid 図
 - すべての図は正常にパースできること（pre-commit フックで検査）
-- EPUB ビルドはローカルの `mmdc` CLI で図をレンダリングする（ネットワークは不要だが `mmdc` が必要）
+- EPUB ビルドは Pele で図をレンダリングする（Node.js >= 20 が必要。固定バンドルは初回のみダウンロードされ、以降はオフラインで動作する）
 - フローチャート、シーケンス図、アーキテクチャ可視化に Mermaid を使用する
 
 ### 相互参照
@@ -148,7 +150,7 @@ uv run scripts/build_epub.py --verbose --output custom-name.epub --lang ja
 
 3. **pre-commit がゲートキーパー** — PR が承認される前に 5 つの品質チェックがすべて通過しなければならない。CI パイプラインは同じチェックを 2 回目のパスとして実行する。
 
-4. **Mermaid のレンダリングにはローカルの `mmdc` が必要** — EPUB ビルドは図のレンダリングにローカルの `mmdc` CLI を呼び出す（ネットワークは不要）。ここでビルドが失敗する場合は、`mmdc` が未インストールか、Mermaid 構文エラーが典型的な原因である。EPUB ビルド自体は pre-commit では実行されず、CI のみで実行される。
+4. **Mermaid のレンダリングには Node.js >= 20 が必要** — EPUB ビルドは固定バージョンの Pele バンドルを Node.js で実行して図をレンダリングする（バンドルは初回のみダウンロードされ、sha256 で検証してキャッシュされる）。ここでビルドが失敗する場合は、Node.js >= 20 が未インストールか、バンドルのダウンロード失敗か、Mermaid 構文エラーが典型的な原因である。pre-commit の mermaid フックは pre-commit が用意する Node.js 22 で厳格モードで実行され、スキップせずに失敗する。EPUB ビルド自体は pre-commit では実行されず、CI のみで実行される。
 
 5. **これはチュートリアルでありライブラリではない** — コンテンツを追加する際は、明快な解説、コピー＆ペースト可能な例、視覚的な図を重視する。価値は概念を教えることにあり、再利用可能なコードを提供することではない。
 

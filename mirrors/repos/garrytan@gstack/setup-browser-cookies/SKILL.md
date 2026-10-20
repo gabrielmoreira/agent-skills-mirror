@@ -15,13 +15,6 @@ allowed-tools:
 <!-- AUTO-GENERATED from SKILL.md.tmpl — do not edit directly -->
 <!-- Regenerate: bun run gen:skill-docs -->
 
-
-## When to invoke this skill
-
-Opens an interactive picker UI where you select which cookie domains to import.
-Use before QA testing authenticated pages. Use when asked to "import cookies",
-"login to the site", or "authenticate the browser".
-
 ## Preamble (run first)
 
 ```bash
@@ -152,83 +145,59 @@ Skills that run plan reviews (`/plan-*-review`, `/codex review`) include the EXI
 
 # Setup Browser Cookies
 
-## 1. Choose the browser
+## 1. Check for Aside
 
-Use this checkout as the gstack root if it contains `BROWSER.md` and `browse/SKILL.md`; otherwise use the installed root containing `bin/gstack-skill-start`, never a generated host stub. Read that root's `browse/SKILL.md` **BROWSER SETUP** section and run its probe first. On `READY`, stop importing: use Aside's sessions or ask the user to sign in there. Otherwise follow the probe's fallback handling, then continue below.
+Use this checkout as the gstack root if it contains `BROWSER.md` and `browse/SKILL.md`; otherwise use the installed root containing `bin/gstack-skill-start`, never a generated host stub. Read that root's `browse/SKILL.md` **BROWSER SETUP** section and run its Aside probe.
 
-## SETUP (run this check BEFORE any browse command)
+- **Aside probe prints `READY`:** no import is needed, because Aside already has the user's signed-in sessions. Tell the user to use Aside, or to sign in there, and end this skill.
+- **Any other result:** continue with gstack's own headless browser (`$B`).
 
-```bash
-_ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
-B=""
-[ -n "$_ROOT" ] && [ -x "$_ROOT/.claude/skills/gstack/browse/dist/browse" ] && B="$_ROOT/.claude/skills/gstack/browse/dist/browse"
-[ -z "$B" ] && B="$HOME/.claude/skills/gstack/browse/dist/browse"
-if [ -x "$B" ] && "${B%/browse/*}/bin/gstack-browser-ensure"; then
-  echo "READY: $B"
-else
-  echo "NEEDS_SETUP"
-fi
-```
+## 2. Get every decision from the user first
 
-`gstack-browser-ensure` installs Chromium on first use when the install skipped it (lazy browser); it prints `BROWSER_OK` or `BROWSER_UNAVAILABLE <reason>` first.
+Ask these together, before running any `$B` command. Never guess an answer or treat the default Comet browser as consent.
 
-If `NEEDS_SETUP`:
-1. Tell the user: "gstack browse needs a one-time build (~10 seconds). OK to proceed?" Then STOP and wait.
-2. Run: `cd <SKILL_DIR> && ./setup`
-3. If `bun` is not installed:
-   ```bash
-   if ! command -v bun >/dev/null 2>&1; then
-     BUN_VERSION="1.4.2"
-     BUN_INSTALL_SHA="bab8acfb046aac8c72407bdcce903957665d655d7acaa3e11c7c4616beae68dd"
-     tmpfile=$(mktemp "${TMPDIR:-/tmp}/bun-install.XXXXXX")
-     curl -fsSL "https://bun.sh/install" -o "$tmpfile"
-     # shasum is macOS/perl; coreutils-only Linux ships sha256sum instead —
-     # resolve whichever exists so the verify never fails on a missing tool.
-     if command -v sha256sum >/dev/null 2>&1; then
-       actual_sha=$(sha256sum < "$tmpfile" | awk '{print $(1)}')
-     else
-       actual_sha=$(shasum -a 256 < "$tmpfile" | awk '{print $(1)}')
-     fi
-     if [ "$actual_sha" != "$BUN_INSTALL_SHA" ]; then
-       echo "ERROR: bun install script checksum mismatch" >&2
-       echo "  expected: $BUN_INSTALL_SHA" >&2
-       echo "  got:      $actual_sha" >&2
-       rm "$tmpfile"; exit 1
-     fi
-     bash "$tmpfile" "bun-v$BUN_VERSION"
-     rm "$tmpfile"
-   fi
-   ```
+1. **Source browser and profile.** `--profile` takes the profile's directory (`Default`, `Profile 2`), not its display name. A profile that cannot be read is unknown, not empty.
+2. **Domains to import,** and the **target**: one page on a chosen domain that the session should open, by URL.
+3. **Sign-in verification (`--verify-auth`)?** Default no. It reloads the target and reports **verified** only after a successful same-origin response with exactly one visible element, found by a CSS selector, whose whitespace-normalized text equals the expected identity. If yes, the user supplies the selector and the expected identity privately.
+4. **Clear stale storage (`--clear-storage`)?** Default no; needs explicit approval. Chromium only. It clears localStorage for the target's origin (shared by that origin's tabs) and sessionStorage for the target tab, and nothing else; other browser engines reject the reset but still import. A failed reset may already have cleared some storage and is not rolled back.
+5. **Every cookie in the profile (`--all`)?** Default no; needs explicit consent. It cannot be combined with a domain or with clearing storage.
+
+Use the picker when any of answers 1-2 is still open; it asks for them. Use direct import when the user has named the browser, the profile directory and the domains.
+
+## 3. Prepare gstack's browser
+
+1. If the user wants verification, have them set `GSTACK_COOKIE_AUTH_SELECTOR` and `GSTACK_COOKIE_AUTH_EXPECTED_IDENTITY` privately in the shell that runs `$B`. The browser daemon reads them only when it starts, so if a gstack daemon is already running, run `$B stop` first. Never invent the values.
+2. Follow `browse/SKILL.md`'s **Browser fallback** section to find `$B`, building it if the check prints `NEEDS_SETUP`.
+3. Run `$B status`. If it reports `Mode: cdp`, `$B` is attached to the user's real browser and already has its sessions: tell the user no import is needed and end this skill.
+4. Open the target URL from answer 2 and leave that tab alone until the import finishes:
 
 ```bash
-$B status
+$B goto "<url>"
 ```
-If status says `Mode: cdp`, stop: the real browser already has sessions.
 
-## 2. Confirm options before import
+## 4. Import
 
-Open the known target and keep its tab unchanged. Both options default off and require explicit request:
-
-- **`--verify-auth` / picker checkbox:** reloads the target. Have the user privately configure daemon `GSTACK_COOKIE_AUTH_SELECTOR` and `GSTACK_COOKIE_AUTH_EXPECTED_IDENTITY` **before startup**. Never invent values or assume CLI env reconfigures an existing daemon. Missing config rejects before mutation. Require a successful same-origin response and exactly one visible element whose whitespace-normalized text exactly matches the expected identity.
-- **`--clear-storage`:** for suspected stale storage, obtain explicit approval. Chromium only: clears captured-origin localStorage (shared across same-origin context tabs) and target-tab sessionStorage. Other origins, other tabs' sessionStorage, IndexedDB, and service workers stay intact. It uses an isolated world/native deadline; other engines reject reset, not imports/auth checks. Never auto-approve or claim rollback after partial failure.
-
-## 3. Select source and scope
+Picker (the user confirms the browser, profile and domains there, ticks verification if they asked for it, then tells you when done; the link works once, for five minutes, so rerun the command if it expires):
 
 ```bash
 $B cookie-import-browser
 ```
 
-Ask the user to choose browser, account/profile, and domains, then say when done. Never guess accounts or treat default Comet as consent. Unreadable profiles are unknown, not empty. Rerun for an expired five-minute one-use link.
+Direct import: run `$B cookie-import-browser` with the chosen browser name, one `--domain` per run and `--profile` set to the profile directory (not its display name); add `--verify-auth` or `--clear-storage` only if the user said yes in step 2.
 
-Direct import: pass the chosen browser and `--domain` after navigating to a matching target. `--profile` takes a directory, not a display name; omit only for an unambiguous relevant profile, otherwise use the picker. `--all` requires consent for all non-expired profile cookies; it cannot accompany `--domain` or `--clear-storage`.
+If the import rejects because verification settings are missing, nothing changed: tell the user which variable is missing and return to step 3. Read that same root's `BROWSER.md`, **Choosing a source and checking sign-in**, for other errors and receipt failure reasons; it has the error tables, examples, profile labels, supported sources and platform setup.
 
-Read that same root's `BROWSER.md`, **Choosing a source and checking sign-in**, for examples, profile labels, supported sources and platform setup.
+## 5. Report honestly
 
-## 4. Report honestly
+Report from the import receipt, not from raw `$B cookies`, as three lines:
 
-Report receipt/picker counts, partial/zero/error and reset outcomes, not raw `$B cookies`. Imports affect the context, not one tab. **Not checked** means no requested check; **not verified** means it failed; **verified** requires positive target evidence. Zero imports, counts, or HTTP 200 never prove login.
+- `Imported: <count> (<imported|partial|empty|failed>, as the receipt says) from <browser> for <domains>`
+- `Storage reset: <done|failed|not requested>`
+- `Sign-in: <verified|not verified|not checked>`
 
-Never request/publish cookie values, passwords, identity/profile text, session details, or raw errors in public logs.
+**Not checked** means verification was not requested; **not verified** means it ran and failed; **verified** needs the identity match. Cookie counts, zero imports and HTTP 200 never prove sign-in. Imported cookies apply to the whole browser context, not one tab.
+
+Never request or publish cookie values, passwords, identity or profile text, session details, or raw errors in public logs.
 
 ## Platform boundaries
 

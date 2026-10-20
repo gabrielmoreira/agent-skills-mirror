@@ -32,17 +32,26 @@ direct actor tools, `search-actors`, `fetch-actor-details`) is mode-agnostic.
   - `tasks/` — Actor task create/get/update plus publish/unpublish of the task's public
     landing page (`task_helpers.ts` holds the shared task response shape and the publication call).
   - `schedules/` — schedule create/get/update/delete for Actors and tasks; `schedule_helpers.ts`
-    converts the flat action shape to the API shape and back, and reuses the id helpers from
+    converts the flat action shape to the API shape and back, and reuses `getTaskByIdOrName` from
     `tasks/task_helpers.ts`.
   - `builds/` — `get-actor-build` (build status), `get-actor-build-log` (build log tail),
     `get-actor-build-list` (the account's builds, or one Actor's with `actorId`, in every status, newest
     first, pointing at the newest failed one) and `build-actor` (start a build of one version and wait for it); `build_helpers.ts` holds the
     allowlisted build result shape, the build start and wait calls (the wait reports progress), the
     shared `waitSecs` field, the shared build response and the by-status next-step text.
-  - `source/`: `get-actor-version` (an Actor version's file manifest with hashes, revision, and
-    requested content). `source_files.ts` holds the file shape, the manifest builder, the hash and
-    revision rules, and the text-or-base64 detection. Versions not stored as files (Git repository,
-    gist, or zip) are refused.
+  - `versions/`: `get-actor-version` (an Actor version's build tag, file manifest with hashes, revision,
+    and requested content), `create-actor` (a new Actor with one version in a single POST),
+    `update-actor-version` (write, edit, and delete operations applied all-or-nothing to a fresh read,
+    stored with one version PUT that carries only the source keys), `create-actor-version` (a new
+    version in one POST, from files or as a copy of another version's files and non-secret env vars,
+    with no default buildTag), and `delete-actor-version` (reads the Actor first, since apify-client
+    reports a delete of a missing version as done, and returns the tags still on its builds). `source_files.ts` holds the file shape, the
+    manifest builder, the hash and revision rules, and the text-or-base64 detection;
+    `source_helpers.ts` holds the Actor and version lookup, the file input shape, and the response
+    after a write, which starts the build for autoBuild. get-actor-version, update-actor-version, and a
+    copy in create-actor-version refuse a version not stored as files (Git repository, gist, or zip);
+    create-actor-version from files and delete-actor-version work whatever the Actor's versions are
+    stored as, but delete-actor-version takes expectedRevision only for a version stored as files.
   - `api/` — the generic Apify API tools: search the operations of the published OpenAPI spec, get the
     operations on a path, and send a GET, or a POST, PUT, PATCH, or DELETE, to a path. The write tool is in
     no category (`UNCATEGORIZED_TOOLS`): `tools=api` serves the other three, and a session gets the write
@@ -76,6 +85,9 @@ direct actor tools, `search-actors`, `fetch-actor-details`) is mode-agnostic.
   - `docs/` — search and fetch Apify docs.
   - `dev/` — the `report-problem` tool for reporting a problem with a tool or Actor.
   - `widgets/` — the `*-widget` tool variants (apps mode only).
+- `../utils/apify_resource_id.ts` holds the helpers that resolve an Actor, task, or schedule given by ID or
+  name, where a name alone means one of the caller's own. The task, schedule, and versions tools use them,
+  and so do `build-actor` and the `actorId` filter of `get-actor-build-list` and `get-actor-run-list`.
 
 ## Rules when editing here
 

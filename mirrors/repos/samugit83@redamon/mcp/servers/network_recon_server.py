@@ -538,7 +538,7 @@ def execute_code(code: str, language: str = "python", filename: str = "exploit")
     Write code to a file and execute it with the appropriate interpreter.
 
     Eliminates shell escaping issues by receiving code as a clean string parameter,
-    writing it to a file using a heredoc, and executing the file directly.
+    writing it to a file, and executing the file directly.
     Use this instead of kali_shell when running multi-line scripts.
 
     Args:
@@ -598,17 +598,11 @@ def execute_code(code: str, language: str = "python", filename: str = "exploit")
     filepath = f"/tmp/{safe_filename}.{ext}"
     binary_path = f"/tmp/{safe_filename}"
 
-    # Step 1: Write code to file using single-quoted heredoc (no shell interpretation)
-    write_cmd = f"cat << 'REDAMON_CODE_EOF' > {filepath}\n{code}\nREDAMON_CODE_EOF"
+    # Step 1: Write the code file from Python, never through a shell heredoc:
+    # code holding the delimiter line would end the heredoc and run as shell.
     try:
-        write_result = subprocess.run(
-            ["bash", "-c", write_cmd],
-            capture_output=True,
-            text=True,
-            timeout=10
-        )
-        if write_result.returncode != 0:
-            return f"[ERROR] Failed to write code file: {write_result.stderr}"
+        with open(filepath, "w", encoding="utf-8") as f:
+            f.write(f"{code}\n")
     except Exception as e:
         return f"[ERROR] Failed to write code file: {str(e)}"
 
@@ -735,11 +729,10 @@ def proxy_brain(code: str, _redamon_ctx: str = "") -> str:
     # the agent's code can use `redamon.*` directly. One physical line keeps the
     # agent's traceback line numbers off by only 1.
     preamble = "import sys as _s; _s.path.insert(0, '/opt/mcp_servers'); import redamon\n"
-    write_cmd = f"cat << 'REDAMON_PB_EOF' > {filepath}\n{preamble}{code}\nREDAMON_PB_EOF"
+    # Written from Python, never a shell heredoc (see execute_code).
     try:
-        w = subprocess.run(["bash", "-c", write_cmd], capture_output=True, text=True, timeout=10)
-        if w.returncode != 0:
-            return f"[ERROR] Failed to write code file: {w.stderr}"
+        with open(filepath, "w", encoding="utf-8") as f:
+            f.write(f"{preamble}{code}\n")
     except Exception as e:  # noqa: BLE001
         return f"[ERROR] Failed to write code file: {str(e)}"
 

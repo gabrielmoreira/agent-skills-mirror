@@ -53,6 +53,8 @@ The gate reads only the structured execution topology produced by
 or that an independent review occurred, even if it contains reviewer names,
 approval labels, or audit markers.
 
+Implementation and tests: [Governance evaluator](../packages/core/src/orchestrator/governance.ts) · [Execution receipts](../packages/core/src/observability/execution-receipt.ts) · [Governance tests](../packages/core/tests/governance-floor.test.ts).
+
 ### Explicit modes and budget conflicts
 
 `runTeam()` resolves execution policy in this order:

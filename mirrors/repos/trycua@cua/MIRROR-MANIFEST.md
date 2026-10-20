@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `trycua/cua` — 26 default patterns, 26 followed patterns, 79 file(s) materialized.
+Mirror of `trycua/cua` — 26 default patterns, 4 followed patterns, 48 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `trycua/cua` — 26 default patterns, 26 followed patterns, 79 file(s)
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 26 |
-| Files         | 79 |
+| Followed pats | 4 |
+| Files         | 48 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,32 +51,10 @@ Mirror of `trycua/cua` — 26 default patterns, 26 followed patterns, 79 file(s)
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-- `rfcs/README.md`
-- `SECURITY.md`
-- `Development.md`
-- `TESTING.md`
-- `libs/cua/README.md`
-- `libs/cua-spacesd/README.md`
-- `apps/cua-spaces/README.md`
-- `libs/cua-driver/README.md`
-- `libs/cua-driver/rust/README.md`
-- `libs/typescript/README.md`
-- `libs/cuabot/README.md`
-- `libs/lume/Development.md`
-- `libs/images/README.md`
-- `docs/README.md`
-- `libs/cua-driver/rust/crates/cua-driver-e2e/tests/README.md`
-- `scripts/ci/README.md`
-- `.github/releases/README.md`
-- `libs/cua-driver/docs/test-harnesses-guide.md`
-- `libs/cua-driver/docs/test-matrix.md`
-- `THIRD_PARTY_NOTICES.md`
-- `LICENSING.md`
-- `LICENSE.md`
-- `libs/cua-driver/rust/crates/cua-perception/models/THIRD_PARTY_NOTICES.md`
-- `COMMERCIAL.md`
-- `TRADEMARKS.md`
-- `scripts/licenses/README.md`
+- `docs/rfcs/README.md`
+- `.github/SECURITY.md`
+- `docs/contributing/Development.md`
+- `docs/contributing/TESTING.md`
 
 ## File Index
 
@@ -86,83 +64,52 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`.agents/skills/poll-github-work/SKILL.md`](.agents/skills/poll-github-work/SKILL.md) |
 | 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 3 | ✓ | [`apps/cua-spaces-macos/THIRD_PARTY_NOTICES.md`](apps/cua-spaces-macos/THIRD_PARTY_NOTICES.md) |
-| 4 | ✓ | [`benchmarks/cua-driver-bench/taskpack/THIRD_PARTY_NOTICES.md`](benchmarks/cua-driver-bench/taskpack/THIRD_PARTY_NOTICES.md) |
-| 5 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 6 | ✓ | [`libs/cua-bench/cua_bench/templates/starter_env/CLAUDE.md`](libs/cua-bench/cua_bench/templates/starter_env/CLAUDE.md) |
-| 7 | ✓ | [`libs/cua-bench/datasets/cua-bench-basic/click-button/CLAUDE.md`](libs/cua-bench/datasets/cua-bench-basic/click-button/CLAUDE.md) |
-| 8 | ✓ | [`libs/cua-bench/datasets/cua-bench-basic/click-icon/CLAUDE.md`](libs/cua-bench/datasets/cua-bench-basic/click-icon/CLAUDE.md) |
-| 9 | ✓ | [`libs/cua-bench/datasets/cua-bench-basic/color-picker/CLAUDE.md`](libs/cua-bench/datasets/cua-bench-basic/color-picker/CLAUDE.md) |
-| 10 | ✓ | [`libs/cua-bench/datasets/cua-bench-basic/date-picker/CLAUDE.md`](libs/cua-bench/datasets/cua-bench-basic/date-picker/CLAUDE.md) |
-| 11 | ✓ | [`libs/cua-bench/datasets/cua-bench-basic/drag-drop/CLAUDE.md`](libs/cua-bench/datasets/cua-bench-basic/drag-drop/CLAUDE.md) |
-| 12 | ✓ | [`libs/cua-bench/datasets/cua-bench-basic/drag-slider/CLAUDE.md`](libs/cua-bench/datasets/cua-bench-basic/drag-slider/CLAUDE.md) |
-| 13 | ✓ | [`libs/cua-bench/datasets/cua-bench-basic/fill-form/CLAUDE.md`](libs/cua-bench/datasets/cua-bench-basic/fill-form/CLAUDE.md) |
-| 14 | ✓ | [`libs/cua-bench/datasets/cua-bench-basic/right-click-menu/CLAUDE.md`](libs/cua-bench/datasets/cua-bench-basic/right-click-menu/CLAUDE.md) |
-| 15 | ✓ | [`libs/cua-bench/datasets/cua-bench-basic/select-dropdown/CLAUDE.md`](libs/cua-bench/datasets/cua-bench-basic/select-dropdown/CLAUDE.md) |
-| 16 | ✓ | [`libs/cua-bench/datasets/cua-bench-basic/spreadsheet-cell/CLAUDE.md`](libs/cua-bench/datasets/cua-bench-basic/spreadsheet-cell/CLAUDE.md) |
-| 17 | ✓ | [`libs/cua-bench/datasets/cua-bench-basic/toggle-switch/CLAUDE.md`](libs/cua-bench/datasets/cua-bench-basic/toggle-switch/CLAUDE.md) |
-| 18 | ✓ | [`libs/cua-bench/datasets/cua-bench-basic/typing-input/CLAUDE.md`](libs/cua-bench/datasets/cua-bench-basic/typing-input/CLAUDE.md) |
-| 19 | ✓ | [`libs/cua-bench/datasets/cua-bench-basic/video-player/CLAUDE.md`](libs/cua-bench/datasets/cua-bench-basic/video-player/CLAUDE.md) |
-| 20 | ✓ | [`libs/cua-bench/example_tasks/minesweeper_game_env/CLAUDE.md`](libs/cua-bench/example_tasks/minesweeper_game_env/CLAUDE.md) |
-| 21 | ✓ | [`libs/cua-driver/docs/action-support.md`](libs/cua-driver/docs/action-support.md) |
-| 22 | ✓ | [`libs/cua-driver/rust/Skills/cua-driver/BROWSER.md`](libs/cua-driver/rust/Skills/cua-driver/BROWSER.md) |
-| 23 | ✓ | [`libs/cua-driver/rust/Skills/cua-driver/EMBEDDING.md`](libs/cua-driver/rust/Skills/cua-driver/EMBEDDING.md) |
-| 24 | ✓ | [`libs/cua-driver/rust/Skills/cua-driver/LINUX.md`](libs/cua-driver/rust/Skills/cua-driver/LINUX.md) |
-| 25 | ✓ | [`libs/cua-driver/rust/Skills/cua-driver/MACOS.md`](libs/cua-driver/rust/Skills/cua-driver/MACOS.md) |
-| 26 | ✓ | [`libs/cua-driver/rust/Skills/cua-driver/RECORDING.md`](libs/cua-driver/rust/Skills/cua-driver/RECORDING.md) |
-| 27 | ✓ | [`libs/cua-driver/rust/Skills/cua-driver/RUNTIME.md`](libs/cua-driver/rust/Skills/cua-driver/RUNTIME.md) |
-| 28 | ✓ | [`libs/cua-driver/rust/Skills/cua-driver/SKILL.md`](libs/cua-driver/rust/Skills/cua-driver/SKILL.md) |
-| 29 | ✓ | [`libs/cua-driver/rust/Skills/cua-driver/WINDOWS.md`](libs/cua-driver/rust/Skills/cua-driver/WINDOWS.md) |
-| 30 | ✓ | [`libs/cua-driver/rust/Skills/cua-driver/WORKFLOW.md`](libs/cua-driver/rust/Skills/cua-driver/WORKFLOW.md) |
-| 31 | ✓ | [`libs/cua-driver/rust/THIRD_PARTY_NOTICES.md`](libs/cua-driver/rust/THIRD_PARTY_NOTICES.md) |
-| 32 | ✓ | [`libs/cua-s1/SECURITY.md`](libs/cua-s1/SECURITY.md) |
-| 33 | ✓ | [`libs/cua-s1/THIRD_PARTY_NOTICES.md`](libs/cua-s1/THIRD_PARTY_NOTICES.md) |
-| 34 | ✓ | [`libs/cua-spacesd/THIRD_PARTY_NOTICES.md`](libs/cua-spacesd/THIRD_PARTY_NOTICES.md) |
-| 35 | ✓ | [`libs/cua/skills/cua-driver/BROWSER.md`](libs/cua/skills/cua-driver/BROWSER.md) |
-| 36 | ✓ | [`libs/cua/skills/cua-driver/EMBEDDING.md`](libs/cua/skills/cua-driver/EMBEDDING.md) |
-| 37 | ✓ | [`libs/cua/skills/cua-driver/LINUX.md`](libs/cua/skills/cua-driver/LINUX.md) |
-| 38 | ✓ | [`libs/cua/skills/cua-driver/MACOS.md`](libs/cua/skills/cua-driver/MACOS.md) |
-| 39 | ✓ | [`libs/cua/skills/cua-driver/RECORDING.md`](libs/cua/skills/cua-driver/RECORDING.md) |
-| 40 | ✓ | [`libs/cua/skills/cua-driver/RUNTIME.md`](libs/cua/skills/cua-driver/RUNTIME.md) |
-| 41 | ✓ | [`libs/cua/skills/cua-driver/SKILL.md`](libs/cua/skills/cua-driver/SKILL.md) |
-| 42 | ✓ | [`libs/cua/skills/cua-driver/WINDOWS.md`](libs/cua/skills/cua-driver/WINDOWS.md) |
-| 43 | ✓ | [`libs/cua/skills/cua-driver/WORKFLOW.md`](libs/cua/skills/cua-driver/WORKFLOW.md) |
-| 44 | ✓ | [`libs/cua/skills/cua-sandboxes/SKILL.md`](libs/cua/skills/cua-sandboxes/SKILL.md) |
-| 45 | ✓ | [`libs/cua/skills/cua-spaces/SKILL.md`](libs/cua/skills/cua-spaces/SKILL.md) |
-| 46 | ✓ | [`libs/cua/skills/cua-volume/SKILL.md`](libs/cua/skills/cua-volume/SKILL.md) |
-| 47 | ✓ | [`libs/cua/skills/gui-automation/SKILL.md`](libs/cua/skills/gui-automation/SKILL.md) |
-| 48 | ✓ | [`libs/python/cua-sandbox/THIRD_PARTY_NOTICES.md`](libs/python/cua-sandbox/THIRD_PARTY_NOTICES.md) |
-| 49 | ✓ | [`libs/xfce/Development.md`](libs/xfce/Development.md) |
-| 50 | ✓ | [`rfcs/0000-template.md`](rfcs/0000-template.md) |
-| 51 | ✓ | [`skills/gui-automation/references/command-reference.md`](skills/gui-automation/references/command-reference.md) |
-| 52 | ✓ | [`skills/gui-automation/SKILL.md`](skills/gui-automation/SKILL.md) |
-| 53 | ✓ | [`skills/jev-use/SKILL.md`](skills/jev-use/SKILL.md) |
-| 54 | → | [`.github/releases/README.md`](.github/releases/README.md) |
-| 55 | → | [`apps/cua-spaces/README.md`](apps/cua-spaces/README.md) |
-| 56 | → | [`COMMERCIAL.md`](COMMERCIAL.md) |
-| 57 | → | [`Development.md`](Development.md) |
-| 58 | → | [`docs/README.md`](docs/README.md) |
-| 59 | → | [`libs/cua-driver/docs/test-harnesses-guide.md`](libs/cua-driver/docs/test-harnesses-guide.md) |
-| 60 | → | [`libs/cua-driver/docs/test-matrix.md`](libs/cua-driver/docs/test-matrix.md) |
-| 61 | → | [`libs/cua-driver/README.md`](libs/cua-driver/README.md) |
-| 62 | → | [`libs/cua-driver/rust/crates/cua-driver-e2e/tests/README.md`](libs/cua-driver/rust/crates/cua-driver-e2e/tests/README.md) |
-| 63 | → | [`libs/cua-driver/rust/crates/cua-perception/models/THIRD_PARTY_NOTICES.md`](libs/cua-driver/rust/crates/cua-perception/models/THIRD_PARTY_NOTICES.md) |
-| 64 | → | [`libs/cua-driver/rust/README.md`](libs/cua-driver/rust/README.md) |
-| 65 | → | [`libs/cua-spacesd/README.md`](libs/cua-spacesd/README.md) |
-| 66 | → | [`libs/cua/README.md`](libs/cua/README.md) |
-| 67 | → | [`libs/cuabot/README.md`](libs/cuabot/README.md) |
-| 68 | → | [`libs/images/README.md`](libs/images/README.md) |
-| 69 | → | [`libs/lume/Development.md`](libs/lume/Development.md) |
-| 70 | → | [`libs/typescript/README.md`](libs/typescript/README.md) |
-| 71 | → | [`LICENSE.md`](LICENSE.md) |
-| 72 | → | [`LICENSING.md`](LICENSING.md) |
-| 73 | → | [`rfcs/README.md`](rfcs/README.md) |
-| 74 | → | [`scripts/ci/README.md`](scripts/ci/README.md) |
-| 75 | → | [`scripts/licenses/README.md`](scripts/licenses/README.md) |
-| 76 | → | [`SECURITY.md`](SECURITY.md) |
-| 77 | → | [`TESTING.md`](TESTING.md) |
-| 78 | → | [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) |
-| 79 | → | [`TRADEMARKS.md`](TRADEMARKS.md) |
+| 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 4 | ✓ | [`docs/rfcs/0000-template.md`](docs/rfcs/0000-template.md) |
+| 5 | ✓ | [`libs/cua-bench/cua_bench/templates/starter_env/CLAUDE.md`](libs/cua-bench/cua_bench/templates/starter_env/CLAUDE.md) |
+| 6 | ✓ | [`libs/cua-bench/datasets/cua-bench-basic/click-button/CLAUDE.md`](libs/cua-bench/datasets/cua-bench-basic/click-button/CLAUDE.md) |
+| 7 | ✓ | [`libs/cua-bench/datasets/cua-bench-basic/click-icon/CLAUDE.md`](libs/cua-bench/datasets/cua-bench-basic/click-icon/CLAUDE.md) |
+| 8 | ✓ | [`libs/cua-bench/datasets/cua-bench-basic/color-picker/CLAUDE.md`](libs/cua-bench/datasets/cua-bench-basic/color-picker/CLAUDE.md) |
+| 9 | ✓ | [`libs/cua-bench/datasets/cua-bench-basic/date-picker/CLAUDE.md`](libs/cua-bench/datasets/cua-bench-basic/date-picker/CLAUDE.md) |
+| 10 | ✓ | [`libs/cua-bench/datasets/cua-bench-basic/drag-drop/CLAUDE.md`](libs/cua-bench/datasets/cua-bench-basic/drag-drop/CLAUDE.md) |
+| 11 | ✓ | [`libs/cua-bench/datasets/cua-bench-basic/drag-slider/CLAUDE.md`](libs/cua-bench/datasets/cua-bench-basic/drag-slider/CLAUDE.md) |
+| 12 | ✓ | [`libs/cua-bench/datasets/cua-bench-basic/fill-form/CLAUDE.md`](libs/cua-bench/datasets/cua-bench-basic/fill-form/CLAUDE.md) |
+| 13 | ✓ | [`libs/cua-bench/datasets/cua-bench-basic/right-click-menu/CLAUDE.md`](libs/cua-bench/datasets/cua-bench-basic/right-click-menu/CLAUDE.md) |
+| 14 | ✓ | [`libs/cua-bench/datasets/cua-bench-basic/select-dropdown/CLAUDE.md`](libs/cua-bench/datasets/cua-bench-basic/select-dropdown/CLAUDE.md) |
+| 15 | ✓ | [`libs/cua-bench/datasets/cua-bench-basic/spreadsheet-cell/CLAUDE.md`](libs/cua-bench/datasets/cua-bench-basic/spreadsheet-cell/CLAUDE.md) |
+| 16 | ✓ | [`libs/cua-bench/datasets/cua-bench-basic/toggle-switch/CLAUDE.md`](libs/cua-bench/datasets/cua-bench-basic/toggle-switch/CLAUDE.md) |
+| 17 | ✓ | [`libs/cua-bench/datasets/cua-bench-basic/typing-input/CLAUDE.md`](libs/cua-bench/datasets/cua-bench-basic/typing-input/CLAUDE.md) |
+| 18 | ✓ | [`libs/cua-bench/datasets/cua-bench-basic/video-player/CLAUDE.md`](libs/cua-bench/datasets/cua-bench-basic/video-player/CLAUDE.md) |
+| 19 | ✓ | [`libs/cua-bench/example_tasks/minesweeper_game_env/CLAUDE.md`](libs/cua-bench/example_tasks/minesweeper_game_env/CLAUDE.md) |
+| 20 | ✓ | [`libs/cua-driver/rust/Skills/cua-driver/BROWSER.md`](libs/cua-driver/rust/Skills/cua-driver/BROWSER.md) |
+| 21 | ✓ | [`libs/cua-driver/rust/Skills/cua-driver/EMBEDDING.md`](libs/cua-driver/rust/Skills/cua-driver/EMBEDDING.md) |
+| 22 | ✓ | [`libs/cua-driver/rust/Skills/cua-driver/LINUX.md`](libs/cua-driver/rust/Skills/cua-driver/LINUX.md) |
+| 23 | ✓ | [`libs/cua-driver/rust/Skills/cua-driver/MACOS.md`](libs/cua-driver/rust/Skills/cua-driver/MACOS.md) |
+| 24 | ✓ | [`libs/cua-driver/rust/Skills/cua-driver/RECORDING.md`](libs/cua-driver/rust/Skills/cua-driver/RECORDING.md) |
+| 25 | ✓ | [`libs/cua-driver/rust/Skills/cua-driver/RUNTIME.md`](libs/cua-driver/rust/Skills/cua-driver/RUNTIME.md) |
+| 26 | ✓ | [`libs/cua-driver/rust/Skills/cua-driver/SKILL.md`](libs/cua-driver/rust/Skills/cua-driver/SKILL.md) |
+| 27 | ✓ | [`libs/cua-driver/rust/Skills/cua-driver/WINDOWS.md`](libs/cua-driver/rust/Skills/cua-driver/WINDOWS.md) |
+| 28 | ✓ | [`libs/cua-driver/rust/Skills/cua-driver/WORKFLOW.md`](libs/cua-driver/rust/Skills/cua-driver/WORKFLOW.md) |
+| 29 | ✓ | [`libs/cua/skills/cua-driver/BROWSER.md`](libs/cua/skills/cua-driver/BROWSER.md) |
+| 30 | ✓ | [`libs/cua/skills/cua-driver/EMBEDDING.md`](libs/cua/skills/cua-driver/EMBEDDING.md) |
+| 31 | ✓ | [`libs/cua/skills/cua-driver/LINUX.md`](libs/cua/skills/cua-driver/LINUX.md) |
+| 32 | ✓ | [`libs/cua/skills/cua-driver/MACOS.md`](libs/cua/skills/cua-driver/MACOS.md) |
+| 33 | ✓ | [`libs/cua/skills/cua-driver/RECORDING.md`](libs/cua/skills/cua-driver/RECORDING.md) |
+| 34 | ✓ | [`libs/cua/skills/cua-driver/RUNTIME.md`](libs/cua/skills/cua-driver/RUNTIME.md) |
+| 35 | ✓ | [`libs/cua/skills/cua-driver/SKILL.md`](libs/cua/skills/cua-driver/SKILL.md) |
+| 36 | ✓ | [`libs/cua/skills/cua-driver/WINDOWS.md`](libs/cua/skills/cua-driver/WINDOWS.md) |
+| 37 | ✓ | [`libs/cua/skills/cua-driver/WORKFLOW.md`](libs/cua/skills/cua-driver/WORKFLOW.md) |
+| 38 | ✓ | [`libs/cua/skills/cua-sandboxes/SKILL.md`](libs/cua/skills/cua-sandboxes/SKILL.md) |
+| 39 | ✓ | [`libs/cua/skills/cua-spaces/SKILL.md`](libs/cua/skills/cua-spaces/SKILL.md) |
+| 40 | ✓ | [`libs/cua/skills/cua-volume/SKILL.md`](libs/cua/skills/cua-volume/SKILL.md) |
+| 41 | ✓ | [`libs/cua/skills/gui-automation/SKILL.md`](libs/cua/skills/gui-automation/SKILL.md) |
+| 42 | ✓ | [`skills/gui-automation/references/command-reference.md`](skills/gui-automation/references/command-reference.md) |
+| 43 | ✓ | [`skills/gui-automation/SKILL.md`](skills/gui-automation/SKILL.md) |
+| 44 | ✓ | [`skills/jev-use/SKILL.md`](skills/jev-use/SKILL.md) |
+| 45 | → | [`.github/SECURITY.md`](.github/SECURITY.md) |
+| 46 | → | [`docs/contributing/Development.md`](docs/contributing/Development.md) |
+| 47 | → | [`docs/contributing/TESTING.md`](docs/contributing/TESTING.md) |
+| 48 | → | [`docs/rfcs/README.md`](docs/rfcs/README.md) |
 
 ---
 
