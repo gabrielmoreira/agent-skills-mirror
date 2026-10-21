@@ -22,10 +22,9 @@ WebBrain separates **model tier** from **conversation mode**.
 Tier defaults and resolution rules are documented in
 [providers and models](providers-and-models.md#prompttool-tiers-and-modes).
 
-In **lean mode** (Settings → Advanced → Lean mode), an Act run gets 17 of these
-tools instead of its tier's set, with the same schemas, and a short prompt; see
-[lean mode](lean-mode.md). On WhatsApp Web and Telegram Web it also gets
-`chat_observe` and `chat_send`, which the recipient guard there relies on.
+**Lean mode** (Settings → Advanced → Lean mode) does not change these lists: a
+lean Act run gets its tier's tools and prompt, and WebBrain skips its quality
+checks; see [lean mode](lean-mode.md).
 
 ## Accessibility read budgets
 
@@ -165,8 +164,10 @@ Navigation also stops unless only trailing observations remain. Mid's usual
 single-action boundary is suspended inside a batch but still applies after it.
 Coordinate clicks after an earlier mutation are rejected during validation.
 
-Verified `set_field`/`type_ax`/`type_text` edits to native input and textarea controls can
-continue within the same batch using updated evidence for those exact values.
+Verified `set_field`/`type_ax`/`type_text` edits to native input and textarea controls,
+password fields included, can continue within the same batch using updated
+evidence for those exact values, so a login's username, password and button can
+run in one batch.
 Element identities, labels, surrounding form/recipient bindings, other control
 values and user-interaction checks remain fixed. A sibling call or another
 batch cannot reuse that exception. Selects, contenteditable editors and clicks

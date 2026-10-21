@@ -1,5 +1,20 @@
 # Analysis efficiency measurements
 
+The [native inventory view checkpoint](native-inventory-views.md) compares
+complete delivery with summaries and selected rows on real `true` and jq
+inventories, including oversized-response recovery, portable old Evidence,
+CLI/MCP parity, tokenizer estimates and independent-engine variation.
+
+The [retained-capture validation checkpoint](retained-capture-validation.md)
+reconciles the earlier audit queue and measures immutable historical-capture
+validation reuse on public compact and large qlogs, including first-view costs,
+small-input limits and unchanged Evidence delivery.
+
+The [Ghidra Evidence projection checkpoint](ghidra-evidence-projection.md)
+measures removal of redundant raw copies on real `true` and jq workflows,
+with complete provenance, unchanged response budgets, native CLI/MCP checks
+and explicit cold-analysis variance.
+
 For Hopper literal string queries, see the [decoded-record checkpoint](hopper-string-records.md).
 It measures record reuse through real Linux CLI/MCP workflows, preserving
 native recognition gaps, guard-stopped attempts and negative whole-task costs.

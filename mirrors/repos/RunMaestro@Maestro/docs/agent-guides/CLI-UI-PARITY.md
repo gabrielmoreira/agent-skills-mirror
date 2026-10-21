@@ -256,7 +256,7 @@ Notification center history uses the live desktop `notificationStore` over a req
 | Enter-to-send chip                                                       | `tab enter-to-send`                                                                              |
 | Read one tab's settings back                                             | `tab show`, or `session list --json`                                                             |
 | Move Tab to First / Last                                                 | `tab move <tab-id> first\|last\|<index>`                                                         |
-| Send a message, or run a shell command                                   | `send`, `dispatch`, `send-terminal`                                                              |
+| Send a message, or run a shell command (incl. a code fence's Run button) | `send`, `dispatch`, `send-terminal`                                                              |
 | Consult another agent (`@mention`)                                       | `ask <agent> "<question>" --from <caller>`                                                       |
 | Open a file / URL / terminal tab                                         | `open-file`, `open-browser`, `open-terminal`                                                     |
 | Click a folder link (reveal it in the Files panel)                       | `open-file <folder>` (both ride `revealPathInFileTree`)                                          |
@@ -285,6 +285,8 @@ Notification center history uses the live desktop `notificationStore` over a req
 | Playbook Exchange: browse, README, install                               | `marketplace list`, `marketplace show <id>`, `marketplace import`                                |
 | Usage Dashboard: Tokens tab and Overview token speed (avg / peak tok/s)  | `stats-tokens [-r <range>] [--refresh] [--json]`                                                 |
 | Usage Dashboard: Activity tab Prompts section (prompt cadence)           | `stats [-r <range>] [--json]` (JSON under `prompts`)                                             |
+| Usage-data scan progress (modal / corner card)                           | `stats-indexing [--wait] [--timeout <s>] [--json]` (Hide / background are view-only)             |
+| Left Bar: Archive / Unarchive a group chat                               | `group-chat archive <chat>` / `--restore` (read back with `group-chat list --all`)               |
 
 ## Open gaps
 
@@ -349,6 +351,13 @@ a design constraint; they are simply not built yet.
     `CODEX_HOME=<dir> codex login` / `CLAUDE_CONFIG_DIR=<dir> claude` then
     `/login`. There is no CLI read of the quota snapshots yet, so verifying the
     login from the CLI is part of this gap.
+14. **Pipeline Graph view selection** (the selector's pipeline / agent / All
+    Pipelines choice, and the dashboard's "View in Graph"). `open cue --tab
+pipeline` reaches the graph but cannot name what it shows. Pure view state
+    on a read-only canvas, with nothing for an agent to read back; the data it
+    filters is already readable through `cue pipeline` and `cue list`. Closing
+    it means carrying a target through `open_modal` into `CueModal`'s
+    `pendingGraphTarget`.
 
 ### Audit backlog (2026-09-27)
 
@@ -363,8 +372,14 @@ still missing. Grouped, highest value first:
   listing of file/terminal/browser tabs; bulk close (others/left/right);
   terminal close, restart, startup command; `read-browser` page text;
   `open-browser` refuses `file://`.
+- **Tiled tab groups:** rename, break apart, and close group (chip menu and
+  palette) have no CLI verbs. `session list` does not expose `tabGroups`, so
+  `resolveTabOwner` cannot resolve a group id; the family should land together
+  as `tab group list|rename|break-apart|close`, routed through
+  `closeTabGroup()` / `breakApartGroup()` so the CLI and the chip share one
+  implementation.
 - **Playbooks:** update an existing one, export/import `.maestro-playbook.zip`.
-- **Group chat:** delete, rename, archive, edit moderator/participants, export.
+- **Group chat:** delete, rename, edit moderator/participants, export.
 - **History:** delete an entry, toggle validated, generate a synopsis now, search.
 - **Diagnostics:** Process Monitor kill (`process list/kill`), read/clear system
   logs (`logs`), reset stuck busy state, restart agent, retry, re-auth.

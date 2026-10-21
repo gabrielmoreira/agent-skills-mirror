@@ -7,7 +7,7 @@ qt_qml_lint.py -- Data-driven single-pass Qt6 QML linter.
 Rules are defined as entries in typed tables (RULES_SIMPLE,
 RULES_CONTEXT, RULES_FLAG) processed by a generic dispatch loop.
 Block-level and ordering rules use a lightweight brace-tracking
-state machine. No external dependencies -- Python 3.6+ only.
+state machine. No external dependencies -- Python 3.7+ only.
 
 Rule categories:
   IMP  -- Import hygiene
@@ -27,10 +27,28 @@ Usage:
     python qt_qml_lint.py <file1.qml> [file2.qml ...]
     python qt_qml_lint.py --files-from=- < filelist.txt
     python qt_qml_lint.py --json <files...>
+    python qt_qml_lint.py --summary <files...>
+    python qt_qml_lint.py --summary --diff=HEAD~1..HEAD
+    python qt_qml_lint.py --summary --qmllint --qmllint-args="-I build" <files...>
 
 Output: FILE:LINE RULE-ID MESSAGE (one per line)
         With --json: JSON array to stdout.
-Exit code: 0 if no findings, 1 if findings found.
+        With --summary: findings grouped by rule and message, with
+        locations listed per file relative to a root printed once.
+        Compact form intended for passing lint results to review agents.
+        With --diff=<git diff args>: run inside a git repository; lints
+        the QML files changed by `git diff <args>` and reports only
+        findings on added or modified lines. Takes no file arguments.
+        The summary then also lists the changed files and line counts.
+        With --qmllint[=<path>]: also run qmllint (the given binary or
+        bin directory, else $QT_HOST_PATH/bin, qmllint on PATH, the
+        qtpaths/qmake host bin directory, or the newest Qt 6 kit under
+        ~/Qt, C:/Qt or /opt/Qt) on the
+        same files and merge its warnings as rule `QL:<id>`; extra
+        qmllint options (import paths) go in --qmllint-args. A missing
+        qmllint is reported, not an error.
+Exit code: 0 if no findings, 1 if findings found, 2 on usage or git
+           errors.
 
 Known limitations:
   - No full QML parser; multiline expressions or QML-like
@@ -48,7 +66,11 @@ Known limitations:
 from __future__ import annotations
 
 import json
+import os
 import re
+import shlex
+import shutil
+import subprocess
 import sys
 from dataclasses import dataclass, field, asdict
 from pathlib import Path
@@ -504,6 +526,14 @@ RE_IMP_QT_INCLUDE = re.compile(r'\bQt\.include\s*\(')
 # IMP-6: Duplicate import detection (post-scan)
 RE_IMPORT_LINE = re.compile(r'^\s*import\s+(.+)')
 
+# IMP-7: Qt 5 graphical effects module. QtGraphicalEffects does not exist
+# in Qt 6; Qt5Compat.GraphicalEffects is a migration bridge only.
+# Research: MultiEffect (QtQuick.Effects, Qt 6.5+) combines blur, shadow
+# and colorization in a single pass.
+RE_IMP_GRAPHICAL_EFFECTS = re.compile(
+    r'^\s*import\s+(QtGraphicalEffects|Qt5Compat\.GraphicalEffects)\b'
+)
+
 # --- BND (Bindings & Properties) ---
 
 # BND-1: property var usage. Research: qmllint warns via
@@ -784,6 +814,9 @@ RULES_SIMPLE: "List[Rule]" = [
          "Versioned import -- Qt 6 does not require version numbers on imports"),
     Rule("IMP-5", RE_IMP_QT_INCLUDE,
          "Qt.include() is deprecated -- use ES module imports or explicit QML imports"),
+    Rule("IMP-7", RE_IMP_GRAPHICAL_EFFECTS,
+         "Qt 5 graphical effects import -- migrate to MultiEffect "
+         "(import QtQuick.Effects, Qt 6.5+)"),
 
     # --- BND ---
     Rule("BND-1", RE_BND_PROP_VAR,
@@ -1289,10 +1322,7 @@ def _check_ordering(block: Block, emit) -> None:
             expected = cat_names.get(prev_cat, "previous attribute")
             actual = cat_names.get(cat, "this attribute")
             emit(lineno, "ORD-1",
-                 f"{actual} appears after {expected} -- "
-                 "expected order: id, properties, signals, "
-                 "assignments, attached, states, transitions, "
-                 "handlers, children, functions")
+                 f"{actual} appears after {expected}")
             return  # Only report first ordering violation per block
         prev_cat = cat
 
@@ -1426,23 +1456,171 @@ def _scan_image_async(
 # Main
 # ---------------------------------------------------------------------------
 
+QML_SUFFIXES = (".qml",)
+RE_HUNK = re.compile(r"^@@ -\S+ \+(\d+)(?:,(\d+))? @@")
+
+
+def changed_lines(diff_args: "List[str]") -> "Tuple[str, Dict[str, Set[int]]]":
+    """Return the repository root and, per changed QML file (relative to
+    the root), the line numbers added or modified by `git diff <diff_args>`.
+    Files with deletions only map to an empty set."""
+    def git(*args: str) -> str:
+        return subprocess.run(["git", *args], stdout=subprocess.PIPE,
+                              stderr=subprocess.PIPE,
+                              universal_newlines=True, check=True).stdout
+
+    root = git("rev-parse", "--show-toplevel").strip()
+    diff = git("-C", root, "-c", "core.quotePath=false", "diff", "-U0",
+               "--no-color", "--no-ext-diff", "--src-prefix=a/",
+               "--dst-prefix=b/", *diff_args)
+    changed: "Dict[str, Set[int]]" = {}
+    current: "Optional[Set[int]]" = None
+    for line in diff.splitlines():
+        if line.startswith("+++ "):
+            path = line[4:].rstrip("\t")
+            current = None
+            if path.startswith("b/") and path.endswith(QML_SUFFIXES):
+                current = changed.setdefault(path[2:], set())
+        elif current is not None and line.startswith("@@"):
+            match = RE_HUNK.match(line)
+            if match:
+                start = int(match.group(1))
+                count = int(match.group(2)) if match.group(2) is not None else 1
+                current.update(range(start, start + count))
+    return root, changed
+
+
+QMLLINT_HINT = ("pass --qmllint=<Qt dir>/<version>/<kit>/bin, "
+                "e.g. ~/Qt/6.8.0/gcc_64/bin or C:\\Qt\\6.8.0\\msvc2022_64\\bin")
+
+
+def qmllint_in(directory: str) -> "Optional[str]":
+    """qmllint in a bin directory. which() adds .exe on Windows."""
+    if not directory or not os.path.isdir(directory):
+        return None
+    return shutil.which("qmllint", path=directory)
+
+
+def qt_host_bins() -> "List[str]":
+    """Host bin directories reported by qtpaths or qmake on PATH."""
+    dirs: "List[str]" = []
+    for tool, flag in (("qtpaths6", "--query"), ("qtpaths", "--query"),
+                       ("qmake6", "-query"), ("qmake", "-query")):
+        exe = shutil.which(tool)
+        if not exe:
+            continue
+        try:
+            proc = subprocess.run([exe, flag, "QT_HOST_BINS"],
+                                  stdout=subprocess.PIPE,
+                                  stderr=subprocess.DEVNULL,
+                                  universal_newlines=True, timeout=10)
+        except (OSError, subprocess.SubprocessError):
+            continue
+        if proc.returncode == 0 and proc.stdout.strip():
+            dirs.append(proc.stdout.strip())
+    return dirs
+
+
+def qt_installer_bins() -> "List[str]":
+    """Bin directories of Qt 6 kits installed by the Qt online
+    installer (<root>/<version>/<kit>/bin), newest version first.
+    Default roots: ~/Qt on Linux and macOS, C:\\Qt on Windows, /opt/Qt."""
+    roots = [os.path.join(os.path.expanduser("~"), "Qt"), "/opt/Qt"]
+    if os.name == "nt":
+        roots.append(os.environ.get("SystemDrive", "C:") + "\\Qt")
+    found: "List[Tuple[Tuple[int, int], str]]" = []
+    for root in roots:
+        if not os.path.isdir(root):
+            continue
+        for version in os.listdir(root):
+            match = re.fullmatch(r"6\.(\d+)\.(\d+)", version)
+            if not match:
+                continue
+            version_dir = os.path.join(root, version)
+            for kit in sorted(os.listdir(version_dir)):
+                bin_dir = os.path.join(version_dir, kit, "bin")
+                if os.path.isdir(bin_dir):
+                    found.append(((int(match.group(1)), int(match.group(2))),
+                                  bin_dir))
+    found.sort(key=lambda item: item[0], reverse=True)
+    return [bin_dir for _, bin_dir in found]
+
+
+def find_qmllint(explicit: str) -> "Optional[str]":
+    """Resolve the qmllint binary, in this order: an explicit binary or
+    bin directory, $QT_HOST_PATH/bin, qmllint on PATH, the host bin
+    directory from qtpaths or qmake, then the newest Qt 6 kit from the
+    Qt online installer."""
+    if explicit:
+        return qmllint_in(explicit) or shutil.which(explicit)
+    candidate = qmllint_in(os.path.join(os.environ.get("QT_HOST_PATH", ""), "bin"))
+    if candidate:
+        return candidate
+    candidate = shutil.which("qmllint")
+    if candidate:
+        return candidate
+    for directory in qt_host_bins() + qt_installer_bins():
+        candidate = qmllint_in(directory)
+        if candidate:
+            return candidate
+    return None
+
+
+def run_qmllint(qmllint: str, extra_args: "List[str]",
+                files: "List[str]") -> "List[Finding]":
+    """Run qmllint on files and return its warnings as findings with
+    rule `QL:<warning id>`. File-level warnings get line 0."""
+    proc = subprocess.run([qmllint, "--json", "-", *extra_args, *files],
+                          stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                          universal_newlines=True)
+    report = json.loads(proc.stdout)
+    by_abs = {os.path.abspath(f): f for f in files}
+    findings: "List[Finding]" = []
+    for entry in report.get("files", []):
+        name = entry.get("filename", "")
+        name = by_abs.get(os.path.abspath(name), name)
+        for w in entry.get("warnings", []):
+            findings.append(Finding(name, int(w.get("line", 0)),
+                                    "QL:" + w.get("id", w.get("type", "?")),
+                                    w.get("message", "").rstrip(":")))
+    return findings
+
+
 def main() -> int:
     if len(sys.argv) < 2:
         print(
-            "Usage: qt_qml_lint.py [--json] <file> [file ...]",
+            "Usage: qt_qml_lint.py [--json|--summary] [--qmllint[=<path>]] "
+            "<file> [file ...]",
             file=sys.stderr,
         )
         print(
             "       qt_qml_lint.py --files-from=- < list.txt",
             file=sys.stderr,
         )
+        print(
+            "       qt_qml_lint.py [--json|--summary] [--qmllint[=<path>]] "
+            "--diff=<git diff args>",
+            file=sys.stderr,
+        )
         return 2
 
     json_output = False
+    summary_output = False
+    diff_args: "Optional[List[str]]" = None
+    qmllint_path: "Optional[str]" = None
+    qmllint_args: "List[str]" = []
     files: "List[str]" = []
     for arg in sys.argv[1:]:
         if arg == "--json":
             json_output = True
+        elif arg == "--summary":
+            summary_output = True
+        elif arg.startswith("--diff="):
+            diff_args = shlex.split(arg[len("--diff="):])
+        elif arg == "--qmllint" or arg.startswith("--qmllint="):
+            qmllint_path = arg[len("--qmllint="):]
+        elif arg.startswith("--qmllint-args="):
+            qmllint_args = shlex.split(arg[len("--qmllint-args="):])
         elif arg == "--files-from=-":
             files.extend(
                 line.strip() for line in sys.stdin if line.strip()
@@ -1450,7 +1628,24 @@ def main() -> int:
         else:
             files.append(arg)
 
-    if not files:
+    root: "Optional[str]" = None
+    changed: "Dict[str, Set[int]]" = {}
+    if diff_args is not None:
+        if files:
+            print("Error: --diff takes no file arguments", file=sys.stderr)
+            return 2
+        try:
+            root, changed = changed_lines(diff_args)
+        except (OSError, subprocess.CalledProcessError) as e:
+            detail = getattr(e, "stderr", None) or str(e)
+            print(f"Error: git diff failed: {detail.strip()}", file=sys.stderr)
+            return 2
+        files = [os.path.join(root, rel) for rel in sorted(changed)
+                 if os.path.isfile(os.path.join(root, rel))]
+        if not files:
+            print(f"No changed QML files in git diff {' '.join(diff_args)}")
+            return 0
+    elif not files:
         print("Error: no input files specified", file=sys.stderr)
         return 2
 
@@ -1458,14 +1653,36 @@ def main() -> int:
     for filepath in files:
         all_findings.extend(scan_file(filepath))
 
+    qmllint_status = "not requested"
+    if qmllint_path is not None:
+        qmllint = find_qmllint(qmllint_path)
+        if qmllint is None:
+            qmllint_status = f"not available ({QMLLINT_HINT})"
+        else:
+            try:
+                all_findings.extend(run_qmllint(qmllint, qmllint_args, files))
+                qmllint_status = f"ran ({qmllint})"
+            except (OSError, ValueError) as e:
+                qmllint_status = f"failed ({e})"
+        if not summary_output:
+            print(f"qmllint: {qmllint_status}", file=sys.stderr)
+
+    if root is not None:
+        all_findings = [
+            f for f in all_findings
+            if f.line in changed.get(os.path.relpath(f.file, root), ())
+        ]
+
     # Sort by file, then line
     all_findings.sort(key=lambda f: (f.file, f.line))
 
-    # Deduplicate (same file + line + rule)
-    seen: "Set[Tuple[str, int, str]]" = set()
+    # Deduplicate (same file + line + rule; qmllint can report several
+    # distinct messages per location, so its rules also key on message)
+    seen: "Set[Tuple[str, int, str, str]]" = set()
     deduped: "List[Finding]" = []
     for f in all_findings:
-        key = (f.file, f.line, f.rule)
+        key = (f.file, f.line, f.rule,
+               f.message if f.rule.startswith("QL:") else "")
         if key not in seen:
             seen.add(key)
             deduped.append(f)
@@ -1475,11 +1692,55 @@ def main() -> int:
             [asdict(f) for f in deduped],
             indent=2,
         ))
+    elif summary_output:
+        if root is None:
+            dirs = [os.path.dirname(os.path.abspath(f)) for f in files]
+            root = os.path.commonpath(dirs)
+        print(f"Paths relative to {root}/")
+        if diff_args is not None:
+            total = sum(len(lines) for lines in changed.values())
+            print(f"Diff `git diff {' '.join(diff_args)}`: "
+                  f"{len(changed)} QML file(s), "
+                  f"{total} added or modified line(s)")
+            print("  " + "  ".join(
+                f"{rel} +{len(lines)}"
+                for rel, lines in sorted(changed.items())
+            ))
+        if qmllint_path is not None:
+            print(f"qmllint: {qmllint_status}")
+        print_summary(deduped, root)
     else:
         for finding in deduped:
             print(finding)
 
     return 1 if deduped else 0
+
+
+def print_summary(findings: "List[Finding]", root: str) -> None:
+    """Print findings grouped by (rule, message), locations per file,
+    with paths relative to root. Line 0 (file-level qmllint warnings)
+    prints as the bare path.
+
+    Example:
+        ORD-1 property assignment appears after child object (5)
+          Main.qml:19,24,29  controls/Panel.qml:12,40
+    """
+    groups: "Dict[Tuple[str, str], Dict[str, List[int]]]" = {}
+    for f in findings:
+        path = os.path.relpath(os.path.abspath(f.file), root)
+        by_file = groups.setdefault((f.rule, f.message), {})
+        by_file.setdefault(path, []).append(f.line)
+
+    total = len(findings)
+    print(f"{total} finding(s), {len(groups)} distinct rule/message pair(s)")
+    for (rule, message), by_file in sorted(groups.items()):
+        count = sum(len(v) for v in by_file.values())
+        print(f"{rule} {message} ({count})")
+        locs = []
+        for path, lines in sorted(by_file.items()):
+            nums = [str(n) for n in sorted(lines) if n > 0]
+            locs.append(f"{path}:{','.join(nums)}" if nums else path)
+        print("  " + "  ".join(locs))
 
 
 if __name__ == "__main__":

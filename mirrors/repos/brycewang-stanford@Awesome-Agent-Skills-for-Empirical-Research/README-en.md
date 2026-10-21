@@ -5,7 +5,7 @@
 > - 🔁 **Replaces Stata / R**: one `import statspai as sp` covers what you reach for in `reghdfe`, `csdid`, `rdrobust`, `synth`, `fixest`, `did` — DID / RD / IV / SCM / DML / matching
 > - 🤖 **Agent-native by design**: structured result objects plus a built-in MCP server, so Claude, Codex and other agents can call, diagnose, audit and tabulate directly
 > - ⚡ **Faster**: no Stata / R session to spin up, no license — a pure-Python pipeline that runs faster end to end
-> - 🏛️ **Maintained by the same team**: StatsPAI is built and maintained by the team behind AERS (Stanford REAP × CoPaper.AI), so the two are tightly integrated and evolve together
+> - 🏛️ **Maintained by the same team**: StatsPAI is built and maintained by the team behind AERS (Stanford REAP), so the two are tightly integrated and evolve together
 >
 > 👉 **[github.com/brycewang-stanford/StatsPAI](https://github.com/brycewang-stanford/StatsPAI)** · `pip install statspai` · MIT licensed · ⭐ Star it
 
@@ -18,7 +18,7 @@
   <table>
     <tr>
       <td align="center">
-        <a href="https://copaper.ai"><img src="images/copaper-logo.png" alt="CoPaper.AI" width="300" /></a>
+        <a href="https://github.com/brycewang-stanford/StatsPAI"><img src="images/statspai-logo.png" alt="StatsPAI" width="360" /></a>
       </td>
       <td width="72"></td>
       <td align="center">
@@ -29,7 +29,7 @@
 
   <br/>
 
-  <strong>Stanford REAP × CoPaper.AI</strong> · An academic–industrial AI toolkit for empirical research<br/>
+  <strong>Stanford REAP × StatsPAI</strong> · An academic–industrial AI toolkit for empirical research<br/>
   <sub>Built by Stanford's empirical-methodology team — the full pipeline from data cleaning to top-journal submission</sub>
 
   <br/>
@@ -70,7 +70,7 @@ This repository can be imported from its root as one skill in Codex, CodeBuddy, 
 
 ## All 77 skill collections at a glance
 
-> **Open the repo → see the whole library.** All **77 collections · 1,107 skills**, numbered `00 → 73`, every one **vendored into this repo** (not just linked out) and tracked in [`catalog/skills.json`](catalog/skills.json). **Click any row to open its folder.** **⭐ = first-party skills built by the Stanford REAP × CoPaper.AI team**; everything else is curated, security-audited community work.
+> **Open the repo → see the whole library.** All **77 collections · 1,107 skills**, numbered `00 → 73`, every one **vendored into this repo** (not just linked out) and tracked in [`catalog/skills.json`](catalog/skills.json). **Click any row to open its folder.** **⭐ = first-party skills built by the Stanford REAP × StatsPAI team**; everything else is curated, security-audited community work.
 >
 > **Theme key —** 🚀 full-pipeline & orchestrators · 🎯 causal inference & econometrics · 📚 literature & research design · ✍️ writing, editing & de-AIGC · 📑 citation, replication & peer review · 🛠️ data, tooling & infrastructure
 >
@@ -194,7 +194,7 @@ AERS is two things at once: (1) a small set of **first-party flagship skills** t
 
 ## The 77, grouped by what they do
 
-> Same **77 collections · 1,107 skills** as the [sequential index at the top ↑](#all-77-skill-collections-at-a-glance) — re-sorted here **by research purpose** so you can scan to the stage you're working on. **⭐ = first-party** (Stanford REAP × CoPaper.AI); everything else is curated, security-audited community work.
+> Same **77 collections · 1,107 skills** as the [sequential index at the top ↑](#all-77-skill-collections-at-a-glance) — re-sorted here **by research purpose** so you can scan to the stage you're working on. **⭐ = first-party** (Stanford REAP × StatsPAI); everything else is curated, security-audited community work.
 
 **🚀 Full-pipeline flagships & orchestrators** — *one call, the whole empirical loop*
 
@@ -628,7 +628,7 @@ If AERS helps your work, please **cite it** ([CITATION.cff](CITATION.cff)) and *
 <table>
   <tr>
     <td align="center">
-      <a href="https://copaper.ai"><img src="images/copaper-logo.png" alt="CoPaper.AI" width="220" /></a>
+      <a href="https://github.com/brycewang-stanford/StatsPAI"><img src="images/statspai-logo.png" alt="StatsPAI" width="260" /></a>
     </td>
     <td width="40"></td>
     <td align="center">
@@ -637,7 +637,7 @@ If AERS helps your work, please **cite it** ([CITATION.cff](CITATION.cff)) and *
   </tr>
 </table>
 
-<sub><strong>Stanford REAP × CoPaper.AI</strong> · An academic–industrial AI toolkit for empirical research</sub>
+<sub><strong>Stanford REAP × StatsPAI</strong> · An academic–industrial AI toolkit for empirical research</sub>
 
 <br/>
 

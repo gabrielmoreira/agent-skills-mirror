@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `PenglongHuang/chinese-novelist-skill` — 26 default patterns, 8 followed patterns, 9 file(s) materialized.
+Mirror of `PenglongHuang/chinese-novelist-skill` — 26 default patterns, 8 followed patterns, 10 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `PenglongHuang/chinese-novelist-skill` — 26 default patterns, 8 foll
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 8 |
-| Files         | 9 |
+| Files         | 10 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -66,15 +66,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`SKILL.md`](SKILL.md) |
-| 2 | → | [`references/flows/phase0-initialization.md`](references/flows/phase0-initialization.md) |
-| 3 | → | [`references/flows/phase1-layer1-core.md`](references/flows/phase1-layer1-core.md) |
-| 4 | → | [`references/flows/phase1-layer2-customize.md`](references/flows/phase1-layer2-customize.md) |
-| 5 | → | [`references/flows/phase1-layer3-title.md`](references/flows/phase1-layer3-title.md) |
-| 6 | → | [`references/flows/phase2-planning.md`](references/flows/phase2-planning.md) |
-| 7 | → | [`references/flows/phase3-writing.md`](references/flows/phase3-writing.md) |
-| 8 | → | [`references/flows/phase4-validation.md`](references/flows/phase4-validation.md) |
-| 9 | → | [`references/flows/shared-infrastructure.md`](references/flows/shared-infrastructure.md) |
+| 1 | ✓ | [`references/flows/chapter-checklist.md`](references/flows/chapter-checklist.md) |
+| 2 | ✓ | [`SKILL.md`](SKILL.md) |
+| 3 | → | [`references/flows/phase0-initialization.md`](references/flows/phase0-initialization.md) |
+| 4 | → | [`references/flows/phase1-layer1-core.md`](references/flows/phase1-layer1-core.md) |
+| 5 | → | [`references/flows/phase1-layer2-customize.md`](references/flows/phase1-layer2-customize.md) |
+| 6 | → | [`references/flows/phase1-layer3-title.md`](references/flows/phase1-layer3-title.md) |
+| 7 | → | [`references/flows/phase2-planning.md`](references/flows/phase2-planning.md) |
+| 8 | → | [`references/flows/phase3-writing.md`](references/flows/phase3-writing.md) |
+| 9 | → | [`references/flows/phase4-validation.md`](references/flows/phase4-validation.md) |
+| 10 | → | [`references/flows/shared-infrastructure.md`](references/flows/shared-infrastructure.md) |
 
 ---
 

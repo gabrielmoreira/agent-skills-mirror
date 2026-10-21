@@ -21,6 +21,7 @@ guides:
 - commands-and-tooling
 - workspace-integrity
 - version-control
+- change-descriptions
 - work-slicing
 handoffs:
 - task: implement-change

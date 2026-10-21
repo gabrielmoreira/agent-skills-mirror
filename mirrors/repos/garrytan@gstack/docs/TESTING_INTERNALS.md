@@ -256,8 +256,8 @@ full-stream spooling to per-shard log files (path printed at START and on
 failure), never-started/timed-out taxonomy, and parent-computed diff
 selection propagated to children via `EVALS_SELECTION_JSON` (fail-open: a
 child that can't parse it recomputes locally with one warning). Paid evals
-never retry; each case's kind fixes its trials before the run (see "Eval verdict
-policy" below). Files in `CASE_SHARDED_FILES` run one registered case per
+never retry, except the gate's one [flaky rerun](#flaky-reruns); each case's kind
+fixes its trials before the run (see "Eval verdict policy" below). Files in `CASE_SHARDED_FILES` run one registered case per
 process (`<file>#<case id>`, an exact `--test-name-pattern`, exactly one executed
 case), so a long file of short cases spreads across runners and each case gets
 its own SDK semaphore. `test/carve-section-loading.test.ts` is one of them: it registers
@@ -411,7 +411,7 @@ archaeology.
 `test/helpers/periodic-exclude-data.ts`; version 1 pre-registered 2026-09-29,
 version 2 approved 2026-10-04 with the decision memo in
 [test-audit-2026-10.md](test-audit-2026-10.md)). Paid evals
-never retry. Each live case has exactly one kind in `E2E_KINDS`
+never retry, except the gate's one [flaky rerun](#flaky-reruns). Each live case has exactly one kind in `E2E_KINDS`
 (`test/helpers/touchfiles-data.ts`; `test/eval-kinds.test.ts` enforces coverage),
 and the kind fixes its trials before the run:
 
@@ -448,7 +448,8 @@ all use. A timed-out, crashed or infrastructure-failed trial is a failed trial
 recorded with its class; a missing or duplicate trial record makes the verdict
 INCOMPLETE, which fails the lane; a 2/3 PASS is shown as `PASS 2/3` with the
 failed trial's cause. A manual re-run adds trials under a new run attempt and
-never replaces the first attempt's verdict. A red census is never rerun on
+never replaces the first attempt's verdict; on the gate it resolves a red only
+by the [flaky rule](#flaky-reruns). A red census is never rerun on
 unchanged inputs: each red is diagnosed as product, test/detector, harness or
 infra and resolved by a concrete repair and a fresh census, or listed as a named
 red. The one exception: a census whose every red verdict is machine-classified
@@ -457,6 +458,51 @@ first model turn) may be re-dispatched once as a new run, and both runs are
 reported. Changing any `EVAL_POLICY` constant after seeing census results needs
 Garry's re-approval, a `version` bump and a fresh census;
 `test/periodic-exclude-policy.test.ts` pins the approved values.
+
+### Flaky reruns
+
+**CREW rule 16; a gate edit.** Garry, 2026-10-19: "you can just
+run the failed test again and note that it is flaky... You don't have to do the
+whole test pass again for one failed test." After the gate's slices,
+`rerun-plan` in `evals.yml` (`scripts/test-paid-shards.ts --report DIR
+--rerun-plan OUT`, `scripts/lib/paid-rerun.ts`) reruns, once, at the same head
+and in the same run attempt, every case whose verdict failed and that nothing
+has re-executed yet: a red rule or judge case on its own shard (narrowed to that
+case in PR mode; when a dependents or full-fallback plan reruns the whole file,
+only the planned cases count), a behavior FAIL as its whole planned panel of 3 trials, a judge case with
+its 3 samples. Kinds, trial counts, thresholds and the judge model never change,
+and the rerun runs fresh (`eval-rerun`: no receipts in, none published). It
+plans nothing when the red is a harness failure (runner error, slice deadline,
+unfinalized checkpoint, a different executed case count, a reused result), an
+INFRA or INCOMPLETE panel, an INFRA-class or unattributed testcase, a case
+already red twice, or when any other problem would keep the gate red anyway.
+
+`slices-report` reads every attempt's slices (`paid-slice-*`), each attempt's
+rerun (`paid-rerun-*`, bound to its own `rerun-plan-a<attempt>` manifest) and
+orders them into one history per case. A case is **FLAKY** when it failed
+exactly once, that failure was eligible, and its very next observation passed:
+the gate is GREEN with a `FLAKY N` headline line, a `⚑` line per case in the
+report and PR comment, and one JSONL record per case in the run's
+`flake-records-a<attempt>` artifact (`flake-records.jsonl`: case, kind, PR,
+head, run, where it failed and passed, symptom, rerun cost) for the daily
+flaky-fix pass. A case that fails twice is a real red (`FAILED TWICE`). Rerun
+spend is reported on the same headline line. Pass-rate history
+(`trial-outcomes.jsonl`) still records each run's first execution unchanged; a
+rerun's trials stay in its `paid-rerun-*` artifacts and the flake record.
+
+A manual `gh run rerun --failed` attempt follows the same history, so an
+attempt that passes every earlier red is GREEN with the same annotation, while
+a red that first appears in a later attempt stays red unless its own next
+observation passes; a later attempt never hides a new red. On the gate lane a
+completed rule shard's red case no longer fails its slice job (`sliceExitCode`
+`caseVerdicts`); the report still fails closed on it, so the run's conclusion
+follows the report, and a flaky GREEN run concludes `success`. A rerun that
+`--failed` re-triggers (because an earlier problem blocked the in-run rerun)
+still reruns a case only once. A flaky GREEN binds as GREEN with its
+`flaky_cases` and is reusable by R2a and R2 (`reused_flaky`); a run still red
+after its rerun binds RED and is never reused. Train runs take the same
+`rerun-plan` path; a bisect reruns a VERDICT FAIL once on its prefix inside
+`scripts/train-gate.ts`, and a pass there is a flaky PASS naming both runs.
 
 ### Ship measure
 
@@ -1164,7 +1210,9 @@ or cancelled before a slice finished); a newer run that is still running,
 finished a slice, or holds a `paid-slice-*` artifact without a bound verdict
 blocks reuse, so a newer red or partial result is never skipped. The gate is
 GREEN with reconcile exit 0, a successful run and no manually accepted
-(unscored) case; it ran the PR profile on a different head. Then either:
+(unscored) case; it ran the PR profile on a different head. Each run's newest
+attempt binding counts, and a [flaky](#flaky-reruns) GREEN is a GREEN whose
+reuse names its flaky cases. Then either:
 
 - **R2a, restamp-only:** it ran on the same base (the tested merge commit's
   first parent), the tree receipt (`lib/tree-receipt.ts` under the base's ship

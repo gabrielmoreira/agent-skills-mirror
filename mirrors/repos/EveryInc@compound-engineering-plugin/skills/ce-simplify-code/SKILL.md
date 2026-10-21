@@ -47,6 +47,8 @@ Read `references/reviewer-dispatch.md` before dispatching; it covers a full harn
 
 **Model selection.** Use the platform's balanced mid-tier model for these reviewers when the current harness exposes a known override. In Claude Code this is the Sonnet class. In Codex, apply this tier only when the active dispatch primitive exposes an explicit model or custom-agent selector; task wording alone does not select a different model. Otherwise omit the override and inherit the parent model -- a working pass on the parent model beats a broken dispatch.
 
+If the user's or project's active instructions or the live prompt name a model for this subagent, use that model instead of the default tier above. They can name it by the subagent's tier, by its prompt-asset name, or for the subagents being dispatched. Without such an instruction, a model configured for this subagent's role takes precedence over the default tier.
+
 ## Step 3: Fix issues
 
 Proceed only after every review outcome is complete, whether returned by subagents or produced inline. In standalone mode, unless the request says to just fix them, report and stop here. Otherwise apply worthwhile findings directly; record false positives and low-value findings as skipped without asking the user.

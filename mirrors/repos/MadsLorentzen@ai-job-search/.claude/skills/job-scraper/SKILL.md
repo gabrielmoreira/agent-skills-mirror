@@ -143,6 +143,8 @@ For each new job, do a rapid fit check (NOT the full evaluation from `04-job-eva
 
 1. Derive each entry's key with the helper, never by slugifying in the moment:
 
+> **Windows:** run these tools as `python`, not `python3`. A python.org install ships no `python3`, so that name reaches the Microsoft Store alias, which either exits 49 with no output (#669) or starts a separate Store Python without the packages `pip` installed (such as pypdf). `.claude/settings.json` allows both spellings.
+
 ```bash
 python3 tools/job_key.py --company "<company>" --title "<title>" --url "<url>"
 ```

@@ -40,6 +40,17 @@ For `/autoplan` driven from Capy, read `autoplan/DRIVER.md` in the checkout (`~/
 
 Capy checklist for `/autoplan`: drive `gstack-autoplan`, never a hand adaptation presented as a run. Relay `gstack-gate render <dir>/gate.json --all` with `rec` (every recommendation, plan changes included) as the one-word default; answer with `--by agent:<id> --owner-reply "<their words>"`. Set `GSTACK_AUTOPLAN_CHECKPOINT_DIR` to a private project-user Drive folder; after machine replacement, `gstack-autoplan resume --out <new dir> --from <that dir>` restores the newest valid checkpoint.
 
+## Working under a Captain
+
+When you work for a Capy Captain (a crew thread) or straight for a person, gstack's decisions reach them through you. Every workflow started with the `GSTACK_LAUNCH` line prints `CAPY: on` and a `capy-asks` block that repeats these rules. The full guide, with worked examples and copy-paste templates, is [captain.md](captain.md) in this folder.
+
+- **How approvals flow.** A crew thread never asks the person directly. It sends the ask to its Captain as a needs-you report, and the Captain asks the person in plain words and brings back their exact reply. A thread with no Captain asks the person with a Capy question. An answer covers only the thread and scope it was asked for.
+- **Standing approvals need no ask.** These are the ones your Captain lists in its rules (for example "merge when green, through a train"). Cite the rule instead of asking again.
+- **These always need a fresh ask:** a product or behaviour decision, spend over a stated cap, anything published outside the repository, a change to a threshold, budget or trial count, closing someone's contribution without landing it, and anything destructive.
+- **Record every answer.** Use `gstack-approvals add --ask … --words "<their exact words>" --by … --scope …`, or after an autoplan answer, `gstack-approvals import --autoplan <run dir> --by <name>`. `gstack-approvals render` prints the `## Approvals` table for your report and the PR body. Rows are secret-scanned, and on Capy they are mirrored to the private Drive folder.
+- **Plan approvals** use `gstack-owner-brief render --captain --out <run dir>`. It prints before → after, why it matters, what caused this work, the big decisions (options, the pick, why, what would flip it) and what we need, with `rec` as the recommended one-word reply. Relay it whole. Gate codes appear only on its last line, which is for you. If it exits `CAPTAIN_BRIEF_INCOMPLETE`, add the missing plan sections first.
+- **Merge asks.** /ship's PR body opens with `## What changed` (captioned before/after images from `gstack-pr-shots` or a UI screenshot, uploaded with Capy's PR asset tool), `## Why` and `## Approvals`. Your READY report attaches the key image.
+
 ## Before any push or pull request
 
 In a repository with a sealed configuration (a `sealed` key in its `.gstack/pregate.json`), run `~/.local/share/gstack/bin/gstack-pregate sealed` before every push and before creating a pull request: Capy's pull-request tool may not run local git hooks, so this is the check that keeps sealed or eval output out of a public repository. A refusal names the file, line and rule; do not push until it passes.

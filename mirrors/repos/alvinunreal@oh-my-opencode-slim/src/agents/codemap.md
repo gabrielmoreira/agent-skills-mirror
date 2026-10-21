@@ -35,7 +35,7 @@ Each agent is a **prompt-driven specialist** with a factory function that create
 
 1. **Agent creation**: `createAgents(config)` instantiates all agents with merged configuration
 2. **Dynamic councillors**: `buildCouncillorAgents()` (`council-agents.ts`) creates one `councillor-<name>` subagent per council preset seat, attaching `_modelArray` fallback chains for multi-model councillors
-3. **Permission application**: `applyDefaultPermissions()` sets `question` to allow (an explicit deny is kept), denies task control, `wait_for_user` and marketplace tools for every agent except the orchestrator, and adds skill grants on top of each agent's map, preserving key order
+3. **Permission application**: `applyDefaultPermissions()` denies `question`, task control, `wait_for_user` and marketplace tools for every agent except the orchestrator — a parked child question has no headless answerer, so only the orchestrator asks by default (explicit per-agent config wins) — and adds skill grants on top of each agent's map, preserving key order
 4. **Task-rejection instruction**: `appendTaskRejectionInstruction()` appends the "outside your role" instruction to specialist prompts (`task-rejection.ts`)
 5. **Display name injection**: Orchestrator prompt rewrites `@agent` mentions to user-configured display names
 6. **Configuration export**: `getAgentConfigs()` converts `AgentDefinition` to OpenCode SDK format with classification metadata

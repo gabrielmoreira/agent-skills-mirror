@@ -1,5 +1,9 @@
 # XERJ
 
+**Local-first search engine and MCP server for AI agents.** One Rust binary indexes code, docs,
+logs, JSONL/CSV and PDFs for BM25 full-text, vector and hybrid search, code search and agent
+memory, behind an Elasticsearch-compatible API. Works with Claude Code, Cursor and any MCP client.
+
 <a href="https://trendshift.io/repositories/116361?utm_source=repository-badge&amp;utm_medium=badge&amp;utm_campaign=badge-repository-116361" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/repositories/116361" alt="xerj-org%2Fxerj | Trendshift" width="250" height="55"/></a>
 
 [English](./README.md) | [简体中文](./README.zh-CN.md) | [日本語](./README.ja-JP.md) | [العربية](./README.ar.md) | [Español](./README.es.md)
@@ -46,13 +50,17 @@ Or run it yourself:
 
 ```sh
 curl -fsSL https://xerj.org/get | sh
-xerj --insecure --data-dir ./data &
+xerj --insecure --data-dir ~/xerj-data &
 xerj init                                        # wire XERJ into Claude Code/Cursor (MCP + skill), one command
 xerj autoindex ~/my-project
 xerj search "how do we rotate the WAL segment"   # ranked passages, file:line
 xerj def "euler_to_rotationmatrix"               # go-to-definition: file:line + signature
 xerj gain                                        # what it did for you — counted, not estimated
 ```
+
+Keep that data directory outside any folder you will autoindex. `data/` is not in the
+built-in ignore list, so `--data-dir ./data` inside a tree you then index makes the node
+index its own storage.
 
 Windows and a hand-verified install are under [Install by hand](#install-by-hand).
 
@@ -113,7 +121,7 @@ awkward CSVs into typed, queryable indices for search, RAG, security audits and 
 memory, with no schema to write and no pipeline to configure.
 
 ```sh
-xerj --insecure --data-dir ./data &      # start it
+xerj --insecure --data-dir ~/xerj-data &      # start it
 xerj autoindex ~/my-project              # point it at anything
 ```
 
@@ -193,7 +201,7 @@ and arm64. You can also [build from source](#build-from-source). It speaks the E
 API, so existing clients, dashboards and tooling work against it unchanged.
 
 First commands after install (the installer prints where `xerj` landed; add it to your PATH
-if needed): `xerj --insecure --data-dir ./data &`, wait until `http://localhost:9200`
+if needed): `xerj --insecure --data-dir ~/xerj-data &`, wait until `http://localhost:9200`
 responds, then `xerj autoindex ~/my-project`. See [Index a folder](#index-a-folder).
 
 For a host with no runtime internet access, follow the
@@ -206,7 +214,7 @@ semantic operation.
 Start the server, then point `autoindex` at anything:
 
 ```sh
-xerj --insecure --data-dir ./data &     # local dev: no TLS, no auth
+xerj --insecure --data-dir ~/xerj-data &     # local dev: no TLS, no auth
 xerj autoindex ~/my-project
 ```
 
@@ -220,8 +228,8 @@ key up from `xerj.toml`; pass `--api-key` or set `XERJ_API_KEY`, or every reques
 `401 Unauthorized`:
 
 ```sh
-xerj --data-dir ./data &                          # auth on: key minted on first boot
-export XERJ_API_KEY="$(cat ./data/admin.key)"     # <data_dir>/admin.key
+xerj --data-dir ~/xerj-data &                          # auth on: key minted on first boot
+export XERJ_API_KEY="$(cat ~/xerj-data/admin.key)" # <data_dir>/admin.key
 xerj autoindex ~/my-project
 ```
 
@@ -300,7 +308,7 @@ tools through the Model Context Protocol, and the binary you just installed is t
 server. There is nothing else to download and nothing to compile:
 
 ```sh
-xerj --insecure --data-dir ./data &     # 1. the node the tools query
+xerj --insecure --data-dir ~/xerj-data &     # 1. the node the tools query
 xerj mcp                                # 2. MCP stdio server (your client runs this)
 ```
 
@@ -327,7 +335,7 @@ Use an absolute path. The installer puts `xerj` in `~/.local/bin` by default
 shell's `PATH`. If the node is running with auth (anything but `--insecure`), add
 `"XERJ_AUTH": "ApiKey <key>"` alongside `XERJ_URL`; the key is in `<data-dir>/admin.key`.
 
-Thirteen tools are exposed. Eleven are thin proxies over an endpoint XERJ already serves:
+Seventeen tools are exposed. Eleven are thin proxies over an endpoint XERJ already serves:
 
 | Tool | What it does |
 |---|---|
@@ -342,6 +350,8 @@ Thirteen tools are exposed. Eleven are thin proxies over an endpoint XERJ alread
 Two more are not plain proxies: `xerj_map` returns the per-index field map from the autoindex
 catalog (trimmed to a byte cap, otherwise verbatim), and `xerj_code_search` runs the `xerj code`
 reference-coding pipeline ([`tools/xerj-code/`](tools/xerj-code/)) and returns its rendered text.
+`xerj_field_report` files a field report, and `xerj_hub_find`, `xerj_hub_def` and `xerj_hub_ask`
+answer from Corpus Hub packs already on the machine (the `xerj ask` flow).
 
 `xerj mcp --help` prints the same config block and the full option list. The machine-readable
 tool schemas are published at
@@ -436,7 +446,7 @@ You need a stable Rust toolchain.
 git clone https://github.com/xerj-org/xerj
 cd xerj/engine
 cargo build --release -p xerj-server
-./target/release/xerj --insecure --data-dir ./data
+./target/release/xerj --insecure --data-dir ~/xerj-data
 ```
 
 To run the conformance suite against a running server:

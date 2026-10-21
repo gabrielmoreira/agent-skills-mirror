@@ -211,7 +211,12 @@ When fixing failures or preparing `/ship`, follow this order:
    result and pending permission state; diagnose a blocked actor before waiting
    through its deadline. Preserve cancellation separately from a test verdict.
    Skipped or unstarted cases
-   do not satisfy coverage; preserve every attempt. Paid evals never retry. Each
+   do not satisfy coverage; preserve every attempt. Paid evals never retry, with
+   one exception: the gate reruns a red rule, behavior or judge case verdict once
+   at the same head (Garry, 2026-10-19: "you can just run the failed test again
+   and note that it is flaky"); a pass is green with a flaky annotation and a
+   flake record, a second failure is a real red, and harness, INFRA, INCOMPLETE
+   or unattributed reds never rerun (`docs/TESTING_INTERNALS.md#flaky-reruns`). Each
    case's kind (`E2E_KINDS`) fixes its trials before the run: `rule` one trial;
    `behavior` a panel of 3 independent trials, PASS at >= 2 with no contract
    violation; `judge` 3 samples on one output, each dimension gated on its

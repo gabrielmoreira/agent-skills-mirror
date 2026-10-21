@@ -1,6 +1,6 @@
 # Loop repair — RIFE in-betweens for jump frames, the jolt index, one cycle per set
 
-> Owns: Where RIFE runs and what it costs, how it is installed and what runs without it, jump-frame repair in `video-loop`, the jolt index and its gate, cycle alignment across a direction set · Index: [docs/README.md](README.md)
+> Owns: Where RIFE runs and what it costs, which model and augmentation it runs with, how it is installed and what runs without it, jump-frame repair in `video-loop`, the flow reading (frames off a walk's way), the eased retime (a part that rushes on its way), the jolt index and its gate, cycle alignment across a direction set · Index: [docs/README.md](README.md)
 
 A walk loop cut from a generated clip can look right in every still and still hitch when it
 plays: the video model redraws thin hair a little differently every frame, and now and then
@@ -19,7 +19,10 @@ where the appearance does not change and only the motion does — the case optic
 
 [rife-ncnn-vulkan](https://github.com/nihui/rife-ncnn-vulkan) release **20221029**, model
 **`rife-v4.6`** (shipped inside the release zip). The engine calls the binary as an external
-tool, like `ffmpeg` and `img2webp`; nothing is vendored into the package.
+tool, like `ffmpeg` and `img2webp`; nothing is vendored into the package. Every call asks for
+the binary's test-time augmentation, spatial and temporal (`-x -z`, `rife.TTA`;
+[Which setting](#which-setting--measured-2026-10-15) below); `SPRITE_GEN_RIFE_TTA` names another —
+`-x`, `-z`, both, or empty for none — and anything else is refused.
 
 | Release zip | SHA-256 (measured 2026-10-03) |
 |---|---|
@@ -66,7 +69,7 @@ cut before RIFE existed still cuts — and nothing is left unsaid:
 
 | Where | Default without RIFE | Asked for by name |
 |---|---|---|
-| `video-loop` jump repair (section 2) | `--repair auto`: a jump is cut as filmed, and each filmed ghost is given way to the clean frame beside it (its own `warning:` line). Where a jump is left, `jump_repair` reads `why`, `rife` (what was not found), `install` and `unmade` (the step, target and score the jump search stopped at), and one `video-loop: warning:` line on stderr says the jump frame was not repaired. `applied` is false only where nothing was replaced | `--repair on`: fails with the install line |
+| `video-loop` jump repair (section 2) | `--repair auto`: a jump is cut as filmed, and each filmed ghost is given way to the clean frame beside it (its own `warning:` line). Where a jump is left, `jump_repair` reads `why`, `rife` (what was not found), `install` and `unmade` (the frames, neighbours and `off` of the group the flow search stopped at), and one `video-loop: warning:` line on stderr says the jump frame was not repaired. `applied` is false only where nothing was replaced | `--repair on`: fails with the install line |
 | `video-set` cycle alignment (section 4) | `--align-cycles auto`: the state is skipped and every loop keeps its own length; `cycle_align.<state>` reads `applied: false` with `why`, `rife`, `install`; the set report lists it under `warnings`; one `video-set: warning:` line | `video-cycle-align`: fails with the install line |
 
 A RIFE that is found and then fails (a binary that cannot reach Vulkan, say) is an error in every
@@ -118,6 +121,58 @@ Read:
 - More cores barely help (8 cores: 2.7 s against 2.8–3.0 s), so the default reservation is
   the right size.
 
+### Which setting — measured 2026-10-15
+
+What there is to choose (read 2026-10-15):
+
+| Source | Newest | What it offers |
+|---|---|---|
+| [nihui/rife-ncnn-vulkan](https://github.com/nihui/rife-ncnn-vulkan/releases) | release 20221029, the one above | models up to `rife-v4.6`; `-x`, spatial test-time augmentation (the pair run as its eight flips and transposes, the results averaged); `-z`, temporal (the pair run both ways in time as well); `-u`, a mode for 4K frames |
+| [TNTwise/rife-ncnn-vulkan](https://github.com/TNTwise/rife-ncnn-vulkan/releases) (a fork) | release 20250112 (an 830 MB zip) | adds `rife-v4.25`, `rife-v4.25-lite` and `rife-v4.26` (and `-v4.25-heavy`, `-v4.26-large`, which Practical-RIFE does not list); its README marks `-x` and `-z` "deprecated with rife-v4.25" |
+| [hzwer/Practical-RIFE](https://github.com/hzwer/Practical-RIFE) (the weights) | 4.26 (2024-09-21) and 4.25.lite (2024-10-20); no model since | "recommended to choose 4.25 by default for most scenes" |
+
+Chosen: **`rife-v4.6`, the model above, with `-x -z`**: the pair is run as its eight flips and
+transposes and both ways in time, and the results are averaged, so a frame made from a to b is the
+one made from b to a. The fork's models are not used.
+
+What each setting makes of the synthetic pairs of `tests/video/test_rife.py`: every setting through
+the engine's own `rife.between`, named by `SPRITE_GEN_RIFE_TTA`, read with its own measures
+(`rife.smear`, `rife.ghost`, `interpolation_quality.faults`), on a Radeon Pro 570 (an Apple M4 Max
+gives the same within three percentage points):
+
+| `rife-v4.6` with | legs crossing far (`_walker` 20/−20 and −5/5, t 0.5): outline lost a→b, b→a; ghost | a short step (10/−10 and 4/−4, t 0.5): outline lost, worse way | legs walking through each other (`_legs`): dark added at t 0.25 / 0.5 / 0.75 |
+|---|---|---|---|
+| nothing | 29 %, 24 %; 0.0096 a→b (a ghost) | 3.6 % | −1.0 / −2.0 / −0.9 % |
+| `-x` | 28 %, 25 %; none | **5.3 %** (over the 5 % bar) | −2.6 / −2.3 / +1.4 % |
+| `-z` | 29 %, the same both ways; 0.021 (a ghost) | 4.0 % | −1.4 / −2.6 / +0.4 % |
+| **`-x -z`** | **26 %, the same both ways; none** | **1.7 %** | +1.3 / −2.2 / +2.1 % |
+
+Only `-x -z` makes the frame between legs that cross far the same both ways and leaves no ghost
+there, and it loses the least of a short step's outline: `-x` alone is not symmetric and loses 5.3 %
+of the short step's outline one way, over the 5 % bar, and `-z` alone leaves a ghost band where legs
+cross far. Where the legs cross (t 0.5) none adds dark. Either side, the flips keep the near leg's
+outline whole over the far one — a line each neighbour draws in another place, not the black fill
+2.24 left (6 % of the body at t 0.5, `test_real_rife_between_crossing_legs_adds_no_black`).
+
+Time per frame made (two calls, wall clock, process start included; the CPU seconds, all cores,
+after it), on the walker of those pairs — legs crossing far and the short step, t 0.5 — drawn
+280 × 520, and drawn 520 × 900 on a 960 × 960 frame (the size of a 720p clip's frame):
+
+| `rife-v4.6` with | Mac M4 Max, GPU, 280 × 520 / 960 × 960 | Modal `cpu=2` (`run_job`), 280 × 520 | Modal `cpu=2`, 960 × 960 | Modal default request (`run_align`), 960 × 960 |
+|---|---|---|---|---|
+| nothing | 0.64 / 1.06 s | 2.2–3.7 s (8–24 CPU s) | 4.3–6.2 s (32–46) | 4.6–4.8 s (33–35) |
+| `-x` | 0.70 / 1.29 s | 7.1–15.8 s (59–184) | 22.7–31.4 s (296–436) | 26.3–26.5 s (327–328) |
+| `-z` | 0.65 / 1.08 s | 2.7–5.4 s (17–47) | 7.3–10.3 s (76–111) | 8.0–8.5 s (80–84) |
+| **`-x -z`** | **0.76 / 1.59 s** | **11.7–29.8 s (120–366)** | **44.0–60.5 s (596–874)** | **49.2–50.6 s (635–650)** |
+
+On the Mac's GPU the augmentation adds a tenth of a second a frame at 280 × 520 and half a second at
+960 × 960: the process start is most of a call. On Modal's CPU it is 15 to 19 times the plain call's
+CPU. Each Modal range is two runs, and hosts differ: the same 280 × 520 frame took 11.7 s on one and
+29.8 s on the other. llvmpipe gives the Mac's frame there as before (a mean difference of 0.006 to
+0.76 of 255 a byte, every setting; the outline reading within two percentage points). The first
+frame in a container takes longer (llvmpipe compiles its shaders). One call is stopped at 600 s
+(`rife.CALL_TIMEOUT_SECONDS`) and reported as a RIFE that failed.
+
 ### Decision
 
 **RIFE runs where the engine runs.** On a Mac that is the Apple GPU. In the app it is the
@@ -134,11 +189,14 @@ unzip -q /tmp/rife.zip -d /opt && ln -s /opt/rife-ncnn-vulkan-20221029-ubuntu/ri
 hash and unpack, and adds the check frame; CI installs RIFE that way.
 
 Cost on Modal (prices read from modal.com/pricing on 2026-10-03: CPU $0.0000131 per core per
-second, memory $0.00000222 per GiB per second): one repaired frame is two calls, about 6 s; a
-loop repairs at most three frames, so at most about 20 s of one container — well under a cent.
-Aligning a set's cycles (section 4) makes more frames: about 6 s per frame RIFE makes, so a
-view that needs 20 made frames adds about two minutes on Modal and a few seconds on a Mac.
-That is the reason section 4 keeps every frame that lands on a source frame.
+second, memory $0.00000222 per GiB per second), with the augmentation ("Which setting" above): one
+repaired frame of 280 × 520 is 12 to 30 s and 120 to 370 CPU seconds, a fifth of a cent to half a
+cent; a loop makes at most three, so at most about a minute and a half of one container — under two
+cents. Aligning a set's cycles (section 4) makes more frames, and larger: 44 to 61 s and 600 to 870
+CPU seconds a 960 × 960 frame, about a cent, so a view that needs 20 made frames takes 15 to 20
+minutes. A deployment that aligns on a CPU names a lighter augmentation for that job:
+`SPRITE_GEN_RIFE_TTA=` (none) is 4 to 6 s a 960 × 960 frame, `-z` 7 to 10 s. On a Mac it is under
+two seconds either way. That is the reason section 4 keeps every frame that lands on a source frame.
 
 A PyTorch RIFE was not chosen: it would add a framework of hundreds of megabytes to the image
 for the same model, and llvmpipe already gives the GPU's frame.
@@ -159,18 +217,28 @@ the zip's `LICENSE` with it.
 
 A walk or run loop (`--state walk|run`) is read, after it is cut and anchored, as it will play:
 cyclic, the last frame followed by the first, inside the union box of the body over the loop
-(the strip cells' own crop). For every step k → k+1 two numbers are taken — the mean change of
-coverage over the whole box, and over the hair behind the body, each divided by its own median
-over the loop — and the larger is the step's score.
+(the strip cells' own crop). The frames that leave the loop's flow — one or two drawings in a row
+that lie far off the line between the frames either side of them, by direction and speed, not by
+how much a step changes ([the flow reading](#the-flow-reading--a-frame-off-the-walks-way-not-a-large-step)
+below) — are taken out and made again by RIFE between the frames either side. Where a part keeps its way
+and rushes — a tail that runs short of the cycle, rushing on at the wrap — the frames either side of
+the rush are then made again at times that spread it, and played only where the rest of the body
+keeps its own beat on them ([the eased retime](#the-eased-retime--a-part-that-rushes-on-its-way)
+below; a frame made is the whole picture at one time, so the legs take the time the part is given,
+and on every walker measured the loop keeps the flow repair). Before all of it, a cut two steps
+long whose wrap a part on its own beat leaves open has the frames beside its wrap made again between
+the clip's frames a cycle apart and its own ([the overlapped
+wrap](#the-overlapped-wrap--a-part-on-its-own-beat-that-no-cut-of-two-steps-closes) below).
 
 | Rule | Value | Why |
 |---|---|---|
-| A jump | a score of at least **1.4** (`JUMP_RATIO`) | the ponytail cuts the experiment found sat at 1.5–2.5; a smooth take's worst step sits near 1.3 |
-| The hair box | (0, 0.30)–(0.45, 0.80) of the union box for a right-facing body; mirrored for `--facing left` | below the head and behind the body, where a ponytail cut at the wrong moment jumps |
-| The frame remade | the frame after the jump; but when the step *into* frame k is a jump too and larger than the step after k+1, frame k itself (a single stray frame breaks two steps) | remaking the frame after a stray frame leaves the stray standing |
-| How | propose RIFE's frame half way between the two neighbours, inspect it, then adopt it only without interpolation faults | a rejected proposal keeps the original middle frame; every other frame stays the video's own |
-| How many | at most **3 calls** (`MAX_REPAIRS`), rejected proposals included, worst eligible target first | a loop that needs more is jolting everywhere, not jumping once |
-| Never | a frame next to one already made | two made frames side by side are made from each other and melt the legs |
+| A frame off the flow | an `off` of at least **3.0** (`FLOW_LIMIT`): that many of its region's usual steps off the line between its neighbours | an ordinary walk reads at most 1.65, a part flung 5 % of the body height against its sway 2.8 to 4.1 (below) |
+| What is taken out | a group of one or two drawings in a row (`FLOW_SPAN`), worst first (`repair.flow_targets`, "Which frames" below); on twos or threes a drawing is every frame that shows it | the drawings off the flow, not the frames beside them that read off only because a neighbour is |
+| What it is made from | the frames either side of the group — the first frame of the drawing before it and of the drawing after it (`neighbours`) | the video's own frames, never a frame made |
+| When each made frame stands | each drawing at its own time between the two: t = (its first frame − the frame before) / (the frame after − the frame before), counted in play order across the wrap (`repair.between_time`) — a half for one frame, a third and two thirds for two in a row, and a half for a drawing on twos whose neighbours show from two frames before it and two after | the loop keeps its length and every frame its time; a drawing made is shown on every frame the drawing was, so a loop held on twos stays held |
+| How | one RIFE call a drawing; the group is taken only when none of its made frames has an interpolation fault (below) | a refused group keeps every frame it would take, as filmed; every other frame stays the video's own |
+| How many | at most **3 calls** (`MAX_REPAIRS`), refused groups included, worst group first; a group the calls left cannot pay for stops the stage (`left`) | a loop that needs more is jolting everywhere, not jumping once |
+| Never | made from or beside a frame already made, given way or refused | two made frames side by side are made from each other and melt the legs; the frames beside a refused group read off only because it does, and an in-between there would smooth toward it |
 
 Re-making every frame (an offset of half a frame) is not offered: it softens the frames that
 were fine, and it was judged "not corrected" (2026-10-03).
@@ -187,22 +255,28 @@ own (`why: "ghost"`), in frame order, before the jumps are read:
 | RIFE's frame has a fault, a frame beside it is a filmed ghost too, or no RIFE is installed | the clean frame beside it: the one after, else the one before (`interpolation_quality.clean_beside`, the alignment's own choice at a time on a ghost) | `{"source": k}` |
 | both frames beside it are filmed ghosts too | nothing: the ghost is kept, named, and the direction is to be filmed again | `null` |
 
-Ghost rounds are outside the three-call budget, which is the jumps'. A cell given way is in
-`replaced` like a jump frame made, so the rule "never next to a frame already made" holds around
-it too, and the jumps are then read on the loop as the ghosts left it. A cell given way to the
+Ghost rounds are outside the three-call budget, which is the flow groups'. A cell given way is in
+`replaced` like a frame made for the flow, so the rule "never made from or beside a frame already
+made" holds around it too, and the flow is then read on the loop as the ghosts left it. A cell given way to the
 frame beside it is that frame shown twice in a row — a step of nothing and a step of two — and the
 jolt index (section 3) measures it as it plays; the GIF and WebP hold it as one frame of twice the
 delay, and are checked for one frame per run of identical cells. The seam gate reads it as filmed
 (below). A loop the screen does not read (drawn part-covered, `reads: false`) has no ghost round.
 
-The report's `jump_repair` carries `replaced` (cycle frame indices, ghost and jump rounds alike), `attempts` (the jumps' calls),
-`blocked` targets, and each round's `why` (`ghost` or `jump`), target, `original` and `proposal`
-measurements (with each one's `ghost`, and the proposal's `crossfade`), `faults`, `look` and
-`outcome`. A jump round adds its step, score and whole/hair parts, its `outcome` `accepted` or
-`rejected`. A ghost round adds its `neighbours`, `taken` and `outcome` (`accepted` for RIFE's
-frame, `given-way` for the frame beside it, `kept`), and `no_proposal` where no frame was made
-("a frame beside it is a filmed ghost too", "no interpolator"); its `original.ghost` is the
-screen's reading. The report and its summary also carry `ghost_given_way` (`frame`, `ghost`,
+The report's `jump_repair` carries `reading` (`flow`), `limit`, `span` and `max_frames`; `facing`,
+recorded for the jump guard of `video-loop-compare`, which reads the size (below; the repair reads
+the flow whichever way the body faces); `hold` and `drawings`, the flow reading's of the loop as the
+ghosts left it; `replaced` (cycle frame indices, ghost and flow rounds alike), `refused` (the frames
+of the groups refused), `attempts` (the flow rounds' calls), `unfixed` and `left`; and each round's
+`why` (`ghost` or `flow`) and `outcome`. A flow round carries its group as `flow_targets` names it —
+`frames`, `drawings`, `neighbours`, `t`, `off`, `turn`, `into`, `out`, `window`, `move` and `off_after`
+(the reading the straight in-between brings it to) — and `made`, per drawing: its `frames`, `t`,
+`original` and `proposal` measurements (with each one's `ghost`, and the proposal's `crossfade`),
+`faults` and `look`. The round's own `faults` and `look` are its drawings' together, its `outcome`
+`accepted` or `rejected`. A ghost round carries its target, `original` and `proposal`, `faults`,
+`look`, `neighbours`, `taken` and `outcome` (`accepted` for RIFE's frame, `given-way` for the frame
+beside it, `kept`), and `no_proposal` where no frame was made ("a frame beside it is a filmed ghost
+too", "no interpolator"); its `original.ghost` is the screen's reading. The report and its summary also carry `ghost_given_way` (`frame`, `ghost`,
 `taken`) and `ghost_kept` (`frame`, `ghost`), and the strip metadata carries each where it is not
 empty: `cycle/` is what `video-cycle-align` reads as `cycle.source/`, and its screen no longer
 sees a ghost given way, so the strip says what the cut gave way, in frames of the cut. A
@@ -213,19 +287,23 @@ made for the source projection and for restoration, which never restores it ([th
 guard](loop-comparison.md#the-ghost-guard)). `--repair off` gives nothing way: the cut's ghosts are
 delivered as filmed, named (section 4).
 
-Blocked targets are skipped while independent candidates remain. Scores are re-read
-after adoption; a rejected target is never retried in that run. The circular last/first
-adjacency rule and call budget still apply. The shared `interpolation_quality` policy
-is the same one used by cycle alignment: `dark_excess > 0.001` or
-`outline_loss > 0.05` rejects a proposal, and so does a proposal that is a ghost on its own
+The flow is read again after each group, on the union box of the loop as filmed; a refused group is
+never tried again in that run, and nothing is made from or beside it. The circular last/first
+adjacency rule and the call budget hold across the wrap. The shared `interpolation_quality` policy
+is the same one used by cycle alignment: `dark_excess > 0.001`, or `outline_loss` and
+`outline_shift` both over 0.05 (an outline lost by the dark line and lighter than the neighbours'
+edge rank by rank, read between outlined neighbours; between neighbours painted without a line,
+`outline_loss` alone, section 4), rejects a proposal, and so does a proposal that is a ghost on its own
 coverage (`ghost` over 0.003, read where the loop's ghost screen reads it, section 4). An empty
-proposal is also rejected. A proposal that cross-fades two drawings inside its silhouette
-(`crossfade` over 0.015, section 4) is taken all the same and named: its round's `look` says so, and
-a `warning:` line names the frame.
-The original middle frame is retained, not a duplicate of either neighbour.
+proposal is also rejected. One made frame at fault refuses its whole group. A proposal that
+cross-fades two drawings inside its silhouette (`crossfade` over 0.015, section 4) is taken all the
+same and named: its round's `look` says so, and a `warning:` line names the frames.
+A refused group keeps its frames as filmed, not a duplicate of a neighbour.
 
-The jump rounds' record is above; `jump_repair` also records `score_max_before` (the cut as
-filmed) / `score_max_after`, why it stopped, and which interpolator made the proposals. Rejection is not overall quality failure
+`jump_repair` also records `off_max_before` (the flow reading of the cut as filmed) /
+`off_max_after` (of the loop as it now plays), why it stopped (`stopped`: "no frame off the flow",
+the frames left `unfixed`, the calls used, or no interpolator), and which interpolator made the
+proposals. Rejection is not overall quality failure
 or success: original drawing changes and normal gait motion can remain.
 When a frame was made — RIFE's, for a jump or for a filmed ghost — the seam gate measures the
 rendered cells (`seam_measurement: rendered-cells`), because the source frames no longer say what
@@ -241,24 +319,399 @@ that only gave its ghosts way to the frames beside them is gated on its source f
 
 To compare an active result with a final candidate after all processing, use
 [`video-loop-compare`](loop-comparison.md); a seam pass alone is not an improvement.
-A replaced cell restored later from its source frame is compared with these
-same scores around it, with the recorded `facing`: a restoration that brings
+A replaced cell restored later from its source frame is compared with the
+size reading around it (`repair.jump_scores`, the change of coverage over the whole box and the hair
+behind the body, with the recorded `facing`): a restoration that brings
 the jump back is not an improvement ([the jump guard](loop-comparison.md#the-jump-guard)).
 
 RIFE is located only when a frame is to be made. A loop with a jump and no RIFE is cut as filmed
 with a warning under `--repair auto`, and fails under `--repair on` (section 1, "Without RIFE");
 so does a filmed ghost between two clean frames under `--repair on`. Under `--repair auto` each
 filmed ghost then gives way to the clean frame beside it (`no_proposal: "no interpolator"`), and
-only a jump left (`unmade`: the step, target and score the search stopped at) sets `why`, `rife`
-and `install`.
+only a jump left (`unmade`: the `frames`, `neighbours` and `off` of the group the search stopped at)
+sets `why`, `rife` and `install`.
 `--repair off` cuts the loop as filmed and records `jump_repair: {"applied": false, "why":
 "--repair off"}`. Other states are not touched (`"why": "not a gait state (…)"`).
 
-Checked on the 2026-10-03 takes (`retime.py` in the experiment folder is the reference): the
-engine replaces the same frames as the experiment on every take tried — Lite side E1
+Until the flow reading picked the frames, the size reading did: a step whose change of coverage,
+over the whole box or the hair behind the body, was at least 1.4 times the loop's median remade
+the frame after it, half way between its neighbours. Checked on the 2026-10-03 takes with it
+(`retime.py` in the experiment folder is the reference), that engine replaced the same frames as the experiment on every take tried — Lite side E1
 [0, 16, 8] (score 1.75 → 1.42), Lite back-diagonal NE2 [13, 0] (1.60 → 1.43), Pro side E1
 [3, 15, 19], Pro back-diagonal NE2 [9], Lite front S2 [0, 11, 14], and nothing in the smooth
-Lite side E2. About 0.7 s a replaced frame on the Mac's GPU.
+Lite side E2. About 0.7 s a replaced frame on the Mac's GPU. Those takes have not been read with
+the flow reading.
+
+### The flow reading — a frame off the walk's way, not a large step
+
+The jump score above counts how much a step changes. A walk's own steps change by very different
+amounts — a leg swung through moves far in one frame, a planted foot not at all — so on an ordinary
+walk the size reading names fast swings as jumps (on the synthetic walks below, five to eighteen
+steps of a loop that has none), and a frame that pops against the way a part is going reads no
+larger than a swing. `repair.flow_scores` and `repair.flow_targets` read the same loop by direction
+and speed instead, and `--repair auto` takes out the frames `flow_targets` names (above).
+
+**What is read.** Each frame is a point of the loop's path: its coverage and its shading (luma
+times coverage) inside the union box, averaged down to a grid a third of the blur's size and
+blurred with a sigma of 3 % of the body height (`FLOW_BLUR`) — a shape moved an ordinary step still
+overlaps where it was, so a step is a short move along the path, not a jump to an unrelated
+picture. The box is read in nine windows, each half its width and half its height, at a stride of a
+quarter (`FLOW_GRID` 4), so a tail, a hand or a foot is whole in at least one window.
+
+| Per frame t, per window | What |
+|---|---|
+| off the path | \|x(t+1) − 2 x(t) + x(t−1)\| / 2: how far the frame lies from the straight line between its two neighbours — the second difference, the acceleration of pose-from-video papers, and the error a straight in-between of the neighbours would make there |
+| usual step | the window's median step over the loop, and no less than the median of those over the windows (a window where little moves is not read on its noise) |
+| `off` | off the path over the usual step; a frame's `off` is its worst window's |
+| `turn` | there, the cosine between the step into the frame and the step out of it: below 0 the part goes back the way it came (1 where either step is still) |
+| `into`, `out` | there, the step into the frame and the step out of it, in the window's usual steps: a lurch is one far larger than the other |
+
+Off the path is direction and speed at once: |out − in|² = |in|² + |out|² − 2 |in| |out| cos θ.
+A part that moves on the way it was going, slow or fast, keeps it small; one that turns back, or
+lurches, makes it large. A part that slows to a stop and swings back (a leg at the end of its swing)
+turns back over small steps, and stays small.
+
+**On its drawings.** A clip filmed on twos or threes shows each drawing for two or three frames
+(`sprite_gen/video/held.py`; section 4, "Held drawings — a take to film again"): a step of nothing, then a step of two, at every drawing — a lurch at
+every drawing, read frame by frame, and a median step that falls between the two kinds. The path is
+read on the drawings instead (`flow_drawings`): the hold is `held.measure`'s, read on the path's own
+steps as a ring, a frame whose step from the frame before it is under its boundary repeats that
+drawing, and every frame that shows a drawing reads the drawing's values. A loop drawn every frame is
+a drawing a frame. A loop whose only large steps are the steps into and out of a few jumps can read
+as held to `held.measure` — its ordinary steps the repeats, its jumps the drawings; on those drawings
+its jumps would read as ordinary steps, and a drawing made again would stand for every frame of a
+run of five. Its runs are not its hold, so a hold is taken only where at least three in four runs
+(`HELD_RUNS`) show their drawing for the hold, a frame more or less (a slip); the loop is otherwise
+read a drawing a frame. A held loop's runs are its hold by construction.
+
+**Which frames.** `flow_targets` takes the worst drawing at or over `FLOW_LIMIT` (3.0) first. A
+group is one or two drawings in a row (`FLOW_SPAN`) that take it or lie beside it; its in-between is
+the straight line of the path from the drawing before the group to the drawing after, each drawing at
+its own time (the time rule above). Of the groups whose in-between brings every drawing from the one
+before them to the one after under the limit, the one taken is the one whose every drawing the
+in-between moves furthest (`move`: the least, over the group's drawings, of how far the in-between
+moves it in its worst window, in that window's usual steps). Those are the drawings off the flow;
+the drawings beside them read off only because a neighbour does, and a drawing the in-between
+hardly moves is not off at all. Ties go to the smaller result, then to the fewer drawings. The path
+then reads with that in-between and the next worst drawing is read. A group never takes, or is made
+from, a drawing a group before it took (two made frames side by side are made from each other), or
+one that shows a frame `fixed` names (the repair passes the frames already made, given way or
+refused). A drawing no group of up to two brings under the limit is `unfixed`.
+
+| Off the flow | The group taken | Not |
+|---|---|---|
+| one frame flung | that frame (on twos, the two frames that show it) | two frames with it: the in-between hardly moves the second |
+| two frames in a row flung together | both | the frame on either side of the pair: its in-between can bring the reading under the limit by smoothing the pair's edges, and leaves the pair standing — it moves half as far as the pair's own |
+| a part that snaps back at a wrap that does not close | the frame on one side of the wrap | two frames, which spread the snap over a frame the in-between moves two thirds as far |
+| two frames flung with one frame between them | each its own group, where the frame between reads under the limit once the first is made (flung 8 % of the body height on the synthetic walker) | flung farther (12 %), no group of up to two drawings straightens either while the other stands: the frames around them are `unfixed`, kept and named |
+
+The straight line is a stand-in for the frames RIFE makes there: it says which frames to take out,
+not how the made frames will look.
+
+Each group records its `frames` in play order, the `drawings` it takes (the frames that show each),
+its `neighbours` and each drawing's time `t`, the worst drawing's `off`, `turn`, `into`, `out` and
+`window` (fractions of the box, x0, y0, x1, y1), `move` and `off_after`; an `unfixed` entry its frames,
+the same readings and the best `off_after` a group reached. The record has `limit`, `span`, `blur`,
+`grid`, `hold`, `drawings`, `off_max_before` and `off_max_after`.
+
+**The limit.** On the synthetic walker of `tests/video/test_loop_flow.py` and its variants (measured
+2026-10-15), an ordinary loop reads at most 1.65 — drawn every frame with its quick swing faster or
+even, at 24 frames, with a tail swaying twice a cycle, or on twos. A frame whose tail is flung 5 % of
+the body height against its sway reads 2.8 to 4.1, by where the sway is; 8 % reads 3.7 to 6.4; 3 %
+reads 2.2, under the limit; a tail that runs a quarter of a cycle short snaps back at the wrap at 5.3,
+half a cycle short at 4.8. A part flung over the body reads less (1.8 to 2.2 at 5 %, 2.6 to 3.0 at
+8 %, where the tail crosses the torso): there the coverage does not change, only the shading. Two
+frames in a row flung as far are a plateau, each of its edges half as far off the path (2.2 at 5 %,
+3.4 at 8 %). `FLOW_LIMIT` 3.0 sits above every
+ordinary loop with room to spare: a frame is taken only where it plainly leaves the way.
+
+**The methods weighed.** The question — which frame of a sequence leaves its motion — has answers
+already; they were measured side by side on the synthetic loops above, each read in the same windows
+of the same blurred path, over the same usual step unless said otherwise.
+
+| Method | Source | On the synthetic loops | Taken? |
+|---|---|---|---|
+| Size of a step (the jump score above) | section 2, above | the ordinary walks name 8 to 18 steps over 1.4; a frame flung 3 % reads 2.61, under an ordinary walk's 2.67 | no: it counts size, not direction |
+| **Second difference — the acceleration — on the drawings** | Kanazawa et al., "Learning 3D Human Dynamics from Video", CVPR 2019, section 6.1: the acceleration error, and where there is no ground truth "we simply report the acceleration" | ordinary ≤ 1.65; flung 5 % 2.8 to 4.1; flung 3 % 2.2 | **yes**: it is the error of the straight in-between, the repair's own question; Pillow and numpy |
+| Interpolation error, with RIFE as the interpolator (the optical-flow warping family) | Baker et al., "A Database and Evaluation Methodology for Optical Flow", IJCV 2011 (interpolation error); Lai et al., "Learning Blind Video Temporal Consistency", ECCV 2018 (temporal warping error) | the same ranks; ordinary up to 2.11, on the quickest swing | no: a RIFE call for every frame (about 3 s each on a CPU in the cloud, section 1), and flow is least sure on large, occluded and flat-coloured motion in 2D animation — AnimeRun (Siyao et al., NeurIPS 2022, table 2) measures RAFT's end-point error at 58 px over motions past 50 px and 35 px on occluded pixels, where a pop is |
+| Optical flow itself (Farnebäck; RAFT) | Farnebäck, SCIA 2003; Teed and Deng, ECCV 2020 | not run | no: OpenCV or PyTorch for the engine (a PyTorch RIFE was turned down for the same reason, section 1), and the weakness above |
+| A periodic (Fourier) curve fitted to each region's path | gait as a Fourier series: Cunado, Nixon and Carter, CVIU 2003 | ordinary up to 2.94; flung 3 % 2.23 | no: a quick swing and a slow plant need more harmonics than a one-cycle loop has frames to fit them with |
+| Constant-velocity prediction (a Kalman predictor) | Kalman, Journal of Basic Engineering, 1960 | ordinary up to 3.29; names the frame after the flung one | no: one-sided — the frame after a flung frame misses most |
+| Savitzky–Golay smoothing residual | Savitzky and Golay, Analytical Chemistry, 1964 | the same ranks at half the scale | no: a wider smoothing of the same second difference |
+| A Hampel test (median and MAD) of the acceleration | Hampel, JASA 1974; Leys et al., JESP 2013 | ordinary walks up to 10; flung 3 % 20 | no: an even walk's acceleration varies so little that its z has no fixed bound. The median stays, as the usual step |
+| Frame deletion and insertion by optical-flow consistency | Chao, Jiang and Sun, IWDW 2012 | not run | no: the same question for edited video, answered on flow (above) |
+| Outermost points (each row's outermost column) fitted on a periodic curve | — | not run on these loops | no: the outermost point of a row switches from one part to another (a foot leaving the row), a jump on an ordinary step |
+
+### The eased retime — a part that rushes on its way
+
+The flow reading names a frame that leaves the way a part is going. A part can keep its way and
+still jump: a tail that runs short of the cycle — swinging on a beat of its own, as a generated
+clip's tail can — rushes on at the wrap, covering in one step what it covers in eight elsewhere.
+Each frame there lies near enough the line between its neighbours that the flow reading lets it
+pass, or takes the frame at the wrap out and leaves the rush over two steps, half as fast and still
+far faster than the steps around it. `repair.surges` reads the speed itself, and a stage after the
+flow groups makes the frames either side of the rush again, at times that spread it.
+
+**The rush.** On the flow reading's own path, windows and usual steps, on the loop as the ghost and
+flow rounds left it: a run of one or two steps (`SURGE_SPAN`) whose mean step in a window is at
+least **3.0** usual steps (`SURGE_LIMIT`) and **3.0** times the mean of the three steps either side
+of it (`SURGE_RATIO`, `SURGE_AROUND`), and through which the part goes on the way it came — no
+drawing from the run's first to its last turns back (the flow reading's `turn` at least 0; a step
+that turns back is a frame flung, the flow repair's). Rushes are taken worst first by that ratio,
+none sharing a step. On the synthetic walker of the tests (measured 2026-10-17):
+
+| Loop | Largest step, usual steps | Largest run over 2 against the steps either side | Read |
+|---|---|---|---|
+| ordinary — drawn every frame, at 24 frames, on twos | 2.1 to 2.4 | 1.9 to 2.2 | no rush |
+| a frame flung 5 % of the body height against the sway | 5.0 | 3.9 | not a rush: it turns back (the flow repair takes it) |
+| the tail 5 % of a cycle short | 3.8 at the wrap | 3.2 | a rush |
+| 8 % short | 4.9 | 4.4 | a rush |
+| a tenth short — the flow reading's 2.6, under its limit | 5.8 | 5.8 | a rush |
+| a quarter short — the flow repair makes a frame at the wrap, and two steps of 5.8 are left | 10.6 (7.2 after the flow repair) | 13.2 (6.6) | a rush |
+
+**The stretch.** Three or four drawings either side of the rush (`EASE_WIDTHS`), between the two
+drawings at its ends, which are kept: three a side for a one-step rush is six frames, four a side
+for a two-step one nine. It is made from the frames as filmed: a drawing the flow repair made
+inside it is made again (`supersedes`), never made from, and a stretch never ends on one. A stretch
+never holds a frame given way, refused, or read off the flow turning back. Four a side is taken
+only where it eases the part more than three by over 2 % (`EASE_SLACK`); one stretch a loop, the
+worst rush that has one. With the frames the ghost and flow rounds replaced, a stretch makes at
+most half the loop (`MADE_SHARE`): `video-loop-compare` reads no more than that back as the
+repair's (its source restoration, [loop comparison](loop-comparison.md)).
+
+**The times.** How far the part has gone is the path of its coverage's centre inside each window
+that reads the rush, in px, through the frames as filmed: a centre moves as far as the part does,
+where the distance between two blurred states stops growing once they no longer overlap, and a
+rush split by it would come out faster in the middle than the search reckoned. Every frame of the
+stretch is given a time, on a grid of a twentieth of a step (`EASE_GRID`); of the timings that go
+forward and keep, in every step,
+
+- each body measure — the foot line's centre (`loop.foot_centre`) and the torso (below), x, and the
+  lowest solid row, y, the ground it stands on (`repair.drift_points`) — within the stretch's largest
+  step as it played, and half a pixel (`DRIFT_PIXEL` − `EASE_MARGIN`), drawn between the frames as
+  filmed, and
+- every other window of the flow reading — the rest of the body — within its own largest step in
+  the stretch, read on the line between the states of the frames as filmed: no leg or arm hurried
+  past what it did there (read again on the frames made, below),
+
+`repair.ease_times` takes the one whose largest change of the part's step from one step to the next,
+from the step into the stretch to the step out of it, is least (`accel`): the part speeds up and
+slows down as gradually as the body lets it, from the speed it came in with to the speed it goes on
+with — an ease in and out whose ends are its own. Of the timings within 2 % of that, the one nearest
+the frames' own times, so a frame the part does not need moved keeps its time.
+
+**The torso.** Drift is the body sliding or lifting off its line. A part that sways on its own beat
+— a tail, the hair's ends — pulls the body's mass along, and moving such a part is what the repair
+is for: that is not drift. The body's point is the torso, the head and torso the motion anchor
+tracks (`repair.Torso`): `auto_motion.discover` on the loop as cut finds the two regions the anchor
+would track — a part swaying on its own beat does not hold still enough to be chosen — and each frame
+is matched by the anchor's masked NCC within the anchor's own fine search (`motion_anchor.SEARCH_RADIUS`:
+14 px across, 28 down — a walk's bob lifts the head further than it sways) of where the loop's first
+frame has them, the two weighted as the anchor weights them (0.7 and 0.3), x to a fraction of a pixel
+on the parabola through the costs either side of the best. Where the anchor finds no such regions,
+or one of them reaches the edge of that search on a frame of the loop, the body's mass
+(`loop.body_centre`) stands in. The round records which (`torso`: `regions`, or
+`stand_in` and `why`), and reports the body's mass beside the drift either way, as information
+(`drift.body_mass`: its largest step over the stretch as it played, `bound`, and on the frames made,
+`moved`). The overlapped wrap below reads the same torso.
+
+**Made, then read again.** Each drawing not at its own time is made by RIFE between the two frames
+as filmed either side of its time, at that fraction of the way between them (in frames), and shown
+on every frame the drawing was; a time on a frame as filmed is that frame. One call a drawing made,
+at most nine, outside the three of the flow groups (`ease_calls`). The stretch is taken only where,
+on the frames made:
+
+| Read on the frames made | Refused for (`rejected_for`) |
+|---|---|
+| no made frame carries an interpolation fault (section 4) | `fault` |
+| no body measure — the foot line, the torso, the ground — moves in a step more than a pixel past the stretch's largest step as it played — the measures are read on whole pixels, the ground on a row (`drift`: `bound`, `moved`, `over`; the body's mass beside it, `body_mass`) | `drift` |
+| the part's largest step over the stretch falls (`part`) | `no gain` |
+| no frame of the stretch is read further off the flow than before and at or over its limit (`off_max`) | `off the flow` |
+| no rush is read in the stretch in a window the part does not rush in: the rest of the body was hurried | `a new rush` |
+| no window the part does not rush in steps further than its own largest step over the stretch as it played (`rest`: `windows`, `step_max_before`, `step_max_after`, in the usual steps of the loop the flow groups left, and `faster`) | `the rest faster` |
+| every window the part does not rush in steps, in each step of the stretch, as far as it did in that step as the loop played, to within a quarter of its usual step (`EASE_BEAT`; `beat`: `bound`, `off` per step in play order, its largest over the windows, and `off_max`) | `the body off its beat` |
+
+A refused stretch keeps the loop as the flow groups left it; the loop keeps its length and every
+frame outside the stretch is as it was.
+
+**The body's beat.** A frame RIFE makes is the whole picture at one time, the legs, the arms and
+the head with the part. A time that gives the part's rush more steps gives the body the same: where
+the part is given its time the legs slow to a stop, and after it they hurry on. In such a frame the
+part's step and the body's are in the ratio they have at that time, so bounding the body's step
+below as well as above (the search bounds it only above) leaves the rush to spread by no more than
+the share of its own step the body may lose: a body held to three quarters of its step leaves the
+part three quarters of its rush. The stretch is
+therefore read on the frames made, step by step, against the loop as the flow groups left it: every
+window of the rest of the body steps as far as it did there, to within a quarter of its usual step,
+the walk's beat as `tests/video/test_loop_ease.py` reads it on a walker's legs (the centres of their
+colours, a quarter of their ordinary step). A window of the rest of the body can hold some of the
+part as well; a stretch that moved the part alone could be refused there, and the engine makes none —
+its frames are made whole. Every stretch the stand-in makes on the synthetic walkers is refused for
+it (below); the rush is recorded, `surge_after` names it, and the loop plays as the flow repair left
+it, its frames each made at their own time and the legs on their steps as filmed. A part spread
+apart from the body would have to be made apart from it, which this stage does not do.
+
+**The rest of the body, read again.** The search reads each window of the rest of the body on the
+line between the states of the frames as filmed. The frames made go the body's own way between
+them, and where a part moves far between two frames — a leg through its swing, two legs crossing —
+its window steps further than that line says, most where a step is stretched across a frame as
+filmed. So the bound is read again on the frames made, on the flow reading's own steps, and a
+stretch that goes past it in any window is refused whole: nothing is allowed over. Better readings
+from the frames as filmed alone were weighed and none holds. Against the stand-in's frames made at
+every time of the search on the 36-frame walker, over the steps a search step can take, a step each
+reading allows is made as much as 1.48 times the bound on the line, 1.39 times along the window's
+path through the frames, 1.35 times along it with a smoothly changing speed and 1.31 times with each
+step lengthened by the circle through its bend; and the stand-in's own speed integrated, the ceiling
+of every reading by speed, eases none of those walkers drawn every frame. Searching again with the
+frames made added to the frames as filmed does not settle either: after five tries those walkers
+were still refused.
+
+| On the synthetic walker (the stand-in in-between of `tests/video/test_loop_ease.py`) | Part's largest step, on the frames made | Frames made | The rest of the body off its beat, at most (`beat`) · the legs off their steps as filmed, ordinary steps |
+|---|---|---|---|
+| 24 frames a cycle, the tail a quarter short, after the flow repair at the wrap | 5.3 → 3.4, no rush left | 8, at four a side, 8 calls | 1.52 · 2.70: refused |
+| 16 frames, 15 % short (under the flow reading's limit) | 3.6 → 1.7, no rush left | 6, at three a side, 5 calls | 1.35 · 2.00: refused |
+| 16 frames, a fifth short | 3.1 → 1.5, no rush left | 6, 6 calls | 2.42 · 2.63: refused |
+| 14 frames, 15 % short | 3.1 → 1.5, no rush left | 6, 6 calls | 1.60 · 1.50: refused |
+| 48 frames on twos, a quarter short, after the flow repair | 5.3 → 3.4 (on its drawings), no rush left | 8 drawings, 16 frames, 8 calls | 1.52 · 2.70: refused |
+| 36 frames, 5 % to 30 % short drawn every frame, 10 % to 30 % on twos | refused: the rest of the body 1.5 % to 19 % past its own largest step on the frames made | 6 to 9 calls | refused |
+| the flow repair alone, each frame made at its own time | | | the legs 0 off |
+
+Every stretch of the stand-in is refused: the loop keeps the flow repair, `surge_after` names the
+rush, and the calls the stretch made are spent. Up to 2.45.0 the first five were taken, and their
+legs stopped where the tail was given its time. On a Mac's GPU a call is a
+second or so; on Modal's CPU with `-x -z` twelve to thirty seconds a
+280 × 520 frame (section 1), so a loop that rushes costs two to four and a half minutes more, and a
+loop that does not, nothing.
+
+`jump_repair` carries `surge` (the worst rush on the loop the flow groups left: `from`, `to`,
+`steps`, `frames`, `windows`, `ratio`, `speed`, `around`), `surge_after` (on the loop as it now
+plays, or `null`), and `ease_skipped` where a rush was read and no stretch was made (`no
+interpolator`, `the stretch would leave more than half the loop made`, `the frames around it were
+given way, refused, or flung against the way`, `no timing keeps the body in bound`). The round `why: ease` carries the
+`surge` it eased, `width`, `anchors` (the frames kept at its ends), `frames` and `drawings` (the
+stretch in play order), `sources` (the frames as filmed it was made from), `supersedes`, `span`
+(frames from anchor to anchor), `made` (per drawing: `frames`, `time` and `own` in frames from the
+first anchor, `from`, `t`, `proposal`, `faults`, `look`), `accel` (`before`, `chosen`), `part`
+(`windows`, `step_max_before`, `step_max_after`), `rest` (`windows`, `step_max_before`,
+`step_max_after`, `faster`), `beat` (`bound`, `off`, `off_max`), `drift`, `off_max`, `calls`, `faults`, `look` and `outcome`, and
+`replaced` or `rejected_for`. The record's `replaced` holds the frames it changed, the
+seam gate reads the rendered cells, and the summary names them (`eased`). Without RIFE the rush is
+cut as filmed with a warning line (`why`: "RIFE not installed — the rush cut as filmed"), and
+`--repair on` refuses.
+
+### The overlapped wrap — a part on its own beat that no cut of two steps closes
+
+A walk cut two steps long by the clip's crossings ([the step
+count](#the-step-count--two-steps-read-off-the-clips-crossings), section 3) closes for the legs. A
+part on a beat of its own — a tail swinging round every 41 frames on a walk of 26 — closes on no cut
+of two steps: the cut's last frame and its first show it in two places the clip never filmed side by
+side, and the seam gate refuses every one. Cutting again does not help, and the eased retime does not
+reach it: where the part turns back at the wrap, the frames there read off the flow against the way,
+which the retime never eases over.
+
+The clip goes on past the cut. Its frame a cycle after one of the cut's shows the legs at the same
+point of the walk, and the part where the clip carried it. `video-loop --anchor motion-auto` makes the
+frames beside the wrap again between the two (`repair.overlap_wrap`), before the jump repair: the wrap
+then plays a step the clip filmed, and the part goes over from the clip's way to the cut's over those
+frames.
+
+| Rule | Value | Why |
+|---|---|---|
+| When | `--repair auto` or `on`, and `--overlap-wrap on` (the default); a cut whose two steps the clip's crossings show (`cycle.steps.by: crossings`) and whose wrap the gate reads over `--seam-max` on its frames as corrected (`loop.wrap_on_cells`) | the legs close; what does not is a part on its own beat. A cut whose steps are not counted keeps the gate's word |
+| The frames a cycle apart | the clip's frame a cycle after each of the cut's first frames (`after`), or before each of its last (`before`), one past the widest run, as far as the clip after its lead-in holds them; each moved by the analysis translation between the two — the drift the clip walks over a cycle — and corrected as its cut frame was (`loop.cycle_apart`) | placed where the cut frame is, the in-between moves the part, not the body |
+| How many | four frames, then six, eight, ten and twelve (`OVERLAP_WIDTHS`), never past half the loop (`MADE_SHARE`), on the side whose frames a cycle apart differ least from the cut's over the run | the fewer made, the more of the loop is the clip's own; a longer run where a shorter one rushes the part or leaves the body no room, its weights going over in smaller steps |
+| Each frame | made by RIFE between its two frames of one time — the late (the clip's frame a cycle after, or the loop's own before the wrap) and the early (the loop's own, or the clip's frame a cycle before) — at the weight of the early the search chooses (`repair.overlap_weights`, below), and read with RIFE's sixteen single passes for a part torn (`rife.Rife.read`, `repair.overlap_frame`, below); a weight of 0 or 1 shows that frame whole, no call, and a frame at one weight is made once, whatever the run | each frame at its own time, the legs where they were on both; next to the wrap near the frame that continues the clip across it |
+| The weights | in play order, from 0 at the frame before the run to 1 at the frame after it, never going back, on a grid of a twentieth: of those that keep every window of the rest of the body within its own largest step over the stretch as the loop plays it and every body measure within the stretch's largest step and half a pixel (below), read on the line between the two frames' states, the one nearest the ease in and out x²(3 − 2x), x = p/(width + 1) at the run's p-th frame (`repair.overlap_weight`) | the part goes over in an ease in and out, held off it only in the steps where the body has no room: a window that closes all but a step still moves by what it differs a cycle apart, and a weight that moves there pushes it past its own step |
+
+The stretch runs from the frame before the run to the frame after it, the wrap inside, and the body is
+held to it as the loop plays it — the eased retime's bound, on the same torso ([the
+torso](#the-eased-retime--a-part-that-rushes-on-its-way) above), never on the clip's frames a cycle
+apart. A made frame next to the wrap stands near the clip's frame a cycle on: the part going over
+pulls the body's mass, which is the move the run is made for, reported and not held
+(`drift.body_mass`); a torso the clip's frame a cycle on shows elsewhere — the clip walked on over the
+cycle — would slide, and the bound holds such a frame toward the cut's own, the wrap then closing only
+as far as that lets it. The run is taken only where, on the frames made:
+
+| Read on the frames made | Refused for (`rejected_for`) |
+|---|---|
+| no made frame carries an interpolation fault (section 4), a part torn among them (`torn`, below); the frames are made the weight nearest a half first, and the first with a fault ends the run, the rest of it not made (`unmade`) | `fault` |
+| the seam gate's reading passes | `seam` |
+| the loop, played round three times, still covers two steps: the crossings read on it, its middle turn judged `two` (`loop.ring_steps`) | `steps` |
+| no body measure (`repair.drift_points`: the foot line, the torso, the ground) moves in a step more than a pixel past the largest step of the stretch as the loop plays it | `drift` |
+| the part — the windows of the flow reading where the frames a cycle apart differ by a usual step or more somewhere in the run (`OVERLAP_APART`) — steps no further than it did over the stretch as the loop played it | `no gain` |
+| no rush the loop did not have is read across the stretch (`repair.surges`) | `a new rush` |
+| no window of the rest of the body steps further than its own largest step over the stretch as the loop plays it | `the rest faster` |
+| no frame of the stretch is read further off the flow than before and at or over its limit | `off the flow` |
+
+The first run taken ends the search; where none is, the cut is kept as filmed and the gate refuses it
+as before. The jump repair after it makes nothing from, beside or again over a frame it made
+(`jump_repair.overlapped`); a filmed ghost beside one gives way to the filmed frame on its other side.
+A loop drawn on twos or threes is not overlapped: a frame made beside the wrap would split a drawing.
+
+**A part torn.** A frame made between two frames a cycle apart bridges the part's whole move in one.
+Where the part swings over a smaller one — a tail across a hand — RIFE's flow drags the small part apart
+with it, and on art painted without a line no other reading sees it (section 4, "A part torn"). So each
+frame the run makes is read with RIFE's sixteen single passes as well, and a frame they disagree on over
+a part is refused (`torn`). The frame nearest a half is made first, where the part's move is bridged
+furthest; the first frame refused ends the run. A clip whose part crosses another on every run is
+refused the overlapped wrap and kept as filmed, for the gate to refuse: a torn hand is not delivered.
+On the file's third walker — painted without a line, seen from behind, 480 × 640, its big tail swung
+from 48 to −8 degrees across its hand between two frames a cycle apart — the real RIFE's frames at
+weights 0.5 and 0.7 read 0.44 and 0.26, over the 0.21 that names a part torn, with no other fault;
+swung 10 degrees past no hand, its frames at 0.3, 0.5 and 0.7 read 0.04 at most.
+
+On the walker of `tests/video/test_loop_overlap.py` — seen from the front, 26 frames a cycle, its
+tail swinging round on a beat of 41 frames, 73 frames, with the stand-in in-between (measured
+2026-10-18):
+
+| The cut 29/26 | Seam gate (2.0) | Jolt index | The loop played round |
+|---|---|---|---|
+| as filmed; every cut of two steps the gate was asked reads 6.0 to 6.2 | 6.23 | 0.71 | two steps |
+| the jump repair alone: the flow repair takes the frame at the wrap, and the tail turns back there (turn −0.91), so the retime eases nothing | 3.17 | 0.44 | two steps |
+| overlapped: four frames after the wrap refused (`a new rush`), six taken at the ease (weights 0.05, 0.2, 0.4, 0.6, 0.8, 0.95) | 1.04 | 0.30 | two steps |
+
+The file's second walker tells the part from the torso: a tuft of 30 px on a short tail bobs up and
+down on the loop, the walker in its place, and drops at the wrap (3.41 at the gate); a cycle on, the
+clip carries the tuft on its bob and 8 px aside a frame.
+
+| The second walker | The run | Seam gate (2.0) | Torso, largest step (stretch → made) | Body's mass (stretch → made) |
+|---|---|---|---|---|
+| the tuft alone carried over | four frames at the ease (0.1, 0.35, 0.65, 0.9) taken, 4 calls | 3.41 → 1.53 | 0.03 → 0.05 | 0.71 → 3.95, reported |
+| the whole walker also 3 px aside a cycle on (its torso slides) | every run of four to twelve held at 0.85 of the cut's own frame next to the wrap, all refused (`seam`), 15 calls | 3.41 → 3.04 to 3.15 | 0.03 → 0.05 at most | 0.71 → 1.96 to 3.91 |
+
+The report's `wrap_overlap` carries `seam` (the reading that asked for it), `seam_max`, `widths`,
+`calls` (the frames made), and each try in `tries` — `side`, `width`, `frames`, `stretch`, `part`
+(`windows`, `apart`), `eased` and `off_ease` (the ease and how far the weights left it), `weights` (those
+the search chose), `made` (per frame made, in play order: `frame`, its weight `t`, `proposal` with its
+`torn`, `faults`, `look`) and `made_order` (the frames in the order made); where a fault ended the run,
+`unmade` (the frames it did not make), `faults`, `look`, `outcome` and `rejected_for` (`fault`); where the
+run was made whole, `shown` (the frames shown otherwise than as cut), `seam`, `steps`, the part's
+`step_max_before` and `step_max_after`, `rest` (`windows`, `step_max_bound`, `step_max_after`, `faster`),
+`drift`, `off_max`, `rushes`, `faults`, `look`, `outcome` and `rejected_for` (`no weighting keeps the
+body in bound` where the search found none and nothing was made); where a run was taken, `side`,
+`width`, `frames` (those shown otherwise than as cut) and `seam_after`; `interpolator`, with the binary's
+calls (`binary_calls`) where RIFE was located for it; and `skipped` where none was tried (drawn on twos, a loop too short
+for a run that leaves half of it filmed, the clip holds no frames a cycle from the cut's beside the wrap,
+no interpolator, turned off by `--overlap-wrap off`). The summary names it; a `warning:` line names the frame that ended each run refused for
+a fault ("fault (torn at frame 3, the rest not made)"). A made frame
+that cross-fades two drawings inside its outline is kept and named in a `warning:` line, as for the
+jump repair. Without RIFE the wrap is cut as filmed with a warning line (`why`: "RIFE not installed —
+the wrap cut as filmed"), and `--repair on` refuses. Each frame made costs the binary 34 calls (the frame
+as every call makes it, and its sixteen passes in colour and coverage), a frame at one weight made once,
+whatever the run; a run ends at its first fault, the frames past it not made, so a wrap whose every run
+is refused for a part torn costs the frames each run makes up to its first torn one, and one whose every
+run is made whole and refused for something else at most forty frames, outside the jump repair's — the
+first walker above takes ten frames, the second four where it is taken and fifteen where its torso slides.
+
+**Turned off.** Where RIFE runs on a CPU, those calls take minutes a frame: on two CPU cores with the
+augmentation off (`SPRITE_GEN_RIFE_TTA=`), a frame of a 960 × 960 synthetic walker took 160 to 174 s, its
+sixteen passes nearly all of it — so a wrap refused for a part torn at its first frame costs minutes a run,
+and one made whole up to forty frames. A caller that stops the loop at a deadline would stop it there, and
+the loop would not fail on its own seam. `video-loop --overlap-wrap off` turns the overlapped wrap off
+alone: nothing is read or made for it, `wrap_overlap` says so (`skipped`: "turned off (--overlap-wrap
+off)", no `tries`, `calls` 0) with the `warning:` line every skipped wrap has, and the gate refuses the cut
+as filmed, the loop failing on its seam as where every run is refused. The jump repair, the eased retime and
+the gate are as with it on; `--repair off` turns it off with the rest.
 
 ## 3. The jolt index — reported on every walk, a gate only when asked
 
@@ -449,6 +902,129 @@ closes: the top band's cut stands, and it is warned about.
   (below). `--cycle fixed` cuts any window ([loop review](loop-review.md)); a two-step cut made that
   way carries no `steps`, and the set alignment asks for its count.
 
+### The step count — two steps, read off the clip's crossings
+
+A walk cycle is two steps: the left foot forward once and the right once. Seen from the side or a
+diagonal, left foot forward and right foot forward are nearly the same silhouette, so a cut chosen by
+how its shape matches at the wrap can be one step (a half step loop: one foot goes forward) or three
+(the wrap puts the nearer foot back: a stomp in place), and a walk whose cycle the search window cannot
+hold, or whose tail repeats on its own beat, is cut one step long or not at all. Pixels cannot count
+the steps. The feet can: each step they pass each other once, a **crossing**, and a cut that covers two
+crossings, joined at the wrap where the walk itself goes on, is one cycle (`crossings.py`).
+
+`--anchor motion-auto` reads the crossings of the frames it searched and records them in the report
+(`cycle.step_count`), whatever it cuts:
+
+| Field | What |
+|---|---|
+| `mode` | `gap`: the feet are seen apart (the foot band's widest gap, `legs.FEET_APART`, in at least a fifth of the frames: side and diagonal views); `sign`: they are not, and the foot band's lean about the body's axis says which foot is nearer (front and back views) |
+| `crossings` | where the feet pass, in the search's frames (`read_from`: after a lead-in); a pair is a crossing whose middle the clip bounds but does not show |
+| `unconfirmed` | frames no reading confirms: a run of feet together cut by the clip's first or last frame that its twin does not confirm, the frames before the first side is seen, a change the clip ends on |
+| `step_range` | the clip's own step (the median between crossings) and the range a step must lie in, a factor of √2 either way |
+| `readable`, `why`, `alternation` | whether the clip shows its steps: three crossings or more, and in sign mode a lean that turns over a step on (correlation one step on at most **−0.7**, `crossings.ALTERNATION_MAX`) |
+| `cut`, `search` | the cut taken and the pixel search's own cut (or why it found none), each with its `verdict`, `code`, `k` (steps covered), `phase` and `ring`; the search's cut counted an odd number of steps where a pass can hide also with `same_picture` (the clip a cut on, in its playback steps, and `overlap`, the feet together at a pass over the step) |
+| `chosen_by` | `search` (kept), `two steps` (chosen on the count), and the search again where the count refutes its cut (`searched_again`) |
+| `declined` | the best two-step cut, where none closed and the search's cut stood: its `cut`, `phase`, whether it passed the gates (`gated`) and its `seam` |
+
+**Counting a cut.** Every crossing counted is one the clip shows whole. A cut s/L plays frames s to
+s+L−1 and then frame s again where the clip itself plays frame s+L; the wrap joins two frames the clip
+never filmed side by side, so nothing the loop shows across it counts as a step. Every step the cut
+plays, on both sides of the wrap, lies in the step range (a stall, a stand with the feet together, a
+stomp fail it: `step-long`, `step-short`, `stand`, `head-stall`, `tail-stall`); the walk's phase
+(crossings so far, plus how far into the step) advances by k steps over the cut, and the wrap joins two
+points of a step that far apart, which must lie within [1/√2 − 1, √2 − 1] of a step (`seam`). What the
+clip does not show — a bounded crossing's middle, an open step's other end — is tried across its bound,
+and the verdict is the one every value gives (`bounds`, `open-count`). A **two** is k = 2 that way,
+with the loop as played showing exactly two crossings as well (`ring`); **refuted** is k steps, each
+seen (`one step`, `three steps`); anything else is **uncertain** and never taken as two. `phase` is how
+far the wrap is from joining the same point of the walk, in frames, the worst over the bounds.
+
+**Choosing the cut.**
+
+- The clip does not show its steps (no feet seen, a legless body, a lean that does not turn over, under
+  three crossings): the search's cut, exactly as before. Only `cycle.step_count` is new.
+- The search's cut is a two within **1.5** frames of phase (`crossings.PHASE_TOLERANCE`): kept, every
+  image and frame as the search alone cuts it.
+- The count says the search's cut is an odd number of steps — one or three, the legs swapped a cut on —
+  where a pass can hide, and the clip a cut on is the same picture. A pass is brief; seen from behind on
+  a diagonal the far foot stands hidden behind the near one through part of the step, so the feet are
+  seen together for most of it, its pass among them, and apart once a cycle. Gap mode, the feet seen
+  together at a pass over more than **0.5** of a step (`crossings.Reading.overlap`, the median of the runs
+  the clip shows whole over the step; `crossings.HIDE_SHARE`), and frame by frame along the cut its frame
+  a cut on at most **1.0** of the cut's playback steps off (`local_cycle.same_picture`,
+  `SAME_PICTURE_MAX`; both in `step_count.search.same_picture`): a step on, the legs are swapped, and a
+  swap that draws nearer than the next frame is none — the count missed a crossing, and proves nothing.
+  The search's cut is kept, every image as the search alone cuts it, its count `uncertain`
+  (`same-picture`), and no `steps` is written: the set alignment screens it as any loop. Both are asked
+  because neither tells alone: from the side, with the legs drawn alike, a step on can draw as near as
+  the next frame — the very half step the count was made for — but there the feet pass briefly and the
+  count stands; where the feet stand together through a step, a lookalike step a cut on still draws
+  further off than a frame. On the synthetic walkers of `tests/video/test_walk_steps.py` the frame a cut
+  on lies 0.03 and 0.27 playback steps off where the far foot hides (on twos and on threes, the feet
+  together 0.60 and 0.63 of a step), and 2.12 on the half step drawn with a tail on its own beat. The side
+  walker whose two steps are one silhouette, near and far a tone apart, reads 0.89 a step on — under the
+  bound, so the picture alone kept its half step — and 1.04 at two tones; its feet pass briefly, and it is
+  cut two steps.
+- Otherwise the cut is among the cuts that cover two steps — any start, any length the count allows,
+  inside an explicit `--min-len`/`--max-len` but not the state's window, half the clip or the gait
+  fallback's ceiling (a walk slower than the window is cut two steps long). Those in phase, if any, are
+  read at the wrap: the flow off of the cut's last and first frames (section 2, "The flow reading", on
+  the clip's own path and box, its frames moved as the cut will be corrected, read once:
+  `repair.clip_flow_states`, `repair.ring_scores`), the top band's jump (`repair.seam_pop`, "The seam
+  pop" below) and the wrap over the cut's step (`ratio`, what the seam gate holds a loop to). The cuts in
+  phase whose top does not pop, whose `ratio` is at most the seam gate's **2.0** (`--seam-max`) and whose
+  two seam frames are both under **3.0** (`repair.FLOW_LIMIT`), the worse within **0.5** of the smoothest
+  such cut's (`local_cycle.SEAM_FLOW_BAND`), are taken nearest the clip's own way on at the wrap
+  (`closure`, as for a counted cut); where none passes, in phase first, then a calm top, then the flow
+  limit, then the seam gate, then the smoothest seam (`method: observed-two-steps-v1`, `cycle.candidates`
+  ranked, `review_recommended` when none passed). Of the first four (`local_cycle.SEAM_TRIES`) the first
+  whose seam the gate will pass is taken, read as the gate reads it before anything is cut
+  (`loop.seam_on_cells`: the cut corrected as it will be, its wrap over its step on the analysis
+  thumbnail; `step_count.seam_gate.tried`): the correction of one cut can leave a jump at its wrap that
+  no reading of the clip shows. Each reading is a whole correction, six fine searches of the motion
+  anchor, and the cut taken is corrected once more, so a gate that tries all four corrects five cuts;
+  the search reads a row of its shifts at once, to the values one patch at a time gives ([loop
+  review](loop-review.md#explicit-xy-motion-correction)). A part on a beat of its own — a tail, a staff — that closes on no cut of
+  two steps leaves every one with a wrap that jumps: the first is cut, still two steps; where the gate
+  would refuse its wrap, the frames beside it are made again from the clip's frames a cycle apart ([the
+  overlapped wrap](#the-overlapped-wrap--a-part-on-its-own-beat-that-no-cut-of-two-steps-closes),
+  section 2), and the seam gate says whether it closes, as for any cut.
+  The pixel search's repeat rule is not asked: a part off the legs' beat — a tail on its own beat —
+  repeats on its own, and its seam is the flow repair's (section 2). `step_count.repeat` records the
+  search's word on the cut, and a cut it would refuse, or one that passed no gate, is a warning line.
+- A search's cut the count does not refute — a two out of phase, or uncertain — and whose own seam the
+  gate passes (`step_count.search.seam`) gives way only to a two-step cut that closes: one of the cuts that
+  passed the gates above (in phase, its top calm, its wrap within the seam gate of its step, its seam under
+  the flow limit) whose seam the gate passes. Where none does, the search's cut is kept, every image as the
+  search alone cuts it (`steps` written where it is a two), and `step_count.declined` names the best
+  two-step cut, its phase, whether it passed the gates and its seam, with a warning line. A cut that plays
+  a step a clip shows unevenly, or a part on its own beat that closes on no two steps, would otherwise
+  trade a loop that passes for one the seam gate refuses. A search's cut the gate refuses as well gives way
+  as before — the two-step cut's wrap may yet be closed by the overlapped wrap (section 2) — and so does
+  one the count refutes, one step or three, each seen; the seam gate says whether the loop passes.
+- The clip shows its steps but no cut of two: the search's cut, unless the count refutes it — then the
+  search runs again refusing what the crossings refute, and a search that finds nothing lists each
+  refused window's count (`cycle.candidates[].step_count`), those the crossings refute last.
+
+A cut taken on two steps records `cycle.steps` (`{"count": 2, "by": "crossings"}`) and `strip.json`
+says `steps: 2`: `video-cycle-align` reads its return half way as the step it is (section 4). The step
+screen below then has its word only where the count does not: its pixel suspicion is kept as
+`pixel_suspect`, `suspect` false. A count given (`--steps`) is the word on the search's cut, and the
+crossings are not asked.
+
+**What crossings cannot see**: a hold the step range absorbs (a 13-frame step held to 17), a still run of
+the feet together inside the clip as long as a pass, and a wobble that reaches the reading's sides at a
+step's beat read as steps; a narrow step that opens the feet only just past the reading's threshold
+reads at that threshold. A pass hidden behind the other foot leaves one crossing a cycle, and the count
+reads a cycle as one step: the clip's own repeat overrules it where the pixel search found it and the feet
+stand together through most of a step (the same picture a cut on, above); where the search found no cycle,
+the cut is two cycles long and says `steps: 2`. A pass that falls between two drawings with the feet seen
+together only briefly is not overruled: from there the same picture a cut on is what a side walk with its
+legs drawn alike does. And a walk whose feet do stand together through most of a step, its two steps drawn
+nearer than a frame apart, is cut as the search cuts it — one step long, as before the count: neither the
+pixels nor the crossings tell its step from its cycle there, and only someone who counts the steps (`--steps`)
+settles it. Four-legged gaits are read as one foot band (`legs.strike_signals`), as before.
+
 ### The step screen — a slow walk cut one step long
 
 The walk window is 0.5 to 1.6 s, and at most half the clip: a cycle has to be seen repeating. A
@@ -459,6 +1035,8 @@ directions play two, and nothing said so: the two-cycle screen looks only below 
 fundamental period", [video pipeline](video-pipeline.md) section 4), and the gait fallback's longer
 window runs only when the first search finds nothing.
 
+Where the clip shows its steps the count above settles it, and a walk slower than the window is cut two
+steps long. Where it does not (the feet hidden, a lean that does not turn over),
 `--anchor motion-auto` screens the cut it takes the other way, over the whole clip rather than the
 window (`cycle.step_screen`, `period.step_screen`):
 
@@ -480,9 +1058,10 @@ by eye, or a vision call). Its images, `strip.json`, warnings and stderr are wha
 it; the report's `cycle`, and the summary `video-loop` prints, gain `step_screen`. A twice-the-cut
 lag past the clip (fewer than 4 pairs) is not read: `lag` null, not a suspect. The synthetic walker
 of `tests/video/test_one_step_cut.py` — a 42-frame cycle, legs drawn alike and arms shaded apart, 73
-frames — is cut at 21 (`ratio` 0.48, a suspect); the same drawing on a 25-frame cycle is cut at 25
-(`ratio` 1.53), and on 23.5 frames at 24 (`ratio` 0.66: a suspect that is a cycle), each written
-exactly as with no screen at all.
+frames, its feet read as unseen — is cut at 21 (`ratio` 0.48, a suspect); the same drawing on a
+25-frame cycle is cut at 25 (`ratio` 1.53), and on 23.5 frames at 24 (`ratio` 0.66: a suspect that is a
+cycle), each written exactly as with no screen at all. With its feet read, the 42-frame walker is cut
+two steps long, 42 frames, on the count.
 
 **`video-loop --steps 1|2`** is the count coming back, with `--anchor motion-auto`: how many steps
 the cut it takes without `--steps` holds.
@@ -621,8 +1200,52 @@ sprite-gen video-cycle-align --loop-dir set/front-walk/loop --loop-dir set/side-
     counts), the share with no dark solid pixel within 2 px, beyond the less outlined
     neighbour's, as a fraction of its edge. Legs that crossed too far for the flow melt into one
     shape of fill and lose their outline where they meet the air; a limb left as a ghost has none.
-    Over 5 % it is the fault `outline`. A step the flow follows keeps its outline; a figure drawn
-    without outlines loses none against neighbours that have none, and is not judged by it.
+    Over 5 % it is the fault `outline` — where `outline_shift` is read, over 5 % too (below). A step
+    the flow follows keeps its outline; a figure drawn without outlines loses none against neighbours
+    that have none, and is not judged by it.
+  - `outline_shift` (`rife.outline_shift`): the same edge read against the neighbours rank by rank —
+    each pixel of the frame's coverage edge by how dark the darkest solid pixel within 2 px of it is,
+    in order, against the lighter neighbour's edge at the same rank, counted where it is lighter by
+    more than **50/255** (`rife.OUTLINE_SHIFT`), as a fraction of its edge. Where it is read, the
+    fault `outline` needs both readings over 5 %. The dark line alone reads an art outlined in a mid tone — a brown or a
+    painted line whose tone lies about 70/255 — as lost wherever the flow softened it: a line a few
+    tones lighter falls on the far side of 70/255 all along the figure, and a frame made between two
+    such drawings reads as melted however cleanly the flow followed them. Rank by rank the softened line is lighter by less than 50/255
+    and is kept, whatever tone the art outlines in; a line gone to the fill beside it is lighter by the
+    line's whole contrast and is lost. Art outlined near-black reads the same on both, and the fault
+    is the dark line's as before; art outlined lighter than 70/255 is still not judged by the outline
+    (the cross-fade reading below names what it hides). On the synthetic walker of
+    `tests/video/test_outline_shift.py`, outlined in two tones either side of 70/255 (luma 57 and 77),
+    the drawing between with its line drawn 20 to 45 tones lighter reads `outline_loss` 57 % and
+    `outline_shift` 0; the same drawing with its legs' line turned to fill reads 24 % and 48 %.
+    The 50/255 is a reference, like the 5 %, not a measured optimum: it lies between the lift a
+    softened line takes and the lift of a line gone to fill, and a frame near either is worth a look.
+    What it does not see: a line less than 50/255 darker than the fill it melts into (a dark grey
+    shoe on a mid blue) is no further from its neighbours' than a softened line, and is not read as
+    lost — on art outlined elsewhere; art with no darker line on most of its edge is not read this
+    way at all (below).
+    It is read only between **outlined** neighbours (`rife.outlined`; `null` otherwise, and the dark
+    line judges alone): on each, the line of at least **75 %** (`rife.OUTLINED`) of its coverage
+    edge — the darkest solid pixel within 2 px — darker by more than the same 50/255 than its fill,
+    its colour from `rife.LINE_DEPTH` inside, pushed out over the edge as the colour around the body
+    is pushed out for RIFE (section 1). Art painted without a line has no line to lose: its edge is
+    its fill, and a part the flow melts — a boot washed pale, a shin left a ghost — comes out lighter
+    by less than 50/255 at every rank where its tones run close together, so read rank by rank it
+    would be kept. There the dark line judges alone, as it did before this reading: a frame it
+    refuses is replaced by the nearer filmed one, a little less smooth, where a melted frame kept
+    would be delivered. On the synthetic walkers of
+    `tests/video/test_outline_shift.py`, the two-tone walker and the walker outlined in black read
+    outlined on all their edge; the walker painted without a line (skin legs, dark boots, a body of
+    one mid tone) reads 4 %, and its drawing between with the near boot washed 40 tones lighter reads
+    `outline_loss` 7.8 % and, rank by rank, 0 — refused on the dark line, where the rank reading
+    alone kept it. The 75 % is a reference, set on frames made between drawn walks and judged by
+    eye: with it, no frame seen as broken that the dark line alone refused is kept.
+    `rife.LINE_DEPTH` is twice the bleed's depth (`rife.BLEED_DEPTH`): the walkers of the tests,
+    outlined 2 px on a figure 153 px tall, read about half their edge outlined at the bleed's depth,
+    whose core still takes the line's inner pixel, and all of it at twice that.
+    The jump repair (section 2) and the alignment read it on every frame they make; the versioned
+    measures of `video-loop-compare` and `video-loop-repair` do not, and judge the outline on the
+    dark line alone, as before.
   - `partial_excess`: part-covered pixels beyond the more ragged neighbour's, as a fraction of
     its solid pixels. Reported, not judged: a melted frame and a clean one read alike on it, and a
     frame made beside a filmed ghost carries the ghost without adding to it — the ghost screen
@@ -728,6 +1351,38 @@ sprite-gen video-cycle-align --loop-dir set/front-walk/loop --loop-dir set/side-
     a step of 13 degrees or more between far-apart drawings, most outlined in grey. A fault would
     give way for clean frames and still pass blends; a line to look at costs neither. 0.015 is set
     by eye between the cross-faded frames and the clean ones, a reference, not a measured optimum.
+- **A part torn — the overlapped wrap's frames** (`rife.passes`, `rife.torn`): between two frames a
+  cycle apart a part on its own beat moves its whole way at once (section 2, "The overlapped wrap"),
+  and where it swings over a smaller part — a tail across a hand — RIFE's flow drags the small part
+  apart with it: the hand broken into blocks, much of its coverage gone, what is left part-covered. On
+  art painted without a line nothing above reads it: there is no line to lose (and the outline
+  readings judge against the less outlined neighbour, the one whose tail meets the air), the coverage
+  goes rather than staying part-covered in a band, and nothing goes darker. RIFE's augmentation runs
+  the pair eight ways (every flip and transpose) and both ways in time, combines the sixteen inside
+  the binary and gives back one frame; run one at a time with no augmentation, each turned back, the
+  passes guess differently exactly where the flow finds no one way through.
+  - `torn`: per pixel, how far the mean of the eight forward passes and the mean of the eight
+    backward ones put the premultiplied colour and coverage apart (`rife.passes`); the pixels where
+    they are more than **0.05** apart (`rife.TORN_LEVEL`), in regions at least **3 px** thick
+    (`rife.TORN_THICK`: an edge the passes place a pixel or two apart opens away, as does hair they
+    redraw strand by strand); and of those, the largest share of a window **a tenth** of the made
+    frame's body height on a side (`rife.TORN_WINDOW`, about a hand on a walk; 8 px at least, the
+    windows stepping by a quarter of it). Read in a window rather than over the body, so a small part
+    torn on a large body is not lost in it.
+  - Over **0.21** (`interpolation_quality.TORN_WARN`) the frame is torn: the fault `torn`. Set by eye
+    on drawn walks, between the frames seen torn — a hand dragged apart beside a tail swung far, legs
+    melted into one shape, a part doubled — which read over it, and the frames seen as clean, which
+    read under it; a reference, not a measured optimum. On the painted walker of
+    `tests/video/test_loop_overlap.py` (section 2) the frames made across the hand read 0.44 and
+    0.26 and those of a swing past no hand 0.04 at most.
+  - Read only on the overlapped wrap's frames: each is made as every call makes it and read with its
+    passes, 34 calls of the binary against two for a frame anywhere else. The jump repair, the eased
+    retime and the cycle alignment make their frames between a walk's neighbours, a move RIFE carries,
+    and do not read it.
+  - The frame delivered is the binary's, not the passes' mean: where the passes disagree the mean
+    blends their guesses part-covered, which the augmentation, combining them inside the binary, does
+    not. Nor can the binary's own augmented calls be read for it: a call with `-x` from a to b and one
+    from b to a agree where the single passes do not.
 - **What `auto` costs**: a frame replaced shows the nearer source frame, so the motion there
   steps as filmed, up to half a frame off its time, and the loop shows fewer distinct drawings a
   second than `rife` — but no melted one. A clip drawn on twos has a long step between drawings
@@ -903,14 +1558,16 @@ sprite-gen video-cycle-align --loop-dir set/front-walk/loop --loop-dir set/side-
   must be RGBA: mode, size, and pixel bytes; other modes are refused), the exact fraction `t`, and the
   interpolator identity. The identity is read again for every frame asked for, and nothing of it is
   remembered: the RIFE binary file and each file in the model directory, by sha256; the model directory's
-  path as given to the binary (the binary reads the model's version from the directory name); the engine
-  code as loaded, which is the sha256 of `sprite_gen/video/rife.py` read once at import (`rife.py` written
+  path as given to the binary (the binary reads the model's version from the directory name); the
+  augmentation every call asks for at that moment (`rife.tta()`: `SPRITE_GEN_RIFE_TTA`, or the default
+  `-x -z` when it is not set — section 1, "Which setting"), as another augmentation makes another frame; the
+  engine code as loaded, which is the sha256 of `sprite_gen/video/rife.py` read once at import (`rife.py` written
   over on disk during a run changes no code that is running, so a frame made by the loaded code is kept
   under that code, and a later process that loads other code gets another key and makes the frames again);
   the NumPy and Pillow versions; and the host as `os.uname()` reports it at that moment (host name,
   OS release, build, and architecture), with the OS platform. A binary or model file that cannot be read
   fails the alignment, as a RIFE that fails does. Any change in cycle length, `--cycles`, source pixels,
-  binary, model, engine code, or host makes the frame again. The key does not read the GPU driver or its
+  binary, model, augmentation, engine code, or host makes the frame again. The key does not read the GPU driver or its
   environment; a caller that changes those between passes gives each pass its own directory. Reading the
   identity hashes 36.5 MB of binary and model files in about 17 ms on an Apple M1: once for a frame taken,
   twice for a frame made (making a frame with RIFE takes on the order of a second). After a frame is made,
@@ -961,7 +1618,10 @@ repaired, aligned), it jumped at all three, so the take — not the resampling �
 The kept picks of both sets (Pro and Lite, five views each) and the refused Lite side take, from
 their keyed frames through `video-loop --state walk --anchor motion-auto --body-height 400
 --strip-height 640` and then `video-cycle-align` per set, on an M4 Max with the Apple GPU. The
-experiment's own scripts (`retime.py`, `finalize.py`) are the reference.
+experiment's own scripts (`retime.py`, `finalize.py`) are the reference. This is the 2.17 engine,
+whose jump repair picked its frames by the size reading (section 2, the end of its rules): the
+"Frames repaired" and "Jump score" columns are that reading's. The flow reading has not been run on
+this set.
 
 | | Cut (start, length) | Frames repaired | Jump score before → after | Jolt index | Head sideways step, % | Warning |
 |---|---|---|---|---|---|---|

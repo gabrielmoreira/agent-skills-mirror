@@ -98,10 +98,12 @@ it with the core stopped.
 - `driver_is_shared(driver)` / `installed_is_shared()`: whether other
   processes may write the same backend (MongoDB). Boot-time recovery, such
   as the orphaned-run sweep, is skipped on a shared backend.
-- `driver_has_cross_process_cas(driver)`: whether a compare-and-swap on
-  that driver is atomic across processes (MongoDB, SQLite), which a
-  clustered node's leases need. Memory and file drivers coordinate only
-  within one process.
+- `backend_has_cross_process_cas(backend)`: whether the backend reports
+  `Capability::SharedAcrossProcesses` (MongoDB, SQLite), i.e. a
+  compare-and-swap atomic across processes, which a clustered node's leases
+  need. `driver_has_cross_process_cas(driver)` is the same answer from a
+  name, for the boot guard, which judges a URL before opening anything.
+  Memory and file drivers coordinate only within one process.
 - `blob_sweep`: reclaims expired blobs (`StorageBackend::sweep_expired_blobs`)
   for `local`, each known agent scope and each provisioned SaaS profile
   (`u:<id>` plus the blob-owning modules' scopes for it) every hour,
@@ -274,15 +276,15 @@ without fencing).
   approvals (`security::approval`), paired devices (`security::devices`),
   notifications (`desktop::notifications`) and task sources
   (`integrations::task_sources`).
-- tinyflows' own stores on the ports (`tinyflows-drivers`), picked per call
-  the same way: cron jobs and runs (`cron::store`, `CronDocuments`), the flow
-  catalog and drafts (`flows::store`, `flows::draft_store`,
-  `FlowCatalogDocuments`), per-flow engine state and dedup settlement
-  (`flows::tinyflows::state::FlowState`), and the flow-run checkpointer
-  (`DriverCheckpointer`). The delegation graph's checkpointer uses
+- Module-owned stores use scoped document callbacks rather than linking their
+  implementation crates into the core. TinyFlows Catalog accesses the current
+  backend through `flows::catalog_storage` and its `CatalogStorage` bus
+  contract; the Schedule service accesses cron documents through
+  `cron::documents_port`. The modules own their schemas, migrations, flow state,
+  and run checkpoints. The delegation graph's checkpointer uses
   tinyagents-graph's `DriverCheckpointer`.
 - `block_on_anyhow(future)`: `block_on` for those stores, whose errors are
-  `anyhow::Error` (a typed `FlowUpdateError` passes through unchanged).
+  `anyhow::Error`.
 - Approvals (`security::approval`), through `store_documents.rs`.
 - Secrets (`storage::secrets`): the keyring's user secrets
   (`security::secret_storage::get` / `set` / `delete`) and the credential stores'

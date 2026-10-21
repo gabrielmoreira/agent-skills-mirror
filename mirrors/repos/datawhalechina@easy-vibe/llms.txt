@@ -243,12 +243,12 @@ docs/zh-cn/
 
 ---
 
-#### 2.5 Zeabur 部署
-**文件**: `docs/zh-cn/stage-2/backend/2.5-zeabur-deployment/index.md`
+#### 2.5 Web 应用部署与 Dify 官方云
+**文件**: `docs/zh-cn/stage-2/backend/zeabur-deployment/index.md`
 
-**关键词**: 部署、上线、Vercel、Zeabur、云部署、CI/CD、持续集成、持续部署、域名、DNS、HTTPS、SSL、服务器、容器、Docker、环境变量、生产环境、Staging、Preview、自动化部署
+**关键词**: 部署、上线、Cloudflare Pages、Vercel、Render、Dify、CloudBase、Netlify、免费额度、云部署、CI/CD、持续集成、持续部署、域名、DNS、HTTPS、SSL、服务器、容器、Docker、环境变量、生产环境、Staging、Preview、自动化部署
 
-**内容概要**: 将应用部署到云端，实现线上访问
+**内容概要**: 按场景介绍 Cloudflare Pages、Vercel、Render 与 Dify 官方云的操作步骤、免费限制，补充 CloudBase 和 Netlify 部署方式
 
 ---
 
@@ -1352,7 +1352,7 @@ Stage 3 (高级开发) - 跨平台 + AI 进阶
 - **AI IDE**: Cursor, Claude Code, Trae
 - **前端**: Vue 3, React, Element Plus
 - **后端**: Node.js, Supabase, Dify
-- **部署**: Vercel, Zeabur
+- **部署**: Cloudflare Pages, Vercel, Render, Dify Cloud, CloudBase, Netlify
 - **跨平台**: 微信小程序, Android, iOS, Electron
 - **AI 技术**: LLM, RAG, MCP, Agent, 多模态
 

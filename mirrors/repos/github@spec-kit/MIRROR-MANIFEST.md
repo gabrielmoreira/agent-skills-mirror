@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `github/spec-kit` — 26 default patterns, 10 followed patterns, 17 file(s) materialized.
+Mirror of `github/spec-kit` — 26 default patterns, 10 followed patterns, 23 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `github/spec-kit` — 26 default patterns, 10 followed patterns, 17 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 10 |
-| Files         | 17 |
+| Files         | 23 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,7 +59,7 @@ Mirror of `github/spec-kit` — 26 default patterns, 10 followed patterns, 17 fi
 - `CONTRIBUTING.md`
 - `CODE_OF_CONDUCT.md`
 - `docs/community/workflow-steps.md`
-- `integrations/CONTRIBUTING.md`
+- `docs/integrations/contributing.md`
 - `spec-driven.md`
 
 ## File Index
@@ -73,18 +73,24 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 4 | ✓ | [`design/catalogs.md`](design/catalogs.md) |
 | 5 | ✓ | [`design/extension.md`](design/extension.md) |
-| 6 | ✓ | [`docs/reference/catalogs.md`](docs/reference/catalogs.md) |
-| 7 | ✓ | [`docs/reference/mcp.md`](docs/reference/mcp.md) |
-| 8 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
-| 9 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 10 | → | [`design/cli.md`](design/cli.md) |
-| 11 | → | [`design/integration.md`](design/integration.md) |
-| 12 | → | [`design/mcp.md`](design/mcp.md) |
-| 13 | → | [`design/shared.md`](design/shared.md) |
-| 14 | → | [`design/workflow-step.md`](design/workflow-step.md) |
-| 15 | → | [`docs/community/workflow-steps.md`](docs/community/workflow-steps.md) |
-| 16 | → | [`integrations/CONTRIBUTING.md`](integrations/CONTRIBUTING.md) |
-| 17 | → | [`spec-driven.md`](spec-driven.md) |
+| 6 | ✓ | [`docs/index.md`](docs/index.md) |
+| 7 | ✓ | [`docs/integrations/catalog.md`](docs/integrations/catalog.md) |
+| 8 | ✓ | [`docs/integrations/claude.md`](docs/integrations/claude.md) |
+| 9 | ✓ | [`docs/integrations/cli.md`](docs/integrations/cli.md) |
+| 10 | ✓ | [`docs/integrations/gemini.md`](docs/integrations/gemini.md) |
+| 11 | ✓ | [`docs/integrations/index.md`](docs/integrations/index.md) |
+| 12 | ✓ | [`docs/reference/catalogs.md`](docs/reference/catalogs.md) |
+| 13 | ✓ | [`docs/reference/mcp.md`](docs/reference/mcp.md) |
+| 14 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
+| 15 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 16 | → | [`design/cli.md`](design/cli.md) |
+| 17 | → | [`design/integration.md`](design/integration.md) |
+| 18 | → | [`design/mcp.md`](design/mcp.md) |
+| 19 | → | [`design/shared.md`](design/shared.md) |
+| 20 | → | [`design/workflow-step.md`](design/workflow-step.md) |
+| 21 | → | [`docs/community/workflow-steps.md`](docs/community/workflow-steps.md) |
+| 22 | → | [`docs/integrations/contributing.md`](docs/integrations/contributing.md) |
+| 23 | → | [`spec-driven.md`](spec-driven.md) |
 
 ---
 

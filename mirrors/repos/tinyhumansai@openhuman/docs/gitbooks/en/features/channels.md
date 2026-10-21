@@ -23,7 +23,7 @@ Where the platform allows it, channels can show a typing indicator, stream draft
 
 ## Supported channels
 
-OpenHuman has 15 channel providers. 14 are built into the shipped desktop app. WhatsApp Web sits behind the `whatsapp-web` build feature, which the shipped app does not enable, so you can't switch it on. The in-app Web chat is built in and is not a provider. A separate `cli` channel serves the `openhuman-core` terminal binary. Eight channels have a setup flow in the app: Telegram, Discord, Web, iMessage, Lark/Feishu, DingTalk, Email and 元宝 (Yuanbao). You turn on the rest by hand in `config.toml`.
+OpenHuman has 15 channel providers. 14 are built into the shipped desktop app. WhatsApp Web is provided by the TinyChannels module and is not enabled in the shipped app. The in-app Web chat is built in and is not a provider. A separate `cli` channel serves the `openhuman-core` terminal binary. Eight channels have a setup flow in the app: Telegram, Discord, Web, iMessage, Lark/Feishu, DingTalk, Email and 元宝 (Yuanbao). You turn on the rest by hand in `config.toml`.
 
 Matrix is no longer supported. The config parser still accepts a `[channels.matrix]` section, but the provider was removed, so it is logged and skipped.
 
@@ -45,7 +45,7 @@ Matrix is no longer supported. The config parser still accepts a `[channels.matr
 | Linq               | Two-way (SMS) | Webhook                      | Your own API token                                                 | `config.toml`  |
 | Email              | Two-way       | IMAP IDLE and SMTP           | Your own mailbox credentials                                       | Yes            |
 
-WhatsApp also has an experimental peer-to-peer variant behind the `whatsapp-web` feature. Channels that use a webhook receive messages by HTTP push, so they need an HTTPS endpoint that the provider can reach.
+WhatsApp also has an experimental peer-to-peer variant in the TinyChannels module. Channels that use a webhook receive messages by HTTP push, so they need an HTTPS endpoint that the provider can reach.
 
 Telegram has the most features. It supports typing indicators and live draft updates, and it is the only channel with its own approval surface, so approval prompts can be answered inline. Discord adds native threaded replies, and Lark threads too. Web supports rich text and stays entirely local.
 

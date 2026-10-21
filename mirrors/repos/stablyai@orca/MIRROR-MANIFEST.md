@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `stablyai/orca` — 26 default patterns, 3 followed patterns, 19 file(s) materialized.
+Mirror of `stablyai/orca` — 26 default patterns, 4 followed patterns, 20 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `stablyai/orca` — 26 default patterns, 3 followed patterns, 19 file(
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 3 |
-| Files         | 19 |
+| Followed pats | 4 |
+| Files         | 20 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -52,8 +52,9 @@ Mirror of `stablyai/orca` — 26 default patterns, 3 followed patterns, 19 file(
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
 - `docs/STYLEGUIDE.md`
-- `.github/pull_request_template.md`
-- `docs/reference/macos-daemon-tcc-attribution.md`
+- `docs/reference/cross-platform-support.md`
+- `docs/reference/git-workflow.md`
+- `docs/reference/test-antipatterns.md`
 
 ## File Index
 
@@ -62,7 +63,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 2 | ✓ | [`docs/reference/macos-daemon-tcc-attribution.md`](docs/reference/macos-daemon-tcc-attribution.md) |
 | 3 | ✓ | [`resources/native-chat-visuals/skills/orca-chat-visuals/SKILL.md`](resources/native-chat-visuals/skills/orca-chat-visuals/SKILL.md) |
 | 4 | ✓ | [`skills/computer-use/SKILL.md`](skills/computer-use/SKILL.md) |
 | 5 | ✓ | [`skills/jira-tickets/SKILL.md`](skills/jira-tickets/SKILL.md) |
@@ -77,9 +78,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 14 | ✓ | [`src/main/daemon/AGENTS.md`](src/main/daemon/AGENTS.md) |
 | 15 | ✓ | [`tests/AGENTS.md`](tests/AGENTS.md) |
 | 16 | ✓ | [`tests/e2e/AGENTS.md`](tests/e2e/AGENTS.md) |
-| 17 | → | [`.github/pull_request_template.md`](.github/pull_request_template.md) |
-| 18 | → | [`docs/reference/macos-daemon-tcc-attribution.md`](docs/reference/macos-daemon-tcc-attribution.md) |
-| 19 | → | [`docs/STYLEGUIDE.md`](docs/STYLEGUIDE.md) |
+| 17 | → | [`docs/reference/cross-platform-support.md`](docs/reference/cross-platform-support.md) |
+| 18 | → | [`docs/reference/git-workflow.md`](docs/reference/git-workflow.md) |
+| 19 | → | [`docs/reference/test-antipatterns.md`](docs/reference/test-antipatterns.md) |
+| 20 | → | [`docs/STYLEGUIDE.md`](docs/STYLEGUIDE.md) |
 
 ---
 

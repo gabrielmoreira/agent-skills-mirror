@@ -2,8 +2,10 @@
 
 A skill is trusted instruction text — optionally with its own tool manifest —
 that WebBrain loads into a run **only when it is relevant**. Manage them under
-Settings → Skills, where you can import skill text or a URL, or remove any
-bundled skill.
+Settings → Skills. It lists your enabled skills first, where you can edit or
+remove any of them, bundled ones included, and then the packaged skills you can
+enable. **Add skill** opens the form for importing a skill from a URL or pasting
+its text; **Edit** opens the same form with that skill loaded.
 
 ## How loading works
 

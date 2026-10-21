@@ -38,6 +38,8 @@ npm run lint:fix         # Fix linting issues
 npm run format           # Format code with Prettier
 npm run format:check     # Check formatting without changes
 npm run type-check       # TypeScript type checking (no emit)
+npm run build:cli        # Build standalone offline CLI from shared contract
+npm run test:cli         # Test CLI offline behavior and standalone npm package
 npm run commitlint       # Validate the latest commit message
 ```
 
@@ -229,11 +231,11 @@ test/
 
 #### Adding a New Platform
 
-1. Add platform entry to `PLATFORM_CATALOG` in `src/config/platform-catalog.js`
+1. Add a platform definition to `PLATFORM_DEFINITIONS` in `src/config/platform-catalog.js`
 2. If special path transformation needed, add a transformer in
    `src/routing/platform-transformers.js`
 3. Add platform tests in `test/platforms/`
-4. Update README.md with platform documentation
+4. Update README.md and the contract/catalog versions as required by `docs/agent-contract.md`
 
 #### Retry Logic
 
@@ -352,12 +354,24 @@ Configure in Cloudflare Workers dashboard or via `wrangler.toml`:
 
 ### Adding a New Platform
 
-1. Add to `PLATFORM_CATALOG` in `src/config/platform-catalog.js`
+1. Add to `PLATFORM_DEFINITIONS` in `src/config/platform-catalog.js`; the legacy
+   `PLATFORM_CATALOG` mapping is derived from these descriptions
 2. If special transformation needed, update
    `src/routing/platform-transformers.js`
 3. Add test in `test/platforms/`
 4. Update README.md documentation
 5. Test locally with `npm run dev`
+
+### Updating the Agent Contract or CLI
+
+- Shared versions and offline conversion live in `src/contracts/`
+- CLI source lives in `packages/cli/`; never edit its generated `shared/` files
+- Run `npm run test:cli` in addition to the normal checks for contract/CLI changes
+- Use `npm run pack:cli` to build a standalone npm tarball without publishing it
+- Regenerate the distributed Skill with
+  `node scripts/sync-xget-skill.mjs --skill-dir /path/to/skills/skills/xget`
+- Validate Skill instructions and Markdown in the Skills repository after syncing
+- Follow version compatibility rules in `docs/agent-contract.md`
 
 ### Debugging Requests
 

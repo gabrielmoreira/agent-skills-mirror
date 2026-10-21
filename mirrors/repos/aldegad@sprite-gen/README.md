@@ -10,6 +10,8 @@
 
 <p align="center"><sub>Help cover the model API costs of developing sprite-gen with an optional <a href="https://github.com/sponsors/aldegad">GitHub sponsorship</a>. Choose your amount and a one-time or monthly contribution.</sub></p>
 
+<p align="center"><sub>Please wishlist <a href="https://store.steampowered.com/app/5045950/">Dungeon Sookuma on Steam</a>, a game in development by the creator of sprite-gen with part of the game art made using this tool.</sub></p>
+
 <p align="center">
   <a href="https://youtu.be/zVu9YlbPtog"><img src="docs/assets/hero-v2-party.gif" width="960" alt="Animated sprite-gen v2 showcase: paladin, wolf and slime" /></a>
 </p>
@@ -93,7 +95,7 @@ Full index: [`docs/README.md`](docs/README.md). Architecture with domain and pip
 - **A runtime manifest** (`manifest.json.frame_layout`) — absolute frame rectangles, per-state fps and loop flags. Your engine samples rectangles; it never guesses a grid.
 - **Breathe** — a still idle becomes a living loop, deterministic squash & stretch baked on your curated frames from one sidecar field, anatomy-aware and pixel-true ([details](docs/breathing.md)).
 - **Pixel-art that stays on grid** — the Backbone Lattice measures one grid for the whole subject and holds every cut to it ([details](docs/pixel-unfake.md)).
-- **Motion loops from video** — jumps get a tall canvas, attacks a wide one, the loop point is the clip's own period, and a one-shot action is cut rest → action → rest ([details](docs/video-pipeline.md)).
+- **Motion loops from video** — jumps get a tall canvas, attacks a wide one, the loop point is the clip's own period, and a one-shot action is cut rest → action → rest. Walk cycles count foot crossovers into a clean two-step loop with smoothed seams ([details](docs/video-pipeline.md)).
 - **Deterministic colourways** — `recolor` bakes N variant sheets from a palette map; same input, same output bytes ([details](docs/recolor.md)).
 - **QA you can watch** — per-state GIFs and contact sheets, so motion is judged as motion before anything ships. Cyclic locomotion (walk/run) stays experimental unless motion QA actually passes.
 - **Independent asset tools** — build repeating backgrounds, project shadows from a foot anchor, and inspect timing, duplicate poses and contact evidence. Ambiguous feet produce an unverified measurement ([details](docs/asset-tools.md)).

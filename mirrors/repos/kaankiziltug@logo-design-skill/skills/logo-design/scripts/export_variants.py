@@ -29,6 +29,7 @@ Notes:
 - Optical centring: --optical-offset -0.02 nudges square/app-icon/favicon marks up by 2 % of the canvas.
 """
 import argparse
+import html
 import json
 import os
 import re
@@ -68,7 +69,7 @@ def set_title(raw, title):
     if not title:
         return raw
     raw = re.sub(r"<title>.*?</title>", "", raw, flags=re.S)
-    return re.sub(r"(<svg\b[^>]*>)", lambda m: m.group(1) + f"<title>{title}</title>", raw, count=1)
+    return re.sub(r"(<svg\b[^>]*>)", lambda m: m.group(1) + f"<title>{html.escape(title)}</title>", raw, count=1)
 
 
 def inner_markup(raw):
@@ -99,7 +100,7 @@ def square_wrap(raw, root, padding=0.1, bg=None, radius=0.0, fg=None, symbol_sca
             if m:
                 carried += f' {attr}="{m.group(1)}"'
     tile = f'<rect width="256" height="256" rx="{canvas * radius:g}" fill="{bg}"/>' if bg else ""
-    t = f"<title>{title}</title>" if title else ""
+    t = f"<title>{html.escape(title)}</title>" if title else ""
     return (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">{t}'
             f'{tile}<g transform="translate({tx:g} {ty:g}) scale({s:g})"{carried}>{body}</g></svg>')
 

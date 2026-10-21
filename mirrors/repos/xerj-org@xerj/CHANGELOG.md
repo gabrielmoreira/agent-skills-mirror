@@ -7,6 +7,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Security
+
+- **Console API: a bearer API token can no longer mint credentials**
+  (CVE-2026-97406,
+  [CERT VU#645818](https://kb.cert.org/vuls/id/645818), published 2026-10-20).
+  `POST /_xerj-console/api/v1/auth/api-tokens` accepted any `AuthSession`, and
+  a passkey cookie and `Authorization: Bearer <api token>` both resolved to
+  that type. Holding one API token was enough to mint independent successors
+  — revoking the parent left them working — and an owner token could issue
+  an invitation, which the attacker redeemed in their own browser to enroll
+  their own passkey. Creating and revoking API tokens, issuing invitations,
+  deleting passkeys, and logout now require a passkey-backed browser session
+  and return 403 for a bearer token. Ordinary console calls (`/me`, prefs,
+  dashboards, and the other data routes) still accept bearer tokens. No
+  token lineage is stored: the only insert of a new API token row refuses
+  bearer auth before it writes, so a revoked token has no descendants.
+
+### Fixed
+
+- `xerj search` and a plain-string `xerj_search` rank a file that contains
+  the query as an exact phrase (a pasted error message or log line) at the
+  top. The bag-of-words leg alone let a short `defs` list sharing two of the
+  words outrank the long file holding all of them in order. On 100 exact
+  string literals from XERJ's own sources the defining file went from rank 1
+  on 16 to rank 1 on 91, with symbol lookups unchanged
+  ([harness](benchmarks/search-exact-phrase/README.md)).
+
+- `xerj autoindex --help` now states the existing `--bulk-mb` maximum of 24.
+
 ## [1.0.0-rc.97] - 2026-10-17
 
 <!-- TODO(release manager): set the date above to the tag date. -->

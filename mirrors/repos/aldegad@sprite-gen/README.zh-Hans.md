@@ -8,6 +8,8 @@
 
 </p>
 
+<p align="center"><sub>请将 <a href="https://store.steampowered.com/app/5045950/">Dungeon Sookuma</a> 添加至 Steam 愿望单，这是 sprite-gen 开发者正在开发的游戏，部分游戏美术由本工具制作。</sub></p>
+
 <p align="center">
   <a href="https://youtu.be/zVu9YlbPtog"><img src="docs/assets/hero-v2-party.gif" width="960" alt="sprite-gen v2 动画展示：圣骑士、狼与史莱姆" /></a>
 </p>
@@ -80,7 +82,7 @@ flowchart LR
 - **一份运行时清单**（`manifest.json.frame_layout`）—— 绝对帧矩形、每状态 fps 与循环标志。你的引擎按矩形取样，绝不去猜网格。
 - **Breathe** —— 静止的待机变成有生命的循环，基于一个 sidecar 字段在你策展过的帧上烘焙确定性的挤压与拉伸，尊重解剖结构且像素精准（[详情](docs/breathing.md)）。
 - **始终贴合网格的像素画** —— Backbone Lattice 为整个主体测量出一套网格，并让每一次切割都严格遵守它（[详情](docs/pixel-unfake.md)）。
-- **来自视频的运动循环** —— 跳跃使用高画布，攻击使用宽画布，循环点取自片段自身的周期，而一次性动作按 静止 → 动作 → 静止 裁切（[详情](docs/video-pipeline.md)）。
+- **来自视频的运动循环** —— 跳跃使用高画布，攻击使用宽画布，循环点取自片段自身的周期，而一次性动作按 静止 → 动作 → 静止 裁切。行走循环通过计算双脚交错裁切为完整的两步一轮，并平滑修复跳帧（[详情](docs/video-pipeline.md)）。
 - **确定性配色方案** —— `recolor` 依据调色板映射烘焙出 N 份变体表；相同输入，相同输出字节。（[详情](docs/recolor.md)）。
 - **可以亲眼检验的 QA** —— 每状态 GIF 与contact sheet，让运动在交付前先以运动的方式被评判。除非运动 QA 真正通过，循环式位移（走/跑）始终视为实验性。
 - **独立的素材工具** —— 构建可重复的背景、从脚部锚点投射阴影，并检查时序、重复姿势与接地证据。脚部含糊不清时将产出一份未经验证的测量结果（[详情](docs/asset-tools.md)）。

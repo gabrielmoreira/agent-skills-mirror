@@ -282,6 +282,7 @@ npx rea-agents@latest setup
 
 - [Installation and setup](../installation.md): agent registration, provider configuration, updates, uninstall.
 - [Readiness and troubleshooting](../installation.md#check-readiness-for-your-task): ഒരു agent-ന്റെയോ analysis engine-ന്റെയോ പ്രശ്നങ്ങൾ കണ്ടെത്തുക.
+- [GGUF / safetensors](../model-artifacts.md)
 - [CLI and Evidence](../cli.md): commands, provider തിരഞ്ഞെടുക്കൽ, snapshots, import/export, exit statuses.
 - [MCP contracts](../mcp-contracts.md), [agent prompts](../mcp-prompts.md): tool results, sessions, guided investigations.
 - [Tool catalog](../mcp-contracts.md#generated-catalog): tools, providers, CLI commands എന്നിവയുടെ സ്വയമേവ സൃഷ്ടിച്ച പട്ടിക.

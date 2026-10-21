@@ -27,9 +27,19 @@ Rule categories:
 Usage:
     python qt_review_lint.py <file1.cpp> [file2.h ...]
     python qt_review_lint.py --files-from=- < filelist.txt
+    python qt_review_lint.py --summary <files...>
+    python qt_review_lint.py --summary --diff=HEAD~1..HEAD
 
 Output: FILE:LINE RULE-ID MESSAGE (one per line)
-Exit code: 0 if no findings, 1 if findings found.
+        With --summary: findings grouped by rule and message, with
+        locations listed per file relative to a root printed once.
+        Compact form intended for passing lint results to review agents.
+        With --diff=<git diff args>: run inside a git repository; lints
+        the C++ files changed by `git diff <args>` and reports only
+        findings on added or modified lines. Takes no file arguments.
+        The summary then also lists the changed files and line counts.
+Exit code: 0 if no findings, 1 if findings found, 2 on usage or git
+           errors.
 
 Known limitations:
   - Interior lines of /* */ block comments that don't start with * are
@@ -43,7 +53,10 @@ Known limitations:
 
 from __future__ import annotations
 
+import os
 import re
+import shlex
+import subprocess
 import sys
 from dataclasses import dataclass
 from pathlib import Path
@@ -746,25 +759,83 @@ def scan_file(filepath: str, framework: bool = False) -> list[Finding]:
 # Main
 # ---------------------------------------------------------------------------
 
+CPP_SUFFIXES = (".cpp", ".cc", ".cxx", ".h", ".hh", ".hpp", ".hxx")
+RE_HUNK = re.compile(r"^@@ -\S+ \+(\d+)(?:,(\d+))? @@")
+
+
+def changed_lines(diff_args: list[str]) -> tuple[str, dict[str, set[int]]]:
+    """Return the repository root and, per changed C++ file (relative to
+    the root), the line numbers added or modified by `git diff <diff_args>`.
+    Files with deletions only map to an empty set."""
+    def git(*args: str) -> str:
+        return subprocess.run(["git", *args], capture_output=True, text=True,
+                              check=True).stdout
+
+    root = git("rev-parse", "--show-toplevel").strip()
+    diff = git("-C", root, "-c", "core.quotePath=false", "diff", "-U0",
+               "--no-color", "--no-ext-diff", "--src-prefix=a/",
+               "--dst-prefix=b/", *diff_args)
+    changed: dict[str, set[int]] = {}
+    current: set[int] | None = None
+    for line in diff.splitlines():
+        if line.startswith("+++ "):
+            path = line[4:].rstrip("\t")
+            current = None
+            if path.startswith("b/") and path.endswith(CPP_SUFFIXES):
+                current = changed.setdefault(path[2:], set())
+        elif current is not None and line.startswith("@@"):
+            match = RE_HUNK.match(line)
+            if match:
+                start = int(match.group(1))
+                count = int(match.group(2)) if match.group(2) is not None else 1
+                current.update(range(start, start + count))
+    return root, changed
+
+
 def main() -> int:
     if len(sys.argv) < 2:
-        print("Usage: qt_review_lint.py [--framework] <file> [file ...]",
+        print("Usage: qt_review_lint.py [--framework] [--summary] <file> [file ...]",
               file=sys.stderr)
         print("       qt_review_lint.py --files-from=- < list.txt",
+              file=sys.stderr)
+        print("       qt_review_lint.py [--framework] [--summary] --diff=<git diff args>",
               file=sys.stderr)
         return 2
 
     framework = False
+    summary = False
+    diff_args: list[str] | None = None
     files: list[str] = []
     for arg in sys.argv[1:]:
         if arg == "--framework":
             framework = True
+        elif arg == "--summary":
+            summary = True
+        elif arg.startswith("--diff="):
+            diff_args = shlex.split(arg[len("--diff="):])
         elif arg == "--files-from=-":
             files.extend(line.strip() for line in sys.stdin if line.strip())
         else:
             files.append(arg)
 
-    if not files:
+    root: str | None = None
+    changed: dict[str, set[int]] = {}
+    if diff_args is not None:
+        if files:
+            print("Error: --diff takes no file arguments", file=sys.stderr)
+            return 2
+        try:
+            root, changed = changed_lines(diff_args)
+        except (OSError, subprocess.CalledProcessError) as e:
+            detail = getattr(e, "stderr", None) or str(e)
+            print(f"Error: git diff failed: {detail.strip()}", file=sys.stderr)
+            return 2
+        files = [os.path.join(root, rel) for rel in sorted(changed)
+                 if os.path.isfile(os.path.join(root, rel))]
+        if not files:
+            print(f"No changed C++ files in git diff {' '.join(diff_args)}")
+            return 0
+    elif not files:
         print("Error: no input files specified", file=sys.stderr)
         return 2
 
@@ -772,13 +843,51 @@ def main() -> int:
     for filepath in files:
         all_findings.extend(scan_file(filepath, framework=framework))
 
+    if root is not None:
+        all_findings = [f for f in all_findings
+                        if f.line in changed.get(os.path.relpath(f.file, root), ())]
+
     # Sort by file, then line
     all_findings.sort(key=lambda f: (f.file, f.line))
 
-    for finding in all_findings:
-        print(finding)
+    if summary:
+        if root is None:
+            dirs = [os.path.dirname(os.path.abspath(f)) for f in files]
+            root = os.path.commonpath(dirs)
+        print(f"Paths relative to {root}/")
+        if diff_args is not None:
+            total = sum(len(lines) for lines in changed.values())
+            print(f"Diff `git diff {' '.join(diff_args)}`: {len(changed)} C++ file(s), "
+                  f"{total} added or modified line(s)")
+            print("  " + "  ".join(f"{rel} +{len(lines)}"
+                                   for rel, lines in sorted(changed.items())))
+        print_summary(all_findings, root)
+    else:
+        for finding in all_findings:
+            print(finding)
 
     return 1 if all_findings else 0
+
+
+def print_summary(findings: list[Finding], root: str) -> None:
+    """Print findings grouped by (rule, message), locations per file,
+    with paths relative to root.
+
+    Example:
+        LCY-2 QObject created with new but no parent (3)
+          main.cpp:12,40  widget.cpp:88
+    """
+    groups: dict[tuple[str, str], dict[str, list[int]]] = {}
+    for f in findings:
+        path = os.path.relpath(os.path.abspath(f.file), root)
+        groups.setdefault((f.rule, f.message), {}).setdefault(path, []).append(f.line)
+    print(f"{len(findings)} finding(s), {len(groups)} distinct rule/message pair(s)")
+    for (rule, message), by_file in sorted(groups.items()):
+        count = sum(len(v) for v in by_file.values())
+        print(f"{rule} {message} ({count})")
+        locs = [f"{path}:{','.join(str(n) for n in sorted(lines))}"
+                for path, lines in sorted(by_file.items())]
+        print("  " + "  ".join(locs))
 
 
 if __name__ == "__main__":

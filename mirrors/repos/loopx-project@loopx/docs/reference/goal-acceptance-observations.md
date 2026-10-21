@@ -73,14 +73,58 @@ plus `node examples/dashboard-goal-acceptance-browser-smoke.mjs`. The browser
 check consumes real status collection over a disposable synthetic Goal; set
 `LOOPX_GOAL_ACCEPTANCE_PACKAGED=1` after the Dashboard build to check shipped assets.
 
-## Owner-authorized contract (v0)
+## Default supporting outcomes
 
-An owner can opt an existing registered Goal into a versioned acceptance contract.
+Goal Overview shows supporting outcomes recorded by a bound Agent: original
+objective, cumulative requirements, linked work, sources and separate Agent
+review/check results. The local owner can **Add a requirement** and read the
+canonical result. Refresh a stale view before rebasing; an unconfirmed write
+retains its operation for retry. No model starts and no check command runs.
+
+Outcome maintenance and evidence review are default, without a feature switch.
+Current storage/readback has no `enabled` switch. Every upgraded Goal uses the
+same feedback loop. An Agent review does
+not certify independent acceptance or complete the root Goal; requirements/work
+changes invalidate its basis and artifact edits require another review. Other
+runnable research and original budget/stop conditions retain precedence.
+See the [Agent workflow](../../skills/loopx-project/references/outcome-refinement.md)
+for inline context, one-call writeback and upgrade/adoption limits.
+
+中文：Goal 概览显示 Agent 登记的支撑成果：原始目的、累计要求、关联工作、来源，
+并区分 Agent 自查与独立检查。所有者可原地补充要求并读取原生结果；过期视图先
+刷新再重基，未确认写入保留原操作重试。不启动模型或执行检查命令。默认维护和
+有据自查没有开关，当前存储和读回删除 `enabled`；升级后的所有 Goal 使用同一闭环。
+自查不代表独立验收或根
+Goal 完成；要求／工作变化使依据过期，产物修改后须重新核对。既有可执行研究及
+原始预算／停止条件保持权威。
+
+Native `goal-acceptance` and outcome-update `refresh-state` rejections retain
+their stable error code. A known outcome validation rule also supplies optional
+`error_detail`, such as `source ref must be an opaque identifier`, in JSON and
+Markdown. This detail contains fixed rule text, never the rejected value or
+provider/IO context. Validation rejection writes nothing: after confirming that
+result, correct the document and retry its operation with the still-current
+provider revision. An uncertain write still follows the original receipt and
+recovery rules. Successful operations and unmarked failures keep their existing
+behavior.
+
+中文：原生 `goal-acceptance` 和成果更新 `refresh-state` 拒绝保留稳定错误码。
+已知成果校验规则还会在 JSON 与 Markdown 中提供可选 `error_detail`，例如
+`source ref must be an opaque identifier`。详情只包含固定规则，不回显被拒值或
+provider/IO 上下文。校验拒绝不写入状态；确认这一结果后，修正文档并沿用原操作和
+仍有效的 provider revision 重试。写入结果不确定时继续遵循原有回执与恢复规则。
+成功操作和未标记错误保持既有行为。
+
+<a id="owner-authorized-contract-v0"></a>
+
+## Executable checks within default acceptance
+
+An owner can attach executable checks to an existing registered Goal’s requirements.
 The Goal must already use promoted canonical authority. These commands never
 promote a provider or fall back to legacy Markdown when canonical reads fail.
-The owner makes three explicit decisions: the objective and its acceptance
-criteria, which existing advancement tasks serve those criteria, and whether to
-enable this governance. The existing Goal authority owns the contract; the
+Prefer a plan that references `outcome_id` and criteria IDs; the typed owner resolves
+objective, requirement descriptions and linked work. The owner reviews the concrete
+commands and scope before execution. Standalone check documents remain supported. The existing Goal authority owns the contract; the
 Dashboard presents its checked result and uses the same owner for authorized changes. No new capability editor or provider is introduced.
 
 For an ordinary delivery, the Agent prepares the technical plan from the stated
@@ -224,7 +268,7 @@ replanning, but a concrete blocker receipt is a wait checkpoint, not a repair or
 handoff. Inspect contract coverage before requesting per-task rebinding. If a
 bounded experiment accidentally gates independent work, prepare a correction for
 the authorized owner, retain all task-level validation and read back runnable work
-after applying it. Do not rebind every new task, disable checks, or create another
+after applying it. Do not rebind every new task, remove check configuration to bypass the hold, or create another
 unbound repair Todo. Contract revision changes invalidate old hold checkpoints.
 
 所有新配置与重新配置都必须明确选择覆盖范围：`selected_work` 只管明确列出的既有推进任务，
@@ -248,7 +292,7 @@ declared file bytes before and after the real run to detect changes. This bounde
 check does not prove all transitive imports or interpreter/external-tool identity.
 
 Configure without `--agent-id`: registered Agent-role invocations can inspect
-and verify, but cannot configure or disable the contract. **This is a trusted
+and verify, but cannot configure or remove command checks. **This is a trusted
 local invocation role, not an authentication boundary.** The CLI relies on
 existing local-process and private-runtime filesystem permissions; omitting
 `--agent-id` is not authentication. Processes with the same private-runtime
@@ -264,7 +308,7 @@ loopx --format json goal-acceptance inspect --goal-id example-goal
 ```
 
 Omitting `--execute` previews configuration. A revision conflict requires a new
-inspect and review of the changed basis before retrying. After enablement, the
+inspect and review of the changed basis before retrying. After configuring checks, the
 existing task claim and completion paths enforce the contract: applicable work
 with an unbound or stale association is held; the owner must confirm its current
 association by reconfiguring. Completion executes fresh bound artifact checks
@@ -314,7 +358,7 @@ advertise them as this decision's execution target. Original receipt identities
 remain in their settlement contracts. A genuinely Todo-bound replan still
 projects its selected Todo; this only removes the unrelated inventory fallback.
 
-Existing enabled contracts configured
+Existing check documents configured
 with a persisted `no_followup` field under the earlier digest rule require owner inspection and
 reconfiguration; no historical receipt is rewritten or automatically accepted.
 Disabled/absent acceptance retains its existing behavior.
@@ -339,9 +383,9 @@ evidence**, refresh the snapshot and expand **Goal acceptance contract** below
 the delivery chain. It shows the Goal ID, contract revision/digest, criteria,
 task associations, and verification results with their own revision/digest.
 The section exists only when the server's
-`acceptance.goal_acceptance_contract.enabled` is `true`. Missing or disabled
-contracts retain the baseline UI and export. The existing snapshot export and
-status Markdown include the enabled readback without command bodies or raw logs.
+`acceptance.goal_acceptance_contract.criteria` carries a check configuration.
+Requirements and Agent reviews remain available without commands. The existing
+snapshot export and status Markdown include readback without command bodies or raw logs.
 
 | Server state | Readback meaning |
 | --- | --- |
@@ -353,13 +397,13 @@ status Markdown include the enabled readback without command bodies or raw logs.
 | Contract `held` | Applicable task associations require confirmation; historical results remain inspectable |
 | Contract `accepted` | All configured artifact checks passed on the current basis; this does not approve or complete the Goal |
 
-Disabling is an explicit owner operation against a freshly inspected provider
-revision. It hides the contextual readback and removes this opt-in gate; existing
+Removing check configuration is an explicit owner operation against a freshly
+inspected provider revision. Default requirement review and replanning continue; existing
 task authority, permissions, and lifecycle rules still apply:
 
 ```bash
 loopx --format json goal-acceptance inspect --goal-id example-goal
-loopx goal-acceptance disable --goal-id example-goal --expected-provider-revision '<current_provider_revision>' --execute
+loopx goal-acceptance clear-checks --goal-id example-goal --expected-provider-revision '<current_provider_revision>' --execute
 loopx --format json goal-acceptance inspect --goal-id example-goal
 ```
 
@@ -419,11 +463,12 @@ status 同时在独立的 `run_history.goals[].artifact_lifecycle` 和 Markdown 
 上面的测试命令覆盖合成 Goal 的生产 refresh-state 写入、
 真实 status 收集和浏览器入口；打包验证使用 `LOOPX_GOAL_ACCEPTANCE_PACKAGED=1`。
 
-### 所有者授权的验收合同（v0）
+### 默认验收中的命令检查
 
-所有者可为已注册且**已提升到 canonical authority** 的 Goal 显式启用版本化验收合同。
+已注册且**已提升到 canonical authority** 的 Goal 可为已有成果要求配置命令检查。
 命令不会自动提升 provider，canonical 读取失败也不回退到旧 Markdown。
-三个明确决定是：目标与验收条件、现有推进任务与条件的关联、是否启用这项治理。
+优先引用 `outcome_id` 和要求 ID，由类型化 owner 解析目标、条件描述和关联任务；
+所有者审阅实际命令及范围后采用。不设整体启用开关。
 合同归既有 Goal authority 所有，Dashboard 展示其检查结果，并通过同一 owner 执行授权操作；
 不新增独立配置 owner 或 provider。普通路径采用上方的 Agent 准备与原位检查，以下 CLI/JSON
 步骤保留给高级配置及迁移。
@@ -443,15 +488,15 @@ status 同时在独立的 `run_history.goals[].artifact_lifecycle` 和 Markdown 
 这项有界检查不证明全部传递导入或解释器/外部工具身份。
 
 所有者使用 `goal-acceptance configure --goal-id example-goal --document acceptance.json
---expected-provider-revision '<provider_revision>'` 预览，再加 `--execute` 启用；
+--expected-provider-revision '<provider_revision>'` 预览，再加 `--execute` 保存配置；
 这里填写最近 inspect 返回的 provider revision，不是合同版本。配置时不传 `--agent-id`：
-已注册 Agent 角色调用可 inspect/verify，但不能配置或停用合同。
+已注册 Agent 角色调用可 inspect/verify，但不能配置或移除命令检查。
 **所有者角色依赖受信任的本地调用，不是身份认证边界。** CLI 沿用本地进程与私有 runtime
 文件系统权限；省略 `--agent-id` 不构成身份认证，具有相同私有 runtime 权限的进程
 不会与所有者操作隔离。发生版本冲突时重新 inspect，
 审阅变化后再重试，配置后再次 inspect 确认。
 
-启用后，现有任务 claim/complete 路径执行真实门禁：适用任务缺少关联或关联过期时受阻，
+配置命令检查后，现有任务 claim/complete 路径执行真实门禁：适用任务缺少关联或关联过期时受阻，
 所有者通过重新配置确认当前关联；完成任务必须执行当前绑定的产物检查，并继续满足原有
 claim、lease/fence、权限和后续工作要求。既有验证回执或已确认的关联不能代替本次任务完成验证。
 任务参数沿用 `loopx todo claim --help`、`loopx todo complete --help`，没有绕过门禁的新参数。
@@ -474,14 +519,14 @@ claim、lease/fence、权限和后续工作要求。既有验证回执或已确�
 
 有界触发项优先保留验收阻塞及其精确检查点，再展示通用 vision 缺口。只有覆盖该阻塞
 代次、被接纳的有据可运行后继或具体阻塞回执，才会消解重复唤醒。无关进展、改写 vision、
-其他关联的确认均不能代替；重新确认合同或改变工作会重新触发恢复。未启用时保持原行为。
+其他关联的确认均不能代替；重新确认合同或改变工作会重新触发恢复。未配置命令检查时，默认要求核对和 replan 仍然可用。
 配额选择重规划时，候选观察任务仍可见于清单，但不再同时成为 `selected_todo` 或
 `agent_lane_next_action`；原回执身份仍由结算合同保留。真正绑定 Todo 的重规划仍展示原 Todo，
 本次仅移除从无关观察清单补出的选择。
 
 `loopx goal-acceptance verify --goal-id example-goal` 仅预览；加 `--execute` 执行全部配置条件，
 再运行 inspect 读回。进入 **概览 → 交付与依据**，刷新并展开交付链下方的 **Goal 验收合同**。
-区块仅在服务端 `acceptance.goal_acceptance_contract.enabled=true` 时显示，缺失或停用保持原界面与导出。
+命令检查区块按实际 `criteria` 配置展示；无命令时仍展示成果要求与 Agent 自查。整体没有启用开关。
 区块及导出展示 Goal ID、合同版本/摘要、条件、任务关联，以及带独立版本/摘要的历史验证结果。
 
 任务 `ready` 只表示所有者确认关联；`unbound` / `stale` 表示缺失 / 过期；
@@ -490,10 +535,10 @@ claim、lease/fence、权限和后续工作要求。既有验证回执或已确�
 `held` 表示适用任务关联需要确认。`accepted` 仅表示当前基线上的全部配置产物检查通过，
 不代表自动批准或完成 Goal。
 
-停用前重新 inspect，随后执行
-`loopx goal-acceptance disable --goal-id example-goal --expected-provider-revision '<current_provider_revision>' --execute`，
-并再次 inspect。停用隐藏此区块并移除此项显式启用的门禁，原有任务权威、权限和生命周期规则仍生效。
-启用不会授予发布、外部副作用、provider 提升或 Goal 完成权威；目标、条件描述与原因必须适合其 status 受众。
+移除检查配置前重新 inspect，随后执行
+`loopx goal-acceptance clear-checks --goal-id example-goal --expected-provider-revision '<current_provider_revision>' --execute`，
+并再次 inspect。该操作移除命令检查约束，保留版本栅栏和历史记录；默认目标核对与 replan 继续生效。
+检查配置不会授予发布、外部副作用、provider 提升或 Goal 完成权威；目标、条件描述与原因必须适合其 status 受众。
 Lark 呈现、远端合同编辑、语义意图保持证明与通用共享 amendment 留给 #3836 / #2831 后续切片，
 不宣称任一 RFC 已完成。合同浏览器检查用 `npm run smoke:goal-acceptance-contract-browser`；
 前端集成打包后，`npm run smoke:goal-acceptance-contract-packaged` 对已发布资源跑同一项检查。
@@ -528,7 +573,7 @@ This is not a general history rollback. If the previous declaration is unknown,
 other work fields changed, or compatible subsequent revisions prevent an exact
 match, prepare the current intent for owner review and explicit rebind. The CLI
 and managed replan guidance name that route instead of prescribing a lease /
-restore loop. Existing ready, unbound and acceptance-disabled work keeps its
+restore loop. Existing ready, unbound and work without configured checks keeps its
 ordinary admission rules. Frontend and Lark consume the resulting canonical
 state; this introduces no separate editor or authority owner.
 
@@ -547,7 +592,7 @@ TS 校验整个候选工作声明的摘要必须等于 owner 当初确认的摘�
 
 In **Goal settings → Task ownership → Goal acceptance contract**, the local owner
 can import a complete approved JSON document, review its scope and command,
-save it, run the configured checks, read back the result, or disable the contract.
+save it, run configured checks, read back the result, or remove check configuration.
 Existing configured contracts offer the same operations in **Delivery & evidence**.
 Saving does not run a command. Reading does not run checks. Failed or uncertain
 operations retain a readback/retry path; an uncertain check is never replayed
@@ -620,13 +665,13 @@ checker's source identity, digest, UTC check time and exact input/output version
 The witness remains under the historical check record when files change or
 current observations are unavailable. It cannot turn a recorded or stale check
 into current acceptance. Downloading reads the snapshot; it does not execute a
-checker. Missing witness fields stay missing. Ordinary criteria and disabled
-contracts retain their existing export format.
+checker. Missing witness fields stay missing. Ordinary criteria retain their export format; absent checks add no command
+verification section. Supporting outcomes remain visible independently.
 
 **导出依据。** 现有「交付与依据 → 导出交付快照」保留检查器来源、摘要、实际检查时间
 及输入／输出版本，并分别显示条件的观测状态与历史检查记录。文件变化或当前观测缺失时，
 旧依据仍可回看，但不表示当前通过；下载不会重跑检查，也不会补造缺失的回执。
-普通条件与停用合同保留原有导出格式。
+普通条件保留原有导出格式；未配置检查时不增加命令验证段，子成果仍独立可见。
 
 The same local-owner journey is available through the existing CLI:
 
@@ -635,25 +680,24 @@ loopx --format json goal-acceptance inspect --goal-id GOAL
 loopx --format json goal-acceptance configure --goal-id GOAL --document owner-contract.json --expected-provider-revision REVISION --execute
 loopx --format json goal-acceptance verify --goal-id GOAL --execute
 loopx --format json goal-acceptance inspect --goal-id GOAL
-loopx --format json goal-acceptance disable --goal-id GOAL --expected-provider-revision CURRENT_REVISION --execute
+loopx --format json goal-acceptance clear-checks --goal-id GOAL --expected-provider-revision CURRENT_REVISION --execute
 ```
 
-Use revision tokens from fresh inspect results. Disable withdraws the current
-contract and current oracle projection while retaining historical evidence;
+Use revision tokens from fresh inspect results. `clear-checks` removes the current
+command document and oracle projection while retaining the revision fence and historical evidence;
 removing every `oracle` through an explicit owner reconfiguration restores
 ordinary criterion behavior and withdraws the current oracle receipt. The immutable
 operation journal retains its historical evidence; ordinary checks must run again.
-Before downgrading to a runtime that predates this optional field, use the newer
-runtime to configure that ordinary document with a fresh revision, inspect the
-result, then optionally disable. Disable alone retains the newer document and is
-not a backward-format migration. This enables no worker, model, transport, budget
-or permission.
+Current storage is `loopx_goal_acceptance_v2`, without `enabled`. Upgrade readers
+normalize v0/v1 state into the same runtime model; older binary writers do not
+understand v2. Clearing checks is not a storage downgrade. No worker, model,
+transport, budget or permission is enabled by this change.
 Local HTTP operations share the same owner through `/api/chat/goal-acceptance`;
 remote/missing authority and stale revisions remain explicit failures.
 
 The packaged regression runs Agent preparation and the in-place owner decision
 against a disposable real SQLite/HTTP/CLI source, including changed output,
-failure/recovery, optional configuration, disable, 390px and keyboard/reduced-motion:
+failure/recovery, optional configuration, removal of checks, 390px and keyboard/reduced-motion:
 
 ```sh
 uv run --extra test python scripts/chat_bundle.py build --install

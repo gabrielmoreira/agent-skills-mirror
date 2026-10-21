@@ -15,7 +15,7 @@
 > - 🔁 **Stata / R 平替**：`reghdfe`、`csdid`、`rdrobust`、`synth`、`fixest`、`did` 等常用命令在 Python 中一站式替代，一个 `import statspai as sp` 搞定 DID / RD / IV / SCM / DML / matching
 > - 🤖 **面向 Agent 设计**：结构化结果对象 + 内置 MCP Server，Claude / Codex 等智能体可直接调用、诊断、审计与出表
 > - ⚡ **运行速度更快**：无需启动 Stata / R 会话，免许可证，纯 Python 流水线端到端提速
-> - 🏛️ **同一团队维护**：StatsPAI 与 AERS 由同一团队（Stanford REAP × CoPaper.AI）开发和持续维护，两者深度集成、同步迭代
+> - 🏛️ **同一团队维护**：StatsPAI 与 AERS 由同一团队（Stanford REAP）开发和持续维护，两者深度集成、同步迭代
 >
 > **[github.com/brycewang-stanford/StatsPAI](https://github.com/brycewang-stanford/StatsPAI)** · `pip install statspai` · MIT 开源 · 欢迎 ⭐ Star
 
@@ -28,7 +28,7 @@
   <table>
     <tr>
       <td align="center">
-        <a href="https://copaper.ai"><img src="images/copaper-logo.png" alt="CoPaper.AI" width="300" /></a>
+        <a href="https://github.com/brycewang-stanford/StatsPAI"><img src="images/statspai-logo.png" alt="StatsPAI" width="360" /></a>
       </td>
       <td width="72"></td>
       <td align="center">
@@ -39,7 +39,7 @@
 
   <br/>
 
-  <strong>Stanford REAP × CoPaper.AI</strong> · 实证研究 AI 工具的学术工业级产品<br/>
+  <strong>Stanford REAP × StatsPAI</strong> · 实证研究 AI 工具的学术工业级产品<br/>
   <sub>由斯坦福实证研究方法论团队打造，覆盖从数据清洗到顶刊投稿的完整工作流</sub>
 
   <br/>
@@ -179,7 +179,7 @@ cp -R skills/00.1-Full-empirical-analysis-skill_Python  ~/.claude/skills/ # 全�
 
 **任何阶段你都可以手动介入** —— 上一阶段的产物全部落盘（产物-幂等 pipeline），你接过去改方法、补控制、加稳健性，再让流水线自动接下去跑。这就是"全自动 + 可介入"。
 
-### 🏆 7 个 Stanford REAP × CoPaper.AI 自研 skill —— 是整个流水线的主干
+### 🏆 7 个 Stanford REAP × StatsPAI 自研 skill —— 是整个流水线的主干
 
 | ⭐ Skill | 在流水线里的角色 |
 |:--|:--|
@@ -201,7 +201,7 @@ cp -R skills/00.1-Full-empirical-analysis-skill_Python  ~/.claude/skills/ # 全�
 
 ## 🧰 77 个核心 Skills 合集一览（`00 → 73`，编号连续无空缺）
 
-> **打开仓库 → 看见整座库。** 全部 **77 个合集 · 1,107 个 skill**，每一个都已 vendor 进本仓库，由 [`catalog/skills.json`](catalog/skills.json) 跟踪。**⭐ = Stanford REAP × CoPaper.AI 团队自研的 skill**；其余为精选、经安全审计的社区作品。
+> **打开仓库 → 看见整座库。** 全部 **77 个合集 · 1,107 个 skill**，每一个都已 vendor 进本仓库，由 [`catalog/skills.json`](catalog/skills.json) 跟踪。**⭐ = Stanford REAP × StatsPAI 团队自研的 skill**；其余为精选、经安全审计的社区作品。
 >
 > **主题图例 —** 🚀 全流程与编排器 · 🎯 因果推断与计量经济学 · 📚 文献与研究设计 · ✍️ 写作 / 编辑 / 去 AIGC · 📑 引用 / 复现 / 同行评审 · 🛠️ 数据 / 工具 / 基础设施
 >
@@ -361,7 +361,7 @@ gitGraph TB:
 <table>
   <tr>
     <td align="center">
-      <a href="https://copaper.ai"><img src="images/copaper-logo.png" alt="CoPaper.AI" width="220" /></a>
+      <a href="https://github.com/brycewang-stanford/StatsPAI"><img src="images/statspai-logo.png" alt="StatsPAI" width="260" /></a>
     </td>
     <td width="40"></td>
     <td align="center">
@@ -370,7 +370,7 @@ gitGraph TB:
   </tr>
 </table>
 
-<sub><strong>Stanford REAP × CoPaper.AI</strong> · 实证研究 AI 工具的学术工业级产品</sub>
+<sub><strong>Stanford REAP × StatsPAI</strong> · 实证研究 AI 工具的学术工业级产品</sub>
 
 <br/>
 

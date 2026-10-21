@@ -117,6 +117,10 @@ REA는 빠르게 바뀌며 새 릴리스에는 버그 수정이 자주 포함됩
 rea update
 ```
 
+`rea --update`는 이 검증된 업데이트 절차의 별칭이며 같은 전역 출력 플래그를 사용할 수 있습니다. 다른 명령 제어 옵션과 함께 사용할 때는 `rea update`를 사용하세요.
+
+업데이트 명령은 stdout과 stderr를 합쳐 최대 4 MiB까지만 보관합니다. 한도를 넘긴 메타데이터 응답은 명령이 종료된 뒤 거부됩니다. 상세 출력을 사용하는 설치에서는 진단 정보를 한도 내에서만 보관하고 설치를 계속 진행합니다. 사람이 읽는 진행 출력은 터미널이 받아들이는 속도에 맞춰 전달되며, 이미 제출한 쓰기가 끝날 때까지 기다립니다.
+
 Bun 전역 업데이트에는 Bun 1.2.17 이상이 필요합니다. 이전 버전의 Bun을 사용한다면 `rea update`를 실행하기 전에 Bun을 직접 업그레이드하세요.
 
 에이전트 등록과 스킬을 갱신하려면 업데이트 과정에서 출력된 설정 명령을 실행하세요.
@@ -275,6 +279,7 @@ npx rea-agents@latest setup
 
 - [설치 및 설정](../installation.md): 에이전트 등록, 제공자 설정, 업데이트, 제거.
 - [준비 상태 확인 및 문제 해결](../installation.md#check-readiness-for-your-task): 특정 에이전트 또는 분석 엔진 진단.
+- [GGUF / safetensors](../model-artifacts.md)
 - [CLI 및 Evidence](../cli.md): 명령, 제공자 선택, 스냅샷, 가져오기/내보내기, 종료 상태.
 - [MCP 계약](../mcp-contracts.md) 및 [에이전트 프롬프트](../mcp-prompts.md): 도구 결과, 세션, 안내에 따른 조사.
 - [도구 카탈로그](../mcp-contracts.md#generated-catalog): 빌드 시 생성되는 도구, 제공자, CLI 명령 목록.

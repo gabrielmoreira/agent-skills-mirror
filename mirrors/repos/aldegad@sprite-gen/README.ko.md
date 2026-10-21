@@ -10,6 +10,8 @@
 
 <p align="center"><sub>개발에 필요한 모델 API 비용을 <a href="https://github.com/sponsors/aldegad">GitHub 후원</a>으로 보탤 수 있어요. 원하시는 금액으로 일회성 또는 월간 후원을 선택할 수 있어요.</sub></p>
 
+<p align="center"><sub>sprite-gen 제작자가 게임 아트 일부를 이 도구로 만들며 개발 중인 <a href="https://store.steampowered.com/app/5045950/">Dungeon Sookuma</a>를 Steam에서 찜해 주세요.</sub></p>
+
 <p align="center">
   <a href="https://youtu.be/zVu9YlbPtog"><img src="docs/assets/hero-v2-party.gif" width="960" alt="움직이는 sprite-gen v2 쇼케이스: 팔라딘, 늑대, 슬라임" /></a>
 </p>
@@ -86,7 +88,7 @@ flowchart LR
 - **런타임 매니페스트** (`manifest.json.frame_layout`) — 절대 프레임 사각형, 상태별 fps 와 루프 플래그. 엔진은 사각형을 샘플링할 뿐, 그리드를 추측하지 않는다.
 - **Breathe** — 정지된 아이들이 살아 있는 루프가 된다. 사이드카 필드 하나로 큐레이션한 프레임 위에 결정론적 스쿼시 & 스트레치를 굽고, 해부학을 인지하며 픽셀 단위로 정확하다 ([자세히](docs/breathing.md)).
 - **그리드를 벗어나지 않는 픽셀 아트** — 백본 래티스(Backbone Lattice)가 피사체 전체에 대해 하나의 그리드를 측정하고 모든 컷을 거기에 고정한다 ([자세히](docs/pixel-unfake.md)).
-- **비디오에서 나온 모션 루프** — 점프에는 세로로 긴 캔버스, 공격에는 가로로 넓은 캔버스가 주어지고, 루프 지점은 클립 자체의 주기이며, 일회성 동작은 대기 → 동작 → 대기로 잘린다 ([자세히](docs/video-pipeline.md)).
+- **비디오에서 나온 모션 루프** — 점프에는 세로로 긴 캔버스, 공격에는 가로로 넓은 캔버스가 주어지고, 루프 지점은 클립 자체의 주기이며, 일회성 동작은 대기 → 동작 → 대기로 잘린다. 걷기 루프는 발이 엇갈리는 순간을 세어 두 걸음 한 바퀴로 자르고 튄 프레임을 매끄럽게 다듬는다 ([자세히](docs/video-pipeline.md)).
 - **결정론적 컬러웨이** — `recolor` 가 팔레트 맵으로 N 개의 변형 시트를 굽는다. 같은 입력이면 같은 출력 바이트 ([자세히](docs/recolor.md)).
 - **눈으로 확인하는 QA** — 상태별 GIF 와 컨택트 시트로, 무엇이든 출고되기 전에 모션을 모션으로서 판단한다. 주기적 이동(걷기/달리기)은 모션 QA 를 실제로 통과하기 전까지 실험적 상태로 남는다.
 - **독립적인 에셋 도구** — 반복 배경을 만들고, 발 앵커에서 그림자를 투영하고, 타이밍·중복 포즈·접지 증거를 검사한다. 발이 모호하면 미검증 측정값이 나온다 ([자세히](docs/asset-tools.md)).

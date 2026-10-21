@@ -43,7 +43,7 @@ strictest values.
 | `CronListTool` | `cron_list` | trait default (`ReadOnly`) | trait default (`false`) | `cron::list_jobs` |
 | `CronUpdateTool` | `cron_update` | `Execute` | `true` | `cron::update_job` (after `SecurityPolicy::is_command_allowed` on `patch.command`) |
 | `CronRemoveTool` | `cron_remove` | `Write` | `true` | `cron::remove_job` |
-| `CronRunTool` | `cron_run` | `Execute` | `true` | `cron::get_job` + `cron::scheduler::execute_job_now`, then `cron::record_run` / `cron::record_last_run` |
+| `CronRunTool` | `cron_run` | `Execute` | `true` | `cron::get_job` + Schedule v6 manual worker lifecycle; the module owns run history and completion |
 | `CronRunsTool` | `cron_runs` | trait default (`ReadOnly`) | trait default (`false`) | `cron::list_runs` (output truncated to `MAX_RUN_OUTPUT_CHARS = 500`) |
 
 The mutating tools (`add`, `update`, `remove`, `run`) set

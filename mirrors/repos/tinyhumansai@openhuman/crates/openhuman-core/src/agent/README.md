@@ -221,8 +221,10 @@ coding workers, and background completion delivery. See
 An `AgentDefinition` ([`../agent_registry/host_definition.rs`](../agent_registry/host_definition.rs), vocabulary in `tinyagents-definition`) is an archetype: id, tier,
 prompt source, model spec, `ToolScope`, `SandboxMode`, iteration policy and
 allowed sub-agents. Built-ins live in `../agent_registry/agents/<id>/` as an
-`agent.toml` plus `prompt.md` (orchestrator, planner, critic, summarizer,
-trigger_triage, trigger_reactor, vision_agent and others). Custom
+`agent.toml` plus a prompt builder. Most use a sibling `prompt.md` for their
+archetype (orchestrator, planner, critic, summarizer, trigger_triage,
+trigger_reactor, vision_agent and others); the workflow builder and discovery
+agents fetch their archetypes from TinyFlows Copilot over the module bus. Custom
 definitions are TOML files under `<workspace>/agents/*.toml`, with
 `~/.openhuman/agents/*.toml` as a fallback (`tinyagents_definition::DefinitionSet::load_dirs`, driven from [`../agent_registry/host_definition.rs`](../agent_registry/host_definition.rs)).
 `AgentDefinitionRegistry` holds the merged set; `agent.reload_definitions`

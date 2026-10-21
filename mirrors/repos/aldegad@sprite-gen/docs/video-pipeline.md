@@ -762,9 +762,14 @@ was 17). `video-loop` therefore:
    reports that jump and warns on it ([loop repair](loop-repair.md) section 3,
    "The seam pop"). Once the top jumps, the held part is read below its top too, and a staff
    that closes only on two steps is cut two steps long — one cycle (`cycle.steps`, "The held
-   side"). The cut taken is screened for one step of a cycle twice as long, over the whole clip
-   (`cycle.step_screen`, "The step screen"); nothing is cut on it, and `--steps` is the count
-   that cuts again.
+   side"). Where the clip shows its steps, the cut is two of them — read off the crossings of the
+   feet, joined at the walk's own point, the smoothest seam first — and the search's cut is kept
+   where it already is that, where the clip a cut on is the same picture though the count says one
+   step and the feet stand together through most of a step (a pass it did not see), and where no cut
+   of two steps closes in its place
+   (`cycle.step_count`, "The step count"). Where it does not, the cut taken
+   is screened for one step of a cycle twice as long, over the whole clip (`cycle.step_screen`, "The
+   step screen"); nothing is cut on it, and `--steps` is the count that cuts again.
 
 This neighbourhood check measures temporal consistency, not anatomical leg
 identity. A consistently repeated malformed motion can still score well; visual
@@ -841,8 +846,9 @@ swings the stride twice a step; a diagonal view's two steps open the feet unequa
 the set stage: `video-cycle-align` screens every loop by the same rule, stops a set on a suspect,
 and takes one cycle out of a loop only when told how many it holds (`--cycles`, [loop
 repair](loop-repair.md) section 4). The local search of `--anchor motion-auto` records the same. A
-loop whose steps are known (`steps: 2` in `strip.json`: cut two steps long so a held part closes, or
-cut again on a count with `video-loop --steps`) returns half way at its second step; the set stage
+loop whose steps are known (`steps: 2` in `strip.json`: cut two steps long on the clip's crossings or
+so a held part closes, or cut again on a count with `video-loop --steps`) returns half way at its
+second step; the set stage
 reads that return as the step it is, not a second cycle. The screen also looks the other way there:
 a cut that may be one step of a cycle twice as long (`cycle.step_screen`, read over the whole clip)
 stops the set the same way, and only a count — `video-loop --steps 1` — cuts it again.
@@ -922,14 +928,29 @@ Gates, all fail-loud: no period (profile flat, below the recorded `periodicity_m
 above `--seam-max` (2.0), GIF/WebP re-opened and checked (frame count, `loop=0`,
 transparent corners, no RGB under alpha 0 in the WebP).
 
-A walk or run loop then has its jump frames repaired before the strip is built: a frame that
-breaks a step 1.4× the loop's median (whole body, or the hair behind it) is replaced by RIFE's
-frame between its two neighbours, at most three and never two side by side (`--repair auto`,
-the default; `--repair off` cuts as filmed). A frame the ghost screen names a filmed ghost, read on
+A walk or run loop then has its jump frames repaired before the strip is built: one or two
+drawings in a row that leave the loop's flow — 3× their region's usual step off the line between
+the frames either side, by direction and speed, not by the size of a step — are taken out and
+made again by RIFE between those frames, each at its own time so the loop keeps its length, at
+most three calls and never made from or beside a frame made (`--repair auto`, the default;
+`--repair off` cuts as filmed). A frame the ghost screen names a filmed ghost, read on
 the cut as filmed, is replaced in the same stage first: by RIFE's frame between the two clean
 frames beside it, else by the clean frame beside it, else kept and named (`ghost_given_way`,
 `ghost_kept`) — a walk of one direction is delivered as cut and never meets the alignment that would
-take a clean frame there. The report's `jump_repair` names the frames. RIFE
+take a clean frame there. Then a part that keeps its way and rushes — a tail that runs short of
+the cycle, rushing on at the wrap — has the three or four drawings either side of the rush made
+again at times that spread it, made from the frames as filmed, the body's feet, torso (the head
+and torso the motion anchor tracks; a part swaying on its own beat is not drift) and ground line
+moving no further in a step, nor the rest of it faster, than they did there (the eased retime, up
+to nine calls of its own) — played only where the rest of the body keeps its own beat on the frames
+made, step by step; a frame made is the whole picture at one time, so the legs take the time the
+tail is given, and the loop then keeps the flow repair. Before all of it, a cut two steps long whose wrap a part on its own beat
+leaves open — a tail swinging round on a beat of its own, closing on no cut of two steps — has four
+to twelve frames beside its wrap made again between the clip's frames a cycle apart and its own, so
+the wrap plays a step the clip filmed, as far as the torso held to the stretch as the loop plays it
+allows (the overlapped wrap, `wrap_overlap`; `--overlap-wrap off` turns it off alone, for a host whose
+RIFE runs on a CPU, and the gate then refuses the cut as filmed).
+The report's `jump_repair` names the frames. RIFE
 is installed once with `sprite-gen rife install`; without it a loop that needs a frame is cut as
 filmed with a warning, each filmed ghost given way to the clean frame beside it (`--repair on`
 fails instead). A frame shown twice in a row is one frame of the GIF and WebP, checked so, and the seam gate reads a frame given way as filmed (`seam_as_filmed`). See [loop repair](loop-repair.md). The repaired loop's jolt index and the head's frame-to-frame
@@ -1496,7 +1517,7 @@ sprite-gen video-stop --frames-dir run/frames/keyed --loop run/loop/run.strip.js
 
 - **The rest.** The clip's opening run of frames within `SAME_POSE` (0.35 steps) of its first frame by engine pose distance (`gait_fallback.poses`: 48 px thumbnails cut about the feet). A step is the clip's median neighbouring-frame pose distance in the loop's window on the clip as filmed, whether cut or aligned. The stop ends on the first frame itself, the still as filmed.
 - **The entry and the cell left from.** The first frame after the rest within `SAME_POSE` of a loop cell, searched to the end of the loop's window (`source_cut`): where the clip reaches the loop. The stop leaves from the nearest cell (`from_cell`) — a player shows the loop through that cell, then the stop — and its first frame is the clip frame before the entry. The entry frame is laid on its cell within 12 % of the cell height (coverage difference, quarter-size search then to the pixel); the first frame is searched across a cell's width.
-- **The seam and its refusal.** Reported in steps from the leaving cell into the stop's first frame. Past the jump line (1.4 steps, `repair.JUMP_RATIO`, overridden by `--seam-max`), the stop is refused: "the clip reaches the loop by a jump".
+- **The seam and its refusal.** Reported in steps from the leaving cell into the stop's first frame. Past the jump line (1.4 steps, `stop.SEAM_MAX`, overridden by `--seam-max`), the stop is refused: "the clip reaches the loop by a jump".
 - **Another motion and its refusal.** A setting-off goes one way, from the still into the loop: the body does not come back to a pose it has left. `video-stop` finds, among the run-up's frames, the one that comes nearest back to the pose of an earlier frame of the clip (the still or one of the rest's frames, or an earlier frame of the run-up itself), counting only earlier frames the body went `TURN_BACK_AWAY` (one step) or more away from in between. That nearest comeback is recorded in the report as `turn_back` (fields `frame`: the frame that comes back; `back_to`: the earlier frame whose pose it is back at; `steps`: how far it still is from that pose; `away_frame`: the farthest frame between; `away_steps`: how far that one went), alongside `turn_back_away` (the one-step threshold); `turn_back` is null when the body never leaves any pose by a step. If that comeback is within `SAME_POSE` (0.35 steps), the run-up turned back: it holds another motion — for example a gesture that ends where it began (an arm waved, a crouch, then standing again before the run sets off), a motion done again, or a run going round a cycle of its own. The stop would play it backwards, so the command refuses, however short the motion is (two frames are enough), naming the three frames: "the run-up turns back — another motion, that the stop would play backwards". This is the only judgment that refuses another motion; the run-up's length plays no part in it, and `--run-up-max` cannot let it through. A motion carried one way into the run (an arm drawn in, a crouch, a turn before the first stride) is the setting-off's own and is not refused; the pose distance cannot tell it from a gesture carried one way into the run.
 - **The run-up and its refusal.** The frames between the rest and the entry that the stop plays before the still. A body sets off into its gait within about a cycle; a run-up longer than `RUN_UP_MAX_CYCLES` (1.5 cycles, `source_cut.length` frames, overridden by `--run-up-max`) plays strides unlike the loop's — a run of its own before the loop's, or a start slower than a setting-off — and is refused: "strides unlike the loop's, that the stop would play backwards". The seam refusal (overridden by `--seam-max`), the another-motion refusal and the run-up refusal can all be named in one message.
 - **Drift.** A body setting off may move across its frame, sliding into the still if played back as filmed. Two frames are laid where the loop stands: the entry on its cell (least coverage difference), and the first frame with its lowest body row on the loop's ground and across where it covers the loop best (mean coverage of the cells). Frames between are moved by a straight share of the difference per step of the stop, none at the entry and all on the first frame: drift is taken out without moving any frame by its own pose. Because a standing pose is laid on a running one by coverage, a run leaning or reaching away moves the still a few pixels — a straight glide over the stop, the same with drift or without it — and drift not straight over the frames shown leaves a little of itself.

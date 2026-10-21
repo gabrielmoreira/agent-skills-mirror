@@ -1,5 +1,32 @@
 # Native, managed, and packaged artifacts
 
+For release comparisons, export `list_procedures` Evidence from each target before
+closing it. Close clears session records: import both bundles after collecting the
+two targets, or supply portable inline Evidence. `match_native_functions` pairs unique exact names and, when supplied,
+complete observed body bytes. Reuse optional same-context `list_names`,
+`procedure_info`, `read_bytes` and existing `analyze_function` Evidence; avoid
+decompiling every function merely to match it. Its summary retains a parent for
+`inspect_analysis_view` `function-matches` collections `matches` and `functions`.
+Select columns, batch IDs and page individual facts; aliases remain unresolved.
+Unpaired observations do not prove additions/removals. Existing matched dossier
+pairs include inputs for `compare_functions`; otherwise analyze just chosen pairs.
+
+## Apple app resources
+
+Use `open_bundle_resources` with the selected app path, then `inspect_plist`,
+`decode_interface_builder`, `inspect_asset_catalog`, or `inspect_keyed_archive`.
+The resource session reads the app without resolving `CFBundleExecutable` or
+starting a deep provider. Preserve `resource_root` provenance, per-resource
+hashes where reported, and null executable identity; a directory path is not
+an executable digest. Export retained Evidence before closing or switching
+roots. Binary analysis snapshots do not apply. Use `open_binary` to switch to
+executable analysis, and `close_binary` to release either session kind.
+
+The four matching CLI commands accept the app path directly. For an archive
+inside the app, use `inspect-keyed-archive APP_PATH RELATIVE_ARCHIVE_PATH`.
+Host requirements for plist and compiled asset/Interface Builder tooling still
+apply; a resource-only session does not establish provider availability.
+
 ## Desktop installation directories
 
 When an installation directory is supplied and its runtime is unknown, use
@@ -27,16 +54,29 @@ unparsed module-text line. A missing record is an unknown, not proof of a
 non-Go binary; observed metadata does not authenticate its claims. Function,
 source and type recovery remain a separate native-analysis question.
 
+## Model files
+
+Use `inspect_model_artifact` (`inspect-model-artifact PATH`) for local GGUF v2/v3
+and safetensors declarations without a model runtime. Header-only mode does not
+read weights or establish full-file identity. `hash: "full"` explicitly streams
+all bytes. Retained `model-artifact` views page `metadata`, `tensors` and derived
+`types`, with exact batch filters and selected fields. Arrays retain typed counts
+and eight-element previews; omitted values, unknown types and runtime behavior
+stay explicit. See [model files](https://github.com/morluto/rea/blob/main/docs/model-artifacts.md).
+
 ## IL2CPP metadata
 
 Use `inspect_il2cpp_metadata` for an explicit local Unity `global-metadata.dat`
-(versions 29, 31 and 39) when the question concerns assembly images, type or method names,
-namespaces or index ranges. No `open_binary`, Unity installation or target
+(versions 24, 27, 29, 31 and 39) when the question concerns assembly images,
+names, member owners, string literals, namespaces or index ranges. No `open_binary`, Unity installation or target
 execution is required. The CLI equivalent is `inspect-il2cpp-metadata PATH`.
 MCP defaults to counts with complete retained Evidence. Query `sections`,
-`images`, `types` or `methods` through `inspect_analysis_view`; use exact names,
+`images`, `types`, `methods`, `fields`, `properties`, `events`, `parameters` or
+`string_literals` through `inspect_analysis_view`; use exact names,
 batch indices and selected fields. Row indices are scoped by artifact SHA-256
-and collection; page offsets count filtered matches. Preserve
+and collection; page offsets count filtered matches. Parameters support batch
+`method_indices` to read one method's parameters directly. Historical reports
+without member collections retain unknown counts rather than empty inventories. Preserve
 artifact SHA-256 and index widths. Unrecognized magic may mean encryption and
 is unsupported, not decrypted. Linking names to `GameAssembly` or
 `UnityFramework` code addresses remains a separate native-analysis question.
@@ -154,6 +194,36 @@ Prepend each set's `shared_limitations` to a group's `limitations` to recover th
 operation's full ordered list. Candidate capabilities describe possible
 providers. Top-level session capabilities describe the current route, and
 `analysis_provider_binding` identifies the selected provider.
+
+## Ghidra startup deadline recovery
+
+`provider_timeout` during the first Ghidra query can cover import, auto-analysis,
+bridge startup, and readiness. The default 330,000 ms is configurable through
+`REA_GHIDRA_STARTUP_TIMEOUT_MS`; a smaller query still needs the same cold import.
+
+Preserve useful Evidence before closing the session or restarting REA. Check
+`close_binary` and resolve reported cleanup failures. Set a larger startup budget
+in the environment that launches REA, then restart REA and reconnect the MCP
+client before reopening the same target. Closing and reopening a binary in the
+existing server keeps its original configuration and starts import again.
+Environment changes in an agent's shell do not update an already running MCP
+server. If its launch configuration cannot be changed, report that constraint
+and the exact retry setting instead of claiming a fixed technical limit.
+
+The client's tool-call deadline must allow startup plus the requested query;
+server settings and progress notifications cannot override it. CLI analysis
+avoids the MCP client deadline, but retains the provider deadline. For example:
+
+```sh
+REA_GHIDRA_STARTUP_TIMEOUT_MS=1800000 rea analyze /absolute/path/to/app.exe --provider ghidra --json
+```
+
+Thirty minutes is an example budget, not a completion guarantee. Keep host CPU
+and memory controls in place. Disable specific expensive analyzers only when
+their missing coverage is acceptable and retain the resulting limitations.
+Exported C and embedded resources remain useful independent evidence, but a
+timeout does not establish complete analysis or absence of code. See the
+[deadline and client guide](https://github.com/morluto/rea/blob/main/docs/mcp-contracts.md#ghidra-first-query-deadlines-and-recovery).
 
 ## Static memory and original file bytes
 

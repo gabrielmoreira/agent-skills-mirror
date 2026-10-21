@@ -181,6 +181,12 @@ connection flow and otherwise fail with "OAuth return did not match an active co
 
 ## Handler expectations
 
+- Vercel project scope comes from the project's `accountId`, not the first team
+  in the user's team list. Personal owners require unscoped requests; preserve
+  legacy rows with a bounded 403/404 fallback, never retries of ambiguous writes.
+- After repairing Vercel environment variables, explicitly start and verify a
+  build. A successful GitHub push can be a no-op and trigger no provider build.
+
 - Keep handler registration free of database-dependent startup work. Handlers
   register before `onReady()` initializes SQLite; run restart reconciliation
   immediately after `initializeDatabase()` instead, or the first access fails
@@ -234,6 +240,8 @@ queryClient.invalidateQueries({ queryKey: queryKeys.apps.all });
 ```
 
 **Adding new keys:** Add entries to the appropriate domain in `queryKeys.ts`. Follow the existing pattern with `all` for the base key and factory functions using object parameters for parameterized keys.
+
+**Event-fed read models (`setQueryData` + `queryFn: skipToken`):** a key written only by a permanent event subscriber is garbage-collected after React Query's default 5-minute `gcTime` whenever no component observes it, so data collected while a panel is closed silently vanishes. Call `queryClient.setQueryDefaults(key, { gcTime: Infinity, staleTime: Infinity })` before `setQueryData` (it applies query defaults when it creates the query), keep the payload bounded, and cover it with a fake-timer test that advances past five minutes with no observer (see `recentRuns` in `useTestRunEvents`).
 
 ## Events and invoke replies are not ordered relative to each other
 
@@ -386,6 +394,9 @@ When creating hooks/components that call IPC handlers:
 - Wrap reads in `useQuery`, using keys from `queryKeys` factory (see above), async `queryFn` that calls the relevant domain client (e.g., `appClient.getApp(...)`) or unified `ipc` namespace, and conditionally use `enabled`/`initialData`/`meta` as needed.
 - Wrap writes in `useMutation`; validate inputs locally, call the domain client, and invalidate related queries on success. Use shared utilities (e.g., toast helpers) in `onError`.
 - When a mutation changes fields exposed by both `apps.detail(...)` and `apps.all` (for example linking or unlinking a GitHub repository), invalidate both query families. Refreshing only the detail query can leave parent pages that derive conditional UI from the apps list stale.
+- To require a fresh read before enabling an action, gate on `query.isFetchedAfterMount`, not `!query.isFetching`. `isFetching` flips on every background refetch (window focus with `staleTime: 0`), so UI gated on it unmounts mid-flow — e.g. it unmounted `MigrationPanelBody` mid-migration in the deploy dialog.
+- When a mutation's result picks an item out of a query whose key does not change (e.g. a new deployment uid in `vercel.deployments`), invalidate that query in the mutation's `onSuccess`. A fast mutation can settle before React renders its pending state, so an `enabled: !!result` toggle never happens and the stale cache hides the new item until the next poll.
+- Callbacks passed to `useMutation(...)` are bound when `mutate()` runs, so they see that render's state. Read a ref for anything that can change while the request is in flight (such as the user cancelling the dialog that started it).
 - Synchronize TanStack Query data with any global state (like Jotai atoms) via `useEffect` only if required.
 - Root-mounted effects that automatically persist settings must depend on
   stable derived values rather than hook-returned callback identities. Set an
@@ -415,7 +426,7 @@ When creating hooks/components that call IPC handlers:
 - In packaged builds, TanStack Router history updates turn the loaded `index.html` URL into root-relative locations such as `file:///chat` (`file:///C:/chat` on Windows). IPC trust must require `senderFrame === sender.mainFrame`, `file:` with an empty host, the configured file-volume prefix, and an allowlisted renderer route; pinning only the built entry pathname breaks packaged IPC, while accepting arbitrary file paths is unsafe.
 - Electron's `setWindowOpenHandler` details do not identify the initiating frame. When preview iframes need popups, fail closed on missing or privileged request details and construct allowed HTTP(S) popups yourself after removing inherited `preload` and forcing sandboxed, Node-disabled web preferences; `about:blank` cannot be safely overridden this way.
 - Keep a strong `BrowserWindow` reference for every popup created through a custom `createWindow` callback until its `closed` event. A callback-local window can be garbage-collected and close an active OAuth or payment flow; remove the reference on close so the owner collection remains bounded.
-- Preview recording cleanup must use `session.clearData({ origins, originMatchingMode: "origin-in-all-contexts", dataTypes })` for origin-based storage: `clearStorageData({ origin })` leaves partitioned iframe localStorage behind. Exclude cookies from `clearData`, which removes them at registrable-domain scope; enumerate and remove cookies for the exact `app-<id>.localhost` hostname instead. Verify with two apps so cleanup cannot silently sign out a sibling preview.
+- Preview recording cleanup must use `session.clearData({ origins, originMatchingMode: "origin-in-all-contexts", dataTypes })` for origin-based storage: `clearStorageData({ origin })` leaves partitioned iframe localStorage behind. Exclude cookies from `clearData`, which removes them at registrable-domain scope; enumerate and remove cookies for the exact `app-<id>.localhost` hostname instead. On shared `localhost` (app-preview domains off), that exact-host loop also sees every other app's `dyad-a<id>.` namespaced HttpOnly session, so pass the app ID and skip foreign prefixes. Verify with two apps so cleanup cannot silently sign out a sibling preview.
 - Before changing preview hostnames, audit exact-`localhost` assumptions in OAuth redirect allowlists, browser identity providers, passkeys, site-restricted keys, and generated app code; Google OAuth, for example, rejects `app-<id>.localhost` as a registered origin. Stage a compatibility-sensitive origin change behind an off-by-default setting and provide a preview fallback that users can toggle when an integration rejects the new origin.
 
 When billing direct OpenAI-compatible model streams, set the provider's

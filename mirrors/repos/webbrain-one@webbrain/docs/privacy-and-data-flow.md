@@ -26,6 +26,9 @@ call to the same configured provider before any browser tools run. That call
 contains the user's task, sanitized page URL/title, a short recent-conversation
 digest, and the planner system prompt. Image blocks are dropped before the
 planner call; any screenshot text description is treated as untrusted context.
+When a plan the user will read (a review card or a plan-only answer) comes back
+without its copy in the user's language, one more call to the same provider
+sends that plan's English summary, steps and risks to be translated.
 
 When **User Memory auto-learn** is enabled, successful chat or continue turns may
 make a best-effort background extractor call to the same configured provider
@@ -110,10 +113,11 @@ requests.
 Providers → Decision has three decision-model modes. **Auto** (the
 default) sends nothing anywhere new: it uses D1 on the device once D1 is
 downloaded (with its explicit consent, on the Providers page or from the Chrome
-install guide), for completion and scheduled checks only, and while Compass is
-the conversation provider Compass's managed Cloud decision route answers
-completion checks and semantic decisions as before. With neither, no decision
-model is used. A downloaded chat or vision model never enables decisions.
+install guide), for completion and scheduled checks only, whatever the
+conversation provider. While Compass is the conversation provider, Compass's
+managed Cloud decision route answers semantic decisions as before, and
+completion checks too until D1 is downloaded. With neither, no decision model
+is used. A downloaded chat or vision model never enables decisions.
 **Off** uses none, Compass's included.
 **On** selects OpenRouter, TypeSafe, a local/custom System One endpoint, D1 or
 the in-browser chat model; completion verification, watch checks, scheduled
@@ -128,7 +132,9 @@ route unless D1 or the in-browser chat model is chosen.
 Each turn the user sends from the side panel also
 asks the configured decision model one `run_mode` question: the text of that
 message, the previous turn's mode and the user's earlier task in the
-conversation. No page text, title, address or screenshot is included, and the
+conversation. The same request asks `plan_need` (whether an action turn needs
+a written plan) about the same data, so it sends nothing more. No page text,
+title, address or screenshot is included, and the
 question is asked only when a message is sent, never while it is typed. Without
 a decision model the turn starts in Ask; only when the active model asks to
 hand the turn to Act or Dev is the same page-free question sent to the active

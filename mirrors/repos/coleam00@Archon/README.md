@@ -96,13 +96,13 @@ The bundled `sdlc` pack is a working factory for a repository:
 
 1. **You open an issue.** `archon-intake` checks it against the current code and decides what it needs: a plan, an investigation, straight to delivery, or a maintainer's look.
 2. **The build queue picks it up.** `archon-build-queue` claims the next ready issue, writes the brief and runs `archon-ship`: plan, implement, review through specialist lenses, fix the findings, wait for CI. It stops at a pull request whose review says Ready.
-3. **The merge queue lands it.** `archon-merge-queue` brings each ready pull request up to date with the base branch and merges the clear ones through a gate that checks the review verdict, CI and open threads at the head commit.
+3. **The merge queue lands it.** `archon-merge-queue` merges the clear ready pull requests that merge cleanly, through a gate that checks the review verdict and CI at the head commit and that the base branch is not red. The queue judges open review threads itself and sends a pull request that conflicts back to the build queue.
 4. **You answer what's unclear.** A scope question, a schema change or a stuck round becomes one attention item with a recommendation. Your answer is written into the issue as the new scope.
 5. **Nothing found along the way is lost.** `archon-discoveries` reads what runs noticed outside their task and files it, tracks it on an existing issue, or drops it.
 
 Archon builds Archon: of the 524 pull requests merged into this repository between 1 and 19 October 2026, Archon runs built 363.
 
-You start the queues by hand or bind them to a schedule or issue events with a [trigger](https://archon.diy/guides/workflow-triggers/). The pack binds nothing by default. The pack works through the GitHub CLI (`gh`) today; see [the forge path](https://archon.diy/reference/forge/#use-the-forge-path-in-the-sdlc-pack) for the plugin route. [The essential workflows](https://archon.diy/book/essential-workflows/) describes every workflow in the pack.
+You start the queues by hand or bind them to a schedule or issue events with a [trigger](https://archon.diy/guides/workflow-triggers/). The pack binds nothing by default. The pack works through the GitHub CLI (`gh`) today; see [the forge path](https://archon.diy/reference/forge/#use-the-forge-path-in-the-sdlc-pack) for the plugin route. [Set up the SDLC factory](https://archon.diy/getting-started/sdlc-factory/) runs it on your repository, and [SDLC pack workflows](https://archon.diy/reference/sdlc-workflows/) describes every workflow in it.
 
 ## Build any factory
 
@@ -163,10 +163,9 @@ Full documentation is at **[archon.diy/docs](https://archon.diy/docs/)**.
 
 | Topic | Description |
 |---|---|
-| [Getting started](https://archon.diy/getting-started/overview/) | Install and first run |
-| [The Book of Archon](https://archon.diy/book/) | A narrative tutorial |
+| [Quickstart](https://archon.diy/getting-started/quick-start/) | Install and first run |
 | [Authoring workflows](https://archon.diy/guides/authoring-workflows/) | Write your own YAML workflows |
-| [The attention queue](https://archon.diy/guides/attention-queue/) | List, follow and answer paused runs |
+| [Operate runs](https://archon.diy/getting-started/operate/) | Watch runs, answer the ones that need you, read results |
 | [CLI reference](https://archon.diy/reference/cli/) | Every command and flag |
 | [Configuration](https://archon.diy/reference/configuration/) | Config options, model tiers and aliases, env vars |
 | [AI assistants](https://archon.diy/getting-started/ai-assistants/) | Claude Code, Codex and Pi setup |

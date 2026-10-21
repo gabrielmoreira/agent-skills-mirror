@@ -19,7 +19,23 @@ Inspect native SAZ or HAR 1.2 offline with REA, or connect Everywhere's separate
 - `analyze_web_bundle` / `rea analyze-web-bundle` parses selected script artifacts without execution and derives chunk edges, route and endpoint candidates, vendor fingerprints, static WebMCP declarations, and optionally source-map/original-source evidence.
 - `observe_web_session` / `rea observe-web-session` arms an observation window of the requested duration for an external user action and records ordered reload, SPA navigation, redirect, failure, lifecycle, and target-termination metadata.
 - `discover_webmcp_tools` / `rea discover-webmcp-tools` uses the experimental CDP WebMCP domain to return every in-scope registration and its complete observed `input_schema` declaration and canonical `input_schema_sha256` digest inline. Declarations are untrusted JSON data, including declared types, required fields, enums, examples and reference URLs. REA does not resolve schema references. These fields replace `input_schema_shape`. Registrations with the same name and URL in distinct observed frames retain separate identities. `tool_key` includes the observed frame ID; it is not a stable identity across navigation or browser sessions. Same-frame registration updates replace that owner only, and removal leaves other owners intact. Declared `readOnly`, `untrustedContent`, `consequential`, and `autosubmit` annotation hints are reported per registration: `true`/`false` are declared values, `null` means the declaration did not provide the hint in that capture, and a missing `consequential` key means the hint was not recorded, either in a historical capture or because the observed annotation was invalid. Consult discovery completeness and exclusions to distinguish these cases. Malformed annotation values retain the registration with incomplete coverage and an `invalid_protocol_value` exclusion. Other malformed protocol payloads can fail discovery explicitly. REA never exposes `WebMCP.invokeTool`.
+
 - `compare_web_captures` / `rea compare-web-captures` compares passive captures or exact-step-aligned browser scenarios. Scenario results commit reproducible literal normalization and expose alignment failures plus artifact-level action, screenshot, DOM, accessibility, URL, history, storage, and event differences. Missing or truncated evidence is never treated as equivalence.
+
+For `analyze_web_bundle`, each `webmcp_declarations` entry's
+`schema_property_names` is a source-derived projection of statically known own
+property keys, not schema validation. `schema_property_names_coverage` reports
+how complete that projection is: `complete` means a literal properties object
+was fully enumerated (including an empty literal); `partial` means a literal
+object was available but some computed or spread membership was unresolved,
+and the name array retains keys that were known; `unknown` means the schema or
+properties owner could not be enumerated as an object literal, including
+explicit non-object values; `not_present` means no effective schema or own
+`properties` member was present after the `inputSchema ?? input_schema` alias
+selection. `not_present` describes this projection only: it does not validate a
+schema or rule out properties expressed through other schema constructs. Older
+observations may omit the coverage field; treat omission as `unknown` rather
+than inferring completeness from the array.
 
 Passive DOM comparison checks complete node inventories and complete frame
 parent/child structure independently. Frame IDs and sibling enumeration order
@@ -201,6 +217,11 @@ rea inspect-web-page http://127.0.0.1:9222 TARGET_ID \
   --json
 ```
 
+Passive observation honors the requested duration using cancellable waits within
+the runtime's timer range. Long windows stay pending across successive waits;
+caller cancellation, target termination or leaving the allowed origins ends
+collection early. `window_elapsed` identifies completion of the requested wait.
+
 Static bundle analysis and a user-driven observation window are separate operations:
 
 ```bash
@@ -283,6 +304,20 @@ Call `list_browser_targets` first because target IDs are browser-instance-specif
 
 REA establishes a main-frame origin boundary before enabling Runtime, Debugger, or Network observation, rechecks it before document capture, and validates it again afterward. If the main frame navigates during final capture, REA discards the mixed result and returns `target_changed`.
 
+The web-session timeline uses CDP monotonic seconds where the event producer
+provides a comparable timestamp; absent or invalid timestamps are `null` rather
+than a synthetic zero. Events buffered while REA samples the window boundary are
+retained only when their timestamp places them after that boundary; older events
+are excluded. A buffered event without a comparable timestamp may remain as
+contextual evidence with `timestamp: null`, accompanied by a limitation stating
+that it does not establish activity in the selected window. Main-frame scope
+enforcement still applies to contextual navigation events. Network redirect
+events retain their paired prior-hop response context when the timestamped
+next-request event falls inside the window. The pre-arm timeline buffer is bounded
+by original CDP message bytes. If clock sampling completes after that budget is
+exhausted, the operation returns `payload_limit` instead of a partial window.
+Cancellation and clock-request failures retain their own outcomes.
+
 ## Data minimization
 
 The Link projection parses repeated CDP header field lines independently and
@@ -326,8 +361,8 @@ REA retains local observation data and removes only URL userinfo credentials, ex
   WebSocket stream inventories and connection counts likewise require complete
   WebSocket coverage. Redirect resource types use only shared known metadata:
   an omitted type leaves equality unknown rather than proving a modification.
-- Console observations with a stack source retain call type, argument types, timestamp, and source location. When console text capture is selected, already-delivered primitive values are retained verbatim; objects, getters, and remote properties are never expanded.
-- WebSocket observations retain direction, opcode, and payload byte length. When shape capture is selected, text frames are classified as text or complete value-free JSON shape; binary bytes, hashes, prefixes, and raw frames are never retained.
+- Console observations with a stack source retain call type, argument types, the CDP `Runtime.Timestamp` in milliseconds since Unix epoch, and source location. An absent or invalid timestamp is `null` and makes `console_events` incomplete; an observed zero remains zero. This epoch-millisecond clock is separate from the monotonic-second timestamps in `observe-web-session`. When console text capture is selected, already-delivered primitive values are retained verbatim; objects, getters, and remote properties are never expanded.
+- WebSocket observations retain direction, opcode, and payload byte length. A missing or malformed CDP opcode is returned as `null`, with opcode-dependent payload byte length and shape also `null`, and marks `websocket_frames` incomplete. Missing or wrong-typed payload data is not treated as empty; its byte length is `null`, and a text payload shape is unknown. Numeric opcode `0` and an observed empty payload remain distinct from missing data. Opcode is nullable in the public inspection schema, so clients must handle unknown protocol values. When shape capture is selected, text messages are classified as text or complete value-free JSON shape; binary bytes, hashes, prefixes, and raw payloads are never retained.
 - Storage observations always redact values. Key names, IndexedDB names, and cache names require `include_storage_keys`; stable content fingerprints require the additional `include_storage_fingerprints` selection. Cookie fingerprints cover cookies applicable to the current main-frame URL, including its path, rather than every cookie path on that origin. Other storage remains scoped to the origin. Cache fingerprints hash all decoded response bytes, including bodies above 64 KiB, subject to the [64 MiB per-message CDP limit](#request-boundary). Missing or undecodable cache bodies and partial IndexedDB remote objects make fingerprint coverage incomplete, so identical observations remain `unknown`.
 - Unavailable or malformed storage inventories mark `storage_keys` unavailable, even without fingerprints. Comparisons suppress inferred key additions and removals while preserving modifications proven by complete fingerprints on both sides. Previously exported captures are not retroactively corrected; recapture them to obtain these coverage markers.
 - Script metadata is included only when CDP supplies a URL on an allowed origin. Stable keys exclude transient CDP script IDs, and exact transient raw URLs are used only during script/resource reconciliation. URL-less scripts are excluded because their origin cannot be established. When CDP supplies an execution-context association, the accepted script retains its authorized frame ID for later attribution. Script metadata admission bounds retained identity and source-map strings to 8 MiB and 50,000 records. When a source-map URL cannot fit, the script identity remains and source-map coverage reports `resource_budget_exhausted`; rejected script observations are counted without retaining their IDs. Source content is omitted unless explicitly requested and is returned inline as a self-verifying artifact with its SHA-256 digest.

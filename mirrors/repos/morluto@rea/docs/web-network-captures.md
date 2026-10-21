@@ -122,29 +122,96 @@ XML node tree; optional `_w.txt` and `_g.txt` files retain opaque WebSocket and
 gRPC message bytes. Missing members remain null, distinct from empty bodies.
 See Telerik's [SAZ format reference](https://www.telerik.com/fiddler/fiddler-everywhere/documentation/knowledge-base/fiddler-archives).
 
-The existing ZIP reader verifies read members; expanded archive contents are
-limited to 32 MiB in addition to the input/output budgets below. Exceeding this
-expanded-byte budget returns `invalid_request` / `invalid_input` through both
-CLI and MCP, with an `out_of_range` issue at
-`capture_path` and `maximum_expanded_capture_bytes`. Selecting records does not
-bypass the complete-archive admission check or return partial Evidence. Encrypted
-archives and unrecognized raw session members are unsupported. SAZ requires an
-enforced decoder memory bound: Node's fixed heap, or the Windows Job Object
-commit limit. Bun on hosts without that Job Object limit returns capability
-unavailable before starting the SAZ decoder. Non-session
-members are inventoried without decoding their content. Original files remain
-unchanged. Linux verification includes independently checked public recorded
-Mattermost captures from [FOREST](https://github.com/dfrc-korea/FOREST/tree/405c9154658a128ea203a6c10040cec55111ed03/api-results/dataset)
-and the Fiddler author's [encoding corpus](https://github.com/ericlaw1979/Clearinet/blob/b6faf78cde1e72042980364f180ceb34b77d1434/Test/data/Encodings.saz),
-plus synthetic malformed/limit fixtures. Their exporting product versions are
-not authenticated. An interactive export from a current Fiddler Everywhere
-installation and its live MCP server remain unverified. Support here is the
-bounded documented raw HTTP/XML SAZ layout, not every product/version profile.
+## Protobuf and gRPC bodies
 
-For visual inspection, use Everywhere's **Import Snapshot**, then **Inspectors**
-and **Overview**. HAR remains an alternative: select sessions, choose
-**Export > HTTPArchive**, and confirm `log.version` is `"1.2"`. Preserve the
-original SAZ when exporting. See the [import/export instructions](https://www.telerik.com/fiddler/fiddler-everywhere/documentation/collaboration/exporting-and-importing).
+Selecting `record_ordinals` (CLI `--record`) also decodes retained bodies with
+recognized protobuf or gRPC content types. Whole-capture inspection does not
+perform this extra work. The original binary sidecar, SHA-256 and producer
+ordinal remain the source; decoding adds flat body, frame and field facts.
+
+Native gRPC admits only data-frame flags 0/1; gRPC-web additionally admits its
+terminal trailer frame. `grpc-web-text` supports independently padded base64
+chunks. Its offsets refer to **base64-decoded body bytes**; other offsets refer
+to retained body bytes. Every field has a body-scoped `field_id` derived from
+its byte offset, a `frame_index`, and a `parent_field_id` for schema-driven
+nested messages or groups. Repeated field numbers remain separate occurrences.
+
+Without a schema, varints and fixed-width values retain exact unsigned decimal
+representations. Length-delimited UTF-8, nested-message and packed readings
+are candidates; REA does not choose one or invent field names or signedness.
+Nested candidate ranges remain accessible without recursively expanding them.
+Malformed messages retain the parsed prefix and an exact error offset.
+Compressed frames and encoded HTTP bodies remain unknown; they are not
+silently treated as empty messages.
+
+For schema interpretation, supply a local compiled `FileDescriptorSet` and its
+fully qualified message type. All imports must be included. REA never fetches
+schemas or executes the selected application. Descriptor identity and parser
+version remain in the body facts. Scalars, repeated numeric packing and nested
+messages are interpreted alongside the unchanged wire facts; disagreements
+remain explicit. Map semantics, extensions and required-field validation are
+unsupported. A supplied schema does not establish the sender's actual schema.
+An invalid nested interpretation records `schema_status: "invalid-message"`
+and `schema_error` locally; later outer fields remain available. Valid string
+contents, including a leading U+FEFF, are preserved.
+
+```bash
+# Compile your own schema with your existing protoc, including local imports:
+protoc --include_imports --descriptor_set_out=/evidence/api.pb api.proto
+rea inspect-web-network-capture /evidence/session.har har --record 3 \
+  --protobuf-schema /evidence/api.pb --protobuf-message example.Response \
+  --detail summary --evidence_output /evidence/session-evidence.json --json
+```
+
+MCP accepts the same choices as `protobuf: {schema: {descriptor_set_path:
+"/evidence/api.pb", message_type: "example.Response"}}`, with explicit
+`record_ordinals`. Optional `body_pointers` batch-select exact binary pointers;
+`framing` can explicitly select `raw`, `grpc`, `grpc-web` or `grpc-web-text`
+when MIME metadata is unavailable. CLI exposes `--protobuf-body-pointer` and
+`--protobuf-framing`. Filters never invent bytes excluded by source redaction. Decoding an extra
+base64 layer also checks explicit exclusions; newly recognized trailer
+credentials exclude the entire affected binary sidecar and its reported
+encoding, preserving a redaction coordinate instead of a credential digest.
+Credential inspection covers every selected body before descriptor reads or
+field expansion. Later capacity or schema failures can therefore retain the
+sanitized source even with explicit sensitivity options. If that source pass
+is interrupted, unchecked bodies are not published as partial Evidence.
+Framing overrides apply only to format-owned body coordinates and preserve
+exclusions for the transport declared in MIME metadata.
+Unknown or explicitly excluded HTTP coding metadata is not treated as absent:
+SAZ/native bodies remain opaque until identity coding is established. Raw
+header values and retained body bytes remain available in source Evidence.
+Skipping wire analysis still runs the independent credential check. If HTTP
+coding metadata is unavailable and that check cannot complete, the operation
+returns unavailable without publishing unchecked capture bodies as Evidence.
+
+Use `detail: "summary"`, then `inspect_analysis_view` with its retained parent:
+
+```json
+{"kind":"protobuf","collection":"bodies","offset":0,"limit":16}
+{"kind":"protobuf","collection":"frames","record_ordinals":[3],"offset":0,"limit":16}
+{"kind":"protobuf","collection":"fields","record_ordinals":[3],"field_numbers":[1,4],"fields":["number","schema_name","schema_value"],"offset":0,"limit":32}
+```
+
+Filters intersect; an empty filter selects nothing. Field pages also accept
+`field_ids`, `frame_indices` and `schema_names`. Default field pages omit `text`,
+`schema_value` and enum alias inventories; select these columns when needed. Identity, source offset
+basis and body status survive column selection. Complete Evidence retains
+all decoded values, and ordinary capture previews expose counts. Page exhaustion
+covers retained facts only; a partial source does not establish absence.
+
+Authenticated immutable parents reuse validation and the most recent field
+filter per capture. These caches live only with retained Evidence, hold references
+to existing facts and never reopen either file. Cached selector text is bounded
+by retained field cardinality; larger selections use an uncached scan. Mutable
+input is revalidated.
+The existing 96 MiB report budget includes the original decoder reply plus
+conservative charges for new facts, strings and descriptor expansion. The explicit
+`protobuf_coverage` reports selected and inspected record counts, preserving
+partial decoding through composed views. Capacity failure retains the source
+observation as partial Evidence; cancellation yields
+between bounded work batches. Real elapsed time and process-family memory
+still depend on the selected capture and schema.
 
 ## Fiddler Everywhere MCP and public skills
 
@@ -432,6 +499,103 @@ rather than inline: response bodies the manifest never reads are then charged
 once per value in the capture clone, not per character. A
 `capture_browser_scenario` parent is also charged, before validation, for
 checking its largest body and for the decoded text of its request bodies.
+
+## Environment state
+
+Pass the same parent to `inspect_analysis_view` with
+`view: {"kind":"environment-state"}` to extract the initial state the
+capture's reads observed, and a render plan per read tool that reproduces those
+reads from it. Where the environment manifest names an application's tools, the
+state holds its data: entities by type and identity, plus documents for written
+paths whose reads are not entities. Use the `template_rules` of the manifest the
+state accompanies so tool names match; the view groups records the same way.
+
+```json
+{
+  "name": "inspect_analysis_view",
+  "arguments": {
+    "source": { "kind": "retained-evidence", "evidence_id": "ev_..." },
+    "view": {
+      "kind": "environment-state",
+      "template_rules": [
+        "after-uid-literal",
+        "opaque-token",
+        "sibling-variance"
+      ]
+    }
+  }
+}
+```
+
+Records on the primary origin are ordered by recorded start time, or by record
+order when any start time is missing (`timeline`), as for a
+`capture_browser_scenario` parent. A `POST`, `PUT`, `PATCH` or `DELETE` with a
+2xx or 3xx status, or no status, may change state, unless it is a `POST` whose
+path has a segment such as `search`, `query`, `list`, `find`, `fuzzy`,
+`count` or `stats`, which queries state instead. A type's state comes from its
+successful reads that finished before the first such write under the same root:
+the path's API base (the literal segments every tool sharing its first segment
+has), any `v1`-style version segments, then one more segment. A read that
+overlaps that write in time is left out. A write whose URL a scenario redacted
+has an unknown target, so it ends the state of every type, and a limitation
+counts such writes. Values from a `capture_browser_scenario` parent keep the
+capture's redaction markers in place of declared secrets; the state is not
+refused for them, as the manifest is not.
+
+Each `GET` tool whose template ends in a parameter is an item tool, and its
+type's `collection_template` is the template without that parameter; any other
+`GET` tool is a list tool of its own template. An item tool proves its type's
+`id_field` when every initial response carries the requested path value in the
+same field, at the root or in one wrapper member (`id_basis: "path-parameter"`).
+Otherwise the field is the first of `id`, `uid`, `uuid`, `_id`, `ID`, `UID`,
+`Id`, `guid`, `key`, `slug` and `name` that every listed item carries as a
+distinct string or number (`id_basis: "field-name"`). A list is the response
+array, or the one array of objects in an envelope that is not itself an entity.
+
+`entities` merge every initial observation of one identity within one
+collection path: an item view's latest values win over a list view's, a view
+whose latest values differ keeps them in `view_fields`, and a field whose value
+changed between one tool's observations with no recorded write between is named
+in the type's `volatile_fields`, keeping the latest value. A value that changed
+across a write under another root may be that write's effect, so every tool of
+its type is a recorded view with reason `fields-differ`; so is a value one tool
+read before a write and another tool read after it. Repeated reads of one full request line also keep the type recorded when list membership changes across a write, including transitions to or from an empty list, or when entity fields are added or removed. Different query strings remain distinct request lines. Sparse responses do not erase the last observation of a field supplied by another request line. Entities are ordered
+by type, collection and first sighting; that order is a list's state order.
+Every entity cites its `record_ordinals`.
+
+`views` lists one plan per read tool in tool order:
+
+| Shape      | Plan                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `item`     | The entity object at `pointer` (the root or one member), the ordered `fields` the view shows and the `required_fields` every recording had, and `envelope_ordinal`: the recording whose response, with the entity replaced, every item response shares                                                                                                                                                                                                                                                                      |
+| `list`     | The array at `pointer`, its `fields`, `membership` (`all`: every entity of the collection in state order, when each recording listed exactly that, had no query, no item-total member (`total`, `count`, `totalCount`, `item_count`, `totalcount`, `itemcount`, but not `total_pages` or `per_page`; a number or a string of digits) differing from the number listed, and no `has_more`, `next` or next-page token member set; `recorded`: the entities each recording listed) and `counters` that equal the number listed |
+| `document` | The path's latest initial value, held in `documents`                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| `recorded` | A `reason` the tool replays its recordings instead                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+
+An item or list plan is kept only when it reproduces the latest initial
+recording of each request line from the state, comparing JSON values without
+regard to member order; a volatile field compares its recorded value. Each
+plan lists the `checked_record_ordinals`. Otherwise the tool is a recorded view
+with reason `envelope-varies`, `fields-differ` or `list-differs`; the other
+reasons are `query-body` (a query `POST`), `no-init-recording`,
+`body-unusable`, `not-entity`, `no-identity` and `query-varies` (a document
+read under several queries). Documents are held only for list-shaped paths
+that a `POST`, `PUT` or `PATCH` tool writes: a non-entity read of an item path
+such as `/api/files/{id}`, or of a path that is only deleted, stays recorded
+with `no-identity` or `not-entity`. A body is usable when its content type is
+JSON-like, it is UTF-8 text of at most 256 KiB, every number survives native
+conversion exactly, and no member is named `__proto__`.
+
+Values in the state are recorded data, so the view refuses the same parents as
+the manifest, including those inspected with `sensitive_values`, and a
+`capture_browser_scenario` parent must have selected response bodies. Types and
+identity are inferences, so the Evidence is always inferred. `unknowns` states
+that the state establishes no authorization model, no way the application
+computes responses or derived values, and no effects of writes. The state
+accumulator charges the manifest's admission and grouping, every record line,
+each body as temporary bytes before it is decoded and parsed, and every value
+it keeps, within the same 96 MiB budget. The view performs no network activity
+and serves nothing.
 
 ## Resource and lifecycle boundaries
 

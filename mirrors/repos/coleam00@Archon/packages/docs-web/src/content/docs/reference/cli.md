@@ -37,7 +37,7 @@ Roles must be `admin` or `member`; unknown ids and invalid roles fail with a non
 
 ## Projects
 
-`archon project list` lists every registered project in the install, from any directory, without a server.
+`archon project list` lists every registered project in the install without collapsing duplicate remotes, from any directory, without a server, provided all stored checkout paths validate. An invalid stored checkout path makes the command fail; repair that path before listing projects.
 
 ```bash
 archon project list          # ID, KIND, NAME, KEY and PATH per project
@@ -180,7 +180,7 @@ The former plugin `install` verb remains a deprecated alias for `archon plugin a
 
 A provider plugin records its descriptor in the receipt and registers on the next CLI invocation or server restart. A workflow names its descriptor id in `provider:`. See [Provider plugins](/guides/publishing-plugins/#provider-plugins) for executable naming, capabilities, credentials, and the process environment.
 
-A chat plugin records its validated descriptor after an initialization-only handshake. On server restart, each usable chat receipt starts one supervised plugin process; a receipt that is unreadable or does not own its executable is logged and skipped until `update <id>` or `remove <id>` repairs it. Install, update, and removal take effect at the next restart. See [Chat plugins](/guides/publishing-plugins/#chat-plugins) for release assets, platform-id collisions, and installation behavior.
+A chat plugin records its validated descriptor after an initialization-only handshake. On server restart, each usable chat receipt starts one supervised plugin process; a receipt that is unreadable or does not own its executable is logged and skipped until `update <id>` or `remove <id>` repairs it. Install, update, and removal take effect at the next restart. In Docker, `SLACK_BOT_TOKEN` declares offline provisioning of the image-provided Slack plugin: removing it while tokens remain configured reinstalls it on the next boot. Remove the tokens from every effective env source as well to keep Slack removed. Valid installed Slack releases are retained; image upgrades do not update them. See [Chat plugins](/guides/publishing-plugins/#chat-plugins) for release assets, platform-id collisions, and installation behavior.
 
 A workflow pack installs complete at one commit. The command fetches the tag, or the default branch head, with `git fetch --depth 1` into a private repository, reads the plugin directory of that commit, and refuses the pack if that directory holds a symlink, a submodule, a path that escapes it or a file name containing `\` or `:`, if an entrypoint is missing, or if another installed pack has the same owner and `name`. Git's credential setup applies to the fetch, but the manifest is first read unauthenticated from `raw.githubusercontent.com`, so a private repository cannot be installed. The tree is written to `ARCHON_HOME/plugins/packs/<id>/<commit>/` and then the receipt to `ARCHON_HOME/plugins/installed/<id>/receipt.json`, so a reader sees either the previous complete install or the new one. With a readable receipt, `update` replaces the tree and prints the old and new commit; `remove` deletes the receipt and that tree. When repairing an unreadable receipt, `update` prints only the newly installed commit and cannot identify old trees at other commits. Inspect `ARCHON_HOME/plugins/packs/<id>/` and remove old trees manually only after confirming they are unused. Nothing updates in the background. Installed entrypoints run as `owner/plugin:entrypoint`; see [Installed workflow packs](/guides/global-workflows/#installed-workflow-packs) for the pack layout and how runs resolve them.
 
@@ -288,6 +288,24 @@ With `--json`, outputs `{ "workflows": [...], "errors": [...] }`. Each workflow 
 
 Run a workflow with an optional user message.
 
+Foreground completion and failure output includes the run's recorded cost and input/output
+tokens, even with `--quiet`. These are stored figures, not a certified complete bill:
+
+```text
+  Usage (recorded totals; completeness unknown):
+    Cost: $0.024
+    Input tokens: 8420
+    Output tokens: 2180
+```
+
+Provider usage metadata is optional. Missing or malformed values print `unknown`;
+a recorded zero prints `0` (or `$0` for cost). An unknown or malformed token-uncertainty
+marker makes both token counts unknown. Every summary carries the completeness warning,
+even when all values are numeric, because stored totals cannot certify that every
+contribution was recorded. If the persisted run cannot be read, output shows
+`Usage: unavailable (persisted run unavailable)` without changing the execution result.
+Paused runs can be inspected with [`workflow get`](#workflow-get).
+
 ```bash
 # Basic usage
 archon workflow run investigate --cwd /path/to/repo "Why does the export job time out?"
@@ -328,7 +346,8 @@ Note that a real `run` emits a JSON payload **only** under `--detach`. Without i
 | `--branch <name>` | Explicit branch name for the worktree |
 | `--from <branch>`, `--from-branch <branch>` | Start-point for the new worktree only -- unlike `--base`, it does not change the PR target |
 | `--base-branch <name>` | Choose the project base branch on first registration only. Omit to follow the remote default at use time; no prompt. Rejected for folder projects, existing projects, resume/adoption/supersedes, and dry runs. A reachable remote must advertise the branch. With `--base`, this flag stores the project choice while `--base` overrides only this dispatch. |
-| `--base <branch>` | Per-dispatch base override for a single run. Sets **both** the worktree cut-from **and** the PR target (`$BASE_BRANCH`), and outranks `worktree.baseBranch` in config plus the codebase default -- see [Base branch precedence](#base-branch-precedence) below. The branch **must already exist on the remote**; a missing one is a hard error, not a fallback. Combine with `--from` to drive the two separately. Rejected with `--no-worktree`, `--folder`, and workflows pinning `worktree.enabled: false`. |
+| `--base <branch>` | Per-dispatch base override, inherited by fresh shared-checkout children. Sets **both** the worktree cut-from **and** the PR target (`$BASE_BRANCH`), and outranks `worktree.baseBranch` in config plus the codebase default -- see [Base branch precedence](#base-branch-precedence) below. The branch **must already exist on the remote**; a missing one is a hard error, not a fallback. Combine with `--from` to drive the two separately. Rejected with `--no-worktree`, `--folder`, and workflows pinning `worktree.enabled: false`. |
+| `--project <id\|name>` | Bind a fresh run to an existing registered repository by ID or exact name (for example `owner/repo`); see `archon project list`. Folder projects are unsupported. See `archon workflow run --help` for incompatible flags. |
 | `--no-worktree` | Opt out of isolation -- run directly in live checkout |
 | `--folder` | Register the current directory (with or without git) as a folder project (first use) and run in place -- no worktree. Rejects `--branch`/`--from`/`--base`. |
 | `--container` | Run a **folder project** inside an overlay-isolated Docker container instead of in place (writes land in an overlay, not the live root, until an approval-gated write-back). Folder-only; a repo project errors. Requires the runner image (`bun run build:runner-image`). Pauses `docker stop` the container; `--resume`/`approve`/`reject` rediscover and restart it. See the [Container isolation guide](/guides/container-isolation/) and [configuration](/reference/configuration/#container-isolation-folder-projects). |
@@ -387,11 +406,11 @@ Every run freezes its workflow source when it starts, whether or not you pass th
 - **A run does not change shape while it is running.** Edit, move, or delete the source checkout after a run starts and a resume still executes what the run began with. Start a new run to pick up the edits.
 - **Resume needs no source path.** Every continuation -- `archon workflow resume <run-id>`, `archon workflow run <name> --resume`, `approve`, and `reject` -- loads the run's own captured source, which is why `--workflow-source` is refused alongside `--resume`.
 
-The captured source lives beside that run's artifacts, at `~/.archon/workspaces/<project>/workflow-source/runs/<run-id>/`, and stays as long as the run's other output does. It is deliberately not inside `$ARTIFACTS_DIR`: that directory is the run's output channel, handed to every node and listed for inspection, and the frozen source is neither. Its manifest records a content digest and source-resolution settings, which the run row also stores. Archon checks those pinned values during initial discovery, on resume, and immediately before every later filesystem-backed command, named script, or composed-source read, hashing the full capture each time. If the capture is changed or replaced, the read and any container dispatch are refused. Start a fresh run to execute the current workflow. If a read fails after the run started because this host cannot read the capture, or the capture is missing here, the run pauses instead of failing and is continued by a host that can read it (see `workflow wake`).
+The captured source lives beside that run's artifacts, at `~/.archon/workspaces/<project>/workflow-source/runs/<run-id>/`, and stays as long as the run's other output does. It is deliberately not inside `$ARTIFACTS_DIR`: that directory is the run's output channel, handed to every node and listed for inspection, and the frozen source is neither. Its manifest records a content digest and source-resolution settings, which the run row also stores. Archon checks those pinned values during initial discovery, on resume, and immediately before every later filesystem-backed command, named script, or composed-source read, hashing the full capture each time. If the capture is changed or replaced, the read and any container dispatch are refused. Start a fresh run to execute the current workflow. If a read fails after the run started because this host cannot read the capture, or the capture is missing here, a successful source release pauses the run for continuation by a host that can read it (see `workflow wake`). If the release write rejects after admission, the executor attempts to record the run as failed. If that failure write succeeds, the caller receives a failure result with the original error. If it also rejects, the caller receives both errors and the row may still be `running`; inspect the store state and run ownership before recovery.
 
 These checks detect a mismatch present when Archon checks; they do not seal the directory or turn workflow execution into a security sandbox. Another process running as the Archon user can still change a file after a check, and already-started parallel nodes are not cancelled. Inline node bodies and command bodies compiled into an included graph are already in memory. A runtime `workflow:` child deliberately captures the live authoring source when that child starts, then receives its own pinned capture. If the parent's recorded authoring directory has moved or been deleted, Archon refuses to start the child instead of capturing a same-named workflow from the target checkout.
 
-The one exception is a run that started before Archon captured source at all. It has nothing recorded to honor, so it resumes against the current source on disk with a warning. A run whose recorded capture is missing or unreadable never falls back to live source. After admission, it pauses for continuation on a host that can read the capture; before admission, execution is refused until the capture is readable. Source-integrity failures, such as a changed or replaced capture, still fail or refuse execution.
+The one exception is a run that started before Archon captured source at all. It has nothing recorded to honor, so it resumes against the current source on disk with a warning. A run whose recorded capture is missing or unreadable never falls back to live source. After admission, a successful source release pauses it for continuation on a host that can read the capture. A rejected release write fails the run when the subsequent failure write succeeds. If that write also rejects, the caller receives both errors and the row may still be `running`; inspect the store state and run ownership before recovery. Before admission, execution is refused until the capture is readable. Source-integrity failures, such as a changed or replaced capture, still fail or refuse execution.
 
 An older captured run may have a digest in its run row but no out-of-band copy of its source-resolution settings. Archon still verifies its tree against that digest, reads the settings from the manifest, and on the first resume records them on the run row beside the digest, with a warning. Nothing can prove those settings are the ones the run started with, since the manifest is outside the digest; pinning them closes the window, so a later edit to the manifest is refused like any other change.
 
@@ -432,7 +451,7 @@ archon workflow run deliver --cwd /path/to/repo \
 
 The scaffold is derived from the already-expanded workflow, so included top-level nodes use their flattened ids (for example, `review__classify`) — while `loop_group` BODY nodes keep their bare ids even inside an included block (the group node gets the `<includeId>__` prefix; its body does not). Prefer `--stubs-init` over hand-writing keys: the scaffold is the authoritative source for both spellings. Structured `output_format` values are emitted as YAML objects with native booleans, numbers, arrays, and nested required properties. Loop completion fields are generated as `true`. If Archon cannot prove that a generated value satisfies its JSON Schema, scaffold generation fails before creating the file.
 
-The stub file must contain one YAML mapping. Each value is either a string or an object. Object stubs are preserved as structured output, so downstream `$classify.output.severity` references behave like live structured producers. Strict coverage remains the default: a reachable AI, bash, or script node without a stub fails the simulation and appears in `missingStubs`. The one exception is a `trigger_rule: all_done` join — it runs whatever its upstream did, so a real run reaches it regardless of stub data. It gets a generated placeholder and is listed in both `missingStubs` and `toleratedMissingStubs`, and the absent stub alone never fails the simulation or a `workflow test` fixture. It is only listed in `toleratedMissingStubs` once that placeholder exists: a node whose `output_format` cannot produce one still fails, and stays out of the tolerated list. A `loop:` node carrying the same trigger rule is tolerated on the same terms, with one addition — the placeholder must also end the loop, which it does by satisfying the node's own completion channel, so a tolerated loop always completes on its first iteration. The one loop shape it cannot end is an `output_format` whose only completion channel is a prose `until:`, because the generated JSON never carries the sentinel; that node still fails and stays out of the tolerated list. Add `--default-stubs` to fill only omitted reachable nodes with the same schema-aware placeholders used by scaffold generation; explicit values always take precedence. Without `--exec-code`, a reachable `bash:` or `script:` node that arrived through `include:` needs a stub like any other: a stubbed node never runs its body, so the caller's `with:` values are never delivered to it. With `--exec-code` it can run unstubbed and reads those values as described below. Supplied stubs for unknown or unreachable nodes appear in `unusedStubs`, while generated placeholders do not. Whole-output references retain their normal lenient behavior, while invalid strict `$node.output.field` references fail the consuming node exactly as they do in a real run. See [Node Output References](/reference/variables/#node-output-references).
+The stub file must contain one YAML mapping. Each value is either a string or an object. Object stubs are preserved as structured output, so downstream `$classify.output.severity` references behave like live structured producers. Strict coverage remains the default: a reachable AI, bash, or script node without a stub fails the simulation and appears in `missingStubs`. The one exception is a `trigger_rule: all_done` join — it runs after its dependencies settle regardless of their result. An interaction in a loop body is an exception: a prior body failure prevents it from starting, even with `all_done` (see [loop failure behavior](/guides/loop-nodes/#how-it-works)). A reachable join gets a generated placeholder and is listed in both `missingStubs` and `toleratedMissingStubs`, and the absent stub alone never fails the simulation or a `workflow test` fixture. It is only listed in `toleratedMissingStubs` once that placeholder exists: a node whose `output_format` cannot produce one still fails, and stays out of the tolerated list. A `loop:` node carrying the same trigger rule is tolerated on the same terms, with one addition — the placeholder must also end the loop, which it does by satisfying the node's own completion channel, so a tolerated loop always completes on its first iteration. The one loop shape it cannot end is an `output_format` whose only completion channel is a prose `until:`, because the generated JSON never carries the sentinel; that node still fails and stays out of the tolerated list. Add `--default-stubs` to fill only omitted reachable nodes with the same schema-aware placeholders used by scaffold generation; explicit values always take precedence. Without `--exec-code`, a reachable `bash:` or `script:` node that arrived through `include:` needs a stub like any other: a stubbed node never runs its body, so the caller's `with:` values are never delivered to it. With `--exec-code` it can run unstubbed and reads those values as described below. Supplied stubs for unknown or unreachable nodes appear in `unusedStubs`, while generated placeholders do not. Whole-output references retain their normal lenient behavior, while invalid strict `$node.output.field` references fail the consuming node exactly as they do in a real run. See [Node Output References](/reference/variables/#node-output-references).
 
 A workflow's declared `inputs:` resolve exactly as in a real run: omitted inputs take their declared `default:`, `--input name=value` binds a value (visible in the trace's resolved text), and a missing **required** input or an **undeclared** name fails at the invocation gate with the same errors a real run gives — before any trace output. With `--exec-code`, bash and script nodes also receive the same `INPUTS_<UPPER_SNAKE>` environment variables a real run delivers: run-level inputs, an included block's own inputs, and a script node's `with:` bindings.
 
@@ -492,11 +511,16 @@ local checkout. See [Troubleshooting](/reference/troubleshooting/) to clear a st
 `--base` is the per-dispatch level, which is what makes parallel multi-base
 dispatch (epic slices, A/B variants) config-free.
 
-**Scope: the dispatched run only.** A `workflow:` node with `isolation: worktree`
+**Scope: isolated children resolve independently.** A `workflow:` node with `isolation: worktree`
 creates a worktree for its child run, and that worktree is cut using levels 2--4
-only -- `--base` and `--from` do **not** propagate to sub-run children. A parent
+only. Parent `--base` and `--from` do **not** change an isolated child's cut-from. A parent
 dispatched with `--base release/2.0` still branches its isolated children off the
-repo's configured base. See [Choosing the child's
+repo's configured base, and the child's `$BASE_BRANCH` reports that provisioning base.
+When reusing an isolated branch without a surviving child run record, its original base
+is unavailable: `$BASE_BRANCH` stays unresolved rather than guessing from current config.
+A fresh shared-checkout child (`isolation: inherit` or omitted) inherits the parent's
+resolved `$BASE_BRANCH`, including a parent `--base` override. Existing child runs keep
+their recorded base on resume. See [Choosing the child's
 checkout](/guides/authoring-workflows/#choosing-the-childs-checkout-with-isolation).
 
 **Driving cut-from and PR target separately.** `--from` overrides only the
@@ -575,7 +599,7 @@ Tool-call advisories appear in nonverbose text and in the JSON `attention` field
 
 ### `workflow runs`
 
-List recent runs of **every** status (completed, failed, cancelled, running, paused) for the current project. The project is resolved from `cwd` the same way `workflow run` does. Complements `workflow status` (which is active-only).
+List recent runs of **every** execution status for the current project. The project is resolved from `cwd` by its registered checkout path or linked-worktree identity. A separate clone does not resolve to that project, even after a launch with `workflow run --project`. Complements `workflow status` (which is active-only).
 
 ```bash
 archon workflow runs
@@ -586,7 +610,9 @@ archon workflow runs --limit 50        # cap rows (default 20)
 archon workflow runs --all             # list across all projects (ignore cwd scope)
 ```
 
-If `cwd` is not a registered project, the command falls back to a global list and says so — `--json` carries this as a `scopeFallback: true` field so a consuming agent never mistakes a global result for a project-scoped one.
+If `cwd` is not a registered project, the command falls back to a global list and says so — `--json` carries this as a `scopeFallback: true` field so a consuming agent never mistakes a global result for a project-scoped one. A registry lookup failure fails the command, including with `--open`; JSON mode returns `{ok:false,error}` with exit code 1.
+
+After a separate-clone launch, use `archon workflow get <full-run-id>` to inspect the run directly, or run `archon workflow runs` from the registered checkout for a project-scoped list. The global list defaults to 20 rows and may omit the run.
 
 The run-list JSON uses the same `active_nodes` contract as `workflow status`. The retained singular
 fields are compatibility fields: `current_step_name` and `current_step_status` are populated only
@@ -624,6 +650,11 @@ archon workflow get <run-id> --json
 archon workflow get <run-id> --verbose   # add the per-node summary
 archon workflow get <run-id> --json --verbose
 ```
+
+The text view includes the same [recorded usage summary](#workflow-run-name-message)
+for any run status. It reads stored totals without recalculating them or certifying
+completeness. `--json` retains the raw usage values in `metadata`, including nulls or
+malformed historical values; it adds no formatted usage text.
 
 For a paused gate, human-readable output lists its declared decision IDs and optional
 labels, with an exact `archon workflow respond <run-id> <decision> [text]` command
@@ -723,13 +754,13 @@ checkout and is logged. Otherwise it is
 
 | Reason | Meaning |
 |---|---|
-| `resumable` | The run failed and can resume; `workflow abandon` or the stale sweep releases it |
-| `cancelled` | The run was cancelled; `workflow abandon` releases it |
+| `resumable` | The run failed and can resume; `workflow abandon` attempts release, retaining owner warnings for inspection, or the stale sweep can release eligible checkouts |
+| `cancelled` | The run was cancelled; `workflow abandon` attempts release, retaining checkouts with owner warnings for inspection and retry |
 | `workspace_retained` | The originating platform keeps its workspaces |
 | `in_use` | Another claimable run uses the checkout; `detail` names it |
 | `uncommitted_changes` | The checkout has uncommitted changes |
 | `unpushed_commits` | A commit on the HEAD or branch is on no remote; `detail` gives the count |
-| `published_branch` | The configured remote has the branch; `isolation cleanup --merged` removes it after its PR merges |
+| `published_branch` | The configured remote has the branch; after its PR merges, `isolation cleanup --merged` can remove the worktree and local branch, retaining the remote branch |
 | `check_failed` | The check could not run; `detail` gives the error |
 
 The artifact manifest records paths, sizes, and typed metadata observed at termination.
@@ -872,7 +903,7 @@ message, the paused node id, the `form` and the `options` an answer may choose f
 Answer it with [`workflow answer`](#workflow-answer); use `archon workflow abandon
 <run-id>` if the run should not continue.
 
-An overdue tool returns `result: "attention"` with `attention.kind: "stalled_tool_calls"`, `status: "running"`, the affected `runId`, and `calls` naming nodes, providers, tools, sanitized titles, timestamps, `elapsedMs`, and `stalledForMs`. Exit `0` means attention was found; it does not mean the run completed. Inspect with `workflow logs` or explicitly cancel if appropriate. This advisory grants no approve or resume action. Reattaching returns it immediately while active. When a parent waits on a child, the advisory names the child's run id.
+An overdue tool returns `result: "attention"` with `attention.kind: "stalled_tool_calls"`, `status: "running"`, the affected `runId`, and `calls` naming nodes, providers, tools, sanitized titles, timestamps, `elapsedMs`, and `stalledForMs`. Exit `0` means attention was found; it does not mean the run completed. Inspect with `workflow logs`, request recovery with [`workflow end-turn`](#workflow-end-turn), or explicitly cancel if appropriate. This advisory grants no approve or resume action. Reattaching returns it immediately while active. When a parent waits on a child, the advisory names the child's run id.
 
 ```bash
 archon workflow wait <run-id>
@@ -943,7 +974,7 @@ shows "Running · owner unknown". Neither is shown as live progress.
   gate type this build does not know, a sub-run pointer with no row). `detail` says which.
   It also reports `reason: source_release_not_continued` for a container paused by a
   host-local captured-source read failure. Resume that container by hand on a host
-  that can read its source; see [Attention queue](/guides/attention-queue/).
+  that can read its source; see [Operate runs](/getting-started/operate/).
 
 Two pauses deliberately do **not** wake a waiter, because neither is owed a response: a
 gate or attention wait that has already been answered and is awaiting continuation, and a
@@ -974,7 +1005,7 @@ inspect the run normally with `workflow get <run-id>`.
 
 ### `workflow attention`
 
-List, count, stream or read the [attention queue](/guides/attention-queue/): every paused
+List, count, stream or read the [attention queue](/getting-started/operate/): every paused
 run that needs an answer or inspection, plus observable provider usage- and rate-limit waits.
 Branch on `kind`: `attention` and `awaiting_response` accept answers, `usage_limit`
 continues automatically after reset, and `unreadable` needs inspection. Read-only.
@@ -1007,7 +1038,7 @@ archon workflow attention --watch --json --after <cursor>          # resume a st
 `item` is null when there is no queue item; a parent blocked on sub-runs resolves to the
 item of the child that holds the pause, or to its own `unreadable` item when its sub-run
 tree cannot be read. The list holds the same items. An unknown run id prints `error: "not_found"` and
-exits `1`. The item shape is described in the [guide](/guides/attention-queue/#queue-items).
+exits `1`. The item shape is described in the [Operate page](/getting-started/operate/#queue-items).
 
 **`--watch`** streams the queue instead of reading it once: one `attention` line per open
 item in scope, then `ready`, then follows changes any process commits, as
@@ -1025,7 +1056,7 @@ snapshot, replays readable feed events strictly after it. Multiple lines can sha
 event cursor; resuming after it excludes all of them. For a partially handled event,
 replay from an earlier checkpoint as described in the guide. A `degraded` warning means replay may have
 gaps; use the repair and replay steps above. The line shapes and the consumer contract are in
-the [guide](/guides/attention-queue/#stream-the-queue). Exit codes: `0` when a signal or a
+the [Operate page](/getting-started/operate/#stream-the-queue). Exit codes: `0` when a signal or a
 closed stdout stops the stream (a closed stdout is noticed at the next line), `1` when it
 cannot start or an output write fails for another reason, `4` when the store cannot read the stream's cursor, an `--after` cursor this
 install did not issue or the stream's own position (with `--json`, the last line is
@@ -1133,8 +1164,15 @@ who owns the run:
   from that server): the run is marked `cancelled` and its executor stops at its next
   status check.
 - **Another live process owns it** (a `--detach` run or a trigger-started run): cancel
-  contacts that process, terminates its host process tree, confirms termination, and
-  only then records the run as `cancelled`.
+  contacts that process and stops its owner before recording the run as `cancelled`.
+  On macOS and Linux it first stops unfinished node groups whose leaders remain unreaped,
+  then confirms those groups and the owner group are gone. A group whose leader was already
+  reaped is never signalled. If a node's output pipes remain held, cancellation still ends
+  the run and reports in `cleanupWarnings` and the run's cancellation event that some
+  process outside the run's process group holds the output and was not signalled.
+  Archon does not identify it; use `lsof` on the run's checkout before reusing or removing
+  that checkout. Background jobs left by completed nodes are excluded. Windows uses
+  the owner's Job Object, including descendants whose parent exited.
 - **No owner answers, or the owner cannot be stopped:** cancel fails and leaves the run
   unchanged. When no owner answers, it prints what the run recorded (host, pid, last
   activity) and points you at `abandon`. A foreground `archon workflow run` or a run
@@ -1168,6 +1206,24 @@ operation as `abandon`. Cancelling a parent therefore attempts descendant cancel
 [500-parent expansion bound](/guides/authoring-workflows/#max_parallel-bounds-concurrency-not-count)
 and can report the same cascade failures or blocked parent described below.
 
+On Windows a detached owner runs in a Job Object that every process it starts inherits, so
+cancel and abandon stop and confirm the whole tree even when an intermediate process has
+already exited. An owner started by an Archon version without this reports no job, and its
+tree cannot be confirmed, so cancel and abandon refuse it while it runs: stop the owner
+process and its descendants yourself, then use `workflow abandon`.
+
+A detached run that a node launches with `workflow run`, `resume`, `approve`, `reject`,
+or `respond` and `--detach` starts outside the launching run's job and owns its own.
+Cancelling the launching run leaves it running; stop it with its own `cancel`.
+The broker and relayed CLI ignore
+`BUN_OPTIONS` and `bunfig.toml` startup hooks, which would execute outside the owner's job.
+On POSIX a detached run starts its own process group, so the same holds.
+
+The job grants no other way out: a tool in the run that asks Windows to start a process
+outside its job fails to start it. A run that a node starts through `archon trigger` stays
+in the launching run's job. Cancelling the launching run kills that run's processes, and
+its row stays `running` with no owner until you `workflow abandon` it.
+
 For a detached container run, cancel must also confirm container teardown after stopping
 the owner and before recording cancellation. If that teardown fails, cancel fails and
 leaves the run's state unchanged, even though the owner process has stopped. With
@@ -1177,7 +1233,8 @@ Once cancellation is recorded, further managed container reclamation is best-eff
 the run stays `cancelled`, but container resources may remain allocated. Every cancel
 surface reports a warning identifying the run and environment; inspect the managed
 containers before retrying cleanup. Successful `--json` responses include an optional
-`cleanupWarnings` array of warning strings when reclamation fails; the field is omitted
+`cleanupWarnings` array for container reclamation failures, owner-stop cleanup failures,
+and output pipes still held by an unsignalled process; the field is omitted
 when there are no cleanup warnings. A cleanup warning does not change `ok: true`.
 
 ### `workflow abandon`
@@ -1187,7 +1244,15 @@ worktree lock and resource slot, so abandon first asks the run's live-owner endp
 this host:
 
 - **An owner answers:** abandon stops it through the same path as `workflow cancel`
-  (proves the owner, terminates its process tree, waits), then records `cancelled`.
+  (proves the owner, stops safely targetable groups, waits), then records `cancelled`.
+  The output-holder warning and `lsof` action described above apply here too; inspect
+  warnings before reusing or removing the checkout. Abandon retains owned checkouts
+  when owner-stop warnings report held output, including descendant checkouts and
+  their root. Warnings learned after cancellation during descendant cleanup or
+  conversation reset are appended to that run as `workflow_cleanup_warning` events.
+  If writing a warning event fails, cleanup continues and the command reports the
+  persistence failure with the cleanup warnings. Keep that command result: those
+  warnings may be missing from the run history.
 - **No owner answers:** abandon records `cancelled` and prints what the run recorded:
   the host and pid of the process that last executed it, and its last activity. If that
   host is not this one, or the owner ran as another user on this host, it says so:
@@ -1209,8 +1274,10 @@ archon workflow abandon <run-id> --json
 `{ "outcome": "no_owner_answered", "thisHost", "recordedHost", "recordedPid",
 "recordedUid", "lastActivityAt" }`.
 
-Abandon also removes the worktree Archon created for this run, and for each cancelled
-`workflow:` sub-run. Abandon is final for that checkout: removal is forced, so
+Abandon also attempts to remove the worktree Archon created for this run, and for each
+cancelled `workflow:` sub-run. Owner warnings retain affected checkouts for inspection;
+use `lsof` on the checkout when output is still held, then retry abandonment after
+resolving the warning. When removal proceeds, it is forced, so
 uncommitted, untracked, and ignored files (including copied `.env` files) and
 initialized submodules are deleted with it. The branch is kept, so committed work,
 pushed or not, stays recoverable. The result lists each removed worktree and its
@@ -1230,10 +1297,50 @@ Managed container reclamation is best-effort here too. A failure leaves the run
 `cancelled` and reports a warning on every abandon surface because container resources
 may remain allocated. Inspect the managed containers before retrying cleanup.
 Successful `--json` responses include an optional `cleanupWarnings` array of warning
-strings when reclamation fails; the field is omitted when there are no cleanup
+strings for container reclamation failures, owner-stop cleanup failures, and output pipes
+still held by an unsignalled process; the field is omitted when there are no cleanup
 warnings. A cleanup warning does not change `ok: true`.
 
 **Sub-run trees (#2121 Phase 2):** abandoning a parent that spawned `workflow:` sub-runs attempts to cancel discovered descendants except completed and cancelled runs, within the [500-parent expansion bound](/guides/authoring-workflows/#max_parallel-bounds-concurrency-not-count). Completed and cancelled runs are left alone, but the walk still inspects beneath them. These are database transitions, not process termination; an in-flight host command can continue until it returns. The command reports cascade failures for failed child cancellations, failed lookups, or unresolved subtrees beyond the bound, so you know descendants may still be alive. Conversely, abandoning a **child** that its parent is paused-and-blocked on strands that parent (nothing re-fires the auto-resume hook); the command surfaces the blocked parent's run id so you can `resume` it (which fails the sub-run node cleanly) or abandon it too.
+
+### `workflow end-turn`
+
+Record a request to end the stalled tools or reported background work named by a
+running run's `stalled_tool_calls.calls` advisory.
+
+```bash
+archon workflow end-turn <run-id>
+archon workflow end-turn <run-id> --json
+archon workflow wait <run-id> --json
+```
+
+Open tools and reported background work remain running when silent. After
+`workflows.toolCallAttentionMs` without progress (30 minutes by default), attention
+shows their node, provider, sanitized description and idle duration. A silent turn
+with no open tool or reported background work still fails after its node's
+`idle_timeout` and follows its existing retry policy.
+
+The command records each observed `(streamId, toolCallId, raisedAt)` occurrence.
+A live owner checks about every ten seconds and aborts only one of its own current
+stalls that matches all three fields by equality. The attempt fails as `timeout`;
+its retry policy decides whether to start a fresh attempt. Progress clears an
+occurrence, and a later stall gets a new `raisedAt`. The requester's clock is not
+used to decide whether a request applies.
+
+Exit `0` means the request was recorded, not that an owner accepted it or the run
+progressed. The owner might exit or the run might finish before it reads the request.
+Use `workflow wait <run-id>` to inspect attention or the terminal result; it can
+return the same advisory while recovery is pending. An `owner_lost` result requires
+operator recovery of the run's ownership. The CLI itself kills nothing and does not
+cancel the run or answer a gate.
+
+Exit `1` refuses an unknown run, any run outside `running` (including paused runs),
+no stalled work, or unreadable attention. `--json` prints
+`{ ok: true, runId, action: "end_turn", requestRecorded: true, nodes }`, or
+`{ ok: false, runId, action: "end_turn", error }` with `error` one of `not_found`,
+`not_running`, `nothing_stalled`, and `unreadable_attention`. Thrown failures use the
+same failure envelope with the error message; `runId` is the resolved id, or the
+supplied argument if resolution failed.
 
 ### `workflow respond`
 
@@ -1299,7 +1406,9 @@ In human mode `approve`/`reject` auto-resume the run inline. In `--json` mode th
 wrong-status, missing-context, `child_workflow`-blocked, already-resolved, or
 no-working-path run is refused synchronously and nothing is spawned. The parent then
 hands the whole command to a detached child that owns all state mutation in its own
-process group. A shell that dies mid-flight can no longer wedge the run.
+process group on POSIX or Job Object on Windows. When launched inside a Windows run,
+the child escapes the launching run's job, so cancelling the launcher leaves the child
+running and independently owned. A shell that dies mid-flight can no longer wedge the run.
 
 For `resume`, the parent waits for the child's engine admission receipt before
 acknowledging success, rather than waiting for workflow completion. Even a run that
@@ -1440,11 +1549,12 @@ resumable: a resume reuses the child's recorded worktree and fails if it has bee
 
 ### `isolation cleanup [days]`
 
-To explicitly discard a resumable run and remove the worktree it created, use
+To explicitly discard a resumable run and attempt removal of the worktree it created, use
 `archon workflow abandon <run-id>`. Ordinary cleanup follows the run-lock rule at the end
 of this section. Abandon removes a checkout only when the run holds its matching creation
-proof, even if the checkout has since been adopted. It deletes uncommitted work there and
-keeps the branch; see [`workflow abandon`](#workflow-abandon) for what it keeps and how to retry.
+proof, even if the checkout has since been adopted. Owner warnings retain the checkout:
+inspect it (`lsof` when output is still held), resolve the warning, then retry abandonment.
+When removal proceeds, it deletes uncommitted work there and keeps the branch; see [`workflow abandon`](#workflow-abandon) for what it keeps and how to retry.
 
 Remove stale environments. Worktree cleanup only handles worktree records. Container
 cleanup removes eligible containers and their volumes through the container backend,
@@ -1455,6 +1565,9 @@ run `archon isolation cleanup 0`; containers owned by resumable runs remain prot
 Project deletion (`DELETE /api/codebases/{id}`) returns `409` while active container
 environments remain. The error lists their environment IDs and the cleanup command.
 Clean them up explicitly, then retry deletion.
+
+Cleanup continues after individual errors and exits with status `1` if any removal fails;
+protected skips exit with status `0`.
 
 Age cleanup uses the originating platform's registered policy.
 Both the CLI and server read chat policies from installed plugin receipts without starting
@@ -1474,12 +1587,16 @@ checkout sets `adopted: true` while preserving its creation proof, so that check
 can remain eligible for cleanup. If Git removal leaves a directory behind, cleanup reports it
 and keeps the environment active; inspect that path before removing it manually.
 
-Cleanup deletes an environment's local branch only when Archon created that branch.
-A branch that already existed when the run started (see `--branch` above) is kept,
-since it may hold commits that exist nowhere else. It is deleted only together with
-its remote branch: by `--merged` (and `--include-closed`) once its PR or branch is
-finished, or by `archon complete`.
-Records created before Archon tracked this are treated the same way, keeping their branch.
+Ordinary age-based cleanup deletes an environment's local branch only when Archon
+created that branch. It keeps pre-existing local branches and branches on legacy
+records that lack branch-creation tracking. Merged cleanup (`--merged`, including
+`--include-closed`) and `archon complete` can delete those local branches after
+their checks. Completion with `--force` bypasses commit-safety checks, so it can
+delete a branch with unmerged commits. Merged cleanup and completion retain
+remote branches and warn after local removal. A remote commit ID cannot prove which
+registration owns a branch: a replacement may publish the same commit after the
+selected registration retires. This refusal also applies with `--force` and with
+separate fetch/push URLs. See [recovering remote branch cleanup](#recovering-remote-branch-cleanup).
 
 These ownership checks also apply to `/worktree remove` and `archon complete`;
 `--force` never bypasses them.
@@ -1491,7 +1608,7 @@ archon isolation cleanup
 # Custom threshold
 archon isolation cleanup 14
 
-# Remove environments with branches merged into the base branch (also deletes remote branches)
+# Remove environments with branches merged into the base branch (retains remote refs for operator inspection)
 archon isolation cleanup --merged
 
 # Also remove environments whose PRs were closed without merging
@@ -1549,10 +1666,118 @@ the branch Archon created for it holds such a commit.
 A completed run removes the worktree it created when it completes, if the checkout is
 clean, every commit on its HEAD and branch is on a remote, and the configured remote
 does not advertise the branch. The removal keeps the branch, so the run can still be
-adopted. A branch that was published waits for `--merged`, which also deletes it. When
-the remote cannot be read, the worktree stays and the record says `check_failed`. The
+adopted. A branch that was published waits for `--merged`, which removes the local
+branch and retains the remote branch with a warning. When the remote cannot be read, the worktree stays and the record says `check_failed`. The
 run's `terminal_record.worktree_disposition` says what happened and why (see
 [`workflow get`](#workflow-get)).
+
+#### Recovering remote branch cleanup
+
+Cleanup and completion retain remote refs because ownership cannot be proved after
+registration retirement. Retrying either command cannot delete a retired
+registration's remote branch. On GitHub, enable **Automatically delete head branches**
+in the repository settings if you want merged pull requests' branches removed automatically.
+
+If the ref belongs to a replacement registration or ownership is uncertain, leave
+it alone. To remove a ref manually, first ensure no one is reusing or publishing
+that branch. From the surviving primary checkout, verify that the branch still
+belongs to the completed work and is no longer in use. Use `worktree.remote` (default: `origin`).
+The branch reported by cleanup is the local branch; a published remote ref can have
+a different name. Cleanup may already have deleted the local branch and does not
+report its tip OID. If available, establish the completed tip from a surviving local
+branch, a commit recorded in the run's artifacts or logs, the pull request's head
+commit history, or a surviving Git reflog. Verify that the commit belongs to the
+completed work; a squash or merge commit is not necessarily its original tip.
+If that evidence is unavailable, use the candidate-ref inspection below with the
+repository owner instead. First check for service overrides or a transport helper:
+
+```bash
+remote='<remote>'
+git config --get-all "remote.$remote.uploadpack"
+git config --get-all "remote.$remote.receivepack"
+git config --get-all "remote.$remote.vcs"
+```
+
+Either service override or a transport helper can redirect Git to a repository
+other than the URL. Before manual cleanup, verify the actual receiving repository
+with the service or helper owner.
+Use an endpoint whose upload and receive services you have verified target that
+repository; do not infer absence from the configured URL or upload service.
+The URL procedure below applies only when no service override or transport helper
+is configured and the endpoint is known to match the receiver.
+
+Inspect the push destinations:
+
+```bash
+git remote get-url --push --all <remote>
+```
+
+For each destination you intend to clean, copy its exact URL, including any
+leading or trailing spaces, into `push_url`. Run these commands in Bash:
+
+```bash
+push_url='<push-url>'
+endpoint="archon-cleanup-$$-$RANDOM:"
+git_at_endpoint() (
+    config_index=${GIT_CONFIG_COUNT:-0}
+    export "GIT_CONFIG_KEY_${config_index}=url.${push_url}.insteadOf"
+    export "GIT_CONFIG_VALUE_${config_index}=$endpoint"
+    export "GIT_CONFIG_KEY_$((config_index + 1))=url.${push_url}.pushInsteadOf"
+    export "GIT_CONFIG_VALUE_$((config_index + 1))=$endpoint"
+    export GIT_CONFIG_COUNT=$((config_index + 2))
+    git "$@"
+)
+git_at_endpoint ls-remote --symref -- "$endpoint" HEAD 'refs/heads/*'
+```
+
+Inspect all advertised branch names and OIDs. Start with the reported local branch's
+name; when the completed tip is known, also check differently named non-default refs
+containing it. For example,
+local `topic` may have been published as `refs/heads/review-name`; an empty query
+for `refs/heads/topic` proves only that exact ref is absent. The default branch
+normally contains merged work and is not a cleanup target merely for containing
+the completed tip.
+
+When the completed tip is known, verify each candidate's ancestry with
+`git merge-base --is-ancestor <completed-tip-oid> <advertised-oid>`
+(exit 0 means it contains the completed tip; exit 1 means it does not). If commits
+are missing, fetch the candidate from the same verified endpoint with
+`git_at_endpoint fetch --no-tags -- "$endpoint" '<full-remote-ref>'`, re-read the
+advertisement and repeat the check. A failed inspection or unknown ancestry does
+not prove absence. Ancestry alone does not prove ownership: confirm that the ref
+belongs to the completed work and is no longer in use before deleting it.
+
+If the completed tip cannot be established, do not guess a differently named ref
+or treat it as absent. Inspect candidate refs with the repository owner: match the
+receiving repository's pull request head-ref and commit history to the completed
+run and review the candidate's commits. Fetch candidates from the verified endpoint
+with the command above as needed, then inspect their advertised OIDs with
+`git show <advertised-oid>` and `git log <advertised-oid>`. A same-name ref can be
+inspected this way too; recovering the deleted local tip is not required. Confirm
+the candidate's provenance, current ownership, and that no replacement registration
+or other user is using or publishing it. If the evidence cannot identify a ref
+confidently, retain it. Once verified, re-read the advertisement and use that ref's
+current OID for the leased delete below.
+
+Keep the same `push_url` and `endpoint`. Enter the verified full remote ref name
+and its advertised OID, independently of the local branch name:
+
+```bash
+remote_ref='refs/heads/<verified-remote-branch>'
+verified_oid='<verified-oid>'
+git_at_endpoint push --force-with-lease="$remote_ref:$verified_oid" -- "$endpoint" ":$remote_ref"
+```
+
+The temporary alias maps directly to the resolved URL for both commands, preventing
+another `insteadOf` or `pushInsteadOf` rewrite from changing the destination.
+Separate config keys and values preserve URLs containing `=`. The destination
+listing is line-delimited; if a configured URL contains a newline,
+do not split it into destinations. Inspect the NUL-delimited configuration with
+`git config --null --list` and verify the exact destination before proceeding.
+
+The explicit lease refuses deletion if the tip changes after inspection. It cannot
+detect a same-commit republish, so delete only while no one is reusing or publishing
+that branch. If ownership is uncertain, leave the remote branch in place.
 
 ### `validate workflows [name]`
 
@@ -1594,7 +1819,10 @@ archon workflow run archon-ship --adopt <run-id> "resolve the remaining review f
 
 ### `complete <branch> [branch2 ...]`
 
-Remove a branch's worktree, local branch, and remote branch, and mark its isolation environment as destroyed.
+Remove a branch's worktree and local branch, and mark its isolation environment as destroyed.
+Remote branches are retained with a warning because registration ownership cannot
+be proved after local removal. This also applies with `--force`; follow
+[recovering remote branch cleanup](#recovering-remote-branch-cleanup) for manual cleanup.
 
 ```bash
 archon complete feature-auth
@@ -1611,7 +1839,8 @@ Without `--force`, completion refuses an environment a workflow run can still cl
 same live-run lock `/worktree remove` applies: a running, pending or paused run, or a
 failed run that can still be resumed. Unlike `isolation cleanup`, completion never
 releases a failed run's lock by merge state or age. If that lookup fails, completion
-refuses rather than skipping the check.
+refuses rather than skipping the check. A failed open-PR query warns and skips that
+check; it does not bypass the other safety checks.
 
 Use this after a PR is merged and you no longer need the worktree or branches. If GitHub
 has deleted a squash-merged branch, first prune its remote-tracking ref so the local clone
@@ -1694,7 +1923,7 @@ archon version
 | `--quiet`, `-q` | Log warnings and errors only (the default for every command except `archon serve`) |
 | `--verbose`, `-v` | Show debug-level logs on stderr (on stdout for `archon serve`) |
 | `--json` | Output machine-readable JSON (workflow `list`, `status`, `runs`, `get`, `artifacts`, `wait`, `attention`, `project list`, and the write commands `approve`/`reject`/`abandon`/`resume`). Implies log suppression so stdout is exactly the JSON payload. |
-| `--after <cursor>` | For `workflow attention --watch`: replay readable feed events strictly after this cursor, excluding all lines at that cursor. A `degraded` warning means coverage may have gaps; see [repair and replay](/guides/attention-queue/#stream-the-queue). |
+| `--after <cursor>` | For `workflow attention --watch`: replay readable feed events strictly after this cursor, excluding all lines at that cursor. A `degraded` warning means coverage may have gaps; see [repair and replay](/getting-started/operate/#stream-the-queue). |
 | `--timeout <seconds>` | For `workflow wait`: give up after N seconds and exit `3`. Omitted means wait indefinitely. |
 | `--follow` | For `workflow logs`: wait for the transcript and stream appended rows until the run ends. |
 | `--format <jsonl\|text>` | For `workflow logs`: `jsonl` (default) prints the exact transcript; `text` renders it as progress lines for a person. |
@@ -1728,7 +1957,16 @@ The CLI determines where to run based on:
 
 Running from a subdirectory (e.g., `/repo/packages/cli`) automatically resolves to the nearest git repository root (e.g., `/repo`). A nested repository resolves as its own codebase and registers on first workflow use. Linked worktrees resolve to their registered source codebase. Ordinary subdirectories of registered folder projects continue to resolve to the registered folder. An exact folder registration wins over git detection. `--folder` retains the supplied directory rather than selecting a surrounding git root. Linked Git worktrees do not inherit a folder registration from the primary checkout. Listing commands do not register projects.
 
-When project registration fails, the command fails with the registration error, even with `--no-worktree`. Registering a second clone of an already-registered remote is refused with the registered project's path; use worktrees (`--branch`) for parallel checkouts. A new project whose name or storage folder is already taken by a different path registers under the first free suffixed name, such as `_local/api-2` or `my-app-2` for a folder project. This also applies to `/register-project` and URL cloning. Existing project names and storage stay unchanged, so projects that an older version registered into one storage folder keep sharing it.
+When project registration fails, the command fails with the registration error, even with `--no-worktree`. Registering a second clone of an already-registered remote is refused with the registered project's path; use worktrees (`--branch`) for parallel checkouts. To bind a separate clone to the existing project, use its registered ID or exact name:
+
+```bash
+archon project list
+archon workflow run investigate --project owner/repo --cwd /other/clone --no-worktree "Investigate the failing build"
+```
+
+`--project` selects the run's registered identity, managed project environment variables, artifacts and logs. For an ordinary fresh run, `--cwd` supplies workflow source, launch configuration and in-place execution. Adoption retains its existing lane, source and configuration rules. `--workflow-source` can still override the authoring directory. With isolation enabled, execution and worktree creation use the registered checkout, including its remote/ref operations and worktree configuration; branches that exist only in the separate clone are not available there. Use `--no-worktree` to execute in the launch clone. This selector applies only to fresh `workflow run` invocations, requires a registered repository, and does not register a second clone. Unknown, ambiguous, or deleted selections fail before launch.
+
+A new project whose name or storage folder is already taken by a different path registers under the first free suffixed name, such as `_local/api-2` or `my-app-2` for a folder project. This also applies to `/register-project` and URL cloning. Existing project names and storage stay unchanged, so projects that an older version registered into one storage folder keep sharing it.
 
 When using `--branch`, workflows run inside the worktree directory.
 

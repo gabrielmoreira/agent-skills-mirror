@@ -19,6 +19,56 @@ requires an absolute filesystem path and preserves that exact selection:
 }
 ```
 
+For build identity and counts, select `detail: "summary"`. MCP retains the same
+complete Evidence and returns `normalized_result.parent_evidence_id`. Read
+selected dependency versions without reopening the file:
+
+```json
+{
+  "name": "inspect_analysis_view",
+  "arguments": {
+    "source": {
+      "kind": "retained-evidence",
+      "evidence_id": "ev_<parent digest>"
+    },
+    "view": {
+      "kind": "go",
+      "collection": "dependencies",
+      "paths": ["golang.org/x/crypto"],
+      "fields": ["path", "version", "replacement"],
+      "offset": 0,
+      "limit": 10
+    }
+  }
+}
+```
+
+Go views support `dependencies` (exact `paths`) and `settings` (exact `keys`),
+optional original `indices`, field selection, and pagination. Filters intersect;
+empty filter arrays select no rows and `fields: []` returns only row identity.
+Each row keeps its original `index`, scoped to the parent Evidence and collection;
+duplicate module paths and setting keys keep distinct indices. Page offsets
+count matching records. Exhausting retained rows does not establish complete
+runtime dependencies. Original bytes, unknown lines and all complete metadata
+remain in the parent and can be exported as an Evidence bundle.
+
+One-shot CLI summaries save complete Evidence before returning the projection:
+
+```bash
+rea inspect-go-binary ./application --detail summary --evidence_output ./go-evidence.json --json
+```
+
+`--evidence_output` is required for CLI summary delivery and never overwrites an
+existing file. The default CLI/MCP reply remains complete.
+
+[Measured workflows](../experiments/analysis-efficiency/go-build-views.md) include
+catalog repetition and extra calls. Identity/count questions benefit from a
+single summary. In the tested Codex full-catalog configuration, a compound
+question about identity and one dependency uses fewer tokens in captured request JSON with
+one complete inspection than with a summary followed by a lookup. The complete
+reply remains useful for that initial question; retained views support later
+selected reads. Token figures are serialization estimates, not model usage.
+
 ## Observations
 
 The inline Evidence result contains the artifact path, SHA-256, byte length,

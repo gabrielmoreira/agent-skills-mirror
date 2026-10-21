@@ -213,6 +213,162 @@ export const MANAGE_FUNCTION_ACTIONS = [
 /** Default SCF traffic alias used by CloudBase CLI `fn get-route` / `fn config-route`. */
 export const DEFAULT_FUNCTION_ALIAS = "$DEFAULT";
 
+/**
+ * 云函数日志的 CLS 检索底座。
+ *
+ * 底层 `GetFunctionLogs` / `GetFunctionLogDetail` 已下线（`@cloudbase/manager-node` 5.8.8 起
+ * `getFunctionLogsV2` / `getFunctionLogDetail` 直接抛错），云函数日志只能从 CLS 取。CLS 里每条
+ * 云函数日志是按请求聚合的 JSON，`function_name` / `request_id` / `qualifier` / `src` 都是扁平
+ * 字段，可以直接做检索条件，不需要再扫全量日志。
+ */
+const FUNCTION_LOG_CLS_SOURCE = "(src:app OR src:system)";
+/** SearchClsLog 单次返回上限。 */
+const FUNCTION_LOG_MAX_LIMIT = 100;
+const FUNCTION_LOG_DEFAULT_LIMIT = 20;
+const FUNCTION_LOG_WINDOW_MS = 24 * 60 * 60 * 1000;
+/**
+ * CLS 的时间入参固定按北京时间理解（与返回的 `Timestamp` 一致），
+ * 托管形态的服务进程可能是 UTC，所以这里显式加偏移，不依赖进程时区。
+ */
+const CLS_TIME_OFFSET_MS = 8 * 60 * 60 * 1000;
+
+/** CLS 检索语法里 `key:"value"` 的值需要转义反斜杠与双引号。 */
+function escapeClsValue(value: string): string {
+  return value.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+}
+
+/** CLS 入参/展示用的时间格式：YYYY-MM-DD HH:mm:ss（北京时间）。 */
+export function formatClsTime(time: number): string {
+  return new Date(time + CLS_TIME_OFFSET_MS).toISOString().slice(0, 19).replace("T", " ");
+}
+
+export function buildFunctionLogClsQuery(input: {
+  functionName?: string;
+  requestId?: string;
+  qualifier?: string;
+}): string {
+  const clauses = [FUNCTION_LOG_CLS_SOURCE];
+  if (input.functionName) {
+    clauses.push(`function_name:"${escapeClsValue(input.functionName)}"`);
+  }
+  if (input.qualifier) {
+    clauses.push(`qualifier:"${escapeClsValue(input.qualifier)}"`);
+  }
+  if (input.requestId) {
+    clauses.push(`request_id:"${escapeClsValue(input.requestId)}"`);
+  }
+  return clauses.join(" AND ");
+}
+
+/** 只传一端时把窗口收敛到 24 小时以内，CLS 与旧接口都限制单次跨度。 */
+export function resolveFunctionLogWindow(
+  startTime?: string,
+  endTime?: string,
+  now: number = Date.now(),
+): { StartTime: string; EndTime: string } {
+  if (startTime && endTime) {
+    return { StartTime: startTime, EndTime: endTime };
+  }
+  if (startTime) {
+    const start = new Date(startTime).getTime();
+    // 单一 startTime 时至少给出一分钟窗口：起止相同（或 start 在未来）时 CLS 会直接判非法。
+    const end = Number.isFinite(start)
+      ? Math.max(start + 60_000, Math.min(now, start + FUNCTION_LOG_WINDOW_MS))
+      : now;
+    return { StartTime: startTime, EndTime: formatClsTime(end) };
+  }
+  if (endTime) {
+    const end = new Date(endTime).getTime();
+    const start = Number.isFinite(end) ? end - FUNCTION_LOG_WINDOW_MS : now - FUNCTION_LOG_WINDOW_MS;
+    return { StartTime: formatClsTime(start), EndTime: endTime };
+  }
+  return { StartTime: formatClsTime(now - FUNCTION_LOG_WINDOW_MS), EndTime: formatClsTime(now) };
+}
+
+export type FunctionLogEntry = {
+  requestId: string;
+  functionName: string;
+  qualifier: string;
+  source: string;
+  log: string;
+  statusCode: string;
+  retCode: string;
+  durationMs: number | null;
+  memoryMb: number | null;
+  memUsageBytes: number | null;
+  requestSource: string;
+  timestamp: string;
+  raw?: Record<string, unknown>;
+};
+
+type ClsLogItem = { Content?: string; Timestamp?: string };
+
+/**
+ * 把 CLS 的日志条目还原成调用方关心的字段。
+ *
+ * 解析失败时（例如用户自己打的纯文本日志）保留原文放进 `log`，不让一条脏数据毁掉整页结果。
+ */
+export function parseFunctionLogItem(item: ClsLogItem): FunctionLogEntry {
+  const content = typeof item.Content === "string" ? item.Content : "";
+  let parsed: Record<string, unknown> | null = null;
+  try {
+    const value: unknown = JSON.parse(content);
+    if (value && typeof value === "object" && !Array.isArray(value)) {
+      parsed = value as Record<string, unknown>;
+    }
+  } catch {
+    parsed = null;
+  }
+
+  const timestamp = item.Timestamp ?? "";
+  if (!parsed) {
+    return {
+      requestId: "",
+      functionName: "",
+      qualifier: "",
+      source: "",
+      log: content,
+      statusCode: "",
+      retCode: "",
+      durationMs: null,
+      memoryMb: null,
+      memUsageBytes: null,
+      requestSource: "",
+      timestamp,
+    };
+  }
+
+  const str = (value: unknown): string =>
+    value === undefined || value === null ? "" : String(value);
+  const num = (value: unknown): number | null => {
+    const parsedNumber = Number(value);
+    return Number.isFinite(parsedNumber) ? parsedNumber : null;
+  };
+
+  return {
+    requestId: str(parsed.request_id),
+    functionName: str(parsed.function_name),
+    qualifier: str(parsed.qualifier || parsed.alias),
+    source: str(parsed.src),
+    log: str(parsed.log || parsed.tcb_log),
+    statusCode: str(parsed.status_code),
+    retCode: str(parsed.ret_code),
+    durationMs: num(parsed.duration),
+    memoryMb: num(parsed.memory),
+    memUsageBytes: num(parsed.mem_usage),
+    requestSource: str(parsed.request_source),
+    timestamp,
+  };
+}
+
+export const FUNCTION_LOG_QUERY_ERROR_CODE = "FUNCTION_LOG_QUERY_FAILED";
+export const FUNCTION_LOG_SERVICE_NOT_ENABLED_ERROR_CODE = "LOG_SERVICE_NOT_ENABLED";
+
+/** 未开通日志服务时 CLS 报的是 topic 不存在，按这个特征把它翻译成可执行的下一步。 */
+export function isLogServiceNotEnabledMessage(message: string): boolean {
+  return /TopicNotExist|TopicIsolated|topic[\s\S]{0,20}not\s*exist|日志服务未开通/i.test(message);
+}
+
 type QueryFunctionsAction = (typeof QUERY_FUNCTION_ACTIONS)[number];
 type ManageFunctionsAction = (typeof MANAGE_FUNCTION_ACTIONS)[number];
 
@@ -310,6 +466,7 @@ type QueryFunctionsInput = {
   endTime?: string;
   requestId?: string;
   qualifier?: string;
+  context?: string;
   runtime?: string;
   searchKey?: string;
   layerName?: string;
@@ -965,6 +1122,91 @@ export function registerFunctionTools(server: ExtendedMcpServer) {
     }
   };
 
+  /**
+   * 云函数日志统一走 CLS。查询失败时分两类给出可执行的下一步：
+   * 日志服务没开通 ⇒ 引导开通；其它失败 ⇒ 引导到 queryLogs 用同一条检索语句重试。
+   */
+  const throwLogQueryError = (
+    error: unknown,
+    scope: {
+      functionName?: string;
+      requestId?: string;
+      window: { StartTime: string; EndTime: string };
+    },
+  ): never => {
+    const message = error instanceof Error ? error.message : String(error);
+    if (isLogServiceNotEnabledMessage(message)) {
+      throwToolPayloadError({
+        success: false,
+        errorCode: FUNCTION_LOG_SERVICE_NOT_ENABLED_ERROR_CODE,
+        data: { ...scope },
+        message: t("functions.logs.serviceNotEnabled"),
+        nextActions: [
+          {
+            tool: "manageLogs",
+            action: "createLogService",
+            reason: t("functions.reason.createLogService"),
+            suggested_args: { action: "createLogService", confirm: true },
+          },
+        ],
+      });
+    }
+    throwToolPayloadError({
+      success: false,
+      errorCode: FUNCTION_LOG_QUERY_ERROR_CODE,
+      data: { ...scope, rawError: message },
+      message: t("functions.logs.queryFailed", { message }),
+      nextActions: [
+        {
+          tool: "queryLogs",
+          action: "searchLogs",
+          reason: t("functions.reason.searchClsFallback"),
+          suggested_args: {
+            action: "searchLogs",
+            service: "tcb",
+            queryString: buildFunctionLogClsQuery({
+              functionName: scope.functionName,
+              requestId: scope.requestId,
+            }),
+            startTime: scope.window.StartTime,
+            endTime: scope.window.EndTime,
+          },
+        },
+      ],
+    });
+  };
+
+  /**
+   * 空结果不等于「函数没被调用」：日志服务没开通时 CLS 同样返回空。
+   * 这里只在真的查到空结果时多做一次开销很小的探活，避免把「没开通」误报成「没日志」。
+   */
+  const assertLogServiceEnabled = async (
+    logService: { checkLogServiceEnabled: () => Promise<boolean> },
+  ): Promise<void> => {
+    try {
+      if (await logService.checkLogServiceEnabled()) {
+        return;
+      }
+    } catch {
+      // 探活失败不制造新的错误源：保持「该时间段没有日志」的原始结论。
+      return;
+    }
+    throwToolPayloadError({
+      success: false,
+      errorCode: FUNCTION_LOG_SERVICE_NOT_ENABLED_ERROR_CODE,
+      data: { enabled: false },
+      message: t("functions.logs.serviceNotEnabled"),
+      nextActions: [
+        {
+          tool: "manageLogs",
+          action: "createLogService",
+          reason: t("functions.reason.createLogService"),
+          suggested_args: { action: "createLogService", confirm: true },
+        },
+      ],
+    });
+  };
+
   const normalizeManageLayers = (
     layers: ManageFunctionsInput["layers"],
   ): FunctionLayerInput[] =>
@@ -1116,43 +1358,95 @@ export function registerFunctionTools(server: ExtendedMcpServer) {
         input.limit,
       );
       const cloudbase = await getManager();
-      let result;
+      const window = resolveFunctionLogWindow(input.startTime, input.endTime);
+      const limit = Math.min(
+        Math.max(input.limit ?? FUNCTION_LOG_DEFAULT_LIMIT, 1),
+        FUNCTION_LOG_MAX_LIMIT,
+      );
+      const offset = Math.max(input.offset ?? 0, 0);
+      // SearchClsLog 单次最多 100 条且没有 offset 入参：不带游标时多取 offset+limit 再本地
+      // 切片，带游标（context）时游标本身已经记录了偏移，直接返回当页。
+      const fetchLimit = Math.min(offset + limit, FUNCTION_LOG_MAX_LIMIT);
+      const queryString = buildFunctionLogClsQuery({
+        functionName: input.functionName,
+        requestId: input.requestId,
+        qualifier: input.qualifier,
+      });
+
+      let logResults: { Results?: ClsLogItem[]; Context?: string; ListOver?: boolean } = {};
       try {
-        result = await cloudbase.functions.getFunctionLogsV2({
-          name: input.functionName,
-          offset: input.offset,
-          limit: input.limit,
-          startTime: input.startTime,
-          endTime: input.endTime,
-          requestId: input.requestId,
-          qualifier: input.qualifier,
+        const result = await cloudbase.log.searchClsLog({
+          queryString,
+          StartTime: window.StartTime,
+          EndTime: window.EndTime,
+          Limit: fetchLimit,
+          Context: input.context,
+          Sort: "desc",
+          service: "tcb",
         });
+        logCloudBaseResult(server.logger, result);
+        logResults = (result as { LogResults?: typeof logResults }).LogResults ?? {};
       } catch (error) {
-        const errMsg = error instanceof Error ? error.message : String(error);
-        if (/invalid parameter/i.test(errMsg)) {
-          throw new Error(
-            `${errMsg}\n\n${t("functions.logsInvalidParamTips")}`,
-          );
-        }
-        throw error;
+        throwLogQueryError(error, { functionName: input.functionName, window });
       }
-      logCloudBaseResult(server.logger, result);
+
+      const entries = (logResults.Results ?? []).map(parseFunctionLogItem);
+      const logs = input.context ? entries : entries.slice(offset, offset + limit);
+
+      if (logs.length === 0) {
+        await assertLogServiceEnabled(cloudbase.log);
+      }
+
+      const hasMore = !logResults.ListOver && Boolean(logResults.Context);
       return buildEnvelope(
         {
           action: input.action,
           functionName: input.functionName,
-          logs: result.LogList || [],
-          requestId: result.RequestId,
-          raw: result,
+          service: "tcb",
+          queryString,
+          startTime: window.StartTime,
+          endTime: window.EndTime,
+          logs,
+          count: logs.length,
+          context: logResults.Context ?? null,
+          hasMore,
         },
-        t("functions.gotFunctionLogs", { fnName: input.functionName }),
-        [
-          {
-            tool: "queryFunctions",
-            action: "getFunctionLogDetail",
-            reason: t("functions.reason.logDetail"),
-          },
-        ],
+        logs.length > 0
+          ? t("functions.gotFunctionLogs", { fnName: input.functionName })
+          : t("functions.logs.emptyByFunction", {
+              fnName: input.functionName,
+              start: window.StartTime,
+              end: window.EndTime,
+            }),
+        hasMore
+          ? [
+              {
+                tool: "queryFunctions",
+                action: "listFunctionLogs",
+                reason: t("functions.reason.nextLogPage"),
+                suggested_args: {
+                  action: "listFunctionLogs",
+                  functionName: input.functionName,
+                  context: logResults.Context,
+                  startTime: window.StartTime,
+                  endTime: window.EndTime,
+                  limit,
+                },
+              },
+            ]
+          : [
+              {
+                tool: "queryFunctions",
+                action: "getFunctionLogDetail",
+                reason: t("functions.reason.logDetail"),
+                suggested_args: {
+                  action: "getFunctionLogDetail",
+                  requestId: logs[0]?.requestId || "<日志里的 requestId>",
+                  startTime: window.StartTime,
+                  endTime: window.EndTime,
+                },
+              },
+            ],
       );
     }
     case "getFunctionLogDetail": {
@@ -1161,29 +1455,74 @@ export function registerFunctionTools(server: ExtendedMcpServer) {
       }
       validateLogRange(input.startTime, input.endTime);
       const cloudbase = await getManager();
-      let result;
+      const window = resolveFunctionLogWindow(input.startTime, input.endTime);
+      const queryString = buildFunctionLogClsQuery({
+        functionName: input.functionName,
+        requestId: input.requestId,
+        qualifier: input.qualifier,
+      });
+
+      let logResults: { Results?: ClsLogItem[]; Context?: string; ListOver?: boolean } = {};
       try {
-        result = await cloudbase.functions.getFunctionLogDetail({
-          startTime: input.startTime,
-          endTime: input.endTime,
-          logRequestId: input.requestId,
+        const result = await cloudbase.log.searchClsLog({
+          queryString,
+          StartTime: window.StartTime,
+          EndTime: window.EndTime,
+          Limit: FUNCTION_LOG_MAX_LIMIT,
+          Sort: "asc",
+          service: "tcb",
         });
+        logCloudBaseResult(server.logger, result);
+        logResults = (result as { LogResults?: typeof logResults }).LogResults ?? {};
       } catch (error) {
-        const errMsg = error instanceof Error ? error.message : String(error);
-        if (/invalid parameter/i.test(errMsg)) {
-          throw new Error(
-            `${errMsg}\n\n${t("functions.logDetailInvalidParamTips")}`,
-          );
-        }
-        throw error;
+        throwLogQueryError(error, { requestId: input.requestId, window });
       }
-      logCloudBaseResult(server.logger, result);
+
+      // 一次调用在 CLS 里是多条记录（START / 业务日志 / REPORT），按时间升序拼回完整过程。
+      const entries = (logResults.Results ?? []).map(parseFunctionLogItem);
+      if (entries.length === 0) {
+        await assertLogServiceEnabled(cloudbase.log);
+        return buildEnvelope(
+          {
+            action: input.action,
+            requestId: input.requestId,
+            queryString,
+            startTime: window.StartTime,
+            endTime: window.EndTime,
+            logs: [],
+            count: 0,
+          },
+          t("functions.logs.emptyByRequest", {
+            requestId: input.requestId,
+            start: window.StartTime,
+            end: window.EndTime,
+          }),
+          [
+            {
+              tool: "queryFunctions",
+              action: "listFunctionLogs",
+              reason: t("functions.reason.widenLogRange"),
+              suggested_args: {
+                action: "listFunctionLogs",
+                functionName: input.functionName || "<函数名>",
+                startTime: window.StartTime,
+                endTime: window.EndTime,
+              },
+            },
+          ],
+        );
+      }
+
       return buildEnvelope(
         {
           action: input.action,
           requestId: input.requestId,
-          logDetail: result,
-          raw: result,
+          functionName: entries[0]?.functionName || input.functionName || null,
+          queryString,
+          startTime: window.StartTime,
+          endTime: window.EndTime,
+          logs: entries,
+          count: entries.length,
         },
         t("functions.gotLogDetail", { requestId: input.requestId }),
       );
@@ -2894,6 +3233,7 @@ export function registerFunctionTools(server: ExtendedMcpServer) {
           .optional()
           .describe("functions.schema.query.requestId"),
         qualifier: z.string().optional().describe("functions.schema.query.qualifier"),
+        context: z.string().optional().describe("functions.schema.query.context"),
         runtime: z.string().optional().describe("functions.schema.query.runtime"),
         searchKey: z.string().optional().describe("functions.schema.query.searchKey"),
         layerName: z

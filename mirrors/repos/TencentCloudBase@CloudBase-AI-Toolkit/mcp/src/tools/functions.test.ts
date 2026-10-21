@@ -40,6 +40,8 @@ const {
   mockListVersionByFunction,
   mockUpdateFunctionAliasConfig,
   mockGetFunctionAlias,
+  mockSearchClsLog,
+  mockCheckLogServiceEnabled,
 } = vi.hoisted(() => ({
   mockCreateFunction: vi.fn(),
   mockUpdateFunctionCode: vi.fn(),
@@ -57,6 +59,8 @@ const {
   mockListVersionByFunction: vi.fn(),
   mockUpdateFunctionAliasConfig: vi.fn(),
   mockGetFunctionAlias: vi.fn(),
+  mockSearchClsLog: vi.fn(),
+  mockCheckLogServiceEnabled: vi.fn(),
 }));
 
 vi.mock("../cloudbase-manager.js", () => ({
@@ -144,6 +148,11 @@ describe("functions tool helpers", () => {
       warnings: [],
       plan: { action: "create", operations: ["deploy-function"] },
     });
+    mockCheckLogServiceEnabled.mockResolvedValue(true);
+    mockSearchClsLog.mockResolvedValue({
+      LogResults: { Results: [], Context: "", ListOver: true },
+      RequestId: "req-search-cls",
+    });
     mockGetCloudBaseManager.mockResolvedValue({
       functions: {
         createFunction: mockCreateFunction,
@@ -161,6 +170,10 @@ describe("functions tool helpers", () => {
       },
       access: {
         createAccess: mockCreateAccess,
+      },
+      log: {
+        searchClsLog: mockSearchClsLog,
+        checkLogServiceEnabled: mockCheckLogServiceEnabled,
       },
     });
 
@@ -1686,6 +1699,11 @@ describe("function zip two-phase deployment", () => {
   const originalSleep = functionUpdatingRuntime.sleep;
 
   const mockManagerWith = (storages: unknown[]) => {
+    mockCheckLogServiceEnabled.mockResolvedValue(true);
+    mockSearchClsLog.mockResolvedValue({
+      LogResults: { Results: [], Context: "", ListOver: true },
+      RequestId: "req-search-cls",
+    });
     mockGetCloudBaseManager.mockResolvedValue({
       functions: {
         createFunction: mockCreateFunction,
@@ -1986,5 +2004,153 @@ describe("function zip two-phase deployment", () => {
     expect(payload.success).toBe(false);
     expect(payload.errorCode).toBe("FUNCTION_UPLOAD_TARGET_NOT_FOUND");
     expect(mockUpdateFunctionCode).not.toHaveBeenCalled();
+  });
+});
+
+describe("queryFunctions logs via CLS", () => {
+  let tools: ReturnType<typeof createMockServer>["tools"];
+
+  const clsItem = (content: Record<string, unknown>, timestamp = "2026-10-18 20:02:09.045") => ({
+    Timestamp: timestamp,
+    Content: JSON.stringify(content),
+  });
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockIsCloudMode.mockReturnValue(false);
+    mockCheckLogServiceEnabled.mockResolvedValue(true);
+    mockSearchClsLog.mockResolvedValue({
+      LogResults: { Results: [], Context: "", ListOver: true },
+      RequestId: "req-search-cls",
+    });
+    mockGetCloudBaseManager.mockResolvedValue({
+      log: {
+        searchClsLog: mockSearchClsLog,
+        checkLogServiceEnabled: mockCheckLogServiceEnabled,
+      },
+    });
+    ({ tools } = createMockServer());
+  });
+
+  it("listFunctionLogs reads CLS by function_name and parses the payload", async () => {
+    mockSearchClsLog.mockResolvedValue({
+      LogResults: {
+        Results: [
+          clsItem({
+            request_id: "req-1",
+            function_name: "finish-rank",
+            log: "START RequestId: req-1",
+            status_code: "202",
+            ret_code: "2",
+            duration: "0",
+            memory: "256",
+            mem_usage: "0",
+            src: "system",
+            request_source: "TRIGGER_TIMER",
+          }),
+        ],
+        ListOver: true,
+      },
+    });
+
+    const result = await tools.queryFunctions.handler({
+      action: "listFunctionLogs",
+      functionName: "finish-rank",
+      startTime: "2026-10-18 00:00:00",
+      endTime: "2026-10-18 23:59:59",
+    });
+    const payload = JSON.parse(result.content[0].text);
+
+    expect(mockSearchClsLog).toHaveBeenCalledWith(
+      expect.objectContaining({
+        queryString: '(src:app OR src:system) AND function_name:"finish-rank"',
+        StartTime: "2026-10-18 00:00:00",
+        EndTime: "2026-10-18 23:59:59",
+        Sort: "desc",
+        service: "tcb",
+      }),
+    );
+    expect(payload.success).toBe(true);
+    expect(payload.data.logs[0]).toMatchObject({
+      requestId: "req-1",
+      functionName: "finish-rank",
+      statusCode: "202",
+      durationMs: 0,
+      memoryMb: 256,
+      timestamp: "2026-10-18 20:02:09.045",
+    });
+    expect(payload.data.hasMore).toBe(false);
+  });
+
+  it("listFunctionLogs surfaces the CLS cursor when more logs exist", async () => {
+    mockSearchClsLog.mockResolvedValue({
+      LogResults: {
+        Results: [clsItem({ request_id: "req-1", function_name: "finish-rank", log: "line" })],
+        Context: "cursor-1",
+        ListOver: false,
+      },
+    });
+
+    const result = await tools.queryFunctions.handler({
+      action: "listFunctionLogs",
+      functionName: "finish-rank",
+      limit: 1,
+    });
+    const payload = JSON.parse(result.content[0].text);
+
+    expect(payload.data.hasMore).toBe(true);
+    expect(payload.data.context).toBe("cursor-1");
+    expect(payload.nextActions[0]).toMatchObject({
+      tool: "queryFunctions",
+      action: "listFunctionLogs",
+      suggested_args: { context: "cursor-1" },
+    });
+  });
+
+  it("getFunctionLogDetail filters CLS by request_id in ascending order", async () => {
+    mockSearchClsLog.mockResolvedValue({
+      LogResults: {
+        Results: [
+          clsItem({ request_id: "req-1", function_name: "finish-rank", log: "START", src: "system" }),
+          clsItem({ request_id: "req-1", function_name: "finish-rank", log: "REPORT", src: "system" }),
+        ],
+        ListOver: true,
+      },
+    });
+
+    const result = await tools.queryFunctions.handler({
+      action: "getFunctionLogDetail",
+      requestId: "req-1",
+      startTime: "2026-10-18 00:00:00",
+      endTime: "2026-10-18 23:59:59",
+    });
+    const payload = JSON.parse(result.content[0].text);
+
+    expect(mockSearchClsLog).toHaveBeenCalledWith(
+      expect.objectContaining({
+        queryString: '(src:app OR src:system) AND request_id:"req-1"',
+        Sort: "asc",
+      }),
+    );
+    expect(payload.data.logs).toHaveLength(2);
+    expect(payload.data.functionName).toBe("finish-rank");
+  });
+
+  it("points at createLogService when the environment has no log service", async () => {
+    mockCheckLogServiceEnabled.mockResolvedValue(false);
+
+    const result = await tools.queryFunctions.handler({
+      action: "listFunctionLogs",
+      functionName: "finish-rank",
+    });
+    const payload = JSON.parse(result.content[0].text);
+
+    expect(payload.success).toBe(false);
+    expect(payload.errorCode).toBe("LOG_SERVICE_NOT_ENABLED");
+    expect(payload.nextActions[0]).toMatchObject({
+      tool: "manageLogs",
+      action: "createLogService",
+      suggested_args: { confirm: true },
+    });
   });
 });

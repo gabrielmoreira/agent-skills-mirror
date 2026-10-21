@@ -90,6 +90,23 @@ rig queue handoff <qitem-id> \
   --body-file /tmp/import-report-handoff.md
 ```
 
+### After a queue write — use the response; read back only when it doesn't show what you need
+
+A queue write (`create`, `claim`, `update`, `handoff`, `handoff-and-complete`) answers with the row it wrote; a
+handoff answers with the closed row and its successor. When that answer shows what you need to establish, use it.
+Read back (`rig queue show <id> --full --json`, or `rig queue transitions <id>`) when it doesn't, for example:
+
+- the outcome was INDETERMINATE (a transport failure, or a 502 `remote_queue_write_failed`), or the write warned
+  `qitem_body_not_saved` (an existing row came back). Reconcile by the original ID before any retry;
+- the output was compact or truncated and the field you need isn't in it (the compact receipt shows `bodyBytes`, not
+  the body, and its footer names what it left out);
+- you need a transition note, a closure or blocker detail, or a successor that the output you saw omits;
+- you need evidence from downstream of the write: the recipient's wake (`create --verify` waits for it), or its
+  pickup or claim (a later read);
+- your team's custody rule asks for a separate read-back.
+
+Don't read back only to see again a field the response already showed you.
+
 ### §1b doctrine — turn ends by passing the ball
 
 **A turn ends by passing the ball, never by going idle holding the slice waiting
@@ -384,11 +401,19 @@ rig reconcile-session <session>
 rig reconcile-session <session> --rig <rigId> --node <logicalId>
 rig reconcile-session <session> --no-launch
 rig reconcile-session <session> --json
+rig reconcile-session <session> --repair-missing-pane --no-launch
 ```
 
-This is a no-launch, no-input adopt. `--rig`/`--node` disambiguate when the
-canonical session name does not uniquely resolve. `--no-launch` is accepted
-for explicitness (it is the only mode this command has).
+This is a no-launch, no-input adopt: it records a new claimed session row for
+the seat (any running row is superseded); it re-captures the resume token if
+it can, and conversation continuity stays unverified. `--rig`/`--node`
+disambiguate when the canonical session name does not uniquely resolve.
+`--no-launch` is accepted for explicitness.
+
+`--repair-missing-pane --no-launch` is different: for a running launched seat
+whose tmux pane was never recorded, it fills in the pane and keeps the
+session, resume token and generation. It never adopts. Both forms refuse
+while the seat's typing protection is on.
 
 ### Five-term restore status vocabulary
 
@@ -1385,9 +1410,10 @@ or `rig add` (one member) when a seat needs an explicit model, a permission poli
 different agent spec or role profile, per-seat runtime or cwd, or startup files.
 
 Node-granular managed partial restore (v0.3.4+):
-- `rig launch <rig> <nodeRef>` relaunches a single seat by logical id or node id through orchestration. `<rig>` is the
-  rig's name or ID; a name shared by more than one active rig stops with the candidate IDs.
-- `rig launch <rig> --seats <a,b,c>` relaunches a comma-separated subset of seats.
+- `rig launch <rig> <nodeRef>` launches a single seat that isn't running, by logical id or node id, through orchestration.
+  `<rig>` is the rig's name or ID; a name shared by more than one active rig stops with the candidate IDs. A seat that's
+  already running is left as it is; for a fresh occupant there, use `rig seat launch <seat> --fresh --stop --reason <why>`.
+- `rig launch <rig> --seats <a,b,c>` launches a comma-separated subset of seats.
 - `--hold-reason <text>` records a reason for holding non-target seats during the partial launch.
 - This is a SUPPORTED managed path. The prior `pod_aware_launch_unsupported` dead-end is retired; pod-aware narrow launch now goes through this surface rather than ad-hoc rebuilds.
 

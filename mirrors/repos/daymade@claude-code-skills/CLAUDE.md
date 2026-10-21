@@ -33,7 +33,7 @@ Then:
 **From your terminal (CLI):**
 ```bash
 # Automated installation (macOS/Linux)
-curl -fsSL https://raw.githubusercontent.com/daymade/claude-code-skills/main/scripts/install.sh | bash
+bash -o pipefail -c 'curl -fsSL https://raw.githubusercontent.com/daymade/claude-code-skills/main/scripts/install.sh | bash'
 
 # Automated installation (Windows PowerShell)
 iwr -useb https://raw.githubusercontent.com/daymade/claude-code-skills/main/scripts/install.ps1 | iex
@@ -65,6 +65,8 @@ For a valid check that emits warnings, follow its
 For local/remote ASR selection, speed comparison and speech-content acceptance, enter
 [asr-transcribe-to-text](daymade-audio/asr-transcribe-to-text/SKILL.md) and its
 [execution SOP](daymade-audio/asr-transcribe-to-text/references/execution_location_and_comparison.md).
+For Scrapling browser-cache diagnosis, follow
+[the troubleshooting owner](scrapling-skill/references/troubleshooting.md#2-browser-backed-fetchers-not-ready).
 For competitor source-carrier/edition binding, claims, citations and existing-product learning, enter
 [competitors-analysis](competitors-analysis/SKILL.md) and its
 [citation readback checklist](competitors-analysis/references/analysis_checklist.md#citation-readback-and-counterevidence).
@@ -74,8 +76,11 @@ For user-selected collection destinations, load the
 [collection destination route](competitors-analysis/references/collection_destination.md).
 For running an original application demo, follow that Skill's
 [original-app demo recipe](competitors-analysis/references/original-app-demo.md).
-For file-backed persistence and CLI acceptance, transaction recovery tests, or financial migration/fixture acceptance, enter
+For file-backed persistence and CLI acceptance, transaction recovery tests,
+financial migration/fixture acceptance, runtime compatibility or project-bound release acceptance, enter
 [qa-expert](qa-expert/SKILL.md); its test-case routes select the detailed recipes.
+For path normalization or drive-relative adapter cases, follow its
+[runtime compatibility recipe](qa-expert/references/runtime-compatibility-acceptance.md#select-optional-path-operation-cases).
 
 For choosing or reviewing a library, framework, storage, data format, model,
 build-vs-buy or architecture — including 用哪个 / 选什么框架 / 要不要自建 / A 还是 B /
@@ -127,7 +132,9 @@ and its actual-reader pilot before expansion. Keep conversion evidence and reade
 observations separate; this file does not define another batch recipe.
 
 For proxy-selection or disruptive VPN recovery changes, enter `tunnel-doctor` and its
-proxy-conflict and network-recovery references. For automatic WeCom integration,
+proxy-conflict and network-recovery references. For unresolved tunnel packet-loss
+localization, read the [capture procedure](debugging-network-issues/references/packet-capture-recipes.md#four-boundary-tunnel-captures).
+For automatic WeCom integration,
 enter `setup-notifications-via-wecom`; its receipt contract owns accepted/rejected/unknown
 handling, while the worker owns event identity and delivery state.
 
@@ -216,17 +223,23 @@ For build reuse across source refs or a target redeployed during acceptance, loa
 [delivery verification procedure](frontend-visual-qa/references/delivery-verification.md).
 For nested zoomable workspaces, use its
 [journey and state matrix](frontend-visual-qa/references/journey-and-page-contracts.md#journey-and-state-matrix).
+For live status or attention filters, follow its
+[cross-view attention journey](frontend-visual-qa/references/journey-and-page-contracts.md#operational-attention-across-views).
 For embedded-reader zoom, return, focus or filtered-selection changes, use its
 [reader journey](frontend-visual-qa/references/journey-and-page-contracts.md#embedded-readers-and-semantic-zoom).
 For browser visibility, selected read modes, request/capture timing or long JSONL input problems, load its
 [browser-driving and observation traps](frontend-visual-qa/references/browser-driving-and-observation-traps.md);
 keep adapter requirements and invocation examples in that reference.
+For timed-out screenshots or blank hidden-window captures, follow its
+[background capture diagnosis](frontend-visual-qa/references/browser-driving-and-observation-traps.md#background-screenshot-failure-does-not-establish-a-page-failure).
 For changed contribution views or multi-item reads, use that same journey contract
 for source-derived coverage and partial-result recovery; keep the detailed recipe
 with the Skill.
 Before designing or judging monitoring, availability or certificate matrices, enter
 [data-visualization-discipline](data-visualization-discipline/SKILL.md).
-Keep observation and risk semantics in its data-validation route, not a second checklist here.
+Observation and risk semantics follow its data-validation route.
+For incomplete observations, unknown counts or confirmed zero, use its
+[operational-state matrix](data-visualization-discipline/references/operational-state-matrix.md).
 
 For oversized images or figure readability in a Markdown note or transcript, use
 [frontend-visual-qa's actual-reader handoff](frontend-visual-qa/references/markdown-reader-handoff.md).
@@ -275,6 +288,12 @@ For uv cache diagnosis or retirement, enter
 [uv target semantics](daymade-macos/macos-cleaner/references/cleanup_targets.md#uv-cache-retirement).
 
 ### Automated Test Suites (CI)
+
+For third-party model speed, protocol, concurrency or answer collection, enter
+[llm-eval-harness](llm-eval-harness/SKILL.md). For machine results, consumed inputs,
+retained answers, output-directory reuse or interrupted runs, read its
+[machine-result contract](llm-eval-harness/references/machine-results.md).
+Process exit alone does not establish the measured result.
 
 A `tests/` directory under a Skill does **not** automatically run in CI.
 [The registry](scripts/ci/test-suites.txt) owns suite admission and membership;
@@ -843,6 +862,8 @@ For changes to scripts, importable API contracts, configuration, or operating pr
 [docs-cleaner](daymade-docs/docs-cleaner/SKILL.md) for scoped documentation delivery:
 resolve implementation intent and authorization before updating the owning SOP,
 and validate the delivered command examples. Keep detailed governance in that Skill.
+For outbound link-check diagnostics, follow its
+[reader-host interpretation](daymade-docs/docs-cleaner/SKILL.md#updating-references-to-a-file-you-moved-or-deleted).
 After moving a procedure or renaming an anchor, use its
 [delivery-entry replay](daymade-docs/docs-cleaner/references/delivery-entry-replay.md)
 against the consuming instruction-file entry.

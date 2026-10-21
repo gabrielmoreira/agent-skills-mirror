@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `manaflow-ai/cmux` — 26 default patterns, 16 followed patterns, 144 file(s) materialized.
+Mirror of `manaflow-ai/cmux` — 26 default patterns, 17 followed patterns, 145 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `manaflow-ai/cmux` — 26 default patterns, 16 followed patterns, 144 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 16 |
-| Files         | 144 |
+| Followed pats | 17 |
+| Files         | 145 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -55,6 +55,7 @@ Mirror of `manaflow-ai/cmux` — 26 default patterns, 16 followed patterns, 144 
 - `STYLE.md`
 - `docs/ci/merge-main.md`
 - `REVIEW.md`
+- `docs/ci/merge-freeze.md`
 - `docs/start-here.md`
 - `CODE_OF_CONDUCT.md`
 - `docs/team-dev-setup.md`
@@ -210,14 +211,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 134 | → | [`CLA.md`](CLA.md) |
 | 135 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
 | 136 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 137 | → | [`docs/ci/merge-main.md`](docs/ci/merge-main.md) |
-| 138 | → | [`docs/contributor-verification.md`](docs/contributor-verification.md) |
-| 139 | → | [`docs/ghostty-fork.md`](docs/ghostty-fork.md) |
-| 140 | → | [`docs/start-here.md`](docs/start-here.md) |
-| 141 | → | [`docs/team-dev-setup.md`](docs/team-dev-setup.md) |
-| 142 | → | [`docs/verification-receipts.md`](docs/verification-receipts.md) |
-| 143 | → | [`REVIEW.md`](REVIEW.md) |
-| 144 | → | [`STYLE.md`](STYLE.md) |
+| 137 | → | [`docs/ci/merge-freeze.md`](docs/ci/merge-freeze.md) |
+| 138 | → | [`docs/ci/merge-main.md`](docs/ci/merge-main.md) |
+| 139 | → | [`docs/contributor-verification.md`](docs/contributor-verification.md) |
+| 140 | → | [`docs/ghostty-fork.md`](docs/ghostty-fork.md) |
+| 141 | → | [`docs/start-here.md`](docs/start-here.md) |
+| 142 | → | [`docs/team-dev-setup.md`](docs/team-dev-setup.md) |
+| 143 | → | [`docs/verification-receipts.md`](docs/verification-receipts.md) |
+| 144 | → | [`REVIEW.md`](REVIEW.md) |
+| 145 | → | [`STYLE.md`](STYLE.md) |
 
 ---
 

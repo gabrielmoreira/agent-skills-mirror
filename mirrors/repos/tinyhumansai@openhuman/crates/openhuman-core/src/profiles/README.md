@@ -228,7 +228,8 @@ A profile holds one thread per conversation, whatever interface it came in on:
   - Memory is bound to the profile (`[memory] agent_id`, `root = user:<id>`).
     That binding wins over definition pins and team roots.
   - The memory layout is pinned to the legacy tree (confined to that root by
-    `memory::user_scope`). Layout v3 would bind the engine below
+    upstream `Confinement` with `Policy::Clamp`, selected by `memory::ops`).
+    Layout v3 would bind the engine below
     `memory::scope::user_root`, which reads `users/<id>` from the config path
     and would answer `org:<id>` or a minted local root instead.
   - The autonomy policy is on and supervised, with no auto-approval, no tool

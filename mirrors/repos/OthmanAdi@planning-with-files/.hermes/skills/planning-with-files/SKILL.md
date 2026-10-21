@@ -2,7 +2,7 @@
 name: planning-with-files
 description: "Persistent file-based planning for multi-step AI-agent work. Keeps task_plan.md, findings.md, and progress.md on disk; lifecycle hooks inject selected project planning context. Automatic recovery reads project planning files only. Explicit session-catchup.py --metadata reads same-project local agent session records and emits aggregate counts only; --replay may emit bounded nonce-framed excerpts. Optional gated mode can request continuation only when the host supports it and never runs commands declared in Markdown. The skill has no network upload path. Use for research or work needing 5+ tool calls."
 metadata:
-  version: "3.24.3"
+  version: "3.25.0"
   hermes:
     tags: [planning, long-running-tasks, context-engineering, workflow]
 ---
@@ -18,6 +18,7 @@ Work like Manus: Use persistent markdown files as your "working memory on disk."
 **Before doing anything else**, check if planning files exist and read them:
 
 1. If `task_plan.md` exists (in the project root, or in the active `.planning/<plan>/` directory), read `task_plan.md`, `progress.md`, and `findings.md` immediately. The `planning_with_files_status` tool or `/pwf-status` names the active plan.
+   When several plans are available, use `planning_with_files_select` with the exact `.planning/` directory name and project `cwd`, or an absolute plan-directory path. The selection belongs to this Hermes conversation. A successful read of a named plan's `task_plan.md` also selects it when this conversation is unbound; reading another plan for reference does not switch an existing selection.
 2. Run `git diff --stat` to see code changes that may not yet be recorded in the planning files.
 
 Automatic recovery stops there. The following optional command reads same-project local session records and emits aggregate counts only:
@@ -46,6 +47,7 @@ Use `--replay` instead of `--metadata` only for a deliberate bounded replay. Rep
 - The Markdown files under `.hermes/commands/` document the original command intent; Hermes does not load Markdown command files, the plugin registers the commands.
 - Hermes Desktop uses the same plugin. Install it as a user plugin (the two commands in the note above); each Desktop session pins its project folder, and the plugin resolves the plan from that folder.
 - Native Windows: the Hermes home is `%LOCALAPPDATA%\hermes`, not `~\.hermes`. Without `sh` from Git for Windows the completion check runs in Python inside the plugin.
+- Session selection: `planning_with_files_select(plan="<exact-slug>", cwd="/abs/project")` selects a named plan, an absolute `.planning/<slug>` directory selects across projects, and `plan=""` clears the selection. Named initialization binds the created plan. Successful writes inside one named plan may switch the selection. Status, completion checks and hooks use the selected plan without changing the process environment. A missing or invalid selected plan stays unavailable until you select another or clear it. A conflicting explicit tool `cwd` returns an error; clear the selection before initializing a different project. Existing attachment and attestation checks remain active.
 
 ## Important: Where Files Go
 

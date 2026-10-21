@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `omnigent-ai/omnigent` — 26 default patterns, 2 followed patterns, 77 file(s) materialized.
+Mirror of `omnigent-ai/omnigent` — 26 default patterns, 2 followed patterns, 78 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `omnigent-ai/omnigent` — 26 default patterns, 2 followed patterns, 7
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 2 |
-| Files         | 77 |
+| Files         | 78 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -135,8 +135,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 73 | ✓ | [`tests/resources/agents/pi_skills_none/skills/pi-e2e-xyz-count-d2f6e1/SKILL.md`](tests/resources/agents/pi_skills_none/skills/pi-e2e-xyz-count-d2f6e1/SKILL.md) |
 | 74 | ✓ | [`tests/resources/agents/pi_skills_none/skills/pi-e2e-xyz-greet-c4a8d5/SKILL.md`](tests/resources/agents/pi_skills_none/skills/pi-e2e-xyz-greet-c4a8d5/SKILL.md) |
 | 75 | ✓ | [`tests/resources/examples/archer/skills/deep-research/SKILL.md`](tests/resources/examples/archer/skills/deep-research/SKILL.md) |
-| 76 | → | [`tests/_helpers/README.md`](tests/_helpers/README.md) |
-| 77 | → | [`tests/README.md`](tests/README.md) |
+| 76 | ✓ | [`web/electron/AGENTS.md`](web/electron/AGENTS.md) |
+| 77 | → | [`tests/_helpers/README.md`](tests/_helpers/README.md) |
+| 78 | → | [`tests/README.md`](tests/README.md) |
 
 ---
 

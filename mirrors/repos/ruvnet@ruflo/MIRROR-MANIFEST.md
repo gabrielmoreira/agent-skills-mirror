@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ruvnet/ruflo` — 26 default patterns, 2 followed patterns, 401 file(s) materialized.
+Mirror of `ruvnet/ruflo` — 26 default patterns, 2 followed patterns, 402 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ruvnet/ruflo` — 26 default patterns, 2 followed patterns, 401 file(
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 2 |
-| Files         | 401 |
+| Files         | 402 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -448,19 +448,20 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 386 | ✓ | [`v3/@claude-flow/cli/.claude/skills/v3-swarm-coordination/SKILL.md`](v3/@claude-flow/cli/.claude/skills/v3-swarm-coordination/SKILL.md) |
 | 387 | ✓ | [`v3/@claude-flow/cli/.claude/skills/verification-quality/SKILL.md`](v3/@claude-flow/cli/.claude/skills/verification-quality/SKILL.md) |
 | 388 | ✓ | [`v3/@claude-flow/cli/CLAUDE.md`](v3/@claude-flow/cli/CLAUDE.md) |
-| 389 | ✓ | [`v3/@claude-flow/codex/.agents/skills/github-automation/SKILL.md`](v3/@claude-flow/codex/.agents/skills/github-automation/SKILL.md) |
-| 390 | ✓ | [`v3/@claude-flow/codex/.agents/skills/memory-management/SKILL.md`](v3/@claude-flow/codex/.agents/skills/memory-management/SKILL.md) |
-| 391 | ✓ | [`v3/@claude-flow/codex/.agents/skills/performance-analysis/SKILL.md`](v3/@claude-flow/codex/.agents/skills/performance-analysis/SKILL.md) |
-| 392 | ✓ | [`v3/@claude-flow/codex/.agents/skills/security-audit/SKILL.md`](v3/@claude-flow/codex/.agents/skills/security-audit/SKILL.md) |
-| 393 | ✓ | [`v3/@claude-flow/codex/.agents/skills/sparc-methodology/SKILL.md`](v3/@claude-flow/codex/.agents/skills/sparc-methodology/SKILL.md) |
-| 394 | ✓ | [`v3/@claude-flow/codex/.agents/skills/swarm-orchestration/SKILL.md`](v3/@claude-flow/codex/.agents/skills/swarm-orchestration/SKILL.md) |
-| 395 | ✓ | [`v3/@claude-flow/codex/AGENTS.md`](v3/@claude-flow/codex/AGENTS.md) |
-| 396 | ✓ | [`v3/@claude-flow/mcp/CLAUDE.md`](v3/@claude-flow/mcp/CLAUDE.md) |
-| 397 | ✓ | [`v3/CLAUDE.md`](v3/CLAUDE.md) |
-| 398 | ✓ | [`v3/docs/adr/ADR-151-harness-intelligence-layer.md`](v3/docs/adr/ADR-151-harness-intelligence-layer.md) |
-| 399 | ✓ | [`v3/docs/adr/ADR-152-genome-similarity-search.md`](v3/docs/adr/ADR-152-genome-similarity-search.md) |
-| 400 | → | [`docs/reviews/intelligence-system-audit-2026-05-29.md`](docs/reviews/intelligence-system-audit-2026-05-29.md) |
-| 401 | → | [`v3/docs/adr/ADR-150-metaharness-integration-surfaces.md`](v3/docs/adr/ADR-150-metaharness-integration-surfaces.md) |
+| 389 | ✓ | [`v3/@claude-flow/cli/templates/grok/skills/agent-teams-grok/SKILL.md`](v3/@claude-flow/cli/templates/grok/skills/agent-teams-grok/SKILL.md) |
+| 390 | ✓ | [`v3/@claude-flow/codex/.agents/skills/github-automation/SKILL.md`](v3/@claude-flow/codex/.agents/skills/github-automation/SKILL.md) |
+| 391 | ✓ | [`v3/@claude-flow/codex/.agents/skills/memory-management/SKILL.md`](v3/@claude-flow/codex/.agents/skills/memory-management/SKILL.md) |
+| 392 | ✓ | [`v3/@claude-flow/codex/.agents/skills/performance-analysis/SKILL.md`](v3/@claude-flow/codex/.agents/skills/performance-analysis/SKILL.md) |
+| 393 | ✓ | [`v3/@claude-flow/codex/.agents/skills/security-audit/SKILL.md`](v3/@claude-flow/codex/.agents/skills/security-audit/SKILL.md) |
+| 394 | ✓ | [`v3/@claude-flow/codex/.agents/skills/sparc-methodology/SKILL.md`](v3/@claude-flow/codex/.agents/skills/sparc-methodology/SKILL.md) |
+| 395 | ✓ | [`v3/@claude-flow/codex/.agents/skills/swarm-orchestration/SKILL.md`](v3/@claude-flow/codex/.agents/skills/swarm-orchestration/SKILL.md) |
+| 396 | ✓ | [`v3/@claude-flow/codex/AGENTS.md`](v3/@claude-flow/codex/AGENTS.md) |
+| 397 | ✓ | [`v3/@claude-flow/mcp/CLAUDE.md`](v3/@claude-flow/mcp/CLAUDE.md) |
+| 398 | ✓ | [`v3/CLAUDE.md`](v3/CLAUDE.md) |
+| 399 | ✓ | [`v3/docs/adr/ADR-151-harness-intelligence-layer.md`](v3/docs/adr/ADR-151-harness-intelligence-layer.md) |
+| 400 | ✓ | [`v3/docs/adr/ADR-152-genome-similarity-search.md`](v3/docs/adr/ADR-152-genome-similarity-search.md) |
+| 401 | → | [`docs/reviews/intelligence-system-audit-2026-05-29.md`](docs/reviews/intelligence-system-audit-2026-05-29.md) |
+| 402 | → | [`v3/docs/adr/ADR-150-metaharness-integration-surfaces.md`](v3/docs/adr/ADR-150-metaharness-integration-surfaces.md) |
 
 ---
 

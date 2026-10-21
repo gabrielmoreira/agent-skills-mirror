@@ -180,6 +180,22 @@ state as well; it is not the same operation as disconnecting an account.
 - The global key is plaintext in config.yaml — only enable it on trusted/internal
   deployments and serve over HTTPS.
 
+## Default message routes
+
+`create_bot` without non-empty `event_bindings` adds two explicit message routes:
+private chat (`chat_type eq person`) and group chat (`chat_type eq group` plus
+`is_at_bot eq true`). Both use the Workspace's default Pipeline, or the first
+available Pipeline. If none exists, first-bot setup creates one with the full
+default config. Creating a Pipeline via `create_agent(kind="pipeline")` also uses
+that full default config. Configure an authorized model before testing replies.
+
+Explicit routes on create are preserved; `update_bot` never automatically
+replaces manual routes, including an intentionally empty list. The WebUI message
+template uses the same private/group conditions and preserves existing routes
+when applied repeatedly. Unmentioned group messages do not enter the Pipeline.
+An existing broad route can still match first; inspect route order and diagnostics
+before changing a member's configuration.
+
 ## Event processors
 
 Create a processor with `kind: "event_processor"` and basic information. Without
@@ -224,10 +240,16 @@ Conversation history supplies context; historical messages without explicit
 links must not be asserted to belong to the selected execution. Events without
 a processor run use `source=event`. All lookups remain Workspace-scoped.
 
-Monitoring record filters accept `mode` (`all`, `real`, `debug`) and
+Monitoring record filters, except for `kind="sessions"`, accept `mode` (`all`, `real`, `debug`) and
 `execution_statuses` (normalized execution statuses). These select the owning
 execution, not the individual model/tool call outcome. Calls without a recorded
 execution link are excluded when an execution filter is active.
+
+Session lists support `bot_ids`, `pipeline_ids`, `start_time`, `end_time`,
+`user_query`, `is_active`, and pagination. For execution status or real/debug
+filters, use `get_monitoring_executions`; HTTP `/monitoring/sessions` rejects
+them. In HTTP `/monitoring/data`, `sessions` and `totalCount.sessions` use only
+bot/pipeline/time filters; execution filters apply to the other records.
 
 ### Workspace message language
 

@@ -16,11 +16,9 @@ guides:
 - defect-repair
 - performance-evidence
 - performance-comparisons
-- performance-cost-domains
 - technology-change
 - implementation-modernization
 - test-work
-- existing-test-maintenance
 - documentation-work
 - source-comments
 - documentation-evidence
@@ -43,6 +41,7 @@ guides:
 - commands-and-tooling
 - workspace-integrity
 - version-control
+- change-descriptions
 - work-slicing
 handoffs:
 - task: withdraw-software
@@ -56,6 +55,6 @@ Before editing, establish the observable outcome, acceptance evidence, authorize
 
 Settle every material design choice before editing, then make the change, splitting large work into independently verifiable units under [[guide:work-slicing]].
 
-Verify each unit, and then the combined change, against its acceptance criteria. After they pass, review the complete final diff for unintended movement, temporary artifacts, stale comments or documentation, missed consumers, and remaining compatibility or migration work.
+Verify each unit, and then the combined change, against its acceptance criteria. Passing checks establish the behavior they exercise, not that the change is coherent, so after they pass, and before reporting the change complete, review the combined change as a whole, including increments of it already reported complete to earlier requests. Confirm that each premise it retires has been followed to every surface resting on it; that nothing the change superseded survives beside what replaced it, such as a mechanism, a second representation of one fact, or state kept for a superseded design; and that no unintended movement, temporary artifact, stale comment or documentation, missed consumer, or unfinished compatibility or migration work remains. The review's result is a disposition for each problem it finds: corrected, retained with a stated reason, or reported as open beside the claim it limits. Until each has one, the review is not done, whatever has been recorded about it.
 
-Report the behavior or project state now delivered, the decisive verification, and any action the reader must take. Put blockers, compatibility breaks, migrations, security effects, skipped material checks, and residual risks beside the claim they qualify.
+Report the behavior or project state now delivered, any premises the change retired and how the material resting on each was reconciled, the decisive verification, and any action the reader must take. Put blockers, compatibility breaks, migrations, security effects, skipped material checks, and residual risks beside the claim they qualify.

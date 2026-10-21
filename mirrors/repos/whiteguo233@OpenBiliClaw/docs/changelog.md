@@ -2,7 +2,33 @@
 
 > 按里程碑记录各阶段交付内容。每次分支合回 main 时追加条目。
 
-## v0.3.229：TikTok 新来源、远程访问安全收紧与 B 站登录失效横幅死锁修复（2026-10-16）
+## v0.3.230：候选池恢复、蓝鱼实验室、多语言与来源权限优化（2026-10-21）
+
+- TikTok / Instagram 扩展站点权限统一默认声明：Chrome / Firefox 将 Instagram 从可选权限移入固定权限，Safari 补齐两者域名。Instagram 来源设置保存不再弹授权或在关闭来源时撤销站点权限；移除已无调用的授权等待代码。来源仍实验性、默认关闭，登录及实际站点访问检查保留；同步首页、README、安装、隐私和商店审核说明。验证见 [权限验收](testing/2026-10-21-default-source-permissions.md)。
+
+- 同步项目首页与中英文 README 的 TikTok / Instagram 状态：移除 TikTok 已随 v0.3.229 发布后残留的“待发版”，明确两者仍为实验性、默认关闭，区分公开发现、登录后个人信号与本地收藏，并补齐连接指南和验收台账入口。没有改变扩展权限或来源实现，也不提升现有账号/浏览器验收结论。
+
+- 修复多进程补池配置不生效：API 热重载曾只更新主进程，discovery worker 继续持有旧模型或暂停状态，导致已有原始候选却没有可推荐内容。桌面与 `start` / `serve-api` 统一监督后台进程，设置队列成功结束后重启读取配置快照的子进程；先确认旧进程退出，保留父入口锁定的数据目录，失败回滚/排队修订期间不切到中间配置。增加真实子进程 + SQLite 的候选评估、入池与文案回归（可推荐数 0 → 1）。详见 [诊断与验证](testing/2026-10-20-empty-pool-recovery.md)。
+- 补充空池修复的真实请求验收：本机 B 站、模型、Ollama、主 API 及四个子进程的推荐 HTTP 链路完成 `0 → 3 → 消费后 0 → 自动补回 1`，画像及评分门槛未变；同时保留原主备模型的 429/500 失败证据，成功轮次明确使用隔离实例中切换的可用模型。详见 [真实请求验收](testing/2026-10-21-empty-pool-live-requests.md)。
+- 更新 Chrome Web Store 脱敏截图生成器以展示全部 14 个来源，并修正移动端懒加载图片的捕获时序；素材已重新生成并目检。
+
+- **蓝鱼实验室「养蓝色大肥鱼」（实验性，默认关闭）**：新增 `src/openbiliclaw/fish/`，一只**独立的小号**从推荐池挑视频、读评论区、挑一条评论回复并 @ 对方。账号隔离是硬约束——凭证独立存在 `<data_dir>/fish/bilibili_cookie.json`，绝不回退主账号 cookie，鱼的 mid 或 cookie 与主号相同即拒绝运行；配置与追加式账本都在 `data/fish/`，删目录即重置。它是**动作层而非第二套管线**：候选直接取已评估的推荐池（`exclude_processed=True`），模型只负责挑评论与写回复；发布后的评论**只写鱼自己的账本**，不写推荐反馈、不把推荐行标成已评论、不触发 cognition，用户画像与推荐列表都不受鱼的影响；等级与配额由账本推导，没有独立的 `state.json`，查重也只看账本（`bvid:rpid` + 跨天累计的单视频上限）。默认 `dry_run` 只预览，真实发布前还要过日配额、最小间隔、单视频上限、`bvid:rpid` 查重、字数与屏蔽词、`allow_top_level` 代码级判断六道硬闸；连续 3 条失败且最近一次在 60 分钟内时定时轮自动暂停（手动触发可绕过）。评论按 `cursor.next` 翻页取满（最多 5 页，老返回结构仍单请求）；新增可选的 `audience_prompt`「只回哪类人」，进 user 消息的 `<audience>` 段；发布成功后把 B 站返回的 `reply_rpid` 记进账本。新增 `/api/fish/{status,config,account,run,ledger}` 七个接口（写操作走 B 站凭据门禁，`config/status/account/ledger` 在 degraded 模式仍可用），桌面 Web 与扩展 popup 设置页各新增「养蓝色大肥鱼」Tab，人设与说话规矩可直接编辑。提示词遵守缓存约定（静态 system + user 携带人设/视频/评论/约束）。详见 [蓝鱼实验室](modules/fish.md) 与 [设计说明](plans/2026-10-19-blue-fish-lab-spec.md)。
+
+- **蓝鱼成为 B 站发现的一路**：新增只读策略 `CommentThreadStrategy`（`comment_thread`），从已评估推荐池取 1–3 个种子（先按鱼账本跳过已回过的视频与评论）读评论区，把评论里点名的 BV 号还原成 `DiscoveredContent` 交给统一 batch evaluator；同一趟把「种子视频 + 评论快照」写进 `data/fish/plans.json`（最多 3 条、45 分钟过期），由动作层在原有隔离 / 熔断 / 配额 / 间隔 / 账本查重闸门内执行，`discover()` 本身绝不发帖。动作层优先消费计划（不再重复抓评论），没有计划时回退到原推荐池路径。路线只在 API runtime 注册（CLI 没有动作层），实验室关闭或没有独立 Cookie 时零网络请求。详见 [蓝鱼实验室](modules/fish.md#作为-b-站发现的一路)。
+
+- **大肥鱼可以在评论区 @ 主人了**：新配置 `notify_owner`（默认关）/ `owner_name` / `notify_daily_limit`，打开后每天最多一次，在推荐池第一条视频下发一条顶层评论 `@主人昵称 推荐你看看这条：《标题》。…`；B 站会把开头 `@昵称` 解析成真正的提及，于是推荐以「有人 @ 了你」的形式进主人的消息。昵称留空时自动读主账号 nav。通知与回复共用最小间隔与账本，通知所在视频计入 `per_video_limit`（同一条视频不再回复），账本新增 `notified` 行和 `via` 之外完全隔离——主号画像、推荐列表不受影响；桌面 Web 与扩展 popup 的鱼设置页都新增「在评论区 @ 你」一节。公开评论区会把小号与主号关联起来，所以默认关闭。详见 [蓝鱼实验室](modules/fish.md#配置项)。
+
+- **大肥鱼支持扫码登录**：设置页新增「扫码登录」，后端用 B站 web 扫码接口生成二维码，再用 `qrcode` 渲染成 SVG data URL（不引第三方图片服务、前端不打包 QR 库），确认后从跨域 URL 取出 Cookie 落盘并走原来的隔离校验——扫到主号会立刻回滚并拒绝。确认时选「记住我 / 长期」，选 24 小时第二天会失效。依赖新增 `qrcode>=8`（同时是 bilibili-api-python 的传递依赖，显式声明）。桌面 Web 与扩展 popup 都已接入。详见 [蓝鱼实验室](modules/fish.md#账号隔离)。
+
+- **大肥鱼的通知与节奏可配了**：`notify_channel` 支持 **评论区 @ / 私信 / 两个都发**（两个都发时评论失败就不发私信；私信走 `send_private_message`，失败只记原因不回滚评论）；新增 `trigger_prompt`「什么情况下才开口」进 prompt 的 `<trigger>` 段（system 保持字节静态，模型据此 skip）；新增 `active_hours`「只在几点到几点说话」（支持跨夜，按本机时区，手动跑不受限）；每次尝试同时写一行 `data/fish/out/<日期>.md` 日报。桌面 Web 与扩展 popup 都加了对应控件，i18n 目录已同步。详见 [蓝鱼实验室](modules/fish.md#配置项)。
+
+- **大肥鱼补上质量门槛与日报视图**：新增 `min_view_count` / `min_publish_age_days`（默认 0 = 不限；开启后统计缺失或发布时间不可解析的候选会被挡掉，全被挡掉返回 `quality_gate`）；`/api/fish/status` 新增 `today_report`，设置页的「今日日报」折叠块直接显示 `data/fish/out/<日期>.md`的内容。两个设置面板都加了对应控件，i18n 已同步。详见 [蓝鱼实验室](modules/fish.md#配置项)。
+
+- **大肥鱼补了无凭据端到端自检**：新增 `scripts/fish_e2e_stub.py`，本地假 B站 + 假模型，把真实 app / 发现路线 / 候选流水线 / 引擎 / 客户端 / 账本 / 日报整条链路跑一遍并逐项断言（登录隔离、BV 号入队、计划复用不二次抓评论、评论 @ / 私信 / 两者投递、日报与推荐行不被改动）。同时修了两处真机前提问题：`fish.comment_reply` 之前是「未知 LLM caller」会被并发闸门按 maintenance 兜底并打警告，现在显式登记；画像未初始化时发现路线每 5 分钟打一条带 traceback 的 WARNING，现在安静返回 0。
+
+- 修复只发私信的通知会占掉该视频的回复名额：`FishStore.view()` 现在只把 `delivery` 含 `comment` 的 `notified` 行计入 `per_video_total`（旧行没有 `delivery` 时按评论处理）。只发私信没有碰评论区，不该挡住同一个视频下的下一条回复。
+
+- **大肥鱼支持直接填主人的 mid**：主号 Cookie 失效时，`owner_mid` 用来做隔离校验、私信收件人；昵称留空时用匿名 WBI 请求 `/x/space/wbi/acc/info` 兜底查（偶发风控失败则只影响 @ 前缀）。桌面 Web 与扩展 popup 都加了「我的 mid」输入，i18n 已同步。
 
 - **多语言基础设施（#305）**：`[general].language` 现在真正驱动界面、CLI 与新生成的模型输出，支持 `zh-Hans`（默认）/ `zh-Hant`（繁體・台灣）/ `en`；旧值 `zh`、`zh-TW`、`en-US` 等自动规范化，未知语言在 `PUT /api/config` 保存时 400 拒绝。新增 `openbiliclaw language [locale]` 与 `OPENBILICLAW_LANG` 单次覆盖、`GET /api/i18n/locales`、`/i18n/ui/<locale>.json` 静态目录；桌面 Web、移动 Web、设置向导与插件侧边栏共用 `web/shared/i18n.js`，按渲染后的 DOM 文本匹配目录翻译（内容与用户输入不翻译，`data-i18n-skip` 保护指定区域）。UI 目录由 `scripts/build_i18n_catalogs.py` 从源码生成：2797 条文案 + 197 条插值模式（如「模型：{0}」「{0} 分钟前」），`zh-Hant` 由 OpenCC `s2twp` 生成，英文 100% 覆盖并由 `tests/test_i18n.py` 守护；数字与短日期按 locale 格式化（`331K` / `Sep 5` 对 `33.1万` / `9月5日`）。聊天与推荐理由的 system prompt 保持字节静态，locale 以 `<output_language>` 指令进 user prompt，provider prompt cache 不受影响；`zh-Hant` 额外约束只用繁體字（真实 provider 实测：仅写「Traditional Chinese」首轮仍可能回简体），配置保存/应用提示也按新语言返回；历史推荐 / 画像文本保留原语言、不批量重译。详见 [多语言模块](modules/i18n.md)。
 
@@ -143,7 +169,9 @@
 - 新增 `tiktok_tag` / `tiktok_user` discovery 策略与 `TiktokDiscoveryProducer`（镜像 YouTube producer：每日执行 ledger、节流、pool 缺口门、统一 candidate pipeline、关键词规划器 P1.7/P1.8 生命周期）；`[scheduler.pool_source_shares]` 增加 `tiktok` 配额。
 - `tiktok` 从 douyin 平台族别名拆分为独立平台族（`requires_overseas_network=True`），source-auth 契约按公开源接入（无需登录），API config / status / credentials 面同步覆盖。
 
-- v0.3.229 发布回执已归档：Chrome / Firefox AMO 已提交待审核，桌面安装包、双架构 Docker 镜像与插件三渠道包均已发布，完整性校验逐项通过；详见 [发布记录](testing/2026-10-16-release-0.3.229.md)。
+## v0.3.229：TikTok 新来源、远程访问安全收紧与 B 站登录失效横幅死锁修复（2026-10-16）
+
+- TikTok 新增实验性发现与登录态关键词搜索；B 站凭据及配置写入接口收紧远程访问；修复 B 站登录失效横幅在 Cookie 修复后仍悬挂的问题。Chrome / Firefox AMO 已提交待审核，桌面安装包、双架构 Docker 镜像与插件包均已发布，完整回执见 [发布记录](testing/2026-10-16-release-0.3.229.md)。
 
 ## v0.3.228：画像门控大幅降本与安装包信任修复（2026-10-13）
 

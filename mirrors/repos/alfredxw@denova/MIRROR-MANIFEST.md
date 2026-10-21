@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `alfredxw/denova` — 26 default patterns, 0 followed patterns, 22 file(s) materialized.
+Mirror of `alfredxw/denova` — 26 default patterns, 0 followed patterns, 27 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `alfredxw/denova` — 26 default patterns, 0 followed patterns, 22 fil
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 22 |
+| Files         | 27 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -77,10 +77,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 16 | ✓ | [`skills/extension-development/references/api.md`](skills/extension-development/references/api.md) |
 | 17 | ✓ | [`skills/extension-development/SKILL.md`](skills/extension-development/SKILL.md) |
 | 18 | ✓ | [`skills/interactive-image/SKILL.md`](skills/interactive-image/SKILL.md) |
-| 19 | ✓ | [`skills/novel-lite/SKILL.md`](skills/novel-lite/SKILL.md) |
-| 20 | ✓ | [`skills/novel-standard/SKILL.md`](skills/novel-standard/SKILL.md) |
-| 21 | ✓ | [`skills/web-research/agents/openai.yaml`](skills/web-research/agents/openai.yaml) |
-| 22 | ✓ | [`skills/web-research/SKILL.md`](skills/web-research/SKILL.md) |
+| 19 | ✓ | [`skills/novel-craft/references/characters-and-rules.md`](skills/novel-craft/references/characters-and-rules.md) |
+| 20 | ✓ | [`skills/novel-craft/references/long-form.md`](skills/novel-craft/references/long-form.md) |
+| 21 | ✓ | [`skills/novel-craft/references/premise-and-outline.md`](skills/novel-craft/references/premise-and-outline.md) |
+| 22 | ✓ | [`skills/novel-craft/references/scene-and-payoff.md`](skills/novel-craft/references/scene-and-payoff.md) |
+| 23 | ✓ | [`skills/novel-craft/SKILL.md`](skills/novel-craft/SKILL.md) |
+| 24 | ✓ | [`skills/novel-lite/SKILL.md`](skills/novel-lite/SKILL.md) |
+| 25 | ✓ | [`skills/novel-standard/SKILL.md`](skills/novel-standard/SKILL.md) |
+| 26 | ✓ | [`skills/web-research/agents/openai.yaml`](skills/web-research/agents/openai.yaml) |
+| 27 | ✓ | [`skills/web-research/SKILL.md`](skills/web-research/SKILL.md) |
 
 ---
 

@@ -356,6 +356,16 @@ S11; this RFC does not silently enable a new acceptance policy. The next complet
 slice should map existing structured criteria through a work switch and restart,
 reject dropped coverage, and invalidate stale evidence under the same owner.
 
+**Supporting-outcome checkpoint:** [default outcome refinement](goal-outcome-refinement-v0.md)
+now proposes cumulative requirements and evidence-backed Agent review inside the
+same acceptance owner, inline work context and existing frontier replan. This
+adds no default enable switch; the legacy switch still controls executable checks.
+Self-review cannot bypass configured checks or close a root Goal. Additive
+requirements, File/SQLite recovery and runnable-research parity form this slice;
+general supersession, global closeout, cross-Agent reassignment and S11 model/
+benchmark adoption remain open. This is a disclosed default guidance change,
+not qualification of the complete R4 contract.
+
 ### 3.8 Invalid evidence and affected consumers
 
 Recovery and work switching must preserve the different observations defined

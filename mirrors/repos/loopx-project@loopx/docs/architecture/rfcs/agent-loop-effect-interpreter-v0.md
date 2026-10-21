@@ -471,6 +471,28 @@ shape merely because of its size. Optional memory participation now has one
 compact, signed envelope projection; the Codex CLI adapter preserves default-off
 isolation. This does not qualify installed heartbeat/App adoption or model value.
 
+Bounded planning context now remains inline instead of forcing a full-decision
+read under envelope budget pressure. Its existing owner retains the 3 KiB bound;
+the shared DSH/cloud adapter transports the signed contribution and, for saved
+historical references, the original capture route and hash. The thin renderer
+requires capability detail only for an actual `agent_context.detail_ref`, since
+`delivery=projected` also describes complete context. Source and actual Host-input
+oracles cover enabled/off, historical references and signature refusal through
+File/SQLite CLI and a protocol-only DSH subprocess. Keep the 8 KiB warning and
+count packet plus necessary detail/source IO before choosing a default. Live
+model behavior, installed adoption and the three acceptances below remain open.
+
+A bound native replan exposed a further shared Host adapter omission: it kept
+the generic action but dropped the signed replan packet and its evidence route.
+The DSH/cloud adapter now forwards both, retaining the existing full Goal read
+and same-capture replan context. File/SQLite selection-to-replan qualification
+checks actual DSH provider input with a protocol-only runner, signed mutation
+refusal and unchanged source/state; it does not invoke a model. The outer Turn
+executor retains writeback/quota/scheduler ownership. Ordinary requests retain
+their previous input. This qualifies that transport boundary only; installed
+adoption, subsequent model decisions, complete costs and the three acceptances
+below remain open.
+
 Current source-path audit for the first convergence slice:
 
 | Execution fact | Existing owner / projection | Remaining boundary |
@@ -482,6 +504,16 @@ Current source-path audit for the first convergence slice:
 | Replan / Goal closure | Replan action packet and the existing TS capsule preserve full audit steps/guidance, current closure assessment (judge) and evidence/non-proof conditions | Same captured File/SQLite decisions qualify clause retention and signature mutation; full evidence stays on authorized detail paths. Host/model adoption remains open; Todo completion is not Goal completion |
 | Settlement / scheduler | Intact typed settlement plan and explicit host-owned scheduler projection; omitted scheduler argv references resolve the same captured full decision | Unbound detail commands are retired in this projection. Actual host readback, stale mutation refusal and exactly-once recovery still need host adoption qualification |
 | Optional memory | Verified boundary participation plus fresh host binding | Off/recall/ingest/stale/provider-failure isolation remains mandatory; transport parity is not model value |
+
+The boundary projection now retains complete scope, approval, guard and stop
+clauses instead of applying display limits. The shared DSH/cloud candidate
+adapter also transports the signed restrictions that it previously omitted,
+keeping scope/workspace compatibility fields once. Independent source oracles
+and real File/SQLite CLI plus a protocol-only Host subprocess expose the old
+loss and exercise retention, tamper refusal and no-debit replay. This repairs
+one existing caller family's boundary delivery; it adds no enforcement owner.
+Keep the 8 KiB warning, disclose the cost of restored clauses, and qualify live
+model behavior, installed adoption and total costs separately before rollout.
 
 The capability-fact correction is a read-model change in the established
 TypeScript owner. Real captured File/SQLite decisions cover refusal and admission
@@ -544,7 +576,10 @@ changes no scheduler admission, execution grant, default or host effect.
 Real packaged transport qualification remains separate from live model outcomes,
 App adoption and the three convergence acceptances below.
 
-Remaining implementation Todos, in dependency order:
+The requirement-delivery (#5844), complete closeout-clause (#6337) and original
+Host decision-capture (#6350) source repairs have merged. Preserve those results;
+their completion does not close M7.4, R5 or the three acceptance streams below.
+Continue in this order using the existing owners and checkpoints:
 
 | Todo | Observable outcome and decisive acceptance |
 |---|---|
@@ -563,6 +598,63 @@ legacy cached-result recovery and terminal readback preserve original receipts.
 This closes the producer-to-detail transport gap only. Live models, packaged
 App/Lark, later authority checks and the remaining convergence matrix retain
 their independent acceptance; no Python projection is retired by this slice.
+
+The shared Host result adapter now retains supplied text for the existing Turn
+validator instead of truncating it into a passing candidate. Over-limit next
+actions could lose a trailing approval constraint while still being accepted.
+JSON booleans, numbers and containers also retain their types for rejection by
+that validator; false/zero cannot disappear into sparse-field defaults. Legacy
+null/omitted optional text retains its existing absence semantics.
+Explicit delivery scale and outcome now retain their values and JSON types;
+only omitted metadata uses the existing sparse defaults. Previously a declared
+`surface_only`, unqualified `outcome_gap` or invalid value became
+`outcome_progress`, bypassing the existing refusal and recording a quota spend.
+The shared prompt uses the existing delivery vocabularies. Native File/SQLite
+tests preserve valid scale history. New material results also reuse the existing
+settlement rule before task validation or effect preparation: `surface_only`
+and `outcome_gap` produce a typed `validation_failed` without a prepared
+writeback. Previously vocabulary-valid but nonqualifying results reached
+refresh-state, raised a generic CLI error and left an in-progress prepared
+writeback that repeated the same refusal. The Host contract carries no typed
+blocker observation; ordinary CLI blocked settlement is unchanged. Historical
+cached results retain provider readback/recovery, including an unknown provider
+observation followed by a committed receipt, without relaunching the Host or
+repeating writeback. No settlement policy is added here.
+File/SQLite native CLI and actual DSH subprocess qualification cover rejection
+before task validation/writeback/spend/ACK, failed-result replay, and a corrected
+fresh Turn settling once. Boundary-length valid results retain their behavior.
+This is result-transport correctness; it does not qualify model adoption, undo
+Host work already performed, or close the three convergence streams.
+
+The first ordinary-CLI consolidation replaces an exactly identical
+`heartbeat_recommendation.blocked_priority_fallback` mirror with
+`blocked_priority_fallback_ref="$.blocked_priority_fallback"`. The complete root
+fact, notification, execution obligation and original capture remain intact;
+different mirrors are retained, including Boolean/number differences. The existing
+`--include-detail agent-todos` view retains the legacy mirror. File/SQLite CLI
+tests cover same-capture action dimensions and no-debit replay. Original source
+hashes intentionally distinguish renderings; this does not change signature
+coverage or make a rendered view a substitute for the original capture.
+Legacy-field access stays in the existing packet owner; the CLI invokes its
+projection function without adding another legacy migration consumer.
+
+The acceptance-context adapter now uses the existing exact Todo inspection for
+selected work. It retains the complete Goal acceptance basis and cumulative
+outcomes, while avoiding a second inventory of unrelated task-binding
+observations and a second selected-Todo body. File/SQLite CLI and actual DSH
+protocol input cover configured checks and outcomes without checks; Todo-less
+inspection still returns its original inventory. This qualifies the scoped IO
+boundary, not live model benefit, installed adoption or total Turn cost.
+
+Next, inventory authorized real Goal captures across active work, peer/replan,
+wait/recovery and optional-capability shapes, then map each retained clause to
+its shared typed owner and actual consumer. Migrate one complete caller family
+before retiring its replaced projection. Compare the same captured decision
+through full/thin heartbeat and Turn, counting required detail reads, tokens,
+serialization/IO, latency and resource growth. Byte savings from this mirror
+removal qualify only that rendering delta; model quality, complete costs,
+installed App/Lark adoption and migration defaults still require their own
+evidence. Keep private source material out of public fixtures and checkpoints.
 
 The earlier cost slice reproduced a regression-budget gap, rather than a
 missing fixture alias or permission to remove required context. Comparing

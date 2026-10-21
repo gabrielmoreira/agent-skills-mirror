@@ -8,6 +8,8 @@
 
 </p>
 
+<p align="center"><sub>Añade a tu lista de deseados de Steam <a href="https://store.steampowered.com/app/5045950/">Dungeon Sookuma</a>, un juego en desarrollo por el creador de sprite-gen con parte de su arte hecho con esta herramienta.</sub></p>
+
 <p align="center">
   <a href="https://youtu.be/zVu9YlbPtog"><img src="docs/assets/hero-v2-party.gif" width="960" alt="Muestra animada de sprite-gen v2: paladín, lobo y slime" /></a>
 </p>
@@ -80,7 +82,7 @@ flowchart LR
 - **Un manifiesto de runtime** (`manifest.json.frame_layout`) — rectángulos de fotograma absolutos, fps por estado y banderas de bucle. Tu motor muestrea rectángulos; nunca adivina una cuadrícula.
 - **Breathe** — un reposo estático se convierte en un bucle vivo, con squash & stretch determinista horneado sobre tus fotogramas curados a partir de un solo campo sidecar, consciente de la anatomía y fiel al píxel ([detalles](docs/breathing.md)).
 - **Pixel-art que no se sale de la cuadrícula** — la Backbone Lattice mide una única cuadrícula para todo el sujeto y ajusta cada recorte a ella ([detalles](docs/pixel-unfake.md)).
-- **Bucles de movimiento a partir de vídeo** — los saltos reciben un lienzo alto, los ataques uno ancho, el punto de bucle es el propio periodo del clip, y una acción de un solo disparo se corta reposo → acción → reposo ([detalles](docs/video-pipeline.md)).
+- **Bucles de movimiento a partir de vídeo** — los saltos reciben un lienzo alto, los ataques uno ancho, el punto de bucle es el propio periodo del clip, y una acción de un solo disparo se corta reposo → acción → reposo. Los bucles de caminata cuentan los cruces de pies para cortar dos pasos completos y suavizar los saltos en la unión ([detalles](docs/video-pipeline.md)).
 - **Combinaciones de color deterministas** — `recolor` hornea N hojas variantes a partir de un mapa de paleta; misma entrada, mismos bytes de salida ([detalles](docs/recolor.md)).
 - **QA que puedes mirar** — GIF por estado y hojas de contacto, para que el movimiento se juzgue como movimiento antes de publicar nada. La locomoción cíclica (caminar/correr) sigue siendo experimental salvo que el QA de movimiento realmente pase.
 - **Herramientas de recursos independientes** — construye fondos repetibles, proyecta sombras desde un ancla de pie e inspecciona el tiempo, las poses duplicadas y la evidencia de contacto. Los pies ambiguos producen una medición no verificada ([detalles](docs/asset-tools.md)).

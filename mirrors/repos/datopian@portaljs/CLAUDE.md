@@ -16,10 +16,9 @@ Datasets are `@`-namespaced so they never collide with content pages. See `docs/
 
 ```
 packages/
-  core/                — layout/UI components (@portaljs/core)
   ckan/                — CKAN catalog UI + React components (@portaljs/ckan)
   ckan-api-client-js/  — pure CKAN API client (@portaljs/ckan-api-client-js)
-examples/              — reference implementations (read these before building)
+examples/              — portaljs-catalog, the canonical template (read it before building)
 .claude/
   commands/     — Claude Code slash commands (OSS skills)
   datopian/     — Datopian-internal skills (require API keys)
@@ -122,6 +121,13 @@ Datasets are `@`-namespaced so they never collide with content pages. Pick one m
 - Tailwind CSS everywhere. Always include `@tailwindcss/typography` for prose content.
 - Do not use inline styles. Do not use CSS modules unless the project already uses them.
 
+## UI strings (i18n)
+
+- Every user-facing string lives in `locales/en.json`, keyed by area (`search.*`, `dataset.*`, `map.*`…). Render it with `t('key', { vars })` from `lib/i18n.ts` (`tn()` for plurals, `formatNumber` / `formatDate` for numbers and dates) — never hardcode English in JSX.
+- New UI text: add the key to `locales/en.json` and to every other `locales/*.json` present (missing keys fall back to English), then run `npm run i18n:check`.
+- A portal's language is `DEFAULT_LOCALE` in `next.config.js` (committed; `NEXT_PUBLIC_LOCALE` overrides it for one build). To set one: copy `en.json` to `locales/<code>.json`, translate it (keep keys and `{placeholders}`, set `_intl`, e.g. `it-IT`), register it in `LOCALES` in `lib/i18n.ts`, set `DEFAULT_LOCALE`, and run `npm run i18n:check`.
+- Plurals are `key.one` / `key.other`; add `.few` / `.many` / … where the language's `Intl.PluralRules` uses them.
+
 Standard `tailwind.config.js`:
 ```js
 module.exports = {
@@ -212,13 +218,19 @@ See `.claude/commands/` for available slash commands:
 - `/portaljs-architect` — recommend a data architecture (storage/compute/catalog/access/hosting/metadata) from your needs, then hand off to the build skills (the advisory entry point)
 - `/portaljs-new-portal` — scaffold a new PortalJS data portal from a brief
 - `/portaljs-add-dataset` — add a dataset (CSV/TSV/JSON/GeoJSON) to an existing portal
+- `/portaljs-add-resource` — attach another file (data dictionary, methodology, extra data) to an existing dataset, making it multi-resource
 - `/portaljs-add-chart` — add a chart (line/bar/area/pie/scatter) to a dataset page via recharts
 - `/portaljs-add-map` — render a GeoJSON dataset on an interactive Leaflet map
 - `/portaljs-add-geo` — auto-ingest a geospatial file (Shapefile/GeoPackage/KML/FGB/GeoJSON/CSV-geom) into a dual-tier dataset on your machine: PMTiles render tier + GeoParquet query tier → R2, no server
+- `/portaljs-define-schema` — infer a Frictionless Table Schema for a dataset and add license/source/keyword metadata
+- `/portaljs-add-dcat` — make the portal harvestable: emit DCAT feeds (DCAT 2/3, DCAT-AP, DCAT-US, national profiles) in JSON-LD, Turtle, and RDF/XML at build
+- `/portaljs-migrate` — harvest or migrate a whole catalog from CKAN, Socrata, OpenDataSoft, ArcGIS, or DCAT-US
 - `/arcgis-to-portaljs` — migrate a whole ArcGIS Hub site end-to-end: harvest its `/data.json`, export every FeatureService layer via the ArcGIS REST API, convert to the dual tier (PMTiles + GeoParquet), push to R2, and write a source-vs-derived parity report
 - `/portaljs-deploy` — one-shot deploy to Vercel or static hosting
 - `/portaljs-connect-ckan` — wire a portal to a CKAN backend over its API (decoupled / any backend)
 - `/portaljs-check-data-quality` — audit a dataset for quality issues (schema, nulls, types)
+
+The shipped set is the `commands` list in `.claude-plugin/plugin.json`; `create-portaljs` and `scripts/install-portaljs-skills.sh` read it from there. When adding a skill, list it in `plugin.json` (`commands` and `skills`), `scripts/skills-manifest.mjs`, and here — `npm run skills:check` fails if any of them disagree.
 
 The skills interview you for missing input (rounds of questions) rather than erroring, and build around the three surfaces. These skills run from any project, not just a clone of this repo — see
 [`.claude/INSTALL.md`](.claude/INSTALL.md) for the three install paths (run-from-clone,

@@ -1144,9 +1144,12 @@ CloudBase 云函数统一只读入口。通过更自解释的 action 查询 Clou
 - `offset`: 分页偏移，从 0 开始
 - 示例：`queryFunctions(action="listFunctions", offset=10, limit=10)`
 
-**查询 CloudBase 云函数日志**：使用 `action="listFunctionLogs"`，需要提供 `functionName` 参数。
+**查询 CloudBase 云函数日志**：`action="listFunctionLogs"`，需要提供 `functionName`。日志从 CLS 检索（底层 GetFunctionLogs 接口已下线）。
 - 示例：`queryFunctions(action="listFunctionLogs", functionName="my-function")`
-- 如需查看日志详情：`queryFunctions(action="getFunctionLogDetail", requestId="xxx")`
+- 不传 startTime/endTime 时默认查最近 1 天；跨度不能超过 1 天，单次最多返回 100 条
+- 返回 `hasMore=true` 表示还有更早的日志：把返回的 `context` 原样传回取下一页（`offset` 只在前 100 条内生效）
+- `logs[]` 已解析成 requestId / log / statusCode / retCode / durationMs / memoryMb / timestamp
+- 想看某一次调用的完整过程（START、业务日志、REPORT）：`queryFunctions(action="getFunctionLogDetail", requestId="xxx")`
 
 **定时任务 / cron / 定时跑**：使用 `listFunctionTriggers` 查询函数的 timer 触发器配置。
 
@@ -1169,7 +1172,7 @@ CloudBase 云函数统一只读入口。通过更自解释的 action 查询 Clou
       name: "action",
       type: "string",
       required: true,
-      description: `只读操作类型： - \`listFunctions\`: 列出所有 CloudBase 云函数 - \`getFunctionDetail\`: 获取 CloudBase 云函数详情（需要 functionName） - \`listFunctionLogs\`: 查询 CloudBase 云函数执行日志（需要 functionName） - \`getFunctionLogDetail\`: 获取日志详情（需要 requestId） - \`listFunctionLayers\`: 列出函数绑定的层 - \`listLayers\`: 列出所有层（账号级视图，含其他环境创建的层） - \`listLayerVersions\`: 列出层的版本（注意：是 Versions 不是 Version；账号级视图） - \`getLayerVersionDetail\`: 获取层版本详情（账号级视图） - \`listFunctionTriggers\`: 列出函数触发器（用于查看定时任务 / cron / timer 配置） - \`getFunctionDownloadUrl\`: 获取函数代码下载地址 - \`getFunctionDeployStatus\`: 按 taskId 查询异步部署状态、阶段进度和最终结果。返回 data.build（构建子状态）、data.deploy（部署子状态）、data.progress（阶段事件）；status=running 时 data.result 与 data.error 一律为 null，不得报告部署完成。调用方必须持续轮询直到 status=succeeded/failed；status=expired 表示任务超过最长保留时间（2 小时）被终结，云端可能仍在部署，需用 getFunctionDetail 确认。任务只保存在 MCP 进程内存中，过期或 MCP Server 重启后返回 errorCode=DEPLOY_TASK_NOT_FOUND；任务按环境隔离，只能查到当前环境自己发起的部署。cloud mode 下本 action 不可用：异步任务只由 buildStrategy=cloud/local 的真实部署创建，而这两种策略在 cloud mode 下都不支持真实执行，image 策略则走同步部署不产生 taskId。 - \`listVersionByFunction\`: 列出函数已发布版本（对齐 tcb fn list-function-versions / SDK listVersionByFunction；需要 functionName） - \`getFunctionAlias\`: 查询函数别名与流量路由（对齐 tcb fn get-route / SDK getFunctionAlias；需要 functionName；aliasName 默认 $DEFAULT） - \`getFunctionUploadUrl\`: 获取函数代码包的 COS 预签名上传地址（ZIP 两段式部署阶段 A）：PUT 代码 zip 到 uploadUrl（uploadHeaders 非空时须随请求携带对应请求头），再调用 manageFunctions 的 createFunction/updateFunctionCode 并传 code 三元组（阶段 B）。functionName 可选，仅用于生成上传对象 key。返回的 uploadUrl 含凭据签名，不得写入日志或持久化；阶段 B 会校验三元组的桶与地域必须是本环境自有存储桶，因此该地址只能用于取到它的那个环境；地址默认 300 秒内有效 可填写的值: "listFunctions", "getFunctionDetail", "listFunctionLogs", "getFunctionLogDetail", "listFunctionLayers", "listLayers", "listLayerVersions", "getLayerVersionDetail", "listFunctionTriggers", "getFunctionDownloadUrl", "getFunctionDeployStatus", "listVersionByFunction", "getFunctionAlias", "getFunctionUploadUrl"`,
+      description: `只读操作类型： - \`listFunctions\`: 列出所有 CloudBase 云函数 - \`getFunctionDetail\`: 获取 CloudBase 云函数详情（需要 functionName） - \`listFunctionLogs\`: 查询云函数执行日志（需要 functionName；走 CLS 检索，默认最近 1 天，单次最多 100 条，翻页传 context） - \`getFunctionLogDetail\`: 获取某次调用的完整日志序列（需要 requestId，取自 listFunctionLogs 的 logs[].requestId） - \`listFunctionLayers\`: 列出函数绑定的层 - \`listLayers\`: 列出所有层（账号级视图，含其他环境创建的层） - \`listLayerVersions\`: 列出层的版本（注意：是 Versions 不是 Version；账号级视图） - \`getLayerVersionDetail\`: 获取层版本详情（账号级视图） - \`listFunctionTriggers\`: 列出函数触发器（用于查看定时任务 / cron / timer 配置） - \`getFunctionDownloadUrl\`: 获取函数代码下载地址 - \`getFunctionDeployStatus\`: 按 taskId 查询异步部署状态、阶段进度和最终结果。返回 data.build（构建子状态）、data.deploy（部署子状态）、data.progress（阶段事件）；status=running 时 data.result 与 data.error 一律为 null，不得报告部署完成。调用方必须持续轮询直到 status=succeeded/failed；status=expired 表示任务超过最长保留时间（2 小时）被终结，云端可能仍在部署，需用 getFunctionDetail 确认。任务只保存在 MCP 进程内存中，过期或 MCP Server 重启后返回 errorCode=DEPLOY_TASK_NOT_FOUND；任务按环境隔离，只能查到当前环境自己发起的部署。cloud mode 下本 action 不可用：异步任务只由 buildStrategy=cloud/local 的真实部署创建，而这两种策略在 cloud mode 下都不支持真实执行，image 策略则走同步部署不产生 taskId。 - \`listVersionByFunction\`: 列出函数已发布版本（对齐 tcb fn list-function-versions / SDK listVersionByFunction；需要 functionName） - \`getFunctionAlias\`: 查询函数别名与流量路由（对齐 tcb fn get-route / SDK getFunctionAlias；需要 functionName；aliasName 默认 $DEFAULT） - \`getFunctionUploadUrl\`: 获取函数代码包的 COS 预签名上传地址（ZIP 两段式部署阶段 A）：PUT 代码 zip 到 uploadUrl（uploadHeaders 非空时须随请求携带对应请求头），再调用 manageFunctions 的 createFunction/updateFunctionCode 并传 code 三元组（阶段 B）。functionName 可选，仅用于生成上传对象 key。返回的 uploadUrl 含凭据签名，不得写入日志或持久化；阶段 B 会校验三元组的桶与地域必须是本环境自有存储桶，因此该地址只能用于取到它的那个环境；地址默认 300 秒内有效 可填写的值: "listFunctions", "getFunctionDetail", "listFunctionLogs", "getFunctionLogDetail", "listFunctionLayers", "listLayers", "listLayerVersions", "getLayerVersionDetail", "listFunctionTriggers", "getFunctionDownloadUrl", "getFunctionDeployStatus", "listVersionByFunction", "getFunctionAlias", "getFunctionUploadUrl"`,
     },
     {
       name: "functionName",
@@ -1179,12 +1182,12 @@ CloudBase 云函数统一只读入口。通过更自解释的 action 查询 Clou
     {
       name: "limit",
       type: "number",
-      description: `分页数量（limit）。列表类 action 可选，默认值由后端决定`,
+      description: `分页数量（limit）。列表类 action 可选，默认值由后端决定；日志类 action 单次最多 100 条，默认 20`,
     },
     {
       name: "offset",
       type: "number",
-      description: `分页偏移（offset）。列表类 action 可选，默认 0`,
+      description: `分页偏移（offset）。列表类 action 可选，默认 0。日志类 action 只在前 100 条内生效，更早的日志请用返回的 context 翻页`,
     },
     {
       name: "codeSecret",
@@ -1199,22 +1202,27 @@ CloudBase 云函数统一只读入口。通过更自解释的 action 查询 Clou
     {
       name: "startTime",
       type: "string",
-      description: `日志查询开始时间，格式必须为 YYYY-MM-DD HH:mm:ss（如 2024-01-01 00:00:00）。与 endTime 间隔不能超过一天。不传时默认查询最近一天`,
+      description: `日志查询开始时间，格式必须为 YYYY-MM-DD HH:mm:ss（如 2024-01-01 00:00:00，按北京时间理解）。与 endTime 间隔不能超过一天。不传时默认查询最近一天`,
     },
     {
       name: "endTime",
       type: "string",
-      description: `日志查询结束时间，格式必须为 YYYY-MM-DD HH:mm:ss（如 2024-01-01 23:59:59）。与 startTime 间隔不能超过一天。不传时默认为当前时间`,
+      description: `日志查询结束时间，格式必须为 YYYY-MM-DD HH:mm:ss（如 2024-01-01 23:59:59，按北京时间理解）。与 startTime 间隔不能超过一天。不传时默认为当前时间`,
     },
     {
       name: "requestId",
       type: "string",
-      description: `日志请求 ID。\`getFunctionLogDetail\` 操作必填，可从 \`listFunctionLogs\` 结果中获取`,
+      description: `日志请求 ID。\`getFunctionLogDetail\` 操作必填；取自 \`listFunctionLogs\` 返回的 logs[].requestId，也可传具体业务日志里出现的 RequestId`,
     },
     {
       name: "qualifier",
       type: "string",
-      description: `函数版本别名，如 $LATEST、$DEFAULT。日志查询时可选`,
+      description: `函数版本别名，如 $LATEST、$DEFAULT。日志查询时可选，作为 CLS 检索条件`,
+    },
+    {
+      name: "context",
+      type: "string",
+      description: `日志翻页游标。把上一次 \`listFunctionLogs\` 返回的 \`context\` 原样传回即可取下一页；不要自己构造，null 表示没有更多`,
     },
     {
       name: "runtime",

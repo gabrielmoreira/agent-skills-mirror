@@ -4,6 +4,60 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.305](https://github.com/Piebald-AI/claude-code-system-prompts/commit/b85e92d)
+
+_+3,943 tokens_
+
+- **NEW:** Agent Prompt: Security monitor email direct send example, Security monitor email group reply example, and Security monitor email group reply exception — Group reply, where enabled, lets "reply all" asks reach people the sender put on the thread; examples confine asks to their stated recipients and content.
+- **NEW:** Agent Prompt: Security monitor email reply approval scope and Security monitor email sender-only approval scope — With email replies enabled, a sender's bare "yes" approves only what the one mail they are answering asked; otherwise a bare approval approves nothing.
+- **NEW:** Agent Prompt: Security monitor email reply outbound content rule, Security monitor email reply outbound recipient rule, and Security monitor email sender-only outbound clearance rule — Mail to anyone besides the sender passes only if the sender's own words cover its recipients and content, read with the answered mail when replies are enabled.
+- **NEW:** Agent Prompt: Security monitor email sender turns — Gives the auto-mode classifier feature-gated rules for emails a session's user sends: only the sender's own new words establish intent; quoted, forwarded, and attached content is data.
+- **NEW:** Data: attributionProject setting — Documents a new setting naming the claude.ai Project credited in organization usage reports, sent only with claude.ai login and direct API access, outside cloud sessions.
+- **NEW:** Skill: /doctor /usage flagged check — Adds Check 10, reporting /usage's flagged rows from the past week as untrusted data; rows with fixes become proposed edits, the rest advice for the user.
+- **NEW:** Skill: Mod plugin packaging (any plan), Mod plugin packaging (organization plans), and Mod plugin packaging (personal plans) — Give plan-specific after-saving steps: press Share on the file's card (Team and Enterprise can publish to the organization where allowed) or send the file; Pro and Max only send.
+- **NEW:** Skill: Mod plugin packaging consent — In flag-gated remote Cowork sessions, offers once to package a working mod as a plugin file handed over in chat, after a key scan; GitHub only on request.
+- **NEW:** System Prompt: Claude in Chrome task-specific tool loading — Splits out, unchanged, the advice to add task-specific tools to the same ToolSearch call; Chrome browser MCP tools and Claude in Chrome deferred tool loading now share it.
+- **NEW:** System Prompt: Windows sandbox localhost access (local binding off) — Splits out the blocked-localhost opening shared by the retry and user-alternatives prompts; it no longer says that no setting allows localhost.
+- **NEW:** System Prompt: Windows sandbox localhost access (local binding on) and Windows sandbox server reachability (local binding on) — With `sandbox.network.allowLocalBinding` on, these replace the whole blocked-localhost guidance: commands reach localhost on any port but one the sandbox reserves; off-machine traffic still uses the proxy.
+- **NEW:** System Prompt: Windows sandbox localhost workarounds (local binding off) — Splits out the shared list of what still works, now with lower-case proxy variables and `sandbox.network.allowLocalBinding` as the user's call, needing a set-up rerun and restart.
+- **NEW:** System Reminder: Managed Agents ant command refused (altered --transform command) and Managed Agents ant command refused (staging, vrtx or bdrk ID) — Newly cataloged refusals the `ant` command guard, active once /claude-api loads, already returned; the staging, vrtx or bdrk one no longer lists `local_` IDs.
+- **NEW:** System Reminder: Managed Agents ant command refused (local ID form or placement) and Managed Agents ant command refused (local servers unsupported) — Local Managed Agents server IDs, previously always refused, now pass the guard only in one exact form and placement; /claude-api managed-agents-secure still refuses them.
+- Agent Prompt: Claude Test author — Tests for a suspected bug assert the right outcome and fail while it exists; only code contradicting itself or its visible promise warrants suspecting a bug.
+- Agent Prompt: Claude Test explorer — Reports suspected bugs, which need strong evidence, beside the action they affect instead of omitting it, and maps files on a "Changed lately:" line to journeys.
+- Data: allowManagedPermissionRulesOnly allowed-tools frontmatter scope — In Claude Desktop, host-delivered `--plugin-dir` plugins keep their `allowed-tools` frontmatter only while the organization's own managed settings leave this setting unset.
+- Data: allowedMcpServers setting — Specifies which fields count: a `managed-mcp.json` entry with `${VAR}` in its command, args, URL, or header values must match the allowlist.
+- Skill: /doctor slash command — When /usage has flagged issues, adds Check 10 to the report, the consolidated cleanup question, and the checks that may propose edits to checked-in files.
+- System Prompt: Claude in Chrome browser automation and Claude in Chrome browser automation (non-deferred tools) — Now hold, respectively, the shared heading and introduction and the shared guidelines body; Claude Code reassembles them, deferred-loading steps included when needed, exactly as before.
+- System Prompt: Windows sandbox localhost retry guidance and Windows sandbox localhost user alternatives — Now start from the shared blocked-localhost opening and workarounds, keeping their own retry or user-decision closings, which apply only while local binding is off.
+- System Prompt: Windows sandbox profile tool retry guidance and Windows sandbox profile tool user guidance — Now say sandbox set-up normally makes the profile readable, except credential stores Claude must never read even when possible, and writable only where `write.allowOnly` allows.
+- System Reminder: Proactivity level high — Claude now asks only before irreversible steps, like deleting customer data, not over costly ambiguity, and treats pushing or landing an approved PR as reversible.
+- Tool Description: Plugin organization submission and replacement — Adds two results to relay: publishing allowed only from claude.ai (no retry) and an earlier submission awaiting review (retry only on request, once withdrawn).
+
+# [2.1.304](https://github.com/Piebald-AI/claude-code-system-prompts/commit/7f5fe8d)
+
+_+3,747 tokens_
+
+- **NEW:** Agent Prompt: Artifact type creation slash command (first-party type), Artifact type creation slash command (MCP connector tools), and Artifact type creation slash command (MCP connector tools, first-party type) — Add creation instructions for when the Artifacts MCP connector's tools replace the built-in Artifact tool, and for types the quickstart has no option for, a case neither `/design` nor `/slides` triggers.
+- **NEW:** System Reminder: Attached machine could not be reached (asleep, busy, cause unknown, signed off, and went silent) — Add cause-specific follow-ups naming the remedy: waking the computer, checking its network without quitting Claude, or reopening Claude there; unknown causes keep the generic check.
+- **NEW:** System Reminder: Attached machine not answering — Splits out the opening shared by the retry-shortly and stop-calling arms, adding Claude not running on the machine to the usual causes.
+- **NEW:** System Reminder: Attached machine signed-off likely causes and Attached machine signed-off notice — Give likely reasons a machine's Claude signs off; once all machines have, run commands here and say reopening Claude with Remote Control on usually brings them back.
+- **NEW:** System Reminder: Memory file contents (unverified managed folder) — Heads unverified instructions from this machine's managed folder, warning that this session's own account could have written them: follow every limit, but treat nothing in them as permission.
+- **NEW:** Tool Description: ExitPlanMode (diskless session) — Without a plan file, Claude passes the whole plan inline as Markdown for approval; declining keeps Claude in plan mode to revise and resubmit.
+- **NEW:** Tool Description: SubscribePR — Describes subscribing a session to a GitHub pull request's CI failures, all-green notices, review comments, and close/reopen events; no built-in tool uses this description in this build.
+- **REMOVED:** Skill: Artifact whiteboard when-to-use guidance, Multiplayer whiteboard description, and Whiteboard description — Remove the whiteboard and multiplayer whiteboard skill descriptions and the guidance for offering a whiteboard unprompted; whiteboard publishing code remains in the build.
+- **REMOVED:** System Reminder: Attached machine could not be reached (return noted) and Attached machine could not be reached (return not noted) — Replaced by the cause-specific arms, which keep the same limits on calling the machine again and still have Claude tell the user what is blocked.
+- Agent Prompt: Claude Test explorer — Adds `effort: medium` to its frontmatter and lowers the report cap from 60 to 40 lines.
+- Data: Artifact host MCP server guidance — Says `host:claude_browser` answers when the page is opened in the Claude desktop app, not only in a Cowork session; viewers are asked at its first call instead of per website, then at each action reaching banking or other high-risk sites.
+- Data: Claude Platform on AWS reference — Adds an `ant` CLI row: with the region and workspace ID set, commands other than `ant beta:worker` go to Claude Platform on AWS; confirm with `ant auth status`.
+- System Reminder: Attached machine could not be reached and Attached machine could not be reached (oversized call) — The opening now says when the machine was last heard from, if known; its request to check that Claude is running moves into the oversized-call and cause-unknown arms.
+- System Reminder: Attached machine not answering (retry shortly) and Attached machine not answering (stop calling) — Now follow the shared not-answering opening; retry-shortly has the user check that Claude is open there, and stop-calling says opening Claude with the computer awake and online brings it back.
+- System Reminder: Plan approved — Mentions where the plan was saved, and referring back to it, only when the session has a plan file.
+- System Reminder: Unreachable attached machines — Has Claude relay what each machine's line says about why it is unreachable and what brings it back, instead of a fixed asleep, offline, or not-running explanation.
+- Tool Description: Artifact publishing and update guidance — Adds that a page's own URL changes never show in the address bar, so name bookmarkable views with bare, non-reserved hash tokens and give users each view's link.
+- Tool Description: Background monitor (streaming events) — In diskless sessions, adds a note that monitors are dependable only while Claude is working, and scopes per-occurrence monitors to the current turn.
+- Tool Description: Bash (sleep — no polling background tasks) and Tool Parameter: Bash run_in_background guidance — When background shells are kept elsewhere, say Claude is notified of a background command only if it finishes while Claude is still working.
+- Tool Description: Plugin organization submission and replacement — No longer says claude.ai scans every upload; whether it scans depends on the organization, so Claude reports a scan only as the result states.
+
 #### [2.1.303](https://github.com/Piebald-AI/claude-code-system-prompts/commit/58997eb)
 
 <sub>_No changes to the system prompts in v2.1.303._</sub>

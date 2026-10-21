@@ -2151,6 +2151,7 @@ def main():
             print("Error: demo_patient.txt not found alongside script", file=sys.stderr)
             sys.exit(1)
         args.input = str(demo_file)
+        args.no_enrich = True  # demos run offline
         if args.output == "pharmgx_report":
             args.output = str(Path(__file__).resolve().parent / "demo_report")
         print("Running in demo mode with bundled patient data")

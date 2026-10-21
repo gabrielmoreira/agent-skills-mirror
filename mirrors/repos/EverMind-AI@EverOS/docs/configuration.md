@@ -148,6 +148,8 @@ Zilliz Cloud endpoint; a Milvus Lite filesystem path is rejected.
 | `model` | string | — | **Yes** | Embedding model identifier. |
 | `api_key` | string | — | **Yes** | API key. |
 | `base_url` | string | — | **Yes** | Embedding endpoint URL. |
+| `dim` | int | `1024` | No | Width of the `vector` column in every index table. See below. |
+| `dimensions` | int | — | No | Server-side truncation width, passed through to the embedding API for models that support it (Matryoshka). Independent of `dim`. |
 | `timeout_seconds` | float | `30.0` | No | Request timeout. |
 | `max_retries` | int | `3` | No | Retry count on failure. |
 | `batch_size` | int | `10` | No | Texts per batch request. |
@@ -159,6 +161,62 @@ Zilliz Cloud endpoint; a Milvus Lite filesystem path is rejected.
 batched call). On a slow or serialized local endpoint (CPU Ollama, a single
 GPU) queued batch requests can exceed the timeout: lower `batch_size` and
 `max_concurrent` together, or raise `timeout_seconds`.
+
+#### Vector width (`dim`)
+
+Every index table stores vectors in a fixed-width column, and `dim` is that
+width. The model has to agree with it:
+
+- **Model returns fewer dimensions than `dim`** — startup stops. Nothing could
+  ever be stored, so there is no useful degraded mode. Set `dim` to what the
+  model returns, then run `everos cascade rebuild`: the tables were already
+  created at the old width.
+- **Model returns more than `dim`** — the extra dimensions are **truncated on
+  every write**, and startup warns once. This is lossless only for models
+  trained for it (Matryoshka representation learning); with any other model
+  recall degrades, because a plain prefix of an embedding is not a valid
+  embedding. Either match `dim` to the model or use a Matryoshka model.
+
+  **The shipped default is this case**: `Qwen/Qwen3-Embedding-4B` returns 2560
+  dimensions and the default `dim` is 1024, so a default install sees this
+  warning at every start. It is Matryoshka-trained, 1024 is one of its
+  published truncation points, and the index compares with cosine distance, so
+  nothing is lost. To silence it, set `dimensions = 1024` so the server returns
+  the shorter vector — but only if your endpoint accepts that parameter; some
+  self-hosted servers reject it outright, which is why it is not the default.
+- **Changing `dim` on an existing index** — startup stops. Vectors of
+  different lengths have no distance between them, so there is nothing to
+  migrate: `everos cascade rebuild` re-embeds from markdown.
+
+- **Downgrading after changing `dim`** — an older EverOS hardcodes 1024, so it
+  refuses to start against a wider or narrower index (`schema drift:
+  type_drift=[...]`), and its `cascade rebuild` rebuilds at 1024 without
+  mentioning it. Set `dim` back to 1024 and rebuild *before* downgrading, or
+  expect to rebuild afterwards.
+
+`dimensions` is a different knob: it asks the *server* to truncate (with
+re-normalisation, which is why it is preferable when the model supports it).
+Tables are still built at `dim`. If both are set and they disagree, startup
+warns and names both values.
+
+The width is measured by one embedding call at startup, with a **5-second
+budget and no retries** — it buys a single integer and sits in front of every
+`everos` command, so it does not inherit `timeout_seconds` × `max_retries`. A
+model that is still loading (a cold local endpoint) can miss that budget: the
+width check is then skipped for that start, the tables are created at `dim`,
+and `/health` reports `embed: false` until the next restart. Start the model
+first, or restart once it is up.
+
+#### Changing the embedding model
+
+An index remembers which model built it, and startup refuses to open one
+built by a different model -- distances between vectors from two models are
+meaningless, and the failure is otherwise silent: searches simply return
+nothing useful. The recovery is `everos cascade rebuild`, which re-embeds
+every entry from markdown and records the new model.
+
+Deployments with no embedding configured (no `api_key`, for instance) are
+unaffected: nothing is probed, compared, or recorded.
 
 ### `[rerank]`
 
@@ -186,6 +244,25 @@ GPU) queued batch requests can exceed the timeout: lower `batch_size` and
 |---|---|---|---|
 | `mode` | string | `"agent"` | Conversation mode: `chat` (user-memory only) or `agent` (user + agent memory). Requires restart. |
 | `session_lock_timeout_seconds` | float | `360.0` | Max wall-clock per memorize() invocation. |
+
+### `[memorize.async_queue]`
+
+Bounds and behaviour of the queue behind `async_mode` on `/add` (a `/flush`
+joins it only behind its session's backlog)
+(see [api.md](api.md#asynchronous-mode)).
+
+| Field | Type | Default | Description |
+|---|---|---|---|
+| `enabled` | bool | `true` | Off: new `async_mode` requests run synchronously; rows accepted while on are still delivered, and their sessions keep the ordering rule. |
+| `max_concurrency` | int | `4` | Batches delivered at once, never two from one session: a session's batches run in arrival order, sessions run side by side. `1` serialises everything. |
+| `max_pending_per_session` | int | `50` | Unfinished batches per session; beyond this `/add` and `/flush` answer `429`. |
+| `max_pending_total` | int | `200` | Unfinished batches across all sessions; beyond this the answer is `429`. |
+| `max_payload_bytes` | int | `4194304` | One serialised request body; beyond this the answer is `413`. |
+| `scan_interval_seconds` | float | `5.0` | Fallback sweep interval; an enqueue wakes the worker immediately. |
+| `max_attempts` | int | `1` | Delivery attempts per batch before it is marked `failed` and skipped. Keep `1` unless duplicate memcells after a partial failure are acceptable: the pipeline is not atomic. |
+| `retry_backoff_seconds` | float | `2.0` | Pause between attempts. |
+| `max_replays` | int | `3` | A batch in flight when the process died is replayed on the next start; after this many replays without finishing it is marked `failed` (`error_code: replays_exhausted`). |
+| `row_retention_hours` | float | `168.0` | Rows of any status are deleted this long after creation (seven days), including rows never delivered; the purge logs a warning for those. Delivered rows drop their request body at once, `failed` rows keep it. |
 
 ### `[clustering]`
 

@@ -1,8 +1,7 @@
 ---
 name: chinese-novelist
 description: |
-  分章节创作引人入胜的中文小说。支持各种题材（悬疑/言情/奇幻/科幻/历史等），支持10-50章长篇创作，每章3000-5000字，结尾设置悬念钩子。强调深度润色去除AI痕迹，确保文字自然流畅。
-  当用户要求：写小说、创作故事、分章节写作、连续剧情、章节悬念、长篇小说时使用。
+  当用户要求写小说、创作故事、分章节写作、连续剧情、长篇小说，或需要续写/校验未完成的小说项目时使用。支持悬疑/言情/奇幻/科幻/历史等全题材中文创作。
 metadata:
   trigger: 创作中文小说、分章节故事、长篇小说创作
   source: 基于小说创作最佳实践设计
@@ -35,7 +34,7 @@ metadata:
 通过递进式问答收集创作需求，确定小说定位与标题：
 
 - **核心定位**（必答，Q1-Q3）：题材创意、主角设定、核心冲突 → 详见 [phase1-layer1-core.md](references/flows/phase1-layer1-core.md)
-- **深度定制与规格**（Q4-Q8）：世界观、视角基调、核心主题、读者定位、章节数量、配置确认 → 详见 [phase1-layer2-customize.md](references/flows/phase1-layer2-customize.md)
+- **深度定制与规格**（2 次合并提问）：世界观、视角基调、核心主题、读者定位、章节数量、配置确认 → 详见 [phase1-layer2-customize.md](references/flows/phase1-layer2-customize.md)
 - **标题生成**：AI 基于创意元素生成候选标题，用户选择或自定义 → 详见 [phase1-layer3-title.md](references/flows/phase1-layer3-title.md)
 
 ### 第二阶段：规划 + 二次确认

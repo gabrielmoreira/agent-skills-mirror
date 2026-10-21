@@ -103,17 +103,33 @@ Formats 2, 3 and 4 retain header, directory and integrity facts. Compact deliver
 keeps complete Evidence in the requested bundle. See [Godot PCK](godot-pck.md)
 for embedded packs, batch queries and unknown encrypted coverage.
 
+Inspect local model declarations without loading weights:
+
+```bash
+rea inspect-model-artifact /absolute/path/model.gguf --json
+rea inspect-model-artifact /absolute/path/model.safetensors --hash full --json
+```
+
+Default hashing reads only headers and leaves full-file identity unknown.
+`--hash full` streams the complete file for SHA-256. Both return typed metadata,
+original tensor declarations and derived totals. MCP summaries retain complete
+Evidence for filtered metadata, tensor and type-total pages; CLI compact delivery
+uses `--detail summary --evidence_output FILE`. See [model files](model-artifacts.md).
+
 Inspect Unity IL2CPP metadata names without Unity or a disassembler:
 
 ```bash
 rea inspect-il2cpp-metadata /absolute/path/global-metadata.dat --json
 ```
 
-The command decodes a version 29, 31 or 39 `global-metadata.dat` and reports assembly
-images, type and method names, index ranges, header sections and SHA-256. It
-does not decrypt metadata or link names to native code addresses. MCP defaults
-to compact counts with retained Evidence; query indexed rows with filters,
-batch indices and selected fields. The CLI defaults to complete Evidence;
+The command decodes a version 24, 27, 29, 31 or 39 `global-metadata.dat` and reports assembly
+images, type, method and member names, string literals, index ranges, header
+sections and SHA-256. With `--binary PATH` it also reads the matching
+`GameAssembly.dylib`, `GameAssembly.dll` or `libil2cpp.so` (never runs it) and
+links each method to its code address; `--ghidra-seeds PATH` then writes Ghidra
+function seeds. It does not decrypt metadata. MCP defaults to compact counts
+with retained Evidence; query indexed rows with filters, batch indices and
+selected fields. The CLI defaults to complete Evidence;
 `--detail summary --evidence_output FILE` exports the full result to a new file
 and returns a compact overview. See [IL2CPP metadata](il2cpp-metadata.md).
 
@@ -441,6 +457,11 @@ missing value fails with `MISSING_OUTPUT_VALUE` before the command runs. `--json
 redirected, which keeps large results smaller for agents and scripts; pipe
 through `jq .` for indented files. Output selection and formatting do not change
 operation status.
+
+`--filter-output` selects fields from successful command data. Classified failures
+retain their complete typed diagnostic projection even when the selector matches
+a field such as `code` or `message`, or names a missing field. `--full-output`
+controls whether the outer `{ok, error, meta}` envelope is included.
 
 For `cutter-command`, `--json-output` requests command-specific JSON from
 Cutter when available. This is separate from `--format json`, which selects the

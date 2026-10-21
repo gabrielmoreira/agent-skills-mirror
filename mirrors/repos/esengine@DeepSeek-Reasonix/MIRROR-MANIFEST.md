@@ -7,7 +7,7 @@ ref: studio
 
 # Mirror Manifest
 
-Mirror of `esengine/DeepSeek-Reasonix` — 26 default patterns, 0 followed patterns, 7 file(s) materialized.
+Mirror of `esengine/DeepSeek-Reasonix` — 26 default patterns, 0 followed patterns, 20 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `esengine/DeepSeek-Reasonix` — 26 default patterns, 0 followed patte
 | Ref           | `studio` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 7 |
+| Files         | 20 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,12 +60,25 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 3 | ✓ | [`examples/api-notes-kit/skills/api-notes/SKILL.md`](examples/api-notes-kit/skills/api-notes/SKILL.md) |
-| 4 | ✓ | [`examples/frontend-page-kit/skills/frontend-page/SKILL.md`](examples/frontend-page-kit/skills/frontend-page/SKILL.md) |
-| 5 | ✓ | [`examples/issue-fix-kit/skills/issue-fix/SKILL.md`](examples/issue-fix-kit/skills/issue-fix/SKILL.md) |
-| 6 | ✓ | [`examples/release-note-kit/skills/release-note/SKILL.md`](examples/release-note-kit/skills/release-note/SKILL.md) |
-| 7 | ✓ | [`internal/ext/skill/builtincontent/reasonix-guide/SKILL.md`](internal/ext/skill/builtincontent/reasonix-guide/SKILL.md) |
+| 2 | ✓ | [`benchmarks/realrepo/base/.reasonix/skills/price-change/SKILL.md`](benchmarks/realrepo/base/.reasonix/skills/price-change/SKILL.md) |
+| 3 | ✓ | [`benchmarks/realrepo/overlay/rt-stale-skills/.reasonix/skills/ablation-arm/SKILL.md`](benchmarks/realrepo/overlay/rt-stale-skills/.reasonix/skills/ablation-arm/SKILL.md) |
+| 4 | ✓ | [`benchmarks/realrepo/overlay/rt-stale-skills/.reasonix/skills/benchctl/SKILL.md`](benchmarks/realrepo/overlay/rt-stale-skills/.reasonix/skills/benchctl/SKILL.md) |
+| 5 | ✓ | [`benchmarks/realrepo/overlay/rt-stale-skills/.reasonix/skills/price-change/SKILL.md`](benchmarks/realrepo/overlay/rt-stale-skills/.reasonix/skills/price-change/SKILL.md) |
+| 6 | ✓ | [`benchmarks/realrepo/tasks/rt-cache-write-rate/workdir/.reasonix/skills/price-change/SKILL.md`](benchmarks/realrepo/tasks/rt-cache-write-rate/workdir/.reasonix/skills/price-change/SKILL.md) |
+| 7 | ✓ | [`benchmarks/realrepo/tasks/rt-plan-ablation-module/workdir/.reasonix/skills/price-change/SKILL.md`](benchmarks/realrepo/tasks/rt-plan-ablation-module/workdir/.reasonix/skills/price-change/SKILL.md) |
+| 8 | ✓ | [`benchmarks/realrepo/tasks/rt-rate-lookup-signatures/workdir/.reasonix/skills/price-change/SKILL.md`](benchmarks/realrepo/tasks/rt-rate-lookup-signatures/workdir/.reasonix/skills/price-change/SKILL.md) |
+| 9 | ✓ | [`benchmarks/realrepo/tasks/rt-stale-skills/solution/.reasonix/skills/ablation-arm/SKILL.md`](benchmarks/realrepo/tasks/rt-stale-skills/solution/.reasonix/skills/ablation-arm/SKILL.md) |
+| 10 | ✓ | [`benchmarks/realrepo/tasks/rt-stale-skills/solution/.reasonix/skills/benchctl/SKILL.md`](benchmarks/realrepo/tasks/rt-stale-skills/solution/.reasonix/skills/benchctl/SKILL.md) |
+| 11 | ✓ | [`benchmarks/realrepo/tasks/rt-stale-skills/solution/.reasonix/skills/price-change/SKILL.md`](benchmarks/realrepo/tasks/rt-stale-skills/solution/.reasonix/skills/price-change/SKILL.md) |
+| 12 | ✓ | [`benchmarks/realrepo/tasks/rt-stale-skills/workdir/.reasonix/skills/ablation-arm/SKILL.md`](benchmarks/realrepo/tasks/rt-stale-skills/workdir/.reasonix/skills/ablation-arm/SKILL.md) |
+| 13 | ✓ | [`benchmarks/realrepo/tasks/rt-stale-skills/workdir/.reasonix/skills/benchctl/SKILL.md`](benchmarks/realrepo/tasks/rt-stale-skills/workdir/.reasonix/skills/benchctl/SKILL.md) |
+| 14 | ✓ | [`benchmarks/realrepo/tasks/rt-stale-skills/workdir/.reasonix/skills/price-change/SKILL.md`](benchmarks/realrepo/tasks/rt-stale-skills/workdir/.reasonix/skills/price-change/SKILL.md) |
+| 15 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 16 | ✓ | [`examples/api-notes-kit/skills/api-notes/SKILL.md`](examples/api-notes-kit/skills/api-notes/SKILL.md) |
+| 17 | ✓ | [`examples/frontend-page-kit/skills/frontend-page/SKILL.md`](examples/frontend-page-kit/skills/frontend-page/SKILL.md) |
+| 18 | ✓ | [`examples/issue-fix-kit/skills/issue-fix/SKILL.md`](examples/issue-fix-kit/skills/issue-fix/SKILL.md) |
+| 19 | ✓ | [`examples/release-note-kit/skills/release-note/SKILL.md`](examples/release-note-kit/skills/release-note/SKILL.md) |
+| 20 | ✓ | [`internal/ext/skill/builtincontent/reasonix-guide/SKILL.md`](internal/ext/skill/builtincontent/reasonix-guide/SKILL.md) |
 
 ---
 

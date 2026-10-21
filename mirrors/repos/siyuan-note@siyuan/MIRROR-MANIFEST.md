@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `siyuan-note/siyuan` — 26 default patterns, 1 followed patterns, 5 file(s) materialized.
+Mirror of `siyuan-note/siyuan` — 26 default patterns, 2 followed patterns, 6 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `siyuan-note/siyuan` — 26 default patterns, 1 followed patterns, 5 f
 | Ref Type      | `branch` |
 | Ref           | `master` |
 | Default pats  | 26 |
-| Followed pats | 1 |
-| Files         | 5 |
+| Followed pats | 2 |
+| Files         | 6 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,6 +51,7 @@ Mirror of `siyuan-note/siyuan` — 26 default patterns, 1 followed patterns, 5 f
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
+- `docs/RELEASE-VERIFICATION.zh-CN.md`
 - `docs/API-CONTRACTS.md`
 
 ## File Index
@@ -64,6 +65,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3 | ✓ | [`docs/PLUGIN-PUBLISH.md`](docs/PLUGIN-PUBLISH.md) |
 | 4 | ✓ | [`kernel/util/builtin_skills/siyuan-plugin-development/SKILL.md`](kernel/util/builtin_skills/siyuan-plugin-development/SKILL.md) |
 | 5 | → | [`docs/API-CONTRACTS.md`](docs/API-CONTRACTS.md) |
+| 6 | → | [`docs/RELEASE-VERIFICATION.zh-CN.md`](docs/RELEASE-VERIFICATION.zh-CN.md) |
 
 ---
 

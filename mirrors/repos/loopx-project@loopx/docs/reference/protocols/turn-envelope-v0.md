@@ -51,12 +51,28 @@ not verify file integrity or make saved admission current. Missing, malformed,
 or mismatched files require recovery, never automatic guard replay. Consumers already referring to `full_decision`, such as compacted capability
 context and peer diagnostics, now read this same observation. Scheduler-specific
 legacy detail requests are unchanged. Replan obligations and fresh selection/lease/quota checks retain their existing owners.
-Without capture, the historical full-decision route and all default outputs are
-unchanged. This opt-in detail link does not change action-signature coverage.
+Without capture, the historical full-decision route remains available. Enabling
+capture does not enable TurnEnvelope or change admission/settlement defaults.
+This opt-in detail link does not change action-signature coverage.
 
 中文：同时开启短包和完整 decision 保存时，详情入口读取本次保存的文件，不再
 为补读上下文重跑 guard。读取前核对身份和源哈希；旧观察不提供新的执行权限。
 文件损坏或丢失不能自动重跑，选 Todo、lease 变化等仍需按原契约重新准入。
+
+The default ordinary quota CLI view may replace an exactly identical nested
+`heartbeat_recommendation.blocked_priority_fallback` diagnostic with
+`blocked_priority_fallback_ref="$.blocked_priority_fallback"`. Read the complete
+root field in that same packet; resolving this reference needs no new guard or
+detail command. Different mirrors remain inline. Raw decisions, saved captures
+and the existing `--include-detail agent-todos` view retain their original shape.
+Action dimensions remain equivalent; the raw source hash still identifies the
+specific original rendering and must not be substituted across views.
+The existing packet owner supplies this compatibility projection, keeping the
+CLI from becoming another reader of the legacy guidance field.
+
+中文：普通 quota CLI 热路径将完全相同的 fallback 副本改为本包根字段引用，完整
+事实仍在当前包内，不需再次执行 guard。不同副本和既有详细视图保留；原始决定与
+capture 不变。动作维度等价不意味着不同渲染可以共用原始 source hash。
 
 ### Native Turn Host capture
 
@@ -94,6 +110,12 @@ permitted. Downgrading code must preserve journals and captures; deleting them
 is not rollback. This transport qualification does not establish live model,
 packaged App/Lark or overall convergence acceptance.
 
+Repair and replan diagnostics remain in the journal's typed `host_result`,
+including its summary and follow-up action. They do not implicitly replace Todo
+notes or evidence, even when settlement succeeds. Semantic refusal and cached
+result recovery must preserve that task context; explicit Todo lifecycle
+operations retain their existing authority and validation.
+
 中文：原生 `turn run-once --execute` 在启动 Host 前保存完整原始决策，实际短包详情
 与失败重试均读取该快照，预览不写入。Turn 身份来自原 journal，不伪造 heartbeat
 准入记录。旧观察不授予新权限；缺失、损坏或身份／哈希不符时拒绝重新启动 Host。
@@ -129,13 +151,56 @@ command retain that explicit choice. Quota's existing explicit flag is unchanged
 
 With that display opt-in, execute its guard, read the short action/contract/writeback fields, and use
 `detail_ref.full_decision` to read the **same invocation** when selection, replan,
-capability context or truncation requires detail. Replan history remains with the
+an `agent_context.detail_ref` or truncation requires detail. Replan history remains with the
 existing owner; this option neither invents another history store nor chooses a
 strategy. The renderer rejects full/compact/brief modes, missing Turn identity,
 native Goal-owned Turns and invalid roots. Stable bootstrap prompts cannot pin a
 Turn. Omit `--turn-envelope` to use the ordinary dispatcher, including when
 checkpoint capture remains enabled. Captured files retain the full decision in
 both display modes.
+
+Capability planning context stays inline under the existing context owner's
+3 KiB bound, including when the envelope exceeds its diagnostic budget. Read it
+before planning; it is guidance, not permission. `delivery=projected` also labels
+complete context and does not itself require a detail read. The shared DSH/cloud
+Host adapter transports this signed context. For historical context with a
+`detail_ref`, it also retains the original capture route and source signature;
+only that saved observation may satisfy the missing context, never a fresh quota
+guard. Missing or invalid evidence holds dependent planning while independent
+work retains its authority. Capture validation and later mutation checks remain
+with their existing owners; prompt delivery does not prove model adoption.
+
+For admitted replans, the shared DSH/cloud adapter also carries the signed
+`replan_action_packet` and the original capture route/signature. Read that saved
+decision's `autonomous_replan_obligation.replan_context` before choosing the
+semantic outcome, preserving the existing full Goal read. Missing or invalid
+original evidence holds dependent replanning; never rerun admission to replace
+it. Return the typed candidate rather than executing the packet's writeback
+commands: the outer Turn executor owns state, quota and scheduler effects.
+This repairs an adapter omission without adding an evidence-read receipt or
+changing non-replan requests.
+
+中文：已准入的重规划通过共享 DSH/cloud adapter 传递签名 action packet，以及原捕获
+路由和签名。选择语义结果前从原决策读取既有 replan context，保留完整 Goal 必读；
+来源缺失或无效时暂停依赖它的重规划，不能重跑准入替代。返回 typed candidate，
+不执行 packet 内写回命令；状态、quota 和 scheduler 效果仍归外层 Turn executor。
+本修复不增加补读回执，也不改变非重规划请求。
+
+The unchanged public multi-subagent CLI fixture grows by 1,147 JSON characters
+and UTF-8 bytes when this context replaces its reference. Its differential
+allows 1,280 only for that reference-to-inline transition (133 headroom);
+absolute ceilings, line limits, later inline growth and the 8 KiB production
+diagnostic remain unchanged. This is an output qualification, not a full-cost SLO.
+
+中文：同一公开 multi-subagent CLI 夹具恢复完整内联后增加 1,147 个 JSON 字符／UTF-8
+字节；差分仅对该引用转内联的一次变化给予 1,280（余量 133），绝对上限、行数、后续
+内联增长检查及生产 8 KiB 诊断不改；这不是完整成本 SLO 验收。
+
+中文：能力规划上下文由既有 owner 限制在 3 KiB 内，短包超出诊断预算时仍完整内联。
+规划前读取它，但它不授予权限。`delivery=projected` 也用于完整上下文，不能仅据该值
+要求补读。共享 DSH/cloud Host 传递签名上下文；历史 `detail_ref` 保留原捕获路由与
+源签名，只能补读原观察，不能重跑 quota。证据缺失或失效时暂停依赖它的规划，独立
+工作保留原权限。捕获及后续写入校验仍归原 owner；输入到达不证明模型实际采用。
 
 中文：捕获和模型输入投影独立。`--decision-output-root` 仅保存完整决策，
 `--decision-handoff-socket` 仅保留检查点交接；二者均不隐式开启 TurnEnvelope。
@@ -523,6 +588,29 @@ not an execution-admission limit. `compaction.envelope_utf8_bytes` measures the
 final packet, including diagnostics. The historical `source_json_bytes` and
 `envelope_json_bytes` fields still count Unicode code points for v0 compatibility;
 do not use them as wire-byte measurements.
+
+### Execution boundary retention
+
+The envelope preserves complete `write_scope`, `available_capabilities`,
+`requires_parent_approval`, `guards` and `stop_condition` values, including
+literal path whitespace and explicit empty lists. Resolved checkpointed write
+approval retains every active scope; private approval entries stay on the
+authorized full-decision path. Display limits must not remove restrictions or
+change path patterns. The 8 KiB warning remains diagnostic.
+
+The shared DSH/cloud candidate prompt carries the remaining signed boundary
+under `boundary`. Its existing `write_scope` and `workspace_guard` fields keep
+their original locations and are not duplicated in that remainder. These are
+instructions for the Host, not a new enforcement mechanism or permission grant;
+owning admission, lease and mutation checks still apply. Boundary facts already
+belong to the action signature: new projections can change hashes, while saved
+signatures and receipts are not rewritten. Signature equality alone cannot
+prove source completeness when both sides use the same projection.
+
+中文：envelope 完整保留范围、能力、审批要求、守卫和停止条件，路径空白、空数组及
+已批准的全部范围也不裁剪。共享 DSH／云端提示传递其余签名边界，原范围和 workspace
+字段继续兼容且只传一份。它们是宿主指令，不替代准入、lease 或写入校验；8 KiB 仍只
+警告，不改写历史签名和回执。两边共用投影时，签名相等本身不能证明来源条款完整。
 
 ### Capability refusal facts
 

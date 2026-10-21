@@ -20,9 +20,11 @@ values for a family of related modules:
 
 - [`records_computer.rs`](./records_computer.rs): `TINYCOMPUTER` (desktop and browser control).
 - [`records_docs_wallet.rs`](./records_docs_wallet.rs): `TINYDOCS`, `TINYWALLET`.
+- [`records_eventqueues.rs`](./records_eventqueues.rs): `TINYEVENTQUEUES` (durable inbound event queues; `inbound-queues` gate).
 - [`records_extra.rs`](./records_extra.rs): `TINYBOX`, `TINYCHANNELS`, `TINYHOSTS`.
 - [`records_flows.rs`](./records_flows.rs): `TINYFLOWS` (scheduler runtime, cron store and schedule maths; authoring).
 - [`records_mcp_connectors.rs`](./records_mcp_connectors.rs): `TINYCONNECTORS`, `TINYMCP`.
+- [`records_memes.rs`](./records_memes.rs): `TINYMEMES`.
 - `records_juice.rs`: `TINYJUICE`.
 - [`records_search.rs`](./records_search.rs): `TINYSEARCH`.
 - [`records_voice.rs`](./records_voice.rs): `TINYVOICE`.

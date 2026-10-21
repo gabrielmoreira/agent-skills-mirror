@@ -414,11 +414,11 @@ reports it as delivered.
 ### The jump guard
 
 A target is a cell the jump repair replaced, and the repair replaced it because
-a step into or out of the source frame at that time jumped ([loop
+the source frame at that time left the loop's flow ([loop
 repair](loop-repair.md), section 2). The in-between it adopted may have melted,
 and that is what restoration clears; the source frame it replaced is still the
 jump. Its pixels can clear the melt and bring the jump back. `axes.jump` reads
-the jump repair's own step score on the final cells of both loops:
+the size reading's step score on the final cells of both loops:
 
 ```text
 score[k]   = repair.jump_scores(cells, facing, box)["score"][k]    step k: cell k to cell k+1, the last to the first
@@ -428,12 +428,14 @@ jump(c)    = max(score[c - 1], score[c])                           the step into
 regressed  where jump(candidate) > jump(baseline) at a changed cell
 ```
 
-The score is the one the jump repair picks frames by: per step, the change of
-coverage over the whole box and over the hair behind the body, each over its
-own median in the loop, the larger of the two. Both loops are scored on one box,
+The score is the size reading: per step, the change of coverage over the whole
+box and over the hair behind the body, each over its own median in the loop, the
+larger of the two. The jump repair picked frames by it until it picked them by
+the flow reading ([loop repair](loop-repair.md), section 2); the guard still
+reads the size, and its record is unchanged. Both loops are scored on one box,
 the source cells' (the jump repair reads the box of the loop as filmed), with
 the facing the repair recorded. More than the baseline's is worse. No bound is
-read, `JUMP_RATIO` included: the baseline is the measure. A rise is a measured
+read: the baseline is the measure. A rise is a measured
 worsening, as on every other axis, so the verdict is `regressed` with
 `jump:regressed`, not `unknown`, and the next independent proposal may be
 tried. A fall alone does not make a candidate `improved`: that still needs a

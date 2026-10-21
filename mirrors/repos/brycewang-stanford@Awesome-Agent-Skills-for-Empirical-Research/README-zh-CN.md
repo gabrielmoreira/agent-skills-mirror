@@ -1,6 +1,6 @@
 # AERS — README-zh-CN (DEPRECATED · 2026-07-19)
 
-> **本文件已弃用。** 自 2026-07-19 起，中文 README 内容（含 **77 行核心 Skills 总表**、**"从 idea 到论文"完整流水线叙事**、Stanford REAP × CoPaper.AI 自研 skill 主干）已并入 GitHub 默认入口 [**`README.md`**](README.md)。
+> **本文件已弃用。** 自 2026-07-19 起，中文 README 内容（含 **77 行核心 Skills 总表**、**"从 idea 到论文"完整流水线叙事**、Stanford REAP × StatsPAI 自研 skill 主干）已并入 GitHub 默认入口 [**`README.md`**](README.md)。
 >
 > 本文件仅保留为**向后兼容的占位** —— GitHub 会自动重定向访问 `#README-zh-CN` 的旧链接，但读者会看到这个弃用提示。
 
@@ -40,7 +40,7 @@
   <table>
     <tr>
       <td align="center">
-        <a href="https://copaper.ai"><img src="images/copaper-logo.png" alt="CoPaper.AI" width="300" /></a>
+        <a href="https://github.com/brycewang-stanford/StatsPAI"><img src="images/statspai-logo.png" alt="StatsPAI" width="360" /></a>
       </td>
       <td width="72"></td>
       <td align="center">
@@ -51,7 +51,7 @@
 
   <br/>
 
-  <strong>Stanford REAP × CoPaper.AI</strong> · 实证研究 AI 工具的学术工业级产品<br/>
+  <strong>Stanford REAP × StatsPAI</strong> · 实证研究 AI 工具的学术工业级产品<br/>
   <sub>由斯坦福实证研究方法论团队打造，覆盖从数据清洗到顶刊投稿的完整工作流</sub>
 </div>
 
@@ -88,7 +88,7 @@
 <table>
   <tr>
     <td align="center">
-      <a href="https://copaper.ai"><img src="images/copaper-logo.png" alt="CoPaper.AI" width="220" /></a>
+      <a href="https://github.com/brycewang-stanford/StatsPAI"><img src="images/statspai-logo.png" alt="StatsPAI" width="260" /></a>
     </td>
     <td width="40"></td>
     <td align="center">
@@ -97,7 +97,7 @@
   </tr>
 </table>
 
-<sub><strong>Stanford REAP × CoPaper.AI</strong> · 实证研究 AI 工具的学术工业级产品</sub>
+<sub><strong>Stanford REAP × StatsPAI</strong> · 实证研究 AI 工具的学术工业级产品</sub>
 
 <br/>
 

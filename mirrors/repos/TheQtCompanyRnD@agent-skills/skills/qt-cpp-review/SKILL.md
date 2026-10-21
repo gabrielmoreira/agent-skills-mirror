@@ -3,17 +3,18 @@ name: qt-cpp-review
 description: >-
   Invoke when the user asks to review, check, audit, or look
   over Qt6 C++ code — or suggest before committing. Runs
-  deterministic linting (60+ rules) then six parallel deep-
-  analysis agents covering model contracts, ownership, threading,
-  API correctness, error handling, and performance. Reports only
-  high-confidence issues (>80/100) with structured mitigations.
-  Read-only — never modifies code.
+  deterministic linting (60+ rules) then deep-analysis agents
+  (scaled to the size of the change) covering model
+  contracts, ownership, threading, API correctness, error
+  handling, and performance. Reports only high-confidence issues
+  (>80/100) with structured mitigations. Read-only — never
+  modifies code.
 license: LicenseRef-Qt-Commercial OR BSD-3-Clause
 compatibility: Designed for Claude Code, GitHub Copilot, and similar agents.
 disable-model-invocation: false
 metadata:
   author: qt-ai-skills
-  version: "2.1"
+  version: "3.0"
   qt-version: "6.x"
   category: review
 argument-hint: "[framework]"
@@ -21,382 +22,205 @@ argument-hint: "[framework]"
 
 # Qt Code Review
 
-A structured, read-only code review skill for Qt6 C++ code that
-combines deterministic linting with parallel agent-driven deep
-analysis across six focused domains.
+Read-only review of Qt6 C++ code: a deterministic Python linter
+first, then agent-driven deep analysis across six rule domains,
+then one consolidated report.
 
 ## When to use this skill
 
-- When the user mentions review-related tasks: "review", "check",
-  "audit", "look over", "code review", "sanity check"
-- Suggest running this skill **before committing** code
-- When the user asks to validate Qt6 C++ code quality
+- Review-related requests: "review", "check", "audit", "look over",
+  "code review", "sanity check"
+- Suggest it **before committing** code
 
 ## Arguments
 
-- `/qt-cpp-review` — review using universal Qt6 C++ rules only
-- `/qt-cpp-review framework` — also apply Qt framework/module
-  development rules (BC, exports, d-pointers, qdoc, QML
-  versioning)
+- `/qt-cpp-review` — universal Qt6 C++ rules
+- `/qt-cpp-review framework` — also apply Qt framework/module rules
+  (binary compatibility, exports, d-pointers, qdoc, QML versioning)
 
-## Framework mode detection
+## Framework mode
 
-If `$ARGUMENTS` contains "framework", enable framework mode.
+Enable when `$ARGUMENTS` contains "framework". Otherwise, if the
+lint run or a quick Grep shows **two or more** of these signals,
+suggest framework mode to the user but do not enable it yourself:
+`QT_BEGIN_NAMESPACE`, any `Q_*_EXPORT` macro, `<QtModule/private/*_p.h>`
+includes, `Q_DECLARE_PRIVATE`/`Q_D()`/`Q_Q()`, `qt_internal_add_module`
+in CMakeLists.txt, `sync.profile` or `.qmake.conf` at the repo root.
 
-If the argument is not passed, auto-detect by scanning the first
-few files in scope for framework signals. If **two or more** of
-the following are found, suggest to the user:
-"This looks like Qt framework/module code. Run
-`/qt-cpp-review framework` to also apply framework-specific
-rules (BC, exports, qdoc, QML versioning)?"
-
-**Framework signals** (any two = likely framework code):
-- `QT_BEGIN_NAMESPACE` / `QT_END_NAMESPACE`
-- `Q_CORE_EXPORT`, `Q_GUI_EXPORT`, `Q_WIDGETS_EXPORT`, or any
-  `Q_*_EXPORT` macro
-- `#include <QtModule/private/*_p.h>` (private headers)
-- `Q_DECLARE_PRIVATE`, `Q_D()`, `Q_Q()`
-- `qt_internal_add_module` or `qt_add_module` in CMakeLists.txt
-- `sync.profile` or `.qmake.conf` in the repository root
-
-Do **not** auto-enable framework mode — only suggest it. Let the
-user confirm.
-
-When framework mode is enabled:
-1. Pass `--framework` to the linter (if supported)
-2. Load `references/qt-framework-checklist.md` alongside the
-   universal checklist
-3. Include framework rules in each agent's mission context
+When enabled: pass `--framework` to the linter, and name
+`references/qt-framework-checklist.md` in the prompts of the agents
+covering A2 or A4 (they apply it as mapped at the end of
+`agent-rules.md`). In diff scope, also check the commit message
+against the FW-CMT rules yourself; load only that section with
+`sed -n '/^## Commit Message/,$p' references/qt-framework-checklist.md`.
 
 ## Scope detection
 
-Detect the user's intended scope from their language:
+**Diff scope** — "this commit", "these changes", "the diff", "what
+I changed", "staged changes", "before I commit". The range is `HEAD`
+(working tree plus index), `--cached` for staged changes only, or
+`HEAD~1..HEAD` for "this commit". Do not load the diff itself: the
+linter's `--diff` mode (Phase 1) lists the changed files with their
+changed-line counts and reports only findings on changed lines.
 
-### Diff/commit scope (narrow)
-Triggered by language like: "this commit", "these changes",
-"the diff", "what I changed", "my changes", "staged changes",
-"outstanding changes", "before I commit"
+**Codebase scope** — "review the codebase", "audit src/", or an
+explicit path with no commit language. Glob `*.cpp`, `*.h`, `*.hpp`
+under the path.
 
-**Action**: Run `git diff` (unstaged) and `git diff --cached`
-(staged) to obtain the changeset. If the user says "this commit",
-use `git diff HEAD~1..HEAD`. Review only the changed lines plus
-sufficient surrounding context (±50 lines) for understanding.
-Only report issues found in the changed lines — do not report
-issues in unchanged surrounding context.
+## Token budget rules
 
-### Codebase scope (wide)
-Triggered by language like: "review the codebase", "audit the
-project", "check the repository", "review src/", or when a specific
-file/directory path is given without commit language.
+These rules exist to keep the review cheap. Follow them.
 
-**Action**: Glob for `*.cpp`, `*.h`, `*.hpp` files in the
-specified scope. Review all matched files.
+1. **Do not load the reference files into the main context.** Agents
+   read `references/agent-rules.md` themselves; you pass its absolute
+   path and the section IDs. Only an inline run (Phase 2) reads it
+   in the main context. Lint messages are self-describing; the
+   checklists are for humans.
+2. **Pass lint results in `--summary` form** (grouped by rule, paths
+   relative to a root printed once), never the raw per-line listing.
+3. **Point agents at content, never paste it.** Every token you write
+   into a prompt is output on the orchestrating model, the most
+   expensive tokens in the review. Prompts carry paths, commands and
+   section IDs; the agents load the rules, the files and the diff.
+   In diff scope an agent gets the `git diff -U50 <range> -- <files>`
+   command instead of the hunks, and reads other files only to trace
+   a specific symbol.
+4. **Scale the agent count to the scope** (see Phase 2). Launch no
+   agents for a small scope and split a large one into shards of about
+   equal line count.
+5. **Use the dedicated review agent where the harness has one.** If the
+   `cpp-review-agent` definition (listed as
+   `qt-development-skills:cpp-review-agent` when installed with the
+   plugin, plain `cpp-review-agent` when copied by hand) is available,
+   launch the agents with it (read-only, tools limited to Read, Grep,
+   Glob and read-only Bash); otherwise
+   use the harness's general-purpose agent. The definition lives in the
+   plugin's `agents/` directory, outside this skill, so it is missing
+   when the skill was copied on its own or the harness does not install
+   `agents/`. Then add one line to each prompt: read-only (Bash only for
+   `cat`, `grep`, `awk`, `git diff`, `git show`); take `file:line` from
+   the printed numbers; in diff scope do not re-read the files; Grep
+   or Read other files only to trace a symbol; prefer few confirmed
+   findings over many guesses.
 
 ## Execution order
 
-The review proceeds in three phases. **Never skip a phase.**
+Never skip a phase.
 
-### Phase 1: Deterministic linting (scripts)
-
-Run the unified Python linter against the target files. Requires
-Python 3.6+ (no external dependencies). If Python is not
-available, warn the user and skip to Phase 2.
+### Phase 1: Deterministic linting
 
 ```bash
-python3 references/lint-scripts/qt_review_lint.py <files...>
-# If python3 is not found, fall back to:
-python references/lint-scripts/qt_review_lint.py <files...>
+# codebase scope
+python3 <skill>/references/lint-scripts/qt_review_lint.py --summary [--framework] <files...>
+# diff scope, run inside the repository; no file arguments
+python3 <skill>/references/lint-scripts/qt_review_lint.py --summary [--framework] --diff=<range>
+# fall back to `python` if python3 is not found
 ```
 
-This single-pass scanner encodes all mechanically-checkable rules
-from the Qt review guidelines. It reads each file once and
-evaluates all rules per line. Output is deterministic and
-repeatable. The linter is authoritative — do not second-guess
-its output.
+Python 3.7+, no dependencies. If Python is unavailable, warn and
+continue (in diff scope, take the file list from
+`git diff --stat <range>`). The linter is authoritative; do not second-guess its
+output. Rule families: INC, DEP, PAT, MDL, ERR, LCY, API, ENM, TMO,
+CND, VAL, HDR, TRN, VAR (60+ checks). Exit code 1 simply means
+findings exist; 2 means a usage or git error.
 
-Collect all output before proceeding to Phase 2.
+### Phase 2: Deep analysis (inline, or one agent per shard)
 
-**Rule categories** (60+ checks):
-- **INC** (Includes) — ordering, qglobal.h, qNN duplication
-- **DEP** (Deprecated) — obsolete Qt/std class usage
-- **PAT** (Patterns) — anti-patterns (min/max, std::optional,
-  NRVO, COW detach, etc.)
-- **MDL** (Model) — QAbstractItemModel contract (begin/end
-  balance, dataChanged roles, flags, default: in data())
-- **ERR** (Error Handling) — QFile::open, QJsonDocument::isNull,
-  QNetworkReply::error, SSL, timeouts, arg() mismatch
-- **LCY** (Lifecycle) — deleteLater, Q_ASSERT side effects,
-  null guards, unbounded containers, qDeleteAll depth
-- **API** (Naming) — get-prefix, enum hygiene, QList<QString>
-- **ENM** (Enums) — scoping/underlying type, bool-trap
-  parameters and bool-literal call sites
-- **HDR/TMO/CND/VAL/TRN** — headers, timeouts, conditionals,
-  value classes, ternary operator
+The six sections of `references/agent-rules.md` are the analysis.
+Agents read it themselves; read it yourself only when running inline:
 
-### Phase 2: Agent-driven deep analysis (6 parallel agents)
+| Section | Mission |
+|---|---|
+| A1 | Model Contracts |
+| A2 | Ownership & Lifecycle |
+| A3 | Thread Safety |
+| A4 | API, Naming & C++ Correctness |
+| A5 | Error Handling & Validation |
+| A6 | Performance & Code Quality |
 
-Launch six focused review agents in parallel. Name each agent
-descriptively when launching (e.g. "Agent 1: Model Contracts")
-to provide progress visibility. Each agent has a tight scope
-and a specific checklist. Agents are READ-ONLY — they must
-never edit or write files.
+Choose the fan-out from the scope size. Count the lines of the files
+in scope (the changed lines in diff scope), taken from the lint
+summary or `wc -l`. A block is about 2,500 lines; the line count
+alone decides the split, never the number of files.
 
-**Tool-agnostic agent contract**: Each agent described below is
-a self-contained review mission. In Claude Code, launch them as
-general-purpose subagents. In other tools, implement each as
-whatever subprocess, prompt chain, or analysis pass the tool
-supports. The key requirement is that each agent:
-- Has read access to all source files in scope
-- Can search/grep the codebase to trace symbols
-- Reports findings in the structured format below
-- Applies confidence thresholds: >80 = confirmed finding,
-  60–79 = investigation target (max 10 total across all
-  agents), <60 = suppress
-- Does NOT duplicate findings from Phase 1 lint output
-  (pass lint output as context to each agent)
+| Scope | Agents |
+|---|---|
+| Up to 2,500 lines | 0 (inline) |
+| More than 2,500 lines | one per shard, `ceil(lines / 2500)` shards |
 
-See **Agent missions** below for the six agents.
+**Inline.** A small scope does not repay the cost of agents, which
+each rebuild the context and roughly double the review's token cost
+for the same findings. Do the analysis yourself: read
+`references/agent-rules.md` and the files (or the diff) with the one
+Bash call shown under the agent prompt below, and apply A1-A6 in a
+single pass under the same rules, confidence thresholds and output
+format. Do not re-report lint rows, and do not run inline above the
+limit because the code looks simple. Report `Agents: 0 (inline)`.
 
-### Phase 3: Consolidation and reporting
+**Shards.** Cut the files, in directory order, into
+n = `ceil(lines / 2500)` shards of about `lines / n` lines each; how
+many files a shard holds does not matter. Keep a directory in one
+shard where it fits, so that a class's header and source, and the
+models and views that reference each other, land together; split a
+larger directory by file. A file larger than a shard gets a shard to
+itself. Each shard agent applies all
+six sections to its shard only and may Grep the whole scope to trace
+a symbol. Run up to six shard agents at a time and the rest in a
+second wave. Cross-shard checks (ownership, model contracts,
+duplicated logic) are then best effort; say so in the report header.
 
-Merge lint script output and all agent findings. Deduplicate
-(same file+line+issue = one finding). Apply confidence scoring.
-Format the final report using the output format below.
+Launch the agents in parallel, named after their shard
+(e.g. "Review shard 2/6: src/models"). Keep each prompt short; it contains
+only:
 
-## Agent missions
+1. The absolute path of `references/agent-rules.md` and the section
+   IDs to apply (A1-A6), plus the absolute path
+   of `references/qt-framework-checklist.md` for A2 and A4 agents in
+   framework mode
+2. The root directory from the lint summary, the files in scope
+   relative to it and, in diff scope, the
+   `git diff -U50 <range> -- <files>` command for them
+3. The lint summary rows for that agent's own files only (a shard
+   agent never needs the other shards' rows), with the instruction
+   "do not re-report these lines"
+4. The instruction to load everything with one Bash call before
+   analysing, and to return findings in the format at the top of the
+   rules file. Each tool call re-sends the agent's whole context, so
+   one batched read instead of one Read per file is the single
+   largest saving on large scopes. Both forms print per-file line
+   numbers for the `file:line` locations (`cat -n` on several files
+   numbers them as one run, and `git diff` has no line numbers):
 
-Launch all six agents in parallel. Pass each agent:
-1. The list of files in scope
-2. The Phase 1 lint output (so they skip already-flagged issues)
-3. Their specific mission below
+   ```bash
+   # codebase scope
+   cd <root> && cat <rules> && for f in <files...>; do echo "== $f"; cat -n "$f"; done
+   # diff scope; numbers context and added lines with the new-file line
+   cd <root> && cat <rules> && git diff -U50 <range> -- <files> | awk '/^@@/{split($3,a,/[+,]/);n=a[2];h=1;print;next} /^diff /{h=0} h&&/^[ +]/{printf "%5d %s\n",n++,$0;next} {print}'
+   ```
 
-Each agent should read all files in scope, then focus on its
-assigned categories.
+Agents are read-only and must never edit files. In tools without
+agents, run each mission as whatever prompt chain or subprocess the
+tool supports; the contract is the same.
 
----
+### Phase 3: Consolidation
 
-### Agent 1: Model Contracts
+Merge lint and agent findings. Deduplicate on file+line+issue. When
+duplicates disagree on confidence, keep the block with the highest
+score and its trace; never average scores. Write the report in the
+format below.
 
-**Scope**: QAbstractItemModel signal protocol, role system,
-index validity, proxy model correctness.
-
-**Check for**:
-- `beginInsertRows`/`endInsertRows` balance — every structural
-  model change (add/remove/move) must use the correct begin/end
-  pairs. `layoutChanged` is NOT a substitute for insert/remove.
-- `roleNames()` returning roles that `data()` does not handle
-  (missing switch cases, fall-through to default)
-- `dataChanged` emitted with empty roles vector (forces full
-  refresh instead of targeted update)
-- `beginRemoveRows` called with `first > last` (edge case when
-  container is empty — QAIM contract violation)
-- `flags()` returning inappropriate flags (e.g. `ItemIsEditable`
-  for non-editable items)
-- `setData()` returning true without emitting `dataChanged`
-- Proxy models accessing source model internals instead of going
-  through `data()`/`index()` API
-- Filter/proxy models using source-model indices to index into
-  filtered containers (wrong index space)
-
-**References**: `references/qt-review-checklist.md` § Model
-Contracts
-
----
-
-### Agent 2: Ownership & Lifecycle
-
-**Scope**: Memory ownership, parent-child, resource cleanup,
-Rule of Five, RAII correctness.
-
-**Check for**:
-- Structs/classes with raw pointers where `new` is visible and
-  no corresponding `delete`/`deleteLater`/smart-pointer wrapping
-  exists (Rule of Five violation)
-- Missing `deleteLater()` on QNetworkReply in finished handlers
-- `Q_ASSERT` wrapping side-effectful expressions (compiled out
-  in release builds — the side effect disappears)
-- `Q_ASSERT` as the sole null guard (crashes in release)
-- Polymorphic QObject subclasses missing `Q_DISABLE_COPY_MOVE`
-- Polymorphic classes missing virtual destructor
-- QTimer/QObject created with `new` but no parent and no other
-  lifecycle management (scope, smart pointer, explicit delete)
-- `QObject::connect()` called with potentially null
-  sender/receiver outside a null guard (runtime warning)
-- `m_recentlyAccessed`-style tracking lists that maintain
-  pointers to objects that may be deleted elsewhere (dangling)
-- Unbounded container growth (append without cap or trim)
-- Destructor not cleaning up owned children recursively
-- Abstract interfaces with no implementations beyond one class
-  (YAGNI violation — codebase scope only)
-
-**References**: `references/qt-review-checklist.md` § Ownership
-& Lifecycle, § Polymorphic Classes, § RAII Classes
-
----
-
-### Agent 3: Thread Safety
-
-**Scope**: Cross-thread QObject access, mutex consistency,
-signal emission from worker threads.
-
-**Check for**:
-- QObject member variables written from `QtConcurrent::run()`
-  or `QThread` worker without synchronization (mutex, atomic,
-  queued connection, or other thread-safe primitive)
-- Signals emitted from worker threads connected with
-  `Qt::DirectConnection` (or explicit non-queued connections)
-  to main-thread receivers
-- Model mutations (`addNote`, `removeRows`, etc.) from
-  background threads
-- Shared containers (`QList`, `QHash`) modified from multiple
-  threads without consistent synchronization
-- Non-atomic increment/decrement of shared counters
-  (`m_operationCount++` from multiple threads)
-- QTimer or other QObject operations from non-owner thread
-
-**References**: `references/qt-review-checklist.md` § Thread
-Safety
-
----
-
-### Agent 4: API, Naming & C++ Correctness
-
-**Scope**: Qt naming conventions, const-correctness, move
-semantics, enum hygiene, noexcept correctness.
-
-**Check for**:
-- `get`-prefix on mere getters (Qt reserves `get` for user
-  interaction or out-parameter decomposition)
-- Non-const getter methods (especially Q_PROPERTY READ
-  accessors — UB via meta-object system)
-- Missing `std::forward<T>()` on forwarding/universal references
-- `return std::move(localVar)` preventing NRVO
-- `const` local variable preventing implicit move on return
-  (e.g. `const QJsonDocument doc(...); return doc;` forces copy)
-- `const` method returning mutable pointer through raw pointer
-  indirection (`findById() const` returning `T*` lets callers
-  mutate via a const accessor — const doesn't propagate through
-  raw pointers)
-- `noexcept` on functions containing `Q_ASSERT` (incompatible —
-  Q_ASSERT may throw for testing, noexcept terminates)
-- Unscoped enums without explicit underlying type
-- Missing trailing comma on last enumerator
-- `switch` over enum with `default:` label (suppresses -Wswitch)
-- Fixed, project-owned vocabulary held in a string — a QString
-  parameter, member, or DTO/JSON field named like
-  state/mode/kind/phase/status, or compared against value
-  literals (`mode == "dark"`). Should be an enum; strings are
-  only for identifiers the project does not own (external
-  system names, protocol/vendor ids) (ENM-8)
-- Boolean parameter traps — non-intuitive `bool` parameters, or
-  call sites passing consecutive bool literals
-  (`f(x, false, false, true)`); should be named enums. Even a
-  single bool qualifies when the call site doesn't read
-  (`sort(true)`); clear ones like `setVisible(true)` are
-  fine (ENM-9)
-- Enum placement — a vocabulary shared across classes but
-  duplicated per class instead of centralized in one
-  `Q_NAMESPACE` namespace; in framework mode, additions to
-  qnamespace.h without strong justification (ENM-10, FW-ENM-1)
-- `QList<QString>` instead of `QStringList`
-- Missing `const` on methods that don't modify state
-- Case-sensitive string comparison for user-facing sort
-- Duplicated validation logic across classes
-- `const QMetaObject::Connection` preventing handle cleanup
-
-**References**: `references/qt-review-checklist.md` § API &
-Naming, § Enums, § Methods, § Move Semantics, § Operators
-
----
-
-### Agent 5: Error Handling & Validation
-
-**Scope**: Missing error checks, input validation, security.
-
-**Check for**:
-- `QFile::open()` return value ignored
-- `QJsonDocument::fromJson()` result not checked for
-  `isNull()`/`isObject()` before use
-- `QNetworkReply::error()` not checked before `readAll()`
-- XML writer `hasError()` not checked after writing
-- Hardcoded `http://` instead of `https://` in URLs
-- No SSL error handling (`QNetworkAccessManager::sslErrors`)
-- No timeout on network requests (`setTransferTimeout`)
-- Negative values accepted where only positive are valid
-  (e.g. timer intervals, font sizes)
-- No schema/version validation on imported data
-- No input length validation on imported/downloaded data
-  (unbounded strings from untrusted sources)
-- `QString::arg()` with wrong placeholder count
-- `saveToFile()` returning true regardless of I/O errors
-- Inconsistent error reporting patterns across methods
-
-**References**: `references/qt-review-checklist.md` § Error
-Handling & Validation
-
----
-
-### Agent 6: Performance & Code Quality
-
-**Scope**: Performance anti-patterns, dead code, unnecessary
-copies, code smells.
-
-**Check for**:
-- `QRegularExpression` constructed inside a loop (expensive
-  compilation on every iteration)
-- `roleNames()` rebuilding QHash on every call (should cache)
-- Non-const range-for over COW-shared QList/QHash triggering
-  unnecessary detach/deep-copy
-- Non-const `operator[]` on shared QHash (triggers detach) —
-  use `.value()` for reads
-- Expensive operation before cheap early-exit check (wasted
-  allocation)
-- Dead/unreachable code (functions never called, branches
-  that are always true/false given preconditions)
-- Magic numbers without named constants
-- God classes violating Single Responsibility
-- Copy-pasted validation/logic across classes
-- Stale member caches not invalidated on model changes
-  (e.g. search cache surviving data edits)
-- `QMap`/`QHash` iteration order nondeterminism when selecting
-  a "best" or "first" entry (`.first()` changes if keys are
-  added; use deterministic tie-breaking)
-- `QMap` for small fixed-size constant data (use array/switch)
-- Returning QList/container by value from frequently-called
-  methods (implicit deep copy on every call — return const ref
-  or cache)
-- Member variables maintained (appended, capped) but never
-  read by any method (dead state — wasted CPU and memory)
-- Missing re-entrancy guard on methods that emit signals
-  which could trigger re-entry
-- Setter silently resetting unrelated state without signal
-- Early return skipping status/signal updates
-
-**References**: `references/qt-review-checklist.md` §
-Performance & Code Quality
-
----
-
-## Confidence scoring guidelines
+## Confidence scoring
 
 | Confidence | Meaning | Action |
-|------------|---------|--------|
-| 90–100 | Certain: direct rule violation with full symbol trace | Report as finding |
-| 80–89 | High: rule violation confirmed but edge case possible | Report as finding |
-| 60–79 | Medium: likely issue but cannot fully verify | Report as investigation target |
-| <60 | Low: suspicion only | Suppress entirely |
-
-**Investigation targets** are findings the agent believes are real
-but cannot fully verify — e.g. noexcept correctness requiring
-whole-program analysis, dead code that may have callers outside
-scope, or design-intent judgments like virtual access levels.
-These are presented in a separate section for human verification.
-Maximum 10 investigation targets per report, prioritized by
-confidence within the 60–79 band.
+|---|---|---|
+| 80-100 | Rule violation confirmed with a symbol trace | Finding |
+| 60-79 | Likely, not fully verifiable (e.g. noexcept needing whole-program analysis, dead code with possible external callers) | Investigation target (max 10) |
+| <60 | Suspicion only | Suppress |
 
 ## Output format
 
-Present the final report as follows. Use exactly this structure.
+Use exactly this structure. Lint findings are grouped by rule with
+one mitigation each; only deep-analysis findings get a full block.
 
 ```
 ## Qt Code Review Report
@@ -404,53 +228,40 @@ Present the final report as follows. Use exactly this structure.
 **Scope**: [diff: `git diff HEAD~1..HEAD` | files: <paths>]
 **Files reviewed**: N
 **Issues found**: N (M from lint, K from deep analysis)
+**Agents**: N (shards ... | inline)
+**Framework mode**: [on / off]
 
 ---
 
 ### Lint findings
 
-For each lint finding:
-
-#### [L-NNN] <Short title>
-- **File**: `path/to/file.cpp:42`
-- **Rule**: <rule ID from checklist>
-- **Finding**: <what the script detected>
-- **Mitigation**: <what to do, in prose — no code patches>
+| Rule | Count | Locations | Mitigation |
+|---|---|---|---|
+| LCY-2 QObject created with new but no parent | 3 | `main.cpp:12,40`, `widget.cpp:88` | Pass a parent or hold in a smart pointer. |
+| ... | | | |
 
 ---
 
 ### Deep analysis findings
 
-For each agent finding:
-
 #### [D-NNN] <Short title>
 - **File**: `path/to/file.cpp:42`
-- **Category**: <agent name: Model Contracts | Ownership &
-  Lifecycle | Thread Safety | API & C++ Correctness | Error
-  Handling | Performance & Quality>
+- **Category**: <A1-A6 mission name>
 - **Confidence**: NN/100
-- **Finding**: <description of the issue>
-- **Trace**: <how the issue was confirmed — which symbols were
-  followed, what was checked>
+- **Finding**: <what is wrong>
+- **Trace**: <symbols followed, what was checked>
 - **Mitigation**: <what to do, in prose — no code patches>
 
 ---
 
 ### Investigation targets (human verification needed)
 
-Findings the agent identified but could not fully verify.
-Maximum 10, sorted by confidence. These require human judgment.
-
-For each investigation target:
-
 #### [I-NNN] <Short title>
 - **File**: `path/to/file.cpp:42`
-- **Category**: <agent name>
+- **Category**: <A1-A6 mission name>
 - **Confidence**: NN/100
-- **Finding**: <what the agent suspects>
-- **Unverified because**: <what the agent could not confirm —
-  e.g. "cannot trace all callees for throw potential",
-  "only one implementation visible in scope">
+- **Finding**: <what is suspected>
+- **Unverified because**: <what could not be confirmed>
 - **How to verify**: <specific action for the reviewer>
 
 ---
@@ -458,23 +269,23 @@ For each investigation target:
 ### Summary
 
 | Category | Lint | Deep | Investigate | Total |
-|----------|------|------|-------------|-------|
-| ...      | N    | N    | N           | N     |
-| **Total**| **M**| **K**| **I**       | **N** |
+|---|---|---|---|---|
+| ... | N | N | N | N |
+| **Total** | **M** | **K** | **I** | **N** |
 
-Findings below confidence 60 are suppressed entirely.
+Findings below confidence 60 are suppressed.
 ```
 
 ## References
 
-The following reference files contain detailed checklists
-extracted from the Qt wiki "Things To Look Out For In Reviews":
-
-- `references/qt-review-checklist.md` — Universal Qt6 C++ review
-  rules (always loaded)
-- `references/qt-framework-checklist.md` — Qt framework/module
-  development rules (loaded only in framework mode)
-- `references/qt-deprecated-classes.md` — Classes and patterns
-  that should no longer be used in Qt implementation
-- `references/lint-scripts/qt_review_lint.py` — Single-pass
-  Python linter (runs all 60+ checks in <1s)
+- `references/agent-rules.md` — agent missions A1-A6 and the agent
+  output format (read by the agents, not the orchestrator)
+- `references/qt-review-checklist.md` — universal rule IDs and
+  rationale (human reference, not loaded during a review)
+- `references/qt-framework-checklist.md` — framework rules (read by
+  A2 and A4 agents in framework mode)
+- `references/qt-deprecated-classes.md` — background for the DEP
+  lint rules (human reference)
+- `references/lint-scripts/qt_review_lint.py` — single-pass linter,
+  `--summary` for grouped output, `--diff=<range>` for changed lines
+  only, `--framework` for module rules

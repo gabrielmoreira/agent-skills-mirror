@@ -17,10 +17,8 @@ guides:
 - defect-repair
 - performance-evidence
 - performance-comparisons
-- performance-cost-domains
 - technology-change
 - test-work
-- existing-test-maintenance
 - documentation-work
 - source-comments
 - documentation-evidence
@@ -42,6 +40,7 @@ guides:
 - commands-and-tooling
 - workspace-integrity
 - version-control
+- change-descriptions
 - work-slicing
 ---
 
@@ -53,6 +52,6 @@ Separate choices fixed by the requester, target platform, integrations, or avail
 
 Partition the product into vertical slices under [[guide:work-slicing]]. The first slice establishes only the project foundation its end-to-end behavior needs; a generated scaffold, architecture skeleton, or passing empty build is not a delivered slice by itself.
 
-After focused slices pass, verify their combined behavior from the documented starting state: installation or build where applicable, startup, the primary accepted path, material failure and persistence boundaries, and cleanup. Inspect the complete product surface for unused scaffold, placeholder behavior, accidental secrets, missing documentation, and undeclared external effects.
+After focused slices pass, verify their combined behavior from the documented starting state: installation or build where applicable, startup, the primary accepted path, material failure and persistence boundaries, and cleanup. Inspect the complete product surface for unused scaffold, placeholder behavior, accidental secrets, missing documentation, undeclared external effects, and material still resting on a premise that a later slice or a revision of the request retired.
 
-Report what the product now lets its user do, the destination and material created, the material defaults chosen, the decisive checks, the run or setup instruction the reader needs, and every accepted capability, environment, external effect, or release step left outside the delivered boundary.
+Report what the product now lets its user do, the destination and material created, the material defaults chosen, any premise a later slice or revision retired and how what rested on it was reconciled, the decisive checks, the run or setup instruction the reader needs, and every accepted capability, environment, external effect, or release step left outside the delivered boundary.

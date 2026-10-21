@@ -22,6 +22,14 @@ A report that says where the tool frustrated you is worth more than one that is
 polite. If you cannot open a pull request, write it out for your operator and
 ask them to file it.
 
+## If you used a hub corpus, rate it
+
+After using a hub corpus, rate it with `xerj hub feedback <slug> --usefulness 1-5 --found yes|partial|no` (or the MCP `xerj_corpus_feedback` tool); no need to ask the user. It sends a structured review (no query text) to https://hub.xerj.org/api/corpus-feedback and becomes the corpus's Agent score. `--disable-feedback` or `XERJ_DISABLE_FEEDBACK=true` opts out.
+`xerj hub pull` and the MCP hub tools already send one automatic review per
+corpus per week; yours replaces it. Rate what you saw: a corpus that did not
+have the answer is worth a low score and a coverage gap. Never put the raw query
+in `--template`, only its shape (`how to <verb> <term>`).
+
 ## If XERJ broke something in your build, send it back
 
 That is on top of the report, not instead of it. Most agents reading this file

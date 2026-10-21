@@ -61,6 +61,13 @@ otherwise.
 
 ## Voice rules + reference layout
 
+- `references/precedence.md` is the resolution order for conflicting rules, and the
+  one place that states it. It also carries the handoff rule: **a skill that hands
+  work to another does not re-implement it, and the receiver owns its contract.**
+  When a sender needs the receiver's rules to change, change the receiver and cite
+  it from both; two copies of a rule is how two paths quietly stop agreeing.
+  Adding a rule anywhere means adding its row to the enforcement table there, or
+  admitting in the row that nothing enforces it yet.
 - Canonical voice rules live at root `references/voice-rules.md`.
   Skill-local "Hard rules" sections must only contain skill-specific
   overrides (char ranges, threading rules, format constraints) and start
@@ -174,6 +181,13 @@ python3 scripts/check_config.py --offline   # credential wiring; --offline skips
 python3 scripts/check_actor_inputs.py  # Apify ignores unknown input keys; this catches a renamed one
 python3 -m unittest discover -s tests    # contracts: docs vs code, response shapes, client behaviour
 python3 scripts/selftest.py              # the whole picture: install, accounts, tests, what works now
+
+`--record [label]` archives a run under `evals/runs/<date>[-label]/` with a
+`grading.json` carrying the bundle version, so two runs are comparable instead of
+a memory of what passed. Transcripts are gitignored; commit a `grading.json` only
+when a run is worth citing. The set is deliberately mixed: most cases check a
+behaviour fires, and `writer-no-invention` checks one does **not**, because a rule
+shipped across seven bundles needs something trying to break it.
 
 Behaviour, not plumbing: `python3 evals/run_evals.py` runs the agent against
 fixtures and grades what comes back (one model call per case, `--list` to see

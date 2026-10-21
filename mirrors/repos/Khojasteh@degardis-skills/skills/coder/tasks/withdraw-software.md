@@ -39,6 +39,7 @@ guides:
 - commands-and-tooling
 - workspace-integrity
 - version-control
+- change-descriptions
 - work-slicing
 handoffs:
 - task: implement-change
@@ -54,4 +55,4 @@ Choose the smallest coherent withdrawal that satisfies that boundary. Remove obs
 
 Derive completion evidence from the resulting contract; whether absence itself earns a maintained test follows [[guide:test-work]], and which existing tests are removed, revised, or retained follows [[guide:existing-test-maintenance]].
 
-After focused evidence passes, reconcile the maintained surfaces whose truth changed, then review the final diff for accidental replacement behavior, orphaned compatibility code, stale mentions, and unrelated deletion. Report what is no longer supported, what remains compatible, any migration the reader must perform, and the evidence establishing both the withdrawal and the surviving surface.
+After focused evidence passes, reconcile the maintained surfaces whose truth changed, including those resting on a premise the withdrawal retired, then review the final diff for accidental replacement behavior, orphaned compatibility code, stale mentions, and unrelated deletion. Report what is no longer supported, what remains compatible, any premise the withdrawal retired and how what rested on it was reconciled, any migration the reader must perform, and the evidence establishing both the withdrawal and the surviving surface.

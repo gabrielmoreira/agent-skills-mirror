@@ -21,8 +21,9 @@ semantics.
   `pnpm build`, `pnpm typecheck`, `pnpm test`. Rebuild the dists after a
   merge; integ and the examples import them.
 - Rust lives in `rust/`, one Cargo workspace: `mirage-rs` holds the command
-  streams both hosts run, `rust/python` is its PyO3 module (`mirage_rs`,
-  built by `uv sync`, which rebuilds it after a Rust change) and `rust/wasm`
+  streams both hosts run, `rust/python` is its PyO3 module (`mirage._rs`,
+  which maturin builds into mirage-ai: `uv sync` builds it and rebuilds it
+  after a Rust change) and `rust/wasm`
   the module the TypeScript core embeds
   (`typescript/packages/core/scripts/embed-rs.mjs`, run by `prepare`,
   `build`, `test` and `typecheck`). Both need cargo on `PATH`;
@@ -33,7 +34,7 @@ semantics.
 - Lint everything: `./python/.venv/bin/pre-commit run --all-files` from the
   repo root (the venv binary, so `examples/` is included).
 - Examples run from the repo root with the venv interpreter:
-  `./python/.venv/bin/python examples/python/s3/s3.py`.
+  `./python/.venv/bin/python examples/python/vfs/s3/s3.py`.
 - **Do not add a changeset.** `typescript/.changeset/` stays as it is for
   now: the public interface is still moving, so a per-PR version note
   describes a surface that changes again before it ships. Nothing gates on
@@ -261,6 +262,10 @@ macOS. Never touch your own TypeScript mountpoint synchronously.
 `workspace/record/`: keyed-record clients (disk lockfile plus rename, s3
 CAS) that sessions, the node table and metadata import, never the reverse.
 `cache/`: the read-through file cache and the index a readdir fills.
+A write past the dispatcher (native code, a runtime line whose file calls
+skip it, an account CLI) drops caches through `MountRegistry.drop_caches`,
+narrowed by the writer's `Accessor.reaches`; answers a client keeps of its
+own (search results, names) live in a `ResponseCache` its mount governs.
 `events/`: external changes as mount events. `scripts/parity/`: maintained parity baselines; generated manifests stay local. `integ/`: runners, fake services (`server/`), goldens (`truth/`),
 `targets.json`; spawn asynchronously, a fake on the same loop deadlocks a
 sync spawn.

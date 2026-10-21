@@ -298,6 +298,13 @@ canonical acceptance 与当前 Todo 精确详情读取。普通产品 heartbeat 
 R1/R4/R5 与 S11，本 RFC 不隐式开启新的 acceptance policy。下一完整切片应让既有
 结构化 criterion 穿过任务切换和重启，在同一 owner 拒绝覆盖丢失并使过期证据失效。
 
+**支撑成果检查点：** [默认成果细化](goal-outcome-refinement-v0.zh-CN.md) 在同一验收
+归属内提出累计要求与有据 Agent 自查，复用内联工作上下文和既有 frontier replan。
+默认能力不新增开关，旧开关仍只控制可执行检查。自查不能绕过已配置检查，也不能
+结清根 Goal。本切片覆盖只增要求、File／SQLite 恢复和可执行研究续行一致性；
+一般替代、全局收口、跨 Agent 转交及 S11 模型／benchmark 采用仍未完成。这是
+明确披露的默认指导变化，不代表完整 R4 合同已取得资格。
+
 ### 3.8 失效证据与受影响消费者
 
 恢复和工作切换须保留 §3.7 中不同观察的含义。当前 `work_context.complete` 表示

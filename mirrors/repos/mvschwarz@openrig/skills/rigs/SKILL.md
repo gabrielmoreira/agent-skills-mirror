@@ -14,7 +14,8 @@ if the person asks you to. When they say what they want built, give it to OpenRi
 building it yourself.
 
 Tell the person what you're about to run and why before you run it. Don't install system packages or change their
-machine without a yes. Starting OpenRig and a team writes files: Codex hooks and settings in
+machine without a yes, and don't start a team, including `rig up`, without their yes to what it will start; a yes they
+already gave for that same launch counts, so don't ask twice. Starting OpenRig and a team writes files: Codex hooks and settings in
 `~/.codex/config.toml`, Claude Code workspace trust in `~/.claude.json`, discovery skills in `~/.claude/skills` and
 `~/.agents/skills`, and, in the repository, managed guidance in `AGENTS.md` or `CLAUDE.md`, activity hooks in
 `.claude/settings.local.json` and a status line there unless the project already has its own, plus the team's skills
@@ -22,6 +23,10 @@ and plugins. Unless a permission policy, a per-seat choice or (for Codex) a name
 seats run with an operational default: Codex with `-s danger-full-access -a never`, and Claude Code with its file
 tools, web fetches and operational commands, including reads under the home folder, allowed without asking. Say so
 before you start OpenRig ([the full list](https://github.com/mvschwarz/openrig#what-openrig-changes-on-your-machine)).
+
+When you give the person a file or a command to run in their own terminal, use a path that exists on their side. A
+file a sandboxed agent writes under `/tmp` may not exist in the person's terminal (seen with Codex), so put files the
+person needs in their project or home folder and name that path.
 
 ## 1. Install OpenRig, if it isn't installed
 
@@ -106,13 +111,18 @@ before you start OpenRig ([the full list](https://github.com/mvschwarz/openrig#w
   `--node <logicalId>` binds to an existing seat instead. Attach once, and keep the variables it prints
   (`OPENRIG_NODE_ID` and `OPENRIG_SESSION_NAME`). Each command may run in a fresh shell, so put them in front of every
   later `rig` command. Check with `rig whoami --json`.
+  If they decline, a message that must still say who it's from can go as a queue item with a declared source,
+  `rig queue create --source <their id>@external --destination <seat> --summary "<one line>" --body-file <file>`: the
+  seat sees that name, recorded as declared, and can reply to them if they're registered (`rig gateway human list`).
+  A declared name is a claim, not a seat's own identity: for a team that acts only on seat identity, the attached
+  shell above is the route.
 - **Give the operator the goal:** ask what they want worked on, in which repository and on which branch, unless they've
   said. Find the `operator.agent` row in `rig ps --nodes --rig kernel --json`, take its `canonicalSessionName`
   (never the logical ID or a guessed name) and send:
   `rig send <canonicalSessionName> 'This is the agent that installed OpenRig. The person will answer in your pane. Goal: <goal>. Project folder: <absolute path>. Branch: <branch>.'`
   Or the person types the goal and folder in the operator's pane. If they give you a goal later, forward it the same
-  way. The operator helps them pick a team that fits their logins, starts it on their yes and gives the goal to the
-  team's lead. Before that yes, it says what launching into their folder changes for their own agent there; relay
+  way. The operator helps them pick a team that fits their logins, starts it (`rig up`) only on their yes to the plan it
+  shows, and gives the goal to the team's lead. Before that yes, it says what launching into their folder changes for their own agent there; relay
   that with the question. Show them where the operator answers, and don't build the project yourself.
 - **Relay the operator's questions:** the operator asks in its own pane, and the person may not be looking there.
   After each step you hand it, read its screen with `rig capture <canonicalSessionName>`. When it asks the person
@@ -125,8 +135,12 @@ before you start OpenRig ([the full list](https://github.com/mvschwarz/openrig#w
 - **See what's running:** `rig ps`, then `rig ps --nodes --rig <rig>` for a team's agents. If a team is already
   running in that repository, tell the operator.
 - **Check it's ready before you say so:** `rig ps --nodes --rig <rig>`. If an agent is stopped at a prompt or a menu,
-  read it with `rig capture <seat>@<rig>` and answer with the key that screen shows (`rig send --help` says how to
-  send a digit, a letter or Escape), or ask the person. Capture it again before sending anything more.
+  read it with `rig capture <seat>@<rig>`. A permission prompt is the person's to answer: show it to them, with any
+  others waiting, one line each (seat, exact action, the choices offered). Before sending their choice, capture that
+  seat again: if its prompt changed, don't reuse the answer. Then send exactly the choice they made for that prompt
+  (`rig send --help` says how to send a digit, a letter or Escape to a prompt). A yes to one prompt isn't a
+  yes to the next, and never pick a "don't ask again" choice they didn't pick. Another kind of menu you can answer with
+  the key that screen shows, or ask the person. Capture it again before sending anything more.
 - **Replies:** in a plain shell, other agents can't type into this session. Read work sent to you with
   `rig queue list --destination <your address>` and `rig queue show <id> --full`, and read an agent's screen with
   `rig capture <seat>@<rig>`.

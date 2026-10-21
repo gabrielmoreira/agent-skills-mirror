@@ -213,6 +213,18 @@ That same warning prefixes every tool description in the standalone card, so
 card discovery carries it before an MCP client initializes. It labels the
 captured text without changing the tool names or schema fields clients use.
 
+## The state a capture observed
+
+Replay answers each call from one recording, so the answers reflect whichever
+moment of the capture recorded them. The
+[environment state](web-network-captures.md#environment-state) view extracts
+instead the data the capture's reads observed before the first related write:
+entity types with an identity field, entities with their recorded values,
+documents for written paths, and a render plan per read tool, kept only where
+it reproduces that tool's recordings from the state. It is the starting state
+an environment can hold, load and report; serving from it is a later increment
+and does not change replay.
+
 ## Serve a manifest
 
 ```sh

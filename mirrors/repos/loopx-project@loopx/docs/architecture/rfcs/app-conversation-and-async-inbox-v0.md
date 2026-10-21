@@ -1117,13 +1117,23 @@ Owner-private Lark connections also compare bounded provider history with native
 capture receipts in the existing background delivery scanner. This default
 observation starts within one minute and repeats one minute after completion;
 it uses the same verified App and an already-admitted owner destination. The
-initial lookback is bounded to a day; later complete windows overlap by a minute.
-Each pass reads at most 20 pages with a five-second history-page request budget;
-identity verification retains its existing timeout.
-Incomplete, failed, stale or changed-binding reads cannot advance coverage.
+initial live lookback is bounded to a day; later complete windows overlap by a
+minute. Each pass reads live sources first, up to 20 pages, then at most five
+older pages from the provider's beginning to a fixed boundary before the live
+window. A private pagination cursor resumes that historical read across restarts,
+including upgrades of receipts that only contain the live cursor. Incomplete
+historical pagination cannot report verified coverage. Each history-page request
+retains its five-second budget; identity verification retains its existing timeout.
+Failed, stale or changed-binding reads cannot advance coverage. A bounded,
+successful historical page batch may save its cursor without claiming completion.
 The private receipt retains every previously observed gap; absence from a later
 window does not close it. Group topics and other providers retain their own
 coverage contracts.
+
+Capture evidence is matched to the same verified App/profile, provider source,
+private destination and owner, including a receipt from a prior context binding.
+That receipt proves capture only; it neither grants the current binding work
+authority nor establishes a final result. Foreign sources remain separate.
 
 After an outage, bounded one-day windows continue from the last complete cursor;
 catch-up cannot certify an unscanned interval. A per-binding receipt lock covers
@@ -1137,7 +1147,8 @@ from live-listener readiness and pending execution. Its `ingress` observation
 uses `unobserved`, `verified`, `gap` and `unavailable`, with timestamps and counts,
 without source identifiers or bodies. An observed Bot reply does not establish
 native capture, a final answer or requester adoption. A newly observed unanswered
-gap may stop only this service's existing consumer once; the existing App lease
+live-window gap may stop only this service's existing consumer once; older-history
+discoveries do not trigger that reconnect. The existing App lease
 and refresh lifecycle own its replacement. History never enters Core admission,
 replies, retries or failed-Turn recovery. Reconnection is a live-path mitigation,
 not proof that a missing historical request ran or that provider loss was fixed.
@@ -1318,6 +1329,13 @@ without provider identity IO for every historical failure. This is a queue hint;
 admission still re-resolves current App/owner/grant and exact source/native proof
 under the existing fences before reserving or enqueueing any continuation.
 
+Source verification accepts both ordinary text and text-only rich posts. A post
+must retain its original provider rendering, an explicit empty attachment
+inventory and the same admitted text after intake whitespace normalization.
+The current provider message type and complete rendering must still match.
+Missing or edited evidence, images and attachment failures remain holds; recovery
+does not download resources or submit only a media caption.
+
 Core may admit one correlated continuation per request and context version
 after current App/owner/grant and unchanged source verification, an exact failed
 native Turn readback, and a complete inventory containing only its original user
@@ -1334,8 +1352,8 @@ whose native error is `other`, only when the stable native inventory proves
 there was exactly the original user input and no execution item. It resumes the
 existing thread, without a history migration or error-message text matching.
 This proves absence of execution, not provider health or eventual success. A
-terminal Core failure is returned and retained; it cannot enqueue another
-continuation.
+terminal Core failure on this unclassified-host/context-migration path is
+returned and retained; it cannot enqueue another continuation on that path.
 
 The existing in-flight transport retry also recognizes the exact native
 `other` diagnostic `workspace routing discovery timed out`. This provider hint
@@ -1346,6 +1364,23 @@ holds. It reuses the original Core Turn, input, Session and three-retry/backoff
 budget; it never reopens a terminal historical request or resets a reservation
 after restart. Native error prose is not copied into the retry journal. Existing
 App and Lark retry progress and final readback expose the same request's outcome.
+
+After those in-flight retries end, the original private reply worker can also
+recover a proven routing outage for ordinary project assistants and stewards.
+The exact diagnostic above, or its native remote-compaction wrapper, must be
+independently read back from the latest failed native Turn. Its complete stable
+inventory may contain only one user input and native compaction bookkeeping;
+answers, tools, corrections, unknown items and active native work remain holds.
+Fresh source, App/owner and grant verification still precede each admission.
+Core reserves at most three new, correlated continuations per original request,
+with 60/120/240-second backoff from the preceding persisted failure. Restart
+neither resets this budget nor reopens the failed Turn. A lost acknowledgement
+after queue admission adopts the exact existing client identity, including an
+already completed Turn, instead of enqueueing it again. Recovery attempts retain
+their own presentation keys and earlier reservation/notice history. A delivered
+failure of a continuation remains unfinished work; a completed answer does not
+activate recovery. This does not establish provider availability or eventual
+business completion, and it creates no additional event consumer.
 
 Recovery discovery backoff is only a temporary hint. The existing reply worker
 retains its per-request fairness count while that canonical request still exists;

@@ -31,7 +31,7 @@
 
 ## 全部 77 个 skill 合集一览
 
-> **打开仓库 → 看见整座库。** 全部 **77 个合集（`00 → 73` 编号连续无空缺） · 1,107 个 skill**，每一个都**已 vendor 进本仓库**（不仅是外链），并由 [`catalog/skills.json`](../catalog/skills.json) 跟踪。**点击任意一行即可打开其文件夹；点击锚点列 # 可跳转到本节对应的行。** **⭐ = 由 Stanford REAP × CoPaper.AI 团队自研的 skill**；其余均为精选、经安全审计的社区作品。
+> **打开仓库 → 看见整座库。** 全部 **77 个合集（`00 → 73` 编号连续无空缺） · 1,107 个 skill**，每一个都**已 vendor 进本仓库**（不仅是外链），并由 [`catalog/skills.json`](../catalog/skills.json) 跟踪。**点击任意一行即可打开其文件夹；点击锚点列 # 可跳转到本节对应的行。** **⭐ = 由 Stanford REAP × StatsPAI 团队自研的 skill**；其余均为精选、经安全审计的社区作品。
 >
 > **主题图例 —** 🚀 全流程与编排器 · 🎯 因果推断与计量经济学 · 📚 文献与研究设计 · ✍️ 写作、编辑与去 AIGC · 📑 引用、复现与同行评审 · 🛠️ 数据、工具与基础设施
 >
@@ -158,7 +158,7 @@ AERS 同时是两样东西：(1) 一小撮**自研旗舰 skill**，能跑通完�
 
 ## 77 个合集 · 按用途分组
 
-> 与[顶部的顺序索引 ↑](#全部-77-个-skill-合集一览)同样是 **77 个合集 · 1,107 个 skill** —— 这里**按研究用途**重新排序，方便你直接跳到当前所处的阶段。**⭐ = 自研**（Stanford REAP × CoPaper.AI）；其余均为精选、经安全审计的社区作品。
+> 与[顶部的顺序索引 ↑](#全部-77-个-skill-合集一览)同样是 **77 个合集 · 1,107 个 skill** —— 这里**按研究用途**重新排序，方便你直接跳到当前所处的阶段。**⭐ = 自研**（Stanford REAP）；其余均为精选、经安全审计的社区作品。
 
 **🚀 全流程旗舰与编排器** —— *一次调用，跑通整个实证闭环*
 
@@ -592,7 +592,7 @@ make check       # 完整 gate：validate + Python 编译 + 单元测试 + eval 
 <table>
   <tr>
     <td align="center">
-      <a href="https://copaper.ai"><img src="../images/copaper-logo.png" alt="CoPaper.AI" width="220" /></a>
+      <a href="https://github.com/brycewang-stanford/StatsPAI"><img src="../images/statspai-logo.png" alt="StatsPAI" width="260" /></a>
     </td>
     <td width="40"></td>
     <td align="center">
@@ -601,7 +601,7 @@ make check       # 完整 gate：validate + Python 编译 + 单元测试 + eval 
   </tr>
 </table>
 
-<sub><strong>Stanford REAP × CoPaper.AI</strong> · 实证研究 AI 工具的学术工业级产品</sub>
+<sub><strong>Stanford REAP × StatsPAI</strong> · 实证研究 AI 工具的学术工业级产品</sub>
 
 <br/>
 

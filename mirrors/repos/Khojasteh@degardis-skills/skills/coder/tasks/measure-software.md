@@ -10,7 +10,6 @@ guides:
 - user-interface-work
 - performance-evidence
 - performance-comparisons
-- performance-cost-domains
 - test-work
 - dependency-and-artifact-integrity
 - observability-and-diagnostics

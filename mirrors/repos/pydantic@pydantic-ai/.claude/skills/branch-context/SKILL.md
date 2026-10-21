@@ -1,0 +1,1 @@
+cache/repos/github.com/pydantic@pydantic-ai/.claude/skills/branch-context/../../../.agents/skills/branch-context/SKILL.md

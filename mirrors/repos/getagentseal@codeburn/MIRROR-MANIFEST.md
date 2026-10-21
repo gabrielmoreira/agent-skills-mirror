@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `getagentseal/codeburn` — 26 default patterns, 0 followed patterns, 2 file(s) materialized.
+Mirror of `getagentseal/codeburn` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `getagentseal/codeburn` — 26 default patterns, 0 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 2 |
+| Files         | 3 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,6 +61,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`docs/providers/claude.md`](docs/providers/claude.md) |
 | 2 | ✓ | [`docs/providers/gemini.md`](docs/providers/gemini.md) |
+| 3 | ✓ | [`plugins/codeburn/skills/cost/SKILL.md`](plugins/codeburn/skills/cost/SKILL.md) |
 
 ---
 

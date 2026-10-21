@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `logancyang/obsidian-copilot` — 26 default patterns, 7 followed patterns, 16 file(s) materialized.
+Mirror of `logancyang/obsidian-copilot` — 26 default patterns, 6 followed patterns, 16 file(s) materialized.
 
 ## Metadata
 
@@ -17,7 +17,7 @@ Mirror of `logancyang/obsidian-copilot` — 26 default patterns, 7 followed patt
 | Ref Type      | `branch` |
 | Ref           | `master` |
 | Default pats  | 26 |
-| Followed pats | 7 |
+| Followed pats | 6 |
 | Files         | 16 |
 
 ## Default Sparse Patterns  *(included from config)*
@@ -51,13 +51,12 @@ Mirror of `logancyang/obsidian-copilot` — 26 default patterns, 7 followed patt
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-- `designdocs/agents/TESTING_GUIDE.md`
-- `designdocs/agents/STYLE_GUIDE.md`
-- `designdocs/agents/PLUGIN_DEV_GUIDE.md`
-- `designdocs/agents/PROCESS_GUIDE.md`
-- `designdocs/agents/DOCS_GUIDE.md`
-- `designdocs/OBSIDIAN_COMMUNITY_REVIEW.md`
-- `designdocs/todo/TECHDEBT.md`
+- `internal-docs/TESTING_GUIDE.md`
+- `internal-docs/STYLE_GUIDE.md`
+- `internal-docs/PLUGIN_DEV_GUIDE.md`
+- `internal-docs/PROCESS_GUIDE.md`
+- `internal-docs/DOCS_GUIDE.md`
+- `internal-docs/OBSIDIAN_COMMUNITY_REVIEW.md`
 
 ## File Index
 
@@ -70,17 +69,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3 | ✓ | [`.cursor/rules/test-rule.mdc`](.cursor/rules/test-rule.mdc) |
 | 4 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 5 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 6 | ✓ | [`src/agentMode/AGENTS.md`](src/agentMode/AGENTS.md) |
-| 7 | ✓ | [`src/agentMode/CLAUDE.md`](src/agentMode/CLAUDE.md) |
-| 8 | ✓ | [`src/modelManagement/AGENTS.md`](src/modelManagement/AGENTS.md) |
-| 9 | ✓ | [`src/modelManagement/CLAUDE.md`](src/modelManagement/CLAUDE.md) |
-| 10 | → | [`designdocs/agents/DOCS_GUIDE.md`](designdocs/agents/DOCS_GUIDE.md) |
-| 11 | → | [`designdocs/agents/PLUGIN_DEV_GUIDE.md`](designdocs/agents/PLUGIN_DEV_GUIDE.md) |
-| 12 | → | [`designdocs/agents/PROCESS_GUIDE.md`](designdocs/agents/PROCESS_GUIDE.md) |
-| 13 | → | [`designdocs/agents/STYLE_GUIDE.md`](designdocs/agents/STYLE_GUIDE.md) |
-| 14 | → | [`designdocs/agents/TESTING_GUIDE.md`](designdocs/agents/TESTING_GUIDE.md) |
-| 15 | → | [`designdocs/OBSIDIAN_COMMUNITY_REVIEW.md`](designdocs/OBSIDIAN_COMMUNITY_REVIEW.md) |
-| 16 | → | [`designdocs/todo/TECHDEBT.md`](designdocs/todo/TECHDEBT.md) |
+| 6 | ✓ | [`internal-docs/GALLERY_REVIEW_COVERAGE.md`](internal-docs/GALLERY_REVIEW_COVERAGE.md) |
+| 7 | ✓ | [`src/agentMode/AGENTS.md`](src/agentMode/AGENTS.md) |
+| 8 | ✓ | [`src/agentMode/CLAUDE.md`](src/agentMode/CLAUDE.md) |
+| 9 | ✓ | [`src/modelManagement/AGENTS.md`](src/modelManagement/AGENTS.md) |
+| 10 | ✓ | [`src/modelManagement/CLAUDE.md`](src/modelManagement/CLAUDE.md) |
+| 11 | → | [`internal-docs/DOCS_GUIDE.md`](internal-docs/DOCS_GUIDE.md) |
+| 12 | → | [`internal-docs/OBSIDIAN_COMMUNITY_REVIEW.md`](internal-docs/OBSIDIAN_COMMUNITY_REVIEW.md) |
+| 13 | → | [`internal-docs/PLUGIN_DEV_GUIDE.md`](internal-docs/PLUGIN_DEV_GUIDE.md) |
+| 14 | → | [`internal-docs/PROCESS_GUIDE.md`](internal-docs/PROCESS_GUIDE.md) |
+| 15 | → | [`internal-docs/STYLE_GUIDE.md`](internal-docs/STYLE_GUIDE.md) |
+| 16 | → | [`internal-docs/TESTING_GUIDE.md`](internal-docs/TESTING_GUIDE.md) |
 
 ---
 

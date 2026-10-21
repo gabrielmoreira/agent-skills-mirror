@@ -37,9 +37,10 @@ The server floor is where `node:sqlite` is available without an experimental fla
 
 **`npm run pr:check` is the whole local gate, and it is a subset of CI by construction.**
 
-`PR Conventions` is a required context whose gating steps on a non-bot PR are: two positive
-controls, the body against `.github/pull_request_template.md`, and `commitlint` on the title. Run
-every one of them before `gh pr create`, from the repo root:
+`PR Conventions` is a required context whose gating steps on a non-bot PR are: three positive
+controls, the body against `.github/pull_request_template.md`, the squash commit against the parser
+release-please reads it with, and `commitlint` on the title. Run every one of them before
+`gh pr create`, from the repo root:
 
 ```bash
 TITLE="feat(scope): outcome"
@@ -59,6 +60,18 @@ to assemble a multi-PR initiative (ADR 0003); a `Decision: ADR-NNNN` trailer mus
 ADR. The scripts that enforce this are managed by the fleet delivery contract
 (`.delivery-contract.json`); `validate:delivery-contract` fails on any local edit to them, and a
 newer contract is adopted with `delivery-contract update` (CONTRIBUTING.md §Pull Request Process).
+
+The squash check exists because release-please leaves out, silently, any commit its parser rejects
+-- no changelog line, no version bump, no BREAKING CHANGE note -- and what it parses is not the body
+as written: GitHub re-flows the body at 72 columns, so a long line can open `name(` and close it on
+the next line. That dropped #501 (a breaking change) and #503 from a release although both bodies
+passed every other check. On a refusal, put the example on one line inside a fenced block, reword
+the line, or add a `BEGIN_COMMIT_OVERRIDE` block to the body -- the marker counts anywhere in the
+body, even quoted in backticks, so never mention it in prose.
+
+One more step warns and never gates: `scripts/warn-contract-lag.mjs` annotates a PR when
+`.delivery-contract.json` trails a repository-standards release that changed the contract template.
+Leave it to an adoption PR.
 
 Parity is enforced rather than documented: `scripts/pr-check.mjs` names each workflow step it
 mirrors and `server/tests/unit/scripts/pr-check-ci-parity.test.ts` reads `pr-conventions.yml` and
@@ -110,7 +123,7 @@ Read the relevant doc before editing. Update docs when behavior changes.
 | `npm run lint:ratchet`            | Fail if ESLint violations increased or decreased without lowering the baseline                                                                                                   |
 | `npm run typecheck:tests:ratchet` | Fail if `tests/` type errors increased or decreased without a baseline update. Covers call sites `typecheck` misses — a broken test file can otherwise land green                |
 | `npm run generate:contracts`      | Regenerate MCP schemas from contracts                                                                                                                                            |
-| `npm run validate:lockfile-sync`  | Fail when `node_modules` has drifted from `package-lock.json` — compares npm's own `node_modules/.package-lock.json`, so no subprocess and no output parsing                     |
+| `npm run validate:lockfile-sync`  | Fail when a tracked `package-lock.json` (root or `server/`) has drifted from its installed `node_modules` — compares npm's own `node_modules/.package-lock.json`, so no output parsing |
 | `npm run setup:python`            | Install the pinned Ruff/Pyrefly/Pytest/PyYAML from `requirements-dev.txt` — the same file CI installs from                                                                       |
 | `npm run validate:all`            | Full validation suite                                                                                                                                                            |
 | `npm run validate:arch`           | Dependency Cruiser architecture rules                                                                                                                                            |
@@ -157,7 +170,7 @@ Read the relevant doc before editing. Update docs when behavior changes.
 - **Consolidation over addition**: Enhance existing systems vs creating new ones.
 - **Pipeline state**: Use `context.gates`, `context.frameworkAuthority`, `context.diagnostics` -- never mutate arrays directly.
 - **Module organization**: import the defining module directly. **Banned is the compat re-export shim** -- a file whose whole body is `export ... from` AND which carries a back-compat marker, giving a symbol a second import path so `rg` for the canonical one misses consumers (the ESLint rule `claude/no-compat-reexport-shim` enforces exactly this). A markerless barrel is NOT banned and `src/` has ~60 of them; prefer direct imports anyway, because `validate:arch` expresses layer + cycle boundaries as **paths**, and a barrel spanning layers launders the real edge. Intra-layer barrels launder nothing -- judge by whether consumers cross a layer. A file that re-exports _and_ defines something is not a barrel (`infra/logging/index.ts`). Dead-barrel detection is `npx knip`; `validate:arch` cannot see it (`no-orphans` needs no incoming AND no outgoing edges, and a re-export always has outgoing). Use `internal/` for a genuinely private region.
-- **Concurrent sessions**: work in a linked worktree, never a second session in this checkout — worktrees share `.git/config` but not HEAD, and a shared HEAD moves under whoever is mid-edit. Create with `npm run worktree:create -- <path> <branch> --from origin/main` (the path resolves from the repo root). **Do not use Claude Code's `--worktree`/`EnterWorktree` here**: anthropics/claude-code#72714 writes an absolutized `core.hooksPath` into the shared `.git/config`, disabling hooks in every worktree including this one — plain `git worktree add` is equally unsafe, for the reason `CONTRIBUTING.md` §Working in a second worktree records. A new worktree's `node_modules` and `server/node_modules` are symlinks pointing back at this checkout, so `npm ci` or an install from a branch that changed `package-lock.json` writes **through** them and mutates every worktree's dependency tree at once. Set a distinct `PORT` if two trees run servers.
+- **Concurrent sessions**: work in a linked worktree, never a second session in this checkout — worktrees share `.git/config` but not HEAD, and a shared HEAD moves under whoever is mid-edit. Create with `npm run worktree:create -- <path> <branch> --from origin/main` (the path resolves from the repo root). **Do not use Claude Code's `--worktree`/`EnterWorktree` here**: anthropics/claude-code#72714 writes an absolutized `core.hooksPath` into the shared `.git/config`, disabling hooks in every worktree including this one — plain `git worktree add` is equally unsafe, for the reason `CONTRIBUTING.md` §Working in a second worktree records. A new worktree's installed `node_modules` trees (root, `server/`, and `cli/` when present) are symlinks pointing back at this checkout, so `npm ci` or an install from a branch that changed `package-lock.json` writes **through** them and mutates every worktree's dependency tree at once. Set a distinct `PORT` if two trees run servers.
 - **Commit convention**: Conventional Commits enforced. Scopes (`commitlint.config.mjs` is the enforced list; keep this and `CONTRIBUTING.md` in lockstep with it): `server`, `cli`, `runtime`, `pipeline`, `gates`, `frameworks`, `prompts`, `chains`, `styles`, `scripts`, `hooks`, `resources`, `mcp-tools`, `contracts`, `parsers`, `ci`, `deps`, `config`, `logging`, `metrics`, `docs`, `tests`, `semantic`, `execution`.
 - **Environment (execution capability)**: `MCP_SHELL_VERIFY_ALLOWLIST` declares which commands `shell_verify` may run. **Unset means every shell verification is refused** — the gate fails with a message naming this variable, and the server keeps serving. Entries are newline-separated (not comma: commands contain commas); an entry ending `*` is a prefix, but a command carrying shell control characters (`; & | \` < > $(`or a newline) must match exactly, because a prefix cannot bound what follows a`;`. The single entry `UNSAFE_ALLOW_ALL` permits everything, for an operator who authors all their own gates and accepts the risk. Both transports read it — this is not a listener concern: the sink is reached identically over STDIO and HTTP. The refusal is deliberately not a degrade-to-advisory; a gate reporting as passed while having verified nothing is a defect this repo has already fixed once.
 - **Environment (execution capability, continued)**: `MCP_SHELL_VERIFY_ALLOWED_DIRS` declares directories, beyond the server's own, that a gate's `shell_working_dir` may resolve inside. **Unset does not mean "anywhere"** — it means the server's own directory, which is where a gate that says nothing already runs. Same newline-separated form and same `UNSAFE_ALLOW_ALL` sentinel as the command allowlist, and deliberately a _separate_ declaration: accepting arbitrary commands is not accepting arbitrary directories. There is no third variable for the environment, and that asymmetry is the point. A resource-supplied `shell_env` / `tool.env` naming a key that decides what a command RESOLVES to — `PATH`, `LD_*`, `DYLD_*`, `NODE_OPTIONS`, `PYTHONPATH`, `BASH_ENV`, `IFS` and their siblings — is **refused outright, with no opt-out**, because otherwise the allowlist bounds a string whose meaning the author still picks: measured 2026-08-29, an operator allowlisting exactly `git status` ran the gate author's `git`. Ordinary variables pass through untouched. The full list and the mechanism behind each entry are in `shared/utils/process.ts`.

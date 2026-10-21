@@ -270,6 +270,7 @@ npx rea-agents@latest setup
 
 - [安裝與設定](../installation.md)：AI 代理註冊、提供者組態、更新和卸載。
 - [就緒檢查與故障排查](../installation.md#check-readiness-for-your-task)：診斷特定 AI 代理或分析引擎。
+- [GGUF / safetensors](../model-artifacts.md)
 - [CLI 與 Evidence](../cli.md)：命令、提供者選擇、快照、匯入/匯出和退出狀態。
 - [MCP 契約](../mcp-contracts.md)和[AI 代理提示詞](../mcp-prompts.md)：工具結果、會話和引導式調查。
 - [工具目錄](../mcp-contracts.md#generated-catalog)：建置時生成的工具、提供者和 CLI 命令清單。

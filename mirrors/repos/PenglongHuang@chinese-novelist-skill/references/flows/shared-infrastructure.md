@@ -51,14 +51,14 @@
 
 1. **启动欢迎语**：有偏好时显示"欢迎回来！" + 个性化提示
 2. **选项排序**：Q1中将 `favoriteGenres` 匹配项排前面
-3. **常用标记**：Q5/Q8中对应用⭐标记"你的常用"/"上次选择"
+3. **常用标记**：基调问（第二层调用一）、章节数问（第二层调用二）中对应用⭐标记"你的常用"/"上次选择"
 4. **需求报告**：结合偏好给个性化建议（如"你之前喜欢悬疑+第三人称限制，这次要不要试试多视角？"）
 5. **随机生成**：优先从偏好范围内随机选取，保持一致性
 6. **风格参考追问**：优先推荐 `styleReferences` 中的作者
 
 ### 错误恢复
 
-- **回退修改**：用户随时可说"回到QX"、"修改XX"，AI 回退到指定问题重新询问
+- **回退修改**：用户随时可说"重新问XX"、"修改XX"，AI 回退到指定问题重新询问
 - **中途暂存**：通过 `02-写作计划.json` 实现自动暂存；下次触发SKILL时 Phase 0 自动检测未完成项目，询问"继续上次的《XXX》？"
 - **偏好文件损坏**：JSON解析失败时忽略偏好，使用默认值，并在后台修复文件
 
@@ -96,32 +96,43 @@
 
 ### 与大纲的关系
 
-- `01-大纲.md`：章节规划（核心事件、悬念钩子、承接上章、出场人物、场景列表）+ 章节摘要（连贯性参考）+ 设定词典（设定名词的首现与揭示跟踪）
+- `01-大纲.md`：章节规划（核心事件、悬念钩子、承接上章、出场人物、场景列表）+ 设定词典（设定名词的首现与揭示跟踪），纯规划文档，不随创作进度膨胀
+- `99-章节摘要.md`：逐章追加的 300-500 字摘要（连贯性参考），每章收尾时写入
 - `02-写作计划.json`：章节状态、字数、重试次数、写作模式（机器可读的进度跟踪）
 - Phase 3 创作每章时必须读取 `01-大纲.md` 中对应章节的规划信息，作为创作依据
 - 两者严格对应：JSON 中的 `chapterNumber` 和 `title` 必须与大纲中的章节规划一致
 
 ### JSON 损坏处理
 
-- JSON 解析失败时：提示用户，尝试从大纲的章节摘要区推断完成进度
+- JSON 解析失败时：提示用户，尝试从 `99-章节摘要.md` 推断完成进度
 - 章节状态丢失时：通过文件存在性和字数脚本重建状态
 
 ---
 
 ## 字数检查脚本
 
-使用 `scripts/check_chapter_wordcount.py` 检查章节字数：
+使用 `{skillBaseDir}/scripts/check_chapter_wordcount.py` 检查章节字数。`{skillBaseDir}` 指 SKILL.md 所在的 skill 安装根目录（如 `~/.claude/skills/chinese-novelist`）——脚本不在用户项目内，**必须用 skill 安装目录的绝对路径调用**，禁止写相对路径 `scripts/...`（那只存在于 skill 源码目录，用户项目解析不到）。
 
 ```bash
-# 检查单个章节
-python scripts/check_chapter_wordcount.py ./chinese-novelist/项目文件夹/第01章.md
+# 检查单个章节（--json 输出机读结果，含 word_count 与达标状态）
+python {skillBaseDir}/scripts/check_chapter_wordcount.py ./chinese-novelist/项目文件夹/第01章.md --json
 
-# 检查所有章节
-python scripts/check_chapter_wordcount.py --all ./chinese-novelist/项目文件夹/
+# 检查所有章节（按章号数值排序，第10章不会排在第2章前面）
+python {skillBaseDir}/scripts/check_chapter_wordcount.py --all ./chinese-novelist/项目文件夹/ --json
 
 # 自定义最小字数
-python scripts/check_chapter_wordcount.py ./chinese-novelist/项目文件夹/第01章.md 3500
+python {skillBaseDir}/scripts/check_chapter_wordcount.py ./chinese-novelist/项目文件夹/第01章.md 3500 --json
 ```
+
+### 退出码
+
+| 退出码 | 含义 |
+|-------|------|
+| 0 | 全部达标 |
+| 1 | 有章节不达标 |
+| 2 | 文件/目录错误 |
+
+Agent 优先用 `--json` + 退出码判断结果：`results[].word_count` 可直接填入 `02-写作计划.json` 的 `wordCount`，无需解析文本报告。
 
 ### 使用场景
 

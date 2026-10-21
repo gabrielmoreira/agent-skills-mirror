@@ -1,6 +1,6 @@
 ---
 name: clawrouter
-description: Hosted-gateway LLM router — save 84% on inference costs. A local proxy that forwards each request to the blockrun.ai gateway, which routes to the cheapest capable model across 88 models from OpenAI, Anthropic, Google, DeepSeek, xAI, Z.AI, and more. 7 free open-weight models included. Also exposes realtime market data (global stocks, crypto, FX, commodities), Twitter/X intelligence, prediction-market data across Polymarket, Kalshi, Limitless, Opinion, Predict.Fun, dFlow + UMA oracle resolution + wallet identity & clustering, phone-number intelligence (carrier + SIM-swap fraud detection) plus AI-powered outbound voice calls (Twilio + Bland.ai), AND the Surf unified crypto data API (84 endpoints — CEX/DEX, on-chain SQL over 80+ ClickHouse tables, 100M+ labeled wallets, prediction markets, social/CT mindshare, news, VC fund intel) as built-in agent tools. Not a local-inference tool — prompts are sent to the blockrun.ai gateway.
+description: Hosted-gateway LLM router — save 84% on inference costs. A local proxy that forwards each request to the blockrun.ai gateway, which routes to the cheapest capable model across 90 models from OpenAI, Anthropic, Google, DeepSeek, xAI, Z.AI, and more. Free open-weight models included. Also exposes realtime market data (global stocks, crypto, FX, commodities), Twitter/X intelligence, prediction-market data across Polymarket, Kalshi, Limitless, Opinion, Predict.Fun, dFlow + UMA oracle resolution + wallet identity & clustering, phone-number intelligence (carrier + SIM-swap fraud detection) plus AI-powered outbound voice calls (Twilio + Bland.ai) as built-in agent tools. Not a local-inference tool — prompts are sent to the blockrun.ai gateway.
 triggers:
   - "clawrouter"
   - "claw router"
@@ -21,13 +21,6 @@ triggers:
   - "phone number verification"
   - "sim swap detection"
   - "outbound ai call"
-  - "blockrun surf"
-  - "surf crypto api"
-  - "on-chain sql query"
-  - "clickhouse onchain"
-  - "wallet labels api"
-  - "crypto mindshare"
-  - "crypto news api"
 homepage: https://blockrun.ai/clawrouter.md
 repository: https://github.com/BlockRunAI/ClawRouter
 license: MIT
@@ -53,7 +46,7 @@ metadata:
 
 # ClawRouter
 
-Hosted-gateway LLM router that saves <!-- br:savings.autoVsBaselinePct -->84<!-- /br:savings.autoVsBaselinePct -->% on inference costs by forwarding each request to the blockrun.ai gateway, which picks the cheapest model capable of handling it across <!-- br:models.chatVisible -->88<!-- /br:models.chatVisible --> models from 9 providers (<!-- br:models.free -->7<!-- /br:models.free --> free open-weight models). All billing flows through one BlockRun credential — either a USDC wallet paying x402 per call, or a BlockRun API key drawing on card-funded account credit. Either way you do not hold provider API keys.
+Hosted-gateway LLM router that saves <!-- br:savings.autoVsBaselinePct -->84<!-- /br:savings.autoVsBaselinePct -->% on inference costs by forwarding each request to the blockrun.ai gateway, which picks the cheapest model capable of handling it across <!-- br:models.chatVisible -->90<!-- /br:models.chatVisible --> models from 9 providers (<!-- br:models.free -->7<!-- /br:models.free --> free open-weight models). All billing flows through one BlockRun credential — either a USDC wallet paying x402 per call, or a BlockRun API key drawing on card-funded account credit. Either way you do not hold provider API keys.
 
 **This is not a local-inference tool.** ClawRouter is a thin local proxy. Your prompts are sent over HTTPS to the blockrun.ai gateway for model execution. If your workload requires inference that never leaves your machine, use a local runtime like Ollama — ClawRouter is not the right tool for that use case.
 
@@ -132,14 +125,14 @@ Routing is done locally by [`@blockrun/router-core`](https://github.com/BlockRun
 
 Curated primaries on the default `auto` profile:
 
-- **SIMPLE** — factual lookups, greetings, translations → gemini-2.5-flash ($0.30/$2.50)
-- **MEDIUM** — summaries, explanations, data extraction → kimi-k2.7 ($0.95/$4.00)
-- **COMPLEX** — code generation, multi-step analysis → gemini-3.1-pro ($2/$12)
-- **REASONING** — proofs, formal logic, multi-step math → grok-4-1-fast-reasoning ($0.20/$0.50)
+- **SIMPLE** — factual lookups, greetings, translations → gemini-2.5-flash
+- **MEDIUM** — summaries, explanations, data extraction → kimi-k2.7
+- **COMPLEX** — code generation, multi-step analysis → gemini-3.1-pro
+- **REASONING** — proofs, formal logic, multi-step math → grok-4-1-fast-reasoning
 
 Turns that actually need their attached tools switch to agent-tuned tiers (gpt-4o-mini → kimi-k2.7 → claude-sonnet-4.6). `eco` opens on the free tier (nemotron-3.5-lightning); `premium` climbs to gpt-5.3-codex / claude-fable-5 / claude-sonnet-4.6. Full chains: [docs/routing-profiles.md](../../docs/routing-profiles.md).
 
-Prices are per 1M input/output tokens. Per-tier
+Per-tier
 savings percentages are deliberately not quoted here: the published figure is
 blended across a stated workload mix, and a per-tier number invites comparing
 it against a baseline nobody wrote down. See
@@ -147,7 +140,34 @@ it against a baseline nobody wrote down. See
 
 ## Available Models
 
-<!-- br:models.chatVisible -->88<!-- /br:models.chatVisible --> models including: gpt-6-astra [GPT-6 flagship, 1M ctx], gpt-6-sol, gpt-6-luna [fast, $0.10/$0.50], gpt-5.6-terra [balanced, stable default], gpt-5.6-sol [flagship], gpt-5.6-luna [cost-efficient], gpt-5.6-sol/terra/luna-pro [pro reasoning tiers], gpt-5.5, gpt-5.5-pro [max compute], chat-latest [ChatGPT Instant], gpt-5.4, gpt-5.1, gpt-4o, o3, claude-fable-5.1, claude-fable-5, claude-opus-5.5 [newest Opus, $4/$20], claude-opus-5 [1M ctx], claude-opus-4.8, claude-opus-4.7, claude-opus-4.5, claude-sonnet-5.5, claude-sonnet-5, claude-sonnet-4.6, gemini-3.1-pro, gemini-3.6-flash, gemini-3.5-flash-lite, gemini-2.5-flash, deepseek-v4-pro, deepseek-chat, grok-4.7, grok-4.6, grok-4.5, grok-4.3, grok-build-0.1, glm-5.3 [Z.AI flagship, 1M ctx], glm-5.3-flash [natively multimodal, 1M ctx — $0.15/$0.50], glm-5.2, minimax-m3, kimi-k3 [1M ctx flagship], kimi-k2.7, qwen3.7-max [Qwen flagship, 1M ctx], qwen3.7-plus, qwen3.7-flash, mimo [Xiaomi MiMo-V2.5 Pro, 1M ctx], and <!-- br:models.free -->7<!-- /br:models.free --> free open-weight models (nemotron-3.5-lightning [1M ctx, thinking mode — the free default], nemotron-3-ultra-550b [550B/55B MoE, 1M ctx — the largest free model], nemotron-3-nano-omni-30b-a3b-reasoning [256K ctx], llama-3.2-11b-vision [Meta Llama], north-mini-code [Cohere, coding, sub-second], laguna-xs-2.1 [Poolside, coding, ~161 tok/s]). The free tier is text-only — image turns route to a paid vision model, because the two free models the catalogs advertise as vision-capable fail a solid-colour probe on both chains and do so with an HTTP 200.
+<!-- br:models.chatVisible -->90<!-- /br:models.chatVisible --> models including: gpt-6-astra [GPT-6 flagship, 1M ctx], gpt-6-sol, gpt-6.1-sol [refreshed Sol], gpt-6-luna [fast], gpt-5.6-terra [balanced, stable default], gpt-5.6-sol [flagship], gpt-5.6-luna [cost-efficient], gpt-5.6-sol/terra/luna-pro [pro reasoning tiers], gpt-5.5, gpt-5.5-pro [max compute], chat-latest [ChatGPT Instant], gpt-5.4, gpt-5.1, gpt-4o, o3, claude-fable-5.1, claude-fable-5, claude-opus-5.5 [newest Opus], claude-opus-5 [1M ctx], claude-opus-4.8, claude-opus-4.7, claude-opus-4.5, claude-sonnet-5.5, claude-sonnet-5, claude-sonnet-4.6, gemini-3.1-pro, gemini-3.6-flash, gemini-3.5-flash-lite, gemini-2.5-flash, deepseek-v4-pro, deepseek-chat, grok-4.7, grok-4.6, grok-4.5, grok-4.3, grok-build-0.1, glm-5.3 [Z.AI flagship, 1M ctx], glm-5.3-flash [natively multimodal, 1M ctx], glm-5.2, minimax-m3, kimi-k3 [1M ctx flagship], kimi-k2.7, qwen3.8-max [Qwen 3.8 flagship, 1M ctx], qwen3.7-max, qwen3.7-plus, qwen3.7-flash, mimo [Xiaomi MiMo-V2.5 Pro, 1M ctx], mistral-large-4 [Mistral flagship, 512K ctx, vision], hy4-preview [Tencent, 770B MoE], laguna-s-2.1 [Poolside, coding], and <!-- br:models.free -->7<!-- /br:models.free --> free open-weight models (nemotron-3.5-lightning [1M ctx, thinking mode — the free default], nemotron-3-ultra-550b [550B/55B MoE, 1M ctx — the largest free model], nemotron-3-nano-omni-30b-a3b-reasoning [256K ctx], llama-3.2-11b-vision [Meta Llama], north-mini-code [Cohere, coding, sub-second], laguna-xs-2.1 [Poolside, coding, ~161 tok/s], muse-glimmer-30b [Meta Muse, reasoning]). The free tier is text-only — image turns route to a paid vision model, because the two free models the catalogs advertise as vision-capable fail a solid-colour probe on both chains and do so with an HTTP 200.
+
+## Model Prices — Look Them Up Live
+
+Model prices move (vendors reprice, promos end), so this skill carries no model price table. Read the live catalog before you budget a call:
+
+```bash
+curl -s https://blockrun.ai/api/v1/models       # Base
+curl -s https://sol.blockrun.ai/api/v1/models   # Solana
+```
+
+Each entry in `data[]` has an `id`, a `billing_mode` and a `pricing` object. All amounts are USD.
+
+| `billing_mode`   | `pricing` fields                                                                                       | Estimated cost of one call                                                                                     |
+| ---------------- | ------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------- |
+| `paid` (chat)    | `input`, `output` per 1M tokens; optional `cache_read` / `cache_write` per 1M; optional `long_context` | `(input_tokens × input + output_tokens × output) / 1,000,000`, minimum $0.001, plus the $0.001 transaction fee |
+| `free`           | `input: 0`, `output: 0`                                                                                | $0 — no payment                                                                                                |
+| `per_image`      | `per_image`, `transaction_fee`                                                                         | `per_image × images + transaction_fee`                                                                         |
+| `per_second`     | `per_second`, `per_call_surcharge`, `transaction_fee`, `default_duration_seconds`                      | `per_second × seconds + per_call_surcharge + transaction_fee`                                                  |
+| `per_track`      | `per_track`, `transaction_fee`                                                                         | `per_track + transaction_fee`                                                                                  |
+| `per_character`  | `per_1k_chars`, `transaction_fee`                                                                      | `per_1k_chars × characters / 1,000 + transaction_fee`                                                          |
+| `per_generation` | `per_generation`, `transaction_fee`                                                                    | `per_generation + transaction_fee`                                                                             |
+
+- **Cached prompt tokens** bill at `cache_read` instead of `input` (and cache writes at `cache_write`) when the model lists them.
+- **`long_context`** is a list of tiers. When the prompt is larger than a tier's `threshold` (or equal to it, if `inclusive` is true), that tier's `input` / `output` / `cache_*` rates apply to the **whole** request.
+- Image size/quality and video resolution can raise the media price above the listed base rate.
+- The figure above is an estimate. The exact amount is quoted in the HTTP 402 challenge before anything is signed, so a call never settles above its quote.
+- Human-readable rate card: https://blockrun.ai/pricing
 
 ## Built-in Agent Tools
 
@@ -168,11 +188,11 @@ Realtime prices and historical OHLC across every asset class. The agent should c
 
 ### Image & Video Generation
 
-| Tool                        | Purpose                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | Price                                                               |
-| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------- |
-| `blockrun_image_generation` | 12 image models — GPT Image 1/2/2.5 (Flare, Sunburst), Nano Banana / 2 / Pro, Seedream 5 Pro, Grok Imagine / 2.0 / Pro, CogView-4                                                                                                                                                                                                                                                                                                                                                                                                                            | $0.015–$0.15 / image                                                |
-| `blockrun_image_edit`       | Edit / inpaint existing image (GPT Image 1/2, 2.5 Sunburst, Nano Banana; `model` param)                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | $0.02–$0.04 / image                                                 |
-| `blockrun_video_generation` | Grok Imagine + ByteDance Seedance (1.5-pro / 2.0-fast / 2.0) at 720p with synced audio (t2v default), 5–10s, + OpenAI Sora 2 via Azure (`azure/sora-2`, 4/8/12s, t2v + i2v, rejects human faces in reference images). Seedance is token-priced upstream (~20,256 tokens/sec at the 720p+audio default — 2× the prior 480p rate); `image_url` (image-to-video) costs the same as t2v since 2026-06-01. Seedance 2.0 variants accept optional `real_face_asset_id` (`ta_…`) for BytePlus RealFace character-consistency — mutually exclusive with `image_url`. | $0.05/s (Grok); $0.10/s (Sora 2); Seedance ~$0.46–$1.49 per 5s clip |
+| Tool                        | Purpose                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | Price                                                            |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------- |
+| `blockrun_image_generation` | 12 image models — GPT Image 1/2/2.5 (Flare, Sunburst), Nano Banana / 2 / Pro, Seedream 5 Pro, Grok Imagine / 2.0 / Pro, CogView-4                                                                                                                                                                                                                                                                                                                                                                                                                            | per model — see [Model Prices](#model-prices--look-them-up-live) |
+| `blockrun_image_edit`       | Edit / inpaint existing image (GPT Image 1/2, 2.5 Sunburst, Nano Banana; `model` param)                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | per model — see [Model Prices](#model-prices--look-them-up-live) |
+| `blockrun_video_generation` | Grok Imagine + ByteDance Seedance (1.5-pro / 2.0-fast / 2.0) at 720p with synced audio (t2v default), 5–10s, + OpenAI Sora 2 via Azure (`azure/sora-2`, 4/8/12s, t2v + i2v, rejects human faces in reference images). Seedance is token-priced upstream (~20,256 tokens/sec at the 720p+audio default — 2× the prior 480p rate); `image_url` (image-to-video) costs the same as t2v since 2026-06-01. Seedance 2.0 variants accept optional `real_face_asset_id` (`ta_…`) for BytePlus RealFace character-consistency — mutually exclusive with `image_url`. | per model — see [Model Prices](#model-prices--look-them-up-live) |
 
 ### Phone & Voice (Twilio + Bland.ai)
 
@@ -237,16 +257,6 @@ egress by default, so it works out of the box in geoblocked regions).
   bootstraps everything from your wallet. Discover token IDs with the
   `blockrun_predexon_*` data tools first. See the **`polymarket-trading` skill**
   for the golden rules and end-to-end flow.
-
-### Crypto Data (Surf) — skill-only integration
-
-Surf is a unified crypto data API with **84 endpoints across 13 domains**: CEX/DEX markets, on-chain SQL over 80+ ClickHouse tables (Ethereum, Base, Arbitrum, BSC, TRON, HyperEVM, Tempo), 100M+ labeled wallets, prediction markets (Polymarket + Kalshi), social/CT mindshare, news, project/DeFi metrics, token analytics, unified search, VC fund intelligence. The killer feature is `POST /surf/onchain/sql` — ad-hoc SELECT against the warehouse, no indexer required.
-
-**ClawRouter ships Surf as a skill, not as typed wrappers.** The base proxy whitelists `/v1/surf/*` so any call through `http://127.0.0.1:8402/v1/surf/...` flows through the same x402 wallet that pays for LLM calls. The endpoint catalog, parameter shapes, and example flows live in the dedicated **`surf` skill** — Claude Code (or any agent) reads that skill on demand and crafts the HTTP call itself. No `blockrun_surf_*` tool definitions to maintain, no release of ClawRouter when Surf adds endpoint #85.
-
-Pricing tiers (per call, settled in USDC directly to Surf's Base treasury): **$0.001** prices/rankings/lists/news · **$0.005** orderbooks/candles/search/wallet details/social · **$0.02** on-chain SQL/query/schema, chat completions. No monthly minimums, no Surf account, no API key. See the `surf` skill for the full endpoint reference.
-
-This is the pattern for new BlockRun-marketplace APIs going forward: base proxy whitelists the namespace, a dedicated skill documents the surface — no hand-coded tool wrappers per endpoint.
 
 ## Example Output
 

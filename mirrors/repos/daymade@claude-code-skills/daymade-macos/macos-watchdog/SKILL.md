@@ -25,6 +25,7 @@ stand down without waiting for a human to disable it.
 | Installing, upgrading, reusing or starting a persistent Python job | § Persistent Python runtime |
 | An existing watchdog misbehaves (spam, re-launches apps, hammers) | § The quiet-watchdog contract, diagnose which clause it violates |
 | Stopping / disabling / restarting a job | § Stop semantics |
+| Retiring a job and its tool permanently | § Stop semantics → Decommissioning a job permanently |
 | plist key details (KeepAlive forms, domains, logging, resource limits) | `references/launchd-plist-reference.md` |
 | Choosing between event-driven and periodic for a source of truth | `references/event-driven-observers.md` § Select event vs periodic |
 | Deploying / accepting an event-driven observer (WatchPaths, FSEvents, inotify-style) | `references/event-driven-observers.md` § Deployment SOP and § Acceptance SOP |
@@ -85,12 +86,14 @@ Verify the completed business round separately from registration or process stat
 
 1. **Location**: user agent → `~/Library/LaunchAgents/` (GUI session context: can `open` apps, show notifications); system daemon → `/Library/LaunchDaemons/` (root, no GUI access). Choose by whether the job needs the user's GUI session, not by habit.
 2. **plist**: for periodic jobs start from `assets/launchagent.template.plist`; for event jobs follow `references/event-driven-observers.md` and its plist reference. Validate with `plutil -lint`. `ProgramArguments` element 0 = absolute path; never rely on shell PATH inheritance.
-3. **Load/reload**: before replacing or stopping an existing job, apply the ownership, active-work and pending-intent checks in `references/event-driven-observers.md` § Deployment SOP. For an authorized idle job, load with `launchctl bootstrap gui/$(id -u) <plist>`; after a plist edit, `bootout` then `bootstrap`. Request one run of an idle owned job with `launchctl kickstart gui/$(id -u)/<label>`; `-k` terminates an existing instance and is not a routine test.
+3. **Load/reload**: before replacing or stopping an existing job, apply the ownership, active-work and pending-intent checks in `references/event-driven-observers.md` § Deployment SOP. For an authorized idle job, load with `launchctl bootstrap gui/$(id -u) <plist>`; after a plist edit, `bootout` then `bootstrap`. Request one run of an idle owned job with `launchctl kickstart gui/$(id -u)/<label>`; `-k` terminates an existing instance and is not a routine test. **`kickstart -k` on an instantly-exiting job is a throttle trap, not a latency probe**: the kill+respawn collides with the 10 s `ThrottleInterval`, producing `spawn failed, error=89 (ECANCELED)` and respawns on 10.01–10.03 s beats, so the call blocks ~11–20 s. Measured 2026-10-20: 108/110 gaps at 10.01–10.03 s while plain `kickstart` returned sub-second. Do not read that blocking as launchd congestion.
 4. **Logs**: `StandardOutPath`/`StandardErrorPath` are non-negotiable (without them failures vanish), plus in-script log rotation (cap ~1 MB).
 5. **Idempotency guard**: re-running your deploy must not double-install. For periodic jobs only, use `scripts/new-launchagent.sh <label> <script> <interval>` after the replacement checks above; it can boot out a loaded job. For event jobs use the event SOP. In both cases, verify loaded configuration through the native helper and completed work separately.
 6. **TCC / Full Disk Access**: a LaunchAgent reading protected files needs a working grant for its effective permission subject. Use `macos-permissions` to inspect TCC attribution and verify a protected read from the actual job; the shell's interpreter path alone does not decide this.
 7. **Batch throttling by default**: any watchdog loop that spawns work (replays, fuzz, batch scans, parallel API calls) needs an explicit rate cap as a default parameter, not a later optimization. To the machine, an unthrottled loop and a runaway process are indistinguishable (real case: an unthrottled test replay forked 1,041 processes/sec for 7 minutes and pushed the die to 83 °C).
 8. **Browser side-effect acceptance**: a successful data fetch alone does not prove a browser-backed watchdog is ready. The deploying operator must declare a budget for task-owned spaces and pages, then independently inventory them across multiple rounds, including injected initialization and cleanup failures. Counts must stay within that lifecycle budget; protect user-owned and unknown-origin pages throughout. If the task requires no focus stealing, independently observe the foreground app and visible windows during those rounds; CDP success is not focus evidence. For ego lite lifecycle, locking, ownership conflicts and cleanup readback, load the named Skill `ego-lite-use` when installed. Otherwise use the owning browser tool's documented lifecycle while meeting the same budget and readback requirements. Missing resource observations, or missing focus observations when no focus stealing is required, leave acceptance incomplete.
+9. **Sub-minute `StartInterval` is a BTM transition tax — prefer a `KeepAlive` loop for high-frequency probes.** Every periodic firing costs two launchd job state transitions (running + exited), and `backgroundtaskmanagementd` converts each into a store write plus a 250 ms-coalesced distributed `userDataDidChange` broadcast that drives LoginItems.appex full monitor rebuilds — the amplifier behind the 2026-10-06/10-17 watchdog panics. Three 30 s jobs alone cost ~16,200 transitions/day. A persistent job running an in-process loop (period = max(interval, runtime+1s)) keeps the cadence with zero steady-state transitions. Measured effect of converting the three biggest offenders: BTM-triggering monitor updates 0.45/s → ~0.20/s.
+10. **macOS zeroes `XPC_SERVICE_NAME` for spawned children — identity guards break when you wrap the probe.** A launchd job process reads its own label, but every child it spawns (bash/sh/python) reads `XPC_SERVICE_NAME=0`, and `export` does not survive `exec` (measured on 27.0.1 with a dedicated probe job). A script whose guard is `[ "$XPC_SERVICE_NAME" = <label> ]` passes only when the script IS the job process. Wrap it in a loop/driver and the probe becomes a grandchild: the guard rejects 100% of iterations while `launchctl` shows `state=running` — one collector produced zero rows for 75 minutes. Pass identity through a different variable the driver sets (e.g. `<PROJECT>_CALLER_LABEL` via argv) and have the guard accept it as an alternative; direct execution stays refused because neither variable is set in a human shell.
 
 ### Persistent Python runtime
 
@@ -152,6 +155,40 @@ Use `bootstrap`/`bootout` instead of deprecated `load`/`unload`. When a job
 must remain disabled across later loads, apply `disable`; stopping an instance
 alone does not establish that persistent override.
 
+A temporary job that stays loaded keeps paying the § Deploy-9 transition tax
+(its every firing still feeds BTM broadcasts). When the task it served is
+done, `disable` it — do not leave a dead-purpose periodic job running because
+stopping it felt irreversible: `disable` is fully reversible (`enable` +
+`bootstrap`), and the plist can stay on disk as the re-enable path.
+
+### Decommissioning a job permanently
+
+Retiring a job's whole line (job + plist + tool) is a different operation from
+stopping one, and it is safe to be thorough: every step except the last is
+recoverable.
+
+1. **Stop and capture.** `bootout` a loaded job; an already-disabled idle job
+   has nothing running. Read the plist once (`plutil -p`) and keep its content
+   in the session record — it names the tool path, log paths, and schedule you
+   are about to remove.
+2. **Remove the plist** from `~/Library/LaunchAgents/`. A leftover
+   `launchctl disable` override for the label is inert once the plist is gone;
+   do not chase it.
+3. **Prove zero references before deleting the tool**: grep the owning repo
+   for the label and the tool name. Hits confined to the tool's own directory
+   mean nothing imports, schedules, or documents it.
+4. **Delete the tool through the repo's normal PR flow** — git history is the
+   backup. After the merge lands, remove regenerable residue (`__pycache__`)
+   from the checkout.
+5. **Keep the data/log directory by default** (wherever the plist pointed,
+   e.g. `~/.local/share/<tool>/`): it is small, it holds the config a revival
+   would need, and deleting it is the only irreversible step — offer it
+   explicitly instead of cleaning silently.
+
+Measured 2026-10-20 (wechat-print retirement): an every-minute
+`StartCalendarInterval` job had cost 2,880 launchd transitions/day of
+§ Deploy-9 BTM tax while emitting nothing but failure logs for six days.
+
 ## Troubleshooting quick map
 
 | Symptom | First check |
@@ -162,6 +199,7 @@ alone does not establish that persistent override.
 | "bootout didn't stick / it came back" | Confirm the exact domain/service target and who bootstrapped it again; for a persistent stop follow § Stop semantics |
 | Silent no-runs | `StandardErrorPath` missing → failures invisible; then `log show --predicate 'process == "launchd"' --last 15m` |
 | "log mtime is fresh" but the job is actually failing | out.log all-green is **not** health — a failed pass may write nothing (`set -e` + prints-verified-only-on-success), so the last-success timestamp stays fresh forever. Judge the **failure** path (err.log / last-exit status), not success-side freshness (Pattern 7) |
+| After `bootout`+`bootstrap`, "the data file has a recent row" is not proof the new job works | The OLD job's final row can land inside your freshness window (real case 2026-10-20: a probe conversion passed a 75 s freshness check while the new job's every iteration was rejected by its identity guard for 75 min). Anchor verification to the NEW job: rows timestamped after the new PID's start, or per-iteration status rows; `state=running` never proves the collector writes |
 | Works interactively, fails under launchd | TCC/FDA on the wrong interpreter; PATH assumptions in `ProgramArguments` |
 | Observation becomes slower as history grows | Audit cold, warm and delta work using `references/probe-cost.md`; caching bytes does not bound parsing or queries |
 

@@ -1,7 +1,7 @@
 ---
 title: Code style and idioms
 applicability:
-- When the work writes or changes source code
+- When the work writes or changes source code the project maintains
 x-claim-provenance:
 - claim: Consistency within a project matters more than consistency with a general style guide, and consistency within one module or function matters most; consistency with surrounding code that also breaks a guideline, and compatibility with older language versions that lack a recommended feature, are reasons to depart from the guideline.
   source: https://peps.python.org/pep-0008/#a-foolish-consistency-is-the-hobgoblin-of-little-minds

@@ -2,6 +2,15 @@
 
 This changelog summarizes significant changes to the installable skill.
 
+## [2.4.0](https://github.com/Khojasteh/degardis-skills/releases/download/skills-2026-10-20/degardis-authoring.zip) - 2026-10-20
+
+Degardis Authoring 2.4 fixes a reported problem everywhere its cause can reach, not only in the part of the skill where it was reported, and a review of fixes checks the same reach. Guide and principle conditions are now tested from both sides, so a page reaches the runs that need it and not the runs it changes nothing for. A nested guide is also listed on a task when a run of that task can need it without its parent.
+
+- When a requester's account, a report, or a finding describes what went wrong or what is wanted, the agent finds every path in the source whose reader can meet the same cause. It writes the point wide enough for every case that shares the cause on all of those paths. Before keeping it, the agent tests it on a case the account doesn't mention from each such path.
+- A review that verifies changes made to close earlier findings checks that each closed finding is gone at its earliest cause on every path whose reader can meet that cause. Other source the changes didn't touch still stays outside the review unless the requester asks for more.
+- Guide design and Principle design test a condition from both sides. A condition that is also true on runs the page changes nothing for, or at moments where the principle's failure can't happen, is wider than the need and is narrowed to it. A condition that names an activity is the common case. The house-style example now shows such a condition failing both ways: it misses other work that produces a publishable draft, and it applies to a private draft nobody will publish.
+- Whether a task also lists a nested guide now depends on whether a run of that task can meet the nested guide's condition while its parent's condition is false. If no run can, as when the parent's condition covers the nested one's, the guide stays nested, because a task link would only give every run one more condition to assess. If a run can, the task lists the guide too, and a guide that can't be understood without its parent names the parent among its requirements.
+
 ## [2.3.0](https://github.com/Khojasteh/degardis-skills/releases/download/skills-2026-10-14/degardis-authoring.zip) - 2026-10-14
 
 Degardis Authoring 2.3 reduces evaluation cost by using fewer trials and cheaper checks that can answer the same questions. New and revised skills get a final check for missing decisions, conflicting instructions, and cases an agent can't follow. Explanations answer the full question asked. Large jobs can continue in a fresh session with a clear account of what's finished and what remains.

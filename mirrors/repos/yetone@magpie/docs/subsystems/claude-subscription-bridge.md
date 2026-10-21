@@ -422,6 +422,57 @@ A client that drops the images' message without adding text to a result
 goes on only when that message held images alone, no text. A tool result of an image alone (pi-ai's "(see attached image)")
 whose text is replaced by the line is not this shape, and starts anew.
 
+## How many Claude Code processes run (`claudeRoom`, #2956)
+
+Every Claude Code magpie starts for a Claude subscription takes a place in
+`claudeRoom` (`claude_room.go`) before it starts, and frees it once its
+process has exited: each conversation's run (`startRun`), busy, idle or
+parked on tool results, and each one-off test, warm-up and /usage read
+(`runClaudeTree`). Nothing bounded them before. Claude Code 2.1.303 holds
+about 205 MiB RSS idle on Linux arm64, 86–112 MiB of it its own, and a
+512 MiB systemd service had 2 busy runs and 14 starting at once when the
+kernel's OOM killer ended them. In Docker under a 512 MiB memory cgroup,
+six idle runs were enough for two OOM kills.
+
+How many may run (`claudeRunsMost`):
+
+- the user's `claudeRunsMost` in settings.json, set with
+  `magpie claude-code runs N` (`auto` clears it). It is this machine's own
+  setting (`KeepOwn`): a sync never brings a desktop's number to a server.
+- otherwise, on Linux, `(limit − 256 MiB) / 128 MiB`, at least 1, where
+  the limit is the least of MemTotal, the cgroup v2 `memory.max` and
+  `memory.high` of magpie's cgroup and every one above it, and the cgroup v1
+  `memory.limit_in_bytes` (`memLimit`). 512 MiB gives 2, 1 GiB 6, a 964 MiB
+  machine with no cgroup limit 5. It is read once per process.
+- otherwise no bound: macOS, Windows, and a Linux whose limits can't be
+  read. A limit not known is not a small one.
+
+An ask that finds no room (`take`):
+
+1. lets go of the run idle longest, of any bridge. Its session is shelved,
+   as a run pushed past `idleMost` is, so its conversation's next turn
+   resumes it (`--resume`) and is told only the new messages.
+2. otherwise lets go of the run parked longest on tool results, once it has
+   waited `parkLongest`. Busy runs, and runs waiting on tool calls made
+   recently, are never let go.
+3. otherwise waits for one to end: woken when a process exits or a run
+   goes idle (`nudge`), and it looks again every `roomLook` (5s) for a
+   parked run that has come to wait `parkLongest`.
+
+A run being ended counts as `leaving`, so several waiting asks don't each
+let one go for the same room. After `claudeRoomWait` (2 minutes), or once
+the request's context ends, the ask gives up. A conversation's turn is
+answered 503 with "N Claude Code processes are running, as many as may run
+at once (why); none ended within …" and how to set the number. `start`
+doesn't retry without the saved session after such an error. A /usage read
+returns it as its error.
+
+Routing treats that 503 (`claudeNoRoom`) as a protected failure. No
+account is rested, no other Claude account is asked next (each would wait
+for the same room), and the request isn't tried again after a moment. A
+member of the group at another provider answers it. Alone, the client gets
+the 503.
+
 ## Files a run leaves
 
 - Its session: `<config>/projects/<work project>/<session>.jsonl`, for
@@ -548,6 +599,9 @@ go test -tags nogui ./internal/gateway/ -run '^TestClaudeCodeGivenTheBridgeForAS
 go test -tags nogui ./internal/provider/ -run '^TestClaudeSignInBridgesASOCKSProxy$' -count=1
 go test -tags nogui ./internal/netproxy/ -run '^TestEnvForBunWith' -count=1
 go test -tags nogui ./internal/gateway/ -run '^TestClaudeToolNamesComeBackAsDeclared$' -count=1
+go test -tags nogui ./internal/gateway/ -run 'TestClaudeRunsHeldToTheRoom|TestClaudeRoom|TestClaudeOneOffsTakeRoom|TestClaudeMemRuns|TestClaudeRunsMost|TestClaudeNoRoom' -count=1
+go test -tags nogui ./internal/cli/ -run '^TestClaudeCodeRunsSetsTheUsersOwn$' -count=1
+go test -tags nogui ./internal/settings/ -run '^TestClaudeRunsMostIsMachineLocal$' -count=1
 go test -tags nogui ./internal/gateway/ -run 'ClaudeSubscriptionRunsTheDownloaded|ClaudeSubscriptionWithoutClaudeCode|ClaudeRewritten|LostMedia|ImagesTakenOut|RunLetGoWhenTheClientRewrote|ClaudeSessionTempFiles|ClaudeLetGo|ClaudeSessionFiles|ClaudeOldSessions|ClaudeSubscriptionReplySaysTheAllowance|ClaudeAllowanceHeaders|ClaudeForksAnsweringTheLeadsCalls|ClaudeTurnGivenUpOn|ClaudeToolResultsGivenUpOn|ClaudePromptMarksEarlierTurns|ClaudeHistoryCachedAcrossNewRuns|ClaudeUnloadableSession|ClaudeEndedRunSaysWhy|ClaudeIdle|ClaudeSideQuestion|ClaudeNoRunSaysWhy|ClaudeToolResultsNoRunSaysWhy|ClaudePromptToldUserText|ClaudePromptKeepsInstructions|ClaudeToolResultsGoOnWithTheUsersWords|ClaudeToolResultsKeepInstructions|ToolResultKeepsUserTextSentMidTurn' -count=1
 ```
 

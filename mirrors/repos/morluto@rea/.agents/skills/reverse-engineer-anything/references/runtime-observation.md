@@ -69,6 +69,12 @@ with `inspect_analysis_view` and `view: {kind: "capture", detail: "preview", off
 Select complete record pages only for needed headers, metadata or payloads; views
 read the historical parent without repeating capture decoding.
 
+For selected protobuf/gRPC bodies, keep raw bytes as the source and use
+`inspect_analysis_view` kind `protobuf`, collection `bodies`, `frames` or
+`fields`. Batch exact record ordinals and field numbers/IDs, and select
+`schema_value` or `text` only when needed. Supply a local descriptor set and
+message type for schema interpretation; compressed payloads remain unknown.
+
 Inspect native `.saz` snapshots with `inspect_web_network_capture` and
 `format: "saz"`; encrypted archives are unsupported. For live
 traffic analysis, connect Everywhere's separate MCP server and use its

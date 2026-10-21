@@ -249,6 +249,7 @@ npx rea-agents@latest setup
 
 - [نصب و راه‌اندازی](../installation.md): ثبت ایجنت، پیکربندی ارائه‌دهنده، به‌روزرسانی و حذف نصب.
 - [آمادگی و رفع اشکال](../installation.md#check-readiness-for-your-task): عیب‌یابی یک ایجنت یا موتور تحلیل.
+- [GGUF / safetensors](../model-artifacts.md)
 - [CLI و شواهد](../cli.md): دستورات، انتخاب ارائه‌دهنده، snapshotها، ورود/خروج داده و وضعیت‌های خروج.
 - [قراردادهای MCP](../mcp-contracts.md) و [پرامپت‌های ایجنت](../mcp-prompts.md): نتایج ابزارها، نشست‌ها و بررسی‌های هدایت‌شده.
 - [فهرست ابزارها](../mcp-contracts.md#generated-catalog): فهرست تولیدشده هنگام build از ابزارها، ارائه‌دهندگان و دستورات CLI.

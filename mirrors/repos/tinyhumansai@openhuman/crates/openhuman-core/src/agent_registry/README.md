@@ -60,11 +60,12 @@ the harness runs come from [`agents/`](agents/) below.
 
 Each built-in agent owns a subfolder with an `agent.toml` (id, `when_to_use`,
 model, tool scope, sandbox mode, iteration cap, tier, `omit_*` flags, parsed
-through `tinyagents_definition::parse_str` into `AgentDefinition`), a
-`prompt.md` holding the static archetype body, and a `prompt.rs` that
-`include_str!`s that body and exposes
-`pub fn build(&PromptContext) -> anyhow::Result<String>`, appending
-runtime-dependent sections (rendered tool list, workspace) to it.
+through `tinyagents_definition::parse_str` into `AgentDefinition`), and a
+`prompt.rs` that exposes `pub fn build(&PromptContext) -> anyhow::Result<String>`.
+Most builders include their archetype from a sibling `prompt.md`; the two flow
+builders receive their archetype text from TinyFlows Copilot through an
+explicit prompt context value. Builders append runtime-dependent sections such
+as the rendered tool list and workspace to that archetype.
 Every archetype uses the shared sub-agent turn graph.
 
 [`agents/loader.rs`](agents/loader.rs) owns the `BUILTINS` slice and
@@ -78,7 +79,7 @@ owner definition crate; unknown subagent ids are tolerated here).
 `BUILTINS` is also the registration point for archetypes that live with
 other domains: `skill_setup`
 ([`skills/catalog/agent/`](../../skills/catalog/agent/), feature `skills`), and
-`workflow_builder` and `flow_discovery` ([`flows/agents/`](../../flows/agents/), feature `flows`).
+`workflow_builder` and `flow_discovery` ([`agents/`](./agents/), feature `flows`).
 Workspace-level overrides (`<workspace_dir>/agents/*.toml`, with a
 `~/.openhuman/agents/` fallback) are loaded separately by
 `tinyagents_definition::DefinitionSet::load_dirs` and replace built-ins on id collision;

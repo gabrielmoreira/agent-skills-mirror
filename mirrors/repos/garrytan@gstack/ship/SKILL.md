@@ -497,6 +497,7 @@ sections. Read a section in full before doing its step; do not work from memory.
 | writing the CHANGELOG entry (Step 13) | `sections/changelog.md` |
 | auditing docs before final commit/verification (Step 14.5), on every ship | `sections/documentation.md` |
 | preparing the title and creating or updating the PR/MR with the verified documentation outcome (Steps 18-19) | `sections/pr-body.md` |
+| Step 19 printed CAPY_PR: on (a Capy session, GSTACK_CAPY=1) — read before composing the PR body | `sections/capy-pr.md` |
 | handing the branch to a coordinator instead of opening a PR (--no-pr or an automation lane; Step 18) | `sections/handoff.md` |
 
 ---

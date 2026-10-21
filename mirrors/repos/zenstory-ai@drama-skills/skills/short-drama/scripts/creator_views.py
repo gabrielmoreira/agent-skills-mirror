@@ -87,12 +87,17 @@ _EPISODE = r"EP(?:[0-9]{3}|[1-9][0-9]{3,})"
 # The same spelling project_tool.py's EPISODE_ID_RE enforces on 剧集/<EP>/.
 EPISODE_ID_RE = re.compile(_EPISODE)
 TITLE_RE = re.compile(r"^# (?:" + _EPISODE + r")?\s*(?:·\s*)?(.*)$")
+# Same heading grammar as the writing stage's index, season prefix included
+# (`S01-EP001-SC001`), so a screenplay the index accepts never drops scenes here.
 SCENE_RE = re.compile(
-    r"^## (?P<scene>" + _EPISODE + r"-SC[0-9]{3}) "
+    r"^## (?P<scene>(?:[A-Za-z0-9]+-)*?" + _EPISODE + r"-SC[0-9]{3}) "
     r"(?P<space>内外|内|外) · (?P<location>\S(?:.*\S)?) · (?P<time>\S(?:.*\S)?)$"
 )
 TAG_RE = re.compile(r"^\[(?P<tag>VO|OS|SFX|画面文字|连续性|转场)\]\s*(?P<body>\S[\s\S]*)$")
-VOICE_BODY_RE = re.compile(r"^(?P<speaker>[^\s：（）:\[\]#]{1,40})：(?P<text>\S[\s\S]*)$")
+VOICE_BODY_RE = re.compile(
+    r"^(?P<speaker>[^\s：（）:\[\]#]{1,40})"
+    r"(?:（(?P<cue>[^（）\r\n]+)）)?：(?P<text>\S[\s\S]*)$"
+)
 DIALOGUE_RE = re.compile(
     r"^(?P<speaker>[^\s：（）:\[\]#]{1,40})"
     r"(?:（(?P<cue>[^（）\r\n]+)）)?：(?P<text>\S[\s\S]*)$"
@@ -171,7 +176,7 @@ def parse_screenplay(text: str) -> dict[str, Any]:
             if voice:
                 current["blocks"].append({
                     "k": "line", "tag": tag.group("tag"), "who": voice.group("speaker"),
-                    "paren": "", "text": voice.group("text").strip(),
+                    "paren": voice.group("cue") or "", "text": voice.group("text").strip(),
                 })
             else:
                 current["blocks"].append({"k": "tag", "tag": tag.group("tag"), "text": body})
@@ -262,6 +267,8 @@ def parse_settings(text: str) -> dict[str, Any]:
 
 SHOT_TITLE_RE = re.compile(r"^## \S+ · (.+)$", re.MULTILINE)
 NOTE_RE = re.compile(r"^> (.+)$", re.MULTILINE)
+BLOCKING_HEADING_RE = re.compile(r"场景站位 · (\S+)(?: · (.+))?")
+BULLET_FIELD_RE = re.compile(r"^- ([^：\n]+)：(.+)$", re.MULTILINE)
 REF_STATES = {
     "t2v": "文生视频（创作者已选择不用图）",
     "pending": "待补参考图",
@@ -346,7 +353,28 @@ def parse_storyboard(text: str) -> dict[str, Any]:
         })
     if not shots:
         raise ValueError("没有找到 `## SHOT-EP001-001 · 标题` 这样的镜头")
-    return {"note": note.group(1).strip() if note else "", "shots": shots}
+    return {
+        "note": note.group(1).strip() if note else "",
+        "blocking": parse_scene_blocking(check._storyboard_head(text)),
+        "shots": shots,
+    }
+
+
+def parse_scene_blocking(head: str) -> list[dict[str, Any]]:
+    """`## 场景站位 · <scene> · <place>` blocks: the staging every shot of a scene inherits."""
+
+    blocks = []
+    for section in re.split(r"(?m)^## ", head)[1:]:
+        heading, _, body = section.partition("\n")
+        match = BLOCKING_HEADING_RE.fullmatch(heading.strip())
+        if not match:
+            continue
+        blocks.append({
+            "scene": match.group(1),
+            "place": (match.group(2) or "").strip(),
+            "rows": [[key.strip(), value.strip()] for key, value in BULLET_FIELD_RE.findall(body)],
+        })
+    return blocks
 
 
 def start_frame(shot: dict[str, Any]) -> Optional[str]:
@@ -398,6 +426,96 @@ def parse_video_prompts(text: str) -> list[dict[str, Any]]:
     if not prompts:
         raise ValueError("没有找到 `## MOTION-… · 标题` 这样的视频提示词条目")
     return prompts
+
+
+def parse_video_groups(text: str) -> list[dict[str, Any]]:
+    """`GROUP-...` delivery groups: one submitted body standing for several MOTIONs."""
+
+    groups = []
+    for group_id, section in check._sections(text, "GROUP").items():
+        fields = check._fields(section, owner=group_id, errors=[])
+        title = SHOT_TITLE_RE.search(section)
+        groups.append({
+            "id": group_id,
+            "n": _number(group_id),
+            "title": title.group(1).strip() if title else "",
+            "members": check._group_members(fields.get("成员", "")),
+            "sec": check._declared_seconds(fields.get("时长", "")) or 0,
+            "prompt": check._copyable_prompt(section) or "",
+        })
+    return groups
+
+
+def usable_groups(
+    text: Optional[str], problems: list[str], documents: Optional[dict[str, Optional[str]]] = None
+) -> list[dict[str, Any]]:
+    """The groups the copy queue may fold their members into.
+
+    The checker runs over the documents in hand; a group stands in for its
+    members only when it reports nothing about the group, its member MOTIONs or
+    their shots. Anything else keeps the members as separate cards with a
+    notice, so a malformed group never hides, reorders or misstates a prompt.
+    """
+    if not text:
+        return []
+    documents = {**(documents or {}), VIDEO_PROMPTS: text}
+    findings = check.validate_documents(
+        {name: documents.get(name) for name in check.REQUIRED_DOCUMENTS}, None, partial=True
+    )
+    motions = check._sections(text, "MOTION")
+    shot_of = {
+        motion_id: check._plain(check._fields(body, owner=motion_id, errors=[]).get("分镜", ""))
+        for motion_id, body in motions.items()
+    }
+    # Findings about the documents as a whole (unpaired shots, repeated
+    # headings) name no entry, yet they can be about any group's members.
+    whole = [
+        finding
+        for finding in findings
+        if finding.startswith(("分镜.md", "视频提示词.md"))
+        and not re.search(r"\b(?:SHOT|MOTION|GROUP)-[A-Z0-9-]+", finding)
+    ]
+    board = documents.get(STORYBOARD)
+    shots = set(check._sections(board, "SHOT")) if board else None
+    ids = re.findall(r"^## (GROUP-[A-Z0-9-]+)\b", text, re.MULTILINE)
+    usable = []
+    for group in parse_video_groups(text):
+        if whole:
+            problems.append(f"{VIDEO_PROMPTS}：{group['id']} 未并入复制队列（{whole[0]}），按逐镜显示")
+            continue
+        # The copy queue follows the MOTION order of this document; a group can
+        # take its members' place only if they sit there consecutively, in order,
+        # whether or not a storyboard is around to say the same.
+        order = list(motions)
+        places = [order.index(m) for m in group["members"] if m in order]
+        if places and len(places) == len(group["members"]) and places != list(
+            range(places[0], places[0] + len(places))
+        ):
+            problems.append(
+                f"{VIDEO_PROMPTS}：{group['id']} 的成员在视频提示词里不相邻或顺序不对，按逐镜显示"
+            )
+            continue
+        unshot = [m for m in group["members"] if shots is not None and shot_of.get(m) not in shots]
+        if unshot:
+            problems.append(
+                f"{VIDEO_PROMPTS}：{group['id']} 的成员 {'、'.join(unshot)} 在分镜里没有对应镜头，按逐镜显示"
+            )
+            continue
+        if ids.count(group["id"]) > 1:
+            problems.append(f"{VIDEO_PROMPTS}：{group['id']} 标题重复，按逐镜显示")
+            continue
+        names = {group["id"], *group["members"], *(shot_of.get(m, "") for m in group["members"])} - {""}
+        about = [
+            finding
+            for finding in findings
+            if any(re.search(rf"(?<![A-Z0-9-]){re.escape(name)}(?![A-Z0-9-])", finding) for name in names)
+        ]
+        if about or not group["members"]:
+            detail = about[0] if about else "没有成员"
+            problems.append(f"{VIDEO_PROMPTS}：{group['id']} 未并入复制队列（{detail}），按逐镜显示")
+            continue
+        usable.append(group)
+    return usable
 
 
 # ------------------------------------------------------------------ cut list
@@ -755,6 +873,19 @@ def read_episode(episode_id: str, documents: dict[str, Optional[str]], review: O
     board = _attempt(problems, STORYBOARD, parse_storyboard, documents.get(STORYBOARD))
     images = _attempt(problems, IMAGE_PROMPTS, parse_image_prompts, documents.get(IMAGE_PROMPTS))
     videos = _attempt(problems, VIDEO_PROMPTS, parse_video_prompts, documents.get(VIDEO_PROMPTS))
+    groups = usable_groups(documents.get(VIDEO_PROMPTS), problems, documents) if videos else []
+    if settings:
+        # `入画` is resolved the way the checker resolves it: every shot whose
+        # 视觉依据 lists the entry. Without a storyboard there are none yet.
+        for item in settings["items"]:
+            lock = item["lock"]
+            if lock and lock["shots"] == [check.IN_FRAME_SCOPE]:
+                lock["scope"] = check.IN_FRAME_SCOPE
+                lock["shots"] = [
+                    shot["id"]
+                    for shot in (board or {}).get("shots", [])
+                    if any(b["cat"] == item["cat"] and b["name"] == item["name"] for b in shot["basis"])
+                ]
     cutlist = _attempt(problems, CUT_LIST, parse_cut_list, documents.get(CUT_LIST))
     parsed_review = _attempt(problems, "审查意见", parse_review, review)
     return {
@@ -765,6 +896,7 @@ def read_episode(episode_id: str, documents: dict[str, Optional[str]], review: O
         "board": board,
         "imagePrompts": images,
         "videoPrompts": videos,
+        "videoGroups": groups,
         "cutlist": cutlist,
         "review": parsed_review,
         "metrics": metrics(script, board),
@@ -810,8 +942,18 @@ def search_entries(episode: dict[str, Any]) -> list[dict[str, Any]]:
     for item in (episode.get("settings") or {}).get("items", []):
         add("设定", item["cat"], item["name"],
             " ".join([*item["desc"], *item["fields"].values(), *item["designators"]]), "settings", item["name"])
+    group_of = {member: group["id"] for group in episode.get("videoGroups") or [] for member in group["members"]}
+    known_shots = {shot["id"] for shot in (episode.get("board") or {}).get("shots", [])}
+    for group in episode.get("videoGroups") or []:
+        add("提示词", group["id"], group["title"], group["prompt"], "prompts", "video", id=group["id"])
     for prompt in episode.get("videoPrompts") or []:
-        add("提示词", prompt["id"], prompt["title"], prompt["prompt"], "prompts", "video", id=prompt["id"])
+        if prompt["id"] in group_of and prompt["shot"] in known_shots:
+            # Its own card is folded into the group's; the shot drawer still shows it.
+            add("提示词", prompt["id"], prompt["title"], prompt["prompt"], "board", prompt["shot"])
+        elif prompt["id"] in group_of:
+            add("提示词", prompt["id"], prompt["title"], prompt["prompt"], "prompts", "video", id=group_of[prompt["id"]])
+        else:
+            add("提示词", prompt["id"], prompt["title"], prompt["prompt"], "prompts", "video", id=prompt["id"])
     for prompt in episode.get("imagePrompts") or []:
         add("提示词", prompt["id"], prompt["title"], prompt["prompt"] + " " + prompt["use"],
             "prompts", "image", id=prompt["id"])

@@ -18,7 +18,8 @@ only selected files. The result and summary record `source_selection`; files
 outside scope and their relationships remain unknown, so partial application
 coverage does not mean the selected source failed. Use repeated `--source-path`
 on either static application CLI route. Omit the selection when the question
-requires complete application analysis. `detail: "summary"` reduces delivery
+requires complete application analysis; `source_paths: []` is invalid, not an
+unfiltered request. `detail: "summary"` reduces delivery
 and does not by itself reduce analysis work.
 
 Exact `#alias` specifiers resolve through the importer's
@@ -35,7 +36,9 @@ the complete application Evidence inline when it fits.
 When the connected schema advertises `max_heap_mb` and `analysis_timeout_ms`,
 these select the isolated source analyzer's old-space heap and per-source
 deadline. Defaults are 1024 MiB and 300000 ms. They do not change the MCP
-process heap. A Bun-hosted REA does not enforce the heap choice; on Windows it
+process heap or the client's tool deadline. For a host timeout without REA
+output, use the [deadline recovery guide](connection-and-recovery.md#distinguish-client-and-server-deadlines)
+instead of raising the server budget. A Bun-hosted REA does not enforce the heap choice; on Windows it
 instead limits the analyzer's committed memory to that choice plus a 512 MiB
 runtime reserve.
 Resource-limited analyses preserve completed static facts and

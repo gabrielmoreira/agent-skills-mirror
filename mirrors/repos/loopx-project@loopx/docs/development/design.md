@@ -81,6 +81,11 @@ Owner-facing state follows four rules:
   "executing", "running") requires an observed active worker, session or turn.
   A stored status, a registration or a count is not activity; unknown stays
   visibly unknown.
+  Aggregate mixed Agent lanes without letting one unreadable lane erase
+  another's observed activity. Distinguish a recent ended turn from execution.
+  Show missing coverage neutrally beside the Goal state, with each affected
+  Agent, host and read failure available through the shared contextual help.
+  A cadence miss is an older observation, not proof of a stopped worker.
 - **Group by responsibility.** Collaboration surfaces place work under the
   member, Agent or owner responsible for it, so one glance shows who is doing
   what and who is blocked. Work with no resolvable owner goes into an explicit
@@ -88,6 +93,11 @@ Owner-facing state follows four rules:
 - **Owner language first.** Primary copy uses the owner's words. Protocol ids,
   gate kinds, preview mechanics and executor profiles belong in a collapsed
   diagnostics disclosure.
+  Generated analysis follows the current interface language, including its
+  questions, explanations and limitations. Pass that language through the
+  analysis owner and cache identity; translating labels alone is insufficient.
+  Switching language is a read, never implicit model execution. Keep original
+  questions and quoted evidence available on demand, identified as originals.
 
 Review realistic populated, quiet, blocked, and unavailable states on desktop
 and mobile. Show before/after views, name what earns attention and what was
@@ -123,6 +133,11 @@ source, method and limitation paragraphs before adding another note.
   readable when the pointer enters it, dismiss with Escape or an outside click,
   fit a narrow viewport, and not trigger the operation it explains. Do not rely
   on a native `title` alone, color alone or hover-only access.
+- After loading a requested source or detail asynchronously, bring the mounted
+  content into view and move keyboard focus there. Opening its parent must not
+  compete for that focus. Closing returns to the exact originating control;
+  a late response after closing or changing scope must not reopen the detail.
+  Check immediate and delayed responses on desktop and narrow screens.
 - Preserve actual unknowns, denominators, negative results and evidence links.
   Reduce explanatory noise without replacing missing evidence with a reassuring
   summary. Keep chart keys that are necessary to decode the marks visible.
@@ -136,6 +151,22 @@ source, method and limitation paragraphs before adding another note.
   per-cell footnotes. On wide screens, use a compact value band so the related
   graph or result remains nearby; reflow on narrower screens. Merge optional
   source, method and cost material into the existing disclosure where practical.
+- In an expanded assessment, make items comparable before asking the owner to
+  read their evidence: one compact row per declared item, with its identity and
+  actual judgment. Show the shared interpretation once on demand. Expand an
+  individual row for its complete question, verbatim rationale and source links;
+  do not repeat a long question template, full rationale and button wall for
+  every item. Apply the same hierarchy to the deep-analysis reader: opening
+  analysis should show comparable episode rows, not expand every evidence
+  section. Show each rationale and its citations once within that episode.
+  Use declared identities rather than extracting guessed labels
+  from prose. Keep unknowns, exclusions and denominators visible at the metric,
+  and preserve keyboard and touch access to the full evidence.
+- When analysis has a successor, show one compact version/change summary and
+  the existing previous-version entry. Keep the new result separate from the
+  last valid result while pending or failed. Put detailed input differences and
+  changed judgments in the same optional disclosure; do not introduce another
+  setup page, repeated methodology paragraphs or automatic model execution.
 
 For example, research metrics can show “19 episodes · purposive sample ·
 uncalibrated” once, with a nearby explanation of yes/eligible counts and unknowns.

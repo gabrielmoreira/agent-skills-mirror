@@ -8,6 +8,8 @@
 
 </p>
 
+<p align="center"><sub>Ajoutez à votre liste de souhaits Steam <a href="https://store.steampowered.com/app/5045950/">Dungeon Sookuma</a>, un jeu en cours de développement par le créateur de sprite-gen avec une partie de ses graphismes conçue avec cet outil.</sub></p>
+
 <p align="center">
   <a href="https://youtu.be/zVu9YlbPtog"><img src="docs/assets/hero-v2-party.gif" width="960" alt="Démonstration animée de sprite-gen v2 : paladin, loup et slime" /></a>
 </p>
@@ -80,7 +82,7 @@ Index complet : [`docs/README.md`](docs/README.md). Architecture avec diagrammes
 - **Un manifeste d'exécution** (`manifest.json.frame_layout`) — rectangles de frames absolus, fps et drapeaux de boucle par état. Votre moteur échantillonne des rectangles ; il ne devine jamais une grille.
 - **Breathe** — une pose idle statique devient une boucle vivante, un squash & stretch déterministe cuit sur vos frames curées à partir d'un seul champ sidecar, respectueux de l'anatomie et fidèle au pixel ([détails](docs/breathing.md)).
 - **Du pixel-art qui reste sur la grille** — le Backbone Lattice mesure une seule grille pour l'ensemble du sujet et y maintient chaque découpe ([détails](docs/pixel-unfake.md)).
-- **Des boucles d'animation issues de la vidéo** — les sauts reçoivent un canvas haut, les attaques un canvas large, le point de boucle est la période propre du clip, et une action one-shot est coupée repos → action → repos ([détails](docs/video-pipeline.md)).
+- **Des boucles d'animation issues de la vidéo** — les sauts reçoivent un canvas haut, les attaques un canvas large, le point de boucle est la période propre du clip, et une action one-shot est coupée repos → action → repos. Les boucles de marche comptent les croisements de pieds pour caler un cycle de deux pas et lisser les raccords ([détails](docs/video-pipeline.md)).
 - **Des variantes de couleurs déterministes** — `recolor` cuit N feuilles variantes à partir d'une palette de correspondance ; même entrée, mêmes octets en sortie ([détails](docs/recolor.md)).
 - **Un QA que vous pouvez regarder** — des GIF et planches contact par état, pour que le mouvement soit jugé en tant que mouvement avant toute livraison. La locomotion cyclique (marche/course) reste expérimentale tant que le QA d'animation n'est pas réellement validé.
 - **Des outils d'assets indépendants** — construisez des fonds répétables, projetez des ombres depuis un point d'ancrage au pied, et inspectez le timing, les poses dupliquées et les preuves de contact. Des pieds ambigus produisent une mesure non vérifiée ([détails](docs/asset-tools.md)).

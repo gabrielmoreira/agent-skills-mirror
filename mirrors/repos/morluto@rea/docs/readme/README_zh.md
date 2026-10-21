@@ -270,6 +270,7 @@ npx rea-agents@latest setup
 
 - [安装与设置](../installation.md)：智能体注册、提供方配置、更新和卸载。
 - [就绪检查与故障排查](../installation.md#check-readiness-for-your-task)：诊断特定智能体或分析引擎。
+- [GGUF / safetensors](../model-artifacts.md)
 - [CLI 与 Evidence](../cli.md)：命令、提供方选择、快照、导入/导出和退出状态。
 - [MCP 契约](../mcp-contracts.md)和[智能体提示词](../mcp-prompts.md)：工具结果、会话和引导式调查。
 - [工具目录](../mcp-contracts.md#generated-catalog)：构建时生成的工具、提供方和 CLI 命令清单。

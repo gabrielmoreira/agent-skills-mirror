@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `plugin87/ux-ui-agent-skills` — 26 default patterns, 0 followed patterns, 34 file(s) materialized.
+Mirror of `plugin87/ux-ui-agent-skills` — 26 default patterns, 0 followed patterns, 35 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `plugin87/ux-ui-agent-skills` — 26 default patterns, 0 followed patt
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 34 |
+| Files         | 35 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -77,22 +77,23 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 16 | ✓ | [`.claude/skills/grill-me/SKILL.md`](.claude/skills/grill-me/SKILL.md) |
 | 17 | ✓ | [`.claude/skills/image-to-code/SKILL.md`](.claude/skills/image-to-code/SKILL.md) |
 | 18 | ✓ | [`.claude/skills/migrate-design-system/SKILL.md`](.claude/skills/migrate-design-system/SKILL.md) |
-| 19 | ✓ | [`.claude/skills/performance/SKILL.md`](.claude/skills/performance/SKILL.md) |
-| 20 | ✓ | [`.claude/skills/prototype/SKILL.md`](.claude/skills/prototype/SKILL.md) |
-| 21 | ✓ | [`.claude/skills/redesign/SKILL.md`](.claude/skills/redesign/SKILL.md) |
-| 22 | ✓ | [`.claude/skills/scaffold-project/SKILL.md`](.claude/skills/scaffold-project/SKILL.md) |
-| 23 | ✓ | [`.claude/skills/ship/SKILL.md`](.claude/skills/ship/SKILL.md) |
-| 24 | ✓ | [`.claude/skills/token-build/SKILL.md`](.claude/skills/token-build/SKILL.md) |
-| 25 | ✓ | [`.claude/skills/ux-writing/SKILL.md`](.claude/skills/ux-writing/SKILL.md) |
-| 26 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 27 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 28 | ✓ | [`mcp/gates.mjs`](mcp/gates.mjs) |
-| 29 | ✓ | [`mcp/selftest.mjs`](mcp/selftest.mjs) |
-| 30 | ✓ | [`mcp/server.mjs`](mcp/server.mjs) |
-| 31 | ✓ | [`templates/product-design/CLAUDE.md`](templates/product-design/CLAUDE.md) |
-| 32 | ✓ | [`tests/fixtures/bad/bare-paths/.claude/skills/leaky/SKILL.md`](tests/fixtures/bad/bare-paths/.claude/skills/leaky/SKILL.md) |
-| 33 | ✓ | [`tests/fixtures/bad/drifted-agents/AGENTS.md`](tests/fixtures/bad/drifted-agents/AGENTS.md) |
-| 34 | ✓ | [`tests/fixtures/bad/drifted-agents/CLAUDE.md`](tests/fixtures/bad/drifted-agents/CLAUDE.md) |
+| 19 | ✓ | [`.claude/skills/observe/SKILL.md`](.claude/skills/observe/SKILL.md) |
+| 20 | ✓ | [`.claude/skills/performance/SKILL.md`](.claude/skills/performance/SKILL.md) |
+| 21 | ✓ | [`.claude/skills/prototype/SKILL.md`](.claude/skills/prototype/SKILL.md) |
+| 22 | ✓ | [`.claude/skills/redesign/SKILL.md`](.claude/skills/redesign/SKILL.md) |
+| 23 | ✓ | [`.claude/skills/scaffold-project/SKILL.md`](.claude/skills/scaffold-project/SKILL.md) |
+| 24 | ✓ | [`.claude/skills/ship/SKILL.md`](.claude/skills/ship/SKILL.md) |
+| 25 | ✓ | [`.claude/skills/token-build/SKILL.md`](.claude/skills/token-build/SKILL.md) |
+| 26 | ✓ | [`.claude/skills/ux-writing/SKILL.md`](.claude/skills/ux-writing/SKILL.md) |
+| 27 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 28 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 29 | ✓ | [`mcp/gates.mjs`](mcp/gates.mjs) |
+| 30 | ✓ | [`mcp/selftest.mjs`](mcp/selftest.mjs) |
+| 31 | ✓ | [`mcp/server.mjs`](mcp/server.mjs) |
+| 32 | ✓ | [`templates/product-design/CLAUDE.md`](templates/product-design/CLAUDE.md) |
+| 33 | ✓ | [`tests/fixtures/bad/bare-paths/.claude/skills/leaky/SKILL.md`](tests/fixtures/bad/bare-paths/.claude/skills/leaky/SKILL.md) |
+| 34 | ✓ | [`tests/fixtures/bad/drifted-agents/AGENTS.md`](tests/fixtures/bad/drifted-agents/AGENTS.md) |
+| 35 | ✓ | [`tests/fixtures/bad/drifted-agents/CLAUDE.md`](tests/fixtures/bad/drifted-agents/CLAUDE.md) |
 
 ---
 

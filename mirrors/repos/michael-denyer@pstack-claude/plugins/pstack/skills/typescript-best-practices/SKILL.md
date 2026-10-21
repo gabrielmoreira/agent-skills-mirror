@@ -6,6 +6,8 @@ paths: ["**/*.ts", "**/*.tsx"]
 
 # TypeScript best practices
 
+On Muse, read the [platform mapping](../poteto-mode/references/muse-tools.md), including its per-skill notes, before following this skill.
+
 Apply the **type-system-discipline** principle skill first.
 
 | Rule | Summary |

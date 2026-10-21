@@ -34,6 +34,47 @@ answers part of the question, and name the unavailable evidence separately.
 Do not substitute another target. Label observations from ordinary shell tools
 as such; only actual REA output supplies REA Evidence.
 
+## Distinguish client and server deadlines
+
+A host message such as `timed out awaiting tools/call` with no REA result means
+the client's deadline expired before a result arrived. It does not establish
+that REA finished, canceled successfully, or released all resources. Do not
+repeat the unchanged analysis. Inspect available session/provider state and
+retained Evidence only when useful; an idle `binary_session` is not proof that
+every target-free operation stopped. Never invent a missing Evidence reference.
+
+Allow the host tool deadline to cover execution, cancellation/cleanup, and
+response delivery. In Codex, the setting is
+`mcp_servers.<server-id>.tool_timeout_sec` in **seconds**, not
+`startup_timeout_sec`. Select a value for the actual operation budget and
+headroom, not a universal timeout. See the
+[official MCP configuration reference](https://learn.chatgpt.com/docs/extend/mcp?surface=cli).
+Apply configuration changes only within the authorized scope, preserving
+unrelated entries and backups; reconnect/restart as required by the host.
+When configuration is not editable, report the setting needed or use an
+authorized CLI fallback. Do not silently broaden permissions or switch targets.
+
+A returned REA `provider_timeout` instead means the **server/provider** reached
+its deadline. Follow its `remediation.action`, reuse accessible partial Evidence,
+and resolve reported incomplete cleanup before retrying. Raising only the
+client deadline does not change this server budget. For static JavaScript,
+`analysis_timeout_ms` (CLI `rea analyze-javascript-application <path>
+--analysis-timeout-ms <milliseconds>`) controls each source's
+startup, analysis and transfer deadline in **milliseconds**. Increase that
+budget or reduce semantic work / select exact inventoried `source_paths` when
+the task permits. Omit `source_paths` for all sources; `[]` is invalid.
+`detail: "summary"` reduces delivery, not analysis work. A per-source budget
+does not bound the elapsed time for an entire multi-source application.
+Partial-Evidence inspection can avoid recomputation; an unavailable reader is
+not itself a reason to block a corrected static-analysis retry.
+The shorthand `rea analyze <path>` does not expose this timeout flag; use the
+explicit JavaScript command when changing that budget.
+
+For invalid arguments, use the connected tool's current input schema, or the
+installed CLI's command help. Refresh the catalog if stale; do not guess fields
+from an older skill or return the entire catalog to repair one field. Correct
+all reported fields before retrying.
+
 ## Repair registration when needed
 
 For Codex:

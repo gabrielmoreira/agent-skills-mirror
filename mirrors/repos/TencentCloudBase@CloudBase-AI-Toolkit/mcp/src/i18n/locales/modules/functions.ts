@@ -10,9 +10,12 @@ export const functions = defineModule(
       "\n- `limit`: 分页数量，默认值由后端决定" +
       "\n- `offset`: 分页偏移，从 0 开始" +
       "\n- 示例：`queryFunctions(action=\"listFunctions\", offset=10, limit=10)`" +
-      "\n\n**查询 CloudBase 云函数日志**：使用 `action=\"listFunctionLogs\"`，需要提供 `functionName` 参数。" +
+      "\n\n**查询 CloudBase 云函数日志**：`action=\"listFunctionLogs\"`，需要提供 `functionName`。日志从 CLS 检索（底层 GetFunctionLogs 接口已下线）。" +
       "\n- 示例：`queryFunctions(action=\"listFunctionLogs\", functionName=\"my-function\")`" +
-      "\n- 如需查看日志详情：`queryFunctions(action=\"getFunctionLogDetail\", requestId=\"xxx\")`" +
+      "\n- 不传 startTime/endTime 时默认查最近 1 天；跨度不能超过 1 天，单次最多返回 100 条" +
+      "\n- 返回 `hasMore=true` 表示还有更早的日志：把返回的 `context` 原样传回取下一页（`offset` 只在前 100 条内生效）" +
+      "\n- `logs[]` 已解析成 requestId / log / statusCode / retCode / durationMs / memoryMb / timestamp" +
+      "\n- 想看某一次调用的完整过程（START、业务日志、REPORT）：`queryFunctions(action=\"getFunctionLogDetail\", requestId=\"xxx\")`" +
       "\n\n**定时任务 / cron / 定时跑**：使用 `listFunctionTriggers` 查询函数的 timer 触发器配置。" +
       "\n\n**版本与流量路由**：`listVersionByFunction` 列出已发布版本（对齐 tcb fn list-function-versions）；`getFunctionAlias` 查看别名/灰度配置（对齐 tcb fn get-route，aliasName 默认 `$DEFAULT`）。" +
       "\n\n**层（Layer）说明**：" +
@@ -88,8 +91,8 @@ export const functions = defineModule(
     endTimeInvalid: "endTime 格式错误: \"{value}\"。必须使用 YYYY-MM-DD HH:mm:ss 格式（如 2024-01-01 23:59:59）",
     logRangeInvalidDatetime: "startTime 和 endTime 必须是有效的日期时间字符串",
     logRangeTooLong: "startTime 和 endTime 间隔不能超过一天",
-    logsInvalidParamTips: "常见原因：\n1. startTime/endTime 格式错误，必须为 YYYY-MM-DD HH:mm:ss（如 2024-01-01 00:00:00），不支持 ISO 8601 或时间戳\n2. startTime 和 endTime 间隔超过一天\n3. functionName 不存在或格式不正确\n建议：不传 startTime/endTime 时默认查询最近一天的日志。",
-    logDetailInvalidParamTips: "常见原因：\n1. startTime/endTime 格式错误，必须为 YYYY-MM-DD HH:mm:ss（如 2024-01-01 00:00:00），不支持 ISO 8601 或时间戳\n2. startTime 和 endTime 间隔超过一天\n建议：不传 startTime/endTime 时默认查询最近一天的日志。",
+    logsInvalidParamTips: "常见原因：\n1. startTime/endTime 格式错误，必须为 YYYY-MM-DD HH:mm:ss（如 2024-01-01 00:00:00），不支持 ISO 8601 或时间戳\n2. startTime 和 endTime 间隔超过一天\n3. functionName 与日志里的 function_name 不一致（大小写敏感），或 qualifier 不匹配\n建议：不传 startTime/endTime 时默认查询最近一天的日志。",
+    logDetailInvalidParamTips: "常见原因：\n1. startTime/endTime 格式错误，必须为 YYYY-MM-DD HH:mm:ss（如 2024-01-01 00:00:00），不支持 ISO 8601 或时间戳\n2. startTime 和 endTime 间隔超过一天\n3. requestId 不在该时间窗口内（日志按请求开始时间归档）\n建议：先用 listFunctionLogs 定位到 requestId 再查详情。",
 
     paramRequired: "{action} 操作时，{param} 参数是必需的",
 
@@ -107,7 +110,11 @@ export const functions = defineModule(
     "reason.viewLogs": "查看该函数的执行日志",
     "reason.updateConfig": "更新该函数配置",
     "reason.checkGateway": "查看该函数是否已暴露网关访问入口",
-    "reason.logDetail": "按 requestId 查看单条日志详情",
+    "reason.logDetail": "按 requestId 查看该次调用的完整日志",
+    "reason.nextLogPage": "带上 context 取下一页（更早的）日志",
+    "reason.widenLogRange": "放宽时间范围后重新查询该函数的日志",
+    "reason.createLogService": "开通环境日志服务后再查询函数日志",
+    "reason.searchClsFallback": "改用 queryLogs 直接按同一条 CLS 语句检索",
     "reason.attachLayer": "为该函数追加绑定层",
     "reason.reorderLayers": "整体调整层顺序或绑定列表",
     "reason.layerVersions": "查看某个层的版本列表",
@@ -153,6 +160,10 @@ export const functions = defineModule(
     gotFunctionDetail: "已获取函数 {fnName} 的详情",
     gotFunctionLogs: "已获取函数 {fnName} 的日志列表",
     gotLogDetail: "已获取 requestId={requestId} 的日志详情",
+    "logs.emptyByFunction": "在 {start} ~ {end} 之间没有查到函数 {fnName} 的日志。常见原因：该时间段内函数没有被调用、日志已过保留期、或 functionName / qualifier 不匹配。可以放宽时间范围后重试。",
+    "logs.emptyByRequest": "在 {start} ~ {end} 之间没有查到 requestId={requestId} 的日志。请确认时间范围覆盖了这次调用（日志按请求开始时间归档），或先用 listFunctionLogs 定位到的 requestId。",
+    "logs.serviceNotEnabled": "当前环境还没有开通日志服务，云函数日志查不到。请先调用 manageLogs(action=\"createLogService\", confirm=true) 开通，再重新查询。",
+    "logs.queryFailed": "查询云函数日志失败：{message}",
     gotFunctionLayers: "已获取函数 {fnName} 当前绑定的层",
     gotLayers: "已获取 {count} 条层记录",
     gotLayerVersions: "已获取层 {layerName} 的版本列表",
@@ -237,16 +248,17 @@ export const functions = defineModule(
     "schema.create.layers": "Layer 配置",
     "schema.manageLayer.name": "层名称",
     "schema.manageLayer.version": "层版本号",
-    "schema.query.action": "只读操作类型：\n- `listFunctions`: 列出所有 CloudBase 云函数\n- `getFunctionDetail`: 获取 CloudBase 云函数详情（需要 functionName）\n- `listFunctionLogs`: 查询 CloudBase 云函数执行日志（需要 functionName）\n- `getFunctionLogDetail`: 获取日志详情（需要 requestId）\n- `listFunctionLayers`: 列出函数绑定的层\n- `listLayers`: 列出所有层（账号级视图，含其他环境创建的层）\n- `listLayerVersions`: 列出层的版本（注意：是 Versions 不是 Version；账号级视图）\n- `getLayerVersionDetail`: 获取层版本详情（账号级视图）\n- `listFunctionTriggers`: 列出函数触发器（用于查看定时任务 / cron / timer 配置）\n- `getFunctionDownloadUrl`: 获取函数代码下载地址\n- `getFunctionDeployStatus`: 按 taskId 查询异步部署状态、阶段进度和最终结果。返回 data.build（构建子状态）、data.deploy（部署子状态）、data.progress（阶段事件）；status=running 时 data.result 与 data.error 一律为 null，不得报告部署完成。调用方必须持续轮询直到 status=succeeded/failed；status=expired 表示任务超过最长保留时间（2 小时）被终结，云端可能仍在部署，需用 getFunctionDetail 确认。任务只保存在 MCP 进程内存中，过期或 MCP Server 重启后返回 errorCode=DEPLOY_TASK_NOT_FOUND；任务按环境隔离，只能查到当前环境自己发起的部署。cloud mode 下本 action 不可用：异步任务只由 buildStrategy=cloud/local 的真实部署创建，而这两种策略在 cloud mode 下都不支持真实执行，image 策略则走同步部署不产生 taskId。\n- `listVersionByFunction`: 列出函数已发布版本（对齐 tcb fn list-function-versions / SDK listVersionByFunction；需要 functionName）\n- `getFunctionAlias`: 查询函数别名与流量路由（对齐 tcb fn get-route / SDK getFunctionAlias；需要 functionName；aliasName 默认 $DEFAULT）\n- `getFunctionUploadUrl`: 获取函数代码包的 COS 预签名上传地址（ZIP 两段式部署阶段 A）：PUT 代码 zip 到 uploadUrl（uploadHeaders 非空时须随请求携带对应请求头），再调用 manageFunctions 的 createFunction/updateFunctionCode 并传 code 三元组（阶段 B）。functionName 可选，仅用于生成上传对象 key。返回的 uploadUrl 含凭据签名，不得写入日志或持久化；阶段 B 会校验三元组的桶与地域必须是本环境自有存储桶，因此该地址只能用于取到它的那个环境；地址默认 300 秒内有效",
+    "schema.query.action": "只读操作类型：\n- `listFunctions`: 列出所有 CloudBase 云函数\n- `getFunctionDetail`: 获取 CloudBase 云函数详情（需要 functionName）\n- `listFunctionLogs`: 查询云函数执行日志（需要 functionName；走 CLS 检索，默认最近 1 天，单次最多 100 条，翻页传 context）\n- `getFunctionLogDetail`: 获取某次调用的完整日志序列（需要 requestId，取自 listFunctionLogs 的 logs[].requestId）\n- `listFunctionLayers`: 列出函数绑定的层\n- `listLayers`: 列出所有层（账号级视图，含其他环境创建的层）\n- `listLayerVersions`: 列出层的版本（注意：是 Versions 不是 Version；账号级视图）\n- `getLayerVersionDetail`: 获取层版本详情（账号级视图）\n- `listFunctionTriggers`: 列出函数触发器（用于查看定时任务 / cron / timer 配置）\n- `getFunctionDownloadUrl`: 获取函数代码下载地址\n- `getFunctionDeployStatus`: 按 taskId 查询异步部署状态、阶段进度和最终结果。返回 data.build（构建子状态）、data.deploy（部署子状态）、data.progress（阶段事件）；status=running 时 data.result 与 data.error 一律为 null，不得报告部署完成。调用方必须持续轮询直到 status=succeeded/failed；status=expired 表示任务超过最长保留时间（2 小时）被终结，云端可能仍在部署，需用 getFunctionDetail 确认。任务只保存在 MCP 进程内存中，过期或 MCP Server 重启后返回 errorCode=DEPLOY_TASK_NOT_FOUND；任务按环境隔离，只能查到当前环境自己发起的部署。cloud mode 下本 action 不可用：异步任务只由 buildStrategy=cloud/local 的真实部署创建，而这两种策略在 cloud mode 下都不支持真实执行，image 策略则走同步部署不产生 taskId。\n- `listVersionByFunction`: 列出函数已发布版本（对齐 tcb fn list-function-versions / SDK listVersionByFunction；需要 functionName）\n- `getFunctionAlias`: 查询函数别名与流量路由（对齐 tcb fn get-route / SDK getFunctionAlias；需要 functionName；aliasName 默认 $DEFAULT）\n- `getFunctionUploadUrl`: 获取函数代码包的 COS 预签名上传地址（ZIP 两段式部署阶段 A）：PUT 代码 zip 到 uploadUrl（uploadHeaders 非空时须随请求携带对应请求头），再调用 manageFunctions 的 createFunction/updateFunctionCode 并传 code 三元组（阶段 B）。functionName 可选，仅用于生成上传对象 key。返回的 uploadUrl 含凭据签名，不得写入日志或持久化；阶段 B 会校验三元组的桶与地域必须是本环境自有存储桶，因此该地址只能用于取到它的那个环境；地址默认 300 秒内有效",
     "schema.query.functionName": "CloudBase 云函数名称。`getFunctionDetail`、`listFunctionLogs`、`listFunctionLayers`、`listFunctionTriggers`、`getFunctionDownloadUrl`、`listVersionByFunction`、`getFunctionAlias` 时必填；`getFunctionUploadUrl` 可选（仅用于生成上传对象 key）",
-    "schema.query.limit": "分页数量（limit）。列表类 action 可选，默认值由后端决定",
-    "schema.query.offset": "分页偏移（offset）。列表类 action 可选，默认 0",
+    "schema.query.limit": "分页数量（limit）。列表类 action 可选，默认值由后端决定；日志类 action 单次最多 100 条，默认 20",
+    "schema.query.offset": "分页偏移（offset）。列表类 action 可选，默认 0。日志类 action 只在前 100 条内生效，更早的日志请用返回的 context 翻页",
     "schema.query.codeSecret": "代码保护密钥，用于解密函数代码",
     "schema.query.revealEnvValues": "getFunctionDetail / listFunctionTriggers / listFunctionLayers 时是否返回环境变量明文值。默认 false：Value 脱敏为 ***，仅保留 Key 与 ValueLength，足以确认配置了哪些变量及变更是否生效；true 时返回明文，敏感变量会进入模型上下文，谨慎使用。如需查看明文，建议优先使用控制台或 CLI",
-    "schema.query.startTime": "日志查询开始时间，格式必须为 YYYY-MM-DD HH:mm:ss（如 2024-01-01 00:00:00）。与 endTime 间隔不能超过一天。不传时默认查询最近一天",
-    "schema.query.endTime": "日志查询结束时间，格式必须为 YYYY-MM-DD HH:mm:ss（如 2024-01-01 23:59:59）。与 startTime 间隔不能超过一天。不传时默认为当前时间",
-    "schema.query.requestId": "日志请求 ID。`getFunctionLogDetail` 操作必填，可从 `listFunctionLogs` 结果中获取",
-    "schema.query.qualifier": "函数版本别名，如 $LATEST、$DEFAULT。日志查询时可选",
+    "schema.query.startTime": "日志查询开始时间，格式必须为 YYYY-MM-DD HH:mm:ss（如 2024-01-01 00:00:00，按北京时间理解）。与 endTime 间隔不能超过一天。不传时默认查询最近一天",
+    "schema.query.endTime": "日志查询结束时间，格式必须为 YYYY-MM-DD HH:mm:ss（如 2024-01-01 23:59:59，按北京时间理解）。与 startTime 间隔不能超过一天。不传时默认为当前时间",
+    "schema.query.requestId": "日志请求 ID。`getFunctionLogDetail` 操作必填；取自 `listFunctionLogs` 返回的 logs[].requestId，也可传具体业务日志里出现的 RequestId",
+    "schema.query.qualifier": "函数版本别名，如 $LATEST、$DEFAULT。日志查询时可选，作为 CLS 检索条件",
+    "schema.query.context": "日志翻页游标。把上一次 `listFunctionLogs` 返回的 `context` 原样传回即可取下一页；不要自己构造，null 表示没有更多",
     "schema.query.runtime": "层查询的运行时筛选，如 Nodejs18.15",
     "schema.query.searchKey": "层名称搜索关键字",
     "schema.query.layerName": "层名称。`listLayerVersions`、`getLayerVersionDetail` 操作必填。层为账号级共享命名空间；推荐固定格式 `{layerName}_{当前envId}`（如 common_cloud1-d9ghadgak3edf6b36）",
@@ -307,9 +319,12 @@ export const functions = defineModule(
       "\n- `limit`: page size, the default is decided by the backend" +
       "\n- `offset`: pagination offset, starting from 0" +
       "\n- Example: `queryFunctions(action=\"listFunctions\", offset=10, limit=10)`" +
-      "\n\n**Querying cloud function logs**: use `action=\"listFunctionLogs\"`, which requires the `functionName` parameter." +
+      "\n\n**Querying cloud function logs**: use `action=\"listFunctionLogs\"`, which requires `functionName`. Logs are retrieved from CLS (the underlying GetFunctionLogs API has been retired)." +
       "\n- Example: `queryFunctions(action=\"listFunctionLogs\", functionName=\"my-function\")`" +
-      "\n- To view log details: `queryFunctions(action=\"getFunctionLogDetail\", requestId=\"xxx\")`" +
+      "\n- Without startTime/endTime it queries the last day; the span must not exceed 1 day and a single call returns at most 100 entries" +
+      "\n- `hasMore=true` means older logs exist: pass the returned `context` back unchanged to fetch the next page (`offset` only works within the first 100 entries)" +
+      "\n- Each `logs[]` item is parsed into requestId / log / statusCode / retCode / durationMs / memoryMb / timestamp" +
+      "\n- To see the full sequence of one invocation (START, business logs, REPORT): `queryFunctions(action=\"getFunctionLogDetail\", requestId=\"xxx\")`" +
       "\n\n**Scheduled tasks / cron / timers**: use `listFunctionTriggers` to query a function's timer trigger configuration." +
       "\n\n**Versions and traffic routing**: `listVersionByFunction` lists published versions (aligns with tcb fn list-function-versions); `getFunctionAlias` views alias / canary config (aligns with tcb fn get-route; aliasName defaults to `$DEFAULT`)." +
       "\n\n**Layers**:" +
@@ -385,8 +400,8 @@ export const functions = defineModule(
     endTimeInvalid: "Invalid endTime: \"{value}\". It must use the YYYY-MM-DD HH:mm:ss format (e.g. 2024-01-01 23:59:59)",
     logRangeInvalidDatetime: "startTime and endTime must be valid datetime strings",
     logRangeTooLong: "The interval between startTime and endTime must not exceed one day",
-    logsInvalidParamTips: "Common causes:\n1. startTime/endTime format error; it must be YYYY-MM-DD HH:mm:ss (e.g. 2024-01-01 00:00:00); ISO 8601 or timestamps are not supported\n2. The interval between startTime and endTime exceeds one day\n3. functionName does not exist or is malformed\nTip: without startTime/endTime, logs from the most recent day are queried by default.",
-    logDetailInvalidParamTips: "Common causes:\n1. startTime/endTime format error; it must be YYYY-MM-DD HH:mm:ss (e.g. 2024-01-01 00:00:00); ISO 8601 or timestamps are not supported\n2. The interval between startTime and endTime exceeds one day\nTip: without startTime/endTime, logs from the most recent day are queried by default.",
+    logsInvalidParamTips: "Common causes:\n1. startTime/endTime format error; it must be YYYY-MM-DD HH:mm:ss (e.g. 2024-01-01 00:00:00); ISO 8601 or timestamps are not supported\n2. The interval between startTime and endTime exceeds one day\n3. functionName does not match function_name in the logs (case-sensitive), or qualifier does not match\nTip: without startTime/endTime, logs from the most recent day are queried by default.",
+    logDetailInvalidParamTips: "Common causes:\n1. startTime/endTime format error; it must be YYYY-MM-DD HH:mm:ss (e.g. 2024-01-01 00:00:00); ISO 8601 or timestamps are not supported\n2. The interval between startTime and endTime exceeds one day\n3. requestId falls outside that window (logs are filed by request start time)\nTip: locate the requestId with listFunctionLogs first.",
 
     paramRequired: "The {param} parameter is required for the {action} action",
 
@@ -404,7 +419,11 @@ export const functions = defineModule(
     "reason.viewLogs": "View the execution logs of this function",
     "reason.updateConfig": "Update this function's configuration",
     "reason.checkGateway": "Check whether this function has an exposed gateway access URL",
-    "reason.logDetail": "View a single log entry by requestId",
+    "reason.logDetail": "View the full logs of that invocation by requestId",
+    "reason.nextLogPage": "Pass context back to fetch the next (older) page of logs",
+    "reason.widenLogRange": "Query this function's logs again with a wider time range",
+    "reason.createLogService": "Enable the environment log service before querying function logs",
+    "reason.searchClsFallback": "Search CLS directly with queryLogs using the same query string",
     "reason.attachLayer": "Attach an additional layer to this function",
     "reason.reorderLayers": "Adjust layer order or the binding list as a whole",
     "reason.layerVersions": "View the version list of a layer",
@@ -450,6 +469,10 @@ export const functions = defineModule(
     gotFunctionDetail: "Retrieved details of function {fnName}",
     gotFunctionLogs: "Retrieved the log list of function {fnName}",
     gotLogDetail: "Retrieved the log detail for requestId={requestId}",
+    "logs.emptyByFunction": "No logs found for function {fnName} between {start} and {end}. Common causes: the function was not invoked in that window, the logs have passed their retention period, or functionName / qualifier does not match. Widen the time range and retry.",
+    "logs.emptyByRequest": "No logs found for requestId={requestId} between {start} and {end}. Make sure the window covers that invocation (logs are filed by request start time), or use a requestId located through listFunctionLogs.",
+    "logs.serviceNotEnabled": "The log service is not enabled for this environment, so function logs cannot be read. Call manageLogs(action=\"createLogService\", confirm=true) first, then query again.",
+    "logs.queryFailed": "Failed to query function logs: {message}",
     gotFunctionLayers: "Retrieved the layers currently bound to function {fnName}",
     gotLayers: "Retrieved {count} layer records",
     gotLayerVersions: "Retrieved the version list of layer {layerName}",
@@ -534,16 +557,17 @@ export const functions = defineModule(
     "schema.create.layers": "Layer configuration",
     "schema.manageLayer.name": "Layer name",
     "schema.manageLayer.version": "Layer version number",
-    "schema.query.action": "Read-only action type:\n- `listFunctions`: list all CloudBase cloud functions\n- `getFunctionDetail`: get function details (requires functionName)\n- `listFunctionLogs`: query function execution logs (requires functionName)\n- `getFunctionLogDetail`: get log details (requires requestId)\n- `listFunctionLayers`: list layers bound to a function\n- `listLayers`: list all layers (account-level view, including layers from other environments)\n- `listLayerVersions`: list layer versions (Versions, not Version; account-level view)\n- `getLayerVersionDetail`: get layer version details (account-level view)\n- `listFunctionTriggers`: list function triggers (scheduled task / cron / timer configuration)\n- `getFunctionDownloadUrl`: get the function code download URL\n- `getFunctionDeployStatus`: query async deployment status, stage progress, and final result by taskId. Returns data.build, data.deploy, and data.progress. While status=running, data.result and data.error are null and deployment must not be reported as complete. Keep polling until status=succeeded/failed. status=expired means the task exceeded the 2-hour retention limit; cloud deployment may still be running, so confirm with getFunctionDetail. Tasks exist only in MCP process memory; expired tasks or a restarted MCP Server return errorCode=DEPLOY_TASK_NOT_FOUND. Tasks are isolated by environment. This action is unavailable in cloud mode because real cloud/local builds cannot run there, while image deployment is synchronous and creates no taskId.\n- `listVersionByFunction`: list published function versions (aligns with tcb fn list-function-versions / SDK listVersionByFunction; requires functionName)\n- `getFunctionAlias`: get function alias and traffic routing (aligns with tcb fn get-route / SDK getFunctionAlias; requires functionName; aliasName defaults to $DEFAULT)\n- `getFunctionUploadUrl`: get a COS presigned upload URL for a function code package (two-phase ZIP deployment phase A): PUT the code zip to uploadUrl (include the corresponding request headers when uploadHeaders is non-empty), then call manageFunctions createFunction/updateFunctionCode with the code triplet (phase B). functionName is optional and only shapes the upload object key. The uploadUrl carries credential-bound signatures; never log or persist it; phase B verifies that the triplet's bucket and region are this environment's own bucket, so an address is only usable in the environment it was minted for; the address is valid for 300 seconds by default",
+    "schema.query.action": "Read-only action type:\n- `listFunctions`: list all CloudBase cloud functions\n- `getFunctionDetail`: get function details (requires functionName)\n- `listFunctionLogs`: query function execution logs (requires functionName; retrieved via CLS, defaults to the last day, at most 100 entries per call, pass context to page)\n- `getFunctionLogDetail`: get the full log sequence of one invocation (requires requestId, taken from logs[].requestId of listFunctionLogs)\n- `listFunctionLayers`: list layers bound to a function\n- `listLayers`: list all layers (account-level view, including layers from other environments)\n- `listLayerVersions`: list layer versions (Versions, not Version; account-level view)\n- `getLayerVersionDetail`: get layer version details (account-level view)\n- `listFunctionTriggers`: list function triggers (scheduled task / cron / timer configuration)\n- `getFunctionDownloadUrl`: get the function code download URL\n- `getFunctionDeployStatus`: query async deployment status, stage progress, and final result by taskId. Returns data.build, data.deploy, and data.progress. While status=running, data.result and data.error are null and deployment must not be reported as complete. Keep polling until status=succeeded/failed. status=expired means the task exceeded the 2-hour retention limit; cloud deployment may still be running, so confirm with getFunctionDetail. Tasks exist only in MCP process memory; expired tasks or a restarted MCP Server return errorCode=DEPLOY_TASK_NOT_FOUND. Tasks are isolated by environment. This action is unavailable in cloud mode because real cloud/local builds cannot run there, while image deployment is synchronous and creates no taskId.\n- `listVersionByFunction`: list published function versions (aligns with tcb fn list-function-versions / SDK listVersionByFunction; requires functionName)\n- `getFunctionAlias`: get function alias and traffic routing (aligns with tcb fn get-route / SDK getFunctionAlias; requires functionName; aliasName defaults to $DEFAULT)\n- `getFunctionUploadUrl`: get a COS presigned upload URL for a function code package (two-phase ZIP deployment phase A): PUT the code zip to uploadUrl (include the corresponding request headers when uploadHeaders is non-empty), then call manageFunctions createFunction/updateFunctionCode with the code triplet (phase B). functionName is optional and only shapes the upload object key. The uploadUrl carries credential-bound signatures; never log or persist it; phase B verifies that the triplet's bucket and region are this environment's own bucket, so an address is only usable in the environment it was minted for; the address is valid for 300 seconds by default",
     "schema.query.functionName": "CloudBase cloud function name. Required for `getFunctionDetail`, `listFunctionLogs`, `listFunctionLayers`, `listFunctionTriggers`, `getFunctionDownloadUrl`, `listVersionByFunction`, and `getFunctionAlias`. Optional for `getFunctionUploadUrl` (only used to generate the upload object key).",
-    "schema.query.limit": "Page size (limit). Optional for list actions; the backend determines the default.",
-    "schema.query.offset": "Pagination offset. Optional for list actions; defaults to 0.",
+    "schema.query.limit": "Page size (limit). Optional for list actions; the backend determines the default. Log actions return at most 100 entries and default to 20.",
+    "schema.query.offset": "Pagination offset. Optional for list actions; defaults to 0. For log actions it only works within the first 100 entries — use the returned context to page further back.",
     "schema.query.codeSecret": "Code protection secret used to decrypt function code.",
     "schema.query.revealEnvValues": "Whether `getFunctionDetail` / `listFunctionTriggers` / `listFunctionLayers` returns plaintext environment variable values. Defaults to false: Value is masked as ***, while Key and ValueLength remain, which is sufficient to verify configured variables and changes. true returns plaintext and may expose secrets to the model context; use cautiously. Prefer the console or CLI for plaintext values.",
-    "schema.query.startTime": "Log query start time in YYYY-MM-DD HH:mm:ss format (for example, 2024-01-01 00:00:00). The interval to endTime must not exceed one day. Defaults to the most recent day when omitted.",
-    "schema.query.endTime": "Log query end time in YYYY-MM-DD HH:mm:ss format (for example, 2024-01-01 23:59:59). The interval from startTime must not exceed one day. Defaults to the current time when omitted.",
-    "schema.query.requestId": "Log request ID. Required for `getFunctionLogDetail`; obtain it from `listFunctionLogs`.",
-    "schema.query.qualifier": "Function version alias, such as $LATEST or $DEFAULT. Optional for log queries.",
+    "schema.query.startTime": "Log query start time in YYYY-MM-DD HH:mm:ss format (for example, 2024-01-01 00:00:00, interpreted as Beijing time). The interval to endTime must not exceed one day. Defaults to the most recent day when omitted.",
+    "schema.query.endTime": "Log query end time in YYYY-MM-DD HH:mm:ss format (for example, 2024-01-01 23:59:59, interpreted as Beijing time). The interval from startTime must not exceed one day. Defaults to the current time when omitted.",
+    "schema.query.requestId": "Log request ID. Required for `getFunctionLogDetail`; take it from logs[].requestId returned by `listFunctionLogs`, or use the RequestId printed in a business log line.",
+    "schema.query.qualifier": "Function version alias, such as $LATEST or $DEFAULT. Optional for log queries; used as a CLS filter.",
+    "schema.query.context": "Log pagination cursor. Pass the `context` returned by the previous `listFunctionLogs` call back unchanged to fetch the next page; never construct it yourself. null means there are no more results.",
     "schema.query.runtime": "Runtime filter for layer queries, such as Nodejs18.15.",
     "schema.query.searchKey": "Layer name search keyword.",
     "schema.query.layerName": "Layer name. Required for `listLayerVersions` and `getLayerVersionDetail`. Layers use an account-level shared namespace; use the fixed format `{layerName}_{current envId}` (for example, common_cloud1-d9ghadgak3edf6b36).",

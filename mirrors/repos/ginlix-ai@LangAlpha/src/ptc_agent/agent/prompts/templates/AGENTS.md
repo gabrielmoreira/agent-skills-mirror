@@ -139,14 +139,22 @@ sees — move it outside the fence, or register it as an either/or.
 
 ## Other conventions
 
-- **`agent_preference` is echoed to the model verbatim.**
-  `components/user_profile.md.j2` prints its keys as user instructions, so a
-  renderer-consumed knob must not be stored there — it would become prompt
-  text about itself. `output_format` is the one exception, and it shows the
-  cost: the loop carries an explicit `if key != "output_format"` so that key
-  can select a section instead of printing. Model-scoped settings (the guidance level
-  among them) live in the sibling `model_preference` bucket, which the template
-  never iterates.
+- **`agent_preference` is echoed to the model verbatim, except for its
+  structured keys.** `components/user_profile.md.j2` prints its keys as user
+  instructions, so a renderer-consumed knob must not be stored there — it
+  would become prompt text about itself. The keys of
+  `STRUCTURED_PREFERENCES["agent_preference"]`
+  (`src/server/models/profile_vocabulary.py`) are the knobs that may:
+  `render_user_profile` hands the template each one whose value is in its
+  vocabulary as `agent_steering`, which selects the main agent's paragraphs
+  (`output_format: "html"` the Styled HTML section, in place of `deliverable`),
+  and prints the rest. A subagent gets none of the paragraphs, and
+  `research_depth` is worded for the role, because the Chief of Staff's
+  research is often a hand-off, so `render_user_profile` takes the `role`. A
+  value added to one of those vocabularies needs its paragraph in the template
+  too, or `tests/unit/prompts/test_agent_preference_rendering.py` fails.
+  Model-scoped settings (the guidance level among them) live in the sibling
+  `model_preference` bucket, which the template never iterates.
 - **`trading_permission` is not a preference.** The agent can write
   `agent_preference` (its profile files, its preference tool), so a level that
   lets orders skip approval cannot live there. It has its own table and

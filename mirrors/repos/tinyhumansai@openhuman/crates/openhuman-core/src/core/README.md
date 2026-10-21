@@ -155,7 +155,7 @@ and the host is the one that knows `E`. [`events.rs`](./events.rs) is the event 
 `DomainEvent`, a `#[non_exhaustive]` enum whose `domain()` value is appended
 to `EVENTS_ROOT` (`/ai/tinyhumans/openhuman/events`) as the routing key.
 The catalog is published under `EVENTS_INTERFACE`
-(`ai.tinyhumans.openhuman.Events`) at `EVENTS_VERSION`, currently `2.0.0`.
+(`ai.tinyhumans.openhuman.Events`) at `EVENTS_VERSION`, currently `2.1.0`.
 
 `bus::init()` starts the in-process broker and announces a peer manifest
 (advisory; failure only logs). Every accessor is safe before `init`:

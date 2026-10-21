@@ -2,6 +2,108 @@
 
 All notable changes to Clawd Cursor will be documented in this file.
 
+## [Unreleased]
+
+### Fixed
+
+- **Windows: `find`, `wait_for` and `invoke` no longer match single
+  letters.** An element whose name sits inside the request matched however
+  short it was: a lone "C" from a PDF tab matched "User code 0" and "MCP
+  Registry". That reverse match now needs a real part of the request (3+
+  characters, at least half its length), close to macOS and Linux, which only
+  match the forward way.
+
+## [1.5.22] - 2026-10-20
+
+### Added
+
+- **A pause ends the moment the user's step is done.** `pause_for_user`
+  (MCP) and the built-in agent's `ask_user` take `done_when`: what is true
+  on screen once the user has done their part (the same checks as
+  `expect`). clawdcursor checks it every 1.5 s and continues by itself, so
+  the prompt goes from blue back to amber with no Resume click. A
+  `done_when` that is already true is rejected. Resume still works.
+
+### Changed
+
+- **Agents ask the user for one step only.** Tool descriptions, the MCP
+  instructions and SKILL.md now say: hand over only what the user must do
+  (a sign-in, a 2FA code) and do everything before and after it yourself.
+
+## [1.5.21] - 2026-10-20
+
+### Fixed
+
+- **`set_value` with no field name or role types nothing.** It fell back to typing
+  into the window's largest editable field (seen live: the browser's
+  address bar) and reported `Set "" = … chars`. It now fails and says to
+  name the field, pass a `compile_ui` reference, or use `type`.
+- **macOS: a failed screen capture at startup no longer breaks every tool
+  (#244).** With no screenshot helper and no Screen Recording grant, the
+  startup probe failed and took `window`, `key` and `accessibility` down
+  with it. The screen size now comes from NSScreen; only screenshots and OCR
+  fail, and they say how to fix it.
+- **Windows: `copy_all_text` no longer returns lines of placeholder
+  characters.** UIA TextPattern marks each embedded object (an image, a
+  link, a frame) with U+FFFC; they are dropped, as on Linux.
+- Preferences seeding for the agent's own browser profile no longer checks
+  for the file before reading it (CodeQL `js/file-system-race`).
+
+### Changed
+
+- Dependencies: vitest 5, playwright 1.64, ws 8.22, supertest 7.3.
+- Security: follow-redirects 1.16.1 (GHSA-q3jh-wrc6-jgq8, high), deep under
+  nut-js, reachable only through jimp's font loader, which clawdcursor does
+  not use.
+
+## [1.5.20] - 2026-10-20
+
+### Fixed
+
+- **The "desktop control in progress" pill no longer blocks the agent's own
+  clicks.** It sits at the top centre — where browsers keep their tab strip
+  and address bar — and is a real window, so a click there landed on the
+  pill instead of the app (macOS live run: 0 clicks reached a target under
+  it; reproduced on Windows 11). Before every synthetic press, drag or scroll
+  the pill now steps aside (`HIDE <ms>` on its stdin) and comes back by
+  itself; double-click-to-stop is unchanged. Windows, macOS and Linux.
+- **macOS: `window focus` focuses the process you asked for.** With two
+  instances of one app (the user's Chrome and the agent's), focusing by
+  pid, title or name could raise the USER's window and still say
+  "Focused matching window." It now focuses by pid, matches titles only
+  within that process, verifies what came to the front, and says which app
+  did when it is not the requested one.
+- **Linux: Esc in the pause prompt's reply box gives the keyboard back** to
+  the user's window (Windows already did). macOS is unchanged for now: a key
+  typed within milliseconds of Esc is sometimes lost there (#255, seen with
+  synthetic input), and a fix waits for a measurement at human typing speed.
+- **`copy_all_text` no longer highlights the page on Linux and macOS
+  either.** It reads the document through accessibility (AT-SPI Text /
+  AXStringForTextMarkerRange) — exact text, no keystrokes, nothing selected,
+  the clipboard untouched — as Windows does since 1.5.18. With the caret in
+  a text box on a web page, the whole page is read, not just the box.
+- **macOS:** a locked screen says so on the OCR path (it read as
+  "no_clickable_target"); a click on a sidebar label selects the row and is
+  verified (System Settings "General" reported success and did nothing);
+  incomplete reads are worded as such, not as timeouts; a modifier key on
+  its own (`shift`) is a key press; after `zoom`, the reply says clicks stay
+  in full-screenshot coordinates and gives the conversion; `space:"screen"`
+  is documented as points on macOS.
+
+### Security
+
+- **`find` results are wrapped as untrusted screen content (#248)** — they
+  were rewritten by the compact surface ("mouse_down" on a page read as a
+  tool call) and not marked as data.
+- **`smart_type` puts the user's clipboard back after pasting (#243)** — a
+  typed password stayed on the clipboard.
+- **Pasting waits for the paste to land before the clipboard is put back**
+  (`type_text`, `smart_type`, the agent's `type`). The restore ran a fixed
+  100–150 ms after Ctrl/Cmd+V; a busy app that read the clipboard later
+  pasted the user's own clipboard instead. The focused field is now watched
+  for the text (up to 1 s; a field that reports no value, or one that never
+  changes, gets 400 ms).
+
 ## [1.5.19] - 2026-10-19 — typing never pastes the user's own clipboard
 
 ### Security

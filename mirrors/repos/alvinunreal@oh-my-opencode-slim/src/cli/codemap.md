@@ -7,15 +7,16 @@ CLI entry point and command-line interface for the oh-my-opencode-slim plugin. P
 ## Design
 
 The CLI follows a command pattern with two primary commands:
-- `install`: Sets up the plugin with OpenCode (adds plugin to config, configures background subagents, installs companion, writes configuration)
+- `install`: Sets up the plugin with OpenCode (adds plugin to config, configures background subagents, writes configuration)
 - `doctor`: Diagnoses plugin configuration issues and validates setup
+- `companion install`: Standalone desktop companion install (downloads the binary, enables `companion` in the existing config)
 
 ### Architecture Pattern: Command Router
 
 - **index.ts**: Routes CLI arguments to appropriate command handlers (install/doctor)
 - **install.ts**: Orchestrates multi-step installation workflow
 - **doctor.ts**: Validates configuration and environment (includes multiplexer validation)
-- **types.ts**: Shared CLI argument types (`InstallArgs`, `BooleanArg`, `SkillsArg`, `CompanionArg`, `OpenCodeConfig`, `InstallConfig`)
+- **types.ts**: Shared CLI argument types (`InstallArgs`, `BooleanArg`, `SkillsArg`, `OpenCodeConfig`, `InstallConfig`)
 
 ### Configuration Management Pattern
 
@@ -50,16 +51,15 @@ The CLI follows a command pattern with two primary commands:
 ### Installation Workflow (install.ts)
 
 ```
-1. Parse install arguments (preset, companion mode, background subagents, etc.)
+1. Parse install arguments (preset, background subagents, etc.)
 2. Check OpenCode installation
 3. Add plugin to OpenCode configuration (opencode.json/opencode.jsonc)
 4. Add TUI version badge (tui.json/tui.jsonc)
 5. Warm OpenCode plugin cache (for package manager installations)
 6. Enable LSP integration by default
 7. Configure background subagents (shell integration)
-8. Install desktop companion (optional)
-9. Write oh-my-opencode-slim configuration (oh-my-opencode-slim.json)
-10. Install custom skills (if requested)
+8. Write oh-my-opencode-slim configuration (oh-my-opencode-slim.json)
+9. Install custom skills (if requested)
 ```
 
 OpenCode's built-in `general`/`explore` subagents are disabled at runtime by
@@ -180,7 +180,6 @@ bunx oh-my-opencode-slim install [OPTIONS]
 
 **Options:**
 - `--skills=yes|no`: Install bundled skills (default: yes)
-- `--companion=ask|yes|no`: Install desktop companion (default: ask)
 - `--preset=<name>`: Select configuration preset (default: openai)
 - `--background-subagents=ask|yes|no`: Configure background subagents (default: ask)
 - `--background-subagents-target=<path>`: Specify shell startup file

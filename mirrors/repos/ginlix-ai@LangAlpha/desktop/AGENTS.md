@@ -119,6 +119,12 @@ there: to the app for an account that is set up, into the wizard for one that is
 `reachedApp` is per-install state and only ever a shortcut past that round trip; reading
 account state off it gets a returning user the wrong first screen,
 being offered a downgrade from the plan they already pay for.
+Every later sign-in passes through that same page. Inside the SaaS edition (read off the
+shell's capabilities), the app sends a signed-out window there instead of showing its own
+sign-in, and a sign-in that still finishes on the app's pages, such as an emailed link opened
+while the app was closed, continues there before the dashboard (`web/src/lib/hostedSignIn.ts`).
+Without that, signing out and registering a new account on an install that has reached the app
+skips the wizard. The OSS edition keeps the app's own sign-in, whatever server it points at.
 
 **The two editions are installable side by side, and all three identity strings
 carry that.** The name is the load-bearing one: `app.getName()` is what
@@ -167,7 +173,7 @@ edition's output directory and refuses a parent holding several.
 | `src/policy.js` | what the shell decides: entry URL, where a navigation belongs. **Pure** — it may not write the store or open anything |
 | `src/origins.js` | what counts as ours: **by origin, never by path** |
 | `src/oauth.js` | system-browser OAuth, intercepted (below) |
-| `src/deeplink.js` | `langalpha://` scheme, for magic links clicked with the app closed and integration logins and installs the browser hands back |
+| `src/deeplink.js` | `langalpha://` scheme, for magic links clicked with the app closed, and integration logins, installs and console pages the browser hands back |
 | `src/preload.js` | the renderer bridge: version, platform, `capabilities`, `setTheme`, `openExternal`, `savePdf` |
 | `src/pdf.js` | renders the calling window to a PDF the user picks a home for; allowlists the options the page may set |
 | `src/downloads.js` | gives a download a visible ending, since a frameless window has no download shelf |
@@ -207,12 +213,18 @@ testable from Playwright**: its mouse events are CDP synthesized and never reach
 hit test that owns `-webkit-app-region`, and posting real CoreGraphics events needs
 macOS Accessibility permission. Changes here are checked by dragging the window.
 
-**So the frame is feature-detected, not assumed.** After each app load the shell asks the
-page whether anything under the buttons is a drag region (`DRAG_PROBE`, hit-testing three
-points along the strip) and remembers the answer in `appChrome`; window creation reads it.
-An unmounted page returns `null`, which is not "no" and is not recorded. `titleBarStyle`
-is fixed at construction, so a changed answer applies on the next launch rather than
-recreating a window that may have a turn streaming in it.
+**So the frame is feature-detected, not assumed.** After each app load the shell reads the
+page's own declaration, `<meta name="langalpha-window-chrome" content="reserves">` in
+`index.html` (`CHROME_DECLARATION` in `main.js`), and remembers the answer in `appChrome`;
+window creation reads it. A declaration rather than a hit-test, because the strip is only
+painted once the shell says the titlebar is hidden, so measuring it would read back the
+shell's own last answer. A page with no meta is a "no" only when the server really served
+it (a 2xx); an error document declares nothing either and is not recorded. The status is
+the document's, so it carries across the SPA's own `replaceState` moves while it boots.
+A load that failed has none: Chromium's own error page commits at the URL that failed,
+so a failed reload would otherwise be credited with the 200 of the page it replaced.
+`titleBarStyle` is fixed at construction, so a changed answer applies on the next launch
+rather than recreating a window that may have a turn streaming in it.
 
 This is the same rule as the bridge: **feature-detected, never version-detected**. The
 shell releases on a slow cadence and the app deploys continuously, so a shell that only
@@ -284,7 +296,7 @@ a code the user had just authorized.
 
 ## Links through the scheme
 
-The registered scheme carries three kinds of link, told apart before any window is picked:
+The registered scheme carries four kinds of link, told apart before any window is picked:
 
 - **Everything else** lands on `/callback` on whichever of our origins the main window
   shows, with the whole query: a magic link or email confirmation, often clicked with
@@ -306,10 +318,25 @@ The registered scheme carries three kinds of link, told apart before any window 
   that path on the console origin, the same refusals, the same window, and never
   `/callback`. It carries only `team`, `team_name` and `error`. Pages detect it as
   `integration-install`.
+- **`<scheme>://console/<page>?…`** is a console page asked to be shown again: the
+  console sent the user to a third party's page in the system browser, that page
+  returned to a console page in the browser, which has no session, and that page
+  hands its query back. Any link whose host reads as `console`, in any case or with a
+  port, is settled here whatever its path, so one this build does not open exactly is
+  dropped and never reaches `/callback`.
+  The path must be exactly a key of `CONSOLE_PAGES` (today only `/desktop/return`,
+  carrying `to`, `outcome` and `session_id`), and the URL is built from that key on
+  the configured console origin, never from the link's path. Parameters the page does
+  not carry are dropped; a repeated parameter, or a carried value outside
+  `^[A-Za-z0-9_-]{1,255}$`, refuses the whole link. It lands as an integration return
+  does: the window that sent the user out if it still shows the console, else any
+  window showing it, else where a console navigation goes, restored and raised. An
+  edition with no console ignores it, with a warning that names none of the link.
+  Pages detect it as `console-return`.
 
-Only an edition that can finish these two advertises them, and it advertises both or
-neither (main passes `--langalpha-integration-returns=1` when there is a console; the
-OSS edition has none, so it passes the switch empty and the list is empty).
+Only an edition with a console advertises these three, and it advertises all of them
+or none (main passes `--langalpha-console-returns=1` when there is a console; the OSS
+edition has none, so it passes the switch empty and the list is empty).
 
 A launch that a link started opens only that link's window. `attach` delivers the queued
 link before the entry opens, and opening the entry as well would cover it, or load

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `oumi-ai/oumi` — 26 default patterns, 1 followed patterns, 4 file(s) materialized.
+Mirror of `oumi-ai/oumi` — 26 default patterns, 2 followed patterns, 4 file(s) materialized.
 
 ## Metadata
 
@@ -17,7 +17,7 @@ Mirror of `oumi-ai/oumi` — 26 default patterns, 1 followed patterns, 4 file(s)
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 1 |
+| Followed pats | 2 |
 | Files         | 4 |
 
 ## Default Sparse Patterns  *(included from config)*
@@ -52,6 +52,7 @@ Mirror of `oumi-ai/oumi` — 26 default patterns, 1 followed patterns, 4 file(s)
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
 - `CONTRIBUTING.md`
+- `STYLE_GUIDE.md`
 
 ## File Index
 
@@ -61,8 +62,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 3 | ✓ | [`docs/development/style_guide.md`](docs/development/style_guide.md) |
-| 4 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 3 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 4 | → | [`STYLE_GUIDE.md`](STYLE_GUIDE.md) |
 
 ---
 

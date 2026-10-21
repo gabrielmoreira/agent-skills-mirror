@@ -22,7 +22,15 @@ each step.
 ```bash
 apps/mobile/scripts/eas-dev.sh --reload   # load the app from Metro again; starts nothing
 apps/mobile/scripts/eas-dev.sh --new      # stop the running session and start a fresh one
+apps/mobile/scripts/eas-dev.sh --user maya@local.test   # sign the app in as this dev account
 ```
+
+- **Switch accounts with `--user name@local.test`.** It runs `db:seed-dev` for the account, which
+  creates it with the shared dev password and makes it an onboarded member of `admin@local.test`'s
+  Pro organization. Then it signs out in Settings and signs in through "Sign in with email (dev)".
+  It needs no app code and takes about 20 s. It works alone on a running session or with `--new`
+  and `--reload`. Only `@local.test` accounts: to test as your real account, use the token that
+  setup bakes in for the first launch.
 
 - **Reload with `--reload`.** It opens the dev-client URL and waits for a new `iOS Bundled` line in the
   Metro log, three tries. Never `agent-device open Superset`: that relaunches the app without the

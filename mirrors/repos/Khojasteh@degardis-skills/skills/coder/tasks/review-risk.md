@@ -11,11 +11,9 @@ guides:
 - user-interface-work
 - performance-evidence
 - performance-comparisons
-- performance-cost-domains
 - technology-change
 - implementation-modernization
 - test-work
-- existing-test-maintenance
 - documentation-work
 - source-comments
 - documentation-evidence
@@ -37,6 +35,7 @@ guides:
 - commands-and-tooling
 - workspace-integrity
 - version-control
+- change-descriptions
 - work-slicing
 handoffs:
 - task: implement-change

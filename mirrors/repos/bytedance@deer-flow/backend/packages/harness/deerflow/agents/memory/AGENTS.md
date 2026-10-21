@@ -151,7 +151,9 @@ fence is accepted from Markdown. Decode the value before checking its closing
 fence so embedded backticks and later fenced notes stay lossless. Parser and
 storage regressions belong in `tests/test_memory_storage.py`; configure a data
 root directory, not the existing manifest file. Legacy v1 reads still migrate
-and advance the revision. Unparseable summary text is quarantined before rebuild.
+and advance the revision. Invalid UTF-8 bytes and unparseable summary text are
+quarantined before rebuild. Summary read `OSError`s raise `MemoryStorageCorruption`
+and preserve the file; `save()` returns false until access recovers.
 Summary and canonical fact reads strip a leading UTF-8 BOM; writes use UTF-8.
 Fact BOM regressions use public save/reload and preserve content and scope.
 
@@ -296,10 +298,12 @@ It does not require a separate signal-to-fact match.
 Search increments access heat only for facts it returns.
 Prompt injection and `get_context()` do not increment access heat.
 
-Usage and audit sidecars live below the agent `.metadata/` directory.
+Usage, audit, and per-thread extraction watermark sidecars live below the
+agent `.metadata/` directory.
 They must not change canonical Markdown timestamps or revisions.
 Write audits only after canonical persistence succeeds.
 User delete and clear operations must remove matching sidecar data.
+Updates feed after the furthest of the LRU and persisted watermark (best-effort IO).
 
 Staleness review reuses the regular updater call.
 It can keep, remove, or extend eligible aged facts.
@@ -380,8 +384,8 @@ Keep these cross-component constraints in sync:
 - The pod grace period must include retrieval wait, flush time, and shutdown margin.
 - `retrieval_adapter` selects FTS5, a custom factory, or the empty fallback.
 - Eviction weights must total `1.0`.
-- `watermark_max_keys: 0` makes the conversation watermark cache unbounded.
-- A dropped watermark can re-extract one batch on the next turn.
+- `watermark_max_keys` caps the watermark LRU and each `watermarks.json`; `0` is unbounded.
+- A watermark missing from both can re-extract one batch on the next turn.
 
 #### Write-side near-duplicate fact gate (opt-in)
 

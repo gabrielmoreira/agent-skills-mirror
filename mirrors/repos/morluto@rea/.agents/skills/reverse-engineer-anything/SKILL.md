@@ -2,7 +2,7 @@
 name: reverse-engineer-anything
 description: Reverse engineer native, managed, Electron/JavaScript, packaged, firmware, and browser targets with REA. Use shipped-artifact or requested runtime evidence to explain features, compare versions, decompile code, or guide a reconstruction. Skip REA for ordinary source-repository architecture analysis.
 metadata:
-  version: "42"
+  version: "44"
 ---
 
 # REA
@@ -30,6 +30,8 @@ unavailable, read [connection and recovery](references/connection-and-recovery.m
 Diagnose the observed blocker, continue useful supported work, and resume the
 original task after repair. Client approval, shell PATH, registration and engine
 availability have different remedies; avoid repeating setup for all of them.
+If the host times out without a REA result, do not repeat the unchanged call or
+assume work stopped. Read the recovery guide's deadline distinction before retrying.
 
 1. Diagnose without changing REA or client configuration. `npx` may download
    the package and write to npm's cache. For Codex, run
@@ -92,6 +94,10 @@ explicit path or endpoint and do not need it.
 - Archive/package member inventory (ZIP/APK/IPA/MSIX/AppX or DMG):
   `open_binary` with the supplied local path; use `inspect_artifact` when its
   graph and findings help answer the question.
+- Apple app plist, Interface Builder, asset catalog, or keyed archive resources:
+  `open_bundle_resources`, then the selected resource tool. This does not
+  require `CFBundleExecutable` or a deep provider. Resource sessions have no
+  executable digest or binary snapshot; use `open_binary` for native code.
 - Android APK code, classes, methods, or incoming references:
   `inspect_android_package`, then focused Android tools when advertised.
   Archive member inventory still uses the archive route above.
@@ -169,14 +175,25 @@ explicit path or endpoint and do not need it.
   absent metadata does not prove a binary is not Go, and unparsed text records
   remain explicit. See the
   [Go binary guide](https://github.com/morluto/rea/blob/main/docs/go-binaries.md).
-- Unity IL2CPP image, type or method names from `global-metadata.dat`:
+- Bundled GGUF or safetensors model declarations: `inspect_model_artifact`
+  with the explicit local file. Default header hashing leaves full-file identity
+  unknown; `hash: "full"` additionally reads all weights for SHA-256. MCP returns
+  retained summaries; optional `view` selects one page in the initial call. Use
+  `inspect_analysis_view` kind `model-artifact` for
+  batched metadata keys, tensor names or type totals, selected fields and pages.
+  Preserve header-scoped indices and array preview omissions; do not infer model
+  behavior from declared architecture or tensor types. See the
+  [model file guide](https://github.com/morluto/rea/blob/main/docs/model-artifacts.md).
+- Unity IL2CPP names, member owners and string literals from `global-metadata.dat`:
   `inspect_il2cpp_metadata` with the explicit local file; MCP defaults to compact
-  counts. Query sections, images, types or methods through `inspect_analysis_view`
+  counts. Query sections, images, types, methods, fields, properties, events,
+  parameters or string_literals through `inspect_analysis_view`
   with the returned `parent_evidence_id`, using exact filters, batch indices and
-  selected fields. Versions 29, 31 and 39; no Unity, IL2CPP
+  selected fields. Parameters accept `method_indices`, avoiding a scan of all
+  parameter pages. Missing collections in historical Evidence remain unknown.
+  Versions 24, 27, 29, 31 and 39; no Unity, IL2CPP
   binary or disassembler is run. Unrecognized magic (possibly encrypted) and
-  other versions are unsupported. Names do not establish native code addresses
-  or runtime behavior. See the
+  other versions are unsupported. Optional matching `binary_path` enables static native addresses and type references; query `method_addresses` with indices or addresses/states, preserving every shared-body method and both artifact identities. Without a linked binary native counts remain unknown. Byte-pattern fallback is inferred; no runtime behavior or same-build pairing is proved. See the
   [IL2CPP metadata guide](https://github.com/morluto/rea/blob/main/docs/il2cpp-metadata.md).
 - Embedded cargo-auditable Rust dependency metadata: `inspect_rust_binary`
   with the explicit local ELF, PE, or thin Mach-O file. This built-in
@@ -255,6 +272,12 @@ is the complete tool inventory; use `tools/list` for canonical tool schemas.
 Provider candidate facts describe possible providers, while top-level session
 capabilities describe the current route and `analysis_provider_binding` names the
 selected provider. Do not treat those scopes as interchangeable.
+
+For a Ghidra startup timeout on a large native target, follow
+[deadline recovery](references/native-and-artifacts.md#ghidra-startup-deadline-recovery)
+before abandoning deep analysis or repeating the same cold import. The default
+330 seconds is configurable; changing the server's environment requires a new
+REA process.
 
 ## Work summary-first
 

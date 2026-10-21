@@ -180,8 +180,21 @@ rea trace-dylib-resolution MyApp.app --root Contents/MacOS/MyApp --architecture 
 
 Load commands are parsed in TypeScript from Mach-O and FAT headers, including
 the `dylib_use_command` encoding newer linkers emit for flags such as delayed
-initialization. Nothing is executed and no Apple tool is required, so the tool
-also works off macOS.
+initialization, and `LC_LAZY_LOAD_DYLIB_INFO` (`0x3a`). That command stores its
+install name in a linkedit payload rather than in the load command itself.
+Its flag and chain-start image offsets must lie in the slice VM range, which
+is dyld's one-page floor extended by every segment except `__LINKEDIT`,
+measured from the `__TEXT` vmaddr. Payload strings must start after the 24-byte
+header. The load-path NUL must occur before the payload's final byte, matching
+dyld's scan. Distinct payload bytes and payload-range lookups stay within the 16 MiB
+limit, and a file range already read is reused. String scanning and UTF-8
+checks count every reference, including repeats and overlaps, and stop at that
+same aggregate. A slice retains at most 1024 of these commands; further copies are
+unsupported instead of becoming one traced edge each. Symbol references,
+including repeats, stop at 65536 per slice. A larger table is unsupported
+instead of caching one string per offset.
+Nothing is executed and no Apple tool is required, so the tool also works off
+macOS.
 
 Resolution follows dyld:
 
@@ -215,15 +228,23 @@ root supplies. Every edge below it has `loader_conditional: true`, and a
 request that reuses it by install name is `conditional` too. Findings on those
 edges say that they apply only if the conditional image loads.
 
-Absolute install names such as `/usr/lib/libSystem.B.dylib` are
-`outside-target`. On macOS 11 and later most of them live in the dyld shared
-cache rather than on disk, so REA does not check them against the host.
+Absolute install names that name a path beneath the analyzed root are checked
+within that root, with symlinks and `..` resolved by the same bounded tree
+resolver. Absolute paths outside the root, such as
+`/usr/lib/libSystem.B.dylib`, are `outside-target`; on macOS 11 and later most
+system libraries live in the dyld shared cache rather than on disk, so REA does
+not check them against the host. Mach-O path strings are not converted from
+`file:` URLs or looked up through unrelated host paths.
 
 `findings` are derived, not observed:
 
 - `required-load-unresolved`, `weak-load-unresolved`, and `lazy-load-unresolved`.
-  `LC_LAZY_LOAD_DYLIB` dependencies are resolved but not traversed, because dyld
-  loads them on first use; an unresolved one is not a launch failure.
+  `LC_LAZY_LOAD_DYLIB` and `LC_LAZY_LOAD_DYLIB_INFO` dependencies are resolved
+  but not traversed, because dyld loads them on first use; an unresolved one is
+  not a launch failure. `LC_LAZY_LOAD_DYLIB_INFO` has no compatibility version,
+  so those fields are null. Its may-be-missing flag is reported as `weak`, and
+  an unresolved dependency with that flag is not a first-use failure: dyld
+  continues if the image is absent.
 - `earlier-rpath-candidate-absent`: a compatible Mach-O placed at an earlier
   modeled search path could take precedence, subject to unmodeled search inputs
   and code-signing library validation. These findings do not establish which

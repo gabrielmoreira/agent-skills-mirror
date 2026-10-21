@@ -1,5 +1,9 @@
 # MCP runtime contracts
 
+For pairing native functions before comparing selected dossiers, see
+[native function matching](native-function-matching.md). It operates on retained
+inventories, preserves aliases/unknowns and exposes selected fact pages.
+
 Use this reference to call REA tools and interpret their replies on one MCP
 connection. Start with [tool results](#tool-results), [retained Evidence](#retained-application-evidence-inputs),
 and [session discovery](#identity-and-discovery). See [transports](#transports)
@@ -21,6 +25,14 @@ directly to a compatible comparison tool: `analyze_function` Evidence can be pas
 directly to `compare_functions`, and `inspect_artifact` Evidence to
 `compare_artifacts`. Use `get_evidence_bundle` when the task needs broader
 retained session history or an explicit bundle for transfer.
+
+Ghidra inventories and function replies use `raw_result: null` when their facts
+are already preserved in `normalized_result`, limitations, locations and
+relationship coverage. Distinct overview details, measured load-image
+observations, file-offset selection roles and database types supplemented with
+derived metadata keep their upstream representation. Read function results from
+`normalized_result`; older retained Evidence keeps its original representation
+and identity.
 
 Artifact inventories declare `coverage.scope` (`root` or `container-entries`)
 and `coverage.status` (`complete` or `unknown`) independently of diagnostic
@@ -59,7 +71,13 @@ Call comparison additionally retains the Evidence relationship coverage
 checks. Ghidra and Hopper declare their observed dossier facets and complete
 provider-observed caller/callee sets, including empty sets. Missing decompiler
 output remains unavailable; complete call coverage does not claim every runtime
-target. Hopper's unavailable reference-kind metadata and reported unresolved
+target. When Ghidra's decompiler fails on one function, its dossier is still
+returned: `pseudocode`, `native_api` and `native_value_flow` are unavailable
+with the decompiler's failure as the reason, while the listing-backed facets
+are collected as usual. These failed decompiler observations and workflows
+derived from them retain Evidence but skip snapshot reuse, so a later request
+can observe backend recovery; healthy dossiers keep their existing cache policy.
+`procedure_pseudo_code` still fails for that function. Hopper's unavailable reference-kind metadata and reported unresolved
 calls still prevent equality conclusions for those dimensions. Analysis profiles
 version these declarations so older snapshots are not reused as current results.
 IDA declares the facets its selected adapter cannot provide; an empty
@@ -72,12 +90,30 @@ metadata in the supported JSON payloads (`parameters`, `raw_result`,
 
 Tool execution failures return `isError: true` and the complete canonical
 `{ "error": ... }` diagnostic as JSON in text `content`. Read that diagnostic
-for the error code, target details, partial observations, and remediation.
+for the error code, target details, partial observations, remediation, and the
+optional bounded `recovery` next step. `recovery.kind=inspect_input_contract`
+names the rejected operation: re-read that operation's advertised input schema
+(call `tools/list` if the catalog may be stale), correct the listed fields, and
+do not repeat the unchanged call. `recovery.kind=inspect_timeout_state` names
+the operation and the REA server/provider deadline; inspect partial Evidence
+and reported cleanup state, then follow producer-specific remediation or reduce
+supported work. Generic errors do not assume adjustable timeout controls. Raising
+only the MCP client's deadline cannot extend this budget. These hints never
+include the complete catalog or caller arguments.
 Failures omit `structuredContent`, since each advertised `outputSchema`
 describes successful results. Successful replies retain their schema-validated
 structured data and matching text projection. Oversized errors are retained
 as Evidence before delivery of a bounded diagnostic with an export reference;
 if retention is unavailable or fails, the diagnostic reports that reason.
+
+SDK-generated input validation failures are normalized into the same canonical
+`invalid_request` text when the bounded diagnostic fits the response budget.
+The complete field/type diagnostic is preserved when normalization fits the
+response budget, including request-specific rejected fields and reasons. Oversized
+SDK diagnostics keep the existing retained-Evidence recovery path. An unknown
+tool remains an MCP JSON-RPC `-32602` error, but its message directs the caller
+to `tools/list` and an advertised operation instead of repeating the unknown
+name.
 
 `get_call_graph` returns a `graph` keyed by traversal depth and a top-level
 `limitations` array with deduplicated execution caveats. Each node keeps its
@@ -93,8 +129,9 @@ unresolved relationship reads. Cancellation remains a tool error.
 
 REA prepares complete MCP results within the pinned stdio client's 10 MiB
 receive-buffer budget, including both text and structured representations and
-room for the JSON-RPC envelope. Tool errors carry only their text
-representation and `isError` flag, so only those count against the budget. Response budget settings are captured at startup;
+room for the JSON-RPC envelope. Tool errors omit `structuredContent` from the
+wire; their text, `isError`, provenance marker and negotiated protocol framing
+count toward the wire budget. Response budget settings are captured at startup;
 restart or recreate the server to apply changes. If a result cannot fit, REA returns
 `resource_constraint` with `details.resource: "transport"` before constructing
 a document-sized string. Analysis Evidence remains complete in the current
@@ -104,6 +141,52 @@ that reference for a summary, one section/module, or a stable page, or call
 `export_evidence_bundle` with a destination path. Complete
 bundle exports stream canonical JSON into an atomically published file.
 
+On protocol revision `2026-07-28`, completed replies retain the SDK's
+`resultType: "complete"`, including the replacement for an oversized error.
+This marks completion of the MCP exchange; Evidence coverage, partial facts
+and unknowns retain their separate meaning. Legacy replies keep their existing
+framing.
+
+`list_procedures`, `search_procedures`, `list_strings`, `search_strings` and
+`list_names` accept `detail: "summary"`. Complete inline delivery remains the
+default. Summary retains the original complete Evidence and returns its row
+count, provider identity, analysis-profile digest, original query, parent Evidence
+ID, limitations and explicit unknown discovery coverage. Delivery detail is excluded from provider arguments
+and original Evidence identity.
+
+Read selected rows with `inspect_analysis_view`:
+
+```json
+{
+  "source": {
+    "kind": "retained-evidence",
+    "evidence_id": "ev_<source digest>"
+  },
+  "view": {
+    "kind": "native-inventory",
+    "offset": 0,
+    "limit": 32,
+    "fields": ["value"]
+  }
+}
+```
+
+Each row has `source_index` and `record`; parent Evidence ID plus source index
+identifies same-address alternatives. Order is the original retained order.
+Omit `fields` for complete records; a selected field list always retains
+`record.address`. Selecting `value` also retains available `string` and
+`decoding` qualifications, so native display text and unterminated fragments
+remain distinguishable. Search tools apply their existing filters before retention.
+Follow `coverage.next_offset`; exhaustion describes the retained list, not
+complete discovery of all code or strings. An unbound source keeps
+`artifact: null` and the derived Evidence keeps `subject: null`.
+
+The CLI uses the same projector. For an original complete Evidence JSON file,
+write `{"source":{"kind":"evidence-file","path":"/absolute/source.json"},"view":{"kind":"native-inventory","limit":32}}`
+to `/absolute/view-request.json`, then run
+`rea inspect-analysis-view /absolute/view-request.json --json`. This also reads
+pre-summary source records without changing their identity; no live provider is started.
+
 For oversized native function Evidence, `details.reported_limits.continuation`
 contains a ready-to-call `inspect_analysis_view` request for the retained
 pseudocode's first page. Use its `name` and `arguments` directly, then follow
@@ -112,6 +195,8 @@ limit is the view contract's default, not a guarantee that arbitrary source or
 metadata fits; reduce the limit or export when needed. Continuations are
 offered for completed `analyze_function` results only after session recording is
 acknowledged; the complete result and its retention reference remain intact.
+Oversized native inventories likewise include a ready-to-call first
+`native-inventory` page. Reduce its limit or select fields when a row is large.
 
 A broad follow-up or `get_evidence_bundle` can also exceed the response budget; exporting
 preserves the complete session without sending it through a single MCP frame.
@@ -154,6 +239,23 @@ reserves 1024 bytes for the envelope. Raising it restores complete inline
 delivery for responses that fit that buffer and Node's single-string limit.
 It does not change the client's buffer, analysis coverage, or retained content.
 Ordinary responses keep their existing complete result contract.
+
+### Error recovery and deadline ownership
+
+Initialization instructions and the static JavaScript tool description teach
+recovery before a host can discard a tool response. Invalid input calls should be corrected from the connected schema
+(refresh `tools/list` only if stale), not retried unchanged. REA's returned
+`provider_timeout` describes its server/provider deadline; provider-authored
+remediation names the applicable controls and preserves partial Evidence and
+cleanup uncertainty.
+
+A host timeout without a REA result is different: execution and cleanup remain
+unknown. Increasing an advertised `analysis_timeout_ms` cannot fix a shorter
+client deadline. Configure the client's tool timeout with execution, cleanup
+and delivery headroom, or report that change is needed when not authorized.
+Session status does not establish that all target-free work stopped. Detailed
+host settings and bounded retry guidance live in the shipped skill's
+[recovery reference](https://github.com/morluto/rea/blob/main/.agents/skills/reverse-engineer-anything/references/connection-and-recovery.md#distinguish-client-and-server-deadlines).
 
 ### Untrusted target content
 
@@ -224,6 +326,13 @@ pointers, plus excluded groups and three fixed unknowns. Templates, parameters a
 names are inferences; the Evidence is inferred whenever any tool or excluded group
 is templated, and derived otherwise.
 See [environment manifests](web-network-captures.md#environment-manifest).
+
+`inspect_analysis_view` also accepts `environment-state` for the same parents,
+extracting the initial state the recorded reads observed: entity types with an
+identity field, entities, documents for written non-entity paths, and a render
+plan per read tool that reproduces its recordings from the state or names why it
+cannot. Types and identity are inferences, so the Evidence is always inferred.
+See [environment state](web-network-captures.md#environment-state).
 
 `inspect_analysis_view` projects a caller-selected view of already completed
 `inspect_binary_layout`, `analyze_javascript_application`, or `analyze_function`
@@ -418,6 +527,17 @@ concrete version, selection source, and complete analysis profile through
 `analysis_provider_binding`. Ambiguity and unknown, unavailable, or unsupported
 choices return typed selection details. A selected provider is never replaced
 automatically after a runtime failure.
+
+`open_bundle_resources` selects a separate read-only app resource session
+without resolving `CFBundleExecutable`, including when it is absent or
+unresolvable. `binary_session` reports `session_kind: "bundle_resources"` and the
+caller and canonical resource-root paths; it does not report a binary target or
+deep-provider binding. `inspect_plist`, `decode_interface_builder`,
+`inspect_asset_catalog`, and `inspect_keyed_archive` retain resource-root
+provenance and use a null Evidence subject when executable identity is unknown.
+Binary-only operations and binary analysis snapshots do not apply in this
+session. `open_binary` can switch back to executable analysis, and
+`close_binary` retires either session kind.
 
 Each provider client receives `binary_session.analysis_run.run_id` before any
 provider startup, including clients whose startup fails. `process_lineage` is
@@ -767,6 +887,13 @@ the current client, so it is not a fresh-start recovery. On the same connection:
 3. Call `open_binary` with the same caller-selected path and
    `provider_id: "ghidra"`, then retry the first query with an appropriate client
    deadline. The connection and selected provider do not need to change.
+
+If REA's provider startup allowance also needs raising, preserve Evidence and
+close as above, then update `REA_GHIDRA_STARTUP_TIMEOUT_MS` in REA's launch
+environment and restart the server. Reconnect the MCP client before reopening
+the target. Configuration is read at process startup; close/reopen on the same
+connection cannot apply a changed environment. See the
+[CLI retry example](installation.md#ghidra).
 
 This close/reopen flow was exercised on one real Linux stdio connection after a
 controlled startup timeout, followed by a successful overview and function

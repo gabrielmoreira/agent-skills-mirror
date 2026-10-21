@@ -13,6 +13,14 @@ rea doctor --provider kuna
 
 Select it explicitly with `--provider kuna`, MCP's `open_binary.provider_id: "kuna"`, or `REA_ANALYSIS_PROVIDER=kuna`. With Kuna and another provider configured for the same target, `auto` reports `ambiguous` instead of choosing one.
 
+Ordinary readiness cancellation returns `cancelled` (CLI SIGINT/SIGTERM exits
+130/143); an earlier recorded timeout or physical failure keeps its diagnostic.
+Completed version, hash and script observations remain in `kuna_installation`
+with `status: "partial"` and `completed_hash` when available. Typed errors carry
+this in `details.diagnostics`; doctor cleanup checks carry it in their `details`.
+Omitted fields remain unobserved; availability remains unknown until readiness
+completes. Cleanup retries keep both the observations and the exact file owner.
+
 | Setting                       | Default                                                                                                                                 | Meaning                                                                                                                                                                                  |
 | ----------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `REA_KUNA_COMMAND`            | none (required)                                                                                                                         | Absolute path of the `kuna` executable.                                                                                                                                                  |

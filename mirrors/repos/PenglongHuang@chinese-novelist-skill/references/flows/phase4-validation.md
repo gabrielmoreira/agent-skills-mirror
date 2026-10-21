@@ -10,15 +10,18 @@
 
 读取 `02-写作计划.json`，将项目 `status` 更新为 `"validating"`。
 
+> 若为子Agent并行/Teams 模式，先确认各批次的状态与章节摘要已合并回 `02-写作计划.json` 和 `99-章节摘要.md`（未合并则先合并），并对每个批次接缝做衔接检查。
+
 ### 2. 逐章检查
 
 对每一章执行以下检查：
 
 1. **文件存在性**：检查 `filePath` 指定的文件是否存在
-2. **字数检查**：使用脚本检查字数
+2. **字数检查**：使用脚本批量检查（`{skillBaseDir}` 为 skill 安装根目录，见 [shared-infrastructure.md](shared-infrastructure.md)）：
    ```bash
-   python scripts/check_chapter_wordcount.py <章节文件路径>
+   python {skillBaseDir}/scripts/check_chapter_wordcount.py --all <项目文件夹路径> --json
    ```
+   退出码：0=全部达标，1=有不达标，2=错误。从 `--json` 输出的 `results[]` 读取各章 `word_count` 与 `status`
 3. **更新 JSON**：将 `wordCount` 和 `wordCountPass` 写入对应章节记录
 
 ### 3. 汇总结果

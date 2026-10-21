@@ -5,7 +5,7 @@
 > - 🔁 **Stata / R 平替**：`reghdfe`、`csdid`、`rdrobust`、`synth`、`fixest`、`did` 等常用命令在 Python 中一站式替代，一個 `import statspai as sp` 搞定 DID / RD / IV / SCM / DML / matching
 > - 🤖 **面向 Agent 設計**：結構化結果物件 + 內建 MCP Server，Claude / Codex 等智能體可直接呼叫、診斷、稽核與出表
 > - ⚡ **執行速度更快**：無需啟動 Stata / R 工作階段，免授權，純 Python 流程端到端提速
-> - 🏛️ **同一團隊維護**：StatsPAI 與 AERS 由同一團隊（Stanford REAP × CoPaper.AI）開發和持續維護，兩者深度整合、同步迭代
+> - 🏛️ **同一團隊維護**：StatsPAI 與 AERS 由同一團隊（Stanford REAP）開發和持續維護，兩者深度整合、同步迭代
 >
 > 👉 **[github.com/brycewang-stanford/StatsPAI](https://github.com/brycewang-stanford/StatsPAI)** · `pip install statspai` · MIT 開源 · 歡迎 ⭐ Star
 
@@ -18,7 +18,7 @@
   <table>
     <tr>
       <td align="center">
-        <a href="https://copaper.ai"><img src="images/copaper-logo.png" alt="CoPaper.AI" width="300" /></a>
+        <a href="https://github.com/brycewang-stanford/StatsPAI"><img src="images/statspai-logo.png" alt="StatsPAI" width="360" /></a>
       </td>
       <td width="72"></td>
       <td align="center">
@@ -29,7 +29,7 @@
 
   <br/>
 
-  <strong>Stanford REAP × CoPaper.AI</strong> · 實證研究 AI 工具的學術工業級產品<br/>
+  <strong>Stanford REAP × StatsPAI</strong> · 實證研究 AI 工具的學術工業級產品<br/>
   <sub>由史丹佛實證研究方法論團隊打造，涵蓋從資料清洗到頂刊投稿的完整工作流</sub>
 
   <br/>
@@ -64,7 +64,7 @@
 
 ## 全部 77 個 skill 合集一覽
 
-> **打開倉庫 → 看見整座資料庫。** 全部 **77 個合集 · 1,107 個 skill**，編號 `00 → 73`，每一個都**自有進本倉庫**（不只是對外連結），並在 [`catalog/skills.json`](catalog/skills.json) 裡追蹤。**點任一列即可打開其資料夾。** **⭐ = 由 Stanford REAP × CoPaper.AI 團隊自研的旗艦 skill**；其餘皆為精選、經安全稽核的社群成果。
+> **打開倉庫 → 看見整座資料庫。** 全部 **77 個合集 · 1,107 個 skill**，編號 `00 → 73`，每一個都**自有進本倉庫**（不只是對外連結），並在 [`catalog/skills.json`](catalog/skills.json) 裡追蹤。**點任一列即可打開其資料夾。** **⭐ = 由 Stanford REAP × StatsPAI 團隊自研的旗艦 skill**；其餘皆為精選、經安全稽核的社群成果。
 >
 > **主題對照 ——** 🚀 全流程與調度器 · 🎯 因果推斷與計量 · 📚 文獻與研究設計 · ✍️ 寫作、編修與去 AIGC · 📑 引用、重現與同儕審稿 · 🛠️ 資料、工具與基礎設施
 >
@@ -190,7 +190,7 @@ AERS 同時是兩樣東西：(1) 一小撮**自研旗艦 skill**，能跑通完�
 
 ## 77 個合集 · 按用途分組
 
-> 與[頂部的順序索引 ↑](#全部-77-個-skill-合集一覽)相同的 **77 個合集 · 1,107 個 skill** —— 這裡**按研究用途**重新排序，方便你直接掃到正在進行的階段。**⭐ = 自研**（Stanford REAP × CoPaper.AI）；其餘皆為精選、經安全稽核的社群成果。
+> 與[頂部的順序索引 ↑](#全部-77-個-skill-合集一覽)相同的 **77 個合集 · 1,107 個 skill** —— 這裡**按研究用途**重新排序，方便你直接掃到正在進行的階段。**⭐ = 自研**（Stanford REAP）；其餘皆為精選、經安全稽核的社群成果。
 
 **🚀 全流程旗艦與調度器** —— *一次呼叫，跑完整個實證閉環*
 
@@ -620,7 +620,7 @@ make check       # 完整 gate：validate + Python 编译 + 单元测试 + eval 
 <table>
   <tr>
     <td align="center">
-      <a href="https://copaper.ai"><img src="images/copaper-logo.png" alt="CoPaper.AI" width="220" /></a>
+      <a href="https://github.com/brycewang-stanford/StatsPAI"><img src="images/statspai-logo.png" alt="StatsPAI" width="260" /></a>
     </td>
     <td width="40"></td>
     <td align="center">
@@ -629,7 +629,7 @@ make check       # 完整 gate：validate + Python 编译 + 单元测试 + eval 
   </tr>
 </table>
 
-<sub><strong>Stanford REAP × CoPaper.AI</strong> · 實證研究 AI 工具的學術工業級產品</sub>
+<sub><strong>Stanford REAP × StatsPAI</strong> · 實證研究 AI 工具的學術工業級產品</sub>
 
 <br/>
 

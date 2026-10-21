@@ -49,13 +49,19 @@ and search how they solved a problem before writing code.
 
 ```sh
 curl -fsSL https://xerj.org/get | sh
-xerj --insecure --data-dir ./data &
+xerj --insecure --data-dir ~/xerj-data &
 xerj init                                        # wire XERJ into Claude Code/Cursor (MCP + skill), one command
 xerj autoindex ~/my-project
 xerj search "how do we rotate the WAL segment"   # ranked passages, file:line
 xerj def "euler_to_rotationmatrix"               # go-to-definition: file:line + signature
 xerj gain                                        # what it did for you — counted, not estimated
 ```
+
+<div dir="rtl">
+
+احتفظ بمجلد البيانات خارج أي مجلد ستفهرسه بـ autoindex. المجلد `data/` ليس ضمن قائمة التجاهل المدمجة، لذا فإن `--data-dir ./data` داخل شجرة تفهرسها لاحقا يجعل العقدة تفهرس تخزينها الخاص.
+
+</div>
 
 <div dir="rtl">
 
@@ -97,7 +103,7 @@ xerj gain                                        # what it did for you — count
 </div>
 
 ```sh
-xerj --insecure --data-dir ./data &      # start it
+xerj --insecure --data-dir ~/xerj-data &      # start it
 xerj autoindex ~/my-project              # point it at anything
 ```
 
@@ -171,7 +177,7 @@ irm https://xerj.org/get.ps1 | iex
 
 ملف ثنائي ساكن واحد، بلا JVM وبلا تبعيات. مبني مسبقا لـ Linux وmacOS وWindows على x86-64 وarm64. يمكنك أيضا [البناء من المصدر](#البناء-من-المصدر). يتحدث بواجهة Elasticsearch، فيعمل العملاء ولوحات المعلومات والأدوات القائمة عليه بلا تغيير.
 
-أوامر أولى بعد التثبيت (يطبع المثبت أين استقر `xerj`؛ أضفه إلى PATH إن لزم): `xerj --insecure --data-dir ./data &`، انتظر حتى يجيب `http://localhost:9200`، ثم `xerj autoindex ~/my-project`. انظر [فهرسة مجلد](#فهرسة-مجلد).
+أوامر أولى بعد التثبيت (يطبع المثبت أين استقر `xerj`؛ أضفه إلى PATH إن لزم): `xerj --insecure --data-dir ~/xerj-data &`، انتظر حتى يجيب `http://localhost:9200`، ثم `xerj autoindex ~/my-project`. انظر [فهرسة مجلد](#فهرسة-مجلد).
 
 لمضيف بلا وصول إلى الإنترنت وقت التشغيل، اتبع
 [وصفة النشر المعزول](./docs/recipes/air-gapped-deployment.md). المضمّن المعجمي الافتراضي يعمل بلا شبكة؛ الوضع العصبي يحتاج ملفات النموذج الثلاثة مجهزة محليا قبل أول عملية دلالية.
@@ -183,7 +189,7 @@ irm https://xerj.org/get.ps1 | iex
 </div>
 
 ```sh
-xerj --insecure --data-dir ./data &     # local dev: no TLS, no auth
+xerj --insecure --data-dir ~/xerj-data &     # local dev: no TLS, no auth
 xerj autoindex ~/my-project
 ```
 
@@ -196,8 +202,8 @@ xerj autoindex ~/my-project
 </div>
 
 ```sh
-xerj --data-dir ./data &                          # auth on: key minted on first boot
-export XERJ_API_KEY="$(cat ./data/admin.key)"     # <data_dir>/admin.key
+xerj --data-dir ~/xerj-data &                          # auth on: key minted on first boot
+export XERJ_API_KEY="$(cat ~/xerj-data/admin.key)" # <data_dir>/admin.key
 xerj autoindex ~/my-project
 ```
 
@@ -262,7 +268,7 @@ curl localhost:9200/ax-orders/_search -H 'content-type: application/json' -d '{
 </div>
 
 ```sh
-xerj --insecure --data-dir ./data &     # 1. the node the tools query
+xerj --insecure --data-dir ~/xerj-data &     # 1. the node the tools query
 xerj mcp                                # 2. MCP stdio server (your client runs this)
 ```
 
@@ -369,7 +375,7 @@ XERJ_EXTRACT_BENCH=/path/to/repo cargo test -p xerj-autoindex --release \
 git clone https://github.com/xerj-org/xerj
 cd xerj/engine
 cargo build --release -p xerj-server
-./target/release/xerj --insecure --data-dir ./data
+./target/release/xerj --insecure --data-dir ~/xerj-data
 ```
 
 <div dir="rtl">

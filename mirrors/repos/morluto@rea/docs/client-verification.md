@@ -457,13 +457,22 @@ disposable HOME and CODEX_HOME under `~/.cache/rea-agent-evaluations/`. Set
 `REA_AGENT_EVAL_ROOT` to choose another parent directory outside the OS temporary
 directory: current Codex refuses helper aliases under `/tmp`, preventing shell
 commands and skill reads even if MCP works. Each owned run directory is removed
-after verification unless fixture retention is requested. Cleanup attempts the
+after verification unless fixture retention is requested. Commands share the
+owned-process supervisor: native ownership preparation has its own bounded
+deadline before each short command budget, and timeouts join bounded process-tree
+and output cleanup before returning. If cleanup remains incomplete, the lane retries its retained
+owner and preserves the run directory (including disposable auth) rather than
+removing files still in use; the error retains ownership and recovery details.
+Command stderr is limited to 32 KiB and combined version output to 8 KiB;
+exceeding these diagnostic budgets fails explicitly. Scenario JSON events stream
+to the evaluator without retaining a second raw stdout copy. Cleanup attempts the
 remaining run tree even if auth removal fails, and reports unresolved cleanup
 together with the original verification failure. The lane
 installs the packaged skill and MCP registration through public `rea setup`,
 rather than copying a skill into a project that also inherits the caller's
 skills and configuration. Only authentication is copied, when present, and it
-is removed even with `REA_AGENT_EVAL_KEEP_FIXTURES=true`. No user configuration,
+is removed after confirmed process cleanup even with
+`REA_AGENT_EVAL_KEEP_FIXTURES=true`. No user configuration,
 rules, plugins or history is copied; shell snapshots and additional agents are
 disabled. Existing API-key environment authentication remains available.
 The native missing-provider scenario preapproves only `open_binary` and

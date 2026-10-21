@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `pacifio/atlas` — 26 default patterns, 0 followed patterns, 6 file(s) materialized.
+Mirror of `pacifio/atlas` — 26 default patterns, 0 followed patterns, 8 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `pacifio/atlas` — 26 default patterns, 0 followed patterns, 6 file(s
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 6 |
+| Files         | 8 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,12 +59,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`src-tauri/resources/skills/atlas-self-configure/SKILL.md`](src-tauri/resources/skills/atlas-self-configure/SKILL.md) |
-| 2 | ✓ | [`src-tauri/resources/skills/remember/SKILL.md`](src-tauri/resources/skills/remember/SKILL.md) |
-| 3 | ✓ | [`vendor/atlas-engine/skills/src/assets/samples/plugin-creator/SKILL.md`](vendor/atlas-engine/skills/src/assets/samples/plugin-creator/SKILL.md) |
-| 4 | ✓ | [`vendor/atlas-engine/skills/src/assets/samples/review-agent/SKILL.md`](vendor/atlas-engine/skills/src/assets/samples/review-agent/SKILL.md) |
-| 5 | ✓ | [`vendor/atlas-engine/skills/src/assets/samples/skill-creator/SKILL.md`](vendor/atlas-engine/skills/src/assets/samples/skill-creator/SKILL.md) |
-| 6 | ✓ | [`vendor/atlas-engine/skills/src/assets/samples/skill-installer/SKILL.md`](vendor/atlas-engine/skills/src/assets/samples/skill-installer/SKILL.md) |
+| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 3 | ✓ | [`src-tauri/resources/skills/atlas-self-configure/SKILL.md`](src-tauri/resources/skills/atlas-self-configure/SKILL.md) |
+| 4 | ✓ | [`src-tauri/resources/skills/remember/SKILL.md`](src-tauri/resources/skills/remember/SKILL.md) |
+| 5 | ✓ | [`vendor/atlas-engine/skills/src/assets/samples/plugin-creator/SKILL.md`](vendor/atlas-engine/skills/src/assets/samples/plugin-creator/SKILL.md) |
+| 6 | ✓ | [`vendor/atlas-engine/skills/src/assets/samples/review-agent/SKILL.md`](vendor/atlas-engine/skills/src/assets/samples/review-agent/SKILL.md) |
+| 7 | ✓ | [`vendor/atlas-engine/skills/src/assets/samples/skill-creator/SKILL.md`](vendor/atlas-engine/skills/src/assets/samples/skill-creator/SKILL.md) |
+| 8 | ✓ | [`vendor/atlas-engine/skills/src/assets/samples/skill-installer/SKILL.md`](vendor/atlas-engine/skills/src/assets/samples/skill-installer/SKILL.md) |
 
 ---
 

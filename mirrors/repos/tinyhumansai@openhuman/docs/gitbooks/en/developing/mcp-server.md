@@ -100,7 +100,7 @@ The `initialize` response includes:
 | `openhuman://prompts/identity`    | `IDENTITY.md` (core agent identity)                    |
 | `openhuman://prompts/soul`        | `SOUL.md` (core agent personality and values)          |
 | `openhuman://prompts/user`        | `USER.md` (user-profile context)                       |
-| `openhuman://prompts/agents/<id>` | `<id>/prompt.md` for each of the 15 built-in subagents |
+| `openhuman://prompts/agents/<id>` | `<id>/prompt.md` for each of the 15 built-in subagents with a static prompt file |
 
 All resources have `mimeType: "text/markdown"`.
 

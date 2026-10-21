@@ -5,7 +5,7 @@
 > - 🔁 **Stata / R 대체**: `reghdfe`, `csdid`, `rdrobust`, `synth`, `fixest`, `did` 등을 `import statspai as sp` 하나로 대체 (DID / RD / IV / SCM / DML / matching)
 > - 🤖 **에이전트 네이티브 설계**: 구조화된 결과 객체와 내장 MCP 서버로 Claude, Codex 등 에이전트가 직접 호출·진단·감사·표 작성까지 수행
 > - ⚡ **더 빠른 실행**: Stata / R 세션 구동도 라이선스도 필요 없는 순수 Python 파이프라인으로 엔드투엔드 가속
-> - 🏛️ **같은 팀이 유지보수**: StatsPAI는 AERS와 같은 팀(Stanford REAP × CoPaper.AI)이 개발·유지보수하며, 두 프로젝트는 긴밀하게 통합되어 함께 발전합니다
+> - 🏛️ **같은 팀이 유지보수**: StatsPAI는 AERS와 같은 팀(Stanford REAP)이 개발·유지보수하며, 두 프로젝트는 긴밀하게 통합되어 함께 발전합니다
 >
 > 👉 **[github.com/brycewang-stanford/StatsPAI](https://github.com/brycewang-stanford/StatsPAI)** · `pip install statspai` · MIT 라이선스 · ⭐ Star 환영
 
@@ -18,7 +18,7 @@
   <table>
     <tr>
       <td align="center">
-        <a href="https://copaper.ai"><img src="images/copaper-logo.png" alt="CoPaper.AI" width="300" /></a>
+        <a href="https://github.com/brycewang-stanford/StatsPAI"><img src="images/statspai-logo.png" alt="StatsPAI" width="360" /></a>
       </td>
       <td width="72"></td>
       <td align="center">
@@ -29,7 +29,7 @@
 
   <br/>
 
-  <strong>Stanford REAP × CoPaper.AI</strong> · 실증 연구를 위한 학술–산업 AI 툴킷<br/>
+  <strong>Stanford REAP × StatsPAI</strong> · 실증 연구를 위한 학술–산업 AI 툴킷<br/>
   <sub>스탠퍼드 실증 방법론 팀이 구축 — 데이터 정제부터 top-journal 투고까지 전체 파이프라인</sub>
 
   <br/>
@@ -64,7 +64,7 @@
 
 ## 전체 77개 스킬 컬렉션 한눈에 보기
 
-> **저장소를 열면 → 전체 라이브러리가 보입니다.** 모든 **77개 컬렉션 · 1,107개 스킬**을 `00 → 73`로 번호를 매겼으며, 하나도 빠짐없이 **본 저장소에 벤더링**되어(단순 외부 링크가 아님) [`catalog/skills.json`](catalog/skills.json)에서 추적됩니다. **아무 행이나 클릭하면 해당 폴더가 열립니다.** **⭐ = Stanford REAP × CoPaper.AI 팀이 직접 만든 자체 제작 스킬**이며, 나머지는 모두 큐레이션하고 보안 감사를 거친 커뮤니티 작업물입니다.
+> **저장소를 열면 → 전체 라이브러리가 보입니다.** 모든 **77개 컬렉션 · 1,107개 스킬**을 `00 → 73`로 번호를 매겼으며, 하나도 빠짐없이 **본 저장소에 벤더링**되어(단순 외부 링크가 아님) [`catalog/skills.json`](catalog/skills.json)에서 추적됩니다. **아무 행이나 클릭하면 해당 폴더가 열립니다.** **⭐ = Stanford REAP × StatsPAI 팀이 직접 만든 자체 제작 스킬**이며, 나머지는 모두 큐레이션하고 보안 감사를 거친 커뮤니티 작업물입니다.
 >
 > **테마 범례 —** 🚀 전체 파이프라인 & 오케스트레이터 · 🎯 인과추론 & 계량경제 · 📚 문헌 & 연구 설계 · ✍️ 글쓰기, 편집 & 탈AIGC · 📑 인용, 재현 & 동료 심사 · 🛠️ 데이터, 도구 & 인프라
 >
@@ -188,7 +188,7 @@ AERS는 두 가지를 동시에 제공합니다: (1) 완전한 실증 파이프�
 
 ## 77개 컬렉션 · 용도별 분류
 
-> 상단의 [순차 인덱스 ↑](#전체-77개-스킬-컬렉션-한눈에-보기)와 동일한 **77개 컬렉션 · 1,107개 스킬**을 — 여기서는 **연구 목적별로** 재정렬했으므로, 작업 중인 단계로 바로 훑어볼 수 있습니다. **⭐ = 자체 제작**(Stanford REAP × CoPaper.AI)이며, 나머지는 모두 큐레이션하고 보안 감사를 거친 커뮤니티 작업물입니다.
+> 상단의 [순차 인덱스 ↑](#전체-77개-스킬-컬렉션-한눈에-보기)와 동일한 **77개 컬렉션 · 1,107개 스킬**을 — 여기서는 **연구 목적별로** 재정렬했으므로, 작업 중인 단계로 바로 훑어볼 수 있습니다. **⭐ = 자체 제작**(Stanford REAP × StatsPAI)이며, 나머지는 모두 큐레이션하고 보안 감사를 거친 커뮤니티 작업물입니다.
 
 **🚀 전체 파이프라인 플래그십 & 오케스트레이터** — *한 번의 호출, 실증 루프 전체*
 
@@ -617,7 +617,7 @@ AERS가 당신의 작업에 도움이 된다면, **인용해 주시고**([CITATI
 <table>
   <tr>
     <td align="center">
-      <a href="https://copaper.ai"><img src="images/copaper-logo.png" alt="CoPaper.AI" width="220" /></a>
+      <a href="https://github.com/brycewang-stanford/StatsPAI"><img src="images/statspai-logo.png" alt="StatsPAI" width="260" /></a>
     </td>
     <td width="40"></td>
     <td align="center">
@@ -626,7 +626,7 @@ AERS가 당신의 작업에 도움이 된다면, **인용해 주시고**([CITATI
   </tr>
 </table>
 
-<sub><strong>Stanford REAP × CoPaper.AI</strong> · 실증 연구를 위한 학술–산업 AI 툴킷</sub>
+<sub><strong>Stanford REAP × StatsPAI</strong> · 실증 연구를 위한 학술–산업 AI 툴킷</sub>
 
 <br/>
 

@@ -51,13 +51,15 @@ O ejecútalo tú mismo:
 
 ```sh
 curl -fsSL https://xerj.org/get | sh
-xerj --insecure --data-dir ./data &
+xerj --insecure --data-dir ~/xerj-data &
 xerj init                                        # wire XERJ into Claude Code/Cursor (MCP + skill), one command
 xerj autoindex ~/my-project
 xerj search "how do we rotate the WAL segment"   # ranked passages, file:line
 xerj def "euler_to_rotationmatrix"               # go-to-definition: file:line + signature
 xerj gain                                        # what it did for you — counted, not estimated
 ```
+
+Deja ese directorio de datos fuera de cualquier carpeta que vayas a indexar con autoindex. `data/` no está en la lista de ignorados integrada, así que `--data-dir ./data` dentro de un árbol que luego indexas hace que el nodo indexe su propio almacenamiento.
 
 Windows y una instalación comprobada a mano están en [Instalación manual](#instalación-manual).
 
@@ -124,7 +126,7 @@ búsqueda, RAG, auditorías de seguridad y memoria de agentes, sin esquema que e
 sin pipeline que configurar.
 
 ```sh
-xerj --insecure --data-dir ./data &      # start it
+xerj --insecure --data-dir ~/xerj-data &      # start it
 xerj autoindex ~/my-project              # point it at anything
 ```
 
@@ -212,7 +214,7 @@ Habla la API de Elasticsearch, así que los clientes, paneles y herramientas que
 funcionan contra él sin cambios.
 
 Primeros comandos después de instalar (el instalador imprime dónde quedó `xerj`; añádelo a
-tu PATH si hace falta): `xerj --insecure --data-dir ./data &`, espera a que
+tu PATH si hace falta): `xerj --insecure --data-dir ~/xerj-data &`, espera a que
 `http://localhost:9200` responda y luego `xerj autoindex ~/my-project`. Véase
 [Indexar una carpeta](#indexar-una-carpeta).
 
@@ -226,7 +228,7 @@ modelo preparados en local antes de la primera operación semántica.
 Arranca el servidor y apunta `autoindex` a lo que sea:
 
 ```sh
-xerj --insecure --data-dir ./data &     # local dev: no TLS, no auth
+xerj --insecure --data-dir ~/xerj-data &     # local dev: no TLS, no auth
 xerj autoindex ~/my-project
 ```
 
@@ -241,8 +243,8 @@ pásale a `autoindex` la misma clave. Nunca la toma de `xerj.toml`; pasa `--api-
 define `XERJ_API_KEY`, o cada petición vuelve con `401 Unauthorized`:
 
 ```sh
-xerj --data-dir ./data &                          # auth on: key minted on first boot
-export XERJ_API_KEY="$(cat ./data/admin.key)"     # <data_dir>/admin.key
+xerj --data-dir ~/xerj-data &                          # auth on: key minted on first boot
+export XERJ_API_KEY="$(cat ~/xerj-data/admin.key)" # <data_dir>/admin.key
 xerj autoindex ~/my-project
 ```
 
@@ -330,7 +332,7 @@ que acabas de instalar es el servidor MCP. No hay nada más que descargar ni nad
 compilar:
 
 ```sh
-xerj --insecure --data-dir ./data &     # 1. the node the tools query
+xerj --insecure --data-dir ~/xerj-data &     # 1. the node the tools query
 xerj mcp                                # 2. MCP stdio server (your client runs this)
 ```
 
@@ -477,7 +479,7 @@ Necesitas una cadena de herramientas de Rust estable.
 git clone https://github.com/xerj-org/xerj
 cd xerj/engine
 cargo build --release -p xerj-server
-./target/release/xerj --insecure --data-dir ./data
+./target/release/xerj --insecure --data-dir ~/xerj-data
 ```
 
 Para correr la suite de conformidad contra un servidor en marcha:
