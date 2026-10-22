@@ -15,6 +15,8 @@ When there are no landmarks and text only gets you to a province or country, thi
 
 Be clear about the capture time: posting time and IP location are not the capture time and place; treat them only as hypotheses to verify.
 
+**Times in saved file names are in the saver's time zone.** Messenger desktop clients (e.g. Telegram Desktop `photo_YYYY-MM-DD_HH-MM-SS.jpg`) write the saving computer's local time. Infer that zone (an inferred clue) and pass its offset: `sun.py pos --at <candidate> --time 2025-03-14T18:30+03:00 --tz <scene IANA zone>`; an hour's gap can put the sun on the other side of the horizon. The capture is at or before this time.
+
 **Without a time, don't infer road direction, river direction or course from the sun's direction**. The sun at the side of the frame only says the lens is roughly perpendicular to the sun's azimuth; morning, noon and afternoon correspond to completely different directions (the creators in v002, v008 and v012 all reasoned this way and happened to be right; the method doesn't hold).
 
 ## 1. Determine the photo heading first
@@ -33,6 +35,7 @@ In order of reliability:
    - Only a time given, no date: compute over the possible date range, and the bearings become ranges; then add `--elev lo:hi` from how high the sun is above the horizon in the frame; dates whose elevation doesn't match are dropped automatically and the range narrows.
    - Neither time nor date: `compass` defaults to the whole year, split into a sunrise set and a sunset set. Around 30°N, the sunset azimuth swings between about 240° and 300° over a year; the difference is enough to make a top-down template not match. **Posting time is not capture time**; don't use the posting month to narrow the date.
    - Telling sunrise from sunset: what the poster says, sky color, shadow changes, road traffic and streetlights. Don't use reasons like "nobody at the school → after school", which holidays and weekends overturn (v014). If you can't tell, build templates for both headings.
+   - **Glow without the sun in the frame is not a compass.** If the sun is low (elevation above 0, below the frame's top edge), out of frame and nothing in the frame could hide it, the heading lies *outside* sun azimuth ± hfov/2, often with the sun just past one edge. Below the horizon the glow only gives the sun's half of the sky (±90°). Write the heading as a range and let a landmark, the street layout or `geo.py bearings` pick the value.
 5. **Roads on satellite imagery**: once you have location candidates, match the directions of roads, walls and riverbanks in the frame against satellite imagery.
 6. Claims like moss or tree crowns leaning one way are unreliable; don't use them.
 
@@ -126,6 +129,7 @@ uv run scripts/sun.py dish --lat 31.2 --sat 92.2 --azimuth 213       # dish face
 ## Common mistakes
 
 - Wrong time zone or DST: use an IANA name for `--tz` (`Europe/Berlin` handles DST automatically); don't hand-write +1/+2.
-- Taking posting time as capture time.
+- Taking posting time as capture time, or a saved file name's time as the scene's local time.
+- Setting the lens heading to the sun azimuth because the horizon glows, while the sun itself is out of frame.
 - Measuring shadow length on slopes or steps; taking a slanted shadow (from a non-vertical object) as the shadow of a vertical object.
 - Computing a band and looking only at its center line: the whole band within tolerance must be checked; prioritize the parts that intersect other clues.

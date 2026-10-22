@@ -22,12 +22,15 @@ this order by one function (`resolveFeature`) everywhere it is checked:
 1. **Deployments**: products it exists on (`cloud`, `self_hosted`). Fixed in code.
 2. **Kill switch**: off everywhere at once, outranking everything below. This is the revert; no deploy.
 3. **Operator lock**: a self-hosted operator forces it on or off for the whole install (Helm `config.features.<key>`).
-4. **Organization override**: platform admins turn it on or off for one organization in `/admin`.
-5. **Everyone**: on or off for everyone on the deployment, changed in `/admin` without a deploy.
+4. **Member override**: platform admins turn it on or off for one active organization member from the organization’s Members page in `/admin`. No override inherits the organization setting.
+5. **Organization override**: platform admins turn it on or off for one organization in `/admin`.
+6. **Everyone**: on or off for everyone on the deployment, changed in `/admin` without a deploy.
 
-Steps 2, 4 and 5 are set per deployment in `/admin` (Features page and each
+Steps 2, 5 and 6 are set per deployment in `/admin` (Features page and each
 organization's row) or with the admin MCP tools `den_list_features`,
 `den_set_feature_rollout` and `den_set_org_capability`.
+
+Member overrides are scoped to a membership, never a user globally. Pass `{ userId }` for caller-specific checks; organization-owned background policy without a person intentionally uses only organization state. The member editor supports true/false and null to restore inheritance.
 
 ## Does this need a feature?
 

@@ -471,6 +471,33 @@ shape merely because of its size. Optional memory participation now has one
 compact, signed envelope projection; the Codex CLI adapter preserves default-off
 isolation. This does not qualify installed heartbeat/App adoption or model value.
 
+PR dependency observation now uses the existing registered TurnStart lifecycle
+shared by executing quota guards, native Turns and compatibility prequota.
+Permission comes from the typed Goal/Agent capability owner, including remembered
+host observations and revocation; callers need no repeated flag when permission
+already exists. Capability-owned diagnostics preserve domain policy outside core
+Turn code. The existing complete-source TypeScript plan, merge-fact owner and
+normal execution admission remain authoritative. Goal-local single flight and
+durable per-dependency cadence prevent duplicate concurrent/due reads.
+File/SQLite qualification covers paused/stopped business, generated full/thin
+heartbeat commands, cross-entrypoint observation, revocation, unknown effects,
+unrelated validated work after provider failure and original-journal replay.
+App/Lark's shared context backend consumes canonical readiness without polling.
+Plans, read-only/status/context paths, missing permission and recovery add no
+observation. Installed executor adoption, legitimate recovery of existing live
+owners, sustained scheduling, model outcomes and the three convergence
+acceptances remain open. Generic memory lifecycle integration is a separate
+remaining boundary; post-writeback hooks retain their effect-free contract.
+
+The same captured decision now retains the selected Task's existing continuation
+condition and readiness through the full selection projection, signed envelope
+and actual protocol-host input. File/SQLite qualification distinguishes two
+repositories' identically numbered PRs, preserves the original event time and
+long requirement tail, validates subsequent work, and rejects proof tampering.
+Read-only managed-step and original-journal replay add no observation or debit.
+This closes that fact-delivery omission; installed adoption and model outcomes
+remain outside this qualification.
+
 Bounded planning context now remains inline instead of forcing a full-decision
 read under envelope budget pressure. Its existing owner retains the 3 KiB bound;
 the shared DSH/cloud adapter transports the signed contribution and, for saved
@@ -533,6 +560,36 @@ and reject signature equivalence after a step/order/judge mutation. The existing
 8 KiB diagnostic remains unchanged; required text can exceed it with a warning.
 This closes that transport omission, not the three convergence acceptances or
 permission to retire their active Python/host adapters.
+
+Following the capsule through the actual shared Host input exposed a second
+loss: DSH/cloud retained only its unavailable-context field, so a valid signed
+audit never reached the provider. That adapter now forwards the existing audit
+and original capture route/hash. Real File/SQLite normal/replan captures through
+a protocol-only DSH subprocess cover ordered obligations, the continuing judge,
+insufficient-proof conditions, signature refusal and unchanged source/state.
+The same audit also found work qualification missing: the capsule filtered out
+outcome-floor/degradation rules, and that Host omitted the whole existing
+execution profile. The typed projection now retains it intact and the Host
+forwards it. A new material result carrying that profile returns typed,
+public-safe `work_evidence` and `validation_evidence` arrays and preserves its
+actual delivery scale/outcome; the outer executor validates and retains both.
+Native source oracles and signed mutations cover these rules. Inputs without
+either contract retain their prior prompt, and older journal replay remains
+readable. The outer executor keeps all state/quota/scheduler effects. This
+qualifies clause delivery at that caller, not model adherence, installed
+adoption or complete-cost improvement. Count the cost of restored requirements;
+the earlier incomplete input is not an accepted efficiency baseline.
+
+The complete execution profile adds 138–142 JSON characters/UTF-8 bytes and no
+lines to ordinary Turn plans on the unchanged 96-row public CLI fixture. The
+original base/head differential fails its 64/70-character and 128-byte growth
+allowances; this remains a recorded failure. Qualify the restored outcome-floor
+and degradation fields with a 160-character/byte one-time allowance only when
+the old four-field profile becomes complete, with unchanged signature coverage
+and no other JSON-shape change. Already complete, partial or unrelated changes
+receive no allowance. Keep absolute budgets, line limits, fixture populations,
+complete source/Host clause checks and the production 8 KiB diagnostic. This
+explains the required presentation cost, not model tokens or efficiency gains.
 
 中文：本批修复验收步骤、继续说明和当前判断在 capsule 中丢失的问题；签名一致曾只
 比较已经裁剪过的投影。File/SQLite 同次捕获验证完整条款和篡改后的签名差异；

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `morluto/rea` — 26 default patterns, 66 followed patterns, 127 file(s) materialized.
+Mirror of `morluto/rea` — 26 default patterns, 68 followed patterns, 129 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `morluto/rea` — 26 default patterns, 66 followed patterns, 127 file(
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 66 |
-| Files         | 127 |
+| Followed pats | 68 |
+| Files         | 129 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -83,6 +83,7 @@ Mirror of `morluto/rea` — 26 default patterns, 66 followed patterns, 127 file(
 - `docs/desktop-applications.md`
 - `docs/native-investigation.md`
 - `docs/binary-diagnostics.md`
+- `docs/gpu-code-objects.md`
 - `docs/model-artifacts.md`
 - `docs/rust-binaries.md`
 - `docs/evm-bytecode.md`
@@ -103,6 +104,7 @@ Mirror of `morluto/rea` — 26 default patterns, 66 followed patterns, 127 file(
 - `docs/javascript-artifact-reconstruction.md`
 - `docs/apple-application-analysis.md`
 - `docs/process-capture.md`
+- `docs/python-packaged-applications.md`
 - `docs/reverse-engineering-tools.md`
 - `docs/ida-provider.md`
 - `docs/kuna-provider.md`
@@ -199,58 +201,60 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 73 | → | [`docs/firmware-analysis.md`](docs/firmware-analysis.md) |
 | 74 | → | [`docs/flutter-analysis.md`](docs/flutter-analysis.md) |
 | 75 | → | [`docs/ghidra-dos.md`](docs/ghidra-dos.md) |
-| 76 | → | [`docs/ida-provider.md`](docs/ida-provider.md) |
-| 77 | → | [`docs/installation.md`](docs/installation.md) |
-| 78 | → | [`docs/javascript-application-workflows.md`](docs/javascript-application-workflows.md) |
-| 79 | → | [`docs/javascript-artifact-reconstruction.md`](docs/javascript-artifact-reconstruction.md) |
-| 80 | → | [`docs/jeb-analysis.md`](docs/jeb-analysis.md) |
-| 81 | → | [`docs/kuna-provider.md`](docs/kuna-provider.md) |
-| 82 | → | [`docs/managed-code-analysis.md`](docs/managed-code-analysis.md) |
-| 83 | → | [`docs/mcp-contracts.md`](docs/mcp-contracts.md) |
-| 84 | → | [`docs/mcp-prompts.md`](docs/mcp-prompts.md) |
-| 85 | → | [`docs/model-artifacts.md`](docs/model-artifacts.md) |
-| 86 | → | [`docs/native-investigation.md`](docs/native-investigation.md) |
-| 87 | → | [`docs/packet-captures.md`](docs/packet-captures.md) |
-| 88 | → | [`docs/pcap-analysis.md`](docs/pcap-analysis.md) |
-| 89 | → | [`docs/process-capture.md`](docs/process-capture.md) |
-| 90 | → | [`docs/readme/README_ar.md`](docs/readme/README_ar.md) |
-| 91 | → | [`docs/readme/README_de.md`](docs/readme/README_de.md) |
-| 92 | → | [`docs/readme/README_el.md`](docs/readme/README_el.md) |
-| 93 | → | [`docs/readme/README_es.md`](docs/readme/README_es.md) |
-| 94 | → | [`docs/readme/README_fa.md`](docs/readme/README_fa.md) |
-| 95 | → | [`docs/readme/README_fr.md`](docs/readme/README_fr.md) |
-| 96 | → | [`docs/readme/README_id.md`](docs/readme/README_id.md) |
-| 97 | → | [`docs/readme/README_it.md`](docs/readme/README_it.md) |
-| 98 | → | [`docs/readme/README_ja.md`](docs/readme/README_ja.md) |
-| 99 | → | [`docs/readme/README_ko.md`](docs/readme/README_ko.md) |
-| 100 | → | [`docs/readme/README_ml.md`](docs/readme/README_ml.md) |
-| 101 | → | [`docs/readme/README_pl.md`](docs/readme/README_pl.md) |
-| 102 | → | [`docs/readme/README_pt-BR.md`](docs/readme/README_pt-BR.md) |
-| 103 | → | [`docs/readme/README_ru.md`](docs/readme/README_ru.md) |
-| 104 | → | [`docs/readme/README_th.md`](docs/readme/README_th.md) |
-| 105 | → | [`docs/readme/README_tr.md`](docs/readme/README_tr.md) |
-| 106 | → | [`docs/readme/README_uk.md`](docs/readme/README_uk.md) |
-| 107 | → | [`docs/readme/README_vi.md`](docs/readme/README_vi.md) |
-| 108 | → | [`docs/readme/README_zh-TW.md`](docs/readme/README_zh-TW.md) |
-| 109 | → | [`docs/readme/README_zh.md`](docs/readme/README_zh.md) |
-| 110 | → | [`docs/recorded-crashes.md`](docs/recorded-crashes.md) |
-| 111 | → | [`docs/releasing.md`](docs/releasing.md) |
-| 112 | → | [`docs/reverse-engineering-tools.md`](docs/reverse-engineering-tools.md) |
-| 113 | → | [`docs/roadmap.md`](docs/roadmap.md) |
-| 114 | → | [`docs/rust-binaries.md`](docs/rust-binaries.md) |
-| 115 | → | [`docs/signal-recordings.md`](docs/signal-recordings.md) |
-| 116 | → | [`docs/testing.md`](docs/testing.md) |
-| 117 | → | [`docs/tool-design.md`](docs/tool-design.md) |
-| 118 | → | [`docs/web-network-captures.md`](docs/web-network-captures.md) |
-| 119 | → | [`docs/windows-ghidra-p0.md`](docs/windows-ghidra-p0.md) |
-| 120 | → | [`licenses/README.md`](licenses/README.md) |
-| 121 | → | [`README.md`](README.md) |
-| 122 | → | [`SECURITY.md`](SECURITY.md) |
-| 123 | → | [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) |
-| 124 | → | [`third_party/evmole/README.md`](third_party/evmole/README.md) |
-| 125 | → | [`third_party/pwndbg/LICENSE.md`](third_party/pwndbg/LICENSE.md) |
-| 126 | → | [`third_party/wabt/README.md`](third_party/wabt/README.md) |
-| 127 | → | [`website/locales/README.md`](website/locales/README.md) |
+| 76 | → | [`docs/gpu-code-objects.md`](docs/gpu-code-objects.md) |
+| 77 | → | [`docs/ida-provider.md`](docs/ida-provider.md) |
+| 78 | → | [`docs/installation.md`](docs/installation.md) |
+| 79 | → | [`docs/javascript-application-workflows.md`](docs/javascript-application-workflows.md) |
+| 80 | → | [`docs/javascript-artifact-reconstruction.md`](docs/javascript-artifact-reconstruction.md) |
+| 81 | → | [`docs/jeb-analysis.md`](docs/jeb-analysis.md) |
+| 82 | → | [`docs/kuna-provider.md`](docs/kuna-provider.md) |
+| 83 | → | [`docs/managed-code-analysis.md`](docs/managed-code-analysis.md) |
+| 84 | → | [`docs/mcp-contracts.md`](docs/mcp-contracts.md) |
+| 85 | → | [`docs/mcp-prompts.md`](docs/mcp-prompts.md) |
+| 86 | → | [`docs/model-artifacts.md`](docs/model-artifacts.md) |
+| 87 | → | [`docs/native-investigation.md`](docs/native-investigation.md) |
+| 88 | → | [`docs/packet-captures.md`](docs/packet-captures.md) |
+| 89 | → | [`docs/pcap-analysis.md`](docs/pcap-analysis.md) |
+| 90 | → | [`docs/process-capture.md`](docs/process-capture.md) |
+| 91 | → | [`docs/python-packaged-applications.md`](docs/python-packaged-applications.md) |
+| 92 | → | [`docs/readme/README_ar.md`](docs/readme/README_ar.md) |
+| 93 | → | [`docs/readme/README_de.md`](docs/readme/README_de.md) |
+| 94 | → | [`docs/readme/README_el.md`](docs/readme/README_el.md) |
+| 95 | → | [`docs/readme/README_es.md`](docs/readme/README_es.md) |
+| 96 | → | [`docs/readme/README_fa.md`](docs/readme/README_fa.md) |
+| 97 | → | [`docs/readme/README_fr.md`](docs/readme/README_fr.md) |
+| 98 | → | [`docs/readme/README_id.md`](docs/readme/README_id.md) |
+| 99 | → | [`docs/readme/README_it.md`](docs/readme/README_it.md) |
+| 100 | → | [`docs/readme/README_ja.md`](docs/readme/README_ja.md) |
+| 101 | → | [`docs/readme/README_ko.md`](docs/readme/README_ko.md) |
+| 102 | → | [`docs/readme/README_ml.md`](docs/readme/README_ml.md) |
+| 103 | → | [`docs/readme/README_pl.md`](docs/readme/README_pl.md) |
+| 104 | → | [`docs/readme/README_pt-BR.md`](docs/readme/README_pt-BR.md) |
+| 105 | → | [`docs/readme/README_ru.md`](docs/readme/README_ru.md) |
+| 106 | → | [`docs/readme/README_th.md`](docs/readme/README_th.md) |
+| 107 | → | [`docs/readme/README_tr.md`](docs/readme/README_tr.md) |
+| 108 | → | [`docs/readme/README_uk.md`](docs/readme/README_uk.md) |
+| 109 | → | [`docs/readme/README_vi.md`](docs/readme/README_vi.md) |
+| 110 | → | [`docs/readme/README_zh-TW.md`](docs/readme/README_zh-TW.md) |
+| 111 | → | [`docs/readme/README_zh.md`](docs/readme/README_zh.md) |
+| 112 | → | [`docs/recorded-crashes.md`](docs/recorded-crashes.md) |
+| 113 | → | [`docs/releasing.md`](docs/releasing.md) |
+| 114 | → | [`docs/reverse-engineering-tools.md`](docs/reverse-engineering-tools.md) |
+| 115 | → | [`docs/roadmap.md`](docs/roadmap.md) |
+| 116 | → | [`docs/rust-binaries.md`](docs/rust-binaries.md) |
+| 117 | → | [`docs/signal-recordings.md`](docs/signal-recordings.md) |
+| 118 | → | [`docs/testing.md`](docs/testing.md) |
+| 119 | → | [`docs/tool-design.md`](docs/tool-design.md) |
+| 120 | → | [`docs/web-network-captures.md`](docs/web-network-captures.md) |
+| 121 | → | [`docs/windows-ghidra-p0.md`](docs/windows-ghidra-p0.md) |
+| 122 | → | [`licenses/README.md`](licenses/README.md) |
+| 123 | → | [`README.md`](README.md) |
+| 124 | → | [`SECURITY.md`](SECURITY.md) |
+| 125 | → | [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) |
+| 126 | → | [`third_party/evmole/README.md`](third_party/evmole/README.md) |
+| 127 | → | [`third_party/pwndbg/LICENSE.md`](third_party/pwndbg/LICENSE.md) |
+| 128 | → | [`third_party/wabt/README.md`](third_party/wabt/README.md) |
+| 129 | → | [`website/locales/README.md`](website/locales/README.md) |
 
 ---
 

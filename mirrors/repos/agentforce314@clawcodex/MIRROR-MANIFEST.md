@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `agentforce314/clawcodex` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
+Mirror of `agentforce314/clawcodex` — 26 default patterns, 0 followed patterns, 7 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `agentforce314/clawcodex` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 5 |
+| Files         | 7 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,11 +59,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`tests/fixtures/skills/commit-helper/SKILL.md`](tests/fixtures/skills/commit-helper/SKILL.md) |
-| 2 | ✓ | [`tests/fixtures/skills/frontend/add-component/SKILL.md`](tests/fixtures/skills/frontend/add-component/SKILL.md) |
-| 3 | ✓ | [`tests/fixtures/skills/lint-py/SKILL.md`](tests/fixtures/skills/lint-py/SKILL.md) |
-| 4 | ✓ | [`ui-desktop/AGENTS.md`](ui-desktop/AGENTS.md) |
-| 5 | ✓ | [`ui-desktop/DESIGN.md`](ui-desktop/DESIGN.md) |
+| 1 | ✓ | [`docs/examples/skills/epub-ebooklib/SKILL.md`](docs/examples/skills/epub-ebooklib/SKILL.md) |
+| 2 | ✓ | [`docs/examples/skills/scrape-cloudflare-site/SKILL.md`](docs/examples/skills/scrape-cloudflare-site/SKILL.md) |
+| 3 | ✓ | [`tests/fixtures/skills/commit-helper/SKILL.md`](tests/fixtures/skills/commit-helper/SKILL.md) |
+| 4 | ✓ | [`tests/fixtures/skills/frontend/add-component/SKILL.md`](tests/fixtures/skills/frontend/add-component/SKILL.md) |
+| 5 | ✓ | [`tests/fixtures/skills/lint-py/SKILL.md`](tests/fixtures/skills/lint-py/SKILL.md) |
+| 6 | ✓ | [`ui-desktop/AGENTS.md`](ui-desktop/AGENTS.md) |
+| 7 | ✓ | [`ui-desktop/DESIGN.md`](ui-desktop/DESIGN.md) |
 
 ---
 

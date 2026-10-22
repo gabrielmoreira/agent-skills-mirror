@@ -46,7 +46,37 @@ without executing tests or building. A missing Git base reports how to fetch
 it or select another revision.
 
 Source typechecking needs no compiled runtime or generated test metadata.
+Typecheck, runtime compilation, and Frida binding verification share
+`scripts/run-typescript.mjs`. The pinned tsrs package supplies Linux x64/arm64
+(GNU and musl) and macOS arm64 compilers. Windows and other unsupported hosts
+retain the existing stable official TypeScript compiler. Its upstream version
+can differ from tsrs, so both compiler tasks hash the selected package and version
+through `scripts/run-turbo.mjs` before cache lookup. Outputs from different
+compilers occupy different cache entries. Repository npm scripts and focused-test
+preparation use that entrypoint; a raw Turbo compiler task without matching
+identity fails instead of publishing an ambiguous successful cache entry.
+A missing binary on a supported host also fails without silently falling back.
+
+The Rust compiler defaults to at most two checker threads. For `--noEmit` checks,
+`--maxMemory 3G` also sets a soft memory target; emit builds do not use that target.
+Explicit compiler arguments can override the defaults. These controls do not
+impose a process-family memory limit. Termux's explicit build, Stryker's compiler
+API dependency, and independent fixture compiler oracles keep their existing
+TypeScript versions.
+
 `npm run build:cached` compiles the CLI/MCP runtime and its packaged skill.
+The build also records `dist/mcp-catalog.json` (compact inputs) and
+`dist/mcp-catalog-full.json` from the canonical SDK registrations and binds
+each to the runtime with its own SHA-256 digest. These are
+runtime artifacts, separate from the test catalog below. Default target-free
+MCP startup serves its schemas without constructing analysis validators;
+the first tool or guided-workflow request materializes the canonical runtime
+on that same SDK server. Explicit compact/full input selections preserve
+their advertised schemas throughout materialization. Initial-target,
+HTTP and output-schema-off startup keep the eager path; source runs without
+recorded artifacts also use eager composition. Compare memory both after discovery and after a completed
+request; report diagnostic GC separately from normal resident memory.
+
 Turbo's strict task environment preserves caller-selected `GOMAXPROCS`,
 `GOMEMLIMIT`, and `UV_THREADPOOL_SIZE` for resource-constrained builds and
 checks. These execution controls do not change artifact content, so changing
@@ -78,8 +108,9 @@ without the artifacts lock, so it can record hashes while `check:pr` or
 `check:test` already holds that lock. The CI jobs still run the locked
 `check:ci:fast` and `check:ci:deep` commands.
 Use `npm run lint:details` or `npm run jscpd:details` for all console diagnostics.
-Both duplicate commands scan production and test code with the same 3% limit;
-the summary commands preserve checker failures and restore reports from cached
+Both duplicate commands scan production and test code using the limit in
+[`.jscpd.json`](https://github.com/morluto/rea/blob/main/.jscpd.json).
+The summary commands preserve checker failures and restore reports from cached
 static tasks. Both lint caches include the website, documentation configuration,
 and experiment code scanned by the checker; a regression compares the actual
 lint inventory with Turbo's resolved inputs.
@@ -155,7 +186,27 @@ rejection without a reason. That cleanup stays owned until a later close or
 call releases it. Another server does not open while the cleanup remains, and
 a cleanup that already succeeded is not run again. Pass
 `mcpCall` when a case needs its own server, environment, or lifecycle. CLI
-cases still start a fresh process.
+cases for that helper share one compiled CLI process per child environment.
+The first case pays process startup; later cases reuse the loaded runtime.
+The process restarts when the environment changes, after 32 commands, or when
+the worker reports a resident set of at least 1 GiB. A fatal worker failure
+or a broken session frame retires that process and waits for it to exit before
+the next command starts.
+`cli.run` still starts a fresh process, including stdin and explicit deadlines.
+`runFileCli` uses the file session for commands that have neither. Go binary,
+IL2CPP metadata, and dylib-resolution commands use that session. File teardown
+stops the shared CLI process, including startup still in flight, and does not
+open another after close.
+`exportedFunctionBindingsCli.test.ts` keeps its own compiled CLI parity
+process for the file and still compares that process's JSON command results
+with the MCP session. A command that does not respond is rejected. That
+process stays owned until it exits, and another process does not start while
+it remains. A process that stays running after SIGKILL remains owned so a
+later close can retry. Closing the session reports a failure when the process
+does not exit after stdin closes, once the child has been stopped.
+`applicationWorkflowCli.test.ts` keeps one compiled CLI process for its JSON
+commands, including a non-zero status whose stdout is still a JSON document,
+and closes that process after the file.
 
 The Apple artifact verifier step shares a job-temporary bytecode cache among
 its fresh CLI/MCP children via `REA_ARTIFACT_NODE_COMPILE_CACHE`. The artifact
@@ -211,6 +262,27 @@ Stateless source-analysis matrices may share a file-owned stdio MCP connection
 and retain representative compiled CLI parity checks. Every distinct source
 scenario still runs through the public workflow; session-lifecycle scenarios
 need their own sessions and cleanup assertions.
+
+When a matrix already holds a named tool definition from live `tools/list`,
+pass that definition through the SDK's `toolDefinition` call option. This keeps
+the selected output-schema validation without eagerly compiling unrelated
+catalog schemas. Re-read definitions if the server advertises a changed list.
+
+Artifact verification uses `artifactMcpCall` for both lifecycle and analysis
+calls. A fresh SDK client has no held tool listing, so a bare `callTool` can
+skip output-schema validation. The helper discovers actual advertised
+definitions, rejects missing or ambiguous schemas, and validates the requested
+tool without compiling unrelated catalog schemas. REA registers process-static
+tool contracts; bindings share one discovery per negotiated connection and are
+discarded on reconnect or failed discovery. Keep raw artifact calls on this
+shared path and retain explicit request options such as timeouts.
+Caller-supplied tool definitions are rejected: the helper owns selection from
+the advertised catalog so a stale or permissive schema cannot bypass it.
+
+The regression fixture changes only `canonical_path` in a real stdio response
+to a number. The old helper accepts that response; the named schema must reject
+it. This client-boundary fault injection does not establish native Apple
+behavior, which remains covered by the macOS verification lane.
 
 Report unavailable authority as a named skip. Await owned cleanup before a
 verifier reports success. Native process inspectors are released at Vitest
@@ -271,7 +343,23 @@ termination. Simulated Windows controls do not establish native Windows behavior
 Native process-ownership controls distinguish start identity, zombie lifecycle,
 current parent/group relation, and token-read evidence. Retain generation-bound
 candidates through smaller lineage observations, table omissions, reparenting,
-group changes, and failed cleanup retries. A readable token with unavailable
+group changes, and failed cleanup retries. Identityless exit-refresh controls
+cover a replacement row that is not linked to the prior descendant set: a
+matching token on its own group is signaled, a foreign or absent token is not,
+an unreadable live token stays unresolved, a replacement that appears only in
+the confirmation table is still token-checked, a group discovered during
+revalidation is signaled before cleanup succeeds, a member that changes groups
+during confirmation is signaled in its new group, a PID first seen with a
+foreign token is read again on the confirmation table, a PID whose token was
+already read is read again even when its parent and group return to the
+pre-exit values, a pre-existing PID is read again when its parent or group
+changes, an unchanged pre-existing row that was never token-read stays unread,
+an unbounded confirmation
+chain stays unresolved, lineage reads a row again when its launcher-tree
+membership changes, a cached lineage token is read again on the next refresh, an initial descendant whose token already matched is read again on a later refresh, the launcher is read again on that refresh and a missing, unowned, or relation-changed launcher PID stays unavailable, a descendant absent from the latest refresh is omitted,
+a group that reappears after it was processed is revalidated once, a further
+reappearance stays unresolved, lineage publishes one row per PID, and lineage does not publish a
+verified empty descendant list while that row remains unexamined. A readable token with unavailable
 identity stays unresolved. Native UID facts, rather than an earlier process-table
 row, determine whether a token denial concerns another user. Darwin tests compile
 the helper and exercise snapshot growth, absence, lifecycle, and UID observations;
@@ -484,9 +572,15 @@ reports even when a shard fails, uploads available diagnostics, and writes the
 slowest files to the workflow summary. Partial reports are marked diagnostic
 only. Failed, cancelled, or missing selected shards still fail the required gate,
 and aggregate coverage thresholds remain enforced in full qualification.
-Only successful complete full-tier merges publish the small `test-timings` artifact, with
-checkout-relative paths; the build job downloads that artifact for the sequencer
-instead of the coverage/JUnit bundle. Timing weights come from Vitest module
+Only a successful complete merge on the default branch publishes shard history,
+and only from a push, schedule, or manual run. Fast runs publish
+`test-timings-fast`. Full runs publish `test-timings-full`. Pull requests do not
+publish it: the lookup reads one unpaginated artifact page, and pull-request
+artifacts would crowd out the default branch. The build job downloads the
+artifact that matches its tier, so fast shards use durations measured without
+coverage and full shards keep coverage-weighted durations. A tier with no
+qualifying artifact leaves history unset. The download is that small
+checkout-relative timing file, not the coverage/JUnit bundle. Timing weights come from Vitest module
 diagnostics and include tests and hooks, worker preparation, environment,
 imports, and setup. Import timings already include transform waits, which are
 not added again. The weights describe file costs under the measured worker and
@@ -605,10 +699,21 @@ missing entries are omitted as whole entries, and consumers rebuild cache misses
 including when every entry is unavailable. Malformed plans, non-file entries,
 and I/O errors other than disappearance still fail publication. After a trusted
 static run, superseded cross-run Turbo snapshots for that OS and architecture
-are deleted down to the two newest generations. The Windows lane relies on the Linux static job for typechecking. They retain the normal build and prepack
-commands, which restore matching outputs or rebuild on a cache miss. Native
+are deleted down to the two newest generations. The Windows lane also runs the
+official compiler's complete source typecheck with two checker threads,
+independently of the accelerated Linux checker. Both lanes retain the normal
+build and prepack commands, which restore matching outputs or rebuild on a cache
+miss. Native
 artifacts, dependency installs, package archives, and runtime verification remain
 host-local. Keep platform-dependent outputs out of this shared cache.
+
+The Windows native verifier's private-runtime ACL observer reads SID rules once
+for both trustee validation and counting. It deliberately rejects the convenience
+`Access` property, which resolves account names. Its `private-runtime-acl` stderr
+markers report completed phases and elapsed time; inspect these on a timeout
+before attributing it to startup, ACL reads, or identity lookup. The original
+15-second deadline and all ownership, DACL, and readonly assertions remain in
+force. A passing retry alone does not explain a previous timeout.
 
 Record cold and warm preparation separately from fresh test execution when
 benchmarking the optional `npm run check:pr` gate. Compare multiple runs on the
@@ -1353,11 +1458,22 @@ catalog, and managed-conformance metadata. Each shard still installs the locked
 dependencies and runs its assigned tests; full qualification enables coverage. It no longer
 regenerates the same metadata independently.
 
-The build job also finds an available `test-timings` artifact from a successful
-trusted default-branch scheduled or manual qualification and includes that same
-report in each shard's snapshot. The bounded lookup verifies the artifact's
-producer; newer schedules that reuse qualification without producing timings do
-not hide the last full run's artifact.
+The build job finds the newest trusted timing artifact for its tier
+(`test-timings-fast` or `test-timings-full`) from a successful default-branch
+push, schedule, or manual CI run, and includes that same report in each shard's
+snapshot. The bounded lookup verifies the producer. Pull-request runs and other
+branches are not producers. A tier with no qualifying artifact leaves history
+unset, and Vitest uses its own assignment. A later schedule that reuses
+qualification without uploading timings leaves the previous artifact in place.
+
+On 2026-10-21 the newest full history was run
+`39545047294`, recorded before compiled-CLI session reuse. Fast run
+`39552964873` packed its eight built shards from that history, and those shard
+jobs executed for 319–591 seconds. Replaying that run's file durations through
+the sequencer's two-worker schedule balances every shard at about 404 seconds
+of file time. The same replay with the stale history weights leaves the slowest
+shard near 547 seconds and the fastest near 293. That spread is file-schedule
+time, not runner queue, which is why each tier keeps its own history.
 CI assigns discovered files by historical duration, with a deterministic
 fallback weight for new files, rather than dividing only by file count.
 Each file keeps its full duration on one worker. Extra workers overlap other
@@ -1700,9 +1816,11 @@ projects the `environment-manifest` view with all three template rules through
 the built CLI, packs the checkout with `npm pack`, exports the bundle with
 `--package-tarball` so the image installs this checkout rather than the
 registry package, and runs `agent-env run` on the bundle. It checks that the
-export reports the planned file set with the inputs copied byte-exact, that
-the runner exits `0` with `tasks/smoke.json` reported as passed and the
-verifier's description naming the tool count, and that no container exists
+export reports the planned file set with the inputs copied byte-exact and a
+bundle served from the derived state, which serves fewer tools than the
+manifest because write tools are not served, that the runner exits `0` with
+`tasks/smoke.json` reported as passed and the verifier's description naming
+that served tool count, and that no container exists
 after the run that did not exist before; the container inventory runs even when
 the run fails or times out, so a failed receipt still lists what it left. The one exception is the framework's
 own image-store helper, `agentenv-registry` (or `agentenv-registry-<port>`),

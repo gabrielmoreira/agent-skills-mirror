@@ -28,17 +28,19 @@ JEB service is reachable or that a project is open; use the existing
 MCP `binary_session` probes the live JEB service and its advertised tool catalog.
 Availability is reported per operation: a reachable headless client can support
 inspection and decompilation while refusing `open_jeb_project`. Catalog discovery
-uses one 60-second deadline across connection and pagination; a responsive server
-cannot keep discovery running indefinitely by returning more pages.
+is one deadline across connection and pagination; a responsive server cannot keep
+discovery running indefinitely by returning more pages.
 
-Each upstream tool call has an absolute 60-second request deadline by default.
-Set `REA_JEB_MCP_TIMEOUT_MS` to a positive decimal number of milliseconds to
-select a different per-request budget, for example `REA_JEB_MCP_TIMEOUT_MS=300000`
-for a five-minute decompilation. This budget starts after discovery and applies
-to each individual `tools/call`; it does not extend the separate catalog deadline
-or establish one end-to-end deadline across a whole CLI or MCP operation. A
-request that reaches its budget returns a typed timeout, while caller
-cancellation remains a cancellation.
+Catalog discovery and each `tools/call` share `REA_JEB_MCP_TIMEOUT_MS`. Set it
+in REA's launch environment to an integer from 1 to 2147483647 milliseconds,
+for example `REA_JEB_MCP_TIMEOUT_MS=300000` for a five-minute budget. Omitted
+means the pinned MCP client SDK default of 60000 ms (`@modelcontextprotocol/client`
+2.3.1). Restart REA and reconnect to apply a change. Raising the setting raises
+both phases. It does not make one end-to-end deadline across a whole CLI or MCP
+operation: discovery and each `tools/call` each get that budget. A request that
+reaches its budget returns a typed timeout naming the phase and the effective
+milliseconds, while caller cancellation remains a cancellation. Allow execution,
+cleanup, and delivery headroom in the outer MCP client deadline.
 
 Earlier verification used JEB 5.48.0 (Linux x64, licensed build) serving `jeb-mcp-server` 1.3.0 over streamable HTTP. The official Linux x64 CE build `5.48.0.202610071539` was also verified through real CLI and production stdio MCP native-code workflows; see the [Linux CE audit](../experiments/analysis-efficiency/jeb-linux-native.md) for measurements and limits. CE verification does not establish licensed/Demo Android decompilation or GUI behavior.
 

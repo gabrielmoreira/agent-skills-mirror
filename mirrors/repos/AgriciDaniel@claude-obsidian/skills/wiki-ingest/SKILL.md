@@ -122,7 +122,11 @@ Draft a single `claude-obsidian.transaction.v1` bundle with
 - at least one active methodology index or MOC for every canonical page create
   or removal; update `wiki/index.md` only when it is an active catalog, and
   `wiki/overview.md` only when the high-level picture changed;
-- one batch log entry and a refreshed hot cache.
+- one batch log entry above every existing entry and a refreshed hot cache.
+
+The workflow gate requires a source (a create-only `.raw/` payload or a recorded
+source in the source ledger) and a real change to at least one ledger. Never
+add a source or claim record only to satisfy the gate.
 
 Record SHA-256 preconditions for every target. Use one write per path. Do not use
 host Write/Edit, Obsidian transport writes, deprecated per-file locks, or
@@ -131,11 +135,23 @@ per-source/per-worker applies.
 ## Preview, apply, and recover
 
 ```bash
-python3 "$CORE" transaction inspect /path/to/ingest-bundle.json --vault /path/to/vault
+python3 "$CORE" workflow inspect /path/to/ingest-bundle.json --vault /path/to/vault
 # Set APPROVAL_SHA256 to the inspect result's approval_sha256 after review.
-python3 "$CORE" transaction apply /path/to/ingest-bundle.json --vault /path/to/vault \
+python3 "$CORE" workflow apply /path/to/ingest-bundle.json --vault /path/to/vault \
   --approved-plan-sha256 "$APPROVAL_SHA256"
 ```
+
+The workflow gate reports `storage_valid` separately from `workflow_complete`.
+A recoverable storage bundle can still omit required knowledge outcomes; apply
+only when both pass. The default active catalog is `wiki/index.md`. For a
+methodology MOC, include `workflow: {"catalogs": ["wiki/path/to/MOC.md"]}` in
+the bundle, with that catalog's expected hash and write. A MOC created in
+the same bundle must be linked from an active catalog write that is also
+declared in `workflow.catalogs`: list `wiki/index.md` beside the new MOC, or
+link it from an existing declared MOC. An undeclared index write does not
+count. Log and hot-cache writes remain required; keep the hot cache at most
+500 words and 32 KiB. See the
+[workflow acceptance guide](../../docs/workflow-acceptance.md).
 
 Show the user the inputs, budget consumed, create/replace paths, raw captures,
 claim assessments, contradictions, and skipped items before apply. Canonical

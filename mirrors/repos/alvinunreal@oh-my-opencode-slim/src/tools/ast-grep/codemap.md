@@ -19,6 +19,11 @@ The implementation follows a layered architecture:
   - Implements robust error handling, truncation detection, and retry logic for missing binaries
   - Uses `crossSpawn` for cross-platform process spawning
 
+- **Rewrite Application** (`apply-rewrites.ts`):
+  - Runs the separate non-JSON `--update-all` pass with the same search scope
+  - Surfaces write failures/timeouts and clears the deadline timer
+  - Accepts process/timer seams for deterministic failure and timeout tests
+
 - **Type System** (`types.ts`):
   - Defines `CliLanguage` (25 supported languages) and `CliMatch`/`SgResult` interfaces
   - Provides type safety for CLI communication and result parsing
@@ -56,9 +61,11 @@ The implementation follows a layered architecture:
 ### Replace Flow
 1. Agent invokes `ast_grep_replace` with pattern, rewrite, language, dry-run flag
 2. Tool calls `runSg()` with `updateAll: !dryRun` to enable actual file writes
-3. CLI performs AST-aware rewrites and returns matches with `replacement` field
-4. Tool formats results with `[DRY RUN]` or `[APPLIED]` indicators and before/after snippets
-5. Output is surfaced to user via metadata
+3. CLI's JSON pass reports matches with `replacement` fields but does not write files
+4. For apply requests with matches in the raw report, a second non-JSON `--update-all` pass writes the files; report truncation never gates writes, and apply failures/timeouts return errors
+5. Tool formats successful results with `[DRY RUN]` or `[APPLIED]` indicators and before/after snippets
+   - Write success is recorded independently of parsed matches; truncated reports retain the applied/dry-run status without claiming complete totals
+6. Output is surfaced to user via metadata
 
 ### Binary Availability Flow
 1. On first use, `getAstGrepPath()` triggers background initialization via `startBackgroundInit()`

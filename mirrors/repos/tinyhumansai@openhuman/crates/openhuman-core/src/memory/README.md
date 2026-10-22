@@ -360,9 +360,10 @@ forget` tool. `learn` stamps the item with facts the model does not choose:
 - Upstream `tinymemory_api::Error` values map at the RPC boundary ([`error.rs`](./error.rs)):
   every RPC failure carries one of `MEMORY_OFF`,
   `UNSUPPORTED`, `INVALID_REQUEST`, `UNAUTHORIZED`, `INSUFFICIENT_CREDITS`,
-  `UNAVAILABLE` or `ENGINE` in `data.code`. The two account-wide refusals are
-  split out so a caller can tell "top up" and "try later" apart from an
-  engine fault.
+  `PLAN_REQUIRED`, `UNAVAILABLE` or `ENGINE` in `data.code`. The account-wide
+  refusals are split out so a caller can tell "top up", "upgrade" and "try
+  later" apart from an engine fault. `PLAN_REQUIRED` (memory not in the
+  account's plan, a hosted 403) never signs the user out (#8081).
 
 ## RPC / CLI surface
 

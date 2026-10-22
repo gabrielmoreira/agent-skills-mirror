@@ -45,6 +45,7 @@ record types preserve populated persisted JSON, including metadata and lineage.
 | [`tool_required_routing.rs`](tool_required_routing.rs) | Native host tool metadata for GPT, Kimi and MiniMax model IDs; premature JSON refusal; required successful execution before final schema; gateway options survive. |
 | [`completion_cancellation.rs`](completion_cancellation.rs) | Cancellation acknowledged after the provider future stops, pre-cancelled calls make no request, and deadlines are typed. |
 | [`structured_validation.rs`](structured_validation.rs) | Full schema constraints, invalid/external schema refusal before dispatch, typed failures and bounded repair usage. |
+| [`dispatch_admission_turn.rs`](dispatch_admission_turn.rs) | A host refusal on structured repair stays typed, retains the paid response usage, stops before configured fallback, and emits no phantom physical-dispatch event. |
 | [`turn_observers.rs`](turn_observers.rs) | Terminal error privacy, explicit input capture, and exactly one terminal callback on dispatch failure. |
 | [`observed_turns.rs`](observed_turns.rs) | Actual model and host-tool observations survive the core runtime task hop; payloads require consent; actual model, finish reason and reasoning usage. |
 | [`public_api.rs`](public_api.rs) | Compile-time check that the host-facing types and signatures stay exported. |

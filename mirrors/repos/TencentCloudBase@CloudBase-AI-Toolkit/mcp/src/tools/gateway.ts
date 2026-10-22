@@ -23,6 +23,7 @@ const QUERY_GATEWAY_ACTIONS = [
   "getRoute",
   "listCustomDomains",
   "getPrivilege",
+  "cachePurgeTask",
 ] as const;
 
 const MANAGE_GATEWAY_ACTIONS = [
@@ -35,6 +36,7 @@ const MANAGE_GATEWAY_ACTIONS = [
   "deleteCustomDomain",
   "enableService",
   "authSwitch",
+  "purgeCache",
 ] as const;
 
 /** DomainType of the environment default HTTP service (gateway) domain. */
@@ -46,11 +48,37 @@ const UPSTREAM_RESOURCE_TYPES = [
   "CBR",
   "STATIC_STORE",
   "LH",
+  "STORAGE",
+] as const;
+
+/** Domain-level protocol accepted by HTTPServiceDomainParam. */
+const DOMAIN_PROTOCOLS = [
+  "HTTP",
+  "HTTPS",
+  "HTTP_AND_HTTPS",
+  "HTTP_TO_HTTPS",
+  "HTTPS_TO_HTTP",
+] as const;
+
+/** Cache layer that owns the purged objects (CDN vs EdgeOne). */
+const CACHE_TYPES = ["CDN", "EO"] as const;
+
+const PURGE_TYPES = ["PURGE_URL", "PURGE_PREFIX", "PURGE_HOST"] as const;
+
+const HEADER_ADD_ACTIONS = [
+  "APPEND_IF_EXISTS_OR_ADD",
+  "ADD_IF_ABSENT",
+  "OVERWRITE_IF_EXISTS_OR_ADD",
+  "OVERWRITE_IF_EXISTS",
 ] as const;
 
 type QueryGatewayAction = (typeof QUERY_GATEWAY_ACTIONS)[number];
 type ManageGatewayAction = (typeof MANAGE_GATEWAY_ACTIONS)[number];
 type UpstreamResourceType = (typeof UPSTREAM_RESOURCE_TYPES)[number];
+type DomainProtocol = (typeof DOMAIN_PROTOCOLS)[number];
+type CacheType = (typeof CACHE_TYPES)[number];
+type PurgeType = (typeof PURGE_TYPES)[number];
+type HeaderAddAction = (typeof HEADER_ADD_ACTIONS)[number];
 
 type GatewayToolEnvelope = {
   success: boolean;
@@ -69,6 +97,67 @@ type QueryGatewayInput = {
   routeId?: string;
   path?: string;
   domain?: string;
+  /** cachePurgeTask only */
+  cacheType?: CacheType;
+  taskId?: string;
+  purgeType?: PurgeType;
+  startTime?: string;
+  endTime?: string;
+  offset?: number;
+  limit?: number;
+};
+
+type HeaderToAddInput = {
+  key: string;
+  value: string;
+  action?: HeaderAddAction;
+};
+
+type HeadersHandlerInput = {
+  requestHeadersToAdd?: HeaderToAddInput[];
+  requestHeadersToRemove?: string[];
+  responseHeadersToAdd?: HeaderToAddInput[];
+  responseHeadersToRemove?: string[];
+};
+
+type CacheRuleInput = {
+  description?: string;
+  enable?: boolean;
+  condition?: {
+    target?: "url_path" | "file_extension" | "full_uri";
+    matchType?: "prefix" | "suffix" | "contains" | "exact";
+    values?: string[];
+  };
+  actions?: Array<{
+    type?: "Cache" | "CacheKey";
+    cache?: {
+      followOrigin?: boolean;
+      noCache?: boolean;
+      cacheTime?: number;
+      maxAgeTime?: number;
+    };
+    cacheKey?: {
+      fullUrlCache?: "on" | "off";
+      queryStringSwitch?: "on" | "off";
+      queryStringAction?: "includeCustom" | "excludeCustom";
+      queryStringValues?: string[];
+    };
+  }>;
+};
+
+type ExtensionInput = {
+  headersHandler?: HeadersHandlerInput;
+  cache?: { rules?: CacheRuleInput[] };
+};
+
+type PathRewriteInput = {
+  prefix?: string;
+  staticStorePrefix?: string;
+};
+
+type QpsPolicyInput = {
+  total?: number;
+  perClient?: { limitBy?: "ClientIP" | "UserID"; limitValue?: number };
 };
 
 type ManageGatewayInput = {
@@ -78,12 +167,24 @@ type ManageGatewayInput = {
   upstreamResourceType?: UpstreamResourceType;
   auth?: boolean;
   enablePathTransmission?: boolean;
+  enableSafeDomain?: boolean;
+  pathRewrite?: PathRewriteInput;
+  qpsPolicy?: QpsPolicyInput;
+  extension?: ExtensionInput;
+  /** Domain-level Extension (HeadersHandler / Cache), applies to createRoute/updateRoute/bindCustomDomain. */
+  domainExtension?: ExtensionInput;
+  /** Domain-level Protocol, applies to createRoute/updateRoute/bindCustomDomain. */
+  protocol?: DomainProtocol;
   route?: {
     path?: string;
     serviceName?: string;
     upstreamResourceType?: UpstreamResourceType;
     auth?: boolean;
     enablePathTransmission?: boolean;
+    enableSafeDomain?: boolean;
+    pathRewrite?: PathRewriteInput;
+    qpsPolicy?: QpsPolicyInput;
+    extension?: ExtensionInput;
     /** Route-level Enable (createRoute / updateRoute). */
     enable?: boolean;
   };
@@ -92,6 +193,10 @@ type ManageGatewayInput = {
   accessType?: "DIRECT" | "CDN" | "CUSTOM";
   customCname?: string;
   enable?: boolean;
+  /** purgeCache only */
+  cacheType?: CacheType;
+  purgeType?: PurgeType;
+  targets?: string[];
 };
 
 /** HTTP 网关总开关与访问鉴权状态（DescribeCloudBaseGWPrivilege）。 */
@@ -121,6 +226,253 @@ function normalizeAccessPath(path: string | undefined): string {
   }
 
   return path.startsWith("/") ? path : `/${path}`;
+}
+
+// ---------------------------------------------------------------------------
+// Route/Domain extension schemas (aligned with manager-node HTTPServiceRouteParam)
+// ---------------------------------------------------------------------------
+
+const headerToAddSchema = z.object({
+  key: z.string().describe("gateway.schema.manage.extension.header.key"),
+  value: z.string().describe("gateway.schema.manage.extension.header.value"),
+  action: z
+    .enum(HEADER_ADD_ACTIONS)
+    .optional()
+    .describe("gateway.schema.manage.extension.header.action"),
+});
+
+const headersHandlerSchema = z.object({
+  requestHeadersToAdd: z.array(headerToAddSchema).optional(),
+  requestHeadersToRemove: z.array(z.string()).optional(),
+  responseHeadersToAdd: z.array(headerToAddSchema).optional(),
+  responseHeadersToRemove: z.array(z.string()).optional(),
+});
+
+const cacheRuleSchema = z.object({
+  description: z.string().optional(),
+  enable: z.boolean().optional(),
+  condition: z
+    .object({
+      target: z.enum(["url_path", "file_extension", "full_uri"]).optional(),
+      matchType: z.enum(["prefix", "suffix", "contains", "exact"]).optional(),
+      values: z.array(z.string()).optional(),
+    })
+    .describe("gateway.schema.manage.extension.cacheCondition"),
+  actions: z
+    .array(
+      z.object({
+        type: z.enum(["Cache", "CacheKey"]).optional(),
+        cache: z
+          .object({
+            followOrigin: z.boolean().optional(),
+            noCache: z.boolean().optional(),
+            cacheTime: z.number().int().min(0).optional(),
+            maxAgeTime: z.number().int().min(0).optional(),
+          })
+          .optional(),
+        cacheKey: z
+          .object({
+            fullUrlCache: z.enum(["on", "off"]).optional(),
+            queryStringSwitch: z.enum(["on", "off"]).optional(),
+            queryStringAction: z.enum(["includeCustom", "excludeCustom"]).optional(),
+            queryStringValues: z.array(z.string()).optional(),
+          })
+          .optional(),
+      }),
+    )
+    .describe("gateway.schema.manage.extension.cacheActions"),
+});
+
+const extensionSchema = z.object({
+  headersHandler: headersHandlerSchema.optional(),
+  cache: z.object({ rules: z.array(cacheRuleSchema).optional() }).optional(),
+});
+
+const pathRewriteSchema = z.object({
+  prefix: z.string().optional(),
+  staticStorePrefix: z.string().optional(),
+});
+
+const qpsPolicySchema = z.object({
+  total: z.number().int().min(0).optional(),
+  perClient: z
+    .object({
+      limitBy: z.enum(["ClientIP", "UserID"]).optional(),
+      limitValue: z.number().int().min(1).optional(),
+    })
+    .optional(),
+});
+
+function toHeadersHandler(input?: HeadersHandlerInput) {
+  if (!input) {
+    return undefined;
+  }
+  const output: {
+    RequestHeadersToAdd?: Array<{ Key: string; Value: string; Action?: HeaderAddAction }>;
+    RequestHeadersToRemove?: string[];
+    ResponseHeadersToAdd?: Array<{ Key: string; Value: string; Action?: HeaderAddAction }>;
+    ResponseHeadersToRemove?: string[];
+  } = {};
+  const toHeader = (item: HeaderToAddInput) =>
+    item.action
+      ? { Key: item.key, Value: item.value, Action: item.action }
+      : { Key: item.key, Value: item.value };
+  if (input.requestHeadersToAdd?.length) {
+    output.RequestHeadersToAdd = input.requestHeadersToAdd.map(toHeader);
+  }
+  if (input.requestHeadersToRemove?.length) {
+    output.RequestHeadersToRemove = input.requestHeadersToRemove;
+  }
+  if (input.responseHeadersToAdd?.length) {
+    output.ResponseHeadersToAdd = input.responseHeadersToAdd.map(toHeader);
+  }
+  if (input.responseHeadersToRemove?.length) {
+    output.ResponseHeadersToRemove = input.responseHeadersToRemove;
+  }
+  return Object.keys(output).length ? output : undefined;
+}
+
+function toCacheSet(input?: { rules?: CacheRuleInput[] }) {
+  if (!input?.rules?.length) {
+    return undefined;
+  }
+  return {
+    Rules: input.rules.map((rule) => ({
+      ...(rule.description !== undefined ? { Description: rule.description } : {}),
+      ...(rule.enable !== undefined ? { Enable: rule.enable } : {}),
+      Condition: {
+        ...(rule.condition?.target ? { Target: rule.condition.target } : {}),
+        ...(rule.condition?.matchType ? { MatchType: rule.condition.matchType } : {}),
+        ...(rule.condition?.values ? { Values: rule.condition.values } : {}),
+      },
+      Actions: (rule.actions ?? []).map((action) => ({
+        ...(action.type ? { Type: action.type } : {}),
+        ...(action.cache
+          ? {
+              Cache: {
+                ...(action.cache.followOrigin !== undefined
+                  ? { FollowOrigin: action.cache.followOrigin }
+                  : {}),
+                ...(action.cache.noCache !== undefined
+                  ? { NoCache: action.cache.noCache }
+                  : {}),
+                ...(action.cache.cacheTime !== undefined
+                  ? { CacheTime: action.cache.cacheTime }
+                  : {}),
+                ...(action.cache.maxAgeTime !== undefined
+                  ? { MaxAgeTime: action.cache.maxAgeTime }
+                  : {}),
+              },
+            }
+          : {}),
+        ...(action.cacheKey
+          ? {
+              CacheKey: {
+                ...(action.cacheKey.fullUrlCache
+                  ? { FullURLCache: action.cacheKey.fullUrlCache }
+                  : {}),
+                ...(action.cacheKey.queryStringSwitch
+                  ? { QueryStringSwitch: action.cacheKey.queryStringSwitch }
+                  : {}),
+                ...(action.cacheKey.queryStringAction
+                  ? { QueryStringAction: action.cacheKey.queryStringAction }
+                  : {}),
+                ...(action.cacheKey.queryStringValues
+                  ? { QueryStringValues: action.cacheKey.queryStringValues }
+                  : {}),
+              },
+            }
+          : {}),
+      })),
+    })),
+  };
+}
+
+function toExtension(input?: ExtensionInput) {
+  if (!input) {
+    return undefined;
+  }
+  const output: Record<string, unknown> = {};
+  const headersHandler = toHeadersHandler(input.headersHandler);
+  if (headersHandler) {
+    output.HeadersHandler = headersHandler;
+  }
+  const cache = toCacheSet(input.cache);
+  if (cache) {
+    output.Cache = cache;
+  }
+  return Object.keys(output).length ? output : undefined;
+}
+
+function toPathRewrite(input?: PathRewriteInput) {
+  if (!input) {
+    return undefined;
+  }
+  const output: { Prefix?: string; StaticStorePrefix?: string } = {};
+  if (typeof input.prefix === "string") {
+    output.Prefix = input.prefix;
+  }
+  if (typeof input.staticStorePrefix === "string") {
+    output.StaticStorePrefix = input.staticStorePrefix;
+  }
+  return Object.keys(output).length ? output : undefined;
+}
+
+function toQpsPolicy(input?: QpsPolicyInput) {
+  if (!input) {
+    return undefined;
+  }
+  const output: {
+    QPSTotal?: number;
+    QPSPerClient?: { LimitBy?: "ClientIP" | "UserID"; LimitValue?: number };
+  } = {};
+  if (typeof input.total === "number") {
+    output.QPSTotal = input.total;
+  }
+  if (input.perClient) {
+    const perClient: { LimitBy?: "ClientIP" | "UserID"; LimitValue?: number } = {};
+    if (input.perClient.limitBy) {
+      perClient.LimitBy = input.perClient.limitBy;
+    }
+    if (typeof input.perClient.limitValue === "number") {
+      perClient.LimitValue = input.perClient.limitValue;
+    }
+    if (Object.keys(perClient).length) {
+      output.QPSPerClient = perClient;
+    }
+  }
+  return Object.keys(output).length ? output : undefined;
+}
+
+/**
+ * Route fields that ModifyHTTPServiceRoute replaces wholesale. When an update
+ * omits one of them, the existing value must be carried over — otherwise a
+ * partial update (e.g. only bumping QPS) would silently wipe CORS / rewrite /
+ * headers / cache rules.
+ */
+const PRESERVED_ROUTE_FIELDS = [
+  "EnableAuth",
+  "EnableSafeDomain",
+  "EnablePathTransmission",
+  "PathRewrite",
+  "QPSPolicy",
+  "Extension",
+  "Enable",
+] as const;
+
+function carryOverRouteFields(
+  route: Record<string, unknown>,
+  existing: Record<string, unknown> | undefined,
+) {
+  if (!existing) {
+    return route;
+  }
+  for (const field of PRESERVED_ROUTE_FIELDS) {
+    if (route[field] === undefined && existing[field] !== undefined) {
+      route[field] = existing[field];
+    }
+  }
+  return route;
 }
 
 /** Single check item from VerifyHTTPServiceRoute. */
@@ -716,12 +1068,21 @@ export function registerGatewayTools(server: ExtendedMcpServer) {
     EnvId: string;
     Domain: {
       Domain: string;
+      Protocol?: DomainProtocol;
+      Extension?: Record<string, unknown>;
       Routes: Array<{
         Path: string;
         UpstreamResourceType: UpstreamResourceType;
         UpstreamResourceName: string;
         EnableAuth?: boolean;
+        EnableSafeDomain?: boolean;
         EnablePathTransmission?: boolean;
+        PathRewrite?: { Prefix?: string; StaticStorePrefix?: string };
+        QPSPolicy?: {
+          QPSTotal?: number;
+          QPSPerClient?: { LimitBy?: "ClientIP" | "UserID"; LimitValue?: number };
+        };
+        Extension?: Record<string, unknown>;
         Enable?: boolean;
       }>;
     };
@@ -731,6 +1092,7 @@ export function registerGatewayTools(server: ExtendedMcpServer) {
       upstreamResourceType: UpstreamResourceType;
       upstreamResourceName: string;
       enableAuth?: boolean;
+      enableSafeDomain?: boolean;
       enablePathTransmission?: boolean;
       enable?: boolean;
     };
@@ -752,18 +1114,24 @@ export function registerGatewayTools(server: ExtendedMcpServer) {
       input.route?.path ?? input.path ?? `/${upstreamResourceName}`,
     );
     const domain = await resolveRouteDomain(input.domain);
-    const enableAuth =
-      input.route?.auth !== undefined
-        ? input.route.auth
-        : input.auth !== undefined
-          ? input.auth
-          : undefined;
-    const enablePathTransmission =
-      input.route?.enablePathTransmission !== undefined
-        ? input.route.enablePathTransmission
-        : input.enablePathTransmission !== undefined
-          ? input.enablePathTransmission
-          : undefined;
+    const pick = <T,>(routeValue: T | undefined, topValue: T | undefined) =>
+      routeValue !== undefined ? routeValue : topValue;
+    const enableAuth = pick(input.route?.auth, input.auth);
+    const enableSafeDomain = pick(
+      input.route?.enableSafeDomain,
+      input.enableSafeDomain,
+    );
+    const enablePathTransmission = pick(
+      input.route?.enablePathTransmission,
+      input.enablePathTransmission,
+    );
+    const routePathRewrite = toPathRewrite(
+      pick(input.route?.pathRewrite, input.pathRewrite),
+    );
+    const routeQpsPolicy = toQpsPolicy(
+      pick(input.route?.qpsPolicy, input.qpsPolicy),
+    );
+    const routeExtension = toExtension(pick(input.route?.extension, input.extension));
     // Route enable: prefer route.enable. For updateRoute only, top-level
     // enable also maps to Route.Enable (enableService/authSwitch use the
     // same field name but different actions).
@@ -780,25 +1148,50 @@ export function registerGatewayTools(server: ExtendedMcpServer) {
       UpstreamResourceType: UpstreamResourceType;
       UpstreamResourceName: string;
       EnableAuth?: boolean;
+      EnableSafeDomain?: boolean;
       EnablePathTransmission?: boolean;
+      PathRewrite?: { Prefix?: string; StaticStorePrefix?: string };
+      QPSPolicy?: {
+        QPSTotal?: number;
+        QPSPerClient?: { LimitBy?: "ClientIP" | "UserID"; LimitValue?: number };
+      };
+      Extension?: Record<string, unknown>;
       Enable?: boolean;
     } = {
       Path: path,
       UpstreamResourceType: upstreamResourceType,
       UpstreamResourceName: upstreamResourceName,
-      EnableAuth: enableAuth,
     };
+    if (enableAuth !== undefined) {
+      route.EnableAuth = enableAuth;
+    }
+    if (enableSafeDomain !== undefined) {
+      route.EnableSafeDomain = enableSafeDomain;
+    }
     if (enablePathTransmission !== undefined) {
       route.EnablePathTransmission = enablePathTransmission;
+    }
+    if (routePathRewrite) {
+      route.PathRewrite = routePathRewrite;
+    }
+    if (routeQpsPolicy) {
+      route.QPSPolicy = routeQpsPolicy;
+    }
+    if (routeExtension) {
+      route.Extension = routeExtension;
     }
     if (routeEnable !== undefined) {
       route.Enable = routeEnable;
     }
 
+    const domainExtension = toExtension(input.domainExtension);
+
     return {
       EnvId: await resolveEnvId(),
       Domain: {
         Domain: domain,
+        ...(input.protocol ? { Protocol: input.protocol } : {}),
+        ...(domainExtension ? { Extension: domainExtension } : {}),
         Routes: [route],
       },
       resolved: {
@@ -807,6 +1200,7 @@ export function registerGatewayTools(server: ExtendedMcpServer) {
         upstreamResourceType,
         upstreamResourceName,
         enableAuth,
+        enableSafeDomain,
         enablePathTransmission,
         enable: routeEnable,
       },
@@ -875,6 +1269,76 @@ export function registerGatewayTools(server: ExtendedMcpServer) {
     }
 
     return matches[0]!;
+  };
+
+  /**
+   * Locate the live record (domain + route) so partial updates can carry over
+   * fields the caller did not touch.
+   */
+  const findExistingRouteRecord = async (domain: string, path: string) => {
+    const result = await listHttpServiceRoutes({ domain });
+    const domainRecord = (result.Domains ?? []).find(
+      (item) => item.Domain === domain,
+    );
+    const route = (domainRecord?.Routes ?? []).find(
+      (item) =>
+        normalizeAccessPath(String((item as { Path?: string }).Path ?? "")) ===
+        path,
+    );
+    return {
+      domainRecord,
+      route: route as unknown as Record<string, unknown> | undefined,
+    };
+  };
+
+  /** CDN vs EO is decided by the domain's access type; default to CDN. */
+  /**
+   * 缓存层由域名的接入方式决定，不能猜。
+   *
+   * - EO / CDN → 对应缓存层
+   * - DIRECT / CUSTOM / NONE → CloudBase 侧没有托管缓存，刷新不适用。
+   *   实测（2026-10-21）对 DIRECT 域发 CDN 刷新，PurgeHTTPServiceCache 会「成功」登记
+   *   一个任务，而 DescribeHTTPServiceCachePurgeTask 随后抛 Third Service Error ——
+   *   即后端对 DIRECT 域缺校验、返回不可读错误。这里提前拦住并说明原因。
+   */
+  const resolveDomainCacheType = async (
+    domain: string,
+    preferred?: CacheType,
+  ): Promise<CacheType> => {
+    const findDomain = (result: { Domains?: Array<{ Domain?: string }> }) =>
+      (result.Domains ?? []).find((item) => item.Domain === domain);
+    let record = findDomain(await listHttpServiceRoutes({ domain }));
+    if (!record) {
+      // 域名下暂时没有路由时，筛 Domain 可能查不到，退回全量再找一次。
+      record = findDomain(await listHttpServiceRoutes());
+    }
+    if (!record) {
+      throw new Error(t("gateway.cache.domainNotFound", { domain }));
+    }
+
+    const accessType = String(
+      (record as { AccessType?: string }).AccessType ?? "",
+    );
+    const boundCacheType: CacheType | undefined =
+      accessType === "EO" ? "EO" : accessType === "CDN" ? "CDN" : undefined;
+    if (!boundCacheType) {
+      throw new Error(
+        t("gateway.cache.notManaged", {
+          domain,
+          accessType: accessType || "UNKNOWN",
+        }),
+      );
+    }
+    if (preferred && preferred !== boundCacheType) {
+      throw new Error(
+        t("gateway.cache.typeMismatch", {
+          domain,
+          accessType: boundCacheType,
+          requested: preferred,
+        }),
+      );
+    }
+    return boundCacheType;
   };
 
   const routeMutationNextActions = (
@@ -1022,6 +1486,41 @@ export function registerGatewayTools(server: ExtendedMcpServer) {
               ],
         );
       }
+      case "cachePurgeTask": {
+        if (!input.domain) {
+          throw new Error(t("gateway.query.cachePurgeTaskDomainRequired"));
+        }
+        const cacheType = await resolveDomainCacheType(
+          input.domain,
+          input.cacheType,
+        );
+        const cloudbase = await getManager();
+        const result = await cloudbase.env.describeHttpServiceCachePurgeTask({
+          EnvId: await resolveEnvId(),
+          Domain: input.domain,
+          CacheType: cacheType,
+          ...(input.taskId ? { TaskId: input.taskId } : {}),
+          ...(input.purgeType ? { PurgeType: input.purgeType } : {}),
+          ...(input.startTime ? { StartTime: input.startTime } : {}),
+          ...(input.endTime ? { EndTime: input.endTime } : {}),
+          ...(input.offset !== undefined ? { Offset: input.offset } : {}),
+          ...(input.limit !== undefined ? { Limit: input.limit } : {}),
+        } as any);
+        logCloudBaseResult(server.logger, result);
+        const tasks = Array.isArray(result?.Tasks) ? result.Tasks : [];
+
+        return buildEnvelope(
+          {
+            action: input.action,
+            domain: input.domain,
+            cacheType,
+            tasks,
+            total: result?.TotalCount ?? tasks.length,
+            raw: result,
+          },
+          t("gateway.query.cachePurgeTask", { count: tasks.length }),
+        );
+      }
       default:
         throw new Error(t("gateway.error.unsupportedAction", { action: input.action }));
     }
@@ -1141,6 +1640,7 @@ export function registerGatewayTools(server: ExtendedMcpServer) {
             upstreamResourceType: payload.resolved.upstreamResourceType,
             upstreamResourceName: payload.resolved.upstreamResourceName,
             auth: payload.resolved.enableAuth ?? null,
+            enableSafeDomain: payload.resolved.enableSafeDomain ?? null,
             enablePathTransmission:
               payload.resolved.enablePathTransmission ?? null,
             accessUrl: `https://${payload.resolved.domain}${payload.resolved.path}`,
@@ -1174,6 +1674,20 @@ export function registerGatewayTools(server: ExtendedMcpServer) {
       case "updateRoute": {
         const cloudbase = await getManager();
         const payload = await normalizeRoutePayload(input);
+        // Preserve untouched route/domain fields from the live record: the
+        // backend replaces the whole route entry, so a partial update would
+        // otherwise wipe CORS / rewrite / QPS / headers / cache settings.
+        const existing = await findExistingRouteRecord(
+          payload.resolved.domain,
+          payload.resolved.path,
+        );
+        carryOverRouteFields(
+          payload.Domain.Routes[0] as unknown as Record<string, unknown>,
+          existing.route,
+        );
+        if (!payload.Domain.Protocol && existing.domainRecord?.Protocol) {
+          payload.Domain.Protocol = existing.domainRecord.Protocol as DomainProtocol;
+        }
         const result = await cloudbase.env.modifyHttpServiceRoute({
           EnvId: payload.EnvId,
           Domain: payload.Domain,
@@ -1193,6 +1707,7 @@ export function registerGatewayTools(server: ExtendedMcpServer) {
             upstreamResourceType: payload.resolved.upstreamResourceType,
             upstreamResourceName: payload.resolved.upstreamResourceName,
             auth: payload.resolved.enableAuth ?? null,
+            enableSafeDomain: payload.resolved.enableSafeDomain ?? null,
             enablePathTransmission:
               payload.resolved.enablePathTransmission ?? null,
             enable: payload.resolved.enable ?? null,
@@ -1278,14 +1793,7 @@ export function registerGatewayTools(server: ExtendedMcpServer) {
               ? input.enablePathTransmission
               : (existing.EnablePathTransmission as boolean | undefined);
 
-        const route: {
-          Path: string;
-          UpstreamResourceType: UpstreamResourceType;
-          UpstreamResourceName: string;
-          Enable: boolean;
-          EnableAuth?: boolean;
-          EnablePathTransmission?: boolean;
-        } = {
+        const route: Record<string, unknown> = {
           Path: normalizedPath,
           UpstreamResourceType: upstreamResourceType,
           UpstreamResourceName: upstreamResourceName,
@@ -1297,6 +1805,11 @@ export function registerGatewayTools(server: ExtendedMcpServer) {
         if (enablePathTransmission !== undefined) {
           route.EnablePathTransmission = enablePathTransmission;
         }
+        if (input.enableSafeDomain !== undefined) {
+          route.EnableSafeDomain = input.enableSafeDomain;
+        }
+        // Toggling Enable must not drop CORS / rewrite / QPS / headers / cache.
+        carryOverRouteFields(route, existing as unknown as Record<string, unknown>);
 
         const cloudbase = await getManager();
         const result = await cloudbase.env.modifyHttpServiceRoute({
@@ -1407,6 +1920,7 @@ export function registerGatewayTools(server: ExtendedMcpServer) {
           CertId: input.certificateId || "",
           AccessType: accessType,
           Enable: input.enable !== undefined ? input.enable : true,
+          ...(input.protocol ? { Protocol: input.protocol } : {}),
           ...(input.customCname ? { CustomCname: input.customCname } : {}),
         };
         const verifyFailure = await verifyHttpServiceRouteOrFail({
@@ -1433,6 +1947,7 @@ export function registerGatewayTools(server: ExtendedMcpServer) {
             Domain: input.domain,
             CertId: certificateId,
             AccessType: accessType,
+            ...(input.protocol ? { Protocol: input.protocol } : {}),
             ...(input.enable !== undefined
               ? { Enable: input.enable }
               : {}),
@@ -1582,6 +2097,51 @@ export function registerGatewayTools(server: ExtendedMcpServer) {
           ],
         );
       }
+      case "purgeCache": {
+        if (!input.domain) {
+          throw new Error(t("gateway.purgeCache.domainRequired"));
+        }
+        const targets = (input.targets ?? [])
+          .map((item) => (typeof item === "string" ? item.trim() : ""))
+          .filter(Boolean);
+        if (!targets.length) {
+          throw new Error(t("gateway.purgeCache.targetsRequired"));
+        }
+        const purgeType = input.purgeType ?? "PURGE_URL";
+        const cacheType = await resolveDomainCacheType(
+          input.domain,
+          input.cacheType,
+        );
+        const cloudbase = await getManager();
+        const result = await cloudbase.env.purgeHttpServiceCache({
+          EnvId: await resolveEnvId(),
+          Domain: input.domain,
+          CacheType: cacheType,
+          PurgeType: purgeType,
+          Targets: targets,
+        } as any);
+        logCloudBaseResult(server.logger, result);
+
+        return buildEnvelope(
+          {
+            action: input.action,
+            domain: input.domain,
+            cacheType,
+            purgeType,
+            targets,
+            taskId: (result as { TaskId?: string } | undefined)?.TaskId ?? null,
+            raw: result,
+          },
+          t("gateway.purgeCache.message", { count: targets.length }),
+          [
+            {
+              tool: "queryGateway",
+              action: "cachePurgeTask",
+              reason: t("gateway.purgeCache.verifyReason"),
+            },
+          ],
+        );
+      }
       default:
         throw new Error(t("gateway.error.unsupportedAction", { action: input.action }));
     }
@@ -1603,6 +2163,19 @@ export function registerGatewayTools(server: ExtendedMcpServer) {
         routeId: z.string().optional().describe("gateway.schema.query.routeId"),
         path: z.string().optional().describe("gateway.schema.query.path"),
         domain: z.string().optional().describe("gateway.schema.query.domain"),
+        cacheType: z
+          .enum(CACHE_TYPES)
+          .optional()
+          .describe("gateway.schema.query.cacheType"),
+        taskId: z.string().optional().describe("gateway.schema.query.taskId"),
+        purgeType: z
+          .enum(PURGE_TYPES)
+          .optional()
+          .describe("gateway.schema.query.purgeType"),
+        startTime: z.string().optional().describe("gateway.schema.query.startTime"),
+        endTime: z.string().optional().describe("gateway.schema.query.endTime"),
+        offset: z.number().int().min(0).optional().describe("gateway.schema.query.offset"),
+        limit: z.number().int().min(1).optional().describe("gateway.schema.query.limit"),
       },
       annotations: {
         readOnlyHint: true,
@@ -1638,6 +2211,26 @@ export function registerGatewayTools(server: ExtendedMcpServer) {
           .boolean()
           .optional()
           .describe("gateway.schema.manage.enablePathTransmission"),
+        enableSafeDomain: z
+          .boolean()
+          .optional()
+          .describe("gateway.schema.manage.enableSafeDomain"),
+        pathRewrite: pathRewriteSchema
+          .optional()
+          .describe("gateway.schema.manage.pathRewrite"),
+        qpsPolicy: qpsPolicySchema
+          .optional()
+          .describe("gateway.schema.manage.qpsPolicy"),
+        extension: extensionSchema
+          .optional()
+          .describe("gateway.schema.manage.extension"),
+        domainExtension: extensionSchema
+          .optional()
+          .describe("gateway.schema.manage.domainExtension"),
+        protocol: z
+          .enum(DOMAIN_PROTOCOLS)
+          .optional()
+          .describe("gateway.schema.manage.protocol"),
         route: z
           .object({
             path: z.string().optional(),
@@ -1654,6 +2247,19 @@ export function registerGatewayTools(server: ExtendedMcpServer) {
               .boolean()
               .optional()
               .describe("gateway.schema.manage.route.enablePathTransmission"),
+            enableSafeDomain: z
+              .boolean()
+              .optional()
+              .describe("gateway.schema.manage.route.enableSafeDomain"),
+            pathRewrite: pathRewriteSchema
+              .optional()
+              .describe("gateway.schema.manage.route.pathRewrite"),
+            qpsPolicy: qpsPolicySchema
+              .optional()
+              .describe("gateway.schema.manage.route.qpsPolicy"),
+            extension: extensionSchema
+              .optional()
+              .describe("gateway.schema.manage.route.extension"),
             enable: z
               .boolean()
               .optional()
@@ -1675,6 +2281,18 @@ export function registerGatewayTools(server: ExtendedMcpServer) {
           .optional()
           .describe("gateway.schema.manage.customCname"),
         enable: z.boolean().optional().describe("gateway.schema.manage.enable"),
+        cacheType: z
+          .enum(CACHE_TYPES)
+          .optional()
+          .describe("gateway.schema.manage.cacheType"),
+        purgeType: z
+          .enum(PURGE_TYPES)
+          .optional()
+          .describe("gateway.schema.manage.purgeType"),
+        targets: z
+          .array(z.string())
+          .optional()
+          .describe("gateway.schema.manage.targets"),
       },
       annotations: {
         readOnlyHint: false,

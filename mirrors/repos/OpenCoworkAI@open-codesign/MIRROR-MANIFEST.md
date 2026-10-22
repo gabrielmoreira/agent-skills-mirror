@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `OpenCoworkAI/open-codesign` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
+Mirror of `OpenCoworkAI/open-codesign` — 26 default patterns, 1 followed patterns, 6 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `OpenCoworkAI/open-codesign` — 26 default patterns, 0 followed patte
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 5 |
+| Followed pats | 1 |
+| Files         | 6 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,7 @@ Mirror of `OpenCoworkAI/open-codesign` — 26 default patterns, 0 followed patte
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `apps/desktop/BACKGROUND_DEBUG.md`
 
 ## File Index
 
@@ -64,6 +64,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 4 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 5 | ✓ | [`website/public/llms.txt`](website/public/llms.txt) |
+| 6 | → | [`apps/desktop/BACKGROUND_DEBUG.md`](apps/desktop/BACKGROUND_DEBUG.md) |
 
 ---
 

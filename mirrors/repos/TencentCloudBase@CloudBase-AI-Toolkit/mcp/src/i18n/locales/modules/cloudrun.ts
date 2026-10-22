@@ -28,7 +28,7 @@ export const cloudrun = defineModule(
     "error.buildManage":
       "[manageCloudRun/{action}] {baseMessage}\n建议：{suggestions}",
     "error.deployTaskRunning":
-      "服务 `{serverName}` 当前已有部署任务在执行，请等待现有任务完成后再重试。",
+      "服务 `{serverName}` 当前已有部署任务在执行。**不要再发起 deploy**：先用 queryCloudRun(action=\"getManageTask\", serverName=\"{serverName}\") 读取该任务的真实状态——已结束就重新部署，长时间停在非终态则带上该输出联系 CloudBase 平台排查。",
     "error.deployTaskRunningForce":
       "注意：`force=true` 仅跳过本工具的确认提示，不会取消或覆盖平台上的发布任务。请先用 queryCloudRun(action=\"getManageTask\", serverName=\"{serverName}\") 确认任务真实状态：若任务已结束却仍报此错，或任务长时间停在非终态，请携带该输出联系 CloudBase 平台排查该环境的发布任务。",
     "error.vpcRequired":
@@ -384,7 +384,7 @@ export const cloudrun = defineModule(
     "error.buildManage":
       "[manageCloudRun/{action}] {baseMessage}\nSuggestions: {suggestions}",
     "error.deployTaskRunning":
-      "Service `{serverName}` already has a deploy task running. Wait for the current task to finish before retrying.",
+      "Service `{serverName}` already has a deploy task running. Do NOT call deploy again: first read the real task state with queryCloudRun(action=\"getManageTask\", serverName=\"{serverName}\") - redeploy once it has finished, or contact the CloudBase platform with that output if it stays in a non-terminal state for a long time.",
     "error.deployTaskRunningForce":
       "Note: `force=true` only skips this tool's confirmation prompt; it does not cancel or override the platform-side deploy task. First confirm the real task state with queryCloudRun(action=\"getManageTask\", serverName=\"{serverName}\"): if the task has already finished but this error persists, or it stays in a non-terminal state for a long time, contact the CloudBase platform with that output to investigate this environment's deploy task.",
     "error.vpcRequired":

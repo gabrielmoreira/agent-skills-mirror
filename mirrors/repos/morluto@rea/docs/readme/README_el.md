@@ -158,6 +158,7 @@ npx rea-agents@latest setup
 | Ιστότοποι                              | Δομή σελίδων, scripts, παρατηρήσεις δικτύου και ζητούμενα στιγμιότυπα οθόνης                                                | Πρόγραμμα περιήγησης της οικογένειας Chrome· [ανάλυση μέσω προγράμματος περιήγησης](../browser-observation.md)                      |
 | Αποθηκευμένες καταγραφές δικτύου       | Αιτήματα, αποκρίσεις, διαθέσιμα δεδομένα φορτίου και θέσεις στην πηγή                                                       | HAR ή SAZ του Fiddler Everywhere· mitmdump σε Linux για την εγγενή μορφή mitmproxy· [οδηγός καταγραφών](../web-network-captures.md) |
 | Assemblies .NET                        | Μεταδεδομένα, εντολές CIL, δηλωμένες εξαρτήσεις από κώδικα μηχανής και συγκρίσεις builds                                    | Καμία πρόσθετη απαίτηση (μόνο στατική ανάλυση)· [οδηγός διαχειριζόμενου κώδικα](../managed-code-analysis.md)                        |
+| PyInstaller                            | CArchive, PYZ, Python bytecode                                                                                              | Static inspection; [Python packaged applications](../python-packaged-applications.md)                                               |
 | APK Android                            | Δηλώσεις manifest, κλάσεις, απομεταγλωττισμένες μέθοδοι και αναφορές                                                        | JADX χωρίς γραφικό περιβάλλον και πλήρες JDK σε Linux/macOS/Windows x64· [οδηγός Android](../android-analysis.md)                   |
 | Συσκευές Android                       | Συσκευές, πακέτα, διεργασίες, logs, dumps, στιγμιότυπα οθόνης και μεταφορές APK/αρχείων                                     | adb που παρέχει ο χρήστης (εξομοιωτής ή φυσική συσκευή)· [οδηγός ADB](../adb-device-analysis.md)                                    |
 | Έργα JEB                               | Μονάδες έργου από τη μηχανή ανάλυσης, ψηφιακά αποτυπώματα αρχείων και ψευδοκώδικα τύπων/μεθόδων                             | Client JEB που έχει ξεκινήσει ο χρήστης και παρέχει MCP, επιλεγμένος μέσω REA_JEB_MCP_URL· [οδηγός JEB](../jeb-analysis.md)         |
@@ -277,6 +278,7 @@ npx rea-agents@latest setup
 
 - [Εγκατάσταση και ρύθμιση](../installation.md): καταχώριση agents, ρύθμιση παρόχων ανάλυσης, ενημερώσεις και απεγκατάσταση.
 - [Έλεγχος ετοιμότητας και αντιμετώπιση προβλημάτων](../installation.md#check-readiness-for-your-task): διάγνωση ενός agent ή μιας μηχανής ανάλυσης.
+- [CUDA / HIP](../gpu-code-objects.md)
 - [GGUF / safetensors](../model-artifacts.md)
 - [CLI και Evidence](../cli.md): εντολές, επιλογή παρόχου, στιγμιότυπα, εισαγωγή/εξαγωγή και κωδικοί εξόδου.
 - [Προδιαγραφές MCP](../mcp-contracts.md) και [prompts για agents](../mcp-prompts.md): αποτελέσματα εργαλείων, συνεδρίες και καθοδηγούμενες διερευνήσεις.

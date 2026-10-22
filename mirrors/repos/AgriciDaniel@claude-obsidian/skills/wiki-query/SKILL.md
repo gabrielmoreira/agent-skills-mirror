@@ -30,12 +30,21 @@ selected vault's `wiki/` directory.
 
 ## Select depth
 
-- **Quick**: read `wiki/hot.md` and `wiki/index.md`; answer only when those
-  pages point to adequate evidence.
+- **Quick**: read `wiki/hot.md` and `wiki/index.md`, then verify the directly
+  linked evidence needed for the answer. Stop when it fully supports the answer
+  without unresolved contradiction; do not run the broader retrieval sequence.
 - **Standard**: retrieve candidates, read the most relevant pages, and follow
   only links that can materially change the answer.
 - **Deep**: broaden the candidate set, inspect competing pages and provenance,
   and state remaining gaps. Deep still means read-only.
+
+Default cumulative read budgets, including orientation and excerpts, are
+12 KiB for Quick, 48 KiB for Standard, and 128 KiB for Deep. Prefer targeted
+heading or line ranges over whole large pages. These are context budgets, not
+permission to truncate evidence silently. Track paths and ranges already read;
+do not reread unchanged passages. If the budget cannot resolve the question,
+state the missing evidence and either use the requested deeper mode or ask
+before substantially broadening the scope.
 
 ## Retrieve
 
@@ -43,7 +52,11 @@ selected vault's `wiki/` directory.
    as a vault.
 2. Read `wiki/hot.md`, then identify the query's entities, time scope, and
    decision context.
-3. Check whether retrieval is verified:
+3. For Quick, follow the cited index links and verify the relevant source or
+   ledger support. If this answers the question, go directly to Assess evidence
+   and Answer. If evidence is missing or contested, report that limit rather
+   than treating a short answer as established. For Standard or Deep, check
+   whether retrieval is verified:
 
    ```bash
    python3 "$CORE" contracts --vault "$VAULT" --verify --capability wiki-retrieve

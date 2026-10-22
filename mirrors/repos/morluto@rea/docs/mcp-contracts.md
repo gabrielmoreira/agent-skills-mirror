@@ -234,11 +234,14 @@ The destination changes only when a complete export is atomically published.
 
 Clients that explicitly configure a larger receive buffer can set the REA
 server's `REA_MCP_MAX_RESPONSE_BYTES` environment variable to the same byte
-count. This setting must be a safe decimal integer at least 10485760; REA
-reserves 1024 bytes for the envelope. Raising it restores complete inline
-delivery for responses that fit that buffer and Node's single-string limit.
-It does not change the client's buffer, analysis coverage, or retained content.
-Ordinary responses keep their existing complete result contract.
+count. This setting must be a safe decimal integer at least 10485760 (10 MiB);
+REA reserves 1024 bytes for the envelope. The value is read when the REA
+process starts, so a change requires a restart and a matching client receive
+buffer. Raising it restores complete inline delivery for responses that fit
+that buffer. It does not raise REA's reserved single-string limit, which is
+1024 UTF-16 code units below Node's single-string ceiling, and it does not
+raise that Node ceiling. It does not change analysis coverage or retained
+content. Ordinary responses keep their existing complete result contract.
 
 ### Error recovery and deadline ownership
 
@@ -329,7 +332,7 @@ See [environment manifests](web-network-captures.md#environment-manifest).
 
 `inspect_analysis_view` also accepts `environment-state` for the same parents,
 extracting the initial state the recorded reads observed: entity types with an
-identity field, entities, documents for written non-entity paths, and a render
+identity field, entities, documents for non-entity reads, and a render
 plan per read tool that reproduces its recordings from the state or names why it
 cannot. Types and identity are inferences, so the Evidence is always inferred.
 See [environment state](web-network-captures.md#environment-state).
@@ -352,10 +355,41 @@ application and semantic coverage. The result carries a digest of the selected
 facts. Actual serialized size determines MCP transport admission: reduce the
 page size or export retained Evidence if the view is too large.
 
+`compare_source_to_bundle` accepts the committed historical graph inline or as
+`reference: {"kind":"file","path":"/absolute/reference.json"}`. The shared
+reader checks resource bounds and the graph's root commitment on every read. File-backed
+comparison Evidence records `parameters.reference_source`: the exact
+`requested_path` and the reader's absolute selected `path`, preserving POSIX
+`..`/symlink semantics. Normalized comparison facts and mapping identities agree
+with inline input; Evidence IDs distinguish caller-selected file origins.
+Omitting `view` preserves the complete comparison. For a compact initial reply,
+select `view: {"kind":"summary"}` or a `source-to-bundle` page; the session retains
+the complete comparison before delivery. Later calls use `inspect_analysis_view`
+with the returned `parent_evidence_id`.
+
+A `source-to-bundle` view selects `collection: "mappings"` or `"candidates"` with
+exact `source_paths`, `mapping_ids`, `statuses`, `fields`, `offset` and `limit`.
+Omitted filters select all; empty arrays select none. The default mapping fields
+include status, confidence, source digest/language and candidate/mapped counts.
+Candidate defaults include kind, score and confidence; request `signals` for exact
+supporting values. Mapping identity and `source_index` always remain; candidates
+also retain `current_node_id`, `candidate_index` and whether they were actually
+mapped. Indices refer to the complete comparison's item array and that item's
+candidate array. All classifications are computed before selection. The original
+`source_coverage` remains separate from page `coverage`; exhausting a page never
+turns unknown correspondence into absence or proves behavioral equivalence.
+
+The CLI accepts the same reference-file alternative (relative paths resolve from
+the working directory). Save its complete `--json` Evidence, then use
+`inspect-analysis-view` with an `evidence-file` source and the same view. Neither
+adapter executes the target or repeats analysis for retained queries.
+
 Completed `inspect_artifact` and atomic `inventory_artifact` Evidence also
 support summary and inventory views. A summary reports the manifest's expected
 counts separately from available record counts, observed entry kinds, inventory
-Evidence IDs and inspection coverage. An inventory view selects `nodes`,
+Evidence IDs, the inventory producer's traversal `source_coverage` and
+inspection coverage. Inspection coverage is `partial` when that traversal
+coverage is unknown. An inventory view selects `nodes`,
 `occurrences`, `edges`, or `integrity_contradictions`, with `offset` and `limit`
 defaulting to 0 and 64. For occurrences, optional `logical_paths` matches exact
 recorded strings: omission selects all available records; `[]` selects none.
@@ -805,13 +839,13 @@ auto-analysis, bridge connection, and health readiness before returning analysis
 
 These deadlines have different owners:
 
-| Deadline             | Owner and effect                                                                                                                                                                                                                    |
-| -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| MCP initialize       | The client bounds transport/REA connection startup, before any target query.                                                                                                                                                        |
-| Hopper startup       | REA allows 120,000 ms by default; `REA_HOPPER_STARTUP_TIMEOUT_MS` accepts decimal integers from 1–2,147,483,647 ms. Invalid values fail configuration validation. Startup failure is reported by the first provider query.          |
-| Ghidra startup       | REA allows 330,000 ms by default; `REA_GHIDRA_STARTUP_TIMEOUT_MS` accepts decimal integers from 1–2,147,483,647 ms. Invalid supplied values fail configuration validation. Startup failure is reported by the first provider query. |
-| Darwin swiftc helper | REA allows 120,000 ms by default for ownership-helper compilation; `REA_SWIFTC_COMPILE_TIMEOUT_MS` accepts decimal integers from 1–2,147,483,647 ms. Invalid values fail configuration validation.                                  |
-| Individual tool call | The client bounds its wait, including cold engine startup. The pinned client SDK 2.3.1 defaults to 60,000 ms and can cancel earlier than REA's startup deadline.                                                                    |
+| Deadline             | Owner and effect                                                                                                                                                                                                                                                                                                    |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| MCP initialize       | The client bounds transport/REA connection startup, before any target query.                                                                                                                                                                                                                                        |
+| Hopper startup       | REA allows 120,000 ms by default; `REA_HOPPER_STARTUP_TIMEOUT_MS` accepts decimal integers from 1–2,147,483,647 ms. Invalid values fail configuration validation. Startup failure is reported by the first provider query.                                                                                          |
+| Ghidra startup       | REA allows 330,000 ms by default; `REA_GHIDRA_STARTUP_TIMEOUT_MS` accepts decimal integers from 1–2,147,483,647 ms. Invalid supplied values fail configuration validation. Startup failure is reported by the first provider query.                                                                                 |
+| Darwin swiftc helper | REA allows 120,000 ms by default for ownership-helper compilation; `REA_SWIFTC_COMPILE_TIMEOUT_MS` accepts decimal integers from 1–2,147,483,647 ms. Invalid values fail configuration validation. Set it in the environment that starts REA and restart REA; the next ownership-helper compile uses the new value. |
+| Individual tool call | The client bounds its wait, including cold engine startup. The pinned client SDK 2.3.1 defaults to 60,000 ms and can cancel earlier than REA's startup deadline.                                                                                                                                                    |
 
 For [Codex and Kimi registrations](client-configuration.md), setup supplies
 missing tool deadlines from the known provider allowance plus 120 seconds of
@@ -819,7 +853,8 @@ operation headroom: 450 seconds with the default Ghidra allowance, or 2820
 seconds with `REA_GHIDRA_STARTUP_TIMEOUT_MS=2700000`. Positive caller-selected
 deadlines remain unchanged. Doctor reports an informational recommendation
 when a configured deadline is shorter than the known provider allowance. An
-explicit JEB upstream request budget also contributes to that allowance.
+explicit JEB upstream deadline (`REA_JEB_MCP_TIMEOUT_MS`, shared by catalog
+discovery and each tools/call) also contributes to that allowance.
 
 For an already connected client using the pinned SDK, request options are the
 **second** argument of `callTool`:
@@ -1018,14 +1053,15 @@ verify the compact advertisement through the same client boundary.
 
 Some function-calling providers reject a request while any single tool's
 `parameters` schema exceeds a literal serialized size cap; Moonshot clients
-such as kimi-cli fail every request while the default catalog is attached
+such as kimi-cli have reported failures with the full catalog attached
 ([#1484](https://github.com/morluto/rea/issues/1484)). Setting the server's
-`REA_MCP_INPUT_SCHEMA_PROFILE` environment variable to `compact` renders every
-advertised input schema within a 13,312-byte budget, measured to sit below
+`REA_MCP_INPUT_SCHEMA_PROFILE` environment variable to `compact` (the default)
+renders every advertised input schema within a 13,312-byte budget, measured to sit below
 Moonshot's observed cap (community measurements: a 13.7 KB schema is accepted
 while a ~15 KB one is rejected). The setting is read at startup; restart the
-server to apply changes, as with `REA_MCP_MAX_RESPONSE_BYTES`. The default
-value `full` keeps the complete advertisement unchanged. Compact presentation
+server to apply changes, as with `REA_MCP_MAX_RESPONSE_BYTES`. Explicitly select
+`full` to retain complete advertised input guidance and nested validation detail.
+Existing explicit profile choices are preserved. Compact presentation
 also reduces schemas whose expanded JSON tree exceeds ten levels, the limit
 reported by strict-depth MCP clients in [#2813](https://github.com/morluto/rea/issues/2813).
 WorkBuddy/CodeBuddy gateways have also rejected full REA catalogs with an

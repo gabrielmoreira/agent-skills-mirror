@@ -345,8 +345,8 @@ every executable in the bundle. It also lists missing or weak loads and earlier
 `architecture`. System paths stay undetermined because the dyld shared cache
 provides them.
 
-Use `extract_artifact` when materialized files are needed. It extracts the active
-target and accepts optional `integrity_policy`; see the [MCP contracts](https://github.com/morluto/rea/blob/main/docs/mcp-contracts.md).
+Use `extract_artifact` when materialized files from a supported format are needed.
+It extracts the active target and accepts optional `integrity_policy`; see the [MCP contracts](https://github.com/morluto/rea/blob/main/docs/mcp-contracts.md).
 It materializes all regular files into a fresh temporary directory chosen by
 REA. Symlinks and encrypted entries are inventory facts, not extractable files.
 The result reports the materialized directory; callers do not choose the
@@ -355,8 +355,11 @@ destination. No separate permission grant is needed.
 Native DMG traversal automatically uses a read-only mount on supported macOS
 hosts, with an owned temporary mount directory and cleanup. It needs no approval
 flag. Unsupported hosts or mount failures remain explicit limitations; do not
-claim child inventory when only root identity is available. Extraction is a
-separate filesystem-writing operation.
+claim child inventory when only root identity is available. DMG extraction is
+unavailable through `extract_artifact`. To access DMG files on macOS, create a
+read-only mount with your own tools, select files from that mount for analysis,
+and detach the mount you created when finished. REA's inspection mount is
+temporary, not a retained export of the image's contents.
 
 For headerless DOS COM, explicitly open with `format: "dos-com"` (CLI
 `--target-format dos-com`). Inspect the load image before trusting function

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `AgriciDaniel/claude-obsidian` — 26 default patterns, 0 followed patterns, 42 file(s) materialized.
+Mirror of `AgriciDaniel/claude-obsidian` — 26 default patterns, 0 followed patterns, 46 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `AgriciDaniel/claude-obsidian` — 26 default patterns, 0 followed pat
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 42 |
+| Files         | 46 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -89,18 +89,22 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 28 | ✓ | [`skills/wiki-mode/templates/zettel/atomic-template.md`](skills/wiki-mode/templates/zettel/atomic-template.md) |
 | 29 | ✓ | [`skills/wiki-query/SKILL.md`](skills/wiki-query/SKILL.md) |
 | 30 | ✓ | [`skills/wiki-retrieve/SKILL.md`](skills/wiki-retrieve/SKILL.md) |
-| 31 | ✓ | [`skills/wiki/references/css-snippets.md`](skills/wiki/references/css-snippets.md) |
-| 32 | ✓ | [`skills/wiki/references/frontmatter.md`](skills/wiki/references/frontmatter.md) |
-| 33 | ✓ | [`skills/wiki/references/git-setup.md`](skills/wiki/references/git-setup.md) |
-| 34 | ✓ | [`skills/wiki/references/install-modes.md`](skills/wiki/references/install-modes.md) |
-| 35 | ✓ | [`skills/wiki/references/mcp-setup.md`](skills/wiki/references/mcp-setup.md) |
-| 36 | ✓ | [`skills/wiki/references/modes.md`](skills/wiki/references/modes.md) |
-| 37 | ✓ | [`skills/wiki/references/operation-transactions.md`](skills/wiki/references/operation-transactions.md) |
-| 38 | ✓ | [`skills/wiki/references/plugins.md`](skills/wiki/references/plugins.md) |
-| 39 | ✓ | [`skills/wiki/references/provenance.md`](skills/wiki/references/provenance.md) |
-| 40 | ✓ | [`skills/wiki/references/rest-api.md`](skills/wiki/references/rest-api.md) |
-| 41 | ✓ | [`skills/wiki/SKILL.md`](skills/wiki/SKILL.md) |
-| 42 | ✓ | [`tests/fixtures/contracts/valid/skills/example/SKILL.md`](tests/fixtures/contracts/valid/skills/example/SKILL.md) |
+| 31 | ✓ | [`skills/wiki/references/coordination.md`](skills/wiki/references/coordination.md) |
+| 32 | ✓ | [`skills/wiki/references/css-snippets.md`](skills/wiki/references/css-snippets.md) |
+| 33 | ✓ | [`skills/wiki/references/dataview.md`](skills/wiki/references/dataview.md) |
+| 34 | ✓ | [`skills/wiki/references/frontmatter.md`](skills/wiki/references/frontmatter.md) |
+| 35 | ✓ | [`skills/wiki/references/git-setup.md`](skills/wiki/references/git-setup.md) |
+| 36 | ✓ | [`skills/wiki/references/install-modes.md`](skills/wiki/references/install-modes.md) |
+| 37 | ✓ | [`skills/wiki/references/knowledge-recipes.md`](skills/wiki/references/knowledge-recipes.md) |
+| 38 | ✓ | [`skills/wiki/references/mcp-setup.md`](skills/wiki/references/mcp-setup.md) |
+| 39 | ✓ | [`skills/wiki/references/model-guidance.md`](skills/wiki/references/model-guidance.md) |
+| 40 | ✓ | [`skills/wiki/references/modes.md`](skills/wiki/references/modes.md) |
+| 41 | ✓ | [`skills/wiki/references/operation-transactions.md`](skills/wiki/references/operation-transactions.md) |
+| 42 | ✓ | [`skills/wiki/references/plugins.md`](skills/wiki/references/plugins.md) |
+| 43 | ✓ | [`skills/wiki/references/provenance.md`](skills/wiki/references/provenance.md) |
+| 44 | ✓ | [`skills/wiki/references/rest-api.md`](skills/wiki/references/rest-api.md) |
+| 45 | ✓ | [`skills/wiki/SKILL.md`](skills/wiki/SKILL.md) |
+| 46 | ✓ | [`tests/fixtures/contracts/valid/skills/example/SKILL.md`](tests/fixtures/contracts/valid/skills/example/SKILL.md) |
 
 ---
 

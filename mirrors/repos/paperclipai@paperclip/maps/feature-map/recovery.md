@@ -222,6 +222,14 @@ cover quiet live recovery, read-only access, stale or missing stop proof,
 source-only repair, and preserved task status. These tests use fixtures; separately
 verify original files and their attached artifact before recording a real repair.
 
+For a source with a retained-file protection marker, exercise recovery through
+the assembled environment runtime. Its exact preservation owner may reopen the
+stopped allocation to read saved files; ordinary resume stays blocked. Reject a
+changed claim, missing stop intent, wrong lease or wrong environment before a
+provider call. Verify saved and newer local files, one preservation receipt, and
+no additional agent turn. The PostgreSQL regression covers this boundary; the
+opt-in provider probe also uses this runtime path with the protection marker.
+
 Repeat source-only repair with a `succeeded` legacy run that still has a retained
 file obligation. Its result must remain successful, its current task owner and
 status must stay unchanged, and later saved input must become eligible for normal

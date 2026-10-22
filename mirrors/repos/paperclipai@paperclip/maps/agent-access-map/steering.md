@@ -141,7 +141,9 @@ Agent access: `restricted` — Board control APIs; agent paperclip_finish/paperc
 for its own turn.
 
 Policy: Queue inspection follows task visibility; queued user-message mutation and run
-cancellation require a board actor/user.
+cancellation require a board actor/user. A saved pre-Stop message does not authorize
+automatic resumption. A later authorized user message may continue with retained
+input after current cleanup, ownership, and budget gates pass.
 
 Evidence: `source-only` — [implementation](../../server/src/routes/issues.ts#L16166) at
 the reviewed commit above.

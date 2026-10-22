@@ -1,4 +1,4 @@
-import { mkdirSync, rmSync, utimesSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, rmSync, utimesSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -750,6 +750,7 @@ describe("flat credential storage", () => {
   });
 
   it("should log out the single credential instead of deleting one slot", async () => {
+    rmSync(projectAuthDir, { recursive: true, force: true });
     authStoreData.credential = {
       secretId: "flat-sid",
       secretKey: "flat-skey",
@@ -759,7 +760,8 @@ describe("flat credential storage", () => {
     const { logout } = await import("./auth.js");
     await logout({ site: "intl" });
 
-    expect(mockAuthLogout).toHaveBeenCalledWith({ cwd: expect.any(String) });
+    // 只退账号登录：不传 cwd，避免 toolbox 顺手把项目级凭据一起删掉
+    expect(mockAuthLogout.mock.calls[0]).toHaveLength(0);
     expect(mockAuthStore.set).not.toHaveBeenCalled();
   });
 
@@ -1001,6 +1003,191 @@ describe("project-level credential priority", () => {
     expect(loginState?.envId).toBe("env-global");
     expect(getCredentialSource()).toBe("global");
     expect(mockCheckAndGetCredential).not.toHaveBeenCalled();
+  });
+});
+
+/**
+ * `logout` 能不能清掉环境变量里那份凭据：只有来自项目级文件的那份才清得掉。
+ * 用户自己在 shell / 宿主配置里设的变量，进程删不掉，工具层只能提示他去源头改。
+ */
+describe("env credential removability for logout", () => {
+  beforeEach(() => {
+    vi.resetModules();
+    delete process.env.CLOUDBASE_API_KEY;
+    delete process.env.CLOUDBASE_APIKEY;
+    delete process.env.CLOUDBASE_ENV_ID;
+    mockAuthGetLoginState.mockResolvedValue(null);
+    mockCheckAndGetCredential.mockResolvedValue(null);
+  });
+
+  afterEach(() => {
+    rmSync(projectAuthDir, { recursive: true, force: true });
+    delete process.env.CLOUDBASE_API_KEY;
+    delete process.env.CLOUDBASE_APIKEY;
+    delete process.env.CLOUDBASE_ENV_ID;
+  });
+
+  function writeProjectCredential(credential: Record<string, unknown>) {
+    mkdirSync(projectAuthDir, { recursive: true });
+    writeFileSync(join(projectAuthDir, "auth.json"), JSON.stringify({ credential }));
+  }
+
+  it("should be removable when the env credential equals the project-level file", async () => {
+    writeProjectCredential({
+      secretId: "proj-sid",
+      secretKey: "proj-skey",
+      envId: "env-project",
+      authSource: "api_key",
+      apiKey: "proj-key",
+    });
+    process.env.CLOUDBASE_API_KEY = "proj-key";
+    process.env.CLOUDBASE_ENV_ID = "env-project";
+
+    const { isEnvCredentialRemovableByLogout } = await import("./auth.js");
+
+    expect(isEnvCredentialRemovableByLogout()).toBe(true);
+  });
+
+  it("should not be removable for a credential set outside the process", async () => {
+    process.env.CLOUDBASE_API_KEY = "shell-key";
+    process.env.CLOUDBASE_ENV_ID = "env-shell";
+
+    const { isEnvCredentialRemovableByLogout } = await import("./auth.js");
+
+    expect(isEnvCredentialRemovableByLogout()).toBe(false);
+  });
+
+  it("should not be removable when the project file holds a different key", async () => {
+    writeProjectCredential({
+      secretId: "proj-sid",
+      envId: "env-project",
+      authSource: "api_key",
+      apiKey: "other-key",
+    });
+    process.env.CLOUDBASE_API_KEY = "shell-key";
+    process.env.CLOUDBASE_ENV_ID = "env-project";
+
+    const { isEnvCredentialRemovableByLogout } = await import("./auth.js");
+
+    expect(isEnvCredentialRemovableByLogout()).toBe(false);
+  });
+
+  it("should stay removable after adoption even if the project file went away", async () => {
+    writeProjectCredential({
+      secretId: "proj-sid",
+      secretKey: "proj-skey",
+      envId: "env-project",
+      authSource: "api_key",
+      apiKey: "proj-key",
+    });
+    mockCheckAndGetCredential.mockResolvedValue({
+      secretId: "proj-sid",
+      secretKey: "proj-skey",
+      envId: "env-project",
+      authSource: "api_key",
+      apiKey: "proj-key",
+    });
+
+    const { peekLoginState, isEnvCredentialRemovableByLogout } = await import("./auth.js");
+    await peekLoginState();
+    expect(process.env.CLOUDBASE_API_KEY).toBe("proj-key");
+
+    rmSync(join(projectAuthDir, "auth.json"), { force: true });
+
+    expect(isEnvCredentialRemovableByLogout()).toBe(true);
+  });
+
+  it("logout should remove only the project credential and keep the account login", async () => {
+    writeProjectCredential({
+      secretId: "proj-sid",
+      secretKey: "proj-skey",
+      envId: "env-project",
+      authSource: "api_key",
+      apiKey: "proj-key",
+    });
+    mockCheckAndGetCredential.mockResolvedValue({
+      secretId: "proj-sid",
+      secretKey: "proj-skey",
+      envId: "env-project",
+      authSource: "api_key",
+      apiKey: "proj-key",
+    });
+    authStoreData.credential = {
+      secretId: "global-sid",
+      secretKey: "global-skey",
+      envId: "env-global",
+    };
+
+    const { logout, peekLoginState, getCredentialSource } = await import("./auth.js");
+    // 先读一次：项目级凭据被采纳，env 里有了回填值
+    await peekLoginState();
+    expect(process.env.CLOUDBASE_API_KEY).toBe("proj-key");
+
+    const result = await logout();
+
+    expect(result.removed).toEqual(["project"]);
+    expect(existsSync(join(projectAuthDir, "auth.json"))).toBe(false);
+    // 关键：不能连带注销账号登录
+    expect(mockAuthLogout).not.toHaveBeenCalled();
+    expect(process.env.CLOUDBASE_API_KEY).toBeUndefined();
+    // 删掉项目那份之后，账号登录直接接上
+    const afterLogout = await peekLoginState();
+    expect(afterLogout?.envId).toBe("env-global");
+    expect(getCredentialSource()).toBe("global");
+  });
+
+  it("logout should sign out the account when no project credential is in effect", async () => {
+    rmSync(projectAuthDir, { recursive: true, force: true });
+    authStoreData.credential = {
+      secretId: "global-sid",
+      secretKey: "global-skey",
+      envId: "env-global",
+    };
+
+    const { logout } = await import("./auth.js");
+    const result = await logout();
+
+    expect(result.removed).toEqual(["global"]);
+    // 不传 cwd：否则 toolbox 会顺带删掉项目级凭据
+    expect(mockAuthLogout.mock.calls[0]).toHaveLength(0);
+  });
+
+  it("should clear the adopted env and fall back to the account login when the project key stops working", async () => {
+    writeProjectCredential({
+      secretId: "proj-sid",
+      secretKey: "proj-skey",
+      envId: "env-project",
+      authSource: "api_key",
+      apiKey: "proj-key",
+    });
+    mockCheckAndGetCredential.mockResolvedValue({
+      secretId: "proj-sid",
+      secretKey: "proj-skey",
+      envId: "env-project",
+      authSource: "api_key",
+      apiKey: "proj-key",
+    });
+
+    const { peekLoginState, getCredentialSource } = await import("./auth.js");
+    await peekLoginState();
+    expect(process.env.CLOUDBASE_API_KEY).toBe("proj-key");
+
+    // 密钥被撤销：换取失败；此时账号登录仍然有效
+    mockCheckAndGetCredential.mockResolvedValue(null);
+    mockAuthLoginByApiKey.mockRejectedValueOnce(new Error("invalid api key"));
+    authStoreData.credential = {
+      secretId: "global-sid",
+      secretKey: "global-skey",
+      envId: "env-global",
+    };
+
+    const loginState = await peekLoginState();
+
+    expect(loginState?.envId).toBe("env-global");
+    expect(getCredentialSource()).toBe("global");
+    // 失效的 key 不能继续占着 env，否则 start_auth / logout 都会被堵在这条分支上
+    expect(process.env.CLOUDBASE_API_KEY).toBeUndefined();
+    expect(process.env.CLOUDBASE_ENV_ID).toBeUndefined();
   });
 });
 

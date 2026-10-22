@@ -160,6 +160,7 @@ REA-യ്ക്ക് Node.js 22.x (>=22.19), 24.x (>=24.11), അല്ലെ�
 | Websites               | Page structure, scripts, network observations, ആവശ്യപ്പെട്ട screenshots                | Chrome-family browser; [browser analysis](../browser-observation.md)                                                              |
 | Saved network captures | Requests, responses, പുറത്തുകാണുന്ന payload-ുകൾ, source locations                          | HAR അല്ലെങ്കിൽ Fiddler Everywhere SAZ; native mitmproxy-നായി Linux-ൽ mitmdump; [capture guide](../web-network-captures.md)           |
 | .NET assemblies        | Metadata, CIL instructions, പ്രഖ്യാപിച്ച native dependencies, build comparisons         | ഒന്നും ആവശ്യമില്ല (static മാത്രം); [managed-code guide](../managed-code-analysis.md)                                                    |
+| Python packaged apps   | CArchive/PYZ entries, Python version, bytecode, resources and runtime options       | Static PyInstaller parsing; [Python guide](../python-packaged-applications.md)                                                    |
 | Android APKs           | Manifest declarations, classes, decompiled methods, references                      | Linux/macOS/Windows x64-ൽ Headless JADX-ഉം full JDK-ഉം; [Android guide](../android-analysis.md)                                   |
 | Android devices        | Devices, packages, processes, logs, dumps, screen captures, APK/file transfers      | Caller നൽകുന്ന adb (emulator അല്ലെങ്കിൽ hardware); [ADB guide](../adb-device-analysis.md)                                             |
 | JEB projects           | Engine-backed project units, artifact digests, type/method pseudo-code              | MCP സേവനം നൽകുന്ന caller ആരംഭിച്ച JEB client; REA_JEB_MCP_URL ഉപയോഗിച്ച് തിരഞ്ഞെടുക്കുക; [JEB guide](../jeb-analysis.md)                   |
@@ -282,6 +283,7 @@ npx rea-agents@latest setup
 
 - [Installation and setup](../installation.md): agent registration, provider configuration, updates, uninstall.
 - [Readiness and troubleshooting](../installation.md#check-readiness-for-your-task): ഒരു agent-ന്റെയോ analysis engine-ന്റെയോ പ്രശ്നങ്ങൾ കണ്ടെത്തുക.
+- [CUDA / HIP](../gpu-code-objects.md)
 - [GGUF / safetensors](../model-artifacts.md)
 - [CLI and Evidence](../cli.md): commands, provider തിരഞ്ഞെടുക്കൽ, snapshots, import/export, exit statuses.
 - [MCP contracts](../mcp-contracts.md), [agent prompts](../mcp-prompts.md): tool results, sessions, guided investigations.

@@ -3,7 +3,7 @@ name: image-studio
 description: "Use when the user wants image generation or editing through the local fal.ai three-stage studio workflow — brainstorm a strong prompt, prototype cheaply and iterate on feedback, then produce a finalised image. Covers \"generate an image\", \"make an image/picture/illustration/graphic of…\", \"create an AI image\", \"edit/change this image\", \"make a variation\", \"upscale this\", a \"production-ready image\", \"clean up / enhance a photo\", \"make this phone shot look professional\", imagery \"for the deck/post/website/newsletter\", or explicit mentions of fal.ai or nano-banana. Do not use for Canva template designs, branded PowerPoint decks, data charts/dashboards, or flowcharts/diagrams. Video generation is out of scope."
 license: MIT
 metadata:
-  version: 1.2.0
+  version: 1.3.2
   author: moonlight-lupin
   platforms: [linux, macos, windows]
 ---
@@ -124,6 +124,23 @@ notes:
   screen to a friend" — so people relate to each other, not the camera.
 - **Protect faces.** Distant/small faces deform easily — prefer fewer, larger people, add "clear,
   natural faces and hands", and re-edit just a bad region rather than re-rolling the whole image.
+
+## Stage 1.5 — Prompt-out contract (check before Stage 2)
+
+Before handing any prompt direction to Stage 2, verify each line:
+
+- Every in-image text string appears verbatim as FINAL copy, in its target language, with role and
+  placement stated (title / detail / footnote) — never "the title" or a placeholder, never an
+  invented name or logo.
+- Negatives fit the image: when text is required content, no "no text" negative survives from the
+  generic examples; state any intentionally absent content instead.
+- No instruction-like phrasing inside the image description; the prompt describes only the visible
+  image.
+- A card / poster / design direction states that the design fills the frame, unless mockup framing
+  is wanted.
+- The user's subjects, counts, exclusions and intended visible wording are preserved exactly.
+
+If any line fails, fix the prompt directions before Stage 2.
 
 ## Stage 2 — Prototype cheaply and iterate
 
@@ -340,6 +357,52 @@ verified alternatives.
 
 Land back on a default once the experiment is done, unless the alternative is clearly and repeatably
 better for that use case.
+
+## Layout-controlled generation — MOSS-Image (precise in-image text)
+
+For images where **exact placement matters** — posters, badges, title cards, bilingual
+中文+English signage — MOSS-Image-SFT (`fal-ai/moss-image`, **$0.05/MP**) takes a JSON
+**layout prompt**: a scene caption plus flat `items` carrying pixel bounding boxes and the
+exact visible strings. Verified live 22 Oct 2026 — a 5-element poster, 1024², one billed run — placed every
+element within ~5–7 px of its box with zero extra text; in the same side-by-side,
+`fal-ai/nano-banana-2` matched character accuracy (3/3 bilingual prompts, zero glyph errors)
+at its higher flat price ($0.08/image at 1K) but hallucinated two extra strings under a strict "exactly these strings" prompt.
+So: text *accuracy* → Nano Banana family suffices; text *placement precision and clean
+minimalism* → MOSS-Image route.
+
+The layout dialect and compiler are vendored locally:
+
+1. **Draft** a layout JSON per `references/moss-layout.md` — `summary` + flat `items` array,
+   `width`/`height` (positive multiples of 16), pixel-space `[x_min,y_min,x_max,y_max]` boxes,
+   exact visible strings in `text` fields. Save it in `_workings/`.
+2. **Compile** — the compiler validates, converts pixel boxes to MOSS's internal
+   `abs_centralized`/`yxyx` form, and rejects out-of-bounds boxes (never silently clips):
+
+   ```bash
+   python scripts/moss_compile_prompt.py _workings/[slug]_layout.json \
+     --output _workings/[slug]_layout_prompt.txt
+   ```
+
+3. **Generate** with the SAME `image_size` as the draft's width/height. `enable_prompt_expansion=false`
+   is **required** for a compiled layout prompt — fal's prompt planner (default on) rewrites the
+   already-structured prompt and breaks placement:
+
+   ```bash
+   python scripts/falgen.py generate \
+     --prompt "$(cat _workings/[slug]_layout_prompt.txt)" \
+     --model fal-ai/moss-image \
+     --arg 'image_size={"width":[W],"height":[H]}' \
+     --arg enable_prompt_expansion=false \
+     --run-log _workings/run-log_[slug].md \
+     --out-dir . --name image_[slug]_final
+   ```
+
+Notes: MOSS is **T2I only — no edit endpoint**; follow-up edits still route to the Nano Banana
+family. Do **not** pass `--aspect` with the moss-image generate call — the helper sends
+`aspect_ratio` to models it does not recognise, which conflicts with a custom `image_size`.
+`[W]×[H]` must equal the draft's width×height, both multiples of 16. For designed posters prefer full-bleed wording ("the poster fills the entire frame") —
+otherwise models may frame the design as a mockup card. The cost (~$0.05 at 1024²) also makes it
+a reasonable Stage-2 prototype when the concept IS a layout.
 
 ## The helper — `scripts/falgen.py`
 

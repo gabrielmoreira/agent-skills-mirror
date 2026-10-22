@@ -17,8 +17,8 @@ shared form would leave later fields unknown instead. The existing
 `REA_MCP_INPUT_SCHEMA_PROFILE=compact` profile lets callers stay below
 its character limit by advertising reduced nested validation structure, while
 REA continues to validate calls against the complete canonical input schema.
-Compact applies to the server's advertised inputs and is not an automatic
-full-profile fallback; see the [compact input schema profile](mcp-contracts.md#compact-input-schema-profile)
+Compact is the default for the server's advertised inputs; an explicit `full`
+choice is preserved. See the [compact input schema profile](mcp-contracts.md#compact-input-schema-profile)
 for details of its reduced forms.
 
 Custom renderer hosts can raise `inputMaxChars` through `renderToolSignature` or

@@ -11,8 +11,8 @@ category: strategy
 3. **Strategy coding**: write `code/signal_engine.py` (following the `SignalEngine` contract)
 4. **Syntax check**: `bash("python -c \"import ast; ast.parse(open('code/signal_engine.py').read()); print('OK')\"")`
 5. **Run backtest**: call the `backtest` tool (built into the engine; no need to write `run_backtest.py`)
-6. **Evaluate results**: read `artifacts/metrics.csv` and judge by the review criteria
-7. **Iterative fixing**: if results are poor, modify with `edit_file` → run `backtest` → re-evaluate
+6. **Evaluate results**: use the backtest tool's structured metrics, validation and artifact summary. Read `artifacts/metrics.csv` or targeted rows with `read_run_artifact` only when the requested evidence is missing from that summary. Judge by the review criteria and report failures honestly.
+7. **Fix implementation errors**: repair code/contract errors and rerun to verify. Poor returns in a correctly implemented strategy are a valid result: report them and stop. Change the strategy or test additional candidates only when the user requested optimization or comparison, within their specified scope. Deeper attribution and robustness research are performed when requested, not added to every backtest.
 
 **You only need to write `signal_engine.py` and `config.json`. The `backtest` tool automatically handles data loading and backtest execution.**
 

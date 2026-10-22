@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `rohitg00/ai-engineering-from-scratch` — 26 default patterns, 0 followed patterns, 86 file(s) materialized.
+Mirror of `rohitg00/ai-engineering-from-scratch` — 26 default patterns, 0 followed patterns, 88 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `rohitg00/ai-engineering-from-scratch` — 26 default patterns, 0 foll
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 86 |
+| Files         | 88 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -109,42 +109,44 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 48 | ✓ | [`skills/course-style/SKILL.md`](skills/course-style/SKILL.md) |
 | 49 | ✓ | [`skills/find-your-level/references/answer-key.md`](skills/find-your-level/references/answer-key.md) |
 | 50 | ✓ | [`skills/find-your-level/SKILL.md`](skills/find-your-level/SKILL.md) |
-| 51 | ✓ | [`skills/isometric-explainer/kit/iso-kit.mjs`](skills/isometric-explainer/kit/iso-kit.mjs) |
-| 52 | ✓ | [`skills/isometric-explainer/kit/lathe.mjs`](skills/isometric-explainer/kit/lathe.mjs) |
-| 53 | ✓ | [`skills/isometric-explainer/kit/LICENSE`](skills/isometric-explainer/kit/LICENSE) |
-| 54 | ✓ | [`skills/isometric-explainer/kit/tube.mjs`](skills/isometric-explainer/kit/tube.mjs) |
-| 55 | ✓ | [`skills/isometric-explainer/references/concept.md`](skills/isometric-explainer/references/concept.md) |
-| 56 | ✓ | [`skills/isometric-explainer/references/geometry.md`](skills/isometric-explainer/references/geometry.md) |
-| 57 | ✓ | [`skills/isometric-explainer/references/live.md`](skills/isometric-explainer/references/live.md) |
-| 58 | ✓ | [`skills/isometric-explainer/references/state-model.md`](skills/isometric-explainer/references/state-model.md) |
-| 59 | ✓ | [`skills/isometric-explainer/references/verify.md`](skills/isometric-explainer/references/verify.md) |
-| 60 | ✓ | [`skills/isometric-explainer/SKILL.md`](skills/isometric-explainer/SKILL.md) |
-| 61 | ✓ | [`skills/isometric-explainer/templates/build.mjs`](skills/isometric-explainer/templates/build.mjs) |
-| 62 | ✓ | [`skills/isometric-explainer/templates/live.js`](skills/isometric-explainer/templates/live.js) |
-| 63 | ✓ | [`skills/isometric-explainer/templates/model.mjs`](skills/isometric-explainer/templates/model.mjs) |
-| 64 | ✓ | [`skills/isometric-explainer/templates/model.test.mjs`](skills/isometric-explainer/templates/model.test.mjs) |
-| 65 | ✓ | [`skills/learn-agent-skills/SKILL.md`](skills/learn-agent-skills/SKILL.md) |
-| 66 | ✓ | [`skills/learn-mcp/SKILL.md`](skills/learn-mcp/SKILL.md) |
-| 67 | ✓ | [`skills/learn-reverse-engineering/SKILL.md`](skills/learn-reverse-engineering/SKILL.md) |
-| 68 | ✓ | [`skills/learn/SKILL.md`](skills/learn/SKILL.md) |
-| 69 | ✓ | [`skills/mcpa-certification/agents/openai.yaml`](skills/mcpa-certification/agents/openai.yaml) |
-| 70 | ✓ | [`skills/mcpa-certification/SKILL.md`](skills/mcpa-certification/SKILL.md) |
-| 71 | ✓ | [`skills/motion-figure/references/dither-fields.md`](skills/motion-figure/references/dither-fields.md) |
-| 72 | ✓ | [`skills/motion-figure/references/mechanism-figures.md`](skills/motion-figure/references/mechanism-figures.md) |
-| 73 | ✓ | [`skills/motion-figure/references/smil-rules.md`](skills/motion-figure/references/smil-rules.md) |
-| 74 | ✓ | [`skills/motion-figure/references/tokens.md`](skills/motion-figure/references/tokens.md) |
-| 75 | ✓ | [`skills/motion-figure/references/toolkit.md`](skills/motion-figure/references/toolkit.md) |
-| 76 | ✓ | [`skills/motion-figure/SKILL.md`](skills/motion-figure/SKILL.md) |
-| 77 | ✓ | [`skills/motion-figure/templates/dither.js`](skills/motion-figure/templates/dither.js) |
-| 78 | ✓ | [`skills/motion-figure/templates/mechanism.html`](skills/motion-figure/templates/mechanism.html) |
-| 79 | ✓ | [`skills/start-learning/SKILL.md`](skills/start-learning/SKILL.md) |
-| 80 | ✓ | [`skills/write-manual/references/audit.md`](skills/write-manual/references/audit.md) |
-| 81 | ✓ | [`skills/write-manual/references/capture-kit.md`](skills/write-manual/references/capture-kit.md) |
-| 82 | ✓ | [`skills/write-manual/references/manual-json.md`](skills/write-manual/references/manual-json.md) |
-| 83 | ✓ | [`skills/write-manual/references/prose-rules.md`](skills/write-manual/references/prose-rules.md) |
-| 84 | ✓ | [`skills/write-manual/references/research-and-sources.md`](skills/write-manual/references/research-and-sources.md) |
-| 85 | ✓ | [`skills/write-manual/references/section-template.md`](skills/write-manual/references/section-template.md) |
-| 86 | ✓ | [`skills/write-manual/SKILL.md`](skills/write-manual/SKILL.md) |
+| 51 | ✓ | [`skills/isometric-explainer/kit/ink.mjs`](skills/isometric-explainer/kit/ink.mjs) |
+| 52 | ✓ | [`skills/isometric-explainer/kit/iso-kit.mjs`](skills/isometric-explainer/kit/iso-kit.mjs) |
+| 53 | ✓ | [`skills/isometric-explainer/kit/lathe.mjs`](skills/isometric-explainer/kit/lathe.mjs) |
+| 54 | ✓ | [`skills/isometric-explainer/kit/LICENSE`](skills/isometric-explainer/kit/LICENSE) |
+| 55 | ✓ | [`skills/isometric-explainer/kit/tube.mjs`](skills/isometric-explainer/kit/tube.mjs) |
+| 56 | ✓ | [`skills/isometric-explainer/references/colour-and-ink.md`](skills/isometric-explainer/references/colour-and-ink.md) |
+| 57 | ✓ | [`skills/isometric-explainer/references/concept.md`](skills/isometric-explainer/references/concept.md) |
+| 58 | ✓ | [`skills/isometric-explainer/references/geometry.md`](skills/isometric-explainer/references/geometry.md) |
+| 59 | ✓ | [`skills/isometric-explainer/references/live.md`](skills/isometric-explainer/references/live.md) |
+| 60 | ✓ | [`skills/isometric-explainer/references/state-model.md`](skills/isometric-explainer/references/state-model.md) |
+| 61 | ✓ | [`skills/isometric-explainer/references/verify.md`](skills/isometric-explainer/references/verify.md) |
+| 62 | ✓ | [`skills/isometric-explainer/SKILL.md`](skills/isometric-explainer/SKILL.md) |
+| 63 | ✓ | [`skills/isometric-explainer/templates/build.mjs`](skills/isometric-explainer/templates/build.mjs) |
+| 64 | ✓ | [`skills/isometric-explainer/templates/live.js`](skills/isometric-explainer/templates/live.js) |
+| 65 | ✓ | [`skills/isometric-explainer/templates/model.mjs`](skills/isometric-explainer/templates/model.mjs) |
+| 66 | ✓ | [`skills/isometric-explainer/templates/model.test.mjs`](skills/isometric-explainer/templates/model.test.mjs) |
+| 67 | ✓ | [`skills/learn-agent-skills/SKILL.md`](skills/learn-agent-skills/SKILL.md) |
+| 68 | ✓ | [`skills/learn-mcp/SKILL.md`](skills/learn-mcp/SKILL.md) |
+| 69 | ✓ | [`skills/learn-reverse-engineering/SKILL.md`](skills/learn-reverse-engineering/SKILL.md) |
+| 70 | ✓ | [`skills/learn/SKILL.md`](skills/learn/SKILL.md) |
+| 71 | ✓ | [`skills/mcpa-certification/agents/openai.yaml`](skills/mcpa-certification/agents/openai.yaml) |
+| 72 | ✓ | [`skills/mcpa-certification/SKILL.md`](skills/mcpa-certification/SKILL.md) |
+| 73 | ✓ | [`skills/motion-figure/references/dither-fields.md`](skills/motion-figure/references/dither-fields.md) |
+| 74 | ✓ | [`skills/motion-figure/references/mechanism-figures.md`](skills/motion-figure/references/mechanism-figures.md) |
+| 75 | ✓ | [`skills/motion-figure/references/smil-rules.md`](skills/motion-figure/references/smil-rules.md) |
+| 76 | ✓ | [`skills/motion-figure/references/tokens.md`](skills/motion-figure/references/tokens.md) |
+| 77 | ✓ | [`skills/motion-figure/references/toolkit.md`](skills/motion-figure/references/toolkit.md) |
+| 78 | ✓ | [`skills/motion-figure/SKILL.md`](skills/motion-figure/SKILL.md) |
+| 79 | ✓ | [`skills/motion-figure/templates/dither.js`](skills/motion-figure/templates/dither.js) |
+| 80 | ✓ | [`skills/motion-figure/templates/mechanism.html`](skills/motion-figure/templates/mechanism.html) |
+| 81 | ✓ | [`skills/start-learning/SKILL.md`](skills/start-learning/SKILL.md) |
+| 82 | ✓ | [`skills/write-manual/references/audit.md`](skills/write-manual/references/audit.md) |
+| 83 | ✓ | [`skills/write-manual/references/capture-kit.md`](skills/write-manual/references/capture-kit.md) |
+| 84 | ✓ | [`skills/write-manual/references/manual-json.md`](skills/write-manual/references/manual-json.md) |
+| 85 | ✓ | [`skills/write-manual/references/prose-rules.md`](skills/write-manual/references/prose-rules.md) |
+| 86 | ✓ | [`skills/write-manual/references/research-and-sources.md`](skills/write-manual/references/research-and-sources.md) |
+| 87 | ✓ | [`skills/write-manual/references/section-template.md`](skills/write-manual/references/section-template.md) |
+| 88 | ✓ | [`skills/write-manual/SKILL.md`](skills/write-manual/SKILL.md) |
 
 ---
 

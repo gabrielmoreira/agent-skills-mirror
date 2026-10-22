@@ -68,8 +68,18 @@ code.
 Each exists because 2.x has no route for it. When a tag adds the route,
 the workaround goes and the record comes from OpenCode.
 
-- **Archive**: 2.x has no archive route. `openchamber-sessions/archive-store.js`
-  keeps it per data dir and the proxy folds it into session reads.
+- **Archive of a session whose directory is gone**: OpenCode holds archive
+  state since 2.1 (`PATCH /api/session/{id}` with `archived`), but the PATCH
+  builds the session's location and answers `LocationNotFoundError` once the
+  folder was deleted, which is where every session of a removed worktree
+  ends up. `POST /api/session/{id}/move` still works there, so
+  `openchamber-sessions/session-archive.js` moves such a session to its
+  project's main folder (`canonical` from the project list) and archives it
+  there; `archive-store.js` marks it archived before the move and keeps only
+  sessions with no folder to move to. Entries written before 2.1 move to
+  OpenCode in one pass after start, one directory at a time, and every
+  location the pass started is unloaded right after
+  (`DELETE /api/debug/location`).
   Session metadata is not a workaround since 2.0.15: it lives on the OpenCode
   record, written by merge-then-PATCH in `session-metadata-store.js`, which
   also migrates the old `sessions-metadata.json`. Provider credentials are
@@ -81,7 +91,8 @@ the workaround goes and the record comes from OpenCode.
   route does not declare, so session update/delete/archive report the status
   without OpenCode's message or log `ref`.
 
-Open asks upstream (OpenCode Slack): declaring 500 bodies on session
+Open asks upstream (OpenCode Slack): archiving a session whose directory is
+gone without building its location, so it need not move; declaring 500 bodies on session
 mutations; `provider.list` and `agent.list` waiting for plugin activation the
 way `model.list` does since 2.0.27, which would retire the cold-catalog
 recovery in `useConfigStore`. Dropped: an import route for missing 1.x

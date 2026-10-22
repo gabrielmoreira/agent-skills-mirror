@@ -6,7 +6,7 @@ Centralized tool factory and registry for the OpenCode plugin system. This direc
 
 - **Task lifecycle tools**: Background task communication, cancellation, status (with live-status policy), results, revival, and HITL continuation control
 - **Code intelligence tools**: AST-grep pattern matching and transformation across languages
-- **Web capabilities**: Smart web fetching with caching and secondary model processing
+- **Web capabilities**: Smart web fetching with caching and content extraction
 - **ACP integration**: External agent protocol execution
 - **Preset switching**: On-disk preset persistence helpers used by the TUI `/preset` managers (v1 and v2); the pure editor domain lives in `src/preset-editor-domain.ts`
 - **Interview state**: `interview-submit-state.ts` persists quiet interview
@@ -31,6 +31,7 @@ Each tool is implemented as a factory function that returns a `ToolDefinition` r
 |------------|---------|----------------|
 | **Task Management** | Background task communication, cancellation, status, results, revival, and HITL continuation control | `task-message.ts`, `cancel-task.ts`, `task-status.ts`, `task-revive.ts`, `wait-for-user.ts` |
 | **Task Policy & Activity** | Shared live-status policy and activity tracking consumed by `task_status` and event wiring | `task-policy.ts` (`summarizeTaskStatus`), `task-activity.ts` (`TaskActivityTracker`) |
+| **Retained Adoption** | Shared resolve-or-adopt seam for untracked host sessions, consumed by `task_revive` and the v2 subagent continuation bridge | `retained-adoption.ts` (`resolveOrAdoptUntrackedTask`) |
 | **ACP Integration** | External agent protocol execution with live progress streaming to the parent TUI (`ctx.metadata`) | `acp-run.ts`, ACP client implementation |
 | **Code Intelligence** | AST-based code manipulation | `ast-grep/` directory, `tools.ts` |
 | **Web Fetching** | Intelligent web content retrieval | `smartfetch/` directory, `tool.ts` |
@@ -113,6 +114,7 @@ Each tool is implemented as a factory function that returns a `ToolDefinition` r
 1. Agent invokes task_status
    ├─> Resolves task_id to a BackgroundJobBoard entry
    ├─> Reads the bounded live session-status snapshot (session-runtime-status)
+   ├─> On the uncertain branch (plain and result:true) one classifyLiveSession probe feeds an attributable host outcome through the terminal gate's observe/reconcile (interrupted → stopped family, never completed); unknown-handle errors append the parent's last 5 `recent:` handles; unattributable evidence keeps `running (unconfirmed)` with push-not-poll guidance
    ├─> summarizeTaskStatus() (task-policy.ts) prefers the live-confirmed host
    │   status; board state is only reported with explicit uncertainty
    └─> possibly_stuck requires a live-confirmed busy/retry signal beyond the
@@ -153,7 +155,6 @@ Each tool is implemented as a factory function that returns a `ToolDefinition` r
    ├─> Validates URL and configuration
    ├─> Checks cache for fresh content
    ├─> If cache miss, fetches via network with timeout
-   ├─> Optionally processes with secondary model
    ├─> Caches result for future requests
    └─> Returns extracted content to agent
 ```
@@ -208,7 +209,7 @@ Tools Layer → AST-grep Layer
 └─> Returns typed AST matches and edit results
 
 Tools Layer → Web Layer
-└─ webfetch tool → Network utilities with caching and model processing
+└─ webfetch tool → Network utilities with caching and content extraction
 ```
 
 ### Configuration Integration
@@ -274,7 +275,7 @@ Preset switching is not a tool: `preset-switch.ts` exposes on-disk helpers
 
 #### Webfetch (smartfetch/)
 - Implements caching with configurable TTL
-- Supports secondary model processing for content extraction
+- Extracts main content from HTML (Readability) with llms.txt probing
 - Handles redirects, timeouts, and error recovery
 
 ## Testing Strategy

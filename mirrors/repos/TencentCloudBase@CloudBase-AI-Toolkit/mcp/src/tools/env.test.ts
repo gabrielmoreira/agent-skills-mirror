@@ -31,6 +31,7 @@ const {
   mockPeekLoginState,
   mockGetAuthProgressState,
   mockLogout,
+  mockIsEnvCredentialRemovableByLogout,
   mockEnvManagerSetEnvId,
   mockGetCachedEnvId,
   mockListAvailableEnvCandidates,
@@ -89,7 +90,8 @@ const {
   mockEnsureLogin: vi.fn(),
   mockPeekLoginState: vi.fn(),
   mockGetAuthProgressState: vi.fn(),
-  mockLogout: vi.fn(),
+  mockLogout: vi.fn(async () => ({ removed: ["global"] })),
+  mockIsEnvCredentialRemovableByLogout: vi.fn(() => false),
   mockEnvManagerSetEnvId: vi.fn(),
   mockGetCachedEnvId: vi.fn(),
   mockListAvailableEnvCandidates: vi.fn(),
@@ -162,6 +164,7 @@ vi.mock("../auth.js", async (importOriginal) => {
     peekLoginState: mockPeekLoginState,
     getAuthProgressState: mockGetAuthProgressState,
     logout: mockLogout,
+    isEnvCredentialRemovableByLogout: mockIsEnvCredentialRemovableByLogout,
     rejectAuthProgressState: vi.fn(),
     resolveAuthOptions: mockResolveAuthOptions,
     resolveAuthProgressState: vi.fn(),
@@ -1047,6 +1050,7 @@ describe("env tools - auth", () => {
     const payload = JSON.parse(result.content[0].text);
 
     expect(payload).toHaveProperty("code", "LOGGED_OUT");
+    expect(payload).toHaveProperty("removed_scopes", ["global"]);
     expect(payload.next_step).toBeUndefined();
     expect(mockLogout).toHaveBeenCalled();
     expect(mockResetCloudBaseManagerCache).toHaveBeenCalled();
@@ -1317,8 +1321,146 @@ describe("env tools - auth", () => {
       expect(payload).toHaveProperty("ok", false);
       expect(payload).toHaveProperty("code", "LOGOUT_NOT_ALLOWED");
       expect(payload).toHaveProperty("auth_mode", "api_key");
+      // 提示里要点明是哪个变量在起作用，用户才知道去哪儿删
+      expect(payload.message).toContain("CLOUDBASE_APIKEY");
+      expect(mockLogout).not.toHaveBeenCalled();
     } finally {
       delete process.env.CLOUDBASE_APIKEY;
+      delete process.env.CLOUDBASE_ENV_ID;
+    }
+  });
+
+  it("auth(action=logout) should log out when the env credential comes from the project file", async () => {
+    process.env.CLOUDBASE_API_KEY = "proj-key";
+    process.env.CLOUDBASE_ENV_ID = "env-project";
+    mockIsEnvCredentialRemovableByLogout.mockReturnValue(true);
+    mockLogout.mockResolvedValueOnce({ removed: ["project"] });
+
+    try {
+      const result = await tools.auth.handler({
+        action: "logout",
+        confirm: "yes",
+      });
+      const payload = JSON.parse(result.content[0].text);
+
+      expect(mockLogout).toHaveBeenCalledTimes(1);
+      expect(payload).toHaveProperty("ok", true);
+      expect(payload).toHaveProperty("code", "LOGGED_OUT");
+      // 只清项目那份，账号登录保留：文案要说清，别让人以为整机都退了
+      expect(payload).toHaveProperty("removed_scopes", ["project"]);
+      expect(payload.message).toBe(t("env.auth.loggedOutProject"));
+    } finally {
+      mockIsEnvCredentialRemovableByLogout.mockReturnValue(false);
+      delete process.env.CLOUDBASE_API_KEY;
+      delete process.env.CLOUDBASE_ENV_ID;
+    }
+  });
+
+  it("auth(action=start_auth) should say how to switch away from a project API Key", async () => {
+    process.env.CLOUDBASE_API_KEY = "proj-key";
+    process.env.CLOUDBASE_ENV_ID = "env-project";
+    mockIsEnvCredentialRemovableByLogout.mockReturnValue(true);
+    mockPeekLoginState.mockResolvedValue({
+      secretId: "sid",
+      secretKey: "skey",
+      token: "token",
+      envId: "env-project",
+    });
+
+    try {
+      const result = await tools.auth.handler({ action: "start_auth" });
+      const payload = JSON.parse(result.content[0].text);
+
+      expect(payload).toHaveProperty("code", "AUTH_READY");
+      expect(payload.message).toContain(t("env.auth.apiKeySwitchHintRemovable"));
+      expect(payload.next_step).toMatchObject({ tool: "auth", action: "logout" });
+    } finally {
+      mockIsEnvCredentialRemovableByLogout.mockReturnValue(false);
+      delete process.env.CLOUDBASE_API_KEY;
+      delete process.env.CLOUDBASE_ENV_ID;
+    }
+  });
+
+  it("auth(action=start_auth) should name the external variable when it cannot be removed", async () => {
+    process.env.CLOUDBASE_API_KEY = "shell-key";
+    process.env.CLOUDBASE_ENV_ID = "env-project";
+    mockIsEnvCredentialRemovableByLogout.mockReturnValue(false);
+    mockPeekLoginState.mockResolvedValue({
+      secretId: "sid",
+      secretKey: "skey",
+      token: "token",
+      envId: "env-project",
+    });
+
+    try {
+      const result = await tools.auth.handler({ action: "start_auth" });
+      const payload = JSON.parse(result.content[0].text);
+
+      expect(payload).toHaveProperty("code", "AUTH_READY");
+      expect(payload.message).toContain(
+        t("env.auth.apiKeySwitchHintExternal", { varName: "CLOUDBASE_API_KEY" }),
+      );
+      expect(payload.next_step).toBeUndefined();
+    } finally {
+      delete process.env.CLOUDBASE_API_KEY;
+      delete process.env.CLOUDBASE_ENV_ID;
+    }
+  });
+
+  it("auth(action=start_auth) should go on to device login when the project key was dropped", async () => {
+    process.env.CLOUDBASE_API_KEY = "proj-key";
+    process.env.CLOUDBASE_ENV_ID = "env-project";
+    mockIsEnvCredentialRemovableByLogout.mockReturnValue(true);
+    // 模拟 auth.ts 的处理：回填的那份换不出临时密钥 → 清 env → 继续往下解析
+    mockPeekLoginState.mockImplementation(async () => {
+      delete process.env.CLOUDBASE_API_KEY;
+      delete process.env.CLOUDBASE_ENV_ID;
+      return null;
+    });
+    mockSupervisorLoginByWebAuth.mockImplementation(
+      async ({ onDeviceCode }: { onDeviceCode: (info: any) => void }) => {
+        onDeviceCode({
+          user_code: "WDJB-MJHT",
+          verification_uri: "https://example.com/device",
+          device_code: "device-code",
+          expires_in: 600,
+        });
+        return new Promise(() => {});
+      },
+    );
+
+    try {
+      const result = await tools.auth.handler({ action: "start_auth", authMode: "device" });
+      const payload = JSON.parse(result.content[0].text);
+
+      // 旧 key 作废不该只报「换取失败」，要能直接接着登
+      expect(payload).toHaveProperty("code", "AUTH_PENDING");
+      expect(payload.auth_challenge).toMatchObject({ user_code: "WDJB-MJHT" });
+    } finally {
+      mockIsEnvCredentialRemovableByLogout.mockReturnValue(false);
+      mockSupervisorLoginByWebAuth.mockReset();
+      mockPeekLoginState.mockReset();
+      delete process.env.CLOUDBASE_API_KEY;
+      delete process.env.CLOUDBASE_ENV_ID;
+    }
+  });
+
+  it("auth(action=start_auth) should offer logout when the API Key exchange fails", async () => {
+    process.env.CLOUDBASE_API_KEY = "proj-key";
+    process.env.CLOUDBASE_ENV_ID = "env-project";
+    mockIsEnvCredentialRemovableByLogout.mockReturnValue(true);
+    mockPeekLoginState.mockResolvedValue(null);
+
+    try {
+      const result = await tools.auth.handler({ action: "start_auth" });
+      const payload = JSON.parse(result.content[0].text);
+
+      expect(payload).toHaveProperty("code", "API_KEY_AUTH_FAILED");
+      expect(payload.message).toContain(t("env.auth.apiKeySwitchHintRemovable"));
+      expect(payload.next_step).toMatchObject({ tool: "auth", action: "logout" });
+    } finally {
+      mockIsEnvCredentialRemovableByLogout.mockReturnValue(false);
+      delete process.env.CLOUDBASE_API_KEY;
       delete process.env.CLOUDBASE_ENV_ID;
     }
   });

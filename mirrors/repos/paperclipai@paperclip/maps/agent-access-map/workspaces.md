@@ -158,6 +158,14 @@ new controller-side Git acquisition. Evidence remains source-only here; focused
 [repository tests](../../server/src/__tests__/task-workspace-repositories-trust.test.ts)
 are separate from live agent qualification.
 
+An admitted native standard task can read a same-agent completion continuation
+for its own pending repository in its current workspace. An explicit yield may
+use that saved continuation; explicit completion remains completion. Existing
+status decisions and wake admission retain Stop and authorization gates. The
+[workspace API regression](../../server/src/__tests__/task-workspace-api.test.ts)
+and [driver regression](../../packages/paperclip-runner/src/drivers/completion-continuation.test.ts)
+cover this contract; live qualification remains separate.
+
 Policy: Company/project/workspace visibility and runtime authority; active run, trust
 preset and task ownership where required.
 

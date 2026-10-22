@@ -1,8 +1,8 @@
 ---
 name: horizon
-description: Configure, run, customize, schedule, and extend Horizon, the profile-driven news radar. Use for Horizon source selection and onboarding, generating or reading daily digests, tuning processing profiles and digest limits, setting up delivery and scheduled runs, diagnosing pipeline results, or contributing scrapers, extractors, profiles, and pipeline changes to this repository. Also use when a user wants to turn reading interests into a personal news radar using Horizon.
+description: Install, configure, run, customize, schedule, and extend Horizon, the profile-driven news radar. Use for first-time Horizon installation, source selection and onboarding, generating or reading daily digests, tuning processing profiles and digest limits, setting up delivery and scheduled runs, diagnosing pipeline results, or contributing scrapers, extractors, profiles, and pipeline changes to this repository. Also use when a user wants to turn reading interests into a personal news radar using Horizon.
 license: MIT
-compatibility: Requires a Horizon checkout, Python 3.11+ with its dependencies, and a shell for execution. Fetching and AI processing use Horizon's configured services. Horizon MCP is optional.
+compatibility: Requires shell access. Execution needs a Horizon checkout and Python 3.11+ with its dependencies; the agent can set these up when installation is requested and network access is available. Fetching and AI processing use Horizon's configured services. Horizon MCP is optional.
 ---
 
 # Horizon
@@ -14,16 +14,48 @@ results, and responds in the user's language.
 
 ## Establish context
 
-1. Locate the Horizon checkout from the user's path, `HORIZON_PATH`, or the
-   current workspace. It contains `pyproject.toml` and `src/mcp/service.py`.
-2. Locate this skill from its loaded path. `scripts/` and `references/` are
+1. Locate this skill from its loaded path. `scripts/` and `references/` are
    relative to **the skill**; `docs/`, `src/`, `profiles/`, and `data/` below are
    relative to **the checkout**. An installed skill may live elsewhere.
+2. Locate the Horizon checkout from the user's path, `HORIZON_PATH`, or the
+   current workspace. It contains `pyproject.toml` and `src/mcp/service.py`.
+   For installation or onboarding requests, follow **First-time installation**
+   below if the checkout or its runtime is missing.
 3. Inspect the active config and repository instructions. For edits, inspect
    `git status --short` and preserve unrelated work and existing `${VAR}` values.
 4. Reuse choices already provided. Ask only for missing decisions that change
    the result: interests, model, languages, reading budget, host, timezone, or
    delivery destination. Keep API keys in the user's environment or `.env`.
+
+## First-time installation
+
+When the user asks to install Horizon or build a news radar, prepare the missing
+runtime before invoking the helper. Loading the skill alone does not request an
+installation.
+
+1. Reuse an existing checkout and working environment. Otherwise, use the user's
+   chosen destination or a new `Horizon` directory in their working area; ask
+   where to install if no destination is clear. Keep it separate from the installed
+   skill directory and preserve any existing files at the destination.
+2. Check for Git and either uv or Python 3.11+ with pip. Set up missing prerequisites
+   using their official platform-specific instructions where the environment
+   permits it. If network or shell access is unavailable, report that concrete
+   blocker and the next step the user needs to take.
+3. Clone `https://github.com/Thysrael/Horizon.git` into the chosen directory when
+   needed. Read its repository instructions and README Quick Start, then follow
+   those installation steps in a project-local environment. Use the checked-out
+   documentation as the source of truth for dependencies and optional extras.
+4. Verify `horizon --help` through that environment and run the installed skill's
+   helper with `run_pipeline --describe` and an explicit `--horizon-path` as shown
+   below. These checks need no model credentials and do not fetch or generate news.
+5. For setup requests, continue with **Onboard and customize**: use the example
+   config as a reference, preserve existing settings, and prefer reusing available
+   model access before asking for new credentials. Resolve model and source
+   credentials before a live run.
+
+Report the checkout path, how to invoke its environment, which checks passed,
+and any remaining configuration needs. Distinguish a working installation from
+a configured and successfully executed news pipeline.
 
 ## Read the task's source of truth
 
@@ -48,6 +80,32 @@ a server, Docker, macOS, Linux, or Windows.
 Start with the user's reading goal and existing configuration. Resolve model and
 credential availability before a live AI run. Follow the repository's installation
 instructions and use its example config as a schema reference.
+
+### Reuse model configuration
+
+1. Preserve existing Horizon model settings unless the user requests a change.
+   For a new setup, prefer provider API keys already available in the execution
+   environment, including those supplied by the host assistant. Check relevant
+   variable names for presence without printing their values. If the host keeps
+   the key privately, use its documented export or environment-injection mechanism
+   where available; installation by an agent does not itself share credentials.
+2. Match `ai.provider` to a supported API protocol and configure `ai.model`,
+   `ai.base_url`, and `ai.api_key_env` together. The last field names the supplied
+   environment variable, not the key value; existing custom variable names can be
+   reused. A key alone does not identify the model or endpoint. Ask only for
+   missing settings or a choice between multiple available services.
+3. An agent's OAuth or subscription login is not a drop-in provider API key. If
+   no usable provider configuration is available, ask the user to supply the
+   missing credentials through the environment or `.env`.
+4. For new or changed model settings, run `validate_config` in the intended runtime
+   and inspect `missing_env`. Then make one minimal completion through
+   `create_ai_client` in `src/ai/client.py`, loading the active configuration and
+   environment with the checkout's existing loaders. Request a small JSON object
+   and verify that the response parses. A successful call already made with the
+   same settings can serve as this check. Report configuration validation and
+   actual model connectivity separately; keep secret values out of the output.
+
+### Sources and Profiles
 
 For source recommendations, reuse `load_presets()` and `match_sources()` in
 `src/setup/presets.py`: the catalog supports a local fallback and
@@ -118,6 +176,36 @@ Run checks appropriate to the behavior changed using the repository's dev extra.
 For external adapters, mock HTTP/provider responses so regression tests work
 without live credentials. Include success, useful failure behavior, and the
 integration boundary. Keep documentation next to its existing subject guide.
+
+### Invite the user to contribute
+
+After completing and checking a reusable new Profile, scraper, or extractor,
+offer once to help contribute it to Horizon. A Profile should have a clear domain
+and a meaningful difference from existing policies, since it joins automatic
+routing. Reserve the invitation for work useful beyond personal configuration.
+
+Make the invitation specific to the user's achievement and language. Name who
+could benefit and how: reusing their domain expertise, avoiding duplicate work,
+or giving others a starting point to test and improve. Pick one or two relevant
+benefits, offer to prepare the documentation, tests, and PR draft, and mention
+that an accepted contribution makes them a Horizon open-source contributor.
+Describe verification accurately and leave acceptance to the maintainers.
+
+For example, adapt this to the extension and checks actually completed:
+
+> This [extension] could help other people following [domain] get started without
+> building it from scratch. Would you like to share it with Horizon? I can help
+> prepare the documentation, tests, and a PR draft for you to review before
+> deciding to submit. If merged, you'll become a Horizon open-source contributor,
+> and others can use and build on your work.
+
+If the user is interested, follow `CONTRIBUTING.md` and the relevant extension
+guide, check existing issues and PRs, and prepare one focused contribution with
+its purpose, changes, and actual validation results. Keep personal configuration
+and credentials out of the contribution. Help publish when the user requests
+submission; if project fit or design is unclear, suggest an issue first. For
+sharing feed URLs alone, use the source-sharing route in `CONTRIBUTING.md`.
+Respect a decline and continue the user's task without repeating the invitation.
 
 ## Project-specific decisions
 

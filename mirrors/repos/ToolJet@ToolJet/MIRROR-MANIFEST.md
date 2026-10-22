@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ToolJet/ToolJet` — 26 default patterns, 0 followed patterns, 78 file(s) materialized.
+Mirror of `ToolJet/ToolJet` — 26 default patterns, 0 followed patterns, 80 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ToolJet/ToolJet` — 26 default patterns, 0 followed patterns, 78 fil
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 78 |
+| Files         | 80 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -113,30 +113,32 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 52 | ✓ | [`.github/instructions/frontend-typescript.instructions.md`](.github/instructions/frontend-typescript.instructions.md) |
 | 53 | ✓ | [`.github/instructions/marketplace.instructions.md`](.github/instructions/marketplace.instructions.md) |
 | 54 | ✓ | [`.github/instructions/server-widget-config-review.instructions.md`](.github/instructions/server-widget-config-review.instructions.md) |
-| 55 | ✓ | [`.github/instructions/widget-components-review.instructions.md`](.github/instructions/widget-components-review.instructions.md) |
-| 56 | ✓ | [`.github/instructions/widget-config-review.instructions.md`](.github/instructions/widget-config-review.instructions.md) |
-| 57 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 58 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 59 | ✓ | [`docs/docs/marketplace/plugins/gemini.md`](docs/docs/marketplace/plugins/gemini.md) |
-| 60 | ✓ | [`docs/versioned_docs/version-3.0.0-LTS/marketplace/plugins/gemini.md`](docs/versioned_docs/version-3.0.0-LTS/marketplace/plugins/gemini.md) |
-| 61 | ✓ | [`frontend/AGENTS.md`](frontend/AGENTS.md) |
-| 62 | ✓ | [`frontend/CLAUDE.md`](frontend/CLAUDE.md) |
-| 63 | ✓ | [`marketplace/AGENTS.md`](marketplace/AGENTS.md) |
-| 64 | ✓ | [`server/AGENTS.md`](server/AGENTS.md) |
-| 65 | ✓ | [`server/CLAUDE.md`](server/CLAUDE.md) |
-| 66 | ✓ | [`server/src/modules/app/AGENTS.md`](server/src/modules/app/AGENTS.md) |
-| 67 | ✓ | [`server/src/modules/apps/AGENTS.md`](server/src/modules/apps/AGENTS.md) |
-| 68 | ✓ | [`server/src/modules/auth/AGENTS.md`](server/src/modules/auth/AGENTS.md) |
-| 69 | ✓ | [`server/src/modules/data-queries/AGENTS.md`](server/src/modules/data-queries/AGENTS.md) |
-| 70 | ✓ | [`server/src/modules/data-sources/AGENTS.md`](server/src/modules/data-sources/AGENTS.md) |
-| 71 | ✓ | [`server/src/modules/git-sync/AGENTS.md`](server/src/modules/git-sync/AGENTS.md) |
-| 72 | ✓ | [`server/src/modules/group-permissions/AGENTS.md`](server/src/modules/group-permissions/AGENTS.md) |
-| 73 | ✓ | [`server/src/modules/licensing/AGENTS.md`](server/src/modules/licensing/AGENTS.md) |
-| 74 | ✓ | [`server/src/modules/organization-payments/AGENTS.md`](server/src/modules/organization-payments/AGENTS.md) |
-| 75 | ✓ | [`server/src/modules/personal-access-tokens/AGENTS.md`](server/src/modules/personal-access-tokens/AGENTS.md) |
-| 76 | ✓ | [`server/src/modules/templates/AGENTS.md`](server/src/modules/templates/AGENTS.md) |
-| 77 | ✓ | [`server/src/modules/versions/AGENTS.md`](server/src/modules/versions/AGENTS.md) |
-| 78 | ✓ | [`server/src/modules/workflows/AGENTS.md`](server/src/modules/workflows/AGENTS.md) |
+| 55 | ✓ | [`.github/instructions/viewer-cache-review.instructions.md`](.github/instructions/viewer-cache-review.instructions.md) |
+| 56 | ✓ | [`.github/instructions/widget-components-review.instructions.md`](.github/instructions/widget-components-review.instructions.md) |
+| 57 | ✓ | [`.github/instructions/widget-config-review.instructions.md`](.github/instructions/widget-config-review.instructions.md) |
+| 58 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 59 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 60 | ✓ | [`docs/docs/marketplace/plugins/gemini.md`](docs/docs/marketplace/plugins/gemini.md) |
+| 61 | ✓ | [`docs/versioned_docs/version-3.0.0-LTS/marketplace/plugins/gemini.md`](docs/versioned_docs/version-3.0.0-LTS/marketplace/plugins/gemini.md) |
+| 62 | ✓ | [`frontend/AGENTS.md`](frontend/AGENTS.md) |
+| 63 | ✓ | [`frontend/CLAUDE.md`](frontend/CLAUDE.md) |
+| 64 | ✓ | [`marketplace/AGENTS.md`](marketplace/AGENTS.md) |
+| 65 | ✓ | [`server/AGENTS.md`](server/AGENTS.md) |
+| 66 | ✓ | [`server/CLAUDE.md`](server/CLAUDE.md) |
+| 67 | ✓ | [`server/src/modules/app-validation/AGENTS.md`](server/src/modules/app-validation/AGENTS.md) |
+| 68 | ✓ | [`server/src/modules/app/AGENTS.md`](server/src/modules/app/AGENTS.md) |
+| 69 | ✓ | [`server/src/modules/apps/AGENTS.md`](server/src/modules/apps/AGENTS.md) |
+| 70 | ✓ | [`server/src/modules/auth/AGENTS.md`](server/src/modules/auth/AGENTS.md) |
+| 71 | ✓ | [`server/src/modules/data-queries/AGENTS.md`](server/src/modules/data-queries/AGENTS.md) |
+| 72 | ✓ | [`server/src/modules/data-sources/AGENTS.md`](server/src/modules/data-sources/AGENTS.md) |
+| 73 | ✓ | [`server/src/modules/git-sync/AGENTS.md`](server/src/modules/git-sync/AGENTS.md) |
+| 74 | ✓ | [`server/src/modules/group-permissions/AGENTS.md`](server/src/modules/group-permissions/AGENTS.md) |
+| 75 | ✓ | [`server/src/modules/licensing/AGENTS.md`](server/src/modules/licensing/AGENTS.md) |
+| 76 | ✓ | [`server/src/modules/organization-payments/AGENTS.md`](server/src/modules/organization-payments/AGENTS.md) |
+| 77 | ✓ | [`server/src/modules/personal-access-tokens/AGENTS.md`](server/src/modules/personal-access-tokens/AGENTS.md) |
+| 78 | ✓ | [`server/src/modules/templates/AGENTS.md`](server/src/modules/templates/AGENTS.md) |
+| 79 | ✓ | [`server/src/modules/versions/AGENTS.md`](server/src/modules/versions/AGENTS.md) |
+| 80 | ✓ | [`server/src/modules/workflows/AGENTS.md`](server/src/modules/workflows/AGENTS.md) |
 
 ---
 

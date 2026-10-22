@@ -67,7 +67,11 @@ Addresses count once per packet, including loopback and nested IP occurrences.
 DNS addresses are associated only with one question in the same response packet;
 additional records may be included, so this does not prove final resolution.
 Ambiguous addresses remain in a separate inventory. Protocol distribution counts
-exact `frame.protocols` stack strings. TLS SNI is recorded handshake metadata,
+exact nonempty `frame.protocols` stack strings. Frames for which TShark reports
+an empty stack, including zero-length packets, still contribute to the packet
+count without adding a protocol row. An all-empty stack inventory can have
+complete examined coverage; it does not establish the absence of network traffic.
+TLS SNI is recorded handshake metadata,
 not process identity or proof of the destination's authenticity.
 
 All examined inventories are retained within the resource budget; no fixed

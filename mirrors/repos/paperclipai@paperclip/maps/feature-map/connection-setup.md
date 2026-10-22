@@ -99,12 +99,43 @@ saved connection. Run a permitted read-only action with an eligible agent and
 verify its useful result. Try an ineligible agent and confirm denial. Repeat
 with a user who cannot install company-wide; the UI must not imply broad access.
 
+Notebook is internally gated by `enablePaperclipNotebook` (default off, no settings toggle). Disabled instances hide setup/discovery and deny curated Notebook dispatch and publishing; local removal and grant revocation remain available.
+
+Availability is catalog metadata evaluated by shared connector checks. Notebook
+publication and file uploads stay in the Notebook service.
+
+Paperclip Notebook uses the existing personal-account MCP OAuth setup at
+`https://notebook.paperclip.app/mcp`. Sign in through Cloud, assign agents, and
+verify tool discovery. The connection keeps its default catalog name.
+Reconnect must preserve agent assignments and Allowed / Ask first / Off choices.
+Removal disables local use and clears saved credentials. Remote authorization
+can be revoked separately in Notebook's Connected apps screen; automatic remote
+cleanup and custom keyed refresh recovery are deferred. A lost rotating-token
+response may require reconnecting. Notebook tools use the selected connection's
+ordinary action gateway. See [Notebook](../../doc/connections/PAPERCLIP-NOTEBOOK.md)
+for the Notebook-owned uploader and fixture coverage. Live Notebook qualification
+still requires the deployed service and both hosted and self-hosted clients.
+
 Daytona follows this same key/access wizard. Its native method exposes the
 published platform and Toolbox HTTP actions using provider sandbox IDs, without
 a Paperclip task or lease requirement. [Daytona browser setup](../../tests/e2e/daytona-connector.spec.ts)
 checks the catalog, password field, access controls, and optional organization
 pin. It does not submit a key or qualify a real provider account. See
 [Daytona](../../doc/connections/DAYTONA.md) for API-key authority and OAuth limits.
+
+For Braintrust, verify US OAuth (default), US API key, EU OAuth, and EU API key
+from both Apps and `/apps/connect?source=braintrust`. Inspect the exact regional
+endpoint and method after Save & exit, cancellation/resume, and reconnect;
+these operations must retain the saved connection and its access choices.
+Verify the key stays out of browser draft storage and public responses, then
+perform a bounded read and disposable write through an actual eligible run.
+The [Braintrust qualification matrix](../../doc/connections/BRAINTRUST.md#qualification-record)
+records completed US OAuth connect/discovery, bounded read, synthetic write
+through actual process-agent gateway calls, catalog refresh, reconnect, local
+removal, and structural redaction. US API-key and both EU methods still need
+account-bound proof. Live token expiry/refresh, remote OAuth revocation, and
+native CLI automatic capability delivery remain unqualified; public metadata
+and fixtures do not establish those results.
 
 ### `mcp-link`
 

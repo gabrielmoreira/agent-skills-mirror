@@ -1,6 +1,6 @@
 {
   "name": "@cloudbase/cloudbase-mcp",
-  "version": "2.36.0",
+  "version": "2.36.1",
   "mcpName": "io.github.TencentCloudBase/cloudbase-mcp",
   "packageManager": "pnpm@10.8.0",
   "description": "CloudBase MCP Server — operate Tencent CloudBase (database, auth, functions, storage, hosting) from AI coding tools via the Model Context Protocol. Part of CloudBase AI Toolkit.",
@@ -50,6 +50,7 @@
     "test:coverage": "npm run build && vitest run --coverage",
     "test:auth:flat": "node ./scripts/verify-flat-auth.mjs",
     "test:pg:cloud": "npm run build && node ./scripts/verify-pg-cloud-smoke.mjs",
+    "test:gateway:cloud": "node ./scripts/verify-gateway-route-cloud-smoke.mjs",
     "test:cli:cloud-mode": "node ./scripts/verify-cli-cloud-mode-smoke.mjs",
     "test:npm:tarball-smoke": "node ./scripts/verify-npm-tarball-smoke.mjs",
     "check:i18n": "node ./scripts/check-i18n-coverage.mjs",

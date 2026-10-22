@@ -316,6 +316,12 @@ step of nothing as one that closes whatever the cut. On the source frames the ce
 filmed; on the rendered cells, the cell of the strip the cut makes with that frame as filmed. A loop
 that only gave its ghosts way to the frames beside them is gated on its source frames, as filmed.
 `--anchor body` reads its `seam_ratio_after_anchor` the same way.
+Where the source frames refuse the wrap, the body anchor moved the cells (`wrap_dx_px` not 0), and
+no frame was made, the gate reads the cells that play again. Where the repair made a frame, the gate
+reads the wrap alone, but here the cut passes on them (`seam_measurement: rendered-cells`) when the
+wrap and the largest step of the loop, each against the mean step, are both within `--seam-max`
+(default 2.0); otherwise the refusal is the source frames' own. See
+[loop review](loop-review.md#the-body-anchor-and-the-seam-gate).
 
 To compare an active result with a final candidate after all processing, use
 [`video-loop-compare`](loop-comparison.md); a seam pass alone is not an improvement.

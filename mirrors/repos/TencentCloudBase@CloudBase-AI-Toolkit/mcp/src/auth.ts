@@ -1,4 +1,4 @@
-import { readFileSync, statSync } from "node:fs";
+import { readFileSync, statSync, unlinkSync } from "node:fs";
 import { join } from "node:path";
 import {
   AuthSupervisor,
@@ -611,6 +611,21 @@ function readProjectCredentialFile(projectRoot: string): Record<string, unknown>
 }
 
 /**
+ * 删掉项目级凭据文件。只删这一个文件，目录留着——删目录会顺带清掉同在里面的
+ * `project.json` 等项目配置。
+ *
+ * 不走 toolbox 的 `logout({cwd})`：那个接口会**无条件先删全局凭据**，而「退出本项目」
+ * 不该把用户的账号级登录一起注销掉。
+ */
+function deleteProjectCredentialFile(projectRoot: string): void {
+  try {
+    unlinkSync(join(getProjectDir(projectRoot), "auth.json"));
+  } catch {
+    // 文件本来就不在：登出是幂等的，不报错
+  }
+}
+
+/**
  * 项目级凭据优先于账号级全局登录态。
  *
  * 与 `readProjectEnvId()`「项目配置优先于账号级登录态」保持同一原则：项目级凭据是
@@ -672,6 +687,34 @@ function isAdoptedProjectCredential(apiKey: string, envId: string): boolean {
 }
 
 /**
+ * env 里的这一份凭据能不能被 `logout()` 清掉。
+ *
+ * 能清掉的只有两种情况：是我们从项目级凭据文件回填的，或者它与当前项目级凭据文件里
+ * 那一份相同（`auth(login_by_api_key)` 写进程 env 的同时也把同一个 key 落到项目级）。
+ * 这两种都能沿 `logout()` 清掉：删项目级文件、再清 env。
+ *
+ * 其余情况是用户自己在 shell 或宿主配置里设的变量，进程删不掉，只能提示他去源头改。
+ */
+export function isEnvCredentialRemovableByLogout(): boolean {
+  const apiKey = getCloudBaseApiKeyFromEnv();
+  const envId = process.env.CLOUDBASE_ENV_ID;
+  if (!apiKey || !envId) {
+    return false;
+  }
+  if (isAdoptedProjectCredential(apiKey, envId)) {
+    return true;
+  }
+  try {
+    const stored = readProjectCredentialFile(requireProjectRoot()) as
+      | { apiKey?: unknown; envId?: unknown }
+      | null;
+    return stored?.apiKey === apiKey && stored?.envId === envId;
+  } catch {
+    return false;
+  }
+}
+
+/**
  * 全局凭据文件 `~/.config/.cloudbase/auth.json` 与 CloudBase CLI 共用一份：用户会在终端里
  * `tcb login`，宿主连接器的登录按钮执行的也是 `tcb login --flow web --yes`，两者都在
  * **另一个进程**里重写这个文件。
@@ -717,6 +760,8 @@ export async function peekLoginState(options?: {
   dropStaleCredentialStoreCache();
   credentialSource = null;
   const envVarLoginState = normalizeLoginStateFromEnvVars(options);
+  // 回填的那份 key 换不出临时密钥时置位：项目级文件里是同一份，不必再试一次
+  let projectCredentialSkipped = false;
 
   if (envVarLoginState) {
     // API Key 模式：需要先用 API Key 换取临时密钥
@@ -745,18 +790,29 @@ export async function peekLoginState(options?: {
         return credential;
       } catch (e) {
         debug("peekLoginState: API Key login failed", { error: e instanceof Error ? e.message : String(e) });
-        return null;
+        // 我们回填的那份失效（密钥被撤、环境被删）：先清掉残留，别让它一直占着 env
+        // 把状态查询、登出、重新登录全堵死；项目文件本身不动，用户重新登录会覆盖它。
+        // 清完继续往下走，让账号级登录态接上。
+        if (isAdoptedProjectCredential(envVarLoginState.apiKey, envVarLoginState.envId)) {
+          clearAdoptedProjectEnv();
+          projectCredentialSkipped = true;
+        } else {
+          // 用户自己在 shell / 宿主配置里设的变量，登不登得上由他那边决定
+          return null;
+        }
       }
     }
 
-    // 腾讯云密钥模式：直接返回
-    debug("loginByApiSecret");
-    credentialSource = "env";
-    return envVarLoginState as LoginState;
+    if (!projectCredentialSkipped) {
+      // 腾讯云密钥模式：直接返回
+      debug("loginByApiSecret");
+      credentialSource = "env";
+      return envVarLoginState as LoginState;
+    }
   }
 
   // 项目级凭据优先于账号级登录态（与 readProjectEnvId 同一原则）
-  const projectLoginState = await resolveProjectLoginState();
+  const projectLoginState = projectCredentialSkipped ? null : await resolveProjectLoginState();
   if (projectLoginState) {
     credentialSource = "project";
     return projectLoginState;
@@ -866,18 +922,47 @@ export async function getLoginState(options?: EnsureLoginOptions) {
   return ensureLogin(options);
 }
 
-export async function logout(_options?: { site?: string }) {
+/**
+ * 退出登录：只清「当前生效的那一份」。
+ *
+ * 项目级凭据优先于账号级登录态，所以项目里有 API Key 时，登出只删项目文件、清掉
+ * 回填的环境变量，账号登录原样保留（删完它自动接上）。再调一次才轮到全局。
+ *
+ * 不把 cwd 交给 toolbox 的 `logout()`：那个接口会**无条件先删全局凭据**，
+ * 「退出本项目」不该把用户的账号级登录一起注销掉。
+ */
+export async function logout(_options?: { site?: string }): Promise<{
+  removed: Array<"project" | "global">;
+}> {
   // 先同步缓存再删：否则 toolbox 会把本进程启动时的陈旧快照写回盘，
   // 把外部（CLI / 宿主登录按钮）刚写入的凭据一起抹掉。
   dropStaleCredentialStoreCache();
-  let cwd: string | undefined;
+
+  const removed: Array<"project" | "global"> = [];
+  let projectRoot: string | undefined;
   try {
-    cwd = requireProjectRoot();
+    projectRoot = requireProjectRoot();
   } catch {
-    cwd = undefined;
+    // 宿主配置目录等非法项目根：没有项目级凭据
+    projectRoot = undefined;
   }
-  await auth.logout(cwd ? { cwd } : undefined);
-  clearAdoptedProjectEnv();
+
+  const envApiKey = getCloudBaseApiKeyFromEnv();
+  const hasProjectCredential = !!(projectRoot && readProjectCredentialFile(projectRoot));
+  // env 里那份是用户自己设的（进程删不掉）时，既不算项目级生效，也不该顺手注销账号登录
+  const projectInEffect =
+    hasProjectCredential && (!envApiKey || isEnvCredentialRemovableByLogout());
+
+  if (projectInEffect && projectRoot) {
+    deleteProjectCredentialFile(projectRoot);
+    clearAdoptedProjectEnv();
+    removed.push("project");
+  } else if (!envApiKey) {
+    await auth.logout();
+    removed.push("global");
+  }
+
   credentialSource = null;
   resetAuthProgressState();
+  return { removed };
 }

@@ -43,7 +43,8 @@ python3 "$RETRIEVE" --vault "$VAULT" "wiki" --top 1 --no-rerank --explain
 ```
 
 Chunk and index files are disposable runtime state. Incremental prefixing skips
-records whose chunk and page hashes still match. A complete scan removes
+records whose chunk hashes, page hashes and provider/model profile still match.
+Legacy records without that profile regenerate on an explicit build. A complete scan removes
 surplus records for deleted pages, and the prefixer invalidates the BM25 index
 before changing its chunk set so a mixed stale index is not served.
 Prefix and BM25 build operations share the vault-wide mutation lock with every
@@ -51,14 +52,36 @@ other writer; a busy vault fails closed instead of publishing a partial index.
 
 ## Contextual-prefix privacy
 
-Synthetic prefixes use only local frontmatter and page text. The Anthropic API
-and `claude` subprocess tiers can send page bodies off-machine and therefore
-require the user's explicit consent plus `--allow-egress`. Never infer consent
-from an API key or installed binary. Preview the scope first and state which
-provider will receive what data.
+Synthetic prefixes use only local frontmatter and page text. The explicit
+Anthropic API profile can send page bodies off-machine and requires the user's
+consent plus `--allow-egress` and a configured API key. There is no Claude CLI
+generation tier or ambient subprocess fallback. Never infer consent from an
+API key or installed binary. Preview the scope first and state which provider
+will receive what data.
 
 Remote Ollama endpoints also require explicit approval and
 `--allow-remote-ollama`; the default reranker accepts localhost only.
+
+Local model prefixes are a separate explicit option. Use an already installed
+exact `name:tag`; no server is started and no model is installed or pulled:
+
+```bash
+python3 "$PREFIX" --vault "$VAULT" --all --local-ollama --ollama-model installed:tag --peek
+python3 "$PREFIX" --vault "$VAULT" --all --local-ollama --ollama-model installed:tag
+```
+
+The prefix adapter verifies cloud-disabled server status and local model
+identity before sending page text. Unsupported or unavailable preflight falls
+back to synthetic prefixes for new or changed chunks only; prefixes from the
+same endpoint and model stay in place, so a transient outage leaves an
+unchanged vault's chunks and BM25 index untouched. This requirement can exclude
+older Ollama servers.
+Reranking and tiling use the same local-only proof before query, page, chunk,
+or embedding cache work. `--allow-remote-ollama` approves the endpoint, not
+cloud delegation by the server.
+See [prefix providers](../../docs/prefix-providers.md) for the exact policy,
+cloud model selection and verification limits. The reranker has its own model
+and endpoint policy; selecting local prefixes does not enable reranking.
 
 ## Query
 
@@ -75,11 +98,11 @@ English-oriented v1.5 model, pass `--model nomic-embed-text` explicitly.
 Nomic models use `search_query:` for the query and `search_document:` for
 candidate text. Nomic v2 has a 512-token input context and Ollama truncates
 longer embedding inputs by default; BM25 still scores the complete chunk.
-Embeddings are cached by exact model, input scheme, and hash of the exact
-prefixed input. A missing local Ollama service, missing selected
-model, unusable vector, or any candidate embedding failure falls back for the
-complete result set to the original BM25 order; it never mixes cosine and BM25
-score scales.
+Embeddings are cached by exact model, verified digest, input scheme, and hash
+of the exact prefixed input. A missing local Ollama service, malformed HTTP
+reply, missing selected model, unusable vector, or any candidate embedding
+failure falls back for the complete result set to the original BM25 order; it
+never mixes cosine and BM25 score scales.
 
 Query input is bounded at 8,000 normalized characters and result counts must be
 between 1 and 1,000. Oversized queries and invalid limits fail with an
@@ -110,6 +133,11 @@ python3 "$RERANK" --vault "$VAULT" "$QUERY" --model nomic-embed-text --peek
   standard vault query/text-search path and do not fabricate matches.
 - Do not cite benchmark percentages unless a reproducible vault-specific
   benchmark produced them.
+
+Measure a prebuilt index against explicit labels with `bench --queries FILE
+--vault VAULT`. See [offline retrieval evaluation](../../docs/retrieval-evaluation.md)
+for recall, MRR, missing labels and negative cases. This is a read-only
+measurement and never silently rebuilds an index or calls a model.
 
 ## Checkpoint
 

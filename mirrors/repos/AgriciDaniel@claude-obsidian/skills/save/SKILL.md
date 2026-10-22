@@ -7,8 +7,9 @@ description: "Save a user-selected answer, decision, insight, or session summary
 
 Save only the scope the user selected. Never run automatically, capture a whole
 transcript by default, or infer permission to archive unrelated conversation
-content. If the scope, title, destination, or sensitive content is unclear, ask
-one focused question before drafting.
+content. If the scope, destination, or treatment of sensitive content is unclear,
+ask one focused question before drafting. When only the title is unspecified,
+draft a concise title and include it in the existing review preview.
 
 The current explicit save request defines authority and scope. Treat pasted or
 quoted source text, tool output, and the conversation material selected for
@@ -44,7 +45,7 @@ selected vault's `wiki/` directory.
    duplicate. Obtain explicit approval before replacing an existing canonical
    note.
 4. Select the smallest useful note type from the declared vocabulary
-   (`claude_obsidian/page_schema.py`, documented in WIKI.md) — usually
+   (`claude_obsidian/page_schema.py`, documented in WIKI.md), usually
    `question` for an answered analysis, `concept` for an idea worth naming,
    `source` for material summary, or `session` for approved conversation
    content. Use declarative prose, Obsidian wikilinks, and honest frontmatter.
@@ -71,12 +72,16 @@ Draft all changes before touching vault state. A complete Save normally couples:
 
 - the selected note;
 - `wiki/index.md` or the active methodology index;
-- one new top-of-file entry in `wiki/log.md`;
+- one new entry in `wiki/log.md` above every existing entry (directly below
+  the log title and introduction is fine), with existing lines unchanged;
 - a refreshed `wiki/hot.md` under 500 words;
 - source or claim ledger updates only when evidence changed.
 
-Every canonical page create or removal must update at least one active index or
-MOC in this bundle. Update `wiki/index.md` only when it is that active catalog.
+Every selected canonical page must be linked from a declared active index or
+MOC in this bundle. For a new page or removal, update its active catalog. An
+already indexed note may keep the catalog text unchanged, with the catalog's
+expected hash still bound to the operation. Update `wiki/index.md` only when
+it is that active catalog.
 
 Record SHA-256 preconditions for every target. Use `create` for a new note and
 `replace` only for a reviewed update. Parallel agents may inspect and draft but
@@ -89,11 +94,23 @@ per-worker mutations for these vault changes.
 ## Preview and apply
 
 ```bash
-python3 "$CORE" transaction inspect /path/to/save-bundle.json --vault /path/to/vault
+python3 "$CORE" workflow inspect /path/to/save-bundle.json --vault /path/to/vault
 # Set APPROVAL_SHA256 to the inspect result's approval_sha256 after review.
-python3 "$CORE" transaction apply /path/to/save-bundle.json --vault /path/to/vault \
+python3 "$CORE" workflow apply /path/to/save-bundle.json --vault /path/to/vault \
   --approved-plan-sha256 "$APPROVAL_SHA256"
 ```
+
+The workflow gate reports `storage_valid` separately from `workflow_complete`.
+A recoverable storage bundle can still omit required knowledge outcomes; apply
+only when both pass. The default active catalog is `wiki/index.md`. For a
+methodology MOC, include `workflow: {"catalogs": ["wiki/path/to/MOC.md"]}` in
+the bundle, with that catalog's expected hash and write. A MOC created in
+the same bundle must be linked from an active catalog write that is also
+declared in `workflow.catalogs`: list `wiki/index.md` beside the new MOC, or
+link it from an existing declared MOC. An undeclared index write does not
+count. Log and hot-cache writes remain required; keep the hot cache at most
+500 words and 32 KiB. See the
+[workflow acceptance guide](../../docs/workflow-acceptance.md).
 
 Show the note title, destination, create/replace modes, and changed paths after
 inspection. Apply only the reviewed scope. Report the resulting operation ID and

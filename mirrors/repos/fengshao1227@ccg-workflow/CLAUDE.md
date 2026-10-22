@@ -2,7 +2,7 @@
 
 > [根目录](../CLAUDE.md) > **skills-v2**
 
-**Last Updated**: 2026-10-18 (v3.7.2)
+**Last Updated**: 2026-10-21 (v3.7.3)
 
 > ⚠ 本文档主体仍停留在 v2.1.16 架构描述（v3.0 引擎重构后未全量同步）。下方变更记录保留 v3.x 修复轨迹，完整历史见 [CHANGELOG.md](./CHANGELOG.md)。
 
@@ -11,6 +11,10 @@
 ## 变更记录 (Changelog)
 
 > 完整变更历史请查看 [CHANGELOG.md](./CHANGELOG.md)
+
+### 2026-10-21 (v3.7.3)
+- 🐛 **Windows dsh 链接失败**：`profileLinkCommand` 给 cmd 的程序名加了引号 → PATH 查到的 `.cmd` 里 `%~dp0` 变成 cwd（microsoft/terminal#15212，官方不修），桌面版 `dsh.cmd` 在配置档目录下找 `DeepSeek Harness.exe`。程序名改为裸名（`[\w.-]+` 校验），参数照旧加引号。⚠ **在 Windows 上经 cmd 调 shim，程序名永远别加引号**。
+- 🐛 **Windows pnpm 兜底**：cmd 报「找不到命令」是 status 9009 不是 ENOENT，现在视同未安装。新增 win32 专用实机测试（`it.runIf`）；CI 只有 ubuntu，Mac/Linux 上跳过。
 
 ### 2026-10-18 (v3.7.2)
 - ✨ **x6.ai 赞助商**：README Banner（置于 PackyCode / APIMart 之下）+ `init` Step 1 / 菜单 API 配置新选项，`ANTHROPIC_BASE_URL=https://api.x6.ai`（**不带** `/v1`）。Codex `[model_providers.x6ai]`，`base_url=https://api.x6.ai/v1`（**带** `/v1`），`env_key=X6AI_API_KEY`，注册与启用分离。只在 `src/utils/sponsors.ts` 加了一项，其余全部遍历注册表。

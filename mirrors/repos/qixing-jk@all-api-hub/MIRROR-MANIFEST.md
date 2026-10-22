@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `qixing-jk/all-api-hub` — 26 default patterns, 7 followed patterns, 26 file(s) materialized.
+Mirror of `qixing-jk/all-api-hub` — 26 default patterns, 7 followed patterns, 27 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `qixing-jk/all-api-hub` — 26 default patterns, 7 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 7 |
-| Files         | 26 |
+| Files         | 27 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -78,19 +78,20 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 11 | ✓ | [`.agents/skills/add-site-integration/SKILL.md`](.agents/skills/add-site-integration/SKILL.md) |
 | 12 | ✓ | [`.agents/skills/live-extension-ui-automation/references/mobile-debugging.md`](.agents/skills/live-extension-ui-automation/references/mobile-debugging.md) |
 | 13 | ✓ | [`.agents/skills/live-extension-ui-automation/references/session-reuse.md`](.agents/skills/live-extension-ui-automation/references/session-reuse.md) |
-| 14 | ✓ | [`.agents/skills/live-extension-ui-automation/SKILL.md`](.agents/skills/live-extension-ui-automation/SKILL.md) |
-| 15 | ✓ | [`.agents/skills/sponsor-catalog/agents/openai.yaml`](.agents/skills/sponsor-catalog/agents/openai.yaml) |
-| 16 | ✓ | [`.agents/skills/sponsor-catalog/references/catalog-compatibility.md`](.agents/skills/sponsor-catalog/references/catalog-compatibility.md) |
-| 17 | ✓ | [`.agents/skills/sponsor-catalog/SKILL.md`](.agents/skills/sponsor-catalog/SKILL.md) |
-| 18 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 19 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 20 | → | [`.husky/README.md`](.husky/README.md) |
-| 21 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 22 | → | [`docs/agents/i18n.md`](docs/agents/i18n.md) |
-| 23 | → | [`docs/agents/product.md`](docs/agents/product.md) |
-| 24 | → | [`docs/agents/site-integrations.md`](docs/agents/site-integrations.md) |
-| 25 | → | [`docs/agents/storage.md`](docs/agents/storage.md) |
-| 26 | → | [`docs/agents/task-acceptance.md`](docs/agents/task-acceptance.md) |
+| 14 | ✓ | [`.agents/skills/live-extension-ui-automation/references/ui-visual-evidence.md`](.agents/skills/live-extension-ui-automation/references/ui-visual-evidence.md) |
+| 15 | ✓ | [`.agents/skills/live-extension-ui-automation/SKILL.md`](.agents/skills/live-extension-ui-automation/SKILL.md) |
+| 16 | ✓ | [`.agents/skills/sponsor-catalog/agents/openai.yaml`](.agents/skills/sponsor-catalog/agents/openai.yaml) |
+| 17 | ✓ | [`.agents/skills/sponsor-catalog/references/catalog-compatibility.md`](.agents/skills/sponsor-catalog/references/catalog-compatibility.md) |
+| 18 | ✓ | [`.agents/skills/sponsor-catalog/SKILL.md`](.agents/skills/sponsor-catalog/SKILL.md) |
+| 19 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 20 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 21 | → | [`.husky/README.md`](.husky/README.md) |
+| 22 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 23 | → | [`docs/agents/i18n.md`](docs/agents/i18n.md) |
+| 24 | → | [`docs/agents/product.md`](docs/agents/product.md) |
+| 25 | → | [`docs/agents/site-integrations.md`](docs/agents/site-integrations.md) |
+| 26 | → | [`docs/agents/storage.md`](docs/agents/storage.md) |
+| 27 | → | [`docs/agents/task-acceptance.md`](docs/agents/task-acceptance.md) |
 
 ---
 

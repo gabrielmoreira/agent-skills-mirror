@@ -328,7 +328,7 @@ install, and a version comparison would call it fine.
 
 **The formula stages a second pinned asset.** Since silverstein/homebrew-tap#5
 the formula compiles the CLI with `engine-sherpa` and installs the signed
-plugin from that release's `minutes-macos-arm64-sherpa.tar.gz`, pinned by URL
+plugin and shared libraries from that release's `minutes-macos-arm64-sherpa-shared.tar.gz`, pinned by URL
 and `sha256`. The bump script moves that pin with the tag and the verifier
 checks it, so this needs no manual step. It is called out because the failure
 is quiet: a formula whose version line is correct can still stage the previous

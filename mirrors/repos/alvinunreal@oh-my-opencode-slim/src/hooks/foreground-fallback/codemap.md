@@ -25,7 +25,7 @@ Runtime model fallback system for foreground (interactive) agent sessions. When 
     OpenCode v1 internal continuation and lifecycle selection consults
     `fallback.continuationPolicy`: retry the primary by default or retain this
     confirmed fallback for an internal continuation.
-  - `sessionAgent`: Maps sessionID → agent name
+   - `sessionAgent`: Maps sessionID → agent name, accepting user and session-created hints but not assistant identities. Cold v1 sessions resolve identity through `utils/prompt-agent.ts`; unresolved sessions are not replayed.
   - `sessionTried`: Maps sessionID → Set of models already attempted in the descent; earlier chain entries are not marked tried implicitly, and the sticky retry retains this set
   - `sessionRetries`: Maps sessionID → absorbed host retry count for the entire descent (not per model)
   - `chainExhaustion`: Maps sessionID → exhaustion stage; stage 2 prevents further aborts without a fresh descent
@@ -138,7 +138,7 @@ Log fallback event
 3. **Model switching**: Uses `parseModelReference()` to extract providerID/modelID from chain entry
 4. **Re-prompting**: Calls `promptAsync()` which queues prompt and returns immediately (non-blocking); appends trusted internal-initiator provenance so the replay is not mistaken for new external user input
 5. **Failover deferral**: Recoverable child errors (`isFailoverError`) leave terminal bookkeeping to the task-session-manager. Its backstop waits for replay preparation, renewing at most five times, and clears the deferral before publishing an unrecovered error. `fallbackFailureReason()` adds the disabled, missing-chain, exhausted-chain (with tried models), or failed-model explanation. Non-failover errors retain their original text.
-6. **Fallback ownership**: Admitted and unresolved-promoted replays retain a tracker flag until external registration replaces the run. Plugin wiring makes v1 `task_revive` refuse pending or running fallback work; `task_cancel` remains available. v2 steering creates no replay flag or refusal.
+6. **Fallback ownership**: Admitted and unresolved-promoted replays retain a tracker flag until external registration replaces the run. Plugin wiring makes v1 `task_revive` refuse pending or running fallback work; `task_cancel` remains available. v2 steering creates no replay flag or refusal. Identity preflight runs before task-error bookkeeping, while replay runs afterwards to avoid synchronous busy-event re-entry.
 7. **Continuation notice**: A confirmed replay after a terminal failover error queues one internal `state="running"` notice with the failed model, provider error and model now running. The tracker uses the same parent transport as terminal delivery and waits for the notice attempt to settle before sending the result. Retry-path replays, superseded or unresolved admissions, promoted owners and v2 steering send no notice.
 
 ## Integration

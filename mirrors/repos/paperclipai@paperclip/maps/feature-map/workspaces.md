@@ -94,6 +94,14 @@ preparation API to add an authorized repository beneath that workspace;
 repeat the request and verify that it reuses the checkout and pinned revision.
 See [task binding tests](../../server/src/__tests__/task-workspace-binding.test.ts)
 and [repository access tests](../../server/src/__tests__/task-workspace-repositories-trust.test.ts).
+
+For native unfinished work, yield after preparation is staged and verify that
+normal admission prepares the repository and continues the same task without
+a timer or user message. A staging-only task that finishes must not wake again.
+The saved continuation must disappear when the repository is ready or belongs
+to another task. Source regressions cover those eligibility checks; a live
+provider journey is required to qualify the complete automatic resume.
+
 An existing projectless folder alias of a sandbox-restricted project must be
 rejected for a standard local task before its adapter executes. Repeat after
 relocating the configured source; retained ownership must still enforce the

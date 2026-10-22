@@ -25,9 +25,14 @@
 
 The environment and filesystem visible to a scheduled account may differ from
 the interactive terminal. Use absolute executable paths and verify that account
-can read `.env`, config, profiles, and its persistent data directory. Preview
-output can contain resolved webhook URLs/headers; keep credentials out of the
-user-facing transcript.
+can read `.env`, config, profiles, and its persistent data directory. When reusing
+the host assistant's API key, configure a persistent credential source for the
+scheduled process or container, such as the existing `.env` or the host's secret
+injection mechanism. A variable available only during an agent turn does not
+establish unattended access. Verify a one-off run in the actual scheduled or
+container environment, rather than relying on an interactive-shell check.
+Preview output can contain resolved webhook URLs/headers; keep credentials out
+of the user-facing transcript.
 
 ## GitHub Actions
 

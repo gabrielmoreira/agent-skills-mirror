@@ -11,7 +11,7 @@ There is no flow here, only a rule about direction. Domains depend on `util`;
 `util` depends on no domain. No file in this folder has a `use crate::` line.
 A helper that needs a `Config`, a `Tool`, a workspace or security policy
 belongs in the domain that owns those things. Domains import LLM-facing text
-sanitization directly from `tinytools_std::sanitize`.
+sanitization directly from `tinytools::sanitize`.
 
 ```text
   agent  memory  tools  inference  config  integrations  mcp  ...
@@ -105,9 +105,10 @@ wording stays one contract.
 ### Sanitization
 
 The stripping rule for untrusted text going into a model's context lives in
-`tinymcp_bus`, which applies it to every remote MCP tool description. This
-module re-exports it at the old path so the orchestrator prompt builder's
-skill descriptions get the same rule. Change it in `vendor/tinymcp`, not here.
+`tinytools::sanitize`, which TinyMCP also applies to every remote MCP tool
+description. The orchestrator prompt builder and skill search call
+`tinytools::sanitize::sanitize_for_llm` directly, so skill descriptions get the
+same rule. Change it in `vendor/tinyagents/vendor/tinytools`, not here.
 
 ### `MaybeSet`
 

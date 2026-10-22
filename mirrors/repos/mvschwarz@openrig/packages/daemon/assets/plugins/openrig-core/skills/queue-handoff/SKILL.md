@@ -29,8 +29,9 @@ without an owner.
   with the rig appearing dormant.
 - **Finishing a slice that has a clear next step.** Default-nudge:
   receiver gets a wake-ping plus the durable queue item.
-- **Blocked on another agent's work.** Park the qitem with
-  `closure_reason: blocked_on` and the blocker qitem id.
+- **Blocked on another agent's work.** Use `rig queue block <id> --on <child>`
+  (or `rig queue update <id> --state blocked --blocked-on <child>`). The item
+  stays active and returns to pending when its blocker completes.
 - **Escalating to the human.** Make the escalation a durable attention
   item, not just a chat message.
 
@@ -53,15 +54,19 @@ human. The qitem state machine enforces this:
 `pending → in-progress → done` requires `closure_reason` from one of:
 
 - `handed_off_to` — work continues at a different seat (target = new owner)
-- `blocked_on` — parked pending another qitem (target = blocker qitem id)
 - `denied` — receiver rejected the work
 - `canceled` — sender or receiver withdrew
 - `no-follow-on` — terminal completion, nothing else needed
 - `escalation` — kicked up to a higher tier (target = escalation target)
+- `superseded` — replaced by another qitem (target = successor qitem id)
 
-Three of those (`handed_off_to`, `blocked_on`, `escalation`) additionally
+Two of those (`handed_off_to`, `escalation`) additionally
 require `closure_target`. The daemon enforces this at the domain layer;
 every surface (CLI, MCP, future UI) inherits the same guarantee.
+
+`done` is terminal. `closure_reason: blocked_on` is valid only on an active
+`state=blocked` park record, as used by workflow writers; combining it with
+`state=done` is rejected. Use the block command above to wait on another qitem.
 
 **The drafted-park failure (draft ≠ throw).** The rule is about the *actual* pass, not the
 intention to pass. A turn that ends with a self-instruction **typed into your own prompt but left

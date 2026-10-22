@@ -26,6 +26,9 @@ npm run format   # run Prettier on the whole repo
 - Vue components: Vue 3 SFCs with `<script setup>`, PascalCase filenames (e.g. `SemanticTagsDemo.vue`).
 - CSS: prefer VitePress theme variables (`var(--vp-c-*)`) and keep components responsive (`@media (max-width: 720px)` when needed).
 - Docs: use clear headings and short paragraphs; components are referenced in Markdown as `<ComponentName />`.
+- Images: prefer WebP for screenshots. Convert existing PNG screenshots losslessly without cropping or resizing, preserving decoded pixels, transparency, and color profiles. For example: `cwebp -lossless -exact -m 6 -metadata all input.png -o input.webp`. Verify decoded pixel equality and browser rendering; keep the original PNG when the browser renders it differently. Inspect representative text-heavy crops at full size before committing.
+- When replacing an image, update references in every locale and remove the obsolete source after checking that nothing still references it. Avoid keeping both PNG and WebP copies of the same screenshot.
+- Measure image savings from the current tracked files; existing clones retain old image blobs in Git history. Run the production build and check rendered image URLs as well as Markdown links.
 
 ## Testing Guidelines
 

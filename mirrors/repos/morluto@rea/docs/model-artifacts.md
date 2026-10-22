@@ -5,6 +5,11 @@ GGUF v2/v3 or safetensors file. Detection uses content, including GGUF byte
 order, rather than its extension. REA does not load a model, interpret weights,
 run inference, import Python, open external-data references or use the network.
 
+Unsupported GGUF versions remain refused. Their diagnostic preserves the four
+version bytes and both UINT32 interpretations with byte order unknown, rather
+than inferring big-endian from an unrecognized little-endian value. Little-endian
+v2/v3 and big-endian v3 remain supported; big-endian v2 remains refused.
+
 ```bash
 rea inspect-model-artifact /absolute/path/model.gguf --json
 rea inspect-model-artifact /absolute/path/model.safetensors --hash full --json

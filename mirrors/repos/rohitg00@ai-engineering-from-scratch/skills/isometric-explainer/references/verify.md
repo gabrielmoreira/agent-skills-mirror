@@ -13,6 +13,8 @@ Do not trust the code. Look at the pixels. Run this loop after each build, and f
 7. **Scenario sweep.** Load every config, seek to every event and finish the run. Collect `console.error` and `pageerror` messages. The count must be 0.
 8. **Contact sheet.** Put one frame per event of a run in a grid and read it as a strip. A reader must be able to follow the steps without captions.
 9. **Exploded pose.** Explode, wait 1.5 s and check that no part leaves the stage.
+10. **Labels.** In every sweep frame, no pill covers another pill or a moving part. Check `?labels=0` once.
+11. **Wrapping.** Readouts and labels wrap only at spaces, commas or parentheses. A flag such as `-O0` never splits at its hyphen.
 
 ## Findings from real runs
 

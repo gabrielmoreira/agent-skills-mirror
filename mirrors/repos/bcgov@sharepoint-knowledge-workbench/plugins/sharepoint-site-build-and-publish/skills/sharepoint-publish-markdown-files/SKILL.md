@@ -30,6 +30,9 @@ Build a `PublishPlan` (source file to target library, folder and filename) and u
   `Resolve-PnPFolder` (creating any that are missing), then confirms the folder with `Get-PnPFolder` before uploading.
   If the library cannot be verified, it stops without uploading; create a missing library with the SharePoint
   document-library skill and rerun.
+- A plan action may carry `values` (field internal name to value) that the executor sets on the file's list item with
+  `Add-PnPFile -Values`. A lookup value is written `{"lookup_list": "...", "lookup_value": "<title>"}` and resolved to the
+  lookup item ID before upload; an unmatched title stops the run before the file is uploaded.
 - Require an explicit target library and folder; there is no default target. Refuse a missing or empty source directory.
 - When running from an installed copy, pass `-ConfigPath` (or `-SiteUrl`, `-ClientId`, `-TenantId`); the default config path
   does not resolve there.

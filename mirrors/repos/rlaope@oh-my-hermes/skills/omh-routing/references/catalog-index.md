@@ -39,6 +39,7 @@ Trigger phrases and the role registry live in `references/workflow-registry.md`;
 - `omh-context-budget-review`: [omh] Context window or token budget at risk: plan compact context, token/cost budgets, summarization checkpoints, and overflow recovery before long agent work.
 - `omh-cto-loop`: [omh] Engineering leadership over roadmap and risk: roadmap, PM, technical tradeoffs, risk, delivery, release, and follow-up operating cadence.
 - `omh-curriculum-design`: [omh] Team training or course that needs a syllabus: turn a learning goal into a teachable curriculum, assessment plan, and learner-ready sequence.
+- `dag-ulw`: [omh] Large multi-part job to run on its own: plan it as a graph of small nodes, run the ready ones in parallel through Hermes' delegate_task, verify the goal with a separate node, and repair failed nodes before reporting.
 - `omh-data-analysis`: [omh] Dataset or table to analyze: scope supplied data with provenance, causal-claim, and hallucination guards.
 - `omh-data-pipelines`: [omh] Data pipeline work -- an ETL or streaming job, a backfill or replay, duplicate events, a schema change downstream, a lineage question, a data-quality regression: make every rerun idempotent, bound every replay, and gate each load on observed checks.
 - `omh-data-share-review`: [omh] Before data leaves the team -- a dataset, log, ticket export or transcript excerpt bound for a vendor, a public issue, a model provider or a training corpus: classify every field, minimize first, pseudonymize with the mapping kept local, and call it redacted only after an observed residual scan.
@@ -84,6 +85,7 @@ Trigger phrases and the role registry live in `references/workflow-registry.md`;
 - `omh-long-document-reading`: [omh] Huge PDF or document to read in full: read a very large PDF, contract, manual, or report through Hermes in page-anchored ranges with a coverage ledger.
 - `ulw-loop`: [omh] Ambitious project goal needing many build cycles: agentic interviewer -> planner -> researcher -> builder -> reviewer cycles until a real gate.
 - `ulw-maestro`: [omh] Coding owner already chosen, handoff pending: prepares the handoff for the coding agent you already chose, composing its prompt from that agent's own installed skills; never selects the owner and never executes the work itself.
+- `omh-market-research`: [omh] Market sizing or customer/competitive analysis: investigate a scoped market with TAM/SAM/SOM sensitivity, attributed customer evidence, and comparable competitor/pricing profiles before a decision brief.
 - `omh-materials-package`: [omh] PPT, PDF, Excel, or HWP output to produce: decks, PDFs, spreadsheets, documents, HWP, Markdown, and binary export handoffs.
 - `omh-media-input`: [omh] Audio, video, or screenshot to process: user-sent media - audio, video, YouTube links, screenshots, receipts, OCR, meeting recordings, transcripts, timestamps, and clip summaries, gated for source, permission, and hallucination risk.
 - `omh-meeting-brief`: [omh] Upcoming work meeting that lacks an agenda: agenda, prompts, decisions, and record template.

@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/interview-mapper/../../../research-ops/skills/interview-mapper/SKILL.md

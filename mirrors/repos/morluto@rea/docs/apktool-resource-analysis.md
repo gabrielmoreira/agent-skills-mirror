@@ -65,6 +65,7 @@ rea decode-android-resources /targets/Example.apk --locale de
 rea decode-android-resources /targets/Example.apk --locales de --locales pt-BR
 rea decode-android-resources /targets/Example.apk --locales de --locales pt-BR --string-tables-only
 rea decode-android-resources /targets/Example.apk --no-strings
+rea decode-android-resources /targets/Example.apk --decode-timeout-ms 900000
 ```
 
 Equivalent MCP methods are `inspect_apktool_client` and
@@ -133,9 +134,14 @@ still suppresses all string projection, including in this mode.
 
 ## Resource and lifecycle limits
 
-- The decode runs with a 600 s deadline and a 4 MiB output capture budget;
-  a stopped decode reports `provider_timeout` and exceeded budgets report
-  `resource_constraint`.
+- The decode wall clock is `decode_timeout_ms` (CLI `--decode-timeout-ms`).
+  Omitted means 600000 ms. The integer range is 1 to 2147483647. A change
+  applies on the next decode. It does not raise the 4194304-byte (4 MiB)
+  output capture budget. That capture budget has no runtime override. A
+  stopped decode reports `provider_timeout` and names the effective
+  milliseconds; an exceeded capture budget reports `resource_constraint`.
+- The version probe waits 20000 ms and retains 65536 bytes. This release has
+  no runtime override for that probe. `decode_timeout_ms` does not raise it.
 - Manifest reads are bounded to 512 KiB before decoding UTF-8. Strings XML
   reads are bounded to 8 MiB; larger documents are skipped with partial
   coverage and an explicit limit, rather than reported as missing.

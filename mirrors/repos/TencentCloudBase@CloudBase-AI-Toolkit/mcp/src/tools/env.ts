@@ -10,6 +10,7 @@ import {
   getAuthProgressState,
   getCloudBaseApiKeyFromEnv,
   getCredentialSource,
+  isEnvCredentialRemovableByLogout,
   logout,
   peekLoginState,
   rejectAuthProgressState,
@@ -2500,53 +2501,85 @@ export function registerEnvTools(server: ExtendedMcpServer) {
           // API Key mode: exchange for temporary credentials
           const apiKeyFromEnv = getCloudBaseApiKeyFromEnv();
           if (apiKeyFromEnv && process.env.CLOUDBASE_ENV_ID) {
+            // 项目级 key 与账号登录并存时，项目级优先——设备码/网页授权即使走完也不生效，
+            // 所以短路段必须说清「怎么切」，否则用户会以为换号成功
+            const removable = isEnvCredentialRemovableByLogout();
+            const apiKeyEnvId = process.env.CLOUDBASE_ENV_ID;
+            const switchHint =
+              "\n" +
+              (removable
+                ? t("env.auth.apiKeySwitchHintRemovable", undefined, outLang)
+                : t(
+                    "env.auth.apiKeySwitchHintExternal",
+                    {
+                      varName: process.env.CLOUDBASE_API_KEY
+                        ? "CLOUDBASE_API_KEY"
+                        : "CLOUDBASE_APIKEY",
+                    },
+                    outLang,
+                  ));
+            const logoutNextStep = removable
+              ? buildAuthNextStep("logout", {
+                  suggestedArgs: { action: "logout", confirm: "yes" },
+                })
+              : undefined;
+            // peek 发现回填的那份已失效时会把 env 清掉：那就不是「登录失败」，
+            // 而是「旧 key 已经作废」，直接往下走正常登录流程
+            let adoptedKeyDropped = false;
             try {
               const existingLoginState = await peekLoginState();
               if (existingLoginState) {
                 return buildJsonToolResult({
                   ok: true,
                   code: "AUTH_READY",
-                  message: await appendApiKeyCamWarningIfNeeded(
-                    existingLoginState,
-                    t("env.auth.apiKeyAutoLogin", undefined, outLang),
-                  ),
+                  message:
+                    (await appendApiKeyCamWarningIfNeeded(
+                      existingLoginState,
+                      t("env.auth.apiKeyAutoLogin", undefined, outLang),
+                    )) + switchHint,
                   auth_mode: "api_key",
-                  envId: process.env.CLOUDBASE_ENV_ID,
+                  envId: apiKeyEnvId,
+                  ...(logoutNextStep ? { next_step: logoutNextStep } : {}),
                 });
               }
+              adoptedKeyDropped = !getCloudBaseApiKeyFromEnv();
             } catch (e) {
               // peekLoginState threw; log and fall through to diagnostic
               debug("start_auth: peekLoginState threw", { error: e instanceof Error ? e.message : String(e) });
             }
 
-            // API Key exchange failed: return diagnostic details
-            const exchangeRegion = resolveApiKeyExchangeRegion();
-            const endpoint =
-              process.env.CLOUDBASE_API_ENDPOINT ||
-              `https://${process.env.CLOUDBASE_ENV_ID}.${exchangeRegion ?? "ap-shanghai"}.tcb-api.tencentcloudapi.com`;
-            const diagMessage =
-              t("env.auth.apiKeyEnvExchangeFailed", undefined, outLang) +
-              t(
-                "env.auth.apiKeyDiagEnv",
-                {
-                  envId: String(process.env.CLOUDBASE_ENV_ID),
-                  apiKeyPrefix: apiKeyFromEnv.slice(0, 20),
-                  site: process.env.TCB_SITE || t("env.auth.siteUnset", undefined, outLang),
-                  gatewayRegion:
-                    exchangeRegion ?? t("env.auth.gatewayRegionDefault", undefined, outLang),
-                  endpoint,
-                },
-                outLang,
-              );
+            if (!adoptedKeyDropped) {
+              // API Key exchange failed: return diagnostic details
+              const exchangeRegion = resolveApiKeyExchangeRegion();
+              const endpoint =
+                process.env.CLOUDBASE_API_ENDPOINT ||
+                `https://${apiKeyEnvId}.${exchangeRegion ?? "ap-shanghai"}.tcb-api.tencentcloudapi.com`;
+              const diagMessage =
+                t("env.auth.apiKeyEnvExchangeFailed", undefined, outLang) +
+                t(
+                  "env.auth.apiKeyDiagEnv",
+                  {
+                    envId: String(apiKeyEnvId),
+                    apiKeyPrefix: apiKeyFromEnv.slice(0, 20),
+                    site: process.env.TCB_SITE || t("env.auth.siteUnset", undefined, outLang),
+                    gatewayRegion:
+                      exchangeRegion ?? t("env.auth.gatewayRegionDefault", undefined, outLang),
+                    endpoint,
+                  },
+                  outLang,
+                ) +
+                switchHint;
 
-            return buildJsonToolResult({
-              ok: false,
-              code: "API_KEY_AUTH_FAILED",
-              message: diagMessage,
-              auth_mode: "api_key",
-              envId: process.env.CLOUDBASE_ENV_ID,
-              endpoint,
-            });
+              return buildJsonToolResult({
+                ok: false,
+                code: "API_KEY_AUTH_FAILED",
+                message: diagMessage,
+                auth_mode: "api_key",
+                envId: apiKeyEnvId,
+                endpoint,
+                ...(logoutNextStep ? { next_step: logoutNextStep } : {}),
+              });
+            }
           }
 
           const region = server.cloudBaseOptions?.region || process.env.TCB_REGION;
@@ -2914,12 +2947,25 @@ export function registerEnvTools(server: ExtendedMcpServer) {
         }
 
         if (action === "logout") {
-          // Disallow logout in API Key mode
-          if (getCloudBaseApiKeyFromEnv() && process.env.CLOUDBASE_ENV_ID) {
+          // 用户自己在 shell / 宿主配置里设的 API Key 变量，进程内删不掉，只能提示去源头改；
+          // 按项目保存的那一份（我们回填的，或 login_by_api_key 写下的）能清，走正常登出。
+          if (
+            getCloudBaseApiKeyFromEnv() &&
+            process.env.CLOUDBASE_ENV_ID &&
+            !isEnvCredentialRemovableByLogout()
+          ) {
             return buildJsonToolResult({
               ok: false,
               code: "LOGOUT_NOT_ALLOWED",
-              message: t("env.auth.logoutNotAllowedApiKey", undefined, outLang),
+              message: t(
+                "env.auth.logoutNotAllowedApiKey",
+                {
+                  varName: process.env.CLOUDBASE_API_KEY
+                    ? "CLOUDBASE_API_KEY"
+                    : "CLOUDBASE_APIKEY",
+                },
+                outLang,
+              ),
               auth_mode: "api_key",
             });
           }
@@ -2935,12 +2981,15 @@ export function registerEnvTools(server: ExtendedMcpServer) {
             });
           }
 
-          await logout();
+          const { removed } = await logout();
           resetCloudBaseManagerCache();
           return buildJsonToolResult({
             ok: true,
             code: "LOGGED_OUT",
-            message: t("env.auth.loggedOut", undefined, outLang),
+            removed_scopes: removed,
+            message: removed.includes("project")
+              ? t("env.auth.loggedOutProject", undefined, outLang)
+              : t("env.auth.loggedOut", undefined, outLang),
           });
         }
 

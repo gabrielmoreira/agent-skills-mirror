@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `AtomicBot-ai/Atomic-Chat` — 26 default patterns, 10 followed patterns, 454 file(s) materialized.
+Mirror of `AtomicBot-ai/Atomic-Chat` — 26 default patterns, 10 followed patterns, 472 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `AtomicBot-ai/Atomic-Chat` — 26 default patterns, 10 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 10 |
-| Files         | 454 |
+| Files         | 472 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -477,51 +477,69 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 407 | ✓ | [`docs/decisions/2026-10-09-hide-the-cli-in-the-app.md`](docs/decisions/2026-10-09-hide-the-cli-in-the-app.md) |
 | 408 | ✓ | [`docs/decisions/2026-10-09-match-file-ids-by-name-and-tell-the-model-documents-are-attached.md`](docs/decisions/2026-10-09-match-file-ids-by-name-and-tell-the-model-documents-are-attached.md) |
 | 409 | ✓ | [`docs/decisions/2026-10-09-run-qwen-image-2-1-turbo-as-a-qwen-image-2-1-sibling.md`](docs/decisions/2026-10-09-run-qwen-image-2-1-turbo-as-a-qwen-image-2-1-sibling.md) |
-| 410 | ✓ | [`docs/decisions/2026-10-13-bundle-the-upstream-release-the-pinned-core-would-choose.md`](docs/decisions/2026-10-13-bundle-the-upstream-release-the-pinned-core-would-choose.md) |
-| 411 | ✓ | [`docs/decisions/2026-10-13-offer-providers-media-models-beside-the-local-ones.md`](docs/decisions/2026-10-13-offer-providers-media-models-beside-the-local-ones.md) |
-| 412 | ✓ | [`docs/decisions/2026-10-15-download-bonsai-with-the-apps-own-downloader.md`](docs/decisions/2026-10-15-download-bonsai-with-the-apps-own-downloader.md) |
-| 413 | ✓ | [`docs/decisions/2026-10-15-fix-windows-chat-directory-enumeration-and-output.md`](docs/decisions/2026-10-15-fix-windows-chat-directory-enumeration-and-output.md) |
-| 414 | ✓ | [`docs/decisions/2026-10-15-hide-agent-mode.md`](docs/decisions/2026-10-15-hide-agent-mode.md) |
-| 415 | ✓ | [`docs/decisions/2026-10-15-let-chat-commands-reach-the-users-own-folders.md`](docs/decisions/2026-10-15-let-chat-commands-reach-the-users-own-folders.md) |
-| 416 | ✓ | [`docs/decisions/2026-10-15-run-commands-and-scripts-from-chat.md`](docs/decisions/2026-10-15-run-commands-and-scripts-from-chat.md) |
-| 417 | ✓ | [`docs/decisions/2026-10-15-sandbox-chat-commands-with-mxc-on-windows.md`](docs/decisions/2026-10-15-sandbox-chat-commands-with-mxc-on-windows.md) |
-| 418 | ✓ | [`docs/decisions/2026-10-16-run-foundry-local-through-the-core-and-download-its-models-in-the-app.md`](docs/decisions/2026-10-16-run-foundry-local-through-the-core-and-download-its-models-in-the-app.md) |
-| 419 | ✓ | [`docs/README.md`](docs/README.md) |
-| 420 | ✓ | [`extensions/assistant-extension/README.md`](extensions/assistant-extension/README.md) |
-| 421 | ✓ | [`foundation-models-server/README.md`](foundation-models-server/README.md) |
-| 422 | ✓ | [`mlx-server/README.md`](mlx-server/README.md) |
-| 423 | ✓ | [`scripts/concurrent-demo/README.md`](scripts/concurrent-demo/README.md) |
-| 424 | ✓ | [`src-tauri/resources/agent-skills/apple-calendar/SKILL.md`](src-tauri/resources/agent-skills/apple-calendar/SKILL.md) |
-| 425 | ✓ | [`src-tauri/resources/agent-skills/apple-notes/SKILL.md`](src-tauri/resources/agent-skills/apple-notes/SKILL.md) |
-| 426 | ✓ | [`src-tauri/resources/agent-skills/apple-reminders/SKILL.md`](src-tauri/resources/agent-skills/apple-reminders/SKILL.md) |
-| 427 | ✓ | [`src-tauri/resources/agent-skills/audio-transcribe/SKILL.md`](src-tauri/resources/agent-skills/audio-transcribe/SKILL.md) |
-| 428 | ✓ | [`src-tauri/resources/agent-skills/currency/SKILL.md`](src-tauri/resources/agent-skills/currency/SKILL.md) |
-| 429 | ✓ | [`src-tauri/resources/agent-skills/docker/SKILL.md`](src-tauri/resources/agent-skills/docker/SKILL.md) |
-| 430 | ✓ | [`src-tauri/resources/agent-skills/ffmpeg/SKILL.md`](src-tauri/resources/agent-skills/ffmpeg/SKILL.md) |
-| 431 | ✓ | [`src-tauri/resources/agent-skills/github/SKILL.md`](src-tauri/resources/agent-skills/github/SKILL.md) |
-| 432 | ✓ | [`src-tauri/resources/agent-skills/gog-workspace/SKILL.md`](src-tauri/resources/agent-skills/gog-workspace/SKILL.md) |
-| 433 | ✓ | [`src-tauri/resources/agent-skills/imagemagick/SKILL.md`](src-tauri/resources/agent-skills/imagemagick/SKILL.md) |
-| 434 | ✓ | [`src-tauri/resources/agent-skills/notion/SKILL.md`](src-tauri/resources/agent-skills/notion/SKILL.md) |
-| 435 | ✓ | [`src-tauri/resources/agent-skills/obsidian/SKILL.md`](src-tauri/resources/agent-skills/obsidian/SKILL.md) |
-| 436 | ✓ | [`src-tauri/resources/agent-skills/pandoc/SKILL.md`](src-tauri/resources/agent-skills/pandoc/SKILL.md) |
-| 437 | ✓ | [`src-tauri/resources/agent-skills/pdf/SKILL.md`](src-tauri/resources/agent-skills/pdf/SKILL.md) |
-| 438 | ✓ | [`src-tauri/resources/agent-skills/skill-creator/SKILL.md`](src-tauri/resources/agent-skills/skill-creator/SKILL.md) |
-| 439 | ✓ | [`src-tauri/resources/agent-skills/wikipedia/SKILL.md`](src-tauri/resources/agent-skills/wikipedia/SKILL.md) |
-| 440 | ✓ | [`src-tauri/resources/agent-skills/wttr-weather/SKILL.md`](src-tauri/resources/agent-skills/wttr-weather/SKILL.md) |
-| 441 | ✓ | [`src-tauri/resources/agent-skills/xlsx/SKILL.md`](src-tauri/resources/agent-skills/xlsx/SKILL.md) |
-| 442 | ✓ | [`web-app/README.md`](web-app/README.md) |
-| 443 | ✓ | [`web-app/src/lib/core-settings-schema/README.md`](web-app/src/lib/core-settings-schema/README.md) |
-| 444 | ✓ | [`web-app/src/services/AGENTS.md`](web-app/src/services/AGENTS.md) |
-| 445 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 446 | → | [`core/CONTRIBUTING.md`](core/CONTRIBUTING.md) |
-| 447 | → | [`DEVELOP.md`](DEVELOP.md) |
-| 448 | → | [`docs/decisions/INDEX.md`](docs/decisions/INDEX.md) |
-| 449 | → | [`docs/ui-layout-rules.md`](docs/ui-layout-rules.md) |
-| 450 | → | [`extensions/CONTRIBUTING.md`](extensions/CONTRIBUTING.md) |
-| 451 | → | [`README.md`](README.md) |
-| 452 | → | [`src-tauri/CONTRIBUTING.md`](src-tauri/CONTRIBUTING.md) |
-| 453 | → | [`src-tauri/plugins/CONTRIBUTING.md`](src-tauri/plugins/CONTRIBUTING.md) |
-| 454 | → | [`web-app/CONTRIBUTING.md`](web-app/CONTRIBUTING.md) |
+| 410 | ✓ | [`docs/decisions/2026-10-12-open-a-linked-safetensors-repository-as-a-managed-checkpoint.md`](docs/decisions/2026-10-12-open-a-linked-safetensors-repository-as-a-managed-checkpoint.md) |
+| 411 | ✓ | [`docs/decisions/2026-10-13-bundle-the-upstream-release-the-pinned-core-would-choose.md`](docs/decisions/2026-10-13-bundle-the-upstream-release-the-pinned-core-would-choose.md) |
+| 412 | ✓ | [`docs/decisions/2026-10-13-offer-providers-media-models-beside-the-local-ones.md`](docs/decisions/2026-10-13-offer-providers-media-models-beside-the-local-ones.md) |
+| 413 | ✓ | [`docs/decisions/2026-10-15-download-bonsai-with-the-apps-own-downloader.md`](docs/decisions/2026-10-15-download-bonsai-with-the-apps-own-downloader.md) |
+| 414 | ✓ | [`docs/decisions/2026-10-15-fix-windows-chat-directory-enumeration-and-output.md`](docs/decisions/2026-10-15-fix-windows-chat-directory-enumeration-and-output.md) |
+| 415 | ✓ | [`docs/decisions/2026-10-15-hide-agent-mode.md`](docs/decisions/2026-10-15-hide-agent-mode.md) |
+| 416 | ✓ | [`docs/decisions/2026-10-15-let-chat-commands-reach-the-users-own-folders.md`](docs/decisions/2026-10-15-let-chat-commands-reach-the-users-own-folders.md) |
+| 417 | ✓ | [`docs/decisions/2026-10-15-run-commands-and-scripts-from-chat.md`](docs/decisions/2026-10-15-run-commands-and-scripts-from-chat.md) |
+| 418 | ✓ | [`docs/decisions/2026-10-15-sandbox-chat-commands-with-mxc-on-windows.md`](docs/decisions/2026-10-15-sandbox-chat-commands-with-mxc-on-windows.md) |
+| 419 | ✓ | [`docs/decisions/2026-10-16-run-foundry-local-through-the-core-and-download-its-models-in-the-app.md`](docs/decisions/2026-10-16-run-foundry-local-through-the-core-and-download-its-models-in-the-app.md) |
+| 420 | ✓ | [`docs/decisions/2026-10-17-confine-secure-projects-commands-to-their-folders-with-mxc.md`](docs/decisions/2026-10-17-confine-secure-projects-commands-to-their-folders-with-mxc.md) |
+| 421 | ✓ | [`docs/decisions/2026-10-19-navigate-with-an-icon-rail-and-a-contextual-sidebar.md`](docs/decisions/2026-10-19-navigate-with-an-icon-rail-and-a-contextual-sidebar.md) |
+| 422 | ✓ | [`docs/decisions/2026-10-19-reveal-files-from-the-blocking-pool-on-linux.md`](docs/decisions/2026-10-19-reveal-files-from-the-blocking-pool-on-linux.md) |
+| 423 | ✓ | [`docs/decisions/2026-10-20-always-offer-chat-commands-without-a-switch.md`](docs/decisions/2026-10-20-always-offer-chat-commands-without-a-switch.md) |
+| 424 | ✓ | [`docs/decisions/2026-10-20-attach-with-one-paperclip-and-gather-access-in-one-menu.md`](docs/decisions/2026-10-20-attach-with-one-paperclip-and-gather-access-in-one-menu.md) |
+| 425 | ✓ | [`docs/decisions/2026-10-20-give-server-configuration-and-remote-access-their-own-pages.md`](docs/decisions/2026-10-20-give-server-configuration-and-remote-access-their-own-pages.md) |
+| 426 | ✓ | [`docs/decisions/2026-10-20-list-everything-downloaded-on-a-downloads-page.md`](docs/decisions/2026-10-20-list-everything-downloaded-on-a-downloads-page.md) |
+| 427 | ✓ | [`docs/decisions/2026-10-20-list-hub-models-in-a-table-whose-rows-open-in-place.md`](docs/decisions/2026-10-20-list-hub-models-in-a-table-whose-rows-open-in-place.md) |
+| 428 | ✓ | [`docs/decisions/2026-10-20-list-inference-engines-on-one-grouped-overview.md`](docs/decisions/2026-10-20-list-inference-engines-on-one-grouped-overview.md) |
+| 429 | ✓ | [`docs/decisions/2026-10-20-name-every-hub-rows-parameters-and-hold-the-place-of-what-loads.md`](docs/decisions/2026-10-20-name-every-hub-rows-parameters-and-hold-the-place-of-what-loads.md) |
+| 430 | ✓ | [`docs/decisions/2026-10-20-put-every-control-on-a-36-24-40-px-scale.md`](docs/decisions/2026-10-20-put-every-control-on-a-36-24-40-px-scale.md) |
+| 431 | ✓ | [`docs/decisions/2026-10-20-set-up-the-server-from-overview-with-a-guide.md`](docs/decisions/2026-10-20-set-up-the-server-from-overview-with-a-guide.md) |
+| 432 | ✓ | [`docs/decisions/2026-10-20-show-hosted-providers-on-cloud-and-own-servers-on-custom-endpoint.md`](docs/decisions/2026-10-20-show-hosted-providers-on-cloud-and-own-servers-on-custom-endpoint.md) |
+| 433 | ✓ | [`docs/decisions/2026-10-20-split-the-api-screen-into-overview-activity-connections-and-model.md`](docs/decisions/2026-10-20-split-the-api-screen-into-overview-activity-connections-and-model.md) |
+| 434 | ✓ | [`docs/decisions/2026-10-20-turn-the-served-models-off-with-the-server.md`](docs/decisions/2026-10-20-turn-the-served-models-off-with-the-server.md) |
+| 435 | ✓ | [`docs/decisions/2026-10-20-unfold-engine-settings-and-offer-engine-updates-on-the-overview.md`](docs/decisions/2026-10-20-unfold-engine-settings-and-offer-engine-updates-on-the-overview.md) |
+| 436 | ✓ | [`docs/decisions/2026-10-21-list-and-remove-download-leftovers-on-the-downloads-page.md`](docs/decisions/2026-10-21-list-and-remove-download-leftovers-on-the-downloads-page.md) |
+| 437 | ✓ | [`docs/README.md`](docs/README.md) |
+| 438 | ✓ | [`extensions/assistant-extension/README.md`](extensions/assistant-extension/README.md) |
+| 439 | ✓ | [`foundation-models-server/README.md`](foundation-models-server/README.md) |
+| 440 | ✓ | [`mlx-server/README.md`](mlx-server/README.md) |
+| 441 | ✓ | [`scripts/concurrent-demo/README.md`](scripts/concurrent-demo/README.md) |
+| 442 | ✓ | [`src-tauri/resources/agent-skills/apple-calendar/SKILL.md`](src-tauri/resources/agent-skills/apple-calendar/SKILL.md) |
+| 443 | ✓ | [`src-tauri/resources/agent-skills/apple-notes/SKILL.md`](src-tauri/resources/agent-skills/apple-notes/SKILL.md) |
+| 444 | ✓ | [`src-tauri/resources/agent-skills/apple-reminders/SKILL.md`](src-tauri/resources/agent-skills/apple-reminders/SKILL.md) |
+| 445 | ✓ | [`src-tauri/resources/agent-skills/audio-transcribe/SKILL.md`](src-tauri/resources/agent-skills/audio-transcribe/SKILL.md) |
+| 446 | ✓ | [`src-tauri/resources/agent-skills/currency/SKILL.md`](src-tauri/resources/agent-skills/currency/SKILL.md) |
+| 447 | ✓ | [`src-tauri/resources/agent-skills/docker/SKILL.md`](src-tauri/resources/agent-skills/docker/SKILL.md) |
+| 448 | ✓ | [`src-tauri/resources/agent-skills/ffmpeg/SKILL.md`](src-tauri/resources/agent-skills/ffmpeg/SKILL.md) |
+| 449 | ✓ | [`src-tauri/resources/agent-skills/github/SKILL.md`](src-tauri/resources/agent-skills/github/SKILL.md) |
+| 450 | ✓ | [`src-tauri/resources/agent-skills/gog-workspace/SKILL.md`](src-tauri/resources/agent-skills/gog-workspace/SKILL.md) |
+| 451 | ✓ | [`src-tauri/resources/agent-skills/imagemagick/SKILL.md`](src-tauri/resources/agent-skills/imagemagick/SKILL.md) |
+| 452 | ✓ | [`src-tauri/resources/agent-skills/notion/SKILL.md`](src-tauri/resources/agent-skills/notion/SKILL.md) |
+| 453 | ✓ | [`src-tauri/resources/agent-skills/obsidian/SKILL.md`](src-tauri/resources/agent-skills/obsidian/SKILL.md) |
+| 454 | ✓ | [`src-tauri/resources/agent-skills/pandoc/SKILL.md`](src-tauri/resources/agent-skills/pandoc/SKILL.md) |
+| 455 | ✓ | [`src-tauri/resources/agent-skills/pdf/SKILL.md`](src-tauri/resources/agent-skills/pdf/SKILL.md) |
+| 456 | ✓ | [`src-tauri/resources/agent-skills/skill-creator/SKILL.md`](src-tauri/resources/agent-skills/skill-creator/SKILL.md) |
+| 457 | ✓ | [`src-tauri/resources/agent-skills/wikipedia/SKILL.md`](src-tauri/resources/agent-skills/wikipedia/SKILL.md) |
+| 458 | ✓ | [`src-tauri/resources/agent-skills/wttr-weather/SKILL.md`](src-tauri/resources/agent-skills/wttr-weather/SKILL.md) |
+| 459 | ✓ | [`src-tauri/resources/agent-skills/xlsx/SKILL.md`](src-tauri/resources/agent-skills/xlsx/SKILL.md) |
+| 460 | ✓ | [`web-app/README.md`](web-app/README.md) |
+| 461 | ✓ | [`web-app/src/lib/core-settings-schema/README.md`](web-app/src/lib/core-settings-schema/README.md) |
+| 462 | ✓ | [`web-app/src/services/AGENTS.md`](web-app/src/services/AGENTS.md) |
+| 463 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 464 | → | [`core/CONTRIBUTING.md`](core/CONTRIBUTING.md) |
+| 465 | → | [`DEVELOP.md`](DEVELOP.md) |
+| 466 | → | [`docs/decisions/INDEX.md`](docs/decisions/INDEX.md) |
+| 467 | → | [`docs/ui-layout-rules.md`](docs/ui-layout-rules.md) |
+| 468 | → | [`extensions/CONTRIBUTING.md`](extensions/CONTRIBUTING.md) |
+| 469 | → | [`README.md`](README.md) |
+| 470 | → | [`src-tauri/CONTRIBUTING.md`](src-tauri/CONTRIBUTING.md) |
+| 471 | → | [`src-tauri/plugins/CONTRIBUTING.md`](src-tauri/plugins/CONTRIBUTING.md) |
+| 472 | → | [`web-app/CONTRIBUTING.md`](web-app/CONTRIBUTING.md) |
 
 ---
 

@@ -1,5 +1,6 @@
 ---
-type: project
+type: entity
+methodology_role: project
 title: "{{title}}"
 status: active
 created: {{date}}

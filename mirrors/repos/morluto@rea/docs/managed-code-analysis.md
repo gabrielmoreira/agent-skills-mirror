@@ -85,7 +85,7 @@ rejects selected summary before analysis; complete delivery remains available.
 
 Complete `inspect_managed_members` delivery always includes the assembly-wide
 `member_refs` and `exported_types`, which `type_names` does not narrow, so even
-one selected or unmatched type can return megabytes. Select
+one selected or unmatched type can return megabytes. In MCP, select
 `{"path":"/absolute/path/Assembly.dll","type_names":["Namespace.Type"],"detail":"summary"}`
 to keep the complete source in the session and receive identity, metadata
 status, the selection with its unmatched names, coverage/issues, the separate
@@ -114,6 +114,49 @@ and carries the source selection and coverage; `user_strings` pages carry the
 literal pool's own coverage. Older Evidence that never examined exported types
 or user strings reports a null count and refuses those pages rather than
 returning an empty one.
+
+#### CLI summary and saved member rows
+
+The CLI accepts the same `complete` and `summary` detail choices. Omitted or
+`--detail complete` returns complete Evidence. To receive a summary, choose a
+new Evidence bundle destination so its original complete parent remains
+available after the command exits:
+
+```bash
+rea inspect-managed-members /absolute/path/Assembly.dll --type Namespace.Type \
+  --detail summary --evidence-bundle /absolute/path/evidence/members.json --json
+```
+
+`--evidence-bundle` writes the complete original Evidence in REA's canonical
+bundle format. Its parent directory must exist, and it never replaces an
+existing path. Relative paths resolve against the command's working directory.
+The option also works with complete delivery when a saved bundle is useful.
+Summary without a destination is rejected before analysis. A publication failure
+returns a typed error with the completed Evidence under
+`details.partial_observation`; it does not report successful summary delivery.
+Cancellation before publication prevents the new output. Once atomic
+publication has started, it can complete despite cancellation; a cancelled
+delivery then retains the committed path and byte count under
+`details.diagnostics.evidence_bundle`.
+
+Copy `normalized_result.parent_evidence_id` from the summary into the
+`source.evidence_id` field of the `managed-members` request above, then save that
+small request as `members-page.json` and run:
+
+```bash
+rea inspect-analysis-view /absolute/path/evidence/members-page.json \
+  --evidence-bundle /absolute/path/evidence/members.json --json
+```
+
+The view command authenticates the selected bundle and resolves that exact
+parent ID. It does not reopen the assembly, so the original target may have
+been moved or removed. Subsequent calls can select another collection or use
+the returned `coverage.next_offset` to continue the same collection. An inline
+source already includes its parent and cannot also select `--evidence-bundle`.
+
+Summary changes delivery, while type selection still controls decoding and the
+same inspection resource limits apply. Each separate CLI page reads and
+authenticates the saved bundle; the full source is retained on disk.
 
 ## Shipped scope
 
@@ -622,6 +665,9 @@ which managed methods executed or how the CLR resolved them.
 
 Managed member comparisons report a `metadata` dimension when an observed
 MethodDef flags or implementation flags value differs, including accessibility
-or synchronization changes. This is separate from the CIL/signature matching
-tiers: identical instructions do not establish unchanged method metadata. The
-reported difference is static metadata evidence, not proof of runtime behavior.
+or synchronization changes. Observed method-body `init_locals` and `max_stack`
+differences also contribute to `metadata`, even when CIL decoding is incomplete.
+An unavailable header value keeps body coverage unknown rather than establishing
+equality or a difference. These comparisons are separate from the CIL/signature
+matching tiers: identical instructions do not establish unchanged method metadata.
+The reported difference is static metadata evidence, not proof of runtime behavior.

@@ -2,14 +2,14 @@
 name: local-codex
 description: >-
   Launches and manages the local OpenAI Codex CLI as a non-interactive coding sub-agent via ChatGPT
-  Pro OAuth, never API keys. Use to delegate coding tasks to Codex, run codex exec, generate or
+  OAuth, never API keys. Use to delegate coding tasks to Codex, run codex exec, generate or
   refactor code, or get a Codex code review; phrases like 'codex', 'run codex', 'codex exec',
   'delegate to codex'.
 ---
 
 # Local Codex
 
-Delegate coding tasks to the local OpenAI Codex CLI agent using your ChatGPT Pro subscription (OAuth, no API charges).
+Delegate coding tasks to the local OpenAI Codex CLI agent using the authorized ChatGPT account's OAuth access.
 
 ## When to Use
 
@@ -18,12 +18,14 @@ Delegate coding tasks to the local OpenAI Codex CLI agent using your ChatGPT Pro
 - User wants to use Codex's GPT-5.5 agent capabilities
 - User mentions "codex", "run codex", "delegate to codex"
 
-## Authentication (OAuth / ChatGPT Pro)
+## Authentication (ChatGPT OAuth)
 
-**CRITICAL**: This skill uses OAuth authentication from `~/.codex/auth.json` (ChatGPT Pro flat-rate subscription). **Do NOT set `OPENAI_API_KEY` or pass API keys** — that would switch to pay-per-use billing.
+**CRITICAL**: Use ChatGPT OAuth through the selected credential store. **Do NOT set `OPENAI_API_KEY` or pass API keys** for this workflow. Keep the authentication route separate from the account's allowance and extra Credit policy; OAuth does not guarantee that long work cannot consume extra Credit.
 
-- The ChatGPT.app desktop bundle and CLI share the same auth cache
-- Before login, account switching, or token recovery, read [references/oauth-guide.md](references/oauth-guide.md). Use its valid-cache/device-code branches and verify the expected account through the actual CLI entry.
+- Resolve the actual `CODEX_HOME` and store; the desktop app and CLI can share credentials.
+- Before login, account switching or token recovery, read [the OAuth guide](references/oauth-guide.md) and follow its [recovery recipe](references/oauth-guide.md#remote-account-switch-and-expired-login-recovery). Use fresh empty stores for independent grants, retain explicitly authorized single-owner transfers, and verify actual access and existing-process adoption separately.
+- Before a native quota query, read [refresh ownership](references/oauth-guide.md#bind-refresh-ownership-before-native-queries); a nominally read-only query can refresh credentials.
+- For quota-driven continuation on another authorized account, use [the included-usage check](references/oauth-guide.md#quota-driven-continuation) before substantial execution; cached login or a new default file is not that check.
 
 ## Codex CLI Path
 
@@ -31,9 +33,9 @@ The skill auto-detects Codex CLI in this order:
 1. `CODEX_BIN` env var, if set — explicit override. A non-executable path fails loudly
    instead of silently falling through to a different build (that would make whatever
    the wrapper measured unattributable).
-2. `which codex` — whatever is first on PATH. **This is the build the surrounding
-   environment actually runs**, so it is the right default: npm global installs under
-   nvm (`~/.nvm/versions/node/*/bin/codex`) resolve here.
+2. `which codex` — the executable first on the wrapper process's PATH, including
+   npm global installs under nvm (`~/.nvm/versions/node/*/bin/codex`). This lookup
+   does not execute an interactive shell's alias or function.
 3. `/Applications/ChatGPT.app/Contents/Resources/codex` — the copy bundled inside
    ChatGPT.app, fallback only. Its version tracks the Desktop app and can diverge from
    the npm build, so it is deliberately last.
@@ -45,7 +47,7 @@ step ran). If neither PATH nor the app bundle has a codex, the wrapper exits 1 w
 the actual search order in `searched_paths`.
 
 Whichever binary wins, attribute behaviour to it by versioning **the binary that
-ran**, not `codex --version`: the bare command always resolves the PATH copy, which is
+ran**. An unrelated shell's `codex --version` may resolve another entry, which is
 the wrong build to quote when the fallback picked the app-bundled one. Use the
 `codex_path` field from the wrapper's status output:
 
@@ -53,7 +55,14 @@ the wrong build to quote when the fallback picked the app-bundled one. Use the
 "<codex_path from status output>" --version
 ```
 
-Two builds on one machine is the normal state, not an anomaly.
+Before using this wrapper, resolve the user's ordinary CLI entry. When that entry
+is a shell function or launcher supplying network/auth context, use it through
+its owning shell instead of silently substituting the discovered binary. On macOS
+zsh, inspect with `/bin/zsh -lic 'command -v codex; codex --version'`, then run
+`codex` inside that same shell mode. Put the finite timeout around the shell
+process: `gtimeout … codex` resolves an executable and cannot call a shell function.
+The bundled Python wrapper does not reproduce shell initialization or support
+every native flag; use native CLI invocation when those capabilities are required.
 
 ## Usage Patterns
 
@@ -88,31 +97,21 @@ python3 scripts/codex_wrapper.py review \
   300
 ```
 
-### 3. Check status
+### 3. Inspect cached login
 
 ```bash
 python3 scripts/codex_wrapper.py status
 ```
 
-## Output Format
+Interpret this result using [cached login inspection](references/oauth-guide.md#cached-login-inspection).
+For an authorized real access check, follow that guide's Verification route.
 
-The wrapper returns JSON with:
-- `success`: bool
-- `exit_code`: int
-- `elapsed_seconds`: float
-- `stdout`: raw output
-- `stderr`: error stream (truncated)
-- `parsed_jsonl`: parsed JSONL events (if --json)
-- `final_message`: extracted assistant text (if available)
+## Parameters and results
 
-## Parameters
-
-| Parameter | Default | Options |
-|-----------|---------|---------|
-| model | `gpt-5.5` | `gpt-5.5`, `gpt-5.5-pro`, `o4-mini`, etc. |
-| sandbox | `workspace-write` | `read-only`, `workspace-write`, `danger-full-access` |
-| timeout | 300 | seconds (increase for large tasks) |
-| json_output | true | always true (wrapper parses JSONL) |
+The command arguments, defaults and JSON fields are defined by `main()`,
+`exec_codex()`, `review_codex()` and `check_auth_status()` in
+[`scripts/codex_wrapper.py`](scripts/codex_wrapper.py). Use those definitions
+rather than a second parameter or output-field table.
 
 ## Safety Notes
 
@@ -127,16 +126,18 @@ The wrapper returns JSON with:
 For multi-step tasks, Codex supports session resume:
 ```bash
 # First step
-codex exec --ephemeral "Step 1..."
-# Later
-codex exec resume --last "Step 2..."
+codex exec --json "Step 1..."
+# Later, use the session ID reported by that first invocation:
+codex exec resume "${CODEX_SESSION_ID:?Set the session ID from the first invocation}" "Step 2..."
 ```
 
 The wrapper currently runs single-shot exec. For multi-step workflows, use raw `codex exec` commands.
+An ephemeral invocation does not persist a session for later resume.
+Use `--last` only after confirming that the most recent recorded session is the intended target.
 
 ## Limitations
 
 - Remote login can use device authorization with a browser on another machine; follow the OAuth guide instead of requiring a desktop app on the remote host.
-- `codex doctor` works and is the first thing to run when Codex misbehaves. Run it **without** `--summary` — `--summary` cuts reachability down to a bare `✗ reachability ... unreachable` line (it actually prints twice, once under Notes and once under Connectivity) with no host and no remedy, in both the fail and the warning state. The full form names the host, the endpoint statuses, and a `→ check proxy, ...` remedy line, likewise in both states; what differs between fail and warning is which endpoint failed and whether it is marked `(required)`. For `--json`, everything lives under `checks["network.provider_reachability"]`: `details` maps endpoint → status, and `issues` is a list whose objects carry `severity` / `cause` / `measured` / `expected` / `remedy` / `fields` (the last three are optional). Two traps: there is **no top-level `issues` key at all** — do not write `report["issues"]` (KeyError) or `report.get("issues")` (silently None); and a check's own `issues` key is **omitted entirely when empty** rather than sent as `[]`, so `check.get("issues")` returns None for the 20+ checks that have nothing to report. Top level has exactly 5 keys, `generatedAt` is a string like `"1790057704s since unix epoch"` rather than a timestamp, and exit 1 fires on **any** failed check, not just reachability — `rollout_db_parity` is ⚠ on this install, and if it ever flips to fail it turns that exit code red for a reason unrelated to your network, which is what gates like `codex-1m-context-window-setup`'s `returncode == 0` check read. Verified 2026-09-22 on 0.155.1 (npm) and 0.155.0-alpha.9.2 (ChatGPT.app-bundled); the remedy wording quoted here is specific to those builds — upstream has since changed it.
-- Environment variables are NOT inherited into Codex's sandbox; pass via config or prompt
+- Inspect the selected binary's `doctor --help` before using its diagnostics; when supported, use the full report for endpoint/remedy details rather than `--summary`. Interpret the failed check, not only the aggregate exit code, and read the emitted JSON schema instead of assuming an older build's keys.
+- Shell environment inheritance follows the selected build's `shell_environment_policy`; inspect the effective configuration. Keep credentials out of prompts.
 - Large file operations may need increased timeout

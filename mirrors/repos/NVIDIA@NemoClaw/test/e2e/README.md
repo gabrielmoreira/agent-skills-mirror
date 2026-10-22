@@ -84,6 +84,15 @@ The install refuses package removals, preserving the runner's Docker and contain
   attempt evidence. A failure attempts to retain redacted container state, the
   published port mapping, and a bounded registry log tail before cleanup.
   Unavailable diagnostics do not suppress the readiness failure.
+  Trusted Portable Podman setup gives its API service a 128-task container limit
+  before registry creation. The live scenario verifies that the registry uses
+  that service's socket and has the effective limit. Setup records service,
+  user, host, and cgroup headroom in `portable-podman-process-headroom.json`.
+  It fails when RLIMIT_NPROC, service TasksMax, host-thread, or cgroup pids
+  headroom is less than 128 tasks. The live scenario requires registry HTTP 200
+  and retains
+  bounded container-cgroup diagnostics if readiness fails. Unavailable
+  diagnostics do not suppress the readiness failure.
 - `.github/workflows/podman-cpu-proof.yaml` publishes PR-only experimental runtime evidence.
 - `.github/workflows/sandbox-images.yaml` provides reusable sandbox-image build and test evidence.
   `.github/workflows/e2e.yaml` selects free-standing jobs, including `whatsapp-qr-compact` and `ollama-auth-proxy`.
@@ -100,6 +109,34 @@ requested timeouts, message-file input, and stdin aliases belong to deterministi
 tests. The real-child input cases include a relative symbolic-link chain to a regular
 file with spaces while stdin contains competing data. This target is selectable for
 Docker and Podman through the existing runtime matrix.
+
+## WSL2 IPv6 native-local policy proof
+
+`TC-INF-19` requires WSL2 Docker and IPv6-only ULA resolution for
+`host.openshell.internal`. It binds the authenticated host fixture on `::`,
+rejects DNS answers with an IPv4 fallback, and sends a sandbox chat through the
+OpenShell-issued credential handle. Public, link-local, and loopback IPv6 requests
+must receive `policy_denied` HTTP 403; a timeout does not satisfy denial.
+Fixture cleanup removes the sandbox and host endpoint.
+
+The `inference-routing-openclaw-native` catalogue target runs on Ubuntu Docker and
+Podman. It skips `TC-INF-19` and does not qualify the WSL2 regression.
+The WSL lane in `CI / Platform Compatibility` installs native Ubuntu Docker.
+It does not provision IPv6-only ULA resolution, so it runs its existing full
+E2E suite without invoking `TC-INF-19`.
+
+WSL2 ARM Docker Desktop qualification remains unverified. No PR catalogue
+selector currently provides that platform. Run `TC-INF-19` on a prepared
+WSL2 Docker Desktop host with IPv6-only ULA resolution before claiming this
+qualification. A passing Ubuntu catalogue run or WSL non-live shard cannot
+replace this missing live evidence.
+The source tests own CIDR membership and receipt compatibility. E2E support tests
+own resolution classification and probe command construction.
+On a prepared WSL2 Docker Desktop host, run:
+
+```bash
+NEMOCLAW_RUN_LIVE_E2E=1 npx vitest run --project e2e-live test/e2e/live/openclaw-inference-switch.test.ts -t '^TC-INF-19'
+```
 
 ## CI execution shape
 

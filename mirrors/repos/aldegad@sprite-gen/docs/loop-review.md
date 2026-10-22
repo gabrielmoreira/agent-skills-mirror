@@ -36,6 +36,36 @@ that this particular heuristic did not flag ambiguity, not that visual quality i
 The direct CLI summary preserves that flag and the guard evidence. `video-set` also
 propagates them in its item report and marks the table row `OK (review gait)`.
 
+### The body anchor and the seam gate
+
+`--anchor body` is `video-loop`'s default for `walk` and `run`. It measures the cut's
+last frame's head and torso offset against its first once (strip sidecar `wrap_dx_px`)
+and ramps frame k by that offset times k/L; the loop plays cells that are not the source
+frames. The seam gate (`--seam-max`, default 2.0: wrap against mean step) reads source
+frames (`seam_measurement: source-frames`) unless RIFE made a frame
+([loop repair](loop-repair.md) section 2) or anchor is `motion` or `motion-auto`
+(`rendered-cells`). Where source frames refuse, `wrap_dx_px` moved cells, no frame was
+made, and the cut is gated by its seam (neither pinned nor played once), the gate reads
+the cells that play again; a cell given way to the frame beside it is read as filmed
+(`seam_as_filmed`). The cut passes (`seam_measurement: rendered-cells`,
+`resampled_seam_ratio`) when wrap and largest step against mean step both meet the
+limit; otherwise source refusal stands. Passing cuts, `--seam-max 1000` included, are
+not read again, keeping identical bytes.
+
+Only where read again, `seam_after_anchor` records `source_seam_ratio`, `seam_ratio`,
+`largest_step_ratio`, and `largest_step_into` (pass or fail). The ramp closes the wrap
+of a cut whose frames at the wrap jump sideways and moves the jump a few frames into the
+loop; read at the wrap alone, every such cut of the test walk passed (one or two frames
+moved 2 to 10 px); a window of steps beside the wrap misses a jump one frame longer than
+the window; every step catches a jump of any length. A test walk sliding 0.1 px/frame
+(2.4 px over 24 frames) failed at 3.08 on source frames but passes on the cells that
+play at 1.33 (steps within 2.0). The slide widens the mean step, so a swapped-leg
+half-stride passes at 1.93 on the cells that play while the walk without the slide is
+refused at 2.19 on source frames; the reading does not promise to refuse every wrap that
+does not close. Repaired frames check the wrap alone, a walk whose ordinary steps are
+uneven can read a step over the limit on the cells that play and is refused as before,
+and `--anchor feet` reads source frames.
+
 ## Material for a vision-capable reviewer
 
 Provide the original clip, the generated loop played at source speed for at least three

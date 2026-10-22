@@ -109,6 +109,16 @@ this is a journey through the existing harness, not a replacement camera or pars
 - Return and reenter the same object; compare reader/document identity where
   retention is promised, range, scroll, expanded content and current find state.
   Use the actual scroll owner, not a guessed body/document scroll property.
+- For bounded Find, qualify a no-match result by the loaded range and use the
+  existing history/pagination path before inferring whole-document absence.
+  Read the product's Find contract before prescribing state changes: when its
+  scope hint is active for focus or a nonempty query, test empty-but-focused,
+  nonempty-but-collapsed and clear-then-blur separately. Clearing the query alone
+  does not end focus. Keep the required scope explanation visible at the point
+  of search, not only in a disclosure that closes on focus. For a shared Reader,
+  include a host without the optional scope declaration as a healthy control;
+  preserve its query, pagination, scroll and return behavior rather than imposing
+  the scoped host's hint or inventing new clear/scroll semantics.
 - Hide the selected object with an authorized filter or no-match query, then
   trigger its retained reading action. Check that it reads the same object and
   preserves the filter; disabling the action or clearing the query cannot certify
@@ -126,6 +136,40 @@ this is a journey through the existing harness, not a replacement camera or pars
 Record only affected states and the actual results. Missing source, unavailable
 body or a hidden/throttled test target keeps the dependent verdict unverified;
 preserve the product's own unknown/read-only boundary.
+
+#### Long-document reading positions
+
+When a change affects a long document's outline, active-section cue or source
+sidebar, the executing auditor selects relevant positions through the existing
+project harness. Keep the same document/version and actual scroll owner; use
+representative uneven short/long sections instead of testing only equal-height
+fixtures. This recipe adds observations, not a required sticky layout or a
+generic active-section algorithm.
+
+- At the top, where several headings may share a viewport, compare the active
+  cue with the content actually being read. A later section's greater visible
+  area alone does not establish the intended reading position. Use the product's
+  navigation contract and record ambiguity rather than inventing one.
+- Follow an explicit outline jump, then ordinary scrolling and the return from
+  original evidence. Verify the cue, heading/focus and document identity after
+  each transition. A cue that immediately snaps away from the chosen section
+  needs explanation even when the destination exists in the DOM.
+- Open a late citation after deep scrolling, including an expanded adjacent
+  form or panel when that changes the available space. Read the source title and
+  context, use its primary inspection action, then close and return. Inspect
+  visibility and hit ownership of the actual controls; focus on an offscreen
+  title or a programmatic click cannot prove a usable path.
+- At the document's final paragraph and affected compact/large desktop sizes,
+  inspect the text, wrapping highlights and sidebar overflow. Verify that
+  necessary context and actions remain reachable, any extra scrolling is
+  discoverable, and the sidebar does not conceal document actions below it.
+
+Keep a healthy ordinary reading/return control alongside the reproduced defect.
+Retain screenshots of the failing and repaired positions with their version
+identities, and record the observed cue, visible heading, controls and return
+target. Reuse unaffected evidence; do not run a full viewport/state Cartesian
+product or claim physical-device behavior from desktop captures. Existing
+source-inspection checks still decide original-content fidelity and misbinding.
 
 #### Reader usability counterexamples
 

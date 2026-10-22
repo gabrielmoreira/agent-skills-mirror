@@ -42,7 +42,8 @@ function tick(now) {
 4. Sort by that value. Join the ids into one string. Reorder the DOM only when the string changed.
 5. Rebuild paths that change shape: rods, needles, crank handles. Cache rebuilt shapes by a rounded value. The reference rounds the drawer opening to 0.25 units.
 6. Toggle `display` for parts that appear and disappear, such as cards.
-7. Set `data-hot` on the beat's `hot` items and on their `tag-` nameplates. Remove it from all others.
+7. Set `data-hot` on the beat's `hot` items. Remove it from all others.
+8. Redraw the pill labels and the status lights from the pose. See `colour-and-ink.md`.
 
 ## One accent
 

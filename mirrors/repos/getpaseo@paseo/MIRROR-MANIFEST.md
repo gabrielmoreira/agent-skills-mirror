@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `getpaseo/paseo` — 26 default patterns, 42 followed patterns, 58 file(s) materialized.
+Mirror of `getpaseo/paseo` — 26 default patterns, 44 followed patterns, 61 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `getpaseo/paseo` — 26 default patterns, 42 followed patterns, 58 fil
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 42 |
-| Files         | 58 |
+| Followed pats | 44 |
+| Files         | 61 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -69,11 +69,13 @@ Mirror of `getpaseo/paseo` — 26 default patterns, 42 followed patterns, 58 fil
 - `docs/forge-providers.md`
 - `docs/custom-providers.md`
 - `docs/plugins.md`
+- `docs/website-i18n.md`
 - `docs/service-proxy.md`
 - `docs/development.md`
 - `docs/rpc-namespacing.md`
 - `docs/protocol-compatibility.md`
 - `docs/protocol-validation.md`
+- `docs/connected-hosts.md`
 - `docs/permissions.md`
 - `docs/terminal-performance.md`
 - `docs/agent-stream-performance.md`
@@ -105,59 +107,62 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 4 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 5 | ✓ | [`docs/hub.md`](docs/hub.md) |
-| 6 | ✓ | [`docs/timeline-sync.md`](docs/timeline-sync.md) |
-| 7 | ✓ | [`packages/server/AGENTS.md`](packages/server/AGENTS.md) |
-| 8 | ✓ | [`packages/server/CLAUDE.md`](packages/server/CLAUDE.md) |
-| 9 | ✓ | [`public-docs/custom-providers.md`](public-docs/custom-providers.md) |
-| 10 | ✓ | [`public-docs/skills.md`](public-docs/skills.md) |
-| 11 | ✓ | [`skills/paseo-advisor/SKILL.md`](skills/paseo-advisor/SKILL.md) |
-| 12 | ✓ | [`skills/paseo-committee/SKILL.md`](skills/paseo-committee/SKILL.md) |
-| 13 | ✓ | [`skills/paseo-handoff/SKILL.md`](skills/paseo-handoff/SKILL.md) |
-| 14 | ✓ | [`skills/paseo-help/SKILL.md`](skills/paseo-help/SKILL.md) |
-| 15 | ✓ | [`skills/paseo-plugin/SKILL.md`](skills/paseo-plugin/SKILL.md) |
-| 16 | ✓ | [`skills/paseo/SKILL.md`](skills/paseo/SKILL.md) |
-| 17 | → | [`docs/ad-hoc-daemon-testing.md`](docs/ad-hoc-daemon-testing.md) |
-| 18 | → | [`docs/agent-lifecycle.md`](docs/agent-lifecycle.md) |
-| 19 | → | [`docs/agent-stream-performance.md`](docs/agent-stream-performance.md) |
-| 20 | → | [`docs/android.md`](docs/android.md) |
-| 21 | → | [`docs/architecture.md`](docs/architecture.md) |
-| 22 | → | [`docs/browser-capture-harness.md`](docs/browser-capture-harness.md) |
-| 23 | → | [`docs/coding-standards.md`](docs/coding-standards.md) |
-| 24 | → | [`docs/custom-providers.md`](docs/custom-providers.md) |
-| 25 | → | [`docs/data-model.md`](docs/data-model.md) |
-| 26 | → | [`docs/design.md`](docs/design.md) |
-| 27 | → | [`docs/development.md`](docs/development.md) |
-| 28 | → | [`docs/docker.md`](docs/docker.md) |
-| 29 | → | [`docs/explorer-sidebar.md`](docs/explorer-sidebar.md) |
-| 30 | → | [`docs/expo-router.md`](docs/expo-router.md) |
-| 31 | → | [`docs/file-icons.md`](docs/file-icons.md) |
-| 32 | → | [`docs/file-observation.md`](docs/file-observation.md) |
-| 33 | → | [`docs/floating-panels.md`](docs/floating-panels.md) |
-| 34 | → | [`docs/forge-providers.md`](docs/forge-providers.md) |
-| 35 | → | [`docs/forms.md`](docs/forms.md) |
-| 36 | → | [`docs/glossary.md`](docs/glossary.md) |
-| 37 | → | [`docs/hover.md`](docs/hover.md) |
-| 38 | → | [`docs/markdown-renderer.md`](docs/markdown-renderer.md) |
-| 39 | → | [`docs/menus.md`](docs/menus.md) |
-| 40 | → | [`docs/mobile-panels.md`](docs/mobile-panels.md) |
-| 41 | → | [`docs/mobile-testing.md`](docs/mobile-testing.md) |
-| 42 | → | [`docs/native-text-selection.md`](docs/native-text-selection.md) |
-| 43 | → | [`docs/permissions.md`](docs/permissions.md) |
-| 44 | → | [`docs/plugins.md`](docs/plugins.md) |
-| 45 | → | [`docs/product.md`](docs/product.md) |
-| 46 | → | [`docs/protocol-compatibility.md`](docs/protocol-compatibility.md) |
-| 47 | → | [`docs/protocol-validation.md`](docs/protocol-validation.md) |
-| 48 | → | [`docs/providers.md`](docs/providers.md) |
-| 49 | → | [`docs/qa.md`](docs/qa.md) |
-| 50 | → | [`docs/release.md`](docs/release.md) |
-| 51 | → | [`docs/rpc-namespacing.md`](docs/rpc-namespacing.md) |
-| 52 | → | [`docs/service-proxy.md`](docs/service-proxy.md) |
-| 53 | → | [`docs/terminal-activity.md`](docs/terminal-activity.md) |
-| 54 | → | [`docs/terminal-performance.md`](docs/terminal-performance.md) |
-| 55 | → | [`docs/testing.md`](docs/testing.md) |
-| 56 | → | [`docs/unistyles.md`](docs/unistyles.md) |
-| 57 | → | [`public-docs/hub/security.md`](public-docs/hub/security.md) |
-| 58 | → | [`SECURITY.md`](SECURITY.md) |
+| 6 | ✓ | [`docs/i18n.md`](docs/i18n.md) |
+| 7 | ✓ | [`docs/timeline-sync.md`](docs/timeline-sync.md) |
+| 8 | ✓ | [`packages/server/AGENTS.md`](packages/server/AGENTS.md) |
+| 9 | ✓ | [`packages/server/CLAUDE.md`](packages/server/CLAUDE.md) |
+| 10 | ✓ | [`public-docs/custom-providers.md`](public-docs/custom-providers.md) |
+| 11 | ✓ | [`public-docs/skills.md`](public-docs/skills.md) |
+| 12 | ✓ | [`skills/paseo-advisor/SKILL.md`](skills/paseo-advisor/SKILL.md) |
+| 13 | ✓ | [`skills/paseo-committee/SKILL.md`](skills/paseo-committee/SKILL.md) |
+| 14 | ✓ | [`skills/paseo-handoff/SKILL.md`](skills/paseo-handoff/SKILL.md) |
+| 15 | ✓ | [`skills/paseo-help/SKILL.md`](skills/paseo-help/SKILL.md) |
+| 16 | ✓ | [`skills/paseo-plugin/SKILL.md`](skills/paseo-plugin/SKILL.md) |
+| 17 | ✓ | [`skills/paseo/SKILL.md`](skills/paseo/SKILL.md) |
+| 18 | → | [`docs/ad-hoc-daemon-testing.md`](docs/ad-hoc-daemon-testing.md) |
+| 19 | → | [`docs/agent-lifecycle.md`](docs/agent-lifecycle.md) |
+| 20 | → | [`docs/agent-stream-performance.md`](docs/agent-stream-performance.md) |
+| 21 | → | [`docs/android.md`](docs/android.md) |
+| 22 | → | [`docs/architecture.md`](docs/architecture.md) |
+| 23 | → | [`docs/browser-capture-harness.md`](docs/browser-capture-harness.md) |
+| 24 | → | [`docs/coding-standards.md`](docs/coding-standards.md) |
+| 25 | → | [`docs/connected-hosts.md`](docs/connected-hosts.md) |
+| 26 | → | [`docs/custom-providers.md`](docs/custom-providers.md) |
+| 27 | → | [`docs/data-model.md`](docs/data-model.md) |
+| 28 | → | [`docs/design.md`](docs/design.md) |
+| 29 | → | [`docs/development.md`](docs/development.md) |
+| 30 | → | [`docs/docker.md`](docs/docker.md) |
+| 31 | → | [`docs/explorer-sidebar.md`](docs/explorer-sidebar.md) |
+| 32 | → | [`docs/expo-router.md`](docs/expo-router.md) |
+| 33 | → | [`docs/file-icons.md`](docs/file-icons.md) |
+| 34 | → | [`docs/file-observation.md`](docs/file-observation.md) |
+| 35 | → | [`docs/floating-panels.md`](docs/floating-panels.md) |
+| 36 | → | [`docs/forge-providers.md`](docs/forge-providers.md) |
+| 37 | → | [`docs/forms.md`](docs/forms.md) |
+| 38 | → | [`docs/glossary.md`](docs/glossary.md) |
+| 39 | → | [`docs/hover.md`](docs/hover.md) |
+| 40 | → | [`docs/markdown-renderer.md`](docs/markdown-renderer.md) |
+| 41 | → | [`docs/menus.md`](docs/menus.md) |
+| 42 | → | [`docs/mobile-panels.md`](docs/mobile-panels.md) |
+| 43 | → | [`docs/mobile-testing.md`](docs/mobile-testing.md) |
+| 44 | → | [`docs/native-text-selection.md`](docs/native-text-selection.md) |
+| 45 | → | [`docs/permissions.md`](docs/permissions.md) |
+| 46 | → | [`docs/plugins.md`](docs/plugins.md) |
+| 47 | → | [`docs/product.md`](docs/product.md) |
+| 48 | → | [`docs/protocol-compatibility.md`](docs/protocol-compatibility.md) |
+| 49 | → | [`docs/protocol-validation.md`](docs/protocol-validation.md) |
+| 50 | → | [`docs/providers.md`](docs/providers.md) |
+| 51 | → | [`docs/qa.md`](docs/qa.md) |
+| 52 | → | [`docs/release.md`](docs/release.md) |
+| 53 | → | [`docs/rpc-namespacing.md`](docs/rpc-namespacing.md) |
+| 54 | → | [`docs/service-proxy.md`](docs/service-proxy.md) |
+| 55 | → | [`docs/terminal-activity.md`](docs/terminal-activity.md) |
+| 56 | → | [`docs/terminal-performance.md`](docs/terminal-performance.md) |
+| 57 | → | [`docs/testing.md`](docs/testing.md) |
+| 58 | → | [`docs/unistyles.md`](docs/unistyles.md) |
+| 59 | → | [`docs/website-i18n.md`](docs/website-i18n.md) |
+| 60 | → | [`public-docs/hub/security.md`](public-docs/hub/security.md) |
+| 61 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

@@ -2973,11 +2973,6 @@ def run(
         bundle.artifacts["hiring_signals"] = hiring_summary
 
     _check_research(config)
-    items_by_source = _finalize_items_by_source(
-        bundle.items_by_source, topic=topic, config=config, depth=depth, mock=mock,
-        elapsed=time.monotonic() - run_started,
-    )
-    source_status = _finalize_source_status(bundle.source_status, items_by_source)
     # Normalized set of handles this run resolved for the topic. A candidate
     # authored by one of these is first-party and is exempted from the
     # entity-miss demotion in rerank (a post never repeats its own author's
@@ -3040,6 +3035,14 @@ def run(
             )
             _log_prune_drop("x", len(x_stream), len(pruned), scope="merged stream")
             bundle.items_by_source["x"] = pruned
+
+    # Finalize after the deferred floor so the report's per-source view and the
+    # source_status counts describe the same post-floor evidence set fusion sees.
+    items_by_source = _finalize_items_by_source(
+        bundle.items_by_source, topic=topic, config=config, depth=depth, mock=mock,
+        elapsed=time.monotonic() - run_started,
+    )
+    source_status = _finalize_source_status(bundle.source_status, items_by_source)
 
     candidates = weighted_rrf(
         bundle.items_by_source_and_query,
@@ -4230,9 +4233,30 @@ def _topic_first_party_candidates(topic: str) -> set[str]:
         tokens.add(mention.lower())
     for word in re.findall(r"[A-Za-z0-9_]{3,15}", topic or ""):
         lowered = word.lower()
-        if lowered not in relevance.STOPWORDS:
+        # Skip query scaffolding ("review", "news", "latest"): it describes the
+        # search, not the subject, and rerank._handle_is_topic skips it too.
+        if lowered not in relevance.STOPWORDS and lowered not in relevance.LOW_SIGNAL_QUERY_TOKENS:
             tokens.add(lowered)
     return tokens
+
+
+def _handle_contains_topic_word(handle: str, topic: str) -> bool:
+    """True when ``handle`` contains a whole topic word of three or more letters.
+
+    Covers short subject names that sit inside a longer handle ("vuejs" for
+    "Vue"), which rerank._handle_is_topic misses because it only counts
+    containment for words of four or more letters. The containment runs one
+    way only, so a short fragment of a longer topic word ("go" in "Google")
+    never matches, and query scaffolding words ("review", "news") are skipped.
+    """
+    for word in re.findall(r"[a-z0-9]+", (topic or "").lower()):
+        if len(word) < 3:
+            continue
+        if word in relevance.STOPWORDS or word in relevance.LOW_SIGNAL_QUERY_TOKENS:
+            continue
+        if word in handle:
+            return True
+    return False
 
 
 def _name_lane_subject(topic: str) -> str:
@@ -4366,14 +4390,21 @@ def _run_supplemental_searches(
             for h in ([x_handle] + list(x_related or []))
             if h and h.strip()
         }
-        topic_tokens = {t for t in re.findall(r"[a-z0-9]+", topic.lower()) if len(t) > 2}
         seen = {h.lower() for h in resolved_handles_out}
         for h in [*handles, *related_handles]:
             clean = h.lstrip("@").strip().lower()
             if not clean or clean in seen:
                 continue
-            corroborated = clean in explicit or any(
-                token in clean or clean in token for token in topic_tokens
+            # "Looks like the topic's subject" is rerank's test: a handle that
+            # contains a topic word or is spelled from word prefixes. A bare
+            # substring match either way admitted fragments ("go" for "Google")
+            # and missed real subjects ("steipete" for "Peter Steinberger").
+            # Rerank's containment needs a 4+ letter word, so a short subject
+            # name inside a longer handle ("vuejs" for "Vue") is added here.
+            corroborated = (
+                clean in explicit
+                or rerank._handle_is_topic(clean, topic)
+                or _handle_contains_topic_word(clean, topic)
             )
             if corroborated:
                 resolved_handles_out.append(clean)
@@ -6015,6 +6046,11 @@ def _retrieve_stream_impl(
         # Use raw_topic so expand_instagram_queries() generates diverse variants
         # from the original user topic, not the planner's narrowed search_query.
         ig_query = raw_topic or subquery.search_query
+        ig_deadline = _research_deadline(config, STREAM_FUTURE_TIMEOUT_SECONDS)
+        # Leave time to publish collected reels before the outer stream wait expires.
+        remaining = max(0, ig_deadline - time.monotonic())
+        ig_deadline -= min(1.0, remaining / 10)
+        ig_cancel = config.get("_enrich_cancel")
 
         def _fetch_instagram() -> tuple[list[dict], dict]:
             result = instagram.search_and_enrich(
@@ -6024,11 +6060,18 @@ def _retrieve_stream_impl(
                 depth=depth,
                 token=env.get_instagram_token(config),
                 ig_creators=ig_creators,
+                deadline=ig_deadline,
+                cancel=ig_cancel,
             )
             items = instagram.parse_instagram_response(result)
             if items and env.is_instagram_comments_available(config):
                 instagram.enrich_with_comments(
                     items, token=config.get("SCRAPECREATORS_API_KEY", ""),
+                    deadline=ig_deadline, cancel=ig_cancel,
+                )
+            if (ig_cancel is not None and ig_cancel.is_set()) or time.monotonic() >= ig_deadline:
+                return items, _outcome_artifact(
+                    health.PARTIAL if items else health.TIMEOUT, instagram.RESEARCH_TIMEOUT,
                 )
             return items, _result_outcome_artifact(source, result)
 

@@ -1,5 +1,6 @@
 ---
-type: resource
+type: concept
+methodology_role: resource
 title: "{{title}}"
 status: seed
 topic: "{{topic}}"
@@ -17,7 +18,7 @@ tags:
 
 ## Key content
 
-(The actual reference material — quotes, summaries, links, structured information.)
+(The actual reference material: quotes, summaries, links, structured information.)
 
 ## Sources
 

@@ -61,6 +61,26 @@ and [runtime prerequisites](../../packages/paperclip-runner/README.md) define th
 platform/libc boundary. Windows and Alpine/musl remain Legacy. Claude follows
 its qualified rollout described above. Disabled adapters, external overrides, and selected-target
 qualification also affect availability.
+
+Choose OpenCode with the native-runner experimental flag off on a qualified
+macOS or GNU/Linux x64 target. Linux ARM64 must retain Legacy because its pinned
+OpenCode runtime is not qualified. Advanced should show Paperclip Runner as the
+automatic default on qualified targets. Save an inactive draft without a model,
+resume it, select an explicit `provider/model`,
+test, finish setup, and reload. Verify the saved provider is `opencode`. Repeat
+with explicit Legacy and an existing Legacy agent; neither should migrate on an
+unrelated edit. Check that saved native permission/lifecycle choices survive
+resuming setup. Custom commands, arguments, variants, and inherited permissions
+must give Legacy remediation when native is selected. A live task with the
+selected account is separate proof from these setup and persistence controls.
+Repeat with Pi on macOS or GNU/Linux x64 after explicit operator setup of the
+pinned runtime (`paperclipai runtime setup pi`). Linux ARM64 retains Legacy.
+Resume an inactive model-free draft, connect an account, choose a `provider/model`,
+and finish setup with the generic native flag off. Verify Pi branding and native
+ACPX Pi execution by completing a simple assigned task. Preserve saved native
+thinking/permission/lifecycle settings on resume and unrelated edits. Native
+thinking supports `off`, `low`, `high`, `max`; legacy aliases must give remediation,
+and returning to Legacy must reject settings it cannot honor.
 On a fresh forced-Kubernetes instance without an environment row, inspect discovery
 and create with automatic selection. Both must retain Legacy without provisioning;
 an explicit Paperclip request must give target-qualification guidance. Begin the

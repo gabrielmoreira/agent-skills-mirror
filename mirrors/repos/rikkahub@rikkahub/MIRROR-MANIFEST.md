@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `rikkahub/rikkahub` — 26 default patterns, 0 followed patterns, 90 file(s) materialized.
+Mirror of `rikkahub/rikkahub` — 26 default patterns, 0 followed patterns, 100 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `rikkahub/rikkahub` — 26 default patterns, 0 followed patterns, 90 f
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 90 |
+| Files         | 100 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -144,11 +144,21 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 83 | ✓ | [`.agents/skills/gemini-api-dev/references/migration.md`](.agents/skills/gemini-api-dev/references/migration.md) |
 | 84 | ✓ | [`.agents/skills/gemini-api-dev/SKILL.md`](.agents/skills/gemini-api-dev/SKILL.md) |
 | 85 | ✓ | [`.agents/skills/i18n-localization/SKILL.md`](.agents/skills/i18n-localization/SKILL.md) |
-| 86 | ✓ | [`.agents/skills/publish-release/SKILL.md`](.agents/skills/publish-release/SKILL.md) |
-| 87 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 88 | ✓ | [`app/src/main/assets/builtin_skills/skill-creator/SKILL.md`](app/src/main/assets/builtin_skills/skill-creator/SKILL.md) |
-| 89 | ✓ | [`web-ui/AGENTS.md`](web-ui/AGENTS.md) |
-| 90 | ✓ | [`web-ui/CLAUDE.md`](web-ui/CLAUDE.md) |
+| 86 | ✓ | [`.agents/skills/jetpack-compose-performance/references/android/develop/ui/compose/custom-modifiers.md`](.agents/skills/jetpack-compose-performance/references/android/develop/ui/compose/custom-modifiers.md) |
+| 87 | ✓ | [`.agents/skills/jetpack-compose-performance/references/android/develop/ui/compose/performance/backwards-write.md`](.agents/skills/jetpack-compose-performance/references/android/develop/ui/compose/performance/backwards-write.md) |
+| 88 | ✓ | [`.agents/skills/jetpack-compose-performance/references/android/develop/ui/compose/performance/stability/strongskipping.md`](.agents/skills/jetpack-compose-performance/references/android/develop/ui/compose/performance/stability/strongskipping.md) |
+| 89 | ✓ | [`.agents/skills/jetpack-compose-performance/references/animation.md`](.agents/skills/jetpack-compose-performance/references/animation.md) |
+| 90 | ✓ | [`.agents/skills/jetpack-compose-performance/references/effects-and-threading.md`](.agents/skills/jetpack-compose-performance/references/effects-and-threading.md) |
+| 91 | ✓ | [`.agents/skills/jetpack-compose-performance/references/graphics-performance.md`](.agents/skills/jetpack-compose-performance/references/graphics-performance.md) |
+| 92 | ✓ | [`.agents/skills/jetpack-compose-performance/references/layouts.md`](.agents/skills/jetpack-compose-performance/references/layouts.md) |
+| 93 | ✓ | [`.agents/skills/jetpack-compose-performance/references/lazy-layouts.md`](.agents/skills/jetpack-compose-performance/references/lazy-layouts.md) |
+| 94 | ✓ | [`.agents/skills/jetpack-compose-performance/references/state-and-stability.md`](.agents/skills/jetpack-compose-performance/references/state-and-stability.md) |
+| 95 | ✓ | [`.agents/skills/jetpack-compose-performance/SKILL.md`](.agents/skills/jetpack-compose-performance/SKILL.md) |
+| 96 | ✓ | [`.agents/skills/publish-release/SKILL.md`](.agents/skills/publish-release/SKILL.md) |
+| 97 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 98 | ✓ | [`app/src/main/assets/builtin_skills/skill-creator/SKILL.md`](app/src/main/assets/builtin_skills/skill-creator/SKILL.md) |
+| 99 | ✓ | [`web-ui/AGENTS.md`](web-ui/AGENTS.md) |
+| 100 | ✓ | [`web-ui/CLAUDE.md`](web-ui/CLAUDE.md) |
 
 ---
 

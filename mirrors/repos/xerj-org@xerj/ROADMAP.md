@@ -2,8 +2,19 @@
 
 This roadmap tracks capabilities that are **planned but not yet fully implemented**, so the project's public claims stay honest about what ships today versus what is coming. Status is verified against the actual code and by real API requests to the release binary, not aspirational.
 
-Last reviewed: 2026-10-17 (against `v1.0.0-rc.97` and `main`). Statuses trace to issues, merged PRs, the CHANGELOG, and the conformance suite; items carried forward from the 2026-07-12 review without fresh live verification are marked as such. This review line is machine-checked: `docs_capability_lists` fails the build if a release is cut without re-reviewing this file (issue #298 — closed as abandoned 2026-09-29; the machine check, not the issue, enforces the cadence now). This pass is the rc.97 release-cut roll:
+Last reviewed: 2026-10-21 (against `v1.0.0-rc.98` and `main`). Statuses trace to issues, merged PRs, the CHANGELOG, and the conformance suite; items carried forward from the 2026-07-12 review without fresh live verification are marked as such. This review line is machine-checked: `docs_capability_lists` fails the build if a release is cut without re-reviewing this file (issue #298 — closed as abandoned 2026-09-29; the machine check, not the issue, enforces the cadence now). This pass is the rc.98 release-cut roll:
 the open-defects shortlist was re-verified against the live tracker at
+cut time — **five open**, unchanged: #1110, #1122, #1170, #1267, #1635. None
+closed inside the window. The window since rc.97 is about 120 merged PRs: a
+console-API security fix (CVE-2026-97406, PR
+[#2003](https://github.com/xerj-org/xerj/pull/2003)), a budget-aware
+`xerj autoindex` (PR [#2102](https://github.com/xerj-org/xerj/pull/2102)) with
+a flood-stage fail-fast (PR [#2087](https://github.com/xerj-org/xerj/pull/2087))
+and `--walk-only` (PR [#2006](https://github.com/xerj-org/xerj/pull/2006)), ES
+request validation, query, aggregation and highlight fixes, and search ranking
+and citation fixes; the CHANGELOG lists every PR. Field report #2114 (an agent
+deleted a live index by hand) is a tracked product gap, not a fixed defect.
+The rc.97 cut's record stands as written: the open-defects shortlist was re-verified against the live tracker at
 cut time — **five open**: #1110, #1122, #1170, #1267, #1635. #1094 closed
 inside the window (low-confidence history votes escalate to the local
 decide tier and the write-back keeps one cached answer per text, PR

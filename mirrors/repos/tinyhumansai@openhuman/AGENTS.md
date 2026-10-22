@@ -489,7 +489,11 @@ seed history by hand, or pick a transcript by recency.
 - **A resumed session's prompt is frozen.** It reuses its persisted system
   messages verbatim, which is what keeps the provider's prefix cache warm
   across a restart. The accepted consequence is that prompt edits, new skills
-  and newly connected integrations do not reach an existing thread.
+  and newly connected integrations do not reach an existing thread, unless
+  the agent's definition sets `refresh_prompt_on_resume`: then a resumed
+  thread is sent the prompt rendered now, and a changed prompt seals the
+  current generation and continues the conversation in the next
+  (`agent/session_host/runtime_session/prompt_refresh.rs`).
 - **So is the tool list it was sent.** Every turn records its tool
   declarations in the transcript (a `{"kind":"tools"}` record, written only
   when they change); resume restores them, the prefix, and the committed-turn

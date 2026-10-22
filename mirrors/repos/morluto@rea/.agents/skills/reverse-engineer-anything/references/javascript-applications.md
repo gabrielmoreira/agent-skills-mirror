@@ -22,6 +22,11 @@ requires complete application analysis; `source_paths: []` is invalid, not an
 unfiltered request. `detail: "summary"` reduces delivery
 and does not by itself reduce analysis work.
 
+ASAR header/index admission is fixed at 16 MiB / 16777216 bytes for this
+release and has no runtime override. `source_paths`, `detail`, and
+`max_heap_mb` do not bypass or raise it. Analyze an extracted directory, or
+supply an archive whose header fits.
+
 Exact `#alias` specifiers resolve through the importer's
 enclosing package `imports` map to package-local files; nested `node_modules`
 packages use their own map. Wildcard, recursive, and external-package import

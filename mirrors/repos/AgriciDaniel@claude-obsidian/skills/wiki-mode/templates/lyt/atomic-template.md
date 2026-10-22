@@ -1,5 +1,6 @@
 ---
-type: note
+type: concept
+methodology_role: atomic
 title: "{{title}}"
 status: seed
 created: {{date}}

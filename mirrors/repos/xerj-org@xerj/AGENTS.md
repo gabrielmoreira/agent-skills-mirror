@@ -78,6 +78,18 @@ cannot push at all: [.github/AI_CONTRIBUTIONS.md](./.github/AI_CONTRIBUTIONS.md)
 
 ## Running an index on someone's machine
 
+The default `--prefix` is `ax`, so `ax-docs` is often another project's index.
+A second folder under that prefix is refused. The refusal's first remedy is a
+ready-to-copy `xerj autoindex <folder> --prefix <name>`. Do not `DELETE` an
+index you did not create in this session, and do not `_delete_by_query` the
+catalog to clean up after that refusal. Drop a folder you indexed with
+`xerj autoindex remove --prefix <name> [--root <dir>]` (MCP:
+`xerj_autoindex_remove`, and only with `confirm: true` after you have read the
+plan). It lists indices, catalog rows, doc counts and sizes, removes only that
+folder, and deletes nothing without a terminal `y` or `--yes` — a non-TTY run
+prints the plan and exits 4. `DELETE` of `*`, `_all`, or any wildcard is
+refused unless `action.destructive_requires_name` is `false`.
+
 `xerj autoindex` is the one command that can occupy a person's laptop for
 minutes while your tool output stays invisible to them. The binary is built to
 be driven by you on their behalf, so the loop is fixed:

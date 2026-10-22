@@ -259,9 +259,15 @@ export const env = defineModule(
     "auth.regionHintUnverified":
       "。未在当前探测地域中确认该 envId，已按唯一 ID 直绑；若后续接口仍指向错误地域，请设置 TCB_REGION 或 queryEnv(action=\"list\", region=...)",
     "auth.logoutNotAllowedApiKey":
-      "当前使用 API Key 认证模式，不支持退出登录。如需切换认证方式，请移除 CLOUDBASE_API_KEY（或兼容的 CLOUDBASE_APIKEY）环境变量后重启。",
+      "当前是 API Key 认证模式，凭据来自环境变量 {varName}。这个变量不是本进程设的、也不由本进程清除，所以没有执行登出。要切换认证方式：在 shell 里 unset {varName}，或从启动本 MCP 的客户端配置里移除它，然后重启。",
     "auth.logoutConfirmRequired": "action=logout 时必须传 confirm=\"yes\"",
     "auth.loggedOut": "✅ 已退出登录",
+    "auth.loggedOutProject":
+      "✅ 已移除本项目的 API Key 登录。这台机器上若还有账号登录，它仍然有效；要一起退出请再执行一次 logout。",
+    "auth.apiKeySwitchHintRemovable":
+      "如需改用账号登录，先执行 logout 退出本项目 API Key，再 start_auth 授权。",
+    "auth.apiKeySwitchHintExternal":
+      "这个 key 来自外部环境变量，MCP 无法退出它；如需改用账号登录，先在 shell 或客户端配置里移除 {varName} 并重启。",
     "auth.tempCredNotLoggedIn": "当前未登录，请先完成管理端认证后再获取临时密钥。",
     "auth.tempCredConfirmRequired":
       "action=get_temp_credentials 时必须显式传 confirm=\"yes\"，以确认你要导出当前管理端临时密钥。",
@@ -630,9 +636,15 @@ export const env = defineModule(
     "auth.regionHintUnverified":
       ". This envId was not confirmed in the probed regions, so it was bound directly by its unique ID; if later APIs still target the wrong region, set TCB_REGION or use queryEnv(action=\"list\", region=...)",
     "auth.logoutNotAllowedApiKey":
-      "API Key authentication mode is in use and logout is not supported. To switch the authentication method, remove the CLOUDBASE_API_KEY (or the compatible CLOUDBASE_APIKEY) environment variable and restart.",
+      "API Key authentication mode is in use, and the credential comes from the {varName} environment variable. This process neither set nor can remove that variable, so logout was skipped. To switch authentication methods, unset {varName} in your shell or remove it from the MCP client configuration, then restart.",
     "auth.logoutConfirmRequired": "confirm=\"yes\" must be passed when action=logout",
     "auth.loggedOut": "✅ Logged out",
+    "auth.loggedOutProject":
+      "✅ Removed this project's API Key login. An account login on this machine is still active; call logout again to sign out of it.",
+    "auth.apiKeySwitchHintRemovable":
+      "To switch to account login, run logout to remove this project's API Key, then start_auth.",
+    "auth.apiKeySwitchHintExternal":
+      "This key comes from an external environment variable and cannot be removed by MCP. To switch to account login, unset {varName} in your shell or client configuration and restart.",
     "auth.tempCredNotLoggedIn":
       "Not logged in. Complete management-plane authentication before fetching temporary credentials.",
     "auth.tempCredConfirmRequired":

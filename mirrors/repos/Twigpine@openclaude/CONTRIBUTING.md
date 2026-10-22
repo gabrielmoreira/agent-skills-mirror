@@ -159,6 +159,9 @@ Dependency changes need a clear project benefit — fixing a bug, addressing a s
 - Avoid mixing unrelated cleanup into the same change.
 - Preserve existing repo patterns unless the change is intentionally refactoring them.
 - Add or update tests when the change affects behavior.
+- In timing-sensitive tests, drive timers with Bun's fake timers (`jest.useFakeTimers()` and `jest.advanceTimersByTime()`) instead of racing real delays, and restore real timers during cleanup, so the tests pass in a single-process whole-suite run as well as in the sharded runner.
+- Await completion promises or explicit readiness signals before asserting asynchronous results. For tests that deliberately suppress readiness, use a short, bounded wait and assert the expected failure.
+- For tests that launch real subprocesses, set an explicit per-test timeout longer than the child-process deadline, leaving time for assertions and cleanup. The launcher heap tests use an 8-second child deadline and a 10-second test timeout. Document the reason for the timeout beside the test.
 - Update docs when setup, commands, or user-facing behavior changes.
 - Website release notes live on GitHub Releases. Do not add manually maintained release-note data to the static site.
 
@@ -244,7 +247,7 @@ bun run dev:profile
 
 ## Validation
 
-CI runs a fixed set of checks on every PR (see `.github/workflows/pr-checks.yml`). This section is the **authoritative local pre-push validation contract** — `AGENTS.md` defers to it. **Run every locally applicable check before every push to an open PR, including follow-up pushes during review.** Do not wait for GitHub CI to discover failures you could have caught locally — wasted Actions minutes are a real cost on this repo.
+PR Checks skips the static check, unit shard, dedicated test, launcher, and typecheck jobs when a PR changes only Markdown files or files under `docs/`, unless any change is under `.github/`. CI runs the PR intent scan on every PR, including documentation-only PRs. The web job is selected independently by website paths; every job runs on pushes to `main` (see `.github/workflows/pr-checks.yml`). This section is the **authoritative local pre-push validation contract** — `AGENTS.md` defers to it. **Run every locally applicable check before every push to an open PR, including follow-up pushes during review.** Do not wait for GitHub CI to discover failures you could have caught locally — wasted Actions minutes are a real cost on this repo.
 
 The security scan requires the commit ancestry needed to find the PR's merge base. Check whether your clone is shallow:
 
@@ -266,8 +269,6 @@ bun run check
 bun run typecheck
 bun run typecheck:type-tests
 node bin/openclaude --version
-bun run test:provider
-npm run test:provider-recommendation
 git fetch https://github.com/Twigpine/openclaude.git main
 bun run security:pr-scan -- --base FETCH_HEAD --head HEAD
 ```
@@ -308,11 +309,12 @@ bun run web:build
 
 Notes on the local preflight:
 
-- `bun run check` already builds the CLI and includes smoke, deadcode, and the full unit pass (`test:full`) — do not run those separately, or you execute work twice.
-- `bun run test` isolates each test file's globals and requires Bun's completed JUnit report as well as a successful exit. `test:full` runs all eight native Bun shards serially to release memory between groups, then applies the same completion check to the conversation-arc pass. Every shard must produce a complete report; a failed shard does not prevent the remaining shards from running. A test that terminates the runner early fails the command, even if it exits with code zero. Each shard has a ten-minute deadline (override with `--shard-timeout-ms=<milliseconds>`), reports its start/end and elapsed time, and kills its process group on timeout or cancellation. A timeout stops the remaining shards and exits nonzero. On Linux, shard output is relayed from temporary regular files to avoid Bun’s isolated-stdio pipe registration bug; diagnostics remain visible during execution. Temporary reports and logs are removed after the check. CI additionally caps each smoke/test job at 15 minutes and the other jobs at five minutes.
+- PR Checks caches Bun package downloads using OS-scoped keys derived from `bun.lock` for root installs and `web/bun.lock` for web installs, with separate restore prefixes. Dependency installs still run with `--frozen-lockfile` on cache hits. Keep the relevant lockfile in sync with dependency changes and run the required local preflight regardless of cache status.
+- `bun run check` runs `check:static` (the any-usage budget, smoke build, and deadcode checks), then the full unit pass (`test:full`) — do not run those separately, or you execute work twice.
+- `bun run test` isolates each test file's globals and requires Bun's completed JUnit report as well as a successful exit. `test:full` runs all eight native Bun shards serially to release memory between groups. Use `bun run scripts/run-tests.ts --shards=N --shard-index=K` with the same test flags to run only shard K of N. `test:full` then applies the same completion check to the conversation-arc pass and the context-efficiency pass with `HISTORY_SNIP` enabled. Every shard must produce a complete report; a failed shard does not prevent the remaining shards from running. A test that terminates the runner early fails the command, even if it exits with code zero. Each shard has a ten-minute deadline (override with `--shard-timeout-ms=<milliseconds>`), reports its start/end and elapsed time, and kills its process group on timeout or cancellation. A timeout stops the remaining shards and exits nonzero. On Linux, shard output is relayed from temporary regular files to avoid Bun’s isolated-stdio pipe registration bug; diagnostics remain visible during execution. Temporary reports and logs are removed after the check. CI runs `check:static` in `smoke-and-tests`, runs the eight unit shards as parallel `unit-tests` jobs, and runs each dedicated feature pass once in `dedicated-tests`. Each unit shard builds the CLI before testing. CI caps these jobs at 15 minutes each and the other jobs at five minutes.
 - Fetching upstream `main` by URL avoids assuming that a fork checkout's `origin` points at Twigpine/openclaude. `FETCH_HEAD` is the fetched upstream tip. The scan deliberately uses local `HEAD` so it includes commits that have not been pushed yet; CI uses the pushed PR head SHA after the push.
-- The web CI job remains unconditional as an integration backstop. Contributors do not need to run the web suite locally for changes that cannot affect the site.
-- This preflight covers the same command families as CI, but it does not reproduce CI exactly in one shell. CI runs the main checks under Node 22 and 24.11.x, separately builds and launches under exact Node 22.0.0, and executes every job on a clean runner.
+- The web CI job runs on PRs that change `web/**`, root `package.json` or `bun.lock`, `.bun-version`, or `.github/workflows/pr-checks.yml`, and on every push to `main`. Contributors do not need to run the web suite locally for changes that cannot affect the site.
+- This preflight covers the same command families as CI, but it does not reproduce CI exactly in one shell. When selected, CI runs static checks with Node 22 available for smoke checks, runs the unit shards and dedicated feature passes under Node 22, separately builds and checks launcher compatibility under Node 22 and 24.11.x, separately builds and launches under exact Node 22.0.0, and executes every job on a clean runner.
 
 If a local or GitHub CI check fails, first determine whether the PR owns the failure. Treat a failure as pre-existing only when you can reproduce it on the PR's current base (or link to the same failure on a current `main` CI run) and the PR neither changes the causal surface nor claims to fix that problem.
 

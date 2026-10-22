@@ -1,5 +1,17 @@
 # Analysis efficiency measurements
 
+The [2026-10-21 coverage reconciliation](coverage-review-20261021.md) maps all
+46 source directories to concrete workflow evidence, including original feature
+PRs, historical no-benefit results and remaining verification boundaries.
+
+The [GGUF validation checkpoint](model-utf8-validation.md) removes decoding of
+omitted strings while retaining full UTF-8 validation. It records real-model
+phase gains, unchanged task token costs and the higher main-task memory peak.
+
+The [WAT framing checkpoint](wasm-string-framing.md) measures structural scanning
+on real SQLite and VS Code components, with unchanged Evidence and token costs,
+small whole-task timing gains and no memory improvement.
+
 The [native inventory view checkpoint](native-inventory-views.md) compares
 complete delivery with summaries and selected rows on real `true` and jq
 inventories, including oversized-response recovery, portable old Evidence,

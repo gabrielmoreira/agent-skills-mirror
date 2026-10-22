@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `hoainho/img2threejs` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
+Mirror of `hoainho/img2threejs` — 26 default patterns, 2 followed patterns, 5 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `hoainho/img2threejs` — 26 default patterns, 0 followed patterns, 3 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 3 |
+| Followed pats | 2 |
+| Files         | 5 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,8 @@ Mirror of `hoainho/img2threejs` — 26 default patterns, 0 followed patterns, 3 
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `docs/INSTALL.md`
+- `docs/PLUGINS.md`
 
 ## File Index
 
@@ -62,6 +63,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 2 | ✓ | [`SKILL.md`](SKILL.md) |
 | 3 | ✓ | [`skills/generic-extract-skill.md`](skills/generic-extract-skill.md) |
+| 4 | → | [`docs/INSTALL.md`](docs/INSTALL.md) |
+| 5 | → | [`docs/PLUGINS.md`](docs/PLUGINS.md) |
 
 ---
 

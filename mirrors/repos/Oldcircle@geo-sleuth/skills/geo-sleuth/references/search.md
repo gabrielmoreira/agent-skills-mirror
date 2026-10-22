@@ -111,6 +111,45 @@ uv run ${CLAUDE_SKILL_DIR}/scripts/match.py rank --query photo.jpg --query-box <
 - Compare multiple views of shortlisted targets. Repetitive brickwork can produce false SIFT matches; confirm ≥3 invariant features as in SKILL step 5.
 - Empty coverage does not exclude a target: the layer can omit panoramas that `gsv.py near <lat,lon> --radius 130` finds. Check shortlisted targets with `near`, including historical captures when appropriate.
 
+### Encyclopedia photo pool (churches, chapels, stations, lighthouses …)
+
+For classes Wikidata lists with a photo per item, rank the whole class in the region from Commons photos before street view; it works where panorama coverage is thin.
+
+```bash
+# 1. Every item of the class in the bbox with its P18 image (WKT is "Point(lon lat)"; a country filter on a large class times out)
+cat > pool.rq <<'EOF'
+SELECT ?c ?cLabel ?coord ?img WHERE {
+  SERVICE wikibase:box {
+    ?c wdt:P625 ?coord .
+    bd:serviceParam wikibase:cornerSouthWest "Point(<w> <s>)"^^geo:wktLiteral ;
+                    wikibase:cornerNorthEast "Point(<e> <n>)"^^geo:wktLiteral .
+  }
+  ?c wdt:P31/wdt:P279* wd:<class QID> .
+  OPTIONAL { ?c wdt:P18 ?img }
+  SERVICE wikibase:label { bd:serviceParam wikibase:language "<local>,en". }
+}
+EOF
+UA='<tool name>/<version> (<contact>)'
+curl -s -G https://query.wikidata.org/sparql --data-urlencode query@pool.rq \
+     -H 'Accept: application/sparql-results+json' -A "$UA" -o pool.json
+jq -e .results pool.json >/dev/null || echo "not JSON: throttled or timed out, wait and retry"
+# 2. One thumbnail per item, named by QID, one request at a time
+mkdir -p thumbs
+jq -r '.results.bindings[] | select(.img) | [(.c.value | split("/")[-1]), .img.value] | @tsv' pool.json |
+  while IFS=$'\t' read -r qid url; do
+    [ -s "thumbs/$qid.jpg" ] || curl -sfL -A "$UA" "$url?width=480" -o "thumbs/$qid.jpg"; sleep 1
+  done
+# 3. Rank them against the building in the photo
+uv run ${CLAUDE_SKILL_DIR}/scripts/match.py rank --query photo.jpg --query-box <building part> --images thumbs/ \
+     --method both --refine sift --top 24 --out pool_rank.json --sheet pool_rank.jpg
+```
+
+- Throttled Wikimedia requests get an HTML page (HTTP 429). If `match.py` prints `skipped N of M files that are not readable images`, fetch those again before ranking.
+- `--images` has no candidate cap and loads everything into memory: keep a run to about 400 images by splitting the bbox.
+- Items without a P18 image are not ranked. Count them (`pool.json` rows minus thumbnails) and say so in the conclusion; they are not excluded.
+- Season, light and side differ, so SIFT inliers stay near zero even for the right item: compare the top 24 in `pool_rank.jpg` by plan, tower, roof and windows; a shortlisted item goes on the board and needs ≥3 invariant features (SKILL step 5).
+- `P279*` already covers subclasses (cathedrals, chapels under church building `wd:Q16970`). If nothing fits, widen to `wd:Q1370598` (structure of worship), then drop the class line, before widening the region.
+
 ## Common mistakes
 
 - Using only one engine and searching only the whole image; after a failure, not changing the image or the engine.

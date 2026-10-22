@@ -1,6 +1,6 @@
 ---
 name: vibe-trading
-version: 0.1.16
+version: 0.1.18
 description: Professional finance research toolkit — backtesting (11 engines + benchmark comparison panel), factor analysis, Alpha Zoo (478 pre-built alphas across qlib158/alpha101/gtja191/academic/fundamental), options pricing, 90 finance skills, 30 multi-agent swarm teams, Trade Journal analyzer, and Shadow Account (extract → backtest → render) across 29 market-data sources (tushare, yfinance, okx, binance, akshare, baostock, tencent, mootdx, ccxt, futu, mt5, tickerall, local, eastmoney, sina, stooq, yahoo, pykrx, india_broker, qveris, longbridge, nobitex, wallex, plus optional-key finnhub/alphavantage/tiingo/fmp/gildata).
 dependencies:
   python: ">=3.11"
@@ -74,7 +74,7 @@ Feed a CSV broker export (同花顺 / 东财 / 富途 / generic), and the agent 
 5. `scan_shadow_signals` — list today's symbols that match your shadow's entry cadence (research only).
 
 ### Backtesting
-Create and run quantitative strategies across 11 engines (ChinaA, GlobalEquity, IndiaEquity, KoreaEquity, VietnamEquity, BrazilEquity, Crypto, ChinaFutures, GlobalFutures, Forex + options) with 29 market-data sources (auto-detect + ordered fallback; the hosted forex `tickerall` source is explicit-only):
+Create and run quantitative strategies across 11 engines (ChinaA, GlobalEquity, IndiaEquity, KoreaEquity, VietnamEquity, BrazilEquity, Crypto, ChinaFutures, GlobalFutures, Forex, cross-market Composite) plus an options portfolio engine, with 29 market-data sources (auto-detect + ordered fallback; the hosted forex `tickerall` source is explicit-only):
 - **HK/US equities** via yfinance / stooq / yahoo (free, no API key); optionally via **Longbridge** historical OHLCV (`longbridge`, requires the optional SDK and `LONGBRIDGE_APP_KEY` / `LONGBRIDGE_APP_SECRET` / `LONGBRIDGE_ACCESS_TOKEN`). To force it for a run, set `"source": "longbridge"` in `config.json`.
 - **Canada equities (TSX/TSXV)** via yahoo / yfinance using Yahoo's canonical `<TICKER>.TO` (TSX, e.g. `TD.TO`) or `<TICKER>.V` (TSXV, e.g. `PNG.V`) suffixes — free, no API key. The GlobalEquity engine uses CAD identity, whole-share orders, configurable Canadian commission/slippage, and the TSX/TSXV price-increment grid.
 - **India equities (NSE/BSE)** via yahoo / yfinance using `<SYMBOL>.NS` (NSE, e.g. `RELIANCE.NS`) or `<SCRIP>.BO` (BSE, e.g. `500325.BO`) — free, no API key. The `IndiaEquityEngine` models T+1 delivery, no overnight shorts (set `allow_short` for intraday), configurable circuit bands, 1-share lots, and the STT/stamp-duty/exchange/GST cost stack. Optionally back-fill from your live broker via the `india_broker` source (Shoonya/Dhan; requires broker login).
@@ -133,7 +133,7 @@ Comprehensive knowledge base covering:
 
 Use `load_skill(name)` to access full methodology docs with code templates.
 
-## Available MCP Tools (81)
+## Available MCP Tools (82)
 
 | Tool | Description | API Key |
 |------|-------------|---------|
@@ -144,6 +144,7 @@ Use `load_skill(name)` to access full methodology docs with code templates.
 | `add_goal_evidence` | Attach evidence to a research goal | None |
 | `update_research_goal_status` | Update goal lifecycle status | None |
 | `backtest` | Run vectorized backtest engine | None* |
+| `paper_trade_step` | Deterministic paper-trading matching engine; never places real orders | None* |
 | `factor_analysis` | IC/IR analysis + layered backtest | None* |
 | `alpha_zoo` | Browse bundled alpha metadata and registry health | None |
 | `alpha_bench` | Benchmark one alpha or a complete zoo | None* |
@@ -212,7 +213,7 @@ Use `load_skill(name)` to access full methodology docs with code templates.
 | `etf_holdings` | ETF look-through — SEC N-PORT (US) and full-book A-share fund reports | None |
 | `prediction_market` | Event-contract search/market/history as labelled implied probability | None |
 | `research_papers` | arXiv + OpenAlex search/read with source-anchored claim extraction | None |
-| `quantlib_call` | Pure-compute finance math — 265 functions across 19 quantlib modules | None |
+| `quantlib_call` | Pure-compute finance math — 308 functions across 24 quantlib modules | None |
 | `cashflow_performance` | XIRR / MOIC / DPI / TVPI / TWR / Modified Dietz over dated cash flows | None |
 | `orderbook_depth` | Crypto L2 ladder — spread bps, depth imbalance, impact cost | None |
 | `sentiment` | Local lexicon text scoring + crypto Fear & Greed Index | None |

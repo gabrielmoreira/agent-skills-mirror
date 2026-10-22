@@ -120,6 +120,8 @@ HTTP fields and ordered duplicate headers are retained, with stored body bytes
 in binary sidecars. Bodies are not dechunked or decompressed. Metadata is an
 XML node tree; optional `_w.txt` and `_g.txt` files retain opaque WebSocket and
 gRPC message bytes. Missing members remain null, distinct from empty bodies.
+A zero-byte `_c.txt` or `_s.txt` member, which Fiddler writes for a session
+without that message, is also null and adds a record limitation.
 See Telerik's [SAZ format reference](https://www.telerik.com/fiddler/fiddler-everywhere/documentation/knowledge-base/fiddler-archives).
 
 ## Protobuf and gRPC bodies
@@ -178,6 +180,9 @@ sanitized source even with explicit sensitivity options. If that source pass
 is interrupted, unchecked bodies are not published as partial Evidence.
 Framing overrides apply only to format-owned body coordinates and preserve
 exclusions for the transport declared in MIME metadata.
+Explicitly excluded or conflicting MIME metadata is not treated as absent:
+automatic framing leaves such a non-empty body uninterpreted, adds a record
+limitation and keeps `protobuf_coverage` partial unless `framing` is selected.
 Unknown or explicitly excluded HTTP coding metadata is not treated as absent:
 SAZ/native bodies remain opaque until identity coding is established. Raw
 header values and retained body bytes remain available in source Evidence.
@@ -449,12 +454,13 @@ template and `params` carry the four format rules with names `id`, `uuid`,
 only when listed, each at most once (a repeated rule is an `invalid_request`),
 in this order:
 
-| Rule                    | Applies to                                                                                                                                                                                                                                                                                                         | Parameter                                               |
-| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------- |
-| `after-uid-literal`     | The literal segment right after a literal `uid`, unless it is a stop word                                                                                                                                                                                                                                          | `uid`                                                   |
-| `opaque-token`          | A lowercase alphanumeric segment of twelve or more characters mixing letters and digits that is not a `v1`-style version                                                                                                                                                                                           | `uid`                                                   |
-| `sibling-pair-variance` | Groups equal in method, origin and segment count that differ in two adjacent literals right after a plural literal at index 2 or later and followed by a literal, with at least three distinct pairs and both positions varying (`/repos/{owner}/{repo}/issues`); stop words and `v1`-style versions never qualify | singular plural literal plus `_namespace`, then `_name` |
-| `sibling-variance`      | Groups equal in method, origin and segment count that differ in one literal at index 2 or later; the siblings whose literal is identifier-like (a digit or `:`, or three or more hyphenated names under a plural literal) merge, never a stop word, and the other literals stay their own tools                    | singular previous literal plus `_id`, else `id`         |
+| Rule                    | Applies to                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Parameter                                               |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
+| `after-uid-literal`     | The literal segment right after a literal `uid`, unless it is a stop word                                                                                                                                                                                                                                                                                                                                                                                                                                                               | `uid`                                                   |
+| `opaque-token`          | A lowercase alphanumeric segment of twelve or more characters mixing letters and digits that is not a `v1`-style version                                                                                                                                                                                                                                                                                                                                                                                                                | `uid`                                                   |
+| `sibling-pair-variance` | Groups equal in method, origin and segment count that differ in two adjacent literals right after a plural literal at index 2 or later and followed by a literal, with at least three distinct pairs and both positions varying (`/repos/{owner}/{repo}/issues`); stop words and `v1`-style versions never qualify                                                                                                                                                                                                                      | singular plural literal plus `_namespace`, then `_name` |
+| `sibling-variance`      | Groups equal in method, origin and segment count that differ in one literal at index 2 or later; the siblings whose literal is identifier-like (a digit or `:`, or three or more hyphenated names under a plural literal) merge, never a stop word, and the other literals stay their own tools                                                                                                                                                                                                                                         | singular previous literal plus `_id`, else `id`         |
+| `prefix-variance`       | A literal at a position that another tool, of any method or segment count, templates by one of the rules above after the same preceding segments, when the literal is one of that parameter's observed values, carries a digit and has the length and character classes (digits, lower case, upper case, each other character) of one, or has the single length of eight or more characters every observed value has and only their character classes; stop words and `v1`-style versions never qualify, and tools that now match merge | the name of the parameter it shares                     |
 
 With `sibling-variance` selected, literal siblings within its comparison scope
 fold into existing opt-in parameters as observed values unless they are stop words.
@@ -471,7 +477,17 @@ cut to their first label, `_by_<params>` appended when parameters exist,
 sanitized to `[a-z0-9_]`, at most 60 characters and made unique with numeric
 suffixes: `get_dashboards_by_uid`, `get_plugins_settings_by_plugin_id`.
 
-`sibling-variance` and `sibling-pair-variance` compare routes of at most 32 segments; longer routes keep
+`prefix-variance` runs last so it can share the parameters the other rules
+produce: with `sibling-variance`, a `PATCH` or `DELETE` of the one entity a
+session edited, `/api/v1/collections/0RZ576QZQA5KG`, becomes
+`/api/v1/collections/{collection_id}` beside the reads that varied there, and
+so do deeper routes such as `/api/v1/collections/{collection_id}/books`. Its
+parameter is labelled `prefix-variance`, unless a merged tool templated the
+position by its own rule. When parameters of different rules share a position,
+a literal shares the one that observed it, else the earliest one it is spelled
+like.
+
+`sibling-variance`, `sibling-pair-variance` and `prefix-variance` compare routes of at most 32 segments; longer routes keep
 their grouped templates and the manifest says so in a limitation. `body_shape`
 is derived for `POST`, `PUT` and `PATCH` from the tool's earliest record when it
 carries an `application/json` or `application/*+json` request body: top-level
@@ -506,9 +522,9 @@ Pass the same parent to `inspect_analysis_view` with
 `view: {"kind":"environment-state"}` to extract the initial state the
 capture's reads observed, and a render plan per read tool that reproduces those
 reads from it. Where the environment manifest names an application's tools, the
-state holds its data: entities by type and identity, plus documents for written
-paths whose reads are not entities. Use the `template_rules` of the manifest the
-state accompanies so tool names match; the view groups records the same way.
+state holds its data: entities by type and identity, plus documents for reads
+that are not entities. Use the `template_rules` of the manifest the state
+accompanies so tool names match; the view groups records the same way.
 
 ```json
 {
@@ -544,13 +560,27 @@ refused for them, as the manifest is not.
 
 Each `GET` tool whose template ends in a parameter is an item tool, and its
 type's `collection_template` is the template without that parameter; any other
-`GET` tool is a list tool of its own template. An item tool proves its type's
+`GET` tool is a list tool of its own template. Empty segments are ignored, so a
+trailing slash names the same collection. An item tool proves its type's
 `id_field` when every initial response carries the requested path value in the
-same field, at the root or in one wrapper member (`id_basis: "path-parameter"`).
-Otherwise the field is the first of `id`, `uid`, `uuid`, `_id`, `ID`, `UID`,
-`Id`, `guid`, `key`, `slug` and `name` that every listed item carries as a
-distinct string or number (`id_basis: "field-name"`). A list is the response
-array, or the one array of objects in an envelope that is not itself an entity.
+same field of one entity object (`id_basis: "path-parameter"`). The object is
+the response itself or one wrapper member; failing both, it is the only element
+of a one-element array at the root (pointer `/0`) or in one member
+(`/<member>/0`), as in `{"posts":[{...}]}` or `{"data":[{...}]}`, provided one
+of the identity names below repeats the value, since a filtered list may also
+answer with one element that repeats its parent's value. Otherwise the field is
+the first of `id`, `uid`, `uuid`, `_id`, `ID`, `UID`, `Id`, `guid`, `key`,
+`slug` and `name` that every listed item carries as a distinct string or
+number; when none does, it is the first key of the first listed item, in its
+order, whose name ends in `Id` or `_id` (such as `orgId` or `user_id`), that
+every item carries as a distinct string or number, and that at least one
+initial response shows distinct across two or more items
+(`id_basis: "field-name"`). A single listed item is distinct from nothing, and
+its suffix-named fields are often foreign keys, so a list that only ever held
+one item is left to a document. Empty initial lists constrain no field. A list
+is the response array, or the one array of objects in an envelope that is not
+itself an entity, preferring an array whose items an identity name identifies,
+then an array of two or more items a suffix-named field identifies.
 
 `entities` merge every initial observation of one identity within one
 collection path: an item view's latest values win over a list view's, a view
@@ -567,9 +597,9 @@ Every entity cites its `record_ordinals`.
 
 | Shape      | Plan                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `item`     | The entity object at `pointer` (the root or one member), the ordered `fields` the view shows and the `required_fields` every recording had, and `envelope_ordinal`: the recording whose response, with the entity replaced, every item response shares                                                                                                                                                                                                                                                                      |
+| `item`     | The entity object at `pointer` (the root, one member, or `/0` or `/<member>/0`), the ordered `fields` the view shows and the `required_fields` every recording had, and `envelope_ordinal`: the recording whose response, with the entity replaced, every item response shares                                                                                                                                                                                                                                              |
 | `list`     | The array at `pointer`, its `fields`, `membership` (`all`: every entity of the collection in state order, when each recording listed exactly that, had no query, no item-total member (`total`, `count`, `totalCount`, `item_count`, `totalcount`, `itemcount`, but not `total_pages` or `per_page`; a number or a string of digits) differing from the number listed, and no `has_more`, `next` or next-page token member set; `recorded`: the entities each recording listed) and `counters` that equal the number listed |
-| `document` | The path's latest initial value, held in `documents`                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| `document` | The latest initial value of a list tool whose responses hold no identified list, when its initial reads share one request line; held in `documents` with that `path`, whether or not the capture writes it, unless its value changed across any recorded write between those reads (`fields-differ`)                                                                                                                                                                                                                        |
 | `recorded` | A `reason` the tool replays its recordings instead                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 
 An item or list plan is kept only when it reproduces the latest initial
@@ -578,11 +608,13 @@ regard to member order; a volatile field compares its recorded value. Each
 plan lists the `checked_record_ordinals`. Otherwise the tool is a recorded view
 with reason `envelope-varies`, `fields-differ` or `list-differs`; the other
 reasons are `query-body` (a query `POST`), `no-init-recording`,
-`body-unusable`, `not-entity`, `no-identity` and `query-varies` (a document
-read under several queries). Documents are held only for list-shaped paths
-that a `POST`, `PUT` or `PATCH` tool writes: a non-entity read of an item path
-such as `/api/files/{id}`, or of a path that is only deleted, stays recorded
-with `no-identity` or `not-entity`. A body is usable when its content type is
+`body-unusable`, `no-identity` (an item read without a proved identity),
+`path-varies` (another read under more than one path, as a template with a
+parameter before its end), `query-varies` (another read of one path under
+more than one query) and `rendered-oversize` (a document value whose JSON
+renders to more than 256 KiB). A document holds the value of its one `path`, so for such
+a template it says nothing about the template's other paths. A body is usable
+when its content type is
 JSON-like, it is UTF-8 text of at most 256 KiB, every number survives native
 conversion exactly, and no member is named `__proto__`.
 
@@ -594,19 +626,25 @@ that the state establishes no authorization model, no way the application
 computes responses or derived values, and no effects of writes. The state
 accumulator charges the manifest's admission and grouping, every record line,
 each body as temporary bytes before it is decoded and parsed, and every value
-it keeps, within the same 96 MiB budget. The view performs no network activity
-and serves nothing.
+it keeps, within the same 96 MiB budget. Documents hold whole recorded response
+values whose recorded text and rendered JSON are each at most 256 KiB, so a
+capture with many read-only paths yields a correspondingly larger state result. The view performs no network activity
+and serves nothing; `rea environment-serve` derives it from the capture at
+startup, serves read tools from it and loads replacement states through the
+AgentEnv data plane, as
+[serve from the state](agent-environments.md#serve-from-the-state) describes.
 
 ## Resource and lifecycle boundaries
 
 Complete evidence has a 32 MiB input, 96 MiB decoder reply and 64-level nesting
-budget. Exceeding a budget returns no partial success.
+budget. Those budgets have no runtime override. `capture_timeout_ms` does not
+raise them. Exceeding a budget returns no partial success.
 Oversized selected captures return an input error identifying `capture_path`
 and the byte budget; owned reply/output failures remain output or provider errors.
 HAR, SAZ and qlog run in an owned
 192 MiB Node old-generation heap with one V8 worker. Mitmproxy decoding applies
 Linux limits of 768 MiB address space, 30 seconds CPU and 96 MiB file output;
-both commands have a 30-second wall deadline and independently supervised
+both commands use `capture_timeout_ms` (default 30000) and independently supervised
 process cleanup. Owned decoder diagnostics retain at most 1 MiB across stdout
 and stderr; the collector drops overflow as it arrives, reports the limit
 failure and verifies cleanup. Heap limits alone do not establish aggregate RSS limits.

@@ -126,6 +126,9 @@ matching help retains original one-based line numbers. Empty query selects all.
 returns all remaining matches; CLI `--all` and `--limit` conflict.
 The window reports examined, matching and returned records and `has_more`.
 A filtered empty page is not evidence that the installation has no decoders.
+When sigrok reports a selected decoder ID as not installed, help and decoding
+return `invalid_request` naming `decoder` or `decoders`; omit `decoder` to list
+installed IDs. An installed decoder that fails to load remains an execution failure.
 
 Discovery refuses more than 65,535 line separators before constructing record
 objects (65,536-line representation budget), in addition to the 4 MiB output cap.

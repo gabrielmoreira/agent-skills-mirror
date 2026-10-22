@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `amruthpillai/reactive-resume` — 26 default patterns, 0 followed patterns, 11 file(s) materialized.
+Mirror of `amruthpillai/reactive-resume` — 26 default patterns, 0 followed patterns, 21 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `amruthpillai/reactive-resume` — 26 default patterns, 0 followed pat
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 11 |
+| Files         | 21 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,17 +59,27 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 4 | ✓ | [`plugins/reactive-resume/skills/interview-prep/SKILL.md`](plugins/reactive-resume/skills/interview-prep/SKILL.md) |
-| 5 | ✓ | [`plugins/reactive-resume/skills/job-application-manager/SKILL.md`](plugins/reactive-resume/skills/job-application-manager/SKILL.md) |
-| 6 | ✓ | [`plugins/reactive-resume/skills/mock-interview/SKILL.md`](plugins/reactive-resume/skills/mock-interview/SKILL.md) |
-| 7 | ✓ | [`plugins/reactive-resume/skills/offer-negotiation/SKILL.md`](plugins/reactive-resume/skills/offer-negotiation/SKILL.md) |
-| 8 | ✓ | [`plugins/reactive-resume/skills/resume-builder/SKILL.md`](plugins/reactive-resume/skills/resume-builder/SKILL.md) |
-| 9 | ✓ | [`plugins/reactive-resume/skills/resume-bullet-writer/SKILL.md`](plugins/reactive-resume/skills/resume-bullet-writer/SKILL.md) |
-| 10 | ✓ | [`plugins/reactive-resume/skills/resume-content-guide/SKILL.md`](plugins/reactive-resume/skills/resume-content-guide/SKILL.md) |
-| 11 | ✓ | [`plugins/reactive-resume/skills/resume-tailor/SKILL.md`](plugins/reactive-resume/skills/resume-tailor/SKILL.md) |
+| 1 | ✓ | [`.agents/docs/container-publishing.md`](.agents/docs/container-publishing.md) |
+| 2 | ✓ | [`.agents/docs/dependency-upgrades.md`](.agents/docs/dependency-upgrades.md) |
+| 3 | ✓ | [`.agents/docs/issue-tracker.md`](.agents/docs/issue-tracker.md) |
+| 4 | ✓ | [`.agents/docs/microsoft-store-handoff.md`](.agents/docs/microsoft-store-handoff.md) |
+| 5 | ✓ | [`.agents/docs/mobile-ci.md`](.agents/docs/mobile-ci.md) |
+| 6 | ✓ | [`.agents/docs/mobile-release-handoff.md`](.agents/docs/mobile-release-handoff.md) |
+| 7 | ✓ | [`.agents/docs/mobile-store-review.md`](.agents/docs/mobile-store-review.md) |
+| 8 | ✓ | [`.agents/docs/plans/job-saving-release.md`](.agents/docs/plans/job-saving-release.md) |
+| 9 | ✓ | [`.agents/docs/research/job-integrations-2026-09-30.md`](.agents/docs/research/job-integrations-2026-09-30.md) |
+| 10 | ✓ | [`.agents/docs/research/reactive-resume-v6-launch-media-2026-10-02.md`](.agents/docs/research/reactive-resume-v6-launch-media-2026-10-02.md) |
+| 11 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
+| 12 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 13 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 14 | ✓ | [`plugins/reactive-resume/skills/interview-prep/SKILL.md`](plugins/reactive-resume/skills/interview-prep/SKILL.md) |
+| 15 | ✓ | [`plugins/reactive-resume/skills/job-application-manager/SKILL.md`](plugins/reactive-resume/skills/job-application-manager/SKILL.md) |
+| 16 | ✓ | [`plugins/reactive-resume/skills/mock-interview/SKILL.md`](plugins/reactive-resume/skills/mock-interview/SKILL.md) |
+| 17 | ✓ | [`plugins/reactive-resume/skills/offer-negotiation/SKILL.md`](plugins/reactive-resume/skills/offer-negotiation/SKILL.md) |
+| 18 | ✓ | [`plugins/reactive-resume/skills/resume-builder/SKILL.md`](plugins/reactive-resume/skills/resume-builder/SKILL.md) |
+| 19 | ✓ | [`plugins/reactive-resume/skills/resume-bullet-writer/SKILL.md`](plugins/reactive-resume/skills/resume-bullet-writer/SKILL.md) |
+| 20 | ✓ | [`plugins/reactive-resume/skills/resume-content-guide/SKILL.md`](plugins/reactive-resume/skills/resume-content-guide/SKILL.md) |
+| 21 | ✓ | [`plugins/reactive-resume/skills/resume-tailor/SKILL.md`](plugins/reactive-resume/skills/resume-tailor/SKILL.md) |
 
 ---
 

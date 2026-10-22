@@ -32,10 +32,10 @@ Then:
 
 **From your terminal (CLI):**
 ```bash
-# Automated installation (macOS/Linux)
+# Generate installation commands (macOS/Linux)
 bash -o pipefail -c 'curl -fsSL https://raw.githubusercontent.com/daymade/claude-code-skills/main/scripts/install.sh | bash'
 
-# Automated installation (Windows PowerShell)
+# Generate installation commands (Windows PowerShell)
 iwr -useb https://raw.githubusercontent.com/daymade/claude-code-skills/main/scripts/install.ps1 | iex
 
 # Manual installation
@@ -43,6 +43,8 @@ claude plugin marketplace add https://github.com/daymade/claude-code-skills
 # Marketplace name: daymade-skills (from marketplace.json)
 claude plugin install daymade-skill@daymade-skills
 ```
+
+[Run the generated commands in your terminal](README.md#generate-installation-commands) after using either helper script.
 
 ### Skill Validation and Packaging
 
@@ -111,6 +113,8 @@ When the user corrects premises, research focus or scope, return first to its
 [task binding](app-evolver/SKILL.md#1-bind-the-application-and-unfinished-result).
 For next-increment selection after that reconciliation or a completed repair batch, use its
 [increment-selection contract](app-evolver/references/evidence-and-fit.md#make-the-disposition-operational).
+When feedback questions navigation, information hierarchy or interface coherence, use its
+[structure comparison](app-evolver/references/evidence-and-fit.md#reconsider-interface-structure).
 
 For permission-sensitive fixtures, use Skill Creator's
 [execution-context verification recipe](daymade-skill/skill-creator/references/stateful-script-verification.md#execution-identity-and-permission-fixtures).
@@ -118,14 +122,21 @@ For permission-sensitive fixtures, use Skill Creator's
 For its audit, release, source-contract or materialization commands from another
 working directory, use the [fixed command entry](daymade-skill/skill-creator/references/fixed-command-entry.md).
 
-Before reading a large file or captured tool response, follow Skill Creator's
-[bounded-read recipe](daymade-skill/skill-creator/references/stateful-script-verification.md)
-through that fixed entry. Keep selection, output limits and incomplete-read semantics
-in the owning recipe.
+Before a command that may exceed the response budget, enter Skill Creator's
+[large-output capture recipe](daymade-skill/skill-creator/references/stateful-script-verification.md#large-command-output).
+For a large file or saved tool response, use its
+[complete-file reading workflow](daymade-skill/skill-creator/references/stateful-script-verification.md#complete-file-reads).
+Keep invocation, selection and incomplete-read semantics in those owners.
 
 For plugin/Skill naming, source registration or release labels, use
 [source location and activation](daymade-skill/skill-creator/references/source-location-and-activation.md)
 and [delivery identity](daymade-skill/skill-creator/references/delivery-identity.md).
+
+For a Chinese illustrated recipient guide from a manufacturer PDF, enter
+[docs-router](daymade-docs/docs-router/SKILL.md) and its
+[manual workflow](daymade-docs/pdf-creator/references/illustrated-manual.md).
+For relative-image resource paths or Markdown → PDF rendering, read
+[PDF Creator's ordinary entry](daymade-docs/pdf-creator/SKILL.md).
 
 For saved HTML batches, follow [the conversion owner](daymade-docs/doc-to-markdown/references/html-conversion.md#gate-a-batch-through-the-existing-recipe)
 and its actual-reader pilot before expansion. Keep conversion evidence and reader
@@ -151,6 +162,11 @@ as the route rather than a second copy of those procedures.
 For customer-approved report forms, follow
 [skill-creator's report-template contract](daymade-skill/skill-creator/references/authoring-and-reuse.md#show-the-result-not-just-the-work).
 
+For Codex login, credential recovery, quota-query ownership or quota-driven continuation, enter
+[local-codex authentication](daymade-codex/local-codex/SKILL.md#authentication-chatgpt-oauth).
+For existing Ghostty Codex windows around an account switch, enter
+[ghostty-use's switch workflow](ghostty-use/SKILL.md#codex-account-switch).
+
 For rebuilding a paper form from an image, scan or screenshot as an editable
 XLSX with a printable layout, enter
 [excel-automation](daymade-docs/excel-automation/SKILL.md).
@@ -167,9 +183,6 @@ owns later reconciliation and consumer readback.
 For citation previews and in-place source inspection, enter
 [report-with-html's interaction owner](report-with-html/references/interaction-components.md)
 and [frontend-visual-qa's source-inspection route](frontend-visual-qa/references/journey-and-page-contracts.md#cited-source-inspection).
-For embedded-reader sizing, surrounding navigation, overlays or reading/return
-changes, enter [frontend-visual-qa](frontend-visual-qa/SKILL.md) and its
-[embedded-reader journey](frontend-visual-qa/references/journey-and-page-contracts.md#embedded-readers-and-semantic-zoom).
 
 For HTML report images and explanatory diagrams, enter
 [report-with-html](report-with-html/SKILL.md); its
@@ -225,8 +238,11 @@ For nested zoomable workspaces, use its
 [journey and state matrix](frontend-visual-qa/references/journey-and-page-contracts.md#journey-and-state-matrix).
 For live status or attention filters, follow its
 [cross-view attention journey](frontend-visual-qa/references/journey-and-page-contracts.md#operational-attention-across-views).
-For embedded-reader zoom, return, focus or filtered-selection changes, use its
+For embedded-reader sizing, surrounding navigation, overlays, zoom, reading/return,
+focus or filtered-selection changes, use its
 [reader journey](frontend-visual-qa/references/journey-and-page-contracts.md#embedded-readers-and-semantic-zoom).
+For long-document outlines, active-section cues or source sidebars, follow its
+[reading-position recipe](frontend-visual-qa/references/journey-and-page-contracts.md#long-document-reading-positions).
 For browser visibility, selected read modes, request/capture timing or long JSONL input problems, load its
 [browser-driving and observation traps](frontend-visual-qa/references/browser-driving-and-observation-traps.md);
 keep adapter requirements and invocation examples in that reference.
@@ -240,6 +256,9 @@ Before designing or judging monitoring, availability or certificate matrices, en
 Observation and risk semantics follow its data-validation route.
 For incomplete observations, unknown counts or confirmed zero, use its
 [operational-state matrix](data-visualization-discipline/references/operational-state-matrix.md).
+When maintaining UI-journey or operational-state regression cases, use
+[frontend-visual-qa evals](frontend-visual-qa/evals/evals.json) and
+[data-visualization-discipline evals](data-visualization-discipline/evals/evals.json).
 
 For oversized images or figure readability in a Markdown note or transcript, use
 [frontend-visual-qa's actual-reader handoff](frontend-visual-qa/references/markdown-reader-handoff.md).
@@ -319,6 +338,8 @@ For loaded plist scheduling and configuration, use its
 [native readback](daymade-macos/macos-watchdog/references/native-job-readback.md).
 For stopping or persistently disabling a job, follow its
 [stop semantics](daymade-macos/macos-watchdog/SKILL.md#stop-semantics-the-deprecated-trap).
+Before replacing an existing launchd job, enter its
+[authorized unload and replacement procedure](daymade-macos/macos-watchdog/references/event-driven-observers.md#wait-for-an-authorized-unload-before-replacement).
 Before choosing or changing any periodic observer's cadence, follow
 [macos-watchdog's observation contract](daymade-macos/macos-watchdog/references/probe-cost.md).
 For named macOS load/runaway alerts, follow
@@ -409,7 +430,8 @@ For CLI/hook manifest selection or continuation in an already-running host, read
 
 For reconciliation of an already-resumed native Goal, read
 [native Goal reconciliation](daymade-claude-code/continue-codex-work/references/native-goal-reconciliation.md)
-directly; use `continue-codex-work`'s full entry for external task takeover.
+directly, binding the current host thread without external-takeover preparation;
+use `continue-codex-work`'s full entry and verified history receipt for external task takeover.
 
 For input appended after an operation's current-thread request, use [read-codex-history's bounded input cursor](daymade-claude-code/read-codex-history/SKILL.md#bounded-current-thread-direct-input-cursor). That owner defines source binding and read failures; the consuming operation owns human authorization. Keep executable commands and source details in the Skill.
 
@@ -427,6 +449,9 @@ those owners rather than copying them here.
 For an original Claude tool call and its result from one known Session, use
 [read-claude-code-history's narrow evidence entry](daymade-claude-code/read-claude-code-history/SKILL.md#original-tool-callresult-evidence).
 Keep selectors, pairing, source scope and incomplete-output handling in that owner.
+
+For a Claude session briefing or expansion of folded runtime Skill bodies, enter
+[Exact Session evidence](daymade-claude-code/read-claude-code-history/SKILL.md#exact-session-evidence).
 
 For Claude history discovery without a known Session, use
 [read-claude-code-history's indexed search entry](daymade-claude-code/read-claude-code-history/SKILL.md#indexed-content-search).

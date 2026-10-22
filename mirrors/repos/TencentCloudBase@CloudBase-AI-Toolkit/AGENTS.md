@@ -95,7 +95,7 @@ alwaysApply: true
 | `.cursor/plans/` | Cursor 的计划文件 | IDE 本地状态；正文里带本机绝对路径与未公开的计划内容 |
 | `.codebuddy/` | IDE 本地状态：`automations/`、`artifacts/`、`settings.local.json` | 同上；`artifacts/` 里是内部审视与改稿提案 |
 
-`specs/` 里仅 `specs/plugin-marketplace-listing/` 与 `specs/npm-supply-chain-security-hardening/` 两个被代码或规范依赖的子目录留在仓库里，其余全部忽略。`.workbuddy/` 全量忽略。`.codebuddy/` 里只有 `skills/`（指向 `.agents/skills` 的软链投影，与 `.claude/skills` 对称）入库。`.cursor/rules/` 是项目规范，同样有意保留。
+`specs/` 里仅 `specs/npm-supply-chain-security-hardening/` 一个被规范依赖的子目录留在仓库里，其余全部忽略（`specs/plugin-marketplace-listing/` 是渠道 BD 台账，2026-10-21 起整体退出公开仓）。`.workbuddy/` 全量忽略。`.codebuddy/` 里只有 `skills/`（指向 `.agents/skills` 的软链投影，与 `.claude/skills` 对称）入库。`.cursor/rules/` 是项目规范，同样有意保留。
 
 `docs/` 走的是相反的白名单：只放对外文档（`enterprise-auth-with-feishu.md`、`research-codex-plugin-enterprise-auth.md`），其余一律当内部工作件——门禁报告、platform-kit spec 与能力对齐表都在此列。`dsh-plugin/community/SUBMISSION.md`、`dsh-plugin/scripts/t9-results.md`、`mcp/scripts/wxide-mcp-e2e-test.md` 三个开发过程记录同理：本地保留、不入库。这几类的门禁由 `scripts/git-guard-internal.sh` 与 CI 的 Internal Docs Guard 同时把关。
 

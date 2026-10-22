@@ -12,7 +12,7 @@ Load this reference when an accepted `ultrawork` plan splits into in-session `de
 ## The Loop
 
 1. `team_start` with `team_id`, `plan_ref`, and one unit per lane (`unit_id`, `title`, `depends_on`, `verification_command`). `max_repair_attempts` defaults to 2 and is capped at 3.
-2. Dispatch the returned `delegate_task` entries unchanged in one call. Each `goal` starts with the attempt key OMH reserved; you may add to `context`, never edit `goal`.
+2. Dispatch the returned `delegate_task` entries unchanged in one call. Each `goal` ends with the attempt key OMH reserved; you may add to `context`, never edit `goal`.
 3. When the helpers return, call `team_reconcile`. While any team helper is still out it checks nothing and says so (`delegations_in_flight`). While a returned helper's work is on a branch this workspace has not merged, it is refused as `helper_branch_unmerged`, checks nothing, and names each such branch in `unmerged`. It runs at most two checks per call; `checks_pending` means call it again.
 4. Relay the result's `say` line. Dispatch any new entries it returns: fix-ups for lanes whose check failed, and lanes whose parents have all passed.
 5. Repeat from 3 until `team_state` is `done` or `blocked`. The one other stop is a `helper_branch_unmerged` you cannot clear, because a branch does not merge or its work must not land: report that part as blocked with its branch named, and stop.

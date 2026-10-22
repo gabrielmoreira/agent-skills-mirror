@@ -504,7 +504,7 @@ At each completed step, the **current packet owner** projects its own result. Ex
 
 ```sh
 rig workflow project --instance <instance-id> --current-packet <inspect-packet> \
-  --exit handoff --actor-session dev-build@starter \
+  --exit handoff \
   --result-note 'Inspection contract implemented; exact candidate and checks recorded' \
   --evidence-ref <absolute-slice-01-proof-path> --json
 ```
@@ -515,7 +515,7 @@ For a **real unresolved blank-cell product choice**, ask the user the concrete q
 
 ```sh
 rig workflow project --instance <instance-id> --current-packet <cli-packet> \
-  --exit waiting --actor-session dev-build@starter \
+  --exit waiting \
   --blocked-on external:user/blank-required-cells \
   --result-note 'Need the user decision recorded in mission NOTES before selecting CLI behavior' \
   --evidence-ref <absolute-mission-notes-path> --json

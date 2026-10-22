@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.7.3] - 2026-10-21
+
+### 🐛 修复
+
+- **Windows 上 `ccg dsh install` 链接失败** — 安装器经 `cmd /c` 调用 `dsh` 时给程序名加了引号；cmd.exe 通过 PATH 找带引号的 `.cmd` 时，脚本里的 `%~dp0` 会指向当前目录（microsoft/terminal#15212），DSH 桌面版启动器于是在配置档目录下找 `DeepSeek Harness.exe`，报「不是内部或外部命令」。现在程序名不加引号（限定 `[\w.-]+`），参数仍逐个加引号、拒绝 shell 元字符。3.6.8–3.7.2 在 Windows 上装过的，更新后重跑 `ccg dsh install`，或直接在终端运行 `dsh plugin --profile <名称> install`。
+- **Windows 上 pnpm 兜底从未生效** — 经 cmd.exe 启动时，找不到 `dsh` 的退出码是 9009 而不是 ENOENT，安装器把它当成启动器拒绝直接返回。现在 9009 视同未安装，改走 `pnpm install`。
+
 ## [3.7.2] - 2026-10-18
 
 ### ✨ 新功能

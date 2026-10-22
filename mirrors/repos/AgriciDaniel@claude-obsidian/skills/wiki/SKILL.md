@@ -71,6 +71,7 @@ Route the user's intent without silently broadening it:
 | Save a specific conversation result | `save` |
 | Research the public web under a budget | `autoresearch` |
 | Check vault health | `wiki-lint` |
+| Draft a cited glossary or consolidate overlapping notes | `wiki-ingest`, with an explicitly reviewed scope |
 | Roll up log entries | `wiki-fold` |
 | Work with a canvas | `canvas` |
 
@@ -123,7 +124,20 @@ Read only the reference needed for the current request:
 - [mcp-setup.md](references/mcp-setup.md) when the user asks to evaluate an
   external read transport;
 - [rest-api.md](references/rest-api.md) only when the user explicitly has or
-  requests the Local REST API adapter.
+  requests the Local REST API adapter;
+- [dataview.md](references/dataview.md) for an existing optional Dataview setup;
+- [knowledge-recipes.md](references/knowledge-recipes.md) for cited glossary or
+  consolidation work;
+- [coordination.md](references/coordination.md) for external editors or multiple
+  machines;
+- [native-conformance.md](../../docs/native-conformance.md) for versioned native
+  acceptance evidence;
+- [capacity-and-recovery.md](../../docs/capacity-and-recovery.md) for size limits
+  or recoverable legacy compaction;
+- [upstream-references.md](../../docs/upstream-references.md) when reconciling
+  pinned external syntax or design references.
+- [model-guidance.md](references/model-guidance.md) when evaluating a model,
+  changing a generation adapter, or validating host-specific prompting.
 
 ## Think, verify, grow
 

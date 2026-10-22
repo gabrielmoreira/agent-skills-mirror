@@ -8,7 +8,7 @@
       "id": "packages",
       "name": "Packages",
       "nameZh": "扩展包",
-      "count": 123,
+      "count": 127,
       "piindexUrl": "https://piindex.dev/?category=packages"
     },
     {
@@ -22,7 +22,7 @@
       "id": "integrations",
       "name": "Editor integrations",
       "nameZh": "编辑器集成",
-      "count": 3,
+      "count": 4,
       "piindexUrl": "https://piindex.dev/?category=integrations"
     },
     {
@@ -45,6 +45,13 @@
       "nameZh": "替代发行版",
       "count": 1,
       "piindexUrl": "https://piindex.dev/?category=distributions"
+    },
+    {
+      "id": "community",
+      "name": "Community Resources",
+      "nameZh": "社区资源",
+      "count": 1,
+      "piindexUrl": "https://piindex.dev/?category=community"
     }
   ],
   "categories": [
@@ -80,7 +87,7 @@
       "name": "UI Enhancement",
       "nameZh": "界面增强",
       "kind": "packages",
-      "count": 12,
+      "count": 15,
       "piindexUrl": "https://piindex.dev/?category=ui-enhancement",
       "guideUrl": null
     },
@@ -89,7 +96,7 @@
       "name": "Security & Permission",
       "nameZh": "安全与权限",
       "kind": "packages",
-      "count": 13,
+      "count": 14,
       "piindexUrl": "https://piindex.dev/?category=security-permission",
       "guideUrl": null
     },
@@ -251,7 +258,7 @@
       "name": "Editor Integration",
       "nameZh": "编辑器集成",
       "kind": "integrations",
-      "count": 3,
+      "count": 4,
       "piindexUrl": "https://piindex.dev/?category=editor-integration",
       "guideUrl": null
     },
@@ -280,6 +287,15 @@
       "kind": "distributions",
       "count": 1,
       "piindexUrl": "https://piindex.dev/?category=alternative-distributions",
+      "guideUrl": null
+    },
+    {
+      "id": "community-resources",
+      "name": "Community Resources",
+      "nameZh": "社区资源",
+      "kind": "community",
+      "count": 1,
+      "piindexUrl": "https://piindex.dev/?category=community-resources",
       "guideUrl": null
     }
   ],
@@ -1415,6 +1431,99 @@
       "guides": []
     },
     {
+      "id": "pi-starline-182e162b",
+      "name": "pi-starline",
+      "kind": "packages",
+      "kindName": "Packages",
+      "kindNameZh": "扩展包",
+      "descriptions": {
+        "en": [
+          "Starship-style statusline, Opencode-style editor chrome, and fullscreen mouse control: drag-select to copy, click to expand a single tool box, click to place the caret. Colours support $ref reuse."
+        ],
+        "zh": [
+          "Starship 风格状态栏、Opencode 风格编辑器边框，以及全屏模式下的鼠标操作：拖选复制、点击展开单个工具框、点击定位光标；配色支持 $ref 复用。"
+        ]
+      },
+      "categories": [
+        "ui-enhancement"
+      ],
+      "searchText": " pi-starline Starship-style statusline, Opencode-style editor chrome, and fullscreen mouse control: drag-select to copy, click to expand a single tool box, click to place the caret. Colours support $ref reuse. Starship 风格状态栏、Opencode 风格编辑器边框，以及全屏模式下的鼠标操作：拖选复制、点击展开单个工具框、点击定位光标；配色支持 $ref 复用。 UI Enhancement packages pi install npm:pi-starline 界面增强",
+      "projectUrl": "https://github.com/Andy8647/pi-starline",
+      "repoUrl": "https://github.com/Andy8647/pi-starline",
+      "npmPackage": "pi-starline",
+      "npmUrl": "https://www.npmjs.com/package/pi-starline",
+      "install": "pi install npm:pi-starline",
+      "stars": null,
+      "weeklyDownloads": null,
+      "weeklyTrendPercent": null,
+      "piindexUrl": "https://piindex.dev/?q=pi-starline",
+      "directoryUrl": "https://piindex.dev/?q=pi-starline",
+      "guideUrl": null,
+      "guides": []
+    },
+    {
+      "id": "pi-tidy-7bd83d0e",
+      "name": "pi-tidy",
+      "kind": "packages",
+      "kindName": "Packages",
+      "kindNameZh": "扩展包",
+      "descriptions": {
+        "en": [
+          "Tool folding: a reply's tool calls collapse into one line, click for one row per call. Edit diffs stay side by side and height-capped; failed calls and background jobs are never folded away."
+        ],
+        "zh": [
+          "工具调用折叠：一次回复的多个调用压成一行，点开看单条；编辑 diff 并排显示且限制高度，失败行和后台任务不会被折进去。"
+        ]
+      },
+      "categories": [
+        "ui-enhancement"
+      ],
+      "searchText": " pi-tidy Tool folding: a reply's tool calls collapse into one line, click for one row per call. Edit diffs stay side by side and height-capped; failed calls and background jobs are never folded away. 工具调用折叠：一次回复的多个调用压成一行，点开看单条；编辑 diff 并排显示且限制高度，失败行和后台任务不会被折进去。 UI Enhancement packages pi install npm:pi-tidy 界面增强",
+      "projectUrl": "https://github.com/Andy8647/pi-tidy",
+      "repoUrl": "https://github.com/Andy8647/pi-tidy",
+      "npmPackage": "pi-tidy",
+      "npmUrl": "https://www.npmjs.com/package/pi-tidy",
+      "install": "pi install npm:pi-tidy",
+      "stars": null,
+      "weeklyDownloads": null,
+      "weeklyTrendPercent": null,
+      "piindexUrl": "https://piindex.dev/?q=pi-tidy",
+      "directoryUrl": "https://piindex.dev/?q=pi-tidy",
+      "guideUrl": null,
+      "guides": []
+    },
+    {
+      "id": "pi-ghostty-tab-b52d08d5",
+      "name": "pi-ghostty-tab",
+      "kind": "packages",
+      "kindName": "Packages",
+      "kindNameZh": "扩展包",
+      "descriptions": {
+        "en": [
+          "Ghostty tab titles as a status readout: spinner, task summary, done / failed / waiting icons, and a system notification when the tab is not focused."
+        ],
+        "zh": [
+          "把 Ghostty 标签页标题当状态提示用：spinner、任务摘要，跑完 / 失败 / 等待回答时换图标，标签页不在前台时发系统通知。"
+        ]
+      },
+      "categories": [
+        "ui-enhancement"
+      ],
+      "searchText": " pi-ghostty-tab Ghostty tab titles as a status readout: spinner, task summary, done / failed / waiting icons, and a system notification when the tab is not focused. 把 Ghostty 标签页标题当状态提示用：spinner、任务摘要，跑完 / 失败 / 等待回答时换图标，标签页不在前台时发系统通知。 UI Enhancement packages pi install npm:pi-ghostty-tab 界面增强",
+      "projectUrl": "https://github.com/Andy8647/pi-ghostty-tab",
+      "repoUrl": "https://github.com/Andy8647/pi-ghostty-tab",
+      "npmPackage": "pi-ghostty-tab",
+      "npmUrl": "https://www.npmjs.com/package/pi-ghostty-tab",
+      "install": "pi install npm:pi-ghostty-tab",
+      "stars": null,
+      "weeklyDownloads": null,
+      "weeklyTrendPercent": null,
+      "piindexUrl": "https://piindex.dev/?q=pi-ghostty-tab",
+      "directoryUrl": "https://piindex.dev/?q=pi-ghostty-tab",
+      "guideUrl": null,
+      "guides": []
+    },
+    {
       "id": "thruwire-foreman-pi-31588235",
       "name": "@thruwire/foreman-pi",
       "kind": "packages",
@@ -1828,6 +1937,37 @@
       "weeklyTrendPercent": -70,
       "piindexUrl": "https://piindex.dev/?q=pi-verdict",
       "directoryUrl": "https://piindex.dev/?q=pi-verdict",
+      "guideUrl": null,
+      "guides": []
+    },
+    {
+      "id": "cc-safety-net-e7c4d87f",
+      "name": "cc-safety-net",
+      "kind": "packages",
+      "kindName": "Packages",
+      "kindNameZh": "扩展包",
+      "descriptions": {
+        "en": [
+          "Blocks destructive Git and filesystem commands, such as git reset --hard and rm -rf, and access to secrets such as SSH keys and .env files before a tool call runs. It checks what a command does, including commands inside bash -c. It is not a sandbox."
+        ],
+        "zh": [
+          "在工具调用执行前拦截破坏性 Git 与文件系统命令，例如 git reset --hard 和 rm -rf，并阻止访问 SSH 密钥、.env 文件等机密。按命令的实际行为判断，bash -c 中的命令同样会被检查；本身不是沙箱。"
+        ]
+      },
+      "categories": [
+        "security-permission"
+      ],
+      "searchText": " cc-safety-net Blocks destructive Git and filesystem commands, such as git reset --hard and rm -rf, and access to secrets such as SSH keys and .env files before a tool call runs. It checks what a command does, including commands inside bash -c. It is not a sandbox. 在工具调用执行前拦截破坏性 Git 与文件系统命令，例如 git reset --hard 和 rm -rf，并阻止访问 SSH 密钥、.env 文件等机密。按命令的实际行为判断，bash -c 中的命令同样会被检查；本身不是沙箱。 Security & Permission packages pi install npm:cc-safety-net 安全与权限",
+      "projectUrl": "https://github.com/kenryu42/cc-safety-net",
+      "repoUrl": "https://github.com/kenryu42/cc-safety-net",
+      "npmPackage": "cc-safety-net",
+      "npmUrl": "https://www.npmjs.com/package/cc-safety-net",
+      "install": "pi install npm:cc-safety-net",
+      "stars": null,
+      "weeklyDownloads": null,
+      "weeklyTrendPercent": null,
+      "piindexUrl": "https://piindex.dev/?q=cc-safety-net",
+      "directoryUrl": "https://piindex.dev/?q=cc-safety-net",
       "guideUrl": null,
       "guides": []
     },
@@ -5489,6 +5629,37 @@
       "guides": []
     },
     {
+      "id": "pi-ide-context-2c94d784",
+      "name": "pi-ide-context",
+      "kind": "integrations",
+      "kindName": "Editor integrations",
+      "kindNameZh": "编辑器集成",
+      "descriptions": {
+        "en": [
+          "Injects the open file, cursor position and selection from Neovim / VS Code / Obsidian into Pi's context, so you stop restating which file to edit; a selection only injects while fresh (60s)."
+        ],
+        "zh": [
+          "把 Neovim、VS Code、Obsidian 当前打开的文件、光标位置和选中文本注入 Pi 的上下文，省掉每轮复述改哪个文件；选区只在 60 秒内注入。"
+        ]
+      },
+      "categories": [
+        "editor-integration"
+      ],
+      "searchText": " pi-ide-context Injects the open file, cursor position and selection from Neovim / VS Code / Obsidian into Pi's context, so you stop restating which file to edit; a selection only injects while fresh (60s). 把 Neovim、VS Code、Obsidian 当前打开的文件、光标位置和选中文本注入 Pi 的上下文，省掉每轮复述改哪个文件；选区只在 60 秒内注入。 Editor Integration integrations pi install npm:pi-ide-context 编辑器集成",
+      "projectUrl": "https://github.com/Andy8647/pi-ide-context",
+      "repoUrl": "https://github.com/Andy8647/pi-ide-context",
+      "npmPackage": "pi-ide-context",
+      "npmUrl": "https://www.npmjs.com/package/pi-ide-context",
+      "install": "pi install npm:pi-ide-context",
+      "stars": null,
+      "weeklyDownloads": null,
+      "weeklyTrendPercent": null,
+      "piindexUrl": "https://piindex.dev/?q=pi-ide-context",
+      "directoryUrl": "https://piindex.dev/?q=pi-ide-context",
+      "guideUrl": null,
+      "guides": []
+    },
+    {
       "id": "pi-pocket-c0465413",
       "name": "pi-pocket",
       "kind": "durable",
@@ -6092,6 +6263,37 @@
       "weeklyTrendPercent": null,
       "piindexUrl": "https://piindex.dev/?q=oh-my-pi",
       "directoryUrl": "https://piindex.dev/?q=oh-my-pi",
+      "guideUrl": null,
+      "guides": []
+    },
+    {
+      "id": "omp-packages-9073d508",
+      "name": "omp packages",
+      "kind": "community",
+      "kindName": "Community Resources",
+      "kindNameZh": "社区资源",
+      "descriptions": {
+        "en": [
+          "Catalog of oh-my-pi plugins on npm, with user reports on whether each Pi package works on omp and a status badge for package READMEs. Website, not a Pi package. By paymog."
+        ],
+        "zh": [
+          "oh-my-pi 的 npm 插件目录，附带用户报告：每个 Pi Package 在 omp 上能否运行；并提供可放入 package README 的状态徽章。网站，非 Pi Package。作者 paymog。"
+        ]
+      },
+      "categories": [
+        "community-resources"
+      ],
+      "searchText": " omp packages Catalog of oh-my-pi plugins on npm, with user reports on whether each Pi package works on omp and a status badge for package READMEs. Website, not a Pi package. By paymog. oh-my-pi 的 npm 插件目录，附带用户报告：每个 Pi Package 在 omp 上能否运行；并提供可放入 package README 的状态徽章。网站，非 Pi Package。作者 paymog。 Community Resources community  社区资源",
+      "projectUrl": "https://omppackages.com",
+      "repoUrl": null,
+      "npmPackage": null,
+      "npmUrl": null,
+      "install": null,
+      "stars": null,
+      "weeklyDownloads": null,
+      "weeklyTrendPercent": null,
+      "piindexUrl": "https://piindex.dev/?q=omp+packages",
+      "directoryUrl": "https://piindex.dev/?q=omp+packages",
       "guideUrl": null,
       "guides": []
     }

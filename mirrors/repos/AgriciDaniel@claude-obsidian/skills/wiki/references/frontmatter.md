@@ -95,5 +95,7 @@ risk: low
 7. Preserve unknown valid properties during an edit.
 8. Do not treat a frontmatter confidence label as evidence; the claim ledger
    and linked active sources determine support.
-9. Quote numeric-only tag values, for example `- "2026"`, so their YAML type
-   remains text.
+9. A numeric-only tag is invalid even when quoted. Use `year/2026` or `y2026`,
+   or a numeric `year` property. Preserve existing user metadata unless its
+   correction is explicitly requested. See [Obsidian Tags](https://obsidian.md/help/tags),
+   checked 2026-10-17.

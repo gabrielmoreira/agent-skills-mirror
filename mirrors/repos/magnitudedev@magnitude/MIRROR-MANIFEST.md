@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `magnitudedev/magnitude` — 26 default patterns, 0 followed patterns, 16 file(s) materialized.
+Mirror of `magnitudedev/magnitude` — 26 default patterns, 0 followed patterns, 7 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `magnitudedev/magnitude` — 26 default patterns, 0 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 16 |
+| Files         | 7 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,22 +59,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.agents/skills/formulate-abstractions/SKILL.md`](.agents/skills/formulate-abstractions/SKILL.md) |
-| 2 | ✓ | [`.agents/skills/refine/SKILL.md`](.agents/skills/refine/SKILL.md) |
-| 3 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 4 | ✓ | [`cli/AGENTS.md`](cli/AGENTS.md) |
-| 5 | ✓ | [`design/AGENTS.md`](design/AGENTS.md) |
-| 6 | ✓ | [`desktop/src/AGENTS.md`](desktop/src/AGENTS.md) |
-| 7 | ✓ | [`inference-v2/AGENTS.md`](inference-v2/AGENTS.md) |
-| 8 | ✓ | [`inference-v2/design/AGENTS.md`](inference-v2/design/AGENTS.md) |
-| 9 | ✓ | [`inference-v3/AGENTS.md`](inference-v3/AGENTS.md) |
-| 10 | ✓ | [`inference-v3/design/AGENTS.md`](inference-v3/design/AGENTS.md) |
-| 11 | ✓ | [`inference-v4/validation/AGENTS.md`](inference-v4/validation/AGENTS.md) |
-| 12 | ✓ | [`inference/AGENTS.md`](inference/AGENTS.md) |
-| 13 | ✓ | [`inference/CLAUDE.md`](inference/CLAUDE.md) |
-| 14 | ✓ | [`old-inference/AGENTS.md`](old-inference/AGENTS.md) |
-| 15 | ✓ | [`packages/client-common/AGENTS.md`](packages/client-common/AGENTS.md) |
-| 16 | ✓ | [`packages/providers/AGENTS.md`](packages/providers/AGENTS.md) |
+| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 2 | ✓ | [`cli/AGENTS.md`](cli/AGENTS.md) |
+| 3 | ✓ | [`desktop/src/AGENTS.md`](desktop/src/AGENTS.md) |
+| 4 | ✓ | [`inference/AGENTS.md`](inference/AGENTS.md) |
+| 5 | ✓ | [`inference/CLAUDE.md`](inference/CLAUDE.md) |
+| 6 | ✓ | [`packages/client-common/AGENTS.md`](packages/client-common/AGENTS.md) |
+| 7 | ✓ | [`packages/providers/AGENTS.md`](packages/providers/AGENTS.md) |
 
 ---
 

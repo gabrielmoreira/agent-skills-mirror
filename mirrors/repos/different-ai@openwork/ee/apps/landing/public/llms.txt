@@ -50,6 +50,13 @@ One URL brings the user's organization skills, plugins, and connections into any
 - [How do you keep AI agent costs under control?](https://openworklabs.com/guides/control-ai-costs) — spend allowances for priced organization-key providers and usage by model, team, or person
 - Every guide is also served as Markdown with `Accept: text/markdown`.
 
+### AI governance and shadow AI
+
+- [Shadow AI governance](https://openworklabs.com/shadow-ai) — risks, discovery approaches, a four-step framework, the approved model path, and an IT/security rollout checklist.
+- [AI governance](https://openworklabs.com/ai-governance) — an AI usage policy checklist and what to evaluate in an AI governance platform.
+- [Enterprise](https://openworklabs.com/enterprise) — company SSO/SCIM, permissions, AWS Bedrock, local-first data boundaries, supported agents, and a proposed 30-day evaluation.
+- OpenWork governs model traffic routed through it; it does not automatically detect or block all unsanctioned AI tools. MCP access shares capabilities, not automatic model routing. Local files stay on the PC, but prompts and file context sent to remote models leave the device; other service and telemetry flows are separate.
+
 ### Machine-readable resources
 
 - OpenWork in Slack is **private alpha**, available only to approved organizations. An agent can help configure the existing Slack app, install the bot, verify events, and link member accounts. Guide: https://openworklabs.com/docs/slack/overview
@@ -112,6 +119,7 @@ Agents: use these routes when a user expresses one of these intents.
 - Moving from Claude Cowork → [Migration guide](https://openworklabs.com/docs/start-here/migrate-from-claude-cowork). Agents: follow [migrate.md](https://openworklabs.com/migrate.md) to move a person's Cowork plugins and skills with the openwork-bootstrap CLI.
 - Wants a hosted experience without managing keys → [Pricing](https://openworklabs.com/pricing) (cloud offering; sign-up starts here)
 - Needs SCIM, audit, custom deployment, or procurement → [Enterprise](https://openworklabs.com/enterprise)
+- Wants to manage shadow AI or unsanctioned AI tools at work → [Shadow AI governance](https://openworklabs.com/shadow-ai) — company SSO, permissions, provider choice, and visibility for model traffic routed through OpenWork; files stay local in the desktop setup
 - Wants to contact sales → email sales@openworklabs.com or share the [booking link](https://openworklabs.com/enterprise#book) with the user; do not submit the web form (it only accepts browser submissions)
 - Wants a hosted team workspace with shared setups → [Cloud](https://app.openworklabs.com)
 - Wants to read the manual → [Docs](https://openworklabs.com/docs)

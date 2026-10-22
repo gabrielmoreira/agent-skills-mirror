@@ -47,28 +47,27 @@ dist:
   name: custom-collector
   description: Production Collector for the payments service
   output_path: ./build
-  otelcol_version: 0.120.0
+  otelcol_version: 0.163.0
 
 receivers:
-  - gomod: go.opentelemetry.io/collector/receiver/otlpreceiver v0.120.0
+  - gomod: go.opentelemetry.io/collector/receiver/otlpreceiver v0.163.0
 
 processors:
-  - gomod: go.opentelemetry.io/collector/processor/memorylimiterprocessor v0.120.0
-  - gomod: go.opentelemetry.io/collector/processor/batchprocessor v0.120.0
-  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/processor/resourcedetectionprocessor v0.120.0
-  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/processor/k8sattributesprocessor v0.120.0
-  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/processor/transformprocessor v0.120.0
-  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/processor/filterprocessor v0.120.0
+  - gomod: go.opentelemetry.io/collector/processor/memorylimiterprocessor v0.163.0
+  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/processor/resourcedetectionprocessor v0.163.0
+  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/processor/k8sattributesprocessor v0.163.0
+  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/processor/transformprocessor v0.163.0
+  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/processor/filterprocessor v0.163.0
 
 exporters:
-  - gomod: go.opentelemetry.io/collector/exporter/otlpexporter v0.120.0
-  - gomod: go.opentelemetry.io/collector/exporter/debugexporter v0.120.0
+  - gomod: go.opentelemetry.io/collector/exporter/otlpexporter v0.163.0
+  - gomod: go.opentelemetry.io/collector/exporter/debugexporter v0.163.0
 
 connectors:
-  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/connector/signaltometricsconnector v0.120.0
+  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/connector/signaltometricsconnector v0.163.0
 
 extensions:
-  - gomod: go.opentelemetry.io/collector/extension/zpagesextension v0.120.0
+  - gomod: go.opentelemetry.io/collector/extension/zpagesextension v0.163.0
 ```
 
 Note: It is possible, and will become increasingly common, to have "off-tree" components that do not reside in the [Collector Core](https://github.com/open-telemetry/opentelemetry-collector) and [Collector Contrib](https://github.com/open-telemetry/opentelemetry-collector-contrib/) repositories, e.g., some components of the [eBPG Profiler](https://github.com/open-telemetry/opentelemetry-ebpf-profiler).
@@ -93,7 +92,7 @@ Use the table below as a starting point for common deployment patterns.
 
 Always include `memorylimiterprocessor` — see [processors](./processors.md#memory-limiter) for sizing guidance.
 
-**Note:** The `batchprocessor` is deprecated, and you shoud guide the users in using [exporter queues](https://github.com/open-telemetry/opentelemetry-collector/blob/main/exporter/exporterhelper/README.md).
+**Note:** Enable batching on the exporter with `sending_queue: { batch: {} }` instead of adding the `batchprocessor`; see [exporter queues](https://github.com/open-telemetry/opentelemetry-collector/blob/main/exporter/exporterhelper/README.md).
 
 ## Build and validate
 

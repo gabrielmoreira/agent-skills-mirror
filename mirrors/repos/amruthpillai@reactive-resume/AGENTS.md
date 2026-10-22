@@ -1,6 +1,6 @@
 # Reactive Resume: agent instructions
 
-This file applies across the repository. Follow a closer `AGENTS.md` when one exists. Keep this guide focused on agent workflows; user-facing documentation lives in `README.md` and `docs/`. Format guidance: [agents.md](https://agents.md/).
+This file applies across the repository. Follow a closer `AGENTS.md` when one exists. Keep this guide focused on agent workflows. Keep `docs/` for public product, integration, self-hosting, and contributor guides; agent instructions, internal runbooks, plans, and research belong in `.agents/docs/`. Format guidance: [agents.md](https://agents.md/).
 
 <!-- caveman-begin -->
 
@@ -35,7 +35,7 @@ This block is written and re-added by `turbo` before repository-scoped commands 
 
 ## Agent skills
 
-- Issues and specs: GitHub Issues for `reactive-resume/reactive-resume`. See `docs/agents/issue-tracker.md`.
+- Issues and specs: GitHub Issues for `reactive-resume/reactive-resume`. See `.agents/docs/issue-tracker.md`.
 - Check `git status --short` before editing. Preserve unrelated changes, including existing edits in this file.
 - Use scripts and configuration as the source of truth when documentation disagrees with them.
 
@@ -74,6 +74,10 @@ REDIS_URL=redis://localhost:6379
 Set `AUTH_SECRET` to a generated secret (`openssl rand -hex 32`). If using saved AI providers or the assistant, also set a separate `ENCRYPTION_SECRET` of at least 32 characters. For database-only development, start just `postgres` and set `STORAGE_BACKEND=local` to avoid the template's S3 defaults.
 
 ## Development workflow
+
+Vite+ (`vp`) runs Vite, Vitest, Oxlint, and Oxfmt through project-local binaries; no global install is required. Keep `vite-plus`, its `vite` override, and the bundled Vitest/coverage versions aligned in `pnpm-workspace.yaml` and `package.json`. Root `vite.config.ts` owns lint and formatting settings; package `vitest.config.ts` files retain isolated test configuration. Turbo owns workspace orchestration and boundaries; tsdown owns server/plugin packaging.
+
+Package typechecks use the pinned experimental `tsrs --noEmit`. Published binaries currently support macOS arm64 and Linux x64/arm64 (GNU/musl), not Windows or Intel macOS. TypeScript remains installed for library APIs and editor support.
 
 ```sh
 pnpm dev
@@ -127,8 +131,8 @@ Narrow cross-cutting helpers go in `packages/utils` only after checking no domai
 
 ## Native mobile app
 
-- **Feature parity is required.** The web app and the native mobile app must always offer the same user-facing features. A change that adds, removes, or changes a feature in `apps/web` must make the matching change in `apps/mobile` in the same work, and the reverse. Share logic through workspace packages (`packages/api`, `packages/schema`, `packages/resume`, `packages/pdf`) rather than duplicating it. An exception forced by store policy (for example, the hidden iOS Donate row) needs the owner's explicit decision and a note in `docs/contributing/mobile-release-handoff.md`.
-- **Over-the-air update or new store build.** The runtime version uses an Expo fingerprint (`apps/mobile/fingerprint.config.js`). JavaScript, styling, copy, translation, and bundled-asset changes ship as an EAS Update: a stable Docker release publishes it to the `production` channel automatically, and no store submission is needed. A change to native code needs a new store build: native dependencies or config plugins, permissions or entitlements, `app.config.ts` native fields (icon, splash, schemes, associated domains), Expo SDK upgrades, `apps/mobile/patches`, or Forme native sources and `packages/forme-native/scripts/prebuilt.json`. Run `eas fingerprint:compare --build-id <last store build>` from `apps/mobile` to check. A changed fingerprint means a new store build. Release steps: `docs/contributing/mobile-release-handoff.md` → **Releasing a new version**.
+- **Feature parity is required.** The web app and the native mobile app must always offer the same user-facing features. A change that adds, removes, or changes a feature in `apps/web` must make the matching change in `apps/mobile` in the same work, and the reverse. Share logic through workspace packages (`packages/api`, `packages/schema`, `packages/resume`, `packages/pdf`) rather than duplicating it. An exception forced by store policy (for example, the hidden iOS Donate row) needs the owner's explicit decision and a note in `.agents/docs/mobile-release-handoff.md`.
+- **Over-the-air update or new store build.** The runtime version uses an Expo fingerprint (`apps/mobile/fingerprint.config.js`). JavaScript, styling, copy, translation, and bundled-asset changes ship as an EAS Update: a stable Docker release publishes it to the `production` channel automatically, and no store submission is needed. A change to native code needs a new store build: native dependencies or config plugins, permissions or entitlements, `app.config.ts` native fields (icon, splash, schemes, associated domains), Expo SDK upgrades, `apps/mobile/patches`, or Forme native sources and `packages/forme-native/scripts/prebuilt.json`. Run `eas fingerprint:compare <installed native fingerprint hash> --environment production` from `apps/mobile` to check; save each Blacksmith build's `fingerprint.json` with the store release record. A changed fingerprint means a new store build. Native binaries and optional store uploads use `.github/workflows/mobile-release.yml` on Blacksmith, not EAS Build/Submit. Setup: `.agents/docs/mobile-ci.md`. Release steps: `.agents/docs/mobile-release-handoff.md` → **Releasing a new version**.
 - Old binaries and old OTA bundles stay in use for weeks. Keep API changes backward compatible, and deploy the backend before releasing mobile changes that depend on it. Never bump the runtime version to force an incompatible update onto old binaries.
 
 ## Package boundaries
@@ -167,10 +171,10 @@ Prefer package-scoped checks for the files changed. Package names come from thei
 pnpm --filter web typecheck
 pnpm --filter @reactive-resume/pdf test
 pnpm --filter @reactive-resume/pdf test src/templates/shared/filtering.test.ts
-pnpm --filter @reactive-resume/pdf exec vitest run src/templates/shared/filtering.test.ts -t "filterItems"
+pnpm --filter @reactive-resume/pdf exec vp test run src/templates/shared/filtering.test.ts -t "filterItems"
 pnpm --filter @reactive-resume/pdf test:coverage
-pnpm exec oxlint --deny-warnings apps/web/src/features/resume
-pnpm exec oxfmt --check apps/web/src/features/resume
+pnpm exec vp lint --deny-warnings apps/web/src/features/resume
+pnpm exec vp fmt --check apps/web/src/features/resume
 pnpm exec turbo boundaries
 ```
 
@@ -199,17 +203,17 @@ pnpm test:e2e:ui
 
 ## Code style
 
-- TypeScript is strict, including `exactOptionalPropertyTypes`, `noUncheckedIndexedAccess`, and unused-symbol checks; packages typecheck with `tsgo --noEmit`.
+- TypeScript is strict, including `exactOptionalPropertyTypes`, `noUncheckedIndexedAccess`, and unused-symbol checks; packages typecheck with `tsrs --noEmit`.
 - Oxlint checks code with its native React Compiler and accessibility rules. Oxfmt uses tabs, double quotes, 120-column lines, separated type import groups, and sorted Tailwind classes in `clsx`, `cva`, and `cn`. Use existing file naming and feature-local conventions.
 - **`pnpm check` modifies files**: it regenerates PDF translations, applies safe Oxlint fixes, runs Oxfmt, then fails on remaining lint errors or warnings. Review the diff; use `pnpm lint` and `pnpm format:check` for non-mutating checks.
 - Lefthook's pre-commit hook checks conflict markers, applies safe Oxlint fixes, runs Oxfmt, then checks staged files with warnings denied and stages the fixes. The commit-message hook enforces Conventional Commits (`fix:`, `feat:`, `docs:`, etc.).
 
 ## Linting and formatting for coding agents
 
-- After code changes, run `pnpm exec oxlint --fix <changed paths>`, then `pnpm exec oxfmt <changed paths>`. Safe lint fixes run before formatting and import/Tailwind sorting. Keep side-effect import order intact.
-- Before finishing, run `pnpm lint:agent` (`oxlint --deny-warnings --format=agent`) and `pnpm format:check`. Fix diagnostics and recheck; do not disable rules merely to make a check pass. Any necessary inline suppression must name its rule and explain why.
-- Lint rules live in `.oxlintrc.json`; formatting and import groups live in `.oxfmtrc.json`. Generated route trees, build outputs, migrations, OpenAPI JSON, generated schema references, and byte-sensitive PDF CSS fixtures are excluded where appropriate.
-- `@shadcn/lint` is registered as a JS plugin. Its design-system rules are opt-in: configure them in `.oxlintrc.json` after choosing the policy. It discovers the shared UI exports and Tailwind theme through `apps/web/components.json` and `packages/ui/components.json`. See [available rules](https://github.com/shadcn-ui/lint#rules). Keep UI-specific policies scoped to the web app and UI package.
+- After code changes, run `pnpm exec vp lint --fix <changed paths>`, then `pnpm exec vp fmt <changed paths>`. Safe lint fixes run before formatting and import/Tailwind sorting. Keep side-effect import order intact.
+- Before finishing, run `pnpm lint:agent` (`vp lint --deny-warnings --format=agent`) and `pnpm format:check`. Fix diagnostics and recheck; do not disable rules merely to make a check pass. Any necessary inline suppression must name its rule and explain why.
+- Lint rules live in `vite.config.ts` under `lint`; formatting and import groups live under `fmt`. Generated route trees, build outputs, migrations, OpenAPI JSON, generated schema references, and byte-sensitive PDF CSS fixtures are excluded where appropriate.
+- `@shadcn/lint` is registered as a JS plugin. Its design-system rules are opt-in: configure them in the root `vite.config.ts` lint block after choosing the policy. It discovers the shared UI exports and Tailwind theme through `apps/web/components.json` and `packages/ui/components.json`. See [available rules](https://github.com/shadcn-ui/lint#rules). Keep UI-specific policies scoped to the web app and UI package.
 - Async test doubles may return a Promise without awaiting; the test override permits this. Playwright fixture callbacks named `use` are not React hooks, so `rules-of-hooks` is disabled only in the fixture adapter. Path references in declaration shims remain supported. CSS is formatted by Oxfmt; Oxlint checks JavaScript/TypeScript rather than CSS declarations.
 - Editor setup is checked in under `.vscode/`: install the recommended Oxc extension for lint fixes and formatting on save. This workflow follows the [Oxc coding-agent guide](https://oxc.rs/docs/guide/usage/coding-agents.html). Restart Codex sessions after changing these instructions.
 
@@ -226,7 +230,7 @@ docker compose up -d --build
 - `vercel.json` defines Vercel Services (project framework must be `Services`): `frontend` (`apps/web`, static `dist`) and `backend` (`apps/server`, entrypoint `apps/server/vercel.mjs` re-exporting the tsdown build). The backend build runs `pnpm build` for both apps, then `node apps/server/dist/prepare-deployment.mjs`. Top-level rewrites send paths whose last segment has a file extension to `frontend` and everything else, including HTML shells, to `backend`, except the server-owned paths listed first. The Function uses Node 24 and a 300-second budget. `outputDirectory: "."` on `backend` stops the builder from treating `dist/index.mjs` (the Docker entrypoint) as the handler.
 - Vercel environment normalization accepts `POSTGRES_URL`, direct/unpooled DB aliases, and `KV_URL`. `APP_URL` can be derived from Vercel host variables. Blob is the default when no S3 credentials are set. Preview deployments require isolated resources before enabling `ALLOW_PREVIEW_MIGRATIONS=true`; see `docs/self-hosting/vercel.mdx`.
 - `.github/workflows/e2e.yml` gates core unit/browser flows; `vercel.yml` builds and checks the serverless artifact on PRs and pushes to `main`. `autofix.yml` runs write-capable `pnpm knip --fix` and `pnpm check`. GitHub runners are the default; `USE_BLACKSMITH=true` switches runners and paired actions.
-- `docker-build.yml` publishes native AMD64/ARM64 images. `main` publishes nightly aliases; release tags/explicit release dispatch publish stable aliases and can trigger configured production integrations. See `docs/agents/container-publishing.md` before release work.
+- `docker-build.yml` publishes native AMD64/ARM64 images. `main` publishes nightly aliases; release tags/explicit release dispatch publish stable aliases and can trigger configured production integrations. See `.agents/docs/container-publishing.md` before release work.
 - Deployment smoke tests create/delete accounts and files; run only against a dedicated test installation. Details: `docs/contributing/deployment-checks.mdx`.
 
 ## Security and pull requests

@@ -121,6 +121,25 @@ selecting another runner must not silently discard them or change an active run'
 recorded execution. Keep runner choice in Advanced and verify the next eligible
 run separately from historical transcripts.
 
+Existing legacy Claude and Codex agents on qualified default environments also
+show **Upgrade runner** above their configuration. Exercise that action with
+pending edits and an environment-variable draft; reopen the page and compare the
+saved harness, model, account bindings, instructions, and run policy. Check a
+rejected incompatible setting, repair it, and retry. Verify a real task before
+and after migration, including its output, preserved history, and fresh session.
+The notice must stay absent for native agents, other harnesses, and unsupported
+targets. Discovery failure must not imply that an upgrade is available.
+Navigate to another agent while an upgrade is pending. Its result must stay with
+the original agent, without showing success on the new page or redirecting back.
+Focused coverage: [save receipt](../../ui/src/pages/AgentRunnerUpgrade.test.tsx)
+and [configuration form](../../ui/src/components/AgentConfigForm.render.test.tsx).
+
+Storybook: [Runner upgrade](../../ui/storybook/stories/agents/codex-runner/upgrade.stories.tsx)
+mounts the production page and shell with mutable HTTP fixtures for both harnesses,
+pending, failure/retry, incompatible settings, repair, native/unsupported states,
+and mobile/light presentation. Fixture success does not establish real migration
+or provider execution.
+
 ### `organization`
 
 Automated: [org chart](../../ui/src/pages/OrgChart.test.tsx) is component evidence. Built-in setup also has [configuration modal tests](../../ui/src/components/ConfigureBuiltInAgentModal.test.tsx).

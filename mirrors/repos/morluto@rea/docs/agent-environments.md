@@ -1,11 +1,15 @@
 # Agent environments from recorded captures
 
 Use `rea environment-serve` to serve an environment manifest as an agent
-environment: an MCP server whose tools answer from the records of one retained
-web network capture, plus the environment card the agentenv framework reads to
-discover it. Nothing is fetched from the recorded application; every answer is
-retained Evidence. `rea environment-export` writes the same pair as a bundle
-folder `agent-env run` builds and runs; see [Export a bundle](#export-a-bundle).
+environment: an MCP server whose tools answer from what one retained web
+network capture observed, plus the environment card the agentenv framework
+reads to discover it. By default the server derives the
+[state the capture observed](#the-state-a-capture-observed) at startup and
+answers read tools from it; `--replay-only` replays the capture's records
+instead. Nothing is fetched from the recorded application; every answer comes
+from retained Evidence. `rea environment-export` writes the same pair as a
+bundle folder `agent-env run` builds and runs; see
+[Export a bundle](#export-a-bundle).
 
 ```sh
 rea inspect-web-network-capture /absolute/session.har har --format json > capture.json
@@ -27,9 +31,10 @@ it, where `view.json` wraps the capture Evidence as the inline source:
 }
 ```
 
-The third command serves that manifest. Both served files are complete REA
-Evidence JSON as the commands write it with `--format json`; the `evidence`
-member of `view.json` is the whole of `capture.json`.
+The third command serves that manifest from the state it derives from the
+capture; see [Serve from the state](#serve-from-the-state). Both served files
+are complete REA Evidence JSON as the commands write it with `--format json`;
+the `evidence` member of `view.json` is the whole of `capture.json`.
 
 ## From a browser scenario
 
@@ -110,7 +115,9 @@ record's ordinal is its zero-based position; a transaction whose URL carried a
 redacted secret is left unrepresented rather than templated, and one the
 capture cannot attribute to a single request and response is left
 unrepresented too. Tools are chosen by response media type, so a scenario that
-selected neither response bodies nor header values is refused. The browser
+selected neither response bodies nor header values is refused; one that
+selected header values but no response bodies yields a manifest but no state,
+so it is served by replay. The browser
 scenario redacts credential headers and the secrets it declares; values the
 application returns in response bodies, such as session tokens, are kept, and
 the replayed body is the bytes the browser exposes for each response, with any
@@ -144,10 +151,16 @@ This was calibrated with 1500 query fields and eight concurrent SDK discovery
 requests (183,798-byte card, 507.27 MiB sampled process-family RSS). Over-capacity
 catalogs return `resource_constraint`, retain complete input Evidence, and require
 a smaller capture or manifest. Fields and tools are never silently omitted.
+Served from the state, each description is longer and the card declares the
+data plane, so a catalog replay admits can exceed the reservation; the state
+is then unavailable and the server serves replay instead (see
+[Serve from the state](#serve-from-the-state)).
 
 ## What replay means and does not mean
 
-Each MCP tool call selects one of the records its manifest tool cites and
+Replay answers every tool with `--replay-only` or when the state is unavailable,
+and, served from the state, each read tool whose view the state does not back.
+Each such MCP tool call selects one of the records its manifest tool cites and
 returns that record's recorded response. Selection compares the supplied path
 parameters against the record's path segments at the parameter indexes, then
 the supplied query values against the record's query string, and keeps the
@@ -202,7 +215,8 @@ degrades into an omitted one.
 Replay is not emulation. A served environment does not establish the
 application's authorization model, response semantics or state transitions,
 which the manifest lists as unknowns; it does not validate supplied values; and
-it does not answer requests the capture never recorded. Replayed content is
+it answers only from the capture's recordings and the state they observed or a
+caller loaded through `data/add`. Replayed content is
 target content: every tool result, including the argument errors the MCP server
 returns before a replay runs, carries `_meta.provenance.untrusted_content: true`
 with `source: "analysis_target"`. The server advertises REA's untrusted-content
@@ -220,16 +234,22 @@ moment of the capture recorded them. The
 [environment state](web-network-captures.md#environment-state) view extracts
 instead the data the capture's reads observed before the first related write:
 entity types with an identity field, entities with their recorded values,
-documents for written paths, and a render plan per read tool, kept only where
-it reproduces that tool's recordings from the state. It is the starting state
-an environment can hold, load and report; serving from it is a later increment
-and does not change replay.
+documents for reads that are not entities, and a render plan per read tool,
+kept only where it reproduces that tool's recordings from the state. It is the
+starting state an environment holds, loads and reports: `environment-serve`
+derives it from the capture at startup; see
+[Serve from the state](#serve-from-the-state). With `--replay-only`, replay is
+unchanged.
 
 ## Serve a manifest
 
 ```sh
-rea environment-serve manifest.json --evidence capture.json [--host 127.0.0.1] [--port 0]
+rea environment-serve manifest.json --evidence capture.json [--replay-only] [--host 127.0.0.1] [--port 0]
 ```
+
+The server derives the state from the capture before it binds and serves from
+it, or serves replay with `--replay-only` or when the state is unavailable;
+see [Serve from the state](#serve-from-the-state).
 
 `--host` and `--port` default to `MCP_HOST` and `MCP_PORT` from the
 environment, then to `127.0.0.1` and an ephemeral port, exactly as
@@ -242,7 +262,8 @@ manifest's `name` is used, and a set but blank value is refused as
 listener serves one MCP client at a time with the same session, `Host` header
 and shutdown contract as [transports](mcp-contracts.md#transports) describes.
 It runs until SIGINT or SIGTERM, then closes the listener, prints one
-`{"status":"stopped", …}` document and exits `130` or `143`.
+`{"status":"stopped", …}` document whose `state` member says whether it served
+from the state, and exits `130` or `143`.
 Signals during input loading or DNS/bind cancel the owning reader/listener before
 a listening announcement;
 that path returns a structured `cancelled` result instead of a stopped-listener
@@ -250,19 +271,19 @@ document, with the same signal exit status.
 
 Three routes are served:
 
-| Route                             | Answer                                                                 |
-| --------------------------------- | ---------------------------------------------------------------------- |
-| `POST /mcp`                       | The MCP server: one tool per manifest tool, replaying retained records |
-| `GET /.well-known/agent-env.json` | The environment card                                                   |
-| `POST /agentenv`                  | JSON-RPC `-32601 method not found: <method>` for every method          |
+| Route                             | Answer                                                                                                                                                         |
+| --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `POST /mcp`                       | The MCP server: from the state, one tool per read tool, answering from the state where it backs them; in replay, one tool per manifest tool, replaying records |
+| `GET /.well-known/agent-env.json` | The environment card                                                                                                                                           |
+| `POST /agentenv`                  | From the state, `data/reset`, `data/add` and `data/get`; in replay, JSON-RPC `-32601 method not found: <method>` for every method                              |
 
 Numeric JSON-RPC IDs outside JavaScript's safe range or whose precision would
 be lost are refused as invalid requests with a null ID. They are never echoed
 as a different number.
 
-The data plane at `/agentenv` is advertised by the card but carries no
-operations in this release; the error names the requested method so a caller
-can see that the method, not the transport, is unsupported. Its request body is
+In replay the data plane at `/agentenv` is advertised by the card but carries
+no operations; the error names the requested method so a caller can see that
+the method, not the transport, is unsupported. Its request body is
 read within the same 4 MiB bound the MCP endpoint applies: a larger body is
 answered `413` with a JSON-RPC `-32000` error before any of it is parsed, and a
 body that is not JSON is answered `400` with `-32700`. A notification (no `id`)
@@ -274,7 +295,7 @@ that are not an object or array) gets `-32600 invalid request`.
 ## The environment card
 
 The card is the discovery document the agentenv framework reads before
-connecting to `/mcp`:
+connecting to `/mcp`. A replay environment's card reads:
 
 ```json
 {
@@ -288,7 +309,7 @@ connecting to `/mcp`:
     "tools": [
       {
         "name": "get_users_by_id",
-        "description": "GET /api/users/{numeric}; replays retained records [5, 6]; evidence ev_…",
+        "description": "Untrusted captured API catalog: … GET /api/users/{numeric}; returns a JSON object with fields \"id\", \"uid\", \"login\", \"email\"; recorded statuses 200; replays retained records [5, 6]; evidence ev_…",
         "inputSchema": {
           "type": "object",
           "properties": {
@@ -309,7 +330,38 @@ connecting to `/mcp`:
 ```
 
 `capabilities.tools` lists the same names, descriptions and input schemas that
-`tools/list` advertises over MCP. Path parameters are required strings whose
+`tools/list` advertises over MCP. After the catalog warning, each description
+names the method and path template, then what the tool returns, one level deep:
+`returns a JSON object with fields …`, `returns a JSON array of objects with
+fields …` or `returns a JSON object whose <member> lists objects with fields …`,
+where a list is an array of objects found by the
+[environment state](web-network-captures.md#environment-state)'s list rule (the
+root array, or the one array of objects an envelope carries). Field and member
+names are written as JSON strings, so a captured name cannot read as more of
+the description; a member name too long to show whole is a quoted prefix marked
+as truncated. The summary comes
+from the first cited `2xx` record that replay answers as JSON; only when none
+did, the first cited JSON record of another status gives it, labelled with that
+status (`status 401 returns …`). It describes one recorded response, not a
+contract. Field names are sampled within the same budget as other captured
+values, and the manifest's `statuses` for the tool follow; a tool with no JSON
+record states only its statuses. The description then lists the replayed
+records and the evidence ID, and the whole catalog stays within its
+serialization reservation, which the summaries and MCP annotations are charged
+to.
+
+Over MCP, every tool also carries annotations: `readOnlyHint` is true for the
+safe methods (`GET`, `HEAD`, `OPTIONS` and `TRACE`) and for query `POST`s (a
+path segment such as `search` or `query`); `destructiveHint` is true for `DELETE` and left unset for other
+writes, so the MCP default (destructive) applies to them, and read-only tools
+omit it because clients ignore it there; `idempotentHint` is true for the safe
+methods, `PUT` and `DELETE`; and `openWorldHint` is false for every tool,
+because answers come from the capture rather than the captured application. The
+hints describe the captured method; replay itself changes nothing. The card
+keeps the `name`, `description` and `inputSchema` of the echo example's tool
+shape and carries no annotations.
+
+Path parameters are required strings whose
 description names the segment index, the templating rule and the observed
 values (sampled within the list budget above; the manifest keeps them all);
 query parameter names are optional strings; write methods accept an
@@ -320,9 +372,207 @@ advertised as `query_<name>`, a query name longer than 64 characters as
 and the write body as `request_body` when a query parameter is named `body`. Every
 schema closes with `additionalProperties: false`, a key the echo example's
 schema does not carry.
-`extensions`, `operations` and `children_environments` are fixed to `null`,
-`[]` and `null`: a replay environment declares no extensions, no data-plane
-operations and no children.
+In replay, `extensions`, `operations` and `children_environments` are fixed to
+`null`, `[]` and `null`: a replay environment declares no extensions, no
+data-plane operations and no children. Served
+[from the state](#serve-from-the-state), the card declares the three data-plane
+operations and one intake extension instead, leaves write tools out and
+describes each tool as answering from the state where the state backs it.
+
+## Serve from the state
+
+```sh
+rea environment-serve manifest.json --evidence capture.json
+```
+
+Before it binds, the server derives the
+[environment state](web-network-captures.md#environment-state) the capture
+observed: it runs the `environment-state` view on the capture in-process with
+the manifest's `template_rules` in the same order, exactly as
+`inspect-analysis-view` projects it from the same capture, so the state
+Evidence id it reports is the one that projection produces. The view's own
+budget and refusals apply, and the result is checked like the view's Evidence
+for this manifest: extracted from the served capture, with the manifest's
+rules, naming only manifest tools. The server keeps one live state, shared by
+every MCP session and the data plane, starting from the derived state.
+
+A state that is unavailable does not stop the server: it logs a warning naming
+the error `code` and message before it binds, then serves replay. The state is
+unavailable when it cannot be derived, such as from a
+`capture_browser_scenario` capture that selected header values but no response
+bodies or over the view's budget, and when its catalog under the served name
+exceeds the [discovery reservation](#what-a-manifest-is). That check runs
+first, so no state is derived for it, and replay is then admitted exactly as
+with `--replay-only`. `--replay-only`
+serves replay without deriving anything; the card, tools and `/agentenv`
+answers are then exactly those of replay. The stopped document's `state`
+member reports which applied:
+
+- `{"served": true, "evidence_id": "ev_…"}`: served from the derived state.
+- `{"served": false, "reason": "replay-only"}`: `--replay-only` was given.
+- `{"served": false, "reason": "unavailable", "code": "unsupported_target", "message": "…"}`:
+  the state is unavailable; `code` and `message` are those of the refusal
+  (`resource_constraint` for a catalog over the reservation), as the warning
+  logged them.
+
+Each read tool answers according to its view in the state:
+
+| View       | Answer                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `item`     | The entity the path arguments name, rendered into the recorded envelope of `envelope_ordinal`. Arguments match as replay matches them: each collection segment equals the held collection's segment as written or after percent-decoding, and the identity is the last argument percent-decoded, then as written; values are never re-split on `/`. Any entity the state holds answers, including one `data/add` loaded; query arguments only decide `replay.exact_match`. An entity the state does not hold, or one lacking a field every recording carried, is a tool error; a body is never invented. |
+| `list`     | When the arguments name one of the lines the view checked exactly (its latest recordings before the first related write; every path and query value equal to the recording's, and every recorded query parameter supplied), that recorded envelope with its array rendered from the state: every entity of the collection in state order for `membership: "all"`, or the recorded members still held. A member lacking a field every recording carried makes the call a tool error rather than a partial list.                                                                                           |
+| `document` | When the arguments name the document's checked line exactly, the state's value for it; a tool error when the state holds none.                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| `recorded` | The recording, as replay answers it.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+
+A list or document call that names no checked line, including a line recorded
+after a write or with other query values, answers from the recording. Every
+answer has the replay shape plus `state`: `{"source": "state", "view": …}`
+naming the entity, collection or document path, or `{"source": "recording",
+"reason": …}` with the view's reason, `no-view` or `unrecorded-request`. A
+state answer carries the base record's status, content type and `replay`
+provenance with `truncated: false`; one whose JSON would exceed 256 KiB is
+refused as a `resource_constraint` tool error rather than cut. Extraction does
+not state-back a document whose rendered JSON exceeds 256 KiB; that read stays
+recorded (`rendered-oversize`) and replays the captured body. Serving is
+read-only: `POST`, `PUT`, `PATCH` and `DELETE` tools, other than query `POST`s,
+are not served, so nothing a call does changes the state. Query `POST`s stay
+served and answer from their recordings with the reason `query-body`.
+
+The data plane serves three JSON-RPC methods:
+
+| Method       | Result                                                                                                    |
+| ------------ | --------------------------------------------------------------------------------------------------------- |
+| `data/reset` | `{}` after restoring the state the Evidence holds                                                         |
+| `data/add`   | `{}` after replacing the whole state with one valid `rea-state/v1` document                               |
+| `data/get`   | `{"parts": [{"kind": "data", "data": <rea-state/v1 document>}]}` with `state_evidence_id` and the `types` |
+
+Calls run one at a time in arrival order across requests. Every message of a
+batch is queued when the batch arrives, so another request's call never lands
+between them and each message sees the changes of those before it; a reset
+sent while a download is loading applies after that load. `data/add`
+takes exactly one part: a `data` part whose `data` is the document, or a
+`file` part whose `file` carries `bytes` (base64 of UTF-8 JSON) or a `uri`,
+either a `file://` URL of a local regular file, whose host is empty or
+`localhost`, or an `https://` URL fetched without following redirects and
+within 30 seconds, including reading the body; `mimeType`, when given, is
+`application/json`. A `file://` URL naming another host, or a UNC path such as
+`file:////server/share/state.json`, is refused before anything is opened, so a
+load never reaches a network share. A loaded document is at most 32
+MiB, and so is the state as `data/get` writes it back with the members a
+document may omit (`types`, `state_evidence_id`, record citations), so a
+reported state always loads again; an inline part also stays within the 4 MiB
+request body bound, so larger states arrive by `uri`. Anything else, including `{"parts": []}`, is `-32602
+invalid params`; a download that fails or answers a non-2xx status is
+`-32000`. Errors never echo the uri or the content; a file or download failure
+names its category in `error.data.reason`: `not-found`, `permission`,
+`not-regular-file`, `changed` or `read-failed` for files, `timeout`,
+`http-status` or `network` (connection, TLS or a refused redirect) for
+downloads, and `cancelled` for a download the server's stop or its caller's
+departure ended.
+
+Stopping the server cancels every pending call, and a caller that leaves before
+its reply cancels its own: a download in progress ends, and calls not yet run
+are answered `-32000` with `error.data.reason` `cancelled` without running. A
+cancelled call leaves the state unchanged, and shutdown never waits for a
+download.
+
+A `file://` state file whose close fails stays owned by the server, and
+the `data/add` gets `-32000`. The next `file://` load retries that close first
+and, while it still fails, answers `-32000` without reading another file;
+inline and `https://` documents still load. Closing the server retries it once
+more and fails with the unfinished close rather than dropping the descriptor.
+
+One `/agentenv` response carries at most 64 MiB of replies, twice the 32 MiB
+a loaded document may hold: room for a `data/get` of a loaded state, while a
+batch of reads cannot multiply a large state into one body. Replies are
+measured in order as they are produced, in bounded parts and before they are
+assembled, and room is kept for every later reply's budget error and the
+batch's brackets and commas, so one that would take the response past the
+budget is never built whole and is answered instead with `-32000` whose `error.data` gives
+`max_response_bytes` and the `reply_bytes` it would have taken. That call still
+ran, so repeat such a read in another request. A reply no larger than that
+error, such as a write's `{}`, is always kept.
+
+```json
+{
+  "rea_state": {
+    "version": 1,
+    "entities": [
+      {
+        "type": "/api/users",
+        "collection": "/api/users",
+        "id": "2",
+        "fields": { "id": 2, "login": "probe" }
+      }
+    ],
+    "documents": []
+  }
+}
+```
+
+Each entity's `type` is a state type's `collection_template`, its `collection`
+matches that template segment by segment (a template parameter matches any one
+segment), its identity field's value is its `id`, and its type, collection and
+id are unique; `view_fields` is optional and names item or list views of its
+type. Views render their values over the entity's fields, so a view's values
+must not set the type's identity field to a value whose text differs from the
+entity's `id`. Spell a collection as requests spell it, as `data/get` reports it: list
+calls find entities under the checked line's recorded path. Each document
+names a `document` view once, at its initial document's `path`. The `version`,
+and the `state_evidence_id` and `types` that `data/get` reports, must match
+the served state, so a `data/get` result loads back unchanged. A number without
+an exact native value, or whose serialized spelling would not be read as exact
+(an integer from 2^53 below 1e21, such as `1e20`, in any spelling), or a
+`__proto__` member is refused rather than altered.
+An invalid document is `-32602` naming the first problem by JSON pointer, as in
+`/rea_state/entities/3/collection` (also in `error.data.path`); a problem
+inside caller data (`fields`, `value`, `types`) is located at that member, so
+the pointer never names the caller's keys. A refused document changes nothing;
+a valid one replaces the whole state at once. The order of `entities` is the
+state order lists use.
+
+Record citations stay Evidence provenance. An entity's `record_ordinals` may
+be omitted or empty and a document's `record_ordinal` omitted; otherwise they
+must be the served Evidence's citations for that entity or document, or the
+document is refused. After loading, an entity or document whose values equal the Evidence's cites
+the Evidence's records, and one whose values were edited or added cites none
+(`record_ordinals: []`, no `record_ordinal`), so `data/get` never presents a
+loaded value as recorded.
+
+The card declares the operations and what `data/add` accepts:
+
+```json
+{
+  "extensions": [
+    {
+      "uri": "urn:agentenv:intake/v1",
+      "description": "data/add replaces the whole environment state with one rea-state/v1 document; data/get returns the current state in the same format.",
+      "params": {
+        "add": [
+          { "part": "data", "format": "rea-state/v1", "load": "replace" },
+          {
+            "part": "file",
+            "format": "rea-state/v1",
+            "mimeTypes": ["application/json"],
+            "load": "replace"
+          }
+        ],
+        "get": [{ "part": "data", "format": "rea-state/v1" }]
+      }
+    }
+  ],
+  "operations": ["data/reset", "data/add", "data/get"]
+}
+```
+
+The state is a projection of recorded reads. List and document calls answer
+from the state only for the lines their views checked, and every recorded view
+answers from recordings; item calls answer for any held entity but render only
+the envelope one recording carried. Values copied outside entity objects,
+derived values and counters other than those that count a list stay as
+recorded; no write has an effect. An exported bundle carries no state file:
+its server derives the state at startup, as the export does to predict what it
+serves.
 
 ## Export a bundle
 
@@ -336,12 +586,12 @@ agent-env run ./grafana-example
 
 ```text
 grafana-example/
-  README.md                                 provenance, replay limits, run command, rights note
+  README.md                                 provenance, what it serves, run command, rights note
   envs/grafana-example/Dockerfile           pinned image: node:24.18.0-bookworm-slim + rea-agents@<this version>
   envs/grafana-example/env.toml             environment_name = "grafana-example"
   envs/grafana-example/manifest.json        byte-exact copy of manifest.json
   envs/grafana-example/evidence.json        byte-exact copy of capture.json
-  artifacts/check_grafana-example/verify.py the replay verifier
+  artifacts/check_grafana-example/verify.py the verifier
   tasks/smoke.json                          deploy_env (local sandbox), then env_outcome_verifier
 ```
 
@@ -352,8 +602,12 @@ pair as `environment-serve` does, so a manifest projected from another capture
 is refused with the same `invalid_request` before anything is written, and the
 bytes it copies are the bytes it authenticated. The bundle directory must be
 absent or empty; an occupied directory is refused and nothing in it changes.
-The complete tool catalog must also fit the server's advertised catalog budget
-before any files are written. Privately parsed JSON is sealed once so authentication
+After checking the bundle name, the export prepares the state from the capture
+exactly as the bundle's server will at startup under that name, to predict what
+the bundle serves; an unavailable state, including one whose catalog exceeds
+the discovery reservation, does not stop the export, and the bundle then
+serves replay. The complete tool catalog the bundle serves must also fit the
+server's advertised catalog budget before any files are written. Privately parsed JSON is sealed once so authentication
 and replay share immutable response trees rather than copying the capture repeatedly.
 `--name` replaces the manifest's portable kebab-case name as the env folder and env id
 (Windows device names such as `con` and `lpt1` are refused);
@@ -361,7 +615,9 @@ and replay share immutable response trees rather than copying the capture repeat
 folder and makes the Dockerfile install it instead of the registry package and
 remove it in the same layer, which is how a checkout rather than a release is
 run. The command prints the
-written files with their sizes and the pinned package source.
+written files with their sizes, the pinned package source, the number of tools
+the bundle serves as `tool_count`, and in `state` whether it serves from the
+state, in the shape of the serve command's stopped document.
 
 Export uses the shared output-tree owner to check directory identities around
 exclusive creates, verify written bytes, and reject unowned entries before
@@ -383,21 +639,31 @@ user, so a private host umask cannot leave them unreadable, runs as that user an
 name from Python sources the image does not have.
 
 `verify.py` is the framework's `async def verify(mcp_url)` shape over its
-Python MCP client: it lists the tools and checks the count equals the
-manifest's, calls the first `GET` tool without path parameters with no
-arguments and checks the call did not fail and its replayed `status` equals the
-recorded status of that tool's first cited record (an unknown recorded status
-stays unknown; it is not borrowed from another record), and returns one
-`replay` result whose description
-reports both checks. A manifest with no such tool yields a verifier that checks
-the count only and says so. `tasks/smoke.json` deploys the env on the local
+Python MCP client: it lists the tools and checks the count equals the number
+the bundle serves (the manifest's read tools from the state, every manifest
+tool in replay), calls one tool with no arguments and checks the call did not
+fail and its `status` is the expected one, and returns one `serve` result
+whose description reports both checks. The tool is the first served `GET` tool
+without path parameters whose answer to no arguments is not an error, and the
+expected status is the status of that answer: the export calls the same answer
+function the server uses, from the derived state or by replay, so a state
+answer carries its base record's status and a replayed one its record's (an
+unknown recorded status stays unknown; it is not borrowed from another
+record). A bundle with no such tool yields a verifier that checks the count
+only and says so. `tasks/smoke.json` deploys the env on the local
 sandbox and runs that verifier against the env's MCP endpoint; the first run
 also builds the framework's own infrastructure, and the run tears everything
 down when it ends.
 
 The README written into the bundle records the capture artifact's SHA-256, the
-capture and manifest Evidence ids, the manifest view digest, the tool count and
-the package source, and states that the recorded content belongs to the
+capture and manifest Evidence ids, the manifest view digest, the served tool
+count, the derived state's Evidence id or that no state is served, and the
+package source. It says what the environment serves: read tools from the state
+the capture observed, the `/agentenv` data plane on it and no write tools yet,
+replay when the state is unavailable, and `--replay-only` for pure replay; it
+says which applies to this bundle, with the error code and message when the
+state is unavailable, and that neither is emulation and served
+content is untrusted data. It states that the recorded content belongs to the
 captured application and must not be published without the rights to it.
 
 ## Compatibility verification
@@ -414,13 +680,21 @@ framework versions.
 
 ## Resource and lifecycle boundaries
 
-Both Evidence files are read once at startup through the bounded JSON input
+The Evidence files are read once at startup through the bounded JSON input
 reader and authenticated as Evidence before the listener binds; a file that is
 not Evidence, a manifest of another view kind, a capture of another format, or
 a manifest projected from a different capture is refused before any port is
-opened. Because authentication covers the capture's records, a manifest whose
+opened. The state is derived once, in-process and before binding, from the
+already authenticated capture: it is projected as retained Evidence, so the
+capture's strings are not charged again as inline view input, and the view's
+96 MiB budget bounds the derivation. Because authentication covers the capture's records, a manifest whose
 parent check passes cites only records the capture retains. The server keeps
-only the cited records' request lines and response text in memory. No outbound
-network request is made, no process is launched and nothing is written to
-disk. A listener that fails after binding is logged and ends the command with
+only the cited records' request lines and response text in memory, plus the
+live state when it serves from one: the derived initial state, or one
+validated document whose JSON was at most 32 MiB. Data-plane calls run one at a time, so
+at most one loaded document is being read and parsed at once; `data/get`
+serializes the held state whole. No process is launched and nothing is
+written to disk. No outbound network request is made unless a `data/add` call names an
+`https://` uri, which is fetched once within the limits above; a `file://` uri
+is read once. A listener that fails after binding is logged and ends the command with
 a `resource_constraint` error and exit `1` instead of serving nothing.

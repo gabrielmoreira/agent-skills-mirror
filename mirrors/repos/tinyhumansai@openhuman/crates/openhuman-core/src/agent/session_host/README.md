@@ -45,6 +45,20 @@ deferred executors instead of dropping them when a cache goes cold, and
 `integrations/prelude_integrations.rs` re-fetches integrations on the first turn of every
 session instance rather than only on a brand-new thread.
 
+An agent whose definition sets `refresh_prompt_on_resume` opts out of the
+prompt half of that freeze. `runtime_session/prompt_refresh.rs` renders its
+prompt again on every resumed turn and offers it as a refreshing prefix; the
+runtime applies it only when it differs from the recorded one, and a
+thread-bound session then seals the current generation and carries the
+conversation into the next. That turn's user message opens with a one-time
+`[instructions update]` note: the conversation before it was written under the
+old prompt, and a model otherwise keeps to what it said there (that a feature
+is "coming soon") over the new instructions. A verbatim prompt therefore costs
+one uncached prompt per thread per edit. A composed one also refreshes when
+the live state it renders changes, but never from integrations the session has
+not read yet. A prompt that fails to render, or a recorded prompt of unknown
+extent, keeps the recorded prompt. The recorded tool list is unaffected.
+
 Compaction never erases history. It seals the current generation and opens
 the next one, recording the sealed generation as the new one's parent; the
 sealed file stays on disk. TinyAgents owns the generation chain and its

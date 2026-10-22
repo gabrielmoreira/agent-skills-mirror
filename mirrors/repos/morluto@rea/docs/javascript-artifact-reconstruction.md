@@ -106,6 +106,15 @@ only reduces delivery; source selection reduces text acquisition and analysis.
 Explicit native provider or snapshot routing rejects `--source-path` rather
 than ignoring it.
 
+ASAR header/index admission is a fixed 16 MiB / 16777216 bytes for this
+release. There is no runtime override. The archive index is read before any
+member can be selected, so `source_paths`, `--source-path`, `detail:
+"summary"`, `max_heap_mb`, and available host memory do not bypass or raise
+it. When the header exceeds that allowance, the failure names this budget.
+Analyze an extracted application directory, which does not admit an ASAR
+header, or supply an archive whose header fits. Repeating the unchanged
+request fails the same way.
+
 ## Read the analysis
 
 `analyze_javascript_application` returns the complete analysis Evidence by
@@ -172,7 +181,8 @@ for the tool-result contract.
 
 Use MCP `detail: "summary"` for a large application, then read selected views of
 the retained analysis. Summary changes delivery only. To reduce source parsing,
-select exact [source paths](#select-sources-before-analysis).
+select exact [source paths](#select-sources-before-analysis). Source selection
+does not bypass ASAR header/index admission.
 
 If a complete response exceeds the transport budget, use its retained Evidence
 ID for a summary, module page, or item, or export the bundle. See
@@ -371,7 +381,15 @@ Recognized literal module-table bootstraps also support bounded lexical
 substitution through module exports, import helper bodies, local wrapper calls,
 returned closures, object spreads, and callback parameters. Recovered Electron
 paths retain source ranges, module identities, literal channels and branch
-conditions as static candidates. Unknown spreads, reassigned bindings, accessors,
+conditions as static candidates. A channel the IPC call site itself
+determines, such as a local constant, resolves that call's observation rather
+than adding a second one. A channel or registration handler supplied through
+a wrapper argument is a candidate beside the call's own unresolved
+observation, because callers outside the traced paths may pass other values.
+A wrapper call that is both its own entry and reached through another entry
+is recorded once when both paths find the same facts; calls that supply
+different handlers or channels stay distinct.
+Unknown spreads, reassigned bindings, accessors,
 dynamic channels and unsupported syntax do not become exact implementations.
 This pass neither executes the bundle nor proves that runtime guards pass.
 An ambiguous or unresolved handler retains its channel registration but does
@@ -589,8 +607,9 @@ The default semantic capacities are 100000 nodes across the application and
 `--max-semantic-nodes-per-file`), each from 1 to 1000000. The per-file offer is
 also bounded by the remaining application capacity. Raising these controls does
 not bypass worker heap, execution deadline or parent result admission. Truncated
-coverage reports both effective node ceilings; omitted relationships remain
-unknown.
+coverage lists both effective ceilings, `max_semantic_nodes` and
+`max_semantic_nodes_per_file`. The limitation names only the ceiling that
+stopped retention. Omitted relationships remain unknown.
 
 Unknown records have independent defaults of 100000 across the application and
 20000 per source. Select `max_semantic_unknowns` and
@@ -598,8 +617,10 @@ Unknown records have independent defaults of 100000 across the application and
 `--max-semantic-unknowns-per-file`), each from 1 to 1000000. The parent offers the
 remaining capacity to the worker, and rejects excess records before adoption.
 Unknown admission happens before canonical identity and provenance construction.
-When capacity is exhausted, coverage is partial and truncated and names both
-effective unknown ceilings. `coverage.omitted_unknown_occurrences` counts examined
+When capacity is exhausted, coverage is partial and truncated. Coverage lists
+both effective unknown ceilings, `max_semantic_unknowns` and
+`max_semantic_unknowns_per_file`. The limitation names only the ceiling that
+stopped retention. `coverage.omitted_unknown_occurrences` counts examined
 emission occurrences by family and reason, including repeated emissions. It does
 not claim distinct discarded identities or count frontiers in unexamined source.
 Omitted unknown provenance and IDs are not retained. Existing source, node,
@@ -612,12 +633,35 @@ checkpoint at its 8 MiB bound with the same 6x retention expansion used at
 admission. Earlier checkpoints are already charged to retained bytes; the
 remaining inventory does not multiply the reserve. Streamed file transfers keep the default 512 MiB
 allowance, and can grow with the parent's offered retention budget (8x byte
-expansion), up to 2 GiB. Individual records remain bounded to 8 MiB. The parent
+expansion), up to 2 GiB. Individual records remain bounded to 8 MiB. The 8 MiB
+record ceiling and the 2 GiB file maximum have no runtime override, and raising
+`max_heap_mb` does not raise them. The effective file ceiling follows the
+parent's offered result budget. On Node, a larger CLI/MCP process heap
+(`NODE_OPTIONS`, for example `--max-old-space-size=<MiB>`, after restarting that
+process) can raise it up to 2 GiB. Selecting fewer `source_paths` can also
+raise that effective allowance, because the reserve for remaining sources and
+earlier retained results reduce the offered budget. Neither change raises the
+record ceiling or the 2 GiB maximum. The parent
 still independently checks actual bytes, record overhead, digests and source
 identities before adopting results.
 
 A source that exhausts the analyzer heap does not terminate the CLI/MCP
-process. Completed static facts are retained, other files can still be analyzed,
+process. On Node, the failure names `max_heap_mb` (CLI `--max-heap-mb`), the
+effective mebibytes, the inclusive range 128 to 16384, and the 1024 MiB
+default. A changed value applies on the next analysis, which starts a new
+worker. It does not change a worker that is already running and does not
+require restarting the REA server. On Bun, the same heap-exhaustion diagnostic
+is not attributed to that V8 old-space limit, because Bun ignores the flag.
+Raising `max_heap_mb` does not raise the parent result budget,
+the transfer record ceiling, the 2 GiB transfer file maximum, the CLI/MCP
+process heap, or fixed parser limits. The parent result budget follows that
+process heap. On Node, set `NODE_OPTIONS` (for example `--max-old-space-size=<MiB>`)
+in the environment that starts the CLI or MCP server, then restart that
+process, to raise the parent heap and the result budget. A completed static
+checkpoint that does not fit the parent's remaining heap names that parent
+process heap. Increasing `max_heap_mb` does not raise it. On Node, the same
+`NODE_OPTIONS` restart can raise the parent heap and admit the checkpoint.
+Completed static facts are retained, other files can still be analyzed,
 and unexamined semantic relationships remain explicit unknowns. The parent
 also checks transfer expansion and accumulated results against its remaining
 heap before accepting semantic facts. A resource-limited result has partial

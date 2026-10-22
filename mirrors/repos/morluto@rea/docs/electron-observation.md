@@ -116,7 +116,9 @@ The CLI and MCP surfaces accept the same schema. For a JSON request file:
 rea capture-electron-scenario scenario.json --json
 ```
 
-The result records action status and targets, correlated app/window/WebContents,
+The result records one status and target per declared action; actions after a
+failed or cancelled action are not run and are recorded as `cancelled` with a
+not-executed error. It also records correlated app/window/WebContents,
 preload, session, navigation, shell, permission, popup, download, protocol,
 native-addon, process, and IPC timeline events. IPC channels and argument-shape
 metadata retain their observed lengths; payload values are never retained.
@@ -243,4 +245,10 @@ application path and capture outcome to the static graph, while frames, scripts,
 workers, and execution claims remain unavailable until a separate passive runtime
 capture provides them.
 
-ASAR observation reads the header through one open file handle, validates its declared lengths against the archive size, and limits encoded JSON headers to 16 MiB before parsing. The header cache also retains at most 16 MiB of encoded headers across eight archives. Oversized headers produce a scope refusal.
+ASAR observation reads the header through one open file handle and validates its
+declared lengths against the archive size. Header/index admission is the same
+fixed 16 MiB / 16777216 byte budget used by static ASAR reads. This release has
+no runtime override. An oversized header is not parsed; selecting a member path
+does not bypass admission, and the page stays unauthorized. The header cache
+separately retains at most 16 MiB of already-admitted encoded headers across
+eight archives. Evicting that cache does not raise admission.

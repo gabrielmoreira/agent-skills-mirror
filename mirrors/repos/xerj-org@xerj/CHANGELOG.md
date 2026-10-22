@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.0-rc.98] - 2026-10-21
+
+Window since v1.0.0-rc.97: a console-API security fix (CVE-2026-97406), a
+budget-aware `xerj autoindex` that estimates the index and checks it against
+the node's flood-stage watermark before hashing (with `--plan`, `--yes` and
+`--max-index-size`; a reduced plan never deletes already-indexed data without
+`--drop-indexed`), `xerj autoindex remove` for dropping one folder safely,
+`--walk-only`, a fail-fast on a full node disk, ES
+request validation and query/aggregation fixes, highlighting, search ranking
+and citation fixes, Corpus Hub routing and ratings, and the field-report
+footer honouring the opt-out. Contributors in this window: amartya1523,
+Tong-bit-art, roedyrustam, jacksonjp0311-gif, MrUranium1, jayhemnani9910,
+leninworld, gyanu2507, dhkts1, Jarvis636431, ravi-arnan, rudycelekli, AK-Lmn,
+miku1130, tree-lancer, Zacharon, tizerluo, olituks,
+tripleaceme, MokuLakshithReddy, HiChat-fog, eltociear, omertahaoztop,
+ronitgupta138 and Jitin2102.
+
+
 ### Security
 
 - **Console API: a bearer API token can no longer mint credentials**
@@ -22,9 +40,137 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   and return 403 for a bearer token. Ordinary console calls (`/me`, prefs,
   dashboards, and the other data routes) still accept bearer tokens. No
   token lineage is stored: the only insert of a new API token row refuses
-  bearer auth before it writes, so a revoked token has no descendants.
+  bearer auth before it writes, so a revoked token has no descendants (PR
+  [#2003](https://github.com/xerj-org/xerj/pull/2003)).
+
+### Added
+
+- `xerj autoindex remove --prefix P [--root R]` and the MCP tool
+  `xerj_autoindex_remove` drop one autoindexed folder. They list the indices,
+  catalog rows, doc counts and sizes first and delete nothing without `--yes`,
+  a `y` at the terminal, or `confirm: true`. An index another folder or a
+  sibling prefix still names is kept, and `autoindex-catalog` is never
+  deleted. `DELETE` of `*`, `_all` or a wildcard is now refused unless
+  `action.destructive_requires_name` is set to false, as in ES 8. The agent
+  docs and tool descriptions say not to delete an index the agent did not
+  create (PR [#2126](https://github.com/xerj-org/xerj/pull/2126), from field
+  report #2114).
+- `GET /_memory` lists the agent-memory namespaces (PR
+  [#2022](https://github.com/xerj-org/xerj/pull/2022), ravi-arnan).
+- `xerj autoindex --walk-only` stops after the walk. It prints each top-level
+  folder's file count and size, what the ignore rules would drop and which
+  rule, and the totals. It does not hash or sniff file contents. `--dry-run`
+  still hashes, sniffs and prints the plan (#1912).
 
 ### Fixed
+
+- `xerj autoindex` no longer deletes an existing index when a later run uses
+  a reduced disk-budget plan (`--plan code-and-docs`, or `--yes` when the
+  default plan does not fit). The plan's keep-set was applied to the walk
+  before reconcile, so files the plan left out looked removed: the
+  `--no-graph` generation emitted `Delete` for their groups, and the graph
+  path swept them as exclusions. A re-run that would drop already-indexed
+  files now exits 4 and lists those files and the datasets that would be
+  left empty. `--drop-indexed` is the confirmation that deletes them.
+  `--plan` and `--yes` choose what to index; they do not agree to the
+  deletion. The regression came from #2102 and never shipped in a release
+  (PR [#2128](https://github.com/xerj-org/xerj/pull/2128)).
+
+- `POST /_ask` (`xerj_plan`) grounds a slash-bearing path in the prompt as a
+  keyword `prefix` on `ax_path` (then `path`, `filepath`, `file`, `ax_file`).
+  A directory gets a trailing slash so `crates/app/src/` does not match
+  `crates/app/src2/`. An index with none of those keyword fields is a 422
+  that names the path, instead of dropping it as an ignored lowercase
+  modifier. `xerj_map` lists the `ax_*` locators stamped on every record,
+  and when the live mapping can be read its `field_count` is the catalog
+  fields union the top-level mapping fields — the same set the plan counts,
+  labeled on both sides. Cardinality of a locator the profiler never sampled
+  stays unmeasured. Two slash-joined words such as `tcp/ip` stay prose
+  ([#2120](https://github.com/xerj-org/xerj/issues/2120), PR
+  [#2124](https://github.com/xerj-org/xerj/pull/2124)).
+
+- A bare hub question that names a language or a technology
+  (`xerj "how do I use async let in Swift"`, `xerj "Swift Result type map"`)
+  routes from the catalogue entry — slug, topics, a language word in the
+  description, then the rest of the description — instead of the term sketch.
+  On the 468-corpus hub the sketch's false positives tied swift-book with
+  unrelated corpora (qwik, docker-docs, harper, oss-review-toolkit) and both
+  questions exited 4. One clear winner is searched on its own. Two or three
+  corpora that share the winning name are searched together and named on one
+  `using:` line. Exit 4 stays for a genuine tie and lists at most five
+  candidates, best first.
+
+- An MCP tool call that cannot connect to `XERJ_URL` now says that no XERJ
+  node is listening there, that `xerj mcp` does not start one, and prints
+  `xerj --insecure --data-dir ~/xerj-data`. A bare connection error was the
+  whole tool result, so agents abandoned xerj for the session. HTTP
+  responses, including 401, are unchanged (#2079).
+
+- `xerj autoindex` on the graph path no longer counts files that appeared
+  after the resume plan was frozen as junk. A resume whose plan predates
+  files now on disk still cannot re-cluster that plan — dataset identity and
+  graph anchors stay put, and the `--no-graph` route is what reconciles
+  additions. The resume finishes `reason=stale-resume-plan` (exit 3, recorded,
+  not a failure), leaves `junk_files` for unusable input, sets
+  `skipped_appeared` to the count on every resume while those files are
+  unindexed, and names `--fresh` as the flag that rebuilds the plan in place
+  and includes them
+  ([#2076](https://github.com/xerj-org/xerj/issues/2076)).
+
+- `xerj autoindex` checks the node's data volume against the disk
+  flood-stage watermark before walking or hashing. A volume already at or
+  over the watermark (default 95%) used to fail only at the first write,
+  after the prepare. The run now stops immediately and reports the free
+  space, the threshold, and `limits.disk_flood_stage_percent`. The probe
+  reads the node (`GET /_cat/allocation?format=json`), not the client's
+  disk. A node that does not report the threshold is unchanged, and
+  `--dry-run` (which writes nothing) is never refused for disk.
+
+- `xerj autoindex` counts the walked folder and estimates the index before
+  hashing. The free-space budget reuses that same allocation row (free bytes
+  under the reported flood-stage watermark; the threshold is not guessed),
+  and `--max-index-size` can lower it. When the default plan does not fit,
+  stdout is a JSON plan list and the run exits 4 until `--yes` takes the
+  recommended plan that fits or `--plan` names one; a named plan runs even over
+  the estimate, with a warning, since the estimate errs high. A kind with no measured ratio stays unmeasured and
+  does not refuse the run. A digit-leading `--prefix` is rejected before the
+  walk ([#2057](https://github.com/xerj-org/xerj/issues/2057)). Skipped files
+  are named after the `ok:` line, and a PDF reuse-fallback line says the PDF
+  is still indexed ([#2056](https://github.com/xerj-org/xerj/issues/2056)).
+  A folder already indexed under another prefix is named before the walk
+  ([#2078](https://github.com/xerj-org/xerj/issues/2078)). MCP:
+  `xerj_index_budget` returns the same estimate and does not index.
+
+- Playground user dashboards resolve their inherited template for chart data
+  and panel editing. Cloning a user dashboard retains the underlying template;
+  missing or cyclic template references keep the blank fallback. Custom
+  dashboard layout overrides also survive reloading the page.
+
+- Landing-page copy buttons report `COPY FAILED` when clipboard access is
+  denied or the legacy copy command fails, and retain their original label
+  after repeated clicks. A failed copy can be retried.
+
+- Playground PNG exports preserve computed SVG paint and text styles, including
+  the embedding query crosshair whose CSS-variable stroke disappeared when
+  rasterized outside the page stylesheet. The live chart is left unchanged.
+
+- Release-download snapshots now refuse malformed existing JSONL history without
+  replacing its contents. Repair the history file and rerun the snapshot command.
+
+- Playground saved views immediately restore the current dashboard, replace
+  stale URL filters when navigating, and preserve custom time-range endpoints.
+
+- Debian release-candidate package versions now sort before the corresponding
+  final release, preserving normal upgrade order without renaming release assets.
+
+- Debian Rust coverage reports now include valid zero-overlap measurements instead
+  of exiting before printing counts. Empty source indexes remain an error.
+
+- Hub pack planning reports malformed manifest JSON shapes as per-corpus warnings
+  and continues planning healthy corpora, rather than crashing on an invalid entry.
+
+- Hub re-pin automation only supersedes generated proposal branches for the
+  exact corpus, preserving proposals for corpora with longer overlapping names.
 
 - `xerj search` and a plain-string `xerj_search` rank a file that contains
   the query as an exact phrase (a pasted error message or log line) at the
@@ -36,9 +182,196 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `xerj autoindex --help` now states the existing `--bulk-mb` maximum of 24.
 
-## [1.0.0-rc.97] - 2026-10-17
+- ES API compatibility, validated like ES with ES's own messages:
+  aggregation parameters and placements (PR
+  [#1861](https://github.com/xerj-org/xerj/pull/1861)), composite aggregation
+  definitions (PR [#1854](https://github.com/xerj-org/xerj/pull/1854)),
+  misplaced pipeline aggregations and bad `buckets_path`s (PR
+  [#1824](https://github.com/xerj-org/xerj/pull/1824)), index-creation,
+  mapping, alias and template requests (PR
+  [#1870](https://github.com/xerj-org/xerj/pull/1870)), and the per-index
+  search request limits (PR [#1859](https://github.com/xerj-org/xerj/pull/1859)),
+  all amartya1523. A bad index name is an `invalid_index_name_exception` (PR
+  [#1666](https://github.com/xerj-org/xerj/pull/1666)). A failed `_bulk` item
+  omits versioning fields (PR [#1672](https://github.com/xerj-org/xerj/pull/1672)).
+  `_cat/indices` hides `.xerj_*` rows by default (PR
+  [#1660](https://github.com/xerj-org/xerj/pull/1660)), and 404 index hints
+  stop suggesting system indices (PR
+  [#1661](https://github.com/xerj-org/xerj/pull/1661)). A mid-name wildcard
+  matches in index patterns (PR [#1937](https://github.com/xerj-org/xerj/pull/1937))
+  and `_msearch` expands wildcard indices (PR
+  [#1939](https://github.com/xerj-org/xerj/pull/1939)).
+- Queries and aggregations: range queries honour `time_zone` (PR
+  [#1744](https://github.com/xerj-org/xerj/pull/1744), jayhemnani9910). A range
+  matches every value of a multi-valued field (PR
+  [#1776](https://github.com/xerj-org/xerj/pull/1776), amartya1523), and range
+  aggregations bucket every value (PR
+  [#1803](https://github.com/xerj-org/xerj/pull/1803), Tong-bit-art).
+  `case_insensitive` works on prefix and regexp queries (PR
+  [#1816](https://github.com/xerj-org/xerj/pull/1816), MrUranium1).
+  `filter`/`filters` aggregations count what the same clause counts as a query
+  (PR [#1752](https://github.com/xerj-org/xerj/pull/1752), Tong-bit-art).
+  Histogram data buckets outside `extended_bounds` are kept (PR
+  [#1823](https://github.com/xerj-org/xerj/pull/1823), amartya1523).
+- Highlighting: whole words and every query term in a fragment are tagged (PR
+  [#1949](https://github.com/xerj-org/xerj/pull/1949)), `highlight.fields` is
+  accepted as an array of field objects (PR
+  [#1950](https://github.com/xerj-org/xerj/pull/1950)), and `_msearch` items
+  carry highlight like `_search` (PR [#1952](https://github.com/xerj-org/xerj/pull/1952)).
+- Search: a file that holds the exact query phrase ranks first (PR
+  [#1759](https://github.com/xerj-org/xerj/pull/1759), jacksonjp0311-gif). A data
+  row is cited by its locator, not by a line inside the row (PR
+  [#1944](https://github.com/xerj-org/xerj/pull/1944)). `xerj code` cites real
+  file lines for prose and Markdown hits (PR
+  [#1908](https://github.com/xerj-org/xerj/pull/1908)), and prose sections carry
+  the file line they start on (PR [#2013](https://github.com/xerj-org/xerj/pull/2013),
+  Tong-bit-art). A plain-string `xerj_search` reads the target mapping first
+  (PR [#1976](https://github.com/xerj-org/xerj/pull/1976), Tong-bit-art). A
+  plain-string search over a mixed index pattern no longer reports a field as
+  unknown when another matched index maps it (PR
+  [#2123](https://github.com/xerj-org/xerj/pull/2123)). On a code corpus,
+  plain-word `xerj search` and `xerj_search` apply `xerj def`'s penalty to test,
+  example, fuzz and bench paths. Prose corpora, DSL queries and explicit sorts
+  keep the engine's order (PR [#2125](https://github.com/xerj-org/xerj/pull/2125)).
+- Autoindex: a heartbeat while an extract slot is full (PR
+  [#1657](https://github.com/xerj-org/xerj/pull/1657)). An open section overlaps
+  on a word (PR [#1700](https://github.com/xerj-org/xerj/pull/1700)). The help
+  documents the bulk size maximum (PR [#1746](https://github.com/xerj-org/xerj/pull/1746),
+  leninworld). Duplicate content is ranked by native path identity, and an
+  unprojectable plan is refused before the snapshot is sealed (PRs
+  [#1780](https://github.com/xerj-org/xerj/pull/1780),
+  [#1781](https://github.com/xerj-org/xerj/pull/1781), amartya1523). The summary
+  leads with an `ok:` line that spells out exit 3 (PR
+  [#1913](https://github.com/xerj-org/xerj/pull/1913)). A rewritten `--prefix`
+  warns and names the wildcard collision (PR
+  [#1914](https://github.com/xerj-org/xerj/pull/1914)), and a literal `--` in a
+  prefix is kept so `owner--repo` corpora verify (PR
+  [#1906](https://github.com/xerj-org/xerj/pull/1906)). The help says a
+  `.xerjignore` `!pattern` cannot re-include a hidden directory (PR
+  [#1916](https://github.com/xerj-org/xerj/pull/1916)). A file that changes
+  mid-run is skipped and recorded instead of aborting (PR
+  [#1917](https://github.com/xerj-org/xerj/pull/1917)). Schema-only SQL is
+  indexed as text (PR [#1987](https://github.com/xerj-org/xerj/pull/1987)), and
+  a README whose first line is badges is not sniffed as JSON (PR
+  [#1988](https://github.com/xerj-org/xerj/pull/1988)). Semantic verify errors
+  include counts and datasets (PR [#2016](https://github.com/xerj-org/xerj/pull/2016),
+  Jarvis636431). The field-report footer honours `--disable-feedback` and
+  `XERJ_DISABLE_FEEDBACK` (PR [#1907](https://github.com/xerj-org/xerj/pull/1907)).
+  The flood-stage fail-fast is PR [#2087](https://github.com/xerj-org/xerj/pull/2087),
+  the stale-resume fix is PR [#2086](https://github.com/xerj-org/xerj/pull/2086),
+  `--walk-only` is PR [#2006](https://github.com/xerj-org/xerj/pull/2006), and
+  the budget is PR [#2102](https://github.com/xerj-org/xerj/pull/2102).
+- Corpus Hub and corpora: the record corpora are published as Hub v2 hubpacks
+  (PR [#1736](https://github.com/xerj-org/xerj/pull/1736)). Agents rate hub
+  corpora with `xerj_corpus_feedback`, `xerj hub feedback` and automatic
+  reviews (PR [#1886](https://github.com/xerj-org/xerj/pull/1886)). `xerj ask`
+  exits 6 when the hub catalogue cannot be loaded (PR
+  [#1905](https://github.com/xerj-org/xerj/pull/1905)). A named language routes
+  to its corpora (PR [#2104](https://github.com/xerj-org/xerj/pull/2104)). The
+  hub test harness runs cross-platform, with Windows file locking (PR
+  [#1764](https://github.com/xerj-org/xerj/pull/1764), roedyrustam). `corpus
+  add` and `xerj code` use a completed licence review when the detector reads
+  UNKNOWN (PR [#1910](https://github.com/xerj-org/xerj/pull/1910)), and a
+  BSD-3-Clause checkout no longer warns as BSD (PR
+  [#1674](https://github.com/xerj-org/xerj/pull/1674)). A corpus name that its
+  index prefix would rewrite is refused (PR
+  [#1919](https://github.com/xerj-org/xerj/pull/1919)). A reference corpus skips
+  CSV, HDF and simulation data (PR [#2014](https://github.com/xerj-org/xerj/pull/2014),
+  Tong-bit-art).
+- MCP, CLI and installer: `xerj_field_report` fills version and os when the
+  agent omits them (PR [#2005](https://github.com/xerj-org/xerj/pull/2005)), and
+  a down `XERJ_URL` explains how to start a node (PR
+  [#2085](https://github.com/xerj-org/xerj/pull/2085)). The field-report verdict
+  cap is 1000 characters (PR [#1847](https://github.com/xerj-org/xerj/pull/1847)),
+  and unfilled optional placeholders are dropped on `--submit` (PR
+  [#1851](https://github.com/xerj-org/xerj/pull/1851)). The `xerj --help`
+  feedback blurb names `--submit` (PR [#1849](https://github.com/xerj-org/xerj/pull/1849)).
+  `xerj init` stops printing a lone backslash in the MCP registration (PR
+  [#1848](https://github.com/xerj-org/xerj/pull/1848)). The installer resolves
+  the latest release without api.github.com (PR
+  [#1852](https://github.com/xerj-org/xerj/pull/1852)) and uses the absolute
+  `xerj` path in its next steps when `xerj` is not on PATH (PR
+  [#1868](https://github.com/xerj-org/xerj/pull/1868)). The console tells an
+  expired magic link how to recover (PR [#1675](https://github.com/xerj-org/xerj/pull/1675)).
+  A document-style write to `/_memory` is explained (PR
+  [#1683](https://github.com/xerj-org/xerj/pull/1683)), and a share link claim
+  accepts `share_id` (PR [#1684](https://github.com/xerj-org/xerj/pull/1684)).
+- Platform: macOS indexing no longer stalls under a memory cap, and shutdown no
+  longer hangs (PR [#1677](https://github.com/xerj-org/xerj/pull/1677), dhkts1).
+  Native Windows probes for system RAM, process RSS and disk (PR
+  [#1766](https://github.com/xerj-org/xerj/pull/1766), roedyrustam). A bind
+  failure says how to move each listener, including Windows error 10013 (PR
+  [#1779](https://github.com/xerj-org/xerj/pull/1779), amartya1523). Startup is
+  refused when the neural model cannot load (PR
+  [#1877](https://github.com/xerj-org/xerj/pull/1877)).
 
-<!-- TODO(release manager): set the date above to the tag date. -->
+### Testing
+
+- Pinned filter `match`/`term`/`match_phrase` analyzer parity (PR
+  [#1748](https://github.com/xerj-org/xerj/pull/1748), gyanu2507). The
+  `pdf_worker` tests that mutate the environment are serialized to fix a flake
+  (PR [#1743](https://github.com/xerj-org/xerj/pull/1743)). The §12.4 whole-hub
+  gate is green, correct and runnable (PR [#1858](https://github.com/xerj-org/xerj/pull/1858)),
+  and the sandboxed hub-e2e gate runs on a CI runner (PR
+  [#1876](https://github.com/xerj-org/xerj/pull/1876)). Formatting after #1804
+  (PR [#1960](https://github.com/xerj-org/xerj/pull/1960)).
+
+### Documentation & site
+
+- Corpus Hub v2 docs for `ask`, `hub` and the MCP hub tools (PR
+  [#1728](https://github.com/xerj-org/xerj/pull/1728)), and the llms.txt agent
+  surface (PR [#2048](https://github.com/xerj-org/xerj/pull/2048)). The README
+  keeps the data directory outside the indexed tree (PR
+  [#1686](https://github.com/xerj-org/xerj/pull/1686)) and opens with a
+  one-line "what it is" (PR [#1923](https://github.com/xerj-org/xerj/pull/1923)).
+  A table of 26 supported agent harnesses (PR
+  [#2109](https://github.com/xerj-org/xerj/pull/2109), AK-Lmn). MCP tool counts
+  (PRs [#1850](https://github.com/xerj-org/xerj/pull/1850),
+  [#2118](https://github.com/xerj-org/xerj/pull/2118)). An MCP Registry
+  `server.json` and an MCPB bundle builder (PR
+  [#1922](https://github.com/xerj-org/xerj/pull/1922)).
+- Site: a light theme by default (PR [#1920](https://github.com/xerj-org/xerj/pull/1920)),
+  answer-first answer and compare pages (PRs
+  [#1963](https://github.com/xerj-org/xerj/pull/1963),
+  [#1966](https://github.com/xerj-org/xerj/pull/1966)), new answer and compare
+  pages (PRs [#1964](https://github.com/xerj-org/xerj/pull/1964),
+  [#1968](https://github.com/xerj-org/xerj/pull/1968)), the Corpus Hub v2 post
+  and one cover series for the blog (PRs
+  [#1915](https://github.com/xerj-org/xerj/pull/1915),
+  [#1918](https://github.com/xerj-org/xerj/pull/1918)), sitemap content dates
+  and noindex on markdown twins (PR [#1992](https://github.com/xerj-org/xerj/pull/1992)),
+  a shorter home copy prompt (PR [#1953](https://github.com/xerj-org/xerj/pull/1953)),
+  and a GA4 analytics tag on xerj.org (PR
+  [#1962](https://github.com/xerj-org/xerj/pull/1962); the site only, nothing
+  in the binary).
+
+### Community & field reports
+
+- Field report: the ES-YAML conformance run on a debug node (PR
+  [#2127](https://github.com/xerj-org/xerj/pull/2127)).
+- Field reports: the HTTP, MCP and console dogfood (PR
+  [#1688](https://github.com/xerj-org/xerj/pull/1688)); autoindex and search on a
+  Windows Electron/Vue project (PR [#1809](https://github.com/xerj-org/xerj/pull/1809),
+  miku1130); reference-coding natural-language false positives (PR
+  [#1936](https://github.com/xerj-org/xerj/pull/1936), tree-lancer); Windows MCP
+  setup over an OSS checkout (PR [#1943](https://github.com/xerj-org/xerj/pull/1943),
+  Zacharon); semantic verification diagnostics on macOS (PR
+  [#2017](https://github.com/xerj-org/xerj/pull/2017), Jarvis636431); the
+  autoindex store-size calibration (PR [#2103](https://github.com/xerj-org/xerj/pull/2103)).
+- CLA signatures: HiChat-fog (#1600), eltociear (#1608), omertahaoztop (#1619),
+  tizerluo (#1753), olituks (#1757), jacksonjp0311-gif (#1758), tripleaceme
+  (#1765), amartya1523 (#1767), MokuLakshithReddy (#1806), miku1130 (#1810),
+  roedyrustam (#1813), MrUranium1 (#1817), tree-lancer (#1938), Zacharon
+  (#1942), ronitgupta138 (#1995), Jitin2102 (#2007), ravi-arnan (#2021),
+  rudycelekli (#2053), AK-Lmn (#2108).
+
+### Housekeeping
+
+- Dependencies: `zip` 9 for RUSTSEC-2026-0367/0368/0369 (PR
+  [#1869](https://github.com/xerj-org/xerj/pull/1869)) and `rustls-webpki` for
+  RUSTSEC-2026-0382 (PR [#2008](https://github.com/xerj-org/xerj/pull/2008)).
+
+## [1.0.0-rc.97] - 2026-10-19
 
 Window since v1.0.0-rc.96: the first release that ships Corpus Hub v2 switched
 on, plus a fix sweep driven by field reports. The fixes cover `xerj search` /

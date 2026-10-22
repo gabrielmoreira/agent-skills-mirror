@@ -212,6 +212,12 @@ Gaps: An acknowledged retry can remain pending or fail; report actual useful res
 
 Capability ID: `recovery/workspace`.
 
+The internal preservation resume path grants no board or agent execution API.
+It requires the exact source action, company, run, lease and environment, a
+held physical workspace owner, and its current stop-only cleanup claim. The
+ordinary resume and destruction fences still apply to protected sources. The
+assembled-runtime regression checks this separation before any provider call.
+
 Review: `operation-reviewed`.
 
 Each workspace repair/export/reconstruction/physical-owner operation has its own proof and authority.

@@ -30,6 +30,10 @@
 
 - **大肥鱼支持直接填主人的 mid**：主号 Cookie 失效时，`owner_mid` 用来做隔离校验、私信收件人；昵称留空时用匿名 WBI 请求 `/x/space/wbi/acc/info` 兜底查（偶发风控失败则只影响 @ 前缀）。桌面 Web 与扩展 popup 都加了「我的 mid」输入，i18n 已同步。
 
+- **大肥鱼的通知文案改由人设生成**：新增 `build_blue_fish_notice_prompt`（system 字节静态，人设 / 视频 / 主人在 user 消息），每次通知花一次模型调用写一句 ≤40 字的钩子，提示词里带正反例，明确拒绝「推荐你看看」「正合你口味」这类模板腔；模型不可用或 JSON 不合规时回落原模板。`fish.owner_notice` 同 `fish.comment_reply` 一样登记为 maintenance caller。
+
+- **大肥鱼的默认人设更可爱了**：默认 persona 改成「圆滚滚、反应慢半拍，会哇/救命/谁懂啊，偶尔自称本鱼」；通知 prompt 明确「你就是本鱼，用你自己的口吻，不是在写推荐语」，并把「太像影评」的书面腔列进反例；回复 prompt 也允许一点点小情绪，但别每句都卖萌。真实模型产出示例：「谁懂啊，那几块石头一放下去，我盯着屏幕看了半天。」
+
 - **多语言基础设施（#305）**：`[general].language` 现在真正驱动界面、CLI 与新生成的模型输出，支持 `zh-Hans`（默认）/ `zh-Hant`（繁體・台灣）/ `en`；旧值 `zh`、`zh-TW`、`en-US` 等自动规范化，未知语言在 `PUT /api/config` 保存时 400 拒绝。新增 `openbiliclaw language [locale]` 与 `OPENBILICLAW_LANG` 单次覆盖、`GET /api/i18n/locales`、`/i18n/ui/<locale>.json` 静态目录；桌面 Web、移动 Web、设置向导与插件侧边栏共用 `web/shared/i18n.js`，按渲染后的 DOM 文本匹配目录翻译（内容与用户输入不翻译，`data-i18n-skip` 保护指定区域）。UI 目录由 `scripts/build_i18n_catalogs.py` 从源码生成：2797 条文案 + 197 条插值模式（如「模型：{0}」「{0} 分钟前」），`zh-Hant` 由 OpenCC `s2twp` 生成，英文 100% 覆盖并由 `tests/test_i18n.py` 守护；数字与短日期按 locale 格式化（`331K` / `Sep 5` 对 `33.1万` / `9月5日`）。聊天与推荐理由的 system prompt 保持字节静态，locale 以 `<output_language>` 指令进 user prompt，provider prompt cache 不受影响；`zh-Hant` 额外约束只用繁體字（真实 provider 实测：仅写「Traditional Chinese」首轮仍可能回简体），配置保存/应用提示也按新语言返回；历史推荐 / 画像文本保留原语言、不批量重译。详见 [多语言模块](modules/i18n.md)。
 
 - 修复 Safari 默认 Cookie store 不完整时扩展无法同步 B 站登录的问题（#304）：仅 Safari 构建通过 `getAllCookieStores()` 逐 store 查找，只有唯一候选 store 同时包含 `SESSDATA` / `bili_jct` / `DedeUserID` 才上传，不跨 store 拼接登录态，也不静默选择多个完整候选之一；缺失诊断仅记录 Cookie 名称，不记录值。

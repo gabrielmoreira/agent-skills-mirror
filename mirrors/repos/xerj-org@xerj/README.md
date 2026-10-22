@@ -335,7 +335,125 @@ Use an absolute path. The installer puts `xerj` in `~/.local/bin` by default
 shell's `PATH`. If the node is running with auth (anything but `--insecure`), add
 `"XERJ_AUTH": "ApiKey <key>"` alongside `XERJ_URL`; the key is in `<data-dir>/admin.key`.
 
-Seventeen tools are exposed. Eleven are thin proxies over an endpoint XERJ already serves:
+### Supported agents
+
+Twenty-six clients can register `xerj mcp` as a local stdio server. The entry is always the same
+two fields - the absolute path to the binary, and `mcp` as its only argument - but where that entry
+lives and which key wraps it differ per client. `tested` means the server was registered in that
+client and `xerj_search` appeared in its tool list; `untested` means the path and shape are
+transcribed from the client's own documentation and nobody has run it yet. Only the OpenCode row
+has been run: v2.1.2 on Windows against `xerj` v1.0.0-rc.97, which answered `initialize` and
+`tools/list` with its full tool list. Correcting an `untested` row is a welcome first PR.
+
+| Client | Config file | Key | Note | Tested |
+|---|---|---|---|---|
+| OpenCode | `opencode.json` in the project, or `~/.config/opencode/opencode.json` | `mcp.servers` | one command array, `environment` not `env`, needs a project root | tested |
+| Claude Code | `.mcp.json` (project) or `~/.claude.json` (user); `claude mcp add` writes either | `mcpServers` | `--` before the command is required | untested |
+| Cursor | `.cursor/mcp.json` in the project, or `~/.cursor/mcp.json` | `mcpServers` | no `type` for stdio | untested |
+| Codex | `~/.codex/config.toml`, or `.codex/config.toml` in trusted projects | `[mcp_servers.xerj]` | TOML, not JSON | untested |
+| Gemini CLI | `.gemini/settings.json` or `~/.gemini/settings.json` | `mcpServers` | `gemini trust` the folder or stdio shows Disconnected | untested |
+| GitHub Copilot in VS Code | `.vscode/mcp.json` | `servers` | needs `"type": "stdio"`; the portable `.mcp.json` uses `mcpServers` | untested |
+| Windsurf | `%APPDATA%\devin\mcp_config.json`, `~/.config/devin/mcp_config.json` | `mcpServers` | the path is Devin's now, not `~/.codeium/windsurf` | untested |
+| Claude Desktop | `%APPDATA%\Claude\claude_desktop_config.json`, `~/Library/Application Support/Claude/claude_desktop_config.json`, `~/.config/Claude/claude_desktop_config.json` | `mcpServers` | quit the app fully, not just the window | untested |
+| Cline | `~/.cline/data/settings/cline_mcp_settings.json` (CLI); the IDE opens it from MCP Servers > Configure | `mcpServers` | `disabled` and `autoApprove` are Cline-specific | untested |
+| Roo Code | `.roo/mcp.json` in the project, or `<VS Code User>/globalStorage/rooveterinaryinc.roo-cline/settings/mcp_settings.json` | `mcpServers` | the project entry wins on name clashes | untested |
+| Kilo Code | `kilo.jsonc` or `.kilo/kilo.jsonc` in the project, `~/.config/kilo/kilo.jsonc` global | `mcp` | one command array, like OpenCode | untested |
+| Continue | `~/.continue/config.yaml`, or any file in `.continue/mcpServers/` | `mcpServers` | a YAML list, not a map; Agent mode only | untested |
+| Zed | `~/.config/zed/settings.json` (on Windows, run `zed: open settings file`) | `context_servers` | the key is not `mcpServers` | untested |
+| JetBrains AI Assistant | settings UI only: Settings > Tools > AI Assistant > Model Context Protocol | `mcpServers` | a separate store from Junie | untested |
+| Junie | `.junie/mcp/mcp.json` in the project, `~/.junie/mcp/mcp.json` user | `mcpServers` | older posts omit the `mcp/` folder | untested |
+| Amp | `~/.config/amp/settings.json`, `.amp/settings.json` in the workspace, or `amp mcp add` | `amp.mcpServers` | the key keeps the `amp.` prefix | untested |
+| Goose | `~/.config/goose/config.yaml`, `%APPDATA%\Block\goose\config\config.yaml` | `extensions` | `cmd`, not `command`, and YAML | untested |
+| Kiro | `.kiro/settings/mcp.json` in the workspace, `~/.kiro/settings/mcp.json` user | `mcpServers` | `${VAR}` expansion needs approval | untested |
+| Antigravity | `~/.gemini/config/mcp_config.json`, or `.agents/mcp_config.json` in the workspace | `mcpServers` | remote servers use `serverUrl` | untested |
+| OpenClaw | `~/.openclaw/openclaw.json` (JSON5) | `mcp.servers` | `transport: "stdio"` | untested |
+| DeepSeek Harness (dsh) | `$DSH_HOME/cordis.patch.yml`, or a profile patch | `- insert:` with `@deepseek-ai/dsh-mcp-client` | one plugin instance per server | untested |
+| Warp | Settings > Agents > MCP servers, or `~/.warp/.mcp.json` and `.warp/.mcp.json` in the project | `mcpServers` | `working_directory`, not `cwd` | untested |
+| Augment Code | `~/.augment/settings.json` for the Auggie CLI; the IDE uses its own panel | `mcpServers` | that file does not drive the IDE | untested |
+| Qwen Code | `~/.qwen/settings.json`, or `.qwen/settings.json` in the project | `mcpServers` | `mcp.allowed` can silently hide it | untested |
+| Kimi CLI | `~/.kimi-code/mcp.json`, or `.kimi-code/mcp.json` in the project | `mcpServers` | the current Kimi Code CLI, not the archived `~/.kimi/mcp.json` | untested |
+| Grok CLI | `~/.grok/config.toml`, or `.grok/config.toml` in the project | `[mcp_servers.xerj]` | Grok Bot has no local stdio registration | untested |
+
+Codex and the Grok CLI read TOML, so the entry is a table:
+
+```toml
+[mcp_servers.xerj]
+command = "/abs/path/to/xerj"
+args = ["mcp"]
+```
+
+OpenCode and Kilo Code take one `command` array, and Kilo uses the same shape one level shallower:
+
+```json
+{"mcp": {"servers": {"xerj": {"type": "local", "command": ["/abs/path/to/xerj", "mcp"], "environment": {"XERJ_URL": "http://localhost:9200"}}}}
+```
+
+```json
+{"mcp": {"xerj": {"type": "local", "command": ["/abs/path/to/xerj", "mcp"]}}}
+```
+
+Continue and Goose read YAML:
+
+```yaml
+# ~/.continue/config.yaml
+mcpServers:
+  - name: xerj
+    command: /abs/path/to/xerj
+    args:
+      - mcp
+```
+
+```yaml
+# ~/.config/goose/config.yaml
+extensions:
+  xerj:
+    type: stdio
+    cmd: /abs/path/to/xerj
+    args:
+      - mcp
+    enabled: true
+```
+
+Amp keeps the key namespaced, VS Code and Copilot need `servers` plus a transport, Zed calls them
+context servers, and OpenClaw nests them under `mcp`:
+
+```json
+{"amp.mcpServers": {"xerj": {"command": "/abs/path/to/xerj", "args": ["mcp"]}}}
+```
+
+```json
+{"servers": {"xerj": {"type": "stdio", "command": "/abs/path/to/xerj", "args": ["mcp"]}}}
+```
+
+```json
+{"context_servers": {"xerj": {"command": "/abs/path/to/xerj", "args": ["mcp"], "env": {}}}}
+```
+
+```json5
+{mcp: {servers: {xerj: {command: "/abs/path/to/xerj", args: ["mcp"], transport: "stdio"}}}}
+```
+
+DeepSeek Harness loads MCP as a plugin in its Cordis patch file:
+
+```yaml
+- insert:
+    - id: mcp-xerj
+      name: "@deepseek-ai/dsh-mcp-client"
+      config:
+        serverName: xerj
+        transport: stdio
+        command: /abs/path/to/xerj
+        args:
+          - mcp
+```
+
+Three candidates from the original list are deliberately absent. Aider has no MCP client support at
+all ([Aider-AI/aider#3314](https://github.com/Aider-AI/aider/issues/3314) is still open). T3 Code is
+the other direction: it hosts an MCP endpoint other agents connect to, and its sessions inherit
+their servers from the harness underneath. Grok Bot has no documented local stdio registration; the
+Grok CLI does, which is the `grok` row above.
+
+Twenty tools are exposed. Eleven are thin proxies over an endpoint XERJ already serves:
 
 | Tool | What it does |
 |---|---|
@@ -350,6 +468,10 @@ Seventeen tools are exposed. Eleven are thin proxies over an endpoint XERJ alrea
 Two more are not plain proxies: `xerj_map` returns the per-index field map from the autoindex
 catalog (trimmed to a byte cap, otherwise verbatim), and `xerj_code_search` runs the `xerj code`
 reference-coding pipeline ([`tools/xerj-code/`](tools/xerj-code/)) and returns its rendered text.
+`xerj_index_budget` counts a folder and estimates its index against the node's disk budget
+before `xerj autoindex` hashes anything (it does not index). `xerj_autoindex_remove` drops
+one autoindexed folder after listing it, and deletes nothing unless `confirm` is true.
+`xerj_corpus_feedback` rates a hub corpus.
 `xerj_field_report` files a field report, and `xerj_hub_find`, `xerj_hub_def` and `xerj_hub_ask`
 answer from Corpus Hub packs already on the machine (the `xerj ask` flow).
 

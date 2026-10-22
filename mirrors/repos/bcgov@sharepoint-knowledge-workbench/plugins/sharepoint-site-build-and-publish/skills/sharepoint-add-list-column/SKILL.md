@@ -10,7 +10,7 @@ examples:
 
 # Add SharePoint List Column
 
-Add a column to one existing list or library with Add-PnPField.
+Add a column to one existing list or library with Add-PnPField, or a Lookup column (`"type": "Lookup"`, `lookup_list`, optional `lookup_field`) with Add-PnPFieldFromXml.
 
 ## Contents
 

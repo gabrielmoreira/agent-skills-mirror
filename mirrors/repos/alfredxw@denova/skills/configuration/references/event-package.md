@@ -103,4 +103,4 @@ config_apply({
 })
 ```
 
-The `COMPLETE_EXISTING_MARKDOWN_FROM_GET` markers mean copy the actual unchanged text; never write the marker. Verify card count, stable IDs, the requested enabled state, and a changed revision. Attaching the package is a separate complete `story_director` update.
+The `COMPLETE_EXISTING_MARKDOWN_FROM_GET` markers mean copy the actual unchanged text; never write the marker. Verify card count, stable IDs, the requested enabled state, and a changed revision. Attaching the package to a story is a separate story setting: choose it during story creation or in the story's tuning settings through `module_refs.event_package_ids`. This resource mutation changes the reusable package only and never changes a story's selection.

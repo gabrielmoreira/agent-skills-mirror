@@ -17,6 +17,10 @@ The CLI follows a command pattern with two primary commands:
 - **install.ts**: Orchestrates multi-step installation workflow
 - **doctor.ts**: Validates configuration and environment (includes multiplexer validation)
 - **types.ts**: Shared CLI argument types (`InstallArgs`, `BooleanArg`, `SkillsArg`, `OpenCodeConfig`, `InstallConfig`)
+- **eval.ts**: Source-checkout eval entry point (run, offline scoring, diff,
+  precheck, manual collection). Uses `src/evals/suite-runner.ts`,
+  `auto-collect.ts`, `eval-server.ts`, and `git-lifecycle.ts`; not an installed
+  plugin runtime command. See `docs/evals.md`.
 
 ### Configuration Management Pattern
 

@@ -65,7 +65,7 @@ This codemap covers the plugin repository itself and excludes the nested `openco
 | `src/v2/` | OpenCode v2 (`opencode2`) adapter: bridges the v1 plugin factory into v2's promise-plugin transform/runtime-hook API. Loaded via `default.setup`; v1 uses `default.server` unchanged. | [View Map](src/v2/codemap.md) |
 | `scripts/` | Build/release validation and generated-artifact maintenance scripts. | [View Map](scripts/codemap.md) |
 | `src/generated/` | Generated build metadata (`build-info.ts` via `scripts/gen-build-info.ts`); never edit by hand. | [View Map](src/generated/codemap.md) |
-| `companion/` | Rust companion crate backing the TUI companion animation; `VIDEOS/` holds MP4 source media used to generate the runtime JPEG sprite sheets. | [View Map](companion/codemap.md) |
+| `src/companion/` | Plugin-side state manager, installer/updater, and pinned native release metadata. Rust/media/builds/releases live in the separate [oh-my-opencode-companion](https://github.com/alvinunreal/oh-my-opencode-companion) repository, with its crate at the root. | [View Map](src/companion/codemap.md) |
 
 ## Runtime Control Flow
 

@@ -35,11 +35,17 @@ syntax skill is available.
 - Resolve the user vault before reading. Never derive it from plugin files.
 - Store boards under `wiki/canvases/`; use `wiki/canvases/main.canvas` only as
   the default when the user did not name a board.
-- Treat `wiki/canvases/index.md` as an optional catalog. Update it only when a
-  canvas is created, renamed, or removed.
+- Treat `wiki/canvases/_index.md` as an optional catalog. Add a new board to it
+  in the same transaction when a catalog exists. Node or edge edits inside an
+  existing board do not require a catalog change.
+- The transaction engine supports file creation and replacement only. A board
+  file cannot be deleted or renamed through this skill. Explain that boundary
+  for a file-removal or file-rename request and return a separate cleanup plan;
+  do not substitute host file tools or silently turn a rename into a copy.
 - Use vault-relative paths in `file` and `background`; reject absolute paths,
   `..` traversal, home shortcuts, and paths that escape through symlinks.
-- Reference only files already inside the vault. If an optional capture or
+- Reference only files already inside the vault or created in the same reviewed
+  transaction. If an optional capture or
   media capability is detected, compose with it and consume its returned
   vault-relative path. Do not assume a particular plugin, command, or session
   log, and do not download or copy assets in this skill.
@@ -128,6 +134,7 @@ python3 "$CORE" transaction apply BUNDLE --vault VAULT \
   --approved-plan-sha256 "$APPROVAL_SHA256"
 ```
 
-For removals, replacements, renames, or other destructive changes, obtain
-explicit consent after presenting the preview. Report the operation ID, exact
+For destructive edits within a board, including node or edge removal, obtain
+explicit consent after presenting the preview. These edits replace the board
+file through the transaction engine. Report the operation ID, exact
 changed paths, board name, node IDs, and final positions. Do not commit Git.

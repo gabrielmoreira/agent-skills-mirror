@@ -39,13 +39,13 @@ This skill makes a single-page interactive figure. The figure is a solid isometr
    | Larger | more than 150 | get the user's approval first |
 
 3. Write the state model first. Make `model.mjs` pure and deterministic, with no DOM and no clock. `simulate(config)` returns an event list and totals. Test it before any geometry. See `references/state-model.md`.
-4. Map each concept to a station. Write a table: station, concept word for its nameplate, what it does, what fails without it.
+4. Map each concept to a station. Write a table: station, concept word for its label, what it does, what fails without it.
 5. Write the parts list. List each part with its assembly, size in world units, tone and whether it moves. Geometry comes after the list.
 6. Set the camera. Use world units and one isometric camera. Set elevation to 30 degrees. Pick the azimuth so the working faces point at the viewer. Fit the projection over the assembled and the exploded pose.
 7. Build the static geometry once. Each part becomes one SVG group with a depth key. Movers get a `data-live` hook. See `references/geometry.md`.
 8. Animate by translation. Move a part by changing its `transform` only. Rebuild a path only when its shape changes, such as a rod that gets longer.
 9. Paint from back to front. Sort groups by depth key plus the depth of their current offset. Reorder the DOM only when the order changes.
-10. Use one accent colour. Exactly one accent colour marks the active part and its nameplate. Everything else uses four grey shades and four line tones.
+10. Paint with colour and ink. Each material has three flat tones, the main bodies have a heavy ink silhouette, and each body casts a short, flat, warm grey shadow on the bench. Exactly one accent colour marks the active part and its pill label. See `references/colour-and-ink.md`.
 11. Add controls that change the model. Run, step, break, repair, reset and the config switches all act on a real `simulate` run. Write the config to the URL. See `references/live.md`.
 12. Verify the page in a headless browser. Take screenshots at desktop and phone width in both themes. Add 4x close-ups, a line-end check, a scenario sweep with zero console errors and a contact sheet. See `references/verify.md`.
 
@@ -61,9 +61,11 @@ Truth:
 Geometry:
 - All coordinates are world units. Pixels appear only in the projection.
 - Elevation is 30 degrees. The azimuth is one fixed value for the whole page. The reference page uses 60.
-- Solids use four shade bands and an outline. Lines use the tones `hi`, `mid`, `lo` and `faint`.
+- Solids use `inkSolid` from `kit/ink.mjs`: three flat tones for each material, an ink outline, and a heavier silhouette round each main body.
 - Every line ends on a solid or on another line. A line with a deliberate loose end carries `data-free="start"`, `"end"` or `""`.
-- Each station carries an engraved nameplate with its concept word in capitals, such as `CACHE` or `VERIFIER`.
+- Each station carries a pill label with a leader line to its working part, with its concept word in capitals, such as `CACHE` or `VERIFIER`. The page has a Labels switch and reads `?labels=0`.
+- Status lights show the state the model gives each station: green when it finished, red when it failed or left a gap.
+- Glass covers show what is inside a station: a light tint and one or two streaks.
 - A part that rests on another part gets a depth bias so it paints after its support.
 
 Motion:
@@ -90,7 +92,9 @@ Page:
 - [ ] Every config control calls `simulate` and updates the URL.
 - [ ] Opening the URL with `?` parameters restores the same config.
 - [ ] Exactly one accent colour shows at any moment, and it follows the active part.
-- [ ] Every station shows a readable nameplate in both themes and at phone width.
+- [ ] Every station shows a readable pill label in both themes and at phone width, and no pill covers a mover or another pill.
+- [ ] The wobble slider, the colour swatches and the Labels switch work, and `?labels=0` starts with the labels off.
+- [ ] A "The big idea" line under the figure says the point in plain words.
 - [ ] The line-end check reports zero loose ends.
 - [ ] The scenario sweep runs every config to the end with zero console errors.
 - [ ] Desktop and phone screenshots in light and dark show no clipping and no horizontal scroll.
@@ -101,10 +105,12 @@ Page:
 
 - `references/concept.md`: invent the machine, the one-sentence test, concept mapping, sizing.
 - `references/state-model.md`: the model contract, event shape, tests, URL state.
-- `references/geometry.md`: units, camera, parts list, kit functions, shading, depth keys, nameplates.
+- `references/geometry.md`: units, camera, parts list, kit functions, shading, depth keys, labels.
+- `references/colour-and-ink.md`: materials, tones, ink weights, cast shadows, glass, status lights, pill labels, wobble and the dark theme.
 - `references/live.md`: the beat timeline, the draw loop, sorting, accent, controls, accessibility, layout.
 - `references/verify.md`: the headless verification loop with a script.
 - `templates/model.mjs`, `templates/model.test.mjs`, `templates/build.mjs`, `templates/live.js`: a working cache machine. Run `node templates/build.mjs` to write `templates/out.html`. Run `node --test templates/model.test.mjs` for the model tests.
 - `kit/iso-kit.mjs`, `kit/lathe.mjs`, `kit/tube.mjs`: projection, solids, lathe bodies, tubes and the base CSS. Keep `kit/LICENSE` with the kit.
+- `kit/ink.mjs`: the colour and ink layer: `inkSolid`, `silhouetteSvg`, `castShadowSvg`, `glassSvg`, `pillSvg`, `wobbleFilter`, `PALETTES` and `INK_CSS`.
 
-Inside the AI Engineering from Scratch repo, also see `scripts/agent-machine/` and `site/test_agent_machine.js` for a full hero build with 57 depth-sorted items.
+Inside the AI Engineering from Scratch repo, also see `scripts/decompiler-machine/` and `site/test_decompiler_machine.js` for a full hero build in the colour and ink look, and `scripts/agent-machine/` for the older grey look.

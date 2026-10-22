@@ -64,8 +64,10 @@ sources:
 ```
 
 Do not nest objects in generated wiki properties. Use block lists rather than
-inline YAML arrays. Quote numeric-only tag values, for example `- "2026"`, so
-YAML parsers preserve them as tags instead of numbers. Keep unknown existing
+inline YAML arrays. A numeric-only tag is invalid in Obsidian even when quoted as a YAML string.
+Use `year/2026` or `y2026`, or store a number in a `year` property. Tags need
+at least one non-numeric character; valid Unicode tags remain supported. See
+[Tags](https://obsidian.md/help/tags), checked 2026-10-17. Keep unknown existing
 properties unless the requested edit changes them.
 
 ## Wikilinks and embeds

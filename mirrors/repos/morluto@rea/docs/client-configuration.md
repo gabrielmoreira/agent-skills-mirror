@@ -153,8 +153,8 @@ headroom. The default is 450000 ms, covering the default 330-second Ghidra
 startup; an explicit Ghidra startup timeout of 2700000 ms produces a 2820000 ms
 tool timeout. The startup allowance follows an explicitly selected Ghidra or
 Hopper provider, and otherwise uses the larger known Ghidra/Hopper deadline.
-An explicit `REA_JEB_MCP_TIMEOUT_MS` request budget also contributes to that
-maximum. For `ida` or `auto` selection, a valid IDA registration's parsed
+An explicit `REA_JEB_MCP_TIMEOUT_MS` deadline, shared by catalog discovery and
+each tools/call, also contributes to that maximum. For `ida` or `auto` selection, a valid IDA registration's parsed
 `timeoutMs` also contributes to that maximum; its default is 300000 ms.
 Setup forwards these explicitly selected REA deadlines and the input schema
 profile into the registration; unrelated process values are omitted. An

@@ -56,7 +56,7 @@ Bad example:
 
 ## Workflow Lane
 
-- Current lane: **Intent -> plan** (`oh-my-hermes`, `meta-router`, `deep-interview`, `context`, `plan`, `ralplan`, `adversarial-consensus`, `codebase-onboarding`, `+8 more`) - clarify, plan, ship, or loop goals.
+- Current lane: **Intent -> plan** (`oh-my-hermes`, `meta-router`, `deep-interview`, `context`, `plan`, `ralplan`, `adversarial-consensus`, `codebase-onboarding`, `+9 more`) - clarify, plan, ship, or loop goals.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
 - Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 
@@ -144,7 +144,7 @@ stopping, stop and plan.
 
 Use before planning or execution when requirements are materially ambiguous.
 
-    Strong routing signals: `deep-interview`, `$deep-interview`, `interview me`, `don't assume`, `clarify`, `feature shaping`, `ambiguous product request`, `one question`, `要件を詰めて`, `曖昧な要求`, `一問一答で確認`, `オンボーディング`, `온보딩`, `부드럽게`, `모호한 제품 요청`, `기획자`, `개발자 사이`, `澄清需求`, `需求不明确`, `一次问一个问题`, `perjelas kebutuhan fitur ini`, `bantu gali kebutuhan sebelum bikin solusi`, `urai kebutuhan yang masih ambigu`, `klarifikasi permintaan ini lewat tanya jawab`
+    Strong routing signals: `deep-interview`, `$deep-interview`, `interview me`, `don't assume`, `clarify`, `feature shaping`, `ambiguous product request`, `one question`, `要件を詰めて`, `曖昧な要求`, `一問一答で確認`, `オンボーディング`, `온보딩`, `부드럽게`, `모호한 제품 요청`, `기획자`, `개발자 사이`, `澄清需求`, `需求不明确`, `一次问一个问题`, `perjelas kebutuhan fitur ini`, `bantu gali kebutuhan sebelum bikin solusi`, `urai kebutuhan yang masih ambigu`, `klarifikasi permintaan ini lewat tanya jawab`, `làm rõ yêu cầu của tính năng này`, `giúp khai thác yêu cầu trước khi xây dựng giải pháp`, `phân tích các yêu cầu còn mơ hồ`, `làm rõ yêu cầu này thông qua hỏi đáp`
 
 ## Catalog Metadata
 

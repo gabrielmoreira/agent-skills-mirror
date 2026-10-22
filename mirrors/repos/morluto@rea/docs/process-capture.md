@@ -461,7 +461,33 @@ selected roots; it is not a per-file allowance. File contents are read in
 
 Ownership inspections bind run-token reads to native start identities and retain
 related generations through reparenting, group changes, omitted rows, and cleanup
-retries. The captured run keeps one evidence owner through settlement and cleanup.
+retries. A host without native identity reads still token-checks process-table
+rows that appear only in a launcher-exit refresh before reporting that group
+clean or publishing an empty lineage. A matching token authorizes a signal only
+for a group whose leader carries the same token. A matching token whose leader
+is absent, or an unreadable token for a still-live new row, stays unresolved. A
+readable foreign token is not signaled. An unreadable row that has exited by
+the confirmation read does not hide a new row in that confirmation table, and a
+group proven while revalidating another owned group is signaled in the same
+cleanup. A matched row that changes parent or group on the confirmation read
+is token-checked again. A PID whose token was already read is read again
+on the next confirmation even when its parent and group return to the
+pre-exit values. A PID whose first token was foreign is read again
+on that table, because the PID alone does not identify the process. A PID
+from the pre-exit table is read again when its parent or group changes, and
+an unchanged pre-existing row that was never token-read stays unread. Lineage
+publishes one row for each PID. Confirmation reads are bounded; a table that keeps producing unreadable
+replacements stays unresolved. That refresh does not retain a ledger
+for a later attempt that never observes the launcher. Lineage reads a row again
+when its parent, group, or launcher-tree membership changes, and it reads a
+token again on the next refresh even when those fields are unchanged. The
+launcher is read on every lineage refresh; a missing, unowned, or
+relation-changed launcher PID is not published as a verified lineage. A
+descendant absent from the latest refresh is omitted. An
+ancestor move cannot leave a foreign descendant inside a verified result. A
+group that reappears after cleanup already processed it is revalidated once;
+another appearance stays unresolved. The captured run keeps
+one evidence owner through settlement and cleanup.
 An absent or changed token leaves a previously related generation unresolved;
 current token proof is still required before signaling. Swept cleanup verifies the
 remaining family after its group signals. Coverage is bounded by the native
@@ -518,6 +544,15 @@ an unset or empty compiler setting keeps the normal `xcrun swiftc` path. A
 missing or relative SDK/compiler path fails with an actionable prerequisite
 error before compilation. An incompatible installation reports the compiler's
 bounded diagnostics; REA does not repair or replace the toolchain.
+
+The compile deadline is `REA_SWIFTC_COMPILE_TIMEOUT_MS`. An omitted value is
+120,000 ms, and accepted values are integers from 1 to 2,147,483,647. REA reads
+the variable from the environment that starts the process and keeps that
+deadline for every helper compile in that process. Restart REA to apply a
+change; the next ownership-helper compile uses the new value. A timeout names
+the effective milliseconds. Invalid values fail configuration validation at
+startup. Embedded compiler diagnostics are cut at 512 bytes, and this release
+has no runtime override for that excerpt.
 
 For example, select paths from your existing Xcode or Command Line Tools
 installation **before** entering an enforced write boundary:

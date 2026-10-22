@@ -48,8 +48,30 @@ still apply its eventual writes through one operation transaction.
 | `para` | Projects, Areas, Resources, or Archives chosen by actionability. |
 | `zettelkasten` | Flat atomic notes with time-sortable, collision-resistant identifiers and explicit links. |
 
-Use the templates under `templates/` as structural guidance, not authority to
-overwrite user conventions.
+Use the templates as structural guidance: [LYT atomic](templates/lyt/atomic-template.md),
+[LYT MOC](templates/lyt/moc-template.md), [PARA area](templates/para/area-template.md),
+[PARA project](templates/para/project-template.md),
+[PARA resource](templates/para/resource-template.md), or
+[Zettelkasten atomic](templates/zettel/atomic-template.md). They use canonical
+`type` values from `claude_obsidian/page_schema.py` and a separate flat
+`methodology_role` property:
+
+| Template | Type | Methodology role |
+|---|---|---|
+| LYT atomic | `concept` | `atomic` |
+| LYT MOC | `meta` | `moc` |
+| PARA area | `concept` | `area` |
+| PARA project | `entity` | `project` |
+| PARA resource collection | `concept` | `resource` |
+| Zettelkasten atomic | `concept` | `zettel` |
+
+A resource template describes a topic collection. Use `source` instead when the
+new page represents a particular captured source. The methodology role does not
+add a router type: pass the canonical type and respect the chosen project, area,
+or MOC destination. Structural MOCs use an explicit destination; `meta` is not a
+routable new-note type. Existing user pages, custom type vocabularies, and saved
+Dataview queries remain unchanged. Any requested migration needs its own reviewed
+plan; switching mode never rewrites existing notes.
 
 ## Change mode
 

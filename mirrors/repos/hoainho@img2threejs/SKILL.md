@@ -15,9 +15,9 @@ subsequently be *exported* to; an explicitly-selected emission target (`--target
 terminal, whole-artifact transform of the already-built model, verified to its own stated limit,
 never a second way to build one.
 
-Agent-agnostic: works under Claude Code, Codex, or OpenCode. Wherever this doc says "agent
-vision" or "agent browser tool", use whatever the host provides — native image reading, a
-browser MCP (playwright/chrome-devtools), the project preview, or a user-supplied screenshot.
+Agent-agnostic: works under Hermes, Claude Code, Codex, or OpenCode. Wherever this doc says "agent vision" or "agent browser tool", use
+whatever the host provides — native image reading, a browser MCP (playwright/chrome-devtools), the
+project preview, or a user-supplied screenshot.
 
 This file is the always-loaded router: it holds the order of operations and every hard rule as one
 line. The full contract behind each rule lives in the `grimoire/` or `docs/` file that rule names —
@@ -25,19 +25,37 @@ read the named file at the moment you reach that stage, not before.
 
 ## Canonical shared checkout
 
-Keep one checkout of this repository and let every host enter it through a symlink, so Claude and
-Codex execute the same code instead of drifting apart:
-
-```text
-~/.claude/skills/img2threejs -> <your checkout>
-~/.codex/skills/img2threejs  -> <your checkout>
-```
+Keep one checkout of this repository and let every host enter it through a symlink, so the hosts
+execute the same code instead of drifting apart. `npx --yes img2threejs@latest install` does this
+for the hosts it detects (`hermes`, `claude`, `codex`, `opencode`); it refuses (exit 2) to replace a
+link it does not manage, so a hand-made link is never silently swapped for a release copy.
+**Hermes** reads skills per profile: also link `~/.hermes/profiles/<profile>/skills/img2threejs`
+(the installer writes only `~/.hermes/skills/`). Install, manual symlinks, and troubleshooting:
+[`docs/INSTALL.md`](docs/INSTALL.md).
 
 ## When To Use
 
 The user attaches/points to an object image and wants a procedural Three.js model, a
 reconstruction/animation/destruction plan, a sculpt spec, or code. Also for material studies,
 action-ready props, game objects, botanical/mechanical parts, and stylized reconstructions.
+
+## Profile preflight (once per run, before `forge/next.py`)
+
+Domain knowledge (CS2 skins, animated characters, emission targets) lives in plugins, not in this
+checkout. Pick the profile from the subject, then confirm this environment can start it:
+
+```bash
+python3 forge/state.py init --help | grep -- --profile   # profiles available here
+```
+
+- `generic` / `character` are built in: no harness, no plugin, nothing else to check.
+- A missing domain profile (e.g. `cs2`) is a setup gap: never downgrade to
+  `generic` silently. Installing it edits the user's machine, so give them the commands in
+  [`docs/INSTALL.md` §3](docs/INSTALL.md#3-add-a-plugin-only-if-you-need-one), get their go-ahead,
+  re-check, and continue.
+- Installed but not listed (wrong `$IMG2_HOME`), or a Hermes plugin link: [`docs/PLUGINS.md`](docs/PLUGINS.md).
+- Then read what the profile's own steps name, at the moment you reach them: the plugin's
+  `SKILL.md` and contracts govern that domain.
 
 ## Core Promise
 
@@ -74,7 +92,7 @@ python3 forge/state.py mark <step-id> --state .img2threejs/state.json --evidence
   silent omission is forbidden. Loop counts derive from `reviewHistory` actions
   (`refine-spec`/`refine-code`), not agent memory. Defaults: 3 corrections per pass, 6 total.
 - A domain profile's steps, gates and reference material come from the **registry**: in-repo
-  modules (`character`) and installed plugins (`cs2`, `animated-character` from plugin-character) register identically, and
+  modules (`character`) and installed plugins (e.g. `cs2`) register identically, and
   `forge/state.py init` names what is available. A profile adds mandatory gates without changing
   the core order -- a domain plugin typically requires an authoritative classification, an intake
   manifest, and a machine-readable domain review before AI review; `character` requires the
@@ -384,11 +402,12 @@ infer the shape from the reference, as for any other object.
 
 Plugins are installed and managed by the `img2` harness
 ([img2threejs/img2](https://github.com/img2threejs/img2)), a separate dependency-free CLI (Node
-launcher, Python core). This skill
-never installs anything itself: when `state.py init` names a profile as unavailable, name the
-`img2 add` command that installs it and stop — never vendor domain logic instead.
+launcher, Python core). This skill vendors no domain logic and never writes a substitute for it;
+a missing profile is handled by the preflight above, and only a plugin that does not exist
+upstream is a blocker to report.
 
 ```bash
+img2 plugins                                      # list plugins
 img2 add img2threejs/plugin-<id> --ref <tag>      # install a plugin at a tag (e.g. plugin-cs2)
 img2 doctor                                       # what each host resolves: base-skill path + version, plugin gates
 img2 capabilities --from-kind image --to-kind glb # which installed plugin serves an edge

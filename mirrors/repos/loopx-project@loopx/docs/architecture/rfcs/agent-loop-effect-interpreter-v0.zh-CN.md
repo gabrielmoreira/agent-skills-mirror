@@ -329,6 +329,22 @@ R5 短包投影也完整保留已有 CLI 结算计划，包括 effect identity�
 envelope 投影，Codex CLI 保持关闭隔离；这不代表安装态 heartbeat/App 或模型收益
 已验收。
 
+PR 依赖观察现复用既有注册 TurnStart 生命周期，由执行性 quota guard、原生 Turn
+与兼容 prequota 共用。权限来自 typed Goal／Agent capability owner，包括已记住的
+宿主观察与撤销；已有授权时不必逐命令补 flag。能力自有诊断使 PR 业务规则留在 core
+Turn 之外；完整源 TS 计划、合并事实 owner 与正常执行准入仍为原权威。Goal 内
+single-flight 与每项依赖的持久节奏避免并发／到期读取重复。File/SQLite 验证覆盖业务
+额度暂停／停止、full/thin heartbeat 生成命令、跨入口观察、撤销、不确定效果、provider
+失败后的无关独立校验工作及原 journal 重放。App/Lark 共用上下文后端只消费 canonical
+就绪状态，不轮询。plan、只读／status／上下文、缺少权限与恢复路径均不添加观察。
+安装态执行器采用、既有真实 owner 的合法恢复、持续调度、模型结果与以下三批收敛验收
+仍开放。通用 memory 生命周期接入是另一项未完成边界；post-writeback hook 继续无效果。
+
+同次捕获决策中的所选 Task 继续条件与满足状态，现在沿完整选择投影、签名 envelope
+到实际协议宿主输入完整保留。File/SQLite 验证区分不同仓库的同号 PR，保留原事件时间
+和长要求尾部，独立验证后续工作并拒绝证明篡改。只读 managed-step 与原 journal
+重放不新增观察或扣费。本批补齐事实交付遗漏，安装采用与模型结果仍另行验收。
+
 有界规划上下文现在保持内联，不再因短包预算压力而强制读取整份决策；既有 owner 的
 3 KiB 限制保留。共享 DSH/cloud adapter 传递签名内容，历史引用同时保留原捕获路由和
 哈希。thin renderer 仅在存在 `agent_context.detail_ref` 时要求能力补读，不能把也用于
@@ -375,6 +391,26 @@ candidate 适配器也传递此前遗漏的签名限制，原范围／workspace 
 保留这些条款，修改步骤、顺序或 judge 后拒绝签名等价。既有 8 KiB 诊断阈值不变，
 必需文本可以超出并警告。这只关闭传输遗漏，不代表三项收敛验收通过，也不授权退役仍
 活跃的 Python/host adapter。
+
+沿 capsule 追到实际共享 Host 输入又暴露一处丢失：DSH／云端只传递其中的
+unavailable-context 字段，签名有效的 audit 没有到达 provider。适配器现传递既有
+audit 及原捕获路由／哈希。真实 File/SQLite 普通工作与 replan 捕获通过无模型 DSH
+子进程验证有序义务、继续执行的 judge、非证明条件、签名拒绝及来源／状态未变。
+同次核对还发现工作资格丢失：capsule 过滤了成果底线／退化规则，该 Host 又遗漏整份
+既有 execution profile。typed 投影现完整保留，Host 直接传递。携带该 profile 的新
+material result 返回公开安全的 typed `work_evidence` 与 `validation_evidence`
+数组，并保留实际 delivery scale／outcome；外层 executor 验证并保留两组证据及分类。
+原生来源 oracle 和签名篡改覆盖这些规则。两种契约都不存在的 prompt 保持原输入，旧
+journal replay 保持可读；所有状态、quota 和 scheduler 效果仍归外层 executor。本批
+只验证该调用方的条款交付，不证明模型遵守、安装采用或完整成本收益。应计入恢复要求
+的成本；旧的不完整输入不能作为已验收的效率基线。
+
+完整 execution profile 在原有 96 行公开 CLI 夹具中，令普通 Turn plan 增加
+138–142 个 JSON 字符／UTF-8 字节，不增加行数。原 base/head 差分超过 64／70
+字符和 128 字节增长额度，仍按原失败保留。仅当旧四字段 profile 补齐成果底线和
+退化字段、签名覆盖不变且无其他 JSON 结构变化时，给予一次性 160 字符／字节额度。
+已经完整、只补部分或无关变化均不适用。绝对预算、行数、夹具人口、完整来源／Host
+条款验证及生产 8 KiB 诊断保持。本结果说明必要展示成本，不代表模型 token 或效率收益。
 
 统一工作上下文现在由既有 TS interaction owner 选择并满足必读，注册的 Python
 adapter 核验来源，在普通 heartbeat/quota 与签名 envelope 中返回完整当前任务来源，

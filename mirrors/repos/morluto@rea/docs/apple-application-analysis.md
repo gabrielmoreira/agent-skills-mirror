@@ -213,20 +213,37 @@ Resolution follows dyld:
 Each edge lists every candidate path tried, with its outcome: `resolved`,
 `absent`, `not-mach-o`, `malformed`, `unsupported` (recognized Mach-O outside
 parser coverage, such as big-endian images), `architecture-missing`,
-`outside-target`, `escapes-target`, or `undetermined`. Slices follow dyld's
-graded architectures, so an `x86_64h` process also loads `x86_64`. The edge's `resolution` is one of:
+`not-loadable`, `platform-mismatch`, `outside-target`, `escapes-target`, or
+`undetermined`. `not-loadable` means a
+matching-architecture Mach-O image was found but it is not a dylib and cannot
+satisfy a dylib dependency. `platform-mismatch` means a matching-architecture
+dylib was found but its observed platform is incompatible with the process.
+These outcomes reject that candidate; dyld search may continue and resolve a
+later candidate. Candidate outcomes describe individual search paths, while
+`resolution.status` describes the final edge. Slices follow dyld's graded
+architectures, so an `x86_64h` process also loads `x86_64`. The edge's
+`resolution` is one of:
 
-| Status         | Meaning                                                                                                                                                   |
-| -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `resolved`     | An image inside the analyzed root loads, and no earlier candidate was undeterminable.                                                                     |
-| `conditional`  | An image inside the root resolves, but an earlier candidate outside the root (for example `/usr/lib/swift`) would win if it exists on the running system. |
-| `unresolved`   | Every candidate is definitively absent or unusable inside the root.                                                                                       |
-| `undetermined` | No candidate resolves inside the root, and some candidate lies outside it or depends on the environment.                                                  |
+| Status         | Meaning                                                                                                                                                        |
+| -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `resolved`     | An image inside the analyzed root loads, and no earlier candidate was undeterminable.                                                                          |
+| `conditional`  | An in-root image may load, but an earlier outside candidate, unmodeled environment input, or unknown platform compatibility can change which image dyld loads. |
+| `unresolved`   | Every candidate is definitively absent or unusable inside the root.                                                                                            |
+| `undetermined` | No candidate resolves inside the root, and some candidate lies outside it or depends on the environment.                                                       |
 
-A `conditional` image is still traced, because it is the image the analyzed
-root supplies. Every edge below it has `loader_conditional: true`, and a
-request that reuses it by install name is `conditional` too. Findings on those
-edges say that they apply only if the conditional image loads.
+A `conditional` image is still traced, because it is an in-root candidate
+that may load. Every edge below it has `loader_conditional: true`, and a
+request that reuses it by install name is `conditional` too. An in-root dylib
+with no platform load command remains unknown unless the root is an executable
+with observed macOS platform and the candidate’s CPU type is x86_64, i386, or arm64. In that macOS context,
+[Apple's dyld](https://github.com/apple-oss-distributions/dyld/blob/fd8d0c4d52320ebf64db34f3cb280310d905c5ae/mach_o/UnsafeHeader.cpp#L1137-L1145) supplies an implicit macOS platform to legacy dylibs on those CPU
+types. The candidate records `platform_basis: "macos-dyld-implicit"`; the
+reported slice fields `platform: null` and `platforms: []` remain the parsed
+facts. For other process contexts the platform remains unknown, coverage is
+partial, and the candidate is not treated as incompatible. If a later known
+candidate resolves, it remains the traced image with conditional resolution;
+the trace does not claim the unknown candidate's dependency graph. Findings on
+conditional edges say that they apply only if the conditional image loads.
 
 Absolute install names that name a path beneath the analyzed root are checked
 within that root, with symlinks and `..` resolved by the same bounded tree

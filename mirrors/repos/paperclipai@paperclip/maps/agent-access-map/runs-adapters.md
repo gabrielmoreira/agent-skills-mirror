@@ -64,6 +64,23 @@ and explicit overrides follow the [shared runner contract](../../packages/shared
 Claude follows its qualified rollout described above. The board inventory does not grant a
 native agent an equivalent discovery binding. See
 [probe restrictions](./execution-environments.md#probe) for acquiring qualification.
+OpenCode now follows the qualified native default without the experimental
+flag on macOS and GNU/Linux x64; Linux ARM64 retains Legacy. An explicit
+`provider/model` is required for test/hire; only server-owned
+inactive setup drafts may omit it. Saved runners and permission/lifecycle
+policies remain authoritative. Actor/company checks and board-only discovery
+remain unchanged. This is scoped source/control evidence for OpenCode selection,
+not live provider execution or agent authorization proof.
+Pi follows the same supported platform/default and model-free inactive-draft
+boundary, with explicit pinned-runtime setup required on the execution host.
+Native ACPX Pi is admitted with the generic flag off. Existing direct Pi agents
+remain Legacy; saved native policies remain authoritative. Incompatible thinking,
+launch, permission, or lifecycle settings return remediation on conversion.
+Managed Pi accounts accept OpenRouter routing and matching OpenAI, Anthropic,
+Google, or OpenRouter API-key models. Subscription methods and custom gateways
+remain excluded for Pi. Selection keeps the existing company, user, grant, and
+agent-install checks; runtime preparation clears alternate credentials and rejects
+custom Pi provider overrides. This adds no cross-company access or runtime installation API.
 An absent forced-Kubernetes environment is an unqualified sandbox target, never
 a local target. Discovery and automatic creation keep the Legacy path without
 provisioning it; explicit Paperclip selection returns qualification guidance.

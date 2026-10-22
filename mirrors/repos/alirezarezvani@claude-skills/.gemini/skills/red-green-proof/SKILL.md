@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/red-green-proof/../../../engineering-team/skills/red-green-proof/SKILL.md

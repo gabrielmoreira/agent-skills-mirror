@@ -32,6 +32,16 @@ The plugin owns the Chromium native-messaging AIDL definitions. Host apps use
 the library classes and must not compile duplicate copies of those definitions.
 Eliza retains its existing service component as a thin subclass of this relay.
 
+Android surfaces may opt in to navigation interception with
+`createSurface({ ..., interceptNavigation: true })`. The page then navigates within its
+own origin by itself; a main-frame navigation to another origin, a cross-origin redirect
+included, is cancelled before any request and reported as `navigationRequested`
+(`{id, owner, session, epoch, url, redirect, userGesture}`). The host loads the address
+with `navigate()` once its own check (for example `SubmittedNavigation`) allows it.
+Non-web schemes and addresses with credentials are refused when WebView sends them to
+this callback. POST form submissions and subframes are not intercepted. This is a
+navigation handoff, not a network filter. Surfaces created without the option are unchanged.
+
 `parseBrowserAddressInput` (also exported as `./address-input` without bridge
 registration) classifies address-bar text as an HTTP(S) URL, search text, or a
 rejection reason. Hosts supply the inferred protocol and own aliases, search
@@ -55,6 +65,33 @@ node packages/app/scripts/android-native-plugins.ts --serial emulator-5554 --plu
 ```
 
 The bridge fixture exports native screenshots and complete page-read results.
+
+Android `controlPage` uses the shared Chromium page commands in a named isolated
+JavaScript world. It requires AndroidX WebKit 1.16 and a provider that supports
+`JS_INJECTION_IN_FRAME_AND_WORLD`; unsupported providers reject control requests.
+The host must supply an authorized task policy for input. Never use a policy
+from model output or website content. Each effect requires a fresh snapshot and
+its document ID. Closing, hiding, navigation, or owner reconciliation interrupts
+pending work. Activity pause also fences control and keeps the page for Resume.
+Hiding or pausing requires a fresh snapshot before the next input. A lost effect reply reports an uncertain outcome; observe before
+continuing and never automatically replay the effect. This API currently covers
+the main frame's DOM commands, not child frames, screenshots or coordinate input.
+
+`bun run --cwd plugins/plugin-native-browser-surface test:control` uses
+`ELIZA_BROWSER_EXECUTABLE` to test the generated channel in a real Chromium
+isolated world. This checks DOM effects and document/reference isolation, not
+Android installation or the native reply proxy. The generated native asset shares
+the existing browser command implementation; `build` regenerates it and
+`node plugins/plugin-native-browser-surface/scripts/build-control-channel.mjs --check`
+checks that it is current.
+The same test routes commands through the authenticated native-host HTTP gateway
+and surface client. It checks complete observations, real click/fill readback,
+and an effect whose reply is lost without delivering that command again. The
+native host transport still needs product task and page ownership composition.
+Run the native bridge flow with `--surface-control` on the Android test command
+above. It uses a local synthetic document, checks real click/fill readback, stale
+references and document IDs, and hides/restores the same page. This lane requires
+a provider with isolated-world support and fails if it is unavailable.
 
 Android foreground-service hosts can share `ChromiumBrowserConnection`: construct
 it with the service context, call `start()` after entering foreground, and

@@ -102,6 +102,35 @@ First orthogonalize the factors with the Schmidt process to remove collinearity,
 4. Combine the orthogonalized factors with equal weights
 ```
 
+### Reusable Combination
+
+The methods above are unrolled by hand only when you want to inspect every step.
+The optional `combination` quantlib module performs the equal-weight and IC
+variants as one reproducible call and returns the weights it used:
+
+```python
+from src.quantlib.combination import combine_factors
+
+result = combine_factors(
+    {"momentum": momentum_panel, "value": value_panel},
+    forward_returns,        # row t is the return earned after observing t
+    method="ic",            # "equal", "ic" or "icir"
+    window=252,             # trailing IC observations per weight
+    rebalance=20,
+)
+result.composite, result.weights, result.diagnostics["correlation"]
+```
+
+Weights are estimated from rows strictly before the row they apply to, so a
+weight never sees its own forward return. There is no complete list of
+combination methods: for decayed IC, maximum IC, regression or trained weights,
+compute the weight table yourself and pass `method="explicit", weights=table`
+(a `time x factor` DataFrame). The module enforces the timing contract and
+reports the diagnostics; it does not choose a method for you, and nothing in the
+backtest path requires it. See
+[references/combination.md](references/combination.md) for the pre-flight
+checklist, the failure modes and the JSON envelope.
+
 ### Reusable Cross-Sectional Transforms
 
 Use `quantlib_call` with `module="neutralization"` (or import

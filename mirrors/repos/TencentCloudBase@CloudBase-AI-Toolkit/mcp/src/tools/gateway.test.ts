@@ -12,6 +12,8 @@ const {
   mockDeleteCustomDomain,
   mockVerifyHttpServiceRoute,
   mockDescribeCertificates,
+  mockPurgeHttpServiceCache,
+  mockDescribeCachePurgeTask,
   mockGetCloudBaseManager,
   mockLogCloudBaseResult,
   mockGetEnvId,
@@ -26,6 +28,8 @@ const {
   mockDeleteCustomDomain: vi.fn(),
   mockVerifyHttpServiceRoute: vi.fn(),
   mockDescribeCertificates: vi.fn(),
+  mockPurgeHttpServiceCache: vi.fn(),
+  mockDescribeCachePurgeTask: vi.fn(),
   mockGetCloudBaseManager: vi.fn(),
   mockLogCloudBaseResult: vi.fn(),
   mockGetEnvId: vi.fn(),
@@ -96,6 +100,7 @@ describe("gateway tools", () => {
         {
           Domain: "api.example.com",
           DomainType: "CUSTOM",
+          AccessType: "CDN",
           IsDefault: false,
           Enable: true,
           Status: "SUCCESS",
@@ -134,6 +139,27 @@ describe("gateway tools", () => {
     mockSwitchAuth.mockResolvedValue({
       RequestId: "req-switch-auth",
     });
+    mockPurgeHttpServiceCache.mockResolvedValue({
+      CacheType: "CDN",
+      TaskId: "task-1",
+      RequestId: "req-purge",
+    });
+    mockDescribeCachePurgeTask.mockResolvedValue({
+      Tasks: [
+        {
+          TaskId: "task-1",
+          CacheType: "CDN",
+          Status: "SUCCESS",
+          PurgeType: "PURGE_URL",
+          Method: "INVALIDATE",
+          Targets: ["https://api.example.com/static/a.js"],
+          CreateTime: "2026-10-21T10:00:00+08:00",
+          UpdateTime: "2026-10-21T10:01:00+08:00",
+        },
+      ],
+      TotalCount: 1,
+      RequestId: "req-purge-task",
+    });
     mockGetCloudBaseManager.mockResolvedValue({
       env: {
         describeHttpServiceRoute: mockDescribeHttpServiceRoute,
@@ -144,6 +170,8 @@ describe("gateway tools", () => {
         deleteCustomDomain: mockDeleteCustomDomain,
         verifyHttpServiceRoute: mockVerifyHttpServiceRoute,
         describeCertificates: mockDescribeCertificates,
+        purgeHttpServiceCache: mockPurgeHttpServiceCache,
+        describeHttpServiceCachePurgeTask: mockDescribeCachePurgeTask,
       },
       commonService: vi.fn(() => ({
         call: mockCommonServiceCall,
@@ -166,6 +194,7 @@ describe("gateway tools", () => {
       "getRoute",
       "listCustomDomains",
       "getPrivilege",
+      "cachePurgeTask",
     ]);
     expect(manageActions).toEqual([
       "createRoute",
@@ -177,6 +206,7 @@ describe("gateway tools", () => {
       "deleteCustomDomain",
       "enableService",
       "authSwitch",
+      "purgeCache",
     ]);
     expect(schema.targetType).toBeUndefined();
     expect(schema.type).toBeUndefined();
@@ -186,6 +216,25 @@ describe("gateway tools", () => {
       "CBR",
       "STATIC_STORE",
       "LH",
+      "STORAGE",
+    ]);
+    expect(schema.enableSafeDomain).toBeDefined();
+    expect(schema.pathRewrite).toBeDefined();
+    expect(schema.qpsPolicy).toBeDefined();
+    expect(schema.extension).toBeDefined();
+    expect(schema.domainExtension).toBeDefined();
+    expect(schema.protocol.unwrap()._def.values).toEqual([
+      "HTTP",
+      "HTTPS",
+      "HTTP_AND_HTTPS",
+      "HTTP_TO_HTTPS",
+      "HTTPS_TO_HTTP",
+    ]);
+    expect(schema.cacheType.unwrap()._def.values).toEqual(["CDN", "EO"]);
+    expect(schema.purgeType.unwrap()._def.values).toEqual([
+      "PURGE_URL",
+      "PURGE_PREFIX",
+      "PURGE_HOST",
     ]);
     expect(tools.queryGateway.meta.inputSchema.targetType).toBeUndefined();
   });
@@ -1644,5 +1693,378 @@ describe("gateway tools", () => {
     // STATIC_STORE 的资源名是实例名/固定别名，无可靠列举通路 → 不校验、不阻塞
     expect(payload.success).toBe(true);
     expect(mockCreateHttpServiceRoute).toHaveBeenCalled();
+  });
+
+  it("manageGateway(action=createRoute) should pass STORAGE upstream with CORS/rewrite/QPS/extension", async () => {
+    const result = await tools.manageGateway.handler({
+      action: "createRoute",
+      domain: "api.example.com",
+      path: "/cos",
+      targetName: "storage-instance",
+      upstreamResourceType: "STORAGE",
+      enableSafeDomain: false,
+      pathRewrite: { prefix: "/v1" },
+      qpsPolicy: { total: 100, perClient: { limitBy: "ClientIP", limitValue: 10 } },
+      extension: {
+        headersHandler: {
+          responseHeadersToAdd: [{ key: "X-Frame-Options", value: "SAMEORIGIN" }],
+        },
+      },
+    });
+
+    const payload = JSON.parse(result.content[0].text);
+
+    expect(payload.success).toBe(true);
+    expect(payload.data.upstreamResourceType).toBe("STORAGE");
+    expect(payload.data.enableSafeDomain).toBe(false);
+    expect(mockCreateHttpServiceRoute).toHaveBeenCalledWith({
+      EnvId: "env-test",
+      Domain: {
+        Domain: "api.example.com",
+        Routes: [
+          {
+            Path: "/cos",
+            UpstreamResourceType: "STORAGE",
+            UpstreamResourceName: "storage-instance",
+            EnableSafeDomain: false,
+            PathRewrite: { Prefix: "/v1" },
+            QPSPolicy: {
+              QPSTotal: 100,
+              QPSPerClient: { LimitBy: "ClientIP", LimitValue: 10 },
+            },
+            Extension: {
+              HeadersHandler: {
+                ResponseHeadersToAdd: [
+                  { Key: "X-Frame-Options", Value: "SAMEORIGIN" },
+                ],
+              },
+            },
+          },
+        ],
+      },
+    });
+  });
+
+  it("manageGateway(action=createRoute) should pass domain-level protocol and extension", async () => {
+    await tools.manageGateway.handler({
+      action: "createRoute",
+      domain: "api.example.com",
+      path: "/cos",
+      targetName: "storage-instance",
+      upstreamResourceType: "STORAGE",
+      protocol: "HTTP_AND_HTTPS",
+      domainExtension: {
+        cache: {
+          rules: [
+            {
+              enable: true,
+              condition: { target: "file_extension", matchType: "suffix", values: [".js"] },
+              actions: [{ type: "Cache", cache: { cacheTime: 3600 } }],
+            },
+          ],
+        },
+      },
+    });
+
+    expect(mockCreateHttpServiceRoute).toHaveBeenCalledWith(
+      expect.objectContaining({
+        Domain: expect.objectContaining({
+          Domain: "api.example.com",
+          Protocol: "HTTP_AND_HTTPS",
+          Extension: {
+            Cache: {
+              Rules: [
+                {
+                  Enable: true,
+                  Condition: {
+                    Target: "file_extension",
+                    MatchType: "suffix",
+                    Values: [".js"],
+                  },
+                  Actions: [{ Type: "Cache", Cache: { CacheTime: 3600 } }],
+                },
+              ],
+            },
+          },
+        }),
+      }),
+    );
+  });
+
+  it("manageGateway(action=updateRoute) should carry over untouched route and domain fields", async () => {
+    mockDescribeHttpServiceRoute.mockResolvedValue({
+      OriginDomain: "origin.service.tcloudbase.com",
+      TotalCount: 1,
+      Domains: [
+        {
+          Domain: "api.example.com",
+          DomainType: "CUSTOM",
+          IsDefault: false,
+          Enable: true,
+          Status: "SUCCESS",
+          Protocol: "HTTP_AND_HTTPS",
+          Routes: [
+            {
+              Path: "/api",
+              UpstreamResourceType: "CBR",
+              UpstreamResourceName: "svc",
+              EnableAuth: true,
+              EnableSafeDomain: true,
+              EnablePathTransmission: true,
+              PathRewrite: { Prefix: "/legacy" },
+              QPSPolicy: { QPSTotal: 50 },
+              Enable: true,
+            },
+          ],
+        },
+      ],
+      RequestId: "req-route-list",
+    });
+
+    await tools.manageGateway.handler({
+      action: "updateRoute",
+      domain: "api.example.com",
+      path: "/api",
+      targetName: "svc",
+      upstreamResourceType: "CBR",
+      qpsPolicy: { total: 200 },
+    });
+
+    expect(mockModifyHttpServiceRoute).toHaveBeenCalledWith(
+      expect.objectContaining({
+        Domain: expect.objectContaining({
+          Protocol: "HTTP_AND_HTTPS",
+          Routes: [
+            expect.objectContaining({
+              Path: "/api",
+              EnableAuth: true,
+              EnableSafeDomain: true,
+              EnablePathTransmission: true,
+              PathRewrite: { Prefix: "/legacy" },
+              QPSPolicy: { QPSTotal: 200 },
+              Enable: true,
+            }),
+          ],
+        }),
+      }),
+    );
+  });
+
+  it("manageGateway(action=disableRoute) should preserve CORS/rewrite/QPS/extension", async () => {
+    mockDescribeHttpServiceRoute.mockResolvedValue({
+      OriginDomain: "origin.service.tcloudbase.com",
+      TotalCount: 1,
+      Domains: [
+        {
+          Domain: "api.example.com",
+          DomainType: "CUSTOM",
+          IsDefault: false,
+          Enable: true,
+          Status: "SUCCESS",
+          Routes: [
+            {
+              Path: "/api",
+              UpstreamResourceType: "CBR",
+              UpstreamResourceName: "svc",
+              EnableAuth: false,
+              EnableSafeDomain: true,
+              EnablePathTransmission: true,
+              PathRewrite: { Prefix: "/v2" },
+              QPSPolicy: { QPSTotal: 30 },
+              Enable: true,
+            },
+          ],
+        },
+      ],
+      RequestId: "req-route-list",
+    });
+
+    await tools.manageGateway.handler({
+      action: "disableRoute",
+      domain: "api.example.com",
+      path: "/api",
+    });
+
+    expect(mockModifyHttpServiceRoute).toHaveBeenCalledWith(
+      expect.objectContaining({
+        Domain: expect.objectContaining({
+          Routes: [
+            expect.objectContaining({
+              Path: "/api",
+              Enable: false,
+              EnableSafeDomain: true,
+              PathRewrite: { Prefix: "/v2" },
+              QPSPolicy: { QPSTotal: 30 },
+            }),
+          ],
+        }),
+      }),
+    );
+  });
+
+  it("manageGateway(action=purgeCache) should submit a cache purge task", async () => {
+    const result = await tools.manageGateway.handler({
+      action: "purgeCache",
+      domain: "api.example.com",
+      purgeType: "PURGE_URL",
+      targets: ["https://api.example.com/static/a.js"],
+    });
+
+    const payload = JSON.parse(result.content[0].text);
+
+    expect(mockPurgeHttpServiceCache).toHaveBeenCalledWith({
+      EnvId: "env-test",
+      Domain: "api.example.com",
+      CacheType: "CDN",
+      PurgeType: "PURGE_URL",
+      Targets: ["https://api.example.com/static/a.js"],
+    });
+    expect(payload.success).toBe(true);
+    expect(payload.data.taskId).toBe("task-1");
+  });
+
+  it("manageGateway(action=purgeCache) should require targets", async () => {
+    const result = await tools.manageGateway.handler({
+      action: "purgeCache",
+      domain: "api.example.com",
+    });
+
+    const payload = JSON.parse(result.content[0].text);
+
+    expect(payload.success).toBe(false);
+    expect(payload.message).toContain("targets");
+    expect(mockPurgeHttpServiceCache).not.toHaveBeenCalled();
+  });
+
+  it("queryGateway(action=cachePurgeTask) should list purge tasks for a domain", async () => {
+    const result = await tools.queryGateway.handler({
+      action: "cachePurgeTask",
+      domain: "api.example.com",
+    });
+
+    const payload = JSON.parse(result.content[0].text);
+
+    expect(mockDescribeCachePurgeTask).toHaveBeenCalledWith({
+      EnvId: "env-test",
+      Domain: "api.example.com",
+      CacheType: "CDN",
+    });
+    expect(payload.success).toBe(true);
+    expect(payload.data.total).toBe(1);
+    expect(payload.data.tasks[0].TaskId).toBe("task-1");
+  });
+
+  it("queryGateway(action=cachePurgeTask) should require domain", async () => {
+    const result = await tools.queryGateway.handler({ action: "cachePurgeTask" });
+    const payload = JSON.parse(result.content[0].text);
+
+    expect(payload.success).toBe(false);
+    expect(payload.message).toContain("domain");
+  });
+
+  /** 用指定的域名 + 接入方式替换域名列表，供缓存层判定用例使用。 */
+  const stubDomains = (
+    ...domains: Array<{ Domain: string; AccessType: string }>
+  ) =>
+    mockDescribeHttpServiceRoute.mockResolvedValue({
+      OriginDomain: "origin.service.tcloudbase.com",
+      TotalCount: domains.length,
+      Domains: domains.map((item) => ({
+        DomainType: "HTTPSERVICE",
+        IsDefault: false,
+        Enable: true,
+        Status: "SUCCESS",
+        Routes: [],
+        ...item,
+      })),
+      RequestId: "req-domain-list",
+    });
+
+  it("manageGateway(action=purgeCache) should reject a DIRECT domain instead of guessing CDN", async () => {
+    stubDomains({ Domain: "direct.example.com", AccessType: "DIRECT" });
+
+    const result = await tools.manageGateway.handler({
+      action: "purgeCache",
+      domain: "direct.example.com",
+      purgeType: "PURGE_URL",
+      targets: ["https://direct.example.com/a.js"],
+    });
+
+    const payload = JSON.parse(result.content[0].text);
+
+    expect(payload.success).toBe(false);
+    expect(payload.message).toContain("DIRECT");
+    expect(payload.message).toContain("CDN");
+    expect(mockPurgeHttpServiceCache).not.toHaveBeenCalled();
+  });
+
+  it("queryGateway(action=cachePurgeTask) should reject a DIRECT domain", async () => {
+    stubDomains({ Domain: "direct.example.com", AccessType: "DIRECT" });
+
+    const result = await tools.queryGateway.handler({
+      action: "cachePurgeTask",
+      domain: "direct.example.com",
+    });
+
+    const payload = JSON.parse(result.content[0].text);
+
+    expect(payload.success).toBe(false);
+    expect(payload.message).toContain("DIRECT");
+    expect(mockDescribeCachePurgeTask).not.toHaveBeenCalled();
+  });
+
+  it("manageGateway(action=purgeCache) should pick EO from the domain access type", async () => {
+    stubDomains({ Domain: "eo.example.com", AccessType: "EO" });
+
+    await tools.manageGateway.handler({
+      action: "purgeCache",
+      domain: "eo.example.com",
+      purgeType: "PURGE_PREFIX",
+      targets: ["/static/"],
+    });
+
+    expect(mockPurgeHttpServiceCache).toHaveBeenCalledWith(
+      expect.objectContaining({
+        Domain: "eo.example.com",
+        CacheType: "EO",
+      }),
+    );
+  });
+
+  it("manageGateway(action=purgeCache) should reject a cacheType that contradicts the access type", async () => {
+    stubDomains({ Domain: "eo.example.com", AccessType: "EO" });
+
+    const result = await tools.manageGateway.handler({
+      action: "purgeCache",
+      domain: "eo.example.com",
+      cacheType: "CDN",
+      purgeType: "PURGE_HOST",
+      targets: ["eo.example.com"],
+    });
+
+    const payload = JSON.parse(result.content[0].text);
+
+    expect(payload.success).toBe(false);
+    expect(payload.message).toContain("EO");
+    expect(payload.message).toContain("CDN");
+    expect(mockPurgeHttpServiceCache).not.toHaveBeenCalled();
+  });
+
+  it("manageGateway(action=bindCustomDomain) should pass domain protocol", async () => {
+    await tools.manageGateway.handler({
+      action: "bindCustomDomain",
+      domain: "api.example.com",
+      certificateId: "cert-1",
+      protocol: "HTTP_TO_HTTPS",
+    });
+
+    expect(mockBindCustomDomain).toHaveBeenCalledWith(
+      expect.objectContaining({
+        Domain: expect.objectContaining({
+          Domain: "api.example.com",
+          Protocol: "HTTP_TO_HTTPS",
+        }),
+      }),
+    );
   });
 });

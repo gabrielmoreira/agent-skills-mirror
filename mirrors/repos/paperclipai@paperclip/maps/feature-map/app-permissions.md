@@ -59,6 +59,19 @@ qualified by this coverage.
 
 Manual: Grant one agent access, leave another excluded, and exercise off, ask, and allowed states for a harmless action. Reload between changes. Verify actual denied calls stay denied and ask-first creates a decision rather than executing early.
 
+For Braintrust, distinguish reviewed action risk from effective policy: S4
+methods retain the shared Allowed defaults. Explicit Off and Ask-first choices
+must survive refresh and reconnect. Exercise the read, write, and destructive
+classifications with a fixture, including billable tests classified as writes
+and dataset row edits/automation activation classified as destructive. After
+initial discovery, newly added or changed tools remain quarantined until
+reviewed. Use synthetic data for provider calls; see
+[Braintrust](../../doc/connections/BRAINTRUST.md#actions-and-governance). Live US
+OAuth proof covers bounded reads, a synthetic dataset insert/readback through
+actual process-agent gateway calls, and denial after local removal. Off,
+Ask-first, and changed-tool denial use fixture evidence; the other three methods
+still need live account qualification.
+
 ### `test-and-maintain`
 
 Automated: [app detail tests](../../ui/src/pages/apps/AppDetail.test.tsx) cover test-dialog/UI contracts. Real provider execution and revocation require the selected provider’s live check.

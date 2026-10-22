@@ -17,26 +17,26 @@ Maintain repository-level build, packaging, and release validation automation. G
   - Performs clean install smoke by importing the installed server entry with Node and the optional OpenTUI-backed
     ./tui entry with Bun in a temp project.
 - `check-companion-release.mjs`
-  - Queries the GitHub release API and verifies all five uploaded native archives.
-  - Retries 404/temporary HTTP and transport errors, but fails closed on
-    persistent API errors rather than triggering a spurious native patch build.
-  - Covered by `check-companion-release.test.ts` (complete, incomplete,
-    missing, transient failures, and authorization failures).
-- `verify-companion-source.mjs`
-  - Compares release-affecting Rust/native assets and dependencies against the
-    manifest's immutable Companion tag. Ignores only crate version stamps.
-  - Fails before npm versioning and publishing when native sources outpace the
-    released executable. Also powers the automatic native release drift gate.
+  - Shared public native-repository API, release identity, archive hashing, and
+    offline manifest validation helpers. Fails closed on API/incomplete releases.
+  - Always queries `alvinunreal/oh-my-opencode-companion`, never the plugin repo.
+- `verify-companion-release.mjs`
+  - Verifies the pinned remote release identity and all five downloaded archive
+    hashes before npm versioning/publishing; no local native files or Git tags.
+- `sync-companion-manifest.mjs`
+  - Reads the latest public native release, calculates actual archive hashes,
+    updates both plugin manifests, and reports whether a plugin-local PR is needed.
+  - Refuses downgrades and same-tag mutations; aligned manifests are untouched.
 - `prepare-companion-release.mjs`
-  - Stamps the new version into Cargo.toml and Cargo.lock for native builds.
-  - With published assets supplied, computes SHA256 checksums and generates the
-    packaged JSON plus TypeScript fallback manifests for the release PR.
+  - Requires five downloaded published archives, computes SHA256 checksums, and
+    generates packaged JSON plus TypeScript fallback manifests only; no Cargo I/O.
 - `companion-release-scripts.test.ts`
-  - Covers native source/tag drift detection, version-only exceptions, and
-    digest generation against real fixture archive bytes.
+  - Covers plugin-only preparation/sync, no-op/fail-closed behavior, and extraction
+    assumptions. `check-companion-release.test.ts` covers API/release/hash guards.
+  - `companion-release-fixtures.ts` supplies deterministic release/archive fixtures.
 - `verify-companion-manifest.ts`
-  - Verifies the packaged Companion manifest matches `companion/Cargo.toml` and the
-    TypeScript fallback manifest.
+  - Independently verifies packaged Companion metadata and TypeScript fallback
+    consistency offline; does not need the native checkout or release tags.
   - Requires the complete supported release-asset set and valid SHA-256 digests.
   - Runs from `prepublishOnly` so npm publish fails closed on stale Companion metadata.
 - `verify-opencode-host-smoke.ts`
@@ -80,7 +80,10 @@ Maintain repository-level build, packaging, and release validation automation. G
 - `bun run verify:release` runs verify-release-artifact.ts: sanitize dist -> pack artifact -> validate files ->
   install/import both server and TUI entrypoints.
 - `bun run verify:companion-manifest` runs verify-companion-manifest.ts before npm publish to keep
-  the Rust crate, packaged manifest, fallback manifest, asset names, and checksums synchronized.
+  the packaged manifest, fallback manifest, asset names, and checksums synchronized offline.
+- `bun run verify:companion-release` hashes the pinned standalone native release
+  before npm versioning/publishing; `sync:companion-manifest` powers the scheduled/manual
+  plugin-local manifest PR workflow without cross-repository write credentials.
 - `bun run verify:host-smoke` runs verify-opencode-host-smoke.ts: pack tarball -> boot isolated host -> wait for health ->
   verify no plugin-load errors.
 - `bun run cache:smoke` runs cache-smoke.ts: start server -> run scenarios -> collect request logs ->

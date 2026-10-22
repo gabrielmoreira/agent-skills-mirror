@@ -105,12 +105,19 @@ API: `present` — representative operation IDs:
 
 - `GET /api/agents/{id}/instructions-bundle/file`.
 - `PUT /api/agents/{id}/instructions-bundle/file`.
+- `PATCH /api/agents/{id}` with an explicit `runner: "paperclip"` upgrade.
 
 Agent access: `available` — Native read/update/history/restore instruction tools; REST /
 CLI.
 
 Policy: Agent creation/configuration uses action grants, resource policies and change
 consent; some controls require a board actor.
+
+The existing-agent upgrade notice uses this configuration PATCH. It does not
+grant configuration, account, or environment access. The server resolves the
+saved settings under normal company/configuration authorization and rejects
+unsupported settings before persistence. Operator browser evidence does not
+qualify the agent permission paths for this operation.
 
 Evidence: `source-only` — [implementation](../../server/src/routes/agents.ts#L1395) at
 the reviewed commit above.

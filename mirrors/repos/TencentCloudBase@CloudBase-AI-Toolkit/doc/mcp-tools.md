@@ -2892,7 +2892,7 @@ CloudBase 云函数统一写入口。支持创建函数、更新代码、更新�
 ---
 
 ### `queryGateway`
-CloudBase HTTP 网关统一只读入口（Domain/Route）。查询域名下路径路由及其上游：WEB_SCF/SCF=云函数，CBR=云托管，STATIC_STORE=静态托管，LH=轻量应用服务器。主键为 Domain + Path；listRoutes / getRoute / listCustomDomains / getPrivilege。getPrivilege 查询 HTTP 网关总开关（enableService）与访问鉴权（enableAuth）状态。实现自定义域名访问前，先 listCustomDomains：若已有自定义域名，优先 createRoute 挂路由（无需证书 ID）；仅在没有可用自定义域名时才 bindCustomDomain。
+CloudBase HTTP 网关统一只读入口（Domain/Route）。查询域名下路径路由及其上游：WEB_SCF/SCF=云函数，CBR=云托管，STATIC_STORE=静态托管，STORAGE=云存储，LH=轻量应用服务器。主键为 Domain + Path；listRoutes / getRoute / listCustomDomains / getPrivilege / cachePurgeTask。getPrivilege 查询 HTTP 网关总开关（enableService）与访问鉴权（enableAuth）状态。cachePurgeTask 查询域名缓存清除任务（先 manageGateway purgeCache 拿 TaskId）。实现自定义域名访问前，先 listCustomDomains：若已有自定义域名，优先 createRoute 挂路由（无需证书 ID）；仅在没有可用自定义域名时才 bindCustomDomain。
 
 #### 参数
 
@@ -2902,7 +2902,7 @@ CloudBase HTTP 网关统一只读入口（Domain/Route）。查询域名下路�
       name: "action",
       type: "string",
       required: true,
-      description: `只读操作类型：listRoutes、getRoute、listCustomDomains、getPrivilege。getPrivilege 无需其他参数，直接返回 HTTP 网关总开关与访问鉴权状态。自定义域名访问场景先 listCustomDomains 确认是否已有域名可复用。 可填写的值: "listRoutes", "getRoute", "listCustomDomains", "getPrivilege"`,
+      description: `只读操作类型：listRoutes、getRoute、listCustomDomains、getPrivilege、cachePurgeTask。getPrivilege 无需其他参数，直接返回 HTTP 网关总开关与访问鉴权状态。cachePurgeTask 需要 domain（可选 cacheType/taskId/purgeType/startTime/endTime/offset/limit）。自定义域名访问场景先 listCustomDomains 确认是否已有域名可复用。 可填写的值: "listRoutes", "getRoute", "listCustomDomains", "getPrivilege", "cachePurgeTask"`,
     },
     {
       name: "targetName",
@@ -2922,7 +2922,42 @@ CloudBase HTTP 网关统一只读入口（Domain/Route）。查询域名下路�
     {
       name: "domain",
       type: "string",
-      description: `域名。getRoute / listRoutes 过滤时可选`,
+      description: `域名。getRoute / listRoutes 过滤时可选；cachePurgeTask 时必填`,
+    },
+    {
+      name: "cacheType",
+      type: "string",
+      description: `缓存层（仅 cachePurgeTask）：CDN 或 EO。省略时按域名接入方式自动匹配（EO→EO、CDN→CDN）；DIRECT / CUSTOM / NONE 的域没有 CloudBase 托管的缓存，会直接拒绝并说明原因。 可填写的值: "CDN", "EO"`,
+    },
+    {
+      name: "taskId",
+      type: "string",
+      description: `缓存清除任务 ID（仅 cachePurgeTask，可选过滤）`,
+    },
+    {
+      name: "purgeType",
+      type: "string",
+      description: `清除方式过滤（仅 cachePurgeTask）：PURGE_URL=按 URL、PURGE_PREFIX=按前缀、PURGE_HOST=整站 可填写的值: "PURGE_URL", "PURGE_PREFIX", "PURGE_HOST"`,
+    },
+    {
+      name: "startTime",
+      type: "string",
+      description: `任务开始时间（仅 cachePurgeTask，可选）。格式 YYYY-MM-DD HH:mm:ss`,
+    },
+    {
+      name: "endTime",
+      type: "string",
+      description: `任务结束时间（仅 cachePurgeTask，可选）。格式 YYYY-MM-DD HH:mm:ss`,
+    },
+    {
+      name: "offset",
+      type: "integer",
+      description: `分页偏移（仅 cachePurgeTask，可选）`,
+    },
+    {
+      name: "limit",
+      type: "integer",
+      description: `返回数量上限（仅 cachePurgeTask，可选）`,
     }
   ]}
 />
@@ -2930,7 +2965,7 @@ CloudBase HTTP 网关统一只读入口（Domain/Route）。查询域名下路�
 ---
 
 ### `manageGateway`
-CloudBase HTTP 网关统一写入口（Domain/Route）。createRoute/updateRoute/deleteRoute 把域名下的 path 转到上游；enableRoute/disableRoute 启用或禁用已有路由（底层 ModifyHTTPServiceRoute 的 Routes[].Enable，不是 ModifyGatewayRoute）。未传 domain 时用 DomainType=HTTPSERVICE 的 IsDefault 默认 HTTP 域名（形如 *.\{region\}.app.tcloudbase.com），不会使用静态托管 CDN 域名（*.tcloudbaseapp.com，DomainType=STATIC_STORE）。这是网关默认域上的路径路由，不是 STATIC_STORE 上游绑定；STATIC_STORE 上游必须显式传 upstreamResourceType=STATIC_STORE。关闭静态托管默认域名（*.tcloudbaseapp.com）：先 queryGateway(listRoutes) 找到 DomainType=STATIC_STORE 且 IsDefault=true 的 domain，再 manageGateway(action="disableRoute", domain=该域名, path="/")；勿用 manageHosting。创建后可用 queryGateway(action="listRoutes") 核对 Domain / DomainType / Path / UpstreamResourceType。上游类型只用一个参数 upstreamResourceType（也可写在 route.upstreamResourceType，route 优先）：WEB_SCF=HTTP云函数，SCF=Event云函数，CBR=云托管，STATIC_STORE=静态托管，LH=轻量应用服务器；配合 targetName 或 route.serviceName（云函数名/云托管服务名/静态托管实例名，常见 staticstore）。createRoute 只建网关入口，不改上游权限。enablePathTransmission：默认 false 剥触发路径前缀；true 透传完整路径（CBR 多路由、WEB_SCF 自管子路径常需 true；STATIC_STORE 自定义触发路径映射站点根通常 false）。⚠️ 自定义域名访问：若环境已有自定义域名（先 queryGateway listCustomDomains），优先 createRoute 并显式传入该 domain，无需 certificateId；仅首次绑定全新自定义域名时用 bindCustomDomain（certificateId 可选：未传时按域名自动检索证书，单证书自动选用、多证书返回选择指引）。createRoute / bindCustomDomain 创建前会调用 VerifyHTTPServiceRoute 做归属权等预检（探测→创建）；失败时返回 data.checks 与 DNS TXT 指引，配置后重试。CORS/安全域名（浏览器跨域白名单，与本工具的网关自定义域名无关）用 manageEnv(action=addSecurityDomain/removeSecurityDomain)。enableService/authSwitch：HTTP 网关总开关与访问鉴权开关；createRoute 后若访问报 HTTPSERVICE_NONACTIVATED，通常是总开关未开启（用 queryGateway getPrivilege 查询、enableService 开启）。
+CloudBase HTTP 网关统一写入口（Domain/Route）。createRoute/updateRoute/deleteRoute 把域名下的 path 转到上游；enableRoute/disableRoute 启用或禁用已有路由（底层 ModifyHTTPServiceRoute 的 Routes[].Enable，不是 ModifyGatewayRoute）。未传 domain 时用 DomainType=HTTPSERVICE 的 IsDefault 默认 HTTP 域名（形如 *.\{region\}.app.tcloudbase.com），不会使用静态托管 CDN 域名（*.tcloudbaseapp.com，DomainType=STATIC_STORE）。这是网关默认域上的路径路由，不是 STATIC_STORE 上游绑定；STATIC_STORE 上游必须显式传 upstreamResourceType=STATIC_STORE。关闭静态托管默认域名（*.tcloudbaseapp.com）：先 queryGateway(listRoutes) 找到 DomainType=STATIC_STORE 且 IsDefault=true 的 domain，再 manageGateway(action="disableRoute", domain=该域名, path="/")；勿用 manageHosting。创建后可用 queryGateway(action="listRoutes") 核对 Domain / DomainType / Path / UpstreamResourceType。上游类型只用一个参数 upstreamResourceType（也可写在 route.upstreamResourceType，route 优先）：WEB_SCF=HTTP云函数，SCF=Event云函数，CBR=云托管，STATIC_STORE=静态托管，STORAGE=云存储，LH=轻量应用服务器；配合 targetName 或 route.serviceName（云函数名/云托管服务名/静态托管实例名，常见 staticstore/云存储实例名）。createRoute 只建网关入口，不改上游权限。enablePathTransmission：默认 false 剥触发路径前缀；true 透传完整路径（CBR 多路由、WEB_SCF 自管子路径常需 true；STATIC_STORE 自定义触发路径映射站点根通常 false）。⚠️ 自定义域名访问：若环境已有自定义域名（先 queryGateway listCustomDomains），优先 createRoute 并显式传入该 domain，无需 certificateId；仅首次绑定全新自定义域名时用 bindCustomDomain（certificateId 可选：未传时按域名自动检索证书，单证书自动选用、多证书返回选择指引）。createRoute / bindCustomDomain 创建前会调用 VerifyHTTPServiceRoute 做归属权等预检（探测→创建）；失败时返回 data.checks 与 DNS TXT 指引，配置后重试。CORS/安全域名（浏览器跨域白名单，与本工具的网关自定义域名无关）用 manageEnv(action=addSecurityDomain/removeSecurityDomain)。enableService/authSwitch：HTTP 网关总开关与访问鉴权开关；createRoute 后若访问报 HTTPSERVICE_NONACTIVATED，通常是总开关未开启（用 queryGateway getPrivilege 查询、enableService 开启）。purgeCache：清除域名缓存（CDN/EO，按 URL/前缀/整站），返回 TaskId 后用 queryGateway cachePurgeTask 查进度。路由级还支持 enableSafeDomain（跨域/合法域名校验）、pathRewrite（路径重写）、qpsPolicy（限频）、extension（自定义请求/响应头与缓存规则）；域名级支持 protocol 与 domainExtension。updateRoute 只传要改的字段即可，未传的 CORS/重写/限频/扩展配置会保持原值。
 
 #### 参数
 
@@ -2940,7 +2975,7 @@ CloudBase HTTP 网关统一写入口（Domain/Route）。createRoute/updateRoute
       name: "action",
       type: "string",
       required: true,
-      description: `写操作：createRoute/updateRoute/deleteRoute 管理路由；enableRoute/disableRoute 启用或禁用已有路由（需 path，建议显式传 domain）；bindCustomDomain/deleteCustomDomain 管理自定义域名；enableService/authSwitch 开关 HTTP 网关总开关与访问鉴权（需配合 enable 参数）。createRoute/updateRoute 必须提供 upstreamResourceType；enableRoute/disableRoute 会先 listRoutes 定位已有路由，通常不必重填上游。updateRoute 也可传 enable/route.enable 直接改 Routes[].Enable。关闭 *.tcloudbaseapp.com 默认静态托管域：disableRoute + domain=该 STATIC_STORE IsDefault 域名 + path="/"。已有自定义域名时优先 createRoute(domain=已有域名) 实现访问，不必再次 bindCustomDomain / 传入 certificateId；bindCustomDomain 仅用于首次绑定新域名（certificateId 可选，未传则按域名自动检索；可选 accessType=DIRECT|CDN|CUSTOM，CUSTOM 需 customCname；普通场景用默认 DIRECT）。createRoute/bindCustomDomain 创建前会 VerifyHTTPServiceRoute 预检；失败时按返回的 DNS TXT 指引配置后重试。接入说明：https://docs.cloudbase.net/service/custom-domain 可填写的值: "createRoute", "updateRoute", "deleteRoute", "enableRoute", "disableRoute", "bindCustomDomain", "deleteCustomDomain", "enableService", "authSwitch"`,
+      description: `写操作：createRoute/updateRoute/deleteRoute 管理路由；enableRoute/disableRoute 启用或禁用已有路由（需 path，建议显式传 domain）；bindCustomDomain/deleteCustomDomain 管理自定义域名；enableService/authSwitch 开关 HTTP 网关总开关与访问鉴权（需配合 enable 参数）。createRoute/updateRoute 必须提供 upstreamResourceType；enableRoute/disableRoute 会先 listRoutes 定位已有路由，通常不必重填上游。updateRoute 也可传 enable/route.enable 直接改 Routes[].Enable。关闭 *.tcloudbaseapp.com 默认静态托管域：disableRoute + domain=该 STATIC_STORE IsDefault 域名 + path="/"。已有自定义域名时优先 createRoute(domain=已有域名) 实现访问，不必再次 bindCustomDomain / 传入 certificateId；bindCustomDomain 仅用于首次绑定新域名（certificateId 可选，未传则按域名自动检索；可选 accessType=DIRECT|CDN|CUSTOM，CUSTOM 需 customCname；普通场景用默认 DIRECT）。createRoute/bindCustomDomain 创建前会 VerifyHTTPServiceRoute 预检；失败时按返回的 DNS TXT 指引配置后重试。purgeCache 清除域名缓存：需 domain 与 targets（配 purgeType=PURGE_URL|PURGE_PREFIX|PURGE_HOST，可选 cacheType=CDN|EO）。接入说明：https://docs.cloudbase.net/service/custom-domain 可填写的值: "createRoute", "updateRoute", "deleteRoute", "enableRoute", "disableRoute", "bindCustomDomain", "deleteCustomDomain", "enableService", "authSwitch", "purgeCache"`,
     },
     {
       name: "targetName",
@@ -2955,7 +2990,7 @@ CloudBase HTTP 网关统一写入口（Domain/Route）。createRoute/updateRoute
     {
       name: "upstreamResourceType",
       type: "string",
-      description: `上游类型（与 route.upstreamResourceType 二选一，route 优先）。WEB_SCF=HTTP云函数，SCF=Event云函数，CBR=云托管，STATIC_STORE=静态托管，LH=轻量应用服务器。createRoute/updateRoute 必填其一；勿把 manageFunctions 的 type=HTTP|Event 传到本字段。 可填写的值: "SCF", "WEB_SCF", "CBR", "STATIC_STORE", "LH"`,
+      description: `上游类型（与 route.upstreamResourceType 二选一，route 优先）。WEB_SCF=HTTP云函数，SCF=Event云函数，CBR=云托管，STATIC_STORE=静态托管，STORAGE=云存储，LH=轻量应用服务器。STORAGE 的 UpstreamResourceName 是云存储实例名，可先用 queryStorage 查实例。createRoute/updateRoute 必填其一；勿把 manageFunctions 的 type=HTTP|Event 传到本字段。 可填写的值: "SCF", "WEB_SCF", "CBR", "STATIC_STORE", "LH", "STORAGE"`,
     },
     {
       name: "auth",
@@ -2966,6 +3001,212 @@ CloudBase HTTP 网关统一写入口（Domain/Route）。createRoute/updateRoute
       name: "enablePathTransmission",
       type: "boolean",
       description: `路径透传（EnablePathTransmission），平台默认 false。例 path=/api 且请求 /api/users：false→上游收到 /users；true→上游收到 /api/users。CBR 云托管（Express 等自管子路由）与 WEB_SCF 多路径函数常需 true；STATIC_STORE 把触发路径映射到站点根目录（如 /app → 托管 /）时通常 false；单入口/根路径处理保持 false。也可用 route.enablePathTransmission（route 优先）。`,
+    },
+    {
+      name: "enableSafeDomain",
+      type: "boolean",
+      description: `跨域/合法域名校验（EnableSafeDomain），即控制台的「跨域设置」。true 时校验请求来源域名，false 时不校验（浏览器直连调用 API 的常见选择）。也可用 route.enableSafeDomain（route 优先）。`,
+    },
+    {
+      name: "pathRewrite",
+      type: "object",
+      description: `路径重写（PathRewrite），形如 {prefix:"/v1", staticStorePrefix:"app"}。prefix=命中路径前缀后替换为的内容；staticStorePrefix=静态托管场景下的目标前缀。不需要改写就省略；也可用 route.pathRewrite（route 优先）。`,
+      children: [
+        {
+          name: "prefix",
+          type: "string",
+        },
+        {
+          name: "staticStorePrefix",
+          type: "string",
+        }
+      ],
+    },
+    {
+      name: "qpsPolicy",
+      type: "object",
+      description: `限频（QPSPolicy），即控制台的「频限」。{total:总 QPS, perClient:{limitBy:"ClientIP"|"UserID", limitValue:单客户端 QPS}}。不传则不限频；也可用 route.qpsPolicy（route 优先）。`,
+      children: [
+        {
+          name: "total",
+          type: "integer",
+        },
+        {
+          name: "perClient",
+          type: "object",
+          children: [
+            {
+              name: "limitBy",
+              type: "string",
+              description: ` 可填写的值: "ClientIP", "UserID"`,
+            },
+            {
+              name: "limitValue",
+              type: "integer",
+            }
+          ],
+        }
+      ],
+    },
+    {
+      name: "extension",
+      type: "object",
+      description: `路由级扩展（Extension），可配自定义请求/响应头与缓存规则。{headersHandler:{requestHeadersToAdd,requestHeadersToRemove,responseHeadersToAdd,responseHeadersToRemove},cache:{rules:[{description,enable,condition:{target,matchType,values},actions:[{type:"Cache"|"CacheKey",cache,cacheKey}]}]}}。⚠️ 默认域（*.{region}.app.tcloudbase.com）不支持自定义响应头，后端会拒绝（实测 2026-10-21），需要自定义域名才能配。也可用 route.extension（route 优先）。`,
+      children: [
+        {
+          name: "headersHandler",
+          type: "object",
+          children: [
+            {
+              name: "requestHeadersToAdd",
+              type: "array of object",
+              children: [
+                {
+                  name: "key",
+                  type: "string",
+                  required: true,
+                  description: `请求/响应头名称，如 X-Frame-Options`,
+                },
+                {
+                  name: "value",
+                  type: "string",
+                  required: true,
+                  description: `请求/响应头取值，如 SAMEORIGIN`,
+                },
+                {
+                  name: "action",
+                  type: "string",
+                  description: `写入策略（可选）：APPEND_IF_EXISTS_OR_ADD 追加；ADD_IF_ABSENT 不存在才加；OVERWRITE_IF_EXISTS_OR_ADD 覆盖或新增；OVERWRITE_IF_EXISTS 仅覆盖已存在的 可填写的值: "APPEND_IF_EXISTS_OR_ADD", "ADD_IF_ABSENT", "OVERWRITE_IF_EXISTS_OR_ADD", "OVERWRITE_IF_EXISTS"`,
+                }
+              ],
+            },
+            {
+              name: "requestHeadersToRemove",
+              type: "array of string",
+            },
+            {
+              name: "responseHeadersToAdd",
+              type: "array of unknown",
+            },
+            {
+              name: "responseHeadersToRemove",
+              type: "array of string",
+            }
+          ],
+        },
+        {
+          name: "cache",
+          type: "object",
+          children: [
+            {
+              name: "rules",
+              type: "array of object",
+              children: [
+                {
+                  name: "description",
+                  type: "string",
+                },
+                {
+                  name: "enable",
+                  type: "boolean",
+                },
+                {
+                  name: "condition",
+                  type: "object",
+                  required: true,
+                  description: `缓存规则匹配条件：target=url_path/file_extension/full_uri，matchType=prefix/suffix/contains/exact，values=匹配值数组`,
+                  children: [
+                    {
+                      name: "target",
+                      type: "string",
+                      description: ` 可填写的值: "url_path", "file_extension", "full_uri"`,
+                    },
+                    {
+                      name: "matchType",
+                      type: "string",
+                      description: ` 可填写的值: "prefix", "suffix", "contains", "exact"`,
+                    },
+                    {
+                      name: "values",
+                      type: "array of string",
+                    }
+                  ],
+                },
+                {
+                  name: "actions",
+                  type: "array of object",
+                  required: true,
+                  description: `缓存动作数组：type=Cache 配 cache{followOrigin,noCache,cacheTime,maxAgeTime}（三者互斥，需开启其一）；type=CacheKey 配 cacheKey{fullUrlCache,queryStringSwitch,queryStringAction,queryStringValues}`,
+                  children: [
+                    {
+                      name: "type",
+                      type: "string",
+                      description: ` 可填写的值: "Cache", "CacheKey"`,
+                    },
+                    {
+                      name: "cache",
+                      type: "object",
+                      children: [
+                        {
+                          name: "followOrigin",
+                          type: "boolean",
+                        },
+                        {
+                          name: "noCache",
+                          type: "boolean",
+                        },
+                        {
+                          name: "cacheTime",
+                          type: "integer",
+                        },
+                        {
+                          name: "maxAgeTime",
+                          type: "integer",
+                        }
+                      ],
+                    },
+                    {
+                      name: "cacheKey",
+                      type: "object",
+                      children: [
+                        {
+                          name: "fullUrlCache",
+                          type: "string",
+                          description: ` 可填写的值: "on", "off"`,
+                        },
+                        {
+                          name: "queryStringSwitch",
+                          type: "string",
+                          description: ` 可填写的值: "on", "off"`,
+                        },
+                        {
+                          name: "queryStringAction",
+                          type: "string",
+                          description: ` 可填写的值: "includeCustom", "excludeCustom"`,
+                        },
+                        {
+                          name: "queryStringValues",
+                          type: "array of string",
+                        }
+                      ],
+                    }
+                  ],
+                }
+              ],
+            }
+          ],
+        }
+      ],
+    },
+    {
+      name: "domainExtension",
+      type: "unknown",
+      description: `域名级扩展（Extension），作用于整个域名（含该域名下所有路径）的自定义头与缓存规则，结构同 extension。缓存规则通常配在域名级；仅 createRoute/updateRoute/bindCustomDomain 生效。⚠️ 同 extension：默认域不支持自定义响应头，需自定义域名。`,
+    },
+    {
+      name: "protocol",
+      type: "string",
+      description: `域名协议（Protocol），仅 createRoute/updateRoute/bindCustomDomain 生效：HTTP / HTTPS / HTTP_AND_HTTPS / HTTP_TO_HTTPS / HTTPS_TO_HTTP。省略则沿用域名现有配置。 可填写的值: "HTTP", "HTTPS", "HTTP_AND_HTTPS", "HTTP_TO_HTTPS", "HTTPS_TO_HTTP"`,
     },
     {
       name: "route",
@@ -2984,7 +3225,7 @@ CloudBase HTTP 网关统一写入口（Domain/Route）。createRoute/updateRoute
         {
           name: "upstreamResourceType",
           type: "string",
-          description: `同顶层 upstreamResourceType。route 内设置时优先于顶层。 可填写的值: "SCF", "WEB_SCF", "CBR", "STATIC_STORE", "LH"`,
+          description: `同顶层 upstreamResourceType。route 内设置时优先于顶层。 可填写的值: "SCF", "WEB_SCF", "CBR", "STATIC_STORE", "LH", "STORAGE"`,
         },
         {
           name: "auth",
@@ -2994,6 +3235,26 @@ CloudBase HTTP 网关统一写入口（Domain/Route）。createRoute/updateRoute
           name: "enablePathTransmission",
           type: "boolean",
           description: `同顶层 enablePathTransmission。route 内设置时优先于顶层。`,
+        },
+        {
+          name: "enableSafeDomain",
+          type: "boolean",
+          description: `同顶层 enableSafeDomain（跨域/合法域名校验）。route 内设置时优先于顶层。`,
+        },
+        {
+          name: "pathRewrite",
+          type: "unknown",
+          description: `同顶层 pathRewrite。route 内设置时优先于顶层。`,
+        },
+        {
+          name: "qpsPolicy",
+          type: "unknown",
+          description: `同顶层 qpsPolicy（限频）。route 内设置时优先于顶层。`,
+        },
+        {
+          name: "extension",
+          type: "unknown",
+          description: `同顶层 extension（路由级自定义头与缓存规则）。route 内设置时优先于顶层。`,
         },
         {
           name: "enable",
@@ -3026,6 +3287,21 @@ CloudBase HTTP 网关统一写入口（Domain/Route）。createRoute/updateRoute
       name: "enable",
       type: "boolean",
       description: `开关目标状态：enableService / authSwitch 必填（true 开启 / false 关闭）；bindCustomDomain 可选：enable=false 表示绑定后禁用域名（默认启用）；updateRoute 可选：映射到 Routes[].Enable（也可用 route.enable，route 优先；也可用专用 action enableRoute/disableRoute）。省略或非布尔值在 enableService/authSwitch 会返回参数错误。`,
+    },
+    {
+      name: "cacheType",
+      type: "string",
+      description: `缓存层（仅 purgeCache）：CDN 或 EO。省略时按域名接入方式自动匹配（EO→EO、CDN→CDN）；DIRECT / CUSTOM / NONE 的域没有 CloudBase 托管的缓存，会直接拒绝并说明原因。 可填写的值: "CDN", "EO"`,
+    },
+    {
+      name: "purgeType",
+      type: "string",
+      description: `清除方式（仅 purgeCache，默认 PURGE_URL）：PURGE_URL=按完整 URL、PURGE_PREFIX=按路径前缀、PURGE_HOST=整个域名 可填写的值: "PURGE_URL", "PURGE_PREFIX", "PURGE_HOST"`,
+    },
+    {
+      name: "targets",
+      type: "array of string",
+      description: `清除目标（仅 purgeCache，必填）：PURGE_URL 传 https://域名/路径 形式；PURGE_PREFIX 传 /static/ 这样的前缀；PURGE_HOST 传域名本身`,
     }
   ]}
 />

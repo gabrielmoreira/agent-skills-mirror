@@ -11,7 +11,7 @@ description: >
   subjects via text-to-video.
 license: MIT
 metadata:
-  version: 1.2.0
+  version: 1.2.2
   author: moonlight-lupin
   platforms: [linux, macos, windows]
   hermes:
@@ -163,7 +163,11 @@ idea — confirm the brief (and the start image, for `animate`/`camera`) before 
 session — it covers grounding real subjects, audio layer control, multi-shot syntax, speech vs
 burned-in text, and continuation/chaining. These techniques work across all fal.ai video models, not
 just one. The short version: write plain prose (not keyword tags), ground anything with a real
-checkable appearance, and specify what matters — what you leave out is the model's call.
+checkable appearance, and specify what matters — what you leave out is the model's call. For a start frame that needs exact in-image text (title card, poster, sign with bilingual
+中文/English strings), generate the still first via `image-studio`'s **Layout-controlled
+generation — MOSS-Image** section (`references/moss-layout.md`, compiled by
+`scripts/moss_compile_prompt.py`) before animating — video models cannot take JSON layouts and
+burn in text unreliably.
 
 ## Stage 2 — Draft cheaply
 

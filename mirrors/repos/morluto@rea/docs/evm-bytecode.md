@@ -106,7 +106,11 @@ CLI keeps its existing complete result.
 
 Inputs are limited to 4 MiB, complete replies to 16 MiB and combined diagnostic
 output to 1 MiB. An owned worker has a 256 MiB JavaScript heap, 3 GiB virtual
-address-space limit, 30 CPU seconds and a 30-second command deadline. Virtual
+address-space limit and 30 CPU seconds. The worker command deadline is
+`timeout_ms` (default 30000 ms, integer 1 through 2147483647) on the next call,
+or `--timeout-ms` on `rea inspect-evm-interface`. Omission keeps 30000 ms.
+Those byte, address-space, and CPU ceilings have no runtime override, and
+`timeout_ms` does not raise them. Virtual
 address space differs from resident memory. The worker retains inherited tighter
 soft/hard limits, reports its configured soft limits inline and leaves hard limits
 unchanged. WASM trap reservations are disabled

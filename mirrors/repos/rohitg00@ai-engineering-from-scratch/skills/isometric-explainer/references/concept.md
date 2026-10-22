@@ -42,7 +42,7 @@ Make a table before geometry. One row per station:
 | Why | The model that wrote the answer is a poor judge of it |
 | Without it | An unchecked answer goes straight to the exit |
 
-The same table feeds the inspector panel, the nameplates and the tour. Keep it in one content module.
+The same table feeds the inspector panel, the labels and the tour. Keep it in one content module.
 
 ## Break it on purpose
 

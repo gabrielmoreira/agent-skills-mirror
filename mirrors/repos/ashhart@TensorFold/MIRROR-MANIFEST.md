@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ashhart/TensorFold` — 26 default patterns, 35 followed patterns, 65 file(s) materialized.
+Mirror of `ashhart/TensorFold` — 26 default patterns, 35 followed patterns, 70 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ashhart/TensorFold` — 26 default patterns, 35 followed patterns, 65
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 35 |
-| Files         | 65 |
+| Files         | 70 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -99,65 +99,70 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`app/mobile/AGENTS.md`](app/mobile/AGENTS.md) |
 | 5 | ✓ | [`app/mobile/vendor/decode-uri-component/README.md`](app/mobile/vendor/decode-uri-component/README.md) |
 | 6 | ✓ | [`docs/api.md`](docs/api.md) |
-| 7 | ✓ | [`docs/receipts/gfx1151-qwen-833bbfcb/README.md`](docs/receipts/gfx1151-qwen-833bbfcb/README.md) |
-| 8 | ✓ | [`docs/receipts/glm-sampling-95818b3/README.md`](docs/receipts/glm-sampling-95818b3/README.md) |
-| 9 | ✓ | [`docs/receipts/qwen-cuda-first-token/README.md`](docs/receipts/qwen-cuda-first-token/README.md) |
-| 10 | ✓ | [`docs/recipes/adding-a-cuda-family.md`](docs/recipes/adding-a-cuda-family.md) |
-| 11 | ✓ | [`docs/recipes/adding-a-family.md`](docs/recipes/adding-a-family.md) |
-| 12 | ✓ | [`docs/recipes/adding-a-zig-family.md`](docs/recipes/adding-a-zig-family.md) |
-| 13 | ✓ | [`docs/recipes/deepseek-v4-flash.md`](docs/recipes/deepseek-v4-flash.md) |
-| 14 | ✓ | [`docs/recipes/exl3-universal-experts.md`](docs/recipes/exl3-universal-experts.md) |
-| 15 | ✓ | [`docs/recipes/exl3.md`](docs/recipes/exl3.md) |
-| 16 | ✓ | [`docs/recipes/flash-next-vision.md`](docs/recipes/flash-next-vision.md) |
-| 17 | ✓ | [`docs/recipes/gemma-4.md`](docs/recipes/gemma-4.md) |
-| 18 | ✓ | [`docs/recipes/glm-5.3-flash.md`](docs/recipes/glm-5.3-flash.md) |
-| 19 | ✓ | [`docs/recipes/SKILL.md`](docs/recipes/SKILL.md) |
-| 20 | ✓ | [`docs/recipes/speed-up-mode.md`](docs/recipes/speed-up-mode.md) |
-| 21 | ✓ | [`docs/recipes/ternary-bonsai-2.md`](docs/recipes/ternary-bonsai-2.md) |
-| 22 | ✓ | [`docs/recipes/training-a-drafter.md`](docs/recipes/training-a-drafter.md) |
-| 23 | ✓ | [`docs/recipes/xpu-arc.md`](docs/recipes/xpu-arc.md) |
-| 24 | ✓ | [`docs/speed-up-mode.md`](docs/speed-up-mode.md) |
-| 25 | ✓ | [`docs/xpu/README.md`](docs/xpu/README.md) |
-| 26 | ✓ | [`tools/zig/cuda_host/README.md`](tools/zig/cuda_host/README.md) |
-| 27 | ✓ | [`tools/zig/fixtures/README.md`](tools/zig/fixtures/README.md) |
-| 28 | ✓ | [`zig/kernels/cuda/torch_ops/README.md`](zig/kernels/cuda/torch_ops/README.md) |
-| 29 | ✓ | [`zig/src/fabric/tp/README.md`](zig/src/fabric/tp/README.md) |
-| 30 | ✓ | [`zig/tests/cuda/nemotron/box/README.md`](zig/tests/cuda/nemotron/box/README.md) |
-| 31 | → | [`app/README.md`](app/README.md) |
-| 32 | → | [`CHANGELOG.md`](CHANGELOG.md) |
-| 33 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 34 | → | [`docs/cache-benchmarks.md`](docs/cache-benchmarks.md) |
-| 35 | → | [`docs/community-benchmarks.md`](docs/community-benchmarks.md) |
-| 36 | → | [`docs/cortheon.md`](docs/cortheon.md) |
-| 37 | → | [`docs/credits.md`](docs/credits.md) |
-| 38 | → | [`docs/glm-5.3-exlr8.md`](docs/glm-5.3-exlr8.md) |
-| 39 | → | [`docs/kernel-contract.md`](docs/kernel-contract.md) |
-| 40 | → | [`docs/known-issues.md`](docs/known-issues.md) |
-| 41 | → | [`docs/living-weights.md`](docs/living-weights.md) |
-| 42 | → | [`docs/memory-diagnostics.md`](docs/memory-diagnostics.md) |
-| 43 | → | [`docs/memory-profiling.md`](docs/memory-profiling.md) |
-| 44 | → | [`docs/recall.md`](docs/recall.md) |
-| 45 | → | [`docs/receipts/flashnext-mtp-chain-2026-10-10/README.md`](docs/receipts/flashnext-mtp-chain-2026-10-10/README.md) |
-| 46 | → | [`docs/recipes/cuda.md`](docs/recipes/cuda.md) |
-| 47 | → | [`docs/recipes/flash-next-cuda.md`](docs/recipes/flash-next-cuda.md) |
-| 48 | → | [`docs/recipes/gemma-4-12b-native.md`](docs/recipes/gemma-4-12b-native.md) |
-| 49 | → | [`docs/recipes/gemma-4-native.md`](docs/recipes/gemma-4-native.md) |
-| 50 | → | [`docs/recipes/kolibri-1.md`](docs/recipes/kolibri-1.md) |
-| 51 | → | [`docs/recipes/nemotron-3.5-super-vl.md`](docs/recipes/nemotron-3.5-super-vl.md) |
-| 52 | → | [`docs/recipes/nemotron-3.5.md`](docs/recipes/nemotron-3.5.md) |
-| 53 | → | [`docs/recipes/nemotron-omni-video.md`](docs/recipes/nemotron-omni-video.md) |
-| 54 | → | [`docs/recipes/qwen3.5-2b-native.md`](docs/recipes/qwen3.5-2b-native.md) |
-| 55 | → | [`docs/recipes/qwen3.6-moe.md`](docs/recipes/qwen3.6-moe.md) |
-| 56 | → | [`docs/recipes/qwen3.8-27b.md`](docs/recipes/qwen3.8-27b.md) |
-| 57 | → | [`docs/recipes/qwen3.8-flash-next.md`](docs/recipes/qwen3.8-flash-next.md) |
-| 58 | → | [`docs/recipes/README.md`](docs/recipes/README.md) |
-| 59 | → | [`docs/recipes/step-5-preview.md`](docs/recipes/step-5-preview.md) |
-| 60 | → | [`docs/WINDOWS.md`](docs/WINDOWS.md) |
-| 61 | → | [`packaging/README.md`](packaging/README.md) |
-| 62 | → | [`README.md`](README.md) |
-| 63 | → | [`RELEASE-NOTES-1.0.0.md`](RELEASE-NOTES-1.0.0.md) |
-| 64 | → | [`RUNBOOK.md`](RUNBOOK.md) |
-| 65 | → | [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) |
+| 7 | ✓ | [`docs/receipts/drafter-counts/fresh-2026-10-19/README.md`](docs/receipts/drafter-counts/fresh-2026-10-19/README.md) |
+| 8 | ✓ | [`docs/receipts/drafter-counts/README.md`](docs/receipts/drafter-counts/README.md) |
+| 9 | ✓ | [`docs/receipts/gfx1151-cancel-76aafcf2/README.md`](docs/receipts/gfx1151-cancel-76aafcf2/README.md) |
+| 10 | ✓ | [`docs/receipts/gfx1151-qwen-833bbfcb/README.md`](docs/receipts/gfx1151-qwen-833bbfcb/README.md) |
+| 11 | ✓ | [`docs/receipts/glm-sampling-95818b3/README.md`](docs/receipts/glm-sampling-95818b3/README.md) |
+| 12 | ✓ | [`docs/receipts/hip-refuses-drafter/README.md`](docs/receipts/hip-refuses-drafter/README.md) |
+| 13 | ✓ | [`docs/receipts/qwen-cuda-first-token/README.md`](docs/receipts/qwen-cuda-first-token/README.md) |
+| 14 | ✓ | [`docs/receipts/rocm-host-identity/README.md`](docs/receipts/rocm-host-identity/README.md) |
+| 15 | ✓ | [`docs/recipes/adding-a-cuda-family.md`](docs/recipes/adding-a-cuda-family.md) |
+| 16 | ✓ | [`docs/recipes/adding-a-family.md`](docs/recipes/adding-a-family.md) |
+| 17 | ✓ | [`docs/recipes/adding-a-zig-family.md`](docs/recipes/adding-a-zig-family.md) |
+| 18 | ✓ | [`docs/recipes/deepseek-v4-flash.md`](docs/recipes/deepseek-v4-flash.md) |
+| 19 | ✓ | [`docs/recipes/exl3-universal-experts.md`](docs/recipes/exl3-universal-experts.md) |
+| 20 | ✓ | [`docs/recipes/exl3.md`](docs/recipes/exl3.md) |
+| 21 | ✓ | [`docs/recipes/flash-next-vision.md`](docs/recipes/flash-next-vision.md) |
+| 22 | ✓ | [`docs/recipes/gemma-4.md`](docs/recipes/gemma-4.md) |
+| 23 | ✓ | [`docs/recipes/glm-5.3-flash.md`](docs/recipes/glm-5.3-flash.md) |
+| 24 | ✓ | [`docs/recipes/SKILL.md`](docs/recipes/SKILL.md) |
+| 25 | ✓ | [`docs/recipes/speed-up-mode.md`](docs/recipes/speed-up-mode.md) |
+| 26 | ✓ | [`docs/recipes/ternary-bonsai-2.md`](docs/recipes/ternary-bonsai-2.md) |
+| 27 | ✓ | [`docs/recipes/training-a-drafter.md`](docs/recipes/training-a-drafter.md) |
+| 28 | ✓ | [`docs/recipes/xpu-arc.md`](docs/recipes/xpu-arc.md) |
+| 29 | ✓ | [`docs/speed-up-mode.md`](docs/speed-up-mode.md) |
+| 30 | ✓ | [`docs/xpu/README.md`](docs/xpu/README.md) |
+| 31 | ✓ | [`tools/zig/cuda_host/README.md`](tools/zig/cuda_host/README.md) |
+| 32 | ✓ | [`tools/zig/fixtures/README.md`](tools/zig/fixtures/README.md) |
+| 33 | ✓ | [`zig/kernels/cuda/torch_ops/README.md`](zig/kernels/cuda/torch_ops/README.md) |
+| 34 | ✓ | [`zig/src/fabric/tp/README.md`](zig/src/fabric/tp/README.md) |
+| 35 | ✓ | [`zig/tests/cuda/nemotron/box/README.md`](zig/tests/cuda/nemotron/box/README.md) |
+| 36 | → | [`app/README.md`](app/README.md) |
+| 37 | → | [`CHANGELOG.md`](CHANGELOG.md) |
+| 38 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 39 | → | [`docs/cache-benchmarks.md`](docs/cache-benchmarks.md) |
+| 40 | → | [`docs/community-benchmarks.md`](docs/community-benchmarks.md) |
+| 41 | → | [`docs/cortheon.md`](docs/cortheon.md) |
+| 42 | → | [`docs/credits.md`](docs/credits.md) |
+| 43 | → | [`docs/glm-5.3-exlr8.md`](docs/glm-5.3-exlr8.md) |
+| 44 | → | [`docs/kernel-contract.md`](docs/kernel-contract.md) |
+| 45 | → | [`docs/known-issues.md`](docs/known-issues.md) |
+| 46 | → | [`docs/living-weights.md`](docs/living-weights.md) |
+| 47 | → | [`docs/memory-diagnostics.md`](docs/memory-diagnostics.md) |
+| 48 | → | [`docs/memory-profiling.md`](docs/memory-profiling.md) |
+| 49 | → | [`docs/recall.md`](docs/recall.md) |
+| 50 | → | [`docs/receipts/flashnext-mtp-chain-2026-10-10/README.md`](docs/receipts/flashnext-mtp-chain-2026-10-10/README.md) |
+| 51 | → | [`docs/recipes/cuda.md`](docs/recipes/cuda.md) |
+| 52 | → | [`docs/recipes/flash-next-cuda.md`](docs/recipes/flash-next-cuda.md) |
+| 53 | → | [`docs/recipes/gemma-4-12b-native.md`](docs/recipes/gemma-4-12b-native.md) |
+| 54 | → | [`docs/recipes/gemma-4-native.md`](docs/recipes/gemma-4-native.md) |
+| 55 | → | [`docs/recipes/kolibri-1.md`](docs/recipes/kolibri-1.md) |
+| 56 | → | [`docs/recipes/nemotron-3.5-super-vl.md`](docs/recipes/nemotron-3.5-super-vl.md) |
+| 57 | → | [`docs/recipes/nemotron-3.5.md`](docs/recipes/nemotron-3.5.md) |
+| 58 | → | [`docs/recipes/nemotron-omni-video.md`](docs/recipes/nemotron-omni-video.md) |
+| 59 | → | [`docs/recipes/qwen3.5-2b-native.md`](docs/recipes/qwen3.5-2b-native.md) |
+| 60 | → | [`docs/recipes/qwen3.6-moe.md`](docs/recipes/qwen3.6-moe.md) |
+| 61 | → | [`docs/recipes/qwen3.8-27b.md`](docs/recipes/qwen3.8-27b.md) |
+| 62 | → | [`docs/recipes/qwen3.8-flash-next.md`](docs/recipes/qwen3.8-flash-next.md) |
+| 63 | → | [`docs/recipes/README.md`](docs/recipes/README.md) |
+| 64 | → | [`docs/recipes/step-5-preview.md`](docs/recipes/step-5-preview.md) |
+| 65 | → | [`docs/WINDOWS.md`](docs/WINDOWS.md) |
+| 66 | → | [`packaging/README.md`](packaging/README.md) |
+| 67 | → | [`README.md`](README.md) |
+| 68 | → | [`RELEASE-NOTES-1.0.0.md`](RELEASE-NOTES-1.0.0.md) |
+| 69 | → | [`RUNBOOK.md`](RUNBOOK.md) |
+| 70 | → | [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) |
 
 ---
 

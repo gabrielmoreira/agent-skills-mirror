@@ -1,5 +1,6 @@
 ---
-type: area
+type: concept
+methodology_role: area
 title: "{{title}}"
 status: active
 created: {{date}}

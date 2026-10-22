@@ -15,7 +15,7 @@ const P = k.fitProjection(points, W, H, { pad: 26, azimuth: 60 });
 ```
 
 - Elevation is 30 degrees, the kit default. Do not change it per part.
-- The azimuth sets which faces show. At 60 degrees, faces toward +y carry 0.87 of the view and faces toward +x carry 0.5. Put working faces and nameplates on +y faces.
+- The azimuth sets which faces show. At 60 degrees, faces toward +y carry 0.87 of the view and faces toward +x carry 0.5. Put working faces on +y faces.
 - `points` must include the plate corners and the highest points of the exploded pose. If you leave out the exploded pose, exploded parts leave the stage.
 - The reference page uses a 960 by 640 viewBox. The starter uses 720 by 440.
 
@@ -29,7 +29,7 @@ Write the list before any code. One row per part:
 | `probe` | cache | -19, -3, 6, 6 | 18 to 25 | hi | z, -2.5 on lookup |
 | `bin0` | cache | -21, -27, 10, 0.8 | 10 to 17 | hi | shown when stored |
 
-The assembly decides the explode vector and the nameplate that lights with the part.
+The assembly decides the explode vector and the pill label that lights with the part.
 
 ## Kit functions you will use
 
@@ -55,12 +55,13 @@ From `kit/lathe.mjs`: `frameAlong`, `disc`, `ribsOf`, `dotsOf`, `circleOf`, `spo
 
 ## Shading and tones
 
-- `solidSvg` paints a paper fill, up to four shade bands, a lit top, a crease and an outline.
-- An extruded side face gets band `floor(4 * (n . l + 1) / 2)`. Here `n` is the face normal in plan and `l` is `(-sin A, cos A)`.
+- `inkSolid` (from `kit/ink.mjs`) paints each solid in three flat tones of its material, a lit top and an ink outline. See `colour-and-ink.md` for the materials and the tone rules.
+- An extruded side face gets band `floor(4 * (n . l + 1) / 2)`. Here `n` is the face normal in plan and `l` is `(-sin A, cos A)`. The ink CSS maps the four bands to three tones.
 - Lathe bodies use a raised light and band limits of 0, 0.2, 0.42 and 0.62.
-- Outline tones are `hi`, `mid`, `lo` and `faint`. Use `hi` for moving and important parts, `mid` for station bodies, `lo` for bases and recesses, `faint` for seams.
-- Grey tokens come from CSS variables, so both themes work. The course light theme uses `--anatomy-shade-0` `#dcdace` to `--anatomy-shade-3` `#f5f3ea`. The dark theme uses `#0b0e1b` to `#14192e`.
-- The accent is `--anatomy-lit`. The course uses `#3553ff` in light and `#6b8eff` in dark. Nothing else on the stage uses a hue.
+- Outline weights: about 2.6 px for a body silhouette, 1.1 px for edges, 0.7 px for seams. Use `silhouetteSvg` for the heavy line.
+- Tokens come from CSS variables, so both themes work. `INK_CSS` holds the paper, ink, material and shadow tokens for light and dark.
+- The accent is `--anatomy-lit`. The hot part gets the accent on its top face and its edges, and its pill turns the accent colour. Nothing else on the stage uses the accent.
+- Cast shadows replace the blurred halo: `castShadowSvg` for each body, drawn in one low item.
 
 ## Items and depth keys
 
@@ -77,19 +78,19 @@ put("probe", "cache", [-16, 0, 20], svg, 6);
 - A part that rests on top of another part needs a positive bias. In the starter, a card on the cache top had a smaller key than the cache body. It stayed hidden until it got a bias of 3.
 - A head that hangs over a carriage gets a bias of 6 to 20, so it paints over the cards below it.
 
-## Nameplates
+## Labels
 
-Every station gets an engraved plate with its concept word in capitals.
+Every station gets a pill label with a leader line to its working part. The pills replace engraved nameplates.
 
 ```js
-const w = text.length * size * 0.62 + size * 1.8;   // plate width
-const baseline = (z0 + z1) / 2 - size * 0.36;       // text on a vertical face
+const roof = at([XS[asm], backY, roofZ])[1] - [62, 38, 14][i % 3];
+LABELS.push({ asm, at: anchor, dx: 0, dy: Math.round(roof - at(anchor)[1]) });
 ```
 
-- Put plates where no mover passes in front of them. In the starter, plates on station faces were hidden each time the carriage parked. Plates on the bench top in front of the track fixed it.
-- Use 4.4 to 7 world units of text on a hero bench. Check the size in the phone screenshot.
-- Plates do not move when the machine explodes. They stay on the bench as a key to the parts.
-- Each plate is an item with id `tag-<assembly>`, so it lights with its station.
+- Anchor the leader on the part that does the work: the decode bed, the IR stack, the type pins.
+- Put pills in empty space above the machine, in two or three rows that alternate, so that neighbours do not touch. The verify loop checks the overlap in every frame.
+- Pills move with their assembly in the exploded view, because the live script adds the explode offset to the anchor.
+- `colour-and-ink.md` has the label rules, the Labels switch and `?labels=0`.
 
 ## Lines
 

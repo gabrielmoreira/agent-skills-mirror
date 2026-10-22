@@ -15,8 +15,16 @@ not shipped at all.)
 xerj corpus add xerj-storage https://github.com/spacejam/sled …  # clone the peers, once
 xerj corpus index xerj-storage                                   # xerj autoindex; re-run to update in place
 xerj corpus index xerj-storage --fresh                           # rebuild beside the old index, verify, then swap
+xerj corpus index xerj-storage --include-data                    # also index CSV/HDF/simulation output (skipped by default)
 xerj code xerj-storage "how does sled fsync its WAL segment on rotation?"
 ```
+
+A reference corpus is code and docs. Test outputs and datasets (CSV, HDF5,
+Parquet, simulation dumps) are skipped by default because they can out-record
+the whole corpus — one test folder in the
+[field report](https://github.com/xerj-org/xerj/issues/1979) produced 636,724
+records. The run prints how many files and bytes it left out; `--include-data`
+indexes them anyway.
 
 Or rebuild a corpus someone else already defined and vetted:
 

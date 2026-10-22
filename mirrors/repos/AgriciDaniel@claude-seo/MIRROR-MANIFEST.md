@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `AgriciDaniel/claude-seo` — 26 default patterns, 2 followed patterns, 200 file(s) materialized.
+Mirror of `AgriciDaniel/claude-seo` — 26 default patterns, 2 followed patterns, 201 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `AgriciDaniel/claude-seo` — 26 default patterns, 2 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 2 |
-| Files         | 200 |
+| Files         | 201 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -238,28 +238,29 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 176 | ✓ | [`skills/seo-sxo/references/wireframe-templates.md`](skills/seo-sxo/references/wireframe-templates.md) |
 | 177 | ✓ | [`skills/seo-sxo/SKILL.md`](skills/seo-sxo/SKILL.md) |
 | 178 | ✓ | [`skills/seo-technical/LICENSE.txt`](skills/seo-technical/LICENSE.txt) |
-| 179 | ✓ | [`skills/seo-technical/SKILL.md`](skills/seo-technical/SKILL.md) |
-| 180 | ✓ | [`skills/seo/LICENSE.txt`](skills/seo/LICENSE.txt) |
-| 181 | ✓ | [`skills/seo/references/backlink-quality.md`](skills/seo/references/backlink-quality.md) |
-| 182 | ✓ | [`skills/seo/references/cwv-thresholds.md`](skills/seo/references/cwv-thresholds.md) |
-| 183 | ✓ | [`skills/seo/references/eeat-framework.md`](skills/seo/references/eeat-framework.md) |
-| 184 | ✓ | [`skills/seo/references/eeat-scoring-guide.md`](skills/seo/references/eeat-scoring-guide.md) |
-| 185 | ✓ | [`skills/seo/references/free-backlink-sources.md`](skills/seo/references/free-backlink-sources.md) |
-| 186 | ✓ | [`skills/seo/references/local-schema-multilocation.md`](skills/seo/references/local-schema-multilocation.md) |
-| 187 | ✓ | [`skills/seo/references/local-schema-types.md`](skills/seo/references/local-schema-types.md) |
-| 188 | ✓ | [`skills/seo/references/local-search-behavior.md`](skills/seo/references/local-search-behavior.md) |
-| 189 | ✓ | [`skills/seo/references/local-seo-signals.md`](skills/seo/references/local-seo-signals.md) |
-| 190 | ✓ | [`skills/seo/references/maps-api-endpoints.md`](skills/seo/references/maps-api-endpoints.md) |
-| 191 | ✓ | [`skills/seo/references/maps-free-apis.md`](skills/seo/references/maps-free-apis.md) |
-| 192 | ✓ | [`skills/seo/references/maps-gbp-checklist.md`](skills/seo/references/maps-gbp-checklist.md) |
-| 193 | ✓ | [`skills/seo/references/maps-geo-grid.md`](skills/seo/references/maps-geo-grid.md) |
-| 194 | ✓ | [`skills/seo/references/quality-gates.md`](skills/seo/references/quality-gates.md) |
-| 195 | ✓ | [`skills/seo/references/schema-types.md`](skills/seo/references/schema-types.md) |
-| 196 | ✓ | [`skills/seo/references/thinking-framework-validate-act.md`](skills/seo/references/thinking-framework-validate-act.md) |
-| 197 | ✓ | [`skills/seo/references/thinking-framework.md`](skills/seo/references/thinking-framework.md) |
-| 198 | ✓ | [`skills/seo/SKILL.md`](skills/seo/SKILL.md) |
-| 199 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 200 | → | [`CONTRIBUTORS.md`](CONTRIBUTORS.md) |
+| 179 | ✓ | [`skills/seo-technical/references/stack-cve-exposure.md`](skills/seo-technical/references/stack-cve-exposure.md) |
+| 180 | ✓ | [`skills/seo-technical/SKILL.md`](skills/seo-technical/SKILL.md) |
+| 181 | ✓ | [`skills/seo/LICENSE.txt`](skills/seo/LICENSE.txt) |
+| 182 | ✓ | [`skills/seo/references/backlink-quality.md`](skills/seo/references/backlink-quality.md) |
+| 183 | ✓ | [`skills/seo/references/cwv-thresholds.md`](skills/seo/references/cwv-thresholds.md) |
+| 184 | ✓ | [`skills/seo/references/eeat-framework.md`](skills/seo/references/eeat-framework.md) |
+| 185 | ✓ | [`skills/seo/references/eeat-scoring-guide.md`](skills/seo/references/eeat-scoring-guide.md) |
+| 186 | ✓ | [`skills/seo/references/free-backlink-sources.md`](skills/seo/references/free-backlink-sources.md) |
+| 187 | ✓ | [`skills/seo/references/local-schema-multilocation.md`](skills/seo/references/local-schema-multilocation.md) |
+| 188 | ✓ | [`skills/seo/references/local-schema-types.md`](skills/seo/references/local-schema-types.md) |
+| 189 | ✓ | [`skills/seo/references/local-search-behavior.md`](skills/seo/references/local-search-behavior.md) |
+| 190 | ✓ | [`skills/seo/references/local-seo-signals.md`](skills/seo/references/local-seo-signals.md) |
+| 191 | ✓ | [`skills/seo/references/maps-api-endpoints.md`](skills/seo/references/maps-api-endpoints.md) |
+| 192 | ✓ | [`skills/seo/references/maps-free-apis.md`](skills/seo/references/maps-free-apis.md) |
+| 193 | ✓ | [`skills/seo/references/maps-gbp-checklist.md`](skills/seo/references/maps-gbp-checklist.md) |
+| 194 | ✓ | [`skills/seo/references/maps-geo-grid.md`](skills/seo/references/maps-geo-grid.md) |
+| 195 | ✓ | [`skills/seo/references/quality-gates.md`](skills/seo/references/quality-gates.md) |
+| 196 | ✓ | [`skills/seo/references/schema-types.md`](skills/seo/references/schema-types.md) |
+| 197 | ✓ | [`skills/seo/references/thinking-framework-validate-act.md`](skills/seo/references/thinking-framework-validate-act.md) |
+| 198 | ✓ | [`skills/seo/references/thinking-framework.md`](skills/seo/references/thinking-framework.md) |
+| 199 | ✓ | [`skills/seo/SKILL.md`](skills/seo/SKILL.md) |
+| 200 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 201 | → | [`CONTRIBUTORS.md`](CONTRIBUTORS.md) |
 
 ---
 

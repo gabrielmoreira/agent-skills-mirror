@@ -247,8 +247,10 @@ PR without the chat history.
   not take waits in the TUI's own queue for the running turn to
   end, whatever the busy mode, so it never interrupts that turn.
   A steer Hermes does not answer within 120 s goes back to the
-  composer and is never re-sent. The subagent views (the strip, the
-  list, one agent's log) read with `subagent.tail` only, the tail of the log
+  composer and is never re-sent. The subagent views (the agent view under
+  the info line, always expanded while there are agents, as the owner asked
+  on 2026-10-21; the list Down opens on its rows; one agent's log) read with
+  `subagent.tail` only, the tail of the log
   the person opened. Two keys in the agent list act on the highlighted
   agent, and only on the person's keypress: `x` interrupts it
   (`subagent.interrupt`) once a second `x` confirms, and `s` steers it

@@ -72,12 +72,24 @@ run by default). The v1 code path is unchanged.
     `wakeRepeatMarker`; child-input wakes exempt, delta-bearing wakes keep
     the full template) and logs `duplicate wake body suppressed`.
     Retries follow the interval timer; failed publication/recovery retains its
-    reason until delivery or a generation change. v2 children mode passes
+    reason until delivery or a generation change. Pending publication facts
+    restore the publication reason after parent busy transitions, even when
+    periodic wakes are disabled; deletion still discards them. v2 children mode passes
     `delivery: 'queue'` (v1 call shape unchanged).
   - A delivered publication consumes the per-parent throttle inside
     `evaluate`, whether delivered directly, by timer or by one-flight
     waiter. Failed/vetoed attempts and periodic deliveries do not consume
     it; `waking` with task identity is logged only by the direct trigger.
+  - V2 publication wakes share the run-fenced publication queue (child ID,
+    generation, and optional terminal revision) per parent,
+    coalesce them into explicit `task_status` result pointers in a NEW trailing
+    volatile message built with `appendTrailingVolatileMessage`, and retire
+    only sent object identities on transport acceptance. Pointers, metadata,
+    and delivery acknowledgements use the same revalidated snapshot of at
+    most 256 executions; overflow stays pending. Failures, throttled
+    bursts, and publications arriving during a send keep their pending IDs.
+    Idle retries work with periodic wakes disabled; deletion/disposal clears
+    pending identities. Existing eligibility/no-progress gates remain intact.
   - `triggerStoppedJobRecovery`: immediate recovery wake for jobs that stopped
     without a native terminal result (separate from the periodic TODO wake;
     bypasses the wake condition, as on v1). Queued facts are revalidated by

@@ -335,9 +335,12 @@ export REA_JADX_OPERATION_TIMEOUT_MS=600000
 ```
 
 The value must be a decimal millisecond count from 1 to 2147483647; anything
-else is refused before Java starts. The same deadline bounds each upstream
-call, a timeout reports the selected value, and a passing JADX configuration
-check in `rea doctor` reports the effective `operation_timeout_ms`. Explicit
+else is refused before Java starts. REA reads it from the environment captured
+at process start. A change applies on the next process start; an already
+running server keeps the deadline it started with. The same deadline bounds
+each upstream call. A timeout names `REA_JADX_OPERATION_TIMEOUT_MS`, the
+effective milliseconds, and that range. A passing JADX configuration check in
+`rea doctor` reports the effective `operation_timeout_ms`. Explicit
 cancellation still ends the operation immediately, and partial observations
 and owned-process cleanup are unchanged. Raising the deadline does not extend
 the bridge's 30-second startup handshake or the upstream **90-second**

@@ -26,7 +26,7 @@ Deletion must be explicitly requested by the user. If a stale-revision conflict 
 
 | Resources | Update behavior |
 | --- | --- |
-| `narrative_style`, `story_director`, `event_package`, `rule_system`, `state_system`, `image_preset` | Complete editable-resource replacement. Start from `get`, change only requested fields, and submit the complete editable value. Omitted arrays and objects are cleared or defaulted. |
+| `narrative_style`, `game_planning`, `event_package`, `rule_system`, `state_system`, `image_preset` | Complete editable-resource replacement. Start from `get`, change only requested fields, and submit the complete editable value. Omitted arrays and objects are cleared or defaulted. |
 | `automation` | Sparse patch. Omitted fields stay unchanged; a present `triggers` array replaces the whole trigger list. `target` is create-only and immutable. |
 | `agent_profile` | Fixed Agents use sectional layered updates. A `custom_agent` mutation is user-only and replaces its complete independent definition; General SubAgent and custom SubAgent mutations follow the resource reference. |
 | `skill` | Complete replacement of one root `SKILL.md` or one supporting reference file. The root revision covers the whole Skill directory. |
@@ -42,7 +42,7 @@ Examples use `REVISION_FROM_GET` as a visible placeholder. Always replace it wit
 
 - `style_reference` → `skill://configuration/references/style-reference.md`
 - `narrative_style` → `skill://configuration/references/narrative-style.md`
-- `story_director` → `skill://configuration/references/story-director.md`
+- `game_planning` → `skill://configuration/references/game-planning.md`
 - `event_package` → `skill://configuration/references/event-package.md`
 - `rule_system` → `skill://configuration/references/rule-system.md`
 - `state_system` → `skill://configuration/references/state-system.md`

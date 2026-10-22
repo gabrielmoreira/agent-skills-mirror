@@ -59,7 +59,7 @@ Mirror of `coleam00/Archon` — 26 default patterns, 11 followed patterns, 49 fi
 - `.github/pull_request_template.md`
 - `.archon/architecture.md`
 - `packages/docs-web/src/content/docs/reference/cli.md`
-- `packages/docs-web/src/content/docs/guides/authoring-workflows.md`
+- `packages/docs-web/src/content/docs/reference/workflow-language.md`
 - `packages/docs-web/src/content/docs/reference/database.md`
 - `README.md`
 
@@ -114,9 +114,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 43 | → | [`.archon/workflows/sdlc/CONSTITUTION.md`](.archon/workflows/sdlc/CONSTITUTION.md) |
 | 44 | → | [`.github/pull_request_template.md`](.github/pull_request_template.md) |
 | 45 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 46 | → | [`packages/docs-web/src/content/docs/guides/authoring-workflows.md`](packages/docs-web/src/content/docs/guides/authoring-workflows.md) |
-| 47 | → | [`packages/docs-web/src/content/docs/reference/cli.md`](packages/docs-web/src/content/docs/reference/cli.md) |
-| 48 | → | [`packages/docs-web/src/content/docs/reference/database.md`](packages/docs-web/src/content/docs/reference/database.md) |
+| 46 | → | [`packages/docs-web/src/content/docs/reference/cli.md`](packages/docs-web/src/content/docs/reference/cli.md) |
+| 47 | → | [`packages/docs-web/src/content/docs/reference/database.md`](packages/docs-web/src/content/docs/reference/database.md) |
+| 48 | → | [`packages/docs-web/src/content/docs/reference/workflow-language.md`](packages/docs-web/src/content/docs/reference/workflow-language.md) |
 | 49 | → | [`README.md`](README.md) |
 
 ---

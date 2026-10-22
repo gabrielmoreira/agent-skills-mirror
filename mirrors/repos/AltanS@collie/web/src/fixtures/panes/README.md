@@ -265,6 +265,56 @@ trailing padding are as read. No user, host or path is in either file.
 | `pi--v130-custom-footer-idle.txt` | Empty editor, the cursor cell, the extension's footer | composer, empty |
 | `pi--v130-custom-footer-draft.txt` | `hello from the probe` typed, not sent | composer, draft read back |
 
+## pi 1.3.0 under pi-powerline-footer's editor (issue 544, reported 2026-10-20, Herdr 0.9.5)
+
+**Sanitized**, from the reporter's own capture attached to issue 544 (`herdr pane read --source recent
+--lines 200 --format ansi`, 254 columns, LF line ends, no trailing newline). pi 1.3.0 with several
+extensions. One of them, pi-powerline-footer, replaces pi's editor (`ctx.ui.setEditorComponent`) with
+a wrapper whose `editor.render` draws both rules ` ─…` and the prompt ` > ` one column in, two cells
+short of the screen, and continuation rows three spaces in. Its `powerline-last-prompt` widget
+(`setWidget`, below the editor) puts ` ↳ ` and the last prompt straight under the bottom rule. Its
+`powerline-status` widget above the editor is the ` GPT-6.1 Sol | think:low | …` row. Under the widget
+stand five footer rows: three match pi's own cwd, stats and joined `setStatus` rows (ponytail's `🐴`
+status is in the last), and two more sit between them, so an extension footer (`setFooter`) draws
+them; which extension is not known. The turn is running, so pi embeds `⠸ Working` in
+the top rule. Cut to the last 23 rows of the read, from the blank row over the last agent turn. The pane
+id, the reporter's German reply and the session name were replaced by strings of the same width;
+`litellm/[REDACTED]` is the reporter's own redaction.
+
+| Fixture | State | Reads as |
+| --- | --- | --- |
+| `pi--v130-powerline-editor-running--w254.txt` | Empty inset editor, a running turn, widget row and five-row footer | running, modal none, composer empty (the profile's `frameAlternates`); the pi reader's `inset` layout, unbound (the tail is past the six-row window) |
+
+**Reporter's idle and draft captures**, the same setup, two captures taken 2026-10-20 and 2026-10-21 (`herdr pane read --source recent
+--lines 200 --format ansi`, 254 columns, CRLF in the read, here LF, no trailing newline). The turn is
+done, so the top rule has no `Working` label and the box stands over the widget row and the five-row
+footer. Cut to the tail (the last agent turn's final rows, then the status row, the box, the widget
+and the footer). Replaced by text of the same width, SGR bytes unchanged: the German reply and the
+German prompts in the widget row and in the cwd row (the widget's second line wraps onto the cwd row,
+105 columns), the Windows share path (`\\wsl.localhost\<user>\tmp\<folder>\...`, user and folder
+names), and the `auth:` profile name (`demo-profile`). The typed draft in the second file is the
+reporter's own test text.
+
+| Fixture | State | Reads as |
+| --- | --- | --- |
+| `pi--v130-powerline-editor-idle-footer--w254.txt` | Empty inset box over a long widget row (cut by an ellipsis) and the five-row footer | free (idle, modal none, empty) |
+| `pi--v130-powerline-editor-two-row-draft-footer--w254.txt` | Two typed rows, `Collie test draft line one` and `... two`, over the widget row and footer | draft read back as the two rows joined, modal none, not free |
+
+**Live**, from the lab run of 2026-10-20: pi 1.3.0 with pi-powerline-footer 0.20.2 alone, 120 columns
+and 40 rows, LF line ends, no trailing newline. pi ran under tmux, so its extended-keys warning stands
+at the top. With no other extension's footer the inset box ends the screen, or its ` ↳ ` widget row
+does; the powerline status row stands over the top rule. Nothing personal was on screen. One file is
+**derived**: the walky talky draft is the two-row draft with its two rows replaced by a walky talky
+header row and a body row, as the bridge types a message (a newline between them).
+
+| Fixture | State | Reads as |
+| --- | --- | --- |
+| `pi--v130-powerline-editor-idle-widget--w120.txt` | Empty inset box after a turn, the ` ↳ ` row under it | free (idle, modal none, empty); the pi reader's `inset` layout with no status row |
+| `pi--v130-powerline-editor-two-row-draft--w120.txt` | A typed prompt that wraps to a second row, three spaces in | draft, modal none, the two rows read as one text (the alternate's `rows` and `ownPrompt`) |
+| `pi--v130-powerline-editor-walky-draft--w120.txt` | Derived: a walky talky header row and its body row | draft, modal none, header and body as one text |
+| `pi--v130-powerline-editor-slash-model--w120.txt` | `/model` typed, pi's command list under the box | draft `/model`, modal none, the list is the command's own (the profile's `commandList`) |
+| `pi--v130-powerline-model-selector--w120.txt` | pi's `/model` selector, which takes the editor's place in column zero | modal unreadable, never free; the pi reader's modal |
+
 ## pi's permission gate on pi 0.87.1 (captured 2026-10-17, Herdr 0.9.4)
 
 Stock pi 0.87.1 with the example pi ships, `examples/extensions/permission-gate.ts` (`pi -e <path>`), in
@@ -306,11 +356,28 @@ The same block with nothing under its bottom rule is built inside `pi/ask.test.t
 file: agy's generic menu claims that screen, and the agy suite fails on any foreign fixture it lifts.
 The pi reader refuses it, because pi always paints a status row under a dialog.
 
+## Kiro CLI 2.33.0 workspace trust (captured 2026-10-21)
+
+The `kiro--v3-workspace-trust-*` captures show the startup trust prompt in a new, empty temporary folder under Herdr 0.9.5 on x86_64 Linux. They came from `kiro-cli chat --v3` and Herdr's visible ANSI grid at 120, 60 and 40 columns by 60 rows. Each starts at the dialog's top divider; rows above it were removed. The user name, temporary suffix and workspace-root hash were replaced with equal-length aliases, preserving the wrapped path fragments and ANSI styling.
+
+The captures themselves accept no trust choice. Up/Down move the pointer, the edge captures prove the arrows clamp, and Escape exits. A separate live phone test verified both native buttons through the scratch bridge's real Ask route, accepting trust only for an empty disposable folder. Keys, binding, results and the retained local screenshots are documented in [`kiro/WORKSPACE_TRUST_NOTES.md`](../../lib/harness/kiro/WORKSPACE_TRUST_NOTES.md).
+
+| Fixture | Cols | State / what's in it | Label |
+| --- | --- | --- | --- |
+| `kiro--v3-workspace-trust-continue-w120.txt` | 120 | Default Trust row; complete subject and revocation note | `dialog` |
+| `kiro--v3-workspace-trust-exit-w120.txt` | 120 | Don't trust row after one Down | `dialog` |
+| `kiro--v3-workspace-trust-continue-w60.txt` | 60 | Trust row; wrapped workspace and revocation paths | `dialog` |
+| `kiro--v3-workspace-trust-exit-w60.txt` | 60 | Don't trust row; same wrapped dialog | `dialog` |
+| `kiro--v3-workspace-trust-continue-w40.txt` | 40 | Trust row; both warnings and key hints wrap | `dialog` |
+| `kiro--v3-workspace-trust-exit-w40.txt` | 40 | Don't trust row; same narrow dialog | `dialog` |
+| `kiro--v3-workspace-trust-continue-up-edge-w40.txt` | 40 | Extra Up at the first row leaves Trust selected | `dialog` |
+| `kiro--v3-workspace-trust-exit-down-edge-w40.txt` | 40 | Extra Down at the last row leaves Don't trust selected | `dialog` |
+
 ## Kiro CLI 2.32.0 corpus (captured 2026-10-17, Herdr 0.9.5, throwaway Herdr session)
 
-`kiro-cli 2.32.0` on x86_64 Linux, run directly with `chat --v3` under Herdr 0.9.5. Each `kiro--*` file is `herdr pane read <pane> --source visible --format ansi --raw`, the same `pane.read` answer the bridge serves, with LF line ends. Each is cut from the composer divider, the divider above a shell panel, or a file panel's `↓` preview row down; transcript rows above it were removed and blank viewport rows remain. The `running-*` and `write-viewport-*` files keep the whole visible grid.
+`kiro-cli 2.32.0` on x86_64 Linux, run directly with `chat --v3` under Herdr 0.9.5. Each `kiro--*` file is `herdr pane read <pane> --source visible --format ansi --raw`, the same `pane.read` answer the bridge serves, with LF line ends. Each is cut from the composer divider or an approval panel's `↓` preview row down; transcript rows above it were removed and blank viewport rows remain. The `running-*` and `write-viewport-*` files keep the whole visible grid.
 
-Two runs on the same day made all but the `slash-*` files. Most files come from scratch agents started with `--v3 --trust-tools=''` and the model `qwen3-coder-next`, in a throwaway Herdr session whose terminal was resized between captures so the pane was exactly 120, 60 or 40 columns by 40 rows; the panel or draft stayed open while it was resized. They asked for harmless shell, file and local stdio MCP echo calls, and the shell probes asked for a fixed tool description, so the panel titles (`Print the probe message`, `Print the deny probe message`, `Print the cancel probe message`) are the same in every run. These replace an earlier set made from the same screens through an xterm grid instead of Herdr: the text of all 55 matched row for row, and only the escape encoding changed. The `-trusted-`, `idle-oneline`, `draft-cwd-wrapped` and `kiro--v2-` files come from an earlier live run, also through Herdr, with the default agent configuration (no `--trust-tools`) in a disposable `/tmp/kiro-fixture/demo` folder. They are 120 columns wide, except `kiro--v2-idle-w119.txt` at 119. The `slash-*` files come from a run on 2026-10-18, also through Herdr, with the default agent configuration and an empty scratch `KIRO_HOME`, so the menu lists only built-in commands.
+Two runs on the same day made all but the `slash-*` files. Most files come from scratch agents started with `--v3 --trust-tools=''` and the model `qwen3-coder-next`, in a throwaway Herdr session whose terminal was resized between captures so the pane was exactly 120, 60 or 40 columns by 40 rows; the panel or draft stayed open while it was resized. They asked for harmless shell, file and local stdio MCP echo calls, and the shell probes asked for a fixed tool description, so the panel titles (`Print the probe message`, `Print the deny probe message`, `Print the cancel probe message`) are the same in every run. These replace an earlier set made from the same screens through an xterm grid instead of Herdr: the text of all 55 matched row for row, and only the escape encoding changed. The `-trusted-`, `idle-oneline`, `draft-cwd-wrapped` and `kiro--v2-` files come from an earlier live run, also through Herdr, with the default agent configuration (no `--trust-tools`) in a disposable `/tmp/kiro-fixture/demo` folder. They are 120 columns wide, except `kiro--v2-idle-w119.txt` at 119. The `slash-*` files come from a run on 2026-10-18, also through Herdr, with the default agent configuration and an empty scratch `KIRO_HOME`, so the menu lists only built-in commands. The `shell-*` files come from a run on 2026-10-21, also through Herdr, with `--v3 --trust-tools=''`, `qwen3-coder-next` and an empty scratch `KIRO_HOME`; their probes asked for `cwd`, `timeout` and `run_in_background`, a long command, or the command alone. On that day the `approval-*` shell files were cut again from their original captures to start at the `↓ Shell` preview row; the rows below it did not change.
 
 For publication, the user name and the scratch folder were replaced with equal-length aliases, following the path across row breaks where it wraps, and the login-expiry label in the status rows with the equal-length word `Status`; its time value is unchanged. In the earlier run's files the model name was also replaced with the equal-length `qwen3-coder`. Every row keeps its columns. Request markers, option labels, pointers, dividers, footers and diff contents were not changed, and no credentials or real conversation content are included. Workspace trust, permissions and user settings were not edited, no persistent tool-approval option was confirmed, and every scratch process was stopped.
 
@@ -367,6 +434,17 @@ Herdr's agent status was not recorded for these captures, so the table gives the
 | `kiro--v3-replace-trusted-deny-w120.txt` | 120 | Default agent configuration: replace panel with four options, a bare-number context row in its diff, Deny pointed; lifts | `dialog` |
 | `kiro--v3-running-steered-w120.txt` | 120 | Running turn after a steer: `› collie steer probe` in the transcript, the busy prompt row; composer, turn running | `running` |
 | `kiro--v3-running-w120.txt` | 120 | Running turn, whole grid: `›  Kiro is working · 1s · …` on the prompt row; composer, turn running | `running` |
+| `kiro--v3-shell-args-allow-w120.txt` | 120 | Shell panel whose `↓ Shell` preview lists `cwd=sub`, `run_in_background=true` and `timeout=5000`, Allow pointed; lifts | `dialog` |
+| `kiro--v3-shell-args-allow-w60.txt` | 60 | Shell panel whose `↓ Shell` preview lists `cwd=sub`, `run_in_background=true` and `timeout=5000` over two rows, Allow pointed; lifts | `dialog` |
+| `kiro--v3-shell-args-deny-w120.txt` | 120 | Shell panel whose `↓ Shell` preview lists `cwd=sub`, `run_in_background=true` and `timeout=5000`, Deny pointed; lifts | `dialog` |
+| `kiro--v3-shell-args-deny-w60.txt` | 60 | Shell panel whose `↓ Shell` preview lists `cwd=sub`, `run_in_background=true` and `timeout=5000` over two rows, Deny pointed; lifts | `dialog` |
+| `kiro--v3-shell-args-no-timeout-allow-w120.txt` | 120 | The same panel as `shell-args-allow-w120` for a call with no `timeout`: only the preview differs; lifts | `dialog` |
+| `kiro--v3-shell-bare-allow-w120.txt` | 120 | Shell call that set only `command`: the preview still lists `run_in_background=false`, Allow pointed; lifts | `dialog` |
+| `kiro--v3-shell-bare-deny-w120.txt` | 120 | Shell call that set only `command`: the preview still lists `run_in_background=false`, Deny pointed; lifts | `dialog` |
+| `kiro--v3-shell-wrapped-allow-w120.txt` | 120 | Long `printf` command wrapped onto a second row in the preview and in the panel, Allow pointed; lifts | `dialog` |
+| `kiro--v3-shell-wrapped-allow-w60.txt` | 60 | Long `printf` command wrapped onto three rows in the preview and in the panel, Allow pointed; lifts | `dialog` |
+| `kiro--v3-shell-wrapped-deny-w120.txt` | 120 | Long `printf` command wrapped onto a second row in the preview and in the panel, Deny pointed; lifts | `dialog` |
+| `kiro--v3-shell-wrapped-deny-w60.txt` | 60 | Long `printf` command wrapped onto three rows in the preview and in the panel, Deny pointed; lifts | `dialog` |
 | `kiro--v3-slash-help-w120.txt` | 120 | `/help` typed: the `/` menu filtered to its one row; popup | `popup` |
 | `kiro--v3-slash-menu-w120.txt` | 120 | `/` typed: the command menu's first eight rows and `(+35 more)`; popup | `popup` |
 | `kiro--v3-slash-model-w120.txt` | 120 | `/model` typed: the `/` menu filtered to its one row; popup | `popup` |
@@ -2699,6 +2777,26 @@ Inherent to vanilla Claude Code: the model writes AskUserQuestion's question tex
 |---|---|
 | `claude--v2304-ask-no-question-mark--w135.txt` | **Derived** from the field report's `display` (an unread-dialog report from a `cui` session), escapes kept, line endings LF. Hardening against a user theme (ui-themes): the coloured strip and blank column left of the dialog, the rules wrapped into a `──` stub above the chip and above `Chat about this`. The chip ` ☐ Green #29`, a five-row question in the `│` gutter ending in `.`, two options with two-row descriptions, `3. Type something.`, `4. Chat about this`, the footer, then a task checklist. Every letter of the transcript, the chip label, the question, the option labels and descriptions and the checklist items was replaced by neutral words of the same width; every escape, glyph, digit, space, `│` and rule is kept, and no `?` was added. `Type something.`, `Chat about this`, the footer and the checklist's count rows are as captured. Lifts a `select` card. Labelled `dialog` |
 | `claude--v2304-ask-no-question-mark-plain--w135.txt` | **Derived** from a plain `claude` 2.1.304 capture (lab, 135 columns, escapes kept, line endings LF): the transcript above the dialog's rule, the lab prompts included, replaced by neutral words of the same width. The dialog is as captured: ` ☐ Ship it`, `The release branch has passed every check. Pick how to proceed with the merge.`, `Merge now (Recommended)`, `Hold the merge`, `3. Type something.`, `4. Chat about this` and the footer. Lifts a `select` card. Labelled `dialog` |
+| `claude--v2304-ask-chip-question-mark.txt` | Plain `claude` (`--safe-mode --setting-sources ""`) at 120 columns, read through `readPane` and trimmed to the prompt bubble and the dialog: the chip ` ☐ Deploy?` ends in `?` while the question row `The staging build passed every check. Pick how to proceed with the rollout.` ends in `.`. `singleSelectChipUnderRule` anchors on the `☐` chip under the top rule and `questionUnderChip` reads only the rows below that chip, so the question is the row under the chip and never `☐ Deploy?`. Labelled `dialog` |
+| `claude--v2304-ask-two-paragraph--w80.txt` | Plain `claude` (`--safe-mode --setting-sources ""`) at 80 columns, trimmed to the prompt bubble and the dialog: ` ☐ Release`, a two-paragraph question across seven `│` gutter rows (paragraph 1 carries `https://ci.example.test/runs/42?tab=checks`, a bare `│` row separates the paragraphs, and paragraph 2 ends in `?`), pointer on `1. Production`. `questionUnderChip` joins all non-empty rows below `☐ Release` so the first row is neither dropped at `MAX_QUESTION_ROWS = 6` nor leaked into `model.subject`, and the bare `│` row does not insert a double space. Labelled `dialog` |
+| `claude--v2304-select-preview-cjk.txt` | Plain `claude` (`--safe-mode --setting-sources ""`) at 120 columns, trimmed to the prompt bubble and the dialog: single-question preview AskUserQuestion (` ☐ デザイン`, `どのウィジェットのデザインにしますか？`), pointer on `1. カード型`, options `2. コンパクト` and `3. ミニマル` left of the boxed preview at display column 34. `splitAtDisplayColumn` splits by terminal display width so double-width CJK option labels do not shift the cut into the preview box's left border. Labelled `dialog` |
+| `claude--v2304-select-preview-cjk-moved.txt` | The same live pane after sending one `Down` key (`herdr pane send-keys <pane> Down`): pointer moved onto `2. コンパクト`, right-hand preview updated to option 2's compact box. Labelled `dialog` |
+
+## The survey's transcript question, 2.1.306 (captured 2026-10-21, 153 columns, Herdr)
+
+After a key on the rating survey (`● How is Claude doing this session? (optional)`) Claude Code 2.1.306
+asks a second question over the same live box: `● Can Anthropic look at your session transcript to help
+us improve Claude Code?`, a `Learn more:` row with the docs link, and the keys `y: Yes    n: No     d:
+Don't ask again`. The 2.1.306 bundle reads them through the same hook as the rating survey's digits: a
+key acts only when the box's whole value is that letter, lowercased first. Read with `herdr pane read
+<pane> --source visible --format ansi` from a live session, CRLF line ends and escapes kept, cut to the
+last 16 rows. The git branch in the statusline is replaced by `fix/transcript-survey-probe-01*` of the
+same width; every other row is as captured. The field case: every phone send to the pane was refused
+`unconfirmed` (`modal: "unreadable"`) until the question was answered by hand.
+
+| Fixture | State / what's in it |
+|---|---|
+| `claude--v2306-transcript-survey--w153.txt` | The transcript question over an empty box, a blank row between; under the box the statusline, `✔ Update installed · Restart to apply` and `new task? /clear to save 289.5k tokens`. Reads `idle`, `none`, `empty` and lifts a card with Yes, No and Don't ask again (`letters` head in claude.json). Labelled `idle` |
 
 ## The slash list under pi's and omp's box (captured 2026-10-17, pi 1.3.0, pi 0.87.1, omp 18.6.1, isolated Herdr)
 

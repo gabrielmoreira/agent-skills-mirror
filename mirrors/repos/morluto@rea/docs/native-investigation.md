@@ -202,8 +202,38 @@ Function dossiers retain this same string evidence. Native call edges retain
 Hopper's partial `CallReference` classification and exact endpoints; detailed
 reference flags remain unavailable rather than being invented.
 Regex searches use ECMAScript Unicode syntax in a cancellable worker with a
-five-second matching deadline. Deadline or cancellation stops matching while
-leaving the Hopper API available. Literal mode retains Unicode casefold matching.
+five-second matching deadline and a worker old-generation heap. Deadline or
+cancellation stops matching while leaving the Hopper API available. This
+release has no runtime override for that deadline. The worker requests 128
+MiB. A positive Node.js `--max-old-space-size` on the process that starts
+REA, including `NODE_OPTIONS`, overrides that request and sets the effective
+heap. `--max-old-space-size-percentage` takes precedence over that flag in
+either order. REA does not turn the percentage into a MiB, so the effective
+heap stays unestablished instead of the 128 MiB request or the absolute flag.
+The reported `NODE_OPTIONS` value is the process initial environment when that
+block can be read. A later edit to the environment is not the value Node
+applied, and an unreadable initial value leaves the effective heap
+unestablished. The launch Node options are the initial command line on Linux
+when that buffer still has a program entry, not a later edit to
+`process.execArgv`. A preload can clear that array after V8 has applied the
+flags. Setting `process.title` or `--title` overwrites the command line, so a
+buffer without a program entry leaves the effective heap unestablished.
+`--env-file` or `--env-file-if-exists` can supply `NODE_OPTIONS`
+when the initial environment has none. That file is not part of the initial
+environment block, so the effective heap stays unestablished instead of the
+128 MiB request. An initial `NODE_OPTIONS` is still used, because Node does
+not let the file replace it. A positive `--max-heap-size`, including the
+underscore form and launch `NODE_OPTIONS` on Node versions that allow it,
+sets the total heap rather than the old generation and can be lower than the
+128 MiB request. The effective old generation stays unestablished while that
+value is in effect. A zero or empty value clears it.
+`--experimental-config-file` or `--experimental-default-config-file` can set
+`nodeOptions`, including a heap percentage, from a file that is not read
+back. The effective heap stays unestablished when either flag is present,
+including when an absolute `--max-old-space-size` is also on the command
+line or in the recovered `NODE_OPTIONS`. Node accepts the config path as
+`=` or the next argument.
+Literal mode retains Unicode casefold matching.
 
 ## Bounded static traces
 
@@ -298,13 +328,25 @@ markup, including UTF-8 and BOM-marked UTF-16 sources. Unidentified text and
 OpenStep plists, including a data-only value such as `<deadbeef>`, report
 `unknown` even when plutil decodes their values through an XML conversion.
 
+Binary plist inspection reads the original bytes through an owned file descriptor,
+so conversion cannot erase control characters, fractional dates, negative zero,
+or the high word of a 128-bit integer. It accepts at most 64 MiB of input and
+reserves an estimated 64 MiB decode budget before parsing; this estimate is not
+a hard process-memory bound. A refused input reports non-retryable
+`resource_constraint` with `reported_limits.maximum_input_bytes`,
+`maximum_decoded_bytes` or, for nesting deeper than 128 levels,
+`maximum_nesting_depth`. These are fixed allowances: worker limits and host
+memory do not raise them, and the unchanged request fails the same way.
+Binary-source provenance records the `file` classification without claiming a
+`plutil` conversion.
+
 A plist explicitly selected through the path input or as the active plist target
 reports an unreadable or malformed selection as `invalid_request`. A missing or
 unreadable default plist of another target reports `capability_unavailable`.
 Permission failures remain `access_denied`; output and cleanup failures retain
 their own error categories.
 
-A plist decode refusal includes plutil's diagnostic from either output stream.
+A conversion refusal includes plutil's diagnostic from either output stream.
 `details.captured_output` retains bounded stdout/stderr excerpts, observed byte
 totals and exit status. `truncated: true` means those excerpts are incomplete.
 
@@ -444,6 +486,13 @@ complete observation.
   an unfixed zero in a nullable ABI field is treated as null. Incomplete or
   conflicting fixup streams keep affected pointers unresolved; coverage reports
   parsing and resource limits while retaining validated prefix facts.
+  Conformance records preserve the raw three-bit `type_reference_kind`. Kinds
+  0 and 1 identify direct and indirect nominal descriptors; kind 2 preserves
+  the inline Objective-C class name and its source location. Kind 3 preserves
+  an imported class binding or the local class-object address when available,
+  but class metadata/name recovery requiring the Objective-C runtime remains
+  partial. Unknown kinds retain the raw kind and reference location without
+  being treated as absent or assigned a guessed type name.
 
   So an external superclass resolves from its `_OBJC_CLASS_$_` bind (for
   example `NSObject`). The `pointer_fixups` coverage facet names the mechanism.
@@ -518,8 +567,10 @@ cleanup. A later abort does not replace an earlier helper or output failure.
 Cleanup failures retain their runtime owner until a confirmed cleanup retry.
 
 Scenarios accept caller-selected action lists and accessibility node counts.
-Individual waits cannot exceed the operation's 180-second deadline, and the
-complete scenario result has a 64 MiB output budget. Screenshots are scaled to
+One wait step stays capped at 180000 ms. That cap has no runtime override.
+The operation deadline is `native_ui_deadline_ms` (omitted means 180000 ms)
+and does not raise the wait-step cap. The complete scenario result has a
+64 MiB output budget. Screenshots are scaled to
 at most 2,048 pixels and captured only for the selected window. REA compiles one
 owned helper per scenario, removes its temporary compiler cache and stops its
 helper on cancellation. It does not launch or own the selected application. UI
@@ -714,7 +765,13 @@ leap seconds) and out-of-range dates remain explicit unknowns. REA does not
 emulate CoreFoundation's normalization of overflowing calendar fields. Invalid
 dates returned by other decoders retain `{ "$plist_type": "date", "iso8601": null }`
 with a counted limitation. `inspect_plist` and Interface Builder decoding use
-the same projection.
+the same projection. Binary plist decoding refuses a reachable date whose marker
+is not `0x33`; date and numeric payloads must end before the offset table.
+Valid overlapping object records retain their independent source values. A valid `0x33` date is
+reported with an ISO-8601 timestamp only when its float64 seconds are exactly
+the canonical encoding of that millisecond instant. Any other finite binary
+date uses `{ "$plist_type": "date", "iso8601": null }` and the counted
+limitation; the archive bytes remain the source of the instant.
 
 A negative-zero real is reported as `{ "$plist_type": "real", "value": "-0" }`
 because a JSON number cannot carry the sign of zero. `inspect_plist` and

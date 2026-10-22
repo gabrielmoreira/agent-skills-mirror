@@ -2,7 +2,7 @@
 
 ## Responsibility
 
-Provides the optional animated companion UI feature that visualizes agent activity (busy/idle states) as animated GIFs. This is a user-facing visual overlay that runs separately from OpenCode's core orchestration.
+Provides the plugin-side state management and distribution integration for the optional animated Companion UI. The native crate, media, builds, and releases live separately in [oh-my-opencode-companion](https://github.com/alvinunreal/oh-my-opencode-companion), with its crate at the repository root.
 
 ## Design
 
@@ -156,9 +156,13 @@ interface CompanionConfig {
 
 ### GitHub Release Artifacts
 
-- Repository: `alvinunreal/oh-my-opencode-slim`
+- Repository: `alvinunreal/oh-my-opencode-companion`
 - Release tag pattern: `companion-v{version}`
 - Artifact names: `oh-my-opencode-slim-companion-v{version}-{target}.{tar.gz|zip}`
+- The plugin's scheduled/manual manifest-sync workflow hashes all five public
+  release archives and opens a plugin-local PR; native releases remain autonomous.
+- Offline manifest validation and pinned remote release/hash verification are
+  independent release guards; neither needs a local native checkout or native tags.
 
 
 ## Error Handling & Edge Cases
