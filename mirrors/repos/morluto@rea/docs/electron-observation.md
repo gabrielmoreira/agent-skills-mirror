@@ -247,8 +247,8 @@ capture provides them.
 
 ASAR observation reads the header through one open file handle and validates its
 declared lengths against the archive size. Header/index admission is the same
-fixed 16 MiB / 16777216 byte budget used by static ASAR reads. This release has
-no runtime override. An oversized header is not parsed; selecting a member path
-does not bypass admission, and the page stays unauthorized. The header cache
-separately retains at most 16 MiB of already-admitted encoded headers across
-eight archives. Evicting that cache does not raise admission.
+budget used by static ASAR reads: 16 MiB / 16777216 bytes by default, or
+`REA_ASAR_MAX_HEADER_BYTES` (at most 256 MiB) when set. An oversized header is
+not parsed; selecting a member path does not bypass admission, and the page
+stays unauthorized. The header cache separately retains at most that many bytes
+of already-admitted encoded headers across eight archives. Evicting that cache does not raise admission.

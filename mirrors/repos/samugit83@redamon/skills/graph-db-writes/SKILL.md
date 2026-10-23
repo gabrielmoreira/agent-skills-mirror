@@ -75,12 +75,22 @@ graph-write rules it depends on.
   does NOT mean "gone". The caller passes `keep_hosts` (anchored regexes, matched
   against `_KEEP_HOST_FIELDS` with `toStringOrNull`, passed as a Cypher parameter)
   to `prune_unseen_findings`, and skips the prune entirely for a degraded source.
-  What was cut is recorded on the `Domain` coverage record — `recon_coverage_at`,
-  `recon_coverage_gaps`, `recon_skipped_hosts`, `recon_nuclei_truncated` (written
-  by `update_graph_coverage` in
-  [graph_db/mixins/recon/domain_mixin.py](../../graph_db/mixins/recon/domain_mixin.py)).
-  Those four are in the webapp's `VOLATILE_PROPERTIES`, so they never make a
-  `Domain` read as "changed" in the Recon Delta.
+  What was cut is recorded on the coverage record of the **org** `Domain` (one per
+  registrable domain), merged across the run's groups of that org —
+  `recon_coverage_at`, `recon_coverage_gaps` (each entry tagged with its scan
+  `root`), `recon_skipped_hosts`, `recon_nuclei_truncated`, `recon_coverage_roots`
+  and `recon_coverage_run` (written by `update_graph_coverage` in
+  [graph_db/mixins/recon/domain_mixin.py](../../graph_db/mixins/recon/domain_mixin.py),
+  one locked unit of work: the first group of a run overwrites, later ones merge).
+  They are in the webapp's `VOLATILE_PROPERTIES`, so they never make a `Domain`
+  read as "changed" in the Recon Delta.
+- **NEVER attach to `Domain {name: <scan root>}`.** A writer decides scope and
+  attach separately (`graph_db/mixins/recon/scope.py`): `scan_root_for_host` /
+  `attach_for_host` say whether a host is in scope, and `org_for_scan_root` names
+  the Domain it hangs off. A deeper scan root that is a target is
+  `Subdomain {is_scan_root: true}`, never a Domain; only
+  `update_graph_from_domain_discovery`, `update_graph_from_ip_recon` and
+  `ensure_root_domains` may MERGE a Domain (`tests/test_no_stray_domain_merge.py`).
 - **NEVER write an unscoped `MATCH` for an entity node.** Uniqueness is the
   `(id, user_id, project_id)` triple, so a natural id is NOT unique across the
   database and `MATCH (n {id: $id})` can read or write another project's node.

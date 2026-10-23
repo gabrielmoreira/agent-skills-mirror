@@ -73,12 +73,17 @@ to rerun it.
 A process that the MSIX app started, such as a terminal in Claude Desktop's
 Code tab, sees the package's private files at their `%APPDATA%` paths even
 though it reports no package identity. Setup compares one of those files at
-both paths. When it finds that redirected view, the app is running, so setup
-and uninstall refuse to change Claude Desktop's configuration; rerun them from
-a terminal that Claude Desktop did not start. If the package has no private
-file to compare, setup and uninstall cannot rule that out and also refuse; open
-Claude Desktop once if it has never run, quit it fully, then rerun. Doctor
-reads the same file from either kind of process.
+both paths: first one from the package's private `Claude` folder, and when
+that folder has none (some installations keep writing the real
+`%APPDATA%\Claude`), one from the package's other private roaming folders,
+which the package redirects in the same way. When it finds that redirected
+view, the app is running, so setup and uninstall refuse to change Claude
+Desktop's configuration; rerun them from a terminal that Claude Desktop did not
+start. If the package keeps no private roaming file at all, setup and
+uninstall cannot rule that out and also refuse. With Claude Desktop fully
+quit, add REA's entry by hand to the file setup names, which is the one the
+app reads, or remove it from both the private copy and the `%APPDATA%` file.
+Doctor reads the same file from either kind of process.
 
 The same process also writes everything under `%APPDATA%` and
 `%LOCALAPPDATA%` into the package's private storage, where other apps never
@@ -249,7 +254,19 @@ registration supports `startup_timeout_sec` for connection initialization and
 startup timeout and a tool timeout derived from the known provider
 allowance plus 120 seconds of operation headroom. This yields 450 seconds for
 the default Ghidra allowance; an explicit Ghidra startup timeout of 2700
-seconds yields 2820 seconds. Setup preserves positive caller-selected timeout
+seconds yields 2820 seconds. That 30-second Codex figure is client guidance.
+REA's own phase budgets are `REA_MCP_INITIALIZE_BUDGET_MS` (default 15000),
+`REA_MCP_TOOLS_LIST_BUDGET_MS` (default 5000),
+`REA_MCP_FIRST_CATALOG_BUDGET_MS` (default 20000), and
+`REA_MCP_DOCTOR_DEADLINE_MS` (default 30000). Each is a positive decimal
+integer of milliseconds from 1 to 2147483647. Unset keeps the default.
+Invalid values fail configuration and name the setting. Setup copies a
+caller-selected value into the registration, and a change is read from the
+environment that starts REA, so it needs a restart. Doctor and packaged
+startup probes name the effective milliseconds, whether they came from the
+default or the setting, the default, the floor, and the maximum. REA does
+not enforce Codex's 30 seconds as the doctor deadline. The 120000 ms
+tool-operation headroom and the 64 KiB doctor stderr cap stay fixed. Setup preserves positive caller-selected timeout
 values in the REA entry, and doctor reports a non-blocking advisory when a tool
 timeout is shorter than the known provider allowance. An explicitly selected
 JEB request budget also contributes to the allowance. A configured IDA

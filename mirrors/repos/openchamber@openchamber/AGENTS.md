@@ -44,6 +44,7 @@ Shared contracts must define intentional behavior for every applicable runtime: 
 - Do not run git or GitHub commands unless the user explicitly asks.
 - Do not add dependencies unless explicitly requested.
 - Never add or log secrets, bearer tokens, pairing credentials, or sensitive user data.
+- Launch Google Chrome for automation with `--disable-features=MacAppCodeSignClone` (`scripts/perf/cdp.mjs` already does). Without it, every launch on macOS copies the 1.4 GB app into `$TMPDIR/../X/com.google.Chrome.code_sign_clone`, and a browser that is killed rather than quit leaves the copy behind.
 - Keep changes minimal and preserve unrelated worktree changes.
 - `changelog/` is read-only, and a fix, feature, or merged PR lands without a changelog line. Release notes are written only when the maintainer asks to update the changelog, through the `update-changelog` skill.
 - Enforce security and correctness in core/runtime logic, not only UI visibility or prompts.

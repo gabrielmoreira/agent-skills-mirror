@@ -562,6 +562,23 @@ unsupported transport remains an explicit delivery gap. A path mentioned only in
 text is not an attachment. This slice does not qualify local-Web file presentation,
 group disclosure, cross-host transfer or inline video playback. Installed live
 provider qualification remains separate from the synthetic transport regressions.
+
+Oversized Markdown results stay rich posts. The Lark presentation splitter counts
+UTF-8 bytes of the serialized provider request, including escaped JSON, numbering
+and attachments, against the documented 30 KB post bound (30,000 bytes as a
+conservative local interpretation). It keeps the complete
+body across ordered parts without a fixed part-count cap or a plain-text fallback;
+code fences and table column headers continue across oversized blocks. The
+existing private Lark part-delivery journal retains the frozen plan and each
+provider locator. Recovery verifies known writes before continuing never-sent
+parts; unknown writes, changed intent or lost locators cannot be blindly resent.
+Attachments remain on the last concrete post. The adapter marks a composite
+delivery complete only after every part and required attachment readback succeeds.
+An atomic link or table row that cannot fit one post remains an explicit delivery
+failure; it is never silently truncated or sent as plain text.
+Historical single-text receipts remain verify-only compatibility. Intentional
+text and identity-verified mention delivery keep their existing contracts.
+
 Before downgrading to an older runtime that does not understand result files,
 pause the reply pump while any file-bearing result remains pending; an old
 text-only reader cannot certify attachment delivery. Retain the result snapshots
@@ -641,10 +658,20 @@ read-only verification. A matching message advances the original delivery to
 message, or verified mismatch becomes `explicit_unverified`. CLI, Manager read,
 and Chat expose the same public-safe state and reason without returning the
 provider locator. The Lark adapter keeps locator interpretation and provider
-readback; `manager-context` remains the sole result/delivery writer. The typed
-`control_plane/collaboration/return_delivery.ts` boundary owns provider-neutral
-attempt validation and verification classification; Python retains file-lock,
-persistence and adapter orchestration only.
+readback. The existing `control_plane/collaboration/return_delivery.ts` owner now
+performs delivery admission, state transitions, backoff and atomic delivery-receipt
+writes for exact-instance and legacy routes. It reuses the request, result and
+Goal-lifetime owners. Python observes original Chat/authority facts, holds the
+existing Host fences and invokes the actual transcript/provider adapters.
+
+The obsolete Python exact/legacy delivery coordinators and attempt-normalization
+RPC are removed. The shared transaction accepts bounded scan hints, rechecks each
+selected receipt under its mutation lock, and uses source/revision and exact
+admission-token fences before persistence. Attempt-aware providers persist their
+acceptance checkpoint before verification continues; it is not deferred to a final callback.
+The same stored request/result/route identities and public delivery readback remain.
+This retires this delivery orchestration family, not Inbox acceptance, source grants,
+all Python IO or installed/live-provider qualification.
 
 Unclassified readback exceptions retain the saved attempt and retry with backoff;
 their wording never establishes revoked authority or a missing route. Adapters

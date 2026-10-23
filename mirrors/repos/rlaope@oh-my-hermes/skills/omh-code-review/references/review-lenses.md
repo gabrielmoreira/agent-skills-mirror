@@ -5,10 +5,10 @@ lenses run as separate passes over the same diff. Load it when a change is large
 enough, or its failure mode quiet enough, that one pass will find the first
 class of problem and stop looking.
 
-One pass finds what its opening question primes it to find. Five passes cost
-five readings and find five different things. Run them in this order, and record
-which lenses were actually run - a review reported as complete after two of them
-is a two-lens review.
+One pass finds what its opening question primes it to find. Load
+`references/risk-selection.md` to select additional passes from changed risk and
+budget, not to require all five. Keep this order among selected lenses and record
+which actually ran; a two-lens review is not a five-lens review.
 
 ## The verification-gap lens
 
@@ -72,7 +72,9 @@ claim about the whole repository and needs the search behind it.
   out of each.
 - **Structure** - the shape of the change against the shape of the codebase.
   Misplaced responsibility, a seam in the wrong place, an abstraction that will
-  need undoing before the next change.
+  need undoing before the next change. When ownership, contracts, dependencies,
+  or reuse change, load `references/architecture-delta.md`, including its
+  extraction proof rubric; a file move or large file alone is not a defect.
 - **Prose** - comments, docstrings, commit and report text. A comment that
   overclaims what a guard proves is a review finding here, not a nitpick: the
   next reader trusts it instead of re-deriving it.
@@ -84,6 +86,12 @@ from a verification gap. Within the verification-gap lens, do not assign
 severity, confidence, or priority: a gap is present or it is not, and ranking
 invites resolving it by argument instead of by a test. The other four lenses
 carry severity as `code-review` already defines it.
+
+Put these gap rows in `verification_gaps`, not in `findings`. Require `path`,
+`line_range`, and `evidence`; include the regression and search scope in the
+evidence. Keep `priority`, `confidence`, and `severity` absent. An independently
+established defect may also have an ordinary ranked finding, but a missing assertion alone
+does not prove one. Gaps do not automatically block; apply repository policy.
 
 Drop any finding that cannot be grounded in something read. A lens that returns
 nothing returns nothing, and reports it.

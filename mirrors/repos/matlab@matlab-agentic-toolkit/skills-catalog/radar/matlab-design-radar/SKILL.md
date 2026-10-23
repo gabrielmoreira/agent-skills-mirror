@@ -4,7 +4,7 @@ description: Launch and control the MATLAB Radar Designer app programmatically v
 license: https://www.mathworks.com/content/dam/mathworks/license/pmrl/license.md
 metadata:
   author: MathWorks
-  version: "1.0"
+  version: "1.1"
 ---
 
 # Radar Designer MCP Control
@@ -110,12 +110,16 @@ All Radar Designer operations go through 5 p-coded wrapper scripts in `scripts/`
 
 ### radarDesignerExport — Built-in export
 
-| Action | Call | Description |
-|--------|------|-------------|
-| SNR vs Range | `radarDesignerExport(h, 'snr')` | Opens SNR vs Range script in editor |
-| Metrics Report | `radarDesignerExport(h, 'report')` | Opens Radar Metrics Report |
-| Vertical Coverage | `radarDesignerExport(h, 'coverage')` | Opens Vertical Coverage script |
-| Range-Doppler Grid | `radarDesignerExport(h, 'rdgrid')` | Opens Range-Doppler Grid script |
+> **The second argument must be an export type string — not a file path.** Passing a file path (e.g., `fullfile(...)`) will error.
+
+| App Menu Item | Call | Description |
+|---------------|------|-------------|
+| Export Detectability Analysis MATLAB Script | `radarDesignerExport(h, 'detectability')` | SNR vs Range, Pd vs Range, Environmental Losses, Link Budget |
+| Export Vertical Coverage MATLAB Script | `radarDesignerExport(h, 'coverage')` | Vertical coverage plot |
+| Generate Metrics Report | `radarDesignerExport(h, 'report')` | Formatted report of numeric metrics |
+| Export Radar Data Generator MATLAB Script | `radarDesignerExport(h, 'rdg')` | Simulate radar detecting target in dynamic scenario (no refraction) |
+| — Effective Earth Radius Model | `radarDesignerExport(h, 'rdg', 'effectiveearth')` | Requires non-free-space, curved Earth, std/low/mid/high latitude atmosphere |
+| — CRPL Exponential Reference Model | `radarDesignerExport(h, 'rdg', 'crpl')` | Same environment requirements as Effective Earth |
 
 ---
 
@@ -234,8 +238,8 @@ See [code-reference.md](references/code-reference.md) for complete patterns.
 | `RxGain` | Receive antenna gain | dBi | `40` |
 | `RxAzBeamwidth` | Rx azimuth beamwidth | deg | `2` |
 | `RxElBeamwidth` | Rx elevation beamwidth | deg | `2` |
-| `TxGainInput` | Tx gain input mode | enum | `'GainBeamwidth'`, `'GainOnly'`, `'Imported'` |
-| `RxGainInput` | Rx gain input mode | enum | `'GainBeamwidth'`, `'GainOnly'`, `'Imported'` |
+| `TxGainInput` | Tx gain input mode | enum | `'FromAntennaPattern'` or `'SincPattern'` |
+| `RxGainInput` | Rx gain input mode | enum | `'FromAntennaPattern'` or `'SincPattern'` |
 | `TxSincInput` | Tx sinc pattern option | enum | `'Sinc'` or `'Gaussian'` |
 
 #### Scanning
@@ -284,6 +288,9 @@ See [code-reference.md](references/code-reference.md) for complete patterns.
 | `CustomLoss` | Additional custom loss | dB | `0` |
 
 ### Target Properties
+
+> **Do not use `'Height'` as a property name.** The property is `TargetHeight`, not `Height`. The value `'Height'` is an enum value for `TargetPositionInputType`, not a settable property.
+
 | Property | Description | Units | Example |
 |----------|-------------|-------|---------|
 | `RCS` | Radar cross section | m² | `1` |

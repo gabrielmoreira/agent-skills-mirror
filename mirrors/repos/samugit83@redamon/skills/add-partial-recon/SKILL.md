@@ -50,17 +50,29 @@ graph-sourced inputs, the modal, and the single-phase re-run.
   `config["domains"]`; `config["domain"]` is only the first, so a tool reading it
   silently skips the rest. [test_partial_scope_guard.py](../../recon/tests/test_partial_scope_guard.py)
   fails the gate on a direct read. Pass `domain_groups=config.get("domain_groups")`
-  to the graph builders so each root keeps its group's scope (a literal group scans
-  only its listed hosts), validate custom hosts with `host_in_roots`, and attach
-  each host to `root_for_host(host, roots)`.
+  (built from the container's `SCOPE_GROUPS`) to the graph builders so each root
+  keeps its group's scope: an EXACT group, a single-domain prefix list included,
+  scans only its listed hosts. Attach each typed host to the org Domain of its
+  scan root, `attach_org(root_for_host(host, roots))`: the graph has one Domain
+  per registrable domain, never one per scan root.
+- **NEVER re-implement the typed-input scope check in a module.** The orchestrator
+  and `_prepare_scope` (`filter_partial_user_input`) already dropped every typed
+  host, URL host, over-wide CIDR and out-of-scope attach target, and a typed URL's
+  host joins the writer's scope only through `_scope_partial_urls`. The run is
+  also refused before your module runs while the graph holds an older scope
+  model's Domain (`_legacy_graph_refusal`, fails closed).
 - **ALWAYS loop an API that takes one domain per call through `run_per_root`**,
   never a bare `for`. It fails only the root that raised or called `sys.exit`,
   retries a rate-limited root once, and returns the `{root: status}` the run report
   and exit code read. Mirror Urlscan (a 429 returns `STATUS_RATE_LIMITED`) or Shodan.
-- **A writer attaches a host through `attach_roots(recon_data)`**, not
-  `scope_roots`: the full pipeline scans one batch group at a time but carries
-  every root in `all_project_roots`, so a host found under another root joins
-  that root instead of becoming an `ExternalDomain`.
+- **A writer attaches a host through `attach_for_host(host, recon_data)`**
+  (`graph_db/mixins/recon/scope.py`): the scope is the longest scan root among
+  `attach_roots(recon_data)` (every project root, from `all_project_roots`, so a
+  host found under another group's root joins it instead of becoming an
+  `ExternalDomain`), and the Domain is that root's org (`org_for_scan_root`). A
+  partial run's recon dicts carry no `scope_groups`; `_prepare_scope` sets the
+  run's default (`set_project_scope` -> `set_run_scope_groups`), and a dict's own
+  `scope_groups` always wins.
 
 ---
 

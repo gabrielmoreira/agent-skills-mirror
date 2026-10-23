@@ -104,9 +104,11 @@ your investigation. Failed steps and diagnostics remain in terminal history.
 
 Select exact clients in scripts with repeatable `--client` flags. Each explicit
 client skips interactive selection. Use `--all-detected` only when you intend
-to configure every detected supported client. `--skill=false` omits the
-workflow, and `--dry-run` returns a read-only plan with status `planned` and
-exit code 0:
+to configure every detected supported client. Combining `--client` with
+`--all-detected` configures both the explicitly selected and detected clients,
+even when an explicit client is not detected. Each client is configured once.
+`--skill=false` omits the workflow, and `--dry-run` returns a read-only plan
+with status `planned` and exit code 0:
 
 ```bash
 rea setup --client codex --client cursor --skill=false --dry-run
@@ -132,6 +134,15 @@ exits 1. Installing missing Hopper non-interactively additionally requires
 ```bash
 rea setup --yes --all-detected --install-hopper --json
 ```
+
+Client configuration writes detect changes to the file read by setup, including
+when a matching recovery backup already exists. A detected conflict reports
+`reason: "conflict"` and preserves the newer file; review it and rerun setup.
+Rollback likewise requires the file identity and content installed by that
+transaction. Requests for the same resolved path are serialized within one REA
+process. These checks do not provide an operating-system compare-and-swap or
+coordinate arbitrary external writers, so avoid editing client configuration
+while setup is applying it.
 
 ### Skill destinations
 
@@ -402,6 +413,53 @@ symbolic link is retained and reported rather than followed. Uninstall checks
 REA's managed shared and Claude Code personal skill locations. See the
 [CLI guide](cli.md#output-and-exit-status) for exit statuses.
 
+### Missing dependencies in an npx installation
+
+If REA exits with `ERR_MODULE_NOT_FOUND` before `doctor` can produce a report,
+inspect the missing path in the error. A path under npm's `_npx/<key>/node_modules`
+identifies a package-runner installation. In [#5259](https://github.com/morluto/rea/issues/5259),
+the missing file was `@modelcontextprotocol/client/dist/index.mjs`. That file is
+present in a clean Windows installation of REA 6.7.0; its absence alone does not
+establish an incompatible dependency release or explain how the file went missing.
+
+`npm cache verify` checks npm's downloaded content cache; it does not restore
+missing files in an already extracted npx installation. Repeating the same npx
+command can reuse that incomplete installation. To reinstall only the affected
+entry:
+
+1. Stop the REA processes and agent clients using that entry. In the same shell
+   environment as the failing command, identify the cache and its entries:
+
+   ```powershell
+   npm.cmd config get cache
+   npm.cmd cache npx ls
+   npm.cmd cache npx info REA_CACHE_KEY
+   ```
+
+   Replace `REA_CACHE_KEY` with the key from the failing `_npx` path. Check that
+   `info` reports that location and the expected `rea-agents` version. Its
+   `valid` label describes the cache entry metadata, not the presence of every
+   installed file. These subcommands require npm with `cache npx` support.
+
+2. Remove that specific entry and rerun the affected version with registry
+   access. For the version reported in #5259:
+
+   ```powershell
+   npm.cmd cache npx rm REA_CACHE_KEY
+   npx.cmd --yes rea-agents@6.7.0 doctor --json
+   ```
+
+   Keep the key argument: this recovery does not require clearing all npm caches
+   or deleting REA configuration, skills, or Evidence. On Linux/macOS, use `npm`
+   and `npx` without `.cmd`. A JSON doctor report confirms startup recovered;
+   it can still exit nonzero for missing analysis engines or registrations.
+   Restart the affected agent after repairing its cache entry.
+
+If a fresh installation still loses the file, retain the error, REA/Node/npm
+versions and installation details in the issue. Check installation logs and,
+on Windows, security software's protection history before attributing the cause.
+Do not rename `index.cjs` to `index.mjs` or disable protection to make startup pass.
+
 ### Update the owning installation
 
 `rea update` installs the exact resolved
@@ -540,8 +598,10 @@ Hopper is separate commercial software with its own license. Its free demo has
 vendor-defined limits, and a paid license is optional. REA reuses any detected
 installation and preserves Hopper during uninstall.
 
-The automated Hopper installer supports macOS 12+, Ubuntu 24.04+, Fedora 41+,
-Nobara 44+, 64-bit Arch Linux, CachyOS, or Omarchy. REA itself runs on any
+The automated Hopper installer supports macOS 12+ and x86_64 hosts running
+Ubuntu 24.04+, Fedora 41+, Nobara 44+, Arch Linux, CachyOS, or Omarchy. The
+official Linux packages are x86_64-only, so setup does not offer Hopper on other
+Linux architectures; configure [Ghidra](#ghidra) there instead. REA itself runs on any
 Linux distribution with a recognized apt, dnf, or pacman package family, where
 an existing Hopper launcher is selected through `HOPPER_LAUNCHER_PATH`. Ghidra
 and IDA have their own provider-specific host requirements; Windows Ghidra uses
@@ -636,10 +696,12 @@ manual dependency repair.
 
 When the package-manager step fails, setup reports the failing command and its
 captured output, so a package conflict is distinguishable from an authorization
-failure. On CachyOS, an unversioned compatibility package such as
-`zlib-ng-compat` may conflict with Hopper's versioned `zlib` dependency. Resolve
-the package conflict yourself or install Hopper's official package manually,
-then rerun `rea setup`.
+failure. Hopper is optional, so setup still applies the approved client
+registrations and skill, then reports `needs_human` with the Hopper failure. On
+Arch Linux and CachyOS, the unversioned compatibility package `zlib-ng-compat`
+may conflict with Hopper's versioned `zlib` dependency. Resolve the package
+conflict yourself, install Hopper's official package manually, or use another
+provider such as Ghidra; rerun `rea setup` after installing Hopper.
 
 The supported Linux demo forwards additional launches into its existing
 application, even across private displays. REA therefore reserves one Linux
@@ -923,7 +985,17 @@ It also checks that the reported JVM `os.arch` and `os.name` map to the same nat
 directory validated for the host; unrecognized reported architectures or a
 non-host operating system are refused. LaunchSupport overrides of either
 property, including through helper-environment JVM option variables, are
-rejected at launch.
+rejected at launch. `JDK_JAVA_OPTIONS` argument files (`@file`) are expanded
+and inspected with that same check using the Java launcher's argfile quoting,
+comments and continuation rules. The reader admits regular UTF-8 files, retains
+failed descriptor cleanup, and bounds all admitted file contents and the prepared
+environment to 64 KiB per launch. Unreadable, oversized or nested `@` references
+are refused before the analysis JVM starts. Validated bytes are snapshotted under
+the owned runtime root, so later helpers and the analysis JVM do not reopen mutable
+caller files. Repeated references share that launch's snapshot; no live state is
+cached across launches. `JAVA_TOOL_OPTIONS`
+and `_JAVA_OPTIONS` do not expand `@file` tokens, so they remain
+literal-token checks.
 When Java is found through `PATH`, setup records its observed JDK home so GUI
 MCP clients do not depend on an incidental shell path. Setup shows every exact
 environment entry in its plan, writes only after approval, and never downloads,
@@ -1115,17 +1187,22 @@ override in `analyzer_preset` (for example
 open when its committed profile and the setting differ. A name starts with a
 letter or digit and contains only letters, digits, spaces, periods, underscores,
 and hyphens; at most 32 names are admitted, each at most 120 characters.
-Names must identify analyzers registered for the selected program. Unknown names
-or options that remain enabled abort the headless import before auto-analysis
-and the bridge, so an unsuccessful override cannot produce a session claiming
-that the analyzer was disabled. The setting applies to every import in the REA
-server. A format-specific analyzer may not be registered for another target, so
-the same override can prevent that target from opening. For mixed-target work,
-omit the override or use a separate REA server configured for the affected
-format. Changing the environment requires restarting the server; reopening a
-target alone keeps the current setting. For Windows PE resource analysis, the
-exact name is `WindowsResourceReference`. Disabling an analyzer skips the facts
-it would have produced.
+
+The setting applies to every import in the REA server, but Ghidra registers
+format-specific analyzers, such as `Objective-C Message Analyzer` or
+`Demangler Swift`, only for programs they can analyze. A name that the Ghidra
+installation provides but did not register for the selected program is not
+applicable: the import continues, the profile still commits the configured
+names, and result limitations report the applied preset with that name marked,
+for example `ghidra-default+disabled:Objective-C Message Analyzer(n/a)`. A name
+that no installed analyzer provides, or an option that remains enabled, aborts
+the headless import before auto-analysis and the bridge with an error naming
+`REA_GHIDRA_DISABLED_ANALYZERS` and the analyzer, so a misspelled override
+cannot produce a session claiming that the analyzer was disabled. Changing the
+environment requires restarting the server; reopening a target alone keeps the
+current setting. For Windows PE resource analysis, the exact name is
+`WindowsResourceReference`. Disabling an analyzer skips the facts it would have
+produced.
 
 ### Ghidra heap and CPU controls
 

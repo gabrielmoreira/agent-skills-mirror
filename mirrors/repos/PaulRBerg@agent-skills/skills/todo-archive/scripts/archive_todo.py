@@ -7,9 +7,8 @@ import pathlib
 import re
 import subprocess
 import sys
+from collections.abc import Iterable
 from dataclasses import dataclass, field
-from typing import Iterable, Optional
-
 
 TASK_RE = re.compile(r"^(\s*)([-*+])\s+\[([ xX])\]\s+(.*?)(\r?\n)?$")
 HEADING_RE = re.compile(r"^(#{1,6})\s+\S.*$")
@@ -22,17 +21,15 @@ class Node:
     line: str = ""
     level: int = 0
     indent: int = -1
-    checked: Optional[bool] = None
-    archive: Optional[bool] = None
+    checked: bool | None = None
+    archive: bool | None = None
     marker: str = "-"
     text: str = ""
-    children: list["Node"] = field(default_factory=list)
+    children: list[Node] = field(default_factory=list)
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(
-        description="Archive checked Markdown tasks from .ai/TODO.md into .ai/todos/."
-    )
+    parser = argparse.ArgumentParser(description="Archive checked Markdown tasks from .ai/TODO.md into .ai/todos/.")
     parser.add_argument("--root", default=None, help="repository root; defaults to git root or cwd")
     parser.add_argument("--date", default=None, help="YYYY-MM-DD or YYYY_MM_DD; defaults to today")
     parser.add_argument("--dry-run", action="store_true", help="print rendered outputs without writing")
@@ -115,7 +112,7 @@ def main() -> int:
     return 0
 
 
-def resolve_root(root_arg: Optional[str]) -> pathlib.Path:
+def resolve_root(root_arg: str | None) -> pathlib.Path:
     if root_arg:
         return pathlib.Path(root_arg).expanduser().resolve()
 
@@ -132,7 +129,7 @@ def resolve_root(root_arg: Optional[str]) -> pathlib.Path:
     return pathlib.Path(result.stdout.strip()).resolve()
 
 
-def normalize_date(value: Optional[str]) -> str:
+def normalize_date(value: str | None) -> str:
     if value is None:
         return dt.date.today().isoformat()
 
@@ -163,7 +160,7 @@ def merge_archive_text(existing_text: str, new_text: str) -> str:
     return existing_text.rstrip("\r\n") + "\n\n" + new_text.lstrip("\r\n")
 
 
-def leading_h1(text: str) -> Optional[tuple[str, int]]:
+def leading_h1(text: str) -> tuple[str, int] | None:
     """Return the first non-blank H1 line and its end offset, if present."""
     offset = 0
     for line in text.splitlines(keepends=True):
@@ -186,8 +183,7 @@ def parse_document(lines: Iterable[str]) -> Node:
         if heading_match:
             level = len(heading_match.group(1))
             while len(stack) > 1 and (
-                stack[-1].kind == "task"
-                or (stack[-1].kind == "heading" and stack[-1].level >= level)
+                stack[-1].kind == "task" or (stack[-1].kind == "heading" and stack[-1].level >= level)
             ):
                 stack.pop()
             node = Node("heading", line=line, level=level)
@@ -247,13 +243,13 @@ def heading_matches(node: Node, hint: str) -> bool:
     return hint.lower() in heading_text(node).lower()
 
 
-def collect_matching_headings(node: Node, hint: Optional[str]) -> list[str]:
+def collect_matching_headings(node: Node, hint: str | None) -> list[str]:
     if hint is None:
         return []
     return [heading_text(h) for h in iter_headings(node) if heading_matches(h, hint)]
 
 
-def mark_tasks(node: Node, hint: Optional[str], in_section: bool) -> None:
+def mark_tasks(node: Node, hint: str | None, in_section: bool) -> None:
     """Mark every task with whether it belongs in the archive output.
 
     A task is archived when it is checked and within scope. Scope is the whole
@@ -288,9 +284,7 @@ def render(node: Node, archive: bool) -> str:
 
     if node.kind == "heading":
         if not archive:
-            children = "".join(
-                render_child(child, archive, parent_is_rendered=True) for child in node.children
-            )
+            children = "".join(render_child(child, archive, parent_is_rendered=True) for child in node.children)
             return node.line + children if children.strip() else ""
         if not has_task(node, archive):
             return ""
@@ -355,7 +349,7 @@ def finalize(text: str, fallback_heading: str) -> str:
     return text
 
 
-def first_heading(source: str) -> Optional[str]:
+def first_heading(source: str) -> str | None:
     for line in source.splitlines(keepends=True):
         if HEADING_RE.match(line):
             return line if line.endswith("\n") else line + "\n"

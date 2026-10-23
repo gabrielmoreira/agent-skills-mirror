@@ -141,32 +141,35 @@ npx rea-agents@latest setup
 
 REA 需要 Node.js 22.x（>=22.19）、24.x（>=24.11）或 26+，以及 npm。额外工具和主机支持取决于分析目标：
 
-| 目标                  | REA 返回的内容                                                | 要求与指南                                                                                                         |
-| --------------------- | ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| 原生二进制文件        | 伪代码、汇编、字符串、符号、调用和引用                        | Hopper、Ghidra 或 IDA；[原生分析](../native-investigation.md)                                                      |
-| 离线 ELF 布局         | 节、段、原始符号/重定位信息及静态防护机制候选项               | Linux x64 上由调用方提供的 pwntools；[二进制诊断](../binary-diagnostics.md)                                        |
-| Go 二进制文件         | 内嵌编译器版本、模块、替换项和构建设置                        | 内置静态 ELF/PE/thin Mach-O 检查；无需安装 Go                                                                      |
-| WASM 工件             | 验证、节、精确的导入/导出 WAT 形式及解码后的 WAT              | 调用方提供的 WABT 1.0.42；`inspect_wasm_artifact`                                                                  |
-| EVM 字节码            | 分派选择器、字节偏移、推断的参数和状态可变性                  | Linux x64 上的本地原始字节/十六进制输入载体；[离线 EVM 指南](../evm-bytecode.md)                                   |
-| Rust binaries         | Embedded cargo-auditable dependency list                      | [Rust binaries](../rust-binaries.md)                                                                               |
-| 已记录的 Linux 崩溃   | 原始 note 记录、每个已记录线程的寄存器/信号及可选的映射候选项 | Linux x64 上由调用方提供的 pwntools；可选的 GDB/pwndbg；[已记录崩溃](../recorded-crashes.md)                       |
-| 桌面安装目录          | 运行时候选、支持文件、组件标记和后续操作                      | 有界的目录与文件头检查；[桌面应用](../desktop-applications.md)                                                     |
-| JavaScript / Electron | 模块、导入、source map、路由、IPC 和原生扩展关系              | Node.js 和 npm；[应用分析](../javascript-application-workflows.md)                                                 |
-| 网站                  | 页面结构、脚本、网络观察结果和按请求获取的截图                | Chrome 系浏览器；[浏览器分析](../browser-observation.md)                                                           |
-| 已保存的网络捕获      | 请求、响应、可访问的载荷和来源位置                            | HAR；原生 mitmproxy 捕获需要 Linux 上的 mitmdump；[捕获指南](../web-network-captures.md)                           |
-| 数据包捕获            | 端点、DNS、TLS SNI、协议分布和 HTTP 请求                      | 调用方提供的 tshark 和 capinfos；[pcap 指南](../pcap-analysis.md)                                                  |
-| .NET 程序集           | 元数据、CIL 指令、声明的原生依赖和构建对比                    | 静态检查；[托管代码指南](../managed-code-analysis.md)                                                              |
-| PyInstaller           | CArchive, PYZ, Python bytecode                                | Static inspection; [Python packaged applications](../python-packaged-applications.md)                              |
-| Android APK           | 清单声明、类、反编译的方法和引用                              | Linux/macOS/Windows x64 上的无界面 JADX 和完整 JDK；[Android 指南](../android-analysis.md)                         |
-| Android 设备          | 设备、软件包、进程、日志、转储、屏幕截图以及 APK/文件传输     | 调用方提供的 adb（模拟器或实体设备）；[ADB 指南](../adb-device-analysis.md)                                        |
-| JEB 项目              | 引擎支持的项目单元、工件摘要和类型/方法的伪代码               | 由调用方启动、提供 MCP 的 JEB 客户端，通过 REA_JEB_MCP_URL 选择；[JEB 指南](../jeb-analysis.md)                    |
-| Android 资源          | 解码后的清单、字符串表、语言区域和版本信息                    | 调用方提供的 Apktool 启动器；[资源指南](../apktool-resource-analysis.md)                                           |
-| Flutter 应用          | Dart 快照哈希、按 ABI 的库摘要及引擎构建溯源                  | 无（静态 APK 解析）；[Flutter 指南](../flutter-analysis.md)                                                        |
-| 固件                  | 区域、提取结果和转交原生分析的内容                            | Linux 上的 Binwalk / Unblob；[固件指南](../firmware-analysis.md)                                                   |
-| 抓包文件              | 指定字段、重复值、过滤条件与解码规则                          | Linux: TShark 4.x + prlimit; [抓包分析指南](../packet-captures.md)                                                 |
-| 录制的逻辑信号        | 解码注释、样本范围和诊断信息                                  | Linux: sigrok-cli 0.7.2 + prlimit; [信号记录指南](../signal-recordings.md)                                         |
-| 软件包与资源          | 文件清单、摘要、plist、Apple bundle 结构和提取的资源          | [制品与 JavaScript 指南](../javascript-artifact-reconstruction.md)、[Apple 应用](../apple-application-analysis.md) |
-| 进程行为              | 终端输出、交互、退出和文件系统观察结果，以及运行对比          | 支持原生 PTY 的 Linux/macOS；[进程捕获](../process-capture.md)                                                     |
+| 目标                  | REA 返回的内容                                                               | 要求与指南                                                                                                         |
+| --------------------- | ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| 原生二进制文件        | 伪代码、汇编、字符串、符号、调用和引用                                       | Hopper、Ghidra 或 IDA；[原生分析](../native-investigation.md)                                                      |
+| 离线 ELF 布局         | 节、段、原始符号/重定位信息及静态防护机制候选项                              | Linux x64 上由调用方提供的 pwntools；[二进制诊断](../binary-diagnostics.md)                                        |
+| Go 二进制文件         | 内嵌编译器版本、模块、替换项和构建设置                                       | 内置静态 ELF/PE/thin Mach-O 检查；无需安装 Go                                                                      |
+| WASM 工件             | 验证、节、精确的导入/导出 WAT 形式及解码后的 WAT                             | 调用方提供的 WABT 1.0.42；`inspect_wasm_artifact`                                                                  |
+| EVM 字节码            | 分派选择器、字节偏移、推断的参数和状态可变性                                 | Linux x64 上的本地原始字节/十六进制输入载体；[离线 EVM 指南](../evm-bytecode.md)                                   |
+| Rust binaries         | Embedded cargo-auditable dependency list                                     | [Rust binaries](../rust-binaries.md)                                                                               |
+| Erlang BEAM           | IFF chunks, atoms, exports, and tables                                       | Built-in static BEAM inspection; [Erlang BEAM](../erlang-beam.md)                                                  |
+| PE certificates       | Authenticode WIN_CERTIFICATE entries and PKCS#7 signer/X.509 identity fields | Built-in static PE inspection; [PE certificates](../pe-certificates.md)                                            |
+| ELF notes             | PT_NOTE/SHT_NOTE owners, types, GNU build-id and ABI-tag fields              | Built-in static ELF inspection; [ELF notes](../elf-notes.md)                                                       |
+| 已记录的 Linux 崩溃   | 原始 note 记录、每个已记录线程的寄存器/信号及可选的映射候选项                | Linux x64 上由调用方提供的 pwntools；可选的 GDB/pwndbg；[已记录崩溃](../recorded-crashes.md)                       |
+| 桌面安装目录          | 运行时候选、支持文件、组件标记和后续操作                                     | 有界的目录与文件头检查；[桌面应用](../desktop-applications.md)                                                     |
+| JavaScript / Electron | 模块、导入、source map、路由、IPC 和原生扩展关系                             | Node.js 和 npm；[应用分析](../javascript-application-workflows.md)                                                 |
+| 网站                  | 页面结构、脚本、网络观察结果和按请求获取的截图                               | Chrome 系浏览器；[浏览器分析](../browser-observation.md)                                                           |
+| 已保存的网络捕获      | 请求、响应、可访问的载荷和来源位置                                           | HAR；原生 mitmproxy 捕获需要 Linux 上的 mitmdump；[捕获指南](../web-network-captures.md)                           |
+| 数据包捕获            | 端点、DNS、TLS SNI、协议分布和 HTTP 请求                                     | 调用方提供的 tshark 和 capinfos；[pcap 指南](../pcap-analysis.md)                                                  |
+| .NET 程序集           | 元数据、CIL 指令、声明的原生依赖和构建对比                                   | 静态检查；[托管代码指南](../managed-code-analysis.md)                                                              |
+| PyInstaller           | CArchive, PYZ, Python bytecode                                               | Static inspection; [Python packaged applications](../python-packaged-applications.md)                              |
+| Android APK           | 清单声明、类、反编译的方法和引用                                             | Linux/macOS/Windows x64 上的无界面 JADX 和完整 JDK；[Android 指南](../android-analysis.md)                         |
+| Android 设备          | 设备、软件包、进程、日志、转储、屏幕截图以及 APK/文件传输                    | 调用方提供的 adb（模拟器或实体设备）；[ADB 指南](../adb-device-analysis.md)                                        |
+| JEB 项目              | 引擎支持的项目单元、工件摘要和类型/方法的伪代码                              | 由调用方启动、提供 MCP 的 JEB 客户端，通过 REA_JEB_MCP_URL 选择；[JEB 指南](../jeb-analysis.md)                    |
+| Android 资源          | 解码后的清单、字符串表、语言区域和版本信息                                   | 调用方提供的 Apktool 启动器；[资源指南](../apktool-resource-analysis.md)                                           |
+| Flutter 应用          | Dart 快照哈希、按 ABI 的库摘要及引擎构建溯源                                 | 无（静态 APK 解析）；[Flutter 指南](../flutter-analysis.md)                                                        |
+| 固件                  | 区域、提取结果和转交原生分析的内容                                           | Linux 上的 Binwalk / Unblob；[固件指南](../firmware-analysis.md)                                                   |
+| 抓包文件              | 指定字段、重复值、过滤条件与解码规则                                         | Linux: TShark 4.x + prlimit; [抓包分析指南](../packet-captures.md)                                                 |
+| 录制的逻辑信号        | 解码注释、样本范围和诊断信息                                                 | Linux: sigrok-cli 0.7.2 + prlimit; [信号记录指南](../signal-recordings.md)                                         |
+| 软件包与资源          | 文件清单、摘要、plist、Apple bundle 结构和提取的资源                         | [制品与 JavaScript 指南](../javascript-artifact-reconstruction.md)、[Apple 应用](../apple-application-analysis.md) |
+| 进程行为              | 终端输出、交互、退出和文件系统观察结果，以及运行对比                         | 支持原生 PTY 的 Linux/macOS；[进程捕获](../process-capture.md)                                                     |
 
 静态 JavaScript 和 .NET 检查读取提供的文件，不运行应用。运行时捕获会以你的用户权限运行目标或与之交互；各运行时指南说明了具体影响。
 

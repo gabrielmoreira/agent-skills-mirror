@@ -64,18 +64,45 @@ or role-incomplete page sets. See
 
 `loopx content-ops media` prepares source-bound private compositions and renders
 them through the optional local `loopx-media` extension. The packaged
-**Settings → Capabilities → a Goal → Content production** workbench renders,
+**Goal → Files → Content artifacts** workbench renders,
 cancels and reads the same compositions, video, captions, transcript and source
 checks. It reuses existing layout tokens and content-item revision/approval,
 while keeping heavy image/audio/video computation in the optional distribution.
 See the [composition contract](../../../docs/reference/protocols/content-ops-media-v0.md)
 and [renderer installation and recovery](../../../packages/loopx-media/README.md).
 
+Creation and requested changes stay in the current Goal conversation; the results
+view returns to that conversation without sending a message. Capability settings
+retain configuration only and do not load production records or start work.
+Delivery requirements and checks reuse the existing Goal acceptance owner, also
+used by non-media deliverables; renderer checks do not create an acceptance or
+publication decision. This integration is Goal-scoped. Ordinary project
+conversations without a Goal are not routed through a fabricated Goal.
+
+`loopx content-ops generation` prepares immutable, priced cloud-footage intents
+and explicitly submits/checks/collects a bounded Seedance 2.5 video through the
+same optional provider, with a separate cloud-generation permission. The
+**Generated footage** view shows drafts, upload/usage consequences, original
+task readback and verified local files. It never repeats an ambiguous paid
+submission or equates stopping observation with remote cancellation. Use the
+saved movie as a source-bound excerpt in a local composition; precise text and
+diagrams remain local. See the same provider guide for credentials, cost
+estimates, unavailable states and recovery.
+
+`loopx content-ops image` prepares and submits one Seedream 5.0 Pro image with
+an optional immutable reference through the same extension. **Generated images**
+shows the draft, consequence, unavailable/unknown states and verified downloads.
+This synchronous route uses a separate image credential, has no cloud task
+polling and recovers saved responses without repeating a paid request. Compose
+the resulting hash-bound image with exact local text; creative/source acceptance
+and billing remain separate from byte readiness. See the provider guide's
+[image setup and recovery](../../../packages/loopx-media/README.md#optional-generated-images).
+
 `loopx content-ops reference` reads an existing private source/style catalog,
 prepares version-checked capture/correction artifacts, retrieves topic/structure
 references, and prepares outlines with original credit and reuse conditions.
-The same TypeScript owner runs in the packaged **Content production → Source
-style references** workbench. Imports stay in browser page memory; downloads are private
+The same TypeScript owner runs in the packaged **Goal → Files → Content artifacts
+→ Prepare source and style references** disclosure. Imports stay in browser page memory; downloads are private
 review artifacts. This preview does not write the original catalog or activate
 a source. Inventory reuses Material Lifecycle, while managed apply/rollback
 still requires that owner's qualified source provider. See

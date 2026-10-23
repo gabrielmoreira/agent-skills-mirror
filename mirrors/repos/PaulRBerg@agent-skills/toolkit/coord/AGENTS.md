@@ -16,7 +16,7 @@ Run shared tasks from `toolkit/justfile` (`just <recipe>` inside `toolkit/`, or 
 catalog root):
 
 - `cargo test -p ai-coord --locked` runs package tests. `just rust-check` runs the complete Rust workspace gate.
-- `just install-cli` installs all workspace binaries and does not link hooks.
+- `just install-cli` installs every CLI supported on this OS and does not link hooks.
 - `just coord-dashboard-check` and `just coord-dashboard-dev` delegate to the dashboard package.
 
 Use package selection when isolating a Rust failure: `cargo test -p ai-coord --locked` and
@@ -197,8 +197,8 @@ ai-coord link all
 ai-coord check
 ```
 
-From `toolkit/`, `just install-cli` installs all workspace binaries. It does not modify hooks. Run `ai-coord link all`
-separately when hook installation is intended.
+From `toolkit/`, `just install-cli` installs every CLI supported on this OS. It does not modify hooks. Run
+`ai-coord link all` separately when hook installation is intended.
 
 `link` merges owned hooks into `~/.codex/hooks.json` and `~/.claude/settings.json`. It preserves unrelated settings and
 hook commands. Successful Codex links also automatically trust only the exact `ai-coord` hook definitions they own. They

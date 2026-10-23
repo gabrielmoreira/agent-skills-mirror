@@ -85,6 +85,12 @@ remain in place. [Daytona regressions](../../server/src/__tests__/daytona-connec
 cover shared/personal catalog upgrades, failed refresh, permission preservation,
 run-bound file transfers, and revocation with fixture provider responses.
 
+Unikraft actions follow the same review rules: deletion, stop/suspend/detach and
+sandbox command execution are destructive, and catalog updates quarantine new or
+changed actions. [Unikraft regressions](../../server/src/__tests__/unikraft-connection.test.ts)
+cover classification, Off policies, revocation and stale contracts with fixture
+provider responses.
+
 ## Gotchas
 
 - Connected does not imply an agent has access or an action is allowed.

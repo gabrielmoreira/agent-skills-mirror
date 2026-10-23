@@ -1,5 +1,9 @@
 # Backend Tests
 
+`test_image_result_url_safety.py` drives GroundRoute through `ainvoke` and an
+offline HTTPX transport. Patch only the provider's `httpx` reference; preserve
+the shared client and exercise real configuration resolution and URL screening.
+
 `test_client_upload_snapshot.py` keeps upload publication and conversion on the
 same private capture. Cover source edits/removal, both conversion branches,
 same-file rejection, metadata and cleanup; retain sandbox symlink defenses.
@@ -358,6 +362,26 @@ setup, after the autouse fixtures initialize runtime, to avoid the package cycle
 ### Web model provider presets
 
 `test_managed_provider_presets.py` covers encrypted compatibility, auto IDs, key switching, snapshot isolation and native/compatible protocols. Its HTTP double is below actual LangChain/vendor SDK serialization; do not replace these adapters with successful stubs. `test_managed_presets_live.py` requires explicit opt-in and vendor credentials, and remains skipped in CI.
+
+## Helm Redis credentials
+
+`test_helm_redis_existing_secret.py` renders the chart and executes its startup
+and both probe commands with argument-recording Redis stubs through
+`support.shell.require_posix_sh`. Keep missing/empty password keys, stale
+`redis.auth.password` values, Secret precedence, external mode and shell
+metacharacters covered.
+Render tests skip when Helm is unavailable; they need no Kubernetes cluster.
+A falsy `existingSecret` (`false` is how people spell "not set") must fall
+through to the chart-managed Secret, not name the Secret after the value.
+
+## Helm postgres Secret precedence
+
+`test_helm_database_secret_precedence.py` pins that the gateway's `DATABASE_URL`
+and the postgres StatefulSet's `POSTGRES_PASSWORD` resolve the same Secret in
+every branch of `deer-flow.databaseUserSecret`, and that only the chart-managed
+branch renders a Secret. Teaching one consumer a new Secret source without the
+other has to fail here. The falsy cases exist because `or` returns its last
+operand even when falsy, which would name the Secret `false`.
 
 ## Multi-instance harness
 

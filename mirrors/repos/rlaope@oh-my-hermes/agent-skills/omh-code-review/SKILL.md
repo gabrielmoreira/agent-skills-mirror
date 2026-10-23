@@ -41,11 +41,12 @@ Bad example:
 
 ## Completion Checklist
 
-- Findings come first and are ranked by severity before summary or praise.
+- Findings come first: rank ordinary findings by severity; keep gaps unranked in `verification_gaps`.
 - Every finding cites file, diff, command output, artifact, or expected behavior evidence.
 - Both axes appear in the report: correctness/risk findings, and a spec-axis verdict naming its Claim source or the `not_assessed` reason.
 - No-issue reviews still name residual risk, missing tests, and independent review evidence if unavailable.
 - The closing carries the checked-and-clean list and the could-not-assess list, each naming its surfaces.
+- The dispatch schema matches the return, candidate validation states remain distinct, and selected checks are not reported as observed coverage.
 - Fix implementation, architecture follow-up, and CI/merge claims stay separate from the review result.
 
 ## Recovery Notes
@@ -56,7 +57,8 @@ Bad example:
 - To dispatch a reviewer rather than write the findings yourself, load `omh-code-review/references/review-dispatch.md`; it carries the base-SHA rule, the findings schema the return is checked against, and the implementer status contract.
 - When findings arrive for work you own, load `omh-code-review/references/review-response.md` before changing anything.
 - For maintainability judgement calls, load `omh-code-review/references/smell-baseline.md`; it names the twelve baseline smells with their fixes and the repo-standards-override rule.
-- When one bug-first pass is not enough, load `omh-code-review/references/review-lenses.md` and run the five lenses separately; the verification-gap lens asks whether anything would go red if the changed behavior broke.
+- Load `omh-code-review/references/risk-selection.md` to select depth; when additional lenses are justified, load `omh-code-review/references/review-lenses.md` and run only those selected as separate passes.
+- Before final findings, load `omh-code-review/references/finding-validation.md` for candidate confirmation, rejection, and unresolved-risk handling; load `omh-code-review/references/architecture-delta.md` when ownership, contracts, dependencies, or shared-code extraction change.
 
 
 
@@ -84,6 +86,8 @@ Quality bar:
 - Review on two axes and report them side by side, never re-ranked against each other: the correctness/risk axis judges the code as it is, and the spec axis judges the diff against the dispatch's Claim and Requirements pointer. A clean diff that does not do what was asked is a spec-axis finding; when no Claim or spec pointer was supplied, report the spec axis as `not_assessed` with that reason instead of staying silent.
 - Judge maintainability findings against the named baseline in `omh-code-review/references/smell-baseline.md`: a baseline smell is a judgement call to argue from evidence, never an automatic finding, and the reviewed repository's own standards override the baseline wherever they conflict.
 - Close with two lists beside the verdict: what was checked and found clean, and what could not be assessed with the reason. An absent finding is evidence only when the closing says the surface was actually checked.
+- Require structured `spec_axis`, `could_not_assess` (empty allowed), and unranked `verification_gaps` (empty allowed) under the dispatch schema; gaps carry `path`, `line_range`, and `evidence`, never finding priority or confidence. Check actual reads, revision, bounds, ordered ranges, and claim truth separately from shape.
+- Select depth by changed risk, not diff size; record selected and omitted checks, reasons, actual coverage, and budget. Deduplicate candidates by root cause and validate before final findings; retain unresolved protected risks separately. Say `independent validation unavailable` when no different reader participated.
 - When the reviewed work ran in a Hermes session, cite `session_file_activity/v1` (`omh quality-evidence file-activity --hermes-session <id> --json`) to scope which workspace files its read_file, write_file, and patch calls touched, with the outcome Hermes recorded; it is file lineage, never file-content, diff, test, review, CI, or merge evidence.
 - For native `omh_todo` checkpoints, `record` then `recall` this review declaration. Stored declarations are not proof.
 
@@ -128,8 +132,9 @@ included (where it sets no language, use the one the user wrote in), and OMH
 shapes structure and content only; OMH's record terms
 (surface, lane, wrapper, handoff, evidence boundary, not_observed) stay in
 records and tool calls, never in the sentence the user reads unless they ask
-about one; and when a stop condition or a decision the user owns ends the turn,
-offer the next action as a question rather than declaring what will not be done.
+about one; and when a real unresolved user decision or a useful briefing discussion
+remains, offer one specific, content-linked question. Completed work needs no question;
+omit unrelated non-action footers and generic offers to continue.
 Supporting paths are relative to this skill directory; sibling skill paths are
 relative to its parent. Resolve them from the host-provided skill base directory
 (`{baseDir}` on hosts that provide it), never a hardcoded install location.

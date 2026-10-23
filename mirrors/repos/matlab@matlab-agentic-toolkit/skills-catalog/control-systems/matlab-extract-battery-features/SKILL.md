@@ -1,406 +1,238 @@
 ---
 name: matlab-extract-battery-features
 description: >
-  Extract battery features for degradation analysis and health monitoring in MATLAB.
-  Covers cycling test features, differential curves (IC/DV/DT), and measurement
-  statistics. Use when working with battery cycling data, SOH estimation, RUL
-  prediction, or any battery test data analysis in MATLAB. Triggers on battery*
-  functions such as batteryTestDataParser, batteryTestFeatureExtractor,
-  batteryMeasurementFeatures, batteryDifferentialCurves.
+  Extract battery features in MATLAB from voltage, current, and temperature
+  measurements: multi-cycle cycling tests, HPPC / pulse tests, EIS impedance
+  sweeps, or a single in-field charge or discharge segment. Use when the user
+  asks for battery features, or for SOH, RUL, degradation, internal-resistance,
+  or impedance analysis that needs them. Output is a feature table; does not
+  train SOH / RUL models. Do not trigger only because battery data is present.
+  Triggers on battery* functions such as batteryTestDataParser,
+  batteryTestFeatureExtractor, batteryPulseFeatures, batteryEISFeatures.
 license: https://www.mathworks.com/content/dam/mathworks/license/pmrl/license.md
 metadata:
   author: MathWorks
-  version: "1.0"
+  version: "2.0"
 ---
 
 # Battery Feature Extraction
 
+Router for MATLAB's Predictive Maintenance Toolbox battery feature extraction functions. Detailed workflows live in `references/*.md` — load only the file that matches the inspected data type.
 
 ## When to Use
 
-- Any task involving battery test data feature extraction: cycling degradation trending, SOH estimation, RUL prediction, capacity fade analysis
-- Differential curve analysis (IC dQ/dV, DV dV/dQ, DT dT/dV) for electrode degradation diagnosis
-- Single-segment measurement statistics from partial or full charge/discharge data
-- Batch processing of multiple battery cycling test files
+Trigger on the domain questions asked about battery voltage / current / temperature measurements — from bench cycler / HPPC / EIS tests **or** from in-field / in-use operational data logged by a BMS or captured during a drive or charge event. The skill produces the feature table that feeds each question's downstream analysis. Concretely:
+
+- **Degradation, SOH, RUL, capacity/energy fade.** *"How much has this cell degraded over 1000 cycles?" · "Track SOH." · "Estimate remaining useful life." · "Which cell is fading fastest?"*
+- **Aging mechanism from differential curves.** *"How are the dQ/dV peaks shifting?" · "Loss of lithium inventory vs. active-material loss?" · "Plot IC curves at cycles 1, 250, 500, 1000." · "What's the DV signature of aging?"*
+- **Internal resistance from HPPC / pulse tests.** *"What's R0 at 50% SOC?" · "How has DCR grown?" · "Get polarization resistance and recovery rate per pulse."*
+- **EIS / impedance analysis.** *"Fit the Nyquist plot." · "What's the charge-transfer resistance?" · "How has R0 grown from EIS?" · "Extract arc widths and Warburg tail."*
+- **Segmentation of cycling data.** *"Split this into charge / discharge / rest." · "Separate CC and CV portions of each cycle." · "Give me only the discharge segments."* (With or without downstream feature extraction.)
+- **In-field / operational condition monitoring.** Features from a single measured segment that has no multi-cycle test structure — a partial charge or discharge logged by a BMS, one CC segment, or a drive/charge event. *"Extract features from this field charge segment." · "Summarize this discharge from the vehicle log." · "What condition-monitoring features can I get from this partial charge?"* (Served by `batteryMeasurementFeatures`, which works stats-only when no cycle/time structure is present.)
+- **Fast-charging stress / plating indicators.** *"Is CV duration growing?" · "Any thermal signature of plating (DT)?" · "Recovery slowdown at high SOC?"*
+- **Cell screening / cell-to-cell comparison.** *"Compare these 10 cells." · "Rank by fade rate." · "Which cells are outliers?"*
+- **Feature engineering for ML.** *"Give me a feature table for SOH modeling." · "Which features best correlate with capacity fade?"*
+- **Batch processing** of multiple test files through any of the above.
 
 ## When NOT to Use
 
-- The task has no battery test data context (no cycling or differential-curve data)
-- The primary goal is battery simulation, equivalent circuit modeling, or Simulink battery plant models
-- The task is general signal processing, machine learning model training, or visualization without feature extraction
-- The data is not from electrochemical battery tests (e.g., fuel cells, supercapacitors, or generic sensor data)
+- **First-look / data classification / orientation** questions on battery data: *"What kind of test is this?" · "Describe this data." · "Tell me about this file." · "Analyze cycling.csv and tell me what it contains."* These are inspection; the skill fires later when the user asks one of the analyses above.
+- **Role-framing without a specific analysis in the current turn.** A system prompt setting a "battery reliability agent" persona, a filename containing "battery" / "cycling" / "SOH", or a bare *"analyze this"* verb is not enough — the current user turn must name one of the specific analyses.
+- **Data import** or **vendor-format conversion** (Arbin `.res`, Neware `.nda`, Maccor, BioLogic → MATLAB table).
+- **Plotting** raw voltage / current / temperature vs time or capacity **without** first segmenting or computing an IC/DV/DT curve — that's a plain plotting task.
+- **Cleaning, resampling, interpolating,** or filtering time-series that does not feed into segmentation, differential curves, or feature extraction.
+- **SOH / RUL model training or prediction** — or any ML training — on an already-extracted feature table. This skill is the upstream feature step; modeling and prediction are downstream.
+- Battery **simulation**, **equivalent-circuit modeling**, or **Simulink** battery plant models.
+- Non-electrochemical data (fuel cells, supercapacitors, generic sensor streams).
 
-This skill covers the 5 released PMT battery feature extraction functions. These functions work natively with MATLAB tables and vectors, handle segmentation and peak detection internally, and are performance-optimized. Prefer these PMT functions over manual feature computation (e.g., hand-coded cumtrapz loops, manual peak finding). Override only if the user explicitly requests otherwise.
+This skill covers the 7 PMT battery feature extraction functions. These functions work natively with MATLAB tables and vectors, handle segmentation and peak detection internally, and are performance-optimized. Prefer these PMT functions over manual feature computation (e.g., hand-coded `cumtrapz` loops, manual peak finding). Override only if the user explicitly requests otherwise.
 
 ---
 
 ## API Overview
 
-The Predictive Maintenance Toolbox provides **5 public functions** for battery feature extraction:
+The Predictive Maintenance Toolbox provides **7 public functions** for battery feature extraction, organized by the kind of measurement they consume:
 
 ```
-                        Battery Cycling Test Data
-                                  │
-                    ┌─────────────┴─────────────┐
-                    │                           │
-              Full Pipeline               Individual Functions
-                    │                           │
-             batteryTest-                       ├── batteryMeasurementFeatures
-             DataParser                         ├── batteryDifferentialCurves
-                 +                              └── batteryDifferentialCurveFeatures
-             batteryTest-
-             Feature-
-             Extractor
-                 │
-                 ▼
-             Feature table
+                                Battery Data
+                                     │
+      ┌────────────────┬─────────────┴────────┬────────────────────┐
+      │                │                      │                    │
+ Multi-cycle     Single measured          Pulse tests          EIS tests
+ cycling test    segment                  (HPPC / GITT)        (impedance)
+      │          (bench or in-field)           │                    │
+      ▼                │                        ▼                    ▼
+ batteryTest-          │                  batteryPulseFeatures  batteryEISFeatures
+ DataParser            │                        │                    │
+     +                 │                        ▼                    ▼
+ batteryTest-          │                  Pulse feature         EIS feature
+ FeatureExtractor      │                  table                 table
+      │                │
+      ▼                ├── batteryMeasurementFeatures        → Measurement feature table
+ Full-pipeline         │
+ feature table         ├── batteryDifferentialCurves         → IC / DV / DT curves
+                       │
+                       └── batteryDifferentialCurveFeatures  → Curve peak feature table
 ```
+
+The **single measured segment** branch is the in-field / operational path: its functions take raw V / I / T / t from one charge or discharge segment and need no multi-cycle test structure, so they serve BMS-logged or drive/charge-event data as well as a segment pulled from a bench test.
 
 | Function | Input | Output | Use When | Available From |
 |----------|-------|--------|----------|----------------|
-| `batteryTestDataParser` | Raw cycling table | Parser object (segmented data) | You have multi-cycle data needing segmentation | R2024b |
+| `batteryTestDataParser` | Raw cycling table | Parser object (segmented data) | Multi-cycle data needing segmentation | R2024b |
 | `batteryTestFeatureExtractor` | Options | Extractor object | Full pipeline: parser → all cycling features | R2024b |
 | `batteryMeasurementFeatures` | V, I, T, t vectors | Statistical + cumulative feature table | Any single-phase segment (partial or full charge/discharge) | R2026a |
 | `batteryDifferentialCurves` | V, I, T, t vectors | dQ/dV, dV/dQ, dT/dV tables | Constant-current segment only (CC charge or CC discharge) | R2026a |
 | `batteryDifferentialCurveFeatures` | Curve + x-axis | Peak feature table | Extracting features from differential curves | R2026a |
+| `batteryPulseFeatures` | V, I, t (or table) | Pulse feature table + pulse data | HPPC/pulse test resistance features | R2026b |
+| `batteryEISFeatures` | Zr, Zi, F vectors | EIS feature table | Impedance spectroscopy analysis | R2026b |
 
 ---
 
-## Interaction Model: Stop or Proceed
+## Load the Right Reference Before Proceeding
 
-Do not stop and ask before every extraction. Most decisions have a deterministic rule — apply it,
-extract, and **report what you did** so the user can correct it. Only stop when a decision is
-genuinely ambiguous *and* guessing it wrong would fail silently (plausible-but-wrong features).
+**Step 1 — inspect the data shape.** Load the file directly from the exact path the user gave, resolved against the current working folder. Do not recursively search temp, home, or system directories to locate it — a recursive `dir(..., '**', ...)` over such a tree can stall for over a minute. Then read the file and answer two questions:
+
+1. **Granularity.** Is each row a **per-sample raw record** (many rows per cycle: voltage / current sampled at 1 Hz or faster), or is each row a **per-cycle / per-cell summary** (one row per cycle per cell, with columns like `Capacity`, `SOH`, `CV_hold_duration`)?
+2. **Multi-cell.** Is there a `CellID` / `Cell` / `SerialNumber` column identifying multiple cells in the same file?
+
+**Step 2 — route by shape:**
+
+| Data shape inspected | Route |
+|----------------------|-------|
+| Raw per-sample **multi-cycle** cycling table with cycle **and** step index columns (one cell, or multi-cell — see note below) | `references/cycling-pipeline.md` |
+| Raw per-sample cycling table with **step index but no cycle index** — either multiple cycles the parser can synthesize a cycle index for, or a single full charge-discharge cycle (see reference for the multi- vs single-cycle rule) | `references/cycling-pipeline.md` |
+| Raw per-sample **single-phase** cycling segment (partial charge, one discharge, CC segment) with no cycle index and no full charge-discharge boundary | `references/individual-cycling-functions.md` |
+| Raw **short current pulses** separated by rest periods (HPPC / GITT) | `references/pulse-features.md` |
+| Raw **impedance sweep** with `Frequency`, `Zreal`, `Zimag` | `references/eis-features.md` |
+| **Already-aggregated per-cell / per-cycle summary** — one row per (cell, cycle) with pre-computed `Capacity`, `SOH`, `CV_hold_duration`, `RPT_capacity`, temperature summaries, etc. (no per-sample V/I/t traces) | **No reference loads.** See § Data Is Already Aggregated below. |
+| Additionally, when tuning `Tolerance`, `WindowSize`, IC/DV/DT smoothing, or diagnosing "not CC data" errors | Also load `references/parameter-tuning.md` |
+
+**Multi-battery-cell data.** When the data covers more than one battery cell, see the loaded reference's § Preprocessing: Data Layout for detection and combine/iterate rules, and § Postprocessing: Feature Table Organization for the `featuresPerCell{k}` output convention.
+
+### Data Is Already Aggregated — Skill Does Not Apply
+
+If each row is already a per-cycle or per-cell summary (e.g., a CSV with columns `CellID, Cycle, Capacity_Ah, SOH, CV_hold_s, Temp_max_C`), the PMT `battery*` functions covered by this skill have **nothing to add** — they compute those very features from raw traces, and you already have them. Tell the user this, then handle the cell-ranking / degradation-comparison task with plain table operations:
+
+- **Rank cells** by fade rate: fit a slope of `Capacity` vs `Cycle` per `CellID`, sort ascending.
+- **Compare mechanisms** by trending `CV_hold_s`, temperature statistics, or resistance summaries per cell.
+- **Visualize** with `tiledlayout`: capacity-vs-cycle families, SOH trajectories, CV-hold growth.
+
+This is standard MATLAB table wrangling — no PMT function is required. If a downstream skill fits better (e.g. `matlab-analyze-data` for the ranking workflow), route there instead of loading a reference from this skill.
+
+**Application × data shape.** When the user names an application (SOH, RUL, Fast Charging, Cell Screening) that could be served by multiple data types, still route by inspected shape first — application alone doesn't pick a workflow. Then read the matching reference's **"Feature Selection for Common Applications"** section for the recipe.
+
+---
+
+## Workflow Skeleton
+
+Every reference in this skill follows the same phase template. Load the matching reference for the phase-by-phase details; the skeleton is:
+
+| # | Phase | What it does |
+|---|-------|--------------|
+| 1 | **Identify inputs** | Map data columns to the function's parameters. Workflow-specific vocabulary table lives at the top of each reference. General rules (vocabulary-first, datetime > numeric, unit conversion) below. |
+| 2 | **Data layout** | Detect single-file vs multi-file, single-cell vs multi-cell, single-sweep vs multi-sweep; combine or split accordingly. |
+| 3 | **Call functions** | Issue the primary computation call(s). |
+| 4 | **Verify results** | Cross-check outputs against independent evidence. Cycling uses `verifySegmentation` + `checkCyclingProtocol`; individual-cycling uses `verifySingleSegment`. **Pulse and EIS skip this phase — no verifier helper exists.** |
+| 5 | **Tune parameters** | Only if Phase 4 flagged an issue (or the caller reports symptoms of a wrong setting). Sweep tuning parameters and re-call. |
+| 6 | **Postprocess / organize** | Attach tag columns (`CellID`, `ExperimentIndex`), keep per-cell tables in a cell array, etc. |
+| 7 | **Report + next steps** | Present the feature table with the key-decisions summary and the Next Steps offer (§ Stop After Extraction rule below). |
+
+Reference-to-phase map:
+
+| Reference | Phases | Verify helper | Tuning reference |
+|-----------|--------|---------------|------------------|
+| `cycling-pipeline.md` (+ `cycling/*.md` on demand) | 1-7 | `verifySegmentation` or `verifyAgainstSchedule`, + `checkCyclingProtocol` | `cycling/tolerance-tuning.md` or `cycling/schedule-verification.md`; `parameter-tuning.md` (IC/DV/DT smoothing) |
+| `individual-cycling-functions.md` | 1-7 | `verifySingleSegment` | `parameter-tuning.md` (IC/DV/DT smoothing, `NoiseTolerance`) |
+| `pulse-features.md` | 1-3, 5-7 (no Verify) | — | inline (`ValidPulseDurationRange`, `MinCurrentChange`) |
+| `eis-features.md` | 1-3, 5-7 (no Verify) | — | inline (`NumArcs`, multi-sweep splitting) |
+
+## Interaction Rules
+
+Cross-cutting rules that apply to every workflow — do not skip regardless of which reference you loaded.
+
+### Interaction Model: Stop or Proceed
+
+Do not stop and ask before every extraction. Most decisions have a deterministic rule — apply it, extract, and **report what you did** so the user can correct it. Only stop when a decision is genuinely ambiguous *and* guessing it wrong would fail silently (plausible-but-wrong features). The rule applies to every workflow — cycling pipeline, individual cycling functions, pulse, and EIS.
 
 **STOP and ask the user first** — but only when one of these is true:
 
-1. **Two or more time-column candidates of the same type** (e.g. two numeric elapsed-time columns) —
-   no rule can choose between them.
-2. **Raw unnamed numeric matrix** — column roles must be inferred, not read from names.
-3. **`checkCyclingProtocol` finds neither phase consistent** — no phase can be recommended.
-4. **Anomalous cycles detected** — never silently exclude them (see CyclingPhase Selection, step 5).
-5. **A required variable cannot be mapped** — a needed column is missing or its role is unclear.
+*General (all workflows):*
 
-**Otherwise PROCEED, then REPORT.** Apply the deterministic rules — datetime/duration beats numeric
-time; use `checkCyclingProtocol`'s `RecommendedPhase`; set `DT=true` iff temperature is present; set
-`CC=true` whenever IC/DV/DT is requested — write and run the extraction, then present in one turn:
+1. **Two or more candidate columns of the same type for one variable** (e.g. two numeric elapsed-time columns, two current-like columns) — no rule can choose between them.
+2. **Raw unnamed numeric matrix** — column roles must be inferred, not read from names.
+3. **A required variable cannot be mapped** — a needed column is missing or its role is unclear.
+
+*Cycling pipeline only:*
+
+4. **`checkCyclingProtocol` finds neither phase consistent** — no phase can be recommended.
+5. **Anomalous cycles detected** — never silently exclude them.
+
+**Otherwise PROCEED, then REPORT.** Apply the deterministic rules — datetime/duration beats numeric time; set `DT=true` iff temperature is present; set `CC=true` whenever IC/DV/DT is requested; for cycling, use `checkCyclingProtocol`'s `RecommendedPhase` — write and run the extraction, then present in a single after-extraction turn:
 
 - the column mappings used (noting any alternatives considered and why the chosen one won),
-- the CyclingPhase and the consistency reason for it,
-- any goal-vs-data tension, if present (see CyclingPhase Selection, step 4 — a report line, not a stop),
+- any workflow-specific decisions — cycling: `CyclingPhase` and its consistency reason; pulse: pulse-detection thresholds if adjusted; EIS: frequency range or sweep selected if the file had multiple,
+- any data-quality findings (time-gap indices, invalid-point count, negative Zreal, missing rests, etc.) as a report line — not a gate,
+- any goal-vs-data tension, if present (see the loaded reference — e.g. cycling-pipeline.md Phase 4),
 - the resulting feature table, followed by the "what next?" offer.
 
-Close the report with an explicit undo invitation, e.g. *"If any mapping or the phase choice looks
-wrong, tell me and I'll re-run."* This preserves the safety net without a blocking question.
-
----
-
-## Full Pipeline: Cycling Test Feature Extraction
-
-For multi-cycle battery test data (the most common workflow):
-
-```matlab
-% Step 1: Parse and segment the raw cycling data
-parser = batteryTestDataParser(tbl, ...
-    CurrentVariable="Current_A", ...
-    VoltageVariable="Voltage_V", ...
-    TimeVariable="Time", ...
-    CycleIndexVariable="Cycle", ...
-    StepIndexVariable="Step", ...
-    TemperatureVariable="Temperature_C", ...
-    ExcludedCycles=[], ...
-    Tolerance=5e-5, ...
-    NumInterpolatedPoints=1000, ...
-    WindowSize=10);
-
-% Step 2: Create extractor with desired feature categories
-extractor = batteryTestFeatureExtractor( ...
-    CyclingPhase="Charge", ...  % 'Charge', 'Discharge', or 'Both'
-    Statistics=true, ...         % Voltage/current/temp statistics
-    CycleCumulative=true, ...   % Capacity, energy, duration
-    CC=true, ...                 % Constant-current segment features
-    CV=true, ...                 % Constant-voltage segment features
-    CCCV=true, ...               % CC+CV combined features
-    IC=true, ...                 % Incremental capacity curve features
-    DV=false, ...                % Differential voltage curve features
-    DT=false);                   % Differential temperature curve features
-
-% Step 3: Extract features
-featureTable = extract(extractor, parser);
-```
-
-### CyclingPhase Selection
-
-Features are only meaningful for degradation trending when extracted from phases with a consistent protocol (same C-rate, same voltage limits) across all cycles.
-
-**Agent should:**
-1. After determining column mappings, run `checkCyclingProtocol` to assess protocol consistency. This helper ships with the skill at `scripts/checkCyclingProtocol.m`. Make it callable by setting the MATLAB current folder to that `scripts/` directory (pass its absolute path as the MCP tool's `project_path`) — do **not** call `addpath`. Reference the user's data by absolute path.
-   ```matlab
-   result = checkCyclingProtocol(data, ...
-       CurrentVariable="<mapped>", VoltageVariable="<mapped>", ...
-       TimeVariable="<mapped>", CycleIndexVariable="<mapped>", ...
-       StepIndexVariable="<mapped>", TemperatureVariable="<mapped>");
-   ```
-
-   **`checkCyclingProtocol` interface:**
-   - **Input:** `data` (table of cycling data) plus the Name-Value column mappings above. `TemperatureVariable` is optional (default `""`, disabled).
-   - **Output:** a struct `result` with fields:
-     - `RecommendedPhase` — `"Charge"`, `"Discharge"`, or `"Both"` (the proposed CyclingPhase)
-     - `ChargeConsistent` / `DischargeConsistent` — logical; whether each phase has a stable repeating protocol across cycles
-     - `AnomalousCycles` — cycle indices with non-standard step sequences (candidates for `ExcludedCycles`)
-     - `MajorityCycles` — cycle indices matching the dominant protocol
-     - `NumCycles` — number of cycles in the data
-     - `StepTable` — per-step reference protocol (phase, CC/CV/rest %, median current, voltage range, duration)
-   - The function also prints a human-readable protocol summary to stdout.
-
-2. Use the output to propose CyclingPhase based **solely** on protocol consistency — justify your choice by citing the repeating C-rate and voltage limits shown in the reference protocol table.
-
-3. **Do NOT mention the user's analysis goal** (SOH, RUL, degradation, health tracking, etc.) as part of the CyclingPhase justification. The choice is purely about which phase has a fixed, repeating protocol — the analysis goal is irrelevant to this decision.
-
-4. **Surface any goal-vs-data tension — but do not let it change the phase choice.** The phase you chose above is final and consistency-driven. Separately, if the consistent phase is **not** the one conventionally associated with the user's stated goal (charge-side IC / dQ-dV for SOH and lithium-inventory loss; discharge for delivered-capacity fade), say so explicitly instead of silently extracting from the phase the data happens to support:
-   > You asked about **<goal>**, which conventionally leans on **<charge/discharge>**-side features (e.g. IC peak shifts for SOH). In your data, though, the **<charge/discharge>** protocol varies across cycles, so those features would not trend on a fixed baseline. Only the **<other>** protocol is consistent, so I'm extracting from there. Here's what the consistent phase can still tell you about **<goal>**: <what it can/can't deliver>.
-
-   This is a **communication** step, not a phase-selection input. Never pick the inconsistent phase just because the goal would normally prefer it — report the tension and proceed with the consistent phase (or ask the user whether they can supply data with a stable protocol on the phase they need).
-
-5. **If anomalous cycles are detected**, inform the user and ask whether to exclude them:
-   > The protocol check found **N anomalous cycles** (X.X%) with non-standard step sequences: [list or first 10].
-   > These cycles likely have data collection issues (missing steps). Would you like to exclude them?
-   > If yes, I'll set `ExcludedCycles=[...]` on the parser.
-
-   Only add `ExcludedCycles` after the user confirms. Do not silently exclude them.
-
-6. Report the CyclingPhase choice (and any tension from step 4) alongside the NV-pair mappings — in the after-extraction report if you proceeded, or in the confirmation if a STOP condition applied.
-
-If protocol consistency cannot be determined from the data (neither phase is consistent), this is a STOP condition — ask the user which phase has a fixed protocol before extracting.
-
-### Feature Categories (165+ features total)
-
-| Category | Property | Features | Tracks |
-|----------|----------|----------|--------|
-| **Statistics** | `Statistics=true` | max, min, mean, std, skewness, kurtosis of V, I, T | General degradation trends |
-| **CycleCumulative** | `CycleCumulative=true` | Capacity (Ah), energy (Wh), duration, start voltage | Capacity fade, energy efficiency |
-| **CC** | `CC=true` | CC duration, median current, slope, energy, skewness, kurtosis | CC phase degradation |
-| **CV** | `CV=true` | CV duration, median voltage, slope, energy, skewness, kurtosis | CV phase degradation |
-| **CCCV** | `CCCV=true` | Energy ratio (CC/CV), energy difference | Phase balance shift |
-| **IC** | `IC=true` | Peak value, width, location, prominence, area, slopes | Electrode degradation mechanisms |
-| **DV** | `DV=true` | Peak features from dV/dQ curve | Electrode capacity balance |
-| **DT** | `DT=true` | Peak features from dT/dV curve | Thermal degradation signatures |
-
-**Dependency: IC, DV, and DT require `CC=true`.** These differential curve features are computed from CC segments identified by the parser. If `CC=false`, no CC segments are identified and IC/DV/DT will silently produce no features. Always set `CC=true` when enabling IC, DV, or DT.
-
----
-
-## Individual Functions
-
-### `batteryMeasurementFeatures` — Statistics and Cumulative
-
-Extracts statistical and cumulative features from **any single-phase segment** — works on partial or full charge/discharge data (CC, CV, or mixed CC+CV). Only requirement: current must not change sign within the segment.
-
-```matlab
-featureTable = batteryMeasurementFeatures(V, I, T, t, ...
-    NoiseTolerance=1e-4);
-
-% T and t are optional:
-featureTable = batteryMeasurementFeatures(V, I);          % stats only
-featureTable = batteryMeasurementFeatures(V, I, [], t);   % stats + cumulative (no temp)
-featureTable = batteryMeasurementFeatures(V, I, T, t);    % all features
-```
-
-**Output features:**
-- Voltage: max, min, mean, std, skewness, kurtosis
-- Current: max, min, mean, std, skewness, kurtosis
-- Temperature (if provided): max, min, mean, std
-- Cumulative (if time provided): capacity (Ah), energy (Wh), duration, start voltage
-
-### `batteryDifferentialCurves` — IC, DV, DT Curves
-
-Computes differential curves from a **constant-current (CC) segment** — charge or discharge. Requires current to be approximately constant (95% of samples must have dI/dt < tolerance). Does NOT work on CV or mixed CC+CV segments.
-
-```matlab
-[dQdV, dVdQ, dTdV] = batteryDifferentialCurves(V, I, T, t, ...
-    NoiseTolerance=1e-4, ...
-    PreSmoothingMethod="none", ...          % "none","movmean","sgolay", etc.
-    PreSmoothingWindowSize=10, ...
-    PostSmoothingMethod="gaussian", ...     % default: "gaussian"
-    PostSmoothingWindowSize=10, ...
-    NumInterpolatedPoints=1000, ...
-    InterpolationMethod="linear");
-```
-
-**Output tables:**
-- `dQdV` — columns: IC, interpolatedVoltage, interpolatedTime
-- `dVdQ` — columns: DV, interpolatedTime, interpolatedVoltage
-- `dTdV` — columns: DT, interpolatedVoltage, interpolatedTemperature (empty if T not provided)
-
-### `batteryDifferentialCurveFeatures` — Peak Features from Curves
-
-Extracts peak-based features from a differential curve:
-
-```matlab
-% From table output of batteryDifferentialCurves:
-features = batteryDifferentialCurveFeatures(dQdV);
-
-% Or from raw vectors:
-features = batteryDifferentialCurveFeatures(curveValues, xAxisValues);
-```
-
-**Output features per peak:** value, width, location (x-axis), prominence, area, left/right slopes, total area under curve, statistical features.
-
----
-
-## Mappings, Phase, and Next Steps
+Close the report with an explicit undo invitation, e.g. *"If any mapping or the phase choice looks wrong, tell me and I'll re-run."* This preserves the safety net without a blocking question.
 
 ### Stop After Extraction — Offer Next Steps
 
-Once the feature table is extracted and displayed, **stop and present available next steps** to the user. Do not autonomously proceed to visualization, feature ranking, or script saving. Example:
+Once the feature table is extracted and displayed, **stop and present available next steps** to the user. Do not autonomously proceed to visualization, feature ranking, or script saving. The stopping turn must have three parts:
 
-> Feature extraction complete — 70 features across 5 cycles.
->
-> What would you like to do next?
-> - **Visualize:** Plot feature trends over cycles (e.g., capacity fade, IC peak shift)
-> - **Rank features:** Identify most discriminative features for your analysis goal
-> - **Export:** Save the feature table to a .mat or .csv file
-> - **Refine:** Adjust feature categories, CyclingPhase, or smoothing parameters
+1. **Feature-table summary** — M features across N rows / cycles / pulses / sweeps.
+2. **Key decisions + undo invitation** — the autonomous choices you made, each stated so the user can override it, because these were decisions the user never explicitly approved:
+   - Column mappings used (with any alternatives considered) and any unit conversion applied.
+   - The workflow-specific settings the loaded reference tells you to report (cycling: CyclingPhase + consistency reason + feature categories; pulse: pulse-detection settings; EIS: frequency range / sweep selection; individual cycling: segment identified). The full workflow-specific template lives in each reference's § Report to the user after extraction.
+   - **Undo invitation, pointed at those choices** — e.g. *"I chose the time column, CyclingPhase, and feature categories automatically — tell me and I'll re-run with different ones."* Do not use a generic *"if anything looks wrong, let me know."*
+   - **When Phase 4 flagged a concern, this is required and must name the finding** — e.g. `verifySegmentation` returned `TuningRecommended`, `checkCyclingProtocol` reported anomalous cycles, or pulse/EIS detection returned empty/failed. State the flag and the concrete re-run it implies (*"3 cycles segmented inconsistently — I can re-run with a tighter Tolerance, or exclude them"*).
+3. **Next-steps offer** — the four standing options:
+   > - **Visualize:** plots appropriate to the workflow (see the loaded reference's Phase 7 Visualize hints; cycling loads `references/cycling/postprocess.md`)
+   > - **Rank features:** identify most discriminative features for your analysis goal
+   > - **Export:** save the feature table to a .mat or .csv file
+   > - **Refine:** adjust feature categories, phase, or smoothing parameters
 
-Only execute a next step when the user explicitly requests it. This applies even if the original prompt contains phrasing like "show me" or "plot" — extract first, present the table, then offer to visualize.
+Only execute a next step when the user explicitly requests it. This applies even if the original prompt contains phrasing like "show me" or "plot" — extract first, present the table with the key decisions, then offer to visualize.
 
-### Column Mapping: Ambiguity Resolution
+### Column Mapping: General Rules
 
-When inspecting data columns, **multiple columns may be plausible candidates** for a single variable (e.g., both `Test_Time` and `DateTime` could be `TimeVariable`). Apply the deterministic rule when one exists; only stop when it doesn't (see Interaction Model: Stop or Proceed):
+Workflow-specific column vocabularies live in the loaded reference's Phase 1 (Identify inputs). The rules below apply regardless of which vocabulary you're consulting.
 
-1. **Prefer datetime/duration over numeric elapsed time.** If one candidate is `datetime`/`duration` type and another is numeric seconds, the datetime column wins — this is a rule, not a judgment call, so apply it and **report it** rather than asking. In your report, note the alternative you considered (e.g., "I found both `Test_Time` (numeric) and `DateTime` (datetime type) — used `DateTime` as it is a proper datetime column").
-2. **Stop only when the rule can't decide.** If two candidates share the same type (e.g. two numeric elapsed-time columns) so no rule can pick, ask the user which to use. Likewise if a required variable has no clear column.
-3. **When you proceed, report the mappings, CyclingPhase, and DT decision after extracting** — with an undo invitation. When you stop (per the Interaction Model), present the proposed mappings first. Example report/proposal block:
+**Vocabulary first — try common vendor names before declaring a column missing.** The 4 mainstream cyclers (Arbin, Neware, Maccor, BioLogic) and typical EIS/potentiostat exports each use different conventions. Match case-insensitively; strip units suffixes (`_V`, `_A`, `/mA`, `/V`, `/Hz`, `/Ohm`); a match on any name in the reference's Phase 1 vocabulary is sufficient — no need to stop-and-ask.
 
-> Column mappings used:
-> - `CurrentVariable` → "Current"
-> - `VoltageVariable` → "Voltage"
-> - `TimeVariable` → "DateTime"  (also saw numeric `Test_Time`; chose the datetime column)
-> - `CycleIndexVariable` → "Cycle_Index"
-> - `StepIndexVariable` → "Step_Index"
-> - `TemperatureVariable` → "Temperature"
->
-> If any mapping or the phase choice looks wrong, tell me and I'll re-run.
+**Unit conversion when the column name carries units.** If the current column is `I/mA` (milliamps), convert to Amps *before* passing to the function (`data.I_A = data.("I/mA") / 1000`); same for `mV` → `V`. Report the conversion in the after-extraction summary.
+
+1. **Prefer datetime/duration over numeric elapsed time.** If one candidate is `datetime`/`duration` type and another is numeric seconds, the datetime column wins — this is a rule, not a judgment call. Apply it and **report it** rather than asking. Note the alternative you considered in the after-extraction report (e.g., *"I found both `Test_Time` (numeric) and `DateTime` (datetime type) — used `DateTime` as it is a proper datetime column"*).
+2. **Stop only when the rule can't decide.** If two candidates share the same type (e.g. two numeric elapsed-time columns) so no rule can pick, ask. Likewise if a required variable has no clear column.
+3. **Report the mappings after extracting** — with any workflow-specific decisions, data-quality findings, and an undo invitation. See § Stop After Extraction above and the loaded reference's Phase 7 for the workflow-specific template.
 
 ### Unnamed Data (Matrices Without Column Names)
 
-When cycling data arrives as a raw numeric matrix (no column names), infer column roles from value characteristics, then confirm with the user before proceeding:
+When data is a raw numeric matrix (no column names), infer column roles from value characteristics, then confirm with the user before proceeding:
 
-- Current alternates sign (charge/discharge)
-- Voltage stays within cell limits (monotonic within a phase)
-- Time is monotonically increasing
-- Cycle and step indices are integer-valued and repeat across cycles
+- **EIS data:** Frequency spans orders of magnitude (all positive), Zreal is non-negative with narrow range, Zimag can be negative with similar magnitude to Zreal
+- **Pulse data:** Current has distinct pulse/rest pattern, voltage shows step responses, time is monotonically increasing
+- **Otherwise:** If the data does not clearly match EIS or pulse patterns, ask the user what type of data it is rather than guessing
 
-Present the inferred mapping and ask the user to confirm before extracting.
+Present the inferred mapping and ask the user to confirm. Example:
 
-### For cycling test analysis
-
-**Inspect first, don't interrogate.** Load the data and read its column names and types yourself
-rather than asking the user to describe them. Map the columns by rule, run `checkCyclingProtocol` for
-the phase choice, and select feature categories from the user's stated goal via the Feature Selection
-Guide below. Only ask the user when a STOP condition applies (Interaction Model) — e.g. the format is
-a raw unnamed matrix, or a time/required column is genuinely ambiguous. If the goal itself is unclear
-(no SOH/RUL/diagnosis stated), ask what they want to learn — that drives feature selection.
+> Your data is a 641×3 matrix with no column names. Based on value ranges:
+> - Column 1: spans 0.05 to 10000 (likely Frequency)
+> - Column 2: all positive, range 13–22 (likely Zreal)
+> - Column 3: range -14 to 6, mixed sign (likely Zimag)
+>
+> Does this mapping look correct?
 
 ---
 
-## Feature Selection Guide
+## Cross-Function Pitfalls
 
-### For SOH / Capacity Estimation
-- **Primary:** CycleCumulative (capacity, energy), IC peak features (track electrode degradation)
-- **Supporting:** Statistics (voltage mean shift), CC duration (charging time increase)
-- **Why IC:** Peak positions shift and heights decrease as electrodes degrade — most physically meaningful
+Only two pitfalls are truly cross-cutting. Workflow-specific pitfalls (time format, phase mixing, DT requirements, feature-count overfitting, CC data requirements, EIS sign conventions, pulse-detection thresholds, etc.) live in the loaded reference's own § Pitfalls section — consult it before extracting.
 
-### For RUL / End-of-Life Prediction
-- **Primary:** IC + CycleCumulative trending over cycles
-- **Supporting:** CCCV energy ratio (CC/CV balance shifts as internal resistance grows)
-
-### For Fast Charging Optimization
-- **Primary:** CV features (CV duration increase = lithium plating risk)
-- **Supporting:** DT features (thermal signature of plating), Statistics (temperature rise)
-
----
-
-## Common Pitfalls
-
-1. **Mixing charge and discharge data.** Both functions require single-phase data (current must not change sign). `batteryMeasurementFeatures` accepts any partial or full charge/discharge segment (CC, CV, or mixed). `batteryDifferentialCurves` is stricter — requires constant-current data specifically.
-
-2. **Time format.** Time must be `datetime` or `duration`, NOT numeric seconds. Convert: `t = seconds(numericTime)` or `t = datetime(numericTime, 'ConvertFrom', 'posixtime')`.
-
-3. **Over-smoothing IC/DV curves.** Large `PostSmoothingWindowSize` destroys degradation-sensitive peaks. Start with default (10), increase only if data is very noisy. Validate visually.
-
-4. **Extracting all features blindly.** 165+ features with <50 cycles = overfitting risk. Use the feature selection guide above to pick physically meaningful subsets.
-
-5. **Wrong units.** Current in Amps (not mA), voltage in Volts, time in seconds-based duration. Capacity is computed as Ah internally using `cumtrapz(I, t)/3600`.
-
-6. **Missing temperature for DT curves.** `batteryDifferentialCurves` returns empty `dTdV` if T is not provided. Set `DT=true` when temperature data is present; set `DT=false` when it is not.
-
-7. **When to use individual functions vs full pipeline.** `batteryTestFeatureExtractor` + `batteryTestDataParser` is for multi-cycle data. For individual segments (partial charge, single discharge phase, etc.), use `batteryMeasurementFeatures` or `batteryDifferentialCurves` directly — they don't require full cycling data.
-
-8. **CCCV requires both CC and CV.** If either `CC=false` or `CV=false`, CCCV features cannot be computed. The extractor handles this automatically.
-
-9. **IC/DV/DT require `CC=true`.** Differential curve features (IC, DV, DT) are computed from the CC segments identified by the parser. Setting `IC=true` with `CC=false` silently produces no IC features. Always enable `CC=true` when using IC, DV, or DT.
-
-10. **`batteryDifferentialCurves` requires pure CC data.** If a step contains both CC and CV portions (common in discharge steps), passing the full step data will error with "Current must remain constant and non-zero during CC mode." Use the segmented data from `batteryTestDataParser` to filter:
-    ```matlab
-    segmented = segmentData(parser);
-    ccMask = segmented.CyclingModes == "CC" & segmented.CyclingPhases == "Discharge";
-    ccData = segmented(ccMask, :);
-    % Then extract per-cycle CC segments for batteryDifferentialCurves
-    ```
-    Prefer using the full pipeline (`batteryTestFeatureExtractor` + `extract`) which handles this filtering internally. Only use `batteryDifferentialCurves` directly when you need the raw IC/DV curve data (e.g., for overlaid curve plots).
-
----
-
-## Typical Workflows
-
-**Before running any workflow:** Apply the Interaction Model (Stop or Proceed). If no STOP condition holds, run the extraction and report the mappings, CyclingPhase, and feature configuration afterward; if one does, present the proposal and wait for confirmation first.
-
-### Workflow 1: Track degradation across cycles
-```matlab
-% Check protocol consistency first (run with the MATLAB current folder set to the
-% skill's scripts/ directory via the MCP project_path — do not use addpath)
-result = checkCyclingProtocol(cyclingData, ...
-    CurrentVariable="I", VoltageVariable="V", ...
-    TimeVariable="t", CycleIndexVariable="Cycle", ...
-    StepIndexVariable="Step");
-
-% Parse multi-cycle data (exclude anomalous cycles if user confirmed)
-parser = batteryTestDataParser(cyclingData, ...
-    CurrentVariable="I", VoltageVariable="V", ...
-    TimeVariable="t", CycleIndexVariable="Cycle", ...
-    StepIndexVariable="Step", ...
-    ExcludedCycles=result.AnomalousCycles);
-
-% Extract IC + capacity features per cycle
-% Note: CC=true is required for IC/DV/DT to work
-extractor = batteryTestFeatureExtractor( ...
-    CyclingPhase="Charge", IC=true, CycleCumulative=true, ...
-    Statistics=false, CC=true, CV=false, CCCV=false);
-features = extract(extractor, parser);
-
-% features is a table: 1 row per cycle, columns = feature values
-% Use for trending, anomaly detection, or RUL model training
-```
-
-### Workflow 2: Partial charge segment analysis
-```matlab
-% batteryMeasurementFeatures works on ANY single-phase segment:
-% partial charge, partial discharge, CC, CV, or mixed CC+CV
-V = partialChargeData.Voltage;
-I = partialChargeData.Current;
-T = partialChargeData.Temperature;
-t = partialChargeData.Time;
-stats = batteryMeasurementFeatures(V, I, T, t);
-
-% For differential curves, data MUST be constant-current:
-idx = data.Mode == "CC";
-[dQdV, ~, ~] = batteryDifferentialCurves(V(idx), I(idx), T(idx), t(idx), ...
-    PostSmoothingMethod="gaussian", PostSmoothingWindowSize=15);
-icFeatures = batteryDifferentialCurveFeatures(dQdV);
-```
-
-(For the full function list with availability and selection guidance, see the API Overview table near the top of this skill.)
+- **Manual loops when a PMT function exists.** If the user asks for capacity fade, IC peaks, pulse R0, EIS Rct, etc., use the PMT function — do not hand-code `cumtrapz`, `findpeaks`, or manual segmentation loops.
+- **Wrong units.** Current in Amps (not mA), voltage in Volts. Convert unit-suffixed columns before passing them to any PMT function.
 
 ----
 

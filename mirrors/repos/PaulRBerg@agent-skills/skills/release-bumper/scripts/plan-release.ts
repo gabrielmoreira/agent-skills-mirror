@@ -307,6 +307,34 @@ function safeRealpath(value: string): string {
 }
 
 function findPackageDirs(root: string): string[] {
+  return findGitPackageDirs(root) ?? walkPackageDirs(root);
+}
+
+function findGitPackageDirs(root: string): string[] | null {
+  if (ignoredDirs.has(path.basename(root))) return [];
+  let output: string;
+  try {
+    output = execFileSync(
+      "git",
+      ["ls-files", "-z", "-co", "--exclude-standard", "--", "package.json", "**/package.json"],
+      { cwd: root, encoding: "utf8", maxBuffer: 256 * 1024 * 1024, stdio: ["ignore", "pipe", "pipe"] },
+    );
+  } catch {
+    return null;
+  }
+
+  const dirs = new Set<string>();
+  for (const file of output.split("\0")) {
+    if (!file) continue;
+    const segments = file.split("/");
+    if (segments.slice(0, -1).some((segment) => ignoredDirs.has(segment))) continue;
+    const dir = path.join(root, ...segments.slice(0, -1));
+    if (fs.existsSync(path.join(dir, "package.json"))) dirs.add(dir);
+  }
+  return [...dirs];
+}
+
+function walkPackageDirs(root: string): string[] {
   const results: string[] = [];
   walk(root);
   return results;
@@ -606,7 +634,7 @@ function unique<T>(values: T[]): T[] {
 }
 
 function isSemver(value: string): boolean {
-  return /^\d+\.\d+\.\d+(?:-[0-9A-Za-z]+(?:\.[0-9A-Za-z]+)*)?(?:\+[0-9A-Za-z]+(?:\.[0-9A-Za-z]+)*)?$/.test(value);
+  return /^\d+\.\d+\.\d+(?:-[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$/.test(value);
 }
 
 function stripLeadingV(value: string): string | null {
@@ -639,14 +667,16 @@ function compareSemver(a: string, b: string): number {
     if (lNum && rNum) return Number(l) - Number(r);
     if (lNum) return -1;
     if (rNum) return 1;
-    return l.localeCompare(r);
+    return l < r ? -1 : 1;
   }
   return 0;
 }
 
 function parseSemver(value: string): Semver {
   const withoutBuild = value.split("+")[0] ?? value;
-  const [core = "0.0.0", pre = ""] = withoutBuild.split("-");
+  const dash = withoutBuild.indexOf("-");
+  const core = dash === -1 ? withoutBuild : withoutBuild.slice(0, dash);
+  const pre = dash === -1 ? "" : withoutBuild.slice(dash + 1);
   const [major = 0, minor = 0, patch = 0] = core.split(".").map(Number);
   return { major, minor, patch, pre: pre ? pre.split(".") : [] };
 }

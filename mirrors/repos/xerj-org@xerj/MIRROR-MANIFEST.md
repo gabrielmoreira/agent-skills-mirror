@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `xerj-org/xerj` — 26 default patterns, 37 followed patterns, 131 file(s) materialized.
+Mirror of `xerj-org/xerj` — 26 default patterns, 38 followed patterns, 132 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `xerj-org/xerj` — 26 default patterns, 37 followed patterns, 131 fil
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 37 |
-| Files         | 131 |
+| Followed pats | 38 |
+| Files         | 132 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -65,6 +65,7 @@ Mirror of `xerj-org/xerj` — 26 default patterns, 37 followed patterns, 131 fil
 - `README.ja-JP.md`
 - `README.ar.md`
 - `README.es.md`
+- `README.ko.md`
 - `user-feedback/11-reference-coding-field-reports/2026-08-11-token-savings-reports.md`
 - `docs/SECURITY_MODEL.md`
 - `docs/recipes/air-gapped-deployment.md`
@@ -218,14 +219,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 121 | → | [`README.ar.md`](README.ar.md) |
 | 122 | → | [`README.es.md`](README.es.md) |
 | 123 | → | [`README.ja-JP.md`](README.ja-JP.md) |
-| 124 | → | [`README.md`](README.md) |
-| 125 | → | [`README.zh-CN.md`](README.zh-CN.md) |
-| 126 | → | [`ROADMAP.md`](ROADMAP.md) |
-| 127 | → | [`scripts/bench/README.md`](scripts/bench/README.md) |
-| 128 | → | [`scripts/seo/README.md`](scripts/seo/README.md) |
-| 129 | → | [`SECURITY.md`](SECURITY.md) |
-| 130 | → | [`user-feedback/11-reference-coding-field-reports/2026-08-11-token-savings-reports.md`](user-feedback/11-reference-coding-field-reports/2026-08-11-token-savings-reports.md) |
-| 131 | → | [`user-feedback/16-agent-field-reports/README.md`](user-feedback/16-agent-field-reports/README.md) |
+| 124 | → | [`README.ko.md`](README.ko.md) |
+| 125 | → | [`README.md`](README.md) |
+| 126 | → | [`README.zh-CN.md`](README.zh-CN.md) |
+| 127 | → | [`ROADMAP.md`](ROADMAP.md) |
+| 128 | → | [`scripts/bench/README.md`](scripts/bench/README.md) |
+| 129 | → | [`scripts/seo/README.md`](scripts/seo/README.md) |
+| 130 | → | [`SECURITY.md`](SECURITY.md) |
+| 131 | → | [`user-feedback/11-reference-coding-field-reports/2026-08-11-token-savings-reports.md`](user-feedback/11-reference-coding-field-reports/2026-08-11-token-savings-reports.md) |
+| 132 | → | [`user-feedback/16-agent-field-reports/README.md`](user-feedback/16-agent-field-reports/README.md) |
 
 ---
 

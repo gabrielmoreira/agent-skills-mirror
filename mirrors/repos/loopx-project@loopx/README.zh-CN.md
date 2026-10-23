@@ -2,6 +2,8 @@
 
 <h1 align="center">LoopX 2.0</h1>
 
+<a href="https://trendshift.io/repositories/102379"><img src="https://trendshift.io/api/badge/repositories/102379" alt="LoopX — GitHub Trending #1，由 Trendshift 记录" width="220" height="48"></a>
+
 **让 Agent 把长程目标做成可验证的成果。**
 
 面向 Agent 与团队的本地优先控制面和研究工作台。<br>
@@ -30,7 +32,7 @@ python3 -m pip install --upgrade loopx && loopx workflow-skills --install
 重启 Agent 宿主，打开项目，再给 Codex 一个具体任务：
 
 ```text
-$loopx 处理 PR 上未解决的 review 意见，保持补丁易于评审
+$loopx 优化这个项目最慢的流程，对比方案并验证性能提升
 ```
 
 Claude Code 使用 `/loopx <复杂任务>`。[其他宿主、安装方式与升级说明 ↓](#试用-loopx)
@@ -55,9 +57,6 @@ Claude Code 使用 `/loopx <复杂任务>`。[其他宿主、安装方式与升�
 | 在一个入口管理个人项目、定时任务与待决事项 | [个人 Agent 工作区](#认识个人-agent-工作区) |
 | 让多个 Agent 分工协作，交付可验收的结果 | [Agent 协作指南](docs/product/use-cases/cross-runtime/README.md#中文指南) |
 
-<details>
-<summary>控制面如何工作，适合哪些场景</summary>
-
 LoopX 把长期控制状态留在同一层紧凑状态里：
 
 <picture>
@@ -73,6 +72,9 @@ Agent runtime 负责执行，LoopX 负责治理跨运行延续的控制状态，
   <source media="(max-width: 640px)" srcset="docs/assets/control-plane-board.zh.mobile.svg">
   <img src="docs/assets/control-plane-board.zh.svg" alt="一轮工作是受约束的状态迁移，不是定时器。" width="1200">
 </picture>
+
+<details>
+<summary>控制面如何工作，适合哪些场景</summary>
 
 一个形象化理解是：LoopX 是
 **[面向长程 Agent 的可执行看板](docs/development/control-plane-course/00-concept-primer.md)**。
@@ -140,10 +142,10 @@ loopx dashboard
 App 为 ad-hoc 签名，尚未 notarize。Windows 预览版目前手动更新，需单独安装 CLI。
 [桌面安装、更新与源码开发指南](apps/desktop/loopx-control-plane/README.md)。
 
+<img src="docs/assets/personal-workspace/capability-1.0.webp" alt="工作区实录：配置子任务数量上限与允许的职责范围" width="960">
+
 <details>
 <summary>能力设置与可复现工作区场景</summary>
-
-<img src="docs/assets/personal-workspace/capability-1.0.webp" alt="工作区实录：配置子任务数量上限与允许的职责范围" width="960">
 
 在源码 checkout 中运行 `python -m demo.workspace serve`，可探索社区活动、家庭能源比较
 和社区网站发布三个复杂项目；每个项目有四个工作角色、18 项任务、两项决策与两项观察。
@@ -176,7 +178,7 @@ python3 -m pip install --upgrade loopx && loopx workflow-skills --install
 例如，给 Agent 一个具体成果要求：
 
 ```text
-$loopx 处理 PR 上未解决的 review 意见，保持补丁易于评审
+$loopx 优化这个项目最慢的流程，对比方案并验证性能提升
 ```
 
 LoopX 会复用项目已有状态或连接项目，把工作规划成 Todo，并设置宿主的循环。
@@ -299,9 +301,6 @@ OpenViking 的公开贡献序列与脱敏的 owner-run Auto ML showcase 各自�
 wall-clock 时间，不是连续模型执行时长或无人值守的生产自治。点击原图查看
 公开安全的任务图、证据分支和跨轮决策；各案例分别说明来源与可复现边界。
 
-<details>
-<summary>早期 200+ 小时项目轨迹：OpenViking 与 ML 实验</summary>
-
 ### 开源 Issue Fix
 
 **超过 200 小时的公开贡献轨迹：Focused PR 交付与可复用修复知识互相反哺。**
@@ -310,6 +309,9 @@ wall-clock 时间，不是连续模型执行时长或无人值守的生产自治
   <img src="docs/assets/long-running-loop-openviking-trajectory.png" alt="开源 Issue Fix 轨迹：连接 Focused PR 交付与 LoopX 通用能力沉淀" width="760">
 </a>
 
+<details>
+<summary>贡献来源与证据边界</summary>
+
 LoopX 的创建者以
 [OpenViking contributor](https://github.com/volcengine/OpenViking/pulls?q=is%3Apr+author%3Ahuangruiteng)
 身份把这条路径用于持续的 issue-to-PR 修复。图中公开贡献序列从首个 PR 创建到
@@ -317,6 +319,8 @@ LoopX 的创建者以
 [Issue-Fix 能力说明](loopx/capabilities/issue_fix/README.zh-CN.md)把 rolling
 repository context、带 revision 的修复知识和 reviewer-facing preference
 分开管理；所链接 PR 与当前 checkout 的源码、测试始终具有最高权威。
+
+</details>
 
 ### Auto ML Experiment
 
@@ -329,8 +333,6 @@ evidence、无效谱系、运行中复现和 promote / stop gate 留在同一张
 
 这张 public-safe graph 保留了该 200+ 小时自然时间窗口中的决策谱系。它是
 owner-run showcase，不代表连续算力执行、独立复现或生产结果。
-
-</details>
 
 ### 真实项目中的使用
 
@@ -775,8 +777,6 @@ benchmark 证据、operator surface 与 IM integration、shared-goal 跨 host �
 明确分阶段的架构与研究孵化器。
 
 ## Star 趋势
-
-<a href="https://trendshift.io/repositories/102379"><img src="https://trendshift.io/api/badge/repositories/102379" alt="loopx-project/loopx 在 Trendshift 的趋势排名" width="220" height="48"></a>
 
 <p align="center">
   <a href="https://github.com/loopx-project/loopx/stargazers"><img src="https://loopx-project.github.io/loopx/site-assets/star-history.svg" alt="LoopX GitHub Star 历史趋势，来自已校验快照" width="800"></a><br>

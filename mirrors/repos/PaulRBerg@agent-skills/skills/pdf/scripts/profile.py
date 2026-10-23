@@ -13,6 +13,7 @@ import shutil
 import subprocess
 import sys
 from collections import Counter
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from typing import Any
 
@@ -97,9 +98,7 @@ def text_coverage(output: str, page_count: int) -> dict[str, Any]:
         "characters": sum(counts),
         "pages_with_text": [index for index, count in enumerate(counts, 1) if count > 0],
         "pages_without_text": [index for index, count in enumerate(counts, 1) if count == 0],
-        "per_page": [
-            {"page": index, "characters": count} for index, count in enumerate(counts, 1)
-        ],
+        "per_page": [{"page": index, "characters": count} for index, count in enumerate(counts, 1)],
     }
 
 
@@ -111,9 +110,7 @@ def image_coverage(output: str, page_count: int) -> dict[str, Any]:
             counts[int(match.group(1))] += 1
     return {
         "total": sum(counts.values()),
-        "per_page": [
-            {"page": page, "count": counts.get(page, 0)} for page in range(1, page_count + 1)
-        ],
+        "per_page": [{"page": page, "count": counts.get(page, 0)} for page in range(1, page_count + 1)],
     }
 
 
@@ -131,6 +128,19 @@ def main() -> int:
 
     basic = run(["pdfinfo", str(pdf_path)])
     if basic.returncode != 0:
+        if "incorrect password" in basic.stderr.lower():
+            # A user (open) password blocks every read; owner-only encryption does not.
+            return emit(
+                {
+                    "schema_version": 1,
+                    "status": "password_required",
+                    "path": str(pdf_path),
+                    "size_bytes": pdf_path.stat().st_size,
+                    "encrypted": True,
+                    "integrity": {"status": "not_checked"},
+                },
+                1,
+            )
         return fail("unreadable_pdf", "pdfinfo could not read the input", pdf_path)
     info = parse_pdfinfo(basic.stdout)
     try:
@@ -149,21 +159,22 @@ def main() -> int:
         "encrypted": encrypted,
         "page_count": page_count,
     }
-    if encrypted:
-        base.update({"status": "password_required", "integrity": {"status": "not_checked"}})
-        return emit(base, 1)
-
-    integrity = run(["qpdf", "--check", str(pdf_path)])
+    with ThreadPoolExecutor(max_workers=4) as pool:
+        integrity_job = pool.submit(run, ["qpdf", "--check", str(pdf_path)])
+        detailed_job = pool.submit(run, ["pdfinfo", "-f", "1", "-l", str(page_count), "-box", str(pdf_path)])
+        text_job = pool.submit(run, ["pdftotext", "-layout", str(pdf_path), "-"])
+        images_job = pool.submit(run, ["pdfimages", "-list", str(pdf_path)])
+    integrity = integrity_job.result()
     if integrity.returncode not in (0, 3):
         return fail("integrity_failed", "qpdf rejected the input", pdf_path)
 
-    detailed = run(["pdfinfo", "-f", "1", "-l", str(page_count), "-box", str(pdf_path)])
+    detailed = detailed_job.result()
     if detailed.returncode != 0:
         return fail("metadata_failed", "pdfinfo could not inspect page geometry", pdf_path)
-    text_result = run(["pdftotext", "-layout", str(pdf_path), "-"])
+    text_result = text_job.result()
     if text_result.returncode != 0:
         return fail("text_failed", "pdftotext could not inspect text coverage", pdf_path)
-    images_result = run(["pdfimages", "-list", str(pdf_path)])
+    images_result = images_job.result()
     if images_result.returncode != 0:
         return fail("images_failed", "pdfimages could not inspect image coverage", pdf_path)
 

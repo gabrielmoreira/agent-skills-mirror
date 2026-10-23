@@ -10,6 +10,12 @@ here. Invoke them with `bun run --cwd packages/cloud/scripts sms-gateway:verify:
 or the corresponding `sms-gateway:*` command in this package. Device installation
 and pairing remain in the app package.
 
+The protected Environment variable `ELIZA_LOGIN_API_URL` selects a login hosting
+cutover for the canonical Cloud CF release. Set it only after state transfer and
+backend readiness. The release checks the exact environment origin, probes that
+staging upstream, and publishes `LOGIN_API_URL` with the certified Worker source.
+Blank retains the repository routing default. Cross-environment URLs fail closed.
+
 Run Cloud Latency Certification from `staging` for staging or `main` for
 production. Select the matching environment and exact served commit. Both use
 `qwen-3.8-27b@high@max` by default and retain sanitized request traces. Auth cache
@@ -345,3 +351,9 @@ The protected named-backup workflow's existing read-only reconciliation also rep
 The runner preserves private intent and baseline files, waits for the returned workflow, then verifies the sole observed new bucket and WAL references. Image, credential, volume and unrelated config changes are refused. A lost reply or prohibited patch permits one read-only reconciliation; it never retries, commits, deletes or claims migration readiness. Existing failed backup attempts and list-only reconciliation receipts do not qualify.
 
 `pitr-stage-operator.ts` composes fresh bounded read-only authority capture, authenticated completed-backup evidence, and recipient-encrypted stage evidence. It refuses outside canonical main GitHub Actions context. Private stage intent, workflow, observations and reconciliation are encrypted before writing; public receipts contain only hashes and fixed outcomes. `production-pitr-stage-only.yml` connects this entrypoint through manual dispatch only, on the exact reviewed main commit and protected production environment. It requires a valid project, environment and service UUID, a completed backup run, exact volume/image receipts, a short-lived review, a writer-maintenance receipt and a recipient public key. It uploads only encrypted evidence on every outcome and always removes private authority captures. If upload fails, cleanup retains ciphertext and fails; this does not prove that a durable copy exists. Before dispatch, independently review writer exclusivity and all input receipts. The default branch registers the same manual inputs. The canonical-main guard refuses runs from develop and staging before any provider operation. Production runs still require the exact reviewed main commit and all protected inputs. No workflow dispatch is part of this change. Stage creation may create a bucket even without commit. No current backup-capacity decision is assumed resolved. An exact patch commit remains a separate reviewed operation.
+
+`ELIZA_DISCORD_GATEWAY_URL` selects the same environment's Cloudflare Discord
+host in a canonical release. Set it after draining the source and verifying the
+new gateway. The release requires an active Discord configuration proof using
+`GATEWAY_DISCORD_BOOTSTRAP_SECRET` and equality with the queued
+`GATEWAY_INTERNAL_SECRET`. Blank retains the repository routing default.

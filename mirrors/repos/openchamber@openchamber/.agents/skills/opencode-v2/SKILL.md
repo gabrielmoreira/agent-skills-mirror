@@ -95,7 +95,10 @@ Open asks upstream (OpenCode Slack): archiving a session whose directory is
 gone without building its location, so it need not move; declaring 500 bodies on session
 mutations; `provider.list` and `agent.list` waiting for plugin activation the
 way `model.list` does since 2.0.27, which would retire the cold-catalog
-recovery in `useConfigStore`. Dropped: an import route for missing 1.x
+recovery in `useConfigStore`; built-in provider plugins setting
+attribution headers only when the client has not set its own, so a client can
+name itself to a provider (today some plugins overwrite provider-level
+headers). Dropped: an import route for missing 1.x
 sessions (the top-up workaround is enough). Check the newest tag before re-asking.
 
 ## Behaviour to expect
@@ -168,8 +171,8 @@ tag and the newest tag is classified.
 ## Bumping the pinned OpenCode
 
 Move every pin to the same tag and check out that tag in the reference
-checkout (`git checkout vX.Y.Z` in `~/projects/opencode`), `bun install`, then `tsc` in `packages/ui`,
-`packages/web`, `packages/vscode`; the isolated ui suites; web vitest; vscode
+checkout (`git checkout vX.Y.Z` in `~/projects/opencode`), `bun install`, then `bun run type-check`
+(it covers `packages/ui`, `packages/web` and `packages/vscode`); the isolated ui suites; web vitest; vscode
 tests. A new message `type` or event needs a case in `model.ts` and
 `events.ts` before it renders. Verify `@opencode/cli@<tag>` exists on npm:
 the desktop packaging and the Docker image install it.

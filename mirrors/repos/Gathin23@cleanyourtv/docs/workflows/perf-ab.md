@@ -1,0 +1,97 @@
+# Workflow: measure a launcher performance change, before and after
+
+**When to use this:** you changed the launcher to make it faster or lighter, and the pull request has to
+show by how much, and where the time went. This is the method #666 used.
+
+Tools: [`tools/trace.py` and `tools/trace_report.py`](../../tools/trace.md),
+[`tools/flamechart.py`](../../tools/flamechart.md) and [`tools/screendiff.py`](../../tools/screendiff.md).
+Install them once:
+
+```bash
+tools/venv/bin/pip install -r tools/requirements-perf.txt
+```
+
+Copy this checklist into your notes and tick it off:
+
+```
+- [ ] 1. Write down the scenario and the slices you expect to shrink
+- [ ] 2. Trace the base build, 5 runs
+- [ ] 3. Trace your build, 5 runs
+- [ ] 4. Report; if the change isn't there, go back to your code
+- [ ] 5. Draw the flame charts
+- [ ] 6. Screenshots identical, or the visual change described
+- [ ] 7. Check the behaviour your change could break
+- [ ] 8. Write it up
+```
+
+## 1. Decide before you measure
+
+Write down two things:
+- **The scenario:** `home` (the return to Home), `cold` (start-up) or `nav` (D-pad, drawing).
+- **The slice names** your change should remove or shorten, e.g. `activityResume`, `RV OnBindView`.
+
+They become `trace.py`'s scenario and `flamechart.py`'s `--highlight`. Choosing them after looking at
+the results proves nothing.
+
+## 2–3. Trace both builds
+
+Install each build with `launcher/build-and-install.sh`, using the same config, theme and wallpaper.
+Let Home sit for a minute after each install, then record:
+
+```bash
+tools/venv/bin/python -I tools/trace.py home --runs 5 --out traces/before   # base build installed
+tools/venv/bin/python -I tools/trace.py home --runs 5 --out traces/after    # your build installed
+```
+
+## 4. Report
+
+```bash
+tools/venv/bin/python tools/trace_report.py traces/before --vs traces/after --markdown
+```
+
+- **No change, or the wrong steps moved:** fix the code before drawing anything.
+- **A starred run** (one over twice the median) stays in the table, named as an outlier.
+
+## 5. Draw
+
+```bash
+tools/venv/bin/python tools/flamechart.py traces/before traces/after \
+    --highlight '<the slices from step 1>' \
+    --subtitle '<TV>, <Android version> · magenta: <what they are>' --out chart.png
+```
+
+For a change to Home, add the frames after the start:
+
+```bash
+tools/venv/bin/python tools/flamechart.py traces/before traces/after \
+    --window start:1500 --threads RenderThread --highlight '^DrawFrame' --out frames.png
+```
+
+## 6. Screenshots
+
+Take the same screenshot on both builds, then compare:
+
+```bash
+tools/venv/bin/python -I tools/tv.py --screenshot shots/before.png HOME DPAD_RIGHT   # each build
+tools/venv/bin/python tools/screendiff.py shots/before.png shots/after.png \
+    --mask <clock box> --blur <network name box> --out shots/before-after.png
+```
+
+`identical` backs "no visible change". If it says `different`, find out why before posting.
+
+## 7. Behaviour
+
+On the TV, check what your change could break, and note what you saw. For the return to Home, for
+example:
+- an app disabled while another app was in front is gone on return;
+- focus comes back to the tile you left from;
+- Home on Home goes to the first tile.
+
+## 8. The pull request
+
+- **Tested on:** the TV, Android version and firmware.
+- **The tables:** `trace_report.py --markdown` before, after and the change, with outliers named.
+- **The charts:** each with its `--highlight` stated.
+- **The screenshots:** the pair from `screendiff.py` and its result.
+- **The behaviour checks:** what you checked and what you saw.
+- **Leave out** `traces/` and raw screenshots: they're large and hold your TV's details.

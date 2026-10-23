@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Unity-Technologies/skills` — 26 default patterns, 0 followed patterns, 221 file(s) materialized.
+Mirror of `Unity-Technologies/skills` — 26 default patterns, 0 followed patterns, 222 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Unity-Technologies/skills` — 26 default patterns, 0 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 221 |
+| Files         | 222 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -204,8 +204,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 143 | ✓ | [`skills/optimize-audio/SECURITY.md`](skills/optimize-audio/SECURITY.md) |
 | 144 | ✓ | [`skills/optimize-audio/SKILL.md`](skills/optimize-audio/SKILL.md) |
 | 145 | ✓ | [`skills/optimize-text-mesh-pro/SKILL.md`](skills/optimize-text-mesh-pro/SKILL.md) |
-| 146 | ✓ | [`skills/optimize-web/resources/toktx-examples.sh`](skills/optimize-web/resources/toktx-examples.sh) |
-| 147 | ✓ | [`skills/optimize-web/resources/WebOptimizer.cs`](skills/optimize-web/resources/WebOptimizer.cs) |
+| 146 | ✓ | [`skills/optimize-web/scripts/toktx-examples.sh`](skills/optimize-web/scripts/toktx-examples.sh) |
+| 147 | ✓ | [`skills/optimize-web/scripts/WebOptimizer.cs`](skills/optimize-web/scripts/WebOptimizer.cs) |
 | 148 | ✓ | [`skills/optimize-web/SECURITY.md`](skills/optimize-web/SECURITY.md) |
 | 149 | ✓ | [`skills/optimize-web/SKILL.md`](skills/optimize-web/SKILL.md) |
 | 150 | ✓ | [`skills/physics-3d-collision/references/troubleshooting.md`](skills/physics-3d-collision/references/troubleshooting.md) |
@@ -264,22 +264,23 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 203 | ✓ | [`skills/unity-cli/references/collaboration.md`](skills/unity-cli/references/collaboration.md) |
 | 204 | ✓ | [`skills/unity-cli/references/config-hub.md`](skills/unity-cli/references/config-hub.md) |
 | 205 | ✓ | [`skills/unity-cli/references/diagnostics-maintenance.md`](skills/unity-cli/references/diagnostics-maintenance.md) |
-| 206 | ✓ | [`skills/unity-cli/references/editors-install.md`](skills/unity-cli/references/editors-install.md) |
-| 207 | ✓ | [`skills/unity-cli/references/integration-advanced.md`](skills/unity-cli/references/integration-advanced.md) |
-| 208 | ✓ | [`skills/unity-cli/references/playmode-verification-loop.md`](skills/unity-cli/references/playmode-verification-loop.md) |
-| 209 | ✓ | [`skills/unity-cli/references/projects-templates.md`](skills/unity-cli/references/projects-templates.md) |
-| 210 | ✓ | [`skills/unity-cli/references/version-control.md`](skills/unity-cli/references/version-control.md) |
-| 211 | ✓ | [`skills/unity-cli/SECURITY.md`](skills/unity-cli/SECURITY.md) |
-| 212 | ✓ | [`skills/unity-cli/SKILL.md`](skills/unity-cli/SKILL.md) |
-| 213 | ✓ | [`skills/unity-package-management/references/select-packages.md`](skills/unity-package-management/references/select-packages.md) |
-| 214 | ✓ | [`skills/unity-package-management/SKILL.md`](skills/unity-package-management/SKILL.md) |
-| 215 | ✓ | [`skills/unity-pipeline/SECURITY.md`](skills/unity-pipeline/SECURITY.md) |
-| 216 | ✓ | [`skills/unity-pipeline/SKILL.md`](skills/unity-pipeline/SKILL.md) |
-| 217 | ✓ | [`skills/urp-postprocessing/references/code-templates.md`](skills/urp-postprocessing/references/code-templates.md) |
-| 218 | ✓ | [`skills/urp-postprocessing/references/effect-reference.md`](skills/urp-postprocessing/references/effect-reference.md) |
-| 219 | ✓ | [`skills/urp-postprocessing/SECURITY.md`](skills/urp-postprocessing/SECURITY.md) |
-| 220 | ✓ | [`skills/urp-postprocessing/SKILL.md`](skills/urp-postprocessing/SKILL.md) |
-| 221 | ✓ | [`skills/validate-urp-render-graph-renderer-feature/SKILL.md`](skills/validate-urp-render-graph-renderer-feature/SKILL.md) |
+| 206 | ✓ | [`skills/unity-cli/references/docs-workflow.md`](skills/unity-cli/references/docs-workflow.md) |
+| 207 | ✓ | [`skills/unity-cli/references/editors-install.md`](skills/unity-cli/references/editors-install.md) |
+| 208 | ✓ | [`skills/unity-cli/references/integration-advanced.md`](skills/unity-cli/references/integration-advanced.md) |
+| 209 | ✓ | [`skills/unity-cli/references/playmode-verification-loop.md`](skills/unity-cli/references/playmode-verification-loop.md) |
+| 210 | ✓ | [`skills/unity-cli/references/projects-templates.md`](skills/unity-cli/references/projects-templates.md) |
+| 211 | ✓ | [`skills/unity-cli/references/version-control.md`](skills/unity-cli/references/version-control.md) |
+| 212 | ✓ | [`skills/unity-cli/SECURITY.md`](skills/unity-cli/SECURITY.md) |
+| 213 | ✓ | [`skills/unity-cli/SKILL.md`](skills/unity-cli/SKILL.md) |
+| 214 | ✓ | [`skills/unity-package-management/references/select-packages.md`](skills/unity-package-management/references/select-packages.md) |
+| 215 | ✓ | [`skills/unity-package-management/SKILL.md`](skills/unity-package-management/SKILL.md) |
+| 216 | ✓ | [`skills/unity-pipeline/SECURITY.md`](skills/unity-pipeline/SECURITY.md) |
+| 217 | ✓ | [`skills/unity-pipeline/SKILL.md`](skills/unity-pipeline/SKILL.md) |
+| 218 | ✓ | [`skills/urp-postprocessing/references/code-templates.md`](skills/urp-postprocessing/references/code-templates.md) |
+| 219 | ✓ | [`skills/urp-postprocessing/references/effect-reference.md`](skills/urp-postprocessing/references/effect-reference.md) |
+| 220 | ✓ | [`skills/urp-postprocessing/SECURITY.md`](skills/urp-postprocessing/SECURITY.md) |
+| 221 | ✓ | [`skills/urp-postprocessing/SKILL.md`](skills/urp-postprocessing/SKILL.md) |
+| 222 | ✓ | [`skills/validate-urp-render-graph-renderer-feature/SKILL.md`](skills/validate-urp-render-graph-renderer-feature/SKILL.md) |
 
 ---
 

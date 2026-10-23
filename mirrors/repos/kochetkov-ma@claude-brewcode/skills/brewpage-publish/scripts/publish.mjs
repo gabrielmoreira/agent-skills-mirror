@@ -15,7 +15,19 @@ const ALLOWED_EXT = new Set([
 ]);
 
 /** Names that stay out even when the extension is allowed. */
-const EXCLUDED_DIRS = new Set(['node_modules', 'vendor', '__pycache__', 'dist-cache']);
+const EXCLUDED_DIRS = new Set(['node_modules', 'vendor', '__pycache__', 'dist-cache', '__MACOSX']);
+
+/** The one dot-folder a site keeps, at the root only (brewpage.app publishes it, drops other hidden entries). */
+const TRUSTED_DOT_DIR = '.well-known';
+
+/** System entries brewpage.app drops on its own: never counted, never flagged. */
+const SYSTEM_RE = /^(__MACOSX|\.Spotlight-V100|\.Trashes|\.fseventsd)\/|(^|\/)(\.DS_Store|Thumbs\.db|desktop\.ini)$/i;
+
+/** True when a dot-named segment, outside the root `.well-known/`, keeps the path out of a site. */
+const isHidden = (rel) => rel.split('/').some((s, i) => s.startsWith('.') && !(i === 0 && s === TRUSTED_DOT_DIR));
+
+/** Extension-less files ship only inside the root `.well-known/` (e.g. `apple-app-site-association`). */
+const isWellKnownBare = (rel) => rel.startsWith(`${TRUSTED_DOT_DIR}/`) && extname(rel) === '';
 
 /** Entries that still need a human OK if they survive the allowlist. */
 const SENSITIVE_RE = /(^|\/)(\.env|id_rsa|id_ed25519)|secret|credential|password|token|\.(pem|key|p12|pfx|crt|map)$/i;
@@ -59,11 +71,12 @@ function collect(root) {
       const abs = join(dir, name);
       const rel = relative(root, abs);
       const st = lstatSync(abs);
-      if (name.startsWith('.') || EXCLUDED_DIRS.has(name)) { skipped.push(rel); continue; }
+      const trusted = dir === root && name === TRUSTED_DOT_DIR && st.isDirectory();
+      if ((name.startsWith('.') && !trusted) || EXCLUDED_DIRS.has(name)) { skipped.push(rel); continue; }
       if (st.isSymbolicLink()) { skipped.push(rel); continue; }
       if (st.isDirectory()) { walk(abs); continue; }
       if (!st.isFile()) { skipped.push(rel); continue; }
-      if (!ALLOWED_EXT.has(extname(name).toLowerCase())) { skipped.push(rel); continue; }
+      if (!ALLOWED_EXT.has(extname(name).toLowerCase()) && !isWellKnownBare(rel)) { skipped.push(rel); continue; }
       if (/[\r\n]/.test(rel)) { skipped.push(rel); continue; }
       kept.push(rel);
     }
@@ -77,10 +90,13 @@ function resolveEntry(names, requested) {
     if (!names.includes(requested)) die(`entry "${requested}" is not in the archive`);
     return requested;
   }
-  if (names.includes('index.html')) return 'index.html';
-  const html = names.filter((n) => n.toLowerCase().endsWith('.html') || n.toLowerCase().endsWith('.htm'));
+  // Server rule: root index.html, else the shallowest HTML file (ties: name order).
+  const html = names.filter((n) => !SYSTEM_RE.test(n) && !isHidden(n) && /\.html?$/i.test(n));
+  const index = html.find((n) => n.toLowerCase() === 'index.html');
+  if (index !== undefined) return index;
   if (html.length === 0) die('no .html file in the bundle — refusing to guess an entry file');
-  return html[0];
+  const depth = (n) => n.split('/').length;
+  return [...html].sort((a, b) => depth(a) - depth(b) || (a < b ? -1 : a > b ? 1 : 0))[0];
 }
 
 function requireTool(bin) {
@@ -185,9 +201,9 @@ function inspect(args) {
   if (listed.length === 0) die('archive contains no files');
   const entry = resolveEntry(listed, entryArg);
 
-  // A supplied ZIP is not rewritten — anything outside the allowlist is surfaced
-  // for a human decision instead of being silently uploaded.
-  const unexpected = listed.filter((n) => !ALLOWED_EXT.has(extname(n).toLowerCase()));
+  // A supplied ZIP is not rewritten: entries outside the allowlist or hidden go to a human decision;
+  // system entries the server drops itself are left alone.
+  const unexpected = listed.filter((n) => !SYSTEM_RE.test(n) && ((!ALLOWED_EXT.has(extname(n).toLowerCase()) && !isWellKnownBare(n)) || isHidden(n)));
   report(listed, bytes, entry, [], zipPath, unexpected);
 }
 

@@ -10,7 +10,7 @@ description: 'Build discounted cash flow (DCF) valuation models in Excel. Use wh
 
   '
 allowed-tools: Read, Write, Edit, Grep, Glob, Bash(cmd:*)
-version: 1.21.0
+version: 1.22.0
 author: Jeremy Longshore <jeremy@intentsolutions.io>
 license: MIT
 tags:
@@ -67,4 +67,4 @@ Result: Model with synergy adjustments, scenario analysis, and per-share valuati
 
 - [Damodaran Online DCF Resources](https://pages.stern.nyu.edu/~adamodar/)
 - [WSO DCF Modeling Guide](https://www.wallstreetoasis.com/)
-- `${CLAUDE_SKILL_DIR}/references/dcf-formulas.md` for Excel formula templates
+- [`references/dcf-formulas.md`](references/dcf-formulas.md) for Excel formula templates

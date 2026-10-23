@@ -11,6 +11,9 @@ files directly. Implementation leaves are private; JSON catalog assets retain
 explicit data exports. Hosts compose database adapters, model providers and
 `@elizaos/plugin-assistant` explicitly.
 
+Model providers use request guards from `@elizaos/core`. The protocol entry
+exports only their types, so browser code does not load the Node turn context.
+
 HTTP lifecycle, native platform detection and library policy, build variants,
 process guards, restart, application configuration and boot environment resolution live
 in `@elizaos/host`, with browser-safe configuration in `@elizaos/host/protocol`.

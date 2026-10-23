@@ -23,7 +23,7 @@ This is a Hermes-native `research` workflow skill.
 
 ## First Steps
 
-- When Hermes' bundled `grounded-citations` skill is available, set the citation ledger up before the first retrieval: choose one ledger file for the run, have the parent reset it once (`sources.py --ledger <path> reset`), and put the script's absolute path and that ledger path in every delegated lane's brief. No lane resets it.
+- When Hermes' bundled `grounded-citations` skill is available, set the citation ledger up before the first retrieval: choose one run-private file, have the parent reset it once (`sources.py --ledger <path> reset`), and declare parent-only writes in every lane brief. No lane resets it.
 
 ## Do Not Use When
 
@@ -69,7 +69,7 @@ Bad example:
 
 ## Workflow Lane
 
-- Current lane: **Research and company ops** (`product-docs`, `source-finder`, `web-research`, `research`, `model-optimization`, `inference-serving`, `model-finetuning`, `research-brief`, `+22 more`) - research, signals, ops, and briefings.
+- Current lane: **Research and company ops** (`product-docs`, `source-finder`, `web-research`, `research`, `model-optimization`, `inference-serving`, `model-finetuning`, `research-brief`, `+25 more`) - research, signals, ops, and briefings.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
 - Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 
@@ -95,22 +95,22 @@ Quality bar:
 - Keep the coding-agent branch dense: findings, exact symbols, file paths, and the plan-feed block, with no narrative framing and no briefing structure.
 - Use official or primary sources first when current or external facts matter, then add source diversity when the topic is contested.
 - Revise the search plan when new evidence exposes a gap or contradiction instead of stopping at the first pass.
-- Gate contested claims: require at least two independent source domains, one counter-search for disconfirming evidence, and a primary source, or move the claim to the unresolved annex.
+- Record contested claims with two independent original groups/domains, primary support and an observed counter-search, or keep them unresolved; use `references/evidence-records.md` for records. Agent/operator validation: `python -m omh.workflows.research_dossier <json-file>`.
 - Separate direct evidence, citation links, retrieval dates, inference, confidence, and residual uncertainty.
-- When Hermes' bundled `grounded-citations` skill is available, load it and register each source in its ledger when it is retrieved (`scripts/sources.py add`). Keep the run's ledger in a file of its own, passed as `--ledger <path>` before the subcommand on every call: the default ledger is shared by the whole profile, and another run's reset rebinds its ids. Only the parent's reset under First Steps touches that file, so an id names the same source in every lane's findings; a delegated lane gets terminal, file, and web tools by default but cannot load the skill, so it works from the two paths its brief carries. When a human briefing is written, report the citation check from a run, or as `not_observed`: the exit status of `sources.py verify <draft>` is the observed check - `0` is a pass and any other status is not - and `verify --evidence` also fails a draft whose cited source carries no verbatim quote. An exit `0` whose `info: stats:` line reads `0 distinct source(s) cited` checked nothing and is reported as `not_observed`. It is a citation check, not fact verification, and it never stands in for the contested-claim gate. Without the skill, keep each source's URL and retrieval date in the research notes and report the citation check as `not_observed`.
+- When Hermes' bundled `grounded-citations` skill is available, load it and register each source in its ledger when it is retrieved (`scripts/sources.py add`). Keep the run's ledger in a file of its own, passed as `--ledger <path>` before the subcommand on every call: the default ledger is shared by the whole profile, and another run's reset rebinds its ids. Use parent-only serialized writes: lanes return observed source entries and quote refs; the parent registers URLs, attaches quotes, and remaps lane ids before drafting. Lanes never write the shared ledger. When a human briefing is written, report the citation check from a run, or as `not_observed`: the exit status of `sources.py verify <draft>` is the observed check - `0` is a pass and any other status is not - and `verify --evidence` also fails a draft whose cited source carries no verbatim quote. An exit `0` whose `info: stats:` line reads `0 distinct source(s) cited` checked nothing and is reported as `not_observed`. It is a citation check, not fact verification, and it never stands in for the contested-claim gate. Without the skill, keep each source's URL and retrieval date in the research notes and report the citation check as `not_observed`.
 - Name retrieval gaps when Hermes or the wrapper cannot access the web.
 - For AI or usability research, separate target-user/task assumptions, measured or reported usability dimensions, and generalizability limits from the evidence.
 - Decompose the question into orthogonal research axes and disambiguate named entities before any deep reading.
-- Fan out one research lane per axis in parallel when the runtime provides subagents or delegation - covering distinct evidence kinds such as web evidence, reference-implementation study, and claim verification - and merge every lane's leads into one shared ledger between waves; without parallel delegation, run the same lanes sequentially under the same contract.
+- Fan out one lane per research axis when delegation is available; merge returned leads between waves, with parent-only shared citation writes. Otherwise run lanes sequentially under the same contract.
 - Study reference implementations directly: read the core modules of the most relevant open-source repos, pin the exact version or commit, and record mechanism, tradeoffs, and license per reference.
-- Expand lead-by-lead: track open leads and dead ends, and continue until leads run dry or the declared budget is reached.
+- Track axes, coverage, novel evidence and open leads in `research_progress/v1`; budget exhaustion or interruption stays partial, never saturation.
 - Mark every figure as measured, assumed, or derived, and carry retrieval dates for time-sensitive facts.
 - Keep historical-capture evidence and live-page evidence as two typed surfaces for a point-in-time or then-versus-now question; capture time, publication time, and retrieval time are independent clocks and none substitutes for another.
 - Distill the dossier into a plan-feed block - decision drivers, viable options with evidence, rejected candidates with reasons, risks, and open questions - so planning consumes conclusions, not raw notes.
 - Reserve the end of the run for synthesis; an interrupted run must still leave a partial dossier rather than lost context.
 - A mid-run user message is an interjection, not a stop: answer it briefly and, in the same reply, continue the run — re-read the phase todo when one is active and dispatch or advance the next pending step, or name the armed wait it is waiting on -- handle, bound completion signal, deadline -- instead of re-reading status. Only the user's explicit stop or cancel, or the engine's own completion gate, ends the run; when the interjection changes scope, say so and update the declared plan or todo instead of silently abandoning it. A mid-run message is the latest steering for the active task, not automatically a replacement objective: it replaces the objective when the user says so and steers the current one otherwise.
 - A follow-up that needs new authority, materially expands the scope, or changes external state not already authorized is described first and started only on the user's approval: the turn ends by naming that next action and asking whether to take it, as one question carrying the choices the user has, never by declaring what will not be done; persistence never broadens the authorized scope. A refused escalation is answered the same way, with a safer alternative inside the boundary or the authorization the boundary asks for — never a workaround or an indirect execution.
-- The closing brief scales to the change: one or two sentences plus the observed validation for a simple change, more only when the complexity earns it. Lead with the result or decision, in the user's words; omit abandoned approaches unless they explain a tradeoff the reader needs; narrate no internal bookkeeping (todo transitions, waits). When the work stops at a boundary or at a decision the user owns, end with the next action offered as a question, and state what was left undone as the option it leaves open, never as a refusal. Required closing lines stay outside this scaling: the observed run summary, and any prepared-not-observed or unmerged work, are stated whatever the brief's length.
+- The closing brief scales to the change: one or two sentences for a simple change. Lead with the result and validation; omit abandoned approaches unless they explain a tradeoff, and internal bookkeeping. Disclose requested-but-not-done work and material prepared/unmerged work; omit unrelated non-action footers. Required accounting stays outside this scaling. Order: result -> relevant evidence/limits -> observed accounting (when required) -> specific question (if useful). For a real unresolved user decision or a useful briefing discussion, offer one specific, content-linked question. Completed work needs no question; discussion grants no authority. Never estimate usage.
 - Summarize the evidence or dossier before any planning or coding handoff; research is not implementation evidence.
 
 Handoff policy:
@@ -136,12 +136,12 @@ Expected outputs:
 - source-backed synthesis
 - links or citations
 - source-quality notes
-- reference-implementation notes with pinned versions or permalinks
-- verified-claims ledger with an unresolved and refuted annex
+- reference_study/v1: revision pin, license provenance, code evidence
+- research_claims/v1: separate unresolved/refuted claims
 - plan-feed block: decision drivers, viable options with evidence, rejected candidates with reasons, risks, open questions
 - confidence and residual uncertainty
 - product_evidence_loop/v1
-- deep_research_dossier/v1
+- deep_research_dossier/v1 binding question/scope, records, progress, reference studies and plan feed
 - research_briefing/v1 with its markdown and print-ready page when the reader is human
 - temporal_source_receipt/v1 per historical claim and temporal_evidence_surfaces/v1 when the question is point-in-time
 
@@ -178,7 +178,7 @@ Record observed delegation results; otherwise return `not_available` or `not_obs
 Prepared OMH routing is not execution, review, CI, merge-readiness, or merge evidence.
 - Treat wrapper memory/context summaries as advisory local context, not proof of opaque Hermes memory reads or changes.
 Preserve workflow intent and stop conditions; verify before claiming completion.
-Reply in the user's own words and the host's own voice: its SOUL.md persona owns reply language, tone, speech level, and sentence endings, progress updates included (where it sets no language, use the one the user wrote in), and OMH shapes structure and content only; OMH's record terms (surface, lane, wrapper, handoff, evidence boundary, not_observed) stay in records and tool calls, never in the sentence the user reads unless they ask about one; and when a stop condition or a decision the user owns ends the turn, offer the next action as a question rather than declaring what will not be done.
+Reply in the user's own words and the host's own voice: its SOUL.md persona owns reply language, tone, speech level, and sentence endings, progress updates included (where it sets no language, use the one the user wrote in), and OMH shapes structure and content only; OMH's record terms (surface, lane, wrapper, handoff, evidence boundary, not_observed) stay in records and tool calls, never in the sentence the user reads unless they ask about one; and when a real unresolved user decision or a useful briefing discussion remains, offer one specific, content-linked question. Completed work needs no question; omit unrelated non-action footers and generic offers to continue.
 
 Use Hermes-native subagent/delegation features when available: native subagents -> Hermes delegation when available, otherwise sequential lanes.
 

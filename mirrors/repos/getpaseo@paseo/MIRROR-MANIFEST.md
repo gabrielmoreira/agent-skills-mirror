@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `getpaseo/paseo` — 26 default patterns, 44 followed patterns, 61 file(s) materialized.
+Mirror of `getpaseo/paseo` — 26 default patterns, 46 followed patterns, 63 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `getpaseo/paseo` — 26 default patterns, 44 followed patterns, 61 fil
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 44 |
-| Files         | 61 |
+| Followed pats | 46 |
+| Files         | 63 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -64,6 +64,7 @@ Mirror of `getpaseo/paseo` — 26 default patterns, 44 followed patterns, 61 fil
 - `docs/floating-panels.md`
 - `docs/menus.md`
 - `docs/expo-router.md`
+- `docs/notifications.md`
 - `docs/file-icons.md`
 - `docs/providers.md`
 - `docs/forge-providers.md`
@@ -71,6 +72,7 @@ Mirror of `getpaseo/paseo` — 26 default patterns, 44 followed patterns, 61 fil
 - `docs/plugins.md`
 - `docs/website-i18n.md`
 - `docs/service-proxy.md`
+- `docs/relay-endpoint-security.md`
 - `docs/development.md`
 - `docs/rpc-namespacing.md`
 - `docs/protocol-compatibility.md`
@@ -146,23 +148,25 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 42 | → | [`docs/mobile-panels.md`](docs/mobile-panels.md) |
 | 43 | → | [`docs/mobile-testing.md`](docs/mobile-testing.md) |
 | 44 | → | [`docs/native-text-selection.md`](docs/native-text-selection.md) |
-| 45 | → | [`docs/permissions.md`](docs/permissions.md) |
-| 46 | → | [`docs/plugins.md`](docs/plugins.md) |
-| 47 | → | [`docs/product.md`](docs/product.md) |
-| 48 | → | [`docs/protocol-compatibility.md`](docs/protocol-compatibility.md) |
-| 49 | → | [`docs/protocol-validation.md`](docs/protocol-validation.md) |
-| 50 | → | [`docs/providers.md`](docs/providers.md) |
-| 51 | → | [`docs/qa.md`](docs/qa.md) |
-| 52 | → | [`docs/release.md`](docs/release.md) |
-| 53 | → | [`docs/rpc-namespacing.md`](docs/rpc-namespacing.md) |
-| 54 | → | [`docs/service-proxy.md`](docs/service-proxy.md) |
-| 55 | → | [`docs/terminal-activity.md`](docs/terminal-activity.md) |
-| 56 | → | [`docs/terminal-performance.md`](docs/terminal-performance.md) |
-| 57 | → | [`docs/testing.md`](docs/testing.md) |
-| 58 | → | [`docs/unistyles.md`](docs/unistyles.md) |
-| 59 | → | [`docs/website-i18n.md`](docs/website-i18n.md) |
-| 60 | → | [`public-docs/hub/security.md`](public-docs/hub/security.md) |
-| 61 | → | [`SECURITY.md`](SECURITY.md) |
+| 45 | → | [`docs/notifications.md`](docs/notifications.md) |
+| 46 | → | [`docs/permissions.md`](docs/permissions.md) |
+| 47 | → | [`docs/plugins.md`](docs/plugins.md) |
+| 48 | → | [`docs/product.md`](docs/product.md) |
+| 49 | → | [`docs/protocol-compatibility.md`](docs/protocol-compatibility.md) |
+| 50 | → | [`docs/protocol-validation.md`](docs/protocol-validation.md) |
+| 51 | → | [`docs/providers.md`](docs/providers.md) |
+| 52 | → | [`docs/qa.md`](docs/qa.md) |
+| 53 | → | [`docs/relay-endpoint-security.md`](docs/relay-endpoint-security.md) |
+| 54 | → | [`docs/release.md`](docs/release.md) |
+| 55 | → | [`docs/rpc-namespacing.md`](docs/rpc-namespacing.md) |
+| 56 | → | [`docs/service-proxy.md`](docs/service-proxy.md) |
+| 57 | → | [`docs/terminal-activity.md`](docs/terminal-activity.md) |
+| 58 | → | [`docs/terminal-performance.md`](docs/terminal-performance.md) |
+| 59 | → | [`docs/testing.md`](docs/testing.md) |
+| 60 | → | [`docs/unistyles.md`](docs/unistyles.md) |
+| 61 | → | [`docs/website-i18n.md`](docs/website-i18n.md) |
+| 62 | → | [`public-docs/hub/security.md`](public-docs/hub/security.md) |
+| 63 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

@@ -59,7 +59,9 @@ Follow `@rebase-skill` for review and merge limits. Enrollment does not approve 
 3. `rg` the repo for `skill-dependencies` entries and `$<name>` references in other skills. Update or remove them.
 4. Publish. The remove group cleans global installs and the CLI lock.
 5. Caveat: a CLI-lock entry whose `source` is not `PaulRBerg/agent-skills` is invisible to the planner. Remove such an
-   install manually with `bunx skills remove --global --skill <name> --yes`.
+   install manually with the `skills` CLI version that `scripts/publish-skills.ts` pins in `skillsCli`:
+   `bunx skills@<pinned-version> remove --global --skill <name> --yes`. Another version can rewrite the lock in a format
+   that the planner rejects.
 
 ## Shelve (Catalog)
 

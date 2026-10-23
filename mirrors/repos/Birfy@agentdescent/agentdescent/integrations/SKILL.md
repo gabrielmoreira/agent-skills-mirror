@@ -37,6 +37,15 @@ written back until the user says so.
      run asked for 8 rounds and completed 2 in 90 minutes. Read `plan`'s notes
      aloud: they say how many held-out tasks the gate actually gets, and with
      too few it has both committed a worse rule and committed nothing at all.
+   - `algorithm` (optional): a named method. Call `list_algorithms` (or
+     `describe_algorithm` for one) before naming one; the same data is in
+     `agentdescent algorithms list` / `show`. Offer one only when the user asks
+     for a specific method or the artifact clearly fits it; the default recipe
+     for the kind is otherwise the right answer. Never invent a name -- `plan`
+     rejects it. The spec can carry parameters under
+     `algorithm: {name, params}`; explicit `policies` / `evolve` fields in the
+     same spec still override the algorithm's defaults. `plan` echoes what was
+     resolved and what it costs.
    - No data? Offer to draft 12 to 20 cases into `eval/cases.jsonl`
      (`{"prompt": ..., "gold": ...}` per line) and have the user check them.
      Fewer than 12 leaves under 4 held-out cases at the default `held_out_frac`
@@ -93,7 +102,11 @@ written back until the user says so.
    shell `sleep`, keep it under a minute -- host shell tools time out near two.
 5. When done, **`show`** with `diff=true`. Explain what changed and why using
    the `outcomes` histogram (`committed`, `below-threshold`, `oracle-rejected`
-   ...). Do not paste the whole tree.
+   ...). Do not paste the whole tree. If `final_reward` is low (or every outcome
+   is a rejection), read `samples` (the worst rollouts, output vs gold) and
+   `rejected` (the diffs the gate measured and refused) and say what went wrong
+   -- the agent answered wrongly, the reflector proposed nothing useful, or the
+   score is too strict -- before suggesting more rounds.
 6. **Ask before `apply`.** It overwrites the target (`show` names it); it backs
    up first. Tell the user the backup path afterwards. If the result has
    `noop: true` (also visible in `show`'s `apply_plan` and `--dry-run`), the target
@@ -155,6 +168,10 @@ endpoint the call goes to `api.openai.com` carrying that key, and `plan` warns
 about it. Never write a key into the spec: `base_url` and `api_key` are refused,
 and only the names above exist. Other keys in the block (`temperature`,
 `thinking`) go into the request body.
+A reasoning model (Ark `doubao-seed-code` thinks by default) can sit silent past
+the 120 s timeout; if `propose_error` says `did not answer within`, add
+`"stream": true` to the block (or raise `"timeout"`, or turn thinking off with
+`"thinking": {"type": "disabled"}`).
 
 **Which model runs.** A worker is the host CLI as a subprocess, started with its
 config directory redirected into the rollout workspace -- so it inherits

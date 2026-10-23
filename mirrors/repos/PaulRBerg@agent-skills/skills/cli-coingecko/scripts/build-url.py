@@ -8,7 +8,6 @@ import re
 from datetime import date, timedelta
 from urllib.parse import quote
 
-
 COIN_ID_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 
 
@@ -31,7 +30,7 @@ def main() -> int:
     args = parser.parse_args()
     try:
         print(build_url(args.coin_id, args.date))
-    except ValueError as error:
+    except (OverflowError, ValueError) as error:
         parser.error(str(error))
     return 0
 

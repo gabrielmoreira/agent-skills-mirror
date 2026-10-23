@@ -46,7 +46,8 @@ When you finish, the entire skill pack should be publish ready (publish-ready ch
 7. confirm visually that example and ref projects are the same (unnecessary objects can be omitted--an example about grass, you can omit accompanying trees in the scene; an example about ocean, you cannot omit correct lighting or ocean bed texture). NOT close, NOT approximately the same, MUST be the same. here you MUST actually compare the visual between them (run dev)
 8. confirm agent skill overall usability check passes
 9. confirm package is publish-ready (not including package version update)
-10. then finish. NONE of the steps above are skippable and all must pass
+10. include inside the newly added example dir the render image, exactly like the thumbnails in the gallery but in 1080p, like all the existing examples. use `scripts/render-example-thumbnails.mjs` to create the render image for the newly added example.
+11. then finish. NONE of the steps above are skippable and all must pass, unless explicitly told otherwise
 
 ## Rules
 

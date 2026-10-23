@@ -26,6 +26,8 @@ to locate provider and shared-workflow bottlenecks, preserve Evidence, and
 compare equivalent real tasks before claiming an improvement.
 
 When adding or changing an MCP tool, follow the [tool design guide](docs/tool-design.md) and preserve the canonical contracts and generated catalog.
+When adding or changing an admission ceiling, budget, or deadline, follow
+[admission limits and recovery](docs/design/limits-and-recovery.md).
 
 ## Reporting issues
 
@@ -238,6 +240,14 @@ running those workflows from source. The artifact build requires Linux,
 MinGW-w64, and `tar`; the build script does not run on Windows. See that guide
 for the build and artifact-verification commands and the separate real Windows
 verification prerequisites. Keep the generated addon and manifest uncommitted.
+
+The general source suite (`npm run test:fast`, `npm run test:changed`, and
+`npm run test:local`) runs on Linux in CI, and Windows CI runs a curated lane.
+On a Windows checkout, some source tests fail because fixtures use POSIX paths,
+`#!/bin/sh` tool stubs, or POSIX rename semantics. Compare failures against the
+base revision, or run the suite on Linux or WSL, before attributing them to a
+change. See [testing](docs/testing.md#developer-commands) for command scopes
+and lane selection.
 
 ## Documentation website
 

@@ -66,7 +66,9 @@ satisfy. A plan without execution does not establish runtime behavior.
   enforce the requested target and lifecycle.
 - Add limits only for real format, protocol, authority, or measured resource
   constraints. Report pagination, truncation, cancellation, and partial failure.
-  An assumed agent budget is insufficient justification for a limit.
+  An assumed agent budget is insufficient justification for a limit. Name the
+  ceiling and its recovery as described in
+  [admission limits and recovery](design/limits-and-recovery.md).
 
 ## Own the lifecycle
 

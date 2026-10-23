@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `trailhq/Trail-Code` — 26 default patterns, 0 followed patterns, 1 file(s) materialized.
+Mirror of `trailhq/Trail-Code` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `trailhq/Trail-Code` — 26 default patterns, 0 followed patterns, 1 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 1 |
+| Files         | 5 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,6 +60,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`.claude/skills/graft/SKILL.md`](.claude/skills/graft/SKILL.md) |
+| 2 | ✓ | [`test/fixtures/skills/graft/SKILL.md`](test/fixtures/skills/graft/SKILL.md) |
+| 3 | ✓ | [`test/fixtures/skills/rotate-pages/SKILL.md`](test/fixtures/skills/rotate-pages/SKILL.md) |
+| 4 | ✓ | [`test/fixtures/skills/ship-docs/SKILL.md`](test/fixtures/skills/ship-docs/SKILL.md) |
+| 5 | ✓ | [`test/fixtures/skills/trail/SKILL.md`](test/fixtures/skills/trail/SKILL.md) |
 
 ---
 

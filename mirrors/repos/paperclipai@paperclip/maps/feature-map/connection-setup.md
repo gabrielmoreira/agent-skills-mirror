@@ -137,6 +137,13 @@ account-bound proof. Live token expiry/refresh, remote OAuth revocation, and
 native CLI automatic capability delivery remain unqualified; public metadata
 and fixtures do not establish those results.
 
+Unikraft follows the same key/access wizard. Setup asks only for the API token;
+the default metro is an optional select under Advanced, and each action can name
+another published metro. [Unikraft browser setup](../../tests/e2e/unikraft-connector.spec.ts)
+checks the catalog, password field, access controls and the advanced metro. It
+does not submit a token or qualify a real provider account. See
+[Unikraft](../../doc/connections/UNIKRAFT.md) for token authority and metros.
+
 ### `mcp-link`
 
 Automated: AppsConnect's generic MCP cases cover probe-driven auth, private or

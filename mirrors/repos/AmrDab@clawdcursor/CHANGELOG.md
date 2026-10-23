@@ -2,6 +2,62 @@
 
 All notable changes to Clawd Cursor will be documented in this file.
 
+## [Unreleased]
+
+### Fixed
+
+- Found in a live macOS test run:
+  - **A password field's text is never echoed.** Typing into one now
+    reports `into a password field (not echoed)`; the reply used to repeat
+    the secret.
+  - **No more queued, stale pause prompts.** A `pause_for_user` with a
+    different message while another is on screen returns `busy` right
+    away, instead of queuing a prompt that would surface later.
+  - **`expect` passed to a tool that does not check it is reported as
+    ignored,** instead of being dropped silently.
+  - **`copy_all_text` returns a document's text exactly** when there is
+    nothing to clean: blank and space-only lines are kept.
+  - Typed character counts count an emoji as one.
+
+### Added
+
+- **Typing leaves your clipboard alone, and reads the field back.** Plain
+  text up to 120 characters is typed as keystrokes; the clipboard is never
+  read or written. Longer text, or text with a newline, tab or non-ASCII
+  character, is still pasted as literal text (verified, clipboard restored).
+  After typing, the focused field is read back. If it shows the text, the
+  result says `(keys, read back ✓)` and counts as `[confirmed]`. Before a
+  submit (text ending in a newline), Return is pressed only when the field
+  ends with the typed text; otherwise it is not pressed (`READBACK_MISMATCH`)
+  and the result shows what the field holds, as untrusted text, so the caller
+  can decide. Password fields and fields that expose no text are not judged.
+  On Linux/Wayland, where the typing helpers would show the text in the
+  process list, text is pasted, and a failed paste stops rather than types.
+- **Screenshot-bound clicks.** Each screenshot now has an id (`s3`), and
+  remembers which windows existed. An image-space click, drag or scroll is
+  refused before anything moves when it names an older screenshot, when there
+  is no screenshot at all, or when a window the screenshot did not show is in
+  front (a dialog or another app opened). Clicking into a window that was on
+  it is fine. Limits: where the platform gives no window handles (macOS),
+  windows are told apart by process; a second taskbar click from one
+  screenshot can be refused (the taskbar is not a listed window). The refusal says so
+  (`STALE_SCREENSHOT`) and suggests a fresh screenshot. This applies inside a
+  `batch` too. Accessibility coordinates (`space:"screen"`) and actions by
+  name are unaffected. `computer` takes an optional `shot` to name the
+  screenshot.
+
+- **Every action result and every error says what happened, in one line.**
+  `[confirmed]` (an `expect` check saw the effect), `[unverified]` (it ran,
+  nothing checked it), `[refused · CODE …]` (it did not run: safety gate,
+  consent, locked screen, a system dialog has the keyboard) or
+  `[failed · CODE · hint · next]`. The codes are stable (`NOT_FOUND`,
+  `TIMEOUT`, `STALE_REF`, `DEVIATION`, `INVALID_ARGS`,
+  `NEEDS_CONFIRMATION`, …), and `next` is a safe call in the caller's own
+  tool names. MCP results get it on every action (not on reads, or on
+  calls that return a value such as `build_uri`); the built-in agent on
+  errors only, so successful steps cost its model nothing. JSON results and
+  batch reports are unchanged.
+
 ## [1.5.23] - 2026-10-21
 
 ### Fixed

@@ -157,28 +157,27 @@ binaries and deploy the backend first.
 1. Deploy the backend first. Keep the API backward compatible: older binaries and OTA bundles remain in use.
 2. Optionally bump `version` in `apps/mobile/app.config.ts` (for example `1.0.0` to `1.1.0`). CI supplies increasing iOS build numbers and Android version codes. iOS needs a new version string after a version is released; Play needs only a higher `versionCode`.
 3. Dispatch **Mobile Release** on `main`, platform `all`. The [Blacksmith setup guide](./mobile-ci.md) covers migrating existing signing credentials, seeding `MOBILE_BUILD_NUMBER_BASE`, and configuring the `mobile-store` approval environment. Build without uploads first to verify signing. No EAS Build credits are used.
-4. Dispatch with **upload** enabled to publish the signed artifacts to every existing Play testing track and all existing TestFlight groups, including external beta groups. iOS waits for processing and submits for TestFlight beta review where required; configure at least one TestFlight group first. This does not submit public App Store review or publish a production release. Fastlane signs locally using existing credentials and does not synchronize Apple capabilities. If exporting credentials through `eas credentials`, keep `EXPO_NO_CAPABILITY_SYNC=1`; Apple sign-in uses web Services ID `me.rxresu.web`, so turning off its primary App ID's Sign in with Apple capability would break sign-in.
+4. Dispatch with **format=store** and **upload** enabled to publish the signed artifacts to every existing Play testing track and all existing TestFlight groups, including external beta groups. iOS waits for processing and submits for TestFlight beta review where required; configure at least one TestFlight group first. This does not submit public App Store review or publish a production release. Fastlane signs locally using existing credentials and does not synchronize Apple capabilities. If exporting credentials through `eas credentials`, keep `EXPO_NO_CAPABILITY_SYNC=1`; Apple sign-in uses web Services ID `me.rxresu.web`, so turning off its primary App ID's Sign in with Apple capability would break sign-in.
 
 5. **App Store Connect:** wait for processing, test through TestFlight, create the new app version, attach the build, write "What's New", and submit for review. Release manually or automatically after approval.
 6. **Play Console:** the build is published on `internal` and promoted to every other existing non-production testing track. After testing, promote it to production with release notes. Use a staged rollout for risky changes.
 7. Run the [signed-device test matrix](#signed-device-test-matrix) on the store-installed builds before promoting to production.
 8. Confirm that a later OTA update reaches the new binary, because its fingerprint and runtime version changed.
 
-Stable distribution uses the App Store and Play Store. IPA and AAB files are not attached to GitHub Releases. Nightly Android APKs are published separately for sideloading as described below; they do not replace store builds or store review.
+Stable distribution uses the App Store and Play Store. IPA and AAB files are not attached to GitHub Releases. Manual Android APKs are available through Actions artifacts as described below; they do not replace store builds or store review.
 
-### Nightly Android downloads
+### Manual Android downloads
 
-Every push to `main` builds signed APKs for `arm64-v8a`, `armeabi-v7a`, and `x86_64`
-with Expo Prebuild, Gradle, and the existing Fastlane Android build lane. Builds use
-the Android upload keystore already stored in Actions secrets; `EXPO_TOKEN` loads
-the preview environment. `MOBILE_UPDATE_CHANNEL=preview` embeds the preview update
-channel. Nightlies use version code 1 without allocating store build numbers.
+Dispatch **Mobile Release** on `main` with `platform=android`, `format=apk`, the desired
+`abi` (`arm64-v8a` by default), and `upload=false`. Approve the `mobile-signing` gate.
+The selected ABI is built with Expo Prebuild, Gradle and the existing Fastlane lane,
+using the existing Android upload keystore and preview EAS environment/channel.
+The normal increasing workflow build number is used; retries reuse that number.
 
-Once all APKs and the matching Docker image succeed, CI publishes a GitHub prerelease
-named `nightly-<workflow-run-id>` at that exact main commit. It contains the three
-APKs, SHA-256 checksums, and a changelog of that push's full commit messages and merged
-PR descriptions. Each push is preserved even when builds finish out of order. Stable
-release aliases and production OTA publishing follow their existing promotion flow.
+Download the signed APK from the run's `mobile-android-<build-number>` Actions
+artifact within 14 days. A separate evidence artifact retains the source SHA,
+fingerprint and available debugging files for 90 days. Neither a Git tag nor a
+GitHub Release is created, and pushes to `main` no longer build APKs.
 
 The APKs retain package `me.rxresu`. Their upload signing certificate may differ from
 Play App Signing, so they cannot necessarily upgrade a Play installation or be
@@ -188,8 +187,9 @@ add its certificate fingerprint to the backend's `MOBILE_ANDROID_CERT_SHA256` li
 alongside the Play fingerprint; do not replace the Play fingerprint. Test native
 sign-in on an actual sideloaded build before advertising it as verified.
 
-See [container publishing](./container-publishing.md#nightly-android-apks-and-github-releases)
-for artifact retention, draft recovery, runner tools, and release permissions.
+See [mobile CI](./mobile-ci.md#manual-android-apks) for signing approvals and retention.
+Export production release evidence to permanent records before Actions retention
+expires; the maximum 90-day retention is not permanent archival storage.
 
 ## Native artifacts and signing
 

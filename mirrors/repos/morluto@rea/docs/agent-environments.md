@@ -5,7 +5,8 @@ environment: an MCP server whose tools answer from what one retained web
 network capture observed, plus the environment card the agentenv framework
 reads to discover it. By default the server derives the
 [state the capture observed](#the-state-a-capture-observed) at startup and
-answers read tools from it; `--replay-only` replays the capture's records
+answers read tools from it, and the write tools whose effect the capture
+confirmed by changing it; `--replay-only` replays the capture's records
 instead. Nothing is fetched from the recorded application; every answer comes
 from retained Evidence. `rea environment-export` writes the same pair as a
 bundle folder `agent-env run` builds and runs; see
@@ -271,11 +272,11 @@ document, with the same signal exit status.
 
 Three routes are served:
 
-| Route                             | Answer                                                                                                                                                         |
-| --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `POST /mcp`                       | The MCP server: from the state, one tool per read tool, answering from the state where it backs them; in replay, one tool per manifest tool, replaying records |
-| `GET /.well-known/agent-env.json` | The environment card                                                                                                                                           |
-| `POST /agentenv`                  | From the state, `data/reset`, `data/add` and `data/get`; in replay, JSON-RPC `-32601 method not found: <method>` for every method                              |
+| Route                             | Answer                                                                                                                                                                                                                                              |
+| --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `POST /mcp`                       | The MCP server: from the state, one tool per read tool, answering from the state where it backs them, and one per write tool whose effect the capture confirmed, applying it to the state; in replay, one tool per manifest tool, replaying records |
+| `GET /.well-known/agent-env.json` | The environment card                                                                                                                                                                                                                                |
+| `POST /agentenv`                  | From the state, `data/reset`, `data/add` and `data/get`; in replay, JSON-RPC `-32601 method not found: <method>` for every method                                                                                                                   |
 
 Numeric JSON-RPC IDs outside JavaScript's safe range or whose precision would
 be lost are refused as invalid requests with a null ID. They are never echoed
@@ -376,8 +377,11 @@ In replay, `extensions`, `operations` and `children_environments` are fixed to
 `null`, `[]` and `null`: a replay environment declares no extensions, no
 data-plane operations and no children. Served
 [from the state](#serve-from-the-state), the card declares the three data-plane
-operations and one intake extension instead, leaves write tools out and
-describes each tool as answering from the state where the state backs it.
+operations and one intake extension instead, and the catalog holds the read
+tools and only the write tools whose effect the capture confirmed: a read tool
+is described as answering from the state where the state backs it, and a
+served write tool by the effect it applies to the state and the quoted body members it
+accepts.
 
 ## Serve from the state
 
@@ -400,7 +404,8 @@ A state that is unavailable does not stop the server: it logs a warning naming
 the error `code` and message before it binds, then serves replay. The state is
 unavailable when it cannot be derived, such as from a
 `capture_browser_scenario` capture that selected header values but no response
-bodies or over the view's budget, and when its catalog under the served name
+bodies or over the view's budget, when `data/get` would write it past the 32 MiB
+`data/add` intake limit, and when its catalog under the served name
 exceeds the [discovery reservation](#what-a-manifest-is). That check runs
 first, so no state is derived for it, and replay is then admitted exactly as
 with `--replay-only`. `--replay-only`
@@ -417,26 +422,66 @@ member reports which applied:
 
 Each read tool answers according to its view in the state:
 
-| View       | Answer                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `item`     | The entity the path arguments name, rendered into the recorded envelope of `envelope_ordinal`. Arguments match as replay matches them: each collection segment equals the held collection's segment as written or after percent-decoding, and the identity is the last argument percent-decoded, then as written; values are never re-split on `/`. Any entity the state holds answers, including one `data/add` loaded; query arguments only decide `replay.exact_match`. An entity the state does not hold, or one lacking a field every recording carried, is a tool error; a body is never invented. |
-| `list`     | When the arguments name one of the lines the view checked exactly (its latest recordings before the first related write; every path and query value equal to the recording's, and every recorded query parameter supplied), that recorded envelope with its array rendered from the state: every entity of the collection in state order for `membership: "all"`, or the recorded members still held. A member lacking a field every recording carried makes the call a tool error rather than a partial list.                                                                                           |
-| `document` | When the arguments name the document's checked line exactly, the state's value for it; a tool error when the state holds none.                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
-| `recorded` | The recording, as replay answers it.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| View       | Answer                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `item`     | The entity the path arguments name, rendered into the recorded envelope of `envelope_ordinal`. Arguments match as replay matches them: each collection segment equals the held collection's segment as written or after percent-decoding, and the identity is the last argument percent-decoded, then as written; values are never re-split on `/`. Any entity the state holds answers, including one `data/add` loaded; query arguments only decide `replay.exact_match`. An entity the state does not hold answers the tool's latest recorded 400, 404 or 410 response with `state.view` `missing`, or is a tool error when none was recorded; one lacking a field every recording carried is a tool error, unless a read showed the application leaves that field out; a body is never invented.                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| `list`     | When the arguments name one of the lines the view checked exactly (its latest recordings before the first related write; every path and query value equal to the recording's, and every recorded query parameter supplied), that recorded envelope with its array rendered from the state: every entity of the collection in state order for `membership: "all"` or a line `all_record_ordinals` names, or the recorded members still held. A call with no query argument answers from such a line of the collection its path arguments name that only pages its list, with `replay.exact_match` false. On a line the view's `query` answers, and for a call whose every query argument has a role there (an argument-less call aside), the answer is the query evaluated over the state: filtered, searched, sorted and paged, with counters at the number listed and `query.totals` at the number matched, and `state.membership: "query"`; such a call answers on a query or whole line of its collection with `replay.exact_match` false. A value an `inert` parameter never recorded, or a parameter without a role, replays its recording. A member lacking a field every recording carried makes the call a tool error rather than a partial list. |
+| `document` | When the arguments name the document's checked line exactly, the state's value for it; a tool error when the state holds none.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| `recorded` | The recording, as replay answers it.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+
+An item or list view that always spells a clock field otherwise than the
+entity's stored value names that spelling in `clock_formats`, and a value it
+never recorded, such as a created entity's clock, is rendered in it: a list that
+writes `+00:00` where item reads write `Z` lists a new entity the same way.
 
 A list or document call that names no checked line, including a line recorded
 after a write or with other query values, answers from the recording. Every
 answer has the replay shape plus `state`: `{"source": "state", "view": …}`
 naming the entity, collection or document path, or `{"source": "recording",
-"reason": …}` with the view's reason, `no-view` or `unrecorded-request`. A
+"reason": …}` with the view's reason, `no-view`, `unrecorded-request`, `page-exceeded` (a call naming a page of a whole list that the collection has outgrown) or `projection` (a call to an item tool whose recordings asked for some fields only, naming such a parameter for an entity the state holds; the answer is a recording, so it does not show served writes). A
 state answer carries the base record's status, content type and `replay`
 provenance with `truncated: false`; one whose JSON would exceed 256 KiB is
 refused as a `resource_constraint` tool error rather than cut. Extraction does
 not state-back a document whose rendered JSON exceeds 256 KiB; that read stays
-recorded (`rendered-oversize`) and replays the captured body. Serving is
-read-only: `POST`, `PUT`, `PATCH` and `DELETE` tools, other than query `POST`s,
-are not served, so nothing a call does changes the state. Query `POST`s stay
-served and answer from their recordings with the reason `query-body`.
+recorded (`rendered-oversize`) and replays the captured body. Query `POST`s
+stay served and answer from their recordings with the reason `query-body`.
+
+A line establishes whole-collection membership only from the beginning:
+`offset`, `start`, `_start` and `page` must be zero when present. Positive or
+malformed positions do not by themselves establish whole membership. A separate
+query model may describe supported paging; an empty later page cannot start
+returning earlier entities merely because it was empty in the capture.
+
+`POST`, `PUT`, `PATCH` and `DELETE` tools are served only when the state's
+[write plan](web-network-captures.md#environment-state) for them is served:
+the capture's later reads confirmed the effect the plan models. Other write
+tools are not served, so no call claims a change it does not make; each one's
+plan states why in its `reason`. A served write changes the live state, which
+every MCP session and `data/get` then see:
+
+| Effect     | Call                                                                                                                                                                                                                                 |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `create`   | Adds an entity to the collection the path names, built from the observed entity with each ruled field taken from the call or generated, at the plan's `insert` position. A plan tied to its exemplar's collection writes only there. |
+| `update`   | Sets the sent members on the entity the path names, constants for members accepted only with their recorded value, and the clock, increment, slug, unique and renewed changes the plan models.                                       |
+| `delete`   | Removes the entity the path names.                                                                                                                                                                                                   |
+| `document` | Merges the body into the plan's document object, or replaces it for `PUT`.                                                                                                                                                           |
+
+Its answer has the status and content type of the plan's recorded response,
+with the written entity or its identity rendered in, no body, or the recorded
+body. A call whose body is not an object, sends a member the capture did not
+show stored, sends a fixed member with another value or a member of another
+JSON type, or lacks a required member is a tool error naming the accepted
+members; so is a rendered answer missing a field the recorded response
+carried, and an update or delete of an entity the state does not hold answers
+the recorded 400, 404 or 410 of the tool or of an item view of the type, if
+any. A refused call leaves the state unchanged. Values a write generates are
+deterministic: the clock starts at `write_clock` and advances one second per
+served write, sequences take one past both the largest held value and the
+largest they generated, and UUIDs and tokens derive from the state Evidence
+id, tool, field and write count, skipping held values. `data/reset` and
+`data/add` restart the clock, counter and sequences, so the same calls after a
+reset give the same state. Answers carry `state: {"source": "state", "view":
+"create" | "update" | "delete", …}` or `"document-write"`.
 
 The data plane serves three JSON-RPC methods:
 
@@ -470,17 +515,28 @@ names its category in `error.data.reason`: `not-found`, `permission`,
 downloads, and `cancelled` for a download the server's stop or its caller's
 departure ended.
 
+Served creates also bound additional collection history since the last reset
+or `data/add` to 1 MiB of deterministic accounting: UTF-8 bytes for each new
+collection spelling and its possible sequence keys, plus a 64-byte allowance
+per collection and potential sequence-key record. The score bounds identifier
+payload and a fixed record allowance; it is not a measurement or guarantee of
+process memory. Collections
+already present in the Evidence or loaded state are part of the state itself;
+the store indexes their unique spellings so they remain known after deletion,
+but they do not consume this additional-history budget. A create that would
+exceed the budget is refused before the state changes. `data/reset` or `data/add`
+clears generated history; if the same calls would hit the limit again, use
+fewer distinct collection paths. The 1 MiB score ceiling is 1/32 of the
+separate 32 MiB state-intake ceiling, reserving a small, explicit allowance
+for identifiers retained beyond the loaded state. A loaded-state path that is
+later deleted and then introduced again may consume the additional-history
+budget when the store must retain it beyond the source entity.
+
 Stopping the server cancels every pending call, and a caller that leaves before
 its reply cancels its own: a download in progress ends, and calls not yet run
 are answered `-32000` with `error.data.reason` `cancelled` without running. A
 cancelled call leaves the state unchanged, and shutdown never waits for a
 download.
-
-A `file://` state file whose close fails stays owned by the server, and
-the `data/add` gets `-32000`. The next `file://` load retries that close first
-and, while it still fails, answers `-32000` without reading another file;
-inline and `https://` documents still load. Closing the server retries it once
-more and fails with the unfinished close rather than dropping the descriptor.
 
 One `/agentenv` response carries at most 64 MiB of replies, twice the 32 MiB
 a loaded document may hold: room for a `data/get` of a loaded state, while a
@@ -565,14 +621,17 @@ The card declares the operations and what `data/add` accepts:
 }
 ```
 
-The state is a projection of recorded reads. List and document calls answer
-from the state only for the lines their views checked, and every recorded view
-answers from recordings; item calls answer for any held entity but render only
-the envelope one recording carried. Values copied outside entity objects,
-derived values and counters other than those that count a list stay as
-recorded; no write has an effect. An exported bundle carries no state file:
-its server derives the state at startup, as the export does to predict what it
-serves.
+The state starts as a projection of recorded reads and changes only through
+served write tools and the data plane. List and document calls answer from the
+state only for the lines their views checked, and every recorded view answers
+from recordings; item calls answer for any held entity but render only the
+envelope one recording carried. Values copied outside entity objects, derived
+values and counters other than those that count a list stay as recorded, and a
+served write changes only the one entity or document it writes: side effects
+on counters, relations and copies of entities in other collections, reordering
+after an update and referential rules on delete are not modelled. An exported
+bundle carries no state file: its server derives the state at startup, as the
+export does to predict what it serves.
 
 ## Export a bundle
 
@@ -640,8 +699,8 @@ name from Python sources the image does not have.
 
 `verify.py` is the framework's `async def verify(mcp_url)` shape over its
 Python MCP client: it lists the tools and checks the count equals the number
-the bundle serves (the manifest's read tools from the state, every manifest
-tool in replay), calls one tool with no arguments and checks the call did not
+the bundle serves (from the state, the manifest's read tools and the write
+tools whose effect the capture confirmed; every manifest tool in replay), calls one tool with no arguments and checks the call did not
 fail and its `status` is the expected one, and returns one `serve` result
 whose description reports both checks. The tool is the first served `GET` tool
 without path parameters whose answer to no arguments is not an error, and the
@@ -659,12 +718,76 @@ The README written into the bundle records the capture artifact's SHA-256, the
 capture and manifest Evidence ids, the manifest view digest, the served tool
 count, the derived state's Evidence id or that no state is served, and the
 package source. It says what the environment serves: read tools from the state
-the capture observed, the `/agentenv` data plane on it and no write tools yet,
-replay when the state is unavailable, and `--replay-only` for pure replay; it
+the capture observed, the `/agentenv` data plane on it and the write tools
+whose effect the capture's later reads confirmed, replay when the state is
+unavailable, and `--replay-only` for pure replay; it
 says which applies to this bundle, with the error code and message when the
 state is unavailable, and that neither is emulation and served
 content is untrusted data. It states that the recorded content belongs to the
 captured application and must not be published without the rights to it.
+
+## Measure fidelity against the application
+
+An environment agrees with its own capture by construction. What matters to an agent is how it answers the calls the
+capture did not make, what it shows after a write, and how it fails. `rea environment-compare` measures that against the
+application itself:
+
+```sh
+rea environment-compare manifest.json --evidence capture.json \
+  --probe probe-crud.json --probe probe-reads.json --json
+```
+
+Each `--probe` is capture Evidence (`inspect-web-network-capture` of a HAR, or `capture-browser-scenario`) of one call
+sequence made against the live application, seeded as it was for the capture and reset before the sequence. The command
+makes no network call: whoever records the probes drives the application with its own credentials. For each probe it
+resets the environment's state, takes the requests in the order they were made (record order when any lacks a start time), matches each to the manifest tool of the
+same method whose path template fits with the most literal segments (a format-rule parameter must fit its format once
+percent-decoded). A path argument is the raw segment, which the environment decodes once.
+It answers the call as the served environment would, and compares that answer with the application's.
+
+A re-seeded application holds the same entities under other ids, so the comparison maps them. Objects in the two answers
+to one call pair by a natural key, a string field unique on each side that both share, such as a name or a slug; their
+identifier fields (`id`, `uuid`, `guid`, and names ending in `_id`, `Id`, `ID`, `_uuid` or `Uuid`), and those of two single
+answers such as a create's, map the live value to the environment's, including a create that returns only the new id.
+Ids are learned only from an answer the environment
+gave that call itself, from its state or a recording of that very call, request line and body, never from another call's
+recording replayed in its place and never from a recording whose body the probe omitted. The answer's own `id`, `uuid` or `guid` also maps within the collection the call names, since
+two collections can reuse a live id, and an equal pair stays in that collection. A live id in a later request's path, query or body is translated before the
+environment answers, a path parameter by the collection the live path names (a nested collection keeps its parent values, each decoded once, and a literal route segment stays), except a query value that pages a list, such as `limit`
+or `page`. Each call is checked against the served tool's input schema first, as the MCP server checks it. After mapping, two clock values compare by format only (ISO-8601 strings, and epoch numbers under
+time-named fields), and two different values each side generated on its own compare equal: both UUIDs, or one length of
+eight or more with the same character classes and a digit. The report counts each kind of normalised value.
+
+A step agrees when the statuses and the normalised bodies are equal. The report gives agreement overall, per probe and
+per tool, `agreement_ignoring_order` for steps that differ only in item order, and each step's differences, at most 20,
+with a JSON pointer and both values cut short:
+
+| Category        | Meaning                                                                                                      |
+| --------------- | ------------------------------------------------------------------------------------------------------------ |
+| `status`        | The statuses differ                                                                                          |
+| `missing-field` | The application's object has a member the environment's lacks                                                |
+| `extra-field`   | The environment's object has a member the application's lacks                                                |
+| `value`         | Values differ, or one is an object or array and the other is not                                             |
+| `length`        | Arrays differ in length, or not every item pairs                                                             |
+| `order`         | Paired items come in a different order                                                                       |
+| `clock-format`  | Both are clocks, in different formats                                                                        |
+| `refused`       | The environment refused the call                                                                             |
+| `not-served`    | The request's tool is one the environment does not offer, such as a withheld write                           |
+| `no-tool`       | No manifest tool matches the request                                                                         |
+| `unmapped-id`   | The application answered with success and the environment did not, for a path id the comparison never mapped |
+
+What a probe did not observe is not counted as the application's behaviour. A record without a usable request line,
+such as a redacted URL or a transaction the capture cannot attribute, is not replayed, nor is a request to another
+origin than the application's (`other-origin`: the probe's origin with the most JSON-like records, as the manifest
+chooses its own), and a request with no recorded
+answer is made, since it may have changed the application, but not compared: each probe lists them under `unobserved` with the reason, and the summary counts them. A live
+body the probe did not record compares by status only and is counted as `unobserved_bodies`, unless the answer never
+carries one (204, 205, 304, `HEAD`). A browser probe captured without `capture.network.response_body` is refused, as
+is one that makes POST, PUT or PATCH calls without `capture.network.request_body`.
+
+Agreement covers only the calls the probes make, after the mapping the answers allow. Values compared by form, clocks
+and generated values, can still differ in content, and an equal answer after a write shows the state matched for that
+read, not that the write had no other effect.
 
 ## Compatibility verification
 

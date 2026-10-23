@@ -15,7 +15,7 @@ platform-independent. Run validation locally with the workspace's nightly Rust t
 - Use the rolling nightly toolchain and lockfile declared in `toolkit/` for every Cargo build, test, and install.
 - Run the package from `toolkit/` with `cargo run -p ai-notify --locked -- ...`.
 - Prefer `cargo test -p ai-notify --locked` for focused verification and `just rust-check` for the aggregate Rust gate.
-- Do not run `just install-cli` for ordinary verification. It installs every workspace binary under `~/.local`.
+- Do not run `just install-cli` for ordinary verification. It installs every CLI supported on this OS under `~/.local`.
 
 ## Architecture and Invariants
 
@@ -25,8 +25,9 @@ platform-independent. Run validation locally with the workspace's nightly Rust t
   session.
 - Hook event commands (`ai-notify event ...` and the legacy `ai-notify codex` callback) never exit 2 on an invalid
   payload. Parse and validation failures there exit 1. Claude Code and Codex treat a hook's exit 2 as a blocking
-  decision. For example, Stop would keep the agent going and PreToolUse would block the tool. Only clap CLI usage errors
-  and non-hook commands (`config`, `link`, `check`, `cleanup`, `test`) still use exit 2.
+  decision. For example, Stop would keep the agent going and PreToolUse would block the tool. Only clap CLI usage
+  errors, a missing or blank `ai-notify codex` payload, and non-hook commands (`config`, `link`, `check`, `cleanup`,
+  `test`) still use exit 2.
 - `integrations::CODEX_HOOK_EVENTS` lists the native Codex events `check` requires for `ai-notify event codex`.
 - `integrations::HOOK_SPECS` is the source of truth for installed Claude hooks. The integration inspector derives its
   required event set from that list so `link claude` and `check` stay aligned.

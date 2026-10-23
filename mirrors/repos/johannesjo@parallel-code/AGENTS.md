@@ -16,7 +16,8 @@ Electron desktop app for running coding agents in isolated Git worktrees. Deskto
   - `npm run test:unit -- path/to/file.test.ts` for logic/backend tests (Node environment).
   - `npm run test:client -- path/to/file.client.test.tsx` for DOM/component tests (happy-dom).
   - `npm run test:changed` runs the tests of both suites that uncommitted changes affect; run it before committing.
-- For code changes, run `npm run check` and relevant tests before handoff. It runs backend and frontend type checking, lint, and a formatting check; caches in `node_modules/.cache` make repeat runs fast. For documentation-only changes, check the changed files with Prettier.
+- For code changes, run `npm run check` and relevant tests before handoff. It runs backend and frontend type checking, lint, and a formatting check in parallel, reports every failing step in one run, and prints output only for failures; caches in `node_modules/.cache` make repeat runs fast. For documentation-only changes, check the changed files with Prettier.
+- Vitest switches to its compact `agent` reporter (failures only) when it detects a coding agent, so don't pass `--reporter` or pipe test output through `tail`.
 - `npm test` runs both test suites. `npm run test:ci` adds unit coverage thresholds. `npm run check:static` includes dead-code and architecture checks as well as type checking and lint; use it when changing exports or module dependencies.
 - See `.github/workflows/ci.yml` for the complete CI sequence, including security-rule fixture tests and the real-PTY coordinator test. Ordinary test runs skip opt-in PTY, Docker, and real-agent suites; real-agent tests can launch paid services. Report skipped or unavailable verification.
 - CI tests that Semgrep rules work on fixtures; it does not scan the repository with Semgrep. `npm run lint:security` and `npm run lint:secrets` run separate scans and require Semgrep and Gitleaks respectively.

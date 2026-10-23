@@ -25,6 +25,10 @@ same definition. Adapted from the classic Fowler/Beck catalog.
 
 ## How to report one
 
+Before recommending shared-code extraction, load `references/architecture-delta.md`
+and apply its extraction proof rubric: actual authored callers, compatible
+contracts, existing reuse, and net maintenance benefit. A smell is not that proof.
+
 - Name the smell, cite the evidence (`path`, `line_range`, and what shows it),
   and say what the fix would be - as a finding, usually `P2`/`P3` unless the
   smell hides a correctness risk.

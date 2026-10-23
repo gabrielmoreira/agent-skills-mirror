@@ -11,7 +11,6 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-
 SEMVER_RE = re.compile(
     r"^(?P<major>0|[1-9]\d*)\.(?P<minor>0|[1-9]\d*)\.(?P<patch>0|[1-9]\d*)"
     r"(?:-(?P<pre>[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z.-]+)?$"
@@ -31,7 +30,7 @@ class Version:
     prerelease: tuple[str, ...] = ()
 
     @classmethod
-    def parse(cls, value: str) -> "Version":
+    def parse(cls, value: str) -> Version:
         match = SEMVER_RE.fullmatch(value)
         if not match:
             raise InputError(f"invalid semver: {value}")
@@ -167,7 +166,9 @@ def package_index(discovery: dict[str, Any]) -> tuple[dict[str, dict[str, Any]],
     return by_id, aliases
 
 
-def resolve_versions(discovery: dict[str, Any], explicit_args: list[str]) -> tuple[dict[str, dict[str, Any]], list[dict[str, str]]]:
+def resolve_versions(
+    discovery: dict[str, Any], explicit_args: list[str]
+) -> tuple[dict[str, dict[str, Any]], list[dict[str, str]]]:
     by_id, aliases = package_index(discovery)
     explicit: dict[str, str] = {}
     for assignment in explicit_args:
@@ -215,7 +216,12 @@ def resolve_versions(discovery: dict[str, Any], explicit_args: list[str]) -> tup
         else:
             planned = stable_promotion(current)
             source = "prerelease-promotion" if planned else "agent-decision"
-        versions[package_id] = {"current": current, "planned": planned, "source": source, "resolved": planned is not None}
+        versions[package_id] = {
+            "current": current,
+            "planned": planned,
+            "source": source,
+            "resolved": planned is not None,
+        }
         if planned is None:
             unresolved.append({"package": package_id, "decision": "choose patch, minor, or major version"})
     for package_id, explicit_version in explicit.items():
@@ -329,6 +335,8 @@ def finalize(discovery: dict[str, Any], explicit_args: list[str]) -> dict[str, A
             item["decision"] = "evaluate unsupported dependency range"
         evaluated.append(item)
 
+    for package_id in sorted(release_nodes - set(versions)):
+        unresolved.append({"package": package_id, "decision": "choose dependent release version"})
     order, cycles = dependency_order(release_nodes, edges)
     if cycles:
         unresolved.append({"package": ",".join(cycles[0]), "decision": "resolve dependency cycle ordering"})

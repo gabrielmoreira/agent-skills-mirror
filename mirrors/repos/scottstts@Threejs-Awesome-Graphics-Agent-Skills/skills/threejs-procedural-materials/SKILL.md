@@ -1,6 +1,6 @@
 ---
 name: threejs-procedural-materials
-description: Author production procedural materials in Three.js. Use for hybrid texture-backed PBR soil and moss with procedural displacement and masks, upward-facing model moss accumulation, atlas filtering, specular AA, planet-space fields, terrain wetness, deformable granular sand with mass-coupled grain shading, simulated tearable denim with implicit yarn mechanics, wear-driven failure and frayed fibres, woven cloth with GPU XPBD mechanics and yarn microstructure, simulated fur with interactive grooming and strand shading, lava and emissive surfaces, reflective wave-optical diffraction gratings, air-film-air soap bubbles with Airy interference, raytraced diamond and gem refraction with internal reflection and dispersion, image-space glass transmission with spectral dispersion and volume absorption, deforming softbody jelly materials with XPBD mechanics and refractive caustics, per-instance dissolve, authored PBR identities, derivative normals, and custom direct-light shadow modulation.
+description: Author production procedural materials in Three.js. Use for simulated paper burning with coupled sheet combustion and pyro fluids, luminescent jellyfish with simulated appendages and layered tissue optics, luminescent butterflies with articulated scale glints and finite wing emitters, hybrid texture-backed PBR soil and moss with procedural displacement and masks, upward-facing model moss accumulation, atlas filtering, specular AA, planet-space fields, terrain wetness, deformable granular sand with mass-coupled grain shading, simulated tearable denim with implicit yarn mechanics, wear-driven failure and frayed fibres, woven cloth with GPU XPBD mechanics and yarn microstructure, simulated fur with interactive grooming and strand shading, lava and emissive surfaces, reflective wave-optical diffraction gratings, air-film-air soap bubbles with Airy interference, raytraced diamond and gem refraction with internal reflection and dispersion, image-space glass transmission with spectral dispersion and volume absorption, deforming softbody jelly materials with XPBD mechanics and refractive caustics, per-instance dissolve, authored PBR identities, derivative normals, and custom direct-light shadow modulation.
 ---
 
 # Procedural Materials
@@ -135,6 +135,24 @@ Read
 softbody coordinate contract, neo-Hookean XPBD split, damping and sleep rules,
 refractive receiver budget, material constants, limits, and diagnostics.
 
+Read the [simulated paper burning implementation](examples/simulated-paper-burning/simulated-paper-burning.js)
+for crumpled-sheet mechanics, material-lattice combustion, char fracture,
+volumetric flame/smoke and soot-driven receiver illumination. Read
+[references/simulated-paper-burning.md](references/simulated-paper-burning.md)
+for its coupled grids, fixed-step order, optical integration and burnout sequence.
+
+Read the [luminescent jellyfish implementation](examples/luminescent-jellyfish/luminescent-jellyfish.js)
+for bell anatomy, swimming, Verlet appendages, bioluminescent tissue and
+depth-ordered underwater transport. Read
+[references/luminescent-jellyfish.md](references/luminescent-jellyfish.md)
+for the anatomy, attachment textures, optical layers and integration contracts.
+
+Read the [luminescent butterfly implementation](examples/luminescent-butterfly/luminescent-butterfly.js)
+for coherent wing masks, scale glints, articulation, perch clearance, finite
+wing illumination and lens imaging. Read
+[references/luminescent-butterfly.md](references/luminescent-butterfly.md)
+for its wing, emission, lens, integration and swept-geometry contracts.
+
 ## Required controls
 
 - real or perceptual texture scale;
@@ -184,6 +202,12 @@ shared moss PBR identity.
 - sand grain sparkle is an unfiltered high-frequency lookup that aliases under grazing motion;
 
 ## Routing boundary
+
+Use `$threejs-procedural-vfx` for free-standing voxel fire and smoke; choose
+`simulated-paper-burning` here when sheet combustion, char failure and fluid
+emission must remain coupled. Use `$threejs-water-optics` for an air-side
+luminescent river; `luminescent-jellyfish` owns submerged animal tissue and
+its surrounding transport.
 
 Use `$threejs-procedural-fields` when the main problem is designing shared
 scalar/vector causes. Use `$threejs-procedural-planets` for a complete

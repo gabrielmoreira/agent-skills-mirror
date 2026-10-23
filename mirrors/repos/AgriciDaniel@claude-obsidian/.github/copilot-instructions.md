@@ -2,7 +2,7 @@
 
 Read `AGENTS.md` before proposing changes. The repository is an Agent Skills
 package, Claude Code adapter, standard-library Python core, and deterministic
-vault template—not the default live user vault.
+vault template, not the default live user vault.
 
 When editing:
 

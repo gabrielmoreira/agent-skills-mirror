@@ -71,6 +71,17 @@ across two machines. A `review` block in the input manifest (see
 [`hub/README.md`](hub/README.md)) is preserved for every repo that lands at its
 recorded SHA.
 
+A local path (`/path/to/checkout` or `file:///path/to/checkout`) is cloned the
+same way. Git checks out committed files only, so a root `.xerjignore` that is
+untracked or has uncommitted edits would never reach the clone, and the index
+would apply built-in ignore rules alone. `corpus add` copies that root file
+into the clone when its bytes differ from the checkout, and says so. Running
+`corpus add` again refreshes the copy from the source working tree. A pinned
+`--from` rebuild does not copy it — the recorded SHA stays exact — and says so
+when the working tree's root `.xerjignore` differs. Nested `.xerjignore` files
+are not carried. Removing the source file does not delete a copy already in
+the clone.
+
 Pre-built *indexes* are a different question (on-disk format version, embedder
 identity, redistribution of the indexed source) and are not offered here.
 
@@ -132,6 +143,33 @@ mapping exists, or the fused request fails, the answer is plain BM25 labelled
 `--mode semantic`, mapping and search HTTP/transport failures exit `2`, rather
 than reporting no match; there are no BM25 results to fall back to.
 
+## Weak matches
+
+Nearest neighbours used to render like hits: hybrid RRF scores a rank-1
+miss the same as a rank-1 hit (`2/(k+1)` with k=60). A page is now labelled
+
+```text
+weak match: the corpus may not cover this
+```
+
+and every passage on it is marked `weak`, when either of these holds:
+
+- the query has at least three content terms (English function words such as
+  `the` and `with` dropped) and the best passage's text contains fewer than
+  half of them — a nearest neighbour, or a collision on one stem such as
+  `recall` inside `recall@k`; or
+- the scores are hybrid RRF and the top score is strictly below `1/(k+1)`,
+  half of a typical two-leg rank-1 score.
+
+A passage whose score is strictly below half the page's top score is marked
+`weak` on its own header. The stronger passages on that page, and any page
+that clears both checks, render exactly as before. A weak page still exits
+0 (the passages are there; they are not evidence the corpus covers the
+need). Fall back to grep or another corpus. `--json` is the raw response
+and does not carry the label. `--meatl` prints `@weak why=corpus-may-not-cover`
+and appends ` weak` to those `@ok` lines. `xerj_code_search` returns the
+same text.
+
 ## Machine-readable retrieval
 
 Pass `--json` to return the search result as JSON, including when no passages
@@ -141,8 +179,9 @@ an empty `hits.hits` array exits `1`. A corpus with no live indices still exits
 usage, an unreachable node, or the 30-day staleness refusal.
 
 `--meatl` prints one line per hit instead of prose:
-`@ok f=<file>:<line> score=<12.34>[ why=<licence>]` (hybrid scores render as
-`rrf=<0.1234>`), `@no q="<query>" why=no-match-in-corpus` for a miss, and
+`@ok f=<file>:<line> score=<12.34>[ why=<licence>][ weak]` (hybrid scores
+render as `rrf=<0.1234>`), `@no q="<query>" why=no-match-in-corpus` for a
+miss, `@weak why=corpus-may-not-cover` when the page is a weak match, and
 `@mode <arms-ran note>` for the hybrid/semantic note line.
 
 Agents without a shell get the same pipeline as an MCP tool,

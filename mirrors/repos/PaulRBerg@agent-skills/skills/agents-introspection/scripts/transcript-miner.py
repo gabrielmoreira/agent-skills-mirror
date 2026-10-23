@@ -13,9 +13,10 @@ import os
 import re
 import sys
 from collections import Counter, defaultdict
+from collections.abc import Iterable
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any
 
 from transcript_common import (
     CORRECTION_PATTERNS,
@@ -33,11 +34,12 @@ from transcript_common import (
     first_string_shallow,
     format_utc_iso,
     is_within,
-    keyword_alternatives,
+    keyword_matcher,
     keywords_present_in_lines,
     normalize_path,
     parse_utc_timestamp,
     raw_prescan_eligible,
+    read_codex_metadata_head,
     read_jsonl,
     read_jsonl_head,
     read_jsonl_sampled,
@@ -48,7 +50,6 @@ from transcript_common import (
     title_already_matches,
     truncate,
 )
-
 
 DATE_YEAR_RE = re.compile(r"^\d{4}$")
 DATE_COMPONENT_RE = re.compile(r"^\d{2}$")
@@ -118,9 +119,13 @@ class SinceFilter:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Mine project-owned Codex and Claude Code transcript signals.")
-    parser.add_argument("--project", action="append", default=[], help="Project path to mine. Repeatable. Default: pwd -P")
     parser.add_argument(
-        "--historical-project", action="append", default=[],
+        "--project", action="append", default=[], help="Project path to mine. Repeatable. Default: pwd -P"
+    )
+    parser.add_argument(
+        "--historical-project",
+        action="append",
+        default=[],
         help="Additional explicit ownership root that may no longer exist. Repeatable",
     )
     parser.add_argument(
@@ -204,13 +209,13 @@ def normalize_projects(raw_projects: list[str], historical_projects: list[str] |
 def build_since_filter(value: str) -> SinceFilter:
     match = SINCE_DAYS_RE.fullmatch(value)
     if match:
-        cutoff = dt.datetime.now(dt.timezone.utc) - dt.timedelta(days=int(match.group(1)))
+        cutoff = dt.datetime.now(dt.UTC) - dt.timedelta(days=int(match.group(1)))
         return SinceFilter(value=value, cutoff=cutoff)
     try:
         parsed = dt.datetime.strptime(value, "%Y-%m-%d")
     except ValueError:
         raise ValueError(f"invalid --since value: {value!r} (expected YYYY-MM-DD or Nd)") from None
-    return SinceFilter(value=value, cutoff=parsed.replace(tzinfo=dt.timezone.utc))
+    return SinceFilter(value=value, cutoff=parsed.replace(tzinfo=dt.UTC))
 
 
 def mine_transcripts(
@@ -229,7 +234,7 @@ def mine_transcripts(
     codex_index = load_codex_index(codex_home / "session_index.jsonl")
     claude_history = load_claude_history(claude_home / "history.jsonl")
     coverage = {project: new_coverage(codex_index["records"]) for project in projects}
-    now = dt.datetime.now(dt.timezone.utc)
+    now = dt.datetime.now(dt.UTC)
 
     codex_sessions = mine_codex_sessions(
         projects,
@@ -287,7 +292,6 @@ def new_coverage(codex_index_records: int) -> dict[str, Any]:
         "claude_candidates": 0,
         "selected_sessions": 0,
         "claude_tool_result_files": 0,
-        "claude_tool_result_failures": {},
         "codex_index_records": codex_index_records,
         "codex_scanned": 0,
         "claude_scanned": 0,
@@ -322,7 +326,7 @@ def mine_codex_sessions(
     sessions: list[SessionSummary] = []
     current_id = os.environ.get("CODEX_THREAD_ID", "").strip()
     for path in paths:
-        metadata = list(read_jsonl_head(path))
+        metadata = list(read_codex_metadata_head(path))
         ownership, ambiguous_projects = codex_ownership(metadata, path, projects)
         mark_ambiguous(coverage, ambiguous_projects)
         if ownership is None:
@@ -437,9 +441,7 @@ def prune_if_stale(path: Path, since: SinceFilter, counter: str, timestamp_count
     return False
 
 
-def codex_ownership(
-    metadata: list[Any], path: Path, projects: list[Path]
-) -> tuple[Ownership | None, set[Path]]:
+def codex_ownership(metadata: list[Any], path: Path, projects: list[Path]) -> tuple[Ownership | None, set[Path]]:
     session_cwds: list[Path] = []
     turn_cwds: list[Path] = []
     for item in metadata:
@@ -474,13 +476,17 @@ def codex_ownership(
             if isinstance(cwd, str) and cwd.strip():
                 turn_cwds.append(normalize_path(cwd))
     owners = {owner for cwd in turn_cwds if (owner := most_specific_project(cwd, projects)) is not None}
-    if not turn_cwds or len(owners) != 1 or any(most_specific_project(cwd, projects) not in owners for cwd in turn_cwds):
+    if (
+        not turn_cwds
+        or len(owners) != 1
+        or any(most_specific_project(cwd, projects) not in owners for cwd in turn_cwds)
+    ):
         return None, owners
     owner = next(iter(owners))
     canonical_cwds = set(turn_cwds)
     if any(not is_within(cwd, owner) for cwd in canonical_cwds):
         return None, owners
-    return Ownership("turn_context.cwd", str(sorted(canonical_cwds, key=str)[0]), str(owner)), set()
+    return Ownership("turn_context.cwd", str(min(canonical_cwds, key=str)), str(owner)), set()
 
 
 def codex_session_ids(metadata: list[Any], path: Path) -> set[str]:
@@ -542,11 +548,13 @@ def mine_claude_sessions(
                 for path in paths
                 if not prune_if_stale(path, since, "claude_files_pruned", "claude_files_pruned_by_timestamp")
             ]
+        # Claude Code stores spilled tool output beside each transcript in <session-id>/tool-results/.
+        tool_result_files = sum(
+            1 for path in paths for result in (project_dir / path.stem / "tool-results").rglob("*") if result.is_file()
+        )
         for project in possible_projects:
             coverage[project]["claude_scanned"] += len(paths)
-            tool_results_dir = project_dir / "tool-results"
-            if tool_results_dir.is_dir():
-                coverage[project]["claude_tool_result_files"] += sum(1 for path in tool_results_dir.rglob("*") if path.is_file())
+            coverage[project]["claude_tool_result_files"] += tool_result_files
         for path in paths:
             path_directory_projects[path.resolve(strict=False)].update(possible_projects)
 
@@ -556,9 +564,7 @@ def mine_claude_sessions(
         metadata = list(read_jsonl_head(path))
         session_id = claude_session_id(metadata, path)
         history_records = history.get(session_id, [])
-        ownership, ambiguous_projects = claude_ownership(
-            metadata, directory_candidates, history_records, projects
-        )
+        ownership, ambiguous_projects = claude_ownership(metadata, directory_candidates, history_records, projects)
         if ownership is None:
             mark_ambiguous(coverage, ambiguous_projects or directory_candidates)
             continue
@@ -569,9 +575,7 @@ def mine_claude_sessions(
         coverage[owner]["claude_candidates"] += 1
         coverage[owner]["structurally_matched"] += 1
 
-        history_messages = deduplicate_messages(
-            record["display"] for record in history_records if record["display"]
-        )
+        history_messages = deduplicate_messages(record["display"] for record in history_records if record["display"])
         if keywords and history_records and not count_keywords(history_messages, keywords):
             continue
         if not history_records and raw_prescan_eligible(keywords):
@@ -630,7 +634,7 @@ def claude_ownership(
         return None, implicated
     owner = next(iter(owners))
     if cwd_values:
-        cwd = sorted(cwd_values, key=str)[0]
+        cwd = min(cwd_values, key=str)
         matched_via = "transcript.cwd+encoded-directory"
     else:
         cwd = owner
@@ -768,8 +772,8 @@ def build_excerpts(
         first = user_messages[0]
         excerpts.append({"channel": "user", "text": truncate(redact_text(first), 240)})
         seen.add(" ".join(first.split()))
-    if keywords:
-        alternatives = [alternative.lower() for keyword in keywords for alternative in keyword_alternatives(keyword)]
+    matcher = keyword_matcher(keywords)
+    if matcher is not None:
         for channel, messages in (("user", user_messages), ("assistant", assistant_messages)):
             for message in messages:
                 if len(excerpts) >= 3:
@@ -777,7 +781,7 @@ def build_excerpts(
                 normalized = " ".join(message.split())
                 if normalized in seen:
                     continue
-                if any(alternative in message.lower() for alternative in alternatives):
+                if matcher.matches(message.lower()):
                     excerpts.append({"channel": channel, "text": truncate(redact_text(message), 240)})
                     seen.add(normalized)
     return excerpts
@@ -803,9 +807,13 @@ def apply_excerpt_budget(sessions: list[SessionSummary], max_bytes: int) -> bool
 def mark_content_only_mentions(
     records: list[Any], owner: Path, projects: list[Path], coverage: dict[Path, dict[str, Any]]
 ) -> None:
-    strings = list(extract_strings(records))
+    strings: list[str] | None = None
     for project in projects:
-        if project != owner and any(str(project) in text for text in strings):
+        if project == owner:
+            continue
+        if strings is None:
+            strings = list(extract_strings(records))
+        if any(str(project) in text for text in strings):
             coverage[project]["content_only_project_mentions_ignored"] += 1
 
 

@@ -56,14 +56,27 @@ name, placeholder, title, field name, image text, nearby text, row text, group
 and form), so controls with no usable name can still be found. Password, code,
 card, bank and ID-number fields are kept apart: `pageView` gives a model only
 their category and whether they are filled, and the workflow points at them
-for the person without asking a model. The host's `planStep` reads `pageView`
+for the person without asking a model. `pageView.blockers` lists what stands in
+front of the page (modal, cookie or consent banner, person check, sign-in wall,
+paywall) with `covers` and, when the browser identified one, the control ref of
+a close control (`ref`) or a consent banner's reject control (`rejectRef`). A
+person check never carries a ref. The host's `planStep` reads `pageView`
 and returns one step with a ref; `checkStep` can stop and ask before a step.
-The workflow points at the control; the person presses every control. Its only
+By default the workflow points at the control; the person presses every control. Its only
 effect is `fill(offerKey)`: one held value into one empty ordinary field after
 the person agrees. It compares every page fact with the offered page first,
 starts a new task epoch for the new browser target (`fillTargets(task)` gives
 the host policy that target), and reads the page again after the fill. Hosts
 compose `verifyGuidedFill` as the actuator's verification for these fills.
+Hosts can opt into planned browser actions with `authorizeAction`. A planner may
+then return `kind: "agent-action"`, a current control ref, an action (`click`,
+`fill`, `select`, or directional `scroll`) and a held `valueRef` when needed.
+`executeAction(offerKey)` rechecks host policy and the complete page observation
+before one task-runtime dispatch; `actionTargets(task)` supplies its current target.
+The host must grant the capability, decide consequence policy, resolve held values,
+and verify the result from fresh page evidence. The default remains person-guided.
+Unknown effects stop further actions and are not replayed.
+
 A browser-stopped submit or page change pauses the task; a form the person sent
 while the website was hers is a `person-check` stop. `BillWorkflow` is the bill
 configuration of this workflow. Run the real Chromium and model lane with

@@ -350,3 +350,5 @@ Tauri [GHSA-w28w-mhc8-qvjv](https://github.com/tauri-apps/tauri/security/advisor
 [#839](https://github.com/shiwenwen/hope-agent/pull/839) 的 Cargo 分组更新带入 Tauri 2.12.4 与 updater 2.14.0；前端同步 API 2.12.4 和精确 updater 2.14.0，避免 Rust/JS minor 不一致导致桌面发布构建失败。保留 `allowDowngrades=false`、公钥、端点、CSP 与 capability。上游 minisign-verify 0.3 支线由桌面插件使用，自有 headless 更新器仍用原有 0.2.5；不能把插件升级描述成整个签名图均已更新。
 
 分组中的 0.x 变化按调用边界核查：tauri-utils 的构建链使用 dom_query 0.28；Tauri 接收 auto-launch、infer、tao/wry、tray-icon 等上游适配；项目不直接跨接这些类型。保留现有 HTML→Markdown、分词 singleton、PDFium 渲染与更新桥调用，不因分组名声称无行为变化。官方 [Tauri 变更](https://github.com/tauri-apps/tauri/releases/tag/tauri-v2.12.4) 与 [updater 变更](https://github.com/tauri-apps/plugins-workspace/releases/tag/updater-v2.14.0) 需结合精确头编译、CI 和审查证据；不包含真实桌面/系统安装或 Provider 验收。
+
+2026-10-20 的实际发布 CLI 预检进一步发现 dialog、notification、process 的 Rust/JS minor 不一致。JS 侧分别对齐 2.8.3、2.7.0、2.4.0，Cargo 解析版本不变；主包和 updater 的配对不足以证明全部插件兼容。版本守卫现覆盖所有已声明的官方 JS 插件及其原生对应项，继续按实际锁定版本比较 major.minor，允许 patch 差异；缺失任一对应项也拒绝。该检查及合成夹具不替代实际四平台构建、系统权限、通知交互或重启验收。

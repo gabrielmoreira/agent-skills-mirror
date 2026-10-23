@@ -66,8 +66,26 @@ printf '%s\n' "$paths" '.omh-agent-skills-manifest.json' | while IFS= read -r pa
         [ ! -L "$current" ] || fail "Symlink destination: $current"
         current=${current%/*}
         [ -n "$current" ] || current=/
+        [ ! -e "$current" ] || [ -d "$current" ] || fail "Not a directory: $current"
     done
     [ ! -e "$target/$path" ] || [ -f "$target/$path" ] || fail "Not a file: $target/$path"
+done
+# Support data needs ownership even though ordinary skill bodies are replaceable.
+# Use the previous one receipt, never a per-host or duplicate inventory.
+printf '%s\n' "$checksums" | while IFS= read -r row; do
+    hash=${row%% *}; path=${row#*  }
+    case $path in
+        */toolkit/*)
+            if [ -f "$target/$path" ]; then
+                prior=
+                if [ -f "$target/.omh-agent-skills-manifest.json" ]; then
+                    prior=$(awk -v key="\"$path\":" '$1 == key {gsub(/[",]/, "", $2); print $2}' "$target/.omh-agent-skills-manifest.json")
+                fi
+                [ -n "$prior" ] || prior=$hash
+                actual=$(checksum "$target/$path"); actual=${actual%% *}
+                [ "$actual" = "$prior" ] || fail "Foreign/edited support preserved: $path"
+            fi ;;
+    esac
 done
 printf '%s\n' "$paths" | while IFS= read -r path; do
     mkdir -p "$target/${path%/*}"

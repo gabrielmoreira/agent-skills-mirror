@@ -10,7 +10,7 @@ description: 'Generate API contracts and OpenAPI specifications from code or des
 
   '
 allowed-tools: Read, Write, Edit, Grep, Glob, Bash(api:contract-*)
-version: 1.25.0
+version: 1.26.0
 author: Jeremy Longshore <jeremy@intentsolutions.io>
 license: MIT
 tags:
@@ -43,7 +43,7 @@ Generate OpenAPI 3.0/3.1 specifications and consumer-driven contract tests from 
 7. Set up provider verification that replays Pact interactions against the actual API implementation, verifying the provider satisfies all consumer expectations.
 8. Generate contract artifacts: OpenAPI spec file, Postman collection, and consumer contract (Pact JSON), all versioned alongside the API source code.
 
-See `${CLAUDE_SKILL_DIR}/references/implementation.md` for the full implementation guide.
+See [`references/implementation.md`](references/implementation.md) for the full implementation guide.
 
 ## Output
 
@@ -64,7 +64,7 @@ See `${CLAUDE_SKILL_DIR}/references/implementation.md` for the full implementati
 | Circular schema reference | Components reference each other creating infinite recursion | Break cycles with `allOf` composition or introduce intermediate types |
 | Example/schema mismatch | Example values do not validate against their own schema | Auto-validate all examples during spec generation; reject mismatched examples |
 
-Refer to `${CLAUDE_SKILL_DIR}/references/errors.md` for comprehensive error patterns.
+Refer to [`references/errors.md`](references/errors.md) for comprehensive error patterns.
 
 ## Examples
 
@@ -74,7 +74,7 @@ Refer to `${CLAUDE_SKILL_DIR}/references/errors.md` for comprehensive error patt
 
 **Design-first workflow**: Author OpenAPI spec in Stoplight Studio, generate server stubs and client SDKs from the spec, then implement business logic in the stubs -- spec stays as the single source of truth.
 
-See `${CLAUDE_SKILL_DIR}/references/examples.md` for additional examples.
+See [`references/examples.md`](references/examples.md) for additional examples.
 
 ## Resources
 

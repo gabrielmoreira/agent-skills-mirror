@@ -85,7 +85,7 @@ from . import (
 from .cluster import cluster_candidates
 from . import fusion
 from . import render
-from .fusion import collapse_duplicate_urls, weighted_rrf
+from .fusion import collapse_duplicate_urls, source_item_key, weighted_rrf
 
 DISCOVERY_SOURCES = ("reddit", "hackernews", "digg", "x")
 _DISCOVERY_GENERIC_DOMAIN_TERMS = {
@@ -674,7 +674,7 @@ def _fetch_discovery_source(
     if source == "digg":
         result = digg.search_digg(plan.domain, from_date, to_date, depth=depth)
         items = digg.parse_digg_response(result, query=plan.domain)
-        # Digg is an AI-focused broad listing, so keep only domain-bearing
+        # Digg's AI and Tech sections are a broad listing, so keep only domain-bearing
         # clusters when scoped; global trending keeps the whole feed.
         if keyword_gate:
             items = [
@@ -2359,10 +2359,14 @@ def run(
         config["_hiring_signals_mode"] = True
         if not requested_sources:
             available = ["jobs"]
+    available = [source for source in available if source not in excluded_sources]
     if not available:
         raise RuntimeError("No sources are available for this run.")
 
-    planner_requested_sources = requested_sources
+    planner_requested_sources = (
+        [source for source in requested_sources if source not in excluded_sources]
+        if requested_sources else None
+    )
     if hiring_signals_mode and not planner_requested_sources:
         planner_requested_sources = ["jobs"]
 
@@ -2383,6 +2387,9 @@ def run(
             external_plan, topic, available, planner_requested_sources, depth,
             honor_plan_sources=True,
         )
+        # Quick runs keep the sanitizer's two-source budget.
+        if depth != "quick":
+            _ensure_unplanned_lanes_in_host_plan(plan, available)
         plan_source = "external"
     else:
         _check_research(config)
@@ -3042,6 +3049,14 @@ def run(
         bundle.items_by_source, topic=topic, config=config, depth=depth, mock=mock,
         elapsed=time.monotonic() - run_started,
     )
+    retained_markets = {
+        source_item_key(item) for item in items_by_source.get("polymarket", [])
+    }
+    for key, stream in bundle.items_by_source_and_query.items():
+        if key[1] == "polymarket":
+            bundle.items_by_source_and_query[key] = [
+                item for item in stream if source_item_key(item) in retained_markets
+            ]
     source_status = _finalize_source_status(bundle.source_status, items_by_source)
 
     candidates = weighted_rrf(
@@ -3765,6 +3780,53 @@ def _ensure_devto_in_plan(plan: schema.QueryPlan, available: list[str]) -> None:
         plan.source_weights = planner._normalize_weights(plan.source_weights)
 
 
+# Sources that are available only because the user installed their CLI or opted
+# in (INCLUDE_SOURCES, --search, a targeting flag). A host plan that names none
+# of them in any subquery almost always means the host planner never knew to
+# list them, not that it chose to skip them, so they ride the primary subquery.
+# Paid lanes with their own host decision step (amazon, meta_ads) stay out;
+# EXCLUDE_SOURCES and --search already filter ``available``.
+HOST_PLAN_BACKFILL_SOURCES = (
+    "digg",
+    "arxiv",
+    "techmeme",
+    "bluesky",
+    "truthsocial",
+    "stocktwits",
+    "linkedin",
+    "dripstack",
+    "devto",
+    "telegram",
+    "trustpilot",
+)
+
+
+def _ensure_unplanned_lanes_in_host_plan(
+    plan: schema.QueryPlan,
+    available: list[str],
+) -> None:
+    if not plan.subqueries:
+        return
+    planned = {source for subquery in plan.subqueries for source in subquery.sources}
+    missing = [
+        source for source in HOST_PLAN_BACKFILL_SOURCES
+        if source in available and source not in planned
+    ]
+    if not missing:
+        return
+    plan.subqueries[0].sources.extend(missing)
+    for source in missing:
+        plan.source_weights.setdefault(source, 1.0)
+    plan.source_weights = planner._normalize_weights(plan.source_weights)
+    log.source_log(
+        "Planner",
+        "Added installed/opted-in sources absent from every --plan subquery to "
+        f"{plan.subqueries[0].label}: {', '.join(missing)} "
+        "(set EXCLUDE_SOURCES to skip them).",
+        tty_only=False,
+    )
+
+
 def _external_plan_names_source(external_plan: Any, source: str) -> bool:
     if not isinstance(external_plan, dict):
         return False
@@ -4162,7 +4224,12 @@ def _finalize_source_status(
         elif state == health.OK and not count:
             state = outcome.lane_failure_state or schema.NO_RESULTS
         elif state == schema.PARTIAL and not count:
-            state = http.classify_failure(message=detail or "")
+            if source == "digg" and digg.is_stale_note(detail):
+                # A stale Digg copy that matched nothing is an empty answer
+                # with a coverage note, not a failed search.
+                state = schema.NO_RESULTS
+            else:
+                state = http.classify_failure(message=detail or "")
         finalized[source] = schema.SourceOutcome(
             source=source,
             state=state,
@@ -5424,7 +5491,36 @@ def _fetch_youtube_stream(
     freshness_mode: str | None = None,
 ) -> tuple[list[dict], dict]:
     """Search, backfill, transcribe, and comment-enrich one YouTube query."""
+    # An abandoned lane keeps running after the report is saved; once the
+    # run is over, every ScrapeCreators call in it is wasted credit (#1315).
+    with youtube_yt.sc_spend_until(
+        lambda: _research_stopped(config),
+        cancel=config.get("_enrich_cancel"),
+        deadline=config.get("_research_deadline"),
+    ):
+        return _fetch_youtube_stream_live(
+            yt_query, from_date, to_date, depth, config,
+            has_ytdlp=has_ytdlp, freshness_mode=freshness_mode,
+        )
+
+
+def _interpreter_shutting_down(exc: BaseException) -> bool:
+    """An abandoned lane outliving main() can no longer start thread pools."""
+    return isinstance(exc, RuntimeError) and "interpreter shutdown" in str(exc)
+
+
+def _fetch_youtube_stream_live(
+    yt_query: str,
+    from_date: str,
+    to_date: str,
+    depth: str,
+    config: dict[str, Any],
+    *,
+    has_ytdlp: bool,
+    freshness_mode: str | None,
+) -> tuple[list[dict], dict]:
     result = None
+    run_over = False
     youtube_failure: str | None = None
     recovered_failure: str | None = None
     # ScrapeCreators key (when present) is the default-on backup tier: it
@@ -5446,13 +5542,16 @@ def _fetch_youtube_stream(
         except Exception as exc:
             youtube_failure = str(exc)
             result = None
+            # Not an empty yt-dlp result: the process is exiting.
+            run_over = _interpreter_shutting_down(exc)
+    run_over = run_over or _research_stopped(config)
     free_items = list((result or {}).get("items") or [])
     min_items = env.youtube_sc_min_items(config)
     backfill_thin = bool(free_items) and len(free_items) < min_items
     thin_detail: str | None = None
     thin_error = False
     thin_retryable = False
-    if (not free_items or backfill_thin) and sc_token:
+    if (not free_items or backfill_thin) and sc_token and not run_over:
         backfill_scope = (
             http.capture_failures() if free_items else contextlib.nullcontext([])
         )
@@ -5525,9 +5624,7 @@ def _fetch_youtube_stream(
     # Enrich top videos with comments (default-on when a key is present).
     items = youtube_yt.parse_youtube_response(result)
     if items and env.is_youtube_comments_available(config):
-        youtube_yt.enrich_with_comments(
-            items, token=config.get("SCRAPECREATORS_API_KEY", ""),
-        )
+        youtube_yt.enrich_with_comments(items, token=sc_token or "")
     if thin_detail:
         if not thin_error:
             return items, {"_source_outcome_detail": thin_detail}
@@ -6152,6 +6249,9 @@ def _retrieve_stream_impl(
         # Enrichment with attached X posts is deferred to
         # _finalize_items_by_source so it runs on the items that actually
         # survive dedupe rather than on top-K of the raw fanout.
+        stale = digg.stale_note(result)
+        if stale:
+            return items, _outcome_artifact(health.PARTIAL, stale)
         return items, _result_outcome_artifact(source, result)
     if source == "arxiv":
         result = arxiv.search_arxiv(subquery.search_query, from_date, to_date, depth=depth)

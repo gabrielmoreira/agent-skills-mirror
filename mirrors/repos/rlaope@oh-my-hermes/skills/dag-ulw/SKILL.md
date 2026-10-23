@@ -24,7 +24,7 @@ This is a Hermes-native `dag-ulw` workflow skill.
 ## First Steps
 
 - Start at once; there is no plan approval. Write the goal criteria in one line.
-- Plan the graph and call `omh_dag action=define` with each node's id, label, category, prompt, depends_on and write_scope; fix every refusal and read the lint before going on.
+- Plan the graph and call `omh_dag action=define` with the complete run `goal` and each node's id, label, category, prompt, depends_on and write_scope; fix every refusal and read the lint before going on. Never `delegate_task` before `define` returns its calls. The saved goal reaches every native task; local VERIFY does not replace goal acceptance.
 - Keep the plan todo as the run's layers in ONE tool: `todo_list` when `todo_list` is in your tool list or tool_search finds it (OMH mirrors it), else `omh_todo`. One item per layer, named for what it delivers, never a list of its nodes (the panel draws those); advance it as each layer settles.
 - For each call `omh_dag` returns, run its route (`omh_delegate_route`, set or fallback as given), then `delegate_task` with the tasks unchanged; never more calls than it returned. Then end the turn with one status line; never wait or poll.
 - On each completion read the node's handoff file and call `omh_dag action=settle` (accepted, failed, or blocked; a provider error is failed with provider_error). Dispatch what it returns in the same turn.
@@ -56,7 +56,7 @@ Bad example:
 - No two concurrently runnable nodes shared a write scope without an edge.
 - A separate verification node ran the real command after every producer.
 - Every accepted node was checked against its SCOPE; repairs stayed within two cycles per node and extend rounds within two per run.
-- The report names what is still open and ends with the observed run summary.
+- The report names what is still open and includes the observed run summary or an explicit run-summary not_available line before any specific next-action question.
 
 ## Recovery Notes
 
@@ -86,6 +86,7 @@ Reasoning demand: `standard`
 
 Quality bar:
 
+- When adapting an existing capability, load `skill_view(name='omh-verification-gate', file_path='references/adaptation-quality.md')` before accepting a plan, dispatching work, or claiming completion; carry its criteria and comparisons into tasks and evidence.
 - Split first: many small nodes beat one big one, but never split one shared write scope or one judgement.
 - Climb the difficulty ladder `quick` -> `unspecified-low` -> `unspecified-high` with a one-line reason per climb; use `ultrabrain` at most once, and a graph whose every node is `deep` or `deep-work` is a routing failure.
 - Write every node prompt self-contained, in order: TASK, DELIVERABLE, SCOPE (what it may read and write), VERIFY (the literal command and expected result), STOP WHEN.
@@ -96,12 +97,12 @@ Quality bar:
 - On a messenger, each completion turn's reply is the run's one status line, and dispatch goes one call per layer and category so the posts stay bounded; load `references/run-loop.md` for the messenger, repair, extend and export details.
 - A mid-run user message is an interjection, not a stop: answer it briefly and, in the same reply, continue the run — re-read the phase todo when one is active and dispatch or advance the next pending step, or name the armed wait it is waiting on -- handle, bound completion signal, deadline -- instead of re-reading status. Only the user's explicit stop or cancel, or the engine's own completion gate, ends the run; when the interjection changes scope, say so and update the declared plan or todo instead of silently abandoning it. A mid-run message is the latest steering for the active task, not automatically a replacement objective: it replaces the objective when the user says so and steers the current one otherwise.
 - A follow-up that needs new authority, materially expands the scope, or changes external state not already authorized is described first and started only on the user's approval: the turn ends by naming that next action and asking whether to take it, as one question carrying the choices the user has, never by declaring what will not be done; persistence never broadens the authorized scope. A refused escalation is answered the same way, with a safer alternative inside the boundary or the authorization the boundary asks for — never a workaround or an indirect execution.
-- The closing brief scales to the change: one or two sentences plus the observed validation for a simple change, more only when the complexity earns it. Lead with the result or decision, in the user's words; omit abandoned approaches unless they explain a tradeoff the reader needs; narrate no internal bookkeeping (todo transitions, waits). When the work stops at a boundary or at a decision the user owns, end with the next action offered as a question, and state what was left undone as the option it leaves open, never as a refusal. Required closing lines stay outside this scaling: the observed run summary, and any prepared-not-observed or unmerged work, are stated whatever the brief's length.
-- Close a finished run with `omh_run_summary` and print its summary_text verbatim as the final lines, or an explicit run-summary not_available line.
+- The closing brief scales to the change: one or two sentences for a simple change. Lead with the result and validation; omit abandoned approaches unless they explain a tradeoff, and internal bookkeeping. Disclose requested-but-not-done work and material prepared/unmerged work; omit unrelated non-action footers. Required accounting stays outside this scaling. Order: result -> relevant evidence/limits -> observed accounting (when required) -> specific question (if useful). For a real unresolved user decision or a useful briefing discussion, offer one specific, content-linked question. Completed work needs no question; discussion grants no authority. Never estimate usage.
+- Close a finished run with `omh_run_summary` and print its summary_text verbatim, or an explicit run-summary not_available line, before any specific next-action question -- never estimated numbers.
 
 Handoff policy:
 
-Hermes owns the plan, the dispatch, the settling and the verdict; every node runs as Hermes' own `delegate_task` child, routed per category with `omh_delegate_route`. OMH's `omh_dag` tool only keeps the graph. Coding nodes go to an external coding CLI only when the person chose that owner within the last day through `omh chat` or `omh coding` (Hermes chat records no choice); then `omh_dag` lists them under `export`. Otherwise no external CLI runs.
+Hermes owns the plan, the dispatch, the settling and the verdict; every node runs as Hermes' own `delegate_task` child, routed per category with `omh_delegate_route`. OMH's `omh_dag` tool keeps the graph, and only its calls start nodes: a `delegate_task` without the `[dag:<run>/<node>]` marker it returned is no node of the run. Coding nodes go to an external coding CLI only when the person chose that owner within the last day through `omh chat` or `omh coding` (Hermes chat records no choice); then `omh_dag` lists them under `export`. Otherwise no external CLI runs.
 
 Required inputs:
 
@@ -132,7 +133,7 @@ Record observed delegation results; otherwise return `not_available` or `not_obs
 Prepared OMH routing is not execution, review, CI, merge-readiness, or merge evidence.
 - Treat wrapper memory/context summaries as advisory local context, not proof of opaque Hermes memory reads or changes.
 Preserve workflow intent and stop conditions; verify before claiming completion.
-Reply in the user's own words and the host's own voice: its SOUL.md persona owns reply language, tone, speech level, and sentence endings, progress updates included (where it sets no language, use the one the user wrote in), and OMH shapes structure and content only; OMH's record terms (surface, lane, wrapper, handoff, evidence boundary, not_observed) stay in records and tool calls, never in the sentence the user reads unless they ask about one; and when a stop condition or a decision the user owns ends the turn, offer the next action as a question rather than declaring what will not be done.
+Reply in the user's own words and the host's own voice: its SOUL.md persona owns reply language, tone, speech level, and sentence endings, progress updates included (where it sets no language, use the one the user wrote in), and OMH shapes structure and content only; OMH's record terms (surface, lane, wrapper, handoff, evidence boundary, not_observed) stay in records and tool calls, never in the sentence the user reads unless they ask about one; and when a real unresolved user decision or a useful briefing discussion remains, offer one specific, content-linked question. Completed work needs no question; omit unrelated non-action footers and generic offers to continue.
 
 Use Hermes-native subagent/delegation features when available: native subagents -> Hermes delegation when available, otherwise sequential lanes.
 

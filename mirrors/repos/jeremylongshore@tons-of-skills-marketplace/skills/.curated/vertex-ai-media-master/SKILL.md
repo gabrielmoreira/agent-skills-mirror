@@ -6,7 +6,7 @@ description: 'Execute automatic activation for all google vertex ai multimodal o
 
   '
 allowed-tools: Read, Write, Edit, Grep, Glob, Bash(general:*), Bash(util:*)
-version: 2.25.0
+version: 2.26.0
 author: Jeremy Longshore <jeremy@intentsolutions.io>
 license: MIT
 tags:
@@ -83,7 +83,7 @@ Multimodal media operations on Google Cloud Vertex AI covering video understandi
 
 ## Resources
 
-- Detailed model capabilities and code patterns: `${CLAUDE_SKILL_DIR}/references/core-capabilities.md`
+- Detailed model capabilities and code patterns: [`references/core-capabilities.md`](references/core-capabilities.md)
 - Vertex AI Multimodal overview: https://cloud.google.com/vertex-ai/generative-ai/docs/multimodal/overview
 - Imagen documentation: https://cloud.google.com/vertex-ai/generative-ai/docs/image/overview
 - Video understanding guide: https://cloud.google.com/vertex-ai/generative-ai/docs/multimodal/video-understanding

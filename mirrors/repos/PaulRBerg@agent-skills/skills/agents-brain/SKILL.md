@@ -1,14 +1,15 @@
 ---
 argument-hint:
   maintain [path] [target ...] [--root-only] [--preserve] [--minimal] [--thorough|--full] [--dry-run] [--force] |
-  create-skill [skill-name]
+  create-skill [skill-name] | create-agents-md [path] [--root-only] [--dry-run] [--force]
 compatibility:
   Requires curl and a writable user cache directory. Network access populates or refreshes the official Anthropic and
   OpenAI prompting guides and the agentskills.io specification.
 name: agents-brain
 description:
-  Maintain README.md, AGENTS.md/CLAUDE.md, skills, and repo context. Create, scaffold, or initialize project-local agent
-  skills. Use task evidence to delete obsolete skills, merge overlapping skills, and capture recurring workflows.
+  Maintain README.md, AGENTS.md/CLAUDE.md, skills, and repo context. Create, scaffold, or initialize AGENTS.md files and
+  project-local agent skills. Use task evidence to delete obsolete skills, merge overlapping skills, and capture
+  recurring workflows.
 ---
 
 # Agents Brain
@@ -26,9 +27,12 @@ unchanged decision. Preserve host restrictions and required destructive-action a
 - `create-skill [skill-name]`: Create a project-local skill from an explicit request. Read
   [references/create-skill.md](references/create-skill.md). Apply its repository catalog guard before scaffolding.
   Explicit creation does not require recurring-use evidence.
+- `create-agents-md [path] [--root-only] [--dry-run] [--force]`: Initialize AGENTS.md files for a scope from an explicit
+  request. Create the scope-root file and judge each subtree for a nested file. Read
+  [references/create-agents-md.md](references/create-agents-md.md).
 
-Choose the route before discovery or writes. Both routes use the prompting and STE requirements below. The maintenance
-sections govern `maintain`. The creation reference owns that route's scope, workflow, validation, and report.
+Choose the route before discovery or writes. All routes use the prompting and STE requirements below. The maintenance
+sections govern `maintain`. Each creation reference owns its route's scope, workflow, validation, and report.
 
 ## Maintenance Scope
 
@@ -61,9 +65,10 @@ model is the exception, for example routing tables, `model:` fields, and API par
 human-facing documentation.
 
 Before complex, long-running, multi-tool, or orchestration-heavy context work, resolve `scripts/fetch-guidance.sh`
-relative to this skill directory. For that work, run it once for `anthropic` and once for `openai`. Read both returned
-files completely. Run the helper and read the guides only when the task writes or changes prompts, skills, or other
-agent-facing prose. For other edits, do not run the helper or read either guide. In that case, report
+relative to this skill directory. For that work, run it once for `anthropic` and once for `openai`. The two runs are
+independent, so start both in the same turn, as parallel calls or one shell command. Read both returned files
+completely, in one parallel batch. Run the helper and read the guides only when the task writes or changes prompts,
+skills, or other agent-facing prose. For other edits, do not run the helper or read either guide. In that case, report
 `guides: skipped (no agent-facing prose)`.
 
 The helper retrieves Anthropic's
@@ -103,7 +108,8 @@ Before writing or changing agent-facing prose, read [references/asd-ste100.md](r
 Apply its STE-based profile during writing. Complete its meaning and style review before reporting completion. Preserve
 obligation strength, uncertainty, conditions, technical precision, and protected literal content. Honor the target's
 audience and any instructions to preserve accurate user-authored prose. The profile does not establish official ASD
-dictionary compliance.
+dictionary compliance. One complete read of that reference during the current run satisfies every later requirement in
+this skill to read it, unless the file changed since.
 
 ## Maintain Workflow
 
@@ -179,7 +185,7 @@ flags. Continue only when they cannot change scope, safety, or write behavior.
 
 ## Repository Guard Rail
 
-For `maintain`, run before discovery or writes:
+For `maintain` and `create-agents-md`, run before discovery or writes:
 
 ```sh
 cwd="$(pwd -P)"
@@ -307,5 +313,7 @@ detail. Stop once the selected targets meet the completion bar.
   validation requirements. Run `scripts/fetch-agentskills-spec.sh [--refresh]` through Bash to obtain the absolute
   cached specification path. The default reuses a valid cache for 24 hours, then revalidates it. The creation reference
   owns refresh, stale-cache, and failure rules.
+- Initializing AGENTS.md files: read [references/create-agents-md.md](references/create-agents-md.md) for scope,
+  nested-file decisions, and the report.
 - Before choosing a new skill's contract or layout: read
   [references/writing-great-skills.md](references/writing-great-skills.md) for authoring, routing, and execution rules.

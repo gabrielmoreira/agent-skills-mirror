@@ -9,7 +9,7 @@
 | # | Pattern | Bad Example | Fixed |
 |---|---------|------------|-------|
 | 1 | **Vague task verb** | "help me with my code" | "Refactor `getUserData()` to use async/await and handle null returns" |
-| 2 | **Two tasks in one prompt** | "explain AND rewrite this function" | Split into two prompts: explain first, rewrite second |
+| 2 | **Unrelated tasks in one prompt** | "fix login and write a sales email" | Split unrelated outcomes; combine related work with shared acceptance criteria |
 | 3 | **No success criteria** | "make it better" | "Done when the function passes existing unit tests and handles null input without throwing" |
 | 4 | **Over-permissive agent** | "do whatever it takes" | Explicit allowed actions list + explicit forbidden actions list |
 | 5 | **Emotional task description** | "it's totally broken, fix everything" | "Throws uncaught TypeError on line 43 when `user` is null" |
@@ -37,7 +37,7 @@
 |---|---------|------------|-------|
 | 14 | **Missing output format** | "explain this concept" | "3 bullet points, each under 20 words, with a one-sentence summary at top" |
 | 15 | **Implicit length** | "write a summary" | "Write a summary in exactly 3 sentences" |
-| 16 | **No role assignment** | (blank) | "You are a senior backend engineer specializing in Node.js and PostgreSQL" |
+| 16 | **Missing domain perspective** | Specialized task without domain context | Add an expert role only when it changes the result |
 | 17 | **Vague aesthetic adjectives** | "make it look professional" | "Monochrome palette, 16px base font, 24px line height, no decorative elements" |
 | 18 | **No negative prompts for image AI** | "a portrait of a woman" | Add: "no watermark, no blur, no extra fingers, no distortion, no text overlay" |
 | 19 | **Prose prompt for Midjourney** | Full descriptive sentence | "subject, style, mood, lighting, composition, --ar 16:9 --v 6" |
@@ -50,7 +50,7 @@
 |---|---------|------------|-------|
 | 20 | **No scope boundary** | "fix my app" | "Fix only the login form validation in `src/auth.js`. Touch nothing else." |
 | 21 | **No stack constraints** | "build a React component" | "React 18, TypeScript strict, no external libraries, Tailwind only" |
-| 22 | **No stop condition for agents** | "build the whole feature" | Explicit stop conditions + ✅ checkpoint output after each step |
+| 22 | **No stop condition for agents** | "build the whole feature" | Explicit stop conditions + meaningful milestones and verification evidence |
 | 23 | **No file path for IDE AI** | "update the login function" | "Update `handleLogin()` in `src/pages/Login.tsx` only" |
 | 24 | **Wrong template for tool** | GPT-style prose prompt used in Cursor | Adapt to File-Scope Template (Template G) |
 | 25 | **Pasting entire codebase** | Full repo context every prompt | Scope to only the relevant function and file |
@@ -75,8 +75,8 @@
 |---|---------|------------|-------|
 | 31 | **No starting state** | "build me a REST API" | "Empty Node.js project, Express installed, `src/app.js` exists" |
 | 32 | **No target state** | "add authentication" | "`/src/middleware/auth.js` with JWT verify. `POST /login` and `POST /register` in `/src/routes/auth.js`" |
-| 33 | **Silent agent** | No progress output | "After each step output: ✅ [what was completed]" |
+| 33 | **Silent agent** | No progress output | "Report meaningful milestones, blockers, and final verification results" |
 | 34 | **Unlocked filesystem** | No file restrictions | "Only edit files inside `src/`. Do not touch `package.json`, `.env`, or any config file." |
 | 35 | **No human review trigger** | Agent decides everything autonomously | "Stop and ask before: deleting any file, adding any dependency, or changing the database schema" |
-| 36 | **Vague first turn for an agentic model** | "fix the auth bug" with no scope, files, or criteria | Use Template M. Front-load the outcome, relevant context, file scope, constraints, action boundaries, and acceptance criteria. |
+| 36 | **Vague first turn for an agentic model** | "fix the auth bug" with no scope, files, or criteria | Use Template M for Claude or Template N for OpenAI tasks. Front-load the outcome, relevant context, file scope, constraints, action boundaries, and acceptance criteria. |
 | 37 | **Context rot on long sessions** | Repeats corrections while stale assumptions remain in context | Start a new session for unrelated work; otherwise compact around current decisions, constraints, failures, and target state. Delegate only independent, sizeable investigation. |

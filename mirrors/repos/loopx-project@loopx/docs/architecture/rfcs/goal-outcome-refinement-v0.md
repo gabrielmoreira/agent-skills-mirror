@@ -1,8 +1,9 @@
 # RFC: Persistent Goal outcome refinement (v0)
 
-- Status: Implementation proposed; installed/model adoption and comparative benefit remain unqualified.
+- Status: Accepted; installed/model adoption and comparative benefit remain unqualified.
+- Supersedes / closes: none
 - Owner: Core Goal acceptance and work planning (S3/R4), with S1/S5 callers.
-- Language mirror: [中文](goal-outcome-refinement-v0.zh-CN.md).
+- Chinese semantic mirror: [中文](goal-outcome-refinement-v0.zh-CN.md).
 - Existing contract: [shared Goal alignment](shared-goal-alignment-and-governed-amendment-v0.md#37-current-work-and-goal-requirements).
 
 ## Problem and current evidence
@@ -71,8 +72,21 @@ not authorize a purpose outside those commitments. Changing those commitments
 requires their existing governed authority or a new Goal lifetime. Outcome
 refinement remains append-only; it cannot silently rewrite a requirement.
 
-The normal conversation guidance directs an Agent to prepare a revision when
-explicit user direction invalidates the recorded objective. The native
+Replanning is the primary semantic review point. Its existing planning guidance
+compares the current operating objective and cumulative requirements with the
+original intent, explicit user direction and actual work, reusing delivered
+`core_goal`/acceptance context. The Agent distinguishes a misleading objective
+from a scope conflict, missing evidence or stale display text, and records the
+evidence and judgment in its existing Vision/`path_delta`. A justified no-change
+decision is valid; review does not require a revision, a new per-Turn receipt or
+another poll. Scope conflicts do not authorize rewriting earlier commitments;
+missing evidence remains unresolved, and display drift belongs to its projection
+owner. This is semantic Agent guidance, not a prose classifier or a new admission
+gate. The existing typed authority, stop and replan-discharge rules remain.
+
+Ordinary conversation keeps the callable API without proactively directing a
+revision. When a material user direction change makes the recorded objective
+misleading, preparation retains the existing owner-review boundary. The native
 `loopx_collaboration` tool exposes `prepare_goal_objective`, and fixes its
 Goal/Agent/source Turn instead of accepting caller-supplied routing. Preparation
 uses the existing `goal.update` review/apply channel, with no Goal effect.
@@ -125,8 +139,8 @@ bind the prospective objective digest, so unrelated work/peer writes need no
 new review; changed objective/source/lifetime still invalidates that review.
 
 No revision is inferred from age or installed automatically on upgrade.
-Unchanged Goals retain their existing execution rules; the additional general
-guidance is conditional on an actual user correction. After adoption, ordinary
+Unchanged Goals retain their existing execution rules; semantic review runs at
+replanning, while a revision still needs an actual material user correction. After adoption, ordinary
 Turns do not require another acknowledgement. Stored revision history is bounded
 and never silently pruned. Before adoption, revert the code if necessary; after
 records exist, retain readers and admission fences, and roll back intent with a
@@ -140,6 +154,16 @@ recognize stale semantics. Model adherence, installed-host adoption, live Lark
 delivery and matched benchmark benefit remain separate qualification. Lark
 conversation workers reuse the native tool contract; this change does not
 rename topics, send messages or introduce a separate amendment authority.
+
+The same ordinary/vision-gap host fixtures measure 2,921 guidance bytes versus
+1,984 before this placement change. All earlier review/continuation clauses are
+retained. The guidance-only regression ceiling is 3,000 bytes instead of 2,000;
+the 8 KiB envelope warning and transport/execution budgets are unchanged. The
+ordinary fixture remains within that envelope (6,842 → 7,779 bytes); the existing
+oversized vision fixture remains disclosed (20,211 → 21,148). Ordinary work reads
+drop the proactive revision hint, and conversation retains tool availability and
+applied-revision adoption. These measurements establish delivery cost, not model
+adherence or a long-horizon benefit.
 
 The bound Agent distinguishes a direct human request from heartbeat instructions,
 quoted documents, tool results and peer messages using the actual host context.
@@ -212,6 +236,46 @@ Review binds the cumulative requirements and linked work declarations. Changing
 these invalidates its basis. Evidence references are Agent assertions: v0 does
 not resolve or fingerprint the cited artifacts, so editing an artifact requires
 another review. Do not call a retained reference proof of freshness or quality.
+
+Declaration provenance and progress evidence have separate lifetimes. Creation
+and new requirements need `source`; existing-outcome reviews and work-link
+maintenance may omit it, preserving all retained origins, including at the
+64-source limit. New observations belong in `review[].evidence_refs`, its note,
+owning material and operation receipt. Native `refine_outcome` similarly omits
+`source_summary` for these updates while retaining its host-bound request/retry
+envelope. Explicit sources remain additive and immutable; overflow fails with
+guidance rather than dropping provenance or raising the limit. A new declaration
+cannot use the review path to evade provenance, ownership or check authority.
+
+Declarations and current evidence reviews have independent 128 KiB UTF-8 JSON
+budgets in the same canonical snapshot. The declaration budget includes Goal
+identity, original objectives, requirements, work links and every source; it
+excludes only the optional `review` fields. The review budget counts their exact
+additional serialized bytes. This explicitly raises the combined outcome-state
+ceiling from 128 to 256 KiB; it is a resource tradeoff, not a historical budget
+pass. Per-field/count limits, operation history and provider transport limits
+remain unchanged. Neither envelope can borrow from the other.
+
+The previous shared cap admitted a 131,000-byte declaration but prevented its
+next complete evidence review. Keeping that cap would require rejecting valid
+progress or moving retained records into a new reference/hydration protocol.
+The bounded extra envelope keeps existing synchronous consumers, one atomic
+snapshot, receipts and recovery intact. No compression, external authority,
+provenance pruning or migration is introduced. Oversized reviews fail before
+commit, retain the prior snapshot and direct detailed evidence to its owning
+material. Existing stored states remain readable by older versions, but an
+older writer may reject further refinement above its combined cap; rollback
+must not delete declarations or historical receipts to make them fit.
+
+The synthetic 20-outcome/100-requirement case grows from 131,000 to 131,753
+stored bytes after review; its full outcome projection is 154,503 bytes. On the
+same already-admissible 19,454-byte input, base and candidate produce identical
+state/projection. An alternating 100-sample owner-refinement plus projection
+measurement gives base/candidate p50 1.025/1.034 ms and p95 1.387/1.417 ms. This
+is a local pure-owner cost observation, not a CLI/provider SLO or long-horizon
+benefit. Real File/SQLite CLI and native conversation tests cover the crowded
+case; File/SQLite/PostgreSQL authority tests cover restart, replay, stale bases
+and atomic overflow rejection. No installed-state expansion is claimed here.
 
 The existing admitted-work context carries the complete outcome declaration;
 when inline content is present, no duplicate acceptance inspection is required.

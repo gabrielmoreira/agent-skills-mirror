@@ -44,6 +44,34 @@ bun --no-install --conditions=eliza-source test packages/cloud/shared/src/lib/se
 The suite creates and removes a unique schema and loads migrations 0544–0545.
 It must not point to a production database.
 
+Authentication nonces, token revocations, voice session mappings and connection claims can use the
+private `AUTHENTICATION_STATE` Durable Object binding with
+protected deployment variable `CLOUD_AUTH_STATE_BACKEND=cloudflare`. The
+canonical release validates this selection. The default remains `redis` until a
+quiesced transfer preserves each live key's original expiration. A missing
+selected binding fails closed; the host never falls back to Redis after activation.
+The operator-only private-binding import preserves absolute expirations, rejects
+conflicts, and closes permanently for a shard once it serves an auth operation.
+Finish and verify imports before sending normal reads or writes to the target.
+This does not replace rate limits, gateway queues, or other Redis state.
+
+These additional private stores also default to `redis`:
+
+| State | Protected release variable |
+| --- | --- |
+| Monthly download quotas | `CLOUD_HF_EGRESS_BACKEND` |
+| Daily voice quotas | `CLOUD_VOICE_USAGE_BACKEND` |
+| Fixed and sliding rate limits | `CLOUD_RATE_STATE_BACKEND` |
+| A2A tasks and organization index | `CLOUD_A2A_STATE_BACKEND` |
+
+Stop source writers and transfer complete state with original expiry before
+selecting `cloudflare`. Imports reject conflicts and close permanently once
+their owner serves normal operations. Rate counters retain carried requests;
+voice and download quotas retain refunds and limits. A2A retains complete tasks
+and index scores. Its update callbacks must be pure because version conflicts
+retry them. Missing selected bindings fail closed. Other Redis domains remain
+separate migration work.
+
 ## Development
 
 Install dependencies with `bun install` at the repository root. Run from that root:
@@ -86,9 +114,9 @@ be enabled and bound to that environment's callback.
 
 ### Alpha-owned managed Google returns
 
-The Alpha-owned callback rollout uses `ALPHA_OAUTH_RETURN_URLS` for exact HTTPS
+App-owned connector callbacks use `APP_OAUTH_RETURN_URLS` for exact HTTPS
 Gmail return addresses. Initiation accepts the app nonce as the only `state`
-query parameter and returns `alphaReturn: 2` when configured. The callback uses
+query parameter and returns `appReturn: 2` when configured. The callback uses
 server-owned state and returns only state/result plus `connectionId` on success.
 The app must verify that connection through its authenticated connector list.
 Denial retires state and creates no grant. Unknown state keeps existing recovery.
@@ -448,3 +476,15 @@ reuse does not establish cache-only entitlement admission: ordinary policy
 writers do not synchronously fence every cached generation. Shared allowance
 correctness is implemented; deployed latency/audio and numeric policy selection
 remain separate acceptance work. Coverage metadata does not consume allowance.
+
+## Hosted speech migration
+
+With the Workers AI binding configured, supported legacy Kokoro voice IDs select
+replacement Aura-2 voices from `KOKORO_CLOUDFLARE_VOICES`. These are replacement
+voices, not the original Kokoro identities. Responses identify the actual provider
+and speaker in `X-Eliza-TTS-Provider` and `X-Eliza-TTS-Voice`. Configured Cartesia
+defaults and custom ElevenLabs voices retain their existing selection and billing.
+Set `VOICE_BATCH_STT_PROVIDER=cloudflare` to move a pinned Whisper deployment to
+Workers AI; verify authenticated TTS/STT before retiring the old services.
+
+Workers AI TTS accepts up to 2,000 characters per request. Longer text is rejected explicitly before synthesis; it is never truncated.

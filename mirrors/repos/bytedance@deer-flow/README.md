@@ -756,6 +756,19 @@ Local services always use their internal ports (`8001`, `3000`, and `2026`).
 The root `.env` variable `PORT` configures only the published Docker ingress;
 it does not change the Next.js port used by `make dev`.
 
+Local startup waits up to 30 seconds for the Gateway port. On a slow cold start,
+set a longer wait without editing the launcher:
+
+```bash
+DEER_FLOW_GATEWAY_STARTUP_TIMEOUT=240 make dev
+```
+
+The value must be a positive integer in seconds. You can also set it in the
+root `.env`, whose value takes precedence over the shell. It applies to local
+`make dev`, `make start`, and their daemon variants, not Docker health checks
+or LLM request timeouts. Check `logs/gateway.log` for startup errors before
+increasing the wait; an expired deadline still stops the services.
+
 #### Startup Modes
 
 DeerFlow runs the agent runtime inside the Gateway API. Development mode enables hot-reload; production mode uses a pre-built frontend.
@@ -972,6 +985,7 @@ downloading a partial transcript. Public demos export their bundled messages.
 Capability Center groups plugins by office collaboration, documents and knowledge, search and research, business and data, and development and operations. The directory includes setup references alongside existing MCP configurations and Lark. Recommended integrations and built-in support do not imply an installed or verified connection; the Installed filter shows configured MCP entries and installed Lark only.
 
 Personal MCP connections configured in the web interface are persisted per user.
+Unexpected failures when changing deployment or personal MCP configuration return fixed error messages; exception details stay in server logs.
 Deployment tools remain shared. Administrators can add, edit, enable, disable and delete shared MCP servers under **Platform provided**; ordinary users see their status without controls. Personal plugin switches affect only the signed-in user's connections. See [connection ownership](docs/capability-center.md#personal-and-deployment-mcp-configuration).
 
 For plugin manifests, adapter registration, and Agent capability selection, see
@@ -1051,6 +1065,12 @@ staging files older than 24 hours. Fresh files, symlinks and unrelated files are
 anonymous `tmp*.tmp` files require manual inspection because their writer cannot be identified safely.
 
 DeerFlow can also expose user-owned IM channel connections in the workspace UI. When `channel_connections` is enabled, logged-in users can bind Telegram, Slack, Discord, Feishu/Lark, DingTalk, WeChat, WeCom, QQ, or Buzz from the sidebar / Settings > Channels. It reuses the existing outbound `channels.*` transports, so no public IP or provider callback URL is required. Incoming IM messages then run under the connected DeerFlow user account. See [IM Channel Connections](backend/docs/IM_CHANNEL_CONNECTIONS.md) for setup and security notes. Buzz backlog paging stops with a warning if timestamp-based queries cannot advance, and channel removal closes both live and backlog subscriptions.
+
+For Discord and Buzz, the local and Docker launchers detect the required optional
+dependencies when both `channel_connections.enabled` and the corresponding
+`channel_connections.<provider>.enabled` are `true`. Selecting Discord in
+`make setup` sets these flags. A nonempty `UV_EXTRAS` overrides configuration
+auto-detection, so include `discord` or `buzz` there if you set it manually.
 
 | Channel | Transport | Difficulty |
 |---------|-----------|------------|
@@ -1464,6 +1484,16 @@ Use it as-is. Or tear it apart and make it yours.
 
 ## Core Features
 
+### Workspace
+
+The workspace keeps a collapsed icon sidebar visible on narrow screens. Its
+toggle opens the full navigation drawer; closing the drawer returns to the icon
+bar without changing your saved desktop sidebar preference. Navigating to another
+page also closes the mobile drawer and preserves the destination page's focus.
+Dismissing the drawer returns keyboard focus to the control that opened it.
+The Agents gallery header wraps to the available width so its import and create
+actions remain visible beside the compact sidebar on narrow screens.
+
 ### Skills & Tools
 
 Open **Capability Center** from the workspace sidebar to manage **Plugins**
@@ -1489,6 +1519,18 @@ even when there are no YAML warnings; check Gateway logs for other load failures
 Parsing remains strict and invalid skills stay unavailable to agents.
 
 #### Read-only knowledge sources
+
+Three retrieval tools can be configured independently in `tools[]`: document
+`knowledge_search`, published `knowledge_entries_search` through the
+[WeKnora plugin](examples/deerflow-extension-weknora/README.md), and
+`entity_relations_search` through the optional
+[LightRAG plugin](examples/deerflow-extension-lightrag/README.md). Remove a tool
+entry to disable it. They share scope admission, source validation, budgets and
+citation rendering. Wiki queries that return no pages retry up to four individual
+keywords within the same authorized base. Unsupported filters fail closed;
+multiple providers with different resource namespaces support only all/disabled scope. The new adapters
+have offline coverage and [local live validation](examples/deerflow-extension-lightrag/VALIDATION.md)
+with bge-m3 and GLM-5.3; see that record for coverage limits.
 
 Configure `knowledge_search` with either
 `deerflow.community.ragflow.tools:knowledge_search_tool` or
@@ -1611,6 +1653,8 @@ errors redact credential values while leaving benign settings such as model
 names and base URLs readable.
 
 For `LocalSandboxProvider`, this is a managed tool-path boundary rather than host filesystem isolation. Explicit per-Agent skill policies are accepted only while host bash is disabled (the default), because a host subprocess can address canonical paths without using the provider's virtual-path mappings. Use Docker/AIO, the Kubernetes provisioner, or E2B when the filesystem boundary must remain enforceable alongside shell access.
+
+When the local sandbox uses PowerShell, mapped host-path spaces and shell metacharacters are escaped for the caller's quoting context; wildcard expansion is preserved. The public `bash` tool's existing workspace prefix uses `&&` and POSIX path quoting: it requires PowerShell 7 for that separator and does not support workspace paths containing apostrophes. These workspace-prefix limitations are separate from virtual-path mapping.
 
 On Windows, the local sandbox's `cmd.exe` fallback decodes builtin output using
 the console output code page, including UTF-8 after `chcp 65001`, independently
@@ -2188,7 +2232,7 @@ Interrupted first-turn runs still persist a fallback conversation title, so stop
 
 Streaming Markdown responses animate only newly arrived words; text that is already visible is not faded out and replayed when the next chunk extends the same block.
 
-In the Web UI, completed assistant turns can be branched into a new main conversation. Automatically inherited branch titles use the next free language-neutral numeric suffix (`Title (2)`, then `Title (3)` for another sibling or a branch of the numbered conversation) so generated sibling titles remain distinct without persisting a locale-specific label; matching explicit or renamed sibling titles also reserve their displayed suffix even though they carry no generated sequence metadata. An explicit API title is preserved. Renaming a branch clears its generated sequence, so its next automatic branch starts from the renamed title at `(2)`. Recent chats also groups loaded branches directly beneath a loaded parent with subtle tree connectors. Missing parents, malformed or cyclic lineage, and branches in a different pinned state stay visible at the top level instead of being hidden or moved across the pinned boundary. The new thread starts from that turn's checkpoint and keeps the preceding replay checkpoint, so the branched response can be regenerated immediately. The latest response can also be regenerated after an interruption, even when its streamed partial text never reached a checkpoint. Regenerating the latest response preserves the thread's current title, including a title you renamed manually after the original response. Legacy or imported histories without checkpoint parent links use a bounded chronological fallback; if no earlier replay checkpoint exists, branching still succeeds with the legacy single-checkpoint shape, while regeneration remains unavailable for that inherited response. Existing single-checkpoint branches are left unchanged rather than attempting an unsafe checkpoint copy. Because workspace files are not checkpointed, the branch only receives a best-effort copy of the current workspace when you branch from the latest turn; branching from an older turn keeps just the restored message history so the branch never inherits files that were created in a later part of the conversation.
+In the Web UI, completed assistant turns can be branched into a new main conversation. Automatically inherited branch titles use the next free language-neutral numeric suffix (`Title (2)`, then `Title (3)` for another sibling or a branch of the numbered conversation) so generated sibling titles remain distinct without persisting a locale-specific label; matching explicit or renamed sibling titles also reserve their displayed suffix even though they carry no generated sequence metadata. An explicit API title is preserved. Renaming a branch clears its generated sequence, so its next automatic branch starts from the renamed title at `(2)`. Recent chats also groups loaded branches directly beneath a loaded parent with subtle tree connectors. Missing parents, malformed or cyclic lineage, and branches in a different pinned state stay visible at the top level instead of being hidden or moved across the pinned boundary. The new thread starts from that turn's checkpoint and keeps the preceding replay checkpoint, so the branched response can be regenerated immediately. The latest response can also be regenerated after an interruption, even when its streamed partial text never reached a checkpoint. Stopping mid-answer retains the assistant text that was already streamed in the thread's message feed, so refreshing no longer discards visible progress; that partial text remains outside authoritative completed checkpoint state. Regenerating the latest response preserves the thread's current title, including a title you renamed manually after the original response. Legacy or imported histories without checkpoint parent links use a bounded chronological fallback; if no earlier replay checkpoint exists, branching still succeeds with the legacy single-checkpoint shape, while regeneration remains unavailable for that inherited response. Existing single-checkpoint branches are left unchanged rather than attempting an unsafe checkpoint copy. Because workspace files are not checkpointed, the branch only receives a best-effort copy of the current workspace when you branch from the latest turn; branching from an older turn keeps just the restored message history so the branch never inherits files that were created in a later part of the conversation.
 
 The Web UI reports completed task time once per run. This is total wall-clock time—including model reasoning, tool calls, and waiting—not a per-step or model-only thinking duration. Reasoning content remains available through its own separate disclosure.
 
@@ -2222,7 +2266,7 @@ Supported commands:
 
 After each Gateway-backed run, DeerFlow evaluates the visible conversation, including the assistant's tool calls and shortened tool results, against the active goal with a non-thinking evaluator model. A successful tool result alone does not satisfy a goal, and when the assistant had to guess missing or ambiguous information the evaluator reports `needs_user_input`. The evaluator must return a typed blocker (`missing_evidence`, `needs_user_input`, `run_failed`, `external_wait`, or `goal_not_met_yet`) plus visible evidence. DeerFlow only injects a hidden continuation when the latest assistant turn is durably checkpointed, the blocker is `goal_not_met_yet`, the thread did not change during evaluation, and the no-progress breaker has not fired. The safety cap defaults to 8 hidden continuations, and repeated identical non-progress evaluations stop after 2 attempts. `/goal clear` and any user-authored new input win over queued continuations. When the evaluator considers the goal satisfied, DeerFlow clears it after the run successfully finalizes and publishes the updated thread state. The same checkpoint records the completion as `goal_outcome`, which stays until the next goal change. If required artifact delivery or its receipt persistence fails, the run reports an error and the goal remains active for a later retry; this does not start another hidden continuation.
 
-An unmet goal also stops automatic continuation after a token or loop-detection hard stop; it stays active for a later user turn.
+For tool-using turns, successful operation results drive the no-progress count: changing only reply wording or a sandbox tool's UI explanation does not reset it, while newly observed work can keep it going. Text-only turns keep their reply-based check. An unmet goal still stops automatic continuation after a token or loop-detection hard stop and stays active for a later user turn.
 
 Regenerating an earlier response keeps the goal currently set for the chat and its used continuation budget. It does not restore a goal that was cleared or achieved. The earlier answer's completion record is removed when its historical checkpoint is replayed.
 
@@ -2456,7 +2500,7 @@ Content-less sub-agent final messages report `No response generated` instead of 
 
 An ordinary `task` also receives a defensive snapshot of the dispatching run's current uploads. This lets eligible sub-agents use `list_uploaded_files` to find earlier-turn files without returning same-turn attachments as historical. Delayed or recovered `batch_task` workers leave this tool disabled because they have no valid turn-local upload boundary.
 
-Embedded Python uploads use the same captured content for the saved document and its Markdown conversion, even if the caller's source changes during upload.
+Embedded Python uploads use the same captured content for the saved document and its Markdown conversion, even if the caller's source changes during upload. Converted Markdown receives a free filename with a numeric suffix on collision, preserving user-authored Markdown and companions from earlier uploads. The upload response reports the actual companion filename.
 
 历史上传发现支持稳定续页：`list_uploaded_files` 默认每页 20 项、最多 100 项，
 将返回的 `next_cursor` 作为下一次调用的 `cursor`，保留相同过滤条件，直到末页不再
@@ -2575,6 +2619,23 @@ storage permissions. An unclean shutdown can leave `.tool-output-*.tmp` files in
 Remove leftovers during thread-data maintenance with all Gateway writers stopped,
 or when deleting the corresponding inactive thread's data.
 
+Workspace change summaries scan up to 2,000 files by default, in sorted order:
+the workspace root first, then outputs. A workspace that alone reaches the limit
+leaves outputs unscanned. When a scan is incomplete, files missing from that
+partial snapshot are not reported as created or deleted. Changes to files
+observed in both snapshots are still reported, and the summary is marked as
+truncated; if no change can be established, no summary is recorded.
+
+Output-delivery verification uses these same snapshots. When the pre-run scan
+is truncated, genuinely new outputs can be omitted even if the post-run scan
+sees them. If no output changes can be established, the run does not fail with
+"Artifact delivery incomplete". If the pre-run scan was truncated, its persisted
+`run.delivery` receipt records `verification_skipped: "truncated_pre_run_snapshot"`
+instead of an output-verification verdict. This distinguishes an incomplete scan
+from a complete scan with no produced outputs; it does not prove that no outputs
+were produced. Outputs modified and observed in both snapshots still participate
+in that check.
+
 `E2BSandboxProvider` uses `wait` as its default overflow policy. It waits for
 `acquire_timeout`, then fails the agent turn. DeerFlow does not retry the turn
 automatically. Clients can use the structured error to schedule a retry.
@@ -2651,6 +2712,8 @@ DeerFlow doesn't just *talk* about doing things. It has its own computer.
 Each task gets its own execution environment with a full filesystem view — skills, workspace, uploads, outputs. The agent reads, writes, and edits files. It can view images and, when configured safely, execute shell commands.
 
 The read-before-write gate ties each read mark to that `read_file` call's result, including custom tools returning multi-message `Command` updates. An unrelated result cannot authorize a write after a failed read or hide a successful read.
+
+On Linux and macOS, local sandbox `write_file` replacements and `str_replace` stage complete text before replacing the destination, so write, flush or publication errors retain the previous file. Existing write access is checked; ownership, permission bits, ACLs and extended attributes are transferred before writing staging content. Failure to transfer metadata aborts the save. Successful revisions get a fresh modification time, including empty saves; source-descriptor cleanup errors are warnings and do not change the save result. Files with set-id bits, macOS file flags or content-bound Linux privilege attributes are refused unchanged. Replacement requires parent-directory write access and publishes a new inode; other hard links retain the previous version. Symlinks follow the existing path-validation rules. Append writes, other host platforms (including Windows), shell writes and remote providers keep their existing behavior. This is not a concurrent-writer or power-loss recovery guarantee.
 
 Loop warnings let agents save collected results before their final answer. If the save is blocked by the read-before-write gate, the agent may read the target file and retry the save once. A looping or stopped tool must be replaced by an available alternative; if no permitted save path exists or the retry fails, the final answer includes the collected results and reports that the file was not saved. Recovery calls still count toward the loop limits, and a hard stop prevents further tool execution.
 
@@ -3029,6 +3092,10 @@ API). It builds user-model memory — long-term preferences and a cross-session
 working representation — on Honcho's server side, so the backend makes no LLM
 calls locally. Each user gets an isolated workspace derived from `user_id`; a
 missing user id fails closed instead of falling back to a shared workspace.
+Framework-hidden user messages are excluded from Honcho writes; the host's
+human-input filter preserves valid user clarification answers carried in hidden messages.
+If that filter raises an exception, only the affected hidden message is skipped;
+other messages in the batch can still be captured.
 Fact CRUD and Settings-page fact editing are not available for this backend. See
 the [Honcho backend guide](backend/packages/harness/deerflow/agents/memory/backends/honcho/README.md).
 
@@ -3365,6 +3432,7 @@ schedule tools keep their existing inputs. See the [group delivery guide](backen
 ### Lifecycle, safety caps and stop conditions
 
 - The tasks page and the REST API (`POST` / `PATCH /api/scheduled-tasks`) accept the same per-run goal (`goal_objective`), safety cap (`max_runs`, `end_at`) and stop condition (`stop_condition`) as a conversation. Sending `null` in a PATCH clears any of these four; an `end_at` without a UTC offset is wall-clock time in the task's timezone.
+- New or changed one-time `run_at` values and submitted `end_at` values without an offset must exist in the chosen timezone. For these fields, a time skipped by a daylight-saving transition is rejected; choose a valid local time or supply an explicit instant with a UTC offset. Repeated local times keep the earlier occurrence unless an offset selects the later one. Recurring cron schedules keep their existing runtime behavior: a fixed-time occurrence in a skipped local time fires at the shifted time that day.
 - A stop condition is the user's "stop when …" rule. It is stored in its own field (migration `0031`), never inside the task instructions. Only when a run starts does DeerFlow append it to that run's message and ask the run to call `stop_scheduled_task` when the rule holds. While `scheduler.tool_enabled` is on, every scheduled run can stop its own schedule, whether a chat or the tasks page created the task; with it off, the run is asked to report a met rule instead of calling a tool it does not have.
 - Goal tasks created on the tasks page are now evaluated like chat-created ones, and their runs also receive the saved notes and the previous-run reference.
 - Resume computes the next run from now, so a long pause never causes a catch-up run. A one-time task whose time has passed returns `422 once_time_passed` and needs a new time. Resuming an active task changes nothing; pausing a finished task returns `409 task_finished`.

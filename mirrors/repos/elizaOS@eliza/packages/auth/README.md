@@ -47,15 +47,16 @@ The default tests also verify the built deployment package. The login tests use
 local OpenSSL to generate ephemeral attestation certificates and verify that
 untrusted chains cannot trigger revocation requests.
 
-## Alpha-owned OAuth returns
+## Registered application OAuth returns
 
-`GET /auth/oauth/google/alpha-readiness` checks the exact Alpha tenant/return
-pair, tenant policy, registered redirect, existing Google credentials and app
-error returns. It returns `{ok:true, alphaAuth:1, tenantId, redirectUri}` without
-creating a challenge. Configure `STEWARD_OAUTH_APP_ERROR_REDIRECTS` with the exact
-registered Alpha HTTPS callback for each environment. Validated-state failures
-then return a bounded error/state fragment. Other clients keep existing behavior.
+`GET /auth/oauth/google/app-readiness` checks tenant policy, the app's registered
+HTTPS redirect, existing Google credentials and error-return configuration. It
+returns `{ok:true, appAuth:1, tenantId, redirectUri}` without creating a challenge.
+Configure `STEWARD_OAUTH_APP_ERROR_REDIRECTS` with each exact registered HTTPS
+callback. Validated-state failures return a bounded error/state fragment.
 Unknown state cannot select an app return. Google uses the existing Cloud client.
+Each app owns its login view, branding and return handling. No product route or
+product identity is needed in the shared login service.
 
 ## Native enrollment
 
@@ -194,6 +195,10 @@ sender after review.
 
 `cloudflare/wrangler.toml` runs the same Bun login server in a Cloudflare
 Container. Deploy staging with `bun run --cwd packages/auth cloudflare:deploy:staging`.
+The runtime stays inactive until deployed with `--var LOGIN_ENABLED:true`.
+State-transfer endpoints remain available while inactive. Deactivating sends SIGTERM
+to a configured runtime; verify the container is stopped before restarting another
+writer. A 503 response alone is not proof that draining has finished.
 Copy the existing environment's identity, vault, signing, provider, and database
 secrets with Wrangler secret bulk input; retain their exact values so accounts,
 sessions, passkeys, and encrypted data remain compatible. Never commit that input.
@@ -201,11 +206,19 @@ The container owns no durable files. PostgreSQL remains the authoritative store
 on Railway; use its external connection endpoint from Cloudflare. Retire only
 the application services after cutover, preserving the database services.
 
+Redis can remain on Railway. Use its authenticated external `rediss://` endpoint
+as `REDIS_URL`. For a private certificate authority, set `STEWARD_REDIS_TLS_CA`
+to its PEM certificate on the login Worker. Both shared-state and token-revocation
+connections use this trust setting and still verify the server certificate and
+hostname. No certificate file or custom image is needed. Keep the existing Redis
+database and credentials; leave the optional native state backend URLs unset.
+
 The edge overwrites forwarding headers and the container trusts one proxy hop.
 Cloud's proxy signs its edge-observed client IP with the existing shared
 `STEWARD_REQUEST_SIGNING_SECRET`; deploy this proxy before routing cross-zone
 traffic to login, preserving independent client rate-limit buckets.
-Set `STEWARD_RATE_LIMIT_URL` to the login Worker's `/internal/rate-limit` URL and
+To move rate limits from Redis, set `STEWARD_RATE_LIMIT_URL` to the login Worker's
+`/internal/rate-limit` URL and
 set the same `STEWARD_RATE_LIMIT_TOKEN` secret on that Worker. Vault and proxy
 sliding-window admission then uses its durable SQLite counter store. Missing or
 failed admission never retries against Redis; transfer existing counters before

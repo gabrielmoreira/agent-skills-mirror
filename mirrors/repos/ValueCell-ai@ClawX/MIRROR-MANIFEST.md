@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ValueCell-ai/ClawX` — 26 default patterns, 7 followed patterns, 19 file(s) materialized.
+Mirror of `ValueCell-ai/ClawX` — 26 default patterns, 7 followed patterns, 22 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ValueCell-ai/ClawX` — 26 default patterns, 7 followed patterns, 19 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 7 |
-| Files         | 19 |
+| Files         | 22 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -74,16 +74,19 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 7 | ✓ | [`resources/skills/computer-use/MACOS.md`](resources/skills/computer-use/MACOS.md) |
 | 8 | ✓ | [`resources/skills/computer-use/README.md`](resources/skills/computer-use/README.md) |
 | 9 | ✓ | [`resources/skills/computer-use/RECORDING.md`](resources/skills/computer-use/RECORDING.md) |
-| 10 | ✓ | [`resources/skills/computer-use/SKILL.md`](resources/skills/computer-use/SKILL.md) |
-| 11 | ✓ | [`resources/skills/computer-use/UPSTREAM-SKILL.md`](resources/skills/computer-use/UPSTREAM-SKILL.md) |
-| 12 | ✓ | [`resources/skills/computer-use/WINDOWS.md`](resources/skills/computer-use/WINDOWS.md) |
-| 13 | → | [`docs/en-US/architecture.md`](docs/en-US/architecture.md) |
-| 14 | → | [`docs/en-US/development.md`](docs/en-US/development.md) |
-| 15 | → | [`docs/en-US/features.md`](docs/en-US/features.md) |
-| 16 | → | [`docs/en-US/proxy-settings.md`](docs/en-US/proxy-settings.md) |
-| 17 | → | [`harness/reference/computer-use-cli-validation.md`](harness/reference/computer-use-cli-validation.md) |
-| 18 | → | [`harness/reference/computer-use-skill.md`](harness/reference/computer-use-skill.md) |
-| 19 | → | [`README.md`](README.md) |
+| 10 | ✓ | [`resources/skills/computer-use/RUNTIME.md`](resources/skills/computer-use/RUNTIME.md) |
+| 11 | ✓ | [`resources/skills/computer-use/SKILL.md`](resources/skills/computer-use/SKILL.md) |
+| 12 | ✓ | [`resources/skills/computer-use/UPSTREAM-SKILL.md`](resources/skills/computer-use/UPSTREAM-SKILL.md) |
+| 13 | ✓ | [`resources/skills/computer-use/VISUAL.md`](resources/skills/computer-use/VISUAL.md) |
+| 14 | ✓ | [`resources/skills/computer-use/WINDOWS.md`](resources/skills/computer-use/WINDOWS.md) |
+| 15 | ✓ | [`resources/skills/computer-use/WORKFLOW.md`](resources/skills/computer-use/WORKFLOW.md) |
+| 16 | → | [`docs/en-US/architecture.md`](docs/en-US/architecture.md) |
+| 17 | → | [`docs/en-US/development.md`](docs/en-US/development.md) |
+| 18 | → | [`docs/en-US/features.md`](docs/en-US/features.md) |
+| 19 | → | [`docs/en-US/proxy-settings.md`](docs/en-US/proxy-settings.md) |
+| 20 | → | [`harness/reference/computer-use-cli-validation.md`](harness/reference/computer-use-cli-validation.md) |
+| 21 | → | [`harness/reference/computer-use-skill.md`](harness/reference/computer-use-skill.md) |
+| 22 | → | [`README.md`](README.md) |
 
 ---
 

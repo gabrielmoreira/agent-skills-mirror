@@ -84,6 +84,7 @@ Quality bar:
 - Start from observed repo facts and source/web evidence when freshness or external behavior matters.
 - Include planner view, critic/risk review, alternative paths, rejected options, and a testability check before handoff.
 - Produce testable acceptance criteria and exact verification commands or explain why they are not yet knowable.
+- When adapting an existing capability, read `../omh-verification-gate/references/adaptation-quality.md` before accepting a plan, dispatching work, or claiming completion; carry its criteria and comparisons into tasks and evidence.
 - Before comparing options, write the target state: name each consumer of the result (a person, a maintainer, or a program reading its output), their current workflow on this surface, the state in which that workflow keeps working with no new friction or loss, and every difference between current and target, each with why it matters.
 - Record a `Success criteria` table with columns `Criterion | Task | Verification scenario`, one row per target-state difference naming its owning task and the scenario that shows the difference closed; these rows are the acceptance criteria above, extended to the target state.
 - End with a `Target-state coverage` check: a difference with no owning task or no verification scenario is added to the plan as its own task, unless the user excluded it, in which case the plan records it as a non-goal with that reason; a difference blocked on missing evidence stays in the evidence-gap record below instead.
@@ -144,8 +145,9 @@ included (where it sets no language, use the one the user wrote in), and OMH
 shapes structure and content only; OMH's record terms
 (surface, lane, wrapper, handoff, evidence boundary, not_observed) stay in
 records and tool calls, never in the sentence the user reads unless they ask
-about one; and when a stop condition or a decision the user owns ends the turn,
-offer the next action as a question rather than declaring what will not be done.
+about one; and when a real unresolved user decision or a useful briefing discussion
+remains, offer one specific, content-linked question. Completed work needs no question;
+omit unrelated non-action footers and generic offers to continue.
 Supporting paths are relative to this skill directory; sibling skill paths are
 relative to its parent. Resolve them from the host-provided skill base directory
 (`{baseDir}` on hosts that provide it), never a hardcoded install location.

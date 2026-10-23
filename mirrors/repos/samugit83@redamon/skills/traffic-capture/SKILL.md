@@ -57,9 +57,14 @@ The one-line "route every egress through the guard" rule is in the capture_proxy
 ## Commands
 
 ```bash
-docker compose --profile tools build capture-proxy    # image rebuild (Dockerfile change)
+docker compose --profile capture build capture-proxy  # image rebuild (Dockerfile change, or a change to
+                                                      # recon_orchestrator/hard_guardrail.py, which it bundles)
 ./redamon.sh test unit                                # capture_proxy section
 ```
+
+A build alone does not swap the running proxy: the orchestrator spawns it, not
+compose. Stop and start traffic capture once after a rebuild so it is recreated
+from the new image; that interrupts every session's capture.
 
 ## Resources
 

@@ -407,7 +407,7 @@ git cherry-pick --abort          # 整段放弃
 | 改 workflow job 名后没同步 ruleset | PR 卡在等一个已不存在的 job | 见 [AGENTS.md「同一改动必须同步」](../AGENTS.md#同一改动必须同步) |
 | 改 `release.yml` 但没在 PR 阶段验证 | tag push 后跑真实 release 才 fail，删 tag 重打 + 又一轮 CI。v0.2.0 三次因此返工 | §4.1 |
 | 两条 build lane 同时上传 `latest.json` | 输的那条报 `422 already_exists` 整个 job 失败，它的平台条目从清单里整段消失 | §4.2 |
-| Rust `tauri` crate 与 npm `@tauri-apps/api` 的 major.minor 不一致 | Tauri CLI 拒绝构建，tag 一推四个平台全在几分钟内失败，只能删 tag 重打。CI 抓不到（clippy / cargo test / vitest 都不跑 `tauri build`） | `verify-tauri-version-sync.mjs`（CI + pre-push）。crate 侧常因 `cargo update` 被顺带抬版本，v0.30.0 即因此返工一轮 |
+| Rust `tauri` / 官方插件与对应 npm 包的 major.minor 不一致 | Tauri CLI 在编译前拒绝四个平台；clippy / cargo test / vitest 不执行这项 CLI 预检。已有 tag 的源码不能由后续修复改变 | `verify-tauri-version-sync.mjs` 读取两份锁文件，检查主包及 `package.json` 中全部 `@tauri-apps/plugin-*` 对应项；CI + pre-push 同时运行其夹具回归。修复后按既有版本合同选择新版本，不移动或覆盖旧 tag |
 
 ### 4.1 修改 release.yml 时的验证流程
 

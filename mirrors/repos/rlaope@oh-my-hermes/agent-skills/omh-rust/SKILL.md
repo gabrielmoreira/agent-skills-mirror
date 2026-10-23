@@ -132,8 +132,9 @@ included (where it sets no language, use the one the user wrote in), and OMH
 shapes structure and content only; OMH's record terms
 (surface, lane, wrapper, handoff, evidence boundary, not_observed) stay in
 records and tool calls, never in the sentence the user reads unless they ask
-about one; and when a stop condition or a decision the user owns ends the turn,
-offer the next action as a question rather than declaring what will not be done.
+about one; and when a real unresolved user decision or a useful briefing discussion
+remains, offer one specific, content-linked question. Completed work needs no question;
+omit unrelated non-action footers and generic offers to continue.
 Supporting paths are relative to this skill directory; sibling skill paths are
 relative to its parent. Resolve them from the host-provided skill base directory
 (`{baseDir}` on hosts that provide it), never a hardcoded install location.

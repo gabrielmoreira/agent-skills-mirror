@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ccfos/nightingale` — 26 default patterns, 0 followed patterns, 23 file(s) materialized.
+Mirror of `ccfos/nightingale` — 26 default patterns, 0 followed patterns, 24 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ccfos/nightingale` — 26 default patterns, 0 followed patterns, 23 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 23 |
+| Files         | 24 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -67,21 +67,22 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 6 | ✓ | [`aiagent/skill/embedded/builtin/create-alert-rule/SKILL.md`](aiagent/skill/embedded/builtin/create-alert-rule/SKILL.md) |
 | 7 | ✓ | [`aiagent/skill/embedded/builtin/create-dashboard/SKILL.md`](aiagent/skill/embedded/builtin/create-dashboard/SKILL.md) |
 | 8 | ✓ | [`aiagent/skill/embedded/builtin/doc-qa/SKILL.md`](aiagent/skill/embedded/builtin/doc-qa/SKILL.md) |
-| 9 | ✓ | [`aiagent/skill/embedded/builtin/generate-message-template/SKILL.md`](aiagent/skill/embedded/builtin/generate-message-template/SKILL.md) |
-| 10 | ✓ | [`aiagent/skill/embedded/builtin/host-health-diagnose/SKILL.md`](aiagent/skill/embedded/builtin/host-health-diagnose/SKILL.md) |
-| 11 | ✓ | [`aiagent/skill/embedded/builtin/host-onboard-diagnose/SKILL.md`](aiagent/skill/embedded/builtin/host-onboard-diagnose/SKILL.md) |
-| 12 | ✓ | [`aiagent/skill/embedded/builtin/import-prom-rule/SKILL.md`](aiagent/skill/embedded/builtin/import-prom-rule/SKILL.md) |
-| 13 | ✓ | [`aiagent/skill/embedded/builtin/modify-dashboard/SKILL.md`](aiagent/skill/embedded/builtin/modify-dashboard/SKILL.md) |
-| 14 | ✓ | [`aiagent/skill/embedded/builtin/modify-task-tpl/SKILL.md`](aiagent/skill/embedded/builtin/modify-task-tpl/SKILL.md) |
-| 15 | ✓ | [`aiagent/skill/embedded/builtin/notify-channel-copilot/SKILL.md`](aiagent/skill/embedded/builtin/notify-channel-copilot/SKILL.md) |
-| 16 | ✓ | [`aiagent/skill/embedded/builtin/notify-rule-copilot/SKILL.md`](aiagent/skill/embedded/builtin/notify-rule-copilot/SKILL.md) |
-| 17 | ✓ | [`aiagent/skill/embedded/builtin/ops-troubleshooting/SKILL.md`](aiagent/skill/embedded/builtin/ops-troubleshooting/SKILL.md) |
-| 18 | ✓ | [`aiagent/skill/embedded/builtin/promql-generator/SKILL.md`](aiagent/skill/embedded/builtin/promql-generator/SKILL.md) |
-| 19 | ✓ | [`aiagent/skill/embedded/builtin/query-alert-events/SKILL.md`](aiagent/skill/embedded/builtin/query-alert-events/SKILL.md) |
-| 20 | ✓ | [`aiagent/skill/embedded/builtin/query-datasource/SKILL.md`](aiagent/skill/embedded/builtin/query-datasource/SKILL.md) |
-| 21 | ✓ | [`aiagent/skill/embedded/builtin/skill-creator/SKILL.md`](aiagent/skill/embedded/builtin/skill-creator/SKILL.md) |
-| 22 | ✓ | [`aiagent/skill/embedded/builtin/sql-generator/SKILL.md`](aiagent/skill/embedded/builtin/sql-generator/SKILL.md) |
-| 23 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 9 | ✓ | [`aiagent/skill/embedded/builtin/explorer-query/SKILL.md`](aiagent/skill/embedded/builtin/explorer-query/SKILL.md) |
+| 10 | ✓ | [`aiagent/skill/embedded/builtin/generate-message-template/SKILL.md`](aiagent/skill/embedded/builtin/generate-message-template/SKILL.md) |
+| 11 | ✓ | [`aiagent/skill/embedded/builtin/host-health-diagnose/SKILL.md`](aiagent/skill/embedded/builtin/host-health-diagnose/SKILL.md) |
+| 12 | ✓ | [`aiagent/skill/embedded/builtin/host-onboard-diagnose/SKILL.md`](aiagent/skill/embedded/builtin/host-onboard-diagnose/SKILL.md) |
+| 13 | ✓ | [`aiagent/skill/embedded/builtin/import-prom-rule/SKILL.md`](aiagent/skill/embedded/builtin/import-prom-rule/SKILL.md) |
+| 14 | ✓ | [`aiagent/skill/embedded/builtin/modify-dashboard/SKILL.md`](aiagent/skill/embedded/builtin/modify-dashboard/SKILL.md) |
+| 15 | ✓ | [`aiagent/skill/embedded/builtin/modify-task-tpl/SKILL.md`](aiagent/skill/embedded/builtin/modify-task-tpl/SKILL.md) |
+| 16 | ✓ | [`aiagent/skill/embedded/builtin/notify-channel-copilot/SKILL.md`](aiagent/skill/embedded/builtin/notify-channel-copilot/SKILL.md) |
+| 17 | ✓ | [`aiagent/skill/embedded/builtin/notify-rule-copilot/SKILL.md`](aiagent/skill/embedded/builtin/notify-rule-copilot/SKILL.md) |
+| 18 | ✓ | [`aiagent/skill/embedded/builtin/ops-troubleshooting/SKILL.md`](aiagent/skill/embedded/builtin/ops-troubleshooting/SKILL.md) |
+| 19 | ✓ | [`aiagent/skill/embedded/builtin/promql-generator/SKILL.md`](aiagent/skill/embedded/builtin/promql-generator/SKILL.md) |
+| 20 | ✓ | [`aiagent/skill/embedded/builtin/query-alert-events/SKILL.md`](aiagent/skill/embedded/builtin/query-alert-events/SKILL.md) |
+| 21 | ✓ | [`aiagent/skill/embedded/builtin/query-datasource/SKILL.md`](aiagent/skill/embedded/builtin/query-datasource/SKILL.md) |
+| 22 | ✓ | [`aiagent/skill/embedded/builtin/skill-creator/SKILL.md`](aiagent/skill/embedded/builtin/skill-creator/SKILL.md) |
+| 23 | ✓ | [`aiagent/skill/embedded/builtin/sql-generator/SKILL.md`](aiagent/skill/embedded/builtin/sql-generator/SKILL.md) |
+| 24 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

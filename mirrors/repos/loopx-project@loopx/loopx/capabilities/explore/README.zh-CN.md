@@ -26,6 +26,46 @@
 每个受评测候选使用新 finding id，仅纠正同一结论时复用 id。未测量显式记为 `null`，
 零分和负分仍为有效测量。
 
+若要复用已核实的比较条件，将三个字段一次保存到 `conditions.json`：
+
+```json
+{"comparison_scope":"validation:fixed-budget-v1","input_revision":"dataset-v1",
+ "evaluation_ref":"evaluator:v1"}
+```
+
+同时传入 `--measurement-context-json conditions.json` 与
+`--measurements-json observations.json`。此时每项观测省略这三个字段，例如：
+
+```json
+[{"metric":"quality","value":9,"unit":"points","higher_is_better":true,
+  "candidate_ref":"candidate:b","evidence_ref":"result:b"}]
+```
+
+普通附件及 path-delta 附件也支持在 `measurements` 旁提供可选
+`measurement_context` 对象。写入前会展开成原有完整记录，不保存可变上下文引用。
+观测重复填写比较字段（即使值相同）、上下文字段缺失或多余都会在记录前拒绝。
+原有完整条目格式继续可用。复用声明不认证可比性；任务、数据、评测器、模型或预算
+改变时另选上下文，条件未知时保持分开。此便捷输入不授予评测、纠正或执行权限。
+
+比较条件与候选、单次结果分别记录：
+
+| 字段 | 连续 finding 中的含义 |
+| --- | --- |
+| `input_revision` | 实际受评测的任务或数据版本；确认输入未变时保持一致。 |
+| `evaluation_ref` | 评测器或计分协议版本；确认协议未变时保持一致。 |
+| `candidate_ref` | 实际受评测的代码或工件版本；候选改变时更新。 |
+| `evidence_ref` | 单次评测结果或回执；在 finding 的 `evidence_refs` 中保留准确来源。 |
+
+例如，在同一问题上将候选 A 的 8 分、候选 B 的 9 分记录为**两个 finding**。
+其他比较字段不变时，两者均使用 `input_revision=dataset-v1`、
+`evaluation_ref=evaluator:v1`，候选与结果引用分别为 `candidate:a`/`result:a`、
+`candidate:b`/`result:b`。反馈包含两条实测记录，改善幅度为 +1。
+若把各候选哈希填进 `input_revision`，或把各次提交编号填进 `evaluation_ref`，
+则会被拆成只有一条记录的组，改善幅度为 null；它不表示零收益。
+确认来源后才通过既有纠正路径修正误填的 finding，原始记录保留在历史中。
+条件已变或可比性未知时必须分开，不得为得到差值而编造共同版本。
+本地样本库扩充不改变实际受评测的固定子集版本；受评测样本改变才更新该版本。
+
 只有节点、指标、单位、方向、比较范围、输入版本和评测器全部一致时才比较。
 任务、模型或资源预算、评测条件改变时，生产者必须更换比较范围；原生评测与本地
 代理指标分别记录。Explore 校验声明的比较键，不认证声明真实性。它在上下文裁剪前
@@ -40,6 +80,11 @@
 下一轮指导使用这些反馈排查退步、回看更好候选，再决定是否
 重复尝试。best 不代表当前保留版本、因果收益、验收通过或执行授权；是否实际采用
 并产生收益，仍需后续工作和证据确认。自动分支排序保持原有行为。
+
+手动登记的量化 finding 同样进入既有结果分页；关联可执行工作时，也进入其精确来源
+比较卡片，无需补写 `writeback-result` 来源标签。先读取结果页，再按需绑定
+`selected_candidate`，仍核对来源修订、Todo 关联和后续实际工作。未带测量的手动笔记
+保持既有摘要/审计路径。读取或选择某条成绩不认证实际采用或执行。
 
 ## 概览
 
@@ -210,6 +255,11 @@ Todo 关联保留既有可恢复边界与 claim/lease 证明；恢复旧批次�
 不再只跟随独立分支规划器的建议。quota 与 managed turn 自动传入显式选择的任务。
 每个相关问题仍优先保留一条范围反证；其它结果继续分页可读，缺少关联不代表没有证据。
 该读取不启用能力、不修改规划分数、任务准入、claim/lease、配额或图谱。
+
+当前任务关联的问题内部，结果在保留范围反证后按原来源新旧排序，量化组保持自身的
+追加顺序；某个问题同时关联另一条计划任务，不会因此获得额外优先级。规划器排序只
+适用于当前任务关联之外的结果。排查证据被埋没时，应比较普通任务页与按问题筛选的
+读取；查询成功本身不证明下一轮 agent 已看到或采用该证据。
 
 任务范围的 `result_page` 多携带 `todo_id`，后续命令也保留它。引用该页时，将它和
 `revision/offset/limit` 一同复制到原 `explore_review.result_pages`；主 review revision

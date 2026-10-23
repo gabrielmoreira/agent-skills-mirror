@@ -164,7 +164,7 @@ Connections between nodes. Usually empty for mood boards.
 - `fromEnd` *(optional)*: end-cap on the source side. Defaults to `"none"`. Values: `"none"` | `"arrow"`.
 - `toEnd` *(optional)*: end-cap on the target side. **Defaults to `"arrow"`**: note the asymmetric default vs `fromEnd`. Values: `"none"` | `"arrow"`.
 - `label` *(optional)*: text shown on the edge.
-- `color` *(optional)*: same color palette as nodes (`"1"`–`"6"` or hex).
+- `color` *(optional)*: same color palette as nodes (`"1"` to `"6"` or hex).
 
 Most edges represent directed relationships, so the asymmetric defaults (`fromEnd: "none"`, `toEnd: "arrow"`) produce a single arrow pointing from source to target without specifying anything explicitly.
 
@@ -197,11 +197,11 @@ identify -format '%w %h' path.png
 
 | Aspect ratio | Condition | Canvas width | Canvas height |
 |-------------|-----------|-------------|--------------|
-| 16:9 (wide) | ratio 1.6–2.0 | 420 | 236 |
+| 16:9 (wide) | ratio 1.6 to 2.0 | 420 | 236 |
 | 2:1 (ultra wide) | ratio > 2.0 | 440 | 220 |
-| 4:3 | ratio 1.2–1.6 | 380 | 285 |
-| 1:1 (square) | ratio 0.9–1.1 | 280 | 280 |
-| 3:4 | ratio 0.6–0.9 | 240 | 320 |
+| 4:3 | ratio 1.2 to 1.6 | 380 | 285 |
+| 1:1 (square) | ratio 0.9 to 1.1 | 280 | 280 |
+| 3:4 | ratio 0.6 to 0.9 | 240 | 320 |
 | 9:16 (portrait) | ratio < 0.6 | 200 | 356 |
 | PDF | any | 400 | 520 |
 | Unknown | fallback | 320 | 240 |

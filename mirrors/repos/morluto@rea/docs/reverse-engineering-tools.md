@@ -70,13 +70,48 @@ Captured stdout and stderr are retained up to a 16 MiB combined limit; `output_t
 Cutter commands use the local REA Python bridge and authenticated loopback messages.
 The client and plugin must support the current v2 handshake; older peers are
 rejected before dispatch because they cannot preserve cross-caller recovery proof.
-The client checks the final encoded request against the bridge's 16 MiB frame
-limit before dispatch; an oversized command does not retain a cleanup owner.
-Each bridge request waits 25000 ms. Discovery admits at most 256 descriptor
+The client checks the final encoded request against
+`REA_BRIDGE_MAX_REQUEST_BYTES` before dispatch. The budget applies to request
+payload bytes and excludes the terminating LF. Unset, the ceiling is 16777216
+bytes (16 MiB). A decimal integer from 7464 to 536870887 is accepted. The floor
+fits the largest bounded symbol-name command inside an authenticated Cutter
+frame. A Cutter status keeps its session id, connection proof, and up to 64
+completion receipts when the frame is tight. The observed `current_file` is
+included when it fits. When it does not, the status reports that path as
+unknown, and the client does not reuse the descriptor path with the new
+generation. The maximum is one byte under Node's 536870888-character string ceiling
+so the framing LF still fits. The ceiling counts the encoded payload. A JSON
+escape is measured before serialization and is not divided into the maximum
+again. A structured Cutter reply is admitted when that encoded payload fits,
+including a dense array of numbers. Cutter hashes the HMAC prefix and the payload as separate updates, so
+an exact-limit frame does not build one preimage string. The plugin measures and signs the response
+from bounded JSON pieces, then writes the authenticated frame in 64 KiB chunks. The bridge searches only the newly read bytes for the framing LF. The client unescapes each socket chunk into one response string, checks the proof, and then parses that string. A fitting reply keeps
+the original output and does not retain the paged wire frame plus another concatenated copy. Zero, negative, non-decimal, and out-of-range
+values are `configuration_invalid` and do not fall back to the default. The
+bridge accepts that full payload size and rejects a larger payload while
+bounding the read. An incomplete frame is still `Incomplete bridge request
+frame`. An oversized command does not retain a cleanup owner. Hopper uses the
+same request payload budget. A Hopper request is serialized when it reaches
+the bridge, so one waiting behind Hopper's serial bridge does not retain
+another copy of the encoded frame. REA injects a caller-selected value into the
+Hopper bootstrap and the bridge also reads the process environment; an injected
+value wins. Cutter reads the environment that starts Cutter and publishes
+`max_request_bytes` on its session descriptor. A Hopper or Cutter process
+started out of band without the setting uses 16777216 bytes. The client
+compares that advertisement with its own ceiling before a discovery status probe and before sending a command. A different ceiling is a mismatch only after the hello proves that descriptor is a live authenticated bridge; a stale descriptor is ignored. That hello does not send a status request. Discovery fails if any such live ceiling differs, even when another live session matches. A hello that
+never sends its authenticated frame does not hold the bridge accept loop.
+At most 8 connection threads run. A further accept is closed, and a failure to start a thread closes that socket without stopping the listener. A status `completed_connection` is the longest prefix of accepted connections that have terminated. It does not treat an earlier connection as finished because a later status reached the command lock first. Scalar values in one Cutter reply are encoded in bounded batches.
+A command reply that does not fit keeps its completion state and document
+generation, and reports an oversized path as unknown. Cutter response frames use this same ceiling and
+also exclude the terminating LF. A command response the client discards because it exceeds that ceiling stays an unknown execution and sets `output_truncated`, so Evidence records the omitted output. Hopper response reads are unchanged.
+Each bridge request waits 25000 ms. The Cutter hello frame still must arrive
+within 1 second. The authenticated command frame is read with one second per
+mebibyte of `REA_BRIDGE_MAX_REQUEST_BYTES`, and that read never waits longer
+than the same 25000 ms. Discovery admits at most 256 descriptor
 candidates and reads and probes at most eight concurrently. A larger directory
 reports `bridge_directory_capacity_exceeded`. This release has no runtime
-override for the 25000 ms request deadline, the 16777216 byte frame, or the
-256-candidate discovery budget.
+override for the 25000 ms request deadline or the 256-candidate discovery
+budget. Those limits do not follow `REA_BRIDGE_MAX_REQUEST_BYTES`.
 
 Terminal receipts are recovered before another command, including from a new CLI
 invocation. A signed status response also confirms completion of older bridge
@@ -88,7 +123,11 @@ identify `cutter_command` and retain `status` in
 `details.diagnostics.auxiliary_operation`; malformed proof still blocks dispatch.
 Descriptor failures likewise retain the requesting operation through cleanup.
 Command admission reports typed cancellation and treats the caller's abort reason
-as opaque metadata, without inferring cleanup ownership from it.
+as opaque metadata, without inferring cleanup ownership from it. A generation
+mismatch is an input correction only when the authenticated reply confirms
+`not_started`. Missing or ambiguous execution state retains the command's
+completion uncertainty until terminal proof arrives, even if the reply names a
+generation error.
 
 ## Configuration and coverage
 

@@ -10,7 +10,7 @@ description: 'Build automated machine learning pipelines with feature engineerin
 
   '
 allowed-tools: Read, Write, Edit, Grep, Glob, Bash(python:*)
-version: 1.25.0
+version: 1.26.0
 author: Jeremy Longshore <jeremy@intentsolutions.io>
 license: MIT
 tags:
@@ -50,7 +50,7 @@ Before using this skill, ensure you have:
 10. Set up data validation checks
 11. Initialize AutoML pipeline with configuration
 
-See `${CLAUDE_SKILL_DIR}/references/implementation.md` for detailed implementation guide.
+See [`references/implementation.md`](references/implementation.md) for detailed implementation guide.
 
 ## Output
 
@@ -63,11 +63,11 @@ See `${CLAUDE_SKILL_DIR}/references/implementation.md` for detailed implementati
 
 ## Error Handling
 
-See `${CLAUDE_SKILL_DIR}/references/errors.md` for comprehensive error handling.
+See [`references/errors.md`](references/errors.md) for comprehensive error handling.
 
 ## Examples
 
-See `${CLAUDE_SKILL_DIR}/references/examples.md` for detailed examples.
+See [`references/examples.md`](references/examples.md) for detailed examples.
 
 ## Resources
 

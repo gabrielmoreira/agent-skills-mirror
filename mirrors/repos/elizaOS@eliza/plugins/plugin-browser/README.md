@@ -27,6 +27,12 @@ before binding a task after restart. It waits at most 10 seconds by default
 stops on cancellation or transport shutdown. It sends no commands and never
 retries dispatched work. Hosts must recheck task/account authority after waiting.
 
+`NativeTaskActuator` requires the browser's one-use exact-value readback for public
+fills before consulting host verification. Missing or mismatched proof returns an
+unknown outcome and does not replay the fill. This includes older browser peers
+that do not supply the proof; update the browser component with the host. Protected
+code entry retains its separate policy and verification contract.
+
 For an advisory-enabled peer, trusted hosts can call
 `NativeSocketBrowserTarget.setProtectionOwner(opaqueOwnerOrNull)` after profile
 registration and every account transition. `onProfileRegistered(listener)` notifies
@@ -59,6 +65,32 @@ access. A dispatched command is never replayed against a different session.
 Android accessibility is a foreground-only fallback when the native profile is
 unavailable before dispatch. Desktop workspace autofill requires prior per-domain
 vault authorization and does not silently fill remote device profiles.
+
+## Embedded native pages
+
+`NativeSurfaceBrowserTarget` accepts an authenticated surface command channel.
+It supplies the existing `NativeTaskActuator` with the current selected page,
+task binding, guidance and main-frame snapshot/click/fill/select/scroll operations.
+Its compatibility `getProfileId()` returns an `embedded:` connection identity;
+it never claims a Chromium extension or profile. Stopping the target aborts its
+in-flight channel requests. Every request names that exact connection, so a
+replacement during account lookup cannot receive an old command. The owning
+host controls the channel lifetime.
+
+The trusted renderer composes `createSurfaceTaskHandler` from
+`packages/os/browser/src/surface-task-handler.mjs` with native page selection,
+control, inventory and annotation-cleanup ports. It reuses the task binding and
+preview checks. A cleanup failure after input remains an uncertain outcome.
+No page offer answers, arbitrary scripts, protected fills, child frames or
+coordinate input are supported by this adapter. Full general browser control
+and product composition require their own implementation and acceptance.
+
+Native `select` takes an exact visible option label in `text` (or the workspace
+`value` field). Snapshots report option labels, disabled state and selection,
+never internal option values. Missing, disabled or duplicate labels are refused.
+This operation covers single-choice native selects; multi-select widgets need
+separate support. The task actuator uses a host-held value reference and verifies
+the result from a new observation, as it does for other effects.
 
 ## Development
 
@@ -130,6 +162,53 @@ after-action snapshot appears only in a later snapshot, and anything the page
 does after the 30 seconds is not watched. `showGuidance` accepts
 `keepClearRefs` (controls the label must not cover, peer capability
 `task-guide-keep-clear`) and returns `placement` and `dismissed`.
+
+A task is bound to its starting origin. When a site hands the person to another
+one (`https://www.ssa.gov` to `https://secure.login.gov` and back), the trusted
+host checks that exact origin (blocklist, look-alike) and calls
+`InteractiveTaskRuntime.extendOrigin(id, revision, origin, checkOrigin)`; it is
+never automatic. The `extend-origin` transition adds the origin under a new
+epoch, records the grant with the check reference, and from then on records the
+origin chain (`originChain`) and each observed origin in the event journal.
+`retractOrigin` removes a granted origin (the starting ones stay) and fences
+in-flight work like pause. The runtime then calls the actuator's
+`scopeChanged`: `NativeTaskActuator` drops page facts and guidance from the old
+scope and calls the host's `applyOrigins`, for example the native surface's
+`setTaskOrigins`. The next binding of an extended task carries every allowed
+origin as `origins` (peer capability `task-origins`); each observation records
+the page's own origin, and each command stays scoped to the origin of the page
+it reads or acts on.
+
+A consented commit is the one exception, and only for a step the person said
+yes to. The host passes a `commitGrant` callback to `NativeTaskActuator`; it
+returns a `NativeCommitGrant` only after the host has recorded her explicit yes
+to this exact step, control and (for a fill or select) value, and `undefined`
+for every other action. A grant names the task, epoch, binding origin, the
+observed control (`targetRef`, so one page observation), its reviewed
+`selector` (the proposal's `expectedSelector`), the subaction, for a fill or
+select the required lowercase SHA-256 `valueHash` of the exact text (a click
+carries none), and `expiresAt` at most
+`COMMIT_GRANT_MAX_MS` (60 seconds) ahead. The actuator refuses a mismatched
+grant before dispatch, and only a peer advertising `task-commit-grant` receives
+one. The browser checks every field again, spends the grant once (a spent ID is
+refused, also after a bridge restart; a refusal after admission still spends
+it), and lets the commit control be pressed. The watch then lets exactly one
+commit through: the submit the granted control itself sends to the page's
+origin with its page load (POST or GET), or, when no such page load is under
+way, one own-site request (a script form or button that sends with fetch). A
+submit with no submitter (`requestSubmit()` or an implicit submission) counts
+only when the granted control is the form's default button and overrides
+nothing. A
+snapshot reports it as `consentedCommit` (`{ grantId, kind }`). A submit the
+page cancels cannot be sent later. A submit from another submitter of the same
+form, a submit whose action, method, target or encoding differs from the
+granted control's when it was pressed, a script `form.submit()`, a second
+submit, another form, a submit to
+another origin, any further own-site request, a same-document address change
+and any other move to another document are still stopped or recorded as
+`effectViolation`, which the actuator treats as an unknown outcome. The actuator treats
+a `consentedCommit` for any other grant as an unknown outcome. Without a grant
+nothing changes: commit controls stay blocked.
 
 `NativeSocketBrowserTarget.currentPage()` is a trusted host read of the page the
 person sees in the connected profile. It sends one `list` command and returns the

@@ -12,8 +12,8 @@ clone a working tree or synchronize arbitrary files.
   versions, notices and undo file in `sync-state.json`. These files live beside
   magpie's settings. Secrets are local, never in the status response.
 - The [`remote`](../../internal/davsync/dav.go) interface reads a version and
-  conditionally replaces it. WebDAV and S3 use ETags; GitHub uses the blob SHA
-  required by its Contents API. [`github.go`](../../internal/davsync/github.go)
+  conditionally replaces it. WebDAV and S3 use ETags; GitHub uses the file's
+  blob SHA. [`github.go`](../../internal/davsync/github.go)
   interprets `github://owner/repo[/prefix]`, with `Config.Branch` selecting a
   branch or using the repository's default.
 - [`backup.go`](../../internal/backup/backup.go) owns bundle contents and
@@ -97,12 +97,45 @@ repository can keep the token. The branch is part of the sync state key.
   repository read doesn't say `"private": true`, since a public history hands
   every sealed version to anyone to guess the passphrase against
   (`TestGitHubPublicRepositoryRefused`). In an empty repository, the first encrypted
-  backup initializes its default branch through the Contents API. A selected
+  backup initializes its default branch through the Contents API. When that
+  API refuses it as too large, a short `README.md` in magpie's folder makes
+  the first commit and the backup follows as the second. A selected
   branch other than the default must already exist. The token needs repository
   Contents read and write.
 - Backups are `<prefix>/magpie/magpie.magpie-backup`; optional usage files
-  live beside them under `usage/`. Changes create commits, and unchanged
-  setup does not create another backup commit.
+  live beside them under `usage/`. Each write or removal is one commit, and
+  unchanged setup does not create another backup commit.
+- A repository with commits is written through the Git Data API: a blob
+  (up to 100 MB), a tree on the head commit's tree, a commit with the head
+  as its parent, and a ref update without force. The Contents API's PUT
+  refuses files well under that with 422 "the file is too large to be
+  processed" (a 102-skill backup past ~19 MB, Discord). The file must still
+  be at the version sync read, checked at the head commit, before the
+  commit is built. A ref update that is not a fast-forward is built again on
+  the new head, up to three times; if the new head changed the file it is
+  `errChanged`. A branch deleted meanwhile is an error, never created.
+- A blob goes up as base64 in one JSON body, a third larger than the file,
+  and GitHub refuses a body well under the 100 MB a blob can hold: a
+  50.8 MB backup (about 68 MB of body) got 422 "Sorry, your input was too
+  large to process" (Zhang-Wei, Discord), while a 19 MB file's Contents
+  PUT (about 25 MB of body) went through; GitHub documents no request
+  size. So a backup over 16 MiB (`githubPart`) goes up in parts, in the
+  same one commit: `magpie.magpie-backup.parts/1`, `/2`, … beside it, and
+  at the backup's own path a short list of them (`githubParts`: format
+  `magpie-backup`, version 2, `split: github-parts`, the total size and
+  each part's blob SHA and size). The list's blob SHA is the version, and
+  it names each part by blob SHA, so one version pins one whole set; a
+  read downloads each part by that SHA, checks it, and returns the backup
+  whole. A list that doesn't add up or a part that isn't the one named is
+  an error, never a backup put together wrong. A write removes the parts
+  the list at the head named and the new backup doesn't use, in the same
+  commit, so going back to one file leaves no part behind. Backups up to
+  16 MiB stay one file, as before.
+- A magpie from before parts opens the list as a backup with version 2
+  and no key derivation, and stops with "made by a newer magpie; update
+  magpie" — not `ErrCorrupt` or `ErrNotBackup`, so it neither rebuilds
+  over it nor offers to replace it. A backup in one file, from any
+  magpie, still reads.
 - Tokens are separate from the library's GitHub token, sent only to
   `https://api.github.com`, and must differ from the encryption passphrase.
   Repository history retains older encrypted versions.
@@ -112,10 +145,12 @@ repository can keep the token. The branch is part of the sync state key.
   initialization, after repository access and the default branch are checked.
   The initial write omits `branch` so GitHub creates its default branch; other
   conflicts and missing branches are not treated as an empty repository.
-- Large files are downloaded by blob SHA, preserving the version that was
-  read. Sync files are limited to 64 MiB. Usage listing fails at the Contents
+- Large files and parts are downloaded by blob SHA, preserving the version
+  that was read. Sync files are limited to 64 MiB in all (four parts), the
+  bound the library's skill budget is sized for. Usage listing fails at the Contents
   API's 1,000-file limit rather than treating a truncated list as complete.
-- A stale SHA or a racing initial creation returns `errChanged`. Other 422
+- A stale SHA, a backup another commit changed, or a racing initial
+  creation returns `errChanged`. Other 422
   responses stay actionable errors. Authentication, permission and branch
   failures remain distinct from missing files. Rate limits use sync backoff.
 - Request archival remains an S3-only feature; its objects are separate from
@@ -132,7 +167,22 @@ node --test internal/gui/tests/github-sync.test.cjs internal/gui/tests/s3-sync.t
 `TestGitHubEmptyRepository` covers the first encrypted backup initializing an
 empty repository and an unchanged second sync. `TestGitHubEmptyRepositoryFailures`
 covers missing branches, unrelated ref conflicts and another computer winning
-the initial write. `TestGitHubNotBackup` covers backend-specific recovery
+the initial write. `TestGitHubLargeBackup` writes a 21 MB backup past a fixture whose Contents
+API refuses it, as one commit, and reads it back by blob SHA.
+`TestGitHubBranchMovedMeanwhile` covers a head that moved before the ref
+update, and `TestGitHubEmptyRepositoryLargeBackup` a large first backup.
+`TestGitHubSplitBackup` writes a 50.8 MB backup past a fixture that refuses
+a blob over 24 MiB, as four parts in one commit, reads it back byte for
+byte, then goes to two parts and back to one file with no part left.
+`TestGitHubOneFileBackupStillReads` reads a 30 MB backup in one file and
+replaces it with parts; `TestGitHubPartsOlderMagpie` checks the list stops
+an older magpie as a newer magpie's backup; `TestGitHubPartsDamaged`,
+`TestGitHubPartsBranchMovedMeanwhile` and
+`TestGitHubEmptyRepositoryPartsBackup` cover a bad list or part, a moved
+head (each blob sent once) and an empty repository;
+`TestGitHubSyncLargeLibrary` syncs a library that seals past one request
+to a second computer.
+`TestGitHubNotBackup` covers backend-specific recovery
 advice when the repository holds an empty or foreign file.
 
 Go tests use `testenv` homes and HTTP fixtures. Browser tests use isolated

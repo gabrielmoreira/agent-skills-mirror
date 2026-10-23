@@ -29,9 +29,10 @@ Do not turn OMH into a hidden Hermes runtime patch, transport bot, network
 service, LLM router, or secret coding executor. The one sanctioned execution
 surface is the explicit opt-in fanout dispatch bridge described under
 Implementation Boundaries — operator-invoked, local-only, fully observed,
-never hidden and never a default. The one sanctioned network call is the
-`omh_jev_ask` tool, also described there — user-requested per turn, never a
-default. The OMH TUI that bare `omh` opens is a terminal frontend over Hermes'
+never hidden and never a default. The one sanctioned network call OMH makes is
+the `omh_jev_ask` tool, also described there — user-requested per turn, never a
+default. The `show-reel` toolkit's opt-in provider scripts reach a provider
+only when the user runs them with their own key; OMH never runs them. The OMH TUI that bare `omh` opens is a terminal frontend over Hermes'
 own gateway, not an execution surface; its boundary is stated there too.
 
 ## Command Audience
@@ -161,10 +162,20 @@ PR without the chat history.
   OMH never writes. Stdlib only, HTTPS only, a fixed two-host route table, no
   redirects, bounded bodies, no retry after a sent request times out. It
   persists no key, `state`, question text, or reply; one metadata-only ledger
-  row per ask. `src/plugin_bundle/omh/jev_ask_client.py` is the only network
-  client in `src/` and only `tools/jev_ask_tool.py` may import it. Third-party
-  Jev plugins are still never called, and `omh doctor` still reads no
-  credential value.
+  row per ask. `src/plugin_bundle/omh/jev_ask_client.py` is the only
+  in-process network client in `src/` and only `tools/jev_ask_tool.py` may
+  import it. Third-party Jev plugins are still never called, and `omh doctor`
+  still reads no credential value.
+- Opt-in show-reel provider scripts (owner approval, PR for show-reel
+  upstream parity): `src/skills/show_reel_toolkit/scripts/eleven.py` and
+  `narrate.py` (ElevenLabs TTS/STT/SFX/music by spawning `curl`, key from
+  `ELEVENLABS_API_KEY` only and passed on curl's stdin) and
+  `codex_ref_image.sh` (the user's signed-in codex CLI) ship as inert package
+  data. Only the user runs them, with their own credential; without it they
+  exit 2 and send nothing. OMH core, install, update, routing and doctor never
+  import or execute them; `eleven.py` is in INVARIANT 1's
+  `PROCESS_SPAWN_ALLOWLIST` and the companion-nonexecution tests cover both
+  Python scripts.
 - The OMH TUI is the frontend bare `omh` opens. `omh` runs the user's own
   `hermes --tui` with `HERMES_TUI_DIR` pointing at OMH's packaged frontend, so
   Hermes' launcher still resolves the profile, resume target, working
@@ -247,11 +258,27 @@ PR without the chat history.
   not take waits in the TUI's own queue for the running turn to
   end, whatever the busy mode, so it never interrupts that turn.
   A steer Hermes does not answer within 120 s goes back to the
-  composer and is never re-sent. The subagent views (the agent view under
+  composer and is never re-sent. Its look is the rail and kind colours the
+  owner picked on 2026-10-22: each transcript block on a `┃` rail with no
+  fill (grey for the person's prompt, the skin's accent for a reply, a
+  call's state colour for the call), a call's state in its mark's glyph and
+  colour as the dag view draws it (running blue `○`, done green `●`, failed
+  red `✗`), its name in its tool family's hue at 4.5:1 on dark and light,
+  consecutive skill loads and tool-detail reads folded into one row, and the
+  composer between two full-width rules with no side edges; none of it
+  changes what the TUI sends or answers. The subagent views (the agent view under
   the info line, always expanded while there are agents, as the owner asked
   on 2026-10-21; the list Down opens on its rows; one agent's log) read with
   `subagent.tail` only, the tail of the log
-  the person opened. Two keys in the agent list act on the highlighted
+  the person opened. In a dag run the agent view is a folding tree, as the
+  owner asked on 2026-10-22: a header row per node (a fold triangle, its
+  state glyph, its label, then category, model:effort, status and tokens),
+  under an open node its child's latest call and latest line (thinking,
+  Hermes' progress line or its reply), running and failed nodes open, layers
+  set apart by blank rows, folded to fit the view's cap before a count row
+  cuts it; Down gives the tree the keys (the arrows and Space fold), and a new
+  turn keeps the open run's lanes in the roster. Two keys in the agent list,
+  and in the tree on the highlighted node's child, act on that
   agent, and only on the person's keypress: `x` interrupts it
   (`subagent.interrupt`) once a second `x` confirms, and `s` steers it
   (`subagent.steer`) with text the person then types and sends; the TUI
@@ -352,6 +379,22 @@ Keep source files and generated projections together in the same change:
 
 - `src/skills/catalog.py` and `src/skills/render.py` produce
   `skills/*/SKILL.md`, `skills/*/references/*.md`, and `docs/WORKFLOWS.md`.
+- `src/skills/show_reel_toolkit/` plus the closed registry in
+  `src/skills/show_reel_support.py` produce `skills/omh-show-reel/toolkit/**`
+  and `agent-skills/omh-show-reel/toolkit/**` as non-executed text support.
+  `python tools/render_skill_pack.py --write` regenerates the tap pack;
+  `--check` checks its declared files. `--refresh-provenance` with `--write`
+  refreshes the canonical toolkit provenance after an audited source edit.
+- Canonical domain toolkit resources and definition-owned closed support
+  factories feed `builtin_skill_support_templates()` for geospatial analysis,
+  biomedical evidence and molecular docking. `tools/render_skill_pack.py --write`
+  projects these inert files to `skills/omh-<canonical-id>/toolkit/**`.
+  The domain provenance files are producer-validated, not written by the
+  show-reel-specific `--refresh-provenance` flag.
+- `agent_skill_files()` and `agent_skills_manifest()` produce the one portable
+  inventory `agent-skills/.omh-agent-skills-manifest.json`; `docs agent-skills`
+  regenerates that tree and its six host adapters. Never embed copied digest
+  inventories in the adapters.
 - `roles_reference_markdown()` in `src/catalogs/roles.py` produces
   `docs/ROLES.md`.
 - The demo case engine produces

@@ -106,12 +106,20 @@ API: `present` — representative operation IDs:
 - `GET /api/agents/{id}/instructions-bundle/file`.
 - `PUT /api/agents/{id}/instructions-bundle/file`.
 - `PATCH /api/agents/{id}` with an explicit `runner: "paperclip"` upgrade.
+- `PATCH /api/agents/{id}` with `runtimeSettings: { harness, model?, aiConnection?, expected: { model, aiConnection } }` for a narrow roster edit. Each request handles one agent; the UI batches at most four writes and collects per-agent outcomes.
 
 Agent access: `available` — Native read/update/history/restore instruction tools; REST /
 CLI.
 
 Policy: Agent creation/configuration uses action grants, resource policies and change
 consent; some controls require a board actor.
+
+The roster intent preserves unrelated settings, rejects stale model/connection
+previews and harness changes, and checks the full execution configuration under
+the lifecycle write lock. It uses the same configuration, company, credential,
+environment, and consent checks as other edits. It adds no agent permission or
+credential fallback. Pool and externally managed agents use their existing
+configuration surfaces. Board browser verification does not qualify agent access.
 
 The existing-agent upgrade notice uses this configuration PATCH. It does not
 grant configuration, account, or environment access. The server resolves the

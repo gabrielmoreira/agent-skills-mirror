@@ -7,7 +7,7 @@ ref: dev
 
 # Mirror Manifest
 
-Mirror of `code-yeongyu/oh-my-openagent` — 26 default patterns, 20 followed patterns, 353 file(s) materialized.
+Mirror of `code-yeongyu/oh-my-openagent` — 26 default patterns, 25 followed patterns, 358 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `code-yeongyu/oh-my-openagent` — 26 default patterns, 20 followed pa
 | Ref Type      | `branch` |
 | Ref           | `dev` |
 | Default pats  | 26 |
-| Followed pats | 20 |
-| Files         | 353 |
+| Followed pats | 25 |
+| Files         | 358 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -66,6 +66,11 @@ Mirror of `code-yeongyu/oh-my-openagent` — 26 default patterns, 20 followed pa
 - `README.zh-cn.md`
 - `README.ja.md`
 - `README.ko.md`
+- `README.es.md`
+- `README.fr.md`
+- `README.de.md`
+- `README.pt-br.md`
+- `README.it.md`
 - `docs/guide/migrating-from-opencode.md`
 - `docs/reference/configuration.md`
 - `docs/reference/features.md`
@@ -425,12 +430,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 345 | → | [`docs/reference/omo-json.md`](docs/reference/omo-json.md) |
 | 346 | → | [`docs/reference/prompt-async-gate-rfc.md`](docs/reference/prompt-async-gate-rfc.md) |
 | 347 | → | [`docs/reference/release-process.md`](docs/reference/release-process.md) |
-| 348 | → | [`README.ja.md`](README.ja.md) |
-| 349 | → | [`README.ko.md`](README.ko.md) |
-| 350 | → | [`README.md`](README.md) |
-| 351 | → | [`README.ru.md`](README.ru.md) |
-| 352 | → | [`README.zh-cn.md`](README.zh-cn.md) |
-| 353 | → | [`ROADMAP.md`](ROADMAP.md) |
+| 348 | → | [`README.de.md`](README.de.md) |
+| 349 | → | [`README.es.md`](README.es.md) |
+| 350 | → | [`README.fr.md`](README.fr.md) |
+| 351 | → | [`README.it.md`](README.it.md) |
+| 352 | → | [`README.ja.md`](README.ja.md) |
+| 353 | → | [`README.ko.md`](README.ko.md) |
+| 354 | → | [`README.md`](README.md) |
+| 355 | → | [`README.pt-br.md`](README.pt-br.md) |
+| 356 | → | [`README.ru.md`](README.ru.md) |
+| 357 | → | [`README.zh-cn.md`](README.zh-cn.md) |
+| 358 | → | [`ROADMAP.md`](ROADMAP.md) |
 
 ---
 

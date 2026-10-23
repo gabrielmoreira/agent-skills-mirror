@@ -195,10 +195,13 @@ through `all_threads_registered_controllers`:
 | Messages | `messages_list`, `message_append`, `message_update`, `edit_message`, `regenerate` |
 | Search and transcript | `search`, `transcript_get`, `token_usage` |
 | Turn state | `turn_state_get`, `turn_state_list`, `turn_state_history`, `turn_state_get_turn`, `turn_state_clear` |
-| Live agent state | `goal_get`, `todos_get` |
+| Live agent state | `goal_get`, `todos_get`, `state_get` |
 
-`goal_get` and `todos_get` are read-only. Goals and todos are written by the
-agent (`agent::goals`, `agent::todos`, backed by `tinyagents_graph`) and their
+`goal_get`, `todos_get` and `state_get` are read-only. `state_get` returns the
+goal, the plan and the agent's own notes (facts, blockers, approach) in one
+call, with the run-state block the model sees rendered from them (TinyAgents
+`state_block::RunState`). Goals, todos and notes are written by the
+agent (`agent::goals`, `agent::todos`, backed by `tinyagents_harness_tools`) and their
 live updates stream over the web channel (`thread_goal_updated`,
 `thread_goal_cleared`, `thread_todos_changed`). There is no task-board or
 todo-editing surface here.

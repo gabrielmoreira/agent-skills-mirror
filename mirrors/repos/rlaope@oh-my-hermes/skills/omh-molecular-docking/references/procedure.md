@@ -1,0 +1,49 @@
+# molecular-docking Specialist Procedure
+
+Expert clarification questions:
+- `prepared receptor and ligand PDBQT paths`
+  - English: Which prepared, rights-cleared single-ligand and rigid-receptor PDBQT files are authorized?
+  - Korean: Which prepared, rights-cleared single-ligand and rigid-receptor PDBQT files are authorized?
+- `binding box and preparation provenance`
+  - English: What are the center and box dimensions in angstrom, and which protonation, charge, tautomer and preparation choices produced these files?
+  - Korean: What are the center and box dimensions in angstrom, and which protonation, charge, tautomer and preparation choices produced these files?
+- `approved local resource budget`
+  - English: Which isolated optional backend, finite host deadline and new evidence directory are approved?
+  - Korean: Which isolated optional backend, finite host deadline and new evidence directory are approved?
+
+## Procedure
+
+Declared checks:
+- `docking_input_check`
+  - Required result fields: `file_hashes`, `format_validation`, `source_license`, `preparation_choices`, `binding_box`
+  - Criterion: Require safe new output paths, valid finite PDBQT atoms, rigid receptor/single ligand, rights and preparation provenance; HOLD absent binding center or preparation facts.
+- `docking_budget_check`
+  - Required result fields: `cpu`, `seed`, `exhaustiveness`, `n_poses`, `host_deadline`
+  - Criterion: Require CPU 1-2, positive fixed seed, exhaustiveness 1-4, poses 1-5, box dimensions 1-24 angstrom and a host-enforced deadline at most 180 seconds; the helper records but cannot interrupt native code itself.
+- `docking_execution_check`
+  - Required result fields: `backend_identity`, `pose_score_readback`, `hashes`, `replay`, `claim_boundary`
+  - Criterion: Require actual dock(), matching MODEL/ENDMDL and VINA RESULT records, finite energies in kcal/mol, engine version, stdout/stderr, exit/deadline evidence and digest-bound replay. A mock, score-only or optimize-only call cannot pass.
+
+### `docking_scope` (analysis)
+
+Bind rights-cleared prepared files, protonation/tautomer/charges, receptor assumptions, site and resource budget. Run optional --validate-only to read back input digests, never as completed docking.
+
+- Input refs: `prepared receptor and ligand PDBQT paths`, `binding box and preparation provenance`, `approved local resource budget`
+- Output refs: `molecular_docking_preflight/v1`
+- Check IDs: `docking_input_check`, `docking_budget_check`
+
+### `docking_execute` (production)
+
+Explicitly run toolkit/scripts/dock.py in the chosen isolated Vina environment with a new output directory, captured logs and a real finite host timeout. Never auto-install or silently substitute a provider.
+
+- Input refs: `prepared receptor and ligand PDBQT paths`, `binding box and preparation provenance`, `approved local resource budget`
+- Output refs: `molecular_docking_run/v1 and real pose/score files`
+- Check IDs: `docking_input_check`, `docking_budget_check`
+
+### `docking_verify` (validation)
+
+Read poses.pdbqt, scores.json and manifest.json; reconcile saved pose energies and atom records with actual inputs and all hashes. Replay with a new output directory when needed; qualify reproducibility by version/platform.
+
+- Input refs: `prepared receptor and ligand PDBQT paths`, `binding box and preparation provenance`, `approved local resource budget`
+- Output refs: `molecular_docking_run/v1 and real pose/score files`
+- Check IDs: `docking_execution_check`

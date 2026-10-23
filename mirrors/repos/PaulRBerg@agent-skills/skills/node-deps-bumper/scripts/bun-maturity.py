@@ -30,7 +30,7 @@ def main() -> None:
             # Configs can contain registry credentials; do not echo parser input.
             raise ValueError(f"cannot read Bun configuration: {config}") from None
         if not isinstance(install, dict):
-            raise ValueError(f"expected an install table in {config}")
+            raise TypeError(f"expected an install table in {config}")
         policy.update(install)
 
     age = policy.get("minimumReleaseAge", 0)
@@ -38,8 +38,7 @@ def main() -> None:
     if type(age) is not int or age < 0:
         raise ValueError("minimumReleaseAge must be a nonnegative integer")
     if not isinstance(excludes, list) or any(
-        not isinstance(name, str) or not name or any(c in name for c in ",\r\n")
-        for name in excludes
+        not isinstance(name, str) or not name or any(c in name for c in ",\r\n") for name in excludes
     ):
         raise ValueError("minimumReleaseAgeExcludes must be an array of package names")
     if age:
@@ -53,6 +52,6 @@ def main() -> None:
 if __name__ == "__main__":
     try:
         main()
-    except ValueError as error:
+    except (TypeError, ValueError) as error:
         print(f"ERROR: {error}", file=sys.stderr)
         sys.exit(1)

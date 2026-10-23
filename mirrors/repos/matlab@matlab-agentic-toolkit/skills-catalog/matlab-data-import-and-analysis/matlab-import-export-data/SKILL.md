@@ -11,7 +11,7 @@ description: >
 license: https://www.mathworks.com/content/dam/mathworks/license/pmrl/license.md
 metadata:
   author: MathWorks
-  version: "1.0"
+  version: "1.1"
 ---
 
 # MATLAB Data Import/Export
@@ -37,7 +37,7 @@ Guidance for MATLAB data I/O — correct patterns for delimiters, locales, forma
 - Vehicle data from MDF/MF4/BLF/ASC log files or CAN/LIN bus decoding (use `matlab-import-export-vehicle-data` skill)
 - Vehicle network communication setup with CAN/CAN FD/J1939 (use `matlab-use-vehicle-network` skill)
 - Tracking data import for sensor fusion workflows (use `matlab-import-tracking-data` skill)
-- Medical image data — DICOM, NIfTI, or Analyze formats (use `matlab-read-medical-data` skill)
+- Medical image data — DICOM, NIfTI, or Analyze formats (use `matlab-process-images` skill)
 - Market or financial data feeds (use `matlab-access-datafeed` skill)
 - Simulink data logging or signal I/O (use Simulink-specific workflows)
 - Image or audio file I/O (`imread`, `audioread` — different domain)

@@ -14,6 +14,7 @@
 #   1 - taze not installed
 #   2 - No package.json found
 #   64 - Usage error
+#   Other nonzero - Bun policy, taze, or plan parser failure
 
 set -euo pipefail
 
@@ -73,8 +74,9 @@ fi
 
 cd "$target_dir"
 
-# Refresh registry metadata so cached scans cannot hide newly published releases.
-taze_args=(major --force)
+# Refresh registry metadata so cached scans cannot hide newly published releases. Skip the GitHub Actions and
+# Node version-file scans: this workflow bumps npm dependencies, and those scans dominate runtime in large repos.
+taze_args=(major --force --no-github-actions --no-node-version)
 
 # Auto-detect monorepo
 if grep -q '"workspaces"' package.json 2>/dev/null ||
@@ -142,7 +144,11 @@ fi
 if [[ "$plan" == true ]]; then
   plan_output="$(mktemp "${TMPDIR:-/tmp}/taze-plan.XXXXXX")"
   trap 'rm -f "$plan_output"' EXIT
-  NO_COLOR=1 taze "${taze_args[@]}" --no-group --no-timediff --no-nodecompat --sort name-asc >"$plan_output" 2>&1
+  NO_COLOR=1 taze "${taze_args[@]}" --no-group --no-timediff --no-nodecompat --sort name-asc >"$plan_output" 2>&1 || {
+    rc=$?
+    cat "$plan_output" >&2
+    exit "$rc"
+  }
   uv run "$script_dir/parse-taze-plan.py" --input "$plan_output"
 else
   taze "${taze_args[@]}" 2>&1

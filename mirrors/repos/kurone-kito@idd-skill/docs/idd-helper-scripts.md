@@ -11,6 +11,18 @@ This document records the current decision on optional helper scripts for
 the IDD workflow. It exists so future reviews can reference the trade-off
 directly instead of re-evaluating the same suggestion from scratch.
 
+## Release links
+
+During a staged release, default-branch links can point to a version
+before its signed tag is published. They may return 404, and
+next-release docs may appear alongside prior-version metadata. This
+occurred in the [PR #4601 review on 2026-10-21](https://github.com/kurone-kito/idd-skill/pull/4601#discussion_r4334064889).
+
+Until the next signed tag is published, use the agent-entry guide at the
+latest published signed tag. The latest is `v0.17.0`:
+
+[Agent-entry and verification guide at v0.17.0](https://github.com/kurone-kito/idd-skill/blob/v0.17.0/idd-template/docs/onboarding/agent-entry-and-verification.md).
+
 ## Flag-name and field-name conventions
 
 Several helpers require a specific flag name that does not match
@@ -5086,7 +5098,7 @@ the verdict table or `post-rejected`. Exit status is 0 for `post` and
 - Command:
   `node scripts/provider-outage-park.mjs [--park --pr <n> --issue <n>
   --service <name> --blockers <name1,name2> --claim-id <id> --agent-id
-  <id>] [--parked-issues] [--apply]`
+  <id>] [--parked-issues] [--budget-ms <milliseconds>] [--apply]`
 - Published bin: `idd-provider-outage-park`
 - Stable contract (the posted `idd-provider-outage-park` marker payload,
   not the list-mode/`--parked-issues` stdout shapes below):
@@ -5132,12 +5144,13 @@ the verdict table or `post-rejected`. Exit status is 0 for `post` and
     and `parkedIssuesComplete` (see the live-marker rule above).
   - `--parked-issues`: the cheap mode Discover's own parked-issue skip
     runs on every pass. Prints only `{ parkedIssues, parkedIssuesComplete
-    }`. Reads the live `provider-health` report first; when EVERY
-    service is `healthy`, `parkedIssues` is empty by construction (a
-    live marker's `resumable` is `true` only once its own service is
-    healthy) and complete, so this returns without any open-pull-request
-    or per-pull-request comment read. Otherwise falls through to the
-    full list-mode collection. Mutually exclusive with `--park`.
+    }`. It collects and validates live park markers first (#4615). With
+    no live markers, it returns the marker scan's completeness result
+    without reading provider health. Otherwise it reads each distinct
+    marker service once and reuses the same markers and verdicts as list
+    mode. A truncated open-PR sample or failed PR-comment read keeps
+    `parkedIssuesComplete: false` even when no live marker was observed.
+    Mutually exclusive with `--park`.
   - `--park`: fetches the pull request's live head SHA, re-checks the
     named service's live `provider-health` verdict is `unavailable`, and
     requires every entry in `--blockers` (the caller's own fresh
@@ -5150,6 +5163,25 @@ the verdict table or `post-rejected`. Exit status is 0 for `post` and
     acceptance criteria) to the pull request; releasing the originating
     issue's claim is a separate, existing step the caller takes
     afterward (`unclaimed-by`), not performed by this command.
+- **Read-operation deadline (`#4618`).** The default read-only list mode
+  and `--parked-issues` share one whole-operation deadline of `120000` ms.
+  It starts before repository/auth resolution and covers open-PR
+  enumeration, comment pagination, nested reads, API admission, and
+  synchronous `gh` execution. An operator can extend it for a slow
+  environment with `--budget-ms <milliseconds>` (integer from `1` through
+  `2147483647`); invalid values fail before remote I/O. The option is
+  rejected with `--park`, whose existing behavior is unchanged. The
+  supervisor writes a start line and progress to stderr at least every ten
+  seconds with only the mode, elapsed/budget time, and a fixed stage name.
+  On expiry or SIGINT/SIGTERM it stops and reaps only this invocation's
+  worker and `gh` process tree, allowing at most `5000` ms for cleanup.
+  Cleanup failure is reported explicitly. A timeout or interruption exits
+  nonzero, never prints a partial success JSON, and is not retried; it is
+  not converted into `parkedIssuesComplete: false`. Per-pull-request
+  failures and truncated-sample reports retain their existing semantics
+  when the operation finishes within budget. This bound follows the
+  measured `69.01`-second, `90`-call scan recorded in issue
+  [#4615](https://github.com/kurone-kito/idd-skill/issues/4615).
 - Same claim-gating contract as `post-idd-marker.mjs`: this command
   performs no claim/state gating itself -- the calling phase runs its
   own claim-revalidation gate before `--apply`.

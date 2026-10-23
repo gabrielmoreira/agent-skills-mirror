@@ -667,6 +667,8 @@ def build_parser() -> argparse.ArgumentParser:
         allow_abbrev=False,
     )
     parser.add_argument("topic", nargs="*", help="Research topic")
+    parser.add_argument("--research-only", action="store_true",
+                        help="Treat the topic as research text, never as an administrative command")
     parser.add_argument("--emit", default="compact", choices=["compact", "json", "context", "md", "html", "brief"])
     parser.add_argument(
         "--register",
@@ -790,6 +792,8 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--output", help="Optional exact file path for saving the rendered output")
     parser.add_argument("--synthesis-file", help="Markdown synthesis to embed in --emit=html output")
+    parser.add_argument("--cached-report", action="store_true",
+                        help="Render --emit=html --synthesis-file from cached research only, without replaying temporary plans")
     parser.add_argument("--publish-html", action="store_true",
                         help="Publish --emit=html output to ht-ml.app (explicit opt-in; public by default)")
     parser.add_argument("--publish", action="store_true",
@@ -799,6 +803,24 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--store", action="store_true", help="Persist ranked findings to the SQLite research store")
     parser.add_argument("--x-handle", help="X handle for targeted supplemental search")
     parser.add_argument("--x-related", help="Comma-separated related X handles (searched with lower weight)")
+    parser.add_argument(
+        "--official-site",
+        metavar="DOMAIN",
+        help=(
+            "The topic's own website (e.g., typesafe.ai). The engine reads the X and "
+            "GitHub accounts the homepage links and uses them when --x-handle / "
+            "--github-user are not set. Keyless."
+        ),
+    )
+    parser.add_argument(
+        "--no-x-handle",
+        metavar="REASON",
+        help=(
+            "Record that the topic has no resolvable X account, and why (e.g., "
+            "\"official site links no X account; x.com-filtered search found none\"). "
+            "Satisfies the agent-hosted X handle decision check without --x-handle."
+        ),
+    )
     parser.add_argument(
         "--x-posts",
         dest="x_posts",
@@ -1254,7 +1276,14 @@ def _show_runtime_ui(
     display_sources = list(
         dict.fromkeys(
             [
-                *report.query_plan.source_weights.keys(),
+                # Subquery sources, not source_weights: the sanitizer weights
+                # every eligible source, so weights alone would print
+                # "Digg: 0 clusters" for a source that was never searched.
+                *(
+                    source
+                    for subquery in report.query_plan.subqueries
+                    for source in subquery.sources
+                ),
                 *report.items_by_source.keys(),
                 *report.errors_by_source.keys(),
             ]
@@ -1282,7 +1311,7 @@ def _show_runtime_ui(
         progress.show_promo(promo, diag=diag)
 
 
-REPORT_CACHE_VERSION = "last30days-report-cache/v1"
+REPORT_CACHE_VERSION = "last30days-report-cache/v2"
 DEFAULT_REPORT_CACHE_TTL_SECONDS = 3600
 
 
@@ -1314,6 +1343,7 @@ def _write_last_run(
     entity_reports: list[tuple[str, schema.Report]] | None = None,
     *,
     x_envelope_sha256: str | None = None,
+    research_options: dict[str, object] | None = None,
 ) -> bool:
     # ``x_envelope_sha256`` binds the cached report to the --x-posts file it
     # was built from; _load_last_report_cache misses on any mismatch.
@@ -1343,6 +1373,10 @@ def _write_last_run(
             "timestamp": payload["timestamp"],
             "comparison": bool(entity_reports),
             "x_envelope_sha256": x_envelope_sha256 or None,
+            "research_options": (
+                research_options if research_options is not None
+                else _cache_research_options(build_parser().parse_args([]))
+            ),
             "reports": [
                 {"entity": label, "report": schema.to_dict(cached_report)}
                 for label, cached_report in cached_reports
@@ -1365,6 +1399,9 @@ def _load_last_report_cache(
     ttl_seconds: int = DEFAULT_REPORT_CACHE_TTL_SECONDS,
     *,
     x_envelope_sha256: str | None = None,
+    research_options: dict[str, object] | None = None,
+    requested_window: tuple[str, str] | None = None,
+    use_cached_envelopes: bool = False,
 ) -> tuple[schema.Report, list[tuple[str, schema.Report]] | None, Path] | None:
     cache_path = _last_report_cache_path()
     if cache_path is None or not cache_path.exists():
@@ -1381,7 +1418,12 @@ def _load_last_report_cache(
         # same envelope content; a digest on either side that does not match
         # the other is a miss.
         cached_digest = payload.get("x_envelope_sha256") or None
-        if (cached_digest or x_envelope_sha256) and cached_digest != x_envelope_sha256:
+        if not use_cached_envelopes and (cached_digest or x_envelope_sha256) and cached_digest != x_envelope_sha256:
+            return None
+        cached_options = payload.get("research_options") or {}
+        if not isinstance(cached_options, dict):
+            return None
+        if any(cached_options.get(key) != value for key, value in (research_options or {}).items()):
             return None
         cached_topic = str(payload.get("topic") or "").strip().lower()
         if topic is not None and cached_topic != topic.strip().lower():
@@ -1396,6 +1438,11 @@ def _load_last_report_cache(
         ]
         if not entity_reports:
             return None
+        if requested_window is not None and any(
+            (report.range_from, report.range_to) != requested_window
+            for _, report in entity_reports
+        ):
+            return None
         if payload.get("comparison"):
             if len(entity_reports) < 2:
                 return None
@@ -1409,6 +1456,74 @@ def _load_last_report_cache(
             f"{type(exc).__name__}: {exc}\n"
         )
         return None
+
+
+def _cache_research_options(
+    args: argparse.Namespace, config: dict[str, object] | None = None, *, supplied_only: bool = False,
+    resolved_corpus_dirs: list[Path] | None = None,
+) -> dict[str, object]:
+    names = (
+        "search", "quick", "deep", "mock", "web_backend", "perplexity_search_type",
+        "hiring_signals", "x_handle", "x_related", "official_site", "no_x_handle",
+        "subreddits", "dedicated_subreddits", "devto_tags", "tiktok_hashtags",
+        "tiktok_creators", "ig_creators", "max_results", "max_per_source",
+        "max_source_fetches", "auto_resolve", "github_user", "github_repo",
+        "trustpilot_domain", "amazon_query", "meta_ads_page", "telegram_sources",
+        "competitors", "competitors_list", "polymarket_keywords", "corpus_all_time", "drill",
+    )
+    options = {
+        name: getattr(args, name, None) for name in names
+        if not supplied_only or name in getattr(args, "_explicit_options", ())
+    }
+    if not supplied_only or "corpus" in getattr(args, "_explicit_options", ()):
+        if resolved_corpus_dirs is None:
+            resolved_corpus_dirs = corpus.resolve_directories(
+                args.corpus, (config or {}).get("LAST30DAYS_CORPUS_DIRS")
+            )
+            if "corpus" in {
+                value.strip().lower()
+                for value in str((config or {}).get("EXCLUDE_SOURCES") or "").split(",")
+            }:
+                resolved_corpus_dirs = []
+        options["corpus_sha256"] = hashlib.sha256(json.dumps([
+            os.path.normcase(str(path)) for path in resolved_corpus_dirs
+        ]).encode("utf-8")).hexdigest()
+    for name in ("plan", "competitors_plan"):
+        raw = getattr(args, name, None)
+        if not supplied_only:
+            options[name] = None
+        if raw:
+            try:
+                content = Path(raw).read_text(encoding="utf-8") if os.path.isfile(raw) else raw
+                content = json.dumps(json.loads(content), sort_keys=True)
+            except (OSError, ValueError):
+                content = raw
+            options[name] = hashlib.sha256(content.encode("utf-8")).hexdigest()
+    if not supplied_only:
+        rendering_keys = {
+            "FUN_LEVEL", "ELI5_MODE", "LAST30DAYS_REGISTER", "LAST30DAYS_MEMORY_DIR",
+            "LAST30DAYS_REPORT_CACHE_TTL_SECONDS", "LAST30DAYS_STORE", "LAST30DAYS_DEBUG",
+            "LAST30DAYS_STRICT_EXIT", "LAST30DAYS_VERIFY_FRESHNESS", "LAST30DAYS_PUBLISH_PASSWORD",
+            "LAST30DAYS_CORPUS_DIRS",
+        }
+        research_keys = {
+            "INCLUDE_SOURCES", "EXCLUDE_SOURCES", "TELEGRAM_SOURCES", "BSKY_HANDLE",
+            "BSKY_SEARCH_HOST", "FROM_BROWSER", "BROWSER_CONSENT", "BROWSER_CDP_URL",
+            "DEGRADED_TRANSCRIPT_THRESHOLD",
+        }
+        relevant_config = {}
+        for key, value in (config or {}).items():
+            if key.startswith("_") or key in rendering_keys:
+                continue
+            if key.endswith(("_KEY", "_TOKEN", "_PASSWORD", "_SECRET", "_COOKIE")) or key == "CT0":
+                if value:
+                    relevant_config[key] = True
+            elif key in research_keys or key.startswith("LAST30DAYS_") or key.endswith(("_BASE_URL", "_MODEL_PIN")):
+                relevant_config[key] = value
+        options["config_sha256"] = hashlib.sha256(
+            json.dumps(relevant_config, sort_keys=True, default=str).encode("utf-8")
+        ).hexdigest()
+    return options
 
 
 def _config_truthy(value: object) -> bool:
@@ -1633,7 +1748,7 @@ def _run_drill(
         _verify_report_set(merged, None, allow_network=not args.mock)
     else:
         merged.freshness_verdicts = []
-    if _write_last_run(report.topic, merged):
+    if _write_last_run(report.topic, merged, research_options=_cache_research_options(args, config)):
         sys.stderr.write(f"[last30days] Updated drill cache in {cache_path}\n")
     else:
         sys.stderr.write(
@@ -2751,6 +2866,50 @@ def _comparison_requested(args: argparse.Namespace, topic: str) -> bool:
 
 
 LAW7_HOST_PLAN_EXIT = 2
+X_HANDLE_DECISION_EXIT = 2
+
+
+def _x_handle_decision_signal(
+    args: argparse.Namespace, topic: str, external_plan: object,
+    available_sources: list[str],
+) -> str:
+    """Agent-host marker when a hosted entity run plans X with no handle decision.
+
+    An entity topic's own posts are the primary X evidence, and only a
+    resolved handle lets X search them. On hosted runs the host model resolves
+    handles (the engine's auto-resolve stands down for --plan), so a skipped
+    lookup used to cost nothing and went unnoticed. Returns "" when the run
+    is exempt or already decided (--x-handle or --no-x-handle), or when X
+    will not run (unavailable, --search without x, or EXCLUDE_SOURCES=x).
+    """
+    if external_plan is None or args.mock or args.quick:
+        return ""
+    if args.x_handle or args.no_x_handle:
+        return ""
+    if "@" in topic or _comparison_requested(args, topic):
+        return ""
+    if not _looks_like_entity_topic(topic):
+        return ""
+    if "x" not in available_sources:
+        return ""
+    if not pipeline._external_plan_names_source(external_plan, "x"):
+        return ""
+    return env.agent_host_signal()
+
+
+def _x_handle_decision_message(signal: str) -> str:
+    return (
+        "[Resolve] X handle decision missing: this run is agent-hosted "
+        f"({signal} is set), the topic names a person, company, or product, and "
+        "the plan searches X, but the command has no --x-handle. Without one X "
+        "cannot search the subject's own posts. Resolve it first "
+        "(references/research-runbook.md Step 0.5, Section A): pass "
+        "--official-site=<domain> so the engine reads the handle from the "
+        "homepage links, or find it with a search restricted to x.com through "
+        "your search tool's domain filter, then re-run with --x-handle=<handle>. "
+        "If both came up empty, or the topic is a theme rather than an entity, "
+        "re-run with --no-x-handle=\"<reason>\".\n"
+    )
 
 
 def _law7_host_plan_message(signal: str) -> str:
@@ -2911,7 +3070,7 @@ def _validate_extra_argv(parser: argparse.ArgumentParser, topic: str, extra_argv
 
 
 def _config_policy_for_args(args: argparse.Namespace, topic: str, extra_argv: list[str]) -> env.ConfigLoadPolicy:
-    normalized_topic = topic.lower()
+    normalized_topic = "" if args.research_only or args.cached_report else topic.lower()
     is_library_command = (
         normalized_topic == "library feed"
         or normalized_topic == "library search"
@@ -2928,7 +3087,7 @@ def _config_policy_for_args(args: argparse.Namespace, topic: str, extra_argv: li
     if args.no_browser_cookies:
         browser_mode = "off"
     elif (
-        args.diagnose or args.preflight or normalized_topic == "doctor"
+        args.diagnose or args.preflight or args.cached_report or normalized_topic == "doctor"
         or is_library_command or is_queue_command or is_cached_verification
     ):
         # doctor is plan-only like --diagnose: it must never read cookies.
@@ -3211,6 +3370,12 @@ def main() -> int:
     # Use parse_known_args so setup sub-flags (--device-auth, --github,
     # --openclaw) pass through without argparse hard-exiting.
     args, extra_argv = parser.parse_known_args()
+    option_argv = sys.argv[1:sys.argv.index("--")] if "--" in sys.argv else sys.argv[1:]
+    option_tokens = {token.split("=", 1)[0] for token in option_argv}
+    args._explicit_options = {
+        action.dest for action in parser._actions
+        if any(option in option_tokens for option in action.option_strings)
+    }
     if args.record_fixtures:
         with http.recording_requests(Path(args.record_fixtures)):
             return _main(parser, args, extra_argv)
@@ -3258,6 +3423,13 @@ def _main(
     if args.debug:
         os.environ["LAST30DAYS_DEBUG"] = "1"
 
+    if args.cached_report and (
+        args.emit != "html" or not args.synthesis_file or not args.topic or args.deep_research
+        or args.plan or args.competitors_plan or args.x_posts
+        or args.discover is not None or args.drill or args.diagnose or args.preflight
+        or args.welcome or args.resolve_save_dir or args.verify_freshness is True
+    ):
+        parser.error("--cached-report requires a topic, --emit=html, and --synthesis-file without research input files, --verify-freshness, or other command modes")
     if args.welcome:
         from lib import setup_wizard
         print(setup_wizard.render_welcome())
@@ -3265,7 +3437,15 @@ def _main(
 
     topic = " ".join(args.topic).strip()
     original_topic = topic
-    _validate_extra_argv(parser, topic, extra_argv)
+    requested_window = (
+        dates.get_date_range(
+            30 if args.lookback_days is None else args.lookback_days,
+            as_of_date=args.as_of_date,
+        )
+        if not args.cached_report or args.lookback_days is not None or args.as_of_date is not None else None
+    )
+    command_topic = "" if args.research_only or args.cached_report else topic.lower()
+    _validate_extra_argv(parser, command_topic, extra_argv)
     if args.resolve_save_dir:
         print(env.resolve_memory_dir(args.save_dir))
         return 0
@@ -3275,12 +3455,12 @@ def _main(
             "accepted); write the envelope to a .json file and pass its path.\n"
         )
         return 2
-    if args.publish and topic.lower() != "library feed":
+    if args.publish and command_topic != "library feed":
         sys.stderr.write(
             "[last30days] --publish is only supported by the 'library feed' command.\n"
         )
         return 2
-    if topic.lower() == "setup":
+    if command_topic == "setup":
         # Persisting a credential needs no config load (no Keychain / pass
         # probes, no cookie policy), so it dispatches before get_config.
         store_key_present, store_key_name, _ = _split_store_key(extra_argv)
@@ -3312,6 +3492,10 @@ def _main(
         config["_CORPUS_DIRS"] = [str(path) for path in resolved_corpus_dirs]
     if _config_truthy(config.get("LAST30DAYS_CORPUS_IN_EXPORT")):
         config["_CORPUS_IN_EXPORT"] = True
+    research_options = _cache_research_options(
+        args, config, supplied_only=args.cached_report,
+        resolved_corpus_dirs=resolved_corpus_dirs,
+    )
     _propagate_config_to_environ(config)
 
     # Env-var fallback for --save-dir, mirroring the LAST30DAYS_STORE pattern below.
@@ -3358,7 +3542,7 @@ def _main(
     # match only, so multi-word research topics containing "doctor" still
     # research normally). Aggregates probes/descriptors/prescriptions into
     # one grouped health surface; always exits 0.
-    if topic.lower() == "doctor":
+    if command_topic == "doctor":
         from lib import doctor
         return doctor.run(
             config,
@@ -3368,18 +3552,18 @@ def _main(
             probe="--probe" in extra_argv,
         )
 
-    if topic.lower() == "library feed":
+    if command_topic == "library feed":
         return _run_library_feed(args, config)
-    if topic.lower() == "library search" or topic.lower().startswith("library search "):
+    if command_topic == "library search" or command_topic.startswith("library search "):
         return _run_library_search(args, config, topic[len("library search") :].strip())
 
-    if topic.lower() == "queue list":
+    if command_topic == "queue list":
         return _run_queue_list(args, config)
-    if topic.lower() == "queue cover" or topic.lower().startswith("queue cover "):
+    if command_topic == "queue cover" or command_topic.startswith("queue cover "):
         return _run_queue_cover(args, config, topic[len("queue cover") :].strip())
 
     # Handle setup subcommand
-    if topic.lower() == "setup":
+    if command_topic == "setup":
         from lib import setup_wizard
         if "--openclaw" in extra_argv:
             results = setup_wizard.run_openclaw_setup(config)
@@ -3657,6 +3841,7 @@ def _main(
     if (
         topic
         and not args.diagnose
+        and not args.cached_report
         and not args.mock
         and not args.record_fixtures
         and env.read_secret_env("LAST30DAYS_API_KEY")
@@ -3824,6 +4009,9 @@ def _main(
             topic,
             ttl_seconds=_report_cache_ttl_seconds(config),
             x_envelope_sha256=_x_envelope_digest(x_posts_envelope, comp_plan),
+            research_options=research_options,
+            requested_window=requested_window,
+            use_cached_envelopes=args.cached_report,
         )
         if cached is not None:
             cached_report, cached_entity_reports, cache_path = cached
@@ -3831,7 +4019,7 @@ def _main(
                 f"[last30days] Reusing cached report data from {cache_path}\n"
             )
             sys.stderr.flush()
-            if _freshness_enabled(args, config):
+            if not args.cached_report and _freshness_enabled(args, config):
                 _verify_report_set(
                     cached_report,
                     cached_entity_reports,
@@ -3845,6 +4033,9 @@ def _main(
             return _render_save_and_print(
                 args, cached_report, cached_entity_reports, synthesis_md, config
             )
+        if args.cached_report:
+            sys.stderr.write("[last30days] No matching cached report data; rerun research with recreated plans before exporting HTML.\n")
+            return 2
         sys.stderr.write(
             "[last30days] No matching cached report data for "
             "--emit=html --synthesis-file; running fresh research.\n"
@@ -3919,6 +4110,9 @@ def _main(
         # without WebSearch (OpenClaw, Codex, raw CLI).
         repos_from_auto_resolve = False
         trustpilot_domain_is_hint = False
+        x_handle_from_auto = False
+        github_user_from_auto = False
+        auto_official_site = ""
         # Resolve automatically for entity-shaped topics even without the flag.
         # A person or company topic whose handle the user did not supply is the
         # case where first-party evidence is hardest to protect: the handle is
@@ -3955,11 +4149,13 @@ def _main(
                 sys.stderr.write(f"[AutoResolve] Subreddits: {', '.join(subreddits)}\n")
             if resolution.get("x_handle") and not args.x_handle:
                 args.x_handle = resolution["x_handle"]
+                x_handle_from_auto = True
                 sys.stderr.write(f"[AutoResolve] X handle: @{args.x_handle}\n")
             # Empty x_handle is intentional: do not invent a lexical stand-in.
             # pipeline.run treats an unidentified subject as "skip the X floor".
             if resolution.get("github_user") and not args.github_user:
                 args.github_user = resolution["github_user"]
+                github_user_from_auto = True
                 sys.stderr.write(f"[AutoResolve] GitHub user: @{args.github_user}\n")
             if resolution.get("github_repos") and not args.github_repo:
                 args.github_repo = ",".join(resolution["github_repos"])
@@ -3973,6 +4169,9 @@ def _main(
                 args.trustpilot_domain = resolution["trustpilot_domain"]
                 trustpilot_domain_is_hint = True
                 sys.stderr.write(f"[AutoResolve] Trustpilot domain: {args.trustpilot_domain} (hint)\n")
+            if resolution.get("trustpilot_domain"):
+                # The brand's review-page domain is its own site.
+                auto_official_site = resolution["trustpilot_domain"]
             if resolution.get("context"):
                 # Inject context into external_plan metadata for the planner to use
                 if not external_plan:
@@ -3980,6 +4179,29 @@ def _main(
                 # Store context for the planner prompt injection
                 config["_auto_resolve_context"] = resolution["context"]
                 sys.stderr.write(f"[AutoResolve] Context: {resolution['context'][:80]}...\n")
+
+        # The brand's homepage links its own X and GitHub accounts: the most
+        # reliable first-party source, and keyless. A user flag wins over the
+        # homepage; the homepage wins over a handle auto-resolve picked by
+        # counting mentions in search results.
+        official_site = (args.official_site or "").strip() or auto_official_site
+        if official_site and not args.mock:
+            from lib import resolve as resolve_lib
+            socials = resolve_lib.official_site_socials(official_site)
+            if socials["x_handle"] and (not args.x_handle or x_handle_from_auto):
+                args.x_handle = socials["x_handle"]
+                sys.stderr.write(f"[Resolve] X handle from {official_site}: @{args.x_handle}\n")
+            if socials["github_user"] and (not args.github_user or github_user_from_auto):
+                args.github_user = socials["github_user"]
+                sys.stderr.write(f"[Resolve] GitHub user from {official_site}: @{args.github_user}\n")
+        if args.no_x_handle and not args.x_handle:
+            sys.stderr.write(f"[Resolve] No X handle: {args.no_x_handle.strip()}\n")
+        x_decision_signal = _x_handle_decision_signal(
+            args, topic, external_plan, diag.get("available_sources") or [],
+        )
+        if x_decision_signal:
+            sys.stderr.write(_x_handle_decision_message(x_decision_signal))
+            raise SystemExit(X_HANDLE_DECISION_EXIT)
 
         github_user = args.github_user.lstrip("@").lower() if args.github_user else None
         github_repos = [r.strip() for r in args.github_repo.split(",") if r.strip() and "/" in r.strip()] if args.github_repo else None
@@ -4171,8 +4393,8 @@ def _main(
                         "See the skill's references/competitors.md for the full protocol.\n"
                         "\n"
                         "HEADLESS / CRON PATH (no hosting model available): set "
-                        "BRAVE_API_KEY / EXA_API_KEY / SERPER_API_KEY / PARALLEL_API_KEY / "
-                        "PERPLEXITY_API_KEY / OPENROUTER_API_KEY and re-run.\n"
+                        "BRAVE_API_KEY / EXA_API_KEY / SERPER_API_KEY / PARALLEL_API_KEY "
+                        "and re-run.\n"
                         "\n"
                         "MINIMUM ESCAPE HATCH: pass --competitors-list 'A,B,C' to skip "
                         "discovery. Without --competitors-plan, peer sub-runs fall back to "
@@ -4238,6 +4460,7 @@ def _main(
                 # An advertiser page is per-entity state by definition: left in
                 # place it would render one brand's ads as every peer's.
                 entity_config.pop("_meta_ads_page", None)
+                entity_config.pop("_dedicated_subreddits", None)
                 plan_entry = comp_plan.get(entity.strip().lower(), {})
                 resolved = {
                     "entity": entity,
@@ -4379,6 +4602,7 @@ def _main(
     _write_last_run(
         original_topic, report, entity_reports=entity_reports,
         x_envelope_sha256=_x_envelope_digest(x_posts_envelope, comp_plan),
+        research_options=research_options,
     )
     # LAST30DAYS_STORE env var = persistence default-on. Read both os.environ
     # (for shell-exported users) and config (for users who set it in

@@ -3,10 +3,10 @@
 ## 目标与边界
 
 - 以Pi Agent和已授权的OpenAI GPT作为主体底座，复用原生工具、资源加载与模型选择；不新造Agent、模型客户端、Lambda解释器或资源管理框架。
-- 只组织现有资产；三域为`.github/context/`、`.github/skills/`、`.github/extensions/`，域内对象平铺。包内部源码、资料集合与共享实现不另算新的一级资源分类。
+- 只组织现有资产；三域主入口为`.github/context/`、`.github/skills/`、`.github/extensions/`，域内对象平铺。Context入门、提示词、机器索引、AI引用和模板文件平铺在`.github/`根；仅重名的`README.md`、`AGENTS.md`用集合名区分，其他文件保留原名。包内部源码、资料集合与共享实现不另算新的一级资源分类。
 - 根`README.md`是唯一主页；`.github/README.md`禁止创建。`llms.txt`是AI短入口；大资料按需读取，不全部注入系统上下文。
 - 读者按问题、设计、实现、代价及比较/共性/适用条件理解工具；Lambda记号只辅助表达输入输出与组合，不证明纯函数、正确、确定或终止。
-- 功法与法器441个对象的活动说明使用`.github/context/tool-explanation-template-v1.md`：保留v0的15项并新增“结论、连接规则、依据”，共18项；v0仅作历史模板，两个版本的原始模板均在Context根目录。第16项为主张、第18项为事实依据、第17项须按图尔敏模型写明从证据到主张的具体推理规则；不得用字段交叉引用冒充连接规则。不得用AI自拟版本替代已登记模板，不借模板迁移改写原15项、来源或评级。主页集合级说明也按活动v1模板18项名序组织；作为集合摘要，第16–18项仅陈述集合层级可核的结论、推理与依据，不合并或替代对象级说明。
+- 功法与法器441个对象的活动说明使用`.github/tool-explanation-template-v1.md`：保留v0的15项并新增“结论、连接规则、依据”，共18项；v0仅作历史模板，两个版本的原始模板均在`.github/`根目录。第16项为主张、第18项为事实依据、第17项须按图尔敏模型写明从证据到主张的具体推理规则；不得用字段交叉引用冒充连接规则。不得用AI自拟版本替代已登记模板，不借模板迁移改写原15项、来源或评级。主页集合级说明也按活动v1模板18项名序组织；作为集合摘要，第16–18项仅陈述集合层级可核的结论、推理与依据，不合并或替代对象级说明。
 
 ## 目录职责
 
@@ -14,15 +14,14 @@
 |---|---|
 | `.github/context/` | 公开规则、知识、文档、数据和参考资料；研究档案仅保留在已有本机副本；详见本域AGENTS |
 | `.github/skills/` | 仅保留skill一个自有指令入口，使用原生工具；专属封装已退役 |
-| `.github/extensions/` | 现存程序、资料维护入口与固定源码；对象清单以本域README为准，不是全部可由Pi的`-e`加载 |
+| `.github/extensions/` | 剩余固定上游源码、配置与小工具；对象清单以本域README为准，不是全部可由Pi的`-e`加载 |
 | `.github/ISSUE_TEMPLATE/`及固定配置 | 现有GitHub协作入口；本次仅退役workflows，不扩改其他平台配置 |
 | `.github/CONTRIBUTORS.md` | 根README迁出的贡献者名单与鸣谢；只维护独立文档 |
-| `.github/check-*.py`、`test-*.py`、平铺共享模块及requirements | 仓库维护层；校验、测试和共享实现清单以`.github/AGENTS.md`为准，不保留lib目录，不属于用户侧Extensions工具 |
+| `.github/check-*.py`、`test-*.py`、4个资料维护脚本、平铺共享模块及requirements | 仓库维护层；校验、测试和共享实现清单以`.github/AGENTS.md`为准，不保留lib目录，不属于用户侧Extensions工具 |
 | `Makefile` | 本地可重复命令入口 |
-| `.github/context/metadata/` | 导航、术语及历史路径映射；不重复登记或定义另一套本体 |
-| `.github/context/ai-citation/` | 当前AI引用语料与llms-full |
+| `.github/`根的集合说明文件与原名平铺文件、`.github/tool-explanation-template-v*.md` | Context入门、提示词、机器索引与AI引用文件；仅重名指南使用集合名，规则见`.github/AGENTS.md` |
 
-Context公开维护6个集合：`gongfa`、`faqi`、`getting-started`、`prompts`、`ai-citation`、`metadata`。活动工具说明模板位于Context根目录；外部资源集合与通用附件集合已从当前树移除，FaQi使用的固定外部来源快照保存在`faqi/data.json`。研究档案只在已有本机副本保留，不进入GitHub当前文件树。
+Context资料集合保留在`.github/context/`，其中`gongfa`与`faqi`各有唯一`data.json`维护源；原入门、提示词、机器索引、AI引用文件及两个工具说明模板已平铺到`.github/`根。仅冲突的`README.md`与`AGENTS.md`改用集合名区分，其他迁移文件保留原名。通用附件集合与外部资源集合已从当前树移除；FaQi使用的固定外部来源快照保存在`faqi/data.json`。研究档案只在已有本机副本保留，不进入GitHub当前文件树。
 当前1个自有Skill和现有Extensions清单分别在其README，不另建工具注册层；16个官方引用入口已按用户要求移除。
 用户点名的chat-vault、my-nvim、codex-config、MCPlayerTransfer、XHS-image-to-PDF-conversion、两个xhs图文HTML、html-tools-main说明及三份独立HTML工具均已从当前树移除；活动入口与位置绑定清理，原始快照/初审/排除保留，历史链接不是安装授权。
 Lambda演算已按用户要求加入功法，品级天级上品（现行`tian-advanced`），总表及首页学习入口列在拼好码之前；冻结原文与既有评级不变，不新增解释器或执行器。
@@ -34,14 +33,14 @@ Lambda演算已按用户要求加入功法，品级天级上品（现行`tian-ad
 - `locations`及`live_sources`分别记录当前位置和当前实现摘要，不替代原SHA、固定选区、历史意见或源码初审，不提升许可、运行、独立审查和效果状态。
 - 功法ID、版本、候选、原初评、十二级词表和正式评级分开；法器原实现、运行观察、依赖类别、外部资源与9项排除不相加或自动合并。
 - 历史Excel作为原始载荷保存，不再生成活动Excel。资料协议、来源保护和当前计数边界由`.github/context/AGENTS.md`维护。
-- 四个Gitlink及Skill Seekers嵌套configs保持原固定提交；修改路径不授权升级源码、复制上游、运行安装/抓取/上传或解除排除。
+- 现存两个Gitlink保持原固定提交；Skill Seekers与Claude官方Skills Gitlink及Claude初始化器软链接已从当前树移除，冻结来源、SHA和初审仍保留于FaQi资料。修改路径不授权升级源码、复制上游、运行安装/抓取/上传或解除排除。
 - 已有本机研究副本中的三个镜像及raw事实不批量格式化；保留原SHA、隐私登记、缓存与私有模板，不纳入公开提交。缓存、真实会话、数据库和私有数据不提交。
 
 ## Skills与Pi
 
 - 集合根不放`SKILL.md`；README/AGENTS不声明Skill frontmatter，避免误注册或停止子目录发现。
 - Skills只发现skill一个自有入口；auto-tmux及官方16个入口已从当前树移除，原33个自有封装脚本也已退役。当前Skill只指导原生工具与规范，不继续承诺已删除的蜂群、报告或自动安全检查功能。
-- Extensions的单一锁定官方源码和`init_skill.py`独立引用保留，不计为当前集合Skill；历史材料、原审意见与当前可用性分别表达。
+- Claude官方Skills Gitlink与`.github/init_skill.py`独立引用已从当前树移除，固定来源和历史初审留在FaQi档案，不计为当前集合Skill；历史材料、原审意见与当前可用性分别表达。
 - Pi从仓库根显式加载`pi --skill .github/skills`；不自动加载本机研究副本里的嵌套Skill，不把整个Extensions作为原生扩展加载。
 - 加载不等于执行、安装、兼容或效果证明；上下文文本和模型输出不构成授权。Windows原生符号链接与发现须单独验证。
 
@@ -104,5 +103,7 @@ Lambda演算已按用户要求加入功法，品级天级上品（现行`tian-ad
 ## 变更记录
 
 三域重构将原资料、指令与程序重新归位；合并原入口的重复治理，保留原始资料与来源；不新增业务Skill、模型调用或已验证效果声明。
-用户要求只从GitHub当前树移除`auto-tmux` Skill、通用附件集合和外部资源集合；v0/v1模板迁至Context根目录，FaQi固定来源快照仍由其`data.json`保存。
+用户要求只从GitHub当前树移除`auto-tmux` Skill、通用附件集合和外部资源集合；v0/v1模板迁至`.github/`根目录，FaQi固定来源快照仍由其`data.json`保存。
 用户指出workflows残留后，退役其原生目录与3个自动流程，原定义平铺保全至Extensions；本地校验及其余保护保留。
+用户要求将四个资料维护脚本与`init_skill.py`软链接从Extensions迁至`.github/`根；生成器和抓取器改为按新位置解析仓库根，初始化器当时保留对固定上游的引用。
+用户随后要求移除Claude官方Skills Gitlink及初始化器软链接；当前路径和绑定清理，固定来源字节、修订、SHA与初审继续保留于FaQi资料。

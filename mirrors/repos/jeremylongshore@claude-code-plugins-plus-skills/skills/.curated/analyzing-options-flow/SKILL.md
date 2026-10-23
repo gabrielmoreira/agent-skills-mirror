@@ -10,7 +10,7 @@ description: 'Track crypto options flow to identify institutional positioning an
 
   '
 allowed-tools: Read, Write, Edit, Grep, Glob, Bash(crypto:options-*)
-version: 1.29.0
+version: 1.30.0
 author: Jeremy Longshore <jeremy@intentsolutions.io>
 license: MIT
 tags:
@@ -45,7 +45,7 @@ Track and analyze crypto options flow on centralized derivatives exchanges (Deri
 9. Generate a flow summary report with actionable signals: bullish large-block calls, bearish put sweeps, IV skew shifts, and OI buildup at key strikes.
 10. Export results using `--format json` or `--format csv` for integration with trading dashboards or alerting systems.
 
-See `${CLAUDE_SKILL_DIR}/references/implementation.md` for the full implementation workflow.
+See [`references/implementation.md`](references/implementation.md) for the full implementation workflow.
 
 ## Output
 

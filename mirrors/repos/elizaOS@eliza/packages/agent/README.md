@@ -48,6 +48,15 @@ never repeat the effect. Revision/epoch and account checks fence late results;
 resolved results require a durable evidence reference. Reconciliation does not
 resume the task. This method is deliberately absent from renderer HTTP routes.
 
+Trusted hosts may call `runtime.complete(id, revision, stillAuthorized)` after
+they verify and durably save the requested result. The callback must recheck the
+current account and request authority. Completion requires an active task at the
+reviewed revision, refuses unresolved operations, fences pending work, and waits
+for cleanup with reason `complete`. It records a terminal state, not evidence of
+goal success. A cleanup failure can occur after completion was saved; read status
+and retry `settle(id)`, not the task or its effects. There is no renderer completion
+route.
+
 ## Optional phone workflows
 
 Lean-chat hosts may set `ELIZA_LEAN_CHAT_WORKFLOWS=1` to retain the workflow

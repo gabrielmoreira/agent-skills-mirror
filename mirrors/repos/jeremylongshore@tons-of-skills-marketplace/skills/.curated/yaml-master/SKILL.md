@@ -8,7 +8,7 @@ description: 'Execute proactive YAML intelligence: automatically activates when 
 
   '
 allowed-tools: Read, Write, Edit, Grep, Glob, Bash(general:*), Bash(util:*)
-version: 2.21.0
+version: 2.22.0
 author: Jeremy Longshore <jeremy@intentsolutions.io>
 license: MIT
 tags:
@@ -63,6 +63,6 @@ This skill activates when working with `.yml`/`.yaml` files to detect structural
 
 ## Resources
 
-- Full detailed guide (kept for reference): `${CLAUDE_SKILL_DIR}/references/SKILL.full.md`
+- Full detailed guide (kept for reference): [`references/SKILL.full.md`](references/SKILL.full.md)
 - YAML spec: https://yaml.org/spec/
 - GitHub Actions workflow syntax: https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions

@@ -15,7 +15,6 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Any
 
-
 STATUSES = ("pending", "inspected", "fixed", "reported", "excluded")
 
 
@@ -24,7 +23,10 @@ class LedgerError(ValueError):
 
 
 def git(root: Path, *args: str) -> bytes:
-    result = subprocess.run(["git", *args], cwd=root, capture_output=True)
+    try:
+        result = subprocess.run(["git", *args], cwd=root, check=False, capture_output=True)
+    except OSError as exc:
+        raise LedgerError(f"cannot run git: {exc}") from exc
     if result.returncode:
         raise LedgerError(result.stderr.decode(errors="replace").strip() or f"git {' '.join(args)} failed")
     return result.stdout
@@ -110,7 +112,7 @@ def load(path: Path) -> dict[str, Any]:
         payload = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
         raise LedgerError(f"cannot read ledger: {exc}") from exc
-    if payload.get("schemaVersion") != 1 or not isinstance(payload.get("files"), list):
+    if not isinstance(payload, dict) or payload.get("schemaVersion") != 1 or not isinstance(payload.get("files"), list):
         raise LedgerError("unsupported ledger schema")
     paths = set()
     for item in payload["files"]:
@@ -142,7 +144,9 @@ def summary(payload: dict[str, Any]) -> dict[str, Any]:
         "revision": payload["revision"],
         "counts": summary_counts,
         "complete": summary_counts["pending"] == 0,
-        "progress": None if filled is None else {"filled": filled, "empty": 10 - filled, "bar": "█" * filled + "░" * (10 - filled)},
+        "progress": None
+        if filled is None
+        else {"filled": filled, "empty": 10 - filled, "bar": "█" * filled + "░" * (10 - filled)},
         "preexistingChangedFiles": sum(bool(item.get("preexistingStatus")) for item in payload["files"]),
     }
 
@@ -153,9 +157,12 @@ def init_command(args: argparse.Namespace) -> dict[str, Any]:
     root = repo_root(args.root.resolve())
     scopes = normalize_scopes(root, args.scopes + args.scope)
     tracked = set(nul_paths(git(root, "ls-files", "-z")))
-    untracked = set(nul_paths(git(root, "ls-files", "--others", "--exclude-standard", "-z")))
     status = preexisting_status(root)
+    untracked = {path for path, codes in status.items() if "??" in codes}
     paths = sorted(path for path in tracked | untracked if in_scope(path, scopes))
+    empty_scopes = [scope for scope in scopes if not any(in_scope(path, [scope]) for path in paths)]
+    if empty_scopes:
+        raise LedgerError(f"scopes match no tracked or untracked files: {', '.join(empty_scopes)}")
     payload = {
         "schemaVersion": 1,
         "revision": 0,
@@ -202,7 +209,12 @@ def pending_command(args: argparse.Namespace) -> dict[str, Any]:
     paths = [item["path"] for item in payload["files"] if item["status"] == "pending"]
     if args.limit is not None:
         paths = paths[: args.limit]
-    return {"schemaVersion": 1, "revision": payload["revision"], "paths": paths, "remaining": counts(payload)["pending"]}
+    return {
+        "schemaVersion": 1,
+        "revision": payload["revision"],
+        "paths": paths,
+        "remaining": counts(payload)["pending"],
+    }
 
 
 def build_parser() -> argparse.ArgumentParser:

@@ -11,7 +11,8 @@ locked Cargo check. Keep macOS and Linux compatibility. Do not add runtime servi
 hooks, or completion generation without an explicit product decision.
 
 From `toolkit/`, `cargo test -p ai-skillet --locked` is the focused package gate and `just rust-check` is the aggregate
-Rust gate. `just install-cli` installs every workspace binary under `~/.local`. Do not run it for ordinary verification.
+Rust gate. `just install-cli` installs every CLI supported on this OS under `~/.local`. Do not run it for ordinary
+verification.
 
 ## CLI reference
 
@@ -19,7 +20,7 @@ Rust gate. `just install-cli` installs every workspace binary under `~/.local`. 
 
 ### Status
 
-Version 1.0.0 provides synchronous, no-network `map` and `doctor` engines. JSON reports use the clean Rust schema
+ai-skillet provides synchronous, no-network `map` and `doctor` engines. JSON reports use the clean Rust schema
 version 1. The schema preserves the Python tools' consumer contracts, but output is not byte-compatible with the Python
 implementation.
 
@@ -145,8 +146,6 @@ The toolkit workspace selects nightly Rust with the minimal profile plus `clippy
 cargo test -p ai-skillet --locked
 just rust-check
 ```
-
-From `toolkit/`, `just install-cli` installs all five workspace binaries under `~/.local`.
 
 ### License
 

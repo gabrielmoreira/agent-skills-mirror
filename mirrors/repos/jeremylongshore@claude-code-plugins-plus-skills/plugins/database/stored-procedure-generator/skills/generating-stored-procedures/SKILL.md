@@ -14,7 +14,7 @@ description: 'Use when you need to generate, validate, or deploy stored procedur
   '
 allowed-tools: Read, Write, Edit, Grep, Glob, Bash(psql:*), Bash(mysql:*), Bash(sqlcmd:*),
   Bash(python3:*)
-version: 1.29.0
+version: 1.30.0
 author: Jeremy Longshore <jeremy@intentsolutions.io>
 license: MIT
 tags:
@@ -270,11 +270,11 @@ Claude: I'll create an audit trigger that:
 
 ## Resources
 
-- `${CLAUDE_SKILL_DIR}/references/postgresql_stored_procedure_best_practices.md`
-- `${CLAUDE_SKILL_DIR}/references/mysql_stored_procedure_best_practices.md`
-- `${CLAUDE_SKILL_DIR}/references/sqlserver_stored_procedure_best_practices.md`
-- `${CLAUDE_SKILL_DIR}/references/database_security_guidelines.md`
-- `${CLAUDE_SKILL_DIR}/references/stored_procedure_optimization_techniques.md`
+- [`references/postgresql_stored_procedure_best_practices.md`](references/postgresql_stored_procedure_best_practices.md)
+- [`references/mysql_stored_procedure_best_practices.md`](references/mysql_stored_procedure_best_practices.md)
+- [`references/sqlserver_stored_procedure_best_practices.md`](references/sqlserver_stored_procedure_best_practices.md)
+- [`references/database_security_guidelines.md`](references/database_security_guidelines.md)
+- [`references/stored_procedure_optimization_techniques.md`](references/stored_procedure_optimization_techniques.md)
 
 ## Overview
 

@@ -159,7 +159,8 @@ clippy/test, not optional.
   `secondary`. Claude, DeepSeek and WorkBuddy retain their designed colors;
   Grok uses the same black/white treatment as ChatGPT.
 - Buttons are 48px tall, pill-shaped, with a 24px product icon and the existing
-  add-account / waiting-for-browser translations. Login timeout is 60 seconds.
+  add-account / waiting-for-browser translations. Embedded browser login timeout
+  is 10 minutes; other login flows retain their existing 60-second timeout.
 - Rows are 48px tall: 16px selection marker on the left, identity above quota
   in the center, plan above refresh/delete actions on the right. Display the
   plan once. Missing quota is unknown (`—`), never fabricated as zero.

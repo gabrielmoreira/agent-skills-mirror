@@ -74,9 +74,9 @@ Confirm the current state by retrieval rather than recall. Separate durable prin
 
 ## Language
 
-The output language is declared by the requester and never inferred from the language of the request. Body prose, role labels, chapter headings, and appendix captions follow the declared language together -- a Korean briefing under English section captions is a half-translated document. Identifiers, schema ids, file paths, command names, and code stay as written. When the declaration is absent, the document is English.
+The output language is declared by the requester and never inferred from the language of the request. Body prose, role labels, chapter headings, and appendix captions follow the declared language together -- a Korean briefing under English section captions is a half-translated document. Identifiers, schema ids, file paths, command names, and code stay as written. The language declaration is required; omission is refused.
 
-OMH holds no translation table for the scaffolding, because one would have to be maintained for every language the engine can write in. Supply the labels with the payload instead: `role_labels` maps a role to its label in the document's language, `captions` does the same for the section headings, and anything left unnamed falls back to English. Translating the body while leaving the captions unset is the failure this field exists to prevent.
+OMH holds no translation table for the scaffolding, because one would have to be maintained for every language the engine can write in. Supply the labels with the payload instead: `role_labels` maps a role to its label in the document's language, `captions` supplies headings, metadata labels and the displayed evidence boundary. Explicit `en` may use English defaults; non-English output requires caller-supplied translations for every role and caption actually rendered. Unused labels need no translation. Translating the body while leaving rendered captions unset is refused. Structured receipt values and schema boundaries stay unchanged; only display labels are translated.
 
 ## Evidence boundary
 

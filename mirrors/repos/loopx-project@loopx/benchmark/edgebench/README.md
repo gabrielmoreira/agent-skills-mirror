@@ -3,9 +3,67 @@
 This research adapter calls SForge's native `run_agent`. Task images, prompts,
 submission cooldowns, judge isolation and scoring remain owned by the pinned
 EdgeBench checkout. Best-only adds host capture/admission scheduling; native and
-blind retain native automatic evaluation. Install SForge and Harbor in an isolated
-runner environment. Run the controller on Linux with Docker and native SForge
+blind retain native automatic evaluation. The CLI defaults to the shared
+[EdgeBench integration branch](https://github.com/huangruiteng/EdgeBench/tree/codex/edgebench-integration),
+maintained jointly by `huangruiteng` and `loopx-agent`. The canonical repository
+and branch live in [`source-default.json`](source-default.json).
+Run the controller on Linux with Docker and native SForge
 iptables permissions; a macOS Docker socket alone does not provide that boundary.
+
+## Select and freeze the native provider
+
+The first CLI entry for a log directory fetches the selected branch into
+`.edgebench-source/checkout` and atomically records its exact commit in
+`.edgebench-source/receipt.json`. Concurrent worker/judge startup shares that lock.
+Later entries reuse the frozen checkout without fetching, even if the branch or
+repository default changes. Dirty/moved source, conflicting explicit selection,
+and existing runs without a source receipt fail before model/container entry.
+Use a new log directory to adopt a newer integration revision; never repin an
+active or historical cohort.
+
+Prepare dependencies in an isolated environment before starting a study:
+
+```sh
+python -m benchmark.edgebench.source --log-dir /data/private-runs
+python -m pip install /data/private-runs/.edgebench-source/checkout harbor
+```
+
+The bootstrap selects this checkout before importing SForge, so an unrelated
+installed package or ambient `PYTHONPATH` cannot silently supply the provider.
+Worker `runtime-receipt.json` includes the verified `sforge_source`. This records
+code selection, not enabled task/scoring options or benchmark qualification.
+No dependency installation is performed automatically.
+
+Start the native judge and workers with the **same log directory**:
+
+```sh
+SFORGE_TASKS_DIR=/data/tasks python -m benchmark.edgebench.serve \
+  --log-dir /data/private-runs --port 8080
+python -m benchmark.edgebench.run \
+  --task TASK_ID --tasks-dir /data/tasks --log-dir /data/private-runs \
+  --run-id UNIQUE_ATTEMPT --worker native-goal --model MODEL --effort high \
+  --feedback native --submission-cooldown 1800 --eval-interval 300 \
+  --judge-url http://HOST:8080
+```
+
+For an alternative source, pass `--sforge-repository URL` with `--sforge-ref REF`
+or a full `--sforge-revision SHA` on the first entry (including preparation).
+For example, `--sforge-repository https://github.com/ByteDance-Seed/EdgeBench.git
+--sforge-ref refs/heads/main` selects upstream instead. These source options also
+apply to the online judge CLI; `SFORGE_LOG_DIR` is equivalent to `--log-dir` there.
+Use an explicit SHA to replay a known revision. A server in another log directory
+is a separate cohort: the launcher cannot attest a remote server's loaded code.
+
+These defaults apply to the LoopX EdgeBench CLI. Direct `sforge serve` and imported
+Python APIs remain caller-managed compatibility entrypoints; use them only with
+an explicitly pinned provider environment. Keep offline backfill pinned to the
+original scorer, or record regrading under a different source separately.
+Maintainers update the shared branch through reviewed integration work and keep
+its PR manifest current. Changing the default repository/branch requires updating
+the single source file and this protocol; adding a second contributor-specific
+default would split the source of truth again.
+
+## Worker profiles
 
 The five worker profiles are `official`, `single`, `native-goal`,
 `heartbeat-resume`, and `heartbeat-explore`. `official` uses SForge's Codex Stop
@@ -65,7 +123,7 @@ run's slot after verified worker removal. An evaluation still in flight keeps
 that slot until its native result is terminal; stopping a solver alone does not
 free evaluator capacity. Native histories, archives and original registration
 identities remain readable, and released registrations reject new captures.
-Native/blind use ordinary `sforge serve` instead. Existing v1 cohorts remain
+Native/blind use `python -m benchmark.edgebench.serve` instead. Existing v1 cohorts remain
 frozen: this does not upgrade or reclaim slots in an already-running server.
 
 An operator may explicitly pass `--allow-resource-overcommit` for a monitored
@@ -127,6 +185,12 @@ GNU timeout after verified execution entry is a normal budget stop. Other nonzer
 or unknown exits, including an early exit with code 124, are `runner_failed` and
 do not publish `final_result.json`. Keep their captures and failure evidence;
 do not count an initial artifact's score as a solver outcome.
+For native Goals with positive runtime, `partial_result.json` preserves the full
+scoring result and its `runtime_status` / `native_goal_outcome` without making
+SForge's visualizer count the attempt as done. Handled terminal stops retain
+`final_result.json`; its presence does not independently qualify a score. Use
+new source pins for new attempts and leave frozen histories unchanged; see the
+[native outcome contract](../runtime/RUNTIME.md) for rollback and classification.
 
 New native archive-submission trials default to **no periodic auto-evaluation**
 (`--eval-interval 0`) and **3,600 seconds between accepted active submissions**.
@@ -196,7 +260,7 @@ resource policy in the study manifest before launching a new comparison.
 Use explicit `--feedback best-only` to retain strict-improvement publication, or
 `--feedback blind` as an evaluator-feedback-free control. Harbor is unchanged.
 
-For native archive submission, start ordinary `sforge serve` and use the runner
+For native archive submission, start `python -m benchmark.edgebench.serve` and use the runner
 without `--feedback` to select the defaults. Explicit
 `--feedback native --submission-cooldown 120 --eval-interval 300` restores the
 previous native timing for a new attempt. Do not edit running receipts. Game
@@ -215,25 +279,52 @@ The shared native task policy also describes accepted-result recovery. Check the
 pinned provider's generated `sforge-submit --help`: clients that support
 `--result ID` can use `sforge-submit --result ID --details` to read or poll an
 already accepted submission without a new evaluation or cooldown reset. If the
-acceptance reply was lost, inspect `sforge-submit --list` and reconcile its ID
-with the retained checkpoint before retrieving it. Plain `--details` still
+acceptance reply was lost, inspect `sforge-submit --list` and reconcile the
+submission identity before retrieving it. Plain `--details` still
 creates a new submission. Older clients may lack result lookup; unavailable
 commands, missing sessions and missing results remain unresolved feedback,
 and never justify blind resubmission. This does not add restart persistence.
 
-New non-game native trials include brief guidance to keep researching the original
-task objective, treating implementation, passing checks and submission as milestones.
-This guidance reaches the startup prompt and workspace `AGENTS.md`. New LoopX
-Goals now retain the task's original `agent_query` as their objective, so planning
-and replan readback preserve its stated priorities rather than a generic reminder.
-If the query points to task files, those files remain required source material;
-this does not extract or invent a structured acceptance contract. Existing Goals
-and restored checkpoints retain their captured objective without migration.
-Trial budgets and deadlines
-stay with the existing runner, without extra agent-facing budget instructions.
-This changes guidance for new native attempts across all five workers, preserving
-grading, cooldown, selection, blind/best-only controls, game prompts and frozen runs.
-Instruction readback does not establish model adoption or outcome gains.
+New non-game native trials describe the task, submission tools, feedback and
+evaluation rules in the startup prompt and workspace `AGENTS.md`. The wrapper no
+longer prescribes incremental implementation or a best-validated-candidate
+workflow. A brief objective/completion reminder retains continued optimization:
+implementation, passing checks and submission alone do not complete the objective.
+Useful in-scope improvements remain the goal. The wrapper does not repeat a
+generic stop/budget/blocker reminder; the original task and runner still own
+those boundaries. The wrapper adds no local-test pass or
+prior-improvement prerequisite for submission; task-owned requirements still
+apply. New LoopX Goals retain the original `agent_query` as their objective,
+including references to task files. Existing Goals and restored checkpoints keep
+their captured objective.
+
+Native submission prompts omit the host's periodic sampling explanation, both
+when the interval is positive and when it is zero. The interval still reaches
+the runner unchanged; it no longer changes the native prompt. Host capture and
+selection behavior are unchanged. The prompt retains on-disk manual/terminal
+submission, recoverable candidate and result/source identity guidance without
+adding a local-test pass or prior-improvement requirement.
+
+Blind and best-only prompts still describe automatic capture using the resolved
+runner interval: positive intervals name the independent on-disk sampling and
+runnable-candidate requirement; zero reports periodic evaluation as disabled.
+The shared observation describes capture, not feedback access. Blind exposes no
+official feedback; best-only retains its strictly improving snapshot channel.
+
+Shared `loopx-planned` entry also drops the adapter's research-strategy prefix.
+The product planning packet, including Core first-delivery guidance, is unchanged
+and remains a separate experimental variable. Optional execution observations,
+stride settings and checkpoint storage guidance retain their explicit selection.
+Budgets and deadlines stay with the existing runner. Opted-in native Goal
+continuation retains the original task and evaluation rules without requiring a
+prior improvement claim before submission.
+
+This is a prompt-policy behavior change for new native attempts across all five
+workers. Grading, cooldown, selection, blind/best-only task wrappers, game prompts
+and frozen runs are unchanged. Pin the new runner revision for new trials;
+cross-version comparisons also change prompt policy and cannot isolate feedback
+alone. Instruction readback establishes neither earlier feedback nor score gains;
+those require matched studies.
 
 | Mode | Agent-visible evaluator feedback | Evaluation access |
 | --- | --- | --- |

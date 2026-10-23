@@ -213,7 +213,9 @@ A relative path resolves from the invoking directory before the repository root.
 | `fixture.resolved-text-contains` | Map of node id to a fragment that must appear in that node's resolved text |
 | `exec-code` | `true` executes `bash:` and `script:` nodes, in a scratch worktree of `HEAD`, instead of requiring stubs |
 
-The command exits 0 when every fixture passes, including when none are declared. It exits 1 when a fixture fails, a workflow cannot load, or a named target has no fixtures. `--json` prints `{ results, passed, failed, errors }`.
+The command exits 0 when every fixture passes, including when none are declared. It exits 1 when a fixture fails, a workflow cannot load, or a named target has no fixtures. `--json` prints `{ results, passed, failed, errors }`. Each result can include `nodeFailures: [{ nodeId, reason }]` with the failed nodes' diagnostics. This field can be present when the fixture passes because it correctly expects a node to fail; `failureReason` describes a fixture verdict failure and can be absent in that case.
+
+Fixtures with `exec-code: true` receive the same environment as [executable dry runs](#deterministic-dry-run): inherited process values, file-configured `env`, then registered-project environment values, with later sources winning. Environment lookup happens only for executable fixtures. If lookup fails, that fixture fails with the lookup error; independent stub fixtures still run and workflow-load errors remain in the report.
 
 ### `workflow run <name> [message]`
 
@@ -244,7 +246,7 @@ archon workflow run archon-ship --cwd /path/to/repo \
   --adopt 6d5066ca-47b4-4ee8-8d1d-2f3db8039190 "finish the delivery"
 ```
 
-Foreground completion and failure output prints the run's recorded cost and input and output tokens, even with `--quiet`:
+Except on an execution handoff, foreground completion and failure output prints the run's recorded cost and input and output tokens, even with `--quiet`:
 
 ```text
   Usage (recorded totals; completeness unknown):
@@ -254,6 +256,19 @@ Foreground completion and failure output prints the run's recorded cost and inpu
 ```
 
 These are stored figures, not a certified bill, so the completeness warning is always printed. Provider usage metadata is optional: a missing or malformed value prints `unknown`, and a recorded zero prints `0` (or `$0`). An unknown or malformed token-uncertainty marker makes both token counts unknown. If the persisted run cannot be read, the output shows `Usage: unavailable (persisted run unavailable)` and the execution result is unchanged. [`workflow get`](#workflow-get) shows the same summary for any run.
+
+If another execution takes ownership before the foreground command returns, it prints:
+
+```text
+Workflow execution handed off. Observed status: <status>.
+```
+
+`<status>` is the status observed at handoff, or `run removed` if the row no longer exists.
+This output omits recorded usage and authored outcome. Exit `0` means this execution handed
+off without observing `failed` or `cancelled`; it does not prove the workflow completed.
+An observed `failed` or `cancelled` status exits non-zero. Use
+[`workflow wait <run-id>`](#workflow-wait) to wait for the next terminal or gate transition,
+and [`workflow get <run-id>`](#workflow-get) to read current status, usage, and authored outcome.
 
 Progress events (node start/complete/fail/skip, approval gates) are written to stderr during execution. The workflow-start output also names the absolute local path of the run's JSONL transcript. Use [`workflow logs`](#workflow-logs) when you have a run ID and want the content rather than the path.
 
@@ -273,7 +288,7 @@ A real run prints a JSON payload only with `--detach`. Without it, `--json` supp
 | `--project <id\|name>` | Bind a fresh run to an existing registered repository by ID or exact name (for example `owner/repo`); see `archon project list`. Folder projects are unsupported. See `archon workflow run --help` for incompatible flags. |
 | `--no-worktree` | Run directly in the live checkout, without isolation |
 | `--folder` | Register the current directory, git or not, as a folder project on first use and run in place, without a worktree. Rejects `--branch`, `--from` and `--base`. |
-| `--container` | Run a **folder project** inside an overlay-isolated Docker container instead of in place (writes land in an overlay, not the live root, until an approval-gated write-back). Folder-only; a repo project errors. Requires the runner image (`bun run build:runner-image`). Pauses `docker stop` the container; `--resume`/`approve`/`reject` rediscover and restart it. See the [Container isolation guide](/guides/container-isolation/) and [configuration](/reference/configuration/#container-isolation-folder-projects). |
+| `--container` | Run a **folder project** inside an overlay-isolated Docker container instead of in place (writes land in an overlay, not the live root, until an approval-gated write-back). Folder-only; a repo project errors. Requires the runner image (`bun run build:runner-image`). Normal gate pauses `docker stop` the container; `--resume`/`approve`/`reject` rediscover and restart it after resume admission. Failed resume setup marks the run failed. Failed setup or suspension can leave its container running and consuming resources; see [Pause economics](/guides/container-isolation/#pause-economics). See the [Container isolation guide](/guides/container-isolation/) and [configuration](/reference/configuration/#container-isolation-folder-projects). |
 | `--input <name>=<value>` | Supply one value for the workflow's declared `inputs:`. **Repeat the flag per input.** Splits on the first `=`, so the value may itself contain `=`; `--input name=` supplies an empty string. Omitted inputs take their declared `default:`. A missing **required** input or an **undeclared** name is refused before any worktree, clone, or AI cost, through the same contract a composing `with:` map goes through. Works with `--dry-run` (inputs resolve exactly as in a real run). Rejected with `--resume` (a resume replays the inputs recorded on the run). See [Running a workflow that declares inputs](/reference/workflow-language/#running-a-workflow-that-declares-inputs). |
 | `--model <name>=<spec>` | Rebind one `small`, `medium`, `large`, or `@alias` for this run. **Repeat the flag per binding.** An Archon agent prefix selects that agent (`codex/gpt-5.6-sol`); another valid vendor/model ref selects Pi (`openai/gpt-5.6`); an unqualified model keeps the binding's current provider, so binding an `@alias` no config defines (one a workflow's model preference list names, such as `@reviewer`) needs a prefixed model, a tier, or another alias; a tier or alias RHS copies that preset. Unspecified names keep their user → repo → global → built-in values. Literal `model:` pins and nodes that never reference the rebound name do not change. Bare `--model <spec>` is invalid, there is no run-wide `--provider`, and the flag is rejected with `--resume`. Works with `--dry-run`. |
 | `--config <path>` | Load one sparse YAML config layer for this fresh run. Relative paths resolve from the directory named by `--cwd`, even when it is a repository subdirectory. Values in the file override persistent config and user AI preferences; explicit `--model` flags then replace only their named bindings. Works with `--dry-run` and `--detach`; the parent validates and seals the layer before handing it to a detached child, so later file edits cannot change that launch. Rejected with `--resume` because a continuation restores the sealed layer recorded when the run started. |
@@ -398,6 +413,8 @@ The one exception is a `trigger_rule: all_done` join, which runs after its depen
 Add `--default-stubs` to fill only omitted reachable nodes with the same schema-aware placeholders used by scaffold generation; explicit values always take precedence. Without `--exec-code`, a reachable `bash:` or `script:` node that arrived through `include:` needs a stub like any other: a stubbed node never runs its body, so the caller's `with:` values are never delivered to it. With `--exec-code` it can run unstubbed and reads those values as described below. Supplied stubs for unknown or unreachable nodes appear in `unusedStubs`, while generated placeholders do not. Whole-output references retain their normal lenient behavior, while invalid strict `$node.output.field` references fail the consuming node exactly as they do in a real run. See [Node Output References](/reference/variables/#node-output-references).
 
 A workflow's declared `inputs:` resolve exactly as in a real run: omitted inputs take their declared `default:`, `--input name=value` binds a value (visible in the trace's resolved text), and a missing **required** input or an **undeclared** name fails at the invocation gate with the same errors a real run gives, before any trace output. With `--exec-code`, bash and script nodes also receive the same `INPUTS_<UPPER_SNAKE>` environment variables a real run delivers: run-level inputs, an included block's own inputs, and a script node's `with:` bindings.
+
+With `--exec-code`, child processes inherit Archon's process environment, then apply file-configured `env`, registered-project environment values, and per-run `env` overrides from `--config`, in that order (later values win). Node input variables and engine-owned variables such as `ARTIFACTS_DIR` take precedence over those layers. Registered-project values come from the project resolved for the invocation's working directory. See [configuration](/reference/configuration/) for file configuration and [managed environment variables](/reference/security/#secrets-handling) for stored credentials. Executable fixtures use the same layers, without per-run CLI overrides.
 
 By default, bash and script nodes are never executed. `--exec-code` is an explicit opt-in for trusted local workflow code and is the only dry-run mode that can cause code-level side effects. An executed node that declares `output_format` is certified exactly as in a real run: stdout must be one JSON document that satisfies the schema, and downstream `$node.output.field` references read that certified value. Executed nodes receive `$ARTIFACTS_DIR` and `$STATE_DIR` under an ephemeral per-simulation directory in `~/.archon/temp/` (honoring `ARCHON_HOME`), created before the first executed node and removed when the simulation ends. A dry run writes nothing inside the repository, and a simulation that executes nothing creates no directory at all. An attention wait pauses the simulation where a real run would pause, unless the stub file gives that wait node a stub; the stub then stands in for its answer and must match the form's output, for example `review: { decision: approve, text: "" }`. Deprecated `approval:` nodes auto-complete unless `--pause-at-gates` is set. Runtime `workflow:` sub-runs are reported as unsupported instead of being launched. Dry-run is incompatible with lifecycle and isolation flags such as `--branch`, `--no-worktree`, `--folder`, `--container`, `--resume`, and `--detach`.
 
@@ -611,8 +628,9 @@ means execution finished normally but the workflow judged the work unsuccessful;
 `paused` with authored outcome `succeeded` records a successful verdict before execution later
 failed or paused. A null outcome means the workflow did not declare one, the selected node has not
 authored it yet, or the run predates the field. In that case human output keeps its status-only
-presentation. Foreground `workflow run` uses the same labels when an outcome exists, but its exit
-code remains driven by execution success or failure.
+presentation. Except on an [execution handoff](#workflow-run-name-message), foreground
+`workflow run` uses the same labels when an outcome exists, and its exit code follows execution
+success or failure. A handoff reports only the observed status and has the exit meaning described above.
 
 Verbose JSON node summaries include `execution` for newly recorded work. It identifies the
 invocation, attempt, provider, requested model and any model the provider reported. Inner retries
@@ -1156,7 +1174,13 @@ who owns the run:
 
 - **The process handling the cancel executes the run** (a run the server started, cancelled
   from that server): the run is marked `cancelled` and its executor stops at its next
-  status check.
+  status check. On macOS and Linux, cooperative cancellation reports possible
+  background work for every host run, even when no command appears in its history.
+  Commands can start or complete while cancellation is in progress, so history cannot
+  establish their absence. The warning appears in `cleanupWarnings` and the cancellation
+  event and identifies each known host run and its recorded checkout, including isolated
+  child and grandchild checkouts. Inspect descendant checkouts too: new sub-runs can
+  appear during cancellation. This warning confirms neither command execution nor survivors.
 - **Another live process owns it** (a `--detach` run or a trigger-started run): cancel
   contacts that process and stops its owner before recording the run as `cancelled`.
   On macOS and Linux it first stops unfinished node groups whose leaders remain unreaped,
@@ -1165,7 +1189,12 @@ who owns the run:
   the run and reports in `cleanupWarnings` and the run's cancellation event that some
   process outside the run's process group holds the output and was not signalled.
   Archon does not identify it; use `lsof` on the run's checkout before reusing or removing
-  that checkout. Background jobs left by completed nodes are excluded. Windows uses
+  that checkout. Background jobs left by completed nodes are outside automatic cleanup.
+  If an earlier host bash or script command exited, cancellation warns that it may have
+  left untracked background work. This warning does not establish that any process
+  survived or confirm cleanup; even an ordinary command with no background jobs can
+  trigger it. Inspect processes using the checkout (for example with `lsof`), verify
+  ownership, and stop any leftovers before reusing or removing it. Windows uses
   the owner's Job Object, including descendants whose parent exited.
 - **No owner answers, or the owner cannot be stopped:** cancel fails and leaves the run
   unchanged. When no owner answers, it prints what the run recorded (host, pid, last
@@ -1228,8 +1257,11 @@ the run stays `cancelled`, but container resources may remain allocated. Every c
 surface reports a warning identifying the run and environment; inspect the managed
 containers before retrying cleanup. Successful `--json` responses include an optional
 `cleanupWarnings` array for container reclamation failures, owner-stop cleanup failures,
-and output pipes still held by an unsignalled process; the field is omitted
-when there are no cleanup warnings. A cleanup warning does not change `ok: true`.
+output pipes still held by an unsignalled process, and possible untracked background
+work from started or completed host commands; the field is omitted when there are no
+cleanup warnings. Owner-stop warnings retain run scratch and owned checkouts for
+inspection. Inspect processes using the checkout, verify ownership, and stop any
+leftovers before reusing or removing it. A cleanup warning does not change `ok: true`.
 
 ### `workflow abandon`
 
@@ -1239,11 +1271,12 @@ this host:
 
 - **An owner answers:** abandon stops it through the same path as `workflow cancel`
   (proves the owner, stops safely targetable groups, waits), then records `cancelled`.
-  The output-holder warning and `lsof` action described above apply here too; inspect
-  warnings before reusing or removing the checkout. Abandon retains owned checkouts
-  when owner-stop warnings report held output, including descendant checkouts and
-  their root. Warnings learned after cancellation during descendant cleanup or
-  conversation reset are appended to that run as `workflow_cleanup_warning` events.
+  The output-holder and possible-leftovers warnings and inspection steps described
+  above apply here too; inspect warnings before reusing or removing the checkout.
+  Abandon retains owned checkouts
+  when owner-stop warnings report held output or possible leftovers, including
+  descendant checkouts and their root. Warnings learned after cancellation during
+  descendant cleanup or conversation reset are appended to that run as `workflow_cleanup_warning` events.
   If writing a warning event fails, cleanup continues and the command reports the
   persistence failure with the cleanup warnings. Keep that command result: those
   warnings may be missing from the run history.
@@ -1595,7 +1628,7 @@ branch, so the run can still be adopted. Otherwise the worktree stays, the run p
 warning naming the path and what removing it would lose, and the run's
 `terminal_record.worktree_disposition` records the reason (see
 [`workflow get`](#workflow-get)). A worktree launched with `--branch` is never removed
-when its run ends: `--merged` removes it after its pull request merges (or closes, with
+when its run ends: `--merged` removes it after its branch merges (or its pull request closes, with
 `--include-closed`). Nor is a worktree that belongs to a chat conversation, an issue or a
 pull request rather than to one run; the merged and age-based cleanups remove it. A
 workflow launched from the Web UI runs in its own per-run worktree on a generated branch,

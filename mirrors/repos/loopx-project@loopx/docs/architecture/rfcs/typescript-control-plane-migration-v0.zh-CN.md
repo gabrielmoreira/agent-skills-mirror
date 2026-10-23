@@ -101,6 +101,54 @@ Python 保留有界地址扫描、请求者注册检查和实时 `Delegations.re
 每页复用既有代码版本请求作用域；操作记录仍实时读取，下一页重新解析当前代码。
 
 
+管家结果回传现由既有 `collaboration/return_delivery.ts` 事务负责准入、provider
+尝试检查点、重试／核验消解和投递回执的原子落盘。Python 的 exact／legacy 两套
+投递编排与私有 attempt 规范化 RPC 同时退役。Python 保留原始 Chat／授权事实读取、
+Host fence 和真实 provider IO。有界扫描只提供读取提示，写入锁内重新检查；provider
+接受写入后的尝试记录先落盘，再继续核验，不增加第二份队列或 Python 决策回退。
+原 request／result／route 身份、历史 codec 和公开回读保留。这实现 R3/T1–T2 的
+一个完整回传事务改造，不等于 Inbox 接收、来源授权迁移、安装采用或真实 provider
+资格已完成。
+
+### Todo 读取事务源码检查点
+
+`todo.read` 现由 `todos/read_projection.ts` 与 `todos/read_transaction.ts`
+组合 canonical provider 读取、完整源上的恢复与后继证据、standing decisions、
+两个角色的摘要、筛选与公共结果。普通 canonical 查询使用一次请求。
+大结果的连续页保留同一次观察和结果摘要；结果变化即拒绝，不拼接新旧页。
+依赖与闭合判断仍使用完整源。
+Python 保留 registry、文档／材料 IO、独立的 Vision-wait 消费者及兼容导出。
+被替代的摘要、筛选与结果协调已退役。持久化 completion 拼写使用共享 token 数据与兼容 codec，
+不再逐标量调用 RPC；实际生产调用者退出后，退役 `todo.summary.project`、
+`todo.completion_state.normalize` 与 `todo.completion_state.require_metadata`。
+事务在进程内执行既有语义 owner。
+
+CLI 查询结果携带查询范围内的 `projection_envelope`。读取不授予执行、验收、
+租约或修改权限。共享 wire 与私有快照预算不变。超大 Python 事实使用私有临时
+源，不增加持久化存储；完整结果通过摘要绑定的片段传输。
+信封覆盖计数使用显示限制前的完整匹配源。hot、限量及 thin 视图分别报告最终
+显示数量；显示截断本身不产生来源遗漏或告警。精确详情按返回的 Todo 计数，
+不按已移除的列表视图计数。
+仍保留的历史／源适配明确记录实际 IO 与跨运行时调用。
+Python 源 codec 与传输现在共用既有 `todos/goal_todo_projection.py` 模块，
+删除独立的 Python `read_projection.py`，独立维护的 py/ts 配对预算仍为 43。
+当前宿主 oracle 观测仍归既有 acceptance owner。
+同一 18 行 Todo 输出矩阵为来源新鲜度和遗漏工作覆盖增加 783–854 个 JSON 字符，
+Markdown 不变。仅三个已测 Todo 查询视图的首次信封 schema 迁移获得 896 字符
+余量；既有绝对上限与后续增长限制继续生效。这些是受控传输下的输出测量。
+普通读取保留 main 的 canonical authority 要求；未迁移 Goal 返回既有迁移原因，
+不退回 Markdown。兼容读取层对空的可选元数据直接返回；已提供的值仍由既有
+校验器处理，避免缺省字段反复构造异常。只有 objective、没有验收检查时，
+仍保留当前目标观察。
+Canonical 摘要仅在某角色组包含恢复条件时准备恢复历史。
+继任计算仍使用完整的活跃与归档血缘。
+上述输出测量保留原受控传输范围。当前正常 IPC、安装包及完整命令证据以
+[#6874](https://github.com/loopx-project/loopx/pull/6874) 记录的精确版本为准。
+历史性能失败仍是失败；RPC 减少或 codec CPU 改善不能免除完整 CLI 门禁，
+也不证明 R3／D2／D3 采用。
+当前 warm 请求未达标仍需 owner 评审。完整 CLI 配对通过不免除 2 ms 目标。
+
+
 <a id="当前交付边界2026-10-02"></a>
 
 ## 当前交付边界（合入后，2026-10-16）

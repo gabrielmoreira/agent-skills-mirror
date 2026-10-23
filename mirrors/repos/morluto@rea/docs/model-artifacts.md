@@ -58,7 +58,10 @@ lengths; affected totals and storage validation remain unknown.
 Safetensors reports the header extent, exact string `__metadata__` values, dtype,
 shape and declared data ranges. JSON duplicate keys, invalid UTF-8, out-of-file
 ranges, overlaps, gaps, trailing unindexed data and known dtype/shape byte-length
-contradictions are rejected with a typed `file_format_rejected` constraint (public code `target_unavailable`, category `unsupported_target`). Empty
+contradictions are rejected with a typed `file_format_rejected` constraint (public code `target_unavailable`, category `unsupported_target`).
+A missing, non-regular or otherwise unusable selected path is also `target_unavailable`;
+host I/O or resource failures on a valid selection, such as `EMFILE` or `EIO`, are
+`execution_failure` with the path and reason in `details.diagnostics`. Empty
 tensors and scalar shapes are supported; packed sub-byte types require whole
 byte storage. Unknown dtypes retain declared ranges and an explicit limitation
 that shape-to-storage validation is unavailable. Each tensor records

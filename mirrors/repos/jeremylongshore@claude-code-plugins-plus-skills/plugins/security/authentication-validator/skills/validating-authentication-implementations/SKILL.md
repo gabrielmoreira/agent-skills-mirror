@@ -3,7 +3,7 @@ name: validating-authentication-implementations
 description: Validate authentication mechanisms for security weaknesses and compliance.
   Use when reviewing login systems or auth flows. Trigger with 'validate authentication',
   'check auth security', or 'review login'.
-version: 1.26.0
+version: 1.27.0
 allowed-tools: Read, Write, Edit, Grep, Glob, Bash(security:*), Bash(scan:*), Bash(audit:*)
 license: MIT
 author: Jeremy Longshore <jeremy@intentsolutions.io>
@@ -28,7 +28,7 @@ and NIST standards.
 - Access to the target codebase and configuration files in `${CLAUDE_SKILL_DIR}/`
 - Familiarity with the authentication framework in use (Passport.js, Spring Security, Django Auth, NextAuth, etc.)
 - Standard shell utilities and Grep/Glob available for codebase scanning
-- Reference: `${CLAUDE_SKILL_DIR}/references/README.md` for OWASP authentication cheat sheet, NIST password guidelines, and JWT RFC specifications
+- Reference: [`references/README.md`](references/README.md) for OWASP authentication cheat sheet, NIST password guidelines, and JWT RFC specifications
 
 ## Instructions
 

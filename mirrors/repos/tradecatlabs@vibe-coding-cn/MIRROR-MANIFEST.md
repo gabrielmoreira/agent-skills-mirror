@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `tradecatlabs/vibe-coding-cn` — 26 default patterns, 0 followed patterns, 15 file(s) materialized.
+Mirror of `tradecatlabs/vibe-coding-cn` — 26 default patterns, 0 followed patterns, 11 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `tradecatlabs/vibe-coding-cn` — 26 default patterns, 0 followed patt
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 15 |
+| Files         | 11 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,19 +61,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`.github/AGENTS.md`](.github/AGENTS.md) |
 | 2 | ✓ | [`.github/context/AGENTS.md`](.github/context/AGENTS.md) |
-| 3 | ✓ | [`.github/context/ai-citation/AGENTS.md`](.github/context/ai-citation/AGENTS.md) |
-| 4 | ✓ | [`.github/context/getting-started/AGENTS.md`](.github/context/getting-started/AGENTS.md) |
-| 5 | ✓ | [`.github/context/metadata/AGENTS.md`](.github/context/metadata/AGENTS.md) |
-| 6 | ✓ | [`.github/context/prompts/AGENTS.md`](.github/context/prompts/AGENTS.md) |
-| 7 | ✓ | [`.github/extensions/AGENTS.md`](.github/extensions/AGENTS.md) |
-| 8 | ✓ | [`.github/ISSUE_TEMPLATE/AGENTS.md`](.github/ISSUE_TEMPLATE/AGENTS.md) |
-| 9 | ✓ | [`.github/skills/AGENTS.md`](.github/skills/AGENTS.md) |
-| 10 | ✓ | [`.github/skills/skill/AGENTS.md`](.github/skills/skill/AGENTS.md) |
-| 11 | ✓ | [`.github/skills/skill/assets/AGENTS.md`](.github/skills/skill/assets/AGENTS.md) |
-| 12 | ✓ | [`.github/skills/skill/references/AGENTS.md`](.github/skills/skill/references/AGENTS.md) |
-| 13 | ✓ | [`.github/skills/skill/SKILL.md`](.github/skills/skill/SKILL.md) |
-| 14 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 15 | ✓ | [`llms.txt`](llms.txt) |
+| 3 | ✓ | [`.github/extensions/AGENTS.md`](.github/extensions/AGENTS.md) |
+| 4 | ✓ | [`.github/ISSUE_TEMPLATE/AGENTS.md`](.github/ISSUE_TEMPLATE/AGENTS.md) |
+| 5 | ✓ | [`.github/skills/AGENTS.md`](.github/skills/AGENTS.md) |
+| 6 | ✓ | [`.github/skills/skill/AGENTS.md`](.github/skills/skill/AGENTS.md) |
+| 7 | ✓ | [`.github/skills/skill/assets/AGENTS.md`](.github/skills/skill/assets/AGENTS.md) |
+| 8 | ✓ | [`.github/skills/skill/references/AGENTS.md`](.github/skills/skill/references/AGENTS.md) |
+| 9 | ✓ | [`.github/skills/skill/SKILL.md`](.github/skills/skill/SKILL.md) |
+| 10 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 11 | ✓ | [`llms.txt`](llms.txt) |
 
 ---
 

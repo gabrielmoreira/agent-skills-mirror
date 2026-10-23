@@ -24,7 +24,7 @@ Stop and report instead of continuing if any of these is false when you check it
 
 - `src/auth/session.ts` still exports `refreshToken(userId)` with a single argument
 - The `users.email` column has a unique index (`\d users` in psql)
-- `npm test -- --reporter=dot` passes on `main` before any change
+- `pnpm test --reporter=dot` passes on `main` before any change
 ```
 
 A STOP condition names the assumption and how to check it. "If anything looks off" is not a STOP condition; the executor cannot check it.
@@ -54,6 +54,10 @@ Name a notes file next to the plan (`<plan>.notes.md`) and instruct the executor
 ```
 
 A deviation that would reverse a logged decision, or that the executor finds crosses its `Flips if:` hinge, is not the conservative option: stop and report, because the human decided on facts that no longer hold. Any other deviation never pauses the work: take the conservative option, log it, keep going. The notes file is what review reads afterwards; a handoff without one loses every decision made during execution, and the reviewer has only the diff to reconstruct them from.
+
+## Testing the plan before handoff
+
+The planner cannot find the plan's gaps by re-reading it: every gap is filled from the conversation it remembers. Before handing off, give one fresh subagent only the plan path and the repository, never a summary of the chat, and ask it to list each step where it would have to guess, choose between options, or find a file the plan does not name. Each guess is a decision missing from the plan; write it into the plan and leave the subagent's opinions on the design out. One round is enough unless the fixes were substantive.
 
 ## Reviewing the result
 

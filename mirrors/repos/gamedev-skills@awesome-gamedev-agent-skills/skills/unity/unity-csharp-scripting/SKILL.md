@@ -42,6 +42,16 @@ plumbing*, not those subsystems.
    start them with `StartCoroutine` and stop them deterministically.
 6. **Verify in Play mode**: check the Console for null-reference exceptions, confirm values
    in the Inspector update as expected, and watch the Profiler if `Update` is hot.
+7. **Check `.meta` files before you finish.** When you create, move, rename or delete
+   scripts or assets outside the Editor, always move a file together with its `.meta`
+   (a new `.meta` means a new GUID and broken references). Then run
+   `python scripts/check_unity_project.py <project-dir>` (`--json` for machine-readable
+   output), fix every `ERROR` (duplicate or malformed GUIDs, files moved without their
+   `.meta`, missing script references) and re-run until it exits 0. A missing `.meta` on a
+   brand-new file is only a warning; Unity creates it on the next import. Run the script
+   path relative to this skill directory, or resolve the installed skill path first. It
+   needs Python 3.10+ and nothing else, reads only text-serialized assets, and does not
+   replace opening the project in Unity.
 
 ## Patterns
 
@@ -128,6 +138,8 @@ private System.Collections.IEnumerator FlashThenHide()
 - For the full event-execution-order table and advanced coroutine patterns (custom
   `CustomYieldInstruction`, stopping by handle, `WaitUntil`/`WaitWhile`), read
   `references/lifecycle-and-coroutines.md`.
+- `scripts/check_unity_project.py` — read-only `.meta`/GUID and missing-script checker;
+  `--help` lists every check and the exit codes.
 - Primary docs: Unity Manual "Event function execution order"
   (`https://docs.unity3d.com/Manual/execution-order.html`) and `ScriptReference/MonoBehaviour`.
 

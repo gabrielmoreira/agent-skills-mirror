@@ -63,9 +63,10 @@ and their own counsel.
 3. **Create your build scripts.** Start with the simple app-build `.vdf` in Patterns below;
    for multi-depot/multi-platform apps use depot scripts (see the reference). The script maps
    local files into depots and names where build output/logs go.
-4. **Bootstrap steamcmd and upload.** Run `steamcmd` once to self-update, then run the build
-   (Patterns). steamcmd chunks files (~1 MB), uploads only changed chunks, and registers a
-   global **BuildID**.
+4. **Check the scripts, then bootstrap steamcmd and upload.** Run
+   `python scripts/check_steam_build.py <app_build.vdf>` before you upload (Pattern 3) and fix
+   every ERROR; then run `steamcmd` once to self-update and run the build (Patterns).
+   steamcmd chunks files (~1 MB), uploads only changed chunks, and registers a global **BuildID**.
 5. **Set the build live on a branch.** Go to `https://partner.steamgames.com/apps/builds/<AppID>`,
    pick the build, **Preview Change**, then **Set Build Live Now** for a branch. Test on a
    beta branch first (see `references/steampipe-build-scripts.md` for branch setup).
@@ -119,7 +120,34 @@ tools/ContentBuilder/
 }
 ```
 
-### 3. Upload the build (Windows; substitute the platform builder elsewhere)
+### 3. Check the build scripts before uploading (read-only, no login)
+
+```bash
+# Run before you upload. Parses the app script and every depot script, resolves
+# ContentRoot/LocalPath exactly as SteamPipe documents, and counts what each depot would upload.
+python scripts/check_steam_build.py tools/ContentBuilder/scripts/app_build_1000.vdf
+python scripts/check_steam_build.py app_build_1000.vdf --json --strict   # CI gate
+```
+
+```text
+ERROR depot_build_1002.vdf:7: LocalPath "bin\*" matches no files under ../content
+  fix: LocalPath is relative to the content root; check the folder names, ...
+Depots:
+  1001 [depot_build_1001.vdf]: 412 files, 1.8 GiB, 3 excluded, from ../content
+Summary: 1 errors, 0 warnings in 3 files checked
+```
+
+Exit 0 = no errors, 1 = errors (or warnings with `--strict`), 2 = file missing or not an
+AppBuild script. Errors cover: unparseable VDF, missing/non-numeric AppID or DepotID, no
+depots, duplicate depots, missing depot script, ContentRoot or InstallScript, a LocalPath
+that matches nothing or names a bare folder, and a depot that would upload zero files.
+Warnings cover `SetLive` without `Preview` (goes live on that branch at once; `default`
+gets a louder warning), missing `Desc`, `Local` builds, BuildOutput inside ContentRoot,
+and misspelled keys. Read the per-depot file count and size before you upload.
+Run the script path relative to this skill directory, or resolve the installed skill path
+first. It needs Python 3.10+ and nothing else, and never logs in or uploads.
+
+### 4. Upload the build (Windows; substitute the platform builder elsewhere)
 
 ```bat
 REM Run from the SDK. Bootstrap once, then build. Use a build account, not your admin login.
@@ -135,7 +163,7 @@ chunks -> uploads only NEW chunks -> writes a depot manifest -> finishes with a 
 BuildID. The build is NOT live yet; set it live per the workflow above.
 ```
 
-### 4. Iterate safely with a preview build (uploads nothing)
+### 5. Iterate safely with a preview build (uploads nothing)
 
 ```text
 // Add to the AppBuild block to validate file mappings without uploading:
@@ -170,6 +198,8 @@ BuildID. The build is NOT live yet; set it live per the workflow above.
 - For advanced multi-depot/multi-platform build scripts, `FileExclusion`/`FileProperties`,
   beta-branch setup, the CI/CD login-token workflow, and the SteamPipe troubleshooting table,
   read `references/steampipe-build-scripts.md`.
+- `scripts/check_steam_build.py` — read-only check of an app build script, its depot scripts
+  and content folders; `--help` lists every check and the exit codes.
 - Primary docs: Steamworks "Uploading to Steam" (`partner.steamgames.com/doc/sdk/uploading`),
   "Release Process" (`/doc/store/releasing`), "Branches (Betas)" (`/doc/store/application/branches`),
   "Depots" (`/doc/store/application/depots`), "Onboarding" (`/doc/gettingstarted/onboarding`,

@@ -1,9 +1,10 @@
-# Local video renderer
+# Content-ops media provider
 
 `loopx-media` is an optional distribution for the existing **content-ops**
-capability. It renders an admitted composition; it does not choose sources,
-run commands from a brief, use an account, call a model, or publish a movie.
-Shared TypeScript admission and render transitions remain in LoopX core.
+capability. It renders an admitted composition and can execute explicitly submitted,
+bounded cloud video or image intents. It does not choose sources, run commands from
+a brief or publish a movie. Shared TypeScript admission and transitions
+remain in LoopX core.
 Pillow, FontTools, FFmpeg and platform speech are specialized local computation.
 
 From a source checkout, install the executable and register its manifest:
@@ -17,18 +18,35 @@ loopx extension doctor loopx-media --execute
 The LoopX process must have `loopx-media` on its PATH. Installation explicitly
 enables the local extension. No renderer is installed, enabled or downloaded
 by `content-ops media prepare`, page loading or a missing-provider read.
-The manifest requests `content_media_write` for private composition output.
+The manifest requests `content_media_write` for private composition output
+and the separate `content_media_generate` permission for cloud generation.
+Ordinary render requests do not use credentials or call the network.
 Use the existing extension state owner; there is no second media setting.
 An isolated environment is also supported if its executable is on that PATH.
 
 An Agent prepares the story, source SHA256s and timing through
 [`content-ops media`](../../docs/reference/protocols/content-ops-media-v0.md).
-In the packaged App, open **Settings → Capabilities → a Goal → Content
-production**. Select the prepared composition, render, then view the video,
+In the packaged App, open **Goal → Files → Content artifacts**. Select the prepared composition, render, then view the video,
 captions, transcript and source boundaries in the same workbench. The CLI
 exposes the same operation. Rendering is local work; it grants no publication
 approval. Revise the brief through the Agent rather than re-entering source
 paths or protocol JSON in the browser.
+
+**Return to conversation** preserves the selected Goal and prepares no model call.
+Use it to give the Agent feedback and prepare another revision. **Goal delivery checks**
+opens the existing Goal acceptance interaction shared with other deliverables;
+opening it only reads its current requirements and receipts. A local render or
+cloud image never grants semantic acceptance, independent review, adoption or
+publication authority. This packaged production route currently requires an
+existing Goal; it does not create one for an ordinary project conversation.
+
+Artifact preview/download URLs bind the saved revision and file SHA256. A changed
+composition revision or different bytes makes that link unavailable rather than
+serving a replacement. Immutable image/footage identities keep their original
+verified outputs. Existing unpinned URLs remain compatible current-file reads.
+Opening saved media does not start rendering, generation or provider polling. An explicit
+render observes that operation while this view remains open; leaving the view or
+a failed read stops observation without cancelling the provider.
 
 Supported atoms are title scenes, measured text wrapping, animated node
 diagrams, hash-bound image/video excerpts, timed captions, supplied audio,
@@ -37,7 +55,8 @@ decode. Images retain their orientation; video excerpts retain aspect ratio.
 Installed fonts must cover the visible text, with CJK line breaking supported.
 RTL shaping and arbitrary font discovery are not qualified. macOS speech is
 optional; other platforms require supplied audio or explicit silence.
-No cloud voice, generative image/video or game engine is bundled here.
+No cloud voice or game engine is bundled here. The bounded Ark video and image
+routes below are explicit and optional; neither is a render fallback.
 
 The default excerpt and Blender layouts display the title and source boundary; nonempty
 `body` text is explicitly refused. Preserve a needed qualifier in those visible
@@ -101,7 +120,7 @@ needs explicit extension registration; doctor cannot rebind an active revision.
 Preparation does not install Blender. The ordinary install still supports 2D;
 a missing Blender extra fails only an attempted 3D scene. Repair that local
 dependency and retry the unchanged prepared composition through the same CLI
-or **Content production** workbench. No second provider setting is needed.
+or **Content artifacts** workbench. No second provider setting is needed.
 
 An Agent selects a `blender` shot and supplies declarative objects, camera,
 lights, materials and position keyframes. The shared TypeScript owner admits
@@ -217,3 +236,164 @@ The opt-in test uses the real extension and HTTP route, inspects the ZIP,
 opens the blend in an independent bpy process and checks stored scene state.
 It performs no cloud/model calls or public uploads. Report the actual bpy
 version and platform; this command is not a claim of cross-platform delivery.
+
+## Optional generated footage
+
+An Agent can prepare a **content-ops generation** plan, then submit one bounded
+Seedance 2.5 video task and collect it as a hash-bound source for the existing
+composition. This provider supports 4–10 whole seconds at 480p/720p, text-only
+or a first frame and optional last frame. Reference images must be explicitly
+public-safe PNG/JPEG, 16:9, 300–1920 pixels wide, 300–1080 pixels high
+and at most 2 MiB each. Alpha is
+composited on white and encoded as RGB PNG; original and transmitted hashes
+remain in the private submission journal. This does not open another model or
+reuse unrelated account credentials.
+
+Load `ARK_API_KEY` only into the authorized LoopX host process environment.
+`ARK_BASE_URL`, if supplied, must be the standard
+`https://ark.cn-beijing.volces.com/api/v3` endpoint. Do not place a key in the
+plan, command arguments, extension manifest, browser or repository. A missing
+credential preserves the prepared intent without submitting it. Upgrade through
+the existing extension lifecycle after installing this package; do not edit a
+saved binding by hand. Existing 0.2 providers still render local compositions;
+they are unavailable for the new generation permission.
+
+```sh
+loopx content-ops generation prepare --goal-id GOAL \
+  --plan-json footage.json --source-directory ./authorized-frames
+# Read generation_id and revision from prepare. This next command submits one
+# paid provider task; prior scoped authorization and a current price are needed.
+loopx content-ops generation submit --goal-id GOAL \
+  --generation-id GENERATION_ID --expected-revision 1
+loopx content-ops generation check --goal-id GOAL \
+  --generation-id GENERATION_ID --expected-revision 1
+loopx content-ops generation collect --goal-id GOAL \
+  --generation-id GENERATION_ID --expected-revision 1
+```
+
+The Agent prepares the immutable prompt, reference SHA256s, audio/watermark/
+last-frame choices and a dated official price quote in
+`content_ops_generation_plan_v0`. The quote contains `cny_per_million_tokens`,
+`checked_at`, `source_url` and `max_estimated_cny`; submission refuses a quote
+older than 24 hours or a nominal estimate above that declared bound. This is
+an estimate check, **not a guaranteed billing cap, invoice or authorization**.
+Token usage returned by the service is shown separately. Read actual account
+charges when a complete financial total is required. Parameters belong in the
+structured plan; Ark's weak prompt parameter suffixes are refused.
+
+![Versioned works in the Goal artifact view](docs/workspace-after-desktop.png)
+
+Packaged Goal artifact view with synthetic local works, using the real backend.
+The [390px view](docs/workspace-after-narrow.png) keeps preview and download
+with the requested work. This fixture checks delivery mechanics; it does not
+qualify live generation or creative quality.
+
+In **Goal → Files → Content artifacts**, the same workbench
+shows the prepared footage, external-upload/usage consequence, submit button,
+original-task checks, missing-provider/key state, saved video and last-frame
+download. It does not ask the owner to copy filesystem paths or re-enter the
+Agent's complete brief. Automatic status checks are limited to five minutes
+and can stop locally; opening the page or reading local drafts never submits
+or polls the cloud. Local inspect/list retain private source locations and
+cloud result URLs internally; the workbench projection has neither.
+
+Each submit/check/collect is a short operation, within the existing 120-second
+extension boundary. Generation continues remotely across host restarts. A
+successful POST's task id is fsynced in a provider journal before stdout returns.
+The parent saves its intent before the effect. Duplicate clicks never POST
+again; after a lost response, check the journal-backed original task. If no task
+id was recovered, the status stays `submission_unknown` with an explicit
+reconciliation requirement. There is no automatic paid retry. A genuinely new
+shot requires a new prepared intent after reviewing the original outcome.
+
+## Optional generated images
+
+Version 0.4 adds a single-image path in the same **Content artifacts**
+workbench. Install or explicitly upgrade this distribution and register the
+current manifest using the lifecycle above. Load a separately authorized
+`ARK_IMAGE_API_KEY` into the LoopX process; optional `ARK_IMAGE_BASE_URL` must
+equal the standard Ark endpoint. The video `ARK_API_KEY` is never borrowed.
+Neither the browser nor a prepared plan stores or displays credentials.
+
+An Agent prepares `content_ops_image_plan_v0` with title, prompt, explicit
+width/height, watermark choice, `references` and a current quote. This bounded
+path pins `doubao-seedream-5-0-pro-260628`, opaque PNG, no layer decomposition
+and standard prompt optimization. It accepts text or one public-safe PNG/JPEG
+reference, at most 4 MiB, with relative path, exact SHA256 and opaque provenance.
+Reference alpha is composited on white; the private journal retains both the
+original and uploaded PNG hashes. Output dimensions are 720–2560 per side,
+with total area 921,600–4,624,220 pixels and aspect ratio 1:16–16:1.
+
+```sh
+loopx content-ops image prepare --goal-id GOAL \
+  --plan-json image.json --source-directory ./authorized-images
+# This next command performs one paid request under the current authorization.
+loopx content-ops image submit --goal-id GOAL \
+  --image-id IMAGE_ID --expected-revision 1
+loopx content-ops image inspect --goal-id GOAL --image-id IMAGE_ID
+# Recover an already saved response; this command never generates another image.
+loopx content-ops image collect --goal-id GOAL \
+  --image-id IMAGE_ID --expected-revision 1
+```
+
+The quote has `cny_per_image`, `checked_at`, official `source_url` and
+`max_estimated_cny`; it expires after 24 hours. Verify the current model and
+[price table](https://ark.volcengine.com/docs/model-pricing) for the actual
+dimensions. The nominal estimate does not grant spending authority or guarantee
+an invoice limit. The supported first reference is free under that rate basis;
+other pricing modes and multiple outputs are outside this path.
+
+The synchronous request has no cloud task ID, polling or cancellation. A
+durable submission journal precedes POST; a saved response precedes stdout.
+When received, exact HTTP response bytes and their digest are persisted before
+interpretation, so local interpretation failure can be recovered without a new
+POST. Header/request-ID observations and sanitized error classes are private
+diagnostic evidence. Loss before a complete response is saved remains unknown.
+After timeout or malformed response the status remains `submission_unknown`.
+Repeated submit does not POST again. `collect` only reads that intent's saved
+response and can repair damaged local output. If no response was saved, the
+external outcome needs reconciliation before a genuinely new intent is chosen.
+Missing provider/credential leaves the draft prepared and sends nothing.
+
+The workbench displays the brief, upload/usage consequence, status, nominal
+cost and verified `original.png` and `generated.png` downloads. Full PNG decode,
+exact dimensions and core-owned hash readback qualify local byte readiness;
+creative quality, visible watermark, source faithfulness and actual invoice
+remain separate judgments. Reuse `generated.png` as a hash-bound composition
+asset; render precise labels, diagrams and subtitles locally. A generated
+illustration must not be presented as a recorded product or benchmark trace.
+Disabling the same extension stops new image/video effects and keeps saved
+results readable. No separate image service or settings owner is introduced.
+
+Images use the same Goal artifact view and backend as the video example above.
+The disposable saved-response fixture uses a locally rendered poster to check
+collection and download, **not live Seedream output or creative acceptance**.
+Unavailable credentials retain the draft; an unconfirmed external request has
+no paid resubmit control. [Unavailable Goal acceptance information](docs/workspace-checks-unavailable-narrow.png)
+remains an explicit gap beside the works, rather than becoming media-owned
+acceptance state.
+
+Ark's DELETE both cancels queued work and erases finished task records, without
+a documented atomic queued-only precondition. The provider therefore retains
+the task and reports `atomic_cancellation_unavailable`; it does not race a GET
+against a destructive DELETE. Stopping local checks does not cancel the task
+or its charges. A failed/expired task stays failed/expired, and remote success
+is separate from verified local collection. A fresh GET obtains expiring asset
+URLs; downloads have origin, byte and time bounds, followed by full video
+decode, measured duration, hashes, poster and optional last-frame validation.
+The original task is never deleted during collection or retry.
+
+Use collected `generated.mp4` as an ordinary SHA256-bound excerpt source in
+`content-ops media prepare`; retain `generation:<id>` as provenance and add
+precise text/diagrams/captions locally. Generated footage is illustrative;
+encoding does not prove continuity, visible watermark, creative quality,
+audience understanding or publication approval. Inspect those separately.
+Disable or roll back through `loopx extension disable/rollback`; preserve the
+private source/intent/artifact files. No global credential configuration or
+publication state changes as a side effect.
+
+Primary provider contracts:
+[create](https://ark.volcengine.com/region:cn-beijing/docs/create-video-generation-task-api),
+[query](https://ark.volcengine.com/region:cn-beijing/docs/get-video-generation-task-api),
+[cancel/delete](https://ark.volcengine.com/region:cn-beijing/docs/cancel-or-delete-video-generation-tasks-api).
+No paid requests run in the default test suite.

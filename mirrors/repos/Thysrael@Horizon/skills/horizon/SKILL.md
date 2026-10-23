@@ -94,11 +94,14 @@ instructions and use its example config as a schema reference.
    environment variable, not the key value; existing custom variable names can be
    reused. A key alone does not identify the model or endpoint. Ask only for
    missing settings or a choice between multiple available services.
-3. An agent's OAuth or subscription login is not a drop-in provider API key. If
-   no usable provider configuration is available, ask the user to supply the
-   missing credentials through the environment or `.env`.
+3. For users choosing their ChatGPT plan, follow `docs/chatgpt.md` and configure
+   `openai-chatgpt`. Use `horizon-chatgpt login`, have the user complete the official
+   browser authorization, then list models and verify with `horizon-chatgpt check`.
+   Keep OAuth tokens in Horizon's auth directory. An agent's existing OAuth login
+   is not a drop-in API key. For other providers, request missing credentials
+   through the environment or `.env`.
 4. For new or changed model settings, run `validate_config` in the intended runtime
-   and inspect `missing_env`. Then make one minimal completion through
+   and inspect `missing_env`, warnings, and `ai.auth` when present. Then make one minimal completion through
    `create_ai_client` in `src/ai/client.py`, loading the active configuration and
    environment with the checkout's existing loaders. Request a small JSON object
    and verify that the response parses. A successful call already made with the

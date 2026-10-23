@@ -90,6 +90,11 @@ obvious:
 
 - After editing Markdown, run `just prettier-write <changed files>` then `just prettier-check <changed files>`, in that
   order. If `prettier-check` fails, fix only the files you changed.
+- After editing Python, run `just python-fix <changed files>` then `just python-check <changed files>`, in that order.
+  Both run ruff through `uvx`, so no global install is needed, and `ruff.toml` is the only configuration. Without paths,
+  they cover every Python file in the repository. Fix remaining findings by hand or narrow the code. For a known false
+  positive, add the narrowest `per-file-ignores` entry in `ruff.toml` with a comment. Use an inline suppression only for
+  a one-off, with a reason.
 - The root `package.json` exists only for local formatting, type-checking, and hook wiring. There is no build step.
 - CLI changes go live only via `just toolkit::install-cli`, under the install-authorization rules in
   `toolkit/AGENTS.md`.
@@ -115,7 +120,7 @@ All checks run locally. Do not add CI workflows or rely on remote checks for com
 | ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------ |
 | Skill metadata, dependencies, README table | Run `just skill-check`. Verify referenced files and documented commands for changed skills.                              |
 | Shell helpers or tests                     | Run `just shell-check <changed files>` and the affected shell tests. Use `just bats-test tests/<skill>` for Bats suites. |
-| Python helpers or tests                    | Run the affected `tests/<skill>/test*.py` scripts with `uv run`.                                                         |
+| Python helpers or tests                    | Run `just python-check <changed files>` and the affected `tests/<skill>/test*.py` scripts with `uv run`.                 |
 | Root Bun TypeScript helpers                | `just typescript-check` and the affected tests (`just publish-skills-test` or `just evm-atlas-test`).                    |
 | evm-atlas generated inputs or references   | Run `just evm-atlas-check`. Change canonical inputs and regenerate derivatives rather than editing generated files.      |
 | Shared catalog tooling or test wiring      | `just test` and `just skill-check`, plus shell linting for changed shell files.                                          |
@@ -142,8 +147,7 @@ the instructions change how a helper is used. Markdown changes always follow the
   writing. Complete its meaning and style review before finishing. Preserve obligation strength and protected technical
   content. This review does not establish official ASD dictionary compliance.
 - In this repository, an unqualified request to create, scaffold, or initialize a skill means an installable catalog
-  skill under `skills/<name>/`. Follow `@skill-lifecycle` and `@skill-authoring`. Do not use the project-local
-  scaffolding in `agents-brain create-skill` here.
+  skill under `skills/<name>/`. Do not use the project-local scaffolding in `agents-brain create-skill` here.
 - Create a repo-private internal skill under `.agents/internal-skills/<name>.md` only when the user explicitly requests
   an internal skill.
 - Run [`@rebase-skill`](.agents/internal-skills/rebase-skill.md) only when the user explicitly requests an upstream

@@ -148,6 +148,8 @@ Adopted model: **mirror by default · upstream improvements · never clobber.** 
 
 **How we upstream respectfully.** Want a plugin at our A-grade bar? We bring THEIR plugin to standard on THEIR repo: a friendly issue first ("we featured your plugin and hardened its frontmatter to our A-grade bar — would you be open to a PR upstreaming it?"), then a PR the contributor owns and merges. No surprise PRs; credit preserved; they decide. Once merged upstream, the mirror is A-grade naturally and `curated:` can be dropped. **Any contributor-facing post (issue or PR body) gets Jeremy's wording sign-off BEFORE posting.**
 
+**Mirror file ownership.** `pnpm run validate:mirror-file-ownership` checks the Git index against `.source.json.files`, the sync engine's metadata files, and explicit `curated: true` local ownership. Every selected file in an active mirror must be present in the Git index; ignored or untracked working copies do not count. Use explicit source exclusions and canonical sync for held content. An unowned root package must be a private tracking manifest with no build/test dependency graph. New unowned payloads fail CI. The legacy ownership baseline is empty after retiring the repository-authored Sugar wrapper; upstream Sugar commands and attribution are preserved.
+
 ## Plugin Structure
 
 **AI instruction plugins** (`plugins/[category]/[name]/`): `.claude-plugin/plugin.json` + `README.md` + optional `commands/*.md`, `agents/*.md`, `skills/[name]/SKILL.md`.
@@ -191,7 +193,7 @@ Beyond the 8 required fields, schema 3.5.0+ adds optional visibility-gating fiel
 
 **Branch protection on `main` requires THREE always-reporting contexts: `ci-required` + `gitleaks` + `skill-conform`** (GitHub Actions app; `strict:false`, `enforce_admins:false`, 0 required approving reviews, code-owner reviews not required). CODEOWNERS routes ownership and optional review; it is not a merge gate. Authorization for any permissive baseline policy-envelope mutation is the narrower machine gate defined by blueprint 727 § 10.2/E6.6.
 
-- **`ci-required`** is the final job in `.github/workflows/validate-plugins.yml` — `if: always()`, `needs:` all 23 gate jobs (validate, marketplace-compliance-ratchet, verify, test, check-package-manager, marketplace-validation, cli-smoke-tests, shellcheck-skills, skill-codeblock-syntax, typescript-coverage-audit, eslint-check, format-check, ruff-check, ruff-format-check, markdownlint, scan-synced-content, promote-curated-check, check-submission-docs, commit-scope-check, codeowners-drift, generated-content-drift, doc-governance, secret-diff-scan). It fails if any needed job ended `failure`/`cancelled`; a `skipped` result counts as PASS — legitimate **only** for a designed job-level `if:`.
+- **`ci-required`** is the final job in `.github/workflows/validate-plugins.yml` — `if: always()`, `needs:` all 24 gate jobs (classify-changes, validate, marketplace-compliance-ratchet, verify, test, check-package-manager, marketplace-validation, cli-smoke-tests, shellcheck-skills, skill-codeblock-syntax, typescript-coverage-audit, eslint-check, format-check, ruff-check, ruff-format-check, markdownlint, scan-synced-content, promote-curated-check, check-submission-docs, commit-scope-check, codeowners-drift, generated-content-drift, doc-governance, secret-diff-scan). The aggregate requires the exact dependency set, successful classification, and successful results. Only the seven jobs explicitly enumerated in `scripts/ci/fastlane.py` may report `skipped`, and only for a proven lightweight diff. See [.github/CI_ROUTING.md](.github/CI_ROUTING.md) for the path classes and retained gates.
 - **`gitleaks`** comes from `secret-scan.yml` (also unfiltered).
 - **`skill-conform`** is its **own** workflow (`.github/workflows/skill-conform.yml`) — `pnpm exec audit-harness conform --strict` over the full marketplace corpus. Always-reports (no path filter). **Never** folded into `ci-required`'s `needs:` (doc 110 § 5: a skippable/path-scoped job must not green the aggregate). Baseline after #1108/#1118: thousands PASS / 0 FAIL; remaining ADVISORY is the harness-side missing marketplace schema only.
 - **Advisory (never required):** `.github/workflows/skill-eval-advisory.yml` — j-rig behavioral eval on changed skills that already carry `eval-spec.yaml`. Kill-switch `vars.ENABLE_SKILL_EVAL=true` + same-repo guard + `MINIMAX_API_KEY`. Graduation to required needs Jeremy + ≥4-week clean flap window (doc 110).
@@ -201,7 +203,7 @@ Beyond the 8 required fields, schema 3.5.0+ adds optional visibility-gating fiel
 
 1. `validate-plugins.yml` runs on **every** `pull_request` — never add a `paths:` filter to it.
 2. **Never add a path-filtered workflow's context to the required-status set.** To make a new check blocking: add it as a job in `validate-plugins.yml` and list it in `ci-required`'s `needs:`.
-3. A job in the aggregate's `needs:` may only skip via a _designed_ `if:` — an undesigned skip silently passes the gate.
+3. A job in the aggregate's `needs:` may only skip when the classifier and aggregate policy explicitly allow it. Missing results and unexpected skips fail the aggregate.
 4. The five split lint workflows (`lint-markdown/python/shell/typescript/skill-codeblocks.yml`) were retired 2026-07; their identically-named jobs live in `validate-plugins.yml`. Do not re-split them. `tests/ci/test_path_routing.py` pins this invariant.
 
 **Supply-chain gate:** `scan-synced-content` (the REFUSE/CHALLENGE/FLAG scanner over `plugins/**`, `scripts/scan-synced-content.mjs`) blocks via the aggregate. A `sources.yaml`-only PR scans zero files and deliberately fails with a **waivable** `sources-change-unscanned` CHALLENGE — a reviewer clears it with a `sources.yaml:sources-change-unscanned  <reason>` line in `scripts/scan-allowlist.txt` after confirming the source is vetted and pinned in `sources.lock.json`. REFUSE is never waivable.
@@ -255,6 +257,21 @@ evidence is explicit. These advisory comparisons concern the installed kernel;
 they do not establish upstream currency or full skill/agent registry coverage.
 Synthetic transport-test receipts are labeled separately in the CI artifact.
 
+The same advisory job also runs `scripts/kernel-shadow-agents.mjs` against the
+pinned composed v1/v2 `agent-definition` schemas. Its read-only Python adapter
+calls canonical `find_agent_files()` and `validate_agent()` because batch
+`--agents-only --json` returns before the agent loop. The separate
+`scripts/.kernel-shadow/agents-report.json` retains every discovered agent,
+content/schema hashes, Python findings, and kernel findings. These are **raw**
+verdict comparisons: Python includes enterprise and body/tool checks, so
+Python-FAIL/kernel-PASS may reflect different scopes, and both failing does not
+prove equivalent rules. The summary leads with v2 Python-PASS/kernel-FAIL.
+Missing or partial evidence is explicit and exits nonzero in a
+`continue-on-error: true` step; disagreements alone never fail the observation.
+There is no new debt baseline or threshold. Python and the marketplace R1
+ratchet retain blocking authority; the DR-049 promotion conditions below and
+the existing skill-shadow report are unchanged.
+
 ### Do-not-flip soak discipline (do not lose this)
 
 **The kernel pin and the authority flip are two SEPARATE axes — do not conflate them.** The pin is _intended_ to track the latest published kernel; bumping it keeps the shadow lane reading a current, byte-frozen `authoring/v1` contract and is a routine governance/coupling update, not an authority change.
@@ -280,7 +297,7 @@ A recent cleanup removed 74 dead duplicate `validation.sh` stubs, collapsed prev
 
 ### auto-bump posture for contributors
 
-`.github/workflows/auto-bump-on-pr.yml` auto-bumps changed plugins' patch versions on PRs (only on `plugins/**` / `packages/**` changes). For a docs-only or otherwise non-release PR, put **`[skip auto-bump]`** in the PR title or body so the auto-bumper steps aside. Minor/major bumps stay a deliberate human choice — hand-edit the version in the same PR. It stays on `pull_request` (not `pull_request_target`) by design — the bump needs a write token, which must never be handed to fork code; fork PRs are skipped cleanly, and a first-time fork contributor's queued "Approve and run" entry just no-ops when approved.
+`.github/workflows/auto-bump-on-pr.yml` auto-bumps changed plugins' patch versions on PRs (only on `plugins/**` / `packages/**` changes). For a docs-only or otherwise non-release PR, put **`[skip auto-bump]`** in the PR title, or on its own line in the body outside prose, quotes, comments, and code examples, so the auto-bumper steps aside. Minor/major bumps stay a deliberate human choice — hand-edit the version in the same PR. It stays on `pull_request` (not `pull_request_target`) by design — the bump needs a write token, which must never be handed to fork code; fork PRs are skipped cleanly, and a first-time fork contributor's queued "Approve and run" entry just no-ops when approved.
 
 ## Adding a New Plugin
 

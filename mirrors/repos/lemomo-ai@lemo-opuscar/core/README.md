@@ -74,7 +74,7 @@ All four page tools take `--size WxH` (default `1920x1080`, even numbers) and `-
 | `LEMO_ANGLE` | WebGL backend (default `metal` on macOS; `default` passes none) |
 | `RENDER_SLOTS` | optional; limits concurrent full renders across processes |
 | `LEMO_COLOR=bt709` | `mux.sh` writes limited-range BT.709 instead of the default full-range output |
-| `WHISPER_MODEL` | Whisper model name or local folder for `asr_check.py` (same as `--model`; default `base.en` for English, `base` otherwise; `small` is more accurate for Chinese) |
+| `WHISPER_MODEL` | Whisper model name or local folder for `asr_check.py` (same as `--model`; default `base.en` for English, `small` for Chinese, `base` otherwise) |
 | `HF_ENDPOINT` | Hugging Face mirror for the Whisper download |
 
 ## Exit codes

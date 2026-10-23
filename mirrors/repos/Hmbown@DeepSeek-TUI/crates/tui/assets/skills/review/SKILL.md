@@ -11,7 +11,24 @@ The bar is a senior reviewer who has the whole repo in their head: the
 diff is the *subject*, the codebase is the *context*. A finding that could
 have been ruled out by reading one caller is noise.
 
-## Scope
+## Prefer the one review core
+
+`codewhale review` is the review implementation, and the `review` tool is the
+same core. Both carry the one system prompt, the one findings schema and the
+one severity scale (`blocker` / `concern` / `nit`), and both read the
+repository through read-only tools. Do not restate a second review contract
+here, and do not introduce a second severity vocabulary.
+
+- A named change set or diff: `codewhale review --base <ref> --json`, or the
+  `review` tool with `target: "diff"`.
+- A pull request: `codewhale review --pr <N> --json`, or `target: "<PR URL>"`.
+- Add `--post` only when the person asked for a comment on the pull request.
+
+Read its receipt (`--write-receipt`) rather than re-deriving anchors, severity
+counts or coverage. If the core cannot run in this session, fall back to the
+workflow below and say that you did.
+
+## Workflow when reviewing by hand
 
 1. Establish the change: `git diff <base>...HEAD`, `gh pr diff`, or the
    named files. If the repo has a `whalewiki/`, use the installed WhaleWiki
@@ -42,6 +59,17 @@ have been ruled out by reading one caller is noise.
 Skip style, naming, formatting, and "I'd have written it differently."
 If a change is stylistically odd but correct, it is not a finding.
 
+## Evidence, not speculation
+
+State what you did, not what you assume. Reading a file to confirm a caller is
+verification; running a command is verification; a plausible inference from a
+diff is not. For each finding, say which it is:
+
+- **reproduced** — a command you ran shows the failure; include it.
+- **traced** — a concrete input and a file:line chain to the wrong result.
+- **suspected** — everything else. Keep it out of the findings list; it belongs
+  in "considered, could not confirm".
+
 ## Confidence gate
 
 Report a finding only when you can name the reachable path that makes it
@@ -53,15 +81,17 @@ goes nowhere. Speculative findings teach reviewers to ignore you.
 
 ```
 ## Findings
-1. [severity: high|med|low] `path/to/file.rs:123` — what breaks, the
-   reachable path, and the fix.
+1. [blocker|concern|nit] `path/to/file.rs:123` — what breaks, the
+   reachable path, and the fix. Evidence: reproduced|traced, with the
+   command or the file:line chain.
    …
 
 ## Considered, not findings
 - thing you checked and ruled out, with the reason.
 
 ## Verdict
-merge-risk summary: what's safe, what blocks, what needs a test.
+merge risk (low|medium|high) and why, what you verified, what you did not
+review, and at most three items worth a human's judgement.
 ```
 
 - Anchor every finding to the *new* code's file:line so it maps to a PR
@@ -73,7 +103,8 @@ merge-risk summary: what's safe, what blocks, what needs a test.
 
 ## Boundaries
 
-- Read-only by default: review reports, never edits.
+- Read-only by default: review reports, never edits. A fix is offered as a
+  suggestion; applying it is the author's decision.
 - Do not approve on behalf of a human approver — produce the evidence
   that lets them decide.
 - Security-adjacent findings get the `security-review` discipline: prove

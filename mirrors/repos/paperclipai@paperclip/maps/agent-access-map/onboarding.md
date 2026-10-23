@@ -96,6 +96,19 @@ testing an existing agent; interactive account login additionally requires a
 board user and owner-bound session. An agent's right to hire is not login or
 instance-environment administration authority.
 
+Scoped source-only runtime preparation: the existing authorized adapter test
+prepares the default Claude CLI in its already acquired sandbox when the image
+version is too old for the selected model. It installs a pinned package into a
+workspace-private versioned prefix and verifies the executable before the hello
+test. This adds no installation API, account grant, environment authority or
+engine fallback. Cloud UI omits manual shell debugging and legacy operator hints
+while retaining check messages and details. Local, SSH and custom
+commands remain operator-managed. Controls:
+[runtime](../../packages/adapters/claude-local/src/server/sandbox-cli-version.test.ts),
+[probe](../../packages/adapters/claude-local/src/server/test.remote.test.ts), and
+[wizard](../../ui/src/components/OnboardingWizard.test.tsx). Live managed
+authorization and subscription execution remain `not-run` for this change.
+
 For fresh managed Codex Auto setup, the wizard's explicit Connect path can call
 `POST /api/environments/{environmentId}/probe?companyId={companyId}` before
 selected-runtime testing, then refresh scoped adapter discovery. This reuses the

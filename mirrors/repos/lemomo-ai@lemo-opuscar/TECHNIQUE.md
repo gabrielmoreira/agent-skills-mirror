@@ -21,7 +21,7 @@ Everything else installs in tiers, from the library root (`$LIB` in skill mode).
 | Command | Adds | Size |
 |---|---|---|
 | `sh plugin/skills/lemo-opuscar/scripts/setup.sh deps` | core: npm packages, headless browser, Python `.venv` (numpy, scipy, soundfile, soxr, pillow): render, synthesize sound, mux | ~350 MB |
-| `… setup.sh deps voice` | Kokoro + model (English, offline), edge-tts (Chinese, online), faster-whisper (voice check) | ~0.55 GB + ~145 MB Whisper model on first check |
+| `… setup.sh deps voice` | Kokoro + model (English, offline), edge-tts (Chinese, online), faster-whisper (voice check) | ~0.55 GB + a Whisper model on first check (~145 MB for English, ~480 MB for Chinese) |
 | `… setup.sh deps music` | numba, for plucked strings (`pluck.py`); the sampler itself needs only the core | ~140 MB |
 | `sh tools/fetch.sh instruments <lib>` | a sample library: `freepats`, `karoryfer`, `salamander`, `vcsl`, `vsco2ce` or `all` | 70–400 MB each |
 | `sh tools/fetch.sh hdri` | HDRIs for 3D styles | 12 MB |
@@ -159,4 +159,4 @@ Fonts: Google Fonts (OFL), self-hosted in the project. The typefaces a `STYLE.md
 | 3D with depth of field and real materials | `styles/brick-toy/`, `styles/paper-popup/` |
 | a CRT or VHS look | `core/post/crt.js`, `styles/ascii-crt/`, `styles/backrooms/` |
 
-Each style's `DEMO.md` says how its demo was built. Open it and the code only after your treatment exists, to learn a technique, never to rebuild our film. In skill mode, get the source with `sh <skill folder>/scripts/setup.sh demo <slug>`. Copied demo code often reaches the library with `../..`: replace that with `$LIB` or absolute URLs.
+Each style's `DEMO.md` says how its demo was built. Open it and the code only after your treatment exists, to learn a technique, never to rebuild our film (an Edit & Documentary style's material tools in `demo/tools/` come first: AGENTS.md, "Treatment first"). In skill mode, get the source with `sh <skill folder>/scripts/setup.sh demo <slug>`. Copied demo code often reaches the library with `../..`: replace that with `$LIB` or absolute URLs.

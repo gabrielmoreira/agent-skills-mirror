@@ -171,14 +171,20 @@ For rebuilding a paper form from an image, scan or screenshot as an editable
 XLSX with a printable layout, enter
 [excel-automation](daymade-docs/excel-automation/SKILL.md).
 
+For growth analysis from sales or support conversations, enter
+[product-growth](product-growth/SKILL.md) and follow its
+[customer-conversation evidence recipe](product-growth/references/customer-conversations.md).
+
 For HTML report creation or updates, enter
 [report-with-html's Define success workflow](report-with-html/SKILL.md#workflow)
 for reader/use, evidence precision, delivery location and investigation acceptance.
 Its [technical comparison reading order](report-with-html/references/visualization-patterns.md)
 owns concrete plans, cost boundaries and next-verification choices; do not turn a research
 shortlist into purchase or deployment approval.
-Its [maintenance contract](report-with-html/references/long-lived-report-maintenance.md)
-owns later reconciliation and consumer readback.
+For filtered evidence inspection, follow its
+[interactive-analysis recipe](report-with-html/references/interactive-analysis.md).
+For transcript speaker-label updates, later reconciliation and consumer readback,
+follow its [maintenance contract](report-with-html/references/long-lived-report-maintenance.md).
 
 For citation previews and in-place source inspection, enter
 [report-with-html's interaction owner](report-with-html/references/interaction-components.md)
@@ -373,8 +379,11 @@ For same-line repeats or a legacy row needing an explicit slot, follow
 [occurrence anchoring](daymade-audio/transcript-fixer/references/review_queue_dashboard.md#same-line-occurrence-anchoring).
 Use the [CLI reference](daymade-audio/transcript-fixer/references/script_parameters.md#fix_transcriptionpy)
 to select the command; the argument parser owns accepted combinations.
-For remaining pending rows or a received human verdict on an already reviewed file, enter
-[pending continuation](daymade-audio/transcript-fixer/references/pending-continuation.md).
+For domain-context location, configuration-directory selection or homophone-veto
+authoring, enter the [Domain Context Guide](daymade-audio/transcript-fixer/references/domain_context_guide.md).
+For remaining pending rows or a received occurrence-specific human verdict on an
+already reviewed file, enter [pending continuation](daymade-audio/transcript-fixer/references/pending-continuation.md)
+for queue resolution and its finalization, learning and propagation owners.
 For source-audio export, identity and timeline pairing, follow
 [the audio setup SOP](daymade-audio/transcript-fixer/references/review_queue_dashboard.md#source-audio-and-timeline-pairing)
 and its [audio helper](daymade-audio/transcript-fixer/scripts/fetch_minute_audio.py).
@@ -392,6 +401,8 @@ review coverage, unresolved verdicts, and repository publication distinct.
 For local correction tests and repository CI ownership, follow the
 [testing strategy](daymade-audio/transcript-fixer/references/architecture.md#testing-strategy);
 keep maintainer-only repository resources distinct from installed Skill paths.
+Context-veto CLI regressions live in
+[test_trap_demotion.py](daymade-audio/transcript-fixer/scripts/tests/test_trap_demotion.py).
 
 ### Feishu Recording Lookup
 

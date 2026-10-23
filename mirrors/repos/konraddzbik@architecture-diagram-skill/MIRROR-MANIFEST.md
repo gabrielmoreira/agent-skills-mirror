@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `konraddzbik/architecture-diagram-skill` — 26 default patterns, 0 followed patterns, 11 file(s) materialized.
+Mirror of `konraddzbik/architecture-diagram-skill` — 26 default patterns, 0 followed patterns, 12 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `konraddzbik/architecture-diagram-skill` — 26 default patterns, 0 fo
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 11 |
+| Files         | 12 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -69,7 +69,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 8 | ✓ | [`skills/architecture-diagram/references/component-library.md`](skills/architecture-diagram/references/component-library.md) |
 | 9 | ✓ | [`skills/architecture-diagram/references/flow-design-patterns.md`](skills/architecture-diagram/references/flow-design-patterns.md) |
 | 10 | ✓ | [`skills/architecture-diagram/references/screenshot.js`](skills/architecture-diagram/references/screenshot.js) |
-| 11 | ✓ | [`skills/architecture-diagram/SKILL.md`](skills/architecture-diagram/SKILL.md) |
+| 11 | ✓ | [`skills/architecture-diagram/references/validation.md`](skills/architecture-diagram/references/validation.md) |
+| 12 | ✓ | [`skills/architecture-diagram/SKILL.md`](skills/architecture-diagram/SKILL.md) |
 
 ---
 

@@ -280,9 +280,14 @@ xerj corpus add async-rust \
 ```
 
 Clones are shallow (`--depth 1`) and land in `~/.xerj-code/corpora/<name>/`.
-Every build writes a `corpus.json` beside them — URLs, full commit SHAs and
-licences, a few hundred bytes, no source. That file *is* the shareable corpus
-definition: hand it to someone else and
+A local path is a valid `<git-url>`. Its root `.xerjignore` is copied into the
+clone when that file is untracked or has uncommitted edits — `git clone` would
+drop it, and the index would then see only built-in ignore rules. Running
+`corpus add` again refreshes the copy. A pinned `--from` rebuild does not copy
+it and says so; nested `.xerjignore` files are not carried. Every build writes
+a `corpus.json` beside the clones — URLs, full commit SHAs and licences, a few
+hundred bytes, no source. That file *is* the shareable corpus definition: hand
+it to someone else and
 
 ```sh
 xerj corpus add --from their-corpus.json
@@ -422,7 +427,15 @@ search with a 400 and takes every other index in the wildcard with it. `xerj
 code` reads the mapping first and aims the vector arm only at capable indices.
 Hybrid also runs a BM25 size-1 preflight: if the lexical arm finds nothing, the
 answer is an honest miss (exit 1) — with the lexical embedder, vector
-nearest-neighbours are not evidence of a match.
+nearest-neighbours are not evidence of a match. A hybrid page that does
+return passages can still be neighbours rather than coverage, because RRF
+scores a rank-1 miss the same as a rank-1 hit. That page prints
+`weak match: the corpus may not cover this` and marks each passage `weak`
+when the best passage contains fewer than half of the query's content terms
+(at least three, function words dropped), or when the top RRF score is
+strictly below `1/(k+1)`. A passage under half the page's top score is
+marked `weak` by itself; the stronger passages stay as they were. Exit
+stays 0. Fall back to grep or another corpus.
 
 **`xerj code` never requests `highlight`.** On this engine a highlight block
 changes `_score` and reorders hits (issue #177): identical query, top-1 **6/6**
@@ -434,7 +447,7 @@ highlighter bought nothing and cost ranking.
 Not every agent can run commands. The same pipeline is the eleventh MCP tool,
 `xerj_code_search` (see `xerj mcp`; registration snippets per client live in the
 llms docs, not here). Its text output is byte-identical to `xerj code`'s prose —
-same hits, same `!!` licence warnings, same footer — with the exit triangle
+same hits, same `!!` licence warnings, same weak-match line, same footer — with the exit triangle
 mapped onto MCP's boolean: refusals (30-day staleness, corpus not in the ledger,
 corpus not loaded on this server, transport failure) are `isError: true` with
 the remediation in the text, while **a no-match is `isError: false`** — a miss
@@ -475,10 +488,11 @@ text: prose to a person stays prose. A summary compressed into arrow chains
 costs the reader more than it saves the budget. The grammar:
 
 ```
-@ok f=<file>:<line> score=<12.34>[ why=<licence>]   # one per hit
-@ok f=<file>:<line> rrf=<0.1234>[ why=<licence>]    # native-hybrid scores
-@no q="<query>" why=no-match-in-corpus              # a miss (exit 1)
-@mode <arms-ran note>                               # hybrid/semantic note line
+@ok f=<file>:<line> score=<12.34>[ why=<licence>][ weak]   # one per hit
+@ok f=<file>:<line> rrf=<0.1234>[ why=<licence>][ weak]    # native-hybrid scores
+@no q="<query>" why=no-match-in-corpus                    # a miss (exit 1)
+@weak why=corpus-may-not-cover                            # weak page (exit 0)
+@mode <arms-ran note>                                     # hybrid/semantic note line
 ```
 
 `f` is the provenance locator `path:line` exactly as the prose block prints it;

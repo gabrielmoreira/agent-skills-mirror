@@ -41,6 +41,21 @@ existing preparation and verification lifecycle.
 
 Open `/agents/:agentId` and the configuration/instruction surfaces it exposes.
 
+In `/agents/all`, select roster checkboxes and choose **Edit connection & model**.
+A mixed selection offers one action per harness. Each field is opt-in. The editor
+previews each changed value and excludes agents already at the target value.
+Models must be compatible with every selected connection. Failed writes show
+per-agent errors; Retry touches only the remaining agents. Connection pools and
+externally managed agents are not editable through this shortcut.
+
+Verify connection-only, model-only, both fields, mixed-harness selection, hidden
+selections, no-op counts, incompatible models, partial failure and retry. Reload
+the roster and compare stored settings, including unrelated heartbeat and adapter
+fields. A concurrent configuration edit must return a conflict. Shared runtime
+validation, access checks, revisions and audit logging still apply. Live runs
+retain their existing settings; model changes can reset saved sessions. Connection
+adoption can require an explicit reset of existing sessions.
+
 ### `organization`
 
 Use the roster’s organization view; `/org` redirects to the roster in the streamlined shell.

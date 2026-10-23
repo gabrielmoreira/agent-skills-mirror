@@ -10,7 +10,6 @@ import re
 import sys
 from pathlib import Path
 
-
 CATEGORIES = ("Changed", "Added", "Removed", "Fixed")
 RELEASE_RE = re.compile(r"^## (?P<linked>\[)?(?P<version>\d+\.\d+\.\d+)(?(linked)\]) - (?P<date>\d{4}-\d{2}-\d{2})$")
 NESTED_ITEM_RE = re.compile(r"^\s+(?:[-*+]|\d+[.)])\s")
@@ -62,11 +61,7 @@ def validate(text: str, version: str, date: str, tag: str | None) -> list[str]:
 
     for position, (offset, category) in enumerate(headings):
         group_end = headings[position + 1][0] if position + 1 < len(headings) else len(body)
-        content = [
-            line
-            for line in body[offset + 1 : group_end]
-            if line.strip() and not REFERENCE_RE.fullmatch(line)
-        ]
+        content = [line for line in body[offset + 1 : group_end] if line.strip() and not REFERENCE_RE.fullmatch(line)]
         bullets = [line for line in content if line.startswith("- ")]
         if not bullets:
             errors.append(f"category {category} must contain an unnumbered list")
@@ -82,9 +77,7 @@ def validate(text: str, version: str, date: str, tag: str | None) -> list[str]:
             errors.append(f"category {category} contains non-list content")
 
     references = {
-        match.group("version"): match.group("url")
-        for line in lines
-        if (match := REFERENCE_RE.fullmatch(line))
+        match.group("version"): match.group("url") for line in lines if (match := REFERENCE_RE.fullmatch(line))
     }
     if heading.group("linked"):
         url = references.get(version)

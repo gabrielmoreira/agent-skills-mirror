@@ -153,8 +153,8 @@ See the runnable [host_tools example](../../examples/host_tools.rs), region `hos
 
 - What a turn does once dispatched (the agent loop, transcripts, tool-call
   parsing) belongs to [`vendor/tinyagents`](../../../../vendor/tinyagents/); the definition types and
-  `agent_chat_for` belong to the core (`openhuman_core::agent::harness` and
-  `inference::host_runtime`).
+  `agent_chat_for` belong to the core (`openhuman_core::agent_runs::agent_chat`
+  and `openhuman_core::agent::harness`).
 - Process-scoped state (keyring, bus, services, the registered domain set)
   belongs to the runtime. See [`../runtime/README.md`](../runtime/README.md)
   and the crate README's list of settings that are still runtime-wide.

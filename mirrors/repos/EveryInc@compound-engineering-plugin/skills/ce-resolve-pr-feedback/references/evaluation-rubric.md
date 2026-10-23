@@ -84,7 +84,7 @@ Pass `ce-pov` the composed `decision_context` as an approach set: the reviewer's
 
 The verdict decides the item:
 
-- A positioned verdict whose action is inside the inherited envelope becomes the ordinary verdict it names (`fixed`, `fixed-differently`, `declined`, or `replied`). The reply on the thread carries the reasoning, names the peers that concurred or differed, and says the call was made autonomously, so the author can reverse it after the fact.
+- A positioned verdict whose action is inside the inherited envelope becomes the ordinary verdict it names (`fixed`, `fixed-differently`, `declined`, or `replied`). The reply on the thread carries the reasoning, names by product (for example Codex or Grok, never a model version or ID) the peers that concurred, differed, or did not run, and says the call was made autonomously, so the author can reverse it after the fact. Because that reply travels with the verdict in every mode, it is also how the caller learns which peers ran.
 - A blocked result, a verdict with no lean, a verdict whose action is outside the envelope, or `ce-pov` unavailable in this harness -> `needs-human`. Fold the adjudication into `decision_context` (its findings into `investigation`, its lean into `recommendation`) so the parked item is richer than the one you started with.
 
 ## Reply text for reply-list and human-list items

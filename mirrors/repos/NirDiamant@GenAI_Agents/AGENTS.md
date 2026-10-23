@@ -50,5 +50,5 @@ It is a **teaching repository, not a framework.** There is no package to install
 
 - Newsletter: https://newsletter.diamant-ai.com
 - Community: https://discord.gg/cA6Aa4uyDX
-- Course, Prompt to Production: https://diamant-ai.com/courses
-- Book, RAG Made Simple: https://diamant-ai.com/rag-made-simple
+- Book, AI Agents Made Simple (the code-free decision guide to building agents): https://www.amazon.com/dp/B0HNXRSRH2
+- Book, RAG Made Simple: https://www.amazon.com/dp/B0GWDH8JJL

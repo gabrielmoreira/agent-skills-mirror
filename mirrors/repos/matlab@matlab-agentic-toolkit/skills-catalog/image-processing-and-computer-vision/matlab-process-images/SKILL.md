@@ -1,23 +1,24 @@
 ---
 name: matlab-process-images
 description: >
-  Load this first for any task involving images, pictures, photos, scans, frames,
-  volumes, or visual data — including reading, writing, filtering, enhancing,
-  denoising, sharpening, deblurring, thresholding, segmenting, masking,
-  detecting, finding or counting objects, removing backgrounds, measuring,
-  comparing, registering, stitching, aligning, cropping, resizing, transforming,
-  or analyzing. Use for image I/O (TIFF, PNG, JPEG, RAW, HDR), histograms,
-  edge detection, color processing, morphology, geometric transforms, deep
-  learning for images, quality assessment, and 3-D volume processing. Also
-  triggers when users describe image problems (dark, noisy, blurry, low contrast,
-  uneven lighting, hazy, color cast) or data exploration tasks (folder of images,
-  characterize data, understand format). Handles microscopy (cells, particles)
-  and general scientific imaging. Routes to sibling skills for medical imaging
-  (DICOM, NIfTI), hyperspectral data, and visual inspection.
+  Load this first for any MATLAB task involving images, photos, scans, frames,
+  volumes, or visual data — reading, writing, filtering, enhancing, denoising,
+  sharpening, deblurring, thresholding, segmenting, masking, detecting,
+  counting objects, removing backgrounds, measuring, registering, stitching,
+  aligning, cropping, resizing, or transforming. Covers image I/O (TIFF, PNG,
+  JPEG, RAW, HDR), histograms, edge detection, color, morphology, deep learning
+  for images, quality assessment, and 3-D volumes. Also for image problems
+  (dark, noisy, blurry, low contrast, uneven lighting, hazy, color cast) or
+  data exploration (folder of images). Includes medical imaging I/O (DICOM,
+  NIfTI, NRRD, medicalVolume) and large/blocked images (blockedImage,
+  whole-slide). Skip if the user just wants you to look at an image, with no
+  MATLAB work. Not for Simulink video-block models, C/C++/CUDA code
+  generation or GPU deployment of a network, or point clouds. Hyperspectral
+  and visual inspection have sibling skills.
 license: https://www.mathworks.com/content/dam/mathworks/license/pmrl/license.md
 metadata:
   author: MathWorks
-  version: "1.0"
+  version: "1.1"
 ---
 
 # Image Processing
@@ -40,6 +41,7 @@ Hand off (and co-load) instead of answering alone: see the handoff table under `
 - C/C++ code generation, MEX, GPU acceleration and deployment — use MATLAB Coder / GPU Coder directly
 - Point clouds, 3-D reconstruction, and video stabilization — use Computer Vision Toolbox directly
 - General MATLAB questions unrelated to images
+- Looking at an image yourself (e.g., "look at this screenshot") when no MATLAB work is requested — use your own vision instead
 
 ## Core Conventions
 
@@ -69,9 +71,17 @@ Most IPT functions accept integer types directly — do not convert to floating-
 - With alpha: read using `[img, ~, alpha] = imread(...)` (alpha is the third output)
 - Convert: `rgb2gray`, `im2gray` (preferred, handles more input types)
 
-### Display Functions
+### Display Functions — use `imageshow`, not `imshow`
 
-Always use `imageshow` instead of `imshow` (R2024b+). `imageshow` handles sub-bit-depth containers (e.g., 12-bit in uint16) via `DisplayRangeMode`, supports `OverlayData` for label/mask overlays, and works with `viewer2d`. Do not fall back to `imshow` — it lacks these capabilities.
+**Always use `imageshow` instead of `imshow`** in all generated code — scripts, apps, examples, and quick previews. The signatures are compatible for common cases: replace `imshow(...)` with `imageshow(...)`. `imageshow` (R2024b+) handles sub-bit-depth containers (e.g., 12-bit in uint16) via `DisplayRangeMode`, supports `OverlayData` for label/mask overlays, and works with `viewer2d`. `imshow` lacks all of these capabilities and should not appear in new code.
+
+**Title convention:** `imageshow` creates a `viewer2d`, not an axes — `gca` does not return it. To add a title, get the viewer from the Image object's parent:
+```matlab
+obj = imageshow(im);
+viewer = obj.Parent;
+title(viewer, "Title Text");
+```
+Do **not** use `title("text")` or `title(gca, "text")` after `imageshow` — these silently fail or create a stray axes title.
 
 ### Code Execution
 
@@ -107,13 +117,11 @@ still owns *conventions*.
 
 | If the task involves... | Also load |
 |---|---|
-| DICOM, NIfTI, NRRD, DICOM-RT, patient metadata, anonymizing, `medicalVolume`, reading/writing medical formats | `matlab-read-medical-data` |
 | Segmenting anatomy — tumor, lesion, organ, vessel — in CT, MRI, PET, ultrasound; MedSAM; radiomics | No skill covers this — Medical Imaging Toolbox (`segmentMedicalImage`, `groundTruthMedical`); look up the doc page |
 | Displaying or viewing a 2-D image: `imshow`, `imageshow`, `viewer2d`, montage, mask overlay, annotation, colorbar, colormap, figure export | `matlab-display-image` |
 | Displaying a 3-D volume: `volshow`, `viewer3d`, isosurface rendering, slice viewer, orthogonal views | `matlab-display-volume` |
 | Hyperspectral or multispectral cubes, spectral indices, unmixing, ENVI, band selection | `matlab-analyze-spectral-images` |
 | Calling a PyTorch or ONNX vision model from MATLAB | `matlab-integrate-pytorch-vision` |
-| Gigapixel, whole-slide, or out-of-memory images; `blockedImage`, tiled workflows, image pyramids | `matlab-process-large-images` |
 | OCR, text recognition, reading text out of an image | `matlab-recognize-text` (requires Computer Vision Toolbox) |
 | Factory-floor visual inspection: anomaly detection, defect/scratch/dent detection, gauging, pass/fail counting | `matlab-use-visual-inspection` (requires Visual Inspection Toolbox, R2026b+) |
 | Barcode or QR reading, camera calibration | No skill covers this — Computer Vision Toolbox (`readBarcode`, `estimateCameraParameters`); look up the doc page |
@@ -124,7 +132,8 @@ still owns *conventions*.
 | If the task or the user's words involve... | Illustrative functions | Load |
 |---|---|---|
 | inspect, understand, characterize, explore data, look at my images, what kind of image, what am I working with, what's in this folder, describe the data, summarize the dataset, what format, bit depth, class and range, indexed image, alpha channel, metadata, file info, dataset characterization, before I start processing | `imfinfo`, `imhist`, `countEachLabel` | `references/image-understanding.md` |
-| read, write, load, save, import, export, open an image, convert format, batch, folder of images, video, footage, frames, TIFF, PNG, JPEG, RAW, HDR, test pattern | `imread`, `imwrite`, `imageDatastore`, `VideoReader`, `hdrread` | `references/image-io.md` |
+| read, write, load, save, import, export, open an image, convert format, batch, folder of images, TIFF, PNG, JPEG, RAW, HDR, test pattern | `imread`, `imwrite`, `imageDatastore`, `hdrread` | `references/image-io.md` |
+| video, footage, frames, read video, write video, VideoReader, VideoWriter, frame rate, video codec, MP4, AVI | `VideoReader`, `VideoWriter`, `readFrame`, `hasFrame`, `writeVideo` | `references/video-io.md` |
 | smooth, blur an image, sharpen, denoise, noise, grainy, filter, kernel, padding, edge-preserving, bilateral, non-local means, frequency filter | `imgaussfilt`, `medfilt2`, `imsharpen`, `imbilatfilt`, `imnlmfilt`, `imdiffusefilt`, `imfilter`, `ordfilt2`, `locallapfilt`, `wiener2` | `references/filtering.md` |
 | contrast, brighten, darken, too dark, washed out, enhance, improve, histogram, equalize, CLAHE, normalize, rescale, blend, arithmetic, type convert, flat-field, illumination correction, vignetting, uneven lighting | `imadjust`, `stretchlim`, `adapthisteq`, `histeq`, `rescale`, `mat2gray`, `im2single`, `imadd`, `imlincomb`, `imblend`, `imflatfield` | `references/preprocessing.md` |
 | erode, dilate, open, close, structuring element, 2-D morphology, fill holes, remove small objects, skeletonize, thin, tidy up a binary result | `strel`, `imerode`, `imdilate`, `imopen`, `imclose`, `imfill`, `bwareaopen`, `bwskel`, `imtophat`, `imreconstruct` | `references/morphological-ops.md` |
@@ -140,6 +149,8 @@ still owns *conventions*.
 | 3-D array, volume, volumetric, voxel, slice stack, z-stack — filtering, 3-D morphology, 3-D transforms, or measurement applied to a volume | `imgaussfilt3`, `medfilt3`, `imresize3`, `regionprops3`, `bwvolumefilt` **(R2026b)**, `bwpropfilt3` **(R2026b)** | `references/3d-volume-processing.md` |
 | deep learning, neural network, train, U-Net, semantic segmentation networks, classify images, pretrained model, transfer learning, fine-tune, inference, augment, training dataset **(requires DLT, often CVT)** | `unet`, `deeplabv3plus`, `trainnet`, `semanticseg`, `imageDataAugmenter`, `augmentedImageDatastore` | `references/deep-learning-imaging.md` |
 | build your own image app or GUI: sliders, live preview, parameter tuning, ROI widgets | `uifigure`, `uigridlayout`, `uislider`, `drawrectangle` | `references/app-building.md` |
+| DICOM, NIfTI, NRRD, DICOM-RT, patient metadata, anonymizing, `medicalVolume`, `medicalImage`, reading/writing medical formats, `extractSlice`, volume orientation, medical spatial referencing | `medicalVolume`, `medicalImage`, `dicomreadVolume`, `dicomCollection`, `extractSlice`, `dicomContours`, `dicomanon` | `references/medical-data-io.md` |
+| gigapixel, whole-slide, out-of-memory images, `blockedImage`, tiled workflows, image pyramids, .svs, .ndpi, .czi, TIFF > 10,000 px, parallel image processing, custom adapters | `blockedImage`, `apply`, `getBlock`, `getRegion`, `selectBlockLocations`, `blockedImageDatastore` | `references/large-image-processing.md` |
 
 ## Toolbox Detection
 

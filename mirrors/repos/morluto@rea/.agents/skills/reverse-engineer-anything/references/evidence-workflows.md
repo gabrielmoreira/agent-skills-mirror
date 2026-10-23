@@ -93,10 +93,14 @@ Use `view: {kind: "environment-state"}` with the manifest's `template_rules` to
 extract the data those reads observed instead: entity types and identity
 fields, entities with recorded values, documents, and per-tool render plans
 checked against the recordings. The state comes only from reads before the
-first related write; types, identity and list membership are inferences.
+first related write; types, identity and list membership are inferences. The
+view also gives each state-changing tool a write plan, served only when a later
+recorded read confirms its effect and none contradicts it.
 `rea environment-serve manifest.json --evidence capture.json` derives that
-state at startup, answers read tools from it and serves `data/reset`,
-`data/add` and `data/get` on `/agentenv`; write tools are not served. It
-replays the capture instead with `--replay-only` or when the state is
-unavailable (not derivable, or a catalog over the discovery budget), and its
-stopped document's `state` says which applied.
+state at startup, answers read tools from it, serves the write tools whose plan
+is served, each applying its effect to that state, and serves `data/reset`,
+`data/add` and `data/get` on `/agentenv`; other write tools are not served, and
+each plan states why in its `reason`. It replays the capture instead with
+`--replay-only` or when the state is unavailable (not derivable, or a catalog
+over the discovery budget), and its stopped document's `state` says which
+applied.

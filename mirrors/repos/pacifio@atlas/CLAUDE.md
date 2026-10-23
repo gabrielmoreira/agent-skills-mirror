@@ -131,8 +131,8 @@ restates `opt-level = 1`.
 LICENSE/NOTICE travel with the code (`vendor-licensing.test.ts`, needs `fetch-depth: 0`),
 and the stripped telemetry paths must stay stripped (`engine-no-phone-home.test.ts`).
 Per ADR-0003 the port is first-party code — editing it, manifests included, is ordinary
-work, not a fork edit. `clippy.toml` at the repo root is upstream's, restored; without
-it the `atlas-native-agent` Clippy job fails on ~500 vendored sites.
+work, not a fork edit. `clippy.toml` at the repo root is the engine's own lint config, kept at the root; without
+it the `atlas-native-agent` Clippy job fails on ~500 engine sites.
 
 **Node singletons and the Vite `dedupe` list are load-bearing.** Two copies of
 `@codemirror/*` or `pdfjs-dist` break editor theming and PDF rendering _in production

@@ -10,7 +10,7 @@ description: 'Audit wallet security by analyzing token approvals, permissions, a
 
   '
 allowed-tools: Read, Write, Edit, Grep, Glob, Bash(crypto:wallet-*)
-version: 1.17.0
+version: 1.18.0
 author: Jeremy Longshore <jeremy@intentsolutions.io>
 license: MIT
 tags:
@@ -171,7 +171,7 @@ python wallet_auditor.py chains
 
 ## Error Handling
 
-See `${CLAUDE_SKILL_DIR}/references/errors.md` for comprehensive error handling:
+See [`references/errors.md`](references/errors.md) for comprehensive error handling:
 
 | Error | Cause | Solution |
 |-------|-------|----------|
@@ -182,7 +182,7 @@ See `${CLAUDE_SKILL_DIR}/references/errors.md` for comprehensive error handling:
 
 ## Examples
 
-See `${CLAUDE_SKILL_DIR}/references/examples.md` for detailed examples.
+See [`references/examples.md`](references/examples.md) for detailed examples.
 
 ### Quick Security Check
 

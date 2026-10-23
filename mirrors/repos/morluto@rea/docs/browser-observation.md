@@ -22,6 +22,13 @@ Inspect native SAZ or HAR 1.2 offline with REA, or connect Everywhere's separate
 
 - `compare_web_captures` / `rea compare-web-captures` compares passive captures or exact-step-aligned browser scenarios. Scenario results commit reproducible literal normalization and expose alignment failures plus artifact-level action, screenshot, DOM, accessibility, URL, history, storage, and event differences. Missing or truncated evidence is never treated as equivalence.
 
+For a compact route query, select `detail: "summary"` and a
+`view: {kind: "javascript-routes", collection: "routes", limit: 20}`. The
+shared [route inventory](javascript-route-inventory.md) preserves source IDs,
+precise locations, partial coverage, and the complete parent Evidence for
+subsequent filtered pages. Static candidates never establish complete application
+coverage or reachability.
+
 For `analyze_web_bundle`, each `webmcp_declarations` entry's
 `schema_property_names` is a source-derived projection of statically known own
 property keys, not schema validation. `schema_property_names_coverage` reports
@@ -333,7 +340,7 @@ REA retains local observation data and removes only URL userinfo credentials, ex
 - DOM snapshots retain node types, node names, value lengths, and attribute names, but not text or attribute values.
 - Accessibility structure and roles are retained by default, while names and descriptions require `include_accessibility_text: true`.
 - Network observations retain method, status, MIME type, size, type, initiator stack location, and complete URLs with userinfo credentials removed. Redirects reported by CDP are attached as ordered `redirects` on the one request ID, with the prior request URL, CDP response URL, method/type, response status/MIME/encoded length, request timestamp, and the next `requestWillBeSent` event timestamp. CDP delivers `redirectResponse` with that next request event, so the latter is an event boundary rather than an exact response timestamp. Redirect response headers and bodies are discarded; hops outside the selected origins are discarded with the request chain. Headers are discarded after an allowlisted projection of length/encoding, structured CSP/Link/policy fields, and untrusted agent hints. Cookies and authorization headers are never retained.
-- Request/response bodies are not requested or parsed by default. When selected, only allowed-origin JSON media types are read, converted immediately to complete value-free typed paths, types and observation counts, and discarded. Each path segment is either `{ "kind": "property", "name": "raw property name" }` or `{ "kind": "array-element" }`; array-element types include primitives and nested arrays. Literal `*` properties remain distinct from array elements. `Network.getResponseBody` is never sent unless JSON body shape capture is selected. Comparison uses body shapes only when both captures selected them, and compares request/response shapes only where both observations provide those facts. Unavailable or truncated selected coverage makes equivalence unknown; observed differences still report changed.
+- Request/response bodies are not requested or parsed by default. When selected, only allowed-origin JSON media types are read, converted immediately to complete value-free typed paths, types and observation counts, and discarded. Each path segment is either `{ "kind": "property", "name": "raw property name" }` or `{ "kind": "array-element" }`; array-element types include primitives and nested arrays. Literal `*` properties remain distinct from array elements. `Network.getResponseBody` is never sent unless JSON body shape capture is selected. A JSON-typed request body that CDP reports through `hasPostData` but omits from `postData`, or that cannot be parsed as JSON, makes `json_body_shapes` unavailable. That request's `body_shapes.status` is `partial`, not `included`, when only its response shape was captured. Comparison uses body shapes only when both captures selected them, and compares request/response shapes only where both observations provide those facts. Unavailable or truncated selected coverage makes equivalence unknown; observed differences still report changed.
   For normalized passive inputs with complete request inventories on both sides,
   request additions and removals remain observable even when selected body shapes,
   response metadata, or WebSocket coverage are unavailable. HTTP request and
@@ -383,6 +390,14 @@ coverage. It reports excluded items and any values omitted or truncated by
 validation and resource bounds. Omitted script metadata makes its affected
 section explicitly truncated.
 Disallowed-origin entries are filtered before retention.
+
+Script metadata and selected source reads use one fixed admitted-script snapshot.
+New in-scope script IDs still retained when the final CDP read completes are
+counted in `scripts.total` and `completeness.dropped_events.scripts`, with
+`scripts` marked truncated; they do not extend the source-read pass. Repeated
+late events for the same ID count once. The original snapshot is not replaced
+or reduced by later updates to an existing ID. These omissions do not imply
+that a source byte or time budget was exhausted.
 
 Selected script-source collection shares a 32 MiB aggregate UTF-8 retention
 budget and the `command_timeout_ms` deadline (default 20000 ms) across the

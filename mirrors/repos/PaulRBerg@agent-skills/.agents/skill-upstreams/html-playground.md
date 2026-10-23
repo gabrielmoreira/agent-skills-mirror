@@ -25,8 +25,8 @@ the same blob ID as at the base. That run found no incoming changes and did not 
 Map upstream `SKILL.md` and `templates/*.md` to the same relative paths under `skills/html-playground/`. The initial
 local name was `playground`. Local-only files include `agents/openai.yaml` and `scripts/prepare-debrief.sh`.
 
-Preserve the light-theme default and desktop verification contract. The light-theme edits are in `SKILL.md` and
-`templates/diff-review.md`. The
+Preserve the system-matched single-theme default and desktop verification contract. The theme edits are in `SKILL.md`,
+`templates/diff-review.md`, and `templates/code-map.md`. The
 [debrief integration](https://github.com/PaulRBerg/agent-skills/commit/5b12aadd3aa765aa6e8981bf168526410ab3249d) added
 task-evidence requirements, output preparation, slug collision handling, and debrief completion rules. Preserve these
 behaviors and the single-file, dependency-free output contract.

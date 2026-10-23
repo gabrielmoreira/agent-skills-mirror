@@ -202,14 +202,28 @@ Function dossiers retain this same string evidence. Native call edges retain
 Hopper's partial `CallReference` classification and exact endpoints; detailed
 reference flags remain unavailable rather than being invented.
 Regex searches use ECMAScript Unicode syntax in a cancellable worker with a
-five-second matching deadline and a worker old-generation heap. Deadline or
-cancellation stops matching while leaving the Hopper API available. This
-release has no runtime override for that deadline. The worker requests 128
-MiB. A positive Node.js `--max-old-space-size` on the process that starts
+matching deadline and a worker old-generation heap. Deadline or cancellation
+stops matching while leaving the Hopper API available. The deadline is
+`REA_REGEX_MATCHING_DEADLINE_MS`, a positive decimal integer from 1 to
+2147483647 ms. Unset uses 5000 ms. A larger value is refused because Node
+schedules a delay past that signed 32-bit bound as 1 ms. Invalid values are
+configuration errors and do not fall back to the default. The setting is read
+from the environment that starts REA, so a change needs a restart. A deadline
+failure names the effective milliseconds, whether they came from the default
+or the setting, the default, and the maximum. The worker old-generation heap
+does not raise it. Kuna regex search uses the same deadline. The worker
+heap request is `REA_REGEX_WORKER_HEAP_REQUEST_MIB`, a decimal integer from
+7 to 16384 MiB. Unset uses 128 MiB. A request below 7 MiB aborts the worker
+during startup, and a larger value is refused. Invalid values are
+configuration errors and do not fall back to 128. The setting is read from
+the environment that starts REA, so a change needs a restart. A heap failure
+names the effective request, whether it came from the default or the setting,
+the default, the floor, and the maximum. A positive Node.js
+`--max-old-space-size` on the process that starts
 REA, including `NODE_OPTIONS`, overrides that request and sets the effective
 heap. `--max-old-space-size-percentage` takes precedence over that flag in
 either order. REA does not turn the percentage into a MiB, so the effective
-heap stays unestablished instead of the 128 MiB request or the absolute flag.
+heap stays unestablished instead of the worker heap request or the absolute flag.
 The reported `NODE_OPTIONS` value is the process initial environment when that
 block can be read. A later edit to the environment is not the value Node
 applied, and an unreadable initial value leaves the effective heap
@@ -221,11 +235,11 @@ buffer without a program entry leaves the effective heap unestablished.
 `--env-file` or `--env-file-if-exists` can supply `NODE_OPTIONS`
 when the initial environment has none. That file is not part of the initial
 environment block, so the effective heap stays unestablished instead of the
-128 MiB request. An initial `NODE_OPTIONS` is still used, because Node does
+worker heap request. An initial `NODE_OPTIONS` is still used, because Node does
 not let the file replace it. A positive `--max-heap-size`, including the
 underscore form and launch `NODE_OPTIONS` on Node versions that allow it,
 sets the total heap rather than the old generation and can be lower than the
-128 MiB request. The effective old generation stays unestablished while that
+worker heap request. The effective old generation stays unestablished while that
 value is in effect. A zero or empty value clears it.
 `--experimental-config-file` or `--experimental-default-config-file` can set
 `nodeOptions`, including a heap percentage, from a file that is not read
@@ -320,6 +334,15 @@ proven count and preserves unknowns for other forms. Real ELF and host ARM64
 Mach-O fixtures check each case against source-owned return values.
 
 ## Static inspection
+
+`inspect_artifact` and `extract_artifact` retain universal Mach-O slices under
+their exact `lipo` names, including 32-bit ARM implementations such as `armv7`,
+`armv7s`, and `armv7k`. These names are reconciled with the FAT CPU subtype;
+the structural reader's `arm` family label alone does not identify a slice.
+Available CPU type, subtype/capability bits, byte range, and alignment remain
+checked against the source bytes. Inventory records source ranges and hashes, and
+extraction copies those ranges without running the target. This does not
+expand any analysis provider's supported architectures.
 
 `inspect_plist.format` describes the selected source, not plutil's conversion
 format. Sources explicitly identified as XML, binary or JSON retain those
@@ -462,11 +485,33 @@ complete observation.
   `rea inspect-native-dispatch-metadata <app-or-binary>` prefers a validated macOS Mach-O byte reader. It decodes
   64-bit little-endian Objective-C class/metaclass records, superclass pointers,
   absolute/relative method entries, ivar offsets/sizes/alignment and protocol
-  declarations. It also decodes simple Swift conformances, static synchronous
-  witness slots, signed-relative pointers and non-generic, non-resilient class
-  vtable descriptors. Records include exact virtual addresses/file offsets and
+  declarations. It also decodes Swift nominal type declarations, simple Swift
+  conformances, static synchronous witness slots, signed-relative pointers and
+  non-generic, non-resilient class vtable descriptors. Records include exact virtual addresses/file offsets and
   artifact evidence. Vtable indexes are metadata word offsets; witness indexes
   start after the conformance header. Names unavailable in metadata remain null.
+  The byte reader holds the whole selected file in memory, so it admits files up
+  to 64 MiB / 67108864 bytes by default. Select a larger budget with
+  `max_input_bytes` (CLI `--max-input-bytes`), at most 1 GiB / 1073741824
+  bytes. The whole file counts, including every slice of a universal Mach-O.
+  Results record `input_admission` with the effective budget, its source
+  (`default` or `caller`) and the bytes retained. A refusal names the observed
+  file size, the effective budget and its source, and either the budget to
+  select or, above 1 GiB, a deep analysis provider.
+  `swift_decls` lists each `__swift5_types` nominal type descriptor, which
+  survives stripping: `kind` (`class`, `struct`, `enum`, or `actor` from the
+  class actor flag), the descriptor's own `name`, `module`, `qualified_name`
+  (`Outer.Inner`), `generic`, the metadata `accessor_address`, the descriptor
+  `location`, and evidence citing its `__swift5_types` record.
+  Private and local types set `anonymous_context` because their anonymous
+  context is omitted from `qualified_name`. When a parent context cannot be
+  resolved, such as an extension of a type named only by a mangled name, a
+  missing module, or a cyclic chain, `qualified_name` is null and the entry is
+  partial with a reason. Access level, superclass, conformances, and fields are
+  not reported by this facet. The `swift_declarations` coverage counters count
+  examined type records and fully decoded declarations. Class vtable recovery
+  reads the same descriptors, so an unreadable type record also keeps
+  `swift_class_vtable_descriptors` partial.
   The `swift_class_vtable_descriptors` coverage counters count examined vtable
   slots and successfully decoded slots, rather than type-section entries.
   The `objc_class_method_ivar_metadata` counters count admitted class and

@@ -114,14 +114,13 @@ Known keyword-trap classes and how to handle each:
   > "{TOPIC} is a huge category - are you asking about {specific-facet-A}, {specific-facet-B}, or {specific-facet-C}? Each is a different community. Pick one or tell me the angle."
 
 **Class 5: Non-English / non-Latin-script topic (Hebrew, Arabic, Chinese, Japanese, etc.)**
-- Pattern: topic contains non-Latin characters (Hebrew [\u0590-\u05FF], Arabic [\u0600-\u06FF], CJK [\u4E00-\u9FFF], etc.).
-- Why it fails without intervention: Reddit, HackerNews, GitHub, and Polymarket are English-dominant platforms. A Hebrew brand like "קפה עלית" scores zero entity-matches across all four sources and returns only English-language noise as fallback padding.
-- Action: **Mandatory pre-flight steps for non-English topics:**
-  1. **Force `--web-backend brave`** in the engine command. Brave indexes non-English web (Ynet/Walla/Mako for Hebrew; Haber7/Hurriyet for Turkish; etc.) and is the only available source with real-language coverage.
-  2. **Skip `--subreddits` targeting unless the topic has a known English-speaking community.** Generic subreddits (r/food, r/Israel) return English noise; omit them or scope tightly to known bilingual communities.
-  3. **Note in the Resolved block:** "Non-English topic detected ([language]). Routing to `--web-backend brave`; Reddit/HN/GitHub will likely return zero on-topic results."
-  4. **X/Twitter and YouTube are the highest-value missing sources for non-English topics.** Surface this clearly in the output so the user knows what would unlock deeper coverage.
-- Do NOT skip this class check for mixed-script queries (e.g. "קפה עלית Elite Coffee") - if any non-Latin characters are present, Class 5 applies.
+- Pattern: Any non-Latin character, including mixed-script queries.
+- Risk: English-dominant Reddit, Hacker News, GitHub, and Polymarket may miss entity matches.
+- Required steps:
+  1. **Leave `--web-backend` unset unless the user requested a backend.** Configured API priority: Brave, Exa, Serper, Parallel. Without a search API key, use the host's native web search when available; otherwise retain the engine's keyless floor. Never force `--web-backend brave` for non-Latin text; explicit Brave requires a resolved `BRAVE_API_KEY`.
+  2. Skip `--subreddits` unless a known English-speaking or bilingual community covers the topic. Avoid generic communities.
+  3. In Resolved, state the language, web search in that language, and possible English-source coverage gaps. Name a backend only if the engine or host reports it available.
+  4. Flag missing X/Twitter and YouTube as the highest-value sources for deeper coverage.
 
 **Pre-Flight decision flow (do this BEFORE any WebSearch):**
 1. Read the topic. Match against Classes 1-5 above.
@@ -158,6 +157,8 @@ Before running the engine, determine every applicable targeting flag and resolve
 | Flag | Resolved in | Applies when |
 |------|-------------|--------------|
 | `--x-handle={handle}` | Step 0.5 (Section A below) | X is in `ACTIVE_SOURCES_LIST` and the topic is a person, brand, product, or creator with an X presence |
+| `--official-site={domain}` | Step 0.5 (Section A below) | Company / product / service with a website; the engine fills unset `--x-handle` / `--github-user` from its homepage links |
+| `--no-x-handle="{reason}"` | Step 0.5 (Section A below) | X is active, the topic is entity-shaped, and no first-party X account was found |
 | `--x-related={h1,h2,...}` | Step 0.5 (Section A below) | X is in `ACTIVE_SOURCES_LIST` and the topic has associated entities (founders, commentators, spouse, collaborators, media handles) |
 | `--github-user={user}` | Step 0.5b | Topic is a person who ships code (developer, engineer, CEO-who-codes, researcher) |
 | `--github-repo={owner/repo}` | Step 0.5c | Topic is a product / project / open-source tool |
@@ -169,7 +170,7 @@ Before running the engine, determine every applicable targeting flag and resolve
 | `--devto-tags={t1,t2}` | Step 0.55 | Tech topics: 1-3 lowercase tags (`claudecode,ai`); enables dev.to |
 | `--tiktok-creators={c1,c2,...}` | Step 0.55 | Creator / influencer / brand topics |
 | `--ig-creators={c1,c2,...}` | Step 0.55 | Creator / brand topics |
-| `--web-backend brave` | Step 0.45 Class 5 | **MANDATORY** for non-Latin-script topics (Hebrew, Arabic, CJK, etc.) — Brave is the only source that indexes non-English web |
+| `--web-backend {backend}` | Explicit user request | Otherwise use automatic selection, including non-Latin topics. API backends require their resolved credential. |
 | `--web-backend parallel-mcp` | Explicit user request only | Use only when the user asks to use Parallel Search MCP. This opts the run into sending its search objective and queries to `https://search.parallel.ai/mcp`; never select it automatically. Anonymous use sends no authorization header; an existing `PARALLEL_API_KEY` is sent as Bearer auth. |
 | `--auto-resolve` | Fallback | WebSearch is available but Step 0.55 could not resolve everything cleanly — use as belt-and-suspenders |
 
@@ -181,63 +182,47 @@ Before running the engine, determine every applicable targeting flag and resolve
 
 If `ACTIVE_SOURCES_LIST` contains `x` and TOPIC looks like it could have its own X/Twitter account - **people, creators, brands, products, tools, companies, communities** (e.g., "Dor Brothers", "Jason Calacanis", "Nano Banana Pro", "Seedance", "Midjourney"), do WebSearches to find handles in three categories. If X is not active, skip this section without prompting or trying to unlock it.
 
+**Restrict X searches with the tool's domain filter, not `site:x.com` (often ignored).** Use the domain parameter (Claude Code WebSearch: `allowed_domains: ["x.com", "twitter.com"]`); without one, keep only x.com / twitter.com result URLs. No x.com URLs back means the search failed: rephrase and retry.
+
+**The engine checks this step:** a hosted run whose plan searches `x` for an entity-shaped topic exits 2 without `--x-handle` or `--no-x-handle="{reason}"`. Use the latter only after both lookups below come up empty.
+
 **1. Primary handle** (the entity itself):
+- **Company, product, or service:** pass `--official-site={domain}` (e.g. `typesafe.ai`); the engine reads the `x.com/{handle}` and `github.com/{org}` links on the homepage, keyless. A homepage link beats a search snippet.
+- **Otherwise, or when the site links no X account:**
 ```
-WebSearch("{TOPIC} X twitter handle site:x.com")
+WebSearch("{TOPIC} on X", allowed_domains: ["x.com", "twitter.com"])
 ```
 
 **2. Company/organization handle OR founder/creator handle** -- This mapping is bidirectional:
 - If the topic is a **PERSON**, resolve their company's X handle. A CEO's story is inseparable from their company's story.
 - If the topic is a **PRODUCT or COMPANY**, resolve the founder/creator's personal X handle. The creator's personal account often has the most candid, high-signal content.
 ```
-WebSearch("{TOPIC} company CEO of site:x.com")
+WebSearch("{TOPIC} company CEO", allowed_domains: ["x.com", "twitter.com"])
 ```
 OR for products:
 ```
-WebSearch("{TOPIC} creator founder X twitter site:x.com")
+WebSearch("{FOUNDER_NAME} {TOPIC} founder", allowed_domains: ["x.com", "twitter.com"])
 ```
+Get the founder's name from news first. Handles often omit the name (TypeSafe's Diogo Almeida is @CompleteSkeptic), so take it from evidence: an `x.com/{handle}/status/...` result titled "{Name} on X", or a "{Name} (@handle)" mention.
 Examples: Sam Altman -> @OpenAI, Dario Amodei -> @AnthropicAI, OpenClaw -> @steipete (Peter Steinberger), Paperclip -> @dotta, Claude Code -> @alexalbert__.
 
 **3. 1-2 related handles** -- People/entities closely associated with the topic (spouse, collaborator, band member), PLUS 1-2 prominent commentator/media handles that regularly cover this topic:
 ```
-WebSearch("{RELATED_PERSON_OR_ENTITY} X twitter handle site:x.com")
+WebSearch("{RELATED_PERSON_OR_ENTITY} on X", allowed_domains: ["x.com", "twitter.com"])
 ```
-For a music artist, find music commentary accounts (e.g., @PopBase, @HotFreestyle, @DailyRapFacts).
-For a tech CEO, find tech media accounts (e.g., @TechCrunch, @TheInformation).
-For a product, find reviewer accounts in that category.
+Commentators: music accounts (@PopBase) for an artist, tech media (@TechCrunch) for a CEO, category reviewers for a product.
 
-From the results, extract their X/Twitter handles. Look for:
-- **Verified profile URLs** like `x.com/{handle}` or `twitter.com/{handle}`
-- Mentions like "@handle" in bios, articles, or social profiles
-- "Follow @handle on X" patterns
+Take handles from `x.com/{handle}` profile URLs, "{Name} (@handle)" mentions, and "Follow @handle" lines. Skip fan, parody, and news accounts: prefer a verified account, one the official site links, and consistent naming (@thedorbrothers, not @DorBrosFan).
 
-**Verify accounts are real, not parody/fan accounts.** Check for:
-- Verified/blue checkmark in the search results
-- Official website linking to the X account
-- Consistent naming (e.g., @thedorbrothers for "The Dor Brothers", not @DorBrosFan)
-- If results only show fan/parody/news accounts (not the entity's own account), skip - the entity may not have an X presence
+Pass handles without @: `--x-handle={handle}` and `--x-related={h1},{h2},{company},{commentators}`. Examples: Kanye West is `--x-handle=kanyewest --x-related=travisscott,PopBase,HotFreestyle`; Sam Altman is `--x-handle=sama --x-related=OpenAI,TechCrunch`. Related handles get weight 0.3 so they do not crowd out the primary entity.
 
-Pass handles to the CLI:
-- Primary: `--x-handle={handle}` (without @)
-- Related: `--x-related={handle1},{handle2},{company_handle},{commentator_handles}` (comma-separated, without @)
-
-Example for "Kanye West":
-- Primary: `--x-handle=kanyewest`
-- Related: `--x-related=travisscott,PopBase,HotFreestyle`
-
-Example for "Sam Altman":
-- Primary: `--x-handle=sama`
-- Related: `--x-related=OpenAI,TechCrunch`
-
-Related handles are searched with lower weight (0.3) so they appear in results but don't dominate over the primary entity's content.
-
-**Note about @grok:** Grok is Elon's AI on X (xAI). It often appears in search results with thoughtful, accurate analysis. When citing @grok in your synthesis, frame it as "per Grok's AI analysis of [article/topic]" rather than treating it as an independent human commentator.
+**Note about @grok:** @grok is xAI's AI on X. Cite it as "per Grok's AI analysis of [topic]", never as an independent human commentator.
 
 **Skip this step if:**
 - TOPIC is clearly a generic concept, not an entity (e.g., "best rap songs 2026", "how to use Docker", "AI ethics debate")
 - TOPIC already contains @ (user provided the handle directly)
 - Using `--quick` depth
-- WebSearch shows no official X account exists for this entity
+- Neither the official site nor an X-restricted search found a first-party account (pass `--no-x-handle="{reason}"`)
 
 Store: `RESOLVED_HANDLE = {handle or empty}`, `RESOLVED_RELATED = {comma-separated handles or empty}`
 
@@ -245,24 +230,11 @@ Store: `RESOLVED_HANDLE = {handle or empty}`, `RESOLVED_RELATED = {comma-separat
 
 **MANDATORY when the topic is a person (developer, creator, CEO, founder, engineer, researcher) and WebSearch is available.** Resolve GitHub independently of the X handle. Without `--github-user={handle}`, GitHub search becomes a keyword match across all of GitHub instead of person-mode scoped to `user:{handle}`. The result is typically 5-10 thin unrelated items instead of the person's actual commits, PRs, releases, and top-starred repos. Treat this as a peer step to Step 0.5 (X handle resolution), not an afterthought.
 
-Do the WebSearch:
-
 ```
-WebSearch("{TOPIC} github profile site:github.com")
+WebSearch("{TOPIC} github profile", allowed_domains: ["github.com"])
 ```
 
-From the results, extract their GitHub username from URLs like `github.com/{username}`.
-
-**Verify the account is correct:** Check that the profile description or pinned repos match the person you're researching. Common names may return multiple profiles.
-
-Pass to the CLI: `--github-user={username}` (without @)
-
-Worked examples:
-- For "Peter Steinberger", a WebSearch for `Peter Steinberger github profile site:github.com` returns @steipete. Pass `--github-user=steipete`.
-- For "Matt Van Horn": `--github-user=mvanhorn`
-- For "Garry Tan": `--github-user=garrytan`
-
-**Person-mode GitHub tells a different story than keyword search.** Instead of "who mentioned this person in an issue body," it answers: "What are they shipping? Where are they getting merged? What do their own projects look like?" The engine fetches PR velocity, top repos with star counts, release notes, and README summaries.
+Take the username from a `github.com/{username}` URL whose bio or pinned repos match the person (common names return several profiles), and pass `--github-user={username}` without @. Examples: Peter Steinberger is `steipete`, Matt Van Horn is `mvanhorn`, Garry Tan is `garrytan`. Person mode fetches what they ship: PR velocity, top repos, releases, and READMEs.
 
 **Skip this step if:**
 - TOPIC is clearly NOT a person (products, concepts, events)
@@ -279,19 +251,10 @@ Store: `RESOLVED_GITHUB_USER = {username or empty}`
 If TOPIC looks like a product, tool, or open source project (not a person), resolve its GitHub repo for project-mode search:
 
 ```
-WebSearch("{TOPIC} github repo site:github.com")
+WebSearch("{TOPIC} github repo", allowed_domains: ["github.com"])
 ```
 
-From the results, extract `owner/repo` from URLs like `github.com/{owner}/{repo}`.
-
-Pass to the CLI: `--github-repo={owner/repo}`
-
-For comparisons ("X vs Y"), resolve repos for both topics: `--github-repo={repo_a},{repo_b}`
-
-Example for "OpenClaw": `--github-repo=openclaw/openclaw`
-Example for "OpenClaw vs Paperclip": `--github-repo=openclaw/openclaw,paperclipai/paperclip`
-
-Project-mode GitHub fetches live star counts, README snippets, latest releases, and top issues directly from the API. This is always more accurate than blog posts or YouTube videos citing weeks-old numbers.
+Take `owner/repo` from `github.com/{owner}/{repo}` URLs and pass `--github-repo={owner/repo}`; for "X vs Y" pass both (`--github-repo=openclaw/openclaw,paperclipai/paperclip`). Project mode fetches live stars, READMEs, releases, and top issues.
 
 **Skip this step if:**
 - TOPIC is a person (use `--github-user` instead)
@@ -546,7 +509,7 @@ Only show lines for platforms where something was resolved. Skip empty lines. On
 
 **Rules for your plan:**
 - Emit 1 to 4 subqueries (more for complex/multi-faceted topics, fewer for simple ones)
-- **CRITICAL: Your PRIMARY subquery MUST include every applicable source from `ACTIVE_SOURCES_LIST` among reddit, x, youtube, tiktok, instagram, hackernews, polymarket.** Never invent an unavailable source. Preserve X whenever it is active; when it is unavailable, continue with the rest. Never omit active Reddit (highest-signal discussion) or active YouTube (unique transcripts + official content). Secondary subqueries can target specific platforms. Per-subquery `sources` on `--plan` is a contract at every depth (quick, default, and deep): the engine searches only those sources and does not expand a narrow list to every available source. Restrict a subquery only when you mean it.
+- **CRITICAL: Your PRIMARY subquery MUST include every applicable source from `ACTIVE_SOURCES_LIST`, including installed lanes such as digg, arxiv, techmeme, bluesky, and linkedin.** Leave out only `grounding`, `corpus`, `perplexity`, `jobs` (engine-attached) and `amazon` / `meta_ads` (Step 0.5e / 0.5f). Never invent an unavailable source. Preserve X whenever it is active; when it is unavailable, continue with the rest. Never omit active Reddit (highest-signal discussion) or active YouTube (unique transcripts + official content). Secondary subqueries can target specific platforms. Per-subquery `sources` on `--plan` is a contract at every depth (quick, default, and deep): the engine searches only those sources and does not expand a narrow list to every available source. Restrict a subquery only when you mean it.
 - `search_query` should be concise and keyword-heavy - match how content is TITLED on platforms
 - `ranking_query` should read like a natural language question
 - **X disambiguation:** express your disambiguation intent in `ranking_query` (e.g., "What are people saying about Rome the city in Italy, not AS Roma or Rome Odunze?") — do not phrase-quote `search_query` for X or invent X operators; the engine handles X query compilation internally.
@@ -607,6 +570,8 @@ Store your plan as `QUERY_PLAN_JSON` - you'll pass it to the script in the next 
 **IMPORTANT: Include `--x-handle={RESOLVED_HANDLE}` in the command. For comparison mode, use the single parallel comparison invocation in `comparison.md`, with outer targeting for the main entity and per-peer targeting in `--competitors-plan`. Also include the resolved Step 0.55 flags listed below.**
 
 Fill `{TOPIC}` below with the parsed topic as literal data, excluding skill-mode controls and engine CLI flags. Choose a quoted heredoc delimiter that does not occur as a line in the topic. Map recognized CLI flags separately to the engine command. Never evaluate raw slash-command text or depend on a shell `$ARGUMENTS` variable.
+
+For research topics matching administrative commands (for example `setup`), add `--research-only` to treat the topic as text. Omit it for explicitly requested administrative actions and follow their runtime flow.
 
 ```bash
 # SKILL_DIR is already bound to the directory containing the loaded root SKILL.md.

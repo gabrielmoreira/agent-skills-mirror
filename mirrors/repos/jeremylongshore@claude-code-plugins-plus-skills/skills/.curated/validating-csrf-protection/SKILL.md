@@ -3,7 +3,7 @@ name: validating-csrf-protection
 description: Validate CSRF protection implementations for security gaps. Use when
   reviewing form security or state-changing operations. Trigger with 'validate CSRF',
   'check CSRF protection', or 'review token security'.
-version: 1.26.0
+version: 1.27.0
 allowed-tools: Read, Write, Edit, Grep, Glob, Bash(security:*), Bash(scan:*), Bash(audit:*)
 license: MIT
 author: Jeremy Longshore <jeremy@intentsolutions.io>
@@ -27,7 +27,7 @@ operations vulnerable to CSRF attacks.
 - Access to the target codebase and configuration files in `${CLAUDE_SKILL_DIR}/`
 - Familiarity with the web framework in use (Express, Django, Rails, Spring, Laravel, etc.)
 - Standard shell utilities and Grep/Glob available for codebase scanning
-- Reference: `${CLAUDE_SKILL_DIR}/references/README.md` for CSRF protection methods, OWASP CSRF Prevention Cheat Sheet, and framework-specific API examples
+- Reference: [`references/README.md`](references/README.md) for CSRF protection methods, OWASP CSRF Prevention Cheat Sheet, and framework-specific API examples
 
 ## Instructions
 

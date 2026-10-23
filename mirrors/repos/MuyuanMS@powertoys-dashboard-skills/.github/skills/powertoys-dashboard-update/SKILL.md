@@ -56,8 +56,8 @@ skills:
 9. Report checkpoint progress separately from concluded reviews. "Updated" or
    "processed" means only that durable state advanced. A PR is "concluded" only
    when it has a current allowed review action, is justified as waiting on the
-   author, or has a published unrecoverable blocker that names the exact manual
-   remediation. Do not tell the user that reviews are finished merely because
+   author. An operator exception is recorded privately and reported separately,
+   never counted as a concluded review. Do not tell the user that reviews are finished merely because
    every selected artifact was rewritten.
 
 ## Configuration
@@ -191,7 +191,8 @@ default run budget instead of trying to drain an arbitrarily large review queue:
 Drain mode intentionally removes the PR selection limit, issue design cap, and
 run deadline. It selects every stale PR, runs up to six PR workers at once by
 default, processes all actionable issue designs, and continues until the stale
-queue is empty or an unrecoverable blocker is published. Drain mode still must
+queue is empty or every remaining PR has an independently verified private
+operator exception. The latter is an incomplete drain, not full coverage. Drain mode still must
 checkpoint every durable fork/mirror/review transition immediately and publish
 after two transitions, after five minutes, or after any completed artifact,
 whichever comes first, so completed work and resumable fork traces survive a
@@ -409,7 +410,7 @@ pwsh -NoProfile -File `
 ```
 
 The queue contains every open, non-draft PR that is not explicitly waiting on
-the author, does not have a current terminal blocker, and that either:
+the author and that either:
 
 - has no dashboard artifact with a current review action for the live upstream
   head (`post_review` for drafted findings, or `review_ready`/no-comment action
@@ -417,18 +418,14 @@ the author, does not have a current terminal blocker, and that either:
 - has a prior proposed review, but the live head SHA differs from the artifact
   or review action head SHA.
 
-A terminal blocker must be pinned to the live upstream head, use
-`stage: review_blocked`, and include one or more `blockers[]` entries whose
-`terminal` field is explicitly `true`, whose `detail` explains the exact
-failure, and whose `remediation` names the concrete manual step needed to
-resume. Waiting for Copilot, unresolved review findings, incomplete builds, a
-run-budget cutoff, generic checkpoints, missing validation, or a bare
-"blocked" label are resumable workflow states and do not clear the queue.
-Workers must publish those states as `waiting_copilot`,
-`reviewing_findings`, `building`, or `review_in_progress` rather than
-`review_blocked`. Existing `review_blocked` artifacts without an explicit
-`terminal: true` blocker are treated as legacy resumable work and selected by a
-later run.
+Operator exceptions must be pinned to the live upstream head in the PRIVATE
+ledger with exact failure evidence and concrete remediation. Do not publish
+`blockers[]` or execution instructions in `data/`. The sanitizer archives
+legacy diagnostics outside the repository and projects `review_in_progress`.
+Waiting for Copilot, incomplete builds, request limits and missing validation
+do not clear the public queue or establish a PR defect. Keep worker phases,
+request identities and build state privately; public pending metadata must
+not substitute for author-facing comments that can be independently validated.
 
 The queue is exhaustive. Build the run plan:
 
@@ -448,7 +445,7 @@ pwsh @runPlanArgs
 In normal mode, send only `selected_prs` through or resume them in
 `powertoys-pr-review`; publish `deferred_prs` as queued work for later runs. In
 drain mode, `selected_prs` is the full stale queue and `deferred_prs` must be
-empty unless an unrecoverable blocker is published. A metadata-only refresh is
+empty. Handle verified private exceptions separately. A metadata-only refresh is
 still insufficient: every run must either advance its selected work or honestly
 retain durable in-progress state. Use `-FailOnStale` only in explicit drain
 mode after all selected work has either completed or reached a durable blocked
@@ -697,6 +694,31 @@ Classify unfinished workflow state:
 
 ## Phase 2 — Resume or rerun workflows
 
+Public PR artifacts are dashboard-user content, not updater diagnostics.
+Follow the public/private boundary in `references/drain-dispatch.md`.
+Keep operator exceptions, toolchain repairs, request limits and worker next
+steps outside `data/`; checkpoint and sanitizer scripts preserve private
+receipts before projecting neutral public metadata.
+The automated-request cap is **three total review iterations per PR**, including
+the initial request. Count preserved requests across lanes and sessions,
+including timeout/no-analysis attempts; scheduled ticks, head changes and
+restarts never reset the allowance. Existing histories at or above three get
+no new requests. Consume saved/in-flight results and finish validation.
+At the automated-request cap, draft all independently validated author-facing
+findings as `post_review` after exact-head grounding and literal-patch checks.
+A nonzero final automated response does not invalidate those findings or
+require discarding them. Never claim a clean approval without its full gates.
+Private terminal exceptions do not clear the public stale queue or count as
+completed reviews.
+
+Before first-round fixes or a second request, workers must follow the PR
+skill's `references/architecture-review.md`: investigate whether the upstream
+design actually meets its stated goal. A large first-round cloud response is
+only a hint. A grounded design flaw stops further requests for that head and
+produces consolidated author-facing drafts without forcing a wholesale fork
+rewrite. Preserve private `architecture` decisions across dispatch/resume;
+never publish the diagnostic ledger or mistake a draft for author-waiting.
+
 For drain execution and recovery, follow
 [drain-dispatch.md](./references/drain-dispatch.md). Verify the complete installed
 suite before starting, maintain a private per-PR next-action ledger, and execute
@@ -756,7 +778,7 @@ work/`reviewing_findings`, and local validation/`building`. A worker waiting on
 GitHub Copilot performs one immediate status check only; if the result is not
 ready, it checkpoints and returns instead of polling.
 
-Use the sibling PR skill's `Request-CopilotReview.ps1 -TimeoutMinutes 0` only
+Use the sibling PR skill's `Request-CopilotReview.ps1 -RequestsUsed <reconciled-count> -TimeoutMinutes 0` only
 for a new round, and its read-only `Get-CopilotReviewStatus.ps1` for resume.
 Persist the returned request timestamp, fork head and baseline review ID.
 Before publishing a `waiting_copilot` checkpoint, recheck that request once:
@@ -789,7 +811,7 @@ queued/running review, not as current.
 
 At the normal-mode run deadline, publish completed/in-progress state and stop
 cleanly. In drain mode, continue through additional work until the stale queue
-is empty or a published blocker remains. Report selected, completed,
+is empty or only verified private exceptions remain. Report selected, completed,
 in-progress, and deferred counts. Run the `-FailOnStale` gate only in explicit
 drain mode after the drain attempt finishes.
 
@@ -818,8 +840,9 @@ is needed. That worker must not delegate to another agent.
 
 - PR: `powertoys-pr-review` must reach zero new Copilot comments and zero
   unresolved Copilot threads before a review-ready artifact is emitted.
-  Resumable checkpoints and independently justified terminal manual blockers
-  must still be emitted without claiming that convergence. For stale-review
+  Resumable checkpoints contain neutral public metadata only; detailed operator
+  exceptions stay private and never claim convergence. Validated findings may
+  be drafted at the request cap without a clean-approval claim. For stale-review
   queue items, the emitted artifact must include `head_sha` and any
   `post_review` action `review.head_sha` pinned to the live upstream head.
 - Issue: `powertoys-issue-to-design` must reach a converged adversary-reviewed

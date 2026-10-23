@@ -1,6 +1,6 @@
 ---
 name: threejs-water-optics
-description: Build production analytic and bounded water in Three.js. Use for photoreal shallow water with gravity-capillary FFT waves, dispersive caustics and diffraction glare, shared multi-wave displacement and normals, bounded RGBA heightfield pool simulation, local drops, object-driven ripples, differential-area caustics, ray-traced pool/water/sphere volume optics, derivative-filtered normal bands, analytic sky reflection, side-aware Fresnel, heuristic screen refraction, Beer-Lambert absorption, and crest foam.
+description: Build production analytic and bounded water in Three.js. Use for luminescent shallow-water rivers with coupled flow, bioluminescent excitation, advected foam and RGB caustics, photoreal shallow water with gravity-capillary FFT waves, dispersive caustics and diffraction glare, shared multi-wave displacement and normals, bounded RGBA heightfield pool simulation, local drops, object-driven ripples, differential-area caustics, ray-traced pool/water/sphere volume optics, derivative-filtered normal bands, analytic sky reflection, side-aware Fresnel, heuristic screen refraction, Beer-Lambert absorption, and crest foam.
 ---
 
 # Water Optics
@@ -42,6 +42,12 @@ radiance and aperture diffraction glare. Read
 [references/photoreal-water.md](references/photoreal-water.md) for its pass,
 coordinate, filtering, integration and diagnostic contracts.
 
+Read the [luminescent water implementation](examples/luminescent-water/luminescent-water.js)
+for staggered shallow-water flow, advected luminous excitation and foam, RGB
+caustics, wet terrain receivers and coupled river optics. Read
+[references/luminescent-water.md](references/luminescent-water.md) for its grid,
+texture, pass ordering, integration, camera-clearance and diagnostic contracts.
+
 ## Failure conditions
 
 - normal texture motion does not agree with displaced crests;
@@ -55,6 +61,9 @@ coordinate, filtering, integration and diagnostic contracts.
 - reflection, refraction, and transparency are all added without energy control.
 
 ## Routing boundary
+
+Use `$threejs-procedural-materials` and `luminescent-jellyfish` for submerged
+animal tissue and appendage optics; `luminescent-water` here owns river flow.
 
 Use `$threejs-spectral-ocean` for large spectral cascades, Jacobian breaking,
 persistent ocean foam and camera-medium crossings. The `photoreal-water`

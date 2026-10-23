@@ -444,9 +444,14 @@ RUN retry git clone https://github.com/epinna/tplmap.git /opt/tplmap \
 # phpggc: PHP gadget-chain generator for unserialize/PHAR exploitation
 # Source: https://github.com/ambionics/phpggc (Apache-2.0). Used by the
 # Insecure Deserialization community skill (PHP track). Requires php-cli.
+# session.upload_progress is off as PHP2Shell defence in depth (CVE-2026-109619
+# is reached through it, and only if something runs `php -S` here); phpggc
+# never uses it.
 RUN apt-get update \
     && apt-get install -y --no-install-recommends php-cli \
     && rm -rf /var/lib/apt/lists/* \
+    && echo 'session.upload_progress.enabled = 0' \
+       > "$(php -r 'echo PHP_CONFIG_FILE_SCAN_DIR;')/99-php2shell.ini" \
     && retry git clone https://github.com/ambionics/phpggc.git /opt/phpggc \
     && git -C /opt/phpggc -c advice.detachedHead=false checkout f8aebde3a1abb88b02042fd12a71b4c61d6cfe2c \
     && chmod +x /opt/phpggc/phpggc \

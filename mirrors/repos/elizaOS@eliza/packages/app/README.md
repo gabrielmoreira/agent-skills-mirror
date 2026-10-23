@@ -55,6 +55,11 @@ A new APK must be built from the changed native sources and tested on the device
 
 ## Development
 
+Set `ELIZA_PGLITE_AUTO_RESET=0` for hosts that must preserve an existing database
+on startup failure. The host then reports the original terminal PGlite error
+without resetting the database singleton or quarantining the data directory.
+Omitting this setting retains the existing automatic recovery behavior.
+
 Install dependencies with `bun install` at the repository root. Run from that root:
 
 ```bash

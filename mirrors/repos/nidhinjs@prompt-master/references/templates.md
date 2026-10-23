@@ -19,6 +19,7 @@ Full template library for Prompt Master. Read the relevant template when the use
 | [K — ComfyUI](#template-k--comfyui) | ComfyUI node-based image workflows |
 | [L — Prompt Decompiler](#template-l--prompt-decompiler) | Breaking down, adapting, or splitting existing prompts |
 | [M — Current Claude Task Brief](#template-m--current-claude-task-brief) | Complex, multi-step, or agentic task on current Claude models |
+| [N — OpenAI Task Brief](#template-n--openai-task-brief) | Complex tasks on GPT-6, GPT-6.1 Sol, or explicitly selected GPT-5.6 models |
 
 ---
 
@@ -440,3 +441,43 @@ For long-running work, report progress only when it changes or when a checkpoint
 ```
 
 **When to use:** Current Claude models on any surface when the task is complex, multi-file, ambiguous, or agentic. Not needed for simple one-shot tasks.
+
+---
+
+## Template N — OpenAI Task Brief
+
+*Use for complex tasks targeting OpenAI models in ChatGPT, Codex, or the API. Keep simple requests short; omit sections that do not affect the result.*
+
+```text
+Goal:
+[The concrete result to deliver.]
+
+Context:
+[Relevant inputs, current state, prior decisions, and failed attempts.]
+
+Constraints:
+[Scope, requirements, compatibility, and limits.]
+
+Actions:
+[For tool-based tasks: available tools, actions already authorized,
+and actions requiring additional approval.]
+
+Done:
+[Observable acceptance criteria and appropriate verification.]
+
+Output:
+[Deliverable, format, level of detail, and required evidence.]
+```
+
+**Adaptation heuristics — evaluate on representative tasks:**
+- Luna: narrow the task and make the output contract explicit.
+- Sol: emphasize implementation context and acceptance criteria.
+- Astra: include decision criteria and evidence requirements for difficult work.
+- Preserve an explicitly selected GPT-5.6 model and apply its compatibility guidance in SKILL.md.
+- Combine related tasks when they share one outcome; split when dependencies, review checkpoints, or context limits justify separate runs.
+- Ask for conclusions, assumptions, concise rationale, evidence, and checks rather than hidden chain-of-thought.
+- For current facts, request retrieval and citations when the environment provides those capabilities; disclose missing access rather than invent sources.
+- Define tool access and authorization only for agentic tasks. For long work, request milestones and blockers instead of a message after every action.
+- Keep API and harness settings in setup notes outside the prompt. Verify supported controls for the exact model, endpoint, and surface.
+
+The task brief and adaptation heuristics are Prompt Master recommendations, not an official OpenAI template or benchmark result.

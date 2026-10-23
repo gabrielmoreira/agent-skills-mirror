@@ -17,7 +17,16 @@ rea inspect-pcap-capture /captures/session.pcapng --json
 ```
 
 Without explicit tool commands, this family resolves them through PATH and
-records that selection source. Client inspection reads no capture file. Capture
+records that selection source. On Linux and macOS it runs the tool found in the
+first absolute PATH entry holding an executable file, the same selection the
+[packet capture tools](packet-captures.md) make; relative PATH entries are
+skipped. Windows keeps PATH/PATHEXT resolution in the process launcher. Client
+inspection reads no capture file; on hosts where PATH/PATHEXT does not expose
+an absolute candidate, its executable digest and resolved path are reported as
+unresolved. Otherwise the canonical executable path and SHA-256 are reported.
+The pcap provider and packet tools share the selected-tool identity check, and
+changes to a resolved executable during a run fail with artifact-changed
+Evidence. Capture
 inspection requires Linux with util-linux prlimit or Windows with owned Job
 Objects. macOS capture inspection returns a capability gap because the new
 native memory boundary is unverified; its version probes remain available.

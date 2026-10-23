@@ -167,6 +167,6 @@ Multi-locale and table-only projection were also verified through real CLI and
 stdio MCP workflows on Linux with Apktool 3.0.3/JDK 21 against NewPipe 0.29.1,
 ApiDemos 6.0.18 and Appium Settings 8.2.1. Independent XML projection checks,
 exact facts/Evidence parity and bounded task costs are recorded in the
-[shared-decode and table-only checkpoint](../experiments/analysis-efficiency/apktool-string-tables.md).
+[shared-decode and table-only checkpoint](https://github.com/morluto/rea/blob/42e1a17d6e6c0487f17be0bae248553c4caba7f7/experiments/analysis-efficiency/apktool-string-tables.md).
 This qualifies selected resource facts, not application execution or independent
 binary resource-decoder completeness.

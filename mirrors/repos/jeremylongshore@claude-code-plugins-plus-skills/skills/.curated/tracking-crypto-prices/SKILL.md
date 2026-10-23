@@ -14,7 +14,7 @@ description: 'Track real-time cryptocurrency prices across exchanges with histor
 
   '
 allowed-tools: Read, Write, Edit, Grep, Glob, Bash(python:*)
-version: 1.27.0
+version: 1.28.0
 author: Jeremy Longshore <jeremy@intentsolutions.io>
 license: MIT
 tags:
@@ -73,7 +73,7 @@ Foundation skill providing real-time and historical cryptocurrency price data fo
 - **JSON** (`--format json`): Machine-readable with prices array and metadata
 - **CSV** (`--output csv`): OHLCV historical data export to `${CLAUDE_SKILL_DIR}/data/`
 
-See `${CLAUDE_SKILL_DIR}/references/implementation.md` for detailed output format examples.
+See [`references/implementation.md`](references/implementation.md) for detailed output format examples.
 
 ## Error Handling
 
@@ -110,6 +110,6 @@ python ${CLAUDE_SKILL_DIR}/scripts/price_tracker.py --symbol ETH --period 90d --
 
 ## Resources
 
-- `${CLAUDE_SKILL_DIR}/references/implementation.md` - Output formats, full config, integration guide, file map
+- [`references/implementation.md`](references/implementation.md) - Output formats, full config, integration guide, file map
 - [CoinGecko API](https://www.coingecko.com/en/api) - Primary data source
 - [yfinance](https://github.com/ranaroussi/yfinance) - Fallback for historical data

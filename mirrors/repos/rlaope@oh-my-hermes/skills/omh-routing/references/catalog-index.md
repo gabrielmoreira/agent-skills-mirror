@@ -22,6 +22,7 @@ Trigger phrases and the role registry live in `references/workflow-registry.md`;
 - `omh-automation-blueprint`: [omh] Recurring Hermes job on a schedule (cron, digests): design recurring Hermes operations with schedule, delivery, silence policy, context chain, and prepared-vs-observed status.
 - `omh-award-bar-score`: [omh] Aiming for design-award quality: score a web surface against published design-award judging axes and name the binding constraint.
 - `omh-backend`: [omh] Designing an API, server, or data-layer change: prepare server, API, and data-layer contracts — auth boundary, error paths, response shape, and schema/migration discipline — before implementation.
+- `omh-biomedical-evidence`: [omh] Public variant claims to cross-check: retrieve and reconcile source-labelled biomedical evidence with identity, conflict and freshness checks.
 - `omh-browser`: [omh] Browser login, click, or form task: policy overlay for browser tasks - add auth, confirmation, and observed-trace gates after preferring the native browser for ordinary URL, click, login, and form actions.
 - `omh-build-failure-triage`: [omh] Build or CI failure to triage: classify build, typecheck, lint, test, CI, and DCO failures into minimal safe fix handoffs.
 - `omh-buzz`: [omh] Buzz community agent setup or relay trouble: connect and operate Hermes as a native Buzz community agent, deliver local media with verified relay receipts, or diagnose a self-hosted Buzz relay without inventing transport evidence.
@@ -59,6 +60,7 @@ Trigger phrases and the role registry live in `references/workflow-registry.md`;
 - `omh-frontend`: [omh] Building or polishing a web or terminal UI: prepare design-system-driven web and terminal (TUI) UI creation, redesign, polish, accessibility, performance, and visual QA handoffs.
 - `omh-frontend-refactor`: [omh] Oversized or tangled UI component: behavior-preserving refactor of UI code - preview the full change plan first, apply as a second explicit step, and work impact-ordered from state architecture down to naming polish.
 - `omh-gateway-intent-card`: [omh] Bot replies via Discord, Slack, or Telegram: normalize Discord, Slack, Telegram, and other gateway sessions into origin, thread, delivery, silent, attachment, and status-update policy.
+- `omh-geospatial-analysis`: [omh] Spatial layers to intersect: execute CRS-safe polygon overlay with measured areas, validated geometry and reproducible GeoJSON outputs.
 - `omh-git-workflow`: [omh] Git branch in trouble -- a merge conflict, a commit that broke something, history to repair: plan the resolution, the bisect, or the rewrite, name what is already pushed first, and force-push only with `--force-with-lease`.
 - `omh-github-event-ops`: [omh] Incoming GitHub PR, issue, or CI event: GitHub event operations: route PR, issue, CI, and review webhook events into triage, review, or fix handoff cards.
 - `omh-github-issue-intake`: [omh] Chat report that should become a GitHub issue: turn a public chat report into a confirmed, verified issue package.
@@ -96,6 +98,7 @@ Trigger phrases and the role registry live in `references/workflow-registry.md`;
 - `omh-model-finetuning`: [omh] Fine-tuning a model on your own data -- SFT, DPO, RLVR or a LoRA adapter: decide first whether prompting or retrieval already closes the gap, choose the method from the data you have, and promote a checkpoint only when it beats the untuned baseline on a held-out eval.
 - `omh-model-optimization`: [omh] Onboarding a newly released model generation: when a model family ships a new generation or changes its serving contract, walk the recognition, research, calibration, routing, and measurement process that keeps model handling honest and current.
 - `omh-model-setup`: [omh] Model and provider configuration changes: diagnose role-slot model configuration, guide provider connection, and apply changes only after diff approval.
+- `omh-molecular-docking`: [omh] Prepared PDBQT inputs: run bounded standalone Vina docking with real poses, scores and replay provenance; never infer efficacy or safety.
 - `omh-morning-brief`: [omh] Mail and calendar brief configuration: morning brief SETUP (one-time) - connects mail and calendar MCP with read-and-draft-only scope and diff approval; produces the configuration, not the daily brief itself.
 - `omh-native-debugging`: [omh] Native program crashes or corrupts memory: prepare hypothesis-driven debugging of native binaries and instruct the executor to drive a DAP debugger instead of printf.
 - `omh-routing`: [omh] Choosing among OMH skills for a request: router guidance for using oh-my-hermes workflow skills inside Hermes Agent.
@@ -130,6 +133,7 @@ Trigger phrases and the role registry live in `references/workflow-registry.md`;
 - `omh-sales-pipeline-review`: [omh] CRM pipeline or sales forecast to review: turn a supplied CRM export or pipeline snapshot into an evidence-bound pipeline health, forecast, and follow-up review.
 - `omh-security-event-response`: [omh] Security event on the code already shipped -- a CVE in a dependency, a secret committed to the repo, a license question, an advisory: triage reachability and severity, contain in order, and never close a leaked secret before its rotation is observed.
 - `omh-security-safety-review`: [omh] Agent or automation safety risks: review prompt, tool, secret, dependency, destructive-action, and explicit local plugin risks before agent or code execution.
+- `omh-show-reel`: [omh] Motion showcase to make: produce a source-grounded product film with audience-specific concepts, segment direction, authored motion, measured locale/export QA and reproducible source delivery.
 - `omh-skill`: [omh] Installing, removing, or editing skills: managing local skills.
 - `omh-skill-health`: [omh] OMH skill portfolio health overview: prepare a metadata-only OMH skill portfolio dashboard with stale surfaces, observed failure signals, pending amendments, and top actions.
 - `omh-skill-scout`: [omh] Existing skills to reuse before authoring: prepare a metadata-only search-before-creation report for local, marketplace, GitHub, and web skill candidates with risk review and adoption options.

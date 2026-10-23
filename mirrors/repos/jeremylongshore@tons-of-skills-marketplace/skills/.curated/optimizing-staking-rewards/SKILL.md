@@ -11,7 +11,7 @@ description: 'Compare and optimize staking rewards across validators, protocols,
 
   '
 allowed-tools: Read, Write, Edit, Grep, Glob, Bash(crypto:staking-*)
-version: 1.26.0
+version: 1.27.0
 author: Jeremy Longshore <jeremy@intentsolutions.io>
 license: MIT
 tags:
@@ -95,7 +95,7 @@ Comparison table ranked by risk-adjusted return (Net APY multiplied by Risk Scor
 | Rate limited | Too many API calls | Automatic retry with backoff |
 | No data found | Protocol not indexed | Falls back to known protocol list |
 
-See `${CLAUDE_SKILL_DIR}/references/errors.md` for comprehensive error handling.
+See [`references/errors.md`](references/errors.md) for comprehensive error handling.
 
 ## Examples
 
@@ -118,8 +118,8 @@ python ${CLAUDE_SKILL_DIR}/scripts/staking_optimizer.py --optimize \
 
 ## Resources
 
-- `${CLAUDE_SKILL_DIR}/references/implementation.md` - Optimization reports, risk assessment details, disclaimers
-- `${CLAUDE_SKILL_DIR}/references/errors.md` - Comprehensive error handling
+- [`references/implementation.md`](references/implementation.md) - Optimization reports, risk assessment details, disclaimers
+- [`references/errors.md`](references/errors.md) - Comprehensive error handling
 - DeFiLlama Yields: https://defillama.com/yields
 - StakingRewards: https://www.stakingrewards.com
 - Lido: https://lido.fi | Rocket Pool: https://rocketpool.net

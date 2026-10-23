@@ -12,7 +12,7 @@ reasoning about anything that touches Hermes Agent.
 oh-my-hermes (OMH) is a Hermes-native wrapper orchestration layer: a
 deterministic skill catalog, router, and prepared-handoff generator installed
 next to Hermes Agent. Core `omh` code makes no LLM, API, or network calls and
-never patches Hermes. Pure Python 3.11+, zero runtime dependencies. Two scoped
+never patches Hermes. Pure Python 3.11+, zero runtime dependencies. Three scoped
 exceptions. `omh coding fanout dispatch` (explicit opt-in) spawns local agent
 CLIs as subprocesses — those CLIs make their own network calls; omh itself
 makes none there, and nothing executes without that explicit command. The
@@ -21,9 +21,15 @@ POSTs typed questions to Jev (TypeSafe, or OpenRouter only with the operator
 setting in `<omh_home>/jev/settings.json`) with the user's own key, only when
 the user named Jev in that turn and a key resolves. Stdlib only, HTTPS only, a
 fixed two-host route table, redirects refused;
-`src/plugin_bundle/omh/jev_ask_client.py` is the only network client in
-`src/`, pinned by INVARIANT 2's `NETWORK_CLIENT_BRIDGES`. Third-party Jev
-plugins are still never called.
+`src/plugin_bundle/omh/jev_ask_client.py` is the only in-process network
+client in `src/`, pinned by INVARIANT 2's `NETWORK_CLIENT_BRIDGES`. Third-party Jev
+plugins are still never called. The `show-reel` skill's opt-in toolkit scripts
+`toolkit/scripts/eleven.py`, `narrate.py` (ElevenLabs, by spawning `curl` with
+the key on stdin) and `codex_ref_image.sh` (the user's codex CLI) are package
+data the user runs themselves with their own `ELEVENLABS_API_KEY` or codex
+login; OMH never imports or executes them, they refuse with exit 2 without
+the credential, and `eleven.py` is pinned in INVARIANT 1's
+`PROCESS_SPAWN_ALLOWLIST`.
 
 ## Build & Test
 
@@ -67,7 +73,8 @@ Source of truth → generated file → regen command → drift gate:
 
 | Source | Generated | Regenerate | Gate |
 | --- | --- | --- | --- |
-| `src/skills/skill_record.py` (`SkillRecord` over `catalog.py`, `catalog_feature_surfaces.py`, `catalog_harnesses.py`, `catalog_portable.py`, `render.py`; `project(skill, target)`) via `builtin_skill_templates()` / `builtin_skill_reference_templates()` | `skills/*/SKILL.md`, `skills/*/references/*.md` | write template `.content` back to `skills/` (short Python loop; no dedicated CLI writer) | tap-skills staleness inside `docs workflows --check` (missing/stale/extra); `tests/test_router_content.py` |
+| `src/skills/skill_record.py` (`SkillRecord` over catalog/render producers) plus the closed `builtin_skill_support_templates()` inventory and canonical toolkit resources | `skills/*/SKILL.md`, `skills/*/references/*.md`, declared `skills/omh-*/toolkit/**` | `uv run python tools/render_skill_pack.py --write` (`--refresh-provenance` refreshes only audited show-reel resources; domains deliver validated provenance) | `uv run python tools/render_skill_pack.py --check`; tap-skills byte gate in `docs workflows --check` |
+| Canonical toolkit resources + `provenance_manifest()` | `src/skills/show_reel_toolkit/upstream-manifest.json` (self-hash excluded) | `uv run python tools/render_skill_pack.py --write --refresh-provenance` | closed producer digest validation and support/distribution tests; outer inventories hash the provenance file |
 | Same catalog data | `docs/WORKFLOWS.md` | `uv run python -m omh.cli docs workflows --output docs/WORKFLOWS.md` | `uv run python -m omh.cli docs workflows --check` |
 | Same catalog data | `docs/ROLES.md` | `uv run python -m omh.cli docs roles --output docs/ROLES.md` | `uv run python -m omh.cli docs roles --check` |
 | Demo case engine | `examples/use-cases/g1-g10-demo-cards.json` | `uv run python -m omh.cli cases demo --all --json` output | parse-equality in `tests/test_application_cases.py` |
@@ -76,7 +83,7 @@ Source of truth → generated file → regen command → drift gate:
 | `ulw_inventory_payload()` in `src/skills/catalog.py` via `src/catalogs/ulw_surfaces.py` | marked ULW region of `README.md` | `uv run python -m omh.cli docs ulw-inventory` | `uv run python -m omh.cli docs ulw-inventory --check`; `tests/test_ulw_inventory.py` |
 | Same producer | marked ULW region of `site/index.html` | `uv run python -m omh.cli docs ulw-site` | `uv run python -m omh.cli docs ulw-site --check`; i18n parity in `tests/test_ulw_inventory.py` |
 | `SHIPPED_MODEL_RECOMMENDATIONS` in `src/coding/model_recommendations.py` via `src/catalogs/model_chain_table.py` | marked chain-table region of `docs/INSTALLATION.md` | `uv run python -m omh.cli docs chain-table` | `uv run python -m omh.cli docs chain-table --check`; round-trip equality in `tests/test_model_chain_table.py` |
-| `src/skills/catalog_portable.py` + catalog/render via `agent_skill_templates()` / `agent_skill_reference_templates()` | `agent-skills/*/SKILL.md`, `agent-skills/*/references/*.md` | `uv run python -m omh.cli docs agent-skills` | `uv run python -m omh.cli docs agent-skills --check` |
+| `agent_skill_files()` and `agent_skills_manifest()` over the catalog/portable/references and reviewed support producers | `agent-skills/**`, one `agent-skills/.omh-agent-skills-manifest.json`, six host adapters | `uv run python -m omh.cli docs agent-skills` | `uv run python -m omh.cli docs agent-skills --check`; never per-host copied digest maps |
 
 Rules:
 

@@ -10,7 +10,7 @@ description: 'Generate comprehensive security audit reports for applications and
 
   '
 allowed-tools: Read, Write, Edit, Grep, Glob, Bash(security-scan:*), Bash(report-gen:*)
-version: 1.28.0
+version: 1.29.0
 author: Jeremy Longshore <jeremy@intentsolutions.io>
 license: MIT
 tags:
@@ -46,7 +46,7 @@ Aggregate vulnerability scan results, configuration analyses, and compliance ass
 9. Create remediation recommendations with effort estimates (hours), priority ranking, and suggested timelines.
 10. Format the final report as Markdown to `${CLAUDE_SKILL_DIR}/reports/security-audit-YYYYMMDD.md`. Optionally produce JSON for Jira/ServiceNow import.
 
-See `${CLAUDE_SKILL_DIR}/references/implementation.md` for the detailed four-phase implementation workflow.
+See [`references/implementation.md`](references/implementation.md) for the detailed four-phase implementation workflow.
 
 ## Output
 
@@ -78,6 +78,6 @@ See `${CLAUDE_SKILL_DIR}/references/implementation.md` for the detailed four-pha
 - NIST Cybersecurity Framework: https://www.nist.gov/cyberframework
 - PCI-DSS v4.0 Requirements: https://www.pcisecuritystandards.org/
 - CVSS 3.1 Calculator: https://www.first.org/cvss/calculator/3.1
-- `${CLAUDE_SKILL_DIR}/references/errors.md` -- full error handling reference
-- `${CLAUDE_SKILL_DIR}/references/examples.md` -- additional usage examples
+- [`references/errors.md`](references/errors.md) -- full error handling reference
+- [`references/examples.md`](references/examples.md) -- additional usage examples
 - https://intentsolutions.io

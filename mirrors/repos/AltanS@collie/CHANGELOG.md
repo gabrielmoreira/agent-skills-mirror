@@ -31,6 +31,7 @@ Running a crew? Update the lead first; members follow on their own. Details:
 - **A Muse pane offers launch chips and counts its no-prompt flags.** The New page lists Yolo mode, Never ask and No question prompts for Muse, built from `muse --help` on 1.4.11. Yolo mode and Never ask exclude each other, as Codex's two bypass chips do. Collie also reads `--yolo`, `--approval-mode never`, `--disable-approval` and `--disable-request-user-input` as flags that stop prompts when it decides whether a pane can ask. Thanks @jpcarranza94 (#566).
 - **The dashboard's workspace filter picks several workspaces.** The filter used to take one workspace or all of them. The closed control names the choice, such as "collie, membero", or "3 workspaces" past two, and a tap opens a sheet with one check per workspace. The dashboard, the Spaces section and Changes show every chosen workspace. A device that stored one workspace keeps it as a choice of one. Thanks @viniciosrab (#531, closes #527).
 - **A long text paste in the composer becomes a chip you can edit.** A plain-text paste of five lines or more, or of 300 characters or more, puts a `[Pasted #N]` marker at the caret and a chip above the field with its line and character counts and its first line. A tap on the chip opens a sheet where you edit the text or expand it back into the box, and Send puts the text where the marker stands. Drafts now live under a new storage key, so a phone that goes back to Stable never sends a bare marker. After that rollback, a draft this build wrote stays hidden until you return to Edge. Thanks @GGGODLIN (#560).
+- **A durable agent on Vercel's durable-harness can reach the phone.** The durable SDK gains an experimental `./durable-harness` entry: `collieRoute` serves the durable wire from a web route that rebuilds its answer from the durable log on every request, and `withCollie` makes a risky tool call wait for the phone through a journal kept beside each session. Self-hosted only; Vercel is untested.
 
 ### Changed
 
@@ -54,6 +55,14 @@ Running a crew? Update the lead first; members follow on their own. Details:
 - **A long message to Claude Code over Herdr no longer sticks as "Typed, not sent".** The Send Protocol typed a message one line at a time, so a long dictation grew Claude's input box past the screen, Collie could not prove the box, and Submit and Discard could not find it either. A message of more than one line, or one line over 800 characters, now goes as one bracketed paste that Claude folds into one row, and Collie proves that row. A slash command, a shell line or a file mention keeps the write per line, and a photo you attached in Collie comes off the paste the way Claude takes it. Thanks @eseninik (#546).
 - **A one-line paste chip reads "1 line", not "1 lines".** The chip and its edit sheet now pick the singular or plural form of the line count, as the rest of the app does.
 - **A crew lead shows why a walky talky message is held, every time.** When a member held a message in the same millisecond it accepted it, as it does for a second message to a pane that already holds one, the lead skipped the member's report as nothing new. `collie walky send` on the lead then printed a plain `accepted`, without `held: draft present`. The lead now takes a report of the same moment when it adds the reason, and a repeat of the same report still writes nothing.
+
+### Packaging
+
+- **The SDK pack check loads the `./durable-harness` entry.** It installs durable-harness and Pi beside the built package, under the same seven-day cooldown as the example, and imports `collieRoute` and `withCollie` on Node and on Bun.
+
+### Docs
+
+- **The durable wire gains a draft appendix for a host with no process.** WIRE.md now says how a durable agent without a long-lived process, such as a function on Vercel, fills the wire: one epoch per World and schema, rev and turn id derived from the log, and the journal of asks, answers and request ids. It describes that host only and changes nothing in version 1.
 
 ## [1.24.0] - 2026-10-20
 

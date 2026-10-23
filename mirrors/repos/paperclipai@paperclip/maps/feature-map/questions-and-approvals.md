@@ -17,7 +17,7 @@ Agent access: [companion](../agent-access-map/questions-and-approvals.md).
 
 - `questions`: `questions-and-approvals/questions` — single-choice, multiple-choice, custom, and free-text answers;
   paged forms retain answers until submission and show validation failures.
-- `dismiss-and-reopen`: `questions-and-approvals/dismiss-and-reopen` — unanswered questions remain in the feed after dismissal
+- `dismiss-and-reopen`: `questions-and-approvals/dismiss-and-reopen` — questions and composer requests (including completion reviews) remain in the feed after dismissal
   or a newer message; reopening restores the form without inventing an answer.
 - `confirmations`: `questions-and-approvals/confirmations` — accept, decline, or request changes; stale, expired, resolved,
   and withdrawn requests cannot be acted on again.
@@ -91,7 +91,7 @@ Use these checks alongside the entry-point recipes below and the operation recor
 | Capability ID | Action and persisted result | Denial, race and retry checks |
 | --- | --- | --- |
 | `questions-and-approvals/questions` | Create fixed-ID single/multiple/custom/text questions; move between pages, submit, and reload the saved answer and responder. | Reject missing/invalid answers without resolving. Competing answers settle once. Distinguish cancel, withdraw, historical Done-task answers, and local dismissal; historical answers must not restart work. |
-| `questions-and-approvals/dismiss-and-reopen` | Dismiss without submitting, reopen from history, edit the retained draft, and reload in the same browser. | Confirm the server request remains pending and a new ordinary comment does not answer it. Resolve in another tab and refresh the old form. Browser draft/dismissal state is not account-wide state. |
+| `questions-and-approvals/dismiss-and-reopen` | Dismiss questions, completion reviews, confirmations, choices, and item requests without deciding; reload and reopen from history. | Confirm the server request remains pending and a new ordinary comment does not answer it. Resolve in another tab and refresh the old form. Saved-request dismissals persist on the server and suppress repeated agent demands; drafts and raw runtime dismissals remain browser-local. Protected actions still require authorization. |
 | `questions-and-approvals/confirmations` | Use separate accept, decline/change-request, checkbox subset, suggested-task selection, and partial item-verdict requests. Inspect the actual selected items and created task IDs. | Test invalid selections, child-without-parent selection, expiry, supersession, withdrawal, and repeated/conflicting decisions. Partial verdicts persist; skip must not start a continuation. |
 | `questions-and-approvals/plan-review` | Open the exact requested plan revision; reject one request and accept another. Inspect saved revision, work mode, owner, and the resulting continuation. | Edit after requesting review and reject stale acceptance. Test finalization readiness and bound completion review separately. In Agent Chat, inspect the later project/task creation and its source-plan provenance; acceptance alone is not a completed handoff. |
 | `questions-and-approvals/audience` | Repeat a request for a named person, named agent, human-only resolver, and independent reviewer. Inspect actionability and final attribution. | Test creator exclusion, wrong audience/company, private task, missing or cancelled run, and changed responsible-user access. A human comment used by an agent remains subject to that agent’s resolver authority. |

@@ -74,6 +74,13 @@ Scores and counts select candidates only. Validate every reported finding agains
 `keyword_hits` counts eligible `(message, keyword)` pairs keyed by the full OR-group keyword string, not repeated
 substring occurrences.
 
+Keyword matching is case-insensitive substring matching. For a plain-word alternative, the helper also matches its
+regular inflections through a stem, so `overwrite` matches `overwriting` and `overwritten`, `committed` matches
+`commit`, and `retry` matches `retried`. An inflection ending or a word boundary must follow the stem, so `retry` does
+not match `retrieve`. Irregular forms such as `overwrote` need an OR-group. Without `--keyword`, the helper keeps every
+owned session and ranks by correction, failure, verification, and recency signals only. Use that signals-only pass when
+the keyword pass selects fewer than three candidates for a project with owned sessions.
+
 With `--since <YYYY-MM-DD|Nd>`, the helper keeps sessions with activity at or after the cutoff. First, it prunes files
 with an mtime older than the cutoff. A later mtime does not prove recent activity, because other tools can touch a file.
 For each remaining file, the helper reads the last record timestamp from a bounded tail of the file. When that timestamp
@@ -138,11 +145,6 @@ exclusions auditable:
 - candidate `signal_channels` records eligible user and assistant message counts, ignored context, and structured tool
   failures.
 
-If a specific reported incident is missing, use Exact-Incident Fallback before widening the time window. Otherwise, make
-one pass with broader or OR-grouped keywords. If still weak, retry once with `--since` removed. Add `--include-archived`
-only for the final bounded fallback. Empty output after those passes is a coverage gap, not proof that no relevant
-behavior exists.
-
 ## Inspect Candidates
 
 Use the bundled inspector to get a bounded, redacted digest of a candidate transcript before opening its raw body:
@@ -156,7 +158,7 @@ uv run "$skill_dir/scripts/transcript-inspect.py" <transcript-path>... \
 
 For each file, the inspector emits a header with source, session ID, `session_kind`, `parent_session_id`, cwd, timestamp
 range, per-channel totals, and sampled flag. Explicit guardian paths remain inspectable. The inspector emits bounded
-entries with absolute record line numbers. Within the sampled records and output limit, these entries contain
+entries with zero-based absolute record line numbers. Within the sampled records and output limit, these entries contain
 non-context user messages, qualifying assistant messages, and tool failures. Redaction is always on. Entry text is
 capped at 240 characters.
 

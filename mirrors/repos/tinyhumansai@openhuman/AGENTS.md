@@ -159,6 +159,12 @@ CI Lite runs area-specific checks and changed-line coverage on PRs to `main`
 or `release`. CI Full runs the complete suites for `release`. Changed-line
 coverage must be at least 80 percent.
 
+### Test ownership
+
+OpenHuman tests composition, host policy, adapters, RPC wire contracts, and data compatibility. Module behavior is tested in the owning `vendor/tiny*` repository. A host test that calls a vendor module's internals (for example, `tinychannels::providers::*` or `tinyinference_local::service::*`) belongs upstream. When code moves upstream, move its tests in the same upstream PR, then delete them in the host PR. Keep one host smoke test per module: load it and make one call through the bus. That is enough to test the host integration.
+
+A PR that only deletes tests is exempt from changed-line coverage because it has no changed lines for diff-cover to measure. CI Lite runs that changed-line check at an 80 percent threshold.
+
 - Frontend unit tests are colocated as `*.test.ts` or `*.test.tsx` under
   `app/src/`. Use Vitest and test behavior rather than implementation.
 - Rust unit tests are never inline. Put them in a sibling `<module>_tests.rs`
@@ -522,6 +528,31 @@ checked by `scripts/ci/check-feature-forwarding.mjs`. The same gate checks the
 library chain: a core gate must be forwarded by `openhuman-embed`, then
 `openhuman-tinyhumans`, then `openhuman-rpc`, then the `openhuman-cli` and
 `openhuman-tui` hosts (each to `openhuman-rpc/<gate>`), or be listed in
+
+## Storage engine ownership
+
+tinystoragedrivers (`vendor/tinystoragedrivers`) is the only crate family that may
+depend on a storage engine. Engines (rusqlite, mongodb, aws-sdk-s3, lapin,
+object_store, sqlx, redb, sled, rocksdb, fs2, and their transitive deps) are
+reachable only from the following composition roots, which are the only
+packages listed in the ALLOWLIST in `scripts/ci/check-storage-owner.mjs`:
+
+  openhuman          core storage domain (installs and owns the backend)
+  openhuman-app      keyring secrets via rusqlite
+  openhuman-cli      keyring secrets via rusqlite
+  openhuman-tui      keyring secrets via rusqlite
+  openhuman-rpc      keyring secrets via rusqlite
+  tinychannels       iMessage chat.db reader (read-only SQLite)
+  tinybox-cli        bin target, bundles engine
+  tinyjuice          bin target, bundles engine
+
+Every other first-party crate must reach tinystoragedrivers only through
+`tinystoragedrivers-types`, `tinystoragedrivers-api`, `tinystoragedrivers-bus`
+or `tinystoragedrivers-busproxy`. The gate `node scripts/ci/check-storage-owner.mjs`
+walks the normal+build dependency closure of `--all-features` from every
+non-root first-party package and fails if it reaches an engine crate.
+Run in `pnpm rust:layout`.
+
 `CHAIN_GATES_NOT_FORWARDED` / `CHAIN_LOCAL_GATES` with a reason. Test both enabled and disabled
 builds after changing a gate. Use `scripts/assert-shed.sh` or
 `scripts/dep-sim.py` before claiming a dependency reduction.

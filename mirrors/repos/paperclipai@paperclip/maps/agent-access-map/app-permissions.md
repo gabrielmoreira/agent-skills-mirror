@@ -131,6 +131,12 @@ and stale same-name contracts before refresh; new/changed tools stay quarantined
 exercise this boundary through real run-bound gateway sessions with fixture
 provider responses. They do not qualify a live Daytona account or agent model.
 
+Unikraft uses the same native-catalog contract: stale same-name saved entries are
+rejected before refresh and new or changed actions stay quarantined. Its
+[database-backed fixtures](../../server/src/__tests__/unikraft-connection.test.ts)
+cover this through real run-bound gateway sessions with fixture provider
+responses, not a live Unikraft account.
+
 ## `test-action`
 
 Capability ID: `app-permissions/test-action`.

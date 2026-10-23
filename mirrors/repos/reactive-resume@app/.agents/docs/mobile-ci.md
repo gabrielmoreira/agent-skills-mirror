@@ -64,7 +64,7 @@ The workflow allocates both platforms' versions as:
 MOBILE_BUILD_NUMBER_BASE + (GITHUB_RUN_NUMBER - 1)
 ```
 
-Each new workflow run increments by one. Retries reuse the same build number;
+Each new workflow run, including a manual APK request, increments by one. Retries reuse the same build number;
 if an upload already used that number, dispatch a fresh run instead of rebuilding
 and uploading it again. The October 21 migration from the old 100-number stride
 uses base **298**: run 3 already allocated 300, so run 4 allocates 301, then run 5
@@ -75,10 +75,12 @@ produce an older version; dispatch a fresh run instead. Stop EAS store builds af
 systems do not allocate competing versions. `eas.json` remains legacy configuration;
 its remote counters and auto-increment do not govern this workflow.
 
-Create GitHub environment **`mobile-store`**, restrict deployment branches to `main`,
-and configure required reviewers if you want an approval before uploads. Merely naming
-an environment does not enable required reviewers. Both workflow signing and upload
-paths are manual, and signing is limited to `main`.
+Create separate GitHub environments **`mobile-signing`** and **`mobile-store`**.
+Restrict both to branch `main`, require approval from `amruthpillai`, allow self-review,
+and disallow admin bypass. The signing environment gates every job that reads signing
+credentials; the store environment separately gates jobs that read upload credentials.
+The preparation job validates inputs and allocates versions without any secrets.
+Merely naming an environment does not configure these protection rules.
 
 ## Build and upload
 
@@ -86,17 +88,20 @@ paths are manual, and signing is limited to `main`.
    `apps/mobile/app.config.ts` when needed; iOS requires a new version string after a
    version has been released. CI supplies the build number automatically.
 2. Dispatch **Mobile Release** on `main`, choose `all`, `android`, or `ios`, and leave
-   **upload** disabled for the first signing check. The workflow validates credentials,
+   **format=store** and **upload** disabled for the first signing check. Approve the
+   `mobile-signing` gate. The workflow validates signing credentials after approval,
    runs mobile source checks, fetches checksum-pinned Forme binaries, loads the EAS
    `production` environment, and generates fresh native projects.
 3. Inspect the signed artifacts, embedded production update channel, signing identities,
-   versions, entitlements and native runtime. Artifacts include `release.json`,
-   `fingerprint.json`, available source maps, and iOS symbols. Raw build logs are not
-   uploaded because toolchains can include environment values in them. Download the
-   fingerprint and keep it with the store release record before the 14-day Actions
-   retention expires. Store binaries stay in workflow artifacts. Separately, each main
-   push builds Android APKs for public sideloading through the same Fastlane build
-   lane; see [nightly downloads](./mobile-release-handoff.md#nightly-android-downloads).
+   versions, entitlements and native runtime. Store binaries are retained for 90 days.
+   A separate `-evidence` artifact retains `release.json`, `fingerprint.json`, available
+   JavaScript source maps, iOS dSYMs, Android obfuscation mappings and native debug
+   symbols for 90 days. Mapping/symbol files are included when produced by the
+   toolchain; this workflow does not enable obfuscation or manufacture missing symbols.
+   Raw build logs are not uploaded because toolchains can include environment values.
+   Actions retention is capped at 90 days for this public repository and deleting a run
+   still deletes its artifacts: export evidence to your permanent release records
+   before expiry. This is longer retention, not permanent off-site storage.
 4. Dispatch with **upload** enabled when ready. Upload jobs start only after every
    selected platform built successfully, then pass the `mobile-store` environment gate.
    They publish the exact signed artifacts from that run. Android creates a **completed
@@ -116,10 +121,21 @@ certificate into a temporary keychain, and removes the profile, keychain and tem
 files after the build. It never invokes capability synchronization or provisions new
 Apple resources. Renew certificates/profiles before expiry and update Actions secrets.
 
+## Manual Android APKs
+
+Dispatch **Mobile Release** on `main` with `platform=android`, `format=apk`,
+`abi=arm64-v8a` (or `armeabi-v7a` / `x86_64`), and `upload=false`. One requested
+architecture is built per dispatch. Approve `mobile-signing`, then download the
+`mobile-android-<build-number>` Actions artifact within 14 days. The build uses the
+preview EAS environment and preview update channel, verifies its APK signature,
+checks that it contains only the requested native ABI and includes Forme, and never
+uploads to either store or creates a GitHub Release/tag. APK uploads and iOS/all
+platform selections are rejected before credentials are accessed.
+
 ## OTA compatibility and observability
 
 The update URL, EAS project and fingerprint policy remain unchanged. The production
-channel is explicitly embedded through `updates.requestHeaders`; nightly APK builds
+channel is explicitly embedded through `updates.requestHeaders`; manual APK builds
 select `preview` with `MOBILE_UPDATE_CHANNEL`. Setting a channel in
 `eas.json` alone does not configure a build produced outside EAS Build. Build numbers
 are excluded from Expo's normalized config fingerprint. Native project output and

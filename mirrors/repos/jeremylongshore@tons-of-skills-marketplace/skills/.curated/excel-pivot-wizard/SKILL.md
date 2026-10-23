@@ -8,7 +8,7 @@ description: 'Create advanced Excel pivot tables with calculated fields and slic
 
   '
 allowed-tools: Read, Write, Edit, Grep, Glob, Bash(cmd:*)
-version: 1.21.0
+version: 1.22.0
 author: Jeremy Longshore <jeremy@intentsolutions.io>
 license: MIT
 tags:
@@ -66,4 +66,4 @@ Result: Time-series pivot with calculated YoY growth fields
 ## Resources
 
 - [Microsoft Pivot Table Guide](https://support.microsoft.com/)
-- `${CLAUDE_SKILL_DIR}/references/pivot-formulas.md` for calculated field syntax
+- [`references/pivot-formulas.md`](references/pivot-formulas.md) for calculated field syntax

@@ -86,7 +86,7 @@ The inline Evidence result contains the artifact path, SHA-256, byte length,
 container format, architecture, word size, and byte order. When a `.dep-v0`
 section is present, `auditable_metadata` contains:
 
-- `section_name`, `.dep-v0` for ELF and PE or `__DATA,.dep-v0` for thin Mach-O;
+- `section_name`, `.dep-v0` for ELF and PE or `__DATA,.dep-v0` for Mach-O;
 - `file_offset` and `section_bytes`, the exact file range of the compressed section;
 - `compressed_bytes` and `uncompressed_bytes`;
 - `format_version`, the embedded integer, or `null` when the field is omitted;
@@ -124,8 +124,17 @@ verified. An omitted revision remains `null` and follows revision 0 semantics.
 Embedded names and versions are file content. They do not authenticate the
 packages or the compiler.
 
-Universal Mach-O containers are unsupported. Select a thin slice first. ELF,
-PE, and thin Mach-O are the supported containers.
+ELF, PE, thin Mach-O and one selected slice of a universal Mach-O are the
+supported containers.
+A universal (FAT) Mach-O needs `architecture` (`x86`, `x86_64`, `arm`
+or `arm64`; CLI `--architecture`). REA reads its own FAT table, without `lipo`,
+and validates the selected slice's range, alignment and Mach-O header CPU
+against the table. The result keeps the universal file as `artifact` (its
+SHA-256 and size), adds `selected_slice` with the slice offset, length, raw CPU
+type/subtype and the FAT table digest, and reports the section and rustc-path offsets as a
+file offset inside that slice. Without `architecture`, or when the file has no
+such slice or several, the request fails on `architecture` and lists the slices
+present. `architecture` on any other image is rejected rather than ignored.
 
 Package and dependency counts are checked against the minimum required JSON
 representation before graph allocation or schema cloning. Oversized graphs

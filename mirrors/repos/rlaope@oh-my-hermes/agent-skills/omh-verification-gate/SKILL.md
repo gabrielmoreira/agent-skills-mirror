@@ -67,6 +67,7 @@ Reasoning demand: `standard`
 
 Quality bar:
 
+- When adapting an existing capability, read `../omh-verification-gate/references/adaptation-quality.md` before accepting a plan, dispatching work, or claiming completion; carry its criteria and comparisons into tasks and evidence.
 - Tie every completion claim to the smallest check that proves it, then broaden for shared surfaces.
 - When a diff touches a declared generated path, name its source of truth and regeneration command before the edit rather than after a byte gate rejects it; a diff touching a generator and its output together is the correct shape, not a violation — load `references/generated-artifact-provenance.md` for the declaration and reporting rules.
 - Record every field the `observed_check_results/v1` artifact expectation below names, for each observed result (`origin` on a failing check only); a field left out is a gap in the record, not a shorter record.
@@ -126,8 +127,9 @@ included (where it sets no language, use the one the user wrote in), and OMH
 shapes structure and content only; OMH's record terms
 (surface, lane, wrapper, handoff, evidence boundary, not_observed) stay in
 records and tool calls, never in the sentence the user reads unless they ask
-about one; and when a stop condition or a decision the user owns ends the turn,
-offer the next action as a question rather than declaring what will not be done.
+about one; and when a real unresolved user decision or a useful briefing discussion
+remains, offer one specific, content-linked question. Completed work needs no question;
+omit unrelated non-action footers and generic offers to continue.
 Supporting paths are relative to this skill directory; sibling skill paths are
 relative to its parent. Resolve them from the host-provided skill base directory
 (`{baseDir}` on hosts that provide it), never a hardcoded install location.

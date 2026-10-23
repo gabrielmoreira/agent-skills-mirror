@@ -11,7 +11,7 @@ description: 'Track new token launches across DEXes with risk analysis and contr
 
   '
 allowed-tools: Read, Write, Edit, Grep, Glob, Bash(python:*launch_tracker*)
-version: 1.30.0
+version: 1.31.0
 author: Jeremy Longshore <jeremy@intentsolutions.io>
 license: MIT
 tags:
@@ -163,7 +163,7 @@ python launch_tracker.py chains
 
 ## Error Handling
 
-See `${CLAUDE_SKILL_DIR}/references/errors.md` for comprehensive error handling including:
+See [`references/errors.md`](references/errors.md) for comprehensive error handling including:
 
 - RPC connection issues and fallback chain
 - Rate limiting and backoff strategies
@@ -171,7 +171,7 @@ See `${CLAUDE_SKILL_DIR}/references/errors.md` for comprehensive error handling 
 
 ## Examples
 
-See `${CLAUDE_SKILL_DIR}/references/examples.md` for detailed examples including:
+See [`references/examples.md`](references/examples.md) for detailed examples including:
 
 - Finding high-risk tokens
 - Multi-chain monitoring scripts

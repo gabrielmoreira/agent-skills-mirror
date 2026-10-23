@@ -28,6 +28,9 @@ Open an agent’s model/adapter configuration or the instance adapter settings p
 ### `run-history`
 
 Open an agent run at `/agents/:agentId/runs/:runId` from the agent or task activity.
+The agent header has one Run now action. Administrators can enable
+Capture raw provider traces under the agent configuration’s Debugging section
+for future runs. The header shows Raw tracing on while that setting is enabled.
 
 For latency diagnosis with an operator OTLP endpoint, search the hashed run ID
 without restricting the root span name. Compare workspace preparation with its
@@ -51,7 +54,21 @@ Claude native setup uses the existing Anthropic API-key or subscription connecti
 flow. Record the selected account separately from successful execution; unavailable
 models/authentication and unsupported Legacy-only options must fail visibly.
 
+Claude CLI tests and runs also prepare a compatible private executable when a
+managed sandbox image's default CLI is too old for the selected model. Verify
+the command used for the hello test and task, reuse of a compatible private
+installation, and a blocking failure when installation cannot establish a valid
+version. Local, SSH and explicit custom commands retain operator management.
+Cloud onboarding must not offer shell commands the customer cannot run.
+
 Manual: Select the intended adapter and account, refresh model choices, and run its environment test. Save, reload, then execute a small task. Repeat with a deliberately unavailable account and verify the failure remains visible.
+
+For Legacy Codex, assign a service secret such as `SLACK_BOT_TOKEN` through agent
+configuration and run a task that checks its presence without printing its value.
+Check both ACP and CLI execution. Remove the binding and repeat on the next run.
+The assigned secret must reach shell tools; an unassigned host token and Codex's
+own login keys must remain unavailable. Verify the same delivery without an
+agent identity. Shell-policy metadata must contain names rather than values.
 
 Choose Codex as the harness; the UI displays its name/icon for both runners.
 Advanced identifies the automatic default and offers Paperclip Runner or Legacy.

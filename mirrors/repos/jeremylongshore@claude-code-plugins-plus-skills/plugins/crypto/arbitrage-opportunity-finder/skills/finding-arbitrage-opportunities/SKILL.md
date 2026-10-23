@@ -11,7 +11,7 @@ description: 'Detect profitable arbitrage opportunities across CEX, DEX, and cro
 
   '
 allowed-tools: Read, Write, Edit, Grep, Glob, Bash(crypto:arbitrage-*)
-version: 1.26.0
+version: 1.27.0
 author: Jeremy Longshore <jeremy@intentsolutions.io>
 license: MIT
 tags:
@@ -89,7 +89,7 @@ Detect and analyze arbitrage opportunities across cryptocurrency exchanges and D
 - **Detailed mode** (`--detailed`): All exchange prices, fee breakdown, slippage estimates, historical spread context
 - **Monitor mode**: Real-time updates with threshold alerts and trend indicators
 
-See `${CLAUDE_SKILL_DIR}/references/implementation.md` for exchange fee tables and output format examples.
+See [`references/implementation.md`](references/implementation.md) for exchange fee tables and output format examples.
 
 ## Error Handling
 
@@ -141,4 +141,4 @@ python ${CLAUDE_SKILL_DIR}/scripts/arb_finder.py calc \
 - [CoinGecko API](https://www.coingecko.com/en/api) - Free price data
 - [CCXT Library](https://github.com/ccxt/ccxt) - Unified exchange API
 - Uniswap Subgraph - DEX data
-- `${CLAUDE_SKILL_DIR}/references/implementation.md` - Exchange fee tables, configuration, advanced arbitrage types, disclaimer
+- [`references/implementation.md`](references/implementation.md) - Exchange fee tables, configuration, advanced arbitrage types, disclaimer

@@ -1,0 +1,78 @@
+# PR gate: the exact head's evidence. Auto-merge merges on "gate" alone; there is no
+# merge queue and no up-to-date requirement. Semantic breaks are caught on main.
+name: pr
+
+on:
+  pull_request:
+
+concurrency:
+  group: pr-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      checks: ${{ steps.plan.outputs.checks }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          sparse-checkout: .github
+          persist-credentials: false
+      - id: plan
+        run: echo "checks=$(jq -c '.checks | keys' .github/merge-loop.json)" >> "$GITHUB_OUTPUT"
+
+  check:
+    needs: plan
+    name: check (${{ matrix.check }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        check: ${{ fromJSON(needs.plan.outputs.checks) }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+      - name: check
+        env:
+          CHECK: ${{ matrix.check }}
+        run: bash .github/merge-loop/loop.sh run-check "$CHECK" pr_command
+
+  # The loop's agent PRs may not touch forbidden paths, delete tests or add skips.
+  # Reverts are exempt: undoing a commit removes the tests it added.
+  guard:
+    if: startsWith(github.head_ref, 'merge-loop/') && !startsWith(github.head_ref, 'merge-loop/revert-')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      # The guard and its config come from the base: a PR cannot loosen its own check.
+      - env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+          HEAD: ${{ github.event.pull_request.head.sha }}
+          REF: ${{ github.head_ref }}
+        run: |
+          git show "$BASE:.github/merge-loop/loop.sh" > "$RUNNER_TEMP/loop.sh"
+          git show "$BASE:.github/merge-loop.json" > "$RUNNER_TEMP/merge-loop.json"
+          kind=${REF#merge-loop/}; kind=${kind%%-*}
+          MERGE_LOOP_CONFIG="$RUNNER_TEMP/merge-loop.json" bash "$RUNNER_TEMP/loop.sh" guard "$BASE" "$HEAD" "$kind"
+
+  # Review is Claude Code Review, outside this file: it runs on Anthropic's side and posts
+  # a "Claude Code Review" check run. Keep that check out of the ruleset (shadow) until
+  # its findings hold up; the proof rule lives in REVIEW.md at the repository root.
+
+  gate:
+    if: always()
+    needs: [plan, check, guard]
+    runs-on: ubuntu-latest
+    steps:
+      - if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')
+        run: exit 1

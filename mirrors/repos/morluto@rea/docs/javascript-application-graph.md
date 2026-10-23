@@ -80,8 +80,8 @@ Graph coverage describes the analyzed artifact scope and resource limits, not
 runtime execution. A partial target alone does not imply omitted source.
 
 The directed relation vocabulary is `contains`, `loads`, `imports`, `maps_to`,
-`exposes`, `sends`, `invokes`, `handles`, `calls`, `persists_to`, `observed_as`,
-and `changed_from`. Provider names are deliberately absent from both
+`exposes`, `sends`, `invokes`, `handles`, `calls`, `accesses`, `persists_to`,
+`observed_as`, and `changed_from`. Provider names are deliberately absent from both
 vocabularies.
 
 For a `maps_to` edge targeting a source-map node, the edge carries

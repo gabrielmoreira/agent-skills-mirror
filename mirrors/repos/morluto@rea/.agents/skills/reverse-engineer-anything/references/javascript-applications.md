@@ -22,10 +22,10 @@ requires complete application analysis; `source_paths: []` is invalid, not an
 unfiltered request. `detail: "summary"` reduces delivery
 and does not by itself reduce analysis work.
 
-ASAR header/index admission is fixed at 16 MiB / 16777216 bytes for this
-release and has no runtime override. `source_paths`, `detail`, and
-`max_heap_mb` do not bypass or raise it. Analyze an extracted directory, or
-supply an archive whose header fits.
+ASAR header/index admission defaults to 16 MiB / 16777216 bytes;
+`REA_ASAR_MAX_HEADER_BYTES` (at most 256 MiB, set where REA starts) changes it.
+`source_paths`, `detail`, and `max_heap_mb` do not bypass or raise it. Or
+analyze an extracted directory.
 
 Exact `#alias` specifiers resolve through the importer's
 enclosing package `imports` map to package-local files; nested `node_modules`
@@ -58,6 +58,20 @@ Timeout or cancellation after source analysis begins retains partial Evidence
 in the same session. A returned `error.details.partial_observation` reference
 can be supplied directly to `inspect_analysis_view`. If the SDK cancels locally, retrieve its recorded ID from
 the Evidence bundle before inspecting the partial analysis.
+
+## Inventory route candidates without returning the application graph
+
+When the advertised schema supports `view`, use `detail: "summary"` with
+`view: {kind: "javascript-routes", collection: "routes", fields: ["path", "confidence"], limit: 20}`.
+The same view works with `analyze_web_bundle` on already selected captured sources.
+The complete source Evidence is retained; use its `parent_evidence_id` with
+`inspect_analysis_view` for `summary`, `routes`, `occurrences`, `sources`, or
+`unknowns`. Filter and batch IDs before requesting more fields, and follow
+`coverage.next_offset`. CLI selections require `--evidence_output` to keep the
+complete record. Static patterns, inferred deployment bases, heuristic system
+classification, and unavailable sources never establish route reachability or
+the complete application route denominator. See the
+[route inventory guide](https://github.com/morluto/rea/blob/main/docs/javascript-route-inventory.md).
 
 ## Read a module without repeating analysis
 

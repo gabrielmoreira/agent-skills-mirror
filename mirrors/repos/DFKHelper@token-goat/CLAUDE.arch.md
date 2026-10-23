@@ -385,6 +385,7 @@ token-goat is a TypeScript CLI bundled to `dist/token-goat.mjs` via esbuild. The
 | [`src/image_gif_encode.ts`](src/image_gif_encode.ts) | Re-encode an already-decoded animated GIF as delta frames. |
 | [`src/image_isobmff.ts`](src/image_isobmff.ts) | Header-only probe for ISO base media (ISOBMFF) still images: AVIF and HEIC/HEIF. |
 | [`src/image_ocr.ts`](src/image_ocr.ts) | OCR — extract text from text-heavy images (screenshots of a terminal, a stack trace, a table, an editor, a doc page) instead of paying vision tokens to reconstruct their pixels. |
+| [`src/image_slice.ts`](src/image_slice.ts) | Image slicing, difference calculation, and compact visual layout inspection. |
 | [`src/json_query.ts`](src/json_query.ts) | Narrow structural summary + path-based extraction for `token-goat json-outline` / `json-query`, so a multi-thousand-line JSON document never needs a full `Read` just to answer "wha |
 | [`src/pdf_extract.ts`](src/pdf_extract.ts) | PDF -> plain text extraction for `token-goat pdf-extract`, so a PDF's useful content reaches the model as text instead of forcing a full binary `Read` (which token-goat can't index |
 | [`src/sqlite_driver.ts`](src/sqlite_driver.ts) | A better-sqlite3-shaped facade over Node's built-in `node:sqlite`. |
@@ -436,6 +437,7 @@ token-goat is a TypeScript CLI bundled to `dist/token-goat.mjs` via esbuild. The
 | [`src/cli_upgrade.ts`](src/cli_upgrade.ts) | Upgrade command for token-goat. |
 | [`src/cli_waste.ts`](src/cli_waste.ts) | CLI handler for `token-goat waste`. |
 | [`src/codex_rules.ts`](src/codex_rules.ts) | Codex's half of rewrite_permission.ts: whether a Codex shell rewrite may ship, read off the prefix rules in every Codex rules layer. |
+| [`src/cold_gap.ts`](src/cold_gap.ts) | Cold-cache re-write accounting behind `session-audit`. |
 | [`src/command_error.ts`](src/command_error.ts) | The one stderr rendering of a command failure (`token-goat: <message>`) and the error class command handlers throw to reach it. |
 | [`src/command_intent.ts`](src/command_intent.ts) | Intent-based suggestions for command names that don't exist. |
 | [`src/config_commands.ts`](src/config_commands.ts) | D3 commands: config, project, compact-doc, fetch-image, history. |
@@ -510,6 +512,8 @@ token-goat is a TypeScript CLI bundled to `dist/token-goat.mjs` via esbuild. The
 | [`src/indexed_roots.ts`](src/indexed_roots.ts) | Which projects were indexed on purpose: by `token-goat index`, or by the first index `install` queues. |
 | [`src/indexed_source.ts`](src/indexed_source.ts) | Resolves the document a stored symbol line range actually addresses. |
 | [`src/injection_scan.ts`](src/injection_scan.ts) | Lexical scan for prompt-injection attack patterns in untrusted fetched content. |
+| [`src/inline_grep_scan.ts`](src/inline_grep_scan.ts) | The lines of a file as ripgrep tests a pattern against them, and the bounded set of files a directory-scoped Grep could search, for the inlined Grep answer. |
+| [`src/inline_symbol_answer.ts`](src/inline_symbol_answer.ts) | Answers a single-file structural Grep with the one symbol it names, instead of a hint that names the command which would fetch it. |
 | [`src/install_index.ts`](src/install_index.ts) | First index of the project `install` runs in. |
 | [`src/jsonc_text.ts`](src/jsonc_text.ts) | JSONC (JSON with line and block comments and trailing commas) support shared by the MCP bridge writers and the JSON read commands. |
 | [`src/known_roots.ts`](src/known_roots.ts) | Exports: `isTooShallowToPrune`, `recordKnownRoot`, `sweepExpiredKnownRootMarkers`, `recordKnownRootThrottled` |
@@ -604,6 +608,7 @@ token-goat is a TypeScript CLI bundled to `dist/token-goat.mjs` via esbuild. The
 | [`src/unbounded_walk.ts`](src/unbounded_walk.ts) | Refuses a shell command that walks a whole filesystem root or the home directory with no depth bound, or that starts the Windows `find.exe` text search with nothing to read, because both outlive a timed-out shell and keep burning CPU. It has its own scanner because `shlexSplit` consumes backslashes (so `C:\` stops being a path) and `splitShellSegments` drops which operator joined two commands (a piped `find "x"` reads stdin, a chained one waits on it forever). The scanner skips comments, heredoc bodies and quoted text. |
 | [`src/untrusted_fence.ts`](src/untrusted_fence.ts) | The single decision point for "should this text be fenced, and under what notice". |
 | [`src/url_policy.ts`](src/url_policy.ts) | Shared allow/deny matching for URL policy (`webfetch.allow` / `webfetch.deny`). |
+| [`src/verification_commands.ts`](src/verification_commands.ts) | The checks beyond named test, lint, typecheck and build runners: validator and `--self-test` scripts that carry only path or selector arguments. A git commit or push is deliberately not one: a hook file existing does not prove it checks anything. |
 | [`src/verification_state.ts`](src/verification_state.ts) | What the session has verified. |
 | [`src/video_chapters.ts`](src/video_chapters.ts) | Reads embedded chapter markers and subtitle-stream metadata out of a video file via `ffprobe`, so an agent can see a video's structure without downloading/transcoding it. |
 | [`src/vscode_duplicate.ts`](src/vscode_duplicate.ts) | Duplicate-invocation suppression for VS Code agent hooks. |

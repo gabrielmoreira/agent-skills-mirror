@@ -9,7 +9,7 @@ description: 'Build leveraged buyout (LBO) models in Excel with debt schedules a
 
   '
 allowed-tools: Read, Write, Edit, Grep, Glob, Bash(cmd:*)
-version: 1.21.0
+version: 1.22.0
 author: Jeremy Longshore <jeremy@intentsolutions.io>
 license: MIT
 tags:
@@ -66,4 +66,4 @@ Result: Integrated model with synergy phase-in and accretion analysis
 
 - [Macabacus LBO Modeling](https://macabacus.com/)
 - [WSO PE Interview Prep](https://www.wallstreetoasis.com/)
-- `${CLAUDE_SKILL_DIR}/references/lbo-formulas.md` for debt schedule templates
+- [`references/lbo-formulas.md`](references/lbo-formulas.md) for debt schedule templates

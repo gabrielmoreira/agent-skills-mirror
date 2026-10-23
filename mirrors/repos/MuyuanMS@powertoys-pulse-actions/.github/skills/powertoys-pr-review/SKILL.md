@@ -53,7 +53,7 @@ If a prerequisite is missing, guide the user through setup ([references/prerequi
 8. The local worktree must build successfully before a deep code review is marked complete.
 9. **Always sync the fork's main before creating or updating the fork PR** to prevent diff bloat from a stale base (Step 2c).
 10. **Resume, do not restart (Step 0).** Before mirroring, check for a prior interrupted run on PR `N` and pick up from the matching step instead of re-mirroring. Re-mirroring clobbers prior commits and review replies.
-11. **The fork Copilot loop (Steps 4–8) is not optional and is independent of the posting decision.** "Just show me" / "do not post" changes only **Step 10**. You must still drive the fork loop to convergence: fix valid issues, commit, push, reply-and-resolve every Copilot thread, and re-request review until a freshly-requested review returns **zero** new comments and there are **zero** unresolved Copilot threads. Final suggestions come from the *converged* net diff, never raw round-1 output.
+11. **The fork Copilot loop (Steps 4–8) is required unless the grounded architectural early-exit gate applies.** "Just show me" / "do not post" changes only **Step 10**. Drive the loop toward convergence within the three-request limit (initial request plus at most two re-requests): fix valid issues, commit, push, reply-and-resolve every Copilot thread, and request another pass only when permitted. Count actual requests across preserved lanes and sessions; recovery, head changes and scheduled ticks never reset the allowance. Existing histories at or above three receive no new requests; consume saved/in-flight results and finish validation/drafting. Clean approval requires a fresh **zero**-comment result and **zero** unresolved threads. At the cap, draft independently grounded and validated corrections without claiming clean convergence; never discard valid findings merely because the service repeated unsupported comments. Final suggestions come from validated upstream corrections, never unassessed raw round-1 output.
 12. **For 2+ independent PRs, review them in parallel unless the user explicitly requests sequential execution.** Fan out one background worker per PR (cap 3–5 concurrent), with an isolated branch/worktree and independent convergence loop. If sub-agents are unavailable, pipeline all PRs in one agent so their review requests and waits remain concurrently in flight. Sync the base once, serialize local builds, and keep the orchestrator as the single writer of dashboard data. Never leave any PR stranded at round 1. See [batch-parallel.md](./references/batch-parallel.md).
 13. **Never mention a fork repository, fork PR, worktree, internal review loop, or private validation provenance in comments posted to the original PR.** Store that evidence only under `internalEvidence`; public payloads must be self-contained.
 14. **Map every finding to the current diff before drafting.** An inline item
@@ -160,6 +160,15 @@ If a prerequisite is missing, guide the user through setup ([references/prerequi
     unfinished, leave the review in progress; never claim an untested patch
     failed merely to get prose published.
 
+28. **Check intent and architecture before fixing the first review or requesting round two.**
+    Follow [architecture-review.md](./references/architecture-review.md).
+    A large first-round response is a hint to investigate the overall approach,
+    not a defect verdict. Independently trace whether the exact upstream design
+    meets the PR's stated goal. A grounded design-level flaw ends new cloud
+    rounds for that head, even after round one; draft consolidated supported
+    comments without implementing a speculative replacement or claiming clean
+    convergence. Preserve the decision privately on resume.
+
 ## Phase 0: Context & Process Review
 
 The half Copilot code review cannot do. It reads the PR description, the full conversation timeline, the CI/checks status, and the linked issue, then decides whether the PR clears PowerToys' *process* bar. Everything Phase 0 produces is **drafted only**. Full rules, the P1–P9 gate table, the compound-quality close signal, and per-gate reply templates are in **[references/phase0-context-review.md](./references/phase0-context-review.md)**.
@@ -184,13 +193,17 @@ These steps are the code-review engine. In **self-check mode** skip Steps 1–2c
 | 2 / 2b / 2c | **Worktree**, rebase on latest `main`, validate the fork diff matches the original scope | [setup-and-mirror.md](./references/setup-and-mirror.md#step-2-create-local-worktree) |
 | 3 | **Prepare and checkpoint the focused validation plan** from changed paths; do not compile yet | [build-and-test.md](./references/build-and-test.md#step-3-prepare-the-validation-plan) |
 | 4 | **Request Copilot review** on the fork PR | [copilot-review-loop.md](./references/copilot-review-loop.md#step-4-request-copilot-review) |
-| 5–6 | **The loop** — fix, push, reply-and-resolve, re-request until convergence | [copilot-review-loop.md](./references/copilot-review-loop.md#step-6-iterate-the-loop) |
+| 5–6 | **Architecture gate, then the loop** — investigate intent/design first; fix and iterate only if appropriate | [copilot-review-loop.md](./references/copilot-review-loop.md#step-6-iterate-the-loop) |
 | 7 / 7b | **Build the converged tree once** (plus required exact-upstream/suggestion candidates) + end-to-end test instructions | [build-and-test.md](./references/build-and-test.md#step-7-final-build) |
 | 8 | **Summarize** the converged net diff | [copilot-review-loop.md](./references/copilot-review-loop.md#step-8-summarize) |
 | 9 | **Draft the review** — context asks + code suggestions with severity | [drafting-and-posting.md](./references/drafting-and-posting.md#step-9-draft-the-review) |
 | 10 | **Wait for approval**, freshness re-check, then post the approved actions | [drafting-and-posting.md](./references/drafting-and-posting.md#step-10-wait-for-approval) |
 
-Convergence (Definition of done for Steps 5–6): the most recent freshly-requested Copilot review returned **zero** new inline comments and **zero** unresolved Copilot threads remain. Then run Step 7's serialized build before calling the review complete or drafting Step 9 suggestions. If any code changes after a successful build, rebuild the final tree.
+Convergence (Definition of done for Steps 5–6): the most recent freshly-requested Copilot review returned **zero** new inline comments and **zero** unresolved Copilot threads remain. Then run Step 7's serialized build before calling the review complete. At the three-request cap, stop new requests but still draft every independently grounded, exact-head validated Step 9 finding; a nonzero last automated response is not a reason to discard valid comments. Do not claim clean approval. Keep automation/toolchain exceptions private, not in dashboard PR content. If any code changes after a successful build, rebuild the final tree.
+
+Architectural early exit is a separate supported outcome, not convergence:
+follow `references/architecture-review.md` to draft a proven design concern
+without further requests or an unnecessary reviewer-authored redesign.
 
 ## Fork Configuration
 
@@ -227,6 +240,7 @@ Auto-detect these at the start of each session with [scripts/Get-ForkConfig.ps1]
 - [prerequisites.md](./references/prerequisites.md) — fork, clone, Copilot review, and VS build-tool setup
 - [setup-and-mirror.md](./references/setup-and-mirror.md) — Steps 0–2c: resume, mirror, worktree, rebase, diff validation
 - [copilot-review-loop.md](./references/copilot-review-loop.md) — Steps 4–8: request, fix/push/resolve loop, summarize
+- [architecture-review.md](./references/architecture-review.md) — first-round intent/design investigation and grounded early exit
 - [build-and-test.md](./references/build-and-test.md) — Steps 3, 7, 7b: local build, module chain, end-to-end tests
 - [migration-and-resume.md](./references/migration-and-resume.md) — move active reviews from older skill versions and resume durable loop state
 - [drafting-and-posting.md](./references/drafting-and-posting.md) — Steps 9–10: suggestion format, freshness re-check, posting

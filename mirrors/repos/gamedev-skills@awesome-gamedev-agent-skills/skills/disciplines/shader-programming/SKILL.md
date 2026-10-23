@@ -45,7 +45,11 @@ the engine's renderer settings.
    divergent branches.
 5. **Pass data via uniforms** (constant per draw) and **varyings** (interpolated
    vertex→fragment). Keep texture samples few; they dominate cost.
-6. **Verify visually and on target hardware.** Shaders that look right on desktop
+6. **Validate source before visual testing when the tools are already available.** For
+   GLSL, run `glslangValidator path/to/shader.frag` with the matching stage suffix;
+   for WGSL, run `naga path/to/shader.wgsl`. Check Godot `.gdshader` files by
+   opening the project in Godot, which has no standalone validator for them.
+7. **Verify visually and on target hardware.** Shaders that look right on desktop
    can break on mobile (precision, missing features). Test where it ships.
 
 ## Patterns

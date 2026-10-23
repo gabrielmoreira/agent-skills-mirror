@@ -474,6 +474,12 @@ Per-OS setup notes:
 
 ## Error recovery
 
+Every action result and every error ends with one line saying what happened: `[confirmed]` (an `expect` check saw the effect), `[unverified]` (it ran; nothing checked it — pass `expect` where the action takes it), `[refused · CODE · hint · next]` (it did not run: safety gate, consent, locked screen, a system dialog has the keyboard) or `[failed · CODE · hint · next]`. Codes are stable (`NOT_FOUND`, `TIMEOUT`, `STALE_REF`, `DEVIATION`, `INVALID_ARGS`, `NEEDS_CONFIRMATION`, …); `next` is a safe call to make next. A `DEVIATION` may have taken: read the screen before retrying.
+
+Image-space clicks are bound to the screenshot they came from: each screenshot reply names its id (`Screenshot id: s3`), and a click, drag or scroll is refused (`STALE_SCREENSHOT`, nothing moves) when a window the screenshot did not show (a dialog, another app) is in front now, or when it passes an older `shot`. Clicking into a window that was on the screenshot is fine. Take a fresh screenshot, or act by name.
+
+Typing (`computer type`, `accessibility smart_type`) reads the field back: `Typed N chars (keys, read back ✓)` means the field shows it. Text ending in `\n` is submitted only when the field ends with the typed text; otherwise `READBACK_MISMATCH` (an autocomplete suggestion took over: press Delete, check, then Return).
+
 | Problem | Fix |
 |---|---|
 | Port 3847 not responding | `clawdcursor agent` - wait 2s - `GET /health` |

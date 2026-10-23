@@ -53,9 +53,22 @@ passed or failed, so the status and the summary are all you have:
 - `completed` is not validation. On some host builds a return that failed the
   contract arrives as completed, with the raw text and no marker. Before you
   read its verdict, check the summary against the schema yourself: one JSON
-  value carrying `verdict`, `confidence`, `findings`,
+  value carrying `verdict`, `confidence`, `findings`, `spec_axis`, `could_not_assess`, `verification_gaps`,
   each finding's required fields, and `checked_clean` on a `ship`. A summary
   that does not match is `not_observed`.
+
+Check the nested contract too: `spec_axis` must carry `status: assessed` with
+non-empty `verdicts`, each with a non-blank `claim`, non-empty `requirements`
+pointers, a `verdict` of `met` or `unmet`, and non-blank `evidence`; or
+`status: not_assessed` with a non-blank `reason`. `could_not_assess` and
+`verification_gaps` must be arrays, even if empty. Each could-not-assess item
+names a surface and reason. Each gap carries non-blank `path`, `line_range`
+and `evidence`, without `priority` or `confidence`; ordinary findings retain
+both. Reject `severity` on gaps too. Require non-empty `checked_clean` on a
+`ship`, with non-blank items, and check all provided closing-list items and line-range syntax as in
+`review-dispatch.md`. Then separately reject inverted ranges and confirm
+real files, actual reads, revision/file bounds and claim truth: the schema
+does not prove them. Gaps do not automatically block; apply repository policy.
 
 Two readings go wrong in either shape:
 

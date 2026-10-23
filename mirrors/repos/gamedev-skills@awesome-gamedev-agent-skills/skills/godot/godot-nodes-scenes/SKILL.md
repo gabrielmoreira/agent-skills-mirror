@@ -37,6 +37,14 @@ decoupling → `godot-signals-groups`; physics bodies/collisions → `godot-phys
 5. **Use autoloads for global state/services** (game state, audio, scene switching) —
    registered in Project Settings > Globals (Autoload), accessible by name everywhere.
 6. **Free nodes with `queue_free()`** and guard later access with `is_instance_valid()`.
+7. **Check references before you finish.** After creating, moving or renaming scenes,
+   resources or scripts, run `python scripts/check_godot_project.py <project-dir>` (no
+   Godot install needed; `--json` for machine-readable output). Fix every `ERROR` (missing
+   or wrong-case `res://` paths, undeclared `ExtResource`/`SubResource` ids, bad `parent=`
+   paths, missing main scene or autoload) and re-run until it exits 0. Warnings such as a
+   stale `path=` that Godot still finds by uid are safe but worth fixing. Run the script
+   path relative to this skill directory, or resolve the installed skill path first. It
+   needs Python 3.10+ and nothing else, and it does not replace opening the project in Godot.
 
 ## Patterns
 
@@ -114,6 +122,8 @@ func go_to_level_2() -> void:
 
 - For scene inheritance, `owner`/ownership when saving scenes from code, groups vs
   unique names, and node-path edge cases, read `references/tree-and-instancing.md`.
+- `scripts/check_godot_project.py` — read-only reference checker for a Godot 4.x project;
+  `--help` lists every check and the exit codes.
 
 ## Related skills
 

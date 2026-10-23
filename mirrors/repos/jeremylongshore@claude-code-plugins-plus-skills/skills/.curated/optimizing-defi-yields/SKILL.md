@@ -11,7 +11,7 @@ description: 'Find and compare DeFi yield opportunities across protocols with AP
 
   '
 allowed-tools: Read, Write, Bash(crypto:yield-*)
-version: 1.28.0
+version: 1.29.0
 author: Jeremy Longshore <jeremy@intentsolutions.io>
 license: MIT
 tags:
@@ -119,7 +119,7 @@ Before using this skill, ensure you have:
 
 ## Error Handling
 
-See `${CLAUDE_SKILL_DIR}/references/errors.md` for comprehensive error handling.
+See [`references/errors.md`](references/errors.md) for comprehensive error handling.
 
 Common issues:
 
@@ -129,7 +129,7 @@ Common issues:
 
 ## Examples
 
-See `${CLAUDE_SKILL_DIR}/references/examples.md` for detailed usage examples.
+See [`references/examples.md`](references/examples.md) for detailed usage examples.
 
 ### Quick Examples
 

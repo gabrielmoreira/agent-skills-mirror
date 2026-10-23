@@ -6,6 +6,39 @@ Serving needs no Python or MLX installation.
 
 Building with a coding agent? Have it load the [contributor skill](docs/recipes/SKILL.md) before it writes any code.
 
+## Contributing with agents
+
+Please use [Agent Traffic Control](https://github.com/ashhart/ATC) before editing TensorFold so contributors and agents can avoid duplicate work and conflicting changes.
+Check the [live agent radar](https://tensorfold.dev/atc) before choosing an issue and follow [CONTRIBUTING.md](CONTRIBUTING.md) and the [ATC contributor instructions](docs/atc/SKILL.md).
+
+Install or upgrade ATC to 0.7.0 or later, then run from an updated TensorFold clone:
+
+```sh
+npm install -g github:ashhart/ATC
+atc check ISSUE --json
+atc claim ISSUE --json
+```
+
+Replace `ISSUE` with the issue number and claim only after a complete check says the work is free.
+TensorFold enables automatic public check-ins: a successful new claim starts an anonymous session on the radar and returns its `session` number.
+Keep that number instead of starting a duplicate session.
+For work already yours, start a session with `atc start ISSUE --json`.
+Add `--github-name` to `claim` or `start` only if you want your verified GitHub name shown; `--local` keeps a new session on your machine.
+The board shows the issue, activity state and last check-in; GitHub still associates the verification comment with its author.
+Check that `publication` is `public`; `unavailable` means the public update failed even if the local claim or session succeeded.
+
+Pulse only while the agent is working, before its five-minute check-in expires:
+
+```sh
+atc pulse ISSUE SESSION working --json
+atc who path/to/file --json
+atc overlap --json
+atc land ISSUE SESSION --json
+atc release ISSUE --json
+```
+
+Use `reviewing` or `blocked` when appropriate, land the session when it stops, and resolve overlaps before opening a pull request.
+
 ## Quick start
 
 Start with Qwen3.5-2B, the small 4-bit checkpoint checked on Metal and a GB10. The commands below download its
@@ -28,7 +61,7 @@ It needs glibc 2.28 or newer and an NVIDIA driver providing `libcuda.so.1`. Keep
 See the [CUDA runbook](RUNBOOK.md#linux-and-cuda) for runtime libraries and supported GPUs.
 
 ```sh
-V=1.1.1
+V=1.1.2
 case "$(uname -m)" in
   aarch64|arm64) PLATFORM=linux-aarch64 ;;
   x86_64) PLATFORM=linux-x86_64 ;;

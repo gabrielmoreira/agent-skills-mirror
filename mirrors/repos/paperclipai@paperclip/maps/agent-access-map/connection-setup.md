@@ -137,6 +137,13 @@ gateway; they cannot export the key. [Database-backed fixtures](../../server/src
 cover selected vault ownership and gateway reads/writes with provider responses
 replaced by fixtures. Real provider authentication remains unqualified.
 
+Unikraft native setup uses an organization API token in the selected personal or
+company vault grant. It does not borrow `unikraft login` state or `UKC_TOKEN`.
+Agents use assigned provider tools through the run-bound gateway, limited to the
+published metro hosts, and cannot export the token. [Database-backed fixtures](../../server/src/__tests__/unikraft-connection.test.ts)
+cover vault ownership and gateway reads, writes and sandbox commands with
+fixture provider responses. Real provider authentication remains unqualified.
+
 ## `handoff`
 
 Capability ID: `connection-setup/handoff`.

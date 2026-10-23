@@ -324,6 +324,15 @@ create new approval gates. Distinguish proposed, packaged and installed behavior
 
 ## UI Design Standard
 
+**Avoid unnecessary secondary labels and descriptions. Let the layout do the explaining.**
+Use hierarchy, grouping, spacing and clear control names to make the interface
+understandable. Remove slogans, heading restatements and implementation or Agent
+instructions from product UI. Improve unclear layout before adding explanatory
+paragraphs. Preserve accessible control names, necessary input constraints,
+permission and activation consequences, errors, recovery and action outcomes;
+place optional help on demand. Apply this in the whole-page visual review,
+not only to isolated components or by imposing a blanket text-length limit.
+
 Before changing or reproducing any UI (including websites, dashboards, desktop,
 documentation, prototypes, screenshots or framework migrations), read
 [the design system](docs/development/design.md), especially
@@ -332,6 +341,13 @@ Apply it before implementation and in PR visual evidence. Match an approved
 design source and use the system for unspecified details. For production
 interactions follow task-first delivery above; label simulations and prototypes
 without claiming packaged or installed readback.
+
+Carry the primary user question, default-versus-detail choices and the
+[populated whole-page review](docs/development/design.md#populated-page-review)
+in the existing task/PR evidence. Inspect the affected page with long, repeated
+content and mixed states, not only isolated components or a quiet fixture.
+Reading the contract and passing UI tests do not establish that the page is
+readable; name the observed composition and any remaining failure.
 
 ## Public And Private Boundary
 

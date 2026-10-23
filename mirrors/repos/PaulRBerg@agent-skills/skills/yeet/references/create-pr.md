@@ -18,6 +18,9 @@ that will be published.
 
 Use `repository.defaultBranchRef.name` as the default base branch unless args specify a base.
 
+The existing-PR check and the CODEOWNERS lookup do not depend on the repository context. Run them in the same turn as
+the context call. Only the base fetch depends on `defaultBranchRef`.
+
 ## Parse Arguments Naturally
 
 - "draft" or "--draft" → draft mode
@@ -63,7 +66,7 @@ Use an admonition only for a material warning that would otherwise be missed.
 
 ```bash
 BRANCH=$(git branch --show-current)
-gh pr list --state all --head "$BRANCH" --json number,url --jq '.[0]' 2>/dev/null
+gh pr list --state open --head "$BRANCH" --json number,url --jq '.[0]' 2>/dev/null
 ```
 
 IF existing PR found: ERROR "PR already exists for this branch: $URL". Do not create or update.

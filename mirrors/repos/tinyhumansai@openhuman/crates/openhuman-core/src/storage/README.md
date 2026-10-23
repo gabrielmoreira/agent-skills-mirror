@@ -104,13 +104,28 @@ it with the core stopped.
   need. `driver_has_cross_process_cas(driver)` is the same answer from a
   name, for the boot guard, which judges a URL before opening anything.
   Memory and file drivers coordinate only within one process.
-- `blob_sweep`: reclaims expired blobs (`StorageBackend::sweep_expired_blobs`)
+- `blob_sweep`: reclaims expired blobs (`BlobStore::sweep_expired`)
   for `local`, each known agent scope and each provisioned SaaS profile
   (`u:<id>` plus the blob-owning modules' scopes for it) every hour,
   spawned with the cron `ServiceSet` switch (`core::runtime::services`; not
   gated on `[cron] enabled`, since it reclaims storage rather than running
   jobs). Each scope's sweep is bounded by `SCOPE_SWEEP_TIMEOUT`; a timeout
   counts as a failed sweep and is retried on the next tick.
+- `sweep_unreferenced_blobs`: an explicit maintenance helper that pages
+  physical blob metadata, keeps unknown or cutoff-equal ages, asks the caller
+  whether each old key is referenced, and stops on the first error while
+  preserving earlier deletions. It is not activated by the periodic sweeper:
+  reference checking and deletion are separate operations, so a caller must
+  coordinate blob writers/reference creation with cleanup or use immutable
+  keys, with a grace period longer than the write-to-reference delay.
+- `journal_maintenance`: invokes TinyAgents' `maintain_run_journals` with the
+  host's configured retention and clock. It visits local and known agent
+  scopes plus module scopes, and only profiles currently open under this
+  process's live lease fence. Dormant profiles are handled after this host
+  opens them; cluster scope is excluded. The successful one-shot inactive-run
+  backfill marker is stored per scope in
+  `openhuman.journal_backfill`. Journal sealing, active-run checks, and
+  timestamp-fenced retention remain owner behavior.
 - `fence` / `fenced_backend`: lease-epoch write fencing (see
   [Write fencing](#write-fencing)).
 - `scope_for_profile(profile_id)`: the scope a SaaS profile's records live
@@ -188,9 +203,13 @@ unique among live processes.
 | `DocumentLeases` | a thin adapter over tinystoragedrivers' `Leases` (`tsd.leases`, owner `profiles`, scope `cluster`); the record, CAS loop, epoch rules and fence are tsd's | clustered nodes on a driver with cross-process CAS |
 | `LocalLeases` | an exclusive `fs2` flock on `<root>/<sha256(key) hex>/.lease`, record in `.lease.json` beside it; no expiry, the OS drops the lock when the process dies | hosts without a backend |
 
-The move from the v1 `leases` collection runs once per cluster scope
-(`profiles::storage_schema::migrate_legacy_leases`) and is a stop-the-world
-cutover like the rest of schema v2: every node must run this version.
+The v1 `leases` conversion is retained as a typed transform in
+`profiles::storage_schema::upgrade_lease_records`. A host legacy-importer must
+read the old profile lease records and import the transformed records into the
+`openhuman.leases` collection in `cluster` scope before clustered profile
+serving relies on them. The v2 boot path does not scan or mutate legacy
+collections; until the host importer performs that cutover, old lease rows
+remain untouched and are not visible to `DocumentLeases`.
 
 Keys are 1 to 200 bytes of ASCII letters, digits and `- _ . @`, not starting
 with `.`, so they are safe as directory names and document ids. The scope
@@ -351,7 +370,7 @@ storage itself.
 ## Schema, scopes and boot
 
 - `scope.rs`: the one scope grammar (`tenant_scope`, `scope_for_profile`, `scope_for_agent`, `scope_for_module`), built on tsd's `Scope::tenant/local/agent/module`.
-- `schema.rs`: `owner_schemas()` and the composed `registry()`; `module_items(owner)` feeds the generated module grants.
-- `boot.rs`: `prepare_and_migrate`, called by `open`: prepare, scope move, then per scope the importers and `Registry::migrate`.
+- `schema.rs`: `collection_owners()` validates linked crates' `CollectionSpec` declarations without merging owners; `module_collections(owner)` feeds module grants.
+- `boot.rs`: `prepare_and_migrate`, called by `open`, ensures each linked crate's collections in the host's local and cluster scopes. Tenant, agent and module scopes are prepared by their owners when opened.
 - `scope_move.rs`: the resumable copy of v1 scopes (`profile:`, `<profile>~<agent>`, raw agent ids, `module:<id>@<base>`, the `*-sha256:` fallbacks) into the v2 scopes.
-- The generated reference is `docs/storage-schema.md`; `node scripts/ci/check-storage-schema.mjs` lints it.
+- The generated reference is `docs/storage-schema.md`; `node scripts/ci/check-storage-schema.mjs` lints the current collection names, indexes, expiry fields and search fields.

@@ -94,7 +94,7 @@ SCOPE: <what was inspected>
 CHECKS: <commands and outcomes>
 
 BLOCKER (N)
-1. path:line — finding
+1. path:line: finding
    Evidence: <observation>
    Fix: <smallest corrective action>
 

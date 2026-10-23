@@ -106,6 +106,9 @@ ring and star response, localized bloom, and the complete filmic composite.
 
 ## Routing boundary
 
+Use `$threejs-procedural-materials` and `simulated-paper-burning` when flames
+must be coupled to a burning sheet's mechanics, char fracture and soot.
+
 Use `$threejs-temporal-surfaces` only for the screen-space
 frost/touch-history pipeline. Use `$threejs-precipitation-surfaces` for
 falling rain or snow, splash flipbooks, and weather events that alter ground

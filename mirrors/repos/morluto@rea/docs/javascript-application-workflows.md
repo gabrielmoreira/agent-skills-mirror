@@ -183,6 +183,11 @@ registrations/removals and dispatch, Node timers and cancellation handles, async
 `node:child_process` creation and ownership, configuration sources and direct
 defaults, request construction and response consumers, parse/coercion/
 validation boundaries, and built-in resource acquisition/release.
+Global timer, `fetch`, `WebSocket`, `JSON.parse`, and coercion calls receive
+these built-in effects only when the file has no visible possible write to that
+global, including a computed write through a global object. The check does not
+evaluate order or reachability, so a later or guarded polyfill write also
+removes the resolved effect.
 
 Local callback candidates do not establish a complete target set when a
 conditional write may leave a parameter, catch binding, or uninitialized

@@ -3,7 +3,7 @@ name: scanning-for-data-privacy-issues
 description: Scan for data privacy issues and sensitive information exposure. Use
   when reviewing data handling practices. Trigger with 'scan privacy issues', 'check
   sensitive data', or 'validate data protection'.
-version: 1.23.0
+version: 1.24.0
 allowed-tools: Read, Write, Edit, Grep, Glob, Bash(security:*), Bash(scan:*), Bash(audit:*)
 license: MIT
 author: Jeremy Longshore <jeremy@intentsolutions.io>
@@ -27,7 +27,7 @@ anonymization or pseudonymization of sensitive fields.
 - Access to the target codebase and configuration files in `${CLAUDE_SKILL_DIR}/`
 - Knowledge of the data types processed by the application (PII categories, PHI, financial data)
 - Standard shell utilities and Grep/Glob available for pattern matching
-- Reference: `${CLAUDE_SKILL_DIR}/references/README.md` for scanner API documentation, GDPR compliance guide, and sensitive data pattern definitions
+- Reference: [`references/README.md`](references/README.md) for scanner API documentation, GDPR compliance guide, and sensitive data pattern definitions
 
 ## Instructions
 

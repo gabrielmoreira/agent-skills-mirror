@@ -113,14 +113,39 @@ The loopback Chat server exposes `POST /api/chat/content-media` for list,
 inspect, render and cancel. Render/cancel use the current revision; the server
 binds the registered Goal/source route and rejects a different selected Goal,
 foreign origin or filesystem fields. Rendering runs in a bounded background
-worker so the page remains responsive. Polling occurs only while a render is
-pending and stops after a terminal readback.
+worker so the page remains responsive. The packaged production path is **Goal →
+Files → Content artifacts**, reached from the existing Goal conversation. Capability
+settings do not host production or reference workbenches. Returning to the
+conversation retains its Goal and does not send a message. Delivery requirements
+and checks reuse the existing Goal acceptance owner used by non-media artifacts;
+this media transport owns neither generic acceptance nor a second approval store.
+This route remains Goal-scoped; ordinary project conversations without a Goal
+are not silently assigned one.
+
+Reading saved work does not start polling. An explicit render observes its own
+pending operation until terminal readback, a failed read or leaving the view;
+opening a previously pending record only reads saved state. Stopping observation
+does not cancel the renderer or a cloud operation.
 
 `GET /api/chat/content-media/file` serves only fixed verified files from that
 composition, with byte ranges for playback, no-store and same-origin resource
 policy. It refuses escaping filenames, non-ready and damaged artifacts; it
 does not serve the private manifest or source files. Browser error projections
 do not include provider stderr or private paths.
+
+New preview/download links include both `revision` and the exact file `sha256`.
+The transport validates the current record revision and hashes the opened file
+descriptor before serving a full or ranged response. Missing, duplicated or
+invalid version fields, a changed composition revision and different bytes are
+unavailable; a prior link cannot silently return a replacement. Immutable image
+and footage records retain their separate original identities. Both version
+fields are optional together for compatibility with existing verified current-file
+links. Neither form certifies creative quality, independent review or acceptance.
+
+中文：制作与预览从当前 Goal 的“成果 → 内容作品”进入，设置页仅保留配置。
+“返回当前对话”不发送消息；交付检查复用已有 Goal 验收，不增加媒体私有审批。
+此入口尚不支持无 Goal 的普通项目对话，也不会自动创建 Goal。预览与下载绑定修订和
+文件摘要；旧修订或不同字节不会被静默替换。浏览保存状态不启动制作、生成或轮询。
 
 Missing provider, changed source, stale revision, text/glyph overflow, short
 footage, invalid narration timing, cancellation, stopped host and damaged bytes
@@ -129,6 +154,10 @@ or repair the existing extension and retry. No failure creates publication
 authority, fills missing footage, infers a creative pass or changes a Goal.
 
 Mechanical rendering, creative quality, audience understanding and operations
+impact have separate evidence. The optional generated-footage path below
+shares this owner; interactive learning and other providers are not silently
+activated by this protocol.
+
 impact have separate evidence. Generated image/video assets and footage from
 authored HTML, game or mini-world works can reuse this source-bound composition
 path. Choose their authoring tools for the requested work; a new form does not
@@ -170,6 +199,119 @@ missing bpy does not disable ordinary 2D work. A failed 3D attempt retains its
 prepared input and supports retry after dependency repair. No fallback replaces
 3D with a code projection. Mechanical readiness still does not establish
 creative quality, audience understanding or publication approval.
+
+## Optional cloud-footage intents
+
+`content-ops generation prepare/submit/check/collect/inspect/list/cancel` uses
+the existing Goal-scoped media workspace and optional `loopx-media` provider.
+The shared `content_media_generation` TypeScript owner validates immutable
+`content_ops_generation_plan_v0` drafts, quote freshness/nominal bounds,
+reference roles and source scope, task identity, observations and collection.
+Python adapts file snapshots and one provider effect; it does not choose work,
+infer publication approval or start a scheduling loop.
+
+The existing runtime protocol accepts additive `generation.*` operations only
+through the separately declared `content_media_generate` permission. A normal
+render request is unchanged and has no network/account effects. The bounded
+video provider supports Seedance 2.5; the separate single-image path is described below.
+Other models and unopened account access remain unavailable. Setup, process-local credentials,
+supported frames, prices and recovery are in the
+[provider guide](../../../packages/loopx-media/README.md#optional-generated-footage).
+
+The parent commits `submitting` before POST. A successful response is only
+`submitted`, not an observed queued/running worker. A provider-side fsynced
+journal binds the returned task id to the plan digest before stdout returns.
+An explicit `check` can recover that id after a stopped parent. If the response
+was lost before an id could be saved, the intent stays `submission_unknown`;
+neither reload nor repeated submit creates a new paid task. Reconciliation of
+an unknown external effect precedes any new generation decision.
+
+Cloud `succeeded` means collection is possible, not local artifact readiness.
+Collection obtains a current expiring URL, downloads within origin/time/byte
+bounds, fully decodes the movie, measures duration and hashes the fixed
+`generated.mp4`, `poster.png` and optional `last-frame.jpg` outputs. The core
+checks those bytes before projecting `ready`. Download URLs, API credentials,
+private paths and raw provider responses never enter browser projections.
+Reference alpha preprocessing retains original and transmitted hashes. The
+returned token count, caller-supplied rate estimate and unknown invoice remain
+distinct; the nominal estimate bound is not a guaranteed maximum bill.
+
+The existing `/api/chat/content-media` accepts `generation_list` and
+revision-bound `generation_submit/check/collect/cancel` actions. Its file route
+accepts exactly one generation or composition id, serves only verified fixed
+artifacts and retains selected-Goal, origin, byte-range and no-store rules.
+The shipped workbench shows draft/consequence, submission, bounded optional
+status checking, errors and saved files through this backend. Pure list/inspect
+reads never call the cloud. Automatic browser checks stop after five minutes,
+on a terminal observation or when the owner stops them; they never POST a job.
+The five-minute window uses elapsed monotonic time across status changes and
+in-flight reads. A failed read, Goal change or unmount stops further checks.
+Stopping observation leaves any already-sent request and cloud task intact.
+
+Both providers share the package's atomic journal writer. It retains file
+flush/fsync and same-directory replacement on supported platforms, and syncs
+the directory on POSIX only; Windows never attempts a CRT directory open.
+POSIX directory-sync failures remain visible rather than being ignored.
+
+Ark DELETE has no documented atomic queued-only precondition and can erase a
+task that finishes between GET and DELETE. `cancel` therefore reads the
+original task and reports `atomic_cancellation_unavailable`, without deleting
+it or claiming that local observation stopped remote usage. The same limitation
+is visible in the workbench. Failed/expired/cancelled states, unavailable
+observation, unknown submission and damaged local artifacts remain separate.
+Creative quality, continuity, visible watermark, audience comprehension and
+actual billed cost require their own evidence; no generated clip changes
+content publication state.
+
+## Optional single-image intents
+
+`content-ops image prepare/submit/collect/inspect/list` shares this capability,
+Goal-local workspace and optional provider. The `content_media_image` TypeScript
+owner validates `content_ops_image_plan_v0`, its immutable digest, a dated
+per-image nominal quote and local transitions. Provider-specific account access
+is checked separately. This is a synchronous image request, not a video job:
+there is no task ID, cloud status polling or remote cancellation contract.
+
+The plan contains `title`, pinned `model`, `prompt`, explicit `width`/`height`,
+`watermark`, zero or one `references` entries and `quote`. A reference binds its
+relative `path`, exact `sha256`, opaque `source_ref` and explicit `public_safe`
+classification. Quote fields are `cny_per_image`, timezone-aware `checked_at`,
+official `source_url` and `max_estimated_cny`. The quote must be current within
+24 hours and fit the declared nominal bound; it is neither authorization nor
+a guaranteed maximum bill. Supported model, dimensional/upload limits,
+separate image credential and lifecycle setup are in the
+[provider guide](../../../packages/loopx-media/README.md#optional-generated-images).
+
+The parent persists `submitting` before the optional provider effect. The
+provider journals the intent before POST, then fsyncs a private response cache
+before returning. Exact received HTTP bytes, digest and request-ID observations
+are private, bounded recovery evidence; interpretation failure can be retried
+locally from that saved response. Loss before response persistence cannot be
+recovered by issuing another POST. Missing provider/key keeps `prepared`; confirmed provider
+rejection remains `rejected`; an unconfirmed effect remains
+`submission_unknown`. None of these states permits automatic paid retries.
+`collect` recovers only cached bytes, without network activity. An intact ready
+result is reused; damage can be repaired from the original response, with the
+original accepted SHA preserved. Unknown external effects without cached bytes
+require reconciliation before choosing any new intent.
+
+The result binds exactly one generated image to the request model and digest,
+full PNG decode and requested geometry. The core verifies `original.png` and
+normalized `generated.png` bytes/hashes before readiness or download. Reported
+generated-image/token counts, caller's nominal estimate and unknown invoice
+remain distinct. Watermark request, visual watermark inspection and creative
+acceptance are separate. Source metadata and returned paths are not exposed.
+
+The existing HTTP route adds `image_list` and revision-bound
+`image_submit/collect`. The fixed-file route accepts exactly one composition,
+generation or image ID and preserves selected-Goal, origin, byte-range and
+no-store boundaries. The packaged workbench can generate an Agent-prepared
+intent, display unavailable/unconfirmed states, recover saved bytes and show
+verified image/downloads. It never requests arbitrary local paths or a key.
+Reuse a resulting image as an ordinary hash-bound composition asset, retaining
+its illustration boundary and adding precise text through local rendering.
+This path does not approve or publish content, qualify learning effects or
+change long-horizon Goal state.
 
 ## Per-shot picture framing
 

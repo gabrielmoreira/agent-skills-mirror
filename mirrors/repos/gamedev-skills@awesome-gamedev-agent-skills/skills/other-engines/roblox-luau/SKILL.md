@@ -45,6 +45,13 @@ API. Engine-agnostic input/save architecture → `input-systems` / `save-systems
    applies. The server is authoritative for all game state.
 6. **Test in Studio** with Play / Play Here / server+client Start; use the Output
    window and the server/client view toggle to confirm where code ran.
+7. **Run static checks before Studio when the project already has the tools.** Put
+   `std = "roblox"` in the root `selene.toml`, then run `selene .`.
+   For a Rojo project, write the sourcemap once with
+   `rojo sourcemap default.project.json --output sourcemap.json`, then run
+   `luau-lsp analyze --sourcemap=sourcemap.json src`, passing the Roblox type definitions
+   with `--definitions` (`luau-lsp analyze --help` lists the flags). Studio Script Sync
+   projects may not have a sourcemap.
 
 ## Patterns
 

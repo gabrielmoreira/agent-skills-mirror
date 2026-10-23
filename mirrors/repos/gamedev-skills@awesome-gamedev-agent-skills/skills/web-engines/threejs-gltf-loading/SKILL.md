@@ -42,7 +42,10 @@ of scope; prefer glTF over OBJ/FBX for runtime.
 5. **Decode compressed assets.** Attach a `DRACOLoader` (and/or `KTX2Loader` +
    Meshopt) so DRACO meshes and KTX2 textures load; point the decoders at their
    files.
-6. **Verify what loaded** — log the scene graph and `gltf.animations`, and confirm
+6. **Validate changed glTF files when the project already has the tool.** Run
+   `gltf-transform validate path/to/model.glb` for each changed `.gltf` or `.glb`;
+   fix reported errors before loading.
+7. **Verify what loaded** — log the scene graph and `gltf.animations`, and confirm
    the model is visible (right scale, lit) and the clip actually plays.
 
 ## Patterns

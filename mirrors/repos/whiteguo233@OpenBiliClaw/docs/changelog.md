@@ -2,6 +2,70 @@
 
 > 按里程碑记录各阶段交付内容。每次分支合回 main 时追加条目。
 
+## 未发布：推荐导演与 Jev 完整评估（2026-10-22）
+
+- 整合导演/Jev 历史实现与最新 main，保持 v0.3.231 的来源、聊天流、多语言和配置子进程重载能力；解决 17 个文件冲突。Jev 三端配置/CLI 新文案补齐简体、繁体及英文，移动页保留语言与评估器同次保存，测试沿用严格本机 Host/peer 校验。默认导演仍关闭，不改用户配置，不把代码合入视为官方模型或推荐质量验收；本次不发版或重启日常服务。
+
+- 2026-10-22：验收脚本支持显式 `--config`，读取设置页保存的 Jev URL/Token/固定模型/容量，经生产 factory 完成隔离评估；默认 preview 零请求，实请求仍要求额度确认，最多 6 POST、禁重试、首错停止，不改生产数据/配置、不自动换模型。补进程关闭后重启的自定义模型评估验收，所配服务身份不作官方认证；本机仍缺 Token，未完成官方真实推理验收。
+
+- 2026-10-21：补测真实 API 进程与浏览器的 Jev 配置保存、实际热重载、来源候选入队及 HTTP 评估准入；发现并修复 Jev 之前沿用批量 LLM 的 400 字描述截断，完整描述及缓存身份现交由预算摘录，普通 LLM 行为不变。新增描述尾部变化的缓存回归；测试用临时数据和本机合成 Jev 后端，不代表官方模型/精确 token 容量已验证，本机仍无 Jev Token。
+
+- 2026-10-20：补齐 Web/插件/移动共用 Jev 连接表单：服务开关、完整原生 URL、密码 Token、固定模型、双上下文容量、合批数及超时/重试，可与完整评估模式原子保存并排队热重建。Token 本机 TOML 保存优先、空值沿用 env，不回显/不进浏览器存储，显式清除；换 URL 必须重填 Token，换模型不套用旧容量。外部仅 HTTPS、回环测试可 HTTP、禁止重定向；未增加付费探测、依赖或生产配置变更。
+
+- 2026-10-19：增加仅开发测试用的本机 Jev 假后端与 `validate_jev_single_pass.py --fake`。真实回环 HTTP 连接原生 adapter、完整评估、画像/正文容量打包和临时 SQLite 入池；固定合成答案/usage，支持低分、缺题、错模型、坏分布/选项/rubric、服务失败及容量拒绝。失败不入池、不转 LLM；不改生产端点、配置、数据、UI 或依赖。测试容量按 UTF-8 字节而非官方 tokenizer，不能据此宣称真实模型质量或 token 上限已验收。
+
+- 2026-10-18：Jev 完整评估增加单轮上下文整理：原文片段去重并携带位置/源摘要/覆盖标记，完整候选题组多题合批，共享规则及相同必需画像，批次超限先减少候选数。单条长文仅本地摘录，显式条件/邻句保留，装不下留待评估；不追加摘要或分段模型调用。新增每批候选数/题数/单题字节护栏、API/TOML 往返与 CLI 展示；登记 1.14 标准容量，官方容量只可收紧。合成临时数据库的真实测试脚本默认预览，需明确确认免费额度与本机 key 才发请求；当前无可用凭据，未完成真实 Jev 验收。无依赖、安装器或生产配置变更。
+
+- 2026-10-04：画像按需加载接入 Jev 完整评估与导演：本地完整目录、任务相关整条事实、完整避雷/场景，不调摘要 LLM、不改源画像。新增精确模型绑定的双上下文容量与共享字节护栏，未知模型需显式登记，不自动选模型；评估额外护栏默认 0=auto，旧显式值保留。缓存/计划身份绑定源画像、选择策略与预算，候选同行和并发反馈不会污染缓存；API/CLI 展示容量与 readiness。无新依赖、不改生产配置；工程字节策略不是 tokenizer，当前词法选择不是语义召回质量保证，真实 Jev 效果仍待验收。
+
+- 2026-10-02：新增可切换的纯 Jev 完整候选评估模式（不是预过滤）：原生类型化评分、受控主题/IP/风格与时效原文选择，未知保留，单条/批量/旧池补评/API/CLI/OpenClaw 同路由；失败不回退 LLM、不缓存失败。固定模型及词表隔离缓存，双层 UTF-8 字节护栏下分批而不裁掉画像负偏好。桌面/插件/移动可切换并显示凭据 readiness，拒绝图片评估或预过滤冲突；凭据仍由本机 TOML/env 提供。无新安装依赖，沿用产品阈值但尚未完成 Jev 中文标定；离线验证与真实验收边界见[记录](plans/2026-10-02-jev-full-evaluator-validation.md)。
+
+- 2026-10-02：修复真实 Luna 规划暴露的引用抄错、遗漏与矛盾选中问题：Agent seam 使用请求内短引用，严格还原后校验；首次非法输出至多由模型纠正一次，两次共用原规划 deadline、不本地补卡、不重试网络失败。供给先行策略升 v3，默认 20 秒预算不变。新增真实画像／库存只读快照的 loopback HTTP 验收脚本，覆盖实际交付、曝光／反馈、重启续排和换批，写入仅在临时副本；同时补齐验收器的空未来计划与响应丢卡假阳性回归。真实调用结果、语义缺陷和未验收边界见[实施记录](plans/2026-09-26-director-implementation-progress.md)，不将结构通过当作推荐质量或 Jev 验收。
+- 2026-10-01：修复临时 Codex CLI 评测将编号重连、显式 WebSocket→HTTPS 回退通知误判为整轮失败的问题。仅接受已识别的有界通知，并要求同一轮中通知后的新最终答案、唯一完成事件、零退出码及一致的最终文件；未知错误／真实失败／旧答案／重复轮次仍拒绝，planner 校验不放宽。相关回归 257 项通过；真实复测仍有非法计划与超时，未验收模型效果。失败探针和复测记录保留，未改生产模型、画像或配置，详见[实施记录](plans/2026-09-26-director-implementation-progress.md)。
+- 2026-10-01：多屏目标从“至多三屏”改为明确覆盖目标＋合法提前结束。新增有界 `completion`／未用候选说明、紧凑屏形和剩余可行容量校验；只允许末屏短缺，不为了凑数偏离明确意图。初始覆盖快照跨消费／修补保留，语义短尾不被纯 Agent／混合执行器机械补满；规划 trace 保留安全失败原因。策略升 v2，旧 JSON 可读、旧未来计划重排。没有新增调用／配置／数据库列，预算不变；语义理由不等于质量认证，实测及边界见[实施记录](plans/2026-09-26-director-implementation-progress.md)。
+- 按用户要求增补临时 Codex CLI / `gpt-6-luna` 评测通道，不修改生产模型或默认配置。应用自带 CLI 完成 3 场景 × 新旧 prompt 共 6 次有效合成计划：首屏均满足关键要求，新策略保留局部反馈边界与已有兴趣入口；但三次均只生成一屏、一次耗时 22.14 秒，不能宣称多屏预排与默认 20 秒预算已验收。旧 prompt 的工程需求后续屏有主题漂移。仅小样本描述，不证明新策略总体优于旧策略；原失败／超时／适配器兼容记录完整保留，详见实施进度。
+- 新增显式 `--real` 的 Agent 中文行为评测脚本：固定合成画像、24 张候选及三类反馈场景，预注册原始指标，对照旧 prompt／新屏策略与确定性 pair baseline，不冒充旧 MMR 或线上满意度实验。首次真实试跑未获得有效计划：主路由明确出现 429，备用路由遇 20 秒超时、无有效正文和 429；冷却短路另行标记，原始记录保留。服务故障时脚本停止剩余比较，不绕过冷却；未改生产代码、真实配置／数据，也未测试 Jev。详见[实测记录](plans/2026-09-26-director-implementation-progress.md#agent-真实调用试跑2026-09-30)。
+- 三模式共用“区分证据 → 确定屏任务 → 分配软角色 → 逐对增量选择 → 整屏自检 → 修订未来草稿”的静态指令。Agent 一次输出有界 brief / 证据引用 / 配对职责；纯 Jev 从明确意图或混合浏览的保守 brief 开始，每步一次联合选择 pair + role，最多 64 个联合选项加拒选，不强制探索比例、不增加调用预算。
+- Jev 修补贯穿原 pair 的 intent / role、已选及剩余草稿，失效引用不能当作候选；纯 Agent 通过完整历史偏好水位区分曝光／弱点击与其它反馈，不因 ACK 挤满短窗口而重排，并在既有四个动作槽内保护最新非点击反馈，让模型读到实际原因；无水位的离线证据缺口仍保守处理。策略版本使旧未来计划失效，并通过 runtime context fencing 阻止旧策略在飞写入；旧 JSON 仍可读，历史屏不重写。
+- 提案 trace 保存 brief、角色和仅检测规范化标题重复的 `screen_review`；后者固定 `semantic_quality=not_certified`，模型自检不等于独立审查或线上质量保证。问题合同升级 v3，沿用 Jev 64,000／Agent 96,000 字节上限；只增加偏好水位查询索引，无新增表／列、设置、UI／CLI、安装依赖或付费探测。验收记录见[实施进度](plans/2026-09-26-director-implementation-progress.md)。
+
+## 开发中：推荐导演画像与短期上下文（2026-09-30）
+
+- 三模式直接消费命名推荐画像视图，区分稳定偏好和近期关注；明确避雷完整保留，排除人格散文与被用户否定的洞察。Agent 全视图、Jev 精简视图，画像变化使旧预排失效。
+- 同一 stream 最近三屏真实经历包含原卡片语义、位置、曝光 ACK 时间及真实行为／备注；4+4 反馈也回填语义，不再仅有 ID。纯生成、未触达卡片不进入短期经历，点击不冒充喜欢，无操作不当作负反馈。
+- 公用 SQLite 上下文读取和索引覆盖四表面及 OpenClaw，无新增设置或安装依赖。上下文／问题版本与 prompt golden 更新，Jev / Agent 字节上限调整至 64KB / 96KB，仍有明确超限回退；不补造观看时长、完成率或疲劳，不声明真实模型效果已验证。
+
+## 开发中：推荐导演三策略与完整屏协议（2026-09-26）
+
+- **三种策略接线**：Jev 每次选两卡逐对组成一屏；Agent 提前编排具体多屏，Jev 可替换中间单卡／整对并重验后缀；纯 Agent 模式不调用 Jev。策略与 off/shadow/enforce 分离，默认关闭。
+- **完整屏与反馈底座**：幂等 request、stream / epoch / generation fencing、TTL / plan CAS、最新库存／内容指纹／避雷复查后整屏原子提交；NEXT 推进、STAY 保留方向，历史屏不可原地修改。提交与曝光分开，真实可见 ACK、click 和明确反馈引用原事件去重。
+- **独立过滤与治理**：与导演正交的 Jev semantic filter，只处理明确稳定避雷、保留探索、完整 cohort 真实标签审计；拒绝延期一轮后强制 LLM 复审。运行时共用有界准入／熔断／deadline，CLI transport 不跨 loop。
+- **入口与文档**：插件、桌面、移动共用屏协议；CLI 与 OpenClaw 接同一运行时，宿主明确 ACK 展示；更新配置、模块、架构、README 与接入规范。TOML 更改需完整重启后端，未增加安装依赖，未启用用户配置或调用付费服务。
+- **验收边界**：真实 SQLite/API/CLI/宿主、原生 MockTransport、共享 JS 与 Chromium 回归覆盖实现。shadow 是同 shortlist 确定性 pair baseline，不是旧 MMR 无干预对照；真实中文效果、误拒、费用／时延待授权实测。最终命令结果见[实施进度](plans/2026-09-26-director-implementation-progress.md)。
+
+## 开发中：独立 Jev 决策 Provider 与离线导演内核（2026-09-26）
+
+- **离线逐对编排内核**：新增 `recommendation.director.PairComposer.prepare_next()`，在最多 40 张的 caller-owned shortlist 中每次追加两张、最多准备 20 张；每步最多 16 个合法 pair 与 `none_suitable`，精确校验 topic minimum / maximum、canonical 去重和排除，保留递推前缀 / 真实反馈分离及逐步归因。Provider 缺席或失败走可诊断的确定性回退；短缺、不可满足和奇数尾部明确处理。所有输出仍为 tentative，不写数据库，不接生产 shadow / serve / 过滤，不实现 Agent 草稿及局部修补；新上限是工程预算而非质量标定，四表面、配置与安装依赖均不变。
+- **内核验收与回放**：新增 205 项测试通过，director 模块覆盖率 99%；相关 provider / 推荐回归合计 578 项通过，全仓 Ruff / MyPy 通过。新增 `scripts/replay_director_pairs.py` 演示逐对递推和中间拒选，全部为不联网合成 fixture；修复并覆盖 adapter 吞掉外部取消、超大 revision 和错绑证据。未重跑全仓 pytest，未验证真实 Jev 质量，详见实施进度。
+- **独立 `decision/` 模块**：新增 provider-neutral typed 请求 / 证据合同与 Jev Choice / Score / Noul HTTP 适配器，严格绑定本次问题和选项，记录模型、schema、输入摘要及用量归因；总 deadline 覆盖有限重试，取消传播，失败保留稳定原因且不泄漏 key / state / 远端正文。复用现有 `httpx`，不加入聊天 LLM fallback 链。
+- **默认关闭的配置基础**：新增 `[decision.providers.jev]`，固定模型默认 `jev-1.13.0`，凭据仅引用 `TYPESAFE_API_KEY` 环境变量名；严格解析 / 保存并由 `config-show` 展示非秘密摘要。首版为配置文件 / CLI / 开发者接口，插件、桌面 Web、移动 Web 和配置表单 API 均不增加设置或探测入口。
+- **交付边界**：尚未接入 discovery 过滤、推荐热路径或 runtime 调度，三种推荐导演模式未上线，现有推荐行为不变；未调用付费 API，不声明中文效果或线上时延已验证，安装流程与依赖不变。新增决策模块文档，同步配置 / CLI、导航、架构 / SPEC 与中英文 README 的未接线边界。
+- **前一 provider 切片验证**：新增 144 项离线测试通过，decision 模块覆盖率 98%；连同既有配置测试共 487 项通过，全仓 Ruff / MyPy 通过。该切片全量回归 9517 passed / 65 skipped / 1 failed；唯一桌面库存更新断言失败已在干净基线 `1253a0a8` 复现，详见[实施进度与验收记录](plans/2026-09-26-director-implementation-progress.md)。
+
+## v0.3.231：Instagram 与 TikTok 正式可用（2026-10-22）
+
+- **Instagram 与 TikTok 转正式来源**：两者不再标注实验性。README、项目首页、模块文档、隐私说明、商店 listing 与 AMO 元数据统一为「正式可用、默认关闭、需在设置中显式启用」；能力范围不变（Instagram topic / creator 发现 + 登录态有界只读初始化；TikTok 访客 feed / hashtag / creator + 登录后关键词搜索），已知限制（TikTok 站内收藏暂缓、非空账号画像与周期增量、Firefox 登录态待验；Instagram 完整 Likes 历史、双账号、Firefox 登录态与手机真机待验）保留为明确的「已知限制」，不再用「实验性」描述。
+
+- **大肥鱼的通知文案改由人设生成**：新增 `build_blue_fish_notice_prompt`（system 字节静态，人设 / 视频 / 主人在 user 消息），每次通知花一次模型调用写一句 ≤45 字的钩子，提示词里带正反例，明确拒绝「推荐你看看」「正合你口味」这类模板腔；模型不可用或 JSON 不合规时回落原模板。`fish.owner_notice` 登记为 maintenance caller。
+
+- **大肥鱼的默认人设更可爱、私信真正可用**：默认 persona 改成「圆滚滚、反应慢半拍，会「哇」「救命」「谁懂啊」，偶尔自称本鱼」，通知 prompt 明确角色扮演并把「太像影评」的书面腔列进反例；私信补上 `msg[dev_id]`（此前 B 站返回 `-400 请求错误`），通知失败不再回落成公开回复。
+
+- 修复 Ollama embedding 在无聊天 SDK 时的构建问题（#318）：embedding 客户端独立于 chat SDK 构建，部署不再要求额外安装 OpenAI 兼容聊天依赖。
+
+- 版本号同步：`pyproject.toml` / `extension/manifest.json` / `extension/package.json` → `0.3.231`；Firefox / Safari 清单的版本由构建脚本从 Chrome 清单注入。发布记录见 [v0.3.231 发布记录](testing/2026-10-22-release-v0.3.231.md)。
+
+- **国内镜像同步状态（2026-10-22）**：检查时 Gitee `main` 已同步至 `8b99ed46`，与当时 GitHub `main` 一致；v0.3.231 四个标签均指向 `13ea1e37`，Gitee Release 页尚未创建。AtomGit `main` 为 `58185cbb`，比当时 GitHub `main`（`8b99ed46`）落后 8 个提交；123 云盘分享页仍列出 v0.3.213 的 7 个文件，v0.3.231 安装包尚未上传。各镜像状态与后续同步记录见 [发布记录](testing/2026-10-22-release-v0.3.231.md)。
+
 ## v0.3.230：候选池恢复、蓝鱼实验室、多语言与来源权限优化（2026-10-21）
 
 - TikTok / Instagram 扩展站点权限统一默认声明：Chrome / Firefox 将 Instagram 从可选权限移入固定权限，Safari 补齐两者域名。Instagram 来源设置保存不再弹授权或在关闭来源时撤销站点权限；移除已无调用的授权等待代码。来源仍实验性、默认关闭，登录及实际站点访问检查保留；同步首页、README、安装、隐私和商店审核说明。验证见 [权限验收](testing/2026-10-21-default-source-permissions.md)。
@@ -29,10 +93,6 @@
 - 修复只发私信的通知会占掉该视频的回复名额：`FishStore.view()` 现在只把 `delivery` 含 `comment` 的 `notified` 行计入 `per_video_total`（旧行没有 `delivery` 时按评论处理）。只发私信没有碰评论区，不该挡住同一个视频下的下一条回复。
 
 - **大肥鱼支持直接填主人的 mid**：主号 Cookie 失效时，`owner_mid` 用来做隔离校验、私信收件人；昵称留空时用匿名 WBI 请求 `/x/space/wbi/acc/info` 兜底查（偶发风控失败则只影响 @ 前缀）。桌面 Web 与扩展 popup 都加了「我的 mid」输入，i18n 已同步。
-
-- **大肥鱼的通知文案改由人设生成**：新增 `build_blue_fish_notice_prompt`（system 字节静态，人设 / 视频 / 主人在 user 消息），每次通知花一次模型调用写一句 ≤40 字的钩子，提示词里带正反例，明确拒绝「推荐你看看」「正合你口味」这类模板腔；模型不可用或 JSON 不合规时回落原模板。`fish.owner_notice` 同 `fish.comment_reply` 一样登记为 maintenance caller。
-
-- **大肥鱼的默认人设更可爱了**：默认 persona 改成「圆滚滚、反应慢半拍，会哇/救命/谁懂啊，偶尔自称本鱼」；通知 prompt 明确「你就是本鱼，用你自己的口吻，不是在写推荐语」，并把「太像影评」的书面腔列进反例；回复 prompt 也允许一点点小情绪，但别每句都卖萌。真实模型产出示例：「谁懂啊，那几块石头一放下去，我盯着屏幕看了半天。」
 
 - **多语言基础设施（#305）**：`[general].language` 现在真正驱动界面、CLI 与新生成的模型输出，支持 `zh-Hans`（默认）/ `zh-Hant`（繁體・台灣）/ `en`；旧值 `zh`、`zh-TW`、`en-US` 等自动规范化，未知语言在 `PUT /api/config` 保存时 400 拒绝。新增 `openbiliclaw language [locale]` 与 `OPENBILICLAW_LANG` 单次覆盖、`GET /api/i18n/locales`、`/i18n/ui/<locale>.json` 静态目录；桌面 Web、移动 Web、设置向导与插件侧边栏共用 `web/shared/i18n.js`，按渲染后的 DOM 文本匹配目录翻译（内容与用户输入不翻译，`data-i18n-skip` 保护指定区域）。UI 目录由 `scripts/build_i18n_catalogs.py` 从源码生成：2797 条文案 + 197 条插值模式（如「模型：{0}」「{0} 分钟前」），`zh-Hant` 由 OpenCC `s2twp` 生成，英文 100% 覆盖并由 `tests/test_i18n.py` 守护；数字与短日期按 locale 格式化（`331K` / `Sep 5` 对 `33.1万` / `9月5日`）。聊天与推荐理由的 system prompt 保持字节静态，locale 以 `<output_language>` 指令进 user prompt，provider prompt cache 不受影响；`zh-Hant` 额外约束只用繁體字（真实 provider 实测：仅写「Traditional Chinese」首轮仍可能回简体），配置保存/应用提示也按新语言返回；历史推荐 / 画像文本保留原语言、不批量重译。详见 [多语言模块](modules/i18n.md)。
 
@@ -172,6 +232,8 @@
 - 新增 `[sources.tiktok]` 实验性内容源：`TiktokClient` 基于 yt-dlp 匿名读取 `tiktok:tag` 话题标签列表、`tiktok:user` 创作者视频列表与单视频元数据，不登录、不用 Cookie、不依赖浏览器扩展、不下载视频；yt-dlp 无 TikTok 搜索 extractor，关键词统一压缩为 hashtag。
 - 新增 `tiktok_tag` / `tiktok_user` discovery 策略与 `TiktokDiscoveryProducer`（镜像 YouTube producer：每日执行 ledger、节流、pool 缺口门、统一 candidate pipeline、关键词规划器 P1.7/P1.8 生命周期）；`[scheduler.pool_source_shares]` 增加 `tiktok` 配额。
 - `tiktok` 从 douyin 平台族别名拆分为独立平台族（`requires_overseas_network=True`），source-auth 契约按公开源接入（无需登录），API config / status / credentials 面同步覆盖。
+
+- 修复打包版 Ollama embedding 无法构建导致 init 永远 409（issue #318）：Windows 桌面安装包里 openai SDK 的 httpx 包装在构造时抛 `'AsyncHttpxClientWrapper' object has no attribute '_mounts'`，而 Ollama embedding 复用了 `OllamaProvider`（`OpenAIProvider.__init__` 会创建 `AsyncOpenAI`），异常被 `build_embedding_service` 的裸 `except` 吞掉 → `/api/init-status` 只报 `misconfigured`、`POST /api/init` 恒 409、推荐池恒空，用户改 base_url / provider 都绕不过去。现在 embedding 走新增的 `OllamaEmbeddingProvider`（原生 httpx 直连 `/api/embeddings`，不构造任何 chat SDK 客户端），`embed()` 的 CPU 回退 / 重试 / 响应体日志抽成 `embed_via_native_api()` 供两条路径共用；构建失败改为带 traceback 的 WARNING，不再静默返回 None。真实 Ollama + 真实 HTTP 请求的修复前后对照见 [验收记录](testing/2026-10-22-issue-318-embedding-e2e.md)：坏 SDK 注入下 main 复现 `misconfigured` 与 `POST /api/init` 恒 409，修复版 `embedding_check: ok` 且 init 返回 202。
 
 ## v0.3.229：TikTok 新来源、远程访问安全收紧与 B 站登录失效横幅死锁修复（2026-10-16）
 

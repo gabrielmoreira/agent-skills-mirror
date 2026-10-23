@@ -4,6 +4,38 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+#### [2.1.308](https://github.com/Piebald-AI/claude-code-system-prompts/commit/eb69409)
+
+<sub>_No changes to the system prompts in v2.1.308._</sub>
+
+# [2.1.307](https://github.com/Piebald-AI/claude-code-system-prompts/commit/84d0ccd)
+
+_+5,273 tokens_
+
+- **NEW:** Data: SDK command_lifecycle scheduled_for field — Gives the time a fired /loop wakeup was set for, so a host keeping an idle session alive can tell it from a newer pending wakeup.
+- **NEW:** Data: SDK read_file anchor as_written kind — Resolves a path copied from Claude's replies against the cwd, git root, and files the session has read or written, reading only an unambiguous match.
+- **NEW:** Data: SDK set model error response model field and SDK set model success payload model field — Internal fields, sent by `claude -p` and claude-code-server, reporting the model the next turn runs after `set_model` succeeds or fails, with aliases resolved to IDs.
+- **NEW:** Data: SDK user message requeue_if_interrupted_within_ms field — Internal input that puts a person's typed prompt back at the front of the queue, instead of losing it, when an interrupt crosses the turn taking it in.
+- **NEW:** Data: Self-hosted runner diff-finds-nested-repository exec path notice — At startup, notes that with `--diff-finds-nested-repository` on, a custom session launcher must put the runner's arguments first and start a Claude Code release no older than the runner.
+- **NEW:** Data: sshHostCommands setting — Documents a Claude Desktop setting, read only from user or managed settings, for macOS and Linux SSH connections whose host comes from a local command; Claude Code ignores it.
+- **NEW:** System Prompt: Windows sandbox pytest cache hang — Warns that a recent `pytest` in a project without `.pytest_cache` can hang after printing results in the Windows sandbox; Claude kills it and reruns it with `-p no:cacheprovider`.
+- **NEW:** System Prompt: Windows sandbox Schannel TLS retry guidance and Windows sandbox Schannel TLS user alternatives — Explain that programs using Windows' own TLS, like `curl.exe` and `dotnet restore`, cannot make HTTPS connections in the sandbox; Claude retries unsandboxed with a warning where allowed, otherwise leaves that to the user, never disabling certificate checks.
+- **NEW:** System Reminder: Auto mode finish exposed work — Behind a feature flag, auto mode has Claude finish the intended job, minimally fixing check failures and clearly exposed bugs, asking only for user-only values or destructive steps, and not ending on offers.
+- **NEW:** System Reminder: Cloud session device tools not yet available — When a cloud session has not yet confirmed that tools may run on the user's connected computer, Claude works in the cloud and, if asked, says it cannot reach that computer yet.
+- **NEW:** System Reminder: Message attachment files missing — Tells Claude which attached files could not be fetched or saved to the uploads folder, or how many may be missing, and to ask the user to reattach any it cannot find.
+- **REMOVED:** Data: SDK safeguard_results field and SDK safeguard_tool_use field — Remove the internal fields through which a worker could take a server-side classifier's dangerous_tool_use verdict on one tool call; auto mode still reads `safeguard_results` from API responses.
+- **REMOVED:** System Prompt: Subagent delegation when-to-use guidance — Removes the variant that pointed to matching agent types and optionally suggested `effort: "lower"` for parallel lookups; Subagent delegation cost guidance keeps its own advice on when to delegate.
+- Agent Prompt: Claude Test author — Writes its spec drafts with the Claude Test plugin's write tool instead of Write, quotes only the stable part of dynamic headings, and stamps created or edited records with `{run}`.
+- Agent Prompt: Claude Test explorer — Adds the Claude Test plugin's write tool to its explicit tool denials.
+- Agent Prompt: Web reading specialist — When WebFetch says a page came from a stored copy, the agent reports that copy's date instead of fetching the page again in hope of a newer one.
+- Data: Claude Test spec file format — Adds the `{run}` placeholder, a per-run stamp for values in journeys that create or edit records, and "reads" versus "contains" wording for whole or partial text.
+- Data: SDK API error kind field — Documents `empty_completion`: when a reply and its one retry are both empty on a person's own prompt, the turn ends as an error instead of a blank reply.
+- Data: SDK read_file anchor field — Extends anchors to `as_written`, which names no directory and carries its own contract; an anchor the session does not serve is now refused.
+- Data: Self-hosted runner orchestrator command help — Documents `--agent-proxy-url`, an agent proxy handed to spawn-runner hooks as `SELF_HOSTED_RUNNER_AGENT_PROXY_URL` to pass on to every runner they start.
+- System Prompt: Windows sandbox package cache limits — Adds that a .NET restore that must download fails in the sandbox because of Windows' own TLS.
+- System Reminder: Managed Agents ant command refused (local ID form or placement) — Now spells out the one accepted command shape: each local ID as its own `ant` argument, plain commands with at most one pipe after `ant`, no variables, redirects, or substitutions, and `--base-url` for self-hosted servers.
+- Tool Description: Bash (sandbox — tmpdir) — Uses `$env:TMPDIR` instead of `$TMPDIR` in sessions without the Bash tool, such as PowerShell-only sessions outside Windows.
+
 #### [2.1.306](https://github.com/Piebald-AI/claude-code-system-prompts/commit/24b848f)
 
 <sub>_No changes to the system prompts in v2.1.306._</sub>

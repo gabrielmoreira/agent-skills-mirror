@@ -6,15 +6,28 @@
 
 | 目录 | 职责 | 入口 |
 |---|---|---|
-| `context/` | 公开资料、规则、文档及数据；研究档案仅留已有本机副本 | `context/README.md`、`context/AGENTS.md` |
+| `context/`及同级平铺的Context资料、`tool-explanation-template-v*.md` | 公开资料、规则、文档及数据；研究档案仅留已有本机副本 | `context/README.md`、`context/AGENTS.md` |
 | `skills/` | 所有既有Skill指令和流程，统一治理 | `skills/README.md`、`skills/AGENTS.md` |
-| `extensions/` | 既有小工具、程序、脚本和适配实现 | `extensions/README.md`、`extensions/AGENTS.md` |
+| `extensions/` | 固定上游源码、配置与仍保留的小工具 | `extensions/README.md`、`extensions/AGENTS.md` |
 
 对象在各域平铺；资料集合和原生程序内部结构不拆散。旧docs/assets/metadata/prompts/research/scripts/tools不再作为并行活动根目录。
 
+### Context平铺文件
+
+原`ai-citation`、`metadata`、`prompts`、`getting-started`目录中的文件已平铺到`.github/`根；无重名的文件保留原名，冲突的`README.md`、`AGENTS.md`仅加集合名区分。两个说明模板为`.github/tool-explanation-template-v0.md`与`.github/tool-explanation-template-v1.md`。导航见`context/README.md`。
+
+| 文件组 | 用途 | 编辑前阅读 |
+|---|---|---|
+| AI引用文件；指南为`ai-citation-AGENTS.md` | AI引用语料 | `ai-citation-AGENTS.md` |
+| metadata文件；指南为`metadata-AGENTS.md` | 分类、术语与历史路径映射 | `metadata-AGENTS.md` |
+| 提示词文件；指南为`prompts-AGENTS.md` | 提示词入口 | `prompts-AGENTS.md` |
+| 入门文件；指南为`getting-started-AGENTS.md` | 新手入门与项目练习 | `getting-started-AGENTS.md` |
+
+这些带集合名的指南保留分组规则，但不再是按目录自动发现的`AGENTS.md`；本文件负责路由，改动对应文件前须显式阅读。
+
 ## 维护脚本与共享库
 
-校验和测试是仓库维护基础设施，不属于用户侧Extensions资源；本次直接平铺到`.github/`，不另建scripts目录或旧路径兼容壳。
+校验、测试和资料维护脚本是仓库维护基础设施，不属于用户侧Extensions资源；直接平铺到`.github/`，不另建scripts目录或旧路径兼容壳。资料生成入口和研究抓取脚本现为`sync-doc-toc.py`、`sync-faqi-catalog.py`、`sync-gongfa-catalog.py`、`fetch-research-raw.py`；此前迁入根目录的Claude `init_skill.py`软链接现已退役，固定来源仍见FaQi历史档案。
 
 | 类别 | 当前入口 |
 |---|---|
@@ -22,6 +35,7 @@
 | 目录与导航 | `check-directory-docs.py`、`check-metadata.py`、`check-ai-citation.py` |
 | 数据与来源 | `check-gongfa.py`；本机研究副本另用`check-research-raw.py`、`check-source-facts.py` |
 | Wiki | `check-wiki.py`；仍只校验明确给定的本地checkout |
+| 资料维护 | `sync-doc-toc.py`、`sync-faqi-catalog.py`、`sync-gongfa-catalog.py`；`fetch-research-raw.py`会联网并写入本机研究资料，不属于默认测试 |
 | 测试 | `test-gongfa.py`、`test-gongfa-catalog.py`、`test-faqi-catalog.py`、`test-markdown-details.py`、`test-source-archive.py`、`test-research-distribution.py` |
 | 共享实现 | `source_boundaries.py`、`taxonomy.py`、`source_archive.py`、`book_views.py`、`tool_explanations.py`直接平铺；供同级入口与原资料生成器共用，不保留lib包 |
 | 依赖 | `requirements-gongfa.txt`、`requirements-faqi.txt` |
@@ -45,7 +59,7 @@
 
 研究档案不属于公开仓库；默认`make test`不运行本机研究事实检查，已有完整本机副本时可显式运行`make test-local-research`。`test-research-distribution.py`防止研究路径重新进入Git索引，并确认整目录被忽略。
 
-3个sync与1个fetch入口仍在Extensions，本次没有迁移它们。保持原校验范围和断言，同步Makefile、真实ROOT、导入与隔离夹具；从其他cwd调用不能误判仓库根。
+3个sync与1个fetch入口现已平铺到`.github/`根维护层；保持原校验范围和断言，同步Makefile、真实ROOT、导入与隔离夹具；从其他cwd调用不能误判仓库根。
 原3份Actions定义已从当前文件树移除，原始字节仍保留在Git历史中；迁移Python脚本不恢复自动CI。
 
 ## 平台入口
@@ -53,12 +67,12 @@
 `ISSUE_TEMPLATE/`、`CODEOWNERS`、`FUNDING.yml`、`PULL_REQUEST_TEMPLATE.md`、`SECURITY.md`、`WIKI.md`、`labeler.yml`、`lint_config.json`保留现有位置；用户本次点名workflows，不扩改其他协作入口。
 
 - `workflows/`已退役，不再作为平台例外；禁止重建目录、符号链接或兼容壳。原3个定义已从当前文件树移除，原始提交仍在Git历史中。
-- 自动CI、Labeler和Welcome不再触发；本地校验/测试由根Makefile调用同级维护脚本，资料维护仍调用Extensions入口，不把空远端检查当CI成功。
+- 自动CI、Labeler和Welcome不再触发；本地校验、测试和资料维护由根Makefile调用`.github/`根入口，不把空远端检查当CI成功。
 - CODEOWNERS仍由`@tukuaiai`、`@tradecatlabs`覆盖，仅迁移路径，不改变审批或豁免资格。
 - Actions定义只在历史提交中保留，不复制或执行；恢复自动化须显式授权，不能只重建路径而忽略权限、输入及检查生产者。
 - 审批Ruleset25244224的`tradecatlabs`豁免只用于其自己的PR；其他PR仍须有效批准。仅退役两套保护中已停用的`markdown-lint`/`link-checker`；签名、PR、线性历史及其它保护不变，不伪造审核。
 - Issue/PR模板保持协作职责，长期规则写根AGENTS或资源域AGENTS，不塞入模板与CI。
-- 固定来源使用Extensions下四个Gitlink；不得提交缓存、私有模板、真实会话、数据库或凭据。
+- 当前固定来源使用Extensions下两个Gitlink；Skill Seekers与Claude官方Skills Gitlink及Claude初始化器均已退役，固定来源快照、SHA与初审仍保留在FaQi资料中；不得提交缓存、私有模板、真实会话、数据库或凭据。
 
 ## 验证
 

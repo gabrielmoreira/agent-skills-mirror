@@ -44,6 +44,9 @@ when switching interfaces.
    `unknown_sources`. This checks selected environment names, not connectivity
    or every optional provider credential. Ollama may use an empty `api_key_env`;
    consult its provider configuration rather than requesting an empty-name key.
+   For `openai-chatgpt`, inspect `ai.auth.plan_usage` and follow `docs/chatgpt.md`
+   for login and a completed-inference check. Stop on account or plan-limit errors
+   instead of retrying the batch or replacing the configured billing method.
 3. Use `run_pipeline` for a configured, understood setup. For first-run diagnosis
    or tuning, use the separate stages in the table below and inspect each result.
 4. Set the requested `hours` explicitly when it differs from the native default.

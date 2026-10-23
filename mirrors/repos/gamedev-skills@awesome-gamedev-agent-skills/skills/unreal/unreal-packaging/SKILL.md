@@ -43,7 +43,10 @@ Editor-time gameplay/iteration is not packaging.
    for repeatable/CI builds.
 6. **Tune Packaging settings** (Project Settings → **Packaging**): which maps/directories to
    cook, full-rebuild, compression, and whether to build all maps.
-7. **Verify** by *running the packaged build*, not just by a successful cook — launch the
+7. **Validate assets before packaging when UnrealEditor-Cmd is available.** Run
+   `UnrealEditor-Cmd <Project>.uproject -run=DataValidation` (`UnrealEditor-Cmd.exe` on
+   Windows) and fix every reported validation error before cooking.
+8. **Verify** by *running the packaged build*, not just by a successful cook — launch the
    executable and confirm it loads the right map and runs.
 
 ## Patterns

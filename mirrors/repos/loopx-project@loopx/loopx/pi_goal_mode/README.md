@@ -12,6 +12,10 @@ into a LoopX-governed visible goal loop.
   --host-surface pi` and delivers the returned packet directly to the agent as
   a follow-up user message (`sendUserMessage` with `triggerTurn`), so the
   guided transaction starts without a popup box or a manual Enter step.
+  Persistent sessions forward a stable, path-digested thread id. An existing
+  binding can resume its registered lane; an unbound session retains the native
+  identity-selection packet. A sole candidate is never automatic takeover
+  authorization. Sessions without a file retain explicit identity selection.
   `/loopx resume` re-arms auto-continuation after a user-driven pause or an
   aborted run.
 - **`loopx_goal_activate`** — agent-callable tool. Binds the current session to

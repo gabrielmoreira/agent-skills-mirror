@@ -95,11 +95,15 @@ optional bounded `recovery` next step. `recovery.kind=inspect_input_contract`
 names the rejected operation: re-read that operation's advertised input schema
 (call `tools/list` if the catalog may be stale), correct the listed fields, and
 do not repeat the unchanged call. `recovery.kind=inspect_timeout_state` names
-the operation and the REA server/provider deadline; inspect partial Evidence
-and reported cleanup state, then follow producer-specific remediation or reduce
-supported work. Generic errors do not assume adjustable timeout controls. Raising
-only the MCP client's deadline cannot extend this budget. These hints never
-include the complete catalog or caller arguments.
+the operation and the REA server/provider deadline. Inspect partial Evidence
+and reported cleanup state, then follow the returned remediation. Change a
+request field or REA_* setting only when the returned remediation explicitly
+recommends that change. Restart REA when that text says the value is read at
+startup. A mention that a control does not raise the deadline is not a
+recommendation to change it. When it names no setting, reduce supported work;
+do not invent one. Raising only the MCP
+client's deadline cannot extend this budget. These hints never include the
+complete catalog or caller arguments.
 Failures omit `structuredContent`, since each advertised `outputSchema`
 describes successful results. Successful replies retain their schema-validated
 structured data and matching text projection. Oversized errors are retained
@@ -310,7 +314,9 @@ that complete Evidence in the session and returns the derived
 `normalized_result.parent_evidence_id` and `evidence_links` name the retained
 analysis, so later views and application workflows read it without repeating
 analysis or moving the complete record through the response. A server without
-session retention refuses summary detail with `capability_unavailable`.
+session retention refuses summary detail with `capability_unavailable`;
+`inspect_artifact`, `inspect_wasm_artifact`, `inspect_macho` and
+`decode_interface_builder` refuse before any analysis starts.
 For `inspect_artifact`, omission also keeps the original request parameters and
 complete output shape. Delivery selection never reaches the inventory engine;
 the complete inspection and its atomic inventory Evidence remain retained.

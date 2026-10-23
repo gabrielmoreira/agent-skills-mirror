@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `daymade/claude-code-skills` — 26 default patterns, 94 followed patterns, 243 file(s) materialized.
+Mirror of `daymade/claude-code-skills` — 26 default patterns, 97 followed patterns, 245 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `daymade/claude-code-skills` — 26 default patterns, 94 followed patt
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 94 |
-| Files         | 243 |
+| Followed pats | 97 |
+| Files         | 245 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,7 +61,9 @@ Mirror of `daymade/claude-code-skills` — 26 default patterns, 94 followed patt
 - `daymade-skill/skill-creator/references/source-location-and-activation.md`
 - `daymade-skill/skill-creator/references/delivery-identity.md`
 - `daymade-docs/pdf-creator/references/illustrated-manual.md`
+- `product-growth/references/customer-conversations.md`
 - `report-with-html/references/visualization-patterns.md`
+- `report-with-html/references/interactive-analysis.md`
 - `report-with-html/references/long-lived-report-maintenance.md`
 - `report-with-html/references/interaction-components.md`
 - `report-with-html/references/visual-evidence.md`
@@ -83,6 +85,7 @@ Mirror of `daymade/claude-code-skills` — 26 default patterns, 94 followed patt
 - `daymade-skill/skill-creator/references/independent-review-protocol.md`
 - `daymade-audio/transcript-fixer/references/scoped_speaker_inference.md`
 - `daymade-audio/transcript-fixer/references/native_review_packets.md`
+- `daymade-audio/transcript-fixer/references/domain_context_guide.md`
 - `daymade-audio/transcript-fixer/references/pending-continuation.md`
 - `feishu-doc-scraper/references/comments-and-feedback.md`
 - `feishu-doc-scraper/references/archive-storage-contract.md`
@@ -282,35 +285,35 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 128 | ✓ | [`repomix-unmixer/README.md`](repomix-unmixer/README.md) |
 | 129 | ✓ | [`repomix-unmixer/SKILL.md`](repomix-unmixer/SKILL.md) |
 | 130 | ✓ | [`report-with-html/references/citation-source-preview.md`](report-with-html/references/citation-source-preview.md) |
-| 131 | ✓ | [`report-with-html/references/interactive-analysis.md`](report-with-html/references/interactive-analysis.md) |
-| 132 | ✓ | [`report-with-html/SKILL.md`](report-with-html/SKILL.md) |
-| 133 | ✓ | [`scrapling-skill/SKILL.md`](scrapling-skill/SKILL.md) |
-| 134 | ✓ | [`setup-notifications-via-wecom/SKILL.md`](setup-notifications-via-wecom/SKILL.md) |
-| 135 | ✓ | [`skill-evolver/SKILL.md`](skill-evolver/SKILL.md) |
-| 136 | ✓ | [`slides-creator/SKILL.md`](slides-creator/SKILL.md) |
-| 137 | ✓ | [`teams-channel-post-writer/SKILL.md`](teams-channel-post-writer/SKILL.md) |
-| 138 | ✓ | [`terraform-skill/SKILL.md`](terraform-skill/SKILL.md) |
-| 139 | ✓ | [`tests/README.md`](tests/README.md) |
-| 140 | ✓ | [`tibo-reset-codex/SKILL.md`](tibo-reset-codex/SKILL.md) |
-| 141 | ✓ | [`tibo-reset-codex/tests/fixtures/README.md`](tibo-reset-codex/tests/fixtures/README.md) |
-| 142 | ✓ | [`tunnel-doctor/SKILL.md`](tunnel-doctor/SKILL.md) |
-| 143 | ✓ | [`twitter-reader/SKILL.md`](twitter-reader/SKILL.md) |
-| 144 | ✓ | [`ui-designer/SKILL.md`](ui-designer/SKILL.md) |
-| 145 | ✓ | [`video-comparer/README.md`](video-comparer/README.md) |
-| 146 | ✓ | [`video-comparer/SKILL.md`](video-comparer/SKILL.md) |
-| 147 | ✓ | [`windows-remote-desktop-connection-doctor/SKILL.md`](windows-remote-desktop-connection-doctor/SKILL.md) |
-| 148 | ✓ | [`wps-doc-scraper/SKILL.md`](wps-doc-scraper/SKILL.md) |
-| 149 | ✓ | [`youtube-downloader/SKILL.md`](youtube-downloader/SKILL.md) |
-| 150 | → | [`.github/ISSUE_TEMPLATE/bug_report.md`](.github/ISSUE_TEMPLATE/bug_report.md) |
-| 151 | → | [`app-evolver/references/skill-composition.md`](app-evolver/references/skill-composition.md) |
-| 152 | → | [`auto-repo-setup/references/git_safety.md`](auto-repo-setup/references/git_safety.md) |
-| 153 | → | [`CHANGELOG.md`](CHANGELOG.md) |
-| 154 | → | [`cloudflare-troubleshooting/references/email-routing.md`](cloudflare-troubleshooting/references/email-routing.md) |
-| 155 | → | [`competitors-analysis/references/collection_destination.md`](competitors-analysis/references/collection_destination.md) |
-| 156 | → | [`competitors-analysis/references/original-app-demo.md`](competitors-analysis/references/original-app-demo.md) |
-| 157 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 158 | → | [`data-visualization-discipline/references/operational-state-matrix.md`](data-visualization-discipline/references/operational-state-matrix.md) |
-| 159 | → | [`daymade-audio/asr-transcribe-to-text/references/execution_location_and_comparison.md`](daymade-audio/asr-transcribe-to-text/references/execution_location_and_comparison.md) |
+| 131 | ✓ | [`report-with-html/SKILL.md`](report-with-html/SKILL.md) |
+| 132 | ✓ | [`scrapling-skill/SKILL.md`](scrapling-skill/SKILL.md) |
+| 133 | ✓ | [`setup-notifications-via-wecom/SKILL.md`](setup-notifications-via-wecom/SKILL.md) |
+| 134 | ✓ | [`skill-evolver/SKILL.md`](skill-evolver/SKILL.md) |
+| 135 | ✓ | [`slides-creator/SKILL.md`](slides-creator/SKILL.md) |
+| 136 | ✓ | [`teams-channel-post-writer/SKILL.md`](teams-channel-post-writer/SKILL.md) |
+| 137 | ✓ | [`terraform-skill/SKILL.md`](terraform-skill/SKILL.md) |
+| 138 | ✓ | [`tests/README.md`](tests/README.md) |
+| 139 | ✓ | [`tibo-reset-codex/SKILL.md`](tibo-reset-codex/SKILL.md) |
+| 140 | ✓ | [`tibo-reset-codex/tests/fixtures/README.md`](tibo-reset-codex/tests/fixtures/README.md) |
+| 141 | ✓ | [`tunnel-doctor/SKILL.md`](tunnel-doctor/SKILL.md) |
+| 142 | ✓ | [`twitter-reader/SKILL.md`](twitter-reader/SKILL.md) |
+| 143 | ✓ | [`ui-designer/SKILL.md`](ui-designer/SKILL.md) |
+| 144 | ✓ | [`video-comparer/README.md`](video-comparer/README.md) |
+| 145 | ✓ | [`video-comparer/SKILL.md`](video-comparer/SKILL.md) |
+| 146 | ✓ | [`windows-remote-desktop-connection-doctor/SKILL.md`](windows-remote-desktop-connection-doctor/SKILL.md) |
+| 147 | ✓ | [`wps-doc-scraper/SKILL.md`](wps-doc-scraper/SKILL.md) |
+| 148 | ✓ | [`youtube-downloader/SKILL.md`](youtube-downloader/SKILL.md) |
+| 149 | → | [`.github/ISSUE_TEMPLATE/bug_report.md`](.github/ISSUE_TEMPLATE/bug_report.md) |
+| 150 | → | [`app-evolver/references/skill-composition.md`](app-evolver/references/skill-composition.md) |
+| 151 | → | [`auto-repo-setup/references/git_safety.md`](auto-repo-setup/references/git_safety.md) |
+| 152 | → | [`CHANGELOG.md`](CHANGELOG.md) |
+| 153 | → | [`cloudflare-troubleshooting/references/email-routing.md`](cloudflare-troubleshooting/references/email-routing.md) |
+| 154 | → | [`competitors-analysis/references/collection_destination.md`](competitors-analysis/references/collection_destination.md) |
+| 155 | → | [`competitors-analysis/references/original-app-demo.md`](competitors-analysis/references/original-app-demo.md) |
+| 156 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 157 | → | [`data-visualization-discipline/references/operational-state-matrix.md`](data-visualization-discipline/references/operational-state-matrix.md) |
+| 158 | → | [`daymade-audio/asr-transcribe-to-text/references/execution_location_and_comparison.md`](daymade-audio/asr-transcribe-to-text/references/execution_location_and_comparison.md) |
+| 159 | → | [`daymade-audio/transcript-fixer/references/domain_context_guide.md`](daymade-audio/transcript-fixer/references/domain_context_guide.md) |
 | 160 | → | [`daymade-audio/transcript-fixer/references/native_review_packets.md`](daymade-audio/transcript-fixer/references/native_review_packets.md) |
 | 161 | → | [`daymade-audio/transcript-fixer/references/pending-continuation.md`](daymade-audio/transcript-fixer/references/pending-continuation.md) |
 | 162 | → | [`daymade-audio/transcript-fixer/references/scoped_speaker_inference.md`](daymade-audio/transcript-fixer/references/scoped_speaker_inference.md) |
@@ -372,29 +375,31 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 218 | → | [`peer-message/references/protocol-and-discovery.md`](peer-message/references/protocol-and-discovery.md) |
 | 219 | → | [`product-analysis/references/analysis_dimensions.md`](product-analysis/references/analysis_dimensions.md) |
 | 220 | → | [`product-analysis/references/synthesis_methodology.md`](product-analysis/references/synthesis_methodology.md) |
-| 221 | → | [`promptfoo-evaluation/references/promptfoo_api.md`](promptfoo-evaluation/references/promptfoo_api.md) |
-| 222 | → | [`qa-expert/references/master_qa_prompt.md`](qa-expert/references/master_qa_prompt.md) |
-| 223 | → | [`QUICKSTART.md`](QUICKSTART.md) |
-| 224 | → | [`QUICKSTART.zh-CN.md`](QUICKSTART.zh-CN.md) |
-| 225 | → | [`README.md`](README.md) |
-| 226 | → | [`README.zh-CN.md`](README.zh-CN.md) |
-| 227 | → | [`references/ci-operations.md`](references/ci-operations.md) |
-| 228 | → | [`references/git-publication-transport.md`](references/git-publication-transport.md) |
-| 229 | → | [`references/new-skill-guide.md`](references/new-skill-guide.md) |
-| 230 | → | [`references/plugin-architecture.md`](references/plugin-architecture.md) |
-| 231 | → | [`references/plugin-troubleshooting.md`](references/plugin-troubleshooting.md) |
-| 232 | → | [`references/promotion-policy.md`](references/promotion-policy.md) |
-| 233 | → | [`repomix-safe-mixer/references/common_secrets.md`](repomix-safe-mixer/references/common_secrets.md) |
-| 234 | → | [`report-with-html/references/interaction-components.md`](report-with-html/references/interaction-components.md) |
-| 235 | → | [`report-with-html/references/long-lived-report-maintenance.md`](report-with-html/references/long-lived-report-maintenance.md) |
-| 236 | → | [`report-with-html/references/visual-evidence.md`](report-with-html/references/visual-evidence.md) |
-| 237 | → | [`report-with-html/references/visualization-patterns.md`](report-with-html/references/visualization-patterns.md) |
-| 238 | → | [`scrapling-skill/references/troubleshooting.md`](scrapling-skill/references/troubleshooting.md) |
-| 239 | → | [`tibo-reset-codex/references/account-usage.md`](tibo-reset-codex/references/account-usage.md) |
-| 240 | → | [`tibo-reset-codex/references/forecast-feedback.md`](tibo-reset-codex/references/forecast-feedback.md) |
-| 241 | → | [`tibo-reset-codex/references/next-reset-forecast.md`](tibo-reset-codex/references/next-reset-forecast.md) |
-| 242 | → | [`tunnel-doctor/references/proxy_conflict_reference.md`](tunnel-doctor/references/proxy_conflict_reference.md) |
-| 243 | → | [`youtube-downloader/references/internal-sop.md`](youtube-downloader/references/internal-sop.md) |
+| 221 | → | [`product-growth/references/customer-conversations.md`](product-growth/references/customer-conversations.md) |
+| 222 | → | [`promptfoo-evaluation/references/promptfoo_api.md`](promptfoo-evaluation/references/promptfoo_api.md) |
+| 223 | → | [`qa-expert/references/master_qa_prompt.md`](qa-expert/references/master_qa_prompt.md) |
+| 224 | → | [`QUICKSTART.md`](QUICKSTART.md) |
+| 225 | → | [`QUICKSTART.zh-CN.md`](QUICKSTART.zh-CN.md) |
+| 226 | → | [`README.md`](README.md) |
+| 227 | → | [`README.zh-CN.md`](README.zh-CN.md) |
+| 228 | → | [`references/ci-operations.md`](references/ci-operations.md) |
+| 229 | → | [`references/git-publication-transport.md`](references/git-publication-transport.md) |
+| 230 | → | [`references/new-skill-guide.md`](references/new-skill-guide.md) |
+| 231 | → | [`references/plugin-architecture.md`](references/plugin-architecture.md) |
+| 232 | → | [`references/plugin-troubleshooting.md`](references/plugin-troubleshooting.md) |
+| 233 | → | [`references/promotion-policy.md`](references/promotion-policy.md) |
+| 234 | → | [`repomix-safe-mixer/references/common_secrets.md`](repomix-safe-mixer/references/common_secrets.md) |
+| 235 | → | [`report-with-html/references/interaction-components.md`](report-with-html/references/interaction-components.md) |
+| 236 | → | [`report-with-html/references/interactive-analysis.md`](report-with-html/references/interactive-analysis.md) |
+| 237 | → | [`report-with-html/references/long-lived-report-maintenance.md`](report-with-html/references/long-lived-report-maintenance.md) |
+| 238 | → | [`report-with-html/references/visual-evidence.md`](report-with-html/references/visual-evidence.md) |
+| 239 | → | [`report-with-html/references/visualization-patterns.md`](report-with-html/references/visualization-patterns.md) |
+| 240 | → | [`scrapling-skill/references/troubleshooting.md`](scrapling-skill/references/troubleshooting.md) |
+| 241 | → | [`tibo-reset-codex/references/account-usage.md`](tibo-reset-codex/references/account-usage.md) |
+| 242 | → | [`tibo-reset-codex/references/forecast-feedback.md`](tibo-reset-codex/references/forecast-feedback.md) |
+| 243 | → | [`tibo-reset-codex/references/next-reset-forecast.md`](tibo-reset-codex/references/next-reset-forecast.md) |
+| 244 | → | [`tunnel-doctor/references/proxy_conflict_reference.md`](tunnel-doctor/references/proxy_conflict_reference.md) |
+| 245 | → | [`youtube-downloader/references/internal-sop.md`](youtube-downloader/references/internal-sop.md) |
 
 ---
 

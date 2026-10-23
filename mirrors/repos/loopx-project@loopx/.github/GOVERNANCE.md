@@ -23,7 +23,7 @@ repository-wide maintainer authority.
 
 This is the public list of everyone who can satisfy a review requirement on
 `main`, and the paths they answer for. It records appointments through
-**2026-10-19**; the matching routes live in [`CODEOWNERS`](CODEOWNERS) and a
+**2026-10-22**; the matching routes live in [`CODEOWNERS`](CODEOWNERS) and a
 change to either file changes both in one pull request.
 
 | Account | Role | Scope | `CODEOWNERS` route | Since |
@@ -31,6 +31,7 @@ change to either file changes both in one pull request.
 | [`@huangruiteng`](https://github.com/huangruiteng) | Lead maintainer | Whole repository; governance, CI, releases, security handling, cross-subsystem decisions | Every path, including `.github/`, `scripts/ci/`, release policy and technical directions | 2026-05-31 |
 | [`@steven-kid`](https://github.com/steven-kid) | Subsystem maintainer | [Lark integration](#lark-integration) | Lark extension, its CLI delegates, Lark docs and focused tests | 2026-08-16 ([#3236](https://github.com/loopx-project/loopx/pull/3236)) |
 | [`@maxliux5`](https://github.com/maxliux5) | Code owner | Frontend source under `apps/presentation/dashboard/` and chat bundle delivery | Dashboard source, `loopx/presentation/chat_bundle.py`, `scripts/chat_bundle*` | 2026-09-08 ([#4071](https://github.com/loopx-project/loopx/pull/4071)) |
+| [`@BigDataDZ`](https://github.com/BigDataDZ) | Windows runtime code owner | Windows installer entrypoints and dedicated Windows filesystem/installer tests; cross-platform runtime review remains advisory | `loopx/windows_install.py`, `scripts/install-windows.ps1`, `tests/test_windows_install.py`, `tests/test_windows_atomic_writes.py` | 2026-10-22 |
 | [`@loopx-agent`](https://github.com/loopx-agent) | Automated technical code owner | Whole repository; evidence-backed technical review, including governance, CI and release changes | Every route, including the `*` fallback and later subsystem overrides | 2026-10-04 |
 | [`@songoow`](https://github.com/songoow) | Technical code owner | Whole repository; technical review across subsystems, including governance, CI and release-policy changes | Every route, including the `*` fallback and later subsystem overrides | 2026-10-19 |
 
@@ -70,6 +71,19 @@ the two change requests also preserve concrete unresolved findings. These
 records support broader technical routing without treating review volume or
 approval as proof of maintainer authority. Best-effort availability and all
 separate release, appointment, security-handling and bypass boundaries remain.
+
+The lead maintainer appoints `@BigDataDZ` to the bounded Windows route above,
+within the [Windows-runtime and test-harness scope they accepted](https://github.com/loopx-project/loopx/issues/4069#issuecomment-6118281182).
+Repository Write is active. Cross-author Windows validation includes
+[file-lock compatibility and state-directory isolation in #6164](https://github.com/loopx-project/loopx/pull/6164),
+[long-path, binary and read-receipt behavior in #6073](https://github.com/loopx-project/loopx/pull/6073),
+and [encoded-path redaction and platform limitations in #5978](https://github.com/loopx-project/loopx/pull/5978).
+These records name the tested revisions, actual native Windows checks, failures
+and limitations. The code-owner paths are deliberately narrower than every
+shared file exercised by those reviews: cross-platform lifecycle, quota,
+authority, shared update policy, CI workflows and release policy keep their
+existing owners. The accepted best-effort availability and recusal boundaries
+continue. This appointment grants no repository Maintain role or bypass.
 
 An `APPROVED` review and GitHub's aggregate review decision are separate facts.
 Required code-owner approval uses `CODEOWNERS` on the pull request's base
@@ -156,65 +170,81 @@ cross-author counts are raw public activity; they inform a scope but never
 qualify an account on their own. Revisit the targets and the roster together,
 at least every eight weeks.
 
-## Repository Developers With Write Access
+<a id="repository-developers-with-write-access"></a>
 
-The following access snapshot was audited on **2026-10-10**. Write access
-supports day-to-day pull-request and branch work within the repository rules.
-It does not appoint a maintainer or authorize release, security, or governance
-decisions under project policy. GitHub's standard Write role includes some
-release operations; project policy and platform permissions are distinct.
-Formal release tags are protected separately as described below.
+## Repository Access And Invitations
 
-Organization membership grants no default repository permission. The
-`loopx-developers` team grants Write only on `loopx-project/loopx`; membership
-does not confer access to other organization repositories. Existing direct
-Write grants remain active. Organization invitations below include this team
-and take effect when accepted.
+The operational access snapshot below was read back on **2026-10-22**.
+Repository settings remain the source of truth. Write supports ordinary branch
+and pull-request work under repository rules; it is separate from a maintainer
+appointment, code ownership, release authority and bypass. The standard GitHub
+Write role includes some release operations, while formal release tags remain
+protected separately below.
 
-| GitHub account | Repository role | Access status |
+Organization membership grants no default repository access. The
+`loopx-developers` team grants Write only on `loopx-project/loopx`; existing
+direct grants remain active. A pending invitation is not active membership or
+access, and takes effect only when the invited contributor accepts it.
+
+| GitHub account | Repository role | Access / organization status |
 | --- | --- | --- |
-| [`@wujc12`](https://github.com/wujc12) | Write | Active |
-| [`@ZaynJarvis`](https://github.com/ZaynJarvis) | Write | Active |
-| [`@Hoey041`](https://github.com/Hoey041) | Write | Active |
-| [`@maxliux5`](https://github.com/maxliux5) | Write | Active |
-| [`@JackyCSer`](https://github.com/JackyCSer) | Write | Active |
-| [`@steven-kid`](https://github.com/steven-kid) | Write | Active |
-| [`@liubf21`](https://github.com/liubf21) | Write | Active |
-| [`@wchwawa`](https://github.com/wchwawa) | Write | Active |
-| [`@now-ing`](https://github.com/now-ing) | Write | Active |
-| [`@cocolord`](https://github.com/cocolord) | Write | Active |
-| [`@liuyizhe`](https://github.com/liuyizhe) | Write | Active |
-| [`@Wanli-Lee`](https://github.com/Wanli-Lee) | Write | Active |
-| [`@Duang777`](https://github.com/Duang777) | Write | Active |
-| [`@songoow`](https://github.com/songoow) | Write | Active |
-| [`@hhyykk`](https://github.com/hhyykk) | Write | Organization + team invitation pending |
-| [`@LIHUA919`](https://github.com/LIHUA919) | Write | Organization + team invitation pending |
-| [`@NIU-123370`](https://github.com/NIU-123370) | Write | Organization + team invitation pending |
-| [`@xyx2002OvO`](https://github.com/xyx2002OvO) | Write | Organization + team invitation pending |
-| [`@jackie-cqz`](https://github.com/jackie-cqz) | Write | Organization + team invitation pending |
-| [`@Jim-jimu`](https://github.com/Jim-jimu) | Write | Organization + team invitation pending |
-| [`@BigDataDZ`](https://github.com/BigDataDZ) | Write | Organization + team invitation pending |
-| [`@mikamikasuki`](https://github.com/mikamikasuki) | Write | External collaborator invitation pending; initial review around 2026-11-07 |
+| [`@liuyizhe`](https://github.com/liuyizhe) | Write | Active; external collaborator |
+| [`@hhyykk`](https://github.com/hhyykk) | Write | Active; organization Member invitation pending (2026-10-21) |
+| [`@maxliux5`](https://github.com/maxliux5) | Write | Active; external collaborator |
+| [`@JackyCSer`](https://github.com/JackyCSer) | Write | Active; organization Member |
+| [`@cocolord`](https://github.com/cocolord) | Write | Active; organization Member |
+| [`@wujc12`](https://github.com/wujc12) | Write | Active; organization Member |
+| [`@songoow`](https://github.com/songoow) | Maintain | Active; organization Member |
+| [`@now-ing`](https://github.com/now-ing) | Write | Active; organization Member |
+| [`@ZaynJarvis`](https://github.com/ZaynJarvis) | Write | Active; external collaborator |
+| [`@Jim-jimu`](https://github.com/Jim-jimu) | Write | Active; organization Member |
+| [`@BigDataDZ`](https://github.com/BigDataDZ) | Write | Active; organization Member |
+| [`@steven-kid`](https://github.com/steven-kid) | Write | Active; organization Member |
+| [`@liubf21`](https://github.com/liubf21) | Write | Active; organization Member |
+| [`@Wanli-Lee`](https://github.com/Wanli-Lee) | Write | Active; organization Member |
+| [`@wchwawa`](https://github.com/wchwawa) | Write | Active; organization Member |
+| [`@xyx2002OvO`](https://github.com/xyx2002OvO) | Write | Active; organization Member |
+| [`@NIU-123370`](https://github.com/NIU-123370) | Write | Active; organization Member |
+| [`@Duang777`](https://github.com/Duang777) | Write | Active; organization Member |
+| [`@Hoey041`](https://github.com/Hoey041) | Write | Active; external collaborator |
+| [`@JasonBuildAI`](https://github.com/JasonBuildAI) | Write pending | Organization Member + `loopx-developers` invitation sent 2026-10-22; not active yet |
+| [`@LIHUA919`](https://github.com/LIHUA919) | Write pending | Organization Member + `loopx-developers` invitation sent 2026-10-22; not active yet |
+| [`@jackie-cqz`](https://github.com/jackie-cqz) | Write pending | Organization Member + `loopx-developers` invitation sent 2026-10-22; not active yet |
+| [`@AronSwan`](https://github.com/AronSwan) | Triage pending | External repository invitation sent 2026-10-22; not active yet |
+| [`@YZJF`](https://github.com/YZJF) | No added repository role | Organization Member-only invitation sent 2026-10-22; no Write-team invitation |
 
-`@maxliux5` also has an organization Member invitation pending; existing
-Write and frontend code ownership continue. The initial collaboration review
-for `@mikamikasuki` is a manual review date, not an automatic expiration or
-restricted version of Write. Consider review responses, regression follow-up,
-scope and availability before proposing organization membership.
+`@LIHUA919` and `@jackie-cqz`'s 2026-10-10 invitations expired before this
+renewal; their pending rows above describe the new invitations. `@hhyykk`'s
+existing organization invitation was reused, and active direct Write continues.
+No Maintain, Admin, team-repository grant or ruleset was changed by this rollout.
 
-GitHub's repository settings are the operational source of truth for access.
-This public snapshot should be updated through a pull request when a write-role
-invitation is accepted, expires, or is revoked. Maintainer appointments remain
-subject to the process below.
+`@AronSwan` [accepted Triage](https://github.com/loopx-project/loopx/issues/4069#issuecomment-6103254297)
+and recorded [scope, recusal and environment limits](https://github.com/loopx-project/loopx/issues/4069#issuecomment-6106778984).
+The responsibility is reproduction, duplicate detection and permitted issue
+labels; lifecycle-label decisions remain with maintainers under the issue-label
+policy. Triage does not grant code Write or code-owner approval.
+`@YZJF` [accepted community membership](https://github.com/loopx-project/loopx/issues/4069#issuecomment-6118195385);
+that invitation carries no repository Write or maintenance commitment.
 
-The [2026-10-10 scope update](https://github.com/loopx-project/loopx/issues/4069#issuecomment-6087047599)
-asks `@yuefengw` and `@xiaods` to confirm continued interest before Member +
-Write invitations, and `@karenchuu`, `@kokokoXUY`, `@YZJF` and `@zyaiire` to
-confirm community Member interest without automatic Write. `@AronSwan` and
-`@JunZ-Leo` are invited to accept issue reproduction, duplicate detection and
-label responsibilities before Triage is granted. These are proposals, not
-active grants. Existing Write is retained while contributors confirm their
-preferred responsibilities; activity alone does not revoke access.
+The earlier external Write invitation for `@mikamikasuki` is no longer pending
+and repository Write is not currently active. Continued interest in the original
+bounded collaboration is being requested in #4069 before a new invitation.
+The previously proposed review around **2026-11-07** was a manual checkpoint,
+not automatic permission expiry; it must not be described as an active trial
+without invitation acceptance. Recent inactivity alone does not revoke access.
+
+The [earlier scope update](https://github.com/loopx-project/loopx/issues/4069#issuecomment-6087047599)
+continues to ask `@JunZ-Leo` whether to accept issue reproduction, duplicate
+detection and label responsibilities before a Triage grant.
+Existing scope and community invitations to `@yuefengw`, `@xiaods`,
+`@karenchuu`, `@kokokoXUY` and `@zyaiire` remain proposals unless accepted in
+[#4069](https://github.com/loopx-project/loopx/issues/4069). Newer contributors
+are welcome to choose a bounded contribution or review scope there. Silence is
+not acceptance, and a welcome message grants no repository role.
+
+Update this snapshot through a pull request when invitations are accepted,
+expire or are otherwise resolved. Maintainer appointments follow the separate
+process below.
 
 ## Subsystem Maintainers
 
@@ -291,19 +321,21 @@ The lead maintainer remains the fallback. Contributor availability is
 voluntary: anyone may decline, narrow, pause, or hand back a scope without
 losing attribution for their work. Silence is not acceptance or approval.
 
-Status reflects the public record in #4069 as of 2026-10-10. The last column
-says what still separates each contact from a `CODEOWNERS` route under the
+Status reflects accepted scopes and follow-up invitations in #4069 through
+2026-10-22. The last column says what still separates each contact from a `CODEOWNERS` route under the
 [eligibility rule](#code-owner-eligibility).
 
 | Surface | Contact | Responsibility / status | Path to a code-owner route |
 | --- | --- | --- | --- |
 | Chat/runtime session lifecycle | [`@Duang777`](https://github.com/Duang777) | Accepted 2026-09-08: managed-session resume/submit/close, request idempotency, focused regressions and follow-up fixes. Shared goal, quota, lease and permission contracts remain outside this assignment. | Has write access and an accepted scope; needs three qualifying in-scope cross-author reviews. |
 | Shared goal authority qualification | [`@wchwawa`](https://github.com/wchwawa) | Accepted 2026-09-08: implementation review, writer/cursor recovery evidence and bounded qualification. Canonical-authority promotion, provider activation and shared-state policy require separate lead-maintainer review. | Has write access and an accepted scope; needs three in-scope cross-author reviews. |
+| Windows runtime correctness | [`@BigDataDZ`](https://github.com/BigDataDZ) | Accepted 2026-10-12: Python CLI Windows paths/encoding, filesystem behavior and native repro-first test qualification; best-effort availability and stated recusals retained. | Bounded Windows code-owner route recorded above; shared semantic and CI-policy decisions remain with existing owners. |
 | Usage and host usage ingestion | [`@liubf21`](https://github.com/liubf21) | Invited to coordinate usage correctness and historical-data compatibility review; no acceptance recorded. Pricing policy and unrelated host/session authority remain outside this scope. | Has write access; needs scope acceptance and in-scope reviews. |
 | Post-writeback hooks and reporting | [`@now-ing`](https://github.com/now-ing) | Write access active; invited to select post-writeback hooks or periodic reporting as one cohesive initial scope and record conclusions as exact-head GitHub reviews. Substantive cross-author review comments exist on claim, lease and settlement changes. | Needs accepted scope and three qualifying in-scope cross-author reviews. |
 | Quota admission and action projection | [`@cocolord`](https://github.com/cocolord) | Proposed first-review scope 2026-10-10; acceptance pending. Shared goal authority, provider activation and release policy remain separately reviewed. | Has write and substantive review history; needs accepted cohesive scope and mapping of three qualifying in-scope reviews. |
-| TypeScript transaction migration | [`@hhyykk`](https://github.com/hhyykk) | Proposed paired review of complete transaction cutovers and Python/TypeScript parity; scope confirmation and organization + Write invitation acceptance pending. | Needs scope and access acceptance, and three qualifying in-scope reviews. |
+| TypeScript transaction migration | [`@hhyykk`](https://github.com/hhyykk) | Write active; organization Member invitation pending. Proposed paired review of complete transaction cutovers, Python/TypeScript parity and measured read-path performance; scope confirmation pending. | Needs accepted scope and three qualifying in-scope cross-author reviews. |
 | Task leases and scheduler boundaries | [`@yuefengw`](https://github.com/yuefengw) | Proposed paired review of lease lifecycle and boundary regressions; scope confirmation pending. | Needs scope acceptance, write access and in-scope reviews. |
+| Desktop delivery and runtime recovery | [`@JasonBuildAI`](https://github.com/JasonBuildAI) | Member + Write invitation sent 2026-10-22; invited to choose a cohesive first-review scope and availability. | Needs invitation acceptance, accepted scope and qualifying in-scope cross-author reviews. |
 | DSH integration | [`@wujc12`](https://github.com/wujc12) | Designated by the lead maintainer 2026-09-07 as first-review contact for the DSH plugin, installation and host-integration regressions; no acceptance recorded. Shared replan and lifecycle contracts stay separately reviewed. | Has write access; needs scope acceptance and in-scope reviews. |
 
 Start by linking a real cross-author PR, not by creating a quota of new
@@ -337,10 +369,14 @@ or unexpectedly skipped core jobs; only an explicitly classified
 documentation-only change may skip those jobs. See the live ruleset for the
 currently activated checks, rather than inferring activation from this file.
 
-`@huangruiteng` retains the existing `always` bypass entry, and the
-maintainer-authorized automation account `@loopx-agent` retains its existing
-`pull_request` bypass entry. This access rollout does not change those entries.
-Write invitations do not grant bypass. A bypass is an exception, not a
+The live ruleset retains `@huangruiteng`'s `always` entry,
+`@loopx-agent`'s `pull_request` entry, and the lead-maintainer-authorized
+**Maintain repository role** entry with `pull_request` bypass. The role-level
+entry covers `@songoow` and any future holder of Maintain: it may bypass this
+ruleset's review, code-owner and required-check restrictions when merging a PR,
+but does not grant an `always` direct-push bypass. This rollout changes none of
+these entries. Member, Write, Triage and code-owner appointments do not grant
+bypass by themselves. A bypass is an exception, not a
 validation substitute: record the exact head, reason, completed checks, known
 failures and recovery plan in the PR. Existing restrictions on which changes
 may be self-merged still apply.

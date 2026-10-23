@@ -10,7 +10,7 @@ description: 'Track large cryptocurrency transactions and whale wallet movements
 
   '
 allowed-tools: Read, Write, Edit, Grep, Glob, Bash(python:*whale*)
-version: 1.26.0
+version: 1.27.0
 author: Jeremy Longshore <jeremy@intentsolutions.io>
 license: MIT
 tags:
@@ -83,7 +83,7 @@ python whale_monitor.py labels --type exchange               # Or use type filte
 
 ## Error Handling
 
-See `${CLAUDE_SKILL_DIR}/references/errors.md` for:
+See [`references/errors.md`](references/errors.md) for:
 
 - API rate limit handling and backoff
 - Network timeout recovery
@@ -117,11 +117,11 @@ python whale_monitor.py track 0x28c6c...
 python whale_monitor.py recent --format json > whales.json
 ```
 
-See `${CLAUDE_SKILL_DIR}/references/examples.md` for more usage patterns.
+See [`references/examples.md`](references/examples.md) for more usage patterns.
 
 ## Resources
 
-- `${CLAUDE_SKILL_DIR}/references/implementation.md` - Flow analysis, wallet database, multi-chain details
+- [`references/implementation.md`](references/implementation.md) - Flow analysis, wallet database, multi-chain details
 - [Whale Alert](https://whale-alert.io) - Real-time whale transaction API
 - [Etherscan](https://etherscan.io) - Ethereum blockchain explorer
 - [CoinGecko](https://coingecko.com) - Price data API

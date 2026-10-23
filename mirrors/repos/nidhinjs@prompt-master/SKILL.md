@@ -106,17 +106,18 @@ Do not assume one universal Claude default. When unsure, start with the **Opus 5
 
 ---
 
-**ChatGPT / GPT-5.6 / OpenAI GPT models**
-- Current GPT-5.6 family: **Sol** (`gpt-5.6-sol`, also the `gpt-5.6` alias) for flagship capability, **Terra** (`gpt-5.6-terra`) for balanced everyday work, and **Luna** (`gpt-5.6-luna`) for fast, repeatable, high-volume work. In standard ChatGPT, availability depends on the user's plan; do not promise a specific picker option.
-- Start lean. For complex work use four compact sections: Goal, Context, Constraints, and Done. State each instruction once.
-- GPT-5.6 infers intent well; specify domain context, hard constraints, approval boundaries, success criteria, and which ambiguity should trigger a question, but do not prescribe every reasoning step.
-- Define autonomy clearly: safe in-scope local inspection, edits, and validation may proceed; external writes, destructive actions, purchases, and material scope expansion require confirmation.
-- Use the lowest reasoning effort that meets the quality bar.
-- For the API, recommend higher effort, `reasoning.mode: "pro"`, or Responses multi-agent beta only when measured quality justifies the added latency and cost. Pro mode is not a separate API model slug.
-- For ChatGPT and Codex surfaces, recommend available product controls such as Sol Pro, Max, or Ultra only for suitably difficult work. Do not translate those UI controls into API parameters.
-- State tool-use expectations and required evidence explicitly. Use programmatic or multi-agent tool orchestration only for bounded work that divides cleanly.
-- Never request hidden reasoning. Ask for conclusions, assumptions, evidence, and checks.
-- Control visible length with the output contract (and `text.verbosity` in the API), not by asking for less thinking.
+**ChatGPT / OpenAI GPT models**
+
+Identify the surface (ChatGPT, Codex, or API), preserve the selected model, and use the Model Recency Gate for availability and exact controls.
+- Route GPT-6 Luna (`gpt-6-luna`) to focused, high-volume tasks; GPT-6.1 Sol (`gpt-6.1-sol`) to complex coding, computer use, and professional work; GPT-6 Astra (`gpt-6-astra`) to demanding reasoning, research, coding, and document work.
+- Preserve GPT-5.6 choices: Sol (`gpt-5.6-sol`, alias `gpt-5.6`) for flagship capability, Terra (`gpt-5.6-terra`) for balanced everyday work, and Luna (`gpt-5.6-luna`) for fast, repeatable tasks. ChatGPT availability depends on the user's plan.
+- Start lean; use Template N for complex tasks and omit irrelevant sections. As heuristics to evaluate, narrow Luna tasks, give Sol implementation context and acceptance criteria, and give Astra decision criteria and evidence requirements.
+- State domain context, constraints, approval boundaries, success criteria, and when ambiguity requires a question. Honor existing authorization, allow routine in-scope work, and specify milestones, delegation limits, and proportionate verification when relevant.
+- For GPT-6 API tools, use Responses: Astra and GPT-6.1 Sol do not support tool calling through Chat Completions; Luna supports function calling there only with `reasoning_effort: "none"`.
+- Use the lowest reasoning effort that meets the quality bar; verify supported values for the exact model and endpoint. Do not transfer GPT-5.6-specific controls to newer models without verification.
+- Keep runtime settings outside the copyable prompt. For GPT-5.6, use higher effort, `reasoning.mode: "pro"`, or Responses multi-agent beta only when measured quality justifies cost and latency; pro mode is not a separate model slug.
+- Treat ChatGPT/Codex controls such as Sol Pro, Max, or Ultra as surface-specific; do not translate them into API parameters. Prompt text does not change the selected model or runtime settings.
+- State tool-use expectations and evidence requirements; use orchestration only for bounded, divisible work. Ask for conclusions, assumptions, evidence, and checks, never hidden reasoning; control visible length with the output contract (and API `text.verbosity`).
 
 ---
 
@@ -125,7 +126,7 @@ Do not assume one universal Claude default. When unsure, start with the **Opus 5
 - NEVER add CoT, "think step by step", or reasoning scaffolding — it actively degrades output
 - Prefer zero-shot first — add few-shot only if strictly needed and tightly aligned
 - State what you want and what done looks like. Nothing more.
-- Keep system prompts under 200 words — longer prompts hurt performance on reasoning models
+- Keep instructions concise while preserving necessary context, constraints, examples, and verification. Do not impose an arbitrary word limit.
 
 ---
 
@@ -216,9 +217,9 @@ Do not assume one universal Claude default. When unsure, start with the **Opus 5
 ---
 
 **Codex CLI / ChatGPT Work / Codex IDE**
-- Use the GPT-5.6 route above. Sol is the capability-first default, Terra is the everyday workhorse, and Luna is best for clear, repeatable tasks.
+- Apply the matching OpenAI model route above, including GPT-6 Luna, GPT-6.1 Sol, GPT-6 Astra, or GPT-5.6 when selected. Do not infer the model from the Codex product name. Use Template N for complex OpenAI tasks.
 - Structure implementation prompts as Goal, Context, Scope, Constraints, Approval Boundaries, and Done. Include concrete verification commands when known.
-- Start with default reasoning. Raise it for work that needs deeper planning or checking; use Max for the hardest single-agent tasks and Ultra only when the task splits into meaningful independent tracks.
+- Start with a supported default reasoning setting and adjust based on task results. Verify available Codex controls before recommending Max, Ultra, or other UI labels; do not map them directly to API settings.
 - Keep one primary agent responsible for synthesis. Name each subagent's bounded deliverable and cap concurrency rather than requesting an open-ended swarm.
 - Ask for a concise rationale, evidence, changed-file summary, and verification results—not hidden reasoning.
 
@@ -401,7 +402,7 @@ Scan every user-provided prompt or rough idea for these failure patterns. Fix si
 
 **Task failures**
 - Vague task verb → replace with a precise operation
-- Two tasks in one prompt → split, deliver as Prompt 1 and Prompt 2
+- Unrelated tasks in one prompt → split when outcomes or review checkpoints differ; keep related tasks together when they share a clear completion contract
 - No success criteria → derive a binary pass/fail from the stated goal
 - Emotional description ("it's broken") → extract the specific technical fault
 - Scope is "the whole thing" → decompose into sequential prompts
@@ -414,7 +415,7 @@ Scan every user-provided prompt or rough idea for these failure patterns. Fix si
 **Format failures**
 - No output format specified → derive from task type and add explicit format lock
 - Implicit length ("write a summary") → add word or sentence count
-- No role assignment for complex tasks → add domain-specific expert identity
+- Missing domain perspective → add a role only when expertise or perspective changes the result
 - Vague aesthetic ("make it professional") → translate to concrete measurable specs
 
 **Scope failures**
@@ -430,7 +431,7 @@ Scan every user-provided prompt or rough idea for these failure patterns. Fix si
 **Agentic failures**
 - No starting state → add current project state description
 - No target state → add specific deliverable description
-- Silent agent → add "After each step output: ✅ [what was completed]"
+- Silent agent → request meaningful milestones, blockers, and final verification evidence
 - Unrestricted filesystem → add scope lock on which files and directories are touchable
 - No human review trigger → add "Stop and ask before: [list destructive actions]"
 
@@ -452,7 +453,7 @@ When the user's request references prior work, decisions, or session history —
 
 ### Safe Techniques — Apply Only When Genuinely Needed
 
-**Role assignment** — for complex or specialized tasks, assign a specific expert identity.
+**Role assignment** — add a specific expert identity only when domain expertise or perspective affects the result.
 - Weak: "You are a helpful assistant"
 - Strong: "You are a senior backend engineer specializing in distributed systems who prioritizes correctness over cleverness"
 
@@ -467,7 +468,7 @@ When the user's request references prior work, decisions, or session history —
 
 ### Agentic Output Warning
 
-For prompts targeting agentic tools (Claude Code, Devin, Cursor, Windsurf, Cline, Bolt, SWE-agent, Manus, or anything that executes commands or edits files — mandatory for Templates G, H, M and any prompt referencing filesystem, terminal, dependency, or database operations), append this notice:
+For prompts targeting agentic tools (Claude Code, Devin, Cursor, Windsurf, Cline, Bolt, SWE-agent, Manus, or anything that executes commands or edits files — mandatory for Templates G, H, M, agentic uses of N, and any prompt referencing filesystem, terminal, dependency, or database operations), append this notice:
 
 "This prompt is for an agentic tool with real system access. Review the scope locks, forbidden actions, and stop conditions before pasting. Confirm file paths, directories, and permissions match the actual project."
 

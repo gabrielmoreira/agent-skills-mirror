@@ -11,7 +11,7 @@ You are the director, not a tech demo. A film is judged in this order: **sound, 
 The user gives a style and a topic, sometimes more (length, language, voice, must-have shots, brand rules). Everything else is your decision. Ask once, in a single message (AGENTS.md, Workflow), then no more questions. Defaults:
 
 - Length **30–60 s**; shorter and tight beats padded. Beyond two or three minutes multiplies time and token cost: tell the user.
-- 1920×1080 at 24 fps by default; other sizes (vertical 1080×1920, for example) with `--size WxH` on the render tools.
+- 1920×1080 at 24 fps by default; an output frame rate set in the style's `STYLE.md` (30 or 60 fps, for example) wins, and is what you pass to `--fps` and `mux.sh`; other sizes (vertical 1080×1920, for example) with `--size WxH` on the render tools.
 - Voice and subtitles in the language the user writes in. Subtitles burned in and exported as `.srt`.
 - Loudness −14 LUFS.
 
@@ -21,7 +21,7 @@ Requests that only change the plan:
 
 - **No voice, or no subtitles.** Drop those steps and say so in the treatment.
 - **Their own voice recording.** Use it as it is; transcribe it with faster-whisper for word timings.
-- **Their own material**: logos, photos, footage, and for styles built from real material (the Evidence Films) their own data, scans, imagery or CAD. Ask whether they have any; what they give comes first, and the sources in the `STYLE.md` are the fallback. Rights: section 12.
+- **Their own material**: logos, photos, footage, and for styles built from real material (the Evidence Films) their own data, scans, imagery or CAD. Ask whether they have any; what they give comes first, and the sources in the `STYLE.md` are the fallback. Before you download from those sources, tell the user what you will fetch, from where and under which licence. Rights: section 12.
 
 ## 2. Find a benchmark first
 
@@ -42,7 +42,7 @@ The benchmark lifts quality more than any rule below.
 
 ## 4. Write the treatment
 
-Write `TREATMENT.md` before drawing anything, and before you open the style's `DEMO.md` or demo code:
+Write `TREATMENT.md` before drawing anything, and before you open the style's `DEMO.md` or demo code (an Edit & Documentary style gathers its material first: AGENTS.md, "Treatment first"):
 
 1. **Three candidate structures**, a few lines each (for example: a single journey, a before/after, a countdown, a list that turns), then the one you chose and why. Choose the opening image, the ending and the shape of the score from the topic too; the first idea that comes to mind for a style is usually its cliché.
 2. **Logline and arc**: one sentence, then setup → turn → ending.
@@ -113,15 +113,16 @@ Render 6–9 key shots with the real drawing code, tiled into one sheet (`core/r
 ## 11. Before you deliver
 
 - Run the review loop (TECHNIQUE.md §8): contact sheets, 0.2 s strips of key actions, one full-speed viewing with sound.
+- **One fix round.** Fix everything the review and the checks below find in one round, then check once more. Small fixes that second check turns up (a level, a frame) belong to the same round; anything bigger, tell the user in one line when you deliver. The user's notes after delivery are new rounds: change only what they ask.
 - **Not the demo again.** After the treatment, read `DEMO.md` and compare: structure, opening, signature shot, camera path, score shape, ending. At least four of the six must differ; rethink the ones that match. Before delivery, put your contact sheet next to the demo poster (`styles/<slug>/poster.jpg`) as a last check.
 - Voice: every line transcribes back correctly (speech-to-text check). For Chinese, one misheard character in a short line is normal: listen, and if it is right, let the check expect what the model heard (TECHNIQUE.md §4).
 - Loudness about −14 LUFS; no black frames, no NaN frames; subtitles in sync and not covering key action.
 - Every row of the sound design table is actually in the mix.
-- No LemoLab sign-off: `grep -rniE "lemo ?lab|opus 5\.5" <project folder>` finds nothing outside `LICENSE` and `CREDITS`, and you have watched the last seconds of the film (text drawn into an image can't be grepped).
+- No LemoLab sign-off: `grep -rniE "lemo ?lab|opus 5\.5" <project folder>` finds nothing outside `LICENSE`, `CREDITS` and the library's path in `LIB=` lines, and you have watched the last seconds of the film (text drawn into an image can't be grepped).
 
 **Deliver**, in the project folder (the complete list):
 
-- `<name>.mp4` (24 fps, about −14 LUFS) and `poster.jpg`;
+- `<name>.mp4` (24 fps unless `STYLE.md` sets another rate, about −14 LUFS) and `poster.jpg`;
 - `<name>.srt`, when the film has narration, dialogue or subtitles;
 - `TREATMENT.md`;
 - `CREDITS`: every third-party asset in the film (sample libraries, music, fonts, images, the voice engine) with its source and licence (TECHNIQUE.md §11);

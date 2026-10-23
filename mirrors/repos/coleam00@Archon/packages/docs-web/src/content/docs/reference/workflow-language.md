@@ -176,7 +176,13 @@ remain held after safe group signals, cancellation still ends the run and warns 
 cancel result and run event that some process outside the run's process group holds the
 output and was not signalled. Archon does not identify that holder. Use `lsof` on the run's
 checkout to find it before reusing or removing the checkout.
-Background jobs of already-completed nodes are excluded. Detached POSIX commands rely on
+Background jobs of already-completed nodes are excluded from automatic signalling.
+For POSIX host commands that started or completed, cancellation reports possible untracked
+background work in the cancel result and run event, including after continuation under a
+new detached owner. Neither a survivor nor cleanup is confirmed. Inspect checkout processes
+with `lsof`, verify ownership, and stop leftovers before checkout reuse or removal.
+Owner-stop warnings retain owned checkouts for inspection.
+Detached POSIX commands rely on
 explicit cancellation; abrupt owner death does not run their group cleanup.
 On Windows, cancellation ends the
 owner's Job Object, which also holds node processes whose parent already exited.
@@ -884,7 +890,7 @@ See Pi's [settings reference](https://github.com/earendil-works/pi/blob/main/pac
 
 ### One retry layer
 
-The node retry is the only retry Archon adds. Each provider makes one attempt per call and reports a typed failure, and the engine decides whether to try again. Before each retry the conversation receives a notice such as ``Node `node-id` failed with transient error (attempt 1/3). Retrying in 3s...``. A vendor's own client may still retry a single API request inside one attempt, such as Claude Code's API retries or Pi's `retry` setting. When every node retry is spent, the run fails; resuming it is your choice (see [DAG Resume on Failure](#dag-resume-on-failure)).
+The node retry is the only retry Archon adds, with one exception: when the provider reports that the session a node resumed no longer exists, the engine makes a single fresh-session attempt (see [When a resume can't be restored](#when-a-resume-cant-be-restored)). Each provider makes one attempt per call and reports a typed failure, and the engine decides whether to try again. Before each retry the conversation receives a notice such as ``Node `node-id` failed with transient error (attempt 1/3). Retrying in 3s...``. A vendor's own client may still retry a single API request inside one attempt, such as Claude Code's API retries or Pi's `retry` setting. When every node retry is spent, the run fails; resuming it is your choice (see [DAG Resume on Failure](#dag-resume-on-failure)).
 
 ## Run budgets
 
@@ -1091,7 +1097,9 @@ If the stored session is gone (for example, a Pi JSONL file was moved), the prov
 
 > ⚠️ Node `planner`: could not resume the prior session — continued with a fresh session, so the earlier context was not restored.
 
-The node still completes on that fresh session, and its new session id is persisted so the *next* run continues from it. The node is **not** re-run: the fresh session is already a clean start, so re-running would only repeat it. Expect this only for `persist_session` nodes whose prior session became unavailable; warm resumes and first-time runs are unaffected.
+The node still completes on that fresh session, and its new session id is persisted so the *next* run continues from it. The node is **not** re-run: the fresh session is already a clean start, so re-running would only repeat it. Expect this only when a resumed session became unavailable; warm resumes and first-time runs are unaffected.
+
+Claude does not fall back on its own: it rejects a resume whose session transcript no longer exists. When Archon confirms on the host that the transcript is gone and the rejection arrived before any output or tool call, it runs the node once more on a fresh session and shows the same warning. This covers `persist_session` nodes, sessions threaded from an earlier node in the run, and plain `loop:` iterations with `fresh_context: false`, which get a loop-specific notice instead. A second rejection, a rejection after output, or a run inside a container fails the node as before. A named resume (`context: { resume }`) never falls back and fails.
 
 Codex does not fall back: a thread it cannot resume or fork fails the node as `unknown`, with Codex's own error as evidence (for example `no rollout found for thread id …`). Codex reports a missing thread with the same JSON-RPC code as any other invalid request, so Archon cannot tell it apart safely enough to start over on its own. A `persist_session` node on Codex forks the thread an earlier run saved, so once that thread is gone (its rollout under the Codex home was deleted, or the run uses another `CODEX_HOME`) the node fails on every run in that scope. Clear the saved session with [`archon workflow reset-sessions`](/reference/cli/#workflow-reset-sessions) to start the node fresh.
 
@@ -1196,6 +1204,14 @@ Two guarantees the loader enforces: every bound producer must be reachable throu
 `depends_on` (a binding can never race its producer), and two binding names may not fold to
 the same `INPUTS_*` env key. At runtime, node-local bindings are the **nearest** input
 layer: they win over a composed block's inputs, which win over the run's `$INPUTS`.
+
+Exec nodes also receive `ARCHON_RUN_ENV_KEYS`, a JSON array of the full run-contract
+key list: fixed engine environment keys (including the manifest itself) and generated
+input keys from run inputs, composed inputs, and node-local bindings.
+Project commands launched outside the run can use this list to remove the run contract
+without stripping independently configured `INPUTS_*` settings. Generated
+bindings override same-key project settings; removing a generated key does not
+restore the shadowed project value.
 
 Bindings carry *values*. For documents (a plan, a findings report, a diff), keep using the
 artifact chain below; a path in a binding plus a file on disk is still the right shape for
@@ -1790,7 +1806,11 @@ An included workflow's outcome declaration never becomes the composer's outcome,
 `workflow:` child owns its outcome on its own run row; neither propagates implicitly to a parent.
 The REST run list, detail, by-worker, and dashboard JSON expose nullable `outcome` beside `status`.
 CLI, console, chat, and adapter result surfaces show a non-null authored outcome separately from
-execution status. When `outcome` is null, they retain the normal status-only presentation. A dry run
+execution status. A foreground CLI execution handoff reports only its observed status, omitting
+authored outcome and usage; its zero exit does not prove completion. Use `archon workflow wait <run-id>`
+to await a terminal or gate transition and `archon workflow get <run-id>` to inspect the current result.
+See [CLI handoff behavior](/reference/cli/#workflow-run-name-message). When `outcome` is null, result
+surfaces retain the normal status-only presentation. A dry run
 reports the same declaration separately as nullable `authoredOutcome`, derived only from the declared
 return node's structured fixture value. Its existing `outcome` remains the simulation result and
 continues to control CLI exit codes and fixture `expect` checks. Generated placeholder stubs never
@@ -2033,8 +2053,9 @@ when its `command:` bodies need named values:
   under [Bash and script node timeouts](#bash-and-script-node-timeouts), and cancelling a
   detached run stops its live node groups and owner group (macOS and Linux) or Job Object
   (Windows), with the output-holder warnings described above.
-- **Cost roll-up.** The child's total cost rolls up into the `workflow:` node's cost and
-  the parent's aggregate, and `parent_run_id` on the child row makes the run tree visible
+- **Cost roll-up.** The parent run total includes all child spend. A resumed `workflow:`
+  node event carries only the increment not previously reported for that child.
+  The `parent_run_id` on the child row makes the run tree visible
   in `archon workflow runs` and the console. A run records what it spent whatever its
   outcome, so a partly-failed fan-out reports the spend of every child, not just the ones
   that finished. How to read token and cost fields without double counting is described in

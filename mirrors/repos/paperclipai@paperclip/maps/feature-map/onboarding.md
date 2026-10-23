@@ -70,6 +70,16 @@ Use [runner validation](./runs-adapters.md#adapter-setup) and
 [environment qualification](./execution-environments.md#environment-settings)
 for the prerequisites; a successful login alone is insufficient.
 
+For managed Cloud setup, an outdated default Claude CLI is prepared automatically
+in a private versioned runtime directory before its hello test. Verify that the
+selected model and account stay unchanged and that the compatible executable is
+actually used. A failed installation still blocks hiring. Cloud failures must
+not display Manual debug shell commands or legacy operator hints; self-hosted
+failures retain that help.
+[Wizard controls](../../ui/src/components/OnboardingWizard.test.tsx) and
+[runtime controls](../../packages/adapters/claude-local/src/server/sandbox-cli-version.test.ts)
+cover these boundaries. They do not establish live Cloud onboarding success.
+
 For a new Claude agent on an explicit immutable sandbox image or a Daytona
 named snapshot, use Connect to
 qualify the selected environment through the existing permission-gated probe.

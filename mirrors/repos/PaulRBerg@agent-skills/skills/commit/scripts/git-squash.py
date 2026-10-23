@@ -10,7 +10,6 @@ import sys
 from pathlib import Path
 from typing import Any
 
-
 PLAN_KEYS = ("repoRoot", "branch", "baseRef", "mergeBase", "originalHead", "aheadCount", "authors", "rollback")
 
 
@@ -19,7 +18,7 @@ class GitError(RuntimeError):
 
 
 def git(cwd: Path, *args: str, check: bool = True) -> subprocess.CompletedProcess[str]:
-    result = subprocess.run(["git", *args], cwd=cwd, text=True, capture_output=True)
+    result = subprocess.run(["git", *args], cwd=cwd, check=False, text=True, capture_output=True)
     if check and result.returncode:
         raise GitError((result.stderr or result.stdout).strip() or f"git {' '.join(args)} failed")
     return result
@@ -43,7 +42,14 @@ def resolve_base(cwd: Path, requested: str | None) -> tuple[str, str]:
         if symbolic.returncode == 0 and symbolic.stdout.strip().startswith("origin/"):
             branch = symbolic.stdout.strip().removeprefix("origin/")
     if not branch:
-        branch = next((candidate for candidate in ("main", "master", "trunk") if ref_exists(cwd, f"refs/heads/{candidate}") or ref_exists(cwd, f"refs/remotes/origin/{candidate}")), None)
+        branch = next(
+            (
+                candidate
+                for candidate in ("main", "master", "trunk")
+                if ref_exists(cwd, f"refs/heads/{candidate}") or ref_exists(cwd, f"refs/remotes/origin/{candidate}")
+            ),
+            None,
+        )
     if not branch:
         raise GitError("cannot resolve a default branch; pass --base")
     branch = branch.removeprefix("refs/heads/").removeprefix("refs/remotes/origin/").removeprefix("origin/")
@@ -87,7 +93,9 @@ def preflight(cwd: Path, requested_base: str | None) -> dict[str, Any]:
     raw_commits = git(root, "log", "--reverse", "--format=%H%x09%aN%x09%aE%x09%s", f"{merge_base}..HEAD").stdout
     for line in raw_commits.splitlines():
         commit, author_name, author_email, commit_subject = line.split("\t", 3)
-        commits.append({"commit": commit, "author": {"name": author_name, "email": author_email}, "subject": commit_subject})
+        commits.append(
+            {"commit": commit, "author": {"name": author_name, "email": author_email}, "subject": commit_subject}
+        )
     authors = sorted({f"{item['author']['name']} <{item['author']['email']}>" for item in commits})
     return {
         "schemaVersion": 1,

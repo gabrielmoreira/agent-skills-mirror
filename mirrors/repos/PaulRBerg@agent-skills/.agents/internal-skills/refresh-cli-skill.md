@@ -41,20 +41,23 @@ skills whose watched upstream sources changed.
    - Write `skills/<cli-skill>/references/version.txt` with exactly the requested semver and one trailing newline.
 4. For `chromium-browser`, complete these steps even when the installed version has not changed:
    - Confirm `skills/chromium-browser/SKILL.md` exists.
-   - Read `~/.agents/skills/chromium-browser/scripts/chrome-devtools-mcp.sh` without changing it. Use
-     `skills/chromium-browser/scripts/chrome-devtools-mcp.sh` in this checkout as its catalog source.
+   - Read the installed wrapper `~/.agents/skills/chromium-browser/scripts/chrome-devtools-mcp.sh` without changing it.
+     Its source is `skills/chromium-browser/scripts/chrome-devtools-mcp.sh` in this checkout.
    - Verify the wrapper's installed executable version through package metadata or its `--version` output. Never start
      the MCP server for this check.
    - Inspect official stable Chrome DevTools MCP release notes and tagged documentation. Compare them with the installed
      version and wrapper flags.
    - Update compatible skill guidance and link to the installed release's tagged tool reference. No browser version
      marker is required.
-   - Report stable upstream releases newer than the installed version and wrapper incompatibilities. Never present
-     unreleased or unavailable features as available.
+   - Report stable upstream releases newer than the installed version and wrapper incompatibilities you could not
+     resolve. Never present unreleased or unavailable features as available.
    - Preserve attach-only operation, privacy and header redaction, negotiated-root restrictions, screenshot caps, and
      shared-browser ownership.
-   - Treat the wrapper audit as read-only. Never change wrapper flags, settings, client configuration, or installed
-     copies.
+   - When the installed executable's `--help` shows that a wrapper flag was removed, renamed, or became the default, or
+     that an environment variable the wrapper sets changed, update the source wrapper and
+     `tests/chromium-browser/wrapper.bats` to match the installed release, then run
+     `just bats-test tests/chromium-browser`. Otherwise leave the wrapper unchanged. Never change settings, client
+     configuration, or installed copies.
 5. For each additional upstream review name:
    - Read its source notes and affected skill guidance. Inspect every supplied source and the relevant stable changes.
    - Check official documentation and source evidence before changing guidance. Confirm installed compatibility when the
@@ -63,8 +66,8 @@ skills whose watched upstream sources changed.
    - Do not update dependencies or merge external skill forks through this review. Follow `@rebase-skill` only under its
      separate invocation policy.
    - Do not create or advance a version marker for an upstream-only review.
-6. Edit only the requested skill directories. Never edit generated lockfiles, unrelated skills, installed copies under
-   `~/.agents`, or global Claude/Codex configuration.
+6. Edit only the requested skill directories and, for a wrapper update, `tests/chromium-browser/`. Never edit generated
+   lockfiles, unrelated skills, installed copies under `~/.agents`, or global Claude/Codex configuration.
 7. Run `just prettier-write <changed files> --ignore-unknown`. Then run `just skill-check` and
    `just prettier-check skills/<name> ...` for every selected skill directory. If a selected directory has an existing
    formatting failure, format and validate the affected file within that directory. Do not report success while a

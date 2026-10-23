@@ -1,0 +1,120 @@
+# One agent task per dispatch: reland, conflict or flake. The agent runs in a Claude
+# Managed Agents session, so no agent-written code runs on a runner: the agent job
+# starts the session with a read-only repository token, waits, and downloads the git
+# bundle the agent wrote. The publish job checks the change and pushes with the App
+# token. To run the agent on Devin or eve instead, replace the agent job's run step
+# and keep publish, because its checks are the guarantee.
+name: agent-task
+run-name: agent-task ${{ inputs.kind }} pr=${{ inputs.pr }} check=${{ inputs.check }} sha=${{ inputs.sha }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      kind:
+        type: choice
+        options: [reland, conflict, flake]
+        required: true
+      check:
+        type: string
+      sha:
+        type: string
+      pr:
+        type: string
+      evidence:
+        description: URL of the failing run
+        type: string
+
+concurrency:
+  group: agent-task-${{ inputs.kind }}-${{ inputs.check }}-${{ inputs.sha }}-${{ inputs.pr }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+env:
+  MERGE_LOOP_RUNG: ${{ vars.MERGE_LOOP_RUNG || '0' }}
+
+jobs:
+  agent:
+    # Re-lands start at rung 2, conflict and flake repair at rung 4; 0 is the kill switch.
+    if: >-
+      fromJSON(vars.MERGE_LOOP_RUNG || '0') >= 4 ||
+      (inputs.kind == 'reland' && fromJSON(vars.MERGE_LOOP_RUNG || '0') >= 2)
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: read
+      actions: read
+      issues: write
+      pull-requests: write
+    outputs:
+      changed: ${{ steps.run.outputs.changed }}
+      session: ${{ steps.run.outputs.session }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          sparse-checkout: .github
+          persist-credentials: false
+      - id: run
+        env:
+          GH_TOKEN: ${{ github.token }}
+          # The session clones with this token through Anthropic's git proxy; it never
+          # enters the sandbox, is read-only, and expires when this job ends.
+          REPO_TOKEN: ${{ github.token }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          MERGE_LOOP_AGENT_ID: ${{ vars.MERGE_LOOP_AGENT_ID }}
+          MERGE_LOOP_ENVIRONMENT_ID: ${{ vars.MERGE_LOOP_ENVIRONMENT_ID }}
+          KIND: ${{ inputs.kind }}
+          CHECK: ${{ inputs.check }}
+          SHA: ${{ inputs.sha }}
+          PR: ${{ inputs.pr }}
+          EVIDENCE: ${{ inputs.evidence }}
+        run: |
+          bash .github/merge-loop/loop.sh prepare "$KIND" "$CHECK" "$SHA" "$PR" "$EVIDENCE"
+          bash .github/merge-loop/loop.sh agent-run
+          if [ -s "$RUNNER_TEMP/work.bundle" ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
+      - if: steps.run.outputs.changed == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: agent-work
+          path: ${{ runner.temp }}/work.bundle
+
+  publish:
+    needs: agent
+    if: needs.agent.outputs.changed == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+      issues: write
+      pull-requests: read
+    steps:
+      - id: app
+        uses: actions/create-github-app-token@v3
+        with:
+          client-id: ${{ vars.MERGE_LOOP_CLIENT_ID }}
+          private-key: ${{ secrets.MERGE_LOOP_PRIVATE_KEY }}
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+          fetch-depth: 0
+          token: ${{ steps.app.outputs.token }}
+      - uses: actions/download-artifact@v8
+        with:
+          name: agent-work
+          path: ${{ runner.temp }}/work
+      # Only the bundle comes from the agent job; everything else is the dispatch inputs.
+      - env:
+          GH_TOKEN: ${{ github.token }}
+          LOOP_TOKEN: ${{ steps.app.outputs.token }}
+          KIND: ${{ inputs.kind }}
+          CHECK: ${{ inputs.check }}
+          SHA: ${{ inputs.sha }}
+          PR: ${{ inputs.pr }}
+          EVIDENCE: ${{ inputs.evidence }}
+          SESSION: ${{ needs.agent.outputs.session }}
+        run: bash .github/merge-loop/loop.sh publish "$KIND" "$CHECK" "$SHA" "$PR" "$EVIDENCE" "$RUNNER_TEMP/work/work.bundle" "$SESSION"

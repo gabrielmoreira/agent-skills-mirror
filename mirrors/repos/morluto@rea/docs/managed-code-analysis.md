@@ -200,8 +200,19 @@ rather than interpreted according to section order.
 
 ### Selected member inspection
 
-When whole-assembly member decoding reaches the representation budget, select
-known declaring types before their signatures and CIL bodies are decoded:
+Member inspection admits type names, tokens, list ranges/counts, nesting facts,
+module identity and their output representation before decoding members. If
+later decoding or projection reaches the 64 MiB representation budget, the
+result retains this type inventory with `coverage.state: "partial"` and the
+original `resource-limit` coordinate. It does not return partially admitted
+member collections: empty fields, methods, references and edges are unexamined,
+not proof of absence; exported types, user strings and signature-resolution
+attestation remain null. Summary and retained pages keep this partial coverage.
+The capacity limit is unchanged. If metadata or the type inventory itself cannot
+be admitted, the result remains unavailable.
+
+Use the returned `types[].full_name` values to select declaring types before
+their signatures and CIL bodies are decoded:
 
 ```bash
 rea inspect-managed-members /absolute/path/Assembly.dll --type Example.Parser
@@ -232,6 +243,14 @@ Coverage describes the selected members. Comparisons leave members outside the
 opposite observation's selection unknown, and application graphs report their
 selected scope as partial. Neither makes an absence claim about the whole
 assembly. Older member Evidence without `selection` remains readable.
+
+For MCP callers, request `detail: "summary"` and page the `types` collection
+using the returned parent Evidence ID. Select one or more returned full names
+in a subsequent `inspect_managed_members` request. Selection is a recovery path,
+not a guarantee: a single type or the assembly-wide member references can still
+exhaust the representation budget. A successful command exit means the Evidence
+was returned; inspect `coverage.state` and `coverage.issues` before treating any
+collection as complete.
 
 ### User strings
 
@@ -427,6 +446,32 @@ support. The managed static tools do not recover those mappings. The optional
 Declared import inventory supports a bounded positive claim. Its absence does
 not exclude dynamic resolution, generated code, protected code, native helpers,
 or server-side behavior.
+
+## Application graph relations
+
+`project_managed_application_graph` turns member Evidence into `contains`
+edges for declarations, `imports` edges for P/Invoke declarations, and two
+relation kinds read from method bodies:
+
+- `calls` links two `managed-method` nodes when a `call`, `callvirt`, `newobj`
+  or `jmp` site in the caller targets a MethodDef in the inspected module.
+- `accesses` links a `managed-method` node to a `managed-field` node for each
+  field it loads, stores or takes the address of.
+
+Each edge stands for every site between one source and one target. Its
+properties carry `site_count` and per-opcode `opcodes` counts; `accesses`
+edges also list `access` as `read`, `write` and/or `address`. Edge evidence
+links the member Evidence.
+
+Some sites are counted rather than projected: calls to MemberRefs (members of
+other assemblies or of generic type instantiations), generic method
+instantiations (`MethodSpec`), unknown targets, `ldftn`/`ldvirtftn` function
+pointer loads, recursive self-calls (the graph has no self-loops), MemberRef
+fields, and sites whose method or field node is absent, for example under a
+type selection. Limitations name each counted class, and graph coverage is
+`partial` with `omitted_count` equal to the omitted sites when nothing else is
+incomplete. A missing `calls` edge is therefore not evidence that a method is
+never called.
 
 ## Evidence record shape
 

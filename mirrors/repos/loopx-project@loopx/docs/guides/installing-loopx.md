@@ -37,6 +37,12 @@ engine. The same doctor projection exposes `runtime_lifecycle.state` as
 the App can render this projection without inventing a second health model.
 `stopped` is healthy and means the idle-exited runtime will restart on the next
 control-plane request. Validate Node before installing or upgrading LoopX.
+The lifecycle also reports `locator_state` (`missing`, `valid`, or `invalid`)
+and `recorded_pid_alive`. An invalid locator is not treated as an absent one:
+if its loopback endpoint and token still authenticate the recorded PID and
+source revision, the existing runtime is reused instead of starting a second
+daemon. Otherwise the next request cold-starts, while doctor retains the
+locator diagnostic for readback.
 Upgrading from an older Node 22 installation requires restarting the managed
 runtime with `loopx doctor --restart-runtime` after the new Node is on `PATH`.
 New unconfigured Goals use canonical SQLite with hard leases. Explicit choices
@@ -58,6 +64,11 @@ startup crash: an exit without a typed envelope remains `runtime_exited_before_r
 Node 堆栈。先核对本机对应的占用或文件系统问题；诊断不会删除活进程持有的锁、
 修复未知 locator，也不证明所有启动退出都已归因。没有 typed envelope 的退出仍
 保留 `runtime_exited_before_ready`。
+
+中文：`runtime_lifecycle` 同时报告 `locator_state`（`missing`、`valid` 或
+`invalid`）与 `recorded_pid_alive`。无效 locator 不会被当作不存在：若记录的
+loopback 端点与 token 仍能认证相同 PID 和源码修订，则复用现有 runtime，不再
+启动第二个 daemon；否则下一次请求冷启动，同时 doctor 保留 locator 诊断供回读。
 
 The CI and release lanes use Node.js 24 LTS. Node.js 26 remains a non-blocking
 forward-compatibility probe and is not a supported-version promise. After the
@@ -397,6 +408,25 @@ interpreter that owns LoopX to upgrade its environment, then starts fresh
 processes to install workflow skills and slash commands, runs doctor, revalidates
 enabled extensions, and restarts managed local LoopX services. It does not
 switch the installation to an archive snapshot.
+
+On Windows, an update requested through the pip/pipx `loopx.exe` launcher is
+refused before installation starts: the running launcher would prevent pip
+from replacing it and can leave a partially uninstalled package. Follow the
+returned command, which uses the owning Python interpreter's module entry and
+preserves the original arguments, including registry and runtime routes:
+
+```powershell
+python -m loopx.entrypoint --format json update apply
+```
+
+Linked pipx application aliases, such as `loopx-preview.exe` installed with
+`--suffix=-preview`, receive the same protection when they refer to the owning
+environment's `loopx.exe` file.
+
+Use the interpreter printed in the refusal rather than an unrelated `python`
+from PATH. Read-only `update check` and `update plan` remain available. If a
+previous update already damaged the installation, repair it with that owning
+interpreter's pip first; a module entry cannot import a missing package.
 
 The equivalent manual sequence is:
 

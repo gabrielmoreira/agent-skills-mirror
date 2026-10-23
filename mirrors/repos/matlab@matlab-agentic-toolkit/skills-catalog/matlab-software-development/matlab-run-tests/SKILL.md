@@ -10,7 +10,7 @@ description: >
 license: https://www.mathworks.com/content/dam/mathworks/license/pmrl/license.md
 metadata:
   author: MathWorks
-  version: "1.0"
+  version: "1.1"
 ---
 
 # Run Tests
@@ -32,7 +32,6 @@ Run MATLAB test suites, analyze results, collect code coverage metrics, and conf
 - Baseline/regression tests against stored reference data — use `matlab-write-tests`
 - Testing Simulink models — use Simulink test skills
 - Performance benchmarking — use profiling workflows
-- Buildtool setup without test context — use `matlab-software-development:matlab-create-buildfile`
 
 ## Workflow
 
@@ -114,6 +113,8 @@ For detailed coverage workflows — gap analysis, justifications, generated C co
 ## CI/CD Integration
 
 Use `buildtool` with a `buildfile.m` for CI pipelines. See [references/test-execution-guidance.md](references/test-execution-guidance.md) for `buildfile.m` templates and CI configs (GitHub Actions, Azure DevOps, GitLab CI).
+
+For toolbox projects, `matlab-package-toolbox` generates a `buildfile.m` in which the packaging task depends on the test task.
 
 ## References
 

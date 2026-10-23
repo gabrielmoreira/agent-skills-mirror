@@ -7,6 +7,47 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- MCP `xerj_search` accepts `prefix` as an alternative to `index`, matching
+  `xerj search --prefix`: `project` searches `project-*`. Conflicting scope
+  arguments and empty or non-string prefixes are rejected before HTTP requests.
+  The default remains `ax-*` (#2080, prefix support only).
+
+### Fixed
+
+- `xerj corpus add <name> <local-path>` copies the checkout's root
+  `.xerjignore` into the clone when that file is untracked or has uncommitted
+  edits. `git clone` only checks out committed files, so the ignore file was
+  dropped and the index used built-in rules only (#2199). A pinned `--from`
+  rebuild stays at the recorded SHA and does not copy it; it says so when the
+  working tree's root `.xerjignore` differs. Nested `.xerjignore` files are
+  not carried.
+
+- `xerj autoindex` no longer wedges or runs out of memory on a JSON object
+  made of several top-level arrays of records (#1856, #1978). When the
+  largest array is longer than a config document (32 records), each top-level
+  array of objects becomes its own dataset instead of being copied onto every
+  row of the largest one. A shared value over 4 KiB is stored once. A data
+  column that would be `semantic_text` falls back to plain text — still
+  searchable — when the real record count exceeds 100,000 or the elected text
+  exceeds 8 MiB, and the plan says so, including `--no-semantic`. The
+  pre-index budget counts records in `.json` files from 256 KiB up to 64 MiB
+  and can refuse on a structural memory ceiling. That ceiling is not a
+  measured store ratio, and no new disk ratio was invented for `.json`.
+
+- `POST /{index}/_refresh` and autoindex `finalize-refresh` no longer wait
+  forever when a shard flush cannot get a finalize-gate or flush-semaphore
+  permit. Admission gives up after `engine.flush_admit_timeout_secs`
+  (default 120 seconds, override `XERJ_FLUSH_ADMIT_TIMEOUT_SECS`) and does
+  not freeze the memtable. The caller gives up after
+  `engine.flush_timeout_secs` (default 300 seconds, override
+  `XERJ_FLUSH_TIMEOUT_SECS`) and leaves a publication that has already
+  frozen its memtable running. The refresh response names the stuck index
+  under `_shards.failures` and continues with the other indices. Autoindex
+  reports that failure instead of treating the refresh as success
+  ([#1635](https://github.com/xerj-org/xerj/issues/1635)).
+
 ## [1.0.0-rc.98] - 2026-10-21
 
 Window since v1.0.0-rc.97: a console-API security fix (CVE-2026-97406), a

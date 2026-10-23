@@ -67,7 +67,7 @@ COMMAND: <exact command and exit code>
 SUMMARY: <pages, links, findings by severity/rule>
 
 FINDINGS
-1. path:line [rule/severity] — diagnostic
+1. path:line [rule/severity]: diagnostic
    Evidence: <validated local observation>
    Proposed repair: <non-destructive suggestion>
 

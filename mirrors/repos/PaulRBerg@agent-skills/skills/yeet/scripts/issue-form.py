@@ -53,7 +53,7 @@ def normalize_projects(value: Any) -> list[str]:
 
 
 def load_yaml_text(args: argparse.Namespace) -> str:
-    local = args.input or args.fixture
+    local = args.input
     if local:
         try:
             return local.read_text(encoding="utf-8")
@@ -66,6 +66,7 @@ def load_yaml_text(args: argparse.Namespace) -> str:
     try:
         result = subprocess.run(
             ["gh", "api", f"repos/{args.repo}/contents/.github/ISSUE_TEMPLATE/{args.template}"],
+            check=False,
             text=True,
             capture_output=True,
         )
@@ -151,7 +152,13 @@ def inspect_form(text: str, repo: str | None = None, template: str | None = None
             if "value" in attributes and not isinstance(attributes["value"], str):
                 raise FormError(f"markdown field {index} value must be a string")
             continue
-        if not isinstance(field_type, str) or field_type not in {"input", "textarea", "dropdown", "checkboxes", "upload"}:
+        if not isinstance(field_type, str) or field_type not in {
+            "input",
+            "textarea",
+            "dropdown",
+            "checkboxes",
+            "upload",
+        }:
             raise FormError(f"body item {index} has unsupported type: {field_type}")
         source_id = raw_field.get("id")
         if source_id is not None and (
@@ -179,8 +186,10 @@ def inspect_form(text: str, repo: str | None = None, template: str | None = None
         attestations: list[dict[str, Any]] = []
         default: int | None = None
         if field_type == "dropdown":
-            if not isinstance(options, list) or not options or not all(
-                isinstance(option, str) and option.strip() for option in options
+            if (
+                not isinstance(options, list)
+                or not options
+                or not all(isinstance(option, str) and option.strip() for option in options)
             ):
                 raise FormError(f"dropdown {field_id} options must be strings")
             if len(set(options)) != len(options):
@@ -222,9 +231,7 @@ def inspect_form(text: str, repo: str | None = None, template: str | None = None
         if "accept" in validations and field_type != "upload":
             raise FormError(f"field {field_id} accept is only valid for upload fields")
         accept = validations.get("accept")
-        if field_type == "upload" and "accept" in validations and (
-            not isinstance(accept, str) or not accept.strip()
-        ):
+        if field_type == "upload" and "accept" in validations and (not isinstance(accept, str) or not accept.strip()):
             raise FormError(f"upload {field_id} accept must be a non-empty string")
         fields.append(
             {
@@ -305,7 +312,13 @@ def _validate_render_form(form: Any) -> list[dict[str, Any]]:
         if source_id is not None and (not isinstance(source_id, str) or not FIELD_ID_RE.fullmatch(source_id)):
             raise FormError(f"form field {field_id} sourceId is invalid")
         field_type = field.get("type")
-        if not isinstance(field_type, str) or field_type not in {"input", "textarea", "dropdown", "checkboxes", "upload"}:
+        if not isinstance(field_type, str) or field_type not in {
+            "input",
+            "textarea",
+            "dropdown",
+            "checkboxes",
+            "upload",
+        }:
             raise FormError(f"form field {field_id} has an unsupported type")
         if (
             not isinstance(field.get("label"), str)
@@ -341,7 +354,11 @@ def _validate_render_form(form: Any) -> list[dict[str, Any]]:
                     raise FormError(f"dropdown {field_id} default index is out of bounds")
         elif field.get("default") is not None:
             raise FormError(f"form field {field_id} has an invalid default")
-        if field_type in {"input", "textarea"} and field.get("value") is not None and not isinstance(field["value"], str):
+        if (
+            field_type in {"input", "textarea"}
+            and field.get("value") is not None
+            and not isinstance(field["value"], str)
+        ):
             raise FormError(f"form field {field_id} value must be a string")
         if field_type == "upload":
             accept = field.get("accept")
@@ -369,7 +386,7 @@ def _validate_render_form(form: Any) -> list[dict[str, Any]]:
         value = form.get(name)
         if value is not None and (not isinstance(value, list) or not all(isinstance(item, str) for item in value)):
             raise FormError(f"form {name} must be a string array")
-    invalid_projects = [project for project in form.get("projects", []) if not PROJECT_RE.fullmatch(project)]
+    invalid_projects = [project for project in form.get("projects") or [] if not PROJECT_RE.fullmatch(project)]
     if invalid_projects:
         raise FormError(f"form projects must use OWNER/NUMBER: {', '.join(invalid_projects)}")
     return fields
@@ -442,10 +459,14 @@ def render_form(form: dict[str, Any], answers: dict[str, Any]) -> dict[str, Any]
             required_labels = [option["label"] for option in field["checkboxAttestations"] if option["required"]]
             unselected = [label for label in required_labels if label not in selected]
             if unselected:
-                raise FormError(f"required checkbox attestations are not selected for {field_id}: {', '.join(unselected)}")
+                raise FormError(
+                    f"required checkbox attestations are not selected for {field_id}: {', '.join(unselected)}"
+                )
             unverified = [label for label in required_labels if label not in verified]
             if unverified:
-                raise FormError(f"required checkbox attestations are unverified for {field_id}: {', '.join(unverified)}")
+                raise FormError(
+                    f"required checkbox attestations are unverified for {field_id}: {', '.join(unverified)}"
+                )
             if field["required"] and not selected:
                 raise FormError(f"missing required answer: {field_id}")
             content = "\n".join(f"- [{'x' if label in selected else ' '}] {label}" for label in labels)
@@ -481,7 +502,6 @@ def build_parser() -> argparse.ArgumentParser:
     inspect.add_argument("--repo")
     inspect.add_argument("--template")
     inspect.add_argument("--input", type=Path)
-    inspect.add_argument("--fixture", type=Path, help=argparse.SUPPRESS)
     render = subparsers.add_parser("render")
     render.add_argument("--form", required=True, type=Path)
     render.add_argument("--answers", required=True, type=Path)

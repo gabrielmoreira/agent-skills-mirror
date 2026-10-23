@@ -34,54 +34,31 @@ builds. An older build still publishes its SHA and timestamped nightly aliases, 
 the current main HEAD updates the moving `nightly` alias. Architecture-specific build
 outputs use `sha-<full-commit>-amd64` and `sha-<full-commit>-arm64`.
 
-### Nightly Android APKs and GitHub releases
+### Explicit product releases and manual APKs
 
-Every push to `main` also builds signed Android APKs for `arm64-v8a`, `armeabi-v7a`,
-and `x86_64`, the three ABIs supported by the pinned Forme native binaries. There is
-no daily schedule: "nightly" means each main push, matching the Docker publishing mode.
-Manual canaries and stable promotions do not build these APKs or create nightly releases.
+A push to `main` publishes container images and compatible preview OTA updates only.
+It never builds Android APKs, creates Git tags, or creates GitHub Releases. Product
+GitHub Releases and `v*` tags are created only by an explicit versioned release operation.
+Docker promotion consumes an existing tag or commit; it does not create either.
 
-The `mobile-apk` matrix uses Expo Prebuild, Gradle, and the existing Fastlane Android
-build lane on CI runners with Node 24, pnpm, Ruby, Java 17, Android SDK, and the pinned
-Forme NDK. Each build selects one ABI, loads the preview EAS environment, and embeds
-the preview update channel through `MOBILE_UPDATE_CHANNEL`. Signing uses the existing
-Android upload keystore from Actions secrets, matching the manual native release
-workflow. Nightlies use version code 1 without allocating store build numbers. Each
-APK's signature, ABI, and embedded Forme library are checked before upload. Workflow
-artifacts are retained for 14 days.
+For a sideloadable APK, dispatch **Mobile Release** on `main` with `platform=android`,
+`format=apk`, the desired `abi`, and `upload=false`. Signing requires approval through
+`mobile-signing`. The preview APK is a downloadable Actions artifact for 14 days;
+release evidence is retained for 90 days. No GitHub tag or release is created.
+See [manual Android downloads](./mobile-release-handoff.md#manual-android-downloads).
 
-After all three APK builds and Docker publishing succeed, `nightly-release` creates
-`nightly-<workflow-run-id>` at that push's full SHA. Each push gets its own prerelease,
-including builds superseded by a newer main push. Prereleases never replace the latest
-stable release or trigger production promotion. Each release contains all three APKs,
-`SHA256SUMS`, and `CHANGELOG.md`; release assets outlive workflow artifact retention.
-The changelog includes full commit messages from `before..after`, deduplicated merged
-main PR titles/descriptions, comparison/build links, and the matching SHA Docker image.
-It reads local Git history rather than the push payload's potentially truncated commit
-list. A newly created main branch includes only its head commit. Very long changelogs
-are attached in full, with a shortened release description linking to the attachment.
-
-Required setup: retain `EXPO_TOKEN` and the four `ANDROID_KEYSTORE_*`/`ANDROID_KEY_*`
-Actions secrets described in [mobile CI](./mobile-ci.md). The release job uses
-`GITHUB_TOKEN` with `contents: write` and `pull-requests: read`;
-repository rules must allow the `nightly-*` tags. No signing keys are stored in GitHub
-artifacts or releases. Missing credentials fail APK publishing without undoing Docker
-publishing. A failed upload leaves a draft release; rerunning the same workflow replaces
-only that draft's assets and publishes it once complete. Already published releases are
-left unchanged on reruns, supporting immutable releases.
-
-These APKs use package `me.rxresu` and the preview update channel. The Android upload
-certificate can differ from Play App Signing, preventing upgrades between Play and
-GitHub installations. Back up local drafts before switching distributions. Add the
-upload signing certificate's SHA-256 fingerprint to `MOBILE_ANDROID_CERT_SHA256` on
-the backend when enabling verified App Links for sideloaded builds; retain the Play
-fingerprint. Keep the same upload key across nightly builds so sideloaded installs remain
-upgradable. See [mobile release handoff](./mobile-release-handoff.md#nightly-android-downloads).
-
-References: [Expo local production builds](https://docs.expo.dev/guides/local-app-production/) and
-[GitHub release API](https://docs.github.com/en/rest/releases/releases#create-a-release).
+Forme's manually published, checksum-pinned binary assets remain available at their
+existing URLs. Moving those rare artifacts to dedicated storage is deferred; never
+remove an asset still referenced by `packages/forme-native/scripts/prebuilt.json`.
 
 ### Stable promotions
+
+Before moving any container aliases or deploying production, the latest `e2e.yml`
+CI run from a `main` push must have completed successfully for the exact full commit
+SHA being promoted. Missing, failed, cancelled, or pending CI blocks promotion;
+PR checks and manual smoke-only runs cannot authorize it. If historical CI was
+removed, that commit is no longer eligible for this promotion path. This check runs
+before registry mutations and does not rebuild the source image.
 
 Release tags must be `vMAJOR.MINOR.PATCH`, optionally with a prerelease suffix, and match
 `package.json` at the tagged commit. Promotion resolves that commit's GHCR

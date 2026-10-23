@@ -374,7 +374,7 @@ All controllers register under `DomainGroup::Agent` in [`core/all.rs`](../core/a
 | `subagent` | [`orchestration/subagent_control.rs`](./orchestration/subagent_control.rs) | `cancel`, `steer` for running sub-agents |
 
 `agent.chat` and `agent.chat_simple` load config and call
-`inference::host_runtime::rpc::agent_chat` / `agent_chat_simple`, which
+`agent_runs::agent_chat::agent_chat` / `inference::host_runtime::ops::agent_chat_simple`, which
 build an `OpenHumanSessionHost`. `chat_simple` is a bare provider call with
 no tools. The JSON-RPC server itself is in [`crates/openhuman-rpc`](../../../openhuman-rpc/).
 

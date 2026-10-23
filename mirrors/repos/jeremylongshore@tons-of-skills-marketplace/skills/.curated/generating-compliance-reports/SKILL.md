@@ -3,7 +3,7 @@ name: generating-compliance-reports
 description: Generate comprehensive compliance reports for security standards. Use
   when creating compliance documentation. Trigger with 'generate compliance report',
   'compliance status', or 'audit compliance'.
-version: 1.25.0
+version: 1.26.0
 allowed-tools: Read, Write, Edit, Grep, Glob, Bash(security:*), Bash(scan:*), Bash(audit:*)
 license: MIT
 author: Jeremy Longshore <jeremy@intentsolutions.io>
@@ -28,7 +28,7 @@ documentation with evidence references and gap analysis.
 - Access to the target codebase, infrastructure configs, and policy documents in `${CLAUDE_SKILL_DIR}/`
 - Knowledge of the target compliance framework and its applicable scope
 - Standard shell utilities and Grep/Glob available for evidence gathering
-- Reference: `${CLAUDE_SKILL_DIR}/references/README.md` for PCI DSS guidelines, HIPAA compliance checklist, SOC 2 framework overview, config schema, and API documentation
+- Reference: [`references/README.md`](references/README.md) for PCI DSS guidelines, HIPAA compliance checklist, SOC 2 framework overview, config schema, and API documentation
 
 ## Instructions
 
@@ -40,7 +40,7 @@ documentation with evidence references and gap analysis.
 6. Calculate an overall compliance score as percentage of applicable controls that are fully compliant.
 7. Generate the report with these sections: Executive Summary, Scope and Methodology, Control-by-Control Assessment, Gap Analysis, Risk Rating, Remediation Roadmap with priority and effort estimates, and Evidence Appendix.
 8. Write the report to `${CLAUDE_SKILL_DIR}/compliance-report-[framework]-[date].md` using the Write tool.
-9. Validate the report against the config schema in `${CLAUDE_SKILL_DIR}/references/README.md` if applicable.
+9. Validate the report against the config schema in [`references/README.md`](references/README.md) if applicable.
 
 ## Output
 

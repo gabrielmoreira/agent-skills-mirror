@@ -10,10 +10,17 @@ Supply an existing TShark 4.x installation **on Linux**, with util-linux
 `prlimit` available at `/usr/bin/prlimit`. Override its absolute path with
 `REA_TSHARK_PRLIMIT_COMMAND` if required. Unsupported hosts, including macOS
 and Windows, are refused before inspection because this integration requires
-an enforced address-space limit:
+an enforced address-space limit.
+
+TShark selection follows the same rule as [`inspect_pcap_capture`](pcap-analysis.md):
+an absolute `REA_TSHARK_COMMAND`, otherwise `tshark` from the first absolute
+`PATH` entry that holds an executable file. A relative `REA_TSHARK_COMMAND` is
+refused rather than looked up. Either way the selected executable is resolved,
+hashed and rechecked after each run, and Evidence records its
+`selection_source` (`environment` or `path`):
 
 ```sh
-export REA_TSHARK_COMMAND=/absolute/path/to/tshark
+export REA_TSHARK_COMMAND=/absolute/path/to/tshark   # optional when tshark is on PATH
 rea inspect-packet-capture /artifacts/device.pcapng \
   --fields ip.addr --fields udp.port --fields data.data \
   --display_filter 'udp' --format json

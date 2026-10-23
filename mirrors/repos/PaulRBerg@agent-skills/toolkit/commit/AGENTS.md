@@ -57,8 +57,8 @@ repository model.
 ## Validation
 
 From `toolkit/`, run the narrowest relevant `cargo test -p ai-commit` filter first, then `just rust-check` for the
-aggregate Rust gate. `just install-cli` installs every workspace binary under `~/.local`. Run it only when the task
-requires refreshing the installed CLIs.
+aggregate Rust gate. `just install-cli` installs every CLI supported on this OS under `~/.local`. Run it only when the
+task requires refreshing the installed CLIs.
 
 ## CLI reference
 

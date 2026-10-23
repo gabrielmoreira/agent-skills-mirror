@@ -7,6 +7,42 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [19.15.0] - 2026-10-22 - "Reviewed Community Skills And Reliable Fork Evidence"
+
+> Adds **6** catalog skills, ships **2,743 skills**, and removes the false SkillSpector timeout on legitimate fork pull requests.
+
+### Added
+
+- **us-watchlist-alerts** - keep a local US stock and ETF watchlist, evaluate price and market alerts, and write morning or after-close briefs from public quotes. Installation and optional delivery integrations require consent; credentials stay in environment variables; the skill never places, modifies or cancels trades and does not present output as financial advice.
+- **animated-github-profile** - build theme-aware animated GitHub profile READMEs with SVG, CSS and SMIL, including example automation pinned to immutable action commits.
+- **launch-check** - run a passive pre-launch audit of a public URL for exposed secrets, open database rules, security headers, phone layout, search readiness and speed. Live reads are bounded and destructive or write-capable steps are excluded.
+- **second-deposit-igaming** - analyze local casino CRM exports for why first-time depositors skip a second deposit, producing local aggregates and CRM lists while keeping player rows out of chat. Laws must be rechecked, responsible-gaming filters remain mandatory and schedule creation requires explicit consent.
+- **usage-engineer** - compact agent logs, detect stale project maps and audit local Codex and OpenCode usage with no network calls. Maintainer repairs remove shell invocation, make health checks argv-based and return an explicit unavailable status for omitted upstream tests.
+- **watch-igaming** - pair video speech and scene frames by timecode to produce reviews, QA tables, UX audits or meeting notes. Downloads and processing remain local, dependency installation requires consent and findings without timecodes are rejected.
+
+### Changed
+
+- **mmx-cli** - prefer MiniMax M3.1 Flash for new text workloads after the upstream documentation changed the recommended default.
+- **datacircle** - use a bounded temporary download, reject insecure redirects and oversized responses, describe the expanded cached API sheets, and treat the downloaded pricing dataset as untrusted data rather than instructions.
+
+### Fixed
+
+- **Fork PR SkillSpector evidence** - bind the exact-head `pr-evidence` result to its Actions job, trusted CI workflow run and current pull request instead of relying on GitHub's sometimes-empty `check_run.pull_requests` association. Wrong SHAs, branches, source or base repositories, workflow paths and events now fail closed.
+- **Shared shortlist and collection skill IDs** - accept the canonical catalog contract for dotted and 200-character IDs while rejecting 201 characters and keeping collection record IDs on their stricter format.
+- **Catalog app dependency audit** - update the affected Vitest dependency chain so the web application audit reports no vulnerabilities.
+
+### Merge batch
+
+Eleven source changes were reviewed for this release. The five fork bundles with executable or support files were consolidated into one owner-authored protected PR, then merged after complete-tree review and deterministic checks. The workflow/evidence repair, shared-ID fix, Datacircle refresh, `us-watchlist-alerts` and `animated-github-profile` also merged through `merge:batch`.
+
+### Review scope
+
+Changed skill trees were reviewed at their exact submitted content heads or their reproducible owner-authored consolidation. Deterministic validation, reference checks, documentation security, strict scanning and changed-skill evidence passed. The SkillSpector workflow was exercised against a real exact-head run with positive provenance and negative SHA and fork cases. The executable bundle dry runs covered launch checks, local GEO and polish audits, synthetic second-deposit analysis and usage local audit/map behavior. The broader catalog audit remains unfinished.
+
+### Thanks
+
+Thanks to **@eli-alvarado** for `us-watchlist-alerts`, **@jhuang-tt** for the catalog-ID repair and fork-evidence diagnosis, **@waynehamadi** for the Datacircle update, **@noamshorts22-prog** for `usage-engineer`, **@Ces107** for `launch-check`, **@igamingsychov** for the two igaming skills and **@shivamnamdev** for `animated-github-profile`, and to the upstream authors whose licensed material is included.
+
 ## [19.13.0] - 2026-10-21 - "Thirteen Reviewed Skills And Security Hardening"
 
 > Adds **13** catalog skills and ships **2,737 skills**. All nine PRs in the maintenance batch were repaired, reviewed and merged.

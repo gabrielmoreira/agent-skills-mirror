@@ -255,23 +255,22 @@ gh label create design-to-pr --repo <FORK_REPO> --color 0E8A16 --description "Fo
 gh pr edit P --repo <FORK_REPO> --add-label design-to-pr
 ```
 
-### 4b. The review loop (Copilot review → fix → push → reply+resolve → RE-REQUEST, until zero new comments)
+### 4b. The review loop (Copilot review → fix → push → reply+resolve → RE-REQUEST, at most three iterations)
 
-This mirrors `powertoys-pr-review` Steps 4–6, scoped to the fork PR `P`. You already own `P`, so there is no fork-mirroring — just iterate. **The loop is not optional and does not stop after one round.** It ends *only* when a freshly-requested Copilot review comes back with **zero new actionable comments**. You must actively **re-request** a review every round — Copilot never re-reviews on its own.
+This mirrors `powertoys-pr-review` Steps 4–6, scoped to the fork PR `P`. You already own `P`, so there is no fork-mirroring — just iterate. **The loop is not optional and permits at most three total review iterations**, including the initial request and all preserved requests across sessions and lanes. A freshly-requested review with **zero new actionable comments** is clean; reaching the cap is not. At the cap, finish saved/in-flight findings and local validation, preserve the outcome privately and stop before claiming the fix review-clean or opening upstream. Do not reset the allowance on a restart, schedule tick or head change.
 
 > **Why the loop "wasn't working" before:** the two failure modes to avoid are (1) treating a single review pass as "done" instead of re-requesting until a clean pass, and (2) pushing fixes but never replying to and **resolving** the prior Copilot comments (so old threads stay open and the next review re-flags them). Both are fixed by the strict procedure below.
 
 ```
-round = 1
+requests_used = <reconciled actual request count across preserved lanes>
 last_ts = <timestamp captured immediately BEFORE the first review request>
 
-LOOP:
-  1. REQUEST a Copilot review on the fork PR (every round, after every push):
-       gh api repos/<FORK_REPO>/pulls/P/requested_reviewers -X POST \
-         -f "reviewers[]=copilot-pull-request-reviewer[bot]"
-     - Reviewer name MUST be exactly copilot-pull-request-reviewer[bot] (plain "copilot" silently no-ops).
-     - Prefer the sibling powertoys-pr-review/scripts/Request-CopilotReview.ps1
-       helper; use -TimeoutMinutes 0 for bounded workers. Save its request time,
+WHILE requests_used < 3:
+  1. REQUEST a Copilot review on the fork PR, only within the remaining allowance:
+       Use sibling powertoys-pr-review/scripts/Request-CopilotReview.ps1
+       -ForkRepo <FORK_REPO> -PRNumber P -RequestsUsed <requests_used>
+     - Persist requests_used += 1 for the actual request, including timeouts.
+     - Use -TimeoutMinutes 0 for bounded workers. Save its request time,
        fork head and baseline review ID. Empty requested_reviewers is not proof
        that Copilot is unavailable; a fast review may already have completed.
 
@@ -350,11 +349,10 @@ LOOP:
          evidence, telling it NOT to touch them. Carve the known-environmental failures out
          of your "clean" gate so the loop can actually terminate.
 
-  9. last_ts = now; round += 1
+  9. last_ts = now
      Termination guards:
-       - round > 10 with only low-severity comments remaining → EXIT (note it in the brief)
-       - round > 20 → EXIT and flag for manual attention
-     GOTO 1   # ← always re-request; do NOT stop just because you handled this round
+       - requests_used >= 3 → stop new requests and preserve a non-clean outcome if not converged.
+     GOTO 1 only while requests_used < 3.
 END LOOP
 ```
 
@@ -362,11 +360,11 @@ Loop rules (same discipline as `powertoys-pr-review`):
 - **Definition of done = one clean *freshly-requested* review AND a green local build/tests.** The loop terminates ONLY after you request a NEW Copilot review (step 1), wait for it to land (step 2), it returns **zero new comments** (step 4), there are zero unresolved bot threads, AND the affected module builds with its unit tests passing (step 8). Fixing, pushing, replying, and resolving every existing thread is **necessary but NOT sufficient** — a PR with all threads resolved is *not* done until a subsequently-requested review comes back empty. Never conclude on a fix/resolve pass; always spend one more request→wait cycle to CONFIRM clean. If that confirming review adds new comments, you are still in the loop — handle them and go again.
 - **Re-request every round until a clean pass.** One review round is never "done." Keep looping request→fix→push→reply+resolve→re-request until a freshly-requested review returns zero new comments.
 - **Always push before re-requesting review** — the reviewer only sees pushed code.
-- **Always re-request review after each push** — it does not auto re-review.
+- **Re-request review after a push only while fewer than three requests have been used** — it does not auto re-review; never exceed the cap.
 - **Every handled comment must be BOTH replied to AND resolved** (step 7). Unresolved threads cause the next review to re-flag the same issue and make the loop look "stuck."
 - **Track `last_ts`** so you only process *new* comments; never re-fix an already-addressed concern (reply "Already addressed in <sha>" and resolve).
 - Treat out-of-scope comments (files the PR didn't touch) as "Not applicable" + resolve.
-- **Verify `requested_reviewers` is non-empty** after each request — a silent empty response means the review was never actually queued.
+- **Check the saved request result, not just `requested_reviewers`** — an empty assignment can mean fast completion; consume the matching review or resume read-only without a duplicate request.
 
 #### 4b-troubleshooting. When the loop stalls (hard-won gotchas)
 
@@ -375,7 +373,7 @@ Loop rules (same discipline as `powertoys-pr-review`):
   If you see a `copilot_work_started` with **no matching `copilot_work_finished`**, the agent session hung. GitHub will **not** start a new session while one is "in progress," so `@copilot` mentions and even un-assign/re-assign become no-ops (they will NOT push new commits). Do not wait indefinitely on it. Switch to the **FALLBACK** in step 5 (fix directly in the local worktree and push), or escalate to the user. A `@copilot` handoff only reliably triggers the agent when no prior session is stuck.
 - **`@copilot` handoff is best-effort, not guaranteed.** If, after a handoff, no `copilot_work_started` appears within a few minutes and no new commit lands, assume the agent will not act and take the local-fix fallback rather than re-poking it in a loop.
 - **Do NOT rely on `manage_schedule` for multi-round convergence.** Scheduled prompts only fire while a CLI session is actively running — an idle/closed session makes **zero** progress, so a "check every 20m" schedule silently stalls for days. Drive the loop inline within an active session, or hand off to the local-worktree fallback, instead of scheduling it and walking away.
-- **Watch for review churn that never converges.** Each fresh review may surface new low-severity nitpicks even after the previous batch is resolved. Honor the termination guards (round > 10 low-severity → exit; round > 20 → exit + flag). Never fabricate a resolution: only reply "Verified addressed" + resolve a thread when you can point to the exact current head code that satisfies it; otherwise leave it open and flag it.
+- **Watch for review churn that never converges.** Each fresh review may surface new low-severity nitpicks even after the previous batch is resolved. Stop new requests after three total iterations; finish existing results and validation without claiming clean convergence. Never fabricate a resolution: only reply "Verified addressed" + resolve a thread when you can point to the exact current head code that satisfies it; otherwise leave it open and flag it.
 
 ### 4c. Local build & e2e readiness
 

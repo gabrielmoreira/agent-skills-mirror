@@ -2,6 +2,8 @@
 
 Load this reference before dispatch whenever an accepted `ultrawork` plan has more than one work unit. Resolve `dependency_topology` first; a prepared topology is still not dispatch, execution, verification, review, CI, or merge evidence.
 
+No unit dispatches without scope, acceptance criteria, a verification command, and an owner route.
+
 ## Topology Lock
 
 Enumerate one to six top-level components that can independently succeed or fail before creating lanes. Every lane maps to exactly one component. Do not collapse distinct components into one vague lane, and do not invent components the request does not have.

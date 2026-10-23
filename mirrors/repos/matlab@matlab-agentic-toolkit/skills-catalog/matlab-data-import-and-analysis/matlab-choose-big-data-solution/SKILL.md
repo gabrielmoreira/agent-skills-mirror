@@ -16,7 +16,7 @@ description: >
 license: https://www.mathworks.com/content/dam/mathworks/license/pmrl/license.md
 metadata:
   author: MathWorks
-  version: "2.0"
+  version: "2.1"
 ---
 
 # Choose Big Data Solution
@@ -141,6 +141,13 @@ result = gather(result);
 **Key points:**
 - Most common functions work on tall: `mean`, `std`, `min`, `max`, `groupsummary`, `sortrows`, `topkrows`
 - Combine multiple gathers: `[a, b] = gather(tallA, tallB)`
+
+For effective tall usage — deferring evaluation to minimize passes, previewing
+without exhausting memory, indexing rules, known-good workarounds when a function
+does not support tall, and validating tall output against the in-memory result —
+see `references/tall-array-effective-use.md`. Consult it before hand-rolling a
+workaround for an unsupported operation: an incorrect workaround can silently
+produce wrong results.
 
 **DuckDB alternative (R2026a+):** When the goal is to filter, aggregate,
 deduplicate, or sample a large file down to a small in-memory result, a
@@ -384,6 +391,11 @@ It covers:
 - Common mistakes and conventions
 - Testing guidelines (`references/custom-datastore/testing-guidelines.md`)
 - Mixin API reference (`references/custom-datastore/mixin-decision-tree.md`)
+
+**When the task asks for tests, always write a separate test-class file — do not
+stop after delivering the datastore class.** Read
+`references/custom-datastore/testing-guidelines.md` first and follow its list of
+required core tests.
 
 ----
 

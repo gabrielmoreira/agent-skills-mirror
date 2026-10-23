@@ -36,7 +36,6 @@ The adapter seam between OpenHuman and the vendored [`tinyagents`](../../../../.
 | [`middleware/research_budget.rs`](./middleware/research_budget.rs) | Withdraws the web tools from a top-level turn after eight successful search or fetch calls (forcing an answer only when no other tool remains), and notes once when consecutive web calls fail. |
 | `model.rs` | Helpers and wrappers over native crate `ChatModel` values: message/response translation, usage merging, stream-delta forwarding, `MaxTokensModel`, `ProfileOverrideModel`. |
 | [`tools.rs`](./tools.rs) | `CanonicalSharedToolAdapter`: resolves an OpenHuman shared tool registry and forwards the canonical `tinytools::Tool` contract; `EarlyExitHook` pauses successful `ask_user_clarification`-style calls. |
-| `routes.rs` | the workload router projected from the upstream `WORKLOAD_ROUTES` table, `RequiredCapabilitiesMiddleware`, `FallbackObserverMiddleware`, `UsageCarryMiddleware`, and the per-model fallback policy. |
 | [`observability.rs`](./observability.rs) + `observability/` | `event_bridge.rs`: `OpenhumanEventBridge`, translating crate `AgentEvent`s into `AgentProgress` and feeding per-call usage into `crate::platform::cost`. `event_projection.rs`: its `EventListener` impl. `bridge_types.rs`: `SubagentScope` and the shared bridge carries (the cap pauser itself is `tinyagents_harness::events::CapPauser`). |
 | [`host/steering.rs`](./host/steering.rs) | OpenHuman's steering allowlist and the shared `SteeringRegistry` for detached sub-agents. Task primitives are imported directly from `tinyagents_graph::orchestration`. |
 | [`host/delegation.rs`](./host/delegation.rs) | Explicit tracing-bound execution helpers over `tinyagents_graph::delegation`'s plan, execute, review, finalize graph. |
@@ -72,7 +71,7 @@ Most of the module is `pub(crate)` or private. The `pub` items, per `mod.rs`:
 
 - `config::*`: the host half of the generic-harness config seam.
 - `payload_summarizer::*`: `pub` since issue #6014 so an embedder can pass its own `Arc<dyn PayloadSummarizer>` to `AgentBuilder::payload_summarizer` (the default dispatches a sub-agent, which some embedders cannot do).
-- `routes::ResolvedRouteMiddleware`: records canonical response metadata in the explicit run context; `TinyagentsTurnOutcome` carries it to the bus.
+- Native workload middleware: `turn_middleware.rs` installs the upstream `ResolvedRouteMiddleware` with OpenHuman's cost estimator, pricing lookup, and explicit route sink. `turn_plan.rs` and `turn_exec.rs` read fallback and capability policy directly from `WorkloadRouter`.
 - `host::*` (the `OpenHuman*` adapter structs) and `TurnModelSource`.
 
 Within the crate the entry point is `TurnSpec::run` (`pub(crate)`); `run_turn_via_tinyagents` is `#[cfg(test)]` only.

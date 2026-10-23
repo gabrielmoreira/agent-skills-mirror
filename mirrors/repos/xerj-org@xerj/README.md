@@ -6,7 +6,7 @@ memory, behind an Elasticsearch-compatible API. Works with Claude Code, Cursor a
 
 <a href="https://trendshift.io/repositories/116361?utm_source=repository-badge&amp;utm_medium=badge&amp;utm_campaign=badge-repository-116361" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/repositories/116361" alt="xerj-org%2Fxerj | Trendshift" width="250" height="55"/></a>
 
-[English](./README.md) | [简体中文](./README.zh-CN.md) | [日本語](./README.ja-JP.md) | [العربية](./README.ar.md) | [Español](./README.es.md)
+[English](./README.md) | [简体中文](./README.zh-CN.md) | [日本語](./README.ja-JP.md) | [العربية](./README.ar.md) | [Español](./README.es.md) | [한국어](./README.ko.md)
 
 [![CI](https://img.shields.io/github/actions/workflow/status/xerj-org/xerj/ci.yml?branch=main&style=flat-square&label=CI)](https://github.com/xerj-org/xerj/actions/workflows/ci.yml)
 [![Release](https://img.shields.io/github/v/release/xerj-org/xerj?style=flat-square&label=release)](https://github.com/xerj-org/xerj/releases)
@@ -197,8 +197,11 @@ irm https://xerj.org/get.ps1 | iex
 ```
 
 One static binary, no JVM, no dependencies. Prebuilt for Linux, macOS and Windows on x86-64
-and arm64. You can also [build from source](#build-from-source). It speaks the Elasticsearch
-API, so existing clients, dashboards and tooling work against it unchanged.
+and arm64. The x86-64 builds need a CPU with AVX2, BMI2 and FMA (x86-64-v3: Intel Haswell
+2013 and later, AMD Excavator/Zen and later); on an older CPU they stop at launch with an
+illegal-instruction error, so the installer checks before downloading and tells you to
+[build from source](#build-from-source) instead. It speaks the Elasticsearch API, so existing
+clients, dashboards and tooling work against it unchanged.
 
 First commands after install (the installer prints where `xerj` landed; add it to your PATH
 if needed): `xerj --insecure --data-dir ~/xerj-data &`, wait until `http://localhost:9200`
@@ -465,6 +468,12 @@ Twenty tools are exposed. Eleven are thin proxies over an endpoint XERJ already 
 | `xerj_brain_overview` / `xerj_brain_ego` / `xerj_brain_link` / `xerj_brain_unlink` | the second-brain link index: orient, expand one node's evidence-backed neighborhood, assert and retire links |
 | `xerj_plan` | a plain-words filter in, validated query DSL out (`POST /_ask`; deterministic and rule-based, not an LLM) |
 
+For `xerj_search`, pass `{"prefix":"project","query":"retry policy"}` to search
+`project-*`, matching `xerj search --prefix project`. Use `index` for an explicit
+index name or pattern instead; non-empty `index` and `prefix` cannot be combined.
+The prefix is trimmed and must be non-empty. With neither argument, the tool
+searches `ax-*`.
+
 Two more are not plain proxies: `xerj_map` returns the per-index field map from the autoindex
 catalog (trimmed to a byte cap, otherwise verbatim), and `xerj_code_search` runs the `xerj code`
 reference-coding pipeline ([`tools/xerj-code/`](tools/xerj-code/)) and returns its rendered text.
@@ -569,6 +578,15 @@ git clone https://github.com/xerj-org/xerj
 cd xerj/engine
 cargo build --release -p xerj-server
 ./target/release/xerj --insecure --data-dir ~/xerj-data
+```
+
+The x86-64 release builds target `x86-64-v3` (AVX2, BMI2, FMA; set per target in
+`engine/.cargo/config.toml`), which is why the prebuilt binaries crash at launch on CPUs older
+than Intel Haswell (2013) or AMD Excavator/Zen. `RUSTFLAGS` overrides that file, so on such a
+CPU build with a lower baseline instead of installing the prebuilt binary:
+
+```sh
+RUSTFLAGS="-C target-cpu=x86-64-v2" cargo build --release -p xerj-server
 ```
 
 To run the conformance suite against a running server:
