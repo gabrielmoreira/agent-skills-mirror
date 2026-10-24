@@ -69,7 +69,11 @@ board task-mutation authority, not agent retry authority. The only request
 fields are a UUID idempotency key and observed source run (or null). It accepts
 no paths, stop attestations or client-selected strategy. The source-scoped
 exact-run and maintenance APIs retain their existing contracts. Connected-chat
-Retry reuses chat admission and its external identity. See the
+Retry reuses chat admission and its external identity. It can persist a wait
+only for the exact current system recovery generation. The chat owner resumes
+that same deferred receipt through normal admission after containment. The
+board intent and external principal remain separate authorities; current task,
+connection, pause and budget gates still apply. See the
 [durable contract](../../doc/task-recovery.md). Agent Chat also requires its
 current conversation owner and feature enablement at admission and locked
 dispatch; generic board mutation permission does not replace chat ownership.
@@ -93,6 +97,15 @@ Evidence: `source-only` — [source actions](../../server/src/services/issue-rec
 Verification: `not-run` — Observe attempts/retry timing and actual useful result; concurrent sweeps don't reset budget or duplicate turn. Operator Stop/chat idle must not trigger unwanted recovery.
 
 Gaps: Native/Legacy and live provider takeover need separate proof; preserve existing failed callback evidence.
+
+A review-path repair uses the existing canonical disposition-repair prompt
+section. The server fixes its instruction and one-attempt bound. This adds no
+API, monitor authority, credential access, or bypass for task and approval gates.
+A pending repair retains that section across connection-pool retries. Ordinary
+wakes without the typed repair marker ignore stale raw instruction text.
+[Prompt controls](../../server/src/services/heartbeat/run-preparation.review-path.test.ts)
+cover fresh/resumed delivery and existing disposition repairs; hosted execution
+and durable monitor acceptance remain separate verification.
 
 ### `resolve-permitted-source-action`
 
@@ -217,6 +230,14 @@ It requires the exact source action, company, run, lease and environment, a
 held physical workspace owner, and its current stop-only cleanup claim. The
 ordinary resume and destruction fences still apply to protected sources. The
 assembled-runtime regression checks this separation before any provider call.
+
+Managed missing-source reconciliation uses the server-only Cloud
+`POST /v1/tenant/sandbox-absence` protocol. A host-bound capability authenticates
+the stack; board and agent credentials cannot call it. Core requires a fresh
+Cloud signature for the exact company, issue, run, lease, allocation and physical
+owner. This can establish execution absence, never recovered files or successful
+task completion. Normal Retry admission and external-effect fences still apply.
+Signature and PostgreSQL regressions are local evidence, not deployed acceptance.
 
 Review: `operation-reviewed`.
 

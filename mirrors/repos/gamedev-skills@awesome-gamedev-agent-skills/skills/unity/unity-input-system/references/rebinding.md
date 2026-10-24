@@ -25,6 +25,11 @@ public void StartRebind(InputAction action, int bindingIndex)
             action.Enable();
             SaveBindings(action.actionMap.asset);        // persist (see below)
         })
+        .OnCancel(op =>                                  // e.g. the player pressed Escape
+        {
+            op.Dispose();
+            action.Enable();
+        })
         .Start();
 }
 ```

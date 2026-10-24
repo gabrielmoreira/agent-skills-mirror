@@ -29,6 +29,7 @@ Opening your first PR gets you added here. See the [contribution guide](.github/
 - [@Bobuyoucrypto](https://github.com/Bobuyoucrypto) (Windows bash timeout process-tree kill)
 - [@green3sf](https://github.com/green3sf) (structured output refresh after an accepted verify revision)
 - [@Zhongghaoming](https://github.com/Zhongghaoming) (evaluation gate minimum-samples guard)
+- [@March-7](https://github.com/March-7) (Team.addTask task-option forwarding)
 
 ## Provider integrations
 

@@ -39,9 +39,10 @@ of scope; prefer glTF over OBJ/FBX for runtime.
    `traverse` / `getObjectByName` to find the parts you'll control.
 4. **Play animations with an `AnimationMixer`.** One mixer per animated root;
    `mixer.clipAction(clip).play()`; advance with `mixer.update(delta)` every frame.
-5. **Decode compressed assets.** Attach a `DRACOLoader` (and/or `KTX2Loader` +
-   Meshopt) so DRACO meshes and KTX2 textures load; point the decoders at their
-   files.
+5. **Decode compressed assets.** Attach a `DRACOLoader`, a `KTX2Loader`, and/or
+   the Meshopt decoder so DRACO meshes, KTX2 textures, and meshopt-compressed
+   buffers load. Since r185 the DRACO and KTX2 loaders find their bundled
+   decoder files on their own.
 6. **Validate changed glTF files when the project already has the tool.** Run
    `gltf-transform validate path/to/model.glb` for each changed `.gltf` or `.glb`;
    fix reported errors before loading.
@@ -64,7 +65,10 @@ loader.load(
     // Inspect: gltf.animations is an array of AnimationClip.
     console.log('clips:', gltf.animations.map((c) => c.name));
   },
-  (event) => console.log(`${(event.loaded / event.total) * 100}% loaded`),
+  (event) => {
+    // total is 0 when the server sends no Content-Length (e.g. compressed responses)
+    if (event.total) console.log(`${(event.loaded / event.total) * 100}% loaded`);
+  },
   (error) => console.error('glTF load failed:', error)
 );
 ```
@@ -102,14 +106,15 @@ mixer = new THREE.AnimationMixer(gltf.scene);
 for (const clip of gltf.animations) {
   actions[clip.name] = mixer.clipAction(clip);
 }
-actions['Idle'].play();
+let current = actions['Idle'];
+current.play();
 
 function transitionTo(name, duration = 0.3) {
   const next = actions[name];
-  next.reset().play();
-  for (const [n, action] of Object.entries(actions)) {
-    if (n !== name) action.crossFadeTo(next, duration, false);
-  }
+  if (!next || next === current) return;
+  next.reset().play();                      // rewind and clear any old fade
+  current.crossFadeTo(next, duration, false); // fade the old one out, new one in
+  current = next;
 }
 ```
 
@@ -117,20 +122,27 @@ function transitionTo(name, duration = 0.3) {
 
 ```js
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
+import { DRACOLoader, DRACO_GLTF_CONFIG } from 'three/addons/loaders/DRACOLoader.js';
 
-const draco = new DRACOLoader();
-// Point at the decoder files you ship (or a pinned CDN copy of the same version).
-draco.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.186.0/examples/jsm/libs/draco/');
+// r185+: DRACOLoader finds the decoder that ships next to it in
+// three/examples/jsm/libs/draco/, so no path is required. DRACO_GLTF_CONFIG
+// (also r185+) selects the smaller glTF-only WASM build in libs/draco/gltf/.
+const draco = new DRACOLoader().setDecoderPath(DRACO_GLTF_CONFIG);
 
 const loader = new GLTFLoader();
-loader.setDRACOLoader(draco);
+loader.setDRACOLoader(draco);              // share one DRACOLoader across loads
 loader.load('assets/city-draco.glb', (gltf) => scene.add(gltf.scene));
 ```
+
+On releases before r185, or when your host does not serve those files, pass a
+folder instead: `draco.setDecoderPath('/decoders/draco/')` with the files copied
+from the same `three` version.
 
 ### 5. Find and animate a named part
 
 ```js
+const timer = new THREE.Timer();
+
 new GLTFLoader().load('assets/car.glb', (gltf) => {
   scene.add(gltf.scene);
   const wheels = [];
@@ -158,9 +170,16 @@ new GLTFLoader().load('assets/car.glb', (gltf) => {
   passed milliseconds instead of seconds (use `timer.getDelta()` after
   `timer.update(time)`), or you forgot
   `action.play()`.
-- **DRACO/KTX2 model fails** → the decoder/transcoder path is wrong or version-
-  mismatched. `setDecoderPath`/`setTranscoderPath` must point at files matching your
-  three.js version.
+- **DRACO/KTX2 model fails, or the network tab shows a 404 for `draco_*`/`basis_*`
+  files** → the decoder/transcoder files are not being served, or come from a
+  different three.js version. Since r185 the loaders default to the copies inside
+  `three/examples/jsm/libs/`; if your bundler or host doesn't serve those, copy the
+  folders from the installed `three` and point `setDecoderPath`/`setTranscoderPath`
+  at them.
+- **`setKTX2Loader must be called before loading KTX2 textures`** or
+  **`setMeshoptDecoder must be called before loading compressed files`** → the
+  asset uses `KHR_texture_basisu` or meshopt compression (`EXT_`/`KHR_meshopt_compression`);
+  attach the missing decoder (see the reference).
 - **Multiple mixers fighting** → use **one** `AnimationMixer` per animated root and
   create all actions from it; don't make a new mixer per clip.
 - **Baked-in transforms surprise you** → exporters sometimes bake scale/rotation onto

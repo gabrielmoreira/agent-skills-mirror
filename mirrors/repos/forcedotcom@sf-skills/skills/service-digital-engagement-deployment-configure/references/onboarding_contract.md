@@ -67,8 +67,7 @@ What is not a transport choice:
 - **Web deployment creation is a Connect API call — send it with `sf api request rest`, not `dispatch`.** Through
   `dispatch` it always fails with an `INTERNAL_ERROR` server error while building the ESW site; the same body via the CLI
   succeeds. Do not try `dispatch` first.
-- **Publish is a Connect API call.** Send it with `dispatch` on the fully-qualified path. If `dispatch` returns a
-  path/route error (not a business error), repeat that one call with `sf api request rest`.
+- **Publish is a Connect API call**, sent per SKILL.md step 17c (`dispatch`, `sf api request rest` on a route error).
 - **Tooling API** work (custom labels, branding, reCAPTCHA) is not verified through `dispatch`. Use `sf` CLI.
 
 ## 3. Pre-scan (idempotency)
@@ -84,8 +83,8 @@ Run before any write, both modes. Read `EmbeddedServiceConfig` by `fullName` = t
 
 Standalone, deployment exists: offer exactly three choices — no change / override / add to existing.
 
-The metadata read does not say whether the latest edits are **published**. After any write to a Web deployment,
-publish. If nothing was written, do not publish.
+The metadata read does not say whether the latest edits are **published**. Publishing is never automatic (SKILL.md
+step 17c); delegated returns `published: false` so the coordinator can ask the admin.
 
 ## 4. Questions in the admin's language (guided mode)
 
@@ -109,7 +108,7 @@ Ask about the outcome, not the Salesforce feature. Keep it to a handful; state t
   "outputs": {
     "deploymentName": "Acme_Support_Chat",
     "embeddedServiceConfigId": "<id or null>",
-    "published": true
+    "published": false
   }
 }
 ```
@@ -137,7 +136,7 @@ On `failed`: `errorMessage` names the failed step and the platform error; stop; 
     note: "Reversible by disabling the deployment (isEnabled=false). Pre-chat form fields can be deactivated but the form cannot be fully deleted."
   validate:
     check: check-messaging-deployment
-    passWhen: "GET EmbeddedServiceConfig fullName=<derived API name> returns isEnabled=true and the embeddedServiceMessagingChannel links values.channelName; for Web, the deployment has been published"
+    passWhen: "GET EmbeddedServiceConfig fullName=<derived API name> returns isEnabled=true and the embeddedServiceMessagingChannel links values.channelName; for Web, publishing is left to the admin after review (published may be false)"
   alternative: "Setup > Embedded Service Deployments > New Deployment > Messaging for In-App and Web; choose the channel, set pre-chat, then Publish."
 ```
 

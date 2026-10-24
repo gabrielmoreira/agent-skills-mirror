@@ -366,9 +366,9 @@ Pass the BotVersion number you intend to activate as the third argument.
 **Critical:** Dependencies must be deployed BEFORE the agent.
 
 ```text
-1. Custom Objects/Fields (platform-custom-object-generate, platform-custom-field-generate)
+1. Custom Objects/Fields (platform-custom-object-generate)
    ↓
-2. Apex Classes (platform-apex-generate)
+2. Apex Classes
    ↓
 3. Flows (automation-flow-generate)
    ↓
@@ -571,14 +571,13 @@ sf agent activate --api-name My_Agent --target-org myorg
 | From Skill | To Skill | Purpose |
 |------------|----------|---------|
 | agentforce-generate | platform-metadata-deploy | Publish and activate agents |
-| platform-apex-generate | platform-metadata-deploy | Deploy Apex before agent |
 | automation-flow-generate | platform-metadata-deploy | Deploy Flows before agent |
 | integration-connectivity-generate | platform-metadata-deploy | Deploy Named Credentials for external APIs |
 
 ### Integration Pattern
 
 ```bash
-# 1. platform-apex-generate creates InvocableMethod class
+# 1. An InvocableMethod class is authored
 # 2. automation-flow-generate creates wrapper Flow
 # 3. agentforce-generate creates agent with flow:// action
 # 4. platform-metadata-deploy orchestrates deployment in correct order

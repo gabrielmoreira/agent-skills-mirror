@@ -99,10 +99,23 @@ managed 与 attached 的工作对话都应能持续在 LoopX 中进行：沿用�
 | **S7 预算、调度与 fleet 规模 · P0 观测/P1–P2 扩展** | quota/scheduler 与部分 usage aggregate 存在；全 provider 成本、分布式资源预留及百 Agent 并发尚需证据 | 先区分配置预算、准入、消耗与估算；未知成本不记零、重复事件不双记。R7 分页/有界摘要及[完整历史传输](typescript-control-plane-migration-v0.zh-CN.md)，验收超出 RPC 上限后的写回/重放/单次扣记；provider/host 限流、公平性、背压、事件唤醒与失败隔离；分别报告注册数/活跃数/吞吐量和每个验收成果成本 回执支持的语义进展已能关闭原 host Turn，保留未完成/等待中的 Todo；file/SQLite guard 回放覆盖 frontier 改变，边界见[quota 结算契约](../../quota-allocation.md#receipt-backed-settlement-progress)。external-wait authoring 现复用 resume owner 从锁定 Todo 快照重算后继，以完成依赖/monitor 代际证明恢复，不再相信展示字段；源证据续接与真实 Host backoff/readback 仍须分别验收。这项有界修复不证明 fleet 规模或宿主延迟。 当前连续计数有界修复让 status 与 Goal-frontier 调用方共用一个 typed Monitor 过期规则。File/SQLite Codex CLI 回读保留计数及等待中的工作：过期及恰好到期的 Monitor 不再引起当前计数重规划；活跃但未来 due 的监控及独立历史触发保持。源码行为、安装采用与完整 Goal/CI 资格分别验收。 |
 | **S8 能力、扩展与领域集成 · P1/P2** | 已有 capability catalog、extension 生命周期、hook、工程/研究/content/office 能力及 computer-use 合同 | 优先用现有 issue-fix/PR-review 和材料/研究 caller 检验共享控制面；每个 provider 带 readiness、版本、权限、默认关闭、卸载/回滚、失败隔离与真实入口证据。新 domain effect 从模拟单操作闭环开始，不先建市场或通用工作流 DSL |
 | **S9 身份、权限、隐私与信任 · P0 持续/P1–P2 远端** | public/private 边界、作用域、capability gate、fence 与确认合同分布在已有 owner | 随 R1/R3 验 sender/audience/artifact scope 和 stale authority；远端 R6 必须认证 tenant/Goal/actor/host、轮换撤销与最小权限。凭据保管、非可信工具/文档输入、依赖供应链、审计留存/删除及漏洞响应纳入真实路径；角色、消息或 memory 不铸造写权限 |
-| **S10 可靠性、诊断与运行运营 · P0/P1** | recovery/canary、read-only diagnostics 原型及 DSH event adapter 已有；C0/C1、开销和完整运营资格仍未闭合 | 故障分类→可观察状态→恢复演练→防复发；覆盖进程/存储/网络/投递故障和数据增长。Chat 上下文或 provider 读取晚于停止等待返回时，按持久 Turn 和精确 Session claim 判断：即使新请求已完成，也不得再启动旧请求或交接迟到结果。这项有界 GQ08 修复不证明上游 interrupt 保真，也不取消其他 owner 已准入的效果；完整恢复仍遵循[共享对话运行契约](capable-manager-semantic-handoff-v0.md#10-operational-contract)。定义并冻结 SLO、RPO/RTO、容量/保留边界，实测后标 qualified；Lark 传输背压与 drain 保留 App consumer lease；未持久化的缓冲消息不算已受理工作或完成回执。运行手册含升级、备份恢复、停止与人工接管，不以测试数代替恢复结果 |
+| **S10 可靠性、诊断与运行运营 · P0/P1** | recovery/canary、read-only diagnostics 原型及 DSH event adapter 已有；C0/C1、开销和完整运营资格仍未闭合 | 故障分类→可观察状态→恢复演练→防复发；覆盖进程/存储/网络/投递故障和数据增长。Chat 上下文或 provider 读取晚于停止等待返回时，按持久 Turn 和精确 Session claim 判断：即使新请求已完成，也不得再启动旧请求或交接迟到结果。迟到的队列恢复只能释放它观察到的 Turn claim；必须保留新 Turn 的活动声明，并保持已关闭 Session 的关闭状态。这项有界 GQ08 修复不证明上游 interrupt 保真，也不取消其他 owner 已准入的效果；完整恢复仍遵循[共享对话运行契约](capable-manager-semantic-handoff-v0.md#10-operational-contract)。定义并冻结 SLO、RPO/RTO、容量/保留边界，实测后标 qualified；Lark 传输背压与 drain 保留 App consumer lease；未持久化的缓冲消息不算已受理工作或完成回执。运行手册含升级、备份恢复、停止与人工接管，不以测试数代替恢复结果 |
 | **S11 评测与科学研究 · P1 持续/P2 研究** | benchmark toolkit、限定任务的 Explore 证据和独立 Research 阅读入口已集成；完整成本覆盖、实际决策采用及匹配研究收益仍是独立缺口 | 固定 native/passive/governed arm、模型/harness/预算/task split 与 evaluator；报告原生分数、成本、失败、人工介入和不确定性。sequential evidence、continuation、stride 为早期研究；memory、formal kernel、curriculum/evolution、主动实验与多尺度状态按 T01–T10 分阶段，不自动影响生产 |
 | **S12 发布、开发体验与社区治理 · P0 卫生/P1** | 安装、源码验证、扩展注册、DCO/PR、测试层级、contributor route 与双语文档已存在 | 从干净机器/发布包验一条首次工作和一次升级/回滚；host/OS 支持以 release contract 为准。缩短合理改动的定位、测试和 review 成本；公开精确 head、可重复 fixture、兼容窗口、维护者路由和贡献归属，退休重复协议及过时证据 |
 | **S13 采用、生态与商业可持续性 · P1 发现/P2 试点** | 公开 adoption loop、showcase、license/governance、observer-first 产品合同已存在；付费 PMF 未证明 | 先收集真实独立首次使用/重复使用/退出原因，做可复现案例和有固定预算/验收/回滚的试点；沉淀 reusable adapter 与交付手册。核算模型/计算/存储/支持成本及维护负担；满足重复需求后再决策商业托管边界、支持等级和分发，不承诺 SLA 或擅改开源条款 |
+
+**S3/S7 行政收尾提案。** [#7117](https://github.com/loopx-project/loopx/pull/7117)
+进一步区分已验收的阻塞重规划与前一个真实成果 checkpoint。File/SQLite CLI 回读和
+长期／压缩历史回归保留原里程碑或真实缺口，避免行政收尾制造新的成果义务。源码
+覆盖已包括通知／真门禁叠加、原截止恢复，以及各自持有 Vision 和时钟时的原生取消
+认领／转派。canonical fixture 整合及原 Turn 记账检查后的完整受影响 CLI 套件通过；
+保留此前失败及 base/head 归因。后续重构删除 Python 重试资格判定，由已有 TypeScript
+结算 owner 批量核对行政／重试历史事实，供语义保留和旧状态读路使用。各维度仍独立，
+保留原时钟及历史微秒到期边界；畸形 Turn 身份不再取得重试活动的正向证明。
+周期历史调用者也尊重同 Agent 最新工作的已接受重试直至原期限，不清零已累积的复盘
+计数。File/SQLite 真实 CLI 覆盖阈值、独立工作、真实用户门禁与自然到期恢复。
+完全相同的 Explore 指引改为同一 CLI 包内引用，保留全部条款及独立读取。整仓
+资格、可比完整调用成本、安装采用与长程实测收益仍是分别验证的未完成项。
 
 **S5/S11 长程进展设计。** [研究计量细化](long-horizon-harness-benchmark-research-program-v0.zh-CN.md#基于证据的研究片段评估拟议细化)
 与[产品阅读旅程](../../product/use-cases/auto-research/long-horizon-progress-design.zh-CN.md)

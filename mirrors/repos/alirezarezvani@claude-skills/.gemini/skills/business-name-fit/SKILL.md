@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/business-name-fit/../../../marketing-skill/skills/business-name-fit/SKILL.md

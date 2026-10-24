@@ -19,6 +19,10 @@ This is an OMH `web-research` workflow skill, projected for Agent Skills hosts (
 
 `web-research` exists so a current-facts question returns a cited answer in one retrieval round, without the declared depth budget, reference-implementation study, and dossier that `research` requires.
 
+## First Steps
+
+- Discover the current search/read tools and authorized scope, then follow `references/search-method.md`: plan -> actual host search/read -> merge -> assess -> bounded retry. Use `omh_search` only when available; otherwise report the skill-only fallback. Keep direct file lookups direct.
+
 ## Do Not Use When
 
 - The decision needs reference-implementation study, a declared depth budget, or a decision-grounding dossier; use `ulw-research`.

@@ -9,8 +9,8 @@ Semantic search across an indexed codebase. Only use after `codebase_index` is c
 | `query` | string | yes | — | Natural language search query (e.g. "authentication middleware", "database connection setup") |
 | `projectPath` | string | no | cwd | Absolute path to the project directory |
 | `limit` | number (1-50) | no | 10 | Maximum results. Override globally via `SEARCH_DEFAULT_LIMIT` env var |
-| `fileFilter` | string | no | — | Filter results to a specific file path (relative) |
-| `languageFilter` | string | no | — | Filter results to a specific language (e.g. "typescript", "python") |
+| `fileFilter` | string | no | — | Filter results to one file, given exactly as a result header shows its path (e.g. "src/index.ts"). Directories, globs, lists and bare names of files below the root match nothing |
+| `languageFilter` | string | no | — | Filter results to one language, given exactly as a result header shows its label in brackets (e.g. "typescript", "python", "go"); aliases such as "ts" or "py" match nothing |
 | `minScore` | number (0-1) | no | 0.10 | Minimum RRF score threshold. Override via `SEARCH_MIN_SCORE`. Set to 0 to disable |
 
 **Returns:** Ranked code chunks with file paths, line numbers, language, and RRF scores.
@@ -188,7 +188,7 @@ Display information about SocratiCode and all its tools.
 ### Search tips
 - A single `codebase_search` returns ranked snippets from the entire codebase in milliseconds — far cheaper than opening files speculatively
 - The RRF score combines semantic similarity and keyword match; higher scores = better relevance
-- Use `fileFilter` when you know the area, `languageFilter` when cross-language results are noisy
+- Use `fileFilter` when you know the exact file (it cannot narrow to a directory), `languageFilter` when cross-language results are noisy
 - Lower `minScore` to 0 when exploring broadly; raise it for precision
 
 ### Graph tips

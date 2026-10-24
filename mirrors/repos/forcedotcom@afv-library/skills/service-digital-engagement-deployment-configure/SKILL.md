@@ -27,20 +27,12 @@ Configures `EmbeddedServiceConfig` metadata for Salesforce Messaging for In-App 
 
 ---
 
-## Entry points: delegated or standalone
+## Entry points and transport
 
-Decide this before asking anything.
+- **Delegated** (`context.calledFrom == "service-onboarding"`): use the approved `values`, ask nothing, and return `failed` naming any missing required key. **Standalone** (no `context`): run Clarifying Questions.
+- **Transport A** (primary): headless-360 MCP `dispatch` / `dispatch_readonly` on `/services/data/vXX.0/headless/metadata`. **Transport B**: the `sf` commands below, only where a probe shows Transport A unavailable. Exception: Web create always uses the `sf` CLI (step 17a).
 
-- **Delegated** — the invocation carries `{ values, context }` with `context.calledFrom == "service-onboarding"`. The admin already approved `values` in the onboarding plan. Ask nothing; skip Clarifying Questions. If a required key is missing, stop and return `failed` naming it — do not guess.
-- **Standalone** — no `context`. Run Clarifying Questions as written.
-
-Both paths run the same pre-scan, write and validate steps. Full contract (payload, wording rules, result shape, registration entry): `references/onboarding_contract.md`.
-
----
-
-## Transport
-
-Org reads and writes go through the **headless-360 MCP `dispatch` / `dispatch_readonly`** tools on `/services/data/vXX.0/headless/metadata` (**Transport A, primary**). Use the **`sf` CLI** (**Transport B**) only for a type/verb that a read-only probe shows is not onboarded, or when the MCP is unavailable. Probe each type separately — never infer onboarding from a different type. Details, the GET → modify → full-document PUT rule, and the credential trap are in `references/onboarding_contract.md` §2. The `sf` commands in the steps below are the Transport B form. Exception: Web create always uses the `sf` CLI (step 17a).
+Details: `references/onboarding_contract.md` (§1 entry points, §2 transport, §3 pre-scan, §5 result).
 
 ---
 
@@ -53,6 +45,7 @@ Before generating, ask the user if not already clear (standalone only):
 - **Channel name?** What is the `channelPlatformKey` of the messaging channel to associate?
 - For **create**: What should the deployment be named?
 - For **update**: What features to configure? (pre-chat forms, business hours, T&C, UI toggles)
+- For **pre-chat** (if requested): the questions in `references/prechat_forms.md` §Inputs to Gather
 - For **update (Web)**: What is the Experience Site name? Branding overrides needed?
 
 ---
@@ -69,7 +62,7 @@ Gather or infer before proceeding:
 For **update** operations additionally:
 - **Site name** (Web only): The Experience Site name (format `ESW_<name>_<timestamp>`)
 - **Branding name** (optional): Reference to existing `BrandingSet`
-- **Pre-chat form fields** (optional): Field names and required status
+- **Pre-chat form fields** (optional): see `references/prechat_forms.md` §Inputs to Gather
 - **Business hours** (optional): Name of existing `BusinessHours` record
 
 Defaults unless specified:
@@ -88,31 +81,19 @@ All steps are sequential. Do not skip or reorder. Branch based on the operation 
 
 2. **Determine operation** — standalone: ask whether the user wants to create a new deployment or update an existing one. Delegated: taken from `values.operation`, then confirmed by the pre-scan (step 4a).
 
-3. **Collect inputs** — standalone: gather deployment name, type, and channel name per Clarifying Questions above. Delegated: bind them from `values`; stop with `failed` if `deploymentName`, `deploymentType` or `channelName` is missing.
+3. **Collect inputs** — standalone: per Clarifying Questions. Delegated: from `values` (`deploymentName`, `deploymentType`, `channelName` required).
 
-3a. **Probe transport** — read-only `GET` of `EmbeddedServiceConfig` via `dispatch_readonly`. Onboarded → Transport A. `UNSUPPORTED_OPERATION` or MCP unavailable → Transport B for that call. See `references/onboarding_contract.md` §2.
+3a. **Probe transport** — read-only `GET` of `EmbeddedServiceConfig` (contract §2).
 
 4. **Read deployment settings reference** — load `references/deployment_settings.md` to understand all available configuration options.
 
-4a. **Pre-scan** — using the step 3a read, look for a deployment whose API name is the one derived from `deploymentName` (Required Inputs):
-   - none → operation is `create` (Phase 2A)
-   - exists and every targeted field already matches → **make no write**; return `already-configured` (delegated) or say so plainly (standalone). Skip to Phase 3
-   - exists with differences → operation is `update` (Phase 2B); announce each change, then write (standalone: ask for a yes first)
-   - exists but linked to a different channel → standalone: ask before repointing; delegated: return `failed`
-
-   Standalone with an existing deployment: offer no change / override / add to existing.
+4a. **Pre-scan** — look up the deployment by its derived API name (contract §3): none → `create` (Phase 2A); matches → no write, `already-configured`, skip to Phase 3; differs → `update` (Phase 2B), announce each change (standalone: ask first); linked to a different channel → standalone: ask before repointing, delegated: `failed`. Standalone, deployment exists: offer exactly three choices — no change / override / add to existing.
 
 ### Phase 2A — Create New Deployment
 
 Use this path when the operation is `create`.
 
-5. **Determine API method by type**:
-
-   | Deployment Type | Creation Method | Prerequisites |
-   |----------------|-----------------|---------------|
-   | API | Metadata API deploy | Channel must exist |
-   | Mobile | Metadata API deploy | Channel must exist |
-   | Web | Connect API | Channel must exist + Experience Site required |
+5. **Determine API method by type** — API/Mobile: Metadata API deploy. Web: Connect API (creates the Experience Site). All types need the channel to exist.
 
 6. **For API/Mobile types** — read the template `assets/esd_api_mobile_template.xml` and generate the `EmbeddedServiceConfig` XML with:
    - `deploymentType` set to `API` or `Mobile`
@@ -123,16 +104,7 @@ Use this path when the operation is `create`.
 
 8. **Generate output** — produce the `.EmbeddedServiceConfig-meta.xml` file (for API/Mobile) or Connect API instructions (for Web).
 
-9. **Present output and next steps** — show the generated file and summarize what was configured. Recommend as next steps:
-   - **Publish** the deployment via Connect API to make it live:
-     ```bash
-     sf api request rest "/services/data/v67.0/connect/embeddedservice/embeddedserviceconfig/publish/<EMBEDDED_SERVICE_CONFIG_ID>" -X POST -b '{}' -o <org-alias>
-     ```
-     To obtain the `EMBEDDED_SERVICE_CONFIG_ID`:
-     ```bash
-     sf data query --use-tooling-api --query "SELECT Id FROM EmbeddedServiceConfig WHERE DeveloperName = '<DEPLOYMENT_NAME>'" --target-org <org-alias>
-     ```
-   - **Generate code snippet** for integration — see `references/code_snippet.md`
+9. **Present output and next steps** — as in step 17.
 
 ### Phase 2B — Update Existing Deployment (Metadata API)
 
@@ -142,43 +114,26 @@ Use this path when the operation is `update`.
     ```bash
     sf project retrieve start --metadata EmbeddedServiceConfig:<DEPLOYMENT_NAME> --target-org <org-alias>
     ```
-    Use it as the starting structure — the update is always a **full document**, never a minimal payload (omitted inline blocks can be silently cleared). If retrieval is not possible, load `assets/esd_web_update_template.xml` as a fallback reference.
+    Use it as the starting structure — the update is always a **full document** (see Rules). If retrieval is not possible, load `assets/esd_web_update_template.xml` as a fallback reference.
 
-11. **Apply messaging channel settings** — configure `<embeddedServiceMessagingChannel>` with:
-    - `messagingChannel` — the channel's `channelPlatformKey`
-    - `shouldShowAgentforceTagline` — Agentforce branding
-    - `shouldShowDeliveryReceipts` — delivery receipts
-    - `shouldShowEmojiSelection` — emoji picker
-    - `shouldShowReadReceipts` — read receipts
-    - `shouldShowTypingIndicators` — typing indicators
-    - `shouldStartNewLineOnEnter` — Enter key behavior
-    - `isChatInvitationCustomizable` / `isInvitationEnabled` — chat invitation settings
+11. **Apply messaging channel settings** — in `<embeddedServiceMessagingChannel>` set `messagingChannel` (the channel's `channelPlatformKey`) and the UI toggles (`shouldShow*`, `shouldStartNewLineOnEnter`, invitation flags). Include every boolean, even when `false`; full list in `references/deployment_settings.md`. Leave each `shouldShow*` / `shouldStartNewLineOnEnter` at its retrieved value (default `false` if nothing was retrieved); set one to `true` only when the user explicitly asks for that feature — never infer it from an example.
 
-12. **Apply pre-chat forms** — if the user needs pre-chat data collection, generate `<embeddedServiceForms>` with `<embeddedServiceFormFields>` elements containing `embeddedServiceFormFieldName` and `isRequired`.
+12. **Apply pre-chat forms** — pre-chat is OFF by default: omit `<embeddedServiceForms>` unless the user asks to collect data before the conversation. If they do, **read `references/prechat_forms.md` first** and follow it (field attributes, hidden fields, ChoiceList, `displayNameFormat`, deactivate vs. remove).
+    - **Before generating**, run the checks in its §Validating and Remediating Prerequisites against the *retrieved* channel. Channel fixes go through `service-digital-engagement-channel-configure`; never hand-edit the channel here.
+    - Delta to graft onto a base deployment: `examples/esd_web_prechat_fields.xml`.
 
 13. **Apply branding customization** (Web only) — a BrandingSet is automatically created with defaults when the deployment is created via Connect API. If the user wants to override specific branding properties (colors, fonts, dimensions), read `references/branding_and_tooling.md` for the Tooling API steps to update individual properties.
 
-14. **Apply invitation** (Web only) — if the user wants the widget to proactively invite visitors based on conditions:
-    - Set `isInvitationEnabled` to `true` in `<embeddedServiceMessagingChannel>`
-    - Generate repeatable `<embdMsgChannelInvitationConditions>` elements with `sequence`, `conditionType`, `operand`, `value`, and optionally `customVariableName`
-    - Update the `formula` field in `<embeddedServiceMessagingChannel>` to reference the condition sequences (e.g., `1 AND 2`, `1 OR 2`). The formula must be updated whenever conditions are added or removed to stay in sync with the `sequence` numbers
-    - See `references/deployment_settings.md` for available condition types and operators
+14. **Apply invitation** (Web only) — set `isInvitationEnabled` to `true`, add `<embdMsgChannelInvitationConditions>` (fields and operators in `references/deployment_settings.md`), and keep `formula` (e.g. `1 AND 2`) in sync with the condition `sequence` numbers whenever conditions change.
 
 15. **Apply additional settings**:
     - `isTermsAndConditionsEnabled` / `isTermsAndConditionsRequired` — T&C in pre-chat
-    - **Do NOT update `site`** — the site name is auto-generated during creation and must never be modified
+    - `site` — Web: the retrieved value, unchanged (see Rules); omit for API/Mobile
 
 16. **Generate the file** — produce the `.EmbeddedServiceConfig-meta.xml` file at the path the user specifies, or default to `EmbeddedServiceConfig/` in the project's metadata source path.
 
 17. **Present output and next steps** — show the generated file and summarize what was configured. Recommend as next steps:
-    - **Publish** the deployment via Connect API to make changes live:
-      ```bash
-      sf api request rest "/services/data/v67.0/connect/embeddedservice/embeddedserviceconfig/publish/<EMBEDDED_SERVICE_CONFIG_ID>" -X POST -b '{}' -o <org-alias>
-      ```
-      To obtain the `EMBEDDED_SERVICE_CONFIG_ID`:
-      ```bash
-      sf data query --use-tooling-api --query "SELECT Id FROM EmbeddedServiceConfig WHERE DeveloperName = '<DEPLOYMENT_NAME>'" --target-org <org-alias>
-      ```
+    - **Publish** (Web) — only after the user approves, per step 17c
     - **Generate code snippet** for integration — see `references/code_snippet.md`
 
 ### Phase 2C — Apply to the org
@@ -193,13 +148,13 @@ Runs for both Phase 2A and 2B, except when the pre-scan returned `already-config
 
 17b. **Re-read and diff** — `GET` the component again and confirm every intended field landed and no inline block (`embeddedServiceMessagingChannel`, forms) was dropped.
 
-17c. **Publish (Web only, only if something was written)** — `dispatch` `POST` on the fully-qualified publish path; if it returns a path/route error, run the `sf` publish command from the next-steps block above. Skip after a Web create alone when the create response has `isPublishSuccess: true` — the create already published.
+17c. **Publish (Web only) — never automatic.** Publishing makes the changes live to customers; the deploy only saves a draft. After 17b, stop: summarize what changed, give the plain Setup link `<instanceUrl>/lightning/setup/EmbeddedServiceDeployments/<EmbeddedServiceConfigId>/view` so the user can review the draft, and ask whether to publish now. Publish only on an explicit yes in that turn (a "publish" in the original request does not count). Then `dispatch` `POST` on the fully-qualified publish path; if it returns a path/route error, or on Transport B, run the `sf` publish command from `references/connect_api_creation.md`. Delegated: do not publish; return `published: false`. Note: a Web create via Connect API publishes by itself (`isPublishSuccess: true`); say so in the plan before creating.
 
 ### Phase 3 — Validate
 
 18. **Verify against checklist** — confirm all items in the Verification Checklist below pass.
 
-19. **Report** — delegated: return `{ "status": "success" | "already-configured" | "failed", "errorMessage": "...", "outputs": { ... } }` (shape in `references/onboarding_contract.md` §5). Standalone: the same outcome in plain language.
+19. **Report** — delegated: return the contract §5 result. Standalone: the same outcome in plain language.
 
 ---
 
@@ -207,20 +162,13 @@ Runs for both Phase 2A and 2B, except when the pre-scan returned `already-config
 
 | Constraint | Rationale |
 |-----------|-----------|
-| Always retrieve existing deployment before updating | Ensures current settings are preserved and only intended changes are applied |
 | `deploymentType` must be `API`, `Mobile`, or `Web` | Platform rejects other values |
-| Never update the `site` field on a Web deployment | Site name is auto-generated at creation and must not be changed |
-| Web deployments cannot be created via Metadata API | Circular dependency between Network and CustomSite — use Connect API |
+| Web updates must include `site`, set to the retrieved value unchanged | Site (`ESW_<name>_<timestamp>`) is auto-generated at creation; the platform rejects a missing or changed value |
 | `embeddedServiceMessagingChannelName` must reference an existing channel | Deployment fails if channel doesn't exist |
-| `site` field required for Web type updates | Web widget must be associated with an Experience Site |
-| BrandingSet is auto-created with defaults by Connect API | To override branding properties, use Tooling API — see `references/branding_and_tooling.md` |
-| Pre-chat form fields must reference valid channel custom parameters | ChoiceList fields need the parameter deployed on the channel first |
 | File extension is `.EmbeddedServiceConfig-meta.xml` | Metadata API uses this specific extension |
 | Do not hardcode file paths — respect `sfdx-project.json` package directories | Customer orgs customize source paths |
 | Do not embed deploy/push commands inside generated files or artifacts | Artifacts stay portable; in-session writes happen in Phase 2C through the chosen transport |
 | Update with the full retrieved document, never a minimal PUT | Omitted inline blocks can be silently cleared by the update |
-| Pre-scan before every write; no write when the org already matches | Makes re-runs idempotent and keeps "already configured" honest |
-| Publish step (Connect API) required after Web ESD updates | Changes are not live until published |
 
 ---
 
@@ -228,19 +176,11 @@ Runs for both Phase 2A and 2B, except when the pre-scan returned `already-config
 
 | Issue | Resolution |
 |-------|------------|
-| Web ESD creation fails via Metadata API | Web type requires Connect API for initial creation; use Metadata API only for updates |
-| Site name not found | Site must exist before Web ESD update; format is `ESW_<name>_<timestamp>` |
 | Branding overrides not applied | Use Tooling API to update individual BrandingSet properties after the deployment is created |
-| Pre-chat ChoiceList not showing | ChoiceList requires two-step deploy: create ChoiceList first, then assign to form field |
-| Changes not appearing in widget | Web ESDs must be published via Connect API after any update |
-| `sf api request rest` POST fails with "No 'mode' found in 'body' entry" | The CLI rejects a POST with no body (and `-b ""`). Pass `-b '{}'` — the publish endpoint takes no input |
-| `sf api request rest` fails with "Nonexistent flag: --url" | The URL is a positional argument, not a flag, and must be fully qualified (`/services/data/vXX.0/connect/...`) |
-| Web create via MCP `dispatch` returns `INTERNAL_ERROR` | Platform limitation of the MCP route during site creation — use `sf api request rest` for Web create. API/Mobile create and publish work via `dispatch` |
-| `embeddedServiceFlowConfig.enabled` error | Set to `false` unless you specifically need embedded flows (not routing flows) |
-| reCAPTCHA configuration rejected | reCAPTCHA is `@HideInWsdl` — must use Tooling API |
-| Business hours not taking effect | Only updating existing business hours works; creation is managed separately |
-| Deploy fails with "required field missing" or "upsert failed null" | All attributes are mandatory: boolean fields in `embeddedServiceMessagingChannel` (include all even with default `false`), and all form field attributes (`formField`, `formFieldType`, `isHidden`, `isRequired`, `displayOrder`, `messagingChannelParameterType`) |
-| Standard pre-chat field not found | Use `_` prefix for standard fields in `formField`: `_FirstName`, `_LastName`, `_Email`, `_Subject` |
+| Pre-chat form, field, ChoiceList, or `displayNameFormat` issues | See the Gotchas table in `references/prechat_forms.md` |
+| Changes not appearing in widget | The deploy is a draft until published (step 17c) |
+| `sf api request rest` fails ("No 'mode' found", "Nonexistent flag: --url") | See `references/connect_api_creation.md` §Publishing After Updates |
+| Deploy fails with "required field missing" or "upsert failed null" | All attributes are mandatory: boolean fields in `embeddedServiceMessagingChannel` (include all even with default `false`), and all pre-chat form field attributes |
 
 ---
 
@@ -256,7 +196,7 @@ Runs for both Phase 2A and 2B, except when the pre-scan returned `already-config
 ### Web Type Checks
 - [ ] Is `site` populated with the Experience Site name?
 - [ ] If branding is configured, does `embeddedServiceBrandingName` reference an existing BrandingSet?
-- [ ] Are pre-chat form field names valid (match channel custom parameters)?
+- [ ] Pre-chat (if configured): does every item in the `references/prechat_forms.md` Verification Checklist pass?
 - [ ] If `isInvitationEnabled` is `true`, is `formula` populated and consistent with all `sequence` numbers in `<embdMsgChannelInvitationConditions>`?
 
 ### API/Mobile Type Checks
@@ -264,17 +204,15 @@ Runs for both Phase 2A and 2B, except when the pre-scan returned `already-config
 - [ ] Is `deploymentType` correctly set to `API` or `Mobile`?
 
 ### Post-Deploy Checks
-- [ ] Is user reminded to publish (Connect API) for Web deployments?
-- [ ] Is user reminded to activate components (Tooling API) if messaging components were deployed?
+- [ ] Web: did you stop before publishing, give the review link, and publish only after the user's explicit yes? Is the user reminded to activate any deployed messaging components (Tooling API)?
 
 ---
 
 ## Output Expectations
 
 Deliverables:
-- **For API/Mobile create**: `<source-path>/EmbeddedServiceConfig/<DeploymentName>.EmbeddedServiceConfig-meta.xml`
-- **For Web create**: Connect API payload and instructions (no XML file)
-- **For update**: `<source-path>/EmbeddedServiceConfig/<DeploymentName>.EmbeddedServiceConfig-meta.xml`
+- **API/Mobile create, and any update**: `<source-path>/EmbeddedServiceConfig/<DeploymentName>.EmbeddedServiceConfig-meta.xml`
+- **Web create**: Connect API payload and instructions (no XML file)
 
 File structure follows the templates in `assets/`.
 
@@ -285,6 +223,7 @@ File structure follows the templates in `assets/`.
 | Need | Delegate to |
 |------|-------------|
 | Creating the messaging channel | `service-digital-engagement-channel-configure` skill |
+| Channel custom parameters, flow-variable mappings, or Queue → Omni-Flow routing | `service-digital-engagement-channel-configure` skill (pass the retrieved channel; see step 12) |
 | Creating Omni-Channel routing flows | `automation-flow-generate` skill |
 | Creating permission sets for agents | `platform-permission-set-generate` skill |
 
@@ -294,14 +233,12 @@ File structure follows the templates in `assets/`.
 
 | File | When to read |
 |------|-------------|
-| `references/onboarding_contract.md` | Delegated mode (`context.calledFrom == "service-onboarding"`), org writes (transport), module registration |
-| `assets/esd_api_mobile_template.xml` | Before generating API or Mobile type deployments |
-| `assets/esd_web_update_template.xml` | Before generating Web type updates |
-| `references/deployment_settings.md` | When configuring deployment options beyond defaults |
-| `references/connect_api_creation.md` | When creating Web type deployments (Connect API required) |
+| `references/onboarding_contract.md` | Pre-scan (§3, both modes); delegated mode (`context.calledFrom == "service-onboarding"`), org writes (transport), module registration |
+| `assets/esd_api_mobile_template.xml`, `assets/esd_web_update_template.xml` | Before generating API/Mobile deployments and Web updates, respectively |
+| `references/deployment_settings.md` | When configuring deployment options beyond defaults; less common gotchas (embedded flow, reCAPTCHA, business hours) |
+| `references/prechat_forms.md` | Whenever pre-chat is requested — inputs, field rules, ChoiceList, `displayNameFormat`, deactivate vs. remove, pre-chat gotchas and checklist |
+| `references/connect_api_creation.md` | When creating Web type deployments (Connect API required); publish command and ID query |
 | `references/branding_and_tooling.md` | When user asks about branding configuration |
 | `references/code_snippet.md` | When user wants the JavaScript embed code snippet for their website |
 | `scripts/check-api-version.sh` | Phase 1 — verify org API version meets the passed minimum (67.0) |
-| `examples/esd_api.xml` | To verify output for API type deployment |
-| `examples/esd_mobile.xml` | To verify output for Mobile type deployment |
-| `examples/esd_web_full.xml` | To verify output for fully configured Web deployment |
+| `examples/esd_api.xml`, `esd_mobile.xml`, `esd_web_full.xml`, `esd_web_prechat_fields.xml` | To verify output per type; the pre-chat file is a forms delta to graft onto `esd_web_full.xml` |

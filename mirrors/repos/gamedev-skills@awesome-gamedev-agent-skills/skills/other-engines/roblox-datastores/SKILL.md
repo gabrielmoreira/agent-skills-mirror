@@ -29,9 +29,10 @@ memory stores (a different service). Engine-agnostic persistence theory →
 
 ## Core workflow
 
-1. **Enable Studio access once.** File → Game Settings → Security → *Enable Studio
-   Access to API Services* (use a test place; Studio hits live data). DataStores
-   work only from server `Script`s, never `LocalScript`s.
+1. **Enable Studio access once.** In a published place, File → Experience Settings →
+   Security → *Enable Studio Access to API Services* (use a separate test place; Studio
+   hits the same live data as players). DataStores work only from server `Script`s,
+   never `LocalScript`s.
 2. **Get a store, then read/write by key.** `DataStoreService:GetDataStore("Name")`;
    key per player is usually `"Player_" .. player.UserId`.
 3. **Wrap every call in `pcall`.** `GetAsync`/`SetAsync`/`UpdateAsync` are network
@@ -79,9 +80,12 @@ end)
 
 ```lua
 -- UpdateAsync reads the latest value, then writes what the callback returns.
--- The callback MUST NOT yield (no task.wait, no further Async calls inside it).
+-- The callback MUST NOT yield (no task.wait, no further Async calls inside it), and it
+-- can run more than once if another server writes the key first, so keep it pure.
 local function savePlayer(player)
-    if player:GetAttribute("DataLoaded") == false then return end  -- never overwrite on a bad load
+    -- Save only after a confirmed load. `~= true` also covers a player who leaves while
+    -- GetAsync is still in flight (attribute still nil), which `== false` would miss.
+    if player:GetAttribute("DataLoaded") ~= true then return end
     local key = "Player_" .. player.UserId
     local newData = gatherDataFor(player)    -- a plain table of serializable values
 
@@ -101,7 +105,7 @@ end
 Players.PlayerRemoving:Connect(savePlayer)
 
 -- BindToClose runs when the server shuts down; save everyone still in.
--- It has a limited time budget, so save in parallel and yield until done.
+-- The server waits at most 30 seconds for it, so save in parallel and yield until done.
 game:BindToClose(function()
     local players = Players:GetPlayers()
     local remaining = #players
@@ -131,6 +135,12 @@ end
 
 local ok, data = withRetry(function() return store:GetAsync(key) end)
 ```
+
+Retry only operations that are safe to repeat. A failed write is not proof the write did
+not happen: the server may simply have missed the response. Re-running an `UpdateAsync`
+that writes the full saved state is harmless; re-running `IncrementAsync` can add twice.
+When the outcome matters, confirm it with an uncached read (`DataStoreGetOptions` with
+`UseCache = false`) before retrying.
 
 ### 5. Increment a counter
 
@@ -168,17 +178,23 @@ end
   each other. Use `UpdateAsync` for read-modify-write so each write sees the latest.
 - **Yielding inside the `UpdateAsync` callback** → the callback can't call
   `task.wait` or other Async functions; compute the new value beforehand and return it.
+- **Side effects inside the `UpdateAsync` callback** → Roblox re-runs the callback when
+  another server changed the key between read and write, so granting items, firing
+  remotes, or incrementing counters there can happen twice. Act after the call returns.
+- **Saving a player who left mid-load** → `PlayerRemoving` can fire while `GetAsync` is
+  still yielding. Gate saves on "load succeeded", not on "load did not fail".
 - **No `BindToClose` save** → players in the server at shutdown lose unsaved progress;
   add `game:BindToClose` and wait for saves to finish within its budget.
 - **Throttling / "too many requests"** → respect per-key and per-minute limits; don't
   save on every value change. Batch and save on a timer / on leave. `GetAsync` is
-  cached briefly, so immediate re-reads may be stale.
+  cached for about four seconds, so immediate re-reads may be stale. Studio Run mode
+  uses its own lower static limits; Roblox recommends testing rate limits in Team Create.
 - **Storing non-serializable values** → only JSON-serializable data persists: numbers,
   strings, booleans, and tables with string/number keys. `Instance`s, `Vector3`,
   `CFrame`, and functions do not — serialize them to plain tables first.
-- **Testing without API access** → DataStores silently can't be used in Studio until
-  *Enable Studio Access to API Services* is on (and they don't work from a
-  `LocalScript`).
+- **Testing without API access** → DataStore requests in Studio error (writes report
+  `StudioAccessToApisNotAllowed`) until *Enable Studio Access to API Services* is on (and
+  they don't work from a `LocalScript`).
 - **`DataStoreKeyInfo` is nil for ordered stores** → `OrderedDataStore` doesn't
   support versioning/metadata; use a regular `DataStore` when you need those.
 

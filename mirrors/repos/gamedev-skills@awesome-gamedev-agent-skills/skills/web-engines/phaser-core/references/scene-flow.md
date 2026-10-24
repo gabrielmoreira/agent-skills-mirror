@@ -26,18 +26,25 @@ The same `data` object is passed to `init` and `create`, coming from
 | Method | Effect on target | Effect on caller |
 |--------|------------------|------------------|
 | `start(key, data)` | start (or restart) | **stop** the caller |
-| `launch(key, data)` | start in parallel | caller keeps running |
-| `switch(key)` | start or wake | **sleep** the caller |
+| `launch(key, data)` | start in parallel; **restarts** it if already running | caller keeps running |
+| `run(key, data)` | wake if sleeping, resume if paused, otherwise (re)start | caller keeps running |
+| `switch(key)` | wake if sleeping, otherwise start (a paused target restarts) | **sleep** the caller |
 | `pause(key?)` | stop updating, keep rendering | — |
 | `resume(key?)` | resume updating | — |
 | `sleep(key?)` | stop updating AND rendering, keep state | — |
 | `wake(key?)` | resume a sleeping scene | — |
 | `stop(key?)` | shutdown (frees objects) | — |
 
+All of these are queued: the Scene Manager applies them at the start of the next game
+step, so the target scene has not started yet on the line after `start`/`launch`.
+
 Rules of thumb:
 
-- **HUD/overlay** → `launch` it once; it renders on top because later scenes draw
-  later. Toggle with `setVisible()` or `sleep`/`wake`, not `start`.
+- **HUD/overlay** → `launch` it once; a second `launch` or `run` while it is running
+  restarts it, so guard with `this.scene.isActive('hud')`. Scenes draw in scene-list
+  order, so it is on top only if it comes after the gameplay scene in the `scene`
+  config array; otherwise call `this.scene.bringToTop('hud')`. Toggle with
+  `setVisible()` or `sleep`/`wake`, not `start`.
 - **Modal pause menu** → `pause` the gameplay scene and `launch` the menu; `resume`
   on close.
 - **Title ⇄ gameplay you revisit** → prefer `sleep`/`wake` (state preserved, starts

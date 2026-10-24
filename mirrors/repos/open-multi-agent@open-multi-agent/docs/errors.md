@@ -114,7 +114,7 @@ Where it surfaces depends on which one fired. Input preparation runs outside `ex
 
 `code: 'STRUCTURED_OUTPUT_VALIDATION_FAILED'`. Carries `cause`.
 
-Constructed by `Agent` when `outputSchema` is set and the output still fails validation after the built-in single corrective retry. It is never thrown: the agent returns a failed result with `status`, `errorInfo` (classified with `kind: 'validation'`), and `error`. Terminal for orchestrator-level retries by design, because re-running the same prompt is not a transport recovery strategy.
+Constructed by `Agent` when `outputSchema` is set and the output still fails validation after the built-in single corrective retry. The validation message, which the corrective retry also shows the model, lists at most 20 issues and counts the rest. It is never thrown: the agent returns a failed result with `status`, `errorInfo` (classified with `kind: 'validation'`), and `error`. Terminal for orchestrator-level retries by design, because re-running the same prompt is not a transport recovery strategy.
 
 ### `InvalidTaskRequirementsError`
 

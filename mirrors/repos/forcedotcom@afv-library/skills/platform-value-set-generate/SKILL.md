@@ -37,7 +37,7 @@ For authoritative Metadata API type, field, and enum details beyond this skill, 
 | Root element | `<GlobalValueSet>` | `<StandardValueSet>` |
 | Name source | filename (dev name) | `<fullName>` = fixed catalog name |
 | Value element | `<customValue>` | `<standardValue>` |
-| Can add NEW values? | Yes | No — modify existing only |
+| Can add NEW values? | Yes | Yes — copy the attribute pattern of an existing value |
 | Can create a new NAME? | Yes | No — only the fixed catalog |
 | `*` wildcard in package.xml | Supported | Not supported |
 
@@ -50,7 +50,7 @@ For authoritative Metadata API type, field, and enum details beyond this skill, 
 This document defines the mandatory constraints for generating value-set metadata XML. The agent must verify these constraints before outputting XML to prevent Metadata API deployment errors.
 
 - **GlobalValueSet** — a reusable, named set of picklist values defined once and referenced by any number of picklist/multi-select fields. Use when the same value list is shared across multiple fields.
-- **StandardValueSet** — the value list behind a Salesforce-defined standard picklist (Industry, Lead Source, etc.). You can only **modify** the values in a fixed catalog of named sets; you cannot invent a new set or add brand-new values.
+- **StandardValueSet** — the value list behind a Salesforce-defined standard picklist (Industry, Lead Source, etc.). You can only customize the fixed catalog of named sets, so you cannot invent a new set name, but you can modify existing values and add new ones.
 
 ---
 
@@ -142,16 +142,16 @@ In API 57.0+ orgs the platform *stores/displays* a GlobalValueSet's developer na
 
 #### HARD CONSTRAINTS — read before generating
 
-1. **You can ONLY modify values inside the fixed catalog of named standard value sets.** You **cannot** add a brand-new value, and you **cannot** create a new StandardValueSet name. The Metadata API will reject both.
+1. **A StandardValueSet name must come from the fixed catalog of named standard value sets.** You **cannot** create a new StandardValueSet name. You **can** add a new value to an existing standard set, but copy the full attribute pattern of an existing value in that set (for example `closed`, `forecastCategory`, `probability` and `won` on `OpportunityStage`), because omitted attributes are filled with platform defaults that can be wrong.
 2. The root carries a `<fullName>` whose value is the **fixed enum name** (e.g. `Industry`), NOT a `masterLabel`. The filename must match this name.
 3. Values are `<standardValue>` entries — **not** `<customValue>`.
-4. **Emit ONLY the values the request explicitly names — a surgical, minimal change.** Include a `<standardValue>` block for each value the user asks you to activate, deactivate, relabel, or reorder, and **nothing else**. Do **not** enumerate the full picklist or emit `<standardValue>` entries for values the request did not mention. A StandardValueSet deployment is a partial update: unlisted values keep their current org state untouched. Reproducing every value (e.g. all 30+ Industry entries) is noise and risks clobbering org state — it is wrong even when the request says "keep *only* X active," which means "set the named ones; leave the rest as-is," not "enumerate and deactivate everything else." If you use the grounding MCP to discover existing values, use it only to confirm the named values exist and to get their exact `<fullName>`/`<label>` — not as a list to reproduce in full.
+4. **A StandardValueSet write REPLACES the whole set. Send every existing value and change only what the request names.** Read the current set first (grounding MCP or a retrieve), then include a `<standardValue>` block for every existing value, with the requested activations, deactivations, relabels or additions applied. A value you leave out is deactivated on the field: a deploy that named only `Web` in `CaseOrigin` left `Email`, `Phone` and `Agentforce` inactive. Never send only the named values, even when the set is large (for example all 30+ `Industry` entries). Request wording such as "keep *only* X active" means set X active and every other value inactive, so state that intent in the result. Verify by reading the set back and diffing it against the read taken before the write.
 
 #### `<standardValue>` — Modifiable Sub-Elements
 
 | Sub-element | Modifiable? | Notes |
 |-------------|-------------|-------|
-| `<fullName>` | Identifies the value (must already exist) | Cannot introduce a new one |
+| `<fullName>` | Identifies the value | An existing value, or a new one you are adding |
 | `<label>` | Yes | Relabel the value's UI text |
 | `<isActive>` | Yes | `false` deactivates; omit or `true` keeps active |
 | `<default>` | Yes | At most one value `true` |
@@ -165,7 +165,7 @@ In API 57.0+ orgs the platform *stores/displays* a GlobalValueSet's developer na
 > `https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/standardvalueset_names.htm`.
 > If the name is not in that appendix, it is **not** a StandardValueSet — it is either a GlobalValueSet or an inline CustomField picklist.
 
-#### CORRECT — StandardValueSet (modify existing values only)
+#### CORRECT — StandardValueSet (the complete set, with the requested change applied)
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -183,6 +183,7 @@ In API 57.0+ orgs the platform *stores/displays* a GlobalValueSet's developer na
         <label>Agriculture</label>
         <isActive>false</isActive>   <!-- deactivated, but kept in the set -->
     </standardValue>
+    <!-- ... every other existing standardValue entry repeated unchanged ... -->
 </StandardValueSet>
 ```
 
@@ -192,23 +193,23 @@ In API 57.0+ orgs the platform *stores/displays* a GlobalValueSet's developer na
 <StandardValueSet xmlns="http://soap.sforce.com/2006/04/metadata">
     <masterLabel>Industry</masterLabel>     <!-- WRONG: StandardValueSet uses <fullName>, not masterLabel -->
     <customValue>                           <!-- WRONG: uses <standardValue>, not customValue -->
-        <fullName>Renewable Energy</fullName> <!-- WRONG: cannot ADD a new value to a standard set -->
+        <fullName>Renewable Energy</fullName>
         <label>Renewable Energy</label>
     </customValue>
 </StandardValueSet>
 ```
 
-**Errors:** unknown element `masterLabel`/`customValue`; adding a value not already in the standard catalog fails deployment.
+**Errors:** unknown element `masterLabel`/`customValue` for a StandardValueSet.
 
 ---
 
 ### 4. Never Invent Values — Verify, Don't Hallucinate CRITICAL
 
-When customizing a **StandardValueSet** (or extending a shared GlobalValueSet), **only modify values that already exist** — never invent the value list of a standard picklist. The hard rule is about what you EMIT: a `<standardValue>` whose `<fullName>` is not a real catalog value will fail deployment.
+When customizing a **StandardValueSet** (or extending a shared GlobalValueSet), **never invent the existing value list of a standard picklist**. Existing values must be repeated exactly as the org has them, and a new value is added only when the request names it.
 
-For well-known standard picklists you already know the canonical values (e.g. `Industry`, `LeadSource`, `OpportunityStage`). When you are unsure a named value exists, you can confirm it against the live org — but treat lookup as a *confirmation* step, not a required first call:
+For well-known standard picklists you already know the canonical values (e.g. `Industry`, `LeadSource`, `OpportunityStage`). When you are unsure which values exist, you can confirm them against the live org — but treat lookup as a *confirmation* step, not a required first call:
 
-- **Grounding MCP** (if available) exposes `search_metadata` and `query_metadata` to look up live metadata. Use them only to confirm a named value's exact `<fullName>`/`<label>` — not to pull the full list to reproduce.
+- **Grounding MCP** (if available) exposes `search_metadata` and `query_metadata` to look up live metadata. Use them to read the complete current set, because a write must repeat every existing value with its exact `<fullName>`/`<label>`.
 - **CLI fallback** — query the Tooling API directly:
 
 ```bash
@@ -216,7 +217,7 @@ sf data query --use-tooling-api \
   --query "SELECT MasterLabel, Metadata FROM StandardValueSet WHERE MasterLabel = '<name>'"
 ```
 
-> **The point is the output, not the lookup:** emit modifications ONLY to values you know exist. A generated StandardValueSet that introduces unseen values is a hallucination and will fail deployment. (This pairs with the minimal-scope rule in §3: confirm the *named* values; don't enumerate the whole set.)
+> **The point is the output, not the lookup:** the written set must contain every existing value unchanged, plus only the changes the request names. Do not invent values the request did not ask for. (This pairs with rule 4 in §3: a write replaces the whole set.)
 
 ---
 
@@ -247,17 +248,16 @@ The agent must **reject** and explain — not silently "fix" by inventing metada
 
 | Violation | Action / Message |
 |-----------|------------------|
-| Add a NEW value to a **StandardValueSet** | Reject. "Standard value sets cannot accept new values. Create a **GlobalValueSet** (reusable) or an inline picklist on a **CustomField** instead." |
 | Create a NEW StandardValueSet name | Reject. The name must be in the standard catalog appendix. Otherwise it is a GlobalValueSet. |
 | **Value set developer name** with spaces / invalid chars | Convert spaces to underscores; must start with a letter; alphanumeric + underscore only. `Priority Levels` → `Priority_Levels`. (This applies to the value SET name and the field API name — NOT to individual `<customValue><fullName>` values, which keep spaces as written.) |
 | Duplicate value `fullName` within one set | Reject. Each `fullName` must be unique within the value set. |
 | More than one `<default>true</default>` | Reject. At most one default value per set. |
 
-#### INCORRECT — adding a value to a standard set
+#### Adding a value to a standard set
 
 > "Add a `Cryptocurrency` value to the Industry picklist."
 
-Do not emit a `<standardValue>` with `fullName` `Cryptocurrency`. Respond that standard value sets are a fixed catalog and propose a GlobalValueSet (if reused across fields) or an inline restricted picklist on a single CustomField.
+This is allowed. Read the complete current `Industry` set, then write it back with every existing value unchanged plus one new `<standardValue>` for `Cryptocurrency`. Copy the attribute pattern of an existing value in the set, because omitted attributes get platform defaults that can be wrong.
 
 ---
 
@@ -275,7 +275,7 @@ A value set must deploy **before** any CustomField that references it.
 
 | Error / Symptom | Cause | Fix |
 |-----------------|-------|-----|
-| Value not added to standard picklist | Tried to ADD a value to a `StandardValueSet` | Standard sets are fixed; use GlobalValueSet or inline CustomField picklist |
+| Other values of a standard picklist became inactive after a deploy | The deploy listed only some values, and a write replaces the whole set | Resend the complete set with every existing value (§3 rule 4) |
 | `Required field missing: sorted` | GlobalValueSet missing `<sorted>` | Add `<sorted>true</sorted>` or `<sorted>false</sorted>` |
 | Unknown element `masterLabel` (StandardValueSet) | Used `masterLabel` instead of `fullName` | StandardValueSet root uses `<fullName>` = catalog name |
 | Unknown element `customValue` (StandardValueSet) | Used `customValue` instead of `standardValue` | Use `<standardValue>` in standard sets |
@@ -301,12 +301,12 @@ Before generating value-set XML, verify:
 - [ ] When referencing from a field, is `<valueSetName>` the **bare** developer name with NO `__gvs` suffix?
 
 ### StandardValueSet Checks CRITICAL
-- [ ] Are you emitting modifications ONLY to values you know exist (confirmed from known standard catalogs, or via grounding `search_metadata`/`query_metadata` / Tooling API if unsure) — never invented values?
+- [ ] Did you read the complete current set (grounding `search_metadata`/`query_metadata` / Tooling API / retrieve) so every existing value is repeated exactly?
 - [ ] Is the root `<StandardValueSet>` with the correct namespace?
 - [ ] Does the root use `<fullName>` set to the fixed catalog name (NOT `masterLabel`)?
 - [ ] Are values `<standardValue>` entries (NOT `customValue`)?
-- [ ] Are you ONLY modifying values that already exist (no new `fullName`)?
-- [ ] Did you avoid adding a brand-new value or a new set name?
+- [ ] Does the written set contain every existing value, with only the changes the request names applied?
+- [ ] Did you avoid a new set name, and for any new value did you copy the attribute pattern of an existing value?
 
 ### Shared Checks
 - [ ] At most one value has `<default>true</default>`?

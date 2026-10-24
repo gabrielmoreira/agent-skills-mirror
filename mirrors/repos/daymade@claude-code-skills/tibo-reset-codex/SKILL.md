@@ -108,7 +108,10 @@ stdin/heredoc 及 Python/Node 子进程调用却可能报 `Failed to start ego l
   主动通知或 ACK 机制。没有另行部署并实测这些运行层，就不能声称已保证持续发现、送达或确认已阅。
 
 - 用户问「我们几个账号 / 都用完了吗 / 还有两个满额 / 还有几次 Full reset」→ 先读
-  [逐账号额度查询与网页登录恢复](references/account-usage.md)。
+  [逐账号额度查询与网页登录恢复](references/account-usage.md)。**通道优先级**：
+  若 `~/.config/agent-fleet/accounts.json` 存在且非空（minions 账号清单），优先走
+  minions `usage-refresh`（CodexBar RPC 通道，覆盖全部注册账号）；失败或不存在时
+  才走浏览器隔离 profile（只覆盖 Chrome 登录态能到的账号）。
 - 用户问「Tibo 说了什么」或明确只要官宣 → 查**公告路径**。
 - 用户问「下一次是什么时候 / 明天会不会重置 / 值不值得等」，包括上一轮刚重置后的追问 →
   查公告后读[下一轮重置预测](references/next-reset-forecast.md)，给出主判断、依据和更新时间。
@@ -230,6 +233,10 @@ stdin/heredoc 及 Python/Node 子进程调用却可能报 `Failed to start ego l
 ## 查证工作流
 
 ### 1. 公告路径：Radar、Tibo 主帖与 reply
+
+读取 tracker 和社区反馈前，加载[时间、来源与覆盖读数](references/signal-readings.md)。
+用其中的 `signal_readings.py` 从已保存响应整理时刻与来源定位，再读完整候选正文；
+辅助元数据不替代正文、产品观测或 claim gate。
 
 **正常轮次必须实际尝试 Radar、Tibo 主帖时间线与下文的有界 reply 发现。** Radar 可能
 完全没有索引一条新的独立主帖；主帖时间线也不含 replies，所以前两条都无新仍不能跳过 reply
@@ -721,6 +728,9 @@ Codex 的时刻**——下「至今没有重置」之前先看最新快照有多
 ```bash
 # 重建本机周额度曲线 + 多账号回跳与低用量锚点前移候选
 uv run python scripts/scan_rollouts.py --days 7
+# 默认终端每类只显示最近 3 条，候选总数不截断；完整明细写入新的私有文件
+uv run python scripts/scan_rollouts.py --days 7 --report-file <新的私有报告路径>
+# 只有要逐项查看所有匿名候选时使用 --full；不要把整份长报告粘进下一条 finding
 # 复现历史某时刻的切面（两端均按时间戳裁剪）：加 --as-of "2026-09-12T17:44:00+08:00"
 # 自定义 CODEX_HOME 时：--codex-home <已授权主页>（auth 与 sessions 必须同属一个主页，不混用）
 ```

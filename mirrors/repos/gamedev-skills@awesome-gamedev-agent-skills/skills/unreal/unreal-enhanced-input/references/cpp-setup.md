@@ -25,7 +25,7 @@ public:
 
 protected:
     virtual void BeginPlay() override;
-    virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
+    virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
     // Assign these in the Blueprint subclass (IMC_/IA_ assets).
     UPROPERTY(EditAnywhere, Category = "Input")
@@ -69,10 +69,10 @@ void AMyCharacter::BeginPlay()
                 Subsystem->AddMappingContext(DefaultMappingContext, 0);
 }
 
-void AMyCharacter::SetupPlayerInputComponent(UInputComponent* InputComponent)
+void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
-    Super::SetupPlayerInputComponent(InputComponent);
-    if (UEnhancedInputComponent* EIC = Cast<UEnhancedInputComponent>(InputComponent))
+    Super::SetupPlayerInputComponent(PlayerInputComponent);
+    if (UEnhancedInputComponent* EIC = Cast<UEnhancedInputComponent>(PlayerInputComponent))
     {
         EIC->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AMyCharacter::Move);
         EIC->BindAction(LookAction, ETriggerEvent::Triggered, this, &AMyCharacter::Look);
@@ -123,7 +123,17 @@ PublicDependencyModuleNames.AddRange(new string[]
 
 ## Runtime rebinding note
 
-Enhanced Input supports **Player Mappable Key Settings** on an Input Action plus the
-`UEnhancedInputUserSettings` subsystem to remap and persist keys at runtime — the supported
-path for a "rebind controls" menu in UE5. Mark the action's mapping as Player Mappable and
-query/modify it through that subsystem rather than editing the `IMC_` asset.
+The supported path for a "rebind controls" menu is Enhanced Input's **User Settings**, not
+editing the `IMC_` asset:
+
+1. Project Settings → Engine → Enhanced Input → User Settings → **Enable User Settings**.
+2. On each remappable Input Action (or on individual mappings in the `IMC_`), set **Player
+   Mappable Key Settings** with a unique **Name**; that name is the save key.
+3. Register the context with the settings object: `Subsystem->GetUserSettings()->
+   RegisterInputMappingContext(IMC)`, or pass `FModifyContextOptions` with
+   `bNotifyUserSettings = true` to `AddMappingContext`.
+4. Remap with `UEnhancedInputUserSettings::MapPlayerKey` (an `FMapPlayerKeyArgs` naming the
+   mapping, slot and new key), reset with `UnmapPlayerKey`, and persist with `SaveSettings`.
+
+The settings object belongs to the `UEnhancedInputLocalPlayerSubsystem` (one per local player),
+so it exists only while that local player does.

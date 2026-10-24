@@ -6,7 +6,7 @@ including a reboot.
 
 | File | What it is |
 |---|---|
-| `debloat.txt` | The 30 packages that were disabled, grouped and commented |
+| `debloat.txt` | The 35 packages that were disabled, grouped and commented |
 | `config.json` | Dock order, hidden apps, Live TV app, columns; push it with `tools/theme.sh` |
 
 All commands run from the repo root, with the TV's IP in `TV_HOST`. USB debugging must be on while you

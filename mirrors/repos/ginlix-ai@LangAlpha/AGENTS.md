@@ -49,6 +49,10 @@ React 19 + Vite + TypeScript + Tailwind + shadcn/ui; state via React Query. Path
 
 Electron wrapper around the hosted web app. It carries **no web bundle**, only an entry URL, so a web deploy never needs a desktop release. Two editions from one source, selected by a gitignored `config/build.json` written at package time (`scripts/write-build-config.mjs`): `oss` points at the user's own stack and asks for it on first run, `saas` opens on hosted onboarding and then the app. Details, including the OAuth interception invariant, in **`desktop/AGENTS.md`**.
 
+### Machine helper (`helper/`)
+
+`langalpha-helper`, a Rust binary that lets a machine with no SSH server be an SSH computer: it holds the machine's tunnel to the gateway and answers the backend's SSH logins itself, so the backend sees an ordinary tunneled SSH computer. The Mac desktop app bundles it as a login item for **Remote control** (Preview). `run --dir <folder>` pairs whenever the app leaves a `pairing` file in the folder and reports through a `state` file, so the two never talk directly. `cargo test` holds it to the SSH provider's runtime contract; `scripts/build-macos.sh` builds the universal Mac binary.
+
 ### Agent internals
 
 Built with `create_agent()` from **`langchain.agents`** (not a hand-written `StateGraph`), wrapped in a custom middleware stack (some middleware from `deepagents`). `PTCAgent.create_agent()` in `src/ptc_agent/agent/agent.py` assembles the tools (`execute_code`, `bash`, filesystem ops, `show_widget`, web search/fetch, SEC/market), the middleware, and a `BackgroundSubagentOrchestrator` for parallel background tasks.

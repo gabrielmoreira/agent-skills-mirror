@@ -1,0 +1,49 @@
+{
+  "schema": "b1-reference-evidence-v1",
+  "baseline_id": "b1-2026-10-23-ryan-v4",
+  "style": "B1",
+  "name": "极简手绘风",
+  "accepted_on": "2026-10-23",
+  "user_confirmation": "我觉得这个效果挺好的，固定下来为B1吧，也就是后面都要做成这个效果",
+  "purpose": "Current B1 picture, character, motion, typography, background and sound reference; not an executable runtime project or a fixed storyboard.",
+  "production_standard": "../../references/b1-minimal-handdrawn.md",
+  "evidence": [
+    {
+      "kind": "video_with_narration_captions_and_sfx",
+      "path": "approved-2026-10-23.mp4",
+      "sha256": "111c241a836a0c26b27df2cbff3ba5697b97460dbb873b68dd2f6eda2383b3fc",
+      "duration_seconds": 21.3,
+      "width": 1280,
+      "height": 720,
+      "fps": 30,
+      "frames": 639,
+      "codecs": ["h264", "aac"]
+    },
+    {
+      "kind": "contact_sheet",
+      "path": "approved-2026-10-23-contact-sheet.png",
+      "sha256": "0bc85b4c8ca938b01d346fcca9af06e608ea56e6d82ea993860647166b7b530e"
+    },
+    {
+      "kind": "encoded_motion_detail_sheet",
+      "path": "approved-2026-10-23-motion-sheet.png",
+      "sha256": "7bb8664e837e44604387f258522fd2251bac5ddf7347ed02297f211dc45ced73"
+    }
+  ],
+  "narration_provenance": {
+    "provider": "Google Gemini",
+    "voice": "Bodi",
+    "language": "English",
+    "style_direction": "empty",
+    "speed": "native_unstretched",
+    "source_wav_duration_seconds": 20.92,
+    "source_wav_sha256": "2a7136236e3c4ffff35440e81ab032fad2e2bb0c866cf610621b623392881501",
+    "word_alignment_sha256": "61d05bbc1e9e2b5445c97de8fefa46c287782d4f25ff407f8de7b2d23ec263b8",
+    "note": "The original WAV and alignment remain in the local production project; the reference clip includes the approved mix. This records provenance, not a required narration script for new videos."
+  },
+  "scope": {
+    "applies_to": "B1 only; explicit user choices take precedence",
+    "public_showcase": "Chinese README hero and B1 detail use this approved Ryan V4 / native Bodi baseline. Earlier Sadaltager V15 remains archived and unchanged.",
+    "runtime": "Engineering examples/pose atlases are not the accepted visual target. New content needs story-specific assets and rendered picture/sound review."
+  }
+}

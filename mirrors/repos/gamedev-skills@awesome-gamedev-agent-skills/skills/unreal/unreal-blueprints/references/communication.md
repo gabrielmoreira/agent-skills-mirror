@@ -77,4 +77,5 @@ HandleHealth(NewHealth) -> Set Progress Bar Percent = NewHealth / MaxHealth
   value once listeners are known.
 - Interface functions with return values are implemented as functions (not events) on the
   implementer; pure interface calls can't have exec pins.
-- Casting a soft reference forces a synchronous load; prefer `Async Load Asset` for soft refs.
+- A soft reference resolves to None until its asset is loaded. **Load Asset Blocking** loads it
+  synchronously and hitches; prefer **Async Load Asset** and continue from its Completed pin.

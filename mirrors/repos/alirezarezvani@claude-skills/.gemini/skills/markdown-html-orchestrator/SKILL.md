@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/markdown-html-orchestrator/../../../markdown-html/skills/markdown-html-orchestrator/SKILL.md

@@ -96,14 +96,14 @@ def resolve(board):
 ### 3. Undo via state snapshot or command
 
 ```python
-# Pseudocode. Snapshot before each move; undo restores it exactly (board + score + counters).
+# Pseudocode. Snapshot before each move; undo restores it exactly (board + score + counters + RNG).
 def make_move(move):
-    history.append(snapshot(board, score, moves_left))   # push BEFORE applying
+    history.append(snapshot(board, score, moves_left, rng.state))   # push BEFORE applying
     apply(move); resolve(board); moves_left -= 1
 
 def undo():
     if history:
-        board, score, moves_left = history.pop()         # exact revert, including resolution
+        board, score, moves_left, rng.state = history.pop()   # exact revert, including refills
 ```
 
 For large boards prefer the **command** pattern (store the move + enough to invert it) over full
@@ -116,10 +116,12 @@ snapshots to save memory; snapshots are simplest and fine for small boards.
 - **Resolving only once** → cascades/chains are missed. Loop resolution until the board is stable
   (Pattern 2).
 - **Undo that doesn't restore everything** → score/move-count/random-state drift. Snapshot *all*
-  state, or make the move fully invertible.
+  state, or make the move fully invertible. If undo skips the RNG state, redoing the same move
+  refills different pieces and players learn to "reroll" by undoing.
 - **Unseeded refill RNG** → can't reproduce a level / no deterministic undo or daily puzzle. Seed it.
 - **Generated boards that aren't solvable** → unfair dead ends. Generate-and-verify, or generate
-  from a known solution backward (refs).
+  from a known solution backward (refs). A sliding-tile puzzle filled by a random shuffle is
+  unsolvable half the time; check the parity rule in refs §7.
 - **No deadlock detection** (match-3) → board with no valid moves softlocks. Detect "no moves"
   and shuffle or end the level (refs).
 - **Difficulty spikes** → too many mechanics at once. Teach one mechanic per level before combining.

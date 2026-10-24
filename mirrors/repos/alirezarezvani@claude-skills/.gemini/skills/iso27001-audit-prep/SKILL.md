@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/iso27001-audit-prep/../../../compliance-os/skills/iso27001-audit-prep/SKILL.md

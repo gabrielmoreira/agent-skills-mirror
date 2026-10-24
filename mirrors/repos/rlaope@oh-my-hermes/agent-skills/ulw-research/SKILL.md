@@ -21,7 +21,7 @@ This is an OMH `research` workflow skill, projected for Agent Skills hosts (Clau
 
 ## First Steps
 
-- When Hermes' bundled `grounded-citations` skill is available, set the citation ledger up before the first retrieval: choose one run-private file, have the parent reset it once (`sources.py --ledger <path> reset`), and declare parent-only writes in every lane brief. No lane resets it.
+- When Hermes' bundled `grounded-citations` skill is available, set the citation ledger up before the first retrieval: choose one run-private file, have the parent reset it once (`sources.py --ledger <path> reset`), and declare parent-only writes in every lane brief. No lane resets it. Discover the current search/read tools and authorized scope, then follow `references/search-method.md`: plan -> actual host search/read -> merge -> assess -> bounded retry. Use `omh_search` only when available; otherwise report the skill-only fallback. Keep direct file lookups direct.
 
 ## Do Not Use When
 

@@ -94,21 +94,31 @@ if buffer_timer > 0 and coyote_timer > 0:
 if jump_released_this_frame and velocity.y < 0:
     velocity.y *= 0.45
 
-# Asymmetric gravity: snappier fall than rise.
+# Asymmetric gravity: snappier fall than rise; clamp to a terminal speed.
 g = fall_gravity if velocity.y > 0 else gravity
-velocity.y += g * dt
+velocity.y = min(velocity.y + g * dt, MAX_FALL_SPEED)
 ```
 
 ### 3. One-way platforms
 
-Solid from above, pass-through from below. Most engines expose a "one-way collision" flag on
-the tile/collider; enable it and let the player **drop through** by disabling that collision
-for a few frames when the player holds Down + Jump. Do not re-implement collision math.
+Solid from above, pass-through from below. Use the engine's flag rather than collision math:
+Godot `CollisionShape2D.one_way_collision` (or the one-way option on a TileSet collision
+polygon), Unity a `PlatformEffector2D` with **Use One Way** on a collider set to be used by the
+effector, Phaser Arcade `platform.body.checkCollision.down = false` (plus `left`/`right` for thin
+ledges). Let the player **drop through** by ignoring that platform for ~0.1–0.2 s when they hold
+Down + Jump (refs §5).
 
 ## Pitfalls / failure modes
 
 - **Per-frame movement not scaled by `dt`** → speed changes with frame rate. Every velocity
   integration and timer must use `dt`. (See `physics-tuning`.)
+- **Jump height differs between machines** → the jump runs on a variable render `dt`. Simple
+  per-step integration lands a few percent short of the designed height, by a different amount
+  at each frame rate. Run the controller on the fixed physics tick (Godot `_physics_process`,
+  Unity `FixedUpdate`) or use the half-step update in refs §1.
+- **Player is flung off or doubles speed leaving a moving platform** → platform velocity added
+  twice. Godot's `CharacterBody2D` already carries the body and adds the platform's velocity on
+  leave (`platform_on_leave`); don't add it again in script (refs §6).
 - **Floaty jumps** → symmetric gravity. Make fall gravity heavier than rise gravity.
 - **"The jump didn't register"** → no input buffering. Buffer presses for ~0.1 s before landing.
 - **"I fell off and couldn't jump"** → no coyote time. Allow a jump for ~0.1 s after leaving ground.

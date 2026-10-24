@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/grill-me/../../../engineering/grill-me/skills/grill-me/SKILL.md

@@ -111,6 +111,14 @@ in the comment block above it — and the reason must be a real argument of 20+
 characters, which the suite also checks. A violation type-checks, lints and renders
 perfectly; this suite is the only thing in the toolchain that can see it.
 
+**`bun run lint` also runs `@shadcn/lint`**, whose rules are errors. `no-unknown-classes`
+catches a class Tailwind can't generate — a typo, or a plugin utility Atlas doesn't ship —
+which otherwise renders as nothing. `no-restyle` stops `className` from overriding a
+`src/ui` primitive's look: when it fires, use the variant its message names, or add one
+to the primitive; don't restyle at the call site. Plain stylesheet classes are
+allowlisted by exact name in `.oxlintrc.json` (`shadcn-lint-allowlist.test.ts` keeps
+that list honest — never add a wildcard).
+
 **Anything reading a _resolved_ colour needs a theme subscription**
 (`theme-subscription-contract.test.ts`). CSS naming `var(--atlas-…)` recolours for
 free; xterm, pixi, recharts and friends cannot, so they must hear the change.

@@ -72,14 +72,17 @@ If one subsystem blows its slice, that's your target — not whatever you assume
 ### 2. Measure with the engine profiler (do this before any fix)
 
 ```text
-Godot 4.7 : Debugger ▸ Profiler (script/physics time) and Monitors tab (FPS, draw calls, memory).
-            In code: Performance.get_monitor(Performance.TIME_PROCESS) and
-            Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME).
-Unity 6.3 LTS   : Profiler window (CPU/GPU/Memory/Rendering modules) + Frame Debugger for draw calls.
-            In code: a ProfilerRecorder tracking "CPU Main Thread Frame Time" for a HUD/log.
-Unreal 5  : `stat unit` (Frame/Game/Draw/GPU ms), `stat fps`, `stat scenerendering` (draw calls);
-            Unreal Insights for deep traces.
-# Read the split: is the Draw/GPU line the biggest, or the Game/CPU line? That decides the fix.
+Godot 4.7     : Debugger ▸ Profiler (script/physics time), Visual Profiler (CPU vs GPU render time
+                per pass) and Monitors tab (FPS, draw calls, memory).
+                In code: Performance.get_monitor(Performance.TIME_PROCESS) returns SECONDS
+                (× 1000 for ms); Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME for draw calls.
+Unity 6.3 LTS : Profiler window (CPU/GPU/Memory/Rendering modules) + Frame Debugger for draw calls.
+                In code: ProfilerRecorder on "CPU Main Thread Frame Time" / "GPU Frame Time"
+                (release players need Frame Timing Stats enabled in Player Settings).
+Unreal 5.8    : `stat unit` (Frame / Game / Draw / RHIT / GPU ms), `stat fps`,
+                `stat scenerendering` (draw calls); Unreal Insights for deep traces.
+# Read the split: Game = gameplay thread, Draw = render thread (both CPU), GPU = the graphics card.
+# Whichever is closest to Frame is the bottleneck; that decides the fix.
 ```
 
 ### 3. Object pooling (stop allocating/freeing in hot loops)
@@ -87,12 +90,12 @@ Unreal 5  : `stat unit` (Frame/Game/Draw/GPU ms), `stat fps`, `stat scenerenderi
 ```gdscript
 # Bullets, particles, enemies, damage numbers: reuse a fixed set instead of instantiate()/free()
 # every frame — that thrashes memory and (in C#) feeds the GC.
-var _pool: Array[Node] = []
-func acquire() -> Node:
-    var n: Node = _pool.pop_back() if not _pool.is_empty() else bullet_scene.instantiate()
+var _pool: Array[Node2D] = []                     # Node3D for 3D; both have `visible`
+func acquire() -> Node2D:
+    var n: Node2D = _pool.pop_back() if not _pool.is_empty() else bullet_scene.instantiate()
     n.set_process(true); n.visible = true
     return n
-func release(n: Node) -> void:
+func release(n: Node2D) -> void:
     n.set_process(false); n.visible = false       # disable + hide; DON'T free
     _pool.append(n)                                # back to the pool for reuse
 # RIGHT: pre-warm the pool at load; reuse. WRONG: instantiate()/queue_free() per shot.
@@ -101,10 +104,12 @@ func release(n: Node) -> void:
 ### 4. Cut draw calls (the most common GPU-side win)
 
 ```text
-Each unique material/texture/state change is roughly a draw call; thousands of them stall the GPU.
+Draw calls and render-state changes (material/shader/texture/blend switches) cost CPU submit time;
+thousands of them make the render thread the bottleneck. 2D batchers merge runs of sprites that
+share state (most bind several textures per batch), so ordering and atlasing decide the count.
 - Atlas textures and share materials so sprites/meshes batch into one call.
-- Identical meshes → GPU instancing (Unity), MultiMesh / MultiMeshInstance (Godot), Instanced
-  Static Mesh (Unreal).
+- Identical meshes → GPU instancing (Unity; under URP/HDRP the SRP Batcher or GPU Resident Drawer
+  takes precedence), MultiMesh / MultiMeshInstance (Godot), Instanced Static Mesh (Unreal).
 - Static geometry → static batching / baking; mark non-moving objects static.
 - Reduce overdraw: limit large overlapping transparent/particle layers (they re-shade pixels).
 - Fewer real-time lights/shadows; bake lighting where it doesn't move.
@@ -115,12 +120,14 @@ Measure draw calls before and after — the count should drop, and so should GPU
 
 ```csharp
 // Unity 6.3 LTS (C#). Allocating every frame fills the managed heap; the GC then stalls a frame.
-// WRONG (allocates each call): foreach (var e in FindObjectsOfType<Enemy>()) ...  // + LINQ, new[]
+// WRONG (new array + scene walk every call):
+//   foreach (var e in FindObjectsByType<Enemy>(FindObjectsSortMode.None)) ...  // + LINQ, new[]
+// (FindObjectsOfType is obsolete in Unity 6.3; its replacement still allocates.)
 // RIGHT: cache references once, reuse buffers, avoid LINQ/boxing in Update.
 void Update() {
     _hits = Physics.RaycastNonAlloc(ray, _hitBuffer);   // reuse a preallocated array
     for (int i = 0; i < _hits; i++) { /* ... */ }       // no per-frame allocation
-}
+}   // hit order is undefined and a full buffer may miss the nearest hit: size it, sort if needed
 // Godot/GDScript: avoid building new arrays/dictionaries every frame in _process; reuse them.
 ```
 
@@ -140,6 +147,9 @@ void Update() {
   Cache and reuse.
 - **Draw-call explosion** from unique materials and unbatched sprites/meshes. Atlas, share
   materials, instance, batch.
+- **Unity "Enable GPU Instancing" with no effect** under URP/HDRP: the SRP Batcher takes
+  precedence for compatible shaders. Check the Frame Debugger; for many identical meshes use the
+  GPU Resident Drawer (Forward+, compute-capable APIs, not OpenGL ES).
 - **Overdraw** from stacked transparents/particles/full-screen effects re-shading pixels.
 - **No budgets.** Without per-subsystem ms and asset ceilings, performance silently regresses;
   enforce them in your build/CI checks.

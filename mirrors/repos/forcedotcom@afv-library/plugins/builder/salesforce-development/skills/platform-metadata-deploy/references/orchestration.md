@@ -11,7 +11,7 @@ This document details how platform-metadata-deploy fits into the multi-skill wor
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │  STANDARD MULTI-SKILL ORCHESTRATION ORDER                                   │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│  1. platform-custom-object-generate / platform-custom-field-generate                      │
+│  1. platform-custom-object-generate                                                      │
 │     └── Create object/field definitions (LOCAL files)                       │
 │                                                                             │
 │  2. automation-flow-generate                                                         │
@@ -84,7 +84,7 @@ When deploying agents with external API integrations:
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  1. integration-connectivity-connected-app-configure → Create OAuth Connected App                 │
 │  2. integration-connectivity-generate    → Create Named Credential + External Service          │
-│  3. platform-apex-generate   → Create @InvocableMethod (if needed)                 │
+│  3. Apex authoring          → Create @InvocableMethod (if needed)                 │
 │  4. automation-flow-generate   → Create Flow wrapper                                 │
 │                                                                             │
 │  5. platform-metadata-deploy         ◀── FIRST DEPLOYMENT                                 │
@@ -169,7 +169,6 @@ sf agent activate --api-name AgentName --version N --target-org alias --json
 |------------|--------------|------|
 | platform-custom-object-generate | → platform-metadata-deploy | "Deploy objects to [org]" |
 | automation-flow-generate | → platform-metadata-deploy | "Deploy flow with --dry-run" |
-| platform-apex-generate | → platform-metadata-deploy | "Deploy classes with RunLocalTests" |
 | agentforce-generate | → platform-metadata-deploy | "Deploy and publish agent" |
 
 ---

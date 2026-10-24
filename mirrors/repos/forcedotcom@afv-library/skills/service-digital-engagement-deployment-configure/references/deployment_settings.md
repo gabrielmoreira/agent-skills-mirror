@@ -40,7 +40,7 @@ Links the deployment to a messaging channel and configures widget behavior. All 
 |-------|------|---------|-------------|
 | `messagingChannel` | String | — | **Required.** Channel `channelPlatformKey` |
 | `businessHours` | String | — | BusinessHours `businessHoursName` |
-| `displayNameFormat` | String | — | Display name if pre-chat is enabled |
+| `displayNameFormat` | String | — | Display name shown when pre-chat is enabled. **Exactly 3 brace tokens** (empty for unused, e.g. `{_firstName}{_lastName}{}`); each token = a pre-chat field's `externalParameterName`, **not** its `formField`. See `references/prechat_forms.md` → displayNameFormat Rules |
 | `formula` | String | — | Condition logic expression referencing `sequence` numbers from `<embdMsgChannelInvitationConditions>` (e.g., `1 AND 2`, `1 OR 2 OR 3`). Required when `isInvitationEnabled` is `true`. Must be updated whenever conditions are added or removed |
 | `isChatInvitationCustomizable` | Boolean | `false` | **Required.** Allow customizing chat invitation. Can only be `true` for Web deployments; must be `false` for API/Mobile |
 | `isEnabled` | Boolean | `true` | **Required.** Whether messaging is enabled on this deployment |
@@ -56,84 +56,9 @@ Links the deployment to a messaging channel and configures widget behavior. All 
 
 ---
 
-## Pre-Chat Forms (`<embeddedServiceForms>`)
+## Pre-Chat Forms (`<embeddedServiceForms>`) and `displayNameFormat`
 
-Collects information from users before conversation starts. Applicable to all deployment types.
-
-### Form Structure
-
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `displayContext` | Enum | Yes | `Conversation` or `Session` |
-| `isActive` | Boolean | Yes | Whether the form is active |
-| `embeddedServiceFormFields` | Repeatable | Yes | Individual form fields (see below) |
-
-### Form Field Structure (`<embeddedServiceFormFields>`)
-
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `displayOrder` | Integer | Yes | 0-based display position |
-| `formField` | String | Yes | Parameter name — use `_` prefix for standard fields (e.g., `_FirstName`), exact `name` for custom fields |
-| `formFieldType` | Enum | Yes | `Text`, `Email`, `Phone`, `Number` |
-| `isHidden` | Boolean | Yes | Whether field is hidden from user (still collected) |
-| `isRequired` | Boolean | Yes | Whether field must be filled |
-| `messagingChannelParameterType` | Enum | Yes | `Standard` or `Custom` |
-
-### Example
-
-```xml
-<embeddedServiceForms>
-    <displayContext>Conversation</displayContext>
-    <embeddedServiceFormFields>
-        <displayOrder>0</displayOrder>
-        <formField>_FirstName</formField>
-        <formFieldType>Text</formFieldType>
-        <isHidden>false</isHidden>
-        <isRequired>true</isRequired>
-        <messagingChannelParameterType>Standard</messagingChannelParameterType>
-    </embeddedServiceFormFields>
-    <embeddedServiceFormFields>
-        <displayOrder>1</displayOrder>
-        <formField>_Email</formField>
-        <formFieldType>Email</formFieldType>
-        <isHidden>false</isHidden>
-        <isRequired>true</isRequired>
-        <messagingChannelParameterType>Standard</messagingChannelParameterType>
-    </embeddedServiceFormFields>
-    <embeddedServiceFormFields>
-        <displayOrder>2</displayOrder>
-        <formField>CompanyName</formField>
-        <formFieldType>Text</formFieldType>
-        <isHidden>false</isHidden>
-        <isRequired>false</isRequired>
-        <messagingChannelParameterType>Custom</messagingChannelParameterType>
-    </embeddedServiceFormFields>
-    <isActive>true</isActive>
-</embeddedServiceForms>
-```
-
-### Standard Pre-Chat Fields
-
-Standard fields use a `_` prefix in the `formField` value:
-
-| `formField` Value | Maps to `parameterType` | Typical Usage |
-|-------------------|------------------------|---------------|
-| `_FirstName` | `FirstName` | User identification |
-| `_LastName` | `LastName` | User identification |
-| `_Email` | `Email` | Follow-up and case creation |
-| `_Subject` | `Subject` | Routing context |
-
-### Custom Pre-Chat Fields
-
-Custom fields use the exact `name` value from the channel's `customParameters` (no prefix). Custom fields must first be configured as `customParameters` on the messaging channel (via `service-digital-engagement-channel-configure`) before they can be referenced in the ESD form.
-
-### ChoiceList (Dropdown) Fields
-
-ChoiceList fields require a two-step deployment:
-1. Create the `ChoiceList` metadata record
-2. Assign it to the form field in the ESD
-
-The ChoiceList field must reference a custom parameter `name` on the messaging channel.
+Pre-chat is OFF by default. Form and field structure, hidden fields, the channel coupling and Omni-Flow routing prerequisites, ChoiceList (dropdown) fields, deactivating vs. removing fields, `displayNameFormat` rules, and pre-chat gotchas are all in `references/prechat_forms.md`.
 
 ---
 
@@ -191,3 +116,13 @@ Available since API v58.0. Repeatable. Configures conditions under which the mes
 | Create BrandingSet | No (auto-created by Connect API) | No | Yes |
 | Update BrandingSet properties | No | Yes | No |
 | Publish ESD | No | No | Yes |
+
+---
+
+## Less Common Gotchas
+
+| Issue | Resolution |
+|-------|------------|
+| `embeddedServiceFlowConfig.enabled` error | Set to `false` unless you specifically need embedded flows (not routing flows) |
+| reCAPTCHA configuration rejected | reCAPTCHA is `@HideInWsdl` — must use Tooling API |
+| Business hours not taking effect | Only updating existing business hours works; creation is managed separately |

@@ -6,13 +6,17 @@ or navmesh polygons — only `neighbors()` and `cost()` change.
 
 A* keeps a priority queue (the *frontier*) ordered by `f = g + h`, where `g` is
 the known cost from the start and `h` is a heuristic estimate to the goal. It is
-optimal **iff** `h` never overestimates the true remaining cost (it is
+optimal **if** `h` never overestimates the true remaining cost (it is
 *admissible*). With `h = 0`, A* degenerates to Dijkstra's algorithm.
 
 ## Complete A* (engine-neutral Python)
 
 ```python
-import heapq
+import heapq, math
+
+def heuristic(a, b):               # nodes are (x, y) tuples; see the table below
+    dx, dy = abs(a[0] - b[0]), abs(a[1] - b[1])
+    return (dx + dy) + (math.sqrt(2) - 2) * min(dx, dy)   # octile (8-way grid)
 
 def a_star(graph, start, goal):
     # Priority queue of (f_score, tie, node). heapq pops the SMALLEST first.
@@ -76,17 +80,29 @@ Scale the heuristic by the minimum step cost so it stays in the same units as
 
 ```python
 class GridGraph:
-    def __init__(self, walls, width, height):
-        self.walls, self.w, self.h = walls, width, height
+    def __init__(self, walls, width, height, diagonal=True):
+        self.walls, self.w, self.h, self.diagonal = walls, width, height, diagonal
     def in_bounds(self, p): return 0 <= p[0] < self.w and 0 <= p[1] < self.h
     def passable(self, p):  return p not in self.walls
+    def open(self, p):      return self.in_bounds(p) and self.passable(p)
     def neighbors(self, p):
         x, y = p
-        candidates = [(x+1,y),(x-1,y),(x,y+1),(x,y-1)]   # add diagonals for octile
-        return [c for c in candidates if self.in_bounds(c) and self.passable(c)]
+        result = [c for c in [(x+1,y),(x-1,y),(x,y+1),(x,y-1)] if self.open(c)]
+        if self.diagonal:
+            for dx, dy in [(1,1),(1,-1),(-1,1),(-1,-1)]:
+                # No corner cutting: both orthogonal neighbours must be open too.
+                if self.open((x+dx, y+dy)) and self.open((x+dx, y)) and self.open((x, y+dy)):
+                    result.append((x+dx, y+dy))
+        return result
     def cost(self, a, b):
-        return 1.0                  # uniform; return terrain weight for varied cost
+        diagonal = a[0] != b[0] and a[1] != b[1]
+        return math.sqrt(2) if diagonal else 1.0   # multiply by a terrain weight >= 1
 ```
+
+The step costs must match the heuristic: octile assumes diagonal steps cost `sqrt(2)`.
+If diagonals cost 1 the true distance is Chebyshev (`max(dx, dy)`) and octile
+overestimates; on a 4-way grid (`diagonal=False`) switch the heuristic to Manhattan.
+Terrain weights below 1 make any of these heuristics inadmissible.
 
 ## When to use an engine navmesh instead
 
@@ -94,10 +110,14 @@ Hand-rolled grid A* is ideal for 2D tile games and for understanding the
 algorithm. For 3D worlds, arbitrary geometry, dynamic obstacle avoidance, and
 agent radius/height, prefer the engine's baked navigation:
 
-- **Unity** — bake a NavMesh and drive a `NavMeshAgent` (see `unity-navmesh`).
+- **Unity** — bake a `NavMeshSurface` (AI Navigation package) and drive a
+  `NavMeshAgent` (see `unity-navmesh`).
 - **Unreal** — Nav Mesh Bounds + `AIController` MoveTo (see `unreal-behavior-trees`).
 - **Godot** — `NavigationRegion2D/3D` + `NavigationAgent2D/3D`, querying
-  `NavigationServer` for paths.
+  `NavigationServer2D/3D` for paths. For a tile grid, the built-in `AStarGrid2D`
+  already implements this file: set `region`, `cell_size`, `diagonal_mode` and
+  `default_compute_heuristic`/`default_estimate_heuristic`, call `update()`, mark walls
+  with `set_point_solid()`, then read `get_id_path(from, to)` (or `get_point_path`).
 
 These handle path smoothing, off-mesh links, and crowd avoidance you would
 otherwise reimplement. Use A* directly when the world is a discrete grid/graph or

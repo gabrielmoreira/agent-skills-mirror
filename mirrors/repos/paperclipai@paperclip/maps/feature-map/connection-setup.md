@@ -18,6 +18,10 @@ Settings → Connections. It adds no Apps provider or transport. Credential owne
 and audience rules are the existing connection rules; saving a connection alone
 does not activate the service. See [service configuration](../../doc/prompt-injection-prevention.md).
 
+1Password is available from Apps with a service-account token and an official
+service-account creation link. Its vault access is chosen in 1Password; action
+policies use the ordinary Permissions screen. See [connector notes](../../doc/connections/1PASSWORD.md).
+
 ## Sub-features
 
 - `catalog`: `connection-setup/catalog` — find a provider, inspect its available methods, and open setup;
@@ -228,3 +232,22 @@ Slack setup does not qualify Discord, Telegram, GitHub, email, or iMessage.
 ### Documentation scope: App catalog and connection setup
 
 Provider-specific authentication/revocation, credential-only accounts, and aggregator administrative variants still need their own detailed matrices.
+
+Supabase and Vercel deployment connections (2026-10-22): Apps offers Supabase
+browser sign-in, hosted MCP personal access token, and project-scoped Management
+API methods, plus Vercel's team-scoped access token method. Supabase's optional
+MCP project pin leaves project creation available when unset; the native method
+requires a project and offers Edge Function deployment and selected configuration.
+Vercel supports preview/production deployment, build settings, environment
+variables and existing domain attachment. Personal/shared credential ownership,
+action permissions, reconnect and removal use the regular setup flow. See
+[Supabase](../../doc/connections/SUPABASE.md) and
+[Vercel](../../doc/connections/vercel.md) for method boundaries and qualification.
+
+For these native methods, continue past a successful connection test into an
+actual native agent task: readiness, assigned-tool delivery, and task-card reuse
+must all work. The 2026-10-23 walkthrough exposed and repaired omitted REST
+admission at those boundaries. Verify a served deployment and provider settings,
+not only the catalog action count. Vercel preview requires an existing deployment;
+its provider makes the first deployment production, so an empty-project preview
+must fail before submission and explain the explicit production prerequisite.

@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/deep-research/../../../research/deep-research/skills/deep-research/SKILL.md

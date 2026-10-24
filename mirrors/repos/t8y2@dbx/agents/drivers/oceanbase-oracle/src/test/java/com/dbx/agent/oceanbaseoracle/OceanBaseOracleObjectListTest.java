@@ -24,6 +24,38 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class OceanBaseOracleObjectListTest {
     @Test
+    void schemaIndexPagesPreserveBothOwnersAndRawNames() {
+        JdbcFixture jdbc = new JdbcFixture();
+        JdbcCall call = jdbc.rows(row(" Ix (a) ", "INDEX", null, "Table Owner", " T(a) "));
+        List<ObjectInfo> objects = jdbc.agent.listObjects("Index Owner", constraints("Ix", 2, 2, "INDEX"));
+
+        assertEquals(1, objects.size());
+        String json = new com.google.gson.Gson().toJson(objects.get(0));
+        com.google.gson.JsonObject object = com.google.gson.JsonParser.parseString(json).getAsJsonObject();
+        assertEquals(" Ix (a) ", object.get("name").getAsString());
+        assertEquals("Index Owner", object.get("schema").getAsString());
+        assertEquals("INDEX", object.get("object_type").getAsString());
+        assertEquals("Table Owner", object.get("parent_schema").getAsString());
+        assertEquals(" T(a) ", object.get("parent_name").getAsString());
+        assertEquals(List.of("Index Owner", "INDEX", "%I%X%", "%I%X%", 4L, 2), call.args);
+        call.assertClosed();
+    }
+
+    @Test
+    void schemaIndexDictionaryFailureDoesNotBecomeAnEmptyPage() {
+        JdbcFixture jdbc = new JdbcFixture();
+        JdbcCall call = jdbc.rows();
+        SQLException denied = new SQLException("ORA-01031: insufficient privileges", "42000", 1031);
+        call.executeFailure = denied;
+
+        RuntimeException error = assertThrows(RuntimeException.class,
+            () -> jdbc.agent.listObjects("APP", constraints(null, 2, 0, "INDEX")));
+
+        assertSame(denied, error.getCause());
+        assertTrue(call.statementClosed);
+    }
+
+    @Test
     void tableAndViewCommentsSurviveObjectListing() {
         JdbcFixture jdbc = new JdbcFixture();
         jdbc.rows(row("T", "TABLE", "订单备注"), row("V", "VIEW", "Customer view"),
@@ -78,13 +110,13 @@ class OceanBaseOracleObjectListTest {
             };
 
             assertEquals(List.of("APP", "TABLE", "VIEW", "PROCEDURE", "FUNCTION", "PACKAGE",
-                "PACKAGE BODY", "SEQUENCE", "SYNONYM", "TYPE", "TYPE BODY"), call.args);
+                "PACKAGE BODY", "SEQUENCE", "SYNONYM", "TYPE", "TYPE BODY", "INDEX"), call.args);
             assertEquals(List.of("TABLE", "VIEW", "PROCEDURE", "FUNCTION", "PACKAGE",
                 "PACKAGE_BODY", "SEQUENCE", "SYNONYM"), objects.stream().map(ObjectInfo::getObject_type).toList());
             assertEquals(8, objects.size());
             assertTrue(objects.stream().allMatch(object -> "APP".equals(object.getSchema())));
             assertTrue(objects.stream().allMatch(object -> object.getValid() == null));
-            assertTrue(call.sql.contains("OBJECT_TYPE IN (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"), call.sql);
+            assertTrue(call.sql.contains("OBJECT_TYPE IN (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"), call.sql);
             assertFalse(call.sql.contains("ROWNUM"), call.sql);
             assertObjectOrder(call.sql);
             call.assertClosed();
@@ -143,6 +175,29 @@ class OceanBaseOracleObjectListTest {
             jdbc.agent.listObjects("APP", constraints(null, 3, 0, "TYPE", "TYPE_BODY")));
         assertEquals(List.of("APP", "TYPE", "TYPE BODY", 3L, 0), call.args);
         call.assertClosed();
+    }
+
+    @Test
+    void typeBodySourcePreservesQuotedIdentityAndIsReadOnly() {
+        JdbcFixture jdbc = new JdbcFixture();
+        JdbcCall call = jdbc.rows(row("TYPE BODY \"Mixed Type\" AS\n"), row("END;\n"));
+
+        ObjectSource source = jdbc.agent.getObjectSource("Mixed.Owner", "Mixed Type", "TYPE_BODY");
+
+        assertEquals("CREATE OR REPLACE TYPE BODY \"Mixed Type\" AS\nEND;", source.getSource());
+        assertEquals("TYPE_BODY", source.getObject_type());
+        assertFalse(source.isEditable());
+        assertEquals(List.of("Mixed.Owner", "Mixed Type", "TYPE BODY"), call.args);
+        call.assertClosed();
+    }
+
+    @Test
+    void missingTypeSourceFailsInsteadOfReturningAnEmptyEditor() {
+        JdbcFixture jdbc = new JdbcFixture();
+        jdbc.rows();
+        jdbc.rows();
+
+        assertThrows(RuntimeException.class, () -> jdbc.agent.getObjectSource("APP", "MISSING_T", "TYPE"));
     }
 
     @Test

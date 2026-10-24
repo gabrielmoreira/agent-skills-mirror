@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/boardroom/../../../c-level-agents/skills/boardroom/SKILL.md

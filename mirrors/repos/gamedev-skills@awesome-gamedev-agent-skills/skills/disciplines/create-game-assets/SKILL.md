@@ -79,7 +79,8 @@ alone does not guarantee transparency.
 
 ## Raster QA recipes
 
-Inspect constraints and emit a machine-readable report:
+Inspect constraints and emit a machine-readable report. `--require-alpha` also fails an RGBA file
+whose every pixel is opaque, which is how a baked background or fake checkerboard shows up:
 
 ```bash
 python scripts/asset_report.py assets/player-idle.png \
@@ -94,8 +95,9 @@ python scripts/build_preview_sheet.py output/player/*.png \
 ```
 
 Run script paths relative to this skill directory, or resolve the installed skill path first.
-Both scripts require Python 3.10+ and Pillow. Install the only dependency with
-`python -m pip install -r scripts/requirements.txt` when it is not already available.
+Both scripts require Python 3.10+ and Pillow 10–13 (Pillow 13 needs Python 3.11+). Install the
+only dependency with `python -m pip install -r scripts/requirements.txt` when it is not already
+available.
 
 ## Quality gates
 

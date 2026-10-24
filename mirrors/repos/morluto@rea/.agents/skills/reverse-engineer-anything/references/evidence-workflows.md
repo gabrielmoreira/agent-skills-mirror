@@ -48,7 +48,9 @@ or absence:
 - `compare_artifacts` compares inventory pages by occurrence path, content,
   metadata, and graph relations.
 - `compare_functions` compares explicit function Evidence, not fuzzy
-  whole-binary matches.
+  whole-binary matches. It rejects an `analyze_function` summary reply; pass
+  the summary's `parent_evidence_id` as a `retained-evidence` reference or
+  the complete dossier.
 - `compare_bundles` compares canonical bundle membership and unknown history.
 - `find_changed_behavior` combines existing comparisons; static differences
   remain candidates, not causal proof.
@@ -104,3 +106,14 @@ each plan states why in its `reason`. It replays the capture instead with
 `--replay-only` or when the state is unavailable (not derivable, or a catalog
 over the discovery budget), and its stopped document's `state` says which
 applied.
+
+For a PE/ELF export question, `inspect_native_exports` accepts `detail: "summary"`
+and retains the complete table. Query `inspect_analysis_view` with
+`view: {kind: "native-exports", collection: "exports", names: ["selected_name"],
+fields: ["name"], offset: 0, limit: 32}` and the reported parent Evidence ID.
+All same-name versions and aliases survive; use `source_index` with the parent ID
+for stable identity. `collection: "issues"` pages interpretation failures. Page
+coverage describes selected retained rows; `summary.coverage` or `exports.coverage`
+still describes the source table, so an empty partial page does not prove absence.
+CLI `inspect-native-exports --detail summary --evidence_output PATH` saves the
+complete bundle for later `inspect-analysis-view --evidence-bundle PATH` requests.

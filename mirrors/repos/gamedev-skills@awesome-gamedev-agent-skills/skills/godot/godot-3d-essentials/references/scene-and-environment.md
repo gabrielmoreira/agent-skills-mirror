@@ -33,9 +33,13 @@ Godot 3D convention: **-Z is forward**, +Y is up, +X is right.
 | `DirectionalLight3D` | Sun (parallel rays) | `shadow_enabled`, `light_energy`, `directional_shadow_mode` |
 | `OmniLight3D` | Point light | `omni_range`, `light_energy`, `shadow_enabled` |
 | `SpotLight3D` | Cone | `spot_range`, `spot_angle`, `shadow_enabled` |
+| `AreaLight3D` (4.7+) | Rectangle (screens, light panels) | `area_size`, `area_range`, `area_attenuation`, `area_texture` |
 
 Common: `light_color`, `light_energy`, `light_indirect_energy`, shadow bias settings.
 Too many shadow-casting lights hurts performance — bake static lighting where possible.
+`AreaLight3D` costs more than omni/spot lights: in Forward+ one visible area light adds cost to every
+rendered object, and the Compatibility renderer cannot draw its shadows. Keep it for close-ups
+and high-end targets.
 
 ## Environment & post-processing
 
@@ -45,8 +49,8 @@ Too many shadow-casting lights hurts performance — bake static lighting where 
   `ProceduralSkyMaterial`/`PanoramaSkyMaterial`).
 - **Ambient:** `ambient_light_source` (sky/color/disabled), `ambient_light_color`,
   `ambient_light_energy`.
-- **Tonemap:** `tonemap_mode` (LINEAR, REINHARD, FILMIC, ACES), `tonemap_exposure`,
-  `tonemap_white`.
+- **Tonemap:** `tonemap_mode` (`TONE_MAPPER_LINEAR`, `_REINHARDT`, `_FILMIC`, `_ACES`,
+  `_AGX`), `tonemap_exposure`, `tonemap_white`.
 - **Post:** `glow_enabled` (+ bloom/levels), `ssao_enabled`, `ssil_enabled`,
   `sdfgi_enabled` (real-time GI), `fog_enabled`/`volumetric_fog_enabled`,
   `adjustment_enabled` (brightness/contrast/saturation + color correction).
@@ -66,7 +70,9 @@ occlusion/roughness/metallic into one texture.
 ## GridMap & MeshLibrary
 
 1. Build a scene where each child is a mesh + optional collision; export it as a
-   `MeshLibrary` (Scene > Export As > MeshLibrary), or convert a scene in the editor.
+   `MeshLibrary` (Scene > Export As > MeshLibrary). In 4.7+ a dedicated `MeshLibrary` editor
+   (like the 2D `TileSet` editor) makes adding and
+   editing items much quicker.
 2. Assign the `MeshLibrary` to the `GridMap.mesh_library` and set `cell_size`.
 3. Paint in the editor, or from code:
    ```gdscript

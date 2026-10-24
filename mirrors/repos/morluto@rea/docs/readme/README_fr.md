@@ -1,7 +1,7 @@
 <div align="center">
 
 [English](../../README.md) · [简体中文](README_zh.md) · [繁體中文](README_zh-TW.md) · [日本語](README_ja.md) · [한국어](README_ko.md) · [Türkçe](README_tr.md) · [Русский](README_ru.md) · [Tiếng Việt](README_vi.md) · [ไทย](README_th.md) · [Deutsch](README_de.md) · [Español](README_es.md) · **Français** · [Українська](README_uk.md) · [Polski](README_pl.md) · [Português (Brasil)](README_pt-BR.md) · [العربية](README_ar.md) · [فارسی](README_fa.md) · [Bahasa Indonesia](README_id.md) · [Italiano](README_it.md)
-· [Ελληνικά](README_el.md) · [മലയാളം](README_ml.md)
+· [Ελληνικά](README_el.md) · [മലയാളം](README_ml.md) · [Roman Urdu](README_ur-Latn.md)
 
 # REA : rétro-ingénierie de tout
 
@@ -66,6 +66,8 @@ Setup enregistre REA auprès de votre agent et installe les instructions de work
 
 ## Démarrage rapide
 
+Sous Linux, les lancements de Ghidra, JADX et des outils de firmware, ainsi que l’analyse statique JavaScript/Electron, nécessitent un `ps` compatible procps dans le `PATH` de REA pour vérifier la propriété des processus. Voir le prérequis Linux.
+
 ### Configurer votre agent
 
 Une fois Node.js et npm installés, exécutez :
@@ -77,6 +79,8 @@ npx rea-agents setup
 Choisissez vos agents, vérifiez les modifications proposées et approuvez-les. Setup ajoute le serveur MCP de REA et les instructions de workflow correspondantes, et sauvegarde la configuration existante. Redémarrez ensuite votre agent.
 
 Setup prend en charge Claude Code, Codex, Cursor, Gemini CLI, Grok Build et [d'autres agents](../installation.md#supported-agents). Consultez [Installation et configuration](../installation.md) pour la configuration des fournisseurs et l'enregistrement MCP manuel.
+
+MCP utilise par défaut des schémas d’entrée compacts. Pour les descriptions complètes des champs et de la validation imbriquée, définissez `REA_MCP_INPUT_SCHEMA_PROFILE=full` dans l’enregistrement MCP. Les deux profils conservent tous les outils et la même validation canonique du serveur ; voir le guide des contrats MCP.
 
 ### Interroger votre agent
 
@@ -116,6 +120,8 @@ Pour une CLI installée avec `npm install --global` ou `bun add --global` :
 rea update
 ```
 
+`rea --update` est un alias de `rea update` avec les mêmes options globales de sortie. Les commandes de mise à jour conservent au plus 4 MiB de stdout/stderr au total. Les réponses de métadonnées trop grandes sont refusées à la fin ; les installations détaillées gardent des diagnostics bornés. La progression respecte la contre-pression du terminal et attend la fin des écritures soumises.
+
 Les mises à jour globales avec Bun nécessitent Bun 1.2.17 ou une version ultérieure. Avec une version plus ancienne de Bun, mettez à jour Bun manuellement avant d'exécuter `rea update`.
 
 Pour actualiser les enregistrements de vos agents et le skill, exécutez la commande setup affichée par la mise à jour.
@@ -140,46 +146,58 @@ Votre agent appelle REA via MCP pour inspecter la cible et suivre le code pertin
 
 ## Ce que vous pouvez analyser
 
-REA nécessite Node.js 22.x (>=22.19), 24.x (>=24.11) ou 26+, ainsi que npm. Les outils supplémentaires et les hôtes pris en charge dépendent de la cible :
+REA nécessite Node.js 22.x (>=22.23.4), 24.x (>=24.22.1) ou 26+ (>=26.12.1), ainsi que npm. Les outils supplémentaires et les hôtes pris en charge dépendent de la cible :
 
-| Cible                        | Ce que REA renvoie                                                                                          | Prérequis et guide                                                                                                                |
-| ---------------------------- | ----------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| Binaires natifs              | Pseudo-code, assembleur, chaînes, symboles, appels et références                                            | Hopper, Ghidra ou IDA ; [analyse native](../native-investigation.md)                                                              |
-| Structure ELF hors ligne     | Sections, segments, symboles et relocations d'origine, et protections statiques candidates                  | pwntools fourni par l'utilisateur sous Linux x64 ; [diagnostics binaires](../binary-diagnostics.md)                               |
-| PE certificates              | Authenticode WIN_CERTIFICATE entries and PKCS#7 signer/X.509 identity fields                                | Built-in static PE inspection; [PE certificates](../pe-certificates.md)                                                           |
-| Artefact WASM                | Validation, sections, formes WAT exactes d'import/export et WAT décodé                                      | WABT 1.0.42 fourni par l'utilisateur ; `inspect_wasm_artifact`                                                                    |
-| Bytecode EVM                 | Sélecteurs de dispatch, offsets en octets, arguments inférés et mutabilité                                  | Fichier local brut ou hexadécimal sous Linux x64 ; [guide EVM hors ligne](../evm-bytecode.md)                                     |
-| Rust binaries                | Embedded cargo-auditable dependency list                                                                    | [Rust binaries](../rust-binaries.md)                                                                                              |
-| ELF notes                    | PT_NOTE/SHT_NOTE owners, types, GNU build-id and ABI-tag fields                                             | Built-in static ELF inspection; [ELF notes](../elf-notes.md)                                                                      |
-| Erlang BEAM                  | IFF chunks, atoms, exports, and tables                                                                      | Built-in static BEAM inspection; [Erlang BEAM](../erlang-beam.md)                                                                 |
-| Crashs Linux enregistrés     | Notes brutes, registres et signaux de chaque thread enregistré, et correspondances de mappings facultatives | pwntools fourni par l'utilisateur sous Linux x64 ; GDB/pwndbg en option ; [crashs enregistrés](../recorded-crashes.md)            |
-| Installations de bureau      | Environnements candidats, fichiers justificatifs, composants et étapes suivantes                            | Inspection bornée des répertoires et en-têtes；[Applications de bureau](../desktop-applications.md)                               |
-| JavaScript / Electron        | Modules, imports, source maps, routes, IPC et relations avec les modules natifs                             | Node.js et npm ; [analyse d'applications](../javascript-application-workflows.md)                                                 |
-| Sites web                    | Structure des pages, scripts, observations réseau et captures d'écran demandées                             | Un navigateur de la famille Chrome ; [analyse du navigateur](../browser-observation.md)                                           |
-| Captures réseau enregistrées | Requêtes, réponses, payloads exposés et emplacements dans le code source                                    | HAR ; mitmdump sous Linux pour les captures mitmproxy natives ; [guide des captures](../web-network-captures.md)                  |
-| Captures de paquets          | Points de terminaison, DNS, TLS SNI, distribution des protocoles et requêtes HTTP                           | tshark et capinfos fournis par l'appelant ; [guide pcap](../pcap-analysis.md)                                                     |
-| Assemblys .NET               | Métadonnées, instructions CIL, dépendances natives déclarées et comparaisons de builds                      | Inspection statique ; [guide du code managé](../managed-code-analysis.md)                                                         |
-| PyInstaller                  | CArchive, PYZ, Python bytecode                                                                              | Static inspection; [Python packaged applications](../python-packaged-applications.md)                                             |
-| APK Android                  | Déclarations du manifeste, classes, méthodes décompilées et références                                      | JADX headless et un JDK complet sous Linux/macOS/Windows x64 ; [guide Android](../android-analysis.md)                            |
-| Appareils Android            | Appareils, paquets, processus, journaux, dumps, captures d'écran et transferts d'APK/fichiers               | adb fourni par l'appelant (émulateur ou appareil) ; [guide ADB](../adb-device-analysis.md)                                        |
-| Projets JEB                  | Unités de projet fournies par le moteur, condensés d'artefacts et pseudo-code de types/méthodes             | Un client JEB démarré par l'appelant servant MCP, sélectionné via REA_JEB_MCP_URL ; [guide JEB](../jeb-analysis.md)               |
-| Ressources Android           | Manifeste décodé, tables de chaînes, langues et faits de version                                            | Lanceur Apktool fourni par l'appelant ; [guide des ressources](../apktool-resource-analysis.md)                                   |
-| Applications Flutter         | Empreinte de snapshot Dart, condensés de bibliothèques par ABI et provenance de build du moteur             | Aucune (analyse APK statique) ; [guide Flutter](../flutter-analysis.md)                                                           |
-| Firmware                     | Régions, résultats d'extraction et passage de relais vers l'analyse native                                  | Binwalk / Unblob sous Linux ; [guide firmware](../firmware-analysis.md)                                                           |
-| Paquets enregistrés          | Champs sélectionnés, valeurs répétées, filtres et règles de décodage                                        | Linux: TShark 4.x + prlimit; [guide des captures](../packet-captures.md)                                                          |
-| Signaux logiques enregistrés | Annotations du décodeur, plages d’échantillons et diagnostics                                               | Linux: sigrok-cli 0.7.2 + prlimit; [guide des signaux](../signal-recordings.md)                                                   |
-| Paquets et ressources        | Inventaires de fichiers, empreintes, plists, anatomie des bundles Apple et ressources extraites             | [Guide artefacts et JavaScript](../javascript-artifact-reconstruction.md), [applications Apple](../apple-application-analysis.md) |
-| Comportement des processus   | Sortie du terminal, interactions, code de sortie, observations du système de fichiers et comparaisons       | Linux/macOS avec un PTY natif ; [capture de processus](../process-capture.md)                                                     |
+| Cible                        | Ce que REA renvoie                                                                                          | Prérequis et guide                                                                                                                        |
+| ---------------------------- | ----------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| Binaires natifs              | Pseudo-code, assembleur, chaînes, symboles, appels et références                                            | Hopper, Ghidra ou IDA ; [analyse native](../native-investigation.md)                                                                      |
+| Structure ELF hors ligne     | Sections, segments, symboles et relocations d'origine, et protections statiques candidates                  | pwntools fourni par l'utilisateur sous Linux x64 ; [diagnostics binaires](../binary-diagnostics.md)                                       |
+| PE certificates              | Authenticode WIN_CERTIFICATE entries and PKCS#7 signer/X.509 identity fields                                | Built-in static PE inspection; [PE certificates](../pe-certificates.md)                                                                   |
+| Artefact WASM                | Validation, sections, formes WAT exactes d'import/export et WAT décodé                                      | WABT 1.0.42 fourni par l'utilisateur ; `inspect_wasm_artifact`                                                                            |
+| Bytecode EVM                 | Sélecteurs de dispatch, offsets en octets, arguments inférés et mutabilité                                  | Fichier local brut ou hexadécimal sous Linux x64 ; [guide EVM hors ligne](../evm-bytecode.md)                                             |
+| Rust binaries                | Embedded cargo-auditable dependency list                                                                    | [Rust binaries](../rust-binaries.md)                                                                                                      |
+| ELF notes                    | PT_NOTE/SHT_NOTE owners, types, GNU build-id and ABI-tag fields                                             | Built-in static ELF inspection; [ELF notes](../elf-notes.md)                                                                              |
+| Erlang BEAM                  | IFF chunks, atoms, exports, and tables                                                                      | Built-in static BEAM inspection; [Erlang BEAM](../erlang-beam.md)                                                                         |
+| Crashs Linux enregistrés     | Notes brutes, registres et signaux de chaque thread enregistré, et correspondances de mappings facultatives | pwntools fourni par l'utilisateur sous Linux x64 ; GDB/pwndbg en option ; [crashs enregistrés](../recorded-crashes.md)                    |
+| Installations de bureau      | Environnements candidats, fichiers justificatifs, composants et étapes suivantes                            | Inspection bornée des répertoires et en-têtes；[Applications de bureau](../desktop-applications.md)                                       |
+| JavaScript / Electron        | Modules, imports, source maps, routes, IPC et relations avec les modules natifs                             | Node.js et npm ; [analyse d'applications](../javascript-application-workflows.md); Linux: procps `ps`                                     |
+| Sites web                    | Structure des pages, scripts, observations réseau et captures d'écran demandées                             | Un navigateur de la famille Chrome ; [analyse du navigateur](../browser-observation.md)                                                   |
+| Captures réseau enregistrées | Requêtes, réponses, payloads exposés et emplacements dans le code source                                    | HAR / Fiddler Everywhere SAZ ; mitmdump sous Linux pour les captures mitmproxy natives ; [guide des captures](../web-network-captures.md) |
+| Captures de paquets          | Points de terminaison, DNS, TLS SNI, distribution des protocoles et requêtes HTTP                           | tshark et capinfos fournis par l'appelant ; [guide pcap](../pcap-analysis.md)                                                             |
+| Assemblys .NET               | Métadonnées, instructions CIL, dépendances natives déclarées et comparaisons de builds                      | Inspection statique ; [guide du code managé](../managed-code-analysis.md)                                                                 |
+| PyInstaller                  | CArchive, PYZ, Python bytecode                                                                              | Static inspection; [Python packaged applications](../python-packaged-applications.md)                                                     |
+| APK Android                  | Déclarations du manifeste, classes, méthodes décompilées et références                                      | JADX headless et un JDK complet sous Linux/macOS/Windows x64 ; [guide Android](../android-analysis.md)                                    |
+| Appareils Android            | Appareils, paquets, processus, journaux, dumps, captures d'écran et transferts d'APK/fichiers               | adb fourni par l'appelant (émulateur ou appareil) ; [guide ADB](../adb-device-analysis.md)                                                |
+| Projets JEB                  | Unités de projet fournies par le moteur, condensés d'artefacts et pseudo-code de types/méthodes             | Un client JEB démarré par l'appelant servant MCP, sélectionné via REA_JEB_MCP_URL ; [guide JEB](../jeb-analysis.md)                       |
+| Ressources Android           | Manifeste décodé, tables de chaînes, langues et faits de version                                            | Lanceur Apktool fourni par l'appelant ; [guide des ressources](../apktool-resource-analysis.md)                                           |
+| Applications Flutter         | Empreinte de snapshot Dart, condensés de bibliothèques par ABI et provenance de build du moteur             | Aucune (analyse APK statique) ; [guide Flutter](../flutter-analysis.md)                                                                   |
+| Firmware                     | Régions, résultats d'extraction et passage de relais vers l'analyse native                                  | Binwalk / Unblob sous Linux ; [guide firmware](../firmware-analysis.md)                                                                   |
+| Paquets enregistrés          | Champs sélectionnés, valeurs répétées, filtres et règles de décodage                                        | Linux: TShark 4.x + prlimit; [guide des captures](../packet-captures.md)                                                                  |
+| Signaux logiques enregistrés | Annotations du décodeur, plages d’échantillons et diagnostics                                               | Linux: sigrok-cli 0.7.2 + prlimit; [guide des signaux](../signal-recordings.md)                                                           |
+| Paquets et ressources        | Inventaires de fichiers, empreintes, plists, anatomie des bundles Apple et ressources extraites             | [Guide artefacts et JavaScript](../javascript-artifact-reconstruction.md), [applications Apple](../apple-application-analysis.md)         |
+| Comportement des processus   | Sortie du terminal, interactions, code de sortie, observations du système de fichiers et comparaisons       | Linux/macOS avec un PTY natif ; [capture de processus](../process-capture.md)                                                             |
+| Binaires Go                  | Version du compilateur embarquée, modules, remplacements et paramètres de compilation                       | Inspection statique intégrée ELF/PE/thin Mach-O; Aucune installation de Go nécessaire                                                     |
+| Bases SQLite                 | Tables, colonnes, index, vues, déclencheurs et lignes sélectionnées de tables ordinaires                    | Instantané local base/WAL ; Node.js 24.x >=24.15 ou 26+ avec limites SQLite natives                                                       |
+| Objets de code GPU           | Cibles CUDA/HIP, paramètres et ressources de noyaux sélectionnés, texte PTX conservé                        | Inspection statique intégrée ELF/PE/fatbin/CUBIN/PTX; [GPU](../gpu-code-objects.md)                                                       |
+| Fichiers de modèles          | Métadonnées GGUF / safetensors, déclarations de tenseurs et totaux dérivés                                  | Lecture des en-têtes ; empreinte complète facultative; [GGUF / safetensors](../model-artifacts.md)                                        |
+| Métadonnées IL2CPP           | Images d’assemblages Unity global-metadata.dat, noms de types/méthodes et plages d’index                    | Décodage statique des versions 24, 27, 29, 31, 39 ; sans Unity                                                                            |
+| Godot PCK                    | Inventaire et extraction d’archive, en-têtes/répertoires originaux et identités des contenus sélectionnés   | Formats statiques 2, 3, 4 ; sans Godot                                                                                                    |
+| Signatures APK               | Signataires v1/v2/v3/v3.1, empreintes de certificats, rotation des clés et cohérence interne des condensats | Inspection statique intégrée; `inspect_apk_signature`                                                                                     |
 
 L'inspection statique JavaScript et .NET lit les fichiers fournis sans exécuter l'application. La capture à l'exécution lance la cible choisie ou interagit avec elle avec vos permissions utilisateur ; chaque guide d'exécution décrit ses effets.
 
 <a id="choosing-a-deep-analysis-provider"></a>
 
-Les formats natifs et les hôtes pris en charge varient selon le fournisseur. Consultez [la configuration de Hopper et Ghidra](../installation.md#hopper), le [guide IDA](../ida-provider.md), [Kuna](../kuna-provider.md) et [la prise en charge expérimentale de Ghidra sous Windows](../windows-ghidra-p0.md). Ghidra prend aussi en charge [l'analyse DOS 16 bits](../ghidra-dos.md). Pour les gros binaires, augmentez son délai de démarrage avec `REA_GHIDRA_STARTUP_TIMEOUT_MS`. Pour le choix du fournisseur, consultez le [guide CLI](../cli.md#choose-a-provider). Vérifiez la [disponibilité dans les versions publiées](../installation.md#released-package-and-main) pour les fonctionnalités ajoutées depuis la dernière version npm.
+Les formats natifs et les hôtes pris en charge varient selon le fournisseur. Consultez [la configuration de Hopper et Ghidra](../installation.md#hopper), le [guide IDA](../ida-provider.md), [Kuna](../kuna-provider.md) et [la prise en charge expérimentale de Ghidra sous Windows](../windows-ghidra-p0.md). Ghidra prend aussi en charge [l'analyse DOS 16 bits](../ghidra-dos.md). Pour les gros binaires, augmentez son délai de démarrage avec `REA_GHIDRA_STARTUP_TIMEOUT_MS` / `REA_HOPPER_STARTUP_TIMEOUT_MS`. Pour le choix du fournisseur, consultez le [guide CLI](../cli.md#choose-a-provider). Vérifiez la [disponibilité dans les versions publiées](../installation.md#released-package-and-main) pour les fonctionnalités ajoutées depuis la dernière version npm.
 
 ## Études de cas
 
-[![Illustrations des études sur la spatialisation sonore de DX-Ball, le pont du presse-papiers de Notion et le cercle de projectiles de TH04](../assets/rea-showcases.png)](https://rea.tools/fr/showcase/)
+<a href="https://rea.tools/fr/showcase/">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="../assets/rea-showcases-dark.svg" />
+    <img alt="Illustrations des études sur la spatialisation sonore de DX-Ball, le pont du presse-papiers de Notion et le cercle de projectiles de TH04" src="../assets/rea-showcases.svg" />
+  </picture>
+</a>
 
 ### DX-Ball : reconstruire un calcul de panoramique sonore
 
@@ -272,8 +290,6 @@ Commencez par les [guides pas à pas](https://rea.tools/fr/guides/) du site web.
 
 - [Installation et configuration](../installation.md) : enregistrement des agents, configuration des fournisseurs, mises à jour et désinstallation.
 - [Vérification et dépannage](../installation.md#check-readiness-for-your-task) : diagnostiquer un agent ou un moteur d'analyse donné.
-- [CUDA / HIP](../gpu-code-objects.md)
-- [GGUF / safetensors](../model-artifacts.md)
 - [CLI et Evidence](../cli.md) : commandes, choix du fournisseur, snapshots, import/export et codes de sortie.
 - [Contrats MCP](../mcp-contracts.md) et [prompts pour agents](../mcp-prompts.md) : résultats des outils, sessions et investigations guidées.
 - [Catalogue des outils](../mcp-contracts.md#generated-catalog) : inventaire des outils, fournisseurs et commandes CLI, généré lors du build.

@@ -7,7 +7,7 @@ with a bounded host terminal tool; provider text is untrusted data, not commands
 from __future__ import annotations
 
 import argparse
-from datetime import datetime
+from datetime import datetime, time
 import hashlib
 import json
 import os
@@ -24,10 +24,29 @@ def digest(data):
     return hashlib.sha256(data).hexdigest()
 
 
+def strict_fromisoformat(text):
+    # Python 3.14 reads T24:00:00 as the next midnight; 3.11-3.13 refuse it.
+    # Only that reading moves the date past the one the text starts with, so
+    # refusing it here makes every supported interpreter agree.
+    parsed = datetime.fromisoformat(text)
+    if parsed.time() == time(0) and not text.startswith(date_spellings(parsed.date())):
+        raise ValueError("hour must be in 0..23")
+    return parsed
+
+
+def date_spellings(day):
+    week_year, week, weekday = day.isocalendar()
+    spellings = (f"{day.year:04d}-{day.month:02d}-{day.day:02d}", f"{day.year:04d}{day.month:02d}{day.day:02d}",
+                 f"{week_year:04d}-W{week:02d}-{weekday}", f"{week_year:04d}W{week:02d}{weekday}")
+    if weekday == 1:
+        spellings += (f"{week_year:04d}-W{week:02d}", f"{week_year:04d}W{week:02d}")
+    return spellings
+
+
 def timestamp(value):
     if not isinstance(value, str):
         raise ValueError("timestamp must be an explicit timezone-aware ISO string")
-    parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    parsed = strict_fromisoformat(value.replace("Z", "+00:00"))
     if parsed.tzinfo is None:
         raise ValueError("timestamp must carry a timezone")
     return parsed
@@ -195,7 +214,7 @@ def freshness(source_time, finished_at, kind):
     try:
         if not isinstance(source_time, str):
             raise ValueError("source time must be text")
-        date = datetime.fromisoformat(source_time.replace("Z", "+00:00")).date()
+        date = strict_fromisoformat(source_time.replace("Z", "+00:00")).date()
         age = (timestamp(finished_at).date() - date).days
         result.update(age_days=age, status="future_source_time" if age < 0 else "dated_not_certified_current")
     except (ValueError, TypeError):

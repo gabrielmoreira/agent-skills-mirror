@@ -396,8 +396,8 @@ Each introduces the goal, then follows three named steps: ask a question,
 find the rule, and try a reconstruction. The question and plain-language finding
 are on the left, with the demo on the right; mobile keeps that reading order.
 Code excerpts and source details join the optional investigation flow and checks
-in each disclosure. Calculator’s excerpt
-comes from an installed model DLL; Microsoft’s public implementation supplies
+in each disclosure. Calculator's excerpt
+comes from an installed model DLL; Microsoft's public implementation supplies
 names and a crosscheck. Its controls apply the percentage rule to generic inputs.
 The target guides end with an optional larger-project disclosure, preserving
 the original website-cloning and game-reconstruction prompts.

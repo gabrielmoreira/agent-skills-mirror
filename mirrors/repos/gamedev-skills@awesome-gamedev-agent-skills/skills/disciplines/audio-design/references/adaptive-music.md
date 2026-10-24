@@ -37,6 +37,11 @@ Tips: author stems at the same BPM/length and bounce them aligned. Fades of
 ~0.5–1.5 s feel musical; instant cuts feel mechanical. Because layers never
 restart, intensity can change any time without losing sync.
 
+Godot 4.7 has this built in: an `AudioStreamSynchronized` holds up to 32 sub-streams
+that start at exactly the same time in one player, and
+`set_sync_stream_volume(index, volume_db)` fades a layer. Prefer it over several
+players when the stems must stay sample-aligned.
+
 ## Horizontal re-sequencing
 
 Switch segments at safe musical points so transitions don't sound abrupt.
@@ -44,18 +49,29 @@ Switch segments at safe musical points so transitions don't sound abrupt.
 ```gdscript
 # Request a section change; apply it only at the next bar boundary.
 var pending_section := ""
+var _last_bar := -1
 const BPM := 120.0
 const BEATS_PER_BAR := 4
-var sec_per_bar := 60.0 / BPM * BEATS_PER_BAR
+const SEC_PER_BAR := 60.0 / BPM * BEATS_PER_BAR
 
-func request_section(name: String) -> void:
-    pending_section = name        # don't switch mid-bar; queue it
+func request_section(section: String) -> void:
+    pending_section = section     # don't switch mid-bar; queue it
 
-func on_bar_boundary(pos: float) -> void:
-    if pending_section != "":
-        crossfade_to(pending_section, 0.2)   # short crossfade across the seam
-        pending_section = ""
+func _process(_dt: float) -> void:
+    var bar := int(song_time() / SEC_PER_BAR)   # song_time(): see the beat-sync pattern in SKILL.md
+    if bar != _last_bar:
+        _last_bar = bar
+        if pending_section != "":
+            crossfade_to(pending_section, 0.2)   # short crossfade across the seam
+            pending_section = ""
 ```
+
+`_process` only sees the boundary on the first frame after it, so this switch lands up to one
+frame late. Godot 4.7's `AudioStreamInteractive` does the switch in the audio thread instead:
+add clips, set `bpm`/`bar_beats` on each clip's Ogg Vorbis or MP3 stream (`AudioStreamWAV` has no
+beat data), define
+transitions with `add_transition(from, to, TRANSITION_FROM_TIME_NEXT_BAR, ...)`, then call
+`get_stream_playback().switch_to_clip_by_name(&"combat")` on the player.
 
 Transition strategies, roughly increasing in polish:
 
@@ -72,9 +88,13 @@ Drive the music from a small, smoothed intensity value rather than raw events:
 
 ```gdscript
 # Combine signals into 0..1, smooth it, then map to layers/sections with hysteresis.
-func intensity_from_state(enemies_near: int, player_hp01: float) -> float:
-    var raw = clamp(enemies_near / 5.0, 0.0, 1.0) * (1.0 - 0.4 * player_hp01)
-    intensity = lerp(intensity, raw, 0.05)   # smooth so it doesn't flicker
+var intensity := 0.0
+
+func intensity_from_state(enemies_near: int, player_hp01: float, dt: float) -> float:
+    var raw := clampf(enemies_near / 5.0, 0.0, 1.0) * (1.0 - 0.4 * player_hp01)
+    # Frame-rate-independent smoothing; a fixed lerp(…, 0.05) per frame would settle
+    # twice as fast at 120 FPS as at 60.
+    intensity = lerpf(intensity, raw, 1.0 - exp(-3.0 * dt))
     return intensity
 
 # Hysteresis: require crossing different thresholds up vs down so the music

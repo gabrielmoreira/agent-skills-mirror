@@ -48,13 +48,14 @@ scripts/                      # automation
 
 ## Hard rules
 
-1. **One commit per lesson directory.** Never batch multiple lessons into one commit. A 10-lesson PR has 10 commits.
+1. **Size commits by judgment.** Commit count is a judgment call, not one commit per lesson. A small fix gets 1 to 2 commits. A large change gets a few logical commits, each one a step a reviewer can read on its own.
 2. **Conventional commit subjects** ≤72 chars: `feat(phase-NN/MM): <slug>`. Body explains why, not what.
 3. **Mermaid or SVG only** for diagrams. No ASCII / Unicode box-drawing.
 4. **Every fenced code block needs a language tag.** Use `text`, `json`, `python`, `typescript`, `rust`, `julia`, `bash`, `console`, `mermaid`, `yaml` as appropriate.
 5. **Original implementations only.** Don't cite external curriculum repos in docs, code comments, or commit text. Cite RFCs, official specs, and academic papers when they are the canonical source.
 6. **Dependency allowlist** (see `Dependencies` below). Stdlib-first.
 7. **Never commit generated files**: `catalog.json` is gitignored, `site/data.js` is rebuilt by CI, `package-lock.json` is never tracked.
+8. **Answer every review bot thread.** CodeRabbit and Devin review each PR. Fix the finding or reply with the reason it does not apply, then resolve the thread.
 
 ---
 
@@ -115,8 +116,8 @@ Keep the distractors comparable in length to the correct option. When the correc
 ### Claude certification contract
 
 Certification lessons under `certifications/claude/lessons/` follow the same
-documentation, quiz, diagram, dependency, and one-commit-per-lesson rules as
-phase lessons. Every certification lesson needs a runnable main file and at
+documentation, quiz, diagram, dependency, and commit-size rules as phase
+lessons. Every certification lesson needs a runnable main file and at
 least five deterministic tests. Tracks reference stable lesson paths so one
 lesson can serve several credentials without duplication. Conceptual lessons
 still need practical work: use a scenario runner, policy scorer, artifact
@@ -199,7 +200,7 @@ pipeline as well.
 
 ### Manual contract
 
-A manual under `manuals/<id>/` explains one subject at one pinned version, built from offline captures and ranked sources. Read `manuals/AUTHORING.md` before writing one. `node scripts/audit_manuals.js` must report `TOTAL 0`: it checks section shape, prose limits, figure legibility, listing provenance, verbatim quotes, and capture drift. Commit one section per commit as `feat(manual/<id>): <section slug>`. Manuals stay outside the book and translation pipelines; their PDFs are release assets, never committed.
+A manual under `manuals/<id>/` explains one subject at one pinned version, built from offline captures and ranked sources. Read `manuals/AUTHORING.md` before writing one. `node scripts/audit_manuals.js` must report `TOTAL 0`: it checks section shape, prose limits, figure legibility, listing provenance, verbatim quotes, and capture drift. Size commits by judgment, such as one section with its figures and captures as `feat(manual/<id>): <section slug>`. Manuals stay outside the book and translation pipelines; their PDFs are release assets, never committed.
 
 ### code/
 
@@ -223,6 +224,8 @@ python3 scripts/audit_lessons.py
 python3 scripts/audit_certifications.py
 python3 scripts/check_readme_counts.py        # advisory — CI fixes on merge
 node --test site/test_manuals.js && node scripts/audit_manuals.js   # when manuals/ changes
+node site/build-cheatsheets.js --check && node site/build-cheatsheets.js --check-quality   # when cheatsheets/ or lessons change
+node site/build.js && node --test site/test_*.js   # when site/ changes; then git checkout -- site/data.js
 
 # For each lesson touched:
 cd phases/NN-phase/MM-lesson/code
@@ -316,7 +319,7 @@ mkdir -p phases/NN-phase-slug/MM-new-lesson/{docs,code/tests,outputs}
 
 # 8. Validate locally.
 
-# 9. Atomic commit:
+# 9. Commit (size commits by judgment):
 git add phases/NN-phase-slug/MM-new-lesson README.md ROADMAP.md
 git commit -m "feat(phase-NN/MM): add <slug>"
 git push -u origin <your-branch>
@@ -327,4 +330,4 @@ gh pr create --title "feat(phase-NN/MM): add <slug>" --body "<5-line summary>"
 
 ---
 
-Last reviewed: 2026-10-06.
+Last reviewed: 2026-10-23.

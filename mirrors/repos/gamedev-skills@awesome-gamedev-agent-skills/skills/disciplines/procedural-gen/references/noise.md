@@ -6,9 +6,12 @@ sampling it across a grid gives a coherent heightfield. **Use a library** —
 implementing correct gradient noise is fiddly and rarely worth it.
 
 Libraries by ecosystem: `FastNoiseLite` (C/C++/C#/Rust/JS/GLSL/HLSL and many
-more), `opensimplex` (Python), `simplex-noise` (JS/TS), `Unity.Mathematics.noise`
-or `Mathf.PerlinNoise` (Unity). Note the output range differs: some return
-`0..1`, others `-1..+1`. Rescale to a known range before combining.
+more; built into Godot 4 as the `FastNoiseLite` resource, whose
+`get_noise_2d()` returns about `-1..1`), `opensimplex` (Python), `simplex-noise`
+(JS/TS), `Unity.Mathematics.noise` (`snoise`/`cnoise`, `-1..1`) or
+`Mathf.PerlinNoise` (Unity, about `0..1` and may slightly overshoot). Rescale to a
+known range before combining. `Mathf.PerlinNoise` takes no seed: derive a large
+per-seed offset added to the coordinates instead.
 
 ## Frequency and wavelength
 
@@ -95,8 +98,8 @@ forest vs sparse desert).
 
 For a map whose east edge tiles with its west edge, sample noise on a cylinder:
 map `x` to an angle and feed `cos/sin` into 3D noise. Tiling both axes uses 4D
-noise on a torus. Higher-dimensional noise has a narrower output range, so
-rescale afterward.
+noise on a torus. The value distribution changes with the dimension, so measure
+the min/max you actually get over the map and rescale afterward.
 
 ## Determinism checklist
 

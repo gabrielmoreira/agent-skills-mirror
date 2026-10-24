@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/partnerships-architect/../../../commercial/skills/partnerships-architect/SKILL.md

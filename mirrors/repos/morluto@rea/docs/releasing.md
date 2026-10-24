@@ -15,8 +15,16 @@ permissions restores the retained tarball and verifier runtime. It installs
 that exact archive into an empty prefix, then exercises CLI help/discovery and
 the real stdio MCP catalog/session contract. Installation finishes before the
 protocol deadline begins, with dependency lifecycle scripts disabled. Only a
-successful rehearsal enables the job with npm publishing authority. Both jobs
-use the same release-input action; neither rebuilds or repacks the archive.
+successful rehearsal enables the job with npm publishing authority. The publisher
+downloads only
+the original qualified archive and manifest, validates their source/run/attempt,
+version, Node identity and streamed digest using Node built-ins, then invokes
+`npm publish --ignore-scripts` against the official registry. A shared built-in
+registry reader checks existing bytes and tags afresh on every publisher attempt,
+including retries after partial publication. It does not install
+application dependencies, restore verifier code or execute package canaries.
+Pinned Node/npm, Actions and the runner remain trusted toolchain inputs. Neither
+job rebuilds or repacks the archive.
 This rehearsal checks package consumption on the Linux release runner;
 qualification retains its broader native-host and real-provider checks.
 
@@ -25,10 +33,19 @@ An existing version must match the qualified tarball's SHA-512 and intended
 `latest`/`next` dist-tag before it can be reused. Publication never overwrites
 an existing version or silently changes a dist-tag. After publication, only
 confirmed registry absence is retried within the propagation window. Content
-or tag mismatches fail immediately. The post-publication verifier installs
+or tag mismatches fail immediately. A separate post-publication job with read-only
+repository/actions permissions verifies registry bytes and tags, then installs
 from npm and repeats the same CLI/MCP checks; it also exercises a real update
 from an older stable release. For a prerelease on `next`, that updater still
-targets stable `latest`, as the public update command does.
+targets stable `latest`, as the public update command does. MCP publication
+depends on that verification job succeeding. Rehearsal, publication and both
+registry-verification/publication jobs do not inherit remote-cache credentials.
+
+Qualification records the parsed `latest`/`next` channel in manifest schema v2.
+Rehearsal validates its exact SemVer mapping; the minimal publisher consumes the
+qualified channel without a second version parser. Only read-only recovery
+accepts existing schema-v1 artifacts, preserving their original bytes and
+source/run identity. New publication requires schema v2.
 
 The required reverse-tools lane runs fresh coverage and both mutation
 preflights. Complete mutation sweeps run separately on a schedule or manual
@@ -38,7 +55,7 @@ both publication jobs and the published-package canary; a merged PR or GitHub
 tag alone does not establish that publication finished. Retry failed jobs in
 the original run after a partial publication.
 
-### Recover an already published npm release
+## Recover an already published npm release
 
 Rerunning a job uses its original workflow and source revision. When a verifier
 or publishing workflow needs a code fix, land that fix on main first, then use
@@ -50,7 +67,9 @@ gh workflow run release-recovery.yml --ref main \
 ```
 
 Select the existing version and its original automatic Release run. Recovery
-requires that run's successful exact-source CI gate and npm publish step. It
+requires that run's successful exact-source CI gate plus a successful npm write
+or registry-byte verification. It recognizes verification in either the older
+publisher job or the separate post-publication job. It
 uses the existing release tag, original qualified tarball and verifier runtime;
 expired or missing artifacts stop recovery. The archive's source, version,
 original run/attempt and Node version must match, and its SHA-512 must equal

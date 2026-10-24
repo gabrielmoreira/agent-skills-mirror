@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/pulse/../../../research/pulse/skills/pulse/SKILL.md

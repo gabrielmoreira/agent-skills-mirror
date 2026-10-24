@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/commercial-forecaster/../../../commercial/skills/commercial-forecaster/SKILL.md

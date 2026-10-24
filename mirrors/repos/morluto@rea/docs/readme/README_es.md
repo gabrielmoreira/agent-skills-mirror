@@ -1,7 +1,7 @@
 <div align="center">
 
 [English](../../README.md) · [简体中文](README_zh.md) · [繁體中文](README_zh-TW.md) · [日本語](README_ja.md) · [한국어](README_ko.md) · [Türkçe](README_tr.md) · [Русский](README_ru.md) · [Tiếng Việt](README_vi.md) · [ไทย](README_th.md) · [Deutsch](README_de.md) · **Español** · [Français](README_fr.md) · [Українська](README_uk.md) · [Polski](README_pl.md) · [Português (Brasil)](README_pt-BR.md) · [العربية](README_ar.md) · [فارسی](README_fa.md) · [Bahasa Indonesia](README_id.md) · [Italiano](README_it.md)
-· [Ελληνικά](README_el.md) · [മലയാളം](README_ml.md)
+· [Ελληνικά](README_el.md) · [മലയാളം](README_ml.md) · [Roman Urdu](README_ur-Latn.md)
 
 # REA: Ingeniería inversa de cualquier cosa
 
@@ -60,11 +60,13 @@
 
 REA conecta tu agente con herramientas para inspeccionar binarios nativos, aplicaciones JavaScript y Electron, ensamblados .NET y sitios web. También puedes usar las mismas herramientas desde la terminal. El análisis se ejecuta localmente y los resultados incluyen las pruebas y limitaciones que sustentan cada conclusión.
 
-La configuración registra REA en tu agente e instala las instrucciones de trabajo correspondientes. El análisis nativo puede usar una instalación existente de Hopper o Ghidra; la configuración también puede instalar Hopper, si lo autorizas. El análisis estático de JavaScript no necesita ninguno de los dos motores.
+La configuración registra REA con tu agente e instala las instrucciones de trabajo correspondientes. El análisis nativo puede usar Hopper, Ghidra o IDA ya instalados; la configuración puede instalar Hopper con tu aprobación. El análisis estático de JavaScript no requiere un motor de análisis nativo.
 
 > **[Visita el sitio web de REA](https://rea.tools/es/)** para encontrar instrucciones de configuración, guías ilustradas y casos reales.
 
 ## Inicio rápido
+
+En Linux, iniciar Ghidra, JADX y herramientas de firmware, y analizar JavaScript/Electron estáticamente, requiere un `ps` compatible con procps en el `PATH` de REA para comprobar la propiedad de los procesos. Consulta el requisito de Linux.
 
 ### Configura tu agente
 
@@ -77,6 +79,8 @@ npx rea-agents setup
 Elige tus agentes, revisa los cambios propuestos y apruébalos. La configuración añade el servidor MCP de REA y las instrucciones de trabajo correspondientes, con copias de seguridad de la configuración existente. Reinicia tu agente al terminar.
 
 La configuración admite Claude Code, Codex, Cursor, Gemini CLI, Grok Build y [otros agentes](../installation.md#supported-agents). Consulta [instalación y configuración](../installation.md) para configurar proveedores y registrar MCP manualmente.
+
+MCP usa esquemas de entrada compactos por defecto. Para ver todas las instrucciones de campos y la validación anidada, establece `REA_MCP_INPUT_SCHEMA_PROFILE=full` en el registro MCP. Ambos perfiles conservan todas las herramientas y la misma validación canónica del servidor; consulta la guía de contratos MCP.
 
 ### Pregunta a tu agente
 
@@ -109,11 +113,15 @@ Para el análisis nativo, configura primero un proveedor. Consulta la [guía de 
 
 REA cambia rápidamente y las nuevas versiones incluyen correcciones frecuentes. Mantén tu instalación actualizada.
 
-Para una CLI instalada mediante npm:
+Para una CLI instalada mediante `npm install --global` / `bun add --global`:
 
 ```bash
 rea update
 ```
+
+`rea --update` es un alias de `rea update` con las mismas opciones globales de salida. Los comandos de actualización conservan como máximo 4 MiB de stdout/stderr combinados. Los metadatos demasiado grandes se rechazan al terminar; las instalaciones detalladas conservan diagnósticos acotados. El progreso respeta la contrapresión del terminal y espera las escrituras enviadas.
+
+Las actualizaciones globales con Bun requieren Bun 1.2.17 o posterior. Actualiza manualmente las versiones anteriores antes de ejecutar `rea update`.
 
 Para actualizar los registros de tus agentes y la skill, ejecuta el comando de configuración que muestra la actualización.
 
@@ -124,6 +132,8 @@ npx rea-agents@latest setup
 ```
 
 Revisa los cambios de configuración y reinicia tu agente. Para ejecutar comandos de CLI puntuales, usa `npx rea-agents@latest` seguido del comando.
+
+Con Bun, usa `bunx rea-agents@latest` en lugar de `npx rea-agents@latest`.
 
 ## Cómo funciona REA
 
@@ -137,45 +147,60 @@ Tu agente llama a REA mediante MCP para inspeccionar el objetivo y seguir el có
 
 ## Qué puedes analizar
 
-REA requiere Node.js 22.x (>=22.19), 24.x (>=24.11) o 26+, además de npm. Las herramientas adicionales y los sistemas anfitriones compatibles dependen del objetivo:
+REA requiere Node.js 22.x (>=22.23.4), 24.x (>=24.22.1) o 26+ (>=26.12.1), además de npm. Las herramientas adicionales y los sistemas anfitriones compatibles dependen del objetivo:
 
-| Objetivo                    | Qué devuelve REA                                                                                                               | Requisitos y guía                                                                                                                      |
-| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------- |
-| Binarios nativos            | Pseudocódigo, ensamblador, cadenas, símbolos, llamadas y referencias                                                           | Hopper, Ghidra o IDA; [análisis nativo](../native-investigation.md)                                                                    |
-| Estructura ELF sin ejecutar | Secciones, segmentos, símbolos/reubicaciones originales y posibles medidas de mitigación detectadas mediante análisis estático | pwntools proporcionado por quien llama, en Linux x64; [diagnóstico de binarios](../binary-diagnostics.md)                              |
-| PE certificates             | Authenticode WIN_CERTIFICATE entries and PKCS#7 signer/X.509 identity fields                                                   | Built-in static PE inspection; [PE certificates](../pe-certificates.md)                                                                |
-| Bytecode EVM                | Selectores de despacho, desplazamientos en bytes, argumentos inferidos y mutabilidad                                           | Entrada local con bytes sin procesar o representación hexadecimal, en Linux x64; [guía de EVM sin ejecutar](../evm-bytecode.md)        |
-| Rust binaries               | Embedded cargo-auditable dependency list                                                                                       | [Rust binaries](../rust-binaries.md)                                                                                                   |
-| ELF notes                   | PT_NOTE/SHT_NOTE owners, types, GNU build-id and ABI-tag fields                                                                | Built-in static ELF inspection; [ELF notes](../elf-notes.md)                                                                           |
-| Erlang BEAM                 | IFF chunks, atoms, exports, and tables                                                                                         | Built-in static BEAM inspection; [Erlang BEAM](../erlang-beam.md)                                                                      |
-| Fallos de Linux registrados | Registros note sin procesar, registros/señales de cada hilo registrado y posibles correspondencias de memoria opcionales       | pwntools proporcionado por quien llama, en Linux x64; GDB/pwndbg opcionales; [fallos registrados](../recorded-crashes.md)              |
-| Instalaciones de escritorio | Posibles entornos de ejecución, archivos de evidencia, componentes y siguientes pasos                                          | Inspección acotada de directorios y cabeceras；[Aplicaciones de escritorio](../desktop-applications.md)                                |
-| JavaScript / Electron       | Módulos, importaciones, mapas de código fuente, rutas, IPC y relaciones con complementos nativos                               | Node.js y npm; [análisis de aplicaciones](../javascript-application-workflows.md)                                                      |
-| Sitios web                  | Estructura de la página, scripts, observaciones de red y capturas de pantalla solicitadas                                      | Un navegador de la familia Chrome; [análisis del navegador](../browser-observation.md)                                                 |
-| Capturas de red guardadas   | Solicitudes, respuestas, contenido accesible de las cargas útiles y ubicaciones de origen                                      | HAR; mitmdump en Linux para capturas en formato nativo de mitmproxy; [guía de capturas](../web-network-captures.md)                    |
-| Capturas de paquetes        | Endpoints, DNS, TLS SNI, distribución de protocolos y solicitudes HTTP                                                         | tshark y capinfos suministrados por el autor de la llamada; [guía pcap](../pcap-analysis.md)                                           |
-| Ensamblados .NET            | Metadatos, instrucciones CIL, dependencias nativas declaradas y comparaciones de compilaciones                                 | Inspección estática; [guía de código administrado](../managed-code-analysis.md)                                                        |
-| PyInstaller                 | CArchive, PYZ, Python bytecode                                                                                                 | Static inspection; [Python packaged applications](../python-packaged-applications.md)                                                  |
-| APK de Android              | Declaraciones del manifiesto, clases, métodos descompilados y referencias                                                      | JADX sin interfaz gráfica y un JDK completo en Linux/macOS/Windows x64; [guía de Android](../android-analysis.md)                      |
-| Dispositivos Android        | Dispositivos, paquetes, procesos, registros, volcados, capturas de pantalla y transferencias de APK/archivos                   | adb suministrado por el autor de la llamada (emulador o dispositivo); [guía de ADB](../adb-device-analysis.md)                         |
-| Proyectos JEB               | Unidades de proyecto del motor, resúmenes de artefactos y pseudocódigo de tipos/métodos                                        | Un cliente JEB iniciado por el autor de la llamada que sirve MCP, seleccionado con REA_JEB_MCP_URL; [guía de JEB](../jeb-analysis.md)  |
-| Recursos de Android         | Manifiesto decodificado, tablas de cadenas, idiomas y datos de versión                                                         | Lanzador de Apktool suministrado por el autor de la llamada; [guía de recursos](../apktool-resource-analysis.md)                       |
-| Aplicaciones Flutter        | Hash de snapshot de Dart, resúmenes de bibliotecas por ABI y procedencia de compilación del motor                              | Ninguna (análisis APK estático); [guía de Flutter](../flutter-analysis.md)                                                             |
-| Firmware                    | Regiones, resultados de extracción y derivaciones al análisis nativo                                                           | Binwalk / Unblob en Linux; [guía de firmware](../firmware-analysis.md)                                                                 |
-| Paquetes grabados           | Campos seleccionados, valores repetidos, filtros y reglas de decodificación                                                    | Linux: TShark 4.x + prlimit; [guía de capturas](../packet-captures.md)                                                                 |
-| Señales lógicas grabadas    | Anotaciones del decodificador, rangos de muestras y diagnósticos                                                               | Linux: sigrok-cli 0.7.2 + prlimit; [guía de señales](../signal-recordings.md)                                                          |
-| Paquetes y recursos         | Inventarios de archivos, resúmenes criptográficos, plists, estructura de paquetes de Apple y recursos extraídos                | [Guía de artefactos y JavaScript](../javascript-artifact-reconstruction.md), [aplicaciones de Apple](../apple-application-analysis.md) |
-| Comportamiento de procesos  | Salida de la terminal, interacciones, observaciones de salida y del sistema de archivos, y comparaciones entre ejecuciones     | Linux/macOS con una PTY nativa; [captura de procesos](../process-capture.md)                                                           |
+| Objetivo                    | Qué devuelve REA                                                                                                               | Requisitos y guía                                                                                                                            |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| Binarios nativos            | Pseudocódigo, ensamblador, cadenas, símbolos, llamadas y referencias                                                           | Hopper, Ghidra o IDA; [análisis nativo](../native-investigation.md)                                                                          |
+| Estructura ELF sin ejecutar | Secciones, segmentos, símbolos/reubicaciones originales y posibles medidas de mitigación detectadas mediante análisis estático | pwntools proporcionado por quien llama, en Linux x64; [diagnóstico de binarios](../binary-diagnostics.md)                                    |
+| PE certificates             | Authenticode WIN_CERTIFICATE entries and PKCS#7 signer/X.509 identity fields                                                   | Built-in static PE inspection; [PE certificates](../pe-certificates.md)                                                                      |
+| Bytecode EVM                | Selectores de despacho, desplazamientos en bytes, argumentos inferidos y mutabilidad                                           | Entrada local con bytes sin procesar o representación hexadecimal, en Linux x64; [guía de EVM sin ejecutar](../evm-bytecode.md)              |
+| Rust binaries               | Embedded cargo-auditable dependency list                                                                                       | [Rust binaries](../rust-binaries.md)                                                                                                         |
+| ELF notes                   | PT_NOTE/SHT_NOTE owners, types, GNU build-id and ABI-tag fields                                                                | Built-in static ELF inspection; [ELF notes](../elf-notes.md)                                                                                 |
+| Erlang BEAM                 | IFF chunks, atoms, exports, and tables                                                                                         | Built-in static BEAM inspection; [Erlang BEAM](../erlang-beam.md)                                                                            |
+| Fallos de Linux registrados | Registros note sin procesar, registros/señales de cada hilo registrado y posibles correspondencias de memoria opcionales       | pwntools proporcionado por quien llama, en Linux x64; GDB/pwndbg opcionales; [fallos registrados](../recorded-crashes.md)                    |
+| Instalaciones de escritorio | Posibles entornos de ejecución, archivos de evidencia, componentes y siguientes pasos                                          | Inspección acotada de directorios y cabeceras；[Aplicaciones de escritorio](../desktop-applications.md)                                      |
+| JavaScript / Electron       | Módulos, importaciones, mapas de código fuente, rutas, IPC y relaciones con complementos nativos                               | Node.js y npm; [análisis de aplicaciones](../javascript-application-workflows.md); Linux: procps `ps`                                        |
+| Sitios web                  | Estructura de la página, scripts, observaciones de red y capturas de pantalla solicitadas                                      | Un navegador de la familia Chrome; [análisis del navegador](../browser-observation.md)                                                       |
+| Capturas de red guardadas   | Solicitudes, respuestas, contenido accesible de las cargas útiles y ubicaciones de origen                                      | HAR / Fiddler Everywhere SAZ; mitmdump en Linux para capturas en formato nativo de mitmproxy; [guía de capturas](../web-network-captures.md) |
+| Capturas de paquetes        | Endpoints, DNS, TLS SNI, distribución de protocolos y solicitudes HTTP                                                         | tshark y capinfos suministrados por el autor de la llamada; [guía pcap](../pcap-analysis.md)                                                 |
+| Ensamblados .NET            | Metadatos, instrucciones CIL, dependencias nativas declaradas y comparaciones de compilaciones                                 | Inspección estática; [guía de código administrado](../managed-code-analysis.md)                                                              |
+| PyInstaller                 | CArchive, PYZ, Python bytecode                                                                                                 | Static inspection; [Python packaged applications](../python-packaged-applications.md)                                                        |
+| APK de Android              | Declaraciones del manifiesto, clases, métodos descompilados y referencias                                                      | JADX sin interfaz gráfica y un JDK completo en Linux/macOS/Windows x64; [guía de Android](../android-analysis.md)                            |
+| Dispositivos Android        | Dispositivos, paquetes, procesos, registros, volcados, capturas de pantalla y transferencias de APK/archivos                   | adb suministrado por el autor de la llamada (emulador o dispositivo); [guía de ADB](../adb-device-analysis.md)                               |
+| Proyectos JEB               | Unidades de proyecto del motor, resúmenes de artefactos y pseudocódigo de tipos/métodos                                        | Un cliente JEB iniciado por el autor de la llamada que sirve MCP, seleccionado con REA_JEB_MCP_URL; [guía de JEB](../jeb-analysis.md)        |
+| Recursos de Android         | Manifiesto decodificado, tablas de cadenas, idiomas y datos de versión                                                         | Lanzador de Apktool suministrado por el autor de la llamada; [guía de recursos](../apktool-resource-analysis.md)                             |
+| Aplicaciones Flutter        | Hash de snapshot de Dart, resúmenes de bibliotecas por ABI y procedencia de compilación del motor                              | Ninguna (análisis APK estático); [guía de Flutter](../flutter-analysis.md)                                                                   |
+| Firmware                    | Regiones, resultados de extracción y derivaciones al análisis nativo                                                           | Binwalk / Unblob en Linux; [guía de firmware](../firmware-analysis.md)                                                                       |
+| Paquetes grabados           | Campos seleccionados, valores repetidos, filtros y reglas de decodificación                                                    | Linux: TShark 4.x + prlimit; [guía de capturas](../packet-captures.md)                                                                       |
+| Señales lógicas grabadas    | Anotaciones del decodificador, rangos de muestras y diagnósticos                                                               | Linux: sigrok-cli 0.7.2 + prlimit; [guía de señales](../signal-recordings.md)                                                                |
+| Paquetes y recursos         | Inventarios de archivos, resúmenes criptográficos, plists, estructura de paquetes de Apple y recursos extraídos                | [Guía de artefactos y JavaScript](../javascript-artifact-reconstruction.md), [aplicaciones de Apple](../apple-application-analysis.md)       |
+| Comportamiento de procesos  | Salida de la terminal, interacciones, observaciones de salida y del sistema de archivos, y comparaciones entre ejecuciones     | Linux/macOS con una PTY nativa; [captura de procesos](../process-capture.md)                                                                 |
+| Binarios Go                 | Versión del compilador integrada, módulos, reemplazos y ajustes de compilación                                                 | Inspección estática integrada ELF/PE/thin Mach-O; No requiere instalar Go                                                                    |
+| Bases de datos SQLite       | Tablas, columnas, índices, vistas, disparadores y filas seleccionadas de tablas ordinarias                                     | Instantánea local de base/WAL; Node.js 24.x >=24.15 o 26+ con límites nativos de SQLite                                                      |
+| Objetos de código GPU       | Destinos CUDA/HIP, parámetros y recursos de kernels seleccionados, texto PTX conservado                                        | Inspección estática integrada ELF/PE/fatbin/CUBIN/PTX; [GPU](../gpu-code-objects.md)                                                         |
+| Archivos de modelos         | Metadatos GGUF / safetensors, declaraciones de tensores y totales derivados                                                    | Inspección de cabeceras; hash completo opcional; [GGUF / safetensors](../model-artifacts.md)                                                 |
+| Metadatos IL2CPP            | Imágenes de ensamblado Unity global-metadata.dat, nombres de tipos/métodos y rangos de índices                                 | Decodificación estática de versiones 24, 27, 29, 31, 39; sin Unity                                                                           |
+| Godot PCK                   | Inventario y extracción, cabeceras/directorios originales e identidad del contenido seleccionado                               | Formatos estáticos 2, 3, 4; sin Godot                                                                                                        |
+| Artefactos WASM             | Validación, secciones, formas WAT exactas de importación/exportación y WAT decodificado                                        | Aportado por quien llama WABT 1.0.42; `inspect_wasm_artifact`                                                                                |
+| Firmas APK                  | Firmantes v1/v2/v3/v3.1, huellas de certificados, rotación de claves y coherencia interna de resúmenes                         | Inspección estática integrada; `inspect_apk_signature`                                                                                       |
 
 La inspección estática de JavaScript y .NET lee los archivos suministrados sin ejecutar la aplicación. La captura en ejecución inicia el objetivo seleccionado o interactúa con él con los permisos de tu usuario; cada guía describe sus efectos.
 
 <a id="choosing-a-deep-analysis-provider"></a>
 
+Para binarios grandes, aumenta el plazo de inicio mediante `REA_GHIDRA_STARTUP_TIMEOUT_MS` o `REA_HOPPER_STARTUP_TIMEOUT_MS`.
+
 Los formatos nativos y los sistemas anfitriones compatibles varían según el proveedor. Consulta [configuración de Hopper y Ghidra](../installation.md#hopper), la [guía de IDA](../ida-provider.md), [Kuna](../kuna-provider.md) y la [compatibilidad experimental de Ghidra en Windows](../windows-ghidra-p0.md). Ghidra también admite [análisis de DOS de 16 bits](../ghidra-dos.md). Para elegir un proveedor, consulta la [guía de CLI](../cli.md#choose-a-provider). Comprueba la [disponibilidad por versión](../installation.md#released-package-and-main) de las funciones añadidas después de la última versión publicada en npm.
 
 ## Casos prácticos
 
-[![Ilustraciones de los casos de panoramización de sonido de DX-Ball, el puente del portapapeles de Notion y el anillo de proyectiles de TH04](../assets/rea-showcases.png)](https://rea.tools/es/showcase/)
+<a href="https://rea.tools/es/showcase/">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="../assets/rea-showcases-dark.svg" />
+    <img alt="Ilustraciones de los casos de panoramización de sonido de DX-Ball, el puente del portapapeles de Notion y el anillo de proyectiles de TH04" src="../assets/rea-showcases.svg" />
+  </picture>
+</a>
 
 ### DX-Ball: reconstruir un cálculo de panoramización de sonido
 
@@ -268,8 +293,6 @@ Empieza con las [guías prácticas](https://rea.tools/es/guides/) del sitio web.
 
 - [Instalación y configuración](../installation.md): registro de agentes, configuración de proveedores, actualizaciones y desinstalación.
 - [Preparación y resolución de problemas](../installation.md#check-readiness-for-your-task): diagnóstico de un agente o motor de análisis concreto.
-- [CUDA / HIP](../gpu-code-objects.md)
-- [GGUF / safetensors](../model-artifacts.md)
 - [CLI y Evidence](../cli.md): comandos, selección de proveedores, instantáneas, importación/exportación y estados de salida.
 - [Contratos de MCP](../mcp-contracts.md) y [prompts para agentes](../mcp-prompts.md): resultados de herramientas, sesiones e investigaciones guiadas.
 - [Catálogo de herramientas](../mcp-contracts.md#generated-catalog): inventario de herramientas, proveedores y comandos de CLI generado durante la compilación.

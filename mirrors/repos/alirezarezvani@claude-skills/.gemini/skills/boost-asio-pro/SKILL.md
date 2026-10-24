@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/boost-asio-pro/../../../engineering/boost-asio-pro/SKILL.md

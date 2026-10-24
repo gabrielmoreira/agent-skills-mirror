@@ -14,8 +14,10 @@ anchored point.
   the parent. Offsets become margins.
 - Center presets set anchors to `0.5` and use offsets relative to the center.
 
-Use `anchors_preset = Control.PRESET_*` (CENTER, FULL_RECT, TOP_WIDE, BOTTOM_RIGHT, ...)
-or the editor's Layout toolbar; it sets anchors and offsets together.
+Use the editor's Layout toolbar, or in code
+`set_anchors_and_offsets_preset(Control.PRESET_*)` (CENTER, FULL_RECT, TOP_WIDE,
+BOTTOM_RIGHT, ...), which sets anchors and offsets together. Assigning `anchor_*` or
+`anchors_preset` alone keeps the existing offsets, so the rect does not snap to the preset.
 
 ## Container types
 
@@ -79,7 +81,8 @@ texture), and `StyleBoxEmpty` cover most needs.
 ## Focus navigation (keyboard / gamepad)
 
 ```gdscript
-control.focus_mode = Control.FOCUS_ALL        # FOCUS_NONE | FOCUS_CLICK | FOCUS_ALL
+control.focus_mode = Control.FOCUS_ALL        # also FOCUS_NONE, FOCUS_CLICK (mouse only),
+                                              # FOCUS_ACCESSIBILITY (screen readers only)
 control.grab_focus()
 # Explicit neighbors (NodePaths) override automatic geometry-based neighbor finding:
 control.focus_neighbor_bottom = next_button.get_path()
@@ -89,6 +92,20 @@ control.focus_next = other.get_path()         # Tab order
 The default UI input actions (`ui_up/down/left/right/accept/cancel/focus_next`) drive
 focus movement; they map to arrow keys, Enter, and the gamepad D-pad/face buttons out of
 the box.
+
+## Offset transforms (4.7+)
+
+Containers overwrite their children's `position`, `rotation` and `scale` on every re-sort.
+For animation inside a container, enable `offset_transform_enabled` and tween
+`offset_transform_position` / `_rotation` / `_scale` (pivot: `offset_transform_pivot_ratio`,
+centre by default). With `offset_transform_visual_only = true` (default) input still hits
+the untransformed rect.
+
+## Touch joystick (4.7+)
+
+`VirtualJoystick` is a built-in `Control` for touchscreens. Set `joystick_mode`
+(`JOYSTICK_FIXED`, `JOYSTICK_DYNAMIC`, `JOYSTICK_FOLLOWING`) and the `action_left/right/up/down`
+input actions it presses, then read movement with `Input.get_vector()` as for a gamepad.
 
 ## HUDs over the game
 

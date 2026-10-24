@@ -3,9 +3,10 @@ name: threejs-scene-setup
 description: >
   Stand up a three.js scene: import maps and the three/addons path, the
   Scene/PerspectiveCamera/WebGLRenderer trio, the setAnimationLoop render loop,
-  responsive resize, and OrbitControls. Use when starting or debugging a three.js
-  app — when the user mentions three.js, THREE.Scene, WebGLRenderer,
-  PerspectiveCamera, the render loop, resizing, or OrbitControls. For models use
+  responsive resize, OrbitControls, and opting into WebGPURenderer. Use when
+  starting or debugging a three.js app — when the user mentions three.js,
+  THREE.Scene, WebGLRenderer, WebGPURenderer, PerspectiveCamera, the render loop,
+  resizing, or OrbitControls. For models use
   threejs-gltf-loading; for materials/lights use threejs-materials-lighting.
 ---
 
@@ -29,9 +30,10 @@ changing an existing project because examples and addons move across releases.
 
 ## Core workflow
 
-1. **Load three.js as an ES module with an import map.** Since r147 the bare
-   specifier `'three'` and `'three/addons/'` must be mapped (in HTML or by a
-   bundler). Addons (controls, loaders) live under `three/addons/...`.
+1. **Load three.js as an ES module with an import map.** Since r137 the bare
+   specifier `'three'` must be resolved by an import map (in HTML) or a bundler;
+   map `'three/addons/'` too. Addons (controls, loaders) live under
+   `three/addons/...`.
 2. **Create the trio.** A `Scene` (root of the graph), a `PerspectiveCamera(fov,
    aspect, near, far)` moved back from the origin, and a `WebGLRenderer` whose
    `domElement` is in the DOM. Set size and `pixelRatio`.
@@ -54,8 +56,8 @@ changing an existing project because examples and addons move across releases.
 <script type="importmap">
 {
   "imports": {
-    "three": "https://cdn.jsdelivr.net/npm/three@0.186.0/build/three.module.js",
-    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.186.0/examples/jsm/"
+    "three": "https://cdn.jsdelivr.net/npm/three@0.186.1/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.186.1/examples/jsm/"
   }
 }
 </script>
@@ -138,6 +140,29 @@ renderer.setAnimationLoop(() => {
 });
 ```
 
+### 6. Opting into WebGPURenderer (only when you need it)
+
+`WebGLRenderer` stays the default choice for compatibility. Switch to
+`WebGPURenderer` when the project needs TSL node materials or compute shaders; it
+falls back to a WebGL 2 backend where WebGPU is unavailable.
+
+```js
+// Official WebGPU examples map both "three" and "three/webgpu" to
+// build/three.webgpu.js, plus "three/tsl" to build/three.tsl.js.
+import * as THREE from 'three/webgpu';
+
+const renderer = new THREE.WebGPURenderer({ antialias: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
+await renderer.init();                  // required before direct render()/compute()
+
+renderer.setAnimationLoop(() => renderer.render(scene, camera));
+```
+
+Scenes, cameras, built-in `Mesh*Material`s, and most addons carry over; custom
+GLSL (`ShaderMaterial`, `onBeforeCompile`) does not.
+
 ## Pitfalls
 
 - **`Failed to resolve module specifier "three"`** → missing import map (or bundler
@@ -153,8 +178,15 @@ renderer.setAnimationLoop(() => {
   4K/retina screens don't tank performance.
 - **OrbitControls feel dead** → with `enableDamping = true` you must call
   `controls.update()` every frame.
-- **Old tutorials use `<script src="three.min.js">`** → since r147 three.js ships
-  ES modules only; use `type="module"` + import maps.
+- **Old tutorials use `<script src="three.min.js">` or `examples/js/...`** →
+  `examples/js` was removed in r148 and `build/three.min.js` in r161; use
+  `type="module"` + import maps.
+- **`.render() called before the backend is initialized`** (WebGPURenderer) → call
+  `await renderer.init()` before any direct `render()`/`compute()`, or render only
+  from `setAnimationLoop`, which initializes first.
+- **`Material "ShaderMaterial" is not compatible`, or an `onBeforeCompile` patch is
+  ignored** (WebGPURenderer) → it renders node materials only; port the effect to
+  TSL, or stay on `WebGLRenderer`.
 
 ## References
 

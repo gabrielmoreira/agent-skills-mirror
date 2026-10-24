@@ -1322,6 +1322,16 @@ def _block_summary(block: SourceBlock, selected: list[Diagram]) -> str:
     return f"[{diagram.index}] {diagram.kind} ({len(diagram.nodes)}n/{len(diagram.edges)}e)"
 
 
+# The keyword that opens each extra region of a fragment: `else` in alt, `and` in par, `option` in critical.
+REGION_KEYWORDS = {"alt": "else", "par": "and", "critical": "option"}
+
+
+def _fragment_digest(item: dict[str, Any]) -> str:
+    keyword = REGION_KEYWORDS.get(item["kind"], "else")
+    parts = [item["label"] or "unlabeled"] + [f"{keyword}: {region or 'unlabeled'}" for region in item["regions"]]
+    return " | ".join(_escape_table(part) for part in parts)
+
+
 def digest(
     path: Path,
     blocks: list[SourceBlock],
@@ -1358,8 +1368,7 @@ def digest(
             )
         if diagram.fragments:
             fragments = ", ".join(
-                f"{item['kind']}({_escape_markdown(item['label'] or 'unlabeled')})"
-                for item in diagram.fragments
+                f"{item['kind']}({_fragment_digest(item)})" for item in diagram.fragments
             )
             output.append(f"- fragments: {fragments}")
         if diagram.notes:

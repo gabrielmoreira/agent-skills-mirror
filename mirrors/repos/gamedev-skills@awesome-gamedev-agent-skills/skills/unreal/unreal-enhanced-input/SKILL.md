@@ -34,7 +34,8 @@ multi-device design) → `input-systems`. The Pawn/Character C++ those bindings 
 3. **Create an Input Mapping Context (`IMC_`)** that maps keys/buttons to those actions. Use
    **Modifiers** to shape raw input (Negate, Swizzle Input Axis Values, Dead Zone) — e.g. WASD
    into one Axis2D needs Negate on A/S and a Swizzle on W/S. Use **Triggers** (Pressed, Hold,
-   Tap) to decide *when* an action fires.
+   Tap) to decide *when* an action fires. The **Combo** trigger is deprecated in UE 5.8; don't
+   build new input on it.
 4. **Add the mapping context to the player** via the `EnhancedInputLocalPlayerSubsystem`
    (`AddMappingContext(IMC, Priority)`), usually in `BeginPlay`/possession.
 5. **Bind actions** to handlers by `ETriggerEvent` (`Triggered`, `Started`, `Completed`, …) on
@@ -61,12 +62,13 @@ void AMyCharacter::BeginPlay()
 ### 2. Bind actions and read values
 
 ```cpp
-void AMyCharacter::SetupPlayerInputComponent(UInputComponent* InputComponent)
+void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
-    Super::SetupPlayerInputComponent(InputComponent);
+    Super::SetupPlayerInputComponent(PlayerInputComponent);
 
     // The component is an Enhanced Input component when the plugin is active.
-    if (UEnhancedInputComponent* EIC = Cast<UEnhancedInputComponent>(InputComponent))
+    // (Don't name the parameter InputComponent: that shadows AActor::InputComponent.)
+    if (UEnhancedInputComponent* EIC = Cast<UEnhancedInputComponent>(PlayerInputComponent))
     {
         EIC->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AMyCharacter::Move);
         EIC->BindAction(LookAction, ETriggerEvent::Triggered, this, &AMyCharacter::Look);
@@ -99,6 +101,10 @@ EnhancedInputAction IA_Move (Triggered)
 
 - **No input at all** — the mapping context was never added (`AddMappingContext`), or the
   player has no Local Player yet. Add it after possession/`BeginPlay`.
+- **Input works in single player but not on a client, or stops after respawn** — `BeginPlay`
+  ran before the controller possessed the pawn, so `GetController()` was null. Add the context
+  in an override of `PawnClientRestart()`, which runs on the owning client after possession
+  (Epic's Input Overview does this), or in the PlayerController.
 - **Link/compile error binding in C++** — `"EnhancedInput"` isn't in `Build.cs`
   `PublicDependencyModuleNames`.
 - **WASD only moves on two keys / wrong axis** — Axis2D needs **Modifiers**: Negate on the
@@ -116,7 +122,9 @@ EnhancedInputAction IA_Move (Triggered)
 - For a complete first-/third-person C++ Character with Enhanced Input (header + source,
   including look/jump and a control-rebind note), read `references/cpp-setup.md`.
 - Primary docs: "Enhanced Input in Unreal Engine"
-  (`https://dev.epicgames.com/documentation/en-us/unreal-engine/enhanced-input-in-unreal-engine`).
+  (`https://dev.epicgames.com/documentation/en-us/unreal-engine/enhanced-input-in-unreal-engine`)
+  and "Input Overview"
+  (`https://dev.epicgames.com/documentation/en-us/unreal-engine/input-overview-in-unreal-engine`).
 
 ## Related skills
 

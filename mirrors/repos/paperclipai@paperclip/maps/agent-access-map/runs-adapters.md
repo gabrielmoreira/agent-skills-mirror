@@ -275,6 +275,14 @@ Gaps: Task-session listing and execution-context reset require board agent
 management at their HTTP routes. Native `call_api` preserves these denials; native
 continuation remains server-owned.
 
+Scoped source evidence: replacement of a workspace may bootstrap a newly
+admitted provider session only with matching current run/runner/lease identity,
+no prior activity or backup, and an atomic claim of an absent remote session
+directory. Existing sessions retain verified restore. This adds no reset or
+cleanup authority. Follow the [session recipe](../feature-map/runs-adapters.md#session)
+with a board-owned disposable fixture; live provider and actor-access evidence
+remain separate from the executor regressions.
+
 Scoped source-only evidence: [configuration changes](../../server/src/services/agent-configuration.ts)
 and [native execution/recovery](../../server/src/services/native-runtime/native-session-executor.ts)
 retain existing execution on unrelated edits and use recorded run configuration

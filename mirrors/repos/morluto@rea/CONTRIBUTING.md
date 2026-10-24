@@ -10,10 +10,18 @@ and maintenance cost. Keep cosmetic polish with useful fixes; confusing or
 incorrect user instructions warrant standalone corrections. Collect other
 cosmetic-only suggestions in an issue rather than separate PRs.
 
-For capability organization and provider composition, use the
-[architecture map](docs/architecture.mermaid). Production factories in
-`src/composition/` construct fresh providers without starting engines or acquiring
-targets; optional adapter failures must preserve successful peers. Run
+For selected architectural owners and dependency paths, use the
+[architecture map](docs/architecture.mermaid). It is not a complete directory or
+import inventory. For current provider wiring, start with
+[`src/composition/binary.ts`](src/composition/binary.ts) for deep candidates and
+the other `src/composition/` factories for tool services, including
+[`gpu.ts`](src/composition/gpu.ts) and [`model.ts`](src/composition/model.ts).
+Live Frida and Cutter adapters are constructed directly in
+[`src/cli/fridaCommands.ts`](src/cli/fridaCommands.ts),
+[`src/cli/cutterCommands.ts`](src/cli/cutterCommands.ts), and
+[`src/server/createServer.ts`](src/server/createServer.ts).
+Production factories construct fresh providers without starting engines or
+acquiring targets; optional adapter failures must preserve successful peers. Run
 `npm run verify:test-discovery` after adding or moving tests. Resolved import
 boundaries are checked by `npm run verify:module-boundaries`, included in lint.
 
@@ -248,6 +256,11 @@ On a Windows checkout, some source tests fail because fixtures use POSIX paths,
 base revision, or run the suite on Linux or WSL, before attributing them to a
 change. See [testing](docs/testing.md#developer-commands) for command scopes
 and lane selection.
+
+`git submodule update --init --recursive` fails at the pinned Unblob submodule
+on Windows and can leave later submodules unchecked out. Apply the
+[Unblob checkout workaround](docs/firmware-analysis.md#windows-submodule-checkout),
+then rerun the command.
 
 ## Documentation website
 

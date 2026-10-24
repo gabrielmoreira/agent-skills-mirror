@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/passive-deal-screener/../../../finance/skills/passive-deal-screener/SKILL.md

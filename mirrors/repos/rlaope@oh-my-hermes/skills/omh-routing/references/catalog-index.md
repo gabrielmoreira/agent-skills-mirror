@@ -14,6 +14,7 @@ Trigger phrases and the role registry live in `references/workflow-registry.md`;
 - `omh-agent-evaluation`: [omh] Choosing between coding agents on evidence: compare executor or agent choices on reproducible tasks using quality, cost, time, tool, and evidence metrics.
 - `omh-agent-instructions`: [omh] Agent instruction file for a repo -- AGENTS.md, CLAUDE.md, a Cursor rule: write or update what an agent cannot derive from the code, inside a marked region, with every command verified or marked unverified and no counts that drift.
 - `omh-agent-ops-review`: [omh] AI agent progress for managers: help managers inspect AI-agent progress, blockers, quality gates, and throughput levers.
+- `omh-ai-job-search`: [omh] Career search to interview: find verified opportunities, tailor evidence-grounded applications and track confirmed outcomes.
 - `omh-ai-slop-cleaner`: [omh] Messy or AI-generated code to clean up: delete AI-generated slop, dead code, and duplication while observable behavior stays identical.
 - `omh-app-debugging`: [omh] Application code misbehaves -- a wrong value, a flaky test, a lost update: reproduce it first, form competing hypotheses, discriminate them with the cheapest observation, and only then fix the demonstrated root cause.
 - `omh-apple-design`: [omh] Designing or reviewing an iOS, macOS, or Apple-style UI: prepare native Apple UI or Apple marketing product-visual direction, review, and improvement briefs with evidence-backed remediation handoffs.

@@ -1,0 +1,74 @@
+<!--
+Pre-chat forms delta. This is NOT a standalone deployable file; graft it onto a base
+Web deployment (see esd_web_full.xml for everything else: branding, site, etc.). Two pieces:
+  1. embeddedServiceForms goes directly under EmbeddedServiceConfig.
+  2. displayNameFormat goes INSIDE the existing embeddedServiceMessagingChannel (not
+     directly under EmbeddedServiceConfig). Merge it into that element if the base file
+     already has one; do not add a second embeddedServiceMessagingChannel.
+-->
+<embeddedServiceForms>
+    <displayContext>Conversation</displayContext>
+    <embeddedServiceFormFields>
+        <displayOrder>0</displayOrder>
+        <formField>_FirstName</formField>
+        <formFieldType>Text</formFieldType>
+        <isHidden>false</isHidden>
+        <isRequired>true</isRequired>
+        <messagingChannelParameterType>Standard</messagingChannelParameterType>
+    </embeddedServiceFormFields>
+    <embeddedServiceFormFields>
+        <displayOrder>1</displayOrder>
+        <formField>_LastName</formField>
+        <formFieldType>Text</formFieldType>
+        <isHidden>false</isHidden>
+        <isRequired>true</isRequired>
+        <messagingChannelParameterType>Standard</messagingChannelParameterType>
+    </embeddedServiceFormFields>
+    <embeddedServiceFormFields>
+        <displayOrder>2</displayOrder>
+        <formField>_Email</formField>
+        <formFieldType>Email</formFieldType>
+        <isHidden>false</isHidden>
+        <isRequired>true</isRequired>
+        <messagingChannelParameterType>Standard</messagingChannelParameterType>
+    </embeddedServiceFormFields>
+    <embeddedServiceFormFields>
+        <displayOrder>3</displayOrder>
+        <formField>CompanyName</formField>
+        <formFieldType>Text</formFieldType>
+        <isHidden>false</isHidden>
+        <isRequired>false</isRequired>
+        <messagingChannelParameterType>Custom</messagingChannelParameterType>
+    </embeddedServiceFormFields>
+    <embeddedServiceFormFields>
+        <displayOrder>4</displayOrder>
+        <formField>NewsletterOptIn</formField>
+        <formFieldType>Checkbox</formFieldType>
+        <isHidden>false</isHidden>
+        <isRequired>false</isRequired>
+        <messagingChannelParameterType>Custom</messagingChannelParameterType>
+    </embeddedServiceFormFields>
+    <embeddedServiceFormFields>
+        <choiceList>Customer_Inquiry_Type</choiceList>
+        <displayOrder>5</displayOrder>
+        <formField>InquiryType</formField>
+        <formFieldType>ChoiceList</formFieldType>
+        <isHidden>false</isHidden>
+        <isRequired>true</isRequired>
+        <messagingChannelParameterType>Custom</messagingChannelParameterType>
+    </embeddedServiceFormFields>
+    <embeddedServiceFormFields>
+        <displayOrder>-1</displayOrder>
+        <formField>utm_campaign</formField>
+        <formFieldType>Text</formFieldType>
+        <isHidden>true</isHidden>
+        <isRequired>false</isRequired>
+        <messagingChannelParameterType>Custom</messagingChannelParameterType>
+    </embeddedServiceFormFields>
+    <isActive>true</isActive>
+</embeddedServiceForms>
+<!-- displayNameFormat tokens use each field's externalParameterName (e.g. _firstName),
+     NOT the formField spelling above (e.g. _FirstName). -->
+<embeddedServiceMessagingChannel>
+    <displayNameFormat>{_firstName}{_lastName}{}</displayNameFormat>
+</embeddedServiceMessagingChannel>

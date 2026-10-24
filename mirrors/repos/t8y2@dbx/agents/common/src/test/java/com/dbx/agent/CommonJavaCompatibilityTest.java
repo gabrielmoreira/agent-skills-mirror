@@ -32,6 +32,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -54,6 +55,23 @@ class CommonJavaCompatibilityTest {
         assertTrue(AgentProtocol.CAPABILITIES.contains(AgentProtocol.CAPABILITY_CONNECT));
         assertTrue(AgentProtocol.CAPABILITIES.contains(AgentProtocol.CAPABILITY_QUERY));
         assertTrue(AgentProtocol.CAPABILITIES.contains(AgentProtocol.CAPABILITY_METADATA));
+        assertFalse(AgentProtocol.CAPABILITIES.contains(AgentProtocol.CAPABILITY_EXACT_METADATA_IDENTITY_V1));
+    }
+
+    @Test
+    void objectInfoRetainsIndependentOwnersWithoutChangingLegacyConstructors() {
+        Gson gson = new Gson();
+        ObjectInfo legacy = gson.fromJson("{\"name\":\"T\",\"object_type\":\"TABLE\"}", ObjectInfo.class);
+        assertNull(legacy.getParent_schema());
+        ObjectInfo index = new ObjectInfo(" Ix(a) ", "INDEX", "Index Owner", null);
+        index.setParent_schema(" Table Owner ");
+        index.setParent_name(" T(a) ");
+        ObjectInfo restored = gson.fromJson(gson.toJson(index), ObjectInfo.class);
+        assertEquals(index, restored);
+        assertEquals(index.hashCode(), restored.hashCode());
+        assertEquals(" Table Owner ", restored.getParent_schema());
+        restored.setParent_schema("Other Owner");
+        assertFalse(index.equals(restored));
     }
 
     @Test
@@ -118,6 +136,47 @@ class CommonJavaCompatibilityTest {
         assertTrue(containsCapability(result.getAsJsonArray("capabilities"), "connect"));
         assertTrue(containsCapability(result.getAsJsonArray("capabilities"), "query"));
         assertTrue(containsCapability(result.getAsJsonArray("capabilities"), "metadata"));
+    }
+
+    @Test
+    void exactMetadataRequiresExplicitAgentSupportBeforeReading() {
+        JsonRpcServer server = new JsonRpcServer(new MinimalAgent());
+        JsonObject old = JsonParser.parseString(server.handleRequest("{\"id\":1,\"method\":\"get_columns\",\"params\":{\"schema\":\"APP\",\"table\":\"T\"}}")).getAsJsonObject();
+        assertTrue(old.has("result"));
+        JsonObject exact = JsonParser.parseString(server.handleRequest("{\"id\":2,\"method\":\"get_columns\",\"params\":{\"schema\":\"APP\",\"table\":\"T\",\"exact_identity\":true}}")).getAsJsonObject();
+        assertTrue(exact.has("error"), exact.toString());
+        assertTrue(exact.getAsJsonObject("error").get("message").getAsString().contains("exact_metadata_identity_v1"));
+    }
+
+    @Test
+    void explicitExactIdentityAgentAdvertisesTheCapability() {
+        MinimalAgent agent = new MinimalAgent() {
+            public boolean supportsExactMetadataIdentity() { return true; }
+        };
+        JsonObject handshake = JsonParser.parseString(new JsonRpcServer(agent).handleRequest("{\"id\":1,\"method\":\"handshake\",\"params\":{}}")).getAsJsonObject();
+        assertTrue(containsCapability(handshake.getAsJsonObject("result").getAsJsonArray("capabilities"), "exact_metadata_identity_v1"));
+    }
+
+    @Test
+    void connectedSessionReportsItsOwnExactIdentitySupport() {
+        try (MultiSessionJsonRpcServer server = new MultiSessionJsonRpcServer(() -> new MinimalAgent() {
+            private boolean exactIdentity = true;
+            @Override
+            public void connect(ConnectParams params) { exactIdentity = !"legacy".equals(params.getDatabase()); }
+            @Override
+            public boolean supportsExactMetadataIdentity() { return exactIdentity; }
+        }).withExactMetadataIdentity()) {
+            JsonObject legacy = JsonParser.parseString(server.handleRequest("{\"id\":1,\"method\":\"open_session\",\"params\":{\"agentSessionId\":\"legacy\",\"database\":\"legacy\"}} ")).getAsJsonObject();
+            JsonObject current = JsonParser.parseString(server.handleRequest("{\"id\":2,\"method\":\"open_session\",\"params\":{\"agentSessionId\":\"current\",\"database\":\"current\"}} ")).getAsJsonObject();
+            assertTrue(legacy.getAsJsonObject("result").get("ok").getAsBoolean());
+            assertTrue(legacy.getAsJsonObject("result").has("exactMetadataIdentity"));
+            assertFalse(legacy.getAsJsonObject("result").get("exactMetadataIdentity").getAsBoolean());
+            assertTrue(current.getAsJsonObject("result").get("exactMetadataIdentity").getAsBoolean());
+            JsonObject ordinary = JsonParser.parseString(server.handleRequest("{\"id\":3,\"method\":\"get_columns\",\"params\":{\"agentSessionId\":\"legacy\",\"schema\":\"APP\",\"table\":\"T\"}} ")).getAsJsonObject();
+            assertTrue(ordinary.has("result"), ordinary.toString());
+            JsonObject exact = JsonParser.parseString(server.handleRequest("{\"id\":4,\"method\":\"get_columns\",\"params\":{\"agentSessionId\":\"legacy\",\"schema\":\"APP\",\"table\":\"T\",\"exact_identity\":true}} ")).getAsJsonObject();
+            assertTrue(exact.has("error"), exact.toString());
+        }
     }
 
     @Test

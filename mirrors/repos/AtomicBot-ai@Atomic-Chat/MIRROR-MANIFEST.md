@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `AtomicBot-ai/Atomic-Chat` — 26 default patterns, 10 followed patterns, 499 file(s) materialized.
+Mirror of `AtomicBot-ai/Atomic-Chat` — 26 default patterns, 10 followed patterns, 510 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `AtomicBot-ai/Atomic-Chat` — 26 default patterns, 10 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 10 |
-| Files         | 499 |
+| Files         | 510 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -521,52 +521,63 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 451 | ✓ | [`docs/decisions/2026-10-22-fold-the-sidebar-over-the-page-when-the-window-is-narrow.md`](docs/decisions/2026-10-22-fold-the-sidebar-over-the-page-when-the-window-is-narrow.md) |
 | 452 | ✓ | [`docs/decisions/2026-10-22-give-a-connector-name-the-title-row-and-badges-the-line-below.md`](docs/decisions/2026-10-22-give-a-connector-name-the-title-row-and-badges-the-line-below.md) |
 | 453 | ✓ | [`docs/decisions/2026-10-22-give-model-picker-rows-a-second-line-for-quant-owner-and-source.md`](docs/decisions/2026-10-22-give-model-picker-rows-a-second-line-for-quant-owner-and-source.md) |
-| 454 | ✓ | [`docs/decisions/2026-10-22-name-downloads-rows-by-model-with-the-quant-apart.md`](docs/decisions/2026-10-22-name-downloads-rows-by-model-with-the-quant-apart.md) |
-| 455 | ✓ | [`docs/decisions/2026-10-22-name-the-served-model-readably-on-the-server-card.md`](docs/decisions/2026-10-22-name-the-served-model-readably-on-the-server-card.md) |
-| 456 | ✓ | [`docs/decisions/2026-10-22-show-an-assistants-initial-when-it-has-no-avatar.md`](docs/decisions/2026-10-22-show-an-assistants-initial-when-it-has-no-avatar.md) |
-| 457 | ✓ | [`docs/decisions/2026-10-22-show-full-names-and-tell-colliding-sidebar-rows-apart.md`](docs/decisions/2026-10-22-show-full-names-and-tell-colliding-sidebar-rows-apart.md) |
-| 458 | ✓ | [`docs/decisions/2026-10-22-show-only-the-generation-settings-a-recipe-can-vouch-for.md`](docs/decisions/2026-10-22-show-only-the-generation-settings-a-recipe-can-vouch-for.md) |
-| 459 | ✓ | [`docs/decisions/2026-10-22-show-the-cloud-catalog-and-configuration-in-turn-on-a-narrow-page.md`](docs/decisions/2026-10-22-show-the-cloud-catalog-and-configuration-in-turn-on-a-narrow-page.md) |
-| 460 | ✓ | [`docs/decisions/2026-10-22-size-the-media-viewer-to-its-preview-and-give-the-gallery-the-rest.md`](docs/decisions/2026-10-22-size-the-media-viewer-to-its-preview-and-give-the-gallery-the-rest.md) |
-| 461 | ✓ | [`docs/decisions/2026-10-22-stack-activity-request-details-under-the-list-when-narrow.md`](docs/decisions/2026-10-22-stack-activity-request-details-under-the-list-when-narrow.md) |
-| 462 | ✓ | [`docs/decisions/2026-10-22-stack-the-skills-list-and-instructions-when-the-page-is-narrow.md`](docs/decisions/2026-10-22-stack-the-skills-list-and-instructions-when-the-page-is-narrow.md) |
-| 463 | ✓ | [`docs/decisions/2026-10-22-step-the-hub-toolbar-down-by-its-own-width.md`](docs/decisions/2026-10-22-step-the-hub-toolbar-down-by-its-own-width.md) |
-| 464 | ✓ | [`docs/README.md`](docs/README.md) |
-| 465 | ✓ | [`extensions/assistant-extension/README.md`](extensions/assistant-extension/README.md) |
-| 466 | ✓ | [`foundation-models-server/README.md`](foundation-models-server/README.md) |
-| 467 | ✓ | [`mlx-server/README.md`](mlx-server/README.md) |
-| 468 | ✓ | [`scripts/concurrent-demo/README.md`](scripts/concurrent-demo/README.md) |
-| 469 | ✓ | [`src-tauri/resources/agent-skills/apple-calendar/SKILL.md`](src-tauri/resources/agent-skills/apple-calendar/SKILL.md) |
-| 470 | ✓ | [`src-tauri/resources/agent-skills/apple-notes/SKILL.md`](src-tauri/resources/agent-skills/apple-notes/SKILL.md) |
-| 471 | ✓ | [`src-tauri/resources/agent-skills/apple-reminders/SKILL.md`](src-tauri/resources/agent-skills/apple-reminders/SKILL.md) |
-| 472 | ✓ | [`src-tauri/resources/agent-skills/audio-transcribe/SKILL.md`](src-tauri/resources/agent-skills/audio-transcribe/SKILL.md) |
-| 473 | ✓ | [`src-tauri/resources/agent-skills/currency/SKILL.md`](src-tauri/resources/agent-skills/currency/SKILL.md) |
-| 474 | ✓ | [`src-tauri/resources/agent-skills/docker/SKILL.md`](src-tauri/resources/agent-skills/docker/SKILL.md) |
-| 475 | ✓ | [`src-tauri/resources/agent-skills/ffmpeg/SKILL.md`](src-tauri/resources/agent-skills/ffmpeg/SKILL.md) |
-| 476 | ✓ | [`src-tauri/resources/agent-skills/github/SKILL.md`](src-tauri/resources/agent-skills/github/SKILL.md) |
-| 477 | ✓ | [`src-tauri/resources/agent-skills/gog-workspace/SKILL.md`](src-tauri/resources/agent-skills/gog-workspace/SKILL.md) |
-| 478 | ✓ | [`src-tauri/resources/agent-skills/imagemagick/SKILL.md`](src-tauri/resources/agent-skills/imagemagick/SKILL.md) |
-| 479 | ✓ | [`src-tauri/resources/agent-skills/notion/SKILL.md`](src-tauri/resources/agent-skills/notion/SKILL.md) |
-| 480 | ✓ | [`src-tauri/resources/agent-skills/obsidian/SKILL.md`](src-tauri/resources/agent-skills/obsidian/SKILL.md) |
-| 481 | ✓ | [`src-tauri/resources/agent-skills/pandoc/SKILL.md`](src-tauri/resources/agent-skills/pandoc/SKILL.md) |
-| 482 | ✓ | [`src-tauri/resources/agent-skills/pdf/SKILL.md`](src-tauri/resources/agent-skills/pdf/SKILL.md) |
-| 483 | ✓ | [`src-tauri/resources/agent-skills/skill-creator/SKILL.md`](src-tauri/resources/agent-skills/skill-creator/SKILL.md) |
-| 484 | ✓ | [`src-tauri/resources/agent-skills/wikipedia/SKILL.md`](src-tauri/resources/agent-skills/wikipedia/SKILL.md) |
-| 485 | ✓ | [`src-tauri/resources/agent-skills/wttr-weather/SKILL.md`](src-tauri/resources/agent-skills/wttr-weather/SKILL.md) |
-| 486 | ✓ | [`src-tauri/resources/agent-skills/xlsx/SKILL.md`](src-tauri/resources/agent-skills/xlsx/SKILL.md) |
-| 487 | ✓ | [`web-app/README.md`](web-app/README.md) |
-| 488 | ✓ | [`web-app/src/lib/core-settings-schema/README.md`](web-app/src/lib/core-settings-schema/README.md) |
-| 489 | ✓ | [`web-app/src/services/AGENTS.md`](web-app/src/services/AGENTS.md) |
-| 490 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 491 | → | [`core/CONTRIBUTING.md`](core/CONTRIBUTING.md) |
-| 492 | → | [`DEVELOP.md`](DEVELOP.md) |
-| 493 | → | [`docs/decisions/INDEX.md`](docs/decisions/INDEX.md) |
-| 494 | → | [`docs/ui-layout-rules.md`](docs/ui-layout-rules.md) |
-| 495 | → | [`extensions/CONTRIBUTING.md`](extensions/CONTRIBUTING.md) |
-| 496 | → | [`README.md`](README.md) |
-| 497 | → | [`src-tauri/CONTRIBUTING.md`](src-tauri/CONTRIBUTING.md) |
-| 498 | → | [`src-tauri/plugins/CONTRIBUTING.md`](src-tauri/plugins/CONTRIBUTING.md) |
-| 499 | → | [`web-app/CONTRIBUTING.md`](web-app/CONTRIBUTING.md) |
+| 454 | ✓ | [`docs/decisions/2026-10-22-keep-the-analytics-distinct-id-in-settings-json.md`](docs/decisions/2026-10-22-keep-the-analytics-distinct-id-in-settings-json.md) |
+| 455 | ✓ | [`docs/decisions/2026-10-22-name-downloads-rows-by-model-with-the-quant-apart.md`](docs/decisions/2026-10-22-name-downloads-rows-by-model-with-the-quant-apart.md) |
+| 456 | ✓ | [`docs/decisions/2026-10-22-name-the-served-model-readably-on-the-server-card.md`](docs/decisions/2026-10-22-name-the-served-model-readably-on-the-server-card.md) |
+| 457 | ✓ | [`docs/decisions/2026-10-22-replace-the-welcome-screen-with-a-full-screen-first-run-flow.md`](docs/decisions/2026-10-22-replace-the-welcome-screen-with-a-full-screen-first-run-flow.md) |
+| 458 | ✓ | [`docs/decisions/2026-10-22-run-litert-lm-through-the-core-and-download-its-models-in-the-app.md`](docs/decisions/2026-10-22-run-litert-lm-through-the-core-and-download-its-models-in-the-app.md) |
+| 459 | ✓ | [`docs/decisions/2026-10-22-show-an-assistants-initial-when-it-has-no-avatar.md`](docs/decisions/2026-10-22-show-an-assistants-initial-when-it-has-no-avatar.md) |
+| 460 | ✓ | [`docs/decisions/2026-10-22-show-full-names-and-tell-colliding-sidebar-rows-apart.md`](docs/decisions/2026-10-22-show-full-names-and-tell-colliding-sidebar-rows-apart.md) |
+| 461 | ✓ | [`docs/decisions/2026-10-22-show-only-the-generation-settings-a-recipe-can-vouch-for.md`](docs/decisions/2026-10-22-show-only-the-generation-settings-a-recipe-can-vouch-for.md) |
+| 462 | ✓ | [`docs/decisions/2026-10-22-show-the-cloud-catalog-and-configuration-in-turn-on-a-narrow-page.md`](docs/decisions/2026-10-22-show-the-cloud-catalog-and-configuration-in-turn-on-a-narrow-page.md) |
+| 463 | ✓ | [`docs/decisions/2026-10-22-sign-every-windows-pe-via-tauri-signcommand-and-ship-an-msstore-installer.md`](docs/decisions/2026-10-22-sign-every-windows-pe-via-tauri-signcommand-and-ship-an-msstore-installer.md) |
+| 464 | ✓ | [`docs/decisions/2026-10-22-size-the-media-viewer-to-its-preview-and-give-the-gallery-the-rest.md`](docs/decisions/2026-10-22-size-the-media-viewer-to-its-preview-and-give-the-gallery-the-rest.md) |
+| 465 | ✓ | [`docs/decisions/2026-10-22-stack-activity-request-details-under-the-list-when-narrow.md`](docs/decisions/2026-10-22-stack-activity-request-details-under-the-list-when-narrow.md) |
+| 466 | ✓ | [`docs/decisions/2026-10-22-stack-the-skills-list-and-instructions-when-the-page-is-narrow.md`](docs/decisions/2026-10-22-stack-the-skills-list-and-instructions-when-the-page-is-narrow.md) |
+| 467 | ✓ | [`docs/decisions/2026-10-22-step-the-hub-toolbar-down-by-its-own-width.md`](docs/decisions/2026-10-22-step-the-hub-toolbar-down-by-its-own-width.md) |
+| 468 | ✓ | [`docs/decisions/2026-10-23-count-local-api-traffic-as-a-first-request-in-the-onboarding-experiment.md`](docs/decisions/2026-10-23-count-local-api-traffic-as-a-first-request-in-the-onboarding-experiment.md) |
+| 469 | ✓ | [`docs/decisions/2026-10-23-draw-the-download-panel-as-the-first-run-strip.md`](docs/decisions/2026-10-23-draw-the-download-panel-as-the-first-run-strip.md) |
+| 470 | ✓ | [`docs/decisions/2026-10-23-notify-every-completion-unless-it-is-on-screen.md`](docs/decisions/2026-10-23-notify-every-completion-unless-it-is-on-screen.md) |
+| 471 | ✓ | [`docs/decisions/2026-10-23-offer-three-models-then-hugging-face-on-the-first-run-model-step.md`](docs/decisions/2026-10-23-offer-three-models-then-hugging-face-on-the-first-run-model-step.md) |
+| 472 | ✓ | [`docs/decisions/2026-10-23-run-the-first-run-flow-in-three-variants.md`](docs/decisions/2026-10-23-run-the-first-run-flow-in-three-variants.md) |
+| 473 | ✓ | [`docs/decisions/2026-10-23-split-new-installs-into-three-onboarding-cohorts.md`](docs/decisions/2026-10-23-split-new-installs-into-three-onboarding-cohorts.md) |
+| 474 | ✓ | [`docs/decisions/2026-10-23-stop-an-idle-server-at-the-first-run-endpoint-handoff.md`](docs/decisions/2026-10-23-stop-an-idle-server-at-the-first-run-endpoint-handoff.md) |
+| 475 | ✓ | [`docs/README.md`](docs/README.md) |
+| 476 | ✓ | [`extensions/assistant-extension/README.md`](extensions/assistant-extension/README.md) |
+| 477 | ✓ | [`foundation-models-server/README.md`](foundation-models-server/README.md) |
+| 478 | ✓ | [`mlx-server/README.md`](mlx-server/README.md) |
+| 479 | ✓ | [`scripts/concurrent-demo/README.md`](scripts/concurrent-demo/README.md) |
+| 480 | ✓ | [`src-tauri/resources/agent-skills/apple-calendar/SKILL.md`](src-tauri/resources/agent-skills/apple-calendar/SKILL.md) |
+| 481 | ✓ | [`src-tauri/resources/agent-skills/apple-notes/SKILL.md`](src-tauri/resources/agent-skills/apple-notes/SKILL.md) |
+| 482 | ✓ | [`src-tauri/resources/agent-skills/apple-reminders/SKILL.md`](src-tauri/resources/agent-skills/apple-reminders/SKILL.md) |
+| 483 | ✓ | [`src-tauri/resources/agent-skills/audio-transcribe/SKILL.md`](src-tauri/resources/agent-skills/audio-transcribe/SKILL.md) |
+| 484 | ✓ | [`src-tauri/resources/agent-skills/currency/SKILL.md`](src-tauri/resources/agent-skills/currency/SKILL.md) |
+| 485 | ✓ | [`src-tauri/resources/agent-skills/docker/SKILL.md`](src-tauri/resources/agent-skills/docker/SKILL.md) |
+| 486 | ✓ | [`src-tauri/resources/agent-skills/ffmpeg/SKILL.md`](src-tauri/resources/agent-skills/ffmpeg/SKILL.md) |
+| 487 | ✓ | [`src-tauri/resources/agent-skills/github/SKILL.md`](src-tauri/resources/agent-skills/github/SKILL.md) |
+| 488 | ✓ | [`src-tauri/resources/agent-skills/gog-workspace/SKILL.md`](src-tauri/resources/agent-skills/gog-workspace/SKILL.md) |
+| 489 | ✓ | [`src-tauri/resources/agent-skills/imagemagick/SKILL.md`](src-tauri/resources/agent-skills/imagemagick/SKILL.md) |
+| 490 | ✓ | [`src-tauri/resources/agent-skills/notion/SKILL.md`](src-tauri/resources/agent-skills/notion/SKILL.md) |
+| 491 | ✓ | [`src-tauri/resources/agent-skills/obsidian/SKILL.md`](src-tauri/resources/agent-skills/obsidian/SKILL.md) |
+| 492 | ✓ | [`src-tauri/resources/agent-skills/pandoc/SKILL.md`](src-tauri/resources/agent-skills/pandoc/SKILL.md) |
+| 493 | ✓ | [`src-tauri/resources/agent-skills/pdf/SKILL.md`](src-tauri/resources/agent-skills/pdf/SKILL.md) |
+| 494 | ✓ | [`src-tauri/resources/agent-skills/skill-creator/SKILL.md`](src-tauri/resources/agent-skills/skill-creator/SKILL.md) |
+| 495 | ✓ | [`src-tauri/resources/agent-skills/wikipedia/SKILL.md`](src-tauri/resources/agent-skills/wikipedia/SKILL.md) |
+| 496 | ✓ | [`src-tauri/resources/agent-skills/wttr-weather/SKILL.md`](src-tauri/resources/agent-skills/wttr-weather/SKILL.md) |
+| 497 | ✓ | [`src-tauri/resources/agent-skills/xlsx/SKILL.md`](src-tauri/resources/agent-skills/xlsx/SKILL.md) |
+| 498 | ✓ | [`web-app/README.md`](web-app/README.md) |
+| 499 | ✓ | [`web-app/src/lib/core-settings-schema/README.md`](web-app/src/lib/core-settings-schema/README.md) |
+| 500 | ✓ | [`web-app/src/services/AGENTS.md`](web-app/src/services/AGENTS.md) |
+| 501 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 502 | → | [`core/CONTRIBUTING.md`](core/CONTRIBUTING.md) |
+| 503 | → | [`DEVELOP.md`](DEVELOP.md) |
+| 504 | → | [`docs/decisions/INDEX.md`](docs/decisions/INDEX.md) |
+| 505 | → | [`docs/ui-layout-rules.md`](docs/ui-layout-rules.md) |
+| 506 | → | [`extensions/CONTRIBUTING.md`](extensions/CONTRIBUTING.md) |
+| 507 | → | [`README.md`](README.md) |
+| 508 | → | [`src-tauri/CONTRIBUTING.md`](src-tauri/CONTRIBUTING.md) |
+| 509 | → | [`src-tauri/plugins/CONTRIBUTING.md`](src-tauri/plugins/CONTRIBUTING.md) |
+| 510 | → | [`web-app/CONTRIBUTING.md`](web-app/CONTRIBUTING.md) |
 
 ---
 

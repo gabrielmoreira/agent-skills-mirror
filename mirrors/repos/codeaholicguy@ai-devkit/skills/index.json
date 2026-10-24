@@ -873,11 +873,25 @@
       "lastIndexed": 1792282117220
     },
     {
+      "name": "dev-retro",
+      "registry": "codeaholicguy/ai-devkit",
+      "path": "skills/dev-retro",
+      "description": "AI DevKit · Run an evidence-based retrospective on finished work (feature, session, incident) and turn friction into durable fixes, automation first. Use when users ask for a retro, lessons learned, post-mortem, or \"what went wrong\", or when another skill offers one after a feature or fix.",
+      "lastIndexed": 1792282117300
+    },
+    {
       "name": "dev-review",
       "registry": "codeaholicguy/ai-devkit",
       "path": "skills/dev-review",
       "description": "AI DevKit · Final code review phase guidance for holistic pre-push review. Use when the user wants code review, final lifecycle review, design alignment checks, integration risk review, or dev-lifecycle phase 9.",
       "lastIndexed": 1792282117389
+    },
+    {
+      "name": "dev-smoke",
+      "registry": "codeaholicguy/ai-devkit",
+      "path": "skills/dev-smoke",
+      "description": "AI DevKit · Smoke-test the user flows a change affects (CLI, API, UI) end to end with a disposable sandboxed script against the real app. Use before calling a feature or fix done, when unit tests pass but the flow is untested, or when users ask for a smoke, e2e, or impact check.",
+      "lastIndexed": 1792282117300
     },
     {
       "name": "dev-testing",
@@ -908,9 +922,9 @@
       "lastIndexed": 1792282117317
     },
     {
-      "name": "refactor",
+      "name": "dev-refactor",
       "registry": "codeaholicguy/ai-devkit",
-      "path": "skills/refactor",
+      "path": "skills/dev-refactor",
       "description": "AI DevKit · Systematic structural or multi-file refactors across any stack while preserving behavior and public contracts. Use for reorganizing modules, boundaries, naming, APIs/contracts, staged refactor plans, or refactor risk review.",
       "lastIndexed": 1792282117309
     },
@@ -943,16 +957,16 @@
       "lastIndexed": 1792282117214
     },
     {
-      "name": "simplify-implementation",
+      "name": "dev-simplify",
       "registry": "codeaholicguy/ai-devkit",
-      "path": "skills/simplify-implementation",
+      "path": "skills/dev-simplify",
       "description": "AI DevKit · Analyze and simplify existing implementations to reduce complexity, improve maintainability, and enhance scalability. Use when users ask to simplify code, reduce complexity, refactor for readability, clean up implementations, improve maintainability, reduce technical debt, or make code easier to understand.",
       "lastIndexed": 1792282117215
     },
     {
-      "name": "structured-debug",
+      "name": "dev-debug",
       "registry": "codeaholicguy/ai-devkit",
-      "path": "skills/structured-debug",
+      "path": "skills/dev-debug",
       "description": "AI DevKit · Guide structured debugging before code changes by clarifying expected behavior, reproducing issues, identifying likely root causes, and agreeing on a fix plan with validation steps. Use when users ask to debug bugs, investigate regressions, triage incidents, diagnose failing behavior, handle failing tests, analyze production incidents, investigate error spikes, or run root cause analysis (RCA).",
       "lastIndexed": 1792282117324
     },
@@ -960,7 +974,7 @@
       "name": "task",
       "registry": "codeaholicguy/ai-devkit",
       "path": "skills/task",
-      "description": "AI DevKit · Track dev-lifecycle / structured-debug progress on a durable task with the ai-devkit task CLI. Use to record phase, progress, next step, blockers, and validation evidence.",
+      "description": "AI DevKit · Track dev-lifecycle / dev-debug progress on a durable task with the ai-devkit task CLI. Use to record phase, progress, next step, blockers, and validation evidence.",
       "lastIndexed": 1792282117232
     },
     {

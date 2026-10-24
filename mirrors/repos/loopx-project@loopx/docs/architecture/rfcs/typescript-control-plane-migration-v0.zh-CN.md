@@ -43,6 +43,13 @@ guard、格式和 typed owner。这不新增领域规则、桥接操作或数据
 
 ### 产品对话与通用异步 inbox
 
+**Chat HTTP POST 作用域。** `ChatRequestHandler.do_POST` 现在为每次完整 HTTP
+分发复用既有 executable-revision 请求作用域。Session 创建／恢复及其他 POST
+路由的 typed 调用共用一个代码版本；下一次请求重新解析当前代码。Session、工作区
+授权、provider 与 authority 仍实时读取。后台 Turn worker 保留自己的作用域。
+这不新增桥接操作、语义 owner 或状态缓存。真实 HTTP 与 runtime 回归分别验证
+源码准入和撤销授权后的拒绝；安装后行为与真实模型响应延迟仍需独立验证。
+
 **公共 quota 读取作用域。** `quota/should_run.py` 现在为每次完整公共 quota 读取
 复用既有 executable-revision 请求作用域。兼容 facade 和全局视图共用该生命周期，
 不再在每次 typed 判定前重新解析代码树。已有外层作用域仍可组合；下一次独立读取
@@ -123,6 +130,11 @@ Python 保留 registry、文档／材料 IO、独立的 Vision-wait 消费者及
 `todo.completion_state.normalize` 与 `todo.completion_state.require_metadata`。
 事务在进程内执行既有语义 owner。
 
+原生摘要组合现在直接传递行对象与继任记录。
+已退役摘要 RPC 的请求版本、列式 codec 和无调用者的 handoff carrier 一并删除。
+完整来源的继任、字段、frontier、lane 与 closure 校验仍由既有 owner 负责；
+公开读取与摘要输出保持兼容。
+
 CLI 查询结果携带查询范围内的 `projection_envelope`。读取不授予执行、验收、
 租约或修改权限。共享 wire 与私有快照预算不变。超大 Python 事实使用私有临时
 源，不增加持久化存储；完整结果通过摘要绑定的片段传输。
@@ -142,8 +154,15 @@ Markdown 不变。仅三个已测 Todo 查询视图的首次信封 schema 迁移
 仍保留当前目标观察。
 Canonical 摘要仅在某角色组包含恢复条件时准备恢复历史。
 继任计算仍使用完整的活跃与归档血缘。
-上述输出测量保留原受控传输范围。当前正常 IPC、安装包及完整命令证据以
-[#6874](https://github.com/loopx-project/loopx/pull/6874) 记录的精确版本为准。
+角色摘要复用一次请求内的血缘事实和继任 owner 的既有上下文字段。
+该 owner 先校验并索引完整图，再生成需要返回的评估。
+源码指纹仍读取每个已准入字节并复查新鲜度；顺序读取省去每个进程的线程池创建。
+正常读取直接使用注册表和路径的 canonical owner，发生错误时才导入相关错误类型。
+精确详情查询在完整来源校验后，将筛选下推到既有来源投影。
+需报告未筛选数量的查询仍保留完整的首次投影。
+上述输出测量保留原受控传输范围。
+[#6874](https://github.com/loopx-project/loopx/pull/6874) 记录原始正常 IPC、安装包及完整命令证据。
+后续测量仅适用于各自记录的精确版本。
 历史性能失败仍是失败；RPC 减少或 codec CPU 改善不能免除完整 CLI 门禁，
 也不证明 R3／D2／D3 采用。
 当前 warm 请求未达标仍需 owner 评审。完整 CLI 配对通过不免除 2 ms 目标。

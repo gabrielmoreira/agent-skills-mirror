@@ -30,6 +30,10 @@ Evidence. Capture
 inspection requires Linux with util-linux prlimit or Windows with owned Job
 Objects. macOS capture inspection returns a capability gap because the new
 native memory boundary is unverified; its version probes remain available.
+`binary_session` advertises those operations separately: unsupported capture
+hosts do not disable the client probe or remove either tool from the catalog.
+A selected tool directory or unreadable tool is a configuration capability
+refusal naming its selected path, before any capture bytes are opened.
 Tools and installed libraries/plugins are caller-trusted. An empty private
 personal Wireshark configuration is used; this is not an OS sandbox.
 
@@ -72,6 +76,10 @@ associations are derivations. Capture Evidence has historical-reference authorit
 nanoseconds). Empty captures, malformed timestamps and instants outside years
 0000–9999 remain `null`; host-local timestamps without a zone are not inferred.
 
+`snapshot_length` is the file-header packet size limit reported by `capinfos`.
+Its separate inferred truncation lengths do not replace that limit; an unset
+file-header limit remains `null`.
+
 Addresses count once per packet, including loopback and nested IP occurrences.
 DNS addresses are associated only with one question in the same response packet;
 additional records may be included, so this does not prove final resolution.
@@ -86,6 +94,13 @@ not process identity or proof of the destination's authenticity.
 All examined inventories are retained within the resource budget; no fixed
 200/100/50-item truncation is applied. HTTP transport credentials are excluded
 without rewriting other URI bytes; ambiguous credential spans cause omission.
+The URI inventory includes absolute-form HTTP request targets when TShark cannot
+construct `http.request.full_uri` because no Host header was reported; relative
+request targets are not promoted to absolute URIs. The inventory also consumes
+`http2.request.full_uri`; a decoded HTTP/2 `:path` without a corresponding full
+URI leaves coverage partial. The HTTP URI profile covers HTTP/1 and HTTP/2;
+HTTP/3 URI semantics are unexamined. All admitted URI fields share the same
+credential exclusion and source-value retention rules.
 Counts preserve distinct observed source URIs before omission or coalescing.
 `coverage: "partial"` records unresolved DNS attribution or URI item loss;
 component credential exclusion is also counted explicitly. Diagnostics retain
@@ -109,9 +124,12 @@ wall deadlines are 300 s for dissection, 60 s for metadata and 20 s for probes.
 Native ownership preparation has its own bounded lifecycle.
 
 Malformed/oversized output returns no partial success. Unvalidated partial JSON
-is not returned as facts. Cancellation reaches probes, acquisition, commands and
-projection. Cleanup failure returns a typed error, retains completed Evidence
-when available, and retains owned resources for retry on close.
+is not returned as facts. Invalid UTF-8 in either `capinfos` or TShark stdout or
+stderr is an unreadable-output error; replacement-decoded text is not parsed as
+producer evidence. A literal U+FFFD character in valid UTF-8 remains text.
+Cancellation reaches probes, acquisition, commands and projection. Cleanup
+failure returns a typed error, retains completed Evidence when available, and
+retains owned resources for retry on close.
 
 ## Verification scope
 

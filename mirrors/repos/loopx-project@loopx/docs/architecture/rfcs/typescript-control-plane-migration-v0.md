@@ -47,6 +47,15 @@ request-scope adoption separately rather than counting its gain again.
 
 ### Product conversations and asynchronous inbox
 
+**Chat HTTP POST scope.** `ChatRequestHandler.do_POST` now joins the existing
+executable-revision request scope for each complete HTTP dispatch. Session
+creation/resume and other POST routes reuse one code revision across their typed
+calls; the next request resolves current code again. Session, workspace grant,
+provider and authority observations remain live. Background Turn workers retain
+their own scope. This adds no bridge operation, semantic owner or state cache.
+Real HTTP and runtime regressions qualify source admission and revoked-grant
+refusal separately from installed behavior and real-model response latency.
+
 **Public quota read scope.** `quota/should_run.py` now reuses the existing
 executable-revision request scope for each complete public quota read. The
 compatibility facade and global views share that lifetime instead of resolving
@@ -150,6 +159,12 @@ without scalar RPCs;
 `todo.completion_state.require_metadata` are retired after their production
 callers exit. Existing semantic owners execute in process inside the transaction.
 
+Native summary composition now passes rows and succession records directly.
+The retired summary RPC's request versions, column codecs and unused handoff
+carrier are removed. Full-source succession, field, frontier, lane and closure
+checks stay with their existing owners; public read and summary outputs remain
+compatible.
+
 CLI query results carry a query-scoped `projection_envelope`. A read grants no
 execution, acceptance, lease or mutation authority. The shared wire and private
 snapshot budgets are unchanged. Oversized Python facts use an owned temporary
@@ -175,9 +190,19 @@ reader; supplied values still use the existing validators. Objective-only
 acceptance observations remain visible without configured checks.
 Canonical summaries prepare recovery history only for role groups that contain
 a resume condition. Succession still uses complete active and archived lineage.
+Role summaries reuse request-local lineage facts and the succession owner's
+existing context fields. That owner validates and indexes the complete graph
+before materializing requested evaluations. Source fingerprinting still reads
+every admitted byte and rechecks freshness; sequential reads avoid starting a
+thread pool in each process. Healthy read commands use canonical registry/path
+owners and defer mutation error imports until needed.
+Exact detail queries push selection into the existing source projection after
+complete source validation. Queries that report unfiltered counts retain the
+complete first projection.
 The output measurements above retain their original controlled-transport scope.
-Current normal-IPC, package and complete-command evidence belongs to the exact
-revision reported in [#6874](https://github.com/loopx-project/loopx/pull/6874).
+[#6874](https://github.com/loopx-project/loopx/pull/6874) records the original
+normal-IPC, package and complete-command evidence. Follow-up measurements apply
+only to their reported revisions.
 Historical performance failures remain failures; neither fewer RPCs nor codec
 CPU savings waive the full-CLI gate or establish R3/D2/D3 adoption.
 The current warm-request miss remains an owner review hold. A passing full-CLI

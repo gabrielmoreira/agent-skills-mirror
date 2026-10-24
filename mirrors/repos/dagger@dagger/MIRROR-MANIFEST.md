@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `dagger/dagger` — 26 default patterns, 0 followed patterns, 18 file(s) materialized.
+Mirror of `dagger/dagger` — 26 default patterns, 0 followed patterns, 17 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `dagger/dagger` — 26 default patterns, 0 followed patterns, 18 file(
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 18 |
+| Files         | 17 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -67,16 +67,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 6 | ✓ | [`skills/adding-pragmas/SKILL.md`](skills/adding-pragmas/SKILL.md) |
 | 7 | ✓ | [`skills/dagger-chores/SKILL.md`](skills/dagger-chores/SKILL.md) |
 | 8 | ✓ | [`skills/dagger-design-proposals/SKILL.md`](skills/dagger-design-proposals/SKILL.md) |
-| 9 | ✓ | [`skills/docs-guide/SKILL.md`](skills/docs-guide/SKILL.md) |
-| 10 | ✓ | [`skills/docs-writing-style/SKILL.md`](skills/docs-writing-style/SKILL.md) |
-| 11 | ✓ | [`skills/engine-debugging/scripts/dagql-cache-analyzer.go`](skills/engine-debugging/scripts/dagql-cache-analyzer.go) |
-| 12 | ✓ | [`skills/engine-debugging/SKILL.md`](skills/engine-debugging/SKILL.md) |
-| 13 | ✓ | [`skills/telemetry-capture/SKILL.md`](skills/telemetry-capture/SKILL.md) |
-| 14 | ✓ | [`skills/tui-console/SKILL.md`](skills/tui-console/SKILL.md) |
-| 15 | ✓ | [`skills/tui-qa/agents/openai.yaml`](skills/tui-qa/agents/openai.yaml) |
-| 16 | ✓ | [`skills/tui-qa/scripts/tui_qa.py`](skills/tui-qa/scripts/tui_qa.py) |
-| 17 | ✓ | [`skills/tui-qa/SKILL.md`](skills/tui-qa/SKILL.md) |
-| 18 | ✓ | [`skills/tui-surfacing/SKILL.md`](skills/tui-surfacing/SKILL.md) |
+| 9 | ✓ | [`skills/docs-writing-style/SKILL.md`](skills/docs-writing-style/SKILL.md) |
+| 10 | ✓ | [`skills/engine-debugging/scripts/dagql-cache-analyzer.go`](skills/engine-debugging/scripts/dagql-cache-analyzer.go) |
+| 11 | ✓ | [`skills/engine-debugging/SKILL.md`](skills/engine-debugging/SKILL.md) |
+| 12 | ✓ | [`skills/telemetry-capture/SKILL.md`](skills/telemetry-capture/SKILL.md) |
+| 13 | ✓ | [`skills/tui-console/SKILL.md`](skills/tui-console/SKILL.md) |
+| 14 | ✓ | [`skills/tui-qa/agents/openai.yaml`](skills/tui-qa/agents/openai.yaml) |
+| 15 | ✓ | [`skills/tui-qa/scripts/tui_qa.py`](skills/tui-qa/scripts/tui_qa.py) |
+| 16 | ✓ | [`skills/tui-qa/SKILL.md`](skills/tui-qa/SKILL.md) |
+| 17 | ✓ | [`skills/tui-surfacing/SKILL.md`](skills/tui-surfacing/SKILL.md) |
 
 ---
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `grafana/grafana` — 26 default patterns, 0 followed patterns, 18 file(s) materialized.
+Mirror of `grafana/grafana` — 26 default patterns, 0 followed patterns, 19 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `grafana/grafana` — 26 default patterns, 0 followed patterns, 18 fil
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 18 |
+| Files         | 19 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -75,8 +75,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 14 | ✓ | [`public/app/features/AGENTS.md`](public/app/features/AGENTS.md) |
 | 15 | ✓ | [`public/app/features/alerting/unified/AGENTS.md`](public/app/features/alerting/unified/AGENTS.md) |
 | 16 | ✓ | [`public/app/features/alerting/unified/TESTING.md`](public/app/features/alerting/unified/TESTING.md) |
-| 17 | ✓ | [`public/app/features/expressions/components/SqlExpressions/SqlEditor/AGENTS.md`](public/app/features/expressions/components/SqlExpressions/SqlEditor/AGENTS.md) |
-| 18 | ✓ | [`public/app/plugins/panel/AGENTS.md`](public/app/plugins/panel/AGENTS.md) |
+| 17 | ✓ | [`public/app/features/dashboard-scene/AGENTS.md`](public/app/features/dashboard-scene/AGENTS.md) |
+| 18 | ✓ | [`public/app/features/expressions/components/SqlExpressions/SqlEditor/AGENTS.md`](public/app/features/expressions/components/SqlExpressions/SqlEditor/AGENTS.md) |
+| 19 | ✓ | [`public/app/plugins/panel/AGENTS.md`](public/app/plugins/panel/AGENTS.md) |
 
 ---
 

@@ -1,7 +1,8 @@
-# three.js glTF: loaders, compression & animation detail (r150+)
+# three.js glTF: loaders, compression & animation detail (r186)
 
 Depth behind the glTF skill: combining decoders, async loading with progress,
-cloning skinned meshes, and exporter hygiene.
+cloning skinned meshes, and exporter hygiene. Notes call out where older releases
+differ.
 
 ## Compression: DRACO, Meshopt, KTX2
 
@@ -10,29 +11,38 @@ textures (KTX2/Basis). Attach the matching loaders to `GLTFLoader`:
 
 ```js
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
+import { DRACOLoader, DRACO_GLTF_CONFIG } from 'three/addons/loaders/DRACOLoader.js';
 import { KTX2Loader } from 'three/addons/loaders/KTX2Loader.js';
 import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
 
-const VERSION = '0.186.0';
-const base = `https://cdn.jsdelivr.net/npm/three@${VERSION}/examples/jsm/libs/`;
-
-const draco = new DRACOLoader().setDecoderPath(`${base}draco/`);
-const ktx2 = new KTX2Loader().setTranscoderPath(`${base}basis/`).detectSupport(renderer);
+// r185+: both loaders default to the decoder files bundled with three
+// (examples/jsm/libs/draco/ and examples/jsm/libs/basis/).
+const draco = new DRACOLoader().setDecoderPath(DRACO_GLTF_CONFIG); // glTF-only WASM build
+const ktx2 = new KTX2Loader().detectSupport(renderer);
 
 const loader = new GLTFLoader()
   .setDRACOLoader(draco)
   .setKTX2Loader(ktx2)
-  .setMeshoptDecoder(MeshoptDecoder);
+  .setMeshoptDecoder(MeshoptDecoder);   // EXT_ and KHR_meshopt_compression (r183+)
 
 loader.load('assets/scene.glb', (gltf) => scene.add(gltf.scene));
 ```
 
 Notes:
 
-- The decoder/transcoder files must match your three.js version. Ship them with
-  your app or pin a CDN copy to the same version; a mismatch throws at load time.
-- `ktx2.detectSupport(renderer)` requires the renderer to exist first.
+- If the default files 404 (some bundler/host setups don't serve them), copy
+  `examples/jsm/libs/draco/` and `examples/jsm/libs/basis/` from the installed
+  `three` into your static assets and call `draco.setDecoderPath('/decoders/draco/')`
+  and `ktx2.setTranscoderPath('/decoders/basis/')`. A pinned CDN folder such as
+  `https://cdn.jsdelivr.net/npm/three@0.186.1/examples/jsm/libs/basis/` also works;
+  on releases before r185 one of these paths is required.
+- The decoder/transcoder files must match your three.js version; a mismatch throws
+  at load time.
+- `ktx2.detectSupport(renderer)` requires the renderer to exist first. With
+  `WebGPURenderer`, `await renderer.init()` before calling it
+  (`detectSupportAsync()` is deprecated since r181).
+- `DRACOLoader.setDecoderConfig()` is deprecated since r185; the loader picks WASM
+  or JS itself.
 - Compression shrinks downloads but adds CPU/Worker decode time; measure both.
 
 ## Async loading with a progress bar
@@ -67,17 +77,20 @@ so the skinned mesh and its skeleton are cloned correctly (a plain `.clone()` do
 not duplicate the skeleton):
 
 ```js
+import * as THREE from 'three';
 import { clone as skeletonClone } from 'three/addons/utils/SkeletonUtils.js';
 
-const base = (await loader.loadAsync('assets/enemy.glb')).scene;
+const enemy = await loader.loadAsync('assets/enemy.glb');
+const mixers = [];
 for (let i = 0; i < 10; i++) {
-  const instance = skeletonClone(base);
+  const instance = skeletonClone(enemy.scene);
   instance.position.x = i * 2;
   scene.add(instance);
   const mixer = new THREE.AnimationMixer(instance);   // each clone needs its own mixer
-  mixer.clipAction(baseClips[0]).play();
-  mixers.push(mixer);                                  // update all in the loop
+  mixer.clipAction(enemy.animations[0]).play();       // clips can be shared
+  mixers.push(mixer);
 }
+// In the loop: for (const m of mixers) m.update(dt);
 ```
 
 For static (non-skinned) meshes, prefer `InstancedMesh` for thousands of copies —

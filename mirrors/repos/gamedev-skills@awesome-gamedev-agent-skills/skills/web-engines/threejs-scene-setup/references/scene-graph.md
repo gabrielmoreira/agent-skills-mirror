@@ -66,6 +66,8 @@ scene frees nothing on the GPU; you must dispose geometries, materials, and
 textures explicitly.
 
 ```js
+// Disposes everything under obj. Skip geometries/materials/textures that other
+// objects still share, or they will be re-uploaded (or break) on the next frame.
 function disposeObject(obj) {
   obj.traverse((node) => {
     if (node.geometry) node.geometry.dispose();
@@ -78,10 +80,17 @@ function disposeObject(obj) {
       }
       mat.dispose();
     }
+    if (node.isSkinnedMesh) node.skeleton.dispose();    // bone texture
+    node.dispose();   // Object3D.dispose() (r186+): shadow maps, instancing buffers
   });
   obj.removeFromParent();
 }
 ```
+
+`Object3D.dispose()` is on every object since r186 (before that only lights,
+`InstancedMesh`, and `BatchedMesh` had it — guard with `node.dispose?.()` on older
+releases). The base method frees no geometry, materials, or textures; those stay
+manual (`BatchedMesh` is the exception: it owns and disposes its own geometry).
 
 Also dispose render targets (`renderTarget.dispose()`) and, on full teardown, the
 renderer (`renderer.dispose()`). When swapping levels, dispose the old level's
@@ -103,6 +112,7 @@ something changes (input, controls' `change` event, a tween step):
 let needsRender = true;
 controls.addEventListener('change', () => { needsRender = true; });
 renderer.setAnimationLoop(() => {
+  controls.update();          // keeps damping alive; fires 'change' while moving
   if (!needsRender) return;
   needsRender = false;
   renderer.render(scene, camera);

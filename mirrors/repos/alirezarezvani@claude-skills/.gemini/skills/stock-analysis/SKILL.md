@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/stock-analysis/../../../finance/skills/stock-analysis/SKILL.md

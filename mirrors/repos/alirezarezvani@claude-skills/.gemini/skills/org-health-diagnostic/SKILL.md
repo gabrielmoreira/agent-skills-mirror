@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/org-health-diagnostic/../../../c-level-advisor/skills/org-health-diagnostic/SKILL.md

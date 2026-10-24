@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/stress-test/../../../c-level-advisor/executive-mentor/skills/stress-test/SKILL.md

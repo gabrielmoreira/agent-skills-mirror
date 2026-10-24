@@ -27,7 +27,11 @@ def derive(base, mods):
 
 Modifier layers (apply in this order): **base → flat adds → percent multipliers → clamp**.
 Equipping an item pushes a modifier; unequipping pops the same one. This avoids the classic
-"buff wore off and left me at the wrong HP" bug.
+"buff wore off and left me at the wrong HP" bug. Decide how percents stack and write it down:
+summing them (`+20%` and `+30%` → `×1.5`) keeps growth linear; multiplying them (`×1.2 × 1.3`
+→ `×1.56`) compounds and runs away when many buffs stack. Sum within a layer by default and
+reserve multiplicative stacking for a few rare effects. Store a modifier's source (item or
+effect id) so removing it removes exactly that one.
 
 ## 2. Damage formulas
 
@@ -38,16 +42,19 @@ Two common families — pick one and stay consistent:
 dmg = max(1, attacker.attack - defender.defense)        # floor at 1 so nothing is immune
 
 # (b) Ratio/mitigation: defense gives diminishing % reduction. Scales smoothly to high numbers.
-mitigation = defender.defense / (defender.defense + K)  # K ~ 100; tune the curve
-dmg = attacker.attack * (1 - mitigation)
+mitigation = defender.defense / (defender.defense + K)  # K ~ 100: defense == K halves damage
+dmg = attacker.attack * (1 - mitigation)                # same as attack * K / (defense + K)
 
 # Layer on: random variance (±10%), crit multiplier, and type effectiveness.
 dmg *= rng.range(0.9, 1.1)
 if is_crit: dmg *= 1.5
 dmg *= type_multiplier(attacker.element, defender.element)   # 0.5 / 1.0 / 2.0
+dmg = max(1, round(dmg))                                # round once, at the very end
 ```
 
 Subtractive feels "tactical" at low numbers; ratio scales better for big late-game values.
+Round only the final number: rounding after every step adds error at each step and makes the
+result depend on the order the multipliers are applied.
 
 ## 3. Leveling curves
 

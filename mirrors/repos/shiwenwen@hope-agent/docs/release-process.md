@@ -409,6 +409,10 @@ git cherry-pick --abort          # 整段放弃
 | 两条 build lane 同时上传 `latest.json` | 输的那条报 `422 already_exists` 整个 job 失败，它的平台条目从清单里整段消失 | §4.2 |
 | Rust `tauri` / 官方插件与对应 npm 包的 major.minor 不一致 | Tauri CLI 在编译前拒绝四个平台；clippy / cargo test / vitest 不执行这项 CLI 预检。已有 tag 的源码不能由后续修复改变 | `verify-tauri-version-sync.mjs` 读取两份锁文件，检查主包及 `package.json` 中全部 `@tauri-apps/plugin-*` 对应项；CI + pre-push 同时运行其夹具回归。修复后按既有版本合同选择新版本，不移动或覆盖旧 tag |
 
+桌面壳或其依赖变化时，发版前必须在待发精确提交上完成四平台 `dry_run=true` 构建（命令见 §4.1），两条 Linux lane 均须成功后才打正式 tag。普通 Rust 门禁不编译 Tauri 桌面壳；macOS 上的 `cargo check --workspace --locked` 与插件版本配对预检也不能覆盖 Linux 条件编译路径。
+
+`tauri-plugin-deep-link 2.6.2` 与锁定的 `rust-ini 0.21.3` 存在 Linux `ParseOption` 缺字段编译错误。当前通过 Cargo workspace 的 `[patch.crates-io]` 固定到[官方最小修复提交](https://github.com/tauri-apps/plugins-workspace/commit/463977675da7bbb257dee59669b5e122c8d681db)，不降级 INI 库或深链插件。替换该补丁时核对精确来源和锁文件，并重新完成桌面矩阵；不能只看业务 crate 的 CI。已有失败 tag 保持不变。
+
 ### 4.1 修改 release.yml 时的验证流程
 
 **Layer 1 — 静态校验**（PR CI 必跑，秒级）：[`lint.yml`](../.github/workflows/lint.yml) 跑 `node scripts/check-release-paths.mjs`，验证

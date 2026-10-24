@@ -17,7 +17,7 @@ Centralized utilities and shared abstractions used across the oh-my-opencode-sli
 
 ### Core Abstractions
 
-- **BackgroundJobBoard** (`background-job-board.ts`): Singleton registry and lifecycle manager for background tasks with reusable session pool patterns, automatic cleanup, and reconciliation hooks
+- **BackgroundJobBoard** (`background-job-board.ts`): Singleton registry and lifecycle manager for background tasks with reusable session pool patterns, automatic cleanup, and reconciliation hooks. Machine-side only: it is never rendered into a prompt (issue #1647)
 - **BackgroundJobStore** (`background-job-store.ts`): Atomic state-store contract for terminal transitions, leases, and deadline claims implemented by the board
 - **BackgroundJobCoordinator** (`background-job-coordinator.ts`): Lifecycle policy layer between board and consumers with terminal-state subscriptions, deferred-close policy, and metadata shaping
 - **BackgroundJobSupervisor** (`background-job-supervisor.ts`): One-shot wall-clock deadline supervision with timer/generation/abort mechanics
@@ -155,7 +155,7 @@ Session metadata, the opencode client accessor, and the type-only call-shape con
 |------|---------|
 | `index.ts` | Public API re-exporting most utilities |
 | `agent-variant.ts` | Agent name normalization and regex escaping |
-| `background-job-board.ts` | Background task registry and lifecycle manager |
+| `background-job-board.ts` | Background task registry and lifecycle manager (never rendered into a prompt) |
 | `background-job-coordinator.ts` | Lifecycle policy and terminal-state subscriptions |
 | `background-job-store.ts` | Atomic store contract and terminal transitions |
 | `background-job-supervisor.ts` | Wall-clock deadline supervision and abort grace |

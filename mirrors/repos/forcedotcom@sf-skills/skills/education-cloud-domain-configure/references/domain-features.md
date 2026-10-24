@@ -25,3 +25,18 @@ Configuration guide for each Education Cloud domain and its sub-features. Based 
 - Write domain/feature toggles via the headless metadata PUT path (IndustriesSettings `xmlRep`, write `dispatch` tool); never `setup/org/preferences/{name}` (404). Fall back to UI instructions only on error
 - EDU toggles are IRREVERSIBLE (`false → true` only) — warn the user, never promise a revert
 - Student Management has no separate domain toggle — it is enabled when Academic Operations is configured with student enrollment records
+
+## Domain prerequisites
+
+Beyond OmniStudio/Business Rules Engine (enabled in Phase 0), most domains need an added license: Experience Cloud (Recruitment & Admissions, Mentoring, and portals generally), Salesforce Scheduler (Student Success, Recruitment & Admissions), Fundraising (Alumni Relations, if using gift management), or a prior domain (Student Management requires Academic Operations already configured). See the selected domain's file under `references/domain-features/` for the full list.
+
+## Domain toggle fields
+
+| Domain | `IndustriesSettings` field |
+|--------|----------------------------|
+| Student Success | `enableStudentSuccess` |
+| Academic Operations | `enableAcademicOperations` |
+| Mentoring | `enableMentoring` |
+| Alumni Relations | `enableAlumniRelations` |
+| Recruitment & Admissions | **No master toggle** — configured via 2 independent sub-feature settings (`enableApplnDecStdSharing`, `enableAppMaterialsProtection`); skip this step, go to `references/domain-features/recruitment-admissions.md` "Enablement & Toggles" |
+| Student Management | `enableStudentManagement` |

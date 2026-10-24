@@ -28,7 +28,8 @@ gameplay action mapping belongs to `input-systems`; server trust belongs to `rob
 
 1. **Inspect before designing.** In Explorer, inventory existing `ScreenGui`s, UI modules,
    fonts, colors, icon family, spacing, corners, strokes, animation timing, naming, and reusable
-   components. Capture representative screenshots at two viewports. Extend that language.
+   components, including any `StyleSheet`/`StyleLink` styling, tokens and themes. Capture
+   representative screenshots at two viewports. Extend that language.
 2. **Define ownership and lifecycle.** `StarterGui` is the authored template; Roblox clones it
    into each player's `PlayerGui`. Decide whether each `ScreenGui` should persist across respawn
    with `ResetOnSpawn = false`; never keep stale references to a destroyed clone.
@@ -46,7 +47,7 @@ gameplay action mapping belongs to `input-systems`; server trust belongs to `rob
 7. **Polish with restraint.** Implement hover, pressed, selected, and disabled states. Animate
    state changes, not decoration; honor `GuiService.ReducedMotionEnabled` and clean up tweens and
    connections when the screen closes or is replaced.
-8. **Verify the real interface.** Use Device Emulator and Controller Emulator. Test desktop,
+8. **Verify the real interface.** Use Device Simulator and Controller Emulator. Test desktop,
    narrow portrait, mobile landscape, tablet-like, and console/gamepad; then respawn. Record
    clipping, overlap, text, scroll, safe-area, focus path, touch target, and lifecycle results.
 
@@ -123,15 +124,24 @@ local GuiService = game:GetService("GuiService")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 
-local function openInventory()
-    root.Visible = true
+local function usesDirectionalFocus(): boolean
+    local preferred = UserInputService.PreferredInput
+    return preferred == Enum.PreferredInput.Gamepad
+        or preferred == Enum.PreferredInput.MicroGamepad
+end
+
+local function focusFirstItem()
     task.spawn(function()
         RunService.RenderStepped:Wait() -- selection must be rendered and selectable
-        if root.Visible and (UserInputService.GamepadEnabled
-            or (UserInputService.KeyboardEnabled and not UserInputService.TouchEnabled)) then
+        if root.Visible and usesDirectionalFocus() then
             GuiService.SelectedObject = firstItemButton
         end
     end)
+end
+
+local function openInventory()
+    root.Visible = true
+    focusFirstItem()
 end
 
 local function closeInventory()
@@ -139,12 +149,19 @@ local function closeInventory()
     root.Visible = false
 end
 
+-- Owned by the screen lifecycle; disconnect on teardown.
+local inputConnection = UserInputService:GetPropertyChangedSignal("PreferredInput"):Connect(function()
+    if root.Visible and GuiService.SelectedObject == nil then focusFirstItem() end
+end)
+
 firstItemButton.Activated:Connect(function()
     selectItem(firstItemButton:GetAttribute("ItemId"))
 end)
 ```
 
-Prefer `Activated` over separate mouse/touch handlers. Set `NextSelectionUp/Down/Left/Right`
+Decide input-dependent UI from `UserInputService.PreferredInput`, which follows the player's
+primary device; `TouchEnabled`/`GamepadEnabled` are capabilities (a touch laptop reports touch)
+and `GetLastInputType()` thrashes. Prefer `Activated` over separate mouse/touch handlers. Set `NextSelectionUp/Down/Left/Right`
 when automatic navigation is ambiguous, especially around grids, sidebars, and modals. A modal
 must trap focus inside itself and restore a sensible selection when it closes.
 
@@ -185,8 +202,10 @@ Animate a panel or state boundary once. Do not independently bounce every descen
 
 - Establish hierarchy through size, weight, contrast, grouping, and whitespace before adding
   decoration. Use a small spacing scale and align to it.
-- Preserve the game's fonts, palette, icons, radii, and strokes. If none exist, define a compact
-  token module; do not improvise per component.
+- Preserve the game's fonts, palette, icons, radii, and strokes. If the project uses UI styling,
+  change tokens and `StyleRule`s rather than per-instance properties; the Properties window
+  marks styled properties with ⚠ and names the style on hover. If nothing exists, define a compact token set (a token `StyleSheet` or module); do not improvise per
+  component.
 - Use corners where the material/form calls for them, not on every nested `Frame`. Avoid nested
   card-on-card shells, universal pills, arbitrary gradients/glows/shadows, neon outlines,
   excessive transparency/blur, oversized headings, meaningless icons, and huge empty panels.
@@ -195,14 +214,14 @@ Animate a panel or state boundary once. Do not independently bounce every descen
 - Motion communicates open/close, focus, confirmation, or spatial relationship. Keep it short,
   interruptible, and subtle; avoid perpetual motion and decorative tween chains.
 - On touch devices, reserve the default movement/jump corners. Move or recompose bottom actions
-  that overlap them, and hide keyboard/gamepad hints when those inputs are not active.
+  that overlap them, and show only the hints for the current `PreferredInput`.
 
 ## Common failures
 
 | Symptom | Likely cause | Remedy |
 |---|---|---|
 | UI disappears or duplicates after respawn | wrong `ResetOnSpawn` policy or stale clone | choose policy; reacquire from `PlayerGui`; clean old bindings |
-| Phone layout clips | desktop offsets/global scale used as layout | add narrow composition, layouts, bounds, and Device Emulator checks |
+| Phone layout clips | desktop offsets/global scale used as layout | add narrow composition, layouts, bounds, and Device Simulator checks |
 | Content hidden under topbar/notch | insets ignored or `ScreenInsets = None` | use `CoreUISafeInsets` for interactive UI; inspect intentional bleed |
 | Scroll ends early | fixed `CanvasSize` | use `AutomaticCanvasSize` or layout `AbsoluteContentSize` |
 | Controller gets stuck | no entry selection or bad neighbor graph | set initial `SelectedObject`; define and test focus edges/modal trap |

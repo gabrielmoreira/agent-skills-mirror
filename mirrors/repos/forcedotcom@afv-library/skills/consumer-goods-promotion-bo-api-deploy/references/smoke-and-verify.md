@@ -28,7 +28,7 @@ on top of the derived contract:
 
 - **R1** — force `DateFrom`, `DateThru`, `Slogan` into the create payload. If the user gave duration-in-weeks intent, compute `DateThru = DateFrom + weeks*7 - 1` client-side.
 - **R2** — poll for `Status__c = 'Calculated'` (NOT `Processed`, which does not exist in the picklist).
-- **R3** — send level NAMES verbatim as `ProductFilter.Criteria` keys (`Category`, `Brand`, ...), NOT Product2 field API names.
+- **R3** — `ProductFilter` is a **top-level** promotion sibling of `Slogan`/`DateFrom`/`Tactics`, **NOT** nested under `Tactics[]` — nesting is schema-valid at ingest but fails downstream with the misleading "You must select at least one Category to the Promotion" (see R3a). Keys are level NAMES (`Category`, `Brand`, …), NOT Product2 field API names. Values are external ids (`<prefix>__Consumer_Goods_External_Product_Id__c`), NOT display `Name`/label (passing a Name fails with the misleading `TransformationError: Could not find Products: <Name>` — see R3b).
 - **R4** — pre-flight the anchor account has a `Plan` `Account_Extension__c` row valid for `DateFrom..DateThru` in this sales org.
 - **R5** — restrict `ManualInputs[].KPI` values to `editable` / `editable_calculated` `KPI_Definition__c.Name` on the template's `KPI_Set__c`.
 - **R6** — for `copy`, derive requireds the same way, then layer the Apex-only preconditions (`Is_Copyable__c`, template type, anchor).
@@ -94,6 +94,23 @@ request: a bearer token in shell output, traces, or agent context is a
 credential exposure (S1). Do **not** add `--json` to `sf api request rest` — the
 raw stdout body is already JSON. `${URL_NS}` is the namespace segment from
 Phase 1 (`/cgcloud` / `/cgcloud_dev` / empty); the endpoint is instance-relative.
+
+**`sf … --json | jq …` parse caveat.** `sf` occasionally prints a plain-text
+update-availability banner (e.g. `›   Warning: @salesforce/cli update available
+from X to Y.`) ahead of the JSON body on stdout, which silently breaks a direct
+`| jq` pipe (jq hits the banner line first and errors with `invalid numeric
+literal` / `parse error`). Two defenses — pick one and use it consistently
+across every `sf … --json | jq` pipe in this phase:
+
+- Export `SF_SKIP_NEW_VERSION_CHECK=true` for the session (suppresses the
+  banner at the source; preferred for a single-session smoke run).
+- Strip pre-JSON noise before piping: `sf … --json | sed -n '/^[\[{]/,$p' | jq .`
+  (keeps everything from the first `{` or `[` onward; works even if the banner
+  grows to multiple lines).
+
+The same caveat applies to the `sf data query --target-org <alias> --json` SOQL
+calls elsewhere in this skill — a stale CLI emits the banner on arbitrary
+invocations, not just the first one.
 
 **Smoke-time re-check of running user's `${PREFIX_UNDER}Sales_Org__c`.** Phase 1
 step 7 gated the whole invocation on this, but Phase 6 can be minutes/hours later

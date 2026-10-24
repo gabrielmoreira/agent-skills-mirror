@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/incident-commander/../../../engineering-team/skills/incident-commander/SKILL.md

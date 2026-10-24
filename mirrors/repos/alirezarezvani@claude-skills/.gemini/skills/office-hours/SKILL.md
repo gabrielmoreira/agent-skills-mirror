@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/office-hours/../../../c-level-agents/skills/office-hours/SKILL.md

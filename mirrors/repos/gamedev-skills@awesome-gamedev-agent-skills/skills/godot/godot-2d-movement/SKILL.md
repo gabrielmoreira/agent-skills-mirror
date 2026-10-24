@@ -70,6 +70,10 @@ func _physics_process(delta: float) -> void:
     move_and_slide()   # 4.x: no arguments; uses and updates `velocity`
 ```
 
+A fixed `gravity` export keeps tuning simple. To follow the project setting
+(*Physics > 2D > Default Gravity*) and any `Area2D` gravity overrides instead, use
+`velocity += get_gravity() * delta`, as the built-in CharacterBody2D script template does.
+
 ### 2. Top-down 8-direction movement
 
 ```gdscript
@@ -133,8 +137,8 @@ func _physics_process(delta: float) -> void:
 - **Sinking through floors** usually means the collision shape is missing/zero-sized, the
   floor body is on a layer this body's mask doesn't include, or you moved the body via
   `position +=` instead of velocity + `move_and_slide()`.
-- **Slope slipping while idle:** keep `floor_stop_on_slope = true` (default) and set a
-  `floor_snap_length` so the body sticks to downward slopes.
+- **Slope slipping while idle:** keep `floor_stop_on_slope = true` (default) and raise
+  `floor_snap_length` (default 1 px) so the body sticks to downward slopes.
 
 ## References
 

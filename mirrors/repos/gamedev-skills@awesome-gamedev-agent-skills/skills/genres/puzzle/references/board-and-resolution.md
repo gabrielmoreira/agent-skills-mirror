@@ -47,8 +47,9 @@ def has_valid_move(board):
                     swap(board, (y, x), (y+dy, x+dx))   # swap back
                     if ok: return True
     return False
-# If not has_valid_move(board): reshuffle existing pieces (keep counts) until a move exists,
-# or end the level, depending on your rules.
+# If not has_valid_move(board): reshuffle existing pieces (keep counts) until a move exists
+# AND find_matches(board) is empty (a reshuffle must not hand out free matches), or end the
+# level, depending on your rules. Cap the attempts and fall back to a fresh board.
 ```
 
 ## 3. Cascade scoring
@@ -110,7 +111,14 @@ Generated levels must be solvable, or players hit unfair dead ends:
   push/slide puzzles; move-existence for match-3); keep it only if solvable within the move/time
   budget. Use a seed so a level is reproducible.
 - **Reverse generation:** start from a solved board and apply random *legal inverse* moves; the
-  scrambled result is guaranteed solvable by reversing them. Great for sliding/sokoban puzzles.
+  scrambled result is guaranteed solvable by reversing them. Great for sliding/sokoban puzzles
+  (for sokoban the inverse move is a *pull*: the player steps back and drags the block).
+- **Sliding-tile parity:** placing the tiles of an N×M sliding puzzle in a random order gives an
+  unsolvable board exactly half the time. With the blank's goal in the bottom-right corner, count
+  *inversions* (pairs of numbered tiles in the wrong order, reading row by row, ignoring the
+  blank). Odd width: solvable iff inversions are even. Even width: solvable iff inversions plus
+  the blank's row counted from the bottom (1 = bottom row) is odd. If a shuffle fails, swap any
+  two numbered tiles to flip the parity.
 - Tag each level with its seed and intended difficulty so progression curves are tunable and a
   bad level can be reproduced and fixed.
 

@@ -804,9 +804,24 @@ availability, or ordering constraint.
   This still fires even though the structural dependency filter
   already correctly treats the closed reference as unblocking
 
-When an issue keeps a dependency edge, justify each dependency edge in
-the surrounding issue body and confirm that the split still preserves
-natural cohesion.
+Common parentage, shared files, and generic correctness claims alone do
+not establish an edge. The roadmap #4079 example is described in
+[Per-edge rationale examples](https://github.com/kurone-kito/idd-skill/blob/main/skills/issue-authoring/references/draft-patterns.md#per-edge-rationale-examples)
+(roadmap #4079 opened 2026-10-12); the shared-file-only and
+generic-claim cases are preventive; no observed incident yet.
+
+To justify each dependency edge, name the predecessor output, the
+dependent operation or acceptance criterion it blocks, and the evidence
+that supports the relationship. Ask what fails without that output while
+keeping the other valid prerequisites. Keep the concise rationale in
+the issue body. For a multi-issue set, map each hard edge in
+`relationships` and support it with `evidence`. For a single issue,
+keep the rationale in the body and supporting evidence in `evidence`;
+`relationships` remains empty as the packet schema requires. Do not add
+packet fields. Keep contention and preferred order in scheduling notes.
+Review each edge against the body and packet, then review the set for
+independent siblings and natural cohesion. Do not impose a parallelism
+quota or another approval gate.
 
 ## Nested roadmap nodes
 
@@ -960,7 +975,10 @@ Validation expectations:
   roadmap body
 - the roadmap explains why multiple issues exist
 - sequencing and blocking are explicit
-- each dependency edge is justified and preserves natural cohesion
+- each dependency edge names its consumed predecessor output, blocked
+  operation or criterion, supporting evidence, and counterfactual with
+  other prerequisites retained; independent siblings stay in the
+  roadmap task list and the set preserves natural cohesion
 - nested roadmap entries stay identifiable as coordination/audit nodes
   instead of normal execution leaves
 - exactly one autopilot-suitability footer with an integer 1-5
@@ -1179,10 +1197,15 @@ Pre-publish validation checklist:
 4. **Human dependency isolation**: Ready issues do not hide unresolved
    decisions, credentials, subjective approvals, or mid-implementation
    human handoffs
-5. **Completed-draft review**: the drafted body has passed the
+5. **Factual-claims check**: before the completed-draft adversarial
+   review and mechanical audit, verify material factual claims under the
+   [Factual-claims check](#factual-claims-check). Put support in the
+   review packet's existing `evidence` array and route materially
+   unresolved claims under the existing rules
+6. **Completed-draft review**: the drafted body has passed the
    [completed-draft adversarial review](#completed-draft-adversarial-review)
    before the linter runs
-6. **Mechanical audit**: the drafted body passes the
+7. **Mechanical audit**: the drafted body passes the
    `audit-authored-issue` linter for its declared shape (see
    [Mechanical pre-publish gate](#mechanical-pre-publish-gate)) — for the
    `orphan` and `child` shapes, this now also runs the same A4 criteria
@@ -1199,8 +1222,9 @@ sentence, and this sentence does not turn those other checks into an ask.
 
 ## Factual-claims check
 
-Before the completed-draft adversarial review, verify material factual
-claims that justify a draft's scope or design against current sources.
+Before the completed-draft adversarial review and mechanical audit,
+verify material factual claims that justify a draft's scope or design
+against current sources.
 This includes repository behavior against current code and documentation,
 issue or pull-request status and prior decisions against live GitHub
 records, and runtime observations under
@@ -1221,6 +1245,8 @@ error reported in [issue #4566](https://github.com/kurone-kito/idd-skill/issues/
 for a draft carried in [issue #4479](https://github.com/kurone-kito/idd-skill/issues/4479),
 concerning [issue #3838](https://github.com/kurone-kito/idd-skill/issues/3838)
 and [issue #1019](https://github.com/kurone-kito/idd-skill/issues/1019).
+The checklist placement is tracked in
+[issue #4643](https://github.com/kurone-kito/idd-skill/issues/4643).
 
 ## Completed-draft adversarial review
 
@@ -1246,6 +1272,12 @@ this packet:
 - relationship context for a multi-issue set
 - the issue-authoring critique checklist below
 
+For a multi-issue set, map each hard edge in `relationships` to its
+producer output and blocked work, and use `evidence` to support that
+relationship. For a single issue, keep `relationships` empty and put
+supporting evidence in `evidence`. Keep the packet aligned with the
+concise rationale in the issue body; the packet schema stays unchanged.
+
 The packet does not include the whole conversation or unbounded work
 instructions.
 
@@ -1255,8 +1287,15 @@ instructions.
 - a concrete surface and an objective verification are named
 - acceptance criteria are checkable without a hidden human decision,
   credential, or subjective approval
-- dependency edges are true blockers, and independent siblings stay in
-  the roadmap task list
+- each dependency edge names the consumed predecessor output, blocked
+  operation or criterion, supporting evidence, and counterfactual with
+  other prerequisites retained. The body and packet agree; for a
+  multi-issue set, `relationships` maps each hard edge and `evidence`
+  supports it, while a single-issue packet keeps `relationships` empty
+  and uses `evidence` for support. Independent siblings stay in the
+  roadmap task list
+- the set preserves natural cohesion without a parallelism quota or a
+  new approval gate
 - the draft stays inside the specificity target range: no hidden
   assumption that only a top-tier model could infer, and no
   step-by-step runbook, so a middle-tier cloud model can implement it

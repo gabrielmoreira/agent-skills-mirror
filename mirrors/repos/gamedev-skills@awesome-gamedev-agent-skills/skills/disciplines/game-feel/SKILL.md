@@ -65,6 +65,7 @@ state); **(2)** scale juice to event importance — a footstep is not a boss dea
 ```gdscript
 # Godot 4.7. Store trauma 0..1; shake = trauma^2 so small hits barely move, big hits punch.
 # Drives a Camera2D OFFSET (the visual), never the player body. Decays every frame.
+# Camera2D.ignore_rotation defaults to true, so set it false or the roll does nothing.
 @export var decay := 1.2          # trauma lost per second
 @export var max_offset := Vector2(12, 8)
 @export var max_roll := 0.1       # radians
@@ -84,24 +85,30 @@ func _process(dt: float) -> void:
                      max_offset.y * shake * sin(_t * 2.3))
     rotation = max_roll * shake * sin(_t * 1.1)
 # Unity 6.3 LTS: identical model on a CinemachineCamera via CinemachineBasicMultiChannelPerlin
-# (set AmplitudeGain/FrequencyGain from trauma^2) — see camera-systems.
+# (set AmplitudeGain/FrequencyGain from trauma^2); for one-off impacts, CinemachineImpulseSource
+# on the hitter + CinemachineImpulseListener on the camera — see camera-systems.
 ```
 
 ### 2. Hit-stop / freeze frame (sell impact by briefly stopping time)
 
 ```gdscript
 # Godot 4.7. Drop time scale, then restore after a REAL-TIME delay (unaffected by time_scale).
-func hit_stop(duration := 0.08, scale := 0.05) -> void:
-    Engine.time_scale = scale
+var _hit_stop_id := 0
+
+func hit_stop(duration := 0.08, slow := 0.05) -> void:
+    _hit_stop_id += 1
+    var my_id := _hit_stop_id
+    Engine.time_scale = slow
     # 4th arg ignore_time_scale=true → the timer still fires while the game is frozen.
     await get_tree().create_timer(duration, true, false, true).timeout
-    Engine.time_scale = 1.0
+    if my_id == _hit_stop_id:       # a newer hit-stop owns the restore; don't cut it short
+        Engine.time_scale = 1.0
 ```
 
 ```csharp
 // Unity 6.3 LTS (C#). WaitForSecondsRealtime ignores Time.timeScale, so the timer still elapses.
-IEnumerator HitStop(float duration = 0.08f, float scale = 0.05f) {
-    Time.timeScale = scale;
+IEnumerator HitStop(float duration = 0.08f, float slow = 0.05f) {
+    Time.timeScale = slow;
     yield return new WaitForSecondsRealtime(duration);
     Time.timeScale = 1f;            // RIGHT: real-time wait. WRONG: WaitForSeconds (never resumes at scale 0)
 }
@@ -140,6 +147,8 @@ func feedback(event_pos: Vector2, tier: String) -> void:
   never advances). Use a real-time wait (`WaitForSecondsRealtime`, or Godot's
   `ignore_time_scale` timer).
 - **Hit-stop on every frame of a held attack** locks the game. Trigger it once per impact.
+- **Overlapping hit-stops** (two hits 30 ms apart) let the first timer restore time scale in
+  the middle of the second freeze. Let only the newest call restore it, as above.
 - **Linear tweens everywhere** feel robotic. Ease almost everything; reserve overshoot
   (BACK/ELASTIC) for "pop" and ease-out for "settle".
 - **Permanent exaggeration** (scale never returns, shake never decays) becomes the new normal

@@ -36,10 +36,13 @@ func _physics_process(delta: float) -> void:
 
 ## One-way platforms
 
-On the platform's `CollisionShape2D` / static body, enable **one-way collision** in the
-editor (the shape gets a one-way arrow). The `CharacterBody2D` passes through from one
-side. To drop through deliberately, briefly disable the body's collision with that layer
-or use `set_collision_mask_value()` for a few frames.
+On the platform's `CollisionShape2D` / `CollisionPolygon2D`, enable **one-way collision**
+(the editor draws an arrow). With the default `one_way_collision_direction` of
+`Vector2(0, 1)` (added in 4.7; earlier versions always use this local-down direction) a
+`CharacterBody2D` lands on top and passes through from below. Rotate the vector instead of
+the node to make one-way walls. Raise `one_way_collision_margin` if fast bodies fall
+through. To drop through deliberately, briefly clear the platform's layer from the body's
+mask with `set_collision_mask_value()` for a few frames.
 
 ## Moving platforms
 

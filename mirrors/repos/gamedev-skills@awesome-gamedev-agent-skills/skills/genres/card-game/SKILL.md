@@ -77,12 +77,14 @@ card = {
     "id": "fireball", "cost": 3, "type": "spell",
     "effects": [ {"op": "damage", "amount": 6, "target": "chosen_enemy"} ],
 }
-def play(card, caster):
-    if resources[caster] < card.cost: return False     # can't afford
-    resources[caster] -= card.cost
+def play(card, caster, chosen_targets):
+    # Validate everything first; a failed check must leave zones and resources untouched.
+    if resources[caster] < card.cost: return False      # can't afford
+    if not targets_legal(card, chosen_targets): return False
+    resources[caster] -= card.cost                      # commit: pay, then move, then resolve
     move(card, from_zone=hand, to_zone=play_or_discard(card))
     for fx in card.effects:
-        resolve_effect(fx, caster)                      # one interpreter handles every card
+        resolve_effect(fx, caster, chosen_targets)      # one interpreter handles every card
     return True
 ```
 
@@ -110,7 +112,12 @@ def take_turn(player):
   by a small set of operations (Pattern 2).
 - **Ambiguous effect order / simultaneous triggers** → nondeterministic outcomes. Resolve in a
   defined order (a queue or stack); document LIFO vs. FIFO (refs).
-- **Unseeded shuffle in a game that needs replays/undo** → can't reproduce. Use a seeded RNG.
+- **Unseeded shuffle in a game that needs replays/undo** → can't reproduce. Use a seeded RNG
+  instance (not the engine's global one) and save its state with the run; see refs §6 for the
+  per-engine calls.
+- **Off-by-one in the shuffle's random index** → some orders never occur (a biased deck). Engine
+  ranges differ: Godot `randi_range(a, b)` and Phaser `RND.between(a, b)` include `b`; Unity
+  `Random.Range(int, int)` excludes it.
 - **No hand limit / no answers** → degenerate hoarding or unbeatable threats. Add a hand cap and
   ensure removal exists for every threat archetype.
 - **Targeting state leaks** → a cancelled play leaves the board mid-targeting. Make play

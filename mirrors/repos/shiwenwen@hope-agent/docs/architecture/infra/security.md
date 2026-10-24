@@ -50,6 +50,10 @@ flowchart TB
 
 **唯一的例外是 LLM Provider 出站**：`ProviderConfig.allow_private_network` 只是一个 UI 标记，后端不做拦截。原因很实际——用户的本地 Ollama / vLLM 自部署常年住在 `192.168.*` / `10.*`，如果对 Provider 也套 SSRF 策略，最常见的本地部署反而被误伤。这条例外在下文"调用方对照"里会再点明。
 
+### 桌面深链依赖的临时上游补丁
+
+工作区将 `tauri-plugin-deep-link 2.6.2` 固定到官方签名提交 `463977675da7bbb257dee59669b5e122c8d681db`，仅补齐 Linux INI 解析选项的新增字段，保留原有引号与转义处理设置，以及该版本的 XDG 注册归属与错误上报修复。`rust-ini 0.21.3` 及所有已锁定包的版本保持不变，Cargo 重新解析已有跨平台依赖边；不回退到已撤回的 INI 版本。来源由 `Cargo.toml` 与 `Cargo.lock` 的完整提交摘要固定；有兼容的正式 crate 发布后再移除补丁，并以真实桌面构建与 Linux 相关验证验收。普通不含 Tauri 壳的 Rust CI 不构成此路径的编译证明。
+
 ---
 
 ## 一、SSRF 出站防护
@@ -285,6 +289,8 @@ pub fn status() -> DangerousModeStatus;
 
 ## 四、凭据与日志红线
 
+随机数调用使用工作区 `rand 0.10`：字节填充导入 `rand::Rng`，PKCE 的 `random()` 方法导入 `rand::RngExt`，均保留 `rand::rng()`。迁移只调整 trait 入口；OAuth 校验码、Server Owner Token、票据、加密盐与 nonce 的长度、编码及存储格式保持原契约，不持久化或复制 RNG 状态。兼容依据见 [rand 0.10 迁移说明](https://rust-random.github.io/book/update-0.10.html)。
+
 这几条不属于某个具体函数，而是所有子系统都要守的跨切面约束：
 
 - **凭据绝不进日志**。任何日志路径（`app_*!` / `tracing` / panic backtrace / 请求响应体落盘）在写出前都必须经 [`logging::redact_sensitive`](../../../crates/ha-base/src/logging/file_ops.rs) 脱敏；错误/正文预览还会额外做长度截断，避免把大段响应体连同其中的密钥一起写进磁盘。API Key / OAuth Token 绝不能出现在任何日志中——一旦模型能读到含密钥的历史，日志就成了泄漏通道。
@@ -352,3 +358,9 @@ Tauri [GHSA-w28w-mhc8-qvjv](https://github.com/tauri-apps/tauri/security/advisor
 分组中的 0.x 变化按调用边界核查：tauri-utils 的构建链使用 dom_query 0.28；Tauri 接收 auto-launch、infer、tao/wry、tray-icon 等上游适配；项目不直接跨接这些类型。保留现有 HTML→Markdown、分词 singleton、PDFium 渲染与更新桥调用，不因分组名声称无行为变化。官方 [Tauri 变更](https://github.com/tauri-apps/tauri/releases/tag/tauri-v2.12.4) 与 [updater 变更](https://github.com/tauri-apps/plugins-workspace/releases/tag/updater-v2.14.0) 需结合精确头编译、CI 和审查证据；不包含真实桌面/系统安装或 Provider 验收。
 
 2026-10-20 的实际发布 CLI 预检进一步发现 dialog、notification、process 的 Rust/JS minor 不一致。JS 侧分别对齐 2.8.3、2.7.0、2.4.0，Cargo 解析版本不变；主包和 updater 的配对不足以证明全部插件兼容。版本守卫现覆盖所有已声明的官方 JS 插件及其原生对应项，继续按实际锁定版本比较 major.minor，允许 patch 差异；缺失任一对应项也拒绝。该检查及合成夹具不替代实际四平台构建、系统权限、通知交互或重启验收。
+
+## 2026-10-23 Node 构建运行时安全补丁
+
+[Node 官方安全公告](https://nodejs.org/en/blog/vulnerability/october-2026-security-releases)提供24.22.1补丁。main的Lint运行39914864235（提交b33bfa7b）的setup-node日志实际读取缓存24.21.0，浮动major并未获取补丁。五处既有setup-node统一固定24.22.1，保留Actions完整摘要、job名称、matrix和门禁。后续补丁应显式维护该版本，不回退受影响补丁；普通CI会读回实际安装版本。
+
+Docker前端构建基础镜像node:24-bookworm-slim刷新后，digest `sha256:55fb5f5a527ea2c5c4a95f963e48ef90aa38c7b346054fdc8ee9957a2b55d205` 的无网络、只读根、无挂载隔离容器读回24.22.1。此证据仅覆盖该镜像digest及当前平台，不表示历史缓存已刷新、多架构完整构建、生产部署或宿主软件已升级。Dockerfile未改，镜像digest固定的既有独立PR归原主责。

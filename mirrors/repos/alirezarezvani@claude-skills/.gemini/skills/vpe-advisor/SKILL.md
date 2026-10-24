@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/vpe-advisor/../../../c-level-advisor/skills/vpe-advisor/SKILL.md

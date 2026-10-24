@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/cross-eval/../../../c-level-agents/skills/cross-eval/SKILL.md

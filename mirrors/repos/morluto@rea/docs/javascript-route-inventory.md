@@ -48,7 +48,8 @@ at the 1 MiB serialized view budget. Oversized indivisible facts return a
 resource error carrying the retained parent Evidence ID.
 
 Pattern IDs bind the exact path. Source IDs bind the source key, path, original
-URL, content digest and container digest. Occurrences identify a detector mechanism at a source location; one location
+URL, content digest, container digest, and any retained Next source applicability
+context (including the owning package digest). Occurrences identify a detector mechanism at a source location; one location
 may support multiple mechanisms. `source_count` counts distinct sources. Lookup IDs use 128 bits of SHA-256;
 full content and inventory digests remain SHA-256. Field selection always keeps
 row identity and necessary provenance. The page's deduplicated `sources` table
@@ -61,6 +62,10 @@ The shared parser handles literal router calls, nested route objects, typed
 `_$` trees with explicitly inferred property-name fallbacks, Next App Router
 page paths, and navigation targets. It follows stable lexical bindings and
 keeps unresolved parents, mutations, spreads, and dynamic fields explicit.
+Index-route flags use the same value-at-read boundary as path fields: erased
+type wrappers and initialized stable boolean aliases preserve `true`/`false`;
+uninitialized or unresolved flags retain an interpretation unknown instead of
+silently disappearing.
 A selected route-builder root owns its configuration even when mutation prevents
 trusting its value. Ordinary wrapper keys do not become route ancestors. Missing
 outer ancestors of unbound typed subtrees remain unknown rather than invented.
@@ -68,6 +73,31 @@ Generic Next runtime path constants require a top-level application segment
 supported by structural or navigation candidates across the supplied sources.
 This limits framework filesystem noise, while leaving unsupported candidates
 unknown. The parser shares the existing AST traversal and lexical index.
+
+Literal fragments of computed expressions, module references, and page-shaped
+paths owned by Next interpretation do not also become generic route constants.
+Selected getter results retain the shared semantic owner's allocation identity;
+finite selections can claim their query data, while widened or cyclic selections
+keep an unknown in the interpretation that requested them.
+
+Next page conversion receives an explicit source context. For local source files,
+the shared JSON owner first establishes a declared `next` dependency in the
+nearest owning package. Inventoried directories then select that package's `app`
+before `src/app`, following Next's [root selection](https://github.com/vercel/next.js/blob/v16.4.2/packages/next/src/lib/find-pages-dir.ts).
+Only files beneath the selected directory supply source-page support. Default
+`.next/static/chunks/app` output receives a separate compiled-directory context
+from the same package owner; custom build directories remain unmodeled. Pages Router
+files, unrelated components, and nested packages do not inherit that root merely
+because their paths contain `app`. Missing package/framework evidence remains an
+interpretation unknown for page-shaped source paths. Each page-shaped source retains its
+`next_app_context` and package identity so this derivation remains inspectable.
+
+Captured script URLs use the `/_next/static/chunks/app/` asset boundary, independently
+of local package evidence. Source literals use recognized Next runtime context;
+imports, exports, and direct call arguments do not themselves declare pages.
+The parser completes its runtime-marker scan before interpreting retained module
+literals, so marker placement does not change the result. A matching filename
+suffix alone cannot establish App Router ownership.
 
 [Next dynamic segments](https://nextjs.org/docs/app/api-reference/file-conventions/dynamic-routes)
 map to `:id`, `:slug+`, or `:slug*`; groups and parallel slots do not contribute
@@ -77,6 +107,17 @@ can differ from the routing base. Every affected occurrence keeps
 `unprefixed_path`, `inferred_base_path`, and low confidence. `system` classification
 is explicitly a path-name heuristic; `page` uses page-file or structured/typed configuration support. Name-only
 `route`/`addRoute` calls remain `unknown` because they can also register server APIs.
+
+Next page-source segments keep their filename spelling when converted to route
+patterns. Next's [page-path conversion](https://github.com/vercel/next.js/blob/v16.4.2/packages/next/src/shared/lib/page-path/absolute-path-to-page.ts#L21-L39)
+removes page extensions and the `index` tail without URI-decoding segments, so
+ordinary percent sequences are not decoded: `%61` and `a` remain separate
+candidates and a literal `%` is retained. Its [App pathname normalizer](https://github.com/vercel/next.js/blob/v16.4.2/packages/next/src/server/normalizers/built/app/app-pathname-normalizer.ts#L5-L18)
+specifically applies the [underscore normalizer](https://github.com/vercel/next.js/blob/v16.4.2/packages/next/src/server/normalizers/underscore-normalizer.ts#L2-L9),
+which maps `%5F` to `_`; private-folder checks apply to the source spelling
+before that escape is mapped. When classifying a chunk URL, REA reads its
+pathname, then applies these same Next-specific rules. This is static source-path
+interpretation, not browser request-path decoding or reachability.
 
 Known capture omissions remain inline in `summary.reported_capture_omissions`
 and queryable as `unknowns` of kind `capture-omission`. Each keeps a stable gap ID,

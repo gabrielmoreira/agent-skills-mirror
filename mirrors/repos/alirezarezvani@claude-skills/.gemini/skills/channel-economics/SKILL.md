@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/channel-economics/../../../commercial/skills/channel-economics/SKILL.md

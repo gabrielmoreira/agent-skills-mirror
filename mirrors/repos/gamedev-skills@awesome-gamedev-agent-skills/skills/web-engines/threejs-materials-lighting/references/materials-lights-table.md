@@ -38,8 +38,10 @@ matches glTF's PBR model, and is the safe choice for imported assets.
 | `SpotLight(color, intensity, distance, angle, penumbra, decay)` | cone | yes (perspective) | flashlights, stage |
 | `RectAreaLight(color, intensity, w, h)` | soft rectangle | no | softboxes, screens (needs init helper) |
 
-Since r155 lighting is physically based and the old `physicallyCorrectLights`
-toggle was removed. Practical starting intensities: key `DirectionalLight` 2–3,
+Since r155 physically correct lighting is the default; the old switch
+(`physicallyCorrectLights`, later `useLegacyLights`) no longer exists in current
+releases, so old tutorial intensities look too dark. Practical starting
+intensities: key `DirectionalLight` 2–3,
 `HemisphereLight`/`AmbientLight` fill ≈ 0.5–1.5. `PointLight`/`SpotLight` use
 inverse-square `decay` (default 2), so they fall off fast — increase intensity or
 reduce `decay` if a lamp seems too dim.
@@ -81,15 +83,33 @@ When you don't have an `.hdr`, generate a neutral studio environment procedurall
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 
 const pmrem = new THREE.PMREMGenerator(renderer);
-scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
-// dispose pmrem when done if you only need it once: pmrem.dispose();
+const room = new RoomEnvironment();
+scene.environment = pmrem.fromScene(room, 0.04).texture;
+room.dispose();   // the room's own geometry/materials are no longer needed
+pmrem.dispose();  // the generated texture stays valid
 ```
+
+`RoomEnvironment` was repositioned in r183, so a project upgraded across that
+release lights slightly differently; re-check exposure and `scene.environmentIntensity`.
 
 `PMREMGenerator` pre-filters any environment (HDR, RoomEnvironment, or a rendered
 scene) into the mip-mapped format PBR materials sample for reflections at varying
 roughness. Assigning the result to `scene.environment` lights every
-`MeshStandardMaterial`/`MeshPhysicalMaterial` without adding explicit lights.
+`MeshStandardMaterial`/`MeshPhysicalMaterial` without adding explicit lights (with
+`WebGLRenderer`, `MeshLambertMaterial` and `MeshPhongMaterial` also pick it up
+since r183).
 
-Pair IBL with tone mapping for a filmic result:
-`renderer.toneMapping = THREE.ACESFilmicToneMapping` and adjust
-`renderer.toneMappingExposure`.
+Pair IBL with tone mapping for a filmic result: set `renderer.toneMapping` to
+`THREE.ACESFilmicToneMapping`, `THREE.AgXToneMapping`, or
+`THREE.NeutralToneMapping` (the Khronos 3D Commerce curve, meant to keep product
+colors close to their authored values) and adjust `renderer.toneMappingExposure`.
+The default is `NoToneMapping`.
+
+The renderer applies `toneMapping` and the sRGB output conversion only when it
+draws straight to the canvas. With `EffectComposer` post-processing, add
+`OutputPass` (from `three/addons/postprocessing/OutputPass.js`) at the end of the
+chain (passes that need sRGB input, such as FXAA, go after it), or the image comes
+out too dark and untoned.
+
+Scale all IBL at once with `scene.environmentIntensity` (r163+);
+`material.envMapIntensity` only scales a material's own `envMap`.

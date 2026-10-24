@@ -1,7 +1,7 @@
 <div align="center">
 
 [English](../../README.md) · [简体中文](README_zh.md) · [繁體中文](README_zh-TW.md) · **日本語** · [한국어](README_ko.md) · [Türkçe](README_tr.md) · [Русский](README_ru.md) · [Tiếng Việt](README_vi.md) · [ไทย](README_th.md) · [Deutsch](README_de.md) · [Español](README_es.md) · [Français](README_fr.md) · [Українська](README_uk.md) · [Polski](README_pl.md) · [Português (Brasil)](README_pt-BR.md) · [العربية](README_ar.md) · [فارسی](README_fa.md) · [Bahasa Indonesia](README_id.md) · [Italiano](README_it.md)
-· [Ελληνικά](README_el.md) · [മലയാളം](README_ml.md)
+· [Ελληνικά](README_el.md) · [മലയാളം](README_ml.md) · [Roman Urdu](README_ur-Latn.md)
 
 # REA：あらゆるものをリバースエンジニアリング
 
@@ -60,11 +60,13 @@
 
 REA はエージェントを分析ツールにつなぎ、ネイティブバイナリ、JavaScript や Electron のアプリ、.NET アセンブリ、ウェブサイトを調べられるようにします。同じツールをターミナルからも使えます。分析はローカルで実行され、結果には各結論を裏付ける根拠と制限事項が含まれます。
 
-セットアップはエージェントに REA を登録し、対応するワークフローの手順をインストールします。ネイティブ分析には既存の Hopper または Ghidra を使えます。承認すれば、セットアップで Hopper をインストールすることもできます。静的な JavaScript 分析には、どちらのエンジンも必要ありません。
+セットアップはエージェントに REA を登録し、対応するワークフロー指示をインストールします。ネイティブ解析には既存の Hopper、Ghidra、IDA を使用でき、承認すれば Hopper をインストールできます。静的 JavaScript 解析にネイティブ解析エンジンは不要です。
 
 > **[REA のウェブサイト](https://rea.tools/ja/)**で、セットアップ手順、図解ガイド、実際の事例を確認できます。
 
 ## クイックスタート
+
+Linux での Ghidra、JADX、ファームウェアツールの起動と静的 JavaScript/Electron 解析には、プロセス所有権の確認用に、REA の `PATH` 上に procps 互換の `ps` が必要です。対処方法はインストールガイドの Linux 前提条件を参照してください。
 
 ### エージェントを設定する
 
@@ -77,6 +79,8 @@ npx rea-agents setup
 使うエージェントを選び、予定されている変更を確認して承認してください。セットアップは REA の MCP サーバーと対応するワークフローの手順を追加し、既存の設定をバックアップします。完了後にエージェントを再起動してください。
 
 セットアップは Claude Code、Codex、Cursor、Gemini CLI、Grok Build、および[その他のエージェント](../installation.md#supported-agents)に対応しています。プロバイダーの設定と MCP の手動登録については、[インストールとセットアップ](../installation.md)を参照してください。
+
+MCP は既定でコンパクトな入力スキーマを使用します。完全なフィールド説明と入れ子の検証情報が必要な場合は、MCP 登録に `REA_MCP_INPUT_SCHEMA_PROFILE=full` を設定してください。どちらも全ツールと同じ正規サーバー検証を維持します。詳細は MCP 契約ガイドを参照してください。
 
 ### エージェントに依頼する
 
@@ -109,11 +113,15 @@ rea --help
 
 REA は更新が速く、新しいリリースには頻繁にバグ修正が含まれます。インストールしたバージョンを最新に保ってください。
 
-npm でインストールした CLI の場合：
+`npm install --global` / `bun add --global` でインストールした CLI の場合：
 
 ```bash
 rea update
 ```
+
+`rea --update` は `rea update` の別名で、同じグローバル出力オプションを受け付けます。更新コマンドが保持する stdout/stderr は合計 4 MiB までです。大きすぎるメタデータは終了後に拒否され、詳細なインストール出力は制限付きで保持されます。進捗出力は端末のバックプレッシャーに従い、送信済みの書き込み完了を待ちます。
+
+Bun のグローバル更新には Bun 1.2.17 以降が必要です。古い場合は、`rea update` の前に Bun を手動で更新してください。
 
 エージェントの登録とスキルを更新するには、更新処理が表示するセットアップコマンドを実行してください。
 
@@ -124,6 +132,8 @@ npx rea-agents@latest setup
 ```
 
 設定の変更を確認し、エージェントを再起動してください。単発の CLI 操作では、`npx rea-agents@latest` に続けてコマンドを指定します。
+
+Bun では `npx rea-agents@latest` の代わりに `bunx rea-agents@latest` を使ってください。
 
 ## REA の仕組み
 
@@ -137,7 +147,7 @@ npx rea-agents@latest setup
 
 ## 分析できる対象
 
-REA には Node.js 22.x（>=22.19）、24.x（>=24.11）、または 26+ と npm が必要です。追加のツールや対応ホストは、対象によって異なります。
+REA には Node.js 22.x（>=22.23.4）、24.x（>=24.22.1）、または 26+ (>=26.12.1) と npm が必要です。追加のツールや対応ホストは、対象によって異なります。
 
 | 対象                             | REA が返すもの                                                                              | 要件とガイド                                                                                                                                   |
 | -------------------------------- | ------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -150,9 +160,9 @@ REA には Node.js 22.x（>=22.19）、24.x（>=24.11）、または 26+ と npm
 | Erlang BEAM                      | IFF chunks, atoms, exports, and tables                                                      | Built-in static BEAM inspection; [Erlang BEAM](../erlang-beam.md)                                                                              |
 | 記録済みの Linux クラッシュ      | 生の note レコード、記録された全スレッドのレジスター／シグナル、任意のマッピング候補        | Linux x64 で利用者が用意する pwntools；GDB/pwndbg は任意；[記録済みクラッシュ](../recorded-crashes.md)                                         |
 | デスクトップのインストール先     | ランタイム候補、根拠ファイル、コンポーネントの目印、次の調査手順                            | 上限付きのディレクトリ・ヘッダー検査；[デスクトップアプリ](../desktop-applications.md)                                                         |
-| JavaScript / Electron            | モジュール、インポート、ソースマップ、ルート、IPC、ネイティブアドオンの関係                 | Node.js と npm；[アプリケーション分析](../javascript-application-workflows.md)                                                                 |
+| JavaScript / Electron            | モジュール、インポート、ソースマップ、ルート、IPC、ネイティブアドオンの関係                 | Node.js と npm；[アプリケーション分析](../javascript-application-workflows.md); Linux: procps `ps`                                             |
 | ウェブサイト                     | ページ構造、スクリプト、ネットワークの観測結果、依頼されたスクリーンショット                | Chrome 系ブラウザー；[ブラウザー分析](../browser-observation.md)                                                                               |
-| 保存済みのネットワークキャプチャ | リクエスト、レスポンス、取得可能なペイロード、ソース内の位置                                | HAR；mitmproxy ネイティブ形式のキャプチャには Linux 上の mitmdump；[キャプチャガイド](../web-network-captures.md)                              |
+| 保存済みのネットワークキャプチャ | リクエスト、レスポンス、取得可能なペイロード、ソース内の位置                                | HAR / Fiddler Everywhere SAZ；mitmproxy ネイティブ形式のキャプチャには Linux 上の mitmdump；[キャプチャガイド](../web-network-captures.md)     |
 | パケットキャプチャ               | エンドポイント、DNS、TLS SNI、プロトコル分布、HTTPリクエスト                                | 呼び出し側が用意した tshark と capinfos；[pcapガイド](../pcap-analysis.md)                                                                     |
 | .NET アセンブリ                  | メタデータ、CIL 命令、宣言されたネイティブ依存関係、ビルドの比較                            | 静的な検査；[マネージドコードのガイド](../managed-code-analysis.md)                                                                            |
 | PyInstaller                      | CArchive, PYZ, Python bytecode                                                              | Static inspection; [Python packaged applications](../python-packaged-applications.md)                                                          |
@@ -166,16 +176,31 @@ REA には Node.js 22.x（>=22.19）、24.x（>=24.11）、または 26+ と npm
 | 記録済みロジック信号             | デコーダ注釈、サンプル範囲、診断情報                                                        | Linux: sigrok-cli 0.7.2 + prlimit; [信号記録ガイド](../signal-recordings.md)                                                                   |
 | パッケージとリソース             | ファイル一覧、ダイジェスト、plist、Apple バンドルの構造、抽出されたリソース                 | [アーティファクトと JavaScript のガイド](../javascript-artifact-reconstruction.md)、[Apple アプリケーション](../apple-application-analysis.md) |
 | プロセスの動作                   | ターミナル出力、対話、終了とファイルシステムの観測結果、実行の比較                          | ネイティブ PTY を備えた Linux/macOS；[プロセスキャプチャ](../process-capture.md)                                                               |
+| Go バイナリ                      | 埋め込みコンパイラバージョン、モジュール、置換、ビルド設定                                  | 組み込みの静的解析 ELF/PE/thin Mach-O; Go のインストールは不要                                                                                 |
+| SQLite データベース              | テーブル、列、インデックス、ビュー、トリガー、選択した通常テーブルの行                      | ローカル DB/WAL スナップショット。ネイティブ SQLite 制限 API を備える Node.js 24.x >=24.15 または 26+                                          |
+| GPU コードオブジェクト           | CUDA/HIP ターゲット、選択したカーネルの引数とリソース、保持された PTX                       | 組み込みの静的解析 ELF/PE/fatbin/CUBIN/PTX; [GPU](../gpu-code-objects.md)                                                                      |
+| モデルファイル                   | GGUF / safetensors メタデータ、テンソル宣言、導出した合計                                   | ヘッダー解析。任意でファイル全体をハッシュ; [GGUF / safetensors](../model-artifacts.md)                                                        |
+| IL2CPP メタデータ                | Unity global-metadata.dat のアセンブリ、型・メソッド名、インデックス範囲                    | バージョン 24、27、29、31、39 を静的デコード。Unity 不要                                                                                       |
+| Godot PCK                        | アーカイブ一覧と展開、元のヘッダー・ディレクトリ情報、選択内容の識別情報                    | 形式 2、3、4 を静的解析。Godot 不要                                                                                                            |
+| WASM アーティファクト            | 検証、セクション、正確なインポート/エクスポート WAT 形式、デコード済み WAT                  | 利用者が用意 WABT 1.0.42; `inspect_wasm_artifact`                                                                                              |
+| APK 署名                         | v1/v2/v3/v3.1 署名者、証明書指紋、鍵ローテーション、ダイジェストの自己整合性                | 組み込みの静的解析; `inspect_apk_signature`                                                                                                    |
 
 静的な JavaScript と .NET の検査は、指定されたファイルを読み取り、アプリケーションを実行しません。実行時キャプチャは、あなたのユーザー権限で対象を実行したり、対象とやり取りしたりします。それぞれの実行時ガイドに、どのような操作が行われるかを記載しています。
 
 <a id="choosing-a-deep-analysis-provider"></a>
 
+大きなバイナリでは `REA_GHIDRA_STARTUP_TIMEOUT_MS` または `REA_HOPPER_STARTUP_TIMEOUT_MS` でプロバイダーの起動期限を延長できます。
+
 対応するネイティブ形式とホストは、プロバイダーによって異なります。[Hopper と Ghidra のセットアップ](../installation.md#hopper)、[IDA ガイド](../ida-provider.md)、[Kuna](../kuna-provider.md)、[Windows 向け Ghidra の実験的対応](../windows-ghidra-p0.md)を参照してください。Ghidra は [16 ビット DOS 分析](../ghidra-dos.md)にも対応しています。プロバイダーの選択は [CLI ガイド](../cli.md#choose-a-provider)を参照してください。最新の npm リリース以降に追加された機能については、[リリースでの利用可否](../installation.md#released-package-and-main)を確認してください。
 
 ## 事例
 
-[![DX-Ball の音声パン、Notion のクリップボードブリッジ、TH04 の弾幕リングの事例を表すイラスト](../assets/rea-showcases.png)](https://rea.tools/ja/showcase/)
+<a href="https://rea.tools/ja/showcase/">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="../assets/rea-showcases-dark.svg" />
+    <img alt="DX-Ball の音声パン、Notion のクリップボードブリッジ、TH04 の弾幕リングの事例を表すイラスト" src="../assets/rea-showcases.svg" />
+  </picture>
+</a>
 
 ### DX-Ball：音声のパン計算を再構築する
 
@@ -270,8 +295,6 @@ npx rea-agents@latest setup
 
 - [インストールとセットアップ](../installation.md)：エージェントの登録、プロバイダーの設定、更新、アンインストール。
 - [準備状況の確認とトラブルシューティング](../installation.md#check-readiness-for-your-task)：特定のエージェントや分析エンジンを診断。
-- [CUDA / HIP](../gpu-code-objects.md)
-- [GGUF / safetensors](../model-artifacts.md)
 - [CLI と Evidence](../cli.md)：コマンド、プロバイダーの選択、スナップショット、インポート／エクスポート、終了ステータス。
 - [MCP 契約](../mcp-contracts.md)と[エージェント向けプロンプト](../mcp-prompts.md)：ツールの結果、セッション、ガイド付き調査。
 - [ツールカタログ](../mcp-contracts.md#generated-catalog)：ビルド時に生成されるツール、プロバイダー、CLI コマンドの一覧。

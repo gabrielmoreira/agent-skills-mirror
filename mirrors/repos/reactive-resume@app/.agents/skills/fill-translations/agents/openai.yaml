@@ -1,0 +1,4 @@
+interface:
+  display_name: "Fill translations"
+  short_description: "Fill all locales in parallel and verify completeness"
+  default_prompt: "Use $fill-translations to complete all Reactive Resume web and mobile catalogs, including unrelated gaps, with parallel subagents and strict verification."

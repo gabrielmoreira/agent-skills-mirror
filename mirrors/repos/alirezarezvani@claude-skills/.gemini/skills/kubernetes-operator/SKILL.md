@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/kubernetes-operator/../../../engineering/skills/kubernetes-operator/SKILL.md

@@ -86,6 +86,45 @@ that neutral shape, not on format-specific bytes.
 - On any failure: log, fall back to backup, and if all else fails, fail *loudly*
   to the player rather than silently loading a broken state.
 
+## Where saves live, and cloud sync
+
+Write saves to the per-user data folder the engine gives you, never next to the
+executable (often read-only, and replaced by updates):
+
+- **Godot 4.7** `user://` — Windows `%APPDATA%\Godot\app_userdata\[project]`,
+  macOS `~/Library/Application Support/Godot/app_userdata/[project]`, Linux
+  `~/.local/share/godot/app_userdata/[project]`. Turn on
+  `application/config/use_custom_user_dir` (optionally with
+  `custom_user_dir_name`) to drop the `Godot/app_userdata` part before you ship,
+  because changing it later moves every player's saves. Web exports store
+  `user://` in the browser's IndexedDB.
+- **Unity 6.3** `Application.persistentDataPath` — Windows
+  `%userprofile%\AppData\LocalLow\<company>\<product>`, Linux
+  `~/.config/unity3d/<company>/<product>`, macOS player
+  `~/Library/Application Support/unity.<company>.<product>`; Web uses IndexedDB;
+  tvOS returns an empty string (no persistent folder). Changing the company or
+  product name changes the folder.
+- **Unreal 5.8** `UGameplayStatics::SaveGameToSlot` / `AsyncSaveGameToSlot`
+  with a `USaveGame` subclass; the platform layer picks the folder and, on
+  consoles, the platform save API.
+
+**Steam Cloud.** Auto-Cloud syncs files under the root paths you configure in
+Steamworks (for example `WinAppDataRoaming`, `WinAppDataLocalLow`,
+`MacAppSupport`, `LinuxXdgDataHome`); the ISteamRemoteStorage API is the
+alternative when you need control. Files upload after the game exits and
+download before the next launch, so a save written while the game runs is not
+in the cloud yet. Choose the Cross-Platform OS setting for each root (with root
+overrides where the folder differs per OS) even for a single-platform game: a
+root locked to one OS will not sync to other platforms if you add them later.
+Set the per-user byte and file quotas in the app admin panel first; Steam Cloud
+is not active without them. Keep the `.tmp` file out of the synced pattern.
+Games that opt into Dynamic Cloud Sync (Steam Deck suspend) can receive changed
+files mid-session and must reload them.
+
+**Consoles and mobile** have platform save APIs, storage limits and
+certification rules; follow the platform's documentation rather than raw file
+paths there.
+
 ## What to store vs recompute
 
 - **Store** authoritative, non-derivable state: choices, unlocked flags, RNG

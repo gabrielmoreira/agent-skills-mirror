@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/eu-ai-act-specialist/../../../ra-qm-team/skills/eu-ai-act-specialist/SKILL.md

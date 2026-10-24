@@ -683,7 +683,7 @@ For spoken-content text, reuse existing transcripts first, then fetch original s
 - Working with YouTube content in regions with access restrictions
 
 **Key features:**
-- Auto PO Token provider (Docker-first, browser fallback) for high-quality access
+- Native yt-dlp clients first; optional PO Token setup after an explicit token diagnostic
 - Browser-cookie verification for “not a bot” prompts (privacy-friendly)
 - Audio-only download with MP3 conversion
 - Format listing and custom format selection
@@ -1794,47 +1794,18 @@ claude plugin install daymade-docs@daymade-skills
 
 > **Install**: `claude plugin install daymade-macos@daymade-skills` (suite-only — invoked as `daymade-macos:capture-screen`)
 
-Capture application windows by CGWindowID with a reliable three-step workflow: discover window IDs via Swift, control app state via AppleScript, and capture outputs with `screencapture`.
-
-**When to use:**
-- Automating repeatable screenshot workflows for documentation
-- Capturing specific app windows instead of full-screen screenshots
-- Producing multi-shot sequences after scripted scroll/zoom changes
-- Building visual evidence capture pipelines on macOS
-
-**Key features:**
-- Bundled Swift script to resolve accurate window IDs (`CGWindowListCopyWindowInfo`)
-- Verified AppleScript patterns for app activation and window preparation
-- Window-scoped capture commands with silent mode, delays, and format control
-- Multi-shot workflow pattern for section-by-section capture
-- Clear anti-pattern notes for methods that fail on macOS
-
-**Example usage:**
-```bash
-# Install the Apple platform suite
-claude plugin install daymade-macos@daymade-skills
-
-# Then ask Claude to capture windows programmatically
-"Find the Excel window ID and capture it silently"
-"Create a multi-shot capture workflow for this workbook"
-"Capture Chrome window sections with scripted scrolling"
-```
-
-**🎬 Live Demo**
-
-*Coming soon*
-
-📚 **Documentation**: See [capture-screen/SKILL.md](./daymade-macos/capture-screen/SKILL.md).
+For desktop or app-window screenshots, start with the Skill's
+[observation and control boundary](./daymade-macos/capture-screen/SKILL.md#select-observation-or-foreground-control),
+then select its [capture route](./daymade-macos/capture-screen/SKILL.md#quick-start).
 
 ### **macos-permissions** - Diagnose and Repair macOS Privacy Permissions
 
 > **Install**: `claude plugin install daymade-macos@daymade-skills` (suite-only — invoked as `daymade-macos:macos-permissions`)
 
-Use for repeated TCC prompts, silent denials, and background jobs that cannot read protected files. It identifies the actual requester, checks for a usable existing grant, and verifies the repair through the real job. The Skill contains the diagnostic and Full Disk Access repair procedure.
-
-📚 **Documentation**: See [macos-permissions/SKILL.md](./daymade-macos/macos-permissions/SKILL.md).
-
-**Requirements**: macOS. Reading TCC.db also requires Full Disk Access for the process doing the read.
+For visible permission or Keychain dialogs, start with
+[observation and classification](./daymade-macos/macos-permissions/SKILL.md#observe-and-classify-the-reported-problem-first).
+For protected-data failures without a visible dialog, enter the
+[TCC request procedure](./daymade-macos/macos-permissions/SKILL.md#reproduce-the-reported-denial-first).
 
 ---
 
@@ -2386,23 +2357,8 @@ claude plugin install daymade-skill@daymade-skills
 
 ### **feishu-doc-scraper** - Feishu/Lark → Faithful Markdown + Source-First Archive
 
-Extract Feishu (Lark) Docs, Wiki pages/collections, spreadsheets (including cell-attachment file download), and Minutes (妙记) transcripts into faithful local Markdown. The primary path uses the `lark-cli` API — it extracts the document body programmatically (no model paraphrasing), recursively follows a collection's reference graph, and reads permission boundaries from error codes; a browser-DOM path is the fallback only when lark-cli cannot reach the content.
-
-**When to use:**
-- The source is a Feishu/Lark URL and fidelity matters (导出飞书文档/合集/妙记转写)
-- Converting a Feishu wiki/knowledge base to Markdown, or archiving a Feishu collection
-- Exporting a Feishu Minutes (妙记) transcript
-- Converting an owner-exported `.docx` into faithful Markdown with heading/highlight restoration
-
-**Key features:**
-- Document comments and complete reply threads accompany the body, with quoted passages, source positions, author IDs, timestamps, solved scope, and explicit coverage gaps
-- lark-cli API extraction writes the body to disk via `jq` (never retyped by the model — the single most important fidelity rule)
-- Recursive reference-graph traversal (BFS) with `feishu_extract_refs.py`, plus a residual rich-media-tag acceptance gate so no referenced doc is silently missed
-- Native Minutes transcript export (never re-runs ASR on downloaded media)
-- Permission-denied path: owner-exported `.docx` → Markdown with font-size→heading and `w:shd`→highlight restoration, then visual verification
-- Source-first artifact manifest + fail-closed validator: structured/searchable derivatives go to Git, raw binaries remain on Feishu or an explicitly chosen object store, and local downloads stay optional caches instead of Git LFS payloads
-- `LARK_CLI_NO_PROXY=1` discipline for `*.feishu.cn` (avoids credential leak/DNS hijack) and a U+FFFD encoding-corruption final check
-- Works with both Feishu (feishu.cn) and Lark (larkoffice.com)
+For supported inputs, extraction steps and prerequisites, read the [Skill guide](feishu-doc-scraper/SKILL.md).
+For archiving, follow the [destination handoff](feishu-doc-scraper/references/archive-destination-handoff.md) and [storage contract](feishu-doc-scraper/references/archive-storage-contract.md).
 
 **Example usage:**
 ```bash
@@ -2414,8 +2370,6 @@ claude plugin install feishu-doc-scraper@daymade-skills
 "export this Feishu Minutes transcript"
 "save this Lark wiki page as Markdown"
 ```
-
-**Requirements**: `lark-cli` binary (npm `@larksuite/cli`) authenticated to the target tenant; `jq`. Fallback path needs a browser-automation surface; the docx path needs `python-docx` and a docx→md converter (the bundled doc-to-markdown skill or pandoc).
 
 ---
 

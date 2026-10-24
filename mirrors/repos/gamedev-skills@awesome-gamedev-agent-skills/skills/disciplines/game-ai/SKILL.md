@@ -54,25 +54,30 @@ spawning waves along lanes, see the `tower-defense` genre skill.
 ### 1. Finite state machine (one state object, explicit transitions)
 
 ```gdscript
-# Each state is a small object with enter/update/exit. The machine owns "current".
-class_name State
-func enter(agent): pass
-func update(agent, dt) -> State: return null   # return a new state to transition
-func exit(agent): pass
+# Godot 4.7, one class per file.
+# state.gd: each state is a small object with enter/update/exit.
+class_name State extends RefCounted
+func enter(_agent) -> void: pass
+func update(_agent, _dt: float) -> State: return null   # return a state to transition
+func exit(_agent) -> void: pass
 
-# --- Chase state: returns Patrol when the player escapes sight range ---
-class Chase extends State:
-    func update(agent, dt) -> State:
-        if not agent.can_see(agent.target):
-            return Patrol.new()                 # transition by returning next state
-        agent.move_toward(agent.target.position, dt)
-        return null                             # null = stay in this state
+# chase.gd: returns Patrol when the player escapes sight range.
+class_name Chase extends State
+func update(agent, dt: float) -> State:
+    if not agent.can_see(agent.target):
+        return Patrol.new()                 # transition by returning the next state
+    agent.move_toward(agent.target.position, dt)
+    return null                             # null = stay in this state
 
-# --- Driver: call once per frame ---
-func tick(dt):
-    var next = current.update(self, dt)
+# enemy.gd: the agent owns `current` and ticks it once per frame.
+var current: State = Patrol.new()           # call current.enter(self) in _ready()
+
+func tick(dt: float) -> void:
+    var next := current.update(self, dt)
     if next != null:
-        current.exit(self); next.enter(self); current = next
+        current.exit(self)
+        next.enter(self)
+        current = next
 ```
 
 Keep transition logic *inside* states (or in a table), never as a growing pile
@@ -117,7 +122,7 @@ func seek(pos, vel, target, max_speed, max_force) -> Vector2:
 func arrive(pos, vel, target, max_speed, max_force, slow_radius) -> Vector2:
     var offset = target - pos
     var dist = offset.length()
-    if dist < 0.001: return -vel                      # already there: kill drift
+    if dist < 0.001: return (-vel).limit_length(max_force)   # already there: brake
     var ramped = max_speed * min(dist / slow_radius, 1.0)
     var desired = offset / dist * ramped
     return (desired - vel).limit_length(max_force)
@@ -130,8 +135,8 @@ func arrive(pos, vel, target, max_speed, max_force, slow_radius) -> Vector2:
 ```python
 # Match the heuristic to the movement. An ADMISSIBLE heuristic (never larger
 # than the true remaining cost) keeps A* optimal.
-def heuristic(a, b):
-    dx, dy = abs(a.x - b.x), abs(a.y - b.y)
+def heuristic(a, b):                 # a, b are (x, y) grid cells
+    dx, dy = abs(a[0] - b[0]), abs(a[1] - b[1])
     # return dx + dy             # Manhattan: 4-direction grids (no diagonals)
     return (dx + dy) + (1.414 - 2) * min(dx, dy)   # octile: 8-direction grids
 # f(n) = g(n) + h(n): g = cost from start, h = heuristic to goal.
@@ -167,6 +172,7 @@ graphs) is in `references/pathfinding.md`.
 
 ## Related skills
 
+- `ai-behavior-trees-utility-ai` — deeper behavior-tree and utility-AI design.
 - `unity-navmesh`, `unreal-behavior-trees` — concrete engine AI/navigation APIs.
 - `physics-tuning` — movement, collision response, and agent radius.
 - `procedural-gen` — generating the graph/level the AI navigates.

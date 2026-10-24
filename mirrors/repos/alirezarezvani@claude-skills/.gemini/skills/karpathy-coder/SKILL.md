@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/karpathy-coder/../../../engineering/karpathy-coder/skills/karpathy-coder/SKILL.md

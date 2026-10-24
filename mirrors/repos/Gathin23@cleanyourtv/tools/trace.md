@@ -54,6 +54,10 @@ tools/venv/bin/python tools/trace_report.py traces/before --vs traces/after --ma
 
 With `--vs`, a third table shows the change in each median. A run over twice the median is starred.
 
+Slices still open when the recording ends have no measured duration. The report leaves those durations
+out and counts only completed draws. If the first RenderThread draw is unfinished, the first-frame time
+is unavailable too; completed lifecycle steps are still reported.
+
 Frame times and missed deadlines need [FrameTimeline](https://perfetto.dev/docs/data-sources/frametimeline),
 available on Android 12 and later. Without its data for the launcher process, these metrics are omitted
 (or shown as `–` beside measured runs). `nav` still counts RenderThread draws and reports their duration
@@ -66,6 +70,9 @@ and GPU waits where available; a draw's duration is not the full frame time.
 - **Keep starred runs.** They're usually memory pressure on a 1 GB TV. Report them; don't drop them.
 - **Don't run `am start` after a force-stop with Home in front.** Android has already restarted Home, so
   `onResume` appears twice. Use `cold` or `coldsys`.
+- **Cold starts use the HOME intent.** `bench.py` and the `cold` trace send `MAIN` with the `HOME`
+  category. Starting only the component can create a regular task beside the Home task, so a later
+  Home press creates another instance. Compare runs recorded with the same launch command.
 - **Check the remote afterwards.** A force-stop switches off the accessibility helpers. `trace.py` puts the
   list back after the last run, but on some TCL sets a helper still won't bind (`docs/TROUBLESHOOTING.md`).
 - **Look in the right place for GPU savings.** Less overdraw shows as GPU wait in `nav`, not as main-thread

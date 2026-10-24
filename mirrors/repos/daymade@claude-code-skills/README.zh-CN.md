@@ -712,7 +712,7 @@ claude plugin install ghostty-use@daymade-skills
 - 在受限环境中下载视频
 
 **主要功能：**
-- 自动 PO Token 提供器（优先 Docker，失败自动切换浏览器方案）
+- 先用 yt-dlp 默认客户端；明确报缺少 Token 后，按授权配置 PO Token 提供器
 - 通过浏览器 Cookie 处理“不是机器人”验证（更友好）
 - 仅音频下载并转换为 MP3
 - 格式列表和自定义格式选择
@@ -1816,47 +1816,16 @@ claude plugin install daymade-docs@daymade-skills
 
 > **安装**：`claude plugin install daymade-macos@daymade-skills`（仅作为套件成员发布，调用方式 `daymade-macos:capture-screen`）
 
-通过三步法实现稳定的窗口截图自动化：Swift 获取 CGWindowID、AppleScript 控制应用状态、`screencapture` 输出截图文件。
-
-**使用场景：**
-- 为文档或审计流程自动化生成可重复截图
-- 只捕获目标应用窗口而非整屏
-- 在脚本化滚动/缩放后分段截图
-- 构建 macOS 视觉证据采集流水线
-
-**主要功能：**
-- 内置 Swift 脚本获取准确窗口 ID（`CGWindowListCopyWindowInfo`）
-- 提供已验证的 AppleScript 激活与预处理命令模式
-- 支持窗口级静默截图、延时截图与格式控制
-- 提供分段多图采集工作流模板
-- 明确列出在 macOS 上不可用的错误方案，避免踩坑
-
-**示例用法：**
-```bash
-# 安装 Apple 平台套件
-claude plugin install daymade-macos@daymade-skills
-
-# 然后请求 Claude 执行程序化截图
-"找到 Excel 窗口 ID 并静默截图"
-"为这个工作簿生成分段截图工作流"
-"通过脚本滚动后抓取 Chrome 窗口多个区域"
-```
-
-**🎬 实时演示**
-
-*即将推出*
-
-📚 **文档**：参见 [capture-screen/SKILL.md](./daymade-macos/capture-screen/SKILL.md)。
+截取桌面或应用窗口前，先读 Skill 的
+[观察与前台操作边界](./daymade-macos/capture-screen/SKILL.md#select-observation-or-foreground-control)，
+再选择对应的[截图路线](./daymade-macos/capture-screen/SKILL.md#quick-start)。
 
 ### **macos-permissions** - 诊断并修复 macOS 隐私权限
 
 > **安装**：`claude plugin install daymade-macos@daymade-skills`（仅作为套件成员发布，调用方式 `daymade-macos:macos-permissions`）
 
-用于排查反复弹出的 TCC 权限提示、静默拒绝，以及后台任务无法读取受保护文件的问题。Skill 会定位实际请求权限的进程，检查现有授权能否复用，并通过真实后台读取验收；诊断和完全磁盘访问权限的修复步骤以 Skill 正文为准。
-
-📚 **文档**：参见 [macos-permissions/SKILL.md](./daymade-macos/macos-permissions/SKILL.md)。
-
-**要求**：macOS。读取 TCC.db 时，执行读取的进程还需具备完全磁盘访问权限。
+出现可见的权限或钥匙串弹窗时，从[观察与分类](./daymade-macos/macos-permissions/SKILL.md#observe-and-classify-the-reported-problem-first)进入。
+没有可见弹窗、但受保护数据读取失败时，进入 [TCC 原请求诊断](./daymade-macos/macos-permissions/SKILL.md#reproduce-the-reported-denial-first)。
 
 ---
 
@@ -2367,21 +2336,8 @@ claude plugin install daymade-skill@daymade-skills
 
 ### **feishu-doc-scraper** - 飞书/Lark → 保真 Markdown
 
-把飞书（Lark）文档、Wiki 页面/合集、表格（含单元格附件文件下载）以及妙记转写提取成保真的本地 Markdown。首选路径用 `lark-cli` API——以编程方式提取正文（不经模型改写）、递归跟随合集的引用图、从错误码读取权限边界；浏览器 DOM 路径只在 lark-cli 触达不到内容时作为兜底。
-
-**使用场景：**
-- 源是飞书/Lark URL 且要求保真（导出飞书文档/合集/妙记转写）
-- 把飞书 wiki/知识库转成 Markdown，或归档一个飞书合集
-- 导出飞书妙记转写
-- 把文档所有者导出的 `.docx` 转成保真 Markdown 并恢复标题/高亮
-
-**主要功能：**
-- lark-cli API 提取通过 `jq` 把正文落盘（绝不经模型转抄——最重要的保真铁律）
-- 用 `feishu_extract_refs.py` 做递归引用图遍历（BFS），并设残留富媒体标签验收闸，确保没有被引用的文档被静默漏掉
-- 妙记原生转写导出（绝不对下载的媒体重跑 ASR）
-- 权限被拒路径：所有者导出 `.docx` → Markdown，恢复字号→标题、`w:shd`→高亮，再做视觉验证
-- 对 `*.feishu.cn` 强制 `LARK_CLI_NO_PROXY=1`（避免凭据泄漏/DNS 劫持），并做 U+FFFD 编码损坏终检
-- 同时支持飞书（feishu.cn）与 Lark（larkoffice.com）
+适用场景、提取流程和依赖要求见 [Skill 正文](feishu-doc-scraper/SKILL.md)。
+归档时进入[落点交接](feishu-doc-scraper/references/archive-destination-handoff.md)和[存储合同](feishu-doc-scraper/references/archive-storage-contract.md)。
 
 **示例用法：**
 ```bash
@@ -2393,8 +2349,6 @@ claude plugin install feishu-doc-scraper@daymade-skills
 "export this Feishu Minutes transcript"
 "把这个 Lark wiki 页面存成 Markdown"
 ```
-
-**要求**：已认证到目标租户的 `lark-cli` 二进制（npm `@larksuite/cli`）、`jq`。兜底路径需要浏览器自动化环境；docx 路径需要 `python-docx` 和一个 docx→md 转换器（内置的 doc-to-markdown 技能或 pandoc）。
 
 ---
 

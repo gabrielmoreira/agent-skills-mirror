@@ -8,7 +8,11 @@ multiplayer ownership/security test.
 `CanCollide` controls physical response, `CanTouch` controls touch event participation, and
 `CanQuery` controls spatial-query eligibility (subject to query parameters). Define each by role.
 Typical sensor parts do not collide but may touch/query; visual-only geometry may do neither. Use
-named collision groups through `PhysicsService` and verify the actual matrix in Studio.
+named collision groups registered on the world (`Workspace:RegisterCollisionGroup()`,
+`CollisionGroupSetCollidable()`; a `WorldModel` keeps its own matrix unless
+`UseWorkspaceCollisionGroups` is on) and verify the actual matrix in Studio. Registration has a
+cost proportional to part count, so register groups at edit time or once at startup. The
+`PhysicsService` versions are deprecated.
 
 ## Query selection
 
@@ -54,4 +58,5 @@ temporary-object cleanup. Use server-observed results for gameplay assertions.
 - `https://create.roblox.com/docs/physics/assemblies`
 - `https://create.roblox.com/docs/physics/network-ownership`
 - `https://create.roblox.com/docs/workspace/raycasting`
+- `https://create.roblox.com/docs/workspace/collisions`
 - `https://create.roblox.com/docs/reference/engine/datatypes/RaycastParams`

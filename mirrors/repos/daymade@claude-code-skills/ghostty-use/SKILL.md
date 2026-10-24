@@ -35,6 +35,7 @@ restore your old focus. Host denials remain binding.
 | "Was anything lost?" / suspicion after restore | `check` |
 | One specific session to bring back | `restore --only <id-prefix>` |
 | Codex quota running out; manually switching account, keeping all Codex work | Read codex-account-switch.md; `switch-prepare` → manual exit/login → `switch-restore` |
+| After a switch, want the same sessions back ("换号后恢复原会话"); opening blocked or delegated | Same SOP's original-set route: deliver the fixed manifest's exact per-SID commands with per-item status; a blank tab is not a recovery |
 
 ## Codex account switch
 
@@ -61,7 +62,12 @@ python3 <skill-dir>/scripts/ghostty_session.py switch-restore
 
 Default to tabs in one window; use `--layout windows` only when independent windows are requested.
 Keep the printed fixed manifest through the handoff. Treat unresolved capture,
-unverified original processes and missing sessions as incomplete. Mode selection,
+unverified original processes and missing sessions as incomplete. Recovery means
+reopening the fixed manifest's original IDs; when reopening is blocked or
+delegated (kept old processes, user-managed locks, denied UI automation), follow
+[the original-set route](references/codex-account-switch.md#reopen-the-original-recorded-set-not-a-blank-session)
+and deliver the complete exact per-session commands with per-item status — a
+blank tab is never a recovery. Mode selection,
 account preconditions and partial-restore readiness belong to
 [the switch SOP](references/codex-account-switch.md). Never send process-termination
 signals or switch credentials through this route; normal local exit controls use
@@ -130,7 +136,9 @@ python3 <skill-dir>/scripts/ghostty_session.py restore \
 ```
 
 Reconstruction merges the optional `--snapshot` (otherwise latest, if present) with
-bounded recent indexed Codex candidates. It verifies internal rollout identity using
+bounded recent indexed Codex candidates. `--only` filters this merged result, so the
+output manifest contains exactly the requested rows even when a latest snapshot exists.
+It verifies internal rollout identity using
 the owning reader and marks each row `past-snapshot` or `indexed-terminal-candidate`.
 Terminal evidence is `source=cli` or `originator=codex-tui`; actual TUIs can report
 `source=vscode`. `--terminal-source` and `--terminal-originator` customize those
@@ -180,6 +188,11 @@ or unavailable evidence. Dry-run output is JSON for inspection.
   that visible; never skip it, and never declare success from paste return codes alone.
 - Before any paste, tell the user to leave keyboard and mouse untouched through
   reconciliation. The script repeats this notice before its first GUI action.
+- Settle user-controlled external preconditions before the first paste. An in-flight
+  ChatGPT account switch is the common one: a reopened tab binds to whichever account
+  is logged in when `codex resume` launches, so opening before the switch finishes
+  means closing and restoring those tabs again. If switching accounts is the goal,
+  use [the switch SOP](references/codex-account-switch.md) instead.
 - Requires **Accessibility permission** for `osascript` keystrokes (System Events).
   If the current host denies Ghostty UI automation, do not switch channels to
   bypass it: prepare the selected manifest and exact user-run restore command,

@@ -37,6 +37,11 @@ def frame(render_dt):
 - Running 0, 1, or several physics steps per frame is normal and correct.
 - Clamping `render_dt` (and `MAX_STEPS`) prevents a slow frame from requesting
   dozens of steps, which would make the game slower still — the "spiral of death".
+- The price of the clamp: when rendering falls below `PHYSICS_HZ / MAX_STEPS`
+  FPS, the game runs in slow motion. Godot's equivalent is
+  `physics/common/max_physics_steps_per_frame` (default 8; raise it if you raise
+  the tick rate a lot); Unity's is *Maximum Allowed Timestep*, which bounds
+  `FixedUpdate` calls per frame to `maximumDeltaTime / fixedDeltaTime`.
 
 ## Render interpolation
 
@@ -51,8 +56,11 @@ visual_rot = slerp(prev_rot, curr_rot, alpha)   # rotations: spherical lerp
 
 This adds up to one physics step of latency but removes stutter. Engines expose
 it directly: Unity `Rigidbody.interpolation = Interpolate` (or `Extrapolate`),
-Godot physics interpolation / `get_physics_interpolation_fraction()`. Prefer the
-built-in; hand-roll only for objects the engine doesn't cover.
+Godot `physics/common/physics_interpolation` / `get_physics_interpolation_fraction()`.
+Prefer the built-in; hand-roll only for objects the engine doesn't cover. After a
+teleport, reset the history (Godot `reset_physics_interpolation()` after the move;
+in a hand-rolled version set `prev_state = curr_state`) or the object visibly
+slides from its old position.
 
 ## Substepping
 
@@ -70,9 +78,14 @@ sweeps the body along its motion and catches the first contact.
 - Enable CCD only on bodies that need it (small + fast: bullets, balls); it costs
   more than discrete checks.
 - Modes vary: sweep against static geometry only, or against dynamic bodies too
-  (more expensive). Use the cheapest mode that fixes your case.
+  (more expensive). Use the cheapest mode that fixes your case. Unity names them
+  `Continuous` (static geometry only), `ContinuousDynamic` (static and dynamic)
+  and `ContinuousSpeculative` (static and dynamic, cheaper, but can cause "ghost
+  collisions" where a speculative contact deflects a body that would not have hit).
 - Complementary fixes: cap maximum velocity so
   `speed / PHYSICS_HZ < thinnest_collider`; thicken thin walls; raise PHYSICS_HZ.
+  For bullets, a ray or shape cast along the frame's motion is often simpler
+  than a fast rigid body.
 
 ## Solver iterations and stability
 
@@ -80,6 +93,12 @@ The constraint solver runs a fixed number of iterations per step; more iteration
 = stiffer, more stable stacks and joints, at CPU cost.
 
 - **Exploding/penetrating stacks**: raise solver (position/velocity) iterations.
+  Where the knob lives: Unity `Physics.defaultSolverIterations` (default 6) and
+  `defaultSolverVelocityIterations` (default 1), or per body. Godot 4.6+ creates
+  new projects on **Jolt Physics** (`physics/3d/physics_engine`); with Jolt use
+  `physics/jolt_physics_3d/simulation/velocity_steps` (default 10, keep ≥ 2 or
+  friction stops working) and `position_steps` (default 2) —
+  `physics/3d/solver/solver_iterations` only affects GodotPhysics3D.
 - **Extreme mass ratios** (a feather resting under a boulder) are inherently
   unstable — keep ratios within ~1:10 where you can.
 - **Jittery resting contacts**: enable a small contact offset / allowed

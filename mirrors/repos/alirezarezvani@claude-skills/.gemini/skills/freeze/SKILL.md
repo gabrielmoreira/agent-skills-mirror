@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/freeze/../../../c-level-agents/skills/freeze/SKILL.md

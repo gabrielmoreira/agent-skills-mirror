@@ -38,7 +38,7 @@ from `index.ts`) that returns the hook points OpenCode invokes.
 
 | Category | Factories | Hook points |
 |---|---|---|
-| Prompt transforms | `createPhaseReminderHook`, `createCouncilInjectHook`, `createChatHeadersHook`, task-session-manager board injection, `processImageAttachments` | `experimental.chat.messages.transform`, `chat.headers` |
+| Prompt transforms | `createPhaseReminderHook`, `createCouncilInjectHook`, `createChatHeadersHook`, task-session-manager delivery observation, `processImageAttachments` | `experimental.chat.messages.transform`, `chat.headers` |
 | Tool interception | `createApplyPatchHook` (tool), `createSearchPathGuardHook`, task-session-manager | `tool.execute.before` / `tool.execute.after` |
 | Error recovery | `createJsonErrorRecoveryHook`, `createAutoUpdateCheckerHook` | message transform, tool-execute after |
 | Lifecycle/event | task-session-manager, `createCacheMonitorHook`, `createOrchestratorWakeScheduler` | `event` |
@@ -52,13 +52,14 @@ from `index.ts`) that returns the hook points OpenCode invokes.
 ```
 1. OpenCode receives chat messages
 2. Plugin's experimental.chat.messages.transform hook is invoked (src/index.ts
-   composes: task-session-manager → phase-reminder → council-inject →
-   task-session-manager board injection, in that order)
-3. Task-session-manager first repairs session mappings; phase-reminder then
-   injects the per-turn scheduler reminder (gated); council-inject then
-   injects the Council Mode block once per transcript, on the first
-   keyword-triggered orchestrator turn (gated); finally task-session-manager
-   injects the Background Job Board via cache-safe helpers
+   composes: task-session-manager → phase-reminder → council-inject, in that
+   order)
+3. Task-session-manager first repairs session mappings and observes terminal
+   deliveries already present in the parent's history (the job board itself is
+   never rendered); phase-reminder then injects the scheduler reminder
+   (per-message eligibility); council-inject then injects the Council Mode
+   block once per transcript, on the first keyword-triggered orchestrator turn
+   (gated)
 4. Transformed messages are sent to the model
 5. chat.headers is forwarded to OpenCode's header slot (v1 hosts; on v2
    hosts the adapter bridges the same decision to
@@ -123,7 +124,7 @@ discoverable skills require permission approval. The plugin does not rewrite
 | `phase-reminder/` | Message-transform reminder enforcing orchestrator workflow phases |
 | `reflect/` | `/reflect` runtime command |
 | `search-path-guard/` | Pre-checks `grep`/`glob` `args.path` validity in `tool.execute.before`, using each host tool's path resolution semantics, and fails fast with an actionable error instead of upstream "ripgrep execution failed" noise or silent parent-directory searches |
-| `task-session-manager/` | Resumable task session tracking, job-board injection, reconciliation |
+| `task-session-manager/` | Resumable task session tracking, terminal-delivery observation, reconciliation |
 | `tool-loop-guard/` | Detects byte-identical repeated tool calls: warns at 3, blocks at 5, with task-lifecycle exemptions and per-turn wait-tool counting |
 
 ### Dependencies

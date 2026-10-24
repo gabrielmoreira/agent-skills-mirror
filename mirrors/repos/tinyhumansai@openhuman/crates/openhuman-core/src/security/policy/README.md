@@ -45,7 +45,8 @@ impl in [`types.rs`](./types.rs).
 | [`path_checks.rs`](./path_checks.rs) | `is_workspace_internal_path`, `is_always_forbidden`, `check_cross_profile`, `is_within_trusted_root`, `is_resolved_path_allowed[_for]`, `check_resolved_against_forbidden` |
 | [`command_checks.rs`](./command_checks.rs) | `classify_command`, `gate_decision`, `check_gated_command`, `is_command_allowed`, `command_risk_level`, `parse_declared_class`, `is_command_executor`, `split_unquoted_segments` |
 | [`enforcement.rs`](./enforcement.rs) | `can_act`, `enforce_write_tier`, `enforce_tool_operation`, `record_action`/`is_rate_limited`, `from_config`, `with_privacy_mode`, `openhuman_scratch_dir`/`ensure_openhuman_scratch_dir`, `validate_path_within_root` |
-| TinyBox module `CommandAnalysis` (`tinybox-bus`) | Module-produced command segments, classifications, structural flags, and literal path words; the host applies autonomy, allowlist, approval, and protected-path policy to these facts |
+| [`command_analysis.rs`](./command_analysis.rs) | `CommandAnalysis::from_shell_analysis`: the production path. TinyBox reports only live segments and redirection; the host derives each segment's class, structural flags and literal path words |
+| [`command_vocabulary.rs`](./command_vocabulary.rs) | The per-segment classifier both paths share (`classify_segment_source`): read/network/install/destructive/executor bases, launchers (`env`, `timeout`, `nohup`, `nice`, …) and leading assignments looked through, quote-split names joined |
 
 ## Public surface
 
@@ -96,7 +97,10 @@ Each of these must not be weakened to make a feature work:
   still reach, for example, `/usr/local/...`.
 - `classify_command`'s fail-closed floor ([`command_checks.rs`](./command_checks.rs)): a
   command that is not provably read-only (and not a recognized
-  network/destructive command) is at least `CommandClass::Write`. The highest
+  network/destructive command) is at least `CommandClass::Write`.
+  `classify_command` (tests) and production's `from_shell_analysis` share one
+  segment classifier, and `policy_classifier_parity_tests.rs` runs one corpus
+  through both. The highest
   class across `;`/`|`/`&&`/`||`/newline-separated segments wins, and any
   unquoted redirect (`>`, `>>`) or `tee` lifts the whole command to at least
   `Write`. An LLM-declared category (`parse_declared_class`) is
@@ -128,6 +132,7 @@ Each of these must not be weakened to make a feature work:
   path checks, and tier enforcement.
 - [`policy_disabled_tests.rs`](./policy_disabled_tests.rs): behavior with `[autonomy] enabled = false`.
 - [`proptest_tests.rs`](./proptest_tests.rs): property tests over command classification.
+- [`policy_classifier_parity_tests.rs`](./policy_classifier_parity_tests.rs): one command corpus through the production and test classifier paths.
 - [`enforcement_scratch_dir_tests_tests.rs`](./enforcement_scratch_dir_tests_tests.rs): `openhuman_scratch_dir` is
   namespaced on every platform and `ensure_openhuman_scratch_dir` creates it.
 

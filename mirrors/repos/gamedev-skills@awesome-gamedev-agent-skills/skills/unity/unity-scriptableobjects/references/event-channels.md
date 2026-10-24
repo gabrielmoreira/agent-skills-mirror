@@ -68,7 +68,7 @@ generic `GameEvent<T>` because Unity cannot create assets for open generic types
 
 ## Runtime set / registry (a shared, live collection)
 
-Instead of `FindObjectsOfType` every frame, objects add themselves to a shared set on enable
+Instead of `FindObjectsByType` (or the obsolete `FindObjectsOfType`) every frame, objects add themselves to a shared set on enable
 and remove on disable. Systems (AI targeting, minimap) read the set.
 
 ```csharp
@@ -97,7 +97,8 @@ what is alive.
 
 - `List` fields on a ScriptableObject are populated at runtime and **persist in the Editor**
   between play sessions unless cleared. Clear runtime sets in `OnEnable` (or `OnDisable`) so a
-  stale entry from the last session doesn't linger.
+  stale entry from the last session doesn't linger; with Reload Domain off those callbacks do
+  not run between sessions, so clear on a Play-mode change as in the main skill's pattern 2.
 - Always `Unregister`/`Remove` in `OnDisable`; objects destroyed without cleanup leave null
   entries that crash listeners.
 - Event channels invoke synchronously on the raiser's thread/frame — a heavy listener stalls

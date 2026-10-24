@@ -31,8 +31,10 @@ uses Godot's own 2D engine.
 
 1. **For 3D, check which engine runs** before debugging behavior: Project Settings >
    Physics > 3D > Physics Engine (`[physics]` `3d/physics_engine="Jolt Physics"` in
-   `project.godot`). The API is the same, but joints, ray-cast face indices, kinematic
-   contacts, and collision margins behave differently (see Pitfalls).
+   `project.godot`). Projects created in 4.6+ get Jolt written there by default; with no
+   such line (`DEFAULT`) the engine is GodotPhysics3D. The API is the same, but joints,
+   ray-cast face indices, kinematic contacts, and collision margins behave differently
+   (see Pitfalls).
 2. **Choose the body type:**
    - `StaticBody` — never moves (floors, walls). Collides, no simulation.
    - `RigidBody` — fully simulated (gravity, forces, bouncing). Don't set its
@@ -140,9 +142,11 @@ func ground_under(global_from: Vector2) -> Dictionary:
   the lone body as `node_b` with `node_a` as the world; GodotPhysics3D always treats it as
   `node_a`. Assign the body to the slot Jolt expects, or use Physics > Jolt Physics 3D >
   Joints > World Node for compatibility with an older project.
-- **Joint soft-limit properties do nothing** under Jolt (e.g. `bias`/`softness`/
-  `relaxation` on Pin, Hinge and ConeTwist joints; limit softness/restitution/damping on
-  Slider and Generic6DOF joints). Godot warns when they are set to non-default values.
+- **Joint soft-limit properties do nothing** under Jolt: `bias`/`damping`/`impulse_clamp` on
+  `PinJoint3D`; `bias`/`softness`/`relaxation` on `HingeJoint3D` and `ConeTwistJoint3D`;
+  `angular_*` and limit softness/restitution/damping on `SliderJoint3D`; limit
+  softness/restitution/damping/erp on `Generic6DOFJoint3D`. Godot warns when they are set
+  to non-default values.
 - **A frozen kinematic `RigidBody3D` reports no contacts** with static or kinematic bodies,
   even with `max_contacts_reported > 0`. Enable Physics > Jolt Physics 3D > Simulation >
   Generate All Kinematic Contacts if gameplay depends on those contacts.
@@ -151,6 +155,11 @@ func ground_under(global_from: Vector2) -> Dictionary:
   from Physics > Jolt Physics 3D > Collisions > Collision Margin Fraction.
 - **`Area3D` now fires `body_entered` for `SoftBody3D`** under Jolt (GodotPhysics3D never
   did). Filter soft bodies out with layers/masks if the old behavior is expected.
+- **A `WorldBoundaryShape3D` floor sits at the wrong height after upgrading to 4.7** → under
+  Jolt, 4.7 reads `plane.d` with Godot's sign convention, the opposite of 4.6; flip the sign
+  of `d` in projects tuned on 4.6. Jolt also caps the plane's effective size (Physics > Jolt
+  Physics 3D > Limits > World Boundary Shape Size), so bodies far from the origin can fall
+  off an "infinite" floor.
 
 ## References
 

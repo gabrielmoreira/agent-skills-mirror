@@ -10,7 +10,7 @@ Per object, the engine calls these in this order:
 
 | Phase | Callback | Runs | Use for |
 |-------|----------|------|---------|
-| Load | `Awake` | once, when the object loads (even if disabled) | cache `GetComponent`, set up self |
+| Load | `Awake` | once, when the object loads — even if the script component is disabled, but not while the GameObject is inactive | cache `GetComponent`, set up self |
 | Enable | `OnEnable` | each time the object/script enables | subscribe to events, re-arm coroutines |
 | Init | `Start` | once, before first `Update`, after every `Awake` | wiring that depends on other objects |
 | Physics | `FixedUpdate` | every fixed step (default 0.02s) | rigidbody forces, `MovePosition` |
@@ -65,6 +65,56 @@ private System.Collections.IEnumerator SpawnLoop()
 `StopAllCoroutines()` stops every coroutine on the MonoBehaviour — convenient but blunt;
 prefer stopping by handle when multiple routines run on one object.
 
+## `Awaitable` (async/await) instead of a coroutine
+
+Unity 6 ships `UnityEngine.Awaitable`, an allocation-light awaitable for `async` methods.
+The coroutine waits map directly:
+
+| Coroutine | `Awaitable` |
+|-----------|-------------|
+| `yield return null` | `await Awaitable.NextFrameAsync()` |
+| `yield return new WaitForSeconds(t)` | `await Awaitable.WaitForSecondsAsync(t)` |
+| `yield return new WaitForFixedUpdate()` | `await Awaitable.FixedUpdateAsync()` |
+| `yield return new WaitForEndOfFrame()` | `await Awaitable.EndOfFrameAsync()` |
+| (no equivalent) | `await Awaitable.BackgroundThreadAsync()` / `MainThreadAsync()` |
+
+```csharp
+using System;
+using UnityEngine;
+
+public class Blinker : MonoBehaviour
+{
+    [SerializeField] private Renderer target;
+
+    private async void Start()
+    {
+        try
+        {
+            while (true)
+            {
+                target.enabled = !target.enabled;
+                // The token cancels the wait when this component is destroyed.
+                await Awaitable.WaitForSecondsAsync(0.5f, destroyCancellationToken);
+            }
+        }
+        catch (OperationCanceledException) { /* destroyed: stop quietly */ }
+    }
+}
+```
+
+Rules that differ from coroutines:
+
+- An async method is **not** stopped when its object is disabled or destroyed. Pass
+  `destroyCancellationToken` (read it before the object is destroyed) or check state after
+  each `await`.
+- `Awaitable` instances are pooled: await each one **once**. To await a result twice, store
+  the result, not the `Awaitable`.
+- After `BackgroundThreadAsync`, most Unity APIs are off-limits until you
+  `await Awaitable.MainThreadAsync()`. Background work does not stop when you exit Play mode;
+  use `Application.exitCancellationToken` for that.
+- Prefer `async Awaitable` over `async void` for methods you call yourself, so callers can
+  await them; reserve `async void` for Unity messages such as `Start`.
+
 ## Custom yield instruction
 
 When you want a reusable wait condition:
@@ -85,6 +135,4 @@ public class WaitForAnimationEnd : CustomYieldInstruction
 - Coroutines are killed when the GameObject is **deactivated** (`SetActive(false)`) or the
   script is destroyed — but *not* when only the script component is disabled while the object
   stays active. Re-arm in `OnEnable` if needed.
-- A coroutine started from `Awake` will not advance past its first `yield` until the object is
-  active and the script enabled. Prefer starting loops in `OnEnable`/`Start`.
 - Allocating `new WaitForSeconds(x)` every loop iteration creates garbage; cache the instance.

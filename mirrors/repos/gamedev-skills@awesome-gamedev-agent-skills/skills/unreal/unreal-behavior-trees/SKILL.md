@@ -102,6 +102,9 @@ void AEnemyAIController::SetTarget(AActor* Target)
   None; set it to Self/Lower Priority/Both so the tree re-evaluates when the key changes.
 - **A task hangs the tree** — a custom task returned `InProgress` and never calls
   `FinishLatentTask`. Always complete latent tasks.
+- **AI behaves strangely only when several NPCs share a tree** — a custom task stores run state
+  in member variables. Task nodes are shared by every AI using the asset unless instanced; keep
+  per-AI state in node memory (see the reference).
 - **Blackboard key typos** — `SetValueAsObject("Taget", ...)` silently does nothing; match the
   key name and type exactly, or use a cached `FBlackboardKeySelector`.
 - **Sequence vs Selector confusion** — Sequence = AND (stops on first failure); Selector = OR
@@ -110,7 +113,8 @@ void AEnemyAIController::SetTarget(AActor* Target)
 ## References
 
 - For a **custom C++ `UBTTaskNode`** (instant and latent `ExecuteTask` returning `EBTNodeResult`,
-  with a `FBlackboardKeySelector`), read `references/custom-bttask.md`.
+  per-AI node memory, `AbortTask`, and a `FBlackboardKeySelector`), read
+  `references/custom-bttask.md`.
 - Primary docs: "Behavior Trees in Unreal Engine"
   (`https://dev.epicgames.com/documentation/en-us/unreal-engine/behavior-trees-in-unreal-engine`).
 

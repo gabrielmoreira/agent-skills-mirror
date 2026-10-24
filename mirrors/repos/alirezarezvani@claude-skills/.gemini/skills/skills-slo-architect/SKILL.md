@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/skills-slo-architect/../../../engineering/slo-architect/skills/slo-architect/SKILL.md

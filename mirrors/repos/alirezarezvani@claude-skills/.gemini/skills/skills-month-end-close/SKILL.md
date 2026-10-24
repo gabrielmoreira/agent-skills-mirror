@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/skills-month-end-close/../../../finance/skills/month-end-close/SKILL.md

@@ -9,8 +9,8 @@ description: >
 
 # Unity Input System (new)
 
-Read input through Unity's **Input System package** (`com.unity.inputsystem`, 1.x) —
-action-based, device-agnostic, rebindable. Targets **Unity 6.3 LTS**. This is the modern
+Read input through Unity's **Input System package** (`com.unity.inputsystem` 1.x; Unity 6.3 LTS
+ships 1.20) — action-based, device-agnostic, rebindable. Targets **Unity 6.3 LTS**. This is the modern
 replacement for the legacy `Input.GetAxis`/`Input.GetKey` Input Manager.
 
 ## When to use
@@ -30,17 +30,23 @@ replacement for the legacy `Input.GetAxis`/`Input.GetKey` Input Manager.
 1. **Check Active Input Handling** (Project Settings → Player). The package only receives
    input when this is `Input System Package (New)` or `Both`. `Both` is required if any old
    `Input.GetAxis` code remains.
-2. **Create an `.inputactions` asset.** Add an *action map* (e.g. `Gameplay`), add *actions*
+2. **Find or create the `.inputactions` asset.** New Unity 6 projects usually already have one
+   assigned as the **project-wide actions** (Project Settings → Input System Package; the
+   template file is `InputSystem_Actions.inputactions`) — reuse it rather than adding a
+   second asset. Add an *action map* (e.g. `Gameplay`), add *actions*
    (`Move` = Value/Vector2, `Jump` = Button, `Fire` = Button), and bind them to controls and
    composite bindings (WASD = 2D Vector composite).
 3. **Choose how to read it:**
    - **`PlayerInput` component** (designer-friendly) — drop it on the player, point it at the
      asset, pick a *Behavior* (Send Messages / Broadcast / Invoke Unity Events / Invoke C#
      Events). Best for single/local-coop players.
+   - **Project-wide actions in code** (`InputSystem.actions.FindAction("Move")`) — no asset
+     reference to wire up, and the actions are already enabled.
    - **Direct in code** (`InputActionReference` / `InputActionAsset`) — most control; you
      `Enable()` actions and read them. Best for systems and tools.
-4. **Enable the actions/maps you read.** `PlayerInput` enables its default map automatically;
-   actions you reference yourself must be `.Enable()`d (and disabled on teardown).
+4. **Enable the actions/maps you read.** `PlayerInput` enables its default map automatically
+   and project-wide actions start enabled; actions from any other asset must be `.Enable()`d
+   (and disabled on teardown).
 5. **Switch action maps** for context (gameplay ↔ UI/menu) instead of guarding every handler.
 6. **Verify** with the Input Debugger (Window → Analysis → Input Debugger) to confirm devices
    and that actions fire.
@@ -87,7 +93,32 @@ public class DirectMover : MonoBehaviour
 }
 ```
 
-### 3. Event callbacks + switching action maps (gameplay ↔ UI)
+### 3. Project-wide actions (no asset reference)
+
+```csharp
+using UnityEngine;
+using UnityEngine.InputSystem;
+
+public class ProjectWideMover : MonoBehaviour
+{
+    private InputAction _move, _jump;
+
+    private void Awake()
+    {
+        // Looked up once; project-wide actions are preloaded and enabled by default.
+        _move = InputSystem.actions.FindAction("Move");
+        _jump = InputSystem.actions.FindAction("Jump");
+    }
+
+    private void Update()
+    {
+        Vector2 move = _move.ReadValue<Vector2>();
+        if (_jump.WasPressedThisFrame()) { /* jump */ }
+    }
+}
+```
+
+### 4. Event callbacks + switching action maps (gameplay ↔ UI)
 
 ```csharp
 [SerializeField] private InputActionAsset actions;
@@ -112,7 +143,15 @@ private void Shoot() { }
 ## Pitfalls
 
 - **No input at all** → either Active Input Handling is still `Input Manager (Old)`, or you
-  forgot to `Enable()` the action/map. `PlayerInput` auto-enables; raw `InputAction`s do not.
+  forgot to `Enable()` the action/map. `PlayerInput` and project-wide actions start enabled;
+  actions from other assets do not.
+- **Gameplay actions fire while a menu is open** → project-wide actions enable *every* action
+  map at startup, including when `PlayerInput` uses that asset. In `Start`, disable the maps
+  you do not want (`InputSystem.actions.FindActionMap("UI").Disable()`) and enable only the
+  current one.
+- **`FindAction` returns null** → the name (or `Map/Action` path) does not exist in that
+  asset. Check the spelling in the Actions Editor; with project-wide actions, make sure the
+  asset you edited is the one assigned in Project Settings → Input System Package.
 - **`InvalidOperationException` about the old input backend** → some script still calls
   `Input.GetAxis`/`Input.GetKey` while Active Input Handling is `New`. Port it or set `Both`.
 - **Buttons read as 0 with `ReadValue`** → button *presses* are edge events; use the
@@ -130,7 +169,9 @@ private void Shoot() { }
   bindings as JSON, and **local multiplayer** with `PlayerInputManager`, read
   `references/rebinding.md`.
 - Primary docs: Unity Manual "Input System"
-  (`https://docs.unity3d.com/Manual/com.unity.inputsystem.html`).
+  (`https://docs.unity3d.com/Manual/com.unity.inputsystem.html`) and the package manual
+  (`https://docs.unity3d.com/Packages/com.unity.inputsystem@1.20/manual/index.html`),
+  including "About project-wide actions".
 
 ## Related skills
 

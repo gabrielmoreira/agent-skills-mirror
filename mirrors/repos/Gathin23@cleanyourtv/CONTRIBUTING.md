@@ -10,9 +10,9 @@ The launcher stays small on purpose, so pick the smallest home that fits:
 
 | Your idea | Where it goes |
 |---|---|
-| A TV model, a fix, a translation, a small switch that is off by default | A pull request here (sections 1 to 3 below) |
+| A TV model, a fix, a translation, a small switch that is off by default | A pull request here (sections 1 to 3 below); a new switch with a screenshot in [`docs/switches.md`](docs/switches.md) |
 | A new look: colours, wallpaper, dock, columns | [`themes/`](themes/README.md), with a screenshot from a real TV |
-| A widget or tile that can be its own small app | [`addons/`](addons/README.md), as a module card; it never touches `launcher/` |
+| A widget or tile that can be its own small app | [`addons/`](addons/README.md), as a module card with a screenshot from a real TV; it never touches `launcher/` |
 | A whole new launcher, a heavy restyle, a port to another platform | Your own repo, plus one row in [`SHOWCASE.md`](SHOWCASE.md) (section 4) |
 
 Everything merged into `themes/` and `addons/` shows up on [cleanyour.tv/addons](https://cleanyour.tv/addons).
@@ -20,7 +20,8 @@ Everything merged into `themes/` and `addons/` shows up on [cleanyour.tv/addons]
 ## 1. Add your TV model
 
 Every brand ships different bloat. If you ran the prompt (or did it by hand) on a TV that isn't in
-`examples/`, add it:
+`examples/`, add it. The same steps for a coding agent are in
+[`docs/workflows/tv-list.md`](docs/workflows/tv-list.md).
 
 1. Create `examples/<brand>-<model>/debloat.txt`. Copy the format from
    `examples/xiaomi-mi-tv-4a/debloat.txt`: one package per line, grouped with a comment that says
@@ -30,17 +31,34 @@ Every brand ships different bloat. If you ran the prompt (or did it by hand) on 
    whether it matches theirs. `tools/tv.py --probe` prints all three.
 3. Only list packages you have actually disabled and lived with for a few days. Note anything that
    broke and what you re-enabled.
-4. Add a row to `examples/README.md`.
-5. If your TV's Live TV app or stock launcher has a different package name, say so in the header;
-   `tools/restore.sh` and `launcher/build-and-install.sh` accept them as arguments.
+4. Add a row to `examples/README.md` and one to the TV table in `README.md`: the tests compare them,
+   so a list with a row in only one of the two fails.
+5. If your TV's Live TV app or stock launcher has a different package name, say so in the header. Where
+   a script needs the stock launcher, `tools/restore.sh` takes it as its second argument
+   (`tools/restore.sh <list> <package>`) and `launcher/build-and-install.sh` takes it in the
+   environment, as `STOCK_LAUNCHER=<package>` (`-StockLauncher` on the PowerShell twin, and `none`
+   keeps it enabled) - not as an argument. The launcher shows your Live TV app in its Inputs menu from
+   `live_tv_package`, in `config.xml` or a theme.
 
 Never list packages to *uninstall*. Everything in this repo disables with `pm disable-user`, which
 is reversible from the TV's own settings if the tools are gone.
 
+Android's own packages are not bloat either. Never list the permission controller, the package
+installer, ext services or ext shared, module metadata, a `com.google.android.overlay.modules*`
+overlay, systemui, shell, phone, settings, tv.settings, `android`, or a `com.android.providers.*`
+package other than calendar, contacts, user dictionary and blocked numbers. A TV that loses one of
+them may never boot again ([#884](https://github.com/Gathin23/cleanyourtv/issues/884), and
+[what to do if it already happened](docs/TROUBLESHOOTING.md#working-on-the-tv)), so
+`tools/disable.sh`, `disable.ps1` and `check.py --fix` refuse such a list outright, with no switch to
+override it, and a pull request that names them comes back for a rework.
+
 ## 2. Improve the launcher
 
 The launcher lives in `launcher/` and is deliberately small: plain Java, AndroidX RecyclerView and
-DynamicAnimation, no Kotlin, no Compose, no network. It targets TVs with 1 GB of RAM, so:
+DynamicAnimation, no Kotlin, no Compose, no network. It targets TVs with 1 GB of RAM. A new switch follows
+[`docs/workflows/launcher-switch.md`](docs/workflows/launcher-switch.md), a new language
+[`docs/workflows/translation.md`](docs/workflows/translation.md), and a speed-up or slow-down is measured with
+[`docs/workflows/perf-ab.md`](docs/workflows/perf-ab.md). In every change:
 
 - No blur, no video backgrounds, no polling, no background services.
 - Anything that depends on a specific TV goes in `app/src/main/res/values/config.xml`, not in code.

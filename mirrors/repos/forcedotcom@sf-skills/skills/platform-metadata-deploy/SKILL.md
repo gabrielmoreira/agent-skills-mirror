@@ -1,8 +1,8 @@
 ---
 name: platform-metadata-deploy
-description: "Salesforce DevOps automation using sf CLI v2. TRIGGER when: user deploys metadata, creates/manages scratch orgs or sandboxes, sets up CI/CD pipelines, or troubleshoots deployment errors with sf project deploy. DO NOT TRIGGER when: writing Apex code (use platform-apex-generate), building LWC components (use experience-lwc-generate), creating metadata definitions (use platform-custom-object-generate or platform-custom-field-generate), or querying org data (use platform-data-manage)."
+description: "Salesforce DevOps automation using sf CLI v2. TRIGGER when: user deploys metadata, validates a deploy or does a dry-run, deploys to a Production org, quick-deploys a validated job ID, ships/promotes to prod, creates/manages scratch orgs or sandboxes, sets up CI/CD pipelines, or troubleshoots deployment errors with sf project deploy. DO NOT TRIGGER when: writing Apex code, building LWC components (use experience-lwc-generate), creating metadata definitions (use platform-custom-object-generate), deleting metadata from an org (use platform-destructive-deploy), or querying org data (use platform-data-manage)."
 metadata:
-  version: "1.1"
+  version: "1.2"
   domains: ["Platform", "Developer Experience"]
   relatedSkills:
     - "agentforce-generate"
@@ -11,9 +11,7 @@ metadata:
     - "experience-lwc-generate"
     - "integration-connectivity-connected-app-configure"
     - "integration-connectivity-generate"
-    - "platform-apex-generate"
     - "platform-apex-test-run"
-    - "platform-custom-field-generate"
     - "platform-custom-object-generate"
     - "platform-data-manage"
   cliTools:
@@ -40,9 +38,9 @@ Use `platform-metadata-deploy` when the work involves:
 - troubleshooting deployment failures and dependency ordering
 
 Delegate elsewhere when the user is:
-- authoring Apex code → [platform-apex-generate](../platform-apex-generate/SKILL.md)
+- authoring Apex code (this skill only deploys it)
 - authoring LWC components → [experience-lwc-generate](../experience-lwc-generate/SKILL.md)
-- creating custom objects or fields → [platform-custom-object-generate](../platform-custom-object-generate/SKILL.md), [platform-custom-field-generate](../platform-custom-field-generate/SKILL.md)
+- creating custom objects or fields → [platform-custom-object-generate](../platform-custom-object-generate/SKILL.md)
 - building Flows → [automation-flow-generate](../automation-flow-generate/SKILL.md)
 - doing org data operations → [platform-data-manage](../platform-data-manage/SKILL.md)
 - authoring or testing Agentforce agents → [agentforce-generate](../agentforce-generate/SKILL.md)
@@ -54,6 +52,7 @@ Delegate elsewhere when the user is:
 - Use **`sf` CLI v2 only**.
 - On non-source-tracking orgs, deploy/retrieve commands require an explicit scope such as `--source-dir`, `--metadata`, or `--manifest`.
 - Prefer **`--dry-run` first** before real deploys.
+- **Never run `sf project deploy start` against a production org.** Production goes through the validate → quick-deploy path below (server-side validation returns a 10-day job ID; quick-deploy promotes it without re-running tests, behind an explicit confirmation).
 - For Flows, deploy safely and activate only after validation.
 - Keep test-data creation guidance delegated to **`platform-data-manage`** after metadata is validated or deployed.
 
@@ -82,7 +81,7 @@ Ask for or infer:
 Preflight checks:
 ```bash
 sf --version
-sf org list
+sf org list --skip-connection-status
 sf org display --target-org <alias> --json
 test -f sfdx-project.json
 ```
@@ -94,7 +93,25 @@ test -f sfdx-project.json
 ### 1. Preflight
 Confirm auth, repo shape, package directories, and target scope.
 
-### 2. Validate first
+### 1a. Classify the target org (routes prod vs non-prod)
+
+Before any deploy, classify the target from its `sf org list` record — the path forks on whether the org is **production**. Do NOT classify from `sf org display`: it reports only a plain My Domain and omits the sandbox/scratch/trial fields, so a Sandbox-or-Demo Org (SDO) is misclassified as production (forcedotcom/sf-skills#356). The `sf org list` record carries the real classification booleans. Pass `--skip-connection-status` so this stays a local read that does not refresh an OAuth token per authenticated org (forcedotcom/sf-skills#349):
+
+```bash
+sf org list --skip-connection-status --json
+```
+
+Find the record whose `alias`, `username`, or `orgId` matches the target, then classify from that record (first match wins):
+- **Scratch** — `isScratch` is `true`.
+- **Sandbox** — `isSandbox` is `true`, or the `instanceUrl` contains `--` (the My Domain sandbox marker) or `test.salesforce.com`.
+- **Trial / Developer Edition** — `trailExpirationDate` (the CLI's spelling; also accept `trialExpirationDate`) is a date in the **future**, or the `instanceUrl` host contains `orgfarm-`, `.develop.my.salesforce.com`, `.pc-rnd.`, or `.scratch.my.salesforce.com`. A past date does not count — the date is cached at login and never refreshed, so a converted trial keeps a stale past date and is not a trial.
+
+Anything else is **production** — including a **Dev Hub** (`isDevHub` is `true`) that shows none of the above signals, since Dev Hub is normally enabled in the customer's own production org. If no record matches or the record has no usable info (no `instanceUrl` and none of the flags), treat it as **unknown** and ask the user before proceeding, rather than assuming production or non-production.
+
+- **Non-production** → the dry-run + deploy path (steps 2–6).
+- **Production** → the validate → quick-deploy path ([Production deploys](#production-deploys-validate--quick-deploy)). Never run `sf project deploy start` against production.
+
+### 2. Validate first (non-production)
 ```bash
 sf project deploy start --dry-run --source-dir force-app --target-org <alias> --wait 30 --json
 ```
@@ -118,9 +135,6 @@ sf project deploy start --manifest manifest/package.xml --target-org <alias> --t
 
 # manifest deploy with Spring '26 relevant-test selection
 sf project deploy start --manifest manifest/package.xml --target-org <alias> --test-level RunRelevantTests --wait 30 --json
-
-# quick deploy after successful validation
-sf project deploy quick --job-id <validation-job-id> --target-org <alias> --json
 ```
 
 ### 5. Verify
@@ -133,6 +147,93 @@ Then verify tests, Flow state, permission assignments, and smoke-test behavior.
 Summarize what deployed, what failed, what was skipped, and what the next safe action is.
 
 Output template: [references/deployment-report-template.md](references/deployment-report-template.md)
+
+---
+
+## Production deploys (validate → quick-deploy)
+
+Production is never deployed with `sf project deploy start`. It is a two-step promotion: a **server-side validation** produces a job ID, then a **quick deploy** promotes that validated job without re-running tests, behind an explicit confirmation.
+
+### P1. Validate against production
+
+Production validations REQUIRE a test level. Use `RunLocalTests` by default; switch to `RunSpecifiedTests --tests <ClassName>...` only if the user has explicitly listed tests.
+
+```bash
+sf project deploy validate --target-org <alias> --json [scope flags] --test-level RunLocalTests
+```
+
+Scope flags — use exactly one: `--source-dir <path>`, `--metadata <Type:Name>`, or `--manifest manifest/package.xml`.
+
+The response returns a **job ID** (`result.id`) valid for **10 days**. Persist it **with the target's immutable identity** — the org ID and instance URL from `sf org display`, not just the alias — so the quick deploy can prove the validation belongs to the org it is about to promote to:
+
+```bash
+mkdir -p .sfdx
+ORG_JSON=$(sf org display --target-org <alias> --json)
+ORG_ID=$(printf '%s' "$ORG_JSON" | jq -r '.result.id')
+INSTANCE_URL=$(printf '%s' "$ORG_JSON" | jq -r '.result.instanceUrl')
+printf '{"jobId":"%s","createdAt":"%s","targetOrg":"%s","orgId":"%s","instanceUrl":"%s","testLevel":"RunLocalTests"}\n' \
+  "<id>" "<iso8601>" "<alias>" "$ORG_ID" "$INSTANCE_URL" > .sfdx/last-validation.json
+```
+
+On validation failure, triage from `result.details.componentFailures` and `result.details.runTestResult.failures` — surface the top component errors and test failures with a scoped fix direction, then STOP. Never use `--ignore-errors`/`--ignore-warnings` during validation.
+
+### P2. Gate the quick deploy strictly
+
+Before promoting, verify all five:
+1. **Target is production** — re-confirm via step 1a's classification.
+2. **A validation exists** — read `.sfdx/last-validation.json`, or ask for the job ID, or fall back to `--use-most-recent`. Resolve `--use-most-recent` to a concrete job ID **now** (do not carry it forward as an unresolved flag), so the checks below run against a known job.
+3. **Validation belongs to THIS target** — re-run `sf org display --target-org <alias> --json` and require the current `result.id` (org ID) to equal the `orgId` persisted in `.sfdx/last-validation.json`. This closes the stale-cache hazard: a cached job ID resolves its org from the deploy cache, so without this check the banner can show org B while the job promotes to org A. On any mismatch — or if the persisted record lacks an `orgId`/`instanceUrl` to compare — treat it as a **hard stop** and re-validate (P1) against the intended target. Never promote a validation whose target you cannot prove.
+4. **Validation is fresh** — explicit `--job-id` ≤ 10 days; a `--use-most-recent` resolution ≤ 3 days. If stale, re-validate (P1) first.
+5. **Explicit user confirmation** — print the banner below and require a literal "yes". Populate every banner field from the verified validation record and the just-fetched org data — never from unverified input. Never auto-confirm.
+
+```text
+┌─ PRODUCTION DEPLOY ─────────────────────────────┐
+│ Org alias:      <alias>                         │
+│ Instance:       <instanceUrl>                   │
+│ Edition:        <edition>                       │
+│ Validation ID:  <jobId>                         │
+│ Validated:      <createdAt> (X days ago)        │
+│ Components:     <componentCount> queued         │
+│ Tests:          <run>/<passed>/<failed>         │
+└─────────────────────────────────────────────────┘
+Confirm deploy to PRODUCTION? (yes/no)
+```
+
+`sf org display --json` does not return the edition. Read `<edition>` from the Organization object's `OrganizationType` (e.g. `Enterprise Edition`):
+
+```bash
+sf data query --query "SELECT OrganizationType FROM Organization" --target-org <alias> --json | jq -r '.result.records[0].OrganizationType'
+```
+
+### P3. Promote and audit
+
+The literal "yes" from P2's banner is the authorization. In the **Salesforce development plugin** context, a PreToolUse hook (`sf-deploy-gate`) blocks a bare production `deploy quick` and only permits it when the command carries the machine-readable confirmation marker `CONFIRM_PROD=1`. Emit that marker to transmit the confirmation the user just gave — it is **not** an independent bypass, so add it **only after** the explicit "yes", never before:
+
+```bash
+# plugin context: CONFIRM_PROD=1 relays P2's confirmation to the safety hook
+CONFIRM_PROD=1 sf project deploy quick --job-id <validation-id> --target-org <alias> --wait 30 --json
+```
+
+Outside the plugin (bare CLI, headless/MCP) there is no such hook — run the same command without the marker.
+
+**Quick deploy starts a new deployment with its own job ID** — it does not reuse the validation ID. Capture the response, extract the new ID, and use *that* for polling, reporting, and the audit filename; keep the validation ID separately for traceability. Stop if the response carries no deployment ID:
+
+```bash
+QUICK_RESULT=$(CONFIRM_PROD=1 sf project deploy quick --job-id <validation-id> --target-org <alias> --wait 30 --json)
+QUICK_DEPLOY_ID=$(printf '%s' "$QUICK_RESULT" | jq -r '.result.id')
+[ -n "$QUICK_DEPLOY_ID" ] && [ "$QUICK_DEPLOY_ID" != "null" ] || { echo "No quick-deploy ID returned — do not report the validation ID as the deploy; investigate."; exit 1; }
+```
+
+Quick deploy promotes the validated components and does NOT re-run tests. Persist the report **for the quick-deploy operation** (not the validation) for the audit trail, then guide post-deploy verification (smoke-test critical paths, watch Setup → Deployment Status, prepare a rollback plan if anything regressed):
+
+```bash
+mkdir -p .sfdx/deploy-history
+sf project deploy report --job-id "$QUICK_DEPLOY_ID" --target-org <alias> --json > ".sfdx/deploy-history/${QUICK_DEPLOY_ID}.json"
+```
+
+If quick deploy times out or stays in progress, poll with the **quick-deploy ID**, not the validation ID.
+
+Adding `CONFIRM_PROD=1` after an explicit confirmation is the sanctioned path — it is not "working around" the gate. But never override a denial the user has **not** confirmed, and never override one raised for a different reason — a target mismatch (P2 check 3), a destructive deploy, or an unknown/unresolved org. Surface those denials and stop.
 
 ---
 
@@ -163,7 +264,7 @@ Default pipeline shape:
 7. verify + notify
 
 - When org policy and release risk allow it, consider `--test-level RunRelevantTests` for Apex-heavy deployments.
-- Pair this with modern Apex test annotations such as `@IsTest(testFor=...)` and `@IsTest(isCritical=true)` — see [platform-apex-generate](../platform-apex-generate/SKILL.md) for authoring guidance.
+- Pair this with modern Apex test annotations such as `@IsTest(testFor=...)` and `@IsTest(isCritical=true)`.
 
 Static analysis now uses **Code Analyzer v5** (`sf code-analyzer`), not retired `sf scanner`.
 
@@ -185,9 +286,7 @@ For full agent DevOps details, including `Agent:` pseudo metadata, publish/activ
 
 | Need | Delegate to | Reason |
 |---|---|---|
-| custom object creation | [platform-custom-object-generate](../platform-custom-object-generate/SKILL.md) | define objects before deploy |
-| custom field creation | [platform-custom-field-generate](../platform-custom-field-generate/SKILL.md) | define fields before deploy |
-| Apex authoring / fixes | [platform-apex-generate](../platform-apex-generate/SKILL.md) | code authoring and repair |
+| custom object / field creation | [platform-custom-object-generate](../platform-custom-object-generate/SKILL.md) | define objects and fields before deploy |
 | run tests after deployment | [platform-apex-test-run](../platform-apex-test-run/SKILL.md) | post-deploy test execution and coverage |
 | Flow creation / repair | [automation-flow-generate](../automation-flow-generate/SKILL.md) | Flow authoring and activation guidance |
 | test data or seed records | [platform-data-manage](../platform-data-manage/SKILL.md) | describe-first data setup and cleanup |

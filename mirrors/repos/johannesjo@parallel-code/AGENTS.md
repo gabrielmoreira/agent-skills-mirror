@@ -40,6 +40,15 @@ When committing, use conventional commit messages, such as `fix(terminal): resto
 - Dense areas such as task headers already contain status text and badges. Don't add another attention-seeking element; use a label, placement, or spacing to make an action discoverable.
 - Content must not jump. Focus, hover, typing, or a state change should not move surrounding content. Reserve space for elements that come and go, such as hints, badges, and errors (for example, toggle `visibility` or `opacity` rather than `display`), or overlay them. Accept layout shift only when it is unavoidable, such as new content arriving.
 
+### Motion
+
+- Instant beats animation. Animate only to explain a change the user might otherwise miss, such as where something went, what appeared, or what is still working. Hover, press, focus, selection, and switching panes or tabs respond at once or within about 100ms.
+- Animations feel fast. Entrances take about 120–200ms, exits are shorter, and both ease out (`cubic-bezier(0.2, 0, 0, 1)`). Nothing the user waits on takes longer than 250ms. Never delay the actual state change or input for an animation, and never block clicks or typing while an element animates in.
+- Use motion to hide latency, not add it. When work takes time (creating a worktree, spawning an agent, merging, loading), respond at once with the final layout, a placeholder, or a working indicator. Then fill in the result. Spinners and pulses are reserved for real ongoing work.
+- Everything stays smooth. Animate `opacity` and `transform`, not layout properties, on large or frequently updated elements (collapsing a small sidebar row is fine); never animate terminal sizes. Keep JavaScript timers that wait for an animation equal to its CSS duration, and zero when reduced motion turns it off. A newer change cancels or overrides a running animation instead of queueing behind it.
+- Respect `prefers-reduced-motion`. Add new CSS animations to the reduced-motion block at the end of `src/styles.css`, or to a `prefers-reduced-motion` rule in their own stylesheet. Gate JavaScript animations with `shouldAnimateTaskAppearance()` from `src/lib/reducedMotion.ts`, the app's general reduced-motion check despite its name.
+- Deliberate showpieces (arena countdown and results) may run longer, but never on a path the user takes repeatedly.
+
 ### IPC changes
 
 - Named channels originate in `electron/ipc/channel-manifest.json`; `electron/ipc/channels.ts` exports the manifest and its type.

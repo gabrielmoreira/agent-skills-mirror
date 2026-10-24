@@ -23,13 +23,19 @@ not name its entry function `entry`. MCP uses `open_binary`, `list_procedures`,
 `procedure_info`, `read_function_instructions`, and `analyze_function` with the
 same admitted target and provider semantics.
 
-The classifier validates MZ page counts, initialized module length, header and
+The DOS MZ parser validates page counts, initialized module length, header and
 relocation-table bounds, relocation destinations, and the initialized entry
-point. It distinguishes DOS load-module and relocation bytes from the Windows
-new-header field. PE remains PE; NE, LE, and LX declarations are explicitly
-unsupported. A damaged declared Windows header does not silently become DOS.
-Inventory classification returns `unknown` when its bounded prefix cannot
-establish the format; this is distinct from the complete target admission check.
+point using the available structural bytes and actual file length. It reports
+those DOS facts separately from Windows-header evidence. A recognized PE
+signature remains PE; recognized NE, LE, and LX headers are explicitly
+unsupported. A nonzero Windows-header pointer without a recognized signature
+remains an unresolved candidate, even when the DOS structure validates:
+automatic target selection fails closed and reports both observations.
+REA does not infer DOS intent from padding or infer a damaged Windows header
+from the pointer alone. Inventory classification is a bounded-prefix format
+hint; it returns `unknown` for that candidate or when its prefix cannot
+establish the format. That result is distinct from complete DOS validation and
+does not decide target admission.
 
 Ghidra imports a private target snapshot with `MzLoader`, language
 `x86:LE:16:Real Mode`, and compiler specification `default`. These settings,

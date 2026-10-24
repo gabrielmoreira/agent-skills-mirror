@@ -25,9 +25,11 @@ func _process(_delta: float) -> void:
         ResourceLoader.THREAD_LOAD_IN_PROGRESS:
             update_bar(progress[0])           # 0.0–1.0
         ResourceLoader.THREAD_LOAD_LOADED:
-            var res := ResourceLoader.load_threaded_get(PATH)
+            set_process(false)                # after load_threaded_get the status
+            var res := ResourceLoader.load_threaded_get(PATH)  # turns INVALID_RESOURCE
             _on_loaded(res)
         ResourceLoader.THREAD_LOAD_FAILED, ResourceLoader.THREAD_LOAD_INVALID_RESOURCE:
+            set_process(false)
             push_error("Load failed")
 ```
 
@@ -48,13 +50,16 @@ values). Guard with `Engine.is_editor_hint()` where needed. Combine with `@expor
 To load a non-Godot file format as a Resource (e.g. a custom `.deck` text format), register
 a `ResourceFormatLoader` (and optionally `ResourceFormatSaver`) and add it with
 `ResourceLoader.add_resource_format_loader(loader)`. Override `_get_recognized_extensions`,
-`_handles_type`, and `_load`. This lets `load("res://x.deck")` return your resource type.
+`_handles_type`, `_get_resource_type`, and `_load`. This lets `load("res://x.deck")` return your resource type.
 
 ## Resource UIDs
 
-Godot 4 assigns each imported resource a stable UID (`uid://...`). Scenes can reference by
-UID so moving/renaming files doesn't break links. Get one with `ResourceUID`. Prefer
-letting the editor manage UIDs; avoid hand-editing `.uid` files.
+Godot 4 assigns each resource a stable UID (`uid://...`). Scenes can reference by UID so
+moving/renaming files doesn't break links. Get one with `ResourceUID`. Imported assets keep
+their UID in the `.import` file; since 4.4, scripts and shaders get a sidecar
+`<file>.uid` (e.g. `player.gd.uid`). **Commit `.uid` files** (never add `*.uid` to
+`.gitignore`) and move them together with their file when moving outside the editor.
+Prefer letting the editor manage UIDs; avoid hand-editing `.uid` files.
 
 ## Data-driven design tips
 
@@ -69,7 +74,8 @@ letting the editor manage UIDs; avoid hand-editing `.uid` files.
 ## Common API
 
 ```gdscript
-res.duplicate(deep := false)      # copy; deep also copies sub-resources
+res.duplicate(deep := false)      # copy; deep copies arrays/dicts + embedded sub-resources
+res.duplicate_deep(Resource.DEEP_DUPLICATE_ALL)  # also copies sub-resources saved to files
 res.take_over_path("res://x.tres")
 res.resource_path                 # where it loaded from ("" if in-memory)
 ResourceLoader.exists(path, type_hint := "")

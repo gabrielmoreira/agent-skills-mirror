@@ -46,7 +46,6 @@ canonical files, not hidden imports.
 | Compose | `compose_sprite_atlas.py` | `frames/` + `curation.json` | `sprite-sheet-alpha.png`, `manifest.json`, `*.report.json` |
 | Engine export (opt) | `sprite-gen export-aseprite` (`sprite_gen/compose/export_aseprite.py`) | composed `manifest.json` + existing atlas | `exports/aseprite.json`, or `exports/aseprite/<state>.json` for Flame |
 | Recolor (opt) | `sprite-gen recolor` / `recolor-palette` (`sprite_gen/effects/recolor.py`) | base sheet (default `sprite-sheet-alpha.png`) + recolor spec | `variants/<name>.png`, optional `variants/<name>.manifest.json`, `variants/recolor.report.json` |
-| Layer bake (opt) | `sprite-gen compose-layers` (`sprite_gen/compose/compose_layers.py`) | `frames/` + `curation.json` + the request's `rig` / `layers` | `layers/<name>.png`, `layers/<name>.manifest.json`, `layers/layers.report.json` (published as one set) |
 | QA | `preview_animation.py` | `frames/` | `qa/<state>-contact.png`, `qa/<state>.gif` |
 | Inspect | `inspect_sprite_run.py` | `sprite-request.json`, `raw/` or `frames/` | `sprite-inspect.report.json` |
 | Score | `score_sprite_run.py` | `sprite-inspect.report.json` | `sprite-score.report.json`, correction hints |
@@ -133,12 +132,6 @@ not restate it elsewhere; point here.
                                      #   passthrough pixels). Adopted pick lives in
                                      #   curation.json.recolor.picked (name-keyed). See
                                      #   docs/recolor.md.
-  layers/                            # only when a rig run bakes composites (compose_layers) —
-                                     #   <name>.png + <name>.manifest.json (runtime shape,
-                                     #   one composite row) + layers.report.json (stack,
-                                     #   source revisions, per-element offsets, clipped
-                                     #   pixels). A composite is NEVER a frames/ row nor a
-                                     #   request state. See docs/layer-tracks.md.
   sprite-inspect.report.json         # inspect_sprite_run.py output (per-state health rows)
   sprite-score.report.json           # score_sprite_run.py output (overall score + correction hints)
   correction-loop/                   # run_correction_loop.py: attempt-N/ (inspect/score/hints) + candidate-N/ regenerated run dirs
@@ -200,10 +193,13 @@ schema writer (`runio.migrate_request_file`, exposed as `sprite-gen migrate-requ
 
 - **Reads are byte-stable.** `load_request`, and everything that goes through it
   (`state_revision`, `run_revision`, `load_curation`, the view's snapshot endpoints),
-  leave the run directory byte for byte identical. A retired key (`fit.pixel_perfect`)
-  is normalized to the current key (`fit.pixel_unfake`) **in memory only**, so an old
-  approved run keeps working without its file being touched. Both keys present is still
-  a hard fail — code cannot pick which of two truths is real.
+  leave the run directory byte for byte identical. A retired key is normalized **in
+  memory only**, so an old approved run keeps working without its file being touched: a
+  renamed key (`fit.pixel_perfect`) is read as the current key (`fit.pixel_unfake`), and a
+  key retired with nothing in its place (`rig`, `layers` and `states.<state>.track`, read
+  by no code since layer-tracks was removed in 3.0.0) is left out. The first read of such a
+  run in a process names those keys once on stderr. A renamed key and its current key both
+  present is still a hard fail — code cannot pick which of two truths is real.
   The curation sidecar reads the same way: a generation-mismatched `curation.json` is
   salvaged row by row **in memory** and the file itself is left alone — the load gate
   writes no backup copy (see the bullet below).
@@ -229,7 +225,7 @@ schema writer (`runio.migrate_request_file`, exposed as `sprite-gen migrate-requ
 - **Unrelated edits preserve the on-disk key form.** Take recording (reroll / interpolate)
   and the view's fps edit reload the whole document through the gate and write it back, so
   they go out through `runio.write_request`, which folds a normalized key back to whatever
-  the file actually carries. Otherwise changing one fps value would migrate the schema as a
+  the file actually carries and writes a left-out key back with the file's own value. Otherwise changing one fps value would migrate the schema as a
   side effect, and "only the explicit command changes the schema" would be false the moment
   anyone edited anything.
 
@@ -572,6 +568,5 @@ service, revisit both here.
 - [`architecture.md`](architecture.md) — how the code realizes these contracts (stage internals, lock, extraction, pixel-unfake path)
 - [`curation.md`](curation.md) — webview interaction model, `curation.json` schema, standalone image-candidate path, multi-agent launch rules
 - [`recolor.md`](recolor.md) — palette-swap bake (`variants/`), report schema, colourway adopt
-- [`layer-tracks.md`](layer-tracks.md) — optional rig / track / composite contract; the `layers/` sibling artifact tree and why a composite is never a `frames/` row or a request state
 - [`pixel-unfake.md`](pixel-unfake.md) — `fit`/`pixel_unfake` behavior + plain-twin bake decision
 - [`directional-anchor-workflow.md`](directional-anchor-workflow.md) — directional/45° anchor chains that name the `raw/` anchors §3 resolves into chips

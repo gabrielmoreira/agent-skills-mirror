@@ -6,14 +6,14 @@ description: >
   wire pointer events, and group draws with render groups. Use when building or
   debugging PixiJS v8 — when the user mentions PixiJS, Pixi, Application, app.stage,
   Container, Sprite, Assets.load, app.ticker, or eventMode. Pins the v8 async
-  init() API.
+  init() API (examples checked against 8.22).
 ---
 
-# PixiJS 8.21 Rendering
+# PixiJS 8.22 Rendering
 
-Set up and structure a PixiJS **8.21** application: the async `Application`, asset
+Set up and structure a PixiJS **8.22** application: the async `Application`, asset
 loading via `Assets`, the `Container`/`Sprite` scene graph, the ticker loop,
-pointer events, and render groups. Pins the 8.21 API (async `init`, unified
+pointer events, and render groups. Pins the 8.22 API (async `init`, unified
 `Assets`, `eventMode`).
 
 ## When to use
@@ -168,11 +168,13 @@ app.stage.addChild(background);
 
 ## Pitfalls
 
-- **Blank canvas / "app.stage is undefined"** → you didn't `await app.init()`, or you
-  configured the constructor. In v8 the constructor is empty; all options go to
-  `init()`. `app.renderer`/`app.canvas`/`app.screen` are `undefined` until the
-  `init()` promise resolves.
-- **`app.view` is undefined** → v8 renamed it to `app.canvas`.
+- **Blank canvas, or `TypeError` reading `canvas`/`screen` of undefined** → you didn't
+  `await app.init()`, or you configured the constructor. In v8 the constructor is
+  empty; all options go to `init()`. `app.stage` exists right away, but
+  `app.renderer` is `undefined` until the `init()` promise resolves, so `app.canvas`
+  and `app.screen` throw before then.
+- **`app.view` logs a deprecation warning** → v8 renamed it to `app.canvas`; the old
+  getter still returns the canvas for now.
 - **Porting v7 code** → `Loader`/`loader.add` → `Assets.load` (the `Loader` class is
   gone); synchronous `new Application({...})` → empty constructor + async `init()`
   (options in the constructor are ignored with a deprecation warning, not an error);
@@ -190,6 +192,13 @@ app.stage.addChild(background);
   `'dynamic'` for objects that move under a stationary cursor).
 - **Drag stops at the object's edge** → `pointermove` fires only while the pointer is
   over the object in v8; use `globalpointermove` for drag/global tracking.
+- **Right-click opens the browser menu over the game** → PixiJS does not block it.
+  From 8.22, listen for `contextmenu` on the object and call
+  `event.preventDefault()`; cancelling `rightdown`/`rightclick` does not stop the menu.
+  On older 8.x, add a native `contextmenu` listener to `app.canvas` instead.
+- **`addChild` on a `Sprite`/`Graphics`/`Text` logs a deprecation warning** → in v8
+  only `Container`s should hold children; put the sprite and its children side by side
+  in a `Container`.
 - **`Texture.from(url)` returns a blank/undefined texture** → in v8 it only reads the
   Assets cache; `await Assets.load(url)` first, then use the returned `Texture`.
 - **WebGPU features error out** → `preference` is a hint. If the backend is

@@ -34,13 +34,15 @@ Editor-time gameplay/iteration is not packaging.
    stats/console for testing) vs **Shipping** (all optimizations, debugging tools stripped — for
    release). `DebugGame`/`Debug` are for debugging engine/game code and aren't for distribution;
    `DebugGame` isn't available for Blueprint-only projects.
-3. **Understand cook vs package.** **Cooking** converts assets to the target platform's format
-   and packs them into `.pak` files. **Packaging** bundles the compiled executable + cooked
-   content into a standalone, distributable set of files. Packaging runs a cook as part of it.
+3. **Understand cook vs package.** **Cooking** converts assets to the target platform's format.
+   **Staging/packaging** copies the compiled executable + cooked content into a standalone,
+   distributable folder, with content in container files (`.pak`, plus `.utoc`/`.ucas` when
+   **Use Io Store** is on, which is the default). Packaging runs a cook as part of it.
 4. **Package from the editor:** the **Platforms** menu → choose the platform (e.g. Windows) →
    set the Binary Configuration → **Package Project** → pick an output folder.
 5. **Or build from the command line** with the Unreal Automation Tool (`RunUAT BuildCookRun`)
-   for repeatable/CI builds.
+   for repeatable/CI builds. The **Project Launcher** (Platforms → Project Launcher) saves the
+   same build/cook/stage/deploy choices as reusable launch profiles.
 6. **Tune Packaging settings** (Project Settings → **Packaging**): which maps/directories to
    cook, full-rebuild, compression, and whether to build all maps.
 7. **Validate assets before packaging when UnrealEditor-Cmd is available.** Run
@@ -73,7 +75,9 @@ RunUAT BuildCookRun \
 ```
 
 `RunUAT` lives in `Engine/Build/BatchFiles/` (`RunUAT.bat` on Windows, `RunUAT.sh` on
-macOS/Linux). Drop `-allmaps` and pass `-map=Map1+Map2` to cook a subset.
+macOS/Linux). Drop `-allmaps` and pass `-map=Map1+Map2` to cook a subset. UE 5.8 adds
+experimental Windows on Arm game builds: `-clientarchitecture=arm64` (or `arm64+x64` for both
+executables side by side); the editor itself is not supported on Arm64 in 5.8.
 
 ### 3. Cook only (no packaging), e.g. to refresh content
 
@@ -88,11 +92,23 @@ RunUAT BuildCookRun -project="C:/Path/MyGame.uproject" -noP4 \
   cooked). Set it in Maps & Modes and ensure it's included in the cook.
 - **Shipping a Development build** — Development keeps logging/console/stats and is slower; ship
   **Shipping**. Conversely, Shipping strips `UE_LOG`/console, so debugging a Shipping-only issue
-  needs Development or `Test`.
+  needs Development or `Test`. A Shipping build has no console `quit`, so the game needs its own
+  exit option.
 - **A referenced map/asset is missing at runtime** — it wasn't cooked. Add it to the Packaging
   settings' maps/directories to cook, or cook all maps.
-- **Build fails on the platform** — the platform SDK/toolchain isn't installed (Windows build
-  tools, Android SDK/NDK, console SDKs). Install the platform's prerequisites.
+- **Build fails on the platform** — the platform SDK/toolchain isn't installed or is too old.
+  For UE 5.8 on Windows that means Visual Studio 2022 17.14+ (2026 recommended), MSVC 14.38+
+  and Windows SDK 10.0.22621.0+; macOS needs Xcode 15.2+. Check the release notes' Platform SDK
+  table for other targets. Console packaging also requires a source build of the engine, not
+  the Launcher build.
+- **`Saved/Cooked/<Platform>` has no `.uasset`/`.uexp` files** — in UE 5.8 Zen Server is the
+  cooked output store by default (unless the project turned it off in Packaging settings). The
+  folder only holds a small `ue.projectstore` marker and the data lives in the Zen data
+  directory. Staging still writes `.pak`/`.utoc`/`.ucas` to the staging folder; ship that
+  folder, not `Saved/Cooked`. For team and CI machines Epic recommends
+  `LimitProcessLifetime=false` under `[Zen.AutoLaunch]` in `DefaultEngine.ini` so `zenserver`
+  is not started and stopped on every step; make sure your build automation tolerates that
+  long-running process.
 - **Expecting Blueprint Nativization** — it was **removed in UE5**; don't rely on it for
   performance. Profile and move hot logic to C++ (`unreal-cpp-gameplay`) instead.
 - **First cook is very slow** — shaders and all assets cook from scratch; subsequent cooks are
@@ -101,8 +117,11 @@ RunUAT BuildCookRun -project="C:/Path/MyGame.uproject" -noP4 \
 ## References
 
 - Primary docs: "Packaging Your Project"
-  (`https://dev.epicgames.com/documentation/en-us/unreal-engine/packaging-your-project`) and the
-  Build Configurations / `BuildCookRun` references.
+  (`https://dev.epicgames.com/documentation/en-us/unreal-engine/packaging-your-project`), the
+  Build Configurations / `BuildCookRun` references, "Zenserver as Cooked Output Store"
+  (`https://dev.epicgames.com/documentation/en-us/unreal-engine/using-zen-storage-server-as-cooked-output-store-for-unreal-engine`)
+  and the Platform SDK table in the UE 5.8 release notes
+  (`https://dev.epicgames.com/documentation/en-us/unreal-engine/unreal-engine-5-8-release-notes`).
 
 ## Related skills
 

@@ -119,6 +119,7 @@ On success, read `[0].outputValues`.
 - Bind a block property to runtime data with `{!$attrs.<attrName>}`. `<attrName>` MUST match a property name in `schema.json`.
 - Inside a `forEach`, reference the loop variable instead — e.g. `"text": "{!$item.name}"`. See `references/widget-meta-directives.md`.
 - A binding may be a **formula expression** instead of a bare field reference. See `references/widget-formulas.md` for the full supported-function list, syntax, and gotchas.
+- **Localization:** only when the user asks for localized or translated text (or names Custom Labels / `$Label`), write static, user-visible strings as Custom Label references — `{!$Label.c.<LabelName>}`. See `references/widget-labels.md`.
 
 ---
 
@@ -131,28 +132,7 @@ On success, read `[0].outputValues`.
 | `action/openLink` | synchronous | `url` (string). Optional `target` (`_blank`\|`_self`, default `_blank`) | Opens a URL |
 | `action/sendMessage` | asynchronous | `content` (string) | Posts a new user message back to the agent and earns a fresh turn |
 
-```json
-{
-  "definition": "tile/button",
-  "attributes": {
-    "label": "Button Label",
-    "variant": "primary",
-    "actions": { "click": [ { "definition": "action/sendMessage", "attributes": { "content": "content" } } ] }
-  }
-}
-```
-
-```json
-{
-   "definition": "tile/button",
-   "attributes": {
-      "label": "Button Label",
-      "variant": "primary",
-      "actions": { "click": [ { "definition": "action/openLink", "attributes": { "url": "https://www.example.com", "target": "_blank" } } ] }
-   }
-}
-```
-
+See `references/widget-actions.md` for complete `sendMessage` and `openLink` button JSON.
 
 **A `tile/button` with no `actions` attribute renders disabled** — a button exists to trigger an action, so always attach a `click` action to a button meant to be interactive.
 
@@ -175,16 +155,7 @@ These conventions cover widget *structure* — how blocks are grouped and stacke
 
 ## Styling Best Practices
 
-Widgets express *intent*, not pixels. Each surface provides a default look and feel; brand/theme overrides apply automatically.
-
-- **Style semantically.** Use `variant`, `size`, and other enum-typed attributes (`primary`, `destructive`, `success`, `warning`). Do not pin literal colors or pixel values.
-- **One primary action per visible group.** At most one `tile/button` with `variant: primary`. Use `secondary` or `destructive` for additional actions (see the `tile/button` schema for the full variant enum).
-- **Every `tile/button` needs a `click` action.** See *Actions* above — an action-less button renders disabled.
-- **One `h1` per widget.** Use `h2`/`h3` for sub-section headings, `body` for prose, `caption` for helper text.
-- **Use semantic state variants on state-bearing blocks** (`tile/badge`, `tile/callout`).
-- **Accept schema defaults for `gap`, `size`** unless there is a specific reason to override.
-- **Don't pin `width`** unless a content constraint requires it.
-- **Use the Lucide icon set.** Pass the Lucide name (`"check"`, `"alert-circle"`); other icon libraries are not supported.
+Style semantically (variants, not literal colors or pixels), one primary button per group, one `h1` per widget, Lucide icons only. Read `references/widget-styling.md` before assigning variants, sizes, or icons.
 
 ---
 
@@ -198,7 +169,7 @@ Widgets express *intent*, not pixels. Each surface provides a default look and f
 
 3. **Select blocks.** Choose one block per widget-spec property, plus structural primitives from *Layout Best Practices*.
 
-4. **Get block schemas (REQUIRED — do NOT skip).** Call the `getUiComponentSchemas` invocable action for the selected blocks. Review property metadata. **If `isSuccess` is `false`, `componentSchemas` is empty, or any entry has `success: false`, do not use that block — re-select a different one from step 2's results; if none works, STOP and surface the error. Never improvise from existing widgets in the project.**
+4. **Get block schemas (REQUIRED — do NOT skip).** Call the `getUiComponentSchemas` invocable action for the selected blocks. Review property metadata, including each property's `default` — omit any attribute whose value would equal it (see `references/widget-styling.md`). **If `isSuccess` is `false`, `componentSchemas` is empty, or any entry has `success: false`, do not use that block — re-select a different one from step 2's results; if none works, STOP and surface the error. Never improvise from existing widgets in the project.**
 
 5. **Build the UEM tree (example reads REQUIRED — do NOT skip).** First, identify which patterns match the widget spec and read each matching example file from this skill's own `examples/` directory (`<skill-root>/examples/`):
 
@@ -207,11 +178,14 @@ Widgets express *intent*, not pixels. Each surface provides a default look and f
    | Single object (no iteration) | `<skill-root>/examples/single-object.json` |
    | Any list iteration (root-level array, nested list, or list embedded in a single-object widget) | `<skill-root>/examples/list-with-foreach.json` |
    | Conditional rendering (`if` bound to a boolean or formula) | `<skill-root>/examples/conditional.json` |
-   | Computed values, text/number transforms, or `if` driven by a formula (not a bare boolean field) | `<skill-root>/examples/formulas.json` |
+   | Computed values, text/number transforms, locale-formatted numbers/currency/dates, or `if` driven by a formula (not a bare boolean field) | `<skill-root>/examples/formulas.json` |
+   | The user asked for localized / translated text (Custom Labels) | `<skill-root>/examples/localized-labels.json` |
 
    A spec may match multiple patterns (e.g. a list of items where some items render conditionally reads both `list-with-foreach.json` and `conditional.json`). **Read every matching example, and only those — do not skip the read because the pattern feels familiar.**
 
    **Before writing any formula**, read `references/widget-formulas.md` in full — it is the authoritative list of supported operators and functions; do not improvise a function name or operator that isn't documented there.
+
+   **Before writing any `$Label` reference**, read `references/widget-labels.md` in full.
 
    Then:
    - Map each widget-spec property to a block property; preserve spec order.
@@ -264,6 +238,8 @@ Widgets express *intent*, not pixels. Each surface provides a default look and f
 9. **Self-validate.** Before reporting, run the checks and report each result individually (`pass` or `fail (<reason>)`). Do **not** summarize as a single "all passed" line — list every check so a reviewer can spot a silent skip.
 Run every check in `references/widget-bundle-validation.md`.
 
+10. **Report labels.** If the widget uses `$Label`, end the response with the label report described in `references/widget-labels.md`.
+
 ---
 
 ## Rules / Constraints
@@ -281,27 +257,25 @@ Run every check in `references/widget-bundle-validation.md`.
 
 ## Gotchas
 
-| Issue | Resolution|
-|---|---|
-| `getUiComponentSchemas` returns a partial-failure entry | Pick a different block from `discoverUiComponents`; do not silently continue without a schema|
-| Body references `{!$attrs.foo}` but `foo` is not under `schema.json` `properties.attributes.properties` | Add `foo` to `schema.json` `properties.attributes.properties` OR remove the body reference|
-| Output written outside `<pkgDir>/uiWidgets/<widgetName>/` | `<pkgDir>` = `<packageDirectories[].path>/main/default` (see `references/widget-bundle-layout.md`). Dropping the `main/default/` segment is the common cause of widgets landing at `force-app/uiWidgets/...` instead of `force-app/main/default/uiWidgets/...` |
-| `if` bound directly to a raw string or number relies on truthiness and is unreliable | Bind to a `lightning__booleanType` property, or use a formula comparison that evaluates to boolean|
-| `tile/button` renders but does nothing when clicked | No `actions.click` entry was set — an action-less button renders disabled by design. Add one (see *Actions* above)|
-| Using `action/sendMessage` for pure navigation, or `action/openLink` when the agent should respond | `action/openLink` is synchronous and does not consume a turn; `action/sendMessage` is asynchronous and earns a fresh turn. Pick the one matching the intended UX|
+Known failure modes and fixes (partial schemas, unresolved bindings, wrong output path, `if` truthiness, dead buttons, action choice): see `references/widget-gotchas.md`.
 
 ---
 
 ## Reference File Index
 
-| File | When to read|
-|---|---|
-| `references/widget-meta-directives.md` | For `forEach` / `forItem` (iteration) and `if` (conditional rendering), including nested loops|
-| `references/schema-from-lightning-type.md` | When `lightningTypeSchema` is provided; how to derive the widget `schema.json` from an Apex-backed Lightning Type|
-| `references/widget-bundle-layout.md` | Folder layout, `-meta.xml` shape, `<pkgDir>` resolution rules|
+| File | When to read                                                                                                                                                                        |
+|---|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `references/widget-meta-directives.md` | For `forEach` / `forItem` (iteration) and `if` (conditional rendering), including nested loops                                                                                      |
+| `references/schema-from-lightning-type.md` | When `lightningTypeSchema` is provided; how to derive the widget `schema.json` from an Apex-backed Lightning Type                                                                   |
+| `references/widget-bundle-layout.md` | Folder layout, `-meta.xml` shape, `<pkgDir>` resolution rules                                                                                                                       |
 | `references/widget-bundle-validation.md` | Step 9 — the checks to run before reporting |
-| `references/widget-formulas.md` | Supported formula functions and operators|
-| `examples/single-object.json` | Single-object pattern (root binding via `{!$attrs.X}`, no iteration)|
+| `references/widget-formulas.md` | Supported formula functions and operators, including locale format functions (`FORMATNUMBER`, `FORMATCURRENCY`, `FORMATDATE`, …)                                                                                                                                           |
+| `references/widget-labels.md` | Localization — `$Label` syntax, naming and reuse, allowed attributes, combining with data, creating labels, and the label report |
+| `references/widget-actions.md` | Complete `tile/button` JSON for `action/sendMessage` and `action/openLink` |
+| `references/widget-styling.md` | Variant, size, heading, and icon conventions |
+| `references/widget-gotchas.md` | Known failure modes and their fixes |
+| `examples/single-object.json` | Single-object pattern (root binding via `{!$attrs.X}`, no iteration)                                                                                                                |
 | `examples/list-with-foreach.json` | Any list-iteration case — root-level collections, nested lists, and lists embedded inside a single-object widget (e.g. iterating a `List<InnerClass>` inside an outer Apex payload) |
-| `examples/conditional.json` | Conditional pattern (`if` on `meta`, including `if` + `forEach` together)|
-| `examples/formulas.json` | Formula usage — text/arithmetic/date transforms, `IF`/`AND`/`NOT` driving both a `tile/text` and `meta.if`|
+| `examples/conditional.json` | Conditional pattern (`if` on `meta`, including `if` + `forEach` together)                                                                                                           |
+| `examples/formulas.json` | Formula usage — text/arithmetic/date transforms, locale format functions, `IF`/`AND`/`NOT` driving both a `tile/text` and `meta.if`                                                                          |
+| `examples/localized-labels.json` | Localization — `$Label` in a heading, caption, badge (`IF` choosing between labels), button label, and a label joined with data |

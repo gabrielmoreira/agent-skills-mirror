@@ -125,9 +125,10 @@ and resolve the remote default branch instead of assuming `main`.
 
 ## 3. Worktrees
 
-**Work inside an isolated worktree.** `moai worktree new <name>` creates a MoAI tree under
-`.moai/worktrees/`. Claude Code uses `moai cc -w <name>` for its native `.claude/worktrees/`
-location or `moai cc -w <absolute-path>` for a MoAI tree; `EnterWorktree(<path>)` and
+**Work inside an isolated worktree.** `moai worktree new <name>` creates one at
+`<MoaiHome>/worktrees/projects/<key>/<name>`. Claude Code uses
+`moai cc -w <name>` for its `.claude/worktrees/` or
+`moai cc -w <absolute-path>` for a MoAI tree; `EnterWorktree(<path>)` and
 `ExitWorktree` are Claude Code session tools. Codex app users select Worktree when starting a
 chat. Codex CLI uses `codex -C <absolute-worktree-path>` for a new session; an active Codex
 session operates through `git -C <absolute-worktree-path>` and direct file operations.
@@ -163,15 +164,14 @@ in place immediately after creating the tree: `git branch -m WT-<slug>`; re-entr
 name, and the worktree directory keeps the card id.
 
 **No main-variant worktree branches; local `main` stays synced.** Never create a `WT-*main*`
-branch or a worktree that holds `main` as an integration holder. `main` advances only through
-PR merges, and local `main` is re-synced with `origin/main` at every landing — a local `main`
-sitting ahead of the remote past a landing is a defect, not a buffer. Tooling must never detach
-the primary checkout's HEAD to take over a branch: a branch checked out in the primary is
-occupied, and the tool refuses rather than steals. (2026-10-21 incident: a `main` holder detached the primary, leaving it 559 commits behind.)
+branch or a worktree holding `main` as an integration holder. `main` advances only through PR
+merges and is re-synced with `origin/main` at every landing — a local `main` ahead of the remote
+past a landing is a defect. Tooling never detaches the primary checkout's HEAD to take over a
+branch: an occupied branch is refused, not stolen.
 
-**WT worktrees live only under `.moai/worktrees/`** — created by `moai worktree new`. `.claude/worktrees/`
-stays reserved for the Claude runtime's own ephemeral `agent-*` isolation trees (behavior unchanged); a
-runtime tree adopted for card work is renamed to `WT-` in place and stays where its creator put it.
+**WT worktrees live only under `.moai/worktrees/`** (`moai worktree new`). `.claude/worktrees/` is
+reserved for the runtime's ephemeral `agent-*` trees; a runtime tree adopted for card work is
+renamed to `WT-` in place and stays put.
 
 **Three traceability carriers are mandatory**: the dispatch's `card:` field, the card id in every commit message on the branch, and the
 card id in the evidence path (`.moai/reports/<card-id>/verdict.md`).
@@ -205,12 +205,7 @@ observation, not one made in this run: a verdict citing it names the key and `re
 from the reuse notice and lists "output not re-observed" under Gaps — a reused result is a Gap,
 not a Claim — and a claim that needs verbatim output runs the command directly.
 
-**A CodeRabbit row in `gh pr checks` is not evidence that a review ran** — the status reads
-`success` and prints `pass` identically whether or not one did. Count the row only when BOTH hold:
-(1) `gh api "repos/$repo/commits/$head_sha/status"` reports the `CodeRabbit` context with
-`state == "success"` and description `Review completed`; (2) a `Merge Risk:` line exists whose
-commit prefix matches the current `headRefOid`. Anything else is a gap, not a pass; `Review rate
-limited` means the review never started.
+**Native Codex review evidence.** Read the trusted Codex bot’s current-head review artifacts, not a successful check row. A completed code-review summary must bind the full head SHA, report no findings or unresolved findings, and agree with its clean receipt. Missing, failed, running, stale, malformed, or contradictory evidence withholds integration. Re-read the head and review artifacts before merge; preserve the separate functional and security checks.
 
 ---
 
@@ -373,3 +368,9 @@ section carries the binding summary.
 Rule 5 (WHAT) runs before Rule 1 (HOW). Where `workflow.autonomy.mode: contract`, a signed contract
 satisfies both — `contract-autonomy.md` § Gate disposition. The quality gate auto-detects the
 project language and runs its standard toolchain, skipping missing tools gracefully.
+
+## 14. MCP Server Reconnect (staleness)
+
+The `moai` MCP server keeps its startup build after a reinstall (stale results carry
+`stale_server: true`; write tools refuse). Reconnect: end the host session so `moai mcp-server`
+respawns, then re-read `tools/list`.

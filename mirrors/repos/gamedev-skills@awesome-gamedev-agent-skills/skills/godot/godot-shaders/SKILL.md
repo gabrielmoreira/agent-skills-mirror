@@ -116,19 +116,22 @@ $Sprite2D.material.set_shader_parameter("amount", 0.7)
 
 - **3.x → 4.x renames.** `SCREEN_TEXTURE` is removed — declare
   `uniform sampler2D x : hint_screen_texture;` and sample with `SCREEN_UV`. Color hints
-  `hint_color`→`source_color`; `hint_albedo`/`hint_white`→`source_color`;
-  `hint_range` stays. Depth/normal use `hint_depth_texture` / `hint_normal_roughness_texture`.
+  `hint_color`/`hint_albedo`→`source_color`; `hint_white`/`hint_black`→
+  `hint_default_white`/`hint_default_black`; `hint_range` stays. Depth/normal use `hint_depth_texture` / `hint_normal_roughness_texture`.
 - **Wrong output variable.** In `canvas_item` write `COLOR`; in `spatial` write `ALBEDO`
   (and `EMISSION`, `ALPHA`, `ROUGHNESS`, `METALLIC`). Writing `COLOR` in a spatial shader
   does nothing.
 - **Color uniforms without `source_color`** are treated as raw linear values and look
   wrong (washed/dark) because Godot won't sRGB-convert them.
-- **Transparency needs opt-in (3D).** For `ALPHA < 1.0` to blend, add a render mode or set
-  the material transparency; otherwise it's opaque/cut.
+- **Object drawn in the wrong order, casts no shadow, or skips SSAO (3D)** → the spatial
+  shader reads or writes `ALPHA`, which moves the whole material to the transparent
+  pipeline even if the value is always `1.0`. Don't touch `ALPHA` in opaque shaders; for
+  hard cut-outs also set `ALPHA_SCISSOR_THRESHOLD` (alpha-scissor stays in the opaque pass).
 - **Sampling outside [0,1] UV** without `repeat_enable` clamps. Add `: repeat_enable` to
   the sampler uniform for tiling/scroll.
-- **`TIME` is seconds since start** and keeps growing — wrap with `fract()`/`mod()` for
-  periodic effects to avoid precision drift.
+- **Effect jumps once an hour** → `TIME` (seconds since start, affected by `time_scale`, not
+  by pausing) wraps every `rendering/limits/time/time_rollover_secs` (3600 by default).
+  Pick periods that divide the rollover, or feed your own time through a uniform.
 - **`discard` is costly** on some hardware and breaks early-Z; prefer setting `ALPHA`/
   `COLOR.a` when you can.
 

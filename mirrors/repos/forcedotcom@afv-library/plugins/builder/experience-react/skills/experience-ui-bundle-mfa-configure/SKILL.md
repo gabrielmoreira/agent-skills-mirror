@@ -10,7 +10,7 @@ metadata:
       semver: ">=1.6"
     - tool: ["sf"]
       semver: ">=2.0.0"
-  accessCheck: "License.ExperienceCloudCustomerCommunityCustomerCommunityLogin"
+  accessCheck: "OrgPermissions.Networks"
   relatedSkills:
     - "dx-org-permission-set-assign"
     - "experience-ui-bundle-deploy"

@@ -48,11 +48,23 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   no way back from the shell on a set with no Wireless debugging, and switching USB debugging off
   stops `adbd` too, so plan one sitting rather than two: switch debugging off at the end, replug the
   adapter, and confirm Ethernet before handing the TV back. The launcher never needs debugging.
+  A Chromecast with Google TV 4K (`sabrina`, `UTTC.250917.004`) kept its USB Ethernet adapter with
+  USB debugging on: `eth0` stayed listed, and Ethernet connected with debugging still on. It printed
+  `host_connected=false` while the adapter was present as `eth0`, so there `host_connected=false` was
+  no proof the adapter was gone ([its list](../examples/google-chromecast-gtv-4k/debloat.txt)).
 - **Close port 5555 when you're done**: plaintext, and a shell for anyone on the LAN when `ro.adb.secure=0`. Steps in the README FAQ.
 - **The TV sits on a separate VLAN or IoT network** and `tools/tv.py` times out although debugging
   is on: the router keeps the computer from reaching it. Add a temporary firewall rule from your
   computer to the TV on tcp/5555 only, and remove it again when you close ADB. Opening the whole
   segment, or moving the TV onto the main network for good, undoes the reason it was separate.
+- **Nothing on the network answers while a VPN runs on the computer**, not even the router: `ping`
+  prints `General failure` on Windows and port 5555 times out, although the TV is on the same Wi-Fi and
+  `arp -a` lists it. Seen with Proton VPN's free plan on Windows 11, working on a Sankey SMART_TV (CVTE,
+  HiSilicon Hi3751V350, Android 12). The VPN client's firewall blocks the local network; marking the
+  Wi-Fi as a private network does not change that. Turn on the client's local-network option and
+  reconnect: Windscribe has Allow LAN traffic (Preferences > Connection) on its free plan, Proton VPN's
+  Allow LAN connections is for paid plans only. Or disconnect the VPN for the session. Turn the option
+  off again afterwards if you use public Wi-Fi.
 - **Windows PowerShell 5.1 adds a byte-order mark** to text piped into a program, which turned the
   first batch command into gibberish. `tv.py` now strips it, and the `.ps1` scripts pipe clean UTF-8.
 - **"Allow USB debugging?" comes back** although `adb devices` already works: `tv.py` used its own
@@ -67,6 +79,13 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
 - **Chained `pm` commands** (`pm disable a; pm disable b`) may silently stop after the first. Run
   one per shell call; `--batch` does exactly that.
 - **Large pushes hang** through the Python client. Use `tools/b64push.py` for APKs.
+- **`tools/tv.py reboot` never comes back.** `reboot` is a shell command, and adbd stops before it
+  sends the shell's last `CLSE`, so the client waits for a reply that cannot arrive: two minutes,
+  then an error, on a TCL 65C935 (`G05_4K_GB`, Google TV 11, AR2101,
+  [#995](https://github.com/Gathin23/cleanyourtv/issues/995)). A chain that reboots and then checks
+  something stalls there. Use `tools/tv.py --reboot`: it sends the reboot through ADB's own service
+  and returns once the request is accepted. The TV is still restarting at that point, so let it
+  answer again (`tools/tv.py --probe`) before the next command.
 - **A `logcat` without the line you expected is not proof that nothing happened.** On a TCL 55C728
   (`G05_4K_GB`, Google TV 11) the main buffer is 1 MiB (`persist.logd.size.main`), and the TV's own
   HDMI, ARC and media logging fills it in well under a minute; around power-on it held about 30
@@ -101,7 +120,7 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   ```sh
   tools/tv.py 'am start -n com.cvte.tv.hkcfac/.MainActivity'
   tools/tv.py 'input keyevent 218; input keyevent 218'
-  tools/tv.py reboot
+  tools/tv.py --reboot             # returns once ADB accepts it; wait for the TV to come back
   tools/tv.py 'settings put global hdmi_control_enabled 1'
   ```
   Press the real Input button afterwards and check the packages are back:
@@ -282,6 +301,10 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
 - **A reboot on setupwraith's recovery screen factory-reset the TV** (Xiaomi MiTV-MOSR4). Disable
   setupwraith before launcherx. If `mFocusedApp` shows `.RecoveryActivity`, re-enable launcherx
   first and do not reboot. [Notes](devices/xiaomi-mitv-mosr4.md).
+- **Home worked for days, then went black after a power cut** (Acer R4G and Panasonic 4KTV-3MUP,
+  MOKA `R4_GTV`, Google TV 14): the firmware re-enables setupwraith at every cold boot and its
+  `.RecoveryActivity` takes Home. `logcat | grep RecoveryActivity` shows it starting several times a
+  second. Re-enable launcherx as above. [Notes](devices/acer-r4g.md).
 - **Black screen at every boot after the launcher change, LED on, remote dead** (Vision
   2024VISION43STV, CVTE, Android 13: [its list](../examples/vision-2024vision43stv/debloat.txt) has the
   details). With file-based encryption (`getprop ro.crypto.type` says `file`) Android starts Home before
@@ -466,6 +489,16 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   workaround not working. An app started in the foreground is unaffected, and the side effect, that
   the home-screen channels only refresh while Stremio is open, costs nothing once the recommendation
   rows are disabled anyway.
+- **Every package in a batch is enabled again after the reboot that follows it**, seen on a Hisense
+  HiSmartTV A4 (xiaoyushan, Android TV 11, `RTT2.221108.001` / `00.00.01.18`). It looks like firmware
+  that resets the list at every boot, but it is the timing of the reboot. Android writes package state
+  to disk about ten seconds after a change (AOSP's `WRITE_SETTINGS_DELAY`). A `tools/tv.py reboot`
+  sent straight after `tools/disable.sh` came before that write, so the TV booted with the old state.
+  `dumpsys package <name>` showed `enabled=0` (default) for every package, and `pm list packages -d`
+  was empty. The same package disabled, given 12 seconds, then rebooted stayed at `enabled=3`
+  (disabled-user), and so did every batch applied that way. Wait 15 seconds after the last `pm` command
+  before rebooting, the same wait the tested lists already describe between batches. It is the
+  package-state counterpart of the lazy app-ops write above.
 - **A firmware update quietly undoes the cleanup.** The update installs over the cleaned-up system, so
   every listed package is enabled again, Home goes back to the stock launcher and new preloads
   appear that no list mentions. `tools/venv/bin/python -I tools/check.py <list>` reports the first
@@ -507,7 +540,10 @@ running back on the list the next time it starts; a helper turned off in Setting
   nothing even when the real Input button works.
 - **Which keycode** a dead button sends: `dumpsys window policy` lists the "global keys" Android routes
   to one app (on Google TV several go to launcherx, which is disabled), and Xiaomi firmware logs every
-  press as `handleAction<keycode>` in `logcat`. Put it in `input_key_keycodes` (opens Inputs) or
+  press as `handleAction<keycode>` in `logcat`. TCL Google TV firmware logs it as
+  `TclPhoneWindowManager: handleKeyBeforeQueueing, key = 4099, down = true` (a TCL 55C728, Google TV 11);
+  read the log straight after the press, as its main buffer there holds well under a minute.
+  Put it in `input_key_keycodes` (opens Inputs) or
   `app_keys` (`keycode:package`, or `hold:keycode:package` for a long press), reinstall with
   `INPUT_KEY_SERVICE=1` and press the real button.
   A press that `logcat` reports as `KEY_UNKNOWN` or `KEY_PROGRAM` cannot be matched by keycode at all,
@@ -542,7 +578,10 @@ running back on the list the next time it starts; a helper turned off in Setting
   `accessibility_enabled 1` only on the path that also puts a missing helper back on the list, and here
   the list was complete. Write the flag back, then read the dump again; toggling the service off and on
   in Accessibility, which is what the owner did, brought the redirect back for that session. Whether the
-  flag survives the next reboot was not retested on that set, and what cleared it is not established:
+  flag survives the next reboot was not retested on that set, and what cleared it is not established.
+  On a TCL 65C655 Pro (`G03`, Android 11, [`examples/tcl-55c725`](../examples/tcl-55c725/README.md)) every
+  one of three reboots left the same state, and there writing the flag back alone bound nothing; clearing
+  `enabled_accessibility_services` and writing it back, as `build-and-install` does, did:
 
   ```sh
   tools/tv.py 'settings get secure accessibility_enabled'
@@ -674,8 +713,11 @@ they do not map, so they are not consuming the volume key. The same was reported
 alone (#944), where the empty list was not tried because it also unhooks the buttons the helpers were
 installed for. An onn 4K Streaming Box (`YOC`, Google TV 14, `URO4.260304.011.B1.15051976`) does the same with
 `HomeKeyService` alone; there `key_filter` false (config.xml or a theme) brought the repeat back with the helper
-still bound, so a helper kept for something other than keys need not cost it. Check the state first, do not
-rewrite it blind:
+still bound, so a helper kept for something other than keys need not cost it. A Hisense 75U75N (`hengshan`,
+Google TV 12, `STT2.230310.002`) with a CEC soundbar does it with `HomeKeyService` alone, and its log shows where
+the repeat goes: the filter hands volume keys to the window policy first, Hisense's policy sends the CEC step and
+consumes the key, so no helper sees it and nothing repeats (the G09 note has the log). Check the state first, do
+not rewrite it blind:
 
 ```sh
 tools/tv.py 'settings get secure enabled_accessibility_services'
@@ -713,3 +755,8 @@ tools/tv.py 'settings put global private_dns_mode opportunistic'
 The other failure mode reads differently: when the TV itself says "No internet", the resolver is down
 or unreachable, and the same command restores it. What the optional resolver does, and what it costs,
 is in the README's "Can it block ads inside apps too?".
+
+When you report how an app does on your TV, say how far it got, because each step can fail on its
+own: installed, opened, usable with the physical remote, signed in, and played a title with sound.
+Reaching the login screen is not playback. Quote the app's full error code (Netflix's `UI-800-3`,
+for example) rather than "doesn't work", since that is what the app's own help pages look up (#1008).

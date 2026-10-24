@@ -50,6 +50,18 @@ class Sequence:
 A Selector is the mirror image: it advances on `FAILURE`, returns on `SUCCESS`
 or `RUNNING`, and resets its index when a child succeeds.
 
+Memory has a cost: while `MoveTo` is `RUNNING`, this Sequence skips
+`CanSeePlayer`, so the guard keeps chasing a player it lost. And a priority
+Selector that resumes its running child never re-checks the higher branches, so a
+running Patrol would block Attack forever. Keep the two roles apart:
+
+- **Priority selectors are reactive**: tick from child 0 every frame, and when a
+  higher child takes over, tell the previously running child to stop (an
+  `abort()`/`reset()` that cancels its move or animation).
+- **Sequences of actions keep memory**, but either re-check their guard
+  conditions each tick (a *reactive sequence*) or let the action fail itself when
+  its precondition no longer holds.
+
 ## Leaf examples
 
 ```gdscript

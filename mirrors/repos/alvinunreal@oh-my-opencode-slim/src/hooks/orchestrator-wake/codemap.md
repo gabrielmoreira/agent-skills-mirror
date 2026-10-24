@@ -11,22 +11,19 @@ job board is never consulted. Progress/reservation state is process-global so
 independently created hook instances share one-flight and the two-wake
 no-progress cap.
 
-On v2 hosts (hostFlavor 'v2' from the client shim) the scheduler runs in a
-children-driven degraded mode: no todo/children/status surfaces exist there,
-so children are enumerated via `session.list({parentID})` (event-tracked
-fallback), the wake condition is children without a terminal `outcome`
-(staleness-bounded at 3× the interval), and the wake prompt is delivered with
-`delivery: 'queue'`. Config: `orchestratorWake.mode` ('auto' | 'todo' |
-'children', default auto) and `orchestratorWake.periodicWakeEnabled`
-(default true; the config loader derives false on v2 hosts when no layer
-configures the key — the native background notifier owns first-terminal
-delivery there, so only event-driven wakes and their timer-based retries
-run by default). The v1 code path is unchanged.
+On v2 hosts (hostFlavor 'v2' from the client shim) the plugin creates NO wake
+scheduler at all (council 2026-10-23): the host's native background notifier
+owns terminal delivery — steer reaches a busy parent at its next step
+boundary, restart recovery re-delivers from the durable KV job marker, and
+the durable inbox dedupes by message ID — and child permission/question asks
+are a host-UI boundary the host does not route to the parent agent. Every
+`orchestratorWake` config key is v1-only and warns as ignored on v2; asks
+stay discoverable via `task_status` pull. The v1 code path is unchanged.
 
 ## Design
 
 - **Scheduler** (`index.ts`): `createOrchestratorWakeScheduler(ctx, options)`
-  returns `{ event, observeChatMessage, triggerStoppedJobRecovery, suppress }`.
+  returns `{ event, observeChatMessage, triggerStoppedJobRecovery, triggerCompletedJobPublication, suppress }`.
   - Tracks per-session local state (`generation` symbol, timer, continuous
     idle flag, and archive suppression) only; progress lives in the process
     gate.
@@ -95,6 +92,16 @@ run by default). The v1 code path is unchanged.
     bypasses the wake condition, as on v1). Queued facts are revalidated by
     task ID + generation before delivery; the bounded detail queue emits an
     overflow signal instead of silently losing excess recovery state.
+  - `triggerCompletedJobPublication`: one-shot push for a LATER terminal
+    publication (rev>1) that the host's native first-publication notifier
+    does not cover. It rides the same bounded delta queue as the stopped-job
+    recovery (cap `COMPLETED_JOB_QUEUE_CAP`, `COMPLETED_JOB_WAKE_CHUNK` per
+    wake, overflow pointer to `task_status`) instead of the terminal-
+    publication wake, which drops on a busy parent and on the per-parent
+    throttle. The delta body is `<completed-job>` (alias, task, state,
+    result); the run fence (task, generation, terminal revision) rides the
+    delivered part's metadata, never the prompt body, so parent-history
+    observation retires exactly that run.
   - `triggerChildInputWaitWake`: coalesces asks for 250 ms before evaluation so
     host/UI auto-replies can settle first. Resolved asks are pruned; empty
     batches cancel their timers. Duplicate asks retain the original deadline.
@@ -107,6 +114,10 @@ run by default). The v1 code path is unchanged.
     Parent deletion, archive/suppression and instance disposal clear timers.
   - `observeChatMessage`: real external user activity rearms the no-progress
     cap and records the observed model for continuation prompts.
+- **Delta queues**: one shared bounded-queue shape (`makeDeltaQueue`) backs
+  the stopped-job recovery, the completed-job push, and the child-input
+  ask. Per-kind policy (cap, chunk, blocker trigger, actionability
+  predicate) is construction-time only.
 - **Gate** (`wake-gate.ts`): Process-local reservation/progress store shared
   via `globalThis` + `Symbol.for` (`oh-my-opencode-slim.orchestrator-wake-gate`):
   - `tryBeginWakeEvaluation` / `releaseWakeEvaluation` / `retryAfterWakeEvaluation`:

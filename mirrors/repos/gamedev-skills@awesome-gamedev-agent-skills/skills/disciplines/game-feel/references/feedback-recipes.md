@@ -41,13 +41,18 @@ or a third-party tween package if the project already uses one. Keep the *curve 
 same regardless of tool.
 
 ```csharp
-// Unity 6.3 LTS: a minimal eased scale "pop" in a coroutine (no external deps).
+// Unity 6.3 LTS: an eased scale "pop" in a coroutine (no external deps).
+static float EaseOutBack(float k) {                     // 0 -> 1, peaks ~10% past 1
+    const float c1 = 1.70158f, c3 = c1 + 1f;
+    float m = k - 1f;
+    return 1f + c3 * m * m * m + c1 * m * m;
+}
+
 IEnumerator Pop(Transform t, float dur = 0.18f) {
-    t.localScale = new Vector3(1.3f, 0.7f, 1f);            // squash on the event
-    for (float e = 0; e < dur; e += Time.deltaTime) {
-        float k = e / dur;
-        float back = 1f + 2.7f * Mathf.Pow(1 - k, 2) * (k - 0); // overshoot-ish
-        t.localScale = Vector3.Lerp(t.localScale, Vector3.one, k * k);
+    var squash = new Vector3(1.3f, 0.7f, 1f);            // squash on the event
+    for (float e = 0f; e < dur; e += Time.deltaTime) {
+        // Unclamped, so the overshoot past Vector3.one survives the lerp.
+        t.localScale = Vector3.LerpUnclamped(squash, Vector3.one, EaseOutBack(e / dur));
         yield return null;
     }
     t.localScale = Vector3.one;
@@ -68,7 +73,7 @@ IEnumerator Pop(Transform t, float dur = 0.18f) {
   0.15 s heavy). Optionally freeze only the attacker+target, not the whole world.
 - **Anticipation & follow-through:** a tiny wind-up before a big action and a settle after read
   as weight; this is animation, not code (engine animation skill).
-- **Chromatic/▒vignette/zoom punch:** post-process nudges for big moments; keep brief.
+- **Chromatic/vignette/zoom punch:** post-process nudges for big moments; keep brief.
 
 ## 4. Importance tiers (keep the whole game proportional)
 
@@ -85,6 +90,10 @@ feeling either dead (under-juiced) or exhausting (everything maxed).
 
 - **Reduce screen shake** (scale trauma output by a 0–100% setting, default ~60–80%).
 - **Reduce/disable flashing** (photosensitivity) — replace white flashes with a static tint.
+  Even with flashing on, keep any large-area flash at or under three flashes in any one-second
+  window ([WCAG 2.3.1](https://www.w3.org/WAI/WCAG22/Understanding/three-flashes-or-below-threshold.html)
+  general flash threshold; [Xbox Accessibility Guideline 118](https://learn.microsoft.com/en-us/xbox/accessibility/xbox-accessibility-guidelines/118),
+  Photosensitivity).
 - **Reduce camera motion** — cut shake roll and zoom punches.
 
 These pair with `game-ui-ux` (settings menu) and `input-systems` (accessibility section).
@@ -95,6 +104,7 @@ These pair with `game-ui-ux` (settings menu) and `input-systems` (accessibility 
   one-shot; `Engine.time_scale` + `ignore_time_scale` timer; shake on `Camera2D.offset`.
 - **Unity 6.3 LTS:** coroutines + `SmoothDamp`/curves (or a tween package); `ParticleSystem.Play()`;
   `Time.timeScale` + `WaitForSecondsRealtime`; shake via `CinemachineBasicMultiChannelPerlin`
-  amplitude/frequency driven by `trauma^2` (see `camera-systems`).
+  amplitude/frequency driven by `trauma^2`, or `CinemachineImpulseSource.GenerateImpulse()` for
+  one-off hits (see `camera-systems`).
 - **Web (Phaser/Pixi/three):** tween via the engine/library tween; `this.cameras.main.shake()`
   in Phaser; `requestAnimationFrame`-driven eases elsewhere.

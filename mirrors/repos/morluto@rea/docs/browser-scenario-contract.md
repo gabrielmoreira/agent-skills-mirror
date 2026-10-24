@@ -15,22 +15,32 @@ there is no separate origin allowlist or request-interception layer. Environment
 settings (including service workers blocked by default), empty storage, and a
 final sanitized URL capture are supplied by default. Set
 `environment.service_workers` to `allow` when the application requires them.
+The connected service-worker policy owner retains its exact CDP transport
+through discovery, attachment and restoration. Failed admission preserves its
+primary diagnostic when socket cleanup also fails; later policy cleanup retries
+that retained transport and clears cleanup uncertainty only after close succeeds.
 For attached browsers, `block` rejects captures when the selected page or its
 frames are controlled by a service worker or already have a registration,
-including after navigation. Existing caller registrations are never removed.
+including after navigation. Policy checks bracket each artifact capture, including
+the final step. If an external worker takes control while artifacts are being
+captured, REA rejects the capture and retains the completed artifacts in
+`details.diagnostics.collected_artifacts`; they do not establish policy-compliant
+completion. Existing caller registrations are never removed.
 Navigation can run destination code before a newly discovered worker is rejected;
 that rejection does not roll back browser effects. REA removes its owned
 future-document scripts, restores live frame methods, then disconnects.
 Add secret declarations, storage seeds, and additional artifact or event
-capture only when needed. Action, secret, and storage counts are not capped.
+capture only when needed. Missing environment-backed secrets fail as input errors before browser acquisition, naming the declaration and required variable. An explicitly set empty string is a resolved value. Action, secret, and storage counts are not capped.
 Duration, action, and navigation timeouts remain separate from CDP command
 deadlines. `command_timeout_ms` (default 20000; omit it to keep that default
 and leave it out of Evidence) bounds launch startup, the connect-over-CDP
 handshake, target lookup, environment commands, and storage CDP commands,
-including replies from attached child targets. Set it in the scenario JSON.
+including replies from attached child targets. It also bounds the initial
+`start_url` navigation through the load event; a redirect or replacement
+navigation cannot leave startup waiting indefinitely. Set it in the scenario JSON.
 `capture-browser-scenario` has no `--command-timeout-ms` option.
 It does not change action `timeout_ms`, `wait_for_timeout.duration_ms`, or
-navigation. Service-worker restoration keeps a fixed 5000 ms grace and does
+action navigation. Service-worker restoration keeps a fixed 5000 ms grace and does
 not inherit a raised `command_timeout_ms`. CDP discovery stays on its own
 fixed deadline. When service workers are blocked, the registration check
 before discovery has its own fixed 10000 ms deadline; `command_timeout_ms`
@@ -211,8 +221,9 @@ validation.
 
 Cookies are installed before the initial navigation. Local storage entries are
 seeded once per browser storage partition; session storage entries are seeded
-once per origin in each top-level browsing context. Seeding occurs before the
-first document scripts for that area. An origin first reached by a later action
+once per origin in each instrumented top-level browsing context. Seeding occurs
+before the first document scripts for the selected page and its instrumented
+frames. An origin first reached by a later action
 receives its seed on that first visit. Application updates, deletions, and
 empty values then persist across later navigations in the same area; a new
 scenario starts with its own seeds. Partitioned frames can receive separate
@@ -220,6 +231,17 @@ local storage seeds even when they share an origin. The pre-script mechanism
 uses CDP debugger instrumentation. The observer resumes only pauses whose top
 frame belongs to its private seed script; page breakpoints and `debugger`
 statements remain under the attached debugger client's control.
+If Chromium leaves the private isolated world's origin empty, REA looks up
+that exact frame's reported security origin before selecting a seed. It does
+not infer the origin from a frame URL or serialized storage key. Unresolved
+frame identity or security origin fails initialization rather than silently
+running with an unknown initial state.
+Popup discovery does not establish that its first script was paused by the
+selected page's storage instrumentation. When non-cookie seeds are declared
+and a popup is discovered, the capture retains completed observations and
+marks `storage` coverage missing, with equality ineligible. This applies even
+if popup lifecycle events were not selected. Popup first-script storage
+initialization is not currently guaranteed.
 
 The result is Evidence with an initial state followed by one record per
 declared action. Each step reports action status, elapsed time, sanitized URLs,
@@ -366,8 +388,16 @@ Proxy-Authorization, Cookie, and Set-Cookie values are null with
 and their standard URI/form or JSON-escaped representations are replaced without
 decoding unrelated binary bytes. Other encodings are not interpreted. Digests describe the
 retained representation after redaction.
+The selected body-byte limit also bounds that retained representation after
+secret expansion, before base64 serialization. Credential header values are
+discarded before retained-header allocation accounting; their names and null
+projections still count. The transport/API has already materialized incoming
+bodies and headers, so these retained limits do not bound producer-side input
+allocation.
 
-Only completed responses are read. At the end of the final step, observation
+Only completed responses are read. The producer-observed terminal state is
+recorded independently of whether its event metadata fit the retention budget. An omitted completion event cannot turn a
+finished transaction into an unfinished one. When the final step ends, observation
 stops; requests still in flight emit `request-unfinished`, and their observed
 responses have explicitly unavailable bodies. Already-admitted content reads
 drain before browser cleanup. At most 16 reads run at once; queued work is
@@ -458,6 +488,11 @@ selection. Captures with different selections report event evidence as unknown
 with a recovery instruction, even when no selected family emitted an event.
 Captures written before this field existed omit it, so their event evidence is
 also unknown.
+Retained-capture readers admit that omission without deriving a selection from
+observed events; other artifact families remain comparable. Current capture
+producers still require and publish the selected event families. Manifest,
+environment and script-export readers share the retained-capture admission
+rules and preserve the same missing fact.
 
 Network normalization also commits the removal of capture-local transaction IDs,
 attribution to the requesting step, and unordered transaction comparison. These

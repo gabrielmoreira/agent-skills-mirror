@@ -95,6 +95,8 @@ for field names, display filters, decode-as syntax and pass semantics. Invalid
 fields or filters return producer diagnostics. An empty result does not prove
 absence of traffic outside the selected recording, filter or read range.
 Dissector results are observations, not independently verified device behavior.
+TShark may resolve a selected alias to its canonical field name in packet output;
+the report preserves the exact requested selection and the producer's output key.
 
 Evidence includes source path/digest/size, exact selections, typed packet fields,
 configured and resolved executable paths/digests/full version banner, arguments and stderr. Warnings remain

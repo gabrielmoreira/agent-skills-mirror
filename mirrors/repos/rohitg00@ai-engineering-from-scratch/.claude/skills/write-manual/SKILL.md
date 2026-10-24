@@ -56,7 +56,7 @@ The worked example has 7 parts, 28 sections, 7 reference sections, and 31 figure
 10. **Write one section at a time.** Use the section shape below. Cut every listing from a capture file.
 11. **Draw each figure from a capture.** Follow the figure must-haves below and the sibling `blueprint-figure` skill.
 12. **Build and audit.** Fix every finding until the audit prints `TOTAL 0`. See [references/audit.md](references/audit.md).
-13. **Commit one section per commit.** Include its figures and the captures it adds.
+13. **Size commits by judgment.** A section with its figures and the captures it adds is a good unit.
 
 ## Plan the contents from the specification
 
@@ -196,7 +196,7 @@ Outside the repo, build your own audit from [references/audit.md](references/aud
 
 ## Commit rules
 
-- Commit one section per commit, with its figures and the captures it adds.
+- Size commits by judgment. A section with its figures and the captures it adds is a good unit. A small fix across sections can be one commit.
 - Use the message `feat(manual/<id>): <section slug>`.
 - Never commit generated output. Inside the repo, that is `site/manual-<id>.html`, `site/manuals.html`, and `site/manuals-data.js`.
 - Keep `status` at `draft` until the manual is complete. A `ready` manual needs a `README.md`.
@@ -213,7 +213,7 @@ Outside the repo, build your own audit from [references/audit.md](references/aud
 - [ ] Every conflict has a register id, and each section that meets it links that id.
 - [ ] Every figure SVG is used by a document and matches its source script.
 - [ ] The audit prints `TOTAL 0`.
-- [ ] Each commit holds one section, with the message `feat(manual/<id>): <section slug>`.
+- [ ] Commits are sized by judgment, with messages such as `feat(manual/<id>): <section slug>`.
 
 ## Files
 

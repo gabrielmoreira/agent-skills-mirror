@@ -90,10 +90,16 @@ def can_craft(recipe, inv, tech, station):
 
 def craft(recipe, inv, tech, station):
     if not can_craft(recipe, inv, tech, station): return False
+    if not inv.can_add_after_removing(recipe["inputs"], *recipe["output"]):
+        return notify("No room for the result")    # check space BEFORE consuming anything
     for item, n in recipe["inputs"].items(): inv.remove(item, n)   # consume all, then add
     inv.add(*recipe["output"])                                     # atomic: no partial craft
     return True
 ```
+
+The space check must count the slots the inputs free up (crafting 3 wood into 1 plank can
+succeed in a full bag). If space is short, refuse, or drop the result on the ground; never
+consume the inputs and then fail the add.
 
 ### 3. Gathering gated by tool tier
 
@@ -114,8 +120,9 @@ def harvest(node, tool):
   with clear warnings and a recovery path (Pattern 1).
 - **Grind without a ladder** → gathering that never unlocks new gathering. Each tier must open
   the next (better tool → new node → new resource → better craft).
-- **Non-atomic crafting** → inputs consumed but output not granted on an edge case. Validate
-  first, then consume-and-add as one step (Pattern 2).
+- **Non-atomic crafting** → inputs consumed but output not granted on an edge case, most often
+  a full inventory. Validate inputs and space first, then consume-and-add as one step
+  (Pattern 2).
 - **Inventory with no limits** → no logistics tension and no reason for a base/storage. Cap by
   slots or weight.
 - **Permanently depleting the world** → players strip the map and quit. Respawn nodes or

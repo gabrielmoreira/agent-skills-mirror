@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/internal-comms/../../../business-operations/skills/internal-comms/SKILL.md

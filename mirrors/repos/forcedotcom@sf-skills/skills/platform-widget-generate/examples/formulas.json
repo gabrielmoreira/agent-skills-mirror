@@ -140,6 +140,23 @@
 
             {
               "definition": "tile/column",
+              "attributes": { "gap": "xs" },
+              "children": [
+                { "definition": "tile/text", "attributes": { "text": "9. Locale format functions", "variant": "h3" } },
+                { "definition": "tile/text", "attributes": { "text": "FORMATNUMBER: {!FORMATNUMBER($attrs.price)}  |  precision 0: {!FORMATNUMBER($attrs.price, 0)}" } },
+                { "definition": "tile/text", "attributes": { "text": "FORMATCURRENCY: {!FORMATCURRENCY($attrs.price)}" } },
+                { "definition": "tile/text", "attributes": { "text": "FORMATPERCENT: {!FORMATPERCENT($attrs.winProbability)}  |  precision 1: {!FORMATPERCENT($attrs.winProbability, 1)}" } },
+                { "definition": "tile/text", "attributes": { "text": "FORMATDATE: {!FORMATDATE($attrs.departureDate)}  |  long: {!FORMATDATE($attrs.departureDate, 'long')}" } },
+                { "definition": "tile/text", "attributes": { "text": "FORMATDATETIME: {!FORMATDATETIME($attrs.departureDateTime)}  |  medium: {!FORMATDATETIME($attrs.departureDateTime, 'medium')}" } },
+                { "definition": "tile/text", "attributes": { "text": "FORMATTIME: {!FORMATTIME($attrs.departureDateTime)}  |  long: {!FORMATTIME($attrs.departureDateTime, 'long')}" } },
+                { "definition": "tile/text", "attributes": { "text": "{!'Fare with tax: ' & FORMATCURRENCY($attrs.price * (1 + $attrs.taxRate))}", "variant": "h4" } }
+              ]
+            },
+
+            { "definition": "tile/spacer", "attributes": { "size": "sm" } },
+
+            {
+              "definition": "tile/column",
               "meta": { "if": "{!AND($attrs.isPriority, $attrs.price > 500)}" },
               "children": [
                 {
@@ -147,7 +164,7 @@
                   "attributes": { "gap": "sm", "align": "center" },
                   "children": [
                     { "definition": "tile/icon", "attributes": { "name": "lightning", "color": "warning" } },
-                    { "definition": "tile/text", "attributes": { "text": "9. Formula-driven meta.if: priority fare over $500 — expedited handling" } }
+                    { "definition": "tile/text", "attributes": { "text": "10. Formula-driven meta.if: priority fare over $500 — expedited handling" } }
                   ]
                 }
               ]
@@ -160,7 +177,7 @@
               "meta": { "forEach": "{!$attrs.flights}", "forItem": "$flight" },
               "attributes": { "gap": "xs" },
               "children": [
-                { "definition": "tile/text", "attributes": { "text": "10. forEach + per-row formula", "variant": "h3" } },
+                { "definition": "tile/text", "attributes": { "text": "11. forEach + per-row formula", "variant": "h3" } },
                 {
                   "definition": "tile/row",
                   "attributes": { "justify": "between", "align": "center" },

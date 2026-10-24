@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/chaos-engineering/../../../engineering/skills/chaos-engineering/SKILL.md

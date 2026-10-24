@@ -18,7 +18,7 @@ ulw-research/
     ├── report-tools.mjs             # CLI entry + dispatcher (COMMANDS, run, main)
     ├── report-tools-commands.mjs    # one function per subcommand
     ├── cli-support.mjs / entry-guard.mjs   # flags, CliError, exit codes, atomic JSON, symlink-safe entry check
-    ├── contracts.mjs                # frozen vocabulary: DEFECT_CODES (severity lives only here), enums, manifest + repair-state validators
+    ├── contracts.mjs                # frozen vocabulary: DEFECT_CODES (severity lives only here), FIDELITY_CODES, enums, manifest + repair-state validators
     ├── outcome.mjs                  # outcome.json manifest, deliverable state, verify, closing briefing
     ├── repair-tracker.mjs           # bounded repair decisions (attempts, plateau, oscillation, wall clock, integrity codes)
     ├── html-lite.mjs / entities.mjs # HTML tokenizer, selector paths, prose text
@@ -32,7 +32,7 @@ ulw-research/
 
 ## SURFACE
 
-`node "$SKILL_DIR/scripts/report-tools.mjs" <command>`: `check`, `layout-probe`, `repair decide`, `outcome init`, `outcome set`, `outcome gate`, `outcome render`, `outcome state`, `outcome verify`, `outcome finish`, `outcome briefing`, `format-extract`, `--help --json`. Exit codes: `0` pass, `1` semantic failure (blockers, a failed verify, a blocked repair), `2` usage or IO. JSON on stdout, one summary line on stderr. Flags per command: `references/deliverable-phase.md` section 10.
+`node "$SKILL_DIR/scripts/report-tools.mjs" <command>`: `check`, `layout-probe`, `repair decide`, `outcome init`, `outcome set`, `outcome gate`, `outcome render`, `outcome state`, `outcome verify`, `outcome finish`, `outcome briefing`, `format-extract`, `--help --json`. Gates recorded by `outcome gate`, in order: `static`, `fidelity`, `layout`, `visual`, `proofread` (`fidelity` is recorded `not_run` until the fidelity verifier ships). Exit codes: `0` pass, `1` semantic failure (blockers, a failed verify, a blocked repair), `2` usage or IO. JSON on stdout, one summary line on stderr. Flags per command: `references/deliverable-phase.md` section 10.
 
 ## CONVENTIONS
 

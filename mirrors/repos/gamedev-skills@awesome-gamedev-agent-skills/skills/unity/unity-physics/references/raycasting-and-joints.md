@@ -40,8 +40,9 @@ Tips:
 - `RaycastHit.normal` is the surface normal at the hit — use it to align decals or compute
   slope angle (`Vector3.Angle(hit.normal, Vector3.up)`).
 - Prefer the `NonAlloc` / buffer overloads in per-frame code to avoid garbage.
-- A ray starting *inside* a collider does not report that collider unless
-  `Physics.queriesHitBackfaces` / start outside it.
+- A ray starting *inside* a collider never reports that collider; start the ray outside it.
+  (`Physics.queriesHitBackfaces` is a different setting: it only lets queries hit back-face
+  triangles of mesh colliders.)
 
 ## Joints
 

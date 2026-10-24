@@ -18,6 +18,17 @@ xerj corpus index  xerj-storage
 Group by problem domain, not by language. A corpus that contains everything
 retrieves like a search engine with no query.
 
+## Harvesting a subdirectory
+
+A repo entry may set `"paths"` to a list of directories inside that
+repository, for example `"paths": ["data/osv"]`. `xerj corpus add --from`
+sparse-checks out only those directories, so a pin of a repository that also
+contains reports, generated data, or a module tree does not become the
+corpus. Omit `paths` to harvest the whole pin. The field is written back
+into `corpus.json`, and a later `--from` of that file rebuilds the same
+limited tree. Each entry is a relative directory (`data/osv`); absolute
+paths, `..`, and globs are refused.
+
 ## The `review` block
 
 The `licence` field is what the detector read from the checkout. The `review`

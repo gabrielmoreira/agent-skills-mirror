@@ -43,8 +43,22 @@ edge/held cleanly so the controller can apply them.
   keyboard/mouse, a specific gamepad type, or touch. Switch on-screen button
   glyphs and tutorials to match.
 - Don't assume a single gamepad layout — Xbox, PlayStation, and Switch differ in
-  face-button labels. Map to abstract glyphs (South/East/West/North) and localize
-  the icon set.
+  face-button labels. Map to abstract **positions** (South/East/West/North) and
+  pick the icon set per controller. SDL3 names buttons this way
+  (`SDL_GAMEPAD_BUTTON_SOUTH`…, with `SDL_GetGamepadButtonLabel` and
+  `SDL_GetGamepadType` for the printed label and family), and so does Godot 4.7,
+  whose desktop joypad driver is SDL3: `JOY_BUTTON_A` is the bottom button —
+  Xbox A, PlayStation Cross, Nintendo B. Read the family from
+  `Input.get_joy_name()` / `Input.get_joy_info()` (vendor and product IDs).
+- **Steam Input** may sit between the pad and your game: when it is on for a
+  controller, the game sees an emulated Xbox-style pad, so name and ID checks
+  report Xbox even for a PlayStation or Switch pad and you show the wrong
+  glyphs. Ask Steam for the real type (`ISteamInput::GetControllerForGamepadIndex`
+  + `GetInputTypeForHandle`; Godot exposes the index as `steam_input_index` in
+  `get_joy_info()`), or fetch Steam's own art (`GetGlyphPNGForActionOrigin` /
+  `GetGlyphSVGForActionOrigin`).
+- Godot 4.7's SDL3 joypad driver covers Windows, Linux and macOS; on Android and
+  Web `get_joy_info()` is empty, so fall back to `get_joy_name()` there.
 - Support **hot-swapping**: a player may start on keyboard and pick up a
   controller mid-session. Re-resolve prompts on device change without a restart.
 

@@ -48,6 +48,6 @@ the tool/version and generation input in the asset manifest.
 
 - [Khronos glTF registry and 2.0.1 specification](https://registry.khronos.org/glTF/)
 - [Godot 4.7 importing 3D scenes](https://docs.godotengine.org/en/4.7/tutorials/assets_pipeline/importing_3d_scenes/index.html)
-- [Unity model import settings](https://docs.unity3d.com/Manual/class-ModelImporter.html)
+- [Unity 6.3 Model tab import settings](https://docs.unity3d.com/6000.3/Documentation/Manual/FBXImporter-Model.html)
 - [Unreal Engine importing static meshes](https://dev.epicgames.com/documentation/en-us/unreal-engine/importing-static-meshes-using-fbx-in-unreal-engine)
-- [three.js GLTFLoader](https://threejs.org/docs/#examples/en/loaders/GLTFLoader)
+- [three.js GLTFLoader](https://threejs.org/docs/pages/GLTFLoader.html)

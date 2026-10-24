@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/zero-hallucination-coder/../../../engineering/zero-hallucination-coder/skills/zero-hallucination-coder/SKILL.md

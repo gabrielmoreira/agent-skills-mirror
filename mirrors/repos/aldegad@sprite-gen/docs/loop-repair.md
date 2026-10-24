@@ -1,6 +1,6 @@
 # Loop repair — RIFE in-betweens for jump frames, the jolt index, one cycle per set
 
-> Owns: Where RIFE runs and what it costs, which model and augmentation it runs with, how it is installed and what runs without it, jump-frame repair in `video-loop`, the flow reading (frames off a walk's way), the eased retime (a part that rushes on its way), the jolt index and its gate, cycle alignment across a direction set · Index: [docs/README.md](README.md)
+> Owns: Where RIFE runs and what it costs, which model and augmentation it runs with, how it is installed and what runs without it, jump-frame repair in `video-loop`, the flow reading (frames off a walk's way), the eased retime (a part that rushes on its way), the seam bridge (the wrap of a loop that is not a walk), the jolt index and its gate, cycle alignment across a direction set, the redrawn wrap of a pinned clip (`--wrap-blend`) · Index: [docs/README.md](README.md)
 
 A walk loop cut from a generated clip can look right in every still and still hitch when it
 plays: the video model redraws thin hair a little differently every frame, and now and then
@@ -69,7 +69,7 @@ cut before RIFE existed still cuts — and nothing is left unsaid:
 
 | Where | Default without RIFE | Asked for by name |
 |---|---|---|
-| `video-loop` jump repair (section 2) | `--repair auto`: a jump is cut as filmed, and each filmed ghost is given way to the clean frame beside it (its own `warning:` line). Where a jump is left, `jump_repair` reads `why`, `rife` (what was not found), `install` and `unmade` (the frames, neighbours and `off` of the group the flow search stopped at), and one `video-loop: warning:` line on stderr says the jump frame was not repaired. `applied` is false only where nothing was replaced | `--repair on`: fails with the install line |
+| `video-loop` jump repair (section 2) | `--repair auto`: a jump is cut as filmed, and each filmed ghost is given way to the clean frame beside it (its own `warning:` line). Where a jump is left, `jump_repair` reads `why`, `rife` (what was not found), `install` and `unmade` (the frames, neighbours and `off` of the group the flow search stopped at), and one `video-loop: warning:` line on stderr says the jump frame was not repaired. `applied` is false only where nothing was replaced. For the seam bridge, the wrap is cut as filmed: `jump_repair` reads `why`, `rife`, `install`, and `unmade` (the `frames`, `anchors`, and `line` of the run it stopped at). One `video-loop: warning:` line says no frame was made round the wrap and names `sprite-gen rife install`. | `--repair on`: fails with the install line |
 | `video-set` cycle alignment (section 4) | `--align-cycles auto`: the state is skipped and every loop keeps its own length; `cycle_align.<state>` reads `applied: false` with `why`, `rife`, `install`; the set report lists it under `warnings`; one `video-set: warning:` line | `video-cycle-align`: fails with the install line |
 
 A RIFE that is found and then fails (a binary that cannot reach Vulkan, say) is an error in every
@@ -228,7 +228,7 @@ below; a frame made is the whole picture at one time, so the legs take the time 
 and on every walker measured the loop keeps the flow repair). Before all of it, a cut two steps
 long whose wrap a part on its own beat leaves open has the frames beside its wrap made again between
 the clip's frames a cycle apart and its own ([the overlapped
-wrap](#the-overlapped-wrap--a-part-on-its-own-beat-that-no-cut-of-two-steps-closes) below).
+wrap](#the-overlapped-wrap--a-part-on-its-own-beat-that-no-cut-of-two-steps-closes) below). A loop of any other state is not read for its flow; where its wrap jumps, frames round it are made again ([the seam bridge](#the-seam-bridge-a-loop-that-is-not-a-walk-whose-wrap-jumps) below).
 
 | Rule | Value | Why |
 |---|---|---|
@@ -336,8 +336,7 @@ so does a filmed ghost between two clean frames under `--repair on`. Under `--re
 filmed ghost then gives way to the clean frame beside it (`no_proposal: "no interpolator"`), and
 only a jump left (`unmade`: the `frames`, `neighbours` and `off` of the group the search stopped at)
 sets `why`, `rife` and `install`.
-`--repair off` cuts the loop as filmed and records `jump_repair: {"applied": false, "why":
-"--repair off"}`. Other states are not touched (`"why": "not a gait state (…)"`).
+`--repair off` cuts the loop as filmed and records `jump_repair: {"applied": false, "why": "--repair off"}`. A loop of another state has its wrap read (the seam bridge, below); a cut played once is not touched (`"why": "not a gait state (...)"`).
 
 Until the flow reading picked the frames, the size reading did: a step whose change of coverage,
 over the whole box or the hair behind the body, was at least 1.4 times the loop's median remade
@@ -718,6 +717,52 @@ alone: nothing is read or made for it, `wrap_overlap` says so (`skipped`: "turne
 off)", no `tries`, `calls` 0) with the `warning:` line every skipped wrap has, and the gate refuses the cut
 as filmed, the loop failing on its seam as where every run is refused. The jump repair, the eased retime and
 the gate are as with it on; `--repair off` turns it off with the rest.
+
+### The seam bridge: a loop that is not a walk, whose wrap jumps
+
+A user expects an idle loop, jump, attack, or generic in-place action to be smoothed at its wrap like a walk. A walk's flow repair reads every frame against the line between its neighbours. An idle's own motion (a blink, an eye half shut, a mouth that opens) leaves that line too, so flow repair would remake those frames and take out the motion. A loop that is not a walk is therefore not read for its flow; its wrap alone is read, leaving the walk path unchanged.
+
+The seam bridge (`repair.seam_bridge`, driven from `loop.run_loop`) runs under `--repair auto` (the default) or `on` for any state that is not a gait (not walk or run). It runs on a cut that plays as a loop, and skips cuts played once (`--cycle once`, `once-return`, or an effect's lifetime), which retain `"why": "not a gait state (...)"`. A pinned clip (`--cycle pinned`) whose pin the gate refuses is skipped (`skipped`: "the pin does not close: the clip is refused on it"), because the clip is refused on its pin whatever its wrap shows. It runs after the anchor (`--anchor`) and the wrap blend (section 6), reads the wrap as blended, and runs before `cycle/`, the strip, the GIF and the WebP are written.
+
+| Rule | Value | Why |
+|---|---|---|
+| When | `--repair auto` or `on`; a state other than walk or run; a cut played as a loop; not a pinned clip whose pin the gate refuses | a cut played once (`--cycle once`, `once-return`, an effect's lifetime) needs no wrap; a clip refused on its pin is refused whatever its wrap shows |
+| The reading | On the frames as they play, cropped to their union box, on the seam gate's analysis thumbnail (`loop.cell_features`, the reading `loop.wrap_on_cells` uses); the wrap step is compared with the mean of the three steps either side of it (`repair.SURGE_AROUND`, 3) | a loop whose steps are uneven (a body moving only in whole pixels, with many zero-step frames) would otherwise read an ordinary wrap as a jump |
+| Not a jump | The wrap ratio is at most `--seam-max` (default 2.0), or the wrap step is at most `loop.PIN_NOISE_MAX` (0.005) | `skipped`: "the wrap reads as a step of the loop"; a wrap step at most 0.005 is re-render noise on a near-still loop where large ratios show nothing; nothing is made, no interpolator is looked for, and the loop is the bytes `--repair off` gives |
+| Drawn on twos or threes | The cut is drawn on twos or threes (`cycle_drawings.hold` over 1, read on the cut) | `skipped`: "drawn on twos or threes: a frame made round the wrap would split a drawing"; nothing is made, no interpolator is looked for, and the loop is the bytes `--repair off` gives |
+| Too short | A loop under 12 frames (`repair.BRIDGE_MIN_FRAMES`) | `skipped`: "a loop of N frames, under 12: no steps either side of the widest stretch"; under 12 frames cannot fit the widest stretch and three steps either side without sharing; nothing is made, no interpolator is looked for, and the loop is the bytes `--repair off` gives |
+| How many frames and which | One frame, then two, then four (`repair.BRIDGE_WIDTHS`, fewest first), ceil(m/2) frames before the wrap and floor(m/2) after (`repair.bridge_run`): for a 48-frame loop, frame 47; frames 47 and 0; frames 46, 47, 0, and 1 | testing the fewest frames first keeps as much filmed motion as possible while centring the repair across the wrap |
+| The straight line | The straight line between the two anchors (their thumbnails mixed in equal steps); rejected if any step along that line exceeds `--seam-max` times the mean of the three steps either side (`rejected_for: "line"`) | stops before making frames if even an even blend across the anchors jumps |
+| How each frame is made | Made by RIFE between the anchors either side of the run, at its own time between them (`repair.between_time`) | the loop keeps its length and every frame its time |
+| Faults | Checked for smear, outline, ghost (ghost screen on the stretch and three frames either side, empty); `rejected_for: "fault"`. Frames with `crossfade` over 0.015 are kept with a `warning:` line | avoids taking interpolation artifacts, matching the shared policy of section 4, while keeping slight cross-fading inside outlines |
+| Taken | The first run where no frame has an interpolation fault and every step of the stretch is within `--seam-max` times the mean of the three steps either side (`rejected_for: "seam"` otherwise) | ends search on the smallest valid bridge; if none is taken, the filmed loop is kept for the seam gate to judge as before |
+| How many calls | At most 1 + 2 + 4 = 7 plain RIFE calls per loop | at most one call per frame across candidate widths |
+| Without RIFE | Under `--repair auto`, wrap is cut as filmed, `jump_repair` records `why`, `rife`, `install`, and `unmade`, and a warning line names `sprite-gen rife install`; under `--repair on`, fails with the install command | RIFE is looked for only when a frame is to be made |
+
+| Case | Wrap reading | Bridge action | Gate result |
+|---|---|---|---|
+| J = 2.6 | 2.65 against steps beside it | Bridged by one frame (frame 47, halfway between frames 46 and 0; stretch reads 1.65) | Passes at 1.55 on rendered cells (refused at 2.41 with `--repair off`) |
+| J = 5 | 4.63 against steps beside it | One frame: straight line reads 2.77, none made. Two frames: made, stretch reads 2.35, refused. Four frames (46, 47, 0, 1 at times 0.2, 0.4, 0.6, 0.8 between frames 45 and 2): stretch reads 1.85, taken | Passes at 1.84 (refused at 4.30 as filmed) |
+| J = 12 | 10.68 against steps beside it | Straight lines read 5.43, 3.76, 2.57; nothing made | Refused at 10.22 as before |
+| J = 1 (closed loop) | 1.10 against steps beside it | Not bridged; no interpolator looked for | Same bytes as `--repair off` |
+| Whole pixels (x = round(6 sin), closed loop) | 2.06 against loop mean step, 1.51 against steps beside it | Not bridged | Read by the bridge alone |
+| Near-still loop (shading patch) | 57 times steps beside it, wrap step is 0.00035 (under 0.005) | Not bridged | Read by the bridge alone |
+| Drawn on twos (J = 2.6) | 4.47 against steps beside it | Skipped: drawn on twos or threes | Refused at 3.00 as filmed |
+| Real RIFE (rife-v4.6 with augmentation, J = 2.6) | 2.65 against steps beside it | Closed by one frame without faults | Passes gate |
+
+Cost: at most seven plain RIFE calls per loop, one per frame. From the RIFE table in section 1 (a 960 x 960 frame on Modal `cpu=2`), a frame takes 4.3 to 6.2 s with no augmentation, and 44.0 to 60.5 s with `-x -z`. Seven frames take 30 to 43 s with augmentation off, and five to seven minutes with `-x -z`. A CPU host sets `SPRITE_GEN_RIFE_TTA=` (empty: no augmentation). The readings take little time, evaluating a few thumbnails and running the ghost screen on the stretch and the three frames either side rather than the whole loop.
+
+Limits:
+- Anchors up to five frames apart can tear a small part that a large part swings across, and no fault check above detects it (on the third walker of `tests/video/test_loop_overlap.py`, a big tail across a hand, the reading `rife.torn` names it; it costs 34 calls of the binary a frame and the bridge does not run it). The walk flow repair, over two or three frames, takes the same risk; that is why the bridge stops at four frames.
+- A wrap where only a small part changes (such as a mouth alone) reads as a step on the whole body thumbnail and is not bridged.
+- A blink or mouth movement inside the frames made is not kept: the frames made show the move between the anchors (at most four frames, or a sixth of a second at 24 fps).
+- A wrap that needs more than four frames to close is not bridged: the loop is refused by the gate as before; regenerate the clip.
+
+The report record stays `jump_repair` (so source projection and restoration, which read `jump_repair.replaced` and `jump_repair.facing`, read it as they read a walk's), with `reading: "seam"`, `limit`, `floor`, `around` (3), `widths` ([1, 2, 4]), `facing`, `replaced` (the frames made, in play order), `calls`, and `applied`. Where it read the wrap, it records `seam` (the wrap over the mean of the steps beside it), `wrap` (the wrap step itself), and `hold`. Where it was not tried, it records `skipped`. Each try in `tries` records `width`, `frames`, `anchors`, `line`, and where frames were made, `made` (per frame: `frame`, `t`, `proposal`, `faults`, `look`), `faults`, `look`, and `after` (the stretch's largest step over the mean of the steps beside it, read again), along with `outcome` (`accepted` or `rejected`) and `rejected_for` (`line`, `fault`, `seam`). Where a run was taken, it records `width` and `seam_after`. Where a frame was made, `interpolator` records `{"kind": "rife-ncnn-vulkan", binary, model, tta, binary_calls}` or `{"kind": "injected"}`.
+
+The CLI summary carries `jump_repair` with `reading`, `seam`, `replaced`, `seam_after` (and `why`) where the wrap was read as a jump. `video-set`'s item record for a loop left unrepaired for want of RIFE carries `seam` where a walk's carries `off_max_before`.
+
+Warning lines: where frames were made, one line names them, the anchors, and says to look at them in the loop or cut it with `--repair off`. Where the wrap jumps and nothing was taken, one line says which widths were tried and why each was refused, cut as filmed. Where RIFE was not found under `--repair auto`, one line says no frame was made round the wrap and names `sprite-gen rife install`. Where a frame made cross-fades two drawings inside its outline (`crossfade` over 0.015), it is kept and named in a `warning:` line.
 
 ## 3. The jolt index — reported on every walk, a gate only when asked
 
@@ -1552,10 +1597,10 @@ sprite-gen video-cycle-align --loop-dir set/front-walk/loop --loop-dir set/side-
   cannot be made leaves the set as it was. The first alignment also records the strip as cut,
   before anything is rewritten (`cycle_align.origin`: its file's sha256 — `follow.source.png`'s
   where a follow-through moved it —, cell size, scale, crop origin, `sample_indices`, each cell's
-  pixels by sha256, and the body's motion as `video-follow` reads it there, `reading`), and every
+  pixels by sha256, and the body's motion as `video-sway` reads it there, `reading`), and every
   later alignment keeps it as it is. A loop aligned before this record existed has none, and gets
   none: its cut is no longer there to read. With `cells_from` it lets a follow-through whose
-  regions were read on the cut be carried to the aligned loop (`video-follow --read-on`,
+  regions were read on the cut be carried to the aligned loop (`video-sway --read-on`,
   docs/video-pipeline.md section 6). Neither record changes a pixel of the strip, GIF or WebP.
 - **Frames between are kept for later passes** (`--between-cache DIR`): every frame RIFE makes between
   two source frames is stored in `DIR`. A later alignment given the same `DIR` takes a kept frame instead
@@ -1607,9 +1652,9 @@ only an item of a walk or run filmed in two or more directions is taken, any oth
 filming), or as `video-cycle-align --foot` on the set's loops. A foot given for an item that failed,
 or whose state was not aligned, is named in that state's `feet_unused` and a warning.
 Cutting a loop again with `video-loop` removes its `cycle.source/`, so the next alignment reads
-the new cut. An alignment also clears a follow-through (`video-follow`, which moved the old
+the new cut. An alignment also clears a follow-through (`video-sway`, which moved the old
 cells): `follow.source.png` and the strip's `follow` record are removed and the loop's row says
-`follow_cleared`; run `video-follow` again after it, with `--read-on` naming the strip the regions
+`follow_cleared`; run `video-sway` again after it, with `--read-on` naming the strip the regions
 were read on.
 
 How much RIFE that is, on the 2026-10-03 sets (the experiment's `finalize.py`): resampling to
@@ -1658,6 +1703,63 @@ this set.
 
 A side-by-side video of the takes as filmed and as this engine leaves them, the numbers, and the
 scripts that made them are kept with the experiment's material in the maintainer's notes.
+
+## 6. The redrawn wrap: a pinned clip whose last frame the model drew again
+
+When `video-loop --cycle pinned` cuts a clip generated with its first frame given to the video model as the last frame too, the cut retains every frame except the last. The pin gate checks that the last frame lands near the first on a small thumbnail and passes, because the pinned last frame holds the first frame's pose. The video model draws that frame again: softer or sharper, in another tone, or with hair strands a pixel over. Because the redraw remains, the wrap from the last cell back to the first shows this redraw as a single jump in sharpness, whereas every other step in the loop shows motion.
+
+The wrap blend (`video-loop --wrap-blend auto`, the default) takes the first frame's drawing back over the cut's last half second, applying only where the two ends differ by a redraw. Passing `--wrap-blend off` cuts as filmed, but the seam bridge (section 2) can still make frames round the wrap of a loop that is not a walk or run; for such a loop, pass `--repair off --wrap-blend off` for the earlier bytes. The step is implemented in `sprite_gen/video/wrap_blend.py` (`measure`, `gate`, `blend`, `apply`) and called from `loop.run_loop`. It runs on the frames as filmed after the anchor and after `source_projection`, before any repair reads the wrap, and before `cycle/`, the strip, the GIF and the WebP are written.
+
+| Rule | Value | Why |
+|---|---|---|
+| When | `--cycle pinned`, `--anchor none`, the pin gate passes, `--wrap-blend auto` | Idle and attack clips that `video-set` films pinned are cut this way. An anchor that moves the cells (`--anchor body`) puts them off the place the pinned frame holds, so they are not blended and the report says why. A pin the gate refuses fails the clip whatever its wrap shows, so it is not tried (the cut is written as filmed and the failure message is unchanged). Other cuts (auto, periodic, fixed, one-shot, once, once-return, lifetime) are not read and their report has no `wrap_blend`. |
+| The ruler (`measure`) | The first cell against the pinned last frame (the pinned frame cleaned as the cut's frames are: RGB under alpha 0 scrubbed, detached specks dropped), at full size, over the first cell's opaque inside (alpha 250 and up, eroded 3 px), composited on a dark ground (RGB 20, 16, 28), the mean of the largest channel difference; divided by the cut's median step read the same way (the wrap left out). This is the residual ratio. | The difference between the two drawings of one pose is the redraw itself; a sharpness measure such as the variance of the Laplacian does not separate this jump from the clip's own frame to frame changes in sharpness. The ruler reads one frame at a time, so a long cut at full size is never held whole. |
+| Not a redraw | Residual ratio at most `--seam-max` (default 2.0) | Nothing is done, the bytes are the same as `off`, and `wrap_blend.why` says so, because a pin that draws the first frame as it is needs nothing. |
+| The ramp | The last K cells, K = min(round(0.5 s x fps), floor(L / 4)) for a cut of L cells (12 at 24 fps); K under 2: nothing | Half a second takes the jump over a dozen ordinary steps; a short cut keeps three quarters of itself as filmed. |
+| The shape (`blend`) | The residual ramp: the difference e = first cell minus pinned frame, premultiplied RGBA, is added to the ramp cells: j/(K+1) of e on the j-th ramp cell (j = 1..K). Per pixel the ramp starts from the first ramp cell on which the pixel stands through to the end, and ramps over the cells left. | Each pose stays the cell's own; its drawing turns into the first cell's by the wrap. Mixing the ramp cells toward the first cell moves the pose as well as the drawing, producing ghost copies of moving parts. |
+| What the two ends hold apart (`gate`, the two ends) | Never ramped: a pixel is held where (a) after one softness match for the clip, the values one end holds lie more than 12 levels outside what the other end holds within 1 px, on a 7x7 mean or along a 7 px run (across, down or along either diagonal), over black or over white; or (b) presence: a value one end holds lies more than 12 outside the other end's 1 px range while the other end's own 1 px range is under half (kappa 0.5) of this end's, in any of seven channels (premultiplied RGBA and RGB over white), raw values, no window. The softness match (`equalize`) blurs the sharper end by 0, 0.35, 0.5 or 0.7 px, whichever brings the two ends nearest over the figure. | A ramp of the difference draws whatever the two ends hold in different places a second time. A redraw (a line drawn softer or half a pixel over) keeps a share of its range in the other frame; a line, a dot or a part moved 2 px or more does not, whatever its direction, length, spacing or width. The presence test has no window and no list of directions because an earlier gate with only (a) let a 1 px line at slope 1/3 through, thinning under 12 in the 7x7 mean and in every one of the four runs, and drew it twice. |
+| Over black and over white | Gate evaluated over both black and white grounds | A sprite lands on any ground. Over black alone, a silhouette's transparent neighbour (0, 0, 0, 0) puts every dark value in range: a dark strand against the silhouette that moved out on the transparent ground would be drawn twice. |
+| Ramp cell standing where pin stands (`gate`, each ramp cell) | Cell 7x7 mean difference to the pinned frame is within 1.5 x the redraw's + 2, and tests (a) without the softness match and (b) hold against the pinned frame; a pixel that does not stand on a ramp cell is not ramped on it | A part that is still moving inside the last half second (an arm coming down, a blink) is the filmed part. |
+| Widen and feather | What is held is widened 3 px and the weight is feathered with a 7x7 mean; a pixel whose weight is 0 is the filmed pixel, byte for byte | The 3 px widening is exactly the feather's reach (a 7x7 mean reaches 3 px), so a pixel the gate holds keeps weight 0 under the feather and no ramp seeps into it; the feather then lets the ramp fade out at the edge of what is held instead of stopping in a hard edge. |
+| The after check | The blend is used only where every step into and through the ramp is within the larger of the cut's own largest step and `--seam-max` x the median step, and the wrap shrinks. Otherwise the cut is written as filmed, `wrap_blend.after_check` is "refused", and a `video-loop: warning:` line says the wrap blend was not used, why, with the numbers. | A blend that steps more than the cut does trades the wrap's jump for a jump inside the loop. |
+| Wrap still over `--seam-max` after blend | Blended, and a `warning:` line says so with the share of the figure held as filmed | The blend passed the after check (no step past the cut's own, the wrap smaller), so it is kept; what the two ends hold apart is filmed and still jumps at the wrap, which the line names so a person looks at the wrap. |
+| Order in `video-loop` | After the anchor and after `source_projection` (which records the cut before the blend), on the frames as filmed, before any repair reads the wrap, and before `cycle/`, the strip, the GIF and the WebP are written | The blend reads where each cell stands against the pinned frame, so it runs on the frames as filmed, after the anchor has placed them; `source_projection` keeps the record of the cut before it; any repair that reads the wrap then reads the wrap the blend leaves, not the redraw's jump; `cycle/`, the strip, the GIF and the WebP all carry the same blended cells. |
+
+Mixing the ramp cells toward the first cell (the conventional wrap blend) moves the pose as well as the drawing, so a part that moves inside the ramp receives a translucent second copy. On a synthetic attack whose arm is raised until four frames before the pin, mixing toward the first cell lays a resting-arm ghost over the raised arm (128 levels from the ideal frame), and a synthetic eye blink near the end gives an eye ghost (133 levels). Adding only the residual difference e (first cell minus pinned frame) as j/(K+1) ensures each pose stays the cell's own while its drawing turns into the first frame's drawing by the wrap.
+
+The test character in `tests/video/test_wrap_blend.py` is a synthetic pinned idle of 73 frames (72 cells and the pin, K = 12 at 24 fps), 160 x 224, whose frames after the first are the model's drawing of it (another cloth texture, hair strands up to 0.6 px over, 0.5 px softer, another tone), so the pin, the ruler and the after check pass and the gate alone stands between a structure on it and the ramp. A flat figure has no redraw, so its cases are read on the gate and the ramp alone.
+
+| Case | Reading |
+|---|---|
+| Tone and 0.5 px softness redrawn, the character breathing 6 px | residual 7.24x the median step; wrap 7.31x to 0.57x; largest ramp step 1.56x against the bound 2.0x; only the 12 ramp cells, the strip, the GIF and the WebP differ from `off` |
+| The whole redraw, with a 1 px line of contrast 24 at slope 1/3 moved 8 px on a flat patch of the torso | wrap 19.90x to 4.26x; the line's pixels are the filmed bytes |
+| An arm raised until four frames before the pin | where the arm is 40 degrees or more from the pin's it is the filmed arm; on the last cell (20 degrees off) its fringe changes by 1 level at most |
+| A 14x14 part moved 2 to 64 px on the flat figure, or only in the first frame, or only from frame 6 | byte for byte |
+| A 10x10 part moved 2 to 32 px on the redrawn character, or only in one end | byte for byte, the rest blended |
+| The 14x14 part (contrast 120) moved 16 px on the flat figure, nothing else redrawn | residual 2.34x; the gate holds the part, the ramp does not shrink the wrap: cut as filmed, warning line |
+| A 1 px line of contrast 24, 48, 96 moved 2, 8, 32 px on the flat figure | byte for byte |
+| Stripes every 5 px redrawn 0.8 px over and swinging 3 px inside the ramp | the swing is filmed |
+| A dark strand against the silhouette moved 7 px out on the transparent ground | byte for byte; over black alone it would be ramped |
+| Dots of 1 to 3 px, dotted lines, a ring, a wave, a cross, an anti-aliased, a light and a one-channel line moved 8 px on a flat patch, a line only in the first frame or only from frame 6 | 2 levels at most (0 for most; 1 for the ring and the wave; 2 for the anti-aliased line) |
+| The slope 1/3 line over decode noise of 4 levels on every frame, a 4 level/px gradient, the widest softness match (0.7 px), static grain of 3, a 1 px checker of plus or minus 4 | 3 levels at most (0 or 1 measured); with the noise the median step rises and the ruler alone keeps that clip as filmed (residual 1.44x) |
+| A strand on the transparent ground off the silhouette moved 3 and 8 px | byte for byte |
+| The character sliding into the model's drawing over the whole clip (each step a 72nd of the redraw) | largest ramp step 6.66x against the bound 3.37x: not used, cut as filmed, warning line |
+| The idle-still fixture, whose pin draws the first frame as it is | residual 0.0x: nothing done, every output the same bytes |
+
+Cost: On a synthetic cut of 145 frames at 800 x 1120 (the test character scaled 5x), on an Apple M4 Max under a 1-minute load of about 15: the whole step takes 6.3 to 7.1 s, of which the ruler (every step of the cut at full size) takes 2.9 s. The pinned frame's grounds and 1 px ranges are computed once a clip; the K ramp cells are held as float RGBA (15 MB each at that size), one 7-channel ground and its 1 px range taking three 26 MB arrays a frame. No interpolator is called.
+
+Limits (what the gate reads as a redraw, and so ramps):
+1. A structure of contrast 12 or less, or one that does not stand 12 above its ground's own 1 px range: a faint part of contrast 8 changes by 7, of 11 by 10; a contrast 12 line by 11; on a 1 px checker of plus or minus 6 a contrast 24 line by 9 and a dotted line by 22.
+2. A move under 1 px in both x and y: a 14x14 part moved 1 px changes its edge column by 111; a 45 degree line moved (1, -1) by 22.
+3. Masking: where the other end has drawing of its own within 1 px of at least half this end's range (texture, an edge, a crossing structure): a 1 px line moved on the textured cloth keeps up to 36 levels (contrast 24), 7 (48), 3 (96), mostly hidden in the texture.
+4. Steep gradients: on 8 levels/px a contrast 24 line changes by 5 to 9, on 12 levels/px by 22.
+5. Noise only on the frames after a clean first frame (6 levels): 8 to 10 on a line. The pipeline does not make this case: the cut's first frame is the clip's own decoded first frame.
+6. The softness match blurs 0.7 px at most: a line moved on a redraw 1.0 px softer than the first frame keeps 8.6 (contrast 24), 1.9 (48), 0.6 (96).
+7. Redrawn hair strands are held by the presence test, so the wrap shrinks less than a ramp of everything would: on the synthetic idle the wrap ends at 7.35x where ramping all but the window test's holds would end at 2.2x.
+
+The loop report records `wrap_blend` on every pinned cut: `applied`, `why`, `K`, `cells` (the cells changed), `residual_ratio`, `wrap_ratio_before`, `wrap_ratio_after`, `ramp_step_max_ratio`, `bound_ratio` (all over the median step), `pose_share` (the share of the figure the two ends hold apart), `presence_share` (of the figure, what the presence test holds), `never_settled` (the share of the figure that never stands where the pin stands in the ramp), `equalize` (`sigma`, `blurred`: "still", "pin" or "none"), `after_check` ("passed" or "refused"), and `seconds`. Where it was not tried, `applied` is false and `why` records the reason ("--wrap-blend off", "--anchor body moves the cells off the place the pinned frame holds", or "the pin does not close: the clip is refused on it"). Other cuts (auto, periodic, fixed, one-shot, once, once-return, lifetime) are not read and their report has no `wrap_blend`. Strip metadata (`<name>.strip.json`) carries `wrap_blend: {cells, K}` where it applied, and the CLI summary carries `wrap_blend` (`applied`, `why`, `residual_ratio`, `wrap_ratio_before`, `wrap_ratio_after`). Because `source_projection` records the cut before the blend, reading a strip whose cells were changed by the blend is reported as processing that cannot be reproduced (`source-processing-unsupported`).
+
+A `video-loop: warning:` line is emitted under two conditions. When the after check refuses the blend because a step into or through the ramp exceeds the bound or the wrap does not shrink, the cut is written as filmed, `wrap_blend.after_check` is set to "refused", and the warning states that the wrap blend was not used, why, and the measured numbers. When the wrap remains over `--seam-max` after blending because the two ends hold a part apart, the blend is applied anyway and a warning line reports that condition along with the share of the figure held as filmed.
 
 ## Related
 

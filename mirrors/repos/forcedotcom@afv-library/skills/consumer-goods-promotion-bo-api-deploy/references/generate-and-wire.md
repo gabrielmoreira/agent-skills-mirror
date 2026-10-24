@@ -25,7 +25,29 @@ Both phases run only on a green Phase 4 and a confirmed Phase 5 interview.
    for the running user. Any failure → stop, print the failing field + FLS
    remediation.
 
-3. **Generate the Apex class from the interview.** The generator takes the
+3. **Clean the deploy staging directory (mandatory on every invocation).**
+   Before writing the new `<stepName>.cls` to
+   `./.promotion-bo-api-deploy/force-app/main/default/classes/`, delete every
+   `*.cls` and `*.cls-meta.xml` already in that directory. This runs on EVERY
+   invocation, not just the second one — the generated class is the only
+   artifact that should live under `classes/` for the next deploy. Rationale:
+   a leftover `.cls` from a prior step run that is no longer known to the
+   source-tracking manifest makes `sf project deploy start` (step 6) evaluate
+   the deploy with `rollbackOnError: true` and silently roll back the *entire*
+   batch — including the new class — while the CLI still surfaces
+   `"created": true` for the intended component. The user sees apparent
+   success; the class is not actually in the org. Do NOT wipe `setup-data/`
+   under the same staging root (Phase 3a's retrieved read-only static resource
+   lives there) and do NOT wipe `sfdx-project.json` or `interview.json`.
+   Concretely:
+
+   ```bash
+   mkdir -p ./.promotion-bo-api-deploy/force-app/main/default/classes
+   find ./.promotion-bo-api-deploy/force-app/main/default/classes \
+     -maxdepth 1 -type f \( -name '*.cls' -o -name '*.cls-meta.xml' \) -delete
+   ```
+
+4. **Generate the Apex class from the interview.** The generator takes the
    schema captured in the interview (Phase 5.1) and emits a namespace-agnostic
    Callable in the same shape as the reference example
    (`references/reference-example-set-comment-value.md`). Rules (do not deviate):
@@ -50,19 +72,9 @@ Both phases run only on a green Phase 4 and a confirmed Phase 5 interview.
        <stepName>.cls-meta.xml
    ```
 
-   **Deploy-directory hygiene — clean stale `.cls` files before writing the new
-   step.** When the skill is invoked more than once against the same working
-   tree (a second custom step, an interview re-run), any prior step's `.cls` /
-   `.cls-meta.xml` left behind in `force-app/main/default/classes/` is picked
-   up by `sf project deploy start` in step 5 below. If that stale file is no
-   longer known to the source-tracking manifest, MDAPI evaluates the deploy
-   with `rollbackOnError: true` and rolls back the *entire* batch — including
-   the new class — while the CLI still surfaces `"created": true` for the
-   intended component. The user sees an apparent success; the class is not
-   actually in the org. Before writing the new step, delete every
-   `*.cls`/`*.cls-meta.xml` under `./.promotion-bo-api-deploy/force-app/main/default/classes/`
-   that is not the class about to be generated. Do NOT wipe `setup-data/`
-   (Phase 3a's retrieved read-only static resource lives there).
+   The staging-dir cleanup (step 3 above) must have already run — the new
+   `.cls` is the only artifact that should land under `classes/` for the next
+   deploy.
 
    `sfdx-project.json`:
    ```json
@@ -81,13 +93,13 @@ Both phases run only on a green Phase 4 and a confirmed Phase 5 interview.
    </ApexClass>
    ```
 
-4. **Show the user the generated class + confirm.** Print the full
+5. **Show the user the generated class + confirm.** Print the full
    `<stepName>.cls` body and ask "Deploy this? [y/N]". `n` → save to
    `./.promotion-bo-api-deploy/` and exit; the user can hand-edit and re-run
    with `--interview-file` pointing at their tweaked answers, or drop their own
    `.cls` into the temp tree before re-invoking. `y` → deploy.
 
-5. **Deploy:**
+6. **Deploy:**
 
    ```bash
    sf project deploy start \

@@ -12,3 +12,4 @@ Report each check individually as `pass` or `fail (<reason>)`.
 - **`metaxml-elements`** — `<widgetName>.uiwidget-meta.xml` has root `<UiWidgetBundle>` and contains `<masterLabel>` (non-empty), `<description>` (non-empty), and `<widgetType>JSON</widgetType>`.
 - **`files-present`** — all three files exist at the resolved `<pkgDir>/uiWidgets/<widgetName>/` path.
 - **`button-actions-present`** — every `tile/button` in `<widgetName>.json` has an `actions.click` action node whose `definition` is `action/openLink` or `action/sendMessage`.
+- **`labels-valid`** — if the user did not ask for localization, `<widgetName>.json` contains no `$Label` (report `pass (not requested)`). Otherwise every `$Label` follows the rules in `references/widget-labels.md` and appears in the step 10 report.

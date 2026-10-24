@@ -41,9 +41,9 @@ with `roblox-ui`, `roblox-networking`, `roblox-characters`, `roblox-physics`, `r
    client logic in `StarterPlayerScripts`, per-character client logic in
    `StarterCharacterScripts`, UI templates in `StarterGui`, shared assets/modules/remotes in
    `ReplicatedStorage`, and secrets/server assets in server-only containers.
-6. **Test the actual risk.** Choose Play, Play Here, Run, Server & Clients, Device Emulator,
-   Controller Emulator, or scripted Studio testing based on the behavior. Inspect server and client
-   Output, not only the viewport.
+6. **Test the actual risk.** Choose Test, Test Here, Run, Server & Clients, Device Simulator,
+   Controller Emulator, Network Simulator, or scripted Studio testing based on the behavior.
+   Inspect server and client Output, not only the viewport.
 7. **Clean the experiment.** Remove temporary parts, test remotes, command-bar scripts, debug UI,
    prints, disabled duplicate scripts, placeholder assets, and tags/Attributes created only for
    diagnosis. Stop the session and confirm edit-mode hierarchy is clean.
@@ -115,14 +115,19 @@ Map the workflow onto the documented tools. Every call also takes a `studio_id`;
 | edit | `script_read`, `multi_edit` (creates the script when the path is new) |
 | run / verify | `execute_luau` (needs a `datamodel_type`: Edit, Client, or Server), `get_studio_state`, `start_stop_play`, `get_console_output`, `screen_capture` |
 | playtest | `subagent` (types `explore`, `playtest`), `character_navigation`, `user_keyboard_input`, `user_mouse_input` |
+| assets | `search_asset`, `insert_asset`, `generate_mesh`/`generate_material`/`generate_procedural_model` (+ `wait_job_finished`) |
 | Roblox's own docs/skills | `http_get` (allowed Roblox doc URLs), `skill` (Roblox-authored reference) |
 
 The discipline does not change with MCP: `multi_edit` still writes normal, inspectable Scripts
 (not a feature hidden in runtime construction), the server stays authoritative, you still edit
 source-of-truth files rather than generated output, and you still clean up experiments. Treat
 `get_console_output` and `screen_capture` as the agent-native evidence for the verification
-ladder, and still inspect BOTH server and client output. MCP is a transport for the same
-workflow, not a licence to skip it.
+ladder, and still inspect BOTH server and client output. An inserted Creator Store model can
+carry its own Scripts: inspect its descendants before keeping it, as you would any third-party
+code. `start_stop_play` runs a single solo session; multi-client checks still need Server &
+Clients or `StudioTestService` (see the verification reference). Connected clients can read and
+modify every open place, so connect only trusted ones. MCP is a transport for the same workflow,
+not a licence to skip it.
 
 Roblox also ships agent-readable docs independent of MCP: an index at
 `https://create.roblox.com/docs/llms.txt` and a `.md` twin of every docs page (append `.md`
@@ -152,9 +157,11 @@ higher-rung result.
 | feature runs twice | duplicate Script/remote/controller | inspect first; consolidate under existing owner |
 | client cannot access module/object | wrong execution/storage location | move shared content deliberately; keep secrets server-only |
 | authored screen unreadable in Explorer | everything created by one LocalScript | create named Instance shell and small behavior modules |
-| test passes only in Play | replication/lifecycle untested | use Server & Clients and relevant emulators |
+| test passes only in Test (solo) | replication/lifecycle untested | use Server & Clients and relevant emulators |
 | “clean” Output hides client errors | only server Output inspected | inspect each client and server context |
 | shipped place has DebugFolder/prints | experiment cleanup skipped | maintain cleanup list and inspect hierarchy after session |
+| MCP tools load but `list_roblox_studios` is empty | Studio closed, no place open, or MCP setting off | open a place and enable "Enable Studio as MCP server" |
+| MCP edit lands in the wrong place | several Studio windows open | pick the `studio_id` from `list_roblox_studios` by place name |
 | Attribute/tag behavior silently fails | schema/class not validated | validate at setup boundary; warn with full Instance path |
 
 ## Resources

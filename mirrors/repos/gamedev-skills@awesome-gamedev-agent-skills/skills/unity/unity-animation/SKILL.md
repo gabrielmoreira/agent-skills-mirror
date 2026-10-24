@@ -78,7 +78,8 @@ _anim.SetFloat(Speed, targetSpeed, 0.1f /* dampTime */, Time.deltaTime);
 
 ```csharp
 // Useful for hit reactions where you want an immediate, explicit transition.
-_anim.CrossFade("Hit", 0.1f);                    // blend over 0.1s normalized
+_anim.CrossFade("Hit", 0.1f);                    // 0.1 = 10% of the state's length, not seconds
+_anim.CrossFadeInFixedTime("Hit", 0.15f);        // duration in seconds
 // Or jump instantly:  _anim.Play("Hit");
 ```
 
@@ -87,8 +88,12 @@ _anim.CrossFade("Hit", 0.1f);                    // blend over 0.1s normalized
 ```csharp
 private System.Collections.IEnumerator AfterAttack()
 {
-    var info = _anim.GetCurrentAnimatorStateInfo(0);   // layer 0
-    yield return new WaitForSeconds(info.length);      // approximate clip length
+    yield return null;                                 // let the Animator start the transition
+    // During a transition the "current" state is the one being left; read the next one.
+    var info = _anim.IsInTransition(0)
+        ? _anim.GetNextAnimatorStateInfo(0)
+        : _anim.GetCurrentAnimatorStateInfo(0);        // layer 0
+    yield return new WaitForSeconds(info.length);      // seconds; approximate, varies in blend trees
     // ...follow-up logic
 }
 ```
@@ -106,6 +111,9 @@ private System.Collections.IEnumerator AfterAttack()
   transform (or vice versa). Decide: root motion *or* scripted movement, not both.
 - **Upper-body layer overrides the whole body** — set the layer's Blend mode (Override vs
   Additive), assign an Avatar Mask, and tune `layerWeight` (0–1).
+- **A cross-fade is much slower or faster than expected** — `CrossFade`'s duration is
+  *normalized* to the state's length. Use `CrossFadeInFixedTime` to give the
+  duration in seconds.
 - **IK does nothing** — IK only applies inside `OnAnimatorIK`, requires "IK Pass" enabled on
   the layer, and needs a Humanoid Avatar.
 

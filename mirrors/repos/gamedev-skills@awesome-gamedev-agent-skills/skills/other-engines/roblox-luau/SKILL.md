@@ -35,7 +35,9 @@ API. Engine-agnostic input/save architecture → `input-systems` / `save-systems
    (server-only code), `ServerStorage`, `RunService`, `UserInputService` (client).
 2. **Know where code runs.** A `Script` runs on the **server**; a `LocalScript`
    runs on a **client** (in `StarterPlayerScripts`, `StarterGui`, or the player's
-   character). A `ModuleScript` is shared code you `require`.
+   character). A `Script` whose `RunContext` is `Client` also runs on clients, from
+   `ReplicatedStorage`; check `RunContext` before deciding where a `Script` runs. A
+   `ModuleScript` is shared code you `require`.
 3. **Create instances deliberately.** `local p = Instance.new("Part")`, set its
    properties, then set `p.Parent` **last** (parenting triggers replication).
 4. **React with events.** `:Connect` to signals like `Players.PlayerAdded`,
@@ -43,8 +45,8 @@ API. Engine-agnostic input/save architecture → `input-systems` / `save-systems
 5. **Cross the client/server boundary with Remotes — and never trust the client.**
    Clients request via `RemoteEvent:FireServer(...)`; the server validates and
    applies. The server is authoritative for all game state.
-6. **Test in Studio** with Play / Play Here / server+client Start; use the Output
-   window and the server/client view toggle to confirm where code ran.
+6. **Test in Studio** with **Test** / **Test Here** / **Server & Clients**; use the
+   Output window and the Client/Server toggle to confirm where code ran.
 7. **Run static checks before Studio when the project already has the tools.** Put
    `std = "roblox"` in the root `selene.toml`, then run `selene .`.
    For a Rojo project, write the sourcemap once with
@@ -173,7 +175,8 @@ print(GameConfig.MaxHealth)
 - **`LocalScript` doesn't run where you put it** → LocalScripts run in
   `StarterPlayerScripts`, `StarterCharacterScripts`, `StarterGui`, or tools — not in
   `Workspace` or `ServerScriptService`. Server `Script`s belong in
-  `ServerScriptService`/`Workspace`.
+  `ServerScriptService`/`Workspace`. A `Script` with `RunContext = Client` placed in a
+  `Starter*` container runs twice (original and copy); keep those in `ReplicatedStorage`.
 - **Deprecated globals** → use `task.wait`/`task.spawn`/`task.delay`, not the old
   `wait()`/`spawn()`/`delay()` (worse scheduling and throttling).
 - **Parenting first, then setting properties** → set properties first and `Parent`

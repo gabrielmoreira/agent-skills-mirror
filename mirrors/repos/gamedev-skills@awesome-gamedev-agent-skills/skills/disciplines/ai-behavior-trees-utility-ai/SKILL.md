@@ -97,23 +97,28 @@ public abstract class Node
 
 ```csharp
 // Selector = fallback/OR: return the first child that is not Failure.
+// `Current` (from Composite) remembers a Running child so the next tick resumes there.
 public sealed class Selector : Composite
 {
     public override Status Tick(Blackboard bb, float dt)
     {
-        for (; _current < Children.Count; _current++)
+        for (; Current < Children.Count; Current++)
         {
-            var s = Children[_current].Tick(bb, dt);
-            if (s != Status.Failure) return s;   // Success or Running stops the scan
+            var s = Children[Current].Tick(bb, dt);
+            if (s == Status.Running) return Status.Running;            // resume here next tick
+            if (s == Status.Success) { Current = 0; return Status.Success; }
         }
-        _current = 0;
-        return Status.Failure;                    // every child failed
+        Current = 0;
+        return Status.Failure;                                         // every child failed
     }
 }
 ```
 
-The reciprocal `Sequence` (AND — stop at first non-`Success`), `Parallel`, the `Blackboard`, the
-leaf base classes, and every decorator are in `references/behavior-tree-core.md`.
+The reciprocal `Sequence` (AND — stop at first non-`Success`), the reactive variants that let a
+higher-priority branch interrupt a running one, `Parallel`, the `Blackboard`, the leaf base
+classes, and every decorator are in `references/behavior-tree-core.md`. The leaves use Unity's
+`Vector2` member names (`magnitude`, `normalized`, `sqrMagnitude`); in Godot C# use `Length()`,
+`Normalized()` and `LengthSquared()`.
 
 ## Utility scoring in one snippet
 
@@ -123,8 +128,9 @@ float Score(Blackboard bb)
 {
     float distance01 = Curves.InverseLerp01(bb.Get<float>("distToPlayer"), 20f, 2f); // near = 1
     float health01   = Curves.Sigmoid(bb.Get<float>("health01"), k: 8f, mid: 0.4f);  // hurt = low
-    // Product + compensation keeps a single 0 from vetoing while low values still dampen.
-    return Curves.CompensatedProduct(new[] { distance01, health01 });
+    // A 0 in any factor still vetoes the action; compensation stops each extra
+    // consideration from dragging every score toward 0. No allocation per call.
+    return Curves.Compensate(distance01 * health01, count: 2);
 }
 ```
 
@@ -138,6 +144,12 @@ The full curve library (linear, quadratic, exponential, logistic/sigmoid, smooth
   resume where you left off; only `Reset()` a subtree when a parent actually abandons it.
 - **Deep trees re-evaluated wholesale each tick** waste time and cause thrash. Prefer shallow
   trees and *conditional aborts* (a higher-priority condition can interrupt a lower branch).
+- **A guard condition stops being checked once the action after it is `Running`.** A memory
+  `Sequence` resumes at the running child, so `[CanSeePlayer?, Chase]` keeps chasing after sight
+  is lost. Use a `ReactiveSequence` (re-checks from the first child each tick) or have the action
+  itself fail when its blackboard input disappears.
+- **A cooldown that clears on `Reset()`** lets an agent bypass it by flickering between branches.
+  Keep the ready-time when the branch is aborted.
 - **Un-normalized considerations.** If one curve outputs 0..100 and another 0..1, the big one
   dominates. Every consideration must return 0..1.
 - **Utility jitter on near-ties.** Add hysteresis: give the currently-running action a small bonus

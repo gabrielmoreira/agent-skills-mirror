@@ -110,14 +110,17 @@ func open_chest() -> void:
 - **Duplicate connections fire handlers multiple times.** Connecting again in `_ready()`
   after re-adding a node stacks callbacks. Guard with
   `if not sig.is_connected(cb): sig.connect(cb)`.
-- **Connecting to a freed node errors.** Disconnect long-lived listeners, or rely on
-  Godot auto-disconnecting when the *connected object* is freed (it does for nodes).
+- **Connecting to a freed node errors.** Godot removes a connection when the emitter or
+  the Callable's owner is freed, but a lambda belongs to the script that created it — one
+  that captures a node freed later keeps firing and errors. Connect listener methods, or
+  disconnect stored lambdas yourself.
 - **Groups are global to the SceneTree**, not per-scene. Two levels using the same group
   name share membership. Namespace group names if that matters.
 - **`call_group` silently ignores nodes lacking the method.** Typos in the method name
   fail quietly — prefer a typed signal when the contract matters.
-- **Signal args must match.** Emitting with the wrong arg count/types raises an error;
-  declare typed params and emit exactly those.
+- **Signal args must match the handlers.** `emit()` does not validate arguments against
+  the `signal` declaration; a handler with a different argument count fails with "Method
+  expected N argument(s)" at emit time. Declare typed params and emit exactly those.
 
 ## References
 

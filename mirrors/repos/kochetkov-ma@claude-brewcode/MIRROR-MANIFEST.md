@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `kochetkov-ma/claude-brewcode` — 26 default patterns, 5 followed patterns, 68 file(s) materialized.
+Mirror of `kochetkov-ma/claude-brewcode` — 26 default patterns, 5 followed patterns, 67 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `kochetkov-ma/claude-brewcode` — 26 default patterns, 5 followed pat
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 5 |
-| Files         | 68 |
+| Files         | 67 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -79,58 +79,57 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 14 | ✓ | [`.codex/skills/eurodns/SKILL.md`](.codex/skills/eurodns/SKILL.md) |
 | 15 | ✓ | [`.codex/skills/memory-sync/SKILL.md`](.codex/skills/memory-sync/SKILL.md) |
 | 16 | ✓ | [`.codex/skills/superreview/SKILL.md`](.codex/skills/superreview/SKILL.md) |
-| 17 | ✓ | [`.codex/skills/update-overview/SKILL.md`](.codex/skills/update-overview/SKILL.md) |
-| 18 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 19 | ✓ | [`brewcode/.codex/skills/agents/SKILL.md`](brewcode/.codex/skills/agents/SKILL.md) |
-| 20 | ✓ | [`brewcode/.codex/skills/convention-setup/SKILL.md`](brewcode/.codex/skills/convention-setup/SKILL.md) |
-| 21 | ✓ | [`brewcode/.codex/skills/rules/SKILL.md`](brewcode/.codex/skills/rules/SKILL.md) |
-| 22 | ✓ | [`brewcode/.codex/skills/superreview-setup/SKILL.md`](brewcode/.codex/skills/superreview-setup/SKILL.md) |
-| 23 | ✓ | [`brewcode/.codex/skills/teams-setup/SKILL.md`](brewcode/.codex/skills/teams-setup/SKILL.md) |
-| 24 | ✓ | [`brewcode/skills/agents/SKILL.md`](brewcode/skills/agents/SKILL.md) |
-| 25 | ✓ | [`brewcode/skills/convention-setup/SKILL.md`](brewcode/skills/convention-setup/SKILL.md) |
-| 26 | ✓ | [`brewcode/skills/e2e/SKILL.md`](brewcode/skills/e2e/SKILL.md) |
-| 27 | ✓ | [`brewcode/skills/rules/SKILL.md`](brewcode/skills/rules/SKILL.md) |
-| 28 | ✓ | [`brewcode/skills/semble-setup/SKILL.md`](brewcode/skills/semble-setup/SKILL.md) |
-| 29 | ✓ | [`brewcode/skills/setup-status/SKILL.md`](brewcode/skills/setup-status/SKILL.md) |
-| 30 | ✓ | [`brewcode/skills/skills/SKILL.md`](brewcode/skills/skills/SKILL.md) |
-| 31 | ✓ | [`brewcode/skills/superreview-setup/SKILL.md`](brewcode/skills/superreview-setup/SKILL.md) |
-| 32 | ✓ | [`brewcode/skills/teams-setup/SKILL.md`](brewcode/skills/teams-setup/SKILL.md) |
-| 33 | ✓ | [`brewdoc/.codex/skills/md-to-pdf/SKILL.md`](brewdoc/.codex/skills/md-to-pdf/SKILL.md) |
-| 34 | ✓ | [`brewdoc/skills/docsync-setup/SKILL.md`](brewdoc/skills/docsync-setup/SKILL.md) |
-| 35 | ✓ | [`brewdoc/skills/md-to-pdf/SKILL.md`](brewdoc/skills/md-to-pdf/SKILL.md) |
-| 36 | ✓ | [`brewdoc/skills/memory-sync-setup/SKILL.md`](brewdoc/skills/memory-sync-setup/SKILL.md) |
-| 37 | ✓ | [`brewdoc/skills/my-claude/SKILL.md`](brewdoc/skills/my-claude/SKILL.md) |
-| 38 | ✓ | [`brewdoc/skills/publish/SKILL.md`](brewdoc/skills/publish/SKILL.md) |
-| 39 | ✓ | [`brewtools/.codex/skills/manager-setup/SKILL.md`](brewtools/.codex/skills/manager-setup/SKILL.md) |
-| 40 | ✓ | [`brewtools/.codex/skills/task-board-setup/SKILL.md`](brewtools/.codex/skills/task-board-setup/SKILL.md) |
-| 41 | ✓ | [`brewtools/.codex/skills/text-human/SKILL.md`](brewtools/.codex/skills/text-human/SKILL.md) |
-| 42 | ✓ | [`brewtools/.codex/skills/text-optimize/SKILL.md`](brewtools/.codex/skills/text-optimize/SKILL.md) |
-| 43 | ✓ | [`brewtools/skills/agent-deadline-setup/SKILL.md`](brewtools/skills/agent-deadline-setup/SKILL.md) |
-| 44 | ✓ | [`brewtools/skills/agent-return-setup/SKILL.md`](brewtools/skills/agent-return-setup/SKILL.md) |
-| 45 | ✓ | [`brewtools/skills/agent-router-setup/SKILL.md`](brewtools/skills/agent-router-setup/SKILL.md) |
-| 46 | ✓ | [`brewtools/skills/context-slim/SKILL.md`](brewtools/skills/context-slim/SKILL.md) |
-| 47 | ✓ | [`brewtools/skills/deploy/SKILL.md`](brewtools/skills/deploy/SKILL.md) |
-| 48 | ✓ | [`brewtools/skills/manager-setup/SKILL.md`](brewtools/skills/manager-setup/SKILL.md) |
-| 49 | ✓ | [`brewtools/skills/plugin-update/SKILL.md`](brewtools/skills/plugin-update/SKILL.md) |
-| 50 | ✓ | [`brewtools/skills/provider-switch/SKILL.md`](brewtools/skills/provider-switch/SKILL.md) |
-| 51 | ✓ | [`brewtools/skills/secrets-scan/SKILL.md`](brewtools/skills/secrets-scan/SKILL.md) |
-| 52 | ✓ | [`brewtools/skills/ssh/SKILL.md`](brewtools/skills/ssh/SKILL.md) |
-| 53 | ✓ | [`brewtools/skills/task-board-setup/SKILL.md`](brewtools/skills/task-board-setup/SKILL.md) |
-| 54 | ✓ | [`brewtools/skills/text-human/SKILL.md`](brewtools/skills/text-human/SKILL.md) |
-| 55 | ✓ | [`brewtools/skills/text-optimize/SKILL.md`](brewtools/skills/text-optimize/SKILL.md) |
-| 56 | ✓ | [`openclaw/brewpage-publish/SKILL.md`](openclaw/brewpage-publish/SKILL.md) |
-| 57 | ✓ | [`skills/brewpage-publish/LICENSE`](skills/brewpage-publish/LICENSE) |
-| 58 | ✓ | [`skills/brewpage-publish/README.md`](skills/brewpage-publish/README.md) |
-| 59 | ✓ | [`skills/brewpage-publish/scripts/brewpage-lib.sh`](skills/brewpage-publish/scripts/brewpage-lib.sh) |
-| 60 | ✓ | [`skills/brewpage-publish/scripts/brewpage-run.sh`](skills/brewpage-publish/scripts/brewpage-run.sh) |
-| 61 | ✓ | [`skills/brewpage-publish/scripts/publish.mjs`](skills/brewpage-publish/scripts/publish.mjs) |
-| 62 | ✓ | [`skills/brewpage-publish/SKILL.md`](skills/brewpage-publish/SKILL.md) |
-| 63 | ✓ | [`web/docs/public/llms.txt`](web/docs/public/llms.txt) |
-| 64 | → | [`.codex/rules/avoid.md`](.codex/rules/avoid.md) |
-| 65 | → | [`.codex/rules/best-practice.md`](.codex/rules/best-practice.md) |
-| 66 | → | [`.codex/rules/docker-best-practice.md`](.codex/rules/docker-best-practice.md) |
-| 67 | → | [`.codex/rules/docs-workflow.md`](.codex/rules/docs-workflow.md) |
-| 68 | → | [`.codex/rules/semble-first.md`](.codex/rules/semble-first.md) |
+| 17 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 18 | ✓ | [`brewcode/.codex/skills/agents/SKILL.md`](brewcode/.codex/skills/agents/SKILL.md) |
+| 19 | ✓ | [`brewcode/.codex/skills/convention-setup/SKILL.md`](brewcode/.codex/skills/convention-setup/SKILL.md) |
+| 20 | ✓ | [`brewcode/.codex/skills/rules/SKILL.md`](brewcode/.codex/skills/rules/SKILL.md) |
+| 21 | ✓ | [`brewcode/.codex/skills/superreview-setup/SKILL.md`](brewcode/.codex/skills/superreview-setup/SKILL.md) |
+| 22 | ✓ | [`brewcode/.codex/skills/teams-setup/SKILL.md`](brewcode/.codex/skills/teams-setup/SKILL.md) |
+| 23 | ✓ | [`brewcode/skills/agents/SKILL.md`](brewcode/skills/agents/SKILL.md) |
+| 24 | ✓ | [`brewcode/skills/convention-setup/SKILL.md`](brewcode/skills/convention-setup/SKILL.md) |
+| 25 | ✓ | [`brewcode/skills/e2e/SKILL.md`](brewcode/skills/e2e/SKILL.md) |
+| 26 | ✓ | [`brewcode/skills/rules/SKILL.md`](brewcode/skills/rules/SKILL.md) |
+| 27 | ✓ | [`brewcode/skills/semble-setup/SKILL.md`](brewcode/skills/semble-setup/SKILL.md) |
+| 28 | ✓ | [`brewcode/skills/setup-status/SKILL.md`](brewcode/skills/setup-status/SKILL.md) |
+| 29 | ✓ | [`brewcode/skills/skills/SKILL.md`](brewcode/skills/skills/SKILL.md) |
+| 30 | ✓ | [`brewcode/skills/superreview-setup/SKILL.md`](brewcode/skills/superreview-setup/SKILL.md) |
+| 31 | ✓ | [`brewcode/skills/teams-setup/SKILL.md`](brewcode/skills/teams-setup/SKILL.md) |
+| 32 | ✓ | [`brewdoc/.codex/skills/md-to-pdf/SKILL.md`](brewdoc/.codex/skills/md-to-pdf/SKILL.md) |
+| 33 | ✓ | [`brewdoc/skills/docsync-setup/SKILL.md`](brewdoc/skills/docsync-setup/SKILL.md) |
+| 34 | ✓ | [`brewdoc/skills/md-to-pdf/SKILL.md`](brewdoc/skills/md-to-pdf/SKILL.md) |
+| 35 | ✓ | [`brewdoc/skills/memory-sync-setup/SKILL.md`](brewdoc/skills/memory-sync-setup/SKILL.md) |
+| 36 | ✓ | [`brewdoc/skills/my-claude/SKILL.md`](brewdoc/skills/my-claude/SKILL.md) |
+| 37 | ✓ | [`brewdoc/skills/publish/SKILL.md`](brewdoc/skills/publish/SKILL.md) |
+| 38 | ✓ | [`brewtools/.codex/skills/manager-setup/SKILL.md`](brewtools/.codex/skills/manager-setup/SKILL.md) |
+| 39 | ✓ | [`brewtools/.codex/skills/task-board-setup/SKILL.md`](brewtools/.codex/skills/task-board-setup/SKILL.md) |
+| 40 | ✓ | [`brewtools/.codex/skills/text-human/SKILL.md`](brewtools/.codex/skills/text-human/SKILL.md) |
+| 41 | ✓ | [`brewtools/.codex/skills/text-optimize/SKILL.md`](brewtools/.codex/skills/text-optimize/SKILL.md) |
+| 42 | ✓ | [`brewtools/skills/agent-deadline-setup/SKILL.md`](brewtools/skills/agent-deadline-setup/SKILL.md) |
+| 43 | ✓ | [`brewtools/skills/agent-return-setup/SKILL.md`](brewtools/skills/agent-return-setup/SKILL.md) |
+| 44 | ✓ | [`brewtools/skills/agent-router-setup/SKILL.md`](brewtools/skills/agent-router-setup/SKILL.md) |
+| 45 | ✓ | [`brewtools/skills/context-slim/SKILL.md`](brewtools/skills/context-slim/SKILL.md) |
+| 46 | ✓ | [`brewtools/skills/deploy/SKILL.md`](brewtools/skills/deploy/SKILL.md) |
+| 47 | ✓ | [`brewtools/skills/manager-setup/SKILL.md`](brewtools/skills/manager-setup/SKILL.md) |
+| 48 | ✓ | [`brewtools/skills/plugin-update/SKILL.md`](brewtools/skills/plugin-update/SKILL.md) |
+| 49 | ✓ | [`brewtools/skills/provider-switch/SKILL.md`](brewtools/skills/provider-switch/SKILL.md) |
+| 50 | ✓ | [`brewtools/skills/secrets-scan/SKILL.md`](brewtools/skills/secrets-scan/SKILL.md) |
+| 51 | ✓ | [`brewtools/skills/ssh/SKILL.md`](brewtools/skills/ssh/SKILL.md) |
+| 52 | ✓ | [`brewtools/skills/task-board-setup/SKILL.md`](brewtools/skills/task-board-setup/SKILL.md) |
+| 53 | ✓ | [`brewtools/skills/text-human/SKILL.md`](brewtools/skills/text-human/SKILL.md) |
+| 54 | ✓ | [`brewtools/skills/text-optimize/SKILL.md`](brewtools/skills/text-optimize/SKILL.md) |
+| 55 | ✓ | [`openclaw/brewpage-publish/SKILL.md`](openclaw/brewpage-publish/SKILL.md) |
+| 56 | ✓ | [`skills/brewpage-publish/LICENSE`](skills/brewpage-publish/LICENSE) |
+| 57 | ✓ | [`skills/brewpage-publish/README.md`](skills/brewpage-publish/README.md) |
+| 58 | ✓ | [`skills/brewpage-publish/scripts/brewpage-lib.sh`](skills/brewpage-publish/scripts/brewpage-lib.sh) |
+| 59 | ✓ | [`skills/brewpage-publish/scripts/brewpage-run.sh`](skills/brewpage-publish/scripts/brewpage-run.sh) |
+| 60 | ✓ | [`skills/brewpage-publish/scripts/publish.mjs`](skills/brewpage-publish/scripts/publish.mjs) |
+| 61 | ✓ | [`skills/brewpage-publish/SKILL.md`](skills/brewpage-publish/SKILL.md) |
+| 62 | ✓ | [`web/docs/public/llms.txt`](web/docs/public/llms.txt) |
+| 63 | → | [`.codex/rules/avoid.md`](.codex/rules/avoid.md) |
+| 64 | → | [`.codex/rules/best-practice.md`](.codex/rules/best-practice.md) |
+| 65 | → | [`.codex/rules/docker-best-practice.md`](.codex/rules/docker-best-practice.md) |
+| 66 | → | [`.codex/rules/docs-workflow.md`](.codex/rules/docs-workflow.md) |
+| 67 | → | [`.codex/rules/semble-first.md`](.codex/rules/semble-first.md) |
 
 ---
 

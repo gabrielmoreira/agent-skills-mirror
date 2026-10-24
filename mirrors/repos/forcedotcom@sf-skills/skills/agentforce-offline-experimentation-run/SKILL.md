@@ -4,20 +4,20 @@ description: "Use this skill when users want to execute this workflow when a use
 metadata:
   relatedSkills:
   - dx-apexguru-scan
-  version: '1.0'
+  version: "1.0"
   cliTools:
   - tool:
-    - curl
-    semver: '>=7.0'
+    - "curl"
+    semver: ">=7.0"
   - tool:
-    - jq
-    semver: '>=1.6'
+    - "jq"
+    semver: ">=1.6"
   - tool:
-    - python3
-    semver: '>=3.8'
+    - "python3"
+    semver: ">=3.8"
   - tool:
-    - sf
-    semver: '>=2.0.0'
+    - "sf"
+    semver: ">=2.0.0"
 ---
 
 # Managing Agentforce Offline Experimentation
@@ -28,7 +28,7 @@ Execute this workflow when a user wants to test how a different LLM model would 
 
 ## Workflow
 
-discover-data-space → verify-stdm-availability → discover-agents → resolve-agent-label → list-available-models (if user needs help choosing) → find-sessions → get-conversation-details → get-llm-step-details → obtain-sfap-token → replay-turn-prompts → [score-exact-matches, judge-function-args, judge-text-responses] → generate-csv-report → generate-html-report.
+discover-data-space → verify-stdm-availability → discover-agents → list-available-models (if user needs help choosing) → find-sessions → get-conversation-details → get-llm-step-details → obtain-sfap-token → replay-turn-prompts → [score-exact-matches, judge-function-args, judge-text-responses] → generate-csv-report → generate-html-report.
 WORKFLOW GATE: Do not proceed past Phase 0 until org alias (auto-discover from authenticated orgs), agent API name (auto-discover from STDM), and target model ID (ask user) are all confirmed.
 SFAP JWT expires after ~2 hours. For 20+ session replays, refresh the token between batches. Each SFAP replay call takes ~1-3 seconds; keep under 20 sessions for reasonable wall-clock time (~10-30 minutes).
 The scoring and judging steps (Phase 3) can run in parallel once replay completes. Exact-match scoring is instant; LLM judge calls add ~1-2 seconds per turn.
@@ -38,7 +38,6 @@ The scoring and judging steps (Phase 3) can run in parallel once replay complete
 **Preconditions:**
 
 - Data Cloud is provisioned and enabled in the org (check: `DataCloudProvisioned`)
-- Agentforce Activity data streaming is active in Data Cloud (check: `AgentforceActivityStream`)
 - Einstein LLM / GenAI Gateway is configured in the org (check: `EinsteinLlmEnabled`)
 - User has an authenticated session to the target org (check: `OrgAuthenticated`)
 
@@ -53,7 +52,6 @@ Operations grouped by purpose. Use these as the building blocks for the workflow
 | `discover-data-space` | read | implemented | `getDataSpaces` | — |
 | `verify-stdm-availability` | validate | implemented | `queryCdpAnsiSqlV2` | `discover-data-space` |
 | `discover-agents` | read | implemented | `queryCdpAnsiSqlV2` | `verify-stdm-availability` |
-| `resolve-agent-label` | read | implemented | `queryGenAiPlannerDefinition` | `discover-agents` |
 | `list-available-models` | read | implemented | `queryAiModel` | — |
 | `find-sessions` | read | implemented | `queryCdpAnsiSqlV2` | `verify-stdm-availability`, `discover-agents` |
 | `get-conversation-details` | read | proposed | `queryCdpAnsiSqlV2` | `find-sessions` |
@@ -73,7 +71,6 @@ graph TD
   discover_data_space["discover-data-space (read)"]
   verify_stdm_availability["verify-stdm-availability (validate)"]
   discover_agents["discover-agents (read)"]
-  resolve_agent_label["resolve-agent-label (read)"]
   list_available_models["list-available-models (read)"]
   find_sessions["find-sessions (read)"]
   get_conversation_details["get-conversation-details (read)"]
@@ -87,7 +84,6 @@ graph TD
   generate_html_report["generate-html-report (write)"]
   discover_data_space --> verify_stdm_availability
   verify_stdm_availability --> discover_agents
-  discover_agents --> resolve_agent_label
   verify_stdm_availability --> find_sessions
   discover_agents --> find_sessions
   find_sessions --> get_conversation_details
@@ -115,23 +111,11 @@ Discover active Data Cloud data spaces in the org
 
 #### `discover-agents`
 
-Query STDM for distinct Agentforce agent API names that have session traces
+Query STDM for distinct agent + version combinations that have session traces
 
 **Call:** `queryCdpAnsiSqlV2`   — status: `implemented`
 
 **Depends on:** `verify-stdm-availability`
-
-#### `resolve-agent-label`
-
-Enrich the selected agent API name with a human-readable MasterLabel
-
-**Call:** `queryGenAiPlannerDefinition`   — status: `implemented`
-
-**Inputs:**
-
-- `agent_api_name` *(`String`)* — Agent API name selected in discover-agents
-
-**Depends on:** `discover-agents`
 
 #### `list-available-models`
 
@@ -141,13 +125,14 @@ List Einstein LLM models configured in the org to help the user choose a target 
 
 #### `find-sessions`
 
-Find recent Agentforce sessions in STDM filtered by agent API name and date range
+Find recent Agentforce sessions in STDM filtered by agent API name, version, and date range
 
 **Call:** `queryCdpAnsiSqlV2`   — status: `implemented`
 
 **Inputs:**
 
 - `agent_api_name` *(`String`)* — Agent API name selected in discover-agents
+- `agent_version_api_name` *(`String`)* — Agent version API name selected in discover-agents
 - `start_date` *(`String`)*
 - `end_date` *(`String`)*
 - `max_sessions` *(`Integer`)*

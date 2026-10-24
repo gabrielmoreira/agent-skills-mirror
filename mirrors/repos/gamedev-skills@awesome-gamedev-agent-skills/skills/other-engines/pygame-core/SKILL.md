@@ -13,7 +13,7 @@ description: >
 Build the foundation of a pygame game in Python: the main loop, delta-time
 movement, drawing with `Surface`/`Rect`, input, and `Sprite`/`Group` management.
 Targets **pygame-ce 2.5.8** (the actively maintained community fork; same
-`import pygame`).
+`import pygame`), which supports Python 3.10–3.15.
 
 ## When to use
 
@@ -159,7 +159,13 @@ if player.rect.colliderect(door_rect):
   Scale by `dt = clock.tick(fps) / 1000` and use pixels-per-second values.
 - **Sub-pixel movement snaps/jitters** → `rect` coordinates are integers; store the
   true position as a `Vector2` of floats and assign `rect.center = round(...)` each
-  frame.
+  frame. In pygame-ce you can instead use a float rect: `image.get_frect(...)` returns
+  a `pygame.FRect`, which sprite groups and collision functions accept like a `Rect`.
+- **Objects jump or tunnel through walls after the window was dragged or the game
+  paused in a debugger** → the next `clock.tick()` returns the whole stall as one huge
+  `dt`. Clamp it before use, e.g. `dt = min(clock.tick(60) / 1000, 0.05)`.
+- **`ValueError: Can't normalize Vector of length zero`** → `Vector2.normalize()` was
+  called with no keys held. Check `length_squared() > 0` first, as in Pattern 2.
 - **Blits are slow / framerate drops** → call `.convert()` (opaque) or
   `.convert_alpha()` (transparent) on loaded images once; un-converted surfaces blit
   far slower.

@@ -119,13 +119,13 @@ Save the `embeddedServiceDeploymentId` — it identifies the deployment for subs
 After creating the Web ESD via Connect API:
 
 1. **Update via Metadata API** — deploy `EmbeddedServiceConfig` XML with full configuration (forms, branding, channel settings, T&C)
-2. **Publish** — make changes live via Connect API publish endpoint
+2. **Publish** — see below
 
 ---
 
 ## Publishing After Updates
 
-After any update to a Web ESD (branding, forms, labels, settings), publish to make changes live:
+Updates to a Web ESD (branding, forms, labels, settings) stay in draft until published. Publish only after the user approves (SKILL.md step 17c):
 
 ```text
 POST /services/data/vXX.0/connect/embeddedservice/embeddedserviceconfig/publish/<EMBEDDED_SERVICE_CONFIG_ID>
@@ -140,7 +140,17 @@ sf api request rest \
 ```
 
 The `--body '{}'` is required: a POST with no body (or `--body ""`) fails in the CLI with
-"No 'mode' found in 'body' entry" before any request is sent.
+"No 'mode' found in 'body' entry" before any request is sent. The URL is a positional
+argument, not a flag (`--url` fails with "Nonexistent flag"), and must be fully qualified
+(`/services/data/vXX.0/connect/...`).
+
+To obtain the `EMBEDDED_SERVICE_CONFIG_ID` (a Tooling API object, so `--use-tooling-api` is required):
+
+```bash
+sf data query --use-tooling-api \
+  --query "SELECT Id FROM EmbeddedServiceConfig WHERE DeveloperName = '<DEPLOYMENT_NAME>'" \
+  --target-org <org-alias>
+```
 
 ---
 

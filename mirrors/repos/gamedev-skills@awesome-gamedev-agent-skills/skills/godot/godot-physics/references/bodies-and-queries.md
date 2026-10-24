@@ -56,7 +56,7 @@ var space := get_world_3d().direct_space_state
 var rq := PhysicsRayQueryParameters3D.create(from, to)
 rq.collision_mask = 0b0010
 rq.exclude = [self.get_rid()]
-var hit := space.intersect_ray(rq)   # {position, normal, collider, collider_id, rid, shape}
+var hit := space.intersect_ray(rq)   # {position, normal, collider, collider_id, rid, shape, face_index}
 
 # Shape overlap (e.g. "what's inside this sphere?")
 var shape := SphereShape3D.new(); shape.radius = 2.0
@@ -66,8 +66,8 @@ sq.transform = Transform3D(Basis(), global_position)
 var hits := space.intersect_shape(sq, 32)  # array of {collider, rid, shape}
 ```
 
-`intersect_point` (2D) and `cast_motion`/`collide_shape` cover point picks and swept
-tests. Space-state queries must run during physics (`_physics_process`) for valid data.
+`intersect_point` (point picks) and `cast_motion`/`collide_shape` (swept and contact tests)
+exist on both the 2D and 3D space states. Space-state queries must run during physics (`_physics_process`) for valid data.
 
 ## RayCast node tips
 
@@ -86,7 +86,9 @@ to the bodies' paths. Use for ragdolls, chains, vehicles, swinging platforms.
 ## One-way collision
 
 On a `CollisionShape2D`/`CollisionPolygon2D`, enable **one_way_collision** so bodies pass
-from one side only (platforms). The pass-through direction is the shape's local up.
+from one side only (platforms). The shape blocks motion along
+`one_way_collision_direction` (Godot 4.7+, default `Vector2(0, 1)`: things land on top and
+pass through from below); before 4.7 that local-down direction is fixed.
 
 ## Areas with physics influence
 

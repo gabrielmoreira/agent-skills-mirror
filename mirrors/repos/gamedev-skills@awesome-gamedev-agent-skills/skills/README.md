@@ -7,8 +7,9 @@ The skill collection, organized by category:
 | Godot | [`godot/`](godot/) | Godot Engine (GDScript, scenes, nodes) |
 | Unity | [`unity/`](unity/) | Unity (C#, GameObjects, prefabs) |
 | Unreal | [`unreal/`](unreal/) | Unreal Engine (C++, Blueprints) |
+| Ebitengine | [`ebitengine/`](ebitengine/) | Go 2D games, input, rendering, audio, testing and builds |
 | Web engines | [`web-engines/`](web-engines/) | Phaser, PixiJS, three.js |
-| Other engines | [`other-engines/`](other-engines/) | Bevy, pygame-ce, LÖVE, Roblox |
+| Other engines | [`other-engines/`](other-engines/) | Bevy, pygame-ce, LÖVE, Defold, Roblox |
 | Disciplines | [`disciplines/`](disciplines/) | Cross-engine craft (game art, AI, physics, audio, shaders, …) |
 | Genres | [`genres/`](genres/) | Genre mechanics (platformer, RPG, shooter, …) |
 | Workflows | [`workflows/`](workflows/) | Prototyping, game jams, and shipping |

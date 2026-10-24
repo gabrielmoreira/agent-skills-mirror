@@ -40,7 +40,10 @@ validation belongs to `roblox-networking`; decorative UI/world motion may only n
 1. **Inspect the mechanism.** In Studio, visualize assemblies, anchors, constraints, collision
    groups, massless parts, and network owners. Identify the assembly root and intended authority.
 2. **Define interaction policy.** Write the collision-group matrix and separately decide
-   `CanCollide`, `CanTouch`, and `CanQuery`. These flags are not interchangeable.
+   `CanCollide`, `CanTouch`, and `CanQuery`. These flags are not interchangeable. Register groups
+   in the Studio Collision Groups editor or with `Workspace:RegisterCollisionGroup()` and
+   `Workspace:CollisionGroupSetCollidable()`; the `PhysicsService` collision-group methods are
+   deprecated and forward to `Workspace`.
 3. **Choose simulation or query.** Do not use `.Touched` as a universal hit detector. Use a ray for
    a path/line, an overlap query for a volume, and simulation contacts when physical response is
    actually required.
@@ -118,6 +121,12 @@ policy below. `OverlapParams.Tolerance` controls contact slop.
   cost. Visualize network owners in Studio.
 - A client owner can manipulate physical results and `.Touched` observations. The server validates
   consequential hits, positions, timing, and permissions independently.
+- If `Workspace.AuthorityMode` is `Server`, the server owns simulation and clients predict parts
+  near their own character with rollback (`RunService:SetPredictionMode()`, client-only, overrides
+  per instance). Drive
+  predicted forces and constraints from `RunService:BindToSimulation()` on both sides rather than
+  from `Heartbeat` or client-only scripts; custom physics scripts need adapting when a place
+  switches modes. See `roblox-networking`.
 
 ## Common failures
 

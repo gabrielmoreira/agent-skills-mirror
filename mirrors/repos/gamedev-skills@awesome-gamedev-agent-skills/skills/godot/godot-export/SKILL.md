@@ -26,15 +26,17 @@ networking code of a server → `godot-multiplayer` (this skill covers building 
 
 1. **Install export templates** matching your engine version: Editor menu >
    *Manage Export Templates* (download), or install the `.tpz` offline. Versions must
-   match the editor exactly.
+   match the editor exactly. Since 4.7 the downloader can fetch templates for a single
+   platform or architecture instead of the full set.
 2. **Add export presets** in *Project > Export*: pick a platform (Windows Desktop, macOS,
    Linux, Web, Android, iOS), set the export path, icons, features, and resource
    include/exclude filters. Presets are saved to `export_presets.cfg`.
 3. **Export from the editor** with *Export Project* (release) or *Export PCK/ZIP*.
 4. **Or export headless from the CLI** for automation/CI using
    `--export-release "<preset name>" <output path>`.
-5. **Per platform:** Web needs cross-origin isolation (COOP/COEP) for threads; Android
-   needs the SDK/keystore; macOS/iOS need signing for distribution.
+5. **Per platform:** Web needs cross-origin isolation (COOP/COEP) only if the preset's
+   *Thread Support* is on (off by default); Android needs the SDK/keystore; macOS/iOS need
+   signing for distribution.
 6. **Smoke-test the build** on the target before shipping — exported builds use `res://`
    read-only; write to `user://`.
 
@@ -46,14 +48,17 @@ networking code of a server → `godot-multiplayer` (this skill covers building 
 # Preset name must match exactly what's in Project > Export (quote it).
 # Run from the project directory (where project.godot lives).
 godot --headless --export-release "Windows Desktop" build/windows/game.exe
-godot --headless --export-release "Linux/X11"       build/linux/game.x86_64
+godot --headless --export-release "Linux"           build/linux/game.x86_64
 godot --headless --export-release "Web"             build/web/index.html
 
 # Debug build (includes debug symbols / remote debug):
 godot --headless --export-debug "Windows Desktop" build/windows/game_debug.exe
 
 # Export only the data pack (no executable):
-godot --headless --export-pack "Linux/X11" build/game.pck
+godot --headless --export-pack "Linux" build/game.pck
+
+# Export only files changed since the given base pack(s):
+godot --headless --export-patch "Linux" build/patch1.pck --patches build/game.pck
 ```
 
 ### 2. Run a project headless (dedicated server / tests)
@@ -94,11 +99,12 @@ func _ready() -> void:
   beta/rc). Re-download via *Manage Export Templates* after upgrading Godot.
 - **Preset name mismatch in CLI.** `--export-release "Windows"` fails if the preset is
   named `"Windows Desktop"`. Names are case- and space-sensitive; quote them.
-- **Web build shows a blank page / threads error.** HTML5 builds that use threads require
-  the server to send `Cross-Origin-Opener-Policy: same-origin` and
-  `Cross-Origin-Embedder-Policy: require-corp` (cross-origin isolation for
+- **Web build shows a blank page / threads error.** Builds with the preset's *Thread
+  Support* option enabled require the server to send
+  `Cross-Origin-Opener-Policy: same-origin` and `Cross-Origin-Embedder-Policy: require-corp` (cross-origin isolation for
   `SharedArrayBuffer`). Must be served over HTTP(S), not opened as a `file://`. itch.io has
-  a "SharedArrayBuffer support" toggle for this.
+  a "SharedArrayBuffer support" toggle for this. If the host cannot set headers (GitHub
+  Pages), leave *Thread Support* off — the default since 4.3.
 - **Writing to `res://` at runtime fails** in exports (read-only, packed). Use `user://`.
 - **Missing resources in the build.** Non-resource files (e.g. external `.json`, `.txt`)
   are not auto-included — add them via the preset's *Resources > Filters to export

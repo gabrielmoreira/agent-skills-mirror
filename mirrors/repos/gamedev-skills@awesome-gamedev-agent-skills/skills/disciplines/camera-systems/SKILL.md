@@ -99,9 +99,13 @@ func _camera_target(dt: float) -> Vector2:
 ```gdscript
 # Godot 4.7. Yaw/pitch a pivot; a SpringArm3D auto-pulls the camera in when blocked.
 func _unhandled_input(e):
-    if e is InputEventMouseMotion:
-        _yaw -= e.relative.x * sensitivity
-        _pitch = clampf(_pitch - e.relative.y * sensitivity, -1.2, 0.4)   # clamp pitch!
+    if e is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
+        # screen_relative is unscaled; `relative` is scaled by the stretch settings, so
+        # sensitivity would change with window size. The docs recommend screen_relative
+        # for captured-mouse aiming.
+        _yaw -= e.screen_relative.x * sensitivity
+        _pitch = clampf(_pitch - e.screen_relative.y * sensitivity,
+                        deg_to_rad(-80.0), deg_to_rad(45.0))       # clamp pitch!
 func _process(_dt):
     pivot.rotation = Vector3(_pitch, _yaw, 0)
     # $SpringArm3D handles wall collision: set spring_length + collision_mask; the child
@@ -117,7 +121,9 @@ func _process(_dt):
 var shake_offset := Vector2.ZERO                 # set each frame by game-feel (trauma^2 * noise)
 func _apply(final_focus: Vector2) -> void:
     global_position = final_focus + shake_offset  # shake rides ON TOP of smooth follow
-# Unity Cinemachine: add a CinemachineBasicMultiChannelPerlin and set amplitude from trauma.
+# Unity Cinemachine 3: CinemachineBasicMultiChannelPerlin (AmplitudeGain/FrequencyGain) for
+# continuous noise driven by trauma; for one-off impacts, a CinemachineImpulseSource on the
+# hitter plus a CinemachineImpulseListener on the camera.
 ```
 
 ## Pitfalls
@@ -129,7 +135,10 @@ func _apply(final_focus: Vector2) -> void:
 - **No bounds clamp** lets the camera show black past the level edge. Clamp focus to the level
   rect (account for the viewport half-size so the *view*, not the center, stays inside).
 - **No deadzone in twitchy games** makes the camera twitch with every micro-movement → nausea.
-- **Unclamped pitch** in third/first-person flips the camera over the top. Clamp pitch to ~±80°.
+- **Unclamped pitch** in third/first-person flips the camera over the top. Clamp pitch (about
+  -80° to +45° for an orbit, ±80° for first-person).
+- **Mouse-look sensitivity that changes with window size** (Godot): `InputEventMouseMotion.relative`
+  is scaled by the stretch settings; read `screen_relative` for captured-mouse aiming.
 - **Camera clipping through walls** in 3D — use a spring arm / occlusion ray to pull in.
 - **Snapping on teleport/respawn** is jarring; either hard-cut intentionally (and reset
   smoothing) or fast-ease. Don't let a huge `SmoothDamp` distance whip across the level.

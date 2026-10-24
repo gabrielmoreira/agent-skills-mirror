@@ -54,7 +54,7 @@ flowchart LR
     end
     subgraph D["D · posprocesado"]
         direction LR
-        d1[recolor] ~~~ d2[compose-layers] ~~~ d3[export-*]
+        d1[recolor] ~~~ d2[export-*]
     end
     subgraph E["E · herramientas de recursos (independientes)"]
         e1[background-tile] ~~~ e2[shadow] ~~~ e3[inspect-motion]
@@ -70,7 +70,7 @@ flowchart LR
 | **A · filas de atlas** | una imagen fija + una lista de estados → `sprite-sheet-alpha.png` + `manifest.json.frame_layout`, con **Breathe** horneado en las poses de reposo | [run-contract](docs/run-contract.md) · [breathing](docs/breathing.md) |
 | **B · vídeo → bucle** | una imagen fija → por estado, un GIF / WebP / tira transparente sin costuras, animado por Grok Imagine y cortado en su periodo real | [video-pipeline](docs/video-pipeline.md) · [video](docs/video.md) |
 | **C · utilidades** | una imagen importada u hoja en cuadrícula → recortes transparentes limpios; un atlas terminado → una ejecución lista para curación | [sheet-slicing](docs/sheet-slicing.md) · [curation](docs/curation.md) |
-| **D · posprocesado** | una hoja terminada → combinaciones de color deterministas, composiciones de capas de rig, exportaciones a Aseprite / Phaser / Flame | [recolor](docs/recolor.md) · [layer-tracks](docs/layer-tracks.md) · [engine-export](docs/engine-export.md) |
+| **D · posprocesado** | una hoja terminada → combinaciones de color deterministas, exportaciones a Aseprite / Phaser / Flame | [recolor](docs/recolor.md) · [engine-export](docs/engine-export.md) |
 | **E · herramientas de recursos** | PNG o animaciones independientes → mosaicos repetibles, sombras proyectadas, mediciones de movimiento/contacto | [asset-tools](docs/asset-tools.md) |
 | **S · escena** | recursos existentes + colocación, cámara e iluminación → fotogramas PNG, MP4/GIF, metadatos de inspección y colocación | [scene](docs/scene.md) |
 
@@ -131,7 +131,6 @@ sprite-gen unpack-atlas --atlas sheet.png             # atlas terminado → ejec
 ```bash
 sprite-gen recolor-palette --base <run>/sprite-sheet-alpha.png --out palette.draft.json
 sprite-gen recolor --run-dir <run> --spec recolor.spec.json      # → <run>/variants/
-sprite-gen compose-layers --run-dir <run>                        # ejecuciones de rig: pilas declaradas → <run>/layers/
 sprite-gen export-aseprite --run-dir <run>                       # JSON de Aseprite para Phaser / Flame
 ```
 

@@ -52,7 +52,12 @@ def alpha_stats(image: Image.Image) -> dict[str, Any]:
 def inspect(path: Path, max_colors: int | None) -> dict[str, Any]:
     with Image.open(path) as image:
         image.load()
-        colors = image.convert("RGBA").getcolors(maxcolors=(max_colors or 65535) + 1)
+        # getcolors() returns None only when the count EXCEEDS maxcolors, so asking for
+        # max_colors + 1 lets an over-limit image come back as a list one entry too long.
+        limit = max_colors or 65535
+        colors = image.convert("RGBA").getcolors(maxcolors=limit + 1)
+        if colors is not None and len(colors) > limit:
+            colors = None
         result: dict[str, Any] = {
             "path": path.as_posix(),
             "format": image.format,
@@ -60,7 +65,7 @@ def inspect(path: Path, max_colors: int | None) -> dict[str, Any]:
             "width": image.width,
             "height": image.height,
             "bytes": path.stat().st_size,
-            "color_count": len(colors) if colors is not None else f">{max_colors or 65535}",
+            "color_count": len(colors) if colors is not None else f">{limit}",
         }
         result.update(alpha_stats(image))
         return result
@@ -70,7 +75,11 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("paths", nargs="+", type=Path, help="Raster image files to inspect")
     parser.add_argument("--expect-size", type=parse_size, metavar="WIDTHxHEIGHT")
-    parser.add_argument("--require-alpha", action="store_true")
+    parser.add_argument(
+        "--require-alpha",
+        action="store_true",
+        help="fail unless the image has an alpha channel with at least one transparent pixel",
+    )
     parser.add_argument("--max-colors", type=int)
     parser.add_argument("--json", action="store_true", dest="as_json")
     args = parser.parse_args()
@@ -100,6 +109,10 @@ def main() -> int:
             )
         if args.require_alpha and not report["has_alpha"]:
             problems.append("image has no alpha channel")
+        elif args.require_alpha and report["alpha_min"] == 255:
+            # An RGBA file with every pixel opaque usually means a baked background
+            # (often a fake checkerboard) rather than real transparency.
+            problems.append("alpha channel is fully opaque; no pixel is transparent")
         if args.max_colors is not None and isinstance(report["color_count"], str):
             problems.append(f"image has more than {args.max_colors} colors")
         report["problems"] = problems

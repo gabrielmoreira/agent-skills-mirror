@@ -56,6 +56,20 @@ deeper than the networking primer in `roblox-luau`.
 Never invoke a client synchronously from the server. A client may disconnect, error, or never
 return. Prefer server `RemoteEvent:FireClient()` and a separate response event when needed.
 
+Delivery rules that change handler design (per connection, per direction):
+
+- `RemoteEvent` messages arrive in send order, even across different `RemoteEvent`s, but order
+  covers when each handler *starts*. A handler that yields (`task.wait`, `WaitForChild`, a
+  DataStore call) lets the next message from the same player start before it resumes, so
+  check-then-yield-then-apply code can approve two requests. Claim the cooldown or mark the
+  request in progress before the first yield.
+- A client firing a `RemoteEvent` faster than the throttle is delayed, not dropped; the backlog
+  still arrives. `UnreliableRemoteEvent` traffic over the limit, over 1000 bytes, or with no
+  handler connected is discarded.
+- Messages sent before a handler connects are queued (bounded) for `RemoteEvent`s and
+  `RemoteFunction`s. There is no ordering guarantee between a `RemoteFunction` and a
+  `RemoteEvent`; use one remote type or your own sequence number when order matters.
+
 ## Pattern: validate before resolving gameplay
 
 ```lua
@@ -128,14 +142,40 @@ replication. Log aggregate abuse signals, not one warning per rejected packet.
   tolerate absence; do not wait forever for optional streamed content.
 - High-rate cosmetic data may use `UnreliableRemoteEvent`; make each sample self-contained because
   delivery and order are not guaranteed. Payloads over **1000 bytes are dropped** (Studio Output
-  reports the overage). `RemoteEvent` and `UnreliableRemoteEvent` also share a throttle of roughly
-  **500 calls/second per client**, counted across all remotes of that type — which is what a
-  legitimate player hits before any attacker does.
-- Predict only latency-sensitive reversible presentation. Include a client sequence/command ID;
-  the server returns authoritative state and acknowledgement; the client corrects smoothly. Never
-  let prediction award damage, currency, inventory, or progression.
+  reports the overage). Client-to-server traffic is throttled at roughly **500 calls/second per
+  client** for each remote type, shared by every `RemoteEvent` (and separately by every
+  `UnreliableRemoteEvent`) in the experience — which is what a legitimate player hits before any
+  attacker does.
+- Without Server Authority, predict only latency-sensitive reversible presentation. Include a
+  client sequence/command ID; the server returns authoritative state and acknowledgement; the
+  client corrects smoothly. Never let prediction award damage, currency, inventory, or progression.
 - Network ownership improves responsiveness but lets that client influence physical simulation.
   Validate gameplay consequences on the server; ownership is not authorization.
+
+## Places that use Server Authority
+
+Check `Workspace.AuthorityMode` before designing prediction. When it is `Server` (opt-in, fully
+released 2026-07-09; setting it also enables next-generation replication, the Input Action System
+for player scripts, deferred signals, fixed simulation, and streaming), the engine supplies
+prediction, rollback, and resimulation, and gameplay objects can stay server-owned without input
+lag. Work with it instead of building a parallel scheme:
+
+- Put core gameplay in a ModuleScript required by both a server `Script` and a client
+  `LocalScript`, with logic in `RunService:BindToSimulation()` callbacks. Only properties and
+  methods tagged *Simulation Access* are allowed there; use `time()` (synchronized and rewound
+  during resimulation), not `os.clock()`, `tick()`, or `os.time()`.
+- Send simulation-affecting input through `InputAction`s (their `InputContext` must sit under the
+  owning `Player`), not `UserInputService` events. Keep synchronized custom state in Attributes on
+  predicted instances (only the first 64 per instance replicate; names and string values up to 50
+  characters) and write them only inside bound simulation functions.
+- Remotes still carry discrete facts and requests, but they are not ordered with property and
+  attribute replication. Play effects and sounds from `RenderStepped`, reading simulation results,
+  so a mispredicted frame does not trigger them twice.
+- `RunService:SetPredictionMode()` forces prediction on or off per instance (client-only call). Test with
+  Studio's Network Simulator to add latency, jitter and loss.
+
+Server Authority is a project-wide migration. Do not switch `AuthorityMode` on an existing place as
+a side effect of another task; report it as an option instead.
 
 ## Common failures
 
@@ -149,6 +189,8 @@ replication. Log aggregate abuse signals, not one warning per rejected packet.
 | remote breaks after respawn | cached character/root | resolve current character during handling and reject stale state |
 | private data leaks | `FireAllClients` used by default | use `FireClient` and minimal payloads |
 | distance check is bypassed | client-owned object moved near target | anchor/server-own critical object and validate full server context |
+| one cooldown lets two requests through | handler yields between check and apply | claim cooldown/in-progress state before the first yield |
+| effect plays twice under Server Authority | effect triggered inside resimulated code | trigger from `RenderStepped` reading simulation state |
 
 ## Resources
 
@@ -166,5 +208,6 @@ replication. Log aggregate abuse signals, not one warning per rejected packet.
 
 - `https://create.roblox.com/docs/scripting/events/remote`
 - `https://create.roblox.com/docs/scripting/security/client-server-boundary`
+- `https://create.roblox.com/docs/projects/server-authority`
 - `https://create.roblox.com/docs/physics/network-ownership`
 - `https://create.roblox.com/docs/studio/testing-modes`

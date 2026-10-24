@@ -1,0 +1,57 @@
+{
+  "type": "lightning__agentforceWidget",
+  "contentBody": {
+    "widgetBody": {
+      "definition": "tile/widget",
+      "children": [
+        {
+          "definition": "tile/column",
+          "attributes": { "gap": "md" },
+          "children": [
+            {
+              "definition": "tile/text",
+              "attributes": { "text": "{!$Label.c.OrderStatus_Heading}", "variant": "h1" }
+            },
+            {
+              "definition": "tile/row",
+              "attributes": { "gap": "sm", "align": "center" },
+              "children": [
+                {
+                  "definition": "tile/text",
+                  "attributes": { "text": "{!$Label.c.OrderStatus_OrderNumberCaption}", "variant": "caption" }
+                },
+                {
+                  "definition": "tile/text",
+                  "attributes": { "text": "{!$attrs.orderNumber}" }
+                }
+              ]
+            },
+            {
+              "definition": "tile/badge",
+              "attributes": {
+                "label": "{!IF($attrs.isShipped, $Label.c.OrderStatus_ShippedStatus, $Label.c.OrderStatus_ProcessingStatus)}",
+                "variant": "{!IF($attrs.isShipped, 'success', 'info')}"
+              }
+            },
+            {
+              "definition": "tile/text",
+              "attributes": { "text": "{!$Label.c.OrderStatus_ItemsPrefix & ' ' & TEXT($attrs.itemCount)}" }
+            },
+            {
+              "definition": "tile/button",
+              "attributes": {
+                "label": "{!$Label.c.OrderStatus_TrackButton}",
+                "variant": "primary",
+                "actions": {
+                  "click": [
+                    { "definition": "action/openLink", "attributes": { "url": "{!$attrs.trackingUrl}" } }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

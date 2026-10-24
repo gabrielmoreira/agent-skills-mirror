@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/fable-goal/../../../productivity/fable-goal/skills/fable-goal/SKILL.md

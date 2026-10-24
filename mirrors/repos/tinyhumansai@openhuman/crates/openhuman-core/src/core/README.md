@@ -415,9 +415,10 @@ surface.
 - `openhuman.auth_clear_session` is a legacy alias whose params get
   `kind: "session"` filled in during dispatch, preserving its session-only
   contract while the canonical method clears every kind by default.
-- Registry lookups for validation and CLI routing search the full,
-  unfiltered registry; only dispatch applies the `DomainSet` gate. A gated
-  method therefore passes validation and then reports as unknown.
+- CLI routing (`rpc_method_from_parts`) searches the full registry minus the
+  SaaS surface filter; the `DomainSet` gate applies at dispatch. Parameter
+  validation (`schema_for_rpc_method`) applies the same `visible` gate as
+  dispatch, so a gated method is unknown before its params are checked.
 - The log-dependent response shape from `apply_log_envelope` is deliberate.
   Adding a log line to a handler that had none changes its wire shape.
 - `http_server_status::HTTP_SERVER_COMPILED_IN` is ungated on purpose: the

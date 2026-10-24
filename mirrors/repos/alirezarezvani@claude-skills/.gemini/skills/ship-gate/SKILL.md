@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/ship-gate/../../../engineering/skills/ship-gate/SKILL.md

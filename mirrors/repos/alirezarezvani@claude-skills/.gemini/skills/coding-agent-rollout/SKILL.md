@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/coding-agent-rollout/../../../engineering/coding-agent-rollout/skills/coding-agent-rollout/SKILL.md

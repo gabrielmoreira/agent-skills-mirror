@@ -24,6 +24,12 @@ conveniences that make a VN pleasant to read.
 `dialogue-systems`. Card/board play → other genres. For the branching-script engine itself,
 use `dialogue-systems` (Ink / Yarn Spinner).
 
+**If the project is Ren'Py** (current stable 8.5.3): the engine already ships save-anywhere,
+rollback, a history (backlog) screen, skip that stops at unseen text by default
+(`preferences.skip_unseen = False`), auto-forward and a text-speed preference. Use and restyle
+those through its screens and preferences; apply this skill's design guidance (routes, flags,
+reactivity) rather than rebuilding the systems in Patterns 2–3.
+
 ## Core loop
 
 **Read a line → advance → (at a branch) make a choice → the story branches on flags/choices →
@@ -76,18 +82,28 @@ script.advance(selected_option_or_none)
 ### 2. Typewriter reveal + advance (skippable)
 
 ```python
-# Pseudocode. Reveal characters over time; a click first completes the line, then advances.
+# Pseudocode. Lay out the whole line once, then reveal it; a press first completes the line.
 def show_text(speaker, text):
     name_label.text = speaker
-    revealed = 0
-    while revealed < len(text):
-        if advance_pressed():                  # first press: reveal the whole line instantly
-            revealed = len(text); break
-        revealed += chars_per_second * dt
-        body_label.text = text[:int(revealed)]
-        push_to_backlog_when_complete(speaker, text)
+    body_label.text = text                     # full text set up front: wrapping is decided now
+    shown = 0.0
+    while shown < visible_length(body_label):  # count displayed characters, not markup tags
+        if advance_pressed():                   # first press: reveal the whole line instantly
+            break
+        shown += chars_per_second * frame_dt()
+        body_label.visible_characters = int(shown)
+        wait_one_frame()
+    show_all_characters(body_label)
+    backlog.append((speaker, text))             # once, when the line is complete
     wait_for_advance()                          # second press: go to the next line
 ```
+
+Reveal with the label's visible-character count, not by slicing the string: slicing cuts
+markup tags in half and re-wraps the text every frame, so a word starts on one line and jumps
+to the next. Godot 4.7: `RichTextLabel.visible_characters` (or `visible_ratio`) with
+`visible_characters_behavior = TextServer.VC_CHARS_AFTER_SHAPING`; the default
+`VC_CHARS_BEFORE_SHAPING` leaves hidden text out of line breaking, so words still jump. Unity 6.3:
+`TMP_Text.maxVisibleCharacters` (TextMeshPro, part of the uGUI package).
 
 ### 3. Choice sets a flag that branches later content
 
@@ -104,7 +120,11 @@ if flags.get("helped_npc"): play_route("good_ending") else: play_route("neutral_
 ## Pitfalls / failure modes
 
 - **Save that only stores a checkpoint** → VNs need **save-anywhere**. Persist the exact script
-  position *and* all flags/variables (and seen-text data) so a load resumes the same line.
+  position *and* all flags/variables (and seen-text data) so a load resumes the same line. Check
+  what your runtime can restore: Ink saves the exact position, Yarn Spinner only the node
+  (refs §4).
+- **Typewriter text that jumps between lines or shows raw tags** → the reveal slices the string.
+  Set the full text and raise the visible-character count (Pattern 2).
 - **Presentation logic baked into the script** → unmaintainable. Keep *content* (text, choices)
   in the script and *how it looks* (sprites, transitions) in the engine layer.
 - **No skip/auto/backlog** → readers feel trapped, especially on replays. These are expected

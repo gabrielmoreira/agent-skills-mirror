@@ -46,6 +46,7 @@ public final class MultiSessionJsonRpcServer implements AutoCloseable {
     private final AtomicBoolean closed = new AtomicBoolean();
     private ScheduledExecutorService maintenance;
     private boolean blobBindStatements;
+    private boolean exactMetadataIdentity;
 
     public MultiSessionJsonRpcServer(Supplier<? extends DatabaseAgent> agentFactory) {
         this(agentFactory, new JdbcConnectionPoolRegistry(), RuntimeLimits.defaults());
@@ -98,6 +99,11 @@ public final class MultiSessionJsonRpcServer implements AutoCloseable {
         return server;
     }
 
+    public MultiSessionJsonRpcServer withExactMetadataIdentity() {
+        exactMetadataIdentity = true;
+        return this;
+    }
+
     public void run() {
         synchronized (outputLock) {
             protocolOutput.println("{\"ready\":true}");
@@ -146,7 +152,7 @@ public final class MultiSessionJsonRpcServer implements AutoCloseable {
             Object result;
             if (AgentProtocol.METHOD_HANDSHAKE.equals(method)) {
                 result = sessionHandlerFactory == null
-                    ? AgentProtocol.multiSessionJdbcHandshakeResult(blobBindStatements)
+                    ? AgentProtocol.withExactMetadataIdentity(AgentProtocol.multiSessionJdbcHandshakeResult(blobBindStatements), exactMetadataIdentity)
                     : customHandshake();
             } else if (AgentProtocol.METHOD_OPEN_SESSION.equals(method)) {
                 result = openSession(requiredSessionId(params), params);

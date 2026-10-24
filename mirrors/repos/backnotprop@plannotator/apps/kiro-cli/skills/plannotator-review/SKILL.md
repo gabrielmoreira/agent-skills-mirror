@@ -26,3 +26,5 @@ Or open the session against a specific base / diff mode (session-only, git-only;
 ```bash
 PLANNOTATOR_ORIGIN=kiro-cli plannotator review --base <ref> [--diff-type <type>]
 ```
+
+If the session closes without feedback (the output is "Review session closed without feedback." or empty), acknowledge it in one sentence and stop. Do not begin any work: closing the session is not approval.

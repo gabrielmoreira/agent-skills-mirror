@@ -144,6 +144,7 @@ public final class AgentProtocol {
     public static final String CAPABILITY_MULTI_SESSION = "multi_session";
     public static final String CAPABILITY_STRUCTURED_ERROR_V1 = "structured_error_v1";
     public static final String CAPABILITY_BLOB_BIND_STATEMENTS_V1 = "blob_bind_statements_v1";
+    public static final String CAPABILITY_EXACT_METADATA_IDENTITY_V1 = "exact_metadata_identity_v1";
 
     public static final List<String> CAPABILITIES = Collections.unmodifiableList(Arrays.asList(
         CAPABILITY_CONNECT,
@@ -181,7 +182,8 @@ public final class AgentProtocol {
         CAPABILITY_MONGO_REPLACE_DOCUMENT,
         CAPABILITY_MONGO_BULK_WRITE,
         CAPABILITY_MONGO_RENAME_COLLECTION,
-        CAPABILITY_MONGO_FIND_CURSOR
+        CAPABILITY_MONGO_FIND_CURSOR,
+        CAPABILITY_EXACT_METADATA_IDENTITY_V1
     ));
 
     public static final List<String> MULTI_SESSION_CAPABILITIES;
@@ -355,6 +357,13 @@ public final class AgentProtocol {
 
     public static HandshakeResult handshakeResult() {
         return new HandshakeResult(PROTOCOL_VERSION, PROTOCOL_VERSION, CAPABILITIES);
+    }
+
+    public static HandshakeResult withExactMetadataIdentity(HandshakeResult result, boolean supported) {
+        if (!supported) return result;
+        java.util.ArrayList<String> capabilities = new java.util.ArrayList<>(result.capabilities);
+        capabilities.add(CAPABILITY_EXACT_METADATA_IDENTITY_V1);
+        return new HandshakeResult(result.protocolVersion, result.agentProtocolVersion, capabilities);
     }
 
     public static HandshakeResult multiSessionHandshakeResult() {

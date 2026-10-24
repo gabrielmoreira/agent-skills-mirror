@@ -38,7 +38,7 @@ A full `systemPrompt` is never exposed. The prompt says so explicitly, so the mo
 
 ## Validating the plan
 
-Decomposition uses the agent's structured-output path: `buildCoordinatorTaskSpecsSchema()` builds a Zod schema from the live roster and passes it as `outputSchema`, so an invalid plan gets the Agent's single corrective retry before anything else runs. The schema is `.strict()` and rejects unknown keys, unknown assignees (when `strictAssignees` is on), and `dependsOn` references that do not resolve to exactly one task title.
+Decomposition uses the agent's structured-output path: `buildCoordinatorTaskSpecsSchema()` builds a Zod schema from the live roster and passes it as `outputSchema`, so an invalid plan gets the Agent's single corrective retry before anything else runs. The schema is `.strict()` and rejects unknown keys, unknown assignees (when `strictAssignees` is on), and `dependsOn` references that do not resolve to exactly one task title. It also caps the plan at 200 tasks, `dependsOn` at 200 entries, and `requires.requiredTools` and `requires.requiredCapabilities` at 64 entries each.
 
 After parsing, three more checks run in order, and each failure ends the run rather than degrading to a different topology:
 

@@ -33,7 +33,9 @@ never hidden and never a default. The one sanctioned network call OMH makes is
 the `omh_jev_ask` tool, also described there — user-requested per turn, never a
 default. The `show-reel` toolkit's opt-in provider scripts reach a provider
 only when the user runs them with their own key; OMH never runs them. The OMH TUI that bare `omh` opens is a terminal frontend over Hermes'
-own gateway, not an execution surface; its boundary is stated there too.
+own gateway, not an execution surface; its boundary is stated there too,
+including its gateway child, which on Hermes' interpreter reaches the person's
+own gateway over loopback as Hermes' own TUI does.
 
 ## Command Audience
 
@@ -180,9 +182,25 @@ PR without the chat history.
   `hermes --tui` with `HERMES_TUI_DIR` pointing at OMH's packaged frontend, so
   Hermes' launcher still resolves the profile, resume target, working
   directory and session ownership, then starts OMH's frontend in place of its
-  own. That frontend spawns one child at a time, Hermes' `tui_gateway`, with
-  the interpreter, import path and environment the launcher handed it, and
-  speaks the gateway's stdio JSON-RPC. When that child exits on its own with
+  own. That frontend spawns one child at a time, with the interpreter, import
+  path and environment the launcher handed it, and speaks the stdio JSON-RPC
+  of Hermes' `tui_gateway` to it. The child is `src/tui/attach/gateway_attach.py`,
+  run by path on Hermes' interpreter and imported by nothing in OMH. On a
+  Hermes that has the shared-gateway attach API (Hermes 9595c3f345 and later
+  refuse the stdio entry beside a running gateway) it reaches the profile's
+  gateway as Hermes' own Ink TUI does, whether or not one was running: Hermes'
+  `ensure_gateway_runtime` finds it or starts it (an unmanaged gateway
+  daemon with idle exit, or the gateway service the person installed, which
+  Hermes starts through launchctl or systemd), a session ticket comes from
+  the home's private control socket, and `websockets.asyncio.client.connect`
+  dials the loopback socket Hermes names. It translates
+  between the stdio wire and the gateway's canonical one only where they
+  differ (the launch policy riding `session.create`, a detach for a close, a
+  rewind as Hermes' revision-fenced `session.mutate`, images staged through
+  Hermes' `image.attach_bytes`, approvals and clarify questions the gateway
+  asks as events), and passes everything else as it is. On any other Hermes it
+  runs Hermes' stdio entry in its own process, as before. Which one is decided
+  by what imports in that Hermes, never by an error's wording. When that child exits on its own with
   a failure (never after a normal exit, after the person quits, or for a
   gateway another runtime owns), it spawns it again the same way and resumes
   the session that was open (`session.resume`), at most 3 times in 60 s, as
@@ -317,15 +335,43 @@ PR without the chat history.
   are metadata: the launcher's active-session file (the session id), and
   what OMH's own HUD reader and model-chain picker already write under the
   OMH home (the HUD fan-out cache and its lock, and
-  the chains `/omh-model` saves), and an empty fallback marker at the path
-  `omh` named, which `omh` removes. The frontend opens no socket and makes no
-  network call, strips the sidecar and attach URLs from the gateway's
-  environment, and reaps the gateway when it exits, SIGTERM and SIGHUP
-  included. Ctrl+Z stops the process group, Hermes' gateway with it, as
-  Hermes' own CLI's Ctrl+Z does, and fg continues both. OMH itself still makes no
-  LLM call; every model call, and every other network call the gateway makes,
-  is Hermes'. This is a foreground terminal the person launched, not a
-  background runtime, a transport bot, or a third process bridge.
+  the chains `/omh-model` saves), and a fallback marker at the path `omh`
+  named, holding what the TUI printed about why it did not start, which `omh`
+  prints again once Hermes' own terminal (which clears the screen) closes,
+  and then removes. A pasted clipboard image is saved by Hermes' own
+  clipboard helper where Hermes stages images, as the stdio entry saved it.
+  The frontend opens no socket and makes no network call, strips the sidecar
+  and attach URLs from the child's environment, and reaps the child when it
+  exits, SIGTERM and SIGHUP included; the child's only connections are the
+  two above, to the person's own Hermes home (the WebSocket goes to the URL
+  the gateway's grant names). INVARIANT 2 holds it to a closed allow list
+  measured from it (`HERMES_INTERPRETER_SCRIPTS`, which the owner approved as
+  asyncio and websockets only, loopback to the person's own gateway): the
+  imports it makes, Hermes' functions named one by one, the `asyncio` names it
+  uses, `websockets.asyncio.client.connect`, and a list of attribute and
+  reflection names it may not use. The script builds exactly one `AttachApi`,
+  in `attach_api()`, with that function's own nested `grant`; `connect` goes
+  only into its `dial` slot; `dial` is called only on an object traced, by
+  name, to `attach_api()`'s result, with the url `grant()` returned on that
+  same object, and always with the literal `proxy=None`; no `_`-prefixed
+  attribute is read except on `self` inside a method of a class it defines,
+  and `self` is bound nowhere else; `type` is not used outside annotations;
+  and `os.environ` changes only as the `TERMINAL_CWD` set-and-restore and the
+  removal of `LAUNCH_POLICY_ENV`, whose one binding anywhere, a module-level
+  assignment, is pinned to its literal tuple. That blocks the realistic drift of a later
+  edit calling another Hermes, network or subprocess helper; it is not a
+  sandbox, and does not catch an allowed Hermes function called with other
+  arguments, or check where the grant's url points. Ctrl+Z stops the process group,
+  the gateway child with it, as Hermes' own CLI's Ctrl+Z does, and fg continues
+  both; a shared gateway, which is not in that group, goes on. Stopped for
+  longer than the shared gateway waits on a send (30 s) while it streams a
+  turn, the child is dropped as a stalled peer, and at fg the TUI spawns it
+  again and resumes the session, as after any lost connection.
+  OMH itself still makes no LLM call; every model call, and every other
+  network call the gateway makes, is Hermes'. This is a foreground terminal
+  the person launched, not a background runtime, a transport bot, or a third
+  process bridge: the child relays one terminal's frames and executes
+  nothing; a gateway it started is Hermes' own, which exits once idle.
 - No Hermes core patching.
 - Runtime artifacts are local, deterministic, schema-versioned, and
   metadata-only by default.

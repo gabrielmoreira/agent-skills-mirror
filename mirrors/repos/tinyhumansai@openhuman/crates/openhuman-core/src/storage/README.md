@@ -89,7 +89,12 @@ it with the core stopped.
 ## Entry points
 
 - `configured_url(&Config)` / `url_from(env, &Config)`: the URL in effect.
-- `open(url)`: parse and open a backend (credentials are redacted in logs).
+- `open(url)`: parse and open a backend (credentials are redacted in logs) The
+  driver connects on the process's storage runtime (two `openhuman-storage`
+  worker threads, alive for the whole process), so MongoDB's connection-time
+  pool and monitor tasks do not depend on the host runtime. Cleanup tasks
+  registered by later object drops can run on the internal `storage::block_on`
+  runtime instead.
 - `install(backend)` / `installed()` / `clear()`: the process slot domains
   read the backend from.
 - `scope_for_agent(agent_id)`: the storage scope (`local/agent:<id>`) an agent's records live
@@ -135,7 +140,9 @@ it with the core stopped.
   host; an error in SaaS mode without a profile — and the installed backend
   under it.
 - `block_on(future)`: runs a storage future from synchronous store code on
-  one shared runtime thread.
+  one shared runtime thread. The future depends only on that thread and the
+  storage runtime, so callers blocked on it cannot starve the host runtime of
+  the threads a backend needs.
 - `documents::Repo` and `documents::compare_and_swap`: the base the domain
   stores build on. A `Repo` holds one domain's scoped document handle,
   declares its collections and runs each call on the blocking bridge;

@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/regulatory-affairs-head/../../../ra-qm-team/skills/regulatory-affairs-head/SKILL.md

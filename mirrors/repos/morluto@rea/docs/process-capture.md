@@ -12,6 +12,11 @@ sandbox. Filesystem observation paths select what REA snapshots; they do not
 restrict what the process can read or write. The inherited environment is not
 recorded, so its influence may remain unknown.
 
+The installed PTY backend cannot preserve an explicit environment name
+`__proto__`. REA rejects that override before launch; use `/usr/bin/env` with
+`__proto__=VALUE` as an argument when that literal variable is required. The
+reserved `REA_PROCESS_RUN_ID` name also remains unavailable to scenario overrides.
+
 ## Host support
 
 Capturing a new scenario currently requires Linux or macOS and a working
@@ -241,9 +246,23 @@ A missing entry proves creation or deletion only when the corresponding
 observation root's path enumeration was exhausted. Otherwise its effect has
 `status: "unknown"`, the available before/after state, and a reason; a null
 state in this variant means unobserved. Paths below symlinks that REA did not
-follow also remain unknown. Partial enumeration of one root does not erase
+follow also remain unknown. Each observed symlink records a
+`symlink_not_followed` enumeration omission with a null system code, including
+a stable selected root. The link's own metadata can remain unchanged while
+descendant coverage and filesystem comparison remain unknown. Physical
+parent-directory enumeration still proves unrelated sibling absence.
+Partial enumeration of one root does not erase
 known effects in another, and unavailable content hashes do not by themselves
 make path absence unknown.
+
+Filesystem coverage records `unobserved_subtrees` separately from metadata
+enumeration. `symlink_not_followed` identifies a link whose own metadata was
+observed while its descendants were outside the snapshot. `observer_owned`
+identifies the exact directory allocated for this capture's bookkeeping; it
+is created before the baseline and excluded from both snapshots and file-entry
+capacity. Target activity inside that excluded directory remains unobserved.
+Matching filenames elsewhere are included normally. Historical captures that
+omit subtree facts do not establish descendant absence under that scope.
 
 When a follow-up read fails after an entry's metadata was observed, the
 snapshot keeps unaffected observations and records an `entry_unavailable`
@@ -261,6 +280,12 @@ denied or otherwise unavailable lookup records an `entry_unavailable` omission
 for that path instead, and its root stays incomplete. Cancellation and
 unexpected I/O failures still stop capture.
 
+An initial selected-root permission denial returns `access_denied` with the
+selected path, native `EACCES` or `EPERM`, and filesystem-read recovery. Capture
+does not launch the target. Earlier snapshot facts and the denied root's
+omission remain in the partial observation; unresolved read cleanup retains its
+own classification until its exact resources are released.
+
 Terminal frame `data` is the comparison text after the selected normalization.
 New captures also preserve `raw_data` when normalization changes a PTY chunk;
 otherwise `data` is already the original text. Older captures may lack the
@@ -268,6 +293,39 @@ original text for changed chunks. Both values participate in Evidence identity,
 while comparisons and trace assertions use the normalized text. Retaining the
 original adds at most `limits.output_bytes` of text, because it comes from the
 same admitted PTY chunks rather than a second unbounded stream.
+
+When PID normalization is enabled, the root and identifiers in retained process
+samples use the same identity set in terminal text and sampled commands. Raw
+PTY chunks emitted before a child was sampled are projected again from their
+retained source after sampling stops; custom patterns still run after PID
+replacement. Earlier declared normalization omissions remain explicit; omitted
+chunks are not reconstructed. Numbers not in that observed set remain literal.
+Captures commit
+`pid_normalization_version: "sampled-identifiers-v2"`, so older root-only terminal
+normalization is not silently compared as equivalent.
+
+Headless rendering runs once at terminal finalization from the already retained,
+byte-bounded PTY chunks, preserving their elapsed times and resize order. Parsing
+latency therefore occurs during finalization; rendered journal entries record
+that derived observation. A corrected raw-text projection that exceeds
+`limits.output_bytes` returns a typed capacity failure with collected facts in
+partial observations. No additional raw-screen copy or replay is retained.
+
+Before failure cleanup renders retained observations, REA cancels scheduled
+interactions, waits for sampling to stop, and stops the owned process group.
+The terminal finalizer then freezes PTY input, retains normalized and rendered
+facts, and releases the renderer. Cleanup retry reuses those completed facts.
+All new captures commit
+`terminal_observation_version: "deferred-rendered-journal-v1"`, including when
+PID and port normalization are disabled. Historical Evidence remains readable;
+recapture both sides with the same observation version before comparison.
+
+When path normalization is enabled, aliases apply to selected path identities
+at clear text delimiters. A selected executable path does not alias a longer
+sibling filename such as `tool-helper`; selected parent directories still
+normalize within descendant paths. The comparison contract records these rules as
+`path-component-boundaries-v2`, so captures made with the earlier prefix rules
+cannot be compared as if the text had the same meaning.
 
 Rendered frame `lines` hold the visible rows after normalization, with trailing
 U+0020 spaces removed. Blank rows and internal spaces remain. `columns` records
@@ -334,6 +392,10 @@ to a bare PID kill for either finalization signal; failed identity or ownership
 validation is recorded as `unverified` with its reason. Cancellation before any
 deadline keeps the existing terminal kill. Descendants are not signalled during
 finalization; owned-process cleanup handles them afterwards.
+
+For an `exited` capture, `exit.code` is the target's normal exit code. It is
+`null` when the target ended on a signal, such as one sent by a scenario
+`signal` event, and the observed signal stays in `exit.signal`.
 
 `exit.reason` keeps the initiating deadline (`timeout` or `idle_timeout`).
 `exit.code` is `null` for every deadline exit; the code of an exit observed
@@ -417,10 +479,12 @@ Every capture requires `truncation_details`, with separate accounting for:
   bytes, plus observed/retained frame counts. This is independent of the raw
   chunk budget and does not count JSON encoding. Repeated screen snapshots can
   exhaust it even when all raw output fits. Rendered states use retained PTY
-  input, so raw omissions also limit rendered coverage. When bounded
-  normalization omits a rendered frame before its final size is known,
-  `unknown_size_frames` reports that count; `observed_bytes` includes only
-  rendered frame sizes that were determined exactly.
+  input, so raw omissions also limit rendered coverage. `unknown_size_frames`
+  counts frames whose complete size was not calculated; it does not by itself
+  identify normalization as the cause. `normalization_over_budget_frames`
+  counts the subset of unknown-size frames stopped by an ordered normalization
+  stage; it cannot exceed `unknown_size_frames`.
+  `observed_bytes` includes only rendered frame sizes determined exactly.
 - `filesystem_before` and `filesystem_after`: file-count/depth limits,
   enumeration failures, whole-file hash budget and bytes successfully hashed.
   Directory names are read incrementally within the remaining entry capacity.
@@ -446,7 +510,9 @@ Every capture requires `truncation_details`, with separate accounting for:
   Denied or failed procfs reads mark
   sampling partial while preserving readable process rows and thread children;
   a process with unreadable identity is not attributed. Expected process-exit
-  races are separate from failed observations. Shutdown counts only when it
+  races are separate from failed observations. A native token reader's confirmed
+  process absence during initialization is an expected exit; token-read denial
+  and unavailable snapshots still count as failed observations. Shutdown counts only when it
   interrupts a read or leaves traversal unfinished; a completed pass does not
   become partial merely because the sampler stops. Completed rows
   remain available and issued reads settle before final coverage is returned.
@@ -458,7 +524,11 @@ Trace assertions use coverage for the sources they select, so an assertion
 about complete raw terminal output need not fail because rendered snapshots
 were omitted. A trace difference applies to the dimensions identified by its
 diagnostic; unrelated dimensions retain their own comparison, including unknown
-coverage. Captures missing `truncation_details` are rejected on import;
+coverage. A finite-variant omission stays nonconforming to that variant, but does
+not mark a shared successor changed merely because its journal position shifted.
+Observed ordering violations remain changes. When a requested trace differs or
+its journal is unavailable and per-source values cannot locate the difference,
+`first_divergence` is unknown rather than evidence that no divergence occurred. Captures missing `truncation_details` are rejected on import;
 preserve them as historical files and recapture for current comparisons.
 `limits.file_bytes` is already the cumulative whole-file hashing budget,
 independent of `limits.output_bytes`, which bounds retained terminal content.
@@ -500,7 +570,7 @@ current token proof is still required before signaling. Swept cleanup verifies t
 remaining family after its group signals. Coverage is bounded by the native
 snapshots and generations inspected; sampled group IDs select candidates.
 
-When the host withholds an unrelated process’s ownership token, REA leaves that
+When the host withholds an unrelated process's ownership token, REA leaves that
 process untouched and records its PID and reason in `cleanup.unverified_processes`
 and process residual unknowns. Successful cleanup verifies the owned group;
 it does not attribute those unrelated processes. Related or otherwise unexplained

@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/agent-workflow-designer/../../../engineering/skills/agent-workflow-designer/SKILL.md

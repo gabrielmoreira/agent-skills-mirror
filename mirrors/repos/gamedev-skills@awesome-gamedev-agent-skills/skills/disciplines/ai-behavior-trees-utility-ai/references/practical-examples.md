@@ -67,10 +67,10 @@ public sealed class GuardAgent
     {
         _tree = new BehaviorTree(
             new ReactiveSelector()                       // reactive: seeing the player preempts patrol
-                .Add(new Sequence()                      // --- combat branch (higher priority) ---
-                    .Add(new CanSeeTarget(sightRange: 12f))
+                .Add(new ReactiveSequence()              // --- combat branch (higher priority) ---
+                    .Add(new CanSeeTarget(sightRange: 12f))          // re-checked every tick
                     .Add(new MoveToTarget(speed: 6f, arriveRadius: 1.5f))
-                    .Add(new Cooldown(0.8f).Wrap(new AttackTarget())))
+                    .Add(new ForceSuccess().Wrap(new Cooldown(0.8f).Wrap(new AttackTarget()))))
                 .Add(new Patrol(patrolRoute)),           // --- fallback ---
             _bb);
     }
@@ -169,7 +169,7 @@ var attackChoice = new UtilityEvaluator()
 
 var hybrid = new BehaviorTree(
     new ReactiveSelector()
-        .Add(new Sequence()
+        .Add(new ReactiveSequence()                       // keeps re-checking sight while attacking
             .Add(new CanSeeTarget(12f))
             .Add(new UtilitySelectorNode(attackChoice)))   // BT picks "engage"; utility picks how
         .Add(new Patrol(route)),

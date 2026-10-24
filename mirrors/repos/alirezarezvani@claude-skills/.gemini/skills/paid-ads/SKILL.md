@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/paid-ads/../../../marketing-skill/skills/paid-ads/SKILL.md

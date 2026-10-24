@@ -61,14 +61,14 @@ resolve_org_auth_with_token "$ORG_ALIAS" || exit 1
 # orgs) reject the OrganizationSettingsDetail query with INVALID_TYPE. That's
 # not a licensing signal — it's a metadata-availability signal. Treat any
 # non-conclusive result as "unknown, defer to SOAP" and only refuse when the
-# query explicitly comes back "false" (W-24022554).
+# query explicitly comes back "false".
 CONVERSATIONPILOT_ENABLED=""
 if CONVERSATIONPILOT_RAW=$(sf data query --target-org "$ORG_ALIAS" --use-tooling-api \
     --query "SELECT SettingValue FROM OrganizationSettingsDetail WHERE SettingName='ConversationPilot' AND DataType='OrgPermissionSettings'" \
     --json 2>/dev/null); then
   CONVERSATIONPILOT_JSON=$(echo "$CONVERSATIONPILOT_RAW" | awk '/^{/,EOF')
   if echo "$CONVERSATIONPILOT_JSON" | jq -e '.status == 0' >/dev/null 2>&1; then
-    CONVERSATIONPILOT_ENABLED=$(echo "$CONVERSATIONPILOT_JSON" | jq -r '.result.records[0].SettingValue // empty')
+    CONVERSATIONPILOT_ENABLED=$(echo "$CONVERSATIONPILOT_JSON" | jq -r '.result.records[0].SettingValue | select(. != null)')
   fi
 fi
 
@@ -215,7 +215,6 @@ fi
 # doing a write — Einstein GenAI Platform is a hard prerequisite for AI
 # Call Scoring, so an org that can't even see that settings type won't be
 # able to enable Call Coaching regardless of what the ECI toggle says.
-# W-24026047.
 #
 # Not perfect: an org could have the GenAI platform present but still lack
 # the specific Call Scoring license. State 2c's ECICallScoringAI
@@ -245,19 +244,33 @@ if ECICALLSCORINGAI_RAW=$(sf data query --target-org "$ORG_ALIAS" --use-tooling-
     --json 2>/dev/null); then
   ECICALLSCORINGAI_JSON=$(echo "$ECICALLSCORINGAI_RAW" | awk '/^{/,EOF')
   if echo "$ECICALLSCORINGAI_JSON" | jq -e '.status == 0' >/dev/null 2>&1; then
-    ECICALLSCORINGAI_ENABLED=$(echo "$ECICALLSCORINGAI_JSON" | jq -r '.result.records[0].SettingValue // "false"')
+    # A missing row means "couldn't read it", NOT "license is off" — default
+    # to empty (unknown), never to "false". OrganizationSettingsDetail is not
+    # queryable (INVALID_TYPE) on some org editions (for example Developer
+    # Edition) and can return zero rows even when queryable; both are "can't
+    # tell", and collapsing them to "false" fails closed. Use select(), not
+    # `// empty`: SettingValue is a boolean and `//` drops an explicit false.
+    ECICALLSCORINGAI_ENABLED=$(echo "$ECICALLSCORINGAI_JSON" | jq -r '.result.records[0].SettingValue | select(. != null)')
   fi
 fi
 
-if [[ -z "$ECICALLSCORINGAI_ENABLED" ]]; then
-  echo "Could not determine AI call coaching license state — ECICallScoringAI query failed."
-  echo "   Verify the CLI session is valid (sf org login web --alias $ORG_ALIAS) and re-run."
+# Only an EXPLICIT negative refuses. An unknown result — the query was
+# rejected (INVALID_TYPE on this org shape) or returned no row — must NOT
+# hard-fail: doing so blocks legitimately-licensed orgs where
+# OrganizationSettingsDetail simply isn't queryable. This mirrors the Phase 0
+# ConversationPilot gate, which defers to SOAP on any non-conclusive read. The
+# 2a-pre GenAI TYPE_UNAVAILABLE gate above catches most unlicensed orgs, and
+# the updateMetadata write below is the final check — a truly unlicensed org
+# faults on the write. Closes the residual gap the earlier
+# GenAI-proxy fix left behind.
+if [[ "$ECICALLSCORINGAI_ENABLED" == "false" ]]; then
+  echo "AI call coaching is not available in this org and org requires Agentforce for Sales license."
   exit 1
 fi
 
-if [[ "$ECICALLSCORINGAI_ENABLED" != "true" ]]; then
-  echo "AI call coaching is not available in this org and org requires Agentforce for Sales license."
-  exit 1
+if [[ -z "$ECICALLSCORINGAI_ENABLED" ]]; then
+  echo "Couldn't confirm the AI Call Scoring license on this org — continuing;"
+  echo "   if the license is missing, the enable step will report it."
 fi
 
 # 2b. ECI must be enabled — this skill is ECI-only.
@@ -363,7 +376,7 @@ EOF
     # read-only and updateMetadata returns INSUFFICIENT_ACCESS_OR_READONLY.
     # This is a transient state that self-resolves in a few minutes, not a
     # permanent failure — surface a wait-and-retry message instead of the
-    # generic error. W-23968462.
+    # generic error.
     case "$CS_RESULT" in
       WRITE_ERROR:INSUFFICIENT_ACCESS_OR_READONLY*)
         echo "   Einstein Conversation Insights is still finishing turning on."
@@ -388,31 +401,40 @@ CCR_LOOKUP=$(sf api request rest \
   "services/data/v68.0/tooling/query/?q=SELECT+Id,SettingValue+FROM+OrganizationSettingsDetail+WHERE+SettingName='CallCoachingReady'+AND+DataType='OrgPermissionSettings'" \
   --target-org "$ORG_ALIAS" 2>/dev/null) || true
 
-CCR_COUNT=$(echo "$CCR_LOOKUP" | jq -r '.totalSize // 0' 2>/dev/null || echo 0)
-if [[ "$CCR_COUNT" == "0" ]]; then
-  echo "Could not locate the CallCoachingReady OrgPermission record on this org."
-  exit 1
-fi
-
-CCR_ID=$(echo "$CCR_LOOKUP" | jq -r '.records[0].Id')
-CCR_CURRENT=$(echo "$CCR_LOOKUP" | jq -r '.records[0].SettingValue')
-
-if [[ "$CCR_CURRENT" == "true" ]]; then
-  echo "CallCoachingReady is already enabled — skipping."
+# On some org editions (for example Developer Edition), OrganizationSettingsDetail
+# isn't exposed at all (INVALID_TYPE) — the same unqueryable shape the Phase 3
+# license gate tolerates. The authoritative enable (enableECICallScoring, flipped
+# above and re-verified below) has already succeeded, so a CallCoachingReady
+# lookup we physically cannot run must not fail the enable closed.
+if echo "$CCR_LOOKUP" | grep -q '"errorCode"[[:space:]]*:[[:space:]]*"INVALID_TYPE"'; then
+  echo "CallCoachingReady OrgPermission isn't queryable on this org — skipping (Call Coaching is already enabled)."
 else
-  echo "Enabling CallCoachingReady..."
-  if CCR_PATCH_RESP=$(sf api request rest \
-      "services/data/v68.0/tooling/sobjects/OrganizationSettingsDetail/${CCR_ID}" \
-      --target-org "$ORG_ALIAS" \
-      --method PATCH \
-      --header 'Content-Type: application/json' \
-      --body '{"SettingValue": true}' \
-      2>/dev/null); then
-    echo "   CallCoachingReady enabled"
-  else
-    echo "   Failed to enable CallCoachingReady"
-    echo "   $CCR_PATCH_RESP"
+  CCR_COUNT=$(echo "$CCR_LOOKUP" | jq -r '.totalSize // 0' 2>/dev/null || echo 0)
+  if [[ "$CCR_COUNT" == "0" ]]; then
+    echo "Could not locate the CallCoachingReady OrgPermission record on this org."
     exit 1
+  fi
+
+  CCR_ID=$(echo "$CCR_LOOKUP" | jq -r '.records[0].Id')
+  CCR_CURRENT=$(echo "$CCR_LOOKUP" | jq -r '.records[0].SettingValue')
+
+  if [[ "$CCR_CURRENT" == "true" ]]; then
+    echo "CallCoachingReady is already enabled — skipping."
+  else
+    echo "Enabling CallCoachingReady..."
+    if CCR_PATCH_RESP=$(sf api request rest \
+        "services/data/v68.0/tooling/sobjects/OrganizationSettingsDetail/${CCR_ID}" \
+        --target-org "$ORG_ALIAS" \
+        --method PATCH \
+        --header 'Content-Type: application/json' \
+        --body '{"SettingValue": true}' \
+        2>/dev/null); then
+      echo "   CallCoachingReady enabled"
+    else
+      echo "   Failed to enable CallCoachingReady"
+      echo "   $CCR_PATCH_RESP"
+      exit 1
+    fi
   fi
 fi
 

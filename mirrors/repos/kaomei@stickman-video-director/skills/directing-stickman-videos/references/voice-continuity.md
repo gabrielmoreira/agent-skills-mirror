@@ -1,5 +1,7 @@
 # Shared voice continuity — all visual styles
 
+Scope: **A · Director text-to-video prompts only**. B · Autopilot uses named TTS voices under `autopilot.md`; do not copy this document's descriptive voice profiles into any B-style TTS request.
+
 This is the common voice contract for Style 1 Light/Dark, Style 2A, Style 2B and Style 3, plus Style 4 Cozy Storytelling. Voice identity belongs to the video, not to a visual style or a clip. Different videos may choose different voices; every clip of one video must use the same complete approved voice profile. Do not force every project into the tested male profile.
 
 ## Choose once in Phase A

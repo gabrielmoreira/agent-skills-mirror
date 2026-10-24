@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/minimalist/../../../engineering/minimalist/SKILL.md

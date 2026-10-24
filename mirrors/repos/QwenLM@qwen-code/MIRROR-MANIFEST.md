@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `QwenLM/qwen-code` — 26 default patterns, 9 followed patterns, 145 file(s) materialized.
+Mirror of `QwenLM/qwen-code` — 26 default patterns, 9 followed patterns, 148 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `QwenLM/qwen-code` — 26 default patterns, 9 followed patterns, 145 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 9 |
-| Files         | 145 |
+| Files         | 148 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -189,29 +189,32 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 120 | ✓ | [`packages/desktop/README.md`](packages/desktop/README.md) |
 | 121 | ✓ | [`packages/live-host/README.md`](packages/live-host/README.md) |
 | 122 | ✓ | [`packages/managed-agent-server/AGENTS.md`](packages/managed-agent-server/AGENTS.md) |
-| 123 | ✓ | [`packages/managed-agent-server/distribution/systemd/README.md`](packages/managed-agent-server/distribution/systemd/README.md) |
-| 124 | ✓ | [`packages/managed-agent-server/distribution/systemd/README.zh-CN.md`](packages/managed-agent-server/distribution/systemd/README.zh-CN.md) |
-| 125 | ✓ | [`packages/managed-agent-server/README.md`](packages/managed-agent-server/README.md) |
-| 126 | ✓ | [`packages/mobile-mcp/README.md`](packages/mobile-mcp/README.md) |
-| 127 | ✓ | [`packages/mobile-shell/README.md`](packages/mobile-shell/README.md) |
-| 128 | ✓ | [`packages/node-repl/README.md`](packages/node-repl/README.md) |
-| 129 | ✓ | [`packages/qwen-live/README.md`](packages/qwen-live/README.md) |
-| 130 | ✓ | [`packages/sdk-java/client/README.md`](packages/sdk-java/client/README.md) |
-| 131 | ✓ | [`packages/sdk-typescript/src/daemon-mcp/serve-bridge/README.md`](packages/sdk-typescript/src/daemon-mcp/serve-bridge/README.md) |
-| 132 | ✓ | [`packages/vscode-ide-companion/README.md`](packages/vscode-ide-companion/README.md) |
-| 133 | ✓ | [`packages/web-shell/README.md`](packages/web-shell/README.md) |
-| 134 | ✓ | [`packages/zed-extension/README.md`](packages/zed-extension/README.md) |
-| 135 | ✓ | [`scripts/sandbox-runtime/README.md`](scripts/sandbox-runtime/README.md) |
-| 136 | ✓ | [`scripts/tui-parity/README.md`](scripts/tui-parity/README.md) |
-| 137 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 138 | → | [`docs/design/README.md`](docs/design/README.md) |
-| 139 | → | [`docs/developers/development/integration-tests.md`](docs/developers/development/integration-tests.md) |
-| 140 | → | [`docs/evaluation.md`](docs/evaluation.md) |
-| 141 | → | [`docs/users/support/tos-privacy.md`](docs/users/support/tos-privacy.md) |
-| 142 | → | [`packages/sdk-java/qwencode/README.md`](packages/sdk-java/qwencode/README.md) |
-| 143 | → | [`packages/sdk-python/README.md`](packages/sdk-python/README.md) |
-| 144 | → | [`packages/sdk-typescript/README.md`](packages/sdk-typescript/README.md) |
-| 145 | → | [`README.md`](README.md) |
+| 123 | ✓ | [`packages/managed-agent-server/distribution/kubernetes/README.md`](packages/managed-agent-server/distribution/kubernetes/README.md) |
+| 124 | ✓ | [`packages/managed-agent-server/distribution/kubernetes/README.zh-CN.md`](packages/managed-agent-server/distribution/kubernetes/README.zh-CN.md) |
+| 125 | ✓ | [`packages/managed-agent-server/distribution/systemd/README.md`](packages/managed-agent-server/distribution/systemd/README.md) |
+| 126 | ✓ | [`packages/managed-agent-server/distribution/systemd/README.zh-CN.md`](packages/managed-agent-server/distribution/systemd/README.zh-CN.md) |
+| 127 | ✓ | [`packages/managed-agent-server/README.md`](packages/managed-agent-server/README.md) |
+| 128 | ✓ | [`packages/managed-agent-server/src/test/resources/capability-parity/README.md`](packages/managed-agent-server/src/test/resources/capability-parity/README.md) |
+| 129 | ✓ | [`packages/mobile-mcp/README.md`](packages/mobile-mcp/README.md) |
+| 130 | ✓ | [`packages/mobile-shell/README.md`](packages/mobile-shell/README.md) |
+| 131 | ✓ | [`packages/node-repl/README.md`](packages/node-repl/README.md) |
+| 132 | ✓ | [`packages/qwen-live/README.md`](packages/qwen-live/README.md) |
+| 133 | ✓ | [`packages/sdk-java/client/README.md`](packages/sdk-java/client/README.md) |
+| 134 | ✓ | [`packages/sdk-typescript/src/daemon-mcp/serve-bridge/README.md`](packages/sdk-typescript/src/daemon-mcp/serve-bridge/README.md) |
+| 135 | ✓ | [`packages/vscode-ide-companion/README.md`](packages/vscode-ide-companion/README.md) |
+| 136 | ✓ | [`packages/web-shell/README.md`](packages/web-shell/README.md) |
+| 137 | ✓ | [`packages/zed-extension/README.md`](packages/zed-extension/README.md) |
+| 138 | ✓ | [`scripts/sandbox-runtime/README.md`](scripts/sandbox-runtime/README.md) |
+| 139 | ✓ | [`scripts/tui-parity/README.md`](scripts/tui-parity/README.md) |
+| 140 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 141 | → | [`docs/design/README.md`](docs/design/README.md) |
+| 142 | → | [`docs/developers/development/integration-tests.md`](docs/developers/development/integration-tests.md) |
+| 143 | → | [`docs/evaluation.md`](docs/evaluation.md) |
+| 144 | → | [`docs/users/support/tos-privacy.md`](docs/users/support/tos-privacy.md) |
+| 145 | → | [`packages/sdk-java/qwencode/README.md`](packages/sdk-java/qwencode/README.md) |
+| 146 | → | [`packages/sdk-python/README.md`](packages/sdk-python/README.md) |
+| 147 | → | [`packages/sdk-typescript/README.md`](packages/sdk-typescript/README.md) |
+| 148 | → | [`README.md`](README.md) |
 
 ---
 

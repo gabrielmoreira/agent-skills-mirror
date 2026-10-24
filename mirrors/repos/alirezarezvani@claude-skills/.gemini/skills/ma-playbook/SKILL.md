@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/ma-playbook/../../../c-level-advisor/skills/ma-playbook/SKILL.md

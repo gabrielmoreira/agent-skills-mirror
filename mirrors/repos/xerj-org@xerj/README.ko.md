@@ -334,9 +334,14 @@ xerj mcp                                # 2. MCP stdio 서버 (클라이언트�
 바이너리의 절대 경로와 유일한 인자 `mcp` — 지만, 그 항목이 어디에 사는지, 어떤 키로 감싸지는지는
 클라이언트마다 다릅니다. `tested`는 해당 클라이언트에서 서버를 등록했고 `xerj_search`가 도구
 목록에 나타난 것; `untested`는 경로와 형태를 해당 클라이언트의 공식 문서에서 옮겨 적었고 아직
-아무도 실행하지 않았다는 뜻입니다. 실행해 본 것은 OpenCode 행뿐입니다: Windows의 v2.1.2를
+아무도 실행하지 않았다는 뜻입니다. 실행해 본 행은 둘입니다. OpenCode v2.1.2(Windows)를
 `xerj` v1.0.0-rc.97에 대해 실행했고, `initialize`와 `tools/list`에 전체 도구 목록으로
-응답했습니다. `untested` 행을 고치는 것은 환영받는 첫 PR입니다.
+응답했습니다. Cline CLI 3.0.73(Linux)을 `xerj` v1.0.0-rc.98에 대해 실행했습니다. 이 절의
+`mcpServers` 블록을 `~/.cline/data/settings/cline_mcp_settings.json`에 넣자 `xerj_search`
+(Cline이 모델에 넘길 때 이름은 `xerj__xerj_search`)가 그 바이너리의 도구 20개 목록에 나타났고,
+Cline이 `xerj_search` 호출 한 번을 실행했습니다. 공급자 키가 없어 모델 턴은 로컬
+OpenAI 호환 스텁이었고, MCP 서버는 실제 `xerj mcp` 프로세스였습니다. IDE의 MCP Servers >
+Configure 버튼은 그 실행에 포함되지 않았습니다. `untested` 행을 고치는 것은 환영받는 첫 PR입니다.
 
 | 클라이언트 | 설정 파일 | 키 | 비고 | 테스트 |
 |---|---|---|---|---|
@@ -348,7 +353,7 @@ xerj mcp                                # 2. MCP stdio 서버 (클라이언트�
 | GitHub Copilot in VS Code | `.vscode/mcp.json` | `servers` | `"type": "stdio"` 필요; 포터블 `.mcp.json`은 `mcpServers` 사용 | untested |
 | Windsurf | `%APPDATA%\devin\mcp_config.json`, `~/.config/devin/mcp_config.json` | `mcpServers` | 경로는 이제 `~/.codeium/windsurf`가 아닌 Devin 것 | untested |
 | Claude Desktop | `%APPDATA%\Claude\claude_desktop_config.json`, `~/Library/Application Support/Claude/claude_desktop_config.json`, `~/.config/Claude/claude_desktop_config.json` | `mcpServers` | 창만 닫지 말고 앱을 완전히 종료 | untested |
-| Cline | `~/.cline/data/settings/cline_mcp_settings.json` (CLI); IDE는 MCP Servers > Configure에서 열기 | `mcpServers` | `disabled`와 `autoApprove`는 Cline 전용 | untested |
+| Cline | `~/.cline/data/settings/cline_mcp_settings.json` (CLI); IDE는 MCP Servers > Configure에서 열기 | `mcpServers` | `disabled`와 `autoApprove`는 Cline 전용; 이번 CLI 실행에는 필요 없었음 | tested |
 | Roo Code | 프로젝트의 `.roo/mcp.json` 또는 `<VS Code User>/globalStorage/rooveterinaryinc.roo-cline/settings/mcp_settings.json` | `mcpServers` | 이름 충돌 시 프로젝트 항목이 우선 | untested |
 | Kilo Code | 프로젝트의 `kilo.jsonc` 또는 `.kilo/kilo.jsonc`, 전역은 `~/.config/kilo/kilo.jsonc` | `mcp` | OpenCode처럼 커맨드 배열 하나 | untested |
 | Continue | `~/.continue/config.yaml` 또는 `.continue/mcpServers/`의 아무 파일 | `mcpServers` | 맵이 아닌 YAML 리스트; Agent 모드만 | untested |
@@ -360,7 +365,7 @@ xerj mcp                                # 2. MCP stdio 서버 (클라이언트�
 | Kiro | 워크스페이스의 `.kiro/settings/mcp.json`, 사용자는 `~/.kiro/settings/mcp.json` | `mcpServers` | `${VAR}` 확장은 승인 필요 | untested |
 | Antigravity | `~/.gemini/config/mcp_config.json` 또는 워크스페이스의 `.agents/mcp_config.json` | `mcpServers` | 원격 서버는 `serverUrl` 사용 | untested |
 | OpenClaw | `~/.openclaw/openclaw.json` (JSON5) | `mcp.servers` | `transport: "stdio"` | untested |
-| DeepSeek Harness (dsh) | `$DSH_HOME/cordis.patch.yml` 또는 프로필 패치 | `@deepseek-ai/dsh-mcp-client`가 있는 `- insert:` | 서버당 플러그인 인스턴스 하나 | untested |
+| [DeepSeek Harness (dsh)](dsh/) | `$DSH_HOME/cordis.patch.yml` 또는 프로필 패치 | `@deepseek-ai/dsh-mcp-client`가 있는 `- insert:` | 서버당 플러그인 인스턴스 하나 | untested |
 | Warp | Settings > Agents > MCP servers 또는 `~/.warp/.mcp.json`과 프로젝트의 `.warp/.mcp.json` | `mcpServers` | `cwd`가 아닌 `working_directory` | untested |
 | Augment Code | Auggie CLI는 `~/.augment/settings.json`; IDE는 자체 패널 사용 | `mcpServers` | 그 파일은 IDE를 구동하지 않음 | untested |
 | Qwen Code | `~/.qwen/settings.json` 또는 프로젝트의 `.qwen/settings.json` | `mcpServers` | `mcp.allowed`가 조용히 숨길 수 있음 | untested |
@@ -426,18 +431,22 @@ Zed는 이들을 컨텍스트 서버라 부르고, OpenClaw는 `mcp` 아래에 �
 {mcp: {servers: {xerj: {command: "/abs/path/to/xerj", args: ["mcp"], transport: "stdio"}}}}
 ```
 
-DeepSeek Harness는 Cordis 패치 파일에서 MCP를 플러그인으로 불러옵니다:
+DeepSeek Harness는 `$DSH_HOME/cordis.patch.yml` 또는 프로필 패치 `$DSH_HOME/profiles/<profile>/cordis.patch.yml`에서 MCP 서버 하나를 플러그인 하나로 불러옵니다. 그 파일이 `[]`뿐이면 배열 아래에 붙이지 말고 아래 블록으로 바꿉니다. `[]` 아래에 붙이면 올바른 YAML이 아닙니다. `env`와 `cwd`는 stdio의 선택 필드입니다(`args` 기본값 `[]`, `env` 기본값 `{}`, `cwd` 기본값 `""`). 노드가 `--insecure`로 돌지 않으면 `env` 아래에 `XERJ_AUTH: "ApiKey <key>"`를 넣습니다:
 
 ```yaml
+# $DSH_HOME/cordis.patch.yml
 - insert:
     - id: mcp-xerj
-      name: "@deepseek-ai/dsh-mcp-client"
+      name: '@deepseek-ai/dsh-mcp-client'
       config:
         serverName: xerj
         transport: stdio
-        command: /abs/path/to/xerj
+        command: xerj
         args:
           - mcp
+        env:
+          XERJ_URL: "http://localhost:9200"
+        cwd: ""
 ```
 
 원래 목록의 후보 세 개는 의도적으로 빠져 있습니다. Aider는 MCP 클라이언트 지원이 아예

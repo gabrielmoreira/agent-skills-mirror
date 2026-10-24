@@ -146,12 +146,19 @@ Classify the org into one of 4 states:
 ### Phase 3 — Prerequisite enablement (State 2 only)
 
 - **License gate (checked first):** query `OrganizationSettingsDetail`
-  (Tooling API) for the `ECICallScoringAI` OrgPermission. If it isn't
-  `true`, exit with: "AI call coaching is not available in this org and org
-  requires Agentforce for Sales license." Non-zero exit. This runs even
-  when `enableCallCoaching`/`enableECICallScoring` already read favorably,
-  since those settings don't by themselves confirm the org is licensed.
-  **Must run before the ECI-off check below** — a genuinely unlicensed org
+  (Tooling API) for the `ECICallScoringAI` OrgPermission. Only an **explicit
+  `false`** refuses — exit with: "AI call coaching is not available in this
+  org and org requires Agentforce for Sales license." (Non-zero exit.) If the
+  permission **can't be read** — the query is rejected with `INVALID_TYPE`
+  (some org editions, for example Developer Edition) or returns no row — treat
+  it as **unknown and proceed**; do NOT fail closed on an unreadable signal.
+  The Einstein GenAI `TYPE_UNAVAILABLE` pre-check catches most unlicensed
+  orgs; the enable `updateMetadata` write is the final check. This mirrors the Phase 0
+  `ConversationPilot` gate, which defers on any non-conclusive read.
+  This runs even when `enableCallCoaching`/`enableECICallScoring`
+  already read favorably, since those settings don't by themselves confirm the
+  org is licensed. **Must run before the ECI-off check below** — a genuinely
+  unlicensed org
   and a licensed-but-toggled-off org both read `enableCallCoaching=false`,
   so checking ECI first would misdiagnose a licensing gap as a self-serve
   Setup toggle (the regression the `NoLicense` eval dataset guards against).
@@ -217,7 +224,7 @@ Re-read `enableECICallScoring`. Require `true`. Print SOAP response on failure.
   is server-side read-only and `updateMetadata` returns
   `INSUFFICIENT_ACCESS_OR_READONLY`. `enable-call-scoring.sh` maps this to a
   transient "still finishing turning on — wait a few minutes and re-run"
-  message rather than a terminal failure (W-23968462).
+  message rather than a terminal failure.
 - **Every SOAP call is bounded by a 30s timeout** (`CURL_TIMEOUT` in
   `enable-call-scoring.sh`, matching the only existing timeout precedent in
   this repo — the Pipeline skill's `setup-all.sh`) and classified via
@@ -243,14 +250,14 @@ Re-read `enableECICallScoring`. Require `true`. Print SOAP response on failure.
 - **SOAP helpers**: `scripts/shared/soap.sh` (copied from the Pipeline skill —
   `redact_token`, `parse_soap_response`)
 - **Server-side gate** (declarative access check):
-  `core/conversation-udd/java/resources/udd/conversation-udd/ConversationalIntelligence.accessChecks.xml`
+  `ConversationalIntelligence.accessChecks.xml`
   — `orgHasCallScoring` = ECI arm OR River Rush arm; `orgHasECICallScoringWithAI`
   adds Einstein GenAI + `ECICallScoringAI` license perm on top.
 - **Pref declaration**:
-  `core/conversation-udd/java/resources/udd/conversation-udd/ConversationalIntelligence.settings.xml`
+  `ConversationalIntelligence.settings.xml`
   — `<orgPreference name="ECICallScoringEnabled" mdApiName="enableECICallScoring" ...>`
 - **Java feature registration** (would be the entry point if a
-  SetupDiscoveryService REST/MCP wrapper existed): `core/conversation-impl/java/src/conversation/features/CoachingCompetenciesFeature.java`
+  SetupDiscoveryService REST/MCP wrapper existed): `CoachingCompetenciesFeature.java`
 
 ## Competency CRUD workflow
 

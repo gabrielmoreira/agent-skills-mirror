@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/patent/../../../research/patent/skills/patent/SKILL.md

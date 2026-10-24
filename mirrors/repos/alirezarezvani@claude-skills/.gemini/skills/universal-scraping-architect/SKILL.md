@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/universal-scraping-architect/../../../engineering/universal-scraping-architect/skills/universal-scraping-architect/SKILL.md

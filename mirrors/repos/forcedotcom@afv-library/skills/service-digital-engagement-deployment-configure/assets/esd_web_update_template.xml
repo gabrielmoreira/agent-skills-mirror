@@ -3,25 +3,98 @@
     <areGuestUsersAllowed>false</areGuestUsersAllowed>
 
     <!-- Branding (optional — reference an existing BrandingSet) -->
-    <!-- <branding>{BRANDING_SET_NAME}</branding> -->
+    <!-- To set branding, add a branding element whose value is {BRANDING_SET_NAME} -->
 
     <deploymentFeature>EmbeddedMessaging</deploymentFeature>
     <deploymentType>{Web|API|Mobile}</deploymentType>
 
+    <!-- Pre-Chat Form (OPTIONAL) -->
+    <!-- Pre-chat is OFF by default. DELETE this entire block if the deployment
+         collects no pre-chat data (that is the correct default).
+         Each formField must resolve to a standard parameter (_-prefixed) OR an
+         existing customParameter on the channel below. ChoiceList fields also need
+         a choiceList record that ALREADY EXISTS in the org (created in Setup —
+         it is not a deployable artifact). -->
+    <embeddedServiceForms>
+        <displayContext>Conversation</displayContext>
+
+        <!-- 1. Standard field -->
+        <embeddedServiceFormFields>
+            <displayOrder>0</displayOrder>
+            <formField>_FirstName</formField>
+            <formFieldType>Text</formFieldType>
+            <isHidden>false</isHidden>
+            <isRequired>true</isRequired>
+            <messagingChannelParameterType>Standard</messagingChannelParameterType>
+        </embeddedServiceFormFields>
+
+        <!-- 2. Visible custom text field (formField = an existing channel customParameter name) -->
+        <embeddedServiceFormFields>
+            <displayOrder>1</displayOrder>
+            <formField>{CUSTOM_PARAM_NAME}</formField>
+            <formFieldType>Text</formFieldType>
+            <isHidden>false</isHidden>
+            <isRequired>false</isRequired>
+            <messagingChannelParameterType>Custom</messagingChannelParameterType>
+        </embeddedServiceFormFields>
+
+        <!-- 3. Checkbox custom field -->
+        <embeddedServiceFormFields>
+            <displayOrder>2</displayOrder>
+            <formField>{CHECKBOX_PARAM_NAME}</formField>
+            <formFieldType>Checkbox</formFieldType>
+            <isHidden>false</isHidden>
+            <isRequired>false</isRequired>
+            <messagingChannelParameterType>Custom</messagingChannelParameterType>
+        </embeddedServiceFormFields>
+
+        <!-- 4. ChoiceList (dropdown) field — choiceList DeveloperName must already exist in the org -->
+        <embeddedServiceFormFields>
+            <choiceList>{CHOICELIST_DEVELOPER_NAME}</choiceList>
+            <displayOrder>3</displayOrder>
+            <formField>{CHOICELIST_PARAM_NAME}</formField>
+            <formFieldType>ChoiceList</formFieldType>
+            <isHidden>false</isHidden>
+            <isRequired>true</isRequired>
+            <messagingChannelParameterType>Custom</messagingChannelParameterType>
+        </embeddedServiceFormFields>
+
+        <!-- 5. Hidden / pre-populated field — displayOrder=-1, value captured but never shown -->
+        <embeddedServiceFormFields>
+            <displayOrder>-1</displayOrder>
+            <formField>{HIDDEN_PARAM_NAME}</formField>
+            <formFieldType>Text</formFieldType>
+            <isHidden>true</isHidden>
+            <isRequired>false</isRequired>
+            <messagingChannelParameterType>Custom</messagingChannelParameterType>
+        </embeddedServiceFormFields>
+
+        <isActive>true</isActive>
+    </embeddedServiceForms>
+
     <!-- Messaging Channel Configuration -->
     <embeddedServiceMessagingChannel>
+        <!-- Display name shown when pre-chat is enabled (OPTIONAL — delete this line if unused).
+             EXACTLY 3 brace tokens; leave unused slots EMPTY, e.g. {_firstName}{_lastName}{}.
+             Each non-empty token = a pre-chat field's externalParameterName (Channel Variable Name),
+             NOT the formField value. Standard: _firstName / _lastName / _email / _subject
+             (lowercase-first — the _FirstName formField spelling is REJECTED).
+             Custom: the channel param's externalParameterName (usually its name, e.g. CompanyName). -->
+        <displayNameFormat>{DISPLAY_NAME_FORMAT}</displayNameFormat>
         <isChatInvitationCustomizable>{true|false}</isChatInvitationCustomizable>
         <isEnabled>true</isEnabled>
         <isInvitationEnabled>{true|false}</isInvitationEnabled>
         <isSendInvtAllowedAfterAccept>{true|false}</isSendInvtAllowedAfterAccept>
         <isSendInvtAllowedAfterReject>{true|false}</isSendInvtAllowedAfterReject>
         <messagingChannel>{CHANNEL_PLATFORM_KEY}</messagingChannel>
-        <shouldShowAgentforceTagline>{true|false}</shouldShowAgentforceTagline>
-        <shouldShowDeliveryReceipts>{true|false}</shouldShowDeliveryReceipts>
-        <shouldShowEmojiSelection>{true|false}</shouldShowEmojiSelection>
-        <shouldShowReadReceipts>{true|false}</shouldShowReadReceipts>
-        <shouldShowTypingIndicators>{true|false}</shouldShowTypingIndicators>
-        <shouldStartNewLineOnEnter>{true|false}</shouldStartNewLineOnEnter>
+        <!-- shouldShow* / shouldStartNewLineOnEnter below: keep the retrieved value on update; with nothing retrieved, leave at the default false.
+             Set true only if the user explicitly asks for that feature. -->
+        <shouldShowAgentforceTagline>false</shouldShowAgentforceTagline>
+        <shouldShowDeliveryReceipts>false</shouldShowDeliveryReceipts>
+        <shouldShowEmojiSelection>false</shouldShowEmojiSelection>
+        <shouldShowReadReceipts>false</shouldShowReadReceipts>
+        <shouldShowTypingIndicators>false</shouldShowTypingIndicators>
+        <shouldStartNewLineOnEnter>false</shouldStartNewLineOnEnter>
     </embeddedServiceMessagingChannel>
 
     <isEnabled>true</isEnabled>
@@ -29,5 +102,7 @@
     <isTermsAndConditionsRequired>{true|false}</isTermsAndConditionsRequired>
     <masterLabel>{DEPLOYMENT_NAME}</masterLabel>
     <shouldHideAuthDialog>false</shouldHideAuthDialog>
-    <!-- Do NOT update <site> — auto-generated at creation, must not be modified -->
+    <!-- Web only: copy the site value UNCHANGED from the retrieved config (required for Web, can never be
+         changed). Omit this element entirely for Mobile/API deployments. -->
+    <site>{EXISTING_SITE_NAME}</site>
 </EmbeddedServiceConfig>

@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/strict-api/../../../engineering/strict-api/SKILL.md

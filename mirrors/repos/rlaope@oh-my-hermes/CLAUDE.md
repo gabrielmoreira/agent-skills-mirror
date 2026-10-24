@@ -12,11 +12,11 @@ reasoning about anything that touches Hermes Agent.
 oh-my-hermes (OMH) is a Hermes-native wrapper orchestration layer: a
 deterministic skill catalog, router, and prepared-handoff generator installed
 next to Hermes Agent. Core `omh` code makes no LLM, API, or network calls and
-never patches Hermes. Pure Python 3.11+, zero runtime dependencies. Three scoped
+never patches Hermes. Pure Python 3.11+, zero runtime dependencies. Four scoped
 exceptions. `omh coding fanout dispatch` (explicit opt-in) spawns local agent
 CLIs as subprocesses — those CLIs make their own network calls; omh itself
 makes none there, and nothing executes without that explicit command. The
-`omh_jev_ask` plugin tool is the one place OMH itself opens a connection: it
+`omh_jev_ask` plugin tool is the one place core OMH itself opens a connection: it
 POSTs typed questions to Jev (TypeSafe, or OpenRouter only with the operator
 setting in `<omh_home>/jev/settings.json`) with the user's own key, only when
 the user named Jev in that turn and a key resolves. Stdlib only, HTTPS only, a
@@ -29,7 +29,22 @@ the key on stdin) and `codex_ref_image.sh` (the user's codex CLI) are package
 data the user runs themselves with their own `ELEVENLABS_API_KEY` or codex
 login; OMH never imports or executes them, they refuse with exit 2 without
 the credential, and `eleven.py` is pinned in INVARIANT 1's
-`PROCESS_SPAWN_ALLOWLIST`.
+`PROCESS_SPAWN_ALLOWLIST`. The OMH TUI's gateway child,
+`src/tui/attach/gateway_attach.py`, is not core: it runs only on Hermes' own
+interpreter as the child the TUI spawns by path, and nothing in `src/` imports
+it. On a Hermes with the shared-gateway attach API it reaches the person's own
+gateway over loopback the way Hermes' Ink TUI does, through Hermes' functions
+and Hermes' `websockets` client; INVARIANT 2's `HERMES_INTERPRETER_SCRIPTS`
+holds it to a closed list of every import and name it may use, measured from
+the script (owner-approved as asyncio + websockets only, loopback), plus name
+flows: one `AttachApi`, built in `attach_api()` with its own nested `grant`;
+`connect` only in its `dial` slot; `dial` called only on the `attach_api()`
+result, with the url that object's `grant()` returned and the literal
+`proxy=None`; private attributes only on `self` in the script's own methods;
+and `os.environ` written only as the `TERMINAL_CWD` set-and-restore and the
+removal of `LAUNCH_POLICY_ENV`, pinned to its literal tuple and bound nowhere else. It is not a sandbox: an allowed
+Hermes function called with other arguments, and where the grant's url points,
+are beyond it.
 
 ## Build & Test
 

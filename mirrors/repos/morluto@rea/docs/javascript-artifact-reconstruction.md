@@ -60,6 +60,11 @@ The result retains the canonical local path, root artifact digest, artifact
 manifest and graph commitments, JavaScript Application Graph, static
 Electron summary, reconstruction statistics, and explicit limitations. It does
 not require a live Hopper, Ghidra, browser, or Electron process.
+Selected directories require read and search access. A denied root remains a
+typed host access failure; omission handling for denied descendants does not
+make an inaccessible selected root analyzable. Other host filesystem failures
+retain the selected input, reported errno and syscall/path when supplied, and
+the original diagnostic separately from artifact-format failures.
 
 The application graph selects the shallowest `package.json` outside
 `node_modules` as its package root, breaking equal-depth ties by Unicode
@@ -97,14 +102,31 @@ Omit the selection for the existing complete
 application workflow.
 
 The result and summary retain `source_selection.requested_paths` and
-`source_selection.unselected_files`. Every relevant file keeps its original
-inventory identity; unselected files report `text_status:
+`source_selection.unselected_files`. Selecting every relevant file leaves this
+count at zero and adds no unselected-source caveat. Every relevant file keeps its
+original inventory identity; unselected files report `text_status:
 "outside-analysis-scope"`. Their relationships remain unknown, and application
 coverage is partial while any file remains outside scope. Selection does not
 claim whole-application completeness or change integrity policy. Summary detail
 only reduces delivery; source selection reduces text acquisition and analysis.
 Explicit native provider or snapshot routing rejects `--source-path` rather
 than ignoring it.
+
+For directory input, a permission-denied child file remains an unavailable
+inventory occurrence, and an unreadable child directory records an unknown
+descendant omission. Readable sources remain available; application coverage is
+partial and retains those inventory limitations. An unreadable selected root
+remains an error. Explicit readers that require selected child bytes keep their
+access errors rather than treating denied paths as absent.
+Unavailable source files also retain their applicable per-file processing gap
+in the application graph. Their container inventory identity anchors that gap;
+REA does not invent a content digest for bytes it could not read.
+Incomplete traversal also qualifies negative path and package-metadata lookups:
+an unobserved earlier loader candidate cannot be skipped in favor of a later
+observed candidate. An explicit source selection whose discovery is unknown
+returns an unavailable error with the retained inventory, rather than claiming
+the selected source does not exist. Observed exact file candidates keep their
+identity; unknown traversal cannot establish a unique application root.
 
 ASAR header/index admission defaults to 16 MiB / 16777216 bytes. Set
 `REA_ASAR_MAX_HEADER_BYTES` in the environment that starts REA to a decimal
@@ -177,8 +199,23 @@ An unpacked entry whose companion bytes were not supplied remains
 `unavailable`. REA continues analyzing embedded JavaScript and records the
 missing native/resource bytes as unknown. The occurrence keeps
 `hash_status: unavailable`; no content-addressed child artifact is created for
-those missing bytes. See [MCP integrity handling](mcp-contracts.md#integrity-record-and-continue)
+those missing bytes. New inventories preserve an ASAR companion declaration as
+`unpacked: true`; an omitted flag in an older inventory does not establish that
+unavailable bytes belonged to a companion. See [MCP integrity handling](mcp-contracts.md#integrity-record-and-continue)
 for the tool-result contract.
+
+JavaScript whose syntax cannot be parsed retains unavailable semantic coverage
+with `incomplete-module` unknowns for each semantic family and unknown omitted
+node and relation extents. The source module is retained when node capacity
+permits. A parser failure alone does not imply resource truncation or a named
+resource limit. Decoding failures and deliberately
+unselected sources retain the same explicit semantic coverage gap.
+
+HTML whose bytes are not valid UTF-8 retains its file observation and an unknown
+`parse-html-script-references` scope with artifact-byte authority. Reference
+discovery was unavailable; zero retained script links does not establish that
+the unreadable HTML declared none. Readable HTML with no references has no such
+gap, and readable external references retain their load edges.
 
 ## Large results
 
@@ -219,6 +256,16 @@ waiting before receiving the reply, follow [MCP cancellation recovery](mcp-contr
 to find the record. CLI failure output contains the complete partial Evidence.
 Owned analyzer cleanup is verified before private files are released; uncertain
 cleanup retains ownership for retry and is reported separately.
+Typed cancellation or another primary interruption remains attached while
+cleanup is incomplete. Confirmed release restores that primary classification,
+including the caller's exact cancellation reason, while retaining partial
+application Evidence and historical cleanup diagnostics.
+
+Private worker storage failures retain the source identity, worker phase and
+reported I/O message as execution failures; they are distinct from malformed
+worker output. A per-source temporary-file cleanup failure preserves static and
+module facts together with any parent application-projection limit. Cleanup
+failure does not authorize expanding relationships that parent admission declined.
 
 ## What is reconstructed
 
@@ -249,10 +296,12 @@ utility-process runtime paths retain the runtime filename selected by the caller
 Selected bounded text is then parsed as inert data to recover:
 
 - `package.json` metadata and declared main or renderer entrypoints;
-- Electron preload paths and renderer files visible in static syntax;
+- Electron preload paths owned by proven BrowserWindow options and renderer
+  files loaded through proven BrowserWindow instances;
 - local HTML script entrypoints;
 - Webpack and Rspack chunk registrations and module factories represented as
-  AST literals;
+  AST literals, plus esbuild `__commonJS` module tables; recovered esbuild
+  CommonJS exports use its factory's `exports`-then-`module` parameter order;
 - static imports, dynamic imports, CommonJS `require` calls, workers, and
   service workers (only `new Worker(new URL(path, import.meta.url))` resolves
   relative to the calling module; string worker and service-worker paths use
@@ -296,9 +345,11 @@ RPC client syntax also contributes network endpoint candidates, in both
   initializer and no binding assignments; shadowed locals do not inherit client
   identity. `subscribe` additionally requires a tRPC observer
   argument (`onData`, `onError`, `onStarted`, `onStopped`, `onComplete`, or
-  `onConnectionStateChange`). `this` roots, browser globals, and any path
-  containing an RTK Query `endpoints` segment are never procedures; cache-key
-  helpers such as `queryKey` issue no request and are excluded.
+  `onConnectionStateChange`). `this` roots and unshadowed browser globals are
+  excluded. A lexical client can be named `history`, and its router segments can
+  use browser-global spellings. RTK Query `endpoints` chains are excluded only
+  when the root has no recognized tRPC client binding. Cache-key helpers such as
+  `queryKey` issue no request and are excluded.
 - `trpc:link:<link>` records the literal `url` option of `httpLink`,
   `httpBatchLink`, `httpBatchStreamLink`, and `httpSubscriptionLink` when the
   link's callee name survives bundling, including `(0, module.httpBatchLink)`
@@ -329,6 +380,21 @@ recorded path keeps those leading carrier segments; the procedure path is its
 suffix. Utility calls such as `useUtils().invoice.list.fetch()`, `useQueries`,
 and links whose callee was renamed by a minifier are not recognized.
 
+Bundler adapters own callback roles: Webpack supplies module, exports, then
+loader; esbuild CommonJS supplies exports, then module. Export extraction uses
+those binding identities for assignments and declarations, so renaming either
+parameter does not change the recovered names. Global property-definition
+intrinsics require lexical and visible-write proof. Computed writes through a
+standalone loader's exposed module/cache table use the shared value owner; an
+unknown key invalidates the original-slot proof rather than implying a fresh
+chunk installation. A function stored on a standalone loader member does not
+write the table merely by being defined: the bootstrap owner excludes its
+deferred writes only when that member is unread and the loader namespace stays
+confined. Calls, member aliases, dynamic member reads, namespace escapes, or
+receiver-based access retain uncertainty about those writes. Export names
+describe recognized declarations, not a proof
+of final runtime property lifetime or arbitrary helper behavior.
+
 Each recovered bundle module retains the exact factory-source digest. A complete
 bounded AST also receives a `babel-ast-v3` structural fingerprint. It ignores
 ordinary identifier spellings while retaining literal and directive values,
@@ -354,6 +420,22 @@ bound, the fingerprint is unavailable and its status is `truncated`; a bounded
 prefix is never presented as a complete stable fingerprint.
 
 ## Authority and unknowns
+
+API identity is a derivation: a familiar method or property name does not
+establish a browser or Electron API. The shared lexical, ambient-write, and
+member-mutation owners must establish the receiver before static API facts become
+roles or storage observations. Path `join`, `resolve`, and `fileURLToPath` use
+proven Node imports; source-relative URL conversion additionally requires an
+unmodified global or proven Node `url.URL` constructor and `import.meta.url`.
+Native constructor aliases retain that identity; their local spelling does not
+determine URL semantics, and replaced exports or local constructors remain unknown.
+Relative results of native path operations retain filesystem-expression context;
+their spelling does not turn them into module specifiers. Other calls preserve
+their expressions. A property named `preload` outside a proven BrowserWindow
+configuration does not establish a script entrypoint. Renderer recovery currently
+covers direct BrowserWindow instances, stable local aliases, and their
+`webContents`; other receiver-producing APIs remain unmodeled. Complete AST
+traversal does not imply complete API-model coverage.
 
 Artifact bytes and AST syntax are observations. Entrypoint resolution, imports,
 loads, calls, and persistence relationships are static inferences and explicitly
@@ -488,6 +570,14 @@ candidate. Dynamic channels are never paired, and multiple compatible handlers
 are reported as ambiguous without adding a caller-to-handler edge. A matching
 channel still does not prove registration order, reachability, or runtime use.
 
+Native-addon call bindings consume the same loader identity and normalized
+arguments as dependency analysis, including optional calls. Local methods or
+parameters named `require` establish no native binding; `require.resolve` records
+lookup rather than a native namespace. CommonJS re-export bindings require a
+selected export value and an applicable shared export receiver. Arithmetic and
+logical compound stores keep their dependency observations without asserting that
+the addon is the selected exported value.
+
 For `.node` bindings, member names mean “requested by JavaScript syntax.” A
 resolved add-on path does not convert them into verified native exports. Native
 symbol verification remains a separate deep-analysis claim.
@@ -512,6 +602,11 @@ normalizer and collision registry, ASAR entry bytes are rechecked against the
 inventory digest before parsing, and malformed ASAR operations return typed
 format diagnostics that retain the local container path. Native add-ons are
 represented by metadata only.
+
+POSIX directory names are read as raw bytes and admitted as logical paths only
+when they round-trip through UTF-8. Invalid names are left untouched, retained
+siblings remain inventoried, and traversal coverage is marked unknown with the
+first rejected basename bytes identified in hexadecimal.
 
 ## Bounds and coverage
 
@@ -636,6 +731,13 @@ execution and memory limits continue to determine examined coverage. Raising onl
 a node capacity does not raise the unknown capacity. Graphs without unknown
 omissions omit this optional coverage field, preserving their existing identities.
 
+These node and unknown capacities bound retained graph projection. Parsing,
+static analysis and semantic fact construction precede that projection for an
+admitted source. Lowering the capacities can reduce projection and retention
+work, but does not bound upstream semantic-analysis time or memory. Select fewer
+`source_paths` to reduce the sources analyzed; heap and deadline controls set
+separate resource failure boundaries with the runtime-specific limits above.
+
 While sources remain, the sequential worker reserves one next compact static
 checkpoint at its 8 MiB bound with the same 6x retention expansion used at
 admission. Earlier checkpoints are already charged to retained bytes; the
@@ -756,6 +858,24 @@ URL targets before selecting a later package-local file; an unsupported bare
 package or recursive alias keeps its unresolved outcome rather than selecting
 a later fallback.
 
+For a proven `createRequire(new URL(relativeFile, import.meta.url))` call,
+relative `require()` edges use the selected filename's directory and retain the
+source-relative `resolution_base_path` on the graph edge. This follows Node's
+`createRequire(filename)` contract; the path is a loader-resolution fact and
+does not change the source file or call-site Evidence identity. If the filename
+cannot be proven, REA keeps the require target unresolved rather than silently
+resolving it from the caller's directory.
+
+Module-reference graph edges, including native-addon `loads` edges, retain
+`properties.operation`: `load` identifies
+an import or loader invocation that may execute the target; `resolve` identifies
+a proven `require.resolve()` lookup that discovers a target without executing it.
+Both retain the exact specifier, resolution mode, selected resolution base, and
+call-site Evidence. Resolve-only edges do not propagate application ownership or
+create executable-import gaps when their targets are missing. A modified
+`.resolve` member remains an uncertain `load`, because its replacement may execute
+code. These static facts do not establish that a call runs at runtime.
+
 ESM relative module paths, legacy package subpaths without exports, and selected
 package exports targets use URL suffix handling and one percent-decoding pass.
 Bare specifiers retain their complete query/fragment text for exports key matching.
@@ -798,3 +918,17 @@ truncated under the `html_inline_script_locations_per_file` limit, and the
 scope's evidence counts the omitted locations. The graph names the
 file and up to 10 starting lines in its limitations, and coverage is partial. Import maps, speculation rules, data blocks, and blank
 bodies are not JavaScript and are not reported.
+
+For static source relationships, an explicitly requested declaration filename
+(`.d.ts`, `.d.mts`, or `.d.cts`) retains its inventoried identity through both
+`import` and `require`. A declaration found only as an emitted-extension fallback
+remains unavailable as a runtime implementation. Package URL targets decode
+filename escapes once, including dots within filenames; forbidden whole segments
+and encoded separators remain rejected. ESM local-path classification uses the
+authored request before URL whitespace preprocessing, so leading whitespace
+cannot turn a bare request into a relative file dependency.
+For example, a leading tab or newline before `./dep.mjs` remains a bare
+package request; Node's later package-URL normalization can resolve it under
+`node_modules`, independently of a same-named file beside the importer. Resolver
+qualification checks the exact path and file existence: [`import.meta.resolve()`](https://github.com/nodejs/node/blob/v24.22.1/doc/api/esm.md#importmetaresolvespecifier)
+alone can return a URL for a missing file.

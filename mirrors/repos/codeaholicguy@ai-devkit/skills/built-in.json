@@ -1,6 +1,7 @@
 [
   "agent-communication",
   "agent-management",
+  "agent-orchestration",
   "ai-devkit-setup",
   "remote-from-slack",
   "remote-from-telegram",
@@ -14,13 +15,16 @@
   "dev-testing",
   "dev-review",
   "dev-pr",
-  "structured-debug",
+  "dev-debug",
   "document-code",
   "memory",
   "task",
-  "simplify-implementation",
+  "dev-simplify",
+  "dev-refactor",
   "brainstorm",
   "verify",
+  "dev-smoke",
+  "dev-retro",
   "tdd",
   "session-compact"
 ]

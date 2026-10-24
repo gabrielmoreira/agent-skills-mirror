@@ -1,7 +1,7 @@
 # Comparing delivered loops
 
 `video-loop-compare` reads the **final strip and metadata**, including any
-`video-follow` changes. A loop report supplies provenance; its seam score and
+`video-sway` changes. A loop report supplies provenance; its seam score and
 pass status do not describe later pixels and are never used as comparison scores.
 
 ```bash
@@ -83,7 +83,7 @@ flattening colour animation is not sufficient: it returns
 `interpolation-fault-remains`. These are `unknown` unless another comparable
 axis already proves a regression.
 
-`body_motion` reuses the common-body tracker from `video-follow`.
+`body_motion` reuses the common-body tracker from `video-sway`.
 `top_band_motion` is the existing silhouette-top observation, which may follow
 an accessory instead of a head. Both are descriptive; reducing their motion
 is not scored as improvement. Rigid scale pumping is not inferred from a

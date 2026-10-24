@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/andreessen/../../../productivity/andreessen/skills/andreessen/SKILL.md

@@ -61,6 +61,11 @@ The server advertises `listChanged: true`. Updating a registered guided prompt
 emits `notifications/prompts/list_changed`, allowing clients to refresh their
 cached prompt catalog.
 
+Schema-invalid parameters to `prompts/get`, `prompts/list`,
+`completion/complete`, and `tools/list` return JSON-RPC `-32602` with field
+diagnostics. Correct the named fields and retry on the same connection.
+Unexpected handler failures retain JSON-RPC `-32603`.
+
 ## Session-aware completion
 
 MCP `completion/complete` completes guided-prompt arguments; it does not define

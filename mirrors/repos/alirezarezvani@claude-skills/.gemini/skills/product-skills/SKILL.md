@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/product-skills/../../../product-team/skills/product-skills/SKILL.md

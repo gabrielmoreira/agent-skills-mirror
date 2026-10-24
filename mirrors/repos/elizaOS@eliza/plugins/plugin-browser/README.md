@@ -70,7 +70,7 @@ vault authorization and does not silently fill remote device profiles.
 
 `NativeSurfaceBrowserTarget` accepts an authenticated surface command channel.
 It supplies the existing `NativeTaskActuator` with the current selected page,
-task binding, guidance and main-frame snapshot/click/fill/select/scroll operations.
+task binding, guidance and main-frame snapshot/click/fill/select/scroll/follow operations.
 Its compatibility `getProfileId()` returns an `embedded:` connection identity;
 it never claims a Chromium extension or profile. Stopping the target aborts its
 in-flight channel requests. Every request names that exact connection, so a
@@ -84,6 +84,18 @@ preview checks. A cleanup failure after input remains an uncertain outcome.
 No page offer answers, arbitrary scripts, protected fills, child frames or
 coordinate input are supported by this adapter. Full general browser control
 and product composition require their own implementation and acceptance.
+
+The embedded task target supports `browser.follow` for an observed same-origin
+HTTPS anchor. It loads the snapshot's exact destination without running a click
+handler. The host must authorize the target and the task capability; the normal
+preview, one-use reference, expiry, effect journal and readback checks apply.
+It refuses URL credentials, download links and new-window targets. It is not a
+form submission or consent grant. Desktop workspace and socket targets do not
+support this operation yet. If a follow returns `UNCERTAIN_OUTCOME`, the actuator does not replay it. It
+checks one fresh snapshot against the exact observed same-origin HTTPS destination
+and then requires host verification. A missing or different destination, effect
+violation, changed authority or failed cleanup remains unknown. Other uncertain
+effects retain the explicit reconciliation path.
 
 Native `select` takes an exact visible option label in `text` (or the workspace
 `value` field). Snapshots report option labels, disabled state and selection,
@@ -195,16 +207,49 @@ refused, also after a bridge restart; a refusal after admission still spends
 it), and lets the commit control be pressed. The watch then lets exactly one
 commit through: the submit the granted control itself sends to the page's
 origin with its page load (POST or GET), or, when no such page load is under
-way, one own-site request (a script form or button that sends with fetch). A
+way, the one own-site request the grant expects (a script form or button that
+sends with fetch). A
 submit with no submitter (`requestSubmit()` or an implicit submission) counts
 only when the granted control is the form's default button and overrides
-nothing. A
-snapshot reports it as `consentedCommit` (`{ grantId, kind }`). A submit the
+nothing.
+
+The expected request is the grant's optional `requestTarget`
+(`{ path, method }` for a path and optional query on the page's origin, or
+`{ url, method }` for an absolute https URL; method `GET`, `POST`, `PUT`,
+`PATCH` or `DELETE`). Without one it is the granted submit button's form
+action and method (a GET form by origin and path), and a control that is not a
+submit button, such as a script "Pay" button, has none: its request is then
+reported as an `effectViolation`. Declare `requestTarget` for such a control.
+A declared target also binds the granted form's page load. The page compares
+the request URL exactly; it cannot see a fetch or XHR method, so it checks the
+method only for a beacon (always POST) and a page load.
+
+The grant's optional `formHash` binds the form contents: `commitFormHash(entries)`
+(exported from `native-socket-target`) over the `[name, value]` pairs the host
+showed the person, in the order the form sends them, the submitter's own
+name/value included and file inputs left out (SHA-256 of
+`"eliza-commit-form-v1\n"` and the JSON pairs, CRLF and CR made LF, NFC). The
+page computes the same hash from the submit's actual FormData and again from
+its page load's form data (or GET query), and consents only on a match, so a
+field a script changed or a hidden input it added after her yes stops the
+submit. Under a `formHash` a request is consented only after such a matching
+submit. Hosts doing money commits MUST send `formHash`. Without one, the
+snapshot's `consentedCommit` carries the hash of the form data sent
+(`{ grantId, kind, formHash }`; left out for a form with a password, code or
+card field) for the host to compare after the fact, and the actuator treats a
+reported hash that differs from a granted one as an unknown outcome. Hidden
+inputs count, and snapshots do not expose field values, so the host must know
+every value it hashes.
+
+A
+snapshot reports the commit as `consentedCommit`. A submit the
 page cancels cannot be sent later. A submit from another submitter of the same
 form, a submit whose action, method, target or encoding differs from the
-granted control's when it was pressed, a script `form.submit()`, a second
+granted control's when it was pressed, changed or added form data, a script
+`form.submit()` (one into another window, which the page cannot stop, is
+reported), a second
 submit, another form, a submit to
-another origin, any further own-site request, a same-document address change
+another origin, any other own-site request, a same-document address change
 and any other move to another document are still stopped or recorded as
 `effectViolation`, which the actuator treats as an unknown outcome. The actuator treats
 a `consentedCommit` for any other grant as an unknown outcome. Without a grant

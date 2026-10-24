@@ -165,7 +165,10 @@ Each such MCP tool call selects one of the records its manifest tool cites and
 returns that record's recorded response. Selection compares the supplied path
 parameters against the record's path segments at the parameter indexes, then
 the supplied query values against the record's query string, and keeps the
-record with the most matches; ties keep manifest order. The result reports
+record with the most matches; ties keep manifest order. A query argument accepts
+one string or an array of strings for repeated values; the array is matched
+against every occurrence in captured order. The raw recorded query remains the
+replay evidence. The result reports
 where the answer came from:
 
 ```json
@@ -187,9 +190,14 @@ where the answer came from:
 }
 ```
 
-`exact_match` is true when every supplied path parameter and query value
-equals the recorded one; it says nothing about parameters the caller omitted.
-Recorded query parsing runs only when supplied query arguments affect selection.
+`exact_match` is true when every supplied path parameter and query occurrence
+matches the recorded one; it says nothing about parameters the caller omitted.
+Comparison probes retain the raw query spelling and its decoded parameter pairs
+in request order, including the interleaving of repeated values across names.
+Standalone tool calls express repeated values as per-name arrays; when matching
+records differ only in cross-name order, `exact_match` is false because those arguments cannot
+identify that order. Recorded query parsing runs only when supplied query
+arguments affect selection.
 A path value matches a recorded segment as written or after percent-decoding;
 when both kinds of match are available, the record whose segment equals the
 value as written is chosen. `recorded_query` keeps the `?` of an explicit empty
@@ -365,7 +373,8 @@ shape and carries no annotations.
 Path parameters are required strings whose
 description names the segment index, the templating rule and the observed
 values (sampled within the list budget above; the manifest keeps them all);
-query parameter names are optional strings; write methods accept an
+query parameter names accept an optional string or array of strings (for
+repeated values in captured order); write methods accept an
 optional `body` object described by the recorded top-level key types. Each
 input keeps its own argument: a query name equal to a path parameter's name is
 advertised as `query_<name>`, a query name longer than 64 characters as
@@ -428,6 +437,15 @@ Each read tool answers according to its view in the state:
 | `list`     | When the arguments name one of the lines the view checked exactly (its latest recordings before the first related write; every path and query value equal to the recording's, and every recorded query parameter supplied), that recorded envelope with its array rendered from the state: every entity of the collection in state order for `membership: "all"` or a line `all_record_ordinals` names, or the recorded members still held. A call with no query argument answers from such a line of the collection its path arguments name that only pages its list, with `replay.exact_match` false. On a line the view's `query` answers, and for a call whose every query argument has a role there (an argument-less call aside), the answer is the query evaluated over the state: filtered, searched, sorted and paged, with counters at the number listed and `query.totals` at the number matched, and `state.membership: "query"`; such a call answers on a query or whole line of its collection with `replay.exact_match` false. A value an `inert` parameter never recorded, or a parameter without a role, replays its recording. A member lacking a field every recording carried makes the call a tool error rather than a partial list. |
 | `document` | When the arguments name the document's checked line exactly, the state's value for it; a tool error when the state holds none.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | `recorded` | The recording, as replay answers it.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+
+A read with repeated query values uses replay, because the state query model
+does not infer repeated-parameter semantics. A repeated-query write is refused
+before it can change state for the same reason.
+
+List counters retain their recorded number or digit-string representation.
+Changing a digit-string counter preserves its observed zero-padding width;
+query-total inference remains limited to canonical decimal counts. Path matching
+uses the same segment parser as extraction, preserving empty internal segments.
 
 An item or list view that always spells a clock field otherwise than the
 entity's stored value names that spelling in `clock_formats`, and a value it
@@ -573,7 +591,10 @@ id are unique; `view_fields` is optional and names item or list views of its
 type. Views render their values over the entity's fields, so a view's values
 must not set the type's identity field to a value whose text differs from the
 entity's `id`. Spell a collection as requests spell it, as `data/get` reports it: list
-calls find entities under the checked line's recorded path. Each document
+calls find entities under the checked line's recorded path. State collection
+identity preserves repeated separators inside captured paths: `/api/books`
+and `/api//books` are distinct. A single trailing slash continues to name the
+same collection. Each document
 names a `document` view once, at its initial document's `path`. The `version`,
 and the `state_evidence_id` and `types` that `data/get` reports, must match
 the served state, so a `data/get` result loads back unchanged. A number without
@@ -646,7 +667,7 @@ agent-env run ./grafana-example
 ```text
 grafana-example/
   README.md                                 provenance, what it serves, run command, rights note
-  envs/grafana-example/Dockerfile           pinned image: node:24.18.0-bookworm-slim + rea-agents@<this version>
+  envs/grafana-example/Dockerfile           pinned image: node:24.22.1-bookworm-slim + rea-agents@<this version>
   envs/grafana-example/env.toml             environment_name = "grafana-example"
   envs/grafana-example/manifest.json        byte-exact copy of manifest.json
   envs/grafana-example/evidence.json        byte-exact copy of capture.json
@@ -755,8 +776,45 @@ recording replayed in its place and never from a recording whose body the probe 
 two collections can reuse a live id, and an equal pair stays in that collection. A live id in a later request's path, query or body is translated before the
 environment answers, a path parameter by the collection the live path names (a nested collection keeps its parent values, each decoded once, and a literal route segment stays), except a query value that pages a list, such as `limit`
 or `page`. Each call is checked against the served tool's input schema first, as the MCP server checks it. After mapping, two clock values compare by format only (ISO-8601 strings, and epoch numbers under
-time-named fields), and two different values each side generated on its own compare equal: both UUIDs, or one length of
-eight or more with the same character classes and a digit. The report counts each kind of normalised value.
+`at`, `time`, `date`, `timestamp`, `created`, `updated` or `modified` field names, including snake-case and camel-case forms).
+Numeric arrays retain that containing field's clock context through nested
+arrays; an object's own fields establish their own context. Numeric values at
+the body root, in root arrays, or under measurement fields remain literal.
+
+Generated strings normalize only where this confirmed, served write's entity
+response rules identify generation. A `unique` rule or UUID identity rule must
+still compare two UUIDs; a `renewed` rule applies only at its recorded pointers,
+with `*` matching actual array items. Token/sequence strings retain the existing
+format check: equal length of at least eight, the same character classes, and
+a digit. Numeric sequences continue to compare literally unless an ID mapping
+applies. String shape and names such as `token` or `sku` alone do not establish
+generation. Read and replay responses without these facts stay literal except
+for supported clocks and learned IDs. A missing write target replays an absence
+response and does not inherit the successful entity response's generation rules.
+Admitted generated values must also preserve aliases and distinct identities
+within that response. UUID identity uses the generator's case-insensitive
+matching; token and sequence strings retain their literal identity. This
+correspondence ends with the answer and is not inferred across calls.
+The report counts each kind of normalised
+value; the generation rules remain model-derived facts, rather than new
+observations of the application.
+ISO clock offsets are accepted only within RFC 3339's `00`–`23` hour and `00`–`59` minute ranges.
+Probe ordering retains every recorded fractional-second digit in ISO timestamps
+with a four-digit year, `T`, and a `Z` or `±HH:MM` suffix. Equal instants use ordinal order. Other native-Date
+spellings keep their existing millisecond interpretation; an absent or unreadable
+start time makes the whole probe use record order. Original capture timestamps
+remain unchanged. Clock-format comparison and respelling recognize four-digit
+ISO years `0000`–`0099` as well as later years, with normal calendar validation.
+Respelling preserves the original value when the target zone would require a year
+outside `0000`–`9999`; generated writes refuse a clock outside that format.
+Capture-state extraction still uses millisecond coordinates for request intervals
+and their ordering, and generated-clock progression compares milliseconds.
+
+Comparison keeps response representations distinct: JSON values compare structurally, text compares as text, and a
+retained base64 body compares by bytes (including with UTF-8 text carrying those same bytes), never by its base64
+spelling. ID mappings apply at identifier fields, `ids`/`uuids`/`guids` lists, an entity's own identity within its
+collection, and a string field learning confirmed as a state-held ID. ID mappings leave other numeric and string values unchanged. A
+global conflict involving an equal pair is not used to normalize either pair; the report counts it as an ID conflict.
 
 A step agrees when the statuses and the normalised bodies are equal. The report gives agreement overall, per probe and
 per tool, `agreement_ignoring_order` for steps that differ only in item order, and each step's differences, at most 20,
@@ -777,16 +835,16 @@ with a JSON pointer and both values cut short:
 | `unmapped-id`   | The application answered with success and the environment did not, for a path id the comparison never mapped |
 
 What a probe did not observe is not counted as the application's behaviour. A record without a usable request line,
-such as a redacted URL or a transaction the capture cannot attribute, is not replayed, nor is a request to another
-origin than the application's (`other-origin`: the probe's origin with the most JSON-like records, as the manifest
+such as a redacted URL or a transaction the capture cannot attribute, is not replayed, nor is a request to an origin different
+from the application's (`other-origin`: the probe's origin with the most JSON-like records, as the manifest
 chooses its own), and a request with no recorded
 answer is made, since it may have changed the application, but not compared: each probe lists them under `unobserved` with the reason, and the summary counts them. A live
 body the probe did not record compares by status only and is counted as `unobserved_bodies`, unless the answer never
 carries one (204, 205, 304, `HEAD`). A browser probe captured without `capture.network.response_body` is refused, as
 is one that makes POST, PUT or PATCH calls without `capture.network.request_body`.
 
-Agreement covers only the calls the probes make, after the mapping the answers allow. Values compared by form, clocks
-and generated values, can still differ in content, and an equal answer after a write shows the state matched for that
+Agreement covers only the calls the probes make, after the mapping the answers allow. Clocks compared by format
+and fields normalized under explicit generation rules can still differ in content, and an equal answer after a write shows the state matched for that
 read, not that the write had no other effect.
 
 ## Compatibility verification

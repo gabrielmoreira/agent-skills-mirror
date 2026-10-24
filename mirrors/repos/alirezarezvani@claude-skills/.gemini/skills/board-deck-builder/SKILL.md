@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/board-deck-builder/../../../c-level-advisor/skills/board-deck-builder/SKILL.md

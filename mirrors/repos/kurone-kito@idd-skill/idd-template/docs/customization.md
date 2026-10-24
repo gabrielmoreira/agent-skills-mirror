@@ -387,9 +387,17 @@ from the target repository root to get the concrete import surface for
 the chosen profile:
 
 ```sh
-npx --yes --package https://codeload.github.com/kurone-kito/idd-skill/tar.gz/refs/heads/main \
+npx --yes \
+  --package https://codeload.github.com/kurone-kito/idd-skill/tar.gz/77befdd4030757464bed7f31c7dfe6d0a404a18b \
   idd-helper-bundle-manifest --profile package-manager
 ```
+
+`--package` selects the running manifest build, pinned here to
+v0.17.0. Issue #4644's
+[2026-10-23 intake][reviewed-executable-example-intake] records the
+maintainer's guidance choice, not a demonstrated vulnerability. See the
+[pinning guide](idd-helper-scripts.md#pinning-executable-examples) for
+update steps and the mutable-source option.
 
 The manifest auto-detects npm, pnpm, or yarn from the target repository
 when possible. If detection is ambiguous, pass this flag explicitly:
@@ -400,8 +408,9 @@ when possible. If detection is ambiguous, pass this flag explicitly:
 
 The output shows which dependency entries, `package.json` scripts,
 vendored files, or one-shot commands belong to the selected profile.
-Pass `--package-spec <pinned-spec>` when you want the manifest to emit a
-reviewed tarball or mirror URL instead of the default archive URL.
+`--package-spec` selects emitted output, not the running build. If
+omitted, the existing mutable `DEFAULT_PACKAGE_SPEC` (`refs/heads/main`)
+remains.
 
 To switch profiles later, rerun the same command with
 these flags:
@@ -1331,7 +1340,7 @@ Example downstream usage:
 ```yaml
 jobs:
   pnpm-boundary:
-    uses: kurone-kito/idd-skill/.github/workflows/pnpm-boundary.yml@main
+    uses: kurone-kito/idd-skill/.github/workflows/pnpm-boundary.yml@77befdd4030757464bed7f31c7dfe6d0a404a18b
     with:
       node-version: "24.x"
       lint-command: npm run lint # replace with your own lint/test command
@@ -2719,16 +2728,16 @@ check each run's own
 `pull_requests[].number` against the target pull request (empty for a
 fork-originated pull request, where GitHub never populates that field).
 
-**Only your configured required status checks cost every pull request
-unconditionally.** A `pull_request`-triggered workflow that is _not_ one of
-your branch ruleset's required contexts -- a security scanner, a
-secondary compatibility-floor guard, anything advisory -- is safely
-droppable or path-filterable without weakening the IDD merge gate itself,
-since the gate only ever waits on the required contexts. Filtering or
-dropping a _required_ context's own trigger is the one cut this guide
-never recommends: a path-filtered required check simply never reports for
-a change outside its filter, which blocks the pull request forever rather
-than saving anything (preventive; no observed incident yet).
+**Required status checks define the merge gate; workflow triggers and
+executed jobs determine Actions usage.** A workflow or job that runs when
+its trigger and conditions match can consume runner usage even when its
+context is not required. Filtering or dropping non-required workflow
+triggers can reduce usage without weakening the merge gate. Keep required
+contexts able to report under the existing gate: filtering or dropping a
+required context's trigger can leave it missing and block the pull request
+instead of saving usage (preventive; no observed incident yet). See the
+[GitHub Actions billing and usage guide][actions-billing].
+This distinction corrects the summary drift reported in [issue #4641](https://github.com/kurone-kito/idd-skill/issues/4641).
 
 **On a private repository, the account Actions spend limit is where this
 multiplier stops being merely a cost and becomes a hard block**: once the
@@ -2744,3 +2753,5 @@ These are repository-local optimizations; they do not change the IDD merge gate
 or the cross-agent workflow.
 
 [issue-authoring-review-input-schema]: https://kurone-kito.github.io/idd-skill/schemas/issue-authoring-review-input.schema.json
+[actions-billing]: https://docs.github.com/en/actions/concepts/billing-and-usage
+[reviewed-executable-example-intake]: https://gist.github.com/kurone-kito/9f2d7871542cb2f7a255f92a7c1232d0

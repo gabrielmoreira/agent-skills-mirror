@@ -74,21 +74,38 @@ func apply_state(data: Dictionary) -> void:
 ### 2. Atomic, crash-safe write (temp + rename)
 
 ```gdscript
-# RIGHT: write to a temp file, then atomically rename over the target.
-func save_atomic(path: String, data: Dictionary) -> void:
+# Godot 4.7. Write a temp file, keep the previous save as .bak, then rename.
+func save_atomic(path: String, data: Dictionary) -> Error:
     var tmp := path + ".tmp"
     var f := FileAccess.open(tmp, FileAccess.WRITE)
-    f.store_string(JSON.stringify(data))
-    f.flush()                                    # ensure bytes hit disk
-    f.close()
-    DirAccess.rename_absolute(tmp, path)         # replaces the target; atomic on POSIX
+    if f == null:
+        return FileAccess.get_open_error()       # disk full, read-only, no permission...
+    if not f.store_string(JSON.stringify(data)):
+        return ERR_FILE_CANT_WRITE
+    f.close()                                    # flushes Godot's buffer to the OS
+    if FileAccess.file_exists(path):
+        DirAccess.rename_absolute(path, path + ".bak")   # keep the last good save
+    return DirAccess.rename_absolute(tmp, path)
+
+func load_save(path: String) -> Dictionary:      # empty = nothing loadable
+    for p in [path, path + ".bak"]:              # .bak covers a crash between renames
+        if FileAccess.file_exists(p):
+            var data = JSON.parse_string(FileAccess.get_file_as_string(p))
+            if data is Dictionary and data.has("version"):
+                data["version"] = int(data["version"])   # JSON numbers load as float
+                return data
+    return {}
 # WRONG: opening `path` directly and writing in place — a crash mid-write leaves a
 # truncated, unloadable save and destroys the player's progress.
 ```
 
-Rename-over-target is atomic on POSIX (same volume); on Windows a replace-by-rename
-isn't guaranteed atomic, so keep the previous file as `path + ".bak"` before the
-rename — that backup is what actually guarantees you can recover from a bad write.
+A crash now leaves the old save, the new one, or (between the two renames) only
+the `.bak` — which the loader tries next. Two limits to know: `rename()` replaces
+the target atomically on POSIX (same volume), but Godot's Windows `rename_absolute`
+deletes the target and then moves, so that platform relies on the `.bak` too; and
+neither `flush()` nor `close()` calls `fsync`, so a power cut right after a save
+can still lose the newest file. Check the returned `Error` and tell the player
+when a save fails instead of carrying on.
 
 ### 3. Versioned load with migration
 
@@ -97,7 +114,7 @@ SAVE_VERSION = 3
 
 def load_save(raw_bytes):
     data = parse(raw_bytes)                  # JSON/binary -> dict
-    v = data.get("version", 0)
+    v = int(data.get("version", 1))          # no field = the first shipped schema
     if v > SAVE_VERSION:
         raise NewerSaveError(v)              # save is from a newer build; refuse
     while v < SAVE_VERSION:                   # apply migrations in order, v -> v+1
@@ -110,6 +127,9 @@ def load_save(raw_bytes):
 # Each migration is a pure function from one version's shape to the next.
 def migrate_1_to_2(d):
     d["flags"] = {k: True for k in d.pop("completed_quests", [])}  # list -> set-map
+    return d
+def migrate_2_to_3(d):
+    d.setdefault("difficulty", "normal")      # new field: old saves get the default
     return d
 MIGRATIONS = {1: migrate_1_to_2, 2: migrate_2_to_3}
 ```
@@ -141,6 +161,15 @@ func autosave_if_due(dt: float) -> void:
   cloud-synced stale. Validate on load and fall back to backup on failure.
 - **Floats and locale.** Text serializers can drop precision or use comma
   decimal separators in some locales. Use a locale-invariant serializer.
+- **Godot JSON turns every number into a float**: `version` 3 loads as `3.0`,
+  so `migrations.has(data["version"])` is false and integers above 2^53 (64-bit
+  IDs, big seeds) lose digits. Convert with `int()` on load, store IDs as
+  strings, or wrap the state in `JSON.from_native()` / `JSON.to_native()`, which
+  round-trip `int`, `Vector2` and other engine types exactly.
+- **Loading objects from save files.** Godot `str_to_var`/`get_var` with objects
+  allowed, a `ConfigFile` that stores objects, or `ResourceLoader` on a `.tres`
+  the player can swap will instantiate an object with a script attached, and that
+  script runs during the load. Saves get shared online; keep them plain data.
 - **Autosave clobbering manual saves**, or firing mid-action and saving an
   inconsistent state. Use a dedicated autosave slot and save on safe boundaries.
 - **Storing secrets or trusting client saves in multiplayer.** A local save is
@@ -150,8 +179,9 @@ func autosave_if_due(dt: float) -> void:
 ## References
 
 - `references/versioning-and-migration.md` — schema evolution strategies, the
-  migration chain, backups/rollback, format trade-offs (JSON vs binary), and a
-  load-time validation checklist.
+  migration chain, backups/rollback, format trade-offs (JSON vs binary), a
+  load-time validation checklist, and where saves live per engine plus Steam
+  Cloud setup.
 
 ## Related skills
 

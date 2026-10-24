@@ -2,7 +2,7 @@
 name: education-cloud-domain-configure
 description: "Use this skill to configure Education Cloud domains (Student Success, Recruitment & Admissions, Academic Operations, Alumni Relations, Student Management, or Mentoring) through conversational setup. Triggers when a user wants to enable or configure Education Cloud features. Guides step-by-step: enables Person Accounts prerequisite, activates target domain, then configures domain sub-features. Covers support processes, case record types, success teams, care plans, applications, admissions, course catalog, alumni engagement, fundraising, enrollment, programs, and mentoring. Explains each feature, confirms before proceeding, verifies every change took effect, and warns that domain and feature toggles are IRREVERSIBLE. DO NOT TRIGGER for metadata generation, custom objects, or package deployment — this configures existing platform features via org settings, not metadata files."
 metadata:
-  version: "1.0"
+  version: "1.1"
   minApiVersion: "60.0"
   domains:
     - "Education"
@@ -66,7 +66,13 @@ Every domain/sub-feature toggle lives on the `IndustriesSettings` settings file 
 
 Before first call, probe transport health: `GET /services/data/vXX.X/limits` via headless-360 dispatch. 2xx → route all calls through it. On absent/4xx/5xx → probe other available transports (other Salesforce MCP, authenticated `sf` CLI, custom MCP) with the same read, use first healthy, announce it. None healthy → stop, ask user to connect one; never fabricate.
 
-> **SOQL routes via headless-360 — pass the query through `queryParams`, NOT inline `?q=` in `url`.** `GET /services/data/vXX.0/query` (or `/tooling/query`) with `queryParams: {"q": "SELECT ..."}` returns records normally; putting `?q=...` directly in the `url` string 404s (`ROUTE_NOT_FOUND`) — a call-shape mistake, not a platform limitation. `?fields=` on a plain sObject GET is still not supported (router treats it as an external-id path segment) — use `/describe` for field lists instead. Prefer a direct SOQL existence/Id lookup over asking the user to supply a record Id; where no REST route exists at all (license/permission provisioning UI-only), ask the user or confirm in Setup UI.
+> **SOQL routes via headless-360 — pass the query through `queryParams`, NOT inline `?q=` in `url`** (inline 404s with `ROUTE_NOT_FOUND`). Call-shape detail: `references/gotchas-extended.md` ("Transport call shapes").
+
+---
+
+## Setup Widgets
+
+Five HXL widgets (`display_widget`: Intent, Review, Plan, Apply, Verify) visualize the workflow. Render each automatically at its checkpoint; never ask whether to show one. They are visual aids, never gates: if the host or org cannot paint them, continue in text. Compute every prop from live reads. A click on a row's action button (for example Enable) is the user's approval of that one item: no separate confirmation turn. Checkpoints, prop contracts, render call, and fallback: `references/setup-widgets.md`.
 
 ---
 
@@ -75,6 +81,8 @@ Before first call, probe transport health: `GET /services/data/vXX.X/limits` via
 ### Phase 0 — Foundation Prerequisites (Org-Level)
 
 All Education Cloud domains require these foundation settings. Verify before proceeding to domain configuration.
+
+> **Visual review.** After the Phase 0, 1, and 1.5 reads, render the 8 prerequisites once with `HxlSetupReview` (see Setup Widgets), then walk the pending items conversationally. Re-render after each enable.
 
 1. **Check org edition** — query `GET /services/data/v68.0/query` with `queryParams: {"q": "SELECT OrganizationType FROM Organization"}` (singleton, no Id needed), then pipe the record into `scripts/check_org_edition.py --allowed "Enterprise Edition,Performance Edition,Unlimited Edition,Developer Edition"` (stdin: `{"records": [...]}`). `eligible: false` → warn user Education Cloud requires Enterprise+ edition.
 
@@ -98,13 +106,15 @@ All Education Cloud domains require these foundation settings. Verify before pro
    - Student Management
    - Mentoring
 
+   Render `HxlSetupIntent` with these six domains and their status.
+
 7. **Explain Person Accounts** — explain: "Person Accounts are required for Education Cloud. They allow individuals (students, applicants, alumni) to be tracked as both Accounts and Contacts in a unified record."
 
    > **WARNING**: Person Accounts cannot be disabled once enabled. Confirm user understands this is irreversible before proceeding.
 
 8. **Enable Person Accounts (UI)** — Person Accounts has no supported org-preferences write API (the `setup/org/preferences/{name}` endpoint returns 404). Instruct user to navigate to Setup → Quick Find → "Account Settings" → Select Account Settings → Turn on "Enable Person Accounts" → Click Save. Wait for user confirmation toggle is ON and saved, then proceed to Phase 1.5.
 
-    To verify: `GET /services/data/v68.0/sobjects/Account/describe` and confirm `IsPersonAccount`/`Person*` fields are present in the `fields` array; if headless routing is unavailable, fall back to `sf sobject describe -s Account` and grep for the same. This describe call is the ONLY valid verification method — do NOT run any SOQL query against `IsPersonAccount` or Person-Account fields (on `Account`, `Organization`, or any object) to check enablement status; SOQL on an unrecognized field returns `INVALID_FIELD`/"No such column", and that failure does NOT mean Person Accounts is off — it means you used the wrong check.
+    To verify: `GET /services/data/v68.0/sobjects/Account/describe` and confirm `IsPersonAccount`/`Person*` fields are present. This describe call is the ONLY valid check; never run SOQL against `IsPersonAccount` or Person-Account fields (see `references/gotchas-extended.md`, "Person Accounts verification").
 
 ### Phase 1.5 — Setup Basics: Dependent Features & Data Space Mapping
 
@@ -112,11 +122,7 @@ This mirrors Setup's own "Setup Basics" grouping (Person Accounts, Dependent Fea
 
 9. **Present Dependent Features** — read `references/dependent-features.md` and present the full list to the user, grouped by category (confirmed API toggle / manual-UI-only / untested), leading with feature name + one-line "what it does", not the API element name. **Always present this list and ask which to enable now**, even if the user declines all of them — record that decision explicitly and proceed to Phase 2 rather than skipping the step. Anything declined can be revisited later.
 
-10. **Configure each selected Dependent Feature** — `references/dependent-features.md` categorizes every feature into one of four shapes; look up the selected feature there for its exact element names, DurableIds, and gotchas:
-    - **Confirmed `IndustriesSettings` toggle** — IRREVERSIBLE, warn user. Use the **Domain & Feature Toggle Write Path**: READ → WRITE (`PUT /services/data/v68.0/headless/metadata`) → cold-VERIFY.
-    - **Confirmed toggle via a different mechanism** (e.g. Einstein Generative AI master toggle) — a Setup-Connect **org preference**, not `IndustriesSettings`: `GET /services/data/v68.0/setup/org/preferences/<PrefName>` → `PATCH` same path with `{"desiredState": true|false}` → cold-VERIFY. Some of these are reversible — check the reference before assuming one-way.
-    - **Overlaps a domain sub-feature** (several toggles are shared with Student Success and/or Mentoring sub-features) — cold-read first; if already `true` from a prior domain's configuration, report as already enabled rather than re-writing.
-    - **Manual UI only, no API route** — instruct user to the Setup path in the reference. Flag where a custom permission set / object permissions are also required, not just a toggle — surface as manual follow-up.
+10. **Configure each selected Dependent Feature** — `references/dependent-features.md` ("Configuration shapes") categorizes every feature into one of four shapes (`IndustriesSettings` toggle, org-preference toggle, overlap with a domain sub-feature, manual UI only); look up the selected feature there for its exact element names, DurableIds, and gotchas. Toggles are IRREVERSIBLE unless the reference says otherwise: warn, then READ → WRITE → cold-VERIFY.
 
 11. **Enable OmniStudio** — OmniStudio is included with Education Cloud license. Attempt API call or instruct user to navigate to Setup → OmniStudio Settings → Enable.
 
@@ -128,22 +134,13 @@ This mirrors Setup's own "Setup Basics" grouping (Person Accounts, Dependent Fea
 
 14. **Explain domain purpose** — look up the selected domain in `references/domain-features.md`'s index and open the linked per-domain file (e.g. `references/domain-features/student-success.md`) to explain to user what the domain provides, including prerequisites.
 
-15. **Check domain-specific prerequisites** — beyond OmniStudio/Business Rules Engine (already enabled in Phase 0), most domains need an added license: Experience Cloud (Recruitment & Admissions, Mentoring, and portals generally), Salesforce Scheduler (Student Success, Recruitment & Admissions), Fundraising (Alumni Relations, if using gift management), or a prior domain (Student Management requires Academic Operations already configured). See the selected domain's file under `references/domain-features/` for the full list. If prerequisites are missing, warn user and ask whether to continue with available features or provision prerequisites first.
+15. **Check domain-specific prerequisites** — beyond OmniStudio/Business Rules Engine (Phase 0), most domains need an added license or a prior domain; the per-domain list is in `references/domain-features.md` ("Domain prerequisites"). If prerequisites are missing, warn user and ask whether to continue with available features or provision prerequisites first. Render `HxlSetupReview` with these domain prerequisites.
 
 16. **Confirm domain enablement** — **IRREVERSIBLE — one-way by design (`false → true` only).** Warn the user explicitly and do NOT promise a revert/rollback. Ask: "Ready to enable [Domain Name]? This activates domain-specific objects, fields, and setup features and CANNOT be turned off afterward."
 
 17. **Enable the domain toggle** — each domain is an `enableXXX` field on `IndustriesSettings`. Follow the **Domain & Feature Toggle Write Path**: READ (tooling GET via DurableId) → WRITE (`PUT /services/data/v68.0/headless/metadata` with the single `<enableXXX>true</enableXXX>` element in `xmlRep`, via the `dispatch` write tool) → VERIFY (tooling GET shows `true`).
 
-    Toggle field per domain:
-
-    | Domain | `IndustriesSettings` field |
-    |--------|----------------------------|
-    | Student Success | `enableStudentSuccess` |
-    | Academic Operations | `enableAcademicOperations` |
-    | Mentoring | `enableMentoring` |
-    | Alumni Relations | `enableAlumniRelations` |
-    | Recruitment & Admissions | **No master toggle** — configured via 2 independent sub-feature settings (`enableApplnDecStdSharing`, `enableAppMaterialsProtection`); skip this step, go to `references/domain-features/recruitment-admissions.md` "Enablement & Toggles" |
-    | Student Management | `enableStudentManagement` |
+    Toggle field per domain: `references/domain-features.md` ("Domain toggle fields"). Recruitment & Admissions has no master toggle; skip this step and go to `references/domain-features/recruitment-admissions.md` "Enablement & Toggles".
 
     On success (`200 { success: true }`, synchronous, no polling), proceed to step 18. On failure, instruct user to navigate to Setup → "Set Up Education Cloud" → the domain section (e.g., "Set Up the Student Success App") → turn on the domain toggle → Save, and wait for confirmation.
 
@@ -153,11 +150,11 @@ This mirrors Setup's own "Setup Basics" grouping (Person Accounts, Dependent Fea
 
 19. **Read sub-feature reference** — load the selected domain's file under `references/domain-features/` to identify available sub-features and their detailed setup steps.
 
-20. **Present sub-feature options** — list the sub-features available for the domain (per the domain's `references/domain-features/` file) and ask user which to configure. Student Success has a required execution order (Support Process → Case Record Types → Success Teams → Care Plans → Support Programs → Salesforce Scheduler → consoles/portal); the other domains' sub-features are independent of each other.
+20. **Present sub-feature options** — list the sub-features available for the domain (per the domain's `references/domain-features/` file) and ask user which to configure. Student Success has a required execution order (Support Process → Case Record Types → Success Teams → Care Plans → Support Programs → Salesforce Scheduler → consoles/portal); the other domains' sub-features are independent of each other. Render `HxlSetupPlan` once the selection is known.
 
-21. **Configure each selected sub-feature** — explain what it does, warn if irreversible, confirm with user, then follow the exact setup path in the domain's `references/domain-features/` file (covers all five shapes: record creation via Data/Tooling API, `IndustriesSettings` toggles via the Toggle Write Path, app/console setup, Experience Cloud portal setup, OmniStudio activation — with endpoints, body shapes, gotchas, and verification per sub-feature). Toggles follow the same IRREVERSIBLE + READ→WRITE→cold-VERIFY rule as domain toggles; cold-read first if already set from Phase 1.5. On API failure, fall back to the Setup UI path in the reference.
+21. **Configure each selected sub-feature** — explain what it does, warn if irreversible, confirm with user (a click on the row's widget button counts as that confirmation), then follow the exact setup path in the domain's `references/domain-features/` file (covers all five shapes: record creation via Data/Tooling API, `IndustriesSettings` toggles via the Toggle Write Path, app/console setup, Experience Cloud portal setup, OmniStudio activation — with endpoints, body shapes, gotchas, and verification per sub-feature). Toggles follow the same IRREVERSIBLE + READ→WRITE→cold-VERIFY rule as domain toggles; cold-read first if already set from Phase 1.5. On API failure, fall back to the Setup UI path in the reference. Render `HxlSetupApply` and re-render it after each item's cold-verify.
 
-22. **Summary** — after all sub-features configured, list what was enabled via which method (API, UI, OmniStudio). Report any failures or manual steps required. If suggesting next steps, limit them to genuine blockers/dependencies actually surfaced during this session (e.g. a prerequisite that's still off, a sub-feature the user asked about but deferred) — not a generic list of every related feature or domain regardless of relevance.
+22. **Summary** — after all sub-features configured, list what was enabled via which method (API, UI, OmniStudio). Report any failures or manual steps required. If suggesting next steps, limit them to genuine blockers/dependencies actually surfaced during this session (e.g. a prerequisite that's still off, a sub-feature the user asked about but deferred) — not a generic list of every related feature or domain regardless of relevance. Render `HxlSetupVerify` with one row per cold-verified write.
 
 ---
 
@@ -203,7 +200,7 @@ Do not include a feature in the final summary as "enabled" unless both its appro
 
 ## Output Expectations
 
-This skill produces no files — configuration happens via Setup navigation, CLI commands, or API calls. Expected outputs: conversational confirmation after each step, verification results showing configuration is active, error messages with suggested fixes on failure, and a final summary listing all configured features.
+This skill produces no files — configuration happens via Setup navigation, CLI commands, or API calls. Expected outputs: conversational confirmation after each step, HXL Setup widgets (Intent, Review, Plan, Apply, Verify via `display_widget`) reflecting live state where the host and org support them, verification results showing configuration is active, error messages with suggested fixes on failure, and a final summary listing all configured features.
 
 ---
 
@@ -226,6 +223,7 @@ This skill produces no files — configuration happens via Setup navigation, CLI
 | `references/domain-features.md` | Index of per-domain reference files — start here to find the right file for the selected domain |
 | `references/domain-features/<domain>.md` | Phase 2 step 14 (explain domain purpose), Phase 3 step 19 (identify sub-features), Phase 3 step 21 (sub-feature configuration setup paths and API preference names) |
 | `references/dependent-features.md` | Phase 1.5 steps 11-12 (Setup Basics — present and configure Dependent Features before any domain), and whenever the user asks about a cross-product feature not owned by one domain — surface as "Set Up Dependent Features" and note domain overlap where relevant |
+| `references/setup-widgets.md` | Steps 6, 15, 20, 21, 22 and the Phase 0 review (prop contracts and Education Cloud mapping for the 5 HXL Setup widgets) |
 | `references/gotchas-extended.md` | When an error doesn't match one of the 10 entries in the Gotchas table above |
 | `scripts/check_org_edition.py` | Phase 0 step 1 (org edition check) |
 | `scripts/check_license_provisioned.py` | Phase 0 step 3 (Education Cloud license check) |

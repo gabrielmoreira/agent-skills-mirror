@@ -45,20 +45,22 @@ escalate any leak instead of rewriting history.
 
 ## Generated API contracts
 
-After changing Den routes, their shared schemas, or the feature registry, run
-`pnpm den:contract` (also run by `pnpm features:sync`) and
-include `packages/docs/openapi.json` and `packages/sdk/src/gen/**` in the same
-commit. The command builds once and generates both outputs from one snapshot. It
-prepares and removes a disposable local MySQL database automatically; start
-MySQL with `pnpm dev:den:mysql`. It never uses `DATABASE_URL`; use
-`OPENWORK_CONTRACT_MYSQL_URL` only for alternate localhost credentials.
-After merging/rebasing `dev`, regenerate rather than choosing ours/theirs for
-conflicted generated files. Never hand-edit them or regenerate a Drizzle migration
-snapshot to resolve an API conflict.
+Den route metadata and shared schemas are the source of truth. OpenAPI and
+`packages/sdk/src/gen/**` are ignored build artifacts: never commit or hand-edit
+them. CI generates, lints and typechecks them from the PR source and uploads
+an artifact. Hosted docs read the normalized deployed contract at
+`/openapi.json?public=1`; the raw `/openapi.json` remains available.
 
-Optional: `pnpm hooks:install` enables a pre-commit hook that skips unrelated
-commits and regenerates/stages only contract outputs for API changes. It refuses
-unstaged/untracked contract inputs or outputs, so finish partial staging first.
+`pnpm sdk:build` and SDK typechecks generate missing or stale artifacts first.
+`pnpm den:contract` forces a clean generation and prepares/removes a disposable
+local MySQL database. Start MySQL with `pnpm dev:den:mysql`; only
+`OPENWORK_CONTRACT_MYSQL_URL` can select alternate localhost credentials.
+`DATABASE_URL` is never used for generation. After a merge/rebase regenerate
+locally when needed; generated files do not enter the merge. Never regenerate
+a Drizzle migration snapshot to resolve an API conflict.
+
+Optional: `pnpm hooks:install` enables source validation before commits. It
+refuses unstaged/untracked contract inputs and never stages generated outputs.
 Hooks never commit, push, or change CI/Warden policy; CI remains authoritative.
 
 ## Coding

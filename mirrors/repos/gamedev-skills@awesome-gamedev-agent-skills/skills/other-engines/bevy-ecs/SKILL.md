@@ -190,12 +190,16 @@ impl Plugin for GameplayPlugin {
 - **"conflicting implementations of trait `Component`" after deriving both `Resource`
   and `Component`** → since 0.19 `Resource` extends `Component`; derive `Resource` alone.
 - **"Despawn everything" panics, or `Query<EntityMut>` next to a `Res<T>` panics with
-  `error[B0002]`** → since 0.19 every resource lives on an entity tagged `IsResource`,
+  `error[B0002]` (or `B0001`, depending on parameter order)** → since 0.19 every
+  resource lives on an entity tagged `IsResource`,
   so `Query<Entity>`/`EntityRef`/`EntityMut` match those entities too. Query your own
   marker component, or add `Without<IsResource>` (`use bevy::ecs::resource::IsResource`).
 - **`On<Add, Player>` fails with "struct takes 1 generic argument but 2 generic
   arguments were supplied"** → 0.20 moved the component into the lifecycle event:
   write `On<Add<Player>>` (likewise `Insert<T>`, `Discard<T>`, `Remove<T>`, `Despawn<T>`).
+- **`Pointer<Click>` / `Pointer<Press>` not found in a picking observer** → 0.20
+  flattened pointer events: observe `On<PointerClick>` / `On<PointerPress>`, and read
+  `click.pointer.position` (a `Vec2`) instead of the old `pointer_location`.
 - **`OnExit`/`OnEnter` run again when "switching" to the current state** →
   `NextState::set` always runs the transition schedules. Use `set_if_different` to skip
   same-state transitions (renamed from `set_if_neq` in 0.20; calling `set_if_neq` on a

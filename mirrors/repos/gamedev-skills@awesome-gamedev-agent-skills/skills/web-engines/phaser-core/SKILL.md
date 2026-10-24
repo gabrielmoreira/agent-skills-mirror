@@ -128,7 +128,9 @@ ui.events.emit('show-message', 'Level cleared!');
 
 ```js
 this.scene.start('gameover', { score: this.score }); // stop this scene, start target
-this.scene.launch('hud');        // run a second scene in parallel (overlay HUD)
+this.scene.launch('hud');        // run a second scene in parallel (restarts it if already running)
+this.scene.run('hud');           // wake if sleeping, resume if paused, else (re)start
+this.scene.bringToTop('hud');    // draw order follows the scene list, not launch order
 this.scene.switch('menu');       // sleep this scene, start/wake target
 this.scene.pause();              // freeze updates but keep rendering (modal)
 this.scene.sleep();              // stop updating AND rendering, keep state for wake
@@ -150,6 +152,13 @@ this.cameras.main.setZoom(1.5);
   instance is reused; reset run state in `init()` and clear arrays on `shutdown`.
 - **`this.scene.start` vs `this.scene.launch`** → `start` stops the calling scene;
   `launch` runs the target alongside it. Using `start` for a HUD hides the game.
+- **HUD loses its state or draws behind the game** → `launch` (and `run`) on a scene
+  that is already running shuts it down and starts it again; launch the HUD once, or
+  guard with `if (!this.scene.isActive('hud'))`. Scenes draw in scene-list order, so a
+  HUD listed before the gameplay scene renders underneath it until you call
+  `this.scene.bringToTop('hud')`.
+- **Scene state read right after `start`/`launch` is stale** → scene operations are
+  queued and run at the start of the next game step, not synchronously.
 - **`this` is wrong in a callback** → arrow functions keep the Scene's `this`; plain
   `function` callbacks need a context argument or `.bind(this)`.
 - **Phaser 2 tutorials don't work** → "States" were renamed to "Scenes" in Phaser 3,
@@ -158,8 +167,23 @@ this.cameras.main.setZoom(1.5);
 - **Phaser 3 custom pipelines fail in Phaser 4** → Phaser 4 rebuilt the renderer and
   replaced the old FX/pipeline extension points. Migrate custom shaders and renderer
   plugins against the Phaser 4 guide; do not mechanically copy internal renderer code.
+- **A Phaser 3 snippet runs but looks wrong in Phaser 4** → common renames: `preFX`/
+  `postFX` and `BitmapMask` became filters (`obj.enableFilters()` then
+  `obj.filters.internal`/`.external`); `setPipeline('Light2D')` became
+  `setLighting(true)`; `setTintFill(c)` only logs an error, so use
+  `setTint(c).setTintMode(Phaser.TintModes.FILL)`; `Phaser.Math.TAU` is now 2π (use
+  `Phaser.Math.PI_OVER_2` where v3 code meant π/2); `Geom.Point` is gone (use
+  `Phaser.Math.Vector2`). Canvas rendering still works but is deprecated.
+- **Pixel art is blurry or shimmers while moving** → set `pixelArt: true` in the game
+  config. It turns off antialiasing and turns on `roundPixels`, which defaults to
+  `false` in Phaser 4.
 - **Nothing renders / black screen** → confirm the canvas mounted, `width`/`height`
   are set, and a scene actually started (check `game.scene.dump()` output).
+- **Two canvases (two games running) after a hot reload or a React/Vue remount** →
+  a second `new Phaser.Game` ran while the first was still alive. Keep one instance
+  and call `game.destroy(true)` when the host component unmounts; the teardown
+  finishes on the next frame. Leave `noReturn` false, or no new game can start on
+  the page.
 
 ## References
 

@@ -129,19 +129,28 @@ private System.Collections.IEnumerator FlashThenHide()
 - **`gameObject.tag == "Enemy"`** allocates a string and is slower; use
   `gameObject.CompareTag("Enemy")`.
 - **Coroutines stop when the GameObject is disabled** — a disabled object's coroutines are
-  killed; re-`StartCoroutine` in `OnEnable` if it must survive toggling.
+  killed; re-`StartCoroutine` in `OnEnable` if it must survive toggling. Setting only the
+  script's `enabled = false` does *not* stop them.
+- **Obsolete warnings on `FindObjectOfType` / `FindObjectsOfType`** — Unity 6 replaced them.
+  Use `FindFirstObjectByType` (old behaviour), `FindAnyObjectByType` (faster, any match) or
+  `FindObjectsByType(FindObjectsSortMode.None)`; all are slow, so cache the result.
+- **An `async` method keeps running after its object is destroyed** — `await` is not tied to
+  the GameObject the way a coroutine is. Pass `destroyCancellationToken` to the
+  `Awaitable` waits (they then throw `OperationCanceledException`), and never await the same
+  `Awaitable` instance twice: instances are pooled.
 - **`Update` never runs before `Start`, but the *first* `Update` can run on the same
   frame as `Start`** — guard against not-yet-initialised fields if you split setup oddly.
 
 ## References
 
-- For the full event-execution-order table and advanced coroutine patterns (custom
-  `CustomYieldInstruction`, stopping by handle, `WaitUntil`/`WaitWhile`), read
-  `references/lifecycle-and-coroutines.md`.
+- For the full event-execution-order table, advanced coroutine patterns (custom
+  `CustomYieldInstruction`, stopping by handle, `WaitUntil`/`WaitWhile`) and the `Awaitable`
+  equivalents of coroutine waits, read `references/lifecycle-and-coroutines.md`.
 - `scripts/check_unity_project.py` — read-only `.meta`/GUID and missing-script checker;
   `--help` lists every check and the exit codes.
 - Primary docs: Unity Manual "Event function execution order"
-  (`https://docs.unity3d.com/Manual/execution-order.html`) and `ScriptReference/MonoBehaviour`.
+  (`https://docs.unity3d.com/Manual/execution-order.html`), `ScriptReference/MonoBehaviour`,
+  and the Manual page "Asynchronous programming with the Awaitable class".
 
 ## Related skills
 

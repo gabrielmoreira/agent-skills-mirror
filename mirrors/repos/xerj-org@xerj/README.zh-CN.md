@@ -233,7 +233,7 @@ xerj mcp                                # 2. MCP stdio server (your client runs 
 
 ### 支持的智能体
 
-二十六个客户端可以把 `xerj mcp` 注册为本地 stdio 服务。配置条目始终只有两个字段：二进制程序的绝对路径，以及作为唯一参数的 `mcp`。各客户端的差别在于条目写进哪个文件、包在哪个键下。“已测试”指在该客户端里注册过此服务，`xerj_search` 出现在了它的工具列表里；“未测试”表示路径和写法照抄自该客户端自己的文档，还没有人实际跑过。目前只有 OpenCode 一行跑过：Windows 上的 v2.1.2 对接 `xerj` v1.0.0-rc.97，`initialize` 和 `tools/list` 都得到应答，工具列表完整。修正任何一行“未测试”都是很好的第一个 PR。
+二十六个客户端可以把 `xerj mcp` 注册为本地 stdio 服务。配置条目始终只有两个字段：二进制程序的绝对路径，以及作为唯一参数的 `mcp`。各客户端的差别在于条目写进哪个文件、包在哪个键下。“已测试”指在该客户端里注册过此服务，`xerj_search` 出现在了它的工具列表里；“未测试”表示路径和写法照抄自该客户端自己的文档，还没有人实际跑过。目前跑过两行。OpenCode：Windows 上的 v2.1.2 对接 `xerj` v1.0.0-rc.97，`initialize` 和 `tools/list` 都得到应答，工具列表完整。Cline CLI 3.0.73（Linux）对接 `xerj` v1.0.0-rc.98：把本节的 `mcpServers` 块写入 `~/.cline/data/settings/cline_mcp_settings.json` 后，`xerj_search`（Cline 交给模型时的名字是 `xerj__xerj_search`）出现在该二进制的 20 个工具里，并且 Cline 执行了一次 `xerj_search` 调用。当时没有供应商密钥，模型回合用的是本地 OpenAI 兼容桩；MCP 服务是真正的 `xerj mcp` 进程。IDE 的 MCP Servers > Configure 按钮不在那次运行里。修正任何一行“未测试”都是很好的第一个 PR。
 
 | 客户端 | 配置文件 | 键 | 说明 | 测试状态 |
 |---|---|---|---|---|
@@ -245,7 +245,7 @@ xerj mcp                                # 2. MCP stdio server (your client runs 
 | GitHub Copilot in VS Code | `.vscode/mcp.json` | `servers` | 需要 `"type": "stdio"`；可移植的 `.mcp.json` 用的是 `mcpServers` | 未测试 |
 | Windsurf | `%APPDATA%\devin\mcp_config.json`、`~/.config/devin/mcp_config.json` | `mcpServers` | 路径现在属于 Devin，不再是 `~/.codeium/windsurf` | 未测试 |
 | Claude Desktop | `%APPDATA%\Claude\claude_desktop_config.json`、`~/Library/Application Support/Claude/claude_desktop_config.json`、`~/.config/Claude/claude_desktop_config.json` | `mcpServers` | 要完全退出应用，只关窗口不行 | 未测试 |
-| Cline | `~/.cline/data/settings/cline_mcp_settings.json`（CLI）；IDE 可从 MCP Servers > Configure 打开 | `mcpServers` | `disabled` 和 `autoApprove` 是 Cline 特有字段 | 未测试 |
+| Cline | `~/.cline/data/settings/cline_mcp_settings.json`（CLI）；IDE 可从 MCP Servers > Configure 打开 | `mcpServers` | `disabled` 和 `autoApprove` 是 Cline 特有字段；这次 CLI 运行不需要它们 | 已测试 |
 | Roo Code | 项目内的 `.roo/mcp.json`，或 `<VS Code User>/globalStorage/rooveterinaryinc.roo-cline/settings/mcp_settings.json` | `mcpServers` | 名称冲突时项目条目优先 | 未测试 |
 | Kilo Code | 项目内的 `kilo.jsonc` 或 `.kilo/kilo.jsonc`，全局为 `~/.config/kilo/kilo.jsonc` | `mcp` | 单个 command 数组，同 OpenCode | 未测试 |
 | Continue | `~/.continue/config.yaml`，或 `.continue/mcpServers/` 下的任意文件 | `mcpServers` | YAML 列表而非映射；仅 Agent 模式 | 未测试 |
@@ -257,7 +257,7 @@ xerj mcp                                # 2. MCP stdio server (your client runs 
 | Kiro | 工作区内的 `.kiro/settings/mcp.json`，用户级为 `~/.kiro/settings/mcp.json` | `mcpServers` | `${VAR}` 展开需要批准 | 未测试 |
 | Antigravity | `~/.gemini/config/mcp_config.json`，或工作区内的 `.agents/mcp_config.json` | `mcpServers` | 远程服务用 `serverUrl` | 未测试 |
 | OpenClaw | `~/.openclaw/openclaw.json`（JSON5） | `mcp.servers` | `transport: "stdio"` | 未测试 |
-| DeepSeek Harness (dsh) | `$DSH_HOME/cordis.patch.yml`，或某个 profile 补丁 | 带 `@deepseek-ai/dsh-mcp-client` 的 `- insert:` | 每个服务一个插件实例 | 未测试 |
+| [DeepSeek Harness (dsh)](dsh/) | `$DSH_HOME/cordis.patch.yml`，或某个 profile 补丁 | 带 `@deepseek-ai/dsh-mcp-client` 的 `- insert:` | 每个服务一个插件实例 | 未测试 |
 | Warp | Settings > Agents > MCP servers，或 `~/.warp/.mcp.json` 与项目内的 `.warp/.mcp.json` | `mcpServers` | `working_directory` 而非 `cwd` | 未测试 |
 | Augment Code | Auggie CLI 用 `~/.augment/settings.json`；IDE 有自己的面板 | `mcpServers` | 该文件不控制 IDE | 未测试 |
 | Qwen Code | `~/.qwen/settings.json`，或项目内的 `.qwen/settings.json` | `mcpServers` | `mcp.allowed` 可能悄悄隐藏它 | 未测试 |
@@ -322,23 +322,27 @@ Amp 的键带命名空间前缀，VS Code 和 Copilot 需要 `servers` 加传输
 {mcp: {servers: {xerj: {command: "/abs/path/to/xerj", args: ["mcp"], transport: "stdio"}}}}
 ```
 
-DeepSeek Harness 在它的 Cordis 补丁文件里把 MCP 作为插件加载：
+DeepSeek Harness 在 `$DSH_HOME/cordis.patch.yml`（或某个 profile 的 `$DSH_HOME/profiles/<profile>/cordis.patch.yml`）里把一个 MCP 服务加载为一个插件。如果该文件只有 `[]`，用下面的块替换这个数组；追加在 `[]` 后面不是合法 YAML。`env` 和 `cwd` 是 stdio 的可选字段（`args` 默认 `[]`，`env` 默认 `{}`，`cwd` 默认 `""`）。节点不是以 `--insecure` 运行时，在 `env` 下加上 `XERJ_AUTH: "ApiKey <key>"`：
 
 ```yaml
+# $DSH_HOME/cordis.patch.yml
 - insert:
     - id: mcp-xerj
-      name: "@deepseek-ai/dsh-mcp-client"
+      name: '@deepseek-ai/dsh-mcp-client'
       config:
         serverName: xerj
         transport: stdio
-        command: /abs/path/to/xerj
+        command: xerj
         args:
           - mcp
+        env:
+          XERJ_URL: "http://localhost:9200"
+        cwd: ""
 ```
 
 最初名单里有三个候选被有意排除。Aider 完全没有 MCP 客户端支持（[Aider-AI/aider#3314](https://github.com/Aider-AI/aider/issues/3314) 仍未关闭）。T3 Code 方向相反：它自己托管一个供其他智能体连接的 MCP 端点，其会话从底层 harness 继承服务配置。Grok Bot 没有文档记载的本地 stdio 注册方式；Grok CLI 有，见上表对应一行。
 
-共提供二十个工具，其中十一个是已有 XERJ 端点的薄代理：
+共提供二十一个工具，其中十一个是已有 XERJ 端点的薄代理：
 
 | 工具 | 用途 |
 |---|---|
@@ -350,7 +354,15 @@ DeepSeek Harness 在它的 Cordis 补丁文件里把 MCP 作为插件加载：
 | `xerj_brain_overview` / `xerj_brain_ego` / `xerj_brain_link` / `xerj_brain_unlink` | 操作“第二大脑”链接索引：查看概况、展开某个节点有证据支持的邻域、建立和撤销链接 |
 | `xerj_plan` | 输入自然语言筛选条件，返回经过校验的查询 DSL（`POST /_ask`；确定性的规则处理，不使用 LLM） |
 
-调用 `xerj_search` 时传入 `{"prefix":"project","query":"retry policy"}` 可搜索 `project-*`，等同于 `xerj search --prefix project`。要指定具体索引名或模式，改用 `index`；`index` 和 `prefix` 不能同时非空。`prefix` 会被去掉首尾空白，且不能为空。两个参数都不传时，工具搜索 `ax-*`。
+调用 `xerj_search` 时传入 `{"prefix":"project","query":"retry policy"}` 可搜索 `project-*`，等同于 `xerj search --prefix project`。`prefix` 与 CLI 走同一个解析函数，也就是 `xerj autoindex --prefix` 实际写入的前缀，因此 `My_Proj` 搜索 `my-proj-*`。要指定具体索引名或模式，改用 `index`；`index` 和 `prefix` 不能同时非空。空前缀、不含 `[a-z0-9]` 的前缀，以及无法作为索引名的前缀都会报错。两个参数都不传时，工具搜索 `ax-*`。
+
+`xerj_def` 查找本地定义，复用 `xerj def --json` 的查询、排序和位置去重逻辑。例如，`{"symbol":"Cache","prefix":"project","kind":"struct","lang":"rust","k":5}` 搜索 `project-*`；也可以用 `index` 替代 `prefix`，作用域规则与 `xerj_search` 相同。`symbol` 也接受描述能力的短语。`k` 必须为 1–50，默认 5；可选的 `max_tokens` 限制响应大小。
+
+结果采用 ES JSON：声明位于 `hits.hits[]._source.code`，文件位置使用 `ax_path`/`path` 和 `line`/`start_line`，旧版文件级结果可能使用 `fields._passage`。`hits.total` 是去重前的引擎匹配数；没有匹配时成功返回空列表。
+
+与 CLI 相同，如果所有目标索引都未映射筛选字段，或任一目标索引将它映射为数值类型，则忽略相应的类型或语言筛选。排序基于词法匹配。此工具查询配置的节点；`xerj_hub_def` 则在指定的 Hub 语料包中查找定义。
+
+未包含 Hub key 的二进制程序不提供三个 Hub 工具，共提供十八个工具。
 
 另外两个工具不只是简单代理：`xerj_map` 从 autoindex 目录读取各索引的字段映射，除按字节上限裁剪外原样返回；`xerj_code_search` 执行 `xerj code` 参考代码检索流程（[`tools/xerj-code/`](tools/xerj-code/)），返回渲染后的文本。`xerj_index_budget` 在 `xerj autoindex` 计算哈希之前统计文件夹，按节点的磁盘预算估算索引大小，本身不做索引。`xerj_autoindex_remove` 删除一个已 autoindex 的文件夹，删前先列出其内容，`confirm` 不为 true 时什么都不删。`xerj_corpus_feedback` 为 hub 语料评分。`xerj_field_report` 提交使用反馈；`xerj_hub_find`、`xerj_hub_def` 和 `xerj_hub_ask` 用本机已有的 Corpus Hub 语料包作答（即 `xerj ask` 流程）。
 

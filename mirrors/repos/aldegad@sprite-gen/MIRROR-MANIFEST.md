@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `aldegad/sprite-gen` — 26 default patterns, 34 followed patterns, 48 file(s) materialized.
+Mirror of `aldegad/sprite-gen` — 26 default patterns, 33 followed patterns, 47 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `aldegad/sprite-gen` — 26 default patterns, 34 followed patterns, 48
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 34 |
-| Files         | 48 |
+| Followed pats | 33 |
+| Files         | 47 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -63,7 +63,6 @@ Mirror of `aldegad/sprite-gen` — 26 default patterns, 34 followed patterns, 48
 - `docs/curation.md`
 - `docs/sheet-slicing.md`
 - `docs/recolor.md`
-- `docs/layer-tracks.md`
 - `docs/breathing.md`
 - `docs/engine-export.md`
 - `docs/scene.md`
@@ -117,29 +116,28 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 23 | → | [`docs/engine-export.md`](docs/engine-export.md) |
 | 24 | → | [`docs/gen.md`](docs/gen.md) |
 | 25 | → | [`docs/interpreter.md`](docs/interpreter.md) |
-| 26 | → | [`docs/layer-tracks.md`](docs/layer-tracks.md) |
-| 27 | → | [`docs/logo.md`](docs/logo.md) |
-| 28 | → | [`docs/loop-comparison.md`](docs/loop-comparison.md) |
-| 29 | → | [`docs/loop-repair.md`](docs/loop-repair.md) |
-| 30 | → | [`docs/loop-review.md`](docs/loop-review.md) |
-| 31 | → | [`docs/pixel-draw.md`](docs/pixel-draw.md) |
-| 32 | → | [`docs/pixel-unfake.md`](docs/pixel-unfake.md) |
-| 33 | → | [`docs/prompt-assembly.md`](docs/prompt-assembly.md) |
-| 34 | → | [`docs/README.md`](docs/README.md) |
-| 35 | → | [`docs/recolor.md`](docs/recolor.md) |
-| 36 | → | [`docs/run-contract.md`](docs/run-contract.md) |
-| 37 | → | [`docs/scene.md`](docs/scene.md) |
-| 38 | → | [`docs/sheet-slicing.md`](docs/sheet-slicing.md) |
-| 39 | → | [`docs/sound.md`](docs/sound.md) |
-| 40 | → | [`docs/user-workflow.md`](docs/user-workflow.md) |
-| 41 | → | [`docs/video-pipeline.md`](docs/video-pipeline.md) |
-| 42 | → | [`docs/video.md`](docs/video.md) |
-| 43 | → | [`README.es.md`](README.es.md) |
-| 44 | → | [`README.fr.md`](README.fr.md) |
-| 45 | → | [`README.ja.md`](README.ja.md) |
-| 46 | → | [`README.ko.md`](README.ko.md) |
-| 47 | → | [`README.md`](README.md) |
-| 48 | → | [`README.zh-Hans.md`](README.zh-Hans.md) |
+| 26 | → | [`docs/logo.md`](docs/logo.md) |
+| 27 | → | [`docs/loop-comparison.md`](docs/loop-comparison.md) |
+| 28 | → | [`docs/loop-repair.md`](docs/loop-repair.md) |
+| 29 | → | [`docs/loop-review.md`](docs/loop-review.md) |
+| 30 | → | [`docs/pixel-draw.md`](docs/pixel-draw.md) |
+| 31 | → | [`docs/pixel-unfake.md`](docs/pixel-unfake.md) |
+| 32 | → | [`docs/prompt-assembly.md`](docs/prompt-assembly.md) |
+| 33 | → | [`docs/README.md`](docs/README.md) |
+| 34 | → | [`docs/recolor.md`](docs/recolor.md) |
+| 35 | → | [`docs/run-contract.md`](docs/run-contract.md) |
+| 36 | → | [`docs/scene.md`](docs/scene.md) |
+| 37 | → | [`docs/sheet-slicing.md`](docs/sheet-slicing.md) |
+| 38 | → | [`docs/sound.md`](docs/sound.md) |
+| 39 | → | [`docs/user-workflow.md`](docs/user-workflow.md) |
+| 40 | → | [`docs/video-pipeline.md`](docs/video-pipeline.md) |
+| 41 | → | [`docs/video.md`](docs/video.md) |
+| 42 | → | [`README.es.md`](README.es.md) |
+| 43 | → | [`README.fr.md`](README.fr.md) |
+| 44 | → | [`README.ja.md`](README.ja.md) |
+| 45 | → | [`README.ko.md`](README.ko.md) |
+| 46 | → | [`README.md`](README.md) |
+| 47 | → | [`README.zh-Hans.md`](README.zh-Hans.md) |
 
 ---
 

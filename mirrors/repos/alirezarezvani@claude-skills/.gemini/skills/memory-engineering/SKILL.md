@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/memory-engineering/../../../engineering/memory-engineering/skills/memory-engineering/SKILL.md

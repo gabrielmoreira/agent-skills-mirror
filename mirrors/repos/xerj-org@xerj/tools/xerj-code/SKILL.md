@@ -80,6 +80,8 @@ of question:
 | add it | `xerj corpus add --from ./<slug>.json`, then `xerj corpus index <slug>` | `xerj autoindex <folder>` |
 | query it | `xerj code <slug> "<question>"` · MCP `xerj_code_search` | `xerj search "<words>"` · `xerj def "<symbol>"` · MCP `xerj_search` |
 
+A folder indexed with `xerj autoindex --prefix <p>` is the local path in that table, not a `xerj code` corpus: `xerj corpus list` reads `~/.xerj-code` and does not list `<p>` until `xerj corpus add` registers the folder, and the commands that search it are `xerj search --prefix <p>` and `xerj def --prefix <p>`.
+
 Use neither for a fact you can already state exactly: on memorised content
 retrieval is overhead (see the status note above).
 
@@ -234,6 +236,11 @@ Three rules that keep the choice honest:
   answers during a rebuild.
 - **During a rebuild both builds exist**, so the node briefly holds the corpus
   twice. Budget disk for it on a large corpus.
+- **Wait for `xerj-done` before deleting an index a mapping scan flagged.**
+  A JSON fixture the tabular sniffer turned into its own index is removed with
+  `DELETE /{exact-name}` after `finalize-verify` has finished. Deleting one
+  while that phase is still reading it ends the run with
+  `index <name> was deleted during verify`, and the generation does not commit.
 - Always verify: `curl -s "$URL/xc-<corpus>*/_count"` must be > 0. The command
   does this itself and says so; do it again if you are scripting around it.
 

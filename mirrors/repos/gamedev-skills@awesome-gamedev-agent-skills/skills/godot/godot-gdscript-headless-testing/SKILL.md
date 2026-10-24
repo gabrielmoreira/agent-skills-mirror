@@ -167,6 +167,19 @@ Pitfalls), not a substitute for backing every `await` with a timeout node.
   `quit(1)`, or (Pattern #2) it always calls `quit(0)` regardless of failures.
   Track failures yourself and call `quit()` explicitly with a code that reflects
   them; do not rely on `assert()` or `push_error()` alone to change the exit code.
+- **A test that hits a runtime error is silently skipped and the run still exits 0** →
+  an error such as calling a method on `null` prints `SCRIPT ERROR` and aborts only that
+  test function; the runner carries on, nothing was counted as failed, and `quit(0)` runs.
+  Declare tests `-> bool`, end each with `return true`, and count anything else as a
+  failure — an aborted function hands its caller a default value instead (`await call(t)`
+  works the same for tests that `await`):
+
+  ```gdscript
+  for t: String in ["test_add", "test_load"]:
+      if call(t) != true:
+          failed += 1
+          push_error("FAIL %s: did not finish (runtime error?)" % t)
+  ```
 - **`_initialize()` runs before nodes, timers, or signals exist** → logic that
   needs a frame to have processed must `await` a signal or a timer before
   asserting; see Pattern #2. `root` itself is not inside the tree yet, so a

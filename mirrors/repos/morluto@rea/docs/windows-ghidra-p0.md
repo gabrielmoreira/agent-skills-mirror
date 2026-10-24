@@ -14,7 +14,7 @@ additional permission flag or degraded mode is required.
 ## Supported boundary
 
 - Windows 10+ x64 with fixed local NTFS target and temporary volumes;
-- Node.js 22.x (>=22.19), 24.x (>=24.11), or 26+;
+- Node.js 22.x (>=22.23.4), 24.x (>=24.22.1), or 26.12.1+;
 - an operator-installed Ghidra 12.1.x distribution (verified with 12.1.4);
 - a 64-bit full JDK inside that installation's declared Java range (JDK 21 or newer, with no maximum, for current 12.1 releases);
 - an explicit native, non-managed x86, x86-64, ARMNT (Thumb-2) or ARM64 PE application/DLL, or a
@@ -223,7 +223,7 @@ Process creation assigns a suspended child atomically to an owned Job Object.
 Membership and kill-on-owner-close policy are verified before resume.
 Breakaway is disabled. Only the child's default file owner is normalized;
 the caller token stays unchanged. Caller priority is preserved, and caller CPU
-affinity whenever the caller and the child share a processor group. A child that
+affinity is preserved whenever the caller and the child share a processor group. A child that
 Windows places in another group keeps that group's default when the caller asked
 for no bound of its own; a caller pinned to fewer processors than its group
 holds is refused there rather than widened.

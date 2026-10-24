@@ -16,15 +16,36 @@ Three common approaches:
   it. Scales to huge crowds (one computation for all enemies) — see `game-ai`.
 
 ```python
-# Waypoint following (pseudocode): move toward the next waypoint; advance when close.
+# Waypoint following (pseudocode). Spend this step's whole move distance, carrying any
+# leftover past a waypoint, so fast enemies don't lose time at corners or overshoot them.
 def update_enemy(e, dt):
-    target = path[e.wp_index]
-    e.pos = move_toward(e.pos, target, e.speed * dt)
-    if distance(e.pos, target) < ARRIVE_EPS:
+    remaining = e.speed * dt
+    while remaining > 0:
+        target = path[e.wp_index]
+        to_go  = distance(e.pos, target)
+        if to_go > remaining:
+            e.pos = move_toward(e.pos, target, remaining)
+            e.progress += remaining
+            return
+        e.pos = target                     # reached this waypoint exactly
+        e.progress += to_go
+        remaining -= to_go
         e.wp_index += 1
         if e.wp_index >= len(path):
             leak(e)                        # reached the goal: cost the player a life
+            return
 ```
+
+`e.progress` is distance travelled along the path; "first"/"last" targeting reads it (§2).
+In Godot 4.7, a `Path2D` with one `PathFollow2D` per enemy does this for you: add
+`speed * delta` to `PathFollow2D.progress` (set `loop = false`) and treat
+`progress_ratio >= 1.0` as a leak.
+
+**Maze TD placement check.** Before committing a tower, mark its cell blocked and run one
+breadth-first search (or flow-field build) from the goal. Reject the placement if the spawn
+**or any enemy currently on the field** can no longer reach the goal; otherwise keep it and
+re-path the enemies. In Godot, `AStarGrid2D.set_point_solid()` takes effect without another
+`update()` call.
 
 ## 2. Tower targeting modes
 

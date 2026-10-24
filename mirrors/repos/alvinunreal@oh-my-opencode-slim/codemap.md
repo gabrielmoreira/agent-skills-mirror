@@ -41,7 +41,7 @@ This codemap covers the plugin repository itself and excludes the nested `openco
 | `src/hooks/json-error-recovery/` | JSON/tool-output recovery helpers for malformed model responses. | [View Map](src/hooks/json-error-recovery/codemap.md) |
 | `src/hooks/phase-reminder/` | Message-transform reminder enforcing orchestrator workflow phases. | [View Map](src/hooks/phase-reminder/codemap.md) |
 | `src/hooks/search-path-guard/` | Pre-checks `grep`/`glob` `args.path` validity in `tool.execute.before` and fails fast with an actionable error instead of upstream ripgrep noise. | [View Map](src/hooks/search-path-guard/codemap.md) |
-| `src/hooks/task-session-manager/` | Resumable `task` session tracking: job-board injection, short alias resolution, cache-safe prompt injection, idle reconciliation, live runtime-status reads, HITL wait gating, fallback-observation handoff, same-provider background conversion, and revived-run tracking. | [View Map](src/hooks/task-session-manager/codemap.md) |
+| `src/hooks/task-session-manager/` | Resumable `task` session tracking: machine-side job board (never rendered), terminal-delivery observation, short alias resolution, live runtime-status reads, HITL wait gating, fallback-observation handoff, same-provider background conversion, and revived-run tracking. | [View Map](src/hooks/task-session-manager/codemap.md) |
 | `src/hooks/tool-loop-guard/` | Detects byte-identical repeated tool calls per session; corrective warning at 3, hard block at 5, with task-lifecycle exemptions and per-turn wait-tool counting. | [View Map](src/hooks/tool-loop-guard/codemap.md) |
 | `src/hooks/cache-monitor/` | Observation-only runtime watchdog over provider cache telemetry (`tokens.cache.read/write`) that warns on prompt-cache busts and frozen-prefix plateaus. | [View Map](src/hooks/cache-monitor/codemap.md) |
 | `src/hooks/orchestrator-wake/` | Periodic orchestrator wake scheduler: after continuous parent idle, sends a static internal wake prompt when incomplete TODOs remain (v1) or when background children lack a terminal outcome (v2 children-driven degraded mode); process-global one-flight/no-progress gate. | [View Map](src/hooks/orchestrator-wake/codemap.md) |
@@ -85,8 +85,8 @@ This codemap covers the plugin repository itself and excludes the nested `openco
 
 3. **Delegated execution**
    - Native OpenCode background tasks are parsed from `task` output and tracked in the shared background job board (board + store + coordinator + supervisor in `src/utils/`).
-   - `src/hooks/task-session-manager/` updates job-board state, resolves short aliases, and injects background/reusable job context; runtime-status reconciliation and the shared terminal-publication gate (`background-job-terminal-gate.ts`) keep board state honest against live session status.
-   - `src/hooks/orchestrator-wake/` periodically nudges an idle parent orchestrator when incomplete TODOs remain and reacts to jobs that stop without a terminal result.
+   - `src/hooks/task-session-manager/` updates job-board state, resolves short aliases, and observes terminal deliveries in the parent's history (the board itself is never rendered); runtime-status reconciliation and the shared terminal-publication gate (`background-job-terminal-gate.ts`) keep board state honest against live session status.
+   - `src/hooks/orchestrator-wake/` periodically nudges an idle parent orchestrator when incomplete TODOs remain, pushes later terminal results as one-shot deltas, and reacts to jobs that stop without a terminal result.
    - The TUI client (`src/tui.ts` → `src/multiplexer/client/`) optionally mirrors those sessions into tmux, Zellij, Herdr, cmux, kitty, or WezTerm panes/surfaces; each client anchors new panes to its own pane resolved from the client environment at spawn time (never a shared registry).
    - Results flow back into the parent session through notifications/output polling.
 

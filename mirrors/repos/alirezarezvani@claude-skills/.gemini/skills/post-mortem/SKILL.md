@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/post-mortem/../../../c-level-agents/skills/post-mortem/SKILL.md

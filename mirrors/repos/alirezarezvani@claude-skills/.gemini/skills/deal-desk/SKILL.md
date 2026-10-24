@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/deal-desk/../../../commercial/skills/deal-desk/SKILL.md

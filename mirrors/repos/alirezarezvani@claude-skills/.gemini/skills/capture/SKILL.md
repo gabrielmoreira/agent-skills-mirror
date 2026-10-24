@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/capture/../../../productivity/capture/skills/capture/SKILL.md

@@ -8,16 +8,22 @@
 Serves the curated list (harnesses.json) as tools so agents can recommend
 agent harnesses: recommend, compare, compare_for, pick_harness,
 pick_infrastructure (curated picks plus live GitHub/Hacker News discovery),
-search_harnesses, get_harness, list_categories, plus the decision guides,
-templates (files to copy), playbooks (step-by-step setup guides), and skills
-(folders an agent installs to check its own setup).
+search_harnesses, get_harness, list_categories, whats_new (the weekly
+digest), plus the decision guides, templates (files to copy), playbooks
+(step-by-step setup guides), and skills (folders an agent installs to check
+its own setup).
 
 Run directly from GitHub (no clone needed):
     uv run https://raw.githubusercontent.com/RyanAlberts/best-of-Agent-Harnesses/main/mcp/server.py
+
+Serve it over Streamable HTTP at http://HOST:PORT/mcp (defaults 127.0.0.1:8000),
+the way the hosted connector runs it:
+    uv run mcp/server.py --http
 """
 
 import json
 import re
+import time
 import urllib.request
 from pathlib import Path
 
@@ -25,6 +31,7 @@ from mcp.server.fastmcp import FastMCP
 from mcp.types import ToolAnnotations
 
 DATA_URL = "https://raw.githubusercontent.com/RyanAlberts/best-of-Agent-Harnesses/main/harnesses.json"
+CHANGES_URL = "https://raw.githubusercontent.com/RyanAlberts/best-of-Agent-Harnesses/main/changes.json"
 
 mcp = FastMCP("agent-harnesses")
 
@@ -33,17 +40,27 @@ mcp = FastMCP("agent-harnesses")
 _READ_ONLY = ToolAnnotations(readOnlyHint=True, openWorldHint=True)
 
 _data: dict | None = None
+_fetched_at: float | None = None  # set only when the data came from GitHub
+# A hosted server runs for days and the list is rescored weekly, so data
+# fetched from GitHub is refetched hourly; a failed refetch keeps the last copy.
+_REFETCH_AFTER = 3600
 
 
 def data() -> dict:
-    global _data
-    if _data is None:
+    global _data, _fetched_at
+    stale = _fetched_at is not None and time.monotonic() - _fetched_at > _REFETCH_AFTER
+    if _data is None or stale:
         local = Path(__file__).resolve().parent.parent / "harnesses.json"
         if local.exists():
             _data = json.loads(local.read_text())
         else:
-            with urllib.request.urlopen(DATA_URL, timeout=15) as r:
-                _data = json.loads(r.read().decode())
+            try:
+                with urllib.request.urlopen(DATA_URL, timeout=15) as r:
+                    _data = json.loads(r.read().decode())
+            except OSError:
+                if _data is None:
+                    raise
+            _fetched_at = time.monotonic()
     return _data
 
 
@@ -734,7 +751,7 @@ def get_skill(name: str, target: str = "claude-code") -> str:
 
 @mcp.tool(annotations=_READ_ONLY)
 def list_categories() -> str:
-    """The list's 10 categories and 14 curated use-case intents, with project counts."""
+    """The list's categories and curated use-case intents, with project counts."""
     d = data()
     counts: dict = {}
     for p in d["projects"]:
@@ -750,8 +767,40 @@ def list_categories() -> str:
     }, indent=2, ensure_ascii=False)
 
 
+@mcp.tool(annotations=_READ_ONLY)
+def whats_new(since: str = "", limit: int = 4) -> str:
+    """What changed in the list, week by week: harnesses added or removed,
+    the biggest star gains, the fastest growers, projects archived upstream,
+    and new guides, skills, and templates. Pass since=YYYY-MM-DD for every
+    week after that date, or omit it for the latest `limit` weeks. Use it to
+    answer "what's new in agent harnesses" or to check whether an earlier
+    recommendation is out of date."""
+    local = Path(__file__).resolve().parent.parent / "changes.json"
+    weeks = json.loads(_fetch_text(local, CHANGES_URL)).get("weeks", [])
+    weeks = [w for w in weeks if w.get("date", "") > since] if since else weeks[:max(1, limit)]
+    return json.dumps({"weeks": weeks}, indent=2, ensure_ascii=False)
+
+
+def http_app():
+    """The server as a stateless Streamable HTTP ASGI app, served at /mcp.
+    Stateless, so any instance can answer any request (serverless hosts)."""
+    from mcp.server.transport_security import TransportSecuritySettings
+    mcp.settings.stateless_http = True
+    # The SDK's default Host check only admits localhost, which would reject
+    # the public hostname. Nothing here is private: every tool is read-only.
+    mcp.settings.transport_security = TransportSecuritySettings(enable_dns_rebinding_protection=False)
+    return mcp.streamable_http_app()
+
+
 def main():
-    mcp.run()
+    import sys
+    if "--http" in sys.argv[1:]:
+        import os
+        import uvicorn
+        uvicorn.run(http_app(), host=os.environ.get("HOST", "127.0.0.1"),
+                    port=int(os.environ.get("PORT", "8000")))
+    else:
+        mcp.run()
 
 
 if __name__ == "__main__":

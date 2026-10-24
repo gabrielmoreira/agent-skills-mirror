@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/dependency-auditor/../../../engineering/skills/dependency-auditor/SKILL.md

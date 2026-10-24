@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/skills-iso42001-specialist/../../../ra-qm-team/compliance-team-iso42001/skills/iso42001-specialist/SKILL.md

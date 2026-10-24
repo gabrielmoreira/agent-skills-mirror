@@ -49,7 +49,8 @@ pnpm run dist                    # real installers (dmg + zip on macOS)
 
 DESKTOP_EDITION=saas \
 DESKTOP_APP_ORIGIN=https://…  \
-DESKTOP_PLATFORM_ORIGIN=https://… pnpm run dist  # a saas package
+DESKTOP_PLATFORM_ORIGIN=https://… \
+DESKTOP_PAIRING_ORIGIN=https://… pnpm run dist  # a saas package
 ```
 
 **`pnpm run preview` is how you see a change before it deploys.** A remote-URL shell
@@ -108,6 +109,7 @@ Minimum supported macOS is **12**, raised by Electron 38.
 | App name | `LangAlpha OSS` | `LangAlpha` |
 | Bundle id | `ai.langalpha.desktop.oss` | `ai.langalpha.desktop` |
 | URL scheme | `langalpha-oss://` | `langalpha://` |
+| Remote-control helper label | `ai.langalpha.desktop.oss.helper` | `ai.langalpha.desktop.helper` |
 
 `src/config.js` merges the two and refuses to start a `saas` build with no
 `platformOrigin`: that build would open on the app and silently skip onboarding, which
@@ -174,7 +176,10 @@ edition's output directory and refuses a parent holding several.
 | `src/origins.js` | what counts as ours: **by origin, never by path** |
 | `src/oauth.js` | system-browser OAuth, intercepted (below) |
 | `src/deeplink.js` | `langalpha://` scheme, for magic links clicked with the app closed, and integration logins, installs and console pages the browser hands back |
-| `src/preload.js` | the renderer bridge: version, platform, `capabilities`, `setTheme`, `openExternal`, `savePdf` |
+| `src/preload.js` | the renderer bridge: version, platform, `capabilities`, `setTheme`, `openExternal`, `savePdf`, the connector OAuth trio, and `getRemoteControl` / `enableRemoteControl` / `disableRemoteControl` |
+| `src/remoteControl.js` | remote control of this Mac: the helper's login item, its folder, and the confirmation before a pairing (below) |
+| `src/remoteControlState.js` | what remote control reads off the Mac: whether it can run here, the status the app is shown, the menu line. **Pure**, like `policy` |
+| `src/sender.js` | the window an IPC call came from, for the channels that answer only some pages |
 | `src/pdf.js` | renders the calling window to a PDF the user picks a home for; allowlists the options the page may set |
 | `src/downloads.js` | gives a download a visible ending, since a frameless window has no download shelf |
 | `src/notify.js` | the dock bounce that says a file landed |
@@ -394,6 +399,53 @@ Its controls reach the main process, so they are kept off every remote page:
 `preload.js` exposes `langalphaOutage` only when `location.protocol === 'file:'`,
 and the main process independently refuses those channels unless the window
 really is showing the page.
+
+## Remote control of this Mac (Preview)
+
+A mac bundle can carry `langalpha-helper`, a Rust binary built in `../helper`, which
+lets the agent use this Mac as an SSH computer. It runs as an SMAppService agent, so
+launchd keeps it up whether or not the app is open, and the app never talks to it
+directly. They share one folder, `~/Library/Application Support/<app name>/helper`:
+the app writes `pairing` there to ask for a pairing and reads `state` to see what the
+helper is doing. All the app does to the process itself is register and unregister
+its login item.
+
+- **Packaging.** `scripts/build.mjs` adds the binary at `Contents/MacOS/langalpha-helper`
+  and a plist generated per edition (`scripts/launch-agent.mjs`) at
+  `Contents/Library/LaunchAgents/<label>.plist`, on mac builds only, through the
+  `mac:` block `scripts/helper-bundle.mjs` writes. With no helper
+  built the app still packages and reports remote control as unsupported;
+  `DESKTOP_REQUIRE_HELPER=1` makes that an error instead. The plist makes the job
+  `Interactive`, as macOS does its own sshd: with no type launchd throttles the CPU
+  and I/O of every command the agent runs.
+- **Signing.** `scripts/sign-mac.mjs` signs the helper itself, then hands the rest
+  of the bundle to electron-builder's signer with the helper skipped. First, because
+  that signer reaches the app's main executable before the helper beside it, and
+  codesign refuses to seal a bundle with unsigned code in `Contents/MacOS`. Itself,
+  because electron-builder signs every nested Mach-O with `entitlementsInherit`, the
+  JIT pair Electron's helpers need, and the helper takes logins from the network and
+  runs no JIT, so it gets an empty set (`resources/entitlements.helper.plist`).
+  `build.mjs` sets it as the signer only on a build that carries the helper.
+- **Enable** checks the URL's shape (https, or http on loopback, and exactly the
+  pairing script path), then asks in a native dialog naming the host and the macOS
+  account, Cancel the default. A saas build first refuses any server but its
+  `pairingOrigin` (`DESKTOP_PAIRING_ORIGIN`, the deployment's API host), so script
+  running in the app cannot pair the Mac elsewhere; an OSS build takes any host,
+  since its server may be reached through a tunnel or a Docker host name. A Mac already paired is torn down only after that yes,
+  since another LangAlpha account signed in on the same macOS account may be using it,
+  and one that cannot be taken down whole is left running as it was.
+- **Never half on.** The login item stays registered only while the Mac is paired or
+  waiting for approval in System Settings. A pairing that is refused, never picked up,
+  or never ends is undone: the item unregistered and the folder deleted, so no helper
+  runs unpaired with nothing to turn it off.
+- **The menu** gets a Remote Control submenu with Pause and Resume while the Mac is
+  paired or the helper's item is on, refreshed by a light poll.
+- **Updates.** launchd keeps the helper it started running when an update swaps the
+  bundle, so the helper watches its own executable: once another file is in its
+  place, it exits when no command, forward or pairing is under way (an hour at
+  most), and `KeepAlive` starts the new build. Nothing on the app's side.
+- **IPC** answers only a window showing the app's own origin, like the connector
+  OAuth channels.
 
 ## Updates
 

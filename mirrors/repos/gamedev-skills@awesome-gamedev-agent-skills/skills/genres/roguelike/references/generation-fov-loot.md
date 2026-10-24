@@ -31,14 +31,21 @@ sibling rooms as you unwind the recursion. Produces evenly distributed, non-over
 ### Cellular automata (organic caves)
 
 ```python
-# Random fill, then smooth: a cell becomes wall if most neighbors are walls.
+# Random fill, then smooth with the "4-5 rule": a cell is wall in the next map if 5 or more of
+# the 9 cells in its 3x3 block (itself included) are walls. Same thing: a wall stays a wall with
+# 4+ wall neighbours; a floor becomes wall with 5+.
 fill_random(map, wall_chance=0.45, rng=rng)
-for _ in range(4, 6):                 # 4–6 smoothing passes
+for _ in range(5):                         # 4–5 passes is typical
+    new_map = copy(map)                    # read the old map, write a new one
     for cell in map:
-        walls = count_wall_neighbors(map, cell)   # 8-neighborhood
-        map[cell] = WALL if walls >= 5 else FLOOR
+        walls = count_walls_3x3(map, cell) # out-of-bounds cells count as walls (solid border)
+        new_map[cell] = WALL if walls >= 5 else FLOOR
+    map = new_map
 # Then keep only the largest connected floor region (discard isolated pockets).
 ```
+
+Updating the map in place while scanning it makes earlier cells influence later ones in the same
+pass, which smears caves in the scan direction. Always write to a second buffer.
 
 ### Drunkard's walk (cheap, winding)
 
@@ -60,26 +67,44 @@ For caves, the common shortcut is to keep only the single largest region and dis
 
 ## 3. Field of view — symmetric shadowcasting
 
-Properties you want: **symmetric** (if A sees B, B sees A), no blind spots, no flicker as the
-player moves. Recursive shadowcasting scans the eight octants around the origin, tracking a
-"shadow" of slopes blocked by walls:
+Properties you want: **symmetric** (if floor tile A sees floor tile B, B sees A), no blind
+corners, and walls that light up as you walk along them. Classic recursive shadowcasting (eight
+octants, tiles shown if they touch the visible slope range) is fast but breaks symmetry.
+*Symmetric shadowcasting* (Albert Ford, 2021) fixes it with one rule: a **floor** tile is
+visible only if its **centre** lies inside the visible slope range; a **wall** tile is visible
+if any part of it does.
 
+```python
+# Pseudocode. Scan each of the 4 quadrants (N, E, S, W) row by row, moving away from the origin.
+# Slopes are col/depth; keep them as exact fractions (rationals), not floats, so the edge
+# tests do not wobble. (depth, col) is mapped to (x, y) per quadrant by a small transform.
+def scan(quadrant, depth, start, end):           # first call: depth=1, start=-1, end=+1
+    prev_wall = None
+    for col in range(round_half_up(depth * start), round_half_down(depth * end) + 1):
+        wall = is_wall(quadrant, depth, col)
+        centre_inside = depth * start <= col <= depth * end
+        if wall or centre_inside:
+            mark_visible(quadrant, depth, col)
+        if prev_wall is True and not wall:        # leaving a wall: narrow the start
+            start = Fraction(2 * col - 1, 2 * depth)
+        if prev_wall is False and wall:           # hitting a wall: scan the gap before it
+            scan(quadrant, depth + 1, start, Fraction(2 * col - 1, 2 * depth))
+        prev_wall = wall
+    if prev_wall is False:                        # row ended on floor: continue outward
+        scan(quadrant, depth + 1, start, end)
 ```
-for each of 8 octants:
-    scan rows outward from the origin up to radius R
-    track the visible slope range [start_slope, end_slope]
-    when a wall is hit, recurse into the narrower slope range beyond it,
-    and continue the current row with the reduced range
-mark a cell visible if it lies within the current slope range and within R
-```
+
+`round_half_up(x)` is `floor(x + 1/2)` and `round_half_down(x)` is `ceil(x - 1/2)`. The origin
+tile is always visible and treated as not blocking. Stop recursing at the map edge or at your
+light radius, and use a circular check (`dx*dx + dy*dy <= R*R`) for a round light rather than a
+square one.
+
+Test it: on random maps, compute FOV from every floor tile and assert that whenever A sees B,
+B sees A. This version passes that test; classic recursive shadowcasting does not.
 
 Implementation notes:
-- Transform each octant into a common coordinate frame so one routine handles all eight.
-- Use a circular radius check (`dx*dx + dy*dy <= R*R`) for a round light, not a square.
-- Cache `explored` separately; render explored-but-not-visible cells dimmed.
-
-A symmetric variant ("symmetric shadowcasting") is simpler to reason about and avoids
-single-cell asymmetries; prefer it if you implement from scratch.
+- Keep `explored` separately; render explored-but-not-visible cells dimmed.
+- Recompute only when the viewer moves or a door/wall changes, not every frame.
 
 ## 4. Weighted, depth-scaled loot and spawn tables
 

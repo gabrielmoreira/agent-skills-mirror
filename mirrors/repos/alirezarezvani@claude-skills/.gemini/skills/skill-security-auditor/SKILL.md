@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/skill-security-auditor/../../../engineering/skills/skill-security-auditor/SKILL.md

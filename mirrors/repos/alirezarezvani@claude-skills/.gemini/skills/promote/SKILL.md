@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/promote/../../../engineering-team/self-improving-agent/skills/promote/SKILL.md

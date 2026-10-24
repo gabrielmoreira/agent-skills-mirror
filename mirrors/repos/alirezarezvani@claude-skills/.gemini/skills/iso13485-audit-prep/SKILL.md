@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/iso13485-audit-prep/../../../compliance-os/skills/iso13485-audit-prep/SKILL.md

@@ -37,7 +37,10 @@ abilities the metrics come from, that's the engine movement skill + `input-syste
    these units. Lock them before building geometry.
 2. **Blockout (whitebox/greybox).** Build the whole level from untextured
    primitives at correct scale. Validate flow, sightlines, and reachability while
-   changes are cheap. No art yet.
+   changes are cheap. No art yet. Tools: Godot `CSGBox3D` and friends with
+   `use_collision` on (prototype only: the docs flag their CPU cost, so bake to
+   static meshes later), Unity's ProBuilder package (`com.unity.probuilder`),
+   Unreal's Modeling Mode (Cube Grid), and a plain grey tileset for 2D.
 3. **Define the critical path** (start → goal) and the **golden path** you expect
    most players to take. Layer optional/secret paths off it.
 4. **Pace the experience.** Alternate tension and rest in a deliberate curve;
@@ -56,19 +59,26 @@ abilities the metrics come from, that's the engine movement skill + `input-syste
 ### 1. Player metrics drive every dimension
 
 ```gdscript
-# Measure the character ONCE, then size geometry in these units. If the jump
-# changes, gaps must be re-derived — never eyeball reachability.
+# Derive the metrics from the SAME constants the character controller uses, then
+# size geometry in these units. If the jump changes, the numbers follow.
 const RUN_SPEED      := 240.0   # px/s (or m/s in 3D)
-const MAX_JUMP_H     := 96.0    # peak height of a full jump
-const MAX_JUMP_DIST  := 200.0   # horizontal distance of a running jump
+const JUMP_VELOCITY  := 420.0   # initial upward speed of a full jump
+const GRAVITY        := 980.0   # px/s², the value the controller applies
+const MAX_JUMP_H     := JUMP_VELOCITY * JUMP_VELOCITY / (2.0 * GRAVITY)  # 90: peak height
+const AIR_TIME       := 2.0 * JUMP_VELOCITY / GRAVITY   # ~0.86 s, take-off to same height
+const MAX_JUMP_DIST  := RUN_SPEED * AIR_TIME            # ~206: running jump, level ground
 const SAFE_GAP       := MAX_JUMP_DIST * 0.7   # comfortable, not pixel-perfect
 const HARD_GAP       := MAX_JUMP_DIST * 0.95  # a deliberate skill check
 # Build platforms so required jumps use SAFE_GAP; reserve HARD_GAP for optional reward.
 ```
 
-A reachable level falls out of honest metrics. A platform placed `MAX_JUMP_DIST +
-1` away is impossible; one at `SAFE_GAP` is fair. Keep these constants beside the
-level data so designers and code agree.
+The formulas are the ideal arc. Variable jump height, a separate fall gravity,
+air acceleration, the fixed physics step and the collider's width all move the
+real numbers, and landing higher shortens the reach. Confirm them once in a
+test room with a measured gap ladder, then treat the measured values as the
+truth. A platform placed `MAX_JUMP_DIST + 1` away is impossible; one at
+`SAFE_GAP` is fair. Keep these constants beside the level data so designers and
+code agree.
 
 ### 2. Encounter / pacing as data (a tension timeline)
 
@@ -99,10 +109,31 @@ const ROOMS := {
     "side_room": { "exits": [ { "to": "hall_1" } ], "grants": "double_jump" },
     "vista":   { "exits": [ { "to": "boss", "needs": "red_key" } ] },
 }
-# Validation (do this!): from "entry", can the player reach "boss" given that
-# "double_jump" is granted in "side_room" before "vista" requires it? A flood
-# fill that only traverses an exit when its `needs` is already satisfiable
-# proves the critical path isn't soft-locked.
+
+# Grow the reachable set until nothing new opens: collect what each reached room
+# grants, then follow every exit whose `needs` is already held. Assumes keys are
+# never used up and doors never re-lock; model consumable keys as counts.
+func goal_reachable(rooms: Dictionary, start: String, goal: String) -> bool:
+    var have := {}                                 # keys/abilities collected
+    var reached := {start: true}
+    var changed := true
+    while changed:
+        changed = false
+        for room in reached.keys():
+            var info: Dictionary = rooms.get(room, {})
+            var grant = info.get("grants")
+            if grant != null and not have.has(grant):
+                have[grant] = true
+                changed = true
+            for exit in info.get("exits", []):
+                var open: bool = not exit.has("needs") or have.has(exit["needs"])
+                if open and not reached.has(exit["to"]):
+                    reached[exit["to"]] = true
+                    changed = true
+    return reached.has(goal)
+# goal_reachable(ROOMS, "entry", "boss") is FALSE for the table above: no room
+# grants "red_key". That is exactly the soft-lock this check exists to catch.
+# Run it in a test or editor tool whenever the room graph changes.
 ```
 
 ## Pitfalls

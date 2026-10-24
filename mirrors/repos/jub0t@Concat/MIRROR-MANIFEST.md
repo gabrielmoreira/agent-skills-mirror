@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `jub0t/Concat` — 26 default patterns, 0 followed patterns, 1 file(s) materialized.
+Mirror of `jub0t/Concat` — 26 default patterns, 0 followed patterns, 2 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `jub0t/Concat` — 26 default patterns, 0 followed patterns, 1 file(s)
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 1 |
+| Files         | 2 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,6 +60,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`.claude/skills/run-concat/SKILL.md`](.claude/skills/run-concat/SKILL.md) |
+| 2 | ✓ | [`.claude/skills/study-editors/SKILL.md`](.claude/skills/study-editors/SKILL.md) |
 
 ---
 

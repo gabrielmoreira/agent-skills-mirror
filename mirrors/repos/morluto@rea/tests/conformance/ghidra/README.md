@@ -45,6 +45,18 @@ binaries and Ghidra projects are never committed.
   retry after backend recovery, and keep healthy dossier snapshot reuse.
   The injection does not establish which natural inputs make the decompiler
   fail.
+- `node scripts/verify-real-ghidra-decompile-timeout.mjs` (after
+  `npm run build:cached`, Linux or macOS x64/arm64) compiles a generated shared
+  library whose `rea_slow` function has thousands of branches and analyzes it
+  with `REA_GHIDRA_DECOMPILE_TIMEOUT_SECONDS=1` through the real read-only TCP
+  provider. Ghidra's own decompiler stops at the limit with no injection:
+  `analyze_function` returns the listing facets with pseudocode unavailable and
+  a live cache policy, `procedure_pseudo_code` fails with a message naming the
+  setting, and the same session then decompiles `rea_small`. Set
+  `REA_DECOMPILE_TIMEOUT_BRANCHES` to change the fixture size. The verifier
+  budgets 1 MiB for generated C source and derives the maximum branch count
+  from the worst-case line size before allocating the source. Larger or
+  invalid counts are rejected before installation inspection or compilation.
 
 `scripts/verify-real-ghidra.mjs` uses `cc`, `clang`, and `lld-link` by default;
 `REA_CC`, `REA_CLANG`, and `REA_LLD_LINK` can select alternate commands. The

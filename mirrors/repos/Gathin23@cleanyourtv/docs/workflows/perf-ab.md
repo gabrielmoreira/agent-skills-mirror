@@ -1,7 +1,48 @@
 # Workflow: measure a launcher performance change, before and after
 
-**When to use this:** you changed the launcher to make it faster or lighter, and the pull request has to
-show by how much, and where the time went. This is the method #666 used.
+**When to use this:** any change under `launcher/`. The regression check below is optional for most of them
+(about six minutes on one TV), but welcome. A change meant to make the launcher faster or lighter, or one
+whose check fails, then follows the full method
+#666 used, to show by how much and where the time went.
+
+## The regression check, for any launcher change (optional)
+
+1. **Before you change anything,** install the base build with `launcher/build-and-install.sh` and run:
+
+   ```bash
+   TV_HOST=<tv ip> tools/venv/bin/python tools/bench.py --out-dir work/bench-before
+   ```
+
+2. Make the change, install your build the same way, and run `tools/bench.py --out-dir work/bench-after`.
+3. Compare the two `result.json` files. Leave out any field that is `null` in both:
+
+   | Field | Fails when the after value is |
+   |---|---|
+   | `response_ms.p50` | more than 10% and 5 ms above before |
+   | `return_to_home_ms.p50` | more than 10% and 10 ms above before |
+   | `cold_start_ms.p50` | more than 10% and 30 ms above before |
+   | `jank_pct` | more than 1 point above before |
+   | `pss_mb` | more than 2 MB above before |
+   | `idle_launcher_cpu_pct` | more than 0.5 points above before |
+
+4. **If a field fails,** follow the method below with that scenario (`home`, `cold` or `nav`) to find
+   the cost. Fix it and go back to step 2. Fixes that usually work:
+   - doing the work after the first frame;
+   - skipping work when nothing changed;
+   - decoding images at their display size;
+   - keeping results instead of recomputing them.
+5. Put the six fields, before and after, in the PR. If a feature has to cost something, give the number
+   and the reason. Once it works, spend one more pass on its cost.
+
+Some notes on the numbers:
+- **Noise:** two runs of the same build on a TCL C755 differed by 0 ms in key response, up to 45 ms in
+  cold start and 1 MB in PSS, and the limits sit above that. Rerun both builds if a field lands near
+  its limit.
+- **Run time:** a full run takes about 6 minutes.
+- **TVs that don't log injected keys:** `return_to_home_ms` is `null`, and `response_ms` includes the ADB
+  round trip. It still compares two builds on the same TV.
+
+## The full method
 
 Tools: [`tools/trace.py` and `tools/trace_report.py`](../../tools/trace.md),
 [`tools/flamechart.py`](../../tools/flamechart.md) and [`tools/screendiff.py`](../../tools/screendiff.md).

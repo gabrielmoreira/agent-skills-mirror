@@ -94,7 +94,10 @@ Debloat
   it and you cannot tell which.
 - After the last batch, reboot once and compare `pm list packages -d` with what you disabled: some
   firmware re-enables packages at every boot from its own list (TCL Android 9 does this for its user
-  center). Note those in the list header instead of disabling them again after each boot.
+  center). Note those in the list header instead of disabling them again after each boot. If
+  setupwraith or the stock launcher came back and Home is black, check `logcat | grep
+  RecoveryActivity` and re-enable the stock launcher before anything else
+  (`docs/devices/acer-r4g.md`).
 - Offer me ad-blocking DNS as an optional extra: on Android 9 and newer, Private DNS set to an
   ad-blocking resolver (`settings put global private_dns_specifier dns.adguard-dns.com`, then
   `settings put global private_dns_mode hostname`). Tell me it doesn't block YouTube ads, check an app

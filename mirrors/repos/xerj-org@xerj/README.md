@@ -197,10 +197,9 @@ irm https://xerj.org/get.ps1 | iex
 ```
 
 One static binary, no JVM, no dependencies. Prebuilt for Linux, macOS and Windows on x86-64
-and arm64. The x86-64 builds need a CPU with AVX2, BMI2 and FMA (x86-64-v3: Intel Haswell
-2013 and later, AMD Excavator/Zen and later); on an older CPU they stop at launch with an
-illegal-instruction error, so the installer checks before downloading and tells you to
-[build from source](#build-from-source) instead. It speaks the Elasticsearch API, so existing
+and arm64. The x86-64 builds target x86-64-v2 (SSE4.2: Intel Nehalem 2008 and later, AMD
+Bulldozer and later) and use AVX2 and FMA at runtime when the CPU has them, so a pre-Haswell
+machine runs the same binary. It speaks the Elasticsearch API, so existing
 clients, dashboards and tooling work against it unchanged.
 
 First commands after install (the installer prints where `xerj` landed; add it to your PATH
@@ -333,8 +332,7 @@ boots the same `--insecure` dev node. Drop this into your MCP client's config:
 }
 ```
 
-Use an absolute path. The installer puts `xerj` in `~/.local/bin` by default
-(`command -v xerj` confirms), and MCP hosts launched from a desktop icon do not inherit your
+Use an absolute path. The `sh` installer (Linux, macOS, and Windows Git Bash, MSYS and Cygwin) puts `xerj` in `~/.local/bin` (`xerj.exe` on Windows; `command -v xerj` confirms) and does not edit PATH. The PowerShell installer (`get.ps1`) puts `xerj.exe` in `%LOCALAPPDATA%\Programs\xerj` and adds that directory to the user PATH (`(Get-Command xerj).Source` confirms; `XERJ_NO_PATH=1` opts out). MCP hosts launched from a desktop icon do not inherit your
 shell's `PATH`. If the node is running with auth (anything but `--insecure`), add
 `"XERJ_AUTH": "ApiKey <key>"` alongside `XERJ_URL`; the key is in `<data-dir>/admin.key`.
 
@@ -344,9 +342,15 @@ Twenty-six clients can register `xerj mcp` as a local stdio server. The entry is
 two fields - the absolute path to the binary, and `mcp` as its only argument - but where that entry
 lives and which key wraps it differ per client. `tested` means the server was registered in that
 client and `xerj_search` appeared in its tool list; `untested` means the path and shape are
-transcribed from the client's own documentation and nobody has run it yet. Only the OpenCode row
-has been run: v2.1.2 on Windows against `xerj` v1.0.0-rc.97, which answered `initialize` and
-`tools/list` with its full tool list. Correcting an `untested` row is a welcome first PR.
+transcribed from the client's own documentation and nobody has run it yet. Two rows have been run.
+OpenCode v2.1.2 on Windows against `xerj` v1.0.0-rc.97 answered `initialize` and `tools/list`
+with its full tool list. Cline CLI 3.0.73 on Linux against `xerj` v1.0.0-rc.98 loaded this
+section's `mcpServers` block at `~/.cline/data/settings/cline_mcp_settings.json`. `xerj_search`
+appeared in the tool list Cline handed the model (named `xerj__xerj_search`) among that binary's
+20 tools, and Cline executed one `xerj_search` call. The model turn was a local OpenAI-compatible
+stub, because no provider key was available; the MCP server was the real `xerj mcp` process. The
+IDE's MCP Servers > Configure button was not part of that run. Correcting an `untested` row is a
+welcome first PR.
 
 | Client | Config file | Key | Note | Tested |
 |---|---|---|---|---|
@@ -358,7 +362,7 @@ has been run: v2.1.2 on Windows against `xerj` v1.0.0-rc.97, which answered `ini
 | GitHub Copilot in VS Code | `.vscode/mcp.json` | `servers` | needs `"type": "stdio"`; the portable `.mcp.json` uses `mcpServers` | untested |
 | Windsurf | `%APPDATA%\devin\mcp_config.json`, `~/.config/devin/mcp_config.json` | `mcpServers` | the path is Devin's now, not `~/.codeium/windsurf` | untested |
 | Claude Desktop | `%APPDATA%\Claude\claude_desktop_config.json`, `~/Library/Application Support/Claude/claude_desktop_config.json`, `~/.config/Claude/claude_desktop_config.json` | `mcpServers` | quit the app fully, not just the window | untested |
-| Cline | `~/.cline/data/settings/cline_mcp_settings.json` (CLI); the IDE opens it from MCP Servers > Configure | `mcpServers` | `disabled` and `autoApprove` are Cline-specific | untested |
+| Cline | `~/.cline/data/settings/cline_mcp_settings.json` (CLI); the IDE opens it from MCP Servers > Configure | `mcpServers` | `disabled` and `autoApprove` are Cline-specific; the CLI run did not need them | tested |
 | Roo Code | `.roo/mcp.json` in the project, or `<VS Code User>/globalStorage/rooveterinaryinc.roo-cline/settings/mcp_settings.json` | `mcpServers` | the project entry wins on name clashes | untested |
 | Kilo Code | `kilo.jsonc` or `.kilo/kilo.jsonc` in the project, `~/.config/kilo/kilo.jsonc` global | `mcp` | one command array, like OpenCode | untested |
 | Continue | `~/.continue/config.yaml`, or any file in `.continue/mcpServers/` | `mcpServers` | a YAML list, not a map; Agent mode only | untested |
@@ -370,7 +374,7 @@ has been run: v2.1.2 on Windows against `xerj` v1.0.0-rc.97, which answered `ini
 | Kiro | `.kiro/settings/mcp.json` in the workspace, `~/.kiro/settings/mcp.json` user | `mcpServers` | `${VAR}` expansion needs approval | untested |
 | Antigravity | `~/.gemini/config/mcp_config.json`, or `.agents/mcp_config.json` in the workspace | `mcpServers` | remote servers use `serverUrl` | untested |
 | OpenClaw | `~/.openclaw/openclaw.json` (JSON5) | `mcp.servers` | `transport: "stdio"` | untested |
-| DeepSeek Harness (dsh) | `$DSH_HOME/cordis.patch.yml`, or a profile patch | `- insert:` with `@deepseek-ai/dsh-mcp-client` | one plugin instance per server | untested |
+| [DeepSeek Harness (dsh)](dsh/) | `$DSH_HOME/cordis.patch.yml`, or a profile patch | `- insert:` with `@deepseek-ai/dsh-mcp-client` | one plugin instance per server | untested |
 | Warp | Settings > Agents > MCP servers, or `~/.warp/.mcp.json` and `.warp/.mcp.json` in the project | `mcpServers` | `working_directory`, not `cwd` | untested |
 | Augment Code | `~/.augment/settings.json` for the Auggie CLI; the IDE uses its own panel | `mcpServers` | that file does not drive the IDE | untested |
 | Qwen Code | `~/.qwen/settings.json`, or `.qwen/settings.json` in the project | `mcpServers` | `mcp.allowed` can silently hide it | untested |
@@ -436,18 +440,22 @@ context servers, and OpenClaw nests them under `mcp`:
 {mcp: {servers: {xerj: {command: "/abs/path/to/xerj", args: ["mcp"], transport: "stdio"}}}}
 ```
 
-DeepSeek Harness loads MCP as a plugin in its Cordis patch file:
+DeepSeek Harness loads one MCP server as one plugin in `$DSH_HOME/cordis.patch.yml`, or in a profile patch at `$DSH_HOME/profiles/<profile>/cordis.patch.yml`. The same block is the profile bundle in [`dsh/`](dsh/), and its `command` is `xerj` on `PATH`. If that file is only `[]`, replace the array with the block below; appending under `[]` is not valid YAML. `env` and `cwd` are optional stdio fields (`args` defaults to `[]`, `env` to `{}`, `cwd` to `""`). When the node is not running `--insecure`, add `XERJ_AUTH: "ApiKey <key>"` under `env`:
 
 ```yaml
+# $DSH_HOME/cordis.patch.yml
 - insert:
     - id: mcp-xerj
-      name: "@deepseek-ai/dsh-mcp-client"
+      name: '@deepseek-ai/dsh-mcp-client'
       config:
         serverName: xerj
         transport: stdio
-        command: /abs/path/to/xerj
+        command: xerj
         args:
           - mcp
+        env:
+          XERJ_URL: "http://localhost:9200"
+        cwd: ""
 ```
 
 Three candidates from the original list are deliberately absent. Aider has no MCP client support at
@@ -456,7 +464,7 @@ the other direction: it hosts an MCP endpoint other agents connect to, and its s
 their servers from the harness underneath. Grok Bot has no documented local stdio registration; the
 Grok CLI does, which is the `grok` row above.
 
-Twenty tools are exposed. Eleven are thin proxies over an endpoint XERJ already serves:
+Twenty-one tools are exposed. Eleven are thin proxies over an endpoint XERJ already serves:
 
 | Tool | What it does |
 |---|---|
@@ -469,10 +477,23 @@ Twenty tools are exposed. Eleven are thin proxies over an endpoint XERJ already 
 | `xerj_plan` | a plain-words filter in, validated query DSL out (`POST /_ask`; deterministic and rule-based, not an LLM) |
 
 For `xerj_search`, pass `{"prefix":"project","query":"retry policy"}` to search
-`project-*`, matching `xerj search --prefix project`. Use `index` for an explicit
-index name or pattern instead; non-empty `index` and `prefix` cannot be combined.
-The prefix is trimmed and must be non-empty. With neither argument, the tool
-searches `ax-*`.
+`project-*`, matching `xerj search --prefix project`. `prefix` is resolved by
+the same function as the CLI: the prefix `xerj autoindex --prefix` stores, so
+`My_Proj` searches `my-proj-*`. Use `index` for an explicit index name or
+pattern instead; non-empty `index` and `prefix` cannot be combined. An empty
+prefix, a prefix with no `[a-z0-9]` character, or a prefix that cannot name an
+index is an error. With neither argument, the tool searches `ax-*`.
+
+`xerj_def` finds local definitions with the same query, ranking and location deduplication
+as `xerj def --json`. For example, `{"symbol":"Cache","prefix":"project","kind":"struct","lang":"rust","k":5}`
+searches `project-*`; `index` can replace `prefix`, with the same scope rules as `xerj_search`.
+`symbol` also accepts capability phrases. `k` must be 1–50 (default 5); optional `max_tokens`
+caps the response. Results are ES JSON: declarations live in `hits.hits[]._source.code`,
+locations in `ax_path`/`path` and `line`/`start_line`; older file hits may use `fields._passage`.
+`hits.total` counts engine matches before deduplication. No match returns an empty hit list.
+As in the CLI, kind/language filters are ignored when no target index maps the field
+or any target index maps it as numeric. Ranking is lexical. This tool queries the configured node;
+`xerj_hub_def` instead looks up definitions in a named Hub pack.
 
 Two more are not plain proxies: `xerj_map` returns the per-index field map from the autoindex
 catalog (trimmed to a byte cap, otherwise verbatim), and `xerj_code_search` runs the `xerj code`
@@ -580,13 +601,13 @@ cargo build --release -p xerj-server
 ./target/release/xerj --insecure --data-dir ~/xerj-data
 ```
 
-The x86-64 release builds target `x86-64-v3` (AVX2, BMI2, FMA; set per target in
-`engine/.cargo/config.toml`), which is why the prebuilt binaries crash at launch on CPUs older
-than Intel Haswell (2013) or AMD Excavator/Zen. `RUSTFLAGS` overrides that file, so on such a
-CPU build with a lower baseline instead of installing the prebuilt binary:
+The x86-64 release builds target `x86-64-v2` (SSE4.2; set per target in
+`engine/.cargo/config.toml`). The HNSW dot-product kernel also compiles an AVX2+FMA
+variant and selects it at runtime when the CPU has both features. `RUSTFLAGS` overrides
+that file, so a local build can opt into the host CPU:
 
 ```sh
-RUSTFLAGS="-C target-cpu=x86-64-v2" cargo build --release -p xerj-server
+RUSTFLAGS="-C target-cpu=native" cargo build --release -p xerj-server
 ```
 
 To run the conformance suite against a running server:

@@ -19,7 +19,7 @@ For an archive installation, download the arm64 asset and its companion checksum
 [latest release](https://github.com/ashhart/TensorFold/releases/latest), with `V` set to its version:
 
 ```sh
-V=1.1.2
+V=1.1.3
 curl -fLO https://github.com/ashhart/TensorFold/releases/download/v$V/tensorfold-$V-macos-arm64.tar.gz
 curl -fLO https://github.com/ashhart/TensorFold/releases/download/v$V/tensorfold-$V-macos-arm64.tar.gz.sha256
 shasum -a 256 -c tensorfold-$V-macos-arm64.tar.gz.sha256
@@ -107,6 +107,13 @@ bin/tensorfold-native serve "$HOME/models/nemotron-lightning" \
   --name local-model --parallel 1 --context 8192 --temperature 0 --no-thinking
 ```
 
+This example's `--parallel 1` caps serving at one active request; extra requests wait for a free slot.
+Omit `--parallel` to use `auto`, which asks for up to eight streams as memory and the engine allow.
+Use `--parallel N` for an explicit cap; the engine refuses a count it cannot fit.
+Read the startup capacity line, such as `8 streams at once` on CUDA, for the accepted count.
+For example, `--parallel 4` keeps at most four requests active while the fifth and later requests wait.
+Completing or cancelling an active request frees its slot; cancelling a waiting request removes it from the queue.
+
 Leave the server running and check it from another terminal:
 
 ```sh
@@ -122,7 +129,14 @@ For streaming, add `"stream": true` to the request.
 The native server also has `/v1/responses` and Anthropic `/v1/messages` routes.
 Serve flags and request overrides are described in [README.md](README.md#serve-flags).
 
+With API authentication off, `/health` includes `live.connections`, the total active plus waiting requests,
+and `live.waiting`, the queued requests. Subtract waiting from connections to get the active count.
+For example, 8 connections with 4 waiting means 4 active and 4 queued.
+When API authentication is enabled, `/health` returns only status.
+
 ## Linux and CUDA
+
+For source builds with `zig build native` (including `--prefix` installs): Structured output and required tool calls need the release archive's `lib/` or `zig build grammar -Dxgrammar=DIR`; prepare DIR with `git clone --branch v0.2.8 --recurse-submodules https://github.com/mlc-ai/xgrammar` (use the native build's same `--prefix` for grammar).
 
 Choose `linux-aarch64` for an arm64 host or `linux-x86_64` for an x86_64 host.
 The archives require glibc 2.28 or newer and an NVIDIA driver providing `libcuda.so.1`.
@@ -135,7 +149,7 @@ Flash Next also serves on CUDA from its MLX 4-bit checkpoint, on the built-in ke
 On a GB10 arm64 host (an x86_64 host uses `linux-x86_64` in the same commands):
 
 ```sh
-V=1.1.2
+V=1.1.3
 curl -fLO https://github.com/ashhart/TensorFold/releases/download/v$V/tensorfold-$V-linux-aarch64.tar.gz
 curl -fLO https://github.com/ashhart/TensorFold/releases/download/v$V/tensorfold-$V-linux-aarch64.tar.gz.sha256
 sha256sum -c tensorfold-$V-linux-aarch64.tar.gz.sha256

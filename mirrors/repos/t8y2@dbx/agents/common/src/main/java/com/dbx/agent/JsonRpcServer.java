@@ -186,14 +186,17 @@ public final class JsonRpcServer {
             observingAgent.beforeAgentMethod(method, stringOrNull(params, "sessionId"));
         }
         if (AgentProtocol.METHOD_HANDSHAKE.equals(method)) {
-            return AgentProtocol.handshakeResult();
+            return AgentProtocol.withExactMetadataIdentity(AgentProtocol.handshakeResult(), agent.supportsExactMetadataIdentity());
         }
         if (AgentProtocol.METHOD_CONNECT.equals(method)) {
             ConnectParams connectParams = gson.fromJson(params, ConnectParams.class);
             agent.connect(connectParams);
             lastConnectParams = connectParams;
             lastConnectionValidationTimeMillis = 0L;
-            return Collections.singletonMap("ok", true);
+            Map<String, Object> result = new LinkedHashMap<>();
+            result.put("ok", true);
+            result.put("exactMetadataIdentity", agent.supportsExactMetadataIdentity());
+            return result;
         }
         if (AgentProtocol.METHOD_TEST_CONNECTION.equals(method)) {
             Map<String, Object> result = agent.testConnectionWithInfo(gson.fromJson(params, ConnectParams.class));
@@ -218,6 +221,14 @@ public final class JsonRpcServer {
                 throw new IllegalStateException("Connection is not valid");
             }
             return Collections.singletonMap("ok", true);
+        }
+        boolean exactIdentity = booleanOrDefault(params, "exact_identity", false);
+        if (exactIdentity) {
+            if (!agent.supportsExactMetadataIdentity()) {
+                throw new UnsupportedOperationException("Agent does not support exact_metadata_identity_v1");
+            }
+            String schema = stringOrNull(params, "schema");
+            if (schema == null || schema.isBlank()) throw new IllegalArgumentException("schema is required for exact metadata identity");
         }
         ensureLiveConnection(method);
         if (AgentProtocol.METHOD_CONNECTION_INFO.equals(method)) {
@@ -262,13 +273,15 @@ public final class JsonRpcServer {
         }
         if (AgentProtocol.METHOD_GET_TABLE_DDL.equals(method)) {
             switchCatalog(params);
-            return agent.getTableDdl(params.get("schema").getAsString(), params.get("table").getAsString());
+            return agent.getTableDdl(params.get("schema").getAsString(), params.get("table").getAsString(), exactIdentity);
         }
         if (AgentProtocol.METHOD_GET_COLUMNS.equals(method)) {
             switchCatalog(params);
             String currentSchema = params.has("current_schema") && !params.get("current_schema").isJsonNull()
                 ? params.get("current_schema").getAsString() : null;
-            return agent.getColumnsInContext(params.get("schema").getAsString(), params.get("table").getAsString(), currentSchema);
+            return exactIdentity
+                ? agent.getColumns(params.get("schema").getAsString(), params.get("table").getAsString())
+                : agent.getColumnsInContext(params.get("schema").getAsString(), params.get("table").getAsString(), currentSchema);
         }
         if (AgentProtocol.METHOD_LIST_INDEXES.equals(method)) {
             switchCatalog(params);
@@ -641,7 +654,8 @@ public final class JsonRpcServer {
             stringOrNull(params, "filter"),
             intOrNull(params, "limit"),
             intOrNull(params, "offset"),
-            stringListOrNull(params, "object_types")
+            stringListOrNull(params, "object_types"),
+            booleanOrDefault(params, "exact_identity", false)
         );
     }
 

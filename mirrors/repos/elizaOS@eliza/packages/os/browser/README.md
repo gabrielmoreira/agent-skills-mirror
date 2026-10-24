@@ -299,8 +299,9 @@ the person said yes to (see the plugin-browser README). `task-bindings.mjs`
 checks the grant against the live binding (task, epoch, origin, reviewed
 control, observed `targetRef`, the value hash a fill or select must carry, at
 most 60 seconds left),
-records it as spent under `commit-grant:<id>`, and hands the page only its ID,
-selector and expiry. The page refuses a grant it has used in this document and
+checks the optional `requestTarget` (`{ path | url, method }`) and `formHash`
+(64 lowercase hex), records it as spent under `commit-grant:<id>`, and hands
+the page only its ID, selector, expiry, request target and form hash. The page refuses a grant it has used in this document and
 reports the commit as `consentedCommit`. Run `node --conditions=eliza-source
 packages/os/browser/scripts/test-commit-grant.mjs` for the Chromium checks:
 no grant, an expired grant or one for another control is refused; a granted
@@ -313,7 +314,15 @@ with a `formaction`, `formmethod` or `formenctype` override), a script
 `form.submit()`, an action moved after the click and a swapped-in copy of the
 control are refused; a submit with no submitter is consented only from the
 default button that overrides nothing; and a second own-site request is
-recorded as a violation.
+recorded as a violation; a same-site fetch to another path than the form's
+action, a non-form control's request with no or another declared
+`requestTarget`, and a beacon for a declared GET are reported, while the
+declared target (by path or URL) and the form's own action sent by the page
+are consented; a field changed or a hidden input added after the click, and
+form data changed by a `formdata` handler for the page load only, are refused
+under a `formHash`, a matching one is consented, and the page's reported hash
+equals `commitFormHash` from plugin-browser; a script `form.submit()` into a
+new window is reported. The fixtures need `text/html; charset=utf-8`.
 
 Show-only guides scroll an off-screen target into view and report `placement`.
 Action guides never scroll. A trusted Dismiss sends only the guide ID; the
@@ -452,3 +461,15 @@ baseline. Run `bun --conditions=eliza-source browser/protection/test-advisory.mj
 from `packages/os` to exercise the same flow through the actual Linux native host
 and socket target, including disconnect reset. These controlled pages do not
 establish Android, TalkBack, or a full owned Chromium build.
+
+Task click snapshots can include a one-use `clickReadback` with the observed
+`targetRef` and `synchronousTextChange`. The isolated command compares visible
+text immediately before and after the click handler, then checks that the same
+text remains at readback. Timer updates, later request results, hidden text and
+form values do not establish this response. A different task scope consumes the
+receipt without exposing it. The receipt proves a visible UI response to that
+click, not goal completion, a provider result or a payment. Product policy must
+still check effect violations and verify the requested outcome separately.
+Chromium page-freshness and generated surface control-channel tests cover this
+protocol; installed native input and asynchronous result attribution are separate
+gates.

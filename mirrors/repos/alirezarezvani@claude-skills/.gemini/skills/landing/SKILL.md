@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/landing/../../../marketing/landing/skills/landing/SKILL.md

@@ -59,6 +59,18 @@ subagent whose session file is in a temp folder). Verification:
 models, token totals, start/last timestamps and effective prices come from the
 same usage records used by Usage and stats endpoints.
 
+A model the user counts under another id (`usageAliases` in settings.json,
+`magpie model alias`; [`provider.UsageAlias`](../../internal/provider/usagealias.go))
+is merged after pricing, never before: `buildGatewaySessions` prices each
+record by its own model and keys its day and model rows by the alias, and
+`sessions.List`, `Get`, `Find` and the stats (`aliasStats` in
+[`alias.go`](../../internal/sessions/alias.go)) merge a native session's rows
+the same way, into new slices so the memo is never changed. The alias is read
+before any lock, and an unreadable settings.json keeps the last aliases read.
+Requests, the Requests ledger and model lists keep each call's own id.
+Verification: `TestUsageAliasCountsTwoIdsAsOne`,
+`TestSessionsCountAliasedModelsAsOne`, `TestAliasStatsLeavesItsInputAlone`.
+
 Claude Desktop gateway rows can have a local name even without a CLI
 transcript (#1675). [`DesktopTitles`](../../internal/sessions/desktop_titles.go)
 reads `claude-code-sessions/*/*/local_*.json` and

@@ -23,7 +23,7 @@ exists in the simulation but won't be displaced by collisions.
 | velocity | `setVelocity(x, y)` / `setVelocityX/Y` | pixels per second |
 | acceleration | `setAcceleration(x, y)` | pixels/sec²; accumulates into velocity |
 | gravity | `setGravity(x, y)` | added on top of world gravity |
-| drag | `setDrag(x, y)` | velocity lost per second (or per-frame if `useDamping`) |
+| drag | `setDrag(x, y)` | px/sec² of slowdown, applied only while that axis has no acceleration; with `setDamping(true)` it is the share of velocity kept per second (e.g. `0.05`) |
 | max velocity | `setMaxVelocity(x, y)` | clamp speed |
 | bounce | `setBounce(x, y)` | 0 = stop on hit, 1 = full rebound |
 | friction | `setFriction(x, y)` | share of motion passed to a riding body |
@@ -74,16 +74,20 @@ group, so one call can wire up "all bullets vs all enemies".
 After the physics step, each body exposes which sides are touching:
 
 ```js
-body.blocked.down   // touching a tile or world boundary below
+body.blocked.down   // can't move down: bounds, tile, or a blocking body below
 body.touching.left  // touching another body on the left this step
 body.onFloor()      // shorthand for blocked.down
 body.onWall()       // blocked.left || blocked.right
 body.wasTouching    // touching state from the previous step (edge detection)
 ```
 
-`blocked` is contact with the world bounds or tiles; `touching` is contact with
-another body. Compare `touching` against `wasTouching` to detect the first frame
-of a hit (e.g. play a sound once on landing).
+`touching` is set for any body contact. `blocked` means the body cannot move further
+that way: the world bounds, a colliding tile, an immovable, static or non-pushable
+(`sprite.setPushable(false)`) body, or a body that is itself blocked (a crate resting
+on the floor). That is why `blocked.down`/`onFloor()` works as a ground check on a
+`staticGroup` platform but stays `false` when landing on an ordinary dynamic body in
+mid-air. Compare `touching` against `wasTouching` to detect the first frame of a hit
+(e.g. play a sound once on landing).
 
 ## World bounds
 
@@ -96,19 +100,37 @@ this.physics.world.on('worldbounds', (b, up, down, left, right) => { /* ... */ }
 
 ## Collision categories & masks
 
-By default every body collides with every other. To control which bodies interact,
-use a bitmask (each category a unique power of two):
+Every body starts in category `1` with a mask of `1`, so everything collides with
+everything. A pair is tested only when **each** side's mask contains the other side's
+category. Moving a body into a new category therefore also cuts it off from every
+body you have not touched, because their mask is still `1`:
 
 ```js
-const PLAYER = 1 << 0, ENEMY = 1 << 1, PICKUP = 1 << 2;
-player.body.setCollisionCategory(PLAYER);
-player.body.setCollidesWith([ENEMY, PICKUP]);   // ignore other players
-enemy.body.setCollisionCategory(ENEMY);
-enemy.body.setCollidesWith([PLAYER]);
+const WORLD  = 1;                                  // the default category
+const PLAYER = this.physics.nextCategory();        // 2, 4, 8, ... (max 32 categories)
+const ENEMY  = this.physics.nextCategory();
+
+player.setCollisionCategory(PLAYER);
+player.setCollidesWith([WORLD, ENEMY]);            // keep the untouched ground
+
+// The ground still has mask 1, so it would now ignore PLAYER: widen it too.
+ground.setCollidesWith([WORLD, PLAYER, ENEMY]);    // or ground.resetCollisionCategory()
 ```
 
-Call `body.resetCollisionCategory()` to return a body to the default
-"collides with everything" behaviour.
+When one side of a collider is a group, the group's own category and mask are checked
+**and** each member's. The group's values are not copied to its members, so set both:
+
+```js
+enemies.setCollisionCategory(ENEMY).setCollidesWith([WORLD, PLAYER]);
+const enemy = enemies.create(600, 400, 'enemy');   // and every other member
+enemy.setCollisionCategory(ENEMY).setCollidesWith([WORLD, PLAYER]);
+```
+
+A dynamic physics group starts with a mask of all bits; a static group and every
+body start with mask `1`. `resetCollisionCategory()` sets category `1` and a mask of
+all bits ("collides with everything"), which is wider than a new body's default.
+If you only need to skip a few pairs, a `processCallback` that returns `false` is
+simpler than categories.
 
 ## Debugging
 

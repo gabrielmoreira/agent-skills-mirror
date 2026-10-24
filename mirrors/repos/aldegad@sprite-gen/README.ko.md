@@ -60,7 +60,7 @@ flowchart LR
     end
     subgraph D["D · 후처리"]
         direction LR
-        d1[recolor] ~~~ d2[compose-layers] ~~~ d3[export-*]
+        d1[recolor] ~~~ d2[export-*]
     end
     subgraph E["E · 에셋 도구 (독립)"]
         e1[background-tile] ~~~ e2[shadow] ~~~ e3[inspect-motion]
@@ -76,7 +76,7 @@ flowchart LR
 | **A · 아틀라스 행** | 정지 이미지 한 장 + 상태 목록 → `sprite-sheet-alpha.png` + `manifest.json.frame_layout`, 아이들 포즈에 **Breathe** 가 구워짐 | [run-contract](docs/run-contract.md) · [breathing](docs/breathing.md) |
 | **B · 비디오 → 루프** | 정지 이미지 한 장 → 상태별로 이음매 없는 투명 GIF / WebP / 스트립, 그록 이매진이 움직이고 실제 주기에서 잘라냄 | [video-pipeline](docs/video-pipeline.md) · [video](docs/video.md) |
 | **C · 유틸리티** | 가져온 이미지 또는 그리드 시트 → 깨끗한 투명 컷; 완성된 아틀라스 → 큐레이터가 바로 쓸 수 있는 런 | [sheet-slicing](docs/sheet-slicing.md) · [curation](docs/curation.md) |
-| **D · 후처리** | 완성된 시트 → 결정론적 컬러웨이, 리그 레이어 합성, Aseprite / Phaser / Flame 익스포트 | [recolor](docs/recolor.md) · [layer-tracks](docs/layer-tracks.md) · [engine-export](docs/engine-export.md) |
+| **D · 후처리** | 완성된 시트 → 결정론적 컬러웨이, Aseprite / Phaser / Flame 익스포트 | [recolor](docs/recolor.md) · [engine-export](docs/engine-export.md) |
 | **E · 에셋 도구** | 독립적인 PNG 또는 애니메이션 → 반복 타일, 투영 그림자, 모션/접지 측정 | [asset-tools](docs/asset-tools.md) |
 | **S · 씬** | 기존 에셋 + 배치, 카메라, 조명 → PNG 프레임, MP4/GIF, 검사 및 배치 메타데이터 | [scene](docs/scene.md) |
 
@@ -137,7 +137,6 @@ sprite-gen unpack-atlas --atlas sheet.png             # 완성된 아틀라스 �
 ```bash
 sprite-gen recolor-palette --base <run>/sprite-sheet-alpha.png --out palette.draft.json
 sprite-gen recolor --run-dir <run> --spec recolor.spec.json      # → <run>/variants/
-sprite-gen compose-layers --run-dir <run>                        # 리그 런: 선언된 스택 → <run>/layers/
 sprite-gen export-aseprite --run-dir <run>                       # Phaser / Flame 용 Aseprite JSON
 ```
 

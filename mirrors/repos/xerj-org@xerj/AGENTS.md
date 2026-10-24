@@ -166,27 +166,42 @@ that is already running; it does not start one.
 }
 ```
 
-Use an absolute path (`command -v xerj`): MCP hosts started from a desktop icon
+Use an absolute path (`command -v xerj`; PowerShell: `(Get-Command xerj).Source`). The `sh` installer, including Windows Git Bash, MSYS and Cygwin, puts `xerj.exe` in `~/.local/bin` and does not edit PATH. The PowerShell installer (`get.ps1`) puts `xerj.exe` in `%LOCALAPPDATA%\Programs\xerj` and adds that directory to the user PATH. MCP hosts started from a desktop icon
 do not inherit a shell `PATH`. Add `"XERJ_AUTH": "ApiKey <key>"` when the node
 is not running `--insecure` — the key is `<data-dir>/admin.key`. `--url` and
 `--auth` flags override the two environment variables.
 
-Twenty tools: `xerj_search`, `xerj_semantic_search`, `xerj_vector_search`,
+Twenty-one tools: `xerj_search`, `xerj_semantic_search`, `xerj_vector_search`,
 `xerj_hybrid_search`, `xerj_memory_store`, `xerj_memory_recall`,
 `xerj_brain_overview`, `xerj_brain_ego`, `xerj_brain_link`, `xerj_brain_unlink`,
 `xerj_plan`, `xerj_map`, `xerj_code_search`, `xerj_index_budget`,
 `xerj_autoindex_remove`, `xerj_field_report`, `xerj_corpus_feedback`,
-`xerj_hub_find`, `xerj_hub_def`, `xerj_hub_ask`. The first eleven are each a *thin
-proxy*: they build exactly the request the ES-compatible surface already accepts
+`xerj_hub_find`, `xerj_hub_def`, `xerj_hub_ask`, `xerj_def`. The first eleven are
+each a *thin proxy*: they build exactly the request the ES-compatible surface already accepts
 (`xerj_plan` is `POST /_ask`, the deterministic rule-based planner) and hand back
 whatever the engine returned, errors and refusals verbatim — no capability of
 their own, so anything you can do over MCP you can also do with `curl`, and vice
-versa. `xerj_map` (#1055) reads the autoindex catalog and returns its per-index
+versa. `xerj_search` adds `match_line` and capped `match_lines` on each hit: the
+absolute 1-based source line of the best-scoring query term inside the passage.
+Cite `ax_path:match_line`. Both fields are omitted when no term is located or the
+passage start line is unknown. `start_line` stays the passage start. `xerj_map` (#1055) reads the autoindex catalog and returns its per-index
 field map, trimmed to a byte cap but otherwise verbatim. `xerj_code_search`
 (#977) is deliberately not a thin proxy: it runs
 the `xerj code` reference-coding pipeline ([`tools/xerj-code/`](tools/xerj-code/))
 — staleness refusal, licence warnings, no-match-as-guidance — and returns its
 rendered text rather than a raw response.
+
+`xerj_def` finds definitions in local autoindexed data, sharing the query,
+lexical ranking and location deduplication of `xerj def --json`. For example,
+`{"symbol":"Cache","prefix":"project","kind":"struct","lang":"rust","k":5}`
+searches `project-*`; `index` can replace `prefix`. With neither scope argument,
+it searches `ax-*`. `k` is 1–50 (default 5); `max_tokens` optionally caps the response.
+Declarations are in `hits.hits[]._source.code`, locations in `ax_path`/`path`
+and `line`/`start_line`; older file hits may use `fields._passage`.
+`hits.total` counts engine matches before deduplication; no match is a successful
+empty hit list. As in the CLI, kind/language filters are ignored when no target
+index maps the field or any target index maps it as numeric. Unlike
+`xerj_hub_def`, this queries the configured node rather than a named Hub pack.
 
 The remaining seven are not proxies either. `xerj_index_budget` counts a folder
 and estimates its index against the node's flood-stage budget before
@@ -196,7 +211,7 @@ true. `xerj_field_report` files an agent field report (a GitHub PR first, the
 `/api/field-report` endpoint when GitHub is unavailable). `xerj_corpus_feedback`
 rates a hub corpus. `xerj_hub_find`, `xerj_hub_def` and `xerj_hub_ask` answer
 from Corpus Hub packs already on the machine, the `xerj ask` flow. A binary with
-no hub key omits the three hub tools and serves seventeen.
+no hub key omits the three hub tools and serves eighteen.
 
 Two honesty notes that bind how you describe results: `xerj_semantic_search`
 embeds server-side with the **lexical feature-hashing** embedder unless the node

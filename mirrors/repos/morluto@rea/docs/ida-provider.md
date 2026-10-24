@@ -108,7 +108,14 @@ Headless REA and the configured supervisor must share the host filesystem and na
 
 REA copies the admitted binary into a private temporary directory, checks its digest, and requests an owned worker with `force_headless`. POSIX workspaces are created atomically with owner-only permissions, respecting the process umask; Windows uses the matching package's native private-DACL boundary on a local NTFS temporary directory. It injects the returned database ID into analysis requests. It verifies the active owned worker and input path rather than adopting a user database. On close or failed startup, it releases its session with `save: false`, verifies that it is absent from upstream session discovery, and removes its private input and sidecars. An unverified release retains the workspace and reports incomplete cleanup.
 
-One REA session owns one database. Stdio registrations default `IDA_MCP_MAX_WORKERS` to `1`; the explicit upstream `--max-workers 1` also bounds a supervisor. Database size and engine memory depend on the target and upstream; REA does not impose an engine memory limit. The original binary is never executed or overwritten. Optional `workspaceRoot` selects an existing absolute temporary-directory parent on the REA host. Ensure it has space for the input copy and IDA working files.
+One REA session owns one database. Stdio registrations default `IDA_MCP_MAX_WORKERS` to `1`; the explicit upstream `--max-workers 1` also bounds a supervisor. Database size and engine memory depend on the target and upstream; REA does not impose an engine memory limit. The original binary is never executed or overwritten. Optional `workspaceRoot` selects an existing absolute temporary-directory parent on the REA host. The selected parent is resolved by the filesystem before deriving its canonical identity, including POSIX symlink/parent components. Ensure it has space for the input copy and IDA working files.
+
+Readiness and allocation check the selected spelling with native
+[`stat`](https://github.com/nodejs/node/blob/v24.22.1/doc/api/fs.md#fspromisesstatpath-options)
+before canonicalizing it. This retains missing and non-directory intermediate
+lookup failures: [macOS `realpath`](https://github.com/apple-oss-distributions/Libc/blob/71bbe350ab79eef58113991d817ccc6165061a64/stdlib/FreeBSD/realpath.c)
+alone can collapse `file/..`. Diagnostics retain the selected spelling; private
+input paths use the canonical parent for upstream identity checks.
 
 When a completed `idb_open` response reports success or is otherwise ambiguous, but no active owned private worker can be verified, REA retains the private workspace even if `idb_list` appears empty. A later close can retry verification if the original owned worker becomes discoverable. A completed explicit `idb_open` rejection retains the existing no-worker cleanup path. This is a local admission/ownership safeguard and **does not** provide a process-termination receipt or change the legacy reaped-worker protocol.
 
@@ -133,7 +140,7 @@ Add the registration path to the **REA** MCP entry's environment, keeping the up
 }
 ```
 
-Use a package version that actually includes this adapter; repository main can be ahead of the npm release. After reconnecting, call:
+Use a package version that actually includes this adapter; repository main can be ahead of the npm release. After reconnecting, call the sequence below; the default `analyze_function` reply is a summary that retains the dossier, so add `"detail":"complete"` when the dossier itself must come back inline:
 
 ```json
 {"name":"open_binary","arguments":{"path":"/absolute/path/to/program","provider_id":"ida"}}
@@ -169,3 +176,37 @@ The verifier requires the resolved procedure in both inventory and procedure sea
 The initial real workflows use stdio registrations for the legacy Windows GUI profile and a Windows x64 headless supervisor with IDA 9.3. The headless workflow has also passed on macOS arm64 with IDA Professional 9.1 (build 9.1.250226) against the same upstream commit `c133c3853faa111a9b00ee615c013b720d0c4acd`, using a source-built arm64 Mach-O fixture; Mach-O C symbols carry a leading underscore, so the procedure name is `_rea_fixture_add`. Streamable HTTP is tested against a loopback MCP fixture with the pinned client SDK; a real IDA HTTP-supervisor workflow remains unverified. Linux headless engine operation, other IDA releases, architectures, and modern attached GUI tools require their corresponding real workflows before support is claimed.
 
 Native Windows verification uses IDA Pro 9.3 with the public two-function fixture and Windows `whoami.exe`, using upstream `c9d15d98e8a143fc74f6e14037c48f63889b6d6c` with a loopback-listener change. It covers production CLI/MCP parity, distinct-function switching, identity and connection cleanup. See the [correctness and performance measurements](https://github.com/morluto/rea/blob/main/experiments/analysis-efficiency/ida-native-windows.md). This follow-up did not run Windows IDA Free or native macOS.
+
+Headless readiness distinguishes an explicit `auto_analysis_ready: false` from
+unknown readiness (`null`). The former returns a retryable capability refusal
+with wait-and-retry guidance; the latter asks for upstream readiness inspection
+without claiming that analysis is running. Neither is malformed protocol output.
+An unusable `workspaceRoot` reports its directory constraint as a configuration
+error before opening an IDA worker. Native JSON metadata resources accept omitted
+media types and normal case/parameter variants of `application/json`; their
+resource URI, JSON structure and recorded target identity remain checked.
+
+The public profile's registration digest excludes HTTP authentication header
+values (`Authorization`, `Proxy-Authorization`, and `Cookie`). Mark any other
+credential fields explicitly with `"sensitive": { "headers": ["X-Api-Key"],
+"env": ["PRIVATE_VALUE"] }` in the registration. Header names match without
+case; environment names match exactly. These values are also redacted from IDA
+diagnostics. Ordinary fields such as `IDADIR` and noncredential headers remain
+part of analysis identity. Credential rotation does not change that public
+identity; each newly resolved client factory still captures its own complete
+transport registration and creates a fresh connection.
+
+Caller cancellation is classified at the MCP request boundary using the installed
+SDK's exact abort outcome. A later abort during error unwinding does not replace
+an established provider failure. Cancellation retains the caller's original reason
+and collected diagnostics; metadata timeouts name the requested analysis operation
+while retaining the resource-read failure as their cause. This request cancellation
+does not authorize saving or closing an attached GUI database.
+
+Registration refusals retain schema-authored constraints, including the
+native/attached lifecycle requirement, local credential-free endpoint requirement
+and absolute workspace root. Configuration diagnostics omit registration values.
+Target and private-worker identity refusals retain the failed check, its reason
+and recovery guidance in the public error before any analysis replies exist.
+These diagnostics do not relax identity admission or authorize closing an attached
+GUI database.

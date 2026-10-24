@@ -100,8 +100,11 @@ identities, positive request/UI budgets and runtime/storage/UI observation ports
 The client enforces its absolute deadline independently of the service. Schema 5
 supports standalone/launcher distributions and fixed runtime/UI observation states;
 reports never mark a journal healthy or authorize recovery. The Android contract
-checks malformed/stale/inconsistent evidence. Hosts must separately qualify actual
-IPC, process death and observation providers in their packaged applications.
+checks malformed/stale/inconsistent evidence, and
+`NativeHealthServiceContract.assertRefusesSameSigner` requires a host's declared
+service to refuse its own same-signer app UID, which is not the supervisor. Hosts
+must separately qualify actual IPC, process death and observation providers in
+their packaged applications.
 
 `WebViewHealthObserver` tracks one host Activity/WebView on the main thread and
 serves deadline-bound observations off the main thread. Hosts supply a trusted
@@ -168,8 +171,14 @@ private sink without persistence, logging or renderer output. Hosts must strip
 handled Intent data before passing lifecycle events to a WebView, use a bounded
 executor and supply coarse delivery-failure handling. The sink must validate state,
 PKCE, account identity and single-use exchange. `QUEUED` is transport admission,
-not authentication success. Portable JVM coverage is in `test:native-host`; Android
-intent/app-link delivery and provider callback registration need host qualification.
+not authentication success. `ResponseMode.FRAGMENT` admits `response_mode=fragment`
+returns, with the response in the fragment or an error in the query, never both.
+`OAuthBrowserLauncher` opens the authorize address in an Auth Tab when the browser
+supports it and hands the result to the callback. If the browser cannot verify the
+redirect host, or has no Auth Tab support, it opens a Custom Tab; the host then
+delivers the App Link intent to the same callback. Portable JVM coverage is in
+`test:native-host`; Android intent/app-link delivery, Auth Tab results and provider
+callback registration need host qualification.
 
 `NativeProcessLog` drains child diagnostics with bounded line buffers, literal
 secret redaction before truncation, UTF-8 byte-limited rotation and serialized
@@ -190,8 +199,10 @@ instrumentation qualifies the real directory-sync adapter.
 APK install directory and configures the optional installed canvas library. Hosts
 supply trusted installed files and a private alias directory, serialize refreshes
 and own bundle verification and launch policy. Links are reconstructible state;
-this does not load native code or authorize a library. Portable and Android tests
-use synthetic files to verify install-path changes and optional-library cleanup.
+this does not load native code or authorize a library. `requireAbi` checks the
+loader, bun and its libraries against an ABI that the caller supplies; it reads
+ELF headers only and does not verify contents. Portable and Android tests use
+synthetic files to verify install-path changes, optional-library cleanup and ABI refusal.
 
 `native-host/local-credential-client` supplies the private JavaScript client for
 `LocalCredentialBroker`. Hosts supply the loopback port, private bearer token,
@@ -218,7 +229,7 @@ source identity, serialize staging and publish provenance only after success.
 Failed staging can leave partial files: verification rejects source/generated
 hash mismatches; this is not an atomic or durable publication API.
 
-`EmbeddedRuntimeLaunch` constructs Android embedded agent/gateway commands and
+`EmbeddedRuntimeLaunch` constructs Android embedded agent/gateway/script commands and
 private base environments from verified installed libraries and trusted host
 paths. Hosts retain provider/plugin configuration, account storage identity and
 all supervisor/readiness policy. Agent authority is not copied to the gateway.

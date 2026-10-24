@@ -10,7 +10,7 @@ motion. Targets Roblox's rolling platform APIs.
   disabled, and busy if an operation can take time. Do not communicate state with color alone.
 - Make touch targets comfortably hittable and separated; do not add invisible hit zones that overlap
   neighboring controls.
-- Show input prompts that match the active device, but never hide the only explanation of an action
+- Show input prompts that match `PreferredInput`, but never hide the only explanation of an action
   during device switching.
 
 ## Selection graph
@@ -20,9 +20,12 @@ On screen open, select the most likely safe action—not a destructive action. U
 `NextSelectionLeft/Right/Up/Down` where layout geometry is ambiguous. Test every edge and a full
 round trip through the graph.
 
-Set initial selection only after the control is rendered and only for keyboard/gamepad navigation.
-Device emulation can expose keyboard capability while touch controls are active, so prefer the
-active input policy used by the project; do not force a selected object on a touch-first screen.
+Set initial selection only after the control is rendered and only while
+`UserInputService.PreferredInput` is `Gamepad` (or `MicroGamepad`, reserved for TV remotes and
+not yet reported). Capability flags mislead here: `TouchEnabled` is true on touch laptops and a
+phone with a paired gamepad should navigate by focus. Re-check on
+`GetPropertyChangedSignal("PreferredInput")`; do not force a selected object on a touch-first
+screen.
 Inspect the default adornment. A custom `SelectionImageObject` must remain a valid visible
 `GuiObject` (it can live offscreen as the reusable template) and should match the interface's focus
 treatment instead of adding a large glow.
@@ -75,11 +78,12 @@ neighbor graph for moving UI focus itself.
 Use Studio's Controller Emulator and also a real controller when available. Verify initial focus,
 all directions, activation, back/cancel, tab/shoulder navigation if used, scroll-following selected
 items, focus restoration, and mouse-to-gamepad switching. Controller emulation proves mapping and
-navigation, not TV legibility; use Device Emulator/console sizing for that.
+navigation, not TV legibility; use Device Simulator/console sizing for that.
 
 ## Primary references
 
 - `https://create.roblox.com/docs/reference/engine/classes/GuiService`
 - `https://create.roblox.com/docs/studio/testing-modes`
 - `https://create.roblox.com/docs/input/input-action-system`
+- `https://create.roblox.com/docs/input` (PreferredInput)
 - `https://create.roblox.com/docs/production/publishing/console-guidelines`

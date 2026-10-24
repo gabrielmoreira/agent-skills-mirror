@@ -61,31 +61,40 @@ movement skill. Persisting bindings to disk is `save-systems`.
 if Input.is_action_just_pressed("jump"):
     try_jump()
 # Continuous (held): read every frame as an axis.
-var move := Input.get_axis("move_left", "move_right")   # -1..1
+var move := Input.get_axis("move_left", "move_right")   # -1..1, one axis
 player.velocity.x = move * RUN_SPEED
+# Two axes (stick or WASD): get_vector applies a circular deadzone, rescales
+# past it and caps the length at 1, so diagonals are not faster.
+var dir := Input.get_vector("move_left", "move_right", "move_up", "move_down")
 # RIGHT: name actions ("jump"); rebinding/devices just change the binding data.
 # WRONG: `if Input.is_key_pressed(KEY_SPACE)` — unrebindable, keyboard-only,
 # and `is_key_pressed` is a held check that would re-fire jump every frame.
 ```
 
-Engine equivalents: Godot `InputMap` + `Input.is_action_just_pressed`; Unity
-Input System `InputAction` / action maps; Unreal Enhanced Input `Input Actions` +
-`Input Mapping Contexts`.
+Engine equivalents (Godot 4.7, Unity 6.3 LTS, Unreal 5.8): Godot `InputMap` +
+`Input.is_action_just_pressed` (valid in `_process` and `_physics_process`);
+Unity Input System `InputAction` / action maps; Unreal Enhanced Input `Input
+Actions` + `Input Mapping Contexts`.
 
 ### 2. Analog deadzone and sensitivity
 
 ```gdscript
 # Raw sticks never rest at exactly zero. Apply a RADIAL deadzone (on the vector
 # length), not per-axis, so diagonals aren't clipped into the axes.
-func apply_deadzone(stick: Vector2, dead := 0.2, sens := 1.0) -> Vector2:
+func apply_deadzone(stick: Vector2, dead := 0.2, curve := 1.0) -> Vector2:
     var mag := stick.length()
     if mag < dead:
         return Vector2.ZERO                      # inside deadzone -> no movement
     # Rescale so motion ramps from 0 at the edge of the deadzone, not from `dead`.
-    var scaled := (mag - dead) / (1.0 - dead)
-    return stick.normalized() * pow(scaled, sens)  # sens>1 = finer near center
+    var scaled := minf((mag - dead) / (1.0 - dead), 1.0)  # some pads report > 1 on diagonals
+    return stick / mag * pow(scaled, curve)      # curve > 1 = finer aim near center
 # WRONG: clamping each axis separately — it carves a square hole and snaps to axes.
 ```
+
+Keep the response curve (exponent) separate from sensitivity (a plain gain on
+the result, usually a camera turn rate) and expose both. Godot's `get_vector`
+already does the deadzone and rescale above, using the average of the four
+actions' deadzones (0.2 by default per action) unless you pass one.
 
 ### 3. Input buffering + coyote time (forgiving, responsive feel)
 
@@ -110,17 +119,57 @@ func _physics_process(dt):
 ### 4. Rebinding with conflict detection
 
 ```gdscript
-# Capture the next physical input, reject duplicates, then persist.
-func rebind(action: String, event: InputEvent) -> bool:
-    for other in actions:                        # conflict check across actions
-        if other != action and binding_of(other) == event:
+# Godot 4.7. Capture the next physical input, reject conflicts, then persist.
+var _waiting_for: StringName = &""               # set by the "press a key for Jump" button
+
+func _unhandled_input(event: InputEvent) -> void:
+    if _waiting_for != &"" and _is_bindable(event):
+        get_viewport().set_input_as_handled()
+        if not rebind(_waiting_for, event):
+            show_conflict_warning(event)         # offer swap or cancel
+        _waiting_for = &""
+
+func _is_bindable(e: InputEvent) -> bool:
+    if e is InputEventKey or e is InputEventJoypadButton or e is InputEventMouseButton:
+        return e.pressed and not e.is_echo()     # ignore releases and key repeat
+    return e is InputEventJoypadMotion and absf(e.axis_value) > 0.5  # ignore stick noise
+
+func rebind(action: StringName, captured: InputEvent) -> bool:
+    var event := _to_binding(captured)
+    for other in InputMap.get_actions():
+        if other != action and not String(other).begins_with("ui_") \
+                and InputMap.action_has_event(other, event):
             return false                         # already used -> let UI warn/swap
-    set_binding(action, event)                   # engine: erase old + add new event
+    for old in InputMap.action_get_events(action):
+        if old.get_class() == event.get_class():  # replace only this device kind's binding
+            InputMap.action_erase_event(action, old)
+    InputMap.action_add_event(action, event)
     save_bindings()                              # persist (see save-systems)
     return true
-# Always provide "reset to defaults", and never let the player unbind a key they
-# need to reach the menu without an alternative.
+
+func _to_binding(e: InputEvent) -> InputEvent:
+    if e is InputEventKey:                       # bind the physical key, not the layout's letter
+        var k := InputEventKey.new()
+        k.physical_keycode = e.physical_keycode
+        return k
+    var b := e.duplicate() as InputEvent
+    b.device = -1                                # all devices: a pad binding must not stick to pad 0
+    if b is InputEventJoypadMotion:
+        b.axis_value = signf(b.axis_value)       # keep the direction only
+    return b
+# Compare bindings with action_has_event() / InputEvent.is_match(), never `==`:
+# two InputEvents with the same key are different objects, so `==` is false.
+# Always provide "reset to defaults" (InputMap.load_from_project_settings()), and
+# never let the player unbind a key they need to reach the menu without an alternative.
 ```
+
+Keyboard bindings use the **physical** key (`physical_keycode`, with `keycode`
+left at 0, which is what makes Godot match by position), so WASD stays in the
+same place on AZERTY or Dvorak; show the label for the player's layout with
+`DisplayServer.keyboard_get_label_from_physical`. Unity Input System `action.PerformInteractiveRebinding()` and
+`SaveBindingOverridesAsJson()` / `LoadBindingOverridesFromJson()`; Unreal
+Enhanced Input **User Settings** (enable under Project Settings ▸ Enhanced Input)
+with player-mappable keys on the mapping context.
 
 ## Pitfalls
 
@@ -134,6 +183,12 @@ func rebind(action: String, event: InputEvent) -> bool:
   physics are correct — players "clearly pressed jump". Add small windows.
 - **Rebinding without conflict handling** lets two actions share a key, or strands
   the player by unbinding menu access. Detect conflicts; guarantee a way back.
+- **WASD lands in the wrong place on AZERTY/QWERTZ**: bindings stored by key
+  *letter* follow the layout. Store physical key positions and display the
+  layout's label.
+- **A rebound gamepad button works only for player 1**: the captured event
+  carried pad 0's device ID. Store bindings for all devices (Godot `device = -1`)
+  unless the game assigns pads to players on purpose.
 - **Not swapping prompts on device change** shows "Press Space" to a gamepad
   player. Track the last-used device and switch glyphs.
 - **Ignoring accessibility**: required simultaneous presses, no remap, fixed

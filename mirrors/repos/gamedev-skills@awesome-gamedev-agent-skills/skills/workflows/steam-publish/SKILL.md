@@ -29,15 +29,21 @@ and their own counsel.
 
 ## Prerequisites (do these once, in order)
 
-1. **Partner account + Steam Direct fee.** Each new app requires the Steam Direct recoupable
-   fee (USD $100 per app at time of writing). You receive an **App ID** — find it on your
-   Steamworks homepage. Treat the App ID as the key to everything below. For your first few
-   titles, Valve also enforces a **21-day wait** between paying the app fee and releasing
-   that game, so pay it well before the planned launch date.
+1. **Partner account + Steam Direct fee.** Onboarding asks for legal identity, bank and tax
+   details (tax verification can take up to 30 days). Each new app needs the Steam Direct fee
+   (USD $100 or equivalent per app at time of writing): not refundable, recouped once the
+   product reaches $1,000 Adjusted Gross Revenue, and not payable with Steam Wallet funds.
+   You receive an **App ID** — find it on your Steamworks homepage. Treat the App ID as the
+   key to everything below. For your first few titles, Valve also enforces a **21-day wait**
+   between paying the app fee and releasing that game, so pay it well before the planned
+   launch date.
 2. **A dedicated build account with least privilege.** Builds require a Steam account in your
    partner group with **Edit App Metadata** and **Publish App Changes To Steam**. Create a
-   *separate* build account with only those permissions (not your admin login). Releasing the
-   app additionally needs **Manage pricing and discounts**.
+   *separate* build account with only those permissions (not your admin login). Posting the
+   Coming Soon page and releasing additionally need **Manage pricing and discounts**. Once the
+   app is released, setting a build live on `default` needs an extra confirmation sent to the
+   Steam Mobile Authenticator or, failing that, by SMS — so the account that sets builds live
+   needs one of them attached.
 3. **Download the Steamworks SDK** on the upload machine. The SteamPipe tools are under
    `tools/ContentBuilder/`.
 
@@ -48,7 +54,10 @@ and their own counsel.
 
 1. **Configure the app (App Admin).**
    - Set **launch options** (executable path + args per OS) under *Installation*. For a
-     sub-folder exe, put the sub-folder in the Executable field — no leading slashes/dots.
+     sub-folder exe, put the sub-folder in the Executable field — no leading slashes/dots. For
+     macOS prefer the app bundle (`Game.app`) over the binary inside it: on Apple Silicon a
+     bundle launch picks the best architecture in the app, while a direct binary launch runs
+     with the Steam client's architecture (currently x86_64).
    - Add **depots** on the *Depots* page (a depot is a bucket of files). Name each depot
      ("Base Content", "Windows Content"). Leave *[All languages]* / *[All OSes]* unless the
      depot is genuinely OS- or language-specific.
@@ -57,9 +66,12 @@ and their own counsel.
    - **Publish** the configuration. Unpublished config is the most common cause of upload
      failures.
 2. **Build the store page (presence track).** Fill graphical assets, description, tags,
-   trailers, system requirements. When complete, click **Mark as ready for review**. Store
+   trailers, system requirements. Complete the **Content Survey** (general content, which
+   generates regional age ratings; mature content; and generative AI — see Pitfalls) before
+   you submit anything for review. When complete, click **Mark as ready for review**. Store
    review takes ~3-5 business days; submit at least **7 business days** before you want it
-   live. It must be in **Coming Soon** for at least **2 weeks** before release.
+   live. Approval does not publish the page: click **Post as Coming Soon** to make it public.
+   A new product must be in **Coming Soon** for at least **2 weeks** before release.
 3. **Create your build scripts.** Start with the simple app-build `.vdf` in Patterns below;
    for multi-depot/multi-platform apps use depot scripts (see the reference). The script maps
    local files into depots and names where build output/logs go.
@@ -71,7 +83,10 @@ and their own counsel.
    pick the build, **Preview Change**, then **Set Build Live Now** for a branch. Test on a
    beta branch first (see `references/steampipe-build-scripts.md` for branch setup).
 6. **Run the Game Build checklist** and **Mark as ready for review** (store presence must be
-   submitted *before* the build review). Both tracks must be approved.
+   submitted *before* the build review). Valve reviews the build live on `default`: it should
+   be near-final, launch on every OS the store page lists, and contain every feature the store
+   page claims. Build review also takes ~3-5 business days; plan for at least 7 business
+   days. Both tracks must be approved. Approval is once: later updates are not re-reviewed.
 7. **Release manually.** When approved and Coming Soon has run its time, use the green
    **Release App** button → **Publish Now** → **Release Now**. Approved titles do **not**
    release themselves.
@@ -179,8 +194,18 @@ BuildID. The build is NOT live yet; set it live per the workflow above.
   releases around this.
 - **Store page must be approved before the build.** You cannot submit the build for review
   until store presence is submitted; both must pass, and Coming Soon must run ~2 weeks.
+- **Coming Soon clock never started.** An approved store page stays hidden until someone
+  clicks **Post as Coming Soon**; the two-week minimum only runs while the page is public.
 - **Titles never auto-release.** Even after approval, a human must click **Release App** at
   the chosen moment.
+- **Generative AI content left out of the Content Survey.** Disclose AI-made content that
+  ships to players (art, audio, text, localization) as *pre-generated*; content made while
+  the game runs is *live-generated* and also needs a description of the guardrails that
+  stop it producing illegal content. AI tools used only to work faster do not need to be
+  listed. Some answers cannot be edited after approval without contacting Steam Support.
+- **Build rejected for missing features.** Every feature selected in the store's Basic Info
+  tab and every OS the page lists must work in the reviewed build; remove a feature there
+  until it is implemented.
 - **Mac/Linux install nothing.** Almost always: the OS-specific depots aren't in the package.
   Add every depot to the package on *Associated Packages & DLC*.
 - **Unpublished app config.** "Failed to get application info" / build errors usually mean
@@ -189,21 +214,32 @@ BuildID. The build is NOT live yet; set it live per the workflow above.
   `ContentRoot`/`LocalPath` points at the wrong (empty) path.
 - **Committing the login token.** The `config.vdf` Steam Guard token and account password are
   secrets. Keep them out of the repo; use the CI workflow in the reference.
-- **Released-app safety delay.** Changing the build account's email/phone forces a **3-day**
-  wait before you can set a build live for a *released* app — don't reconfigure the account
-  right before launch.
+- **Released-app safety delay.** Any security change on the build account (email, phone
+  number, …) forces a **3-day** wait before it can set a build live for a *released* app —
+  don't reconfigure the account right before launch.
+- **Private beta leaked.** Set the branch password *before* you set a build live on that
+  branch; a branch without a password is visible to every owner in *Game Versions & Betas*.
+- **"Unknown" on Steam Deck / Steam Machine.** Hardware compatibility is a separate review
+  from the release review and does not block release. It requires a completed build review;
+  results publish automatically after about a week unless you ship a fix first. See the
+  reference for the checklist (controller input and glyphs, on-screen keyboard, default
+  framerate, Deck text size).
 
 ## References
 
 - For advanced multi-depot/multi-platform build scripts, `FileExclusion`/`FileProperties`,
-  beta-branch setup, the CI/CD login-token workflow, and the SteamPipe troubleshooting table,
-  read `references/steampipe-build-scripts.md`.
+  beta-branch setup, the CI/CD login-token workflow, the Steam Deck / Steam Machine
+  compatibility checklist, and the SteamPipe troubleshooting table, read
+  `references/steampipe-build-scripts.md`.
 - `scripts/check_steam_build.py` — read-only check of an app build script, its depot scripts
   and content folders; `--help` lists every check and the exit codes.
 - Primary docs: Steamworks "Uploading to Steam" (`partner.steamgames.com/doc/sdk/uploading`),
   "Release Process" (`/doc/store/releasing`), "Branches (Betas)" (`/doc/store/application/branches`),
-  "Depots" (`/doc/store/application/depots`), "Onboarding" (`/doc/gettingstarted/onboarding`,
-  first-title waiting periods), "Review Process" (`/doc/store/review_process`).
+  "Builds" (`/doc/store/application/builds`), "Depots" (`/doc/store/application/depots`),
+  "Onboarding" (`/doc/gettingstarted/onboarding`, first-title waiting periods), "Steam Direct
+  Fee" (`/doc/gettingstarted/appfee`), "Coming Soon" (`/doc/store/coming_soon`), "Content
+  Survey" (`/doc/gettingstarted/contentsurvey`), "Review Process" (`/doc/store/review_process`),
+  "Steam Deck and Steam Machine Compatibility Review" (`/doc/steamhardware/compat`).
 
 ## Related skills
 

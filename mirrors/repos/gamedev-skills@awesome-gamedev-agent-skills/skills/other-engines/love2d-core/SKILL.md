@@ -108,10 +108,17 @@ love.graphics.setColor(love.math.colorFromBytes(128, 234, 255))
 -- A screen is a table with optional :update(dt), :draw(), :keypressed(key).
 -- Keep the active screen on a stack so pause/menu overlays are trivial to pop.
 local Stack = require("state_stack")   -- see references/state-stack.md for the module
-function love.load()              Stack.push(require("screens.menu")) end
-function love.update(dt)          Stack.current():update(dt) end
-function love.draw()              Stack.current():draw() end
-function love.keypressed(key)     Stack.current():keypressed(key) end
+
+-- Call a method on the top screen only if it defines it (a menu may have no update).
+local function forward(name, ...)
+    local screen = Stack.current()
+    if screen and screen[name] then screen[name](screen, ...) end
+end
+
+function love.load()          Stack.push(require("screens.menu")) end
+function love.update(dt)      forward("update", dt) end
+function love.draw()          forward("draw") end
+function love.keypressed(key) forward("keypressed", key) end
 ```
 
 ## Pitfalls
@@ -120,13 +127,16 @@ function love.keypressed(key)     Stack.current():keypressed(key) end
   or animation must be scaled by `dt`.
 - **`love.conf` placed in `main.lua`** → it silently does nothing. It must live in `conf.lua`,
   which LÖVE runs *before* loading modules.
-- **Colors washed out or invisible** → you used 0–255 values. In 11.x, `setColor(255,0,0)`
-  clamps to white; use `setColor(1,0,0)` or `love.math.colorFromBytes`.
+- **Colors washed out or invisible** → you used 0–255 values. 11.x does not rescale them;
+  every channel above 1 draws at full intensity, so `setColor(128, 234, 255)` comes out
+  plain white and an alpha of `128` is fully opaque. Use 0–1 floats or
+  `love.math.colorFromBytes` (11.3+).
 - **Everything tinted after one `setColor`** → color is global and persists across draws.
   Reset with `love.graphics.setColor(1, 1, 1)` before drawing text/images you want untinted.
-- **Nothing happens on key release/repeat** → `love.keypressed(key, scancode, isrepeat)`
-  fires on press (and OS key-repeat); use `love.keyreleased` for release, and check
-  `isrepeat` if you must ignore held-key repeats.
+- **Holding a key fires `love.keypressed` only once** → key repeat is off by default.
+  Call `love.keyboard.setKeyRepeat(true)` (e.g. for text fields or menu scrolling); the
+  repeats then arrive with the third argument `isrepeat` set, so a jump handler can
+  ignore them. Releases go to `love.keyreleased(key)`.
 
 ## References
 

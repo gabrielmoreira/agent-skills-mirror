@@ -44,9 +44,13 @@ nearest-neighbor unless a deliberate preprocessing pass says otherwise.
 
 ## Import checkpoints
 
-**Godot 4.7:** choose nearest filtering for crisp pixel art; use mipmaps when non-pixel textures
-shrink substantially; set repeat only for textures designed to tile; verify `Sprite2D`,
-`TileSet`, atlas regions, and animation frames in the editor.
+**Godot 4.7:** 2D filtering and repeat are not import options. Set
+`rendering/textures/canvas_textures/default_texture_filter` to Nearest for a pixel-art project (or
+`texture_filter` on one `CanvasItem` subtree), and enable `rendering/2d/snap/snap_2d_transforms_to_pixel`
+when sprites shimmer while moving. Enable the `mipmaps/generate` import option only for non-pixel
+textures that shrink substantially; set `texture_repeat` (or the 3D material's repeat) only for
+textures designed to tile. Verify `Sprite2D`, `TileSet`, atlas regions, and animation frames in the
+editor.
 
 **Unity 6.3 LTS:** set Texture Type to Sprite (2D and UI), choose Single/Multiple correctly, set a
 consistent Pixels Per Unit, filter mode, compression, mipmaps, mesh type, and sprite slicing.

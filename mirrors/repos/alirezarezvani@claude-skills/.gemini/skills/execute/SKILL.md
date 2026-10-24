@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/execute/../../../c-level-agents/skills/execute/SKILL.md

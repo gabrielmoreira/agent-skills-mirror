@@ -46,8 +46,10 @@ end
 ```
 
 Important: when you set metadata or UserIds, you must re-supply them on every write
-or they're cleared. List past versions with `ListVersionsAsync` and fetch one with
-`GetVersionAsync` to recover from a bad write.
+or they're cleared. In `UpdateAsync`, the callback receives `(currentValue, keyInfo)` and
+returns up to `(newValue, userIds, metadata)`; return `keyInfo:GetUserIds()` and
+`keyInfo:GetMetadata()` when you are not changing them. List past versions with
+`ListVersionsAsync` and fetch one with `GetVersionAsync` to recover from a bad write.
 
 A `schema`/version number stored alongside the data lets you **migrate** old saves:
 on load, if `data.schema < CURRENT`, transform the table forward before use.
@@ -70,8 +72,14 @@ if ok then
 end
 ```
 
-`GetSortedAsync(ascending, pageSize, minValue?, maxValue?)` — page size caps how
-many entries `AdvanceToNextPageAsync` fetches per request.
+`GetSortedAsync(ascending, pageSize, minValue?, maxValue?)` — page size (1–100) caps how
+many entries `AdvanceToNextPageAsync` fetches per request; `minValue`/`maxValue` must be
+integers.
+
+To show specific players' scores (friends, a party) without paging the whole board, read
+up to 100 keys in one request with `boards:BatchGetAsync(keys)`. It is supported only on
+ordered stores, returns a dictionary of `key → { value = n }`, omits missing keys, and
+each requested key counts against the ordered read budget.
 
 ## Request limits & throttling
 
@@ -88,10 +96,18 @@ many entries `AdvanceToNextPageAsync` fetches per request.
   with `GetRequestBudgetForRequestType`.
 - Storage is a GAME-level limit, not per-key: total = 500 MB + 1 MB x lifetime user count
   (any user who has ever joined), measured on the compressed latest version of each key.
-  Superseded versions and deleted keys do not count toward it.
-- `GetAsync` results are cached for a short window — an immediate re-read returns the
-  cached value, not necessarily the freshest. Disable caching only if you truly need
-  to (it costs extra requests).
+  Superseded versions and deleted keys do not count toward it. Store plain data; Roblox
+  compresses it, so pre-compressing only adds CPU cost.
+- Per entry: store, key, and scope names are at most 50 characters; a value is at most
+  4,194,304 characters of serialized JSON (measure with `HttpService:JSONEncode`).
+  Per key across all servers: about 25 MB/minute of reads and 4 MB/minute of writes,
+  rounded up to the next KB per request. A hot shared key throttles as `KeyThrottled`
+  even when the experience budget has room.
+- A failed write call does not prove the write was not applied; verify with an uncached
+  read before retrying a non-idempotent operation.
+- `GetAsync` results are cached for about four seconds — an immediate re-read returns the
+  cached value, not necessarily the freshest. For a verification read after a write, pass
+  a `DataStoreGetOptions` with `UseCache = false` (it costs a real request).
 - Practical rules: save on leave / `BindToClose` and on a periodic timer (e.g. every
   60–120s), **not** on every value change. Coalesce many small changes into one
   write. Use `UpdateAsync` so concurrent writers don't clobber.

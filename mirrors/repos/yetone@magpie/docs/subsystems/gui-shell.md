@@ -12,11 +12,11 @@ three.
 | Part | Responsibility | Source |
 | --- | --- | --- |
 | Native host | `Run` starts the Wails v3 app: the tray icon, the panel, the main window, single-instance handover, `magpie://` import links and open at login. `host` implements `Windows` for the API: show and hide, open URLs and folders, copy to the clipboard, fit and tint the panel, and set the text size. A copy on Linux sets PRIMARY before CLIPBOARD, since GTK 3 serves CLIPBOARD empty when PRIMARY is set after it on a compositor with no primary selection (KDE Plasma with middle-click paste off, #1881); on Wayland the copy is read back through the compositor, and one that doesn't read back whole answers `/api/copy` with 501, so the page tries its clipboard API, then the copy command, then says the copy failed with the text to copy by hand (`copy-fallback.test.cjs`). | [`app.go`](../../internal/gui/app.go), [`clipboard_gtk3.go`](../../internal/gui/clipboard_gtk3.go), [`clipboard_gtk3.h`](../../internal/gui/clipboard_gtk3.h), [`mainwindow.go`](../../internal/gui/mainwindow.go), [`traymenu.go`](../../internal/gui/traymenu.go) |
-| Backend | `startBackend` starts the gateway this process serves, unless another magpie already serves it. In that case this process only shows the other one's status (`gw` is nil). `stopServing` drains requests in flight. | [`backend.go`](../../internal/gui/backend.go) |
+| Backend | `startBackend` starts the gateway this process serves, unless another magpie already serves it. In that case this process only shows the other one's status (`gw` is nil). `stopServing` drains requests in flight. A restart to update can hand the listening socket to the new version instead (see [A restart to update hands the gateway over](#a-restart-to-update-hands-the-gateway-over)). | [`backend.go`](../../internal/gui/backend.go) |
 | API and assets | `Handler` serves `assets/` (embedded with `//go:embed assets`) and the `/api/*` routes, such as `/api/state`, `/api/set` and `/api/agents/{action}/{id}`. `held` lets one API request's reads share one catalog build (`provider.Hold`), and drops it after any write. `revalidated` and `versionedPage` name each script by its content hash, so a cache never serves an old `app.js` under a new page; a file asked for under its current hash (`?v=`) is cached for good (`immutable`), anything else is revalidated by its ETag. | [`api.go`](../../internal/gui/api.go) |
 | Browser mode | `StartWeb` serves the page and the gateway for `magpie web`. The browser signs in with a run key in a link. Gateway mode shows Providers, Gateway, Routing, Usage, Sessions, Plugins and Settings on a machine that is only a gateway. `webHandler` gzips the page's text files and the API's JSON for a browser that takes gzip (`webCompressed`, with a `-gzip` ETag that still answers 304); the app's own windows read the page in-process and get it uncompressed. | [`web.go`](../../internal/gui/web.go), [`gatewaymode.go`](../../internal/gui/gatewaymode.go) |
 | The page | `app.js` keeps one state object per view and renders it into a list, with no framework. The views have their own files: `plugins.js` and `context.js`, and those a plugin adds under `assets/plugins/<id>/` (the Gateway, Sessions, Library, Routing and Usage pages, see [plugin runtime](plugin-runtime.md)) (Usage's Context tab, and the context window card the Routing page draws under a request's story, fed by `/api/context` in `context.go`, which scores and tags each agent; clicking a part, a cell or an item opens its text from `/api/context/text`, the last 10 requests' masked bodies in memory (`openCtxText`), rendered 100 items and 20000 characters at a time; its "Tuned for you" cards are fed by `/api/tune` in `tune.go`, see [agent wiring](agent-wiring.md)). Strings go through `t()` with translations in `i18n.js`, and a plugin's own in its `i18n.js` (zh, zh-TW, ja and de; the English text is the key and the fallback). zh-TW is Traditional Chinese with Taiwan's words; a system language of zh-TW, zh-HK, zh-MO or any zh-Hant picks it, and the tray menu and notifications follow (`trayLang`). Dropdowns use `openProtoMenu`. Every app menu (`openProtoMenu`, `openRowMenu`, `openSessCombo`) is placed by `placeMenu`: under its anchor, or over it when the window runs out below; one that fits neither way takes the larger room, its height held to it, and scrolls inside itself, and a scroll inside a menu doesn't close it (#1437, `removed-groups-menu-scroll.test.cjs`). The highest any popover goes is `popTop`: 8px under `header.top` on a Mac window, where the traffic lights are drawn over the page, and 8px from the top elsewhere; `placeMenu`, the field picker's `placePop` (which also holds `#pop`'s height to that room) and an agent's model list (`openAgentModels`) all use it (#1573, `popover-mac-chrome.test.cjs`). Scrolling is done only by `scrollOnPurpose(e)` with the reader's event. | [`assets/app.js`](../../internal/gui/assets/app.js), [`assets/i18n.js`](../../internal/gui/assets/i18n.js) |
-| Window navigation | In the window from 1024 points wide (`SIDE_AT`, the same width as app.css's `side-nav` rules), `layoutNav` moves the brand, the pages (`#nav`) and Settings into the sidebar (`#side`): the pages in four groups (Work, Models, Insights, Extend; a group none of whose pages shows, as in gateway mode, leaves out its name), the gateway's address at its foot (`sideGwRead`, read from `/api/providers` only while there is a sidebar), and the header a breadcrumb (`renderCrumb`). A page whose head holds only its tools (Library, Plugins, Settings) has them in the title bar after the breadcrumb, `tools` setting the room between it and the window's own buttons. When they don't fit there the tools show their icons alone (`tools-tight`; each keeps its name as `aria-label` and in its tooltip), then the breadcrumb drops its leading parts, and last the page's name is cut at its end, so no tool lies over the title (#2625, `title-bar-tools.test.cjs`). The open page's own tabs (`NAV_SUBS`: Usage, Library, Plugins, Settings) are listed under it as `.nav-s` rows (`role="tab"`, `data-of` the page tab's id) and the page's strip is hidden; a row's click clicks that tab at once, the selection (`.nav-hl`) having set off as the row was pressed (`navSubGlide`; back if the press leaves the row), and is the list's only shape: a row hovered or pressed has no ground of its own, and a `MutationObserver` draws the list again when the strip changes. A page's tabs share its one scroll, so a row that picks another tab opens it at its top (`scrollOnPurpose` with the row's click); the tab already open, picked again, leaves the page where it is (`sidebar-tab-top.test.cjs`). The list opens and folds with an iOS-like spring (`navSubEnter`, `navSubLeave`; none under reduced motion), and a folding list is out of reach at once. Narrower, the page beside a sidebar would be narrower than Usage's requests table needs (768 points), so they go back into the header's row, as a Mac sidebar gives way in a narrow window. At every width the reader can pick the sidebar or the header's tabs from the title bar's button (`#sideToggle`, ⌃⌘S or Ctrl+Shift+S; `toggleSideNav`), kept in localStorage `magpie.navLayout` (`side` or `top`) and so laid out from the first frame; none picked, the sidebar comes from `SIDE_AT`. Picked in a narrow window the sidebar is narrower (184 points under 860), and magpie web on a phone keeps its own tab bar and has no button. The two layouts trade places in a view transition (`navMorph`, app.css `.nav-morph`): the sidebar slides, each page's tab flies to its place in the other, and the page slides as one (its old image dropped, so no line prints twice); without view transitions, under reduced motion, or in the Linux app the change is at once: WebKitGTK with compositing off (`WEBKIT_DISABLE_COMPOSITING_MODE`, which `webkit_linux.go` sets under Wayland) crashes in a view transition. Elsewhere a transition still going after `MORPH_MAX` (1.5s) is skipped, so a webview that never ends one can't leave the window on the old layout's picture. See `side-toggle.test.cjs`. A window made wider or narrower drops what a click held (`heldWidth`): the page laid out again isn't the click's doing. The reader's own place is kept instead for a second while the page is laid out again (`relaid`, a `ResizeObserver` on the open page's parts calling `backToReader`): crossing `SIDE_AT` the browser clamps the scroll to each layout it passes through, and the page ended short of its foot (#1672, `text-size.test.cjs`). See `sidebar.test.cjs`. A sidebar longer than a short window keeps no scroll bar beside its pages: the native bars of `.side-scroll` and `.side-foot` are hidden, and `sideBars` lays a thin bar over each box's edge that shows while it scrolls, fades about a second after it stops (kept while hovered or dragged), can be dragged or clicked to page, and is gone when the box fits, the same in WebKit, WebView2 and WebKitGTK. See `sidebar-overlay-scrollbar.test.cjs`. The window opens on the page the reader last left, as a Mac app comes back as it was (molvqingtai and lc on Discord): `show` keeps the page in localStorage `magpie.lastView` (which the app's webview keeps across restarts, as it keeps `magpie.navLayout`), and `keptView` opens it at start. A page asked for in the address (`?view=`, the tray's links, a reload) wins, Agents too; a kept name that is no page opens the first page, and one gateway mode leaves out opens Providers (`show`). Opening on it scrolls nothing. See `last-page.test.cjs`. | [`assets/app.js`](../../internal/gui/assets/app.js), [`assets/app.css`](../../internal/gui/assets/app.css) |
+| Window navigation | In the window from 1024 points wide (`SIDE_AT`, the same width as app.css's `side-nav` rules), `layoutNav` moves the brand, the pages (`#nav`) and Settings into the sidebar (`#side`): the pages in four groups (Work, Models, Insights, Extend; a group none of whose pages shows, as in gateway mode, leaves out its name), the gateway's address at its foot (`sideGwRead`, read from `/api/providers` only while there is a sidebar), and the header a breadcrumb (`renderCrumb`). A page whose head holds only its tools (Library, Plugins, Settings) has them in the title bar after the breadcrumb, `tools` setting the room between it and the window's own buttons. When they don't fit there the tools show their icons alone (`tools-tight`; each keeps its name as `aria-label` and in its tooltip), then the breadcrumb drops its leading parts, and last the page's name is cut at its end, so no tool lies over the title (#2625, `title-bar-tools.test.cjs`). The open page's own tabs (`NAV_SUBS`: Usage, Library, Plugins, Settings) are listed under it as `.nav-s` rows (`role="tab"`, `data-of` the page tab's id) and the page's strip is hidden; a row's click clicks that tab at once, the selection (`.nav-hl`) having set off as the row was pressed (`navSubGlide`; back if the press leaves the row), and is the list's only shape: a row hovered or pressed has no ground of its own, and a `MutationObserver` draws the list again when the strip changes. A page's tabs share its one scroll, so a row that picks another tab opens it at its top (`scrollOnPurpose` with the row's click); the tab already open, picked again, leaves the page where it is (`sidebar-tab-top.test.cjs`). The list opens and folds with an iOS-like spring (`navSubEnter`, `navSubLeave`; none under reduced motion), and a folding list is out of reach at once. The open page's own row is marked the same way, by one shape (`.nav-top-hl`, the rows' own ground given up to it, hovered or pressed too) that `navTopGo` moves to the row picked on a damped spring, as iOS moves a selection (`NAV_SPRING`, SwiftUI's response 0.42s and damping 0.84; `navTopStep` steps it each frame): it sets off as the row is pressed and comes back if the press leaves the row or the page isn't left, turns with the speed it has when the press changes its mind, and follows its row while the list above it folds, landing where the row ends up. It is put in place, not sent, when the window opens on a page or the rows move under it at rest (a `ResizeObserver`), is away while Settings is open (it has its own selection at the foot), comes back fading in on its row, jumps under reduced motion, and isn't drawn in the header's tabs, which have their `.thumb`. `#nav` is `position: relative` in the sidebar for it, so `.seg`'s centring `left` and `top` are reset. See `sidebar-glide.test.cjs`. Narrower, the page beside a sidebar would be narrower than Usage's requests table needs (768 points), so they go back into the header's row, as a Mac sidebar gives way in a narrow window. At every width the reader can pick the sidebar or the header's tabs from the title bar's button (`#sideToggle`, ⌃⌘S or Ctrl+Shift+S; `toggleSideNav`), kept in localStorage `magpie.navLayout` (`side` or `top`) and so laid out from the first frame; none picked, the sidebar comes from `SIDE_AT`. Picked in a narrow window the sidebar is narrower (184 points under 860), and magpie web on a phone keeps its own tab bar and has no button. The two layouts trade places in a view transition (`navMorph`, app.css `.nav-morph`): the sidebar slides, each page's tab flies to its place in the other, and the page slides as one (its old image dropped, so no line prints twice); without view transitions, under reduced motion, or in the Linux app the change is at once: WebKitGTK with compositing off (`WEBKIT_DISABLE_COMPOSITING_MODE`, which `webkit_linux.go` sets under Wayland) crashes in a view transition. Elsewhere a transition still going after `MORPH_MAX` (1.5s) is skipped, so a webview that never ends one can't leave the window on the old layout's picture. See `side-toggle.test.cjs`. A window made wider or narrower drops what a click held (`heldWidth`): the page laid out again isn't the click's doing. The reader's own place is kept instead for a second while the page is laid out again (`relaid`, a `ResizeObserver` on the open page's parts calling `backToReader`): crossing `SIDE_AT` the browser clamps the scroll to each layout it passes through, and the page ended short of its foot (#1672, `text-size.test.cjs`). See `sidebar.test.cjs`. A sidebar longer than a short window keeps no scroll bar beside its pages: the native bars of `.side-scroll` and `.side-foot` are hidden, and `sideBars` lays a thin bar over each box's edge that shows while it scrolls, fades about a second after it stops (kept while hovered or dragged), can be dragged or clicked to page, and is gone when the box fits, the same in WebKit, WebView2 and WebKitGTK. See `sidebar-overlay-scrollbar.test.cjs`. The window opens on the page the reader last left, as a Mac app comes back as it was (molvqingtai and lc on Discord): `show` keeps the page in localStorage `magpie.lastView` (which the app's webview keeps across restarts, as it keeps `magpie.navLayout`), and `keptView` opens it at start. A page asked for in the address (`?view=`, the tray's links, a reload) wins, Agents too; a kept name that is no page opens the first page, and one gateway mode leaves out opens Providers (`show`). Opening on it scrolls nothing. See `last-page.test.cjs`. | [`assets/app.js`](../../internal/gui/assets/app.js), [`assets/app.css`](../../internal/gui/assets/app.css) |
 | Settings › Privacy | The page opens on what masking kept from vendors (`drawMaskObs` in app.js, fed by `/api/masking/summary`): the values masked over 7 or 30 days with a chart of the days, the kinds, what only the local model found, agents to providers, and the values masked most, each shown only while pointed at (`maskTip`, `/api/masking/value`, which says it is gone after a restart). Its records (`drawMaskRecs`, `/api/masking/records` and `/api/masking/record`) take the page's place, filtered by kind, finder, agent or provider, a day at a time, each opening on the text the vendor saw with its placeholders marked. `maskedBadge`, on the Gateway page's recent calls and the Routing page's log, opens a request's own record (`openMaskRecord`), in amber with the count sent as written when every value found was on Warn. Below the card, *What to mask*, *How it's found* (the rules, always on while anything is masked, and the local model on top of them), *When a value is found* (Mask, Warn or Block per kind, the secret kinds first and the personal ones behind *Show all kinds*, and the *Never mask* list; `renderMaskActions`), *Try it* (`renderMaskTry`, the text as the vendor would get it from `/api/masking/preview`, kept in no storage) and *Sharing*. See [gateway routing](gateway-routing.md) for what is recorded. | [`assets/app.js`](../../internal/gui/assets/app.js), [`masking.go`](../../internal/gui/masking.go) |
 | Built-in plugins | Plugins › Built-in, the page's first tab (`drawBuiltin` in `plugins.js`, rows by `renderBuiltins` in `app.js`), lists magpie's built-in plugins, each with a name, a line on what it is and a switch: Routing groups, Library, Observability, Sessions, Warm-up and check-in, and the Gateway and Routing pages (Essential). A plugin on with settings has their rows under its row, drawn from its schema by the kernel's `ui.form`, and a change posts `{id, config}`. The Gateway page is drawn by its plugin's own scripts through the window's kernel (`kernel.js`, `assets/plugins/gateway/`); see the [plugin runtime](plugin-runtime.md), "The window's kernel". They are `plugins/*` registered with the [plugin runtime](plugin-runtime.md); `GET /api/plugins/builtin` says each one (`builtinJSON`: on is active, the user's own choice, what of it is in use) and `POST {id, on}` (or `{id, config}`) writes plugins.yml. A page marks what goes with a plugin `data-feature="<id>"`. Off, `featureStyle` hides everything so marked (rows drawn later too), `navHides` leaves its page's tab out of the sidebar and the header, `show` opens Agents for an address kept for it, and `setSetTab`, `partShows` and `findSettings` leave its Settings tab and rows out, of the search too. One in use stays on: its switch is disabled and the row says what uses it, and the POST refuses it off. A plugins.yml that doesn't parse is said above the list and no switch moves. `boot.js` says which are off (`featuresOff`) and their settings (`pluginConfig`) before the first paint, and `settings.builtins` carries the list on every state read. The TUI doesn't follow them. See `builtins.test.cjs`, `builtins_test.go`. | [`builtins.go`](../../internal/gui/builtins.go), [`assets/plugins.js`](../../internal/gui/assets/plugins.js), [`assets/app.js`](../../internal/gui/assets/app.js) |
 | No GUI build | `-tags nogui` builds magpie without the GUI: `hasGUI` is false and `runGUI` says to use `magpie tui`. The files of `internal/gui` that need Wails build under `!nogui`. | [`gui_off.go`](../../internal/cli/gui_off.go) |
@@ -207,6 +207,19 @@ under its id (`render`, #1835). The row itself keeps one line: the
 fullest window while idle, what it is doing while it answers. See
 `routing-seat-windows.test.cjs`.
 
+### The Sessions page's folders
+
+The Sessions page lists an agent's project folders as one list, newest
+session first ([`client.js`](../../internal/gui/assets/plugins/sessions/client.js)).
+A row says the folder's name, the folder it is in (home as `~`, from the
+manage reply's `home`), its newest session's title, when, and how many.
+Temporary folders, the disk's root and apps' hidden folders under home
+(`scratch`) wait folded under Other folders at the end; a search, or a
+session opened from elsewhere, unfolds them. Checkboxes and the Delete bar
+come only with Select, and Done lets the pick go. Relocate project and
+Delete all sessions are in a folder's ⋯ menu, shown on hover (always on a
+touch screen) and on a right-click. See `sessions-folder-list.test.cjs`.
+
 ### Stored agent sessions in WSL
 
 The Sessions page uses `sessions.ListAgent`; Usage → Sessions uses
@@ -394,6 +407,12 @@ Routing's New group buttons share `newGroup`, which asks before replacing a
 dirty group draft; Cancel retains the draft and Discard opens the new editor.
 `newGroupWith` applies the same guard when creating a group from a model and
 waits for `show` to accept navigation before creating its draft.
+The Routing page's head also has Routing groups (`#rtGoGroups`), since the
+groups sit below every request. Its click goes through `scrollOnPurpose`,
+brings `.rt-gsec` to the top of the view and focuses it; the page's layout is
+unchanged. `fitGo` gives it only the head's spare room: named, its arrow
+alone, or left out, so nothing else in the head moves or wraps for it
+(`routing-groups-jump.test.cjs`).
 
 The Plugins page updates the npm search-results section when a search answers,
 leaving suggested plugin cards in place so a click begun before the answer still
@@ -431,6 +450,107 @@ never empty: `OwnerTrace` says so with its second result). See
 [`trace_peer_test.go`](../../internal/gui/trace_peer_test.go), and
 `TestGatewayTraceIsLoopbackOnly` in
 [`trace_peer_test.go`](../../internal/gateway/trace_peer_test.go).
+
+### A restart to update hands the gateway over
+
+On a Mac and on Linux, a restart into a downloaded update (the Update pill,
+Settings › Version, the tray's Restart to update, Restart automatically)
+starts the new version beside the running one and hands it the gateway's
+listening socket, rather than ending the gateway and waiting for the new
+one to listen again (xuanwo on X). Nothing an agent sends meanwhile is
+refused: the port never closes, and requests already in flight finish in
+the old process.
+
+The trigger is `handsOver` in
+[`handover.go`](../../internal/gui/handover.go): the app (`Run` sets
+`handoverHost` and `startExe`), on darwin or linux, serving the gateway
+itself, not a dev backend (whose own handover is `gateway.Handover`,
+below) and no `MAGPIE_NO_HANDOVER` in the environment. `restartInto` in [`update.go`](../../internal/gui/update.go)
+then calls `beginHandover` instead of the relaunch-after-exit. The steps:
+
+1. The old magpie opens an Offer ([`internal/handoff`](../../internal/handoff/handoff.go)):
+   a unix socket in a 0700 temporary folder (in `/tmp` when `TMPDIR`'s
+   path leaves a socket's name no room, `sockDir`), named by `handover.json` in
+   the config folder with its pid, its program path and the time. Then it
+   starts the new version beside itself: `open -n` on the bundle on a Mac
+   (`update.OpenBeside`), the binary at the path it started from on Linux
+   (`update.StartBeside`; `startExe`, since `/proc/self/exe` reads
+   "(deleted)" once the update replaced it).
+2. The new magpie's `Run` calls `takeOver` before anything else: a pointer
+   fresh (2 minutes), of a process still running, for the same program and
+   not its own is dialled, the new one says hello, and receives the
+   listening socket (SCM_RIGHTS) with the address, the bridge's callback
+   socket and the old pid (`handoff.Take`). The peer's uid is checked on
+   accept. `gateway.Inherit` keeps the socket for the next `ListenAndServe`
+   on the same address (`sameAddr`; another address lets it go), which
+   serves on it and then acks.
+3. The old one, on the ack (`AwaitAck`), withdraws the pointer, hides
+   itself where it can (below), calls `gateway.Server.HandOff`, ends its
+   backend and waits for its requests, then quits. A handed-off server's
+   shutdown waits up to `handedOffDrain` (15 minutes) for requests in
+   flight, not the 2s an ordinary quit gives them (`shortDrain`). Its
+   `OnShutdown` then skips what goes with the gateway, which the new one
+   now does: ending Codex's failover, porting Codex rollouts and installing
+   the update.
+4. Should the Offer not open, the new version not start, not say hello in
+   60s (`helloWait`), not ack in 90s (`ackWait`), or drop the connection,
+   the old one keeps the socket, takes its instance lock back and restarts
+   as before: the new one opened once it has exited (`fail`,
+   `update.Relaunch` or `relaunchBinary`). It first waits, still serving,
+   for its requests in flight to finish (at most `fallbackWait`, 15
+   minutes), since the restart was let go without waiting for them. A
+   second restart click while a handover is under way does nothing
+   (`pending`).
+
+Two magpies never show at once. On a Mac the old one lets go of its
+instance lock before it gives the socket (`releaseInstance`), so the new
+one's `runningAlready` takes it, and once the ack comes the old one hides
+its menu bar icon, panel and window and leaves the Dock (`onHandedOver`).
+On Linux the D-Bus name Wails holds can't be let go, so the new one serves
+the gateway at once but waits for the old pid to end (`awaitExit`, at most
+`handedOffWait`, 16 minutes) before it makes its app and tray; the old one
+keeps its tray icon until it has drained.
+
+What the old process alone has:
+
+- Sticky routing (which account each conversation stuck to) is flushed to
+  disk before the socket is given (`gateway.FlushSticks`).
+- Claude Code runs the subscription bridge started send their tool calls
+  to the gateway's port, which the new one now serves. The old one serves
+  them on a unix socket in the Offer's folder (`ServeCallbacks`), and the
+  new one forwards a claude-mcp token it doesn't know there
+  (`ForwardCallbacks`, `forwardCallback`; `ownCallback` lets them in while
+  forwarding is on). See [Claude subscription bridge](claude-subscription-bridge.md#a-restart-to-update).
+- Bridge turns can't move to another process, so a restart that hands
+  over waits only for them (`restartBusy`, `blocking`: `Busy.Bridge` as
+  Requests, `Tools`, `BridgeLast` as Last). The page is told
+  (`updateJSON.Handover`) and says it waits for the Claude subscription's
+  replies, with other requests carrying on across the restart.
+- Refreshes of rotating OAuth tokens hold a file lock across both
+  processes (see [Providers and accounts](providers-accounts.md)).
+
+Not carried over, accepted: each process counts its own requests per
+minute and concurrency, so for the drain a provider's limits can be
+exceeded by what the old one still has in flight; a bridge run idle
+between turns ends with the old process, and the next turn starts a new
+run as after any restart; the new one's start-up migrations run while the
+old one still serves its last requests.
+
+Windows has no SCM_RIGHTS for a listening socket in this form, and
+`magpie web` re-executes itself in place; both restart as before, waiting
+for the gateway to be idle (#577). `make dev` keeps its own handover, a
+new backend listening beside the old one (`gateway.Handover`, `devBackend`).
+
+See `TestRestartHandsTheGatewayOver` (the new version a second process,
+a stream across the restart finishing whole, requests during it answered,
+and the old one quitting only after its stream) and
+`TestHandoverNotMadeRestartsAsBeforeOnceIdle` in
+[`handover_unix_test.go`](../../internal/gui/handover_unix_test.go),
+`TestRestartWaitsForWhatAHandoverCantCarry` in
+[`handover_test.go`](../../internal/gui/handover_test.go), the gateway's
+[`handover_test.go`](../../internal/gateway/handover_test.go), the
+socket passing in [`handoff_test.go`](../../internal/handoff/handoff_test.go),
+and `update-wait.test.cjs`.
 
 ## Verification
 

@@ -70,7 +70,9 @@ func _ready() -> void:
 
 ```gdscript
 func give_unique_copy(template: ItemResource) -> ItemResource:
-    # true = deep copy sub-resources too; false = shallow (shares sub-resources).
+    # true = deep: copies nested arrays/dictionaries and *embedded* sub-resources, but
+    # sub-resources saved in their own .tres stay shared. Use
+    # template.duplicate_deep(Resource.DEEP_DUPLICATE_ALL) to copy those as well.
     var copy: ItemResource = template.duplicate(true)
     copy.value += 5                # mutating the copy won't touch the template .tres
     return copy
@@ -93,6 +95,10 @@ func load_config() -> Resource:
 - **Resources are shared by reference.** A single `.tres` assigned to many nodes is the
   *same* object — mutating it changes all of them (and re-saving the file). Call
   `duplicate(true)` for per-instance state.
+- **A deep copy still changes the original's sub-resource** → `duplicate(true)` only copies
+  sub-resources embedded in the file; one saved as its own `.tres` (e.g. a shared
+  `stats.tres` inside `goblin.tres`) is still the same object. Use
+  `duplicate_deep(Resource.DEEP_DUPLICATE_ALL)` when those must be copied too.
 - **`class_name` required to instance from the editor.** Without it the class won't appear
   in the "New Resource" dialog or as an `@export` type.
 - **`res://` is read-only in exported games.** Write runtime data to `user://`, never

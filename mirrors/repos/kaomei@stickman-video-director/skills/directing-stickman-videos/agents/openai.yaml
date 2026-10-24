@@ -1,4 +1,4 @@
 interface:
   display_name: "Stickman Video Director"
-  short_description: "Turn copy into rich Omni Flash stickman videos"
-  default_prompt: "Use $directing-stickman-videos to turn this copy into a one-minute English stickman video prompt package."
+  short_description: "Direct stickman clips or auto-produce narrated videos"
+  default_prompt: "Use $directing-stickman-videos to help me get started with clear outputs, tool preparation, workflow and examples for the relevant mode; reuse my requirements and explain any missing items and concrete next steps."

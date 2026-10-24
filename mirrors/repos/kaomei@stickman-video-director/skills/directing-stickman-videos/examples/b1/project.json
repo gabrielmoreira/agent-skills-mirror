@@ -1,0 +1,61 @@
+{
+  "version": 1,
+  "style": "B1",
+  "width": 1280,
+  "height": 720,
+  "fps": 30,
+  "voice": {"path": "narration.m4a", "lead": 0, "tail": 0, "contains_sfx": true},
+  "captions": [
+    {"start": 0.291, "end": 2.716, "text": "Want a YouTube channel without being on camera?"},
+    {"start": 2.957, "end": 4.273, "text": "Start with a stick figure."},
+    {"start": 4.838, "end": 6.079, "text": "No camera crew."},
+    {"start": 6.098, "end": 7.724, "text": "No weeks of animation."},
+    {"start": 8.157, "end": 9.407, "text": "Just a strong hook,"},
+    {"start": 9.595, "end": 10.610, "text": "a clear story,"},
+    {"start": 10.902, "end": 12.565, "text": "and an open-source workflow."},
+    {"start": 13.288, "end": 14.943, "text": "Here's how to turn one idea"},
+    {"start": 14.943, "end": 15.986, "text": "into a video."}
+  ],
+  "shots": [
+    {"start": 0, "end": 2.85, "layers": [
+      {"type": "text", "text": "YOUR CHANNEL.", "x": 95, "y": 110, "size": 58, "bold": true},
+      {"type": "text", "text": "NOT YOUR FACE.", "x": 95, "y": 185, "size": 58, "bold": true, "color": "#EC4338"},
+      {"type": "pose", "pose": 1, "x": 720, "y": 35, "w": 445},
+      {"type": "image", "path": "@b1/youtube-crayon.png", "x": 120, "y": 300, "w": 270},
+      {"type": "image", "path": "@b1/camera-handdrawn.png", "x": 405, "y": 335, "w": 160, "keys": [{"t": 0, "angle": -0.08}, {"t": 0.5, "angle": 0.06}, {"t": 0.9, "angle": 0}]}
+    ]},
+    {"start": 2.85, "end": 4.7, "layers": [
+      {"type": "pose", "pose": 0, "x": 650, "y": 15, "w": 465},
+      {"type": "text", "text": "ONE GOOD IDEA.", "x": 100, "y": 110, "size": 58, "bold": true},
+      {"type": "image", "path": "@b1/idea-bulb-crayon.png", "x": 120, "y": 275, "w": 170},
+      {"type": "image", "path": "@b1/idea-note-crayon.png", "x": 360, "y": 300, "w": 170, "keys": [{"t": 0, "y": 320, "angle": -0.07}, {"t": 0.4, "y": 300, "angle": -0.025}]}
+    ]},
+    {"start": 4.7, "end": 7.9, "layers": [
+      {"type": "pose", "pose": 2, "x": 70, "y": 45, "w": 435},
+      {"type": "image", "path": "@b1/clapper-crayon.png", "x": 570, "y": 260, "w": 180, "to": 1.4},
+      {"type": "text", "text": "NO CAMERA CREW.", "x": 790, "y": 310, "w": 400, "size": 43, "bold": true, "to": 1.4},
+      {"type": "image", "path": "@b1/calendar-crayon.png", "x": 570, "y": 260, "w": 180, "from": 1.4},
+      {"type": "text", "text": "NO WEEKS OF ANIMATION.", "x": 790, "y": 300, "w": 400, "size": 42, "bold": true, "from": 1.4},
+      {"type": "line", "points": [[570, 410], [735, 285]], "color": "#EC4338", "lineWidth": 5, "keys": [{"t": 0.4, "progress": 0}, {"t": 0.65, "progress": 1}]}
+    ]},
+    {"start": 7.9, "end": 10.8, "layers": [
+      {"type": "text", "text": "A STRONG HOOK. A CLEAR STORY.", "x": 95, "y": 115, "w": 1080, "size": 56, "bold": true},
+      {"type": "image", "path": "@b1/idea-bulb-crayon.png", "x": 110, "y": 300, "w": 155},
+      {"type": "arrow", "x": 330, "y": 400, "w": 280},
+      {"type": "image", "path": "@b1/idea-note-crayon.png", "x": 715, "y": 260, "w": 240, "keys": [{"t": 0, "x": 715, "w": 240, "angle": -0.04}, {"t": 1.8, "x": 620, "w": 340, "angle": -0.01}]}
+    ]},
+    {"start": 10.8, "end": 13.05, "layers": [
+      {"type": "text", "text": "OPEN SOURCE. YOUR WORKFLOW.", "x": 95, "y": 115, "size": 55, "bold": true},
+      {"type": "image", "path": "@b1/open-source-crayon.png", "x": 180, "y": 295, "w": 195},
+      {"type": "image", "path": "@b1/script-page-crayon.png", "x": 700, "y": 260, "w": 220},
+      {"type": "arrow", "x": 420, "y": 400, "w": 210, "keys": [{"t": 0, "progress": 0}, {"t": 0.5, "progress": 1}]}
+    ]},
+    {"start": 13.05, "end": 16.4, "layers": [
+      {"type": "text", "text": "ONE IDEA. A REAL VIDEO.", "x": 95, "y": 110, "size": 56, "bold": true},
+      {"type": "pose", "pose": 0, "x": 700, "y": 35, "w": 445},
+      {"type": "image", "path": "@b1/youtube-crayon.png", "x": 250, "y": 290, "w": 270},
+      {"type": "image", "path": "@b1/idea-note-crayon.png", "x": 100, "y": 310, "w": 155, "keys": [{"t": 0, "x": 100, "y": 310, "angle": -0.08}, {"t": 0.65, "x": 300, "y": 330, "w": 90, "angle": 0}]}
+    ]}
+  ],
+  "sfx": []
+}

@@ -106,6 +106,9 @@ TakeDamage -> Set Health -> Call 'OnHealthChanged' (Health)   // broadcast
   spawn via Spawn node, also mark "Expose on Spawn".
 - **Interface call did nothing** — the target doesn't implement the interface; use "Does
   Implement Interface" before calling, or use the Message version which is safe on non-implementers.
+- **Local variable picks up an unexpected default value** — it shares its name with a member
+  variable, and one can inherit the other's default. UE 5.8 refuses such names for new local
+  variables, but older Blueprints keep existing collisions; rename one of the two by hand.
 
 ## References
 

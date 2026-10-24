@@ -67,7 +67,7 @@ flowchart LR
     end
     subgraph D["D · post-processing"]
         direction LR
-        d1[recolor] ~~~ d2[compose-layers] ~~~ d3[export-*]
+        d1[recolor] ~~~ d2[export-*]
     end
     subgraph E["E · asset tools (independent)"]
         e1[background-tile] ~~~ e2[shadow] ~~~ e3[inspect-motion]
@@ -83,7 +83,7 @@ flowchart LR
 | **A · atlas rows** | one still + a list of states → `sprite-sheet-alpha.png` + `manifest.json.frame_layout`, with **Breathe** baked on idle poses | [run-contract](docs/run-contract.md) · [breathing](docs/breathing.md) |
 | **B · video → loop** | one still → per state, a seamless transparent GIF / WebP / strip, animated by Grok Imagine and cut at its true period | [video-pipeline](docs/video-pipeline.md) · [video](docs/video.md) |
 | **C · utilities** | an imported image or grid sheet → clean transparent cuts; a finished atlas → a curator-ready run | [sheet-slicing](docs/sheet-slicing.md) · [curation](docs/curation.md) |
-| **D · post-processing** | a finished sheet → deterministic colourways, rig layer composites, Aseprite / Phaser / Flame exports | [recolor](docs/recolor.md) · [layer-tracks](docs/layer-tracks.md) · [engine-export](docs/engine-export.md) |
+| **D · post-processing** | a finished sheet → deterministic colourways, Aseprite / Phaser / Flame exports | [recolor](docs/recolor.md) · [engine-export](docs/engine-export.md) |
 | **E · asset tools** | independent PNGs or animations → repeating tiles, projected shadows, motion/contact measurements | [asset-tools](docs/asset-tools.md) |
 | **S · scene** | existing assets + placement, camera and lighting → PNG frames, MP4/GIF, inspection and placement metadata | [scene](docs/scene.md) |
 
@@ -147,7 +147,6 @@ sprite-gen unpack-atlas --atlas sheet.png             # finished atlas → curat
 ```bash
 sprite-gen recolor-palette --base <run>/sprite-sheet-alpha.png --out palette.draft.json
 sprite-gen recolor --run-dir <run> --spec recolor.spec.json      # → <run>/variants/
-sprite-gen compose-layers --run-dir <run>                        # rig runs: declared stacks → <run>/layers/
 sprite-gen export-aseprite --run-dir <run>                       # Aseprite JSON for Phaser / Flame
 ```
 

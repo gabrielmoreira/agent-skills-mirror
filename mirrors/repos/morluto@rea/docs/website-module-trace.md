@@ -83,3 +83,9 @@ closes only the owned browser; cleanup failure cannot return a successful trace.
 the host requires it; it does not enable an REA security boundary.
 
 See [testing](testing.md) for the native loading oracle and CLI/MCP real lane.
+
+The selected local source filename supplies the parser grammar. JavaScript files
+retain native dynamic imports even in relational expressions; TypeScript files
+use the shared TypeScript grammar and omit erased import-type expressions from
+runtime module tracing. Historical-source import retains those type dependencies
+separately. Parser observations and native URL resolution do not prove execution.

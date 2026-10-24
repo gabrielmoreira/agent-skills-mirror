@@ -4,8 +4,10 @@ For release comparisons, export `list_procedures` Evidence from each target befo
 closing it. Close clears session records: import both bundles after collecting the
 two targets, or supply portable inline Evidence. `match_native_functions` pairs unique exact names and, when supplied,
 complete observed body bytes. Reuse optional same-context `list_names`,
-`procedure_info`, `read_bytes` and existing `analyze_function` Evidence; avoid
-decompiling every function merely to match it. Its summary retains a parent for
+`procedure_info`, `read_bytes` and existing `analyze_function` dossiers as
+`left_observations`/`right_observations`; an MCP `analyze_function` summary
+reply contributes its `parent_evidence_id` as a `retained-evidence` reference,
+not the summary itself. Avoid decompiling every function merely to match it. Its summary retains a parent for
 `inspect_analysis_view` `function-matches` collections `matches` and `functions`.
 Select columns, batch IDs and page individual facts; aliases remain unresolved.
 Unpaired observations do not prove additions/removals. Existing matched dossier
@@ -231,6 +233,9 @@ unknown rather than false.
 For a completed `analyze_function` dossier, use `inspect_analysis_view` with
 `view: {kind: "native", facet: "value_flow_operations", offset: 0, limit: 32}`
 and the exact retained Evidence ID to read selected facts without reanalysis.
+The default MCP reply is already a summary of that dossier: its
+`normalized_result.parent_evidence_id` is the retained ID to page, and its
+null counts mark facets the provider did not record or declared unavailable.
 Native facets also include procedure, pseudocode, assembly, basic blocks,
 comments, callers/callees, references, unresolved calls, referenced strings and
 names, the native API record, and value-flow summaries. Pseudocode offsets and limits count UTF-16
@@ -250,6 +255,10 @@ run, use `observe_native_calls` with explicit breakpoints and a bounded
 `duration_ms`/`max_events`. It launches a new process under LLDB, so the target
 runs and may change files or use the network. Hardened-runtime targets need the
 `get-task-allow` entitlement.
+Function breakpoints use exact LLDB runtime names: a Darwin C `_main` static symbol
+may be `main` at runtime. REA does not translate names. Set `module` to the image
+file name when selecting that image only; otherwise loaded system images also
+match. Inspect retained locations and module paths before attributing a call.
 
 Use `binary_session` with no arguments to check the open target, selected
 provider, and alignment. Its default `result.tool_availability` carries a

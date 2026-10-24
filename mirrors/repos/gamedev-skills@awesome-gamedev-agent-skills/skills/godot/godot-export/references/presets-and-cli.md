@@ -35,8 +35,11 @@ godot --headless                      run without a window/GPU
       --path <dir>                    project directory (where project.godot is)
       --export-release "<preset>" <out>   export a release build
       --export-debug "<preset>" <out>     export a debug build
-      --export-pack "<preset>" <out>      export only the .pck/.zip data
-      --quit-after <frames|seconds>   auto-quit (smoke tests)
+      --export-pack "<preset>" <out>      export only the .pck/.zip data (extension decides)
+      --export-patch "<preset>" <out>     export only files changed vs. the base packs
+      --patches <a.pck,b.pck>         base packs for --export-patch (comma-separated)
+      --install-android-build-template    install the Gradle template before exporting
+      --quit-after <frames>           auto-quit after N main-loop iterations (smoke tests)
       --main-pack <file.pck>          run a specific data pack
       --verbose                       detailed logging
       -- <args>                       pass args to your game (OS.get_cmdline_user_args())
@@ -55,13 +58,16 @@ Add tags under a preset's *Features* (or `custom_features`) and branch at runtim
 ## Web (HTML5) specifics
 
 - Output is `index.html` + `.js`/`.wasm`/`.pck`. Serve over HTTP(S).
-- Threaded builds need **cross-origin isolation**:
+- *Thread Support* (`variant/thread_support`) is **off by default** since 4.3; a
+  single-threaded build runs on any static host. Threaded builds need **cross-origin
+  isolation**:
   - `Cross-Origin-Opener-Policy: same-origin`
   - `Cross-Origin-Embedder-Policy: require-corp`
   Without these, `SharedArrayBuffer` is unavailable and the engine errors or falls back.
 - itch.io: enable "This file will be played in the browser" and the SharedArrayBuffer
-  support option. GitHub Pages can't set the headers — use a host that can, or a service
-  worker shim.
+  support option. GitHub Pages can't set the headers — keep threads off, use a host that
+  can, or enable the PWA option *Ensure Cross Origin Isolation Headers*, whose service
+  worker adds them.
 - Reduce size: enable compression, trim unused features, and consider the
   "Extensions Support" toggle only if needed.
 
@@ -88,11 +94,17 @@ Export extra content as a separate `.pck` and load it at runtime:
 var ok := ProjectSettings.load_resource_pack("user://dlc1.pck")  # mounts into res://
 ```
 
-A patch pack can override or add files. Use `--export-pack` to produce packs in CI.
+A patch pack can override or add files. Use `--export-pack` to produce packs in CI, or
+`--export-patch "<preset>" out.pck --patches base.pck` to pack only files that changed since
+the base pack.
 
 ## Encryption
 
-Set a 64-hex-char script encryption key (Project > Export, or `GODOT_SCRIPT_ENCRYPTION_KEY`
-env for CLI) and enable "Encrypt Exported PCK". Note: client-side encryption deters casual
+PCK encryption does **not** work with the official templates: the game fails to load its
+data at startup. You must compile your own export templates with the same key in the
+`SCRIPT_AES256_ENCRYPTION_KEY` environment variable and select them as custom templates.
+Then set the 64-hex-char key in the preset's *Encryption* tab (or
+`GODOT_SCRIPT_ENCRYPTION_KEY` for CLI exports), enable "Encrypt Exported PCK", and add
+include filters — with empty filters nothing is encrypted. Client-side encryption deters casual
 inspection but cannot fully protect assets on a user's machine — don't store true secrets
 in the build.

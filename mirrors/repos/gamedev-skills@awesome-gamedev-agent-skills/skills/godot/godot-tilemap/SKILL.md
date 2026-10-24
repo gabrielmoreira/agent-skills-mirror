@@ -51,8 +51,10 @@ extends TileMapLayer
 
 func _unhandled_input(event: InputEvent) -> void:
     if event is InputEventMouseButton and event.pressed:
-        # local_to_map expects local coords; convert from global first.
-        var cell := local_to_map(to_local(event.position))
+        # event.position is in viewport pixels and ignores Camera2D scroll/zoom.
+        # make_input_local() converts it into this layer's local space.
+        var local_event := make_input_local(event) as InputEventMouseButton
+        var cell := local_to_map(local_event.position)
         var data := get_cell_tile_data(cell)   # TileData or null
         if data:
             var dmg: int = data.get_custom_data("damage")  # custom data layer
@@ -101,8 +103,10 @@ func find_spawns() -> Array[Vector2i]:
 - **`TileMap` node is deprecated in 4.3.** Use `TileMapLayer` nodes (one layer per node);
   group them under a parent `Node2D`. Old `TileMap` calls that took a `layer` argument
   (`set_cell(layer, ...)`) do not apply to `TileMapLayer`.
-- **`local_to_map` needs local coordinates.** Mouse/global positions must be converted
-  with `to_local(...)` first, or cells will be offset.
+- **`local_to_map` needs layer-local coordinates.** A world position needs `to_local(...)`
+  first. A mouse event's `position` is in viewport pixels, not world space, so it is wrong as
+  soon as a `Camera2D` scrolls or zooms; convert it with `make_input_local(event)` (or
+  poll `get_local_mouse_position()`) instead.
 - **`get_cell_tile_data` returns `null`** for empty cells or non-atlas sources — always
   null-check before `get_custom_data`.
 - **Custom data is typed.** A layer declared as `int` returns `int`; reading it as the

@@ -22,25 +22,41 @@ calls. This split is the single most important decision in performance work.
 ## 2. Per-engine profiler quick start
 
 **Godot 4.7**
-- Editor: **Debugger ▸ Profiler** (per-function script + physics time, frame time), and the
-  **Monitors** tab (FPS, draw calls, video/static memory, object/node counts).
-- Code: `Performance.get_monitor(Performance.TIME_PROCESS)` (process ms),
-  `Performance.TIME_PHYSICS_PROCESS`, `Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME`,
-  `Performance.RENDER_TOTAL_PRIMITIVES_IN_FRAME`, `Performance.MEMORY_STATIC`.
-- Visual debugging: viewport **View Information / View Frame Time** overlays.
+- Editor: **Debugger ▸ Profiler** (per-function script + physics time, frame time), **Debugger ▸
+  Visual Profiler** (CPU and GPU time spent on rendering — the Profiler tab does not show GPU cost),
+  and the **Monitors** tab (FPS, draw calls, video/static memory, object/node counts).
+- Code: `Performance.get_monitor(Performance.TIME_PROCESS)` (frame process time in **seconds**;
+  multiply by 1000 for ms), `Performance.TIME_PHYSICS_PROCESS`,
+  `Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME`, `Performance.RENDER_TOTAL_PRIMITIVES_IN_FRAME`,
+  `Performance.MEMORY_STATIC`.
+- Visual debugging: 3D viewport **View Information / View Frame Time** overlays.
+- Native-code traces: an engine built from source with `scons profiler=tracy` (or `perfetto`,
+  `instruments`) streams engine zones to that profiler.
 
 **Unity 6.3 LTS**
 - **Profiler** window: CPU Usage, GPU Usage, Rendering, Memory modules. Use **Deep Profile**
   sparingly (high overhead, skews numbers).
 - **Frame Debugger** to step draw calls and see what breaks batching (SetPass calls, batches).
-- Code: `ProfilerRecorder` tracking `"CPU Main Thread Frame Time"` (Unity 6.3 LTS000 manual) for an
-  in-build HUD/CSV; `FrameTimingManager` for CPU/GPU frame times.
+- Code: `ProfilerRecorder` on the built-in counters `"CPU Main Thread Frame Time"`,
+  `"GPU Frame Time"` (release players need **Frame Timing Stats** enabled) and
+  `"GC Allocated In Frame"` (development players only) for an in-build HUD/CSV;
+  `FrameTimingManager` for CPU/GPU frame times.
 - **Profile a Development build on device** (`Autoconnect Profiler`), not just the editor.
+- **Project Auditor** (`com.unity.project-auditor` package) statically flags costly code and
+  settings before you profile.
 
-**Unreal 5**
-- Console: `stat unit` (Frame / Game / Draw / GPU ms), `stat fps`, `stat scenerendering`
-  (draw calls, primitives), `stat game`, `stat gpu`.
+**Unreal 5.8**
+- Console: `stat unit` (Frame / Game / Draw / RHIT / GPU ms — Game is the game thread, Draw the
+  render thread, both CPU), `stat fps`, `stat scenerendering` (draw calls, primitives),
+  `stat game`, `stat gpu`, `stat hitches` (logs frames over `t.HitchFrameTimeThreshold`).
 - **Unreal Insights** for full timeline traces; `ProfileGPU` (Ctrl+Shift+,) for a GPU breakdown.
+
+**External tools (engine-agnostic)**
+- **RenderDoc** (1.46 at last check): GPU frame capture for Vulkan, D3D11/12 and OpenGL/ES on
+  Windows, Linux and Android; no Metal. On Apple platforms use the Xcode Metal debugger and
+  Instruments; on Windows D3D12, PIX.
+- **Tracy** (0.14.1 at last check): instrumented CPU/GPU timeline for native code; keep the
+  client library and the viewer on the same release, because the network protocol can change.
 
 ## 3. Pooling manager (generic)
 
@@ -62,9 +78,13 @@ decide an overflow policy (grow, or recycle the oldest).
 - **What breaks a batch:** a different material, texture, or render state between objects. Share
   materials and **atlas** textures so runs of objects submit as one draw call.
 - **Identical meshes, many instances** → GPU instancing: Unity (enable *GPU Instancing* on the
-  material) / Godot `MultiMesh` + `MultiMeshInstance2D/3D` / Unreal Instanced Static Mesh or
-  Hierarchical ISM.
-- **Static geometry** → static batching (Unity), mark static; bake where possible.
+  material — but under URP/HDRP an SRP Batcher-compatible shader is drawn by the SRP Batcher
+  instead; for large counts enable the **GPU Resident Drawer**, which needs the Forward+ path and
+  a compute-capable graphics API other than OpenGL ES) / Godot `MultiMesh` +
+  `MultiMeshInstance2D/3D` / Unreal Instanced Static Mesh or Hierarchical ISM.
+- **Static geometry** → static batching (Unity), mark static; bake where possible. Unity's
+  dynamic batching is no longer recommended outside low-end devices: its CPU cost can exceed the
+  draw calls it saves.
 - **2D** → texture atlases + a shared material batch sprites; avoid per-sprite materials.
 - **UI** → minimize canvas rebuilds (Unity: split static/dynamic canvases); a changing element
   shouldn't dirty the whole canvas.

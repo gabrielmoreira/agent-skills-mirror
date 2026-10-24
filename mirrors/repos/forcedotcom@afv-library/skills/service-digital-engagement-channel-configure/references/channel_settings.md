@@ -196,10 +196,12 @@ Repeatable element — one block per pre-chat field for data collection.
 |-------|------|----------|-------------|
 | `name` | String | Yes | Unique API name for the parameter |
 | `masterLabel` | String | Yes | Display label shown to agent/user |
-| `parameterDataType` | Enum | Yes | `String`, `Number`, `Boolean` |
+| `parameterDataType` | String | Yes | **Always `String`** — see note below |
 | `externalParameterName` | String | Yes | External mapping name for the parameter |
-| `maxLength` | Integer | No | Max chars for Text type (default 255) |
+| `maxLength` | Integer | No | Max chars (default 255) |
 | `actionParameterMappings` | Object | No | Maps this parameter to an Omni-Channel Flow action input variable |
+
+> **`parameterDataType` is always `String`.** Every channel custom parameter deploys as `String`, regardless of the field's logical type. The metadata field's declared type is the broad `FlowDataType` enum (`Apex`, `Boolean`, `Currency`, `Date`, `DateTime`, `Multipicklist`, `Number`, `Picklist`, `SObject`, `String`, `Time`), but `MessagingChannel` restricts it at deploy time to `String` only — any other value fails with *"bad value for restricted picklist field."* The parameter's actual data type (Number, Checkbox/Boolean, dropdown, etc.) is not set on the channel; it is chosen at the **deployment** level in the pre-chat New Custom Parameter screen — i.e. via the Embedded Service form field's `formFieldType` (see `service-digital-engagement-deployment-configure`).
 
 ### Action Parameter Mappings
 
@@ -221,6 +223,15 @@ When the channel uses Flow-based routing, `actionParameterMappings` maps a custo
     <parameterDataType>String</parameterDataType>
 </customParameters>
 ```
+
+### Removing a Custom Parameter
+
+A parameter still used by a pre-chat form can't be deleted ("can't be deleted as it is referenced elsewhere"). Several deployments can share one channel, so **check every deployment before writing**: retrieve all `EmbeddedServiceConfig` and find each one whose `<messagingChannel>` is this channel and whose form has `<formField>` = the param `name`. Don't use a failed channel deploy to find them.
+
+1. If another deployment the user didn't mention still uses the param, stop and ask; changing it is outside the request.
+2. Each referencing deployment: remove the field (via `service-digital-engagement-deployment-configure`) and publish it after the user approves.
+3. If the param has `actionParameterMappings`, deploy the channel with the mapping removed first.
+4. Deploy the channel without that parameter's `<customParameters>` block; keep every other parameter.
 
 ---
 

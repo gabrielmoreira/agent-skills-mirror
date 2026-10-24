@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/process-mapper/../../../business-operations/skills/process-mapper/SKILL.md

@@ -3,9 +3,10 @@ name: procedural-gen
 description: >
   Generate game content procedurally — seeded deterministic RNG, value/Perlin/
   Simplex noise for terrain and heightmaps, grid dungeon generation (rooms +
-  corridors, BSP, random walk), and weighted loot/drop tables. Engine-neutral
-  algorithms. Use when the user mentions procedural generation, perlin/simplex
-  noise, random seed, dungeon generator, heightmap/terrain, or loot tables.
+  corridors, BSP, random walk, wave function collapse), and weighted loot/drop
+  tables. Engine-neutral algorithms. Use when the user mentions procedural
+  generation, perlin/simplex noise, random seed, dungeon generator, WFC,
+  heightmap/terrain, or loot tables.
 ---
 
 # Procedural generation
@@ -57,8 +58,11 @@ room_count = rng.randint(5, 12)  # same seed -> same sequence, every run
 # WRONG: calling random.randint(...) (global state) — order-dependent, unseedable.
 ```
 
-Engine equivalents: Godot `var rng = RandomNumberGenerator.new(); rng.seed = s`;
-Unity `var rng = new System.Random(seed)` (or `UnityEngine.Random.InitState`).
+Engine equivalents: Godot 4.7 `var rng := RandomNumberGenerator.new(); rng.seed = s`
+(save `rng.state` to resume a sequence mid-way); Unity 6.3
+`new Unity.Mathematics.Random(seed)` (a `uint`, must be non-zero) or
+`new System.Random(seed)`. Avoid `UnityEngine.Random.InitState` for generation:
+it seeds the one global generator that every other script also draws from.
 Store the seed in the save file so a world can be regenerated.
 
 ### 2. Fractal (fBm) noise for heightmaps
@@ -96,13 +100,16 @@ def weighted_pick(rng, table):           # table: list of (item, weight)
         upto += w
         if roll < upto:                   # first bucket the roll falls into
             return item
-    return table[-1][0]                   # float-safety fallback
+    return next(i for i, w in reversed(table) if w > 0)  # roll == total (float edge)
 
 loot = weighted_pick(rng, [("common", 70), ("rare", 25), ("legendary", 5)])
 ```
 
-Weights need not sum to 100 — they are relative. To prevent bad streaks, use a
-"pity"/bag system (see `references/dungeon-generation.md` notes on distributions).
+Weights need not sum to 100 — they are relative, and a weight of 0 never drops.
+Built-ins do the same job: Python `rng.choices(items, weights)`, Godot
+`rng.rand_weighted(PackedFloat32Array(weights))` (returns an index). To prevent
+bad streaks, use a "pity"/bag system (see `references/dungeon-generation.md`
+notes on distributions).
 
 ### 4. Rooms-and-corridors dungeon (sketch)
 
@@ -135,14 +142,28 @@ random-walk caves) is in `references/dungeon-generation.md`.
   on a small grid. Cap attempts and accept fewer rooms.
 - **Seeding once globally, then relying on frame timing**: any non-deterministic
   input (time, physics, hash randomization) leaking into generation destroys
-  reproducibility.
+  reproducibility. A common hidden one: `rng.choice(list(some_set))` over
+  strings in Python, whose set order changes per process. Sort first.
+- **Seeds that stop matching after an update.** Library RNGs promise the same
+  sequence only on the same version: Python guarantees only `random()` across
+  versions (not `randint`/`choice`), .NET says `System.Random` may change
+  between major versions, and Godot calls its PCG32 an implementation detail.
+  If shared seeds, daily challenges or seed-only saves must survive updates,
+  ship your own small PRNG (PCG32, xorshift, SplitMix64) with a test that pins
+  its first outputs — or save the generated result instead of the seed.
+- **Flat noise at integer coordinates**: Perlin noise is 0 at every integer
+  lattice point, so sampling raw `noise(x, y)` (e.g. `Mathf.PerlinNoise`) at
+  whole tile coordinates returns the same value everywhere. Scale by a
+  non-integer frequency (`x / width * f`); libraries with a frequency setting,
+  such as FastNoiseLite, apply it for you.
 
 ## References
 
 - `references/noise.md` — octaves/lacunarity/gain, redistribution, island
   shaping, two-axis biome lookup, blue-noise object scatter.
 - `references/dungeon-generation.md` — BSP, rooms+corridors, random-walk caves,
-  cellular-automata smoothing, connectivity validation, distribution/pity tables.
+  cellular-automata smoothing, wave function collapse, connectivity validation,
+  distribution/pity tables.
 
 ## Related skills
 

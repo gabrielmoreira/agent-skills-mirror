@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/decide/../../../c-level-agents/skills/decide/SKILL.md

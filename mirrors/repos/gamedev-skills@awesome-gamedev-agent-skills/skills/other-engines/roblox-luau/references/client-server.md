@@ -95,8 +95,9 @@ instance (placed by designers in Studio) without hard-coding references.
 
 ## Studio testing
 
-- **Play** — your avatar in a combined server+client session.
-- **Run** — server simulation with no player.
-- **Start (Local Server)** — separate server + N client windows; the only way to
+- **Test** (F5) / **Test Here** — your avatar in a single session; toggle between
+  the Client and Server views while it runs.
+- **Run** (F8) — simulation with no avatar.
+- **Server & Clients** — separate server + up to 8 client windows; the only way to
   properly test replication and remotes. Use the Server/Client view toggle and the
   Output window to confirm which side a message came from.

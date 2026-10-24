@@ -144,7 +144,7 @@ All steps are sequential. Do not skip or reorder.
 
 11. **Apply standard parameters** — if the user needs standard pre-chat fields, generate `<standardParameters>` elements with `parameterType`. If the channel uses Flow-based routing and the user specifies flow variable mappings, include `<actionParameterMappings>` with `actionParameterName` to map each parameter to a flow input variable.
 
-12. **Apply custom parameters** — if the user needs pre-chat data collection, generate `<customParameters>` elements with `name`, `masterLabel`, `parameterDataType`, `externalParameterName`, and `maxLength`. If the channel uses Flow-based routing and the user specifies flow variable mappings, include `<actionParameterMappings>` with `actionParameterName` to map each parameter to a flow input variable.
+12. **Apply custom parameters** — if the user needs pre-chat data collection, generate `<customParameters>` elements with `name`, `masterLabel`, `parameterDataType`, `externalParameterName`, and `maxLength`. Always set `parameterDataType` to `String` — the channel accepts no other value (the field's actual type, including Checkbox/Number/dropdown, is set at the deployment level via `formFieldType`, not here). If the channel uses Flow-based routing and the user specifies flow variable mappings, include `<actionParameterMappings>` with `actionParameterName` to map each parameter to a flow input variable.
 
 13. **Generate the file** — produce the `.messagingChannel-meta.xml` file following the template structure. Place at the path the user specifies, or default to the project's metadata source path under `messagingChannels/`.
 
@@ -216,7 +216,9 @@ All steps are sequential. Do not skip or reorder.
 | "Only active Agentforce Service Agents are supported" on deploy | Bot is inactive — run `sf agent activate` before deploying |
 | Flow or ASA routing fails without fallback queue | `sessionHandlerQueue` is mandatory when `sessionHandlerType` is `Flow` or `AgentforceServiceAgent` |
 | JWT verification not working | Connected app and certificate must be configured for the org |
-| Custom parameters not collected | `name` must be unique per channel; `parameterDataType` defaults to `Text` |
+| Custom parameters not collected | `name` must be unique per channel |
+| `<customParameters>` deploy fails: "bad value for restricted picklist field" | `parameterDataType` was set to something other than `String`. Channel custom parameters are always `String`; set the field's actual type (Number, Checkbox, dropdown) at the deployment level, not here |
+| Removing a custom parameter: "can't be deleted as it is referenced elsewhere" | **Check before deploying, not after.** Every deployment on this channel whose pre-chat form uses the param must first drop that field and be published (user-approved); remove the param's `actionParameterMappings` in a separate deploy first. See `references/channel_settings.md` §Removing a Custom Parameter |
 | Automated responses not showing | Use exact `type` values (`OptOutConfirmation`, `HelpResponse`); XML-escape special characters |
 | Channel deployed but messages not routing | Channel must be activated after deployment — it defaults to inactive |
 | "You can't enable Session-Based Chat for verified users" | Set `isSynchronousChatEnabled` to `false` for Auth channels — session-based chat is only valid for UnAuth |

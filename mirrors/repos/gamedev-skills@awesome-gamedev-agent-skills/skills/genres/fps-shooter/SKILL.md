@@ -59,8 +59,8 @@ responsive look, clear hit feedback, and a death that reads instantly.
 
 ```python
 # Pseudocode. Cast from the camera; first hit takes damage scaled by range + headshot.
-direction = apply_spread(camera.forward, current_spread)
-hit = raycast(camera.world_position, direction, max_dist=RANGE, mask=SHOOTABLE)
+direction = apply_spread(camera.forward, current_spread)   # cone sample, see refs §4
+hit = raycast(camera.world_position, direction, max_dist=RANGE, mask=SHOOTABLE, exclude=[shooter])
 if hit:
     dmg = base_damage * falloff(hit.distance)
     if hit.is_head: dmg *= HEADSHOT_MULT
@@ -89,7 +89,13 @@ ttk_seconds   = (shots_to_kill - 1) / fire_rate_per_second   # first shot at t=0
 ## Pitfalls / failure modes
 
 - **Look tied to frame rate or unscaled by `dt`** → sensitivity changes with FPS. Look should
-  be driven by raw mouse delta; movement integration uses `dt` (see `physics-tuning`).
+  be driven by raw mouse delta (never multiplied by `dt`); movement integration uses `dt`
+  (see `physics-tuning`). Clamp pitch to about ±89° so the view cannot flip over.
+- **Shots that "do nothing"** → the ray hits the shooter's own collider, misses hitboxes built
+  from trigger/area volumes, or stops on an invisible trigger zone. Exclude the shooter and set
+  the trigger rule explicitly per engine (refs §2 table).
+- **Recoil recovery fights the player's aim** → recoil was written into the look angle. Keep it
+  as a separate offset that decays to zero (refs §4).
 - **Pure random recoil/spread** → feels uncontrollable and unfair. Use a learnable recoil
   pattern; keep the first shot accurate.
 - **Hitscan with no falloff** → pistols snipe across the map. Add range-based damage falloff.

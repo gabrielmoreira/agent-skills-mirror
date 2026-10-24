@@ -27,7 +27,10 @@ checks the tool's `--version` banner when executing a request. Binwalk must
 print `binwalk <version>` and Unblob must print the version alone. Inspection and
 extraction have independent prerequisites; one does not require the other.
 Both require util-linux `prlimit`, normally `/usr/bin/prlimit`; override its
-absolute path with `REA_FIRMWARE_PRLIMIT_COMMAND` if needed.
+absolute path with `REA_FIRMWARE_PRLIMIT_COMMAND` if needed. `rea doctor` does
+not currently inspect firmware readiness. Engine selection/version checks run
+when the firmware operation is requested; successful general doctor checks do
+not establish firmware tool or external-extractor availability.
 
 REA retains at most 8 MiB of combined stdout and stderr per command. Exceeding
 that diagnostic budget stops analysis with an explicit truncated-output error;
@@ -49,6 +52,36 @@ git submodule update --init third_party/binwalk third_party/unblob
 
 Normal REA builds and npm packages do not include or build these sources or
 engine binaries. See [upstream provenance](https://github.com/morluto/rea/blob/main/third_party/README.md).
+
+### Windows submodule checkout
+
+On Windows, the Unblob checkout stops with `error: invalid path`. Several
+upstream test fixture names under `tests/integration/` contain characters,
+trailing dots, or trailing spaces that NTFS does not allow; REA does not use
+those fixtures. Keep the clone, exclude that directory, and retry from the
+repository root in PowerShell:
+
+```powershell
+git -C third_party/unblob config core.protectNTFS false
+git -C third_party/unblob sparse-checkout set --no-cone '/*' '!/tests/integration/'
+git submodule update third_party/unblob
+```
+
+Both settings are required. While `core.protectNTFS` is enabled, Git for
+Windows also rejects index paths that the sparse pattern excludes; the pattern
+keeps the invalid names out of the worktree. The setting applies only to the
+Unblob submodule. In Git Bash, prefix the `sparse-checkout` command with
+`MSYS_NO_PATHCONV=1`; otherwise `!/tests/integration/` is rewritten as a
+Windows path.
+
+The extraction destination must be absent with an existing writable parent.
+REA checks that selection before starting an engine and still acquires it
+exclusively during publication. Invalid sources and destinations identify the
+caller argument; failures inside an acquired workspace keep their own cause.
+Published file `relative_path` preserves producer spelling for lineage; `path`
+uses the writer's actual normalized filename. An extracted filename that cannot
+be represented losslessly as UTF-8 fails publication explicitly with its raw
+name bytes in hexadecimal instead of silently omitting the entry.
 
 ## CLI and MCP
 
@@ -102,14 +135,19 @@ build's source revision, so that field remains unknown.
   selected input have a known `root_file_range`, adjusted by the selected offset.
 - Decompressed children have unknown original byte ranges and runtime addresses.
   Task lineage does not establish a byte-for-byte mapping through decompression.
-- `partial` marks unknown/encrypted chunks, reported extraction problems,
+- `partial` marks unknown/encrypted chunks, selected input bytes outside all
+  reported chunk intervals, reported extraction problems,
   unpublished links/special files or reached depth limits. `complete` means the
-  engine finished its configured extraction without those reported conditions;
+  selected input is covered by reported chunk intervals and the engine finished
+  its configured extraction without those reported conditions;
   default skip rules and format coverage still apply. It does not establish
   complete firmware reconstruction.
 - `extraction_gaps` makes those conditions recoverable: a row identifies an
   unextracted region or a failed task/stage. A chunk retains its identity and
   byte range, plus its original-file range when it belongs to the selected input.
+  `unclassified-range` rows identify selected input intervals with no reported
+  chunk; their provider identity and handler stay null. An empty chunk inventory
+  therefore cannot establish complete extraction of a nonempty selected input.
   A multi-file stage retains its reported ID and handler with unknown byte ranges;
   a standalone task failure keeps unavailable stage identity null. Rows retain exact dependency names from
   the producer's missing-dependency reports; an accepted report with no names
@@ -118,6 +156,11 @@ build's source revision, so that field remains unknown.
   share recovery prose without losing any region identity. Instructions use
   already configured capabilities where one exists. Every extraction rerun
   requires a fresh absent `output_directory`, preserving the prior evidence.
+  Unblob's declared `ERROR` severity establishes an extraction failure,
+  including standalone `UnknownError` task exceptions. Warnings and resolved
+  extraction problems remain diagnostics with partial coverage; they do not
+  establish failed extractor stages. Standalone errors do not acquire a nearby
+  chunk's handler or byte range.
   Nested unknown chunks use `inspect_firmware_regions` on the actual published
   child rather than repeating the same extraction with unchanged handlers.
   Inspection requires separately configured Binwalk (`REA_BINWALK_COMMAND`);
@@ -189,10 +232,15 @@ tree semantics, vulnerability scanning, emulation or hardware runtime capture.
   Diagnostic output is bounded with exact captured byte counts.
 - Default staging budget: **256 MiB** and **10,000 entries**, configurable using
   `max_output_bytes` / `max_output_files` (CLI `--max-output-bytes` /
-  `--max-output-files`). Depth defaults to 3, allowed range 1–10.
+  `--max-output-files`). Exceeding either selected staging budget returns a
+  nonretryable resource constraint naming the selected limit. Depth defaults to
+  3, allowed range 1–10.
 
 Staging budgets are polled and rechecked after exit; short-lived overshoot is
-possible. The inherited file-size limit bounds each file, not total storage;
+possible. The per-file process limit is the larger of the selected payload budget
+and the fixed report/diagnostic file allowances, so a small payload selection
+still permits the mandatory report. A tighter inherited host limit still applies.
+The inherited file-size limit bounds each file, not total storage;
 address-space limits are per process, not an aggregate memory quota. Worker
 count is not CPU affinity for every external extractor. These limits do not
 claim cgroup/container containment. Cancellation cleans the owned process group

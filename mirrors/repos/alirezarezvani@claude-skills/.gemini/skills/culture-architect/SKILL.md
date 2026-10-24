@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/culture-architect/../../../c-level-advisor/skills/culture-architect/SKILL.md

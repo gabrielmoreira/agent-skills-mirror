@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/embedded-iot-mentor/../../../engineering-team/skills/embedded-iot-mentor/SKILL.md

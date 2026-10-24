@@ -71,15 +71,18 @@ func _process(_frame_dt):                   # Unity: void Update()
 # then depend on frame rate and jitter under load.
 ```
 
-Most engines offer this for you (Godot `physics_interpolation`/Rigidbody
-interpolate; Unity `Rigidbody.interpolation = Interpolate`). Prefer the built-in
-before hand-rolling.
+Most engines offer this for you: Godot's project setting
+`physics/common/physics_interpolation` (off by default; it interpolates every
+node, 2D and 3D) and Unity's `Rigidbody.interpolation = Interpolate`. Prefer the
+built-in before hand-rolling, and never do both on the same node.
 
 ### 2. Stop tunneling: CCD + a speed cap
 
 ```gdscript
 # Fast, small bodies skip past thin colliders between ticks. Two fixes:
-body.continuous_cd = true            # RigidBody3D bool (RigidBody2D: CCD_MODE_* enum). Unity: rb.collisionDetectionMode = Continuous
+body.continuous_cd = true            # RigidBody3D bool (RigidBody2D: CCD_MODE_* enum)
+# Unity: rb.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative (cheap, covers
+# dynamic bodies too) or ContinuousDynamic (fast vs fast); plain Continuous sweeps vs static only.
 # Cap velocity so a single step can't move more than ~one collider thickness.
 const MAX_SPEED := 40.0
 if velocity.length() > MAX_SPEED:
@@ -94,11 +97,12 @@ if velocity.length() > MAX_SPEED:
 # Mass is RELATIVE weight in collisions; it does NOT change fall speed (gravity
 # accelerates all masses equally). Use drag and gravity_scale to shape feel.
 body.mass = 2.0                      # heavier pushes lighter in collisions
-body.linear_damp = 0.5               # air drag: higher = stops sooner (Unity: drag)
-body.gravity_scale = 1.5             # per-object gravity multiplier (snappier fall)
+body.linear_damp = 0.5               # air drag: higher = stops sooner (Unity 6: linearDamping, was drag)
+body.gravity_scale = 1.5             # per-object gravity multiplier (Unity: Rigidbody2D.gravityScale)
 # Bounce/slide come from the physics material, not code:
-material.bounce = 0.2                # restitution 0..1 (Unity: bounciness)
+material.bounce = 0.2                # restitution 0..1 (Unity: PhysicsMaterial.bounciness)
 material.friction = 0.8              # surface grip
+body.physics_material_override = material
 ```
 
 ### 4. Collision layers and masks (who collides with whom)
@@ -133,7 +137,18 @@ pickup.collision_mask  = LAYER_PLAYER                  # pickup only reacts to p
 - **One-directional layer setup**: A's mask includes B but B's mask excludes A.
   Detection/collision can need both sides; verify the full matrix.
 - **Huge `dt` spikes** (load hitches, breakpoints) blow up integration. Clamp the
-  max physics step / substep count so a stall doesn't launch everything.
+  max physics step / substep count so a stall doesn't launch everything (Godot
+  `physics/common/max_physics_steps_per_frame`, Unity *Maximum Allowed Timestep*).
+- **Teleports smear across the screen** with interpolation on: the renderer
+  blends from the old position. Godot: call `reset_physics_interpolation()`
+  *after* moving the node. Unity: move interpolated bodies through the
+  Rigidbody; a direct `transform` write is ignored unless followed by
+  `Physics.SyncTransforms()`.
+- **Feel changes after raising the physics rate**: Godot (GodotPhysics and Jolt
+  alike) damps by multiplying velocity by `1 - damp / ticks_per_second` each
+  tick, an approximation that drifts as `damp` approaches the tick rate (at
+  `damp >= ticks_per_second` the body stops in one tick). Small damping values
+  barely change; re-tune large ones after changing `physics_ticks_per_second`.
 
 ## References
 

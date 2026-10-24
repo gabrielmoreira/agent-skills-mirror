@@ -45,6 +45,7 @@ Run at least two clients where possible and capture server/client Output:
 | wrong type/shape, NaN/huge value | rejected without error or expensive work |
 | unknown or wrong-ancestry Instance | rejected; unrelated Instance unchanged |
 | burst and sustained spam | limiter rejects; server remains responsive; logs bounded |
+| two requests from one player while the handler yields | at most one mutation; cooldown claimed before the yield |
 | out of range / no permission / cooldown | authoritative state unchanged |
 | character dies or respawns mid-request | stale request rejected; new character works |
 | player leaves during pending work | no stale table entries or callback errors |
@@ -52,6 +53,10 @@ Run at least two clients where possible and capture server/client Output:
 | targeted server message | only intended client observes it |
 | broadcast | all connected clients observe once |
 | unreliable cosmetic load | losses/reordering do not corrupt gameplay state |
+
+Repeat the timing-sensitive cases (spam, simultaneous players, unreliable load, prediction) with
+added latency and packet loss. Studio's Network Simulator (Device Simulator toolbar) provides this for
+playtest connections; record the profile or settings used.
 
 Do not weaken production validation just to inject malformed calls. Use a Studio-only test harness
 or Command Bar fixture that calls the same pure validator/handler boundary, and remove it after the

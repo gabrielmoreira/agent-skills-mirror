@@ -5,9 +5,12 @@ Depth companion to `godot-csharp`.
 ## Project setup
 
 - Use the **Godot .NET** editor build (labeled ".NET"/"Mono").
-- Install the matching **.NET SDK** (Godot 4.7 targets **.NET 8**).
-- The first C# script creates `<Project>.csproj` and `<Project>.sln`. The `.csproj` sets
-  `<TargetFramework>net8.0</TargetFramework>` and references `GodotSharp`.
+- Install a **.NET SDK**: Godot 4.7 needs **.NET 8** or later, and **.NET 9** or later to
+  export to Android.
+- The first C# script creates `<Project>.csproj` and `<Project>.sln`. The `.csproj` uses
+  `<Project Sdk="Godot.NET.Sdk/4.7.x">` (which brings in the GodotSharp API), sets
+  `<TargetFramework>net8.0</TargetFramework>`, and adds a second `net9.0` value that applies
+  only when `GodotTargetPlatform` is `android`. Keep that condition when editing the file.
 - Build via the editor (it builds on play) or `dotnet build`. Editor Settings let you pick
   an external editor (VS, VS Code, Rider).
 - Add NuGet packages by editing the `.csproj` `<ItemGroup>` and rebuilding.
@@ -101,7 +104,9 @@ GDScript via `Call`/`Get`/`Set` and connects with `Callable.From(method)` or
 
 ## Build/export notes
 
-- Release exports compile C# ahead-of-time per target. Some platforms (web, mobile) have
-  extra .NET export requirements/steps — check the current .NET export docs for your
-  target before shipping.
+- Supported export targets: Windows, Linux, macOS, plus Android and iOS (both
+  experimental). Desktop exports ship the .NET runtime with the game; Android uses the
+  Mono runtime; iOS is compiled with NativeAOT and must be exported from a Mac.
+- **Web is not supported** for C# projects in Godot 4 — the export fails. Use GDScript
+  for a web build.
 - Keep generated `obj/`, `bin/`, and `.godot/` out of version control (`.gitignore`).

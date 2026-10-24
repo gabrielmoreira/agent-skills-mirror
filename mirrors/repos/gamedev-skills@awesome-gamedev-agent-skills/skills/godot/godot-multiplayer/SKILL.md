@@ -35,7 +35,7 @@ work (low-level `PacketPeer`); HTTP requests. For save/persistence → `save-sys
    `rpc_id(peer_id)` (one peer). Inside, `multiplayer.get_remote_sender_id()` tells you who
    sent it.
 4. **Keep RPC signatures identical** on every peer that runs the script — Godot checksums
-   all `@rpc` methods in a script; mismatches break silently.
+   all `@rpc` methods in a script; a mismatch prints errors that can name an unrelated RPC.
 5. **Assign authority** per node with `set_multiplayer_authority(id)`; gate input/RPCs by
    `is_multiplayer_authority()`.
 6. **Replicate state** with `MultiplayerSpawner` (auto-instances scenes on clients) and
@@ -70,6 +70,10 @@ func leave() -> void:
 
 ### 2. RPCs: client sends input to the server (any_peer, call_local)
 
+This script sits on a player avatar whose authority is the owning client (Pattern 3), so
+the server is *not* the node's authority. A server→clients RPC on such a node must be
+`"any_peer"` and check that the sender is the server.
+
 ```gdscript
 func _unhandled_input(event: InputEvent) -> void:
     if event.is_action_pressed("fire") and is_multiplayer_authority():
@@ -78,13 +82,19 @@ func _unhandled_input(event: InputEvent) -> void:
 # Clients may call this; it runs on the server (and locally if server is a player).
 @rpc("any_peer", "call_local", "reliable")
 func request_fire() -> void:
+    if not multiplayer.is_server():     # ignore copies relayed to other clients
+        return
     var sender := multiplayer.get_remote_sender_id()
     if not _can_fire(sender):           # server-side validation
         return
     spawn_projectile.rpc(sender)        # tell everyone to spawn it
 
-@rpc("authority", "call_local", "reliable")
+# "authority" here would make clients reject the server's call (the client is the
+# authority), so accept any peer and keep only calls that come from the server.
+@rpc("any_peer", "call_local", "reliable")
 func spawn_projectile(owner_id: int) -> void:
+    if multiplayer.get_remote_sender_id() != 1:
+        return
     _do_spawn(owner_id)
 ```
 
@@ -113,7 +123,9 @@ func _physics_process(delta: float) -> void:
 @onready var sync: MultiplayerSynchronizer = $MultiplayerSynchronizer
 
 func _ready() -> void:
-    # Only replicate this node to a specific peer (e.g. private info).
+    # Only replicate this node to a specific peer (e.g. private info). Per-peer visibility
+    # matters only once public_visibility is off; by default every peer receives it.
+    sync.public_visibility = false
     sync.set_visibility_for(target_peer_id, true)
 ```
 
@@ -125,6 +137,10 @@ func _ready() -> void:
   the set of RPCs and their annotations are.
 - **Default `@rpc` is `"authority"`.** Clients calling it are ignored unless you set
   `"any_peer"`. Use `"call_local"` so the host (also a player) runs it too.
+- **`RPC 'x' is not allowed on node ... from: 1. Mode is "authority"`** → the server called
+  an `"authority"` RPC on a node a client owns. "Authority" means the node's authority, not
+  the server. Use `"any_peer"` plus a `get_remote_sender_id() == 1` check, or move
+  server-driven RPCs to a server-owned node (e.g. a game manager).
 - **NodePaths must match across peers.** RPC routing uses the node's path/name; spawn nodes
   with identical names on all peers (use `MultiplayerSpawner` or `add_child(node, true)` for
   readable, deterministic names).

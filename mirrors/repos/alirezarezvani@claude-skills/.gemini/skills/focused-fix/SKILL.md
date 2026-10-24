@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/focused-fix/../../../engineering/skills/focused-fix/SKILL.md

@@ -24,7 +24,8 @@ the **Godot .NET build** + the .NET SDK installed; the standard build can't run 
 
 ## Core workflow
 
-1. **Use the Godot .NET editor build** and install the matching .NET 8 SDK. Creating the first C#
+1. **Use the Godot .NET editor build** and install a .NET SDK: 8 or later, and 9 or later if
+   you export to Android. Creating the first C#
    script generates a `.csproj`/`.sln`. Build with the editor or `dotnet build`.
 2. **Every node script is a `partial` class** extending a Godot type (the source generator
    relies on `partial`). The file/class name should match the node script.
@@ -148,13 +149,14 @@ private void OnDied() => GD.Print("entity died");
 - **Value-type structs.** `Vector2`, `Color`, `Transform2D` are structs — mutate a local
   copy (`var v = Velocity; v.X = ...; Velocity = v;`); editing `Velocity.X` directly won't
   compile/persist.
-- **Needs the .NET build + SDK.** The non-.NET editor can't run C#; mismatched/missing
-  .NET SDK causes build failures. Godot 4.7 targets .NET 8; check current platform
-  export notes because Android and other AOT targets can require newer SDK tooling.
+- **Needs the .NET build + SDK.** The non-.NET editor can't run C#; a missing .NET SDK
+  causes build failures. Godot 4.7 projects target `net8.0`, but the generated `.csproj`
+  switches to `net9.0` for Android, so Android exports fail without the .NET 9 SDK.
 - **`QueueFree()` vs `Free()`** — same rules as GDScript; prefer `QueueFree()`. Disposed
   objects throw `ObjectDisposedException` if used after freeing.
-- **Export to some platforms differs for .NET** (e.g. extra steps for web/mobile); check
-  the .NET export notes for your target.
+- **C# projects cannot export to the web** in Godot 4 — keep web builds in GDScript.
+  Android and iOS exports are supported but experimental, and iOS can only be exported
+  from macOS.
 
 ## References
 

@@ -31,14 +31,17 @@ license snapshots outside a public repository when they contain personal or acco
 6. Preserve content credentials/provenance metadata where the file pipeline supports it. If
    optimization strips metadata, retain the corresponding manifest record.
 7. Review each store/platform's current disclosure rules before submission; rules change faster
-   than this skill.
+   than this skill. Steam's Content Survey has a required generative-AI section that separates
+   content made during development from content generated while the game runs. Record which
+   assets were generated so that section can be answered from the manifest, not from memory.
 
 ## Useful primary references
 
 - [Creative Commons license chooser](https://creativecommons.org/chooser/)
 - [SPDX license list](https://spdx.org/licenses/)
+- [C2PA (Content Credentials) specifications](https://spec.c2pa.org/specifications/)
 - [OpenAI content provenance](https://openai.com/index/advancing-content-provenance/)
-- [Steamworks documentation](https://partner.steamgames.com/doc/home)
+- [Steamworks Content Survey, including the generative AI section](https://partner.steamgames.com/doc/gettingstarted/contentsurvey)
 
 When terms are unclear or the release is commercially important, flag the ambiguity for a human
 rights review rather than guessing.

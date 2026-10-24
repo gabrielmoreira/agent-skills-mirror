@@ -26,6 +26,18 @@ fall_gravity = g * fall_multiplier   # 1.5–2.0 feels good
 
 If you instead know the jump velocity and want the height: `h = v0² / (2g)`.
 
+These formulas describe continuous motion. A game integrates in steps, and the usual
+"add gravity to velocity, then add velocity to position" update peaks short by about
+`v0 · dt / 2`: with a 56 px jump and a 0.35 s apex that is ~2.7 px at 60 Hz and ~5 px at 30 Hz.
+Fixed-tick physics keeps the error the same on every machine (tune by eye and accept it). To hit
+the designed height exactly, apply half the gravity before the move and half after:
+
+```python
+velocity.y += 0.5 * g * dt
+position.y += velocity.y * dt       # or move_and_slide() / CharacterController.Move here
+velocity.y += 0.5 * g * dt
+```
+
 ## 2. Full feel knob reference
 
 | Knob | What it changes | Typical range | Notes |
@@ -60,23 +72,36 @@ When a rising jump clips a corner by a pixel or two, players read it as the game
 "sticky". Nudge them past it instead of stopping the jump dead:
 
 ```python
-# On hitting a ceiling while rising, if only the outer 1–4 px are blocked,
-# shift the body sideways into the free space and keep the upward velocity.
+# On hitting a ceiling while rising, if only the outer 1–4 px are blocked, shift the body
+# sideways into the free space and keep the upward velocity. Test both directions, at the
+# position the body is trying to move to this step.
 if blocked_overhead and velocity.y < 0:
-    for offset in (1, 2, 3, 4):            # check small horizontal nudges
-        if free_at(position + sideways * offset):
-            position += sideways * offset
-            break                          # keep rising; don't zero velocity.y
+    target = position + Vector2(0, velocity.y * dt)
+    for offset in (1, 2, 3, 4):                        # smallest nudge first
+        for side in (-1, +1):
+            if free_at(target + Vector2(side * offset, 0)):
+                position.x += side * offset
+                break                                  # keep rising; don't zero velocity.y
+        else:
+            continue
+        break
 ```
+
+Only nudge when the blocked part is a corner, never when the player is under a solid ceiling
+more than a few pixels wide; the 4 px cap is what enforces that.
 
 The same idea on landing edges (a few px of "ledge grab"/snap) makes platforms feel generous.
 
 ## 5. One-way platforms and drop-through
 
 - Mark the platform's collision as one-directional (solid only when the player is above and
-  moving down). Engines expose this directly — do not hand-roll it.
+  moving down). Engines expose this directly — do not hand-roll it (Godot
+  `CollisionShape2D.one_way_collision`, Unity `PlatformEffector2D` **Use One Way**, Phaser Arcade
+  `body.checkCollision.down = false` on the platform).
 - **Drop-through:** when the player holds Down + Jump on a one-way platform, disable that
   collision for ~0.1–0.2 s (or until the player's top passes below the platform), then re-enable.
+  In Godot, clear the platform's layer from the player's `collision_mask` for that window rather
+  than disabling the shape, so other bodies still land on it.
 
 ## 6. Moving platforms
 
@@ -84,6 +109,14 @@ The same idea on landing edges (a few px of "ledge grab"/snap) makes platforms f
   on it, so they ride it instead of sliding off.
 - Apply the platform's velocity to the player on jump-off so leaps from a moving platform feel
   physical. Cap the inherited horizontal velocity so it can't fling the player uncontrollably.
+- **Check what the engine already does before adding either.** Godot 4.7 `CharacterBody2D`
+  follows floor bodies on `platform_floor_layers` during `move_and_slide()` and, by default,
+  adds the platform's velocity when you leave it (`platform_on_leave =
+  PLATFORM_ON_LEAVE_ADD_VELOCITY`; `ADD_UPWARD_VELOCITY` drops the downward part, `DO_NOTHING`
+  turns it off). Move the platform as an `AnimatableBody2D` so it reports a velocity. Phaser
+  Arcade carries a rider horizontally when the platform is an immovable *dynamic* body that is
+  moving (`body.friction`, default `(1, 0)`); a static body does not. Unity's
+  `CharacterController` does not carry riders; add the delta yourself.
 
 ## 7. Camera follow
 

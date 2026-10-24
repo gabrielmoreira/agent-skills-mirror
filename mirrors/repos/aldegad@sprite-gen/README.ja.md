@@ -54,7 +54,7 @@ flowchart LR
     end
     subgraph D["D · ポストプロセス"]
         direction LR
-        d1[recolor] ~~~ d2[compose-layers] ~~~ d3[export-*]
+        d1[recolor] ~~~ d2[export-*]
     end
     subgraph E["E · アセットツール (独立)"]
         e1[background-tile] ~~~ e2[shadow] ~~~ e3[inspect-motion]
@@ -70,7 +70,7 @@ flowchart LR
 | **A · アトラス行** | 一枚の静止画 + ステート一覧 → `sprite-sheet-alpha.png` + `manifest.json.frame_layout`、アイドルポーズには **Breathe** を焼き込み | [run-contract](docs/run-contract.md) · [breathing](docs/breathing.md) |
 | **B · 動画 → ループ** | 一枚の静止画 → ステートごとに、Grok Imagine がアニメートし実周期でカットされたシームレスな透過 GIF / WebP / ストリップ | [video-pipeline](docs/video-pipeline.md) · [video](docs/video.md) |
 | **C · ユーティリティ** | 取り込んだ画像やグリッドシート → きれいな透過カット。完成したアトラス → キュレーション可能な run | [sheet-slicing](docs/sheet-slicing.md) · [curation](docs/curation.md) |
-| **D · ポストプロセス** | 完成したシート → 決定論的カラーウェイ、リグレイヤー合成、Aseprite / Phaser / Flame エクスポート | [recolor](docs/recolor.md) · [layer-tracks](docs/layer-tracks.md) · [engine-export](docs/engine-export.md) |
+| **D · ポストプロセス** | 完成したシート → 決定論的カラーウェイ、Aseprite / Phaser / Flame エクスポート | [recolor](docs/recolor.md) · [engine-export](docs/engine-export.md) |
 | **E · アセットツール** | 独立した PNG やアニメーション → 繰り返しタイル、投影された影、モーション／接地の計測 | [asset-tools](docs/asset-tools.md) |
 | **S · シーン** | 既存アセット + 配置・カメラ・ライティング → PNG フレーム、MP4/GIF、検査と配置のメタデータ | [scene](docs/scene.md) |
 
@@ -131,7 +131,6 @@ sprite-gen unpack-atlas --atlas sheet.png             # 完成したアトラス
 ```bash
 sprite-gen recolor-palette --base <run>/sprite-sheet-alpha.png --out palette.draft.json
 sprite-gen recolor --run-dir <run> --spec recolor.spec.json      # → <run>/variants/
-sprite-gen compose-layers --run-dir <run>                        # リグ run: 宣言されたスタック → <run>/layers/
 sprite-gen export-aseprite --run-dir <run>                       # Phaser / Flame 向け Aseprite JSON
 ```
 

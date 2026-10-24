@@ -34,6 +34,11 @@ The same CLI commands locate a PCK at the beginning of a file or through its
 payloads or discover packs behind additional trailing signatures. The root
 content SHA-256 covers the whole carrier; its content classification remains
 native, while the inventory records the PCK role and exact pack bounds.
+An EOF marker is only a candidate: an invalid size or a pointed-to location
+without a `GDPC` header leaves native classification in place. Once the
+trailer points to a pack header, malformed or unsupported PCK content remains
+an error. This recognition boundary follows the Godot loader at pinned source
+revision [06d1e7a](https://github.com/godotengine/godot/blob/06d1e7a34ccde4029eed53d018cfde77dfe771d5/core/io/file_access_pack.cpp#L2099-L2146).
 Ordinary native `open_binary` detection remains unchanged.
 
 ## MCP and selected facts

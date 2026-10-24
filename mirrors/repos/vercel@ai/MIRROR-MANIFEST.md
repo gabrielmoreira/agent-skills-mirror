@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `vercel/ai` — 26 default patterns, 1 followed patterns, 35 file(s) materialized.
+Mirror of `vercel/ai` — 26 default patterns, 1 followed patterns, 36 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `vercel/ai` — 26 default patterns, 1 followed patterns, 35 file(s) m
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 35 |
+| Files         | 36 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -86,14 +86,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 25 | ✓ | [`skills/adr-skill/SKILL.md`](skills/adr-skill/SKILL.md) |
 | 26 | ✓ | [`skills/capture-api-response-test-fixture/SKILL.md`](skills/capture-api-response-test-fixture/SKILL.md) |
 | 27 | ✓ | [`skills/develop-ai-functions-example/SKILL.md`](skills/develop-ai-functions-example/SKILL.md) |
-| 28 | ✓ | [`skills/list-npm-package-content/scripts/list-package-files.sh`](skills/list-npm-package-content/scripts/list-package-files.sh) |
-| 29 | ✓ | [`skills/list-npm-package-content/SKILL.md`](skills/list-npm-package-content/SKILL.md) |
-| 30 | ✓ | [`skills/major-version-mode/SKILL.md`](skills/major-version-mode/SKILL.md) |
-| 31 | ✓ | [`skills/migrate-ai-sdk-v6-to-v7/SKILL.md`](skills/migrate-ai-sdk-v6-to-v7/SKILL.md) |
-| 32 | ✓ | [`skills/update-harness-dependencies/SKILL.md`](skills/update-harness-dependencies/SKILL.md) |
-| 33 | ✓ | [`skills/update-provider-models/SKILL.md`](skills/update-provider-models/SKILL.md) |
-| 34 | ✓ | [`skills/use-ai-sdk/SKILL.md`](skills/use-ai-sdk/SKILL.md) |
-| 35 | → | [`contributing/secure-url-handling.md`](contributing/secure-url-handling.md) |
+| 28 | ✓ | [`skills/edit-package-readme/SKILL.md`](skills/edit-package-readme/SKILL.md) |
+| 29 | ✓ | [`skills/list-npm-package-content/scripts/list-package-files.sh`](skills/list-npm-package-content/scripts/list-package-files.sh) |
+| 30 | ✓ | [`skills/list-npm-package-content/SKILL.md`](skills/list-npm-package-content/SKILL.md) |
+| 31 | ✓ | [`skills/major-version-mode/SKILL.md`](skills/major-version-mode/SKILL.md) |
+| 32 | ✓ | [`skills/migrate-ai-sdk-v6-to-v7/SKILL.md`](skills/migrate-ai-sdk-v6-to-v7/SKILL.md) |
+| 33 | ✓ | [`skills/update-harness-dependencies/SKILL.md`](skills/update-harness-dependencies/SKILL.md) |
+| 34 | ✓ | [`skills/update-provider-models/SKILL.md`](skills/update-provider-models/SKILL.md) |
+| 35 | ✓ | [`skills/use-ai-sdk/SKILL.md`](skills/use-ai-sdk/SKILL.md) |
+| 36 | → | [`contributing/secure-url-handling.md`](contributing/secure-url-handling.md) |
 
 ---
 

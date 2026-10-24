@@ -13,6 +13,8 @@ author's primary monitor. This reference targets Roblox's rolling platform APIs.
    layouts instead of manually positioning each child.
 4. Use offsets for bounded component dimensions and spacing; use scale for proportional placement
    and flexible region size. Inspect `AbsoluteSize`, not device names, for layout breakpoints.
+   In a styled project, a `StyleQuery` (`MinSize`/`MaxSize`/`AspectRatioRange`, or
+   `PreferredInput`) can switch `@`-selector rules at a breakpoint without a resize script.
 
 ## Roblox layout primitives
 
@@ -111,4 +113,5 @@ fixture unchanged.
 - `https://create.roblox.com/docs/ui/position-and-size`
 - `https://create.roblox.com/docs/ui/size-modifiers`
 - `https://create.roblox.com/docs/ui/list-flex-layouts`
+- `https://create.roblox.com/docs/ui/styling`
 - `https://create.roblox.com/docs/production/publishing/adaptive-design`

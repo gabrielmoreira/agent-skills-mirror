@@ -49,10 +49,12 @@ def evaluate(expr, vars):
     def ev(node):
         if isinstance(node, ast.Expression):  return ev(node.body)
         if isinstance(node, ast.Constant):    return node.value
-        if isinstance(node, ast.Name):        return vars.get(node.id)
+        if isinstance(node, ast.Name):        return vars[node.id]  # KeyError names a typo
         if isinstance(node, ast.BoolOp):      return _BOOL[type(node.op)](ev(v) for v in node.values)
         if isinstance(node, ast.UnaryOp) and isinstance(node.op, ast.Not):
             return not ev(node.operand)
+        if isinstance(node, ast.UnaryOp) and isinstance(node.op, ast.USub):
+            return -ev(node.operand)              # negative literals: "rep > -5"
         if isinstance(node, ast.BinOp):       return _BIN[type(node.op)](ev(node.left), ev(node.right))
         if isinstance(node, ast.Compare):
             left = ev(node.left); res = True
@@ -64,8 +66,12 @@ def evaluate(expr, vars):
 ```
 
 This whitelists only names, literals, arithmetic, comparison, and boolean ops —
-it cannot call functions or touch the host environment. (Engines without a safe
-parser should ship a hand-written tokenizer instead of exposing a real `eval`.)
+it cannot call functions or touch the host environment. The syntax is Python's, so
+booleans are `True`/`False`, logic is `and`/`or`/`not`, and a string literal needs
+inner quotes (`"mood == 'angry'"`). An unknown name raises `KeyError` instead of
+quietly comparing `None`, which would itself raise `TypeError` on `<`/`>`. (Engines
+without a safe parser should ship a hand-written tokenizer instead of exposing a real
+`eval`.)
 
 ## The runner state machine
 

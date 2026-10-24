@@ -276,6 +276,7 @@ Notification center history uses the live desktop `notificationStore` over a req
 | Feedback: Submit now (early exit)                                        | `feedback submit` (the caller supplies whatever fields it has)                                   |
 | Create Debug Package (support package)                                   | `support-package -o <dir> [--no-logs ...]`                                                       |
 | Start / End Performance Profiling                                        | `profiling start`, `profiling status`, `profiling stop -o <zip>`                                 |
+| LIVE panel: web interface on/off, Cloudflare tunnel on/off, URLs         | `live on [--tunnel]`, `live off`, `live tunnel on\|off`; read: `live status`                     |
 | Cue dashboard: subscription on/off switch                                | `cue enable <sub>`, `cue disable <sub>` (any event type)                                         |
 | Cue dashboard: activity log                                              | `cue activity [-a <agent>] [-n <limit>]`                                                         |
 | Auto Run panel: progress                                                 | `auto-run-status -a <agent>`                                                                     |
@@ -302,56 +303,55 @@ a design constraint; they are simply not built yet.
 3. **Duplicate an agent.** The context menu's "Duplicate..." opens a modal with
    options (what to copy). `create-agent` can approximate it, but there is no
    one-shot duplicate.
-4. **Toggle Live mode** (`isLive`) for the web interface.
-5. **Collapse / expand a group**, and reorder agents in the Left Bar. Pure
+4. **Collapse / expand a group**, and reorder agents in the Left Bar. Pure
    presentation; low value for automation, which is why they are last.
-6. **Git actions** (View Git Log / Diff, Pull, Push, Change Branch, Create PR).
+5. **Git actions** (View Git Log / Diff, Pull, Push, Change Branch, Create PR).
    Deliberately not mirrored: these open modals over `useGitAgentActions`, and an
    agent already has `git` and `gh` in its shell, which is strictly more capable.
    Only the modal-opening is unavailable, not the capability.
-7. **Wizard and interactive pickers** (New Agent Wizard, Fuzzy File Search,
+6. **Wizard and interactive pickers** (New Agent Wizard, Fuzzy File Search,
    Tab Switcher, Search: Messages). These are interactive by definition; the
    underlying data is reachable through `list`, `session show`, and
    `director-notes history`.
-8. **Auto Run state in a CLI-built support package.** The desktop's Create
+7. **Auto Run state in a CLI-built support package.** The desktop's Create
    Debug Package hands main a snapshot of the renderer's in-memory batch store
    (`captureAutoRunSnapshots()`). `support-package` and
    `feedback submit --support-package` are built in main with no renderer round
    trip, so that section reads "unavailable". The Feedback modal's own support
    package checkbox has the same gap today. Closing it needs a main-to-renderer
    request with a response channel.
-9. **Context: Compact, Merge Into, Send to Agent.** The WS messages
+8. **Context: Compact, Merge Into, Send to Agent.** The WS messages
    (`summarize_context`, `merge_context`, `transfer_context`) and the preload
    listeners exist, but NO renderer code subscribes to
    `onRemoteSummarizeContext` / `onRemoteMergeContext` /
    `onRemoteTransferContext`, so every call times out. Closing it means wiring
    those listeners to the same hooks the tab overlay menu uses, then adding
    `tab compact / merge / transfer`. Do not wrap the dead messages.
-10. **Interrupt, precisely.** Beyond "no CLI verb": the only backend (REST
-    `POST /api/session/:id/interrupt` -> `remote:interrupt`) signals the
-    legacy `${sessionId}-ai` process id, which misses per-tab processes
-    (`${sessionId}-ai-${tabId}`). Fix the renderer handler to take a tab id,
-    then add `interrupt <agent> [--tab]`.
-11. **Expand a diagram or image to the pan/zoom viewer.** The viewer opens on
+9. **Interrupt, precisely.** Beyond "no CLI verb": the only backend (REST
+   `POST /api/session/:id/interrupt` -> `remote:interrupt`) signals the
+   legacy `${sessionId}-ai` process id, which misses per-tab processes
+   (`${sessionId}-ai-${tabId}`). Fix the renderer handler to take a tab id,
+   then add `interrupt <agent> [--tab]`.
+10. **Expand a diagram or image to the pan/zoom viewer.** The viewer opens on
     an element already rendered in a transcript or document
     (`openZoomViewer(element)`), and a transcript element has no address the
     CLI can name. The capability is still reachable: `open-file <image>` opens
     the file preview's `ImageViewer`, which shares the same `usePanZoom`, and
     an agent can write a diagram to a `.mmd` file and `open-file` it. Pure
     viewing; there is no result for an agent to read back.
-12. **Drag-resized pane sizes kept in renderer localStorage** (the Auto Run
+11. **Drag-resized pane sizes kept in renderer localStorage** (the Auto Run
     document dropdown's height via `useResizableDropdownHeight`, the Document
     Graph preview width via `usePersistedPanelWidth`). Pure view preferences
     with nothing for an agent to act on; the values never reach main, so a
     verb needs a renderer round trip. Double-click on the grip resets them.
-13. **Log in to a provider account** (Usage Dashboard quota row "Log in",
+12. **Log in to a provider account** (Usage Dashboard quota row "Log in",
     palette "Reauthenticate Provider"). The login is an interactive OAuth or
     device-code flow in a PTY, so there is nothing a non-interactive verb could
     complete. The capability is reachable from an agent's shell as
     `CODEX_HOME=<dir> codex login` / `CLAUDE_CONFIG_DIR=<dir> claude` then
     `/login`. There is no CLI read of the quota snapshots yet, so verifying the
     login from the CLI is part of this gap.
-14. **Pipeline Graph view selection** (the selector's pipeline / agent / All
+13. **Pipeline Graph view selection** (the selector's pipeline / agent / All
     Pipelines choice, and the dashboard's "View in Graph"). `open cue --tab
 pipeline` reaches the graph but cannot name what it shows. Pure view state
     on a read-only canvas, with nothing for an agent to read back; the data it
@@ -385,7 +385,7 @@ still missing. Grouped, highest value first:
   logs (`logs`), reset stuck busy state, restart agent, retry, re-auth.
 - **SSH remotes:** test, edit, enable/disable, set default.
 - **Prompts:** edit or reset a Maestro prompt (`prompts set/reset`).
-- **Web access:** dashboard URL, QR pairing, persistent token, tunnel.
+- **Web access:** QR pairing, persistent token (`live on/off/status` and the tunnel are covered).
 - **Updates:** check/download/install.
 - **Exports:** tab as HTML, Usage Dashboard CSV, plan usage.
 - **Media player:** play/pause/next/prev/seek/volume, queue management.

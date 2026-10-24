@@ -113,11 +113,13 @@ you declare which per-particle fields change at runtime via `dynamicProperties` 
 only those are re-uploaded each frame:
 
 ```js
-import { ParticleContainer, Particle } from 'pixi.js';
+import { ParticleContainer, Particle, Rectangle } from 'pixi.js';
 
 const container = new ParticleContainer({
   // Static fields are uploaded once; mark only what actually changes as dynamic.
   dynamicProperties: { position: true, rotation: true, color: false },
+  // It does not measure its particles: give it bounds by hand (see below).
+  boundsArea: new Rectangle(0, 0, app.screen.width, app.screen.height),
 });
 app.stage.addChild(container);
 
@@ -129,6 +131,12 @@ container.addParticle(p);   // NOT container.addChild(new Sprite(...))
 Particles are lightweight records, not full display objects: no children, no
 per-particle events, no filters. Keep every particle on one shared texture (an
 atlas frame) so the batch never breaks.
+
+A `ParticleContainer` reports empty bounds (0, 0, 0, 0) to save work. Without a
+`boundsArea`, `getBounds()` is empty and the container vanishes once it is
+`cullable`; set `boundsArea` to the region the particles cover. Its own hit test
+also reads those empty bounds, so to make the container clickable give it a
+`hitArea` (for example the same `Rectangle`).
 
 ## Filters
 

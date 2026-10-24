@@ -13,9 +13,10 @@ Author and script tile-based 2D levels in Unity 6.3 LTS with the `Grid`/`Tilemap
 Palette, colliders, and runtime painting. Targets **Unity 6.3 LTS (6000.3)**.
 
 > **Package note:** the core Tilemap (`Grid`, `Tilemap`, `Tile`, `TilemapCollider2D`) is
-> built in. **Rule Tiles, Animated Tiles, and Tile Palette brushes live in the separate
-> "2D Tilemap Extras" package (`com.unity.2d.tilemap.extras`)** — install it via Package
-> Manager before using `RuleTile`.
+> built in, and so is the Tile Palette with its default brush. **Rule Tiles, Animated Tiles,
+> and the extra brushes (Random, Line, GameObject, Group) live in the separate "2D Tilemap
+> Extras" package (`com.unity.2d.tilemap.extras`, 6.0.x for Unity 6.3)** — install it via
+> Package Manager before using `RuleTile`.
 
 ## When to use
 
@@ -37,7 +38,7 @@ moves over the tiles → `platformer` / `unity-physics`.
    create `Tile` assets, then paint with the brush tools.
 3. **Add collision** to the solid layer: `TilemapCollider2D`. For one merged collider (far
    cheaper and gap-free), also add `CompositeCollider2D` (+ a `Rigidbody2D` set to **Static**)
-   and enable _Used By Composite_ on the tilemap collider.
+   and set the tilemap collider's **Composite Operation** to **Merge**.
 4. **Auto-tile with Rule Tiles** (2D Tilemap Extras) so edges/corners pick the right sprite
    automatically instead of hand-placing every variant.
 5. **Edit at runtime via script** with cell coordinates (`Vector3Int`): `SetTile`, `GetTile`,
@@ -96,7 +97,13 @@ tilemap.RefreshTile(cell);     // re-evaluate just this cell's rule/animated nei
 - **`RuleTile` type not found** — it's not built in. Install the **2D Tilemap Extras** package
   (`com.unity.2d.tilemap.extras`) via Package Manager.
 - **A collider per tile tanks performance / leaves seams** — add a `CompositeCollider2D` with a
-  static `Rigidbody2D` and _Used By Composite_ to merge the whole layer into one smooth shape.
+  static `Rigidbody2D` and set Composite Operation to **Merge** to merge the whole layer into
+  one smooth shape.
+- **No "Used By Composite" checkbox, or an obsolete warning on `usedByComposite`** — Unity 6
+  replaced it with **Composite Operation** (`Collider2D.compositeOperation`). Old
+  `usedByComposite = true` maps to `CompositeOperation.Merge`; write that instead.
+- **Small gaps remain between merged tiles** — raise the Tilemap Collider 2D's **Extrusion
+  Factor** so neighbouring tile shapes fall within the Composite Collider 2D's Vertex Distance.
 - **Confusing world and cell coordinates** — `SetTile`/`GetTile` take a `Vector3Int` _cell_,
   not a world position. Always convert with `WorldToCell` / `CellToWorld`.
 - **Tiles render behind/in front of sprites unexpectedly** — set each `TilemapRenderer`'s
@@ -111,7 +118,8 @@ tilemap.RefreshTile(cell);     // re-evaluate just this cell's rule/animated nei
 
 - Primary docs: Unity Manual "Tilemaps"
   (`https://docs.unity3d.com/Manual/tilemaps/work-with-tilemaps/tilemap-reference.html`),
-  `ScriptReference/Tilemaps.Tilemap`, and the 2D Tilemap Extras package manual
+  `ScriptReference/Tilemaps.Tilemap`, `ScriptReference/Collider2D-compositeOperation`, the
+  Manual "Tilemap Collider 2D component reference", and the 2D Tilemap Extras package manual
   (`https://docs.unity3d.com/Packages/com.unity.2d.tilemap.extras@6.0/manual/index.html`) for
   Rule Tiles. (`@6.0` is the version that ships with Unity 6.3 LTS; the old `@1.6` docs are
   for Unity 2021-era projects.)

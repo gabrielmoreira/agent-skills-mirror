@@ -25,13 +25,24 @@ at long range without falloff.
 origin    = camera.world_position
 direction = camera.forward
 direction = apply_spread(direction, current_spread)     # see §4
-hit = raycast(origin, direction, max_dist=RANGE, mask=SHOOTABLE)
+hit = raycast(origin, direction, max_dist=RANGE, mask=SHOOTABLE, exclude=[shooter])
 if hit:
     dmg = base_damage * falloff(hit.distance)           # see §3
     if hit.is_head: dmg *= HEADSHOT_MULT                # e.g. 2.0
     hit.actor.take_damage(dmg)
     spawn_impact_fx(hit.point, hit.normal)              # decal + particles = feedback
 ```
+
+Engine query details that silently drop hits (check these before tuning anything):
+
+| | Godot 4.7 (`PhysicsRayQueryParameters3D`) | Unity 6.3 (`Physics.Raycast`) |
+|---|---|---|
+| Skip the shooter | `exclude = [shooter.get_rid()]` or a `collision_mask` without the player layer | a `layerMask` without the player layer |
+| Trigger / area volumes | `Area3D` is ignored unless `collide_with_areas = true` (hitboxes built from areas need it) | triggers **are** hit while the project's *Queries Hit Triggers* setting is on (the default), so pickup and zone triggers stop bullets; pass `QueryTriggerInteraction.Ignore` per shot, or `Collide` if your hitboxes are triggers |
+| Ray starting inside a collider | not reported unless `hit_from_inside = true` | that collider is not hit |
+
+Third-person or muzzle-blocked shots: cast from the camera to find the aim point, then from the
+muzzle to that point, so cover directly in front of the gun still blocks the bullet.
 
 ## 3. Damage falloff (range limiting for hitscan)
 
@@ -52,19 +63,24 @@ def falloff(d, near=20.0, far=60.0, min_mult=0.4):
   pure random recoil feels bad. Recover toward the original aim over time.
 
 ```python
-# Spread: random offset within a cone whose half-angle = current_spread.
+# Spread: a random direction inside a cone whose half-angle = spread_rad.
+# Picking yaw and pitch independently fills a square, not a cone (corners reach 1.41x spread).
 def apply_spread(dir, spread_rad):
-    yaw   = rng.range(-spread_rad, spread_rad)
-    pitch = rng.range(-spread_rad, spread_rad)
-    return rotate(dir, yaw, pitch)
+    r     = spread_rad * sqrt(rng.float01())   # sqrt -> hits uniform over the disc
+    theta = rng.float01() * TAU                # drop the sqrt for a centre-weighted pattern
+    return rotate(dir, yaw=r * cos(theta), pitch=r * sin(theta))
 
-# On each shot: grow spread and kick the camera; recover every frame.
+# Keep recoil as an offset on top of the player's look, so recovery never fights the mouse.
 def on_fire():
-    camera.pitch -= recoil_pattern[shot_index % len(recoil_pattern)]   # learnable kick
+    recoil_offset += recoil_pattern[min(shot_index, len(recoil_pattern) - 1)]  # learnable kick
+    shot_index += 1
     current_spread = min(current_spread + SPREAD_PER_SHOT, MAX_SPREAD)
 def tick(dt):
     current_spread = max(BASE_SPREAD, current_spread - SPREAD_RECOVER * dt)
-    camera.pitch   = move_toward(camera.pitch, aim_pitch, RECOIL_RECOVER * dt)
+    recoil_offset  = move_toward(recoil_offset, 0.0, RECOIL_RECOVER * dt)
+    if time_since_last_shot > PATTERN_RESET: shot_index = 0     # pattern restarts per burst
+    # look_pitch comes only from mouse/stick input; positive = up here, check your engine's sign.
+    camera.pitch = clamp(look_pitch + recoil_offset, -MAX_PITCH, MAX_PITCH)   # e.g. ±89°
 ```
 
 ## 5. Time-to-kill (TTK) — the master balance lever

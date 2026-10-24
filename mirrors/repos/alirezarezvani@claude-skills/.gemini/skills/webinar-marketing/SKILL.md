@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/webinar-marketing/../../../marketing-skill/skills/webinar-marketing/SKILL.md

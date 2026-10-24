@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/deep-work/../../../productivity/deep-work/skills/deep-work/SKILL.md

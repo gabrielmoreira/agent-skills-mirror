@@ -1,0 +1,31 @@
+{
+	"skill_name": "fill-translations",
+	"evals": [
+		{
+			"id": 1,
+			"prompt": "Fill translations for Reactive Resume. The current task touches only a homepage heading. After extraction the full inventory has 12 missing web de-DE entries (9 in unrelated application UI), 8 web fr-FR entries, and 7 mobile de-DE entries (5 share web IDs); fr-FR mobile has 2 mobile-only gaps. An unrelated server source edit, nonempty French target edits, and an untracked web/locales/de-DE.js already exist. Describe the complete executable workflow, worker ownership/handoffs, verification commands, preservation strategy, and completion report. This is a dry run: do not modify the repository or launch translation workers.",
+			"expected_output": "All gaps included; disjoint file ownership; web then seed then mobile remainder; preserve initial dirty work/output; source sync and catalog-mode proof for both apps; placeholders and quality caveat.",
+			"assertions": [
+				"Includes gaps outside current homepage task.",
+				"Assigns disjoint files and seeds mobile after web completion before remaining mobile work.",
+				"Requires catalog-mode completeness and source sync for both apps.",
+				"Preserves nonempty translations and pre-existing untracked compiled output.",
+				"Checks runtime message structure and distinguishes technical proof from linguistic quality."
+			],
+			"files": []
+		},
+		{
+			"id": 2,
+			"prompt": "Ensure all Reactive Resume translations are complete. A previous agent reports compile --strict passes and default missing checks pass, but catalog-mode missing reports 3 active pl-PL web entries and 1 ar-SA mobile entry. Root extraction currently runs only web. zu-ZA is configured as pseudoLocale. One previously filled catalog no longer contains a newly added source message. Explain your actions and exact final command gates. This is a dry run: do not modify the repository or launch translation workers.",
+			"expected_output": "Reject fallback-based completion; extract/sync both; preserve pseudo config; fill all active gaps; repeat checks and derived artifacts; no false successful claims.",
+			"assertions": [
+				"Rejects strict compilation/default missing as proof when catalog-mode fails.",
+				"Extracts and verifies both apps including absent newly added source message.",
+				"Keeps zu-ZA as configured generated pseudo-locale.",
+				"Requires zero catalog-mode gaps and strict compile plus derived-artifact test.",
+				"Does not claim an unexecuted dry-run verification passed."
+			],
+			"files": []
+		}
+	]
+}

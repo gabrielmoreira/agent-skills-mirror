@@ -199,7 +199,7 @@ Change `provider`, `model`, and credentials; the agent shape stays the same.
 | OpenAI-compatible | Set `provider: 'openai'` + `baseURL` for Ollama, vLLM, LM Studio, OpenRouter, Groq, Mistral, Kimi, Qwen, or Zhipu |
 | AI SDK | Use `AISdkAdapter` with `ai` and your selected `@ai-sdk/*` provider (AI SDK 7 needs Node.js 22+) |
 
-Optional integrations load only when used: core directly installs only `@anthropic-ai/sdk`, `openai`, and `zod`; other SDKs are lazy-loading opt-in peers, and OpenTelemetry lives entirely in `@open-multi-agent/otel`. Dependency changes are weighed on demonstrated value plus security, size, maintenance, and compatibility cost, not a fixed count.
+Optional integrations load only when used: core directly installs only `@anthropic-ai/sdk` and `openai`; `zod` is a required peer that accepts Zod 3.25+ or Zod 4.6.6+; other SDKs are lazy-loading opt-in peers, and OpenTelemetry lives entirely in `@open-multi-agent/otel`. Dependency changes are weighed on demonstrated value plus security, size, maintenance, and compatibility cost, not a fixed count.
 
 Image generation and editing use a separate interface: `runImage()` tries an ordered chain of image models with per-model retries, fallback, output validation, and a record for every provider call, and ships native adapters for the OpenAI Images API, OpenRouter, Seedream on Volcengine Ark, and Black Forest Labs. See [image generation](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/image-generation.md).
 

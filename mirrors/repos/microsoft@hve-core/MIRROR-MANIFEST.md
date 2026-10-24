@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `microsoft/hve-core` — 26 default patterns, 4 followed patterns, 192 file(s) materialized.
+Mirror of `microsoft/hve-core` — 26 default patterns, 4 followed patterns, 194 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `microsoft/hve-core` — 26 default patterns, 4 followed patterns, 192
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 4 |
-| Files         | 192 |
+| Files         | 194 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -231,29 +231,31 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 167 | ✓ | [`.github/skills/security/supply-chain-security/SKILL.md`](.github/skills/security/supply-chain-security/SKILL.md) |
 | 168 | ✓ | [`.github/skills/security/vex/SECURITY.md`](.github/skills/security/vex/SECURITY.md) |
 | 169 | ✓ | [`.github/skills/security/vex/SKILL.md`](.github/skills/security/vex/SKILL.md) |
-| 170 | ✓ | [`.github/skills/shared/backlog-templates/SKILL.md`](.github/skills/shared/backlog-templates/SKILL.md) |
-| 171 | ✓ | [`.github/skills/shared/pr-reference/SKILL.md`](.github/skills/shared/pr-reference/SKILL.md) |
-| 172 | ✓ | [`.github/skills/shared/telemetry-foundations/SKILL.md`](.github/skills/shared/telemetry-foundations/SKILL.md) |
-| 173 | ✓ | [`docs/contributing/ai-artifacts-common.md`](docs/contributing/ai-artifacts-common.md) |
-| 174 | ✓ | [`docs/contributing/branch-protection.md`](docs/contributing/branch-protection.md) |
-| 175 | ✓ | [`docs/contributing/custom-agents.md`](docs/contributing/custom-agents.md) |
-| 176 | ✓ | [`docs/contributing/instructions.md`](docs/contributing/instructions.md) |
-| 177 | ✓ | [`docs/contributing/prompts.md`](docs/contributing/prompts.md) |
-| 178 | ✓ | [`docs/contributing/skills.md`](docs/contributing/skills.md) |
-| 179 | ✓ | [`docs/customization/custom-agents.md`](docs/customization/custom-agents.md) |
-| 180 | ✓ | [`docs/customization/instructions.md`](docs/customization/instructions.md) |
-| 181 | ✓ | [`docs/customization/prompts.md`](docs/customization/prompts.md) |
-| 182 | ✓ | [`docs/customization/skills.md`](docs/customization/skills.md) |
-| 183 | ✓ | [`docs/security/branch-protection.md`](docs/security/branch-protection.md) |
-| 184 | ✓ | [`docs/security/code-scanning-alert-lifecycle.md`](docs/security/code-scanning-alert-lifecycle.md) |
-| 185 | ✓ | [`docs/security/dangerous-workflow-detection.md`](docs/security/dangerous-workflow-detection.md) |
-| 186 | ✓ | [`docs/security/dependency-pinning.md`](docs/security/dependency-pinning.md) |
-| 187 | ✓ | [`docs/security/fuzzing.md`](docs/security/fuzzing.md) |
-| 188 | ✓ | [`docs/security/security-model.md`](docs/security/security-model.md) |
-| 189 | → | [`docs/security/README.md`](docs/security/README.md) |
-| 190 | → | [`docs/security/sbom-verification.md`](docs/security/sbom-verification.md) |
-| 191 | → | [`docs/security/vex-verification.md`](docs/security/vex-verification.md) |
-| 192 | → | [`SECURITY.md`](SECURITY.md) |
+| 170 | ✓ | [`.github/skills/session-log-canvas-update/SECURITY.md`](.github/skills/session-log-canvas-update/SECURITY.md) |
+| 171 | ✓ | [`.github/skills/session-log-canvas-update/SKILL.md`](.github/skills/session-log-canvas-update/SKILL.md) |
+| 172 | ✓ | [`.github/skills/shared/backlog-templates/SKILL.md`](.github/skills/shared/backlog-templates/SKILL.md) |
+| 173 | ✓ | [`.github/skills/shared/pr-reference/SKILL.md`](.github/skills/shared/pr-reference/SKILL.md) |
+| 174 | ✓ | [`.github/skills/shared/telemetry-foundations/SKILL.md`](.github/skills/shared/telemetry-foundations/SKILL.md) |
+| 175 | ✓ | [`docs/contributing/ai-artifacts-common.md`](docs/contributing/ai-artifacts-common.md) |
+| 176 | ✓ | [`docs/contributing/branch-protection.md`](docs/contributing/branch-protection.md) |
+| 177 | ✓ | [`docs/contributing/custom-agents.md`](docs/contributing/custom-agents.md) |
+| 178 | ✓ | [`docs/contributing/instructions.md`](docs/contributing/instructions.md) |
+| 179 | ✓ | [`docs/contributing/prompts.md`](docs/contributing/prompts.md) |
+| 180 | ✓ | [`docs/contributing/skills.md`](docs/contributing/skills.md) |
+| 181 | ✓ | [`docs/customization/custom-agents.md`](docs/customization/custom-agents.md) |
+| 182 | ✓ | [`docs/customization/instructions.md`](docs/customization/instructions.md) |
+| 183 | ✓ | [`docs/customization/prompts.md`](docs/customization/prompts.md) |
+| 184 | ✓ | [`docs/customization/skills.md`](docs/customization/skills.md) |
+| 185 | ✓ | [`docs/security/branch-protection.md`](docs/security/branch-protection.md) |
+| 186 | ✓ | [`docs/security/code-scanning-alert-lifecycle.md`](docs/security/code-scanning-alert-lifecycle.md) |
+| 187 | ✓ | [`docs/security/dangerous-workflow-detection.md`](docs/security/dangerous-workflow-detection.md) |
+| 188 | ✓ | [`docs/security/dependency-pinning.md`](docs/security/dependency-pinning.md) |
+| 189 | ✓ | [`docs/security/fuzzing.md`](docs/security/fuzzing.md) |
+| 190 | ✓ | [`docs/security/security-model.md`](docs/security/security-model.md) |
+| 191 | → | [`docs/security/README.md`](docs/security/README.md) |
+| 192 | → | [`docs/security/sbom-verification.md`](docs/security/sbom-verification.md) |
+| 193 | → | [`docs/security/vex-verification.md`](docs/security/vex-verification.md) |
+| 194 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

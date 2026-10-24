@@ -69,7 +69,7 @@ signal health_changed(current: int, maximum: int)   # typed signal params
 var health := 100
 
 func take_damage(amount: int) -> void:
-    health = max(health - amount, 0)
+    health = maxi(health - amount, 0)    # maxi/maxf are typed; max() returns Variant
     health_changed.emit(health, 100)     # 4.x: emit as a method on the signal
 
 func _ready() -> void:
@@ -116,6 +116,11 @@ func get_first_name(d: Dictionary) -> String:
   `_physics_process(delta)`; using `_process` makes motion frame-rate dependent.
 - **`class_name` must be unique** project-wide and is required to use the type name in
   other scripts or as an Inspector type.
+- **An override stops parsing after upgrading to 4.7** → since 4.7 an overriding method
+  inherits the parent's typed return, so every path must `return` a value (add
+  `return null` at the end if needed). Also new in 4.7: setting one element of a packed
+  array property (`points[0] = v`) no longer calls that property's setter; reassign the
+  whole array if the setter must run.
 
 ## References
 

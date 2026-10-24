@@ -68,3 +68,10 @@ All four preserve target-file bytes. `open_jeb_project` selects or creates an en
 - An unreachable endpoint is a provider-availability failure with recovery guidance; REA does not retry or spawn the engine.
 
 Real-engine verification lives in the JEB lane described in [testing.md](testing.md); mock transport tests do not establish real-engine compatibility.
+
+A project-open refusal retains the selected engine-host artifact path separately
+from the service endpoint. Discovery of an unreachable service includes the same
+start/configuration recovery as a direct request. If a primary reply completes
+before a later client-information lookup fails or is cancelled, the typed failure
+retains that reply as partial Evidence. Engine metadata stays unknown; this is not
+a claim that the full operation completed.

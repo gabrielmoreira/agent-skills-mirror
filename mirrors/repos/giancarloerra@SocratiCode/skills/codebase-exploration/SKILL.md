@@ -24,7 +24,8 @@ Hybrid semantic + keyword search (vector + BM25, RRF-fused) runs in a single cal
 - **Broad queries for orientation**: "how is authentication handled", "database connection setup", "error handling patterns"
 - **Precise queries for symbol lookup**: exact function names, constants, type names
 - Prefer search results to infer which files to read — do not speculatively open files
-- Use `fileFilter` to narrow to a specific file path, `languageFilter` for a specific language
+- Use `fileFilter` to narrow to one file, exactly as a result header shows its path; a directory, glob or bare name of a file below the root matches nothing
+- Use `languageFilter` to narrow to one language, exactly as a result header shows its label in brackets (e.g. `typescript`, not `ts`)
 - Adjust `minScore` (default 0.10) for precision vs recall — lower for more results, higher for stricter matching
 
 **When to use grep instead**: If you already know the exact identifier, error string, or regex pattern, grep/ripgrep is faster and more precise — no semantic gap to bridge. Use `codebase_search` when exploring, asking conceptual questions, or when you don't know which files to look in.

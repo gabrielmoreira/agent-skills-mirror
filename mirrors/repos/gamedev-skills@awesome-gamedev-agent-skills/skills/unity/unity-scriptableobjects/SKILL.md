@@ -75,7 +75,24 @@ public class FloatVariable : ScriptableObject
     [SerializeField] private float initialValue;
     [System.NonSerialized] public float runtimeValue;   // not saved to the asset
 
-    private void OnEnable() => runtimeValue = initialValue;  // reset each play session
+    private void OnEnable()
+    {
+        runtimeValue = initialValue;                    // reset when the asset loads
+#if UNITY_EDITOR
+        // With Reload Domain off, OnEnable does not run again on Play, so also reset there.
+        UnityEditor.EditorApplication.playModeStateChanged -= ResetOnPlay;
+        UnityEditor.EditorApplication.playModeStateChanged += ResetOnPlay;
+#endif
+    }
+
+#if UNITY_EDITOR
+    private void OnDisable() => UnityEditor.EditorApplication.playModeStateChanged -= ResetOnPlay;
+
+    private void ResetOnPlay(UnityEditor.PlayModeStateChange change)
+    {
+        if (change == UnityEditor.PlayModeStateChange.ExitingEditMode) runtimeValue = initialValue;
+    }
+#endif
 }
 // Player writes playerHealth.runtimeValue; the HUD reads it — neither references the other.
 ```
@@ -98,8 +115,9 @@ temp.damage = 25;
 - **Disabled Domain Reload skips your `OnEnable` reset** — with **Enter Play Mode Options**
   enabled and **Reload Domain** off (a Unity 6.3 LTS fast-iteration setting), already-loaded SOs are
   _not_ re-created when you press Play, so `OnEnable` never fires and `runtimeValue` keeps its
-  value from the previous session. Reset explicitly from an `ISerializationCallbackReceiver` or
-  a scene-load hook instead of relying on `OnEnable` alone.
+  value from the previous session (non-serialized fields keep their Play-mode values). Also
+  reset on `EditorApplication.playModeStateChanged` (pattern 2), or from a static
+  `[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]` method.
 - **Expecting per-object state** — every reference points to the _same_ asset. If two enemies
   need different current HP, store HP on the MonoBehaviour, not the shared SO.
 - **No frame lifecycle** — ScriptableObjects have `OnEnable`/`OnDisable`/`OnDestroy` but no
@@ -115,6 +133,7 @@ temp.damage = 25;
   **runtime sets/registries** (a shared list of active enemies), read
   `references/event-channels.md`.
 - Primary docs: Unity Manual "ScriptableObject" (`/Manual/class-ScriptableObject.html`) and
+  "Enter Play mode with domain reload disabled" (`/Manual/domain-reloading.html`), plus
   `ScriptReference/ScriptableObject`, `ScriptReference/CreateAssetMenuAttribute`.
 
 ## Related skills

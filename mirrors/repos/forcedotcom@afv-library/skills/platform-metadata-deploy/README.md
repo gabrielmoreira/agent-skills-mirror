@@ -86,7 +86,7 @@ platform-custom-object-generate/automation-flow-generate → platform-metadata-d
 
 | Related Skill | When to Use |
 |---------------|-------------|
-| platform-custom-object-generate / platform-custom-field-generate | Create objects/fields BEFORE deploy |
+| platform-custom-object-generate | Create objects/fields BEFORE deploy |
 | platform-apex-test-run | Run tests AFTER deployment |
 | platform-data-manage | Create describe-validated test data AFTER deployment |
 

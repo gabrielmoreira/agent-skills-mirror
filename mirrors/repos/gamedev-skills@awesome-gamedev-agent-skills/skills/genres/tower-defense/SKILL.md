@@ -100,7 +100,10 @@ damage_dealt  = tower_dps * time_in_range
 - **One dominant tower/strategy** → no decisions. Add enemy types that hard-counter builds
   (armored vs. rapid-fire, flying vs. ground-only) and diminishing upgrade returns.
 - **Maze TD that can fully block the goal** → enemies get stuck/softlock. Forbid placements
-  that sever the path; recompute paths when towers change (refs).
+  that sever the path for the spawn or for any enemy already walking; recompute paths when
+  towers change (refs §1).
+- **Fast enemies slow down at corners or skip waypoints** → per-step movement stops at each
+  waypoint or overshoots it. Carry the leftover distance to the next waypoint (refs §1).
 - **No next-wave telegraph** → specials feel random and unfair. Preview upcoming composition.
 - **Per-frame movement unscaled by `dt`** → speed varies with frame rate. Scale steering by `dt`.
 - **Leaks only cost lives, not gold** → leaking is sometimes optimal. Make leaks lose bounty too.

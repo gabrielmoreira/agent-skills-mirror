@@ -67,6 +67,16 @@ Use the task's Retry action. It can create an isolated attempt after old executi
 is contained even when old-file preservation remains unresolved. Approval,
 credentials, budget and deliberate pause use their existing specific controls.
 
+For a connected conversation, click Retry while an exact retained source still
+needs containment. Observe a saved wait with no new executor. After verified
+containment, the same chat receipt must admit one successor with the original
+source batch. Reload and repeat reconciliation. Check that a paused endpoint,
+changed source, superseded request or revoked access cannot start that work.
+The connected-chat database regression in
+[chat channel integration](../../server/src/__tests__/chat-channels.integration.test.ts)
+exercises admission and queue continuation. It does not establish hosted
+provider recovery or successful delivery.
+
 ### `post-stop-message`
 
 After a stop, send a new instruction on the same task or inspect one already
@@ -88,6 +98,16 @@ task gates. These tests do not qualify a live provider or prove task completion.
 While viewing an active or recovering task, interrupt the browser connection
 and restore it, or suspend and return to the tab. Reload is a separate check.
 The current task and run state should reconcile with the server.
+
+For a consumed review path, verify that the one automatic repair run receives
+the instruction to save a one-shot monitor before it promises another check.
+Repeat with a fresh session, a resumed session, and a connection-pool retry that
+retains the typed repair marker but changes the wake reason. Confirm a persisted
+schedule before claiming that follow-up will occur; the repair instruction does
+not schedule one by itself. The [wake regression](../../server/src/services/heartbeat/run-preparation.review-path.test.ts)
+exercises the real wake builder, serializer and prompt selector with an empty
+credential-history database boundary. It does not prove a hosted agent scheduled
+or completed the follow-up. Exhaustion still blocks for a board decision.
 
 ## Driving it
 
@@ -229,6 +249,14 @@ changed claim, missing stop intent, wrong lease or wrong environment before a
 provider call. Verify saved and newer local files, one preservation receipt, and
 no additional agent turn. The PostgreSQL regression covers this boundary; the
 opt-in provider probe also uses this runtime path with the protection marker.
+
+For a missing managed allocation, verify a fresh Cloud-signed absence observation
+under the exact physical recovery owner. The existing Retry may then select an
+independent workspace through normal admission. Verify that the original run
+stays failed and missing files are not called recovered. Refuse a foreign stack,
+source, allocation or owner, expired signatures, changed provider organizations,
+permission failures and provider outages. Local PostgreSQL and signed-protocol
+regressions cover these boundaries; deployed recovery requires separate proof.
 
 Repeat source-only repair with a `succeeded` legacy run that still has a retained
 file obligation. Its result must remain successful, its current task owner and

@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/chief-data-officer-advisor/../../../c-level-advisor/skills/chief-data-officer-advisor/SKILL.md

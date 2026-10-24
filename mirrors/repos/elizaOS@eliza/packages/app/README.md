@@ -84,6 +84,12 @@ Web subscription settings select a registered product with `VITE_ELIZA_APPLICATI
 agent-backed settings use `ELIZAOS_CLOUD_APPLICATION_SLOT` from the runtime.
 These select a product, not a merchant credential or paid entitlement.
 
+Independent Android consumer profiles may use `main`, `androidTest`, `debug`,
+`release`, and their declared flavor names in `sourceSets`. Keep test trust and
+other debug-only resources in `debug`; they must not enter release artifacts.
+Run `node packages/app/scripts/mobile/android/qualify-consumer-host.mjs` from the
+repository root with the Android SDK and JDK configured to check real APK isolation.
+
 ## Disposable hosted Android fixtures
 
 `scripts/mobile/android/hosted-fixture` supplies display/network admission and
@@ -209,7 +215,7 @@ test-clean utterances and `speech-fixture/0.wav`; and an empty transcript for
 silence. RTF is reported. The host report goes to `test-results/voice-quality/`.
 
 ASR is Phonon-2 (`asr/phonon-2-fv5.gguf`, Parakeet-TDT 0.6B with five-value
-weights, 330,632,256 bytes, sha256 `dc552eb7…`) on the library's parakeet
+weights, 208,932,352 bytes, sha256 `c0f6ad42…`) on the library's parakeet
 backend, which also streams (`ElizaVoiceNative.nativeAsrStream*`,
 `NativeAsr.openStream`). The GGUF is not published yet, so stage it by
 converting the pinned source and pass it through `ELIZA_VOICE_BUNDLE_FROM`
@@ -260,8 +266,8 @@ assets, and have no cloud fallback.
   accepts only `{ "text": "..." }` (1–500 characters) and returns mono PCM16
   WAV at 24 kHz (voice `af_heart`, provider `libelizainference-paradee`).
 - Speech input: `ELIZA_ASR_ENABLED=1` and an absolute `ELIZA_ASR_MODEL_DIR`
-  with the pinned Qwen3-ASR-0.6B pair at `asr/eliza-1-asr.gguf` and
-  `asr/eliza-1-asr-mmproj.gguf`, plus pinned `vad/silero-vad-v5.gguf` as the
+  with the pinned Phonon-2 GGUF at `asr/phonon-2-fv5.gguf` (build it with
+  `bun packages/app/scripts/voice/build-phonon2-gguf.ts`), plus pinned `vad/silero-vad-v5.gguf` as the
   only GGUF in `vad/`. Native Silero VAD rejects non-speech before ASR; speech
   retains the complete input audio. No text model is loaded.
   `GET /api/asr/libelizainference/status` reports readiness.
@@ -452,6 +458,15 @@ letters/digits/underscores/hyphens starting with a letter. Results are recorded 
 `variants[].phases` and output in `<variant>-phase-<name>.log`. Runner extras
 cannot override test selection. Cleanup hooks may run a final fixture phase even
 after cancellation; failed or partial installs do not expose this function.
+
+Set `wake: true` to send `KEYCODE_WAKEUP` and `wm dismiss-keyguard` after the
+APKs install and before `prepareVariant`. Set `appEvidence: {directory, json,
+png}` to copy named files from an app-relative sandbox directory with `run-as`
+after the last instrumentation. Each file is saved as `<variant>-<name>` in the
+report directory, JSON must parse and PNG must have a PNG signature. Its hash is
+recorded in `variants[].appEvidence`, and `collectVariant` receives
+`context.appEvidence.{files,json}`. A missing or invalid file fails the variant.
+The free-form `evidence` field is unchanged.
 
 Consumer APK audits can import `parseXmlTree` and `manifestFacts` from
 `scripts/lib/android-manifest-facts.mjs`. These pure helpers decode aapt xmltree

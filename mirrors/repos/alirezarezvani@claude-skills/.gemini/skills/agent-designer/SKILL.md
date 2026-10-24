@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/agent-designer/../../../engineering/skills/agent-designer/SKILL.md

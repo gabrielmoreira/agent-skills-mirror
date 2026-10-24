@@ -55,6 +55,11 @@ Rules:
   value.
 - For a UObject you create that has no UPROPERTY owner (rare), `AddToRoot()` pins it and
   `RemoveFromRoot()` releases it — but prefer proper ownership.
+- A plain C++ class (not a UObject) can't use `UPROPERTY`. Hold UObjects there with
+  `TStrongObjectPtr<T>`, or derive from `FGCObject` and report them in `AddReferencedObjects`
+  (it also requires `GetReferencerName`).
+- For references that must *not* keep the target alive (a cached target actor, a listener),
+  use `TWeakObjectPtr<T>` and check `IsValid()`/`Get()` before each use.
 
 ## USTRUCT and UENUM for reflected data
 

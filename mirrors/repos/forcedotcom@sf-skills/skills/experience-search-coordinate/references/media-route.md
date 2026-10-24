@@ -109,10 +109,25 @@ Keyword/taxonomy extraction rule: see `SKILL.md` Step 4 point 2. Extract taxonom
 
 ## Search using Data 360 hybrid search (`search_electronic_media`)
 
-1. Use the user's query **as-is** — no keyword extraction or transformation needed
-2. Call `search_electronic_media(searchQuery="<user's query>")`
+1. Pass `searchQuery` **verbatim** — same language, same script as the user wrote it. No translation, no keyword extraction: translating first only makes step 2 harder, since you'd be detecting the language of your own translation instead of the user's actual words.
+2. **Determine language** — a short ISO code read directly off the user's literal wording, before any translation happens in your reasoning. Bare 2-letter codes (`en`, `fr`, `de`, `es`, `ja`, ...) cover most languages and are the validated, simpler form; a few regional splits need a country suffix instead (`pt_BR`, `zh_CN`, `zh_TW`, ...). Default to `en` only when the message is genuinely ambiguous (e.g. a bare product name) — never because translating felt natural. Use the bare 2-letter form whenever one exists — the backend accepts only the platform's own language codes, so `fr` works but `fr_FR` is rejected as invalid (`en` and `en_US` both work because `en_US` is itself a platform code).
+3. Call `search_electronic_media(searchQuery="<verbatim query>", searchLanguage="<language code>")`. **Only send `searchLanguage` if the tool's input schema actually lists it** — orgs without language-variant search enabled don't declare the input at all. When it's absent, call with `searchQuery` alone, skip the language line in the confirmation message, and skip steps 4–5 (the backend searches primary-language content only).
+4. **Offer one retry with `searchLanguage` omitted entirely — ask the user first, never retry silently — but only when the first call either:**
+   - returns **zero results**, **or**
+   - fails with an **input-validation error about the language value itself** — an unrecognized language code errors the whole call (for example, `INVALID_API_INPUT` / "Specify a valid language code, such as en_US, fr, or de.") rather than returning an empty list.
 
-Example: user query "modern luxury apartment with natural lighting" → `search_electronic_media(searchQuery="modern luxury apartment with natural lighting")`
+   **Do NOT offer this retry on a server or transport error (5xx, timeout, connection failure).** Those must fail per `SKILL.md`'s Error Handling table — omitting the language cannot fix them and would mask the real failure. The retry exists only for the two language-specific cases above.
+
+   Offer it before concluding nothing exists and before suggesting broader keywords: tell the user what happened in plain chat text (e.g. "No results found in French."), then `ask_followup_question` with options `Yes - search without language filter` / `No - stop here`. The retry is a second backend call the user didn't confirm, so they decide whether it runs. Skip the question only if the user already said, in this conversation, to fall back to any language when nothing matches theirs — then retry directly. Omitting the field makes the backend fall back to each item's own primary/default language variant instead of the requested one — so an item that only has, say, a French variant still surfaces on the retry even when the user asked in English. Only fall through to "no results" / broadening suggestions if the user declines, or the retry also comes back empty.
+5. **Read each result item's `language` field to know which language variant you actually got** (a locale string such as `en_US` or `fr`). If it differs from the language the user asked for — typically after the retry — say so explicitly when presenting that item, e.g. "No French version exists for this item — here's the original in English." Never present a fallback-language result as if it were the requested-language match; the user needs to know a substitution happened.
+
+   If `language` is **absent** on the results of a call that sent `searchLanguage`, the backend couldn't apply the language filter (for example, the org's search index predates language-variant support) and silently returned primary-language content instead — even on the first call, with no error and no empty list. Don't claim the results are in the requested language; tell the user the search couldn't be restricted to that language.
+
+This is a **strict** filter, not soft ranking like the keyword route: the backend only returns items carrying that exact language variant, and it does **not** fall back to English (or any other language) per item on its own — that's why step 4's retry exists as an explicit, user-approved second call, not something the backend does silently.
+
+Example — French input "trouve-moi une image de pinceaux depuis le CMS" → `search_electronic_media(searchQuery="trouve-moi une image de pinceaux depuis le CMS", searchLanguage="fr")`.
+
+Example of the retry — English input "give me an image of a snowboard from the CMS" → first call `search_electronic_media(searchQuery="give me an image of a snowboard from the CMS", searchLanguage="en")` returns zero results (the only snowboard item in the org has a French variant, not English) → tell the user "No results found in English." and ask whether to search without the language filter → user picks `Yes - search without language filter` → retry `search_electronic_media(searchQuery="give me an image of a snowboard from the CMS")` with `searchLanguage` omitted → the item surfaces with `language: "fr"` → tell the user: "No English version exists for this item — here's the original in French."
 
 ## Confirming the query before searching
 
@@ -130,11 +145,22 @@ I'll search for media with these parameters:
   Channels: Public
 ```
 
+**Message 1 — Data 360 hybrid search variant** (surface the detected language so the user can catch a mis-detection before the search runs — language detection is the most error-prone step of this route):
+
+```text
+I'll search Data 360 hybrid search with:
+
+  Query: trouve-moi une image de pinceaux depuis le CMS
+  Language: fr   (auto-detected — tell me if this is wrong)
+```
+
+Show `Query` exactly as the user wrote it (verbatim) and `Language` as the bare code you'll send. This route has no `Content Type` / `Keywords` / `Taxonomies` / `Channels` lines — it ignores channel scope and does its own semantic matching.
+
 **Message 2 (immediately after):** `ask_followup_question` with options `Yes - search now` / `Edit search` / `Cancel`.
 
 ## Presenting Search Results
 
-1. **Parse each call's response** — Extract all results (title and content type) and each item's full `managedContentChannelDeliveryDetails` array, merged across calls if the item appears in more than one response (per "Executing the search call(s)" above — nothing is dropped as a duplicate).
+1. **Parse each call's response** — Extract all results (title and content type) and each item's full `managedContentChannelDeliveryDetails` array, merged across calls if the item appears in more than one response (per "Executing the search call(s)" above — nothing is dropped as a duplicate). Data 360 hybrid search results have a different shape: each item carries `mediaUrl` (or a `mediaUrls` list of `{channelId, channelName, url}`) instead of `managedContentChannelDeliveryDetails`, plus a `language` field when language-variant search applied — use `language` per step 5 of "Search using Data 360 hybrid search" above.
 2. **Use `ask_followup_question`** to present ALL results as selectable **unique** options (one option per item, by identifier), grouped by content type — same grouping key as the Content Route (see `content-route.md` Step 6), never by channel. Show the title, content type, and channel on each option — do not display the URL. If an item's `managedContentChannelDeliveryDetails` array has more than one entry, show the **first** entry's channel name here as a lightweight hint only; the actual choice between channels is made after selection (see "Disambiguating channel at selection" below), not here. If more than one content type FQN is in scope, order the options by content type (the tool has no native grouping — approximate it by ordering and, where the UI allows a label, prefixing the option text with the content type). Regardless of grouping, always include the channel as a per-item suffix, e.g. `Product Launch Hero Banner (sfdc_cms__image) — Public`.
 3. **Receive the user's selection** from the tool response
 

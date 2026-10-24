@@ -17,6 +17,7 @@ layout resource (`default_bus_layout.tres` by default; set in Project Settings >
 ```gdscript
 var i := AudioServer.get_bus_index("Music")
 AudioServer.set_bus_volume_db(i, linear_to_db(0.8))
+AudioServer.set_bus_volume_linear(i, 0.8)    # same thing, converts for you
 AudioServer.set_bus_mute(i, true)
 AudioServer.set_bus_solo(i, true)
 AudioServer.get_bus_count()
@@ -37,7 +38,8 @@ Add `AudioEffect*` resources to a bus (editor or `add_bus_effect`):
 
 - `AudioEffectReverb`, `AudioEffectDelay`, `AudioEffectChorus`, `AudioEffectDistortion`.
 - `AudioEffectEQ6/EQ10/EQ21`, `AudioEffectLowPassFilter`, `AudioEffectHighPassFilter`.
-- `AudioEffectCompressor`, `AudioEffectLimiter` (mastering).
+- `AudioEffectCompressor`, `AudioEffectHardLimiter` (mastering; the older
+  `AudioEffectLimiter` is deprecated).
 - `AudioEffectPitchShift`, `AudioEffectSpectrumAnalyzer` (for visualizers/beat detection).
 - `AudioEffectCapture` / `AudioEffectRecord` (read/record bus output).
 
@@ -53,12 +55,15 @@ Add `AudioEffect*` resources to a bus (editor or `add_bus_effect`):
 - `AudioStreamPolyphonic` — one player that can play many overlapping streams; grab a
   `AudioStreamPlaybackPolyphonic` from `get_stream_playback()` and call `play_stream(...)`.
 - `AudioStreamInteractive` — define clips and transitions for adaptive music that switches
-  between sections on cue (4.7). `AudioStreamSynchronized` plays layered stems together.
+  between sections on cue (4.3+). `AudioStreamSynchronized` plays layered stems together, and
+  `AudioStreamPlaylist` plays a list of streams in order or shuffled.
 - `AudioStreamRandomizer` — pick a random stream/pitch per play (great for footsteps).
 
 ## Positional audio (2D/3D)
 
 - `AudioStreamPlayer2D`: `max_distance`, `attenuation`, `panning_strength`, `area_mask`.
+  Without a current `AudioListener2D` the hearing point is the centre of the screen; add one
+  and call `make_current()` to hear from somewhere else.
 - `AudioStreamPlayer3D`: `unit_size`, `max_distance`, `attenuation_model`
   (inverse/inverse-square/log/disabled), `panning_strength`, doppler via the player or
   camera. A `Camera3D` acts as the default listener; add an `AudioListener3D` to override.

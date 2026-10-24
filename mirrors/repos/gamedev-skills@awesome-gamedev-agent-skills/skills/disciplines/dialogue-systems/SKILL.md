@@ -61,13 +61,14 @@ across sessions, use `save-systems`. For data-as-resources in Godot/Unity, see
     "guard_intro": {
       "speaker": "Guard", "line": "DLG_GUARD_001",
       "choices": [
-        { "text": "DLG_OPT_BRIBE", "to": "bribe", "if": "gold >= 50" },
+        { "text": "DLG_OPT_BRIBE", "to": "bribe", "if": "gold >= 50",
+          "set": { "gold": "gold - 50" } },
         { "text": "DLG_OPT_LEAVE", "to": "end" }
       ]
     },
     "bribe": {
       "speaker": "Guard", "line": "DLG_GUARD_BRIBED",
-      "set": { "gate_open": true, "gold": "gold - 50" },
+      "set": { "gate_open": true },
       "next": "end"
     },
     "end": { "end": true }
@@ -76,31 +77,35 @@ across sessions, use `save-systems`. For data-as-resources in Godot/Unity, see
 ```
 
 `line`/`text` are **string-table IDs** (localization), not literal text. `if`
-gates a choice; `set` mutates the variable store. The full interpreter that walks
-this graph is in `references/runner.md`.
+gates a choice; `set` mutates the variable store. The gold cost sits on the
+*choice*, so it is paid once per pick even if the `bribe` node is revisited; the
+idempotent `gate_open` write can live on the node. A string `set` value is an
+expression, so a literal string needs inner quotes: `"mood": "'angry'"`. The full
+interpreter that walks this graph is in `references/runner.md`.
 
 ### 2. Runner step (a state machine over the graph)
 
 ```gdscript
-# The runner holds the current node and a variable store; the UI calls advance().
-func present(node):
-    if node.has("line"):
-        ui.show_line(node.speaker, localize(node.line))
-    if node.has("choices"):
-        var shown = node.choices.filter(func(c): return eval_cond(c.get("if", "")))
-        ui.show_choices(shown)            # only choices whose condition passes
-
-func choose(choice):                       # called when the player clicks a choice
-    apply_set(choice.get("set", {}))       # write variables
-    goto(choice.to)
-
-func goto(id):
+# Godot 4.7. The runner holds the current node and a variable store. Every line
+# waits for the player: the UI calls choose() or the continue callback.
+func goto(id: String) -> void:
     current = graph.nodes[id]
     apply_set(current.get("set", {}))
-    if current.get("end", false): ui.close(); return
-    present(current)
-    if current.has("next") and not current.has("choices"):
-        goto(current.next)                 # auto-advance linear nodes
+    if current.get("end", false):
+        ui.close()
+        return
+    if current.has("line"):
+        ui.show_line(current.get("speaker", ""), localize(current.line))
+    if current.has("choices"):
+        var shown = current.choices.filter(func(c): return eval_cond(c.get("if", "")))
+        ui.show_choices(shown)            # only choices whose condition passes
+    elif current.has("next"):
+        var next_id: String = current.next
+        ui.show_continue(func(): goto(next_id))   # advance when the player continues
+
+func choose(choice: Dictionary) -> void:   # called when the player picks a choice
+    apply_set(choice.get("set", {}))       # write on the transition (revisit-safe)
+    goto(choice.to)
 ```
 
 ### 3. Ink — branching with knots, choices, and variables (inkle)
@@ -109,6 +114,7 @@ func goto(id):
 // Ink: '*' = once-only choice, '+' = sticky. [bracketed] text shows only in the
 // choice, not the printed result. '->' diverts; '-> END' stops the flow.
 VAR gold = 60
+-> guard_intro                    // the story starts at the top: divert into a knot
 
 === guard_intro ===
 The guard blocks the gate.
@@ -142,7 +148,8 @@ Yarn lines may start with `Speaker:`; options use `->`; `<<set>>`/`<<declare>>`
 manage `$variables`; `<<if>>` gates an option; `<<jump NodeName>>` moves between
 nodes. Interpolate values in text with `{$gold}`. Declare every variable before first
 use: an undeclared one still compiles (Yarn infers its type and a zero/false/empty
-start value), but that hides typos. These constructs are unchanged from Yarn Spinner 2.x.
+start value) with only a warning, which hides typos. These constructs are unchanged from
+Yarn Spinner 2.x.
 
 ## Pitfalls
 

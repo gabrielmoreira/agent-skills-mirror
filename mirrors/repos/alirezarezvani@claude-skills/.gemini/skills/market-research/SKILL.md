@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/market-research/../../../research-ops/skills/market-research/SKILL.md

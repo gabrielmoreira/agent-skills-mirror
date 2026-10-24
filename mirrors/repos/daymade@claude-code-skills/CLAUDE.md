@@ -271,6 +271,14 @@ For oversized images or figure readability in a Markdown note or transcript, use
 It owns reader-specific sizing and the representative pilot; keep display values
 and verification details there.
 
+### Visible permission and Keychain dialogs
+
+For a visible permission or Keychain dialog, enter
+[macos-permissions' observation and classification route](daymade-macos/macos-permissions/SKILL.md#observe-and-classify-the-reported-problem-first).
+For an authorized desktop view, use
+[capture-screen's full-screen observation route](daymade-macos/capture-screen/SKILL.md#observe-an-unidentified-dialog-or-the-full-desktop).
+Keep detailed diagnosis and cancellation procedures with those Skills.
+
 ### Background protected-data access
 
 For a background protected-data read failure, start at
@@ -361,6 +369,10 @@ Keep decision criteria and verification details in those owners.
 
 ### Transcript Correction
 
+For local audio listening, speaker decisions, word edits and recovery of saved
+judgments, use [Listening Desk](daymade-audio/asr-transcribe-to-text/references/review_workbench.md).
+Its saving and playback contracts govern both the browser and local service.
+
 For explicit single-task speaker-inference requests, load
 [scoped speaker inference](daymade-audio/transcript-fixer/references/scoped_speaker_inference.md).
 
@@ -377,6 +389,10 @@ queue anchor behavior in
 [review_queue.py](daymade-audio/transcript-fixer/scripts/core/review_queue.py).
 For same-line repeats or a legacy row needing an explicit slot, follow
 [occurrence anchoring](daymade-audio/transcript-fixer/references/review_queue_dashboard.md#same-line-occurrence-anchoring).
+For company slots or a short match inside a longer name, follow
+[minimum occurrence checks](daymade-audio/transcript-fixer/references/dictionary_identity_and_context.md#minimum-occurrence-checks-for-name-candidates).
+For wording supported by a parallel transcript, follow
+[written wording evidence](daymade-audio/transcript-fixer/references/review_queue_dashboard.md#written-evidence-for-ordinary-wording).
 Use the [CLI reference](daymade-audio/transcript-fixer/references/script_parameters.md#fix_transcriptionpy)
 to select the command; the argument parser owns accepted combinations.
 For domain-context location, configuration-directory selection or homophone-veto
@@ -415,14 +431,13 @@ For Feishu document reads and archives, enter
 [feishu-doc-scraper](feishu-doc-scraper/SKILL.md). Its
 [comments and feedback SOP](feishu-doc-scraper/references/comments-and-feedback.md)
 owns discussion capture and interpretation; the bundled helper owns the CLI
-interface. For filing, use its
+interface. Before permanent filing or choosing an authorized archive destination,
+follow the [destination handoff](feishu-doc-scraper/references/archive-destination-handoff.md).
+For storage decisions, use its
 [archive storage contract](feishu-doc-scraper/references/archive-storage-contract.md)
 alongside the destination repository's storage SOP.
-For local originals or an Obsidian delivery, follow the Skill's
+For local originals, Obsidian delivery or a personal source-catalog handoff, follow the Skill's
 [original-media and reader SOP](feishu-doc-scraper/references/original-media-and-reader.md).
-That SOP owns archive-root containment, conversion versus delivery evidence,
-and the source-catalog handoff to favorites-search. Respect the selected destination
-and any user-excluded checks; do not substitute a different archive or acceptance claim.
 
 ### Prior Work Retrieval Boundary
 
@@ -647,6 +662,10 @@ in that owner rather than maintaining another push example here.
 
 For recovery or repository convergence under concurrent work, enter
 [git-safety-net](git-safety-net/SKILL.md).
+For local snapshot failures involving an index lock or commit-hook refusal, use its
+[snapshot recovery procedure](git-safety-net/references/recovery_playbook.md#blocked-local-snapshots).
+For Tibo's application retry and acceptance, follow
+[the forecast journal owner](tibo-reset-codex/references/forecast-feedback.md#快照诊断与显式恢复).
 For inherited upload restrictions or source paths hidden by ignore rules, read its
 [convergence authority and source-inventory procedure](git-safety-net/references/merge_verification.md#1-freeze-the-outcome-and-the-first-ref-snapshot).
 

@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/business-operations-skills/../../../business-operations/skills/business-operations-skills/SKILL.md

@@ -40,6 +40,10 @@ Export a typed array of resources (great for data-driven design):
   `godot-multiplayer`).
 - `@warning_ignore("unused_variable")` — silence a specific parser warning.
 - `@static_unload` — allow a script's static variables to unload.
+- `@export_tool_button("Rebuild") var rebuild_action := rebuild` — an Inspector button
+  that calls a `Callable` (4.4+; the script must also be `@tool`).
+- `@export_storage var cache: Array` — saved with the scene/resource but hidden from the
+  Inspector.
 
 ## Static typing details
 
@@ -48,10 +52,15 @@ var a: int = 3                 # explicit type
 var b := 3                     # inferred int via :=
 var c: float                   # typed, defaults to 0.0
 var nodes: Array[Node2D] = []  # typed array (element type enforced)
-var scores: Dictionary = {}    # Dictionary is untyped in 4.3; typed dicts arrived in 4.4
+var scores: Dictionary[String, int] = {}  # typed dictionary (Godot 4.4+)
+var any_data: Dictionary = {}  # untyped: keys and values can be anything
 
 func clamp_hp(hp: int) -> int:
     return clampi(hp, 0, 100)  # clampi/clampf are typed variants
+
+func best_score(name: String) -> int:
+    var s: int = scores.get(name, 0)  # get() returns Variant even on a typed dictionary,
+    return s                          # so `var s := scores.get(...)` fails to parse
 ```
 
 Typed code is faster because the VM can skip runtime type checks, and the editor can

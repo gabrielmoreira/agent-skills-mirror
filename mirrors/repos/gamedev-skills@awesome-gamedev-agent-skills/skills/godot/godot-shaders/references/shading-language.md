@@ -15,7 +15,8 @@ Depth companion to `godot-shaders`. The language is GLSL-like with engine built-
 ## Common built-ins
 
 canvas_item: `UV`, `COLOR`, `TEXTURE`, `TEXTURE_PIXEL_SIZE`, `SCREEN_UV`,
-`SCREEN_PIXEL_SIZE`, `VERTEX`, `TIME`, `POINT_COORD`, `MODELVIEW_MATRIX`.
+`SCREEN_PIXEL_SIZE`, `VERTEX`, `TIME`, `POINT_COORD`, and in `vertex()` `MODEL_MATRIX`,
+`CANVAS_MATRIX`, `SCREEN_MATRIX` (3.x's `MODELVIEW_MATRIX` no longer exists).
 
 spatial: `VERTEX` (model/local), `NORMAL`, `TANGENT`, `UV`, `UV2`, `VIEW`, `ALBEDO`,
 `ALPHA`, `EMISSION`, `ROUGHNESS`, `METALLIC`, `SPECULAR`, `NORMAL_MAP`, `TIME`,

@@ -16,6 +16,9 @@ public interface DatabaseAgent {
 
     default boolean supportsBlobBindStatements() { return false; }
 
+    /** Opt in only when dictionary-derived owner/name values are preserved without fallback. */
+    default boolean supportsExactMetadataIdentity() { return false; }
+
     default QueryResult executeBlobBoundStatements(List<String> previews, List<BlobBoundStatement> statements,
         String schema, int timeoutSecs, boolean transaction) {
         throw new UnsupportedOperationException("BLOB statement binding is not supported by this agent");
@@ -124,6 +127,10 @@ public interface DatabaseAgent {
         }
 
         return DdlBuilder.buildTableDdl(schema, table, getColumns(schema, table), indexes, foreignKeys, Collections.emptyList(), false, false, tableComment);
+    }
+
+    default String getTableDdl(String schema, String table, boolean exactIdentity) {
+        return getTableDdl(schema, table);
     }
 
     /**

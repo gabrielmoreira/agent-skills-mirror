@@ -10,7 +10,7 @@ The skill keeps a headless browser available as a local daemon, uses real search
 npx skills add ogulcancelik/agent-skills --skill web-search
 ```
 
-The agent installs dependencies with Bun when needed. Node.js 20.19 or newer and a Chromium-family browser are required.
+The agent installs dependencies with Bun when needed. Node.js 22.23.4+, 24.22.1+, or 26.12.1+ (Brotli fix for CVE-2026-111497) and a Chromium-family browser are required.
 
 ## What it provides
 

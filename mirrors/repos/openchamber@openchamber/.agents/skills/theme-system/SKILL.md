@@ -93,7 +93,7 @@ Motion that can stay on screen for minutes follows the state it shows:
 
 - **Steady state stands still**: connected, failed, degraded, "Unavailable", the provider logo while the agent works, read-aloud playing (its icon turns `--primary-text`). Show a static icon in the state's color.
 - **A wait that can last spins on the shared clock**: a running project action, worktree setup or removal, a space being made, CI checks, loading sessions or models, walkthrough generation, an OpenCode update. Render `Spinner` (`components/ui/spinner.tsx`): eight bars, four steps a second.
-- **A wait that cannot spin blinks**: a status dot (6 px, `size-1.5`), the recording dot, a loading skeleton, the splash logo's glow. Apply `useWaitingBlink(active)`; it dims every other second.
+- **A wait that cannot spin blinks**: a status dot (6 px, `size-1.5`), the recording dot, a loading skeleton. Apply `useWaitingBlink(active)`; it dims every other second. The splash logo steps instead: its roof tiers light up one at a time, once a second, through `useWaitingPhase`.
 - **Waiting text gets dots**: "Thinking", "Waiting for approval". Put `BusyDots` (`components/ui/busy-dots.tsx`) after the label; drop any "…" from the string.
 - **A spinner that lasts seconds** (a button after a click, a quick load, refresh) keeps `animate-spin`.
 - **Hidden stops.** A surface kept mounted while hidden wraps its content in `PauseClock` (`components/ui/pause-clock.tsx`); the context panel's zones already do. An `inert` subtree pauses its CSS animations (`index.css`).

@@ -7,7 +7,11 @@ operation and the next useful step; after repair, continue the investigation.
 Commands below use an installed `rea`. If none is available, use the package
 invocation in `SKILL.md` when acquiring REA is authorized. Follow the connected
 server's schemas and the installed CLI's help rather than assuming repository
-main and an older release expose the same arguments.
+main and an older release expose the same arguments. Tool-name prefixes belong
+to the client: find the canonical REA operation in its actual tool listing and
+server association before concluding that it is absent. A shared prefix alone
+does not establish which server an approval wildcard covers. See
+[client tool names and discovery](https://github.com/morluto/rea/blob/main/docs/client-configuration.md#client-tool-names-and-discovery).
 
 ## Choose the remedy from the observed failure
 

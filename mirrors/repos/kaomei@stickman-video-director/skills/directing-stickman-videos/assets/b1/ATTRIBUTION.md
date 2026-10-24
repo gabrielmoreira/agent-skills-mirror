@@ -1,0 +1,13 @@
+# B1 assets
+
+These original hand-drawn character/prop assets were created for this project and are distributed under the repository's MIT license. The three-pose sheet is a demo reference, not a requirement to use only three poses in other productions. The bundled narration is the existing, approved Gemini Sadaltager sample audio, reused at its original speed; its effects are already mixed.
+
+The current public B1 showcase is `approved-2026-10-23.mp4` in this directory. The earlier `assets/readme/b1-minimal-handdrawn.mp4` at repository root remains an unchanged Sadaltager V15 archive. The declarative example demonstrates the reusable runtime and is not a pixel-identical recreation or a second approved showcase.
+
+`approved-2026-10-23.mp4`, `approved-2026-10-23-contact-sheet.png` and `approved-2026-10-23-motion-sheet.png` preserve the Ryan V4 preview accepted by the user on 2026-10-23 as the current overall B1 production standard and public preview. The clip reuses its original-speed Google Gemini Bodi recording, project-authored captions, local animation and synchronized effects. The character illustrations were generated for this project from the user-confirmed B1 drawing direction; props combine original project drawings and the existing coherent icon assets. Sheets were produced from that preview project. These are visual/auditory reference evidence, not a runtime-ready project or reusable fixed poses. `approved-baseline.json` records relative paths and SHA-256 fingerprints. Provider-generated media remains subject to the applicable service terms; this note does not relicense provider voices or third-party marks. Local source prompts and render files remain in the production project.
+
+`character-acting-reference.png` contains two project illustrations generated with built-in image generation using user-supplied drawing references. The user accepted their proportion/acting direction on 2026-10-23 and requested still stronger expressions. This is a visual guide for new B1 characters, not a fixed scene/pose atlas, an animation acceptance record or a replacement for the existing public sample. Source prompts and original proof files are retained in the local production project, not required by the installed Skill.
+
+The Ryan V4 clip and its derived previews/sheets include Lucide `file-text` and `clapperboard` icons. Lucide/Feather copyright and permission notices are retained in [LUCIDE-LICENSE.txt](LUCIDE-LICENSE.txt). Other website/platform marks identify their respective services and are not relicensed by this project.
+
+Fonts are separately licensed under SIL OFL; see `../fonts/OFL-Caveat.txt` and `../fonts/OFL-NotoSans.txt`. Do not redistribute the macOS Chalkboard/Arial fonts used for the original private preview.

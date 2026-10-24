@@ -48,10 +48,12 @@ animating UI transitions → `godot-animation` (Tween); genre UIs like card hand
 extends Control
 
 func _ready() -> void:
-    # Stretch this panel to fill its parent (equivalent to the "Full Rect" preset).
-    anchors_preset = Control.PRESET_FULL_RECT
-    # Or set anchors manually: all four edges at the parent's far corners.
-    # anchor_left = 0; anchor_top = 0; anchor_right = 1; anchor_bottom = 1
+    # Stretch this panel to fill its parent (the editor's "Full Rect" preset).
+    # Setting only anchors (or `anchors_preset`) keeps the current offsets, so the
+    # control keeps its old rect; this call moves anchors AND resets offsets.
+    set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+    # Manual equivalent: anchor_left = 0; anchor_top = 0; anchor_right = 1;
+    # anchor_bottom = 1, then set all four offset_* to 0.
 ```
 
 ### 2. A menu built from containers + button signals
@@ -96,14 +98,17 @@ func _ready() -> void:
 
 - **Mixing manual position with Containers.** A child of a `Container` cannot set its own
   position/anchors — the container owns layout. To free-place, take the node out of the
-  container or use a plain `Control`/`PanelContainer` wrapper.
+  container or use a plain `Control`/`PanelContainer` wrapper. To nudge, rotate or scale a
+  container child (e.g. a hover pop) in 4.7+, set `offset_transform_enabled = true` and use
+  `offset_transform_position`/`_rotation`/`_scale`; the container leaves those alone.
 - **Anchors vs offsets.** Anchors are fractions of the parent; offsets are pixel deltas
   from the anchored point. Set anchors via presets, then nudge with offsets. Setting only
   position while anchors are at 0 makes UI not scale with the window.
 - **`Node2D` for UI.** Buttons/labels parented under a `Node2D` won't theme or take focus
   correctly. Keep UI under a `CanvasLayer`/`Control` subtree.
 - **Focus lost on gamepad.** If nothing is focused, directional input does nothing. Call
-  `grab_focus()` on an initial control and ensure `focus_mode` is not `FOCUS_NONE`.
+  `grab_focus()` on an initial control and ensure `focus_mode` is `FOCUS_ALL` (`FOCUS_CLICK`
+  is mouse-only, `FOCUS_NONE` never focuses).
 - **Theme vs theme override.** A `Theme` resource styles a whole subtree; `add_theme_*`
   overrides one node. Overusing per-node overrides defeats centralized theming.
 - **`rect_*` properties are renamed.** Godot 3's `rect_size`/`rect_position`/`rect_min_size`

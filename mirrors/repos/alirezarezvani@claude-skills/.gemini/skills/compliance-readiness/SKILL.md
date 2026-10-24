@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/compliance-readiness/../../../compliance-os/skills/compliance-readiness/SKILL.md

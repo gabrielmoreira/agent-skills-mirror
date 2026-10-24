@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/saas-scaffolder/../../../product-team/skills/saas-scaffolder/SKILL.md

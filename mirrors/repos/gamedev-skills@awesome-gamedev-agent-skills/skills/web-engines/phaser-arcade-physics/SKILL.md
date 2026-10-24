@@ -137,10 +137,17 @@ this.bullets = this.physics.add.group({
 });
 
 fire(x, y) {
-  const bullet = this.bullets.get(x, y);     // reuses a dead bullet if available
-  if (!bullet) return;
+  const bullet = this.bullets.get(x, y);     // reuses an inactive bullet if available
+  if (!bullet) return;                       // pool is full: every bullet is active
   bullet.enableBody(true, x, y, true, true);
   bullet.setVelocityY(-500);
+}
+
+update() {
+  // Return off-screen bullets to the pool, or firing stops after 30 shots.
+  this.bullets.getChildren().forEach((bullet) => {
+    if (bullet.active && bullet.y < -32) bullet.disableBody(true, true);
+  });
 }
 ```
 
@@ -156,10 +163,22 @@ fire(x, y) {
   `body.setImmovable(true)` on a dynamic platform.
 - **`onFloor()` is always false** → the body needs something to collide with; add the
   `collider` against the ground/platforms before checking, and ensure gravity is on.
+  Standing on an ordinary dynamic body does not count as blocked; make platforms
+  static, immovable, or non-pushable (`platform.setPushable(false)`).
 - **Moved a static body but collisions are stale** → static bodies don't auto-sync;
   call `body.updateFromGameObject()` (or `refreshBody()` on the game object).
 - **Collider added every frame** → register `collider`/`overlap` once in `create`,
   not in `update`.
+- **Fast bullets pass through thin walls** → Arcade has no swept collision; a body
+  that moves farther than a wall's thickness in one physics step skips it. Thicken
+  the wall's body, cap speed with `setMaxVelocity`, or raise the step rate
+  (`arcade: { fps: 120 }`, default 60) at extra CPU cost.
+- **Bodies pass through each other after adding collision categories** → a pair only
+  collides when each side's mask includes the other's category, and untouched bodies
+  keep mask `1`. Widen the other side's mask too, and set groups and their members
+  separately (see the reference).
+- **Drag does nothing while a key is held** → Arcade applies drag only on an axis
+  with zero acceleration; set the acceleration to 0 when input stops.
 
 ## References
 

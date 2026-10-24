@@ -156,6 +156,10 @@ anatomy components.
 The projection does not read plists. Use `inspect_plist` on a bundle's
 `info_plist_path` or a launchd plist to read `CFBundleExecutable`, identifiers,
 `SMPrivilegedExecutables`, `BundleProgram`, URL schemes, and usage descriptions.
+MCP calls require an existing `open_binary` or `open_bundle_resources` session,
+including when `inspect_plist.path` is explicit. For a bundle without a resolved
+executable, open its resource session first. The CLI `rea inspect-plist <path>`
+opens the selected artifact for its one invocation.
 Use `inspect_signature` on an executable candidate for code-signing claims.
 
 ## Dylib load resolution
@@ -220,9 +224,16 @@ satisfy a dylib dependency. `platform-mismatch` means a matching-architecture
 dylib was found but its observed platform is incompatible with the process.
 These outcomes reject that candidate; dyld search may continue and resolve a
 later candidate. Candidate outcomes describe individual search paths, while
-`resolution.status` describes the final edge. Slices follow dyld's graded
-architectures, so an `x86_64h` process also loads `x86_64`. The edge's
-`resolution` is one of:
+`resolution.status` describes the final edge. For each selected process-root
+slice, candidate slices are matched by CPU type and dyld's subtype preference
+order, independently of FAT table order. An ARMv7s root slice prefers ARMv7s,
+then ARMv7; other known ARM32 subtypes use their compatibility rows from
+[Apple's dyld source](https://github.com/apple-oss-distributions/dyld/blob/dyld-852.2/src/dyld2.cpp#L2811-L3105).
+An `x86_64h` process also loads generic `x86_64`. Unknown ARM32 subtype policy
+remains undetermined when ARM32 candidate slices exist. This is a static model
+keyed to the selected root slice; it does not observe the target device's host
+CPU or prove which slice the device will execute. The edge's `resolution` is
+one of:
 
 | Status         | Meaning                                                                                                                                                        |
 | -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -235,7 +246,7 @@ A `conditional` image is still traced, because it is an in-root candidate
 that may load. Every edge below it has `loader_conditional: true`, and a
 request that reuses it by install name is `conditional` too. An in-root dylib
 with no platform load command remains unknown unless the root is an executable
-with observed macOS platform and the candidate’s CPU type is x86_64, i386, or arm64. In that macOS context,
+with observed macOS platform and the candidate's CPU type is x86_64, i386, or arm64. In that macOS context,
 [Apple's dyld](https://github.com/apple-oss-distributions/dyld/blob/fd8d0c4d52320ebf64db34f3cb280310d905c5ae/mach_o/UnsafeHeader.cpp#L1137-L1145) supplies an implicit macOS platform to legacy dylibs on those CPU
 types. The candidate records `platform_basis: "macos-dyld-implicit"`; the
 reported slice fields `platform: null` and `platforms: []` remain the parsed

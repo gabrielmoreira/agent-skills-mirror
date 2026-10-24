@@ -196,3 +196,12 @@ DELETE /headless/invoke/platform/data-space-feature-mappings/delete-data-space-f
 
 - **Managed Package Runtime** — skipped at user's explicit request; do not attempt to enable.
 - **Deploy Custom LWC in Standard Runtime** — skipped at user's explicit request; do not attempt to enable.
+
+## Configuration shapes
+
+Every dependent feature is one of four shapes:
+
+- **Confirmed `IndustriesSettings` toggle** — IRREVERSIBLE, warn user. Use the **Domain & Feature Toggle Write Path**: READ → WRITE (`PUT /services/data/v68.0/headless/metadata`) → cold-VERIFY.
+- **Confirmed toggle via a different mechanism** (e.g. Einstein Generative AI master toggle) — a Setup-Connect **org preference**, not `IndustriesSettings`: `GET /services/data/v68.0/setup/org/preferences/<PrefName>` → `PATCH` same path with `{"desiredState": true|false}` → cold-VERIFY. Some of these are reversible — check the reference before assuming one-way.
+- **Overlaps a domain sub-feature** (several toggles are shared with Student Success and/or Mentoring sub-features) — cold-read first; if already `true` from a prior domain's configuration, report as already enabled rather than re-writing.
+- **Manual UI only, no API route** — instruct user to the Setup path in the reference. Flag where a custom permission set / object permissions are also required, not just a toggle — surface as manual follow-up.

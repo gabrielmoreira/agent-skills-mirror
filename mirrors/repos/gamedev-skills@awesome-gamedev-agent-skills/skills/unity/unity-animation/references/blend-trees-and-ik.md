@@ -80,4 +80,6 @@ toward 0 to release the IK smoothly.
   shortcut for the common case.
 - Layer weights and IK weights are not auto-reset; lerp them toward 0 when disengaging or the
   pose stays stuck.
-- Additive layers need a reference pose set on the clip's import settings, or they drift.
+- An additive layer adds each clip's difference from its reference pose, which is the clip's
+  first frame unless **Additive Reference Pose** is enabled in the clip's import settings.
+  If that frame is not a neutral pose, the whole layer comes out offset; pick a neutral frame.

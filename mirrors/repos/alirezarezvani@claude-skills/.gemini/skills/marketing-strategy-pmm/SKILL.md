@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/marketing-strategy-pmm/../../../marketing-skill/skills/marketing-strategy-pmm/SKILL.md

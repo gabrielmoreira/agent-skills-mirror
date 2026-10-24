@@ -20,7 +20,11 @@ Use this skill when the user's question could benefit from historical context: t
 Run a semantic search over the project's memsearch collection. The collection is derived from the project directory (see `derive-collection.sh`); the plugin normally injects the resolved value as `{{COLLECTION}}`:
 
 ```bash
-{{MEMSEARCH_CMD}} search "{{QUERY}}" --top-k 5 --json-output {{MILVUS_FLAG}}--default-collection "{{COLLECTION}}"
+embedding_args=()
+if [[ ! -e "$HOME/.memsearch/config.toml" && ! -e .memsearch.toml ]]; then
+  embedding_args=(--provider onnx)
+fi
+{{MEMSEARCH_CMD}} search "{{QUERY}}" "${embedding_args[@]}" --top-k 5 --json-output {{MILVUS_FLAG}}--default-collection "{{COLLECTION}}"
 ```
 
 Replace `{{QUERY}}` with a concise natural-language summary of what the user needs. The `--json-output` results contain `content`, `source`, `heading`, `score`, and `chunk_hash`.

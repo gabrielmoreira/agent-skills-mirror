@@ -1,14 +1,14 @@
 # src/hooks/phase-reminder/
 
 ## Responsibility
-Orchestrates phase reminder injection into user messages for the orchestrator agent, ensuring workflow guidance is appended without mutating the original message content or affecting UI display.
+Orchestrates phase reminder injection into user messages, ensuring workflow guidance is appended without mutating the original message content or affecting UI display.
 
 ## Design
 
 ### Core Abstraction
 - **Hook Factory**: `createPhaseReminderHook()` returns an OpenCode experimental chat message transformer hook
 - **Non-Mutating Strategy**: Appends phase reminder as a separate message part rather than modifying user-authored text
-- **Targeted Injection**: Only processes messages from the orchestrator agent
+- **Targeted Injection**: Only anchors onto orchestrator-authored user messages (per-message eligibility)
 
 ### Key Components
 - `PHASE_REMINDER` constant (imported from `../../config/constants`)
@@ -20,14 +20,14 @@ Orchestrates phase reminder injection into user messages for the orchestrator ag
 - **Guard Clauses**: Multiple preconditions prevent unnecessary processing:
   - Empty message check
   - User message existence check
-  - Orchestrator agent check
+  - Per-message orchestrator agent check
   - Duplicate injection prevention
   - Internal initiator marker check
 
 ## Flow
 
 1. **Hook Invocation**: OpenCode calls the `experimental.chat.messages.transform` hook before sending messages to API
-2. **Session Selection**: Finds the latest user message and uses its orchestrator/session identity as the eligibility scope
+2. **Session Selection**: Finds the latest user message and uses its session identity as the eligibility scope
 3. **Forward Scan**: Scans messages from oldest to newest within that session view
 4. **Eligibility Check**: Skips non-orchestrator messages, session mismatches, internal-initiator parts, and messages without usable text
 5. **Single Anchor Selection**: The first eligible message becomes the anchor
@@ -45,10 +45,10 @@ Orchestrates phase reminder injection into user messages for the orchestrator ag
 
 ### Consumers
 - **OpenCode**: Registers the hook via plugin initialization
-- **Orchestrator Agent**: Receives phase reminders in messages
+- **Orchestrator Agent**: Orchestrator-authored user messages receive the anchored phase reminder
 - **API Layer**: Receives messages with injected reminders (UI remains unaffected)
 
 ### Context
 - **Execution Timing**: Runs right before API transmission (post-UI rendering)
-- **Scope**: Only affects orchestrator agent messages
+- **Scope**: Anchors onto orchestrator-authored user messages (per-message eligibility); persists across agent switches
 - **Persistence**: Reminder is appended as a separate message part, preserving original content

@@ -174,8 +174,18 @@ alerts tab and run history.
 | `announce` | Requires `channel` and `to`. Sends synchronously through `cron::channel_bridge::send_to_channel`; the run records `Delivered` only after the channel accepts the message, otherwise `Failed`. The `cron_add` tool checks `to` against the channel's `allowed_users`. |
 | `origin` | Sends the reply back into the conversation that created the job ([`scheduler/origin_delivery.rs`](./scheduler/origin_delivery.rs)). Requires `CronJob.origin`. |
 
-Origin delivery treats blank output or exactly `NO_REPLY` as `Suppressed`:
-nothing is sent and no alert is raised. For a web origin, the reply is stored in
+A run that has nothing to send is recorded as `Suppressed` in every delivering
+mode: nothing is sent and no alert is raised. That is blank output, or
+`NO_REPLY` (in any case, with `_`, `-` or a space, quoted or with trailing
+punctuation) from a job whose own prompt names the `NO_REPLY` token, such as
+"report new mail, otherwise reply NO_REPLY". Reminders and other jobs whose
+prompt does not name it must deliver: a run that answers `NO_REPLY` or nothing
+gets one corrective turn (the prompt again, plus "NO_REPLY is not allowed for
+this task"), and if that still yields no message the run delivers
+`Reminder: <job name>`. The token itself is never sent. Shell and flow output
+is not model-written, so those jobs may always answer `NO_REPLY`.
+
+For a web origin, the reply is stored in
 the origin thread under `run_reply_message_id("cron:<job>:<run>")`, the
 web-channel `proactive_message` event is emitted with that `thread_id` and
 `request_id`, and `append_to_origin_transcript` appends it to the thread's agent
@@ -188,8 +198,7 @@ chat's in-memory history.
 Independently of the mode, `push_cron_alert` writes an entry into the
 notifications store (the alerts tab) for any failed run, and for a non-empty
 successful run in a delivering mode (`proactive`, `announce`, `origin`). A
-`none`-mode success stays silent, and so does an origin run that chose
-`NO_REPLY`.
+`none`-mode success stays silent, and so does a suppressed run.
 
 ### Origin and session targets
 
@@ -214,7 +223,7 @@ The session target shapes the prompt:
 | Target | Prompt |
 | --- | --- |
 | `isolated` | `[cron:<id> <name>] <prompt>` |
-| `current` | An unattended-run preamble (the reply is delivered as-is; reply `NO_REPLY` to send nothing), then a tail of the origin conversation (last 10 messages, at most 1400 characters, newest kept), then the task. Web history comes from the thread store, channel history from `channel_bridge`. |
+| `current` | An unattended-run preamble, then a tail of the origin conversation (last 10 messages, at most 1400 characters, newest kept), then the task. Web history comes from the thread store, channel history from `channel_bridge`. The preamble says the reply is delivered as-is; only a job whose prompt names `NO_REPLY` is told it may answer `NO_REPLY` when its condition is not met, every other job is told to always reply with the message. |
 | `main` | Runs like `current`; it is not yet a distinct main session. |
 
 Trust follows the origin. A job with a channel origin runs under
@@ -315,10 +324,10 @@ feature) nothing loads and every cron call answers `COMPONENT_DISABLED:tinyflows
 | `scheduler/run_delivery.rs` | `deliver` (delivery plus completion events) and `trigger` (flow schedule trigger, system jobs). |
 | `scheduler/failure_classification.rs` | Canned user messages and the permanent-failure classifiers that halt retries. |
 | `scheduler/shell_job.rs` | Security-gated shell execution with a timeout. |
-| `scheduler/agent_run.rs` | Agent-job turns, and `build_agent_for_cron_job`. |
+| `scheduler/agent_run.rs` | Agent-job turns (with the corrective turn for a disallowed `NO_REPLY`), and `build_agent_for_cron_job`. |
 | `scheduler/origin_context.rs` | `build_run_prompt`: the isolated prefix or the `current` preamble plus conversation tail. |
 | `scheduler/delivery.rs` | `deliver_run` and `deliver_job`, the mode switch, and `push_cron_alert`. |
-| `scheduler/origin_delivery.rs` | `deliver_to_origin`, `NO_REPLY` suppression, transcript append. |
+| `scheduler/origin_delivery.rs` | `deliver_to_origin`, the `NO_REPLY` rules (`is_no_reply`, `job_allows_no_reply`, `deliverable_reply`, `fallback_reminder`), transcript append. |
 | [`origin.rs`](./origin.rs) | `JobOrigin` capture from the live turn, the approval-gate exemption, and the turn origin a run executes under. |
 | [`job_builder.rs`](./job_builder.rs) | `create_agent_job`: origin-aware defaults and delivery validation shared by the `cron` and `schedule` tools. |
 | [`channel_bridge.rs`](./channel_bridge.rs) | Cron's handle on the channel runtime: per-chat history and live channels, registered by `start_channels`. |

@@ -22,6 +22,12 @@ Instead:
 - Otherwise rely on diff hunks in the provided `<diff>` only.
 - Do not treat local workspace contents as evidence for findings on changed files.
 
+## Whole-file deletions
+
+A file the change deletes appears in the diff as a header only: `deleted file mode` and its path. Its old body is left out. The `<deleted-files>` block in your review context lists each one with what it exported and whether it ran anything at import time. Read a body only when a finding needs it, with `git show <base>:<path>` against the base that block names.
+
+Whether the surviving tree still uses a deleted file is the correctness and adversarial reviewers' question; their personas say what to check. That check needs the reviewed tree, and a body needs the base the block names. When you cannot read one of them (for example, remote scope with no head ref, or a block with no base), record in `residual_risks` which deleted files went unchecked and why; never report their liveness as checked. Every other reviewer reviews the files that survive, including what the deletion left behind there: imports, props, styles, flags, and assets that no longer have a reader. The body of a deleted file is not code to review.
+
 ## Evidence Tools (tool-adaptive)
 
 Recall depends on how you find related code. A diff-local read plus a text `grep` misses callers reached through re-exports, aliases, and barrel files, and mis-hits identifiers inside strings, comments, or longer names. When a claim depends on a symbol's callers, implementations, or whether a construct appears elsewhere, use the strongest search your harness actually exposes, preferring in this order and falling through when a tier is unavailable:

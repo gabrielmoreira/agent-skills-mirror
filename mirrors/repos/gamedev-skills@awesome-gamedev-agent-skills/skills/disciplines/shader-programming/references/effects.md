@@ -11,16 +11,25 @@ shows the HLSL form.
 | `vec2/3/4`, `mat3/4` | `float2/3/4`, `float3x3/4x4` | vectors and matrices |
 | `mix(a, b, t)` | `lerp(a, b, t)` | linear interpolation |
 | `fract(x)` | `frac(x)` | fractional part |
-| `mod(a, b)` | `fmod(a, b)` | sign differs for negatives — verify |
+| `mod(a, b)` | `a - b * floor(a / b)` | HLSL `fmod` truncates, so it differs for negatives |
 | `texture(samp, uv)` | `tex.Sample(samp, uv)` | sampler is a separate object in HLSL |
 | `inversesqrt(x)` | `rsqrt(x)` | |
-| `mat * vec` (column-major) | `mul(vec, mat)` (row-major) | matrix order/convention differs |
+| `atan(y, x)` | `atan2(y, x)` | two-argument arctangent |
+| `M * v` | `mul(M, v)` | same maths; `v * M` ↔ `mul(v, M)` |
 | `gl_Position` / `out` color | `SV_Position` / `SV_Target` | stage outputs via semantics |
 | `dFdx/dFdy` | `ddx/ddy` | screen-space derivatives |
 
-Also watch: clip-space depth range (OpenGL `-1..1` vs D3D `0..1`) and UV/clip Y
-orientation differ between APIs — engines usually normalize this for you, but it
-surfaces when porting raw shaders.
+Matrix order is about how the engine builds and uploads its matrices, not the
+language: Unity's SRP shader library writes
+`mul(GetObjectToWorldMatrix(), float4(positionOS, 1.0))`, the same order as
+GLSL's `M * v`. When porting, keep the multiply order the source engine used and
+check its constant-buffer packing (`row_major` / `column_major`) rather than
+swapping the operands by reflex.
+
+Also watch: clip-space depth range (OpenGL `-1..1`; Direct3D, Vulkan, Metal and
+WebGPU `0..1`) and Y orientation (Vulkan's clip-space Y points down; texture and
+framebuffer origins differ between APIs) — engines usually normalize this for
+you, but it surfaces when porting raw shaders.
 
 ## 2D sprite outline (sample the alpha neighborhood)
 
@@ -44,7 +53,12 @@ void main() {
 ```
 
 For thicker or smoother outlines, sample 8 neighbors (include diagonals) or do a
-small distance-field pass. In 3D, outlines are usually done differently: render
+small distance-field pass. Two traps: the outline can only be drawn inside the
+sprite's quad, so the texture needs a transparent margin at least as wide as the
+outline (or the engine must pad the quad); and on an atlas, neighbour samples at
+the frame edge read the next sprite, so clamp the UV to the frame. In Godot,
+`TEXTURE_PIXEL_SIZE` gives `texel_size` directly; in a PixiJS filter, clamp with
+the provided `uInputClamp`. In 3D, outlines are usually done differently: render
 back-faces scaled outward along normals, or detect edges from depth/normal
 discontinuities in a post-process.
 
@@ -54,15 +68,16 @@ discontinuities in a post-process.
 // Darken pixels by distance from screen center. screen_uv is 0..1 across the view.
 uniform sampler2D screen_tex;
 uniform float strength = 0.6;   // 0 = none, 1 = strong
-uniform float radius = 0.75;    // where darkening begins
+uniform float radius = 0.75;    // full darkness at this distance
 in vec2 screen_uv;
 out vec4 frag;
 void main() {
     vec3 c = texture(screen_tex, screen_uv).rgb;
     float d = distance(screen_uv, vec2(0.5));      // 0 center .. ~0.707 corner
-    float v = smoothstep(radius, radius * 0.5, d); // 1 in center, ->0 at edges
+    float v = 1.0 - smoothstep(radius * 0.5, radius, d); // 1 in center, ->0 at edges
     frag = vec4(c * mix(1.0 - strength, 1.0, v), 1.0);
 }
+// smoothstep needs edge0 < edge1; smoothstep(radius, radius * 0.5, d) is undefined.
 ```
 
 ## Color grading via a curve (brightness/contrast/saturation)
@@ -93,15 +108,41 @@ lookup texture indexed by the pixel's RGB instead.
 
 - **Godot (4.x) — `gdshader`.** Godot's shading language is GLSL-like with a
   `shader_type` (`canvas_item` for 2D, `spatial` for 3D). It provides built-ins:
-  `UV`, `COLOR`, `TIME`, `TEXTURE`, `SCREEN_TEXTURE`, `NORMAL`, `VIEW`. Write
-  `fragment()` / `vertex()` functions. Map the GLSL examples here onto those
-  built-ins. See `godot-shaders`.
-- **Unity — ShaderLab + HLSL.** Shaders live in `.shader` files (ShaderLab
-  blocks) or Shader Graph. Code is HLSL: `float4`, `lerp`, `tex2D`/`.Sample`,
-  `SV_Target`. URP/HDRP supply include files for lighting and transforms.
-- **Unreal — Material Editor (node graph) + HLSL.** Most authoring is visual
+  `UV`, `COLOR`, `TIME`, `TEXTURE`, `TEXTURE_PIXEL_SIZE` (2D), `NORMAL`, `VIEW`
+  (3D). The screen is not a built-in since 4.0 (`SCREEN_TEXTURE` was removed):
+  declare `uniform sampler2D screen_tex : hint_screen_texture, filter_linear_mipmap;`
+  and sample it with `SCREEN_UV`. Write `fragment()` / `vertex()` functions. Map
+  the GLSL examples here onto those built-ins. See `godot-shaders`.
+- **Unity 6.3 — ShaderLab + HLSL.** Shaders live in `.shader` files (ShaderLab
+  blocks) or Shader Graph. Code is HLSL: `float4`, `lerp`, `SV_Target`. In URP,
+  include `Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl`,
+  declare `TEXTURE2D(_BaseMap); SAMPLER(sampler_BaseMap);`, sample with
+  `SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, uv)` and put every material
+  property in one `CBUFFER_START(UnityPerMaterial)` block so the SRP Batcher can
+  batch it. `tex2D`/`sampler2D` belong to Built-in Render Pipeline shaders.
+- **Unreal 5.8 — Material Editor (node graph) + HLSL.** Most authoring is visual
   nodes; Custom nodes embed HLSL. Concepts (UVs, fresnel via a Fresnel node,
   panner for UV scroll) map directly to the patterns here.
+- **three.js r186.** `WebGLRenderer` runs GLSL through `ShaderMaterial`
+  (three.js prepends its uniforms and attributes such as `projectionMatrix`,
+  `position`, `uv`; compiled as GLSL ES 3.00 on WebGL 2) or `RawShaderMaterial`
+  (you declare everything). `WebGPURenderer` (`three/webgpu`) only runs node
+  materials: write the effect in TSL (`three/tsl`), which it compiles to WGSL on
+  WebGPU and to GLSL on its WebGL 2 fallback.
+- **PixiJS 8 filters.** `Filter.from({ gl: { fragment }, resources })` takes a
+  GLSL ES 3.00 fragment shader (`in vec2 vTextureCoord; uniform sampler2D
+  uTexture; out vec4 finalColor;`) for the WebGL renderer; the WebGPU renderer
+  needs a WGSL program passed as `gpu`. `vTextureCoord` is **not** 0..1 over
+  the sprite: it covers the filter's input texture, so for sprite-relative
+  effects (vignette, dissolve by UV) compute
+  `vTextureCoord * uInputSize.xy / uOutputFrame.zw` (declare both as
+  `uniform vec4`; the filter system fills them).
+- **WGSL / WebGPU in browsers (gpuweb status, Oct 2026).** Default-on in Chrome
+  and Edge 113+ on Windows, macOS and ChromeOS, Chrome 121+ on Android 12+
+  (Qualcomm, ARM, Intel GPUs), Safari 26 on macOS, iOS, iPadOS and visionOS,
+  and Firefox 141+ on Windows and 147+ on Apple Silicon Macs. Chrome on Linux
+  enables it only for some GPUs; Firefox on Linux and Android does not yet.
+  Keep a WebGL 2 path for a web game.
 
 ## Performance checklist
 

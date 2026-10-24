@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/site-architecture/../../../marketing-skill/skills/site-architecture/SKILL.md

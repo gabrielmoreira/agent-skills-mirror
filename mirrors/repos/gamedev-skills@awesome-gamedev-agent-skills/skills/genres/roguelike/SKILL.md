@@ -77,17 +77,22 @@ dungeon = generate_dungeon(rng, depth)   # same seed + depth => same dungeon
 ### 2. Energy-based turn scheduler (speeds differ)
 
 ```python
-# Pseudocode. Each actor gains energy each tick and acts when it has enough.
+# Pseudocode. Actors gain energy each tick and act when they have enough.
 # Faster actors gain more per tick, so they act more often — no fixed "player then enemies".
 TURN_COST = 100
 def next_actor(actors):
     while True:
-        for a in actors:                 # stable order avoids ties favoring one side
-            a.energy += a.speed          # e.g. speed 100 = normal, 150 = hasted
+        for a in actors:                 # 1) serve anyone already ready, in a stable order
             if a.energy >= TURN_COST:
-                a.energy -= TURN_COST
-                return a                 # this actor takes exactly one action now
+                a.energy -= TURN_COST    #    (or the cost of the action they choose)
+                return a                 #    this actor takes exactly one action now
+        for a in actors:                 # 2) nobody is ready: advance time for everyone at once
+            a.energy += a.speed          #    e.g. speed 100 = normal, 150 = hasted, 50 = slowed
 ```
+
+Grant energy to everyone in a separate pass. Adding it inside the same loop that returns the
+first ready actor starves every actor after it: with two speed-100 actors, the first one acts
+every time and the second never does.
 
 ### 3. Field of view + explored memory
 
@@ -99,15 +104,19 @@ for cell in visible:
 # Render: visible -> lit; explored-but-not-visible -> dim; never-seen -> hidden.
 ```
 
-Use a proven FOV algorithm (recursive shadowcasting or symmetric shadowcasting). Do not
-roll a naive raycast-per-cell — it produces asymmetric, "blinking" vision. See refs.
+Use symmetric shadowcasting (refs §3): if you can see a monster, it can see you. Classic
+recursive shadowcasting is fast but not symmetric, and a naive raycast per cell gives blind
+spots and "blinking" vision. If a library is available, use its symmetric mode (python-tcod's
+`compute_fov` takes `FOV_SYMMETRIC_SHADOWCAST` as its algorithm).
 
 ## Pitfalls / failure modes
 
 - **Disconnected dungeons** → rooms the player can't reach. Always run a connectivity/flood-fill
   pass and carve corridors until every walkable cell is reachable.
 - **Naive FOV** → vision that flickers or is asymmetric (you see them, they don't see you).
-  Use shadowcasting; test symmetry.
+  Use symmetric shadowcasting and test symmetry (refs §3).
+- **One actor never gets a turn** → energy granted inside the "find who is ready" loop
+  (Pattern 2). Advance energy for all actors in its own pass.
 - **Real-time loop pretending to be turn-based** → input races and double-moves. Resolve one
   discrete turn at a time; queue input.
 - **Flat difficulty** → no descent pressure. Scale monsters/loot by depth and keep resources scarce.

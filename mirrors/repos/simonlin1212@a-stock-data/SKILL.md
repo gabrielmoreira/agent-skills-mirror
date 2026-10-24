@@ -2,16 +2,20 @@
 name: a-stock-data
 description: 当任务需要写代码实际获取A股及相关市场数据时使用——行情/K线/逐笔(腾讯日周月前后复权+分钟线+当日逐笔、通达信官网全市场盘后包、百度)、研报(东财+新浪+同花顺+iwencai)、信号(热点/北向/龙虎榜/解禁/行业/板块资金流)、资金面(融资融券/大宗/股东户数/分红/资金流/ETF份额)、新闻(财联社/东财/华尔街见闻/新闻联播)、财务三表/F10/估值历史/ST名单、公告(巨潮)、打板(涨停池/连板/炸板率/监控池/异动)、ETF期权、舆情互动(互动易/上证e互动/热榜)、筹码分布、复权因子、申万行业变迁、宏观与利率(社融/PMI/中债收益率曲线/回购定盘利率/LPR/全球宏观日历)、指数成分/权重/估值/交易日历、期货与大宗商品(五家期货交易所日行情/商品与股指期权/持仓排名/期货日K含大商所/实时期货/A50/上海金)、事件驱动(业绩预告/机构调研/增减持/回购/股权质押/新股申购)、可转债等真实数据。十五层·87端点(含5备胎)·34个来源·内嵌全部可运行代码，自包含零外部文件；优先用腾讯/交易所官方等不封IP源，东财接口已内置限流防封，主源被封可查「备用源速查」降级。仅在需要调用数据接口取数时使用：A股概念解释、投资观点讨论、策略问答等无需取数的话题不要加载本skill。
 origin: custom
-version: 3.10.2
+version: 3.10.3
 ---
 
 > 📦 项目主页：https://github.com/simonlin1212/a-stock-data — 更新、反馈、支持作者
 > 
 > 作者：Simon 林 · X [@linsizhen](https://x.com/linsizhen) · 邮箱：simonlin0423@gmail.com
 
-# A股全栈数据工具包 V3.10.2
+# A股全栈数据工具包 V3.10.3
 
 十五层数据架构，87 个能力端点（82 主端点 + 5 备胎）、34 个来源。V3.10 新增的 2 个入口于 2026-09-22 实测，V3.9 新增的 25 个入口于 2026-09-20 实测；旧端点的验证日期见各章节。覆盖主板/创业板/科创板/ST，北交所覆盖依端点而异；已有备胎的数据可按「备用源速查」降级。
+
+> **V3.10.3（上证e互动时间列修复，2026-10-23）：** 入口数、来源数不变，返回的数据也不变。§10.3 `sse_e_interaction()`：
+> 站点 1 天内的回复时间写成「昨天 18:22」，原来只认绝对时间，遇到就整页抛 `RuntimeError`；现在相对 / 绝对写法都换算成
+> `YYYY-MM-DD HH:MM`（相对时间按北京时间），认不出仍然报错。
 
 > **V3.10.2（PE 消化年数修正，2026-10-11 · #58）：** 入口数、来源数不变。`full_valuation()` 的 `digest_years`：
 > 前向 PE 高于 30x 而下一年预测缺失或盈利不增长、或当年 EPS 缺失 / 不为正时，原来返回 `0`（像是已经消化完），现在返回 `None`；其余情况不变。
@@ -4850,14 +4854,18 @@ print("人气第一:", hot[0]["name"], "概念命中:", em_hot_concept(hot[0]["c
 沪市公司的问答只能走这里。`code=None` 看全市场；给沪市代码（60 / 68 / 900 开头）只看该公司。
 `kind='answered'` 为最新已回复问答，`kind='questions'` 为最新提问（含未回复，`answer` 为 None）。
 平台只开放近期问答，公司维度实测约近 1 个月。首次查某家公司要在公司列表里定位 uid（倍增 + 二分，约 10–13 次请求），之后走缓存。
+**时间写法不统一（2026-10-23 实测）：** 提问时间是绝对时间（`2026年10月21日 17:47`），1 天内的回复时间是相对时间（`昨天 18:22`），
+返回的 `question_time` / `answer_time` 都换算成 `YYYY-MM-DD HH:MM`（相对时间按北京时间 UTC+8），认不出直接报错。
 北交所公司两个平台都没有。
 
 <!-- v39-sse-e:start -->
 ```python
+import datetime as _dt
 import html as _html
 import re
 
 SSE_E_BASE = "https://sns.sseinfo.com"
+_SSE_CN_TZ = _dt.timezone(_dt.timedelta(hours=8))   # 「昨天 18:22」按北京时间换算，海外服务器也不跑偏
 _sse_uid_cache = {}                 # 证券代码 → 上证e互动公司 uid
 _sse_company_pages = {}             # 页码 → [(code, uid)]，二分查找时复用
 _SSE_COMPANY_END = "没有任何上市公司的信息"
@@ -4913,9 +4921,69 @@ def _sse_text(fragment):
     return _html.unescape(re.sub(r"<[^>]+>", "", fragment)).strip()
 
 
-def _sse_time(text):
-    match = re.search(r"(\d{4})年(\d{2})月(\d{2})日\s*(\d{2}:\d{2})", text)
-    return f"{match.group(1)}-{match.group(2)}-{match.group(3)} {match.group(4)}" if match else None
+# 站点时间两种写法并存（2026-10-23 实测）：提问是绝对时间「2026年10月21日 17:47」，
+# 1 天内的回复是相对时间「昨天 18:22」。只认绝对写法会让整页解析直接抛错。
+_SSE_ABS_TIME = re.compile(r"(\d{4})\s*[年\-/]\s*(\d{1,2})\s*[月\-/]\s*(\d{1,2})\s*日?\s*(\d{1,2}):(\d{2})")
+_SSE_DAY_WORD_TIME = re.compile(r"^(今天|昨天|前天)\s*(\d{1,2}):(\d{2})$")
+_SSE_MONTH_DAY_TIME = re.compile(r"^(\d{1,2})-(\d{1,2})\s+(\d{1,2}):(\d{2})$")
+_SSE_AGO_TIME = re.compile(r"^(\d+)\s*(秒|分钟|小时|天)前$")
+_SSE_CLOCK_TIME = re.compile(r"^(\d{1,2}):(\d{2})$")
+_SSE_DAY_WORD = {"今天": 0, "昨天": 1, "前天": 2}
+_SSE_AGO_UNIT = {"秒": "seconds", "分钟": "minutes", "小时": "hours", "天": "days"}
+
+
+def _sse_time(text, now=None):
+    """把站点的时间文案换算成「YYYY-MM-DD HH:MM」；认不出返回 None，由调用方决定是否报错。
+
+    相对写法按北京时间算；now 可注入，便于离线测试固定日期。
+    """
+    text = (text or "").strip()
+    now = (now or _dt.datetime.now(_SSE_CN_TZ)).replace(tzinfo=None)
+    match = _SSE_ABS_TIME.search(text)
+    if match:
+        year, month, day, hour, minute = (int(group) for group in match.groups())
+        try:
+            return _dt.datetime(year, month, day, hour, minute).strftime("%Y-%m-%d %H:%M")
+        except ValueError:      # 2 月 30 日这类不存在的日期算认不出，不抛 ValueError 给上层
+            return None
+    match = _SSE_DAY_WORD_TIME.match(text)
+    if match:
+        when = now - _dt.timedelta(days=_SSE_DAY_WORD[match.group(1)])
+        try:
+            return when.replace(hour=int(match.group(2)), minute=int(match.group(3)),
+                                second=0, microsecond=0).strftime("%Y-%m-%d %H:%M")
+        except ValueError:      # 非法时分算认不出
+            return None
+    match = _SSE_MONTH_DAY_TIME.match(text)
+    if match:
+        month, day, hour, minute = (int(group) for group in match.groups())
+        try:
+            when = _dt.datetime(now.year, month, day, hour, minute)
+        except ValueError:
+            return None
+        if when - now > _dt.timedelta(days=1):   # 跨年：1 月里看到「12-31」是去年的
+            try:
+                when = when.replace(year=now.year - 1)
+            except ValueError:  # 去年可能没有 2 月 29 日
+                return None
+        return when.strftime("%Y-%m-%d %H:%M")
+    match = _SSE_AGO_TIME.match(text)
+    if match:
+        try:
+            delta = _dt.timedelta(**{_SSE_AGO_UNIT[match.group(2)]: int(match.group(1))})
+            return (now - delta).strftime("%Y-%m-%d %H:%M")
+        except (OverflowError, ValueError):  # N 过大算认不出
+            return None
+    if text in ("刚刚", "刚才"):
+        return now.strftime("%Y-%m-%d %H:%M")
+    match = _SSE_CLOCK_TIME.match(text)    # 只有时分 = 今天
+    if match:
+        try:
+            return now.replace(hour=int(match.group(1)), minute=int(match.group(2)),
+                               second=0, microsecond=0).strftime("%Y-%m-%d %H:%M")
+        except ValueError:      # 非法时分算认不出
+            return None
+    return None
 
 
 def _sse_required_time(item_id, text):

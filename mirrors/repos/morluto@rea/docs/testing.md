@@ -25,6 +25,7 @@ behavior, and complete CI evidence before merging.
 | `npm run check:changed`           | Cached typecheck/lint and branch-related source feedback                                                                |
 | `npm run check:pr`                | Opt-in complete local deterministic gate and generated-file checks                                                      |
 | `npm run docs:check`              | Generated-document validation and fresh onboarding example consistency checks                                           |
+| `npm run docs:build`              | Render VitePress documentation and apply its page-link checks; no live external-link or GitHub fragment verification    |
 
 The general source suite above runs on Linux in CI, and Windows CI runs a
 curated lane ([Native platform baseline in CI](#native-platform-baseline-in-ci)).
@@ -33,6 +34,12 @@ change, such as POSIX fixture paths, `#!/bin/sh` tool stubs, or POSIX rename
 semantics. Compare failures against the base revision, or run the suite on
 Linux or WSL, before attributing them to a change. See `CONTRIBUTING.md` →
 Windows source checkouts.
+
+The CI documentation lane runs both `docs:check` and `docs:build` when the
+existing change classifier selects documentation or its producing inputs.
+Generated facts and rendered page links have separate checks. VitePress does not
+establish that every external URL or GitHub-rendered localized heading exists;
+verify those destinations when editing them.
 
 For example:
 
@@ -137,8 +144,11 @@ without serial scheduling. Pure domain/service, composition, conformance,
 evaluation, CLI boundary, and MCP boundary projects share module graphs. Their
 tests avoid process-global state and keep resource cleanup test-scoped. Each
 MCP session still owns its resources, and CLI cases retain fresh command
-instances or subprocesses. CLI and MCP module mocks belong in `tests/process-global/`
-so they keep per-file isolation. Product catalog verification stays with the
+instances or subprocesses. Fixtures using `vi.mock` or `vi.doMock` need an
+isolated project. CLI/MCP fixtures normally live in `tests/process-global/`.
+When a path must stay, assign it explicitly in `scripts/lib/test-projects.mjs`,
+exclude it from its shared owner, and preserve its source/built group.
+Product catalog verification stays with the
 isolated filesystem boundary tests because it loads both source and compiled
 module graphs. Adapter, other boundary, acceptance, and process-global projects
 retain per-file isolation. See `vitest.config.ts` for current settings.
@@ -148,6 +158,10 @@ mock cannot replace a consumer that was imported earlier. Check these tests
 with the consumer preloaded as well as alone. For simulated protocol traces,
 use an acknowledged event barrier before asserting complete observations;
 a zero-duration capture does not guarantee queued events have arrived.
+
+Focused contract tests should import the named contract family they exercise;
+reserve the full tool catalog for catalog-wide assertions. Resolve contracts by
+operation name rather than array position.
 
 Check advertised schemas after SDK conversion for every supported schema
 profile. Meta-schema validity does not establish client acceptance or useful
@@ -167,6 +181,20 @@ provider options alone do not enable instrumentation.
 Vitest worker limits do not bound subprocesses launched within a test. Bound
 those batches separately so repeated CLI validation cannot oversubscribe the
 runner. Preserve simultaneous launches where concurrency is itself under test.
+
+Coordinate expensive checks across agents sharing a host. If a test unexpectedly
+consumes heavy CPU, stop its owned process family, retain its log and revision,
+and profile a bounded representative case before retrying. Separate production
+work from fixture generation, schema compilation, subprocess startup and cleanup.
+Choose elapsed, CPU and process-family memory limits before the run; a worker
+count or test timeout alone does not enforce those limits.
+
+Remove demonstrated repeated work while preserving distinct assertions and
+resource ownership. Share immutable fixture preparation where safe; keep fresh
+sessions when lifecycle or concurrency is the behavior under test. Compare the
+same completed workload before and after, report cache state and measurement
+limits, and record interrupted runs separately from passes. Increasing a timeout
+does not explain a CPU regression.
 
 Build/documentation writers hold checkout-local output locks. Tests do not
 hold a broad command lock; `check:pr` finishes tests before document validation.
@@ -205,13 +233,16 @@ the next command starts.
 IL2CPP metadata, and dylib-resolution commands use that session. File teardown
 stops the shared CLI process, including startup still in flight, and does not
 open another after close.
-`exportedFunctionBindingsCli.test.ts` keeps its own compiled CLI parity
-process for the file and still compares that process's JSON command results
-with the MCP session. A command that does not respond is rejected. That
-process stays owned until it exits, and another process does not start while
-it remains. A process that stays running after SIGKILL remains owned so a
-later close can retry. Closing the session reports a failure when the process
-does not exit after stdin closes, once the child has been stopped.
+`exportedFunctionBindingsCli.test.ts` uses the shared compiled CLI session for
+its file and compares its JSON command results with the MCP session. It selects
+20-second startup and command deadlines; other callers retain their existing
+deadline behavior. Retired processes stay owned until exit, block replacement,
+and remain available for a later close to retry after failed termination.
+Shared session cleanup closes stdin so the worker can release JavaScript
+resources, waits the bounded grace, then escalates to SIGTERM and SIGKILL only
+if needed. Confirmed exit succeeds; an unconfirmed exit reports cleanup failure.
+When startup or a command fails and cleanup also fails, the reported aggregate
+retains both failures and the original failure as its cause.
 `applicationWorkflowCli.test.ts` keeps one compiled CLI process for its JSON
 commands, including a non-zero status whose stdout is still a JSON document,
 and closes that process after the file.
@@ -236,7 +267,13 @@ instrumentation remains equivalent.
 
 ## Choose verification for the change
 
-| Change or claim                           | First check                                                   | Additional coverage                                         |
+`test:local` is fast source-level feedback. For the strongest practical
+regression, prefer a real public CLI/MCP workflow, then production-boundary
+integration, then a producer golden; use the table to select quick feedback and
+claim-specific additional evidence. Provider-behavior claims require the
+matching real-provider lane.
+
+| Change or claim                           | Fast feedback                                                 | Claim-specific coverage                                     |
 | ----------------------------------------- | ------------------------------------------------------------- | ----------------------------------------------------------- |
 | Source semantics                          | `npm run test:local -- PATH...`                               | Relevant boundary cases when the behavior crosses a port    |
 | CLI/MCP workflow                          | `npm run test:focused -- PATH...`                             | Actual public calls; an injected provider has limited scope |
@@ -265,6 +302,27 @@ cases. Share setup without hiding inputs or expected evidence. For successful
 `Result` values, throw the typed error before asserting the value; a preceding
 `.ok` assertion adds no coverage. Protocol fixtures must reject unmodeled
 commands and preserve actual producer reply shapes.
+
+For comparison normalization, include a legitimate equivalent pair and a
+distinct pair that would collapse if representation tags or scope were lost.
+For learned identifiers, cover conflicting pairs and reused values in different
+collections; mappings must remain one-to-one within their declared scope.
+
+For coverage propagation, compare the same returned rows under complete and
+incomplete examination. If a row exists on the left but is missing from a fully
+examined compatible right inventory, removal can be established. If the right
+side examined only eight of ten applicable records, or returns only one page,
+the same missing row remains unknown unless separate evidence proves absence.
+Assert the structured coverage and comparison status as well as the explanation.
+
+For format compatibility, identify the producer revision that establishes each
+rule. Include an accepted boundary case beside the rejected case so a stricter
+parser cannot pass by refusing both. Keep source-derived behavior, synthetic
+fixtures, and executed producer or runtime oracles distinct in validation
+reports. A fixture accepted by REA proves its reader behavior; it does not prove
+that a real loader accepts the artifact. If multiple producer revisions share a
+format identifier but differ in behavior, record that ambiguity rather than
+using one installed version as an oracle for all of them.
 
 Packed bridge validation uses Python's standard-library AST and tar readers
 with `-I -S`: caller-local modules, `PYTHONPATH`, and site startup hooks must
@@ -743,6 +801,13 @@ behavior requires the applicable `verify:*` lanes; packaging and installation
 changes also require `npm run verify:package`. The full-gate benchmark measures
 that explicit lane, not the routine iteration requirement.
 
+The package-update registry fixture retains its first proxy/body failure and
+aborts the owned updater command. It joins the helper and installer descendants
+before workspace removal. Incomplete process cleanup retains the exact owner
+and workspace rather than reporting successful removal. The controlled
+`packageUpdateRegistryFailure` regression needs built process modules, uses no
+public registry, and checks both the primary failure and live descendant absence.
+
 ## Real-toolchain verification lanes
 
 Linux Rizin debugger ownership changes require a separate real-provider gate on
@@ -849,8 +914,13 @@ After import, deleting that source must preserve the captured database identity.
 Instruction inspection and containing-function lookup also agree across
 hexadecimal case, leading zeros, and encoded default address-space spellings.
 The same source-acquisition workflow exercises missing and directory-replaced
-inputs, plus real read-permission denial on a non-root host. Root runs report
-that permission-denial check as unverified. Filesystem integration separately checks selected-platform routing and exclusive creation.
+inputs, plus real read-permission denial on a host that enforces it. Permission
+fixtures must probe the relevant read, write or search operation before relying
+on POSIX mode bits: a non-root Linux process may bypass DAC through capabilities.
+`requirePermissionDenial` reports an explicit skip when the host permits the
+probe; it restores the probe's permissions before skipping. Such a skip leaves
+real permission coverage unverified. Filesystem integration separately checks
+selected-platform routing and exclusive creation.
 Namespace annotation probes compile a separate host C fixture with C++ ABI
 symbols, avoiding a C++ runtime prerequisite. Real Ghidra demangling supplies
 duplicate leaf names in two top-level namespaces and a nested namespace. The
@@ -1644,7 +1714,7 @@ conformance/vtable fixture.
   allows a host-permission-boundary-only result and explicitly reports
   `positive_e2e: false`; it must not be reported as capture/action proof.
   Both commands reject a changed executable digest and clean up the fixture
-  process and helper. These lanes require an interactive macOS desktop. See [native investigation](native-investigation.md)
+  process and helper. These lanes require an interactive macOS desktop. See [native investigation](native-investigation.md).
 
 `npm run verify:native-calls` needs macOS with Command Line Tools (`clang`,
 `lldb`, `codesign`, `nm`) and actual debugger access to the owned fixtures.
@@ -1732,8 +1802,10 @@ the running Node engine's single-string limit. Shared input leaves keep the
 fixture's graph small; the verifier writes one temporary output file, checks its
 complete byte count and an independent digest, then removes it. It requires only
 Node and the built REA runtime, with space for the output plus a 1 GiB reserve.
-Run `npm run verify:javascript:output -- jsonl` for compact JSONL coverage. This
-opt-in lane is separate from routine tests and the canonical hash check
+Run `npm run verify:javascript:output -- jsonl` for compact JSONL coverage. Its
+row collection must match independent row and final-metadata byte/digest goldens;
+its token count is checked against the actual file one line at a time, even when
+the complete export exceeds the engine string limit. This opt-in lane is separate from routine tests and the canonical hash check
 `npm run verify:javascript:digests`. It verifies serialization rather than an
 arbitrary third-party application's parsing cost or MCP client capacity.
 

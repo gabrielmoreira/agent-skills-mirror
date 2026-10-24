@@ -7,7 +7,7 @@ ref: develop
 
 # Mirror Manifest
 
-Mirror of `elizaOS/eliza` — 26 default patterns, 5 followed patterns, 370 file(s) materialized.
+Mirror of `elizaOS/eliza` — 26 default patterns, 5 followed patterns, 371 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `elizaOS/eliza` — 26 default patterns, 5 followed patterns, 370 file
 | Ref           | `develop` |
 | Default pats  | 26 |
 | Followed pats | 5 |
-| Files         | 370 |
+| Files         | 371 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -337,102 +337,103 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 272 | ✓ | [`plugins/plugin-imessage/README.md`](plugins/plugin-imessage/README.md) |
 | 273 | ✓ | [`plugins/plugin-inbox/README.md`](plugins/plugin-inbox/README.md) |
 | 274 | ✓ | [`plugins/plugin-knowledge/README.md`](plugins/plugin-knowledge/README.md) |
-| 275 | ✓ | [`plugins/plugin-local-inference/native/audio-fixtures/README.md`](plugins/plugin-local-inference/native/audio-fixtures/README.md) |
-| 276 | ✓ | [`plugins/plugin-local-inference/native/polarquant-cpu/fork-integration/README.md`](plugins/plugin-local-inference/native/polarquant-cpu/fork-integration/README.md) |
-| 277 | ✓ | [`plugins/plugin-local-inference/native/polarquant-cpu/README.md`](plugins/plugin-local-inference/native/polarquant-cpu/README.md) |
-| 278 | ✓ | [`plugins/plugin-local-inference/native/qjl-cpu/README.md`](plugins/plugin-local-inference/native/qjl-cpu/README.md) |
-| 279 | ✓ | [`plugins/plugin-local-inference/native/README.md`](plugins/plugin-local-inference/native/README.md) |
-| 280 | ✓ | [`plugins/plugin-local-inference/native/silero-vad-cpp/README.md`](plugins/plugin-local-inference/native/silero-vad-cpp/README.md) |
-| 281 | ✓ | [`plugins/plugin-local-inference/native/verify/asr_bench_fixtures/non_publish_structure_5utt/README.md`](plugins/plugin-local-inference/native/verify/asr_bench_fixtures/non_publish_structure_5utt/README.md) |
-| 282 | ✓ | [`plugins/plugin-local-inference/native/voice-bench/configs/gpu/README.md`](plugins/plugin-local-inference/native/voice-bench/configs/gpu/README.md) |
-| 283 | ✓ | [`plugins/plugin-local-inference/native/voice-bench/README.md`](plugins/plugin-local-inference/native/voice-bench/README.md) |
-| 284 | ✓ | [`plugins/plugin-local-inference/native/voice-classifier-cpp/README.md`](plugins/plugin-local-inference/native/voice-classifier-cpp/README.md) |
-| 285 | ✓ | [`plugins/plugin-local-inference/native/wakeword-cpp/README.md`](plugins/plugin-local-inference/native/wakeword-cpp/README.md) |
-| 286 | ✓ | [`plugins/plugin-local-inference/README.md`](plugins/plugin-local-inference/README.md) |
-| 287 | ✓ | [`plugins/plugin-local-inference/src/services/README.md`](plugins/plugin-local-inference/src/services/README.md) |
-| 288 | ✓ | [`plugins/plugin-maps/README.md`](plugins/plugin-maps/README.md) |
-| 289 | ✓ | [`plugins/plugin-mcp/README.md`](plugins/plugin-mcp/README.md) |
-| 290 | ✓ | [`plugins/plugin-meetings/README.md`](plugins/plugin-meetings/README.md) |
-| 291 | ✓ | [`plugins/plugin-native-action-journal/android/README.md`](plugins/plugin-native-action-journal/android/README.md) |
-| 292 | ✓ | [`plugins/plugin-native-action-journal/README.md`](plugins/plugin-native-action-journal/README.md) |
-| 293 | ✓ | [`plugins/plugin-native-activity-tracker/README.md`](plugins/plugin-native-activity-tracker/README.md) |
-| 294 | ✓ | [`plugins/plugin-native-agent/README.md`](plugins/plugin-native-agent/README.md) |
-| 295 | ✓ | [`plugins/plugin-native-appblocker/README.md`](plugins/plugin-native-appblocker/README.md) |
-| 296 | ✓ | [`plugins/plugin-native-browser-surface/README.md`](plugins/plugin-native-browser-surface/README.md) |
-| 297 | ✓ | [`plugins/plugin-native-bun-runtime/engine/README.md`](plugins/plugin-native-bun-runtime/engine/README.md) |
-| 298 | ✓ | [`plugins/plugin-native-bun-runtime/ios/sqlite-vec/README.md`](plugins/plugin-native-bun-runtime/ios/sqlite-vec/README.md) |
-| 299 | ✓ | [`plugins/plugin-native-bun-runtime/README.md`](plugins/plugin-native-bun-runtime/README.md) |
-| 300 | ✓ | [`plugins/plugin-native-calendar/android/README.md`](plugins/plugin-native-calendar/android/README.md) |
-| 301 | ✓ | [`plugins/plugin-native-calendar/README.md`](plugins/plugin-native-calendar/README.md) |
-| 302 | ✓ | [`plugins/plugin-native-calendar/test/android-consumer/README.md`](plugins/plugin-native-calendar/test/android-consumer/README.md) |
-| 303 | ✓ | [`plugins/plugin-native-camera/README.md`](plugins/plugin-native-camera/README.md) |
-| 304 | ✓ | [`plugins/plugin-native-canvas/README.md`](plugins/plugin-native-canvas/README.md) |
-| 305 | ✓ | [`plugins/plugin-native-contacts/README.md`](plugins/plugin-native-contacts/README.md) |
-| 306 | ✓ | [`plugins/plugin-native-desktop/README.md`](plugins/plugin-native-desktop/README.md) |
-| 307 | ✓ | [`plugins/plugin-native-eliza-tasks/README.md`](plugins/plugin-native-eliza-tasks/README.md) |
-| 308 | ✓ | [`plugins/plugin-native-filesystem/README.md`](plugins/plugin-native-filesystem/README.md) |
-| 309 | ✓ | [`plugins/plugin-native-gateway/README.md`](plugins/plugin-native-gateway/README.md) |
-| 310 | ✓ | [`plugins/plugin-native-inference/README.md`](plugins/plugin-native-inference/README.md) |
-| 311 | ✓ | [`plugins/plugin-native-inference/src/model-catalog/bge/README.md`](plugins/plugin-native-inference/src/model-catalog/bge/README.md) |
-| 312 | ✓ | [`plugins/plugin-native-location/README.md`](plugins/plugin-native-location/README.md) |
-| 313 | ✓ | [`plugins/plugin-native-media/README.md`](plugins/plugin-native-media/README.md) |
-| 314 | ✓ | [`plugins/plugin-native-messages/README.md`](plugins/plugin-native-messages/README.md) |
-| 315 | ✓ | [`plugins/plugin-native-mobile-signals/README.md`](plugins/plugin-native-mobile-signals/README.md) |
-| 316 | ✓ | [`plugins/plugin-native-network-policy/README.md`](plugins/plugin-native-network-policy/README.md) |
-| 317 | ✓ | [`plugins/plugin-native-notifications/README.md`](plugins/plugin-native-notifications/README.md) |
-| 318 | ✓ | [`plugins/plugin-native-passwords/README.md`](plugins/plugin-native-passwords/README.md) |
-| 319 | ✓ | [`plugins/plugin-native-phone/README.md`](plugins/plugin-native-phone/README.md) |
-| 320 | ✓ | [`plugins/plugin-native-reminders/android/README.md`](plugins/plugin-native-reminders/android/README.md) |
-| 321 | ✓ | [`plugins/plugin-native-reminders/README.md`](plugins/plugin-native-reminders/README.md) |
-| 322 | ✓ | [`plugins/plugin-native-reminders/test/android-consumer/README.md`](plugins/plugin-native-reminders/test/android-consumer/README.md) |
-| 323 | ✓ | [`plugins/plugin-native-secure-store/README.md`](plugins/plugin-native-secure-store/README.md) |
-| 324 | ✓ | [`plugins/plugin-native-settings/README.md`](plugins/plugin-native-settings/README.md) |
-| 325 | ✓ | [`plugins/plugin-native-shared-types/README.md`](plugins/plugin-native-shared-types/README.md) |
-| 326 | ✓ | [`plugins/plugin-native-swabble/README.md`](plugins/plugin-native-swabble/README.md) |
-| 327 | ✓ | [`plugins/plugin-native-system/README.md`](plugins/plugin-native-system/README.md) |
-| 328 | ✓ | [`plugins/plugin-native-talkmode/README.md`](plugins/plugin-native-talkmode/README.md) |
-| 329 | ✓ | [`plugins/plugin-native-websiteblocker/README.md`](plugins/plugin-native-websiteblocker/README.md) |
-| 330 | ✓ | [`plugins/plugin-native-wifi/README.md`](plugins/plugin-native-wifi/README.md) |
-| 331 | ✓ | [`plugins/plugin-notes/CLAUDE.md`](plugins/plugin-notes/CLAUDE.md) |
-| 332 | ✓ | [`plugins/plugin-notes/README.md`](plugins/plugin-notes/README.md) |
-| 333 | ✓ | [`plugins/plugin-openai/README.md`](plugins/plugin-openai/README.md) |
-| 334 | ✓ | [`plugins/plugin-pdf/README.md`](plugins/plugin-pdf/README.md) |
-| 335 | ✓ | [`plugins/plugin-personal-assistant/README.md`](plugins/plugin-personal-assistant/README.md) |
-| 336 | ✓ | [`plugins/plugin-personal-assistant/test/scenarios/README.md`](plugins/plugin-personal-assistant/test/scenarios/README.md) |
-| 337 | ✓ | [`plugins/plugin-pty/README.md`](plugins/plugin-pty/README.md) |
-| 338 | ✓ | [`plugins/plugin-relationships/README.md`](plugins/plugin-relationships/README.md) |
-| 339 | ✓ | [`plugins/plugin-reminders/README.md`](plugins/plugin-reminders/README.md) |
-| 340 | ✓ | [`plugins/plugin-scheduling/README.md`](plugins/plugin-scheduling/README.md) |
-| 341 | ✓ | [`plugins/plugin-slack/README.md`](plugins/plugin-slack/README.md) |
-| 342 | ✓ | [`plugins/plugin-sql/drizzle/rollbacks/README.md`](plugins/plugin-sql/drizzle/rollbacks/README.md) |
-| 343 | ✓ | [`plugins/plugin-sql/README.md`](plugins/plugin-sql/README.md) |
-| 344 | ✓ | [`plugins/plugin-sqlite/README.md`](plugins/plugin-sqlite/README.md) |
-| 345 | ✓ | [`plugins/plugin-telegram/README.md`](plugins/plugin-telegram/README.md) |
-| 346 | ✓ | [`plugins/plugin-todos/README.md`](plugins/plugin-todos/README.md) |
-| 347 | ✓ | [`plugins/plugin-trajectory-logger/README.md`](plugins/plugin-trajectory-logger/README.md) |
-| 348 | ✓ | [`plugins/plugin-video/README.md`](plugins/plugin-video/README.md) |
-| 349 | ✓ | [`plugins/plugin-vision/native/doctr-cpp/README.md`](plugins/plugin-vision/native/doctr-cpp/README.md) |
-| 350 | ✓ | [`plugins/plugin-vision/native/doctr.cpp/README.md`](plugins/plugin-vision/native/doctr.cpp/README.md) |
-| 351 | ✓ | [`plugins/plugin-vision/native/face-cpp/README.md`](plugins/plugin-vision/native/face-cpp/README.md) |
-| 352 | ✓ | [`plugins/plugin-vision/native/mobilefacenet.cpp/README.md`](plugins/plugin-vision/native/mobilefacenet.cpp/README.md) |
-| 353 | ✓ | [`plugins/plugin-vision/native/movenet.cpp/README.md`](plugins/plugin-vision/native/movenet.cpp/README.md) |
-| 354 | ✓ | [`plugins/plugin-vision/native/retinaface.cpp/README.md`](plugins/plugin-vision/native/retinaface.cpp/README.md) |
-| 355 | ✓ | [`plugins/plugin-vision/native/yolo.cpp/README.md`](plugins/plugin-vision/native/yolo.cpp/README.md) |
-| 356 | ✓ | [`plugins/plugin-vision/README.md`](plugins/plugin-vision/README.md) |
-| 357 | ✓ | [`plugins/plugin-wallet/README.md`](plugins/plugin-wallet/README.md) |
-| 358 | ✓ | [`plugins/plugin-wallet/src/analytics/lpinfo/kamino/README.md`](plugins/plugin-wallet/src/analytics/lpinfo/kamino/README.md) |
-| 359 | ✓ | [`plugins/plugin-wallet/src/analytics/lpinfo/steer/README.md`](plugins/plugin-wallet/src/analytics/lpinfo/steer/README.md) |
-| 360 | ✓ | [`plugins/plugin-wallet/src/chains/evm/README.md`](plugins/plugin-wallet/src/chains/evm/README.md) |
-| 361 | ✓ | [`plugins/plugin-wallet/src/chains/solana/README.md`](plugins/plugin-wallet/src/chains/solana/README.md) |
-| 362 | ✓ | [`plugins/plugin-web-search/README.md`](plugins/plugin-web-search/README.md) |
-| 363 | ✓ | [`plugins/plugin-workflow/README.md`](plugins/plugin-workflow/README.md) |
-| 364 | ✓ | [`plugins/plugin-x/README.md`](plugins/plugin-x/README.md) |
-| 365 | ✓ | [`plugins/plugin-x/src/__tests__/README.md`](plugins/plugin-x/src/__tests__/README.md) |
-| 366 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 367 | → | [`packages/benchmarks/README.md`](packages/benchmarks/README.md) |
-| 368 | → | [`packages/os/README.md`](packages/os/README.md) |
-| 369 | → | [`README.md`](README.md) |
-| 370 | → | [`SECURITY.md`](SECURITY.md) |
+| 275 | ✓ | [`plugins/plugin-local-inference/native/android/README.md`](plugins/plugin-local-inference/native/android/README.md) |
+| 276 | ✓ | [`plugins/plugin-local-inference/native/audio-fixtures/README.md`](plugins/plugin-local-inference/native/audio-fixtures/README.md) |
+| 277 | ✓ | [`plugins/plugin-local-inference/native/polarquant-cpu/fork-integration/README.md`](plugins/plugin-local-inference/native/polarquant-cpu/fork-integration/README.md) |
+| 278 | ✓ | [`plugins/plugin-local-inference/native/polarquant-cpu/README.md`](plugins/plugin-local-inference/native/polarquant-cpu/README.md) |
+| 279 | ✓ | [`plugins/plugin-local-inference/native/qjl-cpu/README.md`](plugins/plugin-local-inference/native/qjl-cpu/README.md) |
+| 280 | ✓ | [`plugins/plugin-local-inference/native/README.md`](plugins/plugin-local-inference/native/README.md) |
+| 281 | ✓ | [`plugins/plugin-local-inference/native/silero-vad-cpp/README.md`](plugins/plugin-local-inference/native/silero-vad-cpp/README.md) |
+| 282 | ✓ | [`plugins/plugin-local-inference/native/verify/asr_bench_fixtures/non_publish_structure_5utt/README.md`](plugins/plugin-local-inference/native/verify/asr_bench_fixtures/non_publish_structure_5utt/README.md) |
+| 283 | ✓ | [`plugins/plugin-local-inference/native/voice-bench/configs/gpu/README.md`](plugins/plugin-local-inference/native/voice-bench/configs/gpu/README.md) |
+| 284 | ✓ | [`plugins/plugin-local-inference/native/voice-bench/README.md`](plugins/plugin-local-inference/native/voice-bench/README.md) |
+| 285 | ✓ | [`plugins/plugin-local-inference/native/voice-classifier-cpp/README.md`](plugins/plugin-local-inference/native/voice-classifier-cpp/README.md) |
+| 286 | ✓ | [`plugins/plugin-local-inference/native/wakeword-cpp/README.md`](plugins/plugin-local-inference/native/wakeword-cpp/README.md) |
+| 287 | ✓ | [`plugins/plugin-local-inference/README.md`](plugins/plugin-local-inference/README.md) |
+| 288 | ✓ | [`plugins/plugin-local-inference/src/services/README.md`](plugins/plugin-local-inference/src/services/README.md) |
+| 289 | ✓ | [`plugins/plugin-maps/README.md`](plugins/plugin-maps/README.md) |
+| 290 | ✓ | [`plugins/plugin-mcp/README.md`](plugins/plugin-mcp/README.md) |
+| 291 | ✓ | [`plugins/plugin-meetings/README.md`](plugins/plugin-meetings/README.md) |
+| 292 | ✓ | [`plugins/plugin-native-action-journal/android/README.md`](plugins/plugin-native-action-journal/android/README.md) |
+| 293 | ✓ | [`plugins/plugin-native-action-journal/README.md`](plugins/plugin-native-action-journal/README.md) |
+| 294 | ✓ | [`plugins/plugin-native-activity-tracker/README.md`](plugins/plugin-native-activity-tracker/README.md) |
+| 295 | ✓ | [`plugins/plugin-native-agent/README.md`](plugins/plugin-native-agent/README.md) |
+| 296 | ✓ | [`plugins/plugin-native-appblocker/README.md`](plugins/plugin-native-appblocker/README.md) |
+| 297 | ✓ | [`plugins/plugin-native-browser-surface/README.md`](plugins/plugin-native-browser-surface/README.md) |
+| 298 | ✓ | [`plugins/plugin-native-bun-runtime/engine/README.md`](plugins/plugin-native-bun-runtime/engine/README.md) |
+| 299 | ✓ | [`plugins/plugin-native-bun-runtime/ios/sqlite-vec/README.md`](plugins/plugin-native-bun-runtime/ios/sqlite-vec/README.md) |
+| 300 | ✓ | [`plugins/plugin-native-bun-runtime/README.md`](plugins/plugin-native-bun-runtime/README.md) |
+| 301 | ✓ | [`plugins/plugin-native-calendar/android/README.md`](plugins/plugin-native-calendar/android/README.md) |
+| 302 | ✓ | [`plugins/plugin-native-calendar/README.md`](plugins/plugin-native-calendar/README.md) |
+| 303 | ✓ | [`plugins/plugin-native-calendar/test/android-consumer/README.md`](plugins/plugin-native-calendar/test/android-consumer/README.md) |
+| 304 | ✓ | [`plugins/plugin-native-camera/README.md`](plugins/plugin-native-camera/README.md) |
+| 305 | ✓ | [`plugins/plugin-native-canvas/README.md`](plugins/plugin-native-canvas/README.md) |
+| 306 | ✓ | [`plugins/plugin-native-contacts/README.md`](plugins/plugin-native-contacts/README.md) |
+| 307 | ✓ | [`plugins/plugin-native-desktop/README.md`](plugins/plugin-native-desktop/README.md) |
+| 308 | ✓ | [`plugins/plugin-native-eliza-tasks/README.md`](plugins/plugin-native-eliza-tasks/README.md) |
+| 309 | ✓ | [`plugins/plugin-native-filesystem/README.md`](plugins/plugin-native-filesystem/README.md) |
+| 310 | ✓ | [`plugins/plugin-native-gateway/README.md`](plugins/plugin-native-gateway/README.md) |
+| 311 | ✓ | [`plugins/plugin-native-inference/README.md`](plugins/plugin-native-inference/README.md) |
+| 312 | ✓ | [`plugins/plugin-native-inference/src/model-catalog/bge/README.md`](plugins/plugin-native-inference/src/model-catalog/bge/README.md) |
+| 313 | ✓ | [`plugins/plugin-native-location/README.md`](plugins/plugin-native-location/README.md) |
+| 314 | ✓ | [`plugins/plugin-native-media/README.md`](plugins/plugin-native-media/README.md) |
+| 315 | ✓ | [`plugins/plugin-native-messages/README.md`](plugins/plugin-native-messages/README.md) |
+| 316 | ✓ | [`plugins/plugin-native-mobile-signals/README.md`](plugins/plugin-native-mobile-signals/README.md) |
+| 317 | ✓ | [`plugins/plugin-native-network-policy/README.md`](plugins/plugin-native-network-policy/README.md) |
+| 318 | ✓ | [`plugins/plugin-native-notifications/README.md`](plugins/plugin-native-notifications/README.md) |
+| 319 | ✓ | [`plugins/plugin-native-passwords/README.md`](plugins/plugin-native-passwords/README.md) |
+| 320 | ✓ | [`plugins/plugin-native-phone/README.md`](plugins/plugin-native-phone/README.md) |
+| 321 | ✓ | [`plugins/plugin-native-reminders/android/README.md`](plugins/plugin-native-reminders/android/README.md) |
+| 322 | ✓ | [`plugins/plugin-native-reminders/README.md`](plugins/plugin-native-reminders/README.md) |
+| 323 | ✓ | [`plugins/plugin-native-reminders/test/android-consumer/README.md`](plugins/plugin-native-reminders/test/android-consumer/README.md) |
+| 324 | ✓ | [`plugins/plugin-native-secure-store/README.md`](plugins/plugin-native-secure-store/README.md) |
+| 325 | ✓ | [`plugins/plugin-native-settings/README.md`](plugins/plugin-native-settings/README.md) |
+| 326 | ✓ | [`plugins/plugin-native-shared-types/README.md`](plugins/plugin-native-shared-types/README.md) |
+| 327 | ✓ | [`plugins/plugin-native-swabble/README.md`](plugins/plugin-native-swabble/README.md) |
+| 328 | ✓ | [`plugins/plugin-native-system/README.md`](plugins/plugin-native-system/README.md) |
+| 329 | ✓ | [`plugins/plugin-native-talkmode/README.md`](plugins/plugin-native-talkmode/README.md) |
+| 330 | ✓ | [`plugins/plugin-native-websiteblocker/README.md`](plugins/plugin-native-websiteblocker/README.md) |
+| 331 | ✓ | [`plugins/plugin-native-wifi/README.md`](plugins/plugin-native-wifi/README.md) |
+| 332 | ✓ | [`plugins/plugin-notes/CLAUDE.md`](plugins/plugin-notes/CLAUDE.md) |
+| 333 | ✓ | [`plugins/plugin-notes/README.md`](plugins/plugin-notes/README.md) |
+| 334 | ✓ | [`plugins/plugin-openai/README.md`](plugins/plugin-openai/README.md) |
+| 335 | ✓ | [`plugins/plugin-pdf/README.md`](plugins/plugin-pdf/README.md) |
+| 336 | ✓ | [`plugins/plugin-personal-assistant/README.md`](plugins/plugin-personal-assistant/README.md) |
+| 337 | ✓ | [`plugins/plugin-personal-assistant/test/scenarios/README.md`](plugins/plugin-personal-assistant/test/scenarios/README.md) |
+| 338 | ✓ | [`plugins/plugin-pty/README.md`](plugins/plugin-pty/README.md) |
+| 339 | ✓ | [`plugins/plugin-relationships/README.md`](plugins/plugin-relationships/README.md) |
+| 340 | ✓ | [`plugins/plugin-reminders/README.md`](plugins/plugin-reminders/README.md) |
+| 341 | ✓ | [`plugins/plugin-scheduling/README.md`](plugins/plugin-scheduling/README.md) |
+| 342 | ✓ | [`plugins/plugin-slack/README.md`](plugins/plugin-slack/README.md) |
+| 343 | ✓ | [`plugins/plugin-sql/drizzle/rollbacks/README.md`](plugins/plugin-sql/drizzle/rollbacks/README.md) |
+| 344 | ✓ | [`plugins/plugin-sql/README.md`](plugins/plugin-sql/README.md) |
+| 345 | ✓ | [`plugins/plugin-sqlite/README.md`](plugins/plugin-sqlite/README.md) |
+| 346 | ✓ | [`plugins/plugin-telegram/README.md`](plugins/plugin-telegram/README.md) |
+| 347 | ✓ | [`plugins/plugin-todos/README.md`](plugins/plugin-todos/README.md) |
+| 348 | ✓ | [`plugins/plugin-trajectory-logger/README.md`](plugins/plugin-trajectory-logger/README.md) |
+| 349 | ✓ | [`plugins/plugin-video/README.md`](plugins/plugin-video/README.md) |
+| 350 | ✓ | [`plugins/plugin-vision/native/doctr-cpp/README.md`](plugins/plugin-vision/native/doctr-cpp/README.md) |
+| 351 | ✓ | [`plugins/plugin-vision/native/doctr.cpp/README.md`](plugins/plugin-vision/native/doctr.cpp/README.md) |
+| 352 | ✓ | [`plugins/plugin-vision/native/face-cpp/README.md`](plugins/plugin-vision/native/face-cpp/README.md) |
+| 353 | ✓ | [`plugins/plugin-vision/native/mobilefacenet.cpp/README.md`](plugins/plugin-vision/native/mobilefacenet.cpp/README.md) |
+| 354 | ✓ | [`plugins/plugin-vision/native/movenet.cpp/README.md`](plugins/plugin-vision/native/movenet.cpp/README.md) |
+| 355 | ✓ | [`plugins/plugin-vision/native/retinaface.cpp/README.md`](plugins/plugin-vision/native/retinaface.cpp/README.md) |
+| 356 | ✓ | [`plugins/plugin-vision/native/yolo.cpp/README.md`](plugins/plugin-vision/native/yolo.cpp/README.md) |
+| 357 | ✓ | [`plugins/plugin-vision/README.md`](plugins/plugin-vision/README.md) |
+| 358 | ✓ | [`plugins/plugin-wallet/README.md`](plugins/plugin-wallet/README.md) |
+| 359 | ✓ | [`plugins/plugin-wallet/src/analytics/lpinfo/kamino/README.md`](plugins/plugin-wallet/src/analytics/lpinfo/kamino/README.md) |
+| 360 | ✓ | [`plugins/plugin-wallet/src/analytics/lpinfo/steer/README.md`](plugins/plugin-wallet/src/analytics/lpinfo/steer/README.md) |
+| 361 | ✓ | [`plugins/plugin-wallet/src/chains/evm/README.md`](plugins/plugin-wallet/src/chains/evm/README.md) |
+| 362 | ✓ | [`plugins/plugin-wallet/src/chains/solana/README.md`](plugins/plugin-wallet/src/chains/solana/README.md) |
+| 363 | ✓ | [`plugins/plugin-web-search/README.md`](plugins/plugin-web-search/README.md) |
+| 364 | ✓ | [`plugins/plugin-workflow/README.md`](plugins/plugin-workflow/README.md) |
+| 365 | ✓ | [`plugins/plugin-x/README.md`](plugins/plugin-x/README.md) |
+| 366 | ✓ | [`plugins/plugin-x/src/__tests__/README.md`](plugins/plugin-x/src/__tests__/README.md) |
+| 367 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 368 | → | [`packages/benchmarks/README.md`](packages/benchmarks/README.md) |
+| 369 | → | [`packages/os/README.md`](packages/os/README.md) |
+| 370 | → | [`README.md`](README.md) |
+| 371 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

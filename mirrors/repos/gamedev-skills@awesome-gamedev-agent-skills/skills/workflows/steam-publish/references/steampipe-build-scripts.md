@@ -85,15 +85,23 @@ macOS first-run bootstrap: `cd tools/ContentBuilder/builder_osx`, `chmod +x stea
 The **default** branch is what customers get. Always validate a build on a beta branch first.
 
 1. Create a branch on the **Builds** page in App Admin. Use a name with **no spaces**; add a
-   **password** if it should be private (players type it under *Properties → Betas*).
+   **password** if it should be private (players type it under *Properties → Game Versions &
+   Betas*). Set the password *before* setting any build live on the branch, or its contents
+   are not private.
 2. Upload your build (steamcmd, as above), or auto-target it with `"SetLive" "<branch>"`.
 3. On the Builds page: select the branch in *Set build live for branch…*, **Preview Change**,
    then **Set Build Live Now**.
-4. Opt in via the Steam client: right-click the game → *Properties* → *Betas* → pick the
-   branch. Steam downloads it, replacing the installed branch.
+4. Opt in via the Steam client: right-click the game → *Properties* → *Game Versions &
+   Betas* → pick the branch. Steam downloads it, replacing the installed branch.
 
 Reminder: there is **no** way to auto-set the `default` branch live — promote a tested beta
-build to default manually when you're confident.
+build to default manually when you're confident. For a released game, that step also sends
+an authorization prompt to the requesting account's Steam Mobile Authenticator (or SMS to
+its phone number), so do it from an account that has one attached.
+
+Games can also switch branches themselves through `ISteamApps` (`GetNumBetas`,
+`GetBetaInfo`, `SetActiveBeta`, `GetCurrentBetaName`) — that is in-game API work, outside
+this skill.
 
 ## 4. CI/CD upload (token-based login, no password in scripts)
 
@@ -109,6 +117,7 @@ Guard. CI reuses that token instead of a password.
 ```yaml
 # GitHub Actions sketch — restore the token, then build. Never echo the token.
 # Store the base64 of config.vdf as a repo secret (e.g. STEAM_CONFIG_VDF).
+# Assumes steamcmd is already installed on the runner and treats ~/Steam as <Steam>.
 - name: Restore steam login token
   run: |
     mkdir -p ~/Steam/config
@@ -119,10 +128,15 @@ Guard. CI reuses that token instead of a password.
       +run_app_build "$PWD/scripts/app_build_1000.vdf" +quit
 ```
 
+- `<Steam>` is the folder steamcmd installs itself into, so it depends on how steamcmd was
+  installed. After the first interactive login on the same image, look for the
+  `config/config.vdf` that login wrote, and restore the token to that path.
+- Pass `+run_app_build` an absolute path (as above) so it does not depend on the working
+  directory.
 - If a build run prints `Account Login Denied`, Steam Guard is blocking it. Run
   `set_steam_guard_code <code>` in steamcmd (code from the account's email), then retry login.
-- Re-entering a password issues a **new** Steam Guard token and invalidates the cached one —
-  avoid it in CI.
+- Logging in with the password again issues a **new** Steam Guard token, which is then
+  required to log in — avoid it in CI, or re-export `config.vdf` afterwards.
 - Never print or commit `config.vdf`, the account password, or the Steam Guard code. Treat a
   leaked token as compromised and re-secure the account.
 
@@ -139,7 +153,30 @@ updates:
 - **Unreal Engine** pak alignment: build with `-patchpaddingalign=1048576 -blocksize=1048576`
   so re-alignments shift by SteamPipe's block size and patches stay small.
 
-## 6. Troubleshooting table
+## 6. Steam Deck and Steam Machine compatibility review
+
+A separate review from the release review: it never blocks release, but it sets the badge
+players see (Verified, Playable, Unsupported, or Unknown until reviewed), with one rating for
+Steam Deck, one for Steam Machine, and one for other SteamOS devices. Verified on Deck
+implies Verified on Machine.
+
+- **Getting reviewed:** Valve queues some games itself; partners with access can request one
+  from *Steam Hardware Compatibility Review* under Technical Tools on the app landing page,
+  choosing the branch to test (default otherwise). A standard build review must be finished
+  first. Results arrive by email; they publish automatically after about a week. Uploading a
+  fixing build before then delays publication and triggers a retest.
+- **Verified checklist (both devices):** the default controller configuration reaches all
+  content with no in-game setting changes; on-screen glyphs match the active controller (no
+  keyboard/mouse glyphs while using a controller — the Steam Input API handles this); text
+  entry opens the on-screen keyboard through the Steamworks API or offers a controller-usable
+  entry; the default settings run at a playable framerate (30 fps at 800p on Deck, 1080p on
+  Machine); no "unsupported OS/GPU" warnings; any launcher is fully controller-navigable.
+- **Deck-only display checks:** a supported resolution (1280x800 preferred, or 1280x720) and
+  no text smaller than 9 px tall at 1280x800 (12 px recommended).
+- Windows-only games run through Proton; a Proton-specific blocker gives Unsupported until
+  Valve fixes it and retests.
+
+## 7. Troubleshooting table
 
 | Symptom | Likely cause | Fix |
 |---|---|---|
@@ -148,7 +185,8 @@ updates:
 | `Account Login Denied` in steamcmd | Steam Guard blocking automated login | `set_steam_guard_code <code>` then retry; preserve `config.vdf` for future runs |
 | Build uploaded but players don't get it | Build not set live, or set live only on a beta branch | Set live on the correct branch (default = manual) via the Builds page |
 | Windows installs, Mac/Linux install no files | OS depots not added to the package | Add every depot to the package on *Associated Packages & DLC* |
-| "Invalid content configuration" at launch | No build set live on the selected branch, or bad launch options | Set a build live; verify *Installation* launch options |
+| "Invalid content configuration" at launch | No build set live on the selected branch, bad launch options, or your account doesn't own the depots | Set a build live; verify *Installation* launch options; add the depots to the Developer Comp package |
+| Your own account downloads no files | The depot is missing from the package your account owns | Run Steam with `-dev`, then `licenses_for_app <AppID>` in the console to see the package and its depots; add the missing depot |
 | Forgot a steamcmd command's syntax | — | At the `Steam>` prompt run `find <partial>` (e.g. `find build_installer`) to print matching commands + args |
 
 Check the `*.log` files in `BuildOutput` (not the console) for the authoritative error on a

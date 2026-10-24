@@ -77,7 +77,7 @@ Every Apex call is `${PREFIX_DOT}ClassName.method(...)`; every SOQL object/field
 
 Run these and stop on the first failure.
 
-1. `sf --version`; `node --version` (only if running shipped scripts).
+1. `sf --version`; `node --version` (only if running shipped scripts). Also `export SF_SKIP_NEW_VERSION_CHECK=true` once at session start so a stale CLI's update banner cannot leak onto stdout and break any `sf … --json | jq …` pipe downstream (see `references/smoke-and-verify.md` "parse caveat" for the alternate `sed` strip).
 2. `sf org display --target-org <alias> --json` — confirm reachable; capture `instanceUrl` + org id (display/logging only). REST calls use `sf api request rest` on the CLI's stored session — the skill never extracts the access token.
 3. Validate sales org locally: length 4, uppercase, non-blank (mirrors `TPMSetupData.validateSalesOrg`). Fail fast.
 4. **TPM entitlement (Permission Set License)** — the `CGCRetailAndTPMMgmtPsl` PSL assignment on the running user. SOQL + warn/stop routing in `references/preflight-and-seed-queries.md` Step 4.
@@ -165,7 +165,7 @@ Say "use the SetCommentValue reference" for a worked example.
      | jq -r '.fields[] | select(.updateable == true and .createable == true) | .name'
    ```
    Any `outputWrites` field must appear here; otherwise stop and ask for a different one (FLS is caller-scoped).
-4. **Confirm the plan** (recap Class/Entity/Workflows/Reads/Writes/Sort/Description → "Deploy + wire? [y/N]"). If `workflows` includes `copy`, flag that per-child input values come from the source promotion — `outputWrites` still fires but `<inputPaths>` values are ignored (only top-level fields like `Slogan` propagate). `n`/blank → save answers to `./.promotion-bo-api-deploy/interview.json` and exit. `y` → Phase 5a.
+4. **Confirm the plan** (recap Class/Entity/Workflows/Reads/Writes/Sort/Description → "Deploy + wire? [y/N]"). If `workflows` includes `copy`, flag TWO copy-only preconditions up front so neither surfaces as a runtime surprise: (a) per-child input values come from the source promotion — `outputWrites` still fires but `<inputPaths>` values are ignored (only top-level fields like `Slogan` propagate); (b) the running `User.Sales_Org__c` MUST equal the source template's `Sales_Org__c` (preflighted in Phase 1 step 7 + re-checked before every Phase 6 ingest; a mid-flow drift fails `copy` with `TransformationError: The User and the Promotion Template must have the same Sales org` — fix on the user record, do not mutate mid-flow; see `references/conventions-and-payload-rules.md` R6). `n`/blank → save answers to `./.promotion-bo-api-deploy/interview.json` and exit. `y` → Phase 5a.
 
 ## Phases 5a / 5b — Generate + deploy, register + wire
 

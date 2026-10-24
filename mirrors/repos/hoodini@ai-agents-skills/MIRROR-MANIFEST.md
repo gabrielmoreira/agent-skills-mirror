@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `hoodini/ai-agents-skills` — 26 default patterns, 0 followed patterns, 250 file(s) materialized.
+Mirror of `hoodini/ai-agents-skills` — 26 default patterns, 0 followed patterns, 253 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `hoodini/ai-agents-skills` — 26 default patterns, 0 followed pattern
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 250 |
+| Files         | 253 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -291,24 +291,27 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 230 | ✓ | [`skills/yuv-video-director/references/teaser-explainer.md`](skills/yuv-video-director/references/teaser-explainer.md) |
 | 231 | ✓ | [`skills/yuv-video-director/SKILL.md`](skills/yuv-video-director/SKILL.md) |
 | 232 | ✓ | [`skills/yuv-viral-video/assets/fonts/Anton-Regular.ttf`](skills/yuv-viral-video/assets/fonts/Anton-Regular.ttf) |
-| 233 | ✓ | [`skills/yuv-viral-video/assets/fonts/Rubik-Black.ttf`](skills/yuv-viral-video/assets/fonts/Rubik-Black.ttf) |
-| 234 | ✓ | [`skills/yuv-viral-video/assets/fonts/Rubik-Bold.ttf`](skills/yuv-viral-video/assets/fonts/Rubik-Bold.ttf) |
-| 235 | ✓ | [`skills/yuv-viral-video/README.md`](skills/yuv-viral-video/README.md) |
-| 236 | ✓ | [`skills/yuv-viral-video/references/setup.md`](skills/yuv-viral-video/references/setup.md) |
-| 237 | ✓ | [`skills/yuv-viral-video/requirements.txt`](skills/yuv-viral-video/requirements.txt) |
-| 238 | ✓ | [`skills/yuv-viral-video/scripts/apple_glass.py`](skills/yuv-viral-video/scripts/apple_glass.py) |
-| 239 | ✓ | [`skills/yuv-viral-video/scripts/build_screen_share.py`](skills/yuv-viral-video/scripts/build_screen_share.py) |
-| 240 | ✓ | [`skills/yuv-viral-video/scripts/build_selfie.py`](skills/yuv-viral-video/scripts/build_selfie.py) |
-| 241 | ✓ | [`skills/yuv-viral-video/scripts/composite_screen_share.py`](skills/yuv-viral-video/scripts/composite_screen_share.py) |
-| 242 | ✓ | [`skills/yuv-viral-video/scripts/composite_selfie.py`](skills/yuv-viral-video/scripts/composite_selfie.py) |
-| 243 | ✓ | [`skills/yuv-viral-video/scripts/make_anims.py`](skills/yuv-viral-video/scripts/make_anims.py) |
-| 244 | ✓ | [`skills/yuv-viral-video/scripts/make_cards_screen_share.py`](skills/yuv-viral-video/scripts/make_cards_screen_share.py) |
-| 245 | ✓ | [`skills/yuv-viral-video/scripts/make_cards_selfie.py`](skills/yuv-viral-video/scripts/make_cards_selfie.py) |
-| 246 | ✓ | [`skills/yuv-viral-video/scripts/make_karaoke.py`](skills/yuv-viral-video/scripts/make_karaoke.py) |
-| 247 | ✓ | [`skills/yuv-viral-video/scripts/make_layout_assets.py`](skills/yuv-viral-video/scripts/make_layout_assets.py) |
-| 248 | ✓ | [`skills/yuv-viral-video/scripts/make_sfx.py`](skills/yuv-viral-video/scripts/make_sfx.py) |
-| 249 | ✓ | [`skills/yuv-viral-video/SKILL.md`](skills/yuv-viral-video/SKILL.md) |
-| 250 | ✓ | [`templates/skill-template/SKILL.md`](templates/skill-template/SKILL.md) |
+| 233 | ✓ | [`skills/yuv-viral-video/assets/fonts/Assistant-Bold.ttf`](skills/yuv-viral-video/assets/fonts/Assistant-Bold.ttf) |
+| 234 | ✓ | [`skills/yuv-viral-video/assets/fonts/Assistant-ExtraBold.ttf`](skills/yuv-viral-video/assets/fonts/Assistant-ExtraBold.ttf) |
+| 235 | ✓ | [`skills/yuv-viral-video/assets/fonts/Karantina-Bold.ttf`](skills/yuv-viral-video/assets/fonts/Karantina-Bold.ttf) |
+| 236 | ✓ | [`skills/yuv-viral-video/assets/fonts/OFL-Assistant.txt`](skills/yuv-viral-video/assets/fonts/OFL-Assistant.txt) |
+| 237 | ✓ | [`skills/yuv-viral-video/assets/fonts/OFL-Karantina.txt`](skills/yuv-viral-video/assets/fonts/OFL-Karantina.txt) |
+| 238 | ✓ | [`skills/yuv-viral-video/README.md`](skills/yuv-viral-video/README.md) |
+| 239 | ✓ | [`skills/yuv-viral-video/references/setup.md`](skills/yuv-viral-video/references/setup.md) |
+| 240 | ✓ | [`skills/yuv-viral-video/requirements.txt`](skills/yuv-viral-video/requirements.txt) |
+| 241 | ✓ | [`skills/yuv-viral-video/scripts/apple_glass.py`](skills/yuv-viral-video/scripts/apple_glass.py) |
+| 242 | ✓ | [`skills/yuv-viral-video/scripts/build_screen_share.py`](skills/yuv-viral-video/scripts/build_screen_share.py) |
+| 243 | ✓ | [`skills/yuv-viral-video/scripts/build_selfie.py`](skills/yuv-viral-video/scripts/build_selfie.py) |
+| 244 | ✓ | [`skills/yuv-viral-video/scripts/composite_screen_share.py`](skills/yuv-viral-video/scripts/composite_screen_share.py) |
+| 245 | ✓ | [`skills/yuv-viral-video/scripts/composite_selfie.py`](skills/yuv-viral-video/scripts/composite_selfie.py) |
+| 246 | ✓ | [`skills/yuv-viral-video/scripts/make_anims.py`](skills/yuv-viral-video/scripts/make_anims.py) |
+| 247 | ✓ | [`skills/yuv-viral-video/scripts/make_cards_screen_share.py`](skills/yuv-viral-video/scripts/make_cards_screen_share.py) |
+| 248 | ✓ | [`skills/yuv-viral-video/scripts/make_cards_selfie.py`](skills/yuv-viral-video/scripts/make_cards_selfie.py) |
+| 249 | ✓ | [`skills/yuv-viral-video/scripts/make_karaoke.py`](skills/yuv-viral-video/scripts/make_karaoke.py) |
+| 250 | ✓ | [`skills/yuv-viral-video/scripts/make_layout_assets.py`](skills/yuv-viral-video/scripts/make_layout_assets.py) |
+| 251 | ✓ | [`skills/yuv-viral-video/scripts/make_sfx.py`](skills/yuv-viral-video/scripts/make_sfx.py) |
+| 252 | ✓ | [`skills/yuv-viral-video/SKILL.md`](skills/yuv-viral-video/SKILL.md) |
+| 253 | ✓ | [`templates/skill-template/SKILL.md`](templates/skill-template/SKILL.md) |
 
 ---
 

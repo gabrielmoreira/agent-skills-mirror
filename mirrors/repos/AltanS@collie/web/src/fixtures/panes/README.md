@@ -2923,6 +2923,50 @@ separator draws U+E0BB and no closer. The `minimal` preset has no pi glyph and o
 | `omp--v18.11.1-slash-idle--w120.txt` | `statusLine.separator: slash`, empty box. Labelled `idle` |
 | `omp--v18.11.1-minimal-idle--w120.txt` | `statusLine.preset: minimal`, empty box. Labelled `idle` |
 | `omp--v18.11.1-ascii-idle--w120.txt` | `symbolPreset: ascii`, empty box. Labelled `idle` |
+
+## omp 18.12.2 `/goal` in a goal turn (captured 2026-10-22, real OMP, private Herdr 0.9.5, PR 577)
+
+The screens of a real OMP 18.12.2 (`omp --version` reads `omp/18.12.2`) while a goal turn streams, taken
+as Collie sends: the probe `⌁`, Backspace, the command text, then Enter, with a read between each step.
+They are the evidence behind `keys.commandsRunInTurn` in `omp.json`, and the screens
+`bridge/surface/protocol.test.ts` ("OMP 18.12.2 `/goal` in a goal turn, replayed from the real capture")
+and `command-list.test.ts` read.
+
+How they were made: a private Herdr 0.9.5 server (its own `HOME`, XDG folders and socket), one pane of
+119 columns by 40 rows (a read keeps the rows down to the last one that holds text, 20 to 34 of them). OMP ran stock
+(`--no-lsp --no-title`) from the installed binary with a scratch `HOME`, so no user credential or
+setting was used, and a config that held `goal.enabled`, `setupVersion: 2` and `startup.checkUpdate: false`.
+The model was `lab/slow`, a local OpenAI-compatible endpoint that streams one word a second and calls no
+model; it received one request. The goal was `/goal Lab objective: keep streaming ticks`, set before the
+first screen. Every file is `herdr pane read <pane> --source visible --format ansi --raw`, escapes and
+CRLF line ends kept, no row cut or changed. The only path on a screen is the lab folder, shown in the
+status line as `collie-goal-capture-lab/work`. No user, host, key or token is in any file.
+
+| Fixture | State / what's in it |
+|---|---|
+| `omp--v18-12-2-goal-turn-running--w119.txt` | Before `/goal pause`: the goal's first ticks streaming, `⎋ Working…`, the status line `⠙ 11s … 🎯 Goal 0 …`, an empty `╰─` box. The screen S0 reads. Labelled `running` |
+| `omp--v18-12-2-goal-turn-running-probe--w119.txt` | The probe `⌁` in the box. Labelled `draft` |
+| `omp--v18-12-2-goal-pause-typed--w119.txt` | The probe cleared and `/goal pause` typed: `╰─ /goal pause`, and under it the list of the command's arguments, one row `❯ pause   Pause the current goal`. Labelled `popup` |
+| `omp--v18-12-2-goal-pause-result--w119.txt` | 0.4 s after Enter: ` Goal mode paused.` over `⎋ Working…`, the status segment `⏸ Goal 0`, the stream still going. Labelled `running` |
+| `omp--v18-12-2-goal-pause-result-later--w119.txt` | 3 s after Enter: the stream has gone on (`tick 17`), `Goal mode paused.` is still the last status row. Labelled `running` |
+| `omp--v18-12-2-goal-resume-before--w119.txt` | Before `/goal resume`: paused, `⏸ Goal`, the box empty. Labelled `running` |
+| `omp--v18-12-2-goal-resume-probe--w119.txt` | The probe in the box, paused. Labelled `draft` |
+| `omp--v18-12-2-goal-resume-typed--w119.txt` | `/goal resume` typed, the argument list's row `❯ resume   Resume a paused goal`. Labelled `popup` |
+| `omp--v18-12-2-goal-resume-result--w119.txt` | After Enter: ` Goal mode resumed.`, the segment back to `🎯 Goal 0`, the stream going. Labelled `running` |
+| `omp--v18-12-2-goal-bare-before--w119.txt` | Before a bare `/goal`: resumed, `🎯 Goal`, the box empty. Labelled `running` |
+| `omp--v18-12-2-goal-bare-probe--w119.txt` | The probe in the box. Labelled `draft` |
+| `omp--v18-12-2-goal-bare-typed--w119.txt` | `/goal` typed: ten command rows under the box, the pointer on `🎯 goal   Goal: active (Lab objective: keep streaming ticks)`. Labelled `popup` |
+| `omp--v18-12-2-goal-bare-menu--w119.txt` | After Enter: the goal menu, a rounded box `Goal: Lab objective: keep streaming ticks (active)` with `❯ Show details`, `Adjust budget…`, `Pause`, `Drop` and `↑/↓ navigate  ⏎ select  ⎋ cancel`, the stream's last rows above it. It owns the keyboard. Labelled `dialog` |
+
+Each send's step after the probe (Backspace) read the same screen as the one before it, so that read
+has no file of its own. The Escape that closed the menu was the lab's own and is not in a file.
+
+What the screens show. Enter pressed during the goal turn ran the command at once and never queued or
+steered it: no `Steering` or `After yield` row came up, and the status line changed with the command.
+OMP's own words are `Goal mode paused.` and `Goal mode resumed.`. A `/goal pause` or `/goal resume` typed
+into the box brings up the list of that command's arguments under the box, with the pointer on the
+argument typed (`commandList.argumentList`, `command-list.ts`).
+
 ## Hermes corpus (captured 2026-10-16, Hermes Agent v0.22.2 classic CLI, Herdr 0.9.1, sandbox pane)
 
 `hermes--*.txt` come from one disposable Herdr pane running the installed `hermes --cli` with a
@@ -2972,3 +3016,44 @@ this corpus. Recipes: [`hermes/CLARIFY_NOTES.md`](../../lib/harness/hermes/CLARI
 | `hermes--approval-w60` | The same at 60 columns, prompt `⚠` | Allow once, Deny |
 | `hermes--approval-long` | A 120-character command, `5. Show full command` | Allow once, Show full command, Deny |
 | `hermes--approval-long-full` | After `5`: row 5 gone, `❯` on Deny | Allow once, Deny |
+
+## Steer and queue mid-turn (captured 2026-10-23, M69 spec 01, pi 1.3.0, OMP 18.6.1, Codex 0.164.0, scratch tmux, 120 columns)
+
+Real screens of three harnesses while a slow turn runs (a bash call, `for i in $(seq 1 40); do echo $i; sleep 1; done`). A line,
+`also say hello at the end`, was typed into the box and sent with the harness's steer key (Enter on all three), and in a second run
+with its queue key (pi Alt+Enter, OMP Ctrl+Q, Codex Tab). Each run has five captures: `typed` (the line in the box, no key pressed),
+`after-now` (read straight after the key, about 0.1 s), `after` (2 s later) and `done` (the turn ended and the line was answered).
+Taken with `tmux capture-pane -p -e` in a private tmux server (`tmux -L`), isolated `HOME`, no Herdr; the lab's folder was replaced with
+`/home/demo/sandbox/collie-labs/steerqueue`, a path of the same length. Findings table: `experiments/harnesses/steer-queue-2026-10-23.md`.
+
+The `<h>` is `pi--v130`, `omp--v18-6` or `codex--v0164`; every name ends in `--w120.txt`.
+
+| Fixture | State | What it shows |
+| --- | --- | --- |
+| `<h>-steer-typed` | Turn running, the line in the box | pi `── ⠙ Working ──` rule, OMP spinner and seconds in the status bar, Codex `tab to queue message` hint |
+| `<h>-steer-after-now` | Enter pressed, read at once | pi: box empty, no row yet. OMP: box still holds the line. Codex: `Messages to be submitted after next tool call` over `↳ <line>` |
+| `<h>-steer-after` | 2 s after Enter | pi `Steering: <line>` row. OMP: the line stands in the transcript and the tool box says `Backgrounded early to handle an incoming message`. Codex: the line stands in the transcript as `› <line>`, no `↳` row |
+| `<h>-steer-done` | Turn ended | The agent answered the line after the tool call (pi, Codex) or after the backgrounded job (OMP). Idle |
+| `<h>-queue-typed` | Turn running, the line in the box | As the steer-typed capture |
+| `<h>-queue-after-now` | Queue key pressed, read at once | pi: box empty, no row yet. OMP: box still holds the line. Codex: `Queued follow-up inputs` over `↳ <line>` |
+| `<h>-queue-after` | 2 s after the key | pi `Follow-up: <line>`. OMP `After yield · 1`, `1. <line>`. Codex `Queued follow-up inputs`, `↳ <line>`, `shift+← edit last queued message` |
+| `<h>-queue-done` | Turn ended | The agent finished the first task, then ran the line as a second turn. Idle |
+
+## Steer witness gaps from the live rerun (captured 2026-10-23, pi 1.3.0, OMP 18.6.1, Claude Code 2.1.309, scratch tmux, 120 columns)
+
+Real screens, taken after the int/edge-5 live rerun found three receipts or turn states wrong. Taken with `tmux capture-pane -p -e` in
+a private tmux server (`tmux -L`), isolated `HOME` or `CLAUDE_CONFIG_DIR`, no hooks, no Herdr. pi and OMP ran on
+`openrouter/anthropic/claude-haiku-4.5`, Claude Code on Haiku. The lab's folder was replaced with `/home/demo/sandbox/collie-labs/steer-queue-fix`,
+a path of the same length (OMP's shortened `…che/collie-lab/edge5fix-lab` became `…collie-labs/steer-queue-fix`, Claude's
+`~/.cache/collie-lab/edge5fix-lab` became `~/sandbox/collie-labs/steerq-fix`).
+
+| Fixture | State | What it shows |
+| --- | --- | --- |
+| `pi--v130-steer-after-queued--w120.txt` | `running` | A slow bash call runs; `ok` was queued with Alt+Enter, then `say banana` sent with Enter. pi draws `Steering: say banana`, then `Follow-up: ok`, then `↳ Alt+Up to edit all queued messages`: the queued row stands between the Steering row and the hint |
+| `omp--v18-6-steer-pending-block--w120.txt` | `running` | OMP streams a long plain-text answer (no tool runs); `say banana` sent with Enter waits for the next step in a block `Steering · 1` / `1. say banana` / `└ Alt+↑ to edit` over the spinner row. The queue draws the same rows and hint under `After yield · 1` (`omp--v18-6-queue-after`): only the header tells them apart. Taken while streaming, not during a tool batch: during a parallel bash batch OMP backgrounded the calls at once and took the line, with no block |
+| `omp--v18-6-steer-over-queued--w120.txt` | `running` | OMP writes a long file (the write tool's body streams); `ok` was queued with Ctrl+Q, then `say banana` sent with Enter. Two blocks stack over one hint: `Steering · 1` / `1. say banana`, then `After yield · 1` / `1. ok`, then one `└ Alt+↑ to edit`. Second live pass: the steer witness took the `After yield · 1` header for a wrapped row and the receipt said unknown. The lab folder replaced as above; taken in a second private tmux server |
+| `claude--v2-1-309-interrupted--w120.txt` | `idle` | Claude Code 2.1.309 (Haiku, the operator's three-row statusline): a turn read a file with its Read tool, then Escape while it thought. `⎿  Interrupted · What should Claude do instead?` over an empty box; no Stop hook fires. The same screen 2 s and 8 s after the key. Before the first output Escape takes the turn back instead and puts the prompt into the box |
+| `claude--v2-1-309-permission-denied--w120.txt` | `idle` | Claude Code 2.1.309: a Bash permission dialog answered `4. No`. `● Bash(…)`, `⎿  Interrupted · What should Claude do instead?`, `✻ Crunched for 2s · done 3:49 PM` over an empty box; no Stop hook fires |
+| `claude--v2-1-309-interrupted-fresh-session--w120.txt` | `idle` | Claude Code 2.1.309 under the operator's fullscreen TUI (`"tui": "fullscreen"`), a fresh session (`/clear`): a Bash call (`find /usr /opt -type f \| xargs md5sum \| wc -l`) interrupted with Escape. The short transcript stands at the top, `⎿  Interrupted · What should Claude do instead?` on row 14, then blank rows down to the box on row 35: the stopped row stands outside the six-row band above the box. Second live pass; taken in a second private tmux server, no hooks, isolated `CLAUDE_CONFIG_DIR` |
+| `claude--v2-1-309-permission-denied-fresh-session--w120.txt` | `idle` | The same fresh fullscreen session: a Bash permission dialog answered `4. No`. `Ran 1 shell command`, the Interrupted row and `✻ Crunched for 2s` at the top, blank rows, then `◐ medium · /effort` over the box |
+| `claude--v2-1-309-stopped-prompt-restored--w120.txt` | `draft` | The same fresh fullscreen session: `Write 700 numbered lines, …` sent, Escape 1.2 s later, before the first token. Claude takes the turn back and puts the prompt into the box; no Interrupted row and no Stop hook. Only Collie's own Stop receipt tells the fold the turn ended |

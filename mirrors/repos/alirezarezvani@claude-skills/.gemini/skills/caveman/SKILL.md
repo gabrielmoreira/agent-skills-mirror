@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/caveman/../../../engineering/caveman/skills/caveman/SKILL.md

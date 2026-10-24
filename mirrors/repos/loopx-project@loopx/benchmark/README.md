@@ -584,6 +584,16 @@ Its private controller configuration file has exactly `url`, `admin_secret` and
 the bank and controller process outside every solver's filesystem/network authority.
 An owner-only mode is a storage precaution, not proof of solver exclusion.
 
+When the selected native runner supports `host_registration_callback`, the
+adapter binds enabled checkpoint/feedback observers through that host callback
+before container creation. It does not inject the registration token into the
+solver environment. Frozen older providers retain their original environment
+binding path; runs without either observer add no callback. Blind modes also
+remove the newer `SFORGE_FEEDBACK_URL` from the solver environment. A restored
+registration may include the native provider's nonempty `feedback_relay_id`;
+all original activation identities must still match, and unknown fields fail
+closed. Neither compatibility path changes scoring or grants solver authority.
+
 ```sh
 python -m benchmark.edgebench.checkpoint_controller \
   --controller-file /private/source-controller.json capture \

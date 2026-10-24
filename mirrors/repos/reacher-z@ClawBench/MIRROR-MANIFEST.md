@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `reacher-z/ClawBench` — 26 default patterns, 17 followed patterns, 27 file(s) materialized.
+Mirror of `reacher-z/ClawBench` — 26 default patterns, 17 followed patterns, 28 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `reacher-z/ClawBench` — 26 default patterns, 17 followed patterns, 2
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 17 |
-| Files         | 27 |
+| Files         | 28 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -76,32 +76,33 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`docs/edgebench.md`](docs/edgebench.md) |
-| 3 | ✓ | [`docs/harbor.md`](docs/harbor.md) |
-| 4 | ✓ | [`docs/prorl-rl-env.md`](docs/prorl-rl-env.md) |
-| 5 | ✓ | [`docs/README.zh-CN.md`](docs/README.zh-CN.md) |
-| 6 | ✓ | [`docs/v1-vs-v2.md`](docs/v1-vs-v2.md) |
-| 7 | ✓ | [`llms.txt`](llms.txt) |
-| 8 | ✓ | [`src/clawbench/runtime/chrome-extension/README.md`](src/clawbench/runtime/chrome-extension/README.md) |
-| 9 | ✓ | [`src/clawbench/runtime/harnesses/webbrain/README.md`](src/clawbench/runtime/harnesses/webbrain/README.md) |
-| 10 | ✓ | [`test-cases/environmental-observation/README.md`](test-cases/environmental-observation/README.md) |
-| 11 | → | [`CHANGELOG.md`](CHANGELOG.md) |
-| 12 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 13 | → | [`docs/answer-mode-tasks.md`](docs/answer-mode-tasks.md) |
-| 14 | → | [`docs/browser-runtimes.md`](docs/browser-runtimes.md) |
-| 15 | → | [`docs/cli.md`](docs/cli.md) |
-| 16 | → | [`docs/faq.md`](docs/faq.md) |
-| 17 | → | [`docs/getting-started.md`](docs/getting-started.md) |
-| 18 | → | [`docs/news.md`](docs/news.md) |
-| 19 | → | [`docs/README.md`](docs/README.md) |
-| 20 | → | [`docs/trace-cookbook.md`](docs/trace-cookbook.md) |
-| 21 | → | [`docs/walkthrough.md`](docs/walkthrough.md) |
-| 22 | → | [`eval/agentic_eval.md`](eval/agentic_eval.md) |
-| 23 | → | [`eval/README.md`](eval/README.md) |
-| 24 | → | [`eval/scoring.md`](eval/scoring.md) |
-| 25 | → | [`README.md`](README.md) |
-| 26 | → | [`src/clawbench/runtime/runtime-server/README.md`](src/clawbench/runtime/runtime-server/README.md) |
-| 27 | → | [`src/README.md`](src/README.md) |
+| 2 | ✓ | [`docs/cua-evaluation-post-training.md`](docs/cua-evaluation-post-training.md) |
+| 3 | ✓ | [`docs/edgebench.md`](docs/edgebench.md) |
+| 4 | ✓ | [`docs/harbor.md`](docs/harbor.md) |
+| 5 | ✓ | [`docs/prorl-rl-env.md`](docs/prorl-rl-env.md) |
+| 6 | ✓ | [`docs/README.zh-CN.md`](docs/README.zh-CN.md) |
+| 7 | ✓ | [`docs/v1-vs-v2.md`](docs/v1-vs-v2.md) |
+| 8 | ✓ | [`llms.txt`](llms.txt) |
+| 9 | ✓ | [`src/clawbench/runtime/chrome-extension/README.md`](src/clawbench/runtime/chrome-extension/README.md) |
+| 10 | ✓ | [`src/clawbench/runtime/harnesses/webbrain/README.md`](src/clawbench/runtime/harnesses/webbrain/README.md) |
+| 11 | ✓ | [`test-cases/environmental-observation/README.md`](test-cases/environmental-observation/README.md) |
+| 12 | → | [`CHANGELOG.md`](CHANGELOG.md) |
+| 13 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 14 | → | [`docs/answer-mode-tasks.md`](docs/answer-mode-tasks.md) |
+| 15 | → | [`docs/browser-runtimes.md`](docs/browser-runtimes.md) |
+| 16 | → | [`docs/cli.md`](docs/cli.md) |
+| 17 | → | [`docs/faq.md`](docs/faq.md) |
+| 18 | → | [`docs/getting-started.md`](docs/getting-started.md) |
+| 19 | → | [`docs/news.md`](docs/news.md) |
+| 20 | → | [`docs/README.md`](docs/README.md) |
+| 21 | → | [`docs/trace-cookbook.md`](docs/trace-cookbook.md) |
+| 22 | → | [`docs/walkthrough.md`](docs/walkthrough.md) |
+| 23 | → | [`eval/agentic_eval.md`](eval/agentic_eval.md) |
+| 24 | → | [`eval/README.md`](eval/README.md) |
+| 25 | → | [`eval/scoring.md`](eval/scoring.md) |
+| 26 | → | [`README.md`](README.md) |
+| 27 | → | [`src/clawbench/runtime/runtime-server/README.md`](src/clawbench/runtime/runtime-server/README.md) |
+| 28 | → | [`src/README.md`](src/README.md) |
 
 ---
 

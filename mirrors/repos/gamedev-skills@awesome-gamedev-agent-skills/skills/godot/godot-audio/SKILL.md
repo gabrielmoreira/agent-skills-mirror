@@ -33,7 +33,8 @@ philosophy, ducking patterns) → `audio-design`; importing/encoding assets outs
    Define buses in the Audio panel (bottom dock); each can have volume, mute, solo, and
    effects.
 4. **Control volume in dB**, not linear (audio is logarithmic). `0 dB` = unchanged,
-   `-80 dB` ≈ silent. Convert with `linear_to_db`/`db_to_linear`.
+   `-80 dB` ≈ silent. Convert with `linear_to_db`/`db_to_linear`, or use the linear helpers
+   (`volume_linear` on players, `AudioServer.set_bus_volume_linear()`), which convert for you.
 5. **Drive volume/mute from code** with `AudioServer` by bus index.
 6. **For rhythm**, compute precise playback time using output latency compensation.
 
@@ -48,7 +49,7 @@ func play_jump() -> void:
     sfx.pitch_scale = randf_range(0.95, 1.05)   # slight variation avoids fatigue
     sfx.play()
 
-# For many overlapping copies, use an AudioStreamPlayer with an
+# For overlapping copies, raise sfx.max_polyphony (default 1), use an
 # AudioStreamPolyphonic stream, or spawn short-lived players and free on `finished`.
 ```
 
@@ -96,12 +97,14 @@ func get_playback_time() -> float:
 
 - **Treating volume as linear.** `volume_db`/`set_bus_volume_db` are decibels. Setting
   `volume_db = 0.5` is nearly full volume, not half. Map sliders with `linear_to_db`.
-- **`linear_to_db(0.0)` is `-inf`.** Clamp the linear value to a small minimum (e.g.
-  `0.0001`) before converting, or special-case 0 → mute.
+- **`linear_to_db(0.0)` is `-inf`.** It is silent, but tweening or doing math from `-inf`
+  produces NaN. Clamp the linear value to a small minimum (e.g. `0.0001`) before converting,
+  or special-case 0 → mute. `set_bus_volume_linear(bus, 0.0)` stores `-inf` too.
 - **Bus name typos fail quietly.** `get_bus_index("Muisc")` returns `-1`; calls then error
   or no-op. Match the exact bus name from the Audio panel.
-- **Short SFX cut off** when the same player is retriggered. Use separate players, an
-  `AudioStreamPolyphonic`, or `AudioStreamPlayer` per-shot freed on `finished`.
+- **Short SFX cut off** when the same player is retriggered → `max_polyphony` defaults to 1.
+  Raise it (e.g. 4) so `play()` overlaps copies, or use an `AudioStreamPolyphonic` /
+  separate players freed on `finished`.
 - **Music doesn't loop** unless the import/stream loop is enabled (`.ogg` import has a
   Loop option; `AudioStreamWAV` has `loop_mode`).
 - **Syncing to `get_playback_position()` alone is jittery** — it updates per audio mix,

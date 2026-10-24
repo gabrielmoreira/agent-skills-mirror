@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `osaurus-ai/osaurus` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
+Mirror of `osaurus-ai/osaurus` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `osaurus-ai/osaurus` — 26 default patterns, 0 followed patterns, 4 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 4 |
+| Files         | 5 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -63,6 +63,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 2 | ✓ | [`.cursor/rules/testing-workflow.mdc`](.cursor/rules/testing-workflow.mdc) |
 | 3 | ✓ | [`.cursor/settings.json`](.cursor/settings.json) |
 | 4 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 5 | ✓ | [`docs/examples/osaurus-bundle-example/skills/triage-ticket/SKILL.md`](docs/examples/osaurus-bundle-example/skills/triage-ticket/SKILL.md) |
 
 ---
 

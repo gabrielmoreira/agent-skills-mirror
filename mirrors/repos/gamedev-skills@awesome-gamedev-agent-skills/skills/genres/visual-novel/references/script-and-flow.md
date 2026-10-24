@@ -62,8 +62,20 @@ save = {
 }
 ```
 
-The runtime must expose a serializable position (Ink and Yarn both can save/restore state). Add
-a `version` and a migration path so old saves survive script edits (see `save-systems`).
+What the runtime can restore decides how precise "save anywhere" can be:
+
+- **Ink:** `story.state.ToJson()` / `story.state.LoadJson(json)` captures the exact position
+  and all variables, so a load resumes the same line.
+- **Yarn Spinner:** you can save the variables and the current node name
+  (`DialogueRunner.CurrentNodeName` in Unity) and restart that node, but its FAQ states that the
+  specific line inside a node cannot be saved or restored. Keep nodes short, put a node boundary
+  wherever a save may happen, or record the last line ID and fast-forward to it on load.
+- **Ren'Py:** saving and loading at any line is built in (a save records the start of the
+  current statement). Declare story flags with `default`, which is always saved; `define` is for
+  constants.
+
+Add a `version` and a migration path so old saves survive script edits (see `save-systems`).
+Editing a line that a save points at is the usual way old saves break; give lines stable IDs.
 
 ## 5. Backlog, skip, and auto
 

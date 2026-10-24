@@ -6,7 +6,7 @@ This guide is for AI coding agents working in the OpenClaude repository. Read it
 
 OpenClaude is a coding-agent CLI for cloud and local model providers. It supports OpenAI-compatible APIs, Anthropic, Gemini, DeepSeek, Ollama, MCP, local backends, slash commands, tools, agents, and a React/Ink terminal UI.
 
-The installed CLI runs on Node.js `>=22.0.0`. Bun is used for source builds, scripts, dependency management, and tests.
+The installed CLI runs on Node.js `>=24.22.1` (Node 26 recommended/default). Bun is used for source builds, scripts, dependency management, and tests.
 
 ## Work Style
 
@@ -57,9 +57,11 @@ bun install
 bun run build
 bun run smoke
 bun run check
-bun run typecheck
+bun run typecheck:fast
 bun run typecheck:type-tests
 ```
+
+`bun run typecheck:fast` runs Bun's builtin type checker locally and is the CI typecheck; use the wrapper because the repository's `check` script shadows `bun check`. `bun run typecheck:type-tests` also runs in CI for focused TypeScript assertions. `bun run typecheck` (tsc) is available as an additional local check. Keep the `typescript` devDependency for ESLint, `@astrojs/check`, and the focused type tests.
 
 Focused checks:
 

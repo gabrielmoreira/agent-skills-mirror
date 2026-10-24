@@ -169,6 +169,15 @@ If a prerequisite is missing, guide the user through setup ([references/prerequi
     comments without implementing a speculative replacement or claiming clean
     convergence. Preserve the decision privately on resume.
 
+29. **Recheck the original PR after every round.** Follow the
+    [lifecycle/head gate](./references/copilot-review-loop.md#original-pr-lifecyclehead-gate-every-round)
+    with `Get-UpstreamPrReviewGate.ps1`. Closed, merged or draft means stop
+    review work and release the slot, not finish the fork loop. New commits
+    mean fetch/pin and review the new version, re-ground carried findings and
+    invalidate old-head validation. Check on resume and before another request,
+    expensive validation or finalizing drafts too. Preserve the total request
+    count; API errors never authorize continuing with assumed unchanged state.
+
 ## Phase 0: Context & Process Review
 
 The half Copilot code review cannot do. It reads the PR description, the full conversation timeline, the CI/checks status, and the linked issue, then decides whether the PR clears PowerToys' *process* bar. Everything Phase 0 produces is **drafted only**. Full rules, the P1–P9 gate table, the compound-quality close signal, and per-gate reply templates are in **[references/phase0-context-review.md](./references/phase0-context-review.md)**.
@@ -225,6 +234,7 @@ Auto-detect these at the start of each session with [scripts/Get-ForkConfig.ps1]
 | [Get-PRContext.ps1](./scripts/Get-PRContext.ps1) | Fetch author, association, size, and labels to calibrate Phase 0 |
 | [Request-CopilotReview.ps1](./scripts/Request-CopilotReview.ps1) | Request Copilot as reviewer and poll until the review posts |
 | [Get-CopilotReviewStatus.ps1](./scripts/Get-CopilotReviewStatus.ps1) | Read all review pages and match a saved fork-head/request without making a new request |
+| [Get-UpstreamPrReviewGate.ps1](./scripts/Get-UpstreamPrReviewGate.ps1) | Read the original PR lifecycle/head after each round; stop excluded PRs or reconcile new commits |
 | [Get-UnresolvedCopilotThreads.ps1](./scripts/Get-UnresolvedCopilotThreads.ps1) | Count unresolved Copilot threads (stranded-loop / resume check) |
 | [Get-ReviewResumeState.ps1](./scripts/Get-ReviewResumeState.ps1) | Discover durable branches, review PRs, worktrees, rounds, and unresolved threads across sessions |
 | [Sync-ForkMain.ps1](./scripts/Sync-ForkMain.ps1) | Fast-forward the clone's `main` from upstream and push it to the fork |

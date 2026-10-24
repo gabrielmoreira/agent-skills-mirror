@@ -374,8 +374,12 @@ the picture:
   [air-gapped recipe](./recipes/air-gapped-deployment.md) names the three pages
   that link the fonts, and a blocked request falls back to system fonts.
 - **The command-line clients in the same binary** (`xerj autoindex`,
-  `xerj mcp`, `xerj search`, `xerj hub` and the others) send what they read to
-  the node URL you give them, `http://localhost:9200` unless you say otherwise.
+  `xerj mcp`, `xerj search`, `xerj code`, `xerj corpus list`, `xerj hub` and
+  the others) send what they read to the node URL you give them,
+  `http://localhost:9200` unless you say otherwise. On an empty corpus ledger,
+  `xerj code` and `xerj corpus list` also POST one catalog search to that same
+  node URL (autoindex run prefixes, and the API key when one is configured);
+  no document text and no user query.
   `xerj feedback --open-pr` runs your `gh` to open a GitHub pull request with
   the report it drafted; without that flag it does nothing over the network.
 

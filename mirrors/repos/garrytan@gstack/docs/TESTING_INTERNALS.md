@@ -476,6 +476,14 @@ plans nothing when the red is a harness failure (runner error, slice deadline,
 unfinalized checkpoint, a different executed case count, a reused result), an
 INFRA or INCOMPLETE panel, an INFRA-class or unattributed testcase, a case
 already red twice, or when any other problem would keep the gate red anyway.
+A trial whose provider rejected the run's credentials is INFRA-class
+(`credentialRejection()` in `test/helpers/eval-store.ts`): a session its runner
+saw end on Anthropic's 401 `authentication_error`, the CLI's
+`authentication_failed` or `Invalid API key ·` message (claude -p, Agent SDK,
+or anywhere on a PTY screen), or OpenAI's `invalid_api_key`, or the same
+evidence in its failure text. The run's key is shared, so a rerun cannot help;
+the report counts these under INFRA and names them `credentials rejected:`.
+Assertion text that only mentions a key keeps its class.
 
 `slices-report` reads every attempt's slices (`paid-slice-*`), each attempt's
 rerun (`paid-rerun-*`, bound to its own `rerun-plan-a<attempt>` manifest) and
@@ -612,7 +620,7 @@ The highest-precedence cause with evidence wins:
 | `failure_cause` | Recorded when | First step |
 |---|---|---|
 | `contract` | `expectContract()` stamped a contract violation | fix the product; a violation fails a behavior panel outright |
-| `pre_turn_infra` | the trial failed before the first model turn (`failure_class: 'infra'`) | check the runner and API status; an all-INFRA census is re-dispatched once |
+| `pre_turn_infra` | the trial failed before the first model turn (`failure_class: 'infra'`), a rejected credential included | check the runner and API status (for `credentials rejected:`, the key secret); an all-INFRA census is re-dispatched once |
 | `api_error` | a session ended on an API error (for PTY, the `API Error:` panel on an idle turn) or the runner's exit reason was `error_api` | read the evidence line; a provider outage is a named red |
 | `refusal` | the structured stop reason was a refusal (phrases only as a last resort; quoted refusal text in a tool result does not count) | check whether the fixture prompt invites the refusal |
 | `provider_stall` | a session that streamed partial messages saw no event of any kind, thinking deltas included, for `STALL_WINDOW_MS` (120 s) while a model request was in flight and no tool, permission prompt, hook or subagent was outstanding; sessions without partial messages are never stalls | read the session ledger row; still a failed trial under v1 |

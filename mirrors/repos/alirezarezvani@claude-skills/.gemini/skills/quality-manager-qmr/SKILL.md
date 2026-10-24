@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/quality-manager-qmr/../../../ra-qm-team/skills/quality-manager-qmr/SKILL.md

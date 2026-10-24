@@ -78,8 +78,16 @@ progression. Keep run state separate from any meta-collection (see `save-systems
 
 ## 6. Shuffle fairness and consistency
 
-- Use a correct **Fisher–Yates** shuffle (engine RNG); naive "sort by random" is biased.
-- Seed the RNG if you want reproducible runs, replays, or deterministic undo.
+- Use a correct **Fisher–Yates** shuffle. Two common hand-rolled versions are biased: sorting
+  with a random *comparator* (`sort(cmp=random)`), and swapping each index with any index
+  `0..n-1` instead of `0..i`. Both make some deck orders more likely than others.
+- Watch the range convention of the RNG call you use (table below). Picking `j` from `0..i-1`
+  instead of `0..i` gives Sattolo's algorithm, which never leaves a card in place: also biased.
+- Seed the RNG if you want reproducible runs, replays, or deterministic undo, and save the
+  generator's **state** (not just the seed) with the run so a reload continues the same sequence.
+- A small-state PRNG cannot reach every order of a large deck (52 cards have about 2^226
+  orderings; a 64-bit state reaches at most 2^64). That is fine for games; it only matters if you
+  promise "every shuffle equally likely" for money or tournaments.
 - For digital games, players perceive true-random as "streaky". Some games use a *pity* /
   smoothing system (e.g. bound how long before a needed resource appears). Decide intentionally;
   document it so balance math accounts for it.
@@ -87,9 +95,18 @@ progression. Keep run state separate from any meta-collection (see `save-systems
 ```python
 def shuffle(cards, rng):                 # Fisher–Yates
     for i in range(len(cards) - 1, 0, -1):
-        j = rng.range(0, i + 1)          # 0..i inclusive
+        j = rng.int_inclusive(0, i)      # j in 0..i, both ends included
         cards[i], cards[j] = cards[j], cards[i]
 ```
+
+| Engine | Seedable generator | Integer in `0..i` inclusive | Built-in shuffle |
+|--------|--------------------|-----------------------------|------------------|
+| Godot 4.7 | `RandomNumberGenerator` (`seed`, `state`) | `rng.randi_range(0, i)` | `Array.shuffle()` uses the **global** seed, not your instance |
+| Unity 6.3 | `System.Random` or `Unity.Mathematics.Random` per run | `rnd.Next(0, i + 1)` / `UnityEngine.Random.Range(0, i + 1)` (max exclusive) | none |
+| Phaser 4 | `new Phaser.Math.RandomDataGenerator([seed])` (`state()`) | `rnd.between(0, i)` | `rnd.shuffle(array)` (uses that generator) |
+
+`UnityEngine.Random` is one global generator; anything else that calls it (particles, AI)
+consumes values and breaks replay. Give the deck its own generator instance.
 
 ## 7. Mana / resource curves
 

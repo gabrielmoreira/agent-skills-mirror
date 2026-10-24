@@ -30,7 +30,8 @@ template → the `fps-shooter` genre skill.
 2. **Add a `Camera3D`.** Mark it `current` (or call `make_current()`); set `fov`, `near`,
    `far`. Parent it to a rig/pivot for orbit or follow cameras.
 3. **Light the scene.** A `DirectionalLight3D` is the sun; `OmniLight3D`/`SpotLight3D` are
-   local. Enable shadows per light. Without lights and ambient, surfaces render black.
+   local; `AreaLight3D` (4.7+) is a rectangular panel light that costs more than omni/spot.
+   Enable shadows per light. Without lights and ambient, surfaces render black.
 4. **Add a `WorldEnvironment`** with an `Environment` resource: background (sky/color),
    ambient light, tonemap, and post (glow, SSAO, fog, adjustments).
 5. **Give meshes materials** (`StandardMaterial3D` or a `ShaderMaterial`) on
@@ -114,8 +115,10 @@ func build_floor(width: int, depth: int, item_id: int) -> void:
   parent gives surprising results. `look_at` uses global coordinates.
 - **Scaling physics/lights.** Non-uniform `scale` on a `Node3D` distorts child collisions
   and lights; prefer scaling the mesh asset or using uniform scale.
-- **Forgetting `from`/`up` in `look_at`.** `look_at(target, up)` — a target equal to the
-  node's position, or an `up` parallel to the look direction, produces NaNs/flips.
+- **`look_at` does nothing and prints an error** → the target equals the node's position, the
+  `up` vector is parallel to the look direction (e.g. looking straight down with
+  `Vector3.UP`), or the node is not in the tree yet. Keep an offset, pass a different `up`, or
+  use `look_at_from_position()` before the node enters the tree.
 - **GridMap with no `MeshLibrary`** places nothing. Create a `MeshLibrary` (from scenes)
   and assign it; `set_cell_item(cell, -1)` clears a cell.
 - **HDR/glow too strong** → check `tonemap_mode` and glow thresholds; raw emissive values

@@ -97,7 +97,8 @@ fn swap(mut set: ParamSet<(
 3. **Resource entities** — since 0.19 each resource is stored on an entity tagged
    `IsResource`, so broad queries (`Query<Entity>`, `Query<EntityRef>`,
    `Query<EntityMut>`) match those entities too. `Query<EntityMut>` next to any
-   `Res<T>` panics with `error[B0002]`, and despawning every entity a `Query<Entity>`
+   `Res<T>` panics at startup (`error[B0002]` when the `Res` comes after the query,
+   `error[B0001]` when it comes first), and despawning every entity a `Query<Entity>`
    returns panics. Query a marker component instead, or exclude resources:
 
 ```rust
@@ -221,9 +222,11 @@ react only to modified data — cheaper than recomputing every frame. Note: writ
 through a `&mut T` marks it changed even if the value is identical; guard with a
 value check if that matters.
 
-For a component that is checked with `Changed<T>` often but written rarely, 0.20 can
-keep a per-column summary tick so unchanged columns are skipped wholesale. Every write
-gets slightly more expensive, so opt in only where the queries dominate:
+A component can opt in to a per-table summary tick (0.20). It only pays off for code
+that walks the component with `Query::contiguous_iter()` over `Ref<T>` and checks the
+chunk's `summary_tick_is_changed()` to skip a whole table at once; an ordinary
+`Changed<T>` filter still checks every entity's tick. Every write gets slightly more
+expensive, so opt in only for components that are scanned often and written rarely:
 
 ```rust
 #[derive(Component)]

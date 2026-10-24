@@ -111,7 +111,7 @@ Drop a `*.motion.json` sidecar next to the composition (matching the html basena
 npx hyperframes snapshot                       # 5 key frames as PNG
 npx hyperframes snapshot ./my-project          # specific project
 npx hyperframes snapshot --frames 10           # evenly-spaced N frames
-npx hyperframes snapshot --range 3:5 --frames 8 # 8 frames within root-timeline seconds 3–5
+npx hyperframes snapshot --range 3,5 --frames 8 # 8 frames within root-timeline seconds 3–5
 npx hyperframes snapshot --composition intro --frames 8 # 8 frames within this data-composition-id
 npx hyperframes snapshot --review              # beat sheet, seam strips, phone sheet
 npx hyperframes snapshot --review --json       # same, with paths and times as JSON
@@ -119,7 +119,7 @@ npx hyperframes snapshot --review --json       # same, with paths and times as J
 
 Still PNGs. Each run writes `.hyperframes/artifacts/snapshots/<id>/` unless `--output` is set. `snapshot` is the standalone capture; `check --snapshots` is the gate.
 
-One of `--at`, `--range START:END` (seconds), or `--composition <data-composition-id>` (not a CSS selector). `--frames` defaults to 5. Range and composition sample just before the end and add no extra end frame; `--at` adds one unless `--no-end`.
+One of `--at`, `--range START,END` (seconds), or `--composition <data-composition-id>` (not a CSS selector). `--frames` defaults to 5. Range and composition sample just before the end and add no extra end frame; `--at` adds one unless `--no-end`.
 
 `--review` picks the frames that show a film over time. Scenes are the composition's top-level timed clips and sub-composition hosts, as `timeline` lists them (captions and audio excluded); `--composition` scopes to one. It writes `review-beats.jpg` (each scene at its start + 0.3 s and at its middle, and each timed `data-beat="name"` element at its start + 0.3 s, labelled with time and id), `review-seam-NN.jpg` (frames at −0.2, −0.1, 0, +0.1, +0.2 s around every cut) and `review-phone.jpg` (the beat frames 360 px wide, to judge legibility at phone size), beside the `beat-*.png` and `seam-*.png` stills. With fewer than two scenes the beats spread evenly. `--json` prints `{ok, outputDir, frames[{path,time,role,label}], contactSheets, review{window, scenes, beats, seams[{time,from,to,times,paths,sheet}], sheets, notes}}`.
 

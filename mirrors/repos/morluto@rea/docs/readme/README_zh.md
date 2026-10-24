@@ -1,7 +1,7 @@
 <div align="center">
 
 [English](../../README.md) · **简体中文** · [繁體中文](README_zh-TW.md) · [日本語](README_ja.md) · [한국어](README_ko.md) · [Türkçe](README_tr.md) · [Русский](README_ru.md) · [Tiếng Việt](README_vi.md) · [ไทย](README_th.md) · [Deutsch](README_de.md) · [Español](README_es.md) · [Français](README_fr.md) · [Українська](README_uk.md) · [Polski](README_pl.md) · [Português (Brasil)](README_pt-BR.md) · [العربية](README_ar.md) · [فارسی](README_fa.md) · [Bahasa Indonesia](README_id.md) · [Italiano](README_it.md)
-· [Ελληνικά](README_el.md) · [മലയാളം](README_ml.md)
+· [Ελληνικά](README_el.md) · [മലയാളം](README_ml.md) · [Roman Urdu](README_ur-Latn.md)
 
 # REA：逆向一切
 
@@ -66,6 +66,8 @@ REA 将智能体连接到分析工具，用于检查原生二进制文件、Java
 
 ## 快速开始
 
+Linux 上的 Ghidra、JADX、固件工具启动和静态 JavaScript/Electron 分析需要在 REA 的 `PATH` 中提供兼容 procps 的 `ps`，用于检查进程所有权。恢复步骤见安装指南的 Linux 进程所有权前提。
+
 ### 设置智能体
 
 安装 Node.js 和 npm 后，运行：
@@ -77,6 +79,8 @@ npx rea-agents setup
 选择智能体，检查计划中的变更并批准。设置流程会添加 REA 的 MCP 服务和匹配的工作流指引，并备份已有配置。完成后重启智能体。
 
 设置流程支持 Claude Code、Codex、Cursor、Gemini CLI、Grok Build 和[其他智能体](../installation.md#supported-agents)。提供方配置和手动注册 MCP 的方法见[安装与设置](../installation.md)。
+
+MCP 默认使用紧凑输入 Schema 来减少上下文开销。需要完整字段说明和嵌套验证细节时，在 MCP 注册中设置 `REA_MCP_INPUT_SCHEMA_PROFILE=full`。两种配置都保留完整工具集和规范的服务端验证；见 MCP 合约指南。
 
 ### 询问智能体
 
@@ -115,6 +119,8 @@ REA 更新较快，新版本经常包含错误修复。请保持安装的版本�
 rea update
 ```
 
+`rea --update` 是 `rea update` 的别名，接受相同的全局输出选项。更新命令合计最多保留 4 MiB 的 stdout/stderr；命令退出后会拒绝过大的元数据响应，详细安装日志采用有界诊断。进度输出遵守终端背压并等待已提交的写入完成。
+
 Bun 全局更新需要 Bun 1.2.17 或更高版本。如果使用较旧的 Bun 版本，请先手动升级 Bun，再运行 `rea update`。
 
 要更新智能体注册和 skill，请运行更新命令输出的设置命令。
@@ -139,7 +145,7 @@ npx rea-agents@latest setup
 
 ## 可以分析什么
 
-REA 需要 Node.js 22.x（>=22.19）、24.x（>=24.11）或 26+，以及 npm。额外工具和主机支持取决于分析目标：
+REA 需要 Node.js 22.x（>=22.23.4）、24.x（>=24.22.1）或 26+ (>=26.12.1)，以及 npm。额外工具和主机支持取决于分析目标：
 
 | 目标                  | REA 返回的内容                                                               | 要求与指南                                                                                                         |
 | --------------------- | ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
@@ -154,9 +160,9 @@ REA 需要 Node.js 22.x（>=22.19）、24.x（>=24.11）或 26+，以及 npm。�
 | ELF notes             | PT_NOTE/SHT_NOTE owners, types, GNU build-id and ABI-tag fields              | Built-in static ELF inspection; [ELF notes](../elf-notes.md)                                                       |
 | 已记录的 Linux 崩溃   | 原始 note 记录、每个已记录线程的寄存器/信号及可选的映射候选项                | Linux x64 上由调用方提供的 pwntools；可选的 GDB/pwndbg；[已记录崩溃](../recorded-crashes.md)                       |
 | 桌面安装目录          | 运行时候选、支持文件、组件标记和后续操作                                     | 有界的目录与文件头检查；[桌面应用](../desktop-applications.md)                                                     |
-| JavaScript / Electron | 模块、导入、source map、路由、IPC 和原生扩展关系                             | Node.js 和 npm；[应用分析](../javascript-application-workflows.md)                                                 |
+| JavaScript / Electron | 模块、导入、source map、路由、IPC 和原生扩展关系                             | Node.js 和 npm；[应用分析](../javascript-application-workflows.md); Linux: procps `ps`                             |
 | 网站                  | 页面结构、脚本、网络观察结果和按请求获取的截图                               | Chrome 系浏览器；[浏览器分析](../browser-observation.md)                                                           |
-| 已保存的网络捕获      | 请求、响应、可访问的载荷和来源位置                                           | HAR；原生 mitmproxy 捕获需要 Linux 上的 mitmdump；[捕获指南](../web-network-captures.md)                           |
+| 已保存的网络捕获      | 请求、响应、可访问的载荷和来源位置                                           | HAR / Fiddler Everywhere SAZ；原生 mitmproxy 捕获需要 Linux 上的 mitmdump；[捕获指南](../web-network-captures.md)  |
 | 数据包捕获            | 端点、DNS、TLS SNI、协议分布和 HTTP 请求                                     | 调用方提供的 tshark 和 capinfos；[pcap 指南](../pcap-analysis.md)                                                  |
 | .NET 程序集           | 元数据、CIL 指令、声明的原生依赖和构建对比                                   | 静态检查；[托管代码指南](../managed-code-analysis.md)                                                              |
 | PyInstaller           | CArchive, PYZ, Python bytecode                                               | Static inspection; [Python packaged applications](../python-packaged-applications.md)                              |
@@ -170,16 +176,29 @@ REA 需要 Node.js 22.x（>=22.19）、24.x（>=24.11）或 26+，以及 npm。�
 | 录制的逻辑信号        | 解码注释、样本范围和诊断信息                                                 | Linux: sigrok-cli 0.7.2 + prlimit; [信号记录指南](../signal-recordings.md)                                         |
 | 软件包与资源          | 文件清单、摘要、plist、Apple bundle 结构和提取的资源                         | [制品与 JavaScript 指南](../javascript-artifact-reconstruction.md)、[Apple 应用](../apple-application-analysis.md) |
 | 进程行为              | 终端输出、交互、退出和文件系统观察结果，以及运行对比                         | 支持原生 PTY 的 Linux/macOS；[进程捕获](../process-capture.md)                                                     |
+| SQLite 数据库         | 表、列、索引、视图、触发器和选定普通表的行                                   | 本地数据库/WAL 快照；Node.js 24.x >=24.15 或 26+，具有原生 SQLite 限制 API                                         |
+| GPU 代码对象          | CUDA/HIP 目标、选定内核参数和资源、保留的 PTX 文本                           | 内置静态检查 ELF/PE/fatbin/CUBIN/PTX; [GPU](../gpu-code-objects.md)                                                |
+| 模型文件              | GGUF / safetensors 元数据、张量声明和派生总量                                | 头部检查；可选完整文件哈希; [GGUF / safetensors](../model-artifacts.md)                                            |
+| IL2CPP 元数据         | Unity global-metadata.dat 程序集映像、类型和方法名、索引范围                 | 静态解码版本 24、27、29、31 和 39；无需 Unity                                                                      |
+| Godot PCK             | 归档目录与提取、原始头部和目录信息、选定内容身份                             | 静态格式 2、3 和 4；无需 Godot                                                                                     |
+| APK 签名              | v1/v2/v3/v3.1 签名者、证书指纹、密钥轮换和摘要自洽性                         | 内置静态检查; `inspect_apk_signature`                                                                              |
 
 静态 JavaScript 和 .NET 检查读取提供的文件，不运行应用。运行时捕获会以你的用户权限运行目标或与之交互；各运行时指南说明了具体影响。
 
 <a id="choosing-a-deep-analysis-provider"></a>
 
+大型二进制文件可通过 `REA_GHIDRA_STARTUP_TIMEOUT_MS` 或 `REA_HOPPER_STARTUP_TIMEOUT_MS` 延长提供方启动期限。
+
 不同提供方支持的原生格式和主机系统有所不同。请参阅 [Hopper 与 Ghidra 设置](../installation.md#hopper)、[IDA 指南](../ida-provider.md)、[Kuna](../kuna-provider.md)和[实验性 Windows Ghidra 支持](../windows-ghidra-p0.md)。Ghidra 也支持 [16 位 DOS 分析](../ghidra-dos.md)。提供方选择见 [CLI 指南](../cli.md#choose-a-provider)。对于最新 npm 版本发布后新增的功能，请查看[发布可用性](../installation.md#released-package-and-main)。
 
 ## 案例
 
-[![DX-Ball 声音平移、Notion 剪贴板桥接与 TH04 弹幕环案例的插图](../assets/rea-showcases.png)](https://rea.tools/zh-CN/showcase/)
+<a href="https://rea.tools/zh-CN/showcase/">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="../assets/rea-showcases-dark.svg" />
+    <img alt="DX-Ball 声音平移、Notion 剪贴板桥接与 TH04 弹幕环案例的插图" src="../assets/rea-showcases.svg" />
+  </picture>
+</a>
 
 ### DX-Ball：重建声像计算
 
@@ -274,8 +293,6 @@ npx rea-agents@latest setup
 
 - [安装与设置](../installation.md)：智能体注册、提供方配置、更新和卸载。
 - [就绪检查与故障排查](../installation.md#check-readiness-for-your-task)：诊断特定智能体或分析引擎。
-- [CUDA / HIP](../gpu-code-objects.md)
-- [GGUF / safetensors](../model-artifacts.md)
 - [CLI 与 Evidence](../cli.md)：命令、提供方选择、快照、导入/导出和退出状态。
 - [MCP 契约](../mcp-contracts.md)和[智能体提示词](../mcp-prompts.md)：工具结果、会话和引导式调查。
 - [工具目录](../mcp-contracts.md#generated-catalog)：构建时生成的工具、提供方和 CLI 命令清单。

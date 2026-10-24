@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/ai-decision-authority/../../../marketing-skill/skills/ai-decision-authority/SKILL.md
