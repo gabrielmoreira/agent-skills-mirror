@@ -111,7 +111,9 @@ A replacement kernel names the kernel it replaces and gives `replaced`, which ru
 A gate failure on a kernel already shipped is reported, not hidden. Until its fix lands, its spec can carry a
 `known` entry naming the gate and what fails. That gate must keep failing (the run prints `KNOWN`); once a fix makes
 it pass, the run fails until the entry is removed. Today: affine_mm's 4-bit form gives NaN for an infinite input where
-MLX's formula keeps the infinity, because its codes enter the MMAs as q + 128 and its bias as b - 128 s.
+MLX's formula keeps the infinity, because its codes enter the MMAs as q + 128 and its bias as b - 128 s. GLM-5.3-Flash's
+`tf_glm_scores` scores a NaN dot as 0 where float64 keeps the NaN: its relu is `fmaxf(x, 0)`, as `tl.maximum` is in the
+Python family's Triton glue it was ported from.
 
 HIP’s MLX stream tile keeps its finite dot2 sums unchanged. A non-finite result with an actual non-finite
 operand is recomputed by full quantization groups using the factored float64 formula. The plain tile is
@@ -119,6 +121,8 @@ registered at all six supported bit widths and groups of 32, 64 and 128, with no
 
 The HIP relu^2 replacement retains every non-finite plant and checks both unfused bytes and every
 independent float64 output class. No inherited infinity discrepancy is accepted.
+The paired launch retains every table plant and checks both members' separate-launch bytes and every
+float64 output class, without an inherited exception.
 
 ## Coverage
 
@@ -132,18 +136,48 @@ the once-rounded ones, each checked on its residual and its output, with four co
 bit-equal to them) and top-k, the latent top-k's decode form (bit-equal to `tf_super_topk`), the latent combine and
 shared add over bf16 share sums (bit-equal to `tf_super_combine` and `tf_super_moe_out` over the fp32 shares), the
 Mamba scan of a verify window (its host twin's bytes), qmm_group's cluster tile, lane_gemv and its split-K form (both
-bit-equal to it), prompt16's FP4 tile with bf16 and fp32 out, qmmf's FP4 tiles with fp32 out (K slices met in a
+bit-equal to it), the split-K form segmented over projections of one input (bit-equal to `decode()` on each), prompt16's FP4 tile with bf16 and fp32 out, qmmf's FP4 tiles with fp32 out (K slices met in a
 cluster, fused, or by `reduce_kernel<true>`), the checkpoint math's FP8 128-row prompt tiles (both slice meetings,
 bit-equal to the 64-row tiles) and NVFP4 experts: the decode-sized forms and the prompt tiles (up to down's NVFP4
 rows, fp32 down and the down summing two width shares, each bit-equal to the kernels it replaces; sm_120 up), and the
-reduce-scatter's `tf_rank_sum`, and the activation rows in MLX's bf16 steps (GeGLU, and SwiGLU as DFlash drafters
-round it; twelve controls, each dropping one rounding point; their 64-value sums bit-equal to the fp32 tree).
+reduce-scatter's `tf_rank_sum`, GLM-5.3-Flash's float32 norm weight forms `tf_glm_rmsnorm_4096_f32w` (its rows and
+64-sums) and `tf_glm_hc_finish_f32w` (its normed rows, 64-sums, post and Sinkhorn comb), and the activation rows in
+MLX's bf16 steps (GeGLU, and SwiGLU as DFlash drafters round it; twelve controls, each dropping one rounding point;
+their 64-value sums bit-equal to the fp32 tree).
 CUDA also checks the MLX affine token rows (4 bits, and 2 to 6 or 8 bits times a bf16 scale, each
 output bit-equal to float64 at its rounding points; two controls, one dropping the rounding point, one folding the scale
 into the group's scale and bias).
 CUDA also checks qk_rows' attention inputs at head dims to 512 with a unit v norm and MLX's bf16
 rows (three controls, each dropping one option).
+CUDA also checks `window_attention`'s rows at head dims 256 and 512 (`window_rows.cu`: decode chunks and their merge,
+prompt tiles with P as bf16 or in two halves, a row's last key, windows over a ring or none over a linear cache), each
+output within float64's range over the spread its fp32 steps and tensor-core sums allow (`core/attention_range.zig`;
+seven controls, each one planted fault).
+CUDA also checks Dory's nGPT rows: the L2 norm rows with and without their bf16 add, and the normalized lerp residual
+(`norms_l2.cuh`), each output within float64's range at its bf16 points (three controls, each dropping one point).
+CUDA also checks Dory's attention inputs (`qk_l2.cuh`): RoPE first, each head's L2 norm, q times its scale vector, v as is, at
+head dim 256 and positions past 199,800 (two controls, each dropping one rounding point).
+CUDA also checks Dory's activation rows (`act_l2.cuh`): the scaled sigmoid output gate over all heads and the scaled SwiGLU,
+each row then L2-normed, against float64's ranges at their bf16 points and expf's ulps (four controls, one point each).
+CUDA also checks `dense_rows`' scaled epilogue (Dory's logits, fp32(bf16(x . w)) times a per-column scale), bit-equal to its
+unscaled tile's outputs rounded and scaled on the host.
 HIP: the RMS norm rows, a wave a row (fp32, fp16 and bf16 out) and a block a row (fp16 and bf16 out).
+
+RADIO's fused bias, activation and residual (`tf_vit_bias_act`) replaces `tf_vit_bias` then
+`tf_vit_pointwise`, byte for byte.
+CUDA also checks GLM-5.3-Flash's KV page kernels on a page table out of order: the latent write and the pooled keys
+(`tf_glm_lat_write`, `tf_glm_pool_keys`), the index scores and the selected tokens' rows (`tf_glm_scores`,
+`tf_glm_dsa_tokens`), and the MLA chunks through their merge (`tf_glm_chunks_16` and `tf_glm_chunks_32`, dense and
+sparse).
+
+GLM's Metal window projections register narrow and wide rows at 2, 3, 4, 5, 6 and 8 bits, plus both gathered paths.
+Independent FP64 linear cases accompany byte replacements against frozen pre-window-optimization kernels.
+The gathered SwiGLU keeps its predecessor's clipped BF16 output and nonfinite rules; gate/up taps qualify its dots separately.
+Controls dispatch real source mutations that couple rows or select the wrong expert; host tests validate their witnesses.
+CUDA also checks the affine-3 experts' split decode pair, bit-equal to the pair kernel it replaces (two controls,
+one dropping a last round of K groups short of the warps, one chaining the groups in reverse).
+CUDA also checks Flash Next's NVFP4 experts on prompt tiles with the decode form's sums (SwiGLU gate-up and fp32
+down, each bit-equal to the decode instance it replaces; the scaled-code prompt tile is the planted control).
 
 ## CUDA records per nvcc release
 
@@ -154,9 +188,21 @@ and its split-K form, prompt16's FP8 tile, qmmf's FP4 32-row cluster tile, five 
 and FP32-output paths, FP8G's 32-row cluster tile with FP32 output, the common EXL3 prompt products, Super's
 decode-sized latent top-k and NVFP4 up experts, the Mamba scan and Super's NVFP4 prompt down kernels, three of
 GLM-5.3-Flash's packed matmuls and three of its DFlash2 launches, and the training launches it compiles differently,
-and nvcc 13.3 keeps 13.2's and changes `tf_nemo_topk` on sm_120 and sm_121. `kernel-contract` and
+and nvcc 13.3 keeps 13.2's and changes `tf_nemo_topk` on sm_120 and sm_121 and four of GLM-5.3-Flash's KV page
+launches. `kernel-contract` and
 `kernel-contract-limits` read the release from each image's `.note.nv.tkinfo`, check the image against the newest set
 at or below that release (13.0's when an image names none), and print which set they used. A release with no set of
 its own is checked against the one below it, so its differences show as stale records: re-derive them with
 `kernel-contract-limits` and add a set for that release rather than loosening the audit. Launch dimensions, dynamic
 shared memory, the device's limits and the planted controls are checked the same way under every release.
+
+A restored 13.0 receipt can arrive after the later compiler sets. Such records mark `later_pending` so 13.0 and
+13.1 use their base usage, while 13.2 and later keep their independently measured or pending selection.
+A missing later receipt remains pending; a 13.0 measurement never substitutes for it.
+
+Gemma 4 CUDA tower QKV norms and nine-term pooling register FP32 sums and BF16 outputs.
+Their contract keeps the exact FP32 mirror and adds independent FP64 ranges at the BF16 nodes.
+The sum fixtures use integers with exact FP32 partials below 2^24, including pooling cancellation near 2^20;
+FP16 and BF16 simulations must fail in each of the three accumulator orders. Pooling declares its nine-term
+reduction separately from the physical grid width, so the small stress grid remains a valid launch.
+NaN and both infinity signs have explicit class controls. These registrations still require the device gates.

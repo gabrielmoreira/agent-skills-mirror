@@ -6,17 +6,21 @@
 - Examples preserve teaching intent
 - Style deps are real deps
 
-`VISION.md` owns the registry direction. Metadata lives in
-`apps/www/src/registry/registry-*.ts`.
+`docs/vision/plate.md` holds the registry dependency law: dependencies derive
+from source, and authored metadata covers only installation policy that source
+cannot express.
 
-Declare npm `dependencies` and `registryDependencies` for the files each item
-installs. Compare metadata with imports, shared styles, kits and companion
-components. Use `@plate/<item>` for Plate items and existing shadcn dependency
-names for upstream components.
-
-`apps/www/scripts/registry-dependencies.mts` normalizes dependency specifiers
-and public URLs. It does not derive missing edges from imports. Update authored
-metadata when imports or installation policy change.
+`apps/www/scripts/registry-package-dependencies.mts` derives every registry
+edge a copied import needs: `@plate/<item>` from a relative or other `@/`
+import of another item's file, and the shadcn name from
+`@/components/ui/<name>`. It also derives each npm package and the version
+range the package DAG gives it. Never list a registry edge an import already
+gives, or a bare package name whose derived version has a range; the build
+rejects both and names the import. Author `registryDependencies` only for what
+no import shows: a style or CSS item, a companion such as a feature's toolbar
+button, a bundle, a provider, or the one owner to pick when two published items
+install the same imported file and no other import already installs one of
+them.
 
 ## Kits and UI items stay aligned
 
@@ -44,20 +48,22 @@ Do not remove an explicit feature plugin, kit, renderer binding, or dependency
 merely because the application editor installed by the `editor-kit` registry
 item also includes it. Keep the explicit declaration when:
 
-- the example's `registryDependencies` names that feature kit, or the example
-  imports files that require the kit when copied;
+- the example's `registryDependencies` names that feature kit, or the build
+  derives that edge from the example's import;
 - the example exists to teach that feature's installation or component
   binding;
-- removing it would hide which plugin owns the visible feature.
+- removing it would hide which descriptor owns the visible feature.
 
 ```tsx
-plugins: [...plugins, FeaturePlugin.withComponent(FeatureElement)];
+plugins: [...plugins, FeaturePlugin.configure({ component: FeatureElement })];
 ```
 
-An example importing the host-owned plugin array declares `@plate/editor-kit`
-in its registry metadata. Independently installable items use public Plate
-editor hooks and plugin contracts. Avoid coupling them to host editor types
-or application-owned composition.
+The example may import that host-owned plugin array only when its registry
+metadata explicitly depends on `editor-kit`. Other independently installable
+registry items stay generic: use core editor hooks and descriptor portals,
+never host editor types, application-definition modules, or root plugin
+namespaces. `editor-kit` is the registry item name, not an application runtime
+API or application type owner.
 
 Before deduplicating example setup, compare the source with
 `registry-examples.ts`, its feature kit, and the independently copied install
@@ -76,7 +82,7 @@ No import shows a style dependency, so it stays authored.
 **Incorrect:**
 
 ```ts
-registryDependencies: ["@plate/editor-kit"];
+registryDependencies: ["editor-kit"];
 ```
 
 when the example also depends on a shared style token.
@@ -84,5 +90,5 @@ when the example also depends on a shared style token.
 **Correct:**
 
 ```ts
-registryDependencies: ["@plate/editor-kit", "@plate/highlight-style"];
+registryDependencies: ["editor-kit", "highlight-style"];
 ```

@@ -19,6 +19,7 @@ TODO: What could hurt the owner, in at most 40 words.
 - invocation: pending
 - candidate-identity: pending
 - plate-main-identity: pending
+- plite-identity: pending
 - slate-identity: pending
 - named-symptom: pending
 - final-artifacts: pending
@@ -71,12 +72,13 @@ Start Gates:
 |---|---|---|---|---|---|
 | 1 | source-and-host-readiness | pending | pending | pending | pending |
 | 2 | current-vs-main-product-smoke | pending | pending | pending | pending |
-| 3 | plate-vs-slate-decomposition | pending | pending | pending | pending |
+| 3 | plate-vs-plite-decomposition | pending | pending | pending | pending |
 | 4 | owner-microbench-and-trace | pending | pending | pending | pending |
 | 5 | product-mount-matrix | pending | pending | pending | pending |
 | 6 | trusted-editing-matrix | pending | pending | pending | pending |
-| 7 | example-breadth | pending | pending | pending | pending |
-| 8 | large-and-stress | pending | pending | pending | pending |
+| 7 | plite-vs-pinned-slate | pending | pending | pending | pending |
+| 8 | example-breadth | pending | pending | pending | pending |
+| 9 | large-and-stress | pending | pending | pending | pending |
 
 ## Current Cause Checkpoint
 
@@ -133,7 +135,7 @@ Completion Gates:
 | Browser surface proof | pending | Run Browser for product routes; Chrome/device for native state when applicable, or N/A with reason | pending |
 | Changeset/release artifact | pending | Add only for published package behavior/API changes, otherwise N/A | pending |
 | Benchmark plan complete validation | yes | Run validator with `--complete` | pending |
-| Plan complete | yes | Run `node .agents/pstack/plan-open.mjs {{PLAN_PATH}}` | pending |
+| Plan complete | yes | No box or gate row in the plan is pending | pending |
 
 Verification evidence:
 - Pending.

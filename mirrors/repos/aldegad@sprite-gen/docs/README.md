@@ -89,6 +89,7 @@ grouping is derived from `sprite_gen/_modules.py`, the one taxonomy table.
 | [loop-repair.md](loop-repair.md) | RIFE (where it runs, cost, licences, `sprite-gen rife install`, what runs without it), jump-frame repair, the flow reading (frames off a walk's way), the eased retime (a part that rushes on its way), the overlapped wrap (a part on its own beat at a two-step cut's wrap), the jolt index and its gate, one cycle length per direction set |
 | [frame-interpolation.md](frame-interpolation.md) | Generative in-betweens for sprite frames, recorded as a take |
 | [seamless-video-loop.md](seamless-video-loop.md) | Making a non-looping ambient clip loop forever (RIFE seam bridge) — a different job from pipeline B |
+| [face-parts.md](face-parts.md) | Face requests, face packs, talking face rules, live player, `video-face`, and `face-bake`. |
 
 ## Curation
 

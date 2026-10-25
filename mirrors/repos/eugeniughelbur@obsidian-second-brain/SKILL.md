@@ -109,7 +109,7 @@ See `references/vault-schema.md` for full structural details.
 ## Core Operating Principles
 
 ### AI-first vault rule (applies to every note)
-The vault is designed for **future agent** to read and reason over, not for human review. Every note Claude writes - across all 48 commands - must follow `references/ai-first-rules.md`:
+The vault is designed for **future agent** to read and reason over, not for human review. Every note Claude writes - across all 49 commands - must follow `references/ai-first-rules.md`:
 
 1. **Self-contained context** - each note explains itself; don't rely on backlinks alone
 2. **"For future agent" preamble** - 2-3 sentence summary so any compatible agent can decide relevance in 10 seconds
@@ -644,6 +644,21 @@ Steps:
 
 ---
 
+### `/obsidian-checkin`
+
+**Asks the owner whether old people and project notes still hold.**
+
+Reconcile compares notes with notes, so news that never reached the vault leaves a note stale and invisible to every lint. Check-in asks the only source left: the owner. Full playbook in `commands/obsidian-checkin.md`; the deterministic half is `scripts/checkin.py`.
+
+Modes:
+- `ask` (daily): `checkin.py pick` returns up to 3 notes whose facts are older than 14 days (family, strong relationships and `checkin: priority` first, then active projects, then the most linked). Condense each into 1 to 3 facts from the note itself, open a card with `checkin.py ask`, send `checkin.py message` verbatim.
+- `nudge` (every few hours): resend `checkin.py message`. It repeats every open card in full with a reminder count, because the open list lives in `<vault>/.checkin.json`, not in the chat a host may drop.
+- `answer`: "same" stamps `last-checked`; news rewrites the stale claim (stamped `stated by <owner> YYYY-MM-DD`, unknowns `TBD`), propagates, runs `scripts/check_notes.py --fix`, then closes the card; "skip" closes without a stamp.
+
+Which date counts: `last-checked`, else `updated`, else `date`. Never touch `updated:` on a link-only or formatting edit. Check-in messages hold family, health and money facts: send them to the owner directly, never to a group or a shared log.
+
+---
+
 ### `/obsidian-synthesize`
 
 **Automatic synthesis - the vault thinks for itself.**
@@ -726,12 +741,16 @@ A guided conversation (intent, name, category, trigger phrases, behavior steps, 
 
 **Ingests a source into the vault - one source touches many pages.** Full steps in `commands/obsidian-ingest.md` (the source of truth). Read that file before running an ingest; the summary here is an orientation, not the procedure.
 
+Directories use the same workflow in bounded sequential batches: `/obsidian-ingest Sources/ --preview`, then `/obsidian-ingest Sources/ --batch-size 10`. Supported local text, PDF, audio, and image formats are discovered recursively after exclusions; read permissions are resolved before hashing or extraction. One hidden completion comment is appended to the existing operation log only after all required approvals and structural updates finish. Repeat the same command to continue or retry unfinished work, reusing raw captures. Errors and pending approvals are reported without persistent status tracking. Run only one folder ingestion per vault at a time; the helper has no active-session tracking or locking. Preserve source bytes and paths, resolve overlapping output routes before writing, and pass source protection to every worker. Warm start is `/obsidian-ingest First-Brain/` and requires no separate command. See the command's completion format and recovery rules rather than treating raw-capture existence as completion.
+
 In the First-Brain variant, read the selected local source in place, preserve its bytes and path, and record its vault-relative `source_path` in the raw capture. Derived and ancillary writes follow the manual's routes; conflicts involving human originals are recorded in the derived layer. Sensitive-content rules and the current rewrite policy still apply.
+
+Word/OpenDocument text files (`.docx`, `.doc`, `.odt`) follow the same local-source rules as other files. Use `scripts/document_to_pdf.py` to convert the selected in-vault document to a temporary PDF, then use the existing PDF reading step. Requires Python 3.10+ and LibreOffice 26.2+ (`soffice` on PATH or `--soffice`). Comments and revision markup are excluded. The original remains the source under the existing provenance rules. See the command for invocation and cleanup.
 
 Steps:
 1. Accept a URL, file path, or pasted text as the source
-2. Classify the source type before full read: article, PDF, transcript, video, or raw text
-3. Read or fetch the full source content
+2. Classify the source type before full read: article, PDF/text document, transcript, video, or raw text
+3. Read or fetch the full source content; convert `.docx`, `.doc`, and `.odt` to PDF before the shared PDF step
 4. Extract: entities (people, companies, tools), concepts, claims, action items, notable quotes
 5. Save the raw source to `raw/articles/YYYY-MM-DD - Source Title.md` (or `transcripts/`, `pdfs/`, `videos/`), verbatim and immutable, with `type: source` frontmatter and a `content_hash` over the canonical text. Check `raw/` for that hash and for the same normalized `source_url` first: a source already in the vault gets no second raw note, and the run becomes a re-read
 6. REWRITE the vault. Adding pages is not enough. Spawn parallel subagents (entities, projects, ideas, concepts, contradictions) that make existing pages smarter, more connected, and more current
@@ -931,7 +950,7 @@ If `index.md` doesn't exist, offer to run `/obsidian-init` to generate it.
 
 ## Research Commands
 
-Seven commands that pull external knowledge into the vault - X posts, X discourse, web research with citations, vault-grounded synthesis, YouTube videos, and podcast episodes (plus `/obsidian-ingest` above for arbitrary URLs, PDFs, audio, and screenshots). All output AI-first notes per the vault's Section 0 rule (preamble, rich frontmatter, recency markers, mandatory wikilinks, sources verbatim).
+Seven commands that pull external knowledge into the vault - X posts, X discourse, web research with citations, vault-grounded synthesis, YouTube videos, and podcast episodes (plus `/obsidian-ingest` above for arbitrary URLs, PDFs, Word/OpenDocument text files, audio, and screenshots). All output AI-first notes per the vault's Section 0 rule (preamble, rich frontmatter, recency markers, mandatory wikilinks, sources verbatim).
 
 **Setup:** API keys live at `~/.config/obsidian-second-brain/.env`. Run `install.sh` and answer "y" to the research toolkit prompt, or copy `.env.example` manually. The xAI Grok key is required for `/x-read` and `/x-pulse`. Perplexity is optional: with no `PERPLEXITY_API_KEY` set, `/research` and `/research-deep` fall back to free key-less sources automatically, and `--free` forces that path even when a key exists (`--academic` restricts it to scholarly sources). YouTube key is optional; transcripts work without it. Never tell a user a research command is unavailable because they lack a Perplexity key.
 
@@ -1370,3 +1389,5 @@ The default install path (`scripts/setup.sh`) writes `OBSIDIAN_VAULT_PATH` into 
 - `scripts/setup.sh` - One-command installer (wires hook + env var + MCP)
 - `scripts/bootstrap_vault.py` - Bootstrap a complete vault from scratch
 - `scripts/vault_health.py` - Audit a vault for structural issues
+- `scripts/checkin.py` - Pick old people and project notes, keep the open check-in questions in `<vault>/.checkin.json`, render the cards, stamp `last-checked` (used by `/obsidian-checkin`)
+- `scripts/check_notes.py` - Run the write-time AI-first hook over a list of notes, for hosts with no hook runtime (Grok Bot, cron agents); `--fix` rewrites banned characters, exit 1 on anything left

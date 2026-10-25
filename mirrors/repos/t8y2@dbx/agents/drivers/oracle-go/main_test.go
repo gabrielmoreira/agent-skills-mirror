@@ -3668,6 +3668,39 @@ func TestGetObjectSourceAggregatesProcedureSourceInOracle(t *testing.T) {
 	}
 }
 
+func TestStrictPackageSourceReportsDictionaryOriginAndUsesExactDictionaryKind(t *testing.T) {
+	for _, kind := range []string{"PACKAGE", "PACKAGE_BODY"} {
+		for _, strict := range []bool{false, true} {
+			t.Run(fmt.Sprintf("%s/strict=%t", kind, strict), func(t *testing.T) {
+				dictionaryKind := strings.ReplaceAll(kind, "_", " ")
+				source := dictionaryKind + " \"Pkg.With.Dot\" AS END;"
+				db, scripted := openOracleViewSourceTestDB(t, []oracleViewSourceQueryStep{{
+					queryContains: "DBMS_XMLGEN.CONVERT",
+					args:          []driver.Value{"DBX_TEST", "Pkg.With.Dot", dictionaryKind},
+					rows:          [][]driver.Value{{source}},
+				}})
+				s := newServer()
+				s.db = db
+				response, shutdown := s.handleLine(fmt.Sprintf(`{"id":1,"method":"get_object_source","params":{"schema":"DBX_TEST","name":"Pkg.With.Dot","object_type":%q,"include_source_origin":%t}}`, kind, strict))
+				if shutdown || response.Error != nil {
+					t.Fatalf("unexpected source response: %#v", response)
+				}
+				result := response.Result.(map[string]any)
+				if result["source"] != source || result["object_type"] != kind {
+					t.Fatalf("wrong exact source: %#v", result)
+				}
+				origin, exists := result["source_origin"]
+				if exists != strict || (strict && origin != "oracle-dictionary") {
+					t.Fatalf("wrong source provenance: %#v", result)
+				}
+				if scripted.next != len(scripted.steps) {
+					t.Fatalf("unexpected queries: %d", scripted.next)
+				}
+			})
+		}
+	}
+}
+
 func TestGetObjectSourceReturnsEmptyWhenAggregatedSourceIsNull(t *testing.T) {
 	db, scripted := openOracleViewSourceTestDB(t, []oracleViewSourceQueryStep{
 		{

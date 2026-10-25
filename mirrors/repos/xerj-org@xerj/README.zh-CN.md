@@ -20,7 +20,7 @@
 [![Agent memory](https://img.shields.io/badge/agent%20memory-%2F__memory-00b3a4?style=flat-square)](https://xerj.org/docs/recipes/agentic-memory.html)
 [![MCP](https://img.shields.io/badge/MCP-native-1f6feb?style=flat-square)](https://xerj.org/llms.txt)
 [![llms.txt](https://img.shields.io/badge/llms.txt-agent%20ready-6f42c1?style=flat-square)](https://xerj.org/llms.txt)
-[![ES-YAML conformance](https://img.shields.io/badge/ES--YAML%20conformance-1366%2F1369-brightgreen?style=flat-square)](https://xerj.org/benchmarks)
+[![ES-YAML conformance](https://img.shields.io/badge/ES--YAML%20conformance-1444%2F1454-brightgreen?style=flat-square)](https://xerj.org/benchmarks)
 [![Single static binary](https://img.shields.io/badge/single%20static%20binary-no%20JVM-orange?style=flat-square)](https://xerj.org/docs/install.html)
 [![Default embedder](https://img.shields.io/badge/default%20embedder-lexical%2C%20offline-teal?style=flat-square)](https://xerj.org/docs/vectors.html)
 [![Neural](https://img.shields.io/badge/neural%20embedder-opt--in%2C%20downloads%20~90%20MB-9c6ade?style=flat-square)](https://xerj.org/docs/vectors.html)
@@ -391,7 +391,7 @@ XERJ 实现了 Elasticsearch REST API，包括索引、文档、批量操作、�
 
 使用导出工具前需要了解 scroll 的限制：它会预先创建大小受限的快照，不是逐段遍历的游标。查询的精确总数超过快照窗口时，会返回 `400`，避免静默截断结果。任意规模的结果集请使用 `search_after`（[上限说明](https://xerj.org/docs/api-es-compat.html#scroll-cap)）。
 
-一致性测试套件在每次提交时运行。原文记录为 1369 个用例中通过 1366 个；套件位于 [`engine/tests/es-compat-yaml`](./engine/tests/es-compat-yaml)，剩余差异也在其中列出。XERJ 兼容 Elasticsearch 的 API，但没有重新实现其内部架构，也不是它的分支。
+一致性测试套件在每次提交时运行。原文记录为 1454 个用例中通过 1444 个；套件位于 [`engine/tests/es-compat-yaml`](./engine/tests/es-compat-yaml)，剩余差异也在其中列出。XERJ 兼容 Elasticsearch 的 API，但没有重新实现其内部架构，也不是它的分支。
 
 ## 基准测试
 

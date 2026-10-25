@@ -100,6 +100,22 @@ update if none exists. This changes the mobile app only. Coordinate backend roll
 separately and preserve API compatibility in both
 directions. Do not bump runtime versions just to force an incompatible update through.
 
+### Native review prompts
+
+The `expo-store-review` integration requires fresh iOS and Android binaries. It requests
+the platform review UI after five minutes of signed-in foreground use, waiting for a
+main tab and a hidden keyboard. Background time does not count; a new account or app
+launch starts a new five-minute wait. A device-local three-day cooldown survives app
+restarts and account changes. Store quotas may suppress the UI; ratings, dismissals,
+and completed reviews are not observable. No rating filtering or automatic store
+redirect is used. Settings → Support → Report an issue independently opens GitHub's
+new-issue chooser.
+
+Before release, verify foreground/background timing, sign-out, keyboard/editor
+deferral, and cooldown persistence on both platforms. TestFlight does not show the
+production review prompt; use Apple's development behavior and Play's internal test
+track as appropriate, and record actual store-build results separately.
+
 ### Database and web release
 
 - Include migration `migrations/20261017135047_clammy_the_enforcers/` for `ai_content_report`; normal server startup applies migrations. Back up production before deployment and inspect migration logs. Do not reset the database or delete volumes.

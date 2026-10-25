@@ -297,7 +297,7 @@ answers a question the verb asks, it asks that function; a part that is its own 
 | The pick sheet's checker | `qa.preview.checker`, the contact sheets' | — |
 | The billing line, the printed report | `gen.base.announce_api_billing`, `gen.base.print_json` | [gen.md](gen.md) |
 | The subscription login first, the key only without one | `gen.claude_login.resolve_credential`, the order `gen.xai.resolve_credential` keeps for Grok; the key read by `gen.base.env_api_key`; the child's environment from `gen.base.provider_subprocess_env` | [Which credential a call runs on](#which-credential-a-call-runs-on) |
-| The refusal line | `gen.refusal` (`CONTENT_POLICY`) | [gen.md](gen.md#direct-openai-calls-and-authentication) |
+| The refusal line | `gen.refusal` (`CONTENT_POLICY`) | — |
 | What ends a call unanswered, and its words; a refusal's body | `gen.xai` (`NO_ANSWER`, `no_answer_reason`, `error_body`) | — |
 
 Its own, because nothing in sprite-gen does it: the grid and its parse (G1), the row repair, the palette
@@ -366,8 +366,7 @@ The run ends non-zero with one line on stderr, and the report says the rest:
 
 - **No candidate passed** — `pixel-draw: no candidate passed the gates (c1: <reason>; c2: …)`.
 - **Every candidate refused** — `pixel-draw: refused by the provider's content policy
-  (stop_reason=refusal category=<category>); every candidate was refused` (the
-  [refusal marker](gen.md#direct-openai-calls-and-authentication) callers already read).
+  (stop_reason=refusal category=<category>); every candidate was refused`.
 - **A call failed** — a request the API refused before answering in a way Anthropic documents as a
   request not taken (429 but its spend cap, 500, 529 overloaded) made nothing and is asked again
   twice, each wait said on stderr ([a refused request sent again](gen.md#a-refused-request-sent-again)).

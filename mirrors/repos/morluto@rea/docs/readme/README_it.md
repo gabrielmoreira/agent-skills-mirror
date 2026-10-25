@@ -1,7 +1,7 @@
 <div align="center">
 
 [English](../../README.md) · [简体中文](README_zh.md) · [繁體中文](README_zh-TW.md) · [日本語](README_ja.md) · [한국어](README_ko.md) · [Türkçe](README_tr.md) · [Русский](README_ru.md) · [Tiếng Việt](README_vi.md) · [ไทย](README_th.md) · [Deutsch](README_de.md) · [Español](README_es.md) · [Français](README_fr.md) · [Українська](README_uk.md) · [Polski](README_pl.md) · [Português (Brasil)](README_pt-BR.md) · [العربية](README_ar.md) · [فارسی](README_fa.md) · [Bahasa Indonesia](README_id.md) · **Italiano**
-· [Ελληνικά](README_el.md) · [മലയാളം](README_ml.md) · [Roman Urdu](README_ur-Latn.md)
+· [Ελληνικά](README_el.md) · [മലയാളം](README_ml.md) · [Roman Urdu](README_ur-Latn.md) · [Română](README_ro.md)
 
 # REA: Reverse Engineer Anything
 
@@ -153,11 +153,14 @@ REA richiede Node.js 22.x (>=22.23.4), 24.x (>=24.22.1) o 26+ (>=26.12.1), oltre
 | Binari nativi                | Pseudocodice, assembly, stringhe, simboli, chiamate e riferimenti                                       | Hopper, Ghidra o IDA; [analisi nativa](../native-investigation.md)                                                                       |
 | Layout ELF offline           | Sezioni, segmenti, simboli/relocazioni originali e candidati mitigazioni statiche                       | pwntools fornito dal chiamante su Linux x64; [diagnostica binaria](../binary-diagnostics.md)                                             |
 | PE certificates              | Authenticode WIN_CERTIFICATE entries and PKCS#7 signer/X.509 identity fields                            | Built-in static PE inspection; [PE certificates](../pe-certificates.md)                                                                  |
+| PE imports                   | Import and delay-load DLL names, ordinals, IAT RVAs and pefile import hash                              | Built-in static PE inspection; [PE imports](../pe-imports.md)                                                                            |
 | Artefatto WASM               | Convalida, sezioni, forme WAT di import/export esatte e WAT decodificato                                | WABT 1.0.42 fornito dal chiamante; `inspect_wasm_artifact`                                                                               |
 | Bytecode EVM                 | Selettori di dispatch, offset dei byte, argomenti inferiti e mutabilità                                 | Carrier raw/hex locale; [guida EVM offline](../evm-bytecode.md)                                                                          |
 | Rust binaries                | Embedded cargo-auditable dependency list                                                                | [Rust binaries](../rust-binaries.md)                                                                                                     |
 | ELF notes                    | PT_NOTE/SHT_NOTE owners, types, GNU build-id and ABI-tag fields                                         | Built-in static ELF inspection; [ELF notes](../elf-notes.md)                                                                             |
+| Linux kernel modules         | .modinfo keys, __versions CRCs, this_module presence, and signature trailer                             | Built-in static ELF inspection; [kernel modules](../kernel-modules.md)                                                                   |
 | Erlang BEAM                  | IFF chunks, atoms, exports, and tables                                                                  | Built-in static BEAM inspection; [Erlang BEAM](../erlang-beam.md)                                                                        |
+| Apple IPS crashes            | .ips metadata, threads, images, registers and crash classes                                             | Built-in static JSON inspection; [Apple IPS](../apple-ips.md)                                                                            |
 | Crash Linux registrati       | Note grezze, registri/segnai di ogni thread registrato e candidati mapping opzionali                    | pwntools fornito dal chiamante; GDB/pwndbg opzionale; [crash registrati](../recorded-crashes.md)                                         |
 | Installazioni desktop        | Runtime candidati, file di supporto, componenti e passi successivi                                      | Ispezione limitata di directory e intestazioni；[Applicazioni desktop](../desktop-applications.md)                                       |
 | JavaScript / Electron        | Moduli, import, source map, route, IPC e relazioni con add-on nativi                                    | Node.js e npm; [analisi delle applicazioni](../javascript-application-workflows.md); Linux: procps `ps`                                  |

@@ -1318,12 +1318,21 @@ public final class OceanBaseOracleAgent extends ConfiguredJdbcAgent {
 
     @Override
     public ObjectSource getObjectSource(String schema, String name, String objectType) {
+        return getObjectSource(schema, name, objectType, false);
+    }
+
+    @Override
+    public ObjectSource getObjectSourceWithOrigin(String schema, String name, String objectType) {
+        return getObjectSource(schema, name, objectType, true);
+    }
+
+    private ObjectSource getObjectSource(String schema, String name, String objectType, boolean exactMetadataKind) {
         return unchecked(() -> {
             String owner = normalizeSchema(schema);
             String objectName = normalizeObjectName(name);
             String normalizedType = normalizeObjectSourceType(objectType);
             if (prefersDictionarySource(normalizedType)) {
-                return getDictionaryFirstObjectSource(owner, objectName, normalizedType);
+                return getDictionaryFirstObjectSource(owner, objectName, normalizedType, exactMetadataKind);
             }
             String source;
             SQLException metadataError = null;
@@ -1354,8 +1363,9 @@ public final class OceanBaseOracleAgent extends ConfiguredJdbcAgent {
         });
     }
 
-    private ObjectSource getDictionaryFirstObjectSource(String owner, String name, String objectType) throws SQLException {
+    private ObjectSource getDictionaryFirstObjectSource(String owner, String name, String objectType, boolean exactMetadataKind) throws SQLException {
         String source;
+        String origin = "oceanbase-dictionary";
         SQLException dictionaryError = null;
         try {
             source = queryDictionarySource(owner, name, objectType);
@@ -1366,7 +1376,9 @@ public final class OceanBaseOracleAgent extends ConfiguredJdbcAgent {
 
         if (source == null || source.trim().isEmpty()) {
             try {
-                source = queryDbmsMetadataSource(owner, name, objectType);
+                source = queryDbmsMetadataSource(owner, name,
+                    exactMetadataKind && "PACKAGE".equals(objectType) ? "PACKAGE_SPEC" : objectType);
+                origin = "oracle-metadata";
             } catch (SQLException metadataError) {
                 if (dictionaryError != null) {
                     dictionaryError.addSuppressed(metadataError);
@@ -1381,7 +1393,9 @@ public final class OceanBaseOracleAgent extends ConfiguredJdbcAgent {
             }
             return new ObjectSource(name, objectType, owner, source, false);
         }
-        return new ObjectSource(name, objectType, owner, source == null ? "" : source);
+        ObjectSource result = new ObjectSource(name, objectType, owner, source == null ? "" : source);
+        result.setSourceOrigin(origin);
+        return result;
     }
 
     private String queryDbmsMetadataSource(String owner, String name, String objectType) throws SQLException {

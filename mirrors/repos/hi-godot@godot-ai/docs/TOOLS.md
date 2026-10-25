@@ -298,7 +298,11 @@ computed runtime paths. Unreadable
 metadata, discovery deadline/cancellation and discovery budgets return
 `FILESYSTEM_DISCOVERY_FAILED`; semantic refusals remain `INVALID_PARAMS`.
 Linked paths are refused, including when `force=true`. Engine metadata, VCS
-internals and the loaded plugin implementation are excluded.
+internals and the loaded plugin implementation are excluded. Hidden folders and
+folders holding a `.gdignore`, which Godot neither imports nor tracks, are left
+out of discovery unless they hold or lie inside the mutation path; their
+entries do not count toward the entry budget and links inside them do not
+refuse the operation.
 
 Remove defaults to OS trash. `force=true` permits known dangling references,
 not unknown ownership. `permanent=true` supports files only; permanent directory

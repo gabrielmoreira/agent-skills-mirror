@@ -2,7 +2,7 @@
 
 > Real-time global intelligence dashboard — AI-powered news aggregation, geopolitical monitoring, and infrastructure tracking in a unified situational awareness interface.
 
-> Version: 2.11.3 · Last updated: 2026-10-23
+> Version: 2.11.4 · Last updated: 2026-10-24
 
 World Monitor is an open-source (AGPL-3.0) intelligence platform that aggregates curated news feeds, a shared map-layer catalog, concrete panel implementations, and multiple AI models into a single dashboard. Used by 2M+ people live in 190+ countries, with structural resilience ranked for 170 of 196 countries, with press references in the [product identity document](https://www.worldmonitor.app/world-monitor.md). It runs as a web app, installable PWA, and native desktop application (Tauri) for macOS, Windows, and Linux.
 
@@ -119,6 +119,7 @@ A comparison hub plus 12 head-to-head and category pages. Every page uses the sa
 - [Global Intelligence Glossary](https://www.worldmonitor.app/blog/glossary/): Definitions of the scoring indices (CII, CRI), detection signals (geographic convergence, focal points), maritime chokepoints, and OSINT methodology terms — one citable DefinedTerm page per concept
 - [Research Reports](https://www.worldmonitor.app/research/): Original, source-backed research built from committed data snapshots with downloadable CSV/JSON, per-figure provenance, and stable citation guidance — starting with the Strait of Hormuz transit report (July 2026)
 - [Forecast Accuracy Scorecard](https://www.worldmonitor.app/accuracy/): The standing forecast-resolution record: the forecast track record, its current status and methodology, and a machine-readable JSON distribution
+- [Monitor the Situation](https://www.worldmonitor.app/monitor-the-situation/): One live board of current headlines, the 14 crisis trackers grouped by region, shipping chokepoint status and internet outages, each reading stamped with the time it was taken
 - [Machine-Readable Pricing](https://www.worldmonitor.app/pricing.md): Free, Pro, API, API Business, and Enterprise plan details in markdown
 - [Accounts & Sign-up](https://www.worldmonitor.app/docs/accounts.md): How account creation works (free tier needs none; Clerk sign-up for Pro/API)
 - [Support & Contact](https://www.worldmonitor.app/support.md): Support channels, contact emails, status page, response expectations

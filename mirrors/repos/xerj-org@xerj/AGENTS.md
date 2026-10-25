@@ -171,12 +171,12 @@ do not inherit a shell `PATH`. Add `"XERJ_AUTH": "ApiKey <key>"` when the node
 is not running `--insecure` — the key is `<data-dir>/admin.key`. `--url` and
 `--auth` flags override the two environment variables.
 
-Twenty-one tools: `xerj_search`, `xerj_semantic_search`, `xerj_vector_search`,
+Twenty-two tools: `xerj_search`, `xerj_semantic_search`, `xerj_vector_search`,
 `xerj_hybrid_search`, `xerj_memory_store`, `xerj_memory_recall`,
 `xerj_brain_overview`, `xerj_brain_ego`, `xerj_brain_link`, `xerj_brain_unlink`,
 `xerj_plan`, `xerj_map`, `xerj_code_search`, `xerj_index_budget`,
 `xerj_autoindex_remove`, `xerj_field_report`, `xerj_corpus_feedback`,
-`xerj_hub_find`, `xerj_hub_def`, `xerj_hub_ask`, `xerj_def`. The first eleven are
+`xerj_hub_find`, `xerj_hub_def`, `xerj_hub_ask`, `xerj_def`, `xerj_batch_search`. The first eleven are
 each a *thin proxy*: they build exactly the request the ES-compatible surface already accepts
 (`xerj_plan` is `POST /_ask`, the deterministic rule-based planner) and hand back
 whatever the engine returned, errors and refusals verbatim — no capability of
@@ -190,6 +190,14 @@ field map, trimmed to a byte cap but otherwise verbatim. `xerj_code_search`
 the `xerj code` reference-coding pipeline ([`tools/xerj-code/`](tools/xerj-code/))
 — staleness refusal, licence warnings, no-match-as-guidance — and returns its
 rendered text rather than a raw response.
+
+`xerj_batch_search` and `xerj batch-search --input <file|->` share an ordered
+batch-retrieval adapter over `/_msearch`: up to 50 queries, independent errors
+and explicit empty-result abstentions, citations on every returned hit. Exact
+IDs require a caller-selected indexed keyword field. It does not generate
+answers or calibrate confidence. Whole-response token budgets preserve item
+outcomes and at least one citation per matched item, or refuse explicitly.
+See [docs/recipes/batch-search.md](./docs/recipes/batch-search.md).
 
 `xerj_def` finds definitions in local autoindexed data, sharing the query,
 lexical ranking and location deduplication of `xerj def --json`. For example,
@@ -211,7 +219,7 @@ true. `xerj_field_report` files an agent field report (a GitHub PR first, the
 `/api/field-report` endpoint when GitHub is unavailable). `xerj_corpus_feedback`
 rates a hub corpus. `xerj_hub_find`, `xerj_hub_def` and `xerj_hub_ask` answer
 from Corpus Hub packs already on the machine, the `xerj ask` flow. A binary with
-no hub key omits the three hub tools and serves eighteen.
+no hub key omits the three hub tools and serves nineteen.
 
 Two honesty notes that bind how you describe results: `xerj_semantic_search`
 embeds server-side with the **lexical feature-hashing** embedder unless the node

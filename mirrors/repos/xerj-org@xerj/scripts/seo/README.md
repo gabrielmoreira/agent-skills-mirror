@@ -76,6 +76,7 @@ landing/**/*.html  ── gen_sitemap.py ─> landing/sitemap.xml
 | every internal `<a href>` in `landing/` | `fix_links.py` | write the href you mean; the pass rewrites it to the served form |
 | `landing/sitemap.xml` | `gen_sitemap.py` | it is derived from the filesystem and from git |
 | `landing/og/xerj-card.png` | `mk_og_card.py` | edit the rasteriser; the brand tokens come from `landing/style.css` |
+| the `<a class="nav-stars">` GitHub stars badge in every primary nav (its fallback count) | `stars_badge.py` | run it to refresh the count from the GitHub API; `--check` verifies; `landing/theme.js` refreshes the number in the browser |
 
 Generated article pages and twins carry a first-line marker:
 
@@ -534,6 +535,27 @@ that URL. Only a URL that is not in the file yet falls back to the filesystem
 mtime, and that prints `WARNING: <lastmod> fell back to filesystem mtime` on
 stderr. A shallow checkout no longer restamps the whole sitemap to today.
 
+### 5.1 Tell IndexNow after a production deploy
+
+IndexNow lets Bing, Yandex, Seznam, Naver and the other participating engines
+recrawl a changed URL at once instead of on their next sitemap read. It is a
+manual step, run from a checkout after the production deploy is live. No
+workflow runs it.
+
+```bash
+python3 scripts/seo/indexnow_ping.py                        # dry run: lists what it would send
+python3 scripts/seo/indexnow_ping.py --send                 # every <loc> in landing/sitemap.xml
+python3 scripts/seo/indexnow_ping.py --send https://xerj.org/product
+python3 scripts/seo/indexnow_ping.py --host hub.xerj.org --send   # reads the live hub sitemap
+```
+
+The key is public by design: the engine fetches `https://<host>/<key>.txt` and
+compares it with the key in the request. The file is
+`landing/e94e889e7bee019e40a7617324e7a20a.txt`, and the hub generator writes
+the same file into `tools/corpus-hub-site/out/`. Do not rename or delete it;
+a new key needs a new file live on the host first. Send only URLs that
+changed, and do not resend an unchanged sitemap on a schedule.
+
 ---
 
 ## 6. The tools
@@ -554,6 +576,7 @@ stderr. A shallow checkout no longer restamps the whole sitemap to today.
 | `ste_check.py` | ASD-STE100 (Simplified Technical English) house-style reader, plus the article structure checks (H1, TL;DR, FAQ). **Advisory, not a gate** — see §7 | `--fail-on ERROR\|WARN\|INFO`, `--self-test`, `--show`, `--stats`, `--only`, `--skip` | Treat every tier as advice. Never reword a user-phrased H1 or FAQ question to satisfy it |
 | `claims_rules.py` | the fact-check rule corpus: each rule carries its evidence citation and a compliant rewrite | data | n/a |
 | `audit.py` | the full 12-family technical-SEO audit (thinness, duplication, click depth, page weight, image CLS, …). Also supplies the HTML parser that `seo_lint.py` uses, so the auditor and the gate cannot disagree | `--fail-on`, `--max-findings`, `--json`, `--report` | in CI it is **report-only** (`if: always()`), never blocking |
+| `indexnow_ping.py` | **manual, never CI**: sends changed URLs to IndexNow (Bing, Yandex, Seznam, Naver and others). The key file is `landing/<key>.txt`; the hub generator writes the same key into its `out/` | dry run by default; `--send`, `--host xerj.org\|hub.xerj.org`, `[URL ...]` | HTTP 403: the key file is not live on that host yet. 422: a URL is not on the host |
 | `verify_live.py` | **post-deploy, never CI**: fetches every `<loc>` in the *committed* sitemap from a live origin and checks a literal 200, a body that is not the homepage, and a canonical equal to the requested URL — plus one probe that a never-existing path answers 404 | `[base]`, `--jobs`, `--limit`, `--timeout`, `--json`, `--skip-not-found-probe` | the deploy does not match the tree. On a PR everything fails, which is why it is not a gate — see §7 |
 
 `scripts/seo/testdata/factcheck/*.md` is the fact-check regression suite: 21
@@ -621,7 +644,7 @@ releases back, and three machine-readable schema files nothing linked to. It
 checks four things:
 
 1. **ES-YAML conformance figures** agree with the canonical `CONFORMANCE`
-   constant in the script (today `1366/1369`).
+   constant in the script (today `1444/1454`).
 2. **Version stamps** in the `XERJ.AI ·` footer brand line, and the
    `Current release:` line in `llms*.txt`, match the newest `v1.0.0-rc.*` git
    tag. It needs `fetch-depth: 0` for the tags.
@@ -737,8 +760,9 @@ type (`SoftwareApplication` / `CollectionPage` / `TechArticle` / `Article` /
 **One opt-in exception (2026-10-19).** An article source may list
 `structured_data: [faq, howto, software]`. `seo_head.extra_structured_data` then
 adds `FAQPage` (from `faq:`), `HowTo` (from `commands:`, at least two) and a
-`SoftwareApplication` for the product. No page sets `structured_data` in this
-port: FAQPage and HowTo stay off until that opt-in is decided. A best-of page
+`SoftwareApplication` for the product. Since 2026-10-23 every article in
+`content/answers` and `content/compare` sets `structured_data: [faq]`, so
+those pages emit `FAQPage`. HowTo stays off. A best-of page
 can still emit an `ItemList` of the tools in its visible summary table, from
 `items:`, without that opt-in. Google shows no rich result for FAQ or HowTo,
 but answer engines and agents read the blocks as plain structured data when a

@@ -1,7 +1,7 @@
 <div align="center">
 
 [English](../../README.md) · [简体中文](README_zh.md) · [繁體中文](README_zh-TW.md) · [日本語](README_ja.md) · [한국어](README_ko.md) · [Türkçe](README_tr.md) · [Русский](README_ru.md) · [Tiếng Việt](README_vi.md) · [ไทย](README_th.md) · [Deutsch](README_de.md) · [Español](README_es.md) · [Français](README_fr.md) · [Українська](README_uk.md) · [Polski](README_pl.md) · [Português (Brasil)](README_pt-BR.md) · [العربية](README_ar.md) · [فارسی](README_fa.md) · [Bahasa Indonesia](README_id.md) · [Italiano](README_it.md)
-· [Ελληνικά](README_el.md) · [മലയാളം](README_ml.md) · **Roman Urdu**
+· [Ελληνικά](README_el.md) · [മലയാളം](README_ml.md) · **Roman Urdu** · [Română](README_ro.md)
 
 # REA: Reverse Engineer Anything
 
@@ -196,11 +196,14 @@ Mazeed tools aur host support target par depend karte hain:
 | Godot PCK               | Archive inventory aur extraction, original header/directory facts aur selected content identities | Built-in static formats 2, 3 aur 4; Godot zaroori nahi                                                                            |
 | Rust binaries           | Embedded cargo-auditable crate names, versions, sources aur dependency edges                      | Built-in static ELF/PE/thin Mach-O inspection; [Rust binaries](../rust-binaries.md)                                               |
 | PE certificates         | Authenticode WIN_CERTIFICATE entries aur PKCS#7 signer/X.509 identity fields                      | Built-in static PE inspection; [PE certificates](../pe-certificates.md)                                                           |
+| PE imports              | Import aur delay-load DLL names, ordinals, IAT RVAs aur pefile import hash                        | Built-in static PE inspection; [PE imports](../pe-imports.md)                                                                     |
 | ELF notes               | PT_NOTE/SHT_NOTE owners, types, GNU build-id aur ABI-tag fields                                   | Built-in static ELF inspection; [ELF notes](../elf-notes.md)                                                                      |
+| Linux kernel modules    | .modinfo keys, __versions CRCs, this_module presence, and signature trailer                       | Built-in static ELF inspection; [kernel modules](../kernel-modules.md)                                                            |
 | Erlang BEAM             | IFF chunks, atoms, exports, imports, lambdas aur Code header                                      | Built-in static BEAM inspection; [Erlang BEAM](../erlang-beam.md)                                                                 |
 | WASM artifact           | Validation, sections, exact import/export WAT forms aur decoded WAT                               | Aapka diya hua WABT 1.0.42; `inspect_wasm_artifact`                                                                               |
 | EVM bytecode            | Dispatch selectors, byte offsets, inferred arguments aur mutability                               | Linux x64 par local raw/hex carrier; [offline EVM guide](../evm-bytecode.md)                                                      |
 | SQLite databases        | Tables, columns, indexes, views, triggers aur selected ordinary-table rows                        | Local database/WAL snapshot; native SQLite limits ke saath Node.js 24.x >=24.15 ya 26+                                            |
+| Apple IPS crash reports | Apple .ips metadata, threads, images aur crash classification                                     | Built-in static JSON inspection; [Apple IPS](../apple-ips.md)                                                                     |
 | Recorded Linux crashes  | Raw notes, har recorded thread ke registers/signals aur optional mapping candidates               | Linux x64 par aapka diya hua pwntools; optional GDB/pwndbg; [recorded crashes](../recorded-crashes.md)                            |
 | JavaScript / Electron   | Modules, imports, source maps, routes, IPC aur native add-on relationships                        | Node.js aur npm; Linux: procps-compatible `ps`; [application analysis](../javascript-application-workflows.md)                    |
 | Websites                | Page structure, scripts, network observations aur requested screenshots                           | Chrome-family browser; [browser analysis](../browser-observation.md)                                                              |

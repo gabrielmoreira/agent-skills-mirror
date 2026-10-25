@@ -19,7 +19,7 @@
 [![Agent memory](https://img.shields.io/badge/agent%20memory-%2F__memory-00b3a4?style=flat-square)](https://xerj.org/docs/recipes/agentic-memory.html)
 [![MCP](https://img.shields.io/badge/MCP-native-1f6feb?style=flat-square)](https://xerj.org/llms.txt)
 [![llms.txt](https://img.shields.io/badge/llms.txt-agent%20ready-6f42c1?style=flat-square)](https://xerj.org/llms.txt)
-[![ES-YAML conformance](https://img.shields.io/badge/ES--YAML%20conformance-1366%2F1369-brightgreen?style=flat-square)](https://xerj.org/benchmarks)
+[![ES-YAML conformance](https://img.shields.io/badge/ES--YAML%20conformance-1444%2F1454-brightgreen?style=flat-square)](https://xerj.org/benchmarks)
 [![Single static binary](https://img.shields.io/badge/single%20static%20binary-no%20JVM-orange?style=flat-square)](https://xerj.org/docs/install.html)
 [![Default embedder](https://img.shields.io/badge/default%20embedder-lexical%2C%20offline-teal?style=flat-square)](https://xerj.org/docs/vectors.html)
 [![Neural](https://img.shields.io/badge/neural%20embedder-opt--in%2C%20downloads%20~90%20MB-9c6ade?style=flat-square)](https://xerj.org/docs/vectors.html)
@@ -429,7 +429,7 @@ supera la ventana de la instantánea se rechaza con un `400` en lugar de truncar
 silencio. Usa `search_after` para conjuntos de resultados de cualquier tamaño
 ([el tope](https://xerj.org/docs/api-es-compat.html#scroll-cap)).
 
-La suite de conformidad corre en cada commit y ahora mismo pasa 1366 de 1369 casos. Vive
+La suite de conformidad corre en cada commit y ahora mismo pasa 1444 de 1454 casos. Vive
 en [`engine/tests/es-compat-yaml`](./engine/tests/es-compat-yaml), y los huecos que quedan
 están listados ahí en lugar de ocultos. XERJ es compatible con la API. No es una
 reimplementación de los internos de Elasticsearch, y no es un fork.

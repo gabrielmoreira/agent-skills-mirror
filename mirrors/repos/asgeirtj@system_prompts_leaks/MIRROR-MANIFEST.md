@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `asgeirtj/system_prompts_leaks` — 26 default patterns, 0 followed patterns, 238 file(s) materialized.
+Mirror of `asgeirtj/system_prompts_leaks` — 26 default patterns, 0 followed patterns, 239 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `asgeirtj/system_prompts_leaks` — 26 default patterns, 0 followed pa
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 238 |
+| Files         | 239 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -297,6 +297,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 236 | ✓ | [`OpenAI/dots/skills/write-page/SKILL.md`](OpenAI/dots/skills/write-page/SKILL.md) |
 | 237 | ✓ | [`OpenAI/dots/skills/writing-style/SKILL.md`](OpenAI/dots/skills/writing-style/SKILL.md) |
 | 238 | ✓ | [`OpenAI/dots/voice.md`](OpenAI/dots/voice.md) |
+| 239 | ✓ | [`xAI/grok-bot/skills/voice.md`](xAI/grok-bot/skills/voice.md) |
 
 ---
 

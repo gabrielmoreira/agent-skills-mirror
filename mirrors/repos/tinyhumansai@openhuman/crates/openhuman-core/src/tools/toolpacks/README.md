@@ -23,8 +23,8 @@ constructed and executable but unadvertised: the agent sees one small tool,
   `callable_pack_ids` all read this table. The `pub(crate)`
   `DELIBERATELY_UNPACKED_FLEET_TOOLS` list names the delegation family that is
   kept *off* packs because it is used on almost every turn;
-  `agent/orchestration/tools/collapsed_delegation.rs` collapses that family
-  into `delegate_to` instead and explains the trade.
+  Tool packs withhold their schemas from the model until a matching pack is
+  requested; hidden tools remain registered for dispatch.
 - `tools::UseSkillTool` (`USE_SKILL = "use_skill"`) is the one always-on proxy
   tool. Called with `skill` alone it renders that pack's tool schemas into the
   conversation; with `skill` + `tool` + `args` it resolves the real tool
@@ -36,10 +36,10 @@ constructed and executable but unadvertised: the agent sees one small tool,
   produced by the tinyagents policy middleware, which is the only layer that
   holds the session (see below).
 - `tinyagents_harness_tools::skills::PackRegistryHandle` is the late-bound, non-owning (`Weak`) view the
-  proxy dispatches through. It holds two registries: the durable tool `Arc`
-  and the agent's `synthesized_tools` `Arc`, where every `delegate_*` tool
-  lives. Each must be rebound after its `Arc` is replaced, or packed
-  tools degrade to "skill unavailable" / "no tool in skill". The handle rides
+  proxy dispatches through. It holds the durable tool `Arc` and can hold a
+  second synthesized-tools `Arc` when the host provides synthesized tools.
+  Rebind both after replacement, or packed tools degrade to "skill unavailable"
+  / "no tool in skill". The handle rides
   on `Tool::host_extension` and is read back by
   `tools::host_extensions::pack_registry_handle`. The proxy itself
   (`UseSkillTool`, `PackCatalog`, `ToolPack`, the listing/scoping renderers) lives in
@@ -122,12 +122,9 @@ pack must be named in its guide, and a loaded skill renders its guide before
 its schemas.
 
 Running an installed skill is not a pack concern: the orchestrator uses its
-own `run_workflow`. The install hand-off `setup_skills` (into `skill_setup`)
-is a member of the `skills` pack, like the other packed hand-offs
-(`build_workflow`, `manage_tasks`): it was ~270 tokens on every orchestrator
-request for a family used a few times a week. Being packed, it no longer
-closes the `skills` pack through `ops::closed_by_direct_handoff`, so the
-listing offers the hand-off beside the raw registry tools.
+own `run_workflow`. Skill installation, workflow authoring, task management,
+image understanding, and presentation generation are routed through
+`spawn_subagent` with the corresponding specialist `agent_id`.
 
 ## Called by
 

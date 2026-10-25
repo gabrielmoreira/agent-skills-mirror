@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Zafer-Liu/Data-Analysis-Agent` — 26 default patterns, 0 followed patterns, 30 file(s) materialized.
+Mirror of `Zafer-Liu/Data-Analysis-Agent` — 26 default patterns, 0 followed patterns, 32 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Zafer-Liu/Data-Analysis-Agent` — 26 default patterns, 0 followed pa
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 30 |
+| Files         | 32 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -83,12 +83,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 22 | ✓ | [`skills/screening/SKILL.md`](skills/screening/SKILL.md) |
 | 23 | ✓ | [`skills/sql/SKILL.md`](skills/sql/SKILL.md) |
 | 24 | ✓ | [`skills/swot-analysis/SKILL.md`](skills/swot-analysis/SKILL.md) |
-| 25 | ✓ | [`skills/tree/SKILL.md`](skills/tree/SKILL.md) |
-| 26 | ✓ | [`skills/trimming/SKILL.md`](skills/trimming/SKILL.md) |
-| 27 | ✓ | [`skills/value-proposition/SKILL.md`](skills/value-proposition/SKILL.md) |
-| 28 | ✓ | [`skills/var/SKILL.md`](skills/var/SKILL.md) |
-| 29 | ✓ | [`skills/winsorize/SKILL.md`](skills/winsorize/SKILL.md) |
-| 30 | ✓ | [`static/drawio/js/diagramly/vsdx/CLAUDE.md`](static/drawio/js/diagramly/vsdx/CLAUDE.md) |
+| 25 | ✓ | [`skills/timesfm/SKILL.md`](skills/timesfm/SKILL.md) |
+| 26 | ✓ | [`skills/tree/SKILL.md`](skills/tree/SKILL.md) |
+| 27 | ✓ | [`skills/trimming/SKILL.md`](skills/trimming/SKILL.md) |
+| 28 | ✓ | [`skills/value-proposition/SKILL.md`](skills/value-proposition/SKILL.md) |
+| 29 | ✓ | [`skills/var/SKILL.md`](skills/var/SKILL.md) |
+| 30 | ✓ | [`skills/web-table/SKILL.md`](skills/web-table/SKILL.md) |
+| 31 | ✓ | [`skills/winsorize/SKILL.md`](skills/winsorize/SKILL.md) |
+| 32 | ✓ | [`static/drawio/js/diagramly/vsdx/CLAUDE.md`](static/drawio/js/diagramly/vsdx/CLAUDE.md) |
 
 ---
 

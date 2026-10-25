@@ -421,6 +421,105 @@ loopx-canary heartbeat-prompt \
   --goal-id <GOAL_ID>
 ```
 
+### Opt-in native context delivery
+
+`--context-delivery {off,on}` is experimental and defaults to `off`. It reuses
+existing scheduler-owned host declarations and the benchmark worker's explicit
+execution settings; it does not guess a host from process names or ambient native
+session variables. Only two declared run modes can activate it:
+
+| Supported entry | Existing host declaration |
+| --- | --- |
+| Codex App heartbeat, same-session resume and recovery | `--codex-app`, equivalently `--runtime-profile codex_app_heartbeat` (or its complete explicit host tuple) |
+| Codex benchmark heartbeat worker | Existing `generic_cli` profile plus the worker-owned `LOOPX_EXECUTION_MODE=heartbeat` and `LOOPX_CONTEXT_DELIVERY=on` declarations; its execution owner rejects other modes |
+
+`--codex-app` is a shortcut for a complete runtime profile. `--host-surface` alone
+is only one field. With `on`, missing, incomplete, contradictory or unsupported
+run-mode declarations are configuration errors: the CLI exits nonzero with a
+reason before admission or transport writes, including in native hooks. Correct
+the declaration or select `off`; there is no owner question or new approval.
+In a supported run mode, missing or invalid retained-input evidence still
+recovers the same original full capture automatically. `off` creates no native journal, hook configuration or input
+observation; directories alone never turn it on. This declaration check is not
+host authentication, execution authority or proof of retained input. Every warm
+delta still needs independently verified complete current-input evidence.
+Generic CLI, visible native Goals, Claude and other hosts remain outside this
+opt-in. Harbor/container and installed desktop adoption retain their separate
+unqualified boundaries; listing an entry does not certify live adoption.
+
+For a trusted Codex host, create private context/capture directories and render
+the native setup through the installed CLI:
+
+```sh
+loopx --format json quota context-config --context-delivery on --codex-app \
+  --codex-context-root <private-context-root> --goal-id <goal> --agent-id <agent>
+```
+
+The read-only result contains `native_config.hooks` and
+`native_config.developer_instructions`. Merge the hooks into the host's existing
+`hooks.json` or inline hook configuration, and append the recovery instruction to
+its existing developer instructions. Preserve other configuration. Review and
+trust only these exact hooks through Codex's native hook trust surface; the CLI
+does not install files, approve hashes, enable diagnostics or run a guard.
+Use one configuration for the declared Goal/Agent. A shared private root keeps
+different native sessions in separate journals, including interleaved sessions.
+
+Generate the normal bootstrap with `heartbeat-prompt --thin --codex-app
+--bootstrap`, its existing Goal/Agent/registry arguments, and
+`--context-delivery on --decision-output-root <private-capture-root> --codex-context-root
+<private-context-root>`; optionally add `--turn-envelope`. The loader preserves
+these options without freezing a Turn ID. Each wake loads current instructions
+and binds the existing `LOOPX_TURN` before its generated guard. Selection keeps
+the same transport. An unset wake identity fails in the shell before admission.
+
+Warm delta additionally needs the native host process to have
+`CODEX_ROLLOUT_TRACE_ROOT` set to private native trace-v1 diagnostics before it
+starts. A hook cannot set its parent process environment. If that host cannot
+provide the required actual-input observation, ordinary full delivery continues;
+do not use a file, session ID or successful setup as a retention acknowledgement.
+Scope diagnostics to the authorized host and include their IO/retention cost.
+
+Read back native hook discovery/trust and the generated guard options, then
+verify cold full, warm delta only after complete current-input evidence,
+resume and compaction recovery on the actual host. The persistent instruction
+names `quota context-read --codex-context-root ...` when an entire hook is lost;
+lookup is read-only and subsequent pages pin the original file/hash. It never
+readmits or spends. Normal native trust/settings UI remains the activation and
+error surface; unsupported diagnostics keep the same full path.
+An existing decision-handoff socket may use this same capture. Handoff validates
+and releases the immutable original first; native projection follows release.
+It does not create a second checkpoint or change the handoff's failure/recovery
+rules. If interrupted while held, consume the original full continuation packet.
+
+For a host that already saved the quota decision before invoking Codex, present
+that immutable snapshot from the native tool instead of running its guard again:
+
+```sh
+loopx --format json quota context-project --context-delivery on --codex-app \
+  --capture-file <original-quota-json> --capture-sha256 <original-sha256> \
+  --goal-id <goal> --agent-id <agent> --turn-instance-id <original-turn> \
+  --codex-context-root <private-context-root> --decision-output-root <private-capture-root>
+```
+
+The JSON response supplies `mode`, the digest-pinned read `command`, the target
+when available, and an original full `recovery` reference. Cold mode delivers
+complete context plus its target; a warm delta still requires actual current-input
+proof. Follow every page and reconstruct before dependent work. Invalid optional
+transport/cache falls back to that same full capture; invalid source hash or
+Goal/Agent/Turn refuses publication. This is integrity-checked presentation of
+the caller's snapshot, not fresh authority, registry lookup, installation,
+admission or accounting. The original file stays unchanged; generated caches
+remain private. A missing projection command can use `quota context-read` with
+the original file/hash. Set `--context-delivery off` and remove context options from generated host
+configuration to restore ordinary full-read instructions. Remove only these generated hook entries and
+appended recovery instruction from native configuration, and disable their
+owned diagnostics if enabled. Preserve unrelated hooks/settings; the CLI does
+not edit host configuration. No stored decision or receipt is rewritten.
+To roll back, remove the context/capture options from this bootstrap and remove
+only the generated hooks/recovery instruction from the native configuration.
+Existing captures remain private recovery evidence. This opt-in does not grant
+execution authority or prove installed App adoption or net token savings.
+
 ## Template
 
 Generate the persistent prompt from the installed runtime:

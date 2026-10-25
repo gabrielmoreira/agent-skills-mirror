@@ -1,39 +1,53 @@
-# Component Shape and Editor Access
+# Component Shape & Editor Access
 
-`VISION.md` owns the plugin and component direction. This reference records
-the published contracts that copied registry code consumes.
+`docs/vision/plate.md` (Plugin and component doctrine) holds the component
+shape and editor-access law. This reference keeps the plugin field contracts
+that copied registry code consumes.
 
-Plate owns framework-defined plugin fields. Registry code consumes those
-contracts instead of restating them.
+## Plugin field contracts
 
-| Plugin field | Consumer contract |
+Plate owns the types of framework-defined plugin fields. Registry code consumes
+those contracts; it does not restate them.
+
+| Plugin field | Extracted consumer type |
 | --- | --- |
-| live `node.component` | `PlateElementProps<TElement>` or `PlateLeafProps<TText>` from `platejs/react` |
-| static `node.component` | `SlateElementProps<TElement>` or `SlateLeafProps<TText>` from `platejs/static` |
-| live `render.beforeEditable` / `afterEditable` / `beforeContainer` / `afterContainer` | `EditableSiblingComponent` |
-| live `render.aboveNodes` / `belowNodes` | `RenderNodeWrapper`, `RenderNodeWrapperProps`, `RenderNodeWrapperFunction` |
-| static `render.aboveNodes` / `belowNodes` | `RenderStaticNodeWrapper`, `RenderStaticNodeWrapperProps`, `RenderStaticNodeWrapperFunction` |
+| live node `component` | `EditorElementProps<typeof FooPlugin>` or `EditorLeafProps<typeof FooPlugin>` |
+| static node `component` | the same descriptor-derived props from `platejs/static` |
+| `beforeEditable` / `afterEditable` | `EditableSiblingProps` |
+| `beforeContainer` / `afterContainer` | `ContainerSiblingProps` |
+| `wrapRoot` | `WrapRootProps` |
+| `wrapContent` | `WrapContentProps` |
+| `wrapNode` / `wrapNodeChildren` | the matching `RenderNodeWrapperProps`, `RenderNodeWrapper`, or descriptor form |
 
 ```tsx
-import {
-  type PlateElementProps,
-  PlateElement,
-  createPlatePlugin,
-} from 'platejs/react';
+// Correct: the package owns the extracted slot contract.
+function FeatureRoot({ children, editableRef }: WrapRootProps) {
+  useFeature(editableRef);
 
-function FeatureElement(props: PlateElementProps) {
-  return <PlateElement {...props} />;
+  return children;
 }
 
-const FeaturePlugin = createPlatePlugin({
-  key: 'feature',
-  node: {
-    component: FeatureElement,
-    isElement: true,
+// Correct: the plugin builder infers native callback fields.
+const FeaturePlugin = BaseFeaturePlugin.configure(({ editor }) => ({
+  initialState: {
+    query: () => editor.read.isEnabled(),
   },
-});
-```
+}));
 
-Forward full renderer props. Let `configure` and `extend` callbacks infer their
-editor context. Repair weak package typing instead of rebuilding framework
-fields in copied UI.
+// Incorrect: copied UI reconstructs a framework-owned field.
+function FeatureRoot({ children, editableRef }: {
+  children: React.ReactNode;
+  editableRef: React.RefObject<HTMLDivElement | null>;
+}) {
+  return children;
+}
+
+// Incorrect: a local adapter hides failed builder inference.
+type FeaturePluginState = Pick<BaseFeaturePluginState, 'query'>;
+
+BaseFeaturePlugin.extend(
+  ({ editor }): { initialState: FeaturePluginState } => ({
+    initialState: { query: () => editor.read.isEnabled() },
+  })
+);
+```

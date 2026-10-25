@@ -13,6 +13,8 @@ jlpm lint:check
 jlpm jest
 ```
 
+If you added or changed a user-visible string, also run `jlpm i18n:extract` (CI's `jlpm i18n:check` fails on a stale translation template). It needs `pip install -e ".[i18n]"`.
+
 If `jlpm lint:check` reports formatting problems, run `jlpm lint` to auto-fix them with the repo's Prettier (this covers Markdown too).
 
 ## JavaScript tooling
@@ -24,4 +26,5 @@ If `jlpm lint:check` reports formatting problems, run `jlpm lint` to auto-fix th
 ## Code conventions
 
 - Adding an admin policy touches seven places. The comment above `FEATURE_POLICY_SPEC` in `notebook_intelligence/extension.py` lists them all; update every one, or the policy silently stops working in one direction.
+- Every user-visible string goes through JupyterLab's translator: `const trans = getTrans();` (or `useTrans()` in a component) from `src/i18n.ts`, then `trans.__('Saved %1', name)`. The local must be named `trans` or the extractor misses it. Use placeholders instead of concatenation, and do not translate at module load. Prompts sent to a model, tool results returned to it, logs and product names stay English, and so do strings in `schema/plugin.json` and Python, which NBI's catalogs cannot reach yet. [CONTRIBUTING.md](CONTRIBUTING.md#translations) has the details.
 - Import `react-icons` icons from `src/icons.ts`, not directly from `react-icons/vsc` or `react-icons/md`. That module re-types the icons so they compile under `@types/react` 18.

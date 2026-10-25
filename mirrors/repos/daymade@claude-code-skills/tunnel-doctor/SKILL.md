@@ -103,6 +103,7 @@ Determine which scenario applies:
 - **`docker pull` works but `docker build` still dies fetching base-image tokens (TLS/i-o timeout) on a WSL2 + Docker Desktop host, or every runbook proxy port on a Windows+v2rayN host silently died after a v2rayN upgrade** → buildkit direct-dials past the DD proxy override / v2rayN ≥7.17 LAN-port split (references/windows_host_tun_wsl_cascade.md §2026-08-23)
 - **`git clone` fails with `Connection closed by 198.18.x.x`** → two different mechanisms produce this; Step 2H separates them
 - **Every domestic/DIRECT-rule site fails at once (TLS `unexpected EOF` mid-handshake, proxy-port CONNECT returns 503, Node CLIs report `UNKNOWN_CERTIFICATE_VERIFICATION_ERROR`) while proxied overseas sites keep working** → TUN DIRECT split-brain (Step 2J)
+- **One hostname fails after a DNS/delegation move while other sites work** → read [single-host DNS migration](references/single-host-dns-migration.md) before diagnosing a broken forwarding plane or restarting a shared tunnel.
 - **Everything on macOS fails at once — domestic AND overseas, and even Step 2J's real-IP probe fails** → do not declare an outage yet; run the physical-interface discriminator in "TUN full-stall vs genuine outage" (above Step 2A)
 - **SSH connects but `operation not permitted`** → Tailscale SSH config issue (Step 4)
 - **SSH connects but `be-child ssh` exits code 1** → WSL snap sandbox issue (Step 5)
@@ -125,7 +126,7 @@ Determine which scenario applies:
 - If `docker pull` works but `docker build` `RUN apk add` fails instantly with `Connection refused` → OrbStack transparent proxy broken by TUN (Step 2G-1).
 - If container healthcheck shows `(unhealthy)` but app works → lowercase `http_proxy` leaked into container (Step 2G-4).
 - If DNS resolves to `198.18.x.x` virtual IPs → a TUN is active, which is **not** by itself a diagnosis: under TUN every hostname resolves this way, on success as well as failure. Go to Step 2H to find out which mechanism you have.
-- If connections to fake-IP-resolved domains die but the same host works via `curl --resolve <host>:443:<real-ip>` (real IP from `dig @<public-resolver>`) → the TUN tool's DIRECT forwarding state is broken, not your network and not the destination (Step 2J).
+- If fake-IP connections fail but a fresh-IP `curl --resolve` succeeds, hostname-dependent resolution/forwarding is a suspect, not a proven cause. Use Step 2J for the multi-domain DIRECT failure pattern; for one recently moved domain, use [single-host DNS migration](references/single-host-dns-migration.md).
 - If `nc -z` succeeds on port 22 but SSH gets no banner (`kex_exchange_identification`) → Tailscale SSH proxy intercept (Step 5A). Confirm with `tcpdump -i any port 22` on the remote — 0 packets means Tailscale intercepts above the kernel.
 - If `nc -z` also succeeds on a port the destination does **not** serve (probe 65001) → under a TUN the local stack answers for the destination, so **no `nc -z` result on that host means anything**. Never read a port probe you have not calibrated this way. This supersedes the plain `nc -z` reading in the bullet above whenever a TUN — not just Tailscale — is in the path (Step 2K).
 - If the destination's own `journalctl -u ssh` shows **zero** entries for your attempts → something before `sshd` is eating them, but **not necessarily the network**: a host-local packet filter drops them just as silently. `tcpdump` on the host separates "never arrived" from "arrived and was dropped locally"; only the first implicates your TUN. Reach the machine through the cloud provider's guest-agent channel to ask, since that path does not use the port you cannot reach. Check the journal, not `auth.log`: on Ubuntu 24.04 `sshd` writes nothing to `auth.log`, so an empty file there is not evidence (Step 2K).
@@ -813,9 +814,9 @@ For other VPN/tunneling tools, prefer a clean app-level quit (menu bar → Quit,
 
 **Why "restart the app" beats "flush DNS cache"**: `sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder` flushes cached results, but the resolver chain in `scutil --dns` is rebuilt from network configuration, not from the cache. The dead resolver is still there after a flush. The fix has to come from the app that registered the resolver in the first place.
 
-#### Verify End-to-End (4 Dimensions)
+#### Verify End-to-End
 
-A DNS-resolver fix is easy to half-verify. All four must pass before declaring the system path healed:
+A DNS-resolver fix is easy to half-verify. All checks below must pass before declaring the system path healed:
 
 ```bash
 # 1. The owning daemon is back (not just its UI)
@@ -834,7 +835,7 @@ ssh -o "ProxyCommand=none" -T git@github.com
 # Expected: "Hi <user>! You've successfully authenticated..."
 ```
 
-The fourth dimension is the one that matters most. If you applied a workaround during diagnosis (a `ProxyCommand` that delegates DNS to a SOCKS5 proxy, a `/etc/hosts` entry, a hardcoded IP), running the original command with the workaround disabled (`ProxyCommand=none`) is the only way to know you actually healed the system DNS path rather than just routed around it.
+The original failing operation is the decisive check. If you applied a workaround during diagnosis (a `ProxyCommand` that delegates DNS to a SOCKS5 proxy, a `/etc/hosts` entry, a hardcoded IP), running the original command with the workaround disabled (`ProxyCommand=none`) is the only way to know you actually healed the system DNS path rather than just routed around it.
 
 See [references/dns_resolver_chain_stall.md](references/dns_resolver_chain_stall.md) for the full mental model of macOS resolver ordering, the IPv4-vs-IPv6 split, and a worked example walking through every diagnostic command and its real output.
 
@@ -849,7 +850,7 @@ See [references/dns_resolver_chain_stall.md](references/dns_resolver_chain_stall
 
 **Root cause**: the TUN tool (Shadowrocket / Clash / Surge in fake-IP mode) has two independent forwarding planes: proxied traffic (overseas, via the node) and DIRECT traffic (matched by domain rules, forwarded from the tool's own network stack). The DIRECT plane's state can break alone — DNS-over-tunnel failure, stale fake-IP table after a network change, or internal state corruption — while the proxied plane stays perfectly healthy. Everything resolved to a fake IP whose domain matches a DIRECT rule then dies inside the tool.
 
-**Diagnosis** — three commands separate this from a real network outage:
+**Diagnosis:**
 
 ```bash
 # 1. Confirm fake-IP DNS is in effect (domain resolves into 198.18.0.0/15)
@@ -862,7 +863,7 @@ dig +short @223.5.5.5 <domain>   # or @1.1.1.1 / @8.8.8.8
 
 # 3. Connect by real IP with correct SNI — bypasses the fake-IP table
 curl -sS -o /dev/null -w '%{http_code}\n' --resolve <domain>:443:<real-ip> https://<domain>/
-# → normal HTTP status  ← physical network is FINE; the TUN's DIRECT state is broken
+# → normal HTTP status: this fresh-IP path works; establish failure scope before attribution
 ```
 
 If step 3 also fails, this is not split-brain — but it is not a proven outage either: step 3 still rides the TUN (UDP/53 is intercepted too). Run the interface-bound physical probe in "TUN full-stall vs genuine outage" (above Step 2A); only a double-000 there earns "real local-network outage".
@@ -878,7 +879,7 @@ must still reach the armed recovery action. Use the corresponding API or GUI for
 Run `sudo killall -HUP mDNSResponder` only within the authorized maintenance scope after the
 tunnel is confirmed connected; DNS cache flushing does not restore a disconnected VPN.
 
-**Verify all four planes** — a fix that restores one plane can leave (or put) another down:
+**Verify each required plane** — a fix that restores one plane can leave (or put) another down:
 
 ```bash
 curl -sS -o /dev/null -w 'domestic direct: %{http_code}\n' --max-time 10 https://<domestic-site>/

@@ -161,6 +161,7 @@ Dependency changes need a clear project benefit — fixing a bug, addressing a s
 - Add or update tests when the change affects behavior.
 - For vendor/integration catalog tests, cover each vendor with one table-driven test of its registry contract (route resolution, default base URL and model, credential env vars, catalog-to-descriptor linkage, and capability/limit values the runtime uses), plus a small number of behavioral tests such as model-discovery keep/drop parsing or availability windows. Do not copy full curated model lists or cache/refresh settings from vendor definitions into tests.
 - Test files share a process within each run or shard; restore `mock.module` registrations, environment variables, globals, and process state in `afterEach`/`afterAll`.
+- Git discovery honors `GIT_CEILING_DIRECTORIES` in both filesystem lookups and Git subprocesses. Use an explicit ceiling for temporary fixtures that must exclude enclosing repositories; a ceiling prevents ascent into that directory without excluding the starting working directory. Separate multiple absolute ceiling directories with the platform's path-list delimiter.
 - When tests set or delete environment variables, import `snapshotEnv` from `src/test/envSnapshot.ts` using the appropriate relative `.js` path. In `beforeEach`, save the named variables before changing them with `restoreEnv = snapshotEnv(keys)`; pass `{ clear: true }` when setup needs those variables unset. Call `restoreEnv()` in `afterEach`, or use `finally` for changes scoped to one test. Restoration preserves previous values, including empty strings, and deletes variables that were previously unset. List only the variables the test changes or deliberately clears; do not replace `process.env` or blanket-clear unrelated variables. When using the shared mutation lock, snapshot after acquiring it and restore before releasing it.
 - In timing-sensitive tests, drive timers with Bun's fake timers (`jest.useFakeTimers()` and `jest.advanceTimersByTime()`) instead of racing real delays, and restore real timers during cleanup, so the tests pass in a single-process whole-suite run as well as in the sharded runner.
 - Await completion promises or explicit readiness signals before asserting asynchronous results. For tests that deliberately suppress readiness, use a short, bounded wait and assert the expected failure.
@@ -180,6 +181,156 @@ Before submitting, run multiple rounds of review on generated code:
 
 Self-review up front saves everyone time and reduces back-and-forth during maintainer review.
 
+### Markdown parsing and rendering
+
+Use the exact `marked` version in `package.json` and its bundled TypeScript types;
+import `marked`, `Lexer`, `Token`, or `Tokens` from the package's ESM entry point.
+Do not add `@types/marked` or a separate rendering extension. Use
+`configureMarked()` before terminal lexing and `formatToken()` / `applyMarkdown()`
+for terminal output; strikethrough parsing is deliberately disabled.
+
+List items can contain `paragraph` children and `checkbox` tokens. Preserve list
+markers for paragraph children and omit checkbox glyphs in terminal output. Pass
+the previous sibling to `formatToken()` when rendering block sequences so separate
+`space` tokens do not duplicate spacing after headings, tables, or indented code.
+Indented code has trailing newlines removed for terminal display and `/copy`;
+fenced code retains its content. Keep streaming boundary calculations on the
+complete lexer token stream, including whitespace and each token's `raw` length.
+
+CLAUDE.md parsing uses its own `new Lexer({ gfm: false })` to preserve include
+paths. When removing a comment-only HTML block, consume its following whitespace
+token too; preserve whitespace with visible comment residue and leave code blocks
+untouched. When updating `marked`, compare representative terminal, table, list,
+code, link, streaming, and memory-file output and run the markdown regression tests.
+Regenerate the exact dependency pin and lockfile with `bun add --exact marked@<version>`.
+
+### Subprocesses and terminal colors
+
+Development scripts run under Bun and use `Bun.spawn` or `Bun.spawnSync`.
+Use argument arrays and set stdin, stdout, stderr, cwd, environment, and deadlines
+explicitly to preserve the command contract. The capture helper in
+`scripts/subprocess.ts` returns UTF-8 stdout and stderr, a nullable status, and
+launch, timeout, or output-limit errors for synchronous probes. Check errors and
+status before consuming output. Keep the fixed processor probe's platform shell
+invocation when testing command wrappers; never interpolate user input into it.
+The clean-install verifier retains its existing command runner for cross-platform
+package-manager wrappers. The startup benchmark runs under Node to measure its
+startup and compile cache; its process calls and the real Node pipe observer in
+the test runner's backpressure fixture use Node's process API.
+
+Use the exact `execa` and `chalk` pins in `package.json` and their public ESM
+exports and bundled types. Regenerate both pins and the lockfile with
+`bun add --exact execa@<version> chalk@<version>`.
+
+Prefer asynchronous `execa(file, args, options)`; use `shell: true` only for
+commands that need shell syntax. With `reject: false`, check `failed`,
+`timedOut` and `exitCode` before consuming `stdout` or `stderr`. Use
+`SyncOptions` for synchronous options. The subprocess is a promise; access
+Node child-process event and lifecycle APIs through `subprocess.nodeChildProcess`.
+Use template strings or `parseCommandString()` for command splitting, and
+`ipc: true` for IPC. Explicit `input` takes precedence over inherited stdin;
+set stdin deliberately, and bound subprocess output with `maxBuffer` and
+execution time with `timeout`.
+
+Use the shared default `chalk` instance for terminal styles and the existing
+`colorize()` and theme helpers for theme colors. Keep the VS Code color boost
+and tmux clamp in `src/ink/colorize.ts`. Numeric `FORCE_COLOR` selects an exact
+level (0 disables color, 1 selects 16 colors, 2 selects 256, 3 selects truecolor);
+`ansi256()` and `bgAnsi256()` downsample at level 1. Use `new Chalk({ level })`
+only when a separate capability level is intentional, as for Apple Terminal
+charts. Tests that change `chalk.level` must restore it, and environment-driven
+color detection tests must import in a fresh process.
+
+### CLI argument parsing
+
+Keep `commander` and `@commander-js/extra-typings` pinned together at exactly
+`15.0.0`; the typings peer requires `commander ~15.0.0`. Regenerate `bun.lock`
+with `bun install` after changing both pins. Use their public ESM exports.
+
+Declare positional arguments explicitly, including variadic arguments for commands
+that forward subprocess arguments. Excess arguments are rejected by default.
+Short flags must be a single character; use `--debug-to-stderr` in place of the
+unsupported `-d2e` spelling. Dual long flags, such as `--yolo` and
+`--dangerously-skip-permissions`, are supported. When registering both positive
+and negative boolean flags, set an explicit default only if the command needs one;
+otherwise the omitted option remains undefined. Keep help and parse-error checks
+on the built CLI so command registration is exercised under Node.
+
+### Dependency pins and overrides
+
+Terminal syntax highlighting uses the exact `highlight.js` pin directly, with
+the shared Chalk instance for ANSI colors. Keep the lazy loader and terminal
+palette in `src/utils/cliHighlight.ts` for terminal code and Markdown highlighting
+only. Structured diff rendering in `src/native-ts/color-diff/index.ts` loads
+`highlight.js` separately. Run the highlighting and Markdown regression tests
+when changing this dependency or its ANSI renderer.
+
+Keep all direct dependencies and devDependencies pinned to exact versions in the
+root and web manifests. Regenerate the relevant Bun lockfile
+when changing a pin.
+
+Schema validation uses Zod `4.6.7`, pinned exactly in the root development
+dependencies and in the root and website resolution overrides. Import
+`zod/v4` for application schemas, use native conversion through the shared
+`zodToJsonSchema` helper, and preserve validation messages and generated schema
+contracts. Follow [Schema validation](docs/schema-validation.md) for object
+strictness, defaults, error customization, dependency compatibility and SDK
+peer handling. Regenerate both lockfiles with `bun install` after changing
+the shared pin.
+
+The static website in `web/` uses Astro `7.4.2`, `@astrojs/check` `0.9.12`,
+and `@astrojs/sitemap` `3.7.4`, all pinned exactly. Install its dependencies
+with `bun install --cwd web`, then run `bun run web:typecheck` and
+`bun run web:build` from the root. The build includes `scripts/verify-dist.ts`
+to check rendered navigation, release redirects, sprites, and sitemap entries.
+Astro's Node.js `>=22.23.4` requirement is covered by the repository's
+`>=24.22.1` runtime floor. Keep `compressHTML: true` in the site config to
+preserve HTML-aware whitespace compression; Astro 7 defaults to JSX whitespace
+rules. The site uses Astro templates and typed data without remark or rehype
+plugins, so it does not need the optional `@astrojs/markdown-remark` peer.
+If adding those plugins later, install a compatible exact pin and configure
+the Markdown processor according to the Astro 7 upgrade guide.
+
+Linting uses ESLint `10.13.0` with `@typescript-eslint/parser` and
+`@typescript-eslint/eslint-plugin` both pinned to `8.72.0`, which support ESLint 10.
+Keep these pins compatible and regenerate `bun.lock` with `bun install` after
+updating them. Run `bun run lint` from the repository root; ESLint 10 discovers
+`eslint.config.js` from each linted file's directory. The JavaScript flat config
+does not require `jiti` or extend a recommended preset. Keep its explicit rules
+and ignores when upgrading. ESLint's Node.js requirement is covered by the
+supported Node.js `>=24.22.1` runtime.
+
+Keep `chokidar` pinned exactly to `6.0.0` and use its public ESM exports and
+bundled types. Pass literal paths rather than globs. Use `backend` to select
+watching behavior and `pollingInterval` / `pollingBinaryInterval` for polling;
+`awaitWriteFinish.pollInterval` is a separate, unchanged option. Skill watching
+uses the polling backend under Bun with explicit `atomic: true` to preserve
+atomic-save handling. Await `close()` when teardown must finish, and create a
+new watcher for subsequent subscriptions because closing is terminal. Its
+Node.js 22.22 minimum is covered by the supported Node.js `>=24.22.1` runtime.
+Regenerate `bun.lock` with `bun install` after updating the exact pin.
+
+Keep `@sentry/node` pinned exactly to `11.9.0` and regenerate `bun.lock` with
+`bun install` after updating it. The optional reporter uses a lazy ESM import
+after trust is established. Keep default integrations and tracing disabled,
+set `attachStacktrace: false`, and explicitly disable `dataCollection` categories
+so only vetted messages are reported. Do not add automatic instrumentation or
+an OpenTelemetry provider to this path. Run `bun test src/utils/sentry.test.ts`
+when updating the SDK or initialization. Its Node.js minimum is covered by the
+supported runtime; self-hosted Sentry requires 26.4.2 or later.
+
+The root `overrides` block also controls transitive resolutions:
+
+- `ip-address`: `10.7.4` sets the security floor for the MCP SDK's
+  `express-rate-limit` dependency path.
+- `google-auth-library`: `11.3.1` keeps Google authentication on the same version
+  as the direct dependency. The override accompanies the replacement of the
+  legacy Vertex SDK to remove its deprecated UUID dependency path.
+- `lodash-es`: `4.18.1` keeps transitive copies on the security fixes for template
+  code injection and prototype pollution, avoiding the deprecated `4.18.0` release.
+- `node-domexception`: the existing shim re-exports the platform's native
+  `DOMException` for `fetch-blob`, replacing the deprecated polyfill.
+
 ## AI Agent Guidelines
 
 If you are an AI agent (Copilot, Cursor, Claude, etc.) working on this codebase, refer to [AGENTS.md](AGENTS.md) for project-specific coding guidelines, conventions, and validation commands. Following these guidelines will help your contributions align with the project's patterns and reduce review friction.
@@ -192,6 +343,59 @@ In particular: link release-notes navigation to GitHub Releases rather than addi
 - Prefer small, readable changes over broad rewrites.
 - Do not reformat unrelated files just because they are nearby.
 - Keep comments useful and concise.
+
+When working on diff generation or rendering, import public APIs and types from
+`diff`; the package supplies its own TypeScript declarations, so do not add
+`@types/diff` or import internal library paths. Use `diffWordsWithSpace` when
+rendering must preserve whitespace. Keep patch filenames separate from hunk
+content: serialized headers may quote or escape filenames, and parsed patches
+can omit filenames. Check the diff and edit-snippet tests when changing these
+paths.
+
+### Proxy agents
+
+Use the exact `undici` 8.12.3 pin and its public exports and bundled types.
+Regenerate `bun.lock` with `bun install` after changing the manifest pin.
+Its Node.js minimum is covered by the supported `>=24.22.1` runtime.
+Wrap per-request fetch dispatchers with the public `Dispatcher1Wrapper` so
+Node 24's native fetch can use its legacy callbacks; the wrapper also accepts
+the current handler API. `setGlobalDispatcher()` handles the global bridge.
+Undici 8 enables HTTP/2 by default; the bridge keeps legacy requests on HTTP/1.1.
+Set `proxyTunnel: true` to retain CONNECT for plain HTTP targets. Normalize
+leading `*.` bypass entries to `.` before constructing the environment proxy
+dispatcher so apex and subdomain bypasses continue to match the shared helpers.
+Keep custom TLS options on `Agent.connect` for direct requests, including
+`NO_PROXY` bypasses, and on `ProxyAgent.requestTls` for CONNECT targets.
+
+Use the shared helpers in `src/utils/proxy.ts`: `createAxiosInstance()` for
+Axios, `getWebSocketProxyAgent(url)` for Node WebSockets, and `getProxyFetchOptions()`
+for fetch. The Axios and WebSocket helpers apply `NO_PROXY` bypasses before
+selecting an agent. `getWebSocketProxyUrl(url)` supplies Bun's native WebSocket proxy
+option. Lowercase proxy environment variables take precedence over uppercase
+variants on the Axios, WebSocket, and fetch/undici paths. The shared helpers read
+`no_proxy` before `NO_PROXY` using `??`, so an empty lowercase `no_proxy` is kept
+and does not fall back to `NO_PROXY`.
+
+`https-proxy-agent` is pinned exactly to `9.1.0` and remains an external runtime
+module in `scripts/externals.ts`. Use its public named ESM exports, such as
+`import { HttpsProxyAgent } from 'https-proxy-agent'`, and the constructor
+`new HttpsProxyAgent(proxyUrl, options)`. Both it and `agent-base` are ESM
+packages requiring Node.js 20 or later; use OpenClaude's supported Node.js
+`>=24.22.1` runtime. Keep dependency updates exact and generate `bun.lock` with
+`bun add --exact https-proxy-agent@<version>`.
+
+Keep TLS verification enabled. Configure `NODE_EXTRA_CA_CERTS` before starting
+the CLI when a custom CA is needed. For runtime certificate configuration, the
+shared CA loader reads that file and the TLS helpers supply explicit options;
+clear the CA and mTLS caches after configuration changes. Structured I/O
+environment updates to TLS or proxy settings refresh CA, mTLS, and proxy caches
+and global agents; effective bypass-list changes do the same. Proxy-agent
+constructor options configure the connection to the proxy. Supply target TLS
+options on the HTTPS request, using `getWebSocketTLSOptions()` where applicable;
+do not assume constructor `ca` options also trust the target inside a CONNECT
+tunnel. Run `bun test src/utils/proxy.connect.test.ts src/utils/proxy.test.ts`
+when changing these paths to verify HTTPS CONNECT routing and `NO_PROXY`
+bypass with certificate validation enabled.
 
 ## Provider Changes
 
@@ -212,6 +416,8 @@ When submitting provider changes:
 ## Local Setup
 
 Use Node.js `>=24.22.1` (Node 26 recommended/default) and Bun `1.4.4` (tracked in `.bun-version`).
+
+Keep `@types/node` on the Node 24 major to match the minimum supported runtime, even when developing on Node 26. Pin it to an exact published 24.x version; the type package version does not need to match the Node.js runtime patch version.
 
 Install dependencies:
 

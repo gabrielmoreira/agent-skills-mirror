@@ -129,7 +129,7 @@ visibility limits, ordinary notices, current cadence floors and unchanged
 canonical waits/monitor clocks. Installed adoption and live host readback remain
 separate from this source repair.
 
-**S3/S7 administrative closeout proposal.** [#7117](https://github.com/loopx-project/loopx/pull/7117)
+**S3/S7 administrative closeout checkpoint.** [#7117](https://github.com/loopx-project/loopx/pull/7117)
 also separates an accepted blocked replan from the preceding real outcome
 checkpoint. File/SQLite CLI readback and long/compacted history regressions retain
 the previous milestone or genuine gap without creating a new outcome obligation
@@ -150,6 +150,14 @@ packet, preserving all clauses and standalone reads.
 Full-repository qualification, comparable full caller cost, installed adoption
 and measured long-horizon benefit remain distinct and incomplete.
 
+The follow-on timer repair retains readiness at positive CLI work admission.
+File/SQLite reentry distinguishes an unchanged timer already due at admission
+from a later-authored wait, including one already due when read. Both preserve
+the original binding and exactly-once result settlement. The shared TypeScript
+owner checks microseconds; missing legacy facts retain conservative recovery.
+This source qualification adds no scheduler, historical receipt rewrite or
+installed/live-host qualification.
+
 **S5/S11 long-horizon progress design.** The [research measurement refinement](long-horizon-harness-benchmark-research-program-v0.md#evidence-based-episode-evaluation-proposed-refinement)
 and [product reading journey](../../product/use-cases/auto-research/long-horizon-progress-design.md)
 connect native outcomes to research episodes, evidence and actual adoption.
@@ -161,6 +169,14 @@ checks. Keep design, scientific qualification, installed behavior and causal
 benefit separate. This proposal changes no stream priority, experiment budget,
 frozen treatment or scoring rule and must not block otherwise valid experiment
 preparation or the existing L1/R2 journey.
+
+The author proposal [#7233](https://github.com/loopx-project/loopx/pull/7233)
+connects the existing typed assessment's evidence-bound researcher synthesis to
+results → report → research history, with deeper comparison of explanations and
+proposed experiments, and preserves observed cost when output is rejected.
+Its packaged source/recovery and comprehension checks qualify that reading
+slice; independent scientific calibration, installed adoption and 2.0 release
+acceptance remain open. Proposed experiments are advice, not execution authority.
 
 ### Current priorities after research and acceptance integration
 

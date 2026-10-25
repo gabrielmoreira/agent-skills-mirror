@@ -10,7 +10,28 @@ Give a readable quick-start, not just a greeting or two mode names. Show it once
 
 ### A practical first-use explanation
 
-With no brief yet, use short headings like a README quick-start. Explain the actual deliverable, suitable content/duration, tools to prepare, production sequence and a copyable request. Distinguish what the assistant does from what the user needs to do. Explain "生图" as creating illustrations and "本地合成" as combining pictures, voice and captions into video; do not lead with commands, dependency names or an API questionnaire. Treat durations as recommendations, not enforced limits. Link the relevant [A-style catalog](style-catalog.md) or [B1 style](b1-minimal-handdrawn.md) when the user asks about the choices.
+With no brief yet, use short headings like a README quick-start. Explain the actual deliverable, suitable content/duration, tools to prepare, production sequence and a copyable request. Distinguish what the assistant does from what the user needs to do. Explain "生图" as creating illustrations and "本地合成" as combining pictures, voice and captions into video; do not lead with commands, dependency names or an API questionnaire. Treat durations as recommendations, not enforced limits.
+
+Proactively show where to choose a style: link the public GitHub catalogs shown below, explain that the user can watch samples and reply with a style code such as A3 or B1. Do not wait for "where do I choose?" or substitute an installed reference-file path for the public catalog. With no mode selected, show both links; with a known mode but no style, show only its relevant link. If a style is already supplied, acknowledge it and continue without requiring another catalog visit or selection. Only B1 is currently available for B; do not offer future placeholders such as B2 as ready choices.
+
+### Choose the public catalog language
+
+Resolve the guidance language using the priority above, then select its README from this table. Match regional variants to their base language (for example, `en-GB` → `en`, `fr-CA` → `fr`, `pt-PT` → `pt-BR`); the available Chinese catalog is Simplified Chinese. Do not use the host locale instead of a clear conversation language. An explicit request to view a particular README edition overrides only the catalog choice, not the guidance language.
+
+| Guidance language code | Language | Public README |
+|---|---|---|
+| en | English | [README.en.md](https://github.com/kaomei/stickman-video-director/blob/main/README.en.md) |
+| zh | Chinese | [README.zh-CN.md](https://github.com/kaomei/stickman-video-director/blob/main/README.zh-CN.md) |
+| ja | Japanese | [README.ja.md](https://github.com/kaomei/stickman-video-director/blob/main/README.ja.md) |
+| ko | Korean | [README.ko.md](https://github.com/kaomei/stickman-video-director/blob/main/README.ko.md) |
+| fr | French | [README.fr.md](https://github.com/kaomei/stickman-video-director/blob/main/README.fr.md) |
+| pt | Portuguese | [README.pt-BR.md](https://github.com/kaomei/stickman-video-director/blob/main/README.pt-BR.md) |
+| tr | Turkish | [README.tr.md](https://github.com/kaomei/stickman-video-director/blob/main/README.tr.md) |
+| id | Indonesian | [README.id.md](https://github.com/kaomei/stickman-video-director/blob/main/README.id.md) |
+
+Append `#a-styles` for the Director catalog and `#b-styles` for the Autopilot catalog; these anchors are shared by every listed edition. Localize the visible link labels as well as choosing the right destination. For an unsupported language, keep the guidance and link labels in that language but use `README.en.md` for the catalog. Do not invent a translated filename or anchor, or silently fall back to Chinese.
+
+For example, English guidance links to [Director styles and samples](https://github.com/kaomei/stickman-video-director/blob/main/README.en.md#a-styles) and [Autopilot styles and samples](https://github.com/kaomei/stickman-video-director/blob/main/README.en.md#b-styles), even on a Chinese-language host. The Chinese welcome below uses the Chinese edition because its guidance is Chinese; do not copy its destinations unchanged into other languages.
 
 Adapt this Chinese example to the actual environment and installation status:
 
@@ -18,21 +39,29 @@ Adapt this Chinese example to the actual environment and installation status:
 
 给我一个话题、需求、文章链接或故事脚本，就可以开始。**不用先写好完整文案**，我会帮你整理内容，再按你选的模式往下做。一次安装即可使用下面两种模式。
 
-#### A · Director 导演模式：先拿分镜和提示词，自己掌控生成与剪辑
+**画风在这里选择：**[导演模式画风一览](https://github.com/kaomei/stickman-video-director/blob/main/README.zh-CN.md#a-styles) · [全自动模式画风一览](https://github.com/kaomei/stickman-video-director/blob/main/README.zh-CN.md#b-styles)。打开看样片，选好后把画风编号（如 **A3** 或 **B1**）告诉我即可，不用下载画风包或重新安装。
+
+#### A · 导演模式：先拿分镜和提示词，自己掌控生成与剪辑
 
 - **适合做什么**：TikTok / Shorts、反转短剧、需要人物互动和具体动作的故事；可以先做 30 秒，也适合 1～3 分钟短片。
 - **你会拿到什么**：故事提案、分段旁白、画面分镜，以及可以逐条复制使用的视频生成提示词。
 - **需要准备什么**：在支持 Skill 的 AI 助手里和我沟通；生成视频时使用 Google Flow 等工具，最后在剪映等软件里完成剪辑。写提案和提示词不需要先配置 API。
-- **怎么进行**：给话题和要求 → 我给提案 → 你确认或修改 → 我给逐段提示词 → 你生成片段并剪辑。
+- **怎么进行**：给话题和需求 → 我给故事提案 → 你确认或修改 → 按需确认人物三视图 → 我给逐段分镜提示词 → 你生成片段并剪辑。
+
+**可选：先定人物，再做分镜。** 想让人物更一致，或做专属形象的视频，可以先设计符合所选画风的火柴人，确认三视图（正面、侧面、背面）。已有确认的角色参考图可直接复用，不需要定制时可跳过。生成每段视频时，在支持参考图的工具中都附上已确认的角色图；参考图是额外辅助，不替代原有提示词，也不改变画风规则，最终仍需检查各段人物是否一致。
 
 可以直接这样说：
 
 ```text
-我想做《人类的第一份工作是怎么来的？》，用 A3「史前洞穴风」，
-横屏 16:9，30 秒，英文旁白。先给我导演提案，确认后再给逐段提示词。
+使用导演模式/A模式，把下面的话题、文案或需求做成火柴人视频：
+[填写话题、粘贴文案，也可以直接描述需求]
+需求：横屏 16:9，采用 A3「史前洞穴风」，先做 30 秒。
+先给我导演提案，确认后再输出逐段视频提示词。
 ```
 
-#### B · Autopilot 自动成片：确认样片后，自动做完整视频
+如需专属角色，可以再补一句：“先帮我设计符合所选画风的火柴人，确认三视图，再给分镜提示词。”
+
+#### B · 全自动模式：确认样片后，自动做完整视频
 
 - **适合做什么**：YouTube 知识讲解、产品宣传、故事解说和连续故事短剧；可以先试 20 秒，再做 5～10 分钟或更长的内容，不用逐段手动拼装。
 - **你会拿到什么**：配好旁白、字幕、微动画和音效的完整 MP4 视频，以及字幕文件。画面以插画、重点文字和微动画配合讲述。
@@ -42,7 +71,7 @@ Adapt this Chinese example to the actual environment and installation status:
 可以直接这样说：
 
 ```text
-用 Autopilot，把这篇文章做成适合 YouTube 的 5 分钟宣传视频。
+使用全自动模式/B模式，把这篇文章做成适合 YouTube 的 5 分钟宣传视频。
 横屏 16:9，用 B1「极简手绘风」，英文旁白，配好字幕和音效。
 先帮我检查生图、配音和视频合成配置，再给我脚本与 20 秒有声样片。
 文章链接：[粘贴链接]
@@ -50,9 +79,9 @@ Adapt this Chinese example to the actual environment and installation status:
 
 #### 现在怎么开始？
 
-直接发来**内容＋想拿到的结果**就行，例如：“我想做一个介绍这个工具的 YouTube 视频，希望自动拿到完整成片。”也可以补充时长、横竖屏、画风、语言和音色；没想好的部分，我会接着引导，不需要一次填完所有选项。A 模式沿用原有英语、稳定男声默认；B 模式按所选画风配置字幕和配音，B1 默认英语和 Google Gemini 的 Bodi 音色，你也可以指定其他语言、平台或音色。不同 B 画风可以有各自的默认配置，但都会配好旁白和字幕。
+直接发来**内容＋想拿到的结果**就行，例如：“我想做一个介绍这个工具的 YouTube 视频，希望自动拿到完整成片。”也可以补充时长、横竖屏、画风、语言和音色；没想好的部分，我会接着引导，不需要一次填完所有选项。A 模式的旁白和声音设计沿用原有规则；B 模式按所选画风配置字幕和配音，B1 默认英语和 Google Gemini 的 Bodi 音色，你也可以指定其他语言、平台或音色。不同 B 画风可以有各自的默认配置，但都会配好旁白和字幕。
 
-如果工具还没配好，可以先说：**“我想用自动成片，但不知道怎么配置，先帮我检查。”** 我会说明哪些能用了、哪些还缺，以及具体怎么补；涉及收费的生成会先说明，不会因为安装好了就直接开始付费制作。
+如果工具还没配好，可以先说：**“我想用全自动模式，但不知道怎么配置，先帮我检查。”** 我会说明哪些能用了、哪些还缺，以及具体怎么补；涉及收费的生成会先说明，不会因为安装好了就直接开始付费制作。
 
 ### Adapt instead of replaying the README
 
@@ -87,6 +116,16 @@ These are stage handoffs, not per-command logs or recurring reminders. When no u
 | Prompt package | After approval, deliver independently usable clip prompts and stitching guidance. Explain that these are prompts, not generated video files. Next, the user generates clips in a supported video tool and edits/assembles them; offer targeted help if a clip needs correction. |
 
 Keep all existing setup, style, voice and revision rules unchanged. A global change returns to the proposal gate; explain what changed instead of restarting already valid setup.
+
+### Optional A character references
+
+Character references are optional support for stronger visual consistency or a personalized character, not a new setup requirement for all A users. Explain the option in first-use guidance; if the user has not chosen it, continue the ordinary Director workflow without blocking on a three-view sheet or adding an approval gate. This section is A-only; it does not impose a reference workflow on B.
+
+When chosen, help define a character within the selected A style's permitted variations and confirm front, side and back views before delivering final clip prompts. Reuse suitable user-approved references rather than requiring new images. Include the character/reference plan in Phase A; a reference that changes an already approved global design follows the existing proposal-revision rule. Keep fixed style anchors, anatomy and character constraints intact: do not silently override them to copy an incompatible reference. Explain any conflict and resolve it with the user.
+
+At prompt handoff, explain that the user attaches the approved character image(s) as a separate reference input for **every generated clip** when the chosen tool supports reference images. Verify the actual tool's support rather than promising that every platform accepts them. If unsupported, explain the limitation and offer a compatible tool or the unchanged text-prompt path. A reference can help, but is not a consistency guarantee; inspect the resulting clips.
+
+Keep the original validated prompt templates, full style/cast anchors and frozen voice blocks as required by the selected A style. References supplement those prompts, not replace, shorten or globally rewrite them. Personalize only within that style's allowed choices, not by changing a fixed character anchor; do not import B's TTS rules or add a generic character-description block to all A prompts.
 
 ## B · Autopilot handoffs
 

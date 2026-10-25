@@ -7,7 +7,7 @@ user-invocable: true
 
 # llama.cpp Windows 多模型部署与优化集成技能
 
-> **版本**: v3.8.0 | **基准硬件**: RTX 5060 Ti 16GB + Intel U7 270K / CPU-only (48GB DDR5) | **平台**: Windows 10/11 + WSL2 | **llama.cpp 版本**: b10056 – b10713+ | **更新**: 2026-10-14（Q6 批次入库：GSQ-RCO 调优入口 + q6-tuning 探针集；脚本载荷可移植化；补全首次部署链路）
+> **版本**: v3.9.0 | **基准硬件**: RTX 5060 Ti 16GB + Intel U7 270K / CPU-only (48GB DDR5) | **平台**: Windows 10/11 + WSL2 | **llama.cpp 版本**: b10056 – b11836 | **更新**: 2026-10-24（并发专项：np 阶梯实测 + `--kv-unified` + np×MTP 耦合绿屏复盘 + `scripts/np_probe.py` 双显存安全闸）
 >
 > 📚 **references 导航**：先看 [`./references/INDEX.md`](./references/INDEX.md) —— 目录结构、每份文档的用途，以及**权威代码路径表**（历史文档中的旧路径一律以该表为准）。
 
@@ -24,6 +24,7 @@ user-invocable: true
 | MoE 卸载 | "MoE", "n-cpu-moe", "专家卸载", "A3B", "A4B", "专家上 CPU", "显存预算" |
 | prefill 提速 | "prefill", "prompt processing", "ubatch", "batch-size", "首字延迟", "长 prompt 慢" |
 | 显存优化 | "16GB显存", "显存溢出", "OOM", "KV Cache量化" |
+| 并发 / 多路服务 | "并发", "n_parallel", "-np", "同时多个请求", "kv-unified", "统一 KV 池", "slot", "HYPERVISOR_ERROR" → [`references/sessions/20261024-concurrency-np-kv-unified-report.md`](./references/sessions/20261024-concurrency-np-kv-unified-report.md) |
 | 参数/配置一致性 | "参数没生效", "启动器不一致", "override", "回归断言", "负向对照" |
 | 环境搭建 | "预编译包", "Blackwell", "sm_120", "首次部署" |
 | WSL2 连接 | "WSL2", "宿主机访问", "NAT" |

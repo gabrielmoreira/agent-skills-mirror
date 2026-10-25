@@ -63,8 +63,9 @@ says what it means: a 404 on a channel-message path
 ```text
  404 on .../channels/<p>/messages/<id>
    |
-   +-- method is PATCH and body contains "Cannot PATCH "
-   |     (Express unmatched-route page: the backend has no edit route)
+   +-- method is PATCH and the body is not JSON (the SDK's
+   |     `is_unmatched_route_404`: Express's unmatched-route page, or a
+   |     proxy's HTML 404; no handler answered, so no edit route)
    |       -> ChannelMessageRouteMissing { provider, message_id }
    |
    +-- otherwise (handler's JSON 404: the message is gone)

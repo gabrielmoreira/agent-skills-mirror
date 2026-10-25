@@ -1,6 +1,6 @@
 # Testing
 
-Test value follows the Tests rule in `AGENTS.md`: add a test only for a named, plausible defect nothing else already catches, written first when the test path is cheap. This reference owns test shape, owners and runners. `testing audit [scope]` runs the [suite audit](./testing-audit.md), which ranks remaining work and never authorizes writing tests.
+Test value follows the Tests rule in `AGENTS.md`: add a test only for a named, plausible defect nothing else already catches, written first when the test path is cheap. A test asserts what users observe, as pstack's `principle-test-behavior-not-implementation` says, so it fails when that behavior breaks and still passes after a refactor of the internals. This reference owns test shape, owners and runners. `testing audit [scope]` runs `test-audit`'s full mode, which judges existing tests, lists uncovered contracts and never writes a test.
 
 ## Test mechanics
 
@@ -20,9 +20,10 @@ Choose the smallest boundary that proves the behavior:
 
 Hard constraints:
 
-- Bun runs every lane, the `tooling/scripts/**/*.test.mjs` files that
-  `tooling/config/test-suites.mjs` lists included. Use the narrowest affected
-  runner during iteration; `pnpm test` is the fast aggregate, and `pnpm check`
+- Bun runs the root lane, and `node:test` runs the files that
+  `TEST_NODE_FILE_PATTERNS` in `tooling/config/test-suites.mjs` lists, such as
+  oxlint rule tests, whose `RuleTester` refuses Bun. Use the narrowest affected
+  runner during iteration; `bun run test` runs the whole root lane, and `pnpm check`
   is the full handoff/CI gate only when the change or claim requires it.
 - Keep the default iterative suite fast.
 - A unit regression may accompany a browser regression when they guard distinct
@@ -47,26 +48,16 @@ Hard constraints:
   do not anticipate later tests.
 - One logical assertion per test.
 - Failing at the base commit proves only that the behavior was missing. For a
-  guard or a new branch, revert that one condition with
-  `node .agents/pstack/mutate.mjs --dir <run directory> <spec>`. Its spec names
-  the candidate's `freeze.mjs` commit, and the mutation runs in a fresh export
-  of that commit under the run directory that the helper removes afterwards unless
-  the run is killed, never in this checkout. The helper links this checkout's root and package
-  `node_modules` into that export, so a test resolves this checkout's
-  installed packages, and a test that imports a workspace sibling runs this
-  checkout's copy of it. It copies no env file, and only one run at a time may
-  use a run directory. A test that needs `apps/www/.env.local`, or a Turbopack build
-  that refuses linked `node_modules`, reverts its condition in a
-  `tooling/scripts/proof-worktree.mjs` worktree instead, made with `--install`
-  for Turbopack. Name the assertion's
-  own message as the expected text and read the mutant's log, because the
-  helper only finds that text in the last 16 MB of the output. A premise probe counts only once it fails with the
+  guard or a new branch, revert that one condition in a
+  `tooling/scripts/proof-worktree.mjs` worktree, made with `--install` when the
+  test needs installed packages or env files, and confirm the test fails there
+  with the assertion's own message. A premise probe counts only once it fails with the
   mechanism it credits mutated out, because a base that already has the
   property cannot catch a probe that bypasses it.
 - A mutant judged through a build, a bundle or emitted declarations counts only
-  after the run shows its bytes reached that artifact. `pnpm test:types` reads
-  package source through the root `tsconfig.json` paths, so a type-test mutant
-  needs no rebuild. Rebuild the measured app before a browser or
+  after the run shows its bytes reached that artifact. Rebuild the owning
+  partition's declarations before a type test, because `typecheck:contracts`
+  reads declarations, not source. Rebuild the measured app before a browser or
   benchmark run. Mutate with an import the bundler keeps, because the bundler
   drops a bare side-effect import in a `sideEffects: false` package.
 - A lossy case asserts that the round trip equals the input apart from the
@@ -79,37 +70,46 @@ Hard constraints:
   another, add a differential case on an input the old version got right and
   the new one could get wrong. The old suite and a mutation of the new
   mechanism cannot see a guarantee that only the old mechanism gave.
+- A soundness change to a guard or a landing path, one that decides which
+  inputs are refused, moved or landed, also gets a differential oracle over
+  generated inputs. Run thousands of generated cases through the base and the
+  candidate, each loaded from its own tree as the command recipes' Source-first
+  package checks say. Classify every difference, such as a regression, a
+  miss, a flip or a newly landing case, against the semantic oracle that the
+  [regression oracles](./regression-oracles.md) name for generated cases. In
+  the list landing run it found 205 shape regressions that the hand-written
+  cases had missed.
 - A regression for Node-native module loading, such as a CommonJS dependency imported by name from an ESM entrypoint, loads the built entrypoint through `node`, because `process.execPath` under Bun launches Bun and hides the failure.
 ## Plate foundation Rules
 
-- Bun globals come from `tooling/config/global.d.ts`. Do not import `describe`, `it`, `expect`, `mock`, `spyOn`, or other globals from `bun:test`.
-- Use `*.spec.ts[x]` for the fast lane and `*.slow.ts[x]` for the slow lane.
-- Keep helpers package-local first. Reuse `packages/test-utils` (`@platejs/test-utils`)
-  for shared editor contracts; never import a helper from another spec file.
+- Package Bun tests take their globals from the types their package config loads, `tooling/config/global.d.ts` or `bun-types/test-globals`. Do not import `describe`, `it`, `expect`, `mock`, `spyOn`, or other globals from `bun:test` there. `apps/www`'s configs type the globals as Jest's, and loading `global.d.ts` there breaks other www specs, so a www test imports `mock`, `spyOn` and the `expect` of a Bun-only matcher such as `toStartWith` from `bun:test`.
+- Name a Bun test `*.spec.ts[x]`. Every test runs in the lane that owns its path and keeps the 5,000 ms CI deadline, so a slow case gets cheaper instead of moving to another lane.
+- Keep helpers package-local first. Reuse `packages/test` (`@platejs/test`) for
+  shared editor/browser contracts; never import a helper from another spec file.
 - No spec should import another spec.
 - A plugin behavior family keeps one colocated `<FooPlugin>.<family>.spec.tsx`; merged helpers merge their specs into it, and no spec mirrors one public method, deleted helper or old filename.
 - Tests declare no local fixture-shape alias or cast to hide weak hyperscript typing; the test-utils owner type is repaired and exported instead.
 - Test setup is not extracted into constants, helpers or factories to work around weak inference; the source typing is fixed so inline construction infers.
-- A spec that spies on a global, a prototype or a shared module export restores it in the same file (`mock.restore()` in `afterEach`, or the spy's `mockRestore()`); a spec that passes alone and fails in the full suite points at leaked spy or module-mock state before product code. A `mock.module` replacement of a `platejs` or `@platejs/*` module spreads the real module into the mock, so the spec keeps linking when the code under test imports a new export. A Bun process keeps every module mock until it exits, and a later mock of a module cannot add exports. So `pnpm test` and `pnpm test:slow` run each file that calls `mock.module` in its own process. A raw `bun test <directory>` runs those files in one process, so a lane-wide claim uses one of those scripts.
+- A spec that spies on a global, a prototype or a shared module export restores it in the same file (`mock.restore()` in `afterEach`, or the spy's `mockRestore()`); a spec that passes alone and fails in the full suite points at leaked spy or module-mock state before product code. A `mock.module` replacement of a `platejs` or `@platejs/*` module spreads the real module into the mock, which `plate/mock-spreads-module` enforces, so the spec keeps linking when the code under test imports a new export. A Bun process keeps every module mock until it exits, and a later mock of a module cannot add exports. So `pnpm test`, the `test:partition:*` scripts and the `test` scripts of `platejs`, `plitejs` and `@platejs/test` run each file that calls `mock.module` in its own process, and the shared preload `tooling/config/bunTestSetup.ts` fails a run whose later mock adds an export that the module's exports in that process lack. A raw `bun test <directory>`, or a package `test` script given paths, runs those files in one process, so a lane-wide claim uses one of those scripts without paths, such as `pnpm --filter platejs test:partition:excalidraw`.
 - Put compile-only type contracts in `type-tests/`, not mixed into runtime specs.
 - Titles should describe behavior semantically, not echo raw option names.
-- Prefer explicit assertions over snapshots by default.
 - Delete obsolete placeholders and commented-out dead tests. Preserve explicit
   capability skips and their missing prerequisites; never turn an unavailable
   browser/device case into a passing no-op or erase its coverage gap.
 - No app-registry imports in package tests.
 - Do not add package `devDependencies` just to support cross-package or app-shaped test setups. If a test needs other package kits, app aliases, or multi-package wiring, move it to `apps/www/src/__tests__/package-integration`.
-- When test additions change the suite’s measured cost or an audit targets it, inspect outliers with `bun run test:profile`. `bun run test:slowest` hard-budgets the complete fast loop and genuinely blocking individual cases. It never fails a file merely because one coherent owner contains many cheap tests.
+- When test additions change the suite’s measured cost or an audit targets it, inspect outliers with `bun run test:profile`. `bun run test:slowest` times the root `pnpm test` suite, which leaves out the platejs and plitejs package partitions. It hard-budgets that suite's total time and each blocking individual case. `--partition <package>:<partition>`, such as `plitejs:authored`, times one package partition through its own runner instead and budgets only its cases; it takes no Bun arguments. It never fails a file merely because one coherent owner contains many cheap tests.
 - Treat the local warning zone as real debt before CI proves you wrong, but optimize the slow behavior rather than splitting files to game aggregate file time.
-- For borderline individual cases, run `pnpm test:slowest -- --top 25 --rerun-each 3` and move only repeatably blocking behavior into the matching `*.slow.ts[x]` family.
+- For borderline individual cases, run `pnpm test:slowest -- --top 25 --rerun-each 3`, or run `pnpm test:slowest -- --partition <package>:<partition> --top 25` three times for a package case, and make each repeatably blocking case cheaper, such as with fewer random runs or a smaller document.
+- When a random test runs fewer cases, set each coverage floor it asserts, such as a minimum count of compared steps, from a logged sweep of seeds. The floor sits above what the pinned examples reach alone and below the lowest count the sweep reaches, and a mutant that idles the random runs fails it.
 - Treat known third-party resource logs and serializer fallback warnings as test noise. Suppress them narrowly in the shared Bun setup at `tooling/config/bunTestSetup.ts`, not by changing runtime code or sprinkling per-spec console mocks.
 - A spec that deliberately hits a Plate warning path captures that warning in its own editor harness, for example a no-op `logger.warn` on `DebugPlugin`; it never mutes the runtime warning globally or leaves it in broad runs.
 
 ## Owner Selection
 
-- Use `createEditor` from `@platejs/slate` for raw substrate query, transform,
+- Use `createEditor` from `plitejs` for raw substrate query, transform,
   interface, and history contracts.
-- Use `createSlateEditor` from `platejs` for non-React Plate plugin or editor wiring:
+- Use `createEditor` from `platejs` for non-React Plate plugin or editor wiring:
   - plugin option stores
   - selector extension
   - pure plugin API composition
@@ -117,9 +117,9 @@ Hard constraints:
   - parser and deserializer contracts
   - HTML `insertData`
   - DnD-style contracts
-- Use `createPlateEditor` from `platejs/react` only when the contract is genuinely Plate React-specific.
+- Use `createEditor` from `platejs/react` only when the contract is genuinely Plate-specific.
 - Use rendered React tests only when the contract is genuinely React-specific: hooks, providers, stores, DOM behavior, or rerender semantics.
-- Remaining `createPlateEditor` usage is a reviewed allowlist, not a future cleanup queue.
+- Remaining Plate React `createEditor` usage is a reviewed allowlist, not a future cleanup queue.
 
 ## Fake Runtime Contracts
 
@@ -144,8 +144,10 @@ For an escaped defect, identify what the test could miss before adding cases:
 wrong input path, missing consumer/plugin mode, unobserved follow-up state, or
 an assertion that can pass on invalid output. Extend the existing helper when
 that omission recurs. Prove a changed assertion rejects the known bad result
-and accepts the valid one, on the bytes the runner executes: rebuild a package
-the runner resolves from `dist` after each source swap. Before a new or changed oracle's positive suite runs, list
+and accepts the valid one, on the bytes the runner executes: raw
+`playwright test` runs the built `@platejs/test`, so drive the red run through
+`pnpm --filter plite test:plite-browser:project <project> <files>` or rebuild
+that package after each source swap. Before a new or changed oracle's positive suite runs, list
 each way a wrong result can look right, such as a throw after the logged step,
 a canceled insert or a selection-only commit, and add one rejecting case for
 each. A fake runtime cannot certify native browser behavior.
@@ -190,34 +192,35 @@ imports both sides.
 - Use plain object fixtures for option, state, and pure helper tests.
 - Use a real editor object only when editor-root semantics matter. `NodeApi` and `ElementApi` do not treat plain `{ children: [...] }` objects the same way as real editors.
 - Keep inputs and outputs small.
-- An empty text renders a `data-slate-zero-width` placeholder and no `data-slate-string` node, so a test that edits empty-text DOM mutates the `[data-slate-node="text"]` host.
-- Consolidating verification helpers preserves each caller's failure policy: strict runtime error capture stays explicit instead of moving to copied listeners or a narrower filter.
+- An empty text renders a `data-editor-zero-width` placeholder and no `data-editor-string` node, so a test that edits empty-text DOM mutates the `[data-editor-node="text"]` host.
+- The shared browser runtime error recorder `recordBrowserRuntimeErrors` uses `{ strict: true }` wherever every runtime error must fail, and it keeps listener cleanup and reset. Consolidating verification helpers preserves each caller's failure policy: strict error capture stays explicit on the existing recorder instead of copied listeners or a narrower filter.
 - Use `it.each` for small behavior matrices.
 - In this Bun + Testing Library setup, prefer render-returned queries over `screen`.
 - Focus and blur inside one `act` leave the editor's focus state stale; run them in separate `act` calls.
 - Inside `act`, MutationObserver records reach the callback in a microtask, so `takeRecords()` after `await act` comes back empty. Collect records in the callback.
-- Snapshots are allowed only when serialized text, AST, or similar output is the contract and inline assertions would be worse.
 - Whitespace-sensitive serializer outputs should prefer direct `toBe(...)` string assertions.
 - Avoid `toHaveStyle` here. Use direct style-property assertions instead.
-- After broad title renames on snapshot-backed suites, delete and regenerate the snapshot file. `bun test -u` updates and adds keys, but does not reliably prune dead ones.
+- The Tests rule bans snapshots in new tests. In an existing snapshot-backed suite, delete and regenerate the snapshot file after broad title renames. `bun test -u` updates and adds keys, but does not reliably prune dead ones.
 
 ## Package-specific contracts
 
 Read [package recipes](./test-packages.md) only for the affected
-autoformat, markdown/AI, Plate, selection, DOCX or Slate boundary. They retain
+autoformat, markdown/AI, Plate, selection, DOCX or Plite boundary. They retain
 reviewed React/fixture exceptions and upstream behavior guidance.
 
 ## Select the runner
 
 Use the smallest boundary and exact owning script. Bun globals and adjacent
-specs serve the fast `*.spec.ts[x]` lane (`pnpm test`); unavoidable measured
-slow cases use `*.slow.ts[x]` (`pnpm test:slow`). Focused runs use actual
-repo-relative `./` paths or the package’s runner. `pnpm test:all` runs
-both test lanes, and `pnpm check` is the full CI gate when the
-claim needs it. Never infer coverage from
+specs serve the `*.spec.ts[x]` lane (`pnpm test`), and the `platejs` and
+`plitejs` specs run in their package partitions. Focused runs use actual
+repo-relative `./` paths or the package’s runner. `pnpm check test` runs the
+root lane as a gate step, and `pnpm check` is the full CI gate when the claim
+needs it. Never infer coverage from
 an aggregate command without checking its discovered files.
 
-For coverage or cleanup waves, the full [suite audit](./testing-audit.md)
-owns scoring, phases, `lcov`, timing checks and stopping. Ordinary test repair
-does not start that program. Keep negative type proofs and explicit capability
+For coverage or cleanup waves, `test-audit`'s full mode owns the inventory,
+scoring and stopping. It reads coverage from
+`bun test --coverage --coverage-reporter=lcov --coverage-dir=<run directory>/coverage`
+and timing from `pnpm test:profile` and `pnpm test:slowest`.
+Ordinary test repair does not start that program. Keep negative type proofs and explicit capability
 skips with their missing prerequisites visible.

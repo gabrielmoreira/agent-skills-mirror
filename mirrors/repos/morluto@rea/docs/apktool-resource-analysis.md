@@ -93,6 +93,10 @@ still suppresses all string projection, including in this mode.
   `target.bytes` bind the observation to the exact APK that was decoded.
   The Evidence subject carries the same snapshot digest and caller-selected
   path, including when the original file changes during decoding.
+  A change during snapshot acquisition reports retryable `artifact_changed`;
+  wait for a stable input before retrying. Host read permission failures report
+  `access_denied`, while a missing or non-regular selected path reports
+  `invalid_request` with the rejected `path` field.
 - **Metadata comes from apktool.yml as apktool printed it.** Version codes
   keep their own spelling (`'7'` versus `7`); `package_name` is read from
   the decoded manifest, not inferred.

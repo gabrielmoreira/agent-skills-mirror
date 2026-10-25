@@ -16,7 +16,7 @@ Completion threshold:
 
 - Every applicable Feature Manifest row is complete with evidence.
 - Every excluded row has an explicit N/A reason.
-- Selected packs, the feature checker and `plan-open` are closed.
+- Selected packs and the feature checker are closed, and no plan box is pending.
 
 Constraints:
 
@@ -42,10 +42,10 @@ Package boundary contract:
 | Contract | Decision | Evidence |
 | --- | --- | --- |
 | shared Plate host | pending or N/A with reason | pending or N/A with reason |
-| Slate ownership | pending or N/A with reason | pending or N/A with reason |
+| Plite ownership | pending or N/A with reason | pending or N/A with reason |
 | external dependency ownership | pending or N/A with reason | pending or N/A with reason |
 | entrypoint runtime | pending or N/A with reason | pending or N/A with reason |
-| Lint coverage | pending or N/A with reason | pending or N/A with reason |
+| Oxlint coverage | pending or N/A with reason | pending or N/A with reason |
 
 Start Gates:
 | Gate | Applies | Evidence |
@@ -65,8 +65,8 @@ Work Checklist:
 - [ ] Resolve Scale proof before source writes. A yes row links a passing
       executable current-owner versus target receipt; a complexity table,
       review score, or future benchmark plan does not satisfy it.
-- [ ] Resolve the package host, Slate ownership, external dependency ownership,
-      entrypoint runtime, and Lint coverage rows for every applicable
+- [ ] Resolve the package host, Plite ownership, external dependency ownership,
+      entrypoint runtime, and Oxlint coverage rows for every applicable
       package change.
 - [ ] Implement and prove package semantics.
 - [ ] Add only applicable package React adapters.
@@ -81,7 +81,7 @@ Completion Gates:
 | Manifest coverage | yes | Run `node tooling/scripts/check-plate-feature.mjs {{PLAN_PATH}}` | pending |
 | Selected pack closure | yes | Close every selected pack | pending |
 | Package proof | pending | Run owner-selected package proof | pending |
-| Package boundary proof | pending | Run `pnpm test:manifests` and scoped lint, or record N/A | pending |
+| Package boundary proof | pending | Run `pnpm test:manifests`, scoped lint, and the affected Oxlint override audit, or record N/A | pending |
 | Scale proof | pending | For a yes row, close `performance-observability` with the pre-acceptance receipt and exact final production-path cohort/budget rerun plus correctness guard; otherwise source-backed N/A | pending |
 | Registry/browser proof | pending | Verify runnable copied UI or record N/A | pending |
 | Docs/release proof | pending | Verify docs and release classification | pending |

@@ -61,7 +61,7 @@ It needs glibc 2.28 or newer and an NVIDIA driver providing `libcuda.so.1`. Keep
 See the [CUDA runbook](RUNBOOK.md#linux-and-cuda) for runtime libraries and supported GPUs.
 
 ```sh
-V=1.1.3
+V=1.1.4
 case "$(uname -m)" in
   aarch64|arm64) PLATFORM=linux-aarch64 ;;
   x86_64) PLATFORM=linux-x86_64 ;;
@@ -168,8 +168,8 @@ Conversions are explicitly marked: their upstream weights need the linked conver
 | Qwen3.8 Flash Next, MLX 6-bit | `tensorfold pull TensorFold/Qwen3.8-Flash-Next-MLX-6bit-MTP` | One M5 Ultra checked; RAM minimum not published. | [Metal](docs/recipes/qwen3.8-flash-next.md), [runbook](RUNBOOK.md#flash-next-and-paired-metal-serving). |
 | Qwen3.8 Flash Next, MLX 4-bit | `tensorfold pull TensorFold/Qwen3.8-Flash-Next-MLX-4bit-MTP` | One GB10; 73.3 GiB uploaded, plus mapped tables and caches. Metal has a native 4-bit path too (M3 Ultra checked). | [Native CUDA](docs/recipes/flash-next-cuda.md). NVFP4/two-local-rank and vision paths are experimental. Metal's shared-session limits are in [known issues](docs/known-issues.md#models). |
 | GLM-5.3-Flash, MLX 4-bit | `tensorfold pull TensorFold/GLM-5.3-Flash-MLX-4bit-MTP` | Two M5 Ultras; single-Mac native serving is not qualified. | [Paired Metal runbook](RUNBOOK.md#flash-next-and-paired-metal-serving). Do not use the Python recipe's single-Mac command. |
-| GLM-5.3-Flash, EXL3/TR3 | `tensorfold pull Mia-AiLab/GLM-5.3-Flash-EXL3-TR3-4bpw` | Two CUDA ranks; the release checks the two-GB10 setup. | [Release scope](CHANGELOG.md#110), [checkpoint](docs/recipes/glm-5.3-flash.md#exl3). Experimental checkpoint; use native rank options, not the Python installation. |
-| GLM-5.3-Flash, NVFP4 | Not documented yet. | Two GB10s at TP=2: @Bizuayeu loaded the whole checkpoint on 1.1.0 in 302.1 s and served it. | [Contributed run](https://github.com/ashhart/TensorFold/issues/1040): one token hash per prompt across three runs and a passphrase found in 199,307 tokens; scored prompts and more than two ranks were not covered. |
+| GLM-5.3-Flash, EXL3/TR3 | `tensorfold pull Mia-AiLab/GLM-5.3-Flash-EXL3-TR3-4bpw` | Two CUDA ranks; the release checks the two-GB10 setup. | [Release scope](CHANGELOG.md#110), [checkpoint](docs/recipes/glm-5.3-flash.md#exl3). Experimental checkpoint; use [native rank options](docs/recipes/glm-5.3-flash-cuda.md#run), not the Python installation. |
+| GLM-5.3-Flash, NVFP4 | `tensorfold pull nvidia/GLM-5.3-Flash-NVFP4@423acf37583782c51c142d145aef733d72943d93` | Two GB10s at TP=2: @Bizuayeu loaded the whole checkpoint on 1.1.0 in 302.1 s and served it. | [Native CUDA](docs/recipes/glm-5.3-flash-cuda.md); [contributed run](https://github.com/ashhart/TensorFold/issues/1040): one token hash per prompt across three runs and a passphrase found in 199,307 tokens; scored prompts and more than two ranks were not covered. |
 | GLM-5.3, EXLR8 `home` | `tensorfold pull kindlingai/glm-5.3-exlr8-k2-k3-k4@f459f5d0272a529403dd9b3fd32f771f4250a0d4 --exlr8 home --node 0/2 --dir ~/models/glm-5.3-exlr8-home` | Two M5 Ultra Macs, 256 GB each; about 160 GB resident per Mac at 8k context / four streams. | [Two-Mac recipe](docs/glm-5.3-exlr8.md). Use `--node 1/2` on the other Mac; Thunderbolt 5 and MCDMA required. No CUDA backend. |
 | LFM2.5-24B-A2B, MLX 4 / 6 / 8-bit | `tensorfold pull LiquidAI/LFM2.5-24B-A2B-MLX-4bit@667408d494bde191c2cb9dd4f4549827816b9275`<br>`tensorfold pull LiquidAI/LFM2.5-24B-A2B-MLX-6bit@1deec53eb49571e21cdcbf82fd5839248f07ed88`<br>`tensorfold pull LiquidAI/LFM2.5-24B-A2B-MLX-8bit@67ab417dd02d0c9545802a726df668620eae049d` | One Mac; M4 Pro checked. | [Native operator recipe](docs/recipes/README.md), [release history](CHANGELOG.md). No separate native model recipe yet. |
 | Qwen3.6-35B-A3B, MLX with MTP | `tensorfold pull TensorFold/Qwen3.6-35B-A3B-MLX-4bit-MTP@81169a9bc511a27c1b4eedb77a2cd98ced431847` | One GB10; 20.9 GB checkpoint. | [Qwen3.6](docs/recipes/qwen3.6-moe.md). Native CUDA; the recipe's Metal path belongs to Python. |
@@ -186,7 +186,8 @@ The native release does not qualify GLM-5.3 on one machine. GLM-5.3 EXLR8 `home`
 [its recipe](docs/glm-5.3-exlr8.md) gives both pull and serve commands. GLM-5.3-Flash is a different model:
 its native Metal setup needs two M5 Ultras, and its native CUDA setup uses two ranks. The single-256-GB-Mac
 GLM-5.3-Flash command in the older recipe is for Python 0.6.6, not this release.
-For the NVFP4 two-GB10 path, see what [the contributed run](https://github.com/ashhart/TensorFold/issues/1040) covered.
+For the NVFP4 path, see [GLM-5.3-Flash on CUDA](docs/recipes/glm-5.3-flash-cuda.md) and what
+[the contributed run](https://github.com/ashhart/TensorFold/issues/1040) on two GB10s covered.
 
 DeepSeek checkpoints are **not served yet** by any release binary: whole-model gate [#827](https://github.com/ashhart/TensorFold/pull/827) is still open.
 MiMo's native backend is not in a release yet. Bonsai's ternary pack and Gemma 4 26B-A4B remain Python-only;
@@ -286,6 +287,20 @@ The binary's `capabilities --json` response lists its supported flags and platfo
 | `--drafter-bits 0\|4` | Drafter weight precision where the model offers a choice: 4 bits (the default), or 0 to keep bf16. Qwen3.8-27B on CUDA takes 4 only. |
 | `--record DIR` | Write each stream's committed tokens, positions and tapped rows under DIR, for drafter training. CUDA Nemotron only; a single stream runs through the lane rounds, and recording stops below 25 GiB free disk. |
 | `--keep-warm SECONDS` | Keep the Metal GPU active while idle for this long after a request, default 900; zero disables it. |
+| `--silence-floor-dbfs DBFS` | Drama speech only: explicit frame-power floor for the silence guard, with no default floor. Calibrate below quiet intended speech using public or built-in speech. |
+| `--silence-seconds SECONDS` | Drama speech only: stop after this continuous duration below the explicit floor, retaining audio and reporting `silence`. Unset by default: off; calibrate above intentional pauses. |
+| `--silence-onset-s SECONDS` | Drama speech only: with the silence guard on, stop once this many seconds run below its floor while the synthesis has voiced less than `--silence-onset-voiced-s`, retaining audio and reporting `silence`. Off unless given; must be below `--silence-seconds`. |
+| `--silence-onset-voiced-s SECONDS` | Drama speech only: the voiced seconds below which `--silence-onset-s` applies; required with it, with no default. Calibrate on public or built-in speech. |
+| `--silence-mid-s SECONDS` | Drama speech only: with the silence guard on, finish as `silence` when end of speech falls in a run this long below the floor, after the explicit voiced minimum. Whole replies carry the decimal `X-Silence-Mid-Trips` count, including zero. Must be below `--silence-seconds` and paired with `--silence-mid-min-voiced-s`. Unset by default: off. |
+| `--silence-mid-min-voiced-s SECONDS` | Required with `--silence-mid-s`: positive finite cumulative voiced duration before the mid rule applies, including equality. No default; calibrate with the other silence thresholds. |
+| `--silence-redraws N` | Drama speech only: draw a whole reply the silence guard ended again, up to N times, as seed salt + k; N of 1 or more needs the guard. Unset by default: off, as is 0; streams are never redrawn. See [speech redraws](docs/speech-redraws.md). |
+| `--silence-redraw-budget-s SECONDS` | Start a redraw only while elapsed time plus the last take's duration fits; a request's `X-Deadline-S` can lower it. No default budget. |
+| `--silence-redraw-controls LIST` | Redraws speak the input filtered to the listed controls, as `--allowed-controls` filters; an empty list removes every control. |
+| `--short-reply-ratio R` | Also redraw a whole reply that finished `stop` with less audio than R (above 0, below 1) of its text's expected length; needs `--silence-redraws` and `--short-reply-chars-per-s`. No default. |
+| `--short-reply-chars-per-s CPS` | Input characters per second of audio in complete replies of the served voice, setting the expected length; needs `--short-reply-ratio`. No default; calibrate on your own voice. |
+| `--register-redraw-st ST` | Drama speech only: draw a whole reply once more when a phrase after the first opens ST semitones above the other phrases' median opening; needs the two flags below. Unset by default: off, with no default for any of the three. See [speech redraws](docs/speech-redraws.md#register). |
+| `--register-redraw-high PERCENT` | The share of that phrase's voiced frames that must lie above `--register-high-hz`. |
+| `--register-high-hz HZ` | The pitch line, 75 to 600 Hz, that marks a high register; calibrate it on your own voice. |
 | `--parallel N\|auto` | Cap active requests at N and queue the rest. Default `auto` asks for up to 8 as memory and the engine allow; an explicit count that cannot fit is refused. Read the accepted count at startup. |
 | `--prompt-cache-gib GIB` | Retained-prefix budget, 16 GiB by default or less where memory is short; 0 disables it. |
 | `--prompt-cache-over-cap` | Permit an explicit prefix budget past what 70% of RAM leaves once the server loads. |

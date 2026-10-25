@@ -175,6 +175,17 @@ writing. Managed policy can constrain client settings. Consult the
 for the installed client's supported settings. This is an optional recovery
 choice, not a prerequisite for every REA task.
 
+## Repair an editable REA limit
+
+If `details.limit` names an editable setting and its bounds, call
+`update_analysis_settings` directly with a `changes` entry containing `setting`,
+`action: "set"` and `value`. `inspect_analysis_settings` is optional when those
+facts are already present. Retry the same input after work and cleanup settle.
+Runtime defaults affect new work only; explicit per-call arguments take
+precedence and must be corrected directly when selected. Reset restores launch
+values. Updates survive target close/open but disappear on REA restart. They do
+not edit host deadlines, response buffers, registrations or fixed limits.
+
 ## Continue through an installed CLI
 
 Check the command environment only if the launcher fails:

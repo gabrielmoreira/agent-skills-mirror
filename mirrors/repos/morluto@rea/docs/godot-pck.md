@@ -7,6 +7,9 @@ releases have not been verified. Format 1 is unsupported.
 
 Inspection retains the original header and directory facts, including engine
 version, flags, declared file count, source paths, offsets and declared MD5.
+For a member declared as `res://scenes/main.gd`, the occurrence's
+`source_path` retains that exact declaration while `logical_path` is
+`scenes/main.gd`, the relative path used for lookup and extraction.
 Observed plaintext bytes receive content-addressed SHA-256 identities. MD5 is a
 container integrity claim, separate from the observed SHA-256. A mismatch fails
 by default; `--integrity-policy record-and-continue` retains the observed bytes

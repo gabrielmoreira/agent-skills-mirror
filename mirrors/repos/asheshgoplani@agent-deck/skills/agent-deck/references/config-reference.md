@@ -44,6 +44,7 @@ All options for `$XDG_CONFIG_HOME/agent-deck/config.toml` (default `~/.config/ag
 - [[core] Section](#core-section)
 - [[macapp] Section](#macapp-section)
 - [[browser] Section](#browser-section)
+- [[ask] Section](#ask-section)
 - [[tmux] Section](#tmux-section)
 - [Skills Registry (Outside config.toml)](#skills-registry-outside-configtoml)
 - [[mcp_pool] Section](#mcp_pool-section)
@@ -124,6 +125,7 @@ Claude Code integration settings.
 ```toml
 [claude]
 config_dir = "~/.claude"           # Path to Claude config directory
+default_account = "work"           # Account slot new sessions start on ("" = inherit)
 dangerous_mode = true              # Enable --dangerously-skip-permissions
 auto_mode = false                  # Enable --permission-mode auto (classifier-based)
 allow_dangerous_mode = false       # Enable --allow-dangerously-skip-permissions
@@ -142,6 +144,7 @@ prompt_suggestions = "on"          # Optional override of [launch].prompt_sugges
 |-----|------|---------|-------------|
 | `config_dir` | string | `~/.claude` | Claude config directory. Override with `CLAUDE_CONFIG_DIR` env. |
 | `profiles.<name>.claude.config_dir` | string | none | Profile-specific Claude config directory. Takes precedence over `[claude].config_dir` when that profile is active. |
+| `default_account` | string | `""` | Named account slot (a `[profiles.<name>.claude]` block with a `config_dir`) that new Claude sessions start on when none is picked. The New Session dialog preselects it (its pill reads `<slot> (default)`; `←`/`→` still reaches `inherit` and every slot, and a one-off pick is not remembered), and `add` / `launch` without `--account` or `AGENTDECK_ACCOUNT` use it. It is applied at creation only: the slot is stored on the session, so changing the default never moves an existing session (use `session switch-account` for that). A group or parent conductor with its own `config_dir` keeps the session on `inherit`; a slot no longer configured falls back to `inherit` (logged as `default_account_not_configured`). This machine's default never travels to a remote target or `add --ssh` session; a remote server that has its own `default_account` applies that one when no slot is picked. In the CLI an ambient `CLAUDE_CONFIG_DIR` also wins, so a session that agent-deck started on an account (it exports that account's dir) creates children on the same account. In the dialog, moving the Parent row onto or off a conductor with its own `config_dir` re-applies the rule until you touch the Account row. Quick create (recent sessions, zoxide) stays on `inherit`. Empty keeps the conductor/group/env chain. Settable from Settings (`S`, Claude → Default account) or `agent-deck config set claude.default_account <slot>`. |
 | `dangerous_mode` | bool | `false` | Adds `--dangerously-skip-permissions`. Forces bypass on. Takes precedence over `auto_mode` and `allow_dangerous_mode`. |
 | `auto_mode` | bool | `false` | Adds `--permission-mode auto`. A classifier model auto-approves safe operations while blocking risky ones. Ignored when `dangerous_mode` is true. |
 | `allow_dangerous_mode` | bool | `false` | Adds `--allow-dangerously-skip-permissions`. Unlocks bypass as an option without activating it. Ignored when `dangerous_mode` or `auto_mode` is true. |
@@ -722,7 +725,11 @@ How each harness receives the block (`documentation/HARNESS_IDENTITY.md` has the
 | `codex` | `-c developer_instructions="..."` (block inlined as a TOML basic string) | appends to the developer message; a configured `developer_instructions` in that `CODEX_HOME/config.toml` is merged in first; the built-in instructions are never replaced; custom codex commands get the env var only |
 | `pi` | `--append-system-prompt <file>` | also on `session fork` |
 | `gemini` | `--include-directories <dir>` (dir holds `GEMINI.md`) | only when gemini's folder trust is off or a `TRUST_FOLDER` rule in `~/.gemini/trustedFolders.json` covers `<data-dir>/agent-deck/runtime/identity`; otherwise the flag is withheld (the trust dialog would swallow `launch -m`), the pane prints the rule to add, and only the env var is set |
-| anything else (`--cmd`, opencode, cursor, ...) | `AGENTDECK_IDENTITY_FILE` env var only | the file is still written and current |
+| `opencode` | `OPENCODE_CONFIG_CONTENT={"instructions":["<file>"]}` | merged with your opencode config; skipped (env var only) when you already export `OPENCODE_CONFIG_CONTENT` |
+| `copilot` | `COPILOT_CUSTOM_INSTRUCTIONS_DIRS` += `<session dir>/copilot` (holds `AGENTS.md`) | appended to your value |
+| anything else (`--cmd`, cursor, crush, hermes, ...) | `AGENTDECK_IDENTITY_FILE` env var only | the file is still written and current; these tools' only knobs would replace your config |
+
+SSH and Docker-sandboxed sessions get the block too: claude/pi/omp as inline `--append-system-prompt` text, codex as the same inline override (over SSH without merging the remote's own `developer_instructions`), and the file is written where the harness runs (`$XDG_RUNTIME_DIR/agent-deck/identity/<id>/identity.md`, else `~/.local/share/agent-deck/identity/<id>/identity.md`) with `AGENTDECK_IDENTITY_FILE` pointing at it; gemini stays env-only there. The SSH payload runs under `bash -c` on the remote (fish/csh login shells work; bash is required, so an sh-only remote such as Alpine/busybox is a known limit), and the identity payload is capped at 8 KB (codex drops its override first, then the block is skipped for that spawn).
 
 SSH (`--ssh`) and Docker-sandboxed sessions are skipped: the file lives on the controller host.
 
@@ -844,6 +851,39 @@ The session must stay like that for 5 minutes. An opted-in conductor must stay l
 - Every attempt writes one JSON line to `<data dir>/logs/idle-build-refresh.log`.
 - The pass stays off under `go test`, when `CI` is truthy, when `AGENTDECK_SKIP_UPDATE_CHECK` is set, or when any `AGENTDECK_TEST_*` marker is present, like the other automatic update paths.
 
+### Wait timer (`wait_timeout`)
+
+A Claude session that has waited on you longer than its wait timeout takes the recommended option of the question on screen. Off by default.
+
+```toml
+[sessions]
+wait_timeout = "5m"   # Go duration, at least 1m; empty, "0" or "off" = off (default)
+```
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| `wait_timeout` | duration string | off | Default for every session without its own value. Per session: `agent-deck session set <id> wait-timeout 5m` (`off` disables it for that session, `""` falls back to this key), or the "Wait timer" row of Edit Session (`Shift+P`). An invalid or sub-minute value here counts as off. |
+
+**What it answers.** Only a numbered Claude question picker (`AskUserQuestion`) that:
+- passes the same guard as the hands-free account-switch settle first (`ClassifySettlePane`): a tool permission or approval prompt, folder trust, the bypass-permissions warning, a login screen or any first-start screen is never answered
+- is the only menu and the last thing on screen, single-select, one question (not a multi-question form)
+- has exactly one option ending in `(Recommended)`, and the cursor is already on it
+- does not mention permissions, trust, credentials (password, token, API key, login) or a destructive or outward action (delete, remove, force, reset, push, deploy, publish, release, merge, commit, install, kill, truncate, migrate, prod/production, revert, rollback, send, email, upload, shutdown, disable, revoke, rotate, chmod, terminate, format, purge, payment) anywhere in the question or options
+
+Anything else is left alone: nothing is sent.
+
+**When.** The session must be in the waiting status, with no terminal client attached (an attached client means a person is at the prompt; agent-deck's own control-mode clients do not count), checked again right before the key, showing the same prompt (question, options and cursor) for the whole timeout. The session leaving waiting, the prompt changing (you answered it, a new question, the cursor moved) or a client attaching resets the timer. At the timeout the pane is read again, and only when it still shows the same prompt with the dialog owning the keyboard does agent-deck send one `Enter`; it never sends arrows, and never a bare `Enter` to a composer. Each prompt is answered at most once.
+
+**Not timed.** A question you already looked at: once you open or acknowledge the session, its status is idle rather than waiting, so that question is never answered for you. A question with a background task or workflow progress line below it (the picker is then not the last thing on screen). Both fail safe: nothing is sent.
+
+**Mind auto modes.** The answer goes to the model, not to a permission prompt; in a session started with skip-permissions or an auto permission mode, the model can then act on it without asking. The deny list above keeps destructive and outward-facing questions out, but turn the timer on only for sessions whose questions you would let go to the recommended option anyway.
+
+The key is `[sessions] wait_timeout` (the existing `[sessions]` section, next to `auto_refresh_idle_builds`); a `[session]` table is not read.
+
+**Where it runs.** In the TUI's status sweep, only in the primary TUI (one process per host answers, so a prompt never gets two keys); a headless `web --no-tui` does not run it, so close-the-laptop setups need a TUI open.
+
+**Log.** Every choice writes one line to `<data dir>/logs/session-lifecycle.jsonl` with action `wait-timeout-default-chosen` and a reason such as `kind=recommended-option option="1. SQLite (Recommended)" question="Which storage backend?" waited=5m2s timeout=5m0s`, and a `wait_timer_chose_default` record (instance id, title, prompt kind, question, option, waited, timeout) to the debug log.
+
 ## [interval_hooks.*] Section
 
 Run shell commands on a wall-clock interval while the TUI is running,
@@ -923,7 +963,7 @@ embedded_terminal = true                      # Opt in to the persistent sidebar
 sidebar_density = "compact"                   # Embedded sidebar lines per session: "full", "compact", "minimal", "auto"
 hidden_tools = ["gemini", "opencode", "pi"]   # Denylist: hide these from the picker
 show_only_installed_tools = true              # Also hide tools not found on PATH
-new_session_enter_advances = false            # Opt OUT: restore Enter-submits behavior
+new_session_enter_advances = true             # Opt IN: Enter walks the new-session form; Create button or Ctrl+S creates
 attach_on_create = true                       # Opt IN: instantly attach to a newly created session
 active_includes_idle = true                   # Opt IN: active-on-top view keeps idle sessions with a live pane on top
 ```
@@ -935,7 +975,7 @@ active_includes_idle = true                   # Opt IN: active-on-top view keeps
 | `sidebar_density` | string | `"compact"` | Lines each session occupies in the embedded-layout sidebar: `"compact"` (identity line plus one metadata line), `"full"` (two metadata lines), `"minimal"` (one line, with the tool marker inline), or `"auto"` (the widest of the three that still fits every visible session on screen, recomputed as groups open and close). Ignored by the classic layout. Also selectable in TUI Settings under **INTERFACE**. |
 | `hidden_tools` | []string | `[]` | Tool names to hide from the new-session picker. `shell` is always shown and cannot be hidden. Unknown names log a warning and are ignored. Edit via TUI **Settings (`S`) → Visible tools…** or by hand in `config.toml`. |
 | `show_only_installed_tools` | bool | `false` | When `true`, hides built-in and custom tools whose command does not resolve on the host `PATH`. `shell` stays visible. If nothing else resolves, the picker falls back to showing all tools with a one-line hint. Toggle in TUI Settings under **TOOL PICKER**. |
-| `new_session_enter_advances` | bool | `true` | Controls what **Enter** does in the new-session dialog. Default `true`: Enter **advances** to the next field on every row (Name, Tool, Model, Reasoning effort, Path, checkboxes, and each Claude Options row) and only the trailing **[ Create session ]** button creates, so walking the form with Enter never launches a session early. **Ctrl+S** is the explicit "create now" shortcut and submits from any field in both modes. Set `false` to restore the legacy behavior where Enter creates from any row. |
+| `new_session_enter_advances` | bool | `false` | Controls what **Enter** does in the new-session dialog. Default `false`: Enter **creates** the session from any row with the defaults already filled in (an empty name becomes the folder name); Tab/↓ move between rows, and a wrong required field takes focus with the reason. Set `true` to walk the form instead: Enter advances to the next row and only the trailing **[ Create session ]** button creates. **Ctrl+S** creates from any field in both modes. |
 | `attach_on_create` | bool | `false` | When `true`, creating a session in the TUI (`n` new-session dialog) **immediately attaches** to the new session's pane instead of only moving the cursor to it — "instantly open". Default `false`: today's select-only behavior (press **Enter** to attach). Does not affect the CLI; `agent-deck add` / `session start` attach only with an explicit `--attach`. |
 | `active_includes_idle` | bool | `false` | Changes what the active-on-top view (`t`) treats as active. Default `false`: running, waiting and starting sessions sit on top and idle sessions sink below the `idle / done` divider. When `true` (#2452), an idle session whose tmux pane is still alive stays on top too, so the sessions you are juggling no longer jump to the bottom each time one goes idle; only sessions without a live pane (stopped, error, queued) sink, the divider reads `stopped / done`, and a group repeated below it is suffixed `(stopped)`. Pins still win over the split, and the populated-on-top view is unaffected. Read at startup. TUI only: the CLI and web UI have no active-on-top view. |
 
@@ -996,7 +1036,7 @@ All link keys are read at server start and served to the browser by `GET /api/se
 
 ## [global_search] Section
 
-Search across all Claude conversations.
+Settings for the old in-memory global search index. The TUI `G` key no longer reads this section: it searches the Recall index and is gated by `[recall] enabled` (see the `[recall]` section). The keys are still parsed and shown in the Settings panel.
 
 ```toml
 [global_search]
@@ -1009,7 +1049,7 @@ index_rate_limit = 20       # Files/second for indexing
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| `enabled` | bool | `true` | Enable `G` key global search. |
+| `enabled` | bool | `true` | Old global search switch. Does not gate `G` (use `[recall] enabled`). |
 | `tier` | string | `"auto"` | Strategy: `instant` (fast, more RAM), `balanced` (LRU cache). |
 | `memory_limit_mb` | int | `100` | Max memory for balanced tier. |
 | `recent_days` | int | `90` | Only search recent conversations. |
@@ -1115,6 +1155,10 @@ ledger = true   # default false
 consumers = ["conductor-ops"]   # Claude parents (id, unique title, or "*"): ledger prompt text plus unchanged inbox
 ```
 
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| `ledger` | bool | `false` | Spool hook text to `runtime/comms/spool/` and let the notify-daemon commit records to `comms/<profile>/`. `false`: no spool file, no ledger directory. |
+
 ## [send] Section
 
 Tunes `agent-deck session send` (comms redesign PR5).
@@ -1122,6 +1166,12 @@ Tunes `agent-deck session send` (comms redesign PR5).
 ```toml
 [send]
 tag_sends = true   # prefix agent-originated sends with [agent-deck from:<id>]
+```
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| `tag_sends` | bool | `true` | A `session send` from inside an agent-deck session (`AGENTDECK_INSTANCE_ID` set) to a Claude target starts with one `[agent-deck from:<sender-id>]` line, so the receiver's reply is classified as a send and, when the sender is not the receiver's parent, committed to the sender's inbox as an urgent `reply` record that wakes it (also when the receiver has no parent). `false` turns tagging off for every send (`--no-tag` does it per send). Human shells, senders that are not Claude-compatible sessions, `--draft`, bare slash commands, heartbeats, sends to oneself and non-Claude targets are never tagged. |
+
 ## [costs.budgets] and [costs.run_budget]
 
 `[costs.budgets]` limits are in dollars. They are shown in the cost dashboard; with
@@ -1175,8 +1225,6 @@ talkback_interval_secs = 30   # 0 / unset = off
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| `ledger` | bool | `false` | Spool hook text to `runtime/comms/spool/` and let the notify-daemon commit records to `comms/<profile>/`. `false`: no spool file, no ledger directory. |
-| `tag_sends` | bool | `true` | A `session send` from inside an agent-deck session (`AGENTDECK_INSTANCE_ID` set) to a Claude target starts with one `[agent-deck from:<sender-id>]` line, so the receiver's reply is classified as a send and, when the sender is not the receiver's parent, committed to the sender's inbox as an urgent `reply` record that wakes it (also when the receiver has no parent). `false` turns tagging off for every send (`--no-tag` does it per send). Human shells, senders that are not Claude-compatible sessions, `--draft`, bare slash commands, heartbeats, sends to oneself and non-Claude targets are never tagged. |
 | `talkback_interval_secs` | int | `0` (off) | Every N seconds the notify-daemon runs the same incremental drain as `agent-deck remote drain <name> --into <conductor>` for every local `conductor-*` session enrolled with that remote (it has a cursor for it, i.e. it drained it once, or it holds a pending record from it). 30 is a good value. The drain runs off the poll loop, bounded at 60 s, and a remote with a drain in flight is skipped. A failure backs off from 1 min to 10 min; after 3 consecutive failures each enrolled conductor gets ONE urgent record (`remote <name>: talkback failing for N min: <last error>`), and a success clears the streak. An ingested urgent record wakes an idle conductor exactly like a local one; info records ride its next turn. |
 
 ## [health] Section
@@ -1254,6 +1302,14 @@ Switches for the Mac app surface (`docs/macapp-core.md`). All are off by default
 plugins = false            # Opt-in: limits --json and events publish --kind macapp.<name>
 transcript_events = false  # Notify daemon publishes session.transcript frames
 status_events = false      # Status owners publish session.status and session.turn frames
+```
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| `plugins` | bool | `false` | Enables `limits --json` and `events publish` for `macapp.*` kinds other than the Mac app's own frames (`macapp.open`, `macapp.open.ack`, `macapp.browser.response`, `macapp.app.focus`, `macapp.ask.seen`); `macapp.ask` and `macapp.ask.ack` are never admitted (only `agent-deck ask` publishes them); `macapp.browser.request` also needs [`[browser] enabled`](#browser-section). Off by design: turning it on needs explicit consent, so `agent-deck config set macapp.plugins true` exits 2 with `CONSENT_REQUIRED` unless it gets `--yes` (or `-y`), or a `y` at the interactive prompt in a terminal. Turning it off needs no consent. While it is off, `limits` and `events publish` exit 2 and name the command to run: `agent-deck config set macapp.plugins true --yes`; under `--json` the error carries a `hint` object (`key`, `value`, `command`, `argv`, `consent`, `docs`) the Mac app can show before it runs `argv`. |
+| `transcript_events` | bool | `false` | The notify daemon publishes a `session.transcript` frame whenever a live session's native transcript grows. Restart required. |
+| `status_events` | bool | `false` | Every status owner (TUI poller, notify daemon) publishes `session.status` and `session.turn` frames on each status transition. |
+
 ## [browser] Section
 
 The opt-in for `agent-deck browser <op>` (docs/macapp-browser.md). Off by default.
@@ -1268,13 +1324,29 @@ enabled = false         # this profile only; overrides [browser]
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| `plugins` | bool | `false` | Enables `limits --json` and `events publish` for `macapp.*` kinds other than the Mac app's own frames (`macapp.open`, `macapp.open.ack`, `macapp.browser.response`, `macapp.app.focus`); `macapp.browser.request` also needs [`[browser] enabled`](#browser-section). Off by design: turning it on needs explicit consent, so `agent-deck config set macapp.plugins true` exits 2 with `CONSENT_REQUIRED` unless it gets `--yes` (or `-y`), or a `y` at the interactive prompt in a terminal. Turning it off needs no consent. While it is off, `limits` and `events publish` exit 2 and name the command to run: `agent-deck config set macapp.plugins true --yes`; under `--json` the error carries a `hint` object (`key`, `value`, `command`, `argv`, `consent`, `docs`) the Mac app can show before it runs `argv`. |
-| `transcript_events` | bool | `false` | The notify daemon publishes a `session.transcript` frame whenever a live session's native transcript grows. Restart required. |
-| `status_events` | bool | `false` | Every status owner (TUI poller, notify daemon) publishes `session.status` and `session.turn` frames on each status transition. |
 | `browser.enabled` | bool | `false` | Allows `agent-deck browser <op>` and `events publish --kind macapp.browser.request` on this host. While off, both refuse before anything is published: exit 2, JSON code `BROWSER_DISABLED`, and the message names the setting and the command to turn it on. `agent-deck config set browser.enabled true`. |
 | `profiles.<name>.browser.enabled` | bool | none | Per-profile override of `browser.enabled`, either way. `agent-deck config set profiles.<name>.browser.enabled true`. |
 
 Browser requests also need `[macapp] plugins = true`. Both are opt-ins, not security boundaries: an agent on the host can edit its config. The Mac app enforces the browser policy.
+
+## [ask] Section
+
+`agent-deck ask secret|choice|text` asks the owner in a dialog (docs/ask.md). On by default.
+
+```toml
+[ask]
+enabled = true                 # false refuses every request and every deliver
+secret_scopes = ["conductor/"] # vault scopes ask secret may write
+allow_sandboxed = false        # let sessions that run in a sandbox ask
+```
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| `enabled` | bool | `true` | `false` makes `ask` refuse every request (exit 2) and `ask deliver` refuse every answer. |
+| `secret_scopes` | list of strings | `["conductor/"]` | Scope prefixes `ask secret <scope/NAME>` may write; `"conductor"` and `"conductor/"` mean the same scope. An empty list allows no secret requests. Checked again on deliver. |
+| `allow_sandboxed` | bool | `false` | Lets sessions that run in a sandbox ask; otherwise their requests are refused. |
+
+There is no key for the vault command: the vault is the fixed `/usr/local/bin/deck-secret`, which must be root-owned. These keys are guard rails an agent on the host can edit, not security boundaries.
 
 ## [tmux] Section
 
@@ -1294,7 +1366,7 @@ options = { "history-limit" = "50000" }   # raw tmux options, applied after agen
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| `socket_name` | string | `""` | tmux `-L <name>` selector for every agent-deck spawn. Empty shares the user's default server at `$TMUX_TMPDIR/tmux-<uid>/default`. Set it to isolate agent-deck onto its own tmux server, so its global option and key-binding writes never touch the user's interactive tmux, and a `tmux kill-server` in a shell cannot take managed sessions down. Captured per session at creation time — changing it later does **not** migrate existing sessions. CLI `--tmux-socket <name>` wins over this value. See `docs/SOCKET_ISOLATION.md`. |
+| `socket_name` | string | `""` | tmux `-L <name>` selector for every agent-deck spawn. Empty shares the user's default server at `$TMUX_TMPDIR/tmux-<uid>/default`. Set it to isolate agent-deck onto its own tmux server, so its global option and key-binding writes never touch the user's interactive tmux, and a `tmux kill-server` in a shell cannot take managed sessions down. Captured per session at creation time — changing it later does **not** migrate existing sessions. CLI `--tmux-socket <name>` wins over this value. See "Socket Isolation" in the repo README.md. |
 | `mouse` | bool | `true` | `false` never sets tmux `mouse on`, so the terminal emulator keeps raw control of mouse events — required by the VS Code Linux integrated terminal for click-drag selection. Applies both at session creation and on the reconnect configuration pass. |
 | `inject_status_line` | bool | `true` | `false` leaves the tmux status bar alone, and also disables agent-deck's global tmux notification bar and key bindings, so the runtime stops mutating global tmux options. |
 | `clear_on_restart` | bool | `false` | `true` wipes the scrollback buffer on session restart (`respawn-pane`) instead of preserving the previous run's output. |
@@ -1407,7 +1479,7 @@ show_pool_status = true     # Show 🔌 indicator
 
 **Benefits:** 30 sessions x 5 MCPs = 150 processes -> 5 shared processes (90% memory savings).
 
-**Socket location:** `/tmp/agentdeck-mcp-{name}.sock`
+**Socket location:** `<data dir>/sockets/mcp-{name}.sock` (for example `~/.agent-deck/sockets/`), private to your user. Sockets under `/tmp/agentdeck-mcp-*.sock` from old versions are ignored.
 
 ## [mcps.*] Section
 

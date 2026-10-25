@@ -2442,6 +2442,13 @@ producer boundary, and the run index append is the single commit point: each
 session's delta basis is reconstructed from its own already-booked rows
 (telescoping absolute + delta sums per session id), not from a second state
 file, so a crash or retry can never leave the basis behind the ledger.
+The basis reader streams the complete retained index instead of buffering its
+whole text and split lines. Its record buffer scales with the largest index
+record; it still retains the selected session's row identities for duplicate
+suppression. Missing indexes mean no prior booking. Corrupt JSON or an IO
+failure, including a failure after an earlier valid row, refuses the booking
+without publishing a partial usage row. This changes neither retention nor
+the booking lock and adds no cache or second ledger.
 Baselines are per session and each observation is bound to
 `usage.source_snapshot_id`, so interleaved sessions never rebase against each
 other: a returning session books only its own increment instead of re-booking

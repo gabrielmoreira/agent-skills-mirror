@@ -40,9 +40,10 @@ Plate owns the content and delivery:
 - registry source files under `apps/www/src/registry/*`
 - registry build logic in `apps/www/scripts/build-registry.mts`
 - generated registry output under `apps/www/public/r` and `apps/www/public/rd`
-- the `@plate` namespace and provider/style policy in
-  `apps/www/src/lib/plate-registry-config.ts`
-- registry install delivery in `apps/www/src/lib/registry-install.ts` and the
+- the `@plate` namespace, provider/style policy, and create configuration under
+  `apps/www/src/lib/plate-registry-*.ts` and
+  `apps/www/src/lib/plate-create.ts`
+- dynamic registry delivery in `apps/www/src/lib/registry-response.ts` and the
   owning routes
 
 Important boundary:

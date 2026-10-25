@@ -4,6 +4,16 @@
 
 ## 未发布：推荐导演与 Jev 完整评估（2026-10-22）
 
+- Keenable grounding 收敛为纯匿名免费模式：移除 `[discovery].keenable_api_key` 配置项与 `/v1/search`（`X-API-Key`）分支，`KeenableInspirationProvider` 只请求匿名端点 `POST https://api.keenable.ai/v1/search/public` 并带 `X-Keenable-Title: OpenBiliClaw`；key 原本只提升速率限制，免费额度已覆盖关键词灵感用量。旧配置里残留的 `keenable_api_key` 由配置诊断提示「已移除、值被忽略」，不静默丢弃。
+
+- 收敛 query inspiration 后端的默认链、别名表与 V2EX 外部召回白名单到 `discovery/inspiration_backends.py`，三个 grounding key（exa / you / serply）改由 `InspirationGroundingKeys` 打包传递；默认链、别名解析、未配置 key 时的 mcporter 回退与 V2EX 召回行为不变。
+
+- 修复 `bing_rss` 无 key 兜底在 302 区域跳转下必然失败：`www.bing.com` 会 302 到 `cn.bing.com`，此前 httpx 默认不跟随跳转而 `raise_for_status()` 直接抛错，默认链里这个后端等于不可用；现跟随跳转（实测 302 → 200 且返回合法 RSS）。
+
+- query inspiration 的单后端配置也装配 `FallbackInspirationSearchProvider`：单后端同样获得 60 s 错误 cooldown、失败计数与 `last_search_provider` 归因，`grounding_source` 不再退化成 `"none"`；单后端 `pages_per_probe` 固定为 1，单次请求条数不变。 三个修复的真实请求验收见 [grounding fallback 验收](testing/2026-10-24-grounding-fallback-fixes.md)。
+
+- query inspiration 新增可选 `keenable` grounding 后端：`KeenableInspirationProvider` 直连 Keenable **免费匿名**搜索端点 `POST https://api.keenable.ai/v1/search/public`（`X-Keenable-Title: OpenBiliClaw`），无需账户、API Key 或 mcporter。默认后端顺序不变，沿用现有网络策略、限时和失败回退；V2EX 正式 search 的外部召回白名单同步接纳 `keenable`。验证见 [Keenable grounding 验收](testing/2026-10-24-keenable-grounding.md)。
+
 - 修复 main CI 在最新依赖上的红灯：FastAPI 0.161 / Starlette 1.x 移除了 `Router.shutdown()`，`test_api_image_proxy` 改为逐个调用 `app.router.on_shutdown` 注册的处理器；断言与生产代码不变。
 
 - 整合扫码登录、配置保存状态、聊天/插件布局与多轮首屏性能修复，兼容最新 main 的初始化语言选择、动态属性翻译与 MiniMax 路由。共享 i18n 保留简体启动快速路径、目录请求合并/重试及最后选择生效，补合并后的属性翻译回归；合入验证见[首屏验收记录](verification/2026-10-23-first-screen-live-ab.md#主线整合验证2026-10-23)。

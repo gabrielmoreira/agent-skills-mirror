@@ -285,3 +285,10 @@ REA_FIRMWARE_VERIFY_GHIDRA=1 npm run verify:firmware
 `scripts/rea.mjs` to verify the packaged CLI/MCP workflow. Real coverage here is
 generated gzip/USTAR/ext4 with a Linux x64 ELF child; SquashFS, UBIFS, proprietary
 firmware, other hosts and architectures remain unverified.
+
+## Inspect extracted devicetrees
+
+Use [`inspect_devicetree`](devicetree.md) / `rea inspect-devicetree` on an
+extracted DTB for its node/property tree, reservations, hardware summary and
+selected phandle relationships. FDT v16/v17 inspection is portable and requires
+no external tool or disassembler.

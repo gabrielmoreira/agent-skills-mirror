@@ -287,6 +287,8 @@ made for the source projection and for restoration, which never restores it ([th
 guard](loop-comparison.md#the-ghost-guard)). `--repair off` gives nothing way: the cut's ghosts are
 delivered as filmed, named (section 4).
 
+Under `--repair auto` (the default) or `on`, jump repair takes out a group of one or two drawings that lie 3.0 or more usual steps off the line between neighbours (`repair.FLOW_LIMIT`) and has RIFE make them again. A group whose made frames have a fault is refused and keeps its frames as filmed in `refused`. When the loop as it plays still reads a drawing of a refused group at or over the limit, that drawing is in `jump_repair.unfixed` too: `frames`, `off`, `turn`, `into`, `out`, `window` (read on the playing loop) and `refused`. Every drawing in `unfixed` prints the warning line `video-loop: warning: frame <frame> of the loop lies <off>x its window's usual step off the walk's flow after the jump repair: the group that would bring it back was refused (<faults>), so it plays as filmed — a jump played as filmed; --unfixed refuse refuses such a loop (docs/loop-repair.md section 2)`. Flag `--unfixed warn|refuse` (default `warn`) can refuse such a loop with `video-loop: loop frames left off the flow — ` followed by those words, the cut, and `; the motion does not play smoothly — regenerate the clip`. The `--unfixed` flag is caller choice and is not lifted by `--seam-max`.
+
 The flow is read again after each group, on the union box of the loop as filmed; a refused group is
 never tried again in that run, and nothing is made from or beside it. The circular last/first
 adjacency rule and the call budget hold across the wrap. The shared `interpolation_quality` policy
@@ -776,7 +778,7 @@ loop's report carries `jolt`, measured on the loop as it will play (after sectio
 | `step_max_over_median` | the largest step over the median (what section 2 repairs) |
 | `head.x`, `head.y` | the head's place frame by frame in % of the body's height over the loop: x (sideways) the coverage centroid of the top fifth, y (up and down) the body's top line. Each: `step_max_pct` (largest move in one frame), `step_median_pct`, `max_over_median`, `range_pct`, `worst_into_frame` |
 | `reference`, `warnings` | the reference bounds (jolt index **0.43**, head sideways step **0.75** % of the body height) and what exceeds them, in words |
-| `seam_pop` | the top band's jump into the loop's first frame over the loop's median step ("The seam pop" below); a pop over its bound adds a line to `warnings` |
+| `seam_pop` | the top band's jump into the loop's first frame over the loop's median step ("The seam pop" below); a pop over `--seam-pop-max` refuses the loop, the gate's word in `seam_pop_gate` ("The seam pop gate" below). |
 | `gate`, `gated`, `over`, `passed` | the bounds the caller passed, whether they were enforced, what exceeded them |
 | `measured` | `after the jump repair` or `as filmed` |
 
@@ -784,7 +786,8 @@ loop's report carries `jolt`, measured on the loop as it will play (after sectio
 lists the reason under `warnings`, and `video-loop` prints a
 `video-loop: warning: … (reference bound; the loop is kept …)` line on stderr. The aim is fewer
 refilms — section 2 repairs what it can without a new clip — and the reference bounds rest on
-too few judged takes to refilm on (below).
+too few judged takes to refilm on (below). The seam pop is the exception: it is a gate by default
+("The seam pop gate" below).
 
 **A gate only when asked.** `--jolt-max` and/or `--head-step-max` turn the bound passed into a
 gate on the repaired loop: beyond it the loop fails with
@@ -854,7 +857,8 @@ plays:
   within the usual 15 % of the best and the smallest pop (`cycle.seam_pop`: `first_choice`,
   `applied`, `measured`, `unread`, `chosen`). A first choice that does not pop is kept, and nothing past it
   is measured, so a loop without such a part is cut exactly as before. If every candidate read pops,
-  the first choice is kept (`why`) and the warning below says so. Once the first choice pops, the held
+  the first choice is kept (`why`), and the gate then reads it as every motion-auto cut is read before
+  it is cut ("The seam pop gate" below). Once the first choice pops, the held
   part is read below its top too, and the cut may come out two steps long ("The held side" below).
 - **A cut whose top cannot be read is not one that closes.** A frame with nothing in the top band
   (a tip flung far above the rest in one frame) leaves the cut without a jump to read: it is
@@ -862,11 +866,13 @@ plays:
   `seam_pop: null` with `seam_pop_skipped` — and counted under `unread`, apart from `measured`.
   It is never chosen on; a first choice that cannot be read is kept, nothing past it is measured,
   and `jolt.warnings` says the head could not be tracked.
-- **A pop that stays is a warning line** — `video-loop: warning: the top of the silhouette jumps
-  into the loop's first frame up or down … (over 10x): a part held above the head swings on its
-  own beat and does not close at this cut`, in `jolt.warnings` like the bounds above. A sideways
-  jump into frame 0 that the head bound already names is not said twice. A fixed or `--cycle
-  periodic` cut is not chosen again; the warning is all it gets. Nothing fails on it.
+- **A pop over the bound fails the loop:** a walk or run loop whose pop is over the bound is refused
+  ("The seam pop gate" below). When the gate refuses, the pop is not also printed as a warning line
+  and is not in `jolt.warnings`: the refusal says it. With the gate off, a pop over 10 is the warning
+  line `video-loop: warning: the top of the silhouette jumps into the loop's first frame up or down …
+  (over 10x): a part held above the head swings on its own beat and does not close at this cut` in
+  `jolt.warnings`, as before. A sideways jump into frame 0 that the head bound already names is not
+  said twice. A fixed or `--cycle periodic` cut is not chosen again, and the gate refuses it.
 - **The bound** sits between walks holding a staff that swings on its own beat and walks without
   one, both on the cut as it plays and on the source frames the cut is chosen from. The synthetic
   walker of `tests/video/test_loop_prop_seam.py` — steps every 24 frames, a staff above its head swaying every 61 — reads 12 to 18 at the cuts the area
@@ -874,6 +880,26 @@ plays:
 - **What it does not see**: a held part that never reaches the top band (a spear held level, a
   sword at the hip). The lower end of a staff whose top closes while the shaft still swings about the
   hand is read by the held side below, behind this pop.
+
+### The seam pop gate
+
+The seam pop gate refuses any walk or run loop whose seam pop exceeds `--seam-pop-max BOUND|off` (default 10, the existing constant `repair.SEAM_POP_REFERENCE`). The metric `jolt.seam_pop` measures how far the top band of the silhouette (the head, or a part held above it such as a staff, a flag, or a raised spear) jumps from the loop's last frame into its first, over the loop's median step (`pop`), read on the loop as it plays, after jump repair. A pop exactly at the bound passes. The gate applies to every walk or run loop whose cut is gated by its seam ratio, whatever chose the cut (`--cycle fixed`, a periodic search, `--anchor motion-auto`) and whether or not the repair ran (`--repair off` included). When the gate refuses, the failure line is `video-loop: loop seam pop <pop> exceeds <bound> (<kind> length <L> frames from <start>): the top of the silhouette jumps into the loop's first frame up or down <percent> % of the body height, <ratio>x its median step — the loop does not close at its top; cut it where it does, or regenerate the clip`. It names the pop, the bound, the cut (kind, length, first frame) and, in words, how far and how many times its median step the top jumps, up or down and/or sideways: each axis whose largest step is the wrap and whose wrap is over the bound. The pop is not also printed as a warning line and is omitted from `jolt.warnings`.
+
+The report gains `seam_pop_gate` on every walk or run loop, printed in the CLI summary and retained in failed reports:
+
+| Field | What |
+|---|---|
+| `verdict` | `passed`, `refused`, `unreadable`, `off`, or `not-applicable` |
+| `max` | The bound, or `null` when off |
+| `pop` | The pop read, or `null` when unreadable |
+| `why` | Explains why the top band could not be read for `unreadable`, or `a pinned cut is gated by its pin` for `not-applicable` |
+
+- **Check order:** The seam pop gate is checked after the seam gate and the step gate. A cut those refuse is refused by them, with the same line as before.
+- **Unreadable top band:** A loop whose top band cannot be read (a frame with nothing in the top band, for example `a loop frame has no head to track`) is not refused: `seam_pop_gate.verdict` is `unreadable` with `why`, and the existing warning line that the head could not be tracked is still printed. It is never passed quietly.
+- **Pinned clips:** A pinned clip (`--cycle pinned`) is not gated by it: its gate is its pin, as for the seam ratio. Its verdict is `not-applicable`, with `why` set to `a pinned cut is gated by its pin`.
+- **Disabling and `--seam-max`:** `--seam-pop-max off` turns the gate off: the pop is reported, and a pop over 10 is the warning line `video-loop: warning: the top of the silhouette jumps into the loop's first frame up or down … (over 10x): a part held above the head swings on its own beat and does not close at this cut` as before. The flag `--seam-max` does not lift this gate. A `--seam-max` past 2.5 lifts the step gate and the fixed cut's step count refusal because those read the same distance the seam ratio reads; the seam pop reads the place of the top band, a measure in the family of `--jolt-max` and `--head-step-max`.
+- **Pre-cut checks under `--anchor motion-auto`:** Before a cut is taken, candidate cuts are read as the gate reads the loop, their frames corrected as the cut will be (`loop.corrected_cut`, one correction a cut for the seam and the pop: `loop.CutOnCells`) and checked for wrap jump (`repair.seam_pop_of`), short of jump repair. First, the search cut, after the top band has chosen again where it popped, is read; where the gate would refuse it, the next candidate in search order (equivalent cuts earliest first, then the rest best first) is read, taking the first of up to four cuts (`local_cycle.SEAM_TRIES`) the gate does not refuse. Where the gate would refuse all four, the first choice stays and the gate refuses it on the loop. This is recorded in `cycle.seam_pop_gate` (`max`, `tried`, `applied`, `why`). Second, among cuts of two steps chosen by foot crossings, cuts passing the seam gate are read for pop; the first of four cuts passing both gates is taken, adding `pop`, `pop_gate`, and `pop_skipped` to `step_count.seam_gate.tried` and `step_count.search`. Every motion-auto run corrects the search cut once before cutting it.
+- **Byte for byte identity and synthetic results:** With the gate off, or wherever the gate passes, the gate changes no cut and no file: loop files are byte for byte what the previous engine gives, save an `--anchor motion-auto` cut taken in place of a first choice the gate would have refused before the cut. In synthetic tests on a standing rod walk, a fixed cut whose tip drops 11 px reads a pop of 11.0 and is refused, while a 9 px drop reads 9.0 and passes. Under `--anchor motion-auto`, the pop read before the cut equals the loop's own reading (6.0 drawn a frame each, 5.0 on twos), allowing a bound of 3 to drop that cut for the next candidate with pop 0.0.
 
 ### The held side — a staff that closes at the top and swings below the hand
 
@@ -1032,7 +1058,11 @@ far the wrap is from joining the same point of the walk, in frames, the worst ov
   whose seam the gate will pass is taken, read as the gate reads it before anything is cut
   (`loop.seam_on_cells`: the cut corrected as it will be, its wrap over its step on the analysis
   thumbnail; `step_count.seam_gate.tried`): the correction of one cut can leave a jump at its wrap that
-  no reading of the clip shows. Each reading is a whole correction, six fine searches of the motion
+  no reading of the clip shows. For the cuts of two steps that foot crossings choose among, a cut whose
+  seam passes the seam gate is now read for its pop too: of the first four cuts, the first that both
+  gates pass is taken, the search's own cut stands only where both pass it, and
+  `step_count.seam_gate.tried` rows and `step_count.search` gain `pop`, `pop_gate`, and, where
+  unreadable, `pop_skipped` ("The seam pop gate" above). Each reading is a whole correction, six fine searches of the motion
   anchor, and the cut taken is corrected once more, so a gate that tries all four corrects five cuts;
   the search reads a row of its shifts at once, to the values one patch at a time gives ([loop
   review](loop-review.md#explicit-xy-motion-correction)). A part on a beat of its own — a tail, a staff — that closes on no cut of
@@ -1075,6 +1105,16 @@ legs drawn alike does. And a walk whose feet do stand together through most of a
 nearer than a frame apart, is cut as the search cuts it — one step long, as before the count: neither the
 pixels nor the crossings tell its step from its cycle there, and only someone who counts the steps (`--steps`)
 settles it. Four-legged gaits are read as one foot band (`legs.strike_signals`), as before.
+
+### The step gate: every step between drawings, and a fixed cut's count
+
+On every walk or run loop that plays round (not a single play cut), after the seam gate passes, the strip cells are read between their drawings: a loop drawn on twos or threes shows each drawing for two or three frames (`repair.flow_drawings` finds them), so read frame by frame it steps nothing and then two or three steps at each drawing, making its largest step two or three times its mean even when playing evenly. Each drawing first cell is read on analysis features the seam gate reads (`loop._small_features`), taking the step from each drawing to the next and from the last drawing into the first across the wrap. The largest of these steps, wrap included, over the mean of the others must be at most `STEP_RATIO_MAX` (2.5) (`loop.drawing_steps`). Because a pixel of jitter can look large against a tiny mean step, a step over 2.5 is exempt from the bound when it is a pixel's jitter (`loop.step_jitter`): the move that aligns its drawing with the previous drawing while producing the least coverage difference (`stop.register`, read on alpha so colour has no effect) is at most `STEP_JITTER_PX` (1.5) pixels of the frames as filmed. Each such pixel is the strip's `scale` in cell pixels, and the allowed move is never less than one cell pixel. With that move taken back, the step must also be within 2.5 of the mean. The gate holds the largest step that is not a pixel's jitter to the bound. On synthetic frames, a walk going away from the camera has a step where the feet rise a whole crop row that measures 2.5 to 3.6 times the mean as drawn, black or grey. Its move is one pixel, the step taken back is at most 1.3 times the mean, and the loop passes. A frame of a walk cut 400 px tall moved 2 px and back moves 6 cell pixels, or 2.0 pixels of the frames as filmed, and fails in every colour. Measured instead as a mean RGBA difference, that jump reads 0.057 in colour, 0.025 in a grey near the backdrop and 0.021 in black. Past the bound, the loop fails with `video-loop: loop step ratio <ratio> exceeds 2.5 (<kind> length <L> frames from <start>, into frame <frame>, read between its <n> drawings); the loop jumps inside — regenerate the clip`. Where jump repair says why the step jumps, the line says it before ` — regenerate the clip`: `: frame <frame> lies off the walk's flow, and the jump repair's frame there was refused (<faults>), so it plays as filmed`, or `: frame <frame> lies off the walk's flow, and no group of up to 2 drawings brings it back`. The report records `step_gate` on every walk or run loop, passed or failed: `read` (`drawings`), `drawings`, `hold`, `mean_step`, `largest_ratio`, `largest_from` and `largest_into` (the cut frames from and into which the largest step that is not a pixel's jitter runs, each the first frame of its drawing), `wrap_ratio`, `max` (the bound used), `jitter` for steps over 2.5 that are a pixel's jitter (each step's `from` and `into` frames, its `ratio`, its `move` in cell pixels and `ratio_moved_back`, with the larger first), `lifted`, and `kept` when a lifted gate kept a loop over 2.5; a loop with fewer than three drawings records `skipped` instead.
+
+`--cycle fixed --start S --length L` of a walk or run now reads clip foot crossings (`crossings.read`) and judges the cut (`Reading.judge`), as `--anchor motion-auto` already does for the cut it takes. The report records this as `cycle.step_count` (the reading record, `chosen_by: caller`, and `cut` with `verdict`, `code`, `k`, `phase`, `ring`). A walk loops on two steps; a cut whose crossings count an odd number of steps (one, three) swaps legs at the wrap however close frames look, failing with `video-loop: loop step count refutes the fixed cut <start>/<L> — the clip's crossings count one step, each seen where a walk loops on two, and an odd count swaps the legs at the wrap; cut it again two steps long (about <2 steps> frames)`. An even count of four steps is not refused. The exemption from `--anchor motion-auto` applies (`local_cycle.same_picture_count`, shared by both now): where feet are seen together over half a step at a pass (`crossings.HIDE_SHARE`) and the clip one cut on is the same picture (at most `local_cycle.SAME_PICTURE_MAX`, 1.0 playback steps along the cut), the count missed a crossing; verdict reads `uncertain`, code `same-picture`, recorded with `same_picture`, and the cut is not refused. A fixed cut gets no `steps` field and leaves its strip unchanged.
+
+The step gate stands where the seam gate does. Its bound is the larger of 2.5 and `--seam-max`. Setting `--seam-max` past 2.5 lifts it with the seam: every step bound is then `--seam-max`, a loop whose largest step is over 2.5 is kept with the warning line `video-loop: warning: the loop's largest step between drawings is <ratio>x their mean (into frame <frame>), over 2.5: it jumps inside — kept, as --seam-max <seam-max> lifts the step gate` (and `step_gate.kept`, `step_gate.lifted: true`), and a fixed cut counted an odd number of steps is kept with `video-loop: warning: the clip's crossings count the fixed cut <start>/<L> one step, each seen: a walk loops on two steps, and an odd count swaps the legs at the wrap — kept, as --seam-max <seam-max> lifts the step gate` (and `cycle.step_count.lifted`, which records `seam_max`). A forced delivery with `--seam-max 1000` therefore passes as before, with these lines.
+
+The seam gate failure line keeps its first words up to `the cycle does not close — `. Where warning lines name a part on a beat of its own (an `--anchor motion-auto` cut two steps long by clip crossings whose wrap the gate refuses while asking for an overlapped wrap, or a step count warning that no two step cut joins the walk within its phase), the rest of the line says so instead of `regenerate with a complete return to the starting pose`, for example: `video-loop: loop seam ratio <ratio> exceeds 2.0 (periodic length <L> frames from <start>); the cycle does not close — the cut covers two steps by the clip's crossings, and a part on a beat of its own (a tail, a held prop) closes on no cut of two steps: the overlapped wrap was not made (turned off (--overlap-wrap off)) — regenerate with that part moving on the walk's beat`. The middle part names what became of the overlapped wrap: not made (and why, as `wrap_overlap.skipped` says), RIFE not installed, refused (each run reasons, as warning lines give them), or made and still not closing. Elsewhere the line is as before. Every refusal by one of these three readings records `seam_refusal` in the report: `{"reading": "wrap", "ratio", "max", "reason": "own-beat" or null, "overlap_wrap": "made" | "skipped" | "rife not installed" | "refused" | null}`, `{"reading": "steps", "ratio", "max", "into", "reason": "repair-refused" | "unfixed" | null, "frames", "refused"}` (the last two where a reason was found), and `{"reading": "count", "cut", "verdict", "k", "why", "two_steps"}`.
 
 ### The step screen — a slow walk cut one step long
 

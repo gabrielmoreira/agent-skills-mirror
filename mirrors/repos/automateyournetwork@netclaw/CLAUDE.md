@@ -2,6 +2,8 @@
 
 Auto-generated from all feature plans. Last updated: 2026-09-26
 
+Spec153 installer (source 1.12.0 / extension 1.2.0): [new setup](docs/GETTING-STARTED-VSCODE.md), [Claw Plan/CLI](docs/CLAW-PLAN.md), [assistant flow](docs/ASSISTANT-INSTALL.md), and [deployment Spec Kit](docs/SPEC-KIT-CLAWS.md) share a private, exact-review engine. Use `installer/assistant-skills/netclaw-install/SKILL.md` for end-user deployment; `.agents/skills/speckit-*` remain repository development tools. Native Windows is a read-only WSL gate; actual installation targets local macOS and supported WSL2 Ubuntu. No real-installation or publication qualification is implied by fixture success. See `specs/153-ide-installer/verification.md`.
+
 ## Active Technologies
 - N/A (stateless server; subscription state held in-memory during runtime) (003-gnmi-mcp-server)
 - Python 3.10+ + FastMCP (MCP framework), azure-mgmt-network, azure-mgmt-resource, azure-identity (DefaultAzureCredential), gait_mcp (audit logging) (004-azure-network-mcp)

@@ -31,8 +31,12 @@ Every brand ships different bloat. If you ran the prompt (or did it by hand) on 
    whether it matches theirs. `tools/tv.py --probe` prints all three.
 3. Only list packages you have actually disabled and lived with for a few days. Note anything that
    broke and what you re-enabled.
-4. Add a row to `examples/README.md` and one to the TV table in `README.md`: the tests compare them,
-   so a list with a row in only one of the two fails.
+4. Add `examples/<brand>-<model>/tv.json`, the row the TV tables show for your list. Copy
+   `examples/xiaomi-mi-tv-4a/tv.json`: `tv` (the model as the tables name it), `os`, `brand` (spelled as
+   on the README's brand line; a new brand is fine) and `notes` (one line: what the list disables and
+   keeps). Change nothing outside your folder: the TV tables in `README.md` and `examples/README.md`, the
+   brand line and the counts are generated from every folder's `tv.json` after merging, so a PR that
+   edits them only collides with the other open lists.
 5. If your TV's Live TV app or stock launcher has a different package name, say so in the header. Where
    a script needs the stock launcher, `tools/restore.sh` takes it as its second argument
    (`tools/restore.sh <list> <package>`) and `launcher/build-and-install.sh` takes it in the

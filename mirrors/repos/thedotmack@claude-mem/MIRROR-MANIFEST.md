@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `thedotmack/claude-mem` — 26 default patterns, 0 followed patterns, 44 file(s) materialized.
+Mirror of `thedotmack/claude-mem` — 26 default patterns, 0 followed patterns, 46 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `thedotmack/claude-mem` — 26 default patterns, 0 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 44 |
+| Files         | 46 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -93,16 +93,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 32 | ✓ | [`plugin/skills/mem-search/SKILL.md`](plugin/skills/mem-search/SKILL.md) |
 | 33 | ✓ | [`plugin/skills/mode-creator/SKILL.md`](plugin/skills/mode-creator/SKILL.md) |
 | 34 | ✓ | [`plugin/skills/oh-my-issues/SKILL.md`](plugin/skills/oh-my-issues/SKILL.md) |
-| 35 | ✓ | [`plugin/skills/pathfinder/SKILL.md`](plugin/skills/pathfinder/SKILL.md) |
-| 36 | ✓ | [`plugin/skills/release/SKILL.md`](plugin/skills/release/SKILL.md) |
-| 37 | ✓ | [`plugin/skills/screenpipe/SKILL.md`](plugin/skills/screenpipe/SKILL.md) |
-| 38 | ✓ | [`plugin/skills/smart-explore/SKILL.md`](plugin/skills/smart-explore/SKILL.md) |
-| 39 | ✓ | [`plugin/skills/standup/SKILL.md`](plugin/skills/standup/SKILL.md) |
-| 40 | ✓ | [`plugin/skills/timeline-report/SKILL.md`](plugin/skills/timeline-report/SKILL.md) |
-| 41 | ✓ | [`plugin/skills/version-bump/SKILL.md`](plugin/skills/version-bump/SKILL.md) |
-| 42 | ✓ | [`plugin/skills/weekly-digests/SKILL.md`](plugin/skills/weekly-digests/SKILL.md) |
-| 43 | ✓ | [`plugin/skills/what-the/SKILL.md`](plugin/skills/what-the/SKILL.md) |
-| 44 | ✓ | [`plugin/skills/wowerpoint/SKILL.md`](plugin/skills/wowerpoint/SKILL.md) |
+| 35 | ✓ | [`plugin/skills/owner-goals/SKILL.md`](plugin/skills/owner-goals/SKILL.md) |
+| 36 | ✓ | [`plugin/skills/pathfinder/SKILL.md`](plugin/skills/pathfinder/SKILL.md) |
+| 37 | ✓ | [`plugin/skills/release/SKILL.md`](plugin/skills/release/SKILL.md) |
+| 38 | ✓ | [`plugin/skills/request-progress/SKILL.md`](plugin/skills/request-progress/SKILL.md) |
+| 39 | ✓ | [`plugin/skills/screenpipe/SKILL.md`](plugin/skills/screenpipe/SKILL.md) |
+| 40 | ✓ | [`plugin/skills/smart-explore/SKILL.md`](plugin/skills/smart-explore/SKILL.md) |
+| 41 | ✓ | [`plugin/skills/standup/SKILL.md`](plugin/skills/standup/SKILL.md) |
+| 42 | ✓ | [`plugin/skills/timeline-report/SKILL.md`](plugin/skills/timeline-report/SKILL.md) |
+| 43 | ✓ | [`plugin/skills/version-bump/SKILL.md`](plugin/skills/version-bump/SKILL.md) |
+| 44 | ✓ | [`plugin/skills/weekly-digests/SKILL.md`](plugin/skills/weekly-digests/SKILL.md) |
+| 45 | ✓ | [`plugin/skills/what-the/SKILL.md`](plugin/skills/what-the/SKILL.md) |
+| 46 | ✓ | [`plugin/skills/wowerpoint/SKILL.md`](plugin/skills/wowerpoint/SKILL.md) |
 
 ---
 

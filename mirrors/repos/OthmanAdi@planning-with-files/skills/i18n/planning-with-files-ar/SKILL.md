@@ -36,7 +36,7 @@ hooks:
         - type: command
           command: "SH=\"\"; for c in \"${PWF_SCRIPT_DIR}/skill-hook.sh\" \"${CLAUDE_SKILL_DIR}/scripts/skill-hook.sh\" \"$HOME/.claude/skills/planning-with-files-ar/scripts/skill-hook.sh\" \"$HOME/.claude/skills/planning-with-files/scripts/skill-hook.sh\" \"$HOME/.claude/plugins/marketplaces/planning-with-files/scripts/skill-hook.sh\"; do [ -f \"$c\" ] && { SH=\"$c\"; break; }; done; [ -n \"$SH\" ] && sh \"$SH\" --event=precompact; exit 0"
 metadata:
-  version: "3.25.1"
+  version: "3.25.2"
 ---
 
 # نظام تخطيط الملفات
@@ -93,6 +93,18 @@ $(command -v python3 || command -v python) "${SKILL_DIR}/scripts/session-catchup
 4. **عيّن مالكًا واحدًا للخطة.** يرفع العاملون النتائج عبر دفاترهم أو ملفاتهم المخصصة ولا يعيدون كتابة ملفات التخطيط المشتركة.
 
 > **ملاحظة:** ملفات التخطيط توضع في دليل المهمة المحدد داخل مشروعك، وليس في دليل تثبيت المهارة.
+
+## عقد إنشاء خطة جديدة
+
+قبل تنفيذ مهمة جديدة، شغّل `init-session.sh` من تثبيت المهارة (وفي PowerShell استخدم `init-session.ps1`). عدّل الهيكل الناتج ولا تستبدله بقائمة مختصرة. عيّن `PWF_SKILL_DIR` إلى مجلد SKILL.md الذي قرأته، ثم تحقّق من مسار الخطة الصريح:
+
+```sh
+sh "$PWF_SKILL_DIR/scripts/check-complete.sh" --validate path/to/task_plan.md
+```
+
+في PowerShell استخدم `check-complete.ps1 -Validate -PlanFile path/to/task_plan.md`. احتفظ بعنوان `### المرحلة N: الاسم` وبحالة واحدة فقط لكل مرحلة: `**الحالة:** pending` أو `**الحالة:** in_progress` أو `**الحالة:** complete`. لا تكفي قائمة تحت عنوان المراحل. يجب نجاح التحقق قبل التنفيذ وبعد تعديل بنية المراحل. هذا تحقق من الصيغة، وليس من اكتمال العمل أو التصديق.
+
+احتفظ بالخطط الحالية. أبلغ مالك الخطة بأخطاء الصيغة ولا تعِد كتابتها تلقائياً. إن تعذّر تشغيل الأدوات المساعدة، انسخ القالب المرفق كما هو واذكر أن التحقق الأصلي لم يُجرَ.
 
 ## النمط الأساسي
 

@@ -6,12 +6,12 @@
 
 **让 Agent 把长程目标做成可验证的成果。**
 
-面向 Agent 与团队的本地优先控制面和研究工作台。<br>
-<sub>跨会话保留目标、决策、分工与证据，连接你已经在用的 Codex、Claude Code、DeepSeek Harness 等运行时。</sub>
+面向长程 Agent 团队的本地优先[语义控制面](https://loopx-project.github.io/loopx/blog/zh/from-one-shot-agents-to-long-horizon-control/#control-plane)与[研究工作台](#research-workbench)，跨会话、跨运行时延续工作。<br>
+<sub>持久保留目标、决策、分工与证据，连接你已经在用的 Codex、Claude Code、DeepSeek Harness 等运行时。</sub>
 
 [![Release](https://img.shields.io/github/v/release/loopx-project/loopx?color=brightgreen)](https://github.com/loopx-project/loopx/releases/latest) [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE) [![TypeScript core](https://img.shields.io/badge/core-TypeScript-3178C6?logo=typescript&logoColor=white)](docs/architecture/rfcs/typescript-control-plane-migration-v0.zh-CN.md) [![Python](https://img.shields.io/badge/python-3.11%2B-blue.svg)](pyproject.toml)
 
-[![Local first](https://img.shields.io/badge/control--plane-local--first-brightgreen.svg)](docs/public-private-boundary.md) [![Loop Agents](https://img.shields.io/badge/status-loop%20agents%20supported-brightgreen.svg)](docs/product/release-readiness.md) [![GitHub contributors](https://img.shields.io/github/contributors-anon/loopx-project/loopx?color=blue)](https://github.com/loopx-project/loopx/graphs/contributors) [![Discord](https://img.shields.io/badge/Discord-Join-5865F2?logo=discord&logoColor=white)](https://discord.gg/XmGgQyCFZd)
+[![Local first](https://img.shields.io/badge/control--plane-local--first-brightgreen.svg)](docs/public-private-boundary.md) [![Loop Agents](https://img.shields.io/badge/status-loop%20agents%20supported-brightgreen.svg)](docs/product/release-readiness.md) [![GitHub contributors](https://img.shields.io/github/contributors-anon/loopx-project/loopx?color=blue)](https://github.com/loopx-project/loopx/graphs/contributors) [![Discord](https://img.shields.io/badge/Discord-Join-5865F2?logo=discord&logoColor=white)](https://discord.gg/XmGgQyCFZd) [![Listed on dsh-plugin.org](https://dsh-plugin.org/badges/listed.svg)](https://dsh-plugin.org/plugins/loopx-project/loopx)
 
 [快速上手](#快速开始) · [为什么需要 LoopX](#为什么需要-loopx) · [看看实际使用](#看看-loopx-如何工作) · [证据与案例](#证据) · [参与贡献](#贡献) · [文档](https://loopx-project.github.io/loopx/docs/) · [English](README.md)
 
@@ -37,17 +37,36 @@ $loopx 优化这个项目最慢的流程，对比方案并验证性能提升
 
 Claude Code 使用 `/loopx <复杂任务>`。[其他宿主、安装方式与升级说明 ↓](#试用-loopx)
 
+## 📰 最新动态
+
+<!-- Curate major product/architecture releases, research findings, consequential
+     engineering lessons and substantive community milestones. Each needs a public
+     source and a distinct reader takeaway; version bumps or PR merges alone are
+     not news. Keep both languages aligned, newest first, using verified publication
+     dates (UTC). -->
+
+- **2026-10-20 · 🚀 [LoopX 2.0](https://github.com/loopx-project/loopx/releases/tag/v2.0.0)** — 共享 TypeScript 控制面与长程研究工作台。[迁移指南](docs/product/releases/v2.0.0.md#中文指南) · [重构历程](https://loopx-project.github.io/loopx/blog/zh/typescript-control-plane-refactor/)。
+- **2026-10-14 · 🤖 [Agentic Software](https://loopx-project.github.io/loopx/blog/zh/semantic-software-development/)** — 连接目标、证据、人的反馈与工程交付。
+- **2026-10-05 · 📊 [EdgeBench：证据驱动的长程研究](https://loopx-project.github.io/loopx/blog/zh/edgebench-feedback-and-memory/)** — 研究反馈、持续执行、重规划与上下文成本，区分观察到的系统进展与尚待验证的机制收益。
+- **2026-10-02 · 🧠 [长程自举与 RSI](https://loopx-project.github.io/loopx/blog/zh/long-horizon-rsi/)** — 回顾用 LoopX 开发 LoopX 的四个月公开历史，讨论长程连续性如何支撑系统级自我改进。
+- **2026-09-18 · 🧪 [LoopX × LHTB](https://loopx-project.github.io/loopx/benchmarks/lhtb/?lang=zh)** — 46 个长程任务的 Agent 对照研究：比较 Plain Codex、原生 Goal 与 LoopX Heartbeat，公开逐任务结果、方法与适用边界。
+- **2026-09-06 · 🎉 [LoopX 1.0](https://github.com/loopx-project/loopx/releases/tag/v1.0.0)** — 个人 Agent 工作区：跨会话跟进 Agent 工作、处理待决事项、核对交付结果。[工作区指南](https://github.com/loopx-project/loopx/blob/v1.0.0/docs/guides/personal-workspace-user-guide.md)。
+- **2026-08-02 · ⏱️ [200+ 小时长程轨迹在 X 公开分享](https://x.com/huangruiteng/status/2083904257494024425)** — 早期 owner-run 案例跨越 200+ 小时自然时长，展示执行、等待、人工决策与恢复的衔接，并在 X 获得广泛传播。[轨迹与边界](#开源-issue-fix)。
+
+[全部发布记录](https://github.com/loopx-project/loopx/releases)
+
 ## 为什么需要 LoopX
 
 一个 Agent 可以在单次会话里完成任务。长程工作更难：目标会变化，用户决策会出现，
 证据会过期，多个 Agent 会交接。定时器能让任务继续运行，却不能保证仍在做有用的工作。
 
 - **接着做，不必重头交代。** 目标、已接受要求、决策与证据跨会话、跨重启保留。
-- **分工协作，责任始终清楚。** 串起委派、依赖产物、独立评审与结果返回，保留每个 Agent 的工作归属。
+- **[分工协作，责任始终清楚。](https://loopx-project.github.io/loopx/blog/zh/agent-facing-kanban/#walkthrough)** 串起委派、依赖产物、独立评审与结果返回，保留每个 Agent 的工作归属。
 - **看成果和依据，而不只看活动。** 检查交付物、支持与反驳证据、成本，以及下一步决策。
 
-模型与工具由你的 Agent 运行时提供；LoopX 延续工程、研究与运营的控制状态，
-不会替代运行时。受保护操作仍须遵守人类授权。
+模型与工具由你的 Agent 运行时提供。LoopX 的语义控制面跨会话、跨运行时保留目标、
+验收条件、决策、分工与证据，支撑工程、研究与运营中的持续协作。Agent 与人据此
+重新判断下一步；受保护操作仍须遵守人类授权。
 
 <a id="学习-loopx"></a>
 
@@ -546,8 +565,10 @@ LoopX 欢迎与其他开源项目协作，共建长程 Agent 生态。已确认�
 - [NoKV](https://github.com/NoKV-Lab/NoKV) - AI 原生分布式文件系统
 
 <a id="loopx-20-1"></a>
+<a id="20-新变化"></a>
 
-## 2.0 新变化
+<details>
+<summary>2.0 背景与迁移</summary>
 
 | 共享控制面 | 长程研究工作台 |
 | --- | --- |
@@ -557,6 +578,8 @@ LoopX 欢迎与其他开源项目协作，共建长程 Agent 生态。已确认�
 **从 1.x 升级？** 2.0 停止对未迁移 Markdown Goal 的普通写入。
 继续这些 Goal 前先看[迁移与恢复指南](docs/product/releases/v2.0.0.md#中文指南)；
 安装新版不会静默转换既有状态。
+
+</details>
 
 ## 进阶路径
 

@@ -37,7 +37,7 @@ hooks:
           command: "SH=\"\"; for c in \"${PWF_SCRIPT_DIR}/skill-hook.sh\" \"${CLAUDE_SKILL_DIR}/scripts/skill-hook.sh\" \"$HOME/.claude/skills/planning-with-files-zh/scripts/skill-hook.sh\" \"$HOME/.claude/skills/planning-with-files/scripts/skill-hook.sh\" \"$HOME/.claude/plugins/marketplaces/planning-with-files/scripts/skill-hook.sh\"; do [ -f \"$c\" ] && { SH=\"$c\"; break; }; done; [ -n \"$SH\" ] && sh \"$SH\" --event=precompact; exit 0"
 metadata:
 
-  version: "3.25.1"
+  version: "3.25.2"
 
 ---
 
@@ -95,6 +95,18 @@ $(command -v python3 || command -v python) "${SKILL_DIR}/scripts/session-catchup
 4. **指定唯一的计划负责人。** 工作者通过自己的账本或分配文件报告，不独自重写共享规划文件。
 
 > **注意：** 规划文件放在项目中的选定任务目录，不是技能安装目录。
+
+## 新计划的创建约定
+
+开始实现新任务前，先运行已安装 skill 中的 `init-session.sh`（PowerShell：`init-session.ps1`），然后修改生成的模板，不要改成简短的自定义列表。将 `PWF_SKILL_DIR` 设为刚才读取的 SKILL.md 所在目录，再检查明确的计划路径：
+
+```sh
+sh "$PWF_SKILL_DIR/scripts/check-complete.sh" --validate path/to/task_plan.md
+```
+
+PowerShell 使用 `check-complete.ps1 -Validate -PlanFile path/to/task_plan.md`。每个阶段保留 `### 阶段 N：名称`，并且只有一个 `**状态：** pending`、`**状态：** in_progress` 或 `**状态：** complete` 状态。只有 `## 阶段` 下的清单无法被跟踪。实现前和修改阶段结构后必须通过检查。此检查验证格式，不验证任务完成或哈希证明。
+
+保留现有计划。格式检查失败时，向计划负责人说明问题，不要自动重写。如果无法运行辅助脚本，请原样复制附带的模板，并明确说明未进行原生格式检查。
 
 ## 核心模式
 

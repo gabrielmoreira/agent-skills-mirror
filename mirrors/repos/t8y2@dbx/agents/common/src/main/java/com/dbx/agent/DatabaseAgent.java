@@ -104,6 +104,10 @@ public interface DatabaseAgent {
         throw new UnsupportedOperationException("Object source is not supported");
     }
 
+    default ObjectSource getObjectSourceWithOrigin(String schema, String name, String objectType) {
+        return getObjectSource(schema, name, objectType);
+    }
+
     default String getTableDdl(String schema, String table) {
         List<IndexInfo> indexes;
         try {

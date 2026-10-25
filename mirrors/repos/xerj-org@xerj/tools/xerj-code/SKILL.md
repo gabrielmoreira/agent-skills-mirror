@@ -477,6 +477,15 @@ passage. Copying a GPL implementation into a permissively licensed project is a
 real problem, not a technicality. Adapt the approach and write your own code
 when the licences are incompatible.
 
+A corpus of the user's own first-party code is marked with `xerj corpus add --own`
+or `xerj corpus own <name>` (`--off` clears it). `"own": true` in that corpus's
+`corpus.json` keeps an unidentified licence (`UNKNOWN`, `NONE-FOUND`) in the hit
+header and omits the do-not-copy banner for that unidentified licence, in
+`xerj code` and in `xerj_code_search`. A licence the detector named still warns.
+Do not pass `--own` for someone else's repository. A local path is not marked
+own on its own, and a `--from` manifest cannot set the marker. Hub pack licence
+classes are unchanged.
+
 **A stale index is worse than none.** It returns code that no longer exists and
 sends the agent down a dead path with false confidence. `xerj code` refuses to
 answer from an index older than 30 days unless you pass `--stale-ok`; re-run

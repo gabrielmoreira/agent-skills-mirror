@@ -21,7 +21,7 @@ Global API Key location: Cloudflare Dashboard → My Profile → API Tokens → 
 
 ### 2. Get Zone Information
 
-First step for any Cloudflare troubleshooting - obtain the zone ID:
+For zone-scoped troubleshooting, obtain the zone ID:
 
 ```bash
 curl -s -X GET "https://api.cloudflare.com/client/v4/zones?name=<domain>" \
@@ -30,6 +30,8 @@ curl -s -X GET "https://api.cloudflare.com/client/v4/zones?name=<domain>" \
 ```
 
 Select the exact matching zone and account before extracting its `id`; do not blindly select the first result when account or domain identity is ambiguous. Use that zone’s `account.id` for account-scoped calls.
+
+For a Pages hostname that has never been attached, an empty exact-zone result is a finding, not an account ID or proof that the site is absent. Resolve the existing account/project from its authorized configuration and follow [Pages custom domains and DNSSEC migration](references/pages-custom-domain.md). Do not create a zone merely to make this lookup succeed.
 
 ### 3. Investigate Systematically
 
@@ -88,7 +90,7 @@ curl -X PATCH "https://api.cloudflare.com/client/v4/zones/{zone_id}/settings/ssl
   --data '{"value":"full"}'
 ```
 
-Purge cache after fix:
+If stale HTTP redirects remain after the fix, purge the relevant HTTP cache:
 ```bash
 curl -X POST "https://api.cloudflare.com/client/v4/zones/{zone_id}/purge_cache" \
   -H "X-Auth-Email: email" \
@@ -101,6 +103,8 @@ curl -X POST "https://api.cloudflare.com/client/v4/zones/{zone_id}/purge_cache" 
 For alias delivery, destination verification, catch-all behavior or forwarding MX issues, follow [Email Routing](references/email-routing.md). It supplies the account/zone API read sequence and separates saved configuration from actual Inbox arrival.
 
 ### DNS Issues
+
+For a working `pages.dev` site with an unreachable custom hostname, missing Pages binding, or a nameserver/DNSSEC move, load [Pages custom domains and DNSSEC migration](references/pages-custom-domain.md) before changing DNS. It separates registrar identity, parent publication, recursive caches and normal-hostname acceptance.
 
 **Evidence gathering:**
 
@@ -154,7 +158,7 @@ For alias delivery, destination verification, catch-all behavior or forwarding M
 **Common issues:**
 - Error 526: SSL mode is "strict" but origin cert invalid
 - Error 525: SSL handshake failure at origin
-- Provisioning delay: Wait 15-30 minutes for Universal SSL
+- Provisioning delay: inspect the selected product's certificate/domain validation state and report the remaining prerequisite or pending state
 
 ### Origin Server Errors (502/503/504)
 
@@ -249,12 +253,9 @@ Consult `references/common_issues.md` for:
 1. **Gather evidence first** - Understand current state
 2. **Identify root cause** - Don't guess
 3. **Apply targeted fix** - Change only what's needed
-4. **Purge cache if needed** - Especially for SSL/redirect changes
+4. **Purge HTTP cache only when implicated** - A CDN purge does not publish registrar changes or clear recursive DNS caches
 5. **Verify fix** - Re-query API to confirm
-6. **Inform user of wait times:**
-   - Edge server propagation: 30-60 seconds
-   - DNS propagation: Up to 48 hours
-   - Browser cache: Requires manual clear
+6. **Report the waiting stage and next observation:** use current activation state, registry publication policy and observed TTLs. Registrar save, parent publication and client recovery can occur at different times; do not prescribe a fixed delay or browser-cache clearing without evidence.
 
 ### Security
 
@@ -274,8 +275,8 @@ Consult `references/common_issues.md` for:
    - Verify with external tools (dig, curl)
 4. Analyze evidence to determine root cause
 5. Apply fix via appropriate API endpoint
-6. Purge cache if configuration change affects delivery
-7. Verify fix via API query and external testing
+6. Purge HTTP cache only if stale HTTP content is implicated
+7. Verify fix via API query and normal-hostname external testing; provider or forced-IP success alone is partial
 8. Inform user of resolution and any required actions
 ```
 
@@ -304,13 +305,13 @@ curl -X PATCH "https://api.cloudflare.com/client/v4/zones/ZONE_ID/settings/ssl" 
   -H "Content-Type: application/json" \
   --data '{"value":"full"}'
 
-# 4. Purge cache
+# 4. Only if stale HTTP redirects remain, purge HTTP cache
 curl -X POST "https://api.cloudflare.com/client/v4/zones/ZONE_ID/purge_cache" \
   -H "X-Auth-Email: user@example.com" \
   -H "X-Auth-Key: abc123" \
   -d '{"purge_everything":true}'
 
-# 5. Inform user: Wait 60 seconds, clear browser cache, retry
+# 5. Recheck the ordinary hostname and browser; report observed recovery or the unresolved layer
 ```
 
 ## When Scripts Are Useful

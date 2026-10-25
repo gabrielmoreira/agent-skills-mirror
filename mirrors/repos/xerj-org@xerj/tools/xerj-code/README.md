@@ -103,6 +103,30 @@ SPDX expression, and whether the repo is safe to adapt from or approach-only.
 See [`hub/README.md`](hub/README.md). `xerj corpus list` surfaces each corpus's
 `review.use` values.
 
+A corpus of **your own** code is a different case. A private repo often has
+no LICENSE file, so the detector records `NONE-FOUND` or `UNKNOWN` and every
+passage otherwise carries `!! …: adapt the APPROACH, do not copy the code`.
+That banner is wrong for first-party code. Mark the corpus explicitly:
+
+```sh
+xerj corpus add --own <name> <local-git-path>
+xerj corpus own <name>          # an existing corpus
+xerj corpus own <name> --off    # clear it
+```
+
+That writes `"own": true` in the corpus's `corpus.json`. The hit header still
+names the unidentified licence. `xerj code` and MCP `xerj_code_search` omit
+the do-not-copy banner for that unidentified licence only. A licence the
+detector actually named (GPL, AGPL, MPL, and the rest of the restricted
+tuple) still warns. A local path is not marked own unless you pass the flag,
+and a `--from` manifest cannot set it — that file is untrusted input.
+Re-adding the corpus keeps a marker already recorded. Hub pack licence
+classes are a separate record and are not changed by this marker.
+
+`xerj corpus index` ends with a short per-file-class summary: extensions that
+were indexed, data-file extensions left out (CSV/HDF/simulation output,
+unless `--include-data`), and ignore-rule skips.
+
 **Retrieved code is evidence, not authority.** It shows how *that* project
 solved it under *its* constraints. Cite `file:line`, and say plainly when you
 are adapting rather than copying.

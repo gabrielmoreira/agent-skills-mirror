@@ -6,27 +6,25 @@ description: Use before editing any file under the registry components or kits, 
 
 Use the `shadcn` skill for CLI, upstream docs, and generic shadcn/ui rules.
 Use `vercel-react-best-practices` for selected implementation tactics.
-`VISION.md`'s Plugins & Components and UI Registry sections set the direction
-for Plate React components. This skill owns the method that applies it:
-component shape, family topology, open-code preservation, the base/live kit
-split, registry wiring and browser proof. Read
-[Component shape](./rules/component-shape.md) for renderer contracts and
-[Shadcn proofing](./rules/shadcn-proofing.md) for copied component
-implementation or review.
+`docs/vision/plate.md` (Plugin and component doctrine) owns Plate React and
+component law: component shape, family topology, extraction boundaries,
+cross-platform layering and React performance. This skill owns the method that
+applies it: open-code preservation, the base/live kit split, registry wiring
+and browser proof.
 
 ## Repo Surfaces
 
-- `apps/www/src/registry/ui` — copied editor UI and its live and static node
-  components
-- `apps/www/src/registry/components/editor` — editor composition and kits,
-  including `plugins/*-kit.tsx`
+- `apps/www/src/registry/components/editor` — provider-neutral copied editor
+  features, live/static components, and app-owned kit values
+- `apps/www/src/registry/bases/*` — provider-specific source variants that
+  install over the same flat editor targets
 - `apps/www/src/registry/registry-*.ts` — registry metadata and dependencies
 - `packages/*` — upstream semantic owners; package edits route to
   `plate-plugins`
 
 ## Routing Gate
 
-Ownership follows the Domain owners table in `AGENTS.md`.
+Ownership follows the Routing table in `AGENTS.md`.
 
 Continue here whenever a Plate package or registry task makes a React,
 component, hook, provider, store, primitive, or composition decision. Package
@@ -47,7 +45,7 @@ schema law, and application typing remain outside this skill.
 
 ### Registry Wiring → [registry.md](./rules/registry.md)
 
-- Update `registry-ui.ts`, `registry-kits.ts`, `registry-components.ts` and
+- Update `registry-features.ts`, `registry-editor.ts`, and
   `registry-examples.ts` together.
 
 ### Registry Changelog
@@ -76,36 +74,60 @@ visibility.
   need real independent composition. They do not automatically earn a public
   provider or store.
 - Performance advice may optimize an accepted Plate shape; it cannot replace
-  this skill's component law.
+  the component law in Vision.
 
 ## Key Patterns
 
 ```tsx
 // Good: simple component owns its own renderer behavior directly.
-function ImageElement(props: PlateElementProps<TImageElement>) {
+function MediaImage(props: EditorElementProps<typeof ImagePlugin>) {
   const selected = useSelected();
 
-  return <PlateElement {...props} data-selected={selected || undefined} />;
+  return <EditorElement {...props} data-selected={selected || undefined} />;
 }
 
-// Good: copied suggestion UI reads its owning plugin's API.
-const suggestionApi = editor.getApi(SuggestionPlugin).suggestion;
+// Good: one reusable family controller coordinates complex siblings.
+const tableResize = useTableResizeController();
+
+// Good: host-owned app code outside copied registry UI uses its inferred editor.
+const api = editor.api.comments;
+
+// Good: copied suggestion UI uses its owning descriptor.
+const suggestionApi = editor.plugin(SuggestionPlugin).api;
+
+// Good: feature-owned cross-feature integration checks the optional portal.
+const optionalSuggestion = editor.plugin(SuggestionPlugin);
+
+if (optionalSuggestion.installed) {
+  optionalSuggestion.api.createIdentity();
+}
+
+// Good: package core owns commands/state, platform UI composes locally.
+const canToggleBold = bridgeState.canToggleBold;
+const onPress = () => editor.plugin(BoldPlugin).update.toggle();
+return <Button disabled={!canToggleBold} onClick={onPress}>Bold</Button>;
 
 // Good: base/live split stays explicit.
 export const BaseFootnoteKit = [
-  BaseFootnoteReferencePlugin.withComponent(FootnoteReferenceElementStatic),
-  BaseFootnoteDefinitionPlugin.withComponent(FootnoteDefinitionElementStatic),
+  BaseFootnoteReferencePlugin.configure({
+    component: FootnoteReferenceElementStatic,
+  }),
+  BaseFootnoteDefinitionPlugin.configure({
+    component: FootnoteDefinitionElementStatic,
+  }),
 ];
 
 export const FootnoteKit = [
-  FootnoteInputPlugin.withComponent(FootnoteInputElement),
-  FootnoteReferencePlugin.withComponent(FootnoteReferenceElement),
-  FootnoteDefinitionPlugin.withComponent(FootnoteDefinitionElement),
+  FootnoteReferencePlugin.configure({
+    component: FootnoteReferenceElement,
+    slots: { afterEditable: FootnoteCombobox },
+  }),
+  FootnoteDefinitionPlugin.configure({ component: FootnoteDefinitionElement }),
 ];
 
 // Good: runtime-neutral policy is shared by both editor presets.
 export const MarkdownKit = [
-  MarkdownPlugin.configure({ options: { remarkPlugins: [remarkGfm] } }),
+  MarkdownPlugin.configure({ initialState: { remarkPlugins: [remarkGfm] } }),
 ];
 
 // Bad: package hook exists only to feed one shadcn component's local UI.
@@ -120,10 +142,11 @@ const { dialogTitle, menuItems, onOpenChange, popoverOpen } =
 ## Workflow
 
 1. Start with the `shadcn` skill. Run the normal `shadcn` docs/search workflow first.
-2. Search Plate for the closest analog in `apps/www/src/registry/ui`,
-   `apps/www/src/registry/components/editor` and the relevant `packages/*`.
+2. Search Plate for the closest analog in
+   `apps/www/src/registry/components/editor`, the applicable
+   `apps/www/src/registry/bases/*` variant, and the relevant `packages/*`.
 3. Decide ownership before writing code: package ownership requires a durable
-   contract independent of the renderer.
+   contract independent of the renderer (`docs/vision/plate.md`).
 4. Decide the three layers before coding:
    - semantic core
    - platform adapter

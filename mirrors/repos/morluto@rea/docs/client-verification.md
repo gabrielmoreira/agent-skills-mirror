@@ -458,6 +458,11 @@ real local Codex CLI with:
 npm run verify:agent
 ```
 
+The verifier's scenarios, transcript scoring, fixture rubrics, and report gates
+are development verification code under `tests/evaluation/model-evals/`. The
+source-owned evaluator runs alongside the compiled REA tools; it is excluded
+from the shipped runtime package.
+
 The lane runs scenarios sequentially in standalone Codex (`--no-daemon`) with a
 disposable HOME and CODEX_HOME under `~/.cache/rea-agent-evaluations/`. Set
 `REA_AGENT_EVAL_ROOT` to choose another parent directory outside the OS temporary
@@ -487,7 +492,7 @@ boundary instead of stopping at Codex approval. Its scenario contract accepts
 one `provider_unavailable` open refusal without a close, or one successful open
 followed by a successful close. Other errors, an unclosed session, and a close
 without acquisition fail. These outcomes and the prompt are owned together in
-`src/evaluation/AgentEvaluationScenarios.ts`; generic successful-tool sequences
+`tests/evaluation/model-evals/AgentEvaluationScenarios.ts`; generic successful-tool sequences
 still apply to scenarios that require them. The provider scenario checks routing,
 reported limitations, and cleanup; free-form answer correctness remains
 unassessed. It does not validate a real native engine or authorize runtime execution.

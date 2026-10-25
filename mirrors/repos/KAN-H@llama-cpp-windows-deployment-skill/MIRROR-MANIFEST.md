@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `KAN-H/llama-cpp-windows-deployment-skill` — 26 default patterns, 8 followed patterns, 9 file(s) materialized.
+Mirror of `KAN-H/llama-cpp-windows-deployment-skill` — 26 default patterns, 9 followed patterns, 10 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `KAN-H/llama-cpp-windows-deployment-skill` — 26 default patterns, 8 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 8 |
-| Files         | 9 |
+| Followed pats | 9 |
+| Files         | 10 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -52,6 +52,7 @@ Mirror of `KAN-H/llama-cpp-windows-deployment-skill` — 26 default patterns, 8 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
 - `references/INDEX.md`
+- `references/sessions/20261024-concurrency-np-kv-unified-report.md`
 - `references/guides/first-time-setup.md`
 - `references/sessions/20260803-session-experience.md`
 - `references/sessions/20260816-session-experience.md`
@@ -74,7 +75,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 6 | → | [`references/INDEX.md`](references/INDEX.md) |
 | 7 | → | [`references/sessions/20260803-session-experience.md`](references/sessions/20260803-session-experience.md) |
 | 8 | → | [`references/sessions/20260816-session-experience.md`](references/sessions/20260816-session-experience.md) |
-| 9 | → | [`scripts/q6-tuning/README.md`](scripts/q6-tuning/README.md) |
+| 9 | → | [`references/sessions/20261024-concurrency-np-kv-unified-report.md`](references/sessions/20261024-concurrency-np-kv-unified-report.md) |
+| 10 | → | [`scripts/q6-tuning/README.md`](scripts/q6-tuning/README.md) |
 
 ---
 

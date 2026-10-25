@@ -13,10 +13,11 @@ import {
 export const DEFAULT_BENCHMARK_LANES = [
   'source-and-host-readiness',
   'current-vs-main-product-smoke',
-  'plate-vs-slate-decomposition',
+  'plate-vs-plite-decomposition',
   'owner-microbench-and-trace',
   'product-mount-matrix',
   'trusted-editing-matrix',
+  'plite-vs-pinned-slate',
   'example-breadth',
   'large-and-stress',
 ];
@@ -63,7 +64,7 @@ const ARCHITECTURAL_FIX_CLASSES = new Set([
   'public-api',
   'runtime-architecture',
 ]);
-const LAYER_PLANS = new Set(['plate', 'plate + slate', 'slate', 'slate + plate']);
+const LAYER_PLANS = new Set(['plate', 'plate + plite', 'plite', 'plite + plate']);
 const CAUSE_HISTORY_DECISIONS = new Set([
   'deferred',
   'invalidated',
@@ -158,7 +159,7 @@ const validateFixDecision = (decision, label, errors) => {
     }
     if (!LAYER_PLANS.has(decision.layerPlan?.toLowerCase())) {
       errors.push(
-        `${label} ${fixClass} requires layer-plan slate, plate, or both`
+        `${label} ${fixClass} requires layer-plan plite, plate, or both`
       );
     }
     if (
@@ -1403,7 +1404,8 @@ export const validateBenchmarkPlan = (
       rows.find((row) => row.lane === lane)?.applies.toLowerCase() === 'yes';
     const hasApplicableComparison = [
       'current-vs-main-product-smoke',
-      'plate-vs-slate-decomposition',
+      'plate-vs-plite-decomposition',
+      'plite-vs-pinned-slate',
     ].some(applies);
 
     if (
@@ -1413,10 +1415,17 @@ export const validateBenchmarkPlan = (
       errors.push('current-vs-main-product-smoke requires plate-main-identity');
     }
     if (
-      applies('plate-vs-slate-decomposition') &&
+      (applies('plate-vs-plite-decomposition') ||
+        applies('plite-vs-pinned-slate')) &&
+      !isSourceIdentity(benchmarkSource?.['plite-identity'])
+    ) {
+      errors.push('Plite comparison lanes require plite-identity');
+    }
+    if (
+      applies('plite-vs-pinned-slate') &&
       !isSourceIdentity(benchmarkSource?.['slate-identity'])
     ) {
-      errors.push('plate-vs-slate-decomposition requires slate-identity');
+      errors.push('plite-vs-pinned-slate requires slate-identity');
     }
 
     if (!comparisonSignature.error) {

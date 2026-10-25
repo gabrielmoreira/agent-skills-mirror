@@ -72,35 +72,36 @@ Run as an Agent Client Protocol agent over stdio (same as the `clawo-acp` binary
 clawo session-start [name] [options]
 ```
 
-| Flag                            | Description                                                                                 |
-| ------------------------------- | ------------------------------------------------------------------------------------------- |
-| `-d, --cwd <dir>`               | Working directory                                                                           |
-| `-e, --engine <engine>`         | Engine: `claude` (default), `codex`, `codex-app`, `agy`, `grok`, `opencode`, or `custom`    |
-| `-m, --model <model>`           | Model name or alias                                                                         |
-| `--permission-mode <mode>`      | `acceptEdits` (default), `plan`, `auto`, `bypassPermissions`, `manual`, `dontAsk`           |
-| `--effort <level>`              | `low`, `medium`, `high`, `xhigh`, `max`, `ultra`, `auto`                                    |
-| `--allowed-tools <tools>`       | Comma-separated tool whitelist                                                              |
-| `--disallowed-tools <tools>`    | Comma-separated tools to deny                                                               |
-| `--max-turns <n>`               | Max agent loop turns                                                                        |
-| `--max-budget <usd>`            | API cost ceiling                                                                            |
-| `--system-prompt <text>`        | Replace system prompt                                                                       |
-| `--append-system-prompt <text>` | Append to system prompt                                                                     |
-| `--agents <json>`               | Custom sub-agents JSON                                                                      |
-| `--agent <name>`                | Default agent                                                                               |
-| `--bare`                        | No CLAUDE.md, no git context                                                                |
-| `-w, --worktree [name]`         | Git worktree                                                                                |
-| `--fallback-model <model>`      | Fallback model                                                                              |
-| `--json-schema <schema>`        | JSON Schema for structured output                                                           |
-| `--mcp-config <paths>`          | MCP config files (comma-separated)                                                          |
-| `--settings <pathOrJson>`       | Settings.json path or inline JSON                                                           |
-| `--skip-persistence`            | Do not save the session — neither the engine's transcript nor the resume registry           |
-| `--betas <headers>`             | Beta headers (comma-separated)                                                              |
-| `--enable-agent-teams`          | Enable agent teams                                                                          |
-| `--enable-auto-mode`            | Enable auto permission mode                                                                 |
-| `--resume-session-id <id>`      | Resume an existing session by ID                                                            |
-| `--base-url <url>`              | Custom API endpoint (for proxy)                                                             |
-| `--add-dir <dirs>`              | Comma-separated additional working directories                                              |
-| `--custom-engine <preset>`      | With `-e custom`: the id of a bundled engine preset (see [`clawo engines`](#clawo-engines)) |
+| Flag                            | Description                                                                                     |
+| ------------------------------- | ----------------------------------------------------------------------------------------------- |
+| `-d, --cwd <dir>`               | Working directory                                                                               |
+| `-e, --engine <engine>`         | Engine: `claude` (default), `codex`, `codex-app`, `agy`, `grok`, `opencode`, `acp`, or `custom` |
+| `-m, --model <model>`           | Model name or alias                                                                             |
+| `--permission-mode <mode>`      | `acceptEdits` (default), `plan`, `auto`, `bypassPermissions`, `manual`, `dontAsk`               |
+| `--effort <level>`              | `low`, `medium`, `high`, `xhigh`, `max`, `ultra`, `auto`                                        |
+| `--allowed-tools <tools>`       | Comma-separated tool whitelist                                                                  |
+| `--disallowed-tools <tools>`    | Comma-separated tools to deny                                                                   |
+| `--max-turns <n>`               | Max agent loop turns                                                                            |
+| `--max-budget <usd>`            | API cost ceiling                                                                                |
+| `--system-prompt <text>`        | Replace system prompt                                                                           |
+| `--append-system-prompt <text>` | Append to system prompt                                                                         |
+| `--agents <json>`               | Custom sub-agents JSON                                                                          |
+| `--agent <name>`                | Default agent                                                                                   |
+| `--bare`                        | No CLAUDE.md, no git context                                                                    |
+| `-w, --worktree [name]`         | Git worktree                                                                                    |
+| `--fallback-model <model>`      | Fallback model                                                                                  |
+| `--json-schema <schema>`        | JSON Schema for structured output                                                               |
+| `--mcp-config <paths>`          | MCP config files (comma-separated)                                                              |
+| `--settings <pathOrJson>`       | Settings.json path or inline JSON                                                               |
+| `--skip-persistence`            | Do not save the session — neither the engine's transcript nor the resume registry               |
+| `--betas <headers>`             | Beta headers (comma-separated)                                                                  |
+| `--enable-agent-teams`          | Enable agent teams                                                                              |
+| `--enable-auto-mode`            | Enable auto permission mode                                                                     |
+| `--resume-session-id <id>`      | Resume an existing session by ID                                                                |
+| `--base-url <url>`              | Custom API endpoint (for proxy)                                                                 |
+| `--add-dir <dirs>`              | Comma-separated additional working directories                                                  |
+| `--custom-engine <preset>`      | With `-e custom`: the id of a bundled engine preset (see [`clawo engines`](#clawo-engines))     |
+| `--acp-agent <preset>`          | With `-e acp`: the id of a bundled ACP agent preset, e.g. `kimi-code`, `dsh`                    |
 
 The remaining `session_start` options (hook events, permission-prompt tool, debug output, `fromPr`, MCP channels, prompt-cache settings and others) are tool parameters only and have no CLI flag. See [Tools Reference](./tools.md#session_start).
 
@@ -108,14 +109,19 @@ The remaining `session_start` options (hook events, permission-prompt tool, debu
 
 ```bash
 clawo session-send <name> <message> [options]
+clawo session-send <name> --message-file <file> [options]
 ```
 
-| Flag                 | Description                      |
-| -------------------- | -------------------------------- |
-| `--effort <level>`   | Override effort for this message |
-| `--plan`             | Enable plan mode                 |
-| `-s, --stream`       | Collect streaming chunks         |
-| `-t, --timeout <ms>` | Timeout (default 300000)         |
+| Flag                    | Description                                                                  |
+| ----------------------- | ---------------------------------------------------------------------------- |
+| `--message-file <file>` | Read the message from a file (long text, or text starting with `-`)          |
+| `--effort <level>`      | Override effort for this message                                             |
+| `--plan`                | Enable plan mode                                                             |
+| `-s, --stream`          | Collect streaming chunks                                                     |
+| `-t, --timeout <ms>`    | Timeout (default 300000)                                                     |
+| `--json`                | Print the whole result (`ok`, `output`, `sessionId`, `error`, …) as one line |
+
+Every command that fails prints `Failed: …` and exits 1.
 
 ### session-stop
 
@@ -132,8 +138,10 @@ clawo session-list
 ### session-status
 
 ```bash
-clawo session-status <name>
+clawo session-status <name> [--json]
 ```
+
+`--json` prints the whole status (`stats` with turns, tool calls, tokens, cost and the engine's resume id) as one line.
 
 ### session-grep
 
@@ -238,6 +246,37 @@ engine may appear more than once. With `--wait` the run is followed to the end
 and every answer is printed, followed by the synthesis when `--synthesize` was
 given. Checks run after the fan-out, as for `solve`.
 
+## `clawo goal`
+
+Run a Codex `/goal` on one `codex-app` thread, then have the runtime check the
+result: goal → verify → repair on the same thread. See [workflow.md](./workflow.md#goal).
+
+```bash
+clawo goal "<objective>" | --objective-file <file>
+           [--check "<command>"]... [--contract <file>] [--check-timeout <minutes>]
+           [--launcher <arg>]... [--model <model>] [--effort <level>] [--sandbox <mode>] [--thread <id>]
+           [--token-budget N] [--goal-timeout <minutes>] [--max-repairs N]
+           [--cwd <dir>] [--wait] [--json]
+```
+
+| Option             | Default           | Notes                                                                                                               |
+| ------------------ | ----------------- | ------------------------------------------------------------------------------------------------------------------- |
+| `--objective-file` | —                 | Read the objective from a file instead of the argument. Codex accepts at most 4,000 characters                      |
+| `-c, --check`      | —                 | A command check, repeatable, run after the goal. Split on whitespace; quote-needing commands go in `--contract`     |
+| `--check-timeout`  | 10                | Minutes for each `--check`. The verifier's node timeout is sized from the checks                                    |
+| `--launcher`       | —                 | Run codex under this command, one argv element per flag: `--launcher ./sandbox.sh --launcher task --launcher "0 1"` |
+| `-m, --model`      | codex's own       | Codex model                                                                                                         |
+| `--sandbox`        | `workspace-write` | Codex's own sandbox mode. With an outer sandbox as the boundary, `danger-full-access`                               |
+| `--thread`         | —                 | Start on this existing codex thread: its goal is replaced, its history kept                                         |
+| `--token-budget`   | —                 | The goal stops as `budgetLimited` past this                                                                         |
+| `--goal-timeout`   | none              | Wall-clock minutes for one goal pass                                                                                |
+| `--max-repairs`    | `1`               | Times a red verdict sends the goal back to the same thread                                                          |
+| `-w, --wait`       | off               | Follow the run; exit `0` only if it completes                                                                       |
+
+`clawo workflow show <runId>` prints the goal's status, tokens, time, resume
+attempts and thread id while it runs; `clawo workflow steer <runId> "<text>"`
+goes into the running turn.
+
 ## `clawo workflow`
 
 ```bash
@@ -245,7 +284,7 @@ clawo workflow list [--state <s>] [--workflow <name>] [--limit N] [--json]
 clawo workflow show <runId> [--json]
 clawo workflow resume <runId>          # re-attach to a run whose process died
 clawo workflow cancel <runId>
-clawo workflow steer <runId> "<text>"  # queue a correction for the next agent node
+clawo workflow steer <runId> "<text>"  # a correction for the next agent node, or into a running goal
 clawo workflow approve <runId> [reject]
 ```
 
@@ -269,7 +308,7 @@ files included).
 
 ## `clawo engines`
 
-Lists the community engine presets bundled with the installed package, with each
+Lists the community engine presets bundled with the installed package (custom engines and ACP agents), with each
 one's provenance — who attested it, against which engine version, on what date.
 Read locally rather than over HTTP, since it is a property of the package and has
 to work with no server running.
@@ -278,9 +317,10 @@ to work with no server running.
 clawo engines
 clawo engines --json
 clawo session-start my-session -e custom --custom-engine <id>
+clawo session-start my-session -e acp --acp-agent <id>     # an ACP agent preset
 ```
 
-A preset id is the only form of custom engine the CLI can pass: it reaches the
+A preset id is the only form of custom engine or ACP agent the CLI can pass: it reaches the
 session through the HTTP surface, which refuses inline configs because those name
 a binary and its arguments. See [multi-engine.md](./multi-engine.md) for the tiers
 and what a community preset does and does not claim.

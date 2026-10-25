@@ -67,9 +67,11 @@ Use these checks alongside the entry-point recipes below and the operation recor
 
 ### `new-task`
 
-Automated: [creation dialog](../../ui/src/components/NewIssueDialog.test.tsx) is component coverage with mocked requests.
+Automated: [board dialogs](../../ui/src/components/BoardDialogs.test.tsx) checks that the task form appears on the first synchronous open and retains its draft across reopen. [Creation dialog](../../ui/src/components/NewIssueDialog.test.tsx) covers typing while agent/project requests are pending and retaining that text when defaults arrive. These are component checks with mocked requests.
 
 Manual: Create a uniquely named task with an agent and project. Open its resulting link and reload. Confirm text, attachment, assignment, and project persisted, and verify execution started only when the task and agent are eligible.
+
+On the first New task open after a page load, confirm the form appears without a loading dialog. Delay agent and project responses, type a request, then release the responses. Confirm the choices populate without replacing the form or its text.
 
 Creation is request-first: enter **Describe a task…**, choose the assignee and
 project, and submit **Create task**. A standalone title field is not always shown.

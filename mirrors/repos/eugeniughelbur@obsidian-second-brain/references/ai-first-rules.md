@@ -35,6 +35,13 @@ ai-first: true                # explicit flag
 ---
 ```
 
+**Optional check-in fields (any person, project, company, or entity note):**
+```yaml
+last-checked: YYYY-MM-DD      # the owner confirmed or updated the facts; set only by /obsidian-checkin
+checkin: never | priority     # keep the note out of check-ins, or ask about it first
+```
+`last-checked` moves only when the owner looks at the facts. `updated` is the last meaningful update, so a link-only or formatting edit must not touch it.
+
 ### 4. Recency markers per claim
 When stating external facts, attach the date inline:
 
@@ -284,13 +291,16 @@ date: YYYY-MM-DD
 type: source
 tags: [source, <article|transcript|pdf|video>]
 source_url: ""                # verbatim
-source_path: ""               # optional: local source's vault-relative POSIX path
+source_path: ""               # local source: vault-relative POSIX path, absolute outside vault
+source_file_hash: ""          # optional: full SHA-256 of original file bytes for directory ingestion
 source_type: article
 content_hash: ""
 capture_scope: full-local     # full-local | bounded-local | url-only
 source_quality: medium        # high | medium | speculation
 ai-first: true
 ```
+
+`source_file_hash` identifies the original file version, including binary inputs. It is separate from canonical `content_hash`, which identifies the retained text. Directory ingestion records only completed source versions in existing operation logs; unfinished work is retried using retained captures. A raw capture alone does not establish completion. See `commands/obsidian-ingest.md` for the receipt format and recovery procedure.
 
 **`capture_scope` says what the vault actually kept (#194).** A populated `source_url` proves where a claim came from, not that the evidence is still readable: the page can die, or quietly stop saying what the note relied on. The three values are about retention, never about quality:
 

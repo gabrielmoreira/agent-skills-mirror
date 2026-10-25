@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="media/UndetectedStealthBrowser-2.png" alt="Stealth Browser MCP logo" width="200"/>
+<img src="https://raw.githubusercontent.com/vibheksoni/stealth-browser-mcp/master/media/UndetectedStealthBrowser-2.png" alt="Stealth Browser MCP logo" width="200"/>
 
 # Stealth Browser MCP
 
@@ -9,11 +9,11 @@
 Navigate Cloudflare challenges, anti-bot checks, and login walls with real Chrome-family browser instances powered by [nodriver](https://github.com/ultrafunkamsterdam/nodriver), Chrome DevTools Protocol, and [FastMCP](https://github.com/jlowin/fastmcp).
 
 [![MCP](https://img.shields.io/badge/MCP-Compatible-blue?style=flat-square)](https://modelcontextprotocol.io)
-[![Version](https://img.shields.io/badge/version-0.2.5-blue?style=flat-square)](pyproject.toml)
-[![Python](https://img.shields.io/badge/Python-3.10%2B-blue?style=flat-square)](pyproject.toml)
+[![PyPI](https://img.shields.io/pypi/v/browserstealthmcp?style=flat-square)](https://pypi.org/project/browserstealthmcp/)
+[![Python](https://img.shields.io/badge/Python-3.10%2B-blue?style=flat-square)](https://github.com/vibheksoni/stealth-browser-mcp/blob/master/pyproject.toml)
 [![Stars](https://img.shields.io/github/stars/vibheksoni/stealth-browser-mcp?style=flat-square)](https://github.com/vibheksoni/stealth-browser-mcp/stargazers)
-[![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen?style=flat-square)](CONTRIBUTING.md)
+[![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)](https://github.com/vibheksoni/stealth-browser-mcp/blob/master/LICENSE)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen?style=flat-square)](https://github.com/vibheksoni/stealth-browser-mcp/blob/master/CONTRIBUTING.md)
 
 </div>
 
@@ -21,7 +21,7 @@ Navigate Cloudflare challenges, anti-bot checks, and login walls with real Chrom
 
 ## Sponsors
 
-<a href="https://go.nodemaven.com/stealthbrowsermcpreadmesept"><img src="media/nodemaven-sponsor.png" alt="NodeMaven" width="100%"></a>
+<a href="https://go.nodemaven.com/stealthbrowsermcpreadmesept"><img src="https://raw.githubusercontent.com/vibheksoni/stealth-browser-mcp/master/media/nodemaven-sponsor.png" alt="NodeMaven" width="100%"></a>
 
 [NodeMaven](https://go.nodemaven.com/stealthbrowsermcpreadmesept) — The most efficient proxy provider for Web Scraping and Automation with the Highest Quality IP on the market.
 
@@ -69,9 +69,9 @@ Navigate Cloudflare challenges, anti-bot checks, and login walls with real Chrom
 ## Demo
 
 <div align="center">
-<img src="media/showcase-demo-full.gif" alt="Stealth Browser MCP demo" width="800" style="border-radius: 8px;">
+<img src="https://raw.githubusercontent.com/vibheksoni/stealth-browser-mcp/master/media/showcase-demo-full.gif" alt="Stealth Browser MCP demo" width="800" style="border-radius: 8px;">
 <br><br>
-<a href="media/Showcase%20Stealth%20Browser%20Mcp.mp4" download>
+<a href="https://raw.githubusercontent.com/vibheksoni/stealth-browser-mcp/master/media/Showcase%20Stealth%20Browser%20Mcp.mp4" download>
   <img src="https://img.shields.io/badge/Watch%20HD%20Video-red?style=for-the-badge&logo=video&logoColor=white" alt="Watch HD Video">
 </a>
 </div>
@@ -98,9 +98,21 @@ Navigate Cloudflare challenges, anti-bot checks, and login walls with real Chrom
 
 ## Quickstart
 
-### 1. Clone and install
+### 1. Install
 
 Requires Python 3.10+ and Chrome, Chromium, or Microsoft Edge.
+
+**With pipx (recommended):**
+
+```bash
+pipx install browserstealthmcp
+```
+
+This puts a `stealth-browser-mcp` command on your `PATH`. Upgrade with `pipx upgrade browserstealthmcp`. `uvx browserstealthmcp` runs it without installing. To run the latest commit instead of a release, use `pipx install git+https://github.com/vibheksoni/stealth-browser-mcp.git`.
+
+The PyPI package is named `browserstealthmcp` because `stealth-browser-mcp` on PyPI belongs to a different, unrelated project. `pipx install stealth-browser-mcp` installs that project, not this one.
+
+**From a clone (for development):**
 
 ```bash
 git clone https://github.com/vibheksoni/stealth-browser-mcp.git
@@ -118,7 +130,29 @@ pip install -r requirements.txt
 
 ### 2. Add to your MCP client
 
-**Claude Code CLI (recommended):**
+**Installed with pipx:**
+
+```bash
+claude mcp add stealth-browser-mcp -- stealth-browser-mcp
+```
+
+Or in any client's JSON config:
+
+```json
+{
+  "mcpServers": {
+    "stealth-browser-mcp": {
+      "command": "stealth-browser-mcp",
+      "args": [],
+      "env": {}
+    }
+  }
+}
+```
+
+If your client cannot find the command, use the full path printed by `pipx list`. With uv you can skip the install and use `"command": "uvx", "args": ["browserstealthmcp"]`.
+
+**From a clone with Claude Code CLI:**
 
 Windows:
 
@@ -221,12 +255,14 @@ Choose exactly what functionality you need. Run the full 101-tool suite or strip
 | **Xpool safe** (`--xpool-safe`) | 84 | Disable CDP function tools that trigger `Runtime.enable` |
 
 ```bash
-python src/server.py --minimal
-python src/server.py --disable-cdp-functions --disable-dynamic-hooks
-python src/server.py --list-sections
-python src/server.py --debug
-python src/server.py --transport http --host 127.0.0.1 --port 8000
+stealth-browser-mcp --minimal
+stealth-browser-mcp --disable-cdp-functions --disable-dynamic-hooks
+stealth-browser-mcp --list-sections
+stealth-browser-mcp --debug
+stealth-browser-mcp --transport http --host 127.0.0.1 --port 8000
 ```
+
+From a clone, `python src/server.py` takes the same flags.
 
 Use `--debug` or set `STEALTH_BROWSER_DEBUG=1` to enable verbose server diagnostics on `stderr`. Normal MCP `stdio` runs stay quiet by default to avoid corrupting JSON-RPC transport output.
 
@@ -261,7 +297,8 @@ These are environment variables for the MCP server process. Set them in your she
 | `BROWSER_TAB_RECYCLE_NAVIGATIONS` | `0` | Replace the main tab with a fresh one after this many navigations. `0` keeps the same tab, which preserves history and session storage. |
 | `BROWSER_ORPHAN_PROFILE_MAX_AGE` | `21600` | Startup cleanup threshold in seconds for stale `uc_*` temp profiles. Set `0` to disable this startup sweep. |
 | `STEALTH_BROWSER_EXECUTABLE` | auto-detect | Path to the Chrome, Chromium, or Edge executable to launch instead of the auto-detected one. |
-| `BROWSER_FILE_UPLOAD_ALLOWED_DIRS` | repo root | Directories that `file_upload()` may read from. Separate multiple roots with `;` on Windows or `:` on macOS/Linux. |
+| `BROWSER_FILE_UPLOAD_ALLOWED_DIRS` | repo root or data dir | Directories that `file_upload()` may read from. Separate multiple roots with `;` on Windows or `:` on macOS/Linux. Defaults to the repo root for a clone and to the `uploads` folder in the data directory for an installed package. |
+| `STEALTH_BROWSER_MCP_DATA_DIR` | repo root or user data dir | Where element clones and large responses are written. Defaults to the repo root for a clone, and for an installed package to `%LOCALAPPDATA%\stealth-browser-mcp` on Windows, `~/Library/Application Support/stealth-browser-mcp` on macOS, or `$XDG_DATA_HOME/stealth-browser-mcp` (`~/.local/share/stealth-browser-mcp`) on Linux. |
 | `STEALTH_BROWSER_DEBUG` | `0` | Enable verbose debug logging to `stderr` when set to `1`. |
 | `DEBUG` | `0` | Legacy alias for `STEALTH_BROWSER_DEBUG`. |
 | `XPOOL_SAFE_MODE` | `0` | Disable the `cdp-functions` section at startup. |
@@ -512,7 +549,7 @@ client = Client(
 
 ## Stealth vs Playwright MCP
 
-Detection results are point-in-time and depend on site policy, region, browser version, IP reputation, and detector version. See [STEALTH_TESTS.md](STEALTH_TESTS.md) for weekly automated results from the benchmark in `benchmarks/stealth/`, which runs on Linux, Windows, and macOS in GitHub Actions, plus the earlier manual snapshot.
+Detection results are point-in-time and depend on site policy, region, browser version, IP reputation, and detector version. See [STEALTH_TESTS.md](https://github.com/vibheksoni/stealth-browser-mcp/blob/master/STEALTH_TESTS.md) for weekly automated results from the benchmark in `benchmarks/stealth/`, which runs on Linux, Windows, and macOS in GitHub Actions, plus the earlier manual snapshot.
 
 | Feature | Stealth Browser MCP | Playwright MCP |
 |---------|---------------------|----------------|
@@ -576,24 +613,24 @@ All driven from a single AI agent conversation.
 ## Showcase
 
 <div align="center">
-<img src="media/AugmentHeroClone.PNG" alt="Augment Code Hero Recreation" width="700" style="border-radius: 8px;">
+<img src="https://raw.githubusercontent.com/vibheksoni/stealth-browser-mcp/master/media/AugmentHeroClone.PNG" alt="Augment Code Hero Recreation" width="700" style="border-radius: 8px;">
 </div>
 
 **Augment Code hero clone** - A user asked Claude to clone the hero section from [augmentcode.com](https://www.augmentcode.com/). The agent spawned a stealth browser, navigated to the site, extracted the complete element via CDP (styles, structure, assets), and generated a pixel-accurate HTML recreation with responsive design and animations. The entire process took under two minutes of conversation.
 
-[View the recreation](demo/augment-hero-recreation.html) | [Full walkthrough](demo/augment-hero-clone.md)
+[View the recreation](https://github.com/vibheksoni/stealth-browser-mcp/blob/master/demo/augment-hero-recreation.html) | [Full walkthrough](https://github.com/vibheksoni/stealth-browser-mcp/blob/master/demo/augment-hero-clone.md)
 
 ---
 
 ## Roadmap
 
-See the live plan in [ROADMAP.md](ROADMAP.md). Contributions welcome.
+See the live plan in [ROADMAP.md](https://github.com/vibheksoni/stealth-browser-mcp/blob/master/ROADMAP.md). Contributions welcome.
 
 ---
 
 ## Contributing
 
-Read [CONTRIBUTING.md](CONTRIBUTING.md) and open a PR. First-time contributors welcome.
+Read [CONTRIBUTING.md](https://github.com/vibheksoni/stealth-browser-mcp/blob/master/CONTRIBUTING.md) and open a PR. First-time contributors welcome.
 
 If this project saves you time, star the repo. It helps more than you think.
 
@@ -609,4 +646,4 @@ If this tool saved you time or made you money, consider supporting development:
 
 ## License
 
-MIT - see [LICENSE](LICENSE).
+MIT - see [LICENSE](https://github.com/vibheksoni/stealth-browser-mcp/blob/master/LICENSE).

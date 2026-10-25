@@ -24,7 +24,7 @@ MCP 클라이언트에서 사용할 수 있습니다.
 [![Agent memory](https://img.shields.io/badge/agent%20memory-%2F__memory-00b3a4?style=flat-square)](https://xerj.org/docs/recipes/agentic-memory.html)
 [![MCP](https://img.shields.io/badge/MCP-native-1f6feb?style=flat-square)](https://xerj.org/llms.txt)
 [![llms.txt](https://img.shields.io/badge/llms.txt-agent%20ready-6f42c1?style=flat-square)](https://xerj.org/llms.txt)
-[![ES-YAML conformance](https://img.shields.io/badge/ES--YAML%20conformance-1366%2F1369-brightgreen?style=flat-square)](https://xerj.org/benchmarks)
+[![ES-YAML conformance](https://img.shields.io/badge/ES--YAML%20conformance-1444%2F1454-brightgreen?style=flat-square)](https://xerj.org/benchmarks)
 [![Single static binary](https://img.shields.io/badge/single%20static%20binary-no%20JVM-orange?style=flat-square)](https://xerj.org/docs/install.html)
 [![Default embedder](https://img.shields.io/badge/default%20embedder-lexical%2C%20offline-teal?style=flat-square)](https://xerj.org/docs/vectors.html)
 [![Neural](https://img.shields.io/badge/neural%20embedder-opt--in%2C%20downloads%20~90%20MB-9c8ade?style=flat-square)](https://xerj.org/docs/vectors.html)
@@ -526,7 +526,7 @@ scroll, reindex, `_cat` 엔드포인트. Kibana와 공식 클라이언트 라이
 `400`으로 거부됩니다. 어떤 크기의 결과든 `search_after`를 쓰세요
 ([상한](https://xerj.org/docs/api-es-compat.html#scroll-cap)).
 
-적합성 스위트가 매 커밋마다 실행되며 현재 1369건 중 1366건을 통과합니다. 스위트는
+적합성 스위트가 매 커밋마다 실행되며 현재 1454건 중 1444건을 통과합니다. 스위트는
 [`engine/tests/es-compat-yaml`](./engine/tests/es-compat-yaml)에 있고, 남은 간극은 숨기지
 않고 거기에 나열되어 있습니다. XERJ는 API와 호환됩니다. Elasticsearch 내부의 재구현이 아니며
 포크도 아닙니다.

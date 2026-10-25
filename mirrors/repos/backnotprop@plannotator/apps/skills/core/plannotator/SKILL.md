@@ -237,11 +237,11 @@ Recommended: Local only, purged after 30 days
 - `:::question` picks one choice, `:::question-multi` any number, `:::question-text` free text (so does a block with no choices).
 - The first line is the question; the lines after it are context. Never send a bare question: the reviewer switches in cold, thinks at the level of the product, and does not know what you know.
   - Say what the choice affects, what you know or tried, and why you recommend it, so they can decide without opening anything else.
-  - Be terse: one to three short sentences, plain words, no jargon or internal names they would not know.
+  - Be terse: one to three short sentences, plain words, no jargon or internal names.
   - Add a screenshot (`![alt](path)`) for anything visual.
-  - Link a file that shows it better (a plan, an HTML mock): `[the mock](mock.html)`. In the Inbox, attach it too; the link opens it beside the thread.
+  - Link a file that shows it better (a plan, a mock): `[the mock](mock.html)`. In the Inbox, attach it too; the link opens it beside the thread.
 - Choices: `- [ ] label`, optionally `- [ ] label — why`. The reviewer can also answer "Other", add a note, or skip.
-- `Recommended: <label>` marks yours; text matching no choice shows as a suggested answer.
+- `Recommended: <label>` marks yours (`A, B and C` on `:::question-multi`); other text shows as one more answer, tagged Recommended.
 - Ask only what you cannot decide alone, about 8 a round at most. Do not ask rhetorical questions or questions the codebase answers.
 - `- [x]` marks a settled choice. On resubmit, check the chosen answer, or drop the block and state the decision in prose.
 - Leave blank lines between the parts so the block reads well on GitHub.

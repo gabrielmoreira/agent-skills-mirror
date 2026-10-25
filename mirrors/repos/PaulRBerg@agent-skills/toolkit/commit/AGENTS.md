@@ -251,10 +251,11 @@ discard it.
 
 `prepare --porcelain` emits stable TSV records. Tabs, newlines, carriage returns, and backslashes inside fields are
 backslash-escaped. Outcome records use `PREPARED`, `VALIDATED`, `VALIDATION_SKIPPED`, `COMMITTED`, `INTEGRATED`,
-`SUPERSEDED`, `REBASED`, `PUSHED`, `PUSHED_NEW`, `BEHIND`, `HOOK_ADDED`, `FINDING_RESOLVED`, `FINDING_UNRESOLVED`, and
-`DISCARDED`. Each prepared path outside the active claim is disclosed as `UNCLAIMED<tab>path`. Each automatically
-applied exclusion is disclosed as `AUTO_BASELINE<tab>path<tab>oid`. The ordinary output lists the same pairs under
-`auto-applied baselines`. Each skipped automatic baseline is disclosed as `AUTO_BASELINE_SKIPPED<tab>path<tab>oid`.
+`SUPERSEDED`, `REBASED`, `PUSHED`, `PUSHED_NEW`, `PUSH_SKIPPED`, `BEHIND`, `HOOK_ADDED`, `FINDING_RESOLVED`,
+`FINDING_UNRESOLVED`, and `DISCARDED`. Each prepared path outside the active claim is disclosed as `UNCLAIMED<tab>path`.
+Each automatically applied exclusion is disclosed as `AUTO_BASELINE<tab>path<tab>oid`. The ordinary output lists the
+same pairs under `auto-applied baselines`. Each skipped automatic baseline is disclosed as
+`AUTO_BASELINE_SKIPPED<tab>path<tab>oid`.
 
 Receipts and retryable diagnostics print a fixed 12-character commit OID abbreviation. `show` and the transaction
 journal retain full OIDs. The `--diff full` display diff omits binary patch payloads and caps each file's section at 400
@@ -270,8 +271,13 @@ discards or re-prepares the transaction.
 
 Exit status `0` means success or an idempotent replay, `2` means invalid invocation or configuration, and `3` means the
 repository was left safe but needs a retry or reconciliation, including a commit whose finding resolution failed. Other
-Git, hook, signing, and push failures return `1`. Pushes always fetch and compare first. Without `--rebase`, they never
-pull, merge, or rebase. A behind branch prints `BEHIND <branch> <count>` and exits `3`.
+Git, hook, signing, and push failures return `1`. When no branch remote and no named remotes exist, both push commands
+print `PUSH_SKIPPED <branch> no-remote` and exit `0` without fetching, rebasing, or pushing. A commit receipt remains
+`committed`, clears its pending push request, and retains normal terminal expiry. Adding a remote later requires a new
+explicit push request. The skip also supports an unborn branch and does not prove remote publication.
+
+With a destination, pushes always fetch and compare first. Without `--rebase`, they never pull, merge, or rebase. A
+behind branch prints `BEHIND <branch> <count>` and exits `3`.
 
 The push destination is the configured upstream, `branch.<name>.remote` and `branch.<name>.merge`. The remote can be a
 URL, such as the fork URL that `gh pr checkout` writes. For a URL remote, ai-commit fetches the upstream branch and

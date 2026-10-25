@@ -194,6 +194,15 @@ counterpart.
 This section and the next describe the Python 0.6.6 engine; the native binary refuses `--prefill-fp8`,
 `--no-prefill-fp8` and `--precision`.
 
+The native Qwen3.5 engine has its own switch, `--prompt-precision int8` (bf16 by default). Prompt passes past 16 rows
+quantize each MLX affine 4-bit projection's inputs to int8, one scale (amax / 127) a 64-input group, and run the int8
+mma (`cuda.w4a8`, `w4a8_prefill.cu`). The per-64 integer dot is exact int32. Group sums and the scaled epilogue add in
+fp32 and can round; weights of other widths keep the bf16 prompt GEMM. The quantized inputs take 76.5 MiB of device memory, only with the switch on.
+Qualification requires kernel-contract receipts and same-build bf16 controls. Record revision, binary, model,
+fixture, compiler, flags and fatbin hashes with the quality and timing results. The input commit's performance and
+quality measurements are contributor observations until those receipts and the chunk, cache, draft and concurrency
+comparisons are complete.
+
 Prompt matmuls take bf16 activations by default. `--prefill-fp8` switches the ones that have an FP8 kernel (the
 27B's and Qwen3.6's MLX 4-bit projections, and the FP8, NVFP4 and MXFP8 layers of NVFP4 checkpoints) to e4m3
 activations with one scale a row, the arithmetic of TensorFold 0.5.0's prompts; `--no-prefill-fp8` asks for bf16 by

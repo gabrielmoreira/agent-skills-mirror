@@ -236,6 +236,16 @@ Formats 2, 3 and 4 retain header, directory and integrity facts. Compact deliver
 keeps complete Evidence in the requested bundle. See [Godot PCK](godot-pck.md)
 for embedded packs, batch queries and unknown encrypted coverage.
 
+Inspect a Node.js SEA carrier without running it:
+
+```sh
+rea inspect-artifact ./application --json
+rea extract-artifact ./application --json
+```
+
+See [Node.js SEA](node-sea.md) for supported layouts, script and asset paths,
+fuse observations, and the real-fixture verification lane.
+
 Inspect local model declarations without loading weights:
 
 ```bash
@@ -259,8 +269,8 @@ The command decodes a version 24, 27, 29, 31 or 39 `global-metadata.dat` and rep
 images, type, method and member names, string literals, index ranges, header
 sections and SHA-256. With `--binary PATH` it also reads the matching
 `GameAssembly.dylib`, `GameAssembly.dll` or `libil2cpp.so` (never runs it) and
-links each method to its code address; `--ghidra-seeds PATH` then writes Ghidra
-function seeds. It does not decrypt metadata. MCP defaults to compact counts
+links each method to its code address; `--generic-instances` adds generic
+method instances and `--ghidra-seeds PATH` then writes Ghidra function seeds. It does not decrypt metadata. MCP defaults to compact counts
 with retained Evidence; query indexed rows with filters, batch indices and
 selected fields. The CLI defaults to complete Evidence;
 `--detail summary --evidence_output FILE` exports the full result to a new file
@@ -290,6 +300,17 @@ embedded X.509 serial, issuer, subject, and validity fields. A missing security
 directory is observed absence of that table. See
 [PE Authenticode certificate tables](pe-certificates.md).
 
+Inspect PE import and delay-load tables without executing the image:
+
+```bash
+rea inspect-pe-imports /absolute/path/to/application.exe --json
+```
+
+The workflow reports DLL names, named and ordinal functions, delay-load
+descriptors, and a pefile-compatible import hash of the standard import table.
+A missing import directory is observed absence of that table. See
+[PE import and delay-load tables](pe-imports.md).
+
 Inspect ELF PT_NOTE and SHT_NOTE tables without executing the image:
 
 ```bash
@@ -299,6 +320,33 @@ rea inspect-elf-notes /absolute/path/to/program --json
 The workflow reports note owners, types, descriptor hashes, and GNU build-id
 or ABI-tag fields when those descriptors match. A missing note table is
 observed absence of those declarations. See [ELF note tables](elf-notes.md).
+
+Inspect an Apple `.ips` crash report without executing a target:
+
+```bash
+rea inspect-apple-ips /absolute/path/to/report.ips --json
+```
+
+The workflow reports first-line metadata, process/exception/termination facts,
+threads, usedImages, lossless integer registers, and documented crash classes
+when `bug_type` is `"309"`. Other DiagnosticReports types return no crash
+result. See [Apple IPS crash reports](apple-ips.md).
+Inspect Linux kernel module metadata without executing the module or requiring
+`modinfo`:
+
+```bash
+rea inspect-kernel-module /absolute/path/to/module.ko --json
+```
+
+The workflow reports ordered `.modinfo` keys (duplicate `alias` and `parm`
+entries preserved), `__versions` symbol CRCs, presence of
+`.gnu.linkonce.this_module` and `__ksymtab` sections, observed `.init.text`
+and `.exit.text` sizes, and an appended signature trailer. `struct module` is
+not decoded and the signature is not validated. Other ELF types are not
+applicable. gzip, xz, and zstd containers are unsupported and name
+`external_decompression` as the next probe: decompress with an external
+utility, then inspect the decompressed file. See
+[Linux kernel modules](kernel-modules.md).
 
 Inspect a CPython 3.7–3.13 `.pyc` header and nested marshal code objects
 without executing bytecode or installing Python:
@@ -353,7 +401,7 @@ Run `rea --help` or a command's `--help` for arguments and output options.
 The [generated catalog](mcp-contracts.md#generated-catalog) lists all CLI commands and MCP
 tools. Provider-specific target support is described in the
 [native guide](native-investigation.md), [DOS guide](ghidra-dos.md),
-[raw binary guide](raw-binary.md), and
+[raw binary guide](raw-binary.md), [GameCube DOL guide](ghidra-dol.md), and
 [Windows Ghidra guide](windows-ghidra-p0.md).
 
 ## Choose a provider
@@ -417,7 +465,14 @@ an exact result when the target bytes, operation, parameters, provider and
 settings match. Mutations and cursor-dependent calls are excluded from the
 cache. Snapshot files are local and use owner-only permissions.
 
-Importing an Evidence bundle refreshes retained subject display names and paths.
+One-shot binary CLI Evidence reports the exact path argument in `caller_input_path`,
+including relative spelling and symlink aliases. Its subject identifies the
+inspected artifact; `caller_input_path` does not change the Evidence ID or
+snapshot query. A replay reports the current invocation's path while leaving
+the saved Evidence unchanged. Provider inspections continue to include the
+established `parameters.input_path` field.
+
+Importing an Evidence bundle refreshes retained request and subject display metadata.
 It preserves cached analysis results, including observations for other targets.
 Snapshot bindings that use a replaced record retain its updated display path.
 
@@ -724,6 +779,31 @@ like a blank `MCP_HOST`. The bound URL is written to stderr as one JSON log line
 [agent environments](agent-environments.md) for what the state and replay
 return and do not establish.
 
+## Build an environment bundle
+
+`rea environment-build <capture> [dir] [--name <name>] [--template-rule <rule> ...]
+[--format-rules-only] [--package-tarball <path>] [--capture-timeout-ms <ms>] [--dry-run]` builds the bundle
+`environment-export` writes from one recorded capture: a `.har` file, which it
+inspects as `inspect-web-network-capture` does, or capture Evidence JSON from
+`inspect-web-network-capture` (HAR) or `capture-browser-scenario`. It projects
+the environment manifest from the in-memory Evidence with the opt-in rules
+`after-uid-literal`, `opaque-token`, `sibling-variance` and `prefix-variance`
+unless `--template-rule` or `--format-rules-only` selects others, prepares the
+state, and writes the bundle; every file is byte-identical to the three-step
+path's when that path lists the same rules in the views' order and exports
+under the build's name. A loopback or IP-literal capture is named after its file unless `--name`
+is given. It prints one JSON report: the capture and manifest identities, the
+state, a `coverage` summary of which tools answer from the state, which replay
+and why each write is withheld with a hint, the files, warnings and the next
+command. `--dry-run` writes nothing and may omit the directory.
+
+```sh
+rea environment-build grafana.har ./grafana --json
+```
+
+See [agent environments](agent-environments.md#build-a-bundle-in-one-step)
+for the report, the hints and what the bundle ships.
+
 ## Export an environment bundle
 
 `rea environment-export <manifest.json> --evidence <capture.json> <dir>
@@ -899,6 +979,10 @@ server resources. It preserves a primary listener diagnostic, or a
 tool count and Evidence identifiers. The successful `stopped` document is
 returned only after cleanup is confirmed. The same in-process server owner
 retains failed stages for retry; the CLI exposes no separate retry command.
+`rea environment-build` is one-shot too: it prints its report and exits `0`,
+or prints the refusing stage's structured error and exits `1`, writing nothing
+when the refusal comes before the bundle is written. SIGINT cancels it with a
+`cancelled` error; a cancellation before the bundle stage writes nothing.
 `rea environment-export` is one-shot: it prints the written files and exits
 `0`, or prints a structured `invalid_request` error and exits `1` for the same
 pair refusals, a non-empty or file-occupied directory, a missing package
@@ -975,3 +1059,25 @@ Counting retains the existing bounded formatted-string allocation after capacity
 admission; omit the flag to stream large JSON documents without materializing
 the complete formatted text. Exhausted token windows display an empty range at
 the total token count and have no next offset.
+
+### `inspect-devicetree`
+
+Inspect an explicit local FDT v16/v17 blob without execution or an external tool.
+Returns header, reservations, node/property tree, derived standard values and
+selected phandle references. See [devicetree inspection](devicetree.md) for
+limits and retained-view pagination.
+
+```bash
+rea inspect-devicetree /artifacts/board.dtb --json
+rea inspect-devicetree /artifacts/board.dtb --detail summary --evidence_output /artifacts/board-evidence.json --json
+```
+
+### PE TLS and load configuration
+
+```sh
+rea inspect-pe-load-config /absolute/path/to/application.exe --json
+```
+
+Reports TLS callbacks and size-covered load-config fields without execution.
+Use `--max-callbacks` and `--max-file-bytes` to set read budgets. See
+[PE TLS and load configuration](pe-load-config.md).

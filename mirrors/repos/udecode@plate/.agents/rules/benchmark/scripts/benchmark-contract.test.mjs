@@ -91,6 +91,7 @@ const plan = ({
 - invocation: ${invocation}
 - candidate-identity: ${source.candidateIdentity ?? 'ref: candidate-test'}
 - plate-main-identity: ${source.plateMainIdentity ?? 'ref: main-test'}
+- plite-identity: ${source.pliteIdentity ?? 'fingerprint: plite-test'}
 - slate-identity: ${source.slateIdentity ?? 'commit: slate-test'}
 - named-symptom: test action
 - final-artifacts: ${source.finalArtifacts ?? 'artifact: tmp/test-result.json'}
@@ -170,7 +171,7 @@ const provenCause = {
   fixClass: 'internal-implementation',
   fixOwner: 'packages/plate owner',
   isolatedOwner: 'Plate core layer',
-  lane: 'plate-vs-slate-decomposition',
+  lane: 'plate-vs-plite-decomposition',
   layerPlan: 'N/A: internal implementation only',
   longTermTarget: 'compile Plate core capabilities once per editor',
   materialDelta: 'p95 +24 ms and +31% across five packets',
@@ -193,7 +194,7 @@ const architectureCause = {
 test('default inventory keeps every lane in diagnostic order', () => {
   assert.deepEqual(validateBenchmarkPlan(plan()), []);
 
-  const missingLane = plan().replace(/^\| 7 \| example-breadth .*\n/m, '');
+  const missingLane = plan().replace(/^\| 8 \| example-breadth .*\n/m, '');
 
   assert.match(
     validateBenchmarkPlan(missingLane).join('\n'),
@@ -217,7 +218,7 @@ test('a conclusive cause requires causal evidence and pauses later lanes', () =>
   const defaultPlaceholders = plan({
     cause: { lane: provenCause.lane, state: 'proven' },
     rows: {
-      'plate-vs-slate-decomposition': { status: 'red' },
+      'plate-vs-plite-decomposition': { status: 'red' },
     },
   });
 
@@ -229,7 +230,7 @@ test('a conclusive cause requires causal evidence and pauses later lanes', () =>
   const missingIntervention = plan({
     cause: { ...provenCause, causalIntervention: 'pending' },
     rows: {
-      'plate-vs-slate-decomposition': { status: 'red' },
+      'plate-vs-plite-decomposition': { status: 'red' },
     },
   });
 
@@ -243,7 +244,7 @@ test('a conclusive cause requires causal evidence and pauses later lanes', () =>
     rows: {
       'source-and-host-readiness': { status: 'complete' },
       'current-vs-main-product-smoke': { status: 'complete' },
-      'plate-vs-slate-decomposition': { status: 'red' },
+      'plate-vs-plite-decomposition': { status: 'red' },
     },
   });
 
@@ -257,10 +258,11 @@ test('a conclusive cause requires causal evidence and pauses later lanes', () =>
     rows: {
       'source-and-host-readiness': { status: 'complete' },
       'current-vs-main-product-smoke': { status: 'complete' },
-      'plate-vs-slate-decomposition': { status: 'red' },
+      'plate-vs-plite-decomposition': { status: 'red' },
       'owner-microbench-and-trace': { status: 'paused' },
       'product-mount-matrix': { status: 'paused' },
       'trusted-editing-matrix': { status: 'paused' },
+      'plite-vs-pinned-slate': { status: 'paused' },
       'example-breadth': { status: 'paused' },
       'large-and-stress': { status: 'paused' },
     },
@@ -292,10 +294,11 @@ test('architectural causes require the long-term Best API and layer-plan decisio
   const rows = {
     'source-and-host-readiness': { status: 'complete' },
     'current-vs-main-product-smoke': { status: 'complete' },
-    'plate-vs-slate-decomposition': { status: 'red' },
+    'plate-vs-plite-decomposition': { status: 'red' },
     'owner-microbench-and-trace': { status: 'paused' },
     'product-mount-matrix': { status: 'paused' },
     'trusted-editing-matrix': { status: 'paused' },
+    'plite-vs-pinned-slate': { status: 'paused' },
     'example-breadth': { status: 'paused' },
     'large-and-stress': { status: 'paused' },
   };
@@ -390,7 +393,7 @@ test('architectural fixes preserve their durable decision through completion', (
     rows: {
       'source-and-host-readiness': { status: 'complete' },
       'current-vs-main-product-smoke': { status: 'complete' },
-      'plate-vs-slate-decomposition': { status: 'complete' },
+      'plate-vs-plite-decomposition': { status: 'complete' },
     },
   });
 
@@ -447,7 +450,7 @@ test('a green fix reruns the exact lane and resumes the first pending lane', () 
     rows: {
       'source-and-host-readiness': { status: 'complete' },
       'current-vs-main-product-smoke': { status: 'complete' },
-      'plate-vs-slate-decomposition': { status: 'complete' },
+      'plate-vs-plite-decomposition': { status: 'complete' },
     },
   });
 
@@ -619,14 +622,14 @@ test('a later cause cannot skip an unfinished earlier lane', () => {
     ],
     rows: {
       'source-and-host-readiness': { status: 'complete' },
-      'plate-vs-slate-decomposition': { status: 'complete' },
+      'plate-vs-plite-decomposition': { status: 'complete' },
     },
   });
   const errors = validateBenchmarkPlan(invalid).join('\n');
 
   assert.match(
     errors,
-    /plate-vs-slate-decomposition cannot run before prior applicable lane current-vs-main-product-smoke/
+    /plate-vs-plite-decomposition cannot run before prior applicable lane current-vs-main-product-smoke/
   );
   assert.match(errors, /must resume current-vs-main-product-smoke/);
 });
@@ -665,15 +668,15 @@ test('an invalidated cause persists failure and resumes its unfinished lane', ()
   const rows = {
     'source-and-host-readiness': { status: 'complete' },
     'current-vs-main-product-smoke': { status: 'complete' },
-    'plate-vs-slate-decomposition': { status: 'in_progress' },
+    'plate-vs-plite-decomposition': { status: 'in_progress' },
   };
   const valid = plan({ cause: invalidatedCause, history, rows });
 
   assert.deepEqual(validateBenchmarkPlan(valid), []);
 
   const completedLane = valid.replace(
-    '| 3 | plate-vs-slate-decomposition | yes | in_progress |',
-    '| 3 | plate-vs-slate-decomposition | yes | complete |'
+    '| 3 | plate-vs-plite-decomposition | yes | in_progress |',
+    '| 3 | plate-vs-plite-decomposition | yes | complete |'
   );
   const rewrittenHistory = plan({
     cause: invalidatedCause,
@@ -1133,7 +1136,7 @@ test('a pivoted checkpoint leaves its lane the way a green one does', () =>
     const rows = {
       'source-and-host-readiness': { status: 'complete' },
       'current-vs-main-product-smoke': { status: 'complete' },
-      'plate-vs-slate-decomposition': { status: 'complete' },
+      'plate-vs-plite-decomposition': { status: 'complete' },
     };
     const check = (history) =>
       validateBenchmarkPlan(plan({ cause: checkpoint, history, rows }), {

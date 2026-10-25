@@ -42,6 +42,13 @@ remains partial for compound worst cases and broader platform/provider profiles.
 This checkpoint does not qualify M2/M3, live adoption, remote providers or the G1
 team journey. No original identity or receipt is rewritten.
 
+Each gzip/tar scan witnesses the compressed bytes it actually consumes. Its
+digest and byte count must match preflight before manifest verification or audit
+publication; changing the input and restoring it before a later hash does not
+substitute for that witness. The copied scan retains the same check. Wrong input
+digests still refuse before tar decoding. Archive, expansion and metadata limits,
+inert status and execution-authority rules remain unchanged.
+
 ### Delivery after the writer cutoff (2026-10-16)
 
 The landed [R5/T4 cutoff](loopx-overall-roadmap-v0.md#post-6396-delivery-plan)

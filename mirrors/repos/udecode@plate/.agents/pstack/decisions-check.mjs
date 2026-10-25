@@ -33,7 +33,7 @@
 //        <ledger> defaults to <plans>/artifacts/suggested-tasks.decisions.tsv in trunk
 //        delivery and <plans>/suggested-tasks.decisions.tsv otherwise,
 //        --fetch refreshes the remote branches that PR waits read, and --session names
-//        this session, so it cards only the tasks it owns and the ship-list tasks, and each card it does not hold
+//        this session, so it cards only the tasks it owns, and each card it does not hold
 //        gets a check item instead of a withdraw problem)
 //        node .agents/pstack/decisions-check.mjs chips all --session <id> [--sessions <file>] [<ledger>]
 //        (lists every priority, also cards the tasks no session owns, and with the session
@@ -56,7 +56,7 @@
 import { execFileSync } from 'node:child_process';
 import { appendFileSync, existsSync, lstatSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { basename, dirname, isAbsolute, join, resolve } from 'node:path';
-import { findLead, leadLabel, maxEffort } from './lead.mjs';
+import { findLead, leadLabel, maxEffort, runtimeFolder } from './lead.mjs';
 import { cli as pageStop } from './page-stop.mjs';
 import { board, boardState, briefOf, CHIP_STATES, cleanupOf, chipRowProblems, baseRedProblems, gitMerges, ledgerPath, newChipRowProblems, newId, offeredAt, readShip, readTasks, recordRow, renderBoard, SESSION, staleReport, startedOverlaps } from './tasks.mjs';
 import { acceptedWord, committedLines, defaultsWords, isAcceptingWord, isHandOffReview, NOT_PASSED, proofLabels, proofStates, PROVEN, runPaths, SEATS, SEVERITIES, stageOfRow, STATUSES, statusOf } from './status.mjs';
@@ -257,19 +257,20 @@ function problems(path) {
 // The page shows which model and effort wrote each stretch of the log, so a
 // batch from a session whose lead differs from the log's last lead row opens
 // with a new one.
-function leadRow(existing, run) {
+function leadRow(existing, run, miss) {
   const last = existing.findLast((line) => line.split('\t')[1] === 'lead')?.split('\t')[2];
   const label = run ? leadLabel(run) : 'unknown';
-  if (!run) return last === label ? [] : [['lead', label, 'runtime identity could not be verified', 'proof: none', 'recorded unknown session']];
+  const why = `runtime identity could not be verified${miss ? ` because ${miss.replace(/\s+/gu, ' ')}` : ''}`;
+  if (!run) return last === label ? [] : [['lead', label, why, 'proof: none', 'recorded unknown session']];
   return last === label ? [] : [['lead', label, 'read from the session transcript, since an agent cannot see its own effort', `transcript ${basename(run.transcript)}`, `recorded ${run.runtime} session`]];
 }
 
-function append(path, batch, run) {
+function append(path, batch, run, miss = null) {
   const stamp = new Date().toISOString().replace(/\.\d{3}Z$/u, 'Z');
   const text = existsSync(path) ? readFileSync(path, 'utf8') : null;
   const existing = (text ?? '').split('\n');
   const count = batch.length;
-  const attribution = leadRow(existing, run);
+  const attribution = leadRow(existing, run, miss);
   batch = [...attribution, ...batch];
   let opened = existing.some(opens);
   const isWriting = (line) => line.split('\t')[1] === 'writing';
@@ -339,7 +340,15 @@ function stagePage(log) {
 }
 
 const args = process.argv.slice(2);
+const invokedFrom = process.cwd();
 runLedgerCommandFromMainCheckout(args);
+if (args[0] === '--help' || args[0] === '-h') {
+  const source = readFileSync(new URL(import.meta.url), 'utf8').split('\n');
+  const from = source.findIndex((line) => line.startsWith('// Usage:'));
+  const to = source.findIndex((line, index) => index > from && !line.startsWith('//'));
+  console.info(source.slice(from, to).map((line) => line.replace(/^\/\/ ?/, '')).join('\n'));
+  process.exit(0);
+}
 if (args[0] === 'rounds') {
   if (!args[1] || !existsSync(args[1])) {
     console.error(args[1] ? `no log at ${args[1]}` : 'Usage: node .agents/pstack/decisions-check.mjs rounds <log.decisions.tsv>');
@@ -398,7 +407,8 @@ if (args[0] === 'chips') {
       console.error("chips cleanup takes --sessions <file>, the session tool's list of every session, archived ones included, saved as a JSON array");
       process.exit(2);
     }
-    const { archive, remove, report } = cleanupOf(tasks, sessions, here);
+    // The shell may have moved out of the session's folder, which the runtime process keeps.
+    const { archive, remove, report } = cleanupOf(tasks, sessions, here, [invokedFrom, runtimeFolder()]);
     if (!report.length) {
       console.info('Nothing to clean up: no landed task has an idle card session or a worktree left.');
       process.exit(0);
@@ -477,7 +487,7 @@ if (args[0] === 'append') {
   const lead = findLead();
   const run = lead.run ?? null;
   if (!run) console.error(`Runtime identity is unknown because ${lead.miss}, so ${args[1]} records an unknown lead boundary.`);
-  const found = batch.length === 0 ? [`${args[3]} holds no rows`] : append(args[1] ?? '', batch, run);
+  const found = batch.length === 0 ? [`${args[3]} holds no rows`] : append(args[1] ?? '', batch, run, lead.miss);
   if (found.length > 0) {
     console.error(`${batch.length > 1 ? 'No row written' : 'Row not written'}:\n${found.join('\n')}`);
     process.exit(1);
@@ -498,6 +508,11 @@ const paths =
     : args;
 if (paths.length === 0 && args[0] !== '--all') {
   console.error('Usage: node .agents/pstack/decisions-check.mjs <log.decisions.tsv> [...] | --all');
+  process.exit(2);
+}
+const missing = paths.filter((path) => !existsSync(path));
+if (missing.length > 0) {
+  console.error(`no log at ${missing.join(', ')}; --help prints the usage`);
   process.exit(2);
 }
 const found = paths.flatMap(problems);

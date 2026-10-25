@@ -22,6 +22,12 @@ This project is sponsored by:
 - Platform: Windows 11 with PowerShell. Prefer PowerShell-native commands.
 - Run Python from repo root: `& .\venv\Scripts\python.exe ...`
 
+## Layout
+
+- Server code is the `stealth_browser_mcp` package in `src/stealth_browser_mcp/`. Modules import each other with relative imports (`from .debug_logger import debug_logger`).
+- `src/server.py` is only a launcher so existing `python src/server.py` configs keep working. The `stealth-browser-mcp` console script and `python -m stealth_browser_mcp` call the same `main()`.
+- JavaScript templates live in `src/stealth_browser_mcp/js/` and ship as package data. Default file locations come from `paths.py`, not from `__file__` paths in other modules.
+
 ## Validation
 
 ```powershell
@@ -32,7 +38,7 @@ This project is sponsored by:
 For broader syntax validation:
 
 ```powershell
-Get-ChildItem src -Filter *.py | ForEach-Object { & .\venv\Scripts\python.exe -m py_compile $_.FullName }
+Get-ChildItem src -Recurse -Filter *.py | ForEach-Object { & .\venv\Scripts\python.exe -m py_compile $_.FullName }
 ```
 
 Unit tests and the stealth benchmark:
@@ -71,3 +77,7 @@ Set `STEALTH_BROWSER_TESTS=1` to include tests that launch a real browser. Bench
 - Powerful browser-control tools are intentional primitives for trusted local MCP clients.
 - Do not expose secrets from `.mcp.json`, environment variables, browser profiles, cookies, or debug exports.
 - Redact proxy credentials and tokens in diagnostics, logs, and summaries.
+
+## Releasing
+
+Bump `__version__` in `src/stealth_browser_mcp/__init__.py`, then push a matching tag such as `v0.3.0`. The release workflow builds the sdist and wheel and publishes them to PyPI through trusted publishing in the `pypi` environment, which only accepts `v*` tags.

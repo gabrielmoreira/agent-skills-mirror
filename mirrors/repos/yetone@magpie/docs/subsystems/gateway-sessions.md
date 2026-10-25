@@ -38,6 +38,9 @@ after the others, and marks a request that compacts its context with
 `off` is no mark, and a request without one is never taken for a compaction
 by its prompt. `passOnCaller` sends the mark on to a remote magpie beside
 the session, and no vendor is sent either (`TestDshMarksSessionAndCompaction`).
+Both are read on Messages and Responses as on Chat Completions, which a
+user's own llm-deepseek row pointed at magpie relies on (#3298,
+`TestDshMarksOnEveryRoute`).
 
 When the same identity is present in a native session, the native session wins
 and the gateway projection is omitted. On `/api/sessions/manage`, in its
@@ -408,6 +411,44 @@ however old, so a client's history can be backfilled.
 `TestUsageIngest*` and `TestIngestReported*` cover these, including
 concurrent posts beside the gateway's own writes, and a backfill of a full
 5000-record batch landing on the right 7d/30d/all days.
+
+### Requests magpie sends on its own
+
+The provider editor's Test, Detect APIs and per-model detection, and a
+model list's refresh, reach the vendor outside any agent's turn (neiko and
+gys619 on Discord: a test left no trace). Each such request is one row of
+`usage.jsonl` with `source: "probe"`, agent `magpie`, the provider's id
+(the host for one not yet saved), its account, model, endpoint, status,
+time and the error clipped to 500 bytes, and a `kind` saying what it was
+for: `provider_test`, `api_detect` or `model_list`
+([`internal/probelog`](../../internal/probelog/probelog.go)).
+
+- **Marking:** `Provider.ownRequests` marks the context in `Test`,
+  `TestModels`, `Detect`, `DetectModels`, `DetectDecide`, `refetch`,
+  `fetch`, `List`, `fetchOne` and `fetchDue`; a kind set inside another
+  replaces it, so the list a Test fetches is a model list. A request is
+  written once: by `Provider.Do`, which then marks the context taken, or
+  else by `probelog.Transport`, which `netproxy.Install` puts under
+  `http.DefaultClient` for the catalog's list fetches. A Claude account's
+  test (the Claude Code CLI) and the translated test (through the
+  gateway) are one row each from their result (`NoteResult`). A plugin's
+  model list runs in the plugin host and is not written. Only the host and
+  path of a URL are kept, never its query (Gemini's `?key=`) or userinfo.
+- **Counted nowhere:** the log's index keeps these rows out of its blocks
+  (`logSnapshot.probes`), so `Visit`, `Load`, `Summarize`, a gateway key's
+  budget, a window's holds, `Vias`, the heatmap, shared days, `LastSeen`
+  and the observers (`Append` skips `observeLedger`) never meet them. The
+  request page lists them as a chunk of their own (`probeChunk`) and adds
+  them to no total, cell, group, chart or filter count; `?via=` other than
+  all leaves them out.
+- **Showing:** the row's badge is the kind's name ("Test", "Detect APIs",
+  "Model list", from `purposeKinds`), and its tooltip and the "magpie's
+  own" badge's say it counts in no total (`probeWhy` in
+  `plugins/usage/page.js`).
+
+`TestProbeRowsListedNotCounted`, `TestTestWritesItsRequestsDown`,
+`TestDetectWritesItsRequestsDown`, `internal/probelog`'s tests and
+`usage-ledger-probe.test.cjs` cover these.
 `TestReportedTouchesNothingLive` and `TestUsageIngestTouchesNoLimit` go red
 when any of the live guards is removed. Browser:
 `usage-ledger-reported.test.cjs`.

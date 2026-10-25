@@ -265,11 +265,21 @@ public final class JsonRpcServer {
         }
         if (AgentProtocol.METHOD_GET_OBJECT_SOURCE.equals(method)) {
             switchCatalog(params);
-            return agent.getObjectSource(
-                params.get("schema").getAsString(),
-                params.get("name").getAsString(),
-                params.get("object_type").getAsString()
-            );
+            boolean includeOrigin = params.has("include_source_origin") && params.get("include_source_origin").getAsBoolean();
+            String schema = params.get("schema").getAsString();
+            String name = params.get("name").getAsString();
+            String objectType = params.get("object_type").getAsString();
+            ObjectSource source = includeOrigin
+                ? agent.getObjectSourceWithOrigin(schema, name, objectType)
+                : agent.getObjectSource(schema, name, objectType);
+            if (includeOrigin) {
+                JsonObject result = gson.toJsonTree(source).getAsJsonObject();
+                if (source.getSourceOrigin() != null) {
+                    result.addProperty("source_origin", source.getSourceOrigin());
+                }
+                return result;
+            }
+            return source;
         }
         if (AgentProtocol.METHOD_GET_TABLE_DDL.equals(method)) {
             switchCatalog(params);

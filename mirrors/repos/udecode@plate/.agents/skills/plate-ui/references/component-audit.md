@@ -39,5 +39,5 @@ one family do not increase the terminal-consumer count.
 
 ## Registry wiring
 
-Audit `registry-ui.ts`, `registry-kits.ts`, `registry-components.ts` and
+Audit `registry-features.ts`, `registry-editor.ts`, and
 `registry-examples.ts` together.

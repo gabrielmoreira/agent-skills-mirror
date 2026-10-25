@@ -793,7 +793,7 @@ chooses it in item 2 and ALREADY_BUMPED derives it in item 1.
    Save lowercase `BUMP_LEVEL`. A claimed version may move the next available number
    forward, but cannot change the chosen MICRO/PATCH/MINOR/MAJOR level.
 
-3. **Queue-aware pick** (workspace-aware ship):
+3. **Queue-aware pick:**
    ```bash
    QUEUE_JSON=$(bun --no-env-file --config=/dev/null run ~/.claude/skills/gstack/bin/gstack-next-version --base <base> --bump "$BUMP_LEVEL" --current-version "$BASE_VERSION" 2>/dev/null || echo '{"offline":true}')
    CANDIDATE_VERSION=$(echo "$QUEUE_JSON" | jq -r '.version // empty')
@@ -802,6 +802,10 @@ chooses it in item 2 and ALREADY_BUMPED derives it in item 1.
    `offline:false` qualifies; `offline:true` qualifies only with `fallback:"git"`.
    Offline output without that fallback, failure, malformed output or an empty version
    is unusable, even when it contains a version-looking string.
+
+   **Incomplete** (`complete:false`): PRs in `unknown_claims` went unread; the pick may
+   collide. Rerun item 3 once; still incomplete, AskUserQuestion: use it (recommended;
+   Version Gate CI rereads the queue) or stop.
 
    - **Usable candidate:** print warnings and claimed queue. FRESH sets `NEW_VERSION=CANDIDATE_VERSION`.
      ALREADY_BUMPED compares it with `currentVersion`: if different, ask to rebump
@@ -814,16 +818,13 @@ chooses it in item 2 and ALREADY_BUMPED derives it in item 1.
 
 4. **Write the bump** (FRESH, or an approved rebump):
    ```bash
-   bun --no-env-file --config=/dev/null run ~/.claude/skills/gstack/bin/gstack-version-bump write --version "$NEW_VERSION" --regen-digest
+   bun --no-env-file --config=/dev/null run ~/.claude/skills/gstack/bin/gstack-version-bump write --version "$NEW_VERSION" --regen-digest --changelog CHANGELOG.md
    ```
-   The CLI validates `MAJOR.MINOR.PATCH.MICRO` (or pinned 3-digit semver), writes
-   VERSION, the manifest (`--package-json-path` → `.gstack/package-json-path` →
-   `./package.json`) and existing npm lockfiles, never creating one, with the 3-digit
-   translation (`1.67.0.0` → `1.67.0`); VERSION is authoritative. Exit 3 is a half-write:
-   reclassify and `repair` DRIFT_STALE_PKG.
+   It writes VERSION, manifest and lockfiles, and moves `## [Unreleased]` under NEW_VERSION
+   for Step 13. Exit 2 wrote nothing: show stderr, stop.
+   Exit 3 is a half-write: reclassify and `repair` DRIFT_STALE_PKG.
 
-   `--regen-digest` runs repo code (`scripts/gen-agents-digest.ts`) with Step 5's privileges
-   only when it and committed `agents-digest/gstack-AGENTS.md` exist; if `agentsDigest` is
+   `--regen-digest` runs `scripts/gen-agents-digest.ts` only when it and a committed `agents-digest/gstack-AGENTS.md` exist; if `agentsDigest` is
    false, run `bun --no-env-file --config=/dev/null scripts/gen-agents-digest.ts` and stage the digest with the bump. Before
    push, verify the committed digest matches generation for the selected VERSION.
 

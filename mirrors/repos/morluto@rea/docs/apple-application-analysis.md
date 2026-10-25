@@ -213,6 +213,9 @@ Resolution follows dyld:
   already loaded image reuses it.
 - Symlinks such as `Versions/Current` are followed inside the analyzed root.
   An escape through `..` or an absolute link is `escapes-target`.
+- Dyld path components are POSIX names. On Windows hosts, link text uses `\`
+  as its separator, and a dyld component that contains `\` or `:` cannot name
+  a file in the analyzed root, so its candidate is `absent`.
 
 Each edge lists every candidate path tried, with its outcome: `resolved`,
 `absent`, `not-mach-o`, `malformed`, `unsupported` (recognized Mach-O outside

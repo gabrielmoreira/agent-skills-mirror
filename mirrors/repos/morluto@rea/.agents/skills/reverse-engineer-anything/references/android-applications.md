@@ -28,8 +28,11 @@ stdio. A full JDK, including `jdk.compiler`, is required on every host; Windows
 verification coverage. Calls use one worker and provider deadlines; optional
 `REA_JADX_HEAP_MIB` selects the JVM heap and `REA_JADX_OPERATION_TIMEOUT_MS`
 the per-operation deadline (integer milliseconds from 1 to 2147483647, default
-120000; a change applies on the next process start; the MCP client's tool
-timeout must also allow it). The APK is never launched,
+120000). To change that deadline on a running MCP server, set
+`jadx.operation_timeout_ms` through `update_analysis_settings`, then retry after
+work and cleanup settle. Newly accepted operations use the override; accepted
+work keeps its budget. Changing the launch environment requires a new process.
+The MCP client's tool timeout must also allow the selected deadline. The APK is never launched,
 and no emulator is required.
 
 Manifest entries and decompiled text are static observations, not execution or

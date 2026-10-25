@@ -90,6 +90,33 @@ releases are outside this recovery path.
 For a release that needs an independently frozen application checkpoint, use
 the optional manual path below. It retains explicit prepare and publish phases.
 
+Automatic main proposals and manual checkpoint preparation use
+`scripts/release-proposal.mjs` with the pinned release-please dependency.
+The controller applies `patches/release-please+17.3.0.patch` only when invoked;
+normal dependency installation and published-package installation do not apply it.
+The patch avoids commit-file backfills, associated PR file lists and path splitting
+for a single root Node package with the default changelog, default or
+always-bump-minor versioning, no path exclusions and no explicit plugins. Other
+configurations retain the upstream file attribution workflow. Commit history and
+associated PR metadata still come from GitHub: release notes need the commits,
+and `BEGIN_COMMIT_OVERRIDE` needs the merged PR body. Skipped file lists remain
+unknown rather than being reported as empty. The controller sizes commit search
+from the complete selected Git history, and a missing known release boundary
+fails before proposal creation.
+
+History-page reads retry GitHub's canonical internal GraphQL response error within
+the existing five-retry budget and exponential backoff. Each retry uses the same
+cursor; permission, validation and mixed errors fail immediately. Exhaustion
+stops preparation before proposal writes. The controller does not restart proposal
+creation or retry mutations. An internal GraphQL error does not establish API
+quota exhaustion or prove that query size caused the failure. Publication
+continues through the pinned release-please action.
+
+When upgrading release-please, review the upstream manifest implementation,
+refresh the versioned patch and run the release proposal and workflow boundary
+tests. Version mismatch or a patch that neither applies cleanly nor matches an
+already-applied patch fails closed.
+
 ## Contributor-aware release notes
 
 Use [the rea-changelog-update skill](https://github.com/morluto/rea/blob/main/.agents/skills/rea-changelog-update/SKILL.md)

@@ -1,5 +1,7 @@
 # XERJ
 
+**XERJ: the search engine for AI agents.** A new way for AI to search for data: one local Rust binary that indexes your code, docs, specs and logs, plus Corpus Hub packs, and returns cited answers.
+
 **Local-first search engine and MCP server for AI agents.** One Rust binary indexes code, docs,
 logs, JSONL/CSV and PDFs for BM25 full-text, vector and hybrid search, code search and agent
 memory, behind an Elasticsearch-compatible API. Works with Claude Code, Cursor and any MCP client.
@@ -23,7 +25,7 @@ memory, behind an Elasticsearch-compatible API. Works with Claude Code, Cursor a
 [![Agent memory](https://img.shields.io/badge/agent%20memory-%2F__memory-00b3a4?style=flat-square)](https://xerj.org/docs/recipes/agentic-memory.html)
 [![MCP](https://img.shields.io/badge/MCP-native-1f6feb?style=flat-square)](https://xerj.org/llms.txt)
 [![llms.txt](https://img.shields.io/badge/llms.txt-agent%20ready-6f42c1?style=flat-square)](https://xerj.org/llms.txt)
-[![ES-YAML conformance](https://img.shields.io/badge/ES--YAML%20conformance-1366%2F1369-brightgreen?style=flat-square)](https://xerj.org/benchmarks)
+[![ES-YAML conformance](https://img.shields.io/badge/ES--YAML%20conformance-1444%2F1454-brightgreen?style=flat-square)](https://xerj.org/benchmarks)
 [![Single static binary](https://img.shields.io/badge/single%20static%20binary-no%20JVM-orange?style=flat-square)](https://xerj.org/docs/install.html)
 [![Default embedder](https://img.shields.io/badge/default%20embedder-lexical%2C%20offline-teal?style=flat-square)](https://xerj.org/docs/vectors.html)
 [![Neural](https://img.shields.io/badge/neural%20embedder-opt--in%2C%20downloads%20~90%20MB-9c6ade?style=flat-square)](https://xerj.org/docs/vectors.html)
@@ -57,6 +59,9 @@ xerj search "how do we rotate the WAL segment"   # ranked passages, file:line
 xerj def "euler_to_rotationmatrix"               # go-to-definition: file:line + signature
 xerj gain                                        # what it did for you — counted, not estimated
 ```
+
+For several IDs or questions at once, use `xerj batch-search --input queries.json`
+or MCP `xerj_batch_search`: [ordered results, citations and per-item errors](docs/recipes/batch-search.md).
 
 Keep that data directory outside any folder you will autoindex. `data/` is not in the
 built-in ignore list, so `--data-dir ./data` inside a tree you then index makes the node
@@ -553,7 +558,7 @@ exact total exceeds the snapshot window is refused with a `400` rather than sile
 truncated. Use `search_after` for result sets of any size
 ([the cap](https://xerj.org/docs/api-es-compat.html#scroll-cap)).
 
-The conformance suite runs on every commit and currently passes 1366 of 1369 cases. It lives
+The conformance suite runs on every commit and currently passes 1444 of 1454 cases (0 failed, 10 skipped). It lives
 in [`engine/tests/es-compat-yaml`](./engine/tests/es-compat-yaml), and the remaining gaps are
 listed there rather than hidden. XERJ is compatible with the API. It is not a
 reimplementation of Elasticsearch internals, and it is not a fork.

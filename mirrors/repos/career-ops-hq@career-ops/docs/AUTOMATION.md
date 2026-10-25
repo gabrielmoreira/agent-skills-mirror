@@ -40,6 +40,10 @@ Three independent pieces, smallest first. You can use any of them on their own.
 `node scan.mjs` is safe to run unattended — it's idempotent (already-seen URLs are
 deduped) and costs nothing. Pick your platform.
 
+The scan exits 2 when every target it tried failed (no network, for example), and 0
+when at least one board was read, so a scheduler that alerts on a non-zero exit
+reports an outage without flagging every run that hit one dead board.
+
 Replace `/path/to/career-ops` with your checkout path, and make sure `node` is on
 the `PATH` the scheduler uses (schedulers often run with a minimal environment — use
 an absolute path to `node` if in doubt, e.g. `which node`).

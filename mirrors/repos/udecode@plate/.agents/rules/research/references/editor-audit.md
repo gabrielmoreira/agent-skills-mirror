@@ -1,6 +1,6 @@
 # Editor audit
 
-Own source-level architecture comparison between live Slate/Plate and one or
+Own source-level architecture comparison between live Plite/Plate and one or
 more editor repositories. Derive the inventory from source, account for every
 relevant mechanism, and stop after a decision-ready audit. Do not implement
 product code.
@@ -24,7 +24,7 @@ Resolve:
 
 - target: the named surface, or `full` only when explicitly requested;
 - references: every supplied repository and its current local revision;
-- local owners: Slate substrate, Plate product layer, or both;
+- local owners: Plite substrate, Plate product layer, or both;
 - output: a narrow answer or exhaustive planning-only artifact.
 
 For standalone `full`, `all`, `exhaustive`, or multiple-repository work, read
@@ -39,12 +39,12 @@ Do not mirror the same decisions across several ledgers.
 Before matrix work, inventory both sides:
 
 - every atomic reference concept in scope;
-- every relevant Slate/Plate public mechanism, lifecycle rule, proof topology,
+- every relevant Plite/Plate public mechanism, lifecycle rule, proof topology,
   and material debt even when the reference has no equivalent;
 - every prior P0-P3 candidate touching the target, recorded in the manifest
   before its current disposition is judged.
 
-The manifest is the union, not a donor-only checklist. An overall Slate/Plate
+The manifest is the union, not a donor-only checklist. An overall Plite/Plate
 win never permits skipping local-only machinery or reference submechanisms.
 
 Before reading a durable reference audit, require a clean reference checkout
@@ -180,7 +180,7 @@ a pull succeeded.
 
 Current source is authoritative; earlier plans, comparison tables, docs and
 completion reports are leads. Map every reference repository's source, tests,
-public types and export graph, and the live Slate and Plate owners, callers,
+public types and export graph, and the live Plite and Plate owners, callers,
 tests and proof surfaces, before reading local plans, audit dossiers or prior
 P0-P3 candidates. Do not substitute web summaries for local source; use
 official docs only when the checkout cannot settle a public contract.
@@ -215,7 +215,7 @@ debt dispositions, proof adaptations, or verdicts, split it in the manifest.
 Matrix IDs must be exact and ungrouped.
 
 Use the manifest schema `validate-concept-matrix.mjs` enforces. Allowed origins are
-`reference`, `Slate`, `Plate`, `Slate/Plate`, and `shared`. `priorCandidates`
+`reference`, `Plite`, `Plate`, `Plite/Plate`, and `shared`. `priorCandidates`
 is required and may be empty. Each concept appears exactly once even when
 several source units contribute evidence.
 
@@ -235,10 +235,10 @@ state the exact gap instead of calling the audit exhaustive.
 ## Comparison
 
 For every atomic concept, record independent evidence from each supplied
-reference and from current Slate/Plate. Follow the
+reference and from current Plite/Plate. Follow the
 Strict Source-to-Contract Matrix section below: one row per exact
 manifest ID, separate `exact`, `partial`, `absent`, or `not-applicable`
-mappings for the reference, Slate, and Plate, and the same six qualitative
+mappings for the reference, Plite, and Plate, and the same six qualitative
 dimensions for every concept.
 
 The reference's Mapping contract, Qualitative comparison, Base and extraction
@@ -289,7 +289,7 @@ For each suspicious local shape, answer:
   it? Test removing the namespace, plugin, abstraction, layer, or package and
   routing its real jobs through the nearest canonical owner. The donor and the
   named audit surface are evidence, not scope limits.
-- What does the reference do better inside this concept even if Slate/Plate is
+- What does the reference do better inside this concept even if Plite/Plate is
   the preferred base?
 - Which harvested reference tests encode portable behavior or proof topology,
   and what is each disposition?
@@ -309,7 +309,7 @@ Every `P0`-`P3` candidate must include:
 2. Exact current and proposed internal representation and owner.
 3. Material value and the current job it improves.
 4. What becomes hidden, deleted, merged, or moved.
-5. Slate/Plate adoption impact and dependency ordering.
+5. Plite/Plate adoption impact and dependency ordering.
 6. Required correctness, type, property/fuzz, browser, and benchmark proof.
 7. Primary planning owner: `best-api` or the Plan playbook.
 8. Dependent planning owner when the change crosses layers.
@@ -390,13 +390,13 @@ Editor Audit never implements or opens a PR.
 ## Strict Source-to-Contract Matrix
 
 Use this contract for every `full`, `all`, or `exhaustive` audit and before any
-claim that Slate or Plate is superior to a reference editor overall. The
+claim that Plite or Plate is superior to a reference editor overall. The
 manifest defines the atomic concepts. The matrix proves the comparison and
 extracts valuable parts from either architecture.
 
 ### Mapping contract
 
-Record the reference, Slate, and Plate independently:
+Record the reference, Plite, and Plate independently:
 
 - `exact` — the complete job and contract are traced;
 - `partial` — named owners cover only part of the job;
@@ -409,7 +409,7 @@ Use these checkable forms:
 exact — public=`src/api.ts:10`; owner=`src/owner.ts:20`; consumers=`src/use.ts:30`; lifecycle=`src/lifecycle.ts:40`; proof=`src/owner.test.ts:50` — reason
 partial — covers=`src/owner.ts:20`; missing=[gap evidence](docs/plans/audit.md#gap); proof=`src/owner.test.ts:50` — reason
 absent — [source scan](docs/plans/audit.md#source-scan) found no matching owner
-not-applicable — `VISION.md:10` assigns the job to another layer
+not-applicable — `docs/vision/owner.md:10` assigns the job to another layer
 ```
 
 Use `partial` when any applicable facet differs or remains unproved. Its
@@ -426,8 +426,8 @@ Judge every concept on:
 - runtime and performance;
 - proof and host coverage.
 
-Use `reference stronger`, `Slate stronger`, `Plate stronger`,
-`Slate/Plate stack stronger`, `equivalent`, `different tradeoff`, or
+Use `reference stronger`, `Plite stronger`, `Plate stronger`,
+`Plite/Plate stack stronger`, `equivalent`, `different tradeoff`, or
 `insufficient evidence`, followed by a concept-specific reason and source
 citation. A dimension may use `not-applicable` with evidence.
 
@@ -436,7 +436,7 @@ across different concepts. A valid cell identifies the mechanism that wins or
 creates the tradeoff, not merely the repository name.
 
 The final `Classification` uses the same comparison values. `Preferred base`
-uses `reference`, `Slate`, `Plate`, `Slate/Plate stack`, `tie`,
+uses `reference`, `Plite`, `Plate`, `Plite/Plate stack`, `tie`,
 `different tradeoff`, or `insufficient evidence`. Both need evidence and must
 agree. A preferred layer must have an `exact` or `partial` mapping.
 
@@ -461,9 +461,9 @@ or `not-applicable`.
 
 A valid hybrid may say:
 
-- Slate is the preferred base because its data model fits local constraints;
+- Plite is the preferred base because its data model fits local constraints;
 - Wordgard's centralized conflict owner should be adapted;
-- Slate's caller-owned cleanup is material debt;
+- Plite's caller-owned cleanup is material debt;
 - Wordgard's focused invariant test should be adapted;
 - the final verdict is `rearchitect — ...`, `P1`.
 
@@ -471,8 +471,9 @@ That is not a contradiction. It is the point of the audit.
 
 ### Prior candidates
 
-At intake, look up source provenance and coverage through the linked earlier
-audits. Reuse observations only when source and dependency
+At intake, look up source provenance and coverage through
+`node tooling/scripts/review-ledger.mjs lookup <scope-or-feature>` and the
+linked earlier audits. Reuse observations only when source and dependency
 identity match. Frame the ideal design and independently map the current
 owners before judging earlier conclusions. A repeated review is automatic;
 prior verdicts cannot replace its comparison. Then reconcile every manifest
@@ -493,9 +494,9 @@ rename a prior candidate.
 ### Canonical table
 
 ```markdown
-| ID           | Concept            | Origin    | Reference mapping                                                                                                                                                                                                                           | Slate mapping                                                                                                                                                                                                                                          | Plate mapping                                                                   | Correctness                                                                     | API/types                                                                      | Data/collab                                                                  | Ownership/lifecycle                                                           | Runtime/perf                                                              | Proof/host                                                                                                                | Classification                                                                   | Preferred base                                                           | Reference adaptation                                                | Local debt                                                       | Proof adaptation                                                                                            | Prior candidates                                                                 | Verdict                                                              | Priority |
+| ID           | Concept            | Origin    | Reference mapping                                                                                                                                                                                                                           | Plite mapping                                                                                                                                                                                                                                          | Plate mapping                                                                   | Correctness                                                                     | API/types                                                                      | Data/collab                                                                  | Ownership/lifecycle                                                           | Runtime/perf                                                              | Proof/host                                                                                                                | Classification                                                                   | Preferred base                                                           | Reference adaptation                                                | Local debt                                                       | Proof adaptation                                                                                            | Prior candidates                                                                 | Verdict                                                              | Priority |
 | ------------ | ------------------ | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ | ---------------------------------------------------------------------------- | ----------------------------------------------------------------------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | ------------------------------------------------------------------------ | ------------------------------------------------------------------- | ---------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------- | -------- |
-| `WG-DOC-001` | Conflict ownership | reference | exact — public=`../wordgard/src/api.ts:10`; owner=`../wordgard/src/owner.ts:20`; consumers=`../wordgard/src/use.ts:30`; lifecycle=`../wordgard/src/lifecycle.ts:40`; proof=`../wordgard/src/owner.test.ts:50` — complete reference contract | exact — public=`packages/slate/src/api.ts:10`; owner=`packages/slate/src/owner.ts:20`; consumers=`packages/slate/src/use.ts:30`; lifecycle=`packages/slate/src/lifecycle.ts:40`; proof=`packages/slate/src/owner.test.ts:50` — complete local contract | not-applicable — `VISION.md:10` assigns this substrate rule to Slate | reference stronger — `../wordgard/src/owner.ts:20` centralizes conflict cleanup | Slate stronger — `packages/slate/src/api.ts:10` preserves structural inference | Slate stronger — `packages/slate/src/change.ts:10` preserves multi-root JSON | reference stronger — `../wordgard/src/lifecycle.ts:40` owns cleanup centrally | equivalent — `benchmarks/editor/result.json` shows no material difference | different tradeoff — `packages/slate/src/owner.test.ts:50` is broader while `../wordgard/src/owner.test.ts:50` is sharper | Slate stronger — `packages/slate/src/change.ts:10` is the better applicable base | Slate — `packages/slate/src/change.ts:10` preserves the local data model | adapt — `../wordgard/src/owner.ts:20` should replace caller cleanup | material — `packages/slate/src/api.ts:10` exposes caller cleanup | adapt — [Wordgard harvest](docs/editor-test-harvester/wordgard/report.md) contributes the focused invariant | `A3` reaffirm — [A3 dossier](docs/plans/prior-audit.md#a3) targets the same debt | rearchitect — keep the Slate base and move cleanup into its compiler | P1       |
+| `WG-DOC-001` | Conflict ownership | reference | exact — public=`../wordgard/src/api.ts:10`; owner=`../wordgard/src/owner.ts:20`; consumers=`../wordgard/src/use.ts:30`; lifecycle=`../wordgard/src/lifecycle.ts:40`; proof=`../wordgard/src/owner.test.ts:50` — complete reference contract | exact — public=`packages/plitejs/src/api.ts:10`; owner=`packages/plitejs/src/owner.ts:20`; consumers=`packages/plitejs/src/use.ts:30`; lifecycle=`packages/plitejs/src/lifecycle.ts:40`; proof=`packages/plitejs/src/owner.test.ts:50` — complete local contract | not-applicable — `docs/vision/plate.md:10` assigns this substrate rule to Plite | reference stronger — `../wordgard/src/owner.ts:20` centralizes conflict cleanup | Plite stronger — `packages/plitejs/src/api.ts:10` preserves structural inference | Plite stronger — `packages/plitejs/src/change.ts:10` preserves multi-root JSON | reference stronger — `../wordgard/src/lifecycle.ts:40` owns cleanup centrally | equivalent — `benchmarks/editor/result.json` shows no material difference | different tradeoff — `packages/plitejs/src/owner.test.ts:50` is broader while `../wordgard/src/owner.test.ts:50` is sharper | Plite stronger — `packages/plitejs/src/change.ts:10` is the better applicable base | Plite — `packages/plitejs/src/change.ts:10` preserves the local data model | adapt — `../wordgard/src/owner.ts:20` should replace caller cleanup | material — `packages/plitejs/src/api.ts:10` exposes caller cleanup | adapt — [Wordgard harvest](docs/editor-test-harvester/wordgard/report.md) contributes the focused invariant | `A3` reaffirm — [A3 dossier](docs/plans/prior-audit.md#a3) targets the same debt | rearchitect — keep the Plite base and move cleanup into its compiler | P1       |
 ```
 
 ### Material coherence
@@ -534,7 +535,7 @@ A global superiority claim is legal only when:
 A cross-reference conclusion requires every contributing matrix to pass
 independently.
 
-“Every Slate/Plate feature is superior” is stronger: every row must prefer
-`Slate`, `Plate`, or `Slate/Plate stack`. A single reference win, tie, different
+“Every Plite/Plate feature is superior” is stronger: every row must prefer
+`Plite`, `Plate`, or `Plite/Plate stack`. A single reference win, tie, different
 tradeoff, or unknown disproves it. Even when every base is local, adapted
 reference submechanisms and local debt remain material findings.

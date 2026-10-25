@@ -250,11 +250,57 @@ source, method and limitation paragraphs before adding another note.
 
 Choose a default treatment by the user's task, before choosing components:
 
+**Auxiliary explanations are icon help, not default prose.** Apply this across
+the product frontend: Overview, Tasks, Research, Chat, Files and Settings,
+including their empty and unavailable states. Do not add paragraphs, small-print
+subtitles or repeated footnotes to explain a snapshot, a count, incomplete
+coverage, missing observations or the meaning of an empty list. Attach one small
+semantic glyph to the owning heading, value or control. Use an information or
+question glyph for definitions, an alert glyph for incomplete/unknown evidence,
+and the existing source/state glyph when it already expresses that fact. Do not
+add a generic information icon beside a second icon saying the same thing.
+
+辅助说明默认不用正文段落、小字副标题或逐行脚注。概览、任务、研究、对话、成果、
+设置，以及空态和来源不可用状态，统一在所属标题、读数或控件旁使用一个语义合适的
+小符号。统计口径、覆盖缺口、快照含义和“没有记录不等于完成”等解释按需读取；
+同一事实不在标题、状态行、空态和页尾重复。布局不清先改布局，不用说明补救。
+
+Reuse `ContextHelp` for non-interactive explanations. Its accessible name must
+identify the current fact, including partial, unknown or unavailable evidence
+where applicable. The complete explanation opens on mouse hover, keyboard focus
+and deliberate tap/click; Escape, outside dismissal and focus return must work.
+Use the existing reader or disclosure for interactive recovery and long evidence.
+Icons must not turn unknown into zero, failure into success, or a permission
+restriction into an available action. Do not use color alone, a native `title`
+alone, hover-only access, global CSS hiding, shorter body type or text heuristics
+to achieve a quieter screenshot.
+
+This rule concerns interface explanation, not the owner's actual work: keep
+requested documents, original evidence, generated analysis and user messages
+readable in full. Keep consequential action labels, necessary input constraints
+and the immediate result of an operation visible. An actionable failure retains
+its concise failure state and recovery action; move its optional technical cause
+and repeated explanation into the same contextual entry. Permission and model,
+cost or execution consequences remain clear at the actual decision point.
+Reading help never invokes a model, retries work, changes configuration or grants
+permission.
+
+Classify content by its purpose, not its HTML tag, CSS class or sentence length.
+A legacy `hint` paragraph may contain the actual count, delivery result or source
+read state; those primary readouts stay visible. Review each moved explanation
+with its owning heading and current value, and give the glyph an accurate name.
+Do not use a mechanical paragraph sweep as a design or review verdict.
+
+完整解释必须支持悬停、键盘聚焦和点按，不能只用原生 `title` 或颜色。小符号保留
+未知、缺失、失败和只读等真实含义，不得补零或暗示通过。真实错误与恢复动作、输入
+约束、权限和实际执行后果仍在决策处清楚呈现；技术原因和重复解释放入同一个帮助
+入口。用户正文、原文证据和分析结果不属于可隐藏的辅助说明。打开帮助只读取。
+
 | Content | Default presentation | On request |
 | --- | --- | --- |
 | Current outcome, progress, owner decision or main research result | The page's primary reading region, with the status and scope needed to interpret it | Its existing evidence and action reader |
 | Repeated supporting outcomes, requirements or analysis episodes | Comparable compact rows: identity, meaningful result/status and a relevant exception; shared context appears once | Expand the selected item for complete requirements, rationale, evidence and history |
-| Definitions, methodology and routine provenance | One named contextual entry for the related region | Shared help or existing details, without repeating it inside every row |
+| Definitions, methodology, routine provenance and empty/partial snapshot explanations | One accessible semantic glyph at the owning heading, value or control | Shared hover/focus/tap help or existing details, without repeating it inside every row |
 | Failure, stale evidence, unknown result, missing permission or consequential cost | A concise marker at the affected item/action, including disagreement that changes trust | Cause, recovery instructions and full evidence |
 
 README product illustrations and evidence diagrams belong in the default reading
@@ -857,6 +903,11 @@ automated readability score or an additional owner approval.
       narrow widths. Count repeated explanations across regions, remove or share
       them, and check that failures, uncertainty and action consequences remain
       visible with help closed. Do not fix density by shrinking body text.
+- [ ] Default interface explanations use the appropriate shared glyph, with no
+      duplicate paragraph, empty-state caveat or footnote elsewhere on the page.
+      Hover, focus and tap reveal the complete explanation; closing restores
+      context. Verify unknown/partial/unavailable and permission states, without
+      hiding actual user content, action consequences or recovery controls.
 
 Record the before/after default view and a representative expanded/error state
 in the existing PR visual evidence, with the data/build boundary. State what

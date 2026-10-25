@@ -64,7 +64,7 @@ and `TestCardReceiver` shows a test card over whatever is playing.
 |---|---|---|
 | `mqtt` | required | `mqtt://user:password@host:1883`; percent-encode `@ : /` in the user or password |
 | `frigateUrl` | required | `https://host:8971` (authenticated port) or `http://host:5000` |
-| `frigateUser`, `frigatePassword` | empty | Frigate login; the certificate is trusted on first contact and pinned |
+| `frigateUser`, `frigatePassword` | empty | Frigate login; the certificate is trusted on first contact and pinned. Frigate makes a new self-signed one whenever its container is recreated (an update) unless `/etc/letsencrypt` is a volume; Overview then shows **New certificate** with both fingerprints, and OK on the Frigate row trusts it |
 | `topicPrefix` | `frigate` | Frigate's MQTT topic prefix |
 | `cameras` | `{}` (all) | camera name to the name shown on the card; listed cameras only |
 | `newCameras` | `false` | with `cameras` listed: cameras Frigate gains later open cards too |

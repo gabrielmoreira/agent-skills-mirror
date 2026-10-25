@@ -305,8 +305,13 @@ capture provides them.
 
 ASAR observation reads the header through one open file handle and validates its
 declared lengths against the archive size. Header/index admission is the same
-budget used by static ASAR reads: 16 MiB / 16777216 bytes by default, or
-`REA_ASAR_MAX_HEADER_BYTES` (at most 256 MiB) when set. An oversized header is
+budget used by static ASAR reads: 16 MiB / 16777216 bytes by default, seeded by
+`REA_ASAR_MAX_HEADER_BYTES` (at most 256 MiB). In MCP,
+`update_analysis_settings` can override `asar.max_header_bytes` for new
+operations without restarting REA. Cached headers are checked against each
+operation's admission, including after a decrease. See the
+[settings design](design/limits-and-recovery.md#failure-and-retry).
+An oversized header is
 not parsed; selecting a member path does not bypass admission, and the page
 stays unauthorized. The header cache separately retains at most that many bytes
 of already-admitted encoded headers across eight archives. Evicting that cache does not raise admission.

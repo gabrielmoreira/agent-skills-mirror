@@ -25,9 +25,33 @@ publish beta.
 ## Lanes
 
 - `main` publishes stable packages with npm tag `latest`.
-- `next` publishes prerelease packages with npm tag `beta`.
+- `next` publishes prerelease packages with npm tag `beta`. While the repository variable `SKIP_NEXT_CI` is `true`, `release.yml` skips on `next`, so nothing publishes until someone deletes the variable.
 - `.changeset/pre.json` belongs on `next` only.
 - `main` must never publish while `.changeset/pre.json` exists.
+
+## Plite Release Claims
+
+Package publication runs `pnpm plite:release:packages` and does not imply broad
+Plite behavior readiness. A `release-ready` claim needs the authoritative
+producer run that `tooling/scripts/check-plite-release-proof.mjs` verifies;
+missing, stale, incomplete, failed, tampered, dirty, or non-canonical evidence
+blocks that explicit claim. Do not infer broad readiness from source tests,
+historical artifacts, or package proof, and do not select the profile without
+that authoritative producer run.
+
+The current Plite CI workflow does not emit `plite-release-proof`, so the broad
+profile is unavailable. A future producer job must build the manifest from
+lane-owned outputs after those jobs pass; accepting an operator-supplied
+manifest would recreate the fake authority this gate rejects.
+
+The profile and run ID are repository-wide release inputs. Change them only
+when the user explicitly authorizes a broad release-ready claim. Preflight the
+producer from a clean checkout at the exact release SHA before setting them.
+The verifier reads and downloads from live `udecode/plate` Actions data and
+requires an Actions-read token even outside the release workflow.
+
+After the target release finishes or fails, clear both inputs and read them
+back. Do not leave a broad claim armed for the next push.
 
 ## Modes
 
@@ -105,7 +129,9 @@ The script must:
   Version Packages PR
 - use a `[skip release]` sync commit only when no beta changesets were generated
 - verify the merge commit with `verify-main-to-next-sync`
-- push directly to `origin/next`
+- push directly to `origin/next`; a push you type yourself starts with
+  `PSTACK_RELEASE=1`, because `guard.mjs` denies every other agent push to
+  `next` outside `land.mjs`
 
 If the script stops on files outside known release metadata, do not guess.
 Resolve only when source ownership is obvious; otherwise stop with exact files.
@@ -137,7 +163,7 @@ git pull --ff-only origin next
 pnpm changeset pre enter beta
 git add .changeset/pre.json
 git commit -m "chore: enter beta pre-release mode [skip release]"
-git push origin next
+PSTACK_RELEASE=1 git push origin next
 ```
 
 If `.changeset/pre.json` already exists with `{ "mode": "pre", "tag": "beta" }`,

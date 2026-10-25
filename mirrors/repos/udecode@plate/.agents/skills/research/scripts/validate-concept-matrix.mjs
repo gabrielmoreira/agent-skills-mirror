@@ -8,7 +8,7 @@ const requiredColumns = [
   'Concept',
   'Origin',
   'Reference mapping',
-  'Slate mapping',
+  'Plite mapping',
   'Plate mapping',
   'Correctness',
   'API/types',
@@ -33,26 +33,26 @@ const dimensionColumns = [
   'Runtime/perf',
   'Proof/host',
 ];
-const mappingColumns = ['Reference mapping', 'Slate mapping', 'Plate mapping'];
+const mappingColumns = ['Reference mapping', 'Plite mapping', 'Plate mapping'];
 const classificationValues = [
   'reference stronger',
-  'Slate stronger',
+  'Plite stronger',
   'Plate stronger',
-  'Slate/Plate stack stronger',
+  'Plite/Plate stack stronger',
   'equivalent',
   'different tradeoff',
   'insufficient evidence',
 ];
 const preferredValues = [
   'reference',
-  'Slate',
+  'Plite',
   'Plate',
-  'Slate/Plate stack',
+  'Plite/Plate stack',
   'tie',
   'different tradeoff',
   'insufficient evidence',
 ];
-const originValues = ['reference', 'Slate', 'Plate', 'Slate/Plate', 'shared'];
+const originValues = ['reference', 'Plite', 'Plate', 'Plite/Plate', 'shared'];
 const referenceAdaptationValues = [
   'adapt',
   'keep-local',
@@ -85,13 +85,13 @@ const verdictValues = [
 ];
 const priorityValues = ['P0', 'P1', 'P2', 'P3', '—'];
 const comparisonPattern =
-  /^(?:reference stronger|Slate stronger|Plate stronger|Slate\/Plate stack stronger|equivalent|different tradeoff|insufficient evidence)\s+(?:—|-|:)\s+\S/i;
+  /^(?:reference stronger|Plite stronger|Plate stronger|Plite\/Plate stack stronger|equivalent|different tradeoff|insufficient evidence)\s+(?:—|-|:)\s+\S/i;
 const dimensionPattern =
-  /^(?:reference stronger|Slate stronger|Plate stronger|Slate\/Plate stack stronger|equivalent|different tradeoff|insufficient evidence|not-applicable)\s+(?:—|-|:)\s+\S/i;
+  /^(?:reference stronger|Plite stronger|Plate stronger|Plite\/Plate stack stronger|equivalent|different tradeoff|insufficient evidence|not-applicable)\s+(?:—|-|:)\s+\S/i;
 const mappingPattern =
   /^(?:exact|partial|absent|not-applicable)\s+(?:—|-|:)\s+\S/i;
 const preferredPattern =
-  /^(?:reference|Slate|Plate|Slate\/Plate stack|tie|different tradeoff|insufficient evidence)\s+(?:—|-|:)\s+\S/i;
+  /^(?:reference|Plite|Plate|Plite\/Plate stack|tie|different tradeoff|insufficient evidence)\s+(?:—|-|:)\s+\S/i;
 const referenceAdaptationPattern =
   /^(?:adapt|keep-local|reject|defer|not-applicable)\s+(?:—|-|:)\s+\S/i;
 const localDebtPattern =
@@ -116,17 +116,17 @@ const preferredByClassification = {
   equivalent: 'tie',
   'insufficient evidence': 'insufficient evidence',
   'Plate stronger': 'Plate',
-  'Slate stronger': 'Slate',
-  'Slate/Plate stack stronger': 'Slate/Plate stack',
+  'Plite stronger': 'Plite',
+  'Plite/Plate stack stronger': 'Plite/Plate stack',
   'reference stronger': 'reference',
 };
 const mappingByWinner = {
   Plate: ['Plate mapping'],
   'Plate stronger': ['Plate mapping'],
-  Slate: ['Slate mapping'],
-  'Slate/Plate stack': ['Slate mapping', 'Plate mapping'],
-  'Slate/Plate stack stronger': ['Slate mapping', 'Plate mapping'],
-  'Slate stronger': ['Slate mapping'],
+  Plite: ['Plite mapping'],
+  'Plite/Plate stack': ['Plite mapping', 'Plate mapping'],
+  'Plite/Plate stack stronger': ['Plite mapping', 'Plate mapping'],
+  'Plite stronger': ['Plite mapping'],
   reference: ['Reference mapping'],
   'reference stronger': ['Reference mapping'],
 };
@@ -183,7 +183,7 @@ const getConcepts = (manifest) => {
       !originValues.includes(concept.origin)
     ) {
       throw new Error(
-        'manifest concepts must use non-empty IDs and origin reference, Slate, Plate, Slate/Plate, or shared'
+        'manifest concepts must use non-empty IDs and origin reference, Plite, Plate, Plite/Plate, or shared'
       );
     }
 

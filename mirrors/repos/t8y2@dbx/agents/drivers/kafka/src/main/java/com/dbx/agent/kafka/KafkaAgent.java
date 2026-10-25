@@ -160,8 +160,8 @@ public final class KafkaAgent {
             case "mq_get_topic_config" -> getTopicConfig(params);
             case "mq_alter_topic_config" -> alterTopicConfig(params);
             // Consumer groups
-            case "mq_list_consumer_groups" -> listConsumerGroups(params);
-            case "mq_get_consumer_group_snapshot" -> getConsumerGroupSnapshot(params);
+            case "mq_list_consumer_groups" -> listConsumerGroups(params, requireAdmin());
+            case "mq_get_consumer_group_snapshot" -> getConsumerGroupSnapshot(params, requireAdmin());
             case "mq_describe_consumer_group" -> describeConsumerGroup(params);
             case "mq_delete_consumer_group" -> deleteConsumerGroup(params);
             case "mq_reset_consumer_group_offsets" -> resetConsumerGroupOffsets(params);
@@ -1035,8 +1035,7 @@ public final class KafkaAgent {
         return descriptions;
     }
 
-    private static Object listConsumerGroups(JsonObject params) throws Exception {
-        AdminClient admin = requireAdmin();
+    static Object listConsumerGroups(JsonObject params, Admin admin) throws Exception {
         int timeout = requestTimeout(params);
         long deadline = System.currentTimeMillis() + timeout;
         String filterTopic = stringOrEmpty(params, "topic");
@@ -1053,15 +1052,8 @@ public final class KafkaAgent {
             return Collections.singletonMap("groups", Collections.emptyList());
         }
 
-        // Batch-describe every group in one Kafka Admin request. Per-group
-        // failures degrade to an empty member list instead of failing the batch.
-        DescribeConsumerGroupsResult described = admin.describeConsumerGroups(
-            groupIds,
-            new DescribeConsumerGroupsOptions().timeoutMs((int) remainingMillis(deadline))
-        );
-        Map<String, ConsumerGroupDescription> descriptions = awaitGroupDescriptions(described, groupIds, deadline, (groupId, message) -> logger().debug("Consumer group details unavailable for {}: {}", groupId, message));
-
-        // Batch-resolve committed offsets for every group in one Admin request.
+        // Start both independent lookups before waiting. A slow description must
+        // not consume the deadline before committed offsets can even be requested.
         Map<String, ListConsumerGroupOffsetsSpec> offsetSpecs = new LinkedHashMap<>();
         for (String groupId : groupIds) {
             offsetSpecs.put(groupId, new ListConsumerGroupOffsetsSpec());
@@ -1070,6 +1062,10 @@ public final class KafkaAgent {
         ListConsumerGroupOffsetsResult offsetsResult = admin.listConsumerGroupOffsets(
             offsetSpecs,
             new ListConsumerGroupOffsetsOptions().timeoutMs((int) remainingMillis(deadline))
+        );
+        DescribeConsumerGroupsResult described = admin.describeConsumerGroups(
+            groupIds,
+            new DescribeConsumerGroupsOptions().timeoutMs((int) remainingMillis(deadline))
         );
         for (String groupId : groupIds) {
             try {
@@ -1082,6 +1078,7 @@ public final class KafkaAgent {
                 logger().debug("Committed offsets unavailable for {}: {}", groupId, normalizeErrorMessage(error));
             }
         }
+        Map<String, ConsumerGroupDescription> descriptions = awaitGroupDescriptions(described, groupIds, deadline, (groupId, message) -> logger().debug("Consumer group details unavailable for {}: {}", groupId, message));
 
         // End offsets: one batched Admin request limited to the requested
         // topic's partitions (deduplicated across groups). Without a topic
@@ -1137,6 +1134,7 @@ public final class KafkaAgent {
             g.put("groupId", groupId);
             g.put("state", listing == null ? "UNKNOWN" : listing.state().map(Enum::name).orElse("UNKNOWN"));
             g.put("simpleGroup", listing != null && listing.isSimpleConsumerGroup());
+            g.put("membersAvailable", description != null);
             g.put("members", memberMaps(description == null ? Collections.emptyList() : description.members()));
             g.put("committedOffsets", offsetRows(committed, filterTopic));
             g.put("endOffsets", endOffsetRows(committed, endOffsets, filterTopic));
@@ -1207,8 +1205,7 @@ public final class KafkaAgent {
         return rows;
     }
 
-    private static Object getConsumerGroupSnapshot(JsonObject params) throws Exception {
-        AdminClient admin = requireAdmin();
+    static Object getConsumerGroupSnapshot(JsonObject params, Admin admin) throws Exception {
         int timeout = requestTimeout(params);
         long deadline = System.currentTimeMillis() + timeout;
         Collection<ConsumerGroupListing> listings = admin.listConsumerGroups(
@@ -1229,12 +1226,8 @@ public final class KafkaAgent {
         Map<String, Boolean> committedOffsetsAvailable = new HashMap<>();
         Map<String, LinkedHashSet<String>> errors = new HashMap<>();
 
-        DescribeConsumerGroupsResult described = admin.describeConsumerGroups(
-            groupIds,
-            new DescribeConsumerGroupsOptions().timeoutMs((int) remainingMillis(deadline))
-        );
-        descriptions.putAll(awaitGroupDescriptions(described, groupIds, deadline, (groupId, message) -> snapshotErrors(errors, groupId).add("Consumer group details unavailable: " + message)));
-
+        // Offset and description requests share one deadline, but neither needs
+        // the other's result. Launch both before awaiting per-group responses.
         Map<String, ListConsumerGroupOffsetsSpec> offsetSpecs = new LinkedHashMap<>();
         for (String groupId : groupIds) {
             offsetSpecs.put(groupId, new ListConsumerGroupOffsetsSpec());
@@ -1242,6 +1235,10 @@ public final class KafkaAgent {
         ListConsumerGroupOffsetsResult offsetsResult = admin.listConsumerGroupOffsets(
             offsetSpecs,
             new ListConsumerGroupOffsetsOptions().timeoutMs((int) remainingMillis(deadline))
+        );
+        DescribeConsumerGroupsResult described = admin.describeConsumerGroups(
+            groupIds,
+            new DescribeConsumerGroupsOptions().timeoutMs((int) remainingMillis(deadline))
         );
         for (String groupId : groupIds) {
             try {
@@ -1256,6 +1253,7 @@ public final class KafkaAgent {
                 snapshotErrors(errors, groupId).add("Committed offsets unavailable: " + normalizeErrorMessage(error));
             }
         }
+        descriptions.putAll(awaitGroupDescriptions(described, groupIds, deadline, (groupId, message) -> snapshotErrors(errors, groupId).add("Consumer group details unavailable: " + message)));
 
         Map<String, Set<TopicPartition>> assignedPartitions = new HashMap<>();
         Set<TopicPartition> allPartitions = new LinkedHashSet<>();
@@ -1637,7 +1635,8 @@ public final class KafkaAgent {
         int count = validatedPeekCount(intOrDefault(params, "count", 10));
         PeekStartPosition startPosition = peekStartPosition(params);
         boolean explicitStartPosition = stringOrNull(params, "startPosition") != null;
-        validatePeekRequest(startPosition, explicitStartPosition, partition, offset);
+        Long startTimestamp = longOrNull(params, "timestamp");
+        validatePeekRequest(startPosition, explicitStartPosition, partition, offset, startTimestamp);
         boolean legacyOffsetRequest = !explicitStartPosition && offset != null;
 
         JsonObject conn = activeConnection;
@@ -1660,14 +1659,25 @@ public final class KafkaAgent {
             Map<TopicPartition, Long> endOffsets =
                 consumer.endOffsets(candidatePartitions, requestTimeout);
 
+            Map<TopicPartition, Long> timestampOffsets = Collections.emptyMap();
+            if (startPosition == PeekStartPosition.TIMESTAMP) {
+                Map<TopicPartition, Long> byTime = new LinkedHashMap<>();
+                for (TopicPartition tp : candidatePartitions) {
+                    byTime.put(tp, startTimestamp);
+                }
+                timestampOffsets = peekTimestampOffsets(consumer.offsetsForTimes(byTime, requestTimeout));
+            }
+
             List<TopicPartition> readablePartitions = new ArrayList<>();
             Map<TopicPartition, Long> seekOffsets = new LinkedHashMap<>();
             for (TopicPartition tp : candidatePartitions) {
                 long beginningOffset = beginningOffsets.getOrDefault(tp, 0L);
                 long endOffset = endOffsets.getOrDefault(tp, beginningOffset);
-                Long requestedOffset = requestedPeekOffset(
-                    startPosition, offset, legacyOffsetRequest, beginningOffset, endOffset
-                );
+                Long requestedOffset = startPosition == PeekStartPosition.TIMESTAMP
+                    ? timestampOffsets.get(tp)
+                    : requestedPeekOffset(
+                        startPosition, offset, legacyOffsetRequest, beginningOffset, endOffset
+                    );
                 if (requestedOffset == null) {
                     continue;
                 }
@@ -2149,6 +2159,7 @@ public final class KafkaAgent {
         EARLIEST,
         LATEST,
         OFFSET,
+        TIMESTAMP,
     }
 
     /** Omitting startPosition preserves the old earliest default (or explicit legacy offset) behavior. */
@@ -2161,16 +2172,47 @@ public final class KafkaAgent {
             case "earliest" -> PeekStartPosition.EARLIEST;
             case "latest" -> PeekStartPosition.LATEST;
             case "offset" -> PeekStartPosition.OFFSET;
+            case "timestamp" -> PeekStartPosition.TIMESTAMP;
             default -> throw new IllegalArgumentException("Unsupported peek startPosition: " + value);
         };
+    }
+
+    /**
+     * First offset whose batch timestamp is &gt;= {@code timestamp}, per partition. Kafka
+     * answers null for a partition whose newest record is older than the requested time;
+     * that partition is simply left out of the read rather than silently falling back to
+     * its tail, so a time window never shows data from outside itself.
+     */
+    static Map<TopicPartition, Long> peekTimestampOffsets(
+        Map<TopicPartition, OffsetAndTimestamp> located
+    ) {
+        Map<TopicPartition, Long> resolved = new LinkedHashMap<>();
+        located.forEach((tp, offsetAndTimestamp) -> {
+            if (offsetAndTimestamp != null) {
+                resolved.put(tp, offsetAndTimestamp.offset());
+            }
+        });
+        return resolved;
     }
 
     static void validatePeekRequest(
         PeekStartPosition startPosition,
         boolean explicitStartPosition,
         Integer partition,
-        Long offset
+        Long offset,
+        Long timestamp
     ) {
+        if (startPosition != PeekStartPosition.TIMESTAMP && timestamp != null) {
+            throw new IllegalArgumentException("timestamp is only supported when startPosition is timestamp");
+        }
+        if (startPosition == PeekStartPosition.TIMESTAMP) {
+            if (timestamp == null) {
+                throw new IllegalArgumentException("timestamp is required when startPosition is timestamp");
+            }
+            if (timestamp < 0) {
+                throw new IllegalArgumentException("timestamp must be a non-negative epoch millisecond value");
+            }
+        }
         if (partition != null && partition < 0) {
             throw new IllegalArgumentException("partition must be non-negative");
         }
@@ -2205,6 +2247,8 @@ public final class KafkaAgent {
         return switch (startPosition) {
             case LATEST -> endOffset > beginningOffset ? beginningOffset : null;
             case OFFSET -> offset;
+            // Resolved per partition through offsetsForTimes before this is reached.
+            case TIMESTAMP -> null;
             case EARLIEST -> legacyOffsetRequest ? offset : beginningOffset;
         };
     }

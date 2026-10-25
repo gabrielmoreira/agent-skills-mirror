@@ -8,6 +8,7 @@ public final class ObjectSource {
     private String schema;
     private String source;
     private boolean editable;
+    private transient String sourceOrigin;
 
     public ObjectSource() {
         this("", "", null, "", true);
@@ -47,6 +48,14 @@ public final class ObjectSource {
 
     public boolean isEditable() {
         return editable;
+    }
+
+    public String getSourceOrigin() {
+        return sourceOrigin;
+    }
+
+    public void setSourceOrigin(String sourceOrigin) {
+        this.sourceOrigin = sourceOrigin;
     }
 
     public void setName(String name) {

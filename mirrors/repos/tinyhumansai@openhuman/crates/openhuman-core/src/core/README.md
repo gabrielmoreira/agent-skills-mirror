@@ -313,7 +313,7 @@ Dispatch and auth:
 | [`invoke.rs`](./invoke.rs) | `invoke_method` and `default_state`: the in-process entry point and the session-expiry hook. |
 | [`dispatch.rs`](./dispatch.rs) | `dispatch`: legacy rewrite, `core.*` methods, registry fallback, unknown-method handling, `KNOWN_PROBE_METHODS`. |
 | [`legacy_aliases.rs`](./legacy_aliases.rs) | `resolve_legacy`: retired method names to canonical ones; mirrors `LEGACY_METHOD_ALIASES` in [`app/src/services/rpcMethods.ts`](../../../../app/src/services/rpcMethods.ts). |
-| `session_expiry.rs` | `is_session_expired_error` and `is_unconfirmed_unauthorized_error`. |
+| `session_expiry.rs` | `is_session_expired_error`, `is_unconfirmed_unauthorized_error`, and `backend_status_means_session_expired` (the one status rule: only a session-credential 401 expires the session). |
 | `auth.rs` | The per-process RPC bearer: init paths, `get_rpc_token`, `verify_bearer_token`, `bearer_matches`. |
 | `event_bind_tokens.rs` | Single-shot bind tokens for the `/events` SSE stream (`issue`, `consume`). |
 | `server_launcher.rs` | `ServerLauncher` port that `run` / `serve` start a server through. |

@@ -147,7 +147,7 @@ Look for:
 - PR files touched;
 - PR test files changed;
 - upstream test names or behavior labels;
-- current Slate / Plate tests that already cover the same behavior.
+- current Slate v2 / Plate tests that already cover the same behavior.
 
 Useful probes:
 
@@ -187,7 +187,7 @@ Existing ledgers keep their own headers, so parse by header name, never by colum
 
 `owner` values:
 
-- `slate`
+- `slate-v2`
 - `plate`
 - `external-framework`
 - `docs-support-release`
@@ -217,9 +217,9 @@ objective. For each unchecked row:
    instead of designing a fix.
 3. For closed relevant issues, scan linked PR/test provenance before coverage
    search.
-4. Classify owner: raw Slate, Plate, external-framework noise, docs/support,
+4. Classify owner: raw Slate v2, Plate, external-framework noise, docs/support,
    or needs-plan.
-5. Search exact current Slate and/or Plate coverage. Use `--slate-only`
+5. Search exact current Slate v2 and/or Plate coverage. Use `--slate-v2-only`
    to defer Plate rows instead of patching Plate.
 6. If exact coverage exists, link file:line, test name, and focused command;
    run that command before marking covered.
@@ -237,7 +237,7 @@ objective. For each unchecked row:
 Do not patch runtime just because an external issue exists. Patch runtime only
 after a local failing proof exists or the missing test proves a current behavior
 contract gap. Return that issue-bearing candidate to `maintainer slate-issue` for
-one public Slate issue or `maintainer` for any other public issue; only the
+one public Slate issue or the Triage playbook for a udecode/plate issue; only the
 coordinator hands the normalized local repair packet to pstack's Bug fix playbook.
 
 ## Coverage Search
@@ -261,7 +261,7 @@ If coverage is partial, either strengthen the existing test or write a narrow
 new row. Avoid duplicate tests.
 
 For Plate-owned rows, use the relevant Plate package/example command. If the
-run is scoped to Slate only, do not write Plate tests; mark
+run is scoped to Slate v2 only, do not write Plate tests; mark
 `deferred-with-owner` with the concrete Plate owner and reason.
 
 ## Regeneration

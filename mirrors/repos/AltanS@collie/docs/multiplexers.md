@@ -247,17 +247,38 @@ Behavior details for Claude configuration changes:
   Project-level `.claude/settings.json` files are untouched.
 - Injects **five** hooks tagged `# collie-beacon v1` with 10-second timeouts. Existing hooks are
   preserved. `hooks uninstall claude` removes only Collie entries.
-- **Wraps your own statusLine, if you have one.** Its command becomes
-  `collie beacon statusline …`, and your script still runs and prints as before. The wrapper passes
-  the context use and the 5-hour and 7-day limits to the dots beside the model above the belt.
-  Collie never adds a statusLine, and `hooks uninstall claude` puts your command back exactly. Not
-  on Windows.
+- **Leaves your statusLine alone unless you ask.** Without a flag the install does not touch
+  `statusLine`. You still get the context dot beside the model above the belt: the hooks read the
+  session transcript, and the window size from the session start.
+- **The 5-hour and 7-day windows show on their own.** They need no hook and no statusLine. While a
+  Claude pane is open, the bridge reads your Claude login on this machine
+  (`~/.claude/.credentials.json`, or `$CLAUDE_CONFIG_DIR/.credentials.json`; the Keychain on a Mac
+  with no file) and asks `api.anthropic.com/api/oauth/usage`, the same call Claude Code's `/usage`
+  makes. It asks when the pane appears, after a turn ends (at most once a minute) and every five
+  minutes. It stores nothing of the login, never refreshes it and sends it nowhere else. It skips a
+  login file that others may read (anything looser than `0600`) and a login that has expired, and
+  Claude Code refreshes that one at its next call. An API-key, Bedrock or Vertex session has no
+  windows to show. Codex panes get theirs the same way, on the same schedule, from its own session
+  files with no login read. OpenCode Go and Grok are off until you name them, with
+  `COLLIE_ACCOUNT_WINDOWS=all` or a list (see [Usage windows](configure.md#usage-windows)).
+  `COLLIE_ACCOUNT_WINDOWS=0` (or `[bridge] account_windows = false`) turns all of it off, and
+  `collie doctor` says which in its `account-windows` row.
+- **Wrapping your statusLine is the second road.** With
+  `collie hooks install claude --statusline` Collie also wraps your own statusLine, and the windows
+  come from what Claude Code hands it. Take it if you prefer that to the login read, with
+  `COLLIE_ACCOUNT_WINDOWS=0`. Its command becomes `collie beacon statusline …`, and your script
+  still runs and prints as before. Collie never adds a statusLine, and `hooks uninstall claude`
+  puts your command back exactly. An install without the flag keeps a wrap you already have and
+  points it at the current binary. To drop a wrap you no longer want, run
+  `collie hooks uninstall claude` and then `collie hooks install claude` without `--statusline`.
+  Not on Windows.
 - **To change a wrapped statusLine, unwrap it first.** Run `collie hooks uninstall claude`, edit
-  `statusLine.command`, then run `collie hooks install claude` again. The wrapped command names the
-  collie binary by its path, so if that binary moves, the statusLine prints nothing until you run
-  the install again. `collie update` reminds you when the wrapper is missing. To try the wrapper by
-  hand, run it outside the multiplexer (`env -u HERDR_PANE_ID -u TMUX_PANE -u ZELLIJ_PANE_ID …`), or
-  it writes a reading into every running bridge.
+  `statusLine.command`, then run `collie hooks install claude --statusline` again. The wrapped
+  command names the collie binary by its path, so if that binary moves, the statusLine prints
+  nothing until you run the install again. `collie update` reminds you when a wrapped statusLine
+  points at an older binary. To try the wrapper by hand, run it outside the multiplexer
+  (`env -u HERDR_PANE_ID -u TMUX_PANE -u ZELLIJ_PANE_ID …`), or it writes a reading into every
+  running bridge.
 - **Claude Code reloads its hooks while it runs.** This holds for 2.1.301. Restart an older Claude
   if no hook edges come.
 - **Linux only.** The agent liveness check depends on `/proc`. Other operating systems do not emit

@@ -1,5 +1,5 @@
 ---
-description: Measure and repair Plate/Slate performance, or review a performance design before running its applicable benchmark lanes. Use before writing, reviewing, running, rerunning, checking, skipping or deferring a performance gate, including a plan's scale gate, before writing a benchmark script, before explaining a benchmark result or failure, and when a review or panel finds a latency or scaling cost.
+description: Measure and repair Plate/Plite performance, or review a performance design before running its applicable benchmark lanes. Use before writing, reviewing, running, rerunning, checking, skipping or deferring a performance gate, including a plan's scale gate, before writing a benchmark script, before explaining a benchmark result or failure, and when a review or panel finds a latency or scaling cost.
 argument-hint: '[review | only] <scope, lane or plan>'
 name: benchmark
 metadata:
@@ -111,7 +111,7 @@ Before the architecture owner may lock that target:
 An asymptotic table, review score, profiler suspicion, future benchmark plan,
 or "measure during implementation" note cannot satisfy this probe. Record N/A
 only when live source proves the change is type-only or cannot change repeated
-or hot runtime work. The probe never goes to a suggested task, because the
+or hot runtime work. The probe never goes to a session card, because the
 target's acceptance waits on it. It narrows its cohorts or rounds to fit the
 block's one-hour Time budget, and an inconclusive narrowed probe leaves the
 decision `defer` or `gate`, as step 5 says.
@@ -122,7 +122,7 @@ check it with one quick pass of the affected rows; the full interleaved protocol
 runs once, on the final tree, and again only when a later change touches the
 measured path or a result misses its budget. Each run fits the block's one-hour
 Time budget. A protocol that cannot fit, or that needs a quieter host than
-the run has, goes to a suggested task as that rule says. Its lines stay
+the run has, goes to a session card as that rule says. Its lines stay
 `gate`s that the run's close does not wait on. In a Perf issue run, whose
 validator does not yet accept a deferred measurement, the plan stays partial
 instead, as the close rule says. The lead sets that `Status:` before it offers
@@ -136,10 +136,11 @@ says; an inconclusive line stays a `gate`.
 
 - Current Plate versus main Plate is product truth. Use isolated source-built
   hosts, exact refs or dirty fingerprints, and the same route/fixture/action.
-- Plate versus Slate is layer attribution. Use the same current source,
+- Plate versus Plite is layer attribution. Use the same current source,
   document, renderer intent, rendering component and options, and action; report wrapper/plugin
-  tax. Pin and record the exact Slate version or local commit; a mutable
-  `../slate` path is not a baseline identity.
+  tax without calling Plite a Slate baseline.
+- Plite versus Slate is substrate evidence. Pin and record the exact local
+  Slate commit; a mutable `../slate` path is not a baseline identity.
 - Product and engine comparisons answer different questions. Run both when
   both are applicable; never substitute a minimal engine win for a real app
   route.
@@ -149,8 +150,8 @@ says; an inconclusive line stays a `gate`.
   feature against a baseline with that fix applied, and report the fix's effect
   separately, so its speedup cannot hide the feature's cost.
 - Before attributing a metric shift or calling a result the first of its kind,
-  look up earlier values in durable history (`docs/plans`,
-  `benchmarks/targets/history`), not only in scratch artifacts.
+  look up earlier values in durable history (`node tooling/scripts/review-ledger.mjs
+  lookup <scope>`, `docs/plans`), not only in scratch artifacts.
 
 ## Correctness And Native Behavior
 
@@ -179,7 +180,7 @@ wrong. A benchmark row measures only what its name says: helper reads such as fu
 Two identical builds prove only that an evaluator raises no false alarm. Prove
 a new or repaired evaluator end to end with at least one known-bad candidate;
 an identical-build result close to a guard means that guard sits inside the
-noise. A change to a shared benchmark summary or stats helper proves itself on one current core artifact and one current React artifact, read from the emitted JSON, before any threshold uses the new field. A mutant or candidate measured through a build counts only after the run shows its bytes reached that build, such as through a changed build fingerprint. A `*_SKIP_BUILD=1` run builds nothing and checks nothing for staleness. Before a core lane, rebuild the package `dist` it imports.
+noise. A change to a shared benchmark summary or stats helper proves itself on one current core artifact and one current React artifact, read from the emitted JSON, before any threshold uses the new field. A mutant or candidate measured through a build counts only after the run shows its bytes reached that build, such as through a changed build fingerprint. A `*_SKIP_BUILD=1` run builds nothing and checks nothing for staleness. Before a Plite browser lane, run `node apps/plite/scripts/build-app-if-stale.mjs`, which rebuilds the example app; `build-browser-if-stale.mjs` checks only `@platejs/test`. Before a core lane, rebuild the package `dist` it imports.
 
 `benchmarks/editor` is a standalone npm package with its own lockfile. Its
 Evidence Kit CLI exists only after `pnpm bench:editor:install`, and the root

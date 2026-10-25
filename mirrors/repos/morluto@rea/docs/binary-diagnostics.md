@@ -100,6 +100,8 @@ one section or symbol, or a stable page without re-running the decoder. CLI
 one-shot invocations pass portable inline Evidence JSON; an MCP session uses
 the retained `evidence_id`. Page `limit` is required and bounded by the
 measured MCP stdio budget documented on the tool contract.
+An empty retained section or symbol collection has no valid item index. Its page
+view can still return an empty page.
 Malformed authenticated layout input remains rejected with the owning schema's
 safe field diagnostics under `source.normalized_result`, including the field
 path and type or value reason. Evidence authentication and decoder validation

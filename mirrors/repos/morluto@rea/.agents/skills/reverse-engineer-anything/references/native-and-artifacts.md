@@ -112,6 +112,32 @@ not proof the image is unsigned in every catalog or overlay sense. Signatures,
 chains, timestamps, and Authenticode digest coverage remain unobserved. See
 [PE Authenticode certificate tables](https://github.com/morluto/rea/blob/main/docs/pe-certificates.md).
 
+## PE import and delay-load tables
+
+Use `inspect_pe_imports` for an explicit local PE32/PE32+ image when the
+question concerns imported DLL and function names, ordinals, delay-load
+descriptors, or the pefile import hash. No `open_binary`, Windows SDK, or
+target execution is required. The CLI equivalent is `inspect-pe-imports PATH`.
+Preserve artifact SHA-256, directory file ranges, original DLL spellings, and
+ILT/IAT RVAs. A missing `IMAGE_DIRECTORY_ENTRY_IMPORT` directory is observed
+absence of that table, not proof the image never imported APIs through another
+table or overlay. Bound snapshots, loaded IAT contents, and export-forward
+resolution remain unobserved. See
+[PE import and delay-load tables](https://github.com/morluto/rea/blob/main/docs/pe-imports.md).
+
+## PE TLS callbacks and load configuration
+
+Use `inspect_pe_load_config` for an explicit local PE32/PE32+ image when the
+question concerns code that runs before the entry point through TLS callbacks,
+or the security cookie, SafeSEH, CFG, EH-continuation and XFG declarations in
+the load configuration. No `open_binary`, Windows SDK, or target execution is
+required. The CLI equivalent is `inspect-pe-load-config PATH`. Preserve artifact
+SHA-256, directory and callback-array file ranges, and callback VAs as
+hexadecimal strings. Fields outside the declared `Size` are `null`. Guard-flag
+mitigations carry `evidence_kind: "inferred"`; enforcement remains unobserved.
+See
+[PE TLS callbacks and load configuration](https://github.com/morluto/rea/blob/main/docs/pe-load-config.md).
+
 ## ELF note tables
 
 Use `inspect_elf_notes` for an explicit local ELF32/ELF64 image when the
@@ -122,6 +148,37 @@ descriptor hashes, and original owner spellings. A missing table is observed
 absence of those declarations, not proof the image never carried notes in
 another container. See
 [ELF note tables](https://github.com/morluto/rea/blob/main/docs/elf-notes.md).
+
+## Apple IPS crash reports
+
+Use `inspect_apple_ips` for an explicit local Apple `.ips` file when the
+question concerns crash metadata, exception and termination facts, threads,
+usedImages, lossless registers, or documented crash classes. No `open_binary`,
+Xcode, atos, or target execution is required. The CLI equivalent is
+`inspect-apple-ips PATH`. Preserve artifact SHA-256, `bug_type` as a string,
+uppercase image UUIDs, and integer literals that exceed IEEE-754 range. Only
+`bug_type` `"309"` yields a crash body; other DiagnosticReports types return
+no crash result. Opened Mach-O and dSYM UUID joins remain unobserved. See
+[Apple IPS crash reports](https://github.com/morluto/rea/blob/main/docs/apple-ips.md).
+
+## Linux kernel modules
+
+Use `inspect_kernel_module` for an explicit local ELF32/ELF64 relocatable
+object when the question concerns `.modinfo` license, vermagic, alias,
+depends, or parm strings, the `__versions` symbol CRCs, or an appended module
+signature trailer. No `open_binary`, Linux host, or `modinfo` program is
+required. The CLI equivalent is `inspect-kernel-module PATH`. Preserve
+artifact SHA-256, key order, duplicate keys, CRC hex, and section file ranges.
+A missing section is observed absence when section names are known, not proof
+the module never carried that metadata. `.gnu.linkonce.this_module` is reported
+as present or absent; `struct module` stays unknown because its layout changes
+with the kernel version. `__ksymtab` records are not decoded. The PKCS#7 range
+and its SHA-256 are observed; certificate, signer, and digest coverage remain
+unvalidated. An absent trailer is not proof the module is unsigned in another
+container. gzip, xz, and zstd whole-file containers are unsupported and name
+`external_decompression` as the next probe: use an external codec utility to
+decompress into a separate file, then call `inspect_kernel_module` on that file. See
+[Linux kernel modules](https://github.com/morluto/rea/blob/main/docs/kernel-modules.md).
 
 ## CPython pyc files
 
@@ -140,7 +197,11 @@ question concerns IFF chunks, atom names, exports, imports, lambdas, or the
 Code header. No `open_binary`, Erlang installation, or bytecode execution is
 required. The CLI equivalent is `inspect-erlang-beam PATH`. Preserve artifact
 SHA-256, chunk file ranges, 1-based atom indices, and original atom spellings.
-Missing optional tables stay null. See
+Missing optional tables stay null. For a few facts, use `detail: "summary"` with
+a `beam` view selecting a collection, exact names/indices and fields; read later
+pages from `parent_evidence_id` or the complete Evidence bundle. Same-name
+exports retain every arity and original atom index. CLI summary delivery requires
+`--evidence_output`. Null table counts remain distinct from decoded empty tables. See
 [Erlang BEAM files](https://github.com/morluto/rea/blob/main/docs/erlang-beam.md).
 
 ## SQLite snapshots
@@ -281,14 +342,18 @@ providers. Top-level session capabilities describe the current route, and
 bridge startup, and readiness. The default 330,000 ms is configurable through
 `REA_GHIDRA_STARTUP_TIMEOUT_MS`; a smaller query still needs the same cold import.
 
-Preserve useful Evidence before closing the session or restarting REA. Check
-`close_binary` and resolve reported cleanup failures. Set a larger startup budget
-in the environment that launches REA, then restart REA and reconnect the MCP
-client before reopening the same target. Closing and reopening a binary in the
-existing server keeps its original configuration and starts import again.
-Environment changes in an agent's shell do not update an already running MCP
-server. If its launch configuration cannot be changed, report that constraint
-and the exact retry setting instead of claiming a fixed technical limit.
+When the error names `ghidra.startup_timeout_ms`, call
+`update_analysis_settings` with `action: "set"` and a larger value within the
+reported bounds. Resolve retained cleanup before the next startup attempt.
+No REA restart is needed; an already accepted startup keeps its original
+budget. A new attempt repeats import. Preserve useful Evidence before closing
+and reopening the target when remediation requires that lifecycle step.
+
+For a per-function timeout, update `ghidra.decompile_timeout_seconds` and retry
+the same function on the existing Program. Explicit `null` removes that
+per-function deadline. Inspection is optional when the error supplies the
+setting and bounds. Runtime updates disappear when REA exits; environment
+changes only seed future REA processes.
 
 The client's tool-call deadline must allow startup plus the requested query;
 server settings and progress notifications cannot override it. CLI analysis

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Leonxlnx/taste-skill` — 26 default patterns, 0 followed patterns, 39 file(s) materialized.
+Mirror of `Leonxlnx/taste-skill` — 26 default patterns, 0 followed patterns, 40 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Leonxlnx/taste-skill` — 26 default patterns, 0 followed patterns, 3
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 39 |
+| Files         | 40 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -93,11 +93,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 32 | ✓ | [`skills/taste-skill/scripts/inspect.mjs`](skills/taste-skill/scripts/inspect.mjs) |
 | 33 | ✓ | [`skills/taste-skill/scripts/lib/app-draw.mjs`](skills/taste-skill/scripts/lib/app-draw.mjs) |
 | 34 | ✓ | [`skills/taste-skill/scripts/lib/cdp.mjs`](skills/taste-skill/scripts/lib/cdp.mjs) |
-| 35 | ✓ | [`skills/taste-skill/scripts/lib/probe.mjs`](skills/taste-skill/scripts/lib/probe.mjs) |
-| 36 | ✓ | [`skills/taste-skill/scripts/lib/rules.mjs`](skills/taste-skill/scripts/lib/rules.mjs) |
-| 37 | ✓ | [`skills/taste-skill/scripts/lint.mjs`](skills/taste-skill/scripts/lint.mjs) |
-| 38 | ✓ | [`skills/taste-skill/scripts/scenes.mjs`](skills/taste-skill/scripts/scenes.mjs) |
-| 39 | ✓ | [`skills/taste-skill/SKILL.md`](skills/taste-skill/SKILL.md) |
+| 35 | ✓ | [`skills/taste-skill/scripts/lib/inspection-files.mjs`](skills/taste-skill/scripts/lib/inspection-files.mjs) |
+| 36 | ✓ | [`skills/taste-skill/scripts/lib/probe.mjs`](skills/taste-skill/scripts/lib/probe.mjs) |
+| 37 | ✓ | [`skills/taste-skill/scripts/lib/rules.mjs`](skills/taste-skill/scripts/lib/rules.mjs) |
+| 38 | ✓ | [`skills/taste-skill/scripts/lint.mjs`](skills/taste-skill/scripts/lint.mjs) |
+| 39 | ✓ | [`skills/taste-skill/scripts/scenes.mjs`](skills/taste-skill/scripts/scenes.mjs) |
+| 40 | ✓ | [`skills/taste-skill/SKILL.md`](skills/taste-skill/SKILL.md) |
 
 ---
 

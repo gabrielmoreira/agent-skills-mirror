@@ -1,0 +1,42 @@
+{
+  "schema": "b1-production-standard-v1",
+  "standard_id": "b1-2026-10-24-longform-v4",
+  "style": "B1",
+  "name": "极简手绘风",
+  "accepted_on": "2026-10-24",
+  "user_confirmation": "好的，B1就是要做出来这个效果；我做的所有修正要求，都要更新进去skill，后面都要有这个效果",
+  "base_reference": "approved-baseline.json",
+  "production_standard": "../../references/b1-minimal-handdrawn.md",
+  "required_checklist": "../../references/b1-production-qa.md",
+  "common_checklist": "../../references/autopilot-production-qa.md",
+  "purpose": "Retain the accepted Full V4 long-form pacing, semantic staging, clear evidence, captions and whole-film detail while preserving the Ryan V4 drawing/background/native-voice baseline. Not a fixed storyboard or executable runtime project.",
+  "accepted_source": {
+    "file_name": "B1-Stickman-Video-Director-YouTube-Full-v4.mp4",
+    "sha256": "3739b0b1d8aef3678030cb4ac0c1d5ee0f36431f701a9ce0aad1adafb7f2e864",
+    "duration_seconds": 193.9,
+    "frames": 5817,
+    "width": 1280,
+    "height": 720,
+    "fps": 30,
+    "narration": "Google Gemini Bodi, native 1x; accepted original audio and synchronized SFX retained",
+    "availability": "Source film and detailed QA remain in the local production project; the complete film is not bundled or required at this private machine's path."
+  },
+  "evidence": [
+    {
+      "kind": "sampled_encoded_contact_sheet",
+      "path": "approved-2026-10-24-longform-contact-sheet.jpg",
+      "sha256": "18690bd4a1d94cdc611bced722899cd0cae3f3e114120cedc79e0ab717b4c99e",
+      "frames_sampled": 16,
+      "purpose": "Compare distinct distant compositions, readable evidence frames and genuine moving-sample presentation.",
+      "limit": "Static samples cannot verify motion, continuous viewing, caption timing or listening. The later container-only source repair retained the encoded pictures."
+    }
+  ],
+  "scope": {
+    "applies_to": "B1 only: accepted reference assets and style-specific visual/audio defaults; B common quality gates apply separately to every B style",
+    "retains": "Ryan V4 visual/audio baseline, existing public showcase and accepted recordings",
+    "not_inherited_by": ["A1", "A2", "A3", "A4", "A5", "other B styles"],
+    "not_inherited_scope": "B1 reference assets, character/background/typography design and voice defaults only; not the independently shared B production and acceptance checklist",
+    "publication": "Local Skill maintenance only; no GitHub publication, upload or public showcase replacement authorized by this confirmation"
+  },
+  "evidence_boundary": "The user confirmed the current effect. Earlier technical checks reported complete decode, no detected main-picture freezes at or above 2.5s and sampled visual review. Those checks and this instruction update do not guarantee every future render matches the reference; each production still needs semantic, encoded-picture and actual sound review."
+}

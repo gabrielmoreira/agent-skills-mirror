@@ -8,61 +8,178 @@ shapes.
 In `Plate repo root`, prefer these focused forms:
 
 ```bash
-pnpm test
-pnpm --filter <package> test <file-or-pattern>
-bun test ./packages/<package>/src/<file>.spec.ts --test-name-pattern "<pattern>"
-pnpm --filter <package> typecheck
+pnpm check:plite:dev
+pnpm --filter plite test:plite-browser:chromium <file-or--grep>
+pnpm check:plite
+pnpm check:plite:browser-matrix
+PLAYWRIGHT_BASE_URL=http://localhost:3102 PLAYWRIGHT_RETRIES=0 PLAYWRIGHT_WORKERS=1 pnpm --filter plite test:plite-browser:chromium tests/plite-browser/donor/examples/<suite>.test.ts -g "<pattern>"
+pnpm --filter platejs test -- <file-or-pattern>
+bun test ./packages/platejs/<file>.test.ts --test-name-pattern "<pattern>"
 ```
 
 Rules:
 
+- `pnpm check:plite:dev` is the normal affected development lane.
+- Add `--dry-run` to inspect its exact proof selection. Local changes and
+  `PLITE_CHECK_BASE=<ref>` use the same planner as Plite CI. Planner or runner
+  test edits run their Node contracts; shared configuration keeps full proof.
+  Package tasks reuse the existing entrypoint dependency cache.
+- `pnpm check:plite` is the strict handoff lane. Transplant parity, docs
+  audits, benchmark target audits, www typecheck, and the browser matrix are
+  not part of the affected development loop.
+- `pnpm --filter plite test:plite-browser:chromium <file-or--grep>` is
+  the focused changed-row browser lane. `apps/plite` imports its Plite examples
+  from `apps/www`; never maintain a second example source tree.
+- WebKit, mobile viewport, and the full Playwright app matrix are closure
+  gates through `pnpm check:plite:browser-matrix`.
+- Yjs collaboration soak runners under `tooling/plite/donor/proof/` are manual-only diagnostics: run one only when the user explicitly asks for a soak run, and never add one to `check`, `test`, `test:release-proof` or any automatic agent gate.
+- Run `pnpm plite:browser:install` once when Playwright reports a missing local browser. Proof commands never download browsers implicitly.
+- A session restart or resume kills the session's background commands and its `preview_start` servers, and a `proof.mjs` run killed that way logs no `exit=` line. A proof that must outlive a restart starts from a small Node script that calls `spawn(command, args, { detached: true, stdio: ['ignore', fd, fd] }).unref()`, because `set -m` fails in a non-interactive zsh. The session then waits on that run's last log line.
+- Wait on a long run's final `exit=` line with one background loop or one Monitor filter. A filter on every failing line wakes the session once per failure, and each wake rereads the whole context.
 - run commands from the Plate repo root unless a package-local script requires
   the package cwd;
 - keep docs, skill, runtime, package, benchmark, and Playwright scans rooted in
   the Plate repo. Do not search the donor checkout for current runtime facts;
 - before running a focused test, resolve the actual runnable entrypoint from
   the owning surface, not memory: use targeted searches such as
-  `rg --files packages/<pkg>/src tooling benchmarks | rg "<basename>|<suite>"`.
-  Do this first, not after one failed command;
-- match the runner to the resolved entrypoint: Bun specs under
-  `packages/*/src/**` use `bun test ./...`. Plate has no durable Playwright
-  lane. `pnpm e2e` reads `tooling/config/playwright.config.ts`, whose
-  `testDir` is the missing `tooling/e2e`, so browser proof runs through
-  `verify`'s Drive section;
-- if Bun says "No test files found" or "filters did not match", stop
+  `rg --files packages/<pkg>/test apps/plite/tests tooling benchmarks | rg
+  "<basename>|<suite>"`, or run the same search from the package cwd for
+  package-local Vitest. Do this first, not after one failed command. Many owner
+  files are imported by a `*.test.*` wrapper, while some root Bun contract files
+  intentionally do not use `.test.*`;
+- match the runner to the resolved entrypoint: Plite browser specs under
+  `apps/plite/tests/plite-browser/**` use `pnpm --filter plite
+  test:plite-browser:chromium`; root Bun contracts under
+  `packages/*/test/*.ts` use `bun test ./...`; package-local Vitest wrappers
+  use the package cwd and package script;
+- if Bun or Vitest says "No test files found" or "filters did not match", stop
   guessing command variants. Locate the exact file or wrapper with `rg --files`
   / `rg -n`, then rerun once with the correct runner;
-- do not run multiple Playwright commands in parallel, including through
-  `multi_tool_use.parallel`. The Playwright config starts `pnpm dev` on port
-  3000 and reuses any server already there, so concurrent runs can trip the
-  Next build lock (`Another next build process is already running`) or prove
-  the wrong stale server. Parallelize file reads, but serialize Playwright
-  proofs;
+- run Plite package checks through the entrypoint-aware `plitejs` scripts, such
+  as `pnpm --filter plitejs typecheck`, which runs `typecheck:tests`. That task
+  covers the `src` specs and `test/react` with the helpers they import.
+  Elsewhere under `test/`, `check:core`, `typecheck:contracts` and
+  `plite:public-types` check only the files that
+  `test/tsconfig.generic-types.json`, `tsconfig.public-api.json` and
+  `test/tsconfig.public-package-types.json` list, and no gate typechecks the
+  rest. Run alone in a fresh worktree, `typecheck:tests` fails
+  with TS6305 because its partition outputs are not built. Never use
+  `tsc -p test/tsconfig.json` or `tsconfig.test.json` for plitejs; do not target
+  deleted package roots;
+- platejs package typechecks cover source partitions only. To typecheck a
+  platejs spec the task touched, run
+  `pnpm exec tsc -p packages/platejs/tsconfig.test.json --noEmit` from the
+  repository root and compare its errors in the task's files with the same run
+  at `HEAD` in a detached worktree, because that config already reports errors
+  at base;
+- use `pnpm --filter plite test:plite-browser:chromium ...` for focused Plite
+  browser specs; do not send Playwright specs through `bun test` or the
+  `apps/www` docs app;
+- the managed Plite runner passes `-g` to Playwright as `--grep`, a regular
+  expression, so escape `+` and `(` in a test title, or pass a plain part of
+  it. It refuses every other Playwright flag, such as `--output` or
+  `--workers`; `node scripts/run-plite-browser.mjs direct` from `apps/plite`
+  takes them for diagnostics. A file stops at its first failing batch and
+  resumes its passing batches on the next run, so a case after a known
+  failure runs only once its file runs without that failure;
+- do not run multiple managed Playwright commands in parallel,
+  including through `multi_tool_use.parallel`. The managed route builds and
+  serves the Next example app, and concurrent runs can trip the Next build lock
+  (`Another next build process is already running`) or prove the wrong stale
+  server. Parallelize file reads, but serialize managed Playwright proofs
+  unless one checkpoint explicitly owns a prebuilt server plus
+  `PLAYWRIGHT_BASE_URL`. During a managed proof, run nothing that writes under
+  the runner's source entries, such as a bun test that rewrites snapshots,
+  `build:registry` or a writing pass, because the runner then stops at
+  `source-changed` and its next run starts from the first batch;
+- the managed Plite runner validates its app and browser build manifests.
+  An explicit `PLAYWRIGHT_BASE_URL` delegates serving to that instance; bind
+  its source/build identity before trusting it. If it serves stale content,
+  stop only an instance owned by this run or choose a fresh port, then re-drive;
+- every integration entrypoint that imports public package exports during
+  Playwright, including async/local wrappers, must route through its owned
+  managed browser runner; raw `playwright test` is a stale-dist footgun
+  when `@platejs/test/playwright` changes;
+- if an integration wrapper captures `--reporter=json` from Playwright stdout,
+  do not run the full managed browser-proof command as that child command. Run
+  the required package build as a separate preflight, then run the repo-owned
+  Playwright config with JSON stdout so `report.json` stays parseable;
+- the Plite browser runner owns preparation through
+  `apps/plite/scripts/build-browser-if-stale.mjs` for `@platejs/test` and
+  `build-app-if-stale.mjs` for the source-based proof app. Let their input and
+  output manifests validate reuse. Do not prepend unconditional package builds
+  or set force flags for ordinary proof. A repeated or acceptance proof sets
+  `PLITE_BROWSER_FORCE_PROOF=1`, because without it the runner replays a
+  matching earlier proof. An explicit external server still requires checking
+  its serving source identity;
 - some commands exit 0 without running what they name. Read the output for
   these markers and rerun in the form that runs:
   - `None of the selected packages has a "<script>" script` from
     `pnpm --filter <package> <script>`: run the script from the package
     directory, where a missing script exits non-zero;
+  - the Plite runner's `reused N passed … from a matching complete proof`: set
+    `PLITE_BROWSER_FORCE_PROOF=1`;
   - turbo's `Cached: N cached, M total`: set `TURBO_FORCE=true`;
   - a benchmark probe that prints no frozen lines and only a receipt: pass the
     frozen lines, as Benchmark's pre-acceptance step 4 requires;
 - an independent integration runner that resolves workspace `dist` must build
   its actual artifact dependencies before execution. This requirement belongs
   to that runner, not every source-first package or browser check;
+- `pnpm --filter www api-reference` and its `--check` run
+  `pnpm turbo run build --filter=platejs` before they pack platejs, so they
+  read declarations built from the current source. Turbo caches that build on
+  the package sources, so an unchanged package adds about a second;
+- when running packed/external-consumer package smoke, start from the live
+  export/type contracts such as
+  `packages/platejs/test/public-package-import-smoke.spec.ts` and
+  `packages/plitejs/test/public-package-types-smoke.ts`. Do not invent public
+  function call examples from memory. Prefer type-importing exported names and
+  doing only tiny value references unless the package docs/source were just
+  inspected for that exact signature;
+- `tooling/entrypoints/entrypoint-dag.mjs` owns public JS imports, runtime
+  classes and descriptor-call recipes. `entrypoint-turbo.mjs` derives package
+  partitions and their test paths. Use
+  `pnpm --filter <package> typecheck:partition:<partition>` and
+  `test:partition:<partition>` for an existing nonempty test partition.
+  For `@platejs/test`, select `test:react`, `test:dom`, or a named partition;
+  focused arguments through its aggregate `test` do not select those runners;
+- `pnpm plite:release:packages` builds and checks packed artifacts through
+  `tooling/scripts/check-plite-release-artifacts.mjs`. The managed
+  `tests/plite-browser/runtime-entrypoints.test.ts` drives `/runtime-entrypoints`
+  for client imports. These runners derive membership from the DAG; type-only
+  exports retain their separate proof scope;
 - a reported type regression in a published release starts from the tarballs: `npm pack` the bad and the last good version, compare their declaration entrypoints, and rebuild locally; when the rebuild is right and the tarball wrong, fix the release artifact path, not source;
+- split external consumer type smoke by claim width. App-facing packages
+  should compile with strict declaration checking. `@platejs/test/playwright`
+  may need a separate config with third-party lib checking skipped so
+  Playwright/Node ambient declarations do not hide the package result. Record the split as proof scope, not as a product exemption;
 - use `bun test ./path` only with repo-relative Bun test paths from
   `Plate repo root`, or with package-local paths after recording the package cwd.
   A path without `./` is a name filter that makes Bun scan the whole
   repository, ignored `.tmp` and `docs/plans/artifacts` included, which shows up
   as EMFILE, ENFILE or a ModuleNotFound under an ignored directory;
-- if root `bun test ./packages/.../<file>.spec.ts` says the path filter did not
+- if root `bun test ./packages/.../<file>.test.ts` says the path filter did not
   match, inspect the actual file and its owning runner before retrying. The
   package entrypoint scripts select their current test files and preload;
   `tooling/config/test-suites.mjs` owns root aggregate discovery;
 - do not claim a root package test directory proved anything until its output
   reports the expected file and pass counts. Compare discovery with the package
   owner's files; root aggregate commands and direct `bun test` have different
-  selection rules;
+  selection rules. Use package scripts such as
+  `pnpm --filter @platejs/test test:proof` for their named contracts;
+- for package Vitest contracts, target the actual `*.test.*` entrypoint. Some
+  contract bodies live in imported siblings such as `surface-contract.tsx`;
+  running the sibling path directly fails the Vitest include filter and proves
+  only a command-shape miss. Before running Vitest against any target path that
+  does not already match `*.test.*`, locate the wrapper with
+  `rg -n "<imported-file-basename>" <package>/test --glob "*.test.*"`;
+- `packages/plitejs/test/react` contracts are Vitest-owned. Run them from
+  `packages/plitejs` as
+  `bun run test:react test/react/<file>.test.tsx`; do not run them through root
+  `bun test ./packages/plitejs/test/react/...`;
+- a Vitest run or probe whose printed numbers are evidence passes
+  `--reporter=verbose --silent=false`, because under Claude Code Vitest picks
+  its agent reporter, which hides console output behind a bare pass;
 - do not run `generic-*-contract.ts` or other type-contract files with
   top-level compile examples through `bun test`; they may contain deliberate
   runtime-invalid `@ts-expect-error` calls. Use the owning package `typecheck`
@@ -71,25 +188,29 @@ Rules:
   `rg "test\\(" ...` when the lane is already scoped; use a curated file list,
   targeted `rg` filters, or write discovery output to an artifact;
 - when Playwright imports a package through public exports such as
-  `@platejs/playwright`, verify whether the export resolves built `dist`;
-  after source changes to that package, run its focused build
-  (`pnpm --filter @platejs/playwright build`) before claiming the rerun tested
-  the patch;
-- after package, runtime, example, or generated-site source edits, do not use
-  a dev server already on port 3000 for final proof until you have restarted it
-  or proven it rebuilt the current tree, because the Playwright config reuses
-  it. Record the restart time as proof cost instead of trusting stale green or
-  stale red results;
-- for ad hoc route screenshot or DOM-metric proof, do not run raw `node` from
-  outside the checkout and assume it can import `@playwright/test`; keep the
-  script in the run directory so it resolves the root dependency;
+  `@platejs/test/playwright`, verify whether the export resolves built `dist`;
+  after source changes to those packages, run the focused package build (for
+  example `pnpm --filter @platejs/test build`) before claiming the rerun tested
+  the patch, and patch any wrapper script that bypasses that build path;
+- after package, runtime, example, or generated-site source edits, do not use an
+  already-running `PLAYWRIGHT_BASE_URL` dev server for final proof until you
+  have restarted it or proven it rebuilt the current tree. If freshness is
+  uncertain, omit `PLAYWRIGHT_BASE_URL` once and let Playwright run its managed
+  build/server path, then record the extra time as proof cost instead of trusting
+  stale green or stale red results;
+- for ad hoc route screenshot or DOM-metric proof outside a managed Playwright
+  spec, do not run raw `node` and assume it can import `playwright`. Prefer the
+  repo-managed `pnpm --filter plite test:plite-browser:chromium` path for
+  Slate proof when the proof should be durable;
 - do not casually swap in raw `playwright`, or a custom wrapper unless the
   package script and argument forwarding are verified in the plan;
 ## Source-first package checks
 
-A type probe compiles through `node tooling/scripts/type-probe.mjs [--tree <checkout or worktree>] [--package <name>] [--tsc <compiler>] <probe.ts>...`. It extends that package's tsconfig in the tree, prints each probe's errors and exits 1 when a probe has one. It exits 2 when it has no result to give: a bad argument, a missing file, or a compiler that did not run or did not read every probe. A runner that compiles many cases, such as a call-shape matrix or a mutation sweep, calls it instead of spawning `tsc` itself, so a compiler that never ran cannot pass as a probe with no errors. Packages here resolve through the `node_modules` links above the probe to each package's built `dist` declarations, so build the package first. A proof worktree links this checkout's `node_modules`, so a type probe in it reads this checkout's declarations. A base type control needs a worktree with its own install and build.
+A type probe compiles through `node tooling/scripts/type-probe.mjs [--tree <checkout or worktree>] [--package <name>] [--tsc <compiler>] <probe.ts>...`. It extends that package's tsconfig in the tree, prints each probe's errors and exits 1 when a probe has one. It exits 2 when it has no result to give: a bad argument, a missing file, or a compiler that did not run or did not read every probe. A runner that compiles many cases, such as a call-shape matrix or a mutation sweep, calls it instead of spawning `tsc` itself, so a compiler that never ran cannot pass as a probe with no errors.
 
-A throwaway probe that claims source behavior prints which package files it loaded, so a run that loaded `dist` cannot pass as source proof. Run it from the repository root as `bun test <abs path>`, so the preloads the root `bunfig.toml` lists under `[test]` apply. Bun applies them only to `bun test`, so a plain `bun run` resolves dependency packages from `dist`, and `tooling/config/bunTestSetup.ts` registers `afterEach` hooks that only `bun test` provides. Import by absolute path as `AGENTS.md` says, and print the `require.cache` keys under `/packages/` that the import added, dependency packages included. A scratch file outside the repository cannot resolve bare package names, so it imports by path. A probe with JSX lives in the run directory, because Bun resolves the JSX runtime it injects from the probe's own folder, which no import path can redirect. A probe that needs a DOM and runs without a preload that registers one, such as `tooling/config/bunTestSetup.ts`, calls `GlobalRegistrator.register()` from `@happy-dom/global-registrator` first and then loads React DOM and the code under test with `await import(...)`. Static imports run before any statement, so a probe that loads the editor before the DOM exists runs its layout effects as passive effects and proves nothing about them.
+A throwaway probe that claims source behavior prints which package files it loaded, so a run that loaded `dist` cannot pass as source proof. Run it from the package directory and pass the source-alias preload its `bunfig.toml` lists under `[test]`, such as `bun --preload ../../config/plite-source-aliases.ts <abs path>` from `packages/platejs`. Bun applies `[test]` preloads only to `bun test`, so a plain `bun run` resolves dependency packages such as `plitejs` from `dist`. Leave out `tooling/config/bunTestSetup.ts` and any preload that imports it, such as `config/plite-source-test-setup.ts`, because that file calls `afterEach`, which throws outside `bun test`. Import by absolute path as `AGENTS.md` says, and print the `require.cache` keys under `/packages/` that the import added, dependency packages included. A probe launched from a base or candidate worktree is the exception. There an absolute path into this checkout runs this checkout's code, so a base-versus-candidate comparison compares the checkout with itself. It imports packages by bare name, which the worktree's own source-alias preload resolves into that worktree, or takes the tree root as an argument and imports from it, and its printed keys must name that tree. A scratch file outside the repository cannot resolve bare package names, so it imports by path. A probe with JSX lives in the run directory, because Bun resolves the JSX runtime it injects from the probe's own folder, which no import path can redirect. A probe that needs a DOM and runs without a preload that registers one, such as `tooling/config/bunTestSetup.ts`, calls `GlobalRegistrator.register()` from `@happy-dom/global-registrator` first and then loads React DOM and the code under test with `await import(...)`. Static imports run before any statement, so a probe that loads Plite before the DOM exists runs its layout effects as passive effects and proves nothing about them.
+
+A `plitejs` React probe runs under Vitest instead, from a config in the run directory that merges `packages/plitejs/vitest.config.mjs`. The config imports `vitest/config` by the absolute path that `readlink -f packages/plitejs/node_modules/vitest` prints, followed by `/dist/config.js`. It sets `test.dir` to its own directory and `include` to the probe files. Run it from `packages/plitejs` as `pnpm exec vitest run --config <config> --reporter=verbose --silent=false`. The jsdom variant reuses `test/react/vitest-setup.ts`. A claim about DOM behavior that jsdom does not implement, such as visibility, `inert`, `showModal()`, slot assignment, layout or scrolling, needs the Chromium variant. That variant adds `test.browser` with a headless `chromium` instance and `provider: playwright()`, imported from the `@vitest/browser-playwright` that `packages/test` resolves. It also sets `server.fs.allow` to the repository and `resolve.dedupe` to `react`, `react-dom` and `@testing-library/react`, and uses its own setup file, which calls `installBrowserHandle()` and runs `cleanup()` in a global `afterEach`.
 
 Default to source-first typecheck. Do not build packages just to run types.
 Inspect the affected package/app `paths` and source-entry graph if stale
@@ -109,19 +230,60 @@ use `pnpm turbo typecheck --filter=./packages/<modified-package>`. Run affected
 lint and fix actual diagnostics before final verification. Useful forms:
 
 ```bash
-pnpm turbo typecheck --filter=./packages/core --filter=./packages/plate
+pnpm turbo typecheck --filter=./packages/platejs --filter=./packages/test
 pnpm turbo typecheck --filter='[HEAD^1]'
 pnpm turbo typecheck --filter='...[origin/main]'
 pnpm --filter platejs typecheck
 pnpm --filter platejs lint:fix
 ```
 
-A typecheck that reports TS6305, a referenced project's output not built, checked nothing: it is neither a clean result nor evidence that its other errors are unrelated. Build the references instead.
+A typecheck that reports TS6305, a referenced project's output not built, checked nothing: it is neither a clean result nor evidence that its other errors are unrelated. Build the references or run the package's partition typecheck instead.
 
 Use root `pnpm lint:fix` when the affected lint scope needs that command.
-`pnpm typecheck` builds the packages, then typechecks them; `pnpm build` builds
-all packages only when needed. `pnpm test` is the fast aggregate test lane,
-and `pnpm check` is the handoff check, not the default iteration command.
+`pnpm typecheck` checks root packages from source; `pnpm build` builds all
+packages only when needed. `bun run test` runs the whole root test lane,
+and `pnpm check` is the handoff check, not the default iteration command. It
+skips only its `www-build` step, the production build, which CI runs as
+`pnpm check --build`. Pass `--build` locally only when the change can break the
+build itself, such as a Next config, bundler, server-rendering or prerender
+change.
+`pnpm check --list` names its steps, and `pnpm check <step>` runs one. A proof
+runs a gate as `pnpm check <step>`, whose `run` is the
+read-only check, never the package script of the same name, which may be that
+step's `fix` writer.
+
+`pnpm check:plite` covers all Plite-family package typechecks/tests, proof-runner
+contracts and Chromium proof through `apps/plite`. Pair package and browser
+proof for release-quality behavior claims. The closure browser matrix covers
+Chromium, Firefox, mobile viewport and WebKit on Darwin. Run broad app browser
+proof before marking an architecture/browser plan done, for release-quality
+browser claims or when explicitly requested.
+
+`bun test:mobile-device-proof:raw` requires actual Appium Android/iOS artifacts.
+The local device lane is `verify`-scoped proof and does not satisfy that raw
+gate:
+
+```bash
+emulator -list-avds
+emulator -avd <avd> -no-window -no-audio -no-snapshot-save &
+adb wait-for-device
+until [ "$(adb shell getprop sys.boot_completed | tr -d '\r')" = 1 ]; do sleep 3; done
+node tooling/device/android.mjs setup && node tooling/device/android.mjs calibrate
+node tooling/device/android.mjs doctor
+PLATE_DEVICE_WWW_PORT=3000 pnpm --filter plite exec playwright test --config playwright.device.config.ts
+```
+
+Each run writes `test-results/device/run.json` (Chrome pid, DevTools target,
+served build fingerprint), `report.json` and `guard-<serial>.json` (refused
+commands). After an interrupted run, `doctor` refuses until `restore` runs;
+then `setup` and `calibrate` again.
+
+`playwright test --list`, typecheck and lint never execute `globalSetup`, and
+Playwright loads `apps/plite` TypeScript as CommonJS, so `import.meta` there
+fails only at run time. After any edit to the device config, global setup or
+lane fixtures, run one case once before the default five repeats, which take
+about twelve minutes:
+`PLATE_DEVICE_REPEAT=1 pnpm --filter plite exec playwright test --config playwright.device.config.ts bypass`.
 
 ## Base worktree for a HEAD comparison
 
@@ -134,13 +296,22 @@ A package's own `node_modules` links its workspace siblings by relative path.
 Through that link, a sibling import outside the TypeScript path aliases
 resolves to this checkout's source, so a base proof that must run a sibling at
 the base installs in the worktree instead. When the base lockfile differs or a
-package's links are missing, install with scripts instead (`pnpm rebuild` first when an earlier install skipped them). A worktree that serves the app with `next dev` needs a real install, `pnpm install --frozen-lockfile --offline --ignore-scripts`, because Turbopack refuses a `node_modules` symlink that points outside the worktree. A step that fails in about a second, such as
-`command not found`, is a broken install, not a result. Never copy candidate
+package's links are missing, install with scripts instead (`pnpm rebuild` first when an earlier install skipped them) and
+build `@platejs/cli`. A worktree that serves the app with `next dev` needs a real install, `pnpm install --frozen-lockfile --offline --ignore-scripts`, because Turbopack refuses a `node_modules` symlink that points outside the worktree. A step that fails in about a second, such as `plate:
+command not found`, is a broken install, not a result. Never copy candidate
 files into the base worktree; replay them in a second worktree, and require the
 helper's clean status, which ignores only its own links, before labeling any
 run as base. A worktree in which a patched build or typecheck ran is never base, even after
 `git apply -R`, because ignored build output such as `dist` and `.source`
 survives; every base control runs in a fresh worktree.
+
+A timing, typing-burst or caret case that fails only on a candidate server
+that has served a long run is not yet a regression. Start a fresh base server
+from a worktree this helper makes with `--install`, and a fresh candidate
+server from a second one with `--install --with <changed file>`. Run the case
+with `--repeat-each=3` on each server, alternating, for two rounds. A case
+that also fails on the fresh base is pre-existing, and it gets a suggested
+task, as the block's Suggested tasks rule says.
 
 The helper has four modes for these cases:
 
@@ -150,7 +321,8 @@ The helper has four modes for these cases:
   anything, the helper refuses a `--with` that names no file inside this
   checkout or reaches it through a symlink.
 - `--install` runs `pnpm install --offline --frozen-lockfile --ignore-scripts`
-  instead of linking `node_modules`. A www server needs it, because Turbopack
+  instead of linking `node_modules`. A www server and the managed Plite
+  runner's app build need it, because Turbopack
   refuses `node_modules` linked from outside the worktree root. Then run
   `PLATE_WWW_DYNAMIC_DOCS=1 pnpm build:source:dev` in `apps/www` before
   `next dev`.
@@ -158,26 +330,32 @@ The helper has four modes for these cases:
   worktree through `proof.mjs`, removes the worktree and exits with the
   command's status, or 1 when the command passed and the removal failed. It
   exits 2 when `proof.mjs` cannot load or refuses its arguments. Before
-  creating anything, the helper refuses a `--dir` and `--name` whose log
-  directory's real location lies inside the worktree. That comparison is
-  case-sensitive. A script that starts a server for the command
+  creating anything, the helper refuses a `--dir` whose real location
+  lies inside the worktree. That comparison is case-sensitive and ignores the
+  directories a `--name` adds. A script that starts a server for the command
   starts it with `set -m` and kills its process group on exit.
 - `--expect-fail <text>`, repeatable beside a command, refuses a run in which
   the command passes or its output lacks a text. Each text counts only on a
   failing line in the last 16 MiB of the command's output, with terminal colors
   and links stripped, never in the log's command line. A failing line starts,
   after any indentation, with bun's `(fail)`, node:test's `✖` or `not ok`,
-  Playwright's `✘` or `N) `, a `×` such as Biome prints before an error's
-  message, or a `tsc --pretty false` line
-  `<file>(<line>,<col>): error TS<code>:`. An ESLint error line never counts.
+  Playwright's `✘` or `N) `, vitest's `×`, a `tsc --pretty false` line
+  `<file>(<line>,<col>): error TS<code>:`, or an oxlint error. In a proof run,
+  oxlint prints an error as `<file>:<line>:<col>: error <rule>:` when it
+  detects an agent variable such as `CLAUDECODE`, `AI_AGENT` or
+  `CODEX_THREAD_ID`. Otherwise it prints `× <rule>:` under `CI` and
+  `x <rule>:` without it, with the file on a later line. A `<rule>` reads like
+  `entrypoint-dag(no-forbidden-imports)`, and an oxlint warning never counts.
   Pass each case's failure line, such as bun's `(fail) <describe> > <title>`.
-  For a Biome failure, pass the start of its message. A matcher
-  line such as bun's `error: expect(received).toEqual(expected)` is not a
-  failing line. A failure line also matches a longer title that starts the
-  same way, and a match does not show which case printed it, so read the log
-  to tie the failure to its defect. A
+  For a lint failure, pass the rule and the start of its message. bun prints a
+  case's errors above its result line, so a line that starts with `error: `
+  also counts when the next case result below it is `(fail)`. From such a line,
+  pass the thrown or asserted message, never a generic matcher line such as
+  `error: expect(received).toEqual(expected)`. A failure line also matches a
+  longer title that starts the same way, and a match does not show which case
+  printed it, so read the log to tie the failure to its defect. A
   case designed to pass at the base, such as a must-pass control or a case
-  whose defect only a mutation shows, goes to `mutate.mjs` instead. The
+  whose defect only a mutation shows, goes to a mutation run instead. The
   helper exits 0 when the command fails with every text, and 1 when the command
   passes, a text is missing or the worktree setup refuses. It exits 2 when
   `proof.mjs` cannot load or refuses its arguments, or the command cannot
@@ -198,10 +376,13 @@ When a local-only typecheck/build/dev/test failure does not match the change and
 shows missing-module/package-resolution corruption, corrupted `.bun` files,
 mixed `.bun`/`.pnpm` React paths, package-local `node_modules/react*`,
 `Invalid hook call` or null `resolveDispatcher()`, run `pnpm run reinstall` once
-and rerun the exact failing command before changing product code.
+and rerun the exact failing command before changing product code. Under Vitest
+browser mode, first search the log for `Vite unexpectedly reloaded a test`.
+That line means Vite re-optimized dependencies mid-run, so rerun the command or
+list the dependencies in `optimizeDeps.include` instead of reinstalling.
 
-Reinstall removes root/workspace/app `node_modules`, `.turbo`, `apps/www/.next`
-and `tsconfig.tsbuildinfo`, then runs
+Reinstall removes root/workspace/app `node_modules`, `.turbo`, `apps/www/.next`,
+the per-port dev caches `apps/www/.next-*` and `tsconfig.tsbuildinfo`, then runs
 `pnpm install`. A changed/disappeared failure supports install corruption; an
 unchanged failure returns to ordinary diagnosis.
 Do not use reinstall to avoid fixing source errors or keep retrying unchanged

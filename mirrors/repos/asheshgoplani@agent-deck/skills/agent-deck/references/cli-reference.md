@@ -95,7 +95,7 @@ agent-deck launch -g book-keeper -c claude   # no path: lands on the group's def
 
 Notes:
 - `[path]` omitted: resolves the target group's `default_path`, then the global `default_path` config key, then cwd — the same chain as `add` (#1303). An explicit `.` always means the current directory.
-- `--account <name>` selects a named slot from `[profiles.<name>.claude].config_dir` for this session, matching `add --account`.
+- `--account <name>` selects a named slot from `[profiles.<name>.claude].config_dir` for this session, matching `add --account`. Without `--account` (or `AGENTDECK_ACCOUNT`), `add` and `launch` put a Claude session on `[claude].default_account` when it is set, unless the target group or parent conductor has its own `config_dir` or `CLAUDE_CONFIG_DIR` is set in the environment (a child created from an agent-deck Claude session keeps that session's account); the same default the TUI's New Session dialog preselects.
 - `--model <id>` and `--effort <level>` are the per-session overrides behind the TUI's Model ID and Reasoning effort rows (also on `add`). Effort levels: claude `low|medium|high|xhigh|max`, codex `minimal|low|medium|high|xhigh|max|ultra` plus any level the installed Codex advertises; other tools refuse the flag. When the installed Codex describes the chosen `--model`, only that model's levels are accepted. Both are echoed in `--json` output (`model`, `effort`) and by `session show --json`.
 - `--model` accepts any ID: the model lists are suggestions, not an allowlist, and an ID the list lacks is passed to the tool as is.
 - `launch -capabilities --json` (and `add -capabilities --json`) prints what this host can create: per tool `models`, `default_model`, `reasoning_efforts` and, when the installed CLI was probed, `model_efforts` (model ID to accepted efforts). For Codex the lists come from `codex debug models` (models with `visibility: list`, by priority) and for OpenCode from `opencode models` (about 3s timeout), each merged in front of the built-in catalog; Claude Code, Gemini and the rest use the built-in catalog. `[models.<tool>] extra` IDs come first, and a `[models.<tool>] list` replaces the whole list. The probe never sends a prompt, times out after about 1s (Codex) or 3s (OpenCode), runs with the `VAR=value` prefix of the configured command, and its result is cached per CLI binary (path, mtime, size) in the cache dir (`model-probe/<tool>.json`) for up to a day. A missing CLI, a timeout, a non-zero exit or unrecognized output falls back to the built-in catalog; a failed probe is remembered (also on disk) for about a minute and then retried. Remote hosts report their own lists through their own `-capabilities`. Turn the probe off with `[models] probe = false`.
@@ -224,8 +224,13 @@ agent-deck web [options]
 | `--listen` | Listen address (default: `127.0.0.1:8420`) |
 | `--read-only` | Disable terminal input, stream output only |
 | `--token` | Require bearer token for API and WS access |
+| `--token-file` | Read the bearer token from a `chmod 600` file instead of argv |
+| `--allowed-host` | Extra exact HTTP `Host` value to accept (repeatable; optional `:port`) |
+| `--insecure-bind` | Allow a non-loopback `--listen` with no `--token`/`--token-file` (unsafe) |
 | `--push` | Enable browser push notifications (turn them on in the web UI's Tweaks panel → Notifications) |
-| `--open` | Reserved placeholder (currently no-op) |
+| `--push-vapid-subject` | VAPID subject for push (default: `mailto:agentdeck@localhost`) |
+| `--push-test-every` | Send a test push at this interval (e.g. `10s`; `0` disables) |
+| `--no-tui` | Headless: run only the HTTP server, no TUI |
 
 ```bash
 agent-deck web
@@ -412,7 +417,7 @@ agent-deck session primer my-project --json
 #  "identity_file":"/.../identity.md","text":"..."}
 ```
 
-`--json` adds `skip_reason` when injection is skipped (SSH/sandboxed sessions never inject, regardless of level). Against an older remote (`agent-deck remote <r> session primer`) that predates this command, the controller prints a one-line "remote does not support 'session primer'" message instead of forwarding raw stderr.
+`--json` adds `skip_reason` when the level is `none`; SSH/sandboxed sessions inject like local ones (the block travels inline in the launch command `delivery` says so and `identity_file` is empty). Against an older remote (`agent-deck remote <r> session primer`) that predates this command, the controller prints a one-line "remote does not support 'session primer'" message instead of forwarding raw stderr.
 
 ### session set
 
@@ -420,7 +425,7 @@ agent-deck session primer my-project --json
 agent-deck session set <id|title> <field> <value>
 ```
 
-**Fields:** title, path, command, tool, claude-session-id, gemini-session-id, account, context-level, prompt-suggestions
+**Fields:** title, path, command, tool, claude-session-id, gemini-session-id, account, context-level, prompt-suggestions, wait-timeout
 
 Setting `account` auto-migrates the Claude conversation into the target account's config dir (same migration as `session switch-account`, but without the automatic stop/restart).
 
@@ -436,6 +441,14 @@ agent-deck session set my-project context-level ""       # clear: inherit group/
 ```bash
 agent-deck session set my-worker prompt-suggestions on   # keep suggestions in a parented session
 agent-deck session set my-worker prompt-suggestions ""   # clear: follow profile, then [launch]
+```
+
+`wait-timeout` sets the session's wait timer (Claude sessions): after a numbered question whose `(Recommended)` option is under the cursor has waited this long with nobody attached, agent-deck takes that option. It never answers permission, trust, login or security prompts, or a question about a destructive action. A Go duration of at least `1m`; `off` (or `0`) disables it for this session; an empty value falls back to `[sessions] wait_timeout` (default off). Applies live. See `config-reference.md` ("Wait timer").
+
+```bash
+agent-deck session set my-project wait-timeout 5m   # take the recommended option after 5 minutes
+agent-deck session set my-project wait-timeout off  # never, even with [sessions] wait_timeout set
+agent-deck session set my-project wait-timeout ""   # follow [sessions] wait_timeout
 ```
 
 ### session send-keys
@@ -488,6 +501,24 @@ Delivery verdict (`--json` also carries `delivery` and a machine-checkable `subm
 With `--wait` or `--stream` on a Claude target, the reply is bound to the transcript record of this exact message: a message queued behind a live turn waits for its own turn to start, the read begins after that record, and it stops at the next human prompt (an interrupted turn is reported as incomplete or as a stream error, not as the next turn's answer). Slash commands and non-Claude tools keep the timestamp-based best-effort reply.
 
 Claude conversation identity (additive; Claude-compatible targets only, other tools' receipts are unchanged): `--json` receipts carry `claude_session_id`, the native Claude conversation the message went to (the same value `session show --json` and `session output --json` report), omitted while it is not known yet (a fresh session before Claude writes its transcript). The queued `--json` receipt and `session send-status --json` carry it too; once the send has `landed` it names the conversation whose transcript holds `landed_row_id`. A `--json --wait` reply bound to its transcript record also carries `claude_turn_uuid`, the uuid of that user record, and `claude_session_id` from the same record; it is the Claude counterpart of Codex's `accepted_turn.codex_session_id` + `codex_turn_generation`.
+
+### session ref
+
+```bash
+agent-deck session ref <source> <target> [--print] [--json] [-q]
+```
+
+Hands `<target>` a reference to `<source>`; nothing moves and `<source>`'s output is never pasted. The reference names the source's title, id, project path and status, the command that reads it, and its transcript path when it is known locally:
+
+```
+[ref] session "auth fix" (a1b2c3d4-1700000000) · /work/auth · status idle
+read it with: agent-deck -p work session output a1b2c3d4-1700000000 -q
+transcript: ~/.claude/projects/-work-auth/<id>.jsonl
+```
+
+By default the same content is typed into the target's composer (its first, managed window) as one line, with a trailing space, and Enter is never pressed: you or the agent's operator submit it. A vim-mode composer is put into insert mode first. `--print` types nothing and prints the text; the target need not be running. The TUI's pick/drop and the macOS app's drag use the same path.
+
+Refused, with nothing typed: the same session twice (`same_session`), sessions in different profiles (`cross_profile`), remote SSH sessions on either side (`source_remote`, `target_remote`), a target that is not running (`target_not_running`, insert only), has no tmux pane or a pane that cannot be read (`target_no_pane`), or shows a menu or permission prompt (`target_menu_open`, insert only: typed digits, y/n/a or a vim-mode Escape would answer it, so answer it first; the check runs before every keystroke batch, the same rule `session send` uses), or has a vim-mode composer and is working (`target_busy_vim`, insert only: the pane or the status reads running, and the Escape that enters insert mode would interrupt the turn; drop again when it is waiting). Menu detection covers Claude and Codex menus (permission dialogs, AskUserQuestion pickers, Codex approvals) plus, for any tool, a numbered `❯ N.` selection line or an "Enter to confirm" / "Esc to cancel" footer. A prompt drawn another way (for example a Gemini or OpenCode approval with a different marker) is not recognised, so check such a target before dropping. The pane is read right before each batch; a dialog that opens in the few milliseconds between that read and the keys is not caught. A failed insert is `insert_failed`. `--json`: `{"ok":true,"source":{"id","title","path","status","tool","transcript","profile"},"target":{"id","title"},"text":"...","line":"...","inserted":true}`; on refusal `{"ok":false,"error_code":"same_session","code":"INVALID_OPERATION","error":"..."}` with exit 1 (exit 2 when a session is not found).
 
 ### session image-upload
 
@@ -764,6 +795,16 @@ agent-deck open report.html --browser-profile work --wait 10s  # Browser panel p
 ```
 
 Use this to show the user an HTML report. `--session` defaults to the calling session (`$AGENTDECK_INSTANCE_ID`, then the agent-deck session owning the calling tmux session) and is required outside one; ids match exactly and duplicate titles are refused. Paths are made absolute and must be regular files; URLs must be absolute `http`/`https` without credentials. The request is a `macapp.open` frame on the host's own event bus, so it works the same on remote hosts. Exit 0 prints `Opened in AgentDeck (session <title>)` when the app acknowledged within `--wait` (default 3 s), else `Queued for AgentDeck: it opens when the app is connected`; a refused target, a disabled bus or an app rejection exits non-zero. Details: `docs/macapp-open.md`.
+
+### ask - Ask the owner for a secret, a choice or a short text
+
+```bash
+agent-deck ask secret conductor/GH_TOKEN --reason "GitHub key with workflow permission" [--replace]
+agent-deck ask choice "Which database?" --option staging --option prod
+agent-deck ask text "Which branch?"
+```
+
+The owner answers in the Mac app dialog, the TUI modal, or with `agent-deck ask answer <id>` in his own terminal. A secret goes straight to `/usr/local/bin/deck-secret`; the command prints only `stored scope/NAME (replaced=no, by app)` and never the value. Choice and text print the answer only. `--session`, `--wait 10m` (max 30m), `--fallback-after 20s`, `--no-fallback`, `--json`. Exit 0 stored/answered, 2 refused, 3 cancelled, 4 timed out, 5 nothing can show it or no vault. Dialog side: `ask deliver <id>` (header line + value on stdin), `ask cancel <id> --nonce N` (the nonce that dialog announced; `--unshown` instead for a request no dialog showed), `ask show <id> --json`, `ask list --json`. See `docs/ask.md`.
 
 ### browser - Drive the session's Browser panel in the macOS app
 
@@ -1203,7 +1244,7 @@ In the TUI, remote sessions use the same status indicators and nested group tree
 agent-deck remote <name> recall timeline <session> --json [--tail N | --since <cursor> | --before <before_cursor> --limit N]
 agent-deck remote <name> recall follow <session> --after <cursor|end> --jsonl [--status]
 agent-deck remote <name> events follow --jsonl [--since <cursor>] [--kind <prefix,...>] [--session <id>] [--profile <name>]
-agent-deck remote <name> events publish --kind macapp.open.ack|macapp.browser.response|macapp.app.focus --session <id> --data-file - < reply.json
+agent-deck remote <name> events publish --kind macapp.open.ack|macapp.browser.response|macapp.app.focus|macapp.ask.seen --session <id> --data-file - < reply.json
 agent-deck remote <name> session send-status <send-id> --json
 ```
 

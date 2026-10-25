@@ -1,6 +1,6 @@
 # Image and sprite requests
 
-This document owns the conversation flow. `sprite_gen/workflow/catalog.py` owns the two journeys and their choices; `workflow` derives questions and engine steps from it. Commands in this document assume `SPRITE_GEN_ROOT` is the absolute installed repository path.
+This document owns the conversation flow. `sprite_gen/workflow/catalog.py` owns the two journeys and their choices; `workflow` derives questions and engine steps from it.
 
 ## Start with the user's request
 
@@ -11,21 +11,14 @@ This document owns the conversation flow. `sprite_gen/workflow/catalog.py` owns 
 
 Inspect the request before asking anything. Pass choices already named by the user as explicit arguments. An existing sprite base image skips base-image generation and its provider question. An image request may still attach references to `gen --ref` for editing.
 
-A clip from a video MCP on the agent (ZCRE) is a third way to animate the base. `workflow` does not offer it: its motion methods are the two above, so a request that names the MCP goes to that row of the [SKILL](../SKILL.md) execution routes. The Grok video method has one step, `video-set`, which runs its own canvas, clip, frames, loop and set alignment. On the MCP route each stage is a verb the agent runs: `video-canvas` → `video-prompt --no-last-frame` → the agent's MCP tools → `video-frames` → `video-loop` (`--anchor motion-auto` for a walk or run) → `video-cycle-align`, once a walk or run is cut in two or more directions ([video-pipeline](video-pipeline.md#a-clip-from-a-video-mcp-on-your-agent--zcre)).
-
-```bash
-$SPRITE_GEN_ROOT/.venv/bin/sprite-gen workflow --kind sprite
-$SPRITE_GEN_ROOT/.venv/bin/sprite-gen workflow --kind image
-```
-
-The command is read-only: it checks available credentials, reads defaults and returns JSON. `status` is `ready`, `needs-input` or `blocked`; exit 0 means ready and exit 2 means read the questions or blockers. It never generates images, launches a browser, changes authentication or saves defaults.
+The command is read-only: it checks available credentials, reads defaults and returns JSON. `status` is `ready`, `needs-input` or `blocked`; exit 0 means ready and exit 2 means read the questions or blockers.
 
 1. Check the returned access state and explain only what needs the user's attention.
-2. Ask the missing generation choices in `questions`, using their labels rather than CLI identifiers. For sprites, explain that the first provider creates the base drawing, while the motion method animates it. Until it is answered, `questions` also holds `codex_unavailable` ("지피티(codex)를 쓸 수 없을 때 — 로그인이 없거나 사용량을 다 썼을 때 — 어떻게 할까요?": stop and ask, Grok, or the OpenAI API billed per call). It is asked once: save the answer at once with `defaults save --codex-unavailable <answer> --expected-revision <settings_revision>` (the question's `save: general`, no `--kind`), and it is not asked again. `codex_unavailable` in the guide's answer says the choice in force and where it came from (`saved`, `SPRITE_GEN_CODEX_UNAVAILABLE`, or `default` = not yet answered).
+2. Ask the missing generation choices in `questions`, using their labels rather than CLI identifiers. For sprites, explain that the first provider creates the base drawing, while the motion method animates it. Until it is answered, `questions` also holds `codex_unavailable` ("지피티(codex)를 쓸 수 없을 때 — 로그인이 없거나 사용량을 다 썼을 때 — 어떻게 할까요?": stop and ask, Grok, or the OpenAI API billed per call). It is asked once: save the answer at once with `defaults save --codex-unavailable <answer> --expected-revision <settings_revision>` (the question's `save: general`, no `--kind`), and it is not asked again.
 3. Run `workflow` again with the answers. Request choices override saved values without modifying them. When choices came from saved defaults, briefly announce them and do not ask again.
 4. Gather only missing creative inputs: subject, style, requested motions and output needs. Lock the base before motion generation.
-5. Only when the start stage returns `status: ready`, run the returned pipeline through the existing tools. A populated `pipeline` is a proposal, not permission to ignore unresolved questions or blockers. Always pass its explicit provider to `gen`/`gen-set`; do not rely on the low-level CLI's omitted-provider resolution. GPT rows use `codex` even when Grok made the base. No availability-driven provider switch is allowed in this workflow. A step that still names no provider — `video-set`'s mid-step redraw for a front or back walk — follows the saved `codex_unavailable` answer when codex cannot run; when that answer is to ask, the step ends with exit 75 and the question ([gen](gen.md#when-codex-cannot-run--ask-or-what-you-chose), [SKILL](../SKILL.md#when-codex-cannot-run--exit-75)).
-6. Complete the pipeline's QA and deliver the output files. Chroma removal, extraction, placement and export are automatic stages, not user choices. Raw images are evidence, not replacements for extracted sprite frames. Follow [atlas-workflow](atlas-workflow.md), [video-pipeline](video-pipeline.md) or [gen](gen.md), as returned by the guide.
+5. Only when the start stage returns `status: ready`, run the returned pipeline through the existing tools. A populated `pipeline` is a proposal, not permission to ignore unresolved questions or blockers. Always pass its explicit provider to `gen`/`gen-set`; do not rely on the low-level CLI's omitted-provider resolution. No availability-driven provider switch is allowed in this workflow.
+6. Complete the pipeline's QA and deliver the output files. Raw images are evidence, not replacements for extracted sprite frames. Follow [atlas-workflow](atlas-workflow.md), [video-pipeline](video-pipeline.md) or [gen](gen.md), as returned by the guide.
 
 ```bash
 $SPRITE_GEN_ROOT/.venv/bin/sprite-gen workflow --kind sprite \
@@ -36,9 +29,9 @@ $SPRITE_GEN_ROOT/.venv/bin/sprite-gen workflow --kind sprite \
 
 Login, subscription and quota are separate facts. Codex uses `codex login status`; Grok uses the shared image/video credential reader, without rewriting its auth file. Neither probe proves the current media entitlement or remaining quota: those fields remain `unknown`. When access has not independently been established for the current account and request, ask the user once and pass `--confirmed-access codex` or `--confirmed-access grok`. An explicit account/access statement already in the conversation can answer this question; never manufacture confirmation from a saved provider preference. Known failed/missing credentials remain blocked even with confirmation. A successful generation is not a permanent entitlement cache.
 
-For Grok images and videos, the shared resolver prefers the subscription login even when `XAI_API_KEY` is configured. It selects that key only when no login file exists; an expired or invalid login stays blocked. The guide names the separate API-credit billing and requires `--confirm-api-billing` from an explicit user choice before that route becomes ready. It never silently switches from subscription use to API credit. No keys, tokens, account IDs or subscription assertions are saved as preferences, and provider diagnostics do not echo raw credential output.
+The guide names the separate API-credit billing and requires `--confirm-api-billing` from an explicit user choice before that route becomes ready.
 
-The documented login commands are [Codex CLI login status](https://developers.openai.com/codex/cli/reference) and [Grok CLI login](https://docs.x.ai/build/cli/reference). These are authentication contracts, not subscription-verification endpoints. Native token parsing and shared credential priority stay owned by [video](video.md).
+Native token parsing and shared credential priority stay owned by [video](video.md).
 
 ## Finish after delivering files
 
@@ -55,7 +48,7 @@ When the profile has no saved defaults, finish then offers: "이번 선택을 �
 
 ## One settings owner
 
-`preferences.json` in `~/.config/sprite-gen/` owns the `sprite` and `image` profiles separately, and beside them the `general` settings every profile shares: so far `codex_unavailable` (`ask`, `grok` or `openai`; what a call that names no provider does when codex cannot run — the rule is [gen](gen.md#when-codex-cannot-run--ask-or-what-you-chose)'s). `SPRITE_GEN_CONFIG_DIR` explicitly relocates that directory. A profile may be partial, for example saving only motion and curation when an existing base skipped image-provider selection. Missing fields prompt when needed. This storage is independent of a project or run; a run's numeric recipe and curation edits keep their existing owners. The file is version 2 (`profiles` and `general`); a version 1 file (profiles only) still reads, with nothing chosen for codex, and the next save writes it as version 2.
+`preferences.json` in `~/.config/sprite-gen/` owns the `sprite` and `image` profiles separately, and beside them the `general` settings every profile shares: so far `codex_unavailable` (`ask`, `grok` or `openai`; what a call that names no provider does when codex cannot run — the rule is [gen](gen.md#when-codex-cannot-run--ask-or-what-you-chose)'s). `SPRITE_GEN_CONFIG_DIR` explicitly relocates that directory. A profile may be partial, for example saving only motion and curation when an existing base skipped image-provider selection. Missing fields prompt when needed. This storage is independent of a project or run; a run's numeric recipe and curation edits keep their existing owners.
 
 ```bash
 $SPRITE_GEN_ROOT/.venv/bin/sprite-gen defaults show
@@ -68,6 +61,6 @@ $SPRITE_GEN_ROOT/.venv/bin/sprite-gen defaults save --codex-unavailable ask \
   --expected-revision REVISION_FROM_SHOW
 ```
 
-Use the exact `settings_revision` from the guide, or `revision` from show (`missing` for no file). Save merges only supplied fields in the selected profile, and `--codex-unavailable` into `general` (it needs no `--kind`); clear removes only that profile. Both are explicit mutations. Reads never create or rewrite settings. Corrupt or unknown settings fail with a named error instead of resetting silently.
+Use the exact `settings_revision` from the guide, or `revision` from show (`missing` for no file).
 
-Writes use the package's cross-platform exclusive file lock, compare the observed revision under that lock, then atomically replace the complete JSON file. Two writers with the same revision cannot overwrite each other: the first committed write wins; the second fails and must reread/reconfirm. A repeated save with the current revision and identical values leaves bytes and mtime unchanged. Atomic replacement lets read-only queries see a complete old or new snapshot without creating a lock file.
+Two writers with the same revision cannot overwrite each other: the first committed write wins; the second fails and must reread/reconfirm.

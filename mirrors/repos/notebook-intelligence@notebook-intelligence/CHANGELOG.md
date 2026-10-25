@@ -8,17 +8,60 @@ For each release we list user-facing changes grouped as **Added**, **Changed**, 
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
-## [6.0.0] - unreleased
+## [Unreleased]
+
+### Changed
+
+- **Dependency floors raised past newly published advisories** (#518). The Python floors move to `litellm>=1.96.2`, `mcp>=1.30.0`, `urllib3>=2.8.0`, and `aiohttp>=3.14.4`, and the build requires `jupyterlab>=4.6.4`. litellm backported its fix to each minor line from 1.88 to 1.96, so 1.96.2 is the lowest floor that excludes every unpatched release. The `mcp` advisory affects only the StreamableHTTP server, which NBI does not use. npm resolutions were raised or added for `brace-expansion`, `sanitize-html`, `serialize-javascript`, `undici`, `handlebars`, `shell-quote`, and `source-map-js`; of those, only `sanitize-html` reaches the shipped bundle.
+
+### Fixed
+
+- **Terminal drops reject filenames with control or misleading formatting characters.** File-browser drops and uploaded paths containing line breaks, terminal control characters, Unicode line/paragraph separators, or bidirectional formatting controls are skipped with a warning in both @-mention and raw modes. Other paths in the same drop still paste normally.
+- **ACP startup no longer lets npm projects choose the adapter.** Starting an adapter through `npx` could execute a package planted in the workspace or a shared ancestor of the user's home before any approval prompt. ACP now launches a preinstalled `codex-acp` executable directly from an absolute server `PATH` directory, excluding workspace paths, aliases, and intermediate symlink hops from adapter discovery, interpreter checks, and the `PATH` inherited by agent commands. **Migration:** install the tested `@zed-industries/codex-acp@0.16.0` in a trusted location and maintain its version there; NBI does not verify versions found on `PATH` or through an override. `NBI_ACP_AGENT_COMMAND` must point to the installed adapter itself by absolute path, not `npx`, `npm exec`, `pnpm dlx`, `bunx`, or an `env` wrapper. An override preserves the executable's name for trusted shims and retains the full server `PATH`; it is an administrator trust decision covering the executable, its runtime and packages, and their parent directories. Readiness and startup use the same resolver, so relative, missing, malformed, and set-but-empty or whitespace-only commands are consistently blocked. Unset `NBI_ACP_AGENT_COMMAND` to restore default discovery; assigning an empty value does not reset it. The adapter starts in NBI's user directory, workspace sessions retain their explicit root, and the `nbi_workspace_root` MCP tool requires an explicit absolute root through an environment variable instead of falling back to the launch directory. See the [admin guidance](docs/admin-guide.md#gating-the-experimental-acp-agent-378).
+
+## [6.2.0] - 2026-10-05
+
+6.2.0 adds a way to turn an existing notebook into a Chatbook and fixes two Chatbook problems that silently dropped content: `@` mentions that lost their file, and exported code cells that lost their code. No traitlet, env var, REST route, or on-disk format was renamed or removed; upgrading needs no migration.
+
+### Added
+
+- **Convert to Chatbook** (#508). Ordinary notebooks get a **Convert to Chatbook** toolbar button and a **Convert notebook to Chatbook** palette command, the reverse of **Export as code notebook**. Both write a Chatbook copy beside the original (`analysis.ipynb` becomes `analysis-chatbook.ipynb`) and open it, with every code cell arriving as a **Cd** cell that runs exactly as written. The exception is a Chatbook whose kernel was switched to another one: its natural-language cells that have run and not been edited since stay natural language. Outputs, attachments, markdown and raw cells, and other metadata are kept. Conversion sends nothing to the model. A notebook in a different language from the configured backend kernel is not converted, and the dialog explains why. See [`docs/chatbook.md`](docs/chatbook.md#convert-a-notebook-to-a-chatbook).
+
+### Fixed
+
+- **`@` mentions followed by punctuation or naming paths with spaces resolve** (#505). Punctuation typed right after a mention (`@file:data/README.md, then chart it`) became part of the path, and a path containing a space could not be written at all, so the model received the mention as unavailable and generated code anyway. Sentence punctuation after an unquoted file or folder mention is now trimmed, stopping at the first name that exists, and a quoted form (`@file:"data/my notes.md"`) names a path containing whitespace or `@`. The mention menu inserts the quoted form when it is needed.
+- **Exporting keeps the code of a code cell switched to natural language** (#510). A **Cd** cell switched to **NL** and not run again was exported as a comment of its English description instead of its code. Export now writes the code when the cell's English is still the description of that exact code, or is empty on a cell that has only ever been code. English edited after the switch still exports as comments. A description written before 6.2.0 does not record which code it describes, so such a cell still exports as comments until **Refresh English representation** is run on it.
+
+## [6.1.0] - 2026-09-26
+
+6.1.0 adds a switch that turns off the first-run tour, lets NBI share an environment with `jupyter-ai`, and fixes two chat sidebar controls. No traitlet, env var, REST route, or on-disk format was renamed or removed. The `agent-client-protocol` floor moves from 0.10.1 to 0.11.0, so an environment that pins 0.10.x must lift that pin to upgrade.
+
+### Added
+
+- **`NBI_TOUR_DISABLED` turns off the first-run tour** (#495). A deployment can stop the tour from opening on first run without maintaining an override file that disables every step, which broke silently whenever a release added a step. The traitlet is `NotebookIntelligence.tour_disabled`, and the environment variable takes precedence. Users can still replay the tour with **Show NBI tour**. See [`docs/admin-tour-config.md`](docs/admin-tour-config.md#turning-the-tour-off).
+
+### Changed
+
+- **`agent-client-protocol` is a range instead of an exact pin** (#501). The dependency moves from `==0.10.1` to `>=0.11.0,<1`, so NBI can be installed in the same environment as `jupyter-ai`, whose ACP client requires `>=0.11.0,<0.12.0`.
+
+### Fixed
+
+- **Dropdown choices are readable in dark JupyterLab themes** (#497). The chat mode select and NBI's other dropdowns showed light text on the browser's default light option list, so the choices were nearly invisible.
+- **The chat sidebar's `/` and `@` popover keeps its selection visible and valid** (#499). Arrow keys moved the selection out of view on a list longer than the popover, and filtering the list could leave the selection pointing past its end, so Enter raised and the keypress was lost.
+
+## [6.0.0] - 2026-09-22
 
 6.0.0 adds Chatbook, a notebook whose cells can be written in English and executed as generated code, together with its admin policy, its own kernel, and the context, mention, and ruleset plumbing around it. The rest of the release is hardening: the experimental ACP agent mode gets a tighter sandbox and better approval cards, and a long tail of chat, settings, MCP, and readiness fixes. The major version marks Chatbook's arrival rather than a compatibility break: no traitlet, env var, REST route, command id, or on-disk format was renamed or removed, `requires-python` is unchanged at `>=3.10`, and the supported JupyterLab range widened rather than narrowed. Upgrading needs no migration.
 
 ### Added
 
 - **Chatbook: notebooks whose cells are written in English** (#406, #448, #480). A Chatbook is an ordinary `.ipynb` opened against a new `chatbook` kernel, in which each cell is either a natural-language prompt (**NL**) or ordinary code (**Cd**). Running an NL cell generates code for the notebook's backend kernel and runs it; the cell badge is a button and `Ctrl J` / `Ctrl Shift J` switch the active cell or every cell between the two modes. Generated code is governed by an execution mode: `always-confirm` (the default) shows the code and waits, `confirm-if-risky` waits only when a scan finds destructive filesystem, shell, or process calls, and `auto-run` executes without asking. `NBI_CHATBOOK_POLICY` gates the whole feature the way every other admin policy does, and `NBI_CHATBOOK_MAX_EXECUTION_MODE` caps how permissive a user may be, so a tenant can pin `always-confirm` and remove the rest from the dropdown. The backend kernel is resolved from the notebook rather than assumed, so Chatbook is not Python-only, and rules under `modes/chatbook/` apply to generation. Cells can pull context with `@` mentions, served by built-in providers and by any that an extension registers (see [`docs/chatbook-extensions.md`](docs/chatbook-extensions.md)); a Chatbook can be exported to a plain code notebook for the backend language. Running a **Cd** cell also asks the model for an English description of that code, stored in cell metadata, so a hand-written cell can be read as prose later. Chatbook ships a kernelspec and one new route, `POST /notebook-intelligence/chatbook/generate`; `ipykernel` is now a runtime dependency. See [`docs/chatbook.md`](docs/chatbook.md).
+- **Chatbook generation appears in performance diagnostics** (#488). Generation records the same `context_prep` and `dispatch` phases as a chat turn, and its `mode` is `chatbook:<provider>`, so it can be told apart from chat on the same provider.
 - **The MCP handshake is bounded** (#456). A `mcp.json` entry pointing at a command that is not an MCP server never answered the protocol handshake, and the connect attempt could occupy the backend indefinitely. Connect and disconnect now run under deadlines, `NBI_MCP_CONNECT_TIMEOUT` (60 seconds by default) and `NBI_MCP_DISCONNECT_TIMEOUT`, after which the server is marked failed and the log says the command may not be an MCP server. A command that writes non-JSON output in a loop would otherwise fill the log with one parse error per line, so those records are capped and the number withheld is reported with the failure.
 
 ### Changed
 
+- **Chatbook generation asks for results that later cells can name** (#493). The generation instructions now ask the model to bind a cell's meaningful result to a descriptive variable, to avoid the kernel's implicit input and output history (`_`, `Out[n]`, `In[n]`), and, when a cell is regenerated, not to count on names defined only by the code being replaced. These are instructions to the model, not checks on the code it returns.
 - **Tab accepts an inline suggestion only when one is on screen** (#444). The accept binding was scoped to `.jp-mod-completer-enabled`, which is set whenever the completer is active, so Tab could be swallowed in an edit-mode cell with nothing to accept instead of indenting. It is now scoped to `.jp-mod-inline-completer-active`. Inline completion responses are also identified per request, so a reply that arrives after its request was superseded is discarded rather than accepted.
 - **Ollama's chat-model list is fetched lazily and bounded** (#427). Enumerating models ran at startup and waited on the Ollama host, so a configured but unreachable host delayed the extension. The enumeration is deferred and time-bounded, and a failure logs a warning instead of holding up load.
 - **A disabled provider no longer advertises its models** (#431). `disabled_providers` removed a provider from the picker but the capabilities response still carried its model list, so a disabled provider's models remained selectable through a stale or hand-edited config.
@@ -32,6 +75,7 @@ For each release we list user-facing changes grouped as **Added**, **Changed**, 
 - **The ACP session picker shows something useful** (#421). Session titles were cut inside a context pointer, and previews carried pointer segments that meant nothing to a reader; titles are now cut on a boundary and pointer segments are stripped. Session files are named relative to the open directory.
 - **Saving Claude settings keeps keys the tab does not show** (#420). The Claude settings tab saves the keys it renders when it opens, and the server stored that object in place of the old one. Any other `claude_settings` key was erased, including `jupyter_ui_tools_external` (#398), which is set by hand in `config.json`. `POST /notebook-intelligence/config` now merges a posted `claude_settings` onto the stored value. Settings saves also re-read `config.json` first, so a hand edit made while JupyterLab runs is no longer overwritten when a settings tab next saves. Settings changes are judged against the running state rather than the state the tab opened with.
 - **Readiness reports a blank required model instead of answering Ready** (#459). An OpenAI-compatible or LiteLLM-compatible provider with the **Model** field left empty persisted as an empty string. Readiness answered "Ready. Nothing needs configuring" while every chat turn went out with no model name and failed. A blank required property is now a blocking row naming the field, and the settings form marks it once touched.
+- **Copilot is no longer signed in when nothing will use it** (#490). A Claude-only deployment logged into GitHub Copilot at startup, refreshed its token, and polled `api.github.com` for the life of the server, because both model fields default to Copilot. NBI now signs in only when Copilot will serve chat or autocomplete, so Claude chat with Copilot autocomplete still works. Turning "remember login" off still deletes a stored token.
 - **The performance report names the provider that served a turn** (#461). Turns were labeled from the resolved model, which reported `copilot` for every Claude-mode turn and mislabeled a Copilot user pinned outside the fallback list. The label now comes from the configured provider, and a malformed config no longer raises on the chat path.
 - **A stopped response says so in the transcript** (#474, #477, #478, #479). Stopping a response left the bubble exactly as it was, indistinguishable from a model that returned nothing. The turn is now marked, and the marker survives both later deltas and a second turn streaming alongside it. Stop also reaches every turn that is running, not only the one the sidebar input started, so a response begun from an editor command can be stopped; and the openai-compatible, LiteLLM-compatible, and Ollama chat models now read the cancel token and close the stream, so a stopped turn stops generating at the provider instead of running to completion.
 - **Concurrent turns no longer erase each other from the transcript** (#478). A streaming turn rewrote the whole transcript from a snapshot taken when it started, so a turn begun from an editor command while a sidebar response streamed removed that response and its prompt. Each turn now updates only its own message, and a response is placed next to the prompt it answers.
@@ -40,7 +84,7 @@ For each release we list user-facing changes grouped as **Added**, **Changed**, 
 - **A malformed `mcp.json` no longer takes down MCP support** (#433). A bad `mcpServers` or `participants` section raised during parsing; the malformed section is now skipped with a log line and the rest of the file is honored.
 - **`NBI_ENABLED_PROVIDERS` is parsed as a CSV list** (#435). It was read as a single value, so an admin re-enabling more than one provider re-enabled none of them.
 - **Open files are reverted more carefully** (#429). A file changed on disk was reverted even while its kernel was running, which could swap the source out from under an executing cell; the revert is now skipped while the kernel is busy and announced when it happens. The reload notice is scoped to the visible document instead of firing for background files.
-- **Chatbook fixes** (#457, #458). The mention menu could outlive the cell that opened it and reappear over an unrelated cell. Cells whose generated code never ran no longer take an execution number, so a cell waiting on the confirm bar does not look like it executed.
+- **Chatbook fixes** (#457, #458, #487). The mention menu could outlive the cell that opened it and reappear over an unrelated cell. Cells whose generated code never ran no longer take an execution number, so a cell waiting on the confirm bar does not look like it executed. Rules scoped with `kernel_names` are matched against the backend kernel the generated code runs in rather than the `chatbook` wrapper, so a rule naming `python3` now applies to a Python Chatbook. A rule naming `kernel_names: ['chatbook']`, written during the 6.0.0 prereleases, no longer matches; put Chatbook-only rules under `modes/chatbook/` instead (see [`docs/rulesets.md`](docs/rulesets.md)).
 - **Settings panel layout and labels** (#462, #471, #472). The content pane collapsed to nothing in a narrow window while the tab column kept its full width. Buttons pairing an icon with a label rendered the label outside the button, where it painted over the panel background and became invisible. Decorative tab icons are hidden from the accessibility tree.
 
 ## [5.4.0] - 2026-09-01
@@ -496,7 +540,9 @@ A multi-PR accessibility pass landed across most NBI surfaces. Together these ma
 - Settings UI restructured around Claude vs default mode.
 - WebSocket connection reliability improvements.
 
-[unreleased]: https://github.com/plmbr/notebook-intelligence/compare/v6.0.0...HEAD
+[unreleased]: https://github.com/plmbr/notebook-intelligence/compare/v6.2.0...HEAD
+[6.2.0]: https://github.com/plmbr/notebook-intelligence/compare/v6.1.0...v6.2.0
+[6.1.0]: https://github.com/plmbr/notebook-intelligence/compare/v6.0.0...v6.1.0
 [6.0.0]: https://github.com/plmbr/notebook-intelligence/compare/v5.4.0...v6.0.0
 [5.4.0]: https://github.com/plmbr/notebook-intelligence/compare/v5.3.1...v5.4.0
 [5.3.1]: https://github.com/plmbr/notebook-intelligence/compare/v5.3.0...v5.3.1

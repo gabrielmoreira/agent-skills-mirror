@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `xerj-org/xerj` — 26 default patterns, 38 followed patterns, 134 file(s) materialized.
+Mirror of `xerj-org/xerj` — 26 default patterns, 39 followed patterns, 137 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `xerj-org/xerj` — 26 default patterns, 38 followed patterns, 134 fil
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 38 |
-| Files         | 134 |
+| Followed pats | 39 |
+| Files         | 137 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -55,6 +55,7 @@ Mirror of `xerj-org/xerj` — 26 default patterns, 38 followed patterns, 134 fil
 - `user-feedback/16-agent-field-reports/README.md`
 - `.github/AI_CONTRIBUTIONS.md`
 - `docs/CONTRIBUTION_REVIEW.md`
+- `docs/recipes/batch-search.md`
 - `docs/research/llms-txt-2026-09/README.md`
 - `scripts/seo/README.md`
 - `README.md`
@@ -160,76 +161,79 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 62 | ✓ | [`landing/llms.txt`](landing/llms.txt) |
 | 63 | ✓ | [`metrics-worker/README.md`](metrics-worker/README.md) |
 | 64 | ✓ | [`metrics/README.md`](metrics/README.md) |
-| 65 | ✓ | [`recipes/README.md`](recipes/README.md) |
-| 66 | ✓ | [`scripts/seo/blog_covers/README.md`](scripts/seo/blog_covers/README.md) |
-| 67 | ✓ | [`tools/benchmarks/harbor-3arm/README.md`](tools/benchmarks/harbor-3arm/README.md) |
-| 68 | ✓ | [`tools/packs/agent-session-trajectories/README.md`](tools/packs/agent-session-trajectories/README.md) |
-| 69 | ✓ | [`tools/packs/cisa-kev/README.md`](tools/packs/cisa-kev/README.md) |
-| 70 | ✓ | [`tools/packs/keys/README.md`](tools/packs/keys/README.md) |
-| 71 | ✓ | [`tools/packs/rust-vulns/README.md`](tools/packs/rust-vulns/README.md) |
-| 72 | ✓ | [`tools/packs/xerj-blogposts/README.md`](tools/packs/xerj-blogposts/README.md) |
-| 73 | ✓ | [`tools/xerj-code/hub/README.md`](tools/xerj-code/hub/README.md) |
-| 74 | ✓ | [`tools/xerj-code/README.md`](tools/xerj-code/README.md) |
-| 75 | ✓ | [`tools/xerj-code/SKILL.md`](tools/xerj-code/SKILL.md) |
-| 76 | ✓ | [`tools/xerj-code/swebench/README.md`](tools/xerj-code/swebench/README.md) |
-| 77 | ✓ | [`user-feedback/15-clustering-durability-expectations-2025-2026/README.md`](user-feedback/15-clustering-durability-expectations-2025-2026/README.md) |
-| 78 | ✓ | [`user-feedback/kibana/categories/01-dashboard-authoring/README.md`](user-feedback/kibana/categories/01-dashboard-authoring/README.md) |
-| 79 | ✓ | [`user-feedback/kibana/categories/02-discover-and-kql/README.md`](user-feedback/kibana/categories/02-discover-and-kql/README.md) |
-| 80 | ✓ | [`user-feedback/kibana/categories/03-visualization-quality/README.md`](user-feedback/kibana/categories/03-visualization-quality/README.md) |
-| 81 | ✓ | [`user-feedback/kibana/categories/04-performance-and-load/README.md`](user-feedback/kibana/categories/04-performance-and-load/README.md) |
-| 82 | ✓ | [`user-feedback/kibana/categories/05-index-patterns-data-views/README.md`](user-feedback/kibana/categories/05-index-patterns-data-views/README.md) |
-| 83 | ✓ | [`user-feedback/kibana/categories/06-sharing-and-export/README.md`](user-feedback/kibana/categories/06-sharing-and-export/README.md) |
-| 84 | ✓ | [`user-feedback/kibana/categories/07-alerting-and-watcher/README.md`](user-feedback/kibana/categories/07-alerting-and-watcher/README.md) |
-| 85 | ✓ | [`user-feedback/kibana/categories/08-spaces-and-rbac/README.md`](user-feedback/kibana/categories/08-spaces-and-rbac/README.md) |
-| 86 | ✓ | [`user-feedback/kibana/categories/09-upgrades-and-migration/README.md`](user-feedback/kibana/categories/09-upgrades-and-migration/README.md) |
-| 87 | ✓ | [`user-feedback/kibana/categories/10-docs-and-ux/README.md`](user-feedback/kibana/categories/10-docs-and-ux/README.md) |
-| 88 | ✓ | [`user-feedback/kibana/categories/11-ml-and-anomaly/README.md`](user-feedback/kibana/categories/11-ml-and-anomaly/README.md) |
-| 89 | ✓ | [`user-feedback/kibana/categories/12-maps-and-geo/README.md`](user-feedback/kibana/categories/12-maps-and-geo/README.md) |
-| 90 | ✓ | [`user-feedback/kibana/categories/13-observability-apm/README.md`](user-feedback/kibana/categories/13-observability-apm/README.md) |
-| 91 | ✓ | [`user-feedback/kibana/categories/14-siem-and-security/README.md`](user-feedback/kibana/categories/14-siem-and-security/README.md) |
-| 92 | ✓ | [`user-feedback/kibana/categories/15-plugin-and-ecosystem/README.md`](user-feedback/kibana/categories/15-plugin-and-ecosystem/README.md) |
-| 93 | ✓ | [`user-feedback/kibana/categories/99-noise/README.md`](user-feedback/kibana/categories/99-noise/README.md) |
-| 94 | ✓ | [`user-feedback/kibana/categories/99-uncategorized/README.md`](user-feedback/kibana/categories/99-uncategorized/README.md) |
-| 95 | ✓ | [`user-feedback/kibana/README.md`](user-feedback/kibana/README.md) |
-| 96 | ✓ | [`user-feedback/README.md`](user-feedback/README.md) |
-| 97 | → | [`.github/AI_CONTRIBUTIONS.md`](.github/AI_CONTRIBUTIONS.md) |
-| 98 | → | [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md) |
-| 99 | → | [`benchmarks/search-exact-phrase/README.md`](benchmarks/search-exact-phrase/README.md) |
-| 100 | → | [`CHANGELOG.md`](CHANGELOG.md) |
-| 101 | → | [`CLA.md`](CLA.md) |
-| 102 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
-| 103 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 104 | → | [`demo/playbooks/MIXED_READ_UNDER_WRITE_FINDING_2026-07-08.md`](demo/playbooks/MIXED_READ_UNDER_WRITE_FINDING_2026-07-08.md) |
-| 105 | → | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) |
-| 106 | → | [`docs/CONSOLE_READER.md`](docs/CONSOLE_READER.md) |
-| 107 | → | [`docs/CONTRIBUTION_REVIEW.md`](docs/CONTRIBUTION_REVIEW.md) |
-| 108 | → | [`docs/OBJECT_STORAGE.md`](docs/OBJECT_STORAGE.md) |
-| 109 | → | [`docs/PACKAGING_DEBIAN.md`](docs/PACKAGING_DEBIAN.md) |
-| 110 | → | [`docs/recipes/air-gapped-deployment.md`](docs/recipes/air-gapped-deployment.md) |
-| 111 | → | [`docs/RERANK.md`](docs/RERANK.md) |
-| 112 | → | [`docs/research/llms-txt-2026-09/README.md`](docs/research/llms-txt-2026-09/README.md) |
-| 113 | → | [`docs/SCRIPTING.md`](docs/SCRIPTING.md) |
-| 114 | → | [`docs/SECOND_BRAIN.md`](docs/SECOND_BRAIN.md) |
-| 115 | → | [`docs/SECURITY_MODEL.md`](docs/SECURITY_MODEL.md) |
-| 116 | → | [`docs/SHARING.md`](docs/SHARING.md) |
-| 117 | → | [`docs/SNAPSHOT_AND_RESTORE.md`](docs/SNAPSHOT_AND_RESTORE.md) |
-| 118 | → | [`docs/WATCHING_OBJECT_STORAGE.md`](docs/WATCHING_OBJECT_STORAGE.md) |
-| 119 | → | [`docs/WHY_XERJ.md`](docs/WHY_XERJ.md) |
-| 120 | → | [`docs/XERJ_VS_LUCENE.md`](docs/XERJ_VS_LUCENE.md) |
-| 121 | → | [`docs/ZERO_TOKEN_DIRECTION.md`](docs/ZERO_TOKEN_DIRECTION.md) |
-| 122 | → | [`engine/fuzz/README.md`](engine/fuzz/README.md) |
-| 123 | → | [`README.ar.md`](README.ar.md) |
-| 124 | → | [`README.es.md`](README.es.md) |
-| 125 | → | [`README.ja-JP.md`](README.ja-JP.md) |
-| 126 | → | [`README.ko.md`](README.ko.md) |
-| 127 | → | [`README.md`](README.md) |
-| 128 | → | [`README.zh-CN.md`](README.zh-CN.md) |
-| 129 | → | [`ROADMAP.md`](ROADMAP.md) |
-| 130 | → | [`scripts/bench/README.md`](scripts/bench/README.md) |
-| 131 | → | [`scripts/seo/README.md`](scripts/seo/README.md) |
-| 132 | → | [`SECURITY.md`](SECURITY.md) |
-| 133 | → | [`user-feedback/11-reference-coding-field-reports/2026-08-11-token-savings-reports.md`](user-feedback/11-reference-coding-field-reports/2026-08-11-token-savings-reports.md) |
-| 134 | → | [`user-feedback/16-agent-field-reports/README.md`](user-feedback/16-agent-field-reports/README.md) |
+| 65 | ✓ | [`packaging/README.md`](packaging/README.md) |
+| 66 | ✓ | [`plugins/xerj/README.md`](plugins/xerj/README.md) |
+| 67 | ✓ | [`recipes/README.md`](recipes/README.md) |
+| 68 | ✓ | [`scripts/seo/blog_covers/README.md`](scripts/seo/blog_covers/README.md) |
+| 69 | ✓ | [`tools/benchmarks/harbor-3arm/README.md`](tools/benchmarks/harbor-3arm/README.md) |
+| 70 | ✓ | [`tools/packs/agent-session-trajectories/README.md`](tools/packs/agent-session-trajectories/README.md) |
+| 71 | ✓ | [`tools/packs/cisa-kev/README.md`](tools/packs/cisa-kev/README.md) |
+| 72 | ✓ | [`tools/packs/keys/README.md`](tools/packs/keys/README.md) |
+| 73 | ✓ | [`tools/packs/rust-vulns/README.md`](tools/packs/rust-vulns/README.md) |
+| 74 | ✓ | [`tools/packs/xerj-blogposts/README.md`](tools/packs/xerj-blogposts/README.md) |
+| 75 | ✓ | [`tools/xerj-code/hub/README.md`](tools/xerj-code/hub/README.md) |
+| 76 | ✓ | [`tools/xerj-code/README.md`](tools/xerj-code/README.md) |
+| 77 | ✓ | [`tools/xerj-code/SKILL.md`](tools/xerj-code/SKILL.md) |
+| 78 | ✓ | [`tools/xerj-code/swebench/README.md`](tools/xerj-code/swebench/README.md) |
+| 79 | ✓ | [`user-feedback/15-clustering-durability-expectations-2025-2026/README.md`](user-feedback/15-clustering-durability-expectations-2025-2026/README.md) |
+| 80 | ✓ | [`user-feedback/kibana/categories/01-dashboard-authoring/README.md`](user-feedback/kibana/categories/01-dashboard-authoring/README.md) |
+| 81 | ✓ | [`user-feedback/kibana/categories/02-discover-and-kql/README.md`](user-feedback/kibana/categories/02-discover-and-kql/README.md) |
+| 82 | ✓ | [`user-feedback/kibana/categories/03-visualization-quality/README.md`](user-feedback/kibana/categories/03-visualization-quality/README.md) |
+| 83 | ✓ | [`user-feedback/kibana/categories/04-performance-and-load/README.md`](user-feedback/kibana/categories/04-performance-and-load/README.md) |
+| 84 | ✓ | [`user-feedback/kibana/categories/05-index-patterns-data-views/README.md`](user-feedback/kibana/categories/05-index-patterns-data-views/README.md) |
+| 85 | ✓ | [`user-feedback/kibana/categories/06-sharing-and-export/README.md`](user-feedback/kibana/categories/06-sharing-and-export/README.md) |
+| 86 | ✓ | [`user-feedback/kibana/categories/07-alerting-and-watcher/README.md`](user-feedback/kibana/categories/07-alerting-and-watcher/README.md) |
+| 87 | ✓ | [`user-feedback/kibana/categories/08-spaces-and-rbac/README.md`](user-feedback/kibana/categories/08-spaces-and-rbac/README.md) |
+| 88 | ✓ | [`user-feedback/kibana/categories/09-upgrades-and-migration/README.md`](user-feedback/kibana/categories/09-upgrades-and-migration/README.md) |
+| 89 | ✓ | [`user-feedback/kibana/categories/10-docs-and-ux/README.md`](user-feedback/kibana/categories/10-docs-and-ux/README.md) |
+| 90 | ✓ | [`user-feedback/kibana/categories/11-ml-and-anomaly/README.md`](user-feedback/kibana/categories/11-ml-and-anomaly/README.md) |
+| 91 | ✓ | [`user-feedback/kibana/categories/12-maps-and-geo/README.md`](user-feedback/kibana/categories/12-maps-and-geo/README.md) |
+| 92 | ✓ | [`user-feedback/kibana/categories/13-observability-apm/README.md`](user-feedback/kibana/categories/13-observability-apm/README.md) |
+| 93 | ✓ | [`user-feedback/kibana/categories/14-siem-and-security/README.md`](user-feedback/kibana/categories/14-siem-and-security/README.md) |
+| 94 | ✓ | [`user-feedback/kibana/categories/15-plugin-and-ecosystem/README.md`](user-feedback/kibana/categories/15-plugin-and-ecosystem/README.md) |
+| 95 | ✓ | [`user-feedback/kibana/categories/99-noise/README.md`](user-feedback/kibana/categories/99-noise/README.md) |
+| 96 | ✓ | [`user-feedback/kibana/categories/99-uncategorized/README.md`](user-feedback/kibana/categories/99-uncategorized/README.md) |
+| 97 | ✓ | [`user-feedback/kibana/README.md`](user-feedback/kibana/README.md) |
+| 98 | ✓ | [`user-feedback/README.md`](user-feedback/README.md) |
+| 99 | → | [`.github/AI_CONTRIBUTIONS.md`](.github/AI_CONTRIBUTIONS.md) |
+| 100 | → | [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md) |
+| 101 | → | [`benchmarks/search-exact-phrase/README.md`](benchmarks/search-exact-phrase/README.md) |
+| 102 | → | [`CHANGELOG.md`](CHANGELOG.md) |
+| 103 | → | [`CLA.md`](CLA.md) |
+| 104 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
+| 105 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 106 | → | [`demo/playbooks/MIXED_READ_UNDER_WRITE_FINDING_2026-07-08.md`](demo/playbooks/MIXED_READ_UNDER_WRITE_FINDING_2026-07-08.md) |
+| 107 | → | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) |
+| 108 | → | [`docs/CONSOLE_READER.md`](docs/CONSOLE_READER.md) |
+| 109 | → | [`docs/CONTRIBUTION_REVIEW.md`](docs/CONTRIBUTION_REVIEW.md) |
+| 110 | → | [`docs/OBJECT_STORAGE.md`](docs/OBJECT_STORAGE.md) |
+| 111 | → | [`docs/PACKAGING_DEBIAN.md`](docs/PACKAGING_DEBIAN.md) |
+| 112 | → | [`docs/recipes/air-gapped-deployment.md`](docs/recipes/air-gapped-deployment.md) |
+| 113 | → | [`docs/recipes/batch-search.md`](docs/recipes/batch-search.md) |
+| 114 | → | [`docs/RERANK.md`](docs/RERANK.md) |
+| 115 | → | [`docs/research/llms-txt-2026-09/README.md`](docs/research/llms-txt-2026-09/README.md) |
+| 116 | → | [`docs/SCRIPTING.md`](docs/SCRIPTING.md) |
+| 117 | → | [`docs/SECOND_BRAIN.md`](docs/SECOND_BRAIN.md) |
+| 118 | → | [`docs/SECURITY_MODEL.md`](docs/SECURITY_MODEL.md) |
+| 119 | → | [`docs/SHARING.md`](docs/SHARING.md) |
+| 120 | → | [`docs/SNAPSHOT_AND_RESTORE.md`](docs/SNAPSHOT_AND_RESTORE.md) |
+| 121 | → | [`docs/WATCHING_OBJECT_STORAGE.md`](docs/WATCHING_OBJECT_STORAGE.md) |
+| 122 | → | [`docs/WHY_XERJ.md`](docs/WHY_XERJ.md) |
+| 123 | → | [`docs/XERJ_VS_LUCENE.md`](docs/XERJ_VS_LUCENE.md) |
+| 124 | → | [`docs/ZERO_TOKEN_DIRECTION.md`](docs/ZERO_TOKEN_DIRECTION.md) |
+| 125 | → | [`engine/fuzz/README.md`](engine/fuzz/README.md) |
+| 126 | → | [`README.ar.md`](README.ar.md) |
+| 127 | → | [`README.es.md`](README.es.md) |
+| 128 | → | [`README.ja-JP.md`](README.ja-JP.md) |
+| 129 | → | [`README.ko.md`](README.ko.md) |
+| 130 | → | [`README.md`](README.md) |
+| 131 | → | [`README.zh-CN.md`](README.zh-CN.md) |
+| 132 | → | [`ROADMAP.md`](ROADMAP.md) |
+| 133 | → | [`scripts/bench/README.md`](scripts/bench/README.md) |
+| 134 | → | [`scripts/seo/README.md`](scripts/seo/README.md) |
+| 135 | → | [`SECURITY.md`](SECURITY.md) |
+| 136 | → | [`user-feedback/11-reference-coding-field-reports/2026-08-11-token-savings-reports.md`](user-feedback/11-reference-coding-field-reports/2026-08-11-token-savings-reports.md) |
+| 137 | → | [`user-feedback/16-agent-field-reports/README.md`](user-feedback/16-agent-field-reports/README.md) |
 
 ---
 

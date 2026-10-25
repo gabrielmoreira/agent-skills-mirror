@@ -34,6 +34,53 @@ One-shot CLI output remains complete. Older servers require the existing complet
 request after schema discovery. APK authenticity and runtime behavior remain
 unverified.
 
+## Manifest component projection
+
+`inspect_android_package` also returns a static inventory of declared
+activities, aliases, services, receivers and providers from the decoded
+manifest. `declared_name` preserves the source attribute; `name` resolves a
+relative name only when the manifest package is known and the resolved copy
+fits the UTF-8 byte budget. An unresolved package or exhausted name budget
+retains the declared name and marks the inventory partial. Empty component
+names and names with forbidden DEX characters retain their raw spelling and
+are not treated as identities. Valid DEX spaces, including boundary spaces,
+are preserved when resolving component names and matching alias targets.
+Whitespace in the manifest package is rejected by its separate package grammar.
+Component permissions inherit the application
+permission when no component permission is declared, except an activity alias
+with no permission: Android documents that case as requiring no permission
+through the alias. `permission_source` distinguishes a local declaration,
+inherited value, no requirement (including an explicit empty override), and a
+value omitted because its resource/manifest-placeholder token is unresolved
+or the total permission-byte budget was reached. Resource and placeholder
+references are not expanded at this parser boundary. Repeated inherited
+values share one inventory-wide byte budget.
+Provider `android:readPermission` and `android:writePermission` overrides are
+not projected as separate fields; their presence marks the inventory partial
+and is called out in `limitations`. Relative component names are not resolved
+against a manifest package with surrounding whitespace.
+Class-name segments follow DEX `SimpleName` characters, including a leading
+digit or hyphen, rather than Java source identifier rules. Relative-name
+expansion does not prove class existence, DEX-version compatibility or runtime
+loadability. SDK defaults accept JADX's decimal and hexadecimal integer
+spellings; the original SDK declaration strings remain unchanged.
+
+`exported` is the declared literal `true` or `false`, otherwise null.
+`exported_default` is the documented default only where it can be established;
+it remains null for unknown provider target SDKs, nonliteral declarations, or
+components with filters targeting API 31 or later that omit the now-required
+explicit declaration. A limitation records the latter validation error.
+Provider authorities and all inventory dimensions are bounded. `status:
+"partial"` and `limitations` identify omitted declarations or values; a
+capacity limitation appears only when an actual collection limit was reached.
+The projection does not merge manifests, expand resource references, or
+observe runtime enabled/export state.
+
+The service `foreground_service_type` field preserves the declared attribute,
+including an empty value or surrounding spaces; `null` means the attribute is
+absent or the component is not a service. This field does not validate service
+type tokens or establish runtime eligibility.
+
 ## Supply tools
 
 Use a **full JDK 17 or newer** (including its compiler module) and
@@ -147,6 +194,21 @@ queries accept the same `overload_index`; the bridge resolves the selected
 method node and the result reports its index and displayed signature. These
 indices are tied to the current artifact and engine, not stable across builds.
 
+`inspect_android_class` also reports `dex_static_value` for each `static final`
+field whose class definition encodes a value in its DEX static values, so
+compile-time constants are readable even when the class has no `<clinit>`.
+Each value is typed: `boolean`, `byte`, `short`, `char` (UTF-16 code unit) and
+`int` values are JSON booleans or numbers, while `long`, `float` and `double`
+values are strings holding Java's text for the value, so 64-bit values stay
+exact. The field reports `null` when no value is encoded, the encoded value is
+null or of another kind, or the field is not `static final`. The value is read from parsed
+metadata without generating source, and a static initializer can still assign
+the field; use `inspect_android_method` on `<clinit>` for that evidence.
+Only `inspect_android_class` asks the bridge for these values.
+`inspect_android_method` and `trace_android_references` read the member-only
+class summary, so large encoded strings cannot push their member lookup past
+the 8 MiB protocol frame limit.
+
 Smali fallbacks select one complete block using the original method name and DEX
 descriptor, before applying the source byte limit. This preserves the selected
 overload even when Java code generation renames a method. If the selected Java
@@ -193,6 +255,13 @@ the same source byte limit and explicit truncation reporting.
   full reported display types, fields and inner class names. Synthetic members
   that code generation hides can appear in the inventory; it stays consistent
   after method decompilation within the retained session.
+  Class and method inspection and reference tracing accept either the exact
+  reported class name or its original binary name, including `$` in nested and
+  anonymous classes. The bridge keeps both identities from JADX; it does not
+  replace separators or guess suffix matches. Ambiguous selectors are refused.
+  Follow-up calls preserve the selected name, while results report the frozen
+  JADX display name. Quote `$` names in the shell, for example
+  `'com.example.Manager$WorkerThread'`.
   Exact DEX prototypes are reported from frozen JADX method metadata as
   `dex_descriptor`, for example `(I)V`. Display names can be JADX aliases;
   the descriptor alone is not a complete raw DEX method ID. Overload indices
@@ -346,11 +415,17 @@ export REA_JADX_OPERATION_TIMEOUT_MS=600000
 
 The value must be a decimal millisecond count from 1 to 2147483647; anything
 else is refused before Java starts. REA reads it from the environment captured
-at process start. A change applies on the next process start; an already
-running server keeps the deadline it started with. The same deadline bounds
-each upstream call. A timeout names `REA_JADX_OPERATION_TIMEOUT_MS`, the
-effective milliseconds, and that range. A passing JADX configuration check in
-`rea doctor` reports the effective `operation_timeout_ms`. Explicit
+at process start. Changing that environment requires a new REA process. On a
+running MCP server, set `jadx.operation_timeout_ms` through
+`update_analysis_settings` to change the default for newly accepted operations;
+queued or running operations retain their accepted budget. The same deadline
+bounds each upstream call. Timeout recovery reports the effective milliseconds
+and range, with `details.limit` identifying the runtime setting. An invalid
+provider-local launch value can also be repaired by a runtime override; reset
+exposes that invalid launch value again. See the
+[settings design](design/limits-and-recovery.md#invalid-launch-configuration).
+A passing JADX configuration check in `rea doctor` reports its launch-derived
+`operation_timeout_ms`; it does not inspect another running server's overrides. Explicit
 cancellation still ends the operation immediately, and partial observations
 and owned-process cleanup are unchanged. Raising the deadline does not extend
 the bridge's 30-second startup handshake or the upstream **90-second**

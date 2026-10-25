@@ -992,6 +992,12 @@ func (s *server) dispatch(method string, params map[string]json.RawMessage) (any
 		name := stringParam(params, "name")
 		objectType := stringParam(params, "object_type")
 		source, err := s.getObjectSource(schema, name, objectType)
+		if err == nil && boolParam(params, "include_source_origin") {
+			switch strings.ToUpper(objectType) {
+			case "PROCEDURE", "FUNCTION", "PACKAGE", "PACKAGE_BODY":
+				source["source_origin"] = "oracle-dictionary"
+			}
+		}
 		return source, false, err
 	case "get_table_ddl":
 		schema := stringParam(params, "schema")
@@ -3444,8 +3450,12 @@ func (s *server) getObjectSource(schema, name, objectType string) (map[string]an
 
 	// Unquoted Oracle identifiers are stored uppercase; quoted mixed-case names must stay exact.
 	// Try caller-provided identity first, then uppercase fallback (same pattern as column metadata).
+	dictionaryType := upperType
+	if dictionaryType == "PACKAGE_BODY" {
+		dictionaryType = "PACKAGE BODY"
+	}
 	for _, candidate := range oracleObjectIdentityNameCandidates(name) {
-		source, found, queryErr := s.loadObjectSourceText(schema, candidate, upperType)
+		source, found, queryErr := s.loadObjectSourceText(schema, candidate, dictionaryType)
 		if queryErr != nil {
 			return nil, queryErr
 		}

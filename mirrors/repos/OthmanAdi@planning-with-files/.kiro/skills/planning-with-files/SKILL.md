@@ -98,6 +98,22 @@ pwsh -File .kiro/skills/planning-with-files/assets/scripts/check-complete.ps1
 
 ---
 
+## New plan creation contract
+
+For a new Kiro task, run STEP 0 bootstrap before implementation. Set `PWF_SKILL_DIR` to the directory containing this SKILL.md, then run from the workspace root:
+
+```sh
+sh "$PWF_SKILL_DIR/assets/scripts/bootstrap.sh"
+# After filling in the selected plan, validate its explicit path:
+sh "$PWF_SKILL_DIR/assets/scripts/check-complete.sh" --validate .kiro/plan/task_plan.md
+```
+
+PowerShell equivalents are `assets/scripts/bootstrap.ps1` and `assets/scripts/check-complete.ps1 -Validate -PlanFile .kiro/plan/task_plan.md`.
+
+Keep each phase as `### Phase N: Name` with exactly one `**Status:** pending`, `**Status:** in_progress`, or `**Status:** complete` line. A `## Phases` checklist or numbered summary alone is not trackable. Preserve these markers when tailoring the generated plan; do not replace the skeleton with a compact custom format. Validation must succeed before substantive work and after changing phase structure. This checks format, not task completion or attestation.
+
+Reuse existing plans without overwriting them. If an existing plan fails validation, report the issue for its owner to review; do not automatically rewrite it. If helpers cannot run, copy the shipped template exactly and state that native validation is unavailable.
+
 ## The Core Pattern
 
 ```

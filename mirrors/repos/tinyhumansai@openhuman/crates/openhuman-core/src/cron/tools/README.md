@@ -3,11 +3,12 @@
 Agent-facing tools over the `cron` domain. Six per-operation tools
 ([`add.rs`](./add.rs), [`list.rs`](./list.rs), [`update.rs`](./update.rs), [`remove.rs`](./remove.rs), [`run.rs`](./run.rs), [`runs.rs`](./runs.rs)) are the
 implementation; [`collapsed.rs`](./collapsed.rs) wraps them into a single action-dispatched
-`CronTool`. All seven are re-exported wholesale by `crate::tools` (`pub use
-crate::cron::tools::*` in `tools/mod.rs`).
+`CronTool`. The cron tool types are re-exported from `crate::cron::tools`; `tools/ops.rs`
+assembles the registered tool set.
 
-Every tool first checks `config.cron.enabled` and returns an error result
-when cron is disabled.
+The cron-domain tools first check `config.cron.enabled` and return an error
+result when cron is disabled. The separate `schedule` tool exposes its own
+one-shot and recurring schedule actions.
 
 ## Registration state
 
@@ -75,9 +76,8 @@ or immediately execute a stored command or agent prompt on the host.
 
 - `cron` domain: [`../README.md`](../README.md): job/run model, scheduler,
   delivery modes, agent-job minimum interval.
-- [`crates/openhuman-core/src/tools/impl/system/schedule.rs`](../../tools/impl/system/schedule.rs): the separate
-  one-shot `schedule` tool built on `cron::add_once` / `cron::add_once_at`;
-  not part of the collapse above.
+- [`schedule.rs`](./schedule.rs): the separate `schedule` tool for recurring and
+  one-shot jobs; it is not part of the collapse above.
 - `crates/openhuman-core/src/tools/impl/meta/collapse.rs` (module path
   `tinytools::collapse`): the generic
   action-collapsing helper `collapsed.rs` builds on.

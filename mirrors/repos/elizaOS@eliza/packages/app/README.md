@@ -429,13 +429,21 @@ identity, readiness predicates and process reuse policy.
 cleanup with the existing process-group drain. It never adopts or restarts a
 process. Hosts choose commands, environments, readiness and diagnostics; call
 `dispose` in finally. `waitForClose` remains valid after an early close event.
+With `orphanWatchdog: true` (POSIX only), a detached helper sends SIGTERM to each
+child's process group if the host dies without draining it, for example on SIGKILL.
 
 `scripts/mobile/android/build-consumer.mjs` runs an external consumer's admission and
 sync commands, assembles selected app distributions (debug, unsigned release and
 instrumentation), runs lint and product APK verification, then archives only the
 selected APKs plus verification manifest and host metadata. It never signs, installs
 or publishes a release. Hosts select environment, distribution names and archive
-identity. Missing build outputs or failed verification prevent archive publication.
+identity. `lint: false` and `androidTest: false` skip lint and the instrumentation
+APKs, and the archive's `build-checks.json` records which of the two ran. A prepare
+step may also be a synchronous function or `{ gradleTasks }`, which adds tasks to the
+same Gradle run instead of starting another one; a step has exactly one of these
+shapes. The generated `variables.gradle` exposes `rootProject.ext.consumerIdentity`
+(`appId`, `namespace`) for extra modules.
+Missing build outputs or failed verification prevent archive publication.
 Run `node --test scripts/mobile/android/build-consumer.test.mjs` for ordering, failure
 and stale-artifact isolation checks.
 
@@ -515,6 +523,21 @@ instance. HOME and browser roles must remain unchanged; the runner does not
 repair unrelated role policy. SDK AVD admission is unchanged. Caller ownership
 is an explicit assertion, not inferred from a loopback address, and this lane
 proves only the selected APK scenarios, not product-image or live integrations.
+
+A third lane admits one owner-approved physical development device: omit
+`expectedAvdName` and supply `developmentDevice: {ownerApproved: true, model,
+fingerprint}` with the exact `ro.product.model` and `ro.build.fingerprint`. The
+adb serial must be the device's `ro.serialno`. The device must not be an emulator,
+must have finished booting, enforce SELinux and run owner user 0 in front. The
+runner pins the boot ID as for Cuttlefish. Because the device is not reset after
+the run, it also records font scale, screen-off timeout, airplane mode, mobile
+data, live Wi-Fi state (`cmd wifi status`) and media volume, and fails when one
+changed, as it does for HOME and the browser role. A caller that changes one must
+restore it. Scenario hooks receive the frozen pin as `context.developmentDevice` in this
+lane, so a hook cannot change the identity the runner checks. This
+lane is development-device evidence only, not release hardware, a product image
+or user acceptance: `verification.json` records `evidenceClass:
+"development-device"` and that note.
 
 `buildConsumerAndroidRuntime` accepts `targetAbi: "x86_64"` for an emulator or
 Cuttlefish bundle; the default remains `"arm64-v8a"`. The reviewed upstream stager

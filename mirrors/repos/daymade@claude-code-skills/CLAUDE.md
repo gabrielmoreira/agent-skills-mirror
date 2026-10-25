@@ -236,6 +236,10 @@ For persistent Python service installation, environment reuse or startup, follow
 
 For rendered UI freshness, delayed editor/batch responses or deployment acceptance, enter
 [frontend-visual-qa](frontend-visual-qa/SKILL.md).
+For publication-wide clutter despite passing local checks, use its
+[publication journey calibration](frontend-visual-qa/references/publication-journey-cases.md).
+For the pre-release ancillary-copy gate, follow
+[information necessity](frontend-visual-qa/references/history-derived-checklist.md#information-necessity-before-layout).
 Before measuring loading speed, read its
 [cache and timing comparison](frontend-visual-qa/references/browser-driving-and-observation-traps.md#separate-freshness-checks-from-performance-comparisons).
 For build reuse across source refs or a target redeployed during acceptance, load its
@@ -249,7 +253,7 @@ focus or filtered-selection changes, use its
 [reader journey](frontend-visual-qa/references/journey-and-page-contracts.md#embedded-readers-and-semantic-zoom).
 For long-document outlines, active-section cues or source sidebars, follow its
 [reading-position recipe](frontend-visual-qa/references/journey-and-page-contracts.md#long-document-reading-positions).
-For browser visibility, selected read modes, request/capture timing or long JSONL input problems, load its
+For browser visibility, hidden-page polling (query eligibility, scheduling opportunities or product cancellation), selected read modes, request/capture timing or long JSONL input problems, load its
 [browser-driving and observation traps](frontend-visual-qa/references/browser-driving-and-observation-traps.md);
 keep adapter requirements and invocation examples in that reference.
 For timed-out screenshots or blank hidden-window captures, follow its
@@ -363,7 +367,8 @@ For memory pressure or suspected child-process leaks, enter that Skill's
 [memory evidence](daymade-macos/macos-load-doctor/SKILL.md#memory-evidence) before attributing the cause.
 The observation contract above owns delayed-sampling acceptance; keep its tests
 and the diagnostic stop conditions in those Skills.
-For changed operating defaults or thresholds in an already-required review, use
+For changed operating defaults or thresholds in an already-required review,
+or behavior-replay dispatch and coverage claims, use
 [skill-creator's independent-review protocol](daymade-skill/skill-creator/references/independent-review-protocol.md).
 Keep decision criteria and verification details in those owners.
 
@@ -371,7 +376,8 @@ Keep decision criteria and verification details in those owners.
 
 For local audio listening, speaker decisions, word edits and recovery of saved
 judgments, use [Listening Desk](daymade-audio/asr-transcribe-to-text/references/review_workbench.md).
-Its saving and playback contracts govern both the browser and local service.
+Its saving, recovery and verification sections govern the browser and local
+service; keep the operating procedure there rather than in review artifacts.
 
 For explicit single-task speaker-inference requests, load
 [scoped speaker inference](daymade-audio/transcript-fixer/references/scoped_speaker_inference.md).
@@ -448,6 +454,8 @@ already created by the current prompt. Artifact selection and runtime-read
 comparison are owned by that Skill; a receipt about a locator is not proof of
 the delivered artifact. For retrieval freshness, changed-source recovery and
 receipt lifetime, follow the [Prior Work operating contract](daymade-claude-code/prior-work-retrieval/SKILL.md).
+Requests to repeat a previously successful method enter its
+[candidate verification](daymade-claude-code/prior-work-retrieval/SKILL.md#4-verify-candidates-at-authority).
 
 For CLI/hook manifest selection or continuation in an already-running host, read
 [the manifest-selection contract](daymade-claude-code/prior-work-retrieval/SKILL.md#2-validate-the-explicit-source-manifest).
@@ -530,7 +538,10 @@ Skill links.
 ### Ghostty Terminal Sessions
 
 For snapshotting, restoring or reconciling Claude Code / Codex sessions in Ghostty
-across reboots, enter [`ghostty-use`](ghostty-use/SKILL.md). Its bundled script owns
+across reboots, enter [`ghostty-use`](ghostty-use/SKILL.md). Manual Codex account
+switches and blocked/delegated reopening enter its
+[account-switch SOP](ghostty-use/references/codex-account-switch.md), including
+the original-set handoff and actual-continuation acceptance. Its bundled script owns
 liveness classification and the paste-restore + auto-reconciliation loop; keep the
 storage-layout facts and macOS Ghostty limits in its references rather than here.
 For change-only automatic backups, use its
@@ -632,6 +643,12 @@ follow the consumed-file checks in that governance reference before claiming act
 After committing, run `scripts/ci/validate_changed_skills.sh origin/main`; it checks
 the committed diff. A repository-level plugin validation does not replace per-Skill
 validation.
+
+### Repository Environment Repair
+
+For repository startup failures or dependency/environment repairs, enter
+[auto-repo-setup](auto-repo-setup/SKILL.md) and select its Environment repair workflow.
+Keep runtime identification, update steps and consumer verification in that owner.
 
 ### Git Operations
 
@@ -988,5 +1005,7 @@ For maintainer source/install/catalog drift, use **Testing Skills Locally** abov
 Identify the failing layer before updating a marketplace or reinstalling a plugin.
 
 ## Cloudflare mail operations
+
+For Pages custom-hostname failures or signed delegation moves, enter [Cloudflare Troubleshooting](cloudflare-troubleshooting/SKILL.md) and its [custom-domain procedure](cloudflare-troubleshooting/references/pages-custom-domain.md). For a failure confined to one recently moved hostname, [Tunnel Doctor](tunnel-doctor/SKILL.md) selects its local-path comparison; keep mutation authority and recovery with the selected owner.
 
 For domain forwarding diagnosis, use [Email Routing](cloudflare-troubleshooting/references/email-routing.md) through the owning Cloudflare Skill. Keep its endpoint sequence and delivery evidence contract in that reference.

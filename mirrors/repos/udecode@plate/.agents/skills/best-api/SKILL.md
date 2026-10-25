@@ -1,5 +1,5 @@
 ---
-description: Design, review or repair a Plate public call shape with the Plate API lens.
+description: Design, review or repair a Plate or Plite public call shape with the Plate API lens.
 argument-hint: '[design|review|repair] <API surface | diff | plan | correction>'
 name: best-api
 metadata:
@@ -11,7 +11,7 @@ metadata:
 
 Handle $ARGUMENTS.
 
-Own the public call-site decision. This is a taste and decision skill, not an implementation engine. It picks or judges a public call shape and leaves adoption to the Plan playbook. `VISION.md` holds Plate's product and API direction, so read it and cite it instead of restating it. Whether a direction earns any work at all is `verdict`'s question, answered through the Verdict playbook.
+Own the public call-site decision. This is a taste and decision skill, not an implementation engine. It picks or judges a public call shape and leaves adoption to the Plan playbook. `VISION.md` and `docs/vision/**` hold every API law this lens applies, so read them and cite them instead of restating them. Whether a direction earns any work at all is `verdict`'s question, answered through the Verdict playbook.
 
 ## Modes
 
@@ -19,7 +19,7 @@ Infer the mode when it is omitted. Do not invent more modes for workflow stages 
 
 - `design`: choose the smallest materially justified API for a new or redesigned surface, and return one call-shape decision. When the work continues into an API plan, the Plan playbook runs `pstack:architect` under the `api-plan` reviews row.
 - `review`: judge one current or proposed API, diff or plan, recommend the better target and rank its findings on the architecture reference's P0 to P3 scale (`.agents/playbooks/references/architecture.md#priority`), which the Babysit playbook's P0 and P1 gate reads.
-- `repair`: edit the one Vision owner, then fix every example, recipe, check and doc that still teaches the rejected shape. See [Repair](#repair).
+- `repair`: edit the rule's one owner, then fix every example, recipe, check and doc that still teaches the rejected shape. See [Repair](#repair).
 
 A `design` or `review` verdict goes on a page, per `AGENTS.md`'s Plan pages: the active plan's, or a one-off plan's.
 
@@ -27,8 +27,8 @@ A `design` or `review` verdict goes on a page, per `AGENTS.md`'s Plan pages: the
 
 Read only what can change the decision:
 
-1. Root `VISION.md`.
-2. Prior art first, as the `pstack:principle-redesign-from-first-principles` skill says: existing Slate primitives, Plate components and the reference editors. A source-level editor comparison consumes `research audit` evidence.
+1. Root `VISION.md`, `docs/vision/common.md` and the relevant Plate or Plite detail file.
+2. Prior art first, as `docs/vision/common.md`'s Redesign from First Principles says: existing Plite primitives, Plate components and the reference editors. `pnpm kb <area>` lists what Plate already recorded about the reference editors and each repo's last-read commit. A source-level editor comparison consumes `research audit` evidence.
 3. The public types, exports, docs, representative call sites, and owning implementation for the named surface.
 4. Existing plans and compatibility constraints, only after the ideal target is clear on its own.
 
@@ -36,7 +36,7 @@ Read only what can change the decision:
 
 ### 1. The ideal target
 
-Apply the `pstack:principle-redesign-from-first-principles` skill in full. Rank a public API in this order: correct ownership and truthful semantics, one obvious common path, discoverable inference, JSDoc and examples, progressive disclosure, stable composition points, locality, then ecosystem fit. Prefer the Slate and Plate idiom when two designs are equally good, and depart from it when another shape is materially cleaner or more scalable.
+Apply the Redesign from First Principles method in `docs/vision/common.md` in full, and the API taste order in its Taste section.
 
 Show concrete call sites with their real public imports before naming abstractions: the normal path, one realistic customization path, and an advanced path only when a real job needs it. If the normal path needs explanation before it reads naturally, the API is not done. Resolve where every public noun is owned and imported from: root, feature entrypoint, registry or app. A short call site with the wrong owner is still a bad API.
 
@@ -88,9 +88,9 @@ Lead with one recommendation, not a menu. For harsh honest feedback, the first s
 
 Run `repair` when the user corrects an API recommendation in a reusable way, when an accepted design sets or rejects a reusable public API principle, or when a change removes, renames or reinterprets a reusable public API or its canonical pattern. This is an automatic closeout subtask of the API change. In a read-only request, report the exact repair instead of writing it. When the same API mistake comes back a second time, run `/pstack:correct` on its class first, so a type, lint or check stops it before doctrine text changes.
 
-1. Check the correction against live source and the current Vision owner. When it names an API the source lacks or contradicts settled law, stop the repair and run `verdict` on the correction, because changing settled law is a review question, not a repair.
-2. Edit the one Vision owner of the rule in `VISION.md`.
-3. Search every artifact that teaches the contract, its skills, examples, recipes, checks, docs, generated mirrors and generated reference output, for the rejected names, examples, and call shapes. Run `node tooling/scripts/teaching-sweep.mjs <API name> [...]` for that search instead of a hand-written grep. It splits each ASCII name into words at case changes and acronyms, matches those words in any case with at most one word between them, and lists every Chinese twin of an English docs hit. It groups hits as live, generated, release notes and history. History needs no change. It holds decision logs, package changelogs and plans whose every status label marks them finished, superseded or cancelled. Fix live hits, regenerate generated ones, and fix release notes that have not shipped. Read each twin around its English hit, and the prose of every page it hits, because a paraphrase without the name's words, or a translated one, matches nothing. When a generator fails at the base, regenerate its output as `verify`'s command recipes say, or list the stale output as open work in the plan's Close. Update only skills that teach or enforce the changed contract, remove contradictions, and link the Vision owner instead of copying the doctrine.
+1. Check the correction against live source and the rule's current owner. When it names an API the source lacks or contradicts settled law, stop the repair and run `verdict` on the correction, because changing settled law is a review question, not a repair.
+2. Edit the rule's one owner: the scope's subject file, `docs/plans/topics/<scope>.md`, for a call shape or decision that binds one scope, or `VISION.md` or `docs/vision/**` for a principle that binds several.
+3. Search every artifact that teaches the contract, its skills, examples, recipes, checks, docs, generated mirrors and generated reference output, such as the API reference manifest, for the rejected names, examples, and call shapes. Run `node tooling/scripts/teaching-sweep.mjs <API name> [...]` for that search instead of a hand-written grep. It splits each ASCII name into words at case changes and acronyms, matches those words in any case with at most one word between them, and lists every Chinese twin of an English docs hit. It groups hits as live, generated, release notes and history. History needs no change. It holds decision logs, review records, package changelogs and plans whose every status label marks them finished, superseded or cancelled. Fix live hits, regenerate generated ones, and fix release notes that have not shipped. Read each twin around its English hit, and the prose of every page it hits, because a paraphrase without the name's words, or a translated one, matches nothing. When a generator fails at the base, regenerate its output as `verify`'s command recipes say, or list the stale output as open work in the plan's Close. Update only skills that teach or enforce the changed contract, remove contradictions, and link the Vision owner instead of copying the doctrine.
 4. Regenerate skills and their resources per the pstack block's Agent files rule.
 5. Forward-test the affected action on a real API without seeding the expected answer.
 

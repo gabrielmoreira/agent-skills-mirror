@@ -30,3 +30,31 @@ catalog over the same real history backend. They verify that the current pack's
 name stays beside the action while history metrics are collapsed, and changes
 with the existing scope selector. They do not qualify analysis authorization or
 model execution; the regression rejects any non-read analysis request.
+
+## Parent context and narrow reading
+
+Packaged Chat UI, production read-only Explore HTTP owner, synthetic long
+questions and three mixed-state findings. No real research material appears
+in these captures. The analysis fixture is synthetic; this is layout and
+navigation evidence, not model-quality or installed-product qualification.
+
+Before: `920f18809d906b840325c4f40013e9224e4a3a2e`. After: this PR's reader
+implementation. Desktop: 1200 × 888; narrow: 390 × 844. Both views use the same
+fixture and selected finding, with the reader scrolled to its beginning.
+
+| View | Before | After |
+| --- | --- | --- |
+| Desktop | ![Desktop before](context-before-desktop.png) | ![Desktop after](context-after-desktop.png) |
+| Narrow | ![Narrow before](context-before-phone.png) | ![Narrow after](context-after-phone.png) |
+
+Direct finding selection starts with its complete result and keeps the parent
+question optional. Opening a question from the route still expands its complete
+title immediately. The same full parent context remains available from a finding:
+
+![Expanded parent context](context-after-context-phone.png)
+
+The existing `research-route-reading` scenario verifies both entry intents,
+readable finding text, complete titles, mixed states, keyboard return and
+reload/Back in Chinese and English at 1440, 768 and 390 pixels. The broader
+`research-history` scenario also covers unavailable sources, recovery, empty
+history and saved-analysis readback. Neither reader dispatches a model.

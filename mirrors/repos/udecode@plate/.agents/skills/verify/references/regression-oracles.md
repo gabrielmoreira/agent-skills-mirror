@@ -91,6 +91,24 @@ and undoing each document leaves every other document unchanged. Completion
 requires matching `pass` results. A mount count can pass with every root bound
 to the same document. Shared-document views do not require document isolation.
 
+For same-model or same-root views with focus, toolbar, controller or read-only
+behavior, model identity is insufficient. Record `view-bindings:` in the model
+and focus oracles: each mount maps to its command editor, root, DOM element and
+current permissions. The model oracle includes `current-view-permissions:` and
+`stale-mount:`; the focus oracle includes `exact-view-focus:`. Prove that a
+captured action cannot edit a retired/replaced mount or bypass a later read-only
+change, and returns focus to its exact surviving mount. Completion requires
+each marker's `pass` result. A model-level focus boolean cannot certify this
+contract; ordinary shared-document rendering without these interactions does
+not acquire this gate.
+
+For multi-root undo/redo, distinguish a history-driven root transition from
+retiring the control's explicit editor target. The focus oracle includes
+`history-root-transition:` for repeated document undo that changes roots and
+`history-target-retirement:` for canceling restoration after the bound editor
+changes or unmounts. Require both markers to pass; one fixed-root toolbar test
+cannot certify ambient document-history lifetime.
+
 For a toolbar field committed with Enter, follow that commit with Undo while
 the field still owns focus. The `field-commit-once:` model oracle reads the
 result again after focus restoration blurs the input. A committed draft must
@@ -101,6 +119,34 @@ For toolbar field focus with a pending editor focus retry, the
 and settlement callbacks, then sends a follow-up key without another click.
 Check the key's field value and unchanged editor content. A successful blur
 commit alone can hide an earlier focus theft if text arrived before the retry.
+
+For Plite model-based, generated, or differential cases, the semantic oracle
+is canonical `DocumentChange` plus `EditorCommit`. Assert final document state,
+selection, commit metadata, error class, and follow-up usability. Primitive
+Slate or Plate operation traces are diagnostic evidence unless current product
+law explicitly preserves them.
+
+Runtime identity mapping requires a `model@after-action` oracle that round-trips
+canonical changes through JSON, not just an in-process transaction. Assert that
+retained siblings keep their keys and deleted keys resolve to null; exact value
+equality alone misses identity transfer. Record `serialized-replay:`,
+`retained-identity:`, and `deleted-identity:` in the positive assertion, with
+`: pass` for each at completion. Include fresh-editor and historical reads so
+process-local node metadata cannot accidentally satisfy the wire contract.
+Also record `split-merge-range:` with a content-preserving formatting round-trip.
+Assert selected text and forward/backward direction after both the split and
+merge, then type or navigate from the restored range. Completion requires
+`split-merge-range: pass`; correct document values and node keys alone do not
+prove point mapping through a merge.
+
+When changing Plate/Plite runtime dependency placement for a React helper,
+record `package-dependency-change:` in the case. Its `runtime-errors`
+oracle uses a `packed package` proof layer and records `react-free-headless:`
+and `react-consumer:` assertions. Before a keep decision, run
+`pnpm plite:release:packages` against the final manifest and built artifacts;
+both results must be `pass`. Source tests cannot prove that headless consumers
+avoid transitive React installation or that React consumers resolve the helper.
+The existing isolated dependency and packed SSR checks own this proof.
 
 ## Render Measurement
 

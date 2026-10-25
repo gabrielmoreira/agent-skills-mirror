@@ -400,7 +400,7 @@ Cron publishes, through [`core/bus.rs`](../core/bus.rs), these `DomainEvent` var
   service when `cron.enabled` is set, after flows reconcile their schedule
   triggers. It also calls `ensure_memory_jobs` and `prune_retired_jobs`.
 - `core/all.rs` registers the controllers.
-- [`tools/impl/system/schedule.rs`](../tools/impl/system/schedule.rs) is the `schedule` tool, built on the same
+- [`tools/schedule.rs`](./tools/schedule.rs) is the `schedule` tool, built on the same
   store functions and `create_agent_job`.
 - [`channels/runtime/startup/start_channels.rs`](../channels/runtime/startup/start_channels.rs) registers
   the channel bridge used by `announce` and origin delivery.

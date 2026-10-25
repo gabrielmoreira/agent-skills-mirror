@@ -26,6 +26,7 @@
 │   ├── detect.ps1 / detect.py        环境自检
 │   ├── mtp_graft.py                  MTP head 嫁接
 │   ├── _mtp_verify.py / _ub_probe.py 实测探针
+│   ├── np_probe.py                   并发（n_parallel / kv-unified）探针
 │   ├── launcher_gen/                 启动器生成器 + 交互门面
 │   ├── q6-tuning/                    Q6 批次探针集（GSQ-RCO 调优，见其 README）
 │   └── tests/                        闸门测试
@@ -59,6 +60,7 @@
 | [`20260829`](./sessions/20260829-session-experience.md) | Qwen3.8-27B 极限优化、更新器工程修复、WSL/VS Code 对接 | `ECONNREFUSED` 双根因排查 SOP | 配长上下文、VS Code 连不上 |
 | [`20260913`](./sessions/20260913-session-experience.md) | MoE 参数智能化、回归方法论、MTP 嫁接 | **新守卫必须先在已知可用样本上跑**（否则守卫自己成为 bug） | 加模型、写断言、做嫁接 |
 | [`20261012`](./sessions/20261012-qwen38-gsqrco-27b-tuning-report.md) | Qwen3.8-27B **GSQ-RCO**（非均匀量化）16GB 调优 + 启动器回写（专题报告体） | **dense + MTP 的 CPU 卸载断崖（-48%）** —— 与 MoE 经验完全相反 | 配 GSQ-RCO / 非均匀量化模型；dense+MTP 显存不足 |
+| [`20261024`](./sessions/20261024-concurrency-np-kv-unified-report.md) | 并发 np 阶梯、`--kv-unified`、np×MTP 耦合绿屏、客户端 `contextWindow` 对齐 | **np>1 与 MTP 在 16 GiB 卡上是耦合的**；`--kv-unified` 让并发不花上下文；首请求因 GPU 低温只有 1/3 速度 | 开并发、算显存预算、看到 `HYPERVISOR_ERROR` |
 
 > 原始数据（Q6 批次）：[`_q6_results.json`](./sessions/_q6_results.json)（18 条实测记录）
 > ＋[`_q6_metadata.json`](./sessions/_q6_metadata.json)（GGUF 元数据基线；入库时脱敏的**快照**）—— 由
@@ -127,6 +129,7 @@
 | [`scripts/mtp_graft.py`](../scripts/mtp_graft.py) | **MTP head 嫁接的权威实现**：`--check` 只读 / `--go --out` 写入 + 写后自检 / `--audit` 列 per-layer KV 数组 |
 | [`scripts/_mtp_verify.py`](../scripts/_mtp_verify.py) | 嫁接 A/B 验证（baseline vs `--spec-type draft-mtp`，同会话对比） |
 | [`scripts/_ub_probe.py`](../scripts/_ub_probe.py) | batch / ubatch 探针（`-ub` 单独改无效的实证工具） |
+| [`scripts/np_probe.py`](../scripts/np_probe.py) | **并发探针**（`n_parallel` / `--kv-unified`）：np 阶梯、每流与聚合吞吐、`n_ctx_slot`、显存余量、质量一致性；内置 `--prior-headroom` / `--min-headroom` **两道显存安全闸** |
 | [`scripts/launcher_gen/update_launchers.py`](../scripts/launcher_gen/update_launchers.py) | **启动器生成器**：扫描 → 渲染 3 个菜单 `.bat` + `models-config.ini`；读 `LAUNCHER_DIR` / `CHAT_DIR` |
 | [`scripts/launcher_gen/update-launchers.bat`](../scripts/launcher_gen/update-launchers.bat) | 生成器的 Windows 入口（纯 ASCII） |
 | [`scripts/launcher_gen/llama_hub.py`](../scripts/launcher_gen/llama_hub.py) | 交互式门面：菜单 / `--guide` / `--diagnose` / `--write-docs` |

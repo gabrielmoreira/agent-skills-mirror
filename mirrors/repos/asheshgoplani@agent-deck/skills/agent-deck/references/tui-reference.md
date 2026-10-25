@@ -82,6 +82,7 @@ panes are untouched: they receive the raw bytes exactly as typed.
 | `,` | Pin (cycles off -> top -> bottom -> off) |
 | `f` / `F` | Quick fork / fork with options (Claude/OpenCode/Pi/Codex/Oh My Pi) (**rebindable**) |
 | `x` | Send output to another session (**rebindable**) |
+| `alt+l` | Hand a reference to another session: pick this one, move to the target, `Enter` (or `alt+l`) drops, `Esc` cancels. Types a one-line pointer to the picked session (title, id, path, status, `agent-deck session output <id> -q`) into the target's composer and never presses Enter. Group rows, the same session and remote sessions are refused in place; nothing moves (**rebindable**: `[hotkeys].session_ref`) |
 | `E` | Exec shell in sandbox container (**rebindable**) |
 | `H` | Open shell in session's worktree, split pane / window (**rebindable**) |
 | `p` | Edit multi-repo paths (**rebindable**) |
@@ -171,6 +172,7 @@ Inside the search prompt, `/waiting`, `/running` and `/idle` filter by status.
 | `Ctrl+T` | Restart agent-deck in place now (`restart_deck`; the new build starts with the same args, env and selection) |
 | `Alt+D` | Dead-letter events (list, inspect, retry, confirmed selected purge) |
 | `Ctrl+E` | Open feedback dialog |
+| `Z` | Report a problem or idea: a short form, then the full GitHub issue text, filed only after you press `y` (`report_problem`, **rebindable**) |
 | `q` / `Ctrl+C` | Quit (**rebindable**) |
 
 ### Worktree Shortcuts
@@ -214,18 +216,18 @@ completion content are never rendered.
 ### New Session (`n`)
 
 **Fields (order: Name → Tool → Model → Reasoning effort → Path):**
-- Session name (required)
+- Session name (optional: left empty, it is the folder name, made unique; the empty field previews it)
 - Command (claude/gemini/opencode/codex/custom) — the dialog remembers the last-used tool (persisted per profile, never written to config.toml; an explicit `default_tool` in config wins)
 - Model ID (claude/codex/gemini/opencode): empty means the tool default; `↓` or `Space` opens the list of known IDs, or type any ID (CLI: `--model`)
 - Reasoning effort (claude/codex): `←`/`→` or `Space` cycles the levels (CLI: `--effort`)
 - Project path (required, supports `~/`)
 - Parent group (auto-selected)
-- Claude options (when Claude is selected): permission mode, Chrome, teammate mode, extra args, start query, and the account row (CLI: `--account`; hidden when no named accounts are configured)
+- Claude options (when Claude is selected): permission mode, Chrome, teammate mode, extra args, start query, and the account row (CLI: `--account`; hidden when no named accounts are configured; starts on `[claude].default_account`, labelled `(default)`, when one is set)
 - `[ Create session ]` button (last row)
 
-**Controls:** `Enter` next field on every row (inside the Claude options it steps row by row) | `Tab`/`Shift+Tab` and `↓`/`↑` move fields the same way | `Enter` on `[ Create session ]` or `Ctrl+S` anywhere creates | `Esc` back out of a list, then cancel
+**Controls:** `Enter` creates from any row with what is filled in | `Tab`/`Shift+Tab` and `↓`/`↑` move between rows (inside the Claude options row by row) | `↓`/`Space` open the model list, `Space`/`→` browse paths; while a list is open `Enter` picks | `Ctrl+S` creates too | `Esc` back out of a list, then cancel
 
-Enter-advances is the default (`[ui].new_session_enter_advances = true`): Enter never creates the session until you reach the Create button, so typing a name and pressing Enter through the form no longer launches a session before you have chosen the model, path, or options. The footer on every row says what Enter does there. Set `[ui].new_session_enter_advances = false` to restore the legacy behavior where Enter creates from any row; `Ctrl+S` creates in both modes.
+The common case is two keys: `n`, then `Enter` (this folder, the remembered tool, the selected group, the folder name as title). `N` on the home screen creates with the group's defaults without opening the dialog. If a required field is wrong (empty path, worktree without a valid branch, multi-repo with fewer than 2 paths), `Enter` moves to that field and shows why. Set `[ui].new_session_enter_advances = true` to walk the form instead: Enter moves to the next row and only the `[ Create session ]` button or `Ctrl+S` creates.
 
 Pressing `n` on a remote group/session opens a remote-aware dialog (remote paths and group pre-filled); the session is created over SSH on the remote, never on localhost.
 
@@ -233,7 +235,7 @@ Claude New Session defaults are remembered in `$XDG_CONFIG_HOME/agent-deck/confi
 
 ### Edit Session (`Shift+P`)
 
-Edits the fields a session iterates on at runtime: Title, Harness (tool), Pin position, the account row (shown when `[profiles.<name>.*].config_dir` slots are configured for a supported harness), and for claude sessions Skip permissions, Auto mode, Extra args, Plugins.
+Edits the fields a session iterates on at runtime: Title, Harness (tool), Pin position, the account row (shown when `[profiles.<name>.*].config_dir` slots are configured for a supported harness), and for claude sessions Skip permissions, Auto mode, Extra args, Wait timer (take the recommended option after this long: `5m`, `off`, or empty for `[sessions] wait_timeout`; applies live), Plugins.
 
 **Controls:** `Tab`/`↓` `Shift+Tab`/`↑` move rows | `←`/`→` choose (pills) | `Space` toggle (checkboxes) | `Enter` save | `Esc` cancel. The footer says what the keys do on the focused row; on a changed harness or account row it reads "Enter switch (asks first)".
 
@@ -314,18 +316,17 @@ A harness or account change is saved on its own (not together with other edits) 
 
 ### Global Search (`G`)
 
-- Full content search across `~/.claude/projects/`
-- Regex + fuzzy matching
+- Full-text search of the Recall index (`recall.db`): Claude transcripts plus the other harnesses Recall reads (see `docs/recall.md`)
+- Same query as `agent-deck recall search`
 - Recency ranking
 - Split view: results + preview
 - `[/]` scroll preview
 - `Enter` create/jump to session
 
-**Config:**
+**Config:** `G` is off unless Recall is on (with Recall off it falls back to the local title search; see `docs/recall.md`):
 ```toml
-[global_search]
+[recall]
 enabled = true
-recent_days = 30
 ```
 
 ## Preview Pane

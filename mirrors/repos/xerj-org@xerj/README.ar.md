@@ -19,7 +19,7 @@
 [![Agent memory](https://img.shields.io/badge/agent%20memory-%2F__memory-00b3a4?style=flat-square)](https://xerj.org/docs/recipes/agentic-memory.html)
 [![MCP](https://img.shields.io/badge/MCP-native-1f6feb?style=flat-square)](https://xerj.org/llms.txt)
 [![llms.txt](https://img.shields.io/badge/llms.txt-agent%20ready-6f42c1?style=flat-square)](https://xerj.org/llms.txt)
-[![ES-YAML conformance](https://img.shields.io/badge/ES--YAML%20conformance-1366%2F1369-brightgreen?style=flat-square)](https://xerj.org/benchmarks)
+[![ES-YAML conformance](https://img.shields.io/badge/ES--YAML%20conformance-1444%2F1454-brightgreen?style=flat-square)](https://xerj.org/benchmarks)
 [![Single static binary](https://img.shields.io/badge/single%20static%20binary-no%20JVM-orange?style=flat-square)](https://xerj.org/docs/install.html)
 [![Default embedder](https://img.shields.io/badge/default%20embedder-lexical%2C%20offline-teal?style=flat-square)](https://xerj.org/docs/vectors.html)
 [![Neural](https://img.shields.io/badge/neural%20embedder-opt--in%2C%20downloads%20~90%20MB-9c6ade?style=flat-square)](https://xerj.org/docs/vectors.html)
@@ -338,7 +338,7 @@ xerj mcp                                # 2. MCP stdio server (your client runs 
 ينفذ XERJ واجهة REST لـ Elasticsearch: الفهارس والمستندات والـ bulk والبحث والتجميعات والـ mappings وkNN وscroll وreindex ونقاط `_cat`. يتصل Kibana ومكتبات العميل الرسمية به مباشرة. حد يستحق أن تعرفه قبل توجيه أدوات التصدير إليه: scroll لقطة محدودة تُحسب مقدما لا مؤشرا يمشي على المقاطع، فاستعلام يتجاوز مجموعه الدقيق نافذة اللقطة يُرفض بـ `400` بدل أن يُبتر بصمت. استخدم `search_after` لمجموعات نتائج بأي حجم
 ([السقف](https://xerj.org/docs/api-es-compat.html#scroll-cap)).
 
-تعمل حزمة المطابقة على كل commit وتنجح الآن في 1366 من 1369 حالة. تعيش في
+تعمل حزمة المطابقة على كل commit وتنجح الآن في 1444 من 1454 حالة. تعيش في
 [`engine/tests/es-compat-yaml`](./engine/tests/es-compat-yaml)، والفجوات الباقية مدرجة هناك لا مخفية. XERJ متوافق مع الواجهة. ليس إعادة تنفيذ لداخليات Elasticsearch، وليس تفرعا.
 
 ## القياسات المقارنة

@@ -3,7 +3,7 @@
 Core AI agent service of the Ginlix financial research platform. One agent, the **PTC agent**, wired with a full Daytona, E2B or Docker sandbox, or the user's own machine over SSH, and the complete toolset (code execution, MCP financial-data tools, charts, subagent orchestration), in one of two roles per turn. PTC = **Programmatic Tool Calling** (see [PTC pattern](#ptc-pattern)); it names the technique, not a product.
 
 - **Analyst** (default): the agent inside a workspace. Does the R&D and produces the deliverables, which stay in that workspace.
-- **Chief of Staff**: the agent for work in no particular workspace ("All workspaces" in the UI). Runs in a `Home` folder on the user's computer beside the workspace folders, where everything it produces is kept. It answers quick questions and anything the workspaces already hold itself, reading their folders and past threads, and hands new work to the workspace's analyst, which reports back when done.
+- **Chief of Staff**: the agent for work in no particular workspace (named "Chief of Staff" in the web UI; the chat apps still offer it as "All workspaces"). Runs in a `Home` folder on the user's computer beside the workspace folders, where everything it produces is kept. It answers quick questions and anything the workspaces already hold itself, reading their folders and past threads, and hands new work to the workspace's analyst, which reports back when done.
 
 > Single source of truth for AI coding agents. `CLAUDE.md` imports this via `@AGENTS.md`; Codex/Cursor/Copilot read it directly. Edit here, not there.
 

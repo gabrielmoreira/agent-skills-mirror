@@ -199,6 +199,9 @@ existing hashed run ID. Controller startup phase spans carry no custom attribute
 Native controller setup and settlement phases use that same run hash, including
 assigned MCP discovery; neither tool definitions nor credentials are recorded.
 Both retain operator-controlled tracing; unconfigured clients stay silent.
+The native first-text span ends after text is committed for the existing run-events
+reader, including reasoning and completed responses. It exports only the bounded
+text kind and timing, with no text content or new agent access.
 This adds no agent API, credential access, run-log write, or recovery authority.
 See [the tracing contract](../../doc/observability.md#controller-preparation-phases).
 Live latency verification remains separate from the existing access baseline.

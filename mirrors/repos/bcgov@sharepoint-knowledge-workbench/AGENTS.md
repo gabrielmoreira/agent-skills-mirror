@@ -54,26 +54,30 @@ This repository is the central public toolkit of reusable skills and scripts for
 4. **Creating & Publishing Copilot Agents & Skills**: Authoring, validating, deploying, and managing SharePoint Copilot agents (`.agent` packages) and native Copilot Studio skills in SharePoint.
 5. **Content Maintenance, Continuous Improvement & Document Decomposition**: Transforming how unstructured content is maintained and continuously improved—breaking huge documents/manuals (Word/PDF) into modular, maintainable subpages and topics in SharePoint, governed and supported by Copilot agents and skills (**Content + Template + Renderer = Published Output**).
 
-The ecosystem is composed of **7 independently-installable domain plugins** located under `plugins/` (104 skills; one domain = one plugin, functional groups inside it):
-- **`sharepoint-workbench-setup`** (5 skills): access, connection, project/document configuration, path resolution and readiness.
-- **`sharepoint-document-conversion`** (11 skills): extract, analyze, assemble, render and editorially review manual content.
-- **`sharepoint-site-assessment`** (12 skills): read-only inventory, analysis and assessment of classic/modern sites.
-- **`sharepoint-site-build-and-publish`** (33 skills): create/configure SharePoint objects and publish content (dry-run-first writers).
-- **`sharepoint-site-migration`** (19 skills): plan and run site migration: waves, page modernization, list content, links.
-- **`sharepoint-copilot-agents-and-skills`** (14 skills): author, deploy, verify, back up and restore Copilot agents and native skills.
-- **`sharepoint-spfx-development`** (10 skills): SPFx scaffolding, packaging and both delivery routes.
-- Consolidated plugins (`sharepoint-document-conversion`, `sharepoint-site-build-and-publish`, `sharepoint-site-migration`) keep each original implementation in its own namespace folder under `scripts/`, `tests/` and `references/`; their tests run one namespace per process via `tests/run_namespaces.py`.
+The ecosystem is composed of a **single unified domain plugin** (`@sharepoint/sharepoint-workbench`) located under `plugins/sharepoint-workbench/`, comprising **11 domain skills** and **9 specialized subagents**:
+- **`setting-up-sharepoint-workbench`**: access, connection, project/document configuration, path resolution and readiness.
+- **`assessing-sharepoint-sites`**: read-only inventory, analysis, schema drift, calculated columns, and assessment reports.
+- **`converting-sharepoint-documents`**: extract, analyze, assemble, render and editorially review manual content.
+- **`managing-sharepoint-schema`**: declarative schema planning, site columns, content types, diffing, and scaffolding.
+- **`managing-sharepoint-lists-and-libraries`**: provision and configure lists, document libraries, list views, and calendar lists.
+- **`managing-sharepoint-navigation`**: declarative navigation management, Excel/CSV sync, extraction, and validation.
+- **`publishing-sharepoint-pages`**: modern page publishing, dynamic ASPX page migration, static ASPX asset upload, Markdown.
+- **`modernizing-sharepoint-pages`**: classic-to-modern page transformation, web part modernization, previews, and design system.
+- **`migrating-sharepoint-sites`**: dependency waves, list content migration, link remediation, and wave scaffolding.
+- **`developing-spfx-solutions`**: SPFx scaffolding, React/master-detail web parts, extensions, packaging, and App Catalog deployment.
+- **`managing-sharepoint-copilot-agents-and-skills`**: author, deploy, verify, back up and restore Copilot agents and native skills.
 
-Each plugin is self-contained with its own tests, packaging, and skill definitions.
+Each skill is self-contained with modal execution (`references/modes/<mode>.md`), zero symlinks, and verified test suites.
 
 ### Repository Layout
 
 ```
-plugins/                 ← The 7 domain plugins & skill packages
-docs/                    ← Initiative architecture, design specs, and reference catalog
-.agent/rules/            ← Official engineering rules and policies
-.claude-plugin/          ← Marketplace definition (marketplace.json)
-INSTALL.md               ← Complete installation and bootstrapping guide
+plugins/sharepoint-workbench/  ← The unified plugin, 11 skills, and 9 subagents
+docs/                          ← Initiative architecture, migration inventory, and plans
+.agent/rules/                  ← Official engineering rules and policies
+.claude-plugin/                ← Marketplace definition (marketplace.json)
+apm.yml                        # Canonical APM package manifest
+INSTALL.md                     ← APM and marketplace installation guide
 ```
 
 Consumer documents, intake files, run outputs, and project-specific tests are managed in separate consumer repositories (e.g. project POC repositories).
@@ -105,20 +109,20 @@ Consumer documents, intake files, run outputs, and project-specific tests are ma
 - **Interactive Scripts & Tenant Writes**:
   - **The user runs interactive/tenant-facing scripts** in their own terminal session (especially those requiring browser-based authentication or tenant writes). Agents must output the exact commands for the user to run rather than launching interactive scripts asynchronously in the background.
 - **Connectivity & Environment Validation Requirement**:
-  - Always verify connection first using `plugins/sharepoint-workbench-setup/skills/workbench-validate-sharepoint-connection/scripts/test-spo-connection.ps1` or `test-network-connectivity.ps1` after switching profiles or before starting a sequence of tenant operations.
+  - Always verify connection first using `plugins/sharepoint-workbench/.apm/skills/setting-up-sharepoint-workbench/scripts/test-spo-connection.ps1` or `test-network-connectivity.ps1` after switching profiles or before starting a sequence of tenant operations.
 
 ### Canonical Skills Over Custom Scripts (Do Not Recreate Ad-Hoc Scripts)
 
 - **Mandatory Policy**: Never write throwaway, ad-hoc `.ps1` scripts in `temp/` or project roots for standard SharePoint tasks (e.g. provisioning lists, creating views, packaging SPFx solutions, deploying packages, or uploading content).
-- **Use Canonical Skills with Parameters**: Always invoke the existing parameterized scripts in `plugins/` (and mirrored in `.agents/skills/`):
-  - **Environment Connectivity Check**: `pwsh -File plugins/sharepoint-workbench-setup/skills/workbench-validate-sharepoint-connection/scripts/test-spo-connection.ps1`
-  - **Network & Auth Connectivity Check**: `pwsh -File plugins/sharepoint-workbench-setup/skills/workbench-validate-sharepoint-connection/scripts/test-network-connectivity.ps1`
-  - **Build & Package SPFx**: `pwsh -File plugins/sharepoint-spfx-development/skills/sharepoint-package-spfx-solution/scripts/package-spfx-solution.ps1 -SolutionPath <path>`
-  - **Deploy SPFx Package**: `pwsh -File plugins/sharepoint-spfx-development/skills/sharepoint-deploy-spfx-solution/scripts/deploy-spfx-package.ps1 -PackagePath <path> [-Scope Site|Tenant] [-Install]`
-  - **Publish SPFx Directly**: `pwsh -File plugins/sharepoint-spfx-development/skills/sharepoint-publish-spfx-package/scripts/publish-spfx-package.ps1 -PackagePath <path>`
-  - **List Provisioning**: `pwsh -File plugins/sharepoint-site-build-and-publish/skills/sharepoint-create-list/scripts/spo-provision-list.ps1 -PlanPath <plan.json> -Execute -ConfirmToken PROVISION-SPO-LIST`
-  - **View Configuration**: `pwsh -File plugins/sharepoint-site-build-and-publish/skills/sharepoint-create-list-view/scripts/spo-provision-list-view.ps1 -PlanPath <plan.json> -Execute -ConfirmToken PROVISION-SPO-LIST-VIEW`
-  - **Markdown Publishing**: `pwsh -File plugins/sharepoint-site-build-and-publish/skills/sharepoint-publish-markdown-files/scripts/spo-upload-file.ps1 -PlanPath <plan.json> -Execute -ConfirmToken PUBLISH-SPO-MARKDOWN`
+- **Use Canonical Skills with Parameters**: Always invoke the existing parameterized scripts in `plugins/` (and deployed via APM):
+  - **Environment Connectivity Check**: `pwsh -File plugins/sharepoint-workbench/.apm/skills/setting-up-sharepoint-workbench/scripts/test-spo-connection.ps1`
+  - **Network & Auth Connectivity Check**: `pwsh -File plugins/sharepoint-workbench/.apm/skills/setting-up-sharepoint-workbench/scripts/test-network-connectivity.ps1`
+  - **Build & Package SPFx**: `pwsh -File plugins/sharepoint-workbench/.apm/skills/developing-spfx-solutions/scripts/package-spfx-solution.ps1 -SolutionPath <path>`
+  - **Deploy SPFx Package**: `pwsh -File plugins/sharepoint-workbench/.apm/skills/developing-spfx-solutions/scripts/deploy-spfx-package.ps1 -PackagePath <path> [-Scope Site|Tenant] [-Install]`
+  - **Publish SPFx Directly**: `pwsh -File plugins/sharepoint-workbench/.apm/skills/developing-spfx-solutions/scripts/publish-spfx-package.ps1 -PackagePath <path>`
+  - **List Provisioning**: `pwsh -File plugins/sharepoint-workbench/.apm/skills/managing-sharepoint-lists-and-libraries/scripts/spo-provision-list.ps1 -PlanPath <plan.json> -Execute -ConfirmToken PROVISION-SPO-LIST`
+  - **View Configuration**: `pwsh -File plugins/sharepoint-workbench/.apm/skills/managing-sharepoint-lists-and-libraries/scripts/spo-provision-list-view.ps1 -PlanPath <plan.json> -Execute -ConfirmToken PROVISION-SPO-LIST-VIEW`
+  - **Markdown Publishing**: `pwsh -File plugins/sharepoint-workbench/.apm/skills/publishing-sharepoint-pages/scripts/spo-upload-file.ps1 -PlanPath <plan.json> -Execute -ConfirmToken PUBLISH-SPO-MARKDOWN`
 - All canonical scripts feature multi-tier `config.psd1` discovery and support direct CLI overrides (`-SiteUrl`, `-ClientId`, `-TenantId`, `-ConfigPath`).
 
 ### Sub-agent usage
@@ -468,9 +472,9 @@ Before triggering an autonomous self-evolution cycle, all 4 criteria must be sat
 7. **Fix Forward, Never Skip**: Fix failures at source immediately and update rules/playbooks. Never skip, work around, or add blind retries.
 8. **Synchronize Templates on Rule/Strategy Changes**: Update matching templates, generator configs, and prompts when core rules or strategies change.
 9. **Refine Prompt Templates on Ingesting Outputs**: Evaluate external model outputs and update prompt templates to guard against observed gaps.
-10. **Synchronize Manifests & Reinstall Cleanly on Deletion**: Remove deleted assets from `symlinks.json` and reinstall via `plugin_add.py <plugin-path> -y`.
+10. **Synchronize Manifests on Component Changes**: Ensure `apm.yml`, `plugin.yaml`, and `.claude-plugin/plugin.json` accurately reflect all components.
 11. **Pre-Deletion Git History Check**: Run `git log --follow -- <file>` before proposing any file deletion.
-12. **Hub First, Spoke Second**: New skill assets must land in plugin root (`plugins/<plugin>/scripts/`, etc.) and symlink into skill folders via `symlink_manager.py`. Run `audit_plugin_structure.py`.
+12. **Self-Contained Hub Assets (No Symlinks)**: Each skill spoke in `plugins/sharepoint-workbench/.apm/skills/` is fully self-contained with inlined resources and modal dispatch. Never create cross-directory symlinks.
 13. **Asymmetric Persistence via Worktree Transfer**: On 3rd attempt failure in isolated worktree, roll back code, but export Layer 2 insights, negative constraints, and debt records to main checkout before worktree teardown.
 14. **Evolution Integrity Receipts**: Autonomous evolution commits require a programmatic pre-commit receipt (`EVO-INTEGRITY-<cycle_id>-<hash>`) binding staged tree, verifier exit code, and trace manifest.
 
@@ -928,7 +932,7 @@ globs: ["plugins/**/SKILL.md", "plugins/**/scripts/**/*.py", "plugins/**/*.md"]
 
 ## 2. Separation of Concerns & Loose Coupling
 
-1. **Pluggable Independence**: If a user installs a skill via `plugin_add.py` or `uvx`, that skill MUST function completely in isolation. It cannot crash or halt because another plugin is uninstalled or missing.
+1. **Pluggable Independence**: If a user installs a skill via `apm`, `plugin_add.py`, or legacy installers, that skill MUST function completely in isolation. It cannot crash or halt because another plugin is uninstalled or missing.
 2. **Agent Delegation over Code Interfaces**: If a plugin requires coordination with another plugin, it must do so via Natural Language agent instructions (e.g., *"Please invoke the `<plugin>-agent` to..."*) rather than hardcoded Python imports, hidden filesystem state manipulations, or rigid cross-plugin bindings.
 3. **Cross-Plugin Wire Contracts**: Sharing schemas, references, assets, or executable contract helpers through installer-materialized hard copies is permitted. Cross-plugin Python runtime imports or cross-plugin directory symlinks are strictly forbidden.
 
@@ -966,46 +970,19 @@ Resource placement is determined strictly by **purpose**, not file extension:
 
 ---
 
-## 5. Mandatory Symlink Workflow & Cross-Platform Protocol
+## 5. Hub-First Self-Contained Skills & Zero-Symlink Policy
 
-**NEVER create symlinks with `ln -s` directly.**  
-**NEVER create real file copies where a symlink should exist.**
+**All skills in `plugins/sharepoint-workbench/.apm/skills/` are fully self-contained.**  
+The repository has completely retired the legacy `symlinks.json` mechanism in favor of native APM distribution.
 
-All symlink creation, repair, and auditing must go through `.agents/skills/symlink-manager/scripts/symlink_manager.py` and be recorded in `symlinks.json`.
-
-1. **File-Level Symlinks ONLY**:
-   All shared resources within or across plugins must use **file-level symlinks ONLY**. Directory-level symlinks are strictly forbidden because installation bridges drop them or fail on cross-platform checkouts.
-2. **Zero Manual `ln -s`**:
-   Never invoke `ln -s` directly in the shell. Direct calls bypass the manifest, causing links to fail or disappear on fresh checkouts.
-3. **Canonical Source Locations**:
-   | Resource Type | Canonical Master Copy | Installed / Spoke Location |
-   |---|---|---|
-   | Python scripts | `plugins/<plugin-name>/scripts/` | `plugins/<plugin-name>/skills/<skill>/scripts/` |
-   | References / docs | `plugins/<plugin-name>/references/` | `plugins/<plugin-name>/skills/<skill>/references/` |
-   | Assets / templates | `plugins/<plugin-name>/assets/` | `plugins/<plugin-name>/skills/<skill>/assets/` |
-4. **Required 5-Step Symlink Workflow**:
-   - **Step 1: Diagnose first**
-     ```bash
-     python3 .agents/skills/symlink-manager/scripts/symlink_manager.py diagnose
-     ```
-     Identify every `? regular file (not a link)` and `✗ broken symlink` before touching anything.
-   - **Step 2: Remove real-file imposters**
-     If a file that should be a symlink is a regular file copy, delete the imposter first:
-     ```bash
-     rm -f path/to/real-file-that-should-be-symlink
-     ```
-   - **Step 3: Register link in manifest (`symlinks.json`)**
-     Record the canonical source and skill target via `symlink_manager.py` or formatted entry:
-     `{ "src": "canonical/source.py", "dst": "skill/scripts/source.py", "strategy": "symlink", "description": "..." }`
-   - **Step 4: Restore all from manifest**
-     ```bash
-     python3 .agents/skills/symlink-manager/scripts/symlink_manager.py restore
-     ```
-   - **Step 5: Verify clean status**
-     ```bash
-     python3 .agents/skills/symlink-manager/scripts/symlink_manager.py diagnose
-     ```
-     Ensure zero `? regular file` or `✗ broken symlink` entries remain before committing.
+1. **Zero Symlinks**:
+   Never create file or directory symlinks. All shared resources are either centralized at plugin root or inlined into the corresponding modal skill hubs.
+2. **Self-Contained Content**:
+   Every resource, script, and reference a skill requires must be located within that skill's directory tree (`scripts/`, `references/`, `assets/`) or referenced cleanly via relative path to sibling skills.
+3. **Modal Dispatch Architecture**:
+   To keep skills lightweight and context-efficient, each `SKILL.md` contains concise entrypoint instructions under 100 lines and routes execution to dedicated markdown playbooks under `references/modes/<mode>.md`.
+4. **Manifest Synchronization**:
+   All skills and agents are declared in `plugins/sharepoint-workbench/apm.yml` and `.claude-plugin/plugin.json` (legacy `plugin.yaml` is retired).
 
 ---
 
@@ -1168,7 +1145,7 @@ Never skip hooks with `--no-verify` unless the user explicitly requests it.
 ### 9. Commit only what is asked & required
 - Commit only files within the task scope.
 - Auto-modified files like `.DS_Store` or `uv.lock` should not be committed unless relevant.
-- When `skills-lock.json` or `symlinks.json` changes as a direct result of adding/modifying skills or plugins, commit them together with the changes.
+- When `apm.yml`, `plugin.yaml`, or `.claude-plugin/plugin.json` changes as a direct result of adding/modifying skills or plugins, commit them together with the changes.
 
 ### 10. Evolution Integrity Gate — update map-debt BEFORE committing core logic
 Any commit that touches files under `plugins/`, `src/`, or `py_services/` **must** do one of the following before `git commit`:
@@ -1352,7 +1329,7 @@ description: >
   found during the Phase 9 exhaustive source audit as already-generic
   guidance with no project-specific content.
 globs:
-  - "plugins/sharepoint-site-migration/**/*"
+  - "plugins/sharepoint-workbench/.apm/skills/migrating-sharepoint-sites/**/*"
 ---
 
 # Rule: Deployment Decision Principles
@@ -1408,13 +1385,13 @@ description: >
   Schema/dependency definitions for a SharePoint migration must live in JSON,
   never hardcoded inside generated or hand-written deployment scripts.
 globs:
-  - "plugins/sharepoint-site-migration/**/*.py"
-  - "plugins/sharepoint-site-migration/assets/migration-planning/*.json"
+  - "plugins/sharepoint-workbench/.apm/skills/migrating-sharepoint-sites/**/*.py"
+  - "plugins/sharepoint-workbench/.apm/skills/migrating-sharepoint-sites/assets/*.json"
 ---
 
 # Rule: Schema-Driven SharePoint Deployment
 
-Same principle already established in `plugins/sharepoint-site-build-and-publish/rules/
+Same principle already established in `plugins/sharepoint-workbench/.apm/skills/managing-sharepoint-schema/
 schema-driven-sharepoint-deployment.md` — kept as a plugin-local copy here because this plugin is
 the one that actually authors deployment scripts. If the two drift, treat that as a defect to
 reconcile, not two independent rules.
@@ -1451,7 +1428,7 @@ description: >
   is this repository's own TDD rule applied to infrastructure provisioning,
   not a separate convention invented for SharePoint deployment.
 globs:
-  - "plugins/sharepoint-site-migration/**/*"
+  - "plugins/sharepoint-workbench/.apm/skills/migrating-sharepoint-sites/**/*"
 ---
 
 # Rule: Test-Driven Wave Deployment
@@ -1504,7 +1481,7 @@ run, not on a separately-maintained copy someone forgot to update.
 Any object that needs ordered deployment relative to other objects
 declares its dependencies **by name**, in the same shared schema structure
 used for planning and validation (this plugin's generalized
-`DeploymentObject.depends_on`, see `plugins/sharepoint-site-migration/scripts/migration-planning/wave_planning.py`) -- never by
+`DeploymentObject.depends_on`, see `plugins/sharepoint-workbench/.apm/skills/migrating-sharepoint-sites/scripts/wave_planning.py`) -- never by
 having its position hand-encoded into a separate, fixed-order orchestrator
 step list. A dependency is "this object depends on that named object," not
 "this object belongs in stage N" -- the latter requires a human to keep the

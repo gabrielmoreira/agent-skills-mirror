@@ -22,7 +22,9 @@ A and B share an installation, not a production contract or style library. All s
 
 Use one shared guide in the user's requested or current conversation language, falling back to an available host/local language setting when unclear. Keep guidance language separate from video narration/subtitles; do not select it from the README edition.
 
-Read [first-use and stage guidance](references/getting-started.md) for installation handoff or first use, and apply its progress guidance throughout both modes. After an installation you perform is verified, show a practical, plain-language quick-start immediately; otherwise introduce the Skill on first invocation. Explain outputs, suitable uses, tools to prepare, the production sequence and a copyable request, tailored to what the user already knows. Reuse the supplied brief instead of restarting an intake interview. At each substantive stage completion or blocker, explain what is completed, what is still missing and the concrete next action, distinguishing the assistant's work from the user's choices. Do not turn progress updates into new approval gates or repeat the welcome on every turn.
+Read [first-use and stage guidance](references/getting-started.md) at installation handoff or first use; apply it in both modes. After verifying an installation you perform, show a plain-language quick-start immediately; otherwise on first invocation. Explain outputs, uses, tools, workflow, copyable requests and relevant public GitHub style/sample catalogs with selection by code. Reuse known choices. At substantive stage completions or blockers, distinguish assistant work from user choices; state completed outputs, missing items and the concrete next action. Do not add mandatory approval gates or repeat the welcome every turn.
+
+For optional A character references, follow **Optional A character references** in that guide; keep validated prompts and voice rules unchanged.
 
 ## A · Director
 

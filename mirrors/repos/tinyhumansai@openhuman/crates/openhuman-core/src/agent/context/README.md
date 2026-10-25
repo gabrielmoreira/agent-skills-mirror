@@ -69,7 +69,7 @@ No `store.rs`. State is per-session and in-memory:
 - `agent::tinyagents`: `turn_middleware.rs` reads `CLEARED_PLACEHOLDER` when configuring `MicrocompactMiddleware`; `payload_summarizer.rs` and `host/context_composer.rs` build `PromptContext`s through `agent::prompts`.
 - **`agent_registry::agents/*/prompt.rs`**, `skills/*/agent/*/prompt.rs`: archetype prompt modules pull prompt sections/builder through `agent::prompts`.
 - `channels`: [`channels/system_prompt.rs`](../../channels/system_prompt.rs) (`ChannelSystemPrompt`, used by [`channels/runtime/startup/start_channels.rs`](../../channels/runtime/startup/start_channels.rs)) calls `channels_prompt::build_system_prompt_with_identity`; [`channels/mod.rs`](../../channels/mod.rs) re-exports `build_system_prompt`; the `channels/tests/*` prompt/identity tests call it directly.
-- `agent::triage`, `agent::debug`, `agent::orchestration::tools` (spawn_subagent and friends), `tools::orchestrator_tools`, `integrations::composio`: consume prompt types (`PromptContext`, `PromptSection`, `ToolCallFormat`, `ConnectedIntegration`, …) via `agent::prompts`.
+- `agent::triage`, `agent::debug`, `agent::orchestration::tools` (spawn_subagent and friends), `integrations::composio`: consume prompt types (`PromptContext`, `PromptSection`, `ToolCallFormat`, `ConnectedIntegration`, …) via `agent::prompts`.
 
 ## Notes / gotchas
 

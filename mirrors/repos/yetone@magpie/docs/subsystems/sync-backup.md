@@ -153,8 +153,17 @@ repository can keep the token. The branch is part of the sync state key.
   creation returns `errChanged`. Other 422
   responses stay actionable errors. Authentication, permission and branch
   failures remain distinct from missing files. Rate limits use sync backoff.
-- Request archival remains an S3-only feature; its objects are separate from
-  the encrypted setup and usage files.
+- The request archive goes to S3 only when sync has a bucket. Its objects are
+  separate from the encrypted setup and usage files. With no bucket the same
+  files are kept on this computer instead (`gateway.DiskArchive`, in
+  `<settings.Dir()>/request-archive/<date>/<id>.json`, written through a
+  temporary file and renamed, 0600), under its own switch,
+  `RequestArchiveLocal`. That switch and its size, `RequestArchiveLocalMB`
+  (1 GiB unless set; the oldest calls are removed first past it), are in
+  `KeepOwn`, so sync never turns on writing bodies to another computer's
+  disk, and `RequestArchive` synced from a computer with a bucket keeps
+  nothing on one without (`TestArchiveNeverOnDiskUnasked`,
+  `TestRequestArchiveLocalIsThisComputers`).
 
 ## Verification
 

@@ -123,7 +123,7 @@ already running blocking parser.
 
 ## Explicit delegation
 
-Named and collapsed delegation tools accept `image_paths`. Paths resolve against
+Named delegation tools accept `image_paths`. Paths resolve against
 the acting workspace and pass the same policy checks as other local reads.
 Legacy `[IMAGE:path]` markers remain supported; filenames mentioned only in
 ordinary prose grant no read. An explicit image selection replaces automatic

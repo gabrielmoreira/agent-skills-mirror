@@ -14,9 +14,9 @@ Required shape:
    - wrap procedural setup in `<Steps>`
    - use `### Installation` and `### Add Kit`
    - include `<ComponentSource name="actual-kit-name" />`
-   - list relevant kit components from the owning entries in `apps/www/src/registry/registry-kits.ts`
-     and `apps/www/src/registry/registry-ui.ts`
-   - show `createPlateEditor({ plugins: [...RelevantKit] })` from `platejs/react`
+   - list relevant kit components from the owning entries in `apps/www/src/registry/registry-features.ts`
+     and `apps/www/src/registry/registry-editor.ts`
+   - show `useCreateEditor({ plugins: [...RelevantKit] })` from `platejs/react`
 4. `## Examples` for distinct tasks and meaningful states, selected through
    [feature coverage](../SKILL.md#cover-the-features-actual-use). Put one useful
    example under each named subsection; omit this section when the primary
@@ -28,14 +28,15 @@ Required shape:
    primary setup when no kit exists. Apply only the source checks relevant to
    the documented feature:
    - show the package install command
-   - import plugin APIs from `platejs`, `platejs/react`, or the feature's
-     `@platejs/<feature>` package
-   - add the plugin to `createPlateEditor` in React, or to `createSlateEditor`
-     in headless code
+   - import plugin APIs from `platejs`, `platejs/react`, or the actual
+     `platejs/<feature>` entrypoint
+   - add the plugin to `useCreateEditor` in React, or to `createEditor` in
+     headless code; `docs/vision/plate.md` holds the node `component` and
+     `.configure` rules a manual example follows
 7. Style plugins without distinct components should document their schema
-   placement truth. Cross-cut block styles configure `inject.targetPlugins`,
-   and `inject.targetPluginToInject` derives each target's parser injection
-   from that list; document only that one target list. Text styles declare marks and
+   placement truth. Cross-cut block styles configure
+   root `targetPlugins`; render/parser injection is derived and must not
+   be taught as a second target configuration. Text styles declare marks and
    do not invent block target lists. Document `inject.nodeProps` only for real
    rendering defaults and mappings.
 8. Toolbar sections only when the toolbar affordance exists. Check kit
@@ -43,11 +44,12 @@ Required shape:
    controls.
 9. `## Plugins` for actual plugin objects.
 10. `## API Reference` for shipped standalone functions or plugin APIs, and
-    `## Transforms` only for real `editor.tf.<group>.*` surfaces. Give
+    `## Transforms` only for real `editor.update.<group>.*` surfaces. Give
     standalone operations their exact import paths and arguments; do not invent
     an installed plugin for file conversion. Teach
-    `editor.getApi(Plugin)` only when the example is intentionally generic
-    package code.
+    `editor.plugin(Plugin).api.*` only when the example is intentionally generic
+    package code or needs exact descriptor ownership; `docs/vision/plate.md`
+    holds the portal and optional-plugin rules.
 
 Preserve existing `<APIOptions>`, `<APIParameters>`, and `<APIReturns>`
 formatting when editing a working page. Use

@@ -1,0 +1,98 @@
+# Deployment
+
+An agent that runs shell commands belongs in a box of its own. On a server, a container is that box: the agent sees only its data directory and its workspace.
+
+This page is about the Python runtime (the web app's agent) in Docker. Running the relay (your own sign-in, hub and sync) and pointing the apps at it is [self-hosting.md](self-hosting.md), which also puts the three ways to run nanoMuse yourself in order.
+
+## Docker
+
+```bash
+cp .env.example .env && $EDITOR .env      # API key
+nanomuse config init                      # or copy config/config.example.toml to config/config.toml
+docker compose up -d app                  # the phone app on http://<host>:8787
+docker compose logs app                   # shows the URL with the access token
+```
+
+Other entry points:
+
+```bash
+docker compose run --rm muse                      # terminal chat
+docker compose run --rm muse run "plan my week"   # one task
+docker compose up -d daemon                       # advance goals on a timer, no UI
+```
+
+The image runs as a non-root user with all capabilities dropped, and it carries a health check: every 30 seconds the container asks its own `/api/health`, and `docker ps` shows *healthy* or *unhealthy* beside it. The `muse` and `daemon` services run no server, so the compose file turns the check off for them; a plain `docker run` of `chat` or `daemon` takes `--no-healthcheck`. Two volumes hold state: `nanomuse-data` (memory, goals, vault, audit log, threads) and `./workspace` (the agent's files). `config/config.toml` is mounted read-only. Set `NANOMUSE_SERVER_TOKEN` in `.env` so the token is stable across restarts, and open the printed URL from your phone using the host's address.
+
+Without cloning, the published image (linux/amd64 and linux/arm64, so a Raspberry Pi or an Apple-silicon Mac works):
+
+```bash
+docker run -d --name muse -p 8787:8787 --env-file .env \
+  -v nanomuse-data:/data -v "$PWD/workspace:/workspace" \
+  ghcr.io/nano-muse/nanomuse:latest
+docker logs muse                          # the URL with the access token
+```
+
+`:latest` and `:X.Y.Z` follow releases; `:edge` follows `main`. Without a mounted `config.toml` the image starts from `config.example.toml`, so the model is set from `.env` (`NANOMUSE_LLM_*`) or in the app's Connections screen.
+
+**With a browser.** The `-browser` tags (`:latest-browser`, `:X.Y.Z-browser`, `:edge-browser`; linux/amd64) bundle Chromium and Playwright and start with the browser tool on, so the agent can use websites and you can watch and take over from the phone (see [the app → browser view](app.md#what-is-on-the-screen)). It is about 400 MB larger. `NANOMUSE_BROWSER_ENABLED=1` is what switches the tool on in that image; the same variable works anywhere Playwright and Chromium are installed.
+
+Building by hand:
+
+```bash
+docker build -t nanomuse .
+docker build --build-arg WITH_BROWSER=1 -t nanomuse:browser .   # with Chromium
+docker run -d --name muse -p 8787:8787 --env-file .env \
+  -v nanomuse-data:/data -v "$PWD/workspace:/workspace" \
+  -v "$PWD/config/config.toml:/app/config/config.toml:ro" nanomuse
+```
+
+## Keeping it running without Docker
+
+A user-level systemd unit is enough:
+
+```ini
+# ~/.config/systemd/user/nanomuse.service
+[Unit]
+Description=nanoMuse
+After=network-online.target
+
+[Service]
+WorkingDirectory=%h/nanoMuse
+ExecStart=%h/nanoMuse/.venv/bin/nanomuse serve --host 0.0.0.0 --no-qr
+Restart=on-failure
+EnvironmentFile=%h/nanoMuse/.env
+
+[Install]
+WantedBy=default.target
+```
+
+```bash
+systemctl --user enable --now nanomuse
+loginctl enable-linger $USER          # keep it running after logout
+journalctl --user -u nanomuse -f
+```
+
+## Reaching it from outside your network
+
+Do not expose port 8787 to the internet directly. Options that keep the token scheme intact:
+
+- **Tailscale / WireGuard**: bind to `0.0.0.0`, open the tailnet address on your phone.
+- **Reverse proxy with TLS** (Caddy, nginx): proxy `/` and `/ws` (WebSocket upgrade) to `127.0.0.1:8787`. The token still applies.
+
+TLS is also what turns on push notifications on the phone: browsers only allow a service worker and Web Push in a secure context (`https://` or `localhost`). A Tailscale address with [`tailscale serve`](https://tailscale.com/kb/1312/serve) or a Caddy block like the one below is enough:
+
+```
+muse.example.com {
+    reverse_proxy 127.0.0.1:8787
+}
+```
+
+## Updating
+
+```bash
+git pull --ff-only && uv pip install -e ".[dev]"      # source install
+docker compose build && docker compose up -d app       # Docker, built here
+docker pull ghcr.io/nano-muse/nanomuse:latest          # Docker, the published image; then start it again
+```
+
+Data formats (SQLite, JSONL, JSON) are kept backward compatible within a minor version.

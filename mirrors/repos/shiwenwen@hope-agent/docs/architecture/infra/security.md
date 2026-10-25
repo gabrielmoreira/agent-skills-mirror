@@ -340,7 +340,7 @@ pub fn status() -> DangerousModeStatus;
 | XML/Excel | 自有 quick-xml 0.41.0，calamine 0.36.1 → quick-xml 0.41.0；属性解码使用 XML 1.0 归一化 API | 原有大小/深度/属性/实体/ZIP 上限继续生效；xcb 构建链的 0.30.0 仍需上游 ABI 兼容路线，不宣称彻底去重 |
 | HTTP/TLS/取消 | 直接 reqwest 0.13.5（native-tls 保留）、rustls 0.23.46（10-18 补丁）、h2 0.4.16、Tokio 1.53.2 | 禁止重定向不取代 SSRF；Telegram 适配器保留 SDK 所需的 reqwest 0.12.28；平台运行证据分别报告 |
 | 内存缓存与脚本 | lru 0.18.5；ha-core/ha-workflow 的 rquickjs 0.14.0 + serde 0.8.0 成对 | 不新增 unsafe 字节借用，保留原容量/超时/内存/取消语义 |
-| Markdown/图表清洗 | DOMPurify override 下限 3.4.16，实际锁 3.4.16 | 不放宽标签或新增 IN_PLACE/hook；依赖有补丁不表示所有嵌入入口已完成真实攻击验收 |
+| Markdown/图表清洗 | DOMPurify override 下限 3.4.17，实际锁 3.4.17（10-24 补丁） | 不放宽标签或新增 IN_PLACE/hook；依赖有补丁不表示所有嵌入入口已完成真实攻击验收 |
 | 桌面更新 | updater Rust/JS 2.14.0（10-19 配对维护），应用 `allowDowngrades=false` | 不接触生产更新源，不安装真实应用更新；签名/重启审批保持 |
 
 Tauri [GHSA-w28w-mhc8-qvjv](https://github.com/tauri-apps/tauri/security/advisories/GHSA-w28w-mhc8-qvjv)、PDF [RUSTSEC-2026-0187](https://rustsec.org/advisories/RUSTSEC-2026-0187.html)、XML [0194](https://rustsec.org/advisories/RUSTSEC-2026-0194.html)/[0195](https://rustsec.org/advisories/RUSTSEC-2026-0195.html)、TLS [0285](https://rustsec.org/advisories/RUSTSEC-2026-0285.html) 和 HTTP/2 [0258](https://rustsec.org/advisories/RUSTSEC-2026-0258.html) 为当前范围的原始来源。GTK/glib 与维护停更告警仍需按平台/调用链裁决；未取得兼容替代时不强塞跨 ABI patch。
@@ -364,3 +364,11 @@ Tauri [GHSA-w28w-mhc8-qvjv](https://github.com/tauri-apps/tauri/security/advisor
 [Node 官方安全公告](https://nodejs.org/en/blog/vulnerability/october-2026-security-releases)提供24.22.1补丁。main的Lint运行39914864235（提交b33bfa7b）的setup-node日志实际读取缓存24.21.0，浮动major并未获取补丁。五处既有setup-node统一固定24.22.1，保留Actions完整摘要、job名称、matrix和门禁。后续补丁应显式维护该版本，不回退受影响补丁；普通CI会读回实际安装版本。
 
 Docker前端构建基础镜像node:24-bookworm-slim刷新后，digest `sha256:55fb5f5a527ea2c5c4a95f963e48ef90aa38c7b346054fdc8ee9957a2b55d205` 的无网络、只读根、无挂载隔离容器读回24.22.1。此证据仅覆盖该镜像digest及当前平台，不表示历史缓存已刷新、多架构完整构建、生产部署或宿主软件已升级。Dockerfile未改，镜像digest固定的既有独立PR归原主责。
+
+## 2026-10-24 前端依赖安全补丁
+
+[#853](https://github.com/shiwenwen/hope-agent/pull/853) 收敛为 Vite 8.3.4、Vitest / @vitest/mocker 4.1.12 与 DOMPurify 3.4.17 的维护包。同步 Vite 的工作区精确 override，避免仅修改 package.json 后仍解析 8.3.0；DOMPurify 的共享下限覆盖 Mermaid 与 jsPDF 两条传递路径。Vite 所需的 Rolldown 1.2.15 / @oxc-project/types 0.155.0 由上游内部消费，项目没有直接跨接其类型；通过实际构建验证。其余分组升级保留基线版本，React Hooks 7.1.1 新规则迁移另行处理，不改现有 ESLint 配置。
+
+Vite 的 [launch-editor 公告](https://github.com/vitejs/launch-editor/security/advisories/GHSA-698v-4r3x-3vcv)、[路径越界公告](https://github.com/vitejs/vite/security/advisories/GHSA-rq7h-c2jc-7f22) 和 [WASM 文件头公告](https://github.com/vitejs/vite/security/advisories/GHSA-vfpm-58rq-9qcg) 的修复下限为 8.3.3；本包采用机器人已提出的 8.3.4 正式补丁。Vitest [手动 mock 注册注入公告](https://github.com/vitest-dev/vitest/security/advisories/GHSA-qxg6-89mg-rqv8) 的修复下限为 @vitest/mocker 4.1.12。以上涉及开发或测试服务器，不将依赖版本匹配描述成已证实的发布产物远程执行。
+
+DOMPurify 的 [模板与 shadow root](https://github.com/cure53/DOMPurify/security/advisories/GHSA-cg2g-xh64-v4q7)、[IN_PLACE hook](https://github.com/cure53/DOMPurify/security/advisories/GHSA-mrv2-3pqr-j5jr)、[XHTML SMIL](https://github.com/cure53/DOMPurify/security/advisories/GHSA-c6gr-qvv4-5v3f) 三项公告均以 3.4.17 修复。npm 评级与发布者的 low 评级有差异；三者均要求非默认设置或特定 hook / 模板处理，当前应用未发现对应配置。保留 Mermaid strict 字符串清洗和 CSP，不新增允许标签、原地清洗或模板执行。锁文件、隔离合成检查、构建和普通 CI 分别提供证据，不替代真实桌面、恶意内容全入口或 Provider 验收；回滚不得恢复这些已知受影响版本。

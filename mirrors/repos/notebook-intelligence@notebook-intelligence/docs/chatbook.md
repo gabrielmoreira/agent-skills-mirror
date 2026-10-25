@@ -30,6 +30,8 @@ Chatbook adds seven commands, all reachable from the command palette:
 
 **Running a code cell also sends it to the model.** The first time a **Cd** cell runs successfully, Chatbook asks the model for a one-line English description of that source and stores it in the cell's metadata, so the cell can be read as prose and switched back to **NL** later. It does not ask again on later runs, and it does not refresh the description when you edit the code: use **Refresh English representation** for that. This is worth knowing in a deployment where code is more sensitive than prompts, because it means hand-written code in a Chatbook reaches the model even under **Always confirm**.
 
+**What a prompt sees.** Generation sends the model the cells above the prompt cell and the cells below it, each with its code and up to 4,000 characters of its last output, along with the prompt cell itself, any `@` mentions, the rules that apply to Chatbook, the workspace's `AGENTS.md`, and context from any extension providers (see [`docs/chatbook-extensions.md`](chatbook-extensions.md)). Chatbook tells the model that the cells above have already run in the backend kernel and asks it to reuse the names they define instead of copying their code, so running a prompt before the cells above it (after opening a saved Chatbook or restarting the kernel, for example) can fail with an undefined name. It also asks the model to bind a cell's meaningful result to a descriptive variable and still display it, so a later prompt can refer to that result by name, and never to rely on the kernel's implicit input and output history (`_`, `Out[n]`, or `In[n]` in Python), which shifts when cells are added, reordered, or rerun. When you rerun a prompt cell, its previous code is marked as being replaced, so the model is asked not to count on names only the old version defined.
+
 ## Context with @ mentions
 
 Typing `@` in a prompt cell opens a menu of context to attach. The built-in **Files & folders** provider browses the Jupyter root, skipping dotfiles, `__pycache__`, and `node_modules`; a selected file is read and truncated at 16,000 characters. Extensions can register providers of their own, which appear in the same menu under their own root (see [`chatbook-extensions.md`](chatbook-extensions.md)).
@@ -56,7 +58,7 @@ Prompt cells become their generated code. A prompt cell whose code never ran, or
 
 ## What the notebook file holds
 
-Chatbook stores its state in cell metadata under `nbi.chatbook`: the prompt, the generated code, the code source, hashes of the prompt and context, and when generation happened. A Chatbook you share therefore carries the generated code and the model's English descriptions of your own code, not just the prompts.
+Chatbook stores its state in cell metadata under `nbi.chatbook`: the prompt, the generated code, the code source, whether the cell started as a prompt or as code, hashes of the prompt and context, a hash tying a code cell's English description to the code it describes, and when generation happened. A notebook converted to a Chatbook also records the name of its original kernel in the notebook metadata, under `nbi.chatbook.sourceKernel`. A Chatbook you share therefore carries the generated code and the model's English descriptions of your own code, not just the prompts.
 
 Treat a Chatbook from someone else as untrusted input. The persisted generated code is not re-derived on open, so it is whatever the file says it is, which is why approved-code reuse is scoped to the current session rather than read back from the file.
 

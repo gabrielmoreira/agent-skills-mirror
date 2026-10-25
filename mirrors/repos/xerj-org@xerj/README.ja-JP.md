@@ -19,7 +19,7 @@
 [![Agent memory](https://img.shields.io/badge/agent%20memory-%2F__memory-00b3a4?style=flat-square)](https://xerj.org/docs/recipes/agentic-memory.html)
 [![MCP](https://img.shields.io/badge/MCP-native-1f6feb?style=flat-square)](https://xerj.org/llms.txt)
 [![llms.txt](https://img.shields.io/badge/llms.txt-agent%20ready-6f42c1?style=flat-square)](https://xerj.org/llms.txt)
-[![ES-YAML conformance](https://img.shields.io/badge/ES--YAML%20conformance-1366%2F1369-brightgreen?style=flat-square)](https://xerj.org/benchmarks)
+[![ES-YAML conformance](https://img.shields.io/badge/ES--YAML%20conformance-1444%2F1454-brightgreen?style=flat-square)](https://xerj.org/benchmarks)
 [![Single static binary](https://img.shields.io/badge/single%20static%20binary-no%20JVM-orange?style=flat-square)](https://xerj.org/docs/install.html)
 [![Default embedder](https://img.shields.io/badge/default%20embedder-lexical%2C%20offline-teal?style=flat-square)](https://xerj.org/docs/vectors.html)
 [![Neural](https://img.shields.io/badge/neural%20embedder-opt--in%2C%20downloads%20~90%20MB-9c6ade?style=flat-square)](https://xerj.org/docs/vectors.html)
@@ -393,7 +393,7 @@ kNN、scroll、reindex、そして `_cat` エンドポイントです。Kibana �
 サイズの結果セットには `search_after` を使ってください
 （[上限について](https://xerj.org/docs/api-es-compat.html#scroll-cap)）。
 
-適合性テストスイートはコミットごとに実行され、現在 1369 ケース中 1366 ケースに合格しています。スイートは
+適合性テストスイートはコミットごとに実行され、現在 1454 ケース中 1444 ケースに合格しています。スイートは
 [`engine/tests/es-compat-yaml`](./engine/tests/es-compat-yaml) にあり、残りのギャップも隠さずにそこに
 列挙しています。XERJ は API と互換性がありますが、Elasticsearch の内部実装を再実装したものではなく、
 フォークでもありません。

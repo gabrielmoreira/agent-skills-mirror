@@ -7,6 +7,96 @@ These use the S5/S11
 [research episode assessment](../architecture/rfcs/long-horizon-harness-benchmark-research-program-v0.md#evidence-based-episode-evaluation-proposed-refinement).
 It does not change solver prompts, benchmark scoring, checkpoints or research budgets.
 
+## Researcher synthesis in the existing reader
+
+New registrations using the default configuration and CLI previews request
+`research_synthesis: true` and `research_synthesis_revision: 2` in their
+frozen model configuration. Explicit analysis uses the same observer call to
+produce `research-episodes-synthesis-v2`: the six episode judgments plus a
+source-bound `synthesis`. There is no extra per-finding model call. The ordinary
+Goal view follows **results → research report → research history**. Native
+measurements and unknown retention appear first; the saved report adds a concise
+account, expandable findings and a prioritized question. **Read deeper** opens
+findings beside their interpretations and competing explanations. A separate
+report tab compares proposed interventions and controls with distinguishing
+predictions and disconfirming results. Wide layouts use two columns; narrow
+layouts preserve the same reading order vertically. Body text stays readable.
+Individual judgments and limitations remain available as secondary review.
+Direct citations open exact originals and return focus to their source control;
+the history action returns to the complete loaded research history without
+changing the selected evidence pack. Reading either layer, switching report
+tabs or opening an original never executes an analysis or experiment.
+
+The presentation draws on composable inspection in
+[Distill's interpretability article](https://distill.pub/2018/building-blocks/)
+and responsive comparison layouts in the
+[Observable Framework documentation](https://observablehq.github.io/framework/getting-started#layout).
+These inform the design; they do not establish a measured comprehension or
+reading-speed benefit for this reader. Fixed application templates render the
+qualified text; the observer does not generate executable HTML or JavaScript.
+
+The synthesis has at most three findings and two proposed next experiments.
+Each item names the supplied episodes and supporting absolute source lines.
+The typed owner rejects missing evidence, unknown episode/source identities and
+out-of-range citations. Cross-episode synthesis may use only the named episodes'
+evidence; individual metric citations retain their narrower episode scope.
+These checks verify binding, not entailment or causal validity. The result stays
+an uncalibrated Agent interpretation; proposals grant no execution authority.
+Insufficient evidence can yield no findings or experiments, with the gap stated
+in the summary. Useful negative evidence and observed late gains remain visible.
+
+Existing registered configurations without this field keep their original
+prompt, analysis key, schema and saved results. They are not automatically
+upgraded or rerun. For an explicitly requested synthesis of an older study,
+register a new version with `config.research_synthesis: true` and
+`config.research_synthesis_revision: 2`; keep the previous
+pack and its failures. The Python preparation adapter also accepts
+`research_synthesis=False` to reproduce the legacy method. To disable new
+synthesis, register with that field false or an explicit legacy configuration;
+no source history is deleted. A language change retains the existing independent
+language-specific cache and execution boundary.
+
+Revision 2 refines the existing report fields, without new verdicts or a second
+analysis call. It asks the observer to reconcile completed comparisons and
+follow-up decisions before recommending work, preserve paired gains and
+regressions, and distinguish configured limits from actual completed work.
+Controls and predictions should explain whether the intervention engaged and
+which missing observations would prevent interpretation. Equal seeds or time
+limits do not alone prove matched work: distinguish fixed-work from wall-clock
+comparisons and check the relevant coupling, allowing the intended state/path
+divergence. A justified repeat with contemporary controls can still be useful.
+These are model reasoning instructions; the validator does not certify that the
+answer followed them or that a proposed experiment is scientifically sufficient.
+
+New default producer requests persist revision 2. Previously stored synthesis
+configurations that omit the revision retain the exact v1 prompt, key and
+language caches; reading or retrying them does not upgrade the method. Explicit
+custom curator configurations also remain v1 when the revision is omitted.
+To use revised guidance on an existing case, register a successor pack and
+explicitly run that new analysis in the same workbench. Keep both reports and
+their separate failures and usage. No new configuration screen, automatic
+generation or experiment execution is introduced.
+
+新版指引要求先核对已完成比较和后续取舍，再提出下一步；把配置上限、实际完成工作及
+干预是否生效分开，并保留配对改善／回退和局部结果未转移到原生测评的边界。相同种子
+或墙钟期限不等于工作量匹配；应核对相关耦合，也允许机制本身造成后续路径分歧。
+新生产请求保存第2版；缺少版本字段的旧配置保持原提示、标识和语言缓存。接续分析须
+另行明确生成，原报告、失败与用量保留。引用资格和指引文字均不构成科学有效性证明。
+
+Curators must admit relevant prior feedback into each episode that needs it.
+A source existing elsewhere in the pack does not authorize a metric to cite it.
+When prior context or submitted-code excerpts are missing, revise the frozen
+input and disclose the retrospective selection; do not weaken citation checks
+or relabel the old failed attempt. Provider-observed usage now survives output
+parsing and qualification failure. Missing usage stays unknown, and retry
+archives the failed output, receipt and observed usage before a new attempt.
+This does not reconstruct unmeasured historical usage or complete monetary cost.
+
+普通阅读依次呈现指标、研究汇报和完整研究历程；汇报先给概览和可展开结论，「深入解读」
+再用并排对照展开观察／竞争解释及实验条件／预期区分／反证，窄屏保持原顺序纵向阅读。
+两层复用同一结果和原文入口，浏览不触发模型。新分析仍使用既有授权、
+成本、取消与重试边界；旧方法及失败记录保留，引用完整性不代表机制已获证实。
+
 The Goal reader requests `output_language` (`zh` or `en`) from the current
 interface language on reads, explicit execution/retry, cancellation and citation
 readback. The typed assessment owner binds it and its presentation instructions
@@ -20,6 +110,40 @@ Requests without a language retain their original identity and stored artifacts;
 the frontend does not present an unspecified or other-language result as a new
 analysis in the selected language. Output-language metadata records the request,
 not independent verification of a model's translation or judgments.
+
+### Native results as explicit analysis context
+
+`--native-outcomes-json` alone supplies display facts and preserves the existing
+analysis key. To let a new analysis interpret the same source-bound results,
+the curator also includes that complete JSON capture as a normal verified source
+in `input.sources`, then binds its source id:
+
+```json
+"native_outcomes_source_id": "native-capture"
+```
+
+The bound source starts at line 1 and contains a
+`trajectory_native_outcomes_v1` capture with the same Goal/case/run/revision/window.
+Use the same capture for `--native-outcomes-json`; conflicting readback is refused.
+The existing native-measurement owner validates scope, validity, direction,
+retention and citations. Its projection enters the ordinary observer request,
+including unknown retention and the distinction between best, last and retained
+results. A context-only JSON source is not repeated beside that projection.
+The context constrains interpretation; it does not expand the assessed sample
+or permit metric/synthesis citations outside their declared episode sources.
+
+This explicit input binding and its instructions participate in the analysis
+identity. Changing the binding or captured evidence requires reassessment through
+the existing explicit analysis action; registration, reading and language changes
+do not launch a model. Omission preserves old prompts, keys and results. Keep the
+old pack and observed failures; removing the binding in a new version disables
+this context without rewriting history. Source changes retain historical readback
+and block execution until a new verified pack is registered. Supplying correct
+context does not prove model entailment, causal validity or comprehension benefit.
+
+原生结果默认仍是展示资料；只有在新分析输入中明确绑定完整来源，才作为模型上下文。
+同一原生 owner 校验指标方向、范围、保留及引用，未知保持未知，最佳／最后值不代替
+实际保留。绑定变化需显式重新分析，浏览不执行；旧报告与失败保留，引用范围不扩大。
 
 ### Whole-history presentation language
 
@@ -59,6 +183,26 @@ Fields use content-bound opaque identities. Literal code, links, numeric tokens
 and technical identifiers are protected; missing, duplicate or corrupt rows fall
 back to the original with explicit partial/invalid coverage. This mechanical
 check does not verify linguistic quality, causal meaning or model calibration.
+
+For ambiguous compact notes, the curator can add `display_snapshot.contexts`
+rows with `event_id`, `field` and `citations` (existing `source_id`, absolute
+inclusive `first_line`/`last_line`). Bind only a narrative field in that captured
+snapshot and verified source ranges. Empty evidence, duplicate bindings, missing
+fields/sources and out-of-range lines are rejected. The same explicit analysis
+reads those numbered ranges to resolve terms, units and referents; it must not
+import later outcomes, new measurements or stronger certainty into the original
+field. Context evidence is supplied once through the existing source pack.
+The versioned display field retains `context_citations`; equal text with different
+context does not share a translation identity. Context additions, corrections or
+removal invalidate reuse. Omission preserves existing prompts and identities.
+The original source reader and existing job budget, cancellation and retry remain
+the entrypoints; neither a context binding nor an ordinary read launches a model.
+
+压缩记录有歧义时，可由原输入整理者把准确事件/字段关联到已有证据的具体行。
+同一次明确分析据此解释术语、单位和指代，不能把上下文的新结果补写成原记录结论。
+关联随展示产物保存并参与版本隔离；不同上下文不共用同一译文。没有关联时沿用原路径，
+字面校验和来源关联仍不等于译文已获独立语义验证。
+
 For a large capture, the curator can set the optional
 `display_snapshot.translation_encoding: "source_text_aliases_v1"`. The same
 owner requests one translation per exactly equal original string using compact
@@ -92,6 +236,18 @@ reader, partial coverage and explicit execution boundaries are unchanged.
 This encoding has its own analysis identity. Existing direct, alias and
 literal-context artifacts keep their original preparation and remain readable;
 viewing an old result does not upgrade it or launch a new analysis.
+The explicit `"source_text_aliases_with_literal_values_v2"` variant retains those
+exact-value checks and asks the model to explain context-bound quantities in
+ordinary prose, including the exact permitted number and its referent. Keeping
+only an opaque source term in parentheses is insufficient. Unknown meanings stay
+unknown; supporting preparation steps must not become new claims in the field.
+This is a model instruction, not a semantic validator. Earlier encodings retain
+their original prompts and identities; selecting this variant requires a new
+explicit analysis with separately recorded usage.
+
+显式数值编码 v2 要求把有来源语境支持的数量及其所指写成可读正文，仍保留原始标记和
+准确数值限制；未知所指不猜测，不能把支持材料的准备步骤补成原记录的新行动。这不是
+机器语义校验。旧编码及结果保持，新版本仅随明确分析生成并单独记账。
 Translated prose is applied to decoded narrative fields; it is never serialized
 and reparsed as an Explore decision. Owner-format labels or list markers inside
 model text cannot change the original outcome, eligibility or list cardinality.
@@ -184,6 +340,36 @@ Do not add reasoning tokens again if the provider includes them in output tokens
 Ancestor response usage is deduplicated, but processing inherited context again
 is new cost. Analysis-job usage is separate from solver and native-evaluation cost.
 Never impute missing dollars from an unverified model price.
+
+### Select evidence around the research decision
+
+For a mechanism or attribution question, a submission neighborhood is a locator;
+the relevant decision can span earlier turns. Within the authorized history,
+follow the hypothesis through candidate design, comparison, selection and actual
+subsequent work. Include the source-bound baselines and candidate versions,
+inputs and budgets, completed results with regressions or failures, and the
+action that used or rejected them. Keep missing links unknown. Nearby messages
+and a reported plan alone do not establish this chain.
+
+Describe this coverage in `selection.rule` and bind the selected literal ranges
+through the existing episode `source_ids`. Early/middle/late sampling can still
+locate useful episodes; it does not establish that their immediate neighbors
+contain the experiments behind a decision. A judgment of insufficient supplied
+evidence does not establish that the experiment never happened in the run.
+
+Before proposing another comparison, reconcile it with applicable recorded
+designs and outcomes. Prioritize a missing condition, unresolved counterexample
+or necessary repeat when earlier comparisons already address part of the
+question. Preserve their input, timing and reuse limitations; local evidence
+can refine a hypothesis without allocating a native gain or proving a framework
+effect. Keep measured late gains visible while their mechanism remains open.
+
+Choose bounded excerpts that preserve the decision and its limitations. Reuse
+source references instead of repeating transport wrappers or replacing original
+evidence with a model summary. Added evidence belongs in an explicit successor
+pack; preserve the previous report, failures and usage. These are curator
+judgments, beyond automatic citation-range validation, and grant no analysis or
+experiment execution authority.
 
 ## Producer and consumer boundary
 

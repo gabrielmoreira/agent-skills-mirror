@@ -14,3 +14,4 @@ Uses the RuFlo AI Team connector (server name ruflo-ai-team): the tools team_tem
 4. Create the team only after the user accepts the plan.
 5. Create a run, then small tasks that each have one deliverable and one owner role. Recording a task does not execute it; say who or what will do the work.
 6. Never put credentials or secrets in a team, run, or task.
+7. Next: use the coordinate-team-work skill to assign and track the tasks, and the monitor-ai-team skill for status.

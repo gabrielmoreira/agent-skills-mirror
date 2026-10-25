@@ -13,7 +13,7 @@ const header = [
   'Concept',
   'Origin',
   'Reference mapping',
-  'Slate mapping',
+  'Plite mapping',
   'Plate mapping',
   'Correctness',
   'API/types',
@@ -42,25 +42,25 @@ const exactMapping = (root) =>
 const row = (id, overrides = {}) => {
   const cells = {
     'API/types':
-      'Slate stronger — `packages/slate/src/api.ts:10` preserves structural inference',
+      'Plite stronger — `packages/plite/src/api.ts:10` preserves structural inference',
     Classification:
-      'Slate stronger — `packages/slate/src/owner.ts:20` is the better base architecture',
+      'Plite stronger — `packages/plite/src/owner.ts:20` is the better base architecture',
     Concept: `Concept ${id}`,
     Correctness:
       'reference stronger — `../wordgard/src/owner.ts:20` centralizes the invariant',
     'Data/collab':
-      'Slate stronger — `packages/slate/src/change.ts:10` preserves multi-root JSON',
+      'Plite stronger — `packages/plite/src/change.ts:10` preserves multi-root JSON',
     ID: `\`${id}\``,
     'Local debt':
-      'material — `packages/slate/src/api.ts:10` leaves conflict cleanup to callers',
+      'material — `packages/plite/src/api.ts:10` leaves conflict cleanup to callers',
     Origin: 'reference',
     'Ownership/lifecycle':
       'reference stronger — `../wordgard/src/lifecycle.ts:40` owns conflict cleanup centrally',
     'Plate mapping':
-      'not-applicable — `VISION.md:10` assigns this substrate rule to Slate',
-    'Slate mapping': exactMapping('packages/slate/src'),
+      'not-applicable — `docs/vision/plate.md:10` assigns this substrate rule to Plite',
+    'Plite mapping': exactMapping('packages/plite/src'),
     'Preferred base':
-      'Slate — `packages/slate/src/change.ts:10` preserves the applicable local model',
+      'Plite — `packages/plite/src/change.ts:10` preserves the applicable local model',
     'Prior candidates':
       'none — [candidate search](docs/plans/audit.md#candidate-search) found no matching P0-P3 dossier',
     Priority: 'P1',
@@ -74,7 +74,7 @@ const row = (id, overrides = {}) => {
     'Runtime/perf':
       'equivalent — `benchmarks/editor/result.json` shows no material runtime difference',
     Verdict:
-      'rearchitect — keep the Slate base and move conflict ownership into its schema compiler',
+      'rearchitect — keep the Plite base and move conflict ownership into its schema compiler',
     ...overrides,
   };
 
@@ -90,31 +90,31 @@ const ledger = (...rows) =>
 
 const localOnlyOverrides = {
   'API/types':
-    'Slate stronger — `packages/slate/src/api.ts:10` owns the only applicable API',
+    'Plite stronger — `packages/plite/src/api.ts:10` owns the only applicable API',
   Classification:
-    'Slate stronger — `packages/slate/src/owner.ts:20` owns the complete local contract',
+    'Plite stronger — `packages/plite/src/owner.ts:20` owns the complete local contract',
   Correctness:
-    'Slate stronger — `packages/slate/src/owner.ts:20` enforces the local invariant',
+    'Plite stronger — `packages/plite/src/owner.ts:20` enforces the local invariant',
   'Data/collab':
-    'Slate stronger — `packages/slate/src/change.ts:10` owns the applicable data model',
+    'Plite stronger — `packages/plite/src/change.ts:10` owns the applicable data model',
   'Local debt':
-    'none — `packages/slate/src/owner.test.ts:50` covers the complete local contract',
-  Origin: 'Slate',
+    'none — `packages/plite/src/owner.test.ts:50` covers the complete local contract',
+  Origin: 'Plite',
   'Ownership/lifecycle':
-    'Slate stronger — `packages/slate/src/lifecycle.ts:40` owns local cleanup',
+    'Plite stronger — `packages/plite/src/lifecycle.ts:40` owns local cleanup',
   'Preferred base':
-    'Slate — `packages/slate/src/owner.ts:20` is the only applicable base',
+    'Plite — `packages/plite/src/owner.ts:20` is the only applicable base',
   Priority: '—',
   'Proof adaptation':
     'not-applicable — [reference proof scan](docs/plans/audit.md#reference-proof-scan) found no reference proof',
   'Proof/host':
-    'Slate stronger — `packages/slate/src/owner.test.ts:50` proves the local host contract',
+    'Plite stronger — `packages/plite/src/owner.test.ts:50` proves the local host contract',
   'Reference adaptation':
     'not-applicable — [reference source scan](docs/plans/audit.md#reference-source-scan) found no mechanism',
   'Reference mapping':
     'absent — [reference source scan](docs/plans/audit.md#reference-source-scan) found no matching owner',
   'Runtime/perf':
-    'Slate stronger — `benchmarks/editor/result.json` covers the only applicable runtime',
+    'Plite stronger — `benchmarks/editor/result.json` covers the only applicable runtime',
   Verdict: 'keep — the local owner covers the complete contract',
 };
 
@@ -158,17 +158,17 @@ test('accepts a stronger local base with adapted reference mechanisms', () => {
 
 test('accepts a local-only concept in the symmetric inventory', () => {
   const result = validateConceptMatrix({
-    ledger: ledger(row('SLATE-LOCAL-001', localOnlyOverrides)),
-    manifest: manifest([['SLATE-LOCAL-001', 'Slate']]),
+    ledger: ledger(row('PLITE-LOCAL-001', localOnlyOverrides)),
+    manifest: manifest([['PLITE-LOCAL-001', 'Plite']]),
   });
 
-  assert.deepEqual(result.origins.Slate, {
+  assert.deepEqual(result.origins.Plite, {
     count: 1,
-    ids: ['SLATE-LOCAL-001'],
+    ids: ['PLITE-LOCAL-001'],
   });
   assert.deepEqual(result.referenceAdaptations['not-applicable'], {
     count: 1,
-    ids: ['SLATE-LOCAL-001'],
+    ids: ['PLITE-LOCAL-001'],
   });
 });
 
@@ -198,10 +198,10 @@ test('rejects a row origin that contradicts the manifest', () => {
   assert.throws(
     () =>
       validateConceptMatrix({
-        ledger: ledger(row('WG-DOC-001', { Origin: 'Slate' })),
+        ledger: ledger(row('WG-DOC-001', { Origin: 'Plite' })),
         manifest: manifest([['WG-DOC-001', 'reference']]),
       }),
-    /Origin Slate contradicts manifest origin reference/
+    /Origin Plite contradicts manifest origin reference/
   );
 });
 
@@ -211,13 +211,13 @@ test('rejects exact mappings without the complete contract', () => {
       validateConceptMatrix({
         ledger: ledger(
           row('WG-DOC-001', {
-            'Slate mapping':
-              'exact — `packages/slate/src/owner.ts:20` owns the behavior',
+            'Plite mapping':
+              'exact — `packages/plite/src/owner.ts:20` owns the behavior',
           })
         ),
         manifest: manifest([['WG-DOC-001']]),
       }),
-    /Slate mapping exact contract must name evidence-backed public, owner, consumers, lifecycle, and proof/
+    /Plite mapping exact contract must name evidence-backed public, owner, consumers, lifecycle, and proof/
   );
 });
 
@@ -292,12 +292,12 @@ test('rejects a preferred base that contradicts classification or mapping', () =
             'Plate mapping':
               'absent — [Plate scan](docs/plans/audit.md#plate-scan) found no product owner',
             'Preferred base':
-              'Slate — `packages/slate/src/api.ts:10` has broader constraints',
+              'Plite — `packages/plite/src/api.ts:10` has broader constraints',
           })
         ),
         manifest: manifest([['WG-DOC-001']]),
       }),
-    /Classification cannot prefer Plate when Plate mapping is absent[\s\S]*Preferred base Slate contradicts Plate stronger/
+    /Classification cannot prefer Plate when Plate mapping is absent[\s\S]*Preferred base Plite contradicts Plate stronger/
   );
 });
 
@@ -322,12 +322,12 @@ test('rejects a priority on a non-material row', () => {
     () =>
       validateConceptMatrix({
         ledger: ledger(
-          row('SLATE-LOCAL-001', {
+          row('PLITE-LOCAL-001', {
             ...localOnlyOverrides,
             Priority: 'P2',
           })
         ),
-        manifest: manifest([['SLATE-LOCAL-001', 'Slate']]),
+        manifest: manifest([['PLITE-LOCAL-001', 'Plite']]),
       }),
     /non-material verdict requires priority —/
   );
@@ -344,7 +344,7 @@ test('rejects reference-stronger classification without adaptation', () => {
             'Preferred base':
               'reference — `../wordgard/src/owner.ts:20` owns the complete contract',
             'Reference adaptation':
-              'keep-local — `packages/slate/src/owner.ts:20` remains the current owner',
+              'keep-local — `packages/plite/src/owner.ts:20` remains the current owner',
           })
         ),
         manifest: manifest([['WG-DOC-001']]),
@@ -403,7 +403,7 @@ test('rejects the legacy one-sided matrix schema', () => {
     'ID',
     'Concept',
     'Reference owner/evidence',
-    'Slate mapping',
+    'Plite mapping',
     'Plate mapping',
     'Correctness',
     'API/types',

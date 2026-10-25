@@ -9,7 +9,7 @@ the core bigger or change how it behaves. You install an add-on only if you want
 
 | Add-on | What it does | Author | Tested on | Permissions | Screenshot |
 |---|---|---|---|---|---|
-| [Frigate Glance](frigate-glance/) | Frigate camera pop-ups over whatever is playing | [NickLD](https://github.com/NickLD) | TCL 65Q650G | overlay, accessibility (card keys), network, foreground service | wanted |
+| [Frigate Glance](frigate-glance/) | Frigate camera pop-ups over whatever is playing | [NickLD](https://github.com/NickLD) | TCL 65Q650G | overlay, accessibility (card keys), network, foreground service | <img src="frigate-glance/screenshot.jpg" width="240" alt="Frigate Glance on a TV"> |
 | [Capacity Stats](capacity-stats/) | Available/total and used/total RAM; available/total storage | [lionlev21](https://github.com/lionlev21) | Android TV 12 (model private) | None | wanted |
 | [Weather](weather/) | The weather for one city: now, US air quality and the next three days, from Open-Meteo (no key) | [@Sumyabazar1](https://github.com/Sumyabazar1) | Hisense SmartTV 4K FFM (lushan), Google TV 12 | `INTERNET` | <img src="weather/screenshot.jpg" width="240" alt="Weather on a TV"> |
 | [Photo Prints](photo-prints/) | Your own photos as a screensaver: dated prints dealt in on a time-of-day sky, and a card that starts the slideshow | [@shivamsingh262](https://github.com/shivamsingh262) | Sony BRAVIA KD-65X82L (Google TV 12) | None | wanted |
@@ -20,6 +20,14 @@ the core bigger or change how it behaves. You install an add-on only if you want
 | [TV Static](tv-static/) | An off-the-air moment each time the screen turns on: the picture opens from a bright line, snow and hiss, colour bars or an old "no signal" screen for 3 to 10 s, then fades into what was on screen; the card sets style, sound and length | [@luyzfernando08](https://github.com/luyzfernando08) | Xiaomi Mi Box S (Android TV 9), Philco by Skyworth (Android TV 14) | foreground service (screen-on watcher), start at boot, display over other apps | <img src="tv-static/screenshot.jpg" width="240" alt="TV Static on a TV"> |
 | [Brightness](brightness/) | Dims the picture below the TV's own minimum over every app (and the picture settings on Realtek TVs), with a warm night mode on a schedule and a one-press normal screen | [@maxhayim](https://github.com/maxhayim) | MOKA R8G (Android 14) | overlay, foreground service, start at boot | <img src="brightness/screenshot.jpg" width="240" alt="Brightness on a TV"> |
 | [Sleep Timer](sleep-timer/) | A sleep timer: 15 to 120 minutes, a one-minute countdown over what is playing with "15 more minutes", then standby; over HDMI-CEC the TV turns off with the box | [@luyzfernando08](https://github.com/luyzfernando08) | Xiaomi Mi Box S (Android TV 9) | accessibility (lock-screen action only), display over other apps, exact alarms | <img src="sleep-timer/screenshot.jpg" width="240" alt="Sleep Timer on a TV"> |
+| [Quiet Hours](quiet-hours/) | A volume cap for the night (or all day): the volume is brought back down to the cap whenever it goes above, a muted TV is left alone, headphones can stay uncapped | [@maxhayim](https://github.com/maxhayim) | MOKA R8G (Android 14) | foreground service, start at boot | <img src="quiet-hours/screenshot.jpg" width="240" alt="Quiet Hours on a TV"> |
+| [Remote Access](remote-access/) | Whether the TV is open to remote control: network debugging (ADB) and its port, the TV's address, Tailscale, and a button that switches network debugging off | [@maxhayim](https://github.com/maxhayim) | MOKA R8G (Android 14) | network state; `WRITE_SECURE_SETTINGS` granted by ADB, only for the off button | <img src="remote-access/screenshot.jpg" width="240" alt="Remote Access on a TV"> |
+| [AirPlay Status](airplay-status/) | How iPhones and Macs see this TV: its AirPlay name, screen mirroring offered or audio only (and why), and the other AirPlay receivers on the network | [@maxhayim](https://github.com/maxhayim) | MOKA R8G (Android 14) | network (mDNS listening only), network state | <img src="airplay-status/screenshot.jpg" width="240" alt="AirPlay Status on a TV"> |
+| [Sources](sources/) | The TV's sources by the names devices give themselves over HDMI-CEC ("PlayStation 5", not "HDMI 2"), with their state, and Live TV; OK switches | [@maxhayim](https://github.com/maxhayim) | MOKA R8G (Android 14) | None | <img src="sources/screenshot.jpg" width="240" alt="Sources on a TV"> |
+| [Smart Home](smart-home/) | Home Assistant on the TV: scenes, lights and switches (OK toggles, left and right dim), climate, temperature and humidity, doors and windows, and locks shown but never opened | [@maxhayim](https://github.com/maxhayim) | MOKA R8G (Android 14) | `INTERNET` (your Home Assistant only) | <img src="smart-home/screenshot.jpg" width="240" alt="Smart Home on a TV"> |
+| [Ad Blocking](ad-blocking/) | Your Pi-hole (6 or 5) or AdGuard Home on the TV: today's queries and blocked share, and one OK to pause blocking for five minutes | [@maxhayim](https://github.com/maxhayim) | MOKA R8G (Android 14) | `INTERNET` (your blocker only) | <img src="ad-blocking/screenshot.jpg" width="240" alt="Ad Blocking on a TV"> |
+| [World Clock](world-clock/) | One to six offline clocks with dates, UTC offsets and day differences; city search and D-pad controls | [@SaviorOneZero](https://github.com/SaviorOneZero) | Samsung C71KW-200 / AT&T Osprey (Android TV 11) | None | <img src="world-clock/screenshot.jpg" width="240" alt="World Clock on a TV"> |
+| [Flock](flock/) | An interactive flocking simulation using separation, alignment and cohesion, controlled with the TV remote | CleanYourTV contributors | TCL 32S5K (Android TV 14) | None | <img src="flock/screenshot.jpg" width="240" alt="Flock on TCL Android TV"> |
 
 A widget, an info tile, a storage or smart-home card: if it can live as its own small app, it can live
 here. See the rules below.
@@ -78,6 +86,13 @@ sdk.dir=C:/Users/<user name>/AppData/Local/Android/Sdk
 
 </details>
 
+Or let `tools/manage.py` do it the creator's way: it lists every add-on with its screenshot, shows which are on
+the TV, and installs, updates or removes one by running the add-on's own `install.sh` or `build-and-install.sh`
+(or the three steps above when it has none):
+```bash
+tools/venv/bin/python -I tools/manage.py list addons
+TV_HOST=<tv ip> tools/venv/bin/python -I tools/manage.py status
+TV_HOST=<tv ip> tools/venv/bin/python -I tools/manage.py install weather
 ## Rules
 
 - **Its own app.** One folder per add-on, `addons/<name>/`, with its own Gradle project

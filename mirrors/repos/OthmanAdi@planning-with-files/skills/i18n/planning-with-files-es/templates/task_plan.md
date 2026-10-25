@@ -18,7 +18,7 @@ Fase 1
 
 Divide la tarea en entre 3 y 7 fases que puedan completarse. Actualiza el estado de cada fase con uno de estos valores: `pending`, `in_progress` o `complete`.
 
-### Fase 1: Requisitos y Descubrimiento
+### Phase 1: Requisitos y Descubrimiento
 
 Comprende qué se necesita y reúne la información inicial antes de implementar.
 
@@ -27,7 +27,7 @@ Comprende qué se necesita y reúne la información inicial antes de implementar
 - [ ] Documentar hallazgos en findings.md
 - **Estado:** in_progress
 
-### Fase 2: Planificación y Estructura
+### Phase 2: Planificación y Estructura
 
 Define el enfoque, la estructura y las decisiones técnicas necesarias.
 
@@ -36,7 +36,7 @@ Define el enfoque, la estructura y las decisiones técnicas necesarias.
 - [ ] Documentar decisiones con su justificación
 - **Estado:** pending
 
-### Fase 3: Implementación
+### Phase 3: Implementación
 
 Ejecuta el plan en pasos pequeños y verifica el trabajo de forma incremental.
 
@@ -45,7 +45,7 @@ Ejecuta el plan en pasos pequeños y verifica el trabajo de forma incremental.
 - [ ] Probar incrementalmente
 - **Estado:** pending
 
-### Fase 4: Pruebas y Verificación
+### Phase 4: Pruebas y Verificación
 
 Comprueba que la solución cumple los requisitos y registra los resultados.
 
@@ -54,7 +54,7 @@ Comprueba que la solución cumple los requisitos y registra los resultados.
 - [ ] Corregir cualquier problema encontrado
 - **Estado:** pending
 
-### Fase 5: Entrega
+### Phase 5: Entrega
 
 Revisa los entregables antes de presentarlos al usuario.
 

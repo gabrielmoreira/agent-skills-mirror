@@ -2,7 +2,7 @@
 name: zcf-add-sponsor
 description: Quickly add a new corporate sponsor to ZCF — sponsor list by default, with optional API preset and documentation ad placements
 disable-model-invocation: true
-allowed-tools: Read(**), Write(**), Edit(**), Exec(ls, cat, grep, rg, sed, awk, file, mv, pnpm, node, git)
+allowed-tools: Read, Write, Edit, Grep, Glob, Bash(ls:*), Bash(rg:*), Bash(pnpm:*), Bash(git:*)
 ---
 
 # ZCF Add Sponsor — Quick Sponsor Onboarding
@@ -30,7 +30,7 @@ Quickly onboard a new **corporate sponsor** across the ZCF project: README spons
 - `--name <name>` — Display name (e.g. `FooAI`)
 - `--url <url>` — Affiliate/registration URL (used in every link)
 - `--id <provider-id>` — API provider id, kebab-case (only required with `--with-api`, e.g. `fooai`)
-- `--logo <path>` — Local logo path under `src/assets/` (only required with `--with-ad`, e.g. `./src/assets/fooai.png`)
+- `--logo <path>` — Local logo path under `assets/` (only required with `--with-ad`, e.g. `./assets/fooai.png`)
 - `--badge <emoji>` — Trailing emoji badge for the list bullet (default: `🎁`)
 
 ## Context
@@ -39,8 +39,8 @@ Quickly onboard a new **corporate sponsor** across the ZCF project: README spons
 - **API preset format**: Match the existing `ApiProviderPreset` interface in `src/config/api-providers.ts`. Ask the user about `baseUrl`, `authType`, `wireApi`, `defaultModels`, and which code tools are supported (`claude-code`, `codex`, or both).
 - **Ad cards**: Mirror the existing AICodeMirror / Crazyrouter card layout exactly — `<table><tr><td width="180"><a><img></a></td><td>...description...</td></tr></table>`, appended **after** the last existing sponsor card and **before** the next `##` heading.
 - **Image paths**:
-  - In `README*.md` use relative path `./src/assets/<file>`
-  - In `docs/*/index.md` use absolute GitHub raw URL `https://raw.githubusercontent.com/UfoMiao/zcf/main/src/assets/<file>`
+  - In `README*.md` use relative path `./assets/<file>`
+  - In `docs/*/index.md` use absolute GitHub raw URL `https://raw.githubusercontent.com/UfoMiao/zcf/main/assets/<file>`
 - **Trilingual descriptions**: Always generate three localized descriptions (zh-CN / en / ja-JP). Translate from the user-provided source description while preserving brand names, URLs, and discount numbers verbatim.
 
 ## Your Role
@@ -69,7 +69,7 @@ Validation:
     Provider id MUST be kebab-case, lowercase, unique across existing ids in src/config/api-providers.ts
   - If WITH_AD: LOGO_PATH required → if missing, prompt user.
     Verify the logo file exists at the given path (relative to repo root).
-    If not, instruct the user to place the logo under src/assets/ first and abort.
+    If not, instruct the user to place the logo under assets/ first and abort.
 ```
 
 ### 2. Collect missing sponsor information (interactive)
@@ -121,12 +121,12 @@ For each of the six files below, locate the existing sponsor card table and **ap
 
 | File | Image path prefix |
 |------|-------------------|
-| `README.md` | `./src/assets/` |
-| `README_zh-CN.md` | `./src/assets/` |
-| `README_ja-JP.md` | `./src/assets/` |
-| `docs/en/index.md` | `https://raw.githubusercontent.com/UfoMiao/zcf/main/src/assets/` |
-| `docs/zh-CN/index.md` | `https://raw.githubusercontent.com/UfoMiao/zcf/main/src/assets/` |
-| `docs/ja-JP/index.md` | `https://raw.githubusercontent.com/UfoMiao/zcf/main/src/assets/` |
+| `README.md` | `./assets/` |
+| `README_zh-CN.md` | `./assets/` |
+| `README_ja-JP.md` | `./assets/` |
+| `docs/en/index.md` | `https://raw.githubusercontent.com/UfoMiao/zcf/main/assets/` |
+| `docs/zh-CN/index.md` | `https://raw.githubusercontent.com/UfoMiao/zcf/main/assets/` |
+| `docs/ja-JP/index.md` | `https://raw.githubusercontent.com/UfoMiao/zcf/main/assets/` |
 
 **Card template (reference, fill brackets per locale):**
 
@@ -164,17 +164,17 @@ Edit `src/config/api-providers.ts`. Append a new object to the `API_PROVIDER_PRE
   },
 ```
 
-Then run `pnpm typecheck` to confirm no type errors. If the project has corresponding tests for `getValidProviderIds()` or fixtures, surface them in the summary so the user can update tests if needed.
+Then run `pnpm typecheck` and `pnpm vitest run tests/unit/config/api-providers.test.ts`.
 
 ### 7. Validation
 
 ```text
 ✓ List bullets present in all 3 READMEs (or skipped due to existing entry)
 ✓ If --with-ad: card rows present in all 6 target files (or skipped)
-✓ If --with-api: new preset object syntactically valid; pnpm typecheck passes
+✓ If --with-api: pnpm typecheck and the api-providers test pass
 ✓ No duplicate ids in API_PROVIDER_PRESETS
 ✓ All URLs identical across files
-✓ Logo file exists at src/assets/<filename> when --with-ad is used
+✓ Logo file exists at assets/<filename> when --with-ad is used
 ```
 
 ### 8. Summary report
@@ -211,8 +211,8 @@ Next steps:
 - **NEVER** modify any sponsor entries other than the ones being added
 - **NEVER** reorder existing sponsors
 - **ALWAYS** keep the three locale READMEs in sync (same bullet count, same URL, semantically equivalent text)
-- **ALWAYS** verify logo file existence under `src/assets/` before writing ad cards
-- **ALWAYS** validate the API preset by running `pnpm typecheck` after editing
+- **ALWAYS** verify logo file existence under `assets/` before writing ad cards
+- **ALWAYS** validate the API preset with `pnpm typecheck` and the api-providers test after editing
 - **DO NOT** create commits or push — leave that to the user / `/zcf-pr`
 - **DO NOT** invent new section headings; reuse the exact existing ones (`【Corporate Sponsors】` / `【企业赞助商】` / `【企業スポンサー】`)
 

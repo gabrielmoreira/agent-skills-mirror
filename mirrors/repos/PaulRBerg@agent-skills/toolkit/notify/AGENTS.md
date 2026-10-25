@@ -19,25 +19,27 @@ platform-independent. Run validation locally with the workspace's nightly Rust t
 
 ## Architecture and Invariants
 
-- Commands under `ai-notify event` read hook JSON from stdin. `event codex` handles native `UserPromptSubmit` and
-  `Stop`, tracking prompts under a `codex:<session_id>:<turn_id>` key in the existing SQLite schema. The legacy
-  `ai-notify codex` callback accepts JSON as its final argument or via `--stdin` without creating a tracked SQLite
-  session.
+- Commands under `ai-notify event` read hook JSON from stdin. `event codex` handles native `UserPromptSubmit`, `Stop`,
+  `PermissionRequest`, `PreToolUse`, and `Interrupt`. It tracks prompts under a `codex:<session_id>:<turn_id>` key in
+  the existing SQLite schema. The legacy `ai-notify codex` callback accepts JSON as its final argument or via `--stdin`
+  without creating a tracked SQLite session.
 - Hook event commands (`ai-notify event ...` and the legacy `ai-notify codex` callback) never exit 2 on an invalid
   payload. Parse and validation failures there exit 1. Claude Code and Codex treat a hook's exit 2 as a blocking
   decision. For example, Stop would keep the agent going and PreToolUse would block the tool. Only clap CLI usage
   errors, a missing or blank `ai-notify codex` payload, and non-hook commands (`config`, `link`, `check`, `cleanup`,
   `test`) still use exit 2.
-- `integrations::CODEX_HOOK_EVENTS` lists the native Codex events `check` requires for `ai-notify event codex`.
 - `integrations::HOOK_SPECS` is the source of truth for installed Claude hooks. The integration inspector derives its
-  required event set from that list so `link claude` and `check` stay aligned.
+  required event set from that list so `link claude` and `check` stay aligned. `CODEX_HOOK_SPECS` defines all five
+  native Codex hooks. `CODEX_HOOK_EVENTS` retains the two required completion events.
 - Preserve unrelated settings and hooks when changing integration writers. `link codex` must continue to refuse a
   different root `notify` value unless forced. Profile names resolve to sibling `<profile>.config.toml` files.
 - Configuration respects `XDG_CONFIG_HOME` and defaults to `~/.config/ai-notify`. `ConfigLoader` caches the loaded
   configuration for its own lifetime (one load per CLI invocation).
 - Claude `Stop` defers completion while `background_tasks` or `session_crons` are present. `StopFailure` alerts only in
   `all` mode and bypasses duration and prompt filters. Both Codex integrations omit duration filtering, suppress
-  internal title-generation prompts, and apply notification mode and prompt-prefix exclusions.
+  internal title-generation prompts, and apply notification mode and prompt-prefix exclusions to completion alerts.
+  Attention alerts use `all` and `permission_only` modes without duration or prompt filters. `disabled` suppresses every
+  alert. Codex `Interrupt` only marks the tracked turn stopped and sends no alert.
 - SQLite uses WAL mode with `synchronous=NORMAL`. Session data is intentionally transient rather than strictly durable.
 
 ## Testing
@@ -81,7 +83,7 @@ cargo install --git https://github.com/PaulRBerg/agent-skills ai-notify --locked
 ```
 
 Re-run the command to update. Installation targets `~/.local/bin`. Configure integrations separately with
-`ai-notify link claude` or `ai-notify link codex`.
+`ai-notify link claude`, `ai-notify link codex-hooks`, or the legacy `ai-notify link codex`.
 
 ### Development
 
@@ -113,7 +115,7 @@ ai-notify was inspired by [CCNotify](https://github.com/dazuiba/CCNotify). It di
 
 - **Independent CLI** — ai-notify runs as a standalone Rust binary instead of a script symlink.
 - **Fully configurable** — ai-notify uses YAML config with `ai-notify config` commands.
-- **More events** — ai-notify adds `PermissionRequest`, `StopFailure`, and an AskUserQuestion notifier (6 hooks vs 3).
+- **More events** — ai-notify adds permission, API failure, question, and MCP elicitation alerts.
 - **Smart filtering** — ai-notify provides a configurable duration threshold and prompt exclusion patterns.
 - **Notification modes** — ai-notify supports all/permission_only/disabled.
 
@@ -229,9 +231,12 @@ ai-notify event permission-request < event_data.json
 
 # Notify when Claude asks a question (PreToolUse / AskUserQuestion)
 ai-notify event ask-user-question < event_data.json
+
+# Notify when an MCP server requests input
+ai-notify event elicitation < event_data.json
 ```
 
-For Codex CLI, use `ai-notify codex` via the `notify` setting (see below).
+For native Codex hooks, use `ai-notify event codex`. The legacy `notify` setting uses `ai-notify codex` (see below).
 
 ### Claude Code Hook Integration
 
@@ -259,6 +264,7 @@ The resulting `hooks` section uses Claude Code's nested schema (each event maps 
     "Stop": [{ "hooks": [{ "type": "command", "command": "ai-notify event stop" }] }],
     "StopFailure": [{ "hooks": [{ "type": "command", "command": "ai-notify event stop-failure" }] }],
     "Notification": [{ "hooks": [{ "type": "command", "command": "ai-notify event notification" }] }],
+    "Elicitation": [{ "hooks": [{ "type": "command", "command": "ai-notify event elicitation" }] }],
     "PermissionRequest": [{ "hooks": [{ "type": "command", "command": "ai-notify event permission-request" }] }],
     "PreToolUse": [
       {
@@ -279,33 +285,57 @@ failed and, in `all` mode, alerts immediately without applying the duration thre
 `Stop` events do not complete the tracked prompt while the payload lists background tasks or session crons. A user
 interrupt fires neither `Stop` nor `StopFailure`, so it cannot produce a completion notification.
 
+Claude `Notification` alerts on `agent_needs_input`, `quota_auto_resume_stale`, and `quota_auto_resume_disabled`. It
+suppresses `idle_prompt`, `permission_prompt`, `auth_success`, and unknown types. `PermissionRequest` supplies approval
+alerts. Delayed approval reminders stay suppressed to avoid duplicate alerts. Claude sandbox network approvals emit only
+`permission_prompt`, so this integration does not cover them. `Elicitation` reports MCP server input requests. Re-run
+`ai-notify link claude` to add its hook.
+
 ### Codex CLI Integration
 
 #### Native hooks
 
-For Codex versions supporting native hooks, merge these handlers into `~/.codex/hooks.json`, preserving existing hooks:
+Install passive native hook definitions with:
 
-```json
-{
-  "hooks": {
-    "UserPromptSubmit": [{ "hooks": [{ "type": "command", "command": "ai-notify event codex", "timeout": 5 }] }],
-    "Stop": [{ "hooks": [{ "type": "command", "command": "ai-notify event codex", "timeout": 5 }] }]
-  }
-}
+```bash
+ai-notify link codex-hooks
+ai-notify link codex-hooks --dry-run
+ai-notify link codex-hooks --path /path/to/hooks.json
 ```
 
-Review and trust the two exact definitions through Codex's `/hooks` interface. Remove ai-notify from the legacy `notify`
-callback to prevent duplicate notifications. If Codex Desktop owns a `SkyComputerUseClient` wrapper, preserve the
-wrapper and remove only its ai-notify `--previous-notify` forwarding arguments.
+The default path is `$CODEX_HOME/hooks.json` when `CODEX_HOME` is nonempty, otherwise `~/.codex/hooks.json`. The command
+preserves unrelated root keys, events, and handlers. It rejects malformed JSON or hook containers without writing.
+Re-run it to add missing coverage to an existing setup. If coverage is missing, the installer consolidates identical
+ai-notify handlers into one group with the required matcher. It preserves their command path, timeout, and other
+options. It removes only those handler elements from their old groups, preserving unrelated handlers and group fields.
+If owned handler definitions differ, it refuses the update without writing. Make their command and options identical
+before retrying. Equivalent coverage stays unchanged, including timeouts. The command changes neither trust settings nor
+the legacy `notify` callback.
 
-`UserPromptSubmit` retains task context for `Stop`. ai-notify ignores a repeated stop for a tracked turn. If no prompt
-was recorded, such as when hooks are installed during a turn, the completion still reports the available result. Native
-hooks preserve the Codex notification mode and prompt-prefix filters and do not apply `threshold_seconds`.
+| Event               | Matcher                | Timeout   | Purpose                            |
+| ------------------- | ---------------------- | --------- | ---------------------------------- |
+| `UserPromptSubmit`  | None                   | 5 seconds | Track turn context                 |
+| `Stop`              | None                   | 5 seconds | Send completion alerts             |
+| `PermissionRequest` | None                   | 5 seconds | Send approval alerts for all tools |
+| `PreToolUse`        | `^request_user_input$` | 5 seconds | Send question alerts               |
+| `Interrupt`         | None                   | 1 second  | Stop tracking without an alert     |
 
-Codex 0.155.1 disables native hooks in internal title-generation threads, so those threads never invoke these handlers.
-See the [native hook contract](https://learn.chatgpt.com/docs/hooks). Use `/hooks` to review trust for this integration.
-`ai-notify check` reports these handlers from `~/.codex/hooks.json`, and `ai-notify link codex` configures only the
-legacy callback described below.
+Every definition runs `ai-notify event codex`. The handler writes no approval decision and keeps stdout empty. Review
+and trust new or changed definitions through Codex's `/hooks` interface. Definition changes invalidate prior trust, so
+installation does not prove activation. An unchanged definition retains its existing trust state.
+
+Remove only ai-notify from the legacy `notify` callback to prevent duplicate completion alerts. If Codex Desktop owns a
+`SkyComputerUseClient` wrapper, preserve the wrapper and remove only its ai-notify `--previous-notify` forwarding
+arguments. `ai-notify check` reports possible duplicate completion setup without changing it.
+
+`UserPromptSubmit` retains task context for later events. ai-notify ignores a repeated stop for a tracked turn. If no
+prompt was recorded, the completion still reports the available result. Native completion alerts preserve the Codex
+notification mode and prompt-prefix filters and do not apply `threshold_seconds`.
+
+`PreToolUse` observes attempted `request_user_input` calls before the tool validates or displays the questions. It does
+not prove that the user saw a question. Only `request_user_input` has question support. This integration does not cover
+other connector input paths or MCP elicitations. See the [native hook contract](https://learn.chatgpt.com/docs/hooks).
+`ai-notify link codex` continues to configure only the legacy callback described below.
 
 #### Legacy notify callback
 
@@ -371,11 +401,20 @@ ai-notify check
 ai-notify check --profile review
 ```
 
-Codex is OK when either mechanism is fully configured: `~/.codex/hooks.json` has `ai-notify event codex` command
-handlers for both `UserPromptSubmit` and `Stop` (any matcher, since Codex ignores it for those events), or the effective
-legacy `notify` runs `ai-notify codex`. The output lists each contributing source and any missing native hook event. A
-malformed `hooks.json` or Codex config, or a missing profile file, reports `ERROR` and exits 1. Inline `[hooks]` tables
-and project `.codex/hooks.json` files are not inspected.
+Codex is OK when either completion mechanism is fully configured: user `hooks.json` has `ai-notify event codex` command
+handlers for `UserPromptSubmit` and `Stop`, or the effective legacy `notify` runs `ai-notify codex`. Codex ignores
+matchers for those two lifecycle events. Existing completion-only setups remain OK.
+
+The checker separately reports optional `PermissionRequest`, `PreToolUse`, and `Interrupt` coverage. Permission coverage
+requires an all-tool matcher. Question coverage accepts an all-tool matcher, `request_user_input`, or
+`^request_user_input$`. The checker recognizes absent, null, empty, `*`, `.*`, and `^.*$` as all-tool matchers. It does
+not infer coverage from other regular expressions. The installer consolidates identical ai-notify handlers when it
+changes a narrower matcher, so one tool invocation does not run both old and new handlers.
+
+`check` resolves Codex paths from nonempty `CODEX_HOME`, otherwise `~/.codex`. It inspects only user `hooks.json` and
+the base config with any selected profile. It does not inspect inline hooks or project `.codex/hooks.json` files. Static
+definitions do not prove effective enablement or trust. Review those states through `/hooks` in Codex. Malformed JSON,
+hook containers, or Codex config, and missing profile files report `ERROR` and exit 1.
 
 ### How It Works
 
@@ -390,12 +429,13 @@ and project `.codex/hooks.json` files are not inspected.
 3. **StopFailure**: When an API error ends the turn, ai-notify marks the prompt stopped and sends the task, duration,
    and documented error text in `all` mode, even for short or excluded prompts. If the prompt was not tracked, ai-notify
    sends a generic failure notification.
-4. **Notification**: ai-notify detects "waiting for input" notifications (via the `idle_prompt` notification type, with
-   a keyword fallback) and suppresses them. The Stop handler sends the job-completion notification.
+4. **Notification**: ai-notify alerts when Claude needs input or cannot resume after a quota pause. It suppresses idle
+   notifications and delayed approval reminders to avoid duplicate alerts.
 5. **PermissionRequest**: ai-notify sends the current task and the command, path, URL, query, or description that needs
    approval.
 6. **PreToolUse / AskUserQuestion**: ai-notify sends the current task, first question, and count of any remaining
    questions.
+7. **Elicitation**: ai-notify reports MCP input requests with the current task and server name when available.
 
 Notifications use the project as the title and the agent state as the subtitle. Prompt sequence numbers remain in the
 transient session database but are not displayed. Task excerpts are capped at 100 characters and result, error, request,

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `kenjudy/pdca-agentic-coding-framework` — 26 default patterns, 3 followed patterns, 99 file(s) materialized.
+Mirror of `kenjudy/pdca-agentic-coding-framework` — 26 default patterns, 3 followed patterns, 104 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `kenjudy/pdca-agentic-coding-framework` — 26 default patterns, 3 fol
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 3 |
-| Files         | 99 |
+| Files         | 104 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -128,38 +128,43 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 65 | ✓ | [`skill/pdca-framework/SKILL.md`](skill/pdca-framework/SKILL.md) |
 | 66 | ✓ | [`skill/pdca-framework/superpowers-addon/sources/superpowers-setup.md`](skill/pdca-framework/superpowers-addon/sources/superpowers-setup.md) |
 | 67 | ✓ | [`skill/pdca-framework/superpowers-addon/sources/superpowers-workflow.md`](skill/pdca-framework/superpowers-addon/sources/superpowers-workflow.md) |
-| 68 | ✓ | [`skill/promote_baseline.py`](skill/promote_baseline.py) |
-| 69 | ✓ | [`skill/pyproject.toml`](skill/pyproject.toml) |
-| 70 | ✓ | [`skill/README.md`](skill/README.md) |
-| 71 | ✓ | [`skill/run-ab-eval.sh`](skill/run-ab-eval.sh) |
-| 72 | ✓ | [`skill/run-evals.sh`](skill/run-evals.sh) |
-| 73 | ✓ | [`skill/run-tests.sh`](skill/run-tests.sh) |
-| 74 | ✓ | [`skill/SUPERVISION-PROTOCOL.md`](skill/SUPERVISION-PROTOCOL.md) |
-| 75 | ✓ | [`skill/tests/fixtures/rubric_criteria_snapshot.json`](skill/tests/fixtures/rubric_criteria_snapshot.json) |
-| 76 | ✓ | [`skill/tests/test_abstats.py`](skill/tests/test_abstats.py) |
-| 77 | ✓ | [`skill/tests/test_aggregate.py`](skill/tests/test_aggregate.py) |
-| 78 | ✓ | [`skill/tests/test_build.py`](skill/tests/test_build.py) |
-| 79 | ✓ | [`skill/tests/test_builder.py`](skill/tests/test_builder.py) |
-| 80 | ✓ | [`skill/tests/test_changelog_guard.py`](skill/tests/test_changelog_guard.py) |
-| 81 | ✓ | [`skill/tests/test_commands.py`](skill/tests/test_commands.py) |
-| 82 | ✓ | [`skill/tests/test_eval_imports.py`](skill/tests/test_eval_imports.py) |
-| 83 | ✓ | [`skill/tests/test_eval_ran.py`](skill/tests/test_eval_ran.py) |
-| 84 | ✓ | [`skill/tests/test_evals_reporter.py`](skill/tests/test_evals_reporter.py) |
-| 85 | ✓ | [`skill/tests/test_evals.py`](skill/tests/test_evals.py) |
-| 86 | ✓ | [`skill/tests/test_executor.py`](skill/tests/test_executor.py) |
-| 87 | ✓ | [`skill/tests/test_judge_variance_190.py`](skill/tests/test_judge_variance_190.py) |
-| 88 | ✓ | [`skill/tests/test_judge_variance_logic.py`](skill/tests/test_judge_variance_logic.py) |
-| 89 | ✓ | [`skill/tests/test_judges.py`](skill/tests/test_judges.py) |
-| 90 | ✓ | [`skill/tests/test_mechanical.py`](skill/tests/test_mechanical.py) |
-| 91 | ✓ | [`skill/tests/test_promote_baseline.py`](skill/tests/test_promote_baseline.py) |
-| 92 | ✓ | [`skill/tests/test_release_version.py`](skill/tests/test_release_version.py) |
-| 93 | ✓ | [`skill/tests/test_rubrics.py`](skill/tests/test_rubrics.py) |
-| 94 | ✓ | [`skill/tests/test_schema.py`](skill/tests/test_schema.py) |
-| 95 | ✓ | [`skill/typecheck.sh`](skill/typecheck.sh) |
-| 96 | ✓ | [`skill/uv.lock`](skill/uv.lock) |
-| 97 | → | [`CHEATSHEET.md`](CHEATSHEET.md) |
-| 98 | → | [`plugins/pdca/README.md`](plugins/pdca/README.md) |
-| 99 | → | [`README.md`](README.md) |
+| 68 | ✓ | [`skill/pdca-framework/tutorial-addon/sources/act-tutorial-addon.md`](skill/pdca-framework/tutorial-addon/sources/act-tutorial-addon.md) |
+| 69 | ✓ | [`skill/pdca-framework/tutorial-addon/sources/check-tutorial-addon.md`](skill/pdca-framework/tutorial-addon/sources/check-tutorial-addon.md) |
+| 70 | ✓ | [`skill/pdca-framework/tutorial-addon/sources/do-tutorial-addon.md`](skill/pdca-framework/tutorial-addon/sources/do-tutorial-addon.md) |
+| 71 | ✓ | [`skill/pdca-framework/tutorial-addon/sources/plan-tutorial-addon.md`](skill/pdca-framework/tutorial-addon/sources/plan-tutorial-addon.md) |
+| 72 | ✓ | [`skill/pdca-framework/tutorial-addon/sources/tutorial-setup.md`](skill/pdca-framework/tutorial-addon/sources/tutorial-setup.md) |
+| 73 | ✓ | [`skill/promote_baseline.py`](skill/promote_baseline.py) |
+| 74 | ✓ | [`skill/pyproject.toml`](skill/pyproject.toml) |
+| 75 | ✓ | [`skill/README.md`](skill/README.md) |
+| 76 | ✓ | [`skill/run-ab-eval.sh`](skill/run-ab-eval.sh) |
+| 77 | ✓ | [`skill/run-evals.sh`](skill/run-evals.sh) |
+| 78 | ✓ | [`skill/run-tests.sh`](skill/run-tests.sh) |
+| 79 | ✓ | [`skill/SUPERVISION-PROTOCOL.md`](skill/SUPERVISION-PROTOCOL.md) |
+| 80 | ✓ | [`skill/tests/fixtures/rubric_criteria_snapshot.json`](skill/tests/fixtures/rubric_criteria_snapshot.json) |
+| 81 | ✓ | [`skill/tests/test_abstats.py`](skill/tests/test_abstats.py) |
+| 82 | ✓ | [`skill/tests/test_aggregate.py`](skill/tests/test_aggregate.py) |
+| 83 | ✓ | [`skill/tests/test_build.py`](skill/tests/test_build.py) |
+| 84 | ✓ | [`skill/tests/test_builder.py`](skill/tests/test_builder.py) |
+| 85 | ✓ | [`skill/tests/test_changelog_guard.py`](skill/tests/test_changelog_guard.py) |
+| 86 | ✓ | [`skill/tests/test_commands.py`](skill/tests/test_commands.py) |
+| 87 | ✓ | [`skill/tests/test_eval_imports.py`](skill/tests/test_eval_imports.py) |
+| 88 | ✓ | [`skill/tests/test_eval_ran.py`](skill/tests/test_eval_ran.py) |
+| 89 | ✓ | [`skill/tests/test_evals_reporter.py`](skill/tests/test_evals_reporter.py) |
+| 90 | ✓ | [`skill/tests/test_evals.py`](skill/tests/test_evals.py) |
+| 91 | ✓ | [`skill/tests/test_executor.py`](skill/tests/test_executor.py) |
+| 92 | ✓ | [`skill/tests/test_judge_variance_190.py`](skill/tests/test_judge_variance_190.py) |
+| 93 | ✓ | [`skill/tests/test_judge_variance_logic.py`](skill/tests/test_judge_variance_logic.py) |
+| 94 | ✓ | [`skill/tests/test_judges.py`](skill/tests/test_judges.py) |
+| 95 | ✓ | [`skill/tests/test_mechanical.py`](skill/tests/test_mechanical.py) |
+| 96 | ✓ | [`skill/tests/test_promote_baseline.py`](skill/tests/test_promote_baseline.py) |
+| 97 | ✓ | [`skill/tests/test_release_version.py`](skill/tests/test_release_version.py) |
+| 98 | ✓ | [`skill/tests/test_rubrics.py`](skill/tests/test_rubrics.py) |
+| 99 | ✓ | [`skill/tests/test_schema.py`](skill/tests/test_schema.py) |
+| 100 | ✓ | [`skill/typecheck.sh`](skill/typecheck.sh) |
+| 101 | ✓ | [`skill/uv.lock`](skill/uv.lock) |
+| 102 | → | [`CHEATSHEET.md`](CHEATSHEET.md) |
+| 103 | → | [`plugins/pdca/README.md`](plugins/pdca/README.md) |
+| 104 | → | [`README.md`](README.md) |
 
 ---
 

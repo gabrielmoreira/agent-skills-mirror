@@ -41,6 +41,35 @@ SQLite CLI 性能。仅减少请求次数不能证明性能收益。
 guard、格式和 typed owner。这不新增领域规则、桥接操作或数据缓存。增量资格验证
 单独计入待合入的 quota 请求作用域接入，避免重复计算其收益。
 
+### Agent 协作 CLI 调用者接入
+
+`agent-context`、`agent-directory` 和 `agent-capabilities` 现在使用既有按命令 parser
+和共享 dispatcher。完整 parser 的兼容调用者复用相同 dispatcher，旧 handler 分支
+已删除。各命令保留原有注册、handler、registry/runtime 解析、native-controller
+guard 和输出。Dispatcher 复用既有 executable-revision 请求作用域；源数据与
+capability 观察仍实时读取。这不新增 module、桥接、语义 owner 或状态缓存。
+这是有界调用者接入，不证明 peer 执行、模型结果或完整原生 CLI 已通过资格验证。
+
+### Lifecycle CLI 调用者接入
+
+`refresh-state`、`checkpoint-context`、`read-only-map`、`reward` 和
+`operator-gate` 复用按命令 parser 和共享 dispatcher。两个 CLI 入口使用既有
+lifecycle 注册、handler 和 writeback-hook 组合；旧的完整 CLI 分发分支已删除。
+命令集合由路由持有，lifecycle module 的旧 import 仍可使用它。Help、诊断、
+registry/runtime 选择和 native-controller guard 保持既有路径。这不新增领域规则、
+桥接操作或状态缓存。完整命令成本及真实写入／恢复行为与 import 计时分别验证；
+安装后行为和真实 provider 行为仍需各自的证据。
+
+### Handoff CLI 调用者接入
+
+`handoff` 和 `handoff-mode` 复用现有 selected parser 与共享 dispatcher。
+完整兼容 CLI 调用相同且未改动的处理器，原有 continuation 和 mode 分发块已删除。
+每条命令进入既有可执行版本请求 scope；registry、provider、workspace 和 authority
+观察仍实时读取。帮助、诊断、格式、native-controller guard 和操作重放身份保留
+原有所有者。不新增 module、语义所有者、bridge operation 或数据 cache。这是
+有界 Stage 3 调用者接入；完整 CLI 成本及真实 handoff／策略恢复，与完整 native CLI、
+Host 或 provider 晋升分别资格化。
+
 ### 产品对话与通用异步 inbox
 
 **Chat HTTP POST 作用域。** `ChatRequestHandler.do_POST` 现在为每次完整 HTTP

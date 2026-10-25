@@ -4,10 +4,11 @@ The Plan playbook reads this file in full for an API or architecture plan, the B
 
 ## Pick the layer
 
-Read root `VISION.md`. Its laws bind every decision row; link it instead of copying its tables into the plan.
+Read root `VISION.md`, then `docs/vision/plite.md`, `docs/vision/plate.md` or both. Their laws bind every decision row; link them instead of copying their tables into the plan.
 
 - Pick the layer from the owners the question touches. Work that crosses layers starts at the owner of the first unresolved boundary and gives each layer its own rows.
-- Before calling a feature flow registry-only, test whether it exposes a neutral law of one mounted Editable. If the view can derive the behavior from its runtime or DOM lifecycle, include the Slate React primitive and literal DOM protocol; Plate inherits it, while registry UI owns markers and styling. Add a controlled input only when user intent cannot be derived. Never add a view-toggle plugin or kit.
+- Before calling a feature flow registry-only, test whether it exposes a neutral law of one mounted Editable. If the view can derive the behavior from its runtime or DOM lifecycle, include the Plite React primitive and literal DOM protocol; Plate inherits it, while registry UI owns markers and styling. Add a controlled input only when user intent cannot be derived. Never add a view-toggle plugin or kit.
+- Check every owner placement, and every fix that moves code between entrypoints, against the enforced entrypoint graph in `tooling/entrypoints/entrypoint-dag.mjs` before candidates are scored or reviewed, and put that graph in an arena's grounding. A move that dodges one forbidden import often creates another.
 
 ## Decision ledger
 
@@ -32,11 +33,12 @@ Both layers:
 
 Plate:
 
-- A mounted-view presentation row names the Slate React input, the Plate proxy, the copied-UI policy owner, the deleted plugin, store or kit surfaces, and multi-view plus native-selection non-interference proof.
+- A mounted-view presentation row names the Plite React input, the Plate proxy, the copied-UI policy owner, the deleted plugin, store or kit surfaces, and multi-view plus native-selection non-interference proof.
 
-Slate:
+Plite:
 
-- A design that filters input by a stamp, tag or origin traces every producer of it: model-owned input, DOM repair, composition, Android pending diffs and the `input`-event fallback. Input provenance is not typing intent.
+- A controlled view of canonical selection proves two Editables over one editor and two independent editors, expanded and collapsed paint, root and direction correctness, native-paint deduplication, SSR and unmounted behavior, and zero mutation of DOM selection, focus, input, history, clipboard or the internal projected-view-selection runtime.
+- A design that filters input by a stamp, tag or origin traces every producer of it: model-owned input, DOM repair, composition, Android pending diffs and the `input`-event fallback. Input provenance is not typing intent. A per-Editable rule carries the Editable itself, because mounted Editables share their view's focus and selection state.
 
 ## Page sections
 
@@ -44,7 +46,7 @@ A plan that picks an API or architecture target writes these sections as its del
 
 - `## What other editors do`, always: one sentence saying what was read (repository revision or package version) and the outcome, then a table with one row per editor and one column per question the decision turns on, such as where the state lives or what a screen reader receives. Cover ProseMirror, Lexical, Slate, Tiptap and any other editor the evidence names; an editor that was read but not run says so. Run `research audit` first when the decision needs a source-level comparison.
 - `## Document shape`, when a node type, property or serialization changes: the stored node JSON as ```` ```json before ```` and ```` ```json after ```` pairs, with one sentence above each pair naming who reads that shape.
-- `## Layer and owner`, when a row moves or adds an owner: a table of `Change | Layer (Slate or Plate) | Package | Why`, taken from the ledger's Owner column. The Package cell names the package the code lives in.
+- `## Layer and owner`, when a row moves or adds an owner: a table of `Change | Layer (Plite or Plate) | Package | Why`, taken from the ledger's Owner column. The Package cell names the entrypoint the code lives in, checked against the entrypoint graph.
 - `## Hard cuts and app migration`, when anything public is removed or breaks: what is deleted, the callers that break from `pstack:blast-radius`, and the app code and copied registry components that must change, with before and after code where it changes.
 - `## Native behavior and proof`, when selection, IME, clipboard, undo or focus behavior changes: one row per behavior with what changes and the surface its proof ran on (a named browser, device, emulation or jsdom test), or `unproven`.
 
@@ -54,7 +56,7 @@ An architecture plan is ready only when every current-state claim has live evide
 
 ## Hard cut
 
-A hard cut removes behavior, so it runs only when the user asks to remove that feature, through the Build playbook. A Pursue verdict on a review the user asked for counts as that ask for the hard cuts its plan names, taken as a `look` Defaults row. Any other hard cut waits under Open questions as this project's standing stop. Finishing at runtime a removal that the owner's request, a Pursue plan or an answered Open question already cleared is not a new hard cut. A hard cut deletes the feature in one wave, per `pstack:principle-migrate-callers-then-delete-legacy-apis`, never deprecated. Unlike `plate-next`, which freezes scope and defers outside callers, a hard cut reaches every caller.
+A hard cut removes behavior, so it runs only when the user asks to remove that feature, through the Build playbook. A Pursue verdict on a review the user asked for counts as that ask for the hard cuts its plan names, taken as a `look` Defaults row. So does `VISION.md` or a `docs/vision/` file that already rules the removal or gives the removed job to another owner, such as an app that migrates its own stored data, and that row cites the law. Any other hard cut becomes a verdict item instead of an owner question. The run keeps the behavior as a `look` Defaults row. When the question is P0 or P1, or the run is a verdict, it offers the cut's question as a `decide` chip in topic `review-<new id>`, as the Verdict playbook's Topics says, whose deep session writes the scope file. Otherwise it lists the question in the plan's Open work, as chips.md's Offer says. The row names that chip or Open work item. Finishing at runtime a removal that the owner's request, a Pursue plan, the vision or an answered Open question already cleared is not a new hard cut. A hard cut deletes the feature in one wave, per `pstack:principle-migrate-callers-then-delete-legacy-apis`, never deprecated. Unlike `plate-next`, which freezes scope and defers outside callers, a hard cut reaches every caller.
 
 - Delete the surface and its glue: exports, commands and flags, routes, UI entrypoints, feature flags, call sites, types, state, tests of the deleted behavior, docs, examples and comments about the old code.
 - Leave no `Not implemented` throws, stub handlers, "feature removed" notices, compatibility aliases, shims, fallback parsing, migration bridges, dead enum or union members, permanently-false flag branches or unused config.
@@ -85,7 +87,7 @@ Classify every state value before judging its API:
 | Durable document truth | model nodes/properties plus operations and serialization |
 | Shared application or service truth | application/service domain owner outside one editor instance |
 | Editor-session configuration | editor/plugin runtime configuration and scoped store |
-| View-local transient state | mounted view, DOM/input lifecycle, or component owner |
+| View-local transient state | mounted view, DOM/input lifecycle, component owner, or the plugin's view store when plugin commands read it |
 | Derived read, cache, or index | private projection with explicit invalidation from its source |
 
 Then trace all writers, readers, invalidation, serialization, collaboration, mount/unmount and reset paths. A cache is not a second truth only when callers cannot write it independently and its source owns invalidation. Wrong ownership or lifetime is structural failure; UI polish, tests and a short call site cannot average it away.

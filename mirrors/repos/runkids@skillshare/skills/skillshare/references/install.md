@@ -161,10 +161,12 @@ Check for available updates and validate skill metadata.
 skillshare check             # Show update status for all repos/skills
 skillshare check --json      # JSON output (CI-friendly)
 skillshare check -p          # Check project skills
+skillshare check my-skill --diff  # Show local edits vs the installed version
 ```
 
 - **Tracked repos:** Fetches from origin, shows commits behind
 - **Remote skills:** Compares installed version with remote HEAD
+- **Modified skills:** Remote skills edited since install are `modified`; `update` skips them until `--force`. `check <name> --diff` shows the edits
 - **Local skills:** Shown as "local source"
 - **Targets validation:** Warns about unknown target names in skill-level `targets` field
 
@@ -210,7 +212,7 @@ skillshare update _repo --force -p  # Discard local changes
 With `follow_source_links: true`, `update --all` skips followed Git checkouts,
 even with `--force`; update them by name instead.
 
-**Safety:** Tracked repos with uncommitted changes are skipped, and repos whose git status cannot be read fail. Use `--force` to override both.
+**Safety:** Tracked repos with uncommitted changes are skipped, and repos whose git status cannot be read fail. A remote skill whose files changed since install is skipped too; `check` reports it as `modified`. Use `--force` to override all three.
 
 **Security:** Updates roll back when findings reach the configured block threshold.
 `--audit-threshold` / `--threshold` / `-T` overrides the threshold for the run.

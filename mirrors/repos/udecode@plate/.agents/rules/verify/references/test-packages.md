@@ -5,7 +5,7 @@ implementation recipes and reviewed exceptions, not a coverage mandate.
 ### `autoformat` registry integration
 
 - Keep rule arrays in the owning copied registry item.
-- Use `KEYS` or base plugin keys, not copied raw type strings.
+- Use `PLUGINS` or base plugin descriptors, not copied raw identities.
 - Add only the base plugins a rule actually needs.
 - Collapse tiny mark or block suites into matrices when the contract is the same.
 - Do not import `AutoformatKit` or app registries in package tests.
@@ -31,15 +31,16 @@ implementation recipes and reviewed exceptions, not a coverage mandate.
   - option merging
   - API merging
 - Port upstream Slate React invariants by behavior, not by file.
-- When a Plate foundation source test mounts `Plate` while the same run also loads public-package React entrypoints, treat duplicate-instance warnings as test noise. Suppress them in the test wrapper with `suppressInstanceWarning` instead of changing runtime warning logic.
-- For provider-only React specs in the Plate foundation, reuse the shared `packages/core/src/react/__tests__/TestPlate.tsx` helper instead of re-declaring local `const Plate = ...` wrappers.
+- When a Plate foundation source test mounts `EditorRoot` while the same run also loads public-package React entrypoints, treat duplicate-instance warnings as test noise. Suppress them in the test wrapper with `suppressInstanceWarning` instead of changing runtime warning logic.
+- For provider-only React specs in the Plate foundation, reuse the shared `packages/platejs/src/react/__tests__/TestPlate.tsx` helper instead of re-declaring local `const Plate = ...` wrappers.
 
-### `@platejs/slate`
+### `plitejs`
 
 - Focus on pure editor, query, and transform behavior first.
 - Keep runtime coverage on navigation, selection math, structural queries, transform edge cases, extension transforms, and `createEditor` legacy sync.
-- Keep a small compile-only type lane for public `@platejs/slate` contracts.
+- Keep a small compile-only type lane for public `plitejs` contracts.
 - Use selective upstream mining. Pull invariants that cheaply improve local public-contract coverage; do not mirror upstream blindly.
+- The legacy Slate fixture tree, `test/{interfaces,transforms,normalization,utils}` run by `test/index.spec.ts`, owns each row it can express: one input document, one call and an expected document, selection or return value. A contract file holds what that runner cannot express, such as keys, roots, commits, plugins, history or a named schema, and repeats no fixture row.
 - Add direct helper specs for custom Slate code when indirect coverage is lying.
 - Use `lcov` as package truth. Bun’s text coverage summary is noisy for targeted package runs.
 - Stop once the remaining misses are mostly deferred DOM wrappers plus low-risk non-DOM dust.
@@ -55,9 +56,9 @@ implementation recipes and reviewed exceptions, not a coverage mandate.
 
 ## Reviewed Exceptions
 
-### Plate React `createPlateEditor` allowlist
+### Plate React `createEditor` allowlist
 
-Keep `createPlateEditor` when the contract is actually about:
+Keep Plate React `createEditor` when the contract is actually about:
 
 - React or provider wiring
 - rendered output or DOM behavior

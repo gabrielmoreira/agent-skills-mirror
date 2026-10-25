@@ -46,6 +46,22 @@ Before ANY complex task:
 
 > **Note:** Planning files go in your project root, not the skill installation folder.
 
+## New plan creation contract
+
+For a new task, use the installed initializer before implementation. Set `PWF_SKILL_DIR` to the directory containing the SKILL.md you just read, then run from the project root:
+
+```sh
+sh "$PWF_SKILL_DIR/scripts/init-session.sh"
+# After filling in the selected plan, validate its explicit path:
+sh "$PWF_SKILL_DIR/scripts/check-complete.sh" --validate path/to/task_plan.md
+```
+
+PowerShell equivalents are `init-session.ps1` and `check-complete.ps1 -Validate -PlanFile path/to/task_plan.md`. A named task may use the initializer's name argument and printed `PLAN_ID`.
+
+Keep each phase as `### Phase N: Name` with exactly one `**Status:** pending`, `**Status:** in_progress`, or `**Status:** complete` line. A `## Phases` checklist or numbered summary alone is not trackable. Preserve these markers when tailoring the generated plan; do not replace the skeleton with a compact custom format. Validation must succeed before substantive work and after changing phase structure. This checks format, not task completion or attestation.
+
+Reuse existing plans without overwriting them. If an existing plan fails validation, report the issue for its owner to review; do not automatically rewrite it. If helpers cannot run, copy the shipped template exactly and state that native validation is unavailable.
+
 ## The Core Pattern
 
 ```

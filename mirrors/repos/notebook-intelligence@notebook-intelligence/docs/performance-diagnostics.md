@@ -1,7 +1,5 @@
 # Performance diagnostics
 
-> Chatbook generation is not instrumented: turns recorded here come from the chat path only, so a Chatbook-only session shows an empty Recent turns table even with diagnostics on.
-
 NBI can record where each chat turn spends its time and measure the machine it
 is running on. This document covers turning that on, reading what it produces,
 and the three diagnoses it was built to make.

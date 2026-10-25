@@ -6,6 +6,62 @@ All notable changes to Clawd Cursor will be documented in this file.
 
 ### Fixed
 
+- **`expect` is checked on every action.** Only some tools checked it; on the
+  others (`window`, `system`, `browser`) the parameter wasn't even published,
+  so it was stripped before arriving (live macOS: `window focus` with a failing
+  `expect` said nothing). Every action except `batch` and `task` now publishes
+  it. Actions that don't check it themselves get the same check after they
+  run; a malformed `expect` is refused before anything runs.
+- **The pill is the user's: the agent never reads, presses or types into it.**
+  On a live Mac, `accessibility read_tree` with the pill's process id returned
+  its tree, and the pause prompt's Resume button could be found and invoked by
+  name, which would have faked the user's answer. Now any call aimed at an
+  overlay process (by pid, or by its process name) is refused (`OWN_UI`). While
+  a pause waits for the user, every call is refused (`PAUSED`), reads included,
+  except the ones that wait on, end or report the pause. This holds across
+  processes: a pause shown by the daemon also stops a separate MCP server, and
+  a new pause waits behind it rather than stacking a second prompt. The
+  overlay never shows up in window lists, so a lookup by a shared name such as
+  `powershell` cannot land on it. A `done_when` check that the prompt itself
+  would satisfy (its text, or a button such as Resume) is rejected. On macOS,
+  the pause prompt's reply box is no longer counted as an app that may be
+  typed into.
+- **A failed `window focus` says why, on every OS.** On macOS, focusing by name
+  or title while the screen was locked said "No matching window found." (the
+  lock error was swallowed). It now refuses with the locked-screen message.
+  Windows and Linux reported no reason at all: they now name the missing
+  window, a missing `wmctrl`, or a window Windows would not bring to the front.
+  Windows no longer sends a focus with nothing to aim at when no window
+  matches the name.
+- **A failed action keeps its own error.** With an `expect`, a failure like
+  "window not found" used to wait 2 s and then be reported as a DEVIATION
+  ("it ran but the effect was not seen"), when nothing had run.
+- **`computer drag_path` takes the array it is documented with.** The schema said
+  array, the code only accepted a JSON string, so every well-formed call failed
+  and nothing could be drawn. A new test fails if two actions of one tool ever
+  declare the same parameter with different types.
+- **A failed window-title check names only the window in front,** not every
+  open app's title (other titles can hold private text).
+
+- Security: zod 4.6.7 (GHSA-mrhx-c7xc-m3w5, high) and body-parser 2.4.0
+  (GHSA-27r3-jxmh-p828, high; under express).
+
+- **The pill and glow are no longer in screenshots or OCR.** They're for the
+  person at the screen, but were real windows in every capture and sat over
+  apps' toolbars. Now:
+  - **Windows:** excluded from capture (`SetWindowDisplayAffinity`).
+  - **macOS:** `sharingType = .none`, and the screenshot helper filters the
+    `clawd-overlay` app out.
+  - **Linux:** the pill steps aside for the capture (the glow stays; X11 and
+    Wayland cannot exclude a window).
+  Excluded windows still show on your own screen and take clicks. They are
+  also left out of your own screenshots and of screen sharing (Teams, Zoom).
+- **`find` that matches nothing says why.** In a window with real structure it
+  now says "no element named X among N named elements" and lists the closest
+  names (as untrusted screen content). It used to claim the app had "little or
+  no accessibility structure" (live macOS: Freeform has 34 named elements).
+  That advice is now given only for genuinely thin windows.
+
 - Found in a live macOS test run:
   - **A password field's text is never echoed.** Typing into one now
     reports `into a password field (not echoed)`; the reply used to repeat

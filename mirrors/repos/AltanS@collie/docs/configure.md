@@ -238,15 +238,19 @@ Collie's own controls stay.
 
 ### Stop a turn
 
-While an agent works, a **Stop** button sits on the belt, on Collie's own side of it. It shows only when
-the turn runs and Collie knows the key that stops this agent. Stop does not type anything and does not
-send a message. It presses the agent's own stop key, once, and tells you what happened.
+A **Stop** button sits at the start of the belt, before Collie's other buttons, so it is in view
+without a scroll. It stands there for every agent whose harness profile names a stop key, and it is
+dimmed while nothing runs. It keeps its place and its size, so the other buttons never move when a
+turn starts or ends. A tap on the dimmed button does nothing and sends nothing. An agent with no
+stop key has no button. Stop does not type anything and does not send a message. It presses the
+agent's own stop key, once, and tells you what happened.
 
 A Stop needs two taps. The first tap arms the button: the word changes to **Stop?** and the button
 keeps its size. Tap it again within four seconds to stop the turn. A second tap that lands at once,
-within 0.4 seconds, counts as the same touch and is ignored. If you wait, the arm lapses and nothing is
-pressed. The arm also lapses when you open another pane or the turn ends. While the second tap is in flight the button takes no more taps, so a quick third
-tap cannot press a second Stop.
+within 0.4 seconds, counts as the same touch and is ignored. If you wait, the arm lapses and nothing
+is pressed. The arm also lapses when you open another pane, and the button goes dim when the turn
+ends. While the second tap is in flight the button takes no more taps, so a quick third tap cannot
+press a second Stop.
 
 Which key stops a turn is the harness's own choice, and the harness profile holds it. Most agents
 stop on Escape, some on Ctrl+C, and some need Escape twice. The profile decides, not this page.
@@ -266,7 +270,7 @@ Collie refuses before it presses when pressing could do harm:
 
 - **A dialog is open.** Escape would answer that dialog. Answer it on its card instead.
 - **The box holds your text, and this harness's stop key would clear it.** Clear the box, or use the
-  Keys board, then tap Stop again.
+  Clear button on the Keys board, then tap Stop again.
 - **Collie cannot read this pane.** It does not press a key into a screen it cannot read. This also
   covers a screen where Collie cannot tell whether a turn runs.
 - **The turn had already ended.** There was nothing to stop, so nothing was pressed.
@@ -282,6 +286,19 @@ the receipt back through the lead.
 
 A program that runs as a durable agent keeps the Stop it already had. It stops the turn it names,
 with its own receipt, and it does not use the arm.
+
+### Clear the box
+
+The **Clear** button at the end of the chip row on the Keys board empties the harness's input box
+in one tap, with no arm. Collie presses the harness's own delete key as often as the text needs,
+reads the box again, and tells you in a notice above the belt whether the box is clear or why it was
+not. The button is greyed when the box is empty, a dialog is open or the link is down, and if the box
+does not empty Collie leaves what remains alone and does not press again.
+
+After a Clear, the notice offers **Restore** for two minutes. One tap types the text back into the
+box, as one line and without Enter, so nothing is sent. Restore goes away once you type in the box
+again or open another pane. The bridge keeps the cleared text in memory with the Clear's receipt,
+and never writes it to a log or to disk.
 
 ## Your own key presets
 
@@ -851,6 +868,45 @@ config root, switchable from the header. Setting `COLLIE_MULTI_SESSION=off` serv
 Herdr session. Every discovered Herdr session is accessible through the same URL, including private or sandbox
 sessions. [Security](security.md) lists this behavior as a sharp edge.
 
+## Usage windows
+
+The dots beside the model show your 5-hour and 7-day limits for Claude and Codex, with no setup.
+
+```bash
+# turn every source off
+COLLIE_ACCOUNT_WINDOWS=0
+# turn on opencode and grok too, or name the ones you want
+COLLIE_ACCOUNT_WINDOWS=all
+COLLIE_ACCOUNT_WINDOWS=claude,codex
+```
+
+Collie reads your Claude login file on this machine and asks Anthropic's usage endpoint, the same
+call Claude Code's /usage makes; nothing of the login is stored or sent elsewhere. Collie asks only
+while a pane of that harness is open, and it skips a login file that others may read (anything
+looser than `0600`) and a login that has expired. Codex sends no token: it reads its own files.
+
+| form | what it turns on |
+| --- | --- |
+| unset, `1`, `on`, `true`, `yes` | the default set: `claude` and `codex` |
+| `0`, `off`, `false`, `no` | nothing: no login or session file is read and nothing is asked |
+| `all` | every source: `claude`, `codex`, `opencode` and `grok` |
+| `claude,codex` | the harnesses you name, in any case and with spaces |
+
+An id Collie does not know is dropped with a warning, and only the ids it knows are on, so a typo
+never turns on a source you did not name. In the config file, `[bridge] account_windows` takes
+`true` or `false`, a string with the same forms, or an array such as `["claude", "codex"]`.
+
+Each source reads a different thing.
+
+- **Claude, on by default.** Collie reads `~/.claude/.credentials.json`, or `$CLAUDE_CONFIG_DIR/.credentials.json`, and asks `api.anthropic.com`.
+- **Codex, on by default.** Collie reads no login and asks nobody. On a ChatGPT login Codex writes the windows into its own session files (`$CODEX_HOME/sessions`, or `~/.codex/sessions`), and Collie reads the end of the newest files from the last two hours. A Codex on an API key has no windows to show.
+- **OpenCode Go, off by default.** When you turn it on, Collie reads the `opencode-go` entry of OpenCode's login store (`~/.local/share/opencode/auth.json`, or under `$XDG_DATA_HOME`) and asks `opencode.ai`. With no Go entry it asks nothing.
+- **Grok, off by default.** When you turn it on, Collie reads the login `grok login` keeps (`~/.grok/auth.json`, or under `$GROK_HOME`) and asks `cli-chat-proxy.grok.com` for your credits.
+
+> **Note.** OpenCode Go and Grok follow the shape other tools use for these endpoints, and no live account has checked them yet. That is why they are off until you name them. pi and OMP show no windows here yet.
+
+`collie doctor` shows every source in its `account-windows` row: on or off, the file it reads and the host it asks. [Terminals](multiplexers.md#collie-writes-hooks-into-claudes-own-settings) has the statusLine road.
+
 ## Dark mode / light mode
 
 > **Note.** Collie follows your phone's appearance by default.
@@ -900,6 +956,80 @@ panes or reload the page. Panes always open with standard chrome.
 The terminal mirror continues polling in Zen mode, and interactive buffer elements remain
 functional. Prompt buttons, "Load older", and "Show entire history" controls stay available because
 they are part of the content stream rather than chrome.
+
+## Large screens
+
+> **Note.** On a tablet or an open Fold the pane screen shows several panes side by side. A phone held upright and flat is not changed.
+
+The layout turns on for the pane screen when the screen is at least 600 CSS pixels wide and at least
+480 pixels tall. A phone held sideways is under 480 pixels tall, so it keeps the phone layout.
+To switch it off, open **Settings → Appearance → Large-screen layout** and pick **Off**. **Auto**,
+the default, turns it on where the screen is big enough. The choice is stored per device.
+
+The layout has three parts.
+
+- **The sidebar.** It lists your panes, the same list the pane switcher shows. The button in its top
+  row folds it to a narrow rail of icons, and the choice is kept on this device. The ColliePWA mark
+  in the top row goes home. **New space** and **Settings** sit at its foot.
+- **The row of panes.** Each space keeps its own row, and the row scrolls sideways. Tap a pane in
+  the sidebar to show it. Hold it (right-click with a mouse) for **Open here**, which replaces the
+  pane you are in, or **Open beside**, which adds it next to that pane. You can also drag a pane
+  into the row. **Remove from view** takes a pane out of the row. The agent keeps running.
+- **The space header.** It holds the space's name, its tabs and a **+** for a new tab. Hold a tab
+  (right-click with a mouse) to **Rename** it or **Close tab**, as on the phone. Closing the tab you
+  work in moves you to a pane of the tab beside it. Its two buttons, or a vertical swipe, move to the space
+  above or below.
+
+Each pane has a width: **1/2**, **4/5** or **Full** of the row. A pane is never narrower than 360
+pixels, so a width that would make it narrower is not offered. When the row cannot hold two panes at
+that size, every pane is **Full** width and the control is hidden. The row snaps to the start of a
+pane when you stop scrolling, and a scroll to the side never goes back a page in the browser. The row
+always ends with **Add a pane**. It lists the panes of this space that the row does not show, each
+with **Open here** (the pane becomes the last one in the row). It also offers **New agent in this
+space**, which opens the New page on that pane's machine and folder and adds the agent as a new tab
+of this space, next to the pane you are in, and **New agent in a new space**.
+
+Every pane has its own belt, except when you hold a foldable like a laptop (see below). The pane you
+work in has a frame and the reply box. A tap on another pane's belt acts on that pane and moves you
+there. Tap the pane to move without acting.
+
+The layout is kept on this device only, and Back and shared links work as before.
+
+**Foldables.** On a foldable held half open, Chrome and Samsung Internet split the screen at the fold.
+Held like a laptop, the conversation stays above the fold, and the belt and a taller reply box sit
+below it. Only the pane you work in keeps its belt, below the fold. The other panes show Chat only.
+This split applies at any width, so it also changes a half-open flip phone. The layout goes back to
+flat while the keyboard is up. Held like a book, the split applies from 600 pixels wide. With two
+panes, each half shows one pane and the sidebar becomes the rail. With one pane, the sidebar stays
+open in one half and the pane fills the other. Other browsers show the flat layout only.
+
+### Pane navigation
+
+A gesture moves you between panes and spaces, on a phone and in the large-screen layout. Left and
+right go to the previous and next pane of the space, in the switcher's order. Up and down go to the
+previous and next space. At the first or last pane or space, a move stays put. Choose the method in
+**Settings → Appearance → Pane navigation**. A change shows the next time a pane opens.
+
+| Method          | How it works                                                                                                                                                                                                                                                                        |
+| --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Two fingers** | The default. Hold one finger still on the chat or the terminal, then put a second finger down. The phone buzzes and a box shows where you are. Swipe with the second finger: a short swipe is one step, a long one takes more. Lift the second finger, then the first, to go there. |
+| **Joystick**    | Hold the handle just above the belt, then drag the same finger. Let go on another pane to go there, or back where you started to stay. On a phone, a quick drag up opens the pane switcher.                                                                                         |
+| **Off**         | No gesture. The pane switcher still moves you, and on a large screen so do the sidebar and the space header.                                                                                                                                                                        |
+
+The box names the pane you are moving to, with its status, its space and its place in the space,
+above a map of the spaces. You stay where you are when you lift the first finger with no swipe, lift
+it while the second finger is still down, or put a third finger down. Nothing under your fingers is
+tapped when they lift. The first time the gesture starts on a device, a short notice above the belt
+says how it works and where to turn it off.
+
+The gesture keeps the page's own touches. One finger held alone does nothing new: a long press still
+selects text and opens its menu. A pinch still zooms, because a second finger that lands within the
+first 300 ms counts as a pinch. A finger that was scrolling, or that starts at the left or right
+edge of the screen where the phone's own back gesture lives, never starts the gesture. From the
+moment the second finger lands until you lift the first, the page holds off selection and scrolling,
+and a selection you made earlier is cleared. Pane navigation is touch only, and a mouse does nothing
+here. With TalkBack on, the gesture should do nothing, because TalkBack takes two-finger swipes for
+itself; the pane switcher still moves you.
 
 ## Chat view
 

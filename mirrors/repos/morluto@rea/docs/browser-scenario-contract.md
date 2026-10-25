@@ -10,8 +10,10 @@ liveness deadlines. `INPUT_JSON` may be inline JSON or a JSON file path.
 The minimal request contains only browser launch/connect selection, `start_url`,
 and at least one `actions` entry. Launch `headless` defaults to `true` and can
 be set to `false` where the host supports a visible browser. Navigations follow
-the destinations named by the scenario and the page's ordinary browser requests;
-there is no separate origin allowlist or request-interception layer. Environment
+the destinations named by the scenario and the page's ordinary browser requests,
+and [request steps](#request-steps) send only to the start URL's origin;
+there is no separate origin allowlist. Request steps use a temporary dispatch
+gate for cancellation; ordinary page requests retain their browser behavior. Environment
 settings (including service workers blocked by default), empty storage, and a
 final sanitized URL capture are supplied by default. Set
 `environment.service_workers` to `allow` when the application requires them.
@@ -204,7 +206,8 @@ language environments.
 HTTP(S) URLs may include ordinary query values and fragments directly. Use
 ordered structured query entries when a value needs to reference a declared
 environment-backed secret. Form, storage, and cookie values are either literal
-strings or declared secret references. Raw URL userinfo credentials are rejected.
+strings or declared secret references; request step headers can also read a
+cookie or local storage value from the page. Raw URL userinfo credentials are rejected.
 Captured credential-header
 values are not retained, and declared secret values are redacted automatically.
 A secret may be declared solely to
@@ -315,6 +318,113 @@ external browser without closing it. The request itself defines the operation;
 there is no additional REA grant step. The browser and host still enforce their
 own access and process rules.
 
+## Request steps
+
+A `request` step sends one HTTP request from the page with the page's own
+`fetch`, so the browser attaches the session's cookies and the request is
+recorded in the step's network events like any request the application makes.
+Use it to record an application's API, including writes, when driving the UI
+for each call would be slower or less exact than calling the endpoint the UI
+calls. It is the only action that changes application state without a user
+gesture, so run scenarios with write requests only against an instance whose
+data you may change. This scenario creates one item:
+
+```json
+{
+  "browser": {
+    "mode": "launch",
+    "executable_path": "/absolute/path/to/chromium"
+  },
+  "start_url": { "url": "http://127.0.0.1:3000" },
+  "actions": [
+    {
+      "step_id": "create-item",
+      "action": "request",
+      "method": "POST",
+      "path": "/api/items",
+      "query": [
+        { "name": "notify", "value": { "source": "literal", "value": "false" } }
+      ],
+      "headers": [
+        {
+          "name": "X-CSRFToken",
+          "value": { "source": "cookie", "name": "csrftoken" }
+        },
+        {
+          "name": "Authorization",
+          "value": {
+            "source": "local_storage",
+            "key": "auth",
+            "json_pointer": "/token"
+          },
+          "prefix": "Bearer "
+        }
+      ],
+      "json": { "title": "Scratch item 1" },
+      "expected_status": [201],
+      "timeout_ms": 10000
+    }
+  ]
+}
+```
+
+- `method` is `GET`, `HEAD`, `POST`, `PUT`, `PATCH` or `DELETE`. `json` is the
+  body, sent with `Content-Type: application/json` unless a header sets one; a
+  `GET` or `HEAD` step cannot carry it.
+- `path` starts with one `/` and must resolve to the start URL's origin, which
+  validation checks before the browser starts. When the step runs, the page must
+  be on that origin, checked again in the page as the request is sent; add a
+  `goto` step first if an earlier action left it. A query in `path` is sent as
+  written (a fragment is not sent), and `query` entries are appended after it
+  in order and may reference declared secrets.
+- Request steps follow no redirects: a redirect answer fails the step, and
+  nothing is sent to the location it names, though a write the redirect
+  answered may already have been applied. `expected_status` cannot name a 3xx
+  status. Give the path the redirect names; with header values selected, the
+  capture records its `Location`.
+- Header values are literals, declared secrets, a cookie the browser holds for
+  the request URL (`{"source": "cookie", "name"}`, HttpOnly cookies included,
+  whose value the page's scripts can then see while the request runs), or a
+  local storage entry on the start origin (`{"source": "local_storage",
+  "key"}`, with an optional `json_pointer` to a string or number in a stored
+  JSON value). `prefix` is sent before the value. A value read from the page is
+  redacted like a declared secret, as `[REDACTED:page:<step_id>.<header>]`,
+  from records made after the step reads it; a response recorded earlier, such
+  as the login response that returned a token, keeps the value. A value read
+  again keeps its first marker, and a value shorter than 8 characters is not
+  redacted, since redacting it would rewrite ids, ports and hosts throughout
+  the capture. A value is redacted as stored and as `fetch` sends it, without
+  surrounding spaces and tabs. A missing cookie, key or pointer fails the step.
+  Reading a page value raises the estimated cost of redacting every later
+  body, so the bodies kept within `max_network_body_allocation_bytes` (1 MiB
+  by default) get smaller: after a 32-character `X-CSRFToken` value, a body over
+  about 47 KiB is kept as `unavailable`. Raise `capture.limits` when the
+  application's responses are larger.
+- Validation refuses a header name given twice in a step, header names a
+  page's `fetch` cannot set, such as `Cookie`, `Origin`, `Host` or `Sec-*`, and
+  `User-Agent`, which Chrome drops; it refuses line breaks and other ASCII
+  control characters in literal values and prefixes, and the step fails before sending
+  when a secret or page value holds them.
+- The step completes when the whole response has been read. With
+  `expected_status`, any other status fails the step and the later actions are
+  recorded as `cancelled`; without it, any response completes the step. A
+  network error fails the step. `timeout_ms` covers reading the header values
+  and the request: a step whose time runs out, or that is cancelled, before
+  its request is sent sends nothing, but a request already sent can still reach
+  the application after the step fails.
+  An absolute deadline also covers browser evaluation queued behind page work.
+  A temporary route checks cancellation again at network dispatch and is removed
+  when the request evaluation settles. A page controlled by a service worker
+  is refused because its fetch can bypass that dispatch gate; use the default
+  blocked service-worker policy for request steps.
+
+The request runs in the page's main world, so an application that wraps
+`fetch` sees it, and it goes through the same network observation as other
+page requests: select network content (bodies or header values) to record it.
+Captures with request steps state in `limitations` that the steps sent their
+declared requests through the page's fetch. A scenario without request steps
+is unchanged.
+
 ## Network evidence
 
 `capture.events: ["network"]` retains request, response, completion, failure,
@@ -355,6 +465,17 @@ and unfinished-request metadata. Select content independently:
 All three options default to `false`. Any selected network content also enables
 network metadata observation; listing `network` in `events` is then optional.
 Each observed request object receives a capture-scoped `transaction_id`.
+Each `request` event carries `observed_at`, the wall-clock time REA observed the
+request start. Playwright reports the browser's own start only once a request
+ends, so each `request-finished` or `request-failed` event carries `started_at`,
+the browser's wall-clock start, and `elapsed_ms`, its time from that start to
+the end of the response, when the browser reports them. The environment views
+time scenario records from these, as HAR entries are timed: the browser's start
+where it reported one, else `observed_at`, which trails it by up to tens of
+milliseconds while REA reads other responses, and a duration of 0 where the
+browser reported none. Captures made before these fields existed lack them and
+are read in record order. REA versions before them refuse captures that carry
+them. Scenario comparisons ignore all three (`ignore_network_request_timing`).
 Requests sharing a URL remain distinct. Redirects link to the preceding
 transaction only when it was observed; a null predecessor does not establish
 that no earlier hop existed. Request events require both transaction fields;
@@ -452,8 +573,8 @@ and compared as an unordered collection after caller rules apply, because
 concurrent responses arrive in any order and can land in a later step; a
 redirect retains the complete predecessor ancestry, including each hop's own
 request, response outcome, and selected network content. Each transaction's
-capture-local IDs, sequence/index fields, and content source-sequence anchor
-are removed. Caller rules normalize retained strings before hashing. The
+capture-local IDs, sequence/index fields, content source-sequence anchor and
+request times (`observed_at`, `started_at`, `elapsed_ms`) are removed. Caller rules normalize retained strings before hashing. The
 `preserve_redirect_transaction_ancestry` built-in rule fingerprints each hop
 as canonical SHA-256 of `{ events, redirected_from }`: `events` is the sorted
 list of its normalized event SHA-256 digests, and `redirected_from` is its
@@ -474,7 +595,10 @@ scope/flags, value fingerprints, and duplicate entries even when redaction or
 literal rules make names collide. Captured storage arrays retain their original
 order. The `compare_storage_entries_as_unordered_collection` built-in rule
 participates in the normalization commitment; new storage comparison digests
-therefore differ from earlier order-sensitive comparisons.
+therefore differ from earlier order-sensitive comparisons. The
+`ignore_network_request_timing` built-in rule likewise joins the commitment, so
+normalization digests differ from comparisons made before it, though captures
+with and without request times compare alike.
 
 Each aligned step reports changed, unchanged, or unknown. Changed and unknown
 action, screenshot, DOM, accessibility, URL, history, storage, and event

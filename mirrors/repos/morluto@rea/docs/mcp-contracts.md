@@ -68,11 +68,14 @@ byte correspondence or decode the map's original source paths.
 Artifact inventories declare `coverage.scope` (`root` or `container-entries`)
 and `coverage.status` (`complete` or `unknown`) independently of diagnostic
 wording. Comparison requires matching scopes, complete graph members and complete
-traversal coverage before concluding equality. A fully observed root without
-container children can be `unchanged`; its scope notice stays in `limitations`
-without creating a gap. Content and executable metadata changes still produce
-root deltas. Missing graph members yield `truncated`; unknown traversal coverage
-or unavailable occurrence hashes retain uncertainty. Integrity mismatches remain
+traversal coverage before concluding equality. Fully observed roots can be
+`unchanged` within root scope; their scope notice stays in `limitations` without
+creating a gap. Root-scoped equality establishes equality of the observed root
+bytes. Child-container presence and unexamined format details remain unresolved,
+including when the root format is `unknown`. Content and executable metadata
+changes still produce root deltas. Missing graph members yield `truncated`;
+unknown traversal coverage or unavailable occurrence hashes retain uncertainty.
+Integrity mismatches remain
 contradictions. Static artifact equality does not establish unchanged runtime
 behavior.
 Source-map relation deltas include the content identity of the mapped source,
@@ -929,6 +932,25 @@ of a later null value. Inspect the slot's `xrefs` and the writer's assembly or
 pseudocode, retaining uncertainty about execution order and runtime values.
 These operations inspect static evidence and do not execute the target.
 
+## Editable analysis settings
+
+Agents can call `update_analysis_settings` to raise a curated admission,
+timeout or worker heap default on a connected server, then retry the same
+request. Errors carry `details.limit` with the setting and bounds when the
+failing owner supports runtime recovery; `inspect_analysis_settings` is optional
+when those facts are supplied. Updates are atomic, apply to new work, survive
+target close/open, and vanish when REA exits. Explicit per-call arguments take
+precedence. Neither tool changes host deadlines or resolves retained cleanup.
+See [runtime settings and recovery](design/limits-and-recovery.md#runtime-settings-through-mcp)
+for the full setting list, reset/revision semantics and ASAR retry example.
+For implementation ownership, accepted-operation snapshots, provider wiring,
+and extension guidance, see the
+[maintainer design](design/limits-and-recovery.md#ownership-and-data-flow).
+
+Ghidra and Hopper startup updates apply to the next startup attempt without
+restarting REA. Ghidra decompile timeout updates apply on the existing Program.
+An operation already accepted retains its original budgets.
+
 ## Ghidra first-query deadlines and recovery
 
 A successful MCP initialize handshake establishes the REA connection.
@@ -1030,11 +1052,13 @@ the current client, so it is not a fresh-start recovery. On the same connection:
    `provider_id: "ghidra"`, then retry the first query with an appropriate client
    deadline. The connection and selected provider do not need to change.
 
-If REA's provider startup allowance also needs raising, preserve Evidence and
-close as above, then update `REA_GHIDRA_STARTUP_TIMEOUT_MS` in REA's launch
-environment and restart the server. Reconnect the MCP client before reopening
-the target. Configuration is read at process startup; close/reopen on the same
-connection cannot apply a changed environment. See the
+If REA's provider startup allowance also needs raising, set
+`ghidra.startup_timeout_ms` through `update_analysis_settings` before the next
+startup attempt. This needs no REA restart and does not change accepted work,
+clear cleanup blockers, or extend the client's deadline. Alternatively, change
+`REA_GHIDRA_STARTUP_TIMEOUT_MS` in REA's launch environment and restart the
+server, preserving Evidence and closing as above. Close/reopen on the same
+connection cannot apply a changed launch environment. See the
 [CLI retry example](installation.md#ghidra).
 
 This close/reopen flow was exercised on one real Linux stdio connection after a

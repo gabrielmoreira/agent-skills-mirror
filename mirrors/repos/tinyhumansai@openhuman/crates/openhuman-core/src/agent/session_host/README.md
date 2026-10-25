@@ -23,7 +23,7 @@ run after each turn commits.
 | [`integrations/recorded_tools.rs`](../../integrations/recorded_tools.rs) | Rebuilds recorded Composio actions as deferred executors on resume |
 | [`integrations/prelude_integrations.rs`](../../integrations/prelude_integrations.rs) | Fetches connected integrations on the first turn of a session instance |
 | [`announcement_notes.rs`](../../integrations/announcement_notes.rs) | Smaller product wiring pulled out of the builder |
-| `turn/`, [`turn_checkpoint.rs`](./turn_checkpoint.rs) | Per-turn state and checkpointing |
+| `turn/`, [`product_copy.rs`](./product_copy.rs) | Product copy for TinyAgents checkpoint and close operations |
 
 Import `OpenHumanSessionHost` and `SessionHostBuilder` from `crate::agent`,
 which re-exports them from here. The child files are an implementation

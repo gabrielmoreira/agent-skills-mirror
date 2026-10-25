@@ -6,12 +6,12 @@
 
 **Turn long-horizon goals into verifiable results.**
 
-A local-first control plane and research workbench for agents and teams.<br>
-<sub>Keep goals, decisions, ownership and evidence across sessions. Work with the runtimes you already use: Codex, Claude Code, DeepSeek Harness and others.</sub>
+A local-first [semantic control plane](https://loopx-project.github.io/loopx/blog/from-one-shot-agents-to-long-horizon-control/#control-plane) and [research workbench](#research-workbench) for long-running agent teams, across sessions and runtimes.<br>
+<sub>Keep goals, decisions, ownership and evidence durable. Work with Codex, Claude Code, DeepSeek Harness and other runtimes you already use.</sub>
 
 [![Release](https://img.shields.io/github/v/release/loopx-project/loopx?color=brightgreen)](https://github.com/loopx-project/loopx/releases/latest) [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE) [![TypeScript core](https://img.shields.io/badge/core-TypeScript-3178C6?logo=typescript&logoColor=white)](docs/architecture/rfcs/typescript-control-plane-migration-v0.md) [![Python](https://img.shields.io/badge/python-3.11%2B-blue.svg)](pyproject.toml)
 
-[![Local first](https://img.shields.io/badge/control--plane-local--first-brightgreen.svg)](docs/public-private-boundary.md) [![Loop Agents](https://img.shields.io/badge/status-loop%20agents%20supported-brightgreen.svg)](docs/product/release-readiness.md) [![GitHub contributors](https://img.shields.io/github/contributors-anon/loopx-project/loopx?color=blue)](https://github.com/loopx-project/loopx/graphs/contributors) [![Discord](https://img.shields.io/badge/Discord-Join-5865F2?logo=discord&logoColor=white)](https://discord.gg/XmGgQyCFZd)
+[![Local first](https://img.shields.io/badge/control--plane-local--first-brightgreen.svg)](docs/public-private-boundary.md) [![Loop Agents](https://img.shields.io/badge/status-loop%20agents%20supported-brightgreen.svg)](docs/product/release-readiness.md) [![GitHub contributors](https://img.shields.io/github/contributors-anon/loopx-project/loopx?color=blue)](https://github.com/loopx-project/loopx/graphs/contributors) [![Discord](https://img.shields.io/badge/Discord-Join-5865F2?logo=discord&logoColor=white)](https://discord.gg/XmGgQyCFZd) [![Listed on dsh-plugin.org](https://dsh-plugin.org/badges/listed.svg)](https://dsh-plugin.org/plugins/loopx-project/loopx)
 
 [Get started](#quick-start) · [Why LoopX](#why-loopx) · [See it in action](#see-loopx-in-action) · [Evidence](#evidence) · [Contribute](#contributing) · [Docs](https://loopx-project.github.io/loopx/docs/) · [简体中文](README.zh-CN.md)
 
@@ -37,6 +37,24 @@ $loopx speed up this project's slowest workflow; compare approaches and verify t
 
 Claude Code uses `/loopx <complex task>`. [Other hosts, install options and upgrades ↓](#try-loopx)
 
+## 📰 News
+
+<!-- Curate major product/architecture releases, research findings, consequential
+     engineering lessons and substantive community milestones. Each needs a public
+     source and a distinct reader takeaway; version bumps or PR merges alone are
+     not news. Keep both languages aligned, newest first, using verified publication
+     dates (UTC). -->
+
+- **2026-10-20 · 🚀 [LoopX 2.0](https://github.com/loopx-project/loopx/releases/tag/v2.0.0)** — A shared TypeScript control plane and long-horizon research workbench. [Migration guide](docs/product/releases/v2.0.0.md) · [Engineering story](https://loopx-project.github.io/loopx/blog/typescript-control-plane-refactor/).
+- **2026-10-14 · 🤖 [Agentic software](https://loopx-project.github.io/loopx/blog/semantic-software-development/)** — Connecting goals, evidence and human feedback to engineering delivery.
+- **2026-10-05 · 📊 [Evidence-driven research on EdgeBench](https://loopx-project.github.io/loopx/blog/edgebench-feedback-and-memory/)** — Studies of feedback, continuation, replanning and context cost, separating observed system progress from still-unproven mechanism gains.
+- **2026-10-02 · 🧠 [Long-horizon bootstrapping & RSI](https://loopx-project.github.io/loopx/blog/long-horizon-rsi/)** — Four months of developing LoopX with LoopX: public project history and a design perspective on system-level self-improvement.
+- **2026-09-18 · 🧪 [LoopX × LHTB](https://loopx-project.github.io/loopx/benchmarks/lhtb/)** — A 46-task long-horizon agent study comparing Plain Codex, native Goal and LoopX Heartbeat, with task-level results, methodology and comparison limits.
+- **2026-09-06 · 🎉 [LoopX 1.0](https://github.com/loopx-project/loopx/releases/tag/v1.0.0)** — A Personal Agent Workspace to follow agent work, act on decisions, and inspect delivered results across sessions. [Workspace guide](https://github.com/loopx-project/loopx/blob/v1.0.0/docs/guides/personal-workspace-user-guide.md).
+- **2026-08-02 · ⏱️ [200+ hour trajectories shared on X](https://x.com/huangruiteng/status/2083904257494024425)** — Early owner-run examples spanning 200+ elapsed hours drew broad attention on X, showing work across execution, waits, human decisions and recovery. [Trajectories and limits](#open-source-issue-fix).
+
+[All releases](https://github.com/loopx-project/loopx/releases)
+
 <a id="how-it-works"></a>
 
 ## Why LoopX
@@ -47,14 +65,16 @@ hand work to peers. A timer can keep a loop running without making it useful.
 
 - **Continue without starting over.** Keep the Goal, accepted requirements,
   decisions and evidence across sessions and restarts.
-- **Coordinate without losing ownership.** Connect delegated work, dependent
+- **[Coordinate without losing ownership.](https://loopx-project.github.io/loopx/blog/agent-facing-kanban/#walkthrough)** Connect delegated work, dependent
   artifacts, review and returned results while keeping responsibility explicit.
 - **Judge progress by what changed.** Inspect deliverables, supporting and
   refuting evidence, costs and the next decision—not just activity.
 
-Your Agent runtime supplies the model and tools. LoopX carries durable
-control state for long-horizon agents and personal agent teams across
-engineering, research and operations. Human authorization still governs protected actions.
+Your Agent runtime supplies the model and tools. LoopX’s semantic control plane
+preserves goals, acceptance, decisions, ownership and evidence across sessions
+and runtimes for engineering, research and operations. Agents and people use
+those facts to reassess what to do next. Human authorization still governs
+protected actions.
 
 <a id="learn-loopx"></a>
 
@@ -612,8 +632,10 @@ long-running agent ecosystem. Our confirmed partners include:
 - [NoKV](https://github.com/NoKV-Lab/NoKV) - AI native distributed file system
 
 <a id="loopx-20-1"></a>
+<a id="whats-new-in-20"></a>
 
-## What's New in 2.0
+<details>
+<summary>2.0 background and migration</summary>
 
 | A shared control plane | A long-horizon research workbench |
 | --- | --- |
@@ -623,6 +645,8 @@ long-running agent ecosystem. Our confirmed partners include:
 **Upgrading from 1.x?** 2.0 retires ordinary writes to unpromoted Markdown Goals.
 Review the [migration and recovery guide](docs/product/releases/v2.0.0.md) before
 continuing those Goals. Installation does not silently convert existing state.
+
+</details>
 
 ## Advanced Paths
 

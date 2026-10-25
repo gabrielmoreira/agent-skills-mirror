@@ -24,8 +24,8 @@ is adapters that hand TinyAgents the things only OpenHuman knows.
      | (stateful, per thread)            | (stateless, caller owns history)
      v                                   v
   +-----------------------------------------------------------------+
-  | agent/session_host/            agent/bus.rs + harness/graph.rs  |
-  |   builder, hooks, codec, driver                                 |
+  | agent/session_host/            agent/bus.rs + channels/runtime/ |
+  |   builder, hooks, codec, driver  turn_driver.rs                  |
   +-----------------------------------------------------------------+
      |                                   |
      v                                   v
@@ -42,7 +42,7 @@ is adapters that hand TinyAgents the things only OpenHuman knows.
   |   tinyagents-runtime   Session: history, resume, commit         |
   |   tinyagents-session   SessionRef, transcripts, run ledger      |
   |   tinyagents-harness   AgentHarness loop, middleware, RunQueue  |
-  |   tinyagents-graph / -orchestration   delegation, sub-agents    |
+  |   tinyagents-orchestration            delegation, sub-agents    |
   |   tinytools, tinyinference   Tool trait, ChatModel, providers   |
   +-----------------------------------------------------------------+
      |                         |
@@ -150,9 +150,11 @@ In order:
     `AgentError`) and returns the final text.
 
 The bus path is shorter. `bus.rs` scopes the origin, sandbox mode and file
-state agent id, then calls `harness::run_channel_turn_via_graph`
-([`harness/graph.rs`](./harness/graph.rs)), which calls `TurnSpec::run`. There is
-no TinyAgents `Session`: the caller owns the history vector, and
+state agent id, then calls
+`channels::runtime::turn_driver::run_channel_turn`
+([`../channels/runtime/turn_driver.rs`](../channels/runtime/turn_driver.rs)),
+which calls `TurnSpec::run`. There is no TinyAgents `Session`: the caller owns
+the history vector, and
 `ask_user_clarification` is an early-exit tool whose question becomes the
 reply.
 
@@ -187,7 +189,7 @@ target `AgentDefinition` and call `subagent_host::run_subagent_with_parent`.
    | tool call: spawn_subagent { agent_id, prompt }
    v
  orchestration/tools/spawn_subagent.rs
-   | read ParentExecutionContext (run context `parent`, harness/fork_context.rs)
+   | read ParentExecutionContext (run context `parent`, subagent_host/fork_context.rs)
    v
  subagent_host::run_subagent_with_parent
    | resolve definition, model, narrowed tools, narrowed prompt,
@@ -205,7 +207,8 @@ The child gets a filtered tool list (the definition's `tools`,
 `disallowed_tools`, `skill_filter`), its own system prompt, and often a
 cheaper model. Its progress shows up on the parent's channel as
 `SubagentSpawned`, `SubagentToolCallStarted`, `SubagentTextDelta` and the
-other `Subagent*` variants. Spawn depth is capped by
+other `Subagent*` variants. Native child agents are leaf turns unless their
+host explicitly grants depth-bounded nested spawning. Spawn depth is capped by
 `tinyagents::budget::MAX_SPAWN_DEPTH`. Detached runs are tracked through TinyAgents'
 `DetachedTaskRegistry` and can be steered through the shared
 `SteeringRegistry` ([`tinyagents/host/steering.rs`](./tinyagents/host/steering.rs)).
@@ -273,7 +276,7 @@ Turn execution:
 | --- | --- |
 | `session_host/` | `OpenHumanSessionHost`: builder, runtime session, driver, hooks, transcript codec, resume and recorded tools ([README](session_host/README.md)) |
 | `tinyagents/` | Adapter seam onto the TinyAgents harness: turn runner, model source, middleware stack, `host/` capability adapters, event bridge, journal, replay RPC ([README](tinyagents/README.md)) |
-| `harness/` | Agent definitions and loader, parent/fork context types, sandbox and spawn-depth context, oversized tool-result artifacts, the channel/CLI turn graph ([README](harness/README.md)) |
+| `harness/` | Agent definitions and loader, parent/fork context types, sandbox and spawn-depth context, oversized tool-result artifacts ([README](harness/README.md)) |
 | `bus.rs` | The `agent.run_turn` native request handler (`AgentTurnRequest` to `AgentTurnResponse`) |
 | `progress.rs` | `AgentProgress`, the event enum every turn streams to its observer |
 | [`progress_sink.rs`](./progress_sink.rs) | The `ProgressSink` channel type an in-process embedder hands a turn (carried on `AgentChatEnv`) |
@@ -344,8 +347,8 @@ Persistence, setup and RPC:
   deltas, cost updates and the `Subagent*` family.
 - `AgentDefinition`, `AgentDefinitionRegistry`, `ToolScope`, `SandboxMode`
   (`../agent_registry/host_definition.rs` + `tinyagents-definition`): what an agent is.
-- `ParentExecutionContext` ([`harness/fork_context.rs`](./harness/fork_context.rs)): explicit parent
-  state a sub-agent reads from the run context (`parent`); `orchestration::parent_context::build_root_parent`
+- `ParentExecutionContext` ([`subagent_host/fork_context.rs`](./subagent_host/fork_context.rs)): explicit parent
+  state a sub-agent reads from the run context (`parent`); `triage::parent_context::build_root_parent`
   builds one for runs with no parent turn.
 - `run_subagent`, `run_subagent_with_parent`, `SubagentRunOptions`
   ([`subagent_host/lifecycle.rs`](./subagent_host/lifecycle.rs), [`subagent_host/types.rs`](./subagent_host/types.rs)).

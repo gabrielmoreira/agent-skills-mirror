@@ -1,5 +1,5 @@
 ---
-description: Research prior art and external editor evidence for any Plate or Slate feature, picking the gap most likely to change a decision; compare external editor architectures through a strict source inventory; harvest portable tests from external editors; and maintain the compiled research layer. Use it before writing, moving or compiling any page under docs/research, including lessons compiled from retired internal docs.
+description: Research prior art and external editor evidence for any Plate or Plite feature, picking the gap most likely to change a decision; compare external editor architectures through a strict source inventory; harvest portable tests from external editors; and maintain the compiled research layer. Use it before writing, moving or compiling any page under docs/research, including lessons compiled from retired internal docs.
 argument-hint: '[audit [sync] | harvest [plan] | maintain | full] <topic, area or repo>'
 name: research
 metadata:
@@ -11,10 +11,10 @@ metadata:
 
 Handle $ARGUMENTS.
 
-Research is a resumable evidence system, not chat browsing:
+Research is a loop over what Plate already knows, not chat browsing:
 
 ```txt
-pick -> question -> registry -> queries -> leads -> read log -> score -> promote
+lookup -> pick -> new repos -> read what changed -> score -> promote -> write back
 ```
 
 It discovers and synthesizes. It does not run measured packets (`benchmark`), close an issue corpus row by row (`issue-harvester`, which also owns issue-by-issue closure after `harvest --issues`) or patch product code. `best-api` decides call shapes and the Plan playbook plans adoption. Discovery never escalates into `audit` or `harvest` on its own.
@@ -23,56 +23,53 @@ It discovers and synthesizes. It does not run measured packets (`benchmark`), cl
 
 | Arguments | Does |
 | --- | --- |
-| `<feature or question>` | Picks the most valuable open research question for it, then runs a discovery run. |
+| `<feature or question>` | Picks the most valuable open research question for it, then runs the loop below. |
+| none | Picks the top item of `node tooling/scripts/review-ledger.mjs status` (its `queue`) that has no research yet. |
 | `full <area>` | Ingests and compiles every relevant corpus into `docs/research` (see Compiled layer below). |
 | `maintain <area>` | Cleans an existing research lane: contradictions, freshness, backlinks, synthesis (see Compiled layer below). |
-| `audit [--target <surface\|full>] <repo>...` | Compares external editor architectures with Slate and Plate through a complete source inventory and explicit extraction decisions ([editor audit](./references/editor-audit.md); full, all, exhaustive or multi-repository audits also read its Strict source-to-contract matrix section). |
+| `audit [--target <surface\|full>] <repo>...` | Compares external editor architectures with Plite and Plate through a complete source inventory and explicit extraction decisions ([editor audit](./references/editor-audit.md); full, all, exhaustive or multi-repository audits also read its Strict source-to-contract matrix section). |
 | `audit sync [all\|<audit-id>\|<artifact-path>]...` | Refreshes existing audits against new commits ([editor audit](./references/editor-audit.md)). |
 | `harvest <repo> [--since <commit>] [--issues ...] [--apply] [<filter>]` | Harvests portable behavior evidence from an external editor ([test harvest](./references/test-harvest.md)). |
-| `harvest plan <slate\|plate> <report-or-repo-key>`, or `harvest <report> --lane <lane>` | Prepares a lane-specific adoption plan from a harvest ([test harvest](./references/test-harvest.md)). |
+| `harvest plan <slate-v2\|plate> <report-or-repo-key>`, or `harvest <report> --lane <lane>` | Prepares a lane-specific adoption plan from a harvest ([test harvest](./references/test-harvest.md)). |
 
 `audit` and `harvest` run only when typed or explicitly requested; read the named reference in full before starting. When the token after `audit` or `harvest` does not resolve to a repository, owner/repo, audit id or report, treat the arguments as a question.
 
 ## Pick what to research
 
 1. **Layer.** Pick it from the architecture reference's Pick the layer (`.agents/playbooks/references/architecture.md`).
-2. **What is known.** Read the matching compiled pages under `docs/research/decisions/` and `docs/research/sources/`, the earlier runs under `docs/research/runs/` for prior reads, leads and rejections, and the area's category in `docs/solutions/`, which holds lessons already diagnosed.
-3. **The gap.** Choose the one question most likely to change a decision, in this order: an open question or `defer` limit on the decision page; a candidate editor or library not yet compared for this feature; a rejected lead whose reopen condition is now met; evidence whose source changed since it was read.
+2. **What is known.** Run `pnpm kb <area>`, `pnpm kb <scope>` or `pnpm kb <repo>` before any search; `docs/research/areas.tsv` lists each area with its aliases and review scopes. An area card lists the area's page in each home, the scope's subject files, sweep round rows, upstream issues, harvested tests, lessons from `docs/research/sources/plate-notes/`, the reads, leads and rejections of frozen runs, and each repo filed under the area. A repo card lists its clone and each lane's last-read commit, with the clone's commits since each one. Read the subject file and the pages the card lists, `node tooling/scripts/review-ledger.mjs lookup <scope>` for the decision, its current review, limits and open questions, and `docs/research/sources/editor-architecture/candidates.md` for editors not yet compared.
+3. **The gap.** Choose the one question most likely to change a decision, in this order: an open question or `defer` limit in the subject file; a candidate editor or library not yet compared for this feature; a rejected lead whose reopen condition is now met; evidence whose source changed since it was read, such as a saved repo whose clone has commits since its research mark in the area's paths.
 4. State the pick, its layer and why it beats the next candidate, then start the run.
 
-Reuse a matching read or lead instead of repeating it. Compare the question, source revision, dependencies and reopening condition first; a new source can support an existing lead without creating another. Unknown historical provenance needs inspection before reuse. A lookup never advances Editor Audit's architecture, test-harvest or issue-refresh cursors.
+Reuse a finding, read or lead the card already shows instead of repeating it. Compare the question, source revision, dependencies and reopening condition first, and read a rejection's reopen condition before reading its repo again; a new source can support an existing finding without creating another. Unknown historical provenance needs inspection before reuse. A lookup never advances Editor Audit's architecture, test-harvest or issue-refresh cursors.
 
-## Discovery run
+## New repos
 
-Record the question and scope, stop rule, artifact path, expected promotion owner, current local evidence gap and explicit exclusions before the first search.
+Each new task or verdict that researches runs one search, of at most 10 minutes, for repos in its area that `docs/research/repos.tsv` lacks, editors or not.
+
+1. Run `pnpm kb discover <area>`. It searches GitHub with the area's `seeds` from `areas.tsv`, sorted by stars, drops every repo the list holds, saved or skipped, and prints the rest with stars, last push and description. Add `--seed '<phrase>'` for a library family the question needs that the seeds miss, such as Yjs providers for collaboration or virtualization libraries for large documents, and add a phrase worth keeping to the area's `seeds`.
+2. Judge each printed repo from its description, and open the README or source of each that may hold what the question asks.
+3. Record every printed repo in `repos.tsv`. `--record` adds each one as `skipped`, with its description as the note. Change each repo the run reads to `saved`, with its areas, clone and a note on what it holds, and give a skip its reason when the description does not show it. The next search hides both.
+
+A search that finds nothing new is a result; the run's notes say so.
+
+## Read what changed
+
+Record the question and scope, stop rule, expected promotion owner, current local evidence gap and explicit exclusions in the run's notes before the first search.
+
+Read only what Plate has not read. For a saved repo with a mark, which is a research, audit or harvest commit its repo card shows, fetch the clone and read `git log <mark>..origin/HEAD -- <paths>` over the paths its area page cites, then only the files those commits touched. An unread repo gets one bounded first read of the paths the question names. Clone a missing repository to `../<repo>`, as `AGENTS.md`'s Source authority section says, and reuse an existing clone wherever it sits, `../raw` included.
 
 Search the web and GitHub (code search, issues, PRs, discussions, examples, benchmark harnesses, browser test fixtures, commit history). Go beyond the usual three editors when relevant: ProseMirror, Lexical, Tiptap, CodeMirror, Milkdown, Remirror, Monaco, Quill, document editors, browser editor test suites, pagination and virtualization libraries, and TypeScript-heavy runtimes. Use ProseKit for headless extension composition, framework adapters, autocomplete and editor UI prior art, and Meowdown for hybrid Markdown, hidden-syntax caret and selection behavior, touch input, IME and WebKit proof ideas. Separate what those projects own from what they inherit through ProseMirror; Meowdown's desktop WebKit and touch-emulation tests are scoped browser evidence, not iOS proof.
 
-Web and GitHub hits are leads only. Inspect the real source locally before any code-level claim, and never patch from snippets, titles, READMEs or discussions. Extract invariants, test cases, API shape, benchmark technique, architecture pressure and browser proof strategy; write Plate- or Slate-native code, never copied code. External editors are pressure sources, not architecture to clone: translate each lesson into Slate or Plate model, change, selection, DOM, browser and package-owner proof vocabulary before it can change a decision.
+Web and GitHub hits are leads only. Inspect the real source locally before any code-level claim, and never patch from snippets, titles, READMEs or discussions. Extract invariants, test cases, API shape, benchmark technique, architecture pressure and browser proof strategy; write Plate- or Plite-native code, never copied code. External editors are pressure sources, not architecture to clone: translate each lesson into Plite or Plate model, change, selection, DOM, browser and package-owner proof vocabulary before it can change a decision.
 
-### Artifacts
+### Run notes
 
-Each run lives in `docs/research/runs/<date>-<topic>/`, for either layer:
-
-```txt
-README.md              # question, scope, stop rule, current verdict
-repo-registry.tsv      # repo_key, url, host, license, stars_or_signal, last_activity, topic_tags, local_path, status, score, notes
-query-ledger.tsv       # query_key, surface, query, filters, result_count, sampled_count, new_repo_keys, new_lead_keys, next_query
-lead-ledger.tsv        # lead_key, repo_key, source_ref, topic, claim, evidence_grade, novelty, applicability, proof_owner, next_action, status
-read-log.tsv           # source_ref, repo_key, kind, path_or_url, lines_or_id, read_reason, takeaway, lead_key
-rejected-ledger.tsv    # dedupe_key, repo_key, lead_key, reason, reopen_condition
-promoted-ledger.tsv    # lead_key, packet_id, owner, test_or_benchmark, verification_command, decision
-shards/NNN-<theme>.md  # one bounded batch summary each
-sources/               # tiny excerpts and metadata, not dumps
-```
-
-New lead, read and promotion rows also record `source_revision`, `source_fingerprint` and `checked_at`, with `unknown` for unavailable provenance. Historical headers and rows stay as they are. Cloned repositories and bulk corpora live in `../raw`; small raw notes a run cites go in `docs/research/raw/<date>-<topic>/`. A search's output over another project's code stays in `../raw` and never enters the repository; the run records its pattern, hit counts and revision in `query-ledger.tsv`. Never stream bulk results into chat: the ledgers are the state, and a run resumes from `query-ledger.tsv` and `lead-ledger.tsv`.
-
-Keys: `repo_key` is the normalized lowercase `host/owner/repo` without `.git`; `query_key` is a slug of surface plus normalized query; `lead_key` is `<topic>:<normalized invariant>:<proof family>`, independent of repo; `dedupe_key` is the normalized problem signature, such as `selection:projected-native-double-highlight:visual-oracle`. Before reading a repo deeply, check the registry for its `repo_key` and the lead ledger for the same `lead_key` or `dedupe_key`; add support to an existing lead, read a rejected lead's `reopen_condition` first, and reuse an existing clone.
+A run keeps its question, queries, leads, reads, rejections and shard summaries in its ignored run directory, `docs/plans/artifacts/<slug>/`, in whatever shape it needs. Nothing there is committed; the area page, the subject file and `repos.tsv` hold what the next run reads. Bulk corpora live in `../raw`. `docs/research/raw`, `docs/research/probes` and `docs/plite/research` are frozen, and `kb check` refuses a file added under them; `pnpm kb` and `review-ledger.mjs research` still read their runs. A search's output over another project's code stays outside the repository, and the notes record its pattern, hit counts and revision. Never stream bulk results into chat.
 
 ### Shards
 
-Work in batches of about 10-20 repos, 20-40 issues or PRs, or one theme, whichever is smaller. Each shard gets a summary with its scope, sources sampled, top, rejected and duplicate leads, score changes and next query. Update the ledgers after every shard, and stop a shard early when it yields a concrete proof packet.
+Work in batches of about 10-20 repos, 20-40 issues or PRs, or one theme, whichever is smaller. Each shard's summary in the run's notes gives its scope, sources sampled, top, rejected and duplicate leads, score changes and next query. Update the notes after every shard, and stop a shard early when it yields a concrete proof packet.
 
 ### Grades and scores
 
@@ -90,38 +87,47 @@ A lead becomes exactly one of:
 - `test-packet`: a native unit, Playwright or Browser oracle with its verification command;
 - `benchmark-packet`: a metric or harness repair with a target and before/after command;
 - `plan-packet`: a `best-api` verdict on the call shape, plus a decision-ledger row (`.agents/playbooks/references/architecture.md`) when runtime or adoption ownership is unclear;
-- `docs-packet`: an accepted research note or current-state decision;
+- `docs-packet`: a finding on the area page or a current-state decision in the subject file;
 - `no-code-decision`: rejected or quarantined with its reason and reopen condition.
 
-A likely fix becomes a Bug fix, Benchmark, oracle or plan packet with its baseline, proof gate and keep, revert or quarantine decision. A clean negative result keeps its artifact with the rejected leads and the next search angle. A material Stop, Pursue or Defer assessment is written as a review page's verdict through `verdict`; the compiled decision links that page and the raw run instead of copying rows.
+A likely fix becomes a Bug fix, Benchmark, oracle or plan packet with its baseline, proof gate and keep, revert or quarantine decision. A clean negative result goes on the area page as a rejected lead with its reason, reopen condition and next search angle. A material Stop, Pursue or Defer assessment is written as a review page's verdict through `verdict`; the scope's subject file links that page instead of copying rows.
 
-The handoff counts repos searched and read, issues and PRs read, leads kept, merged and rejected, and packets promoted; lists the top promoted leads with `lead_key`, grade, owner and proof command, and the rejections that prevent repeated work; and names the next shard or `none` with a reason.
+## Write back
+
+Each run ends by writing what the next run reads, then runs `pnpm kb check`:
+
+- Findings go on the area page of each repo's home, `docs/research/sources/<home>/<area>.md`, as `- **Title** text` findings that each cite `<owner>/<repo>@<commit>:<path>`. The newest commit an area page cites for a repo is research's mark for it, which its repo card shows. A repo with no home gets one, an editor or a library family, whose README's `Repos:` line names it.
+- A conclusion goes in the scope's subject file, `docs/plans/topics/<scope>.md`, a lesson about Plate's own code in `docs/research/sources/plate-notes/<area>.md`, and a rejected lead on the area page with its reason and reopen condition.
+- `repos.tsv` gains or updates the row of each repo the run read or skipped.
+- An area that `areas.tsv` lacks gets its row, with its review scopes and seeds, when a run writes its first page.
+
+The handoff counts repos searched, new repos the search showed, repos read, issues and PRs read, leads kept, merged and rejected, and packets promoted; lists the top promoted leads with grade, owner and proof command, and the rejections that prevent repeated work; and names the next shard or `none` with a reason.
 
 ## Compiled layer (`full` and `maintain`)
 
-Read `docs/research/schema.md` and the matching pages under `docs/research/decisions/` and `docs/research/sources/` first; drop to `../raw`, broader repository search or external sources only to verify, resolve a conflict or deepen evidence. `docs/research` is the compiled layer and `../raw` the evidence layer; keep raw evidence, source summaries, decisions and open questions distinct, never treat a compiled summary as stronger than its primary source, and update the layer itself, not only the chat answer.
+Read `docs/research/schema.md`, the scope's subject file and the matching pages under `docs/research/sources/` first; drop to the clones in `..` and `../raw`, broader repository search or external sources only to verify, resolve a conflict or deepen evidence. `docs/research` is the compiled layer and the clones and `../raw` the evidence layer; keep raw evidence, source summaries, decisions and open questions distinct, never treat a compiled summary as stronger than its primary source, and update the layer itself, not only the chat answer.
 
 Acquire raw evidence from the strongest stable source: an official git clone, then an official export or local cache, and a page capture only when neither exists. Each raw source family records its canonical URL or repository, local raw path, snapshot date and revision (a commit hash, or a fetch timestamp for a cache or export). Refresh a raw source only when its area is active, its drift matters to the decision or it has likely changed since the last ingest; creating or refreshing a raw source family appends `../raw/log.md`, and a refresh also updates that metadata and refreshes the compiled pages it changes. Never edit `../raw` while compiling conclusions unless the task curates raw evidence.
 
-Compiled pages stay derived: paraphrased summaries and cross-source synthesis, never raw third-party pages, vendor screenshots, one-to-one source cards or quote-heavy mirrors. Promote an editor's findings to an area page of its home under `sources/`, a lesson to `docs/solutions/`, an explicit conclusion to `decisions/` and unresolved ambiguity to an open question on the decision or area page it blocks. Keep one research layer with stable paths and one page-type system; do not split it into goal-specific silos such as `editor-behavior/`. Keep one concept per file, never a giant mixed essay; point every durable claim outward to its evidence in `../raw`, repository files, source-of-truth docs or plans; and promote only knowledge that is reusable, likely to matter again and stable enough to keep, such as durable architecture conclusions and vocabulary, leaving temporary exploration in `docs/analysis` or `docs/plans`.
+Compiled pages stay derived: paraphrased summaries and cross-source synthesis, never raw third-party pages, vendor screenshots, one-to-one source cards or quote-heavy mirrors. Promote an editor's findings to an area page of its home under `sources/`, a lesson to `sources/plate-notes/`, an explicit conclusion to the scope's subject file, `docs/plans/topics/<scope>.md`, and unresolved ambiguity to an open question in the subject file or area page it blocks. Keep one research layer with stable paths and one page-type system; do not split it into goal-specific silos such as `editor-behavior/`, `plate-v2/` or `slate-v2/`. Keep one concept per file, never a giant mixed essay; point every durable claim outward to its evidence in `../raw`, repository files, source-of-truth docs or plans; and promote only knowledge that is reusable, likely to matter again and stable enough to keep, such as durable architecture conclusions and vocabulary, leaving temporary exploration in `docs/analysis` or `docs/plans`.
 
-A `full` pass scopes every relevant corpus, runs an official-source discovery step per corpus (its official docs, repository and release-note entrypoints), reads the strongest local raw hits before calling anything missing, and closes each corpus in a per-corpus ledger: pages and raw paths inspected, files read, official entrypoints checked, strongest evidence, a disposition (`evidenced`, `raw gap`, `compile gap`, `synthesis gap`, `freshness gap`, `evidence gap`, `contradiction gap` or `structure gap`) and the next action. A raw gap means `../raw` holds no relevant evidence after the discovery step; a compile gap, raw evidence with no source summary; a synthesis gap, source summaries with no decision page for their conclusion; a freshness gap, a compiled page that newer evidence likely changed; an evidence gap, a question the strongest local raw hits leave open after they were read; a contradiction gap, compiled pages that disagree; a structure gap, duplicated, orphaned or mis-split pages. No corpus ends silent; thin or contradictory evidence becomes an open question on the decision or area page it blocks, naming its owner and the evidence that would close it, never fake law. A `full` pass that spot-checked one corpus of several is not `full`.
+A `full` pass scopes every relevant corpus, runs an official-source discovery step per corpus (its official docs, repository and release-note entrypoints), reads the strongest local raw hits before calling anything missing, and closes each corpus in a per-corpus ledger: pages and raw paths inspected, files read, official entrypoints checked, strongest evidence, a disposition (`evidenced`, `raw gap`, `compile gap`, `synthesis gap`, `freshness gap`, `evidence gap`, `contradiction gap` or `structure gap`) and the next action. A raw gap means `../raw` holds no relevant evidence after the discovery step; a compile gap, raw evidence with no source summary; a synthesis gap, source summaries whose conclusion no subject file states; a freshness gap, a compiled page that newer evidence likely changed; an evidence gap, a question the strongest local raw hits leave open after they were read; a contradiction gap, compiled pages that disagree; a structure gap, duplicated, orphaned or mis-split pages. No corpus ends silent; thin or contradictory evidence becomes an open question in the subject file or area page it blocks, naming its owner and the evidence that would close it, never fake law. A `full` pass that spot-checked one corpus of several is not `full`.
 
 Broad grep is routing, not evidence: read every hit that obviously matches the question before classifying a corpus, keep raw paths searched separate from raw files actually read, and say why a promising hit was skipped.
 
-`maintain` with no area runs a broad upkeep pass across the layer. `maintain` checks the area for stale pages and claims, contradictions, orphan, duplicated and overgrown pages, dead terminology, weakly sourced claims, raw evidence with no compiled summary, source summaries that imply a missing decision, and open questions that now have answers. It is aggressive about structure and conservative about claims: it fixes what existing evidence supports, never invents a decision, claims coverage from one weak source or silently resolves a contradiction, leaves an open question on the page the gap blocks, naming its owner and the evidence that would close it, for each gap it cannot fill, and reports what it fixed, what is still missing, whether the area needs `full` and, for editor-behavior evidence, whether the spec or `current-evidence.md` needs reconciling under AGENTS.md's editor-behavior rule.
+`maintain` with no area runs a broad upkeep pass across the layer. `maintain` checks the area for stale pages and claims, contradictions, orphan, duplicated and overgrown pages, dead terminology, weakly sourced claims, raw evidence with no compiled summary, source summaries that imply a missing decision, and open questions that now have answers. It is aggressive about structure and conservative about claims: it fixes what existing evidence supports, never invents a decision, claims coverage from one weak source or silently resolves a contradiction, leaves an open question on the page the gap blocks, naming its owner and the evidence that would close it, for each gap it cannot fill, and reports what it fixed, what is still missing, whether the area needs `full` and, for editor-behavior evidence, whether the spec or `current-evidence.md` needs reconciling under AGENTS.md's editor-behavior rule. A lesson that tells agents to work around a defect in this repository's own setup, one nobody chose to keep, also gets that defect fixed, or a session card that owns it.
 
 Retiring internal docs compiles their still-true lessons into a home a workflow reads before anything is deleted; the owner prefers compressing to deleting (2026-10-06).
 
 When a task depends on a domain bigger than the visible compiled pages, run `maintain` on it, or `full` when raw coverage is missing, before relying on those pages; run one before and after major research or migration work.
 
-For backlog or closure status, follow [Reading research ledgers](#reading-research-ledgers).
+After changing a ledger scope, group or document file, or recording a review, run the helper's `check` command. For backlog or closure status, follow [Reading research ledgers](#reading-research-ledgers).
 
 ## Reading research ledgers
 
 Read the existing corpus ledger before interpreting backlog or closure.
 
-- when closing a `docs/research/runs/**` lead, read that artifact's
+- when closing a `docs/plite/research/**` lead, read that artifact's
   `lead-ledger.tsv`, `promoted-ledger.tsv`, and `read-log.tsv` first. Use exact
   source refs and owner files from those ledgers before any repo-wide `rg`.
   Broad current-tree or OSS scans are allowed only after the recorded anchors

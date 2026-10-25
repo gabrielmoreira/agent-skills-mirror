@@ -49,7 +49,7 @@ Automate steps within an explicitly requested run, not the decision to build or 
 7. Prepare the documentation PR in `Re-bin/nanobot-web` under its `MAINTAINING.md`: review English and all nine translations, preserve Nightly and previous releases, update latest-version redirects and run the full site quality gate. Pin source links to the candidate and confirm they match the eventual tag. Do not advertise an unpublished version.
 8. Review pinned Bun/OpenTUI licenses, corresponding source and relinking instructions. Check upstream revision availability and runtime/lockfile/notice agreement. Obtain the maintainer's commitment to the [source offer](../tui/SOURCE_OFFER.md) for its full stated period, at least three years after release; tests cannot grant it.
 9. Build all five native targets with publication scripts, ad-hoc signing macOS before packaging.
-   - Verify archive checksums, manifests, architecture, licenses/notices and embedded source. Run supported native smoke tests, record coverage and exact-head CI evidence, and label cross-compiled-only targets.
+   - Verify archive checksums, manifests, architecture, licenses/notices and embedded source, including checkout-matching bytes for `tui/scripts/targets.ts` and `tui/scripts/target-bindings.ts`. Run supported native smoke tests, record coverage and exact-head CI evidence, and label cross-compiled-only targets.
    - Build platform wheels below, check them with `twine check`, validate RECORDs/tags/permissions and test pip selection on all five platforms.
    - Test first launch with an empty cache and `NANOBOT_TUI_NO_DOWNLOAD=1`; the executable must come from `site-packages/nanobot/tui/bin/`, not checkout or cache.
 10. Merge release preparation only after current checks/reviews pass. Compare the merged source tree with the tested candidate; rebuild/recheck changes. Reconcile changelog and documentation links, then tag the verified commit, not an unchecked later `main` tip.
@@ -68,7 +68,7 @@ Before the third release, remove `provider_api_migration.py`, its import, `Provi
 
 ### TUI preflight without a release tag
 
-Use Bun 1.3.13 and a clean checkout; no tag or GitHub Release is required. Run targets sequentially because native dependency preparation modifies shared `node_modules`:
+Use Bun 1.3.13 and a clean checkout; no tag or GitHub Release is required. Use the same `<target>` for preparation, compilation and notice generation. Run targets sequentially because preparation updates shared `node_modules`:
 
 ```bash
 cd tui
@@ -81,6 +81,10 @@ python3 scripts/package-release.py <target>
 ```
 
 Repeat for `darwin-arm64`, `darwin-x64`, `linux-arm64`, `linux-x64` and `win32-x64`. On macOS, run `codesign --force --sign - <binary>` and verify it; the publication workflow uses pinned `rcodesign` on Linux. Keep the ten `.zip`/`.zip.sha256` files with Python intermediates and provenance manifest in a candidate-specific directory, excluding configuration, backups and test environments from upload selections.
+
+Candidate builds bundle minified JavaScript and the standalone Bun runtime with the additional precompiled bytecode cache disabled. Linux targets include both GNU and musl native variants, and x64 retains Bun's baseline CPU variant. Builds enforce a 135 MiB executable budget on Windows/Linux x64; other targets retain the existing 150 MiB ceiling until measured. The `dist/<executable>.size.json` report identifies the compiled, pre-signing executable and expected native packages; final archive manifests identify signed release bytes.
+
+Before release, measure TUI first-screen and Mermaid render latency on each supported target, including first and warm renders. Verify cancellation and worker restart. Retain latency distributions and record executable, ZIP and final platform-wheel sizes separately. Cross-compilation and startup probes do not replace native interactive acceptance.
 
 ### Build the PyPI platform wheels
 

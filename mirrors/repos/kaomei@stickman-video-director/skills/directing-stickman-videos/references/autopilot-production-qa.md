@@ -1,0 +1,52 @@
+# B · Autopilot shared production and acceptance
+
+Required for **every B style**, before shot planning, sample review and full-film delivery. This is the common quality floor, not a shared drawing style. A does not inherit it. Each B style keeps its own character/visual language, voice/provider defaults, caption design, pacing character and SFX treatment; those choices must still meet this checklist. Future styles need their own reference and runtime support before use. Do not copy B1 assets, background, voice ID or typography into them.
+
+## Plan from meaning and actual narration
+
+Maintain a compact project-local shot ledger: spoken phrase and actual word times; idea to communicate; focal subject/action/expression; short scene text; timed meaningful picture events; evidence source/language/date; caption phrases; SFX event; and connection to the next shot. Cover the body and ending as well as the opening. This is production evidence, not another intake questionnaire.
+
+Make actions, objects, diagrams and marks explain the spoken idea. A control needs visible operation/contact, a choice distinguishable alternatives, and an outcome a visible result. Preserve approved identities while varying acting and viewpoint; do not illustrate every sentence with a recycled presenter/laptop. Time reveals to the corresponding speech, allowing purposeful anticipation/reaction. Pictures follow the real voice; never stretch speech, add dead air or revoice accepted narration to fit a visual template.
+
+## First 30 seconds: picture, sound and copy together
+
+Give the **first 30 seconds**, or the whole opening when the video is shorter, a dedicated hook pass. Aim to substantially exceed a routine slideshow opening through relevance, clarity and coordinated picture/sound, not faster cuts or louder effects. Plan these beats explicitly in the ledger:
+
+- When writing copy, start with a short, concrete line and an audience-relevant question, tension, surprising contrast or desired outcome. Show a relevant result, case or demonstration early; establish why to keep watching before lengthy setup. For a story, use its conflict rather than forcing a sales pitch. Avoid a generic greeting, logo hold or article screenshot as the entire hook.
+- Match each line to a specific principal action, evidence reveal or visual payoff. Use story-specific expressions, scale/viewpoint changes and clear emphasis rather than an unrelated montage or the same animation held under a long sentence. Design the transition from hook to body so the later video actually delivers the opening promise.
+- Place purposeful SFX at the important actions/reveals and review their timing with the words. Make the mix energetic or restrained as the selected style requires, always below intelligible narration; constant pops/whooshes are not polish.
+
+If copy is supplied or already approved, preserve it; propose any needed hook rewrite for approval before changing the recording. Never invent earnings, popularity, testimonials or product capabilities to strengthen a hook, and do not promise virality. The normal approximately 20-second sample gate remains unchanged: review the remaining opening through 30 seconds during full production, without treating sample approval as proof of its quality.
+
+## Meaningful motion, not filler
+
+- No **principal-picture inactivity longer than 2.5 seconds** anywhere in a preview or finished film. Track meaningful event times and inspect the gaps, including shot beginnings/endings. Main-subject acting, genuine prop interaction, a developing diagram, substantive information reveals or relevant moving footage may sustain a longer shot. Allow settling/reading time and keep a clear focal point; this is not a maximum shot length or compulsory hard cuts every 2.5 seconds.
+- Subtitle turnover, whole-frame zoom/pan/fade, decorative noise/pulses, repeated unrelated nods or a tiny moving corner do not rescue a frozen principal picture. Movement must communicate the current idea and be legible at playback size. Do not add distracting motion just to beat a detector.
+- Do not repeat compositions to fill time. Review distant sections as well as neighbors for the same pose/layout with replacement text. Change the focal subject, viewpoint, action or information relationship where the meaning changes. Reuse valid assets for continuity and motivated callbacks; variety is not a reason to regenerate everything.
+- Vary entry order by meaning: sometimes a complete scene, sometimes text/prop/character first. Connect useful actions/props across cuts. Avoid the repeated title → icon → underline build or constant restless transitions.
+
+## Clear screenshots and content-matched graphics
+
+Use genuine, sharp screenshots/recordings when they explain the point. Crop/enlarge the relevant area and check readability in the **final encoded frame**, including small-view playback; upscaling blur is not a repair. Allow enough reading time through purposeful main-picture progression. Apply the selected style's framing without covering key evidence, faces, hands or captions. A diagram/animated crop must not masquerade as actual screen recording.
+
+Match audience language; prefer genuine English UI/source for English videos. If unavailable, use accurate labeled illustration/diagrams or relevant real moving samples rather than a prolonged unreadable foreign-language screenshot. Needed original-language quotations may remain with separate translation. Never repaint translated copy over a capture and present it as genuine UI. Verify names, dates, links and displayed figures against cited sources/capture dates; another creator's example is not proof they used this Skill.
+
+Match icons, platform/company marks, person sketches, hand-drawn objects and charts to the actual entity/action being discussed. Use a coherent, licensed icon family or original drawings with enough detail to be recognizable. Avoid generic stand-ins for essential objects, unrelated logo piles and decorative dashboards. Data charts require supported data; label conceptual illustrations honestly. Keep one dominant idea/action and enough negative space: useful detail, not clutter.
+
+## Natural captions and semantic sound
+
+Narration, synchronized subtitles and meaningful action SFX are required for all B previews/films. Apply the selected B style's caption font, size, placement, safe area and emphasis; do not impose one universal visual design. Screen emphasis and captions must remain readable without competing or covering essential content.
+
+Automatic grouping is a **draft**, not semantic acceptance. Review every cue boundary and visual line break against the exact speech. Preserve all spoken words and order; keep names, numbers/units, natural phrases and tight grammatical groups together when readable. Avoid stranded prepositions/determiners or severing a subject from its verb solely to meet a fixed word count. Split long phrases at natural boundaries within the style's readable line limits; do not shrink text mechanically. After regrouping, each cue starts at its own first aligned spoken word. Recheck punctuation, gaps/overlap, end times and reading time against the original audio. The bundled grouping command does not perform this semantic review automatically.
+
+Keep the selected native named voice fixed without added voice/style descriptions. Use original/licensed, action-specific sounds at the relevant instant, not a pop on every word. Listen for intelligible voice, balanced effects/music and clipping. Do not duplicate SFX in an already mixed master. Music is optional and style-specific, not A's mandatory piano.
+
+## Whole-film delivery gate
+
+Apply the **same detail standard throughout the entire film**, not just the first 30 seconds or approved sample. Inspect every shot/ledger row, then review the actual final picture and sound from beginning to end:
+
+1. **Meaning and continuity:** actions/icons/evidence match narration; facts are supported; hook, body and ending connect. Body/end retain the opening's artwork detail, typography care, evidence sharpness, meaningful motion and sound treatment. No downgrade to low-detail static slides after an attractive hook.
+2. **Picture and repetition:** inspect a chronological contact sheet, necessary encoded full-size frames and both sides of revised cuts. Check focal hierarchy, character/prop contact, safe areas, screenshot clarity/language and distant repetition against the selected style.
+3. **Timing:** inspect the encoded main-picture region **excluding the subtitle band** for inactivity longer than 2.5 seconds, comparing suspect intervals to the semantic-event ledger at playback speed. A pixel-freeze detector is only an aid: camera drift, noise or a tiny inset can hide a frozen subject. Movement alone does not establish meaning or readability.
+4. **Captions and audio:** compare the entire cue sequence to approved text/aligned words, then watch/listen to the actual timing and mix. Successful encoding, frame counts, waveform/loudness checks and static sheets do not prove a good hook, natural phrasing, refined animation or intelligibility. Record unavailable playback/listening as missing review and seek user review rather than claiming it happened. The bundled validator does not automatically enforce these creative gates.
+5. **Preservation and handoff:** record gate results and any failing timestamps, fix only affected shots/cues, and retain accepted script/audio/assets by fingerprint. Save the MP4, subtitle sidecars, ledger, checkpoint and QA results. Sample approval, remaining-production authorization, costs and publication remain governed by [Autopilot](autopilot.md); this quality checklist grants no new paid calls, uploads, showcase replacement or GitHub publication.

@@ -47,8 +47,8 @@ On other TVs these rows don't appear.
 ## How it works
 
 This is software dimming. A full-screen window of one colour sits over everything (`TYPE_APPLICATION_OVERLAY`),
-black at the missing brightness with the amber folded in for warmth. It never takes focus, keys or touches, so
-the remote keeps controlling whatever is on screen. A foreground service holds the window and switches night
+black at the missing brightness with the amber folded in for warmth. It never takes focus or keys, so the remote
+keeps controlling whatever is on screen. A foreground service holds the window and switches night
 mode at the scheduled times, and it stops itself when there is nothing to draw and no schedule to follow.
 
 ## Permissions
@@ -102,6 +102,9 @@ with your own key if you hand them out; the launcher pins its Show answer to the
   other apps; `install.sh` allows it over ADB, or the app shows the ADB command.
 - **Aggressive memory managers** can stop the service on 1 GB TVs. If they do, the layer goes and the screen
   is brighter, never darker; opening the app starts it again.
+- **Below 20 % an air-mouse pointer can't click through.** Since Android 12 a window that lets touches through
+  is drawn at most 80 % opaque, so darker than that the layer keeps touches. TVs have no touchscreen and the
+  remote's keys are never affected; only a pointer (an air mouse) is.
 - Screenshots and screen recordings include the layer.
 
 ## Tested on
@@ -110,16 +113,19 @@ MOKA R8G (Android 14), over ADB, with its own home app: the overlay permission g
 over the settings screen and over Home, the scheduled night mode taking over at 21:13 inside a 21:00 to 07:00
 window (40 %, then down to 1 %, warm), each slider changing the layer at once, **Dimming** Off and the ADB
 broadcast removing the layer at once and On bringing it back, the TV picture option asking for and getting
-the slice permission and moving the TV's own backlight to 1 and back to 0 as the slider moved, and the layer back by itself after the app was updated. Memory: about 22 MB with the layer up.
+the slice permission and moving the TV's own backlight to 1 and back to 0 as the slider moved, the TV's day
+picture (backlight 100, contrast 50, brightness 50) put back by itself at 07:00 after a night at backlight 0,
+the card prompt, the card first in the grid and opening the app (on a home app that implements the module-card
+spec; not yet on this repo's launcher), and the layer back by itself after the app was updated. Memory: about 22 MB with the layer up.
 
 The JVM tests cover the levels, the colour arithmetic, the schedule (past midnight, edges, empty windows), the
 1 % floor, the fine steps and the clamping of stored values.
 
 Still to check on a TV running this repo's launcher (the test TV's home app has no module cards):
 
-1. The card prompt and **Show card**; the card opens the app.
-2. The switch at the end and start of the night without opening the app, the TV's day picture coming back in
-   the morning, and when dimming is switched off.
+1. The card on this repo's launcher.
+2. The start of the night without opening the app, and the day picture coming back when dimming is switched
+   off.
 3. The layer over a streaming app playing video, Live TV and an HDMI input, with every remote key still
    reaching the app below.
 4. A reboot with dimming on brings the layer and the schedule back.

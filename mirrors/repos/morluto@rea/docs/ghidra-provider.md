@@ -36,6 +36,18 @@ provider stays bound to the target; runtime failure never selects another
 provider automatically. The contracts below describe Ghidra observations,
 not equivalence with another engine's pseudocode or analysis database.
 
+## Request payload ceiling
+
+Ghidra requests use `REA_BRIDGE_MAX_REQUEST_BYTES`: default 16 MiB, with a
+configurable range of 7,464–536,870,887 bytes. REA measures UTF-8 JSON, including
+escaping, before allocating the serialized request or sending it. The framing
+newline is excluded. An oversized request returns `resource_constraint` with
+the effective setting, its source, and the exact payload byte count.
+
+Set the value in the environment that starts REA, then restart REA to apply it.
+This setting is enforced by the REA client; the Java bridge has no corresponding
+request ceiling.
+
 ## Admitted inventory semantics
 
 | Concern          | Ghidra contract                                                                                                                                                                                                                                                                                 |
@@ -175,7 +187,7 @@ profile stages before retrying their retained descriptors.
 
 | Concern                 | Ghidra contract                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Decompiler lifetime     | One persistent `DecompInterface` is opened for the imported Program and disposed during bridge shutdown. Native decompilation has no fixed per-function deadline unless `REA_GHIDRA_DECOMPILE_TIMEOUT_SECONDS` sets one; a decompile that reaches it fails only that request with `remote_code` `decompile_timed_out`, the Program and session stay open, and the next decompile uses a fresh decompiler process. External functions or functions without bodies return `null`; cancellation and native failure remain distinct.                                                                                           |
+| Decompiler lifetime     | One persistent `DecompInterface` is opened for the imported Program and disposed during bridge shutdown. Native decompilation has no fixed per-function deadline unless the launch setting `REA_GHIDRA_DECOMPILE_TIMEOUT_SECONDS` or runtime override `ghidra.decompile_timeout_seconds` sets one; a decompile that reaches it fails only that request with `remote_code` `decompile_timed_out`, the Program and session stay open, and the next decompile uses a fresh decompiler process. External functions or functions without bodies return `null`; cancellation and native failure remain distinct.                 |
 | Serialization           | A FIFO sends one Program request at a time. Caller cancellation removes queued work promptly and is passed to active socket waits. This is an adapter safety commitment, not a claim that every Ghidra API is thread-safe.                                                                                                                                                                                                                                                                                                                                                                                                 |
 | Function identity       | Every function result carries the entry address and Ghidra FunctionManager classification for external, thunk, and resolved thunk target. These are observations, not proof that unresolved targetless calls have been recovered.                                                                                                                                                                                                                                                                                                                                                                                          |
 | Assembly and pseudocode | Assembly is complete Ghidra Listing text; pseudocode is Ghidra decompiler output. Neither is original source, and cross-provider comparison never treats Hopper and Ghidra text as equal or unequal semantic facts.                                                                                                                                                                                                                                                                                                                                                                                                        |
@@ -184,6 +196,13 @@ profile stages before retrying their retained descriptors.
 | CFG                     | Dossiers use `BasicBlockModel` and retain only non-call successors inside the function body. CFG topology is address-normalized for comparison; provider-specific block construction remains a declared difference.                                                                                                                                                                                                                                                                                                                                                                                                        |
 | P-code value flow       | Function dossiers include up to 3,000 high-p-code operations, at most 64 inputs per operation, and 12,000 def-use edges. Results identify memory reads/writes, branches, and calls by p-code opcode, and mark decompiler-dead operations. Large results report truncation, an omitted-operation lower bound, and known omitted-input/edge counts. The dossier is an intra-function graph; `trace_native_values` composes derived parameter/argument and return/output dependencies across resolved calls. It does not resolve memory aliasing, call side effects, runtime behavior, persistent state, or business meaning. |
 | Result extent           | Function instruction scans and native API boundary observations remain complete. P-code flow is the explicit bounded exception; its count fields distinguish exact retained counts from lower-bound or known-omitted counts. Caller cancellation and provider failures remain distinct.                                                                                                                                                                                                                                                                                                                                    |
+
+Runtime updates apply to newly accepted operations on the existing Program.
+They preserve accepted budgets and do not clear cleanup blockers or change the
+client deadline. Transient decompile timeout failures remain uncached so the
+same function can be retried after raising the limit. See the
+[settings design](design/limits-and-recovery.md) for snapshots, precedence,
+and provider integration.
 
 Function extents and instruction completeness refer to Ghidra's analyzed body.
 An inferred no-return call can terminate that body before subsequent bytes.

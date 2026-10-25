@@ -39,10 +39,10 @@ section to the same plan with these resolved rows:
 | Contract                      | Decision                                                                                                        | Evidence                                 |
 | ----------------------------- | --------------------------------------------------------------------------------------------------------------- | ---------------------------------------- |
 | shared Plate host             | public `@platejs/*` consumers declare an explicit `peerDependencies.platejs` range and `devDependencies.platejs: workspace:^`; consumers never put `platejs` in normal dependencies; the `platejs` host does not peer-depend on itself | manifest path plus `pnpm test:manifests` |
-| Slate ownership               | only `packages/slate` and `packages/core` import `slate`, `slate-dom`, `slate-react` or `slate-history` directly | manifest/import audit                    |
+| Plite ownership               | only `packages/platejs` declares or imports `plitejs`; raw Plite proof/test exceptions are named                | manifest/import audit                    |
 | external dependency ownership | normal dependency, shared-runtime peer, or opt-in optional peer selected per actual consumer job                | manifest plus import/entrypoint audit    |
-| entrypoint runtime            | every public entrypoint stays headless or React as its export path says; headless roots stay React-free         | package exports plus headless import proof |
-| Lint coverage                 | affected Biome or ESLint config updated, or `N/A:` with proof that existing globs cover the new topology        | scoped lint plus config source audit     |
+| entrypoint runtime            | every public entrypoint declares `headless`, `ssr`, or `client`; headless roots stay React-free                 | DAG runtime matrix and generated proofs  |
+| Oxlint coverage               | affected `oxlint.config.ts` override updated, or `N/A:` with proof that existing globs cover the new topology   | scoped lint plus config source audit     |
 
 The section records the actual package paths. Do not copy placeholder rows into
 the final evidence, and do not use an exception as a substitute for moving code

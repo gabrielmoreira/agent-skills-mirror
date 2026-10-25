@@ -101,6 +101,18 @@ caller's request and first-occurrence priority, analyzing the file once.
 Omit the selection for the existing complete
 application workflow.
 
+For a long selection, pass the paths as a JSON array with
+`--source-paths-json`, either inline or as a JSON file path. A file keeps the
+command below host command-line limits, such as the 8,191-character limit of
+the `cmd.exe` shim that `npx` uses on Windows. Its entries follow any
+`--source-path` values and stay artifact-relative; they are not resolved
+against the working directory:
+
+```bash
+rea analyze-javascript-application /absolute/path/to/app.asar \
+  --source-paths-json /absolute/path/to/paths.json --json
+```
+
 The result and summary retain `source_selection.requested_paths` and
 `source_selection.unselected_files`. Selecting every relevant file leaves this
 count at zero and adds no unselected-source caveat. Every relevant file keeps its
@@ -109,8 +121,8 @@ original inventory identity; unselected files report `text_status:
 coverage is partial while any file remains outside scope. Selection does not
 claim whole-application completeness or change integrity policy. Summary detail
 only reduces delivery; source selection reduces text acquisition and analysis.
-Explicit native provider or snapshot routing rejects `--source-path` rather
-than ignoring it.
+Explicit native provider or snapshot routing rejects `--source-path` and
+`--source-paths-json` rather than ignoring them.
 
 For directory input, a permission-denied child file remains an unavailable
 inventory occurrence, and an unreadable child directory records an unknown
@@ -128,17 +140,24 @@ returns an unavailable error with the retained inventory, rather than claiming
 the selected source does not exist. Observed exact file candidates keep their
 identity; unknown traversal cannot establish a unique application root.
 
-ASAR header/index admission defaults to 16 MiB / 16777216 bytes. Set
-`REA_ASAR_MAX_HEADER_BYTES` in the environment that starts REA to a decimal
-byte count of at most 268435456 (256 MiB) to raise or lower it; restart REA
-after changing it. Invalid values are configuration errors, never a silent
-fallback. The archive index is read before any member can be selected, so
+ASAR header/index admission defaults to 16 MiB / 16777216 bytes. In MCP, use
+`update_analysis_settings` to set `asar.max_header_bytes` to an integer byte
+count from 1 to 268435456 (256 MiB), then retry the same full-archive request.
+The update applies to new operations without restarting REA; cached headers
+must also satisfy the new admission. For CLI or future MCP processes, set
+`REA_ASAR_MAX_HEADER_BYTES` in the launch environment. Changing that environment
+requires a new REA process. Invalid launch values are configuration errors,
+never a silent fallback. See the
+[settings design](design/limits-and-recovery.md#failure-and-retry) for recovery
+metadata, precedence, and reset behavior.
+
+The archive index is read before any member can be selected, so
 `source_paths`, `--source-path`, `detail: "summary"`, `max_heap_mb`, and
 available host memory do not bypass or raise it. When the header exceeds the
-effective allowance, the failure names it, whether it came from the default or
-the setting, and the setting's limits. Alternatively, analyze an extracted
+effective allowance, the failure reports the value, its known source, and the
+setting's limits. Alternatively, analyze an extracted
 application directory, which does not admit an ASAR header. Repeating the unchanged
-request fails the same way.
+request without changing admission fails the same way.
 
 ## Read the analysis
 
@@ -182,6 +201,27 @@ tracing, version comparison, and retained-input examples, use the
 For supplied passive browser or Electron observations, use
 [runtime reconciliation](javascript-runtime-reconciliation.md). It compares
 existing Evidence without rerunning static analysis or contacting CDP.
+
+Each newly analyzed JavaScript file retains `analysis_coverage` in its graph
+observation. `syntax` distinguishes complete parsing, recovered syntax errors,
+failed parsing and unexamined source. `semantics` records the number of observed
+unknown findings and typed uncertainty, including returned-reference widening
+and unavailable type-only compiler options. `examination` reports static semantic
+resource limits and Electron wrapper expansion limits independently. A completed
+pass does not establish complete runtime semantics. Route examination and result
+capacity remain in the separate route inventory.
+
+Electron applicability is `observed` when a static Electron module reference is
+retained, and otherwise `unknown`: a source without such a reference does not
+prove that the application is inapplicable. Sources excluded by `source_paths`
+retain `not-examined` with a reason and null semantic counts. Historical Evidence
+without this facet remains unmeasured. The existing `parse_status` remains its
+conservative overall summary; finer facts do not relabel earlier partial results.
+
+Summary delivery counts these facts under `summary.coverage.static_sources`.
+Read exact per-file measurements with `inspect_analysis_view`, selecting
+`kind: "javascript-facts"` and `property_keys: ["analysis_coverage"]`, or inspect
+the module item. Both views use retained Evidence and preserve source provenance.
 
 ## ASAR integrity
 
@@ -301,7 +341,10 @@ Selected bounded text is then parsed as inert data to recover:
 - local HTML script entrypoints;
 - Webpack and Rspack chunk registrations and module factories represented as
   AST literals, plus esbuild `__commonJS` module tables; recovered esbuild
-  CommonJS exports use its factory's `exports`-then-`module` parameter order;
+  CommonJS exports use its factory's `exports`-then-`module` parameter order.
+  Export receivers and loader helpers retain those calling-convention roles only
+  while the binding at the read still holds its original parameter value;
+  replacing a parameter does not give the replacement object that role;
 - static imports, dynamic imports, CommonJS `require` calls, workers, and
   service workers (only `new Worker(new URL(path, import.meta.url))` resolves
   relative to the calling module; string worker and service-worker paths use
@@ -384,13 +427,19 @@ Bundler adapters own callback roles: Webpack supplies module, exports, then
 loader; esbuild CommonJS supplies exports, then module. Export extraction uses
 those binding identities for assignments and declarations, so renaming either
 parameter does not change the recovered names. Global property-definition
-intrinsics require lexical and visible-write proof. Computed writes through a
-standalone loader's exposed module/cache table use the shared value owner; an
-unknown key invalidates the original-slot proof rather than implying a fresh
-chunk installation. A function stored on a standalone loader member does not
-write the table merely by being defined: the bootstrap owner excludes its
-deferred writes only when that member is unread and the loader namespace stays
-confined. Calls, member aliases, dynamic member reads, namespace escapes, or
+intrinsics require lexical and visible-write proof. Factory export declarations
+also require the loader's `d` member to have no prior or unordered visible
+replacement, including writes through lexical aliases. Unrelated loader members
+do not invalidate declarations. Ordering describes declarations within one factory
+activation; helper integrity on entry, effects of earlier invocations, and
+arbitrary call side effects remain unproven.
+Computed writes through a standalone loader's exposed module/cache table use
+the shared value owner; an unknown key invalidates the original-slot proof
+rather than implying a fresh chunk installation. A function stored on a
+standalone loader member does not write the table merely by being defined:
+the bootstrap owner excludes its deferred writes only when that member is
+unread and the loader namespace stays confined. Calls, member aliases, dynamic
+member reads, namespace escapes, or
 receiver-based access retain uncertainty about those writes. Export names
 describe recognized declarations, not a proof
 of final runtime property lifetime or arbitrary helper behavior.
@@ -695,6 +744,10 @@ deadline per source, including startup and fact transfer. Select
 `max_heap_mb` and `analysis_timeout_ms` through MCP, or `--max-heap-mb` and
 `--analysis-timeout-ms` on the dedicated CLI command. These choices control the
 analyzer; the caller's `NODE_OPTIONS` still controls the CLI/MCP process heap.
+For defaults across new MCP operations, use `update_analysis_settings` with
+`javascript.max_heap_mb` or `javascript.analysis_timeout_ms`. Explicit per-call
+arguments take precedence, and accepted work keeps its original settings. See
+the [settings design](design/limits-and-recovery.md#precedence-and-lifetime).
 V8 old-space limits do not impose a process RSS limit. When REA runs on Bun,
 the analyzer ignores the V8 heap flags; resource failures then report
 `worker_heap_limit_bytes` as null instead of a requested or V8-reported limit.

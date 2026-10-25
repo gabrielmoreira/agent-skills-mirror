@@ -8,7 +8,12 @@
 # no-plan-file behaviour, so the Cursor protocol shape never changes.
 [ "${PLANNING_DISABLED:-}" = "1" ] && exit 0
 
-PLAN_FILE="task_plan.md"
+HOOK_DIR="$(cd "$(dirname "$0")" 2>/dev/null && pwd)" || exit 0
+[ -f "${HOOK_DIR}/resolve-plan-context.sh" ] || exit 0
+. "${HOOK_DIR}/resolve-plan-context.sh"
+cursor_resolve_plan_context "${HOOK_DIR}"
+[ -n "${CURSOR_PLAN_DIR}" ] || exit 0
+PLAN_FILE="${CURSOR_PLAN_DIR}/task_plan.md"
 
 if [ ! -f "$PLAN_FILE" ]; then
     # No plan file = no planning session, allow stop

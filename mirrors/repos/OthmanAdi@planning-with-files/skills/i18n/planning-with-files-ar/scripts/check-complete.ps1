@@ -3,8 +3,44 @@
 # يُستدعى بواسطة خطاف Stop للإبلاغ عن حالة اكتمال المهمة
 
 param(
-    [string]$PlanFile = "task_plan.md"
+    [string]$PlanFile = "task_plan.md",
+    [switch]$Validate
 )
+
+if ($Validate) {
+    if (-not (Test-Path -LiteralPath $PlanFile -PathType Leaf)) { Write-Output '[planning-with-files] Plan format invalid: task_plan.md was not found.'; exit 1 }
+    $content = Get-Content -LiteralPath $PlanFile -Raw
+}
+
+# Explicit creation validation never mutates a plan or changes Stop behavior.
+if ($Validate) {
+    $phases = 0
+    $statuses = 0
+    $inPhase = $false
+    $invalid = $false
+    foreach ($line in ($content -split '\r?\n')) {
+        if ($line -cmatch '^### المرحلة(?:[ \t]|$)') {
+            if ($inPhase -and $statuses -ne 1) { $invalid = $true }
+            $phases++
+            $inPhase = $true
+            $statuses = 0
+        } elseif ($line -match '^#{1,3}[ \t]') {
+            if ($inPhase -and $statuses -ne 1) { $invalid = $true }
+            $inPhase = $false
+        }
+        if ($inPhase) {
+            $statuses += ([regex]::Matches($line, '\*\*الحالة:\*\*[ \t]+(?:pending|in_progress|complete)(?:[^\p{L}\p{N}_]|$)')).Count
+            $statuses += ([regex]::Matches($line, '\[(?:pending|in_progress|complete)\]')).Count
+        }
+    }
+    if ($inPhase -and $statuses -ne 1) { $invalid = $true }
+    if ($phases -eq 0 -or $invalid) {
+        Write-Output '[planning-with-files] Plan format invalid: use ### المرحلة headings with exactly one native status per phase.'
+        exit 1
+    }
+    Write-Output ('[planning-with-files] Plan format valid (' + $phases + ' phases).')
+    exit 0
+}
 
 # issue #195: per-invocation opt-out (PLANNING_DISABLED=1) for one-shot/CI
 # sessions that share a cwd with a plan but never opted into it.

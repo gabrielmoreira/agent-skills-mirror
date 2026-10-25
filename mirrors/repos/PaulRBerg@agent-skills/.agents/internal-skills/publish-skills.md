@@ -43,6 +43,9 @@ branch state before touching global installations:
 
 Never autostash or rebase by hand.
 
+Publication requires propagation. If the commit workflow skips a push because no remote exists, stop before changing
+global installations. Report the missing destination as a blocker. `PUSH_SKIPPED` does not prove propagation.
+
 Keep this work under the source-repository claim through its commit and push. Then run `ai-coord done` for that claim
 before step 2 acquires the target claims.
 

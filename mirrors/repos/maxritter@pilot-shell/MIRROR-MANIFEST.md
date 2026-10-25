@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `maxritter/pilot-shell` — 26 default patterns, 0 followed patterns, 6 file(s) materialized.
+Mirror of `maxritter/pilot-shell` — 26 default patterns, 0 followed patterns, 7 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `maxritter/pilot-shell` — 26 default patterns, 0 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 6 |
+| Files         | 7 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,10 +61,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`docs/site/skills/website-screenshots/SKILL.md`](docs/site/skills/website-screenshots/SKILL.md) |
 | 2 | ✓ | [`qualitylayer/src/skills/ql-artifact/SKILL.md`](qualitylayer/src/skills/ql-artifact/SKILL.md) |
-| 3 | ✓ | [`qualitylayer/src/skills/ql-manage/SKILL.md`](qualitylayer/src/skills/ql-manage/SKILL.md) |
-| 4 | ✓ | [`qualitylayer/src/skills/ql-peer/SKILL.md`](qualitylayer/src/skills/ql-peer/SKILL.md) |
-| 5 | ✓ | [`qualitylayer/src/skills/ql-quality/SKILL.md`](qualitylayer/src/skills/ql-quality/SKILL.md) |
-| 6 | ✓ | [`qualitylayer/src/skills/ql-workflow/SKILL.md`](qualitylayer/src/skills/ql-workflow/SKILL.md) |
+| 3 | ✓ | [`qualitylayer/src/skills/ql-chat/SKILL.md`](qualitylayer/src/skills/ql-chat/SKILL.md) |
+| 4 | ✓ | [`qualitylayer/src/skills/ql-manage/SKILL.md`](qualitylayer/src/skills/ql-manage/SKILL.md) |
+| 5 | ✓ | [`qualitylayer/src/skills/ql-peer/SKILL.md`](qualitylayer/src/skills/ql-peer/SKILL.md) |
+| 6 | ✓ | [`qualitylayer/src/skills/ql-quality/SKILL.md`](qualitylayer/src/skills/ql-quality/SKILL.md) |
+| 7 | ✓ | [`qualitylayer/src/skills/ql-workflow/SKILL.md`](qualitylayer/src/skills/ql-workflow/SKILL.md) |
 
 ---
 

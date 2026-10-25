@@ -554,6 +554,19 @@ hook's output, or nothing (the run's Claude Code doesn't show a bare
 without marking it `[user message]`. A reminder with other words in it is
 still the user's, as #872's was.
 
+A background sub-agent's `<task-notification>` (with its "[SYSTEM
+NOTIFICATION - NOT USER INPUT]" head) is not the user's either, but the
+run's model must hear it. Claude Code 2.1.310 sends one that finishes while
+its main agent is mid-turn as a `{role: "system"}` message after the
+results (several that finish together share one text block), or as text
+after them in their message. `withTaskNotices` appends each to the last
+result, inside `<system-reminder>`, as Claude Code itself does for a
+notification that lands in a tool's result, and `saidWithResults` strips
+them before judging what is left. Before, `agentNotice` dropped them
+whole, the run never heard the sub-agent finished, and the main agent
+waited for it (stones_2026 on Discord). A notification after a reply is a
+turn of its own and is told as it is.
+
 Where the result ends is said by the message's parts alone. A tool whose
 output says "Do not use tools." has it told as its output, inside the
 result. The words of a message that holds images (pi-ai's "Attached
@@ -642,6 +655,7 @@ go test -tags nogui ./internal/gateway/ -run 'TestClaudeRunsHeldToTheRoom|TestCl
 go test -tags nogui ./internal/cli/ -run '^TestClaudeCodeRunsSetsTheUsersOwn$' -count=1
 go test -tags nogui ./internal/settings/ -run '^TestClaudeRunsMostIsMachineLocal$' -count=1
 go test -tags nogui ./internal/gateway/ -run 'ClaudeSubscriptionRunsTheDownloaded|ClaudeSubscriptionWithoutClaudeCode|ClaudeRewritten|LostMedia|ImagesTakenOut|RunLetGoWhenTheClientRewrote|ClaudeSessionTempFiles|ClaudeLetGo|ClaudeSessionFiles|ClaudeOldSessions|ClaudeSubscriptionReplySaysTheAllowance|ClaudeAllowanceHeaders|ClaudeForksAnsweringTheLeadsCalls|ClaudeTurnGivenUpOn|ClaudeToolResultsGivenUpOn|ClaudePromptMarksEarlierTurns|ClaudeHistoryCachedAcrossNewRuns|ClaudeUnloadableSession|ClaudeEndedRunSaysWhy|ClaudeIdle|ClaudeSideQuestion|ClaudeNoRunSaysWhy|ClaudeToolResultsNoRunSaysWhy|ClaudePromptToldUserText|ClaudePromptKeepsInstructions|ClaudeToolResultsGoOnWithTheUsersWords|ClaudeToolResultsKeepInstructions|ToolResultKeepsUserTextSentMidTurn|ClaudeTextToolCalls|ClaudeTextCallsHoldsOnlyTheLine|ClaudePromptSaysPastCallsAreARecord' -count=1
+go test -tags nogui ./internal/gateway/ -run 'TestClaudeTaskNotification|TestWithTaskNotices|TestClaudeTurnToldTheTaskNotification' -count=1
 ```
 
 `claude_rewritten_test.go` has a case for each relaxation and one for each

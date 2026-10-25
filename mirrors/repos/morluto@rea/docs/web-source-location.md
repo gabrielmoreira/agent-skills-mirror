@@ -111,6 +111,10 @@ are made.
 ## Verification
 
 Browser bundle collection uses absolute section offsets for nested inline maps.
+If caller cancellation stops browser map fetching after some items complete,
+the failed bundle request retains those items with the captured page in partial
+Evidence and marks bundle analysis `not_performed`. This is distinct from the
+local source-map decoder's failure semantics above.
 An enclosing column offset contributes only when the nested section starts on
 that enclosing section's first generated line. Parent boundaries still clip
 preceding browser mappings when a nested section starts with a gap or has no
@@ -136,6 +140,17 @@ requests are left unprocessed and reported as unknown through the top-level
 items.
 Malformed UTF-8 map responses are reported as invalid rather than repaired with
 replacement characters.
+For browser fetching, an `invalid` map or structural or decoder capacity
+failure has `artifact: null`, empty decoded arrays, and an explicit limitation.
+When its bounded response body was read in full, optional `response_identity`
+records that body's SHA-256 digest and byte count after HTTP content decoding
+and before UTF-8 decoding. It is not a digest of partial reads or a claim that
+the map was valid; historical items may omit it. Malformed text is omitted so
+it does not consume the 32 MiB inline budget needed by later valid maps. A
+response whose text cannot fit that budget is refused before JSON parsing and
+source-map decoding, and retains the same
+completed-body identity. Successful and partial maps keep their full original
+text, including BOM and XSSI framing; only their parsing view removes it.
 
 Focused tests cover duplicate mappings, indexed offsets/overlap/local indexes,
 32-bit VLQ overflow, nullable content, UTF-16/CRLF positions, immutable artifact

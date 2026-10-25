@@ -21,7 +21,7 @@
 | AI引用文件；指南为`ai-citation-AGENTS.md` | AI引用语料 | `ai-citation-AGENTS.md` |
 | metadata文件；指南为`metadata-AGENTS.md` | 分类、术语与历史路径映射 | `metadata-AGENTS.md` |
 | 提示词文件；指南为`prompts-AGENTS.md` | 提示词入口 | `prompts-AGENTS.md` |
-| 入门文件；指南为`getting-started-AGENTS.md` | 新手入门与项目练习 | `getting-started-AGENTS.md` |
+| 入门文件；指南为`getting-started-AGENTS.md` | 新手入门与工作指南 | `getting-started-AGENTS.md` |
 
 这些带集合名的指南保留分组规则，但不再是按目录自动发现的`AGENTS.md`；本文件负责路由，改动对应文件前须显式阅读。
 
@@ -36,7 +36,7 @@
 | 数据与来源 | `check-gongfa.py`；本机研究副本另用`check-research-raw.py`、`check-source-facts.py` |
 | Wiki | `check-wiki.py`；仍只校验明确给定的本地checkout |
 | 资料维护 | `sync-doc-toc.py`、`sync-faqi-catalog.py`、`sync-gongfa-catalog.py`；`fetch-research-raw.py`会联网并写入本机研究资料，不属于默认测试 |
-| 测试 | `test-gongfa.py`、`test-gongfa-catalog.py`、`test-faqi-catalog.py`、`test-markdown-details.py`、`test-source-archive.py`、`test-research-distribution.py` |
+| 测试 | `test-gongfa.py`、`test-gongfa-catalog.py`、`test-faqi-catalog.py`、`test-local-links.py`、`test-markdown-details.py`、`test-source-archive.py`、`test-research-distribution.py` |
 | 共享实现 | `source_boundaries.py`、`taxonomy.py`、`source_archive.py`、`book_views.py`、`tool_explanations.py`直接平铺；供同级入口与原资料生成器共用，不保留lib包 |
 | 依赖 | `requirements-gongfa.txt`、`requirements-faqi.txt` |
 
@@ -46,7 +46,7 @@
 |---|---|
 | [source_boundaries.py](source_boundaries.py) | 原lib/__init__中的第三方、镜像与研究缓存边界；保留各检查器范围差异 |
 | [taxonomy.py](taxonomy.py) | 读取原轻量YAML子集中的分类与文档导航 |
-| [source_archive.py](source_archive.py) | 严格读取JSON载荷，核对字节、模式、SHA、当前位置、当前绑定与隔离复原 |
+| [source_archive.py](source_archive.py) | 严格读取JSON载荷，核对字节、模式、SHA、当前位置、当前绑定与隔离复原；调用方可显式标记已验证不可用的Gitlink子树，仅跳过其实时文件绑定，原始载荷与其他绑定仍核对 |
 | [book_views.py](book_views.py) | 复用既有链接规则及markdown-it-py，生成文集锚点、历史导航及目录，代码示例不改写 |
 | [tool_explanations.py](tool_explanations.py) | 绑定登记v1模板SHA，校验对象覆盖与18项顺序，安全渲染每对象独立三列表格 |
 

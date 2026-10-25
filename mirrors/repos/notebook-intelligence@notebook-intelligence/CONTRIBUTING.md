@@ -201,6 +201,52 @@ If `jlpm install` produces unexpected lockfile changes, your local Yarn version 
 
 If you work with a coding agent, [AGENTS.md](AGENTS.md) holds these `jlpm` and lockfile rules in a form agents pick up automatically.
 
+## Translations
+
+NBI's user interface is translated through JupyterLab's own translation system, so it follows the language a user picks under **Settings → Language** (which lists the JupyterLab language packs installed on the server). The gettext domain is `notebook_intelligence`. Catalogs live in the package:
+
+- `notebook_intelligence/locale/notebook_intelligence.pot` is the template of every translatable string. It is generated; do not edit it by hand.
+- `notebook_intelligence/locale/<locale>/LC_MESSAGES/notebook_intelligence.po` is one language, for example `de_DE`. These are the only catalog files translators edit.
+- The `.json` bundle the frontend loads is compiled from each `.po` when a wheel is built (`hatch_build.py`) and is not committed. The `jupyterlab.locale` entry point in `pyproject.toml` is how `jupyterlab_server` finds it.
+- Strings in `schema/plugin.json` stay English: `jupyterlab_server` translates settings schemas only from JupyterLab language packs, never from an extension's own catalog. Put user-visible text on the command instead (a toolbar button's tooltip falls back to its command's label and caption).
+
+### Writing translatable strings
+
+In TypeScript, take the bundle where the string is used and name the local `trans`, because the extractor only recognizes calls on a variable with that name:
+
+```ts
+import { getTrans, useTrans } from './i18n';
+
+const trans = getTrans(); // in a React component: const trans = useTrans();
+Notification.error(trans.__('Failed to save %1', path));
+trans._n('%1 file', '%1 files', count); // plurals; %1 is the count
+trans._p('toolbar', 'Run'); // a short label whose meaning depends on context
+```
+
+- Never build a sentence from pieces (`'Failed to ' + verb`) or with a template literal. Write the whole sentence with `%1`, `%2` placeholders so a translator can reorder it.
+- Never translate at module load (a top-level `const LABEL = trans.__(...)`): the bundle is bound when the plugin activates, so such a string stays English.
+- Keep markup out of translated strings. For a sentence with a link or other element inside it, use `interpolate` from `src/i18n.ts`, which translates the whole sentence and places the elements at its `%1`, `%2` placeholders, so a translator can reorder them.
+- Give short labels whose meaning depends on where they appear a context with `trans._p` (`trans._p('permission mode', 'Plan')`), so a translator can choose a different word for each use.
+- Pass string literals only. The extractor skips any other argument (a variable, a template literal), so the string would never be translated; a lint rule enforces this.
+- Leave in English anything that is not shown to the user as prose: prompts and instructions sent to a model, results that UI tools return to the model, log and console messages, telemetry, command ids, and configuration values. Product names (Notebook Intelligence, Claude Code, Codex) are not translated. Neither is text that styling or code matches on, such as the launcher category `Coding Agent`, which `style/base.css` pins to the top of the launcher.
+- Python strings are not extracted yet: `jupyterlab_server`'s Python translator reads only JupyterLab language packs' catalogs, so server text needs a loader of NBI's own first.
+
+In Jest, `tests/ts/pseudo-translator.ts` provides a bundle that wraps every string in `[!! … !!]`. Bind it with `initTranslations(pseudoTranslator)`, or provide it to components through `TranslationContext`, to check that a string goes through `trans`.
+
+### Updating catalogs
+
+The tooling needs the `i18n` extra (`pip install -e ".[i18n]"`) and Node.js:
+
+```bash
+jlpm i18n:extract               # regenerate the .pot after changing strings
+jlpm i18n:update                # merge it into every .po
+jlpm i18n:update -l ca_ES       # start a new language
+jlpm i18n:compile               # build the .json bundles locally to try a catalog
+jlpm i18n:check                 # what CI runs: fails when the .pot is out of date
+```
+
+To try a catalog, compile it, reinstall the package (`pip install -e .`) so the entry point is registered, install the matching JupyterLab language pack (for example `pip install jupyterlab-language-pack-de-DE`), and choose the language under **Settings → Language**. A string missing from a catalog falls back to English.
+
 ## Packaging
 
 See [RELEASE.md](RELEASE.md).
