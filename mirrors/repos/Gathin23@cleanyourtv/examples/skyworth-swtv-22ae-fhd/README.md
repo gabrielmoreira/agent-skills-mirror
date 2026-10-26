@@ -11,6 +11,11 @@ Tested setup for this Skyworth Google TV model.
 - **Firmware:** RTM7.230903.136
 - **Network ADB:** Port 5555
 
+This device info is a **second unit** of this model: the list in this folder (`debloat.txt`) was
+written on Android 14 (SDK 34), firmware `UKNV.260211.001`, and this Android 11 unit applied the same
+list. An entry this build does not ship reads the same as one it does, so run `pm list packages` and
+comment out what your set does not have before applying it.
+
 ## Stock launcher
 - **Launcher:** `com.google.android.apps.tv.launcherx` (`.home.HomeActivity`)
 - When restoring or building/installing, pass `STOCK_LAUNCHER=com.google.android.apps.tv.launcherx`.

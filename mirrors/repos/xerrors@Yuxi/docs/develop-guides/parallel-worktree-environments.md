@@ -38,9 +38,8 @@ COMPOSE_PROJECT_NAME=yuxi-dev-a
 YUXI_STATE_DIR=../.yuxi/slots/dev-a
 
 YUXI_API_PORT=25050
-YUXI_WEB_PORT=25173
+YUXI_FRONTEND_PORT=25173
 YUXI_CORS_ORIGINS=http://localhost:25173,http://127.0.0.1:25173
-YUXI_SANDBOX_PORT=28002
 YUXI_POSTGRES_PORT=25432
 YUXI_REDIS_PORT=26379
 YUXI_MINIO_API_PORT=29000
@@ -72,7 +71,7 @@ docker compose down  # 停止并保留数据
 
 ## 数据规则
 
-- 一个运行中的槽位只允许一套 API、worker 和 `storage-migrator` 写入。
+- 一个运行中的槽位只允许一套 API、worker 和 `app-init` 写入。
 - 同一槽位可以在执行 `docker compose down` 后交给兼容分支使用。
 - Schema 不兼容时创建新槽位，不修改 `yuxi_schema_migrations` 伪装兼容。
 - 知识库同时依赖 PostgreSQL、MinIO、Milvus 和 Neo4j；复制时必须在停机后备份整套状态。

@@ -13,7 +13,11 @@ what a user sees is in [Installation](INSTALLATION.md).
 The OMH TUI is the frontend bare `omh` opens. `omh` runs the user's own `hermes
 --tui` with `HERMES_TUI_DIR` pointing at OMH's packaged frontend, so Hermes'
 launcher still resolves the profile, resume target, working directory and
-session ownership, then starts OMH's frontend in place of its own. That
+session ownership, then starts OMH's frontend in place of its own. A session
+the person closes there exits with OMH's own code (`CLOSED_EXIT`) instead of
+0, which Hermes' launcher prints no exit summary for (it prints one, naming
+`hermes --tui --resume`, only for 0 and 130); `omh` then prints its exit
+card, with only the `omh` way back, and returns 0. That
 frontend spawns one child at a time, with the interpreter, import path and
 environment the launcher handed it, and speaks the stdio JSON-RPC of Hermes'
 `tui_gateway` to it. The child is `src/tui/attach/gateway_attach.py`, run by
@@ -27,7 +31,8 @@ systemd), a session ticket comes from the home's private control socket, and
 `websockets.asyncio.client.connect` dials the loopback socket Hermes names. It
 translates between the stdio wire and the gateway's canonical one only where
 they differ (the launch policy riding `session.create`, a detach for a close, a
-rewind as Hermes' revision-fenced `session.mutate`, images staged through
+rewind as Hermes' revision-fenced `session.mutate`, a steer or a stop carrying
+the execution generation of the turn it acts on, images staged through
 Hermes' `image.attach_bytes`, approvals and clarify questions the gateway asks
 as events), and passes everything else as it is. On any other Hermes it runs
 Hermes' stdio entry in its own process, as before. Which one is decided by what
@@ -37,13 +42,21 @@ for a gateway another runtime owns), it spawns it again the same way and
 resumes the session that was open (`session.resume`), at most 3 times in 60 s,
 as Hermes' own TUI does: the open question and those waiting behind it close
 unanswered, a turn that was running is reported lost and never sent again, and
-past that limit it exits as it would without recovery, naming `hermes --tui`.
+past that limit it exits as it would without recovery, naming `omh --resume
+<id>` (with `-p` for a named profile) when `omh` launched it, and `hermes --tui`
+otherwise. A reply that shows the gateway no longer speaks the declared
+contract ends the session the same way. The attach refusal still names Hermes'
+own terminal: the OMH TUI cannot open a session another runtime's gateway owns.
 
 ## What it sends and answers
 
 It relays only what the person types; on its own it reads Hermes' settings and
 command catalog as a session opens and, at a fresh start, `session.list` to
-name the last session under the banner, and, beyond opening and closing
+name the last session under the banner, reads the config file's mtime
+(`config.get mtime`) and Hermes' configured default model (`model.options`
+naming no session) at the launch, the mtime again at each turn's end and
+before each prompt that starts a turn, and the default again when the mtime
+moved, and, beyond opening and closing
 sessions (`client.capabilities`, `session.create`, `session.resume`,
 `session.close`), sends only what this bullet names below, plus
 `session.history` again when Hermes refuses a rewind; when no turn runs, a
@@ -89,10 +102,32 @@ what is shown, so yolo that Hermes reports for its own reasons is shown too,
 except that one saying approvals are on within 2 seconds of a confirmed on is
 held until the next, keeping accept shown. Ctrl+T and `/effort` set that
 session's reasoning effort through the same session-scoped call. A pick in the
-`/model` picker (bare `/model`, listed from `model.options`) is sent as Hermes'
-own `/model <name> --provider <slug> --session` through `slash.exec`, so it
-switches that session only, and a name or slug that could read as a flag is
-left out of the list. `/cost` and `/permissions` run Hermes' `/usage` and
+`/model` picker (bare `/model`, listed from `model.options`, or `/model
+--refresh`, listed from `model.options` with `refresh`), and a typed `/model
+<name>` with at most `--provider <slug>`, is sent as `config.set model` naming
+the session with the value `<name> --provider <slug> --session`, as Hermes'
+own TUI sends it (attached to a shared gateway, the gateway child sends it as
+the owner's `session.mutate model`), so it switches that session only; a typed
+`/model <name>` carries `--session` only when the person typed it, so on
+Hermes' stdio entry Hermes' own rule (`model.persist_switch_by_default`)
+decides whether it also persists, as for Hermes' typed `/model`; a name
+or slug that could read as a flag is left out of the list and is never sent,
+and a `/model` with any other flag goes to Hermes' `/model` as typed. The one
+switch the TUI makes on its own is this one: when Hermes' configured default
+model moved since it was last read (the person or the agent edited Hermes'
+config), it switches the session to the new default at the next turn boundary,
+never during a turn: at a turn's end, or before the prompt that starts the next
+turn, which waits for that check (an edit made while no turn ran then reaches
+the very next turn). It says so in one line; a refusal leaves the session as it was
+and says why. A target Hermes asks to confirm (cost, data policy, a large
+context), from a pick or from this switch, is a question the TUI asks in the
+slot, keeping the session's model first and selected; only the person's
+"switch anyway" sends it again with `confirm_expensive_model`, and Esc keeps
+the model; a prompt waiting on that check goes once the person answered, on
+the model they chose. It never switches because
+the session runs a model other than the default, so one picked with `/model`
+stays until the default itself moves (owner, 2026-10-25). `/cost` and
+`/permissions` run Hermes' `/usage` and
 `/approvals`; the latter shows or sets Hermes' persistent approval mode, as
 typed. Plan mode is the frontend's own flag, also turned on with Shift+Tab:
 while it is on, a prompt the person types goes to Hermes as `/plan <text>`.
@@ -134,7 +169,9 @@ its child's latest call and latest line (thinking, Hermes' progress line or its
 reply), running and failed nodes open, layers set apart by blank rows, folded
 to fit the view's cap before a count row cuts it; Down gives the tree the keys
 (the arrows and Space fold), and a new turn keeps the open run's lanes in the
-roster. Two keys in the agent list, and in the tree on the highlighted node's
+roster. A run that is over leaves the view as the turn that ended it ends (the
+owner's call of 2026-10-26); its end print in the transcript and `/dag` keep
+its graph. Two keys in the agent list, and in the tree on the highlighted node's
 child, act on that agent, and only on the person's keypress: `x` interrupts it
 (`subagent.interrupt`) once a second `x` confirms, and `s` steers it
 (`subagent.steer`) with text the person then types and sends; the TUI never
@@ -161,6 +198,22 @@ without the next, the byte is read as Esc, and the rest is dropped only if it
 arrives within 0.5 s after that. One that starts later and is split right after
 its first or second byte is read as keys.
 
+## The bot board
+
+The bot board (Ctrl+S, `/bots`, `src/tui/bot_board.py`) only reads. For the
+Hermes root the TUI runs under and each named profile beside it
+(`<root>/profiles/<name>/`), it reads `gateway_state.json` and `state.db`,
+the latter opened `mode=ro`, and immutable when no `-wal`, `-shm` or
+`-journal` is beside it (no connection has it open), so SQLite creates no
+`-wal` or `-shm` there; with a connection open, the read takes its read mark
+in the existing `-shm`, as every reader of the store does. It never opens the
+store outside SQLite, since closing a descriptor on it would drop this
+process's SQLite locks on it. It probes the pid a gateway record names with
+signal 0 and reads that process's start time and state (`/proc` on Linux,
+`sysctl(KERN_PROC_PID)` on macOS); it sends no other signal, and nothing to the
+gateway. It reads on one thread for the session, never on the render path,
+and reads nothing while the board is closed.
+
 ## Sessions it refuses, and what it writes
 
 It never attaches to a session another runtime owns: when the launcher sets
@@ -173,7 +226,12 @@ timestamp line). It only appends there (opened `O_APPEND` and `O_NOFOLLOW`,
 created mode 0600), reads at most the file's last 1 MiB and only when it is a
 regular file (no symlink or FIFO), and never writes an answer to a question
 Hermes asked or masked input there. The other files it writes are metadata: the
-launcher's active-session file (the session id), and what OMH's own HUD reader
+launcher's active-session file (the session id); when `omh` launched it, the
+file `omh` named in `OMH_TUI_SESSION_FILE`, in `omh`'s private 0700 launch
+directory (opened `O_NOFOLLOW`, mode 0600), holding the open session's id, the
+Hermes home it runs on and the ids of the sessions this launch had open
+before, which `omh` reads for its exit card and removes with the directory;
+and what OMH's own HUD reader
 and model-chain picker already write under the OMH home (the HUD fan-out cache
 and its lock, and the chains `/omh-model` saves), and a fallback marker at the
 path `omh` named, holding what the TUI printed about why it did not start,

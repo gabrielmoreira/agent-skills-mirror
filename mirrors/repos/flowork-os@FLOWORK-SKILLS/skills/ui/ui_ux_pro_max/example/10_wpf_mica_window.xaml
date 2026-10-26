@@ -1,0 +1,18 @@
+<Window x:Class="SovereignApp.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Sovereign Control Panel" Height="600" Width="900"
+        Background="{DynamicResource ApplicationBackgroundBrush}">
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <TextBlock Text="System Verification Dashboard" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource TextForegroundBrush}"/>
+        <Border Grid.Row="1" Margin="0,16,0,0" CornerRadius="8" Background="{DynamicResource CardBackgroundBrush}" BorderBrush="{DynamicResource CardBorderBrush}" BorderThickness="1">
+            <StackPanel Margin="16">
+                <TextBlock Text="Active Node Telemetry" FontSize="16" FontWeight="SemiBold"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>

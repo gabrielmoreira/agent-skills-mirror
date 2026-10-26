@@ -23,7 +23,11 @@ its base URL.
   (streaming or not) go to the upstream with the relay's key. The hosted menu contains
   only `Qwen/Qwen3.6-27B-FP8`, including its image-input support for chat and GUI
   operation. Image and video generation require a provider and API key configured by
-  the person on their device.
+  the person on their device. A streamed turn that waits for one of the relay's
+  `CHAT_CONCURRENCY` slots, or for a slow provider's first bytes, hears about it: chunks
+  with `choices: []` and a `nanomuse: {phase: queued | working, ahead, waited_ms}` field
+  while it queues, SSE comment lines while the provider thinks (0.31; shapes every
+  client already skips; details in [docs/cloud.md](../docs/cloud.md#protocol)).
 - **Ledger.** Every request is charged from the account's grant using the
   upstream's own `usage` (for streams, from the final usage chunk). Cheaper
   models are charged with a multiplier; pictures cost a flat amount. One
@@ -68,6 +72,7 @@ Errors carry a stable `code` the app can turn into a sentence:
 | 400 | `phone_region` | a number the SMS sender cannot reach (the Aliyun sender covers mainland China only); e-mail works everywhere |
 | 400 | `code_wrong` / `code_expired` | verification code |
 | 400 | `channel_unsupported` | this relay's `CODE_SENDER` does not send codes that way (SMS or e-mail); the sentence says which |
+| 429 | `code_too_often` | too many codes for the identifier in ten minutes or from the address in an hour, or the SMS carrier's own limit for the number (Aliyun: one a minute, five an hour, ten a day); wait |
 | 502 | `send_failed` | the SMS or mail provider refused or did not answer; the code was not sent |
 | 400 | `bad_credentials` / `password_short` / `password_long` / `password_weak` / `password_wrong` / `password_required` | the password sign-in and the password form (`bad_credentials` is 401; `locked` is 429 after too many wrong passwords) |
 | 404 | `no_session` | the sign-in to revoke no longer exists |
@@ -93,7 +98,7 @@ Errors carry a stable `code` the app can turn into a sentence:
 | 429 | `too_many_in_flight` | `MAX_IN_FLIGHT` requests of the account are already under way; `retry_after` in the body |
 | 429 | `provider_busy` | the image provider answered 429 even after the relay queued and retried (`IMAGE_CONCURRENCY`, `IMAGE_RETRIES`); `retry_after` seconds in the body |
 | 400 | `content_rejected` | the provider's content check declined the words (a chat request or an image prompt); the provider's own line rides along under `upstream` |
-| 400 | `upstream_400` | any other refusal of the request itself; the provider's message passed through |
+| 400 | `upstream_400` | any other refusal of the request itself; the provider's message passed through (read from an object or, as Gemini's OpenAI-compatible endpoint sends it, from the first object of a list) |
 | 502 | `upstream` / `upstream_auth` / `upstream_model` / `upstream_busy` / `upstream_<status>` | the provider failed; a plain sentence, the provider's line under `upstream` |
 | 503 | `upstream_unconfigured` | the key for the requested chat or media provider is missing |
 | 403 | `signup_closed` | the operator closed sign-ups (0.22, *Controls*); an identifier without an account gets this before any code is sent, existing accounts sign in as before |
@@ -733,7 +738,10 @@ awaiting the first token, streaming) and age, the last hour by minute with
 outcomes, latency percentiles and output tokens, the newest finished calls,
 and a verdict (smooth, busy, saturated) from the last ten minutes' queue share
 and queue P95; *Usage* (`/v1/admin/analytics/usage`): the day × model matrix
-by requests, cost, tokens or accounts, and a click on a day opens it
+by requests, cost, tokens, cached tokens or accounts, how much of the prompts
+the provider's cache served (overall and per model, from the ledger; and for
+the turns people ran on keys of their own and sent up, per provider and
+model, from the record), and a click on a day opens it
 (`/v1/admin/analytics/day`): hours × models, platforms, outcomes by model,
 latency by hour, the provider's error reasons, the top accounts; *Platforms*
 (`/v1/admin/analytics/platforms`): Android, iOS, desktop, the runtime, the

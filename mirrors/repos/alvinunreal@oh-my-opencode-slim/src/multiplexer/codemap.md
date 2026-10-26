@@ -353,6 +353,7 @@ the cwd. Herdr, kitty, and WezTerm always set their native cwd flags.
 | `tmux/index.ts` | tmux-specific implementation |
 | `zellij/index.ts` | zellij-specific implementation |
 | `herdr/index.ts` | herdr-specific implementation |
+| `herdr/layout-equalize.ts` | Herdr socket-backed agent-pane equalization |
 | `kitty/index.ts` | kitty-specific implementation |
 | `wezterm/index.ts` | WezTerm-specific implementation |
 | `cmux/index.ts` | cmux-tui new-generation TUI adapter |

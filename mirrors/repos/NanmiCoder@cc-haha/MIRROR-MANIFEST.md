@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `NanmiCoder/cc-haha` — 26 default patterns, 5 followed patterns, 28 file(s) materialized.
+Mirror of `NanmiCoder/cc-haha` — 26 default patterns, 5 followed patterns, 29 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `NanmiCoder/cc-haha` — 26 default patterns, 5 followed patterns, 28 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 5 |
-| Files         | 28 |
+| Files         | 29 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -81,16 +81,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 16 | ✓ | [`docs/en/desktop/skills.md`](docs/en/desktop/skills.md) |
 | 17 | ✓ | [`docs/en/internals/skills.md`](docs/en/internals/skills.md) |
 | 18 | ✓ | [`docs/internals/skills.md`](docs/internals/skills.md) |
-| 19 | ✓ | [`site/AGENTS.md`](site/AGENTS.md) |
-| 20 | ✓ | [`src/AGENTS.md`](src/AGENTS.md) |
-| 21 | ✓ | [`src/skills/bundled/claude-api/SKILL.md`](src/skills/bundled/claude-api/SKILL.md) |
-| 22 | ✓ | [`src/skills/bundled/imagegen/SKILL.md`](src/skills/bundled/imagegen/SKILL.md) |
-| 23 | ✓ | [`src/skills/bundled/verify/SKILL.md`](src/skills/bundled/verify/SKILL.md) |
-| 24 | → | [`.github/pull_request_template.md`](.github/pull_request_template.md) |
-| 25 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 26 | → | [`docs/internals/contributing.md`](docs/internals/contributing.md) |
-| 27 | → | [`LICENSING.md`](LICENSING.md) |
-| 28 | → | [`THIRD_PARTY_LICENSES.md`](THIRD_PARTY_LICENSES.md) |
+| 19 | ✓ | [`mobile/AGENTS.md`](mobile/AGENTS.md) |
+| 20 | ✓ | [`site/AGENTS.md`](site/AGENTS.md) |
+| 21 | ✓ | [`src/AGENTS.md`](src/AGENTS.md) |
+| 22 | ✓ | [`src/skills/bundled/claude-api/SKILL.md`](src/skills/bundled/claude-api/SKILL.md) |
+| 23 | ✓ | [`src/skills/bundled/imagegen/SKILL.md`](src/skills/bundled/imagegen/SKILL.md) |
+| 24 | ✓ | [`src/skills/bundled/verify/SKILL.md`](src/skills/bundled/verify/SKILL.md) |
+| 25 | → | [`.github/pull_request_template.md`](.github/pull_request_template.md) |
+| 26 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 27 | → | [`docs/internals/contributing.md`](docs/internals/contributing.md) |
+| 28 | → | [`LICENSING.md`](LICENSING.md) |
+| 29 | → | [`THIRD_PARTY_LICENSES.md`](THIRD_PARTY_LICENSES.md) |
 
 ---
 

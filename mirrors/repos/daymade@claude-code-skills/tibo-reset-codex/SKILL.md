@@ -122,14 +122,20 @@ stdin/heredoc 及 Python/Node 子进程调用却可能报 `Failed to start ego l
   聚合器后再次用空结果驳回用户。
 - 用户只问当前剩余或下一次周期重置 → 同样进入账号 SOP 的实时查询；需要解释历史跳变时
   再走 §2 的 rollout 快照。当前余额查询不要求先跑整段历史重建或重查公告。
-- 想跳过网页手动登录、把日常 Chrome 已登录的 Google 账号直接接到隔离查询 profile →
-  `scripts/launch-usage-profile.sh <a|b>` 建/开隔离 Chrome profile，`scripts/import-google-cookies.py --profile <a|b>`
-  搬运 `.google.com` 系 cookie（机制与安全论证见脚本自身 docstring，2026-09-15 验证过）。
+- 想迁移日常 Chrome 中**现成的 ChatGPT 登录态**到隔离查询 profile → 先读
+  [Cookie Copy 接入](references/browser-session-migration.md)，加载独立 `cookie-copy`
+  执行复制与身份验证，再由本 Skill 验证账号绑定的真实额度。先安装缺失依赖并读回；
+  不把复制成功或仅登录成功当作额度查询完成。
+- 想把日常 Chrome 的 Google Cookie 接到隔离查询 profile →
+  先按 [Cookie Copy 接入](references/browser-session-migration.md) 准备依赖；
+  `scripts/launch-usage-profile.sh <a|b>` 建/开隔离 Chrome profile，关闭目标后用
+  `scripts/import-google-cookies.py --profile <a|b>` 搬运 `.google.com` 系 Cookie。
 - 想**自动**驱动隔离 Chrome 查第二账号用量 → `node scripts/read-usage-profile.cjs`（依赖
   `~/.chrome-profiles/tibo-cdp/` 的 playwright；默认 profile a）。读模式直接解析当前登录账号
   usage；加 `--drive-login` 在未登录时自动点 `Continue with Google` 驱动到 Google 账号选择器
   并列出全部账号。**实测边界（2026-09-16）**：隔离 profile 无 Google 会话 token，账号选择器
-  每个账号都标 `Signed out`，免密直登做不到——密码/验证码交人工，首登一次后读模式才全自动。
+  每个账号都标 `Signed out`；这只说明当次 Google 路线未取得活会话，不否定上面的
+  ChatGPT 现成会话迁移。密码/验证码遵守当前宿主的人工边界，登录后再验证读模式。
   踩过的可执行细节（代理、真实输入通道对哪个按钮有效、登录态判据、OAuth 轮询）见
   [account-usage.md 隔离 Chrome 自动化节](references/account-usage.md#隔离-chrome-profile-自动化真实输入通道的适用边界2026-09-16-实测)。
 
@@ -231,15 +237,35 @@ stdin/heredoc 及 Python/Node 子进程调用却可能报 `Failed to start ego l
    尾巴凑成预测窗口，也不凭经验添加执行宽限。
 
 **烧额度任务的授权边界。** 接受「烧额度」类授权（让某会话持续跑、直到额度耗尽或跑到某
-时刻）时，授权合同当场写明三项，缺任一项 = 授权不可执行，当场指出、不带病开跑：
+时刻）时，授权合同当场逐项写明下列内容，缺任一项 = 授权不可执行，当场指出、不带病开跑：
 
 1. **绝对停止时刻**：相对时长（「再烧两小时」）与事件锚点（「烧到官宣落地」）都当场
    换算成绝对时刻，并复述回写给用户确认；
-2. **停止执行人**：到点由谁让它停——燃烧会话自停、监测轮叫停、还是用户手动；
+2. **停止执行人**：到点由谁让它停——runner 自停、已验证的停止执行器、还是用户手动；
 3. **停止方式**：自带超时自停、对话内要求停止，还是合同逐条点名授权的 kill。
 
 默认形态是**自带停止**：runner 到点自停，监测轮只兜底复核它是否真的停了，不承担计时
-职责。处置阶梯：发现停止时刻已过而消耗仍在继续 → 永远可以立即报告用户并要求燃烧会话
+职责；定期监测不能充当到点停止器。未配置可执行停止方式时不要开跑。
+
+**可选本地执行器**：宿主已安装 `burn-stopper` 时，先读取其维护者提供的 README；
+本机既有入口为 `~/scripts/burn-stopper/README.md`。这是环境可选工具，不随本公共 Skill 分发，
+不把该路径存在或本机私有脚本当作其他宿主的前提。未安装、依赖缺失或宿主不支持时，
+如实报告 helper 不可用；已有合法的 runner timeout 自停方式仍可用，不借此自动安装或扩大终止权限。
+
+按 README 的实际接口执行：核对本次点名目标、实例/会话归属、停止授权及带时区的绝对 deadline，
+并与当前时刻比较；已过期不新建调度，进入下述到期处置。仅授权 runner 自停时继续用其 timeout，
+不把自停授权解释为 helper 发送 SIGTERM 的授权。已明确授权 helper 的停止方式时，使用 README 的 `arm` 命令，
+按其示例提供 `--at`、`--targets`、`--label` 与 `--note`；授权来源记入 note，note 本身不授予权限。
+武装后用同一 label 的 `status` 读回 deadline、generation、目标与
+`scheduler.plist_exists`、`scheduler.launchd_loaded`，不能只凭 `arm` 回执宣称已受保护。
+工具对会话与共享进程的归属检查、SIGTERM 范围和取消方法以其 README 及现有 kill-guard SOP 为准，
+不在这里复制另一套进程操作流程。
+
+到点读执行报告：`fired` 仍按逐目标退出证据核对；`fired-partial` 逐条报告跳过/幸存者，
+`stale-skipped` 表示迟到未执行，`armed` 只表示任务记录。CLI 退出 0 不等于全部停下；
+需要保留或改作他用的会话先按 README disarm 并读回，再继续使用。
+
+处置阶梯：发现停止时刻已过而消耗仍在继续 → 永远可以立即报告用户并要求燃烧会话
 自停；**kill 仅限当次合同逐条点名的会话/PID 范围**，不写成可复用的通用权力，操作序列按
 `~/.claude/references/irreversible-gates.md`「终止进程」节执行。相对时刻换算与「已过期不建
 调度」的对表规则见全局 CLAUDE.md「中断恢复后先对表」，本节不复述。
@@ -725,8 +751,10 @@ print(f'\n非单调回退次数: {back}   （只报告形状，不证明账号�
 "
 ```
 
-**归零只能报区间，不能报时刻。** 相邻快照可能相隔数小时；写「落地在 A–B 之间」，
-别把「首个见到 0% 的快照时间」当成到账时刻。**另外快照只更新到用户最后一次跑
+**归零默认报区间，不报时刻。** 相邻快照可能相隔数小时；写「落地在 A–B 之间」，
+别把「首个见到 0% 的快照时间」当成到账时刻。秒级相邻快照把迁移本身 pin 到秒级是
+例外：台账评分按 [forecast-feedback](references/forecast-feedback.md) 的 occurrence
+规则记，报告措辞同此例外（2026-10-25 实测 3 秒迁移）。**另外快照只更新到用户最后一次跑
 Codex 的时刻**——下「至今没有重置」之前先看最新快照有多旧，那之后是盲区。
 按账号 SOP 读取实时接口或产品页可以确认当前状态，但补不上过去的历史盲区。
 

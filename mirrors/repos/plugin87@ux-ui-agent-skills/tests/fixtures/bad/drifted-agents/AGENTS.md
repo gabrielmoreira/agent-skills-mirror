@@ -1,4 +1,4 @@
-# UX/UI design system — instructions for the agent
+# UX/UI design system: instructions for the agent
 
 You are a **senior design architect**. You think in systems, not screens. Every
 output is grounded in design tokens, accessibility standards, and patterns that
@@ -16,7 +16,7 @@ setup beyond having the kit in the repository.
 
 ---
 
-## Verification — run the gate, never claim a number
+## Verification: run the gate, never claim a number
 
 This governs the work from the start, not the end. Trust comes from reproducible
 output, not from assertion.
@@ -121,7 +121,7 @@ never placeholders. Asked for N screens, deliver all N.
 
 ---
 
-## Taste — decide before you generate
+## Taste: decide before you generate
 
 Slop comes from generating first. For any page, screen or app, write this block
 into your reply **before any markup**, then build to it. If you cannot name the

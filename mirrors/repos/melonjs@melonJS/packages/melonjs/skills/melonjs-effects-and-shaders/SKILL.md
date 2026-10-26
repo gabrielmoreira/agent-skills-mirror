@@ -136,8 +136,19 @@ pixel keep to the sprite's own frame.** `GlowEffect`, `OutlineEffect`,
 `SwayEffect`, `PixelateEffect` and `BloomEffect` read the neighbouring frames
 as transparent, as if the sprite were drawn on its own, so they never show
 along its edges and the atlas needs no padding for them. Past the texture's own
-edge (a standalone image, or the outside of an atlas) nothing changes. Their `textureSize` is still the size of the whole atlas image: it is
-what turns a width in texels into a distance in the texture.
+edge (a standalone image, or the outside of an atlas) nothing changes.
+
+**Their widths, offsets and sizes are in pixels of the texture they draw, with
+nothing to pass.** Each of those effects takes the size of what it draws: the
+sprite's whole texture (the atlas image, not the frame), the screen for a
+camera's effect, a mesh's texture. Do not pass `textureSize` to get this: a
+`textureSize` (or `setTextureSize()`) fixes the size instead, for a width
+meant in some other texture's pixels.
+
+```js
+// 2 pixels of the sprite's art, whatever the size of its atlas
+sprite.addPostEffect(new OutlineEffect(app.renderer, { width: 2 }));
+```
 
 `SwayEffect` leans a sprite or a layer from side to side, as if in a breeze: the
 top sways most and everything from its `anchor` row down stays put, so a tree's
@@ -217,9 +228,8 @@ app.viewport.addPostEffect(
 );
 ```
 
-Its tap offsets are in texels, so it takes its size from the renderer at
-construction; call `setTextureSize(w, h)` from an `event.ONRESIZE` handler, or
-when applying it to something smaller than the frame.
+Its `radius` is in texels of what it filters, the screen on a camera, and it
+follows a resize by itself.
 
 **`ToneMappingEffect` goes after it, and goes last.** Bloom spreads the bright
 parts; the tone map is what stops the sum of the two clipping flat at white,
@@ -499,6 +509,38 @@ loader.preload([{ name: "ramp", type: "shader", data: myFragmentBody }]);
 label.addPostEffect(loader.getShader("ramp"));
 ```
 
+### Sprites sharing one effect share one draw
+
+Sprites drawn one after the other through the **same** effect instance are one
+draw call, as plain sprites are, even when they come from different frames of
+an atlas: a hundred enemies outlined by one shared `OutlineEffect` draw once.
+Each still draws with the values it was given: a uniform set to a **new**
+value draws the sprites queued before it first (setting the value it already
+has changes nothing). What splits the batch:
+
+- a uniform taking a new value between two sprites: give a few sprites the
+  same value one after the other, rather than a different one each;
+- a different texture (the effect path samples one texture per draw);
+- a different effect instance, or a sprite without the effect in between;
+- a `noise_uv` effect on sprites of different frames or sizes (its rect is
+  per sprite);
+- a `screen_texture` effect, which draws each sprite on its own, as each one
+  samples a capture of everything drawn before it.
+
+So share one instance (the loader's `"shader"` type hands one back, see
+above) rather than constructing an effect per sprite: *n* instances are *n*
+draws as well as *n* programs. One you construct yourself and share needs
+`effect.shared = true`, or the first renderable destroyed destroys it for the
+others (the loader's are marked shared already):
+
+```js
+const outline = new OutlineEffect(renderer, { color: [1, 1, 1] });
+outline.shared = true; // you destroy it, when no enemy is left
+for (const enemy of enemies) {
+    enemy.addPostEffect(outline);
+}
+```
+
 ### Declare a level's effects with that level's assets
 
 An effect the loader knows about can be prepared before anything draws it; an
@@ -689,6 +731,7 @@ same question after construction.
 | ported shader renders upside down | a hand-bound `toFrameTexture()` capture — GL is bottom-up, WebGPU top-down |
 | shadow/smear offset flips on some draws | vertical UV offset not multiplied by `uUVYDir` |
 | frame rate collapses with many blended sprites | an *advanced* mode (overlay, darken, …) — each draw is a capture plus a composite |
+| many sprites with the same effect still cost a draw each | an effect instance per sprite, or a uniform set to a different value per sprite — share one instance and group sprites by value |
 | animated shader never moves | `setTime` fed milliseconds, or the shader declares no `uTime` |
 | squash and stretch only bulges, the height never changes, under Matter | the adapter rewrites `currentTransform` every step; set the scale from the sprite's `update()` |
 | `SquishEffect` squishes the whole screen instead of the sprite | it is chained with another effect, or on the camera; give the sprite it alone |

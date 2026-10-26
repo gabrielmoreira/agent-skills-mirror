@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `notebook-intelligence/notebook-intelligence` — 26 default patterns, 13 followed patterns, 19 file(s) materialized.
+Mirror of `notebook-intelligence/notebook-intelligence` — 26 default patterns, 14 followed patterns, 20 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `notebook-intelligence/notebook-intelligence` — 26 default patterns,
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 13 |
-| Files         | 19 |
+| Followed pats | 14 |
+| Files         | 20 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -55,6 +55,7 @@ Mirror of `notebook-intelligence/notebook-intelligence` — 26 default patterns,
 - `README.md`
 - `docs/troubleshooting.md`
 - `SECURITY.md`
+- `docs/translating.md`
 - `RELEASE.md`
 - `docs/acp.md`
 - `docs/chatbook.md`
@@ -85,11 +86,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 12 | → | [`docs/chatbook.md`](docs/chatbook.md) |
 | 13 | → | [`docs/performance-diagnostics.md`](docs/performance-diagnostics.md) |
 | 14 | → | [`docs/rulesets.md`](docs/rulesets.md) |
-| 15 | → | [`docs/troubleshooting.md`](docs/troubleshooting.md) |
-| 16 | → | [`PRIVACY.md`](PRIVACY.md) |
-| 17 | → | [`README.md`](README.md) |
-| 18 | → | [`RELEASE.md`](RELEASE.md) |
-| 19 | → | [`SECURITY.md`](SECURITY.md) |
+| 15 | → | [`docs/translating.md`](docs/translating.md) |
+| 16 | → | [`docs/troubleshooting.md`](docs/troubleshooting.md) |
+| 17 | → | [`PRIVACY.md`](PRIVACY.md) |
+| 18 | → | [`README.md`](README.md) |
+| 19 | → | [`RELEASE.md`](RELEASE.md) |
+| 20 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

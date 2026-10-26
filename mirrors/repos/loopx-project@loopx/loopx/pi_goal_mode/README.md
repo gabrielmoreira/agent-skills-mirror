@@ -16,6 +16,10 @@ into a LoopX-governed visible goal loop.
   binding can resume its registered lane; an unbound session retains the native
   identity-selection packet. A sole candidate is never automatic takeover
   authorization. Sessions without a file retain explicit identity selection.
+  Inspection (`/loopx`, `/loopx status`, `/loopx history`, `/loopx list`) never
+  creates or changes session authority. Only explicit guided startup issues the
+  activation token and locks its Goal, Agent, registry and capabilities, so
+  inspecting a project first cannot constrain a later startup.
   `/loopx resume` re-arms auto-continuation after a user-driven pause or an
   aborted run.
 - **`loopx_goal_activate`** — agent-callable tool. Binds the current session to

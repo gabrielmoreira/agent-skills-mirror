@@ -228,8 +228,10 @@ serde_json-faithful scanner, exit 1 for a bad body and 5 for a bad line).
 
 ### Sessions, policy, history
 
-`workspace/session/`: env, cwd, functions, jobs; stores for RAM, disk,
-redis, s3. `policy/`: `pre_command`, `pre_session`, profiles and scripts;
+`workspace/session/`: env, cwd, functions, jobs, persisted in a
+`NamespaceStore` (`workspace/mount/namespace/store`), the one store the
+node table uses too: RAM, disk, redis, or s3 through a record client.
+`policy/`: `pre_command`, `pre_session`, profiles and scripts;
 builtins `mount_root`, `output_cap`, `permissions`. `observe/`: a hidden
 `Observer` records every top-level command; `/.bash_history` and the
 `history` builtin are two views of that one recording.
@@ -249,9 +251,11 @@ through `ctx.vfs`.
 
 ### FUSE and FSKit
 
-`mount/` (python) and `node/src/mount/`: `MountCore` owns the semantics
-every kernel or protocol adapter shares (FUSE, SFTP, codex-exec), async on
-both hosts with per-file ordering; `classify_error` is the one errno table.
+`mount/` (python) and `core/src/mount/` (node's adapters in
+`node/src/mount/`): `MountCore` owns the semantics every kernel or protocol
+adapter and every runtime's open files share (FUSE, SFTP, NFS, codex-exec),
+async on both hosts with per-file ordering; `classify_error` is the one
+errno table.
 `fuse/` and `node/src/fuse/`: `MirageFS` is the libfuse adapter and owns the
 sync bridge. `direct_io` plus `attr_timeout=0` keep unknown sizes correct.
 Python fskit writes need `fuse/darwin.py`. One FUSE mount per process on

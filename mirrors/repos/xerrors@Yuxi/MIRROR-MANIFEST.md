@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `xerrors/Yuxi` — 26 default patterns, 7 followed patterns, 21 file(s) materialized.
+Mirror of `xerrors/Yuxi` — 26 default patterns, 11 followed patterns, 27 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `xerrors/Yuxi` — 26 default patterns, 7 followed patterns, 21 file(s
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 7 |
-| Files         | 21 |
+| Followed pats | 11 |
+| Files         | 27 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -58,6 +58,10 @@ Mirror of `xerrors/Yuxi` — 26 default patterns, 7 followed patterns, 21 file(s
 - `docs/develop-guides/contributing.md`
 - `docs/develop-guides/parallel-worktree-environments.md`
 - `docs/develop-guides/decisions/README.md`
+- `docs/advanced/deployment.md`
+- `docs/mechanisms/mcp.md`
+- `docs/develop-guides/decisions/proposed/2026-09-30-agent-view-frontend-refactor.md`
+- `docs/agents/session-cooperation.md`
 
 ## File Index
 
@@ -67,25 +71,31 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`backend/AGENTS.md`](backend/AGENTS.md) |
-| 3 | ✓ | [`backend/package/yuxi/agents/skills/buildin/deep-research/SKILL.md`](backend/package/yuxi/agents/skills/buildin/deep-research/SKILL.md) |
-| 4 | ✓ | [`backend/package/yuxi/agents/skills/buildin/html-preview/SKILL.md`](backend/package/yuxi/agents/skills/buildin/html-preview/SKILL.md) |
-| 5 | ✓ | [`backend/package/yuxi/agents/skills/buildin/image-gen/SKILL.md`](backend/package/yuxi/agents/skills/buildin/image-gen/SKILL.md) |
-| 6 | ✓ | [`backend/package/yuxi/agents/skills/buildin/knowledge-base/SKILL.md`](backend/package/yuxi/agents/skills/buildin/knowledge-base/SKILL.md) |
-| 7 | ✓ | [`backend/package/yuxi/agents/skills/buildin/mysql-reporter/SKILL.md`](backend/package/yuxi/agents/skills/buildin/mysql-reporter/SKILL.md) |
+| 3 | ✓ | [`backend/yuxi/modules/extensions/skills/builtin/chat-widgets/SKILL.md`](backend/yuxi/modules/extensions/skills/builtin/chat-widgets/SKILL.md) |
+| 4 | ✓ | [`backend/yuxi/modules/extensions/skills/builtin/deep-research/SKILL.md`](backend/yuxi/modules/extensions/skills/builtin/deep-research/SKILL.md) |
+| 5 | ✓ | [`backend/yuxi/modules/extensions/skills/builtin/image-gen/SKILL.md`](backend/yuxi/modules/extensions/skills/builtin/image-gen/SKILL.md) |
+| 6 | ✓ | [`backend/yuxi/modules/extensions/skills/builtin/knowledge-base/SKILL.md`](backend/yuxi/modules/extensions/skills/builtin/knowledge-base/SKILL.md) |
+| 7 | ✓ | [`backend/yuxi/modules/extensions/skills/builtin/mysql-reporter/SKILL.md`](backend/yuxi/modules/extensions/skills/builtin/mysql-reporter/SKILL.md) |
 | 8 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 9 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
-| 10 | ✓ | [`docs/develop-guides/changelog.md`](docs/develop-guides/changelog.md) |
-| 11 | ✓ | [`docs/develop-guides/design.md`](docs/develop-guides/design.md) |
-| 12 | ✓ | [`docs/develop-guides/documentation-guidelines.md`](docs/develop-guides/documentation-guidelines.md) |
-| 13 | ✓ | [`docs/develop-guides/roadmap.md`](docs/develop-guides/roadmap.md) |
-| 14 | ✓ | [`web/AGENTS.md`](web/AGENTS.md) |
-| 15 | → | [`ARCHITECTURE.md`](ARCHITECTURE.md) |
-| 16 | → | [`docs/develop-guides/contributing.md`](docs/develop-guides/contributing.md) |
-| 17 | → | [`docs/develop-guides/decisions/README.md`](docs/develop-guides/decisions/README.md) |
-| 18 | → | [`docs/develop-guides/engineering-trust.md`](docs/develop-guides/engineering-trust.md) |
-| 19 | → | [`docs/develop-guides/parallel-worktree-environments.md`](docs/develop-guides/parallel-worktree-environments.md) |
-| 20 | → | [`docs/develop-guides/spec-loop.md`](docs/develop-guides/spec-loop.md) |
-| 21 | → | [`docs/develop-guides/testing-guidelines.md`](docs/develop-guides/testing-guidelines.md) |
+| 9 | ✓ | [`docs/advanced/sandbox-operations.md`](docs/advanced/sandbox-operations.md) |
+| 10 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
+| 11 | ✓ | [`docs/agents/agents-config.md`](docs/agents/agents-config.md) |
+| 12 | ✓ | [`docs/develop-guides/changelog.md`](docs/develop-guides/changelog.md) |
+| 13 | ✓ | [`docs/develop-guides/design.md`](docs/develop-guides/design.md) |
+| 14 | ✓ | [`docs/develop-guides/documentation-guidelines.md`](docs/develop-guides/documentation-guidelines.md) |
+| 15 | ✓ | [`docs/develop-guides/roadmap.md`](docs/develop-guides/roadmap.md) |
+| 16 | ✓ | [`frontend/AGENTS.md`](frontend/AGENTS.md) |
+| 17 | → | [`ARCHITECTURE.md`](ARCHITECTURE.md) |
+| 18 | → | [`docs/advanced/deployment.md`](docs/advanced/deployment.md) |
+| 19 | → | [`docs/agents/session-cooperation.md`](docs/agents/session-cooperation.md) |
+| 20 | → | [`docs/develop-guides/contributing.md`](docs/develop-guides/contributing.md) |
+| 21 | → | [`docs/develop-guides/decisions/proposed/2026-09-30-agent-view-frontend-refactor.md`](docs/develop-guides/decisions/proposed/2026-09-30-agent-view-frontend-refactor.md) |
+| 22 | → | [`docs/develop-guides/decisions/README.md`](docs/develop-guides/decisions/README.md) |
+| 23 | → | [`docs/develop-guides/engineering-trust.md`](docs/develop-guides/engineering-trust.md) |
+| 24 | → | [`docs/develop-guides/parallel-worktree-environments.md`](docs/develop-guides/parallel-worktree-environments.md) |
+| 25 | → | [`docs/develop-guides/spec-loop.md`](docs/develop-guides/spec-loop.md) |
+| 26 | → | [`docs/develop-guides/testing-guidelines.md`](docs/develop-guides/testing-guidelines.md) |
+| 27 | → | [`docs/mechanisms/mcp.md`](docs/mechanisms/mcp.md) |
 
 ---
 

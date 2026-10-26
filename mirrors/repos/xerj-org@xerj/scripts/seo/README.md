@@ -58,6 +58,7 @@ scripts/seo/urlmap.py       ─┘                      └─> a spliced block 
 
 landing/**/*.html  ── fix_heads.py ──> the <!-- seo:begin --> … <!-- seo:end --> block in every <head>, and the GA4 snippet at the top of <head>
 landing/**/*.html  ── fix_links.py ──> every internal <a href>, plus the site-map footer block
+landing/**/*.html  ── set_nav.py ───> the primary nav in every page
 landing/**/*.html  ── gen_sitemap.py ─> landing/sitemap.xml
 (brand tokens)     ── mk_og_card.py ──> landing/og/xerj-card.png
 ```
@@ -76,6 +77,7 @@ landing/**/*.html  ── gen_sitemap.py ─> landing/sitemap.xml
 | every internal `<a href>` in `landing/` | `fix_links.py` | write the href you mean; the pass rewrites it to the served form |
 | `landing/sitemap.xml` | `gen_sitemap.py` | it is derived from the filesystem and from git |
 | `landing/og/xerj-card.png` | `mk_og_card.py` | edit the rasteriser; the brand tokens come from `landing/style.css` |
+| the primary nav (`<nav class="nav">`) in every page, and in the `build_articles.py` templates | `set_nav.py` | edit `LEFT` / `RIGHT` in `set_nav.py`, then run it; `--check` verifies |
 | the `<a class="nav-stars">` GitHub stars badge in every primary nav (its fallback count) | `stars_badge.py` | run it to refresh the count from the GitHub API; `--check` verifies; `landing/theme.js` refreshes the number in the browser |
 
 Generated article pages and twins carry a first-line marker:

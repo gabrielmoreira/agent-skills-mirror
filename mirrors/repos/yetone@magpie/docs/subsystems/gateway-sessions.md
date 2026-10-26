@@ -264,6 +264,78 @@ and `TestGatewayConversationClientRequestPrefixedSession` for the two rules abov
 `gateway-conversations.test.cjs`, `sessions-talk.test.cjs`,
 `sessions-gateway-delete.test.cjs`, and locale checks.
 
+## Carrying a session on in another agent
+
+A session row's Continue in (`carryPick` in the Sessions plugin's
+`client.js`) lists the other agents that can go on from it, from
+`Session.Carry` (`carries` in
+[`internal/sessions/carry.go`](../../internal/sessions/carry.go)). Nothing is
+offered for a read-only or WSL session, or one with no file or folder. There
+are two kinds:
+
+- **From the file as it is.** oh-my-pi forks a Pi session: `Carry.Command`
+  is `omp --fork <file>` run in the session's folder (#845).
+- **Converted** (`Carry.Convert`, no command). A Claude Code session can go
+  on in Codex, and a Codex one in Claude Code, when the other agent is
+  installed (`agentThere`: its binary on the PATH or its config folder,
+  checked at most every 30s). Listing converts nothing. When the user picks
+  it, `POST /api/sessions/carry` `{agent, id, to, open}` calls
+  `sessions.CarryOver`
+  ([`carry_convert.go`](../../internal/sessions/carry_convert.go)). It writes
+  a **new** session in the target's own store and returns `{agent, id,
+  command}`, the target's resume line. The page copies it, or with `open`
+  (macOS app only) opens it in the session terminal.
+
+What a conversion carries:
+
+- **The user's and the agent's words, in order.** For Claude Code, the
+  chain of `parentUuid` from the last main-thread line back to the latest
+  compact boundary. Sidechains, `isMeta` lines and Claude Code's own text
+  are left out: slash-command echoes, `<system-reminder>`, the local-command
+  caveat. For Codex, the `response_item`s, or a `compacted` line's
+  `replacement_history` in place of what came before it. Codex's
+  `<environment_context>`, `<user_instructions>`, AGENTS.md and developer
+  messages are left out.
+- **Pasted images**, as data URLs, into the target's own image block.
+- **Shell calls**, in the target's native shape with their output: Claude
+  Code's Bash and Codex's `exec_command`, `shell`, `shell_command` and
+  `local_shell_call`. Any other tool (Read, Edit, Write, `apply_patch` as a
+  custom tool, MCP tools) is written as the agent's own text: its name,
+  input and result in fences. A result is cut at 64 KiB.
+- **Not carried:** thinking, reasoning, signatures and encrypted content, and
+  a compaction encrypted by OpenAI. Of compactions, only magpie's own
+  summary is read.
+
+What it writes:
+
+- **Claude Code:** `<CLAUDE_CONFIG_DIR>/projects/<cwd as Claude Code names
+  it>/<uuid>.jsonl`. Lines are chained by `parentUuid`, with the field order
+  of Claude Code's own and `version` from the newest Claude Code session
+  listed. Assistant lines have model `<synthetic>`, so the usage reader
+  counts no calls and no cost for them. `claude --resume <id>` opens it.
+- **Codex:** `<CODEX_HOME>/sessions/YYYY/MM/DD/rollout-<local
+  time>-<uuidv7>.jsonl`. A `session_meta` carries no `base_instructions`;
+  Codex uses its own. `model_provider` is what config.toml selects now
+  (`CodexProviderIn`), so the thread is listed under the provider in use.
+  `response_item`s are written, plus the `event_msg` user and agent messages
+  the TUI shows as history. Codex indexes the file into its state database
+  itself on resume, so magpie writes no index. `codex resume <id>` opens it.
+
+The source file is only read. The new file is written to a temp file
+beside it, synced and renamed, and is never written over an existing path.
+`CarryOver` keeps the result per source path, target, size and mtime while
+the new file exists, so asking twice for an unchanged session gives the
+same one.
+
+Not converted: Pi, omp, OpenCode, Kimi, Cursor and the other agents, and
+sessions in WSL.
+
+Verification: `TestCarryClaudeToCodex`, `TestCarryCodexToClaude` (real
+Claude Code 2.1.310 and Codex 0.162.1 files in `testdata/carry`),
+`TestCarryConvertOffered`, `TestCarryImagesAndCompaction` and
+`TestCarryPiToOmp`; browser `sessions-convert.test.cjs` and
+`sessions-talk.test.cjs`.
+
 ## Usage over the gateway, and subagents
 
 `GET /v1/magpie/usage` and `GET /v1/magpie/usage/requests`
@@ -333,6 +405,30 @@ calls. Verification: `TestMiniMaxCodeCalls`, `TestKimiCode*` (the
 reporter's real wire files), `TestCodeBuddyCalls`, `TestWorkBuddyCalls*`,
 `TestPiCalls*` (Pi 1.1.0's and omp 18.9.1's own files) and
 `TestWSLSessionsListed`.
+
+Antigravity CLI's (agy's) conversations are sessions too (RickyWei on
+Discord): one per `brain/<conversation id>/` of `~/.gemini/antigravity-cli`,
+read from the same `transcript_full.jsonl` its calls are (`agyFiles`,
+[`agy.go`](../../internal/sessions/agy.go)). The steps give the times, the
+first prompt (out of agy's `<USER_REQUEST>` wrapper), the tool calls and the
+tokens, counted under the model `agy` since no step names one; a step agy
+writes again replaces its tokens, read on or read whole. Its title and
+folder are its row of `conversation_summaries.db` (`title`, and the first
+local `workspace_uris` entry, `agyFolder` turning `file:///C:/…` into
+`C:\…` on Windows). agy writes the title after the transcript, so the row
+is the file's `rev` and a new title reads the conversation again; the
+database is read again only when it or its `-wal` changed, and a failed
+read keeps the rows read before. A row whose conversation has its
+`conversations/<id>.db` and no transcript (#1718; that database is protobuf,
+not read) is listed from the row alone: title, folder, `last_modified_time`,
+no tokens and no conversation to open (`readable`). Resume is `agy --conversation <id>`, which
+picks it up from any folder; when agy is set to use magpie it is the
+agent's launch command (the gateway's variables and `--model`) with
+`--conversation` after it (`sessions.AgyStart`, set by package agent).
+Subagents (`parent_conversation_id`) and agy in WSL are not read.
+Verification: `TestAgySessions`, `TestAgyTitleLater`, `TestAgyGrows`,
+`TestAgyTranscript`, `TestAgyFolder`, `TestAgyRowOnly`, on conversations agy 1.3.5 and 1.4.7
+wrote in a sandbox.
 
 A read of every call decodes each file's cached shard, and over a long
 history that is tens of thousands of files (#2278: 68k shards, 415 MB).

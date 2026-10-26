@@ -153,7 +153,9 @@ and evidence obvious to a reviewer reading the PR without the chat history.
   the companion-nonexecution tests cover both Python scripts.
 - **The OMH TUI** (bare `omh`) is a foreground frontend over Hermes' own
   gateway, not an execution surface: it relays only what the person types,
-  answers no request on their behalf, and makes no model call. Its gateway
+  answers no request on their behalf, and makes no model call; the one switch
+  it makes on its own is the session's model, at a turn boundary, when Hermes'
+  configured default model moved (owner, 2026-10-25). Its gateway
   child, `src/tui/attach/gateway_attach.py`, runs on Hermes' interpreter under
   INVARIANT 2's `HERMES_INTERPRETER_SCRIPTS` allow list. Read
   [`docs/OMH-TUI-BOUNDARY.md`](docs/OMH-TUI-BOUNDARY.md) before touching

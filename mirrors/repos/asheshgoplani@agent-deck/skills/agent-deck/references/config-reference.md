@@ -30,6 +30,7 @@ All options for `$XDG_CONFIG_HOME/agent-deck/config.toml` (default `~/.config/ag
 - [[ui] Section](#ui-section)
   - [[ui.remote_preview] Section](#uiremote_preview-section)
   - [[ui.header] Section](#uiheader-section)
+- [[security] Section](#security-section)
 - [[global_search] Section](#global_search-section)
 - [[recall] Section](#recall-section)
 - [[notifications] Section](#notifications-section)
@@ -38,6 +39,7 @@ All options for `$XDG_CONFIG_HOME/agent-deck/config.toml` (default `~/.config/ag
 - [[send] Section](#send-section)
 - [[costs.budgets] and [costs.run_budget]](#costsbudgets-and-costsrun_budget)
 - [[remotes.<name>] Talkback](#remotesname-talkback)
+- [[providers.<name>] Sandbox providers](#providersname-sandbox-providers)
 - [[health] Section](#health-section)
 - [[status] Section](#status-section)
 - [[performance] Section](#performance-section)
@@ -67,7 +69,7 @@ send_transport = "tmux"     # `session send` delivery: "tmux" (default) or "auto
 | Key | Type | Default | Description |
 | --- | --- | --- | --- |
 | `default_tool` | string | `"claude"` | Pre-selected tool when creating sessions. |
-| `default_path` | string | `""` | Fallback project directory for `add` and `launch` when no path argument is given (#1303). Resolution chain: explicit path arg (including `.`, which always means the current directory) → target group's `default_path` (DB-resident, set via `group update` or the TUI) → this key → cwd. Supports `~` and `$VAR` expansion; silently skipped if the directory doesn't exist. |
+| `default_path` | string | `""` | Fallback project directory for `add` and `launch` when no path argument is given (#1303). Resolution chain: explicit path arg (including `.`, which always means the current directory) → target group's `default_path` (DB-resident, set via `group update` or the TUI) → this key → the group's most recent session path → cwd. Supports `~` and `$VAR` expansion; silently skipped if the directory doesn't exist. |
 | `sync_title` | bool | `true` | When `true`, agent-deck overwrites a session's title with the agent's own session-name (e.g. Claude's `--name` / `/rename`, issues #572/#697). Set `false` to keep the title you gave the session — globally, for every tool. A title you supply explicitly is already exempt: `add -t`, `launch -t`, the TUI New Session dialog, an explicit fork title, and `rename` all lock the title on creation (#1615/#1715), so only auto-derived folder-name titles follow the agent. The per-session title-lock (`agent-deck session set-title-lock <id> on|off`) remains as a finer-grained override. Also toggleable in the TUI Settings panel (`S`) under **SESSIONS**. |
 | `push_title` | bool | `true` | Pass the exact deck title as `--name <title>` on supported Claude start/restart/resume commands. Case, punctuation, Unicode and long names are preserved; invalid UTF-8, control/bidirectional-control characters and line separators omit the default. An explicit `--name`/`-n` override wins. Missing settings default to enabled; configuration read/parse errors disable automatic naming. A deck rename applies on the next supported startup. No running prompt receives input. |
 | `group_sort` | string | `"creation"` | Order of sessions within a group. `"creation"` (default) keeps the order sessions were created in, and respects the `K`/`J` manual reorder. `"actionable"` restores the issue #857 sort that surfaces the most recently actionable sessions (error → waiting → running → idle → stopped, then recency) to the top of each group. `"alphabetical"` (#2451) orders sessions A→Z by title, case-insensitively; sessions whose titles match ignoring case keep their creation order. In `"actionable"` and `"alphabetical"` mode the sort is reapplied whenever the session list reloads, so a `K`/`J` move does not stick. Any other value falls back to `"creation"`. The setting orders the TUI and the web UI; `agent-deck list` prints sessions in storage order and does not apply it, and remote rows keep the remote's own listing order. Pin and Maestro rows are unaffected by this setting. |
@@ -145,7 +147,7 @@ prompt_suggestions = "on"          # Optional override of [launch].prompt_sugges
 | `config_dir` | string | `~/.claude` | Claude config directory. Override with `CLAUDE_CONFIG_DIR` env. |
 | `profiles.<name>.claude.config_dir` | string | none | Profile-specific Claude config directory. Takes precedence over `[claude].config_dir` when that profile is active. |
 | `default_account` | string | `""` | Named account slot (a `[profiles.<name>.claude]` block with a `config_dir`) that new Claude sessions start on when none is picked. The New Session dialog preselects it (its pill reads `<slot> (default)`; `←`/`→` still reaches `inherit` and every slot, and a one-off pick is not remembered), and `add` / `launch` without `--account` or `AGENTDECK_ACCOUNT` use it. It is applied at creation only: the slot is stored on the session, so changing the default never moves an existing session (use `session switch-account` for that). A group or parent conductor with its own `config_dir` keeps the session on `inherit`; a slot no longer configured falls back to `inherit` (logged as `default_account_not_configured`). This machine's default never travels to a remote target or `add --ssh` session; a remote server that has its own `default_account` applies that one when no slot is picked. In the CLI an ambient `CLAUDE_CONFIG_DIR` also wins, so a session that agent-deck started on an account (it exports that account's dir) creates children on the same account. In the dialog, moving the Parent row onto or off a conductor with its own `config_dir` re-applies the rule until you touch the Account row. Quick create (recent sessions, zoxide) stays on `inherit`. Empty keeps the conductor/group/env chain. Settable from Settings (`S`, Claude → Default account) or `agent-deck config set claude.default_account <slot>`. |
-| `dangerous_mode` | bool | `false` | Adds `--dangerously-skip-permissions`. Forces bypass on. Takes precedence over `auto_mode` and `allow_dangerous_mode`. |
+| `dangerous_mode` | bool | `false` on new installs; `true` on installs from before v1.16.34 | Adds `--dangerously-skip-permissions`. Forces bypass on. Takes precedence over `auto_mode` and `allow_dangerous_mode`. Unset, it follows the [install kind](#safe-defaults-for-new-installs): an install that predates v1.16.34 keeps skipping permission prompts (the value is written into its config.toml once, with a one-time notice); a new install asks. Triage and conductor sessions follow the same value, so unattended ones on a new install need `dangerous_mode = true` (or `allow_dangerous_mode`/`auto_mode`). |
 | `auto_mode` | bool | `false` | Adds `--permission-mode auto`. A classifier model auto-approves safe operations while blocking risky ones. Ignored when `dangerous_mode` is true. |
 | `allow_dangerous_mode` | bool | `false` | Adds `--allow-dangerously-skip-permissions`. Unlocks bypass as an option without activating it. Ignored when `dangerous_mode` or `auto_mode` is true. |
 | `use_chrome` | bool | `false` | Adds `--chrome` to Claude sessions and is remembered from the New Session dialog. |
@@ -307,7 +309,6 @@ Codex CLI integration settings.
 command = "codex"  # Codex CLI command or alias
 yolo_mode = true   # Enable --yolo (bypass approvals and sandbox)
 env_file = "~/.codex.env"
-command = "codex"
 ```
 
 | Key | Type | Default | Description |
@@ -315,7 +316,6 @@ command = "codex"
 | `command` | string | `codex` | Codex CLI command or alias to launch built-in Codex sessions. Examples: `codex-v2`, `CODEX_HOME=~/.codex-work codex`. |
 | `yolo_mode` | bool | `false` | Maps to `codex --yolo` (`--dangerously-bypass-approvals-and-sandbox`). Can be overridden per-session. |
 | `env_file` | string | `""` | A .env file sourced for Codex sessions only. See [Path Resolution](#path-resolution). |
-| `command` | string | `"codex"` | Override the binary/invocation. |
 
 ## [models] Section
 
@@ -731,8 +731,6 @@ How each harness receives the block (`documentation/HARNESS_IDENTITY.md` has the
 
 SSH and Docker-sandboxed sessions get the block too: claude/pi/omp as inline `--append-system-prompt` text, codex as the same inline override (over SSH without merging the remote's own `developer_instructions`), and the file is written where the harness runs (`$XDG_RUNTIME_DIR/agent-deck/identity/<id>/identity.md`, else `~/.local/share/agent-deck/identity/<id>/identity.md`) with `AGENTDECK_IDENTITY_FILE` pointing at it; gemini stays env-only there. The SSH payload runs under `bash -c` on the remote (fish/csh login shells work; bash is required, so an sh-only remote such as Alpine/busybox is a known limit), and the identity payload is capped at 8 KB (codex drops its override first, then the block is skipped for that spawn).
 
-SSH (`--ssh`) and Docker-sandboxed sessions are skipped: the file lives on the controller host.
-
 ### Prompt suggestions in launched sessions
 
 Precedence, most specific first: the session override (`agent-deck session set <id> prompt-suggestions children-off|on|off`, empty clears it) > `[profiles.<active-profile>.claude].prompt_suggestions` > `[launch].prompt_suggestions` > `children-off`. A malformed value at any layer is ignored and the next layer decides. Changes take effect on the session's next start or restart. `agent-deck config set launch.prompt_suggestions off` writes the global key.
@@ -766,7 +764,7 @@ remove_orphans = true   # Delete logs for removed sessions
 | `max_lines` | int | `10000` | Lines to keep after truncation. |
 | `remove_orphans` | bool | `true` | Clean up logs for deleted sessions. |
 
-**Logs location:** `~/.agent-deck/logs/agentdeck_<session>_<id>.log`
+**Logs location:** `~/.local/share/agent-deck/logs/<tmux session name>.log` (the XDG data dir; the legacy `~/.agent-deck/logs/` is only a fallback)
 
 ## [updates] Section
 
@@ -1034,6 +1032,31 @@ file_link_roots = ["~/projects", "~/Downloads"]  # file:// links under these ope
 
 All link keys are read at server start and served to the browser by `GET /api/settings`; the web Settings drawer shows the active values.
 
+## [security] Section
+
+Folder trust: whether agent-deck may mark a folder as trusted for Claude, Codex or Cursor (so the tool skips its "trust the files in this folder?" prompt) and source a relative `env_file` from it.
+
+```toml
+[security]
+auto_trust_folders = false                 # new installs; installs from before v1.16.34 keep true
+trusted_folders = ["~/code/work", "/srv/projects"]
+```
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| `auto_trust_folders` | bool | `false` on new installs; `true` on installs from before v1.16.34 | `true`: every folder a session starts in is pre-trusted (the pre-v1.16.34 behaviour). `false`: only the folders below are. Unset, it follows the [install kind](#safe-defaults-for-new-installs). |
+| `trusted_folders` | []string | `[]` | Folders (and everything under them) agent-deck may pre-trust even when `auto_trust_folders` is off. `~` and `$VARS` expand. `agent-deck launch --trust-folder` and `agent-deck add --trust-folder` add the session's folder here. |
+
+Always pre-trusted, whatever the keys say: folders agent-deck creates itself (conductor, triage, worker-scratch and other dirs under its data or config root), the worktree or multi-repo dir it made for a session, conductor sessions, and the container `/workspace` of a sandboxed session. Account switches and harness switches carry the trust a running session already had. A launch that did not pre-trust its folder prints a note naming both ways to allow it, and `launch --json` reports it as a `FOLDER_NOT_TRUSTED` warning; every grant and every skip is in the debug log (`folder_trust_granted`, `folder_trust_skipped`).
+
+### Safe defaults for new installs
+
+`[claude] dangerous_mode` and `[security] auto_trust_folders` have different defaults for new and existing installs (v1.16.34). The install kind is decided once and kept in `<data dir>/install-kind` (`new` or `existing`):
+
+- An install is **existing** when it has a `config.toml` or a profile store (`profiles/<any>/state.db` or `sessions.json`, XDG or `~/.agent-deck`) that an older release created. Its unset switches keep the old value `true`. On the first interactive start (a terminal command or the TUI) after the update, each unset switch is written into `config.toml` once, as one line under its table (the rest of the file is kept as it is; the previous file is `config.toml.bak`), and a one-time notice says so. Without a `config.toml` nothing is created. Daemons, hooks, scripts and the auto-update restart never edit the file; they resolve the same values from the install kind.
+- An install is **new** when this release creates its first `config.toml` or `state.db`. Its unset switches are `false`.
+- An explicit value always wins. To turn a kept value off, set it to `false`.
+
 ## [global_search] Section
 
 Settings for the old in-memory global search index. The TUI `G` key no longer reads this section: it searches the Recall index and is gated by `[recall] enabled` (see the `[recall]` section). The keys are still parsed and shown in the Settings panel.
@@ -1226,6 +1249,35 @@ talkback_interval_secs = 30   # 0 / unset = off
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | `talkback_interval_secs` | int | `0` (off) | Every N seconds the notify-daemon runs the same incremental drain as `agent-deck remote drain <name> --into <conductor>` for every local `conductor-*` session enrolled with that remote (it has a cursor for it, i.e. it drained it once, or it holds a pending record from it). 30 is a good value. The drain runs off the poll loop, bounded at 60 s, and a remote with a drain in flight is skipped. A failure backs off from 1 min to 10 min; after 3 consecutive failures each enrolled conductor gets ONE urgent record (`remote <name>: talkback failing for N min: <last error>`), and a success clears the streak. An ingested urgent record wakes an idle conductor exactly like a local one; info records ride its next turn. |
+
+## [providers.<name>] Sandbox providers
+
+A sandbox provider is a command that creates, lists, inspects and destroys sandboxes for agent-deck (protocol 1). `agent-deck remote add --provider <name> [--name x]` and `agent-deck launch --provider <name> [--name x] <path> [launch flags]` create a sandbox and register it as a remote; `agent-deck remote destroy <name> [--yes] [--force]` stops its sessions, destroys it and removes the remote; `agent-deck provider list [--json]` and `agent-deck provider test <name> [--create]` check a provider.
+
+```toml
+[providers.docker]
+command = "/path/to/examples/providers/docker/provider"
+create_timeout_seconds = 600
+timeout_seconds = 60
+agent_deck_path = ""
+```
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| `command` | string | (required) | The provider executable: an absolute path, or a bare name looked up in `PATH` (a relative path with a `/` is refused). It runs directly, never through a shell, in its own process group, with exactly one argument: the action (`create`, `list`, `status` or `destroy`). The request is one JSON object on stdin, the answer one JSON object on stdout (at most 1 MiB), so remote names, sandbox ids and labels never appear on a command line. Its environment is agent-deck's own (filtered like every child process) plus `AGENTDECK_PROVIDER_PROTOCOL=1` and `AGENTDECK_PROVIDER_NAME=<name>`. Its stderr (up to 64 KiB, control characters stripped) is shown only in the error when the call fails and is never logged. A helper the provider leaves running (a port forward, say) survives a successful call; on a timeout the whole process group is killed. |
+| `create_timeout_seconds` | int | `600` | Time limit for a `create` call. Cold VMs can take several minutes. |
+| `timeout_seconds` | int | `60` | Time limit for `list`, `status` and `destroy` calls. |
+| `agent_deck_path` | string | `"agent-deck"` | agent-deck path on this provider's sandboxes, copied into each remote it creates as `agent_deck_path`. |
+
+Provider output is untrusted and validated before use: sandbox id, host (DNS name or IP literal only), port, user, auth (`key` with a private key file that is a regular file, not a symlink, owned by you and mode `0600`/`0400`; or `agent`), labels, state and pinned host keys. A sandbox the provider created but agent-deck cannot use (invalid answer, ssh never answers, agent-deck cannot be installed) is destroyed again and the remote is not kept.
+
+A sandbox remote is an ordinary `[remotes.<name>]` entry with three more keys, all written by agent-deck:
+
+| Key | Type | Description |
+|-----|------|-------------|
+| `provider` | string | The `[providers.<name>]` that created the sandbox. `remote destroy` only works on remotes that have it; `remote list` shows them as `sandbox (provider <name>)`. |
+| `sandbox_id` | string | The provider's id for the sandbox. |
+| `ssh_config` | string | Path of the sandbox's own ssh config, `<agent-deck data dir>/sandboxes/<remote>/ssh_config` (directory `0700`, files `0600`, beside `known_hosts` and `sandbox.json`). Every ssh and mosh call for the remote passes it with `-F`, so your `~/.ssh/config` and `~/.ssh/known_hosts` are not used for it. Host keys the provider pins are checked strictly; without them the first key seen is trusted into the sandbox's own `known_hosts`. `host` is the alias `agentdeck-sb-<remote>`. |
 
 ## [health] Section
 
@@ -1660,7 +1712,7 @@ All `env_file` and `env_files` path values support the following formats:
 | `~` (tilde) | `~/.claude.env` | Expanded to home directory (e.g., `/home/user/.claude.env`) |
 | Environment variables | `$HOME/.claude.env` | Expanded via `os.ExpandEnv` (e.g., `/home/user/.claude.env`) |
 | `${VAR}` syntax | `${XDG_CONFIG_HOME}/env` | Expanded via `os.ExpandEnv` |
-| Relative path | `.env`, `config/.env` | Resolved relative to the session's working directory |
+| Relative path | `.env`, `config/.env` | Resolved relative to the session's working directory. Sourced only when that folder is trusted under [`[security]`](#security-section) (always true on an install from before v1.16.34, where `auto_trust_folders` stays on); otherwise skipped with a pane warning |
 
 Environment variable expansion (`$HOME`, `$USER`, `${VAR}`, etc.) is applied before determining whether a path is absolute or relative. This means `$HOME/.env` correctly resolves to an absolute path rather than being treated as relative.
 

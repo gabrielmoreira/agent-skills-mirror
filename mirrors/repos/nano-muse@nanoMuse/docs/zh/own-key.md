@@ -40,6 +40,7 @@ nanoMuse 免费、非营利。它背后的模型要花钱，每个账号的起�
 | OpenCode Zen | ● | | | | 海外 | [opencode.ai/auth](https://opencode.ai/auth) |
 | OpenCode Go | ● | | | | 海外 | [opencode.ai/auth](https://opencode.ai/auth) |
 | Standard Compute | ● | | | | 海外 | [standardcompute.com](https://standardcompute.com/dashboard/api-keys) |
+| API Route | ● | | | | 海外 | [api-route.com](https://www.api-route.com/api-keys) |
 | Cheaper Inference | ● | | | | 海外 | [cheaperinference.com](https://cheaperinference.com/signup) |
 | Ollama / LM Studio / vLLM（本机） | ● | | | | 都可以 | 不需要 key |
 
@@ -67,6 +68,7 @@ nanoMuse 免费、非营利。它背后的模型要花钱，每个账号的起�
 - **OpenCode Go。** 同一域名上的订阅：在 OpenCode 控制台订阅 Go（每月 10 美元）或 Go Plus（每月 40 美元），再到 [opencode.ai/auth](https://opencode.ai/auth) 申请 key。地址 `https://opencode.ai/zen/go/v1`。用量按模型计，分每月、每周和每 5 小时三档上限。OpenCode 把 Go 定位给编程智能体，要求客户端说明自己是谁，并在 `x-opencode-session` 里为每个对话带上一个固定的 id（[它的 Go 页面](https://opencode.ai/go)，「Can I use Go with other coding agents?」一条）。运行时（也就是网页控制台）每次请求 Go 都把 `nanoMuse/<版本>` 作为 user agent，并在这个请求头里带上对话的 id；不属于任何对话的调用（比如连接测试）带的是它自己的 id。桌面版把 Go 写成模型适配器自带的 OpenCode Go 路由，这条路由同样会带上这个请求头，并按每个模型自己的格式访问：桌面版提供这条路由的目录里列出的模型，走 Responses 和 Messages 格式的也在内；其他地方只走 OpenAI 格式。手机端也会发：对 OpenCode 域名的对话和 Responses 请求都带上这个请求头，id 是这个聊天的提示缓存键，由第一条消息算出，每一轮都一样（开头一字不差的两个聊天会共用一个）。和 Zen 一样只有对话。
 - **Standard Compute。** 在 [standardcompute.com/dashboard/api-keys](https://standardcompute.com/dashboard/api-keys) 申请 key；按月付固定费用，每月 19 美元起，每个套餐有每月的算力预算，用完后请求返回 402（没有超额费用）。地址 `https://api.stdcmpt.com/v1`。默认模型 `standardcompute` 是一个路由：每个请求从账号 Models 页面里启用的模型中挑一个；也可以改填 `https://api.stdcmpt.com/v1/models` 里的任意模型 id。只有对话：路由在这个列表里没有声明能看图，所以「动手」不列入。
 - **Cheaper Inference。** 在 [cheaperinference.com/signup](https://cheaperinference.com/signup) 申请 key；一把 key 用多个厂商的模型。地址 `https://api.cheaperinference.com/v1`。默认模型是 `gpt-5.4-mini`；也可以改填 `https://api.cheaperinference.com/v1/models` 里的任意模型 id。这里只有对话，走 OpenAI 格式。
+- **API Route。** 登录后打开 [API keys](https://www.api-route.com/api-keys)，并为账号充值。地址为 `https://global.api-route.com/v1`；默认模型 `gpt-6.1-sol` 已通过 `/v1/models` 列表和真实对话请求验证。其他模型 id 应从这把 key 可用的列表中选择。费用按所选模型的[当前价格](https://www.api-route.com/pricing)从 API Route 预充值余额中扣除，与 nanoMuse Cloud 分开计费。这里只提供对话，尚未验证图片输入、图片生成和视频功能。详见[服务商文档](https://www.api-route.com/docs/overview)。
 
 **贴到 nanoMuse 里。**
 

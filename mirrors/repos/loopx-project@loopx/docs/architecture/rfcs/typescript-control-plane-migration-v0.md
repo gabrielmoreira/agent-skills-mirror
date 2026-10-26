@@ -1641,7 +1641,7 @@ codec retire when CLI/Host callers use the typed kernel directly. The target is
 TypeScript ownership throughout, with no Python rule fallback.
 The adapter transports bounded facts and diagnostic strings, then applies the
 typed quota patch without round-tripping source numbers or metadata. Receipt-bound
-overlays, later route/action builders and effect authority retain their owners.
+overlays, remaining route/action builders and effect authority retain their owners.
 The existing effective-action vocabulary and generated TS binding are reused;
 its canonical Python enum remains until a separate contract-owner cutover.
 The TypeScript producer witness executes the real typed classifier against shared guard fixtures and rejects a
@@ -1649,6 +1649,15 @@ changed rule or an enum-only substitute. This delivers the implementation and
 semantic parity for one base-admission consumer. Full-CLI performance acceptance
 is held for owner review after a p95 regression; whole-Goal migration and
 provider/default qualification remain open.
+
+The task-scoped `goal_route_hint` override now comes back in that same
+`quota.run_decision` response. Python projects the lane count from the existing
+task-orchestration source fact. TypeScript owns the ready-state check, route
+decision and coordination wording. Python's duplicate `task_goal_route_hint` decision is
+deleted, leaving only the bounded merge into the assembled hint. This adds no
+request, provider read or authority. Other Goal-route and primary-action
+builders remain separate migration work; this does not complete the quota read
+transaction or claim a performance gain.
 
 **Long-history transport boundary.** Replan history still has one TS decision
 owner. Small requests retain the inline codec; larger complete fact snapshots

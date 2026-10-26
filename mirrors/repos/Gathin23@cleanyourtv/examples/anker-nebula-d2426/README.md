@@ -8,7 +8,7 @@ All commands below run from the repository root. Replace the IP with the project
 (Settings > Network on the projector).
 
 ```bash
-export TV_HOST=192.168.68.51
+export TV_HOST=192.168.1.50
 ```
 
 ## What was changed
@@ -103,7 +103,7 @@ Settings > Device Preferences > Developer options > revoke USB debugging authori
 debugging and USB debugging, restart, then check from the repo:
 
 ```bash
-tools/venv/bin/python tools/adb-closed.py 192.168.68.51
+tools/venv/bin/python tools/adb-closed.py 192.168.1.50
 ```
 
 Only "Connection refused" (exit 0) proves the port is closed; `nc` on macOS can be blocked by Local Network

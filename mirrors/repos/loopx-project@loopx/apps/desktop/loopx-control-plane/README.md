@@ -419,23 +419,40 @@ restricted to loopback CORS and the existing preview/apply authority boundary.
 
 ## Coexistence With `loopx dashboard`
 
-The packaged App allocates its own private Status and Chat endpoints for each
-window. `loopx dashboard` keeps its CLI endpoints on `8766` and `8767`; either
-entrypoint can run without adopting or stopping the other's listeners. Vite
-development retains those CLI ports and its qualified-service reuse path.
+The normal packaged App and `loopx dashboard` use the same machine Status and
+Chat endpoints on `8766` and `8767`. The supervisor first qualifies the existing
+LoopX listener and its exact runtime identity. It reuses a matching service and
+keeps a loaded standard LaunchAgent as its owner; opening a window does not
+create another Chat store or external-message consumer. A foreign or
+unqualified listener is an error, never another port or an empty history.
+A declared but unloaded machine LaunchAgent stays authoritative: the App reports
+recovery instead of starting another service with an empty default store.
+Core retains original binding, Session, Turn and delegation audience semantics;
+sharing the service does not merge private conversations or widen permissions.
 
-The packaged App watches its own direct service children. When one exits, it
-restarts that service on the same private endpoint with the same qualified
-runtime and identity, keeping the healthy peer running. Recovery attempts are
-at least two seconds apart. An occupied endpoint fails closed and is retried;
-the intervening listener is never adopted or stopped. A live but unresponsive
-child is outside this exit-recovery path.
+Closing a window never stops a borrowed service. Services the App itself starts
+still retain the existing owned-process lifecycle; installing a persistent
+machine service on a fresh machine is a separate lifecycle qualification.
+A configured machine service must retain its original registry and Chat runtime,
+rather than replacing them with an empty default store during adoption.
 
-Recovery keeps an update check's error or available-update choice visible. It
-waits during maintenance and after an App replacement requires restart or leaves
-the App incomplete. The native shell sends no conversation input or replay;
-persisted Session and Turn recovery remain owned by Core. Closing the App stops
-only its own service process groups.
+Developer/QA runs may explicitly set `LOOPX_DESKTOP_PRIVATE_ENDPOINTS=1` to use
+the existing private-endpoint path (only `0` and `1` are accepted). Private ports
+do not isolate stored data: QA must also pin a disposable registry/runtime through
+the existing `LOOPX_BIN` test wrapper. In either mode the supervisor watches and
+restarts only its own direct children on the same ports, with the same qualified
+runtime and at least two seconds between recovery attempts. An occupied private endpoint
+is never borrowed or stopped. This isolation is not the ordinary product path.
+
+Both paths retain update errors, maintenance exclusion, existing preview/apply
+authority and Core-owned Session recovery. The native shell sends no conversation
+input and never replays a Turn to establish service readiness.
+
+普通 App 与网页默认连接同一机器服务；打开窗口不再默认创建另一份 Chat 存储或
+外部消息消费者。复用前核验服务及准确运行时身份；原 registry、Chat runtime、
+Session 与委派受众保持不变，不混合不同私聊或扩大权限。借用的常驻服务不随窗口
+关闭而停止。App 自己启动的服务保留既有生命周期，首次安装常驻服务仍单独验收。
+开发隔离须明确设置上述环境变量；服务不可用或来源未核验时显示恢复，不切到空数据。
 
 ## Prerequisites
 

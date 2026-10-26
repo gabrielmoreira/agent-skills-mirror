@@ -3,7 +3,8 @@
 **When to use this:** a project built on this repo that lives in its own repository.
 
 1. Add one row to the section of `SHOWCASE.md` that fits (home screens, forks, screensavers and add-ons,
-   tools, other platforms), and the project under its TV brand in "Find a project by TV brand".
+   tools, other platforms), and the project under its TV brand in "Find a project by TV brand" - or under
+   "Any Android TV (emulator or generic)" when it names no single brand, as the phone apps do.
 2. Bump the two counts by one: `SHOWCASE.md` opens with an `N projects so far.` line, and the "Built
    something on top?" row in `README.md` spells the same number in words. `tests/test_showcase_project_count.py`
    refuses a row that leaves either of them behind.

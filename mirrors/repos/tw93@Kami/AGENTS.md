@@ -280,9 +280,9 @@ python3 scripts/mermaid_normalize.py raw.svg -o clean.svg
   CI; do not disable or reconfigure them. Pushes may continue under applicable
   specific authorization. Preserve the current branch while branch selection is
   unclear; do not switch or merge into main based on this workflow preference.
-- Preserve the current checkout and user changes. Implement repairs on a separate
-  branch or worktree, locate the cause before targeted tests, and avoid concurrent
-  heavy builds. Never clean real user data to test a repair.
+- Preserve the current checkout and user changes. Locate the cause before
+  targeted tests, and avoid concurrent heavy builds. Never clean real user data
+  to test a repair.
 - Close a duplicate, verified resolved item, or clearly unrelated report only when the
   evidence and applicable user authorization support closure. Keep unresolved or
   uncertain reports open; an empty queue is not a correctness goal.

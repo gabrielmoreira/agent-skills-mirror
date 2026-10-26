@@ -1,6 +1,6 @@
 ---
 name: sprite-gen
-version: 3.1.0
+version: 3.3.0
 description: "Generates images and game sprites through GPT or Grok with guided provider choices, separate saved defaults, automatic cleanup and optional curation. Handles sprite requests, ordinary image generation/editing, typography logos (로고, 타이포그래피, 타이틀 글자, 타이틀 로고, wordmark, logo, title lettering: a title screen drawn with the title in it, its lettering lifted out transparent), standalone image-to-video clips (i2v, animate this still, 그록 영상, 이매진 비디오, 스틸 움직여줘, first/last frame, reference-to-video, 영상 이어붙이기, 영상 편집, extend/edit a clip), clips from a video MCP on the agent (ZCRE, 지크 MCP), chroma removal, animation atlases, video loops, 큐레이션뷰, image candidates, 팔레트 스왑, palette swap, recolor, engine exports, repeating backgrounds, projected shadows, talking face layers over body motions (말하는 얼굴, 입 맞추기, 얼굴 층, lip sync, face pack), motion/contact inspection and optional scene composition from existing assets."
 license: Apache-2.0
 depends_on:
@@ -14,7 +14,7 @@ depends_on:
     - name: node
       why: "face-bake: the face pack's player (sprite-gen-face-v1.mjs) picks the frames"
     - name: rife-ncnn-vulkan
-      why: "video-loop jump repair and video-cycle-align (RIFE v4.6 in-betweens with the -x -z test-time augmentation, release 20221029). Install once with `sprite-gen rife install` (sha256-checked, into the user data directory); SPRITE_GEN_RIFE or PATH override it; Linux without a GPU also needs libvulkan1 mesa-vulkan-drivers. Without it, walk and run loops are cut as filmed with a warning"
+      why: "video-loop jump repair and video-cycle-align (RIFE v4.6 in-betweens with the -x -z test-time augmentation, release 20221029). Install once with `sprite-gen rife install` (sha256-checked, into the user data directory); SPRITE_GEN_RIFE or PATH override it; Linux without a GPU also needs libvulkan1 mesa-vulkan-drivers. Without it, walk and run loops are cut as filmed with a warning. SPRITE_GEN_RIFE_BACKEND=torch runs the same model in PyTorch instead, for a GPU with no Vulkan (`pip install \"sprite-gen[torch]\"`, then `sprite-gen rife install --backend torch`; SPRITE_GEN_RIFE_DEVICE=cuda or cpu; SPRITE_GEN_RIFE_EXECUTOR=module:attr sends its frames to a GPU elsewhere, rife_torch.serve there)"
   required_scripts:
     - scripts/prepare_sprite_run.py
     - scripts/generate_sprite_image.py

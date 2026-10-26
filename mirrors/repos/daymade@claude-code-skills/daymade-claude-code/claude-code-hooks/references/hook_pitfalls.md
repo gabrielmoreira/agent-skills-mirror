@@ -3405,6 +3405,22 @@ this list and describe defects you reach by asking a different question):
   establish the supplied context; they do not prove the model's action was right.
   Reminder counts, registration and green fixtures remain distinct from business
   acceptance. This entry adds no new gate or guarantee against every priority error.
+- **Cadence starvation counterexample:** preserving a maximum-deferral timestamp
+  does not preserve its activity predicate. If every prompt clears the activity
+  count, a sequence of active windows that each stop just below the ordinary
+  threshold can stay silent forever, even after maximum deferral expires. Test
+  that sequence across multiple prompt resets and delivery windows; retain
+  separately scoped activity for the maximum-deferral path, while keeping truly
+  low-activity windows quiet. Apply rule 7's recurring-advisory liveness contract,
+  rather than treating a passing single-window timer test as long-session proof.
+- **Recovery suppression counterexample:** a failed optional cadence write can
+  abort a recovery branch before it emits independently available, safe context.
+  Isolate that write's error handling from context generation and keep the failure
+  observable; do not fabricate a persistence or delivery receipt. Calibrate both
+  healthy and failed writes on the recovery event, and retain ordinary-event and
+  missing-input quiet cases. Apply rule 5's failure-direction decision to each
+  dependency: this does not authorize guessed project facts, context requiring the
+  failed state, or unconditional output whenever any state operation fails.
 
 ## 66. Hook emission and model-context records do not prove that a notification is visible in the ordinary interface
 
@@ -3447,3 +3463,53 @@ this list and describe defects you reach by asking a different question):
   Raw hook stdin was not captured, so it does not distinguish an absent
   outer callback from an unsupported input shape, or establish that
   every outer handler is absent.
+
+## 68. Invalid release evidence can escape into an outer fail-open handler
+
+- **Failure:** a guard expects a JSON object and calls `.get()` on `null` or an
+  array. The resulting exception reaches a broad internal-error handler that
+  allows the operation. An object containing both expected fields and an `error`
+  can also be mistaken for completed evidence. The evidence never established
+  the predicate, yet the recovery path released the block.
+- **Fix:** check the container, required field types, subject binding and error
+  marker before reading evidence fields. Treat invalid or unavailable release
+  evidence as an unsatisfied predicate and provide its normal remediation. Keep
+  the chosen policy for unrelated internal failures; this is not a blanket
+  conversion of advisory hooks to fail-closed gates. Evidence validity alone
+  does not establish the user's authorization for the operation.
+- **Output boundary:** preserve a nonempty diagnostic even when the declared
+  internal-error policy returns exit 0. Test the actual CLI or shared engine,
+  including stderr, rather than only its in-process classifier return value.
+
+Run this synthetic predicate example as written; it does not execute an operation:
+
+```sh
+python3 - <<'PY'
+def release_evidence_matches(data, expected_subject):
+    if not isinstance(data, dict) or "error" in data:
+        return False
+    return (isinstance(data.get("subject"), str)
+            and data["subject"] == expected_subject
+            and data.get("checked") is True)
+
+rejected = [
+    None, [], {},
+    {"subject": "fixture"},
+    {"subject": "fixture", "checked": None},
+    {"subject": "fixture", "checked": False},
+    {"subject": "other", "checked": True},
+    {"subject": "fixture", "checked": True, "error": "probe unavailable"},
+]
+for receipt in rejected:
+    assert release_evidence_matches(receipt, "fixture") is False, receipt
+assert release_evidence_matches(
+    {"subject": "fixture", "checked": True}, "fixture") is True
+print("invalid evidence rejected; matching completed evidence accepted")
+PY
+```
+
+For the real guard, use its own evidence schema and original operation shape.
+Replay each rejected variant through the outer entrypoint and retain a matching
+healthy control. Independently inject an internal probe failure: assert its
+declared exit code and diagnostic. A valid receipt need not authorize every
+action, and a nonblocking fault must not be reported as a healthy no-match.

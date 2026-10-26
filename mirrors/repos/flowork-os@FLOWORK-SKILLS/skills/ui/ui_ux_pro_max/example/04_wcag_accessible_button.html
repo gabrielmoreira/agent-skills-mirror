@@ -1,0 +1,31 @@
+<!-- Example 04: Accessible Button with High Contrast & Focus Visible Ring -->
+<style>
+  .btn-accessible {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px; /* Minimum touch target height */
+    min-width: 44px;  /* Minimum touch target width */
+    padding: 10px 20px;
+    background-color: #2563eb; /* Contrast ratio 5.1:1 on #ffffff */
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 600;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  .btn-accessible:focus-visible {
+    outline: 2px solid #2563eb;
+    outline-offset: 2px;
+  }
+  .btn-accessible:disabled {
+    background-color: #94a3b8;
+    color: #f1f5f9;
+    cursor: not-allowed;
+  }
+</style>
+
+<button type="button" class="btn-accessible" aria-label="Confirm security verification">
+  Confirm Verification
+</button>

@@ -49,6 +49,13 @@ Automated: [execution policy](../../server/src/__tests__/issue-execution-policy.
 
 Manual: Complete implementation under a review-required policy and confirm it waits for the required review outcome. Exercise rejection and later approval. Pause the parent while child work is pending, then verify resumption respects budget and ownership gates.
 
+Resume removes the pause without changing task status. Its wake count includes only
+current agent assignees on todo, in-progress, or in-review tasks. The dialog explains
+that blocked, backlog, and unassigned tasks remain idle. Verify this in both task
+interfaces with [the paused composer browser suite](../../tests/e2e/paused-composer.spec.ts).
+Release rechecks tasks reopened after the pause; another active pause still prevents
+their execution, and uncertain prior executions must be reconciled before waking.
+
 ## Gotchas
 
 - Review completion and task completion are different events under some policies.

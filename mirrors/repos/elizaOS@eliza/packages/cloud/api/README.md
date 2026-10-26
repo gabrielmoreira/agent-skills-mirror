@@ -92,6 +92,9 @@ Client IDs, app UUIDs and canonical HTTPS return URLs must be unique, including
 against the existing `ai.elizaos.app` registration. Unknown and disabled clients
 fail closed; malformed additional configuration does not change the legacy client.
 The global mobile-auth enable switch and environment binding still apply.
+An explicitly registered client does not require the legacy primary app UUID.
+`ELIZA_MOBILE_APP_AUTH_APP_ID` remains required for `ai.elizaos.app`; omitting it
+does not register or enable that legacy client.
 
 Auth has separate configuration boundaries. A Cloud exchange callback is not
 necessarily the browser callback used by Google:
@@ -113,7 +116,9 @@ Before enabling a client, provision its own active, approved app with an active
 owner/organization, an exact allowed callback, and no live generated application
 API key. Use separate registrations in staging and production. Validate the public
 `/api/v1/app-auth/mobile/config` response for that client/environment/return URL
-before shipping. The app UUID and server secrets must not be included in the
+before shipping. The admin preflight allows an `app_url` homepage path on the
+registered HTTPS origin, while `allowed_origins` must contain the sole exact
+registered callback. The app UUID and server secrets must not be included in the
 native configuration. Retain the existing S256 grant, inactive exchange, durable
 receipt acknowledgment, self-revocation and account recovery contracts. `cloud:user`
 is the existing broad user/organization capability, not a narrower permission claim.
@@ -522,3 +527,20 @@ Set `VOICE_BATCH_STT_PROVIDER=cloudflare` to move a pinned Whisper deployment to
 Workers AI Nova-3, including word timestamps and Telegram Ogg voice notes; verify authenticated TTS/STT before retiring the old services.
 
 Workers AI TTS accepts up to 2,000 characters per request. Longer text is rejected explicitly before synthesis; it is never truncated.
+
+## Public service identity and legal documents
+
+`GET /api/public/service` supplies plain-text documents for app-owned sign-in
+views. Set the public Worker binding `CLOUD_PUBLIC_SERVICE_JSON` to an object
+with `name`, `terms`, and `privacy`. Each document has `title`, `revision`, and
+`sections`; each section has `title` and a nonempty `paragraphs` string array.
+Provide the service operator's approved text. The endpoint does not fetch URLs,
+accept caller-defined branding, infer consent, or require a login session.
+Missing, malformed, or over-256-KiB configuration returns HTTP 503. Responses use
+`Cache-Control: no-store`; consumers must render strings as text, never HTML.
+No product identity or default legal agreement is inserted by this endpoint.
+The Cloudflare release workflow reads the same-named protected environment
+variable through its atomic Worker-binding pipeline. A blank source preserves
+the deployed value. This uses the existing binding mechanism even though the
+content is public. To withdraw published documents, replace the binding with
+`{}` so the endpoint refuses it; an empty source is not a deletion request.

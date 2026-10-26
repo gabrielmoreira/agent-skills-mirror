@@ -612,6 +612,22 @@ Do not mix marketing pills and application squares in the same control group.
 
 ### Forms
 
+Conversation controls belong to the single composer: keep the message above a
+compact toolbar, attachments and optional actions at the left, and the current
+executor/model/reasoning entry beside Send at the lower right. Reuse the existing
+configuration and delivery owners. Keep immutable source identity truthful;
+current-turn observations and next-send selections must remain distinct. Global
+defaults and permissions stay in Settings. Reading views keep their folded input.
+Menus preserve drafts, never submit on open/dismiss, work by keyboard and touch,
+and open within the viewport above the input. Keyboard instructions use the
+shared contextual help; actual delivery failures and recovery remain visible.
+
+单一输入框内，消息在上、紧凑工具栏在下；附件和低频操作收进左侧入口，执行器、
+模型与思考深度就近放在右下角发送键旁。原会话身份、本轮实际配置与后续选择如实
+区分，全局默认和权限保留在设置。菜单开启、关闭不发送或丢失草稿，支持键盘和
+触屏，窄屏展开仍完整可操作；阅读页保留折叠输入。快捷键按需帮助，真实失败及
+恢复操作保持可见。
+
 - White surface, ink text, hairline border, 6px radius.
 - Labels remain visible; placeholders do not replace labels.
 - Focus uses the blue link/focus token with sufficient contrast.
@@ -651,7 +667,14 @@ Do not mix marketing pills and application squares in the same control group.
 
 - Motion explains state transitions; it does not decorate idle content.
 - Use 120-200ms control transitions and 200-350ms section transitions.
-- Prefer opacity and small transforms.
+- Prefer small transforms. Reading regions, authoritative values and action
+  consequences stay fully visible from the first frame. Their availability
+  must not depend on an entrance animation finishing: a native WebView can
+  suspend its animation clock while accessible navigation still changes the
+  page. Check populated views with that clock paused; a screenshot that
+  fast-forwards animations can conceal a blank first frame.
+- 阅读区域、真实读数和操作后果从首帧起保持可见；原生视图暂停动画时，也不能只剩
+  标题或空白。验收包含暂停动画的整页，不能只看自动跳到动画结束的截图。
 - Respect `prefers-reduced-motion`.
 - Do not animate layout continuously, pulse large surfaces, or create
   background motion that competes with reading.
@@ -783,8 +806,8 @@ Tokens live in the Dashboard root: `--motion-fast` (120ms controls),
 `--motion-base` (200ms state swaps), `--motion-section` (280ms panels),
 `--ease-out` and `--ease-standard`.
 
-- A changed value swaps with a short fade and 3px rise; a view panel enters
-  with opacity and 4px.
+- A changed value moves once with a 3px rise; a view panel enters with a 4px
+  movement. Both render their complete current content at full opacity.
 - Values use the short swap transition while their text changes directly to
   the new observation. Do not interpolate task counts, decisions, time or money:
   intermediate text would invent a state. Goal and usage-window changes, unknown

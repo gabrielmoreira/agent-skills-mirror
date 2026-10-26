@@ -234,6 +234,15 @@ a timeout on its side into the codes `unreachable` 503 and `timeout` 504).
 shows above the composer (what is left, the invite bonus, *See the ways*) once per pool
 size, as the phones show it in the chat and the web app above its composer.
 
+**The wait above the composer (1.0.8).** While a chat's turn on the account's model has no
+first token, the host lists the call in `live.waiting` (its session and when it began;
+`watchRelayStream` drops it at the first chunk, the end, or a stream that breaks) and
+`WaitLine` in that chat's input dock says nothing for ten seconds, then *The model is busy,
+15 s so far* with *Cancel*, the header's stop. The phones draw the same line under their
+typing dots and add *3 ahead of you* from the relay's status chunks (relay 0.31,
+[cloud.md](cloud.md#protocol)); the harness's parser does not hand those on, so the desktop
+says how long and nothing more.
+
 ### Checking a packaged runtime
 
 After building the bundled runtime, `python scripts/desktop-app/build-runtime.py --check-only`
@@ -341,7 +350,9 @@ link's target: an update that moved the app, say from `Programs\nanoMuse\nanomus
 to `Programs\nanomuse-desktop`, leaves a link pointing nowhere, and 0.1.39 could not start
 over it (`EEXIST: file already exists, symlink …` in `desktop.log`). Since 0.1.40 the stale
 link is removed as a link and remade; should that still fail, the message names the path to
-remove by hand.
+remove by hand. An entry the file system reports as busy, as the installer still holds it
+just after an in-app update, is tried again for about a second before the start is reported
+as failed.
 
 On Windows, read-only and workspace-write PowerShell commands run through DSH's restricted-token
 ACL sandbox. Because the Electron-hosted process has no console of its own, nanoMuse puts a

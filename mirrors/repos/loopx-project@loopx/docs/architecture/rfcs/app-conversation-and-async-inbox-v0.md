@@ -140,6 +140,97 @@ remain unavailable. There is no fallback to ordinary steward/project history,
 Session creation, executor change or model reconfiguration on this entry.
 Group audiences retain their existing boundary.
 
+An owner-private steward connection also offers **Use for App steward**. Core
+stores this explicit entry preference alongside the binding set, without
+changing any audience, managed identity or execution grant. Multiple stewards
+never compete by list order or recent activity. The local App steward Chat
+entry resolves only that source's existing current Session, then freezes its
+exact binding and Session in the URL. Discovery blocks the ordinary composer
+until it completes and performs no model work or Session creation. Existing
+unselected installations retain their ordinary entry. Once selected, a missing,
+revoked or replaced source stays unavailable until recovery or explicit clear;
+it cannot silently fall back to a peer or ordinary conversation. Goal-scoped,
+project, explicit original, managed-Agent and remote/read-only views retain their
+own navigation. A newly selected preference does not retarget an already frozen
+original conversation.
+Overview quick prompts and its composer use the same explicit choice and the
+existing exact Session send, active-Turn queue, stream recovery and readback.
+Resolving the entry does not open Chat or block Goal navigation. Sending stays
+disabled during discovery; failure offers retry and conversation settings beside
+the composer instead of switching to the ordinary manager. Unselected entries
+retain ordinary overview behavior. Quick prompts stay discoverable after source
+selection; opening the full conversation freezes its verified binding and Session
+in the URL. This journey adds no queue or message consumer.
+Settings retain an explicit clear action even after the selected binding is
+removed or its workspace becomes unavailable; clearing changes only the entry
+preference and retains all conversation history and execution grants.
+
+**Open desktop delivery checkpoint.** The normal App, browser and external
+messaging entries must share one machine service owner and its original Chat
+store, Session identities and delegation audience. A window must not silently
+start another service/runtime with a different history. App close/reopen and
+upgrade must preserve the original consumer and its running work; a missing or
+unqualified service must show recovery rather than switch stores. Retain any
+previous independent App history for explicit recovery instead of merging or
+discarding it. Developer isolation remains explicit. Browser acceptance against
+one Bot service does not qualify the native App's actual service route. This
+checkpoint remains open until that native path is implemented and read back.
+
+Chat storage overrides do not select another registered-work authority. The
+workspace Status and delivery task map read the coordinator's existing registered
+runtime root, while private Chat history and its settings keep their own store.
+The bound Session index returns its limited display source from the same fresh
+Core verification and binding fence. Opening that original conversation no longer
+waits for the full connection-settings inventory, unrelated Agent candidates or
+listener/recovery diagnostics. The client requires the exact binding echo,
+owner audience, available workspace and matching executor; missing or stale
+descriptors fail closed without a catalog fallback or replacement Session. The
+existing five-second read bound and fresh input admission remain unchanged.
+Unsent input for an original conversation belongs to its fixed binding/Session,
+not the executor's loading or unavailable display state. Source denial and
+recovery retain the editable text and in-memory images without enabling Send.
+Ordinary multi-executor conversations keep separate drafts. A unique retained
+executor-keyed draft is recovered into the same original conversation; conflicting
+drafts remain separately recoverable without overwriting current input. Retained
+uncertain sends keep their original request/Turn identity and require normal
+source admission before an explicit retry. Text retains the existing tab-session
+storage lifetime; this does not add image persistence across reloads.
+This qualifies a source-read boundary, not complete history/media synchronization
+or an installed provider roundtrip.
+The original-conversation request inventory pins one qualified code revision per
+HTTP read through the existing Effect request scope. Within that read, provider
+scope is verified once per distinct original Session, including older Sessions
+behind a reopened conversation, then every observed source is freshly verified
+again before any content is returned. Each row still checks its current source
+basis, host, Turn, target grant, Goal lifetime and receipt state. A revoked binding
+or provider identity at the closing check refuses the whole response. No proof
+survives the HTTP read; the next page independently qualifies source scope and
+code revision. This bounds provider IO by sources instead of historical rows,
+without caching receipt decisions or reducing scan coverage. Unreadable sources
+remain incomplete coverage rather than an empty successful inventory.
+
+Within each HTTP read, the Chat source observer locates original client Turns once per
+verified source Session, then rereads the exact Turn file for every request.
+This Python IO locator retains only store paths: it caches no content, grants
+or receipt decisions and is discarded before the next page. A missing Turn or
+changed client identity remains unreadable source coverage. This removes repeated
+full-history scans without changing the typed collaboration owner or its checks;
+provider latency and full installed cross-channel acceptance remain separate.
+
+Cold Goal links wait for the current status directory before invalidating a
+missing selection; the bundled placeholder is not proof that a valid Goal was
+removed. This keeps an initial Goal route out of default-steward discovery.
+
+![Choose an existing synthetic source](../../assets/personal-workspace/app-steward-entry/choose-source.png)
+![Continue its original conversation](../../assets/personal-workspace/app-steward-entry/original-conversation.png)
+
+Public-safe packaged evidence also includes the
+[narrow selection](../../assets/personal-workspace/app-steward-entry/selected-source-narrow.png),
+[unavailable entry](../../assets/personal-workspace/app-steward-entry/unavailable-narrow.png),
+and [complete narrow report](../../assets/personal-workspace/app-steward-entry/full-report-narrow.png).
+These use disposable Core/HTTP state and synthetic provider/model data; they do
+not certify installed external delivery or the complete synchronization goal.
+
 The App reuses its conversation history, single composer, stream recovery and
 queued-input owners. Quiet source refresh reads the verified compact index;
 only changed snapshots are read. Messages arriving from the original source
@@ -153,6 +244,46 @@ selection, both input origins, denial/recovery and no replacement Session.
 Packaged browser evidence qualifies the local UI path separately. Live Lark
 return delivery, installed service adoption, split-root composition and
 Goal-less project peer handoff remain open; this checkpoint does not close them.
+
+The existing Lark reply workers now also project committed App-origin user and
+answer messages from that exact owner-private Session. Each provider outbox
+retains the canonical message identity, frozen text and delivery attempt. The
+original Lark input supplies address provenance only: projection never readmits
+it or starts model work. Before every write and receipt recovery, Core rechecks
+the Session, current binding and audience, and the provider verifies the original
+source. Posts identify the App speaker, stay in canonical append order within
+that outbox and retain complete long text through the existing rich-post parts.
+Distinct canonical messages and parts get distinct provider idempotency keys,
+including when their text is identical; callers without that identity retain
+their existing receipt digest. Known attempts are read back before continuation;
+a started write without a provider locator stays unconfirmed after restart.
+Revocation or changed identity prevents further delivery. Disable the existing
+connection to revoke it; rollback must preserve its private delivery journals.
+
+Use **Continue original conversation** or the explicitly selected App steward
+entry above to reach this path. Old ordinary history is retained separately.
+This checkpoint covers text projection, not reply/thread relation mirroring,
+attachment transfer, retroactive insertion into Lark chronology or all-channel
+broadcast. An App attachment produces an explicit unsynchronized notice and a
+partial outbox, never a full-delivery claim. Synthetic real-HTTP/Core journeys
+cover repeated inputs, long text, restart, missing/unknown receipts, revocation
+and provider replacement. Installed provider readback remains a separate gate.
+
+The implementation decision follows primary-source comparisons, not a claim
+that shared context already guarantees two-way delivery:
+
+- [OpenClaw history delta](https://github.com/openclaw/openclaw/blob/b3ba4d622638ac23f64c0cec415bf5bfe81f5cf5/src/gateway/server-methods/chat-history-delta.ts)
+  resets incomplete/scoped projections; its
+  [send retry owner](https://github.com/openclaw/openclaw/blob/b3ba4d622638ac23f64c0cec415bf5bfe81f5cf5/src/gateway/server-methods/chat-send-retry.ts)
+  reconciles already-started execution. These inform recovery, not a Lark bridge.
+- [nanobot unified session keys](https://github.com/HKUDS/nanobot/blob/9e9e22d3319678178dba05a76f0ea61064b78ee8/nanobot/session/keys.py)
+  and [last-destination routing](https://github.com/HKUDS/nanobot/blob/9e9e22d3319678178dba05a76f0ea61064b78ee8/nanobot/agent/loop.py)
+  share context; a last destination does not replicate a transcript to every surface.
+- [mautrix message mappings](https://github.com/mautrix/go/blob/a4237e5b9f8f0e9b35c81d5310615eb70c202cea/bridgev2/database/message.go)
+  and [portal echo handling](https://github.com/mautrix/go/blob/a4237e5b9f8f0e9b35c81d5310615eb70c202cea/bridgev2/portal.go)
+  motivate stable transaction/part identities and echo suppression. A Matrix
+  homeserver/bridge would add separate infrastructure and identity ownership.
+  LoopX borrows the design, not MPL-2.0 code; the other two snapshots are MIT.
 
 Synthetic product previews: [desktop](../../assets/personal-workspace/private-project-conversations.png),
 [narrow](../../assets/personal-workspace/private-project-conversations-narrow.png),

@@ -23,15 +23,15 @@
 - 每个已发 key 的哈希，连同你登录时的设备名、方式（验证码还是密码）、最后使用时间，以及登记后的 Hub 设备 id 和类型；吊销的 key 保留它那一行，登录记录列表才能说明这一点；
 - 密码，如果你设了，以 scrypt 哈希保存，从不保存密码本身；
 - 每次请求：类型（聊天、图片、视频）、模型、token 数和扣费金额；
-- 中继 0.28 起，每次聊天请求的经过（`calls` 表）：在服务商闸门前等了多久、首字和整体用了多久、怎么结束的（成功、服务商错误或超时、内容审查拒绝、连接中断、额度拒绝）、请求里有几条消息和几张图、客户端提供了哪些工具、回复调用了哪些（只记名字）、是不是一次屏幕操作、来自哪个平台。从不记对话里的一个字。超过 `CALLS_KEEP_DAYS`（90）天的行会删除；运营者的「实时」和「用量」页按汇总读这些行（模型接口有多忙、答得多快、哪些平台在排队）；
+- 中继 0.28 起，每次聊天请求的经过（`calls` 表）：在服务商闸门前等了多久、首字和整体用了多久、怎么结束的（成功、服务商错误或超时、内容审查拒绝、连接中断、额度拒绝）、请求里有几条消息和几张图、客户端提供了哪些工具、回复调用了哪些（只记名字）、是不是一次屏幕操作、来自哪个平台，中继 0.31 起还有输入 tokens 里有多少是服务商从缓存里给出的。从不记对话里的一个字。超过 `CALLS_KEEP_DAYS`（90）天的行会删除；运营者的「实时」和「用量」页按汇总读这些行（模型接口有多忙、答得多快、哪些平台在排队）；
 - 中继 0.28 起，每一轮保留的对话（下面的「帮助改进」）旁边有一行形状（`sample_stats`）：消息数、字符数、工具调用、图片数、提问是否过短，以及这个人那句话的哈希，用来数重复。质量页读的是形状，不是对话；删除保留的轮次时形状一起删；
-- 中继 0.28 起，设备可以在 hub 握手里说明自己跑在哪个模型上（`llm {provider, model}`，只有这两个 id，从不是 key、地址或设置），运营者由此知道大家自己配了哪些服务商。1.0.6 及更早的 App 什么都不说，之后的 App 只在这个人用自己的 key 时才说；
+- 中继 0.28 起，设备可以在 hub 握手里说明自己跑在哪个模型上（`llm {provider, model}`，只有这两个 id，从不是 key、地址或设置），运营者由此知道大家自己配了哪些服务商。1.0.6 及更早的 App 什么都不说；1.0.7 起每个客户端在账号的模型回答时说 `cloud`，用自己的 key 时说目录里的服务商 id（`openrouter`、`bailian`）和模型 id；
 - 一条账号事件时间线（登录、登录失败、设置或修改密码、退出登录、因预算被拒、上游错误），细节是设备名、模型或错误码，从不是消息内容；
 - 旧视频任务的记录，包含价格和服务商最后一次返回的状态，只用于账务清理，三天后删除。托管媒体已经全面下线，所以轮询任务和其他托管媒体接口一样返回 `410 hosted_media_retired`，不会请求服务商；
 - 智能体的名字和形象（`/v1/me/profile`）：它用的是哪一张（小龙、某个颜色底上的 emoji，或者形象工作室里画的一张，连同那张形象的五张小 WebP 图），好让账号的每台设备显示同一个。从中继 0.25 起写入是部分的：设备只发它这边变了的字段，改名只发名字，换脸发形象和图片，没发的字段保持中继存着的值（空名字也算没发），所以一台还没拉到账号形象就先改名的手机不会再把「小龙」当成名字一起发上去、让其他设备的形象都被换掉；`avatar` 不是 `face` 时存着的图片一并丢掉，这样没有哪台设备会把 `has_face` 读成还戴着的脸。1.0.3 的客户端每次写整个形象，读法和以前完全一样。0.1.34 起，同一份 profile 还列出账号的**连接器**：哪台设备连接了哪个服务（一个标签；登录方式：OAuth、key 或开放；以及时间），这样另一台设备能说「已在你的 Mac 上连接」。凭据本身留在持有它的设备上；中继拒绝任何带着像凭据一样命名的字段的项。从不存 key 或设置。
 - 中继 0.19 起，**同步的对话**（「在我的设备之间同步对话」，默认开）：账号聊天的文本（每个对话的标题、类型和由哪台设备发起，每条消息的角色、文本、时间和设备，以及附件的名字和大小，从不存文件本身），好让每台设备显示同样的对话。关掉开关会删掉全部；删除账号也一样。下面的[对话同步](#conversation-sync)一节有它的形状。
 
-- 中继 0.29 起，**记录**：中继答过的每一轮聊天，完整保留：中继发给模型的请求原样（每条消息：带着你的记忆、SOUL 和指令的系统提示词、你写的、工具返回的；工具定义；采样参数）和模型给出的回答原样（内容、推理、工具调用、结束原因、用量）。图片、音频和短视频从消息里取出，按各自的 SHA-256 命名，每个只存一份文件，原位置留一个 `blob:sha256:` 引用；屏幕操作时 App 每一轮都重发的那张截图，只是一个文件。随这一轮一起的还有：模型、平台、App 报的设备和对话（`X-NanoMuse-Device`、`X-NanoMuse-Conversation`，1.0.7 起）、token 数，以及和每次请求一样的网络地址与客户端软件。这是账号自己的数据，它的各台设备可以读回来，运营者也能看清一个问题的全貌；它不取决于下面的任何一个开关。[记录](#the-record)一节说明保留什么、谁能读、怎么删。
+- 中继 0.29 起，**记录**：中继答过的每一轮聊天，完整保留：中继发给模型的请求原样（每条消息：带着你的记忆、SOUL 和指令的系统提示词、你写的、工具返回的；工具定义；采样参数）和模型给出的回答原样（内容、推理、工具调用、结束原因、用量）。图片、音频和短视频从消息里取出，按各自的 SHA-256 命名，每个只存一份文件，原位置留一个 `blob:sha256:` 引用；屏幕操作时 App 每一轮都重发的那张截图，只是一个文件。随这一轮一起的还有：模型、平台、App 报的设备和对话（`X-NanoMuse-Device`、`X-NanoMuse-Conversation`，1.0.7 起）、token 数（中继 0.31 起含输入里命中缓存的部分），以及和每次请求一样的网络地址与客户端软件。这是账号自己的数据，它的各台设备可以读回来，运营者也能看清一个问题的全貌；它不取决于下面的任何一个开关。[记录](#the-record)一节说明保留什么、谁能读、怎么删。
 
 消息内容只按下面「记录」「数据控制」和「对话同步」三节所说的方式保存，此外不存：请求转发给运营者配置的上游模型，回复流式传回。中继一次最多向这套共享部署发送 `CHAT_CONCURRENCY` 个聊天请求，其余请求在中继等待；只有在回复开始前收到 429 或 5xx 才会重试，不会重复已经开始的轮次。每个响应都带一个 `X-Nanomuse-Request` id，这样一份问题报告可以对上账本里的一行，而不用记录任何内容。删除账号（带账号 key 的 `POST /v1/auth/delete`）会移除全部：账号、key、设备、profile、账本、事件、保留的对话、视频任务、同步的对话和游标、hub 连接，以及实时的「正在处理」提示；中继的测试会在之后检查每一张表里是否还有这个账号的痕迹，并确认同一个地址再注册是一个全新的空账号。见 [privacy.md](privacy.md)。
 
@@ -51,6 +51,8 @@
 它在回答发出之后、在请求路径之外写入，永远不是一次聊天失败的原因。它不取决于「帮助改进」（那个开关管的是训练集），也不取决于「同步对话」（那是各个 App 自己的一份聊天副本）；自己部署的中继设 `RECORD_TURNS=0` 就什么都不留。
 
 **谁能读。** 账号的各台设备：`GET /v1/turns`（最新在前；用 `before` 和 `before_id` 翻页；`conversation=` 只看一个对话）、`GET /v1/turns/{id}`，以及 `GET /v1/blobs/{sha256}` 取文件；只对持有这个文件引用的账号打开（它的某一轮、它 profile 里的短视频、它自己上传的），知道哈希本身打不开任何东西。本人的视图不含地址。运营者：`GET /v1/admin/turns`、JSON lines 导出（`/v1/admin/turns/export`，含账号 id：这是账号的数据，不是训练集；训练集仍是不含 id 的 `/v1/admin/samples/export`）、`/v1/admin/blobs/{sha256}` 取一个文件，以及 `GET /v1/admin/record` 看数字：总计和按天的轮次与文件数、存储量对上限。
+
+历史记录和样本分页利用现有时间索引跳过较新的秒，再按插入顺序处理同一秒内的记录。导出和分析回填沿用这一分页边界，无需迁移数据库。
 
 **用自己 key 跑的轮次。** 1.0.7 起，App 用自己的 key 跑完一轮后把它传上来，这样不论模型在哪，记录都是完整的：先对每张图 `PUT /v1/blobs/{sha256}`（请求体是原始字节，带 `Content-Type`；哈希会被校验；先 `HEAD` 一下，或者看返回里的 `known: true`，就知道别的设备是不是已经传过），再 `POST /v1/turns`，带 `model`、`messages`（引用，或者内联的 data URL）、`response: {message, usage?}`，以及 App 手里的 `provider`、`ts`、`conversation`、`id` 和 `status`（`status: partial` 时再带一个 `ended`，用 App 自己的词：`aborted`、`error`、`abandoned`）；这一行记 `source: own`。引用一个账号从未上传的文件，返回 400 `unknown_blob`。一个账号每分钟最多传 `RECORD_UPLOADS_PER_MINUTE` 个轮次和文件（120；超过回 429 `rate_limited`，剩下的晚点再传），文件总量最多 `MEDIA_ACCOUNT_MAX_MB`（2048；超过回 413 `quota_exceeded`）；整个存储超过 `MEDIA_MAX_GB` 后，在每小时的清理跑过之前谁的文件都不收（507 `store_full`）。两者都在请求的事件循环之外写入。
 
@@ -75,7 +77,7 @@ GET    /v1/sync/state                   → {enabled, cursor, counts{conversatio
 PUT    /v1/sync/state   {enabled}       → the same; false deletes everything stored, the counter keeps counting
 GET    /v1/sync/changes ?since=0&limit=500&scope=all|main&tail=K   → {cursor, more, conversations[], messages[], skipped?}
 POST   /v1/sync/changes {device, conversations[], messages[]}   → {cursor, accepted, rejected[{cid | mid, reason, cid_main?}]}
-POST   /v1/sync/working {cid, working, device?}   → 204; the hub tells the other devices   404 no_conversation
+POST   /v1/sync/working {cid, working, device?, state?, detail?}   → 204; the hub tells the other devices (0.31: state and step ride along)   404 no_conversation
 DELETE /v1/sync/changes                 → the state, counts at zero     everything stored, switch unchanged
 DELETE /v1/sync/conversations/{cid}     → {cursor, deleted: true}      a tombstone the other devices apply; 404 no_conversation
 ```
@@ -125,6 +127,8 @@ nanoMuse 只求一样回报：在 [GitHub](https://github.com/nano-muse/nanoMuse
 **阈值。** 一条规则说「账号数达到 N 时，做一件事」：关闭注册、暂停额度、暂停同步，或者只是通知。规则在创建账号时检查，另外每分钟一次；一条规则只触发一次（触发时的数字和时间会保存并显示），「重新启用」或改动阈值能让它再次触发。每次触发写一行审计日志和活动时间线上的一行；「通知」还会通过 SMTP 设置给中继的 `ADMIN_EMAIL` 发一封邮件（只有数字和中继的地址，不涉及任何人）。开关的状态和下一个阈值是管理面板的第一行。
 
 ## 自己部署 {#running-your-own}
+
+API 请求和错误计数在线程池中写入。响应会等待计数写入完成；计数写入等待数据库锁时，不占用事件循环。
 
 任何人都可以跑一个中继（给一家人、一个班、一家公司），然后把 App 指向它。服务器是 SQLite 之上的单个 Python 进程；一台装了 Docker 的 VPS 加一个域名就够了：
 
@@ -178,6 +182,8 @@ DELETE /v1/devices/{id}     Bearer                            → 204; 409 devic
 `/v1/config` 里的 `code_ttl_s` 和 `password_min_len` 就是中继的 `CODE_TTL_S` 和 `PASSWORD_MIN_LEN`；网页控制台的登录表单和密码表单打印这两个数，所以设了别的数值的中继也能被说对，没有这两个字段的旧中继按十分钟和 8 位读。
 
 其余都是 OpenAI API：`GET /v1/models`（带 `architecture` 模态，好认出图像模型，每个模型还有一个 `nanomuse` 块，含它的 `kind`、价格、`for`（聊天模型适用的通道：`chat` 和 / 或 `gui`）以及 `recommended_for`）、`GET /v1/models/{id}?kind=chat`（成员检查一个手动输入的 id：`listed`、`priced_as`）、流式的 `POST /v1/chat/completions`、`POST /v1/images/generations` 和 `/v1/images/edits`，以及走服务商自己路径的短视频（`POST /api/v1/services/aigc/video-generation/video-synthesis`、只能查自己任务的 `GET /api/v1/tasks/{id}`、`GET /api/v1/uploads`）。项目托管服务对图片/视频请求、上传、手动媒体模型查询、媒体估算和视频任务轮询，在调用上游之前统一返回 `410 hosted_media_retired`，并带 `action: configure_own_provider`。错误是 `{"error": {"message", "type": "nanomuse_cloud", "code"}}`，`code` 稳定不变，App 把它变成一句话。中继 0.22 加了运营者[开关](#controls)的码：`403 signup_closed`、`503 service_paused`、`503 sync_paused`、`503 hub_paused`（以及 hub 的关闭码 `4003 hub_paused`），还有免费额度是被暂停而不是花完时带 `paused: true` 的 `allowance_exhausted`；`/healthz`、`/v1/config` 和 `/v1/me` 在 `paused` 下列出关着的开关。
+
+**模型开口之前（中继 0.31）。** 一次流式对话可能先收到几段没有 `choices` 的 chunk：`{"object": "chat.completion.chunk", "model", "created", "choices": [], "nanomuse": {"phase", "waited_ms", "ahead"?}}`。请求在中继的模型名额（`CHAT_CONCURRENCY`）前排队时，每 5 秒来一段 `phase: "queued"`，`ahead` 是排在它前面的请求数；轮到它时来一段 `phase: "working"`；没排过队的请求一段也不会收到。模型迟迟不吐出第一个字节的时候，每 10 秒发一行注释（`: keepalive`）。SSE 解析器按定义会跳过注释行，而没有 choices 的 chunk 正是每个客户端早已处理的只带 usage 的那种形状，所以不认识这些的客户端看到的回复和从前一样；手机和桌面读这个字段，告诉你前面还有几个、这一轮等了多久。非流式对话里没有这些；这些也不计费、不入账。
 
 中继不认识的 key 得到 `401 bad_key`；0.1.40 起，账号已被删除的 key 改为得到 `401 account_deleted`，在每一个需要 key 的调用上都如此（`/v1/me`、`/v1/models`、`/v1/chat/completions`、同步和 hub 的调用），删除后持续 90 天；中继把已删除账号的 key 哈希保留这么久，别的什么都不留。不认识这个码的客户端看到的是和以前一样的 `401`；认识的客户端（手机）在 `account_deleted` 时删除账号的本地数据，其他情况都收起来保留（[sync.md](sync.md)）。完整的错误码表在 [`cloud/README.md`](../../cloud/README.md)。
 

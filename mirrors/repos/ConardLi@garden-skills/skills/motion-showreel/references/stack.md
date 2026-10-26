@@ -14,9 +14,29 @@ window.READY = true;              // 字体、图片、模型、纹理全部加�
 
 - 渲染工具用 HTTP 服务项目目录（这样 ES module、字体、glTF 都能加载），视口 = `--size`，DPR = `--dpr`。页面通过 `stageSize()` 读 `?w=&h=`，按这个尺寸排版。
 - 页面里的 JS 报错、必需的脚本 404，工具都会立刻退出并打印错误；可选文件 404 只会警告。
+- `--out` 相对运行命令时的工作目录解析，与项目参数分别计算；没有先进入项目目录时，传 `<slug>/qa/...` 或绝对路径。
 - 预览：`npx serve <slug>` 或任意静态服务，打开 `index.html?w=1920&h=1080`，在控制台调用 `render(3.2)` 就能看第 3.2 秒。也可以临时加一个 `?play=1` 分支，用 rAF 驱动 `render(performance.now()/1000 % DUR)` 方便调试，但**渲染时这个分支不能运行**。
 
-### 带声音预览
+### 子帧采样中的文字和硬切（可选）
+
+使用 `--subframes 2` 等运动模糊设置时，两个采样可能跨过文案切换点，把新旧文字混在一帧里。需要避免这种情况的项目可显式启用采样上下文：
+
+```js
+window.RENDER_CONTEXT = true;
+window.render = (t, frame = {}) => {
+  const copyTime = frame.frameTime ?? t;
+  // 文案内容、硬切状态由 copyTime 决定。
+  const caption = copyTime < 2 ? 'BEFORE' : 'AFTER';
+  // 物体运动、文字位移和有意的淡化仍用 t，保留运动模糊。
+  drawScene(t, caption);
+};
+```
+
+启用后，渲染器额外传入 `{ frameTime, fps }`：`t` 是当前子帧时间，`frameTime` 是这一输出帧的准确时间，包含分段导出的起点。普通预览和手动调用仍可只传 `t`，因此第二个参数应保留默认值和回退。未启用的旧项目仍按原来的一参数 `render(t)` 调用，不改变默认采样、帧率或效果。不要将所有动画时间取整，也不要把有意的交叉淡化改成硬切。
+
+### 默认工作区与轻量调试预览
+
+制作默认运行 `node <skill>/scripts/editor.mjs <slug> --size <本片尺寸> --fps <本片帧率>`，主动打开工作区，让用户确认预览后再生成 MP4，详见 `editor.md`。下面的 `preview.mjs` 保留为轻量调试工具，不自动替代工作区审片。
 
 `preview.mjs` 在内存中加入控件，不修改项目源文件，旧项目可直接使用。新脚手架也包含 `preview.js`，便于通过普通静态服务预览；手动接入时复制该文件，并在 `body` 中加入 `<script type="module" src="./preview.js"></script>`。控件只在 `?preview=1` 且不是 `render=1` 时运行，不改变页面的 `render(t)`。
 
@@ -133,5 +153,5 @@ node <skill>/scripts/preview.mjs <slug> --size 1080x1920 --audio audio/final.wav
 - 渲染工具会打印每个样本的毫秒数。预估：**总时间 ≈ 单帧耗时 × 帧数 × 子帧数 ÷ worker 数 × 1.2**。
 - 参考量级（Apple Silicon、1080p）：Canvas 2D 简单场景 15–40 毫秒/帧，DOM 排版 30–60 毫秒，WebGL 后期 +20–80 毫秒，Three.js 带后期 80–300 毫秒。
 - worker 默认 3 个，CPU 核多可以开到 4–6 个；WebGL 重的页面 worker 太多反而更慢。
-- 先低清小样（960×540、无运动模糊）定节奏，最后一遍再上 `--subframes`、`--dpr`、60fps。
-- 渲染出错时只重渲那一段：`--start 6 --duration 3 --out out/seg.mp4`，确认没问题再出整片。
+- 先在工作区实时预览节奏，用户确认后才渲染 MP4；`--subframes`、`--dpr`、帧率按 brief 的最终规格导出，不为预览擅自改动成片规格。只有用户同意需要离线片段时才生成低清样片。
+- 渲染出错时先在工作区定位和修正；用户确认后可只重渲那一段：`--start 6 --duration 3 --out out/seg.mp4`，再按确认规格重建整片。

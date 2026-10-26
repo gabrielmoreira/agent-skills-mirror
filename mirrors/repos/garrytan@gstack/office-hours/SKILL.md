@@ -509,7 +509,7 @@ SLUG=$(~/.claude/skills/gstack/bin/gstack-slug --get SLUG 2>/dev/null)
 ```
 
 1. Read `CLAUDE.md`, `TODOS.md` (if they exist).
-2. Run `git log --oneline -30` and `git diff origin/main --stat 2>/dev/null` to understand recent context.
+2. Run `git log --oneline -30` and `git diff origin/HEAD --stat` (default branch) to grasp recent context.
 3. Use Grep/Glob to map the codebase areas most relevant to the user's request.
 4. **List existing design docs for this project:**
    ```bash
@@ -633,8 +633,6 @@ grep -li "<keyword1>\|<keyword2>\|<keyword3>" "$GSTACK_STATE_ROOT"/projects/$SLU
 If matches found, read the matching design docs and surface them:
 - "FYI: Related design found — '{title}' by {user} on {date} (branch: {branch}). Key overlap: {1-line summary of relevant section}."
 - Ask via AskUserQuestion: "Should we build on this prior design or start fresh?"
-
-This enables cross-team discovery — multiple users exploring the same project will see each other's design docs in `~/.gstack/projects/`.
 
 If no matches found, proceed silently.
 
@@ -1240,7 +1238,7 @@ Track which of these signals appeared during the session:
 - Showed **agency** — actually building, not just planning
 - **Defended premise with reasoning** against cross-model challenge (kept original premise when Codex disagreed AND articulated specific reasoning for why — dismissal without reasoning does not count)
 
-Count the signals. You'll use this count in Phase 6 to determine which tier of closing message to use.
+Count the signals; Phase 6 uses the count to pick the closing tier.
 
 ### Builder Profile Read (before this session is logged)
 
@@ -1261,9 +1259,7 @@ PRIOR_SESSION_COUNT=0` with the rest empty or false.
 ### Builder Profile Append
 
 After the read above, append a session entry to the builder profile. This is the single
-source of truth for all closing state (tier, resource dedup, journey tracking). The
-`gstack-developer-profile --log-session` binary handles its own directory creation
-and writes via atomic mktemp+mv to `$GSTACK_STATE_ROOT/developer-profile.json`.
+source of truth for all closing state (tier, resource dedup, journey tracking).
 
 Append one JSON line with these fields (substitute actual values from this session):
 - `date`: current ISO 8601 timestamp
@@ -1280,9 +1276,7 @@ Append one JSON line with these fields (substitute actual values from this sessi
 ~/.claude/skills/gstack/bin/gstack-developer-profile --log-session '{"date":"TIMESTAMP","mode":"MODE","project_slug":"SLUG","signal_count":N,"signals":SIGNALS_ARRAY,"design_doc":"DOC_PATH","assignment":"ASSIGNMENT_TEXT","resources_shown":[],"topics":TOPICS_ARRAY}' 2>/dev/null || true
 ```
 
-The session entry is appended to `developer-profile.json`'s `sessions[]` array. A second
-session entry with `mode: "resources"` is appended via `--log-session` after resource
-selection in Phase 6 (Founder Resources).
+Phase 6 (Founder Resources) appends a second `mode: "resources"` entry.
 
 ---
 
@@ -1302,9 +1296,14 @@ the folder; another session may have written it):
 GSTACK_STATE_ROOT=$(~/.claude/skills/gstack/bin/gstack-paths --get GSTACK_STATE_ROOT); : "${GSTACK_STATE_ROOT:?gstack-paths failed; reinstall with ./setup or /gstack-upgrade}"
 DOC="DESIGN_DOC_PATH"
 case "$DOC" in "$GSTACK_STATE_ROOT"/projects/*-design-*.md) [ -s "$DOC" ] && echo "DESIGN_DOC: ok" || echo "DESIGN_DOC: missing" ;; *) echo "DESIGN_DOC: missing" ;; esac
+P="HOST_PLAN_PATH"
+if [ -s "$DOC" ] && [ -f "$P" ]; then
+  [ "$P" -nt "$DOC" ] && ! cmp -s "$P" "$DOC" && cp "$P" "$DOC" && echo "PLAN_COPY: written through"
+  echo "$P" > "$DOC.plan-copy"
+fi
 ```
 
-Replace DESIGN_DOC_PATH with that path, or with nothing if no doc was written. OUTCOME is `success`
+Replace DESIGN_DOC_PATH with that path, or with nothing if no doc was written. In host plan mode, set HOST_PLAN_PATH to the absolute path of the plan file holding this doc, else nothing; its edits are written through to the doc, the source of truth. After `PLAN_COPY: written through`, rewrite any repo copy from the doc (Phase 5 scan rule). OUTCOME is `success`
 only after `DESIGN_DOC: ok`; otherwise use `abort` if the user ended the session, else `error`
 with FAILED_STEP `design_doc`.
 

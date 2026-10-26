@@ -99,6 +99,72 @@ Lark listener 观测。该本地 hook 只读取缓存，不发起网络请求。
 不回退到普通管家/项目历史，不新建替代 Session，也不在这里切换执行器或模型。
 群受众保留原有边界。
 
+已有本人私聊管家连接还提供 **用于 App 管家**。Core 在原 binding 集合中保存
+明确的入口选择，不改变受众、受管身份或执行授权。多个管家不按列表顺序或最近
+活跃时间竞争。点击本机 App 管家聊天时，仅在所选来源中发现当前已有 Session，
+随后将确切 binding 与 Session 固定在 URL。发现完成前阻止普通输入框出现；
+发现不调用模型、不创建会话。未选择的旧安装保留普通入口。选定来源缺失、撤权
+或被替换时保持不可用，等待恢复或明确取消选择，不悄悄回退到另一管家或普通会话。
+Goal 范围、项目、明确原会话、受管 Agent 以及远端/只读视图保留各自导航。
+后来修改默认选择，不挪走已固定的原会话。
+概览中的快捷提问与输入框使用同一个明确选择，复用确切原 Session 的发送、
+活动回合排队、流恢复和读回；选择核验不自动打开聊天，也不遮住 Goal 导航。
+核验期间禁止发送，失败时在输入框旁显示重试与会话设置，不切回普通管家。
+未选择时保持普通概览行为；选择原来源后，概览快捷提问仍可发现，打开完整对话
+时将已核验的 binding 与 Session 固定到 URL。此旅程不建立第二队列或消息消费者。
+所选 binding 已移除或工作区不可用时，设置仍保留明确取消选择的入口；取消只改变
+默认入口，保留全部会话历史与执行授权。
+
+**尚未交付的桌面验收项。** 普通 App、网页与外部消息入口必须共用一个机器级服务
+归属，以及其原 Chat 存储、Session 身份和委派受众。打开窗口不能悄悄另起一套
+服务/runtime，形成不同历史。关闭、重开及升级 App 应保留原消费者与在途工作；
+服务缺失或尚未核验时明确显示恢复，不能切到另一份存储。既有独立 App 历史保留
+用于明确恢复，不擅自混入或删除；开发隔离须显式选择。对某个 Bot 服务做浏览器
+验收不能证明实际原生 App 路由正确。此项保持未闭，直至原生路径实现并独立读回。
+
+Chat 存储覆盖不另选注册工作的权威根目录。工作区状态与交付任务图沿用协调器
+既有的注册 runtime root，私有 Chat 历史与设置仍留在原存储。
+绑定 Session 索引在同一次新 Core 核验和 binding 锁内返回有限的显示来源。
+打开该原会话不再等待全部连接的设置清单、无关 Agent 候选或 listener／恢复诊断。
+客户端仍要求准确的 binding 回显、本人私聊、可用工作区和一致执行器；来源描述
+缺失或失效时拒绝，不回退设置清单或另建 Session。既有五秒读取边界和每次输入的
+新准入不变。
+原会话未发送的输入归属于固定 binding／Session，不随执行器的加载或不可用显示
+状态改换草稿。来源拒绝及恢复保留可编辑正文和内存中的图片，不因此允许发送；
+普通多执行器会话仍各自保存草稿。唯一一份旧执行器分键草稿恢复到同一原会话，
+多份有冲突的草稿保留为可单独恢复的内容，不覆盖当前输入。未确认发送恢复时保留
+原请求／Turn 身份，显式重试前仍走正常来源准入。文字沿用原标签页的 session
+storage 生命周期，不新增图片跨刷新持久化。
+此项资格只覆盖来源读取边界，不代表完整历史／媒体同步或安装态的
+真实 provider 往返已通过。
+原会话委派列表通过
+既有 Effect 请求范围为每次 HTTP 读取固定一个已核验代码修订。在一次读取内，
+每个不同的原 Session（包括重开会话背后的旧 Session）先独立核验 provider 范围，
+返回任何内容前再对所有已观察来源做一次新核验。每条记录仍检查当前来源依据、
+宿主、Turn、目标授权、Goal 生命周期和回执状态；结束核验发现 binding 或 provider
+身份被撤销时，整份响应拒绝返回。证明不跨 HTTP 读取保存，下一页独立核验来源
+范围和代码修订。provider IO 因而随来源数而非历史记录数增长，不缓存回执决策、
+不缩小扫描覆盖。来源不可读继续显示覆盖不完整，不能当作成功的空列表。
+
+每次 HTTP 读取内，Chat 来源观测器对每个已核验来源 Session 只定位一次原 client Turn，
+随后每条请求仍重新读取确切 Turn 文件。此 Python IO 定位器只保留 store 路径，
+不缓存正文、授权或回执决策，下一页重新构建。Turn 丢失或 client 身份变化仍计为
+来源覆盖不可读。这样消除重复全历史扫描，不改变 typed 协作 owner 及其核验；
+provider 延迟与完整安装态跨端验收仍是独立边界。
+
+冷启动 Goal 深链接时，先等待当前状态目录，再判断所选 Goal 是否已失效；内置
+占位数据不能证明有效 Goal 已被删除，初始 Goal 路由因此不会误入默认管家发现。
+
+![选择已有合成来源](../../assets/personal-workspace/app-steward-entry/choose-source.png)
+![继续其原会话](../../assets/personal-workspace/app-steward-entry/original-conversation.png)
+
+公开安全的打包证据另含
+[窄屏选择](../../assets/personal-workspace/app-steward-entry/selected-source-narrow.png)、
+[入口不可用](../../assets/personal-workspace/app-steward-entry/unavailable-narrow.png)和
+[窄屏完整报告](../../assets/personal-workspace/app-steward-entry/full-report-narrow.png)。
+以上使用临时 Core/HTTP 状态及合成 provider/模型数据，不代替安装态外部送达或
+完整同步目标的验收。
+
 App 复用原对话历史、单输入框、流恢复和排队输入 owner。安静刷新读取经核验的
 紧凑索引，仅在变化时读取快照；原来源新增消息无需导航即可显示，Web 输入保留
 Web 来源，通过已有 Core 队列及新鲜来源准入。连接列表独立于 App/凭证目录加载，
@@ -108,6 +174,36 @@ Web 来源，通过已有 Core 队列及新鲜来源准入。连接列表独立�
 来源、拒绝/恢复及不创建替代 Session；打包浏览器证据另行验证本机 UI 路径。
 真实 Lark 结果回传、安装态服务采用、分离运行根组合及无 Goal 项目的 peer 交办
 仍未关闭，不由此检查点代替。
+
+现有 Lark 回复 worker 现在也投递该本人私聊确切 Session 中已提交的 App 用户消息和
+回答。每份 provider outbox 保留 canonical 消息身份、冻结正文和发送尝试。原 Lark
+输入只提供地址来源证据；投影不会重新受理它或启动模型工作。每次发送和恢复回执前，
+Core 重查 Session、当前绑定与受众，provider 核验原来源。消息标明 App 发言者，在
+该 outbox 内按 canonical 追加顺序发送，长正文沿用既有富文本分段，保留完整内容。
+即使正文相同，不同 canonical 消息及分段也使用不同 provider 幂等键；未提供该身份
+的既有调用者保持原回执 digest。恢复先读回已知发送，再继续未发送部分；已经开始但
+没有 provider locator 的写入，重启后仍保留未确认。撤权或身份变化阻止后续投递。
+关闭既有连接即可撤销授权；回滚须保留私有投递 journal。
+
+通过上述 **继续原会话** 或明确选定的 App 管家入口使用该路径；旧普通历史继续
+独立保留。本检查点覆盖文本投影，不覆盖回复/话题关系镜像、附件传输、向 Lark
+历史回插旧时间或全渠道广播。App 附件会产生明确的未同步提示，并保留 partial
+outbox，不声明完整送达。真实 HTTP/Core 配合合成 provider 的旅程覆盖重复输入、
+长正文、重启、回执缺失/未知、撤权及 App 身份替换；安装态 provider 读回另行验收。
+
+实现判断来自一手源码比较，不把共享上下文视为双向送达已经成立：
+
+- [OpenClaw 历史增量](https://github.com/openclaw/openclaw/blob/b3ba4d622638ac23f64c0cec415bf5bfe81f5cf5/src/gateway/server-methods/chat-history-delta.ts)
+  对不完整/受限投影要求重置；其
+  [发送重试 owner](https://github.com/openclaw/openclaw/blob/b3ba4d622638ac23f64c0cec415bf5bfe81f5cf5/src/gateway/server-methods/chat-send-retry.ts)
+  对已经开始的执行先对账。这些机制用于恢复设计，不代表已有 Lark 桥。
+- [nanobot 统一会话键](https://github.com/HKUDS/nanobot/blob/9e9e22d3319678178dba05a76f0ea61064b78ee8/nanobot/session/keys.py)
+  和[最后目的地路由](https://github.com/HKUDS/nanobot/blob/9e9e22d3319678178dba05a76f0ea61064b78ee8/nanobot/agent/loop.py)
+  可以共享上下文，但最后目的地不等于向每个界面复制完整记录。
+- [mautrix 消息映射](https://github.com/mautrix/go/blob/a4237e5b9f8f0e9b35c81d5310615eb70c202cea/bridgev2/database/message.go)
+  及 [portal 回声处理](https://github.com/mautrix/go/blob/a4237e5b9f8f0e9b35c81d5310615eb70c202cea/bridgev2/portal.go)
+  支持稳定事务/分段身份和回声抑制的设计判断。采用 Matrix homeserver/桥还会增加
+  独立基础设施与身份 owner；LoopX 借鉴设计，不复制 MPL-2.0 代码，另两个快照为 MIT。
 
 ![合成私聊工作区设置](../../assets/personal-workspace/private-project-conversations.png)
 ![窄屏私聊设置](../../assets/personal-workspace/private-project-conversations-narrow.png)

@@ -101,14 +101,14 @@ When you call `GetPreviewUrl(port, command, title)`:
 
 **Sub-agent fallback:** Sub-agents cannot call `GetPreviewUrl`. Instead, build the dashboard files, start the server for verification, then return the serve details so the orchestrating agent can call `GetPreviewUrl`.
 
-**All tiers** — use the Bash tool with `run_in_background=true` to start the server:
+**All tiers:** start the server from Bash with `&` and its output sent to a file, so the call returns at once and the server keeps running:
 
 ```bash
-# Simple tier — Bash tool with run_in_background=true
-cd <task> && python -m http.server 8050 --bind 0.0.0.0
+# Simple tier
+cd <task> && nohup python -m http.server 8050 --bind 0.0.0.0 > server.log 2>&1 &
 
-# Docker tiers — Bash tool with run_in_background=true
-cd <task> && bash start.sh
+# Docker tiers
+cd <task> && nohup bash start.sh > server.log 2>&1 &
 ```
 
 Then verify it's up in a separate (foreground) Bash call:
@@ -283,7 +283,7 @@ GetPreviewUrl(port=8050, command="cd dashboard && python -m http.server 8050 --b
 GetPreviewUrl(port=8050, command="bash dashboard/start.sh", title="Stock Dashboard")
 ```
 
-**Local verification before `GetPreviewUrl`** — if you need the server running for Playwright verification, use the Bash tool with `run_in_background=true` (see sub-agent fallback above for the pattern). Do NOT use `subprocess.Popen` from `execute_code` — the process becomes a zombie when the tool-call shell exits.
+**Local verification before `GetPreviewUrl`** — if you need the server running for Playwright verification, start it from Bash with `&` and its output sent to a file (see above). Do NOT use `subprocess.Popen` from `execute_code` — the process becomes a zombie when the tool-call shell exits.
 
 ### Step 7: Iterate
 
@@ -644,9 +644,9 @@ Layout:
 | `start.sh` fails on restart | Ensure idempotent: dockerd startup check, `docker rm -f` before `docker run` (use `start.sh` template) |
 | Docker: yfinance timezone error | Add `tzdata` package to Dockerfile (included in template) |
 | Docker: can't reach external APIs | Use `--network host` flag (included in `start.sh` template) |
-| `GetPreviewUrl` not found / `NameError` | Tool only available to main agent runtime — sub-agents use Bash tool with `run_in_background=true` to start the server, then report port/command/title back |
+| `GetPreviewUrl` not found / `NameError` | Tool only available to main agent runtime — sub-agents start the server from Bash with `&` and its output sent to a file, then report port/command/title back |
 | Playwright `ERR_CONNECTION_REFUSED` | Use `127.0.0.1:PORT` not `localhost` — sandbox resolves `localhost` to IPv6 (`::1`) first |
-| Background server died / `<defunct>` | Use Bash tool with `run_in_background=true` — do NOT use `subprocess.Popen` from `execute_code` (process becomes zombie when tool-call shell exits) |
+| Background server died / `<defunct>` | Start the server from Bash with `&` and its output sent to a file — do NOT use `subprocess.Popen` from `execute_code` (process becomes zombie when tool-call shell exits) |
 | `ModuleNotFoundError: tools.*` in Docker | MCP tools are host-only — use `yfinance` directly inside Docker containers |
 
 ## Quality Checklist

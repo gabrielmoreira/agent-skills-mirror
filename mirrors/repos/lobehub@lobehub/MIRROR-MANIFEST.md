@@ -7,7 +7,7 @@ ref: canary
 
 # Mirror Manifest
 
-Mirror of `lobehub/lobehub` — 26 default patterns, 4 followed patterns, 478 file(s) materialized.
+Mirror of `lobehub/lobehub` — 26 default patterns, 4 followed patterns, 477 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `lobehub/lobehub` — 26 default patterns, 4 followed patterns, 478 fi
 | Ref           | `canary` |
 | Default pats  | 26 |
 | Followed pats | 4 |
-| Files         | 478 |
+| Files         | 477 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -530,16 +530,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 466 | ✓ | [`packages/memory-user-memory/benchmarks/locomo/README.md`](packages/memory-user-memory/benchmarks/locomo/README.md) |
 | 467 | ✓ | [`packages/model-runtime/CLAUDE.md`](packages/model-runtime/CLAUDE.md) |
 | 468 | ✓ | [`packages/prompts/README.md`](packages/prompts/README.md) |
-| 469 | ✓ | [`packages/replica/README.md`](packages/replica/README.md) |
-| 470 | ✓ | [`packages/sdk/README.md`](packages/sdk/README.md) |
-| 471 | ✓ | [`packages/secret-channel/README.md`](packages/secret-channel/README.md) |
-| 472 | ✓ | [`packages/web-crawler/README.md`](packages/web-crawler/README.md) |
-| 473 | ✓ | [`packages/web-crawler/README.zh-CN.md`](packages/web-crawler/README.zh-CN.md) |
-| 474 | ✓ | [`src/features/CommandMenu/README.md`](src/features/CommandMenu/README.md) |
-| 475 | → | [`DESIGN.dark.md`](DESIGN.dark.md) |
-| 476 | → | [`DESIGN.md`](DESIGN.md) |
-| 477 | → | [`README.md`](README.md) |
-| 478 | → | [`README.zh-CN.md`](README.zh-CN.md) |
+| 469 | ✓ | [`packages/sdk/README.md`](packages/sdk/README.md) |
+| 470 | ✓ | [`packages/secret-channel/README.md`](packages/secret-channel/README.md) |
+| 471 | ✓ | [`packages/web-crawler/README.md`](packages/web-crawler/README.md) |
+| 472 | ✓ | [`packages/web-crawler/README.zh-CN.md`](packages/web-crawler/README.zh-CN.md) |
+| 473 | ✓ | [`src/features/CommandMenu/README.md`](src/features/CommandMenu/README.md) |
+| 474 | → | [`DESIGN.dark.md`](DESIGN.dark.md) |
+| 475 | → | [`DESIGN.md`](DESIGN.md) |
+| 476 | → | [`README.md`](README.md) |
+| 477 | → | [`README.zh-CN.md`](README.zh-CN.md) |
 
 ---
 

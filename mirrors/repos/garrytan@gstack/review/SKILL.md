@@ -505,8 +505,11 @@ git diff "$DIFF_BASE"
 ```
 
 1. Save the printed REVIEW_START for this core candidate before reading its diff.
-2. Each re-review captures a new token before reading, never at log time. Earlier
-   core tokens remain unused; Step 5.8 finishes only the final core token.
+2. Each re-review captures a new token before reading, never at log time. After an
+   edited pass, start the next with `--start review --fix-range`: it prints
+   REVIEW_START, then `FIX_BASE=<sha>`. Wherever this pass sets DIFF_BASE outside
+   Step 4.8, use FIX_BASE instead; Step 4.8 and every other `<base>` use stay full.
+   On refusal, start a full pass.
 3. Native/outside reviewer attempts own separate PASS_START tokens, not REVIEW_START.
 4. Read non-ignored untracked source too (`git ls-files --others --exclude-standard`);
    the captured candidate includes it.
@@ -540,13 +543,13 @@ OFFLINE=$(echo "$QUEUE_JSON" | jq -r '.offline // false')
 - `OFFLINE=true`: skip this section.
 - Otherwise, include ONE line in the review output: `Version claimed: v<BRANCH_VERSION>. Queue: <CLAIMED_COUNT> PR(s) ahead. <VERDICT>` where VERDICT is either `Slot free` (if `BRANCH_VERSION >= NEXT_SLOT`) or `⚠ queue moved — rerun /ship to reconcile v<BRANCH_VERSION> → v<NEXT_SLOT>`.
 
-Compare dotted version components as integers from left to right; missing trailing components count as zero.
+Compare versions numerically per dotted component; missing ones count as zero.
 
 ---
 
 ## Step 3.5: Diff scans
 
-Run the gate scan first (local, seconds; every diff size), then the slop scan.
+Run the gate scan first (local; every diff size), then the slop scan.
 
 ### Gate scan
 
@@ -589,14 +592,11 @@ category, Step 5.8's record and the final report.
 
 ### Slop scan (advisory)
 
-Scan changed files for empty catches, redundant `return await` and needless abstractions:
-
 ```bash
 bun run slop:diff origin/<base> 2>/dev/null || true
 ```
 
-Include findings as non-blocking informational diagnostics. If slop:diff is
-unavailable, skip silently.
+Findings are non-blocking informational diagnostics; skip if unavailable.
 
 ---
 
@@ -719,10 +719,8 @@ a clean result. Gate findings are ASK in Step 5 regardless of how mechanical the
 revert looks. A test-only flake fix (timeout, retry, looser assertion, skip) states `P(fail | regression)` before and after, from a forced probe; without both numbers it is RH-15.
 
 **Search-before-recommending:** Research proposed fixes through Aside, especially
-concurrency, caching, auth and framework behavior:
-- Check current best practice for the installed framework version.
-- Look for a newer built-in before proposing a workaround.
-- Verify API signatures against current docs.
+concurrency, caching, auth and framework behavior: current best practice for the
+installed version, newer built-ins that replace a workaround, and current API signatures.
 
 Prompt file text (create, write and send it with the Web research runs in Aside blocks above): `{framework} {version} {pattern} current best practice and whether a built-in replaces it. Reply with up to 5 bullets, each with its source URL.`
 
@@ -1052,7 +1050,7 @@ Verify claims or flag them as unknown; "this looks fine" is not evidence.
 
 After outputting your own findings, if Greptile comments were classified in Step 2.5:
 
-**Include a Greptile summary in your output header:** `+ N Greptile comments (X valid, Y fixed, Z FP)`
+**Greptile summary in your output header:** `+ N Greptile comments (X valid, Y fixed, Z FP)`
 
 Before replying to any comment, run greptile-triage.md's **Escalation Detection** to choose Tier 1 (friendly) or Tier 2 (firm) reply templates.
 
@@ -1067,7 +1065,7 @@ Before replying to any comment, run greptile-triage.md's **Escalation Detection*
 
 3. **VALID BUT ALREADY FIXED comments:** Reply with greptile-triage.md's **Already Fixed reply template**, no AskUserQuestion: what was done and the fixing commit SHA; save to both per-project and global greptile-history.
 
-4. **SUPPRESSED comments:** Skip silently (known false positives from previous triage).
+4. **SUPPRESSED comments:** Skip silently.
 
 ---
 
@@ -1076,16 +1074,17 @@ Before replying to any comment, run greptile-triage.md's **Escalation Detection*
 ### 1. Re-review after edits
 
 1. A pass covers Steps 3–5, including all reviewers before fixes. Allow at most 3 fix cycles:
-   - Edited: increment CYCLES once. Below 3, repeat Steps 3–5 with a new
-     REVIEW_START. At 3, persist `converged:false` and remaining findings by filling
-     and saving the record below. Report nonconvergence and coverage gaps, then STOP
-     this invocation, without a clean summary or a fourth pass.
-   - No edits: fill the record below.
+   - Edited: increment CYCLES once, then fill and save the record below with
+     `converged:false`. Step 5.0 never treats this invocation's records as prior
+     reviews. Below 3, repeat Steps 3–5 with a new REVIEW_START. At 3, report
+     nonconvergence and coverage gaps, then STOP this invocation, without a clean
+     summary or a fourth pass.
+   - No edits: after a full pass, fill the record below. A fix-range pass is never
+     final: repeat Steps 3–5 with a full start.
 2. On a repeat, execute Steps 3–5 in order. At Step 4.7, reuse only this invocation's
-   unchanged-input QA evidence; rerun affected probes after source, test, contract,
-   command or fixture changes. Reusing a probe never skips a review step.
-   A probe is affected when its entrypoint, dependencies, contract or replay inputs
-   change; if uncertain, rerun it.
+   unchanged-input QA evidence; rerun a probe if its source, tests, entrypoint,
+   dependencies, contract, command, fixture or replay inputs changed, or if uncertain.
+   Reusing a probe never skips a review step.
 3. **Verify completed actions.** On the final zero-edit pass, reconcile this
    invocation's actions with current findings. Deduplicate by structural identity
    and advisory/defect kind. For a completed extraction, retain `fixed` and the
@@ -1121,7 +1120,7 @@ pass: report it with its reason.
 
 - Use Step 4.6's `specialists` object unchanged, including its empty small-diff map.
   If this host omits Review Army, use `specialists: {}` without claiming specialist coverage.
-- Build `findings` from Step 5's combined final-pass findings (core, specialist,
+- Build `findings` from Step 5's combined findings (core, specialist,
   adversarial, actionable Greptile, verified exploratory QA findings) and invocation actions. Retain `fingerprint`, `severity`
   (`CRITICAL|INFORMATIONAL`), `action`, and any `advisory`, `evidence_paths`,
   `helper_target`. Recheck source after fixes. The logger uses `sharedLibsFingerprint`,
@@ -1149,11 +1148,11 @@ were skipped or this host omits Review Army). This default is not completion evi
 unresolved non-advisory core defects still count in `issues_found`,
 `critical`, `informational`. The logger builds trusted `review_binding` from the
 validated captured branch digest, discarding caller bindings. Never invent a binding
-or replace REVIEW_START at log time; finish only the final core token.
+or replace REVIEW_START at log time; finish only this pass's own token.
 
 ### Report the final review
 
-Emit one final report, merging all reviewers rather than concatenating them:
+Emit one final report merging all reviewers:
 1. `Pre-Landing Review: N issues (X critical, Y informational)` counts final unresolved
    non-advisory defects. State INCOMPLETE if `COMPLETED` is false, even when N=0.
 2. Use the checklist's action groups with confidence-tagged finding lines. Keep fixed,

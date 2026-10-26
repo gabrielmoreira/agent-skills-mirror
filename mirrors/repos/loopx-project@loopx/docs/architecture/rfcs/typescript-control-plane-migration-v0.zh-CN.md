@@ -1164,13 +1164,20 @@ automation、replan、终态、inbox 和协调者覆盖规则，生成基础运�
 迁移后退役。CLI/Host 调用方直接使用类型化内核后，Python 公共函数、dataclass
 及诊断 codec 退役。最终实现全部由 TypeScript 持有，不设 Python 规则回退。
 适配器传递有界事实及诊断字符串，再应用
-类型化配额补丁，不让来源数值或元数据经历 JSON 往返转换。回执绑定覆盖、后续
+类型化配额补丁，不让来源数值或元数据经历 JSON 往返转换。回执绑定覆盖、剩余
 route/action builder 和 effect 权限保留各自 owner。沿用既有 effective-action
 词表及生成的 TS binding；canonical Python enum 等独立契约 owner 切换后退役。
 TS 生产者验证器通过共享 guard fixture 执行真实 TS 分类器，并拒绝规则变更或
 仅枚举 owner 的替代结果。这交付一个基础准入消费者的实现及语义一致性；完整 CLI
 出现 p95 回退，性能验收保留 owner 复核门禁。整 Goal 迁移及 provider／默认配置
 资格仍待完成。
+
+Task-scoped `goal_route_hint` override 现在由同一个
+`quota.run_decision` 响应返回。Python 从既有 task-orchestration source fact 投影
+lane 数。TypeScript 持有 ready 状态检查、route 判定和协调说明。Python 重复实现的
+`task_goal_route_hint` 判定已删除，只保留将有界补丁合并进已组装 hint 的步骤。
+本改动不增加请求、provider 读取或 authority。其他 Goal route 与 primary-action
+builder 仍是独立迁移工作；这不代表 quota read transaction 已完成，也不宣称性能提升。
 
 **长历史传输边界。** Replan 历史仍由一个 TS owner 决策。小请求保留 inline
 codec；较大的完整事实快照通过私有临时文件和摘要绑定的引用传递。同一 reducer

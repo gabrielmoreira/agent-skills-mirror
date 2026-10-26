@@ -372,3 +372,12 @@ Docker前端构建基础镜像node:24-bookworm-slim刷新后，digest `sha256:55
 Vite 的 [launch-editor 公告](https://github.com/vitejs/launch-editor/security/advisories/GHSA-698v-4r3x-3vcv)、[路径越界公告](https://github.com/vitejs/vite/security/advisories/GHSA-rq7h-c2jc-7f22) 和 [WASM 文件头公告](https://github.com/vitejs/vite/security/advisories/GHSA-vfpm-58rq-9qcg) 的修复下限为 8.3.3；本包采用机器人已提出的 8.3.4 正式补丁。Vitest [手动 mock 注册注入公告](https://github.com/vitest-dev/vitest/security/advisories/GHSA-qxg6-89mg-rqv8) 的修复下限为 @vitest/mocker 4.1.12。以上涉及开发或测试服务器，不将依赖版本匹配描述成已证实的发布产物远程执行。
 
 DOMPurify 的 [模板与 shadow root](https://github.com/cure53/DOMPurify/security/advisories/GHSA-cg2g-xh64-v4q7)、[IN_PLACE hook](https://github.com/cure53/DOMPurify/security/advisories/GHSA-mrv2-3pqr-j5jr)、[XHTML SMIL](https://github.com/cure53/DOMPurify/security/advisories/GHSA-c6gr-qvv4-5v3f) 三项公告均以 3.4.17 修复。npm 评级与发布者的 low 评级有差异；三者均要求非默认设置或特定 hook / 模板处理，当前应用未发现对应配置。保留 Mermaid strict 字符串清洗和 CSP，不新增允许标签、原地清洗或模板执行。锁文件、隔离合成检查、构建和普通 CI 分别提供证据，不替代真实桌面、恶意内容全入口或 Provider 验收；回滚不得恢复这些已知受影响版本。
+
+
+## 2026-10-25 emSign 信任链安全补丁
+
+同一来源 `rustsec:CVE-2026-111943` 的 [RUSTSEC-2026-0382](https://rustsec.org/advisories/RUSTSEC-2026-0382.html) 与 [0383](https://rustsec.org/advisories/RUSTSEC-2026-0383.html) 分别约束证书验证器与随包根证书。共享锁文件仅将 `rustls-webpki` 0.103.15 提升至 0.103.16、`webpki-root-certs` 1.0.9 提升至 1.0.10；两者均为已正式发布、未撤回的兼容补丁，发布包 SHA-256 与注册表校验值一致。上游前者在路径构建时拒绝八项已不受信任的 emSign 中间证书公钥，后者移除 `emSign ECC Root CA - G3`。原公告条件是配置的信任锚允许相关证书路径，不能将版本匹配直接描述成当前设备已被攻击。
+
+项目没有直接调用 webpki 或穷举其错误；`rustls` 0.23.46 经 chromiumoxide/reqwest 等传递路径使用验证器。`rustls-platform-verifier` 0.7.0 的随包根证书用于 wasm32 路线；原生平台分别使用系统信任，不因锁中包含该包就声称每个平台都使用随包根。补丁保留现有 ring/std/tls12 特征、直接 reqwest 的 native-tls 路线、SSRF、重定向守卫及证书验证策略，不写用户证书库或 Provider 配置。`webpki-root-certs` 的最低 Rust 版本由 1.70 升至 1.71，低于项目既有工具链，不新增宿主升级要求。
+
+本地编译、锁文件范围核验与隔离的上游合成证书路径测试分别留证；它们不替代真实 Provider、设备系统信任库、跨平台 TLS 或生产验收。回滚应保留受支持的已修补兼容图，不恢复上述已知受影响版本，也不通过关闭证书验证恢复连接。

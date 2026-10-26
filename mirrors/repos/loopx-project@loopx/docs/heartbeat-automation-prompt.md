@@ -439,7 +439,15 @@ run-mode declarations are configuration errors: the CLI exits nonzero with a
 reason before admission or transport writes, including in native hooks. Correct
 the declaration or select `off`; there is no owner question or new approval.
 In a supported run mode, missing or invalid retained-input evidence still
-recovers the same original full capture automatically. `off` creates no native journal, hook configuration or input
+delivers the same original full capture. The current recovery reference is saved
+before optional delta computation, so an oversized warm request or failed
+candidate update cannot select an older capture after compaction or resume.
+If the current recovery cannot be saved, the old session lookup is invalidated;
+use the explicit original capture reference. If preparation fails before that
+can be established, or invalidation also fails, the CLI reports
+`quota_decision_transport_failed` with the saved decision and receipt. Do not
+rerun admission to recover a presentation failure.
+`off` creates no native journal, hook configuration or input
 observation; directories alone never turn it on. This declaration check is not
 host authentication, execution authority or proof of retained input. Every warm
 delta still needs independently verified complete current-input evidence.
@@ -447,15 +455,16 @@ Generic CLI, visible native Goals, Claude and other hosts remain outside this
 opt-in. Harbor/container and installed desktop adoption retain their separate
 unqualified boundaries; listing an entry does not certify live adoption.
 
-For a trusted Codex host, create private context/capture directories and render
-the native setup through the installed CLI:
+For a trusted Codex host, render the native setup through the installed CLI.
+Private context/capture directories are selected and created automatically under
+the resolved machine runtime; advanced callers may override those locations:
 
 ```sh
 loopx --format json quota context-config --context-delivery on --codex-app \
-  --codex-context-root <private-context-root> --goal-id <goal> --agent-id <agent>
+  --goal-id <goal> --agent-id <agent>
 ```
 
-The read-only result contains `native_config.hooks` and
+The result contains `native_config.hooks` and
 `native_config.developer_instructions`. Merge the hooks into the host's existing
 `hooks.json` or inline hook configuration, and append the recovery instruction to
 its existing developer instructions. Preserve other configuration. Review and
@@ -466,8 +475,7 @@ different native sessions in separate journals, including interleaved sessions.
 
 Generate the normal bootstrap with `heartbeat-prompt --thin --codex-app
 --bootstrap`, its existing Goal/Agent/registry arguments, and
-`--context-delivery on --decision-output-root <private-capture-root> --codex-context-root
-<private-context-root>`; optionally add `--turn-envelope`. The loader preserves
+`--context-delivery on`; optionally add `--turn-envelope` or explicit private paths. The loader preserves
 these options without freezing a Turn ID. Each wake loads current instructions
 and binds the existing `LOOPX_TURN` before its generated guard. Selection keeps
 the same transport. An unset wake identity fails in the shell before admission.
@@ -504,9 +512,12 @@ loopx --format json quota context-project --context-delivery on --codex-app \
 The JSON response supplies `mode`, the digest-pinned read `command`, the target
 when available, and an original full `recovery` reference. Cold mode delivers
 complete context plus its target; a warm delta still requires actual current-input
-proof. Follow every page and reconstruct before dependent work. Invalid optional
-transport/cache falls back to that same full capture; invalid source hash or
-Goal/Agent/Turn refuses publication. This is integrity-checked presentation of
+proof. Follow every page and reconstruct before dependent work. Optional codec
+or delivery-cache failure after recovery publication falls back to that same
+full capture. Enabled native preparation or unsafe recovery publication fails
+with `ok: false`, `quota_decision_transport_failed`, and the original `recovery`
+reference and receipt; follow that explicit reference instead of a session lookup.
+Invalid source hash or Goal/Agent/Turn refuses publication. This is integrity-checked presentation of
 the caller's snapshot, not fresh authority, registry lookup, installation,
 admission or accounting. The original file stays unchanged; generated caches
 remain private. A missing projection command can use `quota context-read` with

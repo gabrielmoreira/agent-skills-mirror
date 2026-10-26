@@ -24,7 +24,7 @@ Use one shared guide in the user's requested or current conversation language, f
 
 Read [first-use and stage guidance](references/getting-started.md) at installation handoff or first use; apply it in both modes. After verifying an installation you perform, show a plain-language quick-start immediately; otherwise on first invocation. Explain outputs, uses, tools, workflow, copyable requests and relevant public GitHub style/sample catalogs with selection by code. Reuse known choices. At substantive stage completions or blockers, distinguish assistant work from user choices; state completed outputs, missing items and the concrete next action. Do not add mandatory approval gates or repeat the welcome every turn.
 
-For optional A character references, follow **Optional A character references** in that guide; keep validated prompts and voice rules unchanged.
+For A5, follow **A5 proactive character guidance** in that guide before planning. Other A references follow **Optional A character references**; keep voice rules unchanged.
 
 ## A · Director
 
@@ -46,7 +46,7 @@ Require these before planning:
     - `Style 2B (Cinematic Story)`: full-color narrative environments, cinematic lighting & depth
   - `Style 3 (Prehistoric Hand-Drawn / Dark Comedy)`: expressive white filled heads, black stick limbs, animal-hide costumes and earthy prehistoric settings; story-specific casting
   - `Style 4 (Cozy Storytelling / 治愈故事风)`: expressive minimalist white-filled characters with dark stick limbs in full-color 2D cartoon environments; varied story locations and cinematic shot changes
-  - `Style 5 (Historical Cartoon / 历史卡通风)`: white-filled round heads, simple black oval eyes and thin black stick limbs in era-specific costume, with cel shading and full-color painterly historical settings
+  - `Style 5 (Historical Cartoon / 历史卡通风)`: white heads with connected short white necks, expressive faces, black stick limbs and compact fingerless palms, period dress and cel-shaded historical settings
 
 If aspect ratio or visual style is missing, ask for all missing items in one concise message and stop. If duration is omitted, default to 60 seconds (6 clips). If a user provides a duration not divisible by 10, round to the nearest 10-second multiple. If a user specifies only light or dark theme, default to Style 1. Never select an aspect ratio or style silently. Do not re-ask choices already supplied.
 

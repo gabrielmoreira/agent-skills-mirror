@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `MicrosoftDocs/Agent-Skills` — 26 default patterns, 0 followed patterns, 218 file(s) materialized.
+Mirror of `MicrosoftDocs/Agent-Skills` — 26 default patterns, 0 followed patterns, 220 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `MicrosoftDocs/Agent-Skills` — 26 default patterns, 0 followed patte
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 218 |
+| Files         | 220 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -276,7 +276,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 215 | ✓ | [`skills/microsoft-foundry-classic/SKILL.md`](skills/microsoft-foundry-classic/SKILL.md) |
 | 216 | ✓ | [`skills/microsoft-foundry-local/SKILL.md`](skills/microsoft-foundry-local/SKILL.md) |
 | 217 | ✓ | [`skills/microsoft-foundry-tools/SKILL.md`](skills/microsoft-foundry-tools/SKILL.md) |
-| 218 | ✓ | [`skills/microsoft-foundry/SKILL.md`](skills/microsoft-foundry/SKILL.md) |
+| 218 | ✓ | [`skills/microsoft-foundry/deployment.md`](skills/microsoft-foundry/deployment.md) |
+| 219 | ✓ | [`skills/microsoft-foundry/integrations.md`](skills/microsoft-foundry/integrations.md) |
+| 220 | ✓ | [`skills/microsoft-foundry/SKILL.md`](skills/microsoft-foundry/SKILL.md) |
 
 ---
 

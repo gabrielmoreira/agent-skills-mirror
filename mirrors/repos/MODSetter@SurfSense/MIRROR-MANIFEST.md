@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `MODSetter/SurfSense` — 26 default patterns, 16 followed patterns, 241 file(s) materialized.
+Mirror of `MODSetter/SurfSense` — 26 default patterns, 15 followed patterns, 237 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `MODSetter/SurfSense` — 26 default patterns, 16 followed patterns, 2
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 16 |
-| Files         | 241 |
+| Followed pats | 15 |
+| Files         | 237 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,9 +51,10 @@ Mirror of `MODSetter/SurfSense` — 26 default patterns, 16 followed patterns, 2
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
+- `docs/architecture/license/portal.md`
 - `docs/architecture/plugin-host.md`
 - `docs/architecture/plugin-registry.md`
-- `docs/architecture/sunset.md`
+- `docs/proposals/legacy-split/README.md`
 - `docs/README.md`
 - `CONTRIBUTING.md`
 - `SECURITY.md`
@@ -62,10 +63,8 @@ Mirror of `MODSetter/SurfSense` — 26 default patterns, 16 followed patterns, 2
 - `docs/ROADMAP.md`
 - `docs/adr/README.md`
 - `surfsense_local/README.md`
-- `surfsense_mcp/README.md`
-- `surfsense_backend/README.md`
-- `surfsense_web/README.md`
-- `plugins/registry/README.md`
+- `www/README.md`
+- `backend/plugins/registry/README.md`
 - `docs/contracts/README.md`
 
 ## File Index
@@ -186,74 +185,74 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 110 | ✓ | [`.cursor/rules/ponytail.mdc`](.cursor/rules/ponytail.mdc) |
 | 111 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 112 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 113 | ✓ | [`docker/sandbox/skills/docx/SKILL.md`](docker/sandbox/skills/docx/SKILL.md) |
-| 114 | ✓ | [`docker/sandbox/skills/flashcards/SKILL.md`](docker/sandbox/skills/flashcards/SKILL.md) |
-| 115 | ✓ | [`docker/sandbox/skills/html/SKILL.md`](docker/sandbox/skills/html/SKILL.md) |
-| 116 | ✓ | [`docker/sandbox/skills/infographic/SKILL.md`](docker/sandbox/skills/infographic/SKILL.md) |
-| 117 | ✓ | [`docker/sandbox/skills/mindmap/SKILL.md`](docker/sandbox/skills/mindmap/SKILL.md) |
-| 118 | ✓ | [`docker/sandbox/skills/pdf/SKILL.md`](docker/sandbox/skills/pdf/SKILL.md) |
-| 119 | ✓ | [`docker/sandbox/skills/pptx/SKILL.md`](docker/sandbox/skills/pptx/SKILL.md) |
-| 120 | ✓ | [`docker/sandbox/skills/quiz/SKILL.md`](docker/sandbox/skills/quiz/SKILL.md) |
-| 121 | ✓ | [`docker/sandbox/skills/video/SKILL.md`](docker/sandbox/skills/video/SKILL.md) |
-| 122 | ✓ | [`docker/sandbox/skills/xlsx/SKILL.md`](docker/sandbox/skills/xlsx/SKILL.md) |
-| 123 | ✓ | [`docs/adr/0003-artifacts-as-documents.md`](docs/adr/0003-artifacts-as-documents.md) |
-| 124 | ✓ | [`docs/adr/0004-desktop-app-is-its-own-tree.md`](docs/adr/0004-desktop-app-is-its-own-tree.md) |
-| 125 | ✓ | [`docs/adr/0005-hand-written-migrations.md`](docs/adr/0005-hand-written-migrations.md) |
-| 126 | ✓ | [`docs/adr/0006-hybrid-retrieval.md`](docs/adr/0006-hybrid-retrieval.md) |
-| 127 | ✓ | [`docs/adr/0007-bundled-embeddings.md`](docs/adr/0007-bundled-embeddings.md) |
-| 128 | ✓ | [`docs/adr/0008-two-job-queues.md`](docs/adr/0008-two-job-queues.md) |
-| 129 | ✓ | [`docs/adr/0009-freshness-by-invalidation.md`](docs/adr/0009-freshness-by-invalidation.md) |
-| 130 | ✓ | [`docs/adr/0010-studio-builders-not-sandboxes.md`](docs/adr/0010-studio-builders-not-sandboxes.md) |
-| 131 | ✓ | [`docs/adr/0011-llama-cpp-local-runtime.md`](docs/adr/0011-llama-cpp-local-runtime.md) |
-| 132 | ✓ | [`docs/adr/0012-vulkan-only-gpu-backend.md`](docs/adr/0012-vulkan-only-gpu-backend.md) |
-| 133 | ✓ | [`docs/adr/0013-fit-from-the-allocator.md`](docs/adr/0013-fit-from-the-allocator.md) |
-| 134 | ✓ | [`docs/adr/0014-two-tier-model-catalog.md`](docs/adr/0014-two-tier-model-catalog.md) |
-| 135 | ✓ | [`docs/adr/0015-openai-compatible-connections.md`](docs/adr/0015-openai-compatible-connections.md) |
-| 136 | ✓ | [`docs/adr/0016-no-telemetry.md`](docs/adr/0016-no-telemetry.md) |
-| 137 | ✓ | [`docs/adr/0017-egress-off-by-default.md`](docs/adr/0017-egress-off-by-default.md) |
-| 138 | ✓ | [`docs/adr/0018-keychain-envelope-encryption.md`](docs/adr/0018-keychain-envelope-encryption.md) |
-| 139 | ✓ | [`docs/adr/0019-offline-licenses.md`](docs/adr/0019-offline-licenses.md) |
-| 140 | ✓ | [`docs/adr/0020-two-update-channels.md`](docs/adr/0020-two-update-channels.md) |
-| 141 | ✓ | [`docs/adr/0021-no-intel-mac-build.md`](docs/adr/0021-no-intel-mac-build.md) |
-| 142 | ✓ | [`docs/adr/0022-markdown-only-cloud-import.md`](docs/adr/0022-markdown-only-cloud-import.md) |
-| 143 | ✓ | [`docs/adr/0023-sunset-behind-flags.md`](docs/adr/0023-sunset-behind-flags.md) |
-| 144 | ✓ | [`docs/adr/0024-portal-without-accounts.md`](docs/adr/0024-portal-without-accounts.md) |
-| 145 | ✓ | [`docs/adr/0025-scraper-client-as-paid-plugin.md`](docs/adr/0025-scraper-client-as-paid-plugin.md) |
-| 146 | ✓ | [`docs/adr/0026-curated-order-is-list-position.md`](docs/adr/0026-curated-order-is-list-position.md) |
-| 147 | ✓ | [`docs/adr/0027-egress-consent-per-host.md`](docs/adr/0027-egress-consent-per-host.md) |
-| 148 | ✓ | [`docs/adr/0028-model-written-code-runs-with-approval.md`](docs/adr/0028-model-written-code-runs-with-approval.md) |
-| 149 | ✓ | [`docs/adr/0029-icu-translation-catalogs.md`](docs/adr/0029-icu-translation-catalogs.md) |
-| 150 | ✓ | [`docs/adr/0030-formatjs-renders-interface-text.md`](docs/adr/0030-formatjs-renders-interface-text.md) |
-| 151 | ✓ | [`docs/adr/0031-ranking-blends-absolute-leg-scores.md`](docs/adr/0031-ranking-blends-absolute-leg-scores.md) |
-| 152 | ✓ | [`docs/adr/0032-one-tokenizer-for-index-and-question.md`](docs/adr/0032-one-tokenizer-for-index-and-question.md) |
-| 153 | ✓ | [`docs/adr/0033-every-candidate-is-scored-on-its-own-cosine.md`](docs/adr/0033-every-candidate-is-scored-on-its-own-cosine.md) |
-| 154 | ✓ | [`docs/adr/0034-vision-is-the-runtimes-answer-stored-nowhere.md`](docs/adr/0034-vision-is-the-runtimes-answer-stored-nowhere.md) |
-| 155 | ✓ | [`docs/adr/0035-docker-compose-runs-the-desktop-stack.md`](docs/adr/0035-docker-compose-runs-the-desktop-stack.md) |
-| 156 | ✓ | [`docs/adr/0036-the-index-records-its-embedder.md`](docs/adr/0036-the-index-records-its-embedder.md) |
-| 157 | ✓ | [`docs/adr/0037-embedding-is-a-type-not-a-slot.md`](docs/adr/0037-embedding-is-a-type-not-a-slot.md) |
-| 158 | ✓ | [`docs/adr/0038-chatgpt-plans-sign-in-through-openai-not-codex.md`](docs/adr/0038-chatgpt-plans-sign-in-through-openai-not-codex.md) |
-| 159 | ✓ | [`docs/adr/0039-document-scripts-run-without-approval.md`](docs/adr/0039-document-scripts-run-without-approval.md) |
-| 160 | ✓ | [`docs/adr/0047-premium-plugins-are-source-available.md`](docs/adr/0047-premium-plugins-are-source-available.md) |
-| 161 | ✓ | [`docs/adr/0048-the-api-is-the-only-path-to-a-text-model.md`](docs/adr/0048-the-api-is-the-only-path-to-a-text-model.md) |
-| 162 | ✓ | [`docs/adr/0049-prompts-grow-at-the-end.md`](docs/adr/0049-prompts-grow-at-the-end.md) |
-| 163 | ✓ | [`docs/adr/0050-a-model-answers-on-its-own-route-with-its-connections-credential.md`](docs/adr/0050-a-model-answers-on-its-own-route-with-its-connections-credential.md) |
-| 164 | ✓ | [`docs/adr/0051-plugins-are-mcp-servers-behind-one-tool-gateway.md`](docs/adr/0051-plugins-are-mcp-servers-behind-one-tool-gateway.md) |
-| 165 | ✓ | [`docs/adr/0052-the-chat-model-never-calls-tools.md`](docs/adr/0052-the-chat-model-never-calls-tools.md) |
-| 166 | ✓ | [`docs/adr/0053-plugins-are-listed-in-a-registry-and-third-party-ones-start-off.md`](docs/adr/0053-plugins-are-listed-in-a-registry-and-third-party-ones-start-off.md) |
-| 167 | ✓ | [`docs/adr/0054-surfsenses-plugins-run-on-one-plugin-host.md`](docs/adr/0054-surfsenses-plugins-run-on-one-plugin-host.md) |
-| 168 | ✓ | [`docs/adr/0055-verified-is-a-maintainers-judgement-and-ci-contacts-each-server.md`](docs/adr/0055-verified-is-a-maintainers-judgement-and-ci-contacts-each-server.md) |
-| 169 | ✓ | [`docs/adr/0056-speech-recognition-runs-on-a-second-audiocpp-server.md`](docs/adr/0056-speech-recognition-runs-on-a-second-audiocpp-server.md) |
-| 170 | ✓ | [`docs/adr/0057-a-claude-plan-runs-through-the-users-own-claude-code.md`](docs/adr/0057-a-claude-plan-runs-through-the-users-own-claude-code.md) |
-| 171 | ✓ | [`docs/adr/0058-the-bundled-embedder-runs-at-fp32-on-x86-64.md`](docs/adr/0058-the-bundled-embedder-runs-at-fp32-on-x86-64.md) |
-| 172 | ✓ | [`docs/adr/0059-a-born-digital-pdf-is-read-from-its-text-layer.md`](docs/adr/0059-a-born-digital-pdf-is-read-from-its-text-layer.md) |
-| 173 | ✓ | [`docs/adr/0060-one-consent-question-per-user-action.md`](docs/adr/0060-one-consent-question-per-user-action.md) |
-| 174 | ✓ | [`docs/adr/0061-claude-code-reaches-anthropic-and-in-the-agent-the-turns-plugins.md`](docs/adr/0061-claude-code-reaches-anthropic-and-in-the-agent-the-turns-plugins.md) |
-| 175 | ✓ | [`docs/adr/0062-a-scan-is-read-by-ocr-alone-before-docling.md`](docs/adr/0062-a-scan-is-read-by-ocr-alone-before-docling.md) |
-| 176 | ✓ | [`docs/adr/0063-a-plugins-connection-is-a-transport-and-one-sign-in.md`](docs/adr/0063-a-plugins-connection-is-a-transport-and-one-sign-in.md) |
-| 177 | ✓ | [`docs/adr/0064-agent-runtimes-reach-plugins-through-surfsenses-gateway.md`](docs/adr/0064-agent-runtimes-reach-plugins-through-surfsenses-gateway.md) |
-| 178 | ✓ | [`docs/adr/0065-a-turns-plugin-tools-are-sized-by-the-window-not-counted.md`](docs/adr/0065-a-turns-plugin-tools-are-sized-by-the-window-not-counted.md) |
-| 179 | ✓ | [`docs/architecture/about.md`](docs/architecture/about.md) |
-| 180 | ✓ | [`docs/architecture/agent.md`](docs/architecture/agent.md) |
+| 113 | ✓ | [`docs/adr/0003-artifacts-as-documents.md`](docs/adr/0003-artifacts-as-documents.md) |
+| 114 | ✓ | [`docs/adr/0004-desktop-app-is-its-own-tree.md`](docs/adr/0004-desktop-app-is-its-own-tree.md) |
+| 115 | ✓ | [`docs/adr/0005-hand-written-migrations.md`](docs/adr/0005-hand-written-migrations.md) |
+| 116 | ✓ | [`docs/adr/0006-hybrid-retrieval.md`](docs/adr/0006-hybrid-retrieval.md) |
+| 117 | ✓ | [`docs/adr/0007-bundled-embeddings.md`](docs/adr/0007-bundled-embeddings.md) |
+| 118 | ✓ | [`docs/adr/0008-two-job-queues.md`](docs/adr/0008-two-job-queues.md) |
+| 119 | ✓ | [`docs/adr/0009-freshness-by-invalidation.md`](docs/adr/0009-freshness-by-invalidation.md) |
+| 120 | ✓ | [`docs/adr/0010-studio-builders-not-sandboxes.md`](docs/adr/0010-studio-builders-not-sandboxes.md) |
+| 121 | ✓ | [`docs/adr/0011-llama-cpp-local-runtime.md`](docs/adr/0011-llama-cpp-local-runtime.md) |
+| 122 | ✓ | [`docs/adr/0012-vulkan-only-gpu-backend.md`](docs/adr/0012-vulkan-only-gpu-backend.md) |
+| 123 | ✓ | [`docs/adr/0013-fit-from-the-allocator.md`](docs/adr/0013-fit-from-the-allocator.md) |
+| 124 | ✓ | [`docs/adr/0014-two-tier-model-catalog.md`](docs/adr/0014-two-tier-model-catalog.md) |
+| 125 | ✓ | [`docs/adr/0015-openai-compatible-connections.md`](docs/adr/0015-openai-compatible-connections.md) |
+| 126 | ✓ | [`docs/adr/0016-no-telemetry.md`](docs/adr/0016-no-telemetry.md) |
+| 127 | ✓ | [`docs/adr/0017-egress-off-by-default.md`](docs/adr/0017-egress-off-by-default.md) |
+| 128 | ✓ | [`docs/adr/0018-keychain-envelope-encryption.md`](docs/adr/0018-keychain-envelope-encryption.md) |
+| 129 | ✓ | [`docs/adr/0019-offline-licenses.md`](docs/adr/0019-offline-licenses.md) |
+| 130 | ✓ | [`docs/adr/0020-two-update-channels.md`](docs/adr/0020-two-update-channels.md) |
+| 131 | ✓ | [`docs/adr/0021-no-intel-mac-build.md`](docs/adr/0021-no-intel-mac-build.md) |
+| 132 | ✓ | [`docs/adr/0022-markdown-only-cloud-import.md`](docs/adr/0022-markdown-only-cloud-import.md) |
+| 133 | ✓ | [`docs/adr/0023-sunset-behind-flags.md`](docs/adr/0023-sunset-behind-flags.md) |
+| 134 | ✓ | [`docs/adr/0024-portal-without-accounts.md`](docs/adr/0024-portal-without-accounts.md) |
+| 135 | ✓ | [`docs/adr/0025-scraper-client-as-paid-plugin.md`](docs/adr/0025-scraper-client-as-paid-plugin.md) |
+| 136 | ✓ | [`docs/adr/0026-curated-order-is-list-position.md`](docs/adr/0026-curated-order-is-list-position.md) |
+| 137 | ✓ | [`docs/adr/0027-egress-consent-per-host.md`](docs/adr/0027-egress-consent-per-host.md) |
+| 138 | ✓ | [`docs/adr/0028-model-written-code-runs-with-approval.md`](docs/adr/0028-model-written-code-runs-with-approval.md) |
+| 139 | ✓ | [`docs/adr/0029-icu-translation-catalogs.md`](docs/adr/0029-icu-translation-catalogs.md) |
+| 140 | ✓ | [`docs/adr/0030-formatjs-renders-interface-text.md`](docs/adr/0030-formatjs-renders-interface-text.md) |
+| 141 | ✓ | [`docs/adr/0031-ranking-blends-absolute-leg-scores.md`](docs/adr/0031-ranking-blends-absolute-leg-scores.md) |
+| 142 | ✓ | [`docs/adr/0032-one-tokenizer-for-index-and-question.md`](docs/adr/0032-one-tokenizer-for-index-and-question.md) |
+| 143 | ✓ | [`docs/adr/0033-every-candidate-is-scored-on-its-own-cosine.md`](docs/adr/0033-every-candidate-is-scored-on-its-own-cosine.md) |
+| 144 | ✓ | [`docs/adr/0034-vision-is-the-runtimes-answer-stored-nowhere.md`](docs/adr/0034-vision-is-the-runtimes-answer-stored-nowhere.md) |
+| 145 | ✓ | [`docs/adr/0035-docker-compose-runs-the-desktop-stack.md`](docs/adr/0035-docker-compose-runs-the-desktop-stack.md) |
+| 146 | ✓ | [`docs/adr/0036-the-index-records-its-embedder.md`](docs/adr/0036-the-index-records-its-embedder.md) |
+| 147 | ✓ | [`docs/adr/0037-embedding-is-a-type-not-a-slot.md`](docs/adr/0037-embedding-is-a-type-not-a-slot.md) |
+| 148 | ✓ | [`docs/adr/0038-chatgpt-plans-sign-in-through-openai-not-codex.md`](docs/adr/0038-chatgpt-plans-sign-in-through-openai-not-codex.md) |
+| 149 | ✓ | [`docs/adr/0039-document-scripts-run-without-approval.md`](docs/adr/0039-document-scripts-run-without-approval.md) |
+| 150 | ✓ | [`docs/adr/0044-a-score-sets-the-default-mode-never-whether-agentic-is-allowed.md`](docs/adr/0044-a-score-sets-the-default-mode-never-whether-agentic-is-allowed.md) |
+| 151 | ✓ | [`docs/adr/0047-premium-plugins-are-source-available.md`](docs/adr/0047-premium-plugins-are-source-available.md) |
+| 152 | ✓ | [`docs/adr/0048-the-api-is-the-only-path-to-a-text-model.md`](docs/adr/0048-the-api-is-the-only-path-to-a-text-model.md) |
+| 153 | ✓ | [`docs/adr/0049-prompts-grow-at-the-end.md`](docs/adr/0049-prompts-grow-at-the-end.md) |
+| 154 | ✓ | [`docs/adr/0050-a-model-answers-on-its-own-route-with-its-connections-credential.md`](docs/adr/0050-a-model-answers-on-its-own-route-with-its-connections-credential.md) |
+| 155 | ✓ | [`docs/adr/0051-plugins-are-mcp-servers-behind-one-tool-gateway.md`](docs/adr/0051-plugins-are-mcp-servers-behind-one-tool-gateway.md) |
+| 156 | ✓ | [`docs/adr/0052-the-chat-model-never-calls-tools.md`](docs/adr/0052-the-chat-model-never-calls-tools.md) |
+| 157 | ✓ | [`docs/adr/0053-plugins-are-listed-in-a-registry-and-third-party-ones-start-off.md`](docs/adr/0053-plugins-are-listed-in-a-registry-and-third-party-ones-start-off.md) |
+| 158 | ✓ | [`docs/adr/0054-surfsenses-plugins-run-on-one-plugin-host.md`](docs/adr/0054-surfsenses-plugins-run-on-one-plugin-host.md) |
+| 159 | ✓ | [`docs/adr/0055-verified-is-a-maintainers-judgement-and-ci-contacts-each-server.md`](docs/adr/0055-verified-is-a-maintainers-judgement-and-ci-contacts-each-server.md) |
+| 160 | ✓ | [`docs/adr/0056-speech-recognition-runs-on-a-second-audiocpp-server.md`](docs/adr/0056-speech-recognition-runs-on-a-second-audiocpp-server.md) |
+| 161 | ✓ | [`docs/adr/0057-a-claude-plan-runs-through-the-users-own-claude-code.md`](docs/adr/0057-a-claude-plan-runs-through-the-users-own-claude-code.md) |
+| 162 | ✓ | [`docs/adr/0058-the-bundled-embedder-runs-at-fp32-on-x86-64.md`](docs/adr/0058-the-bundled-embedder-runs-at-fp32-on-x86-64.md) |
+| 163 | ✓ | [`docs/adr/0059-a-born-digital-pdf-is-read-from-its-text-layer.md`](docs/adr/0059-a-born-digital-pdf-is-read-from-its-text-layer.md) |
+| 164 | ✓ | [`docs/adr/0060-one-consent-question-per-user-action.md`](docs/adr/0060-one-consent-question-per-user-action.md) |
+| 165 | ✓ | [`docs/adr/0061-claude-code-reaches-anthropic-and-in-the-agent-the-turns-plugins.md`](docs/adr/0061-claude-code-reaches-anthropic-and-in-the-agent-the-turns-plugins.md) |
+| 166 | ✓ | [`docs/adr/0062-a-scan-is-read-by-ocr-alone-before-docling.md`](docs/adr/0062-a-scan-is-read-by-ocr-alone-before-docling.md) |
+| 167 | ✓ | [`docs/adr/0063-a-plugins-connection-is-a-transport-and-one-sign-in.md`](docs/adr/0063-a-plugins-connection-is-a-transport-and-one-sign-in.md) |
+| 168 | ✓ | [`docs/adr/0064-agent-runtimes-reach-plugins-through-surfsenses-gateway.md`](docs/adr/0064-agent-runtimes-reach-plugins-through-surfsenses-gateway.md) |
+| 169 | ✓ | [`docs/adr/0065-a-turns-plugin-tools-are-sized-by-the-window-not-counted.md`](docs/adr/0065-a-turns-plugin-tools-are-sized-by-the-window-not-counted.md) |
+| 170 | ✓ | [`docs/adr/0066-web-pages-are-html-the-model-writes-without-network.md`](docs/adr/0066-web-pages-are-html-the-model-writes-without-network.md) |
+| 171 | ✓ | [`docs/adr/0067-b2b-jobs-ship-as-paid-plugins.md`](docs/adr/0067-b2b-jobs-ship-as-paid-plugins.md) |
+| 172 | ✓ | [`docs/adr/0068-surfsense-calls-its-own-plugins-to-pull-a-link-into-sources.md`](docs/adr/0068-surfsense-calls-its-own-plugins-to-pull-a-link-into-sources.md) |
+| 173 | ✓ | [`docs/adr/0069-opencode-calls-tools-natively-and-holds-what-a-turn-needs.md`](docs/adr/0069-opencode-calls-tools-natively-and-holds-what-a-turn-needs.md) |
+| 174 | ✓ | [`docs/adr/0070-opt-in-id-less-update-checks-and-usage-statistics.md`](docs/adr/0070-opt-in-id-less-update-checks-and-usage-statistics.md) |
+| 175 | ✓ | [`docs/adr/0071-package-managers-ship-the-release-files-and-own-their-updates.md`](docs/adr/0071-package-managers-ship-the-release-files-and-own-their-updates.md) |
+| 176 | ✓ | [`docs/adr/0072-the-desktop-and-the-container-are-two-entries-over-one-core.md`](docs/adr/0072-the-desktop-and-the-container-are-two-entries-over-one-core.md) |
+| 177 | ✓ | [`docs/adr/0073-the-docker-gpu-image-is-one-cuda-12-8-variant-from-upstream-builds.md`](docs/adr/0073-the-docker-gpu-image-is-one-cuda-12-8-variant-from-upstream-builds.md) |
+| 178 | ✓ | [`docs/architecture/about.md`](docs/architecture/about.md) |
+| 179 | ✓ | [`docs/architecture/agent.md`](docs/architecture/agent.md) |
+| 180 | ✓ | [`docs/architecture/backend.md`](docs/architecture/backend.md) |
 | 181 | ✓ | [`docs/architecture/chat.md`](docs/architecture/chat.md) |
 | 182 | ✓ | [`docs/architecture/chatgpt-subscription.md`](docs/architecture/chatgpt-subscription.md) |
 | 183 | ✓ | [`docs/architecture/claude-plan.md`](docs/architecture/claude-plan.md) |
@@ -263,58 +262,54 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 187 | ✓ | [`docs/architecture/egress.md`](docs/architecture/egress.md) |
 | 188 | ✓ | [`docs/architecture/embedding.md`](docs/architecture/embedding.md) |
 | 189 | ✓ | [`docs/architecture/import.md`](docs/architecture/import.md) |
-| 190 | ✓ | [`docs/architecture/issue-reports.md`](docs/architecture/issue-reports.md) |
-| 191 | ✓ | [`docs/architecture/localization.md`](docs/architecture/localization.md) |
-| 192 | ✓ | [`docs/architecture/model-capabilities.md`](docs/architecture/model-capabilities.md) |
-| 193 | ✓ | [`docs/architecture/office-pack.md`](docs/architecture/office-pack.md) |
-| 194 | ✓ | [`docs/architecture/packaging.md`](docs/architecture/packaging.md) |
-| 195 | ✓ | [`docs/architecture/plugins.md`](docs/architecture/plugins.md) |
-| 196 | ✓ | [`docs/architecture/resource-usage.md`](docs/architecture/resource-usage.md) |
-| 197 | ✓ | [`docs/architecture/search.md`](docs/architecture/search.md) |
-| 198 | ✓ | [`docs/architecture/studio.md`](docs/architecture/studio.md) |
-| 199 | ✓ | [`docs/architecture/updates.md`](docs/architecture/updates.md) |
-| 200 | ✓ | [`docs/contracts/01-license-file.md`](docs/contracts/01-license-file.md) |
-| 201 | ✓ | [`docs/contracts/02-scraper-api-auth.md`](docs/contracts/02-scraper-api-auth.md) |
-| 202 | ✓ | [`docs/contracts/03-export-bundle.md`](docs/contracts/03-export-bundle.md) |
-| 203 | ✓ | [`docs/contracts/04-sunset-flag.md`](docs/contracts/04-sunset-flag.md) |
-| 204 | ✓ | [`surfsense_backend/AGENTS.md`](surfsense_backend/AGENTS.md) |
-| 205 | ✓ | [`surfsense_backend/app/agents/chat/multi_agent_chat/main_agent/skills/builtin/email-drafting/SKILL.md`](surfsense_backend/app/agents/chat/multi_agent_chat/main_agent/skills/builtin/email-drafting/SKILL.md) |
-| 206 | ✓ | [`surfsense_backend/app/agents/chat/multi_agent_chat/main_agent/skills/builtin/kb-research/SKILL.md`](surfsense_backend/app/agents/chat/multi_agent_chat/main_agent/skills/builtin/kb-research/SKILL.md) |
-| 207 | ✓ | [`surfsense_backend/app/agents/chat/multi_agent_chat/main_agent/skills/builtin/meeting-prep/SKILL.md`](surfsense_backend/app/agents/chat/multi_agent_chat/main_agent/skills/builtin/meeting-prep/SKILL.md) |
-| 208 | ✓ | [`surfsense_backend/app/agents/chat/multi_agent_chat/main_agent/skills/builtin/slack-summary/SKILL.md`](surfsense_backend/app/agents/chat/multi_agent_chat/main_agent/skills/builtin/slack-summary/SKILL.md) |
-| 209 | ✓ | [`surfsense_backend/CLAUDE.md`](surfsense_backend/CLAUDE.md) |
-| 210 | ✓ | [`surfsense_local/AGENTS.md`](surfsense_local/AGENTS.md) |
-| 211 | ✓ | [`surfsense_local/backend/modules/agent/prompts/agent.md`](surfsense_local/backend/modules/agent/prompts/agent.md) |
-| 212 | ✓ | [`surfsense_local/backend/modules/agent/skills/surfsense-data/SKILL.md`](surfsense_local/backend/modules/agent/skills/surfsense-data/SKILL.md) |
-| 213 | ✓ | [`surfsense_local/backend/modules/agent/skills/surfsense-documents/SKILL.md`](surfsense_local/backend/modules/agent/skills/surfsense-documents/SKILL.md) |
-| 214 | ✓ | [`surfsense_local/backend/modules/agent/skills/surfsense-pdf/SKILL.md`](surfsense_local/backend/modules/agent/skills/surfsense-pdf/SKILL.md) |
-| 215 | ✓ | [`surfsense_local/backend/modules/agent/skills/surfsense-revisions/SKILL.md`](surfsense_local/backend/modules/agent/skills/surfsense-revisions/SKILL.md) |
-| 216 | ✓ | [`surfsense_local/backend/worker/studio/office/docx/SKILL.md`](surfsense_local/backend/worker/studio/office/docx/SKILL.md) |
-| 217 | ✓ | [`surfsense_local/backend/worker/studio/office/pdf/SKILL.md`](surfsense_local/backend/worker/studio/office/pdf/SKILL.md) |
-| 218 | ✓ | [`surfsense_local/backend/worker/studio/office/pptx/SKILL.md`](surfsense_local/backend/worker/studio/office/pptx/SKILL.md) |
-| 219 | ✓ | [`surfsense_local/backend/worker/studio/office/xlsx/SKILL.md`](surfsense_local/backend/worker/studio/office/xlsx/SKILL.md) |
-| 220 | ✓ | [`surfsense_local/CLAUDE.md`](surfsense_local/CLAUDE.md) |
-| 221 | ✓ | [`surfsense_mcp/AGENTS.md`](surfsense_mcp/AGENTS.md) |
-| 222 | ✓ | [`surfsense_mcp/CLAUDE.md`](surfsense_mcp/CLAUDE.md) |
-| 223 | ✓ | [`surfsense_web/.cursorrules`](surfsense_web/.cursorrules) |
-| 224 | ✓ | [`surfsense_web/AGENTS.md`](surfsense_web/AGENTS.md) |
-| 225 | ✓ | [`surfsense_web/CLAUDE.md`](surfsense_web/CLAUDE.md) |
-| 226 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
-| 227 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 228 | → | [`docs/adr/README.md`](docs/adr/README.md) |
-| 229 | → | [`docs/architecture/overview.md`](docs/architecture/overview.md) |
-| 230 | → | [`docs/architecture/plugin-host.md`](docs/architecture/plugin-host.md) |
-| 231 | → | [`docs/architecture/plugin-registry.md`](docs/architecture/plugin-registry.md) |
-| 232 | → | [`docs/architecture/sunset.md`](docs/architecture/sunset.md) |
-| 233 | → | [`docs/contracts/README.md`](docs/contracts/README.md) |
-| 234 | → | [`docs/README.md`](docs/README.md) |
-| 235 | → | [`docs/ROADMAP.md`](docs/ROADMAP.md) |
-| 236 | → | [`plugins/registry/README.md`](plugins/registry/README.md) |
-| 237 | → | [`SECURITY.md`](SECURITY.md) |
-| 238 | → | [`surfsense_backend/README.md`](surfsense_backend/README.md) |
-| 239 | → | [`surfsense_local/README.md`](surfsense_local/README.md) |
-| 240 | → | [`surfsense_mcp/README.md`](surfsense_mcp/README.md) |
-| 241 | → | [`surfsense_web/README.md`](surfsense_web/README.md) |
+| 190 | ✓ | [`docs/architecture/install-channels.md`](docs/architecture/install-channels.md) |
+| 191 | ✓ | [`docs/architecture/issue-reports.md`](docs/architecture/issue-reports.md) |
+| 192 | ✓ | [`docs/architecture/license/app.md`](docs/architecture/license/app.md) |
+| 193 | ✓ | [`docs/architecture/localization.md`](docs/architecture/localization.md) |
+| 194 | ✓ | [`docs/architecture/model-capabilities.md`](docs/architecture/model-capabilities.md) |
+| 195 | ✓ | [`docs/architecture/office-pack.md`](docs/architecture/office-pack.md) |
+| 196 | ✓ | [`docs/architecture/packaging.md`](docs/architecture/packaging.md) |
+| 197 | ✓ | [`docs/architecture/plugins.md`](docs/architecture/plugins.md) |
+| 198 | ✓ | [`docs/architecture/resource-usage.md`](docs/architecture/resource-usage.md) |
+| 199 | ✓ | [`docs/architecture/search.md`](docs/architecture/search.md) |
+| 200 | ✓ | [`docs/architecture/studio.md`](docs/architecture/studio.md) |
+| 201 | ✓ | [`docs/architecture/updates.md`](docs/architecture/updates.md) |
+| 202 | ✓ | [`docs/architecture/usage-statistics.md`](docs/architecture/usage-statistics.md) |
+| 203 | ✓ | [`docs/architecture/web-sources.md`](docs/architecture/web-sources.md) |
+| 204 | ✓ | [`docs/contracts/01-license-file.md`](docs/contracts/01-license-file.md) |
+| 205 | ✓ | [`docs/contracts/02-scraper-api-auth.md`](docs/contracts/02-scraper-api-auth.md) |
+| 206 | ✓ | [`docs/contracts/03-export-bundle.md`](docs/contracts/03-export-bundle.md) |
+| 207 | ✓ | [`docs/contracts/05-desktop-telemetry.md`](docs/contracts/05-desktop-telemetry.md) |
+| 208 | ✓ | [`surfsense_local/AGENTS.md`](surfsense_local/AGENTS.md) |
+| 209 | ✓ | [`surfsense_local/backend/modules/agent/prompts/agent.md`](surfsense_local/backend/modules/agent/prompts/agent.md) |
+| 210 | ✓ | [`surfsense_local/backend/modules/agent/skills/surfsense-data/SKILL.md`](surfsense_local/backend/modules/agent/skills/surfsense-data/SKILL.md) |
+| 211 | ✓ | [`surfsense_local/backend/modules/agent/skills/surfsense-documents/SKILL.md`](surfsense_local/backend/modules/agent/skills/surfsense-documents/SKILL.md) |
+| 212 | ✓ | [`surfsense_local/backend/modules/agent/skills/surfsense-html/SKILL.md`](surfsense_local/backend/modules/agent/skills/surfsense-html/SKILL.md) |
+| 213 | ✓ | [`surfsense_local/backend/modules/agent/skills/surfsense-pdf/SKILL.md`](surfsense_local/backend/modules/agent/skills/surfsense-pdf/SKILL.md) |
+| 214 | ✓ | [`surfsense_local/backend/modules/agent/skills/surfsense-revisions/SKILL.md`](surfsense_local/backend/modules/agent/skills/surfsense-revisions/SKILL.md) |
+| 215 | ✓ | [`surfsense_local/backend/worker/studio/office/docx/SKILL.md`](surfsense_local/backend/worker/studio/office/docx/SKILL.md) |
+| 216 | ✓ | [`surfsense_local/backend/worker/studio/office/pdf/SKILL.md`](surfsense_local/backend/worker/studio/office/pdf/SKILL.md) |
+| 217 | ✓ | [`surfsense_local/backend/worker/studio/office/pptx/SKILL.md`](surfsense_local/backend/worker/studio/office/pptx/SKILL.md) |
+| 218 | ✓ | [`surfsense_local/backend/worker/studio/office/xlsx/SKILL.md`](surfsense_local/backend/worker/studio/office/xlsx/SKILL.md) |
+| 219 | ✓ | [`surfsense_local/CLAUDE.md`](surfsense_local/CLAUDE.md) |
+| 220 | ✓ | [`www/.cursorrules`](www/.cursorrules) |
+| 221 | ✓ | [`www/AGENTS.md`](www/AGENTS.md) |
+| 222 | ✓ | [`www/CLAUDE.md`](www/CLAUDE.md) |
+| 223 | → | [`backend/plugins/registry/README.md`](backend/plugins/registry/README.md) |
+| 224 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
+| 225 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 226 | → | [`docs/adr/README.md`](docs/adr/README.md) |
+| 227 | → | [`docs/architecture/license/portal.md`](docs/architecture/license/portal.md) |
+| 228 | → | [`docs/architecture/overview.md`](docs/architecture/overview.md) |
+| 229 | → | [`docs/architecture/plugin-host.md`](docs/architecture/plugin-host.md) |
+| 230 | → | [`docs/architecture/plugin-registry.md`](docs/architecture/plugin-registry.md) |
+| 231 | → | [`docs/contracts/README.md`](docs/contracts/README.md) |
+| 232 | → | [`docs/proposals/legacy-split/README.md`](docs/proposals/legacy-split/README.md) |
+| 233 | → | [`docs/README.md`](docs/README.md) |
+| 234 | → | [`docs/ROADMAP.md`](docs/ROADMAP.md) |
+| 235 | → | [`SECURITY.md`](SECURITY.md) |
+| 236 | → | [`surfsense_local/README.md`](surfsense_local/README.md) |
+| 237 | → | [`www/README.md`](www/README.md) |
 
 ---
 

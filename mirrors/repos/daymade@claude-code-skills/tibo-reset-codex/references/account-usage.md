@@ -26,13 +26,23 @@ CC Switch 管理**——即使 `~/.cc-switch/cc-switch.db` 存在且记有 codex
 **第一步是最小可证伪动作，不是深入协议层**：
 
 ```bash
-curl -s -m 8 -o /dev/null -w '%{http_code} %{time_total}s\n' https://chatgpt.com
+curl -sS -m 8 -o /dev/null -w 'http=%{http_code} elapsed=%{time_total}s\n' https://chatgpt.com
+# 紧接上一条执行，保留 curl 的传输退出码：
+printf 'curl_exit=%s\n' "$?"
 ```
 
-- **不通**（000 / 超时 / 非 2xx）→ 出口断了。**停止所有账号层排查**，转 `tunnel-doctor` 修出口。provider 协议、登录态、token 全是浪费。
-- **通**（200/401/403 均可——401 只是未登录，证明网络通）→ 出口正常，继续按原流程查 provider / 登录态 / 凭据。
+- **`000` / 未取得 HTTP 响应**：结合退出码与 stderr 区分 DNS、连接、TLS、超时等失败，
+  转 `tunnel-doctor` 做最小链路排查；不能仅凭这一读数断言出口中断或账号异常。
+- **已取得 HTTP 响应（含 200、401、403、429、5xx）**：只证明到达了某个 HTTP 边界，
+  不证明正确的 Usage 端点、登录身份、额度或完整出口健康。非 2xx 不自动归为网络或认证单一根因；
+  检查响应来源与必要的错误正文，区分站点、代理、WAF/挑战或服务端拒绝，再选对应排查路径。
+  首页 401/403 不能当作 Usage 请求已成功或 token 已失效的证据。
+- **继续原查询**：用已核实账号的正确请求或官网 Usage 页验证实际读数；只有该请求返回预期字段，
+  才能报告对应账号额度。链路问题保留来源与未核字段，不用反复切号或重登来试网络。
 
-**为什么**：2026-10-23 实战——4 账号同时 unknown，先深入 provider 协议层 40 分钟，最后才发现是 JMS 流量超限导致的出口中断。一次 10 秒的 curl 就能省掉全部排查。
+该探针用于选择下一步，不是完整健康检查。`000` 的边界见
+[curl 响应码说明](https://curl.se/libcurl/c/CURLINFO_RESPONSE_CODE.html)：未收到服务端响应码时为零。
+首次探针后只做能区分当前候选的检查；原因已定位就回原账号查询，不无限扩查。
 
 ## 实时 API：只读一个明确账号
 
@@ -240,6 +250,14 @@ mouseReleased 序列）；宿主没有真实输入通道时不自起浏览器、
 去掉 URL 的查询参数与片段；OAuth 回调可能把 token 或授权码放进 URL。不要保存完整回调
 URL，不从聊天记录、浏览器 Cookie 库或旧工具回执中搜 token 来替代正常登录。
 
+### 已有 ChatGPT 会话迁移
+
+用户授权迁移现成登录态时，进入[Cookie Copy 接入](browser-session-migration.md)，
+由独立 `cookie-copy` 处理复制与登录验证，再回到本 Skill 核对真实额度。
+它直接迁移 ChatGPT/OpenAI 站点 Cookie，以重开后的预期账号与真实额度响应验收，
+不依赖 Google 账号选择器。仅源有活会话且当前宿主允许该本地脚本通道时执行；
+前文关于不得提取 Cookie token 替代正常登录的约束，保留在未授权迁移的普通查询路径。
+
 ### 隔离 Chrome profile 自动化：真实输入通道的适用边界（2026-09-16 实测）
 
 用隔离 profile（`~/.chrome-profiles/tibo-codex-{a,b}`）+ Playwright `connectOverCDP` 自动
@@ -256,12 +274,13 @@ URL，不从聊天记录、浏览器 Cookie 库或旧工具回执中搜 token �
 - **登录态判据用正面证据，不猜 URL**：解析到邮箱或 `Weekly usage limit` 文本才算已登录。
   登出时 usage 页可能留在 `/` 首页（有 Log in/Sign up）、也可能重定向到 `/auth/login`，
   两种 URL 都得覆盖，只认 `/auth/` 会漏掉首页登出态。
-- **隔离 profile 无 Google 会话 token，免密直登做不到**。`import-google-cookies.py` 只搬
+- **当次隔离 profile 没有可用的 Google 会话 token**。当时 `import-google-cookies.py` 只搬到
   `ACCOUNT_CHOOSER`（账号记忆列表）+ `LSOLH` + 分析类 cookie，实测 `SID`/`__Secure-1PSID`/
   `__Secure-3PSID`/`HSID`/`SSID`/`SAPISID` 全无。Google 账号选择器会列出全部账号但**每个都
   标 `Signed out`**，点任意一个都要密码/验证码。所以自动化只能驱动到「Google 账号选择器」
   为止；密码/验证码/授权确认交人工，**不自动化输入**。人工登录一次后会话 cookie 存进隔离
-  profile，之后读模式才全自动——这段「登录后读取」需人工首登后实测，不能预先宣称已验证。
+  profile，之后验证读模式。这是当次 Google 路线的观察，不是 ChatGPT 现成会话不可迁移的结论；
+  已授权迁移走上一节，不能预先宣称任何账号均可免密。
 - **Google cookie 读不出明文邮箱**。CDP `Network.getAllCookies` 拿到的是 Google 侧编码值
   （`ACCOUNT_CHOOSER`/`LSOLH` 已是密文/编码），账号身份只能从页面 DOM 读（账号选择器或
   `myaccount.google.com`）。别试图解密 cookie 取邮箱。

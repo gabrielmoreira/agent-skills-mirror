@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `mvschwarz/openrig` — 26 default patterns, 0 followed patterns, 115 file(s) materialized.
+Mirror of `mvschwarz/openrig` — 26 default patterns, 0 followed patterns, 120 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `mvschwarz/openrig` — 26 default patterns, 0 followed patterns, 115 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 115 |
+| Files         | 120 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -151,29 +151,34 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 90 | ✓ | [`skills/_canonical/pods/orchestration-team/SKILL.md`](skills/_canonical/pods/orchestration-team/SKILL.md) |
 | 91 | ✓ | [`skills/_canonical/pods/oversight-team/SKILL.md`](skills/_canonical/pods/oversight-team/SKILL.md) |
 | 92 | ✓ | [`skills/_canonical/pods/review-team/SKILL.md`](skills/_canonical/pods/review-team/SKILL.md) |
-| 93 | ✓ | [`skills/_canonical/process/agent-browser/LOCAL-INSIGHTS.md`](skills/_canonical/process/agent-browser/LOCAL-INSIGHTS.md) |
-| 94 | ✓ | [`skills/_canonical/process/agent-browser/OPENRIG.md`](skills/_canonical/process/agent-browser/OPENRIG.md) |
-| 95 | ✓ | [`skills/_canonical/process/agent-browser/SKILL.md`](skills/_canonical/process/agent-browser/SKILL.md) |
-| 96 | ✓ | [`skills/_canonical/process/context-engineering/SKILL.md`](skills/_canonical/process/context-engineering/SKILL.md) |
-| 97 | ✓ | [`skills/_canonical/process/dogfood/references/issue-taxonomy.md`](skills/_canonical/process/dogfood/references/issue-taxonomy.md) |
-| 98 | ✓ | [`skills/_canonical/process/dogfood/SKILL.md`](skills/_canonical/process/dogfood/SKILL.md) |
-| 99 | ✓ | [`skills/_canonical/process/dogfood/templates/dogfood-report-template.md`](skills/_canonical/process/dogfood/templates/dogfood-report-template.md) |
-| 100 | ✓ | [`skills/_canonical/process/frontend-design/LICENSE.txt`](skills/_canonical/process/frontend-design/LICENSE.txt) |
-| 101 | ✓ | [`skills/_canonical/process/frontend-design/SKILL.md`](skills/_canonical/process/frontend-design/SKILL.md) |
-| 102 | ✓ | [`skills/_canonical/process/systematic-debugging/condition-based-waiting-example.ts`](skills/_canonical/process/systematic-debugging/condition-based-waiting-example.ts) |
-| 103 | ✓ | [`skills/_canonical/process/systematic-debugging/condition-based-waiting.md`](skills/_canonical/process/systematic-debugging/condition-based-waiting.md) |
-| 104 | ✓ | [`skills/_canonical/process/systematic-debugging/defense-in-depth.md`](skills/_canonical/process/systematic-debugging/defense-in-depth.md) |
-| 105 | ✓ | [`skills/_canonical/process/systematic-debugging/find-polluter.sh`](skills/_canonical/process/systematic-debugging/find-polluter.sh) |
-| 106 | ✓ | [`skills/_canonical/process/systematic-debugging/root-cause-tracing.md`](skills/_canonical/process/systematic-debugging/root-cause-tracing.md) |
-| 107 | ✓ | [`skills/_canonical/process/systematic-debugging/SKILL.md`](skills/_canonical/process/systematic-debugging/SKILL.md) |
-| 108 | ✓ | [`skills/_canonical/process/test-driven-development/SKILL.md`](skills/_canonical/process/test-driven-development/SKILL.md) |
-| 109 | ✓ | [`skills/_canonical/process/test-driven-development/testing-anti-patterns.md`](skills/_canonical/process/test-driven-development/testing-anti-patterns.md) |
-| 110 | ✓ | [`skills/_canonical/process/verification-before-completion/references/performance-claims.md`](skills/_canonical/process/verification-before-completion/references/performance-claims.md) |
-| 111 | ✓ | [`skills/_canonical/process/verification-before-completion/SKILL.md`](skills/_canonical/process/verification-before-completion/SKILL.md) |
-| 112 | ✓ | [`skills/CHANGELOG.md`](skills/CHANGELOG.md) |
-| 113 | ✓ | [`skills/LICENSE`](skills/LICENSE) |
-| 114 | ✓ | [`skills/README.md`](skills/README.md) |
-| 115 | ✓ | [`skills/rigs/SKILL.md`](skills/rigs/SKILL.md) |
+| 93 | ✓ | [`skills/_canonical/process/agent-browser/LICENSE.txt`](skills/_canonical/process/agent-browser/LICENSE.txt) |
+| 94 | ✓ | [`skills/_canonical/process/agent-browser/LOCAL-INSIGHTS.md`](skills/_canonical/process/agent-browser/LOCAL-INSIGHTS.md) |
+| 95 | ✓ | [`skills/_canonical/process/agent-browser/OPENRIG.md`](skills/_canonical/process/agent-browser/OPENRIG.md) |
+| 96 | ✓ | [`skills/_canonical/process/agent-browser/SKILL.md`](skills/_canonical/process/agent-browser/SKILL.md) |
+| 97 | ✓ | [`skills/_canonical/process/context-engineering/SKILL.md`](skills/_canonical/process/context-engineering/SKILL.md) |
+| 98 | ✓ | [`skills/_canonical/process/dogfood/LICENSE.txt`](skills/_canonical/process/dogfood/LICENSE.txt) |
+| 99 | ✓ | [`skills/_canonical/process/dogfood/references/issue-taxonomy.md`](skills/_canonical/process/dogfood/references/issue-taxonomy.md) |
+| 100 | ✓ | [`skills/_canonical/process/dogfood/SKILL.md`](skills/_canonical/process/dogfood/SKILL.md) |
+| 101 | ✓ | [`skills/_canonical/process/dogfood/templates/dogfood-report-template.md`](skills/_canonical/process/dogfood/templates/dogfood-report-template.md) |
+| 102 | ✓ | [`skills/_canonical/process/frontend-design/LICENSE.txt`](skills/_canonical/process/frontend-design/LICENSE.txt) |
+| 103 | ✓ | [`skills/_canonical/process/frontend-design/SKILL.md`](skills/_canonical/process/frontend-design/SKILL.md) |
+| 104 | ✓ | [`skills/_canonical/process/systematic-debugging/condition-based-waiting-example.ts`](skills/_canonical/process/systematic-debugging/condition-based-waiting-example.ts) |
+| 105 | ✓ | [`skills/_canonical/process/systematic-debugging/condition-based-waiting.md`](skills/_canonical/process/systematic-debugging/condition-based-waiting.md) |
+| 106 | ✓ | [`skills/_canonical/process/systematic-debugging/defense-in-depth.md`](skills/_canonical/process/systematic-debugging/defense-in-depth.md) |
+| 107 | ✓ | [`skills/_canonical/process/systematic-debugging/find-polluter.sh`](skills/_canonical/process/systematic-debugging/find-polluter.sh) |
+| 108 | ✓ | [`skills/_canonical/process/systematic-debugging/LICENSE.txt`](skills/_canonical/process/systematic-debugging/LICENSE.txt) |
+| 109 | ✓ | [`skills/_canonical/process/systematic-debugging/root-cause-tracing.md`](skills/_canonical/process/systematic-debugging/root-cause-tracing.md) |
+| 110 | ✓ | [`skills/_canonical/process/systematic-debugging/SKILL.md`](skills/_canonical/process/systematic-debugging/SKILL.md) |
+| 111 | ✓ | [`skills/_canonical/process/test-driven-development/LICENSE.txt`](skills/_canonical/process/test-driven-development/LICENSE.txt) |
+| 112 | ✓ | [`skills/_canonical/process/test-driven-development/SKILL.md`](skills/_canonical/process/test-driven-development/SKILL.md) |
+| 113 | ✓ | [`skills/_canonical/process/test-driven-development/testing-anti-patterns.md`](skills/_canonical/process/test-driven-development/testing-anti-patterns.md) |
+| 114 | ✓ | [`skills/_canonical/process/verification-before-completion/LICENSE.txt`](skills/_canonical/process/verification-before-completion/LICENSE.txt) |
+| 115 | ✓ | [`skills/_canonical/process/verification-before-completion/references/performance-claims.md`](skills/_canonical/process/verification-before-completion/references/performance-claims.md) |
+| 116 | ✓ | [`skills/_canonical/process/verification-before-completion/SKILL.md`](skills/_canonical/process/verification-before-completion/SKILL.md) |
+| 117 | ✓ | [`skills/CHANGELOG.md`](skills/CHANGELOG.md) |
+| 118 | ✓ | [`skills/LICENSE`](skills/LICENSE) |
+| 119 | ✓ | [`skills/README.md`](skills/README.md) |
+| 120 | ✓ | [`skills/rigs/SKILL.md`](skills/rigs/SKILL.md) |
 
 ---
 

@@ -48,6 +48,16 @@ ROW
 }' ] || fail 'Unexpected source inventory layout'
 checksums=$(sed -n '/^  "files": {$/,/^  },$/s/^    "\([^"]*\)": "\([0-9a-f]\{64\}\)",\{0,1\}$/\2  \1/p' "$inventory")
 paths=$(printf '%s\n' "$checksums" | sed 's/^[0-9a-f]*  //')
+# Refuse by name, as install.ps1 does, before the order and tree checks: an
+# empty, `.` or `..` segment aliases or escapes the destination, and a
+# case-variant pair is one file on a case-insensitive destination.
+printf '%s\n' "$paths" | while IFS= read -r path; do
+    case /$path/ in
+        *//*|*/./*|*/../*) fail "Unsafe source inventory path: $path" ;;
+    esac
+done
+folded=$(printf '%s\n' "$paths" | sed 'y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/' | LC_ALL=C sort)
+[ "$folded" = "$(printf '%s\n' "$folded" | LC_ALL=C sort -u)" ] || fail 'Duplicate or case-variant source inventory path'
 [ "$paths" = "$(printf '%s\n' "$paths" | LC_ALL=C sort -u)" ] || fail 'Source inventory rows are not sorted and unique'
 # Reject extra files and links rather than silently installing an unverified tree.
 [ -z "$(find "$source" ! -type f ! -type d -print)" ] || fail 'Unsupported source entry (including symlink)'
@@ -83,7 +93,7 @@ printf '%s\n' "$checksums" | while IFS= read -r row; do
                 fi
                 [ -n "$prior" ] || prior=$hash
                 actual=$(checksum "$target/$path"); actual=${actual%% *}
-                [ "$actual" = "$prior" ] || fail "Foreign/edited support preserved: $path"
+                [ "$actual" = "$prior" ] || fail "Foreign/edited support preserved: $path (move it aside, then rerun)"
             fi ;;
     esac
 done
@@ -94,4 +104,6 @@ done
 verify "$target"
 cp "$inventory" "$target/.omh-agent-skills-manifest.json"
 printf 'Installed cursor skills in %s\n' "$target"
+# Cursor and opencode load both pack roots, so a second copy is a second set of skills.
+[ ! -f "$base/.claude/skills/.omh-agent-skills-manifest.json" ] || printf 'Warning: %s also holds OMH Agent Skills; Cursor and opencode load both directories and find each skill twice. See docs/AGENT-SKILLS.md#duplicate-copies.\n' "$base/.claude/skills" >&2
 printf '%s\n' "$paths" | sed 's|/.*||' | LC_ALL=C sort -u

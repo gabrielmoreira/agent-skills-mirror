@@ -69,7 +69,7 @@ sudo tailscale set --advertise-routes=192.168.1.0/24
 ```
 
 Approve the route in your admin console: Machines → the helper → Subnets → Edit. You then reach the
-TV at its local address, e.g. `TV_HOST=192.168.1.40`.
+TV at its local address, e.g. `TV_HOST=192.168.1.50`.
 
 **The two networks must not overlap.** If their home uses the same range as yours (both
 `192.168.1.x`, say), your computer can't tell their TV from a device at home. Use option A, or

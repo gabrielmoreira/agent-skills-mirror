@@ -6,7 +6,7 @@
 
 - 先搜索 [Issues](https://github.com/xerrors/Yuxi/issues)，确认问题没有重复。
 - 如果任务来自 GitHub Project，读完任务描述、关联 Issue、验收标准和讨论，并确认任务已经分配给你。
-- 需求会改变架构、权限、持久化、运行生命周期、公开接口或模型可见输入时，先在 Issue 或 [Discussions](https://github.com/xerrors/Yuxi/discussions) 对齐方案，并建立 [工程决策记录](./decisions/README.md)。
+- 判断需求是否非平凡、何时需要 decision，按[工程决策记录](./decisions/README.md#何时需要)和 [Yuxi Spec Loop](./spec-loop.md)执行；需要时先在 Issue 或 [Discussions](https://github.com/xerrors/Yuxi/discussions) 对齐方案。
 - 一个 PR 解决一个清楚的问题。无关的格式化、重构和“顺手优化”请另开 PR。
 
 修改不熟悉的模块前，先读 [ARCHITECTURE.md](https://github.com/xerrors/Yuxi/blob/main/ARCHITECTURE.md)，再从真实的路由、service、repository、Schema、Compose 和测试中定位实现。源码和可执行测试比旧文档、历史 PR 或自动生成 Wiki 更可靠。
@@ -49,31 +49,52 @@ docker compose ps
 docker compose logs --tail=100 api
 ```
 
-`api` 和 `web` 服务默认支持热重载。容器名由 Compose project 生成；使用 `docker compose logs api web` 查看当前槽位日志。修改本地代码后通常不需要手动重启。
+`frontend` 使用 Vite 热更新。`api` 与 `worker` 保留源码挂载，源码修改通过显式重启生效。重启前检查活动任务，避免中断正在执行的 Run；按改动范围选择服务，例如后端公共代码修改后运行：
+
+```bash
+docker compose restart api worker
+```
+
+修改 Compose 启动命令后，运行 `docker compose up -d --no-deps api worker` 重新创建受影响的容器；`restart` 沿用已有容器的命令。容器名由 Compose project 生成；使用 `docker compose logs api worker frontend` 查看当前槽位日志。
 
 ## 3. 实现原则
 
 - 用满足验收标准的最小实现，保持主路径线性可读。
-- HTTP 路由只做请求解析、认证上下文和响应装配；用例流程放在 `yuxi.services`，持久化查询放在 `yuxi.repositories`。
+- HTTP 路由只做请求解析、认证上下文和响应装配；用例流程放在各模块的 `services/`，持久化查询放在各模块的 `repositories/`（如 `yuxi/modules/agents/services`、`yuxi/modules/agents/repositories`）。
 - 预设条件不成立时明确失败，不用静默回退或吞异常掩盖问题。
 - 权限在后端依赖和 repository 可见性查询处执行；前端守卫、prompt、schema omission 和隐藏按钮不是授权边界。
 - PostgreSQL 保存业务事实；Redis 只负责投递、短期事件、取消和缓存。LangGraph checkpoint 只使用 PostgreSQL。
 - 文件路径、沙盒虚拟路径、对象 URL 和宿主机路径不能混用；在真正产生副作用的 executor 或 repository 处做边界校验。
 - 修复 Bug 时先补一个能稳定复现原问题的回归测试，再改实现。
-- 新增函数或类使用简洁中文 docstring；注释只说明时序、Owner、安全边界和调用义务。
+- 新增函数或类使用简洁中文 docstring；注释说明时序、Owner、安全边界和调用义务，较长处理段可在段首概括职责与阶段，不逐行翻译代码。
+
+知识库现有管理和 executor 调度从 `KnowledgeBaseManager` 开始，后台处理与 Agent 工具从知识库 `services` 开始。修改前按[知识库源码定位](../mechanisms/knowledge-base.md#源码定位与验证)选择当前用例 Owner，再追踪具体 executor 和 repository。
 
 ### 后端
 
 后端代码位于 `backend/`。新增测试放在 `backend/test/unit`、`backend/test/integration` 或 `backend/test/e2e`，按测试实际依赖选择层级。测试分层、fixture 和 skip 规则见[测试规范](./testing-guidelines.md)。
 
+以下排版规则只适用于 `backend/` 的 Python。Ruff 行宽上限为 140，配置由 `backend/pyproject.toml` 拥有；行宽是上限，不是填满目标。
+
+能清楚写在一行的调用保持一行：
+
+```python
+if not await repo.try_lock(turn_id):
+    raise StateConflictError("本轮正在标注来源，请稍后读取结果", code="references_busy")
+```
+
+需要折行的调用按参数分行，关键字参数各占一行；参数内的集合或表达式继续按自身结构展开。只折开括号、多个参数仍挤在同一行的布局，改成清楚的单行调用或按参数分行。多行数据、有说明性注释的参数和复杂调用保留有意义的分组，不为压缩行数强行合并。
+
+不同语义阶段之间留空行，例如授权与读取、事实写入与提交、提交与投递；紧密相关的短语句放在一起。必要注释靠近约束或副作用，说明非显然的事务时序、Owner、路径边界或调用义务；较长的处理段可在段首用一句话概括该段职责与阶段。显然的赋值、条件和函数名不逐行复述。保持完整配置、SQL、prompt 与其他字符串内容不变，用等价排版改善阅读。
+
 ### 前端
 
-前端代码位于 `web/`，使用 `pnpm` 和 LESS：
+前端代码位于 `frontend/`，使用 `pnpm` 和 LESS：
 
-- API 封装放在 `web/src/apis`；
+- API 封装放在 `frontend/src/apis`；
 - 图标优先使用 `@lucide/vue`；
 - 颜色优先使用 `base.css` 和 `base.dark.css` 的变量；
-- 浅色、暗色、loading、empty、error、focus 和响应式状态都要检查；
+- 浅色、暗色、loading、empty、error、focus 和响应式状态都要检查，适配与验收宽度遵循[设计规范的响应式范围](./design.md#_8-响应式行为)；
 - UI 改动遵循[产品体验与界面设计规范](./design.md)。
 
 不要为单次需求引入新的依赖、样式体系或抽象。确需新增依赖时，在 PR 中说明用途、替代方案和许可证影响。
@@ -93,17 +114,20 @@ docker compose logs --tail=100 api
 后端常用命令：
 
 ```bash
-docker compose exec api uv run --group test pytest test/unit -m "not slow"
-docker compose exec api uv run --group test pytest test/integration
-docker compose exec api uv run --group test pytest test/e2e -m e2e
+docker compose exec api uv run --no-sync --group test pytest test/unit -m "not slow"
+docker compose exec api uv run --no-sync --group test pytest test/integration/api
+docker compose exec api uv run --no-sync --group test pytest test/integration --ignore=test/integration/api --ignore=test/integration/services/test_background_job_worker_path.py
+backend/test/run_tests.sh e2e
 ```
+
+批次边界、`test_background_job_worker_path.py` 的独立拓扑和容器内跳过部署配置测试的条件由[测试规范](./testing-guidelines.md#常用命令)维护。
 
 前端常用命令：
 
 ```bash
-docker compose exec web pnpm run lint:check
-docker compose exec web pnpm run test:unit
-docker compose exec web pnpm run build
+docker compose exec frontend pnpm run lint:check
+docker compose exec frontend pnpm run test:unit
+docker compose exec frontend pnpm run build
 ```
 
 项目统一格式化命令会修改工作树，完成格式化后应重新查看 diff：
@@ -117,7 +141,7 @@ make format
 ```bash
 python3 scripts/verify_engineering_contracts.py
 python3 -m unittest scripts.test_verify_engineering_contracts
-docker compose exec api uv run --group test pytest test/unit -m "not slow"
+docker compose exec api uv run --no-sync --group test pytest test/unit -m "not slow"
 git diff --check
 ```
 
@@ -125,7 +149,7 @@ git diff --check
 
 ## 5. 提交前 Review
 
-代码变更在 commit 前必须经过一个不继承当前开发上下文的独立 Reviewer。Reviewer 应读取完整需求、规范、完整 diff、相关源码、测试结果和未验证范围，重点检查：
+代码变更在 commit 前必须经过独立 Review。该审阅由不继承本次实现上下文的全新会话 Reviewer Agent 执行，至少读取完整需求、decision、规范、完整 diff、源码、实际测试结果和未验证范围；维护者的确认不替代该审阅。Fork PR 由有写权限的维护者在合并前确认该审阅已经完成。Reviewer 应重点检查：
 
 1. 主路径、边界、错误处理和回归测试是否完整；
 2. 路由、服务、仓储、前端 API 和测试是否位于正确边界；
@@ -177,7 +201,17 @@ PR 正文按创建方式选择模板：
 3. 修复产生新提交时创建下一个候选 tag；已推送的候选 tag 保留原指向。
 4. 最终候选通过后，在同一提交新增正式 tag，并发布正式 Release。Release 正文保留相对上一正式版本的完整功能更新及升级注意事项。应用 tag 触发检查，文档站只在 main 分支推送时部署。
 
-CLI 使用 `packages/yuxi-cli/pyproject.toml` 中的独立版本。需要发布 CLI 时先提交包版本和锁文件更新，再对明确的提交或 tag 手动运行 [Publish yuxi-cli](https://github.com/xerrors/Yuxi/actions/workflows/publish-yuxi-cli.yml)；应用 Release 不触发 PyPI 上传。CLI 版本未变时无需重复发布，上传失败须检查版本与 PyPI 状态。
+CLI 使用 `packages/yuxi-cli/package.json` 中的独立 npm 版本。修改 CLI 后至少运行：
+
+```bash
+cd packages/yuxi-cli
+npm ci
+npm run typecheck
+npm test
+npm run pack:check
+```
+
+需要发布 CLI 时先提交包版本和 `package-lock.json`，再对明确的提交手动运行 [Publish yuxi-cli](https://github.com/Yuchuan925/Yuxi/actions/workflows/publish-yuxi-cli.yml)。工作流使用 npm Trusted Publishing，应用 Release 不触发 npm 上传。CLI 版本未变时无需重复发布；上传失败须检查 npm 包版本和发布工作流身份。
 
 ## 7. 文档维护
 

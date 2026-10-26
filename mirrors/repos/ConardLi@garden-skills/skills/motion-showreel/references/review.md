@@ -50,6 +50,8 @@ node <skill>/scripts/inspect.mjs qa <slug>/out/final.mp4 --out <slug>/qa/final \
 - **按镜头的运动**（`qa` 和 `inspect.mjs motion` 都会打印；`timeline.js` 有 `SHOTS` 时按镜头分，没有就按硬切分段）：每个镜头里每一帧步有多少画面在变（moving）、多少帧步完全不变（still）、有几次突然的跳变（jumps）。重点看三种提示：「nothing moves」（不在 `HOLDS` 里的长时间不动）、「sudden jumps」（整屏噪点隔几帧重新生成一次，读起来就是闪；或者某一帧穿帮）、「every other step is still」（步进动画，或者镜头也被步进了）。另外单独列出 **flash frames**：某一帧和前后两帧都不一样、前后两帧却一样，多半是一帧闪白、一帧空画面或一层东西漏画，除非是刻意的单帧频闪。一连串紧挨着的整屏大变化会单独列成 **rapid whole-frame changes**：快速蒙太奇是刻意的；笔触、噪点、纹理隔几帧整屏重新生成一次，看起来就是闪。
 - **文字框景**（`render.mjs --text-check`，`build.sh` 默认会跑，结果在 `qa/text.json` 和 `qa/text-t<秒>.png`）：字被画面边缘切掉（CUT；展示级大字出血记为 BLEED，多半是刻意的）、两串不同的字叠在一起（OVERLAP）、竖屏字落进平台 UI 会盖住的上下安全区（SAFE）、字小到手机上读不出（TINY）。持续 ≥ 0.3 秒才报，每个时刻出一张标了框的图。它看得到 Canvas 2D 和 DOM / SVG 的字，看不到 WebGL 纹理和图片里的字，这些帧要自己看。
 
+文字框景检查读取原页面，不会验证子帧平均后的像素。使用运动模糊且有文案或镜头硬切时，导出后用 `inspect.mjs strip --at <切换秒数>` 检查成片的连续帧，留意只出现一帧的叠印。需要区分文案状态和连续运动时间时，可按 `stack.md` 的可选采样上下文接入；保留有意的交叉淡化。
+
 逐项写观察，**不适用的写「不适用」**：
 
 | 项 | 看什么 | 什么时候不适用 |
@@ -80,7 +82,7 @@ node <skill>/scripts/inspect.mjs qa <slug>/out/final.mp4 --out <slug>/qa/final \
 仍未解决（交付时告诉用户）：…
 ```
 
-修完只重渲出问题的那一段（`render.mjs --start --duration --out out/seg.mp4`），没问题后再出整片，并重新跑技术检查。一般要两三轮，但目标是解决问题，不是凑一个分数。同一类问题连着三轮都没修掉、两种修法都不管用，就别再在这一段上磨了，回到 brief 换做法（换技术、换镜头、换结构），或者如实告诉用户。
+导出前的修改先刷新工作区、复看相关区间，让用户确认后再合成 MP4；不为每次审片先生成视频。已导出的成片发现问题时，也先修正并回到工作区复看；确需离线片段时经用户同意只重渲必要范围（`render.mjs --start --duration --out out/seg.mp4`），当前版本确认后再出整片，并重新跑技术检查。一般要两三轮，但目标是解决问题，不是凑一个分数。同一类问题连着三轮都没修掉、两种修法都不管用，就别再在这一段上磨了，回到 brief 换做法（换技术、换镜头、换结构），或者如实告诉用户。
 
 ### 独立审片（宿主支持子 agent 时）
 
@@ -116,7 +118,8 @@ node <skill>/scripts/inspect.mjs qa <slug>/out/final.mp4 --out <slug>/qa/final \
 
 ## 4. 交付清单
 
-- [ ] 两次确认已记录，或用户明确免除；必填信息明确，确认时长不超过 1200 秒
+- [ ] 需求与风格确认已记录，或用户明确免除；必填信息明确，确认时长不超过 1200 秒
+- [ ] 默认已打开工作区并记录当前版本的预览与导出确认；长片逐章预览，或用户明确要求跳过预览
 - [ ] TTS 使用用户原稿；有口播时真实音频、句段时间戳和画面一致，时长冲突已确认
 - [ ] BGM、音效来源分别与需求一致，人声期间音乐与音效收敛；不把计量通过当作听感通过
 - [ ] 长片章节清单、局部源码和音频可重建，各章检查和接缝复核有记录
@@ -129,5 +132,5 @@ node <skill>/scripts/inspect.mjs qa <slug>/out/final.mp4 --out <slug>/qa/final \
 - [ ] 按镜头的运动和 flash frames 都看过：没有不在 `HOLDS` 里的空拍、没有意外的闪帧
 - [ ] 素材和字体的授权已列出
 - [ ] `qa/review_log.md` 写明了审片观察、改了什么、还剩什么问题
-- [ ] `brief.md`、`build.sh`、`out/final.mp4`、`out/poster.png` 都在项目目录里
+- [ ] `brief.md`、`build.sh`、实际导出的 MP4（`out/editor-<task-id>.mp4` 或 `out/final.mp4`）及 `out/poster.png` 都在项目目录里；编辑版附对应会话与任务记录
 - [ ] 交付说明里请用户自己看一遍成片（有声片要打开声音）

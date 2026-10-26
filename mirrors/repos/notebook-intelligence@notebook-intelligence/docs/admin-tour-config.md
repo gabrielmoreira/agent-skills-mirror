@@ -44,6 +44,13 @@ of JSON, so the same content parses unchanged), then trim it to only
 the keys you want to change. Anything you remove falls back to the
 built-in copy.
 
+The built-in copy is translated into the language each user picks for
+JupyterLab, but text you change is shown exactly as written, in every
+language, so write it in the language your users read. A key whose value
+is identical to the built-in English is ignored and stays translated.
+In the launcher step's templates, the `{launchers}` list is joined in
+the user's language ("Codex und opencode" for German).
+
 ## Schema
 
 The file is a single mapping with up to three top-level keys: `steps`,

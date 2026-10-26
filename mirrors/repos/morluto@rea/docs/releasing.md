@@ -112,6 +112,13 @@ creation or retry mutations. An internal GraphQL error does not establish API
 quota exhaustion or prove that query size caused the failure. Publication
 continues through the pinned release-please action.
 
+A nonzero manifest version must resolve to a GitHub release or tag before
+proposal history is collected. If publication has not created that boundary
+yet, preparation stops before opening or updating a PR; wait for publication
+before retrying. Missing manifest versions and `0.0.0` still allow an initial
+release. This prevents historical `Release-As` directives from being replayed
+as unreleased changes.
+
 When upgrading release-please, review the upstream manifest implementation,
 refresh the versioned patch and run the release proposal and workflow boundary
 tests. Version mismatch or a patch that neither applies cleanly nor matches an

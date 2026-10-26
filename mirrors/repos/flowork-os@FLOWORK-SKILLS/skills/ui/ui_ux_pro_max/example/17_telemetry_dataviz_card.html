@@ -1,0 +1,11 @@
+<!-- Example 17: Telemetry Chart Card With Accessible Numeric Tooltip -->
+<article class="telemetry-card" style="background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 20px; color: #f8fafc; font-family: system-ui, sans-serif;">
+  <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+    <h3 style="margin: 0; font-size: 16px; font-weight: 600;">Throughput Latency (ms)</h3>
+    <span style="font-size: 14px; font-weight: 700; color: #4ade80;">18ms (avg)</span>
+  </header>
+  <svg viewBox="0 0 300 80" style="width: 100%; height: auto; overflow: visible;" aria-label="Line graph showing latency over time">
+    <polyline fill="none" stroke="#6366f1" stroke-width="2.5" points="0,50 50,40 100,55 150,25 200,30 250,15 300,20"/>
+    <circle cx="250" cy="15" r="4" fill="#6366f1"/>
+  </svg>
+</article>

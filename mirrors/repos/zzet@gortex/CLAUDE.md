@@ -5,9 +5,15 @@ Code intelligence engine written in Go. Indexes repositories into a knowledge gr
 ## Build & Test
 
 ```bash
-go build -o gortex ./cmd/gortex/   # requires CGO (tree-sitter C bindings)
+CGO_CFLAGS="-O2 -g -fno-strict-aliasing" CGO_CXXFLAGS="-O2 -g -fno-strict-aliasing" \
+  go build -o gortex ./cmd/gortex/   # requires CGO (tree-sitter C bindings)
 go test -race ./...                 # all test packages must pass
 ```
+
+Gcc builds must disable strict aliasing in C and C++ dependency packages to avoid
+[tree-sitter heap corruption (#821)](https://github.com/zzet/gortex/issues/821).
+The flags above preserve Go's default `-O2 -g`; `make` sets them automatically.
+Building with clang (`CC=clang CXX=clang++`) is another option.
 
 ## Codebase Overview
 

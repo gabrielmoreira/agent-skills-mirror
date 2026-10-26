@@ -137,7 +137,12 @@ the newest 300 messages first so a long history is readable at once instead of
 arriving oldest-first. While another device is answering, the chat shows *kwai
 is working…* (kwai 正在处理…) under the last message, a presence note the relay
 passes on and never stores; it goes when the reply lands, when the device says
-it is done, or after ten minutes. A message that arrived from another device is
+it is done, or after ten minutes. Since 1.0.8 the line follows the run: *kwai is
+working: opening the booking site* while a step runs, in the step's own words,
+and *kwai is waiting for you* while a card holds the run there for you to
+answer. The computer, the phones and the web console all say their steps and
+all show them; a device on an older version shows and sends the plain line. A
+message that arrived from another device is
 never shown as interrupted and never offers *Continue*, since only the device that
 ran the turn knows how it ended.
 
@@ -165,8 +170,9 @@ own state (off by default; off, a side chat here is neither listed nor read for
 the push, and a side row that still arrives makes no session), asks the relay
 for `scope=main` and, on the first pull and when the side switch goes on, for
 the tail; the other device's *kwai is working…* line is drawn under its last
-bubble from the hub's `working` frame and cleared by its reply, by
-`working: false` or after ten minutes; the remote rows are never in the
+bubble from the hub's `working` frame (with the step's words or *waiting for
+you* when the frame carries `state` and `detail`, relay 0.31) and cleared by
+its reply, by `working: false` or after ten minutes; the remote rows are never in the
 session log, so the harness cannot take one for an unfinished turn. The host
 reads a session's log once per change (title, lines and prompt positions are
 kept until the session's next event) and turns a burst of `sync` frames into

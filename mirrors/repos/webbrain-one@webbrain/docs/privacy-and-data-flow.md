@@ -619,7 +619,14 @@ The only outbound HTTP requests are:
 7. **Encrypted Cloud Sync calls** to `https://api.webbrain.one/v1/sync` (only after a subscriber explicitly enables sync; vault content is encrypted before upload)
 8. **Slash-driven tab/screen recording** creates no outbound traffic (the .webm is saved to the Downloads folder via `chrome.downloads.download`)
 9. **Voluntary research shares** to `https://api.webbrain.one/v1/improvement/generations` and `/v1/improvement/diagnostic-traces` (only for a local or bring-your-own provider with its separate sharing switch enabled)
-10. **Feedback trace attachments** uploaded by GitHub's native issue editor,
+10. **Chat link favicons** use `https://icons.duckduckgo.com/ip3/` for public
+   website hostnames visible in the chat. The lookup sends only the hostname,
+   never the link's path, query string, fragment, credentials or a referrer.
+   Icons are cached in memory while the panel is open, with bounded requests
+   and response sizes. Local hosts, IP addresses, code, Markdown image syntax
+   and download links do not trigger these requests. Strict Secret Mode disables
+   remote icon lookups; unavailable icons use a local globe.
+11. **Feedback trace attachments** uploaded by GitHub's native issue editor,
     only after the user chooses **Upload trace and open GitHub** in the extension.
     Preparing, viewing, and downloading the trace are local operations. The
     attachment includes only recordings preceding the opening of the rating
@@ -634,7 +641,7 @@ The only outbound HTTP requests are:
     same authorized bytes. Full traces that exceed the attachment limit use an
     explicitly disclosed diagnostic fallback; the original stays available as
     a local download.
-11. **WebBrain bulletins**: a `GET` of a fixed static file on `https://webbrain.one`, with no
+12. **WebBrain bulletins**: a `GET` of a fixed static file on `https://webbrain.one`, with no
     cookies, referrer, query string or identifiers. The new tab page reads
     `/newtab-comm.html` at most once every 10 minutes per browser (only while the new tab is
     shown); Apocalypse Mode pages read `/apocalypse-comm.html` when they open. Both files ship

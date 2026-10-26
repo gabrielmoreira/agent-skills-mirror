@@ -9,8 +9,8 @@
 | Unit | `backend/test/unit` | 纯逻辑、边界值、状态转换和失败分支 | 不依赖运行中的 Docker 服务 |
 | Integration | `backend/test/integration` | 真实 HTTP、认证、事务、锁、Schema、lease 和服务副作用 | 依赖 Docker Compose |
 | E2E | `backend/test/e2e` | Run、SSE、worker、文件落盘和完整用户链路 | 依赖完整 Compose，数量少、速度慢 |
-| Web unit | `web/test/unit` | 前端状态、组件和交互逻辑 | 通过 `pnpm test:unit` |
-| CLI | `packages/yuxi-cli/tests` | CLI 配置、命令和客户端行为 | 独立 Python 包 |
+| Web unit | `frontend/test/unit` | 前端状态、组件和交互逻辑 | 通过 `pnpm test:unit` |
+| CLI | `packages/yuxi-cli/test` | npm CLI 配置、命令、Public v1 客户端和协议逻辑 | Node.js 22+，静态测试不依赖运行中的服务 |
 
 同一个子项目只保留一个测试根目录，不要同时创建 `test` 和 `tests`。
 
@@ -48,10 +48,19 @@ test_agent_bubble_sort_run_creates_expected_artifacts
 ## Fixture 和测试数据
 
 - 同一文件内复用的准备逻辑优先写本地 helper；多个文件需要时再放对应层级的 `conftest.py`。
-- `backend/test/conftest.py` 只保留通用 marker，不绑定真实服务。
+- 通用 marker 由 `backend/pyproject.toml` 注册；`backend/test/conftest.py` 只装配测试路径和插件，不绑定真实服务。
 - integration fixture 负责创建 `test_client`、测试用户和测试资源；不要依赖数据库里碰巧存在的 Agent、模型或知识库。
+- integration 默认执行共享 schema 检查和 API/沙盒清理。仅当用例不需要这些共享 session fixture，且自行创建并回收资源时，才可显式声明 `self_managed_resources` 豁免这些依赖；它不承诺独立数据库 schema。混合批次只要包含未标记用例，仍执行共享检查和清理。
 - E2E fixture 负责真实入口、账号和资源清理；测试结束后删除自己创建的对话、文件、Run 和外部对象。
 - 不在测试或文档中写真实账号、密码、Token、用户数据和本地绝对路径。
+
+### 核心输入链路的前提与等待
+
+输入队列、附件、Skill 授权、取消和恢复用例在准备代码旁明确初始状态、建立入口、回读事实和清理 Owner。公开输入通过 HTTP 建立真实消费前提；需要停在消费前故障窗口的服务测试使用自己的隔离 Schema。普通用户和 Key 使用本例明确授权的 Agent 与 bound Skill；内置发布内容测试以正式 app-init 产物为对象。
+
+复用 `e2e_helpers.py` 的 Input 消费、Turn 终态与 replay 阻塞点等待。Turn 的 `completed`、`failed`、`cancelled` 都是等待结果，由调用方断言本场景预期；删除资源前另用 `live_api_cleanup.py` 的 `validate_test_runs_terminal` 检查历史 Run 的运行时清理。等待总预算覆盖 HTTP 和数据库请求，超时只报告目标 ID 与最后状态。
+
+跨进程文件先写同目录临时文件，完成后原子改名；存在性信号只证明标记已经发布。模型阻塞点使用 replay 的 started/release 协议，解除本例阻塞放在 `finally`。固定 sleep 仅用于轮询间隔或明确验证的缓存 TTL、空闲暂停、取消后持续无写入等时间性质。业务结果继续从 HTTP 投影、数据库、文件或对象字节独立断言。
 
 ## skip 规则
 
@@ -83,13 +92,37 @@ docker compose ps
 docker compose logs --tail=100 api
 ```
 
-后端：
+后端按 unit、integration/api、其余 integration 子树、E2E 分批运行。各套件的模块和 helper 按当前目录加载；脚本的 `integration` 与 `all` 同样分批执行。确定性 E2E 的用例集合由 `backend/test/run_tests.sh` 唯一维护，CI 复用此入口，避免重复执行相同文件。涉及不兼容 Schema 时，先使用[独立槽位](./parallel-worktree-environments.md)装配完整环境，再运行测试；脚本只负责选择和执行套件。
+
+后台作业启动恢复由 `system-tests.yml` 的现有拓扑步骤单独验证：先停止 worker，保存未发布 intent，再启动 worker 并回读领域结果。`test_background_job_worker_path.py` 的这组跨进程阶段不进入普通 integration 批次；通用脚本不会重启正在使用的服务。完整系统验证须同时完成该拓扑步骤。
 
 ```bash
-docker compose exec api uv run --group test pytest test/unit -m "not slow"
-docker compose exec api uv run --group test pytest test/integration
-docker compose exec api uv run --group test pytest test/e2e/test_deterministic_agent_path_e2e.py -m e2e
-docker compose exec api uv run --group test pytest test
+docker compose exec api uv run --no-sync --group test pytest test/unit -m "not slow"
+docker compose exec api uv run --no-sync --group test pytest test/integration/api
+docker compose exec api uv run --no-sync --group test pytest test/integration --ignore=test/integration/api --ignore=test/integration/services/test_background_job_worker_path.py
+backend/test/run_tests.sh e2e
+backend/test/run_tests.sh all
+```
+
+Compose API 容器只挂载后端目录时，部署配置测试会因缺少仓库根文件而跳过。这些用例由包含根目录的 CI 单测环境执行；本地须从宿主仓库根目录补跑，不能把容器的 skip 当作部署契约通过：
+
+```bash
+uv run --project backend --no-sync --group test pytest backend/test/unit/config -q
+```
+
+应用共享初始化使用真实 PostgreSQL 隔离 Schema 和临时 Skill 目录验证首次部署、当前版本重跑、管理员值保留、阶段失败重试与并发锁。独立子进程覆盖已有 Schema 的冷启动，并用缺少 ORM 注册的负控复现失败；这些用例接入 `service-integration.yml`：
+
+```bash
+docker compose exec api uv run --no-sync --group test pytest test/integration/services/test_app_initialization.py test/integration/services/test_schema_migration_version.py -q
+```
+
+模型重放服务由测试环境启动；依赖共享重放的场景显式读取 `OPENAI_REPLAY_URL` 与 `COOPERATION_REPLAY_URL`。需要独占状态的场景复用 `e2e/conftest.py` 已有的重放 fixture，避免在测试文件内重复启动和回收服务器。
+
+默认 Compose 测试环境分别启动 `test/support/openai_replay_server.py` 与 `test.support.cooperation_replay_server` 后，在宿主导出 worker 可访问的地址；测试脚本把它们和测试账号转发给容器。CI 在现有环境生成步骤写入同样的值：
+
+```bash
+export OPENAI_REPLAY_URL=http://api:8765/v1
+export COOPERATION_REPLAY_URL=http://api:8766/v1
 ```
 
 也可以从仓库根目录使用脚本：
@@ -105,16 +138,19 @@ backend/test/run_tests.sh all
 前端：
 
 ```bash
-docker compose exec web pnpm run lint:check
-docker compose exec web pnpm run test:unit
-docker compose exec web pnpm run build
+docker compose exec frontend pnpm run lint:check
+docker compose exec frontend pnpm run test:unit
+docker compose exec frontend pnpm run build
 ```
 
 CLI：
 
 ```bash
 cd packages/yuxi-cli
-uv run pytest
+npm ci
+npm run typecheck
+npm test
+npm run pack:check
 ```
 
 工程契约、文档构建和补丁检查：
@@ -133,6 +169,12 @@ make audit-dependencies
 make audit-licenses
 ```
 
+Docker 镜像与挂载权限回归在仓库宿主执行，需要可用的 Docker Engine。测试使用临时合成文件与独立 Compose project，不挂载生产数据；受限构建输入、历史文件保留、只读存储失败与负向镜像均由真实容器结果验证。API 容器无需访问 Docker daemon。
+
+```bash
+python3 -m unittest scripts.test_docker_build_context scripts.test_container_permissions
+```
+
 Windows 初始化脚本的安全行为需要在 Windows 或 PowerShell 7 环境中验证：
 
 ```powershell
@@ -140,6 +182,41 @@ pwsh -NoProfile -File scripts/test_init_security.ps1
 ```
 
 这些命令的实际 workflow 和 selector 由仓库 `.github/workflows` 与 `Makefile` 维护；文档不复制一份会漂移的 CI 配置。
+
+## CI 环境与依赖
+
+常规质量检查和独立服务集成测试使用 GitHub 托管执行器，无需维护公网服务器。测试选择器由对应 workflow 和脚本拥有：
+
+| 检查范围 | 实际依赖 | 执行入口 |
+|---|---|---|
+| 工程契约、Ruff、后端 unit、前端、文档、依赖审计 | 执行器上的语言工具链 | `.github/workflows` 中对应质量工作流 |
+| 初始化、Schema/关系约束、Input/FIFO、Run lease、反馈、协作持久化、OAuth 和局部 HTTP | 临时 PostgreSQL、Redis、文件与测试自建 HTTP 服务 | `service-integration.yml` → `scripts/ci_run_service_integration.sh` |
+| 附件服务持久化与对象读写 | PostgreSQL、MinIO 与文件系统；测试主体无需 VM | `system-tests.yml` 中附件服务步骤，随完整拓扑执行 |
+| 完整 API readiness、正式 worker 启动恢复、Agent E2E 和沙盒隔离 | 完整 Compose 拓扑、container runner 与 sandbox 镜像 | `system-tests.yml` 的两个 ubuntu-24.04 job，使用 `container` profile |
+| GitHub 托管机器的 KVM/Cube 兼容性探针 | KVM、临时 XFS、Cube 安装、正式模板和共享挂载 | `cube-hosted-probe.yml`，仅手动运行 |
+
+独立服务 job 使用一次性数据库，运行应用初始化并创建基线测试管理员后执行已有集成测试；显式选择 container 配置，共享 API、container runner 与 Cube 地址固定为不可达，用真实数据库结果证明独立性。该入口会写入数据库及 Skill 目录，本地复用时必须提供独立的 `POSTGRES_URL`、`REDIS_URL` 与 `YUXI_SKILL_DATA_DIR`，并使用没有 `backend/.env` 的干净 checkout，禁止指向运行中的业务环境。基线管理员保留在临时库中，测试账号的创建、修改和清理继续受数据库的最后管理员约束保护。
+
+公开附件 HTTP 用例中的待消费快照、取消与删除边界使用真实 worker 和阻塞模型重放，随完整 container 拓扑执行；模型重放服务在这些用例之前启动。它们与仅验证持久化和对象读写的附件服务测试具有不同依赖。
+
+`self_managed_resources` 只描述 fixture 清理责任，不绕过 API/worker 的沙盒启动检查。常规系统 job 通过环境准备脚本显式选择 container 后端、启用对应 Compose profile 并生成临时 runner 令牌；API、worker 和 runner 使用同一物理 Workspace 与 Skill projection，只有 runner 持有 Docker socket。正式 sandbox 镜像参与独立层缓存，状态位于执行器临时目录。生产默认后端仍由 Compose 配置决定。
+
+container 专项包括 API/worker 的真实 execute 与 steer 后容器清理，以及宿主进程通过真实 Docker 验证文件、进程、资源和认证隔离。宿主专项显式启用 `SANDBOX_CONTAINER_TEST=1`，使用本次 Compose 配置选择的镜像；它的临时文件根与业务 runner 分离，不给 API 容器挂载 Docker socket。协作 E2E 对 container 使用共享 Project 文件作跨 Run 探针，对 Cube 保留共享 VM 临时文件与执行身份断言；全部协作、取消、压缩和持久结果检查仍执行。
+
+Cube 实现的 unit 继续运行；真实 KVM、Cube 安装、正式模板与共享挂载由手动 hosted probe 和 Cube 专属测试验证。常规 container CI 的成功不能解释为 Cube VM 兼容性通过。托管探针仅允许在 GitHub 临时托管执行器运行，其成功只证明该次执行器的兼容性。CI 取舍见[container 运行链路决定](decisions/implemented/2026-10-23-container-runtime-ci.md)。
+
+## 网络搜索与正文工具
+
+设置持久化与权限由 `integration/api/test_web_tools_settings.py` 在真实 HTTP、独立 PostgreSQL Schema 上验证；`integration/services/test_web_provider_protocol.py` 启动独立 TLS 重放进程验证固定官方端点上的协议传输。供应商重放属于确定性证据，不能代替带真实凭据的外部探针。
+
+worker 全链路在独立测试槽位叠加协议重放拓扑：
+
+```bash
+docker compose -f docker-compose.yml -f backend/test/e2e/web-tools.compose.yml up -d web-provider-replay api worker
+docker compose exec -T -e E2E_USERNAME -e E2E_PASSWORD api uv run --no-sync --no-dev pytest test/e2e/test_web_tools_e2e.py -q
+```
+
+该拓扑仅用于没有已保存搜索 Key 的隔离测试环境。它生成短期测试 CA，API 与 worker 的 HTTPS 请求由重放服务提供三家 Search 和两家 Fetch 固定结果；测试通过真实 Session SSE、worker 与持久消息确认配置切换，结束后清除自己保存的 Key。`system-tests.yml` 显式运行此测试，生产拓扑不使用该 CA 或代理。
 
 ## 性能评测
 
@@ -150,7 +227,7 @@ python -m backend.test.performance --help
 python -m backend.test.performance matrix --help
 python -m backend.test.performance load --help
 python -m backend.test.performance report tmp/load-tests/continuous/final-20260907/matrix.json
-docker compose exec api uv run --group test pytest test/unit/performance -q
+docker compose exec api uv run --no-sync --group test pytest test/unit/performance -q
 ```
 
 `matrix` 测不同用户、固定 Thread、完成后立即补位的闭环调度；`load` 保留通用对话与沙盒容量场景，协议不同，不能混算。两者执行采样会产生真实模型费用。默认矩阵为 3150 请求，小实验通过 `--workers`、`--concurrency`、`--rounds-per-thread` 显式缩减，不自动预热。认证变量、独立槽位与结果边界见[并发优化决策](decisions/archived/0.7.3/12-concurrency/2026-09-07-agent-concurrency-optimization.md)。

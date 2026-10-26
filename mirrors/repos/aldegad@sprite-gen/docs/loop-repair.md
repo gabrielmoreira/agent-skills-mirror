@@ -1,6 +1,6 @@
 # Loop repair — RIFE in-betweens for jump frames, the jolt index, one cycle per set
 
-> Owns: Where RIFE runs and what it costs, which model and augmentation it runs with, how it is installed and what runs without it, jump-frame repair in `video-loop`, the flow reading (frames off a walk's way), the eased retime (a part that rushes on its way), the seam bridge (the wrap of a loop that is not a walk), the jolt index and its gate, cycle alignment across a direction set, the redrawn wrap of a pinned clip (`--wrap-blend`) · Index: [docs/README.md](README.md)
+> Owns: Where RIFE runs and what it costs, which model and augmentation it runs with, its two backends (the binary and PyTorch, the latter in this process or on a GPU elsewhere), how it is installed and what runs without it, jump-frame repair in `video-loop`, the flow reading (frames off a walk's way), the eased retime (a part that rushes on its way), the seam bridge (the wrap of a loop that is not a walk), the jolt index and its gate, cycle alignment across a direction set, the redrawn wrap of a pinned clip (`--wrap-blend`) · Index: [docs/README.md](README.md)
 
 A walk loop cut from a generated clip can look right in every still and still hitch when it
 plays: the video model redraws thin hair a little differently every frame, and now and then
@@ -30,6 +30,112 @@ the binary's test-time augmentation, spatial and temporal (`-x -z`, `rife.TTA`;
 | `rife-ncnn-vulkan-20221029-macos.zip` | `4a63a1f3c9c715773c57d2ee51df1b315ed20cd6c63103e45c483ecc4400b595` |
 | `rife-ncnn-vulkan-20221029-windows.zip` | `d8e4d772d26cd8006ef0ad0bc82eb191b53c68677d1ae2f42506d74cbbbea606` |
 
+| Model file (the macOS and Ubuntu zips hold the same, measured 2026-10-21) | SHA-256 |
+|---|---|
+| `rife-v4.6/flownet.param` | `724569596bcd1e7b9fa50455c604777ebed99746d2ef40aa86e31b5725f1053c` |
+| `rife-v4.6/flownet.bin` | `f334ed2260149ce0188a6dcf049844e8b0cdd912e01cbcfb63553157d2508958` |
+
+#### The torch backend: `SPRITE_GEN_RIFE_BACKEND=torch`
+
+The binary is the default. `SPRITE_GEN_RIFE_BACKEND=torch` runs the same model in PyTorch instead
+(`sprite_gen/video/rife_torch.py`), for a GPU the binary cannot run on: rife-ncnn-vulkan needs Vulkan,
+and a GPU offered for compute alone (CUDA with no Vulkan driver) has none. It is the same RIFE:
+
+- the network is rife-v4.6's IFNet (Practical-RIFE `IFNet_HDv3`), written again with its parameter
+  names;
+- its weights are read out of the binary's own model files above, checked against those SHA-256 first
+  (the binary's float16 weights widened as the binary widens them, no other download);
+- one run does what one call of the binary does with `-x -z`: the pair turned its eight ways and run
+  both ways in time, every way's flows turned back and averaged at each of the network's four levels,
+  the frames averaged and rounded as the binary rounds them; `SPRITE_GEN_RIFE_TTA` means the same;
+- a frame is the same two runs (colour, coverage) and a read the same sixteen passes (section 4), the
+  engine's part of them done by the same code for either backend (`rife.frame_runs`, `rife.pass_runs`).
+
+| Variable | Values | Default |
+|---|---|---|
+| `SPRITE_GEN_RIFE_BACKEND` | `ncnn` (the binary), `torch` | `ncnn` |
+| `SPRITE_GEN_RIFE_DEVICE` | `cuda`, `cpu` (the torch backend's device) | `cuda` |
+| `SPRITE_GEN_RIFE_MODEL` | a `rife-v4.6` directory | beside the binary (`ncnn`); the install root's (`torch`) |
+| `SPRITE_GEN_RIFE_TTA` | `-x`, `-z`, both, or empty | `-x -z`, for both backends |
+| `SPRITE_GEN_RIFE_EXECUTOR` | `module:attr`, the host's send to a GPU elsewhere (torch backend; below) | unset: in this process |
+
+Nothing falls back. With torch chosen the engine neither looks for the binary nor runs it. A device is
+not chosen for you and not traded for another: `cuda` where PyTorch finds no CUDA is refused, naming
+why (a PyTorch built for the CPU only, or a CUDA that finds no GPU), and does not run on the CPU.
+Apple's GPU (`mps`) is refused: no release lane measures it, and on a Mac the binary already runs on
+the GPU. PyTorch not installed, or no model where it looks, is RIFE not installed ("Without RIFE"
+below); a backend or device named wrong, a model whose files are not the pinned ones, or a device
+that fails as the network is put on it or as a frame runs (out of its memory, its driver or CUDA
+failing), is a RIFE that fails, in PyTorch's own words.
+
+On CUDA every frame runs with cuDNN deterministic, its benchmark off and its convolutions in IEEE
+float32 (`torch.backends.cudnn.conv.fp32_precision = "ieee"`: PyTorch turns TF32 on by default), so the
+same frame twice is the same bytes on one GPU, driver and PyTorch. On the CPU it is the same bytes
+whatever the thread count. PyTorch does not promise the same bytes across GPUs or releases, so what
+made a frame (the backend, the model bytes it loaded, its network code, PyTorch, on CUDA the GPU,
+driver, CUDA, cuDNN and those settings as they read back, on the CPU its instruction set) is the RIFE's
+identity, and a frame kept for one is never taken for another (section 4, `--between-cache`). The
+engine's reports name what made their frames: `interpolator.kind` is `rife-ncnn-vulkan` or
+`rife-torch`, and the overlapped wrap counts the binary's calls (`binary_calls`) or the torch backend's
+runs (`runs`).
+
+#### A GPU elsewhere: `SPRITE_GEN_RIFE_EXECUTOR`
+
+A host with no GPU (a job container, say) can have the torch backend's frames made on a machine that
+has one. The engine knows nothing of what carries them. The host names a function of its own,
+`SPRITE_GEN_RIFE_EXECUTOR=module:attr`, from a request's bytes to its answer's, and that function
+reaches `sprite_gen.video.rife_torch.serve` on the GPU's machine: the same sprite-gen, with PyTorch
+and the model installed there (`sprite-gen rife install --backend torch`). The host needs neither.
+It sets `SPRITE_GEN_RIFE_BACKEND=torch` and no `SPRITE_GEN_RIFE_DEVICE`: the device is the
+executor's, and naming one here as well is refused. So is an executor named with the binary's
+backend.
+
+| Asked for | Runs on the executor | Calls of the send |
+|---|---|---|
+| a RIFE made (the probe) | none: the executor says what it is, loading the backend (the cold start) | 1 |
+| a frame | 2 (colour and coverage), with the augmentation this host names | 1 |
+| a read (the overlapped wrap) | 2, and the 32 runs of the sixteen passes, reduced there to how far they disagree | 1 |
+
+Frames are not batched: the repairs make and judge one frame at a time. A `video-loop` makes at
+most 53 calls: the probe, three flow repairs, nine eased frames and forty frames of the overlapped
+wrap. A `video-cycle-align` makes one call for each frame it makes, and the probe.
+
+A RIFE asks the executor what it is once, as it is made, and holds the answer for its life. The
+answer is the torch backend's identity there (above: the model bytes, its network code, PyTorch,
+on CUDA the GPU, its driver, CUDA, cuDNN and the determinism settings), with the protocol. The
+RIFE's identity, which `--between-cache` keys frames on (section 4), is that answer, the
+executor's name and this host's own part. Every frame and read carries the identity held. An
+executor that is not it any more (another GPU, driver or image) makes nothing, and the RIFE fails,
+naming what differs (`gpu: Tesla T4 -> NVIDIA L4`). An answer from another identity is not handed
+on. So one RIFE never hands on frames of two GPUs, and a frame it takes from the cache is the frame
+it would make. The next loop or alignment makes a new RIFE, which asks again and keys its frames
+anew. Containers of one image, GPU and driver are one executor: their hosts' CPU and name are no
+part of the identity, so a cache directory serves every one of them.
+
+The host keeps to three things:
+
+- Name one GPU type for the executor, with no list to fall back on. A request a GPU of another type
+  takes fails the RIFE.
+- Run the same sprite-gen on both sides. A request names this host's `rife.py` by SHA-256, and an
+  executor of other code is refused as the RIFE is made.
+- Do not deploy the executor anew while a loop or an alignment runs: that run fails, by why.
+
+A send that raises, an answer that does not read (not the format, damaged or cut short on the
+way, or not the frame's size), or the executor's own failure (its model not installed, its GPU out
+of memory) is a RIFE that fails, in its words. Nothing is asked again, and nothing runs here or on
+another device in its place.
+
+A request and an answer are each one compressed NumPy archive (`np.savez_compressed`, read with
+`allow_pickle=False`). Its `header` is JSON: `protocol` (1) and `code` (the `rife.py` SHA-256),
+then `probe`, or `expect`, `t`, `modes` and `read`. Its images are RIFE's input as `rife.inputs`
+makes it: the colour (H × W × 3) and the coverage (H × W) of the two frames, uint8. The answer
+holds the identity, and the made colour and coverage (uint8) and, for a read, the disagreement
+(float32); or an error (`protocol`, `code`, `identity` or `failed`, with what it names). Each
+member of the archive is read whole, so its CRC-32 is checked before its array is read: an answer
+damaged on the way does not read, and hands on no other pixels. Reports name the executor:
+`interpolator` reads `kind` `rife-torch`, `executor`, and the executor's `device` and `gpu`; the
+overlapped wrap counts `runs` and `executor_calls`.
+
 ### Install — `sprite-gen rife install`
 
 ```bash
@@ -55,11 +161,28 @@ finds out at install time (`--no-check` skips it). `--zip FILE` installs from a 
 downloaded (behind a proxy, in an image build), checked the same way; `--dir DIR` installs
 elsewhere and prints the `SPRITE_GEN_RIFE=…` line the engine then needs. Other platforms (Linux
 on ARM, for one) have no release build: build it from the repository and set `SPRITE_GEN_RIFE`.
+Either backend's install checks the model's two files against their SHA-256 above once the zip is
+unpacked, and installs nothing where they differ.
 
 The engine finds the binary by, in order: `SPRITE_GEN_RIFE` (the binary's path), then
-`rife-ncnn-vulkan` on `PATH`, then the install root above. The model is `SPRITE_GEN_RIFE_MODEL`
-or `rife-v4.6/` next to the binary. When an earlier place holds another RIFE, the install says
-which one the engine runs.
+`rife-ncnn-vulkan` on `PATH`, then the install root above. The model is `SPRITE_GEN_RIFE_MODEL` or
+`rife-v4.6/` next to the binary. When an earlier place holds another RIFE, the install says which one
+the engine runs.
+
+For the torch backend:
+
+```bash
+pip install "sprite-gen[torch]"           # PyTorch 2.13 or later
+sprite-gen rife install --backend torch    # the model, and a check frame through PyTorch
+```
+
+`--backend torch` (the default where `SPRITE_GEN_RIFE_BACKEND=torch`) installs the same zip and makes
+the check frame through PyTorch on `SPRITE_GEN_RIFE_DEVICE` (name `cpu` for an image built without a
+GPU). It reads the model only, so a Linux machine the binary does not run on (ARM) is not refused. The
+backend reads the model from `SPRITE_GEN_RIFE_MODEL`, else the install root's `rife-v4.6/`, never from
+beside a binary on `PATH`. PyPI's Linux wheel of PyTorch is its CUDA build (527 MB, and its CUDA
+libraries); a host that runs the backend on the CPU only installs PyTorch's CPU build first (192 MB):
+`pip install torch==2.13.0 --index-url https://download.pytorch.org/whl/cpu`.
 
 ### Without RIFE
 
@@ -71,6 +194,11 @@ cut before RIFE existed still cuts — and nothing is left unsaid:
 |---|---|---|
 | `video-loop` jump repair (section 2) | `--repair auto`: a jump is cut as filmed, and each filmed ghost is given way to the clean frame beside it (its own `warning:` line). Where a jump is left, `jump_repair` reads `why`, `rife` (what was not found), `install` and `unmade` (the frames, neighbours and `off` of the group the flow search stopped at), and one `video-loop: warning:` line on stderr says the jump frame was not repaired. `applied` is false only where nothing was replaced. For the seam bridge, the wrap is cut as filmed: `jump_repair` reads `why`, `rife`, `install`, and `unmade` (the `frames`, `anchors`, and `line` of the run it stopped at). One `video-loop: warning:` line says no frame was made round the wrap and names `sprite-gen rife install`. | `--repair on`: fails with the install line |
 | `video-set` cycle alignment (section 4) | `--align-cycles auto`: the state is skipped and every loop keeps its own length; `cycle_align.<state>` reads `applied: false` with `why`, `rife`, `install`; the set report lists it under `warnings`; one `video-set: warning:` line | `video-cycle-align`: fails with the install line |
+
+With `SPRITE_GEN_RIFE_BACKEND=torch`, PyTorch not installed or no model where the backend looks is RIFE
+not installed in the same way: the records' `rife` names what was missing and `install` gives the torch
+backend's line (`pip install "sprite-gen[torch]" && sprite-gen rife install --backend torch`); the
+binary is not run in its place.
 
 A RIFE that is found and then fails (a binary that cannot reach Vulkan, say) is an error in every
 mode: the install is there and broken, which a warning would hide. A jolt gate passed to a loop
@@ -198,8 +326,45 @@ minutes. A deployment that aligns on a CPU names a lighter augmentation for that
 `SPRITE_GEN_RIFE_TTA=` (none) is 4 to 6 s a 960 × 960 frame, `-z` 7 to 10 s. On a Mac it is under
 two seconds either way. That is the reason section 4 keeps every frame that lands on a source frame.
 
-A PyTorch RIFE was not chosen: it would add a framework of hundreds of megabytes to the image
-for the same model, and llvmpipe already gives the GPU's frame.
+**The torch backend is for a GPU the binary cannot use; the binary stays the default.** A GPU offered
+for compute only cannot run the binary at all, and there the torch backend runs the same model and
+augmentation. Elsewhere it adds PyTorch, hundreds of megabytes, for the same model: on a Mac the binary
+already runs on the GPU. On a CPU host the torch backend is faster than the binary on llvmpipe (the
+table below), but its frames are not the binary's bytes; a deployment that wants it there names it, and
+the default does not move. Measured on synthetic walkers, 2026-10-21:
+
+- **The same verdicts.** The seven pairs of `tests/fixtures/rife-walkers` (clean steps, an outline lost
+  where legs cross far, a ghost band, parts torn, a cross-fade to look at) get the same faults and
+  looks from the binary on an Apple GPU, the binary on llvmpipe and the torch backend on a CPU, each
+  reading at least a tenth of its bound away from it (and three more pairs besides, one left out for a
+  torn reading 8 % from its bound on llvmpipe). The tests keep it: the torch backend judges the seven
+  as the binary did on a machine with no binary, and as this machine's binary does where both run.
+- **Frames as close as two GPUs'.** Against the binary's frame on the Apple GPU, the torch backend's
+  lies 0.005 to 0.052 of 255 apart on average and 11 at most (premultiplied RGBA in the box either
+  covers), and the binary's own frame on llvmpipe 0.007 to 0.25 apart and 76 at most: closer on six of
+  the seven pairs, the seventh 7 % further.
+- **Time** (a 960 × 960 frame of the walker drawn 512 × 768, legs crossing far and the short step, t
+  0.5, after a warm call):
+
+| | `-x -z` frame | plain frame | read (`-x -z` frame and sixteen passes) |
+|---|---|---|---|
+| binary, Apple M4 Max GPU | 1.27 to 1.37 s | 0.77 to 0.82 s | 12.6 to 13.2 s |
+| torch backend, Apple M4 Max CPU (12 threads) | 3.3 to 3.6 s | 0.38 to 0.40 s | 8.8 to 9.0 s |
+| binary, Modal `cpu=2` (llvmpipe), one cold call each | 127.7 to 131.5 s | 9.3 to 9.5 s | not run |
+| torch backend, the same Modal container, 2 threads | 22.6 to 28.5 s | 1.5 to 1.7 s | 45.1 to 46.1 s |
+| torch backend, Modal NVIDIA T4 (CUDA), in its process | 1.36 to 1.41 s | 0.32 to 0.36 s | 3.9 to 4.1 s |
+| torch backend on that T4, from a `cpu=2` host without PyTorch (`SPRITE_GEN_RIFE_EXECUTOR`, a Modal call each) | 1.49 to 1.52 s | 0.46 to 0.49 s | 4.0 to 4.1 s |
+
+The torch backend's frame on an x86 CPU is not the same bytes as on an Apple CPU (its torn reading is),
+which the CPU's instruction set in its identity keeps apart. PyTorch sizes its threads by the host's
+cores, not a container's share (the container above saw 18): a container names its share
+(`OMP_NUM_THREADS`).
+
+On the T4 (driver 610.57.04, PyTorch 2.13.0 for CUDA 13.0, cuDNN 9.20, 2026-10-22) the frames made
+through the executor, from another container of the same image, are the bytes made in the T4's own
+process: both walkers' frames, plain frames, and reads with their disagreement. The executor adds 0.1 to
+0.2 s to a frame, a read takes as long as in the process, and the probe, a T4 container's cold start,
+took 8.4 s. The T4 lane runs the torch tests on CUDA for a release (docs/release.md).
 
 ### Licences
 
@@ -210,8 +375,12 @@ for the same model, and llvmpipe already gives the GPU's frame.
 | RIFE v4.x weights (Practical-RIFE) | MIT — "The content of these links is under the same MIT license as this project." | github.com/hzwer/Practical-RIFE |
 | ncnn | BSD 3-Clause | github.com/Tencent/ncnn |
 
-sprite-gen ships none of these. A deployment that bakes the release zip into an image ships
-the zip's `LICENSE` with it.
+| sprite-gen's torch backend (`sprite_gen/video/rife_torch.py`) | MIT notices in `NOTICE`: the IFNet written again from Practical-RIFE `IFNet_HDv3.py` and `warplayer.py`, © 2021 hzwer; the augmentation from rife-ncnn-vulkan's `RIFE::process_v4`, © 2020 nihui | Practical-RIFE f6b5132 (2022-09-26); rife-ncnn-vulkan 20221029 |
+| PyTorch (the `torch` extra) | BSD 3-Clause | github.com/pytorch/pytorch |
+
+sprite-gen ships none of the binaries, weights or PyTorch: its torch backend is code written again from
+the two MIT sources above, their notices in `NOTICE`, and reads the weights from the release zip's
+model. A deployment that bakes the release zip into an image ships the zip's `LICENSE` with it.
 
 ## 2. Jump frames — `video-loop --repair auto`
 
@@ -1280,10 +1449,12 @@ sprite-gen video-cycle-align --loop-dir set/front-walk/loop --loop-dir set/side-
   `--align-between`. `auto` runs RIFE for every frame between two source frames, as `rife` does,
   and needs it installed the same way.
 - **Smear and melt, per made frame**: `cycle_align.smear` lists every frame RIFE made, with its
-  `method` — `rife` (kept) or `nearest` (a source frame beside it taken instead) — its `faults`,
-  its own ghost reading (`ghost`, below; `null` where the screen does not read the loop), its
-  cross-fade reading and what to `look` at (`crossfade`, below — named, never judged), and what
-  it has that neither source frame beside it has (`rife.smear`):
+  `method` — `rife` (kept) or `nearest` (a source frame beside it taken instead) — its `faults`, its
+  own ghost reading (`ghost`, below; `null` where the screen does not read the loop), its cross-fade
+  reading and what to `look` at (`crossfade`, below — named, never judged), the holes it opened
+  inside its silhouette that neither source frame has there (`hole`, below), the line one source
+  frame draws that runs at part strength in its own place in the made frame as a double outline
+  (`doubled`, below), and what it has that neither source frame beside it has (`rife.smear`):
   - `dark_excess`: dark pixels (luma under 70/255) inside the body beyond the darker neighbour's
     count, as a fraction of its solid pixels — a black smear raises it, a dark part that only
     moved (a hat, a watch) does not. Over 0.1 % it is the fault `smear`.
@@ -1431,7 +1602,18 @@ sprite-gen video-cycle-align --loop-dir set/front-walk/loop --loop-dir set/side-
   - Over **0.015** (`interpolation_quality.CROSSFADE_LOOK`) the frame is named to look at: its
     `smear` row's `look` is `["crossfade"]`, and a kept frame (`method: rife`) gets a line in
     `warnings` ("frame 14 (made by RIFE) may cross-fade two drawings inside its outline …; kept").
-    It is no fault: `auto` keeps it, it gives nothing way, and the retake rule does not count it.
+    It is no fault: `auto` keeps it, it gives nothing way, and the retake rule does not count it. A
+    cross-fade that leaves the two drawings' lines at part strength inside the silhouette over a
+    long enough run is now a double outline (`doubled`, the bullet below), a fault of its own, and
+    gives way for that; the cross-fade reading still only names it. Before the double outline was
+    read, the alignment kept such frames because the cross-fade reading is no fault, for the reason
+    in the next sub-bullet, which is about that reading and still holds; it was never a choice to
+    keep frames with doubled lines. The clean drawing between far-apart drawings, which the
+    cross-fade reading reads over its line, reads no double outline (0 in grey and in black
+    outlines) and is kept; separately, on the synthetic legs of `tests/video/test_crossfade.py`, the
+    frames a RIFE stand-in cross-fades across the legs' long steps (its colour run blends, its
+    coverage run is the union) now give way under `auto`, each still named to look at; under `rife`
+    they are kept and named.
   - Why a reading and not a fault: checked against frames labelled by eye, it does not part them.
     On drawn walks the frame seen cross-faded read well over the line and the frames seen clean
     under it; on synthetic legs (the walker of `tests/video/test_crossfade.py`, its palette varied
@@ -1474,6 +1656,410 @@ sprite-gen video-cycle-align --loop-dir set/front-walk/loop --loop-dir set/side-
     blends their guesses part-covered, which the augmentation, combining them inside the binary, does
     not. Nor can the binary's own augmented calls be read for it: a call with `-x` from a to b and one
     from b to a agree where the single passes do not.
+- **A hole through a limb, per made frame** (`rife.hole`): RIFE runs a frame's colour and its
+  coverage apart (section 1), and where a step opens a gap between the legs in one source frame and
+  not the other, the coverage run can carry that gap into a leg the colour run keeps whole: a
+  transparent band through the leg, its fill on both sides. Nothing is added, no part coverage is
+  left to read, and the leg's own fill is all the line round the band; a fill darker than 70/255
+  (dark tights, a boot) is outline to the dark line, and one lighter than that is lost rank by rank
+  only where it is 50/255 lighter than the source frames' lines at the same rank, which light lines
+  elsewhere on the art (fur, hair drawn without a dark line) hide; the fault `outline` needs both.
+  Neither reading is about a hole.
+  - `hole`: of the made frame's pixels under solid (alpha under 0.5) that the outside of the picture
+    cannot reach without crossing its solid body (enclosed holes), a pixel is the source frames' own
+    in either of two readings, where either source frame has a pixel under solid within **4 px**
+    (`rife.HOLE_REACH`, a square neighbourhood) of where that pixel lay at that frame's time: in
+    place (the background, still, and a gap kept, or opened by a step where the frame showing it
+    open has it); or carried with the whole figure along the motion the two source frames show for
+    the whole figure. Where the made frame sits at fraction `t` from source frame a to source frame
+    b, a pixel of it lay in a at `t` of the motion back and lies in b at `1 - t` of it on (rounded
+    so the two are the whole motion apart). The whole figure's motion is measured only from the two
+    source frames, never from the made frame or RIFE's flow: over the box round all three frames'
+    solid bodies, each pixel of the box is read in a where it lay and in b where it lies, and the
+    motion with the least mean absolute difference of premultiplied colour and coverage is taken
+    (ties going to the smaller motion). It is followed up to 20 % of the body's height each way
+    (`rife.HOLE_TRAVEL`, 0.2), searched coarse to fine: pooled in square blocks of a power of two
+    where the range is at most 24 px each way (`rife.HOLE_COARSE`, 24), then within 2 px of twice
+    the coarser motion on each finer level down to the pixel. Third, whatever carried it, a hole
+    those two readings leave is the source frames' own, all its pixels, where it is one hole of each
+    source frame: the pairing. It reads holes, not a motion. A hole here is one 8-connected piece of
+    a frame's enclosed pixels: the made frame's count where they keep a pixel when opened by a 5 px
+    square (`rife.HOLE_THICK`); a source frame's where they keep one opened by a 3 px square
+    (`rife.HOLE_SOURCE_THICK`, 3), since a gap can be a little thinner at a source frame's time.
+    Each hole is read for its area (its pixels), its centroid, its shape (the logarithms of its
+    pixels' two principal second moments, each plus 1/12, over its area, so turning and growing
+    leave it as it is) and the colour round it (the mean premultiplied colour of that frame's solid
+    pixels from 5 to 8 px out). A hole of the made frame is paired with a hole of a and a hole of b
+    where the two source frames' holes have areas within 4 times of each other
+    (`rife.HOLE_PAIR_AREA`, 4.0), shapes within 2 times on each moment (`rife.HOLE_PAIR_SHAPE`, 2.0)
+    and colours round them within 0.12 on each channel (`rife.HOLE_COLOUR`, 0.12, on 0 to 1), and
+    their centroids lie at most sqrt(2) times the reach the figure's motion is followed (20 % of the
+    body's height each way, so diagonally) plus 4 px apart; and where the made frame's hole has its
+    area within 25 % of their range (`rife.HOLE_AREA`, 0.25: at least 0.75 times the smaller, at
+    most 1.25 times the larger), its shape within 1.3 times of theirs on each moment
+    (`rife.HOLE_SHAPE`, 1.3), the colour round it within 0.12 of each, and its centroid within 4 px
+    plus 0.1 of their distance (`rife.HOLE_PATH`, 0.1) of the point at `t` on the line from the
+    centroid of a's hole to that of b's. The pairing reads only the made frame's holes that the
+    first two readings (in place, and carried with the whole figure) leave, that is, holes keeping a
+    pixel those two readings do not give the source frames. A hole every pixel of which those two
+    readings give the source frames takes no pair: it is theirs already, whichever of their holes it
+    lies by. Pairs are taken one to one: no hole of the made frame, of a or of b is in two pairs
+    taken, so each source frame's hole explains one of the holes paired. Of all sets of pairs that
+    can be taken together, the set taken pairs the most holes; of those, the one with the least
+    summed cost. The same frames always give the same set. The cost of a pair is the sum of: the
+    logarithm of how far the made frame's hole's area is out of the range of the two source frames'
+    holes' areas, its distance from the point at `t` over what it may be, how far its shape is out,
+    the colour differences of the made frame's hole and of the two source frames' holes each over
+    0.12, and the two source frames' holes' distance over what it may be. So alike holes moving
+    together each keep their own two holes, however near their ways run. Pairs that share a hole,
+    directly or through other pairs, form a group, searched apart. First an exact depth first search
+    asks whether one set pairs every hole of the group: from the hole with the fewest pairs still
+    free, it tries each of that hole's free pairs, cheapest first, and leaves no hole unpaired; it
+    cuts a branch where a hole left has no free pair, or where the holes left cannot each keep a
+    hole of a, or a hole of b, of its own among the holes their free pairs hold (a bipartite
+    matching, checked for each source frame). Where it finds such a set, every hole of the group is
+    paired. Where that search ends without such a set, a second exact depth first search finds the
+    set pairing the most: from the hole with the fewest pairs still free, it tries each free pair
+    cheapest first and then leaving the hole unpaired; it cuts branches that cannot pair more holes
+    than the best set found, or as many at no less cost, and stops at a set pairing every hole. Each
+    search takes at most 5000 steps per group (`rife.HOLE_PAIR_STEPS`, 5000). Where the first runs
+    past them, the second runs; a group whose second search runs past them pairs none of its holes,
+    and the frame gives way to the nearer source frame. Where every hole of a row or grid of alike
+    holes pairs, the first search takes one step per hole and one more (a grid of 196 holes, 197
+    steps). On the synthetic frames no group runs past 5000 steps; the most taken is 258, by the
+    second search, on a grid of 36 holes 24 px apart one of whose holes a source frame shuts (that
+    frame gives way in any case). On random groups of 8 to 96 alike holes, each with its own two
+    holes and up to five more pairs within three places of its own, at random costs, the second
+    search alone runs past 5000 steps before finding a set pairing all of them on 651 of 4000
+    groups, and such a frame would give way though every hole has its own two; with the first search
+    before it, on 17. That remaining case is a named bound of the reading. The made frame is never
+    used to measure a motion and RIFE's flow is never read. The motion and the pairing are read only
+    on frames keeping a hole after the in-place reading, and the pairing only on frames keeping one
+    after the second reading. Regions at least **5 px** thick (`rife.HOLE_THICK`, opened by a square
+    that wide: a pinhole or an antialiased crevice a pixel or two wide opens away) are taken after
+    each step, as a fraction of its solid pixels.
+  - Over **0** (`interpolation_quality.HOLE_WARN`) the frame has a hole through a limb: the fault
+    `hole`, and `auto` takes the nearer source frame there, with a line in `warnings` (it says the
+    frame opened a transparent hole inside its outline over the given share of its body, at least 5
+    px thick, where neither source frame beside it has one, a gap through a limb, and that the
+    nearer source frame was taken there); `rife` keeps it, named. A gap both source frames have,
+    carried by the body's motion, lies in the frame between on the way from where one source frame
+    has it to where the other has it; moved far enough it lies 5 px and more from where either
+    source frame has it in place, and a reading in place alone would take it for a hole and give a
+    correct frame way. A gap one source frame has, half open in the frame between while the figure
+    moves, lies beside where that frame has it in the same way. A hole both source frames have that
+    a part carries, while the figure's motion does not, is kept by the pairing: a part moving over a
+    body that stays, plain or patterned, a part turning, growing, sheared or swinging. No motion of
+    the whole figure carries it: the body that stays outweighs the small part, and a turned or grown
+    gap lies where no motion of the whole picture puts it. It is one hole of each source frame,
+    alike in area, shape and the colour round it, and it lies on its way between theirs, so whatever
+    carried it, it is theirs. The pairing tells the hole by what it is, not by where a motion takes
+    it. Following the whole figure's motion and pairing the holes keep those gaps as the source
+    frames' own; a gap the flow opens through a lock of hair is read the same way as one through a
+    leg.
+  - What it does not read: a band cut through a leg's edge rather than inside it reaches the outside
+    and is no hole (the outline readings read its edge as before); a hole within 4 px of a hole a
+    source frame has, in place or where the whole figure's motion carries it, is read as that hole,
+    whatever it is: in a row of alike holes moving along the row about as far as they are apart, a
+    hole more lies within 4 px of a source frame's hole in place and is read as theirs (a row of
+    four holes 8 px square, 24 px apart, on a plate moving 32 px along the row); and in a column of
+    three holes 8 px square, 24 px apart, on a plate moving 32 px down, the middle hole shut in the
+    second source frame, in the frame between the middle hole lies against holes of both source
+    frames, so the in-place reading reads it as theirs, though it is one hole more than the second
+    source frame has (the last hole pairs with its own two; the frame between is kept: figure 10). A
+    hole the pairing's bounds let through is the source frames' own: one moved off its way by no
+    more than 4 px and 0.1 of the distance between the two source frames' holes (6 px across and 6
+    px along the way of a plate moving 48 px is 8.5 px, where 8.8 px is let through), or one larger
+    or smaller than both of theirs by up to a quarter. The pairing's bounds are where a hole stops
+    being theirs, and past them the frame gives way to the nearer source frame: a hole unlike both
+    source frames' holes (its area more than a quarter out of the range of theirs, or its shape more
+    than 1.3 times out of theirs); a hole off its way between theirs (farther from the point at `t`
+    than 4 px and 0.1 of their distance, as a plate drawn 12 px across its way, or drawn where it is
+    at t 0.8 in a frame made at t 0.5); two source frames' holes farther apart than sqrt(2) times
+    the reach and 4 px (77.5 px on a body 260 px high: a plate whose centre moves 80 px, or one
+    swung 60 degrees from a point 100 px above it, its centre moving 100 px); and two source frames'
+    holes whose areas differ more than 4 times (a plate grown 2.2 times as it moves). A gap only one
+    source frame has, that neither the in-place reading nor the whole figure's motion carries, has
+    nothing to pair with and gives way: a gap only one source frame opens (closed in the other, half
+    open in the frame between) on a part moving over a body that stays, plain or patterned (pinned
+    by a test). The reading cannot tell such a gap from a band the coverage run carried out of one
+    source frame's gap into a limb: both show one source frame's gap and nothing in the other. The
+    pairing reads only the holes the first two readings leave. Among them each source frame's hole
+    explains one: a hole more than the source frames have among them gives way, as a hole more in a
+    row of holes moving with their plate, midway between two of them or past the row's end, or one
+    of the row moved to a midway (figure 8). A hole more than the source frames have, left by the
+    first two readings, is read as theirs where it pairs with one source frame's hole and the
+    other's alike hole whose own holes in the frame between the first two readings already give the
+    source frames (those holes take no pair, so their source holes are free for it). One more midway
+    between two holes of a row standing still, or of a row the whole figure carries, lies where one
+    source frame's hole and the other's next one put it, and pairs with them (figure 12; and figure
+    8's row standing still, drawn a pixel taller, with one hole more midway). A twin of a gap the
+    whole figure carries pairs with the gap's own two where it lies within the gap's way; being 5 px
+    or more from the gap (or the second reading would take it for the gap), it needs the gap's width
+    and 5 px to be within 4 px and 0.1 of how far the gap moves, so only a narrow gap moving far has
+    one: a gap 5 px wide moving 67.9 px (48 px across and 48 down), its twin 10 px beside it; 11 px
+    beside, it gives way, and a gap 8 px wide with its twin 13 px beside it gives way (figure 12).
+    On that frame the outline readings give the frame way, readings of their own. A half-open gap
+    the whole figure carries (figure 3) is kept by the second reading.
+  - Read only on the frames the alignment makes (`hole` in each `smear` row). The jump repair of
+    `video-loop`, its eased retime and overlapped wrap (section 2) do not read it, and neither do the
+    versioned measures of `video-loop-compare` and `video-loop-repair`.
+  - On the synthetic figures of `tests/video/test_inbetween_hole.py`: figure 1 (rectangles outlined
+    in black, legs filled darker than 70/255, one source frame with legs side by side and the other
+    with a gap between them) has the frame between with a band 8 px wide and 40 px tall through its
+    far leg read `outline_loss` 0, `outline_shift` 11.3 %, `ghost` 0, and `hole` 2.69 % (its own 320
+    pixels as a share of the body); the whole figure's motion is 0, so neither of the first two
+    readings shows a gap where the band lay; the only enclosed hole both source frames have is the
+    gap between the arm and the body (320 pixels), which the made frame keeps where it was, so the
+    in-place reading gives the made frame's arm gap to the source frames, and it takes no pair; the
+    band is left by the first two readings, and its only possible pair, the two source frames' arm
+    gaps, does not fit: the band lies 25 times farther from the point at t 0.5 between those gaps
+    than its way lets through, and the colour round it differs from theirs 6 times as much as is let
+    through, so the band has no pair and is read whole. The drawn frame, the arm gap moved 3 px, a
+    pinhole 3 px wide, and an empty frame read `hole` 0. In figure 2 (a 120 by 180 px body with an 8
+    by 40 px gap, moved 0 to 32 px across and diagonally), the gap from 24 px on lies 5 px and more
+    from where either source frame has it in place (1.50 % in place alone), but whole figure motion
+    carries it: `hole` 0. In figure 3 (a body 90 px wide on legs in boots closing the gap below), a
+    half-open gap when moving 30 px lies 8 px and more beside where the parted frame has it (300 px
+    in place), but whole figure motion carries it: `hole` 0; with an 8 by 40 px band cut through the
+    moving body it reads `hole` 2.88 % (320 pixels) and `faults: ["outline", "hole"]`. In figure 4
+    (a 200 by 180 px still body with a 40 px square part and 14 px square hole moving 32 px), the
+    whole figure's motion is 0, so the first two readings leave the hole; it is one hole of each
+    source frame, alike and on its way 32 px between theirs, so it is paired: `hole` 0. In figure 5
+    (a body that stays, patterned, with a part on it and a hole through the part's middle, the part
+    moved from one source frame to the next, each frame between drawn exactly at its place): (i) the
+    checkpoint validator's frame: a body 200 by 180 px with stripes 3 px wide every 6 px (a lighter
+    colour by 40 levels), on a 260 by 220 px canvas, a part 24 px square with a hole 10 px square,
+    moved 32 px across: the whole figure's motion is 0 and the in-place reading leaves the hole
+    whole, 100 pixels or 0.28 % of the body (a motion read over the box round the hole would take
+    one that lays the stripes on themselves); the hole is one hole of each source frame, alike and
+    on its way, so it is paired: `hole` 0, and both made cells are kept as made, byte for byte. (ii)
+    A body 240 by 260 px on a 300 by 300 px canvas in five patterns (stripes 3, 2 and 6 px wide
+    every 6, 4 and 12 px running up and down; stripes 3 px wide every 6 px running across; checks 4
+    px square) at contrasts 15, 40 and 120, parts 24, 40 and 60 px square with holes 10, 17 and 25
+    px square: moved 32 and 48 px across and diagonally at `t` 0.5, and moved 16, 32 and 48 px
+    across and diagonally at `t` 0.25 and 0.75 over the 3 px stripes at contrast 40, every one of
+    these frames reads `hole` 0 (the moves listed in the test are those where a motion read over the
+    box round the hole takes the body's stillness, or the stripes laid on themselves, on some
+    pattern). Resampled to eight frames (`t` 0.25, 0.5 and 0.75 each way), parts of 24, 40 and 60 px
+    moved 32 px diagonally and the 24 px part moved 48 px over stripes at contrast 120 keep every
+    made frame, byte for byte. In figure 6 (a torso 120 by 260 px that stays, patterned in blocks 4
+    px square each lighter by its own whole number up to 200 levels, with an arm beside its right
+    edge: the upper arm and the forearm lie along that edge and are joined by the arm's outer side,
+    so the gap between arm and torso, 16 by 12 px, has the torso's edge on its left and the arm on
+    its other three sides; the arm reaches 48 px above and 52 px below the gap and moves 40 px down
+    from one source frame to the next), the gap lies where the arm covers it in the other source
+    frame, so the in-place reading leaves it, and the whole figure's motion is 0 (a motion read over
+    the box round it would take the torso's stillness); it is one gap of each source frame, alike
+    and on the arm's way, so it is paired: `hole` 0 at `t` 0.25, 0.5 and 0.75, and resampled to
+    eight every made frame is kept, byte for byte. The boundary, pinned by a test: a part 30 px
+    square moving 32 px across a body that stays, a hole 14 px square open through it in one source
+    frame and closed in the other, 8 px square in the frame between (half open): over a plain body
+    and over the 3 px stripes alike it reads `hole` 0.10 % (its 64 pixels) and both made cells are
+    given way to the nearer source frame, with `faults: ["hole"]`; the second source frame has no
+    hole on the part to pair it with. In figure 7 (a body 240 by 260 px on a 300 by 300 px canvas
+    that stays, in stripes 3 px wide every 6 px (a lighter colour by 40 levels) or plain, with a
+    plate on it (|u| < 24 and |v| < 28 px in its own axes) and a gap through the plate (|u| < 6, |v|
+    < 16, so 11 by 31 px on whole pixels); each frame between drawn exactly at its place in one
+    motion from one source frame to the next: the plate's centre moves across, and the plate turns,
+    grows or is sheared about it, or the plate swings from a point 100 px above its centre), (i) the
+    third checkpoint validator's frame: the plate turns 60 degrees as it moves 48 px over the
+    stripes. No motion of the whole figure carries the turned gap, and the in-place reading leaves
+    it whole, 0.55 % of the body; it is one hole of each source frame, alike and on its way, so it
+    is paired: `hole` 0, and resampled to four, and to eight (`t` 0.25, 0.5 and 0.75 each way),
+    every made frame is kept, byte for byte. The plate turned 90 degrees, grown 2 times and sheared
+    by 0.6 as it moves 48 px, and swung 45 degrees (its centre moving 76.5 px, within sqrt(2) times
+    52 plus 4, or 77.5 px, on this body), are kept the same way over the stripes; over the plain
+    body each reads `hole` 0 (plain, the plate swung 45 degrees is given way for `smear`, a reading
+    of its own). (ii) The plate turned 0 to 90 degrees, grown 1.1 to 2 times, or sheared by 0.15 to
+    0.6 as it moves 0, 24 or 48 px, or swung 10 to 45 degrees, over the stripes and over the plain
+    body at `t` 0.5, and turned as it moves over the stripes at `t` 0.25: all 125 frames read `hole`
+    0. (iii) The boundaries, over either body: the plate moving 48 px, drawn with its gap 16 by 40
+    px (1.9 times their area, where a quarter more is let through) it reads `hole` 1.04 %; with its
+    gap 18 by 18 px (its larger moment 2.8 times smaller over its area, where 1.3 times is let
+    through), 0.52 %; the plate drawn 12 px across its way, 0.55 %; the plate drawn where it is at
+    `t` 0.8 in a frame made at `t` 0.5 (14.4 px along its way, where 8.8 px is let through), 0.30 %;
+    the plate growing 2.2 times as it moves 48 px (the source frames' gaps more than 4 times apart
+    in area, where 4 times is let through), 0.55 %; the plate moving 80 px (its centre 80 px from
+    one source frame to the next, where 77.5 px is let through on this body), 0.55 %; and the plate
+    swung 60 degrees, its centre moving 100 px, 0.55 %. Each frame gives way to the nearer source
+    frame, with `hole` among its faults. In figure 8 (the same body with a plate 120 by 40 px on it
+    and a row of four holes 8 px square through the plate, 24 px apart, the plate moving 32 px down
+    from one source frame to the next), the frame between drawn exactly reads `hole` 0 and is kept
+    as made; so is the frame between with the row drawn a pixel taller, where a hole of one source
+    frame and the next but one of the other have their midpoint as near each of the made frame's
+    holes as its own two: the pairing takes the set that pairs the most holes, so each hole keeps
+    its own two. Drawn with one hole more, midway between two of the row's holes, or between the
+    last two, or past the row's end, or with one of the row's holes moved 12 px to a midway, the
+    frame between reads `hole` 0.10 % (the 64 pixels of one hole) and gives way to the nearer source
+    frame: each source frame's hole explains one hole of the made frame. Standing still, with the
+    row drawn a pixel taller in the frame between, the in-place reading gives the row's holes to the
+    source frames, and the frame between reads `hole` 0 and is kept as made; the frame with one hole
+    more midway is described with figure 12. In figure 9 (the same body with a plate on it and a row
+    of two, three or four holes 8 px square through the plate, 12 px apart, moving on a curved way
+    from one source frame (t 0) to the next (t 1): int(40 t + 20 t (1 - t)) px across and int(32 t)
+    px down at time t, the plate moving with the holes, or staying while the holes move through it;
+    with two holes it is the fourth checkpoint validator's frame), the frame between is drawn
+    exactly, at t 0.5: each of its holes lies 5 px beside the midpoint of where the two source
+    frames have that hole; 4 px and 0.1 of their distance (51 px), 9.1 px in all, are let through.
+    The first hole lies 1 px from the midpoint of the second hole in the first source frame and the
+    first hole in the second source frame: that pair of source holes is the cheaper for it, and
+    taken, it would leave the second hole with nothing to pair with. The set of pairs taken pairs
+    the most holes, so each hole keeps its own two: the frame between reads `hole` 0, and resampled
+    to four frames, both made cells are kept, byte for byte. This holds for two, three and four
+    holes, the plate moving or staying (with three and four holes, each hole but the last is
+    likewise cheaper with the next one's hole in the first source frame). Boundaries, pinned by a
+    test, with two and four holes, the plate moving or staying: with one hole more before the row,
+    on the first hole's way (it could take the first hole's two, but then the first and the second
+    cannot both keep theirs: each source frame's holes pair as many of the made frame's holes as
+    they number, and no more), the frame between reads `hole` 0.10 % (the 64 pixels of one hole) and
+    gives way to the nearer source frame; with the row's last hole shut in the second source frame
+    (it has nothing there to pair with), it reads 0.10 % and gives way. With both searches limited
+    to one step (`rife.HOLE_PAIR_STEPS` set to 1), neither finds a set within it, so neither hole of
+    figure 9's two-hole frame is paired: it reads `hole` 0.21 % (both holes, 128 pixels) and gives
+    way. In figure 10 (the same body with a plate 40 by 90 px on it and a column of three holes 8 px
+    square through the plate, 24 px apart, the plate moving 32 px down from one source frame to the
+    next; the middle hole shut in the second source frame), the frame between is drawn exactly at t
+    0.5, its holes 16 px down. Each of its holes lies against the next hole down in the first source
+    frame and the hole before it in the second: the in-place reading gives the frame between's first
+    and middle holes to the source frames (of the first it leaves only a strip 4 px high, thinner
+    than 5 px, which does not count; the middle one lies against the first source frame's last hole
+    and the second source frame's first hole), and leaves the last hole whole, which lies against
+    nothing in the second source frame, where the middle hole is shut. Those two take no pair; the
+    last hole pairs with its own two holes (the last hole of each source frame), and the frame
+    between reads `hole` 0 and is kept as made. The middle hole is one hole more than the second
+    source frame has, which the in-place reading takes for theirs because it lies within 4 px of
+    their holes: what the reading does not tell (see figure 12 and the sub-item on what it does not
+    read), pinned by a test. In figure 11 (the same body with a plate 105 px square on it; through
+    the plate a hole 8 px square that the first source frame and the frame between have in place and
+    the second source frame shuts, and beside it a hole 8 px square moving from (100, 100) to (152,
+    148), 52 px across and 48 px down; it is the fifth checkpoint validator's frame), the frame
+    between is drawn at t 0.5, the moving hole at its exact midpoint, 10 px from the hole in place:
+    within the moving hole's way (4 px and 0.1 of its 70.8 px, 11.1 px in all). The in-place reading
+    gives the hole in place to the source frames, so it takes no pair, and the moving hole pairs
+    with its own two; the frame between reads `hole` 0, and resampled to four frames both made cells
+    are kept, byte for byte; so are they with the hole in place kept by the second source frame
+    instead (open in the frame between and the second source frame, shut in the first). Figure 12 (a
+    body 200 by 260 px outlined in black on a 400 by 400 px canvas, moving whole from one source
+    frame to the next, with holes through it) pins what the reading does not tell: with a row of
+    four holes 8 px square, 24 px apart, the body moving 32 px down, and one hole more midway
+    between the middle two in the frame between, the second reading carries the row's holes to the
+    source frames without pairs, and the hole more pairs with one source frame's hole and the
+    other's next one, whose midpoint it is, reading `hole` 0 and kept as made (so is figure 8's row
+    standing still, drawn a pixel taller, with one hole more midway, where the in-place reading
+    gives the row to the source frames and the hole more pairs the same way, and figure 10's
+    column); with a gap 5 by 30 px, moving 48 px across and 48 px down (67.9 px), and an alike gap
+    10 px beside it in the frame between (5 px of the body between them), the second reading carries
+    the gap, while the gap more lies 10 px from the point at t 0.5 between the source gaps, within 4
+    px and 0.1 of their 67.9 px (10.8 px), pairing to read `hole` 0 either way, though outline
+    readings give this frame way to the nearer source frame; a gap more 11 px beside is off that
+    way, reading `hole` 0.29 % and giving way with `hole` among its faults, as does an 8 px wide gap
+    with its twin 13 px beside it (5 px of the body between them again), at 0.45 %. In the test on
+    triples alone (no frame), twenty alike holes, each with its own two holes and up to five more
+    pairs with holes of the source frames within three places of its own at seeded random costs,
+    have one set pairing every hole: each group of pairs sharing a hole is searched first for a set
+    pairing every hole, then, where there is none, for the set pairing the most, each search at most
+    5000 steps (`rife.HOLE_PAIR_STEPS`); the search for the set pairing the most, cheapest first,
+    runs past 5000 steps and would pair none, whereas the search for a set pairing every hole finds
+    one in 29 steps, pairing all twenty; where that search too runs past the steps, the other
+    answers, and here pairs none.
+- **A double outline, per made frame** (`rife.doubled`): Where RIFE's flow does not follow a line
+  (on drawn art, the top of a boot that one source frame tilts, showing the oval of its opening, and
+  the other plants flat, showing a straight band), it can fade the line out in place instead of
+  moving it. The made frame then shows that source frame's line, lighter, in the source frame's own
+  place, beside the line the made frame drew: a double outline. Its coverage is whole, so the ghost
+  screen (part coverage, alpha 0.1 to 0.9, in regions **5 px** thick) reads nothing; the faded line
+  is lighter than 70/255, so the dark count (`dark_excess`) adds nothing; the line is inside the
+  body, not on the coverage edge, so both outline readings (`outline_loss`, `outline_shift`, which
+  read the coverage edge) pass it; it has no enclosed transparent pixels, so `hole` reads 0. The
+  cross-fade reading names whole drawings blended where the made frame keeps under 60 % of the
+  source frames' strong edges in a window; a frame that moved most of a part and left one line faded
+  keeps its edges, and the cross-fade reading is a reading to look at, never a fault, in any case.
+  - `doubled`: `rife.doubled(made, a, b)` takes the made frame between source frame a and source
+    frame b, with no fraction needed. A frame's line is its solid pixels (alpha 0.5 and over) darker
+    by more than 50/255 (`rife.OUTLINE_SHIFT`, the same contrast the rank outline reading uses) than
+    its own luma closed by a square 2.5 % of the made frame's body height wide (`rife.DOUBLED_WIDE`,
+    0.025; off the solid body the luma counts as white). A dark stroke narrower than that window
+    goes in the closing and is a line; a dark fill wider than it stays and is no line. A pixel of
+    one source frame's line is left at part strength in the made frame when all of these hold: the
+    three frames are solid there; the other source frame draws no line within **4 px** of it
+    (`rife.DOUBLED_SHARED`, 4, a square neighbourhood): a line both draw is theirs at any strength;
+    the other source frame is lighter there than this line by more than 50/255; the made frame is
+    darker there than the other source frame by more than 50/255 (the line is still seen); and the
+    made frame is darker than the other by no more than 0.8 of the line's contrast (the line's
+    contrast is how much lighter the other source frame is than the line there; `rife.DOUBLED_PART`,
+    0.8), both at the pixel and at its darkest pixel within **2 px** (`rife.OUTLINE_REACH`, 2): no
+    line at full strength beside it, as there is beside the soft edge of a line the flow moved. Such
+    pixels count where they make a region **3 px** thick (opened by a 3 px square,
+    `rife.DOUBLED_THICK`, 3). Widened by **3 px**, those that touch make one run. A run's length is
+    sqrt(12) times the square root of the larger second moment of its pixels, which is a straight
+    run's own length. The reading is the longest run's length as a share of the made frame's body
+    height: 0 where the made frame has no solid body, or where the two source frames nowhere differ
+    by more than 50/255 inside all three bodies. It is read inside the box round where the source
+    frames differ, padded so that every pixel there reads as in the whole frame.
+  - Over **0.03** (`interpolation_quality.DOUBLED_WARN`, 0.03 of the body's height) the frame shows
+    a double outline: the fault `doubled`. `auto` takes the nearer source frame there and writes a
+    line in `warnings`; the line says the made frame left a line one source frame beside it draws at
+    part strength in its own place, over a run of the given share of its body high, a double
+    outline, and that the nearer source frame was taken there (`--between auto`). `rife` keeps it,
+    named. The report's `smear` rows carry `doubled` on every made frame.
+  - What is the source frames' own, kept (each a named bound): a line both source frames draw within
+    **4 px** of each other is theirs, at any strength in the made frame (a static line the flow
+    softened, a hem both draw with two lines); a line the made frame carries at more than 0.8 of its
+    contrast is that source frame's own drawing there (a light crease one source frame draws,
+    carried at its own strength, is kept); the soft edge of a line the flow moved lies within **2
+    px** of the line at full strength, so it is not read; a line left less than 50/255 darker than
+    what the other source frame shows there is not seen and not read; a dark patch wider than the
+    closing window is no line; a run 3 % of the body high or shorter is not a fault; and only pixels
+    where all three frames are solid are read, as part coverage is the ghost screen's.
+  - A line only one source frame draws, with no line of the other's within **4 px** (a crease that
+    comes or goes, an eyelid's line, a line a passing leg covers or uncovers), left at part
+    strength, is read the same way and is a double outline: the flow did not follow it and faded it.
+    This is a fault by the definition, not an exception. What the reading does not tell: a part the
+    made frame draws smeared along its way, where the smear reaches back over a line one source
+    frame draws there at part strength, reads as that line left. And lines left where one source
+    frame is not solid (on the silhouette's edge) are not read, so a cross-fade whose doubled lines
+    lie mostly on the silhouette's edge can read under the line.
+  - Where **0.03** sits: set by eye on drawn walks, between the frames seen with a line doubled (a
+    boot's top faded out where one source frame tilts it, beside the top the frame drew), which read
+    over it, and the frames seen as clean or only soft, which read under it. It is a reference, not
+    a measured optimum, and a frame near it is worth a look.
+  - Read only on the frames the alignment makes (`doubled` in each `smear` row). The jump repair of
+    `video-loop`, its eased retime and overlapped wrap (section 2) do not read it, and neither do
+    the versioned measures of `video-loop-compare` and `video-loop-repair`.
+  - Synthetic numbers (`tests/video/test_inbetween_doubled.py`): a figure on a 200 by 260 px canvas,
+    a coat over two legs in boots, outlined **3 px** in near-black, a hand beside the coat; the near
+    boot lifted 18 px in the first source frame and planted in the second. The boot's line is 0.69
+    darker than the boot's fill. The frame drawn between, with the first source frame's near-boot
+    lines laid over it at 0.45 of their strength: `outline_loss` 0, `outline_shift` 0, `ghost` 0,
+    `hole` 0, `crossfade` 0, no fault before; `doubled` 0.102 (the run's own length is the boot's
+    width). Resampled from two frames to four under `auto`, both made cells (1 and 3) take the
+    nearer source frame; under `rife` they are kept, named. The same with both source frames' lines
+    at half, and the frame whose colour is the plain blend of the two inside the drawing's coverage,
+    read over the line too. A crease the first source frame draws across the still near boot and the
+    second does not: left at 0.3, 0.45 or 0.6 of its contrast it reads `doubled` and gives way; left
+    at 0.25 it is lighter than 50/255 under the boot and reads 0; the frame that draws it, and the
+    frame that does not, read 0 and keep their bytes. Read 0 and delivered as the very frame made:
+    the drawing between; the same blurred (radius 1.5 px) or smeared along the step; a hand moving
+    60 px over the coat, drawn, blurred or smeared along its way (t 0.35 to 0.65); boots both source
+    frames draw with a second line; a hem both draw with two lines, softened to 60 % in the frame
+    between; a light crease one source frame draws, carried at its own strength. The bounds, where
+    each turns: left at 0.28 of its contrast the made frame there is 0.1960 darker than the boot,
+    just under 50/255, which is 0.1961, and reads 0; at 0.30 it is 0.2076 darker and is read; at
+    0.80 it reads, at 0.82 it is the source frame's own line and reads 0; with the boot moved 8 px,
+    the pixels of its old line that the reading keeps are too thin to hold a 3 px square, so the
+    opening by 3 px removes them and it reads 0; moved 9 px they hold one and it reads (0.092); a
+    dark patch 10 px square one source frame draws is no line, a stroke **3 px** wide is; left over
+    6 columns the run is 0.0294 of the body, under the line, over 7 columns 0.0343, over it. What it
+    does not tell: the hand smeared along its way from t 0.3 to 0.7 of its 60 px move reaches back
+    over the line the first source frame draws there and reads 0.063. The walker of
+    `tests/video/test_crossfade.py`, legs closing from 16 to 3 degrees: its drawing between, which
+    the cross-fade reading reads over its line in grey (the reason that reading is no fault), reads
+    `doubled` 0 in grey and in black outlines and keeps its bytes; its colour blended inside the
+    drawing's coverage reads 0.098 in grey and 0.37 in black and gives way. Legs closing from 10 to
+    5 degrees, the cross-fade's lines left inside all three silhouettes run 0.0195 of the body (the
+    rest of its doubled edge lies on the silhouette, where one source frame is not solid): under the
+    line, kept.
 - **What `auto` costs**: a frame replaced shows the nearer source frame, so the motion there
   steps as filmed, up to half a frame off its time, and the loop shows fewer distinct drawings a
   second than `rife` — but no melted one. A clip drawn on twos has a long step between drawings
@@ -1651,22 +2237,30 @@ sprite-gen video-cycle-align --loop-dir set/front-walk/loop --loop-dir set/side-
   remembered: the RIFE binary file and each file in the model directory, by sha256; the model directory's
   path as given to the binary (the binary reads the model's version from the directory name); the
   augmentation every call asks for at that moment (`rife.tta()`: `SPRITE_GEN_RIFE_TTA`, or the default
-  `-x -z` when it is not set — section 1, "Which setting"), as another augmentation makes another frame; the
-  engine code as loaded, which is the sha256 of `sprite_gen/video/rife.py` read once at import (`rife.py` written
-  over on disk during a run changes no code that is running, so a frame made by the loaded code is kept
-  under that code, and a later process that loads other code gets another key and makes the frames again);
-  the NumPy and Pillow versions; and the host as `os.uname()` reports it at that moment (host name,
-  OS release, build, and architecture), with the OS platform. A binary or model file that cannot be read
-  fails the alignment, as a RIFE that fails does. Any change in cycle length, `--cycles`, source pixels,
-  binary, model, augmentation, engine code, or host makes the frame again. The key does not read the GPU driver or its
-  environment; a caller that changes those between passes gives each pass its own directory. Reading the
-  identity hashes 36.5 MB of binary and model files in about 17 ms on an Apple M1: once for a frame taken,
-  twice for a frame made (making a frame with RIFE takes on the order of a second). After a frame is made,
-  its key is read again; if anything it is made from changed while it was being made, the frame is handed
-  on but not kept, and counted as `not_kept`. Each kept frame is a PNG file named by its key, with its
-  pixel sha256 in a text chunk, written to a temporary file and renamed into place. A kept file that does
-  not read back as that frame is made again, written over, and counted as `unreadable`. A taken frame is
-  a new image of exactly the kept pixels, so the aligned loop is the same, byte for byte, as an alignment
+  `-x -z` when it is not set — section 1, "Which setting"), as another augmentation makes another frame;
+  the engine code as loaded, which is the sha256 of `sprite_gen/video/rife.py` read once at import
+  (`rife.py` written over on disk during a run changes no code that is running, so a frame made by the
+  loaded code is kept under that code, and a later process that loads other code gets another key and
+  makes the frames again); the NumPy and Pillow versions; and the host as `os.uname()` reports it at that
+  moment (host name, OS release, build, and architecture), with the OS platform. With the torch backend
+  (section 1) the binary's and the model's files give way to what the backend loaded and runs on, read
+  once when it loads and kept for its life: the sha256 of the model bytes it read, its network code
+  (`rife_torch.py`, read at import), PyTorch's version, the device, and on CUDA the GPU's name and
+  capability, the driver, CUDA's and cuDNN's versions and the determinism settings as they read back, on
+  the CPU its instruction set; the key names the backend either way, so a frame one backend made is never
+  taken for the other's. On an executor (section 1, "A GPU elsewhere") that part is what the executor
+  answered as the RIFE was made, held for its life, and the executor's name: an executor that changes
+  under the RIFE fails it rather than make a frame of another identity. A binary or model file that cannot be read fails the alignment, as a RIFE that
+  fails does. Any change in cycle length, `--cycles`, source pixels, binary, model, augmentation, engine
+  code, or host makes the frame again. The key does not read the GPU driver or its environment; a caller
+  that changes those between passes gives each pass its own directory. Reading the identity hashes 36.5
+  MB of binary and model files in about 17 ms on an Apple M1: once for a frame taken, twice for a frame
+  made (making a frame with RIFE takes on the order of a second). After a frame is made, its key is read
+  again; if anything it is made from changed while it was being made, the frame is handed on but not
+  kept, and counted as `not_kept`. Each kept frame is a PNG file named by its key, with its pixel sha256
+  in a text chunk, written to a temporary file and renamed into place. A kept file that does not read
+  back as that frame is made again, written over, and counted as `unreadable`. A taken frame is a new
+  image of exactly the kept pixels, so the aligned loop is the same, byte for byte, as an alignment
   without the directory. Nothing is kept without `--between-cache` (there is no default directory). The
   caller gives each alignment its own directory and removes it when that alignment is done. The engine
   creates `DIR` mode 0700 and files mode 0600, never deletes `DIR`, and records `dir`, `hits`, `misses`,

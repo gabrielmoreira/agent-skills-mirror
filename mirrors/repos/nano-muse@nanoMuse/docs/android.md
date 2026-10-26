@@ -120,6 +120,26 @@ the date, language and available-model count in its final runtime-context sectio
 or crossing into a new day therefore leaves the static prefix available to providers that support
 prefix caching.
 
+The phone also keeps what one call carries within a budget of its own (1.0.8, `io.github.nanomuse.chat`).
+Over the hosted model's last week the time to the first token grew with the prompt (4.7 s at
+the median under 12k tokens, 25 s between 24k and 40k, 54 s above), so `ContextBudget` pulls
+the compaction line down to 32k tokens on every window from 64k up (it was 108k on the 128k
+window the hosted model is read as) and moves old big tool results to disk from 28k; the
+compaction itself, and the recent exchanges it keeps whole, are upstream's. `PromptDiet`
+rewrites the two fattest parts of the baseline densely without taking anything away: the
+`browser_use` schema (every action and parameter kept, the paragraphs on cookies, viewport and
+infinite scroll shortened) and the `minis-*` paragraphs of the Android tools section (each
+CLI's `--help` has the rest). Together about 5k characters, roughly an eighth of what every
+call carried before a single message.
+
+While a turn has no first token yet, a small line sits under the typing dots (`NmWaitLine`):
+nothing for ten seconds, then *The model is busy, 15 s so far* with *Cancel*; and when
+nanoMuse Cloud has said the request is waiting for one of its provider slots (relay 0.31
+sends a chunk with no `choices` and a `nanomuse: {phase, ahead}` field every five seconds,
+[cloud.md](cloud.md#protocol)), *3 ahead of you* or *You are next* instead, as soon as that
+is known (`NmStreamStatus`, one marked line in `OpenAIProvider`). Each step of a tool-using
+turn counts its own wait.
+
 | | |
 | --- | --- |
 | **The agent, on the phone** | A sandboxed Alpine Linux, a real shell, files, a browser, MCP servers, skills in the Agent Skills format, memory, scheduled tasks; approvals before deleting, sending or paying. The model is the account's or your own; with your own key the chat itself goes from the phone to that provider and never through the project's relay, and from 1.0.7 the finished turn is added to your account's record afterwards (the model's id and the turn, never the key) so your other devices have it ([cloud.md](cloud.md#the-record)). |
@@ -290,6 +310,13 @@ pack is unavailable still falls back once to the default service.
 
 The voice detector releases its allocated recorder if recording cannot start or is cancelled
 before capture begins. You can retry voice input without leaving that recorder allocated.
+
+A segment that closes on silence is transcribed and the microphone stops, and that stop used
+to free the voice detector's native object from inside its own callback, on the same thread,
+while the detector was still running: the app died with a native crash the moment a take of
+two seconds or more fell silent (1.0.8 fixes this; upstream OpenMinis 1.14 has the same
+change). A stop from inside a callback now takes effect once the detector has handed the
+frame back.
 
 ## Privacy and permissions
 

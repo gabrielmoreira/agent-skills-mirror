@@ -1,6 +1,6 @@
 ---
 name: melonjs-camera-and-drawing
-description: "Use this skill for camera control and immediate-mode drawing in melonJS — following a target, viewport bounds, shake and fade, secondary cameras, and drawing shapes, lines and gradients inside a custom draw(). Covers world versus screen coordinate conversion, clipping and masking, baking with CanvasRenderTarget, and reading pixels back. Triggers on: Camera2d, viewport, follow, setBounds, shake, fadeIn, fadeOut, worldToLocal, localToWorld, colorMatrix, renderer.fill, renderer.stroke, Rect, Ellipse, Polygon, Line, Gradient, clipRect, mask, CanvasRenderTarget, NoiseTexture2d, lookAt, setBasis, toImageData, getImageData, toBlob, toDataURL, screenshot, read pixels."
+description: "Use this skill for camera control and immediate-mode drawing in melonJS — following a target, viewport bounds, shake and fade, secondary cameras and what each one draws, and drawing shapes, lines and gradients inside a custom draw(). Covers world versus screen coordinate conversion, clipping and masking, baking with CanvasRenderTarget, and reading pixels back. Triggers on: Camera2d, viewport, follow, offset, look ahead, setBounds, minimap, second camera, split screen, cullMask, visibilityLayer, hide from a camera, shake, fadeIn, fadeOut, worldToLocal, localToWorld, colorMatrix, renderer.fill, renderer.stroke, Rect, Ellipse, Polygon, Line, Gradient, clipRect, mask, CanvasRenderTarget, NoiseTexture2d, lookAt, setBasis, toImageData, getImageData, toBlob, toDataURL, screenshot, read pixels."
 license: MIT
 ---
 
@@ -23,6 +23,24 @@ frame-rate independent since 19.7. `AXIS.HORIZONTAL` / `AXIS.VERTICAL` /
 `AXIS.BOTH` / `AXIS.NONE`.
 
 Call it from the followed entity's `onActivateEvent`, using `this.parentApp`.
+
+**To frame the target off centre, set `offset`; do not follow a helper
+object.** It shifts the view without moving the camera, in world units, and is
+applied after following and the bounds, so the view can show past them:
+
+```js
+app.viewport.follow(player, app.viewport.AXIS.BOTH, 0.1);
+app.viewport.offset.set(0, -70);   // look a little above the feet
+
+// or ahead of where the player faces, eased (see math.damp below)
+const ahead = facingLeft ? -80 : 80;
+app.viewport.offset.x = math.damp(app.viewport.offset.x, ahead, 4, dt / 1000);
+```
+
+Culling, tile layers, parallax `ImageLayer`s, lights and the pointer
+(`localToWorld`, `worldToLocal`) all count it. `shake()` adds its jitter on top
+and gives the value back when it ends, so setting it before or during a shake
+is fine. `reset()` clears it.
 
 **For anything that is NOT the camera, the same smoothing is `math.damp`.**
 `follow()` is frame-rate independent for you; a value you smooth yourself is
@@ -191,6 +209,37 @@ View state is per camera, not per scene: a `Camera3d` carries its own distance
 fog (`setFog`), so a minimap or split-screen view fogs independently of the main
 one — and a `Camera2d` never fogs. See `melonjs-3d`.
 
+### What each camera draws: `visibilityLayer` and `cullMask`
+
+Every camera draws the whole world. To keep something off one camera only, put
+it on a layer that camera leaves out. A renderable's `visibilityLayer` is the
+layers it is on, as bits (1, 2, 4...); a camera's `cullMask` is the layers it
+draws. A camera draws a renderable only if the two share a bit:
+
+```js
+const PARTICLES = 2;
+emitter.visibilityLayer = PARTICLES;   // the particles go on layer 2
+minimap.cullMask = ~PARTICLES;         // the minimap draws every layer but 2
+```
+
+- By default every renderable is on layer 1 and every camera draws every layer
+  (`cullMask` is `-1`), so nothing changes until a game sets one.
+- A container left out is left out with everything inside it, however deep:
+  set it on an emitter and none of its particles are drawn. The world itself
+  obeys it too, and so does what it contains: a child is drawn only if it and
+  every container above it share a bit with the camera.
+- A renderable on layer `0` is drawn by no camera; a `cullMask` of `0` draws
+  nothing.
+- It decides drawing only: what a camera leaves out still updates, collides and
+  receives pointer events.
+- A `Light2d` a camera leaves out, itself or a container it is in, neither
+  glows, nor cuts its hole in the darkness, nor lights normal-mapped sprites in
+  that camera. A `Light3d` lights the meshes of every camera.
+- It adds to the floating rule: a floating renderable is drawn by a secondary
+  camera only with `visibleInAllCameras`, and only if the layers match as well.
+- On a Tiled object, set it as an `int` custom property named
+  `visibilityLayer`.
+
 ## Immediate-mode drawing
 
 Inside a custom `draw(renderer)` you can draw shapes directly. Remember the two
@@ -349,6 +398,9 @@ const data = await rt.toImageData(0, 0, w, h);
 | GPU memory grows with every level or restart | a `CanvasRenderTarget` created each time: make one and reuse it |
 | a repainted `CanvasRenderTarget` still shows the old pixels | call `rt.invalidate(renderer)` after painting |
 | a 3D camera cannot be given an arbitrary up | `Camera3d#lookAt(target, up)` or `setBasis(right, up, forward)`; see `melonjs-3d` |
+| particles or effects clutter a minimap | every camera draws everything: put them on their own `visibilityLayer` and leave it out of the minimap's `cullMask` |
+| something is missing from one camera only | its `visibilityLayer`, or a container's above it, shares no bit with that camera's `cullMask` |
+| a renderable shows in no camera at all | its `visibilityLayer` is `0`, or the world's own layer is left out |
 
 ## Related skills
 

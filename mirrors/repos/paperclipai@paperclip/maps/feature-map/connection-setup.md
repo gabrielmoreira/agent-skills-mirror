@@ -205,6 +205,15 @@ configuration changes, saved retry deadlines, rollback, and parking pending
 repair while an endpoint or connection is inactive. The provider responses are
 fixtures. Settled maintenance leaves no discovery timer or database scans.
 
+GitHub Cloud setup also covers an older empty-queue backoff, concurrent setup and
+background leases, and retry after a Cloud error in the
+[event poller regression](../../server/src/services/github-connection-events.test.ts).
+Channel integration checks that active setup drains its signed ping through the
+normal webhook handler; a forged ping still cannot verify the endpoint. These
+fixtures do not establish live Cloud delivery. For live proof, start a disposable
+App after an idle personal GitHub connection, complete installation, and confirm
+that the same draft advances after authenticating the queued ping.
+
 Manual: complete setup for one named provider, reload endpoint settings, link
 the intended sender, and send a disposable message. Verify one task and a useful
 reply in the originating conversation. Inspect an unlinked sender's denial and

@@ -366,6 +366,7 @@ sections. Read a section in full before doing its step; do not work from memory.
 |------|-------------------|
 | analyzing the design or making any layout/visual decision (Step 1 onward) — the UX-principles doctrine governs every design choice | `sections/doctrine.md` |
 | writing the finalized HTML in Step 3 — the Pretext wiring patterns and API cheatsheet are the required reference for all text-layout code | `sections/pretext-patterns.md` |
+| writing the Step 1 implementation spec — the Persuade intake and archetype, and the craft floor every page ships with | `sections/craft.md` |
 | the Setup probe printed DESIGN_DETECTOR_INSTALL_OFFER — ask the user once whether gstack may download impeccable's engine (checksum-pinned, receipted) before any other step | `sections/detector-install-offer.md` |
 
 ---
@@ -535,6 +536,9 @@ After routing, output a brief context summary:
 
 ## Step 1: Design Analysis
 
+> **STOP.** Before writing the Step 1 implementation spec — the Persuade intake and archetype, and the craft floor every page ships with, Read `~/.claude/skills/gstack/design-html/sections/craft.md` and execute it
+> in full. Do not work from memory — that section is the source of truth for this step.
+
 1. If `$D` is available (`DESIGN_READY`), extract a structured implementation spec:
 ```bash
 $D prompt --image <approved-variant.png> --output json
@@ -658,6 +662,7 @@ For framework output, save to:
 - `prefers-color-scheme` media query for dark mode
 - `prefers-reduced-motion` for animation respect
 - Real content extracted from the mockup (never lorem ipsum)
+- The craft section's ship floor, scale-snapped values and motion rules
 
 **Never include by default (AI slop blacklist):** an approved mockup that carries one, a DESIGN.md blessing, or an explicit user ask overrides it; say the tradeoff once.
 - Purple/blue gradients as default <!-- ai-color-palette -->
@@ -725,6 +730,8 @@ _DJ=$(mktemp "${TMPDIR:-/tmp}/gstack-detect.XXXXXX"); bun --no-env-file --config
 ```
 
 Exit 2 → one surgical fix pass over the non-advisory rules in the `DETECT_TOP` block, then scan once more. Whatever remains, present the page with those findings listed as accepted-with-reason: a pattern the approved mockup contains, a value DESIGN.md's tokens bless or a pattern its Decisions Log or Do's and Don'ts records as intentional, or an inline `<!-- impeccable-disable <rule>: <reason> -->` the user agreed to. One pass, not a loop. Any other first line from the probe: skip, no ceremony.
+
+Then, always: the craft section's check, `~/.claude/skills/gstack/bin/gstack-design-craft <path-to-finalized.html>`, one fix pass and one rerun, as above.
 
 ### Verification Screenshots
 

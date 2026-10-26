@@ -27,7 +27,13 @@ omh <command> --help
 store is writable it records `last_doctor`, and failed health checks can return
 a nonzero exit code while still emitting useful JSON. Disclose the
 `state-write side effect` before running it, then interpret the payload rather
-than treating a nonzero status as command absence.
+than treating a nonzero status as command absence. Use `--no-state-write` to
+skip the state update and runtime/workflow write probes; those checks then
+report write access as not probed and use a non-writing permission check. Use
+`--no-personal-files` to avoid opening `SOUL.md`, `memories/MEMORY.md`, and
+`memories/USER.md`; their two advisories are explicitly `skipped`. The flags
+are independent and work with human or JSON output. The loader-registration
+smoke can still use a temporary directory under `--no-state-write`.
 
 Record the command, selected profile/home, and observed OMH version or commit.
 Do not reinterpret a command's absence as a product-wide capability claim.

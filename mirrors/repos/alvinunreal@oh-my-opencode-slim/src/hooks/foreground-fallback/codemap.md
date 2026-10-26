@@ -123,7 +123,7 @@ Resolve fallback chain for session
     ↓
 Abort current rate-limited prompt (session.status retry path only, with timeout)
     ↓
-Retrieve last user message from session history (replayed via isReplayableUserMessage/partsFromReplayMessage)
+Confirm a user turn in session history (isReplayableUserMessage); the replay carries only an internal reminder
     ↓
 Re-prompt session with next model via promptAsync()
     ↓
@@ -136,7 +136,7 @@ Log fallback event
 1. **Abort with timeout**: `abortSessionWithTimeout()` sends Ctrl+C to pane then kills it after 250ms delay
 2. **Message retrieval**: Queries session messages via `client.session.messages()` and finds last user message
 3. **Model switching**: Uses `parseModelReference()` to extract providerID/modelID from chain entry
-4. **Re-prompting**: Calls `promptAsync()` which queues prompt and returns immediately (non-blocking); appends trusted internal-initiator provenance so the replay is not mistaken for new external user input
+4. **Re-prompting**: Calls `promptAsync()` which queues prompt and returns immediately (non-blocking); the body is a single trusted internal-initiator reminder, so the replay is not mistaken for new external user input and the user's request is read from history
 5. **Failover deferral**: Recoverable child errors (`isFailoverError`) leave terminal bookkeeping to the task-session-manager. Its backstop waits for replay preparation, renewing at most five times, and clears the deferral before publishing an unrecovered error. `fallbackFailureReason()` adds the disabled, missing-chain, exhausted-chain (with tried models), or failed-model explanation. Non-failover errors retain their original text.
 6. **Fallback ownership**: Admitted and unresolved-promoted replays retain a tracker flag until external registration replaces the run. Plugin wiring makes v1 `task_revive` refuse pending or running fallback work; `task_cancel` remains available. v2 steering creates no replay flag or refusal. Identity preflight runs before task-error bookkeeping, while replay runs afterwards to avoid synchronous busy-event re-entry.
 7. **Continuation notice**: A confirmed replay after a terminal failover error queues one internal `state="running"` notice with the failed model, provider error and model now running. The tracker uses the same parent transport as terminal delivery and waits for the notice attempt to settle before sending the result. Retry-path replays, superseded or unresolved admissions, promoted owners and v2 steering send no notice.
@@ -162,7 +162,7 @@ Log fallback event
   - `log()`: Structured logging for observability
 - **SessionLifecycle** (`src/hooks/session-lifecycle.ts`): registers `session.deleted` cleanup
 - **Background job board** (`src/index.ts`): supplies a synchronous `hasRunning(sessionID)` child check for the optional v1 abort guard; the failing background job itself is not counted as its own child
-- **Message types** (`src/hooks/types.ts`): `isReplayableUserMessage` / `partsFromReplayMessage` for safe replay
+- **Message types** (`src/hooks/types.ts`): `isReplayableUserMessage` to locate the user turn before a replay
 - **Configuration**: Fallback chains provided at construction from agent configurations
 
 ### Configuration Schema

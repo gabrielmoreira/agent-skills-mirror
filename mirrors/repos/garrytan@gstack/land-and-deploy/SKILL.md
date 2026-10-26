@@ -708,35 +708,45 @@ approves each), or C) stop.
 
 ## Step 3.4: VERSION drift detection (workspace-aware ship)
 
-Check that another workspace has not claimed this PR's VERSION since `/ship`.
-
 ```bash
 BRANCH_VERSION=$(git show "$PR_HEAD:VERSION" 2>/dev/null | tr -d '\r\n[:space:]')
 BASE_VERSION=$(git show "$BASE_SHA:VERSION" 2>/dev/null | tr -d '\r\n[:space:]')
-QUEUE_JSON=$(bun --no-env-file --config=/dev/null run ~/.claude/skills/gstack/bin/gstack-next-version \
-  --base "$BASE_BRANCH" \
-  --exclude-pr "$PR_NUMBER" \
-  --bump patch \
-  --current-version "$BASE_VERSION" 2>/dev/null || echo '{"offline":true}')
-NEXT_SLOT=$(echo "$QUEUE_JSON" | jq -r '.version // empty')
-OFFLINE=$(echo "$QUEUE_JSON" | jq -r '.offline // false')
-NO_VERSION=$(echo "$QUEUE_JSON" | jq -r '.no_version // false')
+git fetch -q origin "$BASE_BRANCH"
+read -r MODE CL < <(~/.claude/skills/gstack/bin/gstack-ship-policy show-effective --base "$BASE_BRANCH" --json |
+  jq -r 'select(.valid).policy | "\(.queue_mode) \(.changelog)"')
+Q=$(bun --no-env-file --config=/dev/null run ~/.claude/skills/gstack/bin/gstack-next-version --base "$BASE_BRANCH" \
+  --exclude-pr "$PR_NUMBER" --bump patch --current-version "$BASE_VERSION" 2>/dev/null || echo '{"offline":true}')
+Q=$(echo "$Q" | jq -r --arg v "$BRANCH_VERSION" '[.claimed[]? | select(.version == $v).pr] as $c | if .no_version
+  then "NO_VERSION" elif $c != [] then "STOP also claimed by #\($c[0])" elif .offline or (.complete | not)
+  then "unavailable: claims unread" else "ok" end')
+cl() { sed -n 's/^## \[\([^]]*\)\].*/\1/p' | head -2 | xargs; }
+H=$(git show "$PR_HEAD:$CL" 2>/dev/null | cl); B=$(git show "$BASE_SHA:$CL" 2>/dev/null | cl)
+V=$(awk -v a="$BASE_VERSION" -v b="$BRANCH_VERSION" 'BEGIN { r = "^[0-9]+[.][0-9]+[.][0-9]+([.][0-9]+)?$"
+  if (a !~ r || b !~ r || split(a, x, ".") != (n = split(b, y, "."))) { print "bad"; exit }
+  for (i = 1; i <= n && x[i] == y[i]; i++); if (i > n || y[i] < x[i]) { print "low"; exit }
+  s = y[i] == x[i] + 1; for (j = i + 1; j <= n; j++) s = s && !y[j]; print s ? "one" : "up" }')
+if [ "$Q" = NO_VERSION ]; then R=$Q
+elif [ "$V" = bad ]; then R="unavailable: bad version"
+elif [ "$MODE" = stamp-at-merge ]; then
+  [ "$V" = one ] && { [ -z "$H" ] || [ "$H" = "$(echo $BRANCH_VERSION ${B%% *})" ]; } && R=ok || R="STOP stamp stale"
+elif [ "$V" = low ]; then R="STOP base is at or above it"
+elif [ -z "$MODE" ]; then R="unavailable: no policy"
+else R=$Q; fi
+echo "VERSION_CHECK: $R ($MODE: $BRANCH_VERSION, base $BASE_VERSION)"
 ```
 
-Use the existing conservative patch-level allocation; compare numeric version
-components, not lexical strings. A missing/unparseable version on only one side is
-unavailable, not green.
-
-0. `NO_VERSION=true` (no configured version source, the same signal `/ship` reads):
-   print `VERSION check: not applicable (<version_source.reason>)` and continue to
-   Step 3.5. Never expect a version-prefixed title, CHANGELOG version header or tag.
-1. `OFFLINE=true`, helper failure or invalid result: report VERSION check unavailable
-   with the reason; continue to Step 3.5. CI's version gate is the backstop.
-2. `BRANCH_VERSION >= NEXT_SLOT`: no drift; continue.
-3. `BRANCH_VERSION < NEXT_SLOT`: **STOP** with "VERSION drift detected", both versions
-   and instructions to rerun `/ship` from the feature branch. Its ALREADY_BUMPED path
-   reconciles VERSION, package.json, CHANGELOG header and PR title together. Do NOT
-   auto-bump or merge here: duplicate versions can overwrite another branch's release notes.
+- `NO_VERSION`: print `VERSION check: not applicable (<version_source.reason>)`; never
+  expect a version-prefixed title, CHANGELOG version header or tag.
+- `unavailable`: report it; continue to Step 3.5 (CI's version gate is the backstop).
+- `ok`: continue; a higher sibling claim or a MICRO bump is not drift.
+- `STOP stamp stale` (stamp-at-merge: not base + one bump, or the top CHANGELOG headings
+  are not it then the base's): **STOP**; on the PR branch run `gstack-restamp --next --base
+  <base> --pr <n> --expect-base <BASE_SHA> --allow-repo-commands`, push the stamp diff,
+  wait for CI, rerun.
+- Other `STOP`: **STOP** with "VERSION drift detected", the verdict and: rerun `/ship`
+  from the feature branch (its ALREADY_BUMPED path reconciles VERSION, package.json,
+  CHANGELOG header and PR title). Never auto-bump or merge here: duplicate versions can
+  overwrite another branch's release notes.
 
 ---
 

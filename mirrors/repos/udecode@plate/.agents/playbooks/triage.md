@@ -1,6 +1,6 @@
 ---
 extends: investigation
-when: Use it for `triage`, `triage label:<label>`, `triage #<N>` or `triage fix #<N>`, for `maintainer issues`, and for a udecode/plate issue URL. A Slate issue stays with `maintainer slate-issue`, and a security-shaped report with `maintainer security`.
+when: Use it for `triage`, `triage label:<label>`, `triage #<N>`, `triage fix #<N>` or `triage fix <domain>`, for `maintainer issues`, and for a udecode/plate issue URL. A Slate issue stays with `maintainer slate-issue`, and a security-shaped report with `maintainer security`.
 ---
 
 # Triage
@@ -11,18 +11,20 @@ Triage turns an open udecode/plate issue into a call: what it is, whether it rep
 
 | Request | Scope | Ends with |
 | --- | --- | --- |
-| `triage`, or `maintainer issues` | every open issue `pnpm triage queue` lists | records landed, drafts under Needs you |
+| `triage`, or `maintainer issues` | every open issue `pnpm triage queue` lists | records landed, drafts under Needs you, a fix run offered for each domain with a P0 or P1 kind |
 | `triage label:<label>` | `pnpm triage queue --label <label>` | the same |
-| `triage #<N>`, or a udecode/plate issue URL | issue N and its neighbors | N's record; a current one is printed and the run stops |
+| `triage #<N>`, or a udecode/plate issue URL | issue N and its neighbors | N's record and its domain's fix run; a current one is printed and the run stops |
 | `triage fix #<N>` | issue N's group | records, then the Bug fix playbook over the group |
+| `triage fix <domain>` | the domain's group | records, then one Bug fix run over every kind of the domain |
 
 ## Who records
 
-1. Run `pnpm triage show <N>...` first, a few issues per call. Its `session:` line says whether this session can record. Only the root session of a person's own Claude or Codex launch can, on Opus or Sol at xhigh on every turn of it and of every transcript it continues.
-2. Read the whole output. When the runtime saves a long output to a file, read that file to its end; `record` refuses an issue unless every line of its text and its `seen:` line reached this session's tool results.
-3. A Codex session runs `pnpm triage` outside the sandbox, because `workspace-write` blocks `ps` and writes to `.git`. It saves `show`'s output to a file in the run directory and reads that file in pieces of about 200 lines, because Codex cuts the middle out of a longer tool output.
-4. A session that cannot record still triages and drafts. Its reply names each issue it could not record and says that `triage #<N>` in a fresh Opus or Sol xhigh session records it. It never starts another session to record for it, because only a person's own launch records.
-5. Subagents and seats may search neighbors and trace owners, as the Extraction rule says, and return evidence. The lead reads each issue's show output itself and makes every call.
+1. Run `pnpm triage show <N>...` first, a few issues per call. It prints who opened each issue, and its `session:` line says whether this session can record. Only the root session of a person's own Claude or Codex launch can, on Opus or Sol at xhigh on every turn of it and of every transcript it continues.
+2. `record` saves the GitHub account `gh` is signed in as beside the model. A record by an account that `triage.owners` in `.agents/pstack.json` does not list reads `unconfirmed` until an owner triages the issue again, so an owner checks every call made in anyone else's session, its priority included. The owner's record confirms the call or replaces it. `queue` lists unconfirmed issues only for an owner, and `labels` keeps the `triaged` label off them.
+3. Read the whole output. When the runtime saves a long output to a file, read that file to its end; `record` refuses an issue unless every line of its text and its `seen:` line reached this session's tool results.
+4. A Codex session runs `pnpm triage` outside the sandbox, because `workspace-write` blocks `ps` and writes to `.git`. It saves `show`'s output to a file in the run directory and reads that file in pieces of about 200 lines, because Codex cuts the middle out of a longer tool output.
+5. A session that cannot record still triages and drafts. Its reply names each issue it could not record and says that `triage #<N>` in a fresh Opus or Sol xhigh session records it. It never starts another session to record for it, because only a person's own launch records.
+6. Subagents and seats may search neighbors and trace owners, as the Extraction rule says, and return evidence. The lead reads each issue's show output itself and makes every call.
 
 ## Method
 
@@ -36,7 +38,23 @@ Call an issue `dup` only when at least two evidence categories match: the user-v
 
 ### Kinds
 
-Group the issues into failure kinds. A kind is one wrong result that one fix removes, as the Bug fix playbook's Redesign runs define it. Trace each kind to the code that owns it, with its `path:line`, and label the cause read or inferred. Its scope is the review scope whose owners hold that code, as the review ledger maps it, such as `editing`. Give it each miss class from `verify`'s [Why tests missed it](../rules/verify/references/sweep.md#why-tests-missed-it) that applies, with the cheapest test layer that would have failed on it. Its priority follows chips.md's Priority.
+Group the issues into failure kinds. A kind is one wrong result that one fix removes, as the Bug fix playbook's Redesign runs define it. Trace each kind to the code that owns it, with its `path:line`, and label the cause read or inferred. Its scope is the review scope whose owners hold that code, as the review ledger maps it, such as `editing`. Give it each miss class from [Why tests missed it](#why-tests-missed-it) that applies, with the cheapest test layer that would have failed on it. Its priority follows chips.md's Priority.
+
+### Why tests missed it
+
+The class decides what the kind's fix run adds besides the fix.
+
+| Class | What happened | What closes it |
+| --- | --- | --- |
+| M1 no test | Nothing at any layer runs the behavior | The fix's test at the lowest layer that sees the bug, and a row in the feature's scenario catalog, so the next agent pass drives it |
+| M2 wrong layer | A model or unit test passes, and the bug lives in DOM, event or browser handling | A Plite browser test, or a Plate browser test in `apps/www/tests/browser/regressions/` |
+| M3 wrong assertion | A test runs the path but checks something else, or expects the bug | The test fixed to assert what users see, and `test-audit` on the area when it holds more tests like it |
+| M4 engine gap | Only Firefox, Safari or iOS shows it, and no gated test runs there | A test gated in that engine; until a lane runs it, its recheck stays in that browser |
+| M5 wiring gap | The tested setup differs from what the shipped kit or demo installs | A check over the shipped kits or demos, through `/pstack:correct` |
+| M6 composition gap | Each feature is tested alone, and the bug needs two together | A generated check over the combinations. For a rule set or state machine whose bug shows without a browser, a formal check through `/pstack:create-formal-verification-skill`, as its own small skill |
+| M7 spec gap | No law says what should happen | A row in `docs/editor-behavior/markdown-editing-spec.md` first, then the test |
+
+When two kinds, in one run or across runs, missed for the same reason, such as two tests marked expected to fail, the fix run of the second kind runs `/pstack:correct` on that reason. It encodes the reason as architecture, a type, a lint or a test before any rule text.
 
 ### Fit Gate
 
@@ -65,36 +83,40 @@ An active owner, PR, branch, assignee or recent claim does not change the record
 | `split` | `into`, two or more issue numbers |
 | `spec` | `question`, optional `law` |
 
-Detail is `key: value` pairs joined by `; `. Write the run's calls to a batch file in the run directory, a tab-separated table with the header `issue outcome detail seen why`, each `seen` the one `show` printed in this session. Run `pnpm triage record --from <batch.tsv> --dry-run`, fix each refusal, then run it without `--dry-run`. A record replaces every current head of its issue, so it also resolves a conflict. Land the register through `land.mjs` before the reply, as the Delivery rule says; a record counts for everyone else only on `next`.
+Detail is `key: value` pairs joined by `; `. Write the run's calls to a batch file in the run directory, a tab-separated table with the header `issue outcome detail seen why`, each `seen` the one `show` printed in this session. Run `pnpm triage record --from <batch.tsv> --dry-run`, fix each refusal, then run it without `--dry-run`. A record replaces every current head of its issue, so it also resolves a conflict. Land the register through `land.mjs` before the reply, as the Delivery rule says; a record counts for everyone else only on `next`. Once the records land, offer fix runs as [Offer fix runs](#offer-fix-runs) says.
 
 ### Drafts
 
-A duplicate close, a repro ask, a `not-bug` answer or a `spec` question for the reporter is a comment draft. Write each as a file in the run directory, then save `pnpm -s triage mark <draft.md>` beside it; the marker it appends keeps the issue's record current once the comment is posted unchanged. A draft that says fixed passes `maintainer`'s truth gate first. Each draft waits under Needs you, as the Messages rule says, with its command: `gh issue comment <N> --repo udecode/plate --body-file <marked draft>`, plus `gh issue close <N> --repo udecode/plate --duplicate-of <M>` for a duplicate. After the records land, `pnpm triage labels` prints the `gh` commands that make the `triaged` label match the register; they wait under Needs you too.
+A duplicate close, a repro ask, a `not-bug` answer or a `spec` question for the reporter is a comment draft. A `kind` record gets a draft only when triage found something the issue lacks, such as a cause the issue left untraced or a different owner. When triage only confirms the issue, nothing is posted, because the labels and the Priority field carry the call. Write every draft as `technical-writing` says, and link each code location to a GitHub permalink pinned to a commit, because line numbers on `next` drift. A `kind` draft has up to four parts, each led by a bold label: **Cause.** with its linked code, **Not traced.** for what the reading left open, **Open decision.** for the design call a fix has to make, and **Test.** as numbered steps followed by the expected result. It leaves out a part that has nothing to say. Write each as a file in the run directory, then save `pnpm -s triage mark <draft.md>` beside it; the marker it appends keeps the issue's record current once the comment is posted unchanged. A draft that says fixed passes `maintainer`'s truth gate first. Each draft waits under Needs you, as the Messages rule says, with its command: `gh issue comment <N> --repo udecode/plate --body-file <marked draft>`, plus `gh issue close <N> --repo udecode/plate --duplicate-of <M>` for a duplicate. After the records land, `pnpm triage labels` prints the `gh` commands that make GitHub match the register. A current record gets the `triaged` label, a `kind` record sets the org's Priority field (P0 Urgent, P1 High, P2 Medium, P3 Low), and a `needs-repro`, `dup` or `spec` record gets the `needs reproduction`, `duplicate` or `enhancement` label. These commands wait under Needs you too.
 
 ## The global run
 
-`triage` and `triage label:<label>` save `pnpm triage queue` to the run directory. It lists every open issue that is not current, conflicts first, then stale, unchecked and untriaged, grouped by scope. Take one scope at a time, so kinds that share an owner are read together. An issue whose task has started still gets its record, and its task stays with that task's session. An `unchecked` issue waits until its reads work, because `record` refuses on refs fetched last.
+`triage` and `triage label:<label>` save `pnpm triage queue` to the run directory. It lists every open issue that is not current, conflicts first, then stale, unchecked, untriaged and, for an owner, unconfirmed, grouped by scope. Take one scope at a time, so kinds that share an owner are read together. An issue whose task has started still gets its record, and its task stays with that task's session. An `unchecked` issue waits until its reads work, because `record` refuses on refs fetched last.
 
 ## Sweep domains
 
 `verify`'s sweep runs this method on a domain's finds before any of them is filed, as its [Triage a domain](../rules/verify/references/sweep.md#triage-a-domain) says. Its finds marked bug and the domain's open `target:beta` issues group into kinds; a kind whose owner sits outside the domain joins the owner's domain. Each kind gets one issue drafted with `maintainer`'s issue-draft, each member find a numbered repro with its clip, and when an open issue already covers the kind, the draft adds the new members to it. The tester publishes each draft and closes the kind's other open issues as its duplicates; an agent publishes or closes only when the tester's request names that action. Each published issue then gets its record through `triage #<N>`.
 
+## Offer fix runs
+
+A domain is the review scope a `kind` record names in `scope`. An issue whose `tasks:` line, as `show` prints it, names an open task stays with that task. Once a run's records land, each domain that a landed `kind` record names gets one fix-run task for the rest of its open issues, when one of their current `kind` records is P0 or P1. Offer it through the `chips` skill's Offer mode. The task's priority is its worst kind's, its `repro:` names those issues, whose numbered repros hold the exact steps, and its `writes:` names the owner files their records trace. Its finding asks for `triage fix <domain>`. When the triage traced every kind to its owner, the task runs at `high`, and otherwise its title ends in `(xhigh)`, as chips.md's Title rule says. When an open task builds the check a kind needs, the domain task waits on it. A domain whose other kinds are all P2 or P3 gets no task, and the run's plan lists them in Open work, or its reply when it keeps no plan. Domain tasks run by priority, P0 first, as the chips board orders them. A sweep adds its own handoff to the offer, as the sweep's [Triage a domain](../rules/verify/references/sweep.md#triage-a-domain) says.
+
 ## Fix
 
-`triage fix #<N>` continues into a fix in the same session.
+`triage fix #<N>` and `triage fix <domain>` continue into a fix in the same session.
 
-1. N's group starts from the issues that hold N's call. When N's record is `dup`, that is the issue its `of` names, followed through each `dup` record to the first issue whose record is not `dup`. When it is `split`, they are the issues its `into` names. Otherwise it is N. The group is those issues, each open issue recorded `dup` of one of them, and each open issue whose `kind` record shares an owner file with one of theirs. Triage the group until each issue has a current record or one this session wrote.
+1. N's group starts from the issues that hold N's call. When N's record is `dup`, that is the issue its `of` names, followed through each `dup` record to the first issue whose record is not `dup`. When it is `split`, they are the issues its `into` names. Otherwise it is N. The group is those issues, each open issue recorded `dup` of one of them, and each open issue whose `kind` record shares an owner file with one of theirs. A domain's group is every open issue whose `tasks:` line names the task this session runs, every other open issue whose current `kind` record names that domain and whose `tasks:` line names no open task, and each open issue recorded `dup` of one of them. Triage the group until each issue has a current record or one this session wrote. A session that cannot record works from the records it finds, as the Bug fix playbook says for such a session.
 2. Check live claims, even on a current record: assignees, linked PRs (`gh issue view <N> --json assignees,closedByPullRequestsReferences`), remote branches that name the issue, recent comments that claim it, and the `tasks:` line `show` prints. A claim stops the fix unless the owner asked to take over, and a started task stays with its session.
-3. Run the Bug fix playbook over every kind of the group. Two or more kinds with one owner make it a Redesign run, seeded from the records.
-4. Once the fix lands, record each issue it closes as `fixed` with its commit, owner files and proof, then draft each close as Drafts says.
+3. Run the Bug fix playbook once over every kind of the group, never one issue at a time, so the run sees every kind its owner shares. Two or more kinds with one owner make it a Redesign run, as that playbook's Redesign runs say, and the records seed its expected-results table. Each test carries the `[plate#N]` tag of every issue it checks in full, or whose one numbered repro it checks in full, as the Bug fix playbook says. Before it closes, the run adds what each kind's miss classes call for. The exception is an M6 check the tree lacks, which the run builds before the fix, so it tests the fix against that check. When it changes code a formal check covers, it follows that check's own skill, such as `authored-decision-order`.
+4. Once the fix lands, record each issue it closes as `fixed` with its commit, owner files and proof, then draft each close as Drafts says. A session that cannot record names each such issue with the `triage #<N>` line that records it, as Who records says.
 
 ## Steps
 
-Unlike pstack's investigation, triage writes register rows through `pnpm triage record` and comment drafts. Product code changes only inside `triage fix`'s Bug fix run.
+Unlike pstack's investigation, triage writes register rows through `pnpm triage record`, plus comment drafts and fix-run offers. Product code changes only inside `triage fix`'s Bug fix run.
 
 - **Replace** "For motivation questions, also route through the **why** skill.": run Who records, then the Method over the request's scope. `how` and `why` stay available for tracing an owner, never required.
 - **Replace** "Throughput checkpoint stays one line": the checkpoint names the queue's count by state and the scopes in the order the run takes them, or `n/a, one issue`.
-- **Replace** "Produce the `how`-shaped output": the output is the landed records, the drafts and the issues this session could not record.
+- **Replace** "Produce the `how`-shaped output": the output is the landed records, the drafts, the fix runs offered and the issues this session could not record.
 - **After** "Produce the `how`-shaped output": `triage fix` continues into Fix above in the same session, and its Bug fix run's close replaces this reply; every other entry hands back here.
 
-**Reply:** the count of records landed per outcome, the queue count still not current, each draft's command under Needs you, the `labels` commands, and each issue this session could not record with the `triage #<N>` line that records it.
+**Reply:** the count of records landed per outcome, the queue count still not current, each draft's command under Needs you, the `labels` commands, each fix-run task offered with its priority, each P2 or P3 domain left in Open work, and each issue this session could not record with the `triage #<N>` line that records it.

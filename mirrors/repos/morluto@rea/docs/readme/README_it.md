@@ -20,7 +20,7 @@
 
 **[Sito web](https://rea.tools/it/) · [Guide](https://rea.tools/it/guides/) · [Showcase](https://rea.tools/it/showcase/)**
 
-[Avvio rapido](#avvio-rapido) · [Come funziona REA](#come-funziona-rea) · [Cosa puoi analizzare](#cosa-puoi-analizzare) · [Showcase](#showcase) · [FAQ](#faq) · [Strumenti GNU objdump e Rizin](../reverse-engineering-tools.md) · [Documentazione](#documentazione)
+[Avvio rapido](#avvio-rapido) · [Come funziona REA](#come-funziona-rea) · [Cosa puoi analizzare](#cosa-puoi-analizzare) · [Showcase](#showcase) · [Creare ambienti RL](#build-rl-environments) · [FAQ](#faq) · [Strumenti GNU objdump e Rizin](../reverse-engineering-tools.md) · [Documentazione](#documentazione)
 
 <code>npx rea-agents setup</code>
 
@@ -220,7 +220,50 @@ Ispeziona le istruzioni a 16 bit del gioco PC-98 originale, recupera i calcoli d
 
 [Leggi il case study](https://rea.tools/it/showcase/th04/) · [Repository di ricostruzione](https://github.com/N0zoM1z0/th04)
 
+### Creare ambienti RL con REA
+
+Registra una sessione di un’app web, trasforma la sua API in strumenti ed esporta un ambiente utilizzabile da un agente IA. Eseguilo con AgentEnv, poi aggiungi attività e controlli sulle ricompense per l’addestramento RL o la valutazione.
+
+[Guida alla creazione di un ambiente](https://rea.tools/guides/rl-environments/) ·
+[Guarda la demo su X](https://x.com/reatools/status/2112574822584918075?s=20)
+
 Se hai usato REA su qualcosa di interessante, ci piacerebbe vederlo. Condividi il tuo caso in una [issue](https://github.com/morluto/rea/issues) o in una [pull request](https://github.com/morluto/rea/pulls), includendo il bersaglio, la tua domanda, come REA ti ha aiutato e cosa hai scoperto.
+
+<a id="build-rl-environments"></a>
+
+## Creare ambienti RL
+
+Crea un ambiente locale in cui un agente IA possa esercitarsi in attività come cercare una issue o creare una cartella, senza eseguire l’app originale. Usalo per l’apprendimento per rinforzo (RL) o per verificare come l’agente completa le attività.
+
+REA trasforma le richieste e le risposte API registrate in strumenti che l’agente può chiamare. L’ambiente usa i dati registrati e supporta modifiche solo quando la registrazione ne conferma gli effetti.
+
+Configura REA nel tuo agente, poi sostituisci l’URL e le attività sulle cartelle dell’esempio con i tuoi:
+
+```text
+Usa REA per creare un ambiente RL dalla mia app web di prova su
+http://127.0.0.1:3000.
+Includi elenco, creazione, rinomina ed eliminazione delle cartelle. Puoi creare
+e rimuovere cartelle di prova, ma non modificare i dati esistenti.
+Salvalo in una cartella chiamata my-env, verifica le operazioni disponibili e spiegami come eseguirlo.
+```
+
+<details>
+<summary>Usare la riga di comando</summary>
+
+Usa questi comandi se hai già un file con le richieste e le risposte dell’app registrate nel browser. Per eseguire il risultato servono anche AgentEnv e Docker.
+
+```sh
+rea environment-build ./session.har ./my-env --name my-env --json
+agent-env run ./my-env
+```
+
+</details>
+
+REA esporta un ambiente eseguibile con un test di base che ne verifica l’avvio e le risposte. Usalo con il tuo framework RL per definire gli obiettivi, aggiungere controlli sulle ricompense ed eseguire l’addestramento.
+
+[Guida alla creazione di un ambiente](https://rea.tools/guides/rl-environments/) ·
+[Riferimento degli ambienti](../agent-environments.md) ·
+[Guarda la demo su X](https://x.com/reatools/status/2112574822584918075?s=20)
 
 ## FAQ
 

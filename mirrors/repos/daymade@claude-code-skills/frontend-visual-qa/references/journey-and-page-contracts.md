@@ -94,6 +94,19 @@ Check incomplete detail counts separately from confirmed complete zero counts.
 Retain the observed identities, filter membership and transition results; this
 recipe supplies no generic state classifier or additional write authority.
 
+When the project distinguishes observed condition from attention or retention
+intent, compare two objects with the same adverse condition but different
+confirmed intent. Check default ordering, attention membership/counts and
+list-to-detail wording against that contract; an accurate failure badge alone
+does not pass. Verify the existing route for finding excluded records. If
+restoration is supported and authorized, verify the same object returns to the
+expected attention position. Reopen the original route and check persistence.
+
+Do not infer intent from expiry, disabled automatic renewal or absence from a
+provider inventory. Use declared decisions; keep unknown intent on the project's
+existing review path. Excluding intentional retirements must preserve attention
+for a still-retained failing control.
+
 ### Embedded readers and semantic zoom
 
 Use this bounded recipe when an affected workspace moves from cards or summaries
@@ -180,6 +193,7 @@ reader usability; neither build success nor a matching iframe resolves these fai
 | Observation | What the executor must establish |
 |---|---|
 | The document, Find and scroll survive return, but the body has zero height or only a clipped sliver beneath a long title. | Inspect the ordinary, populated page with its actual navigation and title; read the body and use its controls. Measure the body rather than the iframe shell. A larger frame is not a pass if the prose remains unreadable. |
+| A status bar outside the Reader's bounded layout preserves the document, Find and scroll but pushes the final record beyond the parent clip. | With the failure visible, ordinarily scroll the actual body to its end and read the final prose and footnote through the parent clipping boundary. Check the same state after recovery; hiding the failure or retaining the iframe alone does not establish usability. |
 | A new global action changes the mobile grid, or a relationship overlay stays above the original-text control. | Inspect the complete header and reader together, then use the ordinary visible control. Compare the hit owner at the pointer with the promised action; DOM presence or a forced/programmatic click cannot clear an intercepted control. |
 | Returning appears to recreate the reader, but the driver changed viewport or emulation between observations. | Mark that comparison inconclusive, bind the same settled viewport and repeat only the affected journey before attributing the recreation to the product. Refresh element references after a driver operation invalidates them. |
 
@@ -188,6 +202,12 @@ Preserve the promised document, query, range and actual scroll owner while also
 reading usable body content. Use the project's reading requirement; an observed
 pixel height is not a universal minimum. A narrow-browser result does not supply
 unperformed physical-phone, keyboard or native-intervention evidence.
+
+Source-checkout calibration: `evals/files/reader-status-bar-fixture.html` and
+`tests/test_reader_status_bar.mjs` pair retained-but-clipped and bounded status-bar
+layouts. The fixture is a reduced synthetic example, not a deployed Reader;
+the test runs through an existing project's Playwright dependency. It checks
+geometry and literal source preservation, not semantic copy necessity.
 
 Treat these as Major unless the project taxonomy says otherwise:
 

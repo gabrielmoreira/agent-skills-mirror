@@ -203,11 +203,11 @@ If you work with a coding agent, [AGENTS.md](AGENTS.md) holds these `jlpm` and l
 
 ## Translations
 
-NBI's user interface is translated through JupyterLab's own translation system, so it follows the language a user picks under **Settings → Language** (which lists the JupyterLab language packs installed on the server). The gettext domain is `notebook_intelligence`. Catalogs live in the package:
+Translators: see [docs/translating.md](docs/translating.md). NBI's user interface is translated through JupyterLab's own translation system, so it follows the language a user picks under **Settings → Language** (which lists the JupyterLab language packs installed on the server). The gettext domain is `notebook_intelligence`. Catalogs live in the package:
 
 - `notebook_intelligence/locale/notebook_intelligence.pot` is the template of every translatable string. It is generated; do not edit it by hand.
 - `notebook_intelligence/locale/<locale>/LC_MESSAGES/notebook_intelligence.po` is one language, for example `de_DE`. These are the only catalog files translators edit.
-- The `.json` bundle the frontend loads is compiled from each `.po` when a wheel is built (`hatch_build.py`) and is not committed. The `jupyterlab.locale` entry point in `pyproject.toml` is how `jupyterlab_server` finds it.
+- The `.json` bundle the frontend loads and the `.mo` file the server reads are compiled from each `.po` when a wheel is built (`hatch_build.py`) and are not committed. The `jupyterlab.locale` entry point in `pyproject.toml` is how `jupyterlab_server` finds it.
 - Strings in `schema/plugin.json` stay English: `jupyterlab_server` translates settings schemas only from JupyterLab language packs, never from an extension's own catalog. Put user-visible text on the command instead (a toolbar button's tooltip falls back to its command's label and caption).
 
 ### Writing translatable strings
@@ -229,7 +229,18 @@ trans._p('toolbar', 'Run'); // a short label whose meaning depends on context
 - Give short labels whose meaning depends on where they appear a context with `trans._p` (`trans._p('permission mode', 'Plan')`), so a translator can choose a different word for each use.
 - Pass string literals only. The extractor skips any other argument (a variable, a template literal), so the string would never be translated; a lint rule enforces this.
 - Leave in English anything that is not shown to the user as prose: prompts and instructions sent to a model, results that UI tools return to the model, log and console messages, telemetry, command ids, and configuration values. Product names (Notebook Intelligence, Claude Code, Codex) are not translated. Neither is text that styling or code matches on, such as the launcher category `Coding Agent`, which `style/base.css` pins to the top of the launcher.
-- Python strings are not extracted yet: `jupyterlab_server`'s Python translator reads only JupyterLab language packs' catalogs, so server text needs a loader of NBI's own first.
+
+The server translates text it writes for the user (the readiness report, approval cards, chat status lines, built-in toolset descriptions, user-facing REST errors) from the same catalogs, in the language each request names: `src/handler.ts` adds an `nbi_locale` query parameter to REST calls and the chat WebSocket (`withLocale`). Not a header, which would need a CORS preflight that jupyter_server refuses. As in the frontend, a locale is translated only when a JupyterLab language pack for it is installed. The same rules apply, with a bundle from `notebook_intelligence/i18n.py`, again in a local named `trans`:
+
+```python
+from notebook_intelligence import i18n
+
+trans = i18n.request_bundle(self)  # in a REST handler
+trans = i18n.response_bundle(response)  # in chat code
+trans.__("Skill '%1' not found in %2 scope", name, scope)
+```
+
+`scripts/i18n.py` refuses a `trans` call whose msgid is not a string literal (an f-string, a variable), or one made through an attribute (`self.trans.__`). Text returned to the model or an agent CLI, log messages and exception text stay English.
 
 In Jest, `tests/ts/pseudo-translator.ts` provides a bundle that wraps every string in `[!! … !!]`. Bind it with `initTranslations(pseudoTranslator)`, or provide it to components through `TranslationContext`, to check that a string goes through `trans`.
 

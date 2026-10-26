@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **cookie-copy** (v1.0.0): Extract same-machine macOS Chrome cookie copying, backups, restore and ChatGPT identity verification into a standalone Skill. Keep quota verification in **tibo-reset-codex** (v2.2.3 → v2.3.0), with dependency preparation and compatibility entry points for existing commands. Change types: user-requested ownership extraction and separation of login from quota acceptance. Marketplace v3.26.0.
+
+- **read-claude-code-history** (`daymade-claude-code` v4.31.0 → v4.31.1): Resolve the output-limit default through executable CLI help. Align repository instruction routes with Workflow evidence and saved release-evidence handling.
+- **tibo-reset-codex** (v2.2.2 → v2.2.3): Remove the derived authorization-field total and redundant monitor cadence from the stop contract; retain the required fields and deadline behavior.
+- **tunnel-doctor** (v1.17.11 → v1.17.12): Remove the observation total from provider-account triage while retaining its evidence boundaries.
+
+- **read-claude-code-history / claude-code-hooks** (`daymade-claude-code` v4.30.24 → v4.31.0): Read Workflow subagent tool evidence by exact leaf path while preserving main-only defaults; reject invalid release evidence inside its predicate and retain CLI fault diagnostics.
+- **tunnel-doctor** (v1.17.10 → v1.17.11): Prioritize provider account checks without treating TLS symptoms as proof of suspension; require account and data-plane evidence.
+- **tibo-reset-codex** (v2.2.1 → v2.2.2): Separate HTTP reachability from authenticated Usage results and add the optional deadline-stopper handoff with actual stop-result verification.
+- **tibo-reset-codex** (v2.2.0 → v2.2.1): Resolve the browser verifier's executable identity through filesystem symlinks so source-backed Skill entry points execute instead of exiting silently. Add a real subprocess CLI regression. Change type: deterministic repair of the existing invocation contract.
+
+- **frontend-visual-qa** (v1.21.18 → v1.21.19): Check attention ordering, counts and recovery against confirmed retention intent. Change type: bounded acceptance-evidence correction.
+- **tibo-reset-codex** (v2.1.5 → v2.2.0): Add authorized, same-machine Chrome session migration for existing ChatGPT logins, with selected-site replacement, coherent SQLite reads, destination backups and restore, and restarted-browser identity plus usage verification. Preserve the Google-only merge default. Change types: capability addition and bounded migration correctness fixes.
+
+- **tibo-reset-codex** (`tibo-reset-codex` v2.1.4 → v2.1.5): Allow the second-spaced rollout exception in the main zeroing-reporting rule and route its scoring to the occurrence section of forecast-feedback. Change type: main-text consistency fix for the v2.1.4 calibration.
+- **tibo-reset-codex** (`tibo-reset-codex` v2.1.3 → v2.1.4): Record the pinned-occurrence time basis for second-spaced rollout snapshots and the per-record `event_start` rule when one event has both an announce and a forecast record. Change type: review-scoring calibration from a live landing verification.
+- **frontend-visual-qa** (v1.21.17 → v1.21.18): Calibrate retained-but-clipped Reader recovery with a synthetic status-bar fixture and browser controls for final prose, footnotes, document/Find/scroll continuity and verbatim source text. Change type: bounded acceptance-evidence correction.
+
+- **qa-expert** (v1.2.6): Derive partial-run group totals from actual outcomes and verify zero-selection and interrupted-loop reporting through the executing harness. Change type: bounded reporting-method repair.
+
+- **claude-code-hooks** (`daymade-claude-code` v4.30.23 → v4.30.24): Replace filename-only registration health with owner-bound checks, preserve silent healthy output and failure diagnostics, and align advisory examples with existing delivery and state-failure boundaries. Add cadence-reset and recovery-suppression counterexamples. Change type: bounded verification correction.
+- **qa-expert** (v1.2.4 → v1.2.5): Add actual-process argument and early-exit checks for affected CLI refactors, preserving legal special modes, stdin behavior, output contracts and allowed side effects. Change type: bounded acceptance-evidence correction.
+- **app-evolver** (v1.1.8 → v1.1.9): Add domain-role extraction through real consumer adoption while retaining adjacent admission, execution and recovery owners. Change type: bounded engineering-guidance correction.
+- **qa-expert** (v1.2.3 → v1.2.4): Add admission/recovery binding cases and extend delivered-package, final-open race, configuration-snapshot and fixture-contract acceptance. Preserve healthy retry and first-create paths; deduplicate the entry's onboarding schedule into its existing guide. Change types: bounded acceptance-workflow correction and lossless entry compression.
 - **frontend-visual-qa** (v1.21.16 → v1.21.17): Route AI-generated UI/copy complaints through the existing necessity check with task-matched Impeccable, Taste Skill and Product Writing methods. Calibrate redundant explanation against localized recovery, honest unknown states, necessary warnings and verbatim source quotes; remove the evaluation reward for adding overview explanation by default. Change type: bounded runtime guidance and evaluation correction.
 
 - **tunnel-doctor** (v1.17.9 → v1.17.10): Remove derived command and check totals from diagnostic labels; preserve the commands and required recovery checks.

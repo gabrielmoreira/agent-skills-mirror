@@ -21,6 +21,7 @@ NBI is free and open-source. Connect it to a free or paid LLM provider of your c
   - [Notebook toolbar generation](#notebook-toolbar-generation)
   - [Multi-language and kernel-aware notebooks](#multi-language-and-kernel-aware-notebooks)
   - [Reload open files when changed on disk](#reload-open-files-when-changed-on-disk)
+  - [Replies in your language](#replies-in-your-language)
 - [Configuration](#configuration)
   - [Configuration files](#configuration-files)
   - [Remembering GitHub Copilot login](#remembering-github-copilot-login)
@@ -211,6 +212,10 @@ When the agent needs a notebook in a language the current context has not establ
 ### Reload open files when changed on disk
 
 NBI reloads open document tabs when their files change on disk, so edits an AI agent makes via its Read/Write tools appear in the editor without a manual refresh. Tabs with unsaved local edits are skipped so user work is never clobbered. Toggle via the **NBI Settings dialog → External changes → "Refresh open files when changed on disk"** (default on).
+
+### Replies in your language
+
+When JupyterLab is set to another language through a language pack, turn on **NBI Settings dialog → Language → "Reply in my JupyterLab language"** (default off) to have the AI write its chat replies and Chatbook cell descriptions in that language, in every chat mode (the configured provider, Claude, and ACP agents). Code, identifiers, file names and file contents are left as they are. The language is sent to the model by the English name of its JupyterLab language pack ("German (Germany)"), and while JupyterLab is in English, or the setting is off, prompts are unchanged. In Claude and ACP mode the instruction goes with each message rather than a slash command, and a conversation keeps following it after the setting is turned off until you start a new chat.
 
 ## Configuration
 
@@ -511,6 +516,7 @@ Full guide, including the span and event reference, the probe thresholds, worked
 - [`docs/chatbook-extensions.md`](docs/chatbook-extensions.md) — dynamic Chatbook context and mention providers.
 - [`docs/troubleshooting.md`](docs/troubleshooting.md) — common problems with copy-pasteable fixes.
 - [`docs/performance-diagnostics.md`](docs/performance-diagnostics.md): turn timelines, the environment probe, and how to read both.
+- [`docs/translating.md`](docs/translating.md): using NBI in your language, and fixing or adding a translation.
 - [`PRIVACY.md`](PRIVACY.md) — what NBI sends to which provider, and the egress allowlist.
 - [`SECURITY.md`](SECURITY.md) — how to report a vulnerability.
 - [`CHANGELOG.md`](CHANGELOG.md) — release history.

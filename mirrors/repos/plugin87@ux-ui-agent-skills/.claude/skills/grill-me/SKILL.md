@@ -1,6 +1,6 @@
 ---
 name: grill-me
-description: Interrogate the brief before a line is built — ask only the questions whose answers change the work, and put every unasked decision on the record as a stated assumption.
+description: Interrogate the brief before a line is built. Ask only the questions whose answers change the work, and put every unasked decision on the record as a stated assumption.
 # A command the user runs. Converted from .claude/commands/ so it has a
 # CLAUDE_SKILL_DIR of its own and its paths resolve on every install route.
 # disable-model-invocation keeps the behaviour a command had: the user
@@ -9,7 +9,7 @@ description: Interrogate the brief before a line is built — ask only the quest
 disable-model-invocation: true
 ---
 
-> **Step 0 — is the kit here?** This skill reads files from the kit. Check once:
+> **Step 0: is the kit here?** This skill reads files from the kit. Check once:
 > `ls ${CLAUDE_SKILL_DIR}/../../../tokens >/dev/null 2>&1 && echo KIT_OK || echo KIT_MISSING`
 > On `KIT_MISSING` only the skill folders were installed, which is what
 > `npx skills add` does. Say so plainly, point the user at
@@ -34,13 +34,13 @@ that answering you is a waste of time. Before writing a single question:
 
 - Look for an existing brief, `CLAUDE.md`, `BRIEF.md`, or a `reference/` folder.
 - Look for an existing theme: `${CLAUDE_SKILL_DIR}/../../../tokens/*.json`, `design-tokens.json`, `theme.css`.
-  If one exists, the theme question is answered — do not ask it.
+  If one exists, the theme question is answered. Do not ask it.
 - Look at the neighbouring screens and components. Framework, conventions, and
   the component inventory are usually visible, not unknown.
 
 Every question you keep after this pass is one the code genuinely cannot answer.
 
-## 2. The bank — grouped by what no gate can see
+## 2. The bank, grouped by what no gate can see
 
 Pick from these. Do not ask all of them.
 
@@ -48,18 +48,18 @@ Pick from these. Do not ask all of them.
 - Who is this for, and what is the one task they came to finish?
 - What is the first thing their eye should land on? (Four equal cards means the
   answer is "nothing", and that is a composition bug before it is a design.)
-- What does success look like for them — what have they done when they leave?
+- What does success look like for them? What have they done when they leave?
 
 **Content reality**
 - What does this look like with zero items? With one? With four hundred?
-- What is the longest string a real user will put in here — a 60-character
+- What is the longest string a real user will put in here: a 60-character
   project name, a nine-digit amount, an email with no spaces to break?
 - Which numbers are real and which are placeholder? Placeholder that ships as
   real is a lie the user catches immediately.
 
 **Irreversible actions**
 - Which actions here destroy or cannot be undone, and what confirms them?
-  (Destructive wears the danger variant in every place it appears — the trigger
+  (Destructive wears the danger variant in every place it appears: the trigger
   and the confirm dialog both. A blue Delete is an automatic fail.)
 - What happens when the action fails? What does the user read, and what can they
   do next?
@@ -67,7 +67,7 @@ Pick from these. Do not ask all of them.
 **Theme and platform**
 - New theme or existing? If new: which direction, and does dark mode ship too?
 - What is the narrowest width this must survive? (The kit's floor is 280px.)
-- Which framework is the deliverable — and does it need RTL, AA or AAA?
+- Which framework is the deliverable, and does it need RTL, AA or AAA?
 
 **Scope and done**
 - How many screens or components exactly, and what is explicitly out of scope?
@@ -79,7 +79,7 @@ Pick from these. Do not ask all of them.
 - **Maximum seven questions, asked in one round.** A drip of one question at a
   time is worse than a wrong assumption.
 - **Every question must change the work.** If both answers produce the same
-  build, it is not a question, it is a default — take it and say so.
+  build, it is not a question, it is a default. Take it and say so.
 - **Never ask what you can choose well.** Taste is the job. Ask about intent,
   content, and constraint; decide the rest.
 

@@ -11,6 +11,12 @@ metadata:
 
 # Zoom Meeting Context
 
+For installation, use the IDE **Comms** setup guide at `docs/COMMS-SETUP.md`.
+The full Zoom component belongs to an eligible Focused/member claw, with an
+explicit private Border binding where required. Inert MCP discovery does not
+start capture or qualify historical-meeting access. This skill requires its own
+historical connector; RTMS credentials do not substitute for that consent.
+
 ## What this is, and isn't
 
 NetClaw for Zoom (spec 118) has two separate recognition paths — don't confuse them:

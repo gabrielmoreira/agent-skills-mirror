@@ -1,0 +1,33 @@
+{
+  "id": "software_company_sop",
+  "name": "Software Company SOP",
+  "version": "1.0.0",
+  "author": "Flowork OS Sovereign Architect",
+  "category": "engineering_sop",
+  "category_id": "CAT-005",
+  "description": "Multi-agent software company standard operating procedures covering architecture, testing, API contracts, threat modeling, and QC release signoff.",
+  "keywords": [
+    "architecture",
+    "engineering",
+    "standard_operating_procedures",
+    "testing",
+    "quality_assurance",
+    "product_requirement_document",
+    "system_design",
+    "threat_modeling",
+    "security_audit",
+    "role_handover",
+    "terminal_verification",
+    "exit_code_zero",
+    "api_contract",
+    "schema_integrity",
+    "automated_review",
+    "code_hygiene",
+    "deterministic_pipeline",
+    "microservices",
+    "backend_contract",
+    "frontend_interface"
+  ],
+  "shard": "index/so/ft/software_company_sop.json",
+  "source_path": "skills/so/software_company_sop"
+}

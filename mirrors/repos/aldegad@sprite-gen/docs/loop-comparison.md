@@ -267,7 +267,7 @@ application owns its deadline, attempted IDs and adoption transaction.
 | `proposal_id`, `target` | Selected identity and zero-based cell; null for a no-op |
 | `applied_cells` | Cells earlier requests restored, in order, as rebuilt from the origin |
 | `origin_artifacts`, `baseline_artifacts`, `candidate_artifacts` | Exact five-file byte receipts (`sha256`, `bytes` per file) |
-| `source_artifacts`, `projection` | Source inputs, fixed transform, sample PTS and exact correspondence |
+| `source_artifacts`, `projection` | Source inputs, fixed transform, size hold applied on a held cut (`size_hold`: `padding_ltrb` and `cut_frames`), sample PTS and exact correspondence |
 | `partial.copied`, `partial.capped`, `partial.protected` | The three masks of the target: `size`, `count`, row-major run lengths `rle` (the first run is clear) and `sha256` of the packed bits |
 | `partial.alpha_equals_source` | Whether the output's coverage is the source's; `false` only with `protected-pixel-alpha-conflict` |
 | `partial.capped_pixels` | `count`, and for the first 256 in row order (`listed`) `x`, `y`, `origin_rgba`, `source_rgba`, `output_rgba`, and `source_window` (`[left, top, right, bottom]`, inclusive, in the cropped source frame) |
@@ -287,11 +287,15 @@ reported as `no_change`.
 
 The supported projection is scrub, small-component cleanup, optional integer
 body ramp, one shared integer crop and the standard resampler. New loop reports
-also record hashes before repair. Legacy crops are bounded by the recorded
+also record hashes before repair. A held fixed cut is projected by first holding
+each source frame by its recorded move (`size_hold.cut_frames`, `padding_ltrb`).
+This needs the report's hashes before repair and checks every frame against
+them; a held cut without the recorded moves (3.1.0) stays unknown
+(`source-processing-unsupported`). Legacy crops are bounded by the recorded
 scale recipe and canvas, with a search limit of 4096 hypotheses; multiple exact
 matches remain unknown. Frame-specific alignment, different cuts, subsampling,
-size hold, motion anchoring, cycle alignment, or unproven follow warps are not
-accepted. Do not rerun follow on a restoration output.
+motion anchoring, cycle alignment, or unproven follow warps are not accepted.
+Do not rerun follow on a restoration output.
 
 ### The receipt and what a later request rebuilds
 
@@ -306,7 +310,7 @@ comparison reports, not in the loop report, which cannot hold its own digest.
 | `operation`, `metric_version`, `policy_version` | This contract |
 | `origin_artifacts` | The origin's five byte receipts |
 | `source_artifacts`, `source` | Source input receipts and the ordered keyed sequence identity |
-| `projection` | Recipe, crop, cell, scale, wrap, samples, PTS, reference pixel hashes |
+| `projection` | Recipe, crop, cell, scale, wrap, size hold applied on a held cut (`size_hold`: `padding_ltrb` and `cut_frames`), samples, PTS, reference pixel hashes |
 | `applied` | One entry per restored cell, in the order they were adopted; a cell appears once |
 | `applied[].target`, `source_index` | The cell and its source frame |
 | `applied[].copied`, `capped`, `protected` | The three masks, as in the repair report |

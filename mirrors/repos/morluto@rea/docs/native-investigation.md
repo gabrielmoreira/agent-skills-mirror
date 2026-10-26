@@ -14,6 +14,10 @@ device platform. A chained-import row ending in `+0x...` is ambiguous in
 dyld's text output: it may be an addend or part of a literal symbol name. REA
 keeps the full expression in `raw_name`, sets `name` and `addend` to null, and
 marks `name_status: "ambiguous"`; it does not synthesize a symbol identity.
+Each import and export `name` is the exact symbol-table spelling, such as
+`_main`; `runtime_name` is the derived name LLDB and `dlsym` use, such as `main`,
+and is null when `name` is null. See [native call observation](#native-call-observation) for
+breakpoint names.
 
 ## Start with a function
 
@@ -916,15 +920,22 @@ missing LLDB. `duration_ms` controls the later target observation window.
 rea observe-native-calls /Applications/Example.app '{"breakpoints":[{"kind":"objc-method","class_name":"NSURLSession","selector":"dataTaskWithRequest:completionHandler:"},{"kind":"function","name":"open","module":"libsystem_kernel.dylib"}],"duration_ms":5000,"backtrace_frames":4}' --json
 ```
 
-Function names select LLDB runtime symbols. On Darwin, a C function reported as
-`_main` by `inspect_macho` or `nm` can resolve as `main` in LLDB. REA preserves the
-exact selected name; it does not remove underscores or translate static names.
-Use `{"kind":"function","name":"main","module":"Example"}` to limit that
-runtime symbol to the executable image named `Example`, then inspect the reported
-locations and image paths. Omitting `module` deliberately matches every loaded
-image, including system libraries. A match outside the executable is valid for
-that request and does not by itself make coverage partial. This C naming example
-does not establish a translation rule for Swift, C++ or other mangled symbols.
+Function names select LLDB runtime symbols. On Darwin, the Mach-O symbol table
+spells language-level symbols with one leading underscore, which LLDB and `dlsym`
+omit: `_main` is `main`, C++ `__ZN3rea3addEii` is `_ZN3rea3addEii`, and Swift
+`_$s…` is `$s…`. Names without that underscore, such as `-[Class selector]`, are
+unchanged. `inspect_macho` keeps each export and import `name` exactly as the
+symbol table spells it and derives its `runtime_name`; pass `runtime_name` as the
+breakpoint `name`. `observe_native_calls` preserves the exact selected name; it
+does not remove underscores or translate static names, so `_main` selects a
+different runtime symbol. Use `{"kind":"function","name":"main","module":"Example"}`
+to limit that runtime symbol to the executable image named `Example`, then inspect
+the reported locations and image paths. Omitting `module` deliberately matches
+every loaded image, including system libraries. A match outside the executable is
+valid for that request and does not by itself make coverage partial. Event and
+location `symbol` values are LLDB display names, which are demangled for C++ and
+Swift; join them to `inspect_macho` through `breakpoint_index` and the request
+`name`, or through `file_address` and the export `address`.
 
 Each event is an observation: thread, image, symbol, load and file address,
 the raw integer argument registers, optional caller frames and, for an

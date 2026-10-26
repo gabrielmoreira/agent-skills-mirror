@@ -27,6 +27,14 @@ the history action returns to the complete loaded research history without
 changing the selected evidence pack. Reading either layer, switching report
 tabs or opening an original never executes an analysis or experiment.
 
+The source reader displays saved completed-command output and text-only
+`function_call_output` / `custom_tool_call_output` records in source order.
+Direct shell-result envelopes show their literal output and observed exit code;
+a missing exit code remains unknown. Command arguments and the complete original
+record stay available on demand. Mixed, malformed or unsupported content falls
+back to the complete literal citation. Unknown nested transport stays text;
+reading never recursively interprets it or turns an exit code into acceptance.
+
 The presentation draws on composable inspection in
 [Distill's interpretability article](https://distill.pub/2018/building-blocks/)
 and responsive comparison layouts in the
@@ -388,6 +396,14 @@ previous and current coverage, and changed judgments after completion. Previous
 versions remain accessible through the same reader and browser history.
 Reading, registering or refreshing a successor never starts analysis. A failed,
 cancelled or concurrently running successor does not replace a valid base result.
+
+`compared_pair_count` is the number of shared episode/metric pairs in two
+qualified outputs. It is `null` when either output is unavailable; zero means
+there are no shared judgments, not that conclusions stayed unchanged. Changed
+judgments are shown with this denominator, separately from added/removed eligible
+pairs. Older projections without the count remain unknown in the reader.
+These are structural version facts, not matched scientific comparisons or
+evidence of analysis quality.
 
 The typed comparison reuses a qualified output only when literal excerpts,
 source identities/paths/line positions, episode questions, eligibility,

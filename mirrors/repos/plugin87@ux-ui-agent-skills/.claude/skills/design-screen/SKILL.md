@@ -64,7 +64,7 @@ assumes you have already made.
 
 Full version and the reasoning: `${CLAUDE_SKILL_DIR}/../../../taste/design-taste.md`.
 
-### Banned defaults — break each one deliberately
+### Banned defaults: break each one deliberately
 
 These are the tells that make UI read as generated. They are defects, not
 starting points.
@@ -100,8 +100,9 @@ thing leads, zero emoji, and never state a number you did not measure.
 ## 3. Direction into tokens
 
 Pick the reference anchor from
-`${CLAUDE_SKILL_DIR}/../../../taste/aesthetic-systems.md` or the library at
-`${CLAUDE_SKILL_DIR}/../../../design-systems/library/`, then resolve it into
+`${CLAUDE_SKILL_DIR}/../../../taste/aesthetic-systems.md` or a named system
+(`node ${CLAUDE_SKILL_DIR}/../../../scripts/library.mjs get <name>` fetches its
+spec and prints where it is), then resolve it into
 tokens rather than styling screens directly. One CSS-variable layer, imported
 once. If a brand colour fails contrast, adjust it: taste serves tier 4 and never
 overrides accessibility.
@@ -117,7 +118,7 @@ styles and layer wider screens on with `min-width`. `max-width` is fine for a
 narrow refinement, never as the way mobile gets supported. Every value a token. Every interactive element ships all eight
 states. Content first, then the layout that serves it.
 
-## 5. Gate — run it, never claim it
+## 5. Gate: run it, never claim it
 
 ```bash
 node ${CLAUDE_SKILL_DIR}/../../../scripts/accuracy_report.mjs
@@ -126,10 +127,10 @@ node ${CLAUDE_SKILL_DIR}/../../../scripts/accuracy_report.mjs
 Report the real `N/N` line. For a single file, at minimum:
 
 ```bash
-node ${CLAUDE_SKILL_DIR}/../../../scripts/verify_states.mjs <file> [--dark]
-node ${CLAUDE_SKILL_DIR}/../../../scripts/verify_responsive.mjs <file> --scale=1.25
-node ${CLAUDE_SKILL_DIR}/../../../scripts/slop_tells.mjs --strict <file>
-node ${CLAUDE_SKILL_DIR}/../../../scripts/taste_audit.mjs --strict <file>
+node ${CLAUDE_SKILL_DIR}/../../../scripts/gate.mjs verify_states.mjs <file> [--dark]
+node ${CLAUDE_SKILL_DIR}/../../../scripts/gate.mjs verify_responsive.mjs <file> --scale=1.25
+DS_REQUIRE_BROWSER=1 node ${CLAUDE_SKILL_DIR}/../../../scripts/slop_tells.mjs --strict <file>
+DS_REQUIRE_BROWSER=1 node ${CLAUDE_SKILL_DIR}/../../../scripts/taste_audit.mjs --strict <file>
 ```
 
 A render gate with no browser prints SKIPPED and exits 0. That is not a pass.

@@ -5,6 +5,12 @@ description: "Handle inbound Twilio voice conversations for network status and o
 
 # Twilio Inbound Voice Skill
 
+For installation, use `docs/COMMS-SETUP.md`. Native SMS, the core API MCP and this
+voice gateway have separate credentials, callback and readiness contracts.
+Managed voice is OpenClaw-specific and scoped to its selected Focused/member
+home; a Hermes SMS or core MCP setup does not qualify this voice path. Installer
+checks never place calls or replace existing number routes.
+
 **Feature**: 042-twilio-voice-mcp
 **Priority**: P2
 **User Stories**: US5 (Inbound Conversations), US6 (Voice Commands)

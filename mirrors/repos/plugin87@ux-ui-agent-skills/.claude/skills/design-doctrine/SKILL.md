@@ -5,7 +5,7 @@ description: The house rules for ANY design or UI work - the verification protoc
 
 # Skill: Design Doctrine
 
-> **Step 0 — is the kit here?** This skill reads files from the kit. Check once:
+> **Step 0: is the kit here?** This skill reads files from the kit. Check once:
 > `ls ${CLAUDE_SKILL_DIR}/../../../tokens >/dev/null 2>&1 && echo KIT_OK || echo KIT_MISSING`
 > On `KIT_MISSING` only the skill folders were installed, which is what
 > `npx skills add` does. Say so plainly, point the user at
@@ -21,7 +21,7 @@ then load the rule file for the territory you are actually in.
 1. **Never state a number you did not measure.** Any contrast ratio, "WCAG pass",
    or "100%" must come from running a gate and reporting its real output. If you
    have not run it, say "not verified yet."
-2. **Verify every state, not just resting.** `node ${CLAUDE_SKILL_DIR}/../../../scripts/verify_states.mjs <file> [--dark]`
+2. **Verify every state, not just resting.** `node ${CLAUDE_SKILL_DIR}/../../../scripts/gate.mjs verify_states.mjs <file> [--dark]`
    measures default, hover and focus - a button that passes at rest can fail on hover.
 3. **One command before reporting done:** `node ${CLAUDE_SKILL_DIR}/../../../scripts/accuracy_report.mjs`.
    Report the real `N/N` line. It is all-or-nothing.
@@ -29,8 +29,9 @@ then load the rule file for the territory you are actually in.
    announce success between failures.
 5. **Render and LOOK.** Gates pass while a UI is still visibly broken. Screenshot
    the harness in both themes, click every control, and confirm the state changed.
-6. **Responsive is gated too:** `node ${CLAUDE_SKILL_DIR}/../../../scripts/verify_responsive.mjs <file|dir>` -
-   no horizontal overflow at 280/320/414px.
+6. **Responsive is gated too:** `node ${CLAUDE_SKILL_DIR}/../../../scripts/gate.mjs verify_responsive.mjs <file|dir>`:
+   no horizontal overflow from 280 to 951px, iPhone Duo included, and a hinge kept clear
+   by any page that answers the fold.
 7. **Honest scope.** The gates prove objective correctness. They never prove taste.
    For that, run `/critique`, look at the work yourself, and start from the taste
    preflight below rather than from default components.
@@ -113,7 +114,8 @@ use `design-screen`, which runs this preflight as step 1 of the pipeline.
 > ABSOLUTE: zero emoji in any output - UI, code, JSON, copy, comments, commit
 > messages. Not as an icon, a bullet, a status dot, or "polish". Emoji are the
 > number-one tell of machine-generated work. Use a lucide icon (inline SVG,
-> `currentColor`) or plain words. Enforced by `${CLAUDE_SKILL_DIR}/../../../scripts/check_no_emoji.py`.
+> `currentColor`) or plain words. No em dash or en dash either: a colon, a comma or
+> parentheses. Enforced by `${CLAUDE_SKILL_DIR}/../../../scripts/check_no_emoji.py`.
 
 ## The five non-negotiables
 
@@ -143,13 +145,13 @@ inaccessible is broken; consistent but confusing is the wrong pattern.
 
 | Read it when | File |
 |---|---|
-| Tokens, palettes, theming, dark mode, any colour decision | `.claude/rules/tokens-and-color.md` |
-| Type scale, line length, the 4px spacing rhythm | `.claude/rules/typography-and-spacing.md` |
-| Building any screen or component, composition, empty states | `.claude/rules/components.md` |
-| Auditing, or finishing any interactive element | `.claude/rules/accessibility.md` |
-| Generating code for React, Next.js, SwiftUI, or any adapter | `.claude/rules/frameworks.md` |
-| Design review, prototyping, research, handoff | `.claude/rules/review-and-research.md` |
-| Aesthetic direction, motion, voice and tone, governance, QA | `.claude/rules/brand-and-operations.md` |
+| Tokens, palettes, theming, dark mode, any colour decision | `${CLAUDE_SKILL_DIR}/../../../.claude/rules/tokens-and-color.md` |
+| Type scale, line length, the 4px spacing rhythm | `${CLAUDE_SKILL_DIR}/../../../.claude/rules/typography-and-spacing.md` |
+| Building any screen or component, composition, empty states | `${CLAUDE_SKILL_DIR}/../../../.claude/rules/components.md` |
+| Auditing, or finishing any interactive element | `${CLAUDE_SKILL_DIR}/../../../.claude/rules/accessibility.md` |
+| Generating code for React, Next.js, SwiftUI, or any adapter | `${CLAUDE_SKILL_DIR}/../../../.claude/rules/frameworks.md` |
+| Design review, prototyping, research, handoff | `${CLAUDE_SKILL_DIR}/../../../.claude/rules/review-and-research.md` |
+| Aesthetic direction, motion, voice and tone, governance, QA | `${CLAUDE_SKILL_DIR}/../../../.claude/rules/brand-and-operations.md` |
 
 Then pick the runnable skill for the job: `design-tokens`, `design-component`,
 `design-code`, `design-review`, `a11y-audit`, `apply-aesthetic`, `brandkit`,

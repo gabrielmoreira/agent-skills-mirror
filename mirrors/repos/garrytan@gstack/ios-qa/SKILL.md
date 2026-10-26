@@ -593,10 +593,10 @@ If the user says "demo", "demo mode", "show me", or "I want to see it
 working", run in **DEMO MODE**. This changes how the agent interacts with
 the app:
 
-**DEMO MODE OVERRIDES ALL OTHER RULES.** When demo mode is active, the
-agent MUST drive every action through visible UI (`/tap`, `/swipe`, `/type`)
-and NEVER use `POST /state/*` writes to skip steps. Viewers see the agent
-type every key, tap every button. The on-device DebugOverlay attribution
+In demo mode, drive every action through visible UI (`/tap`, `/swipe`,
+`/type`) rather than `POST /state/*` writes, because viewers watch each
+step: they see the agent type every key and tap every button. All other
+rules in this skill still apply. The on-device DebugOverlay attribution
 chip shows "Driven by Claude Code (demo)" or the remote agent identity.
 
 In demo mode, the screencap rate is bumped to 4fps so the recording feels

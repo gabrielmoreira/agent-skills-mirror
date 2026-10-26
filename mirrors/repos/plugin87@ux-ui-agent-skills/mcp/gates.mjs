@@ -17,7 +17,7 @@ const WHAT = {
   'verify_states.mjs':        'WCAG contrast on a real render, for every element in default, hover and focus. The state most pages fail is not the resting one.',
   'measure_render.mjs':       'WCAG contrast measured on the rendered page rather than on the token source, so a value overridden in CSS is caught.',
   'axe_audit.mjs':            'axe-core WCAG 2.2 A/AA: roles, names, labels, landmarks.',
-  'verify_responsive.mjs':    'No horizontal overflow at 280, 320 and 414px. --scale=1.25 re-runs it with a wider root font, which is how a layout breaks on another platform.',
+  'verify_responsive.mjs':    'No horizontal overflow from 280 to 951px, including the five viewports Safari gives a page on iPhone Duo, then the page folded: a page that answers the fold may put no text or control on the hinge. --scale=1.25 re-runs it with a wider root font, which is how a layout breaks on another platform.',
   'verify_keyboard.mjs':      'WCAG 2.1.1: Tab reaches every control, Enter and Space operate it, composite widgets implement their arrow-key model.',
   'verify_target_size.mjs':   'WCAG 2.5.8: every target at least 24x24, with the spec\'s spacing and inline exceptions.',
   'verify_mobile_first.mjs':  'Strips every @media and renders the base layer at 320px. A mobile-first page survives it; a desktop-first page cannot.',

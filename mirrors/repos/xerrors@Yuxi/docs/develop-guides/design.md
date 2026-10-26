@@ -1,6 +1,6 @@
 # 产品体验与界面设计规范
 
-本文档定义 Yuxi 的产品体验与界面设计规范，适用于需求设计、交互方案、视觉设计、`web/src` 下的新页面、新组件和现有 UI 调整。它同时面向产品、设计、人类开发者和 AI coding agent：开始实现前先说明用户目标、信息层级和交互语义，再复用现有组件、CSS 变量和交互模式。
+本文档定义 Yuxi 的产品体验与界面设计规范，适用于需求设计、交互方案、视觉设计、`frontend/src` 下的新页面、新组件和现有 UI 调整。它同时面向产品、设计、人类开发者和 AI coding agent：开始实现前先说明用户目标、信息层级和交互语义，再复用现有组件、CSS 变量和交互模式。
 
 ## 0. 产品判断先于界面实现
 
@@ -25,7 +25,7 @@ Yuxi 是知识库、知识图谱与 Agent 开发平台，界面应保持克制�
 
 ## 2. 颜色与 Token
 
-颜色必须优先使用 `web/src/assets/css/base.css` 和 `web/src/assets/css/base.dark.css` 中定义的 CSS 变量。不要在组件中随意新增硬编码色值；确需新增全局色值时，先补充 token 并说明用途。
+颜色必须优先使用 `frontend/src/assets/css/base.css` 和 `frontend/src/assets/css/base.dark.css` 中定义的 CSS 变量。不要在组件中随意新增硬编码色值；确需新增全局色值时，先补充 token 并说明用途。
 
 ### 主色
 
@@ -88,7 +88,7 @@ Yuxi 通过 `:root.dark` 覆盖同名 token。新增 UI 必须使用 CSS 变量�
 
 ## 3. 字体与文本层级
 
-全局字体栈定义在 `web/src/assets/css/main.css`，新增组件不要私自引入新字体。代码、命令、路径和技术标识可使用 monospace，优先复用现有 `@mono-font` 或系统 monospace 栈。
+全局字体栈由 `frontend/src/assets/css/base.css` 的 `--font-family` 定义，`main.css` 与 Ant Design token 共同消费，新增组件不要私自引入新字体。代码、命令、路径和技术标识可使用 monospace，优先复用现有 `@mono-font` 或系统 monospace 栈。
 
 建议层级：
 
@@ -119,6 +119,24 @@ Yuxi 通过 `:root.dark` 覆盖同名 token。新增 UI 必须使用 CSS 变量�
 - 颜色变量：使用 `base.css` / `base.dark.css` 中的 CSS 变量
 - UI 基础：复用 Ant Design Vue 和项目现有组件模式，避免为单次需求封装新组件体系
 
+### 共享基础外观
+
+CSS 色板拥有颜色、字体和浮层阴影，`shared/model/theme.js` 读取当前主题的实际 CSS 色值并装配 Ant Design token。主题切换先更新根节点的 `dark` 类，再重新装配控件主题；需要参与颜色派生的 token 使用实际色值。按钮、表单、选择器、标签和普通弹窗的通用外观由主题与 `assets/css/antd.less` 统一维护。
+
+主题选择为 light、dark、auto，默认浅色，以 localStorage 的 `theme` 保存选择。auto 实时跟随浏览器 `prefers-color-scheme`，`isDark` 提供实际明暗状态。用户菜单与 Dashboard 按浅色 → 深色 → 自动 → 浅色轮换并显示当前模式；用户菜单点击主题保持展开，其他操作与点击外部关闭。
+
+当前 Ant Design Vue 4.2.6 将根 Provider 的设计 token 提供给静态 `message`、`notification` 和 `Modal.confirm`，这些反馈沿用同一主题入口。静态调用的其他上下文与组件树分离，不能据此假设它们获取业务注入。调用方保留反馈内容、时长、操作回调和显式定制；基础外观不逐页重复定义，升级组件库时验证静态反馈的主题切换。
+
+`a-select` 的下拉选项通过 `components.Select` 统一使用中性背景：`controlItemBgActive` 映射 `--gray-100`，`controlItemBgHover` 映射 `--gray-50`。选中与悬停保持不同明度，深浅主题沿用同名 CSS 色板；不在业务页覆盖下拉选项背景。
+
+`a-alert` 的四种状态共用当前主题的浅中性背景与柔和边框，以语义色图标区分成功、信息、警告和错误。背景、边框、图标颜色和圆角由 Alert 组件 token 维护，说明文字由共享样式维护；保留 banner、关闭按钮、操作与内容 slot 的原有行为。
+
+现有 `a-empty` 标签与 ConfigProvider 的 `renderEmpty` 复用 `shared/ui/AntEmpty.js`，只替换默认图像，保留原有说明、自定义图像、显式隐藏配置及操作 slot。菜单空状态采用紧凑间距；需要标题、解释和下一步操作的业务引导使用 `ResourceEmptyState`。
+
+管理页的行内操作、刷新按钮和旋转状态复用 `assets/css/management-controls.less` 的明确样式类。局部样式继续拥有尺寸、业务布局、自绘标题、定高面板及透明标题选择器等真实差异。共享规则接管外观时同步删除对应局部定义，不以追加全局覆盖保留两个可编辑事实源。
+
+设置面板的分区标题、说明、页头操作、表单行、服务卡片和管理表格复用 `assets/css/settings.less`，由全局样式入口一次加载。组件使用明确的 `settings-*` 类，设置弹窗只拥有导航与内容区布局，不通过后代通用类覆盖面板外观。分区使用 `settings-section-block` 表达间距，不根据标题在 DOM 中是否为首个子节点推断层级；账户资料、沙盒状态与表格业务列保留局部布局。
+
 ### 按钮
 
 按钮应按操作优先级区分：
@@ -129,7 +147,9 @@ Yuxi 通过 `:root.dark` 覆盖同名 token。新增 UI 必须使用 CSS 变量�
 | 次按钮 | 返回、取消、普通操作 | 使用中性边框和浅背景，hover 只增强边框或背景 |
 | 文本/链接按钮 | 表格行内操作、轻量入口 | 保持轻量，不扩大视觉权重 |
 | 危险按钮 | 删除、撤销、清空等不可逆操作 | 使用 error 语义色，并配合确认弹窗或明确文案 |
-| 图标按钮 | 工具栏、折叠、刷新、复制 | 使用 `lucide-icon-btn` 保证图标与文本居中 |
+| 图标按钮 | 工具栏、折叠、刷新、复制 | Ant 按钮使用 `#icon` 插槽；原生按钮使用 `lucide-icon-btn` |
+
+Ant 按钮的图标与文字由 `assets/css/antd.less` 统一居中排列，默认间距 8px；Lucide、Ant 原生图标和 loading 图标共用此布局，不在业务组件重复添加对齐、gap 或图标 margin。图标默认沿用文字字号，显式 `size` 保持生效。纯图标按钮提供 `aria-label`，与可见文字相邻的装饰图标使用 `aria-hidden="true"`。
 
 交互状态：
 
@@ -172,7 +192,7 @@ Yuxi 的信息界面以配置卡片、列表和表格为主，默认使用轻量
 - 开关默认表示立即生效。需要统一保存时，应明确显示未保存状态，不能混用两种提交模型。
 - 同类行共享稳定的展开、文本、状态和操作列。图标使用固定盒、统一 `gap` 和 `line-height`，右侧操作保持同一边界。
 - 配置列表优先使用一个列表容器和轻分割线，避免每行形成厚重卡片；展开内容与触发行保持连续。
-- 至少在真实页面的目标宽度、1024px、768px 和 375px 检查对齐、长文本和溢出。
+- 至少在真实页面的目标宽度、1024px 和 768px 检查对齐、长文本和溢出。
 
 ### 状态标签
 
@@ -253,12 +273,14 @@ Yuxi 默认采用“背景 + 边框”的轻量层级：
 
 ## 8. 响应式行为
 
-响应式设计以“功能不丢失、信息不挤压”为优先：
+前端最小适配视口宽度为 768px（CSS 像素），响应式设计与验收范围为 768px 及以上。无需手机端适配，768px 以下不列入适配与验收要求。本规范中的“小屏”指支持范围内的较窄视口。
+
+支持范围内以“功能不丢失、信息不挤压”为优先：
 
 - 小屏下表单字段纵向排列，按钮组可换行。
 - 侧栏、抽屉和弹窗要保证最小宽度内内容可读。
 - 表格在小屏下允许横向滚动；不要把关键字段压缩到不可读。
-- 图标按钮和主要操作需要保持可点击区域，移动端目标尺寸尽量不小于 40px。
+- 图标按钮和主要操作需要保持清晰、易点击的操作区域。
 - 长文本使用省略号时，应提供 tooltip、title 或详情入口查看完整内容。
 - 图谱、图表、代码块等宽内容应保留横向滚动或自适应缩放策略。
 
@@ -328,7 +350,19 @@ AI agent 修改或生成 Yuxi UI 时，优先按这一节执行。
 
 ## 参考资料
 
-- `web/src/assets/css/base.css`：浅色模式 token
-- `web/src/assets/css/base.dark.css`：暗色模式 token
-- `web/src/assets/css/main.css`：全局字体、布局基础样式和 `lucide-icon-btn`
+- `frontend/src/assets/css/base.css`：浅色模式 token
+- `frontend/src/assets/css/base.dark.css`：暗色模式 token
+- `frontend/src/assets/css/main.css`：全局字体、布局基础样式和 `lucide-icon-btn`
 - [Awesome DESIGN.md](https://github.com/VoltAgent/awesome-design-md)：面向 AI agent 的 `DESIGN.md` 样例集合
+
+## 头像组件
+
+Agent 与 User 使用共享 [FallbackAvatar](https://github.com/xerrors/Yuxi/blob/main/frontend/src/shared/ui/FallbackAvatar.vue)。调用方传入 kind、稳定实体 seed、自定义图片 src 与展示尺寸；自定义图片优先。Agent 默认 Clay，User 默认 Glyphs。生成器随前端本地交付，不请求外部头像 API，Gaze 保持透明背景。
+
+组件支持 style 为 glyphs、clay、shape-grid、gaze；preset 默认为 default，也支持 studio、heritage、soft，每套色卡都有日间与夜间版本。明暗共用主体色，底纸与墨色可独立调整；default 保留各风格上游主体与对比色，夜间仅调整 Glyphs 与 Clay 的底纸，Shape Grid 保留彩色背景。dark 为 on、off、auto，auto 跟随 Yuxi 的主题 Store；circle、square、rounded 分别提供圆形、直角方形和圆角方形。颜色配置由 [共享色卡](https://github.com/xerrors/Yuxi/blob/main/frontend/src/shared/lib/avatar/presets.js) 拥有，几何与表情随稳定 seed 固定。
+
+图片加载或本地生成失败时，Agent 使用 Lucide Bot、User 使用 Lucide User，浅色背景 token 在深浅主题下保持相同。组件通过 fallback 事件提供 image 或 generation 原因。图片地址改变后重新加载；网络恢复只重试失败图片。装饰头像传 decorative，独立头像使用 alt 或 name 提供可访问名称。
+
+Glyphs 使用 Matt Houser 原作的 CC BY 4.0 授权，组件保留 SVG 署名与许可元数据，应用配色、夜间底纸及画布裁切适配；发布包含 [头像第三方声明](https://github.com/xerrors/Yuxi/blob/main/frontend/public/avatar-licenses.txt)。Clay、Shape Grid、Gaze 美术为 CC0 1.0，DiceBear 核心为 MIT。固定依赖与色卡更新需要核验输出和许可。
+
+知识库、Skill 和工具的图标色由 `shared/lib/extensionIconColor.js` 按稳定资源身份从预设色卡中选择；浅色底使用当前主题背景混色。知识库使用 `kb_id`，Skill 使用 `slug`，图标与颜色在目录卡片和 @ 候选中保持一致。飞书使用本地品牌图标。

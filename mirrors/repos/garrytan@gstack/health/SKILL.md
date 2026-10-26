@@ -500,7 +500,7 @@ Score each category on a 0-10 scale using this rubric:
 | Tests | 28% | All pass (exit 0) | >95% pass | >80% pass | <=80% pass |
 | Dead code | 13% | Clean (exit 0) | <5 unused exports | <20 unused | >=20 unused |
 | Shell lint | 9% | Clean (exit 0) | <5 issues | >=5 issues | N/A (skip) |
-| GBrain | 10% | doctor=ok, queue<10, pushed <24h | doctor=warnings OR queue<100 OR pushed <72h | doctor broken OR queue>=100 OR pushed >=72h | N/A (gbrain not installed) |
+| GBrain | 10% | Computed in code: see **GBrain sub-score computation** below | — | — | N/A (gbrain not installed) |
 
 **Parsing tool output for counts:**
 Use the complete captured output, not the displayed tail. A zero match count cannot
@@ -534,17 +534,28 @@ a numeric composite, and skip numeric history persistence and trend calculation.
 
 **GBrain sub-score computation:**
 
-```
-doctor_component: 10 if `gbrain doctor --json | jq -r .status` == "ok";
-                   7 if "warnings"; 0 otherwise (or command times out after 5s).
-queue_component:   10 if ~/.gstack/.brain-queue.jsonl has <10 lines;
-                    7 if 10-100; 0 if >=100 (suggests secret-scan rejections
-                    piling up). N/A if artifacts_sync_mode == off.
-push_component:    10 if (now - mtime of ~/.gstack/.brain-last-push) < 24h;
-                    7 if <72h; 0 if >=72h. N/A if artifacts_sync_mode == off.
-gbrain_score     = 0.5 * doctor_component + 0.3 * queue_component + 0.2 * push_component
-                   (redistribute 0.3 + 0.2 into doctor when sync_mode is off:
-                   gbrain_score = doctor_component in that case)
+Compute the GBrain score in code, not by hand, and pass the printed
+`GBRAIN_SCORE` as `gbrain` to the composite above. Gather three readings:
+
+- **doctor:** 10 when `gbrain doctor --json` reports `status` `ok`, 7 for
+  `warnings`, 0 for anything else or when the call times out after 5s.
+- **queue:** the line count of `~/.gstack/.brain-queue.jsonl` (0 when absent).
+  A long queue suggests secret-scan rejections piling up.
+- **pushHours:** hours since the mtime of `~/.gstack/.brain-last-push`.
+
+Pass `null` for both queue and pushHours when `artifacts_sync_mode` is `off`;
+the doctor component then carries the whole score:
+
+```bash
+bun --no-env-file --config=/dev/null -e '
+const doctor = <N|null>;
+const queue = <N|null>;
+const pushHours = <N|null>;
+const d = doctor ?? 0;
+const band = (v, ten, seven) => (v < ten ? 10 : v < seven ? 7 : 0);
+const score = queue === null || pushHours === null ? d : 0.5 * d + 0.3 * band(queue, 10, 100) + 0.2 * band(pushHours, 24, 72);
+console.log("GBRAIN_SCORE: " + score.toFixed(1));
+'
 ```
 
 The `gbrain doctor --json` call MUST be wrapped in `timeout 5s` so a hung
@@ -625,7 +636,8 @@ Fields:
 - `ts` -- ISO 8601 timestamp
 - `branch` -- current git branch
 - `score` -- composite score (one decimal)
-- `typecheck`, `lint`, `test`, `deadcode`, `shell`, `gbrain` -- individual category scores (integer 0-10)
+- `typecheck`, `lint`, `test`, `deadcode`, `shell` -- individual category scores (integer 0-10)
+- `gbrain` -- the printed `GBRAIN_SCORE` (0-10, one decimal)
 - `duration_s` -- total time for all tools in seconds
 
 If a category was skipped, set its value to `null`. Treat a history entry

@@ -20,15 +20,16 @@ on-every-commit check. Treat this Galata suite as top-of-the-pyramid coverage.
 
 ## What's covered
 
-| Spec                               | Flows                                                                                                                                                                           |
-| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `extension.spec.ts`                | Smoke: extension activates, chat sidebar opens.                                                                                                                                 |
-| `chat-sidebar.spec.ts`             | Footer icons + labels, gear-icon title, prefix popover via typed `/`, slash-button toggle, workspace file picker open + close, **regression #262** (Escape from picker search). |
-| `notebook-toolbar.spec.ts`         | Toolbar button renders, popover structure, **regression #231** (textarea focus on open), submit gating, Escape + outside-click dismissal.                                       |
-| `cell-output.spec.ts`              | Hover toolbar renders Explain + Ask on clean cells, Troubleshoot only on errored cells, click activates the hovered cell.                                                       |
-| `launcher.spec.ts`                 | **Regression #260/#268** (Coding Agent tiles must add / dispose dynamically on capability change, not rely on `isVisible`).                                                     |
-| `claude-mcp-patch.spec.ts`         | Claude MCP panel: paste-to-add parsing and the shapes it accepts.                                                                                                               |
-| `chatbook-cell-mode-badge.spec.ts` | Chatbook cell badge renders and switches a cell between prompt and code.                                                                                                        |
+| Spec                               | Flows                                                                                                                                                                                                                                         |
+| ---------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `extension.spec.ts`                | Smoke: extension activates, chat sidebar opens.                                                                                                                                                                                               |
+| `chat-sidebar.spec.ts`             | Footer icons + labels, gear-icon title, prefix popover via typed `/`, slash-button toggle, workspace file picker open + close, **regression #262** (Escape from picker search).                                                               |
+| `notebook-toolbar.spec.ts`         | Toolbar button renders, popover structure, **regression #231** (textarea focus on open), submit gating, Escape + outside-click dismissal.                                                                                                     |
+| `cell-output.spec.ts`              | Hover toolbar renders Explain + Ask on clean cells, Troubleshoot only on errored cells, click activates the hovered cell.                                                                                                                     |
+| `launcher.spec.ts`                 | **Regression #260/#268** (Coding Agent tiles must add / dispose dynamically on capability change, not rely on `isVisible`).                                                                                                                   |
+| `claude-mcp-patch.spec.ts`         | Claude MCP panel: paste-to-add parsing and the shapes it accepts.                                                                                                                                                                             |
+| `chatbook-cell-mode-badge.spec.ts` | Chatbook cell badge renders and switches a cell between prompt and code.                                                                                                                                                                      |
+| `i18n.spec.ts`                     | Switches JupyterLab to German and walks the chat sidebar, command palette, settings tabs and a server-written readiness row, checking each against NBI's de_DE catalog. Needs `pip install jupyterlab-language-pack-de-DE`; skips without it. |
 
 When a flow needs a real LLM round trip to pass we skip it rather than mock
 the network — these tests are about UI state, not model output. Tests that

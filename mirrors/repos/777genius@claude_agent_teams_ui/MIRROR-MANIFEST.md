@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `777genius/claude_agent_teams_ui` — 26 default patterns, 15 followed patterns, 62 file(s) materialized.
+Mirror of `777genius/claude_agent_teams_ui` — 26 default patterns, 15 followed patterns, 63 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `777genius/claude_agent_teams_ui` — 26 default patterns, 15 followed
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 15 |
-| Files         | 62 |
+| Files         | 63 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -105,36 +105,37 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 30 | ✓ | [`src/features/manual-message-queue/README.md`](src/features/manual-message-queue/README.md) |
 | 31 | ✓ | [`src/features/member-log-reads/README.md`](src/features/member-log-reads/README.md) |
 | 32 | ✓ | [`src/features/opencode-compatibility/README.md`](src/features/opencode-compatibility/README.md) |
-| 33 | ✓ | [`src/features/project-folder/README.md`](src/features/project-folder/README.md) |
-| 34 | ✓ | [`src/features/recent-projects/README.md`](src/features/recent-projects/README.md) |
-| 35 | ✓ | [`src/features/task-folders/README.md`](src/features/task-folders/README.md) |
-| 36 | ✓ | [`src/features/team-direct-chats/README.md`](src/features/team-direct-chats/README.md) |
-| 37 | ✓ | [`src/features/team-group-chats/README.md`](src/features/team-group-chats/README.md) |
-| 38 | ✓ | [`src/features/team-import/README.md`](src/features/team-import/README.md) |
-| 39 | ✓ | [`src/features/team-message-history/README.md`](src/features/team-message-history/README.md) |
-| 40 | ✓ | [`src/features/team-provisioning/README.md`](src/features/team-provisioning/README.md) |
-| 41 | ✓ | [`src/features/team-read-recovery/README.md`](src/features/team-read-recovery/README.md) |
-| 42 | ✓ | [`src/features/team-task-detail/core/domain/README.md`](src/features/team-task-detail/core/domain/README.md) |
-| 43 | ✓ | [`src/features/team-templates/README.md`](src/features/team-templates/README.md) |
-| 44 | ✓ | [`src/features/workspace-trust/README.md`](src/features/workspace-trust/README.md) |
-| 45 | ✓ | [`src/renderer/features/CLAUDE.md`](src/renderer/features/CLAUDE.md) |
-| 46 | ✓ | [`tools/opencode-console-wrapper/README.md`](tools/opencode-console-wrapper/README.md) |
-| 47 | ✓ | [`tools/owned-process-broker/README.md`](tools/owned-process-broker/README.md) |
-| 48 | → | [`.github/CLA.md`](.github/CLA.md) |
-| 49 | → | [`.github/CODE_OF_CONDUCT.md`](.github/CODE_OF_CONDUCT.md) |
-| 50 | → | [`.github/CONTRIBUTING.md`](.github/CONTRIBUTING.md) |
-| 51 | → | [`.github/SECURITY.md`](.github/SECURITY.md) |
-| 52 | → | [`AGENT_CRITICAL_GUARDRAILS.md`](AGENT_CRITICAL_GUARDRAILS.md) |
-| 53 | → | [`docs/FEATURE_ARCHITECTURE_STANDARD.md`](docs/FEATURE_ARCHITECTURE_STANDARD.md) |
-| 54 | → | [`docs/GIT_DELIVERY_POLICY.md`](docs/GIT_DELIVERY_POLICY.md) |
-| 55 | → | [`docs/RELEASE.md`](docs/RELEASE.md) |
-| 56 | → | [`docs/research/gastown-paperclip-comparison-2026-06-25.md`](docs/research/gastown-paperclip-comparison-2026-06-25.md) |
-| 57 | → | [`docs/research/openrig-comparison-2026-10-06.md`](docs/research/openrig-comparison-2026-10-06.md) |
-| 58 | → | [`docs/team-management/debugging-agent-teams.md`](docs/team-management/debugging-agent-teams.md) |
-| 59 | → | [`docs/team-management/team-provisioning-target-architecture.md`](docs/team-management/team-provisioning-target-architecture.md) |
-| 60 | → | [`README.md`](README.md) |
-| 61 | → | [`src/features/organizations/README.md`](src/features/organizations/README.md) |
-| 62 | → | [`src/features/README.md`](src/features/README.md) |
+| 33 | ✓ | [`src/features/opencode-runtime-installer/README.md`](src/features/opencode-runtime-installer/README.md) |
+| 34 | ✓ | [`src/features/project-folder/README.md`](src/features/project-folder/README.md) |
+| 35 | ✓ | [`src/features/recent-projects/README.md`](src/features/recent-projects/README.md) |
+| 36 | ✓ | [`src/features/task-folders/README.md`](src/features/task-folders/README.md) |
+| 37 | ✓ | [`src/features/team-direct-chats/README.md`](src/features/team-direct-chats/README.md) |
+| 38 | ✓ | [`src/features/team-group-chats/README.md`](src/features/team-group-chats/README.md) |
+| 39 | ✓ | [`src/features/team-import/README.md`](src/features/team-import/README.md) |
+| 40 | ✓ | [`src/features/team-message-history/README.md`](src/features/team-message-history/README.md) |
+| 41 | ✓ | [`src/features/team-provisioning/README.md`](src/features/team-provisioning/README.md) |
+| 42 | ✓ | [`src/features/team-read-recovery/README.md`](src/features/team-read-recovery/README.md) |
+| 43 | ✓ | [`src/features/team-task-detail/core/domain/README.md`](src/features/team-task-detail/core/domain/README.md) |
+| 44 | ✓ | [`src/features/team-templates/README.md`](src/features/team-templates/README.md) |
+| 45 | ✓ | [`src/features/workspace-trust/README.md`](src/features/workspace-trust/README.md) |
+| 46 | ✓ | [`src/renderer/features/CLAUDE.md`](src/renderer/features/CLAUDE.md) |
+| 47 | ✓ | [`tools/opencode-console-wrapper/README.md`](tools/opencode-console-wrapper/README.md) |
+| 48 | ✓ | [`tools/owned-process-broker/README.md`](tools/owned-process-broker/README.md) |
+| 49 | → | [`.github/CLA.md`](.github/CLA.md) |
+| 50 | → | [`.github/CODE_OF_CONDUCT.md`](.github/CODE_OF_CONDUCT.md) |
+| 51 | → | [`.github/CONTRIBUTING.md`](.github/CONTRIBUTING.md) |
+| 52 | → | [`.github/SECURITY.md`](.github/SECURITY.md) |
+| 53 | → | [`AGENT_CRITICAL_GUARDRAILS.md`](AGENT_CRITICAL_GUARDRAILS.md) |
+| 54 | → | [`docs/FEATURE_ARCHITECTURE_STANDARD.md`](docs/FEATURE_ARCHITECTURE_STANDARD.md) |
+| 55 | → | [`docs/GIT_DELIVERY_POLICY.md`](docs/GIT_DELIVERY_POLICY.md) |
+| 56 | → | [`docs/RELEASE.md`](docs/RELEASE.md) |
+| 57 | → | [`docs/research/gastown-paperclip-comparison-2026-06-25.md`](docs/research/gastown-paperclip-comparison-2026-06-25.md) |
+| 58 | → | [`docs/research/openrig-comparison-2026-10-06.md`](docs/research/openrig-comparison-2026-10-06.md) |
+| 59 | → | [`docs/team-management/debugging-agent-teams.md`](docs/team-management/debugging-agent-teams.md) |
+| 60 | → | [`docs/team-management/team-provisioning-target-architecture.md`](docs/team-management/team-provisioning-target-architecture.md) |
+| 61 | → | [`README.md`](README.md) |
+| 62 | → | [`src/features/organizations/README.md`](src/features/organizations/README.md) |
+| 63 | → | [`src/features/README.md`](src/features/README.md) |
 
 ---
 

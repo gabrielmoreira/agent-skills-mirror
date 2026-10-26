@@ -35,7 +35,10 @@ TV_HOST=<tv ip> tools/venv/bin/python -I tools/trace.py home --runs 5 --out trac
 
 - **Output:** each run writes `<scenario>-<n>.pftrace` (10–20 MB) and a `.json` with the commands and the
   TV's model and build. `traces/` is gitignored.
-- **The other app:** `--app package/activity`, or by default the TV's Settings.
+- **The other app:** `--app package/activity`, or by default the TV's Settings. Both this tool and
+  `bench.py` bring an existing instance to the front across runs, rather than stacking new Settings
+  activities. They do not clear the other app's data or force-stop it. Check that it is responsive
+  after a long session; an already accumulated history is not removed by this flag.
 
 ## Report
 

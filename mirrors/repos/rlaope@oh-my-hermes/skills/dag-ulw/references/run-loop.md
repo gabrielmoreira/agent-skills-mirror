@@ -4,8 +4,14 @@
 
 1. `omh_dag action=define run=<id> name=<short name> goal=<criteria> nodes=[...]`. A refusal names what to fix:
    a cycle, an unknown or self dependency, two nodes writing one path with no edge between them, more than
-   48 nodes, an empty graph. Lint is advice: missing prompt markers, no verification node, a producer the
-   verification node does not depend on, every node `deep`, more than one `ultrabrain`.
+   48 nodes, an empty graph, a node whose prompt names none of TASK / DELIVERABLE / SCOPE / VERIFY /
+   STOP WHEN, and in a finite one-shot session (`hermes chat -q`) more nodes than
+   `delegation.oneshot_max_children` (default 2, 0 = unlimited; a value that is not a positive integer
+   uses the default; interactive sessions are never capped). If the host's one-shot detector itself
+   cannot be read, define is refused as `oneshot_detection_unavailable` rather than run uncapped.
+   Lint is advice: a partial prompt-marker set, no verification node, a producer the verification node does
+   not depend on, every node `deep`, more than one `ultrabrain`, and a graph of 5+ nodes whose critical
+   path is at least 80% of it (`serial_graph`: split it into parallel lanes where the work allows).
 2. The result carries `calls`. Each call is one category (and route: a node retried after a provider error
    goes in a call of its own): run its `route` with `omh_delegate_route` (`set`, or `fallback`), then one
    `delegate_task` with its `tasks` unchanged. The goal ends with `[dag:<run>/<node>]`; that marker is how
@@ -21,6 +27,13 @@
    command there, then `ready`.
    The result carries the next `calls`; dispatch them in the same turn.
 6. `omh_dag action=status` at any time; it survives compaction.
+
+A child handing off a still-running background process or CI run is not a failure: settle with
+`outcome=parked`, its `handle` (at most 120 characters), and `wake_at` (UTC ISO-8601 or epoch, future,
+within 24 hours). The node stays live as `parked`, spends no repair cycle, and cannot be repaired.
+At the deadline call `ready`: the same node gets a fresh attempt naming the handle, not replacement
+work. OMH starts no timer or poll. After three parks per node, another park is refused with
+`park_limit_reached`; settle accepted, failed or blocked instead. Cancel turns parked nodes cancelled.
 
 ## Goal loop
 

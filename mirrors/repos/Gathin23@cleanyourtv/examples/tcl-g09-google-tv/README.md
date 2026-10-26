@@ -6,7 +6,7 @@ including a reboot.
 
 | File | What it is |
 |---|---|
-| `debloat.txt` | The 35 packages that were disabled, grouped and commented |
+| `debloat.txt` | The 36 packages that were disabled, grouped and commented |
 | `config.json` | Dock order, hidden apps, Live TV app, columns; push it with `tools/theme.sh` |
 
 All commands run from the repo root, with the TV's IP in `TV_HOST`. USB debugging must be on while you
@@ -97,6 +97,17 @@ good when launcherx was disabled — re-enabling every debloated package did not
   `INPUT_KEY_SERVICE` is only needed for the app buttons above.
 - Also verified on `G09_4K_GB` with firmware `STT2.230203.001.AS24` in India with the same debloat list.
 - Same lists and buttons on a second unit with firmware STT2.230203.001 AS10 (G09_4K_GB_32BIT).
+- Also verified on a TCL 55V6C (product `G09_4K_GB_NF`, firmware `STT2.230203.001.AS24`) in Colombia,
+  including a reboot. This unit also ships `com.tcl.magiconnectfree` (MagiConnect, TCL's phone companion
+  app), which the list disables. If a TCL soundbar is connected over HDMI eARC, keep
+  `com.tcl.UpdatePeripheral` enabled so the soundbar gets firmware updates.
+- AS24 also loses volume repeat. On the 55V6C, with `HomeKeyService` and `InputKeyService` bound, the gear
+  and app buttons work, but holding volume up moves one step. Unbinding both restores the repeat.
+- On the 55V6C, the gear button does nothing after `build-and-install.sh` and works after the first restart,
+  with no helper bound. The Netflix, Prime Video, and YouTube buttons stay unmapped.
+- The 55V6C Wi-Fi is a MediaTek module on an internal USB 2.0 bus (`btmtk_usb`). Expect about 100 to
+  125 Mbps in both directions, which is enough for 4K. Speed tests in the TV's browser read lower because
+  the CPU limits them.
 - Firmware updates come through Play Services and are untouched.
 - Screenshots come out black while HDMI or Live TV is on screen; press Home first.
 - Switch USB debugging off when you're done; the launcher keeps working without it.

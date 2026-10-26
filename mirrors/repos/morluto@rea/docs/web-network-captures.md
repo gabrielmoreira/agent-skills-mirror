@@ -746,7 +746,16 @@ integer of 10 or more digits that no entity of the type holds (where every one
 holds a distinct integer of the same length, as time-based ids do), a
 `nested-clock` object whose clocks the request stamped, a `template` around
 a generated value, a `reference` to an entity, or a `composed` string; other
-fields keep the observed value. A `reference` is an object holding fields of the
+fields keep the observed value. When the first read of a created entity before
+the next write shows fields the create's answer lacks, or its clocks to another
+precision, the observed entity takes them (`observation.read`). An item read
+that agrees with the answer otherwise lends its fields and clock spellings and
+no longer confirms the create; one that disagrees or omits an answer field its
+item view renders still checks it. Clock agreement uses the coarser recorded
+precision, including microseconds. A list read
+only adds fields the answer lacks and still checks it. Serving answers a create
+in its answer's shape and clock precision and stores the fields of both with
+the item read-back's clock precision. A `reference` is an object holding fields of the
 entity a sent member names, as the state holds it (a parent beside `parentId`):
 the member is accepted with any value, serving looks the entity up and refuses a
 call naming one the environment does not hold or holds in more than one
@@ -778,7 +787,14 @@ with them. Other clocks the plan stamps take that spelling too unless their own
 value shows a fixed width. A body that wraps one
 object in a one-element array is that object, wrapped so on every call
 (`body.envelope`). An update's members
-echo when stored as sent; a member stored differently is accepted only with its
+echo when stored as sent. A clock sent back as the entity held it and stored as
+a fresh clock near the call is a `clock`, and a member stored as the slug of
+another member stored as sent is a `slug`, both accepted with any value, as a
+whole-object write that sends what it read shows. A save that echoes an
+already-derived slug or holds a clock in its own second remains compatible
+with that derivation in either call order; earlier saves must also reproduce
+a newly learned slug. Any other member stored
+differently is accepted only with its
 recorded value (`body.fixed`) and stores the value the call that showed it
 recorded (the `value` of its `constant` rule), and a field it changed without
 sending must be a clock, a nested clock, an increment, a slug, a fresh `unique`

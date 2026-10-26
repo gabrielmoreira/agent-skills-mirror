@@ -9,6 +9,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `xerj sessions import --format claude-code --input FILE --output NEW.jsonl`
+  prepares an explicit Claude Code JSONL transcript for ordinary `autoindex`.
+  It emits text-bearing user/assistant records through the existing native
+  PII plugin before writing, preserving UUIDs, parent links, source filename,
+  line/byte offset and explicitly referenced file paths. Tool bodies,
+  thinking and metadata records are omitted. The export is an offline,
+  new-file snapshot: malformed input, unsupported turn shapes, repeated UUIDs
+  or a changed source refuse publication; existing output is never replaced.
+  This covers one preparation format for #1793, not automatic session
+  discovery, incremental synchronization or universal secret removal. See
+  [the import guide](tools/session-import/README.md).
+
+- With `[cluster] enabled = true`, `POST /v1/indices/{name}/docs` (one
+  document, or a JSON array with one document per element),
+  `DELETE /v1/indices/{name}/docs/{id}`, and
+  `POST /v1/indices/{name}/docs/_bulk` run on the shard primary, whichever
+  member accepted the request. The primary copies the stored document or
+  the delete onto the in-sync replicas and acknowledges it with the same
+  quorum as `PUT /{index}/_doc/{id}`. The caller still gets the native
+  envelope: `data.seq_no` is the engine's 1-based sequence (the ES
+  `_seq_no` plus one), a successful index or update is HTTP 201, and a
+  delete of a document that is already absent is HTTP 200 `deleted`. A
+  primary that does not answer is the native error body with HTTP 503,
+  and the accepting node does not store the document. A copy that misses
+  quorum is HTTP 503 `replica_not_acknowledged`: the primary has the
+  write. The index must already exist; this path does not create one.
+  A JSON array on this endpoint is a batch. It used to be stored as one
+  value, because the single-document shape was parsed first and accepts
+  any JSON. `POST /v1/indices/{name}/ingest` is unchanged and still
+  writes on the receiving node, as do logs, OTLP, syslog, and turbo.
+  A write still needs the primary. `[cluster] enabled = false` does not
+  take this path (part of
+  [#1170](https://github.com/xerj-org/xerj/issues/1170); the issue stays
+  open).
+
 - `xerj autoindex` names a file family in the run summary when every file of
   that family was junked, or when junked files are a strict majority
   (`junk_files * 2 > files`; stale-plan skips are not counted). The human
@@ -35,13 +70,103 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   refuses the request before any document is written. A copy that misses
   quorum is HTTP 503 `replica_not_acknowledged`: the primaries that ran
   have the delete, and the response still reports `deleted` and
-  `failures`. `wait_for_completion=false` uses the same path. Native
-  `/v1` ingest still writes on the receiving node. A write still needs
-  the primary. `[cluster] enabled = false` does not take this path (part of
+  `failures`. `wait_for_completion=false` uses the same path. Native `/v1` logs,
+  OTLP, syslog, turbo, and pipeline ingest still write on the receiving
+  node. A write still needs the primary. `[cluster] enabled = false` does
+  not take this path (part of
   [#1170](https://github.com/xerj-org/xerj/issues/1170); the issue stays
   open).
 
 ### Fixed
+
+- `xerj autoindex` no longer aborts a long run with `Resource temporarily
+  unavailable (os error 11)` when the machine refuses to start a thread. The
+  sync replay used to start a new thread for every operation (hundreds of
+  thousands on a large folder); it now starts at most the window width of
+  workers once per replay and reuses them. Starting a replay worker or an
+  indexing worker now retries with a short backoff when thread creation is
+  refused, and the replay finishes on the calling thread if no worker can be
+  started, so a refusal is no longer fatal (#2428).
+- `xerj autoindex` no longer runs out of memory while planning a large folder.
+  It used to keep the sampled values of every file in memory at once before
+  grouping them into datasets, and kept them all until the end of the run;
+  on a 5 GB folder of about 146,000 files that was several GB on the client
+  before anything was indexed. Files are now grouped as they are read, and only
+  what the end-of-run key correlation needs is kept. The datasets and index
+  names it plans are unchanged (part of #1122).
+- `xerj autoindex` no longer fails a run because a dataset name built from a
+  long path (for example a Go module path) is over the 255-character index name
+  limit. Names longer than 128 characters are shortened and end in a short
+  hash, so they stay the same on every run and never clash (part of #1122).
+- The first searches after a restart, or after a segment left the cache,
+  no longer read every stored document to return a page of hits. When the
+  request names its `_source` fields (as `xerj search` does), only the
+  winning rows and only the needed fields are read, and the full document
+  cache is filled in the background. On a 344 MB autoindexed corpus the
+  first `xerj search` after a restart went from about 2.6 s to about 1.4 s.
+  `fields: ["_passage"]` no longer makes a filtered `_source` load the whole
+  document. (#2422, #2423)
+
+- `autoindex` no longer turns a large nested array of mostly numbers, such
+  as a flight trace or a coordinate matrix, into one long text field. The
+  record keeps a `<field>_count` number instead. Such text fields were up to
+  64 KB per record, made every search hit slower to load, and matched
+  queries on stray digits. Re-index to drop them from existing indices.
+  (#2423)
+
+- Server startup now reports the resolved data directory, its configuration
+  source and whether this launch created it. New-directory guidance points
+  operators back to their previous `--data-dir` or `--config` when they expected
+  existing indices/accounts. Defaults, flag precedence, auto-port relocation
+  and existing data are preserved; no other data directories are scanned (#2409).
+
+- `POST /{index}/_search` applies `post_filter` to the hits, as
+  Elasticsearch does. It used to be accepted and ignored: every document
+  the query matched came back and `hits.total` counted them all.
+  Aggregations still see the unfiltered query, which is the point of the
+  parameter: a faceted UI keeps offering a facet's other values while one
+  is selected. A request that aggregates now runs as two searches, one for
+  the filtered hits and one for the aggregations. `post_filter` beside a
+  hybrid query is still a 400 (#943). `_msearch`, async search, scroll and
+  a `?q=` query still ignore `post_filter`
+  ([#2400](https://github.com/xerj-org/xerj/issues/2400)).
+
+- `xerj mcp` no longer holds every message behind a slow tool call. Each
+  `tools/call` runs on its own task, so `ping`, `tools/list` and other
+  calls are answered while one call waits on the node. A ping sent 0.2 s
+  after a call to a stalled node was answered after 60 s; it is now
+  answered at once. `notifications/cancelled` now aborts the call it names,
+  and no response is sent for that call, as the MCP spec asks; it used to
+  be ignored. Replies can go out in any order (they are matched by `id`); a
+  batch is still answered one line per request
+  ([#2390](https://github.com/xerj-org/xerj/issues/2390)).
+
+- `xerj autoindex remove --root` also deletes indices an aborted or failed
+  build of that folder left behind when the build never wrote a catalog run.
+  The resume journal names the folder and the index names; a catalog walk
+  cannot see them. A cataloged index is left in place — the working copy the
+  abort preserved, and any index another folder still names. `xerj autoindex
+  status` marks a live leftover of any prefix `ORPHAN` and prints the remove
+  command
+  ([#2391](https://github.com/xerj-org/xerj/issues/2391)).
+
+- `xerj mcp`: a proxied tool call whose response body cannot be read in
+  full (the connection drops partway, or the request deadline fires
+  mid-body) is now an error that names the URL and the cause. It used to
+  come back as an empty *successful* result, which reads as "no matches".
+
+- MCP calls to a loopback node (`127.0.0.1`, `localhost`, `::1`) no longer
+  follow `ALL_PROXY`, `HTTP_PROXY`, or `HTTPS_PROXY`. reqwest sends those
+  addresses through the proxy unless the client opts out, so a socks or HTTP
+  proxy in the environment answered HTTP 503 while the node was healthy and
+  `curl --noproxy` reached it. `xerj autoindex`, `xerj search`, `xerj def`,
+  and the other commands that share the node HTTP client skip the proxy for
+  the same hosts. A non-loopback URL still uses the process proxy, including
+  `NO_PROXY`. When a proxy is used and returns HTTP 502, 503, or 504, or the
+  connection to it fails, the tool error names the proxy (`request to …
+  went through proxy http://…, which returned HTTP 503`) instead of
+  `XERJ returned HTTP 503`
+  ([#2379](https://github.com/xerj-org/xerj/issues/2379)).
 
 - `xerj mcp`: `xerj_code_search` now gives up on a node that does not
   answer. Its requests went through a fresh HTTP client without the 30 s
@@ -443,13 +568,13 @@ samuelmbabhazi, elewashy, WYSTAF, kamwoh, mgtf, mariomarcolongo and Jun516.
     [#1170](https://github.com/xerj-org/xerj/issues/1170); the issue stays
     open (PR [#2347](https://github.com/xerj-org/xerj/pull/2347)).
   - What #1170 still does not do: `wait_for_active_shards`; replica
-    promotion (a write still needs the primary); native `/v1` ingest and
-    `_delete_by_query` (they stay on the receiving node); replicating
-    pipelines; moving copies when membership changes; merging aggregations,
-    suggest, collapse, rescore, profile, `search_after` or scroll across
-    owners; node-lifecycle APIs. The snapshot is the command prefix, not
-    the documents, and a history that does not fit in 8 MiB stays in the
-    log.
+    promotion (a write still needs the primary); native `/v1` logs, OTLP,
+    syslog, turbo, and pipeline ingest (they stay on the receiving node);
+    `_reindex`; replicating pipelines; moving copies when membership
+    changes; merging aggregations, suggest, collapse, rescore, profile,
+    `search_after` or scroll across owners; node-lifecycle APIs. The
+    snapshot is the command prefix, not the documents, and a history that
+    does not fit in 8 MiB stays in the log.
 
 - A DeepSeek Harness profile bundle in `dsh/` (`xerj-dsh`, Apache-2.0,
   version `1.0.0-rc.99`) inserts the README's `mcp-xerj` stdio row via
@@ -607,6 +732,14 @@ samuelmbabhazi, elewashy, WYSTAF, kamwoh, mgtf, mariomarcolongo and Jun516.
   report `eta_quality=stalled` when a phase with a known total completes
   nothing (including 0/N), and when a phase with no total has been silent
   for 10 minutes.
+
+- Writing through a multi-index alias follows ES's write-index rule: one
+  backing index, or exactly one member carrying `is_write_index: true`; an
+  ambiguous alias is refused with `illegal_argument_exception` instead of
+  silently writing to the first backing index. The same resolution covers
+  `_bulk` items and the id-addressed GET/HEAD/DELETE, so a document written
+  through the alias is readable through it, and the response `_index` now
+  names the concrete index.
 
 - Semantic `xerj autoindex` against `--embed-mode proxy` resumes after a
   mid-run failure and does not re-embed documents already indexed, when the

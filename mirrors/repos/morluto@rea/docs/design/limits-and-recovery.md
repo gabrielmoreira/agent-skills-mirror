@@ -169,6 +169,7 @@ cannot partially apply. Clients coordinating writes can supply
 | `capture.decoder_old_generation_mib`                          | Next owned capture decoder                                             |
 | `javascript.analysis_timeout_ms`, `javascript.max_heap_mb`    | Next source analysis / new JavaScript worker                           |
 | `wasm.command_timeout_ms`                                     | Next WABT operation                                                    |
+| `native.matching_representation_bytes`                        | Next `match_native_functions` request                                  |
 
 ### Precedence and lifetime
 
@@ -243,6 +244,8 @@ Inspection then reports the runtime value while retaining the launch error.
 Reset exposes the invalid launch state again; it does not repair or replace it
 with the built-in default. Provider availability and execution must resolve the
 same effective setting so readiness changes along with repair and reset.
+`REA_NATIVE_MATCHING_REPRESENTATION_BYTES` is validated the same way, by
+`match_native_functions` alone.
 
 ## Keep a fixed ceiling honest
 

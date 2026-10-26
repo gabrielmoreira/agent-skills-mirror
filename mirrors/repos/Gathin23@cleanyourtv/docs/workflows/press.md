@@ -11,6 +11,8 @@
    performance requirements install:
    `tools/venv/bin/pip install -r tools/requirements-perf.txt`, then
    `tools/readme_featured.py Fredoka.ttf docs/featured.png` and
-   `tools/readme_card.py Fredoka.ttf docs/card.jpg`. If you cannot redraw them, say so in the PR.
+   `tools/readme_card.py Fredoka.ttf docs/card.jpg`. Fredoka is the variable TTF from Google Fonts and its
+   file is not in the repo, so that first argument is the path of the copy you downloaded; each script says
+   so when the path is wrong. If you cannot redraw them, say so in the PR.
 
 Then run the tests: `python3 -m unittest discover -s tests -v`.

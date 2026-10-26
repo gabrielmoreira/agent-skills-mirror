@@ -35,3 +35,46 @@ Undo lines in the list header are the repo's standard ones, not something run on
   Developer options each time.
 - The setup wizard, launcherx and the Ambient screensaver (`dreamx`, left enabled here) are the ones to look at
   first if Home or the screensaver misbehaves after a system update.
+
+## Second unit: TCL 55Q77K
+
+TCL 55Q77K, 55", model "Smart TV Pro", product `G08_4K_US`, client type `TCL-NA-MT9653-S1` (MediaTek MT9653),
+the same firmware `UTT2.250416.001 AU16`. On the Ethernet port, TV speakers, nothing in USB. Set up on
+23 October 2026: this list without the AirPlay packages, the TCL browser and the streaming apps (kept by that
+owner), then launcherx and the setup wizard for a custom launcher. All of it came through a reboot the same day.
+
+- **The setup wizard's saved Wi-Fi on an Ethernet set.** Four saved networks belonged to
+  `com.google.android.tungsten.setupwraith` (`dumpsys wifi | grep cname`), though the set was on Ethernet.
+  Disabling the wizard deleted them, as Android does, and nothing else: the address on `eth0` and ADB stayed. Join
+  Wi-Fi again in Settings if the set ever goes back to it; a network saved there belongs to Settings and stays.
+- **Apps only mode** (Settings > Accounts & Sign In > the account) lives in launcherx. With launcherx disabled the
+  switch is gone; enable launcherx, change it, disable launcherx again. Google TV takes Home back the moment
+  launcherx is enabled, `set-home-activity` or not, so make the new launcher Home again afterwards and check
+  `mFocusedApp`.
+- **Network debugging** on port 5555 came back on its own after the reboot on this unit.
+
+### The remote's buttons with launcherx disabled
+
+The remote is `BT_RC923A_B1` over Bluetooth (vendor `0x0417`, product `0x0304`). Its key layout has no entry for
+the app buttons, so the kernel reports `KEY_UNKNOWN` (scancode 240) and TCL's input layer maps the HID usage
+(`MSC_SCAN` in `getevent -lt`) to a keycode; `logcat` shows each as a `TIDD:` line.
+
+| Button | HID usage | Keycode | With launcherx disabled |
+| --- | --- | --- | --- |
+| Settings | `0x000c0055` | `NOTIFICATION` (83) | reaches the focused window; the launcher's `settings_key_keycodes` answers it on Home |
+| Netflix | `0x000c0051` | 4062 | reaches the focused window, nothing opens |
+| Prime Video | `0x000c005f` | 4099 | reaches the focused window, nothing opens |
+| YouTube | `0x000c0057` | `BUTTON_3` (190) | a global key: Android sends it to launcherx's `GlobalKeyListener_Receiver`, no window sees it |
+| Apple TV | `0x000c0086` | 4160 | reaches the focused window, nothing opens |
+| TCL tv+ | `0x000c0150` | 4184 | TCL's `TclShortCutKeyManager` starts `tcl://com.tcl.tvplus`, which fails with TCL TV+ disabled |
+| Disney+ | | | still opens: TCL starts it itself |
+
+Input, Back, Home, the Assistant button and volume work as before. `dumpsys window policy` lists the global keys
+that go to launcherx on this build: `GUIDE`, `BUTTON_3`, `PROFILE_SWITCH`, `FEATURED_APP_1` and `MACRO_1`.
+
+Since four of the buttons reach the focused window, a Home screen can answer them while it is on screen without
+any accessibility helper; inside another app they go to that app. YouTube needs a key-filtering helper
+(`InputKeyService` with `app_keys` `190:com.google.android.youtube.tv`), and with only that helper bound a held
+volume button stepped once per press here too, with TV speakers and no soundbar
+([TROUBLESHOOTING](../../docs/TROUBLESHOOTING.md#a-key-helper-is-bound-and-a-held-remote-button-stopped-repeating)).
+That owner kept the volume ramp and went without the YouTube button.

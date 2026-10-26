@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `UfoMiao/zcf` — 26 default patterns, 0 followed patterns, 6 file(s) materialized.
+Mirror of `UfoMiao/zcf` — 26 default patterns, 0 followed patterns, 22 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `UfoMiao/zcf` — 26 default patterns, 0 followed patterns, 6 file(s) 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 6 |
+| Files         | 22 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -65,6 +65,22 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`.claude/skills/zcf-update-docs/SKILL.md`](.claude/skills/zcf-update-docs/SKILL.md) |
 | 5 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 6 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 7 | ✓ | [`packages/core/templates/skills/en/bmad-init/SKILL.md`](packages/core/templates/skills/en/bmad-init/SKILL.md) |
+| 8 | ✓ | [`packages/core/templates/skills/en/feat/SKILL.md`](packages/core/templates/skills/en/feat/SKILL.md) |
+| 9 | ✓ | [`packages/core/templates/skills/en/git-clean-branches/SKILL.md`](packages/core/templates/skills/en/git-clean-branches/SKILL.md) |
+| 10 | ✓ | [`packages/core/templates/skills/en/git-commit/SKILL.md`](packages/core/templates/skills/en/git-commit/SKILL.md) |
+| 11 | ✓ | [`packages/core/templates/skills/en/git-rollback/SKILL.md`](packages/core/templates/skills/en/git-rollback/SKILL.md) |
+| 12 | ✓ | [`packages/core/templates/skills/en/git-worktree/SKILL.md`](packages/core/templates/skills/en/git-worktree/SKILL.md) |
+| 13 | ✓ | [`packages/core/templates/skills/en/init-project/SKILL.md`](packages/core/templates/skills/en/init-project/SKILL.md) |
+| 14 | ✓ | [`packages/core/templates/skills/en/workflow/SKILL.md`](packages/core/templates/skills/en/workflow/SKILL.md) |
+| 15 | ✓ | [`packages/core/templates/skills/zh-CN/bmad-init/SKILL.md`](packages/core/templates/skills/zh-CN/bmad-init/SKILL.md) |
+| 16 | ✓ | [`packages/core/templates/skills/zh-CN/feat/SKILL.md`](packages/core/templates/skills/zh-CN/feat/SKILL.md) |
+| 17 | ✓ | [`packages/core/templates/skills/zh-CN/git-clean-branches/SKILL.md`](packages/core/templates/skills/zh-CN/git-clean-branches/SKILL.md) |
+| 18 | ✓ | [`packages/core/templates/skills/zh-CN/git-commit/SKILL.md`](packages/core/templates/skills/zh-CN/git-commit/SKILL.md) |
+| 19 | ✓ | [`packages/core/templates/skills/zh-CN/git-rollback/SKILL.md`](packages/core/templates/skills/zh-CN/git-rollback/SKILL.md) |
+| 20 | ✓ | [`packages/core/templates/skills/zh-CN/git-worktree/SKILL.md`](packages/core/templates/skills/zh-CN/git-worktree/SKILL.md) |
+| 21 | ✓ | [`packages/core/templates/skills/zh-CN/init-project/SKILL.md`](packages/core/templates/skills/zh-CN/init-project/SKILL.md) |
+| 22 | ✓ | [`packages/core/templates/skills/zh-CN/workflow/SKILL.md`](packages/core/templates/skills/zh-CN/workflow/SKILL.md) |
 
 ---
 

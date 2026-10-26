@@ -29,7 +29,7 @@ Yuxi 不维护可独立编辑的中央 risk/claim inventory，也不要求 claim
 python3 scripts/verify_engineering_contracts.py --report
 ```
 
-该输出由仓库事实重新生成，不提交、不手工编辑，也不反向定义事实。删除投影后应能从同一代码、测试、decision 和 workflow 得到相同结果。Verifier 只证明引用、接线和部分边界检查真实存在；router/web 边界检查只覆盖静态可判部分，service 层事务、锁与 lease 语义仍由真实 PostgreSQL integration 证明。它也不判断目标是否值得、测试断言是否正确、oracle 是否真正独立、远端是否把检查设为 required，或某个 diff 是否被错误归类为 trivial。这些语义仍由 Reviewer 结合真实系统证据裁决。
+该输出由仓库事实重新生成，不提交、不手工编辑，也不反向定义事实。删除投影后应能从同一代码、测试、decision 和 workflow 得到相同结果。Verifier 只证明引用、接线和部分边界检查真实存在；router/frontend 边界检查只覆盖静态可判部分，service 层事务、锁与 lease 语义仍由真实 PostgreSQL integration 证明。它也不判断目标是否值得、测试断言是否正确、oracle 是否真正独立、远端是否把检查设为 required，或某个 diff 是否被错误归类为 trivial。这些语义仍由 Reviewer 结合真实系统证据裁决。
 
 ## 证据等级
 
@@ -57,7 +57,7 @@ python3 scripts/verify_engineering_contracts.py
 python3 -m unittest scripts.test_verify_engineering_contracts
 ```
 
-Gate 必须只读、失败可诊断、拥有明确 Owner，并保持有限延迟。低成本只读检查（`trust.yml`）在每个 PR 无条件阻塞；真实 Compose integration/E2E（`system-tests.yml` 等按路径触发）只在匹配高风险范围时运行。高风险 Agent 主链路使用无外部密钥的 deterministic assembled-path E2E 阻断，`real-provider-probe.yml` 手工探针负责外部 provider 校准；两者不能互相冒充。Workflow、selector、skip 或 expected-output 更新都按生产代码审查；长期 flake、误报、绕过或无 consumer 的 gate 应及时修复或退役，禁止用新增规则掩盖既有缺陷。
+Gate 必须只读、失败可诊断、拥有明确 Owner，并保持有限延迟。低成本只读检查（`trust.yml`）在每个 PR 运行；它是否阻止合并由 GitHub 分支保护的 required 设置决定，workflow 本身不保证这一点。真实 Compose integration/E2E（`system-tests.yml` 等按路径触发）只在匹配高风险范围时运行。高风险 Agent 主链路使用无外部密钥的 deterministic assembled-path E2E 阻断，`real-provider-probe.yml` 手工探针负责外部 provider 校准；两者不能互相冒充。Workflow、selector、skip 或 expected-output 更新都按生产代码审查；长期 flake、误报、绕过或无 consumer 的 gate 应及时修复或退役，禁止用新增规则掩盖既有缺陷。
 
 运行时当前事实属于 `ARCHITECTURE.md`、对应代码 Owner 与测试；本页不复制 readiness、Run 或 checkpoint 契约。相关非显然取舍保存在 [工程决策记录](./decisions/README.md) 的聚焦 implemented records 中，审计时从这些局部 Owner 派生，不维护另一份手工状态表。
 

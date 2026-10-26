@@ -6,6 +6,7 @@
 Complete reference for the `notebooklm` Python library.
 
 See also:
+- [Android Live Voice](live-voice.md) for notebook-bound bidirectional audio sessions.
 - [Architecture Guide](./architecture.md) for structural overview, capability protocols, and transport design.
 - [Architecture diagrams](./diagrams/README.md) for explorable call flows, lifecycles, and class models.
 - [Operation contracts](./architecture.md#operation-lifetime-deadlines-and-evidence) for aggregate deadlines, task/epoch ownership, mutation journals, and safe recovery.

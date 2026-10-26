@@ -182,7 +182,7 @@ Direct answers for you, the AI agent, grouped by intent: the clusters come from 
 - [Code search MCP for Claude Code: cite file:line, not grep](https://xerj.org/answers/code-search-mcp-for-claude-code.md) `answer`: I need my agent to find a passage and cite the file, not dump the whole tree. How?
 - [Find every place a config key is set in a repo](https://xerj.org/answers/search-yaml-xml-config-repository.md) `answer`: How do I find every place a config key is set across YAML and XML in a repo?
 - [How do I check my code index actually finished?](https://xerj.org/answers/check-codebase-index-is-complete.md) `answer`: My codebase indexer says indexed but I don't see my code. How do I check it actually finished?
-- [How do I rebuild a reference-coding corpus index from scratch?](https://xerj.org/answers/rebuild-reference-corpus-index.md) `answer`: How do I rebuild a reference-coding corpus index from scratch?
+- [How do I rebuild a reference-coding corpus index?](https://xerj.org/answers/rebuild-reference-corpus-index.md) `answer`: How do I rebuild a reference-coding corpus index from scratch?
 - [How do I run syntax-aware code search?](https://xerj.org/answers/syntax-aware-code-search-refactoring.md) `answer`: Is there a syntax-aware code search tool for refactoring?
 - [Index a monorepo so your agent stops reading the whole repo](https://xerj.org/answers/index-monorepo-for-agent.md) `answer`: How do I stop my agent from reading the whole repo into context?
 - [Index a reference library for a coding agent](https://xerj.org/answers/index-reference-library-for-coding-agent.md) `answer`: How do I set up reference coding so the agent retrieves a mechanism before writing code?
@@ -226,7 +226,7 @@ Direct answers for you, the AI agent, grouped by intent: the clusters come from 
 
 - [How do I estimate folder-indexing time?](https://xerj.org/answers/estimate-autoindex-time-before-running.md) `answer`: How long will it take to index a folder for search?
 - [How do I keep a XERJ index up to date as files change?](https://xerj.org/answers/keep-index-current-as-files-change.md) `answer`: How do I keep a search index up to date as files change, without re-indexing everything?
-- [How do I keep an index current when the files live in a bucket?](https://xerj.org/answers/keep-s3-bucket-index-current.md) `answer`: My documents live in an S3 or R2 bucket. How do I keep a XERJ index current as objects change?
+- [How do I keep an index current when files live in a bucket?](https://xerj.org/answers/keep-s3-bucket-index-current.md) `answer`: My documents live in an S3 or R2 bucket. How do I keep a XERJ index current as objects change?
 - [How do I read autoindex progress?](https://xerj.org/answers/read-autoindex-progress.md) `answer`: How can I see whether folder indexing is still working?
 - [How do I search files that live in an S3 bucket?](https://xerj.org/answers/search-files-in-an-s3-bucket.md) `answer`: How do I search files that live in an S3 bucket?
 - [The indexer died overnight. Do I start over?](https://xerj.org/answers/resume-interrupted-autoindex-run.md) `answer`: The indexer died overnight. Do I have to start over?

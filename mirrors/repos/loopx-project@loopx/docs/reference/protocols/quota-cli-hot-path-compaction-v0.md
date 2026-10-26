@@ -67,6 +67,24 @@ projection. Candidate lists and peer action lists retain counts and point to
 `--include-detail vision`; `--include-detail all` restores every supported
 detail section.
 
+When a bounded next-action label still carries the complete Task again in
+`agent_lane_next_action.title`, the default view may replace that exact duplicate
+with `title_ref`. The reference resolves to `text` or `title` in the single
+current selected-Todo source under this response's `work_context.sources`.
+The typed work-context owner must have verified the full current requirements;
+incomplete, failed, ambiguous, mismatched or differing sources retain the title.
+The full requirements, source metadata, controls and original capture remain
+intact. `--include-detail agent-todos` retains the title inline. This ordinary
+CLI serialization applies with differential delivery off as well as on; it
+neither enables native tracing nor changes the default-off transport switch.
+
+下一动作的有界摘要可能在 `agent_lane_next_action.title` 中重复携带完整任务。
+默认视图仅将与当前包内唯一、完整、已核验 Todo 源精确相同的副本替换为
+`title_ref`，指向 `work_context.sources` 中的 `text` 或 `title`。
+来源缺失、不完整、失败、歧义、身份不符或内容不同时保留原标题；完整要求、来源、
+控制字段和原始捕获均保留。`--include-detail agent-todos` 保留内联标题。
+这是普通 CLI 序列化去重，差分开关关闭和开启时均适用，不会开启原生追踪或改变默认关闭。
+
 When a replan action carries a complete `vision_authoring` schema, the default
 `quota should-run` packet now retains it, alongside its executable writeback
 summary (`required_fields`, accepted path outcomes, and rule). Only when the

@@ -1,16 +1,14 @@
 # Yuxi Agent 开发约定
 
-Yuxi 是基于 LangGraph、FastAPI、Vue 和多种持久化服务构建的知识库与多智能体平台。Docker Compose 是开发拓扑的事实来源；修改不熟悉的模块前先阅读 [ARCHITECTURE.md](ARCHITECTURE.md)，再用符号搜索确认真实实现。
+Yuxi 是基于 LangGraph、FastAPI、Vue 和多种持久化服务构建的知识库与多智能体平台。Docker Compose 是开发拓扑的事实来源；用符号搜索确认模块的真实实现。
 
-## 每次任务先加载什么
+## 按任务范围加载
 
-- [ARCHITECTURE.md](ARCHITECTURE.md)：稳定边界、主链路和架构不变量。
-- [Yuxi Spec Loop](docs/develop-guides/spec-loop.md)：非平凡变更从提案、证据到收敛的流程。
-- [工程信任系统](docs/develop-guides/engineering-trust.md)：语义 Owner、证据、决策记录、派生审计和 gate 规则。
-- [测试规范](docs/develop-guides/testing-guidelines.md)：unit、integration、E2E 的职责与命令。
-- [贡献指南](docs/develop-guides/contributing.md)：分支、独立 Review、commit 和 PR 流程。
-- [并行工作树与隔离运行环境](docs/develop-guides/parallel-worktree-environments.md)：同时运行多个分支、复用长期数据或处理 Schema 不兼容时加载。
-- 用户在当前任务中的明确要求优先于本文件；修改 `backend/`、`web/` 或 `docs/` 时同时遵循该子树的 `AGENTS.md`。子树规则只补充本目录，不复制回根文件。
+- 始终以本文件为准；修改 `backend/`、`frontend/` 或 `docs/` 时，同时读取该子树的 `AGENTS.md`。子树规则只补充本目录，不复制回根文件。
+- 改一个文案、修一个小 bug、机械重命名或等价清理：只读根与适用子树指令及直接相关源码或文档；架构和开发指南按下一条的任务条件加载。
+- 跨模块设计或实现、改变状态/权限/持久化/外部副作用，或需要选择架构方案：先读 [ARCHITECTURE.md](ARCHITECTURE.md)；非平凡变更再读 [Yuxi Spec Loop](docs/develop-guides/spec-loop.md) 和[工程信任系统](docs/develop-guides/engineering-trust.md)，涉及测试时读[测试规范](docs/develop-guides/testing-guidelines.md)。
+- 提交或创建 PR 前读取[贡献指南](docs/develop-guides/contributing.md)。只有同时运行多个分支、复用长期数据或处理 Schema 不兼容时，才读取[并行工作树与隔离运行环境](docs/develop-guides/parallel-worktree-environments.md)。
+- 用户在当前任务中的明确要求优先于本文件。
 
 ## 任务与决策
 
@@ -24,15 +22,15 @@ Yuxi 是基于 LangGraph、FastAPI、Vue 和多种持久化服务构建的知识
 
 ## 不能破坏的系统事实
 
-- HTTP 路由保持薄；用例流程属于 `yuxi.services`，持久化查询属于 `yuxi.repositories`。
-- 普通请求先在 PostgreSQL 中持久化 Message 和 AgentRunRequest；只有 ready FIFO 队头创建 AgentRun，且每次投递 ARQ 前 owning transaction 都已提交。Redis 负责投递、短期事件、取消和缓存，不拥有最终业务状态。
-- 同一用户、Agent、线程的普通请求按 FIFO 串行派发；Request 和 Run 是不同状态模型。
-- AgentRun 的输出、事件、artifact 和错误必须绑定同一 request/run；禁止从相邻 Run 猜测结果。
+- HTTP 路由保持薄；用例流程属于 各业务域的 `services`，持久化查询属于 各业务域的 `repositories`。
+- 普通输入先在 PostgreSQL 中持久化 Input 原始消息和 Receipt；消费事务创建正式 Message 并绑定 Turn/Run、附件，提交后才投递 ARQ。Redis 负责投递、短期事件、取消和缓存，不拥有最终业务状态。
+- 每次提交拥有独立 Input；同一用户、APP、Agent、Thread 的 follow-up 按 FIFO 单条派发，steer 优先并在消费时合并连续就绪前缀，运行中在安全边界接管。等待回答或审批时禁止普通消息；协作等待只接收 FIFO 输入。取消与转引导只操作指定 pending Input。
+- Turn 的最终输出必须来自 result_run_id 指向的顶层 Run；Run 的输出、事件、artifact 和错误绑定同一 Turn/Run，禁止从相邻 Run 猜测结果。
 - 非终态 Run 必须有明确执行 Owner、lease/heartbeat 或等价机制，以及崩溃后的可观察结局。
 - `/api/system/health` 只表达进程 liveness；接流量前置条件由 `/api/system/ready` 证明，业务正确性仍由真实链路测试证明。
 - LangGraph checkpoint 只使用 PostgreSQL；API、worker 与 Agent 不提供本地后端选择或静默降级。
 - 权限在后端依赖与 repository 可见性查询处最终执行；前端守卫、prompt、schema omission 和 UI 隐藏不是授权边界。
-- Shipping 启动、路由注册和能力发现始终包含知识库、图谱与评估能力；附件解析入口只在真实解析动作发生时惰性加载 parser。
+- 默认部署包含知识库、图谱与评估能力；显式关闭 Knowledge 时，启动、路由、能力发现与 worker 装配保持一致，保留代码和数据。Agent 知识库访问经 MCP，后端复核当前用户权限与会话选择交集；附件 parser 按需加载。
 - 沙盒虚拟路径、对象 URL 和宿主机路径不可混用；所有用户路径必须在 owning filesystem boundary 校验。
 
 ## 证据规则
@@ -43,22 +41,22 @@ Yuxi 是基于 LangGraph、FastAPI、Vue 和多种持久化服务构建的知识
 - Expected output、snapshot 和 fixture 只能显式更新并审阅；CI 不得一边生成 oracle 一边验证 oracle。
 - 实际执行命令、结果和未执行原因写入 PR；未验证不能写成通过。
 
-提交前在仓库根目录至少运行：
+代码变更提交前在仓库根目录至少运行：
 
 ```bash
 python3 scripts/verify_engineering_contracts.py
 python3 -m unittest scripts.test_verify_engineering_contracts
-docker compose exec api uv run --group test pytest test/unit -m "not slow"
+docker compose exec api uv run --no-sync --group test pytest test/unit -m "not slow"
 ```
 
-改动面按下表选择最低证据，并按升级条件扩大；不要用低层级结果替代高风险语义。
+仅文档或导航改动按下表执行最低证据，不要求运行后端 unit；其他改动按表选择并升级。不要用低层级结果替代高风险语义。
 
 | 改动面 | 最低证据 | 何时升级 |
 |---|---|---|
 | 纯 Python / JS 逻辑 | 相关 unit，断言业务结果 | 触及数据库、缓存或文件副作用时补 integration |
 | API / 权限 / 持久化 | 真实 HTTP integration | 跨 worker、队列或用户主链路时补 E2E |
 | Run / FIFO / SSE / 沙盒 / 恢复 | E2E，验证最终状态与产物 | 依赖外部可选服务时记录环境与未验证范围 |
-| 前端交互 | lint + unit（[web/AGENTS.md](web/AGENTS.md)） | 行为关键时补 build 与真实页面验证 |
+| 前端交互 | lint + unit（[frontend/AGENTS.md](frontend/AGENTS.md)） | 行为关键时补 build 与真实页面验证 |
 | 文档与导航 | 相对链接检查 + docs build | 公开行为变化时与代码验证一起执行 |
 
 完整命令由 [测试规范](docs/develop-guides/testing-guidelines.md) 维护。
@@ -69,7 +67,7 @@ docker compose exec api uv run --group test pytest test/unit -m "not slow"
 - 实现明显长于问题本身，或一半行数可以清楚表达同样行为时，先简化再提交；自检"高级工程师是否会认为这段代码过度设计、过度防御或过于零碎"。
 - 不可信输入只在 parser、配置、模型/tool JSON、持久化、worker、process、wire 和用户路径等真实信任边界校验；授权与隔离在产生副作用的 executor/repository fail-closed，直接或替代调用路径都不能绕过。
 - 预设条件不成立时显式失败。可选能力可以降级，但必须结构化、可观察，且不把未就绪伪装为成功。
-- 新增函数/类使用简洁中文 docstring；注释只解释非显然约束、时序、Owner 和安全用法，不复述代码。
+- 新增函数/类使用简洁中文 docstring；注释解释非显然约束、时序、Owner 和安全用法，较长处理段可在段首用一句话概括职责与阶段，不逐行翻译代码。
 - 不输出或提交 `.env`、账号、Token、用户数据、运行目录和构建产物。
 - 文件以一个换行结尾；提交前运行 `git diff --check`。
 

@@ -1,4 +1,4 @@
-# UX/UI design system — instructions for the agent
+# UX/UI design system: instructions for the agent
 
 You are a **senior design architect**. You think in systems, not screens. Every
 output is grounded in design tokens, accessibility standards, and patterns that
@@ -16,7 +16,7 @@ setup beyond having the kit in the repository.
 
 ---
 
-## Verification — run the gate, never claim a number
+## Verification: run the gate, never claim a number
 
 This governs the work from the start, not the end. Trust comes from reproducible
 output, not from assertion.
@@ -83,7 +83,7 @@ python3 scripts/lint_hardcodes.py <file|dir>          # no raw hex, px, ms
 node scripts/verify_overflow.mjs <file>               # clipped text, overlapping controls
 node scripts/verify_reduced_motion.mjs <file>         # motion stops, no content lost
 python3 scripts/lint_native_select.py <file|dir>      # the native-select ban
-python3 scripts/check_no_emoji.py <dir>               # the emoji ban, enforced
+python3 scripts/check_no_emoji.py <dir>               # the emoji and dash ban, enforced
 python3 scripts/validate_contrast.py <tokens.json>    # WCAG on the token source
 ```
 
@@ -98,7 +98,8 @@ which agent is reading this file.
 or "polish" - and not in UI, code, JSON, copy, comments or commit messages. Emoji
 are the loudest tell of machine-generated work and they render differently on
 every platform. Use a real icon set (lucide, inline SVG, `currentColor`) or plain
-words. This is a hard gate: `python3 scripts/check_no_emoji.py` fails the build.
+words. No em dash or en dash either: write a colon, a comma or parentheses. This
+is a hard gate: `python3 scripts/check_no_emoji.py` fails the build on both.
 
 **Token by intent.** Pick the token whose *meaning* matches the action, not any
 token that resolves. Destructive actions use `action.destructive` everywhere they
@@ -146,7 +147,7 @@ never placeholders. Asked for N screens, deliver all N.
 
 ---
 
-## Taste — decide before you generate
+## Taste: decide before you generate
 
 Slop comes from generating first. For any page, screen or app, write this block
 into your reply **before any markup**, then build to it. If you cannot name the
@@ -178,8 +179,10 @@ They are defects, not starting points.
   lorem ipsum)
 - Cramped vertical rhythm between sections
 
-Depth: `taste/design-taste.md`, and 138 named systems in
-`taste/aesthetic-systems.md` and `design-systems/library/`.
+Depth: `taste/design-taste.md`, and 2,144 named systems in
+`taste/aesthetic-systems.md`. Find one with `python3 scripts/design_systems.py
+search <term>`, then `node scripts/library.mjs get <name>` fetches its spec
+(an npm install carries none until asked) and prints where it is.
 
 ---
 

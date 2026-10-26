@@ -33,7 +33,7 @@ Yuxi 采用 [Diátaxis](https://diataxis.fr/) 的四类文档思路。现有目�
 
 - `intro/`：第一次使用和产品任务的顺序教程。
 - `advanced/`：部署、配置、外部集成和故障处理参考。
-- `agents/`：Agent、工具、MCP、Skills、子智能体的配置和扩展方法。
+- `agents/`：Agent、工具、MCP、Skills、会话协作的配置和扩展方法。
 - `mechanisms/`：运行链路、状态、权限、文件与失败恢复的解释。
 - `develop-guides/`：贡献、测试、设计和文档治理。
 - `decisions/`：代码和当前文档无法表达的非显然取舍；它不是运行时说明的副本。
@@ -72,7 +72,7 @@ Yuxi 采用 [Diátaxis](https://diataxis.fr/) 的四类文档思路。现有目�
 中文是正文语言；代码、配置和行业名称保留原文。第一次出现时给出中文和英文名称，之后保持一种写法：
 
 - 智能体（Agent）：面向用户的正文优先写“智能体”，代码标识保留 ``Agent``。
-- Skill、MCP、Sandbox、Workdir、Run、Request、SSE：首次解释用途，后续保留项目约定的英文名称。
+- Skill、MCP、Sandbox、Workdir、Input、Receipt、Turn、Run、SSE：首次解释用途，后续保留项目约定的英文名称。
 - Embedding、Rerank：分别写“嵌入模型”和“重排模型”，需要对应源码字段时保留 ``embedding``、``rerank``。
 - 知识库与数据库分开使用；只有 PostgreSQL 等持久化组件才称为数据库。
 
@@ -115,7 +115,9 @@ Yuxi 采用 [Diátaxis](https://diataxis.fr/) 的四类文档思路。现有目�
 
 ## 修改流程
 
-1. 读取根与子树 `AGENTS.md`、`ARCHITECTURE.md`、当前 Owner 和相关源码。
+局部文案、链接或机械清理只读取适用指令与直接相关内容；下列完整流程适用于新增、重写或机制说明变更。所有文档改动均须执行提交前验证与独立 Review。
+
+1. 读取根与子树 `AGENTS.md`、当前 Owner 和相关源码；架构与开发指南按根 `AGENTS.md` 的任务范围加载。
 2. 写出读者、任务、前置条件、完成标准、非目标和页面类型；非平凡的信息架构或长期约束变化先建立 proposed decision。
 3. 沿入口 → service/executor → repository/发布点 → 用户或模型可见结果核对事实，同时检查权限、失败和可选依赖。
 4. 先列出每节唯一要回答的问题，再按“概念 → 关系 → 状态/Owner → 权限/失败 → 源码定位”展开；教程按完成任务的顺序展开。

@@ -79,7 +79,7 @@ For user-selected collection destinations, load the
 For running an original application demo, follow that Skill's
 [original-app demo recipe](competitors-analysis/references/original-app-demo.md).
 For file-backed persistence and CLI acceptance, transaction recovery tests,
-financial migration/fixture acceptance, runtime compatibility or project-bound release acceptance, enter
+financial migration/fixture acceptance, admission/recovery bindings, runtime compatibility or project-bound release acceptance, enter
 [qa-expert](qa-expert/SKILL.md); its test-case routes select the detailed recipes.
 For path normalization or drive-relative adapter cases, follow its
 [runtime compatibility recipe](qa-expert/references/runtime-compatibility-acceptance.md#select-optional-path-operation-cases).
@@ -109,6 +109,8 @@ For evidence-based improvement of an existing application, enter
 [app-evolver](app-evolver/SKILL.md). For released-artifact or runtime evidence,
 load its [Skill composition route](app-evolver/references/skill-composition.md);
 keep specialist selection and handoff boundaries in that owner.
+For domain-role extraction or scattered policy, use its
+[consumer-adoption recipe](app-evolver/references/implementation-and-acceptance.md#extract-a-domain-role-through-its-consumers).
 When the user corrects premises, research focus or scope, return first to its
 [task binding](app-evolver/SKILL.md#1-bind-the-application-and-unfinished-result).
 For next-increment selection after that reconciliation or a completed repair batch, use its
@@ -145,6 +147,8 @@ observations separate; this file does not define another batch recipe.
 For proxy-selection or disruptive VPN recovery changes, enter `tunnel-doctor` and its
 proxy-conflict and network-recovery references. For unresolved tunnel packet-loss
 localization, read the [capture procedure](debugging-network-issues/references/packet-capture-recipes.md#four-boundary-tunnel-captures).
+For same-provider node failures with a working subscription, enter
+[provider account checks](tunnel-doctor/references/provider_account_suspension.md).
 For automatic WeCom integration,
 enter `setup-notifications-via-wecom`; its receipt contract owns accepted/rejected/unknown
 handling, while the worker owns event identity and delivery state.
@@ -211,6 +215,8 @@ owning implementation.
 For ordinary-interface notification visibility, use
 [hook_pitfalls.md #66](daymade-claude-code/claude-code-hooks/references/hook_pitfalls.md);
 for current-version/partial-structure SQLite upgrades, use that file's #59.
+Before accepting persisted evidence that releases a hook block, read
+[release-evidence failure handling](daymade-claude-code/claude-code-hooks/references/hook_pitfalls.md#68-invalid-release-evidence-can-escape-into-an-outer-fail-open-handler).
 
 Python entry points registered as synchronous Claude Code/Codex lifecycle hooks or
 background services (LaunchAgents included) must call a fixed direct interpreter
@@ -480,7 +486,8 @@ owns complete Codex tool evidence, and
 owns indexed role/phrase filters. Keep commands and source-attribution rules in
 those owners rather than copying them here.
 
-For an original Claude tool call and its result from one known Session, use
+For original Claude tool calls/results from a known Session, including a named
+Workflow subagent, use
 [read-claude-code-history's narrow evidence entry](daymade-claude-code/read-claude-code-history/SKILL.md#original-tool-callresult-evidence).
 Keep selectors, pairing, source scope and incomplete-output handling in that owner.
 
@@ -563,8 +570,8 @@ for query parameters, supported response fields and exit behavior;
 claim/evidence attribution and `claim_gate`. For local
 snapshot reconstruction, [scan_rollouts.py](tibo-reset-codex/scripts/scan_rollouts.py)
 owns candidate output. An unfulfilled
-reset promise or a question about missing execution signals enters the Skill's
-[monitoring route](tibo-reset-codex/SKILL.md#监测轮从信息到可行动信号) and
+reset promise, missing execution signals or deadline-bound quota work enters the Skill's
+[monitoring and stop contract](tibo-reset-codex/SKILL.md#监测轮从信息到可行动信号) and
 [output contract](tibo-reset-codex/SKILL.md#输出合同先给结论再交代边界).
 Before using a third-party date or Yes/No as a reset signal, check its source-post
 chronology (an operator-entered event cites no source post), whether it observes

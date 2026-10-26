@@ -5,7 +5,7 @@ description: Generate, extend, or audit design tokens in DTCG format with the 3-
 
 # Skill: Design Tokens
 
-> **Step 0 — is the kit here?** This skill reads files from the kit. Check once:
+> **Step 0: is the kit here?** This skill reads files from the kit. Check once:
 > `ls ${CLAUDE_SKILL_DIR}/../../../tokens >/dev/null 2>&1 && echo KIT_OK || echo KIT_MISSING`
 > On `KIT_MISSING` only the skill folders were installed, which is what
 > `npx skills add` does. Say so plainly, point the user at
@@ -15,8 +15,8 @@ description: Generate, extend, or audit design tokens in DTCG format with the 3-
 Produce and maintain DTCG (`$type`/`$value`) tokens following the project's 3-tier system.
 
 ## Steps
-1. Read `.claude/rules/tokens-and-color.md` → "Token System" + "Color Guidelines" and `.claude/rules/typography-and-spacing.md` for the rules (4px base, Major Third scale, OKLCH palette generation, dark-mode-at-semantic-layer).
-2. Read the relevant existing files in `tokens/` to match structure: `colors.json`, `typography.json`, `spacing.json`, `shadows.json`, `borders.json`, `breakpoints.json`, `motion.json`, `gradients.json`, `opacity.json`, `blur.json`, `sizing.json`, `states.json`, `theming.json`.
+1. Read `${CLAUDE_SKILL_DIR}/../../../.claude/rules/tokens-and-color.md` → "Token System" + "Color Guidelines" and `${CLAUDE_SKILL_DIR}/../../../.claude/rules/typography-and-spacing.md` for the rules (4px base, Major Third scale, OKLCH palette generation, dark-mode-at-semantic-layer).
+2. Read the relevant existing files in `${CLAUDE_SKILL_DIR}/../../../tokens/` to match structure: `colors.json`, `typography.json`, `spacing.json`, `shadows.json`, `borders.json`, `breakpoints.json`, `motion.json`, `gradients.json`, `opacity.json`, `blur.json`, `sizing.json`, `states.json`, `theming.json`.
 3. Generate/extend tokens:
    - Primitives = raw values (never used directly). Semantic = purpose aliases. Component = component-scoped.
    - New palettes: generate 11 OKLCH shades; verify 500 ≥ 4.5:1 on white (text), 600 ≥ 3:1 (UI) using the `a11y-audit` skill / `${CLAUDE_SKILL_DIR}/../../../scripts/contrast.py`.

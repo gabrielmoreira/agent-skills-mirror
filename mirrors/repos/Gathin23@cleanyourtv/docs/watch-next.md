@@ -25,6 +25,14 @@ and preview channels. They live in the TV provider, behind `TvContract.WatchNext
   `ACCESS_ALL_EPG_DATA` a reader sees only its own rows plus rows marked `searchable`, so Plex rows
   that are not searchable would be invisible too: the probe cannot tell "publishes nothing" from
   "publishes only non-searchable rows".
+- **Seen on a TCL 75Q7C** (G08, Google TV 12, `STT2.221228.001 AS36`), the same kind of probe: 43 Watch Next
+  rows, from Prime Video (14), HBO Max (`com.wbd.stream`, 10), Jellyfin (7), Wholphin (6), Moonfin (4) and
+  SkyShowtime (2), plus 339 preview programs (the 60 the probe printed were all SkyShowtime's). Netflix,
+  installed, had no rows visible. Of the Watch Next posters, 32 were `https://` (Prime Video, HBO Max,
+  SkyShowtime) and 11 were `content://` from the Jellyfin clients' own image providers, which a reader opens
+  without network access. `watch_next_type` 0, 1 and 2 (continue, next, new) all occurred; Jellyfin's
+  next-episode rows had no `last_playback_position_millis`. Prime Video's `intent_uri` opened the app at its
+  profile picker on a cold start.
 
 Source: `createSqlParams()` in `packages/providers/TvProvider/src/com/android/providers/tv/TvProvider.java`
 (AOSP) holds the `READ_TV_LISTINGS` and `searchable` logic; both permissions are defined in that

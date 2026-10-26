@@ -189,7 +189,7 @@ the key in `hello` instead).
 → devices  {}        → rename {name}        → forget {device_id}        → ping  ← pong
 ← profile  {rev, device}       the account's name, look or connectors changed (PUT /v1/me/profile); fetch it
 ← sync     {what:"conversations", cursor, from}   another device pushed or deleted synced conversations; pull /v1/sync/changes
-← working  {cid, from, device_name, working, at}  another device started (true) or finished (false) a turn in that synced conversation
+← working  {cid, from, device_name, working, at, state?, detail?}  another device started (true) or finished (false) a turn in that synced conversation; on a true, since relay 0.31, what it is doing (`state`: working | waiting; `detail`: the step, up to 160 characters)
 ```
 
 Close codes: `4000` hello expected (no hello within 15 s, or a frame that is
@@ -299,7 +299,13 @@ also carries **who is answering**: a device that starts or ends a turn in a
 synced conversation posts `/v1/sync/working`, and the other sockets get
 `working {cid, from, device_name, working, at}`; the apps show *kwai is
 working…* under the last message until `working: false` arrives, the reply
-itself lands, or ten minutes pass. The relay keeps these in memory only. By
+itself lands, or ten minutes pass. Since relay 0.31 a `working: true` also says
+what the run is doing: `state` is `working` or `waiting` (the run is parked on a
+card for the person), and `detail` is the step's own words, at most 160
+characters, so the line reads *kwai is working: opening the booking site* or
+*kwai is waiting for you*. A device that posts without the two fields is shown
+as plain working; a client that does not know them ignores them. The relay
+keeps these in memory only. By
 default only the main conversation is synced; side chats travel only from and to
 devices that turned *Also sync side chats* on. Nothing else is synchronised:
 keys, providers and settings stay where they were entered, and files and images

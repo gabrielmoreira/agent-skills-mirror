@@ -2365,6 +2365,9 @@ func TestListObjectsSQLUsesSplitDictionaryQuery(t *testing.T) {
 	if !strings.Contains(sqlText, "'SEQUENCE'") {
 		t.Fatalf("object listing should include sequences, got: %s", query.SQL)
 	}
+	if !strings.Contains(sqlText, "'TRIGGER'") {
+		t.Fatalf("object listing must expose triggers for data transfer selection, got: %s", query.SQL)
+	}
 	if !strings.Contains(sqlText, "'TYPE BODY'") || !strings.Contains(sqlText, "TYPE_BODY") || !strings.Contains(sqlText, "'TYPE'") {
 		t.Fatalf("object listing should include TYPE and normalize TYPE BODY, got: %s", query.SQL)
 	}
@@ -2373,6 +2376,34 @@ func TestListObjectsSQLUsesSplitDictionaryQuery(t *testing.T) {
 	}
 	if !strings.Contains(sqlText, "ALL_SYNONYMS") || !strings.Contains(sqlText, "'SYNONYM' AS OBJECT_TYPE") {
 		t.Fatalf("object listing should include schema synonyms, got: %s", query.SQL)
+	}
+}
+
+func TestTableIndexDDLExclusionBindsConstraintIndexOwner(t *testing.T) {
+	for _, fromConnection := range []bool{false, true} {
+		t.Run(fmt.Sprint(fromConnection), func(t *testing.T) {
+			ddl := `CREATE INDEX OTHER.IX ON APP.T(ID)`
+			db, scripted := openOracleViewSourceTestDB(t, []oracleViewSourceQueryStep{
+				{queryContains: "c.INDEX_OWNER = i.OWNER", args: []driver.Value{"APP", "T", "APP", "T"}, columns: []string{"DDL"}, rows: [][]driver.Value{{ddl}}},
+			})
+			var result []string
+			var err error
+			if fromConnection {
+				conn, connectErr := db.Conn(context.Background())
+				if connectErr != nil {
+					t.Fatal(connectErr)
+				}
+				defer conn.Close()
+				result, err = loadTableIndexDDLsFromConn(conn, "APP", "T")
+			} else {
+				s := newServer()
+				s.db = db
+				result, err = s.loadTableIndexDDLs("APP", "T")
+			}
+			if err != nil || len(result) != 1 || result[0] != ddl || scripted.next != len(scripted.steps) {
+				t.Fatalf("exact owner query failed: result=%v error=%v queries=%d", result, err, scripted.next)
+			}
+		})
 	}
 }
 
@@ -2462,10 +2493,13 @@ func TestExactTableDDLDoesNotBuildAnotherTargetAfterMetadataFailure(t *testing.T
 	}
 }
 
-func TestListSessionUserObjectsSQLIncludesSequences(t *testing.T) {
+func TestListSessionUserObjectsSQLIncludesSequencesAndTriggers(t *testing.T) {
 	sqlText := strings.ToUpper(oracleListObjectsSessionUserBaseSQL)
 	if !strings.Contains(sqlText, "FROM USER_OBJECTS") || !strings.Contains(sqlText, "'SEQUENCE'") || !strings.Contains(sqlText, "'TYPE BODY'") || !strings.Contains(sqlText, "'TYPE'") {
 		t.Fatalf("session-user object listing should include sequences, got: %s", oracleListObjectsSessionUserBaseSQL)
+	}
+	if !strings.Contains(sqlText, "'TRIGGER'") {
+		t.Fatalf("session-user object listing must expose triggers for data transfer selection, got: %s", oracleListObjectsSessionUserBaseSQL)
 	}
 }
 
@@ -3870,6 +3904,7 @@ type oracleViewSourceQueryStep struct {
 	nextPanicText    string
 	columnsPanicText string
 	columnsPanicCall int
+	nextError        error
 }
 
 type oracleViewSourceDriver struct {
@@ -3937,6 +3972,7 @@ func (c *oracleViewSourceConn) QueryContext(
 		nextPanicText:    step.nextPanicText,
 		columnsPanicText: step.columnsPanicText,
 		columnsPanicCall: step.columnsPanicCall,
+		nextError:        step.nextError,
 	}, nil
 }
 
@@ -3975,6 +4011,7 @@ type oracleViewSourceRows struct {
 	columnsPanicText string
 	columnsPanicCall int
 	columnsCalls     int
+	nextError        error
 }
 
 func (r *oracleViewSourceRows) Columns() []string {
@@ -3997,6 +4034,9 @@ func (r *oracleViewSourceRows) Next(dest []driver.Value) error {
 		return r.nextErr
 	}
 	if r.next >= len(r.values) {
+		if r.nextError != nil {
+			return r.nextError
+		}
 		return io.EOF
 	}
 	copy(dest, r.values[r.next])

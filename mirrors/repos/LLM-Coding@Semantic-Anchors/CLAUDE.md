@@ -496,11 +496,11 @@ tiers above/below are from the original run and were not re-scored._
 ## Specification
 
 When we talk about a "specification" or "spec", we mean:
-- Persona Use Cases in Cockburn's Fully Dressed format (Primary Actor, Trigger, Main Success Scenario, Extensions, Postconditions) at User Goal level, with Business Rules (BR-IDs)
+- Persona Use Cases in Cockburn's Fully Dressed format (Primary Actor, Trigger, Main Success Scenario, Extensions, Postconditions) at User Goal level
+- Rules and requirements as one numbered list (BR-IDs). Each entry is one statement in an EARS pattern (ubiquitous "shall", event-driven "When", state-driven "While", unwanted behaviour "If … then", optional feature "Where"), with its source. EARS is the grammar of the rules, not a second list: there is no separate requirements register.
 - System Use Cases for each technical interface (API endpoint, CLI command, event, file format): input/validation, processing, output/status codes, error responses
 - Activity Diagrams for all flows (not just the happy path)
-- Acceptance criteria in Gherkin format (Given/When/Then)
-- Individual requirements in EARS syntax where applicable (When/While/If/Shall)
+- Acceptance criteria in Gherkin format (Given/When/Then). Each scenario cites the rule it proves, at least one scenario per use-case extension. The rule is the contract, the scenario is the proof.
 - Supplementary Specifications as needed: Entity Model, State Machines, Interface Contracts, Validation Rules
 
 ## Requirements Discovery
@@ -508,7 +508,8 @@ When we talk about a "specification" or "spec", we mean:
 Clarify requirements using the Socratic Method:
 - Ask at most 3 questions at a time, challenge assumptions
 - Use MECE to ensure questions cover all areas without overlap
-- Keep asking until you fully understand the requirements
+- Keep a list of open questions; after each answer, update it and add any new question it raises
+- Stop when the list is empty and the user confirms it
 
 Frame the scope before writing it down:
 - Impact Mapping connects deliverables to business goals and actors — so you build what moves a goal, not just what was asked.

@@ -374,8 +374,8 @@ a guard; use bounded deployment/liveness checks (rule 4; Pattern C in
   so the next profile to start a session carries the registration into every
   profile. `--all` is the explicit convergence mode; run it when immediate
   profile synchronization is needed, without treating that write as activation proof.
-  A SessionStart health check greps each profile for the Tier-0 guards to
-  catch drift. For new or changed registrations, verify a real matching event
+  A SessionStart health check verifies each profile's effective registrations
+  through their owner; use text searches only to locate candidates. For new or changed registrations, verify a real matching event
   and debug evidence in a fresh native session. Claim current-session hot reload
   only after observing that session invoke the changed registration; a successful
   settings write or startup health line alone is insufficient. The current
@@ -493,6 +493,10 @@ have run and the guard didn't see it** — an unbalanced quote makes tokenizing 
 the fallback allows, and a genuine cross-domain commit ships with no dialog (rule 1's
 ValueError note). Ask of every allowed row: *would this command actually have done
 the thing?* If no, the allow is correct.
+
+When saved evidence can release a block, validate its shape inside that predicate;
+read [invalid evidence and outer fail-open handlers](references/hook_pitfalls.md#68-invalid-release-evidence-can-escape-into-an-outer-fail-open-handler).
+A rejected receipt and an unrelated runtime fault have separate failure policies.
 
 Running this exact probe against a real state-deriving guard returned two allows on
 the first pass: one was correct (the short-circuit above) and one was a genuine

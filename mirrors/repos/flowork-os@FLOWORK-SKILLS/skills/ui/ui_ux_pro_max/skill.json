@@ -1,0 +1,33 @@
+{
+  "id": "ui_ux_pro_max",
+  "name": "UI/UX Pro Max",
+  "version": "1.0.0",
+  "author": "Flowork OS Sovereign Architect",
+  "category": "design_system",
+  "category_id": "CAT-012",
+  "description": "Professional interface design intelligence, anti-AI-slop aesthetics, design tokens, responsive typography, and modern front-end component patterns.",
+  "keywords": [
+    "design_tokens",
+    "typography",
+    "visual_hierarchy",
+    "motion_curves",
+    "accessibility_wcag",
+    "svelte_runes",
+    "vue_sfc",
+    "react_composition",
+    "wpf_mica",
+    "qt_qml",
+    "android_compose",
+    "dark_mode",
+    "micro_interactions",
+    "color_palette",
+    "layout_grid",
+    "zero_corner",
+    "responsive_layout",
+    "dataviz_widgets",
+    "anti_ai_slop",
+    "design_system"
+  ],
+  "shard": "index/ui/_u/ui_ux_pro_max.json",
+  "source_path": "skills/ui/ui_ux_pro_max"
+}

@@ -29,7 +29,9 @@
 import { spawnSync } from 'node:child_process';
 import { readFileSync, existsSync, readdirSync, statSync } from 'node:fs';
 import { join, resolve, relative } from 'node:path';
+import { homedir } from 'node:os';
 import { catalogue, byName, KIT } from './gates.mjs';
+import { ensure, loadIndex } from '../scripts/library.mjs';
 
 const PROTOCOL = '2025-06-18';
 const pkg = JSON.parse(readFileSync(join(KIT, 'package.json'), 'utf8'));
@@ -110,7 +112,9 @@ const TOOLS = [
     title: 'Read a named design system',
     description:
       'One of the kit\'s brand-grade design system specs: visual theme, colour roles with hex, '
-      + 'typography, spacing, components, motion. Call with no name to list what is available.',
+      + 'typography, spacing, components, motion. Call with no name to list what is available. '
+      + 'An npm install fetches a spec the first time it is asked for, checks it against the '
+      + 'sha256 the kit ships, and serves it from a local cache after that.',
     inputSchema: {
       type: 'object',
       properties: { name: { type: 'string', description: 'A system name such as stripe or linear. Omit to list them all.' } },
@@ -230,16 +234,24 @@ function handle(name, args) {
   }
 
   if (name === 'get_design_system') {
-    const dir = join(KIT, 'design-systems/library');
-    if (!existsSync(dir)) return text('The design-system library is not in this install.', true);
-    const all = readdirSync(dir, { withFileTypes: true }).filter(d => d.isDirectory()).map(d => d.name).sort();
+    let index;
+    try { index = loadIndex(KIT); }
+    catch { return text('The design-system index is not in this install.', true); }
+    const all = Object.keys(index.systems).sort();
     if (!args.name) return text(`${all.length} systems:\n\n${all.join(', ')}`);
-    const p = join(dir, args.name, 'DESIGN.md');
-    if (!existsSync(p)) {
-      const near = all.filter(n => n.includes(String(args.name).toLowerCase())).slice(0, 8);
+    const slug = String(args.name);
+    if (!Object.hasOwn(index.systems, slug)) {
+      const near = all.filter(n => n.includes(slug.toLowerCase())).slice(0, 8);
       return text(`No system "${args.name}".${near.length ? ` Did you mean: ${near.join(', ')}?` : ''}`, true);
     }
-    return text(readFileSync(p, 'utf8'));
+    // A clone or a plugin install carries the specs; read them as they are.
+    const p = join(KIT, 'design-systems/library', slug, 'DESIGN.md');
+    if (existsSync(p)) return text(readFileSync(p, 'utf8'));
+    // An npm install does not: fetch once into a cache keyed by the index tag.
+    const cache = join(process.env.XDG_CACHE_HOME || join(homedir(), '.cache'), 'ux-ui-agent-skills', index.ref);
+    return ensure(slug, { kit: KIT, into: cache, repair: true, index })
+      .then(r => text(r.buf.toString('utf8')))
+      .catch(e => text(`${slug}: ${e.message}`, true));
   }
 
   if (name === 'get_tokens') {
@@ -258,6 +270,7 @@ function handle(name, args) {
 /* -------------------------------------------------------------- transport */
 
 const send = (msg) => process.stdout.write(JSON.stringify(msg) + '\n');
+const pending = new Set();
 const reply = (id, result) => send({ jsonrpc: '2.0', id, result });
 const fail = (id, code, message) => send({ jsonrpc: '2.0', id, error: { code, message } });
 
@@ -291,14 +304,15 @@ function dispatch(msg) {
   if (method === 'tools/call') {
     const tool = TOOLS.find(t => t.name === params?.name);
     if (!tool) return fail(id, -32602, `Unknown tool: ${params?.name}`);
-    try {
-      const result = handle(params.name, params.arguments || {});
-      if (!result) return fail(id, -32602, `Unknown tool: ${params.name}`);
-      return reply(id, result);
-    } catch (e) {
+    // get_design_system may fetch, so every call is answered once it settles.
+    const done = Promise.resolve()
+      .then(() => handle(params.name, params.arguments || {}))
+      .then(result => result ? reply(id, result) : fail(id, -32602, `Unknown tool: ${params.name}`))
       // A thrown error is the tool failing, not the protocol failing.
-      return reply(id, text(`${tool.name} could not run: ${e.message}`, true));
-    }
+      .catch(e => reply(id, text(`${tool.name} could not run: ${e.message}`, true)))
+      .finally(() => pending.delete(done));
+    pending.add(done);
+    return done;
   }
 
   if (id !== undefined) fail(id, -32601, `Method not found: ${method}`);
@@ -324,4 +338,5 @@ process.stdin.on('data', (chunk) => {
     catch { send({ jsonrpc: '2.0', id: null, error: { code: -32700, message: 'Parse error' } }); }
   }
 });
-process.stdin.on('end', () => process.exit(0));
+// A client that closes stdin still gets the answers it already asked for.
+process.stdin.on('end', () => Promise.allSettled([...pending]).then(() => process.exit(0)));

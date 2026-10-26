@@ -89,6 +89,17 @@ Ours, in `NanoMuse/`:
 - **The agent's steps, the status line.** *Settings → Chat → Steps* keeps the tool capsules out of
   finished messages unless asked for; the typing line reads *〈name〉 is on it*, not *is thinking*.
   Both are one-line edits in upstream's `AssistantBlockView` / `ContentView`, marked `// nanoMuse:`.
+- **The wait under the dots (1.0.8; `NanoMuseStreamStatus.swift`).** While a step has no first
+  token, `NanoMuseWaitLine` under the typing line says nothing for ten seconds, then *The model is
+  busy, 15 s so far* with *Cancel* (the chat's stop); when nanoMuse Cloud has said the request is
+  waiting for one of its provider slots (relay 0.31's `nanomuse: {phase, ahead}` chunks,
+  [cloud.md](cloud.md#protocol)), *3 ahead of you* or *You are next* instead. One marked line in
+  each OpenAI provider's SSE loop hands the field over; one in `ChatMessageViews` draws the line.
+- **The prompt budget (1.0.8; `NanoMuseContextBudget.swift`, `NanoMusePromptDiet.swift`).** The
+  compaction line is 32k tokens on every window from 64k up (upstream's tiers put it 20k short of
+  the window), old big tool results go to disk from 28k, and the `browser_use` schema is worded
+  densely with every action and parameter kept; the Android page has the figures behind it. The
+  three call sites in `AIChatViewModel` are marked; the policy's own tiers and tests are untouched.
 - **The Muse shell (0.1.33; iPad too since 0.1.34).** `NanoMuseRoot` replaces upstream's
   `ContentView` at the root; *Settings → nanoMuse* has the two switches (*Muse home*, *Face and
   name in the chat header*), and the OpenMinis layout stays one tap away in the drawer. The chat's
@@ -415,7 +426,9 @@ Ours, in `NanoMuse/`:
   /v1/sync/working {cid, working}` after the user line is pushed and after the turn's end is;
   the hub's `working` frame and `/v1/sync/state`'s `working` list fill a map that expires after
   ten minutes, and the chat shows *〈device〉 is working…* under the last message when it is
-  another device's user line (`ChatMessage.nmWorkingDevice`). A remote user line as the tail is
+  another device's user line (`ChatMessage.nmWorkingDevice` holds the sentence; with the frame's
+  `state` and `detail`, relay 0.31, it reads *〈device〉 is working: 〈step〉* or *〈device〉 is
+  waiting for you*, `NanoMusePresence.sentence`). A remote user line as the tail is
   never this phone's interrupted turn: `recheckCanResumeFromHistory` leaves `canResume` off for
   it, so no banner, no Resume, nothing re-sent.
 - **Sign-in and the relay (0.1.38)** (`NanoMuseCloud.swift`, `NanoMuseCloudView.swift`,
@@ -758,8 +771,12 @@ when either grows past its ceiling.
 Distribution is TestFlight, **internal testers**: the people you add as users of your App Store
 Connect team (up to 100), who get every build minutes after it is processed, with no App Review.
 An external group (public link, up to 10,000 testers) needs Apple's beta review once per version;
-the group *nanoMuse Beta* and its public link exist, and each build is added to it and submitted
-for review after the internal testers have had it. The pipeline is the same either way.
+the group *nanoMuse Beta* and its public link exist. A build is handed to it by the *iOS · Beta
+group* workflow (`.github/workflows/ios-beta-external.yml`, *Run workflow*, the build number from
+the TestFlight run and a "What to Test" note; an empty build number takes the newest): the
+`external` lane of the Fastfile adds the build to the group, writes the note and submits it for
+the beta review, with the three App Store Connect secrets and nothing else. The testers are
+notified when the review has passed. The pipeline is the same either way.
 
 ### Where it stands
 

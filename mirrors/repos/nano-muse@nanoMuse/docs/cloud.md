@@ -95,8 +95,9 @@ The relay is the code in [`cloud/`](../cloud/README.md). It stores:
   the whole, how it ended (ok, a provider error or timeout, a content-check
   refusal, a broken connection, an allowance refusal), how many messages and
   pictures the request carried, which tools the client offered and which the
-  reply called (names only), whether it was a screen-operation turn, and the
-  client platform. Never a word of the conversation. Rows older than
+  reply called (names only), whether it was a screen-operation turn, the
+  client platform and, from relay 0.31, how many of the prompt tokens the
+  provider served from its cache. Never a word of the conversation. Rows older than
   `CALLS_KEEP_DAYS` (90) are removed, and the operator's *Live* and *Usage*
   pages read these rows in aggregate (how busy the model endpoint is, how
   fast it answers, which platforms queue);
@@ -108,8 +109,10 @@ The relay is the code in [`cloud/`](../cloud/README.md). It stores:
 - since relay 0.28, a device may say in its hub hello which model it runs on
   (`llm {provider, model}`, the two ids and nothing else: never a key, an
   address or a setting), so the operator can see which providers people
-  configure for themselves. The apps of 1.0.6 and earlier say nothing, and a
-  later app says it only when the person runs their own key;
+  configure for themselves. The apps of 1.0.6 and earlier say nothing; from
+  1.0.7 every client says `cloud` while the account's models answer and the
+  catalogue's vendor id (`openrouter`, `bailian`) with the model id on a key
+  of its own;
 - a timeline of account events (signed in, failed sign-in, password set or
   changed, signed out, refused for budget, upstream error) with a
   device name, a model or an error code as the detail, never message content;
@@ -151,7 +154,8 @@ The relay is the code in [`cloud/`](../cloud/README.md). It stores:
   screenshot the app resends with every turn of a screen operation is one
   file. With the turn: the model, the platform, the device and conversation
   the app named (`X-NanoMuse-Device`, `X-NanoMuse-Conversation`, 1.0.7 on),
-  the token counts, and the address and client software like every request.
+  the token counts (from relay 0.31 with the cached part of the prompt), and
+  the address and client software like every request.
   It is the account's own data, so its devices can read it back and the
   operator can see a problem whole; it does not depend on either switch
   below. The section [The record](#the-record) says what is kept, who reads
@@ -252,6 +256,8 @@ this is the account's data, not the training set, which stays
 `/v1/admin/samples/export` without them), one file at
 `/v1/admin/blobs/{sha256}`, and `GET /v1/admin/record` for the figures:
 turns and files in all and per day, the store against its cap.
+
+History and sample pages use the existing timestamp indexes to skip newer seconds before applying the insertion-order tie-break. Exports and the analytics backfill use the same paging boundary; no database migration is needed.
 
 **Turns on your own key.** From 1.0.7 an app that ran a turn on a key of its
 own sends it up afterwards, so the record is whole wherever the model was:
@@ -360,7 +366,7 @@ GET    /v1/sync/state                   → {enabled, cursor, counts{conversatio
 PUT    /v1/sync/state   {enabled}       → the same; false deletes everything stored, the counter keeps counting
 GET    /v1/sync/changes ?since=0&limit=500&scope=all|main&tail=K   → {cursor, more, conversations[], messages[], skipped?}
 POST   /v1/sync/changes {device, conversations[], messages[]}   → {cursor, accepted, rejected[{cid | mid, reason, cid_main?}]}
-POST   /v1/sync/working {cid, working, device?}   → 204; the hub tells the other devices   404 no_conversation
+POST   /v1/sync/working {cid, working, device?, state?, detail?}   → 204; the hub tells the other devices (0.31: state and step ride along)   404 no_conversation
 DELETE /v1/sync/changes                 → the state, counts at zero     everything stored, switch unchanged
 DELETE /v1/sync/conversations/{cid}     → {cursor, deleted: true}      a tombstone the other devices apply; 404 no_conversation
 ```
@@ -381,7 +387,11 @@ row and behaves the same). Any other `scope` is 400 `bad_scope`.
 (`false`); the relay keeps the live ones in memory for ten minutes (never in
 the database, so a restart forgets them), lists them under `working` in the
 state (`[{cid, from, device_name, working, at}]`) and sends a `working` frame
-to the account's other sockets ([hub.md](hub.md#frames)). Request bodies over
+to the account's other sockets ([hub.md](hub.md#frames)). Since 0.31 a
+`working: true` may also say `state` (`working` | `waiting`) and `detail` —
+the run's current step in the model's own words, capped at 160 characters —
+and the frame and the state's `working` rows carry both, so the other devices
+see the run move between its start and its end. Request bodies over
 `MAX_REQUEST_BYTES` (16 MiB by default since 0.20) are 413 `too_large` with
 *Request body is N MB; this relay accepts up to M MB*.
 
@@ -568,6 +578,8 @@ are the first line of the admin dashboard.
 
 ## Running your own
 
+API and error counters are written through the relay's worker pool. The response awaits these writes, while the event loop remains available if a counter write waits for a database lock.
+
 Anyone can run a relay (for a family, a class, a company) and point the app
 at it. The server is a single Python process over SQLite; a VPS with Docker and
 a domain name is enough:
@@ -662,6 +674,19 @@ operator's [switches](#controls): `403 signup_closed`, `503 service_paused`,
 hub_paused`), and `allowance_exhausted` with `paused: true` when the free
 allowance is paused rather than spent; `/healthz`, `/v1/config` and `/v1/me`
 list the switches that are off under `paused`.
+
+**Before the model says anything (relay 0.31).** A streamed chat turn may begin with
+chunks that have no `choices`: `{"object": "chat.completion.chunk", "model", "created",
+"choices": [], "nanomuse": {"phase", "waited_ms", "ahead"?}}`. While the request waits for
+one of the relay's provider slots (`CHAT_CONCURRENCY`), one comes every five seconds with
+`phase: "queued"` and `ahead`, how many requests are in front of it; when its slot comes,
+one with `phase: "working"`; a request that never waited gets none. While the provider
+takes its time over the first bytes, a comment line (`: keepalive`) goes out every ten
+seconds. An SSE parser skips comment lines by definition, and a chunk without choices is
+the shape of the usage-only chunk every client already handles, so a client that knows
+nothing of either sees the reply it always saw; the apps read the field and say how many
+are ahead and how long the turn has waited. Nothing of this is in a non-streamed turn,
+and nothing of it is charged or recorded.
 
 A key the relay does not know answers
 `401 bad_key`; from 0.1.40, a key whose account was deleted answers

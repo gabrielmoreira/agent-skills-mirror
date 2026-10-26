@@ -426,8 +426,17 @@ and links whose callee was renamed by a minifier are not recognized.
 Bundler adapters own callback roles: Webpack supplies module, exports, then
 loader; esbuild CommonJS supplies exports, then module. Export extraction uses
 those binding identities for assignments and declarations, so renaming either
-parameter does not change the recovered names. Global property-definition
-intrinsics require lexical and visible-write proof. Factory export declarations
+parameter does not change the recovered names. The convention always supplies
+every role argument, so a role parameter's default never runs: a defaulted
+module or exports parameter keeps its role, and the default expression yields
+no exports, references or chunk keys. `{exports: alias}` in the module position
+binds `alias` to `module.exports`.
+Other role patterns, such as rest, array, nested or computed-key patterns or a
+non-identifier loader, receive no role and count as unknown findings, so the
+file's analysis is partial rather than an exact empty export list. An
+export-shaped write through a role binding whose value at that read cannot be
+ordered against a replacement is also an unknown finding. Global
+property-definition intrinsics require lexical and visible-write proof. Factory export declarations
 also require the loader's `d` member to have no prior or unordered visible
 replacement, including writes through lexical aliases. Unrelated loader members
 do not invalidate declarations. Ordering describes declarations within one factory

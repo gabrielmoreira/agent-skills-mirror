@@ -9,7 +9,7 @@ disable-model-invocation: true
 
 # Skill: Prototype & Research
 
-> **Step 0 — is the kit here?** This skill reads files from the kit. Check once:
+> **Step 0: is the kit here?** This skill reads files from the kit. Check once:
 > `ls ${CLAUDE_SKILL_DIR}/../../../tokens >/dev/null 2>&1 && echo KIT_OK || echo KIT_MISSING`
 > On `KIT_MISSING` only the skill folders were installed, which is what
 > `npx skills add` does. Say so plainly, point the user at
@@ -20,7 +20,7 @@ Guide work through the right fidelity level with validation.
 
 ## Steps
 1. Read `${CLAUDE_SKILL_DIR}/../../../workflows/prototyping.md` (5-level fidelity ladder, journey mapping template, usability-testing script, sample data).
-2. Identify the current need and pick the **lowest** fidelity that answers it — never skip levels:
+2. Identify the current need and pick the **lowest** fidelity that answers it. Never skip levels:
    - Content-first (info needs) → Wireframe (layout/nav) → Low-fi (task completion) → High-fi (visual/a11y) → Code (feasibility/perf).
 3. For flows: produce a user-journey map with decision points, error paths, and edge cases.
 4. For validation: define the usability test (tasks, success criteria, 5-user rule) using the script.
@@ -30,7 +30,7 @@ Guide work through the right fidelity level with validation.
 The artifact at the chosen fidelity + an explicit "what we validate next" plan.
 
 ## Verification (before declaring done)
-- The fidelity matches the question being answered — no level skipped.
+- The fidelity matches the question being answered; no level skipped.
 - Flows include decision points, **error paths, and edge cases** (empty/loading/overflow), not just the happy path.
 - A concrete validation step is named (tasks + success criteria), not "test later".
 - High-fi/code artifacts pass the same token + a11y bar as `design-code` (no hardcoded values, contrast, states).
