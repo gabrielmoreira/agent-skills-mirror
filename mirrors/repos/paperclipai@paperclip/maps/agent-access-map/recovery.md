@@ -4,6 +4,22 @@ Product map: [Recovery](../feature-map/recovery.md).
 
 Feature ID: `recovery`.
 
+Native finalization deadline reconciliation records unfinished workspace
+preservation through the existing server-owned recovery path. It grants no
+additional agent API, provider-stop authority or permission to replay work.
+
+Remote process probes remain server-owned. Confirmed exit requires `ESRCH` or a
+zombie with the saved generation. Unknown adopted-process ownership rejects the
+probe and grants no permission to replace a runner, signal a different process,
+or replay work. Launch requires a working Node probe before detachment.
+
+Ordinary board Retry can reauthorize saved GitHub input for the same App after
+reconnect. It pins current runtime authority and preserves sender, repository,
+conversation and task checks. Pending input takes precedence over the older
+failed request and transfers once to the retry owner. This grants no new agent
+Retry API or stale webhook authority. Local PostgreSQL and HTTP-route regressions
+cover these transitions; hosted execution and delivery remain separate acceptance.
+
 Source revision: `3bbc2104b65caf9f7763938a01260a5673e12f7a`.
 
 Review depth and executed proof are separate. The operation records enumerate the named behavior and access boundaries. Their evidence states describe the reviewed sources; run results and environment limits belong in the PR or verification artifacts. A listed API or source test does not establish a live authorized journey. Follow the [map contract](../README.md).
@@ -225,6 +241,20 @@ Gaps: An acknowledged retry can remain pending or fail; report actual useful res
 
 Capability ID: `recovery/workspace`.
 
+Committed authorized Retry and workspace-recovery requests notify the internal
+preservation worker. Startup reconstructs its source-bound obligations and saved
+retry deadlines. A duplicate request during physical preservation does not
+replace the owner's generation or revision. Resolved files-only recovery retains
+its no-replay restriction. The local PostgreSQL regression checks the producer,
+worker, and physical source receipt; it is not deployed provider acceptance.
+
+An authorized deliberate Retry also registers missing historical native
+preservation from an exact prepared descriptor and an unowned terminal
+finalization. It adopts only the existing bounded maintenance capability. A live
+owner or mismatched allocation cannot supply this proof. No termination receipt
+or execution authority is created by registration; connected Retry still waits
+behind recovery and rechecks its existing external identity.
+
 The internal preservation resume path grants no board or agent execution API.
 It requires the exact source action, company, run, lease and environment, a
 held physical workspace owner, and its current stop-only cleanup claim. The
@@ -434,6 +464,11 @@ API: `present` — GET /api/issues/{id}; GET /api/heartbeat-runs/{runId}. Server
 Agent access: `partial` — eligible admitted agent/native bound wake receives saved input; delivery remains server-owned.
 
 Policy: Exact prior run/lease/workspace stop proof, no competing execution, current owner/responsible user, normal subtree/project pause/budget/review gates. Durable ordered message/wake receipts avoid duplicates; never borrow authority from stale callback/other routine. Unused hold-denied admission needs no-execution/dispatch evidence before automatic reconsideration.
+
+A human-authored comment attached to an assignment wake can authorize the same
+fresh continuation as an ordinary comment. The server validates the persisted
+comment and its task/author/timing; the assignment label alone grants no
+authority. Agents and system wakes cannot inherit this human-input path.
 
 Evidence: `source-only` — [legacy gates](../../server/src/services/recovery/legacy-continuation.ts), [native ownership](../../server/src/services/native-runtime/native-restart-recovery.ts), [queued Stop](../../server/src/modules/wake-queue/adapters/postgres.ts); reviewed at `3bbc2104b65caf9f7763938a01260a5673e12f7a`. No live provider proof.
 

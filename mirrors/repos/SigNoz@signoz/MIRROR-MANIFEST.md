@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `SigNoz/signoz` — 26 default patterns, 0 followed patterns, 12 file(s) materialized.
+Mirror of `SigNoz/signoz` — 26 default patterns, 0 followed patterns, 13 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `SigNoz/signoz` — 26 default patterns, 0 followed patterns, 12 file(
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 12 |
+| Files         | 13 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,18 +59,19 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.claude/skills/sbshot-visual-diff/SKILL.md`](.claude/skills/sbshot-visual-diff/SKILL.md) |
-| 2 | ✓ | [`.claude/skills/signoz-page-story/SKILL.md`](.claude/skills/signoz-page-story/SKILL.md) |
-| 3 | ✓ | [`frontend/.claude/skills/scaffold-feature/SKILL.md`](frontend/.claude/skills/scaffold-feature/SKILL.md) |
-| 4 | ✓ | [`frontend/.cursor/rules/state-management.mdc`](frontend/.cursor/rules/state-management.mdc) |
-| 5 | ✓ | [`frontend/.cursor/rules/testing-conventions.mdc`](frontend/.cursor/rules/testing-conventions.mdc) |
-| 6 | ✓ | [`frontend/.cursor/rules/testing-mock-strategy.mdc`](frontend/.cursor/rules/testing-mock-strategy.mdc) |
-| 7 | ✓ | [`frontend/.cursor/rules/testing-type-safety.mdc`](frontend/.cursor/rules/testing-type-safety.mdc) |
-| 8 | ✓ | [`frontend/.cursor/rules/ui-components-and-icons.mdc`](frontend/.cursor/rules/ui-components-and-icons.mdc) |
-| 9 | ✓ | [`frontend/.cursor/skills/migrate-state-management/reference.md`](frontend/.cursor/skills/migrate-state-management/reference.md) |
-| 10 | ✓ | [`frontend/.cursor/skills/migrate-state-management/SKILL.md`](frontend/.cursor/skills/migrate-state-management/SKILL.md) |
-| 11 | ✓ | [`frontend/AGENTS.md`](frontend/AGENTS.md) |
-| 12 | ✓ | [`frontend/CLAUDE.md`](frontend/CLAUDE.md) |
+| 1 | ✓ | [`.claude/skills/authz-configurator/SKILL.md`](.claude/skills/authz-configurator/SKILL.md) |
+| 2 | ✓ | [`.claude/skills/sbshot-visual-diff/SKILL.md`](.claude/skills/sbshot-visual-diff/SKILL.md) |
+| 3 | ✓ | [`.claude/skills/signoz-page-story/SKILL.md`](.claude/skills/signoz-page-story/SKILL.md) |
+| 4 | ✓ | [`frontend/.claude/skills/scaffold-feature/SKILL.md`](frontend/.claude/skills/scaffold-feature/SKILL.md) |
+| 5 | ✓ | [`frontend/.cursor/rules/state-management.mdc`](frontend/.cursor/rules/state-management.mdc) |
+| 6 | ✓ | [`frontend/.cursor/rules/testing-conventions.mdc`](frontend/.cursor/rules/testing-conventions.mdc) |
+| 7 | ✓ | [`frontend/.cursor/rules/testing-mock-strategy.mdc`](frontend/.cursor/rules/testing-mock-strategy.mdc) |
+| 8 | ✓ | [`frontend/.cursor/rules/testing-type-safety.mdc`](frontend/.cursor/rules/testing-type-safety.mdc) |
+| 9 | ✓ | [`frontend/.cursor/rules/ui-components-and-icons.mdc`](frontend/.cursor/rules/ui-components-and-icons.mdc) |
+| 10 | ✓ | [`frontend/.cursor/skills/migrate-state-management/reference.md`](frontend/.cursor/skills/migrate-state-management/reference.md) |
+| 11 | ✓ | [`frontend/.cursor/skills/migrate-state-management/SKILL.md`](frontend/.cursor/skills/migrate-state-management/SKILL.md) |
+| 12 | ✓ | [`frontend/AGENTS.md`](frontend/AGENTS.md) |
+| 13 | ✓ | [`frontend/CLAUDE.md`](frontend/CLAUDE.md) |
 
 ---
 

@@ -4,8 +4,71 @@ All notable changes to Clawd Cursor will be documented in this file.
 
 ## [Unreleased]
 
+## [1.5.24] - 2026-10-26
+
 ### Fixed
 
+- **A refused call is logged and reported as refused.** The safety gate logs
+  `safety.decision allow` before the screenshot-binding and pause/own-UI
+  guards run. When one of those then refused the call, nothing else was
+  logged, so stderr showed only "allow" for a call that never ran. Those
+  guards now log `safety.refused` with the guard and the reason, on the
+  direct route and for each `batch` step. The session report (`system
+  report`, `clawdcursor report`) counts refusals separately from errors and
+  lists their reasons on their own, so a session where the pause guard did
+  its job no longer reads "errors: 3". This covers a batch a guard halted and
+  a call stopped by the consent prompt.
+- **OCR `confidence` is the engine's own value or absent (#275).** It was
+  presented as a comparable per-word score, but:
+  - Windows.Media.Ocr has no confidence, so every Windows word claimed 1.0;
+  - macOS Vision returns a per-line level (0.3 / 0.5 / 1 in the shipped
+    configuration, measured on a Mac), not a fine-grained score;
+  - a missing value was read as 0, which made the word look unreadable.
+
+  The Windows scripts no longer invent a value, and a missing score stays
+  absent. The `ui-map` and `smart_click` paths treat no score as neutral, so
+  Windows behaves as before. The `ocr` tool description says what the value
+  means: low means the engine likely misread the text, and 1 does not mean
+  the text is right.
+- **`clawdcursor doctor` and the status check work on a Mac without the native
+  helpers.** When the helpers had not been built (no Xcode Command Line
+  Tools), the permission check stopped at "ClawdCursor app binary not found"
+  instead of falling back to its own probes, so `doctor` and status failed.
+  It now falls back as intended. Asking for the permissions without the
+  binary says how to build it.
+- **Each compact action's required fields are published (#273).** The
+  compound schemas merge every action's fields and mark them all optional, so
+  nothing said which action needs which: `accessibility find_button` with
+  `target` (a real field of `smart_click`) passed the MCP layer and then failed
+  on the missing `intent`. The `action` description of every compound now
+  lists each action's required fields under the names it accepts, generated
+  from the delegates (e.g. `find_button: intent; find_field: purpose`).
+- **macOS: an open popover is no longer invisible** (#273). With Freeform's
+  "Insert Shape" popover open, `read_tree`, `compile_ui`, `find_button`,
+  `find` and `invoke` saw the button that opened it and nothing inside it.
+  AppKit puts an open popover under the control that presented it, and the
+  walk never reads a button's children (they are decoration). It now reads
+  them only for an open popover, in the helper and the JXA fallbacks. In the
+  helper, a control with no title, description or text label is now named by
+  its help text (tooltip), so icon-only buttons can be found by name.
+- **The browser comes to the front when the agent opens a page (#277).**
+  `browser` actions work over CDP whatever the window order, so the browser
+  the agent drove could stay hidden behind other apps for a whole session,
+  and the person watching never saw it. New policy, on every OS: a
+  successful `navigate` selects the agent's tab and raises that browser's
+  window. The window is found by the process id of the browser the agent is
+  connected to, so a second Chrome running alongside is never raised by
+  mistake. Connecting alone stays quiet. If the
+  raise fails, it is logged and the navigation still succeeds.
+- **A failed capture or OCR read says so instead of passing for a real result.**
+  On macOS without Screen Recording, screenshots and OCR used to return an
+  image of only the wallpaper and menu bar, which looked like a real but
+  stale screen (#276). Every capture is now checked first and refused with
+  "Screen Recording permission denied" (`CAPTURE_DENIED`). An OCR read that
+  fails now reports its error. It used to come back as "No text detected",
+  which hid the cause on macOS window reads (#274). A window that is partly
+  off screen is read only where it is on screen, instead of shifting the
+  region onto other pixels.
 - **`expect` is checked on every action.** Only some tools checked it; on the
   others (`window`, `system`, `browser`) the parameter wasn't even published,
   so it was stripped before arriving (live macOS: `window focus` with a failing

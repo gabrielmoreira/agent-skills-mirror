@@ -1,4 +1,4 @@
-# Provider response contracts (FMP)
+# Provider response contracts
 
 Tracking: [Issue #332](https://github.com/tradermonty/claude-trading-skills/issues/332).
 
@@ -34,12 +34,88 @@ config/provider-contracts/
     income-statement.v1.json
     ratios.v1.json
     economic-calendar.v1.json
+  trader-monty/
+    market-breadth-data.v1.json
+    market-breadth-summary.v1.json
+    uptrend-ratio-timeseries.v1.json
+    uptrend-sector-summary.v1.json
 ```
 
 Location follows `config/ci-test-policy.yaml`'s convention: data lives under
 `config/`, the code that reads it lives under `scripts/` — see
 `scripts/provider_contracts.py` (loader/validator, stdlib-only at import time) and
 `scripts/check_provider_contracts.py` (the `check` / `canary` CLI).
+
+## Public CSV contracts (trader-monty)
+
+The four `trader-monty` contracts cover keyless public CSVs. They feed
+`market-breadth-analyzer` and `uptrend-analyzer`, two of the three required skills of
+the `market-regime-daily` workflow. Because no API key is involved, their live canary
+actually runs in CI. The schema above is extended additively; FMP contracts are
+unchanged and default to `format: "json"`.
+
+| Key | Applies to | Meaning |
+|---|---|---|
+| `format` | all | `"json"` (default) or `"csv"`. Any other value fails `check`. |
+| `url` | csv only | Required for csv, forbidden for json. `https` only, host in `{tradermonty.github.io, raw.githubusercontent.com}`, no port, credentials, query string or fragment. `path` must equal the URL path and `query` must be empty. |
+| `max_bytes` | csv only | Positive integer cap on the decompressed body, default 2 MiB. The timeseries sets 16 MiB because the file is 2.81 MB today and grows about 14 KB per trading day. |
+| `required_values` | all | `{column: [values]}`. Each value must appear in at least one row, otherwise the fatal `missing_required_value:<column>=<value>`. Used for the `worksheet == "all"` row and the two summary metrics the breadth analyzer reads. |
+
+`parse_csv_rows(text)` returns `(rows, parse_anomalies)` using the stdlib `csv` module:
+
+- A UTF-8 BOM is stripped and the first line is the header.
+- An empty cell becomes `None`.
+- `true` / `false` in any case becomes `bool`.
+- An integer literal becomes `int`; a decimal or exponent literal becomes `float`.
+- Everything else stays `str`, including dates, `nan` and `inf`. A numeric column holding
+  `nan` therefore reports `wrong_type:<col>:str`. This is intentional, because the breadth
+  consumer rejects non-finite numbers, and the live files contain none.
+- A short row maps missing cells to `None`. A row with extra cells yields one fatal
+  `extra_cells` anomaly and keeps only the header keys.
+- A header-only body returns `[]`, which gives `empty_response` when `min_rows >= 1`.
+
+Fixtures are stored as already-coerced JSON rows, so a fixture and a live body go through
+the same coercion. Declared types follow what the consumers accept: float-parsed columns
+declare `["float", "int"]`, `["int"]` is used only for `Breadth_200MA_Trend`, which the
+consumer parses with `int()`, and the timeseries `count` / `total` declare `["int", "float"]`
+because the uptrend consumer's `_safe_int` is `int(float(v))` and so tolerates `840.0`. Bool
+columns declare `["bool"]` (only `true`/`false` in any case) and are deliberately **stricter**
+than any single consumer. The owners disagree on other spellings: market-breadth-analyzer's
+`_parse_bool` accepts `1`/`0`/`yes`/`no` and raises on anything else, while
+market-top-detector's (`breadth_csv_client.py`) silently reads every value other than
+`true`/`1`/`yes` as `False`. A provider switch to `Y`/`N`, `1`/`0` or `yes`/`no` would
+therefore produce wrong signals in one owner, so the canary reports it as fatal
+`wrong_type:<col>:str` / `:int`. The summary `Value` column declares
+`["int", "float", "str"]` because it mixes numbers and dates.
+
+`market-breadth-data` records `SP500_Price`, `Breadth_200MA`, `Breadth_8MA` and `Trend` as
+`legacy_aliases`. They are **consumer-tolerated alternates** read by breadth-chart-analyst
+(`fetch_breadth_csv.py`), not provider history. A provider rename to one of them is still
+fatal (`canonical_absent_legacy_present`) because market-breadth-analyzer and
+market-top-detector would break.
+
+### Canary fetch for CSV contracts
+
+One GET per contract with no credentials, `allow_redirects=False`, a 30 s timeout and
+`stream=True`. The body is read up to `max_bytes + 1` decompressed bytes and decoded as
+`utf-8-sig`. Fetch-level fatal codes:
+
+| Code | When |
+|---|---|
+| `http_status:<code>` | non-200 response, including a 3xx (redirects are never followed). Validation is skipped, so this is the only code. |
+| `transport_error` | the request failed. The redacted message goes to stderr only. It replaces `http_status:-1` for CSV. |
+| `body_too_large:<max_bytes>` | the body exceeded the cap. |
+| `decode_error` | the body is not valid UTF-8. |
+| `parse_error` | the stdlib `csv` parser rejected the body (a NUL byte, or a field over the size limit). Only that contract fails; the other contracts are still reported. |
+| `extra_cells` | a row had more cells than the header. |
+
+### Deduplicated anomalies and `count`
+
+`validate_rows` still emits one anomaly per row. The canary and summary use
+`RowValidation.summarized()`, which returns the unique `(code, severity)` pairs in
+first-seen order with a `count`. A 30k-row timeseries with one renamed column therefore
+reports one entry with `count: 30000`. `count` is additive and also appears in FMP reports.
+Summary table cells render `code ×count` when the count is above 1.
 
 ## Contract schema
 
@@ -127,6 +203,7 @@ Produced by `validate_rows()` in `scripts/provider_contracts.py`:
 | `all_null_required_field:<f>` | fatal | every row explicitly has null for a field with `reject_all_null: true` |
 | `invalid_contract_rule:<f>:reject_all_null` | fatal | the opt-in policy value is not a JSON boolean |
 | `wrong_type:<f>:<got>` | fatal | required key's value type is outside its declared `types` |
+| `missing_required_value:<col>=<val>` | fatal | a `required_values` entry (for example `worksheet=all`) appears in no row |
 | `canonical_absent_legacy_present:<legacy>-><canonical>` | fatal | **the #328 signature** — the legacy field name showed up instead of the canonical one |
 | `legacy_alias_present:<legacy>` | deprecation (non-fatal) | both the legacy and canonical keys are present; informational only |
 
@@ -238,15 +315,20 @@ signal above.
 | Endpoint | Owners (skills that call it) |
 |---|---|
 | `profile` | earnings-trade-analyzer, pead-screener, ibd-distribution-day-monitor, parabolic-short-trade-planner, canslim-screener, us-undervalued-growth-screener |
-| `quote` | vcp-screener, parabolic-short-trade-planner, ftd-detector, canslim-screener, market-top-detector, us-undervalued-growth-screener |
-| `historical-price-eod-full` | all 10 generated clients: pead-screener, earnings-trade-analyzer, ibd-distribution-day-monitor, vcp-screener, parabolic-short-trade-planner, ftd-detector, canslim-screener, macro-regime-detector, market-top-detector, us-undervalued-growth-screener |
+| `quote` | vcp-screener, parabolic-short-trade-planner, ftd-detector, canslim-screener, market-top-detector, us-undervalued-growth-screener, stockbee-exhaustion-hammer-screener (generated client `fetch_quote_row`) |
+| `historical-price-eod-full` | 15 generated-client owners: pead-screener, earnings-trade-analyzer, ibd-distribution-day-monitor, vcp-screener, parabolic-short-trade-planner, ftd-detector, canslim-screener, macro-regime-detector, market-top-detector, us-undervalued-growth-screener, plus the five stockbee clients (#495 Batch C): stockbee-20pct-study, stockbee-episodic-pivot-analyzer, stockbee-exhaustion-hammer-screener, stockbee-momentum-burst-screener, stockbee-setup-fluency-trainer |
 | `earnings-calendar` | pead-screener, earnings-trade-analyzer, ibd-distribution-day-monitor |
 | `sp500-constituent` | vcp-screener, parabolic-short-trade-planner |
 | `income-statement` | canslim-screener, dividend-growth-pullback-screener, value-dividend-screener — ad-hoc consumers (their own inline FMP fetch layer) |
 | `ratios` | value-dividend-screener — ad-hoc consumer |
-| `company-screener` (slice 2a) | dividend-growth-pullback-screener, downtrend-duration-analyzer, institutional-flow-tracker, pair-trade-screener, stockbee-20pct-study, stockbee-exhaustion-hammer-screener, stockbee-momentum-burst-screener, us-undervalued-growth-screener, value-dividend-screener — note these are **ad-hoc consumers**, not generated clients: eight scripts carry their own inline FMP fetch layer and only `us-undervalued-growth-screener` rides the generated garp client (`get_company_screener`) |
+| `company-screener` (slice 2a) | dividend-growth-pullback-screener, downtrend-duration-analyzer, institutional-flow-tracker, pair-trade-screener, stockbee-20pct-study, stockbee-exhaustion-hammer-screener, stockbee-momentum-burst-screener, us-undervalued-growth-screener, value-dividend-screener — seven of these are generated-client consumers: dividend-growth-pullback-screener, institutional-flow-tracker, us-undervalued-growth-screener, value-dividend-screener and the three stockbee skills (stockbee-20pct-study, stockbee-exhaustion-hammer-screener, stockbee-momentum-burst-screener, via `fetch_screener_rows` on the stable-only client, #495 Batch C). Only downtrend-duration-analyzer and pair-trade-screener remain **ad-hoc consumers** with their own inline FMP fetch layer |
 | `income-statement` (this slice) | canslim-screener, dividend-growth-pullback-screener, value-dividend-screener — ad-hoc consumers (their own inline FMP fetch layer) |
 | `ratios` (this slice) | value-dividend-screener — ad-hoc consumer |
+
+| `market-breadth-data` (trader-monty) | market-breadth-analyzer (`csv_client.py`), market-top-detector (`breadth_csv_client.py`), breadth-chart-analyst (`fetch_breadth_csv.py`) |
+| `market-breadth-summary` (trader-monty) | market-breadth-analyzer (`csv_client.py`) |
+| `uptrend-ratio-timeseries` (trader-monty) | uptrend-analyzer (`data_fetcher.py`), sector-analyst (`analyze_sector_rotation.py`), breadth-chart-analyst (`fetch_breadth_csv.py`), theme-detector (`uptrend_client.py`) |
+| `uptrend-sector-summary` (trader-monty) | uptrend-analyzer (`data_fetcher.py`), sector-analyst, theme-detector, breadth-chart-analyst |
 
 Owners are validated against `skills-index.yaml` by `check` — an owner naming a
 skill directory that does not exist there is a validation error.
@@ -378,6 +460,16 @@ Sanitization checklist before pasting the result into a `fixture` array:
 
 ## Canary: schedule, report shape, promotion criteria
 
+The public CSV canary is a separate workflow, `.github/workflows/public-csv-contract-canary.yml`
+(Mondays 12:30 UTC plus `workflow_dispatch`). It runs `canary --provider trader-monty`,
+needs no secret and has no preflight job. It is report-only (`continue-on-error: true`)
+under the same promotion policy as the FMP canary, so **the run stays green on drift**.
+The `::error` / `::warning` annotations and the step summary are the only drift signal
+until a promotion issue makes it fail-closed. The report is uploaded as
+`public-csv-canary-report` for 30 days. `fmp-contract-canary.yml` is unchanged.
+
+The remainder of this section describes the FMP canary.
+
 `.github/workflows/fmp-contract-canary.yml` runs
 `python3 scripts/check_provider_contracts.py canary` weekly (Monday 12:00 UTC) plus
 on `workflow_dispatch`. Drift is **report-only** (the `canary` job has
@@ -478,7 +570,7 @@ endpoints, and are excluded.
 | `quote` | ✅ `quote.v1.json` | see ownership table above | — |
 | `historical-price-eod/full` | ✅ `historical-price-eod-full.v1.json` | see ownership table above | — |
 | `earnings-calendar` (v3 alias: `earning_calendar`) | ✅ `earnings-calendar.v1.json` | pead-screener, earnings-trade-analyzer, ibd-distribution-day-monitor call `get_earnings_calendar`; vcp-screener/parabolic-short-trade-planner vendor the same v3→stable compat rename but do not call it | — |
-| `company-screener` | ✅ `company-screener.v1.json` | dividend-growth-pullback-screener, downtrend-duration-analyzer, institutional-flow-tracker, pair-trade-screener, stockbee-20pct-study, stockbee-exhaustion-hammer-screener, stockbee-momentum-burst-screener, us-undervalued-growth-screener, value-dividend-screener | consumer reason codes → slice 2b |
+| `company-screener` | ✅ `company-screener.v1.json` | dividend-growth-pullback-screener, downtrend-duration-analyzer, institutional-flow-tracker, pair-trade-screener, stockbee-20pct-study, stockbee-exhaustion-hammer-screener, stockbee-momentum-burst-screener, us-undervalued-growth-screener, value-dividend-screener — the stockbee three are generated-client consumers (`fetch_screener_rows`, stable-only, no v3 fallback) | consumer reason codes → slice 2b |
 | `sp500-constituent` (v3 alias: `sp500_constituent`) | ✅ `sp500-constituent.v1.json` | vcp-screener, parabolic-short-trade-planner call `get_sp500_constituents`; pead-screener/earnings-trade-analyzer/ibd-distribution-day-monitor vendor the compat rename but do not call it | covered |
 | `income-statement` | ✅ `income-statement.v1.json` | canslim-screener, dividend-growth-pullback-screener, value-dividend-screener — ad-hoc consumers (their own inline FMP fetch layer) | — |
 | `ratios` | ✅ `ratios.v1.json` | value-dividend-screener — ad-hoc consumer | — |
@@ -526,7 +618,7 @@ flat list of record dicts and `non_empty.min_rows=1` applies.
   — matching the consumer's own `if pe is None or pb is None: continue` guard.
   `returnOnEquity` etc. are optional (observed null on the recorded fixture).
 
-Issue #332 remains open: non-FMP providers, the remaining FMP endpoint contracts,
+Issue #332 remains open: the remaining non-FMP providers, the remaining FMP endpoint contracts,
 other consumer reason codes, and canary promotion remain outstanding. The
 scheduled canary remains report-only. Slice 2a (`company-screener` contract +
 its field-usage inventory) has landed; slice 2b is the consumer reason codes for
@@ -534,7 +626,13 @@ the nine `company-screener` consumers.
 
 ## Out of scope (this slice)
 
-- Non-FMP providers.
+- Providers still without contracts: yfinance, CoinGecko, Binance, Alpaca and FXMacroData.
+- Parser hardening for the four trader-monty contract owners that are not hardened yet.
+  Their behavior is unchanged and each is a follow-up:
+  - market-top-detector: `breadth_csv_client.py`, the read of `market_breadth_data.csv`.
+  - breadth-chart-analyst: `fetch_breadth_csv.py`, `fetch_breadth_data` and the uptrend reader.
+  - sector-analyst: `analyze_sector_rotation.py`, the uptrend timeseries read.
+  - theme-detector: `uptrend_client.py`, the uptrend timeseries read.
 - Every `/stable` endpoint above marked ❌ in the "Covered in slice 1" column.
 - Zero-result reason codes for the `company-screener` consumers (slice 2b — the
   inventory above is 2b's prerequisite and was delivered in 2a).
@@ -554,16 +652,20 @@ the nine `company-screener` consumers.
 # against skills-index.yaml. Zero network. Exit 1 on any error.
 python3 scripts/check_provider_contracts.py check
 
-# Live probe — needs FMP_API_KEY. Makes one GET per contract (query-param
-# auth), scores the response, writes a JSON report, exits 1 if any contract
-# is not ok.
-python3 scripts/check_provider_contracts.py canary [--max-calls N] [--report PATH]
+# Live probe. --provider fmp (default) needs FMP_API_KEY and makes one GET per
+# contract (query-param auth). --provider trader-monty probes the keyless public
+# CSVs. --provider all runs both. Scores each response, writes a JSON report
+# (default reports/<provider>_canary_<date>.json) with a top-level "provider"
+# key, and exits 1 if any contract is not ok.
+python3 scripts/check_provider_contracts.py canary [--provider {fmp,trader-monty,all}] [--max-calls N] [--report PATH]
 
 # Render a canary report as markdown (stdout, or appended to --summary-file such as
 # $GITHUB_STEP_SUMMARY). --github also prints ::error / ::warning annotations to
 # stdout. Stdlib only. Exits 0 for missing/malformed reports (report problems never gate);
 # argument or write errors exit non-zero.
-python3 scripts/check_provider_contracts.py summarize --report PATH [--summary-file PATH] [--github]
+python3 scripts/check_provider_contracts.py summarize --report PATH [--provider {fmp,trader-monty,all}] [--summary-file PATH] [--github]
+# A report's own "provider" key picks the titles (absent or fmp: FMP titles, otherwise
+# "Public CSV ..."). --provider only chooses the title when the report is missing.
 ```
 
 ## S&P 500 constituent recording and consumer boundary

@@ -179,7 +179,9 @@ automatically inherit every tool the parent has.
   `gortex-search` (locate / trace / explore) and `gortex-impact`
   (blast-radius / verification) — each with an explicit
   `tools: mcp__gortex__…` frontmatter listing exactly the graph tools it
-  needs. The allowlist is **graph-only by construction**: it contains no
+  needs. The plugin ships the same two subagents with
+  `tools: mcp__plugin_gortex_gortex__…` names for its plugin-scoped MCP server.
+  The allowlist is **graph-only by construction**: it contains no
   `Bash`/`Grep`/`Glob`, so a spawned subagent cannot escape the graph.
   A `PreToolUse` Task hook additionally briefs spawned subagents. The
   allowlists are validated in CI (`subagents_test.go`) so a tool rename

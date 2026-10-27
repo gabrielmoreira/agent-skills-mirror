@@ -4,6 +4,28 @@ Each release's page on GitHub has its notes and measurements. See [the 1.0.0 rel
 
 ## Unreleased
 
+- A streamed tool call cut by `max_tokens` while an XML value's opening newline was still held no longer sends that framing newline as an extra `\n` in the argument; the stream now matches the whole reply (#1408, item 3 of #1396). Thanks to @Maxrio9.
+
+- Qwen3.8-27B and Qwen3.5-MoE on CUDA apply `presence_penalty` and `frequency_penalty` (-2 to 2; 400 outside), which the server used to ignore silently, as the Qwen3.8 model card's thinking-off settings use (#1346). A drafted row is penalized exactly as the plain step at its position, so drafted replies equal undrafted ones; engines that don't apply them say so once in the log. On a GB10 with Qwen3.8-27B, requests without penalties give the same tokens as before, and prefill and decode are unchanged. Thanks to @BobClawblaw.
+
+- A request's grammar compiles once: the lane thread builds its matcher from the HTTP thread's compiled handle instead of compiling the same text again under the compiler lock (#1362). Replies are unchanged; on M3 Ultras with Qwen3.8-27B, decode at 1 to 8 streams is unchanged. Thanks to @jschmied.
+
+- The prompt cache keeps, for each entry, links to the entries that extend it, so choosing an eviction victim no longer compares every pair of entries (#1363). Choices are the same (a randomized test checks them against the old scans); in a 220-turn forked conversation with 200 slots, choosing a victim takes about 0.5 ms instead of 20 ms. Thanks to @jschmied.
+
+- Flash Next on Macs: concurrent chats share each round's work more fully (#1338, #1339, #1340, #1341, #1342, #1343). A shared round samples every sampled stream's draft and target rows in one dispatch, drafts every stream in one packed MTP pass, copies kept states in the verify command buffer, runs the sessions' recurrences in one verify without barriers between them, and prices a batched head's extra drafts as the deepest stream's steps. On an M3 Ultra with the 4-bit MTP checkpoint, decode across 2, 4 and 8 concurrent streams rises 6.9%, 8.8% and 11.8% (4.5% and 10.7% at 2 and 4 streams on an M5 Ultra); one stream and prefill are unchanged, and prompt tokens equal the previous build's. `FZ_VERIFY_OVERLAP=0`, `FZ_PRICE_BATCHED=0` and `FZ_KEYED_DRAFTS=0` restore the previous paths. Thanks to @gilby.
+
+- Qwen4 dense (preparation, ahead of a released checkpoint): the native binary admits `qwen4` and `qwen4_text` configs on Metal and CUDA, sharing Flash Next's layer graph with a dense feed-forward, and refuses any geometry its kernels do not cover before allocating (#1244). Weights stay as stored (BF16, MLX affine, ModelOpt FP8 or NVFP4). Synthetic device gates (`zig build test-qwen4-metal`, `tf-cuda-test qwen4`) load nonzero checkpoints through the serving engine and match a binary64 reference with no tolerance; no real checkpoint, speed or memory fit is claimed yet. Existing models are unchanged.
+
+## 1.1.6
+
+- DeepSeek-V4.1 (experimental): a tool call in the model's spaced DSML spelling now comes back in `tool_calls`, streamed and whole, instead of in the reply's text, and a lone DSML opener inside a `<tool_call>` no longer crashes the parser; the `TF_DSV41_ASSETS` refusal names the file boot actually opens (`engram-token-map.bin`) (#1324).
+
+- Host sampling with no rank cut (`top_k: 0`, `top_p: 1`) finds the sampled token by a keyed race over the candidates instead of sorting the whole vocabulary (#1337). The draw is the same: a host test compares it with the full sort over 483,840 sampler settings, ties and extreme values included, and on M3 Ultras with Qwen3.8-27B and Nemotron sampled replies equal the previous build's token for token. Thanks to @ajensenwaud.
+
+- Dory on CUDA can keep its full-attention caches in pages of the core pool with `TENSORFOLD_DORY_KV_PAGES=1` (#1284); off by default. On a GB10 with Dory 1.0 4B NVFP4, pages give the same tokens as the contiguous cache, the shared window kernels compile to identical machine code, and the default path is unchanged. Thanks to @jschmied.
+
+- GLM-5.3-Flash images: a chat's later turns no longer run the vision tower again for images the kept prompt state already holds (Metal), and the engine reads the vision tower of MLX conversions that name it `vision_tower.` with channels-last convolution kernels, which it used to refuse with `NoVisionTower`. On an M3 Ultra with the oQ4 checkpoint, a follow-up image turn's first token comes about 90 ms sooner (0.13 s instead of 0.22 s on the second turn), and every reply equals a fresh server's. `tools/image_cache_turns.py` measures multi-turn image chats' cached tokens, first-token times and replies against a served model.
+
 - Drama speech: `POST /v1/audio/speech` takes per-request `temperature`, `top_p`, `top_k` (1 to 64) and an exact 64-bit `seed`, whole and streamed (#1277, fixing #1273), and accepts dialogue with speaker tags `<|speaker:0|>` through `<|speaker:15|>` (#1278, fixing #1274). A request without them sounds exactly as before: on an M3 Ultra with Drama 3, default requests give the same PCM as the previous build byte for byte, repeats and concurrent requests included. Thanks to @krunkosaurus.
 
 - On Macs, `--spill-gib N` writes a conversation state that the prompt cache pushes out of memory to disk (under `~/.cache/tensorfold/spilled`, at most N GiB, least recently used first), and reads it back when the conversation returns; `--checkpoint-slots N` bounds how many states stay in memory (#840, from Python #68). Qwen3.8-27B, Nemotron, Flash Next and GLM-5.3-Flash take both; neither is on by default. With one slot in memory and a second 16k-token conversation in between, a returning conversation's next turn starts after 2.6 s instead of 56 s with Qwen3.8-27B on an M3 Ultra (1.8 s instead of 31 s with GLM-5.3-Flash), with the same reply as a fresh pass. Thanks to @gilby.
@@ -19,8 +41,6 @@ Each release's page on GitHub has its notes and measurements. See [the 1.0.0 rel
 - Spark-X2.5/2.6-4B also runs on Metal, from the bf16 release as published (#1320). On an M3 Ultra it prefills 2,840 tokens/s at 2k and decodes 69 tokens/s on one stream; repeats and concurrent streams equal their runs alone, and its tokens match the CUDA engine's on the same prompt. Thanks to @BobClawblaw.
 
 - GLM-5.3: a tool call that `max_tokens` cuts comes back in `tool_calls` with `finish_reason: "length"`, streamed and whole, instead of leaking its `<tool_call>` markup into the reply's text (#1298; thanks @Boscoeuk for the report).
-
-- `--spill-gib N` on Macs writes a prompt state the cache evicts from RAM to disk, up to N GiB, and a later turn whose prefix matches reads it back and resumes exactly as a fresh prompt pass; `--checkpoint-slots N` sets how many states stay in RAM beside it. Qwen3.8-27B, Nemotron, Flash Next and GLM-5.3-Flash take them, on `--learn-conversations`' disk store; both are off by default, and without them nothing changes (from Python #68; thanks @gilby).
 
 - `tensorfold plan MODEL [--memory-gb GIB] [--ram GB]...` says, before any download or weight load, the memory CUDA admission would grant and whether the checkpoint's weights fit each budget, and which setting would make them fit (#1319, from Python #281; thanks @akol1).
 
@@ -39,6 +59,8 @@ Each release's page on GitHub has its notes and measurements. See [the 1.0.0 rel
 - Qwen3.5 on Metal can keep its streams' keys and values in pages of the core pool with `TF_QWEN35_METAL_KV_PAGES=1`, planned under the load limit at load; the paged kernels' arithmetic is the contiguous ones', and the default path is unchanged (#1294).
 
 - Tests and builds: the f64 reference keeps signed zeros at interval endpoints, so x86_64 hosts accept an exact +0 (#1309, #1315); the memory HTTP test reads the fake server's port line without buffering past it (#1306, #1308); `zig build server-cpu` builds the CPU fake server and engine-less CLI through the shared build graph (#1305, #1314).
+
+- `tensorfold pull` on macOS finishes a connection a signal interrupts instead of crashing (`ISCONN` after a retried connect).
 
 ## 1.1.5
 

@@ -29,8 +29,10 @@ Every CloudBase task follows this three-stage process:
    ├── 2a. Resource preparation → Prefer MCP to prepare backend resources
    │     (enable auth providers, create database tables, configure storage domains,
    │      set up security rules — before writing frontend code).
-   │     If MCP tools are missing in THIS session, configure MCP for next time
-   │     (`./cloudbase-mcp/SKILL.md`) and use `tcb` CLI now (`./cloudbase-cli/SKILL.md`).
+   │     If MCP tools are missing in THIS session, run the readiness check in
+   │     `./cloudbase-mcp/SKILL.md` first — missing tools are often wiring
+   │     (connector unbound or in need of a reconnect), not configuration.
+   │     Then configure for next time and use `tcb` CLI now (`./cloudbase-cli/SKILL.md`).
    └── 2b. Frontend implementation → Write code, install deps, start server, test
 3. Close-out  →  Run cloudbase-code-review, fix all errors, declare done
 ```

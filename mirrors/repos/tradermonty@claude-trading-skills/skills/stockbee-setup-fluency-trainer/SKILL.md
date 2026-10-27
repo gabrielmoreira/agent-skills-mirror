@@ -120,3 +120,16 @@ Each JSONL record includes:
 - `references/model_book_schema.md` - JSONL schema and lifecycle states
 - `references/outcome_tags.md` - Outcome classification and tag definitions
 - `references/review_workflow.md` - Daily, 3-day, 5-day, and monthly review routine
+
+## Shared FMP client
+
+Live FMP access uses the bundled generated `scripts/fmp_client.py`, loaded only
+when an FMP run starts, so offline modes still work without `requests`. CLI
+key/environment precedence, the API-call budget and successful output shapes are
+preserved. Requests use stable endpoints only; a denied, empty or failed stable
+request does not fall back to retired v3 URLs. The shared client masks raw and
+URL-encoded key echoes, retries malformed JSON once, and retries a 429 at most once,
+after a 60-second wait, before stopping on a repeated rate limit.
+
+If every requested symbol fails at the transport level, `update` exits 1 and
+leaves the model book unchanged instead of stamping each record `missing_prices`.

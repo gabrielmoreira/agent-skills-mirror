@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `heygen-com/hyperframes` — 26 default patterns, 3 followed patterns, 348 file(s) materialized.
+Mirror of `heygen-com/hyperframes` — 26 default patterns, 3 followed patterns, 349 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `heygen-com/hyperframes` — 26 default patterns, 3 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 3 |
-| Files         | 348 |
+| Files         | 349 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -400,15 +400,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 337 | ✓ | [`skills/remotion-to-hyperframes/scripts/frame_strip.sh`](skills/remotion-to-hyperframes/scripts/frame_strip.sh) |
 | 338 | ✓ | [`skills/remotion-to-hyperframes/scripts/lint_source.py`](skills/remotion-to-hyperframes/scripts/lint_source.py) |
 | 339 | ✓ | [`skills/remotion-to-hyperframes/scripts/render_diff.sh`](skills/remotion-to-hyperframes/scripts/render_diff.sh) |
-| 340 | ✓ | [`skills/remotion-to-hyperframes/scripts/tests/fixtures/blocker.tsx`](skills/remotion-to-hyperframes/scripts/tests/fixtures/blocker.tsx) |
-| 341 | ✓ | [`skills/remotion-to-hyperframes/scripts/tests/fixtures/clean.tsx`](skills/remotion-to-hyperframes/scripts/tests/fixtures/clean.tsx) |
-| 342 | ✓ | [`skills/remotion-to-hyperframes/scripts/tests/smoke.sh`](skills/remotion-to-hyperframes/scripts/tests/smoke.sh) |
-| 343 | ✓ | [`skills/remotion-to-hyperframes/SKILL.md`](skills/remotion-to-hyperframes/SKILL.md) |
-| 344 | ✓ | [`skills/slideshow/references/standalone-harness.md`](skills/slideshow/references/standalone-harness.md) |
-| 345 | ✓ | [`skills/slideshow/SKILL.md`](skills/slideshow/SKILL.md) |
-| 346 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
-| 347 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 348 | → | [`TRIAGE.md`](TRIAGE.md) |
+| 340 | ✓ | [`skills/remotion-to-hyperframes/scripts/tests/boxSizing.test.mjs`](skills/remotion-to-hyperframes/scripts/tests/boxSizing.test.mjs) |
+| 341 | ✓ | [`skills/remotion-to-hyperframes/scripts/tests/fixtures/blocker.tsx`](skills/remotion-to-hyperframes/scripts/tests/fixtures/blocker.tsx) |
+| 342 | ✓ | [`skills/remotion-to-hyperframes/scripts/tests/fixtures/clean.tsx`](skills/remotion-to-hyperframes/scripts/tests/fixtures/clean.tsx) |
+| 343 | ✓ | [`skills/remotion-to-hyperframes/scripts/tests/smoke.sh`](skills/remotion-to-hyperframes/scripts/tests/smoke.sh) |
+| 344 | ✓ | [`skills/remotion-to-hyperframes/SKILL.md`](skills/remotion-to-hyperframes/SKILL.md) |
+| 345 | ✓ | [`skills/slideshow/references/standalone-harness.md`](skills/slideshow/references/standalone-harness.md) |
+| 346 | ✓ | [`skills/slideshow/SKILL.md`](skills/slideshow/SKILL.md) |
+| 347 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
+| 348 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 349 | → | [`TRIAGE.md`](TRIAGE.md) |
 
 ---
 

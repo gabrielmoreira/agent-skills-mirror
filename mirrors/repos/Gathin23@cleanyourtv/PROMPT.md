@@ -3,7 +3,8 @@
 Paste this into Claude Code (or another coding assistant with shell access) on a computer that is
 on the same Wi-Fi as the TV. Works on Android TV / Google TV sets (Xiaomi, TCL, Hisense, Sony,
 OnePlus, Realme, Nvidia Shield and most others). It will not work on Samsung Tizen, LG webOS or
-Fire TV. If you cloned this repo, mention that: the assistant can reuse `tools/` and `launcher/`
+Fire TV. For Samsung, LG, Roku and other non-Android TVs, use https://cleanyour.tv/not-android instead:
+it turns off the tracking with the remote. If you cloned this repo, mention that: the assistant can reuse `tools/` and `launcher/`
 instead of writing them from scratch, and only needs to edit `launcher/.../values/config.xml`.
 
 Before you start, on the TV: Settings → Device Preferences → About → press OK on "Build" 7 times,
@@ -17,6 +18,10 @@ adapter on that port can drop the same way, so plan to do the whole session in o
 I want to debloat my Android TV and replace its launcher with a clean Apple TV style home screen.
 My TV model is: <MODEL NAME HERE>. Work on the real device, step by step, and verify everything you
 do with screenshots pulled from the TV. Ask me before anything that depends on my preferences.
+Where these steps name a file under `tools/`, `docs/` or `examples/` that is not in your working
+folder, you are running without this repo: clone it first with
+`git clone https://github.com/Gathin23/cleanyourtv` and work from there, so `tools/disable.sh` and the
+rest keep their safety checks, rather than stopping or writing your own.
 
 Connect
 - Find the TV on my network (hostname, ARP table, or ask me for the IP) and connect over ADB on port 5555.
@@ -35,6 +40,9 @@ Connect
   and `adb tcpip 5555`. Android switches Wireless debugging off whenever Wi-Fi drops.
   Some firmware runs network ADB on another fixed port instead (a projector used 5877): if 5555 refuses and
   nothing advertises Wireless debugging, scan the TV's own TCP ports and try each open one with `TV_PORT`.
+- If the TV turns out not to be Android TV / Google TV (no ADB port at all, or it identifies as Tizen,
+  webOS, Roku OS, VIDAA or SmartCast), stop and tell me to use https://cleanyour.tv/not-android, which
+  turns off the tracking with the remote. Nothing in this repo applies to it.
 - Tell me when the "Allow USB debugging?" prompt will appear on the TV so I can accept it.
 - If `adb install` hangs on Android 14 it is waiting for an on-screen confirmation; push the APK and run
   `pm install -r` over the shell instead.
@@ -94,7 +102,11 @@ Debloat
   `docs/TROUBLESHOOTING.md` has the way out if one has been opened.
 - Disable in small batches and screenshot between them: a batch can take something load-bearing with
   it and you cannot tell which.
-- After the last batch, reboot once and compare `pm list packages -d` with what you disabled: some
+- After the last batch, wait about 15 seconds before rebooting - Android writes package state to
+  disk about ten seconds after a change (`WRITE_SETTINGS_DELAY`, `docs/TROUBLESHOOTING.md`), so a
+  reboot sent straight after the batch boots with the old state and what came back reads as
+  firmware re-enabling packages it never re-enabled. `adb shell sync` first is fine too. Then reboot
+  once and compare `pm list packages -d` with what you disabled: some
   firmware re-enables packages at every boot from its own list (TCL Android 9 does this for its user
   center). Note those in the list header instead of disabling them again after each boot. If
   setupwraith or the stock launcher came back and Home is black, check `logcat | grep
@@ -189,7 +201,8 @@ Verify
   Fix what you see before moving on.
 - Live TV, HDMI and some streaming apps (Netflix) give empty screenshots (0 bytes); that is the TV, not a
   broken debloat, and `--screenshot` exits 1 with that message. Check
-  `dumpsys activity activities | grep topResumedActivity` instead (see `docs/TROUBLESHOOTING.md`).
+  `dumpsys activity activities | grep -i ResumedActivity` instead (some builds print no `topResumedActivity`
+  line but do print `mResumedActivity`; see `docs/TROUBLESHOOTING.md`).
 - If screenshots keep showing an app you already left, byte for byte, `screencap` is returning its last
   frame: confirm `mCurrentFocus` in `dumpsys window`, force-stop that app and capture again.
 - If the screen looks enlarged and clipped after an install or a reboot, check the display overrides

@@ -1,0 +1,153 @@
+# Databricks App Kit SDK
+
+## TypeScript Import Rules
+
+This template uses strict TypeScript settings with `verbatimModuleSyntax: true`. **Always use `import type` for type-only imports**.
+
+Template enforces `noUnusedLocals` - remove unused imports immediately or build fails.
+
+```typescript
+// ✅ CORRECT - use import type for types
+import type { MyInterface, MyType } from './types';
+
+// ❌ WRONG - will fail compilation
+import { MyInterface, MyType } from './types';
+```
+
+## Server Setup
+
+For server configuration, see: `npx @databricks/appkit docs ./docs/plugins.md`
+
+## Execution identity: service principal vs user (OBO)
+
+Server-side, AppKit uses the **service principal by default**. Open a caller scope only when an operation must run with the requesting user's Databricks permissions. The app-level `appkit.asUser(req)` API requires **`@databricks/appkit` `>= 0.84.0`** (`databricks apps init --version latest` installs it).
+
+```typescript
+// Block form: everything inside runs as the user; prefer this for handlers doing multiple ops:
+const orders = await appkit.asUser(req).run((kit) => kit.analytics.query("orders"));
+
+// One-call shorthand:
+await appkit.asUser(req).analytics.query("orders");
+
+// No caller scope → runs as the service principal:
+await appkit.analytics.query("metrics");
+```
+
+- The service principal is the default whenever no user scope is open.
+- **Fail-closed:** in production an OBO call with no usable user token rejects. It never silently falls back to the service principal (the only fallback is the documented `NODE_ENV=development` dev mode).
+- `plugin.asUser(req)` (e.g. `appkit.files("uploads").asUser(req)`) is **deprecated** but still works, with a one-time deprecation warning. New code should use `appkit.asUser(req)`.
+- OBO requires the resource's scope in `user_api_scopes`; see [Platform Guide](../platform-guide.md#user_api_scopes-names).
+- SQL query files: a `<key>.obo.sql` file runs as the user (per-user cache); a plain `<key>.sql` runs as the SP. See [SQL Queries](sql-queries.md). Agent execution identity is covered in [Agents](agents.md).
+
+## useAnalyticsQuery Hook
+
+**ONLY use when displaying data in a custom way that isn't a chart or table.** For charts/tables, pass `queryKey` directly to the component — don't double-fetch. Charts also accept a `format` option (`"json"` | `"arrow"` | `"auto"`, default `"auto"`) to control the data transfer format.
+
+Use cases:
+- Custom HTML layouts (cards, lists, grids)
+- Summary statistics and KPIs
+- Conditional rendering based on data values
+- Data that needs transformation before display
+
+### ⚠️ Memoize Parameters to Prevent Infinite Loops
+
+```typescript
+// ❌ WRONG - creates new object every render → infinite refetch loop
+const { data } = useAnalyticsQuery('query', { id: sql.string(selectedId) });
+
+// ✅ CORRECT - memoize parameters
+const params = useMemo(() => ({ id: sql.string(selectedId) }), [selectedId]);
+const { data } = useAnalyticsQuery('query', params);
+```
+
+### Conditional Queries
+
+```typescript
+// ❌ WRONG - `enabled` is NOT a valid option (this is a React Query pattern)
+const { data } = useAnalyticsQuery('query', params, { enabled: !!selectedId });
+
+// ✅ CORRECT - use autoStart: false
+const { data } = useAnalyticsQuery('query', params, { autoStart: false });
+
+// ✅ ALSO CORRECT - conditional rendering (component only mounts when data exists)
+{selectedId && <DetailsComponent id={selectedId} />}
+```
+
+### Type Inference
+
+When `appKitTypes.d.ts` has been generated (via `<pm> run typegen`), types are inferred automatically:
+```typescript
+// ✅ After typegen - types are automatic, no generic needed
+const { data } = useAnalyticsQuery('my_query', params);
+
+// ⚠️ Before typegen - data is `unknown`, you must provide type manually
+const { data } = useAnalyticsQuery<MyRow[]>('my_query', params);
+```
+
+**Common mistake** — don't define interfaces that duplicate generated types:
+```typescript
+// ❌ WRONG - manual interface may conflict with generated QueryRegistry
+interface MyData { id: string; value: number; }
+const { data } = useAnalyticsQuery<MyData[]>('my_query', params);
+
+// ✅ CORRECT - run `<pm> run typegen` and let it provide types
+const { data } = useAnalyticsQuery('my_query', params);
+```
+
+### Basic Usage
+
+```typescript
+import { useAnalyticsQuery, Skeleton } from '@databricks/appkit-ui/react';
+import { sql } from '@databricks/appkit-ui/js';
+import { useMemo } from 'react';
+
+function CustomDisplay() {
+  const params = useMemo(() => ({
+    start_date: sql.date('2024-01-01'),
+    category: sql.string("tools")
+  }), []);
+
+  const { data, loading, error } = useAnalyticsQuery('query_name', params);
+
+  if (loading) return <Skeleton className="h-4 w-3/4" />;
+  if (error) return <div className="text-destructive">Error: {error}</div>;
+  if (!data) return null;
+
+  return (
+    <div className="grid gap-4">
+      {data.map(row => (
+        <div key={row.column_name} className="p-4 border rounded">
+          <h3>{row.column_name}</h3>
+          <p>{Number(row.value).toFixed(2)}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+## useMetricView Hook
+
+For a **governed UC Metric View** (not a `config/queries/` SQL file), use `useMetricView` —
+a structured `{ measures, dimensions, filter, orderBy, limit }` request instead of SQL text.
+Register the view in `config/metric-views/definitions.json`, run `<pm> run typegen`, then:
+
+```typescript
+import { useMetricView } from '@databricks/appkit-ui/react';
+
+const { data, loading, error } = useMetricView('orders', {
+  measures: ['revenue'],
+  dimensions: ['region'],
+  orderBy: [{ field: 'revenue', direction: 'DESC' }],
+  limit: 10,
+});
+// numeric cells are strings/null → Number(row.revenue) before math
+```
+
+- `measures` is required (≥ 1); `dimensions`, `filter`, `orderBy`, `timeGrain`/`timeDimension`,
+  and `limit` are optional. `autoStart: false` defers the query (no `enabled` option — same as
+  `useAnalyticsQuery`).
+- Do **not** use `useAnalyticsQuery` for a metric view, or `useMetricView` for a plain table.
+
+See [Metric Views](metric-views.md) for registration, executor (service-principal vs OBO),
+the filter predicate tree, and the full request rules.

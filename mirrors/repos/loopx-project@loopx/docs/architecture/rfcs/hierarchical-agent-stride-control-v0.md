@@ -777,6 +777,16 @@ rows retain their result class and delivery outcome. The compatibility
 Historical decision identities and stride admission/settlement gates remain
 unchanged; off-mode context now includes this feedback without enabling stride.
 
+Ordinary replan already reviews the goal, unmet requirements, actual work and
+evidence to choose continuation or adjustment. Stride adds the source-bound
+structured decision, next probe and applicable previous-decision review, with
+the existing typed settlement requirements. Shared planning guidance applies
+independently of the Stride setting. The captured
+reader below serves both off and enabled modes. Keep its delivery/settlement
+benefit separate from strategy adoption and outcome benefit; an off-mode reader
+comparison cannot establish a Stride effect. See the
+[shared guidance and contract boundaries](../../reference/protocols/goal-vision-replan-contract-v0.md#replan-planning-guidance).
+
 The [captured replan reader](../../reference/protocols/turn-envelope-v0.md#captured-replan-reads--捕获后的重规划读取)
 separates state review from authoring on one immutable decision snapshot.
 Cumulative acceptance uses lossless content-bound detail reads, and Explore

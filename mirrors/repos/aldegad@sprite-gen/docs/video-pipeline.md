@@ -156,6 +156,15 @@ on its larger strike and is listed under the report's `unnamed_feet` with its tw
 `cycle/`: look at the first, say which own foot lands there, and run the same alignment again with
 `--foot <loop>=left|right` — that loop alone turns to start on the set's foot
 (`start_foot_source: "given"`).
+Every aligned loop's report row (and its `strip.json`, under `cycle_align`) records its beat
+(`beat`): how far the frames the alignment moved off their own time jolt the legs, in beats; under
+`--between auto` a frame RIFE could not make cleanly is made again at another fraction of its two
+source frames, or its jolt is shared by the frames beside it, where the nearer source frame would
+break the beat; where nothing keeps it, the loop is named in the warnings. A loop whose `--view` is
+`back` or `back_diagonal` is also read for stepping the same foot twice in a row (`same_foot`),
+named in the warnings with whether any other cut of its clip would alternate; `--same-foot refuse`
+stops the set before anything is rewritten instead (both are explained in
+[loop repair](loop-repair.md) section 4).
 
 `video-prompt --json` also gives the duration (the state's own, as `video-set`), whether the clip
 ends on the canvas (`last_frame`), the loop cut (`cycle`) and the canvas, clip, frames and loop
@@ -383,6 +392,14 @@ See [loop repair](loop-repair.md).
 inside a 24 fps clip, each drawing shown for two frames ("on twos", or three: "on threes"). Nothing is refused here: played at its own rate a held loop is ordinary
 limited animation. It matters when `video-cycle-align` stretches it ([loop repair](loop-repair.md)
 section 4, "Held drawings").
+
+**Every cut's feet: recorded on every walk.** `video-loop` reads every cut of the cut's length the
+clip holds (after any lead-in), each as the loop it would make, on the keyed frames of every walk or
+run it cuts, and records it as `clip_feet` in `strip.json` and its report: `length`, `cuts`,
+`same_foot` (how many step the same foot twice), `alternate`, `unread`, `seam_in_step` (cuts whose
+seam falls inside a step, counted apart), and `same_foot_at` (the first clip frame of each that
+does). This is recorded whatever the view; `video-cycle-align` reads it only where the view reads
+the feet (back and back_diagonal; [loop repair](loop-repair.md) section 4, "Same foot twice").
 
 ### One-shot actions — `--cycle auto|periodic|one-shot`
 

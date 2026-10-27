@@ -1,29 +1,17 @@
-Build and test microsoft/PowerToys PR <PRNumber> locally: <PRTitle>
+Test microsoft/PowerToys PR <PRNumber> end to end using its CI artifacts: <PRTitle>
 https://github.com/microsoft/PowerToys/pull/<PRNumber>
 
-Prepare this PR for local end-to-end testing. Do not review the code, modify the upstream PR, push branches, or post comments.
+Prepare and exercise this PR locally without compiling when a matching CI package is available. Do not review or modify the code, push branches, or post comments. Use the powertoys-verification skill's PR-validation workflow when available.
 
-Required workflow:
-1. Locate the existing PowerToys clone and verify Visual Studio 2022 or Build Tools has the Desktop C++ and .NET desktop workloads. Preserve all existing branches, changes, and worktrees.
-2. Check whether an isolated worktree for PR <PRNumber> already exists and reuse it when safe. Otherwise fetch the exact PR head without changing the main checkout:
-   git fetch origin pull/<PRNumber>/head:pr-test/<PRNumber>
-   .\tools\build\New-WorktreeFromBranch.ps1 -Branch pr-test/<PRNumber>
-3. Enter the worktree and initialize dependencies:
-   git submodule update --init --recursive
-   Confirm HEAD matches the current upstream PR head SHA. Do not rebase or change the PR code merely to make the build pass.
-4. Inspect the changed files to identify every affected PowerToys module, native module interface, managed application, plugin, and dependency project.
-5. Build from the worktree using the repository scripts, not ad-hoc MSBuild:
-   $env:POWERTOYS_DISABLE_SPECTRE = "1"
-   .\tools\build\build-essentials.cmd
-   Then build the full affected chain in dependency order with tools\build\build.cmd: dependency projects, native module interface DLL, managed module application, and the specific changed project or plugin.
-6. Verify every build exits successfully, x64\Debug\PowerToys.exe exists, the affected module binaries exist under x64\Debug, and the runner log contains no "Failed to load" entry for the target module.
-7. Launch the exact built executable from this worktree. Exercise the changed feature end to end with 2-4 concrete scenarios, including the main behavior and relevant edge cases from the PR description.
-8. Return a concise test handoff containing:
-   - PR head SHA and worktree path
-   - exact PowerToys.exe launch path
-   - projects and commands built
-   - concrete steps to access the feature
-   - expected result for each test scenario
-   - any build/runtime failure with the relevant log path and error
+1. Read the current PR description, changed files, linked issue and relevant discussion. Record its live source head SHA and derive a concrete checklist covering its intended behavior, original failure, relevant edge cases and affected modules. A build passing is not an E2E pass.
+2. Locate a successful public Azure CI build for this PR. No PAT is needed for Azure reads. The build API is:
+   https://dev.azure.com/shine-oss/62769a65-d989-45e3-803c-9ad21fcf2ea2/_apis/build
+   Query /builds?branchName=refs%2Fpull%2F<PRNumber>%2Fmerge&queryOrder=queueTimeDescending&$top=20&api-version=7.1, following continuation tokens if more history is needed. Match sourceBranch, triggerInfo["pr.number"] and triggerInfo["pr.sourceSha"] to this PR and its live head. Require status=completed and result=succeeded. Record the build ID, sourceVersion (synthetic merge SHA), source head, finish time and build URL separately.
+3. Query /builds/{buildId}/artifacts?api-version=7.1. Select build-x64-Release or build-arm64-Release for the test machine. Resolve resource.downloadUrl at download time; do not reuse an old expiring URL. Never send a GitHub PAT to Azure or its artifact hosts. Download and extract into a dedicated test directory. If no current artifact exists, report unavailable/outdated/expired or running, with the PR checks URL. Tell the user they can use Pulse's Trigger CI build control to post /azp run after confirmation; do not post it yourself. Do not silently use older-head bits or start a source build.
+4. Inspect the archive before installation. Select the installer by architecture AND intended per-user/per-machine scope, not the first EXE. Verify any supplied SHA256 manifest and record the computed installer hash and Authenticode status. A hash is an integrity check, not proof of trusted authorship. PR builds may be unsigned; report the actual status. Do not disable system security or broadly trust certificates to make installation succeed.
+5. Prefer a disposable Windows VM or dedicated test environment. Inventory existing PowerToys version, scope, running processes and settings; preserve settings and establish a restoration plan before replacing an installation. Obtain the user's confirmation of the selected installer, environment and replacement effects before running it. Do not install into a daily-use machine without that confirmation.
+6. Install the selected package, preserve installer logs, and check its actual exit code (0 success; 3010 reboot required). Verify the installed PowerToys.exe path/version and affected module binaries. Resolve signing/registration requirements for embedded MSIX features explicitly; report BLOCKED if they cannot be satisfied safely. Never infer that CmdPal or another packaged feature works just because the bootstrapper finished.
+7. Launch the exact installed test binaries and execute every derived checklist item on an interactive desktop. Use the verification skill's UI automation where appropriate; keep manual/hardware-dependent steps explicit. Record actual observed results and evidence, not just instructions. Recheck the upstream head before reporting; if it changed, label the results as covering the recorded revision, not the latest PR.
+8. Return a concise handoff: PR/source head, CI build ID and URL, synthetic merge SHA, architecture/scope, artifact name, installer hash/signature, installed executable path/version, each scenario's steps/expected/observed result and PASS/FAIL/BLOCKED verdict, logs/evidence, and restoration status. This tests the upstream PR merge build, not unpublished review-fork fixes. Do not claim a full E2E pass for untested or blocked items.
 
-Do not claim the PR is ready for testing until the full affected module chain builds and the feature can be launched from the isolated worktree.
+If CI cannot supply usable packages and the user explicitly chooses source-build validation, preserve existing checkouts and use an isolated exact-head worktree with the repository's build scripts. Verify the complete affected dependency/native/managed chain and actual exit codes before launching. Never substitute a different revision merely to make a build succeed.

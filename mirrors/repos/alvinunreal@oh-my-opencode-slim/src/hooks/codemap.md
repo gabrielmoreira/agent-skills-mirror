@@ -39,7 +39,7 @@ from `index.ts`) that returns the hook points OpenCode invokes.
 | Category | Factories | Hook points |
 |---|---|---|
 | Prompt transforms | `createPhaseReminderHook`, `createCouncilInjectHook`, `createChatHeadersHook`, task-session-manager delivery observation, `processImageAttachments` | `experimental.chat.messages.transform`, `chat.headers` |
-| Tool interception | `createApplyPatchHook` (tool), `createSearchPathGuardHook`, task-session-manager | `tool.execute.before` / `tool.execute.after` |
+| Tool interception | `createApplyPatchHook` (tool), `createSearchPathGuardHook`, `createCouncilSeatHook`, task-session-manager | `tool.execute.before` / `tool.execute.after` |
 | Error recovery | `createJsonErrorRecoveryHook`, `createAutoUpdateCheckerHook` | message transform, tool-execute after |
 | Lifecycle/event | task-session-manager, `createCacheMonitorHook`, `createOrchestratorWakeScheduler` | `event` |
 | Runtime commands | `createDeepworkCommandHook`, `createReflectCommandHook`, `createLoopCommandHook` | `command.execute.before` |
@@ -100,6 +100,10 @@ discoverable skills require permission approval. The plugin does not rewrite
 
 - **Main Plugin** (`src/index.ts`): imports every factory from `index.ts` and
   wires the returned handlers into the plugin's hook object.
+- **Council seats** (`council-seats/`): owns `Seats:`-line seat-result
+  assembly. The managed resolver reads the parent-side job board only;
+  the native resolver reads the host sessions and is selected when
+  `backgroundJobs.enabled` is false. Neither depends on the other.
 - **Task-session-manager**: depends on `cache-safe-injection.ts` for all prompt
   injection and on `session-lifecycle.ts` for delete coordination.
 - **Orchestrator-wake**: gates on the task-session-manager's `hasInputWait`
@@ -116,6 +120,7 @@ discoverable skills require permission approval. The plugin does not rewrite
 | `apply-patch/` | Structured `apply_patch` parsing, matching, recovery, rewrite pipeline |
 | `auto-update-checker/` | Startup update detection, cache handling, optional install prompt |
 | `cache-monitor/` | Observation-only prompt-cache telemetry watchdog |
+| `council-seats/` | Council seat-result assembly seam: `Seats:`-line rewrite hook + managed (job board) and native (host session) resolvers |
 | `deepwork/` | `/deepwork` runtime command |
 | `foreground-fallback/` | Interactive-session model fallback on rate-limit/errors |
 | `json-error-recovery/` | Malformed JSON/tool-output recovery helpers |

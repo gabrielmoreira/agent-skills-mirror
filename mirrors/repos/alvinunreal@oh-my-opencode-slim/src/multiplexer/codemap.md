@@ -2,7 +2,7 @@
 
 ## Responsibility
 
-Provides a unified abstraction for tmux, Zellij, Herdr, cmux-tui, kitty, and WezTerm to
+Provides a unified abstraction for tmux, Zellij, Herdr, cmux-tui, kitty, WezTerm, and Orca to
 spawn, manage, and close panes for child OpenCode agent sessions — **from the
 TUI client process that displays the parent session**, never from the server.
 
@@ -39,6 +39,9 @@ multiplexer-specific command translation.
     `terminal <sel> close`, `terminal list` / `terminal <sel> process show`),
     sibling-tab placement inside the parent pane, two-hop anchor from
     `CMUX_TUI_TERMINAL_ID`, protocol read self-check (never `--version`)
+  - `OrcaMultiplexer`: `orca terminal split/close` CLI, anchor handle from
+    `ORCA_TERMINAL_HANDLE` + `TERM_PROGRAM=Orca`, layout mapped to split
+    direction only (no layout primitives), soft split timeout
 - **Client lifecycle core** (`client/`): see below.
 - **Shared Utilities** (`shared.ts`): `quoteShellArg`,
   `buildOpencodeAttachCommand`, `buildShellLaunchArgs`, `findBinary`,
@@ -86,7 +89,7 @@ multiplexer-specific command translation.
 
 ```typescript
 export interface Multiplexer {
-  readonly type: 'tmux' | 'zellij' | 'herdr' | 'cmux-tui' | 'kitty' | 'wezterm';
+  readonly type: 'tmux' | 'zellij' | 'herdr' | 'cmux-tui' | 'kitty' | 'wezterm' | 'orca';
   isAvailable(): Promise<boolean>;
   isInsideSession(): boolean;
   spawnPane(sessionId: string, description: string, serverUrl: string, directory: string, options?: PaneSpawnOptions): Promise<PaneResult>;
@@ -197,7 +200,7 @@ The server entry (`src/index.ts`) must not reach `src/multiplexer/client/*` or
 
 ```typescript
 interface MultiplexerConfig {
-  type: 'tmux' | 'zellij' | 'herdr' | 'cmux-tui' | 'kitty' | 'wezterm' | 'auto' | 'none';
+  type: 'tmux' | 'zellij' | 'herdr' | 'cmux-tui' | 'kitty' | 'wezterm' | 'orca' | 'auto' | 'none';
   layout: 'main-horizontal' | 'main-vertical' | 'tiled' | 'even-horizontal' | 'even-vertical';
   main_pane_size?: number; // Percentage for main pane (20-80), tmux main-* and the first WezTerm main-* split
   cmux_tui_binary?: string; // Explicit cmux-tui binary path
@@ -212,14 +215,16 @@ pane management with a once-per-process diagnostic.
 The host wiring resolves an omitted viewer. v1 mini uses `attach ... --dir
 <dir> --mini` (OpenCode >= 1.17.10), without extra pane-cwd pinning; v2 mini
 uses the `mini` subcommand without a positional directory, so adapters pin
-the cwd. Herdr, kitty, and WezTerm always set their native cwd flags.
+the cwd. Herdr, kitty, and WezTerm always set their native cwd flags; Orca
+has no cwd flag (the split inherits the anchor's working directory).
 
 ### Environment Detection
 
 - **Auto / admission order**: cmux-tui (`CMUX_TUI_SOCKET` or legacy
   `CMUX_MUX_SOCKET`) → tmux (`TMUX_PANE`) → Zellij (`ZELLIJ_PANE_ID`) → Herdr
   (`HERDR_PANE_ID`) → kitty (`KITTY_WINDOW_ID`) → WezTerm (`WEZTERM_PANE`,
-  last so tmux/Zellij nested inside WezTerm win).
+  so tmux/Zellij nested inside WezTerm win) → Orca (`ORCA_TERMINAL_HANDLE`,
+  last).
 - **Explicit adapter**: only enabled when it matches the detected adapter;
   otherwise `admission-mismatch` and no pane.
 - **Availability checks**: binary probes, Zellij >= 0.44.1 version gate, and
@@ -289,6 +294,22 @@ the cwd. Herdr, kitty, and WezTerm always set their native cwd flags.
   transport/protocol errors while the pane still exists.
 - No FR-8 sweep: the CLI cannot set pane titles and the viewer replaces them.
 
+### Orca Implementation
+
+- Detection `ORCA_TERMINAL_HANDLE` + `TERM_PROGRAM=Orca`; binary from
+  `$ORCA_CLI_BIN_DIR/orca` or `PATH`, availability probed with
+  `orca status --json` (`ok` + `app.running`).
+- `orca terminal split --terminal <anchor> --direction <dir>` (no `--cwd`;
+  the split inherits the anchor's cwd); handle read from
+  `result.split.handle`. A split timeout is a soft `unavailable` failure
+  (never `hard`, never pane loss); a missing anchor is `not_found`.
+- Layout maps to split direction only (`main-vertical`/`even-horizontal`/
+  `tiled` → horizontal, `main-horizontal`/`even-vertical` → vertical);
+  `applyLayout` is a no-op (Orca has no layout primitives).
+- Close: `orca terminal close --terminal <handle>`, exit 0 only. No FR-8
+  sweep (titles are shell-overwritten, like WezTerm). win32: `spawnPane`
+  refuses with `unavailable`.
+
 ### cmux-tui Implementation
 
 - Detection `CMUX_TUI_SOCKET` (preferred) / legacy `CMUX_MUX_SOCKET`;
@@ -357,3 +378,4 @@ the cwd. Herdr, kitty, and WezTerm always set their native cwd flags.
 | `kitty/index.ts` | kitty-specific implementation |
 | `wezterm/index.ts` | WezTerm-specific implementation |
 | `cmux/index.ts` | cmux-tui new-generation TUI adapter |
+| `orca/index.ts` | Orca-specific implementation |

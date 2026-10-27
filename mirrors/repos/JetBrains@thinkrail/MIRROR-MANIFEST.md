@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `JetBrains/thinkrail` — 26 default patterns, 0 followed patterns, 14 file(s) materialized.
+Mirror of `JetBrains/thinkrail` — 26 default patterns, 0 followed patterns, 13 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `JetBrains/thinkrail` — 26 default patterns, 0 followed patterns, 14
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 14 |
+| Files         | 13 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,19 +60,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 3 | ✓ | [`packages/pi-thinkrail-workflow/skills/asking-user-questions/SKILL.md`](packages/pi-thinkrail-workflow/skills/asking-user-questions/SKILL.md) |
-| 4 | ✓ | [`packages/pi-thinkrail-workflow/skills/brainstorming/SKILL.md`](packages/pi-thinkrail-workflow/skills/brainstorming/SKILL.md) |
-| 5 | ✓ | [`packages/pi-thinkrail-workflow/skills/choosing-a-workflow/SKILL.md`](packages/pi-thinkrail-workflow/skills/choosing-a-workflow/SKILL.md) |
-| 6 | ✓ | [`packages/pi-thinkrail-workflow/skills/importing-a-codebase/SKILL.md`](packages/pi-thinkrail-workflow/skills/importing-a-codebase/SKILL.md) |
-| 7 | ✓ | [`packages/pi-thinkrail-workflow/skills/setting-up-a-project/SKILL.md`](packages/pi-thinkrail-workflow/skills/setting-up-a-project/SKILL.md) |
-| 8 | ✓ | [`packages/pi-thinkrail-workflow/skills/shipping-a-pr/SKILL.md`](packages/pi-thinkrail-workflow/skills/shipping-a-pr/SKILL.md) |
-| 9 | ✓ | [`packages/pi-thinkrail-workflow/skills/starting-a-new-project/SKILL.md`](packages/pi-thinkrail-workflow/skills/starting-a-new-project/SKILL.md) |
-| 10 | ✓ | [`packages/pi-thinkrail-workflow/skills/writing-specs/SKILL.md`](packages/pi-thinkrail-workflow/skills/writing-specs/SKILL.md) |
-| 11 | ✓ | [`packages/pi-thinkrail-workflow/skills/writing-workflow-skills/SKILL.md`](packages/pi-thinkrail-workflow/skills/writing-workflow-skills/SKILL.md) |
-| 12 | ✓ | [`packages/pi-todos/skills/todos/SKILL.md`](packages/pi-todos/skills/todos/SKILL.md) |
-| 13 | ✓ | [`packages/server/skills/managing-mcp-servers/SKILL.md`](packages/server/skills/managing-mcp-servers/SKILL.md) |
-| 14 | ✓ | [`packages/spec-graph/skills/spec-graph/SKILL.md`](packages/spec-graph/skills/spec-graph/SKILL.md) |
+| 2 | ✓ | [`packages/pi-thinkrail-workflow/skills/asking-user-questions/SKILL.md`](packages/pi-thinkrail-workflow/skills/asking-user-questions/SKILL.md) |
+| 3 | ✓ | [`packages/pi-thinkrail-workflow/skills/brainstorming/SKILL.md`](packages/pi-thinkrail-workflow/skills/brainstorming/SKILL.md) |
+| 4 | ✓ | [`packages/pi-thinkrail-workflow/skills/choosing-a-workflow/SKILL.md`](packages/pi-thinkrail-workflow/skills/choosing-a-workflow/SKILL.md) |
+| 5 | ✓ | [`packages/pi-thinkrail-workflow/skills/importing-a-codebase/SKILL.md`](packages/pi-thinkrail-workflow/skills/importing-a-codebase/SKILL.md) |
+| 6 | ✓ | [`packages/pi-thinkrail-workflow/skills/setting-up-a-project/SKILL.md`](packages/pi-thinkrail-workflow/skills/setting-up-a-project/SKILL.md) |
+| 7 | ✓ | [`packages/pi-thinkrail-workflow/skills/shipping-a-pr/SKILL.md`](packages/pi-thinkrail-workflow/skills/shipping-a-pr/SKILL.md) |
+| 8 | ✓ | [`packages/pi-thinkrail-workflow/skills/starting-a-new-project/SKILL.md`](packages/pi-thinkrail-workflow/skills/starting-a-new-project/SKILL.md) |
+| 9 | ✓ | [`packages/pi-thinkrail-workflow/skills/writing-specs/SKILL.md`](packages/pi-thinkrail-workflow/skills/writing-specs/SKILL.md) |
+| 10 | ✓ | [`packages/pi-thinkrail-workflow/skills/writing-workflow-skills/SKILL.md`](packages/pi-thinkrail-workflow/skills/writing-workflow-skills/SKILL.md) |
+| 11 | ✓ | [`packages/pi-todos/skills/todos/SKILL.md`](packages/pi-todos/skills/todos/SKILL.md) |
+| 12 | ✓ | [`packages/server/skills/managing-mcp-servers/SKILL.md`](packages/server/skills/managing-mcp-servers/SKILL.md) |
+| 13 | ✓ | [`packages/spec-graph/skills/spec-graph/SKILL.md`](packages/spec-graph/skills/spec-graph/SKILL.md) |
 
 ---
 

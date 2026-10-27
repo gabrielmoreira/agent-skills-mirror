@@ -19,17 +19,17 @@ Codemap is installed automatically by the `oh-my-opencode-slim` installer when c
 
 ### Run it (manual / local)
 
-From a repo root (or with an explicit `--root`):
+From the skill directory (`src/skills/codemap/`), or with an explicit `--root` from anywhere:
 
 ```bash
 # Initialize mapping
-node codemap.mjs init --root /repo --include "src/**/*.ts" --exclude "node_modules/**"
+node scripts/codemap.mjs init --root /repo --include "src/**/*.ts" --exclude "node_modules/**"
 
 # Check what changed
-node codemap.mjs changes --root /repo
+node scripts/codemap.mjs changes --root /repo
 
 # Update hashes
-node codemap.mjs update --root /repo
+node scripts/codemap.mjs update --root /repo
 ```
 
 ## Outputs

@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `kyegomez/swarms` — 26 default patterns, 2 followed patterns, 9 file(s) materialized.
+Mirror of `kyegomez/swarms` — 26 default patterns, 2 followed patterns, 11 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `kyegomez/swarms` — 26 default patterns, 2 followed patterns, 9 file
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 2 |
-| Files         | 9 |
+| Files         | 11 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,15 +60,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 2 | ✓ | [`examples/single_agent/capabilities/skills/code-review/SKILL.md`](examples/single_agent/capabilities/skills/code-review/SKILL.md) |
-| 3 | ✓ | [`examples/single_agent/capabilities/skills/data-visualization/SKILL.md`](examples/single_agent/capabilities/skills/data-visualization/SKILL.md) |
-| 4 | ✓ | [`examples/single_agent/capabilities/skills/financial-analysis/SKILL.md`](examples/single_agent/capabilities/skills/financial-analysis/SKILL.md) |
-| 5 | ✓ | [`examples/single_agent/capabilities/skills/multiple_skill_dirs/my_skills/commit-messages/SKILL.md`](examples/single_agent/capabilities/skills/multiple_skill_dirs/my_skills/commit-messages/SKILL.md) |
-| 6 | ✓ | [`examples/single_agent/capabilities/skills/multiple_skill_dirs/team_skills/code-review/SKILL.md`](examples/single_agent/capabilities/skills/multiple_skill_dirs/team_skills/code-review/SKILL.md) |
-| 7 | ✓ | [`SKILL.md`](SKILL.md) |
-| 8 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
-| 9 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 1 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
+| 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 4 | ✓ | [`examples/single_agent/capabilities/skills/code-review/SKILL.md`](examples/single_agent/capabilities/skills/code-review/SKILL.md) |
+| 5 | ✓ | [`examples/single_agent/capabilities/skills/data-visualization/SKILL.md`](examples/single_agent/capabilities/skills/data-visualization/SKILL.md) |
+| 6 | ✓ | [`examples/single_agent/capabilities/skills/financial-analysis/SKILL.md`](examples/single_agent/capabilities/skills/financial-analysis/SKILL.md) |
+| 7 | ✓ | [`examples/single_agent/capabilities/skills/multiple_skill_dirs/my_skills/commit-messages/SKILL.md`](examples/single_agent/capabilities/skills/multiple_skill_dirs/my_skills/commit-messages/SKILL.md) |
+| 8 | ✓ | [`examples/single_agent/capabilities/skills/multiple_skill_dirs/team_skills/code-review/SKILL.md`](examples/single_agent/capabilities/skills/multiple_skill_dirs/team_skills/code-review/SKILL.md) |
+| 9 | ✓ | [`SKILL.md`](SKILL.md) |
+| 10 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
+| 11 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 
 ---
 

@@ -1815,8 +1815,8 @@ status = await client.artifacts.generate_audio(
     language="en",
 )
 
-# Queue an Audio Overview for later (Web and Android)
-status = await client.artifacts.generate_audio(notebook_id, later=True)
+# Queue supported Studio artifacts for later (Web and Android)
+status = await client.artifacts.generate_report(notebook_id, later=True)
 assert status.is_scheduled  # status.status == "scheduled"; not terminal
 # The server chooses when generation runs, usually a few hours later.
 # Account quota and feature availability still apply.
@@ -1850,6 +1850,14 @@ status = await client.artifacts.generate_quiz(
     difficulty=QuizDifficulty.MEDIUM,  # EASY, MEDIUM, HARD
 )
 ```
+
+`later=True` is a keyword-only option on `generate_audio`, `generate_video`,
+`generate_report`, `generate_study_guide`, `generate_quiz`, `generate_flashcards`,
+`generate_infographic`, and `generate_slide_deck`. It defaults to `False`.
+Cinematic video does not support deferred generation; requesting it raises
+`ValidationError` before submission. Deferred jobs remain subject to account
+quota and feature availability. No immediate generation is substituted.
+
 
 **Omitting an option does not mean "let the server choose."** `quantity=None` /
 `difficulty=None` (the defaults) are resolved to `QuizQuantity.STANDARD` and
@@ -3121,7 +3129,7 @@ working unchanged. **Prefer the `.is_*` predicates** (`status.is_complete`,
 | `UNKNOWN` | `"unknown"` | status code 0, plus any code outside the backend enum (future-proofing) |
 | `SUGGESTED` | `"suggested"` | status code 5 — a suggestion row; listings filter these out server-side |
 | `PENDING_REVIEW` | `"pending_review"` | status code 6 — backend state with unconfirmed semantics ([#2127](https://github.com/teng-lin/notebooklm-py/issues/2127)) |
-| `SCHEDULED` | `"scheduled"` | status code 7 — audio created with `later=True`; nonterminal |
+| `SCHEDULED` | `"scheduled"` | status code 7 — an artifact created with `later=True`; nonterminal |
 | `REMOVED` | `"removed"` | Legacy compatibility value; no longer emitted by polling |
 
 `GenerationState.is_terminal` is the single authority for "generation ended":

@@ -64,11 +64,20 @@ def _resp(status=200, payload=None, text=""):
 
 
 @pytest.fixture
-def client(monkeypatch):
-    monkeypatch.setattr(smb.time, "sleep", lambda s: None)
+def shared():
+    return smb._load_shared_fmp()
+
+
+@pytest.fixture
+def client(monkeypatch, shared):
+    monkeypatch.setattr(shared.time, "sleep", lambda s: None)
     c = FMPClient(api_key="k", max_api_calls=5)
     c.session = MagicMock()
     return c
+
+
+def _urls(client):
+    return [c[0][0] for c in client.session.get.call_args_list]
 
 
 # ---------------------------------------------------------------- FMPClient
@@ -88,6 +97,13 @@ def test_client_reads_env_key(monkeypatch):
     assert c.max_api_calls == 500
 
 
+def test_client_explicit_key_beats_env(monkeypatch):
+    monkeypatch.setenv("FMP_API_KEY", "envkey")
+    c = FMPClient(api_key="argkey")
+    assert c.api_key == "argkey"  # pragma: allowlist secret
+    assert c.session.headers["apikey"] == "argkey"  # pragma: allowlist secret
+
+
 def test_client_exits_when_requests_missing(monkeypatch, capsys):
     monkeypatch.setattr(smb, "requests", None)
     with pytest.raises(SystemExit) as exc:
@@ -96,65 +112,114 @@ def test_client_exits_when_requests_missing(monkeypatch, capsys):
     assert "requests library not found" in capsys.readouterr().err
 
 
-def test_request_success_counts_call_and_sleeps(client, monkeypatch):
-    slept = []
-    monkeypatch.setattr(smb.time, "sleep", slept.append)
-    monkeypatch.setattr(smb.time, "time", lambda: 1000.0)
-    client.last_call_time = 999.9
-    client.session.get.return_value = _resp(200, {"ok": 1})
-    assert client._request("http://x", {"a": 1}) == {"ok": 1}
-    assert client.api_calls_made == 1
-    assert len(slept) == 1
-    assert slept[0] == pytest.approx(client.RATE_LIMIT_DELAY - 0.1)
+def test_shared_module_is_cached_and_registered(shared):
+    assert smb._load_shared_fmp() is shared
+    assert sys.modules[smb._SHARED_FMP_MODULE] is shared
 
 
-def test_request_budget_exhausted(client):
+def test_load_shared_cleans_up_on_exec_failure(monkeypatch):
+    monkeypatch.delitem(sys.modules, smb._SHARED_FMP_MODULE, raising=False)
+
+    class _Loader:
+        def exec_module(self, module):
+            raise RuntimeError("boom")
+
+    class _Spec:
+        loader = _Loader()
+
+    monkeypatch.setattr(smb.importlib.util, "spec_from_file_location", lambda *a, **k: _Spec())
+    monkeypatch.setattr(smb.importlib.util, "module_from_spec", lambda spec: object())
+    with pytest.raises(RuntimeError, match="boom"):
+        smb._load_shared_fmp()
+    assert smb._SHARED_FMP_MODULE not in sys.modules
+
+
+def test_delegating_attributes_round_trip(client):
+    client.api_calls_made = 3
+    client.max_api_calls = 9
+    client.last_call_time = 12.5
+    client.rate_limit_reached = True
+    inner = client._client
+    assert (inner.api_calls_made, inner.max_api_calls) == (3, 9)
+    assert inner.last_call_time == 12.5
+    assert inner.rate_limit_reached is True
+    assert client.api_calls_made == 3
+    assert client.max_api_calls == 9
+    assert client.last_call_time == 12.5
+    assert client.rate_limit_reached is True
+    sess = MagicMock()
+    client.session = sess
+    assert inner.session is sess
+
+
+def test_budget_exhausted_translates_to_local_exception(client):
     client.api_calls_made = 5
     with pytest.raises(ApiCallBudgetExceeded, match="5/5"):
-        client._request("http://x")
+        client.get_universe(1e9, 5.0, 100_000, 5)
+    with pytest.raises(ApiCallBudgetExceeded):
+        client.get_historical_prices("AAPL", days=10)
+    client.session.get.assert_not_called()
+    # Local class, not the generated module's class.
+    assert ApiCallBudgetExceeded is not smb._load_shared_fmp().ApiCallBudgetExceeded
 
 
-def test_request_429_sets_rate_limit_and_short_circuits(client, capsys):
+def test_429_sets_rate_limit_and_short_circuits(client, capsys):
     client.session.get.return_value = _resp(429)
-    assert client._request("http://x") is None
+    assert client.get_historical_prices("AAPL", days=10) == []
     assert client.rate_limit_reached is True
-    assert "rate limit" in capsys.readouterr().err
+    assert "rate limit" in capsys.readouterr().err.lower()
+    # 429 retried once after the (patched) 60 s wait, then flagged.
+    assert client.session.get.call_count == 2
     client.session.get.reset_mock()
-    assert client._request("http://x") is None
+    assert client.get_historical_prices("MSFT", days=10) == []
     client.session.get.assert_not_called()
 
 
-def test_request_http_error_noisy_vs_quiet(client, capsys):
-    client.session.get.return_value = _resp(500, text="boom")
-    assert client._request("http://x", quiet=True) is None
-    assert capsys.readouterr().err == ""
-    assert client._request("http://x") is None
-    assert "HTTP 500 - boom" in capsys.readouterr().err
-    assert client.api_calls_made == 2
+def test_http_error_returns_empty_and_never_calls_v3(client):
+    client.session.get.return_value = _resp(402, text="payment required")
+    assert client.get_universe(1e9, 5.0, 100_000, 5) == []
+    assert client.get_historical_prices("AAPL", days=10) == []
+    assert client.session.get.call_count == 2
+    assert all("/stable/" in u and "/api/v3" not in u for u in _urls(client))
 
 
-def test_request_exception_handled(client, capsys):
+def test_transport_exception_returns_empty(client):
     client.session.get.side_effect = smb.requests.exceptions.ConnectionError("down")
-    assert client._request("http://x") is None
-    assert "request exception" in capsys.readouterr().err
-    assert client._request("http://x", quiet=True) is None
-    assert capsys.readouterr().err == ""
-    # Exception happens before the counter increments.
-    assert client.api_calls_made == 0
+    assert client.get_historical_prices("AAPL", days=10) == []
+    assert client.get_universe(1e9, 5.0, 100_000, 5) == []
 
 
-def test_stable_then_v3_falls_back_on_empty(client):
-    client.session.get.side_effect = [_resp(200, []), _resp(200, [{"symbol": "A"}])]
-    out = client._stable_then_v3("http://stable", "http://v3", {})
-    assert out == [{"symbol": "A"}]
-    urls = [c[0][0] for c in client.session.get.call_args_list]
-    assert urls == ["http://stable", "http://v3"]
+def test_malformed_json_retried_once_then_succeeds(client):
+    bad = _resp(200)
+    bad.json.side_effect = ValueError("bad json")
+    rows = [{"symbol": "aapl", "date": "2026-01-02", "close": 1}]
+    client.session.get.side_effect = [bad, _resp(200, rows)]
+    out = client.get_historical_prices("aapl", days=10)
+    assert out == [{"date": "2026-01-02", "close": 1}]
+    assert client.session.get.call_count == 2
 
 
-def test_stable_then_v3_uses_stable_when_present(client):
-    client.session.get.return_value = _resp(200, [{"symbol": "S"}])
-    assert client._stable_then_v3("http://stable", "http://v3", {}) == [{"symbol": "S"}]
-    assert client.session.get.call_count == 1
+def test_error_body_key_echo_is_redacted(client, capsys):
+    client.api_key = client._client.api_key = "sekret/key+1"  # pragma: allowlist secret
+    body = "bad sekret/key+1 and sekret%2Fkey%2B1 end"  # pragma: allowlist secret
+    client.session.get.return_value = _resp(500, text=body)
+    assert client.get_universe(1e9, 5.0, 100_000, 5) == []
+    err = capsys.readouterr().err
+    assert "sekret" not in err
+    assert "REDACTED" in err
+
+
+def test_no_circuit_breaker_after_empty_symbols(client):
+    client.max_api_calls = 50
+    client.session.get.side_effect = [_resp(200, [])] * 5 + [
+        _resp(200, [{"date": "2026-01-02", "close": 1}])
+    ]
+    for i in range(5):
+        assert client.get_historical_prices(f"E{i}", days=10) == []
+    out = client.get_historical_prices("GOOD", days=10)
+    assert out == [{"date": "2026-01-02", "close": 1}]
+    assert client.session.get.call_count == 6
+    assert all("/api/v3" not in u for u in _urls(client))
 
 
 def test_get_universe_filters_sorts_caches(client):
@@ -169,9 +234,15 @@ def test_get_universe_filters_sorts_caches(client):
     client.session.get.return_value = _resp(200, data)
     uni = client.get_universe(1e9, 5.0, 100_000, 2)
     assert [r["symbol"] for r in uni] == ["BIG-B", "MID"]
+    assert _urls(client) == ["https://financialmodelingprep.com/stable/company-screener"]
     params = client.session.get.call_args[1]["params"]
-    assert params["marketCapMoreThan"] == 1_000_000_000
-    assert params["volumeMoreThan"] == 100_000
+    assert params == {
+        "marketCapMoreThan": 1_000_000_000,
+        "priceMoreThan": 5.0,
+        "volumeMoreThan": 100_000,
+        "exchange": "NASDAQ,NYSE,AMEX",
+        "limit": 10000,
+    }
     calls = client.api_calls_made
     assert client.get_universe(1e9, 5.0, 100_000, 2) is uni
     assert client.api_calls_made == calls
@@ -182,26 +253,44 @@ def test_get_universe_non_list_returns_empty(client):
     assert client.get_universe(1e9, 5.0, 100_000, 5) == []
 
 
-def test_get_historical_prices_stable_then_cache(client):
+def test_get_universe_failure_not_cached(client):
+    client.session.get.return_value = _resp(500, text="x")
+    assert client.get_universe(1e9, 5.0, 100_000, 5) == []
+    assert client.get_universe(1e9, 5.0, 100_000, 5) == []
+    assert client.session.get.call_count == 2
+
+
+def test_get_historical_prices_stable_then_cache(client, monkeypatch, shared):
+    import datetime as dt
+
+    monkeypatch.setattr(shared, "_et_today", lambda: dt.date(2026, 3, 2))
     rows = [{"symbol": "aapl", "date": "2026-01-02", "close": 1}]
     client.session.get.return_value = _resp(200, rows)
     out = client.get_historical_prices("aapl", days=10)
     assert out == [{"date": "2026-01-02", "close": 1}]
-    assert client.session.get.call_args[0][0].endswith("/historical-price-eod/full")
-    assert client.session.get.call_args[1]["params"]["symbol"] == "AAPL"
+    assert client.session.get.call_args[0][0].endswith("/stable/historical-price-eod/full")
+    assert client.session.get.call_args[1]["params"] == {
+        "symbol": "AAPL",
+        "from": "2026-01-31",  # 2026-03-02 minus 30 days
+        "to": "2026-03-02",
+    }
     assert client.get_historical_prices("AAPL", days=10) is out
     assert client.session.get.call_count == 1
 
 
-def test_get_historical_prices_v3_fallback_and_empty_cached(client):
-    client.session.get.side_effect = [
-        _resp(200, []),
-        _resp(200, {"historical": [{"date": "2026-01-02"}, {"date": "2026-01-01"}]}),
-    ]
-    out = client.get_historical_prices("MSFT", days=1)
-    assert out == [{"date": "2026-01-02"}]
-    assert "historical-price-full/MSFT" in client.session.get.call_args[0][0]
-    assert client.session.get.call_args[1]["params"] == {"timeseries": 1}
+def test_get_historical_prices_empty_is_cached_without_v3(client):
+    client.session.get.return_value = _resp(200, [])
+    assert client.get_historical_prices("MSFT", days=1) == []
+    assert client.get_historical_prices("MSFT", days=1) == []
+    assert client.session.get.call_count == 1
+    assert "/api/v3" not in _urls(client)[0]
+
+
+def test_get_historical_prices_failure_not_cached(client):
+    client.session.get.return_value = _resp(500, text="x")
+    assert client.get_historical_prices("MSFT", days=1) == []
+    assert client.get_historical_prices("MSFT", days=1) == []
+    assert client.session.get.call_count == 2
 
 
 def test_get_api_stats(client):
@@ -216,6 +305,15 @@ def test_get_api_stats(client):
     }
     client.api_calls_made = 9
     assert client.get_api_stats()["budget_remaining"] == 0
+
+
+def test_non_budget_exceptions_propagate(client, monkeypatch, shared):
+    def boom():
+        raise RuntimeError("tzdata missing")
+
+    monkeypatch.setattr(shared, "_et_today", boom)
+    with pytest.raises(RuntimeError, match="tzdata"):
+        client.get_historical_prices("AAPL", days=10)
 
 
 # ------------------------------------------------------------ small helpers
@@ -899,8 +997,7 @@ def test_collect_price_data_offline_filters_by_symbols(tmp_path):
     assert sorted(data) == ["AAA", "BBB"]
 
 
-def test_collect_price_data_no_symbols_raises(monkeypatch):
-    monkeypatch.setattr(smb.time, "sleep", lambda s: None)
+def test_collect_price_data_no_symbols_raises():
     with pytest.raises(ValueError, match="No symbols to process"):
         smb.collect_price_data(_col_args())
 

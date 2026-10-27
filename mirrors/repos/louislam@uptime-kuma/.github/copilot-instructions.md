@@ -11,6 +11,7 @@ Warning: Only maintainers of Uptime Kuma can use these instructions. Other contr
 ## Keep These Instructions in Sync
 
 - If a PR/commit changes anything documented here (commands, paths, architecture, test files, workflows), update the related content in this file in the same PR/commit, so it does not drift.
+- User-facing docs live in the separate [uptime-kuma-wiki](https://github.com/louislam/uptime-kuma-wiki) repo: if a change affects documented behavior (env vars, CLI, config, setup), update the wiki as well.
 
 ## Repository Overview
 
@@ -103,7 +104,7 @@ npm run dev  # Frontend on port 3000, backend on port 3001
 
 ### Backend Architecture
 
-- `server/model/` — RedBean models mapped to tables. `monitor.js` holds the monitor loop and handles the core types inline: `http`, `keyword`, `json-query`, `ping`, `push`, `docker`, `radius`, `kafka-producer`.
+- `server/model/` — RedBean models mapped to tables. `monitor.js` holds the monitor loop and handles the core types inline: `http`, `keyword`, `json-query`, `push`, `docker`, `radius`, `kafka-producer`.
 - `server/monitor-types/` — one class per monitor type, registered in `server/uptime-kuma-server.js` (`monitorTypeList`).
 - `server/notification-providers/` — one file per provider (110+), registered in `server/notification.js`.
 - `server/socket-handlers/` — Socket.IO event handlers (most of the real-time API surface).

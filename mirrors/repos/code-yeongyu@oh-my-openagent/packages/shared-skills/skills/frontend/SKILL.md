@@ -104,12 +104,12 @@ Layer B: when the user names a brand or site ("Linear-style", "like Stripe's lan
 uv run $SKILL_DIR/scripts/perfection/lighthouse-audit.py https://localhost:3000
 ```
 
-`ui-ux-db/`: `README.md` documents the search CLI and the master-plus-overrides persistence pattern. Run it from the ruleset directory so it finds `data/`:
+`ui-ux-db/`: `README.md` documents the search CLI and the master-plus-overrides persistence pattern. The CLI finds `data/` next to itself, so run it from the user's project directory: `--persist` writes `design-system/` into the current directory, and the skill directory can sit inside a signed app bundle that must never change. Keep `-B` for the same reason:
 
 ```bash
-python3 $SKILL_DIR/references/ui-ux-db/scripts/search.py "<query>" --design-system -p "Project"   # design-system generation
-python3 $SKILL_DIR/references/ui-ux-db/scripts/search.py "<query>" --domain <domain>             # product style typography color landing chart ux react web prompt
-python3 $SKILL_DIR/references/ui-ux-db/scripts/search.py "<query>" --stack <stack>               # html-tailwind react nextjs vue svelte astro swiftui react-native flutter shadcn jetpack-compose
+python3 -B $SKILL_DIR/references/ui-ux-db/scripts/search.py "<query>" --design-system -p "Project"   # design-system generation
+python3 -B $SKILL_DIR/references/ui-ux-db/scripts/search.py "<query>" --domain <domain>             # product style typography color landing chart ux react web prompt
+python3 -B $SKILL_DIR/references/ui-ux-db/scripts/search.py "<query>" --stack <stack>               # html-tailwind react nextjs vue svelte astro swiftui react-native flutter shadcn jetpack-compose
 ```
 
 `designpowers/`: `README.md` routes the pinned `Owl-Listener/designpowers` corpus (personas, accessibility and cognitive constraints, critique, debt, handoff, synthetic user testing, motion, role prompts) into `DESIGN.md` first, then into the implementation contract. It replaces nothing: not this skill, `/visual-qa`, `/ulw-plan`, `/ulw-execute`, or `/review-work`.

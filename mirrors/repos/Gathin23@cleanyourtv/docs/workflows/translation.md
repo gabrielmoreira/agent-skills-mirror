@@ -15,9 +15,9 @@
    - `fonts.xml`: point `font_body`, `font_regular` and the other `font_*` at the system families when the
      bundled Outfit has no glyphs for the language's letters (`values-vi`, #833).
    - `lunar.xml`: the lunar date format, the leap-month wording and the stem and branch names, for a
-     language that names them itself (`values-zh-rCN`, `values-vi`). Keep `lunar_stems` at ten items and
-     `lunar_branches` at twelve: `Lunar.java` indexes both by position, so a short list crashes the
-     launcher on a TV running that language and nothing anywhere else.
+     language that names them itself (`values-zh-rCN`, `values-vi`, `values-ko`). Keep `lunar_stems` at ten
+     items and `lunar_branches` at twelve: `Lunar.java` indexes both by position, so a short list crashes
+     the launcher on a TV running that language and nothing anywhere else.
 3. Add the locale to `launcher/app/src/main/res/xml/locales_config.xml`, in the tag form: a language
    folder that is not registered there cannot be chosen for the launcher alone on Android 13+.
 4. Add the language to the Languages list in `README.md`.
@@ -28,7 +28,7 @@
 7. Check the size gate before you push. A language's strings ship in the release APK, and that APK has to
    stay under 589,824 B (576 KB): `launcher/app/build/outputs/apk/release/app-release.apk`, measured with
    `stat -c %s` on Linux or `stat -f %z` on macOS, and checked by the "Launcher build and unit tests" job
-   on every pull request. `README.md` quotes the launcher at about 520 KB, so a full language can be the
+   on every pull request. `README.md` quotes the launcher at about 532 KB, so a full language can be the
    difference between green and a failed build. A language that does not fit is a maintainer decision, not
    something to land by dropping strings ([#1271](https://github.com/Gathin23/cleanyourtv/issues/1271)).
 8. Build the launcher, set the TV's language (Android 13+: `tools/tv.py 'cmd locale set-app-locales com.gathin.tvhome --locales <tag>'`)

@@ -8,6 +8,13 @@ PDF rendering; OpenHuman calls it through the shared bus contract.
 
 ## Intake and durable references
 
+Clients send attachments as typed `ContentPart`s in the `attachments` param of
+`channel.web_chat`, `threads.message_append` and `threads.edit_message`
+(`parts.rs`, `fold_into_message`). Parts carry an inline `data:` URI or an http(s)
+url; local paths and non-media parts are refused. The RPC edge renders them into
+the marker grammar below once, so the marker is an internal staging format and
+no client splices it into message text.
+
 Web chat stages `[FILE:…]` and `[IMAGE:…]` sources before prompt scanning,
 history, memory, or queue persistence. `threads.message_append` also stages user
 uploads before writing a durable conversation row and removes upload bytes,

@@ -19,15 +19,15 @@ generate broker instructions, or treat screener candidates as automatic trades.
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import json
 import math
 import os
 import statistics
 import sys
-import time
 from collections.abc import Iterable
 from dataclasses import dataclass
-from datetime import date, datetime, timedelta
+from datetime import date, datetime
 from pathlib import Path
 from typing import Any
 
@@ -58,12 +58,37 @@ class ApiCallBudgetExceeded(Exception):
     """Raised when max_api_calls is exhausted."""
 
 
-class FMPClient:
-    """Small /stable-first FMP client for daily OHLCV outcome updates."""
+_SHARED_FMP_MODULE = "_stockbee_setup_fluency_trainer_fmp_client"
 
-    STABLE_URL = "https://financialmodelingprep.com/stable"
-    V3_URL = "https://financialmodelingprep.com/api/v3"
-    RATE_LIMIT_DELAY = 0.30
+
+def _load_shared_fmp():
+    """Load the sibling generated client by path (never `import fmp_client`)."""
+    module = sys.modules.get(_SHARED_FMP_MODULE)
+    if module is None:
+        path = Path(__file__).resolve().parent / "fmp_client.py"
+        spec = importlib.util.spec_from_file_location(_SHARED_FMP_MODULE, path)
+        module = importlib.util.module_from_spec(spec)
+        sys.modules[_SHARED_FMP_MODULE] = module
+        try:
+            spec.loader.exec_module(module)
+        except BaseException:
+            sys.modules.pop(_SHARED_FMP_MODULE, None)
+            raise
+    return module
+
+
+def _delegated(name: str) -> property:
+    def getter(self):
+        return getattr(self._client, name)
+
+    def setter(self, value):
+        setattr(self._client, name, value)
+
+    return property(getter, setter)
+
+
+class FMPClient:
+    """Thin adapter over the generated stable-only FMP client (#495 Batch C)."""
 
     def __init__(self, api_key: str | None = None, max_api_calls: int = 200):
         if requests is None:
@@ -71,32 +96,17 @@ class FMPClient:
         self.api_key = api_key or os.getenv("FMP_API_KEY")
         if not self.api_key:
             raise ValueError("FMP API key required. Set FMP_API_KEY or pass --api-key.")
-        self.session = requests.Session()
-        self.session.headers.update({"apikey": self.api_key})
-        self.max_api_calls = max_api_calls
-        self.api_calls_made = 0
-        self.last_call_time = 0.0
+        shared = _load_shared_fmp()
+        self._budget_error = shared.ApiCallBudgetExceeded
+        self._client = shared.FMPClient(api_key=self.api_key, max_api_calls=max_api_calls)
         self.cache: dict[str, Any] = {}
+        self.failed_requests = 0
 
-    def _get(self, url: str, params: dict[str, Any] | None = None, quiet: bool = False) -> Any:
-        if self.api_calls_made >= self.max_api_calls:
-            raise ApiCallBudgetExceeded(
-                f"API budget exhausted: {self.api_calls_made}/{self.max_api_calls} calls used"
-            )
-        elapsed = time.time() - self.last_call_time
-        if elapsed < self.RATE_LIMIT_DELAY:
-            time.sleep(self.RATE_LIMIT_DELAY - elapsed)
-        response = self.session.get(url, params=params or {}, timeout=30)
-        self.last_call_time = time.time()
-        self.api_calls_made += 1
-        if response.status_code == 200:
-            return response.json()
-        if not quiet:
-            print(
-                f"ERROR: FMP request failed: HTTP {response.status_code} - {response.text[:200]}",
-                file=sys.stderr,
-            )
-        return None
+    session = _delegated("session")
+    api_calls_made = _delegated("api_calls_made")
+    max_api_calls = _delegated("max_api_calls")
+    last_call_time = _delegated("last_call_time")
+    rate_limit_reached = _delegated("rate_limit_reached")
 
     def get_historical_prices(self, symbol: str, days: int = 80) -> list[dict[str, Any]]:
         symbol = normalize_symbol(symbol)
@@ -104,20 +114,13 @@ class FMPClient:
         if cache_key in self.cache:
             return self.cache[cache_key]
 
-        today = date.today()
-        params = {
-            "symbol": symbol,
-            "from": (today - timedelta(days=days * 2 + 10)).isoformat(),
-            "to": today.isoformat(),
-        }
-        data = self._get(f"{self.STABLE_URL}/historical-price-eod/full", params, quiet=True)
-        bars = normalize_price_bars(data, symbol=symbol)
-        if bars:
-            result = [bar_to_dict(b) for b in bars[-days:]]
-            self.cache[cache_key] = result
-            return result
-
-        data = self._get(f"{self.V3_URL}/historical-price-full/{symbol}", {"timeseries": days})
+        try:
+            data = self._client.fetch_eod_rows(symbol, days, pad_days=10, quiet=False)
+        except self._budget_error as exc:
+            raise ApiCallBudgetExceeded(str(exc)) from exc
+        if data is None:
+            self.failed_requests += 1
+            return []
         bars = normalize_price_bars(data, symbol=symbol)
         result = [bar_to_dict(b) for b in bars[-days:]]
         self.cache[cache_key] = result
@@ -128,6 +131,8 @@ class FMPClient:
             "api_calls_made": self.api_calls_made,
             "max_api_calls": self.max_api_calls,
             "budget_remaining": max(0, self.max_api_calls - self.api_calls_made),
+            "rate_limit_reached": self.rate_limit_reached,
+            "failed_requests": self.failed_requests,
         }
 
 
@@ -885,6 +890,12 @@ def command_ingest(args: argparse.Namespace) -> int:
     return 0
 
 
+def requested_symbols(records: list[dict[str, Any]]) -> list[str]:
+    return sorted(
+        {normalize_symbol(r.get("symbol")) for r in records if normalize_symbol(r.get("symbol"))}
+    )
+
+
 def build_prices_for_update(
     args: argparse.Namespace, records: list[dict[str, Any]]
 ) -> tuple[dict[str, list[Bar]], dict[str, Any] | None]:
@@ -893,9 +904,7 @@ def build_prices_for_update(
 
     client = FMPClient(api_key=args.api_key, max_api_calls=args.max_api_calls)
     prices: dict[str, list[Bar]] = {}
-    symbols = sorted(
-        {normalize_symbol(r.get("symbol")) for r in records if normalize_symbol(r.get("symbol"))}
-    )
+    symbols = requested_symbols(records)
     for symbol in symbols:
         raw = client.get_historical_prices(symbol, days=args.history_days)
         bars = normalize_price_bars(raw, symbol=symbol)
@@ -910,6 +919,15 @@ def command_update(args: argparse.Namespace) -> int:
         print(f"No records found in {args.model_book}")
         return 0
     prices, api_stats = build_prices_for_update(args, records)
+    if api_stats is not None:
+        symbol_count = len(requested_symbols(records))
+        if symbol_count > 0 and api_stats["failed_requests"] == symbol_count:
+            print(
+                f"ERROR: FMP price fetch failed for all {symbol_count} symbols; "
+                "model book not updated",
+                file=sys.stderr,
+            )
+            return 1
     horizons = parse_horizons(args.horizons)
     records, stats = update_record_outcomes(
         records, prices, horizons=horizons, only_pending=args.only_pending

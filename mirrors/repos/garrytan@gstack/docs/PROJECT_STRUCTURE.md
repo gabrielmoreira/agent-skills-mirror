@@ -26,7 +26,7 @@ gstack/
 │   ├── gen-agents-digest.ts  # Generates the budget-capped instruction-tier digest (agents-digest/)
 │   ├── host-config.ts     # HostConfig interface + validator
 │   ├── host-config-export.ts  # Shell bridge for setup script
-│   ├── resolvers/   # Template resolver modules (preamble, aside = the Aside driver contract + research, browse = $B fallback setup + command reference, qa = surface-aware QA/exploration, sections = lazy loading, design, design-checklist = renders review/design-checklist.md from lib/design-catalog.ts, review-dashboard / plan-gates / spec-review / review-scope, outside-voice = outside-voice primitives + the one failure policy, outside-voice-steps = second opinion / adversarial / plan and doc review, gbrain, etc.)
+│   ├── resolvers/   # Template resolver modules (preamble, aside = the Aside driver contract + research, browse = $B fallback setup + command reference, qa = surface-aware QA/exploration, sections = lazy loading, design, design-checklist = renders review/design-checklist.md from lib/design-catalog.ts, design-craft = craft-section paragraphs and the Persuade checks for /design-review's craft audit and /plan-design-review, review-dashboard / plan-gates / spec-review / review-scope, outside-voice = outside-voice primitives + the one failure policy, outside-voice-steps = second opinion / adversarial / plan and doc review, gbrain, etc.)
 │   ├── lib/shard-engine.ts  # Shared shard engine for both test lanes: spawn, group kill, strict verdicts, per-shard sandbox, logs, duration seeds, flags
 │   ├── skill-check.ts     # Health dashboard
 │   ├── test-free-shards.ts  # Free-lane policy on the shard engine (GSTACK_FREE_JOBS, opt-in flaky retry)
@@ -55,10 +55,12 @@ gstack/
 ├── deslop-shared-libs/ # Recommendations-only audit for worthwhile shared-code extractions
 ├── test-audit/      # Report-first sweep for low-value tests (test value bar, audit mode)
 ├── eval-plan/       # Preregistered paid evals: prereg, arms, $0 dry run, priced pilot (bin/gstack-eval-plan)
+├── captain/         # /captain (also /crew): one controller, many lanes; templates/ holds CREW.md, AGENTS.md, NOTES.md, DIGEST.md, the flaky ledger, the lane report, the READY block, slot call, asks and the daily automation prompt
 ├── plan-ceo-review/ # /plan-ceo-review skill
 ├── plan-eng-review/ # /plan-eng-review skill
 ├── autoplan/        # /autoplan skill (auto-review pipeline: CEO → design → DX → eng, eng always last)
 ├── benchmark/       # /benchmark skill (performance regression detection)
+├── ubicloud/        # /ubicloud skill (ephemeral Ubicloud VMs: TTL + reaper, quota preflight, watchdog, verify; bin/gstack-ubi)
 ├── canary/          # /canary skill (post-deploy monitoring loop)
 ├── codex/           # /codex skill (multi-AI second opinion via OpenAI Codex CLI)
 ├── land-and-deploy/ # /land-and-deploy skill (merge → deploy → canary verify)
@@ -70,12 +72,13 @@ gstack/
 ├── freeze/          # /freeze skill; bin/check-freeze.sh (PreToolUse edit-boundary hook; sources careful/bin/hook-extract.sh, fails closed)
 ├── guard/, unfreeze/  # /guard (careful + freeze in one), /unfreeze
 ├── gstack-upgrade/  # /gstack-upgrade skill + migrations/ (run after ./setup during an upgrade)
-├── bin/             # CLI utilities (gstack-render.ts = render a local HTML file through Aside or the engine, gstack-design-detect.ts = probe/scan through a user-installed impeccable engine; gstack-design-md.ts = open DESIGN.md check/convert/tokens/mark; gstack-repo-mode, gstack-slug, gstack-config, gstack-wtree, gstack-evidence, gstack-issue-guard, gstack-relink, gstack-memorable, etc.)
+├── bin/             # CLI utilities (gstack-render.ts = render a local HTML file through Aside or the engine, gstack-design-detect.ts = probe/scan through a user-installed impeccable engine; gstack-design-md.ts = open DESIGN.md check/convert/tokens/mark; gstack-design-lint = the free deterministic design lint over HTML/CSS/components, --render measures in the browser (docs/design-lint.md); gstack-repo-mode, gstack-slug, gstack-config, gstack-wtree, gstack-evidence, gstack-issue-guard, gstack-relink, gstack-memorable, etc.)
 ├── document-release/ # /document-release skill (every-ship pre-verification audit; standalone doc updates + Diataxis coverage map)
 ├── document-generate/ # /document-generate skill (Diataxis doc generator: tutorial/how-to/reference/explanation)
 ├── cso/             # /cso skill (OWASP Top 10 + STRIDE security audit)
 ├── design-consultation/ # /design-consultation skill (design system from scratch)
 ├── design-shotgun/  # /design-shotgun skill (visual design exploration)
+├── design-motion/   # /design-motion skill (showcase loops: deterministic capture, MP4 and GIF exports)
 ├── open-gstack-browser/  # /open-gstack-browser skill (launch GStack Browser)
 ├── connect-chrome/  # symlink → open-gstack-browser (backwards compat)
 ├── setup-browser-cookies/, pair-agent/, skillify/  # Fallback-engine skills (cookie import, shared-browser tunnel, codify a /scrape)
@@ -88,7 +91,7 @@ gstack/
 │   └── dist/        # Compiled binary
 ├── agents-digest/   # Committed 2KB instruction-tier rules digest (gstack-AGENTS.md) for rules-reading hosts
 ├── extension/       # Chrome extension (side panel + activity feed + CSS inspector)
-├── lib/             # Shared libraries (aside-render.ts = local-HTML rendering, Aside first, engine fallback; design-catalog.ts = the typed design anti-pattern catalog every design skill renders from; design-detect-contract.ts = detector sentinel vocabulary; design-md.ts = open DESIGN.md reader/writer; dom-dump-script.ts + generated dom-dump.js = rendered-DOM dump for the detector; review-evidence.ts = review-start receipt binding, computed freshness and shared-code snapshot eligibility; frontend-scope.ts; claude-bin.ts, error-handling.ts, worktree.ts, egress-receipt.ts, context-bill.ts, redact-engine.ts, tracker-guard.ts, version-source.ts, code-intelligence/)
+├── lib/             # Shared libraries (aside-render.ts = local-HTML rendering, Aside first, engine fallback; design-catalog.ts = the typed design anti-pattern catalog every design skill renders from; design-lint/ = the static and render tiers behind bin/gstack-design-lint, ported from hallmark's sloplint; design-detect-contract.ts = detector sentinel vocabulary; design-md.ts = open DESIGN.md reader/writer; dom-dump-script.ts + generated dom-dump.js = rendered-DOM dump for the detector; review-evidence.ts = review-start receipt binding, computed freshness and shared-code snapshot eligibility; frontend-scope.ts; claude-bin.ts, error-handling.ts, worktree.ts, egress-receipt.ts, context-bill.ts, redact-engine.ts, tracker-guard.ts, version-source.ts, code-intelligence/)
 │   └── diagram-render/  # Vendored mermaid + excalidraw runtimes, built into one offline bundle the renderer loads
 ├── patches/         # bun `patchedDependencies` patches (playwright-core windowsHide)
 ├── docs/designs/    # Design documents (incl. IMPECCABLE_INTEROP.md = the design detector / catalog / open DESIGN.md record, and fork-port-residual-2026-09/ evaluation evidence)
@@ -102,7 +105,7 @@ gstack/
 ├── SKILL.md         # Generated from SKILL.md.tmpl (don't edit directly)
 ├── SKILL.md.tmpl    # Template: edit this, run gen:skill-docs
 ├── ETHOS.md         # Builder philosophy (Boil the Ocean, Search Before Building)
-├── NOTICE.md        # Third-party notices: material derived from impeccable and the DESIGN.md spec (both Apache-2.0)
-├── licenses/        # Verbatim license texts for the notices above (Apache-2.0.txt)
+├── NOTICE.md        # Third-party notices: material derived from impeccable and the DESIGN.md spec (Apache-2.0), Elaya's design skills and hallmark's sloplint (MIT)
+├── licenses/        # Verbatim license texts for the notices above (Apache-2.0.txt, MIT-elaya.txt, MIT-hallmark.txt)
 └── package.json     # Build scripts for browse
 ```

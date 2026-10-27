@@ -1,9 +1,9 @@
 # TCL C7K (G08, Google TV, Android 14), UK and EU firmware
 
 TCL C7K QD-Mini LED, device `G08`, model "Smart TV Pro", firmware `UTT2.250416.001 AU02`, MediaTek, about
-2.4 GB RAM. Two units have run this list: a 55C7K-UK on Wi-Fi (the first, see the header of `debloat.txt`) and a
-50C7K on Ethernet in Poland (below). Both halves work on this set: the debloat list and the Clean Your TV
-launcher as Home.
+2.4 GB RAM. Three units have run this list: a 55C7K-UK on Wi-Fi (the first, see the header of `debloat.txt`), a
+50C7K on Ethernet in Poland and a C6K on Ethernet in Brazil (both below). Both halves work on this set: the
+debloat list and the Clean Your TV launcher as Home.
 
 | File | What it is |
 |---|---|
@@ -65,3 +65,33 @@ Notes from this unit:
   two further restarts, the last one with USB debugging off.
 - `wm size` reports an override of 1920x1080 on the 3840x2160 panel at density 320 straight from the factory. It
   is not a leftover; leave it.
+
+## Third unit: C6K, Brazil, Ethernet
+
+TCL C6K, model "Smart TV Pro", device `G08`, product `G08_4K_GB`, same `UTT2.250416.001 AU02`, pt-BR market, on
+the built-in Ethernet port. Set up on 24 October 2026 in five batches with screenshots between them, then the
+launcher; rebooted twice. After the first reboot every package on the list was still disabled and Home, Ethernet
+and Private DNS came back. One day of use, not weeks.
+
+**Different choices from the UK unit:** `com.tcl.ttvs` kept, for firmware updates, at the price of the Samba TV
+tracking it carries. Kept on this unit: Netflix, Prime Video, YouTube Music, Assistant (`katniss`), Chromecast,
+AirPlay, the game bar, the USB media player and gallery, and dreamx. Off by choice besides the UK ones: the Google
+TV movie app (`com.google.android.videos`). `com.tcl.channelplus` (TCL Live) was disabled and then re-enabled: it
+registers as a TV input (`com.tcl.iptv.service.InputService`) and has no launcher entry, so its channels play only
+through Live TV. `tv.mopa.ginga` was left alone, as on the 65C7K list from Brazil.
+
+What was checked on the TV: Home after each batch, the Inputs menu (HDMI 1-4 and Live TV), switching to HDMI 1
+(`com.tcl.tv/com.tcl.player.TVActivity` on top), TCL Live in Live TV after re-enabling it, D-pad from every edge,
+and a Home Assistant Android TV Remote key still reaching the TV.
+
+Notes from this unit:
+
+- **Network ADB without Wireless debugging**: with the TV on Ethernet, the Wireless debugging toggle flipped
+  straight back off, and switching on USB debugging alone opened port 5555. `ro.adb.secure` is 1, so the
+  authorisation prompt still appears.
+- **setupwraith owned no network** here (no Wi-Fi was ever saved), so `disable.sh` had nothing to skip. With
+  launcherx off, Home resolved to setupwraith's `RecoveryActivity` until setupwraith went too.
+- **Remote buttons without the helper**: with launcherx off, Settings, Input, the GloboPlay button and the mic kept
+  working; Netflix, YouTube, Prime, TCL and Disney did nothing. The owner kept the volume ramp and enabled no key
+  helper; held volume ramps normally that way.
+- `wm size` shows the same factory override of 1920x1080, density 320.

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `reactive-resume/app` — 26 default patterns, 0 followed patterns, 26 file(s) materialized.
+Mirror of `reactive-resume/app` — 26 default patterns, 0 followed patterns, 31 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `reactive-resume/app` — 26 default patterns, 0 followed patterns, 26
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 26 |
+| Files         | 31 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,32 +59,37 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.agents/docs/container-publishing.md`](.agents/docs/container-publishing.md) |
-| 2 | ✓ | [`.agents/docs/dependency-upgrades.md`](.agents/docs/dependency-upgrades.md) |
-| 3 | ✓ | [`.agents/docs/issue-tracker.md`](.agents/docs/issue-tracker.md) |
-| 4 | ✓ | [`.agents/docs/mcp-tool-annotations.md`](.agents/docs/mcp-tool-annotations.md) |
-| 5 | ✓ | [`.agents/docs/microsoft-store-handoff.md`](.agents/docs/microsoft-store-handoff.md) |
-| 6 | ✓ | [`.agents/docs/mobile-ci.md`](.agents/docs/mobile-ci.md) |
-| 7 | ✓ | [`.agents/docs/mobile-release-handoff.md`](.agents/docs/mobile-release-handoff.md) |
-| 8 | ✓ | [`.agents/docs/mobile-store-review.md`](.agents/docs/mobile-store-review.md) |
-| 9 | ✓ | [`.agents/docs/plans/job-saving-release.md`](.agents/docs/plans/job-saving-release.md) |
-| 10 | ✓ | [`.agents/docs/research/job-integrations-2026-09-30.md`](.agents/docs/research/job-integrations-2026-09-30.md) |
-| 11 | ✓ | [`.agents/docs/research/reactive-resume-v6-launch-media-2026-10-02.md`](.agents/docs/research/reactive-resume-v6-launch-media-2026-10-02.md) |
-| 12 | ✓ | [`.agents/docs/template-showcase-sources.json`](.agents/docs/template-showcase-sources.json) |
-| 13 | ✓ | [`.agents/skills/fill-translations/agents/openai.yaml`](.agents/skills/fill-translations/agents/openai.yaml) |
-| 14 | ✓ | [`.agents/skills/fill-translations/evals/evals.json`](.agents/skills/fill-translations/evals/evals.json) |
-| 15 | ✓ | [`.agents/skills/fill-translations/SKILL.md`](.agents/skills/fill-translations/SKILL.md) |
-| 16 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 17 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 18 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 19 | ✓ | [`plugins/reactive-resume/skills/interview-prep/SKILL.md`](plugins/reactive-resume/skills/interview-prep/SKILL.md) |
-| 20 | ✓ | [`plugins/reactive-resume/skills/job-application-manager/SKILL.md`](plugins/reactive-resume/skills/job-application-manager/SKILL.md) |
-| 21 | ✓ | [`plugins/reactive-resume/skills/mock-interview/SKILL.md`](plugins/reactive-resume/skills/mock-interview/SKILL.md) |
-| 22 | ✓ | [`plugins/reactive-resume/skills/offer-negotiation/SKILL.md`](plugins/reactive-resume/skills/offer-negotiation/SKILL.md) |
-| 23 | ✓ | [`plugins/reactive-resume/skills/resume-builder/SKILL.md`](plugins/reactive-resume/skills/resume-builder/SKILL.md) |
-| 24 | ✓ | [`plugins/reactive-resume/skills/resume-bullet-writer/SKILL.md`](plugins/reactive-resume/skills/resume-bullet-writer/SKILL.md) |
-| 25 | ✓ | [`plugins/reactive-resume/skills/resume-content-guide/SKILL.md`](plugins/reactive-resume/skills/resume-content-guide/SKILL.md) |
-| 26 | ✓ | [`plugins/reactive-resume/skills/resume-tailor/SKILL.md`](plugins/reactive-resume/skills/resume-tailor/SKILL.md) |
+| 1 | ✓ | [`.agents/docs/adr/0001-server-rendered-web-pages.md`](.agents/docs/adr/0001-server-rendered-web-pages.md) |
+| 2 | ✓ | [`.agents/docs/adr/0002-web-page-reuses-resume-template.md`](.agents/docs/adr/0002-web-page-reuses-resume-template.md) |
+| 3 | ✓ | [`.agents/docs/adr/0003-both-domains-serve-public-pages.md`](.agents/docs/adr/0003-both-domains-serve-public-pages.md) |
+| 4 | ✓ | [`.agents/docs/ci-performance.md`](.agents/docs/ci-performance.md) |
+| 5 | ✓ | [`.agents/docs/container-publishing.md`](.agents/docs/container-publishing.md) |
+| 6 | ✓ | [`.agents/docs/dependency-upgrades.md`](.agents/docs/dependency-upgrades.md) |
+| 7 | ✓ | [`.agents/docs/issue-tracker.md`](.agents/docs/issue-tracker.md) |
+| 8 | ✓ | [`.agents/docs/mcp-tool-annotations.md`](.agents/docs/mcp-tool-annotations.md) |
+| 9 | ✓ | [`.agents/docs/microsoft-store-handoff.md`](.agents/docs/microsoft-store-handoff.md) |
+| 10 | ✓ | [`.agents/docs/mobile-ci.md`](.agents/docs/mobile-ci.md) |
+| 11 | ✓ | [`.agents/docs/mobile-release-handoff.md`](.agents/docs/mobile-release-handoff.md) |
+| 12 | ✓ | [`.agents/docs/mobile-store-review.md`](.agents/docs/mobile-store-review.md) |
+| 13 | ✓ | [`.agents/docs/plans/job-saving-release.md`](.agents/docs/plans/job-saving-release.md) |
+| 14 | ✓ | [`.agents/docs/research/job-integrations-2026-09-30.md`](.agents/docs/research/job-integrations-2026-09-30.md) |
+| 15 | ✓ | [`.agents/docs/research/reactive-resume-v6-launch-media-2026-10-02.md`](.agents/docs/research/reactive-resume-v6-launch-media-2026-10-02.md) |
+| 16 | ✓ | [`.agents/docs/template-showcase-sources.json`](.agents/docs/template-showcase-sources.json) |
+| 17 | ✓ | [`.agents/docs/turbo-remote-cache.md`](.agents/docs/turbo-remote-cache.md) |
+| 18 | ✓ | [`.agents/skills/fill-translations/agents/openai.yaml`](.agents/skills/fill-translations/agents/openai.yaml) |
+| 19 | ✓ | [`.agents/skills/fill-translations/evals/evals.json`](.agents/skills/fill-translations/evals/evals.json) |
+| 20 | ✓ | [`.agents/skills/fill-translations/SKILL.md`](.agents/skills/fill-translations/SKILL.md) |
+| 21 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
+| 22 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 23 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 24 | ✓ | [`plugins/reactive-resume/skills/interview-prep/SKILL.md`](plugins/reactive-resume/skills/interview-prep/SKILL.md) |
+| 25 | ✓ | [`plugins/reactive-resume/skills/job-application-manager/SKILL.md`](plugins/reactive-resume/skills/job-application-manager/SKILL.md) |
+| 26 | ✓ | [`plugins/reactive-resume/skills/mock-interview/SKILL.md`](plugins/reactive-resume/skills/mock-interview/SKILL.md) |
+| 27 | ✓ | [`plugins/reactive-resume/skills/offer-negotiation/SKILL.md`](plugins/reactive-resume/skills/offer-negotiation/SKILL.md) |
+| 28 | ✓ | [`plugins/reactive-resume/skills/resume-builder/SKILL.md`](plugins/reactive-resume/skills/resume-builder/SKILL.md) |
+| 29 | ✓ | [`plugins/reactive-resume/skills/resume-bullet-writer/SKILL.md`](plugins/reactive-resume/skills/resume-bullet-writer/SKILL.md) |
+| 30 | ✓ | [`plugins/reactive-resume/skills/resume-content-guide/SKILL.md`](plugins/reactive-resume/skills/resume-content-guide/SKILL.md) |
+| 31 | ✓ | [`plugins/reactive-resume/skills/resume-tailor/SKILL.md`](plugins/reactive-resume/skills/resume-tailor/SKILL.md) |
 
 ---
 

@@ -73,11 +73,14 @@ def make_bars(n=55, event_date="2026-04-25", volume=300000):
 
 
 class FakeResponse:
-    def __init__(self, payload, status_code=200):
+    def __init__(self, payload, status_code=200, text=""):
         self._payload = payload
         self.status_code = status_code
+        self.text = text
 
     def json(self):
+        if isinstance(self._payload, Exception):
+            raise self._payload
         return self._payload
 
 
@@ -87,10 +90,12 @@ class ScriptedSession:
     def __init__(self, responses):
         self.responses = list(responses)
         self.urls = []
+        self.params = []
         self.headers = {}
 
     def get(self, url, params, timeout):  # noqa: ARG002
         self.urls.append(url)
+        self.params.append(params)
         item = self.responses.pop(0)
         if isinstance(item, Exception):
             raise item
@@ -99,7 +104,7 @@ class ScriptedSession:
 
 @pytest.fixture(autouse=True)
 def _no_sleep(monkeypatch):
-    monkeypatch.setattr(analyze_ep.time, "sleep", lambda *_a, **_k: None)
+    monkeypatch.setattr(analyze_ep._load_shared_fmp().time, "sleep", lambda *_a, **_k: None)
 
 
 def make_client(monkeypatch, responses, max_calls=10):
@@ -120,52 +125,133 @@ def test_fmp_client_requires_api_key(monkeypatch):
 
 def test_fmp_client_requires_requests(monkeypatch):
     monkeypatch.setattr(analyze_ep, "requests", None)
-    with pytest.raises(RuntimeError):
+    with pytest.raises(RuntimeError, match="requests is required for FMP mode"):
         FMPClient(api_key="k")
 
 
-def test_fmp_get_respects_call_budget(monkeypatch):
-    client = make_client(monkeypatch, [FakeResponse([{"x": 1}])], max_calls=1)
-    assert client._get("u", {}) == [{"x": 1}]
-    assert client._get("u", {}) is None  # budget exhausted, no session call
-    assert client.stats() == {"api_calls_made": 1, "max_api_calls": 1}
+def test_fmp_client_api_key_precedence(monkeypatch):
+    monkeypatch.setenv("FMP_API_KEY", "env-key")
+    assert FMPClient(api_key="arg-key").api_key == "arg-key"  # pragma: allowlist secret
+    assert FMPClient(api_key=None).api_key == "env-key"  # pragma: allowlist secret
 
 
-def test_fmp_get_returns_none_on_non_200_and_request_error(monkeypatch):
-    client = make_client(
-        monkeypatch,
-        [FakeResponse({}, status_code=429), analyze_ep.requests.RequestException("boom")],
-    )
-    assert client._get("u", {}) is None
-    assert client._get("u", {}) is None
-    assert client.api_calls == 2
+def test_fmp_client_has_no_removed_surface():
+    assert not hasattr(FMPClient, "get_profile")
+    assert not hasattr(FMPClient, "HIST_URLS")
+    assert not hasattr(FMPClient, "PROFILE_URLS")
 
 
-def test_fmp_historical_prices_falls_back_to_v3(monkeypatch):
+def test_fmp_attribute_delegation(monkeypatch):
+    client = make_client(monkeypatch, [])
+    client.api_calls = 4
+    assert client._client.api_calls_made == 4
+    assert client.api_calls_made == 4
+    client.api_calls_made = 6
+    assert client.api_calls == 6
+    client.max_api_calls = 9
+    assert client._client.max_api_calls == 9
+    client.rate_limit_reached = True
+    assert client._client.rate_limit_reached is True
+    client.last_call_time = 5.0
+    assert client._client.last_call_time == 5.0
+    sentinel = ScriptedSession([])
+    client.session = sentinel
+    assert client._client.session is sentinel
+    assert client.stats() == {"api_calls_made": 6, "max_api_calls": 9}
+
+
+def test_fmp_historical_prices_stable_only_url_and_params(monkeypatch):
     hist = [
         {"date": f"2026-01-{d:02d}", "close": d, "open": d, "high": d, "low": d} for d in (3, 1, 2)
     ]
-    client = make_client(monkeypatch, [FakeResponse([]), FakeResponse({"historical": hist})])
+    client = make_client(monkeypatch, [FakeResponse(hist)])
     bars = client.get_historical_prices("ABC", days=2)
     assert [b["date"] for b in bars] == ["2026-01-02", "2026-01-03"]
-    assert "api/v3/historical-price-full/ABC" in client.session.urls[1]
+    assert client.session.urls == [
+        "https://financialmodelingprep.com/stable/historical-price-eod/full"
+    ]
+    assert client.session.params[0]["symbol"] == "ABC"
+    assert "from" in client.session.params[0] and "to" in client.session.params[0]
+    assert client.api_calls == 1
 
 
-def test_fmp_historical_prices_empty_when_both_fail(monkeypatch):
-    client = make_client(monkeypatch, [FakeResponse({}, 500), FakeResponse({"historical": None})])
+@pytest.mark.parametrize(
+    "responses",
+    [
+        [FakeResponse([])],
+        [FakeResponse({}, 402)],
+        [FakeResponse({"historical": [{"date": "2026-01-01"}]})],
+    ],
+)
+def test_fmp_historical_prices_no_v3_and_empty_on_failure(monkeypatch, responses):
+    client = make_client(monkeypatch, responses)
+    assert client.get_historical_prices("ABC") == []
+    assert len(client.session.urls) == 1
+    assert all("api/v3" not in u for u in client.session.urls)
+
+
+def test_fmp_historical_prices_request_exception_returns_empty(monkeypatch):
+    client = make_client(monkeypatch, [analyze_ep.requests.RequestException("boom")])
     assert client.get_historical_prices("ABC") == []
 
 
-def test_fmp_profile_stable_then_v3_then_empty(monkeypatch):
-    client = make_client(monkeypatch, [FakeResponse([{"symbol": "ABC", "mktCap": 5}])])
-    assert client.get_profile("ABC")["mktCap"] == 5
+def test_fmp_malformed_json_retries_once(monkeypatch):
+    hist = [{"date": "2026-01-01", "close": 1, "open": 1, "high": 1, "low": 1}]
+    client = make_client(monkeypatch, [FakeResponse(ValueError("bad json")), FakeResponse(hist)])
+    assert [b["date"] for b in client.get_historical_prices("ABC")] == ["2026-01-01"]
+    assert len(client.session.urls) == 2
+    assert client.api_calls == 2
 
-    client = make_client(monkeypatch, [FakeResponse([]), FakeResponse([{"symbol": "ABC"}])])
-    assert client.get_profile("ABC") == {"symbol": "ABC"}
-    assert "api/v3/profile/ABC" in client.session.urls[1]
 
-    client = make_client(monkeypatch, [FakeResponse({}), FakeResponse({})])
-    assert client.get_profile("ABC") == {}
+def test_fmp_429_sets_rate_limit_reached(monkeypatch):
+    client = make_client(monkeypatch, [FakeResponse({}, 429), FakeResponse({}, 429)])
+    assert client.get_historical_prices("ABC") == []
+    assert client.rate_limit_reached is True
+    # Further calls short-circuit without touching the session.
+    assert client.get_historical_prices("DEF") == []
+    assert len(client.session.urls) == 2
+
+
+def test_fmp_budget_exhaustion_is_soft(monkeypatch):
+    hist = [{"date": "2026-01-01", "close": 1, "open": 1, "high": 1, "low": 1}]
+    client = make_client(monkeypatch, [FakeResponse(hist)], max_calls=1)
+    assert len(client.get_historical_prices("ABC")) == 1
+    assert client.get_historical_prices("DEF") == []  # no exception escapes
+    assert len(client.session.urls) == 1
+    assert client.stats() == {"api_calls_made": 1, "max_api_calls": 1}
+
+
+def test_fmp_non_budget_errors_propagate(monkeypatch):
+    client = make_client(monkeypatch, [])
+
+    def boom(*_a, **_k):
+        raise RuntimeError("tzdata missing")
+
+    monkeypatch.setattr(client._client, "fetch_eod_rows", boom)
+    with pytest.raises(RuntimeError, match="tzdata"):
+        client.get_historical_prices("ABC")
+
+
+def test_fmp_redacts_key_echoed_in_error_body(monkeypatch, capsys):
+    monkeypatch.setenv("FMP_API_KEY", "k3y/+secret")
+    client = FMPClient(api_key=None)
+    body = "denied k3y/+secret and k3y%2F%2Bsecret"
+    client.session = ScriptedSession([FakeResponse({}, 403, text=body)])
+    assert client.get_historical_prices("ABC") == []
+    err = capsys.readouterr().err
+    assert "k3y/+secret" not in err
+    assert "k3y%2F%2Bsecret" not in err.replace("%2f", "%2F")
+    assert "REDACTED" in err
+
+
+def test_fmp_no_circuit_breaker_across_empty_symbols(monkeypatch):
+    hist = [{"date": "2026-01-01", "close": 1, "open": 1, "high": 1, "low": 1}]
+    responses = [FakeResponse([]) for _ in range(5)] + [FakeResponse(hist)]
+    client = make_client(monkeypatch, responses)
+    for sym in ("A", "B", "C", "D", "E"):
+        assert client.get_historical_prices(sym) == []
+    assert len(client.get_historical_prices("F")) == 1
+    assert len(client.session.urls) == 6
 
 
 # ------------------------------------------------------------- small helpers

@@ -20,13 +20,13 @@ from __future__ import annotations
 
 import argparse
 import csv
+import importlib.util
 import io
 import json
 import os
 import sys
-import time
 from dataclasses import dataclass
-from datetime import date, datetime, timedelta
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
@@ -78,12 +78,41 @@ class ApiCallBudgetExceeded(Exception):
     """Raised when the configured API call budget has been exhausted."""
 
 
-class FMPClient:
-    """Small FMP client with /stable-first routing and legacy v3 fallback."""
+_SHARED_FMP_MODULE = "_stockbee_momentum_burst_screener_fmp_client"
 
-    BASE_URL = "https://financialmodelingprep.com/api/v3"
-    STABLE_URL = "https://financialmodelingprep.com/stable"
-    RATE_LIMIT_DELAY = 0.30
+
+def _load_shared_fmp():
+    """Load the sibling generated client by path (never `import fmp_client`)."""
+    module = sys.modules.get(_SHARED_FMP_MODULE)
+    if module is None:
+        path = Path(__file__).resolve().parent / "fmp_client.py"
+        spec = importlib.util.spec_from_file_location(_SHARED_FMP_MODULE, path)
+        module = importlib.util.module_from_spec(spec)
+        sys.modules[_SHARED_FMP_MODULE] = module
+        try:
+            spec.loader.exec_module(module)
+        except BaseException:
+            sys.modules.pop(_SHARED_FMP_MODULE, None)
+            raise
+    return module
+
+
+def _delegated(name: str) -> property:
+    """Property that reads/writes `name` on the wrapped shared client."""
+    return property(
+        lambda self: getattr(self._client, name),
+        lambda self, value: setattr(self._client, name, value),
+    )
+
+
+class FMPClient:
+    """Thin adapter over the generated stable-only FMP client (#495 Batch C)."""
+
+    session = _delegated("session")
+    api_calls_made = _delegated("api_calls_made")
+    max_api_calls = _delegated("max_api_calls")
+    last_call_time = _delegated("last_call_time")
+    rate_limit_reached = _delegated("rate_limit_reached")
 
     def __init__(self, api_key: str | None = None, max_api_calls: int = 500):
         if requests is None:
@@ -97,53 +126,16 @@ class FMPClient:
             raise ValueError(
                 "FMP API key required. Set FMP_API_KEY or use --prices-json for offline mode."
             )
-        self.session = requests.Session()
-        self.session.headers.update({"apikey": self.api_key})
-        self.max_api_calls = max_api_calls
-        self.api_calls_made = 0
-        self.last_call_time = 0.0
+        shared = _load_shared_fmp()
+        self._budget_error = shared.ApiCallBudgetExceeded
+        self._client = shared.FMPClient(api_key=self.api_key, max_api_calls=max_api_calls)
         self.cache: dict[str, Any] = {}
-        self.rate_limit_reached = False
 
-    def _request(self, url: str, params: dict[str, Any] | None = None, quiet: bool = False) -> Any:
-        if self.api_calls_made >= self.max_api_calls:
-            raise ApiCallBudgetExceeded(
-                f"API budget exhausted: {self.api_calls_made}/{self.max_api_calls} calls used"
-            )
-        if self.rate_limit_reached:
-            return None
-
-        elapsed = time.time() - self.last_call_time
-        if elapsed < self.RATE_LIMIT_DELAY:
-            time.sleep(self.RATE_LIMIT_DELAY - elapsed)
-
+    def _call(self, fn, *args, **kwargs):
         try:
-            response = self.session.get(url, params=params or {}, timeout=30)
-            self.last_call_time = time.time()
-            self.api_calls_made += 1
-            if response.status_code == 200:
-                return response.json()
-            if response.status_code == 429:
-                print("ERROR: FMP daily rate limit reached.", file=sys.stderr)
-                self.rate_limit_reached = True
-                return None
-            if not quiet:
-                print(
-                    f"ERROR: FMP request failed: HTTP {response.status_code} - "
-                    f"{response.text[:200]}",
-                    file=sys.stderr,
-                )
-            return None
-        except requests.exceptions.RequestException as exc:
-            if not quiet:
-                print(f"ERROR: FMP request exception: {exc}", file=sys.stderr)
-            return None
-
-    def _stable_then_v3(self, stable_url: str, v3_url: str, params: dict[str, Any]) -> Any:
-        stable = self._request(stable_url, params, quiet=True)
-        if stable not in (None, [], {}):
-            return stable
-        return self._request(v3_url, params, quiet=False)
+            return fn(*args, **kwargs)
+        except self._budget_error as exc:
+            raise ApiCallBudgetExceeded(str(exc)) from exc
 
     def get_universe(
         self,
@@ -164,11 +156,7 @@ class FMPClient:
             "exchange": "NASDAQ,NYSE,AMEX",
             "limit": 10000,
         }
-        data = self._stable_then_v3(
-            f"{self.STABLE_URL}/company-screener",
-            f"{self.BASE_URL}/stock-screener",
-            params,
-        )
+        data = self._call(self._client.fetch_screener_rows, params)
         if not isinstance(data, list):
             return []
 
@@ -197,29 +185,11 @@ class FMPClient:
         if cache_key in self.cache:
             return self.cache[cache_key]
 
-        today = date.today()
-        stable_params = {
-            "symbol": symbol,
-            "from": (today - timedelta(days=days * 2 + 10)).isoformat(),
-            "to": today.isoformat(),
-        }
-        stable_data = self._request(
-            f"{self.STABLE_URL}/historical-price-eod/full",
-            stable_params,
-            quiet=True,
-        )
-        bars = normalize_fmp_historical_response(stable_data, symbol, days)
-        if bars:
+        rows = self._call(self._client.fetch_eod_rows, symbol, days, pad_days=10)
+        bars = normalize_fmp_historical_response(rows, symbol, days)
+        if rows is not None:
+            # Only a provider answer is cached; a transport failure may recover.
             self.cache[cache_key] = bars
-            return bars
-
-        v3_data = self._request(
-            f"{self.BASE_URL}/historical-price-full/{symbol}",
-            {"timeseries": days},
-            quiet=False,
-        )
-        bars = normalize_fmp_historical_response(v3_data, symbol, days)
-        self.cache[cache_key] = bars
         return bars
 
     def get_api_stats(self) -> dict[str, Any]:

@@ -1,5 +1,5 @@
 ---
-description: 多视角小说审查；ZCode 项目 agents 不可用时自动降级 solo。
+description: 多视角小说审查；优先派发插件角色，不可用时降级 solo。
 skills: story-review
 ---
 

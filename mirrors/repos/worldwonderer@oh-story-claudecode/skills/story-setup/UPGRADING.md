@@ -2,12 +2,12 @@
 
 ## 当前版本
 
-助手版本 36（v0.9.0）。已有项目更新技能包后，在项目根重跑 `/story-setup`（Codex 用 `$story-setup`，Antigravity 用 `/skills` 或直接点名），再新开会话。
+助手版本 37（v0.9.1）。已有项目更新技能包后，在项目根重跑 `/story-setup`（Codex 用 `$story-setup`，Antigravity 用 `/skills` 或直接点名），再新开会话。
 
-- `setup_skill_version: 1.3.4`
-- `agents_version: 36`
+- `setup_skill_version: 1.3.5`
+- `agents_version: 37`
 
-`.story-deployed` 字段不全，或 `agents_version` 不是整数、低于 36，都算待更新，重跑 story-setup 即可。项目里的 `agents_version` 大于 36，说明本机技能包比项目旧：先更新 oh-story-claudecode，不要用旧包覆盖。各版本改了什么见仓库根目录 `CHANGELOG.md`。
+`.story-deployed` 字段不全，或 `agents_version` 不是整数、低于 37，都算待更新，重跑 story-setup 即可。项目里的 `agents_version` 大于 37，说明本机技能包比项目旧：先更新 oh-story-claudecode，不要用旧包覆盖。各版本改了什么见仓库根目录 `CHANGELOG.md`。
 
 ## 升级步骤
 
@@ -17,7 +17,14 @@
 4. 正在写的长篇：确认每本书有 `追踪/_tracking-state.json`。没有就按下方「追踪模型迁移」重建，否则写下一章会被拦。
 5. 拆文成果或细纲不满足当前格式时，按检查提示定点补齐，不因单项缺口整本重拆。
 
-## 本次更新必须重跑 story-setup（v0.9.0，助手版本 36）
+## 本次更新必须重跑 story-setup（v0.9.1，助手版本 37）
+
+- 更新技能包后重跑 story-setup，并新开会话，让新版助手与 hook 生效。
+- ZCode 用户须先更新并启用 `oh-story` 插件，再从**更新后的插件副本**运行 story-setup，覆盖项目 `.zcode/skills` 快照；不要用项目里的旧 story-setup 重部署。独立安装的 Skills 不会注册插件角色。
+- ZCode 若仍命中项目旧快照，先把受管目录 `.zcode/skills/story-setup` 移出 `.zcode/skills` 留作备份，再从新版插件运行 story-setup；部署完成后该目录由新版重新生成。不必删除其他项目 Skills。
+- Windows 用户重跑后会刷新项目 hook，避免继续使用旧版入口。
+
+## v0.9.0 升级说明（助手版本 36）
 
 - 写手、架构师、角色设计、一致性检查、查资料、资料研究这些助手的模板都改了。参考资料包里的排纲、开篇、人物、题材和情绪方法按使用环节重新整理，删掉了重复和过时的几份；写手读的技法与去 AI 味方法对齐。不重跑的话，项目里的旧助手会去找已经删掉的资料。
 - 项目指令（`CLAUDE.md`、`AGENTS.md`）改成每个编程工具一个管理块，从 `<!-- oh-story:{工具} 开始` 到 `<!-- oh-story:{工具} 结束 -->`。第一次重跑会把旧版 oh-story 写进去的段落换成管理块，你自己写的段落留在块外；以后重跑只替换块里的内容。几个工具共用 `AGENTS.md` 时各占一块，互不覆盖。

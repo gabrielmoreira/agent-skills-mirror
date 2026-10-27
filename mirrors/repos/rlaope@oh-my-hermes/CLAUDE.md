@@ -100,6 +100,8 @@ changed source.
 | Same producer | marked ULW region of `site/index.html` | `uv run python -m omh.cli docs ulw-site` | `docs ulw-site --check`; i18n parity in `tests/test_ulw_inventory.py` |
 | `SHIPPED_MODEL_RECOMMENDATIONS` in `src/coding/model_recommendations.py` via `src/catalogs/model_chain_table.py` | marked chain-table region of `docs/INSTALLATION.md` (the public chain table; the READMEs link to it) | `uv run python -m omh.cli docs chain-table` | `docs chain-table --check`; round-trip equality in `tests/test_model_chain_table.py` |
 
+- Never hand-edit `agent-skills/**`; regenerate the portable target without
+  changing the Hermes projection.
 - A skill's read path is `skill_record(name)`; new per-skill metadata is a
   field on the record, not a new module.
 - A model that joins or leaves a shipped chain needs `docs chain-table`
@@ -241,9 +243,12 @@ language are in `AGENTS.md`. Two rules live here:
   under `build/`. Edits to existing files resolve live; a module ADDED after
   the build has no link and does not exist for the install (a new top-level
   directory under `src/` can still resolve through `__path__`). It never heals
-  on ordinary `uv run` / `uv sync`, so resync after the branch's last new file
-  exists, not before. Bisecting across the commit that adds a module then
-  shows green-then-red, the exact shape of a real regression. CI cannot reach
+  on ordinary `uv run` / `uv sync`; only
+  `uv sync --reinstall-package oh-my-hermes` or a change that invalidates uv's
+  build cache, such as a new `pyproject.toml` mtime, rebuilds it. So resync
+  after the branch's last new file exists, not before. Bisecting across the
+  commit that adds a module then shows green-then-red, the exact shape of a
+  real regression. CI cannot reach
   this state (its test jobs `pip install -e .` on a fresh checkout), so it
   cannot warn you. A `-P` spawn or the `omh` console script reads the
   installed generation while in-checkout `uv run … docs --check` reads your
@@ -288,6 +293,6 @@ language are in `AGENTS.md`. Two rules live here:
 
 - State assumptions before editing; if the contract is unclear, ask.
 - Minimum code that solves the goal; touch only what it requires and match
-  the surrounding style.
+  the surrounding style. No speculative options, flags, or hooks.
 - Define the verifying command before coding, loop until it passes, then run
   the gates and the full suite as the final proof.

@@ -65,6 +65,7 @@ short videos.
 | Standard Compute | ● | | | | outside mainland China | [standardcompute.com](https://standardcompute.com/dashboard/api-keys) |
 | API Route | ● | | | | outside mainland China | [api-route.com](https://www.api-route.com/api-keys) |
 | Cheaper Inference | ● | | | | outside mainland China | [cheaperinference.com](https://cheaperinference.com/signup) |
+| Opper | ● | | | | outside mainland China | [platform.opper.ai](https://platform.opper.ai) |
 | Ollama / LM Studio / vLLM (on your machine) | ● | | | | both | no key |
 
 Only Bailian has a dot under *Clips* because nanoMuse's clip generation speaks
@@ -101,6 +102,7 @@ or paste it into a chat.**
 - **Standard Compute.** A key from [standardcompute.com/dashboard/api-keys](https://standardcompute.com/dashboard/api-keys); a fixed monthly plan from $19 with a monthly compute budget, and once it is used, requests stop with 402 (no overage charges). Base URL `https://api.stdcmpt.com/v1`. The default model, `standardcompute`, is a router that picks a model for each request from the ones enabled on the account's Models page; any id from `https://api.stdcmpt.com/v1/models` can be set instead. Chat only: the router's entry in that list declares no picture input, so the hands are not claimed.
 - **Cheaper Inference.** A key from [cheaperinference.com/signup](https://cheaperinference.com/signup); one key reaches models from several labs. Base URL `https://api.cheaperinference.com/v1`. The default model is `gpt-5.4-mini`; any id from `https://api.cheaperinference.com/v1/models` can be set instead. Chat only here, on the OpenAI shape.
 - **API Route.** Sign in and open [API keys](https://www.api-route.com/api-keys), then add balance. Base URL `https://global.api-route.com/v1`; the default model is `gpt-6.1-sol`, verified in `/v1/models` and with a chat request. Other model ids must come from the list available to your key. Usage is deducted from your prepaid API Route balance at the selected model's [current rates](https://www.api-route.com/pricing), separately from nanoMuse Cloud. Chat only here; picture input, image generation and video have not been verified. See the [provider documentation](https://www.api-route.com/docs/overview).
+- **Opper.** A key from *API Keys* at [platform.opper.ai](https://platform.opper.ai); one key reaches 700+ models from 50+ providers at the providers' rates, with no markup, and the gateway is hosted in the EU. Base URL `https://api.opper.ai/v3/compat`. The default model is `claude-sonnet-4-6`; any id from `https://api.opper.ai/v3/compat/models` can be set instead, and a `provider/model` id such as `anthropic/claude-sonnet-4-6` pins one route. Chat only here, on the OpenAI shape.
 
 **Paste it into nanoMuse.**
 

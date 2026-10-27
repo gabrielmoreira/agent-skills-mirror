@@ -1,49 +1,26 @@
 # Worktrees
 
-`worktrees` is a bundled Orchestrator skill that manages Git worktrees as safe,
-isolated coding lanes under `.slim/worktrees/<slug>/`. It lets agents work on
-parallel, complex, or high-risk tasks in separate checkouts without polluting
-your current workspace.
-
-The skill does not exist to explain Git worktrees. It gives OMO an opinionated
-safety protocol for planning lanes, assigning agents, validating diffs,
-integrating changes, and cleaning up without losing user work.
+`worktrees` is a bundled Orchestrator skill that manages Git worktrees as
+isolated coding lanes under `.slim/worktrees/<slug>/`, so agents can work on
+parallel, complex, or high-risk tasks without polluting your checkout. It is
+not a Git tutorial: it is the safety protocol for planning lanes, assigning
+agents, validating diffs, integrating, and cleaning up without losing work.
 
 ---
 
-## What It Does
-
-When managing worktree coding lanes, the Orchestrator:
-
-1. **Checks workspace state:** confirms the repo, branch, dirty state, and
-   existing `git worktree list` output.
-2. **Registers metadata:** maintains `.slim/worktrees.json` to track active
-   lanes, branches, base refs, purposes, owners, areas, and statuses.
-3. **Applies confirmation gates:** asks before creating/removing worktrees,
-   creating/deleting branches, merging, rebasing, cherry-picking, pruning, or
-   running destructive commands.
-4. **Validates and integrates:** runs relevant checks inside the lane, presents a
-   diff against the base branch, and asks before integrating.
-5. **Gates cleanup:** refuses to remove dirty worktrees or delete unmerged
-   branches without explicit approval.
-
----
-
-## How To Use It
-
-Ask the Orchestrator directly to isolate a complex or parallel task:
+## Usage
 
 ```text
 Create a worktree lane to refactor the auth logic.
 ```
 
-Or for risky operations:
-
 ```text
 Let's use an isolated worktree to test upgrading the database packages.
 ```
 
-The Orchestrator will analyze the work, present a lane plan (with slug, path, base branch, and purpose), and ask for your permission before initializing the worktree.
+The Orchestrator checks workspace state, proposes a lane plan (slug, path, base
+branch, purpose), and asks before creating the worktree, branch, or any
+mutating Git command.
 
 ---
 
@@ -51,15 +28,14 @@ The Orchestrator will analyze the work, present a lane plan (with slug, path, ba
 
 ### `.slim/worktrees/<slug>/`
 
-Local Git worktrees are placed here, separated from your main checkout while
-sharing the same underlying Git database. Specialists such as `@fixer` or
-`@designer` are directed to write and run tests strictly within this path.
-
-For example, `.slim/worktrees/refactor-auth/` contains a copy of the repository files on the `omo/refactor-auth` branch.
+Local worktrees sharing the repository's Git database. Specialists such as
+`@fixer` or `@designer` write and run tests strictly inside the lane; for
+example, `.slim/worktrees/refactor-auth/` holds the files for the
+`omos/refactor-auth` branch.
 
 ### `.slim/worktrees.json`
 
-A local metadata registry mapping active worktree lanes.
+Local lane registry (git-ignored), e.g.:
 
 ```json
 {
@@ -68,7 +44,7 @@ A local metadata registry mapping active worktree lanes.
   "lanes": [
     {
       "slug": "refactor-auth",
-      "branch": "omo/refactor-auth",
+      "branch": "omos/refactor-auth",
       "path": ".slim/worktrees/refactor-auth",
       "base": "main",
       "purpose": "Refactor token parsing module",
@@ -83,53 +59,27 @@ A local metadata registry mapping active worktree lanes.
 
 ---
 
-## Safety Guidelines
+## Safety
 
-- **Orchestrator control:** The orchestrator owns worktree coordination.
-  Specialists can work inside lanes but should not run lane-management Git
-  commands unless explicitly instructed.
-- **Strict Confirmations:** No git mutating commands (e.g. `worktree add`, `worktree remove`, `branch`, `merge`, `rebase`, `cherry-pick`, `prune`) are run without manual prompt agreement.
-- **No force operations:** Destructive git operations such as `reset --hard`,
-  `clean`, force-push, or branch deletion must not be executed automatically.
-- **Git exclusions:** `.slim/worktrees/` is git-ignored. `.ignore` is updated so
-  OpenCode can still read lane contents. `.slim/worktrees.json` is git-ignored
-  by default because it is local workflow metadata.
-
-Managed `.gitignore` block:
-
-```gitignore
-# BEGIN oh-my-opencode-slim worktrees
-.slim/worktrees/
-.slim/worktrees.json
-# END oh-my-opencode-slim worktrees
-```
-
-Managed `.ignore` block:
-
-```ignore
-# BEGIN oh-my-opencode-slim worktrees
-!.slim/
-!.slim/worktrees.json
-!.slim/worktrees/
-!.slim/worktrees/**
-# END oh-my-opencode-slim worktrees
-```
-
----
+- The Orchestrator owns lane coordination; specialists do not run
+  lane-management Git commands unless instructed.
+- No mutating Git command (`worktree add|remove`, `branch`, `merge`, `rebase`,
+  `cherry-pick`, `prune`) runs without confirmation, and destructive operations
+  (`reset --hard`, `clean`, force-push, branch deletion) are never automatic.
+- Cleanup refuses dirty worktrees and unmerged branches without explicit
+  approval.
+- `.slim/worktrees/` and `.slim/worktrees.json` are git-ignored; managed
+  `.ignore` entries keep them readable by OpenCode, and the skill only edits its
+  own marker blocks.
 
 ## When To Use It
 
-- **Risky implementation tasks:** major package upgrades, core architectural
-  migrations, or database schema changes.
-- **Parallel task coordination:** separate lanes for independent background
-  agents or an urgent hotfix while another feature is unfinished.
-- **Complex agent delegation:** another agent can implement in a clean checkout
-  while the main workspace remains untouched.
+Risky implementations (package upgrades, architectural migrations, schema
+changes), parallel lanes for independent agents, or a hotfix while another
+feature is unfinished.
 
 ## When NOT To Use It
 
-- **Trivial modifications:** single-file tweaks, documentation updates, or tiny
-  fixes.
-- **Non-Git repositories:** projects that do not use Git.
-- **Disk/resource constraints:** large projects in environments with very limited
-  disk space.
+- Trivial modifications: single-file tweaks, documentation updates, tiny fixes.
+- Non-Git repositories.
+- Environments with very limited disk space.

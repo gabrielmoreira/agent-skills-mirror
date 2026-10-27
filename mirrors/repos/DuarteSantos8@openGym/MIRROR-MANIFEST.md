@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `DuarteSantos8/openGym` — 26 default patterns, 0 followed patterns, 14 file(s) materialized.
+Mirror of `DuarteSantos8/openGym` — 26 default patterns, 1 followed patterns, 23 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `DuarteSantos8/openGym` — 26 default patterns, 0 followed patterns, 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 14 |
+| Followed pats | 1 |
+| Files         | 23 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,7 @@ Mirror of `DuarteSantos8/openGym` — 26 default patterns, 0 followed patterns, 
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `docs/ARCHITECTURE.md`
 
 ## File Index
 
@@ -60,19 +60,28 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 2 | ✓ | [`mcp/package-lock.json`](mcp/package-lock.json) |
-| 3 | ✓ | [`mcp/package.json`](mcp/package.json) |
-| 4 | ✓ | [`mcp/README.md`](mcp/README.md) |
-| 5 | ✓ | [`mcp/scripts/check-node-loadable.mjs`](mcp/scripts/check-node-loadable.mjs) |
-| 6 | ✓ | [`mcp/src/index.js`](mcp/src/index.js) |
-| 7 | ✓ | [`mcp/src/labels.js`](mcp/src/labels.js) |
-| 8 | ✓ | [`mcp/src/state.js`](mcp/src/state.js) |
-| 9 | ✓ | [`mcp/src/tools.js`](mcp/src/tools.js) |
-| 10 | ✓ | [`mcp/test/labels.test.js`](mcp/test/labels.test.js) |
-| 11 | ✓ | [`mcp/test/state.test.js`](mcp/test/state.test.js) |
-| 12 | ✓ | [`mcp/test/tools.test.js`](mcp/test/tools.test.js) |
-| 13 | ✓ | [`mcp/vitest.config.js`](mcp/vitest.config.js) |
-| 14 | ✓ | [`website/llms.txt`](website/llms.txt) |
+| 2 | ✓ | [`docs/APP_STORES.md`](docs/APP_STORES.md) |
+| 3 | ✓ | [`docs/MOBILE.md`](docs/MOBILE.md) |
+| 4 | ✓ | [`docs/SELF_HOSTING.md`](docs/SELF_HOSTING.md) |
+| 5 | ✓ | [`mcp/package-lock.json`](mcp/package-lock.json) |
+| 6 | ✓ | [`mcp/package.json`](mcp/package.json) |
+| 7 | ✓ | [`mcp/README.md`](mcp/README.md) |
+| 8 | ✓ | [`mcp/scripts/check-node-loadable.mjs`](mcp/scripts/check-node-loadable.mjs) |
+| 9 | ✓ | [`mcp/scripts/pair.mjs`](mcp/scripts/pair.mjs) |
+| 10 | ✓ | [`mcp/src/api-client.js`](mcp/src/api-client.js) |
+| 11 | ✓ | [`mcp/src/index.js`](mcp/src/index.js) |
+| 12 | ✓ | [`mcp/src/labels.js`](mcp/src/labels.js) |
+| 13 | ✓ | [`mcp/src/state.js`](mcp/src/state.js) |
+| 14 | ✓ | [`mcp/src/tools.js`](mcp/src/tools.js) |
+| 15 | ✓ | [`mcp/src/write-tools.js`](mcp/src/write-tools.js) |
+| 16 | ✓ | [`mcp/test/labels.test.js`](mcp/test/labels.test.js) |
+| 17 | ✓ | [`mcp/test/log-workout.e2e.test.js`](mcp/test/log-workout.e2e.test.js) |
+| 18 | ✓ | [`mcp/test/state.test.js`](mcp/test/state.test.js) |
+| 19 | ✓ | [`mcp/test/tools.test.js`](mcp/test/tools.test.js) |
+| 20 | ✓ | [`mcp/test/write-tools.test.js`](mcp/test/write-tools.test.js) |
+| 21 | ✓ | [`mcp/vitest.config.js`](mcp/vitest.config.js) |
+| 22 | ✓ | [`website/llms.txt`](website/llms.txt) |
+| 23 | → | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) |
 
 ---
 

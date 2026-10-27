@@ -254,8 +254,8 @@
       "compose",
       "page",
       "screen",
-      "view",
-      "form"
+      "-view",
+      "-form"
     ],
     "common/api-design": [
       "api",
@@ -281,8 +281,7 @@
     ],
     "common/mobile-ux-core": [
       "screen",
-      "page",
-      "view",
+      "-view",
       "activity",
       "fragment"
     ],
@@ -490,13 +489,13 @@
       ]
     },
     "common": {
-      "version": "2.9.1",
-      "last_updated": "2026-10-22",
+      "version": "2.9.2",
+      "last_updated": "2026-10-26",
       "tag_prefix": "common-v",
       "token_metrics": {
-        "total_skills": 44,
-        "total_tokens": 38650,
-        "avg_tokens_per_skill": 878,
+        "total_skills": 45,
+        "total_tokens": 40994,
+        "avg_tokens_per_skill": 911,
         "largest_skill": "common-skill-creator (1693 tokens)"
       },
       "owners": [
@@ -504,14 +503,14 @@
       ]
     },
     "quality-engineering": {
-      "version": "1.6.1",
-      "last_updated": "2026-10-14",
+      "version": "1.6.2",
+      "last_updated": "2026-10-23",
       "tag_prefix": "quality-engineering-v",
       "token_metrics": {
         "total_skills": 14,
-        "total_tokens": 12010,
-        "avg_tokens_per_skill": 858,
-        "largest_skill": "quality-engineering-zephyr-test-generation (1278 tokens)"
+        "total_tokens": 12184,
+        "avg_tokens_per_skill": 870,
+        "largest_skill": "quality-engineering-business-analysis (1450 tokens)"
       },
       "owners": [
         "HoangNguyen0403"
@@ -828,17 +827,17 @@
       ]
     },
     "cybersecurity": {
-      "version": "1.0.0",
-      "last_updated": "2026-09-22",
+      "version": "1.0.1",
+      "last_updated": "2026-10-26",
       "tag_prefix": "cybersecurity-v",
       "owners": [
         "HoangNguyen0403"
       ],
       "token_metrics": {
-        "total_skills": 11,
-        "total_tokens": 6760,
-        "avg_tokens_per_skill": 615,
-        "largest_skill": "cyber-scoped-validation (732 tokens)"
+        "total_skills": 13,
+        "total_tokens": 11113,
+        "avg_tokens_per_skill": 855,
+        "largest_skill": "cyber-rea-reverse-engineering (1390 tokens)"
       }
     },
     "database": {
@@ -856,17 +855,17 @@
       ]
     },
     "product-management": {
-      "version": "1.0.1",
-      "last_updated": "2026-10-15",
+      "version": "1.0.2",
+      "last_updated": "2026-10-23",
       "tag_prefix": "product-management-v",
       "owners": [
         "HoangNguyen0403"
       ],
       "token_metrics": {
         "total_skills": 10,
-        "total_tokens": 13868,
-        "avg_tokens_per_skill": 1387,
-        "largest_skill": "product-metrics (1717 tokens)"
+        "total_tokens": 14029,
+        "avg_tokens_per_skill": 1403,
+        "largest_skill": "product-metrics (1771 tokens)"
       }
     }
   },

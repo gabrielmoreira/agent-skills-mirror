@@ -158,7 +158,7 @@ account and worn on every device)), the name, *online* / *Not signed in* / *Offl
 what the agent is doing right now, a share button (a card with the face and the name, as
 a picture to save or copy), and a segmented control of four tabs: **Activity** (the
 sessions and the hub's notices, *Today* and *Earlier*), **Approvals** (the per-app
-*Always allow* grants with **Revoke**, *Manage permissions* → Settings → Computer use,
+*Always allow* grants with **Revoke**, each saying when it holds in one chat or one task only, *Manage permissions* → Settings → Computer use,
 then what you allowed or rejected on the approval cards, with when; kept on this
 computer), **Daily** (the routines; *Manage routines* opens the harness's schedules
 panel), **Soul & memory** (what the agent remembers about you, one line each): a
@@ -223,14 +223,25 @@ and it cannot be looked back at.) The harness's approval card is restyled
 into the permission card (a shield, the headline, the detail, *Allow once* in blue
 first and *Reject* in grey), and every answer is written to the agent page's
 *Approvals* tab; the Sentinel's reasons ([sentinel.md](sentinel.md)) are in the
-headline. The same question, *Allow once*, *Always in <app>* (for the hands' tools; the
-app is the window title's first part), *Deny* (the host's `ApprovalDesk` sits first in
+headline. For a step of the hands, a strip above the card adds *Always in this chat* and
+*Always in <app>* (the harness's card has no room for them; the app is the window title's
+first part). The same question, *Allow once*, *Always in this chat*, *Always in <app>*,
+*Deny* (the host's `ApprovalDesk` sits first in
 the `approval/request` waterfall and answers for the card), is on the **capsule**, the
 small always-on-top pill the shell shows when the nanoMuse window is not in front, so
 you can answer from wherever you are.
 *Always in <app>* writes a `computer_app:<app>` grant: the hands' tools in that app are
 allowed without asking until you revoke the grant, on the agent page or under Settings →
-Computer use → *Always allowed*. Settings → **Computer use** shows the two macOS
+Computer use → *Always allowed*. *Always in this chat* writes the same grant with the
+chat's session id and title: it holds in that chat only, which is what a scheduled task
+needs (its runs land in the same chat), and its row in the lists says *Only in the chat “…”*.
+While a scheduled task runs (its reminder opened the turn), the strip and the capsule offer
+*Always in this task* in place of *Always in this chat*: the grant also keeps the task's id
+and title and holds only in the turns that task starts, until someone writes in that turn;
+a turn that runs two tasks at once needs a grant for each. Its row in the lists says
+*Only in the scheduled task “…”*, and says so once the task is deleted.
+The grant names the app, not the person or the words: in that chat, the hands may send
+anything to anyone in that app. Settings → **Computer use** shows the two macOS
 permissions with *Allow* and *Open System Settings* (through the desktop shell; the
 first time the hands are about to start, the shell asks for them in order with a word on
 why, the phone's and Codex's way: Accessibility, then Screen Recording for nanoMuse
@@ -315,7 +326,8 @@ shows the same in the trajectory card), and goes 220 ms after the run ends. When
 hands are about to click or drag under it, it moves to the bottom of the work area first
 (and back up next time), the way the phone's capsule dodges the finger. A hold turns it
 amber with **Your turn · <reason> · Done**; a question the agent asked before a step
-hangs under it as a card with *Allow once*, *Always in <app>*, *Deny*. The shell feeds it
+hangs under it as a card with *Allow once*, *Always in this chat* (*Always in this task*
+in a scheduled task's run) and *Always in <app>* (for a step of the hands), *Deny*. The shell feeds it
 over IPC from the main window (`nanomuse:overlay`, `{hands: {active, held, step, title,
 text, face, stop, take, x, y, kind}, cards}`) and its answers come back the same way.
 

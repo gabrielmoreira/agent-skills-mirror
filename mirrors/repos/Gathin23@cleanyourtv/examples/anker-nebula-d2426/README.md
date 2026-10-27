@@ -27,8 +27,9 @@ A backup of the state before any change (package lists, getprop, all settings, H
 ## Undo everything
 
 ```bash
-examples/anker-nebula-d2426/restore.sh                     # re-enable all 17, stock Home back, screensaver back
-examples/anker-nebula-d2426/restore.sh --remove-launcher   # same, and uninstall the new launcher
+tools/restore.sh examples/anker-nebula-d2426/debloat.txt com.google.android.tvlauncher   # re-enable all 17, stock Home back
+tools/venv/bin/python -I tools/tv.py 'settings put secure screensaver_components com.google.android.backdrop/.Backdrop'   # Ambient back
+tools/venv/bin/python -I tools/tv.py 'pm uninstall com.gathin.tvhome'   # only to remove the new launcher too
 ```
 
 ## Re-enable one app
@@ -80,11 +81,16 @@ Delete `wallpaper.jpg` and push again for the plain black background. `themes/` 
 ## Rebuild and reinstall the launcher
 
 ```bash
-examples/anker-nebula-d2426/build-and-install.sh
+STOCK_LAUNCHER=none launcher/build-and-install.sh
+tools/disable.sh examples/anker-nebula-d2426/debloat.txt
+tools/venv/bin/python -I tools/tv.py 'cmd package set-home-activity --user 0 com.gathin.tvhome/.MainActivity'
+tools/theme.sh examples/anker-nebula-d2426
 ```
 
-It builds the APK, installs it, applies `debloat.txt` (which disables the stock home only once the new one can
-take over), makes the new launcher Home and pushes `config.json`.
+The first line builds and installs the launcher and leaves the stock home alone. If it fails, stop there: the
+list disables the stock home, which is only safe once the new one is installed. The list then disables the 17
+packages, the third line makes the new launcher Home and the last one pushes `config.json`. Press Home on the
+remote: if it does not land on the new launcher, undo as above.
 
 ## Notes from this projector
 

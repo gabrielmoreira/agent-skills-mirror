@@ -25,6 +25,9 @@ It sends a binary trace config, which Android 9 accepts without the `--txt` opti
 TV_HOST=<tv ip> tools/venv/bin/python -I tools/trace.py home --runs 5 --out traces/before
 ```
 
+`--out` is the folder the traces are written into, and it is created if it is not there. A file where the
+folder goes, a path through a file and an empty `--out` are refused before the TV is asked anything.
+
 | Scenario | Recorded | Use for |
 |---|---|---|
 | `home` | HOME pressed while another app is in front | Most Home changes |

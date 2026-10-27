@@ -4,6 +4,40 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.311](https://github.com/Piebald-AI/claude-code-system-prompts/commit/62d66b7)
+
+_+4,096 tokens_
+
+- **NEW:** Data: SDK result process model-request turn count field — Documents the per-session count of earlier process turns that sent main-conversation model requests, including its error-result behavior.
+- **NEW:** Data: SDK result process streaming CPU time field — Documents process CPU time used while main-response streams are open, including concurrent work and measurement limits.
+- **NEW:** Data: SDK result main stream chunk count field — Describes how streamed response-body chunks are counted and when the count is unavailable.
+- **NEW:** Data: SDK result runtime tuning environment bitmask field — Documents a startup-time bitmask of runtime tuning variables set, without exposing their values.
+- **NEW:** Data: SDK result startup garbage collection counts field — Describes opt-in startup garbage-collection measurements on eligible hosted cloud workers.
+- **NEW:** Data: SDK turn handoff required rewind request ID field — Documents conditional handoff after a specific rewind, compatibility requirements, rejection cases, and retry precautions.
+- **NEW:** Data: SDK UI attach client request capabilities field — Describes how clients opt into plugin UI requests and replace or withdraw advertised capabilities.
+- **NEW:** Data: SDK UI prompt paint request schema — Documents plugin composer overlays, client opt-in, timeout behavior, and remote-session authorization restrictions.
+- **NEW:** System Reminder: Conversation activity awareness and authority warning — Treats conversation activity as awareness, not a fresh user instruction or approval, including when an edited message claims consent.
+- **NEW:** System Reminder: MCP server connection retry guidance — Identifies failed server connections and explains that searching for a server by name retries connection, subject to a cooldown.
+- **REMOVED:** Tool Description: Bash (working directory) — Removes the standalone note that the working directory persists between commands while shell state does not.
+- Tool Description: Project local_file read-only workflow — Adds long-line search and byte-range reading workarounds for oversized project files that cannot be paged normally.
+- Data: Claude API reference — PHP — Updates credential initialization examples and adds Bedrock SDK-version guidance for models older than Claude 4.7.
+- Data: Claude Platform on AWS reference — Updates the Go SDK installation and import paths to the v2 module.
+- Data: Files API reference — Java — Uses the beta file metadata type and revises the explanation of beta message types.
+- Data: OpenTelemetry tracing reference — Python — Updates the example Anthropic API version to `2026-10-21`.
+- Data: SDK API error kind field — Documents unattended cloud-session start limits and unconfirmed checks, including their different replay and retry implications.
+- Data: SDK message_stop abandoned_blocks field — Extends abandoned-block guidance to responses stopped because the turn was interrupted.
+- Data: Streaming reference and Tool use reference — C# — Updates message examples to use explicit user and assistant message parameter types.
+- Data: Streaming reference — PHP — Removes the pinned SDK version from the Composer upgrade command.
+- Data: Turn handoff available event schema — Adds capability advertisement for handoffs that depend on a rewind request.
+- System Reminder: Message attachment files missing — Adds a conditional notice when an attachment could not be saved because the device has no space.
+- System Prompt: Windows sandbox localhost workarounds (local binding off) — Clarifies administrator-controlled managed settings and limits the project-settings caveat to the other settings path.
+- Tool Description: Artifact publishing and update guidance — Revises hash-routing and link behavior, adds hash-change handling, and warns against putting private values in URLs.
+- Tool Description: Artifact type discovery guidance — Removes “page” from examples of editable text documents in the type-discovery guidance.
+- Tool Description: Background monitor (streaming events) — Removes the diskless-session-specific stderr notice and describes stderr as going to the readable output file.
+- Tool Description: Code review command — Specifies that the effort level must precede any review target and tightens the command wording.
+- Tool Description: Publish audience-facing deliverables (app wording) — Distinguishes editable text documents from visual or interactive artifacts when choosing a publishing destination.
+- Tool Description: Skill proposal rendering — Allows updates to the user's own uploaded skills even when listed as plugin skills, while retaining restrictions on other plugins.
+
 # [2.1.310](https://github.com/Piebald-AI/claude-code-system-prompts/commit/06a56c0)
 
 _+3,227 tokens_

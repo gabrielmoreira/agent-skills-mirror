@@ -2,37 +2,13 @@
 
 ![Clonedeps dependency source workspace](../img/clonedeps.jpg)
 
-`clonedeps` is a bundled Orchestrator skill for cloning a small set of important
-dependency source repositories into a local, ignored workspace so agents can
-inspect library internals while working on your project.
-
-It is useful when docs are not enough and the agent needs to understand how a
-runtime, SDK, framework, plugin API, or other core dependency actually behaves.
+`clonedeps` is a bundled Orchestrator skill that clones a small set of
+important dependency source repositories into an ignored local workspace, so
+agents can inspect library internals when docs are not enough.
 
 ---
 
-## What It Does
-
-When you ask for cloned dependency source, the Orchestrator:
-
-1. Checks `.slim/clonedeps.json` first and reuses existing clones when possible.
-2. Asks `@explorer` for source-repo recommendations only if more context is
-   needed.
-3. Presents a small clone plan for approval.
-4. Clones each approved source repository once into
-   `.slim/clonedeps/repos/<safe-repo-name>/`.
-5. Writes `.slim/clonedeps.json` as trackable project metadata.
-6. Updates ignore files so git ignores clone contents while OpenCode can read
-   them.
-7. Updates root `AGENTS.md` with a concise list of cloned repos and why each one
-   exists.
-
-There is intentionally no helper script. The workflow uses agent judgment for
-source selection and normal git/filesystem operations for cloning.
-
----
-
-## How To Use It
+## Usage
 
 Ask the Orchestrator directly:
 
@@ -40,14 +16,16 @@ Ask the Orchestrator directly:
 Use clonedeps to clone the key dependency source repos for this project.
 ```
 
-Or for a specific dependency/debugging task:
+For a specific dependency:
 
 ```text
 Use clonedeps for the OpenCode SDK so you can inspect its plugin API internals.
 ```
 
-The Orchestrator should show you what it wants to clone before running network
-git operations, unless you explicitly ask it to clone immediately.
+It reuses `.slim/clonedeps.json` when present, proposes a small clone plan for
+approval, clones each repository once, then updates the manifest, ignore files,
+and a short `## Cloned Dependency Source` section in the root `AGENTS.md`.
+There is no helper script: selection is agent judgment, cloning is plain git.
 
 ---
 
@@ -55,27 +33,21 @@ git operations, unless you explicitly ask it to clone immediately.
 
 ### `.slim/clonedeps/repos/`
 
-Ignored local clones live here, one folder per source repository:
+Ignored, read-only clones, one folder per source repository:
 
 ```text
-.slim/clonedeps/repos/<safe-repo-name>/
+.slim/clonedeps/repos/<owner>__<repo>/
 ```
 
-The safe folder name is based on the repository owner/name, not the package
-name, and may include a pinned-release suffix when multiple revisions need to
-coexist. For example, the TypeScript OpenCode repository
-`https://github.com/anomalyco/opencode.git` becomes
-`.slim/clonedeps/repos/anomalyco__opencode-v1.18.13/` when pinned to that
-release.
-
-If multiple packages come from the same monorepo, they share one cloned repo path
-and use different `packagePath` values in the manifest.
-
-These repositories are read-only reference source. Do not edit them.
+The safe name comes from the repository owner/name, not the package name:
+`https://github.com/anomalyco/opencode.git` →
+`.slim/clonedeps/repos/anomalyco__opencode/`. Do not add version or package
+suffixes; every manifest entry from one repository shares that path with a
+different `packagePath`. Do not edit these clones.
 
 ### `.slim/clonedeps.json`
 
-This is the structured manifest. It is intentionally small and committable:
+A small, committable manifest, read first on later runs:
 
 ```json
 {
@@ -87,7 +59,7 @@ This is the structured manifest. It is intentionally small and committable:
       "resolvedVersion": "1.18.13",
       "repoUrl": "https://github.com/anomalyco/opencode.git",
       "ref": "v1.18.13@a105350812f05f914c768e468559dbd6bd508d8e",
-      "path": ".slim/clonedeps/repos/anomalyco__opencode-v1.18.13",
+      "path": ".slim/clonedeps/repos/anomalyco__opencode",
       "packagePath": "packages/plugin",
       "reason": "Plugin API source used by the project"
     },
@@ -96,7 +68,7 @@ This is the structured manifest. It is intentionally small and committable:
       "resolvedVersion": "1.18.13",
       "repoUrl": "https://github.com/anomalyco/opencode.git",
       "ref": "v1.18.13@a105350812f05f914c768e468559dbd6bd508d8e",
-      "path": ".slim/clonedeps/repos/anomalyco__opencode-v1.18.13",
+      "path": ".slim/clonedeps/repos/anomalyco__opencode",
       "packagePath": "packages/sdk/js",
       "reason": "Core SDK source used to inspect runtime behavior"
     }
@@ -104,51 +76,25 @@ This is the structured manifest. It is intentionally small and committable:
 }
 ```
 
-Future clonedeps runs read this file first instead of starting from a fresh scan.
-
 ### `AGENTS.md`
 
-The skill also keeps a short `## Cloned Dependency Source` section in the repo
-root `AGENTS.md`, listing the cloned repo paths directly so future agents do not
-need to read the manifest just to know what exists.
-
-Example:
-
-```markdown
-## Cloned Dependency Source
-
-Read-only dependency source repositories are available under
-`.slim/clonedeps/repos/` for inspection. Do not edit these clones.
-
-- `.slim/clonedeps/repos/anomalyco__opencode-v1.18.13/` -
-  `anomalyco/opencode` at
-  `v1.18.13@a105350812f05f914c768e468559dbd6bd508d8e`; inspect `packages/plugin` and
-  `packages/sdk/js` for OpenCode plugin and SDK internals.
-```
+A short `## Cloned Dependency Source` section lists the clone paths and what
+each is for, so agents do not need the manifest to know what exists.
 
 ---
 
 ## Safety Defaults
 
-- Prefer **0-3 strong recommendations** over a dependency dump.
-- Clone at most **3-5 core dependencies** by default.
-- Use HTTPS repository URLs by default.
-- Prefer pinned tags or commit SHAs.
-- Do not run install, build, test, or lifecycle scripts from cloned repos.
-- Git ignores `.slim/clonedeps/repos/`, but not `.slim/clonedeps.json`.
-- Ignore-file edits are limited to managed clonedeps marker blocks.
-
----
+- Prefer 0-3 strong recommendations; clone at most 3-5 core dependencies.
+- Use HTTPS URLs and prefer pinned tags or commit SHAs.
+- Never run install, build, test, or lifecycle scripts from a clone.
+- Git ignores `.slim/clonedeps/repos/`, not `.slim/clonedeps.json`; ignore-file
+  edits stay inside the managed clonedeps marker blocks.
 
 ## When To Use It
 
-Use clonedeps when source code is likely to answer questions better than docs:
-
-- debugging SDK or framework behavior;
-- implementing against plugin/runtime APIs;
-- checking version-specific internals;
-- understanding generated types, adapters, or protocol code;
-- working with dependencies whose docs are incomplete or stale.
-
-Do not use it for ordinary documentation lookup, tiny utilities, transitive
-dependencies, or packages where public docs are sufficient.
+Use it when source answers better than docs: debugging SDK/framework behavior,
+implementing against plugin/runtime APIs, checking version-specific internals,
+or reading generated types, adapters, and protocol code. Skip it for ordinary
+doc lookup, tiny utilities, transitive dependencies, or well-documented
+packages.

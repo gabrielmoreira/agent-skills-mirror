@@ -37,6 +37,14 @@ Save & exit keeps its configuration; Finish setup on the agent returns to the
 same record. Final submission requests approval when required, then follows the
 existing preparation and verification lifecycle.
 
+Agent-owned plugin environments prepare the saved draft in the background when
+their driver declares `requiresAgent`. The draft waits in `verifying` with its
+setup hold until hiring finishes. Changing environments keeps the selected
+account and Configure step, saves the selection, and invalidates its test.
+Preparation and failed-save retries remain visible without reconnecting.
+Companies requiring hire approval save the account with pending verification;
+resource allocation waits for approval.
+
 ### `agent-configuration`
 
 Open `/agents/:agentId` and the configuration/instruction surfaces it exposes.
@@ -87,6 +95,14 @@ Preconditions: follow the [baseline](./README.md#before-driving-a-journey). Use 
 
 Automated: [new agent page](../../ui/src/pages/NewAgent.test.tsx) and [configuration form](../../ui/src/components/AgentConfigForm.render.test.tsx) cover mocked UI behavior.
 
+For an agent-owned plugin environment, verify preparation before connecting,
+same-agent probes, account preservation after an environment change, failed
+selection-save retry, and switching back while the computer stops. Confirm the
+setup hold still blocks ordinary work and API key creation before finishing.
+The [setup lifecycle tests](../../server/src/modules/agent-lifecycle/__tests__/setup.test.ts)
+exercise durable transitions with synthetic plugin resources; they do not prove
+live VM provisioning.
+
 Manual: Hire an agent with a distinct name and role. Complete any required approval, reload the roster, and open its configuration. Confirm manager, adapter, and model persisted; run a small task to prove execution readiness.
 
 For a new Codex hire, choose the Codex harness. Automatic selection uses Paperclip
@@ -128,6 +144,14 @@ from the hiring picker; API fixture creation does not prove this UI journey.
 
 Automated: [instruction service](../../server/src/__tests__/agent-instructions-service.test.ts) and [instruction revisions](../../server/src/__tests__/agent-instruction-revisions.test.ts) cover file/revision contracts.
 
+The [AI account field regression](../../ui/src/components/ai-connections/AiConnectionField.test.tsx)
+checks duplicate provider names, account identity in choices and adoption confirmation,
+the exact selected grant, and disabled unavailable accounts with authorized metadata fixtures.
+Manually compare a personal API key and shared subscription with the same name in
+Harness / Runtime. Confirm their method, scope and available identity before saving.
+Reload the saved choice and verify the next eligible task uses it; labels alone
+do not establish credential validity or change account access.
+
 Manual: Save a harmless instruction edit, reload, and verify its revision and effect in the next eligible run. Pause and resume the disposable agent; confirm pause prevents new work and does not erase previous runs.
 
 For failed setup, use an unavailable model or invalid command on a disposable agent.
@@ -160,6 +184,16 @@ Navigate to another agent while an upgrade is pending. Its result must stay with
 the original agent, without showing success on the new page or redirecting back.
 Focused coverage: [save receipt](../../ui/src/pages/AgentRunnerUpgrade.test.tsx)
 and [configuration form](../../ui/src/components/AgentConfigForm.render.test.tsx).
+
+For an existing native agent on a Daytona snapshot or immutable sandbox image,
+use **Test** in its saved Harness or Runtime configuration after a managed
+computer update. This action qualifies the saved computer under the existing
+agent configuration permission before testing the runtime. A current proof must
+remain unchanged. A missing proof requires a real successful probe and verified
+cleanup. Failed qualification must stop the runtime test. Unsaved configuration
+or a different computer must not qualify a draft target. A company owner must not
+need instance-admin permission, and the generic environment probe must remain
+restricted. Existing runs retain their recorded allocation and snapshot binding.
 
 Storybook: [Runner upgrade](../../ui/storybook/stories/agents/codex-runner/upgrade.stories.tsx)
 mounts the production page and shell with mutable HTTP fixtures for both harnesses,

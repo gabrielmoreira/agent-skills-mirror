@@ -174,6 +174,24 @@ Limitations:
 - Only on stills, outside a dark outline the flank can give a few faint pixels in the subject's colour.
 - Time and memory go up: keying on an Intel i5-7500 took 1.14 s a frame with `off` and 3.36 s with `auto` at 1080x1920, and peak memory rose from about 400 MB to 1155 MB (about 365 MB more per megapixel of frame, or about 2.3 GB more for `video-set` running three concurrent jobs).
 
+## The measured background: any flat colour, one matte
+
+Owns the rule; the code is `sprite_gen/frames/measured_matte.py`, routed from `cutout.py`.
+
+A model asked for a key background rarely paints the key. It paints a muted yellow-green, a deep green that darkens toward pure green in shadow, an off-cyan, a grey; with noise, a gradient, a darker shade of the background round the subject, and sometimes thin dark strips along the edges. The chroma engine recognises a background as a key only through `is_border_key_candidate` or the hard cut of the pure key. Before this matte such a background was keyed against the pure key and nothing came off, and `cutout` still exited 0; a green background whose corners sat on dark strips was routed to the white matte.
+
+No colour gets a route of its own. The measured matte reads the background off the image:
+
+1. **Ring.** The colour is the mode of a ring just inside where an edge strip may reach (3 % of the short side, at least 2 px), refined to the mean of the ring pixels within 24 of it; its spread is their largest channel deviation. A background that holds under 20 % of the ring is refused.
+2. **Background-like.** Within `max(26, 4 x spread)` on every channel of the colour, or, on a saturated background (chroma 40 and over), its hue in shade: within 30 degrees of its hue, at half its saturation or more, with chroma over `max(20, 0.15 x its chroma)` at any brightness. A model shades a green toward a deeper, purer green, not along the same RGB line, so shade is read in hue. Near-black lineart (chroma 10) is never shade.
+3. **Edge strips.** A run of lines from an edge that are 60 % one colour and not background is a strip; its colour's pixels are keyed, a subject drawn over it keeps its own.
+4. **Keyed.** Background-like pixels connected to the edges, read twice: the second time against the background's own colour nearby, so a gradient is followed. On a saturated background, enclosed pockets of it at least 5 px across (between an arm and the body, between strands of hair) are keyed too. On a pale background they are not: its pockets may be the subject's highlight or skin, the white matte's rule.
+5. **Edge.** Within 2 px of the keyed set each pixel is unmixed between the local background and the nearest solid subject colour: alpha is its projection on that line, its colour the unmixed one (falling back to the subject colour as alpha drops). The subject's pixels farther in are byte-identical.
+
+Routing (`cutout`): a pure or recognised magenta/green background still goes to the chroma engine, a bright achromatic corner to the white matte, and everything else to the measured matte. `--key measured` forces it. A magenta/green request whose background the engine does not recognise (`cutout.key_recognised`) is measured inside `extract_route`, so `video-canvas` repaints such a still to the exact key and `cutout` keys each frame of such a clip on its own; the stats say `route: measured` with `chroma_key_painted` the measured colour. `video-frames` does not measure (`measure_unrecognised=False`): a clip is keyed from one exact key, so it still refuses a clip whose background the engine does not recognise and sends its still to `video-canvas`, which now normalises it. `cutout` now fails when it made nothing transparent (`refuse_empty`; `video-frames` refuses such a frame itself).
+
+Report fields (`route: measured`): `background`, `background_spread`, `background_ring_share`, `shade`, `tolerance`, `edge_strips` (depth per side), `keyed_pixels`, `pocket_pixels`, `edge_pixels`, `band`, and `key_residue_px`: opaque pixels in the edge band still within the tolerance of the local background colour, the visible key left on the cut. `--decontam palette` refuses this route (there is no key colour to remove); `auto` records that the matte unmixed its own edge.
+
 ## Related
 
 - [`../SKILL.md`](../SKILL.md) — 필수 게이트 (크로마 키 소재색 분기 + 변환 후 소재색 보존 검증)

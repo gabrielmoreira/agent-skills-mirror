@@ -141,24 +141,21 @@ def _profile():
     }
 
 
-def test_fmp_stable_and_v3_fallback_send_apikey_query_param(monkeypatch):
-    monkeypatch.setattr(FMPClient, "RATE_LIMIT_DELAY", 0)
+def test_fmp_stable_only_uses_header_auth_and_no_apikey_query_param():
     client = FMPClient(api_key="k", max_api_calls=10)
-    fake_session = _FakeSession([_FakeResponse({}), _FakeResponse([{"symbol": "APP"}])])
+    assert client.session.headers["apikey"] == "k"
+    fake_session = _FakeSession([_FakeResponse([{"symbol": "APP"}])])
     client.session = fake_session
     params = {"symbol": "APP"}
 
-    result = client._stable_then_v3(
-        "https://example.test/stable/company-screener",
-        "https://example.test/api/v3/stock-screener",
-        params,
-    )
+    result = client._client.fetch_screener_rows(params)
 
     assert result == [{"symbol": "APP"}]
     assert params == {"symbol": "APP"}
-    assert len(fake_session.calls) == 2
-    assert fake_session.calls[0]["params"] == {"symbol": "APP", "apikey": "k"}
-    assert fake_session.calls[1]["params"] == {"symbol": "APP", "apikey": "k"}
+    assert len(fake_session.calls) == 1
+    assert fake_session.calls[0]["url"].endswith("/stable/company-screener")
+    assert "/api/v3/" not in fake_session.calls[0]["url"]
+    assert fake_session.calls[0]["params"] == {"symbol": "APP"}
 
 
 def test_good_exhaustion_hammer_scores_actionable():

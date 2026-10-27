@@ -13,6 +13,9 @@ tools/venv/bin/python tools/flamechart.py traces/before traces/after \
     --out chart.png
 ```
 
+`--out` is the PNG to write; a folder, a name with no extension and a folder that is not there are refused
+before the traces are opened, so a typo cannot read as a chart that failed.
+
 | Option | Default | Notes |
 |---|---|---|
 | `TRACE ...` | | Before, then after (up to 4). A folder draws its median run, by the first of time to first frame, median frame time and median RenderThread draw that every run has; the panel names the run and the measure. A folder with none of them in every run is refused. |

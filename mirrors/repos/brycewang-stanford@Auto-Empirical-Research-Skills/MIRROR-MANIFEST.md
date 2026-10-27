@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `brycewang-stanford/Auto-Empirical-Research-Skills` — 26 default patterns, 41 followed patterns, 3893 file(s) materialized.
+Mirror of `brycewang-stanford/Auto-Empirical-Research-Skills` — 26 default patterns, 41 followed patterns, 3923 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `brycewang-stanford/Auto-Empirical-Research-Skills` — 26 default pat
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 41 |
-| Files         | 3893 |
+| Files         | 3923 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -3950,48 +3950,78 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3849 | ✓ | [`skills/73-brycewang-p-hacking-skills/tests/test_search.py`](skills/73-brycewang-p-hacking-skills/tests/test_search.py) |
 | 3850 | ✓ | [`skills/73-brycewang-p-hacking-skills/tests/test_simulate.py`](skills/73-brycewang-p-hacking-skills/tests/test_simulate.py) |
 | 3851 | ✓ | [`skills/73-brycewang-p-hacking-skills/tests/test_theatre.py`](skills/73-brycewang-p-hacking-skills/tests/test_theatre.py) |
-| 3852 | ✓ | [`skills/README.md`](skills/README.md) |
-| 3853 | → | [`aers_score/README.md`](aers_score/README.md) |
-| 3854 | → | [`CHANGELOG.md`](CHANGELOG.md) |
-| 3855 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 3856 | → | [`docs/archive/EMPIRICAL_TOOLS_2026-06.md`](docs/archive/EMPIRICAL_TOOLS_2026-06.md) |
-| 3857 | → | [`docs/CHOOSING_A_SKILL.md`](docs/CHOOSING_A_SKILL.md) |
-| 3858 | → | [`docs/CONTENT_ZH.md`](docs/CONTENT_ZH.md) |
-| 3859 | → | [`docs/demos/de-aigc.md`](docs/demos/de-aigc.md) |
-| 3860 | → | [`docs/ECOSYSTEM.md`](docs/ECOSYSTEM.md) |
-| 3861 | → | [`docs/EVALS.md`](docs/EVALS.md) |
-| 3862 | → | [`docs/EXTERNAL_SCOREBOARD.md`](docs/EXTERNAL_SCOREBOARD.md) |
-| 3863 | → | [`docs/FAQ.md`](docs/FAQ.md) |
-| 3864 | → | [`docs/GETTING_STARTED.md`](docs/GETTING_STARTED.md) |
-| 3865 | → | [`docs/GOLDEN_WORKFLOWS.md`](docs/GOLDEN_WORKFLOWS.md) |
-| 3866 | → | [`docs/INSTALL.md`](docs/INSTALL.md) |
-| 3867 | → | [`docs/INTEROP.md`](docs/INTEROP.md) |
-| 3868 | → | [`docs/LICENSE_AUDIT.md`](docs/LICENSE_AUDIT.md) |
-| 3869 | → | [`docs/LONG_SKILL_STATUS.md`](docs/LONG_SKILL_STATUS.md) |
-| 3870 | → | [`docs/PLAN-2026-07.md`](docs/PLAN-2026-07.md) |
-| 3871 | → | [`docs/QUALITY_GATE.md`](docs/QUALITY_GATE.md) |
-| 3872 | → | [`docs/RELEASE_NOTES.md`](docs/RELEASE_NOTES.md) |
-| 3873 | → | [`docs/RELEASE.md`](docs/RELEASE.md) |
-| 3874 | → | [`docs/RIGOR_COVERAGE.md`](docs/RIGOR_COVERAGE.md) |
-| 3875 | → | [`docs/ROADMAP.md`](docs/ROADMAP.md) |
-| 3876 | → | [`docs/SCOREBOARD_RULES.md`](docs/SCOREBOARD_RULES.md) |
-| 3877 | → | [`docs/SKILL_AUDIT.md`](docs/SKILL_AUDIT.md) |
-| 3878 | → | [`docs/SKILL_CATALOG.md`](docs/SKILL_CATALOG.md) |
-| 3879 | → | [`docs/SKILL_HYGIENE.md`](docs/SKILL_HYGIENE.md) |
-| 3880 | → | [`docs/SKILL_SUBMISSION_GUIDE.md`](docs/SKILL_SUBMISSION_GUIDE.md) |
-| 3881 | → | [`docs/TAXONOMY.md`](docs/TAXONOMY.md) |
-| 3882 | → | [`docs/TRUST.md`](docs/TRUST.md) |
-| 3883 | → | [`docs/WORKFLOW_MAP.md`](docs/WORKFLOW_MAP.md) |
-| 3884 | → | [`INSTALL.md`](INSTALL.md) |
-| 3885 | → | [`README-en.md`](README-en.md) |
-| 3886 | → | [`README-ja.md`](README-ja.md) |
-| 3887 | → | [`README-ko.md`](README-ko.md) |
-| 3888 | → | [`README-zh-CN.md`](README-zh-CN.md) |
-| 3889 | → | [`README-zh-TW.md`](README-zh-TW.md) |
-| 3890 | → | [`README.md`](README.md) |
-| 3891 | → | [`SECURITY-SCAN-REPORT.md`](SECURITY-SCAN-REPORT.md) |
-| 3892 | → | [`tools/CATALOG.md`](tools/CATALOG.md) |
-| 3893 | → | [`tools/README.md`](tools/README.md) |
+| 3852 | ✓ | [`skills/74-brycewang-spss-amos-sem/README.md`](skills/74-brycewang-spss-amos-sem/README.md) |
+| 3853 | ✓ | [`skills/74-brycewang-spss-amos-sem/spss-amos-sem/assets/demo/example_output/analysis.sps`](skills/74-brycewang-spss-amos-sem/spss-amos-sem/assets/demo/example_output/analysis.sps) |
+| 3854 | ✓ | [`skills/74-brycewang-spss-amos-sem/spss-amos-sem/assets/demo/example_output/lavaan_model.txt`](skills/74-brycewang-spss-amos-sem/spss-amos-sem/assets/demo/example_output/lavaan_model.txt) |
+| 3855 | ✓ | [`skills/74-brycewang-spss-amos-sem/spss-amos-sem/assets/demo/example_output/questionnaire_demo_cleaned.sav`](skills/74-brycewang-spss-amos-sem/spss-amos-sem/assets/demo/example_output/questionnaire_demo_cleaned.sav) |
+| 3856 | ✓ | [`skills/74-brycewang-spss-amos-sem/spss-amos-sem/assets/demo/example_output/results.json`](skills/74-brycewang-spss-amos-sem/spss-amos-sem/assets/demo/example_output/results.json) |
+| 3857 | ✓ | [`skills/74-brycewang-spss-amos-sem/spss-amos-sem/assets/demo/example_output/results.xlsx`](skills/74-brycewang-spss-amos-sem/spss-amos-sem/assets/demo/example_output/results.xlsx) |
+| 3858 | ✓ | [`skills/74-brycewang-spss-amos-sem/spss-amos-sem/assets/demo/questionnaire_demo.sav`](skills/74-brycewang-spss-amos-sem/spss-amos-sem/assets/demo/questionnaire_demo.sav) |
+| 3859 | ✓ | [`skills/74-brycewang-spss-amos-sem/spss-amos-sem/assets/demo/spec_demo.yml`](skills/74-brycewang-spss-amos-sem/spss-amos-sem/assets/demo/spec_demo.yml) |
+| 3860 | ✓ | [`skills/74-brycewang-spss-amos-sem/spss-amos-sem/assets/templates/spec_template.yml`](skills/74-brycewang-spss-amos-sem/spss-amos-sem/assets/templates/spec_template.yml) |
+| 3861 | ✓ | [`skills/74-brycewang-spss-amos-sem/spss-amos-sem/references/01-workflow-and-chapters.md`](skills/74-brycewang-spss-amos-sem/spss-amos-sem/references/01-workflow-and-chapters.md) |
+| 3862 | ✓ | [`skills/74-brycewang-spss-amos-sem/spss-amos-sem/references/02-spss-syntax.md`](skills/74-brycewang-spss-amos-sem/spss-amos-sem/references/02-spss-syntax.md) |
+| 3863 | ✓ | [`skills/74-brycewang-spss-amos-sem/spss-amos-sem/references/03-amos-guide.md`](skills/74-brycewang-spss-amos-sem/spss-amos-sem/references/03-amos-guide.md) |
+| 3864 | ✓ | [`skills/74-brycewang-spss-amos-sem/spss-amos-sem/references/04-reliability-validity.md`](skills/74-brycewang-spss-amos-sem/spss-amos-sem/references/04-reliability-validity.md) |
+| 3865 | ✓ | [`skills/74-brycewang-spss-amos-sem/spss-amos-sem/references/05-fit-and-modification.md`](skills/74-brycewang-spss-amos-sem/spss-amos-sem/references/05-fit-and-modification.md) |
+| 3866 | ✓ | [`skills/74-brycewang-spss-amos-sem/spss-amos-sem/references/06-mediation-moderation.md`](skills/74-brycewang-spss-amos-sem/spss-amos-sem/references/06-mediation-moderation.md) |
+| 3867 | ✓ | [`skills/74-brycewang-spss-amos-sem/spss-amos-sem/references/07-reporting.md`](skills/74-brycewang-spss-amos-sem/spss-amos-sem/references/07-reporting.md) |
+| 3868 | ✓ | [`skills/74-brycewang-spss-amos-sem/spss-amos-sem/references/08-lavaan-amos-parity.md`](skills/74-brycewang-spss-amos-sem/spss-amos-sem/references/08-lavaan-amos-parity.md) |
+| 3869 | ✓ | [`skills/74-brycewang-spss-amos-sem/spss-amos-sem/references/citations.md`](skills/74-brycewang-spss-amos-sem/spss-amos-sem/references/citations.md) |
+| 3870 | ✓ | [`skills/74-brycewang-spss-amos-sem/spss-amos-sem/scripts/draft_spec.R`](skills/74-brycewang-spss-amos-sem/spss-amos-sem/scripts/draft_spec.R) |
+| 3871 | ✓ | [`skills/74-brycewang-spss-amos-sem/spss-amos-sem/scripts/make_demo_data.R`](skills/74-brycewang-spss-amos-sem/spss-amos-sem/scripts/make_demo_data.R) |
+| 3872 | ✓ | [`skills/74-brycewang-spss-amos-sem/spss-amos-sem/scripts/R/cfa_sem.R`](skills/74-brycewang-spss-amos-sem/spss-amos-sem/scripts/R/cfa_sem.R) |
+| 3873 | ✓ | [`skills/74-brycewang-spss-amos-sem/spss-amos-sem/scripts/R/gen_amos.R`](skills/74-brycewang-spss-amos-sem/spss-amos-sem/scripts/R/gen_amos.R) |
+| 3874 | ✓ | [`skills/74-brycewang-spss-amos-sem/spss-amos-sem/scripts/R/gen_spss.R`](skills/74-brycewang-spss-amos-sem/spss-amos-sem/scripts/R/gen_spss.R) |
+| 3875 | ✓ | [`skills/74-brycewang-spss-amos-sem/spss-amos-sem/scripts/R/io.R`](skills/74-brycewang-spss-amos-sem/spss-amos-sem/scripts/R/io.R) |
+| 3876 | ✓ | [`skills/74-brycewang-spss-amos-sem/spss-amos-sem/scripts/R/measure.R`](skills/74-brycewang-spss-amos-sem/spss-amos-sem/scripts/R/measure.R) |
+| 3877 | ✓ | [`skills/74-brycewang-spss-amos-sem/spss-amos-sem/scripts/R/process.R`](skills/74-brycewang-spss-amos-sem/spss-amos-sem/scripts/R/process.R) |
+| 3878 | ✓ | [`skills/74-brycewang-spss-amos-sem/spss-amos-sem/scripts/R/report.R`](skills/74-brycewang-spss-amos-sem/spss-amos-sem/scripts/R/report.R) |
+| 3879 | ✓ | [`skills/74-brycewang-spss-amos-sem/spss-amos-sem/scripts/run_sem.R`](skills/74-brycewang-spss-amos-sem/spss-amos-sem/scripts/run_sem.R) |
+| 3880 | ✓ | [`skills/74-brycewang-spss-amos-sem/spss-amos-sem/SKILL.md`](skills/74-brycewang-spss-amos-sem/spss-amos-sem/SKILL.md) |
+| 3881 | ✓ | [`skills/74-brycewang-spss-amos-sem/spss-amos-sem/tests/test_demo.R`](skills/74-brycewang-spss-amos-sem/spss-amos-sem/tests/test_demo.R) |
+| 3882 | ✓ | [`skills/README.md`](skills/README.md) |
+| 3883 | → | [`aers_score/README.md`](aers_score/README.md) |
+| 3884 | → | [`CHANGELOG.md`](CHANGELOG.md) |
+| 3885 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 3886 | → | [`docs/archive/EMPIRICAL_TOOLS_2026-06.md`](docs/archive/EMPIRICAL_TOOLS_2026-06.md) |
+| 3887 | → | [`docs/CHOOSING_A_SKILL.md`](docs/CHOOSING_A_SKILL.md) |
+| 3888 | → | [`docs/CONTENT_ZH.md`](docs/CONTENT_ZH.md) |
+| 3889 | → | [`docs/demos/de-aigc.md`](docs/demos/de-aigc.md) |
+| 3890 | → | [`docs/ECOSYSTEM.md`](docs/ECOSYSTEM.md) |
+| 3891 | → | [`docs/EVALS.md`](docs/EVALS.md) |
+| 3892 | → | [`docs/EXTERNAL_SCOREBOARD.md`](docs/EXTERNAL_SCOREBOARD.md) |
+| 3893 | → | [`docs/FAQ.md`](docs/FAQ.md) |
+| 3894 | → | [`docs/GETTING_STARTED.md`](docs/GETTING_STARTED.md) |
+| 3895 | → | [`docs/GOLDEN_WORKFLOWS.md`](docs/GOLDEN_WORKFLOWS.md) |
+| 3896 | → | [`docs/INSTALL.md`](docs/INSTALL.md) |
+| 3897 | → | [`docs/INTEROP.md`](docs/INTEROP.md) |
+| 3898 | → | [`docs/LICENSE_AUDIT.md`](docs/LICENSE_AUDIT.md) |
+| 3899 | → | [`docs/LONG_SKILL_STATUS.md`](docs/LONG_SKILL_STATUS.md) |
+| 3900 | → | [`docs/PLAN-2026-07.md`](docs/PLAN-2026-07.md) |
+| 3901 | → | [`docs/QUALITY_GATE.md`](docs/QUALITY_GATE.md) |
+| 3902 | → | [`docs/RELEASE_NOTES.md`](docs/RELEASE_NOTES.md) |
+| 3903 | → | [`docs/RELEASE.md`](docs/RELEASE.md) |
+| 3904 | → | [`docs/RIGOR_COVERAGE.md`](docs/RIGOR_COVERAGE.md) |
+| 3905 | → | [`docs/ROADMAP.md`](docs/ROADMAP.md) |
+| 3906 | → | [`docs/SCOREBOARD_RULES.md`](docs/SCOREBOARD_RULES.md) |
+| 3907 | → | [`docs/SKILL_AUDIT.md`](docs/SKILL_AUDIT.md) |
+| 3908 | → | [`docs/SKILL_CATALOG.md`](docs/SKILL_CATALOG.md) |
+| 3909 | → | [`docs/SKILL_HYGIENE.md`](docs/SKILL_HYGIENE.md) |
+| 3910 | → | [`docs/SKILL_SUBMISSION_GUIDE.md`](docs/SKILL_SUBMISSION_GUIDE.md) |
+| 3911 | → | [`docs/TAXONOMY.md`](docs/TAXONOMY.md) |
+| 3912 | → | [`docs/TRUST.md`](docs/TRUST.md) |
+| 3913 | → | [`docs/WORKFLOW_MAP.md`](docs/WORKFLOW_MAP.md) |
+| 3914 | → | [`INSTALL.md`](INSTALL.md) |
+| 3915 | → | [`README-en.md`](README-en.md) |
+| 3916 | → | [`README-ja.md`](README-ja.md) |
+| 3917 | → | [`README-ko.md`](README-ko.md) |
+| 3918 | → | [`README-zh-CN.md`](README-zh-CN.md) |
+| 3919 | → | [`README-zh-TW.md`](README-zh-TW.md) |
+| 3920 | → | [`README.md`](README.md) |
+| 3921 | → | [`SECURITY-SCAN-REPORT.md`](SECURITY-SCAN-REPORT.md) |
+| 3922 | → | [`tools/CATALOG.md`](tools/CATALOG.md) |
+| 3923 | → | [`tools/README.md`](tools/README.md) |
 
 ---
 

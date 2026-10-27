@@ -24,6 +24,8 @@ public abstract class AbstractJdbcAgent extends BaseDatabaseAgent {
     private String configuredDatabase = "";
     private String identifierQuote = "";
     private JdbcConnectionPoolRegistry poolRegistry;
+    private JdbcConnectionPoolRegistry physicalRegistry;
+    private boolean ownsPhysicalRegistry;
     private JdbcConnectionPoolRegistry.Lease pooledLease;
     private ConnectParams connectParams;
     private String poolIdentity;
@@ -32,6 +34,25 @@ public abstract class AbstractJdbcAgent extends BaseDatabaseAgent {
     private boolean sessionAffinity;
     private boolean pooledConnectionPoisoned;
     private boolean nativeJobConnection;
+    private final Object dedicatedAdmission = new Object();
+    private java.util.function.BooleanSupplier nativeJobReservation;
+
+    protected final Object dedicatedAdmission() { return dedicatedAdmission; }
+
+    final void bindNativeJobReservation(java.util.function.BooleanSupplier reservation) {
+        synchronized (dedicatedAdmission) {
+            if (nativeJobReservation != null) throw new IllegalStateException("Native job reservation is already bound");
+            nativeJobReservation = reservation;
+        }
+    }
+
+    protected final boolean hasNativeJobReservation() {
+        synchronized (dedicatedAdmission) {
+            return nativeJobReservation != null && nativeJobReservation.getAsBoolean();
+        }
+    }
+
+    protected boolean hasDedicatedDebugReservation() { return false; }
 
     @Override
     public boolean supportsQueryTiming() { return true; }
@@ -285,6 +306,11 @@ public abstract class AbstractJdbcAgent extends BaseDatabaseAgent {
         uncheckedVoid(() -> {
             closeCurrentConnection();
             afterDisconnect();
+            if (ownsPhysicalRegistry && physicalRegistry != null) {
+                physicalRegistry.close();
+                physicalRegistry = null;
+                ownsPhysicalRegistry = false;
+            }
             connectParams = null;
             poolIdentity = null;
             sessionAffinity = false;
@@ -300,7 +326,8 @@ public abstract class AbstractJdbcAgent extends BaseDatabaseAgent {
         if (connectParams != null || connection != null || pooledLease != null) {
             throw new IllegalStateException("JDBC pool registry must be attached before connecting");
         }
-        poolRegistry = registry;
+        physicalRegistry = registry;
+        poolRegistry = registry.isEnabled() && supportsConnectionPooling() ? registry : null;
     }
 
     public boolean supportsConnectionPooling() {
@@ -621,7 +648,11 @@ public abstract class AbstractJdbcAgent extends BaseDatabaseAgent {
     protected abstract String buildJdbcUrl(ConnectParams params);
 
     protected Connection openConnection(ConnectParams params) throws Exception {
-        return DriverManager.getConnection(buildJdbcUrl(params), buildConnectionProperties(params));
+        return openConnection(params, buildJdbcUrl(params));
+    }
+
+    protected final Connection openConnection(ConnectParams params, String jdbcUrl) throws Exception {
+        return DriverManager.getConnection(jdbcUrl, buildConnectionProperties(params));
     }
 
     protected Properties buildConnectionProperties(ConnectParams params) {
@@ -746,6 +777,53 @@ public abstract class AbstractJdbcAgent extends BaseDatabaseAgent {
                 );
             }
             throw error;
+        }
+    }
+
+    /** Ownership outlives an RPC wait, including a driver that returns a connection late. */
+    public interface DedicatedConnectionOwner extends AutoCloseable {
+        Connection open() throws Exception;
+        default Connection openUntil(long deadlineNanos) throws Exception {
+            throw new UnsupportedOperationException("Absolute-deadline dedicated open is not supported; no connection was opened");
+        }
+        default boolean closeConnectionUntil(Connection connection, long deadlineNanos) throws java.sql.SQLException {
+            throw new UnsupportedOperationException("Absolute-deadline dedicated close is not supported; no close was submitted");
+        }
+        default boolean closeUnreturnedConnectionsUntil(long deadlineNanos) throws java.sql.SQLException {
+            throw new UnsupportedOperationException("Absolute-deadline unreturned cleanup is not supported; no close was submitted");
+        }
+        boolean resourcesReleased();
+        /** Retry cleanup of failed allocations only; never close a delivered business connection. */
+        default void closeUnreturnedConnections() throws Exception { }
+        /** Release the owner only after its connections and cleanup continuations have finished. */
+        @Override void close();
+    }
+
+    protected final DedicatedConnectionOwner registerDedicatedConnections(Runnable onRetire, Runnable onCompletion) {
+        return registerDedicatedConnections(onRetire, onCompletion, this::openConnection);
+    }
+
+    @FunctionalInterface
+    protected interface DedicatedConnectionOpener {
+        Connection open(ConnectParams params) throws Exception;
+    }
+
+    protected final DedicatedConnectionOwner registerDedicatedConnections(
+        Runnable onRetire, Runnable onCompletion, DedicatedConnectionOpener opener
+    ) {
+        synchronized (this) {
+            ConnectParams params = connectParams;
+            if (params == null) throw new IllegalStateException("Not connected");
+            if (physicalRegistry == null) {
+                physicalRegistry = new JdbcConnectionPoolRegistry();
+                ownsPhysicalRegistry = true;
+            }
+            return physicalRegistry.registerDedicatedOwner(
+                () -> opener.open(params),
+                opened -> afterPhysicalConnect(params, opened),
+                onRetire,
+                onCompletion
+            );
         }
     }
 

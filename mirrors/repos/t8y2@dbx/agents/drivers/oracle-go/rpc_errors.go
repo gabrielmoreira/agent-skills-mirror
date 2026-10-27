@@ -69,6 +69,23 @@ func oracleConnectionCode(code int) bool {
 }
 
 func errorResponse(id json.RawMessage, err error, method, sessionID string) response {
+	var native *plDebugNativeError
+	if errors.As(err, &native) {
+		category, stage := native.category, native.stage
+		if category == "" {
+			category = "sql"
+		}
+		if stage == "" {
+			stage = "execute"
+		}
+		disposition := "keep"
+		if category == "timeout" || category == "canceled" {
+			disposition = "quarantine"
+		}
+		data := &rpcErrorData{ContractVersion: 1, Category: category, Retryable: false, SessionDisposition: disposition,
+			Stage: stage, OperationOutcome: native.outcome, AgentSessionID: native.agentSessionID}
+		return response{JSONRPC: "2.0", ID: id, Error: &rpcError{Code: -1, Message: err.Error(), Data: data}}
+	}
 	stage := oracleRPCStage(method)
 	data := &rpcErrorData{ContractVersion: 1, Category: "protocol", SessionDisposition: "keep", Stage: stage,
 		OperationOutcome: "unknown", VendorCode: oracleVendorCode(err), ExceptionClass: fmt.Sprintf("%T", err), AgentSessionID: sessionID}

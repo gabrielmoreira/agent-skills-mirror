@@ -48,13 +48,23 @@ project/
 
 Agents cannot interfere with each other's files. All integration happens via `git merge` to `main`.
 
+If `projectDir` does not exist it is created; if it is not a git repository the council runs `git init`, and if
+the repository has no commit yet it commits whatever the directory holds. Commits need a git identity: when the
+repository has none at any level, the council sets a local `Council <council@openclaw>` in `.git/config`; an
+identity you configured is left untouched. Agent names become branch names, so they must match
+`^[a-zA-Z0-9_-]+$`. A council refuses to start with a `projectDir` inside the orchestrator's own package
+directory.
+
 ### Consensus Voting
 
 Every agent must include `[CONSENSUS: YES]` or `[CONSENSUS: NO]` at the end of each round's response. The council continues until:
 
-- **All agents vote YES** — consensus reached
-- **Max rounds reached** — timeout
-- **Aborted** — user intervention
+- **All agents vote YES** — consensus reached; status becomes `awaiting_user` (ready for review / accept / reject)
+- **Max rounds reached** — status `max_rounds`
+- **Aborted** — user intervention; status `error`
+
+An agent that fails or errors in a round counts as a NO for that round. A loosely formatted vote (for example
+`CONSENSUS=YES`) is still read, and a missing vote counts as NO.
 
 ## Quick Start
 
@@ -99,9 +109,12 @@ console.log(`Council started: ${session.id}`);
 const status = manager.councilStatus(session.id);
 ```
 
+`councilStart`, `fanoutStart`, `ultraplanStart` and `ultrareviewStart` are async (each creates a durable run before
+returning); direct TypeScript callers need `await`.
+
 ### Mixed Engines
 
-Agents can use different engines and models:
+Agents can use different engines and models. Each agent also accepts `effort` and, on Claude, `ultracode`:
 
 ```json
 {
@@ -115,15 +128,15 @@ Agents can use different engines and models:
 
 ## Council Tools
 
-| Tool             | Description                                                                             |
-| ---------------- | --------------------------------------------------------------------------------------- |
-| `council_start`  | Start a council. Runs in background, returns session ID immediately.                    |
-| `council_status` | Get current status (running/consensus/max_rounds/error), responses, votes.              |
-| `council_abort`  | Stop all agent sessions and terminate the council.                                      |
-| `council_inject` | Inject a user message into all agents' prompts in the next round.                       |
-| `council_review` | Review completed council output: changed files, branches, plan status, agent summaries. |
-| `council_accept` | Accept work and clean up: remove worktrees, branches, plan.md, reviews/.                |
-| `council_reject` | Reject work: rewrite plan.md with feedback for the council to retry.                    |
+| Tool             | Description                                                                                                             |
+| ---------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `council_start`  | Start a council. Runs in background, returns session ID immediately.                                                    |
+| `council_status` | Status (`running`, `awaiting_user`, `max_rounds`, `error`, `accepted`, `rejected`) and each response with its vote.     |
+| `council_abort`  | Stop all agent sessions, terminate a council running in this process, and remove the worktrees it created.              |
+| `council_inject` | Inject a user message into all agents' prompts in the next round. A second inject before that round replaces the first. |
+| `council_review` | Review completed council output: changed files, branches, plan status, agent summaries.                                 |
+| `council_accept` | Accept work and clean up: remove worktrees, branches, plan.md, reviews/.                                                |
+| `council_reject` | Reject work: rewrite plan.md with feedback for the council to retry.                                                    |
 
 ## Post-Processing Lifecycle
 
@@ -143,6 +156,7 @@ Returns a structured report:
 - **planContent**: full plan.md text (check for unchecked tasks)
 - **reviews**: review files in `reviews/` directory
 - **agentSummaries**: final-round output preview from each agent
+- **reviewerGuidance**: the checklist from `configs/council-reviewer-prompt.md`, for whoever reviews the output
 
 ### 2. Accept
 
@@ -150,14 +164,14 @@ Returns a structured report:
 { "tool": "council_accept", "args": { "id": "<council-id>" } }
 ```
 
-Cleans up all council scaffolding:
+Checks out `main` (or `master`), then cleans up all council scaffolding:
 
 - Removes the worktrees under `{projectDir}/.worktrees/`, and that directory —
   selection is by containment, so a worktree of yours that merely has `council`
   somewhere in its path is never touched
 - Deletes all `council/*` branches
 - Removes `plan.md` and `reviews/` directory
-- Sets council status to `accepted`
+- Sets council status to `accepted`, recorded on the run so `council_status` reports it
 
 ### 3. Reject
 
@@ -165,7 +179,7 @@ Cleans up all council scaffolding:
 { "tool": "council_reject", "args": { "id": "<council-id>", "feedback": "..." } }
 ```
 
-Rewrites `plan.md` with rejection feedback and commits it. All worktrees and branches are preserved so the council can be restarted to address the feedback.
+Rewrites `plan.md` with rejection feedback and commits it, and sets council status to `rejected`, recorded on the run. All worktrees and branches are preserved so the council can be restarted to address the feedback: a new `council_start` on the same `projectDir` with the same agent names reuses those worktrees (resetting each to its branch head, which discards uncommitted changes in them).
 
 ## Configuration
 
@@ -175,6 +189,8 @@ Rewrites `plan.md` with rejection feedback and commits it. All worktrees and bra
 | `agentTimeoutMs`   | 1,800,000 (30 min) | Per-agent timeout per round        |
 | `maxTurnsPerAgent` | 50                 | Max tool turns per agent per round |
 | `maxBudgetUsd`     | —                  | API spend limit per agent          |
+
+These are the `council_start` defaults. The `council` workflow template (`workflow_start`) runs up to 8 rounds.
 
 ### defaultPermissionMode
 
@@ -238,18 +254,24 @@ workflow_start({
 
 Without a contract the run completes `unverified` — nothing checked it.
 
-`councilStart`, `fanoutStart`, `ultraplanStart` and `ultrareviewStart` are
-async (each creates a durable run before returning); direct TypeScript callers
-need `await`.
-
 ## Durable runs
 
 A council is a durable kernel run. `GET /council/list` (and the dashboard)
 returns real records from disk, across processes.
 
+| Route                      | Purpose                                                                                                                                                                |
+| -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `GET /council/list`        | Every council run, newest first.                                                                                                                                       |
+| `POST /council/new`        | Body `{ task, projectDir, maxRounds? }`. Starts the dashboard preset: three Claude agents, 15 rounds by default.                                                       |
+| `GET /council/<id>/state`  | The council session (status, config, responses).                                                                                                                       |
+| `GET /council/<id>/events` | SSE: a `snapshot`, then a `council-event` for each session, round and agent event (output chunks included). Only for a council running in this process; 404 otherwise. |
+
 `council_review` / `council_accept` / `council_reject` work after a restart:
-they act on the git state the council left behind, not on live agents.
-`council_inject` needs the live run and says so plainly when there is none.
+they act on the git state the council left behind, not on live agents, and the
+accept / reject decision is written to the run record.
+`council_inject` and `council_abort` need the live run and say so plainly when
+there is none: `council_abort` then returns `ok: false` with the run's state and
+leaves the run and its worktrees as they are.
 
 ## Changed-file reporting
 

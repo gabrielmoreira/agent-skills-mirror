@@ -248,6 +248,15 @@ rest still need a deliberately constructed state — the point is to *know that
 default-state evidence is partial* and say so, rather than reporting "audited"
 after one screenshot.
 
+For time-sensitive populated fixtures, the auditor rechecks the rendered state
+mix at capture and review time, including the timestamps or expiry policy that
+select it. A fixture intended to show active, waiting and unknown items may have
+expired into all-unknown; that image cannot verify the intended mixed states.
+Refresh timestamps only in an authorized isolated harness, then recapture and
+inspect the resulting states. Preserve genuine production unknowns and report
+missing state coverage when an isolated replay is unavailable. This is an
+auditor-run check; the default sweep does not establish the intended state mix.
+
 **A note on what should not become an automated check:** a custom scrollbar, a
 missing hover style, an unusual focus color — these are design choices, and
 flagging them mechanically produces false positives on healthy pages. A check
@@ -453,6 +462,27 @@ of the affected block. A blank screenshot does not count as a read position;
 reacquire an inspected frame or keep that position unverified. Observe offsets;
 do not assign `scrollLeft` or `currentTime`, or change CSS to stage a result.
 This is a journey-specific auditor check, not an automatic sweep verdict.
+
+### Wheel requests are not browser-received wheel events
+
+When judging wheel-driven pan or zoom sensitivity, reuse the fresh geometry and
+hit-target checks above for the intended pan/zoom surface; the `closest <pre>`
+predicate applies only to PRE reading. Observe the event stream **at the browser's actual target**. Record
+received `deltaX`, `deltaY`, `deltaMode`, modifier keys and event count alongside
+camera/scroll state before and after. A harness request can be scaled or split
+before delivery; its requested delta is not the denominator for product gain.
+For example, a request of 40 units, a received pixel delta of 80 and a camera
+movement of −80 do not establish doubled product sensitivity.
+
+Compare against the product's declared transform, including sign, gain, bounds,
+zoom level and any inertia settling; one-to-one movement is not universal.
+Keep line/page deltas distinct from pixel deltas rather than assuming a unit
+conversion. Include zero input and a known ordinary gesture as controls. For
+anchored zoom, compare the content point under the pointer as well as scale.
+If received events cannot be observed, leave the sensitivity cause unverified;
+do not alter product gain to compensate for the driving harness. The gesture
+recipe in [Embedded Readers And Semantic Zoom](journey-and-page-contracts.md#embedded-readers-and-semantic-zoom)
+owns the separate physical-trackpad evidence boundary.
 
 ## 9. Virtual time fast-forwards timers, not I/O
 

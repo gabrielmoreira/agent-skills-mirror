@@ -1,7 +1,9 @@
 ---
 name: maplibre-running-evals
 description: The step-by-step procedure for running this repo's Promptfoo evals with a generator and a judge over provider APIs. Use when starting a new skill and needing a baseline before writing content, when a run stalls or returns no data, when a provider rate-limits, or when deciding whether an edit needs a retest.
-status: process
+metadata:
+  status: process
+  internal: true
 ---
 
 # Running Promptfoo Evals
@@ -76,7 +78,7 @@ Needed:
 - A rubric or prompt is reworded — that test's baseline is now invalid, so re-run that test with `--filter-pattern`, not the whole config. The reverse holds too: when you change a skill's wording, grep its rubric for the phrase you removed, in the same commit, because an outdated rubric grades leniently and comes back green.
 - The pinned generator or judge changes — re-run every config.
 
-The weekly CI drift check (`eval.yml`) re-runs the whole collection against the default branch on its own cadence; that run is not something a contributor repeats by hand.
+The scheduled CI run (`eval.yml`) grades every config whose skill, eval config or harness changed since its last graded run, and each one again a week after its last grade; that run is not something a contributor repeats by hand.
 
 Not needed:
 

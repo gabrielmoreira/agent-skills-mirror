@@ -7,10 +7,13 @@ icon: layer-group
 
 # Agent harness
 
-`crates/openhuman-core/src/agent/` is the host side of an agent turn: the
-tool-call loop and its dialects, sub-agent dispatch and archetypes, sessions
-and resume, triage, hooks, interrupts and cost accounting, all wrapped around
-the TinyAgents harness rather than reimplementing it.
+`crates/openhuman-core/src/agent/` is the host side of an agent turn. TinyAgents
+owns the generic tool-call loop, call parsing, session identity and transcript
+replay, and reusable turn-runner mechanics. OpenHuman adapts those primitives
+to product policy and host ports: provider selection, access and approvals,
+session persistence, sub-agent product behavior, interruption policy, and cost
+accounting. TinyChannels owns provider implementations and the canonical typed
+channel and web-event contracts.
 
 ## Embedding OpenHuman as a library
 
@@ -93,7 +96,7 @@ Some settings remain runtime-wide for every agent (the live autonomy policy's
 config sub-agents re-read); the crate README lists them under "Still
 runtime-wide".
 
-Every agent turn runs through the published [`tinyagents`](https://crates.io/crates/tinyagents) harness. There are three entry points: `Agent::turn`, the channel and CLI bus path, and `run_subagent`. All of them go through the adapter seam in [`crates/openhuman-core/src/agent/tinyagents/`](https://github.com/tinyhumansai/openhuman/tree/main/crates/openhuman-core/src/agent/tinyagents) (`TurnSpec::run`). Context trimming is `MessageTrimMiddleware`, and cancellation is the tinyagents steering channel. Policy stop hooks (budget, thread-goal and iteration caps) use the upstream `tinyagents-hooks` `StopHookMiddleware` and pause the run on the first stop vote. The channel route forwards live `AgentProgress` like the chat route. The shared `TurnProgress` seam lives in `agent/session_host/tool_progress.rs`.
+Every agent turn runs through the published [`tinyagents`](https://crates.io/crates/tinyagents) harness. There are three entry points: `Agent::turn`, the channel and CLI bus path, and `run_subagent`. All of them go through the adapter seam in [`crates/openhuman-core/src/agent/tinyagents/`](https://github.com/tinyhumansai/openhuman/tree/main/crates/openhuman-core/src/agent/tinyagents) (`TurnSpec::run`). Context trimming is `MessageTrimMiddleware`, and cancellation is the tinyagents steering channel. Policy stop hooks (budget, thread-goal and iteration caps) use the upstream `tinyagents-hooks` `StopHookMiddleware` and pause the run on the first stop vote. Web chat admission and queue mechanics use TinyAgents' `TurnRunner`; OpenHuman's `web_chat` host supplies ingress, session checkout, approvals, persistence, and terminal-event policy. Channel provider transport and the typed web-event schema/projection are supplied by the TinyChannels v2 module over TinyBus. OpenHuman publishes those canonical events on its process event bus and retains only host routing metadata. The shared `TurnProgress` seam lives in `agent/session_host/tool_progress.rs`.
 
 TinyAgents' `tinyagents-orchestration` crate owns the host-neutral sub-agent lifecycle. OpenHuman supplies the product adapters for spawn policy, durable session resolution, cancellation, progress, and completion delivery. The current host surface is documented in [`agent/orchestration/README.md`](https://github.com/tinyhumansai/openhuman/blob/main/crates/openhuman-core/src/agent/orchestration/README.md); [`spawn_subagent_host_impl.rs`](https://github.com/tinyhumansai/openhuman/blob/main/crates/openhuman-core/src/agent/orchestration/tools/spawn_subagent_host_impl.rs) binds a child run to its caller's execution context.
 
@@ -107,13 +110,22 @@ OpenHuman depends on the split TinyAgents crate family by path into the vendored
 - No scripting runtime. There is no `repl` or Rhai scripting feature and no `rhai_workflows` tool. Rhai still appears as a dependency of `tinyflows` for its own JSON-query stack, unrelated to the agent harness.
 - Ownership map: model construction → `inference::provider::create_chat_model*`; workflow checkpoints → TinyFlows' driver schema; generic detached executor state → `DetachedTaskRegistry`; controller-facing durability → OpenHuman SQL/JSON run ledgers (`running_subagents`, `workflow_runs`, `agent_teams`, `command_center`). The generic harness/middleware/event primitives are used as-is.
 
-The agent harness is the runtime that turns a user message (or a webhook fire, or a cron tick) into a complete, tool-using LLM interaction. It owns the tool-call loop, sub-agent dispatch, the trigger-triage pipeline, and the hook surface around them. It does not own provider HTTP transport, tool implementations, prompt-section assembly or memory storage. Those are separate domains the harness composes.
+The agent harness turns a user message, webhook event, or cron tick into a complete, tool-using interaction. TinyAgents owns the generic loop and reusable execution primitives. OpenHuman supplies the product-specific sub-agent and trigger workflows, policy hooks, and host capabilities. Provider transport and channel normalization belong to TinyChannels; tool implementations, prompt assembly, and memory storage belong to their respective domains.
 
 This page walks through what happens in one turn, then zooms in on each of the moving parts.
 
 ## The shape of a turn
 
 Every turn goes through the same lifecycle, whether the user just typed a message, a Telegram webhook fired or a 9am cron ticked:
+
+Messaging-channel ingress is prepared by the configured TinyChannels v2 module
+through typed bus operations and shared wire types. OpenHuman applies account
+authorization and host policy, then supplies the persistence ports used by
+TinyAgents' session and transcript machinery. TinyAgents owns generic turn
+execution, session identity, transcript replay, and the reusable turn runner.
+Provider transport, normalization, and canonical web-output projection stay in
+TinyChannels; OpenHuman owns account authorization, approvals, session and
+delivery policy, and the host adapters and persistence implementations.
 
 ```text
 ┌─ inbound ─────────────────────────────────────────────────────────┐
@@ -180,11 +192,11 @@ Freezing the prompt is only one third of the contract, and the other two are eas
 - The tool block counts, and it comes _first_. Every prefix cache in production renders the tool catalogue ahead of the conversation, a chat template has to put it somewhere the model reads before the first user turn. OpenAI's automatic cache, Anthropic's `cache_control` (tools → system → messages), DeepSeek's context cache and any vLLM/SGLang radix cache all work this way. So a `tools` array that changes between turns invalidates the frozen system prompt too, and the JSON key order of the request body (which puts `messages` before `tools`) says nothing about it. The mid-session Composio reconcile is still correct, a tool surface that lies about what the model can call is worse than a cold prefill, but it must fire only on a real capability change and be byte-stable otherwise. `connected_set_hash` sorts before hashing so a reordered backend response never reaches a rebuild, and `collect_orchestrator_tools` sorts the connected-toolkit enum for the same reason.
 - History must be append-only. Turn N's serialization has to survive verbatim as the opening of turn N+1. `pair_tool_cycles` drops half-finished tool cycles at serialization time, so its verdict for an entry must depend only on that entry and its immediate neighbour, never on anything appended later, or an earlier message's presence flips retroactively and the prefix moves under the cache. Context compaction is the one deliberate exception; it rewrites the middle and pays for a re-prefill.
 
-A resumed session's replayed prefix is folded into `Agent::history` rather than spliced into one request, so the request, the following turn and the persisted transcript all read the same sequence. Splicing it cost the conversation twice: the next turn went out without it, and the transcript written afterwards (serialized from `history`) held only the new turn, which the *next* resume then read back, truncating the thread a little further on every restart.
+A resumed session's replayed prefix is folded into `Agent::history` rather than spliced into one request, so the request, the following turn and the persisted transcript all read the same sequence. Splicing it cost the conversation twice: the next turn went out without it, and the transcript written afterwards (serialized from `history`) held only the new turn, which the _next_ resume then read back, truncating the thread a little further on every restart.
 
 #### A stable prefix only pays out when the wire says so
 
-Keeping the bytes stable is necessary, not sufficient: the provider still has to be *told* to cache, and two providers need telling explicitly.
+Keeping the bytes stable is necessary, not sufficient: the provider still has to be _told_ to cache, and two providers need telling explicitly.
 
 - Anthropic caches nothing without `cache_control` markers, and its OpenAI-compatible endpoint cannot carry them, Anthropic documents prompt caching as unsupported on that path and reports `prompt_tokens_details` as always empty. A `cloud_providers` entry with `auth_style = "anthropic"` is therefore built as the crate's native Messages adapter (`tinyinference_llm::providers::anthropic`), which places markers on the last tool, the last system block, and the final message so a growing tool loop reuses the previous iteration's cache rather than only the system prompt. The one exception is text mode (`native_tools = false`, prompt-guided tools), which only the Chat Completions adapter implements and which keeps the compat client, and so keeps paying full price.
 - OpenRouter forwards markers to Anthropic and Gemini but adds none itself; hosted OpenAI rejects unknown content-part fields. The OpenRouter slug (and any endpoint on `openrouter.ai`) enables `OpenAiModel::with_explicit_cache_control`, which marks the last system and last user message; every other Chat Completions endpoint stays unmarked.
@@ -355,7 +367,7 @@ Path hardening is fail-closed. `resolve_artifact_path` rejects absolute paths, `
 
 Writes log `[artifact] wrote worker artifact under action_dir`; each path a handoff carries logs `[artifact] handoff carried an artifact path to the parent`, on both the producing and the consuming side, so a run journal shows both ends of every pointer.
 
-### TokenJuice: content-aware tool-output compaction 
+### TokenJuice: content-aware tool-output compaction
 
 Before a fresh tool result enters history (and ahead of the byte-budget backstop), it passes through the TokenJuice content router inside the compiled TinyJuice module, with OpenHuman adapters in `crates/openhuman-core/src/inference/tokenjuice/`. Inspired by Headroom, the router _detects the content kind_ (JSON, code, log, search, diff, HTML, plain text) from the bytes and/or a hint derived from the tool name and arguments, then dispatches to a specialised compressor:
 
@@ -390,26 +402,26 @@ A single agent that knows everything also has a system prompt the size of a smal
 
 Each archetype lives under `agents/<name>/` with an `agent.toml` (metadata, tool scope, model hint) and a prompt. The orchestrator's chat delegates are the ones in its `[subagents]` allowlist:
 
-| Archetype              | When the orchestrator picks it                                                                 |
-| ---------------------- | ---------------------------------------------------------------------------------------------- |
-| `orchestrator`         | The Master Agent: top-level, direct-capable default. Never spawned by another orchestrator.   |
-| `task_manager_agent`   | Adding, previewing, fetching, updating or removing task sources, workflow bundles, artifacts. |
-| `vision_agent`         | Anything that depends on the content of an image (describe, OCR, UI elements).                |
-| `image_agent`          | Generating or editing an image.                                                               |
-| `video_agent`          | Generating a video or animating an image.                                                     |
-| `presentation_agent`   | Building a slide deck with grounding and citations (feature `documents`).                     |
-| `skill_setup`          | Finding, installing and managing skills from registries (`setup_skills`).                     |
-| `workflow_builder`     | Authoring or editing a saved workflow (`build_workflow`); returns a proposal, never saves.   |
-| `flow_discovery`       | Suggesting workflows worth setting up (`discover_workflows`).                                 |
+| Archetype            | When the orchestrator picks it                                                                |
+| -------------------- | --------------------------------------------------------------------------------------------- |
+| `orchestrator`       | The Master Agent: top-level, direct-capable default. Never spawned by another orchestrator.   |
+| `task_manager_agent` | Adding, previewing, fetching, updating or removing task sources, workflow bundles, artifacts. |
+| `vision_agent`       | Anything that depends on the content of an image (describe, OCR, UI elements).                |
+| `image_agent`        | Generating or editing an image.                                                               |
+| `video_agent`        | Generating a video or animating an image.                                                     |
+| `presentation_agent` | Building a slide deck with grounding and citations (feature `documents`).                     |
+| `skill_setup`        | Finding, installing and managing skills from registries (`setup_skills`).                     |
+| `workflow_builder`   | Authoring or editing a saved workflow (`build_workflow`); returns a proposal, never saves.    |
+| `flow_discovery`     | Suggesting workflows worth setting up (`discover_workflows`).                                 |
 
 Other built-ins are never chat delegates:
 
-| Archetype                              | Who runs it                                                                                                  |
-| -------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| `planner`, `critic`                    | Only the `parallel_research_cross_check` workflow-run template (decompose and research = `planner`, cross_check = `critic`). |
-| `summarizer`                           | The harness, to compress oversized tool results; also the synthesize phase of that workflow-run template.  |
-| `trigger_triage` / `trigger_reactor`   | Classifying an incoming external event, and the lightweight reaction to one.                               |
-| `morning_briefing`                     | Cron: the daily digest, on a named read-only tool belt.                                                     |
+| Archetype                            | Who runs it                                                                                                                  |
+| ------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------- |
+| `planner`, `critic`                  | Only the `parallel_research_cross_check` workflow-run template (decompose and research = `planner`, cross_check = `critic`). |
+| `summarizer`                         | The harness, to compress oversized tool results; also the synthesize phase of that workflow-run template.                    |
+| `trigger_triage` / `trigger_reactor` | Classifying an incoming external event, and the lightweight reaction to one.                                                 |
+| `morning_briefing`                   | Cron: the daily digest, on a named read-only tool belt.                                                                      |
 
 The orchestrator itself handles coding, crypto, settings, scheduling, product docs and MCP servers through inline skills: `use_skill` loads a tool pack's guide and schemas (`coding`, `web3`, `system`, `scheduling`, `docs`, `mcp`), and the same tools are `Deferred` so `tool_search` finds any single one. Running an installed skill is the orchestrator's own `run_workflow`. See [`tools/toolpacks/README.md`](https://github.com/tinyhumansai/openhuman/blob/main/crates/openhuman-core/src/tools/toolpacks/README.md).
 
@@ -456,11 +468,11 @@ Primary     (direct-capable, Master Agent on `coding` hint)
 
 Each `AgentDefinition` carries an `agent_tier` field (`chat` / `reasoning` / `worker`, default `worker`). The contract:
 
-| Tier        | May spawn             | Must NOT spawn                  | Typical members                                                                 |
-| ----------- | --------------------- | ------------------------------- | ------------------------------------------------------------------------------- |
-| `chat`      | `reasoning`, `worker` | another `chat`                  | `orchestrator`                                                                  |
-| `reasoning` | `worker`              | another `reasoning`, any `chat` | `planner` (today the canonical one)                                             |
-| `worker`    | nothing[^1]           | anything                        | critic, image_agent, task_manager_agent, …               |
+| Tier        | May spawn             | Must NOT spawn                  | Typical members                            |
+| ----------- | --------------------- | ------------------------------- | ------------------------------------------ |
+| `chat`      | `reasoning`, `worker` | another `chat`                  | `orchestrator`                             |
+| `reasoning` | `worker`              | another `reasoning`, any `chat` | `planner` (today the canonical one)        |
+| `worker`    | nothing[^1]           | anything                        | critic, image_agent, task_manager_agent, … |
 
 [^1]: Skill-wildcard entries (`{ skills = "*" }`) are exempt because they name no agent: they expand to the connected Composio actions as `Deferred` tools the agent reaches through `tool_search`, not to a spawn.
 

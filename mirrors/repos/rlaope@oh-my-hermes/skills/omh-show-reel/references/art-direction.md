@@ -16,6 +16,43 @@ style frames at delivery size AND a short moving proof before full production.
 Authentic product captures, material/photographic composition, depth, kinetic
 phrases, seeded geometry and quiet holds are options, not a required effect list.
 
+## Frame checks before the first style frame
+
+Run these on the storyboard, then again on the rendered style frame. Each is a
+measurement with a stated number, not an impression.
+
+- `frame_fill`: the area a product shot fills depends on the subtitle mode,
+  using the zones `references/craft-design.md` (Layout and safe areas)
+  defines. With no subtitles, a product-led shot is full-bleed: it uses the
+  full frame minus the 46 px edge inset, so a 1080p product shot is at least
+  about 988 px tall (1920x1080: at least 1828x988), and in 9:16 it still keeps
+  the top 250 px and bottom 420 px clear. With subtitles, it fills at least 90%
+  of the width and height of the body safe area (16:9: x 120-1800, y 120-900)
+  and the subtitle band y 940-1040 stays clear. A shot that is not
+  product-led, such as a title or a quote, follows the safe areas instead.
+  Text rows are at least 2% of the frame's shorter side (22 px at 1080). Choose terminal columns and
+  rows, or the viewport, from that area and row height; never keep a default
+  size and letterbox it. Record the area used, the measured fractions and the
+  row height.
+- `clear_space`: a logo or identity mark (one the product renders, such as an
+  ASCII logo) keeps clear space of at least one of its own text rows (one
+  terminal row for an ASCII logo) from the frame edge and the window edge.
+  Flush against either is REVISE. An intentional crop, as `craft-design.md`
+  allows, is exempt; headings follow the type and safe-area rules instead.
+- `decorative_text`: no text the product does not render and the brief does
+  not need. Window title bars, `cols×rows` dimension labels, invented paths
+  and prompts, and fake version strings are removed, not restyled.
+- `palette_families`: for a composed frame (promo shot, poster, slide, end
+  card), list every hue family on screen with its hex values and where it
+  appears (background, window chrome, product palette, logo, captions,
+  accents). The captured product or brand palette is given and never
+  repainted. The surrounding composition adds at most one accent family beyond
+  it. Neutrals, semantic-state colors and data-series palettes are listed but
+  not counted. Check text contrast on its actual background: at least 4.5:1,
+  or 3:1 for large type. A composed frame that adds more than one accent
+  family beyond the product or brand palette, or misses contrast, is REVISE
+  before render.
+
 ## Anti-slide evidence, not keyword approval
 
 Record `anti_slide_review` from actual segment and transition evidence. Compare
@@ -29,6 +66,10 @@ not a checklist keyword or numeric quality score.
 
 Name strongest and weakest scenes, why each succeeds/fails, and keep/fix/rebuild
 for every segment. Reserve actual iteration/time budget to rebuild the weakest.
+When the weakness is the subject itself (the feature shown is thin, not its
+staging), record `product_gap` with the capability the film needs and report
+it to the user as a product change; do not spend the budget on particles,
+glow, palette or camera moves to hide it.
 `before_after_and_boundaries` requires same-time before/after samples, consecutive
 moving strips and both entry/exit cut boundaries from real renders. Re-render and
 review the final encoded revision; approval of the earlier draft is not approval

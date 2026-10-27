@@ -264,6 +264,38 @@ calling another Hermes, network or subprocess helper; it is not a sandbox, and
 does not catch an allowed Hermes function called with other arguments, or check
 where the grant's url points.
 
+## herdr
+
+Inside a herdr pane, and only there (`HERDR_ENV=1` and a `HERDR_PANE_ID`, the
+pane environment herdr's own Hermes plugin is gated on too; that plugin only
+reports a session id, never a state), the TUI tells herdr the state its title
+shows, so herdr's agent list can name it: it runs `herdr pane report-agent
+<pane> --source omh:tui --agent omh --state <state>`, with `waiting on you` as
+`blocked`, `running` as `working` and `idle` as `idle`, each time that state
+changes and never per frame, and `herdr pane release-agent` on the way out,
+since herdr keeps the pane's agent after the TUI exits until told. The agent
+label is `omh`, one herdr does not know: a known label (`hermes`) would tie
+the report to herdr's own Hermes process and screen detection. The binary is
+an absolute `HERDR_BIN_PATH` or `herdr` on PATH, the person's own; the verbs
+and flags are fixed and only the binary and pane id come from that
+environment, with no text from the session. One call runs at a time on a
+worker thread, so the loop never waits on herdr, and only the newest waits
+behind it (a later change replaces it, and the release replaces any report
+and stops the one in flight); each call gives up after 1 s and fails without
+a word (no herdr, a dead socket, a timeout), and an exit waits at most 2 s
+before it stops the release. herdr's CLI reaches herdr over its own local
+socket: no network call. Outside herdr nothing is spawned. No session id is
+sent: herdr keeps one only from its own `herdr:*` sources.
+
+The gateway child does not get the pane's `HERDR_PANE_ID`; herdr's CLI and
+skill still work there, without a current-pane default. herdr drops the same
+one name for its own pane-less popups. Where the gateway runs, herdr's Hermes
+plugin (gated on `HERDR_ENV=1` and that id) would otherwise report a
+`herdr:hermes` session for the pane, and herdr then refuses the TUI's own
+reports from then on (measured on herdr 0.9.5: the pane stayed at `working`,
+or left the list); a gateway daemon started from the child would also keep the
+pane's id after the pane closed.
+
 ## Job control, and what OMH does not do
 
 Ctrl+Z stops the process group, the gateway child with it, as Hermes' own CLI's

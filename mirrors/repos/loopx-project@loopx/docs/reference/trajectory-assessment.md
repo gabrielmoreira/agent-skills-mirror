@@ -76,6 +76,47 @@ divergence. A justified repeat with contemporary controls can still be useful.
 These are model reasoning instructions; the validator does not certify that the
 answer followed them or that a proposed experiment is scientifically sufficient.
 
+Optional revision 3 (`config.research_synthesis_revision: 3`, with synthesis
+enabled) adds case-selection reasoning in the existing `why_priority` and
+`controls` fields. When proposing concrete cases, explain their observed
+selection basis, changed baselines, useful supporting or contrary cases, and
+missing evidence. Separate a retrospective diagnostic pilot from a predeclared
+sample and its broader generalization. A pilot need not test every case, and
+matching labels do not establish independent or comparable observations.
+Register a successor pack and explicitly generate its report through the same
+workbench; browsing does not invoke a model. Disable this guidance by choosing
+a revision 2 or legacy pack. Default producer requests remain revision 2, and
+frozen v1/v2 prompts, keys, results, failures and usage are unchanged. Revision 3
+adds no result fields, new model call per finding, solver behavior or scientific
+qualification gate. Its case-selection rationale remains uncalibrated advice.
+
+可选第3版沿既有优先级理由／控制条件说明案例选择依据、基线变化、反例和缺失证据，
+区分事后诊断试点与预先定义样本，不把少量试点外推为普遍收益。接续pack需显式生成，
+浏览不调用模型；选择第2版或旧pack即可停用。默认仍为第2版，旧报告、失败和用量不改；
+新增指引不等于模型已遵从或科学有效性获得认证。
+
+Optional revision 4 (`config.research_synthesis_revision: 4`) retains revision 3
+and asks which decision the next step should change before choosing its design.
+Candidate selection, component attribution and interaction testing answer
+different questions. Reuse completed controls and negative evidence; prefer a
+staged comparison when it can resolve the immediate uncertainty, and state what
+observation would justify a broader design. A factorial or replication is useful
+when the decision needs it, rather than an automatic response to multiple changes.
+Known case/arm/repetition limits and preparation, validation and analysis costs
+belong in the existing priority/intervention fields. Configured allowance is not
+actual elapsed cost; unknown costs remain unknown. Existing evidence can justify
+no new experiment. These are observer instructions, not an enforced minimization
+rule, a scientific qualification or execution authority. Register and explicitly
+analyze a successor pack; select an older pack to disable the new guidance.
+Default requests remain revision 2. Frozen v1/v2/v3 requests, jobs, results,
+failures and usage retain their identities and are never automatically upgraded.
+
+可选第4版先明确下一步要改变的决策，区分方案选择、组件归因与交互检验；复用已完成
+对照和负结果，能分阶段判别时说明先做什么、出现什么证据才扩大设计。更全面的设计
+或复验须说明决策需要；配置预算不当作实耗，准备／验证／分析的未知成本保留未知。
+已有证据足够时不强加新实验。这是观察者指引，不是强制最小化、科学认证或执行授权。
+须注册接续pack并显式生成；选回旧pack即可停用。默认第2版和旧版身份、失败、用量不改。
+
 New default producer requests persist revision 2. Previously stored synthesis
 configurations that omit the revision retain the exact v1 prompt, key and
 language caches; reading or retrying them does not upgrade the method. Explicit
@@ -790,6 +831,10 @@ It grants no source-Goal lifecycle, conversation, scoring or solver writes.
 Stop and restart the reader without the option to disable local execution;
 historical packs remain on disk. Cancel running analysis through its existing
 action before stopping the server.
+Cancellation uses the prepared source namespace, original Goal and existing
+local pack/job identity, so it remains available when the original source is
+offline. Starting or retrying analysis still requires a fresh source read and
+current registered membership.
 
 The trusted curator registers authorized inputs through the existing
 `trajectory-pack-register` command. For each source, use runtime root

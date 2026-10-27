@@ -19,6 +19,10 @@ tools/venv/bin/python -I tools/tv.py --probe
   `$TV_HOST` and its port to `$TV_PORT`, as for `tools/tv.py`.
 - **It prints the `TV_HOST`/`TV_PORT` to use**, and one line each time it can't reach the TV.
 - **Stop it with Ctrl-C** when you're done.
+- **Check that ADB is closed from an ordinary terminal**, at the TV's IP: `tools/adb-closed.py 192.168.1.50`.
+  Through the relay, `127.0.0.1` answers for the relay, not for the TV, and from the sandbox the TV's IP does
+  not answer at all, which proves nothing. With the tools' `TV_HOST`/`TV_PORT` still exported in that
+  terminal, it stops at "TV_PORT=15555 is a relay's port": run `unset TV_HOST TV_PORT` first.
 
 ## Safety
 

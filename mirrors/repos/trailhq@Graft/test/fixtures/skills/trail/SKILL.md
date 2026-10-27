@@ -38,7 +38,12 @@ Save one when the session found what the code can't tell the next person:
 
 Save it before you commit or open the PR, so it ships with the change:
 `trail note --title "<the fact, not the task>"` with the text on stdin. Name
-the files or functions it's about, and give each decision its reason.
+the files or functions it's about, and give each choice its reason.
+
+A learning is followed by default, and the person can say otherwise in the
+moment. When the user says one must hold even if someone asks otherwise
+later, add `--always-follow`: Claude then won't go against it, and names
+it and who added it instead. Only on their word, never on your own.
 
 Don't save setting up trail or other tools, what the diff already shows,
 status ("PR is open", "not merged yet"), or facts about one machine (those go
@@ -284,7 +289,7 @@ the steps back.
 - Trail may ask you to run `trail skills add <name> --run <id>`, only after the person typed yes to its offer or asked to save a job; its message quotes what they typed. Never run it on your own.
 - When Trail offers to keep a job, it gives you 2 lines to end your reply with, so the person can answer; Trail reads their answer to the last one, so keep it as it is.
 - When `trail init` gives you a list, show it as written and run `trail keep` only with the numbers the person typed.
-- When Trail offers a lesson, keep its lines as they are; run `trail skills lesson` only after the person typed yes.
+- When Trail offers a learning, keep its lines as they are; run `trail skills lesson` only after the person typed yes.
 - Trail may ask you to run `trail skills update <name> --offer <id>` only after the person typed yes to the change it showed.
 - Never write or edit a skill's steps yourself. Never run `trail skills keep`, `trail skills on` or `trail skills offers on`: those are the person's.
 - When a run block comes in, start from its steps, in order.

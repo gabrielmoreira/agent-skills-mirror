@@ -76,6 +76,7 @@ Quality bar:
 - Review content accuracy and hierarchy before visual polish.
 - Use design-system/reference rules for web, deck, PDF, and poster surfaces.
 - Reject generic AI slop: weak hierarchy, cramped copy, flat templates, one-note palettes, and unverified exports.
+- For a composed frame (promo, poster, slide, end card), run the color-harmony pass before render: list every hue family on screen with its hex values and where it appears; the surrounding composition adds at most one accent family beyond the captured product or brand palette; neutrals, semantic-state colors and data-series palettes are listed but not counted; text contrast is at least 4.5:1, or 3:1 for large type, on its actual background. A composed frame that fails is REVISE before render; details in `references/design-critique-rubric.md`.
 - Require fresh visual QA for pages, slides, states, viewports, and CJK-heavy regions before PASS.
 
 Required inputs:

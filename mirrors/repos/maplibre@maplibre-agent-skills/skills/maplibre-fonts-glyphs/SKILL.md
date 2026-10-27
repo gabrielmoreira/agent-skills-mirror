@@ -1,12 +1,13 @@
 ---
 name: maplibre-fonts-glyphs
-description: Configuring fonts and glyphs for MapLibre GL JS and MapLibre Native — the style's `glyphs` URL, self-hosting or generating font PBFs, the GL JS local-font fallback (omitted `glyphs` or a failed glyph fetch), MapLibre Native's `font-faces` property, and Noto/CJK/RTL/Devanagari script handling. Use when text labels aren't rendering in the intended font, setting up a glyphs server, choosing between self-hosting and generating font PBFs, or handling non-Latin scripts.
-status: verified
+description: Configuring fonts and glyphs for MapLibre GL JS and MapLibre Native — the style's `glyphs` URL, self-hosting or generating font PBFs, the GL JS local-font fallback (omitted `glyphs` or a failed glyph fetch), the `font-faces` property both SDKs read, and CJK, right-to-left and Devanagari script handling. Use when text labels aren't rendering in the intended font, setting up a glyphs server, choosing between self-hosting and generating font PBFs, or handling non-Latin scripts.
+metadata:
+  status: verified
 ---
 
 # MapLibre Fonts and Glyphs
 
-MapLibre doesn't render text with fonts installed on the machine by default. It fetches precomputed glyph images from a server, or (GL JS, since 5.11.0) falls back to local/system fonts. This skill covers where glyphs come from, the GL JS local-font fallback, MapLibre Native's separate `font-faces` mechanism, and non-Latin script support. For font sizing, weight, and other visual-hierarchy decisions, see [maplibre-cartography](../maplibre-cartography/SKILL.md).
+MapLibre draws label text from precomputed glyph images that a server provides, or, for some scripts and setups, with local or web fonts. This skill covers where glyphs come from, the GL JS local-font fallback, the `font-faces` property, and non-Latin script support. For font sizing, weight, and other visual-hierarchy decisions, see [maplibre-cartography](../maplibre-cartography/SKILL.md).
 
 ## When to Use This Skill
 
@@ -16,7 +17,7 @@ MapLibre doesn't render text with fonts installed on the machine by default. It 
 - Rendering non-Latin scripts (CJK, Arabic, Hebrew, Devanagari, and others)
 - Rendering fonts locally/offline without a glyphs server, on GL JS or Native
 
-**Don't use this skill to pad an unrelated answer.** Fonts and glyphs only affect symbol layers that set `text-field`. A question about terrain, hillshade, or any other layer that draws no text gets a normal, focused answer that leaves fonts, glyphs, and label scripts out entirely, caveats and troubleshooting rows included.
+**Don't use this skill to pad an unrelated answer.** Fonts and glyphs only affect symbol layers that set `text-field`. A question about terrain, hillshade, or any other layer that draws no text gets a normal, focused answer that leaves fonts, glyphs, `font-faces`, and label scripts out entirely, caveats, troubleshooting rows, and optional label sections included.
 
 ## MapLibre renders text using SDF glyphs
 
@@ -25,9 +26,9 @@ MapLibre renders text using **SDF (signed-distance field) glyphs** — precomput
 - **`glyphs` omitted entirely.** A first-class local-fonts mode, not just error recovery. Every `text-font` name is resolved as a web font (loaded with `@font-face` or `document.fonts.load()`) or a system font, the same way a browser resolves a CSS `font-family` list. No PBF generation, no glyph server. See the [local fonts](https://maplibre.org/maplibre-gl-js/docs/examples/style-labels-with-local-fonts/) and [web fonts](https://maplibre.org/maplibre-gl-js/docs/examples/style-labels-with-web-fonts/) examples.
 - **`glyphs` is set but a specific glyph PBF fails to load** (wrong font name, 404, etc.). The same local-render path fires per glyph range instead of failing the tile, logging `Unable to load glyph range ... Rendering codepoint U+... locally instead.` Treat this as **cosmetic**, not correctness: the text renders in a generic local/system font that varies by OS/browser, but doesn't go invisible or break the layer.
 
-The PR author's own caveat still holds: **this is GL JS only.** The PR text declines to "encourage style authors to rely on non-CJK local text rendering yet," since Native still needs matching Android and iOS implementations for interoperability. A style that must look the same on GL JS and Native should keep serving glyphs explicitly instead of relying on the fallback.
+The PR author's own caveat still holds: **this fallback is GL JS only.** Native has no equivalent of omitting `glyphs` (tracked, still open: [maplibre-native#165](https://github.com/maplibre/maplibre-native/issues/165)), so a style that must look the same on GL JS and Native should keep serving glyphs explicitly instead of relying on the fallback.
 
-**Native's equivalent is a different property, not the same one.** Native doesn't support omitting `glyphs` to fall back to local fonts (tracked, still open: [maplibre-native#165](https://github.com/maplibre/maplibre-native/issues/165)). Instead it has its own `font-faces` property (Android ≥ 11.13.0, iOS ≥ 6.18.0 — **not implemented in GL JS**, [gl-js#6637](https://github.com/maplibre/maplibre-gl-js/issues/6637)), mapping each `text-font` name to one or more local font files with an explicit Unicode range you specify yourself. Same goal as GL JS's fallback — offline rendering without a glyph server — but manual instead of automatic: you get exact control over which file covers which codepoints, at the cost of working out those ranges yourself. Don't port `font-faces` config to a GL JS style, or the GL JS omit-`glyphs` pattern to Native — the two SDKs solve local fonts with unrelated mechanisms today.
+**`font-faces` names font files for `text-font` names, and both SDKs read it.** The style's root [`font-faces`](https://maplibre.org/maplibre-style-spec/root/#font-faces) property maps each `text-font` name to one or more font files, each optionally limited to a `unicode-range`. Characters those files cover are drawn from them, and everything else falls back to the `glyphs` URL. Native has read it since Android 11.13.0 and iOS 6.18.0, with HarfBuzz shaping, and GL JS since 6.7.0, with [`map.setFontFaces()`](https://maplibre.org/maplibre-gl-js/docs/API/classes/Map/#setfontfaces) to change it at runtime. GL JS loads the files through the browser, so each `url` must be one the browser can fetch: a Native config whose URLs point at files on the device needs URLs the web app serves before GL JS can use it.
 
 ## Setting the glyphs URL
 
@@ -59,22 +60,29 @@ const map = new maplibregl.Map({
 });
 ```
 
-**Other non-Latin scripts (Arabic, Hebrew, Thai, …) — need real glyphs.** `localIdeographFontFamily` does not apply here. Add the relevant Noto script font to the style layer's `text-font` fallback list and serve its glyph PBFs (or rely on the GL JS ≥ 5.11.0 local fallback, which is environment-dependent — see the top of this skill). Font names must match those the glyph server knows.
+**Arabic, Hebrew and other alphabetic scripts — need real glyphs.** `localIdeographFontFamily` does not apply here. Add the relevant Noto script font to the style layer's `text-font` fallback list and serve its glyph PBFs (or rely on the GL JS ≥ 5.11.0 local fallback, which is environment-dependent — see the top of this skill). Font names must match those the glyph server knows.
 
-**Devanagari, Khmer, and other scripts requiring ligatures/reordering — glyphs alone will not fix this.** MapLibre maps each Unicode codepoint to one glyph with no shaping engine (no HarfBuzz/Raqm), so it cannot form the conjuncts and reordering these scripts require — serving the correct font's PBFs will not produce correct-looking text. There is currently no configuration fix; this is a known architectural limitation.[3]
+**Devanagari, Khmer, Thai, Myanmar and other scripts that join letters with marks — on GL JS, drawn with the browser.** A `glyphs` URL serves one codepoint at a time, so it cannot supply a letter written together with its vowel signs, and before 6.7.0 GL JS drew these scripts letter by letter, with no fix short of upgrading. GL JS 6.7.0 began drawing them a grapheme cluster at a time with the browser's text engine, 6.9.0 improved it, and since 6.15.0 every letter of these scripts is drawn that way even when the style has a `glyphs` URL, so a word never mixes two fonts. The glyph server's PBFs for these scripts then go unused, and the face is whatever the browser finds for the `text-font` names. To choose it, declare the font file in `font-faces`:
 
 ```json
-{ "text-font": ["Noto Sans Regular", "Noto Sans Devanagari Regular"] }
+"font-faces": {
+  "Noto Sans Regular": [
+    {
+      "url": "https://example.com/fonts/NotoSansDevanagari-Regular.ttf",
+      "unicode-range": ["U+0900-097F"]
+    }
+  ]
+}
 ```
 
-**Arabic and Hebrew additionally need the RTL text plugin** for correct right-to-left shaping and ordering — glyph coverage alone is not enough. GL JS does not handle RTL by default[1]:
+On Native, `font-faces` is also what brings HarfBuzz shaping to these scripts.
+
+**Arabic and Hebrew — GL JS 6.9.0 and later need no plugin.** Since 6.9.0, GL JS shapes Arabic and lays out right-to-left text itself, and `setRTLTextPlugin` is deprecated. Before 6.9.0, load the right-to-left text plugin once, before creating the map:
 
 ```javascript
 import { setRTLTextPlugin } from 'maplibre-gl';
-setRTLTextPlugin('https://unpkg.com/maplibre-gl/dist/maplibre-gl-rtl-text.js', null, true);
+setRTLTextPlugin('https://unpkg.com/@mapbox/mapbox-gl-rtl-text@0.3.0/dist/mapbox-gl-rtl-text.js', false);
 ```
-
-Call this before initializing the map.
 
 ## Related Skills
 
@@ -84,6 +92,10 @@ Call this before initializing the map.
 
 ## References
 
-1. [**`setRTLTextPlugin` (MapLibre GL JS API)**](https://maplibre.org/maplibre-gl-js/docs/API/functions/setRTLTextPlugin/) — required for correct Arabic/Hebrew shaping
+1. [**`setRTLTextPlugin` (MapLibre GL JS API)**](https://maplibre.org/maplibre-gl-js/docs/API/functions/setRTLTextPlugin/) — deprecated since GL JS 6.9.0; needed for Arabic and Hebrew before it
 2. [**Use locally generated ideographs (MapLibre GL JS example)**](https://maplibre.org/maplibre-gl-js/docs/examples/use-locally-generated-ideographs/) — `localIdeographFontFamily` default and CJK rendering behavior
-3. [**"About Text Rendering in MapLibre"**](https://github.com/wipfli/about-text-rendering-in-maplibre) — SDF glyph architecture, codepoint-to-glyph mapping, and why shaping-dependent scripts (Devanagari, Khmer) don't render correctly
+3. [**`font-faces` (MapLibre Style Specification)**](https://maplibre.org/maplibre-style-spec/root/#font-faces) and the [GL JS CHANGELOG](https://github.com/maplibre/maplibre-gl-js/blob/main/CHANGELOG.md) (6.7.0, 6.9.0 and 6.15.0) — font files per `text-font` name, and complex and right-to-left scripts drawn without a plugin
+
+---
+
+**This skill is a snapshot.** Where a primary source contradicts it — the References above, MapLibre's current documentation, or what MapLibre does when you run it — that source wins. Follow it, then [report the disagreement](https://github.com/maplibre/maplibre-agent-skills/issues/new?template=ai-failure-report.md), citing the source and your MapLibre version: editing your installed copy helps no one else and is overwritten on the next update.

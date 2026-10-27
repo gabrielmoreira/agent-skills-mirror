@@ -221,6 +221,42 @@ class StandardJdbcMetadataTest {
     }
 
     @Test
+    void stripsSqlServerProcedureGroupSuffix() {
+        Connection conn = routineConnection(
+            "Microsoft SQL Server",
+            rows(
+                row("PROCEDURE_NAME", "dt_addtosourcecontrol;1", "REMARKS", null),
+                row("PROCEDURE_NAME", "dt_addtosourcecontrol_u;1", "REMARKS", null)
+            ),
+            rows()
+        );
+        MetadataListConstraints constraints =
+            new MetadataListConstraints(null, null, null, Collections.singletonList("PROCEDURE"));
+
+        List<ObjectInfo> objects = StandardJdbcMetadata.INSTANCE.listObjects(conn, profile, "", "APP", constraints);
+
+        assertEquals(2, objects.size());
+        assertEquals("dt_addtosourcecontrol", objects.get(0).getName());
+        assertEquals("dt_addtosourcecontrol_u", objects.get(1).getName());
+    }
+
+    @Test
+    void keepsRoutineSuffixesForNonSqlServerDrivers() {
+        Connection conn = routineConnection(
+            "PostgreSQL",
+            rows(row("PROCEDURE_NAME", "proc;1", "REMARKS", null)),
+            rows()
+        );
+        MetadataListConstraints constraints =
+            new MetadataListConstraints(null, null, null, Collections.singletonList("PROCEDURE"));
+
+        List<ObjectInfo> objects = StandardJdbcMetadata.INSTANCE.listObjects(conn, profile, "", "APP", constraints);
+
+        assertEquals(1, objects.size());
+        assertEquals("proc;1", objects.get(0).getName());
+    }
+
+    @Test
     void listsDataTypesFromJdbcTypeInfo() {
         Connection conn = connection(
             rows(),
@@ -1009,10 +1045,17 @@ class StandardJdbcMetadataTest {
     }
 
     private static Connection routineConnection(ResultSet procedures, ResultSet functions) {
+        return routineConnection(null, procedures, functions);
+    }
+
+    private static Connection routineConnection(String productName, ResultSet procedures, ResultSet functions) {
         DatabaseMetaData meta = proxy(DatabaseMetaData.class, new MethodHandler() {
             @Override
             public Object handle(Method method, Object[] args) {
                 String name = method.getName();
+                if ("getDatabaseProductName".equals(name)) {
+                    return productName;
+                }
                 if ("getTables".equals(name) || "getTableTypes".equals(name)) {
                     return rows();
                 }

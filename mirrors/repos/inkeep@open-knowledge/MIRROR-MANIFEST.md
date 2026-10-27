@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `inkeep/open-knowledge` — 26 default patterns, 6 followed patterns, 32 file(s) materialized.
+Mirror of `inkeep/open-knowledge` — 26 default patterns, 4 followed patterns, 30 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `inkeep/open-knowledge` — 26 default patterns, 6 followed patterns, 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 6 |
-| Files         | 32 |
+| Followed pats | 4 |
+| Files         | 30 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -55,8 +55,6 @@ Mirror of `inkeep/open-knowledge` — 26 default patterns, 6 followed patterns, 
 - `CONTRIBUTING.md`
 - `PRECEDENTS.md`
 - `lint-plugins/no-comments/README.md`
-- `CLA.md`
-- `.github/PULL_REQUEST_TEMPLATE.md`
 
 ## File Index
 
@@ -90,12 +88,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 24 | ✓ | [`packages/server/assets/skills/project/SKILL.md`](packages/server/assets/skills/project/SKILL.md) |
 | 25 | ✓ | [`packages/server/assets/skills/write-skill/SKILL.md`](packages/server/assets/skills/write-skill/SKILL.md) |
 | 26 | ✓ | [`scripts/linux-repo/README.md`](scripts/linux-repo/README.md) |
-| 27 | → | [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md) |
-| 28 | → | [`CLA.md`](CLA.md) |
-| 29 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 30 | → | [`lint-plugins/no-comments/README.md`](lint-plugins/no-comments/README.md) |
-| 31 | → | [`PRECEDENTS.md`](PRECEDENTS.md) |
-| 32 | → | [`README.md`](README.md) |
+| 27 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 28 | → | [`lint-plugins/no-comments/README.md`](lint-plugins/no-comments/README.md) |
+| 29 | → | [`PRECEDENTS.md`](PRECEDENTS.md) |
+| 30 | → | [`README.md`](README.md) |
 
 ---
 

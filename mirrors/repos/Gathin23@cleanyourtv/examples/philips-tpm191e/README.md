@@ -1,4 +1,4 @@
-# Philips 50PUS8505: single-session TPM191E notes
+# Philips TPM191E: device notes and additional observed unit states
 
 Checked on a Philips 50PUS8505, TP Vision TPM191E (`PH9M_EA_5599`), Android TV 12 / API 31, firmware `STT2.230526.001`. It shares the platform and firmware family of this folder's existing [`debloat.txt`](debloat.txt), but this was not a test of that full list.
 
@@ -73,3 +73,9 @@ unit" note; this section covers the launcher side.
   failed from Live TV too.
 - Everything above survived three restarts, one of them a cold start; the TV comes back on Live TV
   after power-on, as the firmware does by itself, and Home from there opens the launcher.
+
+## Another 65OLED804/12 unit: initial state only
+
+On 25 October 2026, a separate Philips TV reported `65OLED804/12` as its Android device name. Its system properties identify the platform as TPM191E / `PH9M_EA_5599`, MediaTek MT5887, Android TV 12 / API 31, fingerprint `Philips/PH9M_EA_5599/PH9M_EA_5599:12/STT2.230526.001/4215:user/release-keys`, matching the firmware above.
+
+At observation, Home still resolved to the stock `com.google.android.tvlauncher/.MainActivity`. The Freeview/TP Vision packages noted above were disabled. `com.google.android.youtube.tvmusic` was also disabled, but its disable history was not established. No additional package had been disabled for cleanup, and the shared debloat list was not applied to this unit. This is a starting-state observation, not a debloat or launcher test.

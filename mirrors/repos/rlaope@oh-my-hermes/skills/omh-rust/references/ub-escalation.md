@@ -71,8 +71,8 @@ If the executor cannot run Miri or the needed sanitizer, the change stays blocke
 
 Concept lineage only. The idea of a mandatory per-language reference gate that
 escalates on `unsafe`/FFI contact, and of a hypothesis-first native debugging
-loop, is adapted from the `programming` and `debugging` skills of the
-`omo-ai` plugin; the DAP-over-printf preference is adapted from `can1357/oh-my-pi`'s
+loop, is adapted from the `programming` and `debugging` skills of an
+upstream coding-agent plugin; the DAP-over-printf preference is adapted from `can1357/oh-my-pi`'s
 first-class debug adapter tooling. No upstream text is reproduced -- the
 wording, the artifact vocabulary, and the `prepared_not_observed` claim
 boundary are OMH's own, and OMH keeps its no-execution boundary: every command

@@ -54,6 +54,10 @@ All modules depend on `BackgroundJobBoard` from `src/utils/background-job-board.
 1. **Before Execution (`tool.execute.before`)**
    - Intercepts `task` tool calls on managed sessions
    - Generates a task label from `description`/`prompt` via `deriveTaskSessionLabel`
+   - Council seat-result assembly no longer lives here: it moved to
+     `../council-seats/` (the `Seats:` line is rewritten by that seam's own
+     hook before the task manager sees the prompt), so this hook is
+     purely delegation bookkeeping
    - Creates a `PendingTaskCall` record with call ID, parent session ID, agent type, and label
    - Resolves reusable task IDs from the job board; completed/reconciled jobs
      are reusable by alias, while timed-out running jobs become recoverable

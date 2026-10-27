@@ -121,7 +121,7 @@ is at least 2.5x the body size. Four equal cards, three equal plan tiles, a grid
 identical tiles: the eye lands nowhere and the screen reads as generated. An empty
 state owns its viewport instead of floating under the header, and a page ends on
 purpose. Depth in `.claude/rules/components.md` -> "Composition"; measured (as a
-signal, never a score) by `scripts/taste_audit.mjs`.
+signal, never a score) by `scripts/taste_audit.mjs`. Cards in one row share a height, nothing touches (8px minimum, 4px for a label to its own field), and gaps and the page gutter stay consistent: "Spacing" in the same rule file, measured by `scripts/verify_spacing.mjs`.
 
 **5. Output completeness.** A partial output is a broken output. Deliver full
 files, never placeholders (`// ... rest unchanged`). Asked for N components or
@@ -300,7 +300,7 @@ scripts/                  ← validate_tokens.py [file|dir] · contrast.py · va
                             · verify_interactive.mjs (a control that DECLARES aria-sort/pressed/expanded/
                               checked must change something on a real click. It catches the sort header that
                               draws a chevron and sorts nothing; `data-demo-state` opts a state rendering out)
-                            · verify_overflow.mjs (silently clipped text + overlapping controls: the
+                            · verify_overflow.mjs (silently clipped text + overlapping controls; verify_spacing.mjs: rows share a height, nothing touches; both catch the
                               failures that stay inside the page and survive a happy-path screenshot)
                             · render_framework_source.mjs (esbuild + react-dom/server against the real
                               stylesheets; every class it emits must resolve, then the render gates run on the

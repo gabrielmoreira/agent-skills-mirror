@@ -29,6 +29,13 @@ separate. It does not cover other property operations or agent authorization.
 
 ## How to get to it (user POV)
 
+Cold collection loads use a lightweight index and batched hierarchy context,
+then fetch diagnostic details for visible rows. Delay the index, hierarchy, and
+visible-row details independently when verifying `tasks/organize`: row heights,
+title bounds, and the first-row origin should remain stable. Test nested expansion,
+scrolling to more rows, and detail/back navigation; a collection projection must
+never suppress the full task instruction fetch.
+
 ### `new-task`
 
 Use New task from the global launcher, task list, or project task view.
@@ -39,7 +46,7 @@ Open `/issues` or a project’s Issues view; legacy `/tasks` links redirect.
 
 ### `task-detail`
 
-Open `/issues/:issueId` from a row, mention, or direct link.
+Open `/issues/:issueId` from a row, mention, or direct link. Cold opens show the instruction and recent exchange first. **More messages** appears only when earlier comments or runs are omitted and loads that history. Fresh tasks with no omitted history have no disclosure. A single legacy run with a truncated log offers **More run output** instead. **More task actions → Show task activity** loads full activity even for a single native run; incoming messages remain visible while the task stays open.
 
 ### `task-sharing`
 
@@ -87,7 +94,9 @@ Manual: Filter by status and assignee, change grouping/sort, open a task, and re
 
 ### `task-detail`
 
-Automated: [task detail](../../ui/src/pages/IssueDetail.test.tsx) covers component behavior, while [issue service](../../server/src/__tests__/issues-service.test.ts) covers server contracts.
+Manual: Open a long task with slow historical requests. Read the instruction and recent reply before those requests finish. Edit the title/status while enrichment is pending and verify saves and rollbacks. Expand **More messages**, verify scroll position and no duplicate replies, return to the task, and follow an older comment link. Leave a task open across new messages and runs and confirm none disappear. Reconnect after several turns and verify watched runs settle. Reopen after steering with more than 50 newer activity rows; the delivered message must not reappear in the queue.
+
+Automated: [cold-open reads](../../server/src/__tests__/task-cold-open.test.ts) cover bounded reads, event filtering and company denial. [Task detail](../../ui/src/pages/IssueDetail.test.tsx) covers component behavior, while [issue service](../../server/src/__tests__/issues-service.test.ts) covers server contracts.
 
 Failure markers have no dashed divider rules. An adjacent run error and
 no-live-execution-path notice show only the last error, with its details and

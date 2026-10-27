@@ -19,14 +19,15 @@ Usage examples:
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import json
 import math
 import os
 import re
 import sys
-import time
 from dataclasses import dataclass
-from datetime import date, datetime, timedelta
+from datetime import date, datetime
+from pathlib import Path
 from typing import Any
 
 try:
@@ -147,17 +148,37 @@ class PriceStats:
     prior_20d_return_pct: float | None = None
 
 
-class FMPClient:
-    """Minimal stable-first FMP OHLCV/profile client for optional enrichment."""
+_SHARED_FMP_MODULE = "_stockbee_episodic_pivot_analyzer_fmp_client"
 
-    HIST_URLS = [
-        "https://financialmodelingprep.com/stable/historical-price-eod/full",
-        "https://financialmodelingprep.com/api/v3/historical-price-full",
-    ]
-    PROFILE_URLS = [
-        "https://financialmodelingprep.com/stable/profile",
-        "https://financialmodelingprep.com/api/v3/profile",
-    ]
+
+def _load_shared_fmp():
+    """Load the sibling generated client by path (never `import fmp_client`)."""
+    module = sys.modules.get(_SHARED_FMP_MODULE)
+    if module is None:
+        path = Path(__file__).resolve().parent / "fmp_client.py"
+        spec = importlib.util.spec_from_file_location(_SHARED_FMP_MODULE, path)
+        module = importlib.util.module_from_spec(spec)
+        sys.modules[_SHARED_FMP_MODULE] = module
+        try:
+            spec.loader.exec_module(module)
+        except BaseException:
+            sys.modules.pop(_SHARED_FMP_MODULE, None)
+            raise
+    return module
+
+
+def _delegated(name: str) -> property:
+    def getter(self):
+        return getattr(self._client, name)
+
+    def setter(self, value):
+        setattr(self._client, name, value)
+
+    return property(getter, setter)
+
+
+class FMPClient:
+    """Thin adapter over the generated stable-only FMP client (#495 Batch C)."""
 
     def __init__(self, api_key: str | None, max_api_calls: int = 200):
         if requests is None:
@@ -165,48 +186,26 @@ class FMPClient:
         self.api_key = api_key or os.getenv("FMP_API_KEY")
         if not self.api_key:
             raise ValueError("FMP API key required for FMP enrichment")
-        self.max_api_calls = max_api_calls
-        self.api_calls = 0
-        self.session = requests.Session()
-        self.session.headers.update({"apikey": self.api_key})
+        shared = _load_shared_fmp()
+        self._budget_error = shared.ApiCallBudgetExceeded
+        self._client = shared.FMPClient(api_key=self.api_key, max_api_calls=max_api_calls)
+        self.cache: dict[str, Any] = {}
 
-    def _get(self, url: str, params: dict[str, Any]) -> Any | None:
-        if self.api_calls >= self.max_api_calls:
-            return None
-        self.api_calls += 1
-        try:
-            resp = self.session.get(url, params=params, timeout=30)
-            time.sleep(0.3)
-            if resp.status_code == 200:
-                return resp.json()
-        except requests.RequestException:
-            return None
-        return None
+    session = _delegated("session")
+    api_calls_made = _delegated("api_calls_made")
+    api_calls = _delegated("api_calls_made")
+    max_api_calls = _delegated("max_api_calls")
+    last_call_time = _delegated("last_call_time")
+    rate_limit_reached = _delegated("rate_limit_reached")
 
     def get_historical_prices(self, symbol: str, days: int = 90) -> list[dict[str, Any]]:
-        today = date.today()
-        params_stable = {
-            "symbol": symbol,
-            "from": (today - timedelta(days=days * 2 + 10)).isoformat(),
-            "to": today.isoformat(),
-        }
-        data = self._get(self.HIST_URLS[0], params_stable)
+        try:
+            data = self._client.fetch_eod_rows(symbol, days, pad_days=10)
+        except self._budget_error:
+            return []  # budget exhaustion stays soft for EP
         if isinstance(data, list) and data:
             return normalize_bars(data)[-days:]
-
-        data = self._get(f"{self.HIST_URLS[1]}/{symbol}", {"timeseries": days})
-        if isinstance(data, dict) and isinstance(data.get("historical"), list):
-            return normalize_bars(data["historical"])[-days:]
         return []
-
-    def get_profile(self, symbol: str) -> dict[str, Any]:
-        data = self._get(self.PROFILE_URLS[0], {"symbol": symbol})
-        if isinstance(data, list) and data:
-            return data[0]
-        data = self._get(f"{self.PROFILE_URLS[1]}/{symbol}", {})
-        if isinstance(data, list) and data:
-            return data[0]
-        return {}
 
     def stats(self) -> dict[str, Any]:
         return {"api_calls_made": self.api_calls, "max_api_calls": self.max_api_calls}
@@ -1135,7 +1134,7 @@ def parse_args() -> argparse.Namespace:
         help="stockbee-momentum-burst-screener JSON output for price/volume enrichment",
     )
     parser.add_argument("--prices-json", help="Offline OHLCV JSON by symbol; avoids FMP calls")
-    parser.add_argument("--api-key", help="FMP API key for optional OHLCV/profile enrichment")
+    parser.add_argument("--api-key", help="FMP API key for optional OHLCV enrichment")
     parser.add_argument(
         "--max-api-calls", type=int, default=200, help="FMP API call budget (default: 200)"
     )

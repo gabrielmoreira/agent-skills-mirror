@@ -3,6 +3,7 @@ package com.dbx.agent;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 public final class AgentProtocol {
     public static final int PROTOCOL_VERSION = 1;
@@ -57,6 +58,54 @@ public final class AgentProtocol {
     public static final String METHOD_CLOSE_NATIVE_JOB_SESSION = "close_native_job_session";
     public static final String METHOD_DISCONNECT = "disconnect";
     public static final String METHOD_SHUTDOWN = "shutdown";
+
+    // PL/SQL debugger (OceanBase Oracle mode only). These methods are served by
+    // the oceanbase-oracle agent; other agents reject them with the default
+    // DatabaseAgent implementation. They are intentionally excluded from
+    // COMMON_METHODS so the handshake of unrelated drivers stays unchanged.
+    public static final String METHOD_PL_DEBUG_PROBE = "pl_debug_probe";
+    public static final String METHOD_PL_DEBUG_INSPECT = "pl_debug_inspect";
+    public static final String METHOD_PL_DEBUG_RESOLVE_TARGET = "pl_debug_resolve_target";
+    public static final String METHOD_PL_DEBUG_COMPILE = "pl_debug_compile";
+    public static final String METHOD_PL_DEBUG_COMPILE_STATUS = "pl_debug_compile_status";
+    public static final String METHOD_PL_DEBUG_START = "pl_debug_start";
+    public static final String METHOD_PL_DEBUG_SET_BREAKPOINTS = "pl_debug_set_breakpoints";
+    public static final String METHOD_PL_DEBUG_DELETE_BREAKPOINTS = "pl_debug_delete_breakpoints";
+    public static final String METHOD_PL_DEBUG_LIST_BREAKPOINTS = "pl_debug_list_breakpoints";
+    public static final String METHOD_PL_DEBUG_RESUME = "pl_debug_resume";
+    public static final String METHOD_PL_DEBUG_STEP_OVER = "pl_debug_step_over";
+    public static final String METHOD_PL_DEBUG_STEP_IN = "pl_debug_step_in";
+    public static final String METHOD_PL_DEBUG_STEP_OUT = "pl_debug_step_out";
+    public static final String METHOD_PL_DEBUG_RESUME_IGNORE_BREAKPOINTS = "pl_debug_resume_ignore_breakpoints";
+    public static final String METHOD_PL_DEBUG_ABORT = "pl_debug_abort";
+    public static final String METHOD_PL_DEBUG_GET_VARIABLES = "pl_debug_get_variables";
+    public static final String METHOD_PL_DEBUG_SET_VALUE = "pl_debug_set_value";
+    public static final String METHOD_PL_DEBUG_SET_EXCEPTION_BREAKPOINT = "pl_debug_set_exception_breakpoint";
+    public static final String METHOD_PL_DEBUG_SET_BREAKPOINT_ENABLED = "pl_debug_set_breakpoint_enabled";
+    public static final String METHOD_PL_DEBUG_GET_STACK = "pl_debug_get_stack";
+    public static final String METHOD_PL_DEBUG_GET_LOG = "pl_debug_get_log";
+    public static final String METHOD_PL_DEBUG_CLOSE = "pl_debug_close";
+    public static final String METHOD_PL_DEBUG_STATUS = "pl_debug_status";
+    public static final String METHOD_PL_DEBUG_HEARTBEAT = "pl_debug_heartbeat";
+    public static final String METHOD_PL_DEBUG_GET_VALUE = "pl_debug_get_value";
+    public static final String METHOD_PL_DEBUG_OPERATION_STATUS = "pl_debug_operation_status";
+    public static final String METHOD_PL_DEBUG_GET_LOG_PAGE = "pl_debug_get_log_page";
+    public static final String METHOD_PL_DEBUG_GET_RESULTS = "pl_debug_get_results";
+    public static final String METHOD_PL_DEBUG_GET_RESULT_PAGE = "pl_debug_get_result_page";
+    public static final String METHOD_PL_DEBUG_EXECUTE = "pl_debug_execute";
+
+    public static final Set<String> PL_DEBUG_SESSION_METHODS = Set.of(
+        METHOD_PL_DEBUG_START, METHOD_PL_DEBUG_COMPILE, METHOD_PL_DEBUG_COMPILE_STATUS,
+        METHOD_PL_DEBUG_SET_BREAKPOINTS, METHOD_PL_DEBUG_DELETE_BREAKPOINTS,
+        METHOD_PL_DEBUG_LIST_BREAKPOINTS, METHOD_PL_DEBUG_RESUME, METHOD_PL_DEBUG_STEP_OVER,
+        METHOD_PL_DEBUG_STEP_IN, METHOD_PL_DEBUG_STEP_OUT, METHOD_PL_DEBUG_RESUME_IGNORE_BREAKPOINTS,
+        METHOD_PL_DEBUG_ABORT, METHOD_PL_DEBUG_GET_VARIABLES, METHOD_PL_DEBUG_SET_VALUE,
+        METHOD_PL_DEBUG_SET_EXCEPTION_BREAKPOINT, METHOD_PL_DEBUG_SET_BREAKPOINT_ENABLED,
+        METHOD_PL_DEBUG_GET_STACK, METHOD_PL_DEBUG_GET_LOG, METHOD_PL_DEBUG_CLOSE,
+        METHOD_PL_DEBUG_STATUS, METHOD_PL_DEBUG_HEARTBEAT, METHOD_PL_DEBUG_GET_VALUE,
+        METHOD_PL_DEBUG_GET_LOG_PAGE, METHOD_PL_DEBUG_EXECUTE, METHOD_PL_DEBUG_OPERATION_STATUS,
+        METHOD_PL_DEBUG_GET_RESULTS, METHOD_PL_DEBUG_GET_RESULT_PAGE
+    );
 
     public static final String MONGO_METHOD_LIST_DATABASES = "list_databases";
     public static final String MONGO_METHOD_LIST_COLLECTIONS = "list_collections";
@@ -385,7 +434,7 @@ public final class AgentProtocol {
         if (!supported) return result;
         java.util.ArrayList<String> capabilities = new java.util.ArrayList<>(result.capabilities);
         capabilities.add(CAPABILITY_EXACT_METADATA_IDENTITY_V1);
-        return new HandshakeResult(result.protocolVersion, result.agentProtocolVersion, capabilities);
+        return new HandshakeResult(result.protocolVersion, result.agentProtocolVersion, capabilities, result.plDebug);
     }
 
     public static HandshakeResult multiSessionHandshakeResult() {
@@ -437,15 +486,33 @@ public final class AgentProtocol {
         return new HandshakeResult(MULTI_SESSION_PROTOCOL_VERSION, MULTI_SESSION_PROTOCOL_VERSION, capabilities);
     }
 
+    public static HandshakeResult withNativePlDebug(HandshakeResult result, boolean nativePlDebug,
+                                                   boolean valueOperationStatus, boolean breakpointOperationStatus,
+                                                   boolean retainedResults) {
+        if (!nativePlDebug) return result;
+        java.util.ArrayList<String> capabilities = new java.util.ArrayList<>(result.capabilities);
+        if (retainedResults) capabilities.add("pl_debug_retained_results_v1");
+        return new HandshakeResult(result.protocolVersion, result.agentProtocolVersion, capabilities,
+            java.util.Map.of("contractVersion", 1, "helperObjects", false, "setValueOperationStatus", valueOperationStatus,
+                "breakpointOperationStatus", breakpointOperationStatus));
+    }
+
     public static final class HandshakeResult {
         private final int protocolVersion;
         private final int agentProtocolVersion;
         private final List<String> capabilities;
+        private final java.util.Map<String, Object> plDebug;
 
         private HandshakeResult(int protocolVersion, int agentProtocolVersion, List<String> capabilities) {
+            this(protocolVersion, agentProtocolVersion, capabilities, null);
+        }
+
+        private HandshakeResult(int protocolVersion, int agentProtocolVersion, List<String> capabilities,
+                                java.util.Map<String, Object> plDebug) {
             this.protocolVersion = protocolVersion;
             this.agentProtocolVersion = agentProtocolVersion;
             this.capabilities = capabilities;
+            this.plDebug = plDebug;
         }
     }
 }

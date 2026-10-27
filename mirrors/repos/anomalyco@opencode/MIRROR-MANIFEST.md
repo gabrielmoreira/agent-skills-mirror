@@ -7,7 +7,7 @@ ref: dev
 
 # Mirror Manifest
 
-Mirror of `anomalyco/opencode` — 26 default patterns, 2 followed patterns, 88 file(s) materialized.
+Mirror of `anomalyco/opencode` — 26 default patterns, 2 followed patterns, 89 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `anomalyco/opencode` — 26 default patterns, 2 followed patterns, 88 
 | Ref           | `dev` |
 | Default pats  | 26 |
 | Followed pats | 2 |
-| Files         | 88 |
+| Files         | 89 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -99,8 +99,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 37 | ✓ | [`packages/desktop/AGENTS.md`](packages/desktop/AGENTS.md) |
 | 38 | ✓ | [`packages/desktop/icons/README.md`](packages/desktop/icons/README.md) |
 | 39 | ✓ | [`packages/desktop/README.md`](packages/desktop/README.md) |
-| 40 | ✓ | [`packages/gui-extensions/AGENTS.md`](packages/gui-extensions/AGENTS.md) |
-| 41 | ✓ | [`packages/gui-extensions/README.md`](packages/gui-extensions/README.md) |
+| 40 | ✓ | [`packages/gui-plugins/AGENTS.md`](packages/gui-plugins/AGENTS.md) |
+| 41 | ✓ | [`packages/gui-plugins/README.md`](packages/gui-plugins/README.md) |
 | 42 | ✓ | [`packages/http-recorder/README.md`](packages/http-recorder/README.md) |
 | 43 | ✓ | [`packages/httpapi-codegen/README.md`](packages/httpapi-codegen/README.md) |
 | 44 | ✓ | [`packages/plugin-browser/README.md`](packages/plugin-browser/README.md) |
@@ -131,23 +131,24 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 69 | ✓ | [`packages/session-ui/performance/markdown-lifetime/README.md`](packages/session-ui/performance/markdown-lifetime/README.md) |
 | 70 | ✓ | [`packages/stats/AGENTS.md`](packages/stats/AGENTS.md) |
 | 71 | ✓ | [`packages/stats/README.md`](packages/stats/README.md) |
-| 72 | ✓ | [`packages/storybook/playwright/README.md`](packages/storybook/playwright/README.md) |
+| 72 | ✓ | [`packages/stories/playwright/README.md`](packages/stories/playwright/README.md) |
 | 73 | ✓ | [`packages/tui/AGENTS.md`](packages/tui/AGENTS.md) |
 | 74 | ✓ | [`packages/ui/AGENTS.md`](packages/ui/AGENTS.md) |
-| 75 | ✓ | [`packages/web/README.md`](packages/web/README.md) |
-| 76 | ✓ | [`salesforce/README.md`](salesforce/README.md) |
-| 77 | ✓ | [`script/ast-grep/effect-simplifications/README.md`](script/ast-grep/effect-simplifications/README.md) |
-| 78 | ✓ | [`sdks/vscode/README.md`](sdks/vscode/README.md) |
-| 79 | ✓ | [`services/changelog/README.md`](services/changelog/README.md) |
-| 80 | ✓ | [`services/files/README.md`](services/files/README.md) |
-| 81 | ✓ | [`services/README.md`](services/README.md) |
-| 82 | ✓ | [`services/update/README.md`](services/update/README.md) |
-| 83 | ✓ | [`services/www/AGENTS.md`](services/www/AGENTS.md) |
-| 84 | ✓ | [`services/www/README.md`](services/www/README.md) |
-| 85 | ✓ | [`services/www/src/docs/AGENTS.md`](services/www/src/docs/AGENTS.md) |
-| 86 | ✓ | [`specs/v2/README.md`](specs/v2/README.md) |
-| 87 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 88 | → | [`README.md`](README.md) |
+| 75 | ✓ | [`packages/ui/src/motion/README.md`](packages/ui/src/motion/README.md) |
+| 76 | ✓ | [`packages/web/README.md`](packages/web/README.md) |
+| 77 | ✓ | [`salesforce/README.md`](salesforce/README.md) |
+| 78 | ✓ | [`script/ast-grep/effect-simplifications/README.md`](script/ast-grep/effect-simplifications/README.md) |
+| 79 | ✓ | [`sdks/vscode/README.md`](sdks/vscode/README.md) |
+| 80 | ✓ | [`services/changelog/README.md`](services/changelog/README.md) |
+| 81 | ✓ | [`services/files/README.md`](services/files/README.md) |
+| 82 | ✓ | [`services/README.md`](services/README.md) |
+| 83 | ✓ | [`services/update/README.md`](services/update/README.md) |
+| 84 | ✓ | [`services/www/AGENTS.md`](services/www/AGENTS.md) |
+| 85 | ✓ | [`services/www/README.md`](services/www/README.md) |
+| 86 | ✓ | [`services/www/src/docs/AGENTS.md`](services/www/src/docs/AGENTS.md) |
+| 87 | ✓ | [`specs/v2/README.md`](specs/v2/README.md) |
+| 88 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 89 | → | [`README.md`](README.md) |
 
 ---
 

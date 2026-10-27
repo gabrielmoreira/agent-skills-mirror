@@ -110,7 +110,7 @@ echo "Install type: $INSTALL_TYPE at $INSTALL_DIR"
 ```
 
 The install type and the absolute directory printed above are used in all subsequent steps.
-Carry `INSTALL_TYPE`, `INSTALL_DIR`, `OLD_VERSION`, and later `NEW_VERSION` forward explicitly: tool calls may run in fresh shells, so start each later block by assigning them from the captured output (for example `INSTALL_DIR=/abs/path/printed/above`). Do not rely on a prior call's working directory or shell variables. Every block that changes files first checks `INSTALL_DIR` and stops before any git command when it is unset, empty, missing, unreadable, or not gstack's own checkout.
+Carry `INSTALL_TYPE`, `INSTALL_DIR`, `OLD_VERSION`, and later `UPSTREAM_REF` and `NEW_VERSION` forward explicitly: tool calls may run in fresh shells, so start each later block by assigning them from the captured output (for example `INSTALL_DIR=/abs/path/printed/above`). Do not rely on a prior call's working directory or shell variables. Every block that changes files first checks `INSTALL_DIR` and stops before any git command when it is unset, empty, missing, unreadable, or not gstack's own checkout.
 
 ### Step 3: Save old version
 
@@ -135,12 +135,19 @@ is saved in a rescue ref instead of being left as conflict markers:
 cd -- "${INSTALL_DIR:?INSTALL_DIR is not set: re-run Step 2 and substitute the printed path}" || exit 1
 { [ -f VERSION ] && [ -f setup ] && [ -f bin/gstack-config ] && _p=$(git rev-parse --show-prefix 2>/dev/null) && [ -z "$_p" ] && [ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" = true ]; } || { echo "ERROR: $INSTALL_DIR is not a gstack checkout; nothing was changed. Re-run Step 2." >&2; exit 1; }
 git fetch origin
+# Channel ref (docs/releases.md): origin/stable for a team install, else origin/main
+_CH=$(bash bin/gstack-update-channel.sh --fetch-ref 2>&1) || _CH=origin/main
+echo "$_CH"; UPSTREAM_REF=$(printf '%s\n' "$_CH" | tail -1)
+echo "UPSTREAM_REF=${UPSTREAM_REF:=origin/main}"
 # Same pre-advance check as the auto-updater: the incoming release's Bun floor,
 # judged by bash whatever this tool shell is (zsh does not word-split).
-HOLD=$(bash -c '. bin/gstack-bun-version.sh && gstack_bun_incoming_hold . origin/main' 2>/dev/null) && { case "$HOLD" in bun-version-unreadable*) echo "BUN_VERSION_UNREADABLE: $HOLD; nothing was changed" >&2 ;; *) echo "BUN_TOO_OLD: $HOLD; nothing was changed" >&2 ;; esac; exit 1; }
+HOLD=$(UPSTREAM_REF="$UPSTREAM_REF" bash -c '. bin/gstack-bun-version.sh && gstack_bun_incoming_hold . "$UPSTREAM_REF"' 2>/dev/null) && { case "$HOLD" in bun-version-unreadable*) echo "BUN_VERSION_UNREADABLE: $HOLD; nothing was changed" >&2 ;; *) echo "BUN_TOO_OLD: $HOLD; nothing was changed" >&2 ;; esac; exit 1; }
 PRE_UPGRADE_COMMIT=$(git rev-parse HEAD)
 echo "PRE_UPGRADE_COMMIT=$PRE_UPGRADE_COMMIT"
-FF=$(bash bin/gstack-ff-update . origin/main); FF_RC=$?
+# Past the release (by ancestry, or by VERSION in a depth-1 clone): wait for stable; nothing moves back.
+if [ "$UPSTREAM_REF" = origin/stable ] && [ "$(git rev-parse origin/stable)" != "$PRE_UPGRADE_COMMIT" ] && ! git merge-base --is-ancestor HEAD origin/stable 2>/dev/null \
+  && { git merge-base --is-ancestor origin/stable HEAD 2>/dev/null || [ "$(printf '%s\n%s\n' "$(git show origin/stable:VERSION)" "$(cat VERSION)" | sort -V | tail -1)" = "$(cat VERSION)" ]; }; then echo "AHEAD_OF_STABLE"; exit 0; fi
+FF=$(bash bin/gstack-ff-update . "$UPSTREAM_REF"); FF_RC=$?
 echo "$FF"
 case "$FF_RC" in
   0) if ./setup --refresh-registered; then echo "FF_OK"; else echo "SETUP_FAILED: git update succeeded; stop and inspect setup output (previous commit: $PRE_UPGRADE_COMMIT)" >&2; exit 1; fi ;;
@@ -164,6 +171,7 @@ their conflicting local edits were saved there and relay the `Inspect`,
 checkout with `git apply -3`, never `stash apply` in the install;
 `unmerged=1` means the rescue needs manual resolution).
 On `FF_STOPPED`, STOP and relay the reason: nothing was changed.
+On `AHEAD_OF_STABLE`, STOP: the checkout is already past the weekly release, so nothing changes until the next cut (`gstack-config set update_channel main` follows every merge). On a `fetching origin/stable failed` line above, STOP and relay it; nothing was changed.
 `ff-busy` means another gstack update is running (retry in a minute);
 `autostash-unrecoverable` names what is in the way (an untracked file the
 release adds, or another git command); `index-unreadable` means the checkout's
@@ -176,7 +184,7 @@ On `SETUP_FAILED`, STOP; keep user changes and report the recovery commit. There
 --hard` DESTROYS things: a clean tree with unpushed local commits still loses
 those commits. Gate it:
 
-1. Run `git status --porcelain` and `git rev-list origin/main..HEAD --oneline`
+1. Run `git status --porcelain` and `git rev-list "${UPSTREAM_REF:?}"..HEAD --oneline`
    in `$INSTALL_DIR`.
 2. If BOTH are empty, the reset is provably safe — run the fallback block
    below without asking.
@@ -193,7 +201,7 @@ cd -- "${INSTALL_DIR:?INSTALL_DIR is not set: re-run Step 2 and substitute the p
 # Regenerable render-footprint dirt (setup re-renders it) never goes into the stash.
 git checkout -- 'SKILL.md' '*/SKILL.md' '*/sections/*.md' 2>/dev/null || true
 STASH_OUTPUT=$(git stash 2>&1)
-git reset --hard origin/main
+git reset --hard "${UPSTREAM_REF:?UPSTREAM_REF is not set: substitute the value Step 4 printed}"
 ./setup --refresh-registered
 ```
 If `$STASH_OUTPUT` contains "Saved working directory", warn the user: "Note: local changes were stashed (any modified generated SKILL.md/sections files were discarded first — they regenerate on setup). Run `git stash pop` in the skill directory to restore your own changes."
@@ -280,40 +288,30 @@ Only on `LOCAL_SYNC_OK`, tell user: "Also updated vendored copy at `$LOCAL_GSTAC
 
 ### Step 4.75: Run version migrations
 
-After `./setup` completes, run any migration scripts for versions between the old
-and new version. Migrations handle state fixes that `./setup` alone can't cover
-(stale config, orphaned files, directory structure changes).
+After `./setup`, run the migrations in `gstack-upgrade/migrations/` (idempotent
+`v{VERSION}.sh` scripts; CONTRIBUTING.md says how to add one) newer than the old
+version: they fix state `./setup` alone cannot (stale config, orphaned files).
 
 ```bash
 MIGRATIONS_DIR="${INSTALL_DIR:?INSTALL_DIR is not set: re-run Step 2 and substitute the printed path}/gstack-upgrade/migrations"
 : "${OLD_VERSION:?OLD_VERSION is not set: substitute the value Step 3 printed}"
 if [ -d "$MIGRATIONS_DIR" ]; then
   for migration in $(find "$MIGRATIONS_DIR" -maxdepth 1 -name 'v*.sh' -type f 2>/dev/null | sort -V); do
-    # Extract version from filename: v0.15.2.0.sh → 0.15.2.0
     m_ver="$(basename "$migration" .sh | sed 's/^v//')"
-    # Run if this migration version is newer than old version
-    # (simple string compare works for dotted versions with same segment count)
     if [ "$OLD_VERSION" != "unknown" ] && [ "$(printf '%s\n%s' "$OLD_VERSION" "$m_ver" | sort -V | head -1)" = "$OLD_VERSION" ] && [ "$OLD_VERSION" != "$m_ver" ]; then
       echo "Running migration $m_ver..."
-      # GSTACK_INSTALL_DIR: migrations that clean the INSTALL (not just
-      # ~/.gstack state) default to ~/.claude/skills/gstack when unset —
-      # a repo-local install would silently no-op without this.
+      # Without GSTACK_INSTALL_DIR a migration that cleans the install assumes ~/.claude/skills/gstack.
       GSTACK_INSTALL_DIR="$INSTALL_DIR" bash "$migration" || echo "  Warning: migration $m_ver had errors (non-fatal)"
     fi
   done
 fi
 ```
 
-Migrations are idempotent bash scripts in `gstack-upgrade/migrations/`. Each is named
-`v{VERSION}.sh` and runs only when upgrading from an older version. See CONTRIBUTING.md
-for how to add new migrations.
-
 ### Step 4.8: Stop any stale daemon (unconditional)
 
-A browse daemon started before the upgrade keeps serving the OLD binary's code
-until it is stopped — it survives `git reset --hard` and `./setup` because the
-running process holds the old executable. Always run this step, using
-the install directory detected in Step 2.
+A browse daemon started before the upgrade keeps running the old binary (the
+reset and `./setup` do not stop it), so always run this step with the install
+directory from Step 2.
 
 ```bash
 INSTALL_DIR_PLACEHOLDER="<install dir from Step 2>"
@@ -338,8 +336,7 @@ else
 fi
 ```
 
-Replace `<install dir from Step 2>` with the actual install directory before
-running. Interpret the `DAEMON_CHECK` result:
+Substitute the install directory from Step 2, then act on `DAEMON_CHECK`:
 
 1. **`stale-responsive` + `DAEMON_STOPPED=yes`:** Tell the user "Stopped the
    old browse daemon (binary {OLD_HASH} → {NEW_HASH}). The next browse command
@@ -350,7 +347,7 @@ running. Interpret the `DAEMON_CHECK` result:
    busy right now. When it finishes, stop it with `browse stop` — or force it
    immediately with `browse --force-restart stop` (loses that session's
    tabs/cookies/logins)."
-3. **`none` / `dead` / `current`:** Nothing to do — say nothing.
+3. **`none` / `dead` / `current`:** say nothing.
 
 ### Step 5: Write marker + clear cache
 
@@ -364,7 +361,7 @@ rm -f "$GSTACK_STATE_ROOT"/update-snoozed
 
 ### Step 6: Show What's New
 
-Read `$INSTALL_DIR/CHANGELOG.md`. Find all version entries between the old version and the new version. Summarize as 5-7 bullets grouped by theme. Don't overwhelm — focus on user-facing changes. Skip internal refactors unless they're significant.
+Read `$INSTALL_DIR/CHANGELOG.md`. Find all version entries between the old version and the new version. Summarize as 5-7 bullets grouped by theme, user-facing changes first.
 
 Four fields: summarize `git -C "$INSTALL_DIR" log --oneline <PRE_UPGRADE_COMMIT>..HEAD` (≤7 bullets) as "gstack v{old}, main at {sha}".
 
@@ -382,7 +379,7 @@ Happy shipping!
 
 ### Step 7: Continue
 
-After showing What's New, continue with whatever skill the user originally invoked. The upgrade is done — no further action needed.
+Continue with the skill the user originally invoked; the upgrade is done.
 
 ---
 
@@ -395,7 +392,6 @@ When invoked directly as `/gstack-upgrade` (not from a preamble):
 ~/.claude/skills/gstack/bin/gstack-update-check --force 2>/dev/null || \
 .claude/skills/gstack/bin/gstack-update-check --force 2>/dev/null || true
 ```
-Use the output to determine if an upgrade is available.
 
 2. If `UPGRADE_AVAILABLE` (three or four fields): follow Steps 2-6 above.
 

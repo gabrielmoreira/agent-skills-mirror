@@ -8,7 +8,7 @@ Providers, API keys, commands, and how to write prompts and rubrics all live in 
 
 ## Correctness Validation
 
-Please review [What a skill's status means](README.md#what-a-skills-status-means) in the README. Everything below is how a contribution actually gets to `status: verified`, and how that's maintained.
+Please review [What Status Means](README.md#what-status-means) in the README. Everything below is how a contribution actually gets to `status: verified`, and how that's maintained.
 
 Correctness is established two ways:
 
@@ -76,7 +76,7 @@ Then:
 4. **Write the results doc**: `evals/results/maplibre-<name>.md`, one row per test — baseline and with-skill outcome, failure mode compressed into the cell — a `Run:` header line (date, model, judge), closing with a bold pass/fail tally. [`maplibre-cartography.md`](evals/results/maplibre-cartography.md) and [`maplibre-v6-migration.md`](evals/results/maplibre-v6-migration.md) are the pattern to copy. (A handful of older results docs use a longer full-transcript format instead — left as-is, not something to replicate.)
 5. **Test with an AI assistant** before marking the PR ready: `npx skills add .` to install the skill locally, then ask it the questions from your rubric to confirm the fix holds.
 
-If the eval setup is onerous, ship as `status: provisional` instead — but accept that your content may be edited or dropped if it later turns out not to match a verified gap. See [What a skill's status means](README.md#what-a-skills-status-means).
+If the eval setup is onerous, ship as `status: provisional` instead — but accept that your content may be edited or dropped if it later turns out not to match a verified gap. See [What Status Means](README.md#what-status-means).
 
 ### Edit an existing skill
 
@@ -103,7 +103,8 @@ skills/maplibre-your-skill-name/
 ---
 name: maplibre-example-skill
 description: Expert guidance on [domain] for MapLibre applications
-status: provisional
+metadata:
+  status: provisional
 ---
 
 # MapLibre [Domain] Skill
@@ -129,7 +130,8 @@ Use this skill when:
 
 - `name` must match the directory name exactly (e.g. `maplibre-tile-sources`).
 - `description` should be concise (1–2 sentences).
-- `status` is `verified`, `provisional`, or `process` — see [What a skill's status means](README.md#what-a-skills-status-means).
+- `metadata.status` is `verified`, `provisional`, or `process` — see [What Status Means](README.md#what-status-means).
+- Any other key of our own goes under `metadata` too. The [Agent Skills spec](https://agentskills.io/specification) allows six top-level keys, and claude.ai uploads and the Skills API reject a file with any other.
 - The closing footer is required and identical in every skill. A skill directory is all an install copies, so this is the only route back to us that an installed user has.
 - Content must include actionable guidance, not just reference text.
 
@@ -162,6 +164,8 @@ The exemption is narrow. The test is whether the skill's correctness depends on 
 
 Anything asserting how MapLibre behaves fails that test, whatever the front matter says — "it's a process skill" does not carry untested MapLibre content past the bar. Where a process skill needs a MapLibre example, it should point at a shipped skill that already carries the claim rather than restating it.
 
+A process skill only maintainers need sets `metadata.internal: true`, so `npx skills add` does not install it.
+
 Process skills are reviewed by reading them against the files they describe, and they go stale when this repo's process changes rather than when MapLibre ships.
 
 ## Development setup
@@ -191,7 +195,7 @@ Run `npm run check` frequently while developing, not just before pushing — it 
 5. **Model pins** — provider ids must match the pinned generator/judge
 6. **Eval request sizes** — every eval answer keeps at least half its token budget, and every config fits in a day's generator tokens ([details](evals/README.md#request-size))
 7. **Eval tripwires** — no `not-icontains` check matches the skill its test injects ([details](evals/README.md#writing-eval-prompts))
-8. **Skills validation** — YAML frontmatter and structure
+8. **Skills validation** — front matter against the Agent Skills spec, `metadata.status`, and the closing footer
 
 All checks pass when the output ends with:
 
@@ -340,7 +344,7 @@ Reference these sources in skill content wherever possible:
 
 Due to similarities and shared history, though it shouldn't strictly be necessary, we acknowledge that this project may adapt structure or content from [mapbox-agent-skills](https://github.com/mapbox/mapbox-agent-skills) (MIT © Mapbox). Please, if you find yourself adding or changing content that is adapted from that repository:
 
-- **Preserve Mapbox's copyright.** The [NOTICE](NOTICE) file and [LICENSE.md](LICENSE.md) already state that portions are adapted from mapbox-agent-skills and remain Copyright (c) Mapbox, Inc.
+- **Preserve Mapbox's copyright.** The [NOTICE](NOTICE) file already states that portions are adapted from mapbox-agent-skills and remain Copyright (c) Mapbox, Inc.
 - For a skill or file that is substantially adapted from a Mapbox skill, you may add a short line at the top of the file, e.g.:
   `Adapted from mapbox-agent-skills. Copyright (c) Mapbox, Inc. Modifications (c) MapLibre and contributors.`
 - New, original content only needs the project's usual license (see [LICENSE.md](LICENSE.md)).

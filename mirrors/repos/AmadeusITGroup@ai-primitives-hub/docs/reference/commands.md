@@ -37,6 +37,28 @@ The lockfile keeps bundle-relative `path` entries with their checksums. For item
 
 Repository-scope VS Code and Copilot CLI targets keep their own `.github/` writer and are not affected.
 
+## Plugin Create (CLI)
+
+`ai-primitives-hub plugin create <name> [--path <dir>] [--collection <id>] [--description <text>] [--version <version>] [--author <name>]`
+
+Writes `<dir>/<name>/plugin.json` (default `plugins/<name>/plugin.json`), an Agent Plugins 1.0.0 manifest with `$schema`, `name`, `version` (default `1.0.0`), `description` (default `A <name> plugin`) and an object `author` (default: the `USER` environment variable, else `Your Name`). The manifest passes `collection validate` as written.
+
+- `<name>` must be 1–64 characters of lowercase letters, digits, `.` and `-`, start and end with a letter or digit, and contain no `--` or `..`. An invalid name fails with `PRIMITIVE.INVALID_NAME` and a suggested valid name, and nothing is written.
+- An existing `plugin.json` is never overwritten; the command fails with `PRIMITIVE.ALREADY_EXISTS`.
+- `--collection <id>` adds a `kind: plugin` item to `collections/<id>.collection.yml`. The collection is read before anything is written, so a missing or unreadable collection fails with `FS.COLLECTION_UPDATE_FAILED` and writes nothing. If writing the collection fails, the files the command created are removed.
+
+See [Plugin Items](../author-guide/collection-schema.md#plugin-items) for the plugin layout.
+
+## Doctor Diagnostics (CLI)
+
+`ai-primitives-hub doctor diagnostics [--primitives [--kinds <csv>] [--targets <csv>] [--scopes <csv>]] [--retain-workspace] [-v] [-o <format>]`
+
+Without `--primitives`, the command runs an end-to-end smoke test in a throwaway workspace whose home, XDG and temp directories are sandboxed. With `--primitives`, it runs the primitive install matrix instead: one fixture bundle per primitive kind (`plugin` is not covered yet), validated and built, then installed with `install --from` on every target type at user and repository scope, and uninstalled after a successful install.
+
+- `--kinds`, `--targets` and `--scopes` (`user`, `repository`) take comma-separated values and narrow the cases. They are only valid with `--primitives`. An unknown value, an empty list or a filter that matches no case fails with `USAGE.INVALID_FLAG` before anything is written.
+- Each bundle and case is reported as `pass`, `known-gap` (a failure the product is known to have today, matched exactly) or `fail`. Known gaps that no longer occur are listed as unused (`[WARN]` in text output) and do not fail the run.
+- The exit code is 0 when nothing fails, 1 otherwise. `-o json|yaml|ndjson` prints the full report; `--retain-workspace` keeps the workspace for inspection.
+
 ## Bundle Management
 
 | Command | Title | Description |

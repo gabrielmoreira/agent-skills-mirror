@@ -47,6 +47,8 @@ Bad example:
 - Audience, channel, language, tone, style guide, length, source scope, fact-risk, review owner, and stop condition are explicit.
 - Missing facts, source gaps, claims needing citations, legal/compliance needs, approval, publish/send authority, and file-export needs are gated or marked missing.
 - Published, sent, exported, approved, and fact-verified claims are reported only from observed evidence.
+- Every product fact in the copy (install command, command and flag names, package name, URL, version, count) is copied byte-for-byte from its canonical source, such as the README install block, `--help` output, or the producer of the count, and cited by path; a fact written from memory or an earlier draft is a fact-risk, not a fact.
+- Every count the copy generates agrees with its noun in each plural category of the content locale (0, 1, and 2 for English: `0 agents`, `1 agent`, `2 agents`) before it ships.
 
 ## Recovery Notes
 

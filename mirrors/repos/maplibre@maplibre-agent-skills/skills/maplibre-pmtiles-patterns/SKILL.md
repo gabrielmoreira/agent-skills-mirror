@@ -1,7 +1,8 @@
 ---
 name: maplibre-pmtiles-patterns
 description: Serverless vector and raster tiles with PMTiles for MapLibre GL JS — single-file format, HTTP range requests, hosting on S3/R2/GitHub Pages, generating with Planetiler or tippecanoe, and the pmtiles protocol. Use when you need no tile server or want to host tiles from static storage.
-status: verified
+metadata:
+  status: verified
 ---
 
 # MapLibre PMTiles Patterns
@@ -184,8 +185,8 @@ The following tools **generate tiles from source data** (GeoJSON, OSM, Shapefile
 [Planetiler](https://github.com/onthegomap/planetiler) reads OpenStreetMap (or other sources) and outputs PMTiles or MBTiles in the OpenMapTiles schema.
 
 ```bash
-# Example: build a PMTiles file for a region (e.g. from a .osm.pbf download)
-java -jar planetiler.jar --area=monaco --output=monaco.pmtiles
+# Example: download a region's OSM extract and build a PMTiles file from it
+java -jar planetiler.jar --download --area=monaco --output=monaco.pmtiles
 ```
 
 See Planetiler docs for area names, custom sources, and schema options. Output is a single .pmtiles file you can upload to S3/R2/static host.
@@ -227,7 +228,7 @@ PMTiles supports **raster** tiles (PNG/JPEG, e.g. satellite or pre-rendered imag
 
 ## References
 
-- [MapLibre GL JS: PMTiles source and protocol](https://maplibre.org/maplibre-gl-js/docs/examples/pmtiles/) — Official example: adding the protocol, vector and raster sources.
+- [MapLibre GL JS: PMTiles source and protocol](https://maplibre.org/maplibre-gl-js/docs/examples/pmtiles-source-and-protocol/) — Official example: adding the protocol, vector and raster sources.
 - [PMTiles for MapLibre GL](https://docs.protomaps.com/pmtiles/maplibre) (Protomaps) — Setup, vector/raster/raster-dem (Terrarium) sources, React usage.
 - [`addProtocol` (MapLibre GL JS API)](https://maplibre.org/maplibre-gl-js/docs/API/functions/addProtocol/) — The custom-protocol handler signature and the `{data}` return shape.
 - [PMTiles](https://github.com/protomaps/PMTiles) — Format and protocol

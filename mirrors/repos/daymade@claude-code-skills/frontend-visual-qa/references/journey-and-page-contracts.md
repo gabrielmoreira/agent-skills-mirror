@@ -343,6 +343,11 @@ reference; no bundled text-count or DOM-node metric decides whether detail is us
    what. Names, lifecycle events and repeated missing-content warnings cannot
    establish that answer. A verified source gap may be shown with an actionable
    coverage state; record the unanswered question rather than granting a pass.
+   When the brief asks readers to distinguish collaborators' responsibilities,
+   compare their visible original work or results at the intended reading level
+   and state what each contributed without relying only on opaque identifiers.
+   Shared roles and repeated layouts are healthy when the work supports them;
+   a far-zoom overview may defer that detail to the promised reading level.
 3. Trigger the actual control, then read and extract the newly visible granular
    rows, relationships, explanations, or supporting evidence. Answer the expanded
    question using that evidence, naming what was unavailable while collapsed.
@@ -407,6 +412,17 @@ For every real page, tab, workspace, or map view under review:
 4. Refresh and confirm the same workspace returns.
 5. Open the URL directly in a new tab or clean test context.
 6. Use browser back and forward and verify the visible state follows.
+
+When the product promises to retain a position in an ordered journey or history,
+visit the **same object at two different occurrences**. For example, follow
+`home → list → detail → list → home`, select the final home, then refresh,
+open its address in a fresh context and exercise back/forward. Compare the
+selected occurrence, visible content, step indicator and previous/next actions;
+matching the page ID alone can hide a reset to the first home. Test an existing
+address without occurrence information if compatibility is promised. Determine
+its expected state from the product contract, not from whichever state renders.
+Do not prescribe a universal `visit` parameter or require occurrence persistence
+for a product that promises only object-level navigation.
 
 Do not demand a route for a deliberately temporary component-state demo.
 Document that contract instead. A visible product workspace that cannot survive

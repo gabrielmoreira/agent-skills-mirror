@@ -15,6 +15,7 @@ Detailed guides for every gstack skill — philosophy, workflow, and examples.
 | [`/design-review`](#design-review) | **Designer Who Codes** | Live-site visual audit + fix loop. 80-item audit, then fixes what it finds. Atomic commits, before/after screenshots. |
 | [`/design-shotgun`](#design-shotgun) | **Design Explorer** | Generate multiple AI design variants, open a comparison board in your browser, and iterate until you approve a direction. Taste memory biases toward your preferences. |
 | [`/design-html`](#design-html) | **Design Engineer** | Generates production-quality Pretext-native HTML. Works with approved mockups, CEO plans, design reviews, or from scratch. Text reflows on resize, heights adjust to content. Smart API routing per design type. Framework detection for React/Svelte/Vue. Previews render through your Aside browser. |
+| [`/design-motion`](#design-motion) | **Motion Designer** | Turns an approved design into a showcase loop: rebuilds the exact frame, loads it from empty, one story per visual, then an MP4 for X, a website GIF and an 800×500 GIF after seam, rest and overflow checks. |
 | [`/qa`](#qa) | **QA Lead** | Explore browser and functional behavior (APIs, CLIs, jobs, workers, webhooks), reproduce defects, prove regressions fail before repair, then fix and re-verify. |
 | [`/qa-only`](#qa) | **QA Reporter** | Explore the same surfaces and propose regression cases with evidence, without changing product code or tests. |
 | [`/scrape`](#browse) | **Browser Data Extractor** | Pull structured data off a web page — tables, lists, prices — in your Aside browser with the page's real logged-in state. Same driver contract as `/browse`. On the fallback browser, a codified browser-skill answers a repeat intent in ~200ms. |
@@ -23,6 +24,7 @@ Detailed guides for every gstack skill — philosophy, workflow, and examples.
 | [`/land-and-deploy`](#land-and-deploy) | **Release Engineer** | Merge the PR, wait for CI and deploy, verify production health. One command from "approved" to "verified in production." |
 | [`/canary`](#canary) | **SRE** | Post-deploy monitoring loop. Watches for console errors, performance regressions, and page failures in your Aside browser. |
 | [`/benchmark`](#benchmark) | **Performance Engineer** | Baseline page load times, Core Web Vitals, and resource sizes. Compare before/after on every PR. Track trends over time. |
+| [`/ubicloud`](#ubicloud) | **Remote Runner** | Run a heavy suite, build or eval on an ephemeral 16-vCPU Ubicloud VM: TTL-named VMs with a reaper, quota preflight, a hang watchdog and one committed verify per repository. |
 | [`/cso`](#cso) | **Chief Security Officer** | Supported security findings with explicit coverage. Static assessment remains available without catalog profiles; contained runtime/scanner execution requires matching qualified profiles. Runtime-tested bundles authenticate separate external assertions. Project-test completion remains `self_reported` because target code controls the test process; `tested` is reserved for a future target-independent completion witness. |
 | [`/document-release`](#document-release) | **Technical Writer** | Audit relevant docs on every ship before final verification; standalone runs can also update docs after a PR exists. Catches stale READMEs and reports unresolved gaps. |
 | [`/document-generate`](#document-generate) | **Technical Writer** | Generate Diataxis docs (tutorial / how-to / reference / explanation) for a feature from code. |
@@ -41,6 +43,7 @@ Detailed guides for every gstack skill — philosophy, workflow, and examples.
 | [`/deslop-shared-libs`](#deslop-shared-libs) | **Shared Code Reviewer** | Find worthwhile shared-code extractions in recent work. Recommendations only. |
 | [`/test-audit`](#test-audit) | **Test Auditor** | Sweep existing tests for low-value, implementation-coupled or duplicate tests. Report-only unless you approve a batch. |
 | [`/landing-report`](#landing-report) | **Ship Queue Dashboard** | Read-only snapshot of the workspace-aware ship queue. Which version slots are claimed, which sibling workspaces have WIP. |
+| [`/captain`](#captain) | **Crew Controller** | Run many coding agents from one controller. Lanes build and send a READY block; the controller validates it, merges through trains (stamp on call, verify, merge with the expected head, verify again), keeps the digest, relays approvals in three fixed shapes and runs a daily flaky-fix pass. Also answers to `/crew`. |
 | [`/benchmark-models`](#benchmark-models) | **Model Benchmark** | Side-by-side cross-model benchmark for skills (Claude vs GPT vs Gemini). Latency, tokens, cost, optional LLM-judged quality. |
 | [`/eval-plan`](#eval-plan) | **Eval Planner** | Preregister a paid eval (bars, arms, decoys, stop rules), dry-run it for $0 with the stub model, pilot three priced items, then approve the spend from the extrapolation table. |
 | | | |
@@ -462,7 +465,7 @@ You know the feeling. You have a feature, a page, a landing screen... and you're
 3. It generates 3 distinct design variants as PNGs
 4. A comparison board opens in your browser with all 3 side-by-side
 5. You click "Approve" on the one you like, or give feedback for another round
-6. The approved variant saves to `~/.gstack/projects/$SLUG/designs/` with an `approved.json`
+6. The approved variant saves to `~/.gstack/projects/$SLUG/designs/` with an `approved.json`; for a landing, pricing or campaign screen, it also records the page archetype you picked (`classic-hero`, `long-form-story`, `minimal-conversion` or `comparison`) and its section outline
 
 That `approved.json` is one way to feed `/design-html`. The design pipeline chains: shotgun picks the direction, design-html renders it as working code. But `/design-html` also works with CEO plans, design reviews, or just a description.
 
@@ -512,7 +515,7 @@ Not every page needs the full Pretext engine. The skill reads the design and pic
 
 ### The refinement loop
 
-1. Reads the approved mockup from `approved.json`
+1. Reads the approved mockup from `approved.json`, plus any page archetype and section outline you picked on the board, which it builds as given instead of asking again
 2. Uses GPT-4o vision to extract implementation spec (colors, typography, layout)
 3. Generates self-contained HTML with Pretext inlined (15KB, zero network dependency)
 4. Spins up a live-reload server so you see changes instantly
@@ -549,6 +552,43 @@ Claude: [Edits font-size and margin, browser auto-reloads]
 You:    Done
 
 Claude: Saved to ~/.gstack/projects/myapp/designs/hero-20260330/finalized.html
+```
+
+---
+
+## `/design-motion`
+
+This is my **showcase mode**.
+
+A launch post on X wants the product moving, not a static mockup. Screen-recording a page in real time gives you dropped frames, a loop that jumps at the seam, and a card that drifts out of its container halfway through.
+
+`/design-motion` takes an approved mockup from `/design-shotgun`, a `finalized.html` from `/design-html`, or a URL. It rebuilds the exact frame as one self-contained page, starts it from an empty state, loads it in with a soft rise-and-resolve, and gives each visual one story: a chart gets read, a list receives a new item, a prompt retypes itself. Then it dissolves and repeats.
+
+Nothing is recorded in real time. `bin/gstack-motion-capture.ts` drives the page on Playwright's fake clock in whole-millisecond steps that average 1000/60, so frame N is always the same pixels. `bin/gstack-motion-encode check` then proves the loop with ffmpeg's PSNR: the first frame equals the frame one cycle later (seam), the empty beat equals the frame before the start (no JS state left over), the last frame before the dissolve equals the still design (every story came home), and nothing moves outside the containers (overflow). Only then does `export` write an MP4 for X, a 960 px website GIF and an 800×500 GIF.
+
+On a website it follows gstack's design rules instead: one authored motion moment per page, content visible without script, and no pulsing dots or marquees left running. ffmpeg is optional; without it the skill builds the page and tells you how to install it. A Figma source works when a `FIGMA_TOKEN` is set.
+
+Adapted from Elaya's [design-to-motion](https://github.com/elayadesign/ai-design-skills) (MIT, © 2026 Elaya).
+
+### Example
+
+```
+You:   /design-motion
+
+Claude: Found approved mockup: variant-B.png (analytics bento, 1440×990)
+        Context: showcase. Layout: separate cards (4).
+        Stories: chart scrubber, a new lead lands on the stack, KPI counts up.
+        Cycle: 12 s.
+
+        [Rebuilds the frame, still matches the mockup at 37 dB]
+        [Captures 744 frames on a fake clock]
+
+        MOTION_CHECK: seam pass
+        MOTION_CHECK: empty-beat pass
+        MOTION_CHECK: rest pass
+        MOTION_CHECK: overflow pass
+
+        bento-x.mp4 (1744×1200, 60 fps, 12 s), bento-loop.gif, bento-800x500.gif
 ```
 
 ---
@@ -862,6 +902,45 @@ Claude: Benchmarking 5 pages (3 runs each)...
         /settings   load: 0.8s  LCP: 0.6s  CLS: 0.00  resources: 18 (420KB)
 
         Baseline saved. Run again after changes to compare.
+```
+
+---
+
+## `/ubicloud`
+
+This is my **Remote Runner**.
+
+A suite that takes an hour on a 4-core sandbox takes minutes on a `standard-16`
+VM. `/ubicloud` runs it there through one entry point, `bin/gstack-ubi`
+(`scripts/ubicloud/ubi-runner.sh`), with the discipline a shared quota needs:
+every VM is named `ubirun-<owner>-<epoch>-<suffix>-t<hours>`, so its owner
+(`UBI_OWNER`) and TTL (`UBI_TTL_HOURS`, default 4) are visible to everyone;
+every `up` first reaps VMs whose TTL ended, whichever owner made them; the
+quota preflight refuses before the create request when the project's running
+VMs plus the new size exceed the known ceiling (`UBI_QUOTA_VCPUS`, or the
+maximum the last refusal printed; `UBI_QUOTA_WAIT` waits for room instead); a
+watchdog kills a remote command silent for `UBI_IDLE_TIMEOUT` seconds (1800)
+with exit 124 and its last 40 lines, and prints a heartbeat every
+`UBI_HEARTBEAT` seconds; and `gstack-ubi verify` runs the repository's
+committed `.gstack/ubicloud.json` (setup, command, size, env, pass, pull)
+instead of a wrapper per lane, with the file confined to the checkout: setup
+and pull paths resolve inside `--src`, and a `pass` name is forwarded only
+when the command line grants it (`--pass NAME` or `--trust-config`), never
+`UBICLOUD_*`. The skill insists on a watched launch (a
+background operation that is waited on, or `gstack-detach`), because the
+runner destroys its VM on every exit path only while it is alive.
+
+```
+You:   /ubicloud run the full verify
+
+Claude: UBICLOUD_API_KEY: set; UBI_OWNER=lane7
+        gstack-ubi verify  (.gstack/ubicloud.json: bootstrap.sh, "bash scripts/verify.sh", standard-16)
+        ubi-runner: reap: no expired VMs
+        ubi-runner: creating eu-central-h1/ubirun-lane7-1761500000-9f3a2c10-t4 (standard-16)
+        ubi-runner: ubirun-lane7-1761500000-9f3a2c10-t4 carries a 4h TTL (any later run of this script reaps it); if this process dies first: gstack-ubi down ubirun-lane7-1761500000-9f3a2c10-t4
+        ubi-runner: heartbeat: command 300s elapsed, last output 2s ago
+        ubi-runner: command exited 0 after 1140s
+        ubi-runner: destroyed eu-central-h1/ubirun-lane7-1761500000-9f3a2c10-t4
 ```
 
 ---
@@ -1236,6 +1315,10 @@ Outside-review routing follows the harness, independently of the configured mode
 
 `/claude` was renamed to `/claude-code` without an alias. Run `./setup --host <name>` to migrate managed installations, including installations sharing that checkout. Setup retains a working old installation when replacement generation or installation fails.
 
+## Proactive skill suggestions
+
+gstack can invoke a skill for you when your request matches one. By default (`proactive: core`) only `/office-hours`, `/review`, `/qa` and `/ship` auto-invoke; `all` frees every skill and `off` suggests nothing. See [docs/proactive.md](proactive.md).
+
 ## Safety & Guardrails
 
 Four skills that add safety rails to any Claude Code session. They work via Claude Code's PreToolUse hooks — transparent, session-scoped, no configuration required.
@@ -1286,6 +1369,39 @@ Full safety mode — combines `/careful` + `/freeze` in one command. Destructive
 Remove the `/freeze` boundary, allowing edits everywhere again. The hooks stay registered for the session — they just allow everything. Run `/freeze` again to set a new boundary.
 
 ---
+
+## `/captain`
+
+One controller, many lanes. `/captain` (also `/crew`) teaches a coordinating agent the
+operating model that keeps dozens of worker threads merging into one base branch without
+turning it red.
+
+```text
+You: /captain
+You: /captain ready 42        # validate a lane's READY block before it enters a train
+You: /captain train           # build, read the verdict, call slots, verify, merge, verify
+You: /captain digest          # rewrite Needs you / New / In progress
+```
+
+The rules: lanes never merge and their job ends at an unstamped **READY** (the block
+`gstack-ship-queue ready` prints, plus the full head SHA, the screen choice, the ship
+receipt at the pin and the logged flaky cases); a green PR page or a cheap test tier is
+never merge evidence. The controller batches READY pins into a **merge train**, reads one
+full gate on the train head (an in-run flaky rerun once; a case that failed twice is
+real), then merges slot by slot: slot call, lane stamps on call with a commit that holds
+only tool output, `verify --train`, `gh pr merge --match-head-commit`, verify again. A red
+train is bisected on its red cases and rebuilt at most once; a backstop gate on every
+base push freezes the queue when a tree no train covered lands. Approvals have three
+shapes (the per-thread record, the plan ask with before → after and a "do it" reply, the
+merge ask with captioned before/after images). The digest is Needs you / New / In
+progress with ages. A daily flaky-fix pass reads the gate runs' flake records and the free
+suites' retries into a ledger and fixes causes, never thresholds. Where crews that run
+this model disagree (squash or merge, who stamps, gate-ahead, the severe race, a gate run
+id in the READY), the skill ships both as options for the crew rules file.
+
+Templates (CREW.md, AGENTS.md, NOTES.md, DIGEST.md, the flaky ledger, the lane report,
+the READY block, the slot call, the plan and merge asks, the daily automation prompt)
+live in `captain/templates/`; the team setup guide for Capy is [docs/captain.md](captain.md).
 
 ## `/gstack-upgrade`
 

@@ -1,10 +1,10 @@
 # CleanYourTV in the press
 
-Every article about CleanYourTV (called tv-vibehack until 19 October 2026) that we could open and check: **196 articles**, 158 of them from outlets in 32 countries, 9 from Spanish-language sites in Latin America and 29 from newsletters, blogs and AI news sites. Headlines are in the language they were published in. Syndicated copies and auto-generated listings are left out. [41 videos](#videos) follow the articles.
+Every article about CleanYourTV (called tv-vibehack until 19 October 2026) that we could open and check: **197 articles**, 159 of them from outlets in 32 countries, 9 from Spanish-language sites in Latin America and 29 from newsletters, blogs and AI news sites. Headlines are in the language they were published in. Syndicated copies and auto-generated listings are left out. [41 videos](#videos) follow the articles.
 
 Wrote about it and not here? Open an issue or a pull request with the link.
 
-[United States](#united-states)&nbsp;19 · [United Kingdom](#united-kingdom)&nbsp;4 · [India](#india)&nbsp;4 · [Denmark](#denmark)&nbsp;1 · [Japan](#japan)&nbsp;2 · [Bangladesh](#bangladesh)&nbsp;1 · [United Arab Emirates](#united-arab-emirates)&nbsp;1 · [France](#france)&nbsp;12 · [Germany](#germany)&nbsp;5 · [Spain](#spain)&nbsp;6 · [Italy](#italy)&nbsp;14 · [Norway](#norway)&nbsp;1 · [Portugal](#portugal)&nbsp;4 · [Czechia](#czechia)&nbsp;1 · [Ukraine](#ukraine)&nbsp;2 · [Greece](#greece)&nbsp;1 · [Egypt](#egypt)&nbsp;5 · [Brazil](#brazil)&nbsp;12 · [Latin America (Spanish-language)](#latin-america-spanish-language)&nbsp;9 · [China](#china)&nbsp;10 · [Taiwan](#taiwan)&nbsp;4 · [Indonesia](#indonesia)&nbsp;12 · [Thailand](#thailand)&nbsp;3 · [Vietnam](#vietnam)&nbsp;4 · [Netherlands](#netherlands)&nbsp;3 · [Poland](#poland)&nbsp;5 · [Russia](#russia)&nbsp;9 · [Belarus](#belarus)&nbsp;2 · [Turkey](#turkey)&nbsp;3 · [Jordan](#jordan)&nbsp;1 · [South Korea](#south-korea)&nbsp;4 · [Australia](#australia)&nbsp;2 · [Pakistan](#pakistan)&nbsp;1 · [Online (newsletters, blogs, AI news)](#online-newsletters-blogs-ai-news)&nbsp;29
+[United States](#united-states)&nbsp;19 · [United Kingdom](#united-kingdom)&nbsp;4 · [India](#india)&nbsp;5 · [Denmark](#denmark)&nbsp;1 · [Japan](#japan)&nbsp;2 · [Bangladesh](#bangladesh)&nbsp;1 · [United Arab Emirates](#united-arab-emirates)&nbsp;1 · [France](#france)&nbsp;12 · [Germany](#germany)&nbsp;5 · [Spain](#spain)&nbsp;6 · [Italy](#italy)&nbsp;14 · [Norway](#norway)&nbsp;1 · [Portugal](#portugal)&nbsp;4 · [Czechia](#czechia)&nbsp;1 · [Ukraine](#ukraine)&nbsp;2 · [Greece](#greece)&nbsp;1 · [Egypt](#egypt)&nbsp;5 · [Brazil](#brazil)&nbsp;12 · [Latin America (Spanish-language)](#latin-america-spanish-language)&nbsp;9 · [China](#china)&nbsp;10 · [Taiwan](#taiwan)&nbsp;4 · [Indonesia](#indonesia)&nbsp;12 · [Thailand](#thailand)&nbsp;3 · [Vietnam](#vietnam)&nbsp;4 · [Netherlands](#netherlands)&nbsp;3 · [Poland](#poland)&nbsp;5 · [Russia](#russia)&nbsp;9 · [Belarus](#belarus)&nbsp;2 · [Turkey](#turkey)&nbsp;3 · [Jordan](#jordan)&nbsp;1 · [South Korea](#south-korea)&nbsp;4 · [Australia](#australia)&nbsp;2 · [Pakistan](#pakistan)&nbsp;1 · [Online (newsletters, blogs, AI news)](#online-newsletters-blogs-ai-news)&nbsp;29
 
 ## United States
 
@@ -47,6 +47,7 @@ Wrote about it and not here? Open an issue or a pull request with the link.
 | TechPP | [How I Made My Android TV Faster and Ad-Free Using Claude Code](https://techpp.com/2026/10/18/speed-up-android-tv-claude-code/) | 18&nbsp;Oct |
 | SSBCrack News | [DIY Hacks Allow Consumers to "Vibe-Code" Their Smart TVs, Eliminating Ads and Bloatware](https://news.ssbcrack.com/diy-hacks-allow-consumers-to-vibe-code-their-smart-tvs-eliminating-ads-and-bloatware/) | 19&nbsp;Oct |
 | Analytics Insight | [How AI Tools Can Make Old Smart TVs Faster](https://www.analyticsinsight.net/ampstories/artificial-intelligence/how-ai-tools-can-make-old-smart-tvs-faster) | 21&nbsp;Oct |
+| PaidFreeDroid | [CleanYourTV Guide: How to Remove Ads and Bloatware From Android TV Without a Laptop](https://paidfreedroid.com/2026/10/cleanyourtv-guide-remove-android-tv-ads-bloatware.html) | 24&nbsp;Oct |
 
 ## Denmark
 

@@ -84,7 +84,7 @@ The copied plugin and package use the same uncached root resolver, in this order
    `$HOME` -- this lane has no secret scope to verify a variable against, so
    it will not read one out of the process environment. Each refusal names
    `--omh-home` as the way to run the tool that reads the file. So
-   `omh model-chains --hermes-home ~/.hermes/profiles/<name>`, and
+   `omh --hermes-home ~/.hermes/profiles/<name> model-chains`, and
    `/omh-model` in the OMH TUI `omh --hermes-home ~/.hermes/profiles/<name>`
    opens, read and write the store the profile's own plugin dispatches from. The CLI has no Hermes dependency and
    retains its explicit `--omh-home`, `--hermes-home`, and `--scope project`
@@ -192,6 +192,55 @@ inside the test workspace. The ordinary OMH unittest suite needs no Hermes
 installation. These tests distinguish actual turn-start behavior from positive
 recall after the native background queue; this change does not alter upstream
 turn-start pack invalidation or claim live model delivery.
+
+## Hermes compatibility and support boundaries (operator reference)
+
+Loader observation follows the selected Hermes runtime, not a leftover legacy
+venv. An explicit interpreter or `HERMES_PYTHON` override takes precedence; a
+direct Python launcher remains supported. Otherwise the PATH launcher is queried
+with `--print-runtime-command`, and the observer reads the host's PM-committed
+dependency environment before loading PluginManager in a disposable home. It does
+not run the state-changing PM bootstrap. A present launcher that fails its printer
+reports `hermes_runtime_command_failed`, without falling back to another runtime;
+a missing explicit override reports `hermes_python_override_missing`. Finding an
+old `venv/bin/python` alone is not proof of the active PM runtime. Successful tool
+and hook registration is registration evidence only, not full startup, update,
+plugin execution, or browser execution. PM-only browser-skill promotion is not
+covered by this loader fix.
+
+The optional browser bridge requires explicit trusted-wrapper opt-in, a bound
+principal/session/profile/message identity, and request-bound cache bypasses.
+`host_browser_capability()` (also exposed as `ctx.browser_capability()`) reports
+API support, not admission. On audited Hermes main revision
+`4ea8d23cc9f527332ccb1d55359b27741b6ea51b`, optional browser execution remains unsupported:
+`_BROWSER_CONTROL_PRINCIPAL` and `_BROWSER_CONTROL_TRANSPORT_FAMILY` are absent.
+The diagnostic is `host_scope_unavailable` with
+`host_browser_identity_unsupported` and the missing capability names. OMH does not
+manufacture a principal from environment/config/user IDs or bypass approval,
+identity, lease, effect, or cache checks. Stable `v0.22.5` supplied the audited
+identity/cache APIs, but API support and loader registration do not demonstrate
+actual browser acquisition or effect execution on either host.
+
+The compatibility workflow and `tools/check_hermes_compatibility.py` are
+maintainer admission checks, not install or support certificates. A local helper
+result is not a hosted CI result. The local candidate probe observed a real
+stable `v0.22.5` PluginManager, a validated harmless status tool and completed
+pre-LLM callback using existing PM dependencies and disposable homes. Fresh PM
+provisioning, the hosted stable/main matrix, native Windows execution, Ubuntu
+runner execution, and branch-rule enforcement were not observed by this repair.
+The local macOS result does not close those gaps. A dirty candidate's receipt
+keeps its base SHA and bundle digest separate from an immutable source SHA.
+
+Profile synchronization recognizes genuine Hermes identity markers
+(`config.yaml`, `.env`, `SOUL.md`, `profile.yaml`, `auth.json`, or `state.db`),
+not directories containing logs/cache alone. Hidden and tombstoned profiles are
+excluded. Marker symlinks remain identity claims for existing symlink refusal
+and ownership checks, not permission to write through them. A configured child
+remains discoverable through its OMH-written `config.yaml` if its initial
+`SOUL.md` is later removed; this does not promise recovery after all identity
+files are deleted. Setup preserves supported inline-comment `skills:` headers
+and existing settings; ambiguous/unsupported YAML shapes are refused rather
+than shadowed with duplicate keys.
 
 ## Command Audience
 
@@ -776,7 +825,13 @@ run and approval decision stays Hermes'; the screen is OMH's.
   `read_file`, `12 matches` for
   `search_files` (`3 files` when it listed files, `50+ matches` when Hermes
   stopped counting, and Hermes' warning on the line under it when it gave
-  one, such as why nothing matched). Loading skills and reading tool details
+  one, such as why nothing matched). An `omh_memory` recall that found
+  records lists them from its own result, a line each, type then summary
+  (`decision  rotate refresh tokens per session`), so a found recall prints
+  your memory's summaries into the local transcript; as the call lands, one
+  band of the `dag-ulw` aura sweeps those lines once, where the composer's
+  aura moves (truecolor, motion on), and in scrollback they are plain.
+  Loading skills and reading tool details
   (`skill_view`, `tool_describe`) are plumbing: a run of them is one row,
   `● Loaded 4 skills + tool details · github-development-workflows, dag-ulw,
   hermes-agent, omh-routing/skill-common-rail.md  2.8s`, and any other call
@@ -1455,11 +1510,12 @@ reports the supported installer command instead.
 On installer-managed installs (the curl and PowerShell paths), the update is
 staged rather than applied in place. OMH builds the new command environment and
 its workflow pack off to the side, smoke-tests them, and only then swaps them in
-with a single pointer move. You either keep the version you had or get the new
-one; there is no half-updated state in between, even if the machine loses power
-mid-update. If the new version fails its post-activation check, OMH puts the
-previous one back automatically and says so. To go back deliberately after a bad
-update, run:
+with a single pointer move. This keeps the command and workflow pack paired;
+it does not make shared plugin/config refreshes atomic. If the new version fails
+its post-activation check, OMH attempts to restore the previous pointer and
+re-enters that version to restore shared resources. A failed restoring reentry
+leaves recovery required, even when the pointer is already back. To select a
+retained known-good generation deliberately, run:
 
 ```sh
 omh update --recover-known-good
@@ -1680,8 +1736,8 @@ installing or using OMH.
 The guided flow is deliberately staged:
 
 1. **Inspect.** `omh setup --model-setup` scans bounded, allowlisted metadata
-   roots for Codex, Claude Code, Hermes, OpenCode, OMO, `pi`, and `senpi`.
-   `pi` and `senpi` are host CLIs in the OMO runtime family. Discovery does not
+   roots for Codex, Claude Code, Hermes, OpenCode, and the pi-family runtime
+   with its host CLIs. Discovery does not
    open auth files or call providers. It parses bounded local session/config
    records, which may contain prompt or tool-result fields, but emits only the
    allowlisted provider, model, variant, timestamp, and source identifiers; it
@@ -1704,9 +1760,9 @@ Agent/maintainer preview example:
 
 ```sh
 omh setup --model-setup \
-  --confirm-model openrouter/qwen3-coder \
+  --confirm-model openai-codex/gpt-6.1-sol \
   --confirm-model google/gemini-3.1-pro \
-  --model-alias main=openrouter/qwen3-coder \
+  --model-alias main=openai-codex/gpt-6.1-sol \
   --no-interactive --json
 ```
 
@@ -1721,8 +1777,8 @@ arguments with:
 An explicit unavailable model returns `choice_required` and never silently
 falls through. A missing recommended model is different: setup remains usable
 and ordered recommendation chains skip missing entries in favor of a confirmed
-compatible alternative. Qwen and Gemini therefore remain valid user-selected
-alternatives even when they are not shipped category heads. If no candidate is
+compatible alternative, so a model that heads no chain stays a valid
+user-selected alternative. If no candidate is
 confirmed for the selected category, role-slot, and domain chains, the resolver
 consults one shared final order: Claude Opus 5.5, then GPT-6.1 Sol. These names
 remain editorial candidates filtered through caller-confirmed metadata; they
@@ -1767,8 +1823,8 @@ transcript (Hermes' own `/model` picks the session model and keeps its name;
 the two edit different things); `omh model-chains show` prints the current
 per-category state, `omh model-chains interview` walks every category with
 numbered choices — the
-interactive `omh setup` offers that walk as its last question, default No, and
-a "no" leaves the seeded defaults in effect — and
+interactive `omh setup` offers that walk right after its provider question,
+default No, and a "no" leaves the seeded defaults in effect — and
 `omh model-chains set <category> "model[:effort], ..."` is the scriptable
 write (agents included).
 
@@ -1799,18 +1855,23 @@ $ cat ~/.omh/routing/model-chains.json
   "categories": {
     "architect": [
       {"model": "claude-fable-5-1", "reasoning_effort": "xhigh"},
-      {"model": "gpt-5.6-sol", "reasoning_effort": "xhigh"}
+      {"model": "gpt-6.1-sol", "reasoning_effort": "xhigh"}
     ],
     "quick": [
-      {"model": "kimi-k3-ultrafast", "reasoning_effort": "low"},
+      {"model": "deepseek-v4.1-flash-ultrafast", "reasoning_effort": "low"},
       {"model": "glm-5.3-ultrafast", "reasoning_effort": "low"}
     ]
   }
 }
 ```
 
-The Ultrafast models in that example, Kimi K3 Ultrafast (300 TPS) and GLM 5.3
-Ultrafast, are served on [OpenGateway](https://opengateway.ai/).
+The Ultrafast models in that example, DeepSeek V4.1 Flash Ultrafast and GLM
+5.3 Ultrafast, are served on [OpenGateway](https://opengateway.ai/). The
+interview's Ultrafast option swaps a chain member for its `-ultrafast` id only
+when OMH knows that id. Among the shipped chains it appears only for
+`unspecified-low`, whose GLM 5.3 entry has one. GLM 5.3 Flash has no
+Ultrafast id, and the chains name DeepSeek's `deepseek-flash` pointer, which
+has none of its own either.
 
 Next to those two documents, `omh_delegate_route` maintains
 `~/.omh/routing/route-provenance.json` (`delegation_route_provenance/v1`): a
@@ -1974,14 +2035,15 @@ named), `omh coding category-maestro set <profile> <category>
 presence is the opt-in: machines without it keep byte-identical routes, and
 routes resolved against it record `catalog_kind: "operator_category_config"`
 plus the config fingerprint in the frozen contract. Catalogless profiles
-(for example `omo-runtime`, host CLI `pi`/`senpi`) are deliberately not
-configured here — their categories resolve from the locally-derived model
-catalog (omo config). See `docs/FANOUT.md` (Category-maestro) for the full
+(for example the `pi-family-runtime` profile and its host CLIs) are
+deliberately not configured here — their categories resolve from the
+locally-derived model catalog (that runtime's own config). See
+`docs/FANOUT.md` (Category-maestro) for the full
 rules.
 
 ### Reaching models through a provider
 
-Chains name models the way a person says them (`glm-5.2`, `kimi-k3`). A host
+Chains name models the way a person says them (`glm-5.3`, `kimi-k3.1-pro`). A host
 that reaches models through a provider usually needs two different values
 instead: a provider id, and that provider's own model string, which is often
 namespaced like `vendor/model-name`. Which provider serves which model, and
@@ -2105,8 +2167,8 @@ Supply wire-id routes in `~/.omh/routing/model-providers.json`
 {
   "schema_version": "model_provider_routes/v1",
   "models": {
-    "glm-5.2": {"provider": "my-gateway", "model": "z-ai/glm-5.2"},
-    "kimi-k3": {"provider": "my-gateway", "model": "moonshotai/kimi-k3"}
+    "glm-5.3": {"provider": "my-gateway", "model": "z-ai/glm-5.3"},
+    "kimi-k3.1-pro": {"provider": "my-gateway", "model": "moonshotai/kimi-k3.1-pro"}
   }
 }
 ```
@@ -2263,10 +2325,10 @@ or credential evidence.
 The X/Grok row is a static, editable affinity for work explicitly declaring X
 platform data. It is not a measured capability, performance, or availability
 claim, never removes another candidate, and never overrides an explicit user
-choice. CCAPI for Claude and Apitopia for Kimi are preferred provider-family
-metadata only. They are not bundled or probed integrations and are considered
-only when the user declares the corresponding local route active. OMH never
-copies their tokens or keys.
+choice. CCAPI for Claude is preferred provider-family metadata only. It is
+not a bundled or probed integration and is considered only when the user
+declares the corresponding local route active. OMH never copies its tokens or
+keys.
 
 Agents and maintainers can replace named chains with a secret-free
 `model_recommendation_overrides/v2` JSON file. Only the existing category,
@@ -2280,9 +2342,9 @@ documents remain accepted but cannot define `last_resort`. For example:
   "categories": {
     "deep": [
       {
-        "model_alias": "qwen3-coder",
-        "model_family": "qwen",
-        "preferred_provider_families": ["openrouter"],
+        "model_alias": "kimi-k3.1-pro",
+        "model_family": "kimi",
+        "preferred_provider_families": ["kimi-coding"],
         "reasoning_effort": "high",
         "reasoning": "Local editorial choice for this installation."
       }
@@ -2312,8 +2374,8 @@ Hermes-native routing resolves a reviewed alias/provider/model binding and
 keeps native skill, Kanban, and `delegate_task` execution in Hermes. It does
 not cross Maestro.
 
-Maestro is the external handoff boundary for Codex, Claude Code, OMO, OMC, OMX,
-and generic profiles. It projects an ordered eligible recommendation chain,
+Maestro is the external handoff boundary for Codex, Claude Code, the pi-family
+runtime, OMC, OMX, and generic profiles. It projects an ordered eligible recommendation chain,
 coordinates existing prepared handoff/status adapters, and rejects Hermes as an
 external profile. Maestro does not execute work, write Hermes aliases, own
 credentials, or convert a prepared handoff into observed evidence. External
@@ -2362,7 +2424,7 @@ implicit default.
 3. **Optional: route per work category.** The Maestro lane resolves each
    unit's model from a category → model table (`ultrabrain`, `deep`, `quick`,
    `writing`, ...). Override it per profile with
-   `omh coding category-maestro set codex ultrabrain gpt-5.6-sol:xhigh`, walk
+   `omh coding category-maestro set codex ultrabrain gpt-6.1-sol:xhigh`, walk
    it guided with `omh coding category-maestro interview` (the interactive
    `omh setup` offers this walk too), and inspect the effective table with
    `omh coding category-maestro show`. A unit declares its category
@@ -3836,9 +3898,10 @@ The backend flow is:
    or revise it before preparing any coding handoff.
 13. If the accepted interaction exposes executor or runtime selection, the
    wrapper uses the chosen profile. Codex can use the run-backed lifecycle path;
-   Claude Code and generic agents use prompt-only handoffs; Hermes, OMX, OMO,
-   and OMC use runtime handoffs with team/swarm, worker-protocol, and worktree
-   guidance. The wrapper records only what it actually observes.
+   Claude Code and generic agents use prompt-only handoffs; Hermes, OMX, the
+   pi-family runtime, and OMC use runtime handoffs with team/swarm,
+   worker-protocol, and worktree guidance. The wrapper records only what it
+   actually observes.
 14. Before dispatching to a coding profile, the wrapper runs
    `omh coding executor-readiness --executor <profile>` and reads
    `executor_readiness/v1`. OMH reuses its stored observation while that
@@ -4210,7 +4273,7 @@ Before calling the bot integration ready, verify these points:
   profiles return a `coding_prompt_handoff/v1` prompt-only payload without
   creating a lifecycle run.
 - `omh coding delegate --executor hermes --record "<message>"` and
-  `omx-runtime` / `omo-runtime` / `omc-runtime` return a
+  `omx-runtime` / `pi-family-runtime` / `omc-runtime` return a
   `coding_runtime_handoff/v1` payload with runtime, team/swarm,
   worker-protocol, and worktree guidance without creating a lifecycle run.
 - Coding handoffs include `worktree_session_isolation/v1` so wrappers can show
@@ -4364,9 +4427,12 @@ place. It runs as a transaction:
    is the only step that makes the new version visible.
 6. Re-enter through the pointer to confirm the activated version actually runs.
 7. On success, keep the previous generation as the known-good fallback and
-   collect the rest. On failure, move the pointer back.
+   collect the rest. On failure, attempt to move the pointer back and re-enter
+   the previous generation; shared-resource restoration must succeed before
+   recovery is considered complete.
 
-The pointer is what makes the swap all-or-nothing. Both things that consume the
+The pointer makes the command/workflow-pack selection atomic, not all shared
+resource changes. Both things that consume the
 install are spelled beneath it and never in resolved form: the `omh` launcher
 resolves through `current/venv/bin/omh` (`current\Scripts\omh.exe` on Windows),
 and the workflow pack Hermes reads is registered in `skills.external_dirs` as
@@ -4391,10 +4457,25 @@ What you see when something goes wrong:
 | --- | --- | --- |
 | Staging or download fails | Candidate deleted before anything is activated | The install you already had, untouched |
 | Candidate fails its smoke checks | Candidate deleted before activation | The install you already had, untouched |
-| Activated version fails the post-activation run | Pointer moved back automatically | The previous generation, active again |
-| Machine dies mid-activation | Next `omh update` reconciles the marker against the pointer, then rolls back or discards the candidate | A consistent pair either way |
+| Activated version fails the post-activation run | Attempt pointer rollback and restoring reentry | Previous command/pack selected if rollback succeeds; shared resources restored only if reentry succeeds |
+| Restoring reentry also fails | Retain recovery marker and candidate anchor; report failed restoration | Recovery still required, not a healthy restored install |
+| Machine dies mid-activation | Next `omh update` reconciles the marker and retries the required activation/restoration step | Command/pack remain paired; restoration can still fail |
 | Two updates at once | The second refuses to start | No partial work |
-| You want the previous version back | `omh update --recover-known-good` | The retained known-good generation, active again |
+| You want the previous version back | `omh update --recover-known-good` selects and checks a retained generation | Restoration is reported only after its reentry succeeds |
+
+When candidate activation fails and restoring reentry also fails, the persisted
+`activation_in_progress.restore_required` marker remains true and records the
+candidate/previous anchors. JSON reports `rollback.status: failed`, an empty
+`rollback.restored`, and `recovery.status: required` / `action: restore_failed`,
+with the failure reason. Do not delete the retained candidate or clear the
+marker by hand. Preserve the reported paths and failure evidence, resolve the
+reported restoration error, then retry `omh update`: pending restore intent
+allows only restoration until it succeeds, not a fresh candidate activation.
+A healthy restoring reentry clears the marker and permits candidate cleanup;
+the original attempted update still reports failure rather than success.
+Pointer rollback alone does not prove shared-resource restoration or reverse
+all user/plugin state. Run `omh doctor` after recovery and inspect any remaining
+profile failures before treating the install as healthy.
 
 `omh update --recover-known-good` refuses rather than guesses when no retained
 generation exists. If the activation state file is unreadable or carries a schema
@@ -4720,7 +4801,7 @@ the outcome in chat and let Hermes run the guide.
 
 | Audience | Chat intent | What the guide covers |
 | --- | --- | --- |
-| Person using Hermes | Ask Hermes to set up your models. | Walks through the main / realtime-search / design model role slots, provider connection, and session model switching. |
+| Person using Hermes | Ask Hermes to set up your models. | Walks through the `main` model alias and the per-category model chains, provider connection, and session model switching. |
 | Person using Hermes | Ask Hermes to make web search cheaper. | Walks through a provider API key and the web search and extract backend or free-tier choice as two separate reviewed diffs. |
 | Person using Hermes | Ask Hermes to connect mail and calendar for a morning brief. | Walks through read/draft-only mail and calendar access for an on-demand morning brief. Mail Send permission is never enabled, and any token pasted by the user is never stored. |
 | Person using Hermes | Ask Hermes to check it is up to date. | Reports whether the installed Hermes/parallel-tools version is current and, if not, the update command to run. |
@@ -4767,7 +4848,7 @@ omh setup --default-executor claude-code
 ```
 
 Supported values are `choose`, `hermes`, `codex`, `claude-code`, `generic`,
-`omx-runtime`, `omo-runtime`, and `omc-runtime`. This flag exists for
+`omx-runtime`, `pi-family-runtime`, and `omc-runtime`. This flag exists for
 wrappers, scripts, and users who want a standing default instead of the
 per-request question. Legacy `OMH_SETUP_PROFILES=1,3` still maps to setup
 profile categories for automation that already uses it, but new scripts should
@@ -4790,7 +4871,7 @@ right pattern per request:
 | `solo-operator` | One operator wants safe defaults and explicit executor choice. |
 | `small-team` | A small team wants product, technical, QA, and release ownership to be visible in chat. |
 | `research-ops` | Hermes should favor research, strategy, and meeting preparation instead of coding. |
-| `coding-runtime-team` | Hermes should prepare Hermes/OMX/OMO/OMC runtime handoffs with runtime templates and observed ladder status. |
+| `coding-runtime-team` | Hermes should prepare Hermes, OMX, pi-family, and OMC runtime handoffs with runtime templates and observed ladder status. |
 
 Inspect the available models with:
 

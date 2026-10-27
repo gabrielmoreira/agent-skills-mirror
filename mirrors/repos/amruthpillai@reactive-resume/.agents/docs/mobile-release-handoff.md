@@ -37,7 +37,7 @@ Owner controls merge/deployment. Backend runs on a VPS in Frankfurt, Germany, us
 
 ### Image publishing is not automatic Swarm deployment
 
-The checked-in `.github/workflows/docker-build.yml` currently behaves as follows:
+The checked-in `.github/workflows/docker-publish.yml` currently behaves as follows:
 
 - Push to `main`: builds native AMD64/ARM64 images and publishes SHA/nightly aliases; **does not run the SSH redeploy step**.
 - Manual dispatch with `release=false`: builds a canary/SHA image; no production deployment.
@@ -81,9 +81,9 @@ One-time activation:
    store build, open it to download, then restart to apply. Verify startup offline and
    saved drafts. Repeat on iOS and Android. Existing preview binaries keep their channel.
 
-The Docker workflow publishes from the image's exact source commit: non-production
-images go to preview, stable releases to production after SSH deployment and three
-matching healthy commit probes. Production deployment must expose `/api/health` from
+The Docker workflow calls `mobile-ota-update.yml` only for stable production releases,
+using the image's exact source commit after successful SSH deployment. Nightlies, canaries,
+and prereleases skip OTA. The OTA workflow requires three matching healthy commit probes. Production deployment must expose `/api/health` from
 the application without caching or substituting a proxy's `OK` response. A missing
 `APP_REVISION`, old replica, or unhealthy backend withholds the mobile update. A timeout
 or missing `EXPO_TOKEN` fails the mobile job; Docker publishing is not rolled back.
@@ -173,7 +173,7 @@ binaries and deploy the backend first.
 1. Deploy the backend first. Keep the API backward compatible: older binaries and OTA bundles remain in use.
 2. Optionally bump `version` in `apps/mobile/app.config.ts` (for example `1.0.0` to `1.1.0`). CI supplies increasing iOS build numbers and Android version codes. iOS needs a new version string after a version is released; Play needs only a higher `versionCode`.
 3. Complete the [signed-device test matrix](#signed-device-test-matrix), store declarations, listing/reviewer details, and release notes before submission. The workflow retains saved listings and screenshots. Ensure Play credentials permit production releases and the App Store Connect key has App Manager or Admin access. No testing tracks or TestFlight groups are required.
-4. Dispatch **Mobile Release** on `main`, platform `all`, **format=store**, and **upload** enabled. Approve `mobile-signing`, inspect this run's signed artifacts, then approve `mobile-store` to submit them. Latest main-push CI must have passed for the exact source commit before upload begins. Leave **upload** disabled if only checking a build. The [Blacksmith setup guide](./mobile-ci.md) covers credentials, build numbering, and approval environments. No EAS Build credits are used. Fastlane does not synchronize Apple capabilities. If exporting credentials through `eas credentials`, keep `EXPO_NO_CAPABILITY_SYNC=1`; Apple sign-in uses web Services ID `me.rxresu.web`, so turning off its primary App ID's Sign in with Apple capability would break sign-in.
+4. Dispatch **Mobile release** on `main`, platform `all`, **format=store**, and **upload** enabled. Approve `mobile-signing`, inspect this run's signed artifacts, then approve `mobile-store` to submit them. Latest main-push CI must have passed for the exact source commit before upload begins. Leave **upload** disabled if only checking a build. The [Blacksmith setup guide](./mobile-ci.md) covers credentials, build numbering, and approval environments. No EAS Build credits are used. Fastlane does not synchronize Apple capabilities. If exporting credentials through `eas credentials`, keep `EXPO_NO_CAPABILITY_SYNC=1`; Apple sign-in uses web Services ID `me.rxresu.web`, so turning off its primary App ID's Sign in with Apple capability would break sign-in.
 5. **App Store Connect:** the workflow uploads the IPA, creates or updates its app version, waits for its matching processed build, submits for App Review, and sets automatic release after approval. Missing metadata or a pending review can block submission; review status and public availability must be checked separately.
 6. **Play Console:** the workflow uploads directly to production with a completed, full rollout and sends changes for review. It does not publish to testing tracks. Review and Managed Publishing still control public availability; if Managed Publishing is enabled, publish approved changes in the console, or disable it there for automatic publication after review.
 7. Verify both public store versions and smoke-test store-installed builds. Workflow success proves submission, not approval or publication. Confirm that a later OTA update reaches each new binary, because its fingerprint and runtime version changed.
@@ -182,7 +182,7 @@ Stable distribution uses the App Store and Play Store. IPA and AAB files are not
 
 ### Manual Android downloads
 
-Dispatch **Mobile Release** on `main` with `platform=android`, `format=apk`, the desired
+Dispatch **Mobile release** on `main` with `platform=android`, `format=apk`, the desired
 `abi` (`arm64-v8a` by default), and `upload=false`. Approve the `mobile-signing` gate.
 The selected ABI is built with Expo Prebuild, Gradle and the existing Fastlane lane,
 using the existing Android upload keystore and preview EAS environment/channel.

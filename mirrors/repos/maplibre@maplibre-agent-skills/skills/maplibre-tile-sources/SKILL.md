@@ -1,7 +1,8 @@
 ---
 name: maplibre-tile-sources
 description: Choosing what form your data needs for MapLibre GL JS — GeoJSON read straight from a file versus vector or raster tiles, the feature-count and file-size thresholds where each stops working, and how a basemap and your own data combine as separate sources. Use when deciding which source type a dataset needs, not when hosting or configuring one.
-status: verified
+metadata:
+  status: verified
 ---
 
 # MapLibre Tile Sources
@@ -27,7 +28,7 @@ A style has three main components:
 
 - **Sources** — Point to the actual data. Each source has a `type` and either inline data or a URL. MapLibre requests tiles or data as the viewport changes. The same source can back many layers (e.g. roads, water, and labels all from one vector URL).
 - **Layers** — An ordered list defining what to draw and how. Each layer references a source (and for vector tiles, a `source-layer` name) and specifies paint/layout properties.
-- **Glyphs and sprite** — URLs to font SDF stacks and icon spritesheets. `sprite` has no fallback: a missing icon is silently omitted. `glyphs` does have one on GL JS ≥ 5.11.0 (text still renders, in a local/system font) — see [maplibre-fonts-glyphs](../maplibre-fonts-glyphs/SKILL.md) for the mechanism and its limits. Production styles should still supply both explicitly.
+- **Glyphs and sprite** — URLs to font SDF stacks and icon spritesheets. `sprite` has no fallback: a missing icon is omitted and the console warns `Image "<id>" could not be loaded`; use `map.hasImage(id)` to test whether an icon ID is defined. `glyphs` does have one on GL JS ≥ 5.11.0 (text still renders, in a local/system font) — see [maplibre-fonts-glyphs](../maplibre-fonts-glyphs/SKILL.md) for the mechanism and its limits. Production styles should still supply both explicitly.
 
 **Source types:**
 
@@ -75,7 +76,7 @@ If your dataset exceeds these thresholds, or if you need zoom-dependent renderin
 
 ### Other formats and the cloud-native ecosystem
 
-The choice of data source is shaped by more than performance: data type, update frequency, access patterns, and the broader geospatial ecosystem all factor in. Many formats (FlatGeobuf, GeoParquet, Cloud-Optimized GeoTIFF, KML, GPX, and more) can be displayed in MapLibre via plugins and custom protocols. The cloud-native geospatial ecosystem — formats designed for HTTP range requests and distributed storage — is evolving rapidly and increasingly relevant for web maps. A separate skill will cover this in depth; for now, see the [Map Rendering Plugins](https://github.com/maplibre/awesome-maplibre#map-rendering-plugins) and [Utility Libraries](https://github.com/maplibre/awesome-maplibre#utility-libraries) sections of awesome-maplibre.
+The choice of data source is shaped by more than performance: data type, update frequency, access patterns, and the broader geospatial ecosystem all factor in. Many formats (FlatGeobuf, GeoParquet, Cloud-Optimized GeoTIFF, KML, GPX, and more) can be displayed in MapLibre via plugins and custom protocols. The cloud-native geospatial ecosystem — formats designed for HTTP range requests and distributed storage — is evolving rapidly and increasingly relevant for web maps. See the [Map Rendering Plugins](https://github.com/maplibre/awesome-maplibre#map-rendering-plugins) and [Utility Libraries](https://github.com/maplibre/awesome-maplibre#utility-libraries) sections of awesome-maplibre.
 
 ## When You Need Tiles
 
@@ -107,7 +108,7 @@ Most MapLibre workflows use vector tiles; increasing numbers are integrating `ra
 
 ### Using MapLibre with Leaflet
 
-[Leaflet](https://leafletjs.com/) is a widely used JavaScript mapping library that supports only raster tiles. If your app is built on Leaflet, [MapLibre GL Leaflet](https://github.com/maplibre/maplibre-gl-leaflet) lets you pre-render a MapLibre GL compatible style as a raster layer — allowing you to use hosted vector tile sources in your Leaflet app.
+[Leaflet](https://leafletjs.com/) is a widely used JavaScript mapping library whose core draws only raster tiles. If your app is built on Leaflet, [MapLibre GL Leaflet](https://github.com/maplibre/maplibre-gl-leaflet) adds a live MapLibre GL JS map to it as a Leaflet layer, so the app can draw a vector style from hosted vector tile sources.
 
 ## Combining source types
 

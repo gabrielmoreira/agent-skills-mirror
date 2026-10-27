@@ -26,7 +26,7 @@ Centralized utilities and shared abstractions used across the oh-my-opencode-sli
 - **Session Selection** (`session-selection.ts`): Session selection resolution with provenance tracking (host-persisted, observed-external, unknown)
 - **Child Transcript** (`child-transcript.ts`): Child session transcript evidence extraction and terminal evidence classification; the startup-only historical idle classifier complements on-demand host-outcome attribution. Shared latest-input/text helpers reject malformed history rather than skipping it.
 - **Host Transcript Attribution** (`child-transcript.ts`, `attributeHostRoundToTranscript`): Validates parsed host terminal evidence against assistant creation/completion after the latest delivered input; newer activity stays pending and unreadable timestamps stay unknown. Recovery and untracked reads retain the shared host-round parser/composer.
-- **BackgroundJobTerminalGate** (`background-job-terminal-gate.ts`): Terminal evidence verification with host outcome attribution, evidence deadlines, and reading leases
+- **BackgroundJobTerminalGate** (`background-job-terminal-gate.ts`): Terminal evidence verification with host outcome attribution, reading leases, and a bounded two-tier evidence re-arm (fast `graceMs` retries, then exponential slow re-arms) that is armed only on hosts where no polling reconciler owns recovery
 - **BackgroundJobPersistence** (`background-job-persistence.ts`): Persistence layer for lifecycle state with tombstone and epoch tracking across host restarts
 - **BackgroundJobFixture** (`background-job-fixture.ts`): Test-only board fixtures for adapter/state-machine tests (not for production)
 - **TestTimers** (`test-timers.ts`): Test-only deterministic timer harness (manual clock, injected `setTimeout`/`clearTimeout` seams, zero-duration `tick` drain); wire into timer-seam components, see AGENTS.md "Test Time"
@@ -155,7 +155,7 @@ Session metadata, the opencode client accessor, and the type-only call-shape con
 | `background-job-supervisor.ts` | Wall-clock watchdog: one timer per run, host abort on expiry |
 | `background-task-concurrency.ts` | Process-local admission scheduler for background tasks |
 | `background-job-persistence.ts` | Persistence for lifecycle state (tombstones, deletion) |
-| `background-job-terminal-gate.ts` | Terminal evidence verification and attribution |
+| `background-job-terminal-gate.ts` | Terminal evidence verification and attribution; bounded two-tier evidence re-arm for late-attributable host outcomes (shim hosts only — `runtime-status-reconciliation.ts` owns recovery where `session.status` exists) |
 | `background-job-fixture.ts` | Test-only board fixtures for adapter/state-machine tests |
 | `test-timers.ts` | Test-only deterministic timer harness for seam-wired timer code |
 | `tui-reusable-projection.ts` | Board → tui-state projection for sidebar reusable dots |

@@ -81,6 +81,7 @@ node scripts/lint_intent.mjs <file>                   # destructive never wears 
 node scripts/slop_tells.mjs --strict <file>           # generated-UI tells
 python3 scripts/lint_hardcodes.py <file|dir>          # no raw hex, px, ms
 node scripts/verify_overflow.mjs <file>               # clipped text, overlapping controls
+node scripts/verify_spacing.mjs <file>                # rows of cards share a height, nothing touches
 node scripts/verify_reduced_motion.mjs <file>         # motion stops, no content lost
 python3 scripts/lint_native_select.py <file|dir>      # the native-select ban
 python3 scripts/check_no_emoji.py <dir>               # the emoji and dash ban, enforced

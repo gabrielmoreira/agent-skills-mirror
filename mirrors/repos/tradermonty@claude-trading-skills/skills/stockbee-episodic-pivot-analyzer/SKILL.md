@@ -18,7 +18,7 @@ Classify Day 1 Episodic Pivot (EP) candidates using both **catalyst quality** an
 ## Prerequisites
 
 - Python 3.10+
-- Optional: FMP API key for OHLCV/profile enrichment
+- Optional: FMP API key for OHLCV enrichment
 - One of:
   - Catalyst/events JSON
   - `earnings-trade-analyzer` JSON output
@@ -116,3 +116,13 @@ For each candidate, present:
 - `references/ep_methodology.md` — Stockbee EP interpretation and setup taxonomy
 - `references/catalyst_quality.md` — catalyst classification and quality scoring
 - `references/handoff_rules.md` — downstream workflow handoffs and review rules
+
+## Shared FMP client
+
+Live FMP access uses the bundled generated `scripts/fmp_client.py`, loaded only
+when an FMP run starts, so offline modes still work without `requests`. CLI
+key/environment precedence, the API-call budget and successful output shapes are
+preserved. Requests use stable endpoints only; a denied, empty or failed stable
+request does not fall back to retired v3 URLs. The shared client masks raw and
+URL-encoded key echoes, retries malformed JSON once, and retries a 429 at most once,
+after a 60-second wait, before stopping on a repeated rate limit.

@@ -23,11 +23,11 @@ ulw-research/
     ├── report-tools-commands.mjs    # one function per subcommand
     ├── cli-support.mjs / entry-guard.mjs   # flags, CliError, exit codes, atomic JSON, symlink-safe entry check
     ├── contracts.mjs                # frozen vocabulary: DEFECT_CODES (severity lives only here), FIDELITY_CODES, enums, manifest + repair-state validators
-    ├── outcome.mjs                  # outcome.json manifest, deliverable state, verify, closing briefing
+    ├── outcome.mjs / outcome-start.mjs # manifest lifecycle + the run clock outcome init records (--started-at, metadata, dir-name fallback)
     ├── repair-tracker.mjs           # bounded repair decisions (attempts, plateau, oscillation, wall clock, integrity codes)
     ├── html-lite.mjs / entities.mjs # HTML tokenizer, selector paths, prose text
     ├── css-lite.mjs / design-spec.mjs      # CSS scanning, palette + lineage parsing, design-spec rendering
-    ├── gates-static.mjs + gates-text.mjs / gates-figures.mjs / gates-structure.mjs   # static gates G1-G17
+    ├── gates-static.mjs + gates-text.mjs / gates-figures.mjs / gates-structure.mjs   # static gates G1-G17; sources-citation.mjs is the one Sources predicate (claim segments vs citation fields)
     ├── layout-probe.mjs / gates-layout.mjs # in-page probe source + layout gates L1-L5 over its output
     ├── format-extract.mjs / format-extract-css.mjs   # design-spec draft from a pointed-at HTML or Markdown document
     ├── fact-ledger.mjs              # fact ledger IO and writers (addRow, retractRow, supersedeRow, --view table)

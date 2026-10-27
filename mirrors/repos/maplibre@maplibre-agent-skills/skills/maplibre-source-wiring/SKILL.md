@@ -1,7 +1,8 @@
 ---
 name: maplibre-source-wiring
 description: Getting a MapLibre GL JS source to actually render — TileJSON `url` versus hand-wired `tiles` templates, matching `source-layer` names to the tile schema, layer order and inserting below labels, `promoteId` and the feature ids that feature state needs, and the CORS and glyph failures behind a blank map. Use when a source is configured but nothing is drawing, or when setFeatureState does nothing.
-status: verified
+metadata:
+  status: verified
 ---
 
 # MapLibre Source Wiring
@@ -108,7 +109,7 @@ Two style-root properties supply the assets that symbol layers draw with:
 
 Pre-built style URLs from hosted providers include their own. When building a custom style or self-hosting, you must supply them.
 
-**The two fail differently when absent, and the difference is what makes a symptom readable backwards to a cause.** Since GL JS 5.11.0 an absent `glyphs` does _not_ remove text: MapLibre renders it in a local system font instead, so the symptom is text in the wrong face, not missing text. Reach for `glyphs` when the labels are there but wrong, not when they are absent entirely. An absent `sprite` has no equivalent fallback — icons are silently omitted.
+**The two fail differently when absent, and the difference is what makes a symptom readable backwards to a cause.** Since GL JS 5.11.0 an absent `glyphs` does _not_ remove text: MapLibre renders it in a local system font instead, so the symptom is text in the wrong face, not missing text. Reach for `glyphs` when the labels are there but wrong, not when they are absent entirely. An absent `sprite` logs a console warning for each missing icon (`Image "<id>" could not be loaded`) and renders none; `map.hasImage(id)` returns `false` for each. A `sprite` URL that fails to load also logs an error.
 
 For the fallback's mechanism and its limits (it is GL JS only; Native still needs served PBFs), font stacks, self-hosting versus generating, and script coverage, see [maplibre-fonts-glyphs](../maplibre-fonts-glyphs/SKILL.md).
 

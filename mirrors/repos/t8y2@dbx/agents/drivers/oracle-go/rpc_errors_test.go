@@ -111,6 +111,20 @@ func TestRPCErrorContractPreservesStageAndNeverAuthorizesExecutionRetry(t *testi
 	}
 }
 
+func TestRPCNativeDebugErrorKeepsAuthoritativeOutcome(t *testing.T) {
+	for _, sample := range []struct{ category, stage, outcome, wantCategory, wantStage, disposition string }{
+		{"timeout", "execute", "unknown", "timeout", "execute", "quarantine"},
+		{"canceled", "request", "not_started", "canceled", "request", "quarantine"},
+		{"", "", "unknown", "sql", "execute", "keep"},
+	} {
+		native := &plDebugNativeError{message: "debug operation failed", category: sample.category, stage: sample.stage, outcome: sample.outcome, agentSessionID: "original"}
+		data := rpcDiagnostics(t, errorResponse(json.RawMessage("1"), fmt.Errorf("wrapped: %w", native), "connect", "replacement"))
+		if data["category"] != sample.wantCategory || data["stage"] != sample.wantStage || data["operationOutcome"] != sample.outcome || data["sessionDisposition"] != sample.disposition || data["agentSessionId"] != "original" || data["retryable"] != false {
+			t.Fatalf("native debug facts were reclassified: %#v", data)
+		}
+	}
+}
+
 func TestRuntimeNegotiatesStructuredErrorsAndLegacyHandshakeStaysCompatible(t *testing.T) {
 	legacy, _ := newServer().handleLine(`{"id":1,"method":"handshake","params":{}}`)
 	runtime, _ := newRuntimeServer().handleLine(`{"id":1,"method":"handshake","params":{}}`)

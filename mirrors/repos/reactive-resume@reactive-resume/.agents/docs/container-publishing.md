@@ -6,7 +6,7 @@ The repository is `reactive-resume/reactive-resume`. Docker Hub remains
 
 ## Builds and release safety
 
-`.github/workflows/docker-build.yml` builds AMD64 and ARM64 on matching native runners.
+`.github/workflows/docker-publish.yml` builds AMD64 and ARM64 on matching native runners.
 All workflows run on GitHub-hosted runners (`ubuntu-latest`, `ubuntu-24.04-arm`) by default,
 so forks work without setup. Setting the repository variable `USE_BLACKSMITH=true` switches
 every job to Blacksmith runners (32 vCPU for build/test jobs, 2 vCPU for lightweight jobs) and
@@ -25,7 +25,7 @@ Dockerfile's pnpm cache mounts between runs, keyed per architecture (`Dockerfile
 | Manual dispatch, default `release=false`        | Build AMD64 and ARM64      | `sha-<full-commit>`, `canary-<run-id>-<attempt>`       | No                                                 |
 | Push of a stable `v*` tag                       | Promote existing SHA image | `latest`, version/major/minor (`v6.0.0`, `v6.0`, `v6`) | When configured: SSH redeploy and Cloudflare purge |
 | Push of a prerelease `v*` tag                   | Promote existing SHA image | Prerelease version only (for example, `v6.0.0-rc.1`)   | No                                                 |
-| Manual dispatch, `release=true`, branch         | Promote existing SHA image | `latest`                                               | When configured: SSH redeploy and Cloudflare purge |
+| Manual dispatch, `release=true`, branch         | Promote existing SHA image | `latest`, version/major/minor from `package.json`      | When configured: SSH redeploy and Cloudflare purge |
 | Manual dispatch, `release=true`, stable tag     | Promote existing SHA image | `latest`, version/major/minor (`v6.0.0`, `v6.0`, `v6`) | When configured: SSH redeploy and Cloudflare purge |
 | Manual dispatch, `release=true`, prerelease tag | Promote existing SHA image | Prerelease version only                                | No                                                 |
 
@@ -36,12 +36,12 @@ outputs use `sha-<full-commit>-amd64` and `sha-<full-commit>-arm64`.
 
 ### Explicit product releases and manual APKs
 
-A push to `main` publishes container images and compatible preview OTA updates only.
+A push to `main` publishes container images only. OTA updates ship with stable production releases.
 It never builds Android APKs, creates Git tags, or creates GitHub Releases. Product
 GitHub Releases and `v*` tags are created only by an explicit versioned release operation.
 Docker promotion consumes an existing tag or commit; it does not create either.
 
-For a sideloadable APK, dispatch **Mobile Release** on `main` with `platform=android`,
+For a sideloadable APK, dispatch **Mobile release** on `main` with `platform=android`,
 `format=apk`, the desired `abi`, and `upload=false`. Signing requires approval through
 `mobile-signing`. The preview APK is a downloadable Actions artifact for 14 days;
 release evidence is retained for 90 days. No GitHub tag or release is created.
@@ -53,7 +53,7 @@ remove an asset still referenced by `packages/forme-native/scripts/prebuilt.json
 
 ### Stable promotions
 
-Before moving any container aliases or deploying production, the latest `e2e.yml`
+Before moving any container aliases or deploying production, the latest `ci.yml`
 CI run from a `main` push must have completed successfully for the exact full commit
 SHA being promoted. Missing, failed, cancelled, or pending CI blocks promotion;
 PR checks and manual smoke-only runs cannot authorize it. If historical CI was
@@ -74,11 +74,13 @@ manual `release=false` build at that ref first, then rerun promotion. Historical
 older workflow files still run their original workflow; their short SHA tags are not promotion
 sources. Keep full SHA images in registry retention policies so commits remain promotable.
 
-Manual `release=true` on main or another branch updates `latest` only, keeping semver
-aliases tied to Git releases. To update `latest` to main without rebuilding:
+Manual `release=true` on main or another branch promotes the branch head to `latest` and to
+the full/minor/major aliases of its `package.json` version (a prerelease version updates only
+its own alias and skips production integrations). Use it to republish a release with a fix
+that landed after its Git tag, without rebuilding:
 
 ```bash
-gh workflow run docker-build.yml --repo reactive-resume/reactive-resume --ref main -f release=true
+gh workflow run docker-publish.yml --repo reactive-resume/reactive-resume --ref main -f release=true
 ```
 
 To re-promote an existing stable release, select its Git tag. This updates `latest` and
@@ -86,7 +88,7 @@ that release's full/minor/major semver aliases. The tag must match the built `pa
 version. Prerelease tags update only their prerelease alias and skip production integrations.
 
 ```bash
-gh workflow run docker-build.yml --repo reactive-resume/reactive-resume --ref v6.0.1 -f release=true
+gh workflow run docker-publish.yml --repo reactive-resume/reactive-resume --ref v6.0.1 -f release=true
 ```
 
 SSH redeployment requires `SSH_KEY`, `SSH_HOST`, and `SSH_USER`; Cloudflare purging requires
@@ -95,20 +97,24 @@ secret is missing. Dispatch does not create a Git tag, GitHub release, or versio
 
 ## Native mobile updates
 
-After successful GHCR publishing, `mobile-update` checks out the same full commit and
-publishes an EAS Update using the `EXPO_TOKEN` Actions secret. The token must have access
-to Expo account `reactive-resume` and project `5830280e-e1ba-45b7-b9c9-ba048fa3bd4d`.
-Missing credentials fail the mobile job without undoing the published Docker image.
+After a successful stable Docker promotion and SSH redeploy, `docker-publish.yml` calls
+`.github/workflows/mobile-ota-update.yml`. This reusable workflow checks out the image's
+exact full source commit and publishes an EAS Update to the `production` channel using
+the `production` EAS environment. Nightlies, manual canaries, and prereleases skip OTA.
 
-- Current-main nightlies, manual canaries, and prereleases publish to the `preview` channel
-  using the `preview` EAS environment. Superseded main builds skip mobile publishing.
-- Stable promotions publish to `production` using the `production` EAS environment only
-  when the SSH redeploy step succeeded. Before publishing, three consecutive probes of
-  `https://rxresu.me/api/health` must identify this service, report healthy, and match the
-  full source commit. Official Docker builds embed `APP_REVISION` for that check.
-- Each channel cancels superseded mobile jobs independently; Docker image builds remain
-  unaffected. Publishing and deployment are separate operations, so a failed mobile job
-  can leave the backend ahead. Fix the failure and rerun the release workflow.
+The workflow uses the `EXPO_TOKEN` Actions secret, which must have access to Expo account
+`reactive-resume` and project `5830280e-e1ba-45b7-b9c9-ba048fa3bd4d`. Missing credentials
+fail the mobile job without undoing the published Docker image.
+
+Before publishing, three consecutive probes of `https://rxresu.me/api/health` must identify
+this service, report healthy, and match the full source commit. Official Docker builds
+embed `APP_REVISION` for that check. A successful container publish alone cannot authorize OTA.
+
+New production OTA jobs cancel superseded OTA jobs; Docker image builds remain unaffected.
+Publishing and deployment are separate operations, so a failed mobile job can leave the
+backend ahead. Fix the failure and rerun failed jobs in the Docker release run. The reusable
+workflow runs within that release's dependency chain; it has no independent push or
+`workflow_run` trigger and receives only the source SHA and Expo secret from its caller.
 
 The app uses `expo-updates` with fingerprint runtime compatibility. Generated native
 projects and local Forme build output are excluded; the Rust sources and reviewed
@@ -116,8 +122,8 @@ prebuilt pin are included. Native changes need a new compatible store build; pub
 an OTA update alone cannot upgrade native code. JavaScript and asset changes are checked
 at launch, downloaded in the background, and applied on the next restart.
 
-Before first use, add `EXPO_TOKEN`, create preview/production EAS channels, and distribute
-new builds with these channels and update configuration. Existing binaries without
+Before first use, add `EXPO_TOKEN`, create the production EAS channel, and distribute
+new production builds with that channel and update configuration. Existing binaries without
 `expo-updates` cannot receive OTA updates. See [mobile release handoff](./mobile-release-handoff.md#over-the-air-updates)
 for setup, rollback, and remaining verification. Keep APIs compatible with older clients
 and self-hosted servers; runtime fingerprints only protect the JavaScript/native boundary.
@@ -126,7 +132,7 @@ Manual canaries build, publish, merge, and sign images in enabled registries wit
 running production integrations:
 
 ```bash
-gh workflow run docker-build.yml --repo reactive-resume/reactive-resume --ref main -f release=false
+gh workflow run docker-publish.yml --repo reactive-resume/reactive-resume --ref main -f release=false
 ```
 
 Published images retain SBOMs, maximum provenance, and Cosign signatures. GHCR always uses
@@ -185,8 +191,11 @@ repository source label and signing identity; historical digests and signatures 
 Release aliases are mutable: pin the original digest above if you need the pre-rename artifact.
 
 New signatures identify
+`https://github.com/reactive-resume/reactive-resume/.github/workflows/docker-publish.yml@<ref>`.
+Images signed before the workflow rename retain
 `https://github.com/reactive-resume/reactive-resume/.github/workflows/docker-build.yml@<ref>`.
-Historical signatures and image source labels retain the old repository identity. Verify
+Use the workflow identity from the image's signing record when verifying older images.
+Signatures and image source labels from before the repository rename retain the old repository identity. Verify
 historical v5.3.0 with its original workflow identity, even at its new registry address:
 
 ```bash

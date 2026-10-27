@@ -1,10 +1,6 @@
 ---
 name: career-ops
-description: >-
-  Open-source AI job search agent -- evaluate offers, generate CVs, scan portals,
-  track applications. Use when the user pastes a job URL or JD, asks to scan
-  portals, generate a CV/PDF, track applications, prepare for interviews, draft
-  outreach/emails, or run any career-ops mode.
+description: "Open-source AI job search agent -- evaluate offers, generate CVs, scan portals, track applications. Use when the user pastes a job URL or JD, asks to scan portals, generate a CV/PDF, track applications, prepare for interviews, draft outreach/emails, or run any career-ops mode."
 arguments: mode
 user_invocable: true
 user-invocable: true
@@ -12,7 +8,7 @@ argument-hint: "[scan | discover | deep | pdf | ats | text | latex | latex-tex |
 license: MIT
 ---
 
-# career-ops -- Router
+# career-ops: open-source AI job search agent
 
 career-ops is a multi-CLI AI job search agent. The routing below is shared across supported agent CLIs even when the invocation surface differs.
 

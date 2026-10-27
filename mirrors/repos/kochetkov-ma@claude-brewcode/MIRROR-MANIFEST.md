@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `kochetkov-ma/claude-brewcode` — 26 default patterns, 5 followed patterns, 67 file(s) materialized.
+Mirror of `kochetkov-ma/claude-brewcode` — 26 default patterns, 5 followed patterns, 68 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `kochetkov-ma/claude-brewcode` — 26 default patterns, 5 followed pat
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 5 |
-| Files         | 67 |
+| Files         | 68 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -122,14 +122,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 57 | ✓ | [`skills/brewpage-publish/README.md`](skills/brewpage-publish/README.md) |
 | 58 | ✓ | [`skills/brewpage-publish/scripts/brewpage-lib.sh`](skills/brewpage-publish/scripts/brewpage-lib.sh) |
 | 59 | ✓ | [`skills/brewpage-publish/scripts/brewpage-run.sh`](skills/brewpage-publish/scripts/brewpage-run.sh) |
-| 60 | ✓ | [`skills/brewpage-publish/scripts/publish.mjs`](skills/brewpage-publish/scripts/publish.mjs) |
-| 61 | ✓ | [`skills/brewpage-publish/SKILL.md`](skills/brewpage-publish/SKILL.md) |
-| 62 | ✓ | [`web/docs/public/llms.txt`](web/docs/public/llms.txt) |
-| 63 | → | [`.codex/rules/avoid.md`](.codex/rules/avoid.md) |
-| 64 | → | [`.codex/rules/best-practice.md`](.codex/rules/best-practice.md) |
-| 65 | → | [`.codex/rules/docker-best-practice.md`](.codex/rules/docker-best-practice.md) |
-| 66 | → | [`.codex/rules/docs-workflow.md`](.codex/rules/docs-workflow.md) |
-| 67 | → | [`.codex/rules/semble-first.md`](.codex/rules/semble-first.md) |
+| 60 | ✓ | [`skills/brewpage-publish/scripts/history.py`](skills/brewpage-publish/scripts/history.py) |
+| 61 | ✓ | [`skills/brewpage-publish/scripts/publish.mjs`](skills/brewpage-publish/scripts/publish.mjs) |
+| 62 | ✓ | [`skills/brewpage-publish/SKILL.md`](skills/brewpage-publish/SKILL.md) |
+| 63 | ✓ | [`web/docs/public/llms.txt`](web/docs/public/llms.txt) |
+| 64 | → | [`.codex/rules/avoid.md`](.codex/rules/avoid.md) |
+| 65 | → | [`.codex/rules/best-practice.md`](.codex/rules/best-practice.md) |
+| 66 | → | [`.codex/rules/docker-best-practice.md`](.codex/rules/docker-best-practice.md) |
+| 67 | → | [`.codex/rules/docs-workflow.md`](.codex/rules/docs-workflow.md) |
+| 68 | → | [`.codex/rules/semble-first.md`](.codex/rules/semble-first.md) |
 
 ---
 

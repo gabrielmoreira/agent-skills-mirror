@@ -39,6 +39,44 @@ DETAIL_COLUMNS = {
 
 TIMEOUT = 30
 
+SUMMARY_COLUMNS = ("Metric", "Value")
+REQUIRED_SUMMARY_METRICS = ("Average Peaks (200MA)", "Average Troughs (8MA < 0.4)")
+
+
+def _open_reader(text: str) -> csv.DictReader:
+    """Build a DictReader with a BOM-free text and whitespace-stripped header names.
+
+    DictReader row keys come from ``fieldnames``, so stripping them once here keeps
+    the header check and the row lookups consistent.
+    """
+    reader = csv.DictReader(io.StringIO(text.lstrip("\ufeff")))
+    if reader.fieldnames is not None:
+        reader.fieldnames = [(name or "").strip() for name in reader.fieldnames]
+    return reader
+
+
+def _read_csv(text: str, filename: str) -> Optional[tuple[list[str], list[dict]]]:
+    """Parse a whole CSV body; report an unparsable body (NUL, oversized field) once."""
+    try:
+        reader = _open_reader(text)
+        return list(reader.fieldnames or []), list(reader)
+    except csv.Error as exc:
+        print("FAILED")
+        print(f"ERROR: {filename} schema drift: unparsable CSV ({exc})", file=sys.stderr)
+        return None
+
+
+def _missing_columns(fieldnames, required) -> list[str]:
+    """Return sorted required columns absent from a header normalized by _open_reader."""
+    return sorted(set(required) - set(fieldnames or []))
+
+
+def _report_drift(filename: str, missing: list[str]) -> None:
+    print(
+        f"ERROR: {filename} schema drift: missing columns [{','.join(missing)}]",
+        file=sys.stderr,
+    )
+
 
 def fetch_detail_csv(url: str = DEFAULT_DETAIL_URL) -> list[dict]:
     """
@@ -55,21 +93,24 @@ def fetch_detail_csv(url: str = DEFAULT_DETAIL_URL) -> list[dict]:
         print(f"ERROR: Failed to fetch detail CSV: {e}", file=sys.stderr)
         return []
 
-    reader = csv.DictReader(io.StringIO(resp.text))
+    parsed = _read_csv(resp.text, "market_breadth_data.csv")
+    if parsed is None:
+        return []
+    fieldnames, raw_rows = parsed
+    missing = _missing_columns(fieldnames, DETAIL_COLUMNS)
+    if missing:
+        print("FAILED")
+        _report_drift("market_breadth_data.csv", missing)
+        return []
+
     rows = []
 
-    for line_num, raw_row in enumerate(reader, start=2):
+    for line_num, raw_row in enumerate(raw_rows, start=2):
         try:
             row = _parse_detail_row(raw_row)
             rows.append(row)
         except (ValueError, KeyError) as e:
             print(f"\n  WARN: Skipping line {line_num}: {e}", file=sys.stderr)
-
-    # Validate columns
-    if rows:
-        missing = set(DETAIL_COLUMNS.keys()) - set(rows[0].keys())
-        if missing:
-            print(f"\n  WARN: Missing columns: {missing}", file=sys.stderr)
 
     if not rows:
         print("OK (0 rows)")
@@ -97,9 +138,18 @@ def fetch_summary_csv(url: str = DEFAULT_SUMMARY_URL) -> dict[str, str]:
         print(f"ERROR: Failed to fetch summary CSV: {e}", file=sys.stderr)
         return {}
 
-    reader = csv.DictReader(io.StringIO(resp.text))
+    parsed = _read_csv(resp.text, "market_breadth_summary.csv")
+    if parsed is None:
+        return {}
+    fieldnames, raw_rows = parsed
+    missing = _missing_columns(fieldnames, SUMMARY_COLUMNS)
+    if missing:
+        print("FAILED")
+        _report_drift("market_breadth_summary.csv", missing)
+        return {}
+
     summary = {}
-    for line_num, raw_row in enumerate(reader, start=2):
+    for line_num, raw_row in enumerate(raw_rows, start=2):
         raw_metric = raw_row.get("Metric")
         raw_value = raw_row.get("Value")
         if raw_metric is None or raw_value is None:
@@ -111,6 +161,9 @@ def fetch_summary_csv(url: str = DEFAULT_SUMMARY_URL) -> dict[str, str]:
             summary[metric] = value
 
     print(f"OK ({len(summary)} metrics)")
+    for name in REQUIRED_SUMMARY_METRICS:
+        if name not in summary:
+            print(f"WARN: market_breadth_summary.csv missing metric '{name}'", file=sys.stderr)
     return summary
 
 

@@ -13,7 +13,7 @@ tools/venv/bin/python tools/screendiff.py shots/before.png shots/after.png \
 |---|---|---|
 | 0 | `identical (1 region masked): ...` | No pixel outside the masks differs by more than 8 |
 | 1 | `different: N pixels differ ..., inside x0,y0,x1,y1` | Find out why before posting |
-| 2 | an error | Different sizes, a box outside the picture, an unreadable file |
+| 2 | an error | Different sizes, a box outside the picture, an unreadable file, an `--out` or `--diff` it cannot write |
 
 | Option | Notes |
 |---|---|

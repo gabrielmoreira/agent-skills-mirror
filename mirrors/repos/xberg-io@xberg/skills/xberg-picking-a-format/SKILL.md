@@ -6,7 +6,7 @@ name: xberg-picking-a-format
 <!--
 AI-RULEZ :: GENERATED FILE — DO NOT EDIT
 Content-Hash: blake3:a2f204c34c2eb303812f0b7b0a9acf29c879edd1985b8cc3312555b347378e1e
-Source-Hash: blake3:7d89c85db34d7924976a1442b62b8207fc6312bfcd69b4688f3c7887b887018b
+Source-Hash: blake3:934f7e3903a85762c6a94f533fc47d534e94d3274b6a2cd147fa8bda13a6b03a
 Schema-Version: v1
 -->
 

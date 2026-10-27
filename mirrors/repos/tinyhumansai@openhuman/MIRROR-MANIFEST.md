@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `tinyhumansai/openhuman` — 26 default patterns, 18 followed patterns, 239 file(s) materialized.
+Mirror of `tinyhumansai/openhuman` — 26 default patterns, 18 followed patterns, 240 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `tinyhumansai/openhuman` — 26 default patterns, 18 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 18 |
-| Files         | 239 |
+| Files         | 240 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -279,42 +279,43 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 201 | ✓ | [`docs/gitbooks/en/features/native-tools/README.md`](docs/gitbooks/en/features/native-tools/README.md) |
 | 202 | ✓ | [`docs/gitbooks/en/guides/README.md`](docs/gitbooks/en/guides/README.md) |
 | 203 | ✓ | [`docs/gitbooks/en/README.md`](docs/gitbooks/en/README.md) |
-| 204 | ✓ | [`docs/plans/README.md`](docs/plans/README.md) |
-| 205 | ✓ | [`docs/README.md`](docs/README.md) |
-| 206 | ✓ | [`fastlane/README.md`](fastlane/README.md) |
-| 207 | ✓ | [`llms.txt`](llms.txt) |
-| 208 | ✓ | [`packages/arch/openhuman-bin/README.md`](packages/arch/openhuman-bin/README.md) |
-| 209 | ✓ | [`packages/tauri-plugin-ptt/README.md`](packages/tauri-plugin-ptt/README.md) |
-| 210 | ✓ | [`scripts/ci/README.md`](scripts/ci/README.md) |
-| 211 | ✓ | [`scripts/debug/README.md`](scripts/debug/README.md) |
-| 212 | ✓ | [`scripts/dep-audit/README.md`](scripts/dep-audit/README.md) |
-| 213 | ✓ | [`scripts/memory-scenarios/README.md`](scripts/memory-scenarios/README.md) |
-| 214 | ✓ | [`scripts/rabbit/README.md`](scripts/rabbit/README.md) |
-| 215 | ✓ | [`scripts/README.md`](scripts/README.md) |
-| 216 | ✓ | [`scripts/shortcuts/README.md`](scripts/shortcuts/README.md) |
-| 217 | ✓ | [`scripts/shortcuts/review/README.md`](scripts/shortcuts/review/README.md) |
-| 218 | ✓ | [`scripts/shortcuts/work/README.md`](scripts/shortcuts/work/README.md) |
-| 219 | ✓ | [`scripts/test-planning/README.md`](scripts/test-planning/README.md) |
-| 220 | ✓ | [`tests/fixtures/memory_golden/README.md`](tests/fixtures/memory_golden/README.md) |
-| 221 | ✓ | [`tests/README.md`](tests/README.md) |
-| 222 | → | [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md) |
-| 223 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
-| 224 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 225 | → | [`crates/README.md`](crates/README.md) |
-| 226 | → | [`docs/community/discussions.md`](docs/community/discussions.md) |
-| 227 | → | [`docs/CONTRIBUTING-BEGINNERS.md`](docs/CONTRIBUTING-BEGINNERS.md) |
-| 228 | → | [`docs/gitbooks/en/developing/architecture.md`](docs/gitbooks/en/developing/architecture.md) |
-| 229 | → | [`docs/gitbooks/en/developing/architecture/agent-harness.md`](docs/gitbooks/en/developing/architecture/agent-harness.md) |
-| 230 | → | [`docs/gitbooks/en/developing/architecture/frontend.md`](docs/gitbooks/en/developing/architecture/frontend.md) |
-| 231 | → | [`docs/gitbooks/en/developing/architecture/tauri-shell.md`](docs/gitbooks/en/developing/architecture/tauri-shell.md) |
-| 232 | → | [`docs/gitbooks/en/developing/embed/builder-setters.md`](docs/gitbooks/en/developing/embed/builder-setters.md) |
-| 233 | → | [`docs/gitbooks/en/developing/embed/concepts/README.md`](docs/gitbooks/en/developing/embed/concepts/README.md) |
-| 234 | → | [`docs/gitbooks/en/developing/embed/README.md`](docs/gitbooks/en/developing/embed/README.md) |
-| 235 | → | [`docs/gitbooks/en/developing/getting-set-up.md`](docs/gitbooks/en/developing/getting-set-up.md) |
-| 236 | → | [`docs/SUPPORT.md`](docs/SUPPORT.md) |
-| 237 | → | [`INSTALL.md`](INSTALL.md) |
-| 238 | → | [`README.md`](README.md) |
-| 239 | → | [`SECURITY.md`](SECURITY.md) |
+| 204 | ✓ | [`docs/gitbooks/zh/features/channels.md`](docs/gitbooks/zh/features/channels.md) |
+| 205 | ✓ | [`docs/plans/README.md`](docs/plans/README.md) |
+| 206 | ✓ | [`docs/README.md`](docs/README.md) |
+| 207 | ✓ | [`fastlane/README.md`](fastlane/README.md) |
+| 208 | ✓ | [`llms.txt`](llms.txt) |
+| 209 | ✓ | [`packages/arch/openhuman-bin/README.md`](packages/arch/openhuman-bin/README.md) |
+| 210 | ✓ | [`packages/tauri-plugin-ptt/README.md`](packages/tauri-plugin-ptt/README.md) |
+| 211 | ✓ | [`scripts/ci/README.md`](scripts/ci/README.md) |
+| 212 | ✓ | [`scripts/debug/README.md`](scripts/debug/README.md) |
+| 213 | ✓ | [`scripts/dep-audit/README.md`](scripts/dep-audit/README.md) |
+| 214 | ✓ | [`scripts/memory-scenarios/README.md`](scripts/memory-scenarios/README.md) |
+| 215 | ✓ | [`scripts/rabbit/README.md`](scripts/rabbit/README.md) |
+| 216 | ✓ | [`scripts/README.md`](scripts/README.md) |
+| 217 | ✓ | [`scripts/shortcuts/README.md`](scripts/shortcuts/README.md) |
+| 218 | ✓ | [`scripts/shortcuts/review/README.md`](scripts/shortcuts/review/README.md) |
+| 219 | ✓ | [`scripts/shortcuts/work/README.md`](scripts/shortcuts/work/README.md) |
+| 220 | ✓ | [`scripts/test-planning/README.md`](scripts/test-planning/README.md) |
+| 221 | ✓ | [`tests/fixtures/memory_golden/README.md`](tests/fixtures/memory_golden/README.md) |
+| 222 | ✓ | [`tests/README.md`](tests/README.md) |
+| 223 | → | [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md) |
+| 224 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
+| 225 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 226 | → | [`crates/README.md`](crates/README.md) |
+| 227 | → | [`docs/community/discussions.md`](docs/community/discussions.md) |
+| 228 | → | [`docs/CONTRIBUTING-BEGINNERS.md`](docs/CONTRIBUTING-BEGINNERS.md) |
+| 229 | → | [`docs/gitbooks/en/developing/architecture.md`](docs/gitbooks/en/developing/architecture.md) |
+| 230 | → | [`docs/gitbooks/en/developing/architecture/agent-harness.md`](docs/gitbooks/en/developing/architecture/agent-harness.md) |
+| 231 | → | [`docs/gitbooks/en/developing/architecture/frontend.md`](docs/gitbooks/en/developing/architecture/frontend.md) |
+| 232 | → | [`docs/gitbooks/en/developing/architecture/tauri-shell.md`](docs/gitbooks/en/developing/architecture/tauri-shell.md) |
+| 233 | → | [`docs/gitbooks/en/developing/embed/builder-setters.md`](docs/gitbooks/en/developing/embed/builder-setters.md) |
+| 234 | → | [`docs/gitbooks/en/developing/embed/concepts/README.md`](docs/gitbooks/en/developing/embed/concepts/README.md) |
+| 235 | → | [`docs/gitbooks/en/developing/embed/README.md`](docs/gitbooks/en/developing/embed/README.md) |
+| 236 | → | [`docs/gitbooks/en/developing/getting-set-up.md`](docs/gitbooks/en/developing/getting-set-up.md) |
+| 237 | → | [`docs/SUPPORT.md`](docs/SUPPORT.md) |
+| 238 | → | [`INSTALL.md`](INSTALL.md) |
+| 239 | → | [`README.md`](README.md) |
+| 240 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

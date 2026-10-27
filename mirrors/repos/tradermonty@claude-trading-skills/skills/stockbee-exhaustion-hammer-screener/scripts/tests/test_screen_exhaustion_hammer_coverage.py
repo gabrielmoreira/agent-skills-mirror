@@ -2,6 +2,7 @@
 
 import json
 import sys
+from datetime import date
 from pathlib import Path
 
 import pytest
@@ -47,11 +48,13 @@ from test_screen_exhaustion_hammer import (  # noqa: E402
     _profile,
 )
 
+SHARED = mod._load_shared_fmp()
+
 
 @pytest.fixture(autouse=True)
 def _no_sleep(monkeypatch):
-    monkeypatch.setattr(mod.time, "sleep", lambda *_: None)
-    monkeypatch.setattr(FMPClient, "RATE_LIMIT_DELAY", 0)
+    monkeypatch.setattr(SHARED.time, "sleep", lambda *_: None)
+    monkeypatch.setattr(SHARED.FMPClient, "RATE_LIMIT_DELAY", 0)
 
 
 def _client(responses, max_calls=50):
@@ -85,58 +88,205 @@ def test_client_reads_key_from_env(monkeypatch):
     assert FMPClient().api_key == "envkey"  # pragma: allowlist secret
 
 
-def test_request_budget_exhausted_raises():
+class _BadJsonResponse:
+    status_code = 200
+    text = "not json"
+
+    def json(self):
+        raise ValueError("bad json")
+
+
+def _urls(client):
+    return [c["url"] for c in client.session.calls]
+
+
+def test_adapter_budget_exhausted_raises_local_exception():
     client = _client([], max_calls=1)
     client.api_calls_made = 1
+    for call in (
+        lambda: client.get_historical_prices("APP"),
+        lambda: client.get_universe(1e9, 20.0, 1000, 10),
+        lambda: client.get_quote_bar("APP"),
+    ):
+        with pytest.raises(ApiCallBudgetExceeded) as exc_info:
+            call()
+        assert type(exc_info.value) is ApiCallBudgetExceeded
+    assert client.session.calls == []
+
+
+def test_adapter_budget_exhausted_mid_loop_raises_local_exception():
+    stable = [dict(_bar_dict("2026-06-26"), symbol="AAA")]
+    client = _client([_FakeResponse(stable)], max_calls=1)
+    assert client.get_historical_prices("AAA", days=5)
     with pytest.raises(ApiCallBudgetExceeded):
-        client._request("https://example.test/x")
+        client.get_historical_prices("BBB", days=5)
 
 
-def test_request_429_sets_rate_limit_and_short_circuits(capsys):
-    client = _client([_FakeResponse({}, status_code=429)])
-    assert client._request("https://example.test/x") is None
+def test_429_waits_once_then_sets_rate_limit_and_short_circuits(monkeypatch, capsys):
+    slept = []
+    monkeypatch.setattr(SHARED.time, "sleep", lambda s: slept.append(s))
+    client = _client([_FakeResponse({}, status_code=429), _FakeResponse({}, status_code=429)])
+    assert client.get_historical_prices("APP", days=5) == []
     assert client.rate_limit_reached is True
-    assert "rate limit" in capsys.readouterr().err
+    assert 60 in slept
+    assert "rate limit" in capsys.readouterr().err.lower()
+    assert len(client.session.calls) == 2
     # Subsequent calls make no HTTP request.
-    assert client._request("https://example.test/y") is None
-    assert len(client.session.calls) == 1
+    assert client.get_historical_prices("MSFT", days=5) == []
+    assert client.get_quote_bar("APP") is None
+    assert len(client.session.calls) == 2
 
 
-def test_request_http_error_logs_unless_quiet(capsys):
-    client = _client([_FakeResponse({"e": 1}, 500), _FakeResponse({"e": 1}, 500)])
-    assert client._request("https://example.test/x") is None
+def test_429_then_success_retries_once(monkeypatch):
+    slept = []
+    monkeypatch.setattr(SHARED.time, "sleep", lambda s: slept.append(s))
+    stable = [dict(_bar_dict("2026-06-26"), symbol="APP")]
+    client = _client([_FakeResponse({}, status_code=429), _FakeResponse(stable)])
+    bars = client.get_historical_prices("APP", days=5)
+    assert [b["date"] for b in bars] == ["2026-06-26"]
+    assert client.rate_limit_reached is False
+
+
+def test_http_error_logs_for_universe_and_returns_empty(capsys):
+    client = _client([_FakeResponse({"e": 1}, 500)])
+    assert client.get_universe(1e9, 20.0, 1000, 10) == []
     assert "HTTP 500" in capsys.readouterr().err
-    assert client._request("https://example.test/x", quiet=True) is None
-    assert capsys.readouterr().err == ""
-    assert client.api_calls_made == 2
+    assert client.api_calls_made == 1
 
 
-def test_request_exception_returns_none(capsys):
+def test_http_error_on_history_is_reported_and_empty(capsys):
+    client = _client([_FakeResponse({"e": 1}, 500)])
+    assert client.get_historical_prices("APP", days=5) == []
+    assert "HTTP 500" in capsys.readouterr().err
+
+
+def test_request_exception_returns_empty():
     class Boom:
         def get(self, *a, **k):
             raise mod.requests.exceptions.ConnectionError("down")
 
     client = FMPClient(api_key="k")
     client.session = Boom()
-    assert client._request("https://example.test/x") is None
-    assert "down" in capsys.readouterr().err
-    assert client._request("https://example.test/x", quiet=True) is None
+    assert client.get_historical_prices("APP", days=5) == []
+    assert client.get_quote_bar("APP") is None
+    assert client.get_universe(1e9, 20.0, 1000, 10) == []
 
 
-def test_request_sleeps_when_within_rate_limit_delay(monkeypatch):
-    slept = []
-    monkeypatch.setattr(mod.time, "sleep", lambda s: slept.append(s))
-    monkeypatch.setattr(FMPClient, "RATE_LIMIT_DELAY", 100.0)
-    client = _client([_FakeResponse({"ok": 1})])
-    client.last_call_time = mod.time.time()
-    assert client._request("https://example.test/x") == {"ok": 1}
-    assert slept and slept[0] > 0
+def test_malformed_json_retries_once_then_succeeds():
+    stable = [dict(_bar_dict("2026-06-26"), symbol="APP")]
+    client = _client([_BadJsonResponse(), _FakeResponse(stable)])
+    bars = client.get_historical_prices("APP", days=5)
+    assert [b["date"] for b in bars] == ["2026-06-26"]
+    assert client.api_calls_made == 2
 
 
-def test_stable_then_v3_prefers_stable_when_present():
-    client = _client([_FakeResponse([{"a": 1}])])
-    assert client._stable_then_v3("s", "v", {}) == [{"a": 1}]
-    assert len(client.session.calls) == 1
+def test_malformed_json_twice_fails_soft():
+    client = _client([_BadJsonResponse(), _BadJsonResponse()])
+    assert client.get_historical_prices("APP", days=5) == []
+    assert client.api_calls_made == 2
+
+
+def test_error_body_key_echo_is_redacted(capsys):
+    from urllib.parse import quote, quote_plus
+
+    key = "sek/ret+key1"  # pragma: allowlist secret
+    resp = _FakeResponse({}, 401)
+    resp.text = f"bad key {key} {quote(key, safe='')} {quote_plus(key, safe='')}"
+    client = FMPClient(api_key=key)
+    client.session = _FakeSession([resp])
+    assert client.get_universe(1e9, 20.0, 1000, 10) == []
+    err = capsys.readouterr().err
+    assert "HTTP 401" in err
+    assert key not in err
+    assert quote(key, safe="") not in err
+    assert quote_plus(key, safe="") not in err
+
+
+def test_stable_only_no_v3_on_empty_402_or_none():
+    for payload, status in (([], 200), ({"e": 1}, 402), (None, 200)):
+        client = _client([_FakeResponse(payload, status)] * 3)
+        assert client.get_historical_prices("APP", days=5) == []
+        assert client.get_universe(1e9, 20.0, 1000, 10) == []
+        assert client.get_quote_bar("APP") is None
+        urls = _urls(client)
+        assert len(urls) == 3
+        assert all("/stable/" in u for u in urls)
+        assert not any("/api/v3/" in u for u in urls)
+
+
+def test_history_request_shape(monkeypatch):
+    monkeypatch.setattr(SHARED, "_et_today", lambda now=None: date(2026, 6, 26))
+    client = _client([_FakeResponse([])])
+    client.get_historical_prices("app", days=120)
+    call = client.session.calls[0]
+    assert call["url"].endswith("/stable/historical-price-eod/full")
+    assert call["params"] == {"symbol": "APP", "from": "2025-10-19", "to": "2026-06-26"}
+    assert "apikey" not in call["params"]
+
+
+def test_universe_request_shape():
+    client = _client([_FakeResponse([])])
+    client.get_universe(2e9, 20.0, 100000, 5)
+    call = client.session.calls[0]
+    assert call["url"].endswith("/stable/company-screener")
+    assert call["params"] == {
+        "marketCapMoreThan": 2000000000,
+        "priceMoreThan": 20.0,
+        "volumeMoreThan": 100000,
+        "exchange": "NASDAQ,NYSE,AMEX",
+        "limit": 10000,
+    }
+
+
+def test_quote_request_shape_is_stable_only():
+    client = _client([_FakeResponse([{"price": 10}])])
+    client.get_quote_bar("app", asof_date="2026-06-26")
+    call = client.session.calls[0]
+    assert call["url"].endswith("/stable/quote")
+    assert call["params"] == {"symbol": "APP"}
+
+
+def test_no_circuit_breaker_after_many_empty_symbols():
+    stable = [dict(_bar_dict("2026-06-26"), symbol="OK")]
+    responses = [_FakeResponse([]) for _ in range(5)] + [_FakeResponse(stable)]
+    client = _client(responses)
+    for sym in ("A", "B", "C", "D", "E"):
+        assert client.get_historical_prices(sym, days=5) == []
+    bars = client.get_historical_prices("OK", days=5)
+    assert [b["date"] for b in bars] == ["2026-06-26"]
+    assert len(client.session.calls) == 6
+
+
+def test_missing_requests_still_exits(monkeypatch, capsys):
+    monkeypatch.setattr(mod, "requests", None)
+    with pytest.raises(SystemExit) as exc:
+        FMPClient(api_key="k")
+    assert exc.value.code == 1
+    assert "requests library not found" in capsys.readouterr().err
+
+
+def test_api_key_argument_beats_env(monkeypatch):
+    monkeypatch.setenv("FMP_API_KEY", "envkey")
+    client = FMPClient(api_key="argkey")  # pragma: allowlist secret
+    assert client.api_key == "argkey"  # pragma: allowlist secret
+    assert client.session.headers["apikey"] == "argkey"  # pragma: allowlist secret
+
+
+def test_delegating_attributes_round_trip():
+    client = _client([])
+    client.api_calls_made = 3
+    client.max_api_calls = 9
+    client.last_call_time = 1.5
+    client.rate_limit_reached = True
+    shared_client = client._client
+    assert (shared_client.api_calls_made, shared_client.max_api_calls) == (3, 9)
+    assert shared_client.last_call_time == 1.5 and shared_client.rate_limit_reached is True
+    assert client.api_calls_made == 3 and client.max_api_calls == 9
+    assert client.last_call_time == 1.5 and client.rate_limit_reached is True
+
+
+def test_default_budget_is_700():
+    assert FMPClient(api_key="k").max_api_calls == 700
 
 
 def test_get_universe_filters_sorts_caps_and_caches():
@@ -172,12 +322,11 @@ def test_get_historical_prices_stable_then_cache():
     assert "historical-price-eod/full" in client.session.calls[0]["url"]
 
 
-def test_get_historical_prices_falls_back_to_v3():
-    v3 = {"historical": [_bar_dict("2026-06-25"), _bar_dict("2026-06-24")]}
-    client = _client([_FakeResponse([]), _FakeResponse(v3)])
-    bars = client.get_historical_prices("APP", days=1)
-    assert [b["date"] for b in bars] == ["2026-06-25"]
-    assert "historical-price-full/APP" in client.session.calls[1]["url"]
+def test_get_historical_prices_empty_does_not_fall_back_to_v3():
+    client = _client([_FakeResponse([])])
+    assert client.get_historical_prices("APP", days=1) == []
+    assert len(client.session.calls) == 1
+    assert "/api/v3/" not in client.session.calls[0]["url"]
 
 
 def test_get_quote_bar_parses_and_caches():
@@ -196,11 +345,12 @@ def test_get_quote_bar_parses_and_caches():
     assert len(client.session.calls) == 1
 
 
-def test_get_quote_bar_defaults_from_price_only():
+def test_get_quote_bar_defaults_from_price_only(monkeypatch):
+    monkeypatch.setattr(SHARED, "_et_today", lambda now=None: date(2026, 6, 26))
     client = _client([_FakeResponse([{"price": 10}])])
     bar = client.get_quote_bar("APP")
     assert (bar["open"], bar["high"], bar["low"]) == (10.0, 10.0, 10.0)
-    assert bar["date"] == mod.date.today().isoformat()
+    assert bar["date"] == "2026-06-26"
 
 
 @pytest.mark.parametrize(
@@ -213,9 +363,16 @@ def test_get_quote_bar_invalid_returns_none(payload):
 
 
 def test_get_api_stats_reports_budget():
-    client = _client([_FakeResponse({"x": 1})], max_calls=5)
-    client._request("https://example.test/x")
+    client = _client([_FakeResponse([])], max_calls=5)
+    client.get_historical_prices("APP", days=5)
     stats = client.get_api_stats()
+    assert set(stats) == {
+        "api_calls_made",
+        "max_api_calls",
+        "budget_remaining",
+        "cache_entries",
+        "rate_limit_reached",
+    }
     assert stats["api_calls_made"] == 1
     assert stats["budget_remaining"] == 4
     assert stats["rate_limit_reached"] is False

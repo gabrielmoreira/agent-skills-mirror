@@ -642,6 +642,13 @@ Todo 来源缺失和省略数量明确保留；缺少观测不等于没有执行
 观测数量，不表示成功工作。历史决定引用及 stride 准入/结算门禁不变；off 模式
 新增反馈上下文，但不启用 stride。
 
+普通 replan 原本就会对照目标、未满足要求、实际工作和证据，决定继续或调整。
+Stride 增加绑定来源的结构化决定、下一探针和适用的前次决定复核，并受既有 typed
+结算要求约束。共同规划指引不依赖 Stride 开关。下述捕获 reader
+同时服务关闭和启用策略的路径；信息投递／结算收益与策略采用、成果收益分别验证，
+关闭策略的 reader 对照不能证明 Stride 效果。详见
+[共同指引与契约边界](../../reference/protocols/goal-vision-replan-contract-v0.md#replan-planning-guidance)。
+
 [捕获后的重规划读取](../../reference/protocols/turn-envelope-v0.md#captured-replan-reads--捕获后的重规划读取)
 把状态审视和写回格式分开，复用同一不可变决策快照。累计验收通过内容绑定的明细
 读取完整保留，Explore 使用独立的上下文增量预算；未捕获快照的调用仍完整投递。

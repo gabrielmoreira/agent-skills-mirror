@@ -17,6 +17,8 @@
 
 ```bash
 uv run python scripts/forecast_log.py --help
+uv run python scripts/forecast_log.py summary --compact
+# 审计、复盘或需要完整叙述时：
 uv run python scripts/forecast_log.py summary
 ```
 
@@ -35,7 +37,10 @@ uv run python scripts/forecast_log.py summary
 
 ## 每次调用先回看
 
-1. 运行 `summary`，先读 `due_for_followup`（窗口已过期或即将关闭、尚无定论的 pending；
+1. 正常监测轮运行 `summary --compact`；审计、复盘或需要完整叙述时运行 `summary`。compact
+   是同一个完整 summary 的投影，只省略 forecast 的 `rationale`、`feedback_applied`，以及
+   `latest_review` / `latest_withdrawal` 的 `reason`、`lesson`；其他字段保持不变，包括各队列及其顺序、ID、kind、状态、窗口、`revision_trigger`、
+   证据引用、账号观测、`withdrawal_conflicts` 与 `snapshot`。先读 `due_for_followup`（窗口已过期或即将关闭、尚无定论的 pending；
    临近关闭阈值以脚本常量 `CLOSING_SOON_HOURS` 为准，完整 id 可直接喂 review），
    再核对 `withdrawal_conflicts`，然后读 `pending`、`recent_resolved` 和 `recent_withdrawn`。`pending`
    同时含未核验与证据不足的记录；`window_elapsed` 只说明窗口已过，不判输赢。没有历史时
@@ -66,6 +71,44 @@ uv run python scripts/forecast_log.py summary
    规则判断旧结果是否仍可比。若给日期窗口，说明本次为何调整窗口、信心或信号权重；不调整也
    写理由。没有可支持的日期时给等待判断，不创建窗口。一次失误不足以归纳固定规律，不能把
    本来不知道的信息写成当时应知。
+
+## 社区增量读取
+
+本节用于已有监测游标的补查，不替代用户要求的完整阅读。执行者先加载当前安装的
+`read-wechat-messages`，沿其入口核对部署、账号、talker 和预检，再读取其
+阅读请求参考页的「最近消息与分页」接口；该 Skill 是独立依赖，不随本包分发。
+依赖或预检不可用时保留 `uncovered` 和具体恢复条件，不绕过身份检查。
+
+1. 从上轮 handoff 取得同一部署与 talker 的时间、seq 游标及独立的媒体缺口；只有日期而
+   没有消息游标时，从该日近期小片段开始，不能用旧消息总数推算新 offset。
+2. 在游标日期至本轮日期内，用现有 `read_chat.py --talker <id> --time <起日~止日>
+   --last <本轮小片段条数> --page-size <页大小> --layout json` 选择连续片段。条数按实际
+   交流量选择，不默认重读整日；读取 JSON 正文、引用与媒体，不只读取窗口元数据。
+3. 保存首次返回的 `window.before_seq`。同一选区的后续页沿用 time、last、page-size 和
+   before-seq，只更新 offset。若整个选区仍晚于旧游标，保持这个最新边界、扩大 last 并
+   从新选区 offset 0 读取，直到见到旧游标或确认可读历史／本轮资源边界；扩大选区不能
+   沿用旧 offset。按实际消息 seq 区分新增与必要上下文，不能把页数或条数当客户端未读。
+4. 命中旧游标且选区中新消息已逐条读取时停止向旧扩展；若有未解引用或承重旧媒体，按
+   原坐标补读。未见游标、历史补录或缺失造成覆盖不明时保留缺口，不宣称增量穷尽。
+
+新片段媒体照常处理；旧媒体缺口单独结转，仅在它会改变当前判断、取得新原件或达到
+已记录重试条件时补查。不得用 `--keyword` 或关闭媒体理解伪装增量提速。小片段可能带回
+少量已读上下文，现有缓存与冷却策略仍归微信读取器；本流程不保证零重复请求，也不提供
+未声明的 `--after-seq` 接口。游标推进只证明所列消息已观察，不能清除其未读媒体缺口。
+
+## 交接结转
+
+执行者每轮生成一份可直接接续的当前交接，不用 `new_notes + previous.notes` 累加旧正文。
+`notes` 只保留：本轮检查时刻与判断；各来源最后实际观测时刻、游标和覆盖；仍影响判断的
+未决问题及候选来源；下一次触发条件；仍有效的用户纠偏。已排除解释仅保留会改变下一步的部分。
+
+本轮未查的账号或来源明确标为未刷新；必要旧读数附原观测时刻、`account_ref` 与 finding ID，
+不换成本轮时间。未决问题逐项结转或写明由哪条证据关闭；不能为缩短交接而丢掉承诺、
+账号到账缺口或媒体缺口。已结束的浏览器清理、旧查询过程和重复原文留在原 finding，
+交接只引用记录 ID；未完成的资源收尾仍须保留恢复信息。
+
+追加后运行 `handoff`，逐项读回当前问题、旧观测时间与未决项。脚本只选取最新有效 monitor，
+不会替执行者去重或判断时效；原始 findings 不改写，本轮更正通过新记录引用旧证据。
 
 ## findings：原始读数层
 

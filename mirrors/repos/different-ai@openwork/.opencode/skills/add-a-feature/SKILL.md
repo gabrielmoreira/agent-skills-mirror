@@ -30,6 +30,12 @@ Steps 2, 5 and 6 are set per deployment in `/admin` (Features page and each
 organization's row) or with the admin MCP tools `den_list_features`,
 `den_set_feature_rollout` and `den_set_org_capability`.
 
+Every change made in `/admin` or by those tools (on, off, reset, kill switch,
+restore) is appended to the `feature_change` table with who made it and when.
+`/admin` shows the latest one on each row, e.g. "Last change: On for this
+organization by Omar McAdam · 26 Oct 2026, 14:03". Deploy-time operator locks
+(`DEN_FEATURE_*`) are not changes and are not recorded.
+
 Member overrides are scoped to a membership, never a user globally. Pass `{ userId }` for caller-specific checks; organization-owned background policy without a person intentionally uses only organization state. The member editor supports true/false and null to restore inheritance.
 
 ## Does this need a feature?
@@ -62,6 +68,8 @@ works rather than *whether* people get it (put it in `env.ts` / Helm `config.<ar
 newThing: {
   label: "New thing",
   description: "What a person gets, in words they see in the product.",
+  category: "workbot",
+  added: "2026-10-26",
   since: "2026-10",
   author: "your-github-handle",
   docs: "docs/features/new-thing/README.md",
@@ -71,6 +79,8 @@ newThing: {
 ```
 
 - **Key**: lowerCamelCase, no consecutive capitals. Permanent: also the Helm key, `DEN_FEATURE_NEW_THING`, the API field and stored rows.
+- **category**: the group `/admin` lists it under, one of `FEATURE_CATEGORIES` at the top of the registry. Pick the one a platform admin would look under; add a group there only when none fits.
+- **added**: the day you add the flag, `YYYY-MM-DD`. It never changes (`since` moves when the entry changes). Shown in `/admin` as "Added 26 Oct 2026".
 - **Deployments**: leave one out on purpose (e.g. `["cloud"]` for a cloud-only feature).
 - **default**: false for new work. A fresh deployment, and a client that cannot reach Den, uses it, so never ship half-done work as `true`.
 - **author**: GitHub handle of the person who owns the feature: who platform admins ask what it does, whether it is safe to turn on, and when the flag can go. Shown on `/admin` › Features with a link to their profile.

@@ -1,7 +1,8 @@
 ---
 name: maplibre-skill-authoring
 description: How to turn a working session into a MapLibre agent skill — you researched something MapLibre's docs did not cover, got it wrong before you got it right, shipped it, and the session is about to end. Covers what to capture while the context is still live, how to separate the durable claim from the project it came from, and where to hand it off. Use at the end of a MapLibre task that took real research, or when asked to capture one as a skill.
-status: process
+metadata:
+  status: process
 ---
 
 # Authoring a Skill From a Session

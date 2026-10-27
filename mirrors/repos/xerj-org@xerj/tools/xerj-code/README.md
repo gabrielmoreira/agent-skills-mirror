@@ -149,6 +149,13 @@ match. Window offsets refer to the original source, including when Unicode
 lowercasing changes its length. `--full N` changes the character limit, and
 `--full 0` keeps the explicit file-head mode.
 
+A matching definition longer than the limit is windowed the same way: the
+passage shows the part of that definition around the query terms, with a
+marker giving the window's offset from the definition's start, and the
+`kind name @ line N` label still names the definition's first line. When the
+head of the definition is already the best window, it is shown with a
+`truncated at N chars` marker.
+
 ## Hybrid retrieval, fused server-side
 
 With `--mode hybrid`, `xerj code` sends **one native top-level `hybrid` query**

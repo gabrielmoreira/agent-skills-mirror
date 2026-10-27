@@ -131,16 +131,16 @@ For a PR, check `baseRefName` before routing. A PR based on `main` is worked in 
 A public issue's fix run closes with the evidence packet the
 [Bug fix playbook](../../playbooks/bug-fix.md) names. A complete local packet
 proves only `candidate-local`. It may justify a comment
-that a candidate fix exists locally, but not `fixed`, `completed`, or a
-`completed` label. After the work is pushed, replay the same case on that exact
+that a candidate fix exists locally, but not `fixed` or `completed` wording
+or a close as completed. After the work is pushed, replay the same case on that exact
 pushed ref from a fresh process in a clean matching checkout or immutable CI
 artifact; prove zero tracked or untracked issue-owned runtime-input differences,
 record matching fingerprints, and carry the retry-free warm ledger (5 of 5 for
 native selection, focus, drag and drop, paint and React DOM lifecycle) in the
 exact reported browser or device. Any commit, rebase, generation, combination,
 or push after a replay invalidates it. Only that clean final-pushed-ref replay
-may justify fixed/completed wording. Explicit authority to add a label never
-waives this truth gate. Do not duplicate the worker's repair methodology in
+may justify fixed/completed wording or a close as completed. Explicit authority
+to close never waives this truth gate. Do not duplicate the worker's repair methodology in
 this coordinator.
 
 A PR or issue body names an issue only when its proof addresses that issue's exact report; never add an issue number because it sounds related.
@@ -153,15 +153,15 @@ reporter says the failure remains:
 1. classify the prior fixed/completed claim as disproven;
 2. move the item to `needs-repro` and keep it out of completed queue slices;
 3. compare the reporter action and end state with the case's recorded setup, input, expected result and environment to find the missing topology, requirement, environment, or final-ref replay;
-4. treat any `completed` label as stale public state requiring correction under
-   the current mutation authority;
+4. reopen an issue closed as completed on that claim, under the current
+   mutation authority;
 5. route a new bounded bug-fix packet under the Bug fix playbook's failed-fix
    recovery. Do not defend the old proof with unit
    tests, a review, or a green proxy route.
 
 When the reporter confirms the headline fix but identifies a related residual
 symptom, record a separate observable case or explicitly split it to a new
-issue. Do not leave a blanket `completed` label on an unresolved workflow.
+issue. Do not leave an issue closed as completed on an unresolved workflow.
 
 ## Intake
 
@@ -213,7 +213,9 @@ Default is read, classify, route, patch local files when the execution owner
 allows, and hand off. A comment, label, close, reopen, review, release or other
 public write needs the active request's explicit authority and otherwise waits
 as a draft, as `AGENTS.md`'s Messages rule says; loading this skill creates no
-authority. Credentials, payment, 2FA, captcha and account signup stop for the
+authority. The one standing authority is the Triage playbook's Drafts, which
+posts a triage comment on the owner's word of 2026-10-26 and never a label,
+close or reopen. Credentials, payment, 2FA, captcha and account signup stop for the
 owner, as its Git and publication rules say, and security disclosure wording
 waits for maintainer approval.
 

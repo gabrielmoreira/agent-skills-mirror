@@ -1,258 +1,93 @@
 ---
 name: powertoys-pr-review
-description: "End-to-end PR review for the microsoft/PowerToys repository, usable by any teammate on any PR. Runs a CONTEXT/PROCESS review (things Copilot code review will not catch: CLA, demo/recording for user-visible changes, author self-validation, provenance, duplicates, scope, CI/spell-check, template) — focused on community-contributor PRs — in parallel with a CODE review (mirror to a personal fork, iterate GitHub Copilot review, fix, build locally). Drafts review actions grounded in real PowerToys review conventions, then stops for explicit approval before anything is posted. Use when asked to review a PR, continue a review, self-check your own PR, or draft suggested-fix comments for a PowerToys pull request."
-license: Complete terms in LICENSE.txt
+description: "Review a microsoft/PowerToys PR with at most three cloud review requests, grounded architectural early exit, focused local fixes and exact-head validation. Returns author-facing review drafts and private resume state. Never posts upstream without explicit approval."
 ---
 
 # PowerToys PR Review
 
-Review a `microsoft/PowerToys` pull request the way a maintainer would, given a PR number `N`. The review has **two halves that run in parallel**:
+Own one PR's review, not the drain. Finish the next useful operation and return
+a durable result. Do not build another orchestration or permission framework.
 
-1. **Context & process review (Phase 0)** — the checks Copilot code review can never do: is the CLA signed, is there a demo for a user-visible change, did the author validate it, is it original work, a duplicate, in-scope, CI-green, and template-complete? Aimed at **community-contributor** PRs and often the deciding factor. See [references/phase0-context-review.md](./references/phase0-context-review.md).
-2. **Code review (Steps 0–10)** — mirror the PR to the reviewer's personal fork, iterate GitHub Copilot review to convergence, fix valid issues, build locally, and draft suggested-fix comments.
+## Inputs and setup
 
-**Never post anything to the original PR without explicit user approval (Step 10).**
+Inputs: upstream PR number, configured writable fork, saved state (if any),
+suite revision and coordinator-assigned operation/deadline.
+Read [setup-and-mirror.md](./references/setup-and-mirror.md) only for
+discovery/mirroring, and [prerequisites.md](./references/prerequisites.md) only
+for a missing prerequisite. Self-checks use the author's existing branch.
 
-## When to Use This Skill
+Run `Get-UpstreamPrReviewGate.ps1` on resume, after each round and its
+processing, and before a request, expensive validation or finalization.
+Closed/merged/draft stops work. A new head requires repinning and reassessment,
+not relabeling old evidence. Preserve consumed requests across heads/sessions.
+API errors are explicit errors, not assumed unchanged state.
 
-- "Review PR N" / "review this PowerToys PR" / "continue the review for PR N"
-- Self-check your own PowerToys PR before a maintainer sees it
-- Draft inline code suggestions (click-to-commit) with severity for a PR
-- Decide the process disposition (proceed / ask / align / recommend-close) for a community PR
+## The worker loop
 
-## Review Modes
+The authoritative transition rules and command recipes are in
+[copilot-review-loop.md](./references/copilot-review-loop.md).
 
-| Mode | Trigger | What changes |
-| --- | --- | --- |
-| **Standard review** | "review PR N" | Phase 0 (context) **and** Steps 0–10 (code) in parallel. |
-| **Batch (parallel)** | "review PRs N1, N2, N3, …" (2+ numbers) | **Review all PRs concurrently, not one-by-one** — fan out one background sub-agent per PR (capped at 3–5 in flight), each driving its own fork loop to convergence while their long waits (Copilot review polling, builds) overlap. Launch the dashboard up front as the live tracker. See [batch-parallel.md](./references/batch-parallel.md). |
-| **Self-check** | The PR author is the current user (own fork owner) | **Skip fork-mirroring** (Steps 1–2c) — you already own the branch; review/build in the author's own worktree. Run Phase 0 on yourself to pre-empt what maintainers will demand. |
+```text
+resume existing fork work; pin the live upstream head
+prepare focused validation commands; do not compile before the first request
+consume any saved request before issuing a new one
+for at most three total cloud requests, including preserved history:
+    request -> save identity -> wait without holding a worker/build slot
+    read the matching review and all its comments
+    assess upstream validity and intent/architecture before first-round fixes
+    if a grounded design flaw: stop new rounds and prepare overall comments
+    otherwise fix valid localized issues, push, reply and resolve fork threads
+    if fresh zero-comment convergence or request cap: leave the loop
+validate the final supported output -> draft -> return
+```
 
-## Prerequisites (verify on first run)
+Three is the initial request plus at most two re-requests, not three per
+session/lane/head. Timeouts consume allowance. Never request a fourth.
+The cap ends requests, not assessment, validation or drafting.
+Cloud review remains required; no automatic local-review substitute.
 
-Run [scripts/Test-Prerequisites.ps1](./scripts/Test-Prerequisites.ps1) to check all four at once. Detail and setup guidance: [references/prerequisites.md](./references/prerequisites.md).
+## Validation and drafting
 
-| # | Prerequisite | Quick check |
-| --- | --- | --- |
-| 1 | Personal fork of `microsoft/PowerToys` | `gh repo list --fork` includes `<owner>/PowerToys` |
-| 2 | Local clone with a remote pointing to the fork | a `PowerToys` clone with a non-`microsoft` remote |
-| 3 | GitHub Copilot code review enabled on the fork | a requested review produces a Copilot review; `requested_reviewers` may already be empty when an asynchronous review finishes quickly |
-| 4 | Visual Studio 2022 (Desktop C++ + .NET desktop) | `vswhere.exe -latest` resolves an install |
+Load only the reference needed for the current operation:
 
-If a prerequisite is missing, guide the user through setup ([references/prerequisites.md](./references/prerequisites.md)) before proceeding. Do not infer that prerequisite 3 is missing solely from an empty `requested_reviewers` response; check for a review submitted after the request. Prerequisite 3 must be enabled by the user in the fork's settings; for 4, offer to install the tools via winget.
-
-## Critical Rules
-
-1. **Never post comments, suggestions, reviews, approvals, labels, or close actions on the original PR** until the user gives **explicit written approval** in Step 10. This includes `gh pr review`, `gh pr close`, `gh pr edit --add-label`, or any command targeting `microsoft/PowerToys`. Violating this is a critical failure.
-2. **Never approve the original PR** — even after user approval. Draft suggestions/requests/dispositions only; the human makes the final call.
-3. **Run Phase 0 in parallel with the code review** for community PRs. A perfectly-coded PR can still need a demo, CLA, validation, or a close. Context findings are first-class output.
-4. **Respect author type, and do not over-gate.** Skip Phase 0 process nags for members/collaborators/bots; hold community contributors to the gates but stay welcoming. Most well-formed PRs trip *no* gate — do not invent friction.
-5. **Never use `#<number>` format** in any fork PR title or description — it notifies the referenced upstream thread. Use plain numbers.
-6. **Skip fork-mirroring in self-check mode** (author is the fork owner): review and build in the author's own worktree; Steps 1–2c do not apply.
-7. All code work happens on the fork and locally until final approval.
-8. The local worktree must build successfully before a deep code review is marked complete.
-9. **Always sync the fork's main before creating or updating the fork PR** to prevent diff bloat from a stale base (Step 2c).
-10. **Resume, do not restart (Step 0).** Before mirroring, check for a prior interrupted run on PR `N` and pick up from the matching step instead of re-mirroring. Re-mirroring clobbers prior commits and review replies.
-11. **The fork Copilot loop (Steps 4–8) is required unless the grounded architectural early-exit gate applies.** "Just show me" / "do not post" changes only **Step 10**. Drive the loop toward convergence within the three-request limit (initial request plus at most two re-requests): fix valid issues, commit, push, reply-and-resolve every Copilot thread, and request another pass only when permitted. Count actual requests across preserved lanes and sessions; recovery, head changes and scheduled ticks never reset the allowance. Existing histories at or above three receive no new requests; consume saved/in-flight results and finish validation/drafting. Clean approval requires a fresh **zero**-comment result and **zero** unresolved threads. At the cap, draft independently grounded and validated corrections without claiming clean convergence; never discard valid findings merely because the service repeated unsupported comments. Final suggestions come from validated upstream corrections, never unassessed raw round-1 output.
-12. **For 2+ independent PRs, review them in parallel unless the user explicitly requests sequential execution.** Fan out one background worker per PR (cap 3–5 concurrent), with an isolated branch/worktree and independent convergence loop. If sub-agents are unavailable, pipeline all PRs in one agent so their review requests and waits remain concurrently in flight. Sync the base once, serialize local builds, and keep the orchestrator as the single writer of dashboard data. Never leave any PR stranded at round 1. See [batch-parallel.md](./references/batch-parallel.md).
-13. **Never mention a fork repository, fork PR, worktree, internal review loop, or private validation provenance in comments posted to the original PR.** Store that evidence only under `internalEvidence`; public payloads must be self-contained.
-14. **Map every finding to the current diff before drafting.** An inline item
-    targets an exact current RIGHT-side diff range and may contain either
-    explanatory prose or one non-empty, apply-ready `suggestion` block. Use the
-    suggestion block whenever the localized replacement is safe to apply
-    directly; do not force architectural or coordinated multi-site changes
-    into one unsafe patch. Split localized edits out of broader findings
-    instead of collapsing them into companion prose. A companion item is
-    allowed only when no current RIGHT-side anchor exists and must include a
-    concrete `outOfDiffReason`. Its author-facing body must be independently
-    implementation-ready: name affected repository paths and symbols, explain
-    the current behavior and impact, give ordered change guidance or
-    illustrative pseudo-code, and state focused verification. Write it so the
-    author can paste the comment into Copilot and implement the same fix proven
-    in the review branch without access to that branch. Consolidate findings
-    with the same root cause; never expand suppressed/internal findings into
-    repetitive general comments. Omit obsolete findings.
-15. **Never publish with ad-hoc `gh` commands.** Validate schema-version-2 data with `Test-ReviewData.ps1`, then publish approved decisions with `Publish-ApprovedReview.ps1`. The publisher stages a pending review, reads it back, and submits only after exact verification.
-16. **Score confidence per finding, but never expose it upstream.** Every drafted public item carries a 50–100 confidence score and evidence-based rationale as metadata. Scores below 50 stay internal. Pulse may show the score to maintainers; author-facing review bodies must contain severity and reasoning only.
-17. **Fork pushes are required review work, not upstream publication.** Workers may create/update branches and PRs in the configured personal fork, push review fixes, and resolve fork review threads. A coordinator instruction not to commit or push dashboard data must never be interpreted as prohibiting fork-side pushes. Only writes to `microsoft/PowerToys` remain approval-gated.
-18. **Resolve the writable fork from configuration and clone remotes, not only the active login.** `Get-ForkConfig.ps1` prefers `POWERTOYS_FORK_REPO`, then a non-Microsoft `PowerToys` remote in the local clone, and switches to the authenticated fork-owner account when the current account has read-only access. Do not substitute `<active-login>/PowerToys` when the durable review branches live in another configured account.
-19. **Use the dashboard terminal-stage contract.** Emit a clean current-head
-    review with zero proposed comments as `stage: review_ready`, never
-    `concluded`, `complete`, or another synonym. A review with findings must
-    instead include a current-head `post_review` or `request_changes` action.
-    Emit `stage: review_blocked` only for a current-head unrecoverable/manual
-    blocker and include a `blockers[]` entry with `terminal: true`, non-empty
-    `detail`, and exact `remediation`. A pending Copilot review, unresolved
-    findings, incomplete validation, or a run cutoff remains resumable as
-    `waiting_copilot`, `reviewing_findings`, `building`, or
-    `review_in_progress`.
-20. **Consume an outstanding review request before making another one.** On
-    resume, read the checkpoint/request timestamp and inspect reviews already
-    submitted for that fork head using `Get-CopilotReviewStatus.ps1`. Exhaust
-    all review/comment pages and all thread cursors; a default 30-row response
-    or a single 100-row page is not complete history. Save request time, fork
-    head, baseline review ID and submitted review ID. If the request is pending,
-    preserve `waiting_copilot` and return; do not create duplicate requests. If
-    it arrived, process that result before deciding whether another review
-    round is needed.
-21. **Never transfer fork validation to a different upstream tree.** A
-    successful build of a fork branch proves only that exact fork tree. Before
-    declaring the upstream PR clean, verify the upstream head itself. If the
-    converged fork contains any fix not present upstream, the PR is not
-    `review_ready` on that evidence alone. Account for each fork-only hunk as
-    an independently proven upstream fix, a review-introduced regression, or
-    a rejected/optional experiment. Only the first category can become an
-    author request. Preserve the audit trail and remove rejected experiments
-    with ordinary commits, never by resetting shared work. Verify the exact
-    upstream tree separately before a zero-finding result. Never summarize
-    fork-only tests, documentation, braces, or logic as though they exist upstream.
-22. **Build the exact suggestion result before presenting it.** Materialize
-    every apply-ready suggestion, together and independently where applicable,
-    on a clean worktree at the pinned upstream head. Run the smallest build or
-    syntax check covering the changed files on that exact candidate tree and
-    record the applied item IDs and commands under
-    `internalEvidence.validation.suggestionPatch`. A build of a hand-edited
-    fork approximation is not sufficient. For a clean zero-finding result,
-    record a passing build of the exact upstream head under
-    `internalEvidence.validation.upstreamHead`.
-23. **Minimize suggestion ranges after proving correctness.** An apply-ready
-    suggestion must show the author only the lines whose replacement is needed.
-    Trim every unchanged leading and trailing line from the selected range and
-    suggestion body unless one unchanged line is required as GitHub's anchor
-    for a pure insertion. Do not include an unchanged opening brace,
-    declaration, condition, or closing brace merely as visual context. Put
-    context in the explanatory prose; keep the apply block to the smallest
-    independently valid replacement.
-24. **Reject suggestions on mixed-line-ending blobs.** Run
-    `scripts/Test-SuggestionLineEndings.ps1` against the exact pinned upstream
-    head and every suggestion target path. Record the result under
-    `internalEvidence.validation.lineEndingSafety`. If any raw blob mixes LF,
-    CRLF, or lone CR endings, do not emit an apply-ready suggestion even when
-    the BOM is unchanged and the local candidate builds. GitHub's server-side
-    Apply suggestion can rewrite every line to the `.gitattributes` checkout
-    EOL; use exact inline prose or an implementation-ready companion comment
-    instead.
-25. **Group coordinated inline suggestions atomically.** When one root-cause
-    fix requires localized edits at multiple current RIGHT-side locations,
-    emit one apply-ready inline item per location with a shared
-    `selectionGroup` containing a safe ID, shared title, `position`, `total`,
-    and `atomic: true`. Number public headings `(1/N)` through `(N/N)`. Every
-    member must be selected, validated, and posted together; partial groups
-    are invalid. Do not downgrade the whole fix to a companion note merely
-    because it spans files, but do not group optional or out-of-diff work.
-
-26. **Ground every proposed finding in upstream, not the review fork.** Follow
-    [finding-grounding.md](./references/finding-grounding.md) before drafting,
-    rewriting, revalidating, or publishing. Store per-item origin, exact source
-    ranges/excerpts, counterevidence and body hashes privately. A fix for an
-    agent-introduced regression is not an upstream defect. A no-comment fork
-    review, build, confidence score or unchanged head cannot establish that a
-    finding is necessary. Run `Test-ReviewData.ps1 -RequireFindingGrounding
-    -CheckGitHub`; the live publisher enforces this gate too.
-27. **Account for every prose-only inline finding.** Before defaulting to
-    prose, try to extract a minimal safe replacement from the converged fix
-    at the pinned upstream RIGHT-side line, validate literal patches and
-    line endings, and split or atomically group localized multi-site edits.
-    A larger cross-file fix does not by itself make each localized edit unsafe.
-    When an inline comment legitimately cannot contain an apply-ready block,
-    record the concrete reason and attempt in its private
-    `findingGrounding.findings[].suggestion_assessment`. If validation is
-    unfinished, leave the review in progress; never claim an untested patch
-    failed merely to get prose published.
-
-28. **Check intent and architecture before fixing the first review or requesting round two.**
-    Follow [architecture-review.md](./references/architecture-review.md).
-    A large first-round response is a hint to investigate the overall approach,
-    not a defect verdict. Independently trace whether the exact upstream design
-    meets the PR's stated goal. A grounded design-level flaw ends new cloud
-    rounds for that head, even after round one; draft consolidated supported
-    comments without implementing a speculative replacement or claiming clean
-    convergence. Preserve the decision privately on resume.
-
-29. **Recheck the original PR after every round.** Follow the
-    [lifecycle/head gate](./references/copilot-review-loop.md#original-pr-lifecyclehead-gate-every-round)
-    with `Get-UpstreamPrReviewGate.ps1`. Closed, merged or draft means stop
-    review work and release the slot, not finish the fork loop. New commits
-    mean fetch/pin and review the new version, re-ground carried findings and
-    invalidate old-head validation. Check on resume and before another request,
-    expensive validation or finalizing drafts too. Preserve the total request
-    count; API errors never authorize continuing with assumed unchanged state.
-
-## Phase 0: Context & Process Review
-
-The half Copilot code review cannot do. It reads the PR description, the full conversation timeline, the CI/checks status, and the linked issue, then decides whether the PR clears PowerToys' *process* bar. Everything Phase 0 produces is **drafted only**. Full rules, the P1–P9 gate table, the compound-quality close signal, and per-gate reply templates are in **[references/phase0-context-review.md](./references/phase0-context-review.md)**.
-
-Disposition outcomes (Phase 0 → one of):
-
-- **Proceed** — no gate tripped (or only Notes). Go to the code-review output.
-- **Ask** — draft the specific request(s); review pauses on the author.
-- **Align first** — duplicate/superseded/out-of-scope: draft a redirect to the canonical PR/issue.
-- **Recommend close** — compound-quality or long-stale-with-author-owing: draft a polite close.
-
-Always recommend, never auto-apply — labels/closes are maintainer actions gated by Step 10.
-
-## Code Review Workflow
-
-These steps are the code-review engine. In **self-check mode** skip Steps 1–2c.
-
-| Step | Action | Reference |
-| --- | --- | --- |
-| 0 | **Resume check** — detect a prior interrupted run on PR `N` and jump to the right step | [setup-and-mirror.md](./references/setup-and-mirror.md#step-0-resume-check) |
-| 1 | **Mirror** the PR to the personal fork (sanitize `#refs`) | [setup-and-mirror.md](./references/setup-and-mirror.md#step-1-mirror-the-pr) |
-| 2 / 2b / 2c | **Worktree**, rebase on latest `main`, validate the fork diff matches the original scope | [setup-and-mirror.md](./references/setup-and-mirror.md#step-2-create-local-worktree) |
-| 3 | **Prepare and checkpoint the focused validation plan** from changed paths; do not compile yet | [build-and-test.md](./references/build-and-test.md#step-3-prepare-the-validation-plan) |
-| 4 | **Request Copilot review** on the fork PR | [copilot-review-loop.md](./references/copilot-review-loop.md#step-4-request-copilot-review) |
-| 5–6 | **Architecture gate, then the loop** — investigate intent/design first; fix and iterate only if appropriate | [copilot-review-loop.md](./references/copilot-review-loop.md#step-6-iterate-the-loop) |
-| 7 / 7b | **Build the converged tree once** (plus required exact-upstream/suggestion candidates) + end-to-end test instructions | [build-and-test.md](./references/build-and-test.md#step-7-final-build) |
-| 8 | **Summarize** the converged net diff | [copilot-review-loop.md](./references/copilot-review-loop.md#step-8-summarize) |
-| 9 | **Draft the review** — context asks + code suggestions with severity | [drafting-and-posting.md](./references/drafting-and-posting.md#step-9-draft-the-review) |
-| 10 | **Wait for approval**, freshness re-check, then post the approved actions | [drafting-and-posting.md](./references/drafting-and-posting.md#step-10-wait-for-approval) |
-
-Convergence (Definition of done for Steps 5–6): the most recent freshly-requested Copilot review returned **zero** new inline comments and **zero** unresolved Copilot threads remain. Then run Step 7's serialized build before calling the review complete. At the three-request cap, stop new requests but still draft every independently grounded, exact-head validated Step 9 finding; a nonzero last automated response is not a reason to discard valid comments. Do not claim clean approval. Keep automation/toolchain exceptions private, not in dashboard PR content. If any code changes after a successful build, rebuild the final tree.
-
-Architectural early exit is a separate supported outcome, not convergence:
-follow `references/architecture-review.md` to draft a proven design concern
-without further requests or an unnecessary reviewer-authored redesign.
-
-## Fork Configuration
-
-Auto-detect these at the start of each session with [scripts/Get-ForkConfig.ps1](./scripts/Get-ForkConfig.ps1); verify on first run. The resolver prefers `POWERTOYS_FORK_REPO`, then the clone's non-Microsoft PowerToys remote, and verifies write permission. It may switch `gh` to the authenticated fork-owner account so fork branches and review PRs remain writable.
-
-| Placeholder | Meaning | Example |
-| --- | --- | --- |
-| `<FORK_OWNER>` | The reviewer's GitHub login | `your-username` |
-| `<FORK_REPO>` | The reviewer's fork | `your-username/PowerToys` |
-| `<FORK_REMOTE>` | Git remote pointing at the fork (default `fork`) | `fork` |
-| `<CLONE_PATH>` | Main PowerToys clone directory | `C:\PowerToys` |
-
-## Available Scripts
-
-| Script | Purpose |
+| Operation | Reference |
 | --- | --- |
-| [Test-Prerequisites.ps1](./scripts/Test-Prerequisites.ps1) | Check fork, clone, Copilot review, and VS build tools |
-| [Get-ForkConfig.ps1](./scripts/Get-ForkConfig.ps1) | Resolve fork owner/repo/remote and clone path |
-| [Get-PRContext.ps1](./scripts/Get-PRContext.ps1) | Fetch author, association, size, and labels to calibrate Phase 0 |
-| [Request-CopilotReview.ps1](./scripts/Request-CopilotReview.ps1) | Request Copilot as reviewer and poll until the review posts |
-| [Get-CopilotReviewStatus.ps1](./scripts/Get-CopilotReviewStatus.ps1) | Read all review pages and match a saved fork-head/request without making a new request |
-| [Get-UpstreamPrReviewGate.ps1](./scripts/Get-UpstreamPrReviewGate.ps1) | Read the original PR lifecycle/head after each round; stop excluded PRs or reconcile new commits |
-| [Get-UnresolvedCopilotThreads.ps1](./scripts/Get-UnresolvedCopilotThreads.ps1) | Count unresolved Copilot threads (stranded-loop / resume check) |
-| [Get-ReviewResumeState.ps1](./scripts/Get-ReviewResumeState.ps1) | Discover durable branches, review PRs, worktrees, rounds, and unresolved threads across sessions |
-| [Sync-ForkMain.ps1](./scripts/Sync-ForkMain.ps1) | Fast-forward the clone's `main` from upstream and push it to the fork |
-| [Test-SuggestionLineEndings.ps1](./scripts/Test-SuggestionLineEndings.ps1) | Reject apply-ready suggestions whose pinned target blobs mix line-ending styles |
-| [Test-ReviewData.ps1](./scripts/Test-ReviewData.ps1) | Validate public payloads, decisions, pinned heads, and current diff ranges |
-| [FindingGrounding.Common.ps1](./scripts/FindingGrounding.Common.ps1) | Verify per-finding provenance, body hashes and exact pinned source excerpts |
-| [Publish-ApprovedReview.ps1](./scripts/Publish-ApprovedReview.ps1) | Idempotently stage, verify, and submit approved GitHub reviews |
-| [Show-ReviewDashboard.ps1](./scripts/Show-ReviewDashboard.ps1) | Serve a single-window HTML dashboard for a batch of PRs: live status tracker while reviews run (polls `/status`), then an approval surface capturing per-PR/per-suggestion decisions to a file the agent resumes from |
+| Check whether intent/design is flawed | [architecture-review.md](./references/architecture-review.md) |
+| Prove findings on upstream; check counterevidence and fork-only regressions | [finding-grounding.md](./references/finding-grounding.md) |
+| Run smallest affected checks; reuse verified identical inputs | [build-and-test.md](./references/build-and-test.md) |
+| Map findings to diff, form minimal/atomic suggestions, draft author-ready prose | [drafting-and-posting.md](./references/drafting-and-posting.md) |
+| Community contributor context checks, without process nags for members/bots | [phase0-context-review.md](./references/phase0-context-review.md) |
 
-## References
+Validate the literal final suggestion blocks on the pinned upstream tree,
+including raw-blob EOL safety. A passing altered fork is not proof of the
+upstream tree. Architectural concerns need grounded evidence, not an invented
+replacement implementation. Never copy unassessed cloud comments.
 
-- [phase0-context-review.md](./references/phase0-context-review.md) — the context/process gates, dispositions, and reply templates
-- [prerequisites.md](./references/prerequisites.md) — fork, clone, Copilot review, and VS build-tool setup
-- [setup-and-mirror.md](./references/setup-and-mirror.md) — Steps 0–2c: resume, mirror, worktree, rebase, diff validation
-- [copilot-review-loop.md](./references/copilot-review-loop.md) — Steps 4–8: request, fix/push/resolve loop, summarize
-- [architecture-review.md](./references/architecture-review.md) — first-round intent/design investigation and grounded early exit
-- [build-and-test.md](./references/build-and-test.md) — Steps 3, 7, 7b: local build, module chain, end-to-end tests
-- [migration-and-resume.md](./references/migration-and-resume.md) — move active reviews from older skill versions and resume durable loop state
-- [drafting-and-posting.md](./references/drafting-and-posting.md) — Steps 9–10: suggestion format, freshness re-check, posting
-- [approval-dashboard.md](./references/approval-dashboard.md) — optional interactive UI for approving/holding/editing drafted actions across a multi-PR session
-- [batch-parallel.md](./references/batch-parallel.md) — how to review 2+ PRs concurrently (sub-agent fan-out, build serialization, single-writer status, aggregation)
+## Return exactly one outcome
+
+| Outcome | Required output / next step |
+| --- | --- |
+| Cloud pending | Private saved request and next check; release slot. |
+| Needs validation | Private commands/inputs and findings; coordinator queues the build slot. |
+| Review with findings | Current-head drafts plus private grounding/validation; coordinator publishes `post_review` (or deliberate `request_changes`). Allowed at cap/architectural exit without clean convergence. |
+| Clean review | Fresh substantive zero-comment cloud result, zero unresolved threads, exact-upstream checks and context complete; `stage: review_ready`, zero proposed comments. |
+| Excluded/head changed | Stop obsolete work; return live gate observation for inventory refresh or repinning. |
+| Actual failure | Private exact error, evidence and next remediation; preserve supported drafts. Never publish a blocker as a PR defect. |
+
+Keep `number`, upstream `head_sha`, `source_updated_at`, consumed requests
+(`round` in legacy ledgers), phase, request identity, evidence/receipt paths,
+and concrete next operation in the private handoff. A worker return is not
+proof of publication; the coordinator acknowledges delivery separately.
+
+## Permissions and independent use
+
+Fork feature-branch commits/pushes and fork thread replies/resolution are
+normal review work. Preserve shared history; no reset/force-push recovery.
+Never write dashboard data from a worker or expose fork/local provenance in
+author-facing bodies. For multiple direct reviews, use
+[batch-parallel.md](./references/batch-parallel.md); no nested workers.
+
+Without a coordinator, execute the same transitions yourself and present the
+validated drafts. Upstream posting is a separate explicitly approved action:
+use `Test-ReviewData.ps1` and `Publish-ApprovedReview.ps1`, never ad-hoc posting.
+Do not approve the original PR; the human makes that decision.

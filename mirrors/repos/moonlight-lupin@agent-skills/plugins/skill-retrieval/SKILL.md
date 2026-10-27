@@ -116,6 +116,7 @@ pip install pyyaml
 | Setting | Default | How to set |
 |---------|---------|------------|
 | `TOP_K` | `6` | Env var `SKILL_RETRIEVAL_TOP_K` |
+| `INJECT_K` | `TOP_K` | Env var `SKILL_RETRIEVAL_INJECT_K`; how many of the retrieved candidates are injected. A pool wider than the injected set (e.g. `TOP_K=12`, `INJECT_K=6`) lets the Jev rerank filter, not just reorder. Values above `TOP_K` are clamped. |
 | System prompt compaction | enabled | Set `SKILL_RETRIEVAL_COMPACT=0` to disable compaction while keeping BM25 retrieval injection |
 | BM25 `k1` | `1.5` | Constant in `scripts/bm25_retriever.py` |
 | BM25 `b` | `0.75` | Constant in `scripts/bm25_retriever.py` |
@@ -125,6 +126,7 @@ pip install pyyaml
 
 ```bash
 export SKILL_RETRIEVAL_TOP_K=8
+export SKILL_RETRIEVAL_INJECT_K=6
 export SKILL_RETRIEVAL_COMPACT=0
 export SKILL_RETRIEVAL_RERANK=jev
 ```

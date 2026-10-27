@@ -33,6 +33,17 @@ and preview channels. They live in the TV provider, behind `TvContract.WatchNext
   without network access. `watch_next_type` 0, 1 and 2 (continue, next, new) all occurred; Jellyfin's
   next-episode rows had no `last_playback_position_millis`. Prime Video's `intent_uri` opened the app at its
   profile picker on a cold start.
+- **Seen on a TCL C6K** (Google TV 14, `UTT2.250416.001 AU02`): the same kind of test build saw 25 Watch Next
+  rows: Crunchyroll 19, Prime Video 3, Netflix 2 and Jellyfin for Android TV 1. All four fill `title`,
+  `season_display_number`, `episode_display_number`, `poster_art_uri`, `intent_uri`, `watch_next_type`,
+  `last_engagement_time_utc_millis`, `last_playback_position_millis` and `duration_millis`; only Crunchyroll and
+  Jellyfin add `episode_title`. `watch_next_type` 0 (continue), 1 (next) and 2 (new, from Prime Video) all
+  appeared. Posters were `https://` except Jellyfin's `content://`. Rows linger: the oldest was six months old,
+  and a "continue" row sat at 99% of its episode, so a reader filters by engagement time and progress.
+  YouTube published no Watch Next rows, only preview channels ("Recommended for you", "Trending", "YouTube
+  Music"). Stremio (`com.stremio.one`) published none either; it keeps a preview channel named "Continue
+  Watching" whose rows carry `last_playback_position_millis` and `duration_millis` but no date column at all, so
+  they cannot be sorted or aged by time.
 
 Source: `createSqlParams()` in `packages/providers/TvProvider/src/com/android/providers/tv/TvProvider.java`
 (AOSP) holds the `READ_TV_LISTINGS` and `searchable` logic; both permissions are defined in that

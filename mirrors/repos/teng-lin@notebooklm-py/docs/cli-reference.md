@@ -1394,6 +1394,18 @@ notebooklm generate audio --later --json
 notebooklm generate audio --prompt-file instructions.txt --format debate
 ```
 
+The same `--later` flag is available on `generate video`, `report`, `quiz`,
+`flashcards`, `infographic`, and `slide-deck` on Web and Android. Report formats,
+including `--format study-guide`, also support it. `--later --wait` is rejected
+before generation; poll the returned task ID separately. Cinematic video
+(`--format cinematic` or `generate cinematic-video`) rejects `--later`.
+
+```bash
+notebooklm generate report --format study-guide --later --json
+notebooklm generate quiz --later --json
+notebooklm --backend android generate infographic --later --json
+```
+
 ### Generate: `video`
 
 Generate a video overview. Use `--format cinematic` for AI-generated documentary footage (Veo 3); cinematic videos ignore `--style` and take ~30-40 min (requires AI Ultra). For non-cinematic formats, see `generate cinematic-video` for the alias subcommand.

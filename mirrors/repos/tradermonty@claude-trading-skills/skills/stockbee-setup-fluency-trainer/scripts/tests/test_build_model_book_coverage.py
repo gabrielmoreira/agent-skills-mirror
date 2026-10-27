@@ -49,6 +49,8 @@ class FakeResponse:
         self.text = text
 
     def json(self):
+        if isinstance(self._payload, Exception):
+            raise self._payload
         return self._payload
 
 
@@ -64,10 +66,13 @@ class FakeSession:
 
 
 def make_client(monkeypatch, responses, **kwargs):
+    """Build the adapter with the real shared client but a fake HTTP session."""
     session = FakeSession(responses)
     monkeypatch.setattr(bmb, "requests", SimpleNamespace(Session=lambda: session))
-    monkeypatch.setattr(bmb.time, "sleep", lambda s: None)
+    shared = bmb._load_shared_fmp()
+    monkeypatch.setattr(shared.time, "sleep", lambda s: None)
     client = bmb.FMPClient(api_key="k", **kwargs)
+    client.session = session
     return client, session
 
 
@@ -85,12 +90,24 @@ def test_client_requires_api_key(monkeypatch):
 
 
 def test_client_reads_key_from_env_and_sets_header(monkeypatch):
-    session = FakeSession([])
-    monkeypatch.setattr(bmb, "requests", SimpleNamespace(Session=lambda: session))
     monkeypatch.setenv("FMP_API_KEY", "envkey")
     client = bmb.FMPClient()
     assert client.api_key == "envkey"  # pragma: allowlist secret
-    assert session.headers == {"apikey": "envkey"}  # pragma: allowlist secret
+    assert client.session.headers["apikey"] == "envkey"  # pragma: allowlist secret
+
+
+def test_explicit_api_key_beats_env(monkeypatch):
+    monkeypatch.setenv("FMP_API_KEY", "envkey")
+    client = bmb.FMPClient(api_key="argkey")
+    assert client.api_key == "argkey"  # pragma: allowlist secret
+    assert client.session.headers["apikey"] == "argkey"  # pragma: allowlist secret
+
+
+def test_shared_module_is_private_and_cached():
+    first = bmb._load_shared_fmp()
+    assert first is bmb._load_shared_fmp()
+    assert sys.modules[bmb._SHARED_FMP_MODULE] is first
+    assert bmb._SHARED_FMP_MODULE != "fmp_client"
 
 
 def test_get_stable_success_and_stats(monkeypatch):
@@ -107,7 +124,13 @@ def test_get_stable_success_and_stats(monkeypatch):
     assert timeout == 30
     span = date.fromisoformat(params["to"]) - date.fromisoformat(params["from"])
     assert span.days == 1 * 2 + 10
-    assert client.stats() == {"api_calls_made": 1, "max_api_calls": 200, "budget_remaining": 199}
+    assert client.stats() == {
+        "api_calls_made": 1,
+        "max_api_calls": 200,
+        "budget_remaining": 199,
+        "rate_limit_reached": False,
+        "failed_requests": 0,
+    }
 
 
 def test_get_historical_prices_caches(monkeypatch):
@@ -119,45 +142,103 @@ def test_get_historical_prices_caches(monkeypatch):
     assert len(session.calls) == 1
 
 
-def test_get_historical_prices_falls_back_to_v3(monkeypatch, capsys):
-    v3 = {"historical": [{"date": "2026-06-22", "close": 7}, {"date": "2026-06-23", "close": 8}]}
+def test_empty_rows_not_a_failure_and_no_v3(monkeypatch):
+    client, session = make_client(monkeypatch, [FakeResponse(200, [])])
+    assert client.get_historical_prices("AAA") == []
+    assert len(session.calls) == 1
+    assert client.stats()["failed_requests"] == 0
+
+
+def test_http_error_counts_failure_and_never_requests_v3(monkeypatch, capsys):
+    client, session = make_client(monkeypatch, [FakeResponse(402, None, "pay")])
+    assert client.get_historical_prices("AAA") == []
+    assert len(session.calls) == 1
+    assert all("/api/v3/" not in call[0] for call in session.calls)
+    assert client.stats()["failed_requests"] == 1
+    # failures are not cached: a later call retries
+    session.responses.append(FakeResponse(200, [{"date": "2026-06-22", "close": 5}]))
+    assert len(client.get_historical_prices("AAA")) == 1
+
+
+def test_non_list_body_counts_failure(monkeypatch):
+    client, _ = make_client(monkeypatch, [FakeResponse(200, {"Error Message": "bad"})])
+    assert client.get_historical_prices("AAA") == []
+    assert client.stats()["failed_requests"] == 1
+
+
+def test_malformed_json_retries_once_then_succeeds(monkeypatch):
+    rows = [{"date": "2026-06-22", "close": 5}]
     client, session = make_client(
-        monkeypatch, [FakeResponse(404, None, "nope"), FakeResponse(200, v3)]
+        monkeypatch, [FakeResponse(200, ValueError("boom")), FakeResponse(200, rows)]
     )
-    out = client.get_historical_prices("AAA", days=80)
-    assert [r["close"] for r in out] == [7.0, 8.0]
-    assert "/api/v3/historical-price-full/AAA" in session.calls[1][0]
-    assert session.calls[1][1] == {"timeseries": 80}
-    assert capsys.readouterr().err == ""
+    assert len(client.get_historical_prices("AAA")) == 1
+    assert len(session.calls) == 2
+    assert client.stats()["failed_requests"] == 0
 
 
-def test_v3_failure_prints_error_and_returns_empty(monkeypatch, capsys):
+def test_malformed_json_twice_fails_soft(monkeypatch):
     client, _ = make_client(
-        monkeypatch, [FakeResponse(500, None, "x"), FakeResponse(429, None, "slow down")]
+        monkeypatch, [FakeResponse(200, ValueError("a")), FakeResponse(200, ValueError("b"))]
     )
     assert client.get_historical_prices("AAA") == []
-    err = capsys.readouterr().err
-    assert "HTTP 429" in err
-    assert "slow down" in err
-    assert "HTTP 500" not in err  # first call is quiet
+    assert client.stats()["failed_requests"] == 1
 
 
-def test_budget_exhausted_raises(monkeypatch):
+def test_rate_limit_sets_flag_and_counts_failure(monkeypatch):
+    client, session = make_client(monkeypatch, [FakeResponse(429), FakeResponse(429)])
+    assert client.get_historical_prices("AAA") == []
+    assert client.rate_limit_reached is True
+    stats = client.stats()
+    assert stats["rate_limit_reached"] is True
+    assert stats["failed_requests"] == 1
+    assert len(session.calls) == 2
+
+
+def test_error_body_key_is_redacted(monkeypatch, capsys):
+    secret = "SECRETKEY123"  # pragma: allowlist secret
+    client, _ = make_client(monkeypatch, [FakeResponse(500, None, f"bad {secret} {secret}")])
+    client._client.api_key = secret
+    client.get_historical_prices("AAA")
+    captured = capsys.readouterr()
+    assert secret not in captured.err
+    assert "***REDACTED***" in captured.err
+    assert secret not in captured.out
+
+
+def test_budget_exhausted_raises_local_exception(monkeypatch):
     client, session = make_client(monkeypatch, [], max_api_calls=0)
     with pytest.raises(bmb.ApiCallBudgetExceeded, match="0/0"):
         client.get_historical_prices("AAA")
     assert session.calls == []
 
 
-def test_rate_limit_sleeps_when_called_quickly(monkeypatch):
-    client, _ = make_client(monkeypatch, [FakeResponse(200, [])])
-    slept = []
-    monkeypatch.setattr(bmb.time, "sleep", slept.append)
-    monkeypatch.setattr(bmb.time, "time", lambda: 1000.0)
-    client.last_call_time = 999.9
-    client._get("http://x")
-    assert len(slept) == 1
-    assert slept[0] == pytest.approx(0.2)
+def test_budget_exhausted_mid_loop(monkeypatch):
+    client, _ = make_client(monkeypatch, [FakeResponse(200, [])], max_api_calls=1)
+    client.get_historical_prices("AAA")
+    with pytest.raises(bmb.ApiCallBudgetExceeded):
+        client.get_historical_prices("BBB")
+
+
+def test_no_circuit_breaker_after_empty_symbols(monkeypatch):
+    rows = [{"date": "2026-06-22", "close": 5}]
+    responses = [FakeResponse(200, [])] * 5 + [FakeResponse(200, rows)]
+    client, session = make_client(monkeypatch, responses)
+    for i in range(5):
+        assert client.get_historical_prices(f"E{i}") == []
+    assert len(client.get_historical_prices("GOOD")) == 1
+    assert len(session.calls) == 6
+
+
+def test_delegated_attributes_roundtrip(monkeypatch):
+    client, _ = make_client(monkeypatch, [])
+    client.api_calls_made = 3
+    client.max_api_calls = 9
+    client.last_call_time = 12.5
+    client.rate_limit_reached = True
+    assert (client._client.api_calls_made, client._client.max_api_calls) == (3, 9)
+    assert client._client.last_call_time == 12.5
+    assert client._client.rate_limit_reached is True
+    assert client.stats()["budget_remaining"] == 6
 
 
 # ------------------------------------------------------------- tiny helpers
@@ -961,48 +1042,131 @@ def test_main_update_no_only_pending_flag(tmp_path, capsys):
     assert bmb.load_model_book(book)[0]["outcomes"]["5d"]["matured"] is True
 
 
+def install_fake_session(monkeypatch, session):
+    """Route the adapter's shared client through a fake HTTP session."""
+    shared = bmb._load_shared_fmp()
+    fake_requests = SimpleNamespace(Session=lambda: session, exceptions=shared.requests.exceptions)
+    monkeypatch.setattr(bmb, "requests", fake_requests)
+    monkeypatch.setattr(shared, "requests", fake_requests)
+    monkeypatch.setattr(shared.time, "sleep", lambda s: None)
+    monkeypatch.setenv("FMP_API_KEY", "k")
+
+
+def fmp_rows():
+    return [
+        {"date": b.date, "open": b.open, "high": b.high, "low": b.low, "close": b.close}
+        for b in bars_up(n=6)
+    ]
+
+
+def update_argv(book, out_dir, max_calls="5"):
+    argv = ["update", "--model-book", str(book), "--history-days", "10"]
+    return argv + ["--max-api-calls", max_calls, "--output-dir", str(out_dir)]
+
+
 def test_main_update_via_fmp_uses_fake_client(tmp_path, monkeypatch, capsys):
     book = tmp_path / "book.jsonl"
     bmb.save_model_book(
         book,
         [bmb.make_record(cand(symbol="aaa")), bmb.make_record(cand(symbol="bbb"))],
     )
-    rows = [
-        {"date": b.date, "open": b.open, "high": b.high, "low": b.low, "close": b.close}
-        for b in bars_up(n=6)
-    ]
-    session = FakeSession([FakeResponse(200, rows), FakeResponse(200, [])])
-    monkeypatch.setattr(bmb, "requests", SimpleNamespace(Session=lambda: session))
-    monkeypatch.setattr(bmb.time, "sleep", lambda s: None)
-    monkeypatch.setenv("FMP_API_KEY", "k")
-    argv = ["update", "--model-book", str(book), "--history-days", "10", "--max-api-calls", "5"]
-    argv += ["--output-dir", str(tmp_path / "o")]
-    # BBB: stable returns [] -> v3 fallback; supply that response too.
-    session.responses.append(FakeResponse(200, {"historical": []}))
-    assert bmb.main(argv) == 0
+    session = FakeSession([FakeResponse(200, fmp_rows()), FakeResponse(200, [])])
+    install_fake_session(monkeypatch, session)
+    assert bmb.main(update_argv(book, tmp_path / "o")) == 0
+    capsys.readouterr()
+    recs = {r["symbol"]: r for r in bmb.load_model_book(book)}
+    assert recs["AAA"]["matured"] is True
+    assert recs["BBB"]["update_error"] == "missing_prices"
+    assert all("/api/v3/" not in call[0] for call in session.calls)
+    jpath = next(p for p in (tmp_path / "o").iterdir() if p.suffix == ".json")
+    payload = json.loads(jpath.read_text(encoding="utf-8"))
+    assert payload["prices_source"] == "fmp"
+    assert payload["api_stats"] == {
+        "api_calls_made": 2,
+        "max_api_calls": 5,
+        "budget_remaining": 3,
+        "rate_limit_reached": False,
+        "failed_requests": 0,
+    }
+    assert payload["update"]["skipped_no_prices"] == 1
+
+
+def test_main_update_partial_failure_saves_and_reports_count(tmp_path, monkeypatch, capsys):
+    book = tmp_path / "book.jsonl"
+    bmb.save_model_book(
+        book,
+        [bmb.make_record(cand(symbol="aaa")), bmb.make_record(cand(symbol="bbb"))],
+    )
+    session = FakeSession([FakeResponse(200, fmp_rows()), FakeResponse(500, None, "boom")])
+    install_fake_session(monkeypatch, session)
+    assert bmb.main(update_argv(book, tmp_path / "o")) == 0
     capsys.readouterr()
     recs = {r["symbol"]: r for r in bmb.load_model_book(book)}
     assert recs["AAA"]["matured"] is True
     assert recs["BBB"]["update_error"] == "missing_prices"
     jpath = next(p for p in (tmp_path / "o").iterdir() if p.suffix == ".json")
     payload = json.loads(jpath.read_text(encoding="utf-8"))
-    assert payload["prices_source"] == "fmp"
-    assert payload["api_stats"] == {
-        "api_calls_made": 3,
-        "max_api_calls": 5,
-        "budget_remaining": 2,
-    }
-    assert payload["update"]["skipped_no_prices"] == 1
+    assert payload["api_stats"]["failed_requests"] == 1
+
+
+def test_main_update_all_symbols_failed_is_fail_closed(tmp_path, monkeypatch, capsys):
+    book = tmp_path / "book.jsonl"
+    bmb.save_model_book(
+        book,
+        [bmb.make_record(cand(symbol="aaa")), bmb.make_record(cand(symbol="bbb"))],
+    )
+    before = book.read_bytes()
+    session = FakeSession([FakeResponse(500, None, "x"), FakeResponse(500, None, "y")])
+    install_fake_session(monkeypatch, session)
+    assert bmb.main(update_argv(book, tmp_path / "o")) == 1
+    err = capsys.readouterr().err
+    assert "ERROR: FMP price fetch failed for all 2 symbols; model book not updated" in err
+    assert book.read_bytes() == before
+    assert not (tmp_path / "o").exists() or not list((tmp_path / "o").iterdir())
+
+
+def test_main_update_rate_limited_is_fail_closed(tmp_path, monkeypatch, capsys):
+    book = tmp_path / "book.jsonl"
+    bmb.save_model_book(book, [bmb.make_record(cand(symbol="aaa"))])
+    before = book.read_bytes()
+    session = FakeSession([FakeResponse(429), FakeResponse(429)])
+    install_fake_session(monkeypatch, session)
+    assert bmb.main(update_argv(book, tmp_path / "o")) == 1
+    assert "failed for all 1 symbols" in capsys.readouterr().err
+    assert book.read_bytes() == before
+
+
+def test_main_update_all_empty_rows_still_saves(tmp_path, monkeypatch, capsys):
+    """[] is data, not a failure: the no-rows ticker is marked missing_prices."""
+    book = tmp_path / "book.jsonl"
+    bmb.save_model_book(book, [bmb.make_record(cand(symbol="aaa"))])
+    install_fake_session(monkeypatch, FakeSession([FakeResponse(200, [])]))
+    assert bmb.main(update_argv(book, tmp_path / "o")) == 0
+    capsys.readouterr()
+    assert bmb.load_model_book(book)[0]["update_error"] == "missing_prices"
+
+
+def test_main_update_budget_exhaustion_propagates(tmp_path, monkeypatch):
+    book = tmp_path / "book.jsonl"
+    bmb.save_model_book(book, [bmb.make_record(cand(symbol="aaa"))])
+    install_fake_session(monkeypatch, FakeSession([]))
+    with pytest.raises(bmb.ApiCallBudgetExceeded):
+        bmb.main(update_argv(book, tmp_path / "o", max_calls="0"))
 
 
 def test_build_prices_for_update_skips_blank_symbols(monkeypatch):
     session = FakeSession([])
-    monkeypatch.setattr(bmb, "requests", SimpleNamespace(Session=lambda: session))
-    monkeypatch.setenv("FMP_API_KEY", "k")
+    install_fake_session(monkeypatch, session)
     args = SimpleNamespace(prices_json=None, api_key=None, max_api_calls=3, history_days=10)
     prices, stats = bmb.build_prices_for_update(args, [{"symbol": ""}, {}])
     assert prices == {}
-    assert stats == {"api_calls_made": 0, "max_api_calls": 3, "budget_remaining": 3}
+    assert stats == {
+        "api_calls_made": 0,
+        "max_api_calls": 3,
+        "budget_remaining": 3,
+        "rate_limit_reached": False,
+        "failed_requests": 0,
+    }
     assert session.calls == []
 
 

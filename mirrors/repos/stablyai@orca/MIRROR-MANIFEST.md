@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `stablyai/orca` — 26 default patterns, 5 followed patterns, 21 file(s) materialized.
+Mirror of `stablyai/orca` — 26 default patterns, 1 followed patterns, 16 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `stablyai/orca` — 26 default patterns, 5 followed patterns, 21 file(
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 5 |
-| Files         | 21 |
+| Followed pats | 1 |
+| Files         | 16 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -52,10 +52,6 @@ Mirror of `stablyai/orca` — 26 default patterns, 5 followed patterns, 21 file(
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
 - `docs/STYLEGUIDE.md`
-- `docs/reference/component-fixtures.md`
-- `docs/reference/cross-platform-support.md`
-- `docs/reference/git-workflow.md`
-- `docs/reference/test-antipatterns.md`
 
 ## File Index
 
@@ -64,26 +60,21 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`docs/reference/macos-daemon-tcc-attribution.md`](docs/reference/macos-daemon-tcc-attribution.md) |
-| 3 | ✓ | [`resources/native-chat-visuals/skills/orca-chat-visuals/SKILL.md`](resources/native-chat-visuals/skills/orca-chat-visuals/SKILL.md) |
-| 4 | ✓ | [`skills/computer-use/SKILL.md`](skills/computer-use/SKILL.md) |
-| 5 | ✓ | [`skills/jira-tickets/SKILL.md`](skills/jira-tickets/SKILL.md) |
-| 6 | ✓ | [`skills/linear-tickets/SKILL.md`](skills/linear-tickets/SKILL.md) |
-| 7 | ✓ | [`skills/orca-cli/SKILL.md`](skills/orca-cli/SKILL.md) |
-| 8 | ✓ | [`skills/orca-emulator-android/SKILL.md`](skills/orca-emulator-android/SKILL.md) |
-| 9 | ✓ | [`skills/orca-emulator/SKILL.md`](skills/orca-emulator/SKILL.md) |
-| 10 | ✓ | [`skills/orca-jira/SKILL.md`](skills/orca-jira/SKILL.md) |
-| 11 | ✓ | [`skills/orca-linear/SKILL.md`](skills/orca-linear/SKILL.md) |
-| 12 | ✓ | [`skills/orca-per-workspace-env/SKILL.md`](skills/orca-per-workspace-env/SKILL.md) |
-| 13 | ✓ | [`skills/orchestration/SKILL.md`](skills/orchestration/SKILL.md) |
-| 14 | ✓ | [`src/main/daemon/AGENTS.md`](src/main/daemon/AGENTS.md) |
-| 15 | ✓ | [`tests/AGENTS.md`](tests/AGENTS.md) |
-| 16 | ✓ | [`tests/e2e/AGENTS.md`](tests/e2e/AGENTS.md) |
-| 17 | → | [`docs/reference/component-fixtures.md`](docs/reference/component-fixtures.md) |
-| 18 | → | [`docs/reference/cross-platform-support.md`](docs/reference/cross-platform-support.md) |
-| 19 | → | [`docs/reference/git-workflow.md`](docs/reference/git-workflow.md) |
-| 20 | → | [`docs/reference/test-antipatterns.md`](docs/reference/test-antipatterns.md) |
-| 21 | → | [`docs/STYLEGUIDE.md`](docs/STYLEGUIDE.md) |
+| 2 | ✓ | [`resources/native-chat-visuals/skills/orca-chat-visuals/SKILL.md`](resources/native-chat-visuals/skills/orca-chat-visuals/SKILL.md) |
+| 3 | ✓ | [`skills/computer-use/SKILL.md`](skills/computer-use/SKILL.md) |
+| 4 | ✓ | [`skills/jira-tickets/SKILL.md`](skills/jira-tickets/SKILL.md) |
+| 5 | ✓ | [`skills/linear-tickets/SKILL.md`](skills/linear-tickets/SKILL.md) |
+| 6 | ✓ | [`skills/orca-cli/SKILL.md`](skills/orca-cli/SKILL.md) |
+| 7 | ✓ | [`skills/orca-emulator-android/SKILL.md`](skills/orca-emulator-android/SKILL.md) |
+| 8 | ✓ | [`skills/orca-emulator/SKILL.md`](skills/orca-emulator/SKILL.md) |
+| 9 | ✓ | [`skills/orca-jira/SKILL.md`](skills/orca-jira/SKILL.md) |
+| 10 | ✓ | [`skills/orca-linear/SKILL.md`](skills/orca-linear/SKILL.md) |
+| 11 | ✓ | [`skills/orca-per-workspace-env/SKILL.md`](skills/orca-per-workspace-env/SKILL.md) |
+| 12 | ✓ | [`skills/orchestration/SKILL.md`](skills/orchestration/SKILL.md) |
+| 13 | ✓ | [`src/main/daemon/AGENTS.md`](src/main/daemon/AGENTS.md) |
+| 14 | ✓ | [`tests/AGENTS.md`](tests/AGENTS.md) |
+| 15 | ✓ | [`tests/e2e/AGENTS.md`](tests/e2e/AGENTS.md) |
+| 16 | → | [`docs/STYLEGUIDE.md`](docs/STYLEGUIDE.md) |
 
 ---
 

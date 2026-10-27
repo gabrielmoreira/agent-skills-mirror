@@ -42,6 +42,11 @@ limits. Inspect:
 - actual delivery-size text readability, safe areas, contrast, clipping and hierarchy;
 - native script line breaks, glyphs/fallback, weights, mixed-script baseline,
   Arabic shaping/bidi isolation of numbers/URLs/commands, subtitle reading time;
+- every on-screen literal against `literal_fact_citations`: install commands,
+  command names, URLs and counts match their cited source byte-for-byte, and
+  every count agrees with its noun (`1 agents` is REVISE);
+- the art-direction frame checks re-measured on the final export: frame fill,
+  clear space, decorative meta text and the hue-family list;
 - cut ordering, transition continuity, motion intent, unintentional freeze/flicker,
   flash suspicion and loops; distinguish an intentional hold from a stuck render;
 - codec/color/filesize/channel cap and full decode; audio sync, pronunciation and

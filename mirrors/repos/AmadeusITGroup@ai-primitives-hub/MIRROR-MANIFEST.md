@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `AmadeusITGroup/ai-primitives-hub` — 26 default patterns, 21 followed patterns, 73 file(s) materialized.
+Mirror of `AmadeusITGroup/ai-primitives-hub` — 26 default patterns, 21 followed patterns, 74 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `AmadeusITGroup/ai-primitives-hub` — 26 default patterns, 21 followe
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 21 |
-| Files         | 73 |
+| Files         | 74 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -130,28 +130,29 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 49 | ✓ | [`packages/cli/src/commands/AGENTS.md`](packages/cli/src/commands/AGENTS.md) |
 | 50 | ✓ | [`packages/core/README.md`](packages/core/README.md) |
 | 51 | ✓ | [`packages/infra/README.md`](packages/infra/README.md) |
-| 52 | ✓ | [`packages/README.md`](packages/README.md) |
-| 53 | → | [`apps/vscode-extension/README.md`](apps/vscode-extension/README.md) |
-| 54 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
-| 55 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 56 | → | [`docs/author-guide/creating-source-bundle.md`](docs/author-guide/creating-source-bundle.md) |
-| 57 | → | [`docs/contributor-guide/architecture.md`](docs/contributor-guide/architecture.md) |
-| 58 | → | [`docs/contributor-guide/architecture/adr/adr-index.md`](docs/contributor-guide/architecture/adr/adr-index.md) |
-| 59 | → | [`docs/contributor-guide/architecture/library-centric-architecture/clean-architecture.md`](docs/contributor-guide/architecture/library-centric-architecture/clean-architecture.md) |
-| 60 | → | [`docs/contributor-guide/coding-standards.md`](docs/contributor-guide/coding-standards.md) |
-| 61 | → | [`docs/contributor-guide/core-flows.md`](docs/contributor-guide/core-flows.md) |
-| 62 | → | [`docs/contributor-guide/development-setup.md`](docs/contributor-guide/development-setup.md) |
-| 63 | → | [`docs/contributor-guide/testing.md`](docs/contributor-guide/testing.md) |
-| 64 | → | [`docs/README.md`](docs/README.md) |
-| 65 | → | [`docs/reference/commands.md`](docs/reference/commands.md) |
-| 66 | → | [`docs/user-guide/configuration.md`](docs/user-guide/configuration.md) |
-| 67 | → | [`docs/user-guide/getting-started.md`](docs/user-guide/getting-started.md) |
-| 68 | → | [`docs/user-guide/marketplace.md`](docs/user-guide/marketplace.md) |
-| 69 | → | [`docs/user-guide/profiles-and-hubs.md`](docs/user-guide/profiles-and-hubs.md) |
-| 70 | → | [`docs/user-guide/sources.md`](docs/user-guide/sources.md) |
-| 71 | → | [`docs/user-guide/troubleshooting.md`](docs/user-guide/troubleshooting.md) |
-| 72 | → | [`README.md`](README.md) |
-| 73 | → | [`SECURITY.md`](SECURITY.md) |
+| 52 | ✓ | [`packages/infra/src/scaffolding/templates/README.md`](packages/infra/src/scaffolding/templates/README.md) |
+| 53 | ✓ | [`packages/README.md`](packages/README.md) |
+| 54 | → | [`apps/vscode-extension/README.md`](apps/vscode-extension/README.md) |
+| 55 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
+| 56 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 57 | → | [`docs/author-guide/creating-source-bundle.md`](docs/author-guide/creating-source-bundle.md) |
+| 58 | → | [`docs/contributor-guide/architecture.md`](docs/contributor-guide/architecture.md) |
+| 59 | → | [`docs/contributor-guide/architecture/adr/adr-index.md`](docs/contributor-guide/architecture/adr/adr-index.md) |
+| 60 | → | [`docs/contributor-guide/architecture/library-centric-architecture/clean-architecture.md`](docs/contributor-guide/architecture/library-centric-architecture/clean-architecture.md) |
+| 61 | → | [`docs/contributor-guide/coding-standards.md`](docs/contributor-guide/coding-standards.md) |
+| 62 | → | [`docs/contributor-guide/core-flows.md`](docs/contributor-guide/core-flows.md) |
+| 63 | → | [`docs/contributor-guide/development-setup.md`](docs/contributor-guide/development-setup.md) |
+| 64 | → | [`docs/contributor-guide/testing.md`](docs/contributor-guide/testing.md) |
+| 65 | → | [`docs/README.md`](docs/README.md) |
+| 66 | → | [`docs/reference/commands.md`](docs/reference/commands.md) |
+| 67 | → | [`docs/user-guide/configuration.md`](docs/user-guide/configuration.md) |
+| 68 | → | [`docs/user-guide/getting-started.md`](docs/user-guide/getting-started.md) |
+| 69 | → | [`docs/user-guide/marketplace.md`](docs/user-guide/marketplace.md) |
+| 70 | → | [`docs/user-guide/profiles-and-hubs.md`](docs/user-guide/profiles-and-hubs.md) |
+| 71 | → | [`docs/user-guide/sources.md`](docs/user-guide/sources.md) |
+| 72 | → | [`docs/user-guide/troubleshooting.md`](docs/user-guide/troubleshooting.md) |
+| 73 | → | [`README.md`](README.md) |
+| 74 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

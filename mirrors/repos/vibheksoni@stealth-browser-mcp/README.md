@@ -21,9 +21,9 @@ Navigate Cloudflare challenges, anti-bot checks, and login walls with real Chrom
 
 ## Sponsors
 
-<a href="https://go.nodemaven.com/stealthbrowsermcpreadmesept"><img src="https://raw.githubusercontent.com/vibheksoni/stealth-browser-mcp/master/media/nodemaven-sponsor.png" alt="NodeMaven" width="100%"></a>
+<a href="https://go.nodemaven.com/stealthbrowsermcpreadmeoct"><img src="https://raw.githubusercontent.com/vibheksoni/stealth-browser-mcp/master/media/nodemaven-sponsor.png" alt="NodeMaven" width="100%"></a>
 
-[NodeMaven](https://go.nodemaven.com/stealthbrowsermcpreadmesept) — The most efficient proxy provider for Web Scraping and Automation with the Highest Quality IP on the market.
+[NodeMaven](https://go.nodemaven.com/stealthbrowsermcpreadmeoct) — The most efficient proxy provider for Web Scraping and Automation with the Highest Quality IP on the market.
 
 **Why NodeMaven?**
 
@@ -38,7 +38,7 @@ Navigate Cloudflare challenges, anti-bot checks, and login walls with real Chrom
 - `STEALTHMCP35` — 35% off to Mobile and Residential Proxies
 - `STEALTHMCP40` — 40% off to ISP (Static) Proxies
 
-[Get started with NodeMaven](https://go.nodemaven.com/stealthbrowsermcpreadmesept)
+[Get started with NodeMaven](https://go.nodemaven.com/stealthbrowsermcpreadmeoct)
 
 > Sponsored placement. NodeMaven is a paid sponsor of this project.
 
@@ -581,6 +581,9 @@ Run with `--sandbox=false` only if your environment requires it, or ensure the e
 
 **Orphan Chromium processes or `uc_*` temp profiles accumulate**
 The server reaps idle browser instances automatically and performs startup cleanup of tracked orphan browser processes plus stale `uc_*` temp profiles. Set `BROWSER_IDLE_TIMEOUT=0` only if you want fully manual browser lifetime management.
+
+**macOS disk fills up with `code_sign_clone` folders**
+Older versions let Chrome copy its app bundle into `com.google.Chrome.code_sign_clone` at every launch, and the copy stayed behind when an instance crashed or was killed. The server now launches Chrome with `MacAppCodeSignClone` turned off, so no new copies are made. To remove copies left by older versions, quit Chrome and run `rm -rf /private/var/folders/*/*/X/com.google.Chrome.code_sign_clone` (use `com.microsoft.edgemac.code_sign_clone` for Edge).
 
 **Too many tools cluttering the AI chat**
 Use `--minimal` for 20 core tools, `--xpool-safe` for xpool-compatible operation, or selectively disable sections:

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ashhart/TensorFold` — 26 default patterns, 41 followed patterns, 86 file(s) materialized.
+Mirror of `ashhart/TensorFold` — 26 default patterns, 41 followed patterns, 87 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ashhart/TensorFold` — 26 default patterns, 41 followed patterns, 86
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 41 |
-| Files         | 86 |
+| Files         | 87 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -129,62 +129,63 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 28 | ✓ | [`docs/recipes/flash-next-vision.md`](docs/recipes/flash-next-vision.md) |
 | 29 | ✓ | [`docs/recipes/gemma-4.md`](docs/recipes/gemma-4.md) |
 | 30 | ✓ | [`docs/recipes/glm-5.3-flash.md`](docs/recipes/glm-5.3-flash.md) |
-| 31 | ✓ | [`docs/recipes/SKILL.md`](docs/recipes/SKILL.md) |
-| 32 | ✓ | [`docs/recipes/spark-x2.6-4b-cuda.md`](docs/recipes/spark-x2.6-4b-cuda.md) |
-| 33 | ✓ | [`docs/recipes/spark-x2.6-4b-metal.md`](docs/recipes/spark-x2.6-4b-metal.md) |
-| 34 | ✓ | [`docs/recipes/speed-up-mode.md`](docs/recipes/speed-up-mode.md) |
-| 35 | ✓ | [`docs/recipes/ternary-bonsai-2.md`](docs/recipes/ternary-bonsai-2.md) |
-| 36 | ✓ | [`docs/recipes/training-a-drafter.md`](docs/recipes/training-a-drafter.md) |
-| 37 | ✓ | [`docs/recipes/xpu-arc.md`](docs/recipes/xpu-arc.md) |
-| 38 | ✓ | [`docs/speed-up-mode.md`](docs/speed-up-mode.md) |
-| 39 | ✓ | [`docs/xpu/README.md`](docs/xpu/README.md) |
-| 40 | ✓ | [`tools/zig/cuda_host/README.md`](tools/zig/cuda_host/README.md) |
-| 41 | ✓ | [`tools/zig/fixtures/README.md`](tools/zig/fixtures/README.md) |
-| 42 | ✓ | [`zig/kernels/cuda/torch_ops/README.md`](zig/kernels/cuda/torch_ops/README.md) |
-| 43 | ✓ | [`zig/src/fabric/tp/README.md`](zig/src/fabric/tp/README.md) |
-| 44 | ✓ | [`zig/tests/cuda/nemotron/box/README.md`](zig/tests/cuda/nemotron/box/README.md) |
-| 45 | ✓ | [`zig/tests/server/README.md`](zig/tests/server/README.md) |
-| 46 | → | [`app/README.md`](app/README.md) |
-| 47 | → | [`CHANGELOG.md`](CHANGELOG.md) |
-| 48 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 49 | → | [`docs/cache-benchmarks.md`](docs/cache-benchmarks.md) |
-| 50 | → | [`docs/community-benchmarks.md`](docs/community-benchmarks.md) |
-| 51 | → | [`docs/cortheon.md`](docs/cortheon.md) |
-| 52 | → | [`docs/credits.md`](docs/credits.md) |
-| 53 | → | [`docs/drama-http-voices.md`](docs/drama-http-voices.md) |
-| 54 | → | [`docs/glm-5.3-exlr8.md`](docs/glm-5.3-exlr8.md) |
-| 55 | → | [`docs/kernel-contract.md`](docs/kernel-contract.md) |
-| 56 | → | [`docs/known-issues.md`](docs/known-issues.md) |
-| 57 | → | [`docs/living-weights.md`](docs/living-weights.md) |
-| 58 | → | [`docs/memory-diagnostics.md`](docs/memory-diagnostics.md) |
-| 59 | → | [`docs/memory-profiling.md`](docs/memory-profiling.md) |
-| 60 | → | [`docs/recall.md`](docs/recall.md) |
-| 61 | → | [`docs/receipts/flashnext-mtp-chain-2026-10-10/README.md`](docs/receipts/flashnext-mtp-chain-2026-10-10/README.md) |
-| 62 | → | [`docs/receipts/glm-fp4local-80517fc3/README.md`](docs/receipts/glm-fp4local-80517fc3/README.md) |
-| 63 | → | [`docs/recipes/cuda.md`](docs/recipes/cuda.md) |
-| 64 | → | [`docs/recipes/flash-next-cuda.md`](docs/recipes/flash-next-cuda.md) |
-| 65 | → | [`docs/recipes/gemma-4-12b-native.md`](docs/recipes/gemma-4-12b-native.md) |
-| 66 | → | [`docs/recipes/gemma-4-native.md`](docs/recipes/gemma-4-native.md) |
-| 67 | → | [`docs/recipes/glm-5.3-flash-cuda.md`](docs/recipes/glm-5.3-flash-cuda.md) |
-| 68 | → | [`docs/recipes/kolibri-1.md`](docs/recipes/kolibri-1.md) |
-| 69 | → | [`docs/recipes/nemotron-3.5-super-vl.md`](docs/recipes/nemotron-3.5-super-vl.md) |
-| 70 | → | [`docs/recipes/nemotron-3.5.md`](docs/recipes/nemotron-3.5.md) |
-| 71 | → | [`docs/recipes/nemotron-omni-video.md`](docs/recipes/nemotron-omni-video.md) |
-| 72 | → | [`docs/recipes/qwen3.5-2b-native.md`](docs/recipes/qwen3.5-2b-native.md) |
-| 73 | → | [`docs/recipes/qwen3.6-moe.md`](docs/recipes/qwen3.6-moe.md) |
-| 74 | → | [`docs/recipes/qwen3.8-27b.md`](docs/recipes/qwen3.8-27b.md) |
-| 75 | → | [`docs/recipes/qwen3.8-flash-next.md`](docs/recipes/qwen3.8-flash-next.md) |
-| 76 | → | [`docs/recipes/README.md`](docs/recipes/README.md) |
-| 77 | → | [`docs/recipes/step-5-preview.md`](docs/recipes/step-5-preview.md) |
-| 78 | → | [`docs/speech-controls.md`](docs/speech-controls.md) |
-| 79 | → | [`docs/speech-redraws.md`](docs/speech-redraws.md) |
-| 80 | → | [`docs/speech-sampling.md`](docs/speech-sampling.md) |
-| 81 | → | [`docs/WINDOWS.md`](docs/WINDOWS.md) |
-| 82 | → | [`packaging/README.md`](packaging/README.md) |
-| 83 | → | [`README.md`](README.md) |
-| 84 | → | [`RELEASE-NOTES-1.0.0.md`](RELEASE-NOTES-1.0.0.md) |
-| 85 | → | [`RUNBOOK.md`](RUNBOOK.md) |
-| 86 | → | [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) |
+| 31 | ✓ | [`docs/recipes/qwen4-dense.md`](docs/recipes/qwen4-dense.md) |
+| 32 | ✓ | [`docs/recipes/SKILL.md`](docs/recipes/SKILL.md) |
+| 33 | ✓ | [`docs/recipes/spark-x2.6-4b-cuda.md`](docs/recipes/spark-x2.6-4b-cuda.md) |
+| 34 | ✓ | [`docs/recipes/spark-x2.6-4b-metal.md`](docs/recipes/spark-x2.6-4b-metal.md) |
+| 35 | ✓ | [`docs/recipes/speed-up-mode.md`](docs/recipes/speed-up-mode.md) |
+| 36 | ✓ | [`docs/recipes/ternary-bonsai-2.md`](docs/recipes/ternary-bonsai-2.md) |
+| 37 | ✓ | [`docs/recipes/training-a-drafter.md`](docs/recipes/training-a-drafter.md) |
+| 38 | ✓ | [`docs/recipes/xpu-arc.md`](docs/recipes/xpu-arc.md) |
+| 39 | ✓ | [`docs/speed-up-mode.md`](docs/speed-up-mode.md) |
+| 40 | ✓ | [`docs/xpu/README.md`](docs/xpu/README.md) |
+| 41 | ✓ | [`tools/zig/cuda_host/README.md`](tools/zig/cuda_host/README.md) |
+| 42 | ✓ | [`tools/zig/fixtures/README.md`](tools/zig/fixtures/README.md) |
+| 43 | ✓ | [`zig/kernels/cuda/torch_ops/README.md`](zig/kernels/cuda/torch_ops/README.md) |
+| 44 | ✓ | [`zig/src/fabric/tp/README.md`](zig/src/fabric/tp/README.md) |
+| 45 | ✓ | [`zig/tests/cuda/nemotron/box/README.md`](zig/tests/cuda/nemotron/box/README.md) |
+| 46 | ✓ | [`zig/tests/server/README.md`](zig/tests/server/README.md) |
+| 47 | → | [`app/README.md`](app/README.md) |
+| 48 | → | [`CHANGELOG.md`](CHANGELOG.md) |
+| 49 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 50 | → | [`docs/cache-benchmarks.md`](docs/cache-benchmarks.md) |
+| 51 | → | [`docs/community-benchmarks.md`](docs/community-benchmarks.md) |
+| 52 | → | [`docs/cortheon.md`](docs/cortheon.md) |
+| 53 | → | [`docs/credits.md`](docs/credits.md) |
+| 54 | → | [`docs/drama-http-voices.md`](docs/drama-http-voices.md) |
+| 55 | → | [`docs/glm-5.3-exlr8.md`](docs/glm-5.3-exlr8.md) |
+| 56 | → | [`docs/kernel-contract.md`](docs/kernel-contract.md) |
+| 57 | → | [`docs/known-issues.md`](docs/known-issues.md) |
+| 58 | → | [`docs/living-weights.md`](docs/living-weights.md) |
+| 59 | → | [`docs/memory-diagnostics.md`](docs/memory-diagnostics.md) |
+| 60 | → | [`docs/memory-profiling.md`](docs/memory-profiling.md) |
+| 61 | → | [`docs/recall.md`](docs/recall.md) |
+| 62 | → | [`docs/receipts/flashnext-mtp-chain-2026-10-10/README.md`](docs/receipts/flashnext-mtp-chain-2026-10-10/README.md) |
+| 63 | → | [`docs/receipts/glm-fp4local-80517fc3/README.md`](docs/receipts/glm-fp4local-80517fc3/README.md) |
+| 64 | → | [`docs/recipes/cuda.md`](docs/recipes/cuda.md) |
+| 65 | → | [`docs/recipes/flash-next-cuda.md`](docs/recipes/flash-next-cuda.md) |
+| 66 | → | [`docs/recipes/gemma-4-12b-native.md`](docs/recipes/gemma-4-12b-native.md) |
+| 67 | → | [`docs/recipes/gemma-4-native.md`](docs/recipes/gemma-4-native.md) |
+| 68 | → | [`docs/recipes/glm-5.3-flash-cuda.md`](docs/recipes/glm-5.3-flash-cuda.md) |
+| 69 | → | [`docs/recipes/kolibri-1.md`](docs/recipes/kolibri-1.md) |
+| 70 | → | [`docs/recipes/nemotron-3.5-super-vl.md`](docs/recipes/nemotron-3.5-super-vl.md) |
+| 71 | → | [`docs/recipes/nemotron-3.5.md`](docs/recipes/nemotron-3.5.md) |
+| 72 | → | [`docs/recipes/nemotron-omni-video.md`](docs/recipes/nemotron-omni-video.md) |
+| 73 | → | [`docs/recipes/qwen3.5-2b-native.md`](docs/recipes/qwen3.5-2b-native.md) |
+| 74 | → | [`docs/recipes/qwen3.6-moe.md`](docs/recipes/qwen3.6-moe.md) |
+| 75 | → | [`docs/recipes/qwen3.8-27b.md`](docs/recipes/qwen3.8-27b.md) |
+| 76 | → | [`docs/recipes/qwen3.8-flash-next.md`](docs/recipes/qwen3.8-flash-next.md) |
+| 77 | → | [`docs/recipes/README.md`](docs/recipes/README.md) |
+| 78 | → | [`docs/recipes/step-5-preview.md`](docs/recipes/step-5-preview.md) |
+| 79 | → | [`docs/speech-controls.md`](docs/speech-controls.md) |
+| 80 | → | [`docs/speech-redraws.md`](docs/speech-redraws.md) |
+| 81 | → | [`docs/speech-sampling.md`](docs/speech-sampling.md) |
+| 82 | → | [`docs/WINDOWS.md`](docs/WINDOWS.md) |
+| 83 | → | [`packaging/README.md`](packaging/README.md) |
+| 84 | → | [`README.md`](README.md) |
+| 85 | → | [`RELEASE-NOTES-1.0.0.md`](RELEASE-NOTES-1.0.0.md) |
+| 86 | → | [`RUNBOOK.md`](RUNBOOK.md) |
+| 87 | → | [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) |
 
 ---
 

@@ -55,6 +55,8 @@ For executable handoffs, including instruction-only cross-owner workflows, bind 
 [intended-consumer boundary](daymade-skill/skill-creator/references/change-verification.md#bind-the-intended-consumer-before-verification)
 and follow its [first-use route](daymade-skill/skill-creator/references/first-use-and-resume.md).
 Use its selected workflow for regression review, validation, initialization, and packaging.
+For capability extraction or reuse across business callers, follow its
+[ownership decision](daymade-skill/skill-creator/references/authoring-and-reuse.md#the-extend-vs-create-check--runs-before-any-specialized-branch).
 
 Operational or code-bearing Skill edits complete directly affected document alignment
 before the first candidate freeze; follow skill-creator's Edit workflow.
@@ -78,7 +80,8 @@ For user-selected collection destinations, load the
 [collection destination route](competitors-analysis/references/collection_destination.md).
 For running an original application demo, follow that Skill's
 [original-app demo recipe](competitors-analysis/references/original-app-demo.md).
-For file-backed persistence and CLI acceptance, transaction recovery tests,
+For file-backed persistence and CLI acceptance (including wrapper argument forwarding
+and compatibility aliases), transaction recovery tests,
 financial migration/fixture acceptance, admission/recovery bindings, runtime compatibility or project-bound release acceptance, enter
 [qa-expert](qa-expert/SKILL.md); its test-case routes select the detailed recipes.
 For path normalization or drive-relative adapter cases, follow its
@@ -117,6 +120,7 @@ For next-increment selection after that reconciliation or a completed repair bat
 [increment-selection contract](app-evolver/references/evidence-and-fit.md#make-the-disposition-operational).
 When feedback questions navigation, information hierarchy or interface coherence, use its
 [structure comparison](app-evolver/references/evidence-and-fit.md#reconsider-interface-structure).
+For discovery-task changes, follow its [task-pivot and return-context cases](app-evolver/references/implementation-and-acceptance.md#task-pivots-and-return-context).
 
 For permission-sensitive fixtures, use Skill Creator's
 [execution-context verification recipe](daymade-skill/skill-creator/references/stateful-script-verification.md#execution-identity-and-permission-fixtures).
@@ -244,7 +248,7 @@ For rendered UI freshness, delayed editor/batch responses or deployment acceptan
 [frontend-visual-qa](frontend-visual-qa/SKILL.md).
 For publication-wide clutter despite passing local checks, use its
 [publication journey calibration](frontend-visual-qa/references/publication-journey-cases.md).
-For the pre-release ancillary-copy gate, follow
+For the pre-release ancillary-copy gate or density/layout comparisons, follow
 [information necessity](frontend-visual-qa/references/history-derived-checklist.md#information-necessity-before-layout).
 Before measuring loading speed, read its
 [cache and timing comparison](frontend-visual-qa/references/browser-driving-and-observation-traps.md#separate-freshness-checks-from-performance-comparisons).
@@ -252,7 +256,12 @@ For build reuse across source refs or a target redeployed during acceptance, loa
 [delivery verification procedure](frontend-visual-qa/references/delivery-verification.md).
 For nested zoomable workspaces, use its
 [journey and state matrix](frontend-visual-qa/references/journey-and-page-contracts.md#journey-and-state-matrix).
-For live status or attention filters, follow its
+For repeated journey positions or measured wheel sensitivity, use its
+[route contract](frontend-visual-qa/references/journey-and-page-contracts.md#route-and-addressability)
+and [received-input recipe](frontend-visual-qa/references/browser-driving-and-observation-traps.md#wheel-requests-are-not-browser-received-wheel-events).
+Before drawing page relationships or a click-through journey, use
+[the topology/visit distinction](data-visualization-discipline/references/visual-form-selection.md#关系拓扑与有序旅程).
+For live status, attention filters, retention intent or excluded-record recovery, follow its
 [cross-view attention journey](frontend-visual-qa/references/journey-and-page-contracts.md#operational-attention-across-views).
 For embedded-reader sizing, surrounding navigation, overlays, zoom, reading/return,
 focus or filtered-selection changes, use its
@@ -351,10 +360,10 @@ For self-hosted routing, resource limits or cache persistence, follow its
 [runner acceptance](github-ops/references/workflow_operations.md#self-hosted-runner-capacity-and-acceptance).
 Keep demand selection, validation-reuse and capacity acceptance in those owners.
 
-For browser-backed recurring jobs, enter
-[macos-watchdog](daymade-macos/macos-watchdog/SKILL.md) and apply its deployment
-acceptance before shipping. That Skill owns resource-budget and focus evidence;
-keep the detailed procedure there.
+For automatic observers or recovery jobs, begin with
+[ordinary-entry and lifecycle acceptance](daymade-macos/macos-watchdog/SKILL.md#bind-the-ordinary-entry-before-choosing-a-mechanism),
+including recovery after temporary protection. Browser-backed recurring jobs also
+use that Skill's deployment acceptance for resource-budget and focus evidence.
 
 Before selecting file-event or periodic triggers, follow
 [macos-watchdog's trigger and acceptance workflow](daymade-macos/macos-watchdog/references/event-driven-observers.md).
@@ -556,6 +565,10 @@ For change-only automatic backups, use its
 
 ### Codex Quota and Account Checks
 
+For selected-site Cookie copying between local profiles of the same macOS Chrome,
+enter [cookie-copy](cookie-copy/SKILL.md). For its quota-query caller, follow
+[Tibo's Cookie Copy handoff](tibo-reset-codex/references/browser-session-migration.md).
+
 For a remote Codex sign-in prompt or terminal refresh rejection, start at
 [Local Codex authentication recovery](daymade-codex/local-codex/references/oauth-guide.md#remote-account-switch-and-expired-login-recovery).
 That owner defines project-authorization recovery, credential-store selection and usable-access verification; quota checks below remain a separate route.
@@ -563,7 +576,10 @@ That owner defines project-authorization recovery, credential-store selection an
 For Codex reset announcements or account quota questions, enter
 [tibo-reset-codex](tibo-reset-codex/SKILL.md). Follow its
 [account usage SOP](tibo-reset-codex/references/account-usage.md) for authentication,
-per-account verification, adjacent-reset attribution and browser restoration. Treat
+per-account verification, adjacent-reset attribution and browser restoration.
+For unused quota, reset gains or avoidable waste, follow
+[waste and added capacity](tibo-reset-codex/references/account-usage.md#浪费与新增容量).
+Treat
 [query_usage.py](tibo-reset-codex/scripts/query_usage.py) as the executable authority
 for query parameters, supported response fields and exit behavior;
 [reset_attribution.py](tibo-reset-codex/scripts/reset_attribution.py) owns mechanical
@@ -595,6 +611,9 @@ digest; a matching basename is not identity. A pending item is not a delivery
 receipt, and an automatic outbox path gets one non-retrying HTTP attempt.
 
 ### Testing Skills Locally
+
+For affected executable entries before release and after source synchronization,
+follow [source location and activation](daymade-skill/skill-creator/references/source-location-and-activation.md).
 
 For installed-Skill and fresh-host acceptance, test the canonical source route. Use the current
 `claude-switch-models-setup` local-source workflow for this maintainer machine,

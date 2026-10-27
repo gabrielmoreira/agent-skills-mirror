@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `YuqingNicole/variant-design-skill` — 26 default patterns, 0 followed patterns, 7 file(s) materialized.
+Mirror of `YuqingNicole/variant-design-skill` — 26 default patterns, 0 followed patterns, 18 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `YuqingNicole/variant-design-skill` — 26 default patterns, 0 followe
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 7 |
+| Files         | 18 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,13 +59,24 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`SKILL.md`](SKILL.md) |
-| 2 | ✓ | [`skills/shared/code-output.md`](skills/shared/code-output.md) |
-| 3 | ✓ | [`skills/variant-analyze/SKILL.md`](skills/variant-analyze/SKILL.md) |
-| 4 | ✓ | [`skills/variant-component/SKILL.md`](skills/variant-component/SKILL.md) |
-| 5 | ✓ | [`skills/variant-design-system/SKILL.md`](skills/variant-design-system/SKILL.md) |
-| 6 | ✓ | [`skills/variant-generate/SKILL.md`](skills/variant-generate/SKILL.md) |
-| 7 | ✓ | [`skills/variant-ux/SKILL.md`](skills/variant-ux/SKILL.md) |
+| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 3 | ✓ | [`mcp/.gitignore`](mcp/.gitignore) |
+| 4 | ✓ | [`mcp/canvas-server.mjs`](mcp/canvas-server.mjs) |
+| 5 | ✓ | [`mcp/canvas-server.test.mjs`](mcp/canvas-server.test.mjs) |
+| 6 | ✓ | [`mcp/demo.mjs`](mcp/demo.mjs) |
+| 7 | ✓ | [`mcp/package-lock.json`](mcp/package-lock.json) |
+| 8 | ✓ | [`mcp/package.json`](mcp/package.json) |
+| 9 | ✓ | [`mcp/README.md`](mcp/README.md) |
+| 10 | ✓ | [`mcp/server.mjs`](mcp/server.mjs) |
+| 11 | ✓ | [`mcp/server.test.mjs`](mcp/server.test.mjs) |
+| 12 | ✓ | [`SKILL.md`](SKILL.md) |
+| 13 | ✓ | [`skills/shared/code-output.md`](skills/shared/code-output.md) |
+| 14 | ✓ | [`skills/variant-analyze/SKILL.md`](skills/variant-analyze/SKILL.md) |
+| 15 | ✓ | [`skills/variant-component/SKILL.md`](skills/variant-component/SKILL.md) |
+| 16 | ✓ | [`skills/variant-design-system/SKILL.md`](skills/variant-design-system/SKILL.md) |
+| 17 | ✓ | [`skills/variant-generate/SKILL.md`](skills/variant-generate/SKILL.md) |
+| 18 | ✓ | [`skills/variant-ux/SKILL.md`](skills/variant-ux/SKILL.md) |
 
 ---
 

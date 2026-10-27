@@ -1,7 +1,7 @@
 <!--
 AI-RULEZ :: GENERATED FILE — DO NOT EDIT
-Content-Hash: blake3:b9281b07af57a10b362019da24d8545036e83015038e2f5902bfe167f165ecec
-Source-Hash: blake3:7d89c85db34d7924976a1442b62b8207fc6312bfcd69b4688f3c7887b887018b
+Content-Hash: blake3:70bcb43e649e885bb822d41efb7221b365fd6f1870d1e6a5bb4ab3ec10be6acc
+Source-Hash: blake3:934f7e3903a85762c6a94f533fc47d534e94d3274b6a2cd147fa8bda13a6b03a
 Schema-Version: v1
 -->
 
@@ -11,11 +11,13 @@ Comprehensive command-line interface for the Xberg document intelligence library
 
 ## Installation
 
+The pinned command below follows this source release (1.4.0); use it once that release is published.
+
 ```bash
 brew install xberg-io/tap/xberg
 # or run without a persistent install (self-installs the binary):
 npx @xberg-io/xberg-cli --help
-uvx --from xberg-cli xberg --help
+uvx --from xberg-cli==1.4.0 xberg --help
 ```
 
 Or download a pre-built binary from the [latest GitHub Release](https://github.com/xberg-io/xberg/releases/latest), or build from source:

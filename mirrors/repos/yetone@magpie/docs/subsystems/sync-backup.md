@@ -13,7 +13,10 @@ clone a working tree or synchronize arbitrary files.
   magpie's settings. Secrets are local, never in the status response.
 - The [`remote`](../../internal/davsync/dav.go) interface reads a version and
   conditionally replaces it. WebDAV and S3 use ETags; GitHub uses the file's
-  blob SHA. [`github.go`](../../internal/davsync/github.go)
+  blob SHA. S3's conditions (`If-Match`, `If-None-Match`) go outside the
+  SigV4 signature ([`unsigned`](../../internal/davsync/s3.go)): a server that
+  reads one back otherwise than it arrived refused the signed request with
+  403 SignatureDoesNotMatch once a sync had an ETag to ask with. [`github.go`](../../internal/davsync/github.go)
   interprets `github://owner/repo[/prefix]`, with `Config.Branch` selecting a
   branch or using the repository's default.
 - [`backup.go`](../../internal/backup/backup.go) owns bundle contents and

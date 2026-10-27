@@ -49,6 +49,6 @@ Seiten mit wenig Text können Scans oder reine Abbildungen sein. Leerer Text und
 
 ## Lösungen schützen
 
-Im Übemodus keine Endantworten ungefragt zeigen. Such-/Leseausgaben verbergen erkannte Lösungsbereiche; Arbeitsfassungen von erkannten Misch-/Lösungsseiten bleiben gesperrt. `--mit-antworten` nur für gewünschte Lösungen oder eine ausdrücklich beauftragte interne Lösungsprüfung verwenden. Die Erkennung ist heuristisch: Rohtexte, OCR, Arbeitsfassungen und ganze Seitenbilder können unmarkierte Lösungen enthalten. Bei unklarer Trennung gezielt prüfen und keine ungefilterten Lösungsbilder ausgeben.
+Im Übemodus keine Endantworten ungefragt zeigen. Such-/Leseausgaben verbergen erkannte Lösungsbereiche; Arbeitsfassungen von erkannten Misch-/Lösungsseiten bleiben gesperrt. `seiten_ausgeblendet` in der Suchausgabe zählt dabei nicht durchsuchte Seiten: Ohne Treffer und mit Wert über 0 kein „nicht enthalten“ behaupten. Lösungseinträge auf Inhaltsverzeichnisseiten gelten nicht als Lösungsbeginn. `--mit-antworten` nur für gewünschte Lösungen oder eine ausdrücklich beauftragte interne Lösungsprüfung verwenden. Die Erkennung ist heuristisch: Rohtexte, OCR, Arbeitsfassungen und ganze Seitenbilder können unmarkierte Lösungen enthalten. Bei unklarer Trennung gezielt prüfen und keine ungefilterten Lösungsbilder ausgeben.
 
-Ausführliche Beispiele und Agent-Prüfaufträge: [gezielte-nutzung.md](references/gezielte-nutzung.md). Projektzuordnung: [beispiel-formelsammlung.md](references/beispiel-formelsammlung.md).
+Ausführliche Beispiele und Agent-Prüfaufträge: [gezielte-nutzung.md](references/gezielte-nutzung.md).

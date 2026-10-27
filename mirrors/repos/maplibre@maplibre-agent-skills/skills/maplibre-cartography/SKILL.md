@@ -1,7 +1,8 @@
 ---
 name: maplibre-cartography
 description: Cartographic principles for MapLibre GL JS — label and symbol legibility on imagery vs. vector basemaps, figure-ground for point icons, styling vector roads over aerial imagery, visual hierarchy, layer ordering for data injection, and accessibility. Use when styling a map, choosing text or symbol colors, making markers or roads readable on satellite/aerial imagery, or ordering layers correctly.
-status: verified
+metadata:
+  status: verified
 ---
 
 # MapLibre Cartography
@@ -144,17 +145,17 @@ Hillshade sits directly above raster imagery and below all vector layers, with s
 
 MapLibre styles are rendered in the browser as a WebGL canvas. Accessibility considerations:
 
-- **Text contrast:** WCAG 2.1 AA requires 4.5:1 for normal text, 3:1 for large.[9] White text on a `rgba(0,0,0,0.75)` halo satisfies this for most backgrounds — check the **combined text+halo color**, not the text alone, with a tool like the [WebAIM Contrast Checker](https://webaim.org/resources/contrastchecker/).
+- **Text contrast:** WCAG 2.1 AA requires 4.5:1 for normal text, 3:1 for large ([SC 1.4.3](https://www.w3.org/TR/WCAG21/#contrast-minimum)). White text on a `rgba(0,0,0,0.75)` halo satisfies this for most backgrounds — check the **combined text+halo color**, not the text alone, with a tool like the [WebAIM Contrast Checker](https://webaim.org/resources/contrastchecker/).
 - **Do not rely on color alone:** use shape, size, or pattern in addition to hue.
 - **Minimum label size:** prefer size stops that start at 10px even at low zoom.
-- **Screen readers and the WebGL canvas:** MapLibre's canvas is not inherently accessible to screen readers. For accessible map experiences, provide an accessible alternative such as a data table or a text description of the map contents, and use [maplibre-gl-accessibility](https://github.com/maplibre/maplibre-gl-accessibility) for keyboard navigation and ARIA roles.
+- **Screen readers and the WebGL canvas:** MapLibre's canvas is not inherently accessible to screen readers. For accessible map experiences, provide an accessible alternative such as a data table or a text description of the map contents.
 
 ## Related Skills
 
 - [**maplibre-sprites-icons**](../maplibre-sprites-icons/SKILL.md) — The `sprite` base URL and `{id, url}` array form, self-hosting and building sprites, runtime images with `addImage`, and route shields.
 - [**maplibre-fonts-glyphs**](../maplibre-fonts-glyphs/SKILL.md) — Setting up the `glyphs` URL, self-hosting or generating font PBFs, the GL JS local-font fallback, MapLibre Native's `font-faces`, and non-Latin script support.
 - [**maplibre-tile-sources**](../maplibre-tile-sources/SKILL.md) — Choosing between GeoJSON and tiles for a dataset.
-- [**maplibre-source-wiring**](../maplibre-source-wiring/SKILL.md) — Sprites and source configuration.
+- [**maplibre-source-wiring**](../maplibre-source-wiring/SKILL.md) — Getting a configured source to render: TileJSON, `source-layer`, layer order, and CORS.
 - [**maplibre-pmtiles-patterns**](../maplibre-pmtiles-patterns/SKILL.md) — Serving imagery (raster) and terrain sources from PMTiles files.
 - [**maplibre-terrain-rendering**](../maplibre-terrain-rendering/SKILL.md) — Hillshade, color-relief, contours, and 3D terrain configuration.
 

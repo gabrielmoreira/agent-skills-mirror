@@ -12,6 +12,7 @@ Data Sources:
 
 import csv
 import io
+import math
 import sys
 from typing import Optional
 
@@ -25,6 +26,8 @@ SECTOR_SUMMARY_URL = (
     "https://raw.githubusercontent.com/tradermonty/uptrend-dashboard/main/data/sector_summary.csv"
 )
 
+TIMESERIES_COLUMNS = ("worksheet", "date", "count", "total", "ratio", "ma_10", "slope", "trend")
+SECTOR_SUMMARY_COLUMNS = ("Sector", "Ratio", "10MA", "Trend", "Slope", "Status")
 
 WORKSHEET_TO_DISPLAY = {
     "sec_basicmaterials": "Basic Materials",
@@ -109,12 +112,27 @@ class UptrendDataFetcher:
             print(f"WARNING: Failed to fetch timeseries CSV: {e}", file=sys.stderr)
             return []
 
+        csv_body = _read_csv(response.text, "uptrend_ratio_timeseries.csv")
+        if csv_body is None:
+            self._timeseries_cache = []
+            return []
+        fieldnames, raw_rows = csv_body
+        missing = _missing_columns(fieldnames, TIMESERIES_COLUMNS)
+        if missing:
+            _report_drift("uptrend_ratio_timeseries.csv", f"missing columns [{','.join(missing)}]")
+            self._timeseries_cache = []
+            return []
+
         rows = []
-        reader = csv.DictReader(io.StringIO(response.text))
-        for row in reader:
+        for row in raw_rows:
             parsed = _parse_timeseries_row(row)
             if parsed:
                 rows.append(parsed)
+
+        if not any(_is_usable_ratio(r["ratio"]) for r in rows if r["worksheet"] == "all"):
+            _report_drift("uptrend_ratio_timeseries.csv", "no usable 'all' ratio values")
+            self._timeseries_cache = []
+            return []
 
         self._timeseries_cache = rows
         return rows
@@ -136,9 +154,19 @@ class UptrendDataFetcher:
             print(f"WARNING: Failed to fetch sector summary CSV: {e}", file=sys.stderr)
             return []
 
+        csv_body = _read_csv(response.text, "sector_summary.csv")
+        if csv_body is None:
+            self._sector_summary_cache = []
+            return []
+        fieldnames, raw_rows = csv_body
+        missing = _missing_columns(fieldnames, SECTOR_SUMMARY_COLUMNS)
+        if missing:
+            _report_drift("sector_summary.csv", f"missing columns [{','.join(missing)}]")
+            self._sector_summary_cache = []
+            return []
+
         rows = []
-        reader = csv.DictReader(io.StringIO(response.text))
-        for row in reader:
+        for row in raw_rows:
             parsed = _parse_sector_summary_row(row)
             if parsed:
                 rows.append(parsed)
@@ -186,14 +214,14 @@ def _parse_timeseries_row(row: dict) -> Optional[dict]:
     """Parse a timeseries CSV row, casting numeric fields."""
     try:
         return {
-            "worksheet": row.get("worksheet", "").strip(),
-            "date": row.get("date", "").strip(),
+            "worksheet": _text(row, "worksheet"),
+            "date": _text(row, "date"),
             "count": _safe_int(row.get("count")),
             "total": _safe_int(row.get("total")),
             "ratio": _safe_float(row.get("ratio")),
             "ma_10": _safe_float(row.get("ma_10")),
             "slope": _safe_float(row.get("slope")),
-            "trend": row.get("trend", "").strip(),
+            "trend": _text(row, "trend"),
         }
     except (ValueError, TypeError):
         return None
@@ -203,15 +231,56 @@ def _parse_sector_summary_row(row: dict) -> Optional[dict]:
     """Parse a sector summary CSV row, casting numeric fields."""
     try:
         return {
-            "Sector": row.get("Sector", "").strip(),
+            "Sector": _text(row, "Sector"),
             "Ratio": _safe_float(row.get("Ratio")),
             "10MA": _safe_float(row.get("10MA")),
-            "Trend": row.get("Trend", "").strip(),
+            "Trend": _text(row, "Trend"),
             "Slope": _safe_float(row.get("Slope")),
-            "Status": row.get("Status", "").strip(),
+            "Status": _text(row, "Status"),
         }
     except (ValueError, TypeError):
         return None
+
+
+def _open_reader(text: str) -> csv.DictReader:
+    """Build a DictReader with a BOM-free text and whitespace-stripped header names.
+
+    DictReader row keys come from ``fieldnames``, so stripping them once here keeps
+    the header check and the row lookups consistent.
+    """
+    reader = csv.DictReader(io.StringIO(text.lstrip("\ufeff")))
+    if reader.fieldnames is not None:
+        reader.fieldnames = [(name or "").strip() for name in reader.fieldnames]
+    return reader
+
+
+def _read_csv(text: str, filename: str) -> Optional[tuple[list[str], list[dict]]]:
+    """Parse a whole CSV body; report an unparsable body (NUL, oversized field) once."""
+    try:
+        reader = _open_reader(text)
+        return list(reader.fieldnames or []), list(reader)
+    except csv.Error as exc:
+        _report_drift(filename, f"unparsable CSV ({exc})")
+        return None
+
+
+def _missing_columns(fieldnames, required) -> list[str]:
+    """Return sorted required columns absent from a header normalized by _open_reader."""
+    return sorted(set(required) - set(fieldnames or []))
+
+
+def _text(row: dict, key: str) -> str:
+    """Stripped cell text; a missing key or a short row (restval None) gives ''."""
+    return (row.get(key) or "").strip()
+
+
+def _report_drift(filename: str, detail: str) -> None:
+    print(f"ERROR: {filename} schema drift: {detail}", file=sys.stderr)
+
+
+def _is_usable_ratio(value) -> bool:
+    """True when a parsed ratio is a finite number (None and NaN are unusable)."""
+    return value is not None and math.isfinite(value)
 
 
 def _safe_float(value) -> Optional[float]:

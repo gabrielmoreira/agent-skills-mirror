@@ -2,8 +2,6 @@ MIT License
 
 Copyright (c) 2026 MapLibre contributors
 
-Though this is not intended to be a derivative work, portions of this repository may be adapted from [mapbox-agent-skills](https://github.com/mapbox/mapbox-agent-skills), also under MIT license. Those portions are Copyright (c) Mapbox, Inc.
-
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights

@@ -16,16 +16,20 @@ test doesn't need the other seven re-run. Test 8's raw CSVs:
 
 Test 1 re-run 2026-10-22, three runs each way, after its rubric took over the `/dist/maplibre-gl.js` check from a tripwire the skill's own v5 example matched: with skill 3/3 PASS, baseline 3/3 FAIL. Raw CSVs: [with-skill](latest/maplibre-v6-migration-with-skill-test1_2026-10-22.csv), [baseline](latest/maplibre-v6-migration-baseline-test1_2026-10-22.csv).
 
-| #   | Test                                            | Type         | Baseline (no skill)                                           | With skill                                                            |
-| --- | ----------------------------------------------- | ------------ | ------------------------------------------------------------- | --------------------------------------------------------------------- |
-| 1   | CDN script tag, no bundler (ESM-only)           | Explicit     | FAIL — loads the dead v5 UMD bundle via `<script src>`        | PASS — `<script type="module">` against the `.mjs` build, pinned      |
-| 2   | Convert a Mapbox import (default export gone)   | Implicit     | FAIL — carries the Mapbox default-import shape over unchanged | PASS — named/namespace import, no default import                      |
-| 3   | Write a CommonJS script (require() unsupported) | Anti-pattern | FAIL — presents `require('maplibre-gl')` as working           | PASS — names `ERR_PACKAGE_PATH_NOT_EXPORTED`, uses dynamic `import()` |
-| 4   | Dynamically supply a missing sprite icon        | Explicit     | FAIL — v5 `styleimagemissing` + `addImage()`, no caveat       | PASS — `map.setMissingStyleImageResolver()`, notes v5 pattern is dead |
-| 5   | Read camera state + projection matrix           | Implicit     | FAIL — reads the internal `map.transform` directly            | PASS — public getters, matrix scoped to custom layer render           |
-| 6   | Type-safe handler for the `data` event          | Implicit     | FAIL — imports `MapDataEvent` as a current type (¹)           | PASS — imports `MapSourceDataEvent`/`MapStyleDataEvent`               |
-| 7   | Add a PMTiles vector source (unrelated to v6)   | Negative     | PASS                                                          | PASS (²)                                                              |
-| 8   | Set up MapLibre in a Vite + TypeScript app      | Explicit     | FAIL — "no worker needed"; never calls `setWorkerUrl()`       | PASS — calls `setWorkerUrl()` before `Map`, via Vite's `?worker&url`  |
+The CDN, missing-icon and Vite tests re-run 2026-10-26, three runs each with the skill, after the CDN example moved to a namespace import and the missing-icon example and rubric began requiring `map.addImage()` inside the resolver: 9/9 PASS, and the missing-icon baseline 3/3 FAIL on the v5 handler. Raw CSVs: [with-skill](latest/maplibre-v6-migration-with-skill-tests-1-4-7_2026-10-26.csv), [baseline](latest/maplibre-v6-migration-baseline-test4_2026-10-26.csv).
+
+The PMTiles negative re-run 2026-10-26 with the judge `google:gemini-3.1-flash-lite`, after it gained three `not-icontains` checks and the skill gained an opening rule against padding unrelated answers. With the old opening, all four answers added v6 migration sections ([CSV](latest/maplibre-v6-migration-with-skill-negative-old-opening_2026-10-26.csv)). With the new one: 4/4 PASS with the skill, a fifth run got no grade because the spare Groq key's day ran out, and 3/3 PASS at baseline. These answers were graded again with the final rubric, which lets a bundler setup call `setWorkerUrl()`, as the baseline's own bundler sections need on v6 ([with-skill](latest/maplibre-v6-migration-with-skill-negative_2026-10-26.csv), [baseline](latest/maplibre-v6-migration-baseline-negative_2026-10-26.csv), [graded again](latest/maplibre-v6-migration-negative-graded-again_2026-10-26.csv)). All eight tests also ran once with the new opening; the other seven passed ([CSV](latest/maplibre-v6-migration-with-skill_2026-10-26.csv)).
+
+| #   | Test                                            | Type         | Baseline (no skill)                                           | With skill                                                              |
+| --- | ----------------------------------------------- | ------------ | ------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| 1   | CDN script tag, no bundler (ESM-only)           | Explicit     | FAIL — loads the dead v5 UMD bundle via `<script src>`        | PASS — `<script type="module">` against the `.mjs` build, pinned        |
+| 2   | Convert a Mapbox import (default export gone)   | Implicit     | FAIL — carries the Mapbox default-import shape over unchanged | PASS — named/namespace import, no default import                        |
+| 3   | Write a CommonJS script (require() unsupported) | Anti-pattern | FAIL — presents `require('maplibre-gl')` as working           | PASS — names `ERR_PACKAGE_PATH_NOT_EXPORTED`, uses dynamic `import()`   |
+| 4   | Dynamically supply a missing sprite icon        | Explicit     | FAIL — v5 `styleimagemissing` + `addImage()`, no caveat       | PASS — a resolver that calls `map.addImage()`, notes v5 pattern is dead |
+| 5   | Read camera state + projection matrix           | Implicit     | FAIL — reads the internal `map.transform` directly            | PASS — public getters, matrix scoped to custom layer render             |
+| 6   | Type-safe handler for the `data` event          | Implicit     | FAIL — imports `MapDataEvent` as a current type (¹)           | PASS — imports `MapSourceDataEvent`/`MapStyleDataEvent`                 |
+| 7   | Add a PMTiles vector source (unrelated to v6)   | Negative     | PASS, 3 of 3                                                  | PASS, 4 of 4 (²)                                                        |
+| 8   | Set up MapLibre in a Vite + TypeScript app      | Explicit     | FAIL — "no worker needed"; never calls `setWorkerUrl()`       | PASS — calls `setWorkerUrl()` before `Map`, via Vite's `?worker&url`    |
 
 **Result: baseline 7 FAIL + 1 correct negative; with-skill 8/8 PASS — launch bar cleared.**
 
@@ -67,5 +71,4 @@ official [install guide](https://maplibre.org/maplibre-gl-js/docs/)'s per-bundle
 JS ships" — the same defect, just past the regex. Effectively fail⁵, corrected here;
 the shipped test uses an `llm-rubric` instead.
 
-² Gemini's grader hit `RateLimitExhaustedError` after 4 retries here (the other six
-graded cleanly). The raw completion answers the PMTiles question directly.
+² 2026-10-26, with the new opening; the old opening failed 4 of 4 by adding v6 migration sections.

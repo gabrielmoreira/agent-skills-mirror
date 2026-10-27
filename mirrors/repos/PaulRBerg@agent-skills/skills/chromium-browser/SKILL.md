@@ -13,10 +13,14 @@ description:
 Operate the configured Chrome DevTools MCP against the existing shared browser without disrupting unrelated tabs or
 authenticated state.
 
-This skill owns rendered browser UI interaction, inspection, automation, and verification through shared Chromium. When
-they fit, use search, fetch, APIs, CLIs, or connectors for retrieval. Use host native-app tools for non-browser UI. Do
-not use native-app tools as a fallback around this skill's shared-browser attachment, page-ownership, or privacy rules.
-If the user selects another available browser integration, follow its tool contract without mixing controllers.
+Prefer this skill for rendered web pages in shared Chromium. When they fit, use search, fetch, APIs, CLIs, or connectors
+for retrieval. Use host computer-use/CUA tools for native apps, browser chrome, and browser-internal pages such as
+`chrome://extensions`. Also use native controls for a user-requested browser without a usable browser integration.
+Existing task authorization covers this controller choice without a separate permission request.
+
+Use one controller at a time for each browser. Preserve existing profiles, sessions, and unrelated tabs across
+controllers. Native controls do not relax privacy rules or approval requirements for the action itself. If the user
+selects another available browser integration, follow its tool contract.
 
 ## Environment Contract
 
@@ -34,7 +38,7 @@ If the user selects another available browser integration, follow its tool contr
   configuration as a troubleshooting shortcut.
 
 For released tool behavior, consult the
-[upstream tool reference](https://github.com/ChromeDevTools/chrome-devtools-mcp/blob/chrome-devtools-mcp-v1.11.0/docs/tool-reference.md).
+[upstream tool reference](https://github.com/ChromeDevTools/chrome-devtools-mcp/blob/chrome-devtools-mcp-v1.12.0/docs/tool-reference.md).
 The current session's schemas determine which tools and parameters are available.
 
 ## Reference Routing
@@ -44,6 +48,9 @@ request. Otherwise do not load it. Discover captures through serial API requests
 selected replay when rendered inspection adds evidence.
 
 ## Page Ownership
+
+The numbered steps below apply to MCP pages. With native controls, track task-created tabs through the native UI. Verify
+the requested result, then close only those tabs unless the user asked to leave them open.
 
 1. Call `list_pages` before interacting and preserve the initial pages as pre-existing state.
 2. Prefer `new_page` with `background: true` when a fresh page satisfies the task. Record the exact `pageId` returned by
@@ -66,6 +73,8 @@ selected replay when rendered inspection adds evidence.
 - Prefer `take_snapshot` for structure and automation, `take_screenshot` for visual evidence, and `evaluate_script` for
   information absent from the accessibility tree. If exposed, use `waitForStableDom: false` only for scripts that read
   data without changing page state.
+- When a call returns `A dialog is open`, the open dialog blocks `evaluate_script` and other dialog-sensitive tools on
+  that page. Use `handle_dialog` only on a page that this task owns or depends on, within the task's authority.
 - Prefer `fill_form` for batches of inputs, selects, checkboxes, and radio buttons. For `upload_file`, use the current
   `filePaths` array schema with task-authorized files on the browser host.
 - For CSS cascade questions, use `get_css_styles` with a UID from a fresh snapshot. Paginate with `pageIdx` and
@@ -89,8 +98,10 @@ selected replay when rendered inspection adds evidence.
   root the client negotiated. The Claude Code scratchpad under `/private/tmp` and the `/tmp` directory are not permitted
   roots. A write there returns `Access denied`. On that error, retry once under `<cwd>/.ai/`. Path capability is not
   write authorization.
-- Calls within one MCP server are serialized, even with explicit page routing. Separate agent servers still share
-  browser state. Preserve causal order and page ownership across concurrent work.
+- Within one MCP server, page-scoped calls on different pages can run in parallel. Calls on the same page run in order.
+  Exclusive tools, such as `list_pages`, `new_page`, `select_page`, and `close_page`, wait for running calls and block
+  later calls. Separate agent servers still share browser state. Preserve causal order and page ownership across
+  concurrent work.
 
 ## Human Gates
 
@@ -101,9 +112,10 @@ external approval page is an npm trusted-publisher prompt. Ending the turn at a 
 2. Tell the user the exact page and the action the gate requires.
 3. Allow ten minutes in total unless the user states another response window. Use sequential `wait_for` calls on the
    gated `pageId`, with each `timeout` at most 10000. Match text that appears only after the gate clears. Examples are
-   the post-login heading or the next form label. If no distinctive text exists, use snapshots separated by short,
-   interruptible host waits. Do not queue another browser call behind an outstanding `wait_for`. Canceling a host wait
-   does not prove that its MCP call stopped.
+   the post-login heading or the next form label. Set `visible: true` when the text can exist hidden before the gate
+   clears. If no distinctive text exists, use snapshots separated by short, interruptible host waits. Do not queue
+   another browser call behind an outstanding `wait_for`. Canceling a host wait does not prove that its MCP call
+   stopped.
 4. After a user reply, take a fresh snapshot before waiting again. A cleared gate can leave the form awaiting another
    action. When the gate clears, resume from the same page state. Re-verify the form fields first, because sites clear
    them.
@@ -180,8 +192,9 @@ Use these workflows only when the tools are exposed in the current session.
   Recheck the live version. Call `list_pages` for fresh IDs. Verify that pre-existing pages were restored. Test creation
   and navigation on an owned page before closing it.
 
-- When a requested capability is missing, confirm the current tool inventory and wrapper configuration, then report the
-  boundary. Do not invent a fallback that weakens the configured privacy or concurrency defaults.
+- When a requested capability is missing, confirm the current tool inventory and wrapper configuration. Use native
+  controls for the browser UI cases described above, including an unsupported `chrome://extensions` URL. Otherwise,
+  report the boundary. Do not weaken the configured privacy or concurrency defaults.
 
 Completion requires fresh tool evidence for the requested outcome and confirmation that task-created pages were either
 closed or intentionally left open.

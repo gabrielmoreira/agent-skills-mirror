@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Sae-l/pdf-seitenweise-sichten` — 26 default patterns, 2 followed patterns, 4 file(s) materialized.
+Mirror of `Sae-l/pdf-seitenweise-sichten` — 26 default patterns, 1 followed patterns, 3 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `Sae-l/pdf-seitenweise-sichten` — 26 default patterns, 2 followed pa
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 2 |
-| Files         | 4 |
+| Followed pats | 1 |
+| Files         | 3 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -52,7 +52,6 @@ Mirror of `Sae-l/pdf-seitenweise-sichten` — 26 default patterns, 2 followed pa
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
 - `references/gezielte-nutzung.md`
-- `references/beispiel-formelsammlung.md`
 
 ## File Index
 
@@ -62,8 +61,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`.github/skills/pdf-seitenweise-sichten/SKILL.md`](.github/skills/pdf-seitenweise-sichten/SKILL.md) |
 | 2 | ✓ | [`SKILL.md`](SKILL.md) |
-| 3 | → | [`references/beispiel-formelsammlung.md`](references/beispiel-formelsammlung.md) |
-| 4 | → | [`references/gezielte-nutzung.md`](references/gezielte-nutzung.md) |
+| 3 | → | [`references/gezielte-nutzung.md`](references/gezielte-nutzung.md) |
 
 ---
 

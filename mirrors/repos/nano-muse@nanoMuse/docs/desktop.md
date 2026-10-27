@@ -148,11 +148,14 @@ speaking as nanoMuse through the `nanomuse` preset, with:
   in one list, grouped under the three tiers the phone's Permissions page uses: *Runs
   without asking* (the remote-control switch: every device of the account may run things
   here), *Remembered from the card* (a device allowed with *always* on a remote-control
-  card; the hands in an app, from *Always in <app>* on a permission card), *Runs, then tells
-  you* (nothing of the desktop's lands there today). Each row says what was allowed, for
-  whom or where, when, and has *Revoke*; the empty state says that *always* on a card is
-  what puts a row here. The Computer use page and the profile drawer keep their own shorter
-  lists; this one is the complete one. The host answers `GET /nanomuse/cloud/grants` with
+  card; the hands in an app, from *Always in <app>*, *Always in this chat* or *Always in
+  this task* on a permission card), *Runs, then tells you* (nothing of the desktop's lands
+  there today). Each row says what was allowed, for whom or where, when, and has *Revoke*;
+  a grant in one chat says *Only in the chat “…”* and names the scheduled tasks in that
+  chat, which it covers too, and a grant in one task says *Only in the scheduled task “…”*,
+  names its chat, and says so once the task was deleted. The empty state says that *always*
+  on a card is what puts a row here. The Computer use page and the profile drawer keep their
+  own shorter lists, whose rows say the same; this one is the complete one. The host answers `GET /nanomuse/cloud/grants` with
   the list and `POST /grants/revoke {id}` for any row of it.
 - **A real quit protects the work in progress.** Quit (the menu's Quit, Ctrl+Q, the tray's
   Quit, or closing the last window when there is no tray) first asks the Host what is still
@@ -631,8 +634,12 @@ warning in the iOS app fails its build: the helper is nanoMuse code.
   sensible picture (without one Electron's capturer can return a black frame; the runtime
   then falls back to its own capture). Steps that act on your behalf (Enter, a submit, heavy shortcuts, clicks on words
   from the sensitive list) wait for the card in the chat or on the capsule; *Allow once*
-  runs the step, *Always allow in <app>* keeps the hands going in that app until you revoke
-  it under Settings → Permissions. Text outside ASCII is typed through the clipboard
+  runs the step, *Always in this chat* keeps the hands going in that app in this chat only,
+  *Always in this task* (offered in its place while a scheduled task runs) keeps them going
+  in that app only when that task runs, so the task stops asking while the same chat typed
+  by hand still asks, and
+  *Always in <app>* keeps them going in that app in every chat, until you revoke any of them
+  under Settings → Permissions. Text outside ASCII is typed through the clipboard
   (`xclip`/`xsel` are not needed; Electron's clipboard is used) and Ctrl+V; the previous
   clipboard content is put back afterwards.
 - The log is `~/.nanomuse/desktop/desktop.log` (each operator action is a line, `operator:

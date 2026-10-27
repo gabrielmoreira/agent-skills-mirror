@@ -130,3 +130,13 @@ Backfill records are marked `CURRENT_UNIVERSE_BACKFILL_SURVIVORSHIP_BIAS` by def
 - `references/scoring_system.md` — event quality and study priority scoring
 - `references/cohort_mining_rules.md` — overfitting controls and sample-size rules
 - `scripts/run_20pct_study.py` — CLI for scan, enrich, update-outcomes, summarize, and backfill
+
+## Shared FMP client
+
+Live FMP access uses the bundled generated `scripts/fmp_client.py`, loaded only
+when an FMP run starts, so offline modes still work without `requests`. CLI
+key/environment precedence, the API-call budget and successful output shapes are
+preserved. Requests use stable endpoints only; a denied, empty or failed stable
+request does not fall back to retired v3 URLs. The shared client masks raw and
+URL-encoded key echoes, retries malformed JSON once, and retries a 429 at most once,
+after a 60-second wait, before stopping on a repeated rate limit.

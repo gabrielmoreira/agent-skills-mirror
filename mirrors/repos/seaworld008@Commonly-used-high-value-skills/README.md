@@ -5,27 +5,10 @@
 [![简体中文](https://img.shields.io/badge/README-%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87-1677ff)](./README.md)
 [![English](https://img.shields.io/badge/README-English-111111)](./README.en.md)
 [![OpenClaw](https://img.shields.io/badge/OpenClaw-Compatible-00b894)](./openclaw-skills/README.md)
-[![Skills](https://img.shields.io/badge/Skills-294-7c3aed)](./skills/)
+[![Skills](https://img.shields.io/badge/Skills-296-7c3aed)](./skills/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
-面向全球 AI 开发者与 Agent 工作流构建者的高价值 Skills 仓库，覆盖开发工程、DevOps、产品设计、运营、办公自动化、金融投资、AI 平台与安全治理等高频任务场景。当前共 **16 个分类 / 294 个技能**。
-
-
-## v4.3.0 精选技能策展与验证规则升级
-
-截至 2026-10-24，精选更新 Brainstorming、Writing Skills、Neon Postgres 与 Azure Kubernetes，强化上下文续接、静态和行为测试边界、Neon Jev 可选重排序和 AKS 工具发现。保留 294 个技能及 16 个分类，未完成逐文件审阅的上游继续待审。[查看发布说明](docs/releases/v4.3.0.md)。
-
-## v4.1.0 上游契约与跨平台修复
-
-更新工程方法、飞书任务/图表、AKS readiness 和 Neon 检索指导，修复 macOS 离线 HTML 报告更新。Live Panel 保留渲染能力与许可原文，以原创模拟示例替换第三方图示配置。[查看发布说明](docs/releases/v4.1.0.md)。
-
-## v4.0.0 安全加固
-
-已处理 v3.3.0 新增 HTML/Live Panel 实现的 CodeQL 风险，发布链路新增“主分支开放 Code Scanning 告警必须归零”门禁。HTML CLI 由高风险上游捆绑脚本切换为受限离线实现，部分旧功能明确停用。仍保留 294 个 Skills 和 16 个分类。
-
-## v3.3.0 精选增强
-
-Go 三件套、架构重构、HTML 可视化、动态架构面板和 Azure 诊断；升级已有 Agent Browser，完整固定上游来源并遵守授权边界。
+面向全球 AI 开发者与 Agent 工作流构建者的高价值 Skills 仓库，覆盖开发工程、DevOps、产品设计、运营、办公自动化、金融投资、AI 平台与安全治理等高频任务场景。当前共 **16 个分类 / 296 个技能**。
 
 ## 为什么值得收藏
 
@@ -403,10 +386,10 @@ openclaw-skills/                        # 为 OpenClaw 生成的扁平兼容导�
 2. 打开对应技能的 `SKILL.md` 查看触发条件、操作流程和脚本说明。
 3. 若技能下含 `scripts/`、`references/`、`assets/`，优先复用现成内容。
 
-## 技能总览（按分类，16 类 / 294 技能）
+## 技能总览（按分类，16 类 / 296 技能）
 
 <a id="cat-developer-engineering"></a>
-### 1. 开发工程（developer-engineering，52）
+### 1. 开发工程（developer-engineering，53）
 
 - `agent-designer`：设计智能体的职责、工具、记忆、协作架构和评测方法。
 - `api-design-reviewer`：用于评审 API 设计的一致性、可用性、版本策略、错误语义、安全性和开发者体验。
@@ -448,6 +431,7 @@ openclaw-skills/                        # 为 OpenClaw 生成的扁平兼容导�
 - `repomix-safe-mixer`：打包代码前扫描凭据、输出脱敏报告，并在发现风险时阻止打包。
 - `rust-engineer`：用于 Rust 代码开发、所有权和生命周期调试、异步模式选择和系统性能优化。
 - `schema`：数据库模式设计、迁移规划、索引策略和关系建模。
+- `shadcn`：维护 shadcn 组件、注册源和主题，核对项目真实 API，并验证预览差异与交互结果。
 - `skill-tester`：验证技能触发、执行步骤和输出结果是否符合预期。
 - `supabase`：开发和排查 Supabase 数据库、认证、存储及应用集成。
 - `supabase-postgres-best-practices`：用于编写或评审 Supabase/Postgres 的查询、Schema、索引、RLS、连接配置与迁移。
@@ -513,7 +497,7 @@ openclaw-skills/                        # 为 OpenClaw 生成的扁平兼容导�
 - `writing-skills`：编写可复用的技能指导并验证实际触发和执行行为。
 
 <a id="cat-ai-agent-platform"></a>
-### 3. AI 平台与 Agent 开发（ai-agent-platform，14）
+### 3. AI 平台与 Agent 开发（ai-agent-platform，13）
 
 - `agent-hub`：用于管理 Agent 能力中心、技能发现、路由和协作工作流。
 - `arena`：用于构建和运行 Agent 竞技场、评测对战和能力比较流程。
@@ -527,7 +511,6 @@ openclaw-skills/                        # 为 OpenClaw 生成的扁平兼容导�
 - `native-mcp`：用于构建和调试原生 MCP 集成、服务器和工具调用流程。
 - `openai-docs`：用于查阅和应用 OpenAI 官方文档、API 行为和集成指南。
 - `oracle`：人工智能应用设计、评估、检索增强和安全护栏规划。
-- `self-improving-agent`：用于构建具备记忆、反馈吸收和安全自我优化机制的持续改进型 Agent。
 - `sigil`：根据项目代码自动生成贴合仓库约定的技能。
 
 <a id="cat-workflow-automation"></a>
@@ -692,7 +675,7 @@ openclaw-skills/                        # 为 OpenClaw 生成的扁平兼容导�
 - `voice`：用户反馈收集、满意度调研、评论分析和洞察提炼。
 
 <a id="cat-security-reliability"></a>
-### 12. 安全治理与稳定性（security-and-reliability，23）
+### 12. 安全治理与稳定性（security-and-reliability，24）
 
 - `breach`：红队场景、攻击路径、威胁建模和对抗演练设计。
 - `cloak`：隐私工程、敏感信息流、同意管理和数据治理。
@@ -707,6 +690,7 @@ openclaw-skills/                        # 为 OpenClaw 生成的扁平兼容导�
 - `security-audit`：对代码库进行安全审计，聚焦可利用且有真实影响的漏洞，并生成可验证的发现、报告和结构化输出。
 - `security-auditor`：审查应用、接口、基础设施和依赖中的实际安全风险。
 - `security-best-practices`：用于按语言或框架检查安全最佳实践，生成安全审查报告和 secure-by-default 建议。
+- `security-model`：维护供安全审查工具读取的安全模型，核验信任边界、继承、可信版本和抑制规则。
 - `security-ownership-map`：用于分析代码责任分布、敏感模块归属和人员风险。
 - `security-pen-testing`：在授权范围内执行漏洞扫描、渗透测试和修复验证。
 - `security-review`：依据代码证据审查注入、认证、授权和加密漏洞。
@@ -719,12 +703,13 @@ openclaw-skills/                        # 为 OpenClaw 生成的扁平兼容导�
 - `vuls-linux-cve-scanner`：用于通过 Vuls 对 Linux、FreeBSD、容器、WordPress、库和网络设备执行 Agentless。
 
 <a id="cat-multimodal-media"></a>
-### 13. 多模态内容（multimodal-media，10）
+### 13. 多模态内容（multimodal-media，11）
 
 - `clay`：生成和优化面向目标引擎的三维模型及纹理资产。
 - `gpt-image2`：让 Codex 通过本地配置的 gpt-image-2 兼容画图服务生成图片，支持提示词、参考图、比例、清晰度和本地保存。
 - `imagegen`：用于生成、编辑和迭代图像内容与视觉素材。
 - `live-panel`：将系统架构和数据流 JSON 配置渲染为动态面板 HTML 或 MP4。
+- `remotion-video`：制作和修复 Remotion 视频，以帧时间线、抽帧检查和媒体元数据验证交付结果。
 - `screenshot`：用于截图、屏幕捕获、视觉核查和界面证据收集。
 - `sketch`：图像生成代码、提示优化、批量生成和成本估算。
 - `sora`：用于构思、生成和评审 Sora 视频或视频提示词。

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `cyanheads/obsidian-mcp-server` — 26 default patterns, 0 followed patterns, 35 file(s) materialized.
+Mirror of `cyanheads/obsidian-mcp-server` — 26 default patterns, 0 followed patterns, 36 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `cyanheads/obsidian-mcp-server` — 26 default patterns, 0 followed pa
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 35 |
+| Files         | 36 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -65,35 +65,36 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`framework-skills/add-prompt/SKILL.md`](framework-skills/add-prompt/SKILL.md) |
 | 5 | ✓ | [`framework-skills/add-resource/SKILL.md`](framework-skills/add-resource/SKILL.md) |
 | 6 | ✓ | [`framework-skills/add-service/SKILL.md`](framework-skills/add-service/SKILL.md) |
-| 7 | ✓ | [`framework-skills/add-test/SKILL.md`](framework-skills/add-test/SKILL.md) |
-| 8 | ✓ | [`framework-skills/add-tool/SKILL.md`](framework-skills/add-tool/SKILL.md) |
-| 9 | ✓ | [`framework-skills/api-auth/SKILL.md`](framework-skills/api-auth/SKILL.md) |
-| 10 | ✓ | [`framework-skills/api-canvas/SKILL.md`](framework-skills/api-canvas/SKILL.md) |
-| 11 | ✓ | [`framework-skills/api-config/SKILL.md`](framework-skills/api-config/SKILL.md) |
-| 12 | ✓ | [`framework-skills/api-context/SKILL.md`](framework-skills/api-context/SKILL.md) |
-| 13 | ✓ | [`framework-skills/api-errors/SKILL.md`](framework-skills/api-errors/SKILL.md) |
-| 14 | ✓ | [`framework-skills/api-linter/SKILL.md`](framework-skills/api-linter/SKILL.md) |
-| 15 | ✓ | [`framework-skills/api-mirror/SKILL.md`](framework-skills/api-mirror/SKILL.md) |
-| 16 | ✓ | [`framework-skills/api-services/SKILL.md`](framework-skills/api-services/SKILL.md) |
-| 17 | ✓ | [`framework-skills/api-telemetry/SKILL.md`](framework-skills/api-telemetry/SKILL.md) |
-| 18 | ✓ | [`framework-skills/api-testing/SKILL.md`](framework-skills/api-testing/SKILL.md) |
-| 19 | ✓ | [`framework-skills/api-utils/SKILL.md`](framework-skills/api-utils/SKILL.md) |
-| 20 | ✓ | [`framework-skills/api-workers/SKILL.md`](framework-skills/api-workers/SKILL.md) |
-| 21 | ✓ | [`framework-skills/code-simplifier/SKILL.md`](framework-skills/code-simplifier/SKILL.md) |
-| 22 | ✓ | [`framework-skills/design-mcp-server/SKILL.md`](framework-skills/design-mcp-server/SKILL.md) |
-| 23 | ✓ | [`framework-skills/field-test/SKILL.md`](framework-skills/field-test/SKILL.md) |
-| 24 | ✓ | [`framework-skills/git-wrapup/SKILL.md`](framework-skills/git-wrapup/SKILL.md) |
-| 25 | ✓ | [`framework-skills/maintenance/SKILL.md`](framework-skills/maintenance/SKILL.md) |
-| 26 | ✓ | [`framework-skills/orchestrations/SKILL.md`](framework-skills/orchestrations/SKILL.md) |
-| 27 | ✓ | [`framework-skills/polish-docs-meta/SKILL.md`](framework-skills/polish-docs-meta/SKILL.md) |
-| 28 | ✓ | [`framework-skills/release-and-publish/SKILL.md`](framework-skills/release-and-publish/SKILL.md) |
-| 29 | ✓ | [`framework-skills/release-pr-review/SKILL.md`](framework-skills/release-pr-review/SKILL.md) |
-| 30 | ✓ | [`framework-skills/report-issue-framework/SKILL.md`](framework-skills/report-issue-framework/SKILL.md) |
-| 31 | ✓ | [`framework-skills/report-issue-local/SKILL.md`](framework-skills/report-issue-local/SKILL.md) |
-| 32 | ✓ | [`framework-skills/security-pass/SKILL.md`](framework-skills/security-pass/SKILL.md) |
-| 33 | ✓ | [`framework-skills/setup/SKILL.md`](framework-skills/setup/SKILL.md) |
-| 34 | ✓ | [`framework-skills/techniques/SKILL.md`](framework-skills/techniques/SKILL.md) |
-| 35 | ✓ | [`framework-skills/tool-defs-analysis/SKILL.md`](framework-skills/tool-defs-analysis/SKILL.md) |
+| 7 | ✓ | [`framework-skills/add-skill/SKILL.md`](framework-skills/add-skill/SKILL.md) |
+| 8 | ✓ | [`framework-skills/add-test/SKILL.md`](framework-skills/add-test/SKILL.md) |
+| 9 | ✓ | [`framework-skills/add-tool/SKILL.md`](framework-skills/add-tool/SKILL.md) |
+| 10 | ✓ | [`framework-skills/api-auth/SKILL.md`](framework-skills/api-auth/SKILL.md) |
+| 11 | ✓ | [`framework-skills/api-canvas/SKILL.md`](framework-skills/api-canvas/SKILL.md) |
+| 12 | ✓ | [`framework-skills/api-config/SKILL.md`](framework-skills/api-config/SKILL.md) |
+| 13 | ✓ | [`framework-skills/api-context/SKILL.md`](framework-skills/api-context/SKILL.md) |
+| 14 | ✓ | [`framework-skills/api-errors/SKILL.md`](framework-skills/api-errors/SKILL.md) |
+| 15 | ✓ | [`framework-skills/api-linter/SKILL.md`](framework-skills/api-linter/SKILL.md) |
+| 16 | ✓ | [`framework-skills/api-mirror/SKILL.md`](framework-skills/api-mirror/SKILL.md) |
+| 17 | ✓ | [`framework-skills/api-services/SKILL.md`](framework-skills/api-services/SKILL.md) |
+| 18 | ✓ | [`framework-skills/api-telemetry/SKILL.md`](framework-skills/api-telemetry/SKILL.md) |
+| 19 | ✓ | [`framework-skills/api-testing/SKILL.md`](framework-skills/api-testing/SKILL.md) |
+| 20 | ✓ | [`framework-skills/api-utils/SKILL.md`](framework-skills/api-utils/SKILL.md) |
+| 21 | ✓ | [`framework-skills/api-workers/SKILL.md`](framework-skills/api-workers/SKILL.md) |
+| 22 | ✓ | [`framework-skills/code-simplifier/SKILL.md`](framework-skills/code-simplifier/SKILL.md) |
+| 23 | ✓ | [`framework-skills/design-mcp-server/SKILL.md`](framework-skills/design-mcp-server/SKILL.md) |
+| 24 | ✓ | [`framework-skills/field-test/SKILL.md`](framework-skills/field-test/SKILL.md) |
+| 25 | ✓ | [`framework-skills/git-wrapup/SKILL.md`](framework-skills/git-wrapup/SKILL.md) |
+| 26 | ✓ | [`framework-skills/maintenance/SKILL.md`](framework-skills/maintenance/SKILL.md) |
+| 27 | ✓ | [`framework-skills/orchestrations/SKILL.md`](framework-skills/orchestrations/SKILL.md) |
+| 28 | ✓ | [`framework-skills/polish-docs-meta/SKILL.md`](framework-skills/polish-docs-meta/SKILL.md) |
+| 29 | ✓ | [`framework-skills/release-and-publish/SKILL.md`](framework-skills/release-and-publish/SKILL.md) |
+| 30 | ✓ | [`framework-skills/release-pr-review/SKILL.md`](framework-skills/release-pr-review/SKILL.md) |
+| 31 | ✓ | [`framework-skills/report-issue-framework/SKILL.md`](framework-skills/report-issue-framework/SKILL.md) |
+| 32 | ✓ | [`framework-skills/report-issue-local/SKILL.md`](framework-skills/report-issue-local/SKILL.md) |
+| 33 | ✓ | [`framework-skills/security-pass/SKILL.md`](framework-skills/security-pass/SKILL.md) |
+| 34 | ✓ | [`framework-skills/setup/SKILL.md`](framework-skills/setup/SKILL.md) |
+| 35 | ✓ | [`framework-skills/techniques/SKILL.md`](framework-skills/techniques/SKILL.md) |
+| 36 | ✓ | [`framework-skills/tool-defs-analysis/SKILL.md`](framework-skills/tool-defs-analysis/SKILL.md) |
 
 ---
 

@@ -1,6 +1,6 @@
 # Native releases on Blacksmith
 
-The **Mobile Release** GitHub Actions workflow builds Android on Blacksmith Linux and
+The **Mobile release** GitHub Actions workflow builds Android on Blacksmith Linux and
 iOS on Blacksmith Apple Silicon macOS. Expo Prebuild generates native projects; Gradle
 and Xcode compile them; Fastlane signs and optionally uploads them. It does not call
 EAS Build or EAS Submit. EAS Update still delivers compatible OTA updates through the
@@ -91,7 +91,7 @@ Merely naming an environment does not configure these protection rules.
    Update app `version` in
    `apps/mobile/app.config.ts` when needed; iOS requires a new version string after a
    version has been released. CI supplies the build number automatically.
-2. Dispatch **Mobile Release** on `main`, choose `all`, `android`, or `ios`, set
+2. Dispatch **Mobile release** on `main`, choose `all`, `android`, or `ios`, set
    **format=store**, and enable **upload** for production submission. Leave **upload**
    disabled for a build-only signing check. Production requests require successful
    latest main-push CI at the exact source commit before uploading. Approve the
@@ -131,7 +131,7 @@ Apple resources. Renew certificates/profiles before expiry and update Actions se
 
 ## Manual Android APKs
 
-Dispatch **Mobile Release** on `main` with `platform=android`, `format=apk`,
+Dispatch **Mobile release** on `main` with `platform=android`, `format=apk`,
 `abi=arm64-v8a` (or `armeabi-v7a` / `x86_64`), and `upload=false`. One requested
 architecture is built per dispatch. Approve `mobile-signing`, then download the
 `mobile-android-<build-number>` Actions artifact within 14 days. The build uses the

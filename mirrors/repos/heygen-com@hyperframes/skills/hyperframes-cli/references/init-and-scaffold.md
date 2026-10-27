@@ -48,6 +48,7 @@ npx hyperframes capture https://example.com --skip-vision   # skip optional AI c
 npx hyperframes capture https://example.com --max-screenshots 12
 npx hyperframes capture https://example.com --timeout 60000 # page-load timeout in ms
 npx hyperframes capture https://example.com --capture-budget 90000 # post-navigation budget
+HYPERFRAMES_CAPTURE_PROXY=http://127.0.0.1:3128 npx hyperframes capture https://example.com # behind an egress proxy
 ```
 
 Captures a live URL as an editable HyperFrames project: screenshots become layered scenes, assets are downloaded locally, and the result is a normal project you can `lint` / `preview` / `render`. Use this when the user supplies a URL as the starting point for a video.
