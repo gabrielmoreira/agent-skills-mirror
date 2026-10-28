@@ -69,7 +69,7 @@ function buildIndex() {
     if (slugs.has(e.slug)) throw new Error(`duplicate slug ${e.slug}`);
     slugs.add(e.slug);
   }
-  writeFileSync(INDEX, JSON.stringify({ built: new Date().toISOString().slice(0, 10), themes: entries }, null, 1) + '\n');
+  writeFileSync(INDEX, JSON.stringify({ themes: entries }, null, 1) + '\n');
   return entries;
 }
 

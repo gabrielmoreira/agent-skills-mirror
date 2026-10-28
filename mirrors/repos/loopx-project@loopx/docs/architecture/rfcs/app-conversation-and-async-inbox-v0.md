@@ -981,7 +981,33 @@ registered Goal recipients. Conversely, `conversation_bindings.py` can discover
 an original project Session, but `queued_admission.py` admits bound input only
 through its existing human/provider provenance. Discovery does not bridge these
 contracts. Neither a fabricated Goal nor `origin=web` is a legitimate adapter.
-The following is an implementation plan, not a claim of shipped acceptance.
+The following remains the acceptance contract. The source proposal now connects
+the exact `source_session_v1` requester profile to an existing private Codex
+project conversation through these owners. It preserves the original Session,
+native thread and null Goal, and uses a per-Turn response schema on resumed
+threads instead of requiring new dynamic tools. File/SQLite integration uses
+the production source, request, FIFO, revision and return owners with a scripted
+model transport. Packaged browser evidence qualifies the local management
+journey only; legacy requester profiles, other executors, installed provider
+delivery and natural receiver adoption remain unqualified. See the
+[operator and recovery contract](../../reference/original-project-collaboration.md).
+This is proposed behavior, not a claim of shipped acceptance.
+
+Accepted corrections use revision/digest-bound continuations in the same FIFO,
+including after the original conclusion has been read. Queue-write recovery and
+saved-answer recovery reuse that revision without another model call; the first
+Turn and its result remain historical. The panel selects the current revision's
+state rather than presenting an older conclusion as its pending result.
+
+The requester's automatic Goal Turn agenda and explicit Inbox return read share
+the same typed outgoing-address reader. Original project requests retain their
+versioned conversation recipient, not a synthetic Goal/Agent. The agenda follows
+the current revision from waiting for a result to explicit requester consumption;
+reading a conclusion alone does not remove it. Changed requester identity or a
+missing/conflicting original return route leaves incomplete coverage, not an
+empty queue. This read-only source checkpoint neither acknowledges work nor
+dispatches another Turn; full briefs, live adoption and installed-provider
+qualification retain their separate acceptance.
 
 Keep one typed recipient identity across discovery, grants, request publication,
 receiver read/assessment and return. Extend the existing collaboration owner with

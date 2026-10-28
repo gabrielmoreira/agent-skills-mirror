@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `mlflow/mlflow` — 26 default patterns, 1 followed patterns, 27 file(s) materialized.
+Mirror of `mlflow/mlflow` — 26 default patterns, 1 followed patterns, 28 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `mlflow/mlflow` — 26 default patterns, 1 followed patterns, 27 file(
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 27 |
+| Files         | 28 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,31 +61,32 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`.claude/skills/analyze-ci/SKILL.md`](.claude/skills/analyze-ci/SKILL.md) |
 | 2 | ✓ | [`.claude/skills/github-actions-style/SKILL.md`](.claude/skills/github-actions-style/SKILL.md) |
-| 3 | ✓ | [`.claude/skills/pr-review/SKILL.md`](.claude/skills/pr-review/SKILL.md) |
-| 4 | ✓ | [`.claude/skills/python-style/SKILL.md`](.claude/skills/python-style/SKILL.md) |
-| 5 | ✓ | [`.claude/skills/triage/bug/output.md`](.claude/skills/triage/bug/output.md) |
-| 6 | ✓ | [`.claude/skills/triage/feature_request/output.md`](.claude/skills/triage/feature_request/output.md) |
-| 7 | ✓ | [`.claude/skills/triage/output.md`](.claude/skills/triage/output.md) |
-| 8 | ✓ | [`.claude/skills/triage/runtime.md`](.claude/skills/triage/runtime.md) |
-| 9 | ✓ | [`.claude/skills/triage/SKILL.md`](.claude/skills/triage/SKILL.md) |
-| 10 | ✓ | [`.claude/skills/ui-review/SKILL.md`](.claude/skills/ui-review/SKILL.md) |
-| 11 | ✓ | [`.claude/skills/upload-media/SKILL.md`](.claude/skills/upload-media/SKILL.md) |
-| 12 | ✓ | [`.github/instructions/cloud-agent.instructions.md`](.github/instructions/cloud-agent.instructions.md) |
-| 13 | ✓ | [`.github/instructions/code-review.instructions.md`](.github/instructions/code-review.instructions.md) |
-| 14 | ✓ | [`.github/instructions/github-actions.instructions.md`](.github/instructions/github-actions.instructions.md) |
-| 15 | ✓ | [`.github/instructions/python.instructions.md`](.github/instructions/python.instructions.md) |
-| 16 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 17 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 18 | ✓ | [`libs/typescript/integrations/claude-code/skills/setup/SKILL.md`](libs/typescript/integrations/claude-code/skills/setup/SKILL.md) |
-| 19 | ✓ | [`libs/typescript/integrations/claude-code/skills/status/SKILL.md`](libs/typescript/integrations/claude-code/skills/status/SKILL.md) |
-| 20 | ✓ | [`mlflow/genai/scorers/online/CLAUDE.md`](mlflow/genai/scorers/online/CLAUDE.md) |
-| 21 | ✓ | [`mlflow/server/AGENTS.md`](mlflow/server/AGENTS.md) |
-| 22 | ✓ | [`mlflow/server/jobs/CLAUDE.md`](mlflow/server/jobs/CLAUDE.md) |
-| 23 | ✓ | [`mlflow/server/js/CLAUDE.md`](mlflow/server/js/CLAUDE.md) |
-| 24 | ✓ | [`mlflow/server/js/src/experiment-tracking/pages/experiment-scorers/CLAUDE.md`](mlflow/server/js/src/experiment-tracking/pages/experiment-scorers/CLAUDE.md) |
-| 25 | ✓ | [`mlflow/server/js/src/shared/web-shared/traces-table/CLAUDE.md`](mlflow/server/js/src/shared/web-shared/traces-table/CLAUDE.md) |
-| 26 | ✓ | [`mlflow/server/js/src/shared/web-shared/traces-table/data/CLAUDE.md`](mlflow/server/js/src/shared/web-shared/traces-table/data/CLAUDE.md) |
-| 27 | → | [`.github/pull_request_template.md`](.github/pull_request_template.md) |
+| 3 | ✓ | [`.claude/skills/nightly/SKILL.md`](.claude/skills/nightly/SKILL.md) |
+| 4 | ✓ | [`.claude/skills/pr-review/SKILL.md`](.claude/skills/pr-review/SKILL.md) |
+| 5 | ✓ | [`.claude/skills/python-style/SKILL.md`](.claude/skills/python-style/SKILL.md) |
+| 6 | ✓ | [`.claude/skills/triage/bug/output.md`](.claude/skills/triage/bug/output.md) |
+| 7 | ✓ | [`.claude/skills/triage/feature_request/output.md`](.claude/skills/triage/feature_request/output.md) |
+| 8 | ✓ | [`.claude/skills/triage/output.md`](.claude/skills/triage/output.md) |
+| 9 | ✓ | [`.claude/skills/triage/runtime.md`](.claude/skills/triage/runtime.md) |
+| 10 | ✓ | [`.claude/skills/triage/SKILL.md`](.claude/skills/triage/SKILL.md) |
+| 11 | ✓ | [`.claude/skills/ui-review/SKILL.md`](.claude/skills/ui-review/SKILL.md) |
+| 12 | ✓ | [`.claude/skills/upload-media/SKILL.md`](.claude/skills/upload-media/SKILL.md) |
+| 13 | ✓ | [`.github/instructions/cloud-agent.instructions.md`](.github/instructions/cloud-agent.instructions.md) |
+| 14 | ✓ | [`.github/instructions/code-review.instructions.md`](.github/instructions/code-review.instructions.md) |
+| 15 | ✓ | [`.github/instructions/github-actions.instructions.md`](.github/instructions/github-actions.instructions.md) |
+| 16 | ✓ | [`.github/instructions/python.instructions.md`](.github/instructions/python.instructions.md) |
+| 17 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 18 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 19 | ✓ | [`libs/typescript/integrations/claude-code/skills/setup/SKILL.md`](libs/typescript/integrations/claude-code/skills/setup/SKILL.md) |
+| 20 | ✓ | [`libs/typescript/integrations/claude-code/skills/status/SKILL.md`](libs/typescript/integrations/claude-code/skills/status/SKILL.md) |
+| 21 | ✓ | [`mlflow/genai/scorers/online/CLAUDE.md`](mlflow/genai/scorers/online/CLAUDE.md) |
+| 22 | ✓ | [`mlflow/server/AGENTS.md`](mlflow/server/AGENTS.md) |
+| 23 | ✓ | [`mlflow/server/jobs/CLAUDE.md`](mlflow/server/jobs/CLAUDE.md) |
+| 24 | ✓ | [`mlflow/server/js/CLAUDE.md`](mlflow/server/js/CLAUDE.md) |
+| 25 | ✓ | [`mlflow/server/js/src/experiment-tracking/pages/experiment-scorers/CLAUDE.md`](mlflow/server/js/src/experiment-tracking/pages/experiment-scorers/CLAUDE.md) |
+| 26 | ✓ | [`mlflow/server/js/src/shared/web-shared/traces-table/CLAUDE.md`](mlflow/server/js/src/shared/web-shared/traces-table/CLAUDE.md) |
+| 27 | ✓ | [`mlflow/server/js/src/shared/web-shared/traces-table/data/CLAUDE.md`](mlflow/server/js/src/shared/web-shared/traces-table/data/CLAUDE.md) |
+| 28 | → | [`.github/pull_request_template.md`](.github/pull_request_template.md) |
 
 ---
 

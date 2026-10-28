@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `aipoch/open-science` — 26 default patterns, 0 followed patterns, 26 file(s) materialized.
+Mirror of `aipoch/open-science` — 26 default patterns, 0 followed patterns, 27 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `aipoch/open-science` — 26 default patterns, 0 followed patterns, 26
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 26 |
+| Files         | 27 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -67,24 +67,25 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 6 | ✓ | [`resources/skills/compute-env-setup/SKILL.md`](resources/skills/compute-env-setup/SKILL.md) |
 | 7 | ✓ | [`resources/skills/customize/SKILL.md`](resources/skills/customize/SKILL.md) |
 | 8 | ✓ | [`resources/skills/diffdock/SKILL.md`](resources/skills/diffdock/SKILL.md) |
-| 9 | ✓ | [`resources/skills/env-management/SKILL.md`](resources/skills/env-management/SKILL.md) |
-| 10 | ✓ | [`resources/skills/esmfold2/SKILL.md`](resources/skills/esmfold2/SKILL.md) |
-| 11 | ✓ | [`resources/skills/evo2/SKILL.md`](resources/skills/evo2/SKILL.md) |
-| 12 | ✓ | [`resources/skills/fair-esm2/SKILL.md`](resources/skills/fair-esm2/SKILL.md) |
-| 13 | ✓ | [`resources/skills/figure-composer/SKILL.md`](resources/skills/figure-composer/SKILL.md) |
-| 14 | ✓ | [`resources/skills/figure-style/SKILL.md`](resources/skills/figure-style/SKILL.md) |
-| 15 | ✓ | [`resources/skills/indication-dossier/SKILL.md`](resources/skills/indication-dossier/SKILL.md) |
-| 16 | ✓ | [`resources/skills/ligandmpnn/SKILL.md`](resources/skills/ligandmpnn/SKILL.md) |
-| 17 | ✓ | [`resources/skills/literature-review/SKILL.md`](resources/skills/literature-review/SKILL.md) |
-| 18 | ✓ | [`resources/skills/openfold3/SKILL.md`](resources/skills/openfold3/SKILL.md) |
-| 19 | ✓ | [`resources/skills/paper-narrative/SKILL.md`](resources/skills/paper-narrative/SKILL.md) |
-| 20 | ✓ | [`resources/skills/proteinmpnn/SKILL.md`](resources/skills/proteinmpnn/SKILL.md) |
-| 21 | ✓ | [`resources/skills/remote-compute-ssh/SKILL.md`](resources/skills/remote-compute-ssh/SKILL.md) |
-| 22 | ✓ | [`resources/skills/scgpt/SKILL.md`](resources/skills/scgpt/SKILL.md) |
-| 23 | ✓ | [`resources/skills/scvi-tools/SKILL.md`](resources/skills/scvi-tools/SKILL.md) |
-| 24 | ✓ | [`resources/skills/self-awareness/SKILL.md`](resources/skills/self-awareness/SKILL.md) |
-| 25 | ✓ | [`resources/skills/skill-creator/SKILL.md`](resources/skills/skill-creator/SKILL.md) |
-| 26 | ✓ | [`resources/skills/solublempnn/SKILL.md`](resources/skills/solublempnn/SKILL.md) |
+| 9 | ✓ | [`resources/skills/docx-generation/SKILL.md`](resources/skills/docx-generation/SKILL.md) |
+| 10 | ✓ | [`resources/skills/env-management/SKILL.md`](resources/skills/env-management/SKILL.md) |
+| 11 | ✓ | [`resources/skills/esmfold2/SKILL.md`](resources/skills/esmfold2/SKILL.md) |
+| 12 | ✓ | [`resources/skills/evo2/SKILL.md`](resources/skills/evo2/SKILL.md) |
+| 13 | ✓ | [`resources/skills/fair-esm2/SKILL.md`](resources/skills/fair-esm2/SKILL.md) |
+| 14 | ✓ | [`resources/skills/figure-composer/SKILL.md`](resources/skills/figure-composer/SKILL.md) |
+| 15 | ✓ | [`resources/skills/figure-style/SKILL.md`](resources/skills/figure-style/SKILL.md) |
+| 16 | ✓ | [`resources/skills/indication-dossier/SKILL.md`](resources/skills/indication-dossier/SKILL.md) |
+| 17 | ✓ | [`resources/skills/ligandmpnn/SKILL.md`](resources/skills/ligandmpnn/SKILL.md) |
+| 18 | ✓ | [`resources/skills/literature-review/SKILL.md`](resources/skills/literature-review/SKILL.md) |
+| 19 | ✓ | [`resources/skills/openfold3/SKILL.md`](resources/skills/openfold3/SKILL.md) |
+| 20 | ✓ | [`resources/skills/paper-narrative/SKILL.md`](resources/skills/paper-narrative/SKILL.md) |
+| 21 | ✓ | [`resources/skills/proteinmpnn/SKILL.md`](resources/skills/proteinmpnn/SKILL.md) |
+| 22 | ✓ | [`resources/skills/remote-compute-ssh/SKILL.md`](resources/skills/remote-compute-ssh/SKILL.md) |
+| 23 | ✓ | [`resources/skills/scgpt/SKILL.md`](resources/skills/scgpt/SKILL.md) |
+| 24 | ✓ | [`resources/skills/scvi-tools/SKILL.md`](resources/skills/scvi-tools/SKILL.md) |
+| 25 | ✓ | [`resources/skills/self-awareness/SKILL.md`](resources/skills/self-awareness/SKILL.md) |
+| 26 | ✓ | [`resources/skills/skill-creator/SKILL.md`](resources/skills/skill-creator/SKILL.md) |
+| 27 | ✓ | [`resources/skills/solublempnn/SKILL.md`](resources/skills/solublempnn/SKILL.md) |
 
 ---
 

@@ -50,7 +50,7 @@ in the root [AGENTS.md](../../AGENTS.md) CRITICAL RULES; this skill is everythin
   that needs a service prints SKIP and exits 0, and the gate containers have no
   Neo4j, so the live-graph schema checks in
   [recon/tests/test_schema_catalog.py](../../recon/tests/test_schema_catalog.py)
-  SKIP in every CI run. Their hermetic counterparts in
+  SKIP in every gate run. Their hermetic counterparts in
   [recon/tests/test_graph_writes_documented.py](../../recon/tests/test_graph_writes_documented.py)
   do run. Neither sees everything: the code scan cannot see the ~22 labels
   written with `SET n += $props` (the names are built in Python and appear in no
@@ -60,7 +60,7 @@ in the root [AGENTS.md](../../AGENTS.md) CRITICAL RULES; this skill is everythin
   it `@pytest.mark.xfail(strict=True, reason=...)` and say so. Tests must not enshrine bugs.
 - **NEVER put a recon test in the root [tests/](../../tests/) folder.** Root
   `tests/` runs in the **agent** image; recon files there must be listed in
-  `_ROOT_RECON_TESTS` at [redamon.sh:4898](../../redamon.sh#L4898) or they run
+  `_ROOT_RECON_TESTS` in [redamon.sh](../../redamon.sh) or they run
   against the wrong image and fail on imports. New recon tests go in [recon/tests/](../../recon/tests/).
 - **NEVER add a third-party import to a test without checking it is in the section
   image.** Only `pytest`, `pytest-cov`, `pytest-xdist`, `pytest-asyncio`
@@ -137,5 +137,5 @@ its image exists: build it before adding the section to `_TEST_SECTIONS`.
 
 - [docs/readmes/README.TESTING.md](../../docs/readmes/README.TESTING.md) - full testing guide + coverage ratchet
 - [tooling/scripts/pytest_isolated.py](../../tooling/scripts/pytest_isolated.py) - the per-file isolation gate
-- [redamon.sh:4901](../../redamon.sh#L4901) - `_TEST_SECTIONS`, section/image map, shell + webapp hooks
+- [redamon.sh](../../redamon.sh) `_TEST_SECTIONS` - section/image map, shell + webapp hooks
 - Related: root [AGENTS.md](../../AGENTS.md) for the host-pytest / Docker-gate rule

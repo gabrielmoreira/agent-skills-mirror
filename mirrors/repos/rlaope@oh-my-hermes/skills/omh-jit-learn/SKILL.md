@@ -61,7 +61,7 @@ Bad example:
 
 ## Workflow Lane
 
-- Current lane: **Research and company ops** (`product-docs`, `source-finder`, `web-research`, `research`, `model-optimization`, `inference-serving`, `model-finetuning`, `research-brief`, `+26 more`) - research, signals, ops, and briefings.
+- Current lane: **Research and company ops** (`product-docs`, `source-finder`, `web-research`, `research`, `model-optimization`, `inference-serving`, `model-finetuning`, `research-brief`, `+27 more`) - research, signals, ops, and briefings.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
 - Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 
@@ -69,7 +69,7 @@ Bad example:
 
 Use when selecting the highest-leverage immediate learning target for an active blocker before preparing a source-backed Markdown brief for direct application.
 
-    Strong routing signals: `jit-learn`, `learn next`, `learn now`, `blocker-specific learning target`, `highest-leverage learning target`, `immediate learning payoff`, `immediately applicable learning brief`, `source-backed learning brief`, `학습 주제`, `도움 되는 학습 주제`, `당장 적용할 학습 목표`, `책 팟캐스트 크리에이터 강의 학습 브리프`
+    Strong routing signals: `jit-learn`, `learn next`, `learn now`, `blocker-specific learning target`, `highest-leverage learning target`, `immediate learning payoff`, `immediately applicable learning brief`, `source-backed learning brief`, `학습 주제`, `도움 되는 학습 주제`, `당장 적용할 학습 목표`, `책 팟캐스트 크리에이터 강의 학습 브리프`, `объясни с нуля`, `разжуй тему`, `выучи и расскажи`
 
 ## Catalog Metadata
 

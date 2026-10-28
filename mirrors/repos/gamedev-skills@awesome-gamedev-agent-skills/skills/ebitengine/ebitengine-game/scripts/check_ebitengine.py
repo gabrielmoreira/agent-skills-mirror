@@ -4,8 +4,9 @@
 This is a heuristic source scan, not a Go type checker or a quality verdict.
 It recognises named/aliased imports, but not dot imports or variable shadowing;
 it scans every selected file regardless of build constraints. Review warnings.
-Reads Go sources and go.mod only and never modifies them. All heuristic findings
-are warnings: deprecated does not mean broken. Use go build/vet for errors.
+Reads Go sources and go.mod only and never modifies them. Heuristic findings
+are warnings or informational notes: deprecated does not mean broken. Ambiguous
+At calls are notes and never fail --strict. Use go build/vet for errors.
 The deprecation table matches
 Ebitengine v2.10; on an older pinned version some replacements may not exist yet
 (each finding names the version that deprecated the API).
@@ -87,7 +88,7 @@ IN_DRAW = [
 # Checks inside Update and Draw bodies.
 IN_LOOP = [
     (r"\btime\.(Now|Since)\(", "wall-clock time in the game loop; use ticks for simulation, wall time may be intentional for profiling or external deadlines"),
-    (r"\.ReadPixels\(|\.At\(", "possible GPU readback (if this is an ebiten.Image); review repeated reads, screenshots/tests are intentional"),
+    (r"\.ReadPixels\(", "possible GPU readback (if this is an ebiten.Image); review repeated reads, screenshots/tests are intentional"),
 ]
 
 
@@ -204,6 +205,11 @@ def scan_file(path, raw_imports):
                 add("warn", line0 + body.count("\n", 0, m.start()), "in Draw: " + msg)
     for name in ("Update", "Draw"):
         for line0, body in method_bodies(code, name):
+            # At is also a common grid/map method. Without Go type information,
+            # neither its name nor argument count proves an Image readback.
+            for m in re.finditer(r"\.At\s*\(", body):
+                add("note", line0 + body.count("\n", 0, m.start()), "in " + name +
+                    ": At call has an unknown receiver type; only ebiten.Image.At reads GPU pixels, ordinary grid/map lookups are fine")
             for pat, msg in IN_LOOP:
                 for m in re.finditer(pat, body):
                     add("warn", line0 + body.count("\n", 0, m.start()), "in " + name + ": " + msg)
@@ -284,9 +290,12 @@ def main(argv=None):
             findings.append(("warn", p, line, "multiple audio.NewContext call sites; only one context may exist per process. "
                              "Check whether these sites can execute together (build tags and alternative entry points may exclude them)"))
 
-    warnings = []
-    for _, path, line, message in sorted(findings, key=lambda f: (str(f[1]), f[2], f[3])):
-        if "deprecated:" in message or message.startswith("old import:"):
+    warnings, notes = [], []
+    for severity, path, line, message in sorted(findings, key=lambda f: (str(f[1]), f[2], f[3])):
+        if severity == "note":
+            code = "ambiguous-at"
+            fix = "Check the receiver type; avoid repeated Image.At reads in the loop. No action is needed for CPU grid/map lookups."
+        elif "deprecated:" in message or message.startswith("old import:"):
             code = "deprecated-api" if "deprecated:" in message else "old-import"
             fix = "Confirm the imported type and pinned engine version before applying the suggested replacement."
         elif message.startswith("multiple audio.NewContext"):
@@ -295,22 +304,31 @@ def main(argv=None):
         else:
             code = "loop-review"
             fix = "Review the operation in context; keep gameplay/input/audio triggers in Update and reuse expensive resources."
-        warnings.append({"code": code, "file": Path(path).relative_to(root).as_posix(),
-                         "line": line, "message": message, "fix": fix})
+        (notes if severity == "note" else warnings).append(
+            {"code": code, "file": Path(path).relative_to(root).as_posix(),
+             "line": line, "message": message, "fix": fix})
     shown = warnings[:args.max_issues] if args.max_issues else warnings
-    truncated = len(shown) < len(warnings)
+    shown_notes = notes[:max(0, args.max_issues - len(shown))] if args.max_issues else notes
+    omitted = len(warnings) + len(notes) - len(shown) - len(shown_notes)
+    truncated = omitted > 0
     if args.json:
         print(json.dumps({"tool": TOOL, "schema": SCHEMA, "root": root.as_posix(),
                           "files_checked": len(files), "error_count": 0,
                           "warning_count": len(warnings), "errors": [],
-                          "warnings": shown, "truncated": truncated}, indent=2))
+                          "warnings": shown, "note_count": len(notes), "notes": shown_notes,
+                          "truncated": truncated}, indent=2))
     else:
         for issue in shown:
             print(f"WARNING {issue['file']}:{issue['line']}: {issue['message']}")
             print(f"  fix: {issue['fix']}")
+        for issue in shown_notes:
+            print(f"NOTE {issue['file']}:{issue['line']}: {issue['message']}")
+            print(f"  fix: {issue['fix']}")
         if truncated:
-            print(f"... and {len(warnings) - len(shown)} more")
+            print(f"... and {omitted} more")
         print(f"Summary: 0 errors, {len(warnings)} warnings in {len(files)} files checked")
+        if notes:
+            print(f"Notes: {len(notes)} informational findings (do not affect --strict)")
     return 1 if args.strict and warnings else 0
 
 

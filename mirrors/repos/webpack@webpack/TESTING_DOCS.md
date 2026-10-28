@@ -112,13 +112,13 @@ Directories come first, in alphabetical order, then the individual files worth t
 
 - **Purpose**: Holds the runners for specification-conformance suites.
 - **Files**:
-  - `test262.spectest.js` — `yarn test:test262`
+  - `test262.spectest.js` — `yarn test:test262 --parts=3`: defined whole, its ~175k tests overflow Jest's stack, so it always runs in [parts](#splitting-one-file-across-workers), as CI does
   - `test262-parser.spectest.js` — `yarn test:test262-parser`
   - `html5lib.spectest.js` — `yarn test:html5lib`
   - `syntaxEquivalence.spectest.js` — `yarn test:syntax-equivalence`
   - `cssParsing-webpack.spectest.js` — `yarn test:css-parsing`
   - `xmlconf.spectest.js` — `yarn test:xmlconf`
-  - `minify-corpora.spectest.js` — `yarn test:minify-corpora`
+  - `minify-corpora.spectest.js` — `yarn test:minify-corpora`; CI runs it in three [parts](#splitting-one-file-across-workers), each claiming the next 100 sources of a group no other part took, and the last part to finish checks no table entry went unmet
   - `js-fuzz.spectest.js` — `yarn test:js-fuzz`: programs from `test/helpers/jsFuzzProgram.js`, in the sloppy ES5 terser's ufuzz writes, in modern syntax, as modules importing a fixed `dep` and as webpack-shaped bundles, minified under ufuzz's option sets, webpack's and random ones; the parser is held to acorn's tree on each program and output, the printer to the tree it read and to its own output, each output to what its program prints and exports, the default set's source map to its output and source, and the output to what it prints minified again. Needs no submodule; `JS_FUZZ_SEED=<n>` replays one seed, `JS_FUZZ_SEED=random` runs a new one named in the test's title, and `JS_FUZZ_PROGRAMS` sets the programs per seed.
 
 ### `statsCases/`
@@ -195,6 +195,10 @@ During the test run, webpack compiles this project and compares the result with 
 - Unit tests verify individual module functionality.
 - Integration tests ensure multiple components work together.
 
+### Splitting one file across workers
+
+Jest runs each file in one worker, so a long suite in one file leaves the runner's other cores idle. `--parts=<n>` (read by `jest.config.js`) runs every matched file in `n` workers at once, as `n` projects whose coverage merges as usual; global setup and teardown run once. A file splits its own work with `test/helpers/testParts.js`: `isInPart(key)` tells whether this part runs the work named `key`, by a hash of the name, so nothing to measure or store; `claimInPart(key)` gives the work to the first part that asks, so a part that ends early takes more and the parts end together even where costs vary; and `currentPart()` returns `[part, parts]`, e.g. to run a check once in part 1. Without the flag a file is one part and runs everything; a file that doesn't use the helper runs whole in every part, so pass the flag only where it runs files using it — e.g. CI's `yarn cover:spec --parts=3`. CI's `spec` job also runs the CSS, HTML and XML suites, which take a minute together and so run whole in every part.
+
 ### Suites that drive a real browser
 
 `unitCases/ProfilingPlugin.unittest.js`, `specCases/syntaxEquivalence.spectest.js` and
@@ -208,8 +212,10 @@ the lockfile: run `yarn setup:browsers chrome` first, or set
 `CHROME_EXECUTABLE_PATH` to point at another binary.
 
 `syntaxEquivalence.spectest.js` is the one that reads more than one engine:
-`EQUIVALENCE_BROWSER` takes `chrome`, `firefox` or `webkit`, and CI runs all
-three as one matrix. Fetch the browser first — `yarn setup:browsers` (all three,
+`EQUIVALENCE_BROWSER` takes `chrome`, `firefox` or `webkit`, or a list of them
+that gives each part of a [`--parts`](#splitting-one-file-across-workers) run its
+own engine: CI runs `EQUIVALENCE_BROWSER=chrome,firefox,webkit` with
+`--parts=3`, all three at once on one runner. Fetch the browser first — `yarn setup:browsers` (all three,
 or name one; `--with-deps` also installs the system libraries Firefox and WebKit
 need) — which installs into playwright's own cache (`PLAYWRIGHT_BROWSERS_PATH`,
 defaulting to `~/.cache/ms-playwright` on Linux). Firefox and WebKit are
@@ -286,14 +292,14 @@ Upstream test suites webpack runs against but doesn't maintain — upstream's to
 
 Git submodules, all under `test/external/`, checked out on demand: `yarn setup` doesn't fetch them, and each CI job fetches only its own, one commit deep.
 
-- `test/external/test262-cases` — [tc39/test262](https://github.com/tc39/test262); fetched by `test262`, `spec (js)`, `spec (minify-corpora)`
-- `test/external/html5lib-tests` — [html5lib/html5lib-tests](https://github.com/html5lib/html5lib-tests); fetched by `spec (css-html-xml)`
-- `test/external/wpt` — [web-platform-tests/wpt](https://github.com/web-platform-tests/wpt); fetched by `spec (css-html-xml)`, `syntax-equivalence` (browsers)
-- `test/external/css-parsing-tests` — [CourtBouillon/css-parsing-tests](https://github.com/CourtBouillon/css-parsing-tests); fetched by `spec (css-html-xml)`
-- `test/external/xml-conformance-suite` — [lddubeau/xml-conformance-suite](https://github.com/lddubeau/xml-conformance-suite) (the W3C XML Conformance Test Suite); fetched by `spec (css-html-xml)`
-- `test/external/terser` — [terser/terser](https://github.com/terser/terser), pinned to the installed `terser`'s version; fetched by `spec (minify-corpora)`
-- `test/external/swc` — [swc-project/swc](https://github.com/swc-project/swc), read only under `crates/swc_ecma_minifier/tests`; fetched by `spec (minify-corpora)`
-- `test/external/oxc` — [oxc-project/oxc](https://github.com/oxc-project/oxc), pinned to the installed `oxc-minify`'s release and read only under `crates/oxc_minifier/tests`; fetched by `spec (minify-corpora)`
+- `test/external/test262-cases` — [tc39/test262](https://github.com/tc39/test262); fetched by `test262`, `spec`
+- `test/external/html5lib-tests` — [html5lib/html5lib-tests](https://github.com/html5lib/html5lib-tests); fetched by `spec`
+- `test/external/wpt` — [web-platform-tests/wpt](https://github.com/web-platform-tests/wpt); fetched by `spec`, `syntax-equivalence` (browsers)
+- `test/external/css-parsing-tests` — [CourtBouillon/css-parsing-tests](https://github.com/CourtBouillon/css-parsing-tests); fetched by `spec`
+- `test/external/xml-conformance-suite` — [lddubeau/xml-conformance-suite](https://github.com/lddubeau/xml-conformance-suite) (the W3C XML Conformance Test Suite); fetched by `spec`
+- `test/external/terser` — [terser/terser](https://github.com/terser/terser), pinned to the installed `terser`'s version; fetched by `spec`
+- `test/external/swc` — [swc-project/swc](https://github.com/swc-project/swc), read only under `crates/swc_ecma_minifier/tests`; fetched by `spec`
+- `test/external/oxc` — [oxc-project/oxc](https://github.com/oxc-project/oxc), pinned to the installed `oxc-minify`'s release and read only under `crates/oxc_minifier/tests`; fetched by `spec`
 
 ```sh
 git submodule update --init --recursive --depth 1   # check out the commits the repo pins

@@ -29,7 +29,7 @@ When performing these actions, ALWAYS invoke the corresponding skill FIRST:
 
 ## TECH STACK
 
-Python 3.11 · mitmproxy addon + spool-tailing ingest worker. Runs in the
+Python 3.12 · mitmproxy addon + spool-tailing ingest worker. Runs in the
 `redamon-capture-proxy` image (spawned by the orchestrator). Captured traffic is
 spooled and ingested into Postgres for the agent's replay/fuzz tools.
 

@@ -62,7 +62,7 @@ Bad example:
 
 Use when Hermes should help an operator or coding executor understand an unfamiliar repository before planning implementation.
 
-    Strong routing signals: `codebase-onboarding`, `codebase onboarding`, `repo onboarding`, `repository onboarding`, `codebase tour`, `code tour`, `new repo orientation`, `understand this repo`, `how this repo works`, `first task runway`, `개발자 온보딩`, `레포 온보딩`, `코드베이스 온보딩`, `처음 보는 레포`, `레포 구조 설명`
+    Strong routing signals: `codebase-onboarding`, `codebase onboarding`, `repo onboarding`, `repository onboarding`, `codebase tour`, `code tour`, `new repo orientation`, `understand this repo`, `how this repo works`, `first task runway`, `개발자 온보딩`, `레포 온보딩`, `코드베이스 온보딩`, `처음 보는 레포`, `레포 구조 설명`, `разберись в репозитории`, `объясни репозиторий`, `как устроен репозиторий`, `тур по репо`, `изучи кодовую базу`, `карта репозитория`
 
 ## Catalog Metadata
 

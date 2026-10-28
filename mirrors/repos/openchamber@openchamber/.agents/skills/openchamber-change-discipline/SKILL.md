@@ -61,6 +61,17 @@ For persisted data, require a migration only when existing stored data needs con
 
 Do not hide a required architectural migration behind a local heuristic. Do not turn a local fix into a speculative rewrite.
 
+## Answering Review Findings
+
+When a reviewer (a subagent, a review session, a bot) reports on your change, you own the change and the reviewer advises. Review loops grow a change one cheap-looking fix at a time; hold it at the size its goal needs.
+
+- Weigh every finding yourself before acting. A problem the change neither causes nor set out to fix (another path, a rare case, a small cost that was there before) is a nit, whatever label it came with. A regression this change introduces is never a nit, however rare its case.
+- Fix what is wrong in the case the change is for, with the smallest fix. A fix that deletes or narrows code beats a new guard, helper, option, or test the goal does not need.
+- A finding you think is wrong stays unfixed, with evidence: file and line, a test, command output. Decline nits and out-of-scope items in one line each; a real problem outside the change goes to the report as a follow-up.
+- Never agree with a finding just to end the review.
+- A finding still disputed after you and the reviewer have each answered twice goes to the maintainer, with both positions in two or three lines each. Do not argue a third round.
+- After the fixes, compare the diff size with the one before review. If review grew it, cut first.
+
 ## Validation Matrix
 
 | Change | Minimum validation |
@@ -73,6 +84,7 @@ Do not hide a required architectural migration behind a local heuristic. Do not 
 | Added, renamed, or removed `packages/*` workspace | Mirror it in the Dockerfile `deps` stage, which copies those manifests by name, then run `docker build .`: a `COPY` of a missing workspace fails the build, and a workspace another one depends on fails the frozen install when absent. CI does not build the image. |
 | Generated asset | Regeneration check plus consumer build/test |
 | Docs-only or isolated config | Narrow syntax/schema/link validation; do not run unrelated full suites |
+| UI or server behavior a user sees | Run it and look before calling it done: `OPENCHAMBER_HMR_UI_PORT=<port> OPENCHAMBER_HMR_API_PORT=<port> bun run dev` on two free ports (it opens without a password, and once a first start has filled the compile cache, in seconds), then drive the scenario in the browser panel at `http://localhost:<ui-port>`, the UI port you chose, and read the screen. Always `localhost`, never `127.0.0.1`: the desktop app lifts Chromium's connection cap for `127.0.0.1`, and the panel then overruns Vite and resets connections; the mobile UI at `/mobile.html` with the panel at the mobile viewport. Desktop and VS Code render the same shared UI, so their UI changes are checked here too; never build the desktop app for a UI change. Stop the server by its process group, never by a name pattern that would stop someone else's |
 | Platform/runtime behavior | Relevant runtime build or manual/integration check; static checks are insufficient |
 | Desktop update or quit/install sequence | A real update run; read `references/updater-testing.md` first, because a run done the obvious way completes the update and reports success while testing nothing |
 

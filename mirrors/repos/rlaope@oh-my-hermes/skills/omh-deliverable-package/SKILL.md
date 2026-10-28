@@ -1,6 +1,6 @@
 ---
 name: "omh-deliverable-package"
-description: "[omh] Attachment and deliverable status tracking: track PPT, PDF, XLSX, DOCX, HWP, Markdown, and attachments through prepared, generated, QA, approved, and attached states. Use when the user says: deliverable-package, deliverable mode, file attachment, attach file, attachment status, file delivery, file deliverable status, generated file."
+description: "[omh] Attachment and deliverable status tracking: track PPT, PDF, XLSX, DOCX, HWP, Markdown, and attachments through prepared, generated, QA, approved, attached, archived, and published states. Use when the user says: deliverable-package, deliverable mode, file attachment, attach file, attachment status, file delivery, file deliverable status, generated file."
 license: MIT
 author: "oh-my-hermes maintainers"
 metadata:
@@ -53,7 +53,7 @@ Bad example:
 
 ## Workflow Lane
 
-- Current lane: **Materials and visual summaries** (`show-reel`, `design-orchestration`, `apple-design`, `design-quality-gate`, `award-bar-score`, `frontend`, `accessibility-audit`, `visual-qa`, `+7 more`) - web, accessibility, visual QA, files, and packages.
+- Current lane: **Materials and visual summaries** (`show-reel`, `sprite-forge`, `design-orchestration`, `apple-design`, `design-quality-gate`, `award-bar-score`, `frontend`, `accessibility-audit`, `+8 more`) - web, accessibility, visual QA, files, and packages.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
 - Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 
@@ -79,6 +79,10 @@ Quality bar:
 - On Hermes, a rung taken from a bundled document skill is observed only from that skill's result for that exact file, judged by its field, not its exit code: `"rendered": false` or `"recalculated": false` exits 0 yet leaves that rung not observed, blocked on the missing tools it names; other observed evidence for a rung still counts.
 - On Hermes, the bundled skills give these rungs when available: `powerpoint` gives `slide_count` (`pptx_read.py --outline`) and `render_screenshot` (`pptx_render.py` into a fresh directory, its image count matching `slide_count`, since it lists every image already in that directory); `pdf` gives `page_count` (`pdf_read.py --meta`) and `render_preview` (`pdf_page_image.py`); `xlsx` gives `sheet_schema` (`xlsx_read.py --sheets`) and `formula_recalculation` (`xlsx_recalc.py --out <copy>`, since without `--out` it replaces the input and rungs or approvals already recorded were for other bytes, then the cached results read back with `xlsx_read.py --formulas`, where an error value or a formula with no cached value is a finding); `docx` gives `section_structure` and `required_clause_check` (`docx_read.py --structure` and `--text`) but no `page_count` or appearance until a converted PDF is rendered, and `docx_validate.py` checks package health, never rendering. Images that exist are not a render pass until each one has been inspected, and a producer's `"ok": true` is never the QA verdict.
 - A file is `generated` only from the producer's read-back of the written file, `approved` only from the person's answer, and `attached` only from the destination's own read-back, never from a reply that names the file.
+- `archived` only after the archive entry records the content sha256, the version, a poster frame or thumbnail for media, and a catalog row read back from the archive.
+- `published` only from the destination's own read-back - a URL resolving to the same content hash - never from an upload command's exit code.
+- Never pick the final file by modification time: the person's approval names it.
+- One work keeps one stable id, and each revision is a new version under it - never a new id and never an overwrite.
 
 Handoff policy:
 

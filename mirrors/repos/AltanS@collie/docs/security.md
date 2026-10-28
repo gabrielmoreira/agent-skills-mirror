@@ -22,14 +22,18 @@ bin/collie pair
 ```
 
 Pairing is always on, and reads need the pairing token as well as writes. Until a device is
-paired, Collie answers every phone and browser with `403 device not paired`. Run `collie pair`
-first, on the host, before you open Collie on the phone.
+paired, Collie answers every phone and browser with `403 device not paired`. Open Collie on the
+phone first. On an iPhone, add it to the home screen and open it from the icon, because the home
+screen app keeps its own storage, separate from Safari. Then run `collie pair` on the host.
 
-Open Collie on the phone, go to **Settings** → **Paired devices**, and enter the code with a label
-for the device, or scan the QR code printed by the command to open directly to that screen with
-the code already filled in. The phone stores the returned token. Collie keeps only the hash, and
-the token is displayed once. You do not need to restart the process; the running daemon applies
-pairings and revocations on the next request.
+In Collie, go to **Settings** → **System** → **Paired devices**, and enter the code with a label
+for the device. On a desktop, you can instead scan or open the QR code printed by the command,
+which opens that screen in a browser tab with the code already filled in. On a phone, type the
+code in the home screen app, because the camera opens the QR code in a browser tab.
+
+The phone stores the returned token. Collie keeps only the hash, and the token is displayed once.
+You do not need to restart the process; the running daemon applies pairings and revocations on
+the next request.
 
 The two device gates answer different questions, and you can run either, both, or neither:
 
@@ -522,6 +526,11 @@ to host** or runs `collie stt whistle`, and it sends no data about you ([The spe
 
 Walky talky adds no outbound call. A message to another machine rides the crew link and goes
 nowhere else ([Walky talky](#walky-talky)).
+
+Report a problem adds no outbound call. After failed sends the phone can open GitHub's new-issue
+form, filled in, as a link in your own browser. You read the whole text first and submit it yourself
+under your own account. Collie holds no GitHub token and the phone never calls GitHub
+([ADR 0123](../.adr/0123-report-a-problem-three-failed-sends-offer-a-prefilled-issue.md)).
 
 If you set `COLLIE_ACCESS_TEAM`, Collie also fetches that Cloudflare Access team's public keys, at
 start and once an hour. That call is yours to turn on, and it sends nothing about you either.

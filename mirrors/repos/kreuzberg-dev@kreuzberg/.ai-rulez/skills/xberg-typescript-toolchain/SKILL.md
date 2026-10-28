@@ -1,7 +1,7 @@
 ---
 type: Playbook
 title: Xberg Typescript Toolchain
-description: "Xberg TypeScript/JavaScript tooling: poly, pnpm vs npm lockfiles, Vitest, napi-rs, wasm-pack, integration packages. Use for TS/JS package or tooling changes, not Rust-only binding generation."
+description: "Xberg TS/JS tooling: pnpm vs npm lockfiles, Vitest, napi-rs, wasm-pack, integration packages. Use for TS/JS package or tooling changes."
 paths:
   - "crates/xberg-node/**"
   - "crates/xberg-wasm/**"

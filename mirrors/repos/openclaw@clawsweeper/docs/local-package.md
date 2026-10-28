@@ -4,12 +4,13 @@
 - Owner: ClawSweeper local-runtime maintainers
 - Source of truth: `scripts/stage-local-package.mjs`, `src/clawsweeper-local.ts`,
   and `.github/workflows/local-package-qualification.yml`
-- Verified source baseline: `a8ed845bfdad2467c4d73d8b470f4284dce625f0`; CI artifacts identify the tested source and diff
+- Verified source baseline: `118a07468663a22e9cc0e3fd76dfe2f17532eec0`; CI artifacts identify the tested source and diff
 - Update when: the local entrypoint, imports, workers, assets, package format, or qualification matrix changes
 
 The private package candidate contains the full committed-range reviewer. It
-does not contain hosted admission, publication, or service state. Its package
-name and `clawsweeper-review` bin are provisional; nothing is published to npm.
+does not contain hosted admission, publication, or service state. The scoped
+package stays private as `@openclaw/clawsweeper` and exposes the `clawsweeper`
+command. It does not require npm registry publication.
 
 From a development checkout with dependencies installed, build and stage into
 a new directory outside the checkout:
@@ -31,8 +32,8 @@ Install the resulting tarball into a disposable directory to qualify it:
 
 ```sh
 npm install --prefix /tmp/clawsweeper-local-install --ignore-scripts --omit=dev --no-audit --no-fund ./openclaw-clawsweeper-0.3.1.tgz
-/tmp/clawsweeper-local-install/node_modules/.bin/clawsweeper-review --help
-/tmp/clawsweeper-local-install/node_modules/.bin/clawsweeper-review --version
+/tmp/clawsweeper-local-install/node_modules/.bin/clawsweeper --help
+/tmp/clawsweeper-local-install/node_modules/.bin/clawsweeper --version
 ```
 
 Node 24 or newer and Git are required. A real review also needs the configured
@@ -44,7 +45,7 @@ scanner, install target dependencies, or call a review model.
 Run from a clean target repository or pass its path explicitly:
 
 ```sh
-clawsweeper-review review --base origin/main --target-repo owner/repo --target-dir /path/to/target
+clawsweeper review --base origin/main --target-repo owner/repo --target-dir /path/to/target
 ```
 
 That command runs a real model review. `--help` and `--version` do not.
@@ -113,11 +114,31 @@ provider access, native scanner coverage, a published release, or global install
 Keep the original target, reports, and operator authentication separate from the
 disposable install.
 
-## Proposed release rehearsal
+## Release rehearsal and publication
 
-The manual `.github/workflows/release.yml` caller is preparation only. It has
-no publishing mode and cannot create a version tag, npm package, or tap change.
-The existing package and command names remain private and provisional.
+The manual `.github/workflows/release.yml` caller rehearses by default.
+Leave `publish` false to verify release assets without publishing them. It
+does not publish an npm package or change the Homebrew tap. The generated
+package remains private and exposes the same `clawsweeper` command.
+
+Publication is a separate maintainer action after the final source, release
+notes, and assets are approved. Create and verify an SSH-signed annotated
+`v<version>` tag at that source using a key in `.github/release-allowed-signers`,
+then push that tag. Select that exact tag when dispatching the workflow and
+set `publish` true. Publication from a branch or a different version tag
+fails before package qualification. The pinned shared workflow verifies the
+existing tag signature and protected-main source before publishing assets.
+Before creating a draft, uploading each asset, or making the release public,
+it also verifies the tag signer against the current protected default branch's
+`.github/release-allowed-signers`. Removing a signer blocks the next checked
+write, including a publisher-only retry. The policy read and release write
+are not atomic: removal cannot revoke an already-issued write. This protects
+runs selecting this workflow pin, including older tags routed through it;
+runs or retries pinned to older workflow code do not gain the check.
+An already-public release with exactly matching bytes remains a no-write
+comparison, even after signer removal.
+Publisher retries discover an existing draft by its exact tag and preserve its
+release ID and existing asset bytes. Listing failures stop further writes.
 
 Both CI and the caller reuse `.github/workflows/local-package-qualification.yml`.
 Its Linux producer emits one canonical four-file envelope. Linux, Windows, and
@@ -125,7 +146,7 @@ macOS must all consume the producer's exact artifact ID successfully before the
 workflow exposes that ID. A failed or skipped consumer prevents the release job.
 
 The caller pins `openclaw/release-workflows` at
-`9d81ab3d2877f9900ef787e6dbcf4d9af96eb013`. That shared workflow downloads the
+`933d6886e83ec26f29f13b3444638f0d7fd9cde3`. That shared workflow downloads the
 same-run ID into `RELEASE_ASSET_INPUT_DIR`. The dependency-free
 `scripts/release-local-package-envelope.mjs` validates the original four files,
 their hashes and locked resolution, and their source commit, tree, and clean
@@ -142,15 +163,16 @@ integrity; the three consumers provide the package behavior proof.
 
 The caller grants `actions: read`, `checks: read`, `contents: write`, and
 `statuses: read` only to the pinned shared call. Its tag and publication jobs
-declare write capability even in dry-run mode. `dry_run: true`, signed-tag and
-strict-CI options are fixed, and Homebrew handoff is disabled. Qualification
+declare write capability even in dry-run mode. The boolean `publish` input
+defaults to false and controls `dry_run`; signed-tag and strict-CI options
+remain fixed, and Homebrew handoff is disabled. Qualification
 has only `contents: read`; no secrets are inherited or supplied, and the shared
 build strips token environment variables before running the wrapper.
 
-A protected-main rehearsal is still blocked until the release maintainer
-approves dated release notes matching package version `0.3.1`. The current
-`0.3.1 - Unreleased` heading does not satisfy the shared metadata contract.
-Do not dispatch an expected failure or invent release metadata. Public naming,
-signer policy for a future real release, dependency delivery for Homebrew, and
-publication require separate decisions. This caller does not establish those
-outcomes or a full shared-workflow rehearsal.
+Every selected source must contain maintainer-approved dated release notes
+matching its package version; an Unreleased heading does not satisfy the
+shared contract. A successful rehearsal qualifies only that source and its
+actual assets; later source changes need fresh qualification. Rehearsal does
+not establish publication, signer policy, Homebrew dependency delivery, or
+installed provider access, and does not exercise the real signed-tag or
+publisher paths. Those outcomes require their own validation and authorization.

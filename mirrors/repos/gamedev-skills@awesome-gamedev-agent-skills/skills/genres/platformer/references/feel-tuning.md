@@ -136,3 +136,99 @@ The same idea on landing edges (a few px of "ledge grab"/snap) makes platforms f
 - Place the first instance of any lethal hazard where failure is cheap (near a checkpoint,
   no long re-traversal).
 - Keep checkpoint-to-checkpoint segments short early, longer later; respawn must be instant.
+
+## 9. Wall slide and wall jump
+
+Treat wall traversal as part of the existing jump resolver, not a second independent jump
+script. Use fixed physics ticks and latched input edges. The following is engine-neutral
+pseudocode for static, vertical walls with positive Y downward; names are controller state,
+not engine APIs. Bind contact detection to the project's collision system. Distinguish walls
+from floors/ceilings using contact normals, and use contacts from the latest completed physics
+step or an explicit probe. Collision flags may disappear when the player stops pushing.
+
+Remember the last valid wall side (`-1` left, `+1` right) for a short **wall-coyote** window.
+Do not use the remembered contact to apply slide friction after the player has left the wall.
+For a narrow passage with both sides touching, pick one side deterministically, such as the
+side the player presses toward. Clear wall state on respawn, teleport, and scene changes.
+
+| Knob | Starting experiment, not a universal default |
+|------|---------------------------------------------|
+| Wall-coyote window | 0.08–0.12 s |
+| Wall jump height | about 0.8 × ground jump height |
+| Horizontal kick speed | about 1.25 × run speed |
+| Steering lock after kick | 0.10–0.15 s |
+| Slide max fall speed | about 0.2 × normal terminal speed |
+| Refresh air jumps on wall contact | explicit boolean; false preserves limited midair jumps |
+
+Derive upward kick speed from height: `-sqrt(2 * rise_gravity * WALL_JUMP_HEIGHT)`.
+Tune these values in the level's world units. Refreshing air jumps on each wall contact
+enables longer climbing routes; not refreshing them makes the existing air-jump budget matter.
+In this example a wall jump itself does **not** spend an air jump.
+
+```python
+# At each fixed tick, before moving. side is current contact; 0 means no wall.
+# All timers and air_jumps_left persist between ticks; initialize them on spawn.
+coyote_timer = max(0, coyote_timer - dt)
+wall_timer = max(0, wall_timer - dt)
+buffer_timer = max(0, buffer_timer - dt)
+steer_lock = max(0, steer_lock - dt)
+if jump_pressed_this_tick:
+    buffer_timer = JUMP_BUFFER
+if on_floor:
+    coyote_timer = COYOTE_TIME
+    air_jumps_left = MAX_AIR_JUMPS
+    wall_timer = 0
+elif side != 0 and steer_lock == 0:
+    wall_side = side
+    wall_timer = WALL_COYOTE
+    if REFRESH_AIR_JUMPS_ON_WALL:
+        air_jumps_left = MAX_AIR_JUMPS
+
+# Run normal horizontal steering only when steer_lock == 0.
+# After steering, remove only velocity INTO a current wall; retain velocity away.
+if side != 0 and velocity.x * side > 0:
+    velocity.x = 0
+
+jumped = False
+if buffer_timer > 0:
+    if on_floor or coyote_timer > 0:           # ground/coyote wins
+        velocity.y = jump_velocity
+        jumped = True
+    elif wall_timer > 0 and steer_lock == 0:  # then wall, using remembered side
+        velocity.x = -wall_side * WALL_KICK_SPEED
+        velocity.y = -sqrt(2 * rise_gravity * WALL_JUMP_HEIGHT)
+        steer_lock = WALL_STEER_LOCK
+        jumped = True
+    elif air_jumps_left > 0:                  # finally air jump
+        velocity.y = air_jump_velocity
+        air_jumps_left -= 1
+        jumped = True
+if jumped:
+    buffer_timer = 0                          # consume the press exactly once
+    coyote_timer = 0
+    wall_timer = 0
+
+# Apply the existing variable-height/gravity rules once, then cap wall descent.
+# Keep the cap after gravity so gravity does not immediately exceed it.
+if not on_floor and side != 0 and velocity.y > 0 and input_x * side > 0:
+    velocity.y = min(velocity.y, WALL_SLIDE_MAX_FALL)
+# Move/collide once; refresh contacts for the next tick.
+```
+
+The lock prevents normal steering from cancelling the kick on its first frames. It also
+prevents the previous contact from immediately refreshing wall grace. Collision response still
+applies while locked. Landing restores the normal ground/air-jump state; clear stale grounded
+flags through the normal physics update after a jump. If a game forbids repeated jumps from
+the same wall until landing or reaching another wall, track wall identity separately.
+
+Test both left and right walls: ground jump beside a wall; jump one tick after losing wall
+contact; hold toward the wall through a kick; release direction while falling; double jump
+before/after wall contact under both refresh policies; one press with every jump eligible.
+Only one branch may fire per press. A weak kick usually means steering overwrote its X
+velocity; an unexplained launch after leaving a wall often means stored into-wall velocity
+was never removed. A slide while rising or away from a wall means the cap predicate is too broad.
+
+For an example of contact-query semantics, the primary
+[Godot CharacterBody2D reference](https://docs.godotengine.org/en/stable/classes/class_characterbody2d.html)
+documents wall normals and contact flags from the last movement call. Verify equivalent
+semantics against the actual engine/version before translating this pseudocode.

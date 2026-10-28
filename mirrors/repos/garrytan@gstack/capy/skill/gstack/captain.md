@@ -26,6 +26,12 @@ and the Captain's drive) is the `/captain` skill and `docs/captain.md` in the gs
   - a change to a threshold, budget, trial count or test kind;
   - closing someone's contribution without landing it;
   - anything destructive or irreversible.
+- **Observable questions are not the person's to answer.** A question a command, a render or a measurement
+  can settle locally, read-only and for free ("is the new path faster", "does the test endpoint take this
+  payload", "does the test still fail") is settled by the thread: it runs the thing and reports the result.
+  A call that changes state, reaches a live system or spends money is still an ask. Only a product or preference call
+  goes up, with the observation already made. A Captain that receives an observable question sends it
+  back with the check that answers it instead of relaying it.
 - **What a gstack workflow does in Capy.** Launched with `GSTACK_SESSION_KIND=unattended`, a workflow takes
   each recommended option, writes everything else as a pending gate item, and stops. Your job is to carry
   those pending items to the Captain or person in the shape below, then feed the answer back.
@@ -47,9 +53,10 @@ gstack-approvals render                                    # the ## Approvals se
 
 - **Where it lives.** `<state root>/projects/<slug>/approvals/<branch key>.jsonl`, one file per branch,
   because one thread ships one branch. On Capy the state root is thrown away with the machine, so every write
-  is also mirrored to the private project-user Drive folder (`<drive>/approvals/<slug>/`), or to
-  `GSTACK_APPROVALS_DIR`. `GSTACK_APPROVALS_MIRROR=0` turns the mirror off. Reads merge both copies, and
-  `gstack-approvals sync` restores the local copy.
+  is also mirrored to `GSTACK_APPROVALS_DIR`, else to the `approvals/` directory in the mounted Captain
+  drive (`<captain drive>/approvals/<slug>/`, readable by the whole crew), else to the private project-user
+  Drive folder. `gstack-approvals path` prints the chosen mirror and `READ_ALSO:` roots, which reads still
+  merge. `GSTACK_APPROVALS_MIRROR=0` turns the mirror off, and `gstack-approvals sync` restores the local copy.
 - **The durable copies** are the `## Approvals` sections in the thread's report and in the PR body. Paste
   `render` output into them; never type rows by hand.
 - **Secret-free.** Every field passes gstack's secret scanner before it is written. A hit refuses the row
@@ -62,6 +69,13 @@ gstack-approvals render                                    # the ## Approvals se
   "Record unavailable" instead (`APPROVAL_RECORD_UNAVAILABLE`), because a lost record is not an empty one.
 
 ## 3. Plan approvals: the shape
+
+Under a Captain, a thread that builds something plans before any product code. A `/autoplan` run on its
+brief, sized to the work, is its first act, the gate goes up in the shape below, and the build starts only
+when the answer is in the run and it reports `APPROVED`. The short form every Capy thread follows, with the
+exempt work (read-only threads, flaky-pass repairs, slot stamps, CHANGELOG resolves, cap re-pins under a
+grant), is the "Plan, approve, ship" section of SKILL.md in this folder; the rule in full is `docs/captain.md`,
+Plan before build.
 
 Every plan or gate you bring for approval has these parts, in this order, written so someone outside the
 project can follow it:
@@ -88,7 +102,8 @@ gstack-owner-brief render --captain --out <run dir>
 
 It prints a header line ("Decision needed … Reply **rec** …"), the four plan sections (each capped, with a
 pointer to the plan for the rest), and "What we need from you", which lists every choice `rec` takes, in
-words, and closes with the "do it" reply. The last line, "For the relaying agent", carries the run, `gate_rev`, `rec_hash` and the exact
+words, and closes with the "do it" reply, then a `### Cost` section (spent so far, worst case, and the estimate for
+the phases `rec` can reopen). The last line, "For the relaying agent", carries the run, `gate_rev`, `rec_hash` and the exact
 `gstack-autoplan answer` command. Relay everything above that line. When the reply comes back:
 
 ```bash
@@ -118,9 +133,12 @@ Every PR you send READY on, and the READY report itself, has:
    With no browser that line says `unavailable`: screenshot the printed `shot.html` with your own browser.
    Upload each PNG with Capy's PR asset tool (`tools.pr.uploadAsset`), only for public repositories, and embed
    the URL it returns with the caption as alt text.
-2. **Why.** The cause and the effect the user will see, in two or three sentences.
-3. **Approvals.** `gstack-approvals render`.
-4. **Evidence.** Checks green at the head, gate or train results, flaky cases.
+2. **Why.** The problem in the person's words first, then the cause and the effect the user will see,
+   in two or three sentences.
+3. **Blast radius.** What else the change touches and the one fact that makes that safe, with the
+   evidence-ladder rung that fact reached.
+4. **Approvals.** `gstack-approvals render`.
+5. **Evidence.** Checks green at the head, gate or train results, flaky cases.
 
 The READY report attaches the key image (Capy message attachment), so the Captain can show it inline.
 /ship does all of this when `GSTACK_CAPY=1` (its `capy-pr` section). Outside Capy, the PR body is unchanged.

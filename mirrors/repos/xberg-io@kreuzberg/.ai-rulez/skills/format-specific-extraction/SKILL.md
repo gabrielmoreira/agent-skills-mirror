@@ -1,7 +1,7 @@
 ---
 type: Playbook
 title: Format Specific Extraction
-description: "Per-format extraction workflows in Xberg (Office XML, PDF, archives and others): parsers, security budgets, metadata helpers. Use when changing or adding a format extractor."
+description: "Per-format Xberg extractors (Office XML, PDF, archives, ...): parsers, security budgets, metadata helpers. Use when changing or adding one."
 paths:
   - "crates/xberg/src/extractors/**"
   - "crates/xberg/src/extraction/**"
@@ -68,7 +68,7 @@ pretty-print to text. See `extractors/structured.rs`.
 
 Parse headers → extract body (text/html) → process attachments. Message-in-message nesting is
 bounded by the `SecurityBudget`'s `SecurityLimits`-derived `DepthValidator`, the same counter
-every other format uses. See `extraction/email.rs`, `extractors/email.rs`, `extractors/pst.rs`.
+every other format uses. See `extraction/email/`, `extractors/email.rs`, `extractors/pst.rs`.
 
 ## Common Helpers
 

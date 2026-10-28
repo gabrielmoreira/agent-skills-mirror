@@ -1,7 +1,7 @@
 ---
 type: Playbook
 title: Extraction Pipeline Patterns
-description: "Xberg core extraction orchestration: cache semantics, extractor fallback, post-processing, concurrency defaults, format-wide quality invariants. Use for pipeline changes or diagnosis, not a single parser's syntax."
+description: "Xberg core extraction orchestration: cache, extractor fallback, post-processing, concurrency, quality invariants. Use for pipeline changes."
 paths:
   - "crates/xberg/src/core/**"
   - "crates/xberg/src/extraction/**"
@@ -17,7 +17,7 @@ x-ai-rulez:
 
 # Extraction Pipeline Patterns
 
-**Format detection → extractor routing → post-processing, across 106 formats / 140 file extensions**
+**Format detection → extractor routing → post-processing over the `FORMATS` registry**
 
 The full-registry counts are verified against published claims by
 `scripts/sync_supported_counts.py verify`. Runtime `SUPPORTED_FORMAT_COUNT` and
@@ -54,7 +54,7 @@ The full-registry counts are verified against published claims by
 - PDF: text, encrypted-document, and OCR-fallback handling under `extractors/pdf/`.
 - Images: PNG, JPEG, TIFF, WebP, HEIC, SVG, and QR under `extractors/` and `extraction/`.
 - Web: HTML, XHTML, XML, and MDX under `extractors/` and `extraction/html/`.
-- Email: EML, MSG, and PST under `extractors/` and `extraction/email.rs`.
+- Email: EML, MSG, and PST under `extractors/` and `extraction/email/`.
 - Archives: ZIP, TAR, GZIP, and 7z under `extractors/archive.rs` and `extraction/archive/`.
 - Structured: JSON, GeoJSON, YAML, TOML, CSV, DBF, SQLite, and GeoPackage under `extractors/`.
 
@@ -112,17 +112,12 @@ All features live in `crates/xberg/Cargo.toml`; there is no `FEATURE_MATRIX.md`.
 
 Bindings are separate crates, not features of `crates/xberg`. The one mutually-exclusive pair
 is `ort-bundled` / `ort-dynamic`. WASM excludes ORT-backed `embeddings`, but **does** carry
-`ocr-wasm`, `keywords` and `static-embeddings`. Full detail in `feature-flag-policy`.
+`ocr-wasm`, `keywords` and `static-embeddings`. Full detail in `feature-flag-conventions`.
 
 ## Critical Rules
 
-1. **Detect before routing** — never dispatch on a caller-supplied extension alone.
-2. **Post-processing is mandatory** — all results flow through `run_pipeline` / `run_pipeline_sync`.
-3. **Selection is by priority, not registration order** — the registry returns the highest `priority()` for a MIME
-   type.
-4. **Do not claim streaming** — current file extraction reads the whole input into memory.
-5. **Apply `SecurityLimits` to user content** — archive size, compression ratio, file count, nesting depth.
-6. **Fail gracefully** — malformed input returns partial content plus error context, never a panic.
+- **Detect before routing** — never dispatch on a caller-supplied extension alone.
+- **Apply `SecurityLimits` to user content** — archive size, compression ratio, file count, nesting depth.
 
 ## Verification
 

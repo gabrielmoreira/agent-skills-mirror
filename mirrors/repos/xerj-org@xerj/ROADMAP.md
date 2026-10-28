@@ -2,7 +2,32 @@
 
 This roadmap tracks capabilities that are **planned but not yet fully implemented**, so the project's public claims stay honest about what ships today versus what is coming. Status is verified against the actual code and by real API requests to the release binary, not aspirational.
 
-Last reviewed: 2026-10-24 (against `v1.0.0-rc.99` and `main`). Statuses trace to issues, merged PRs, the CHANGELOG, and the conformance suite; items carried forward from the 2026-07-12 review without fresh live verification are marked as such. This review line is machine-checked: `docs_capability_lists` fails the build if a release is cut without re-reviewing this file (issue #298 — closed as abandoned 2026-09-29; the machine check, not the issue, enforces the cadence now). This pass is the rc.99 release-cut roll:
+Last reviewed: 2026-10-26 (against `v1.0.0-rc.100` and `main`). Statuses trace to issues, merged PRs, the CHANGELOG, and the conformance suite; items carried forward from the 2026-07-12 review without fresh live verification are marked as such. This review line is machine-checked: `docs_capability_lists` fails the build if a release is cut without re-reviewing this file (issue #298 — closed as abandoned 2026-09-29; the machine check, not the issue, enforces the cadence now). This pass is the rc.100 release-cut roll:
+the open-defects shortlist was re-verified against the live tracker at
+cut time — **two open**: #1122 and #1170, and none closed inside the window.
+rc.100 is a performance release. #1122 moves forward: autoindex plans a
+large folder in bounded memory and caps long dataset names (PR
+[#2417](https://github.com/xerj-org/xerj/pull/2417)), and a `semantic_text`
+field with the built-in lexical embedder keeps its vectors out of the stored
+`_source` (PR [#2471](https://github.com/xerj-org/xerj/pull/2471)); the
+merge and search memory work under #2427 (PRs
+[#2441](https://github.com/xerj-org/xerj/pull/2441),
+[#2452](https://github.com/xerj-org/xerj/pull/2452),
+[#2462](https://github.com/xerj-org/xerj/pull/2462),
+[#2470](https://github.com/xerj-org/xerj/pull/2470),
+[#2484](https://github.com/xerj-org/xerj/pull/2484) and
+[#2485](https://github.com/xerj-org/xerj/pull/2485)) continues, and both
+issues stay open. #1170 moves forward: native `/v1` document writes run on
+the shard primary (PR [#2380](https://github.com/xerj-org/xerj/pull/2380))
+and `_delete_by_query` runs on every shard primary (PR
+[#2377](https://github.com/xerj-org/xerj/pull/2377)); replica promotion,
+`wait_for_active_shards` and moving copies when membership changes stay
+open. The window is 63 merged pull requests on `main` since the rc.99 cut
+(the `v1.0.0-rc.99` tag is a backport commit, merged into the release
+branch so the gate counts from it); the CHANGELOG cites or exempts every
+one. Every release candidate now passes the release performance gate (PR
+[#2432](https://github.com/xerj-org/xerj/pull/2432)).
+The rc.99 cut's record stands as written:
 the open-defects shortlist was re-verified against the live tracker at
 cut time — **two open**: #1122 and #1170. Three closed inside the window:
 #1110 (an unreadable corpus source fails the build instead of pruning, PR
@@ -415,7 +440,13 @@ autoindex threads and `POST /{index}/_update/{id}` do the same (PR
 [#2322](https://github.com/xerj-org/xerj/pull/2322)), and a host under
 16 GiB takes a cap of half its RAM with a smaller merge batch (PR
 [#2340](https://github.com/xerj-org/xerj/pull/2340)). The memory-ceiling
-class and the WSL2 VM death stay open.
+class and the WSL2 VM death stay open. In the rc.100 window: bounded
+autoindex planning memory (PR [#2417](https://github.com/xerj-org/xerj/pull/2417)),
+`semantic_text` vectors kept out of stored `_source` (PR
+[#2471](https://github.com/xerj-org/xerj/pull/2471)), and merges held
+under a merge-pool ceiling below a search read reserve (PRs
+[#2484](https://github.com/xerj-org/xerj/pull/2484) and
+[#2485](https://github.com/xerj-org/xerj/pull/2485)); the issue stays open.
 [#1170](https://github.com/xerj-org/xerj/issues/1170) (cluster
 replication). Partial in the rc.99 window: index metadata through the
 Raft log (PR [#2257](https://github.com/xerj-org/xerj/pull/2257)),
@@ -437,6 +468,12 @@ documents copied onto a replica that is behind (PR
 [#2347](https://github.com/xerj-org/xerj/pull/2347)). Replica promotion,
 `wait_for_active_shards`, native `/v1` ingest, `_delete_by_query`, and
 moving copies when membership changes stay open.
+In the rc.100 window: native `/v1` document writes on the shard primary
+(PR [#2380](https://github.com/xerj-org/xerj/pull/2380)) and
+`_delete_by_query` on every shard primary (PR
+[#2377](https://github.com/xerj-org/xerj/pull/2377)). Replica promotion,
+`wait_for_active_shards`, and moving copies when membership changes stay
+open.
 **Closed inside the rc.99 window and recorded in the CHANGELOG, not
 carried here:** #1110 (an unreadable corpus source fails the build
 instead of pruning, PR

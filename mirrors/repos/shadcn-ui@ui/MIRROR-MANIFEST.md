@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `shadcn-ui/ui` — 26 default patterns, 0 followed patterns, 36 file(s) materialized.
+Mirror of `shadcn-ui/ui` — 26 default patterns, 0 followed patterns, 38 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `shadcn-ui/ui` — 26 default patterns, 0 followed patterns, 36 file(s
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 36 |
+| Files         | 38 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,42 +59,44 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`apps/v4/public/llms.txt`](apps/v4/public/llms.txt) |
-| 2 | ✓ | [`skills/migrate-radix-to-base/class-mapping.md`](skills/migrate-radix-to-base/class-mapping.md) |
-| 3 | ✓ | [`skills/migrate-radix-to-base/consumer-props.md`](skills/migrate-radix-to-base/consumer-props.md) |
-| 4 | ✓ | [`skills/migrate-radix-to-base/disclosure.md`](skills/migrate-radix-to-base/disclosure.md) |
-| 5 | ✓ | [`skills/migrate-radix-to-base/display-misc.md`](skills/migrate-radix-to-base/display-misc.md) |
-| 6 | ✓ | [`skills/migrate-radix-to-base/form-controls.md`](skills/migrate-radix-to-base/form-controls.md) |
-| 7 | ✓ | [`skills/migrate-radix-to-base/menus.md`](skills/migrate-radix-to-base/menus.md) |
-| 8 | ✓ | [`skills/migrate-radix-to-base/overlays.md`](skills/migrate-radix-to-base/overlays.md) |
-| 9 | ✓ | [`skills/migrate-radix-to-base/SKILL.md`](skills/migrate-radix-to-base/SKILL.md) |
-| 10 | ✓ | [`skills/migrate-radix-to-base/universal-patterns.md`](skills/migrate-radix-to-base/universal-patterns.md) |
-| 11 | ✓ | [`skills/migrate-radix-to-base/wrapper-shapes.md`](skills/migrate-radix-to-base/wrapper-shapes.md) |
-| 12 | ✓ | [`skills/shadcn/agents/openai.yml`](skills/shadcn/agents/openai.yml) |
-| 13 | ✓ | [`skills/shadcn/assets/shadcn-small.png`](skills/shadcn/assets/shadcn-small.png) |
-| 14 | ✓ | [`skills/shadcn/assets/shadcn.png`](skills/shadcn/assets/shadcn.png) |
-| 15 | ✓ | [`skills/shadcn/assets/showcase/color-pair.tsx`](skills/shadcn/assets/showcase/color-pair.tsx) |
-| 16 | ✓ | [`skills/shadcn/assets/showcase/preview-states.css`](skills/shadcn/assets/showcase/preview-states.css) |
-| 17 | ✓ | [`skills/shadcn/assets/showcase/state-matrix.tsx`](skills/shadcn/assets/showcase/state-matrix.tsx) |
-| 18 | ✓ | [`skills/shadcn/cli.md`](skills/shadcn/cli.md) |
-| 19 | ✓ | [`skills/shadcn/customization.md`](skills/shadcn/customization.md) |
-| 20 | ✓ | [`skills/shadcn/design-system-page.md`](skills/shadcn/design-system-page.md) |
-| 21 | ✓ | [`skills/shadcn/design-system.md`](skills/shadcn/design-system.md) |
-| 22 | ✓ | [`skills/shadcn/evals/evals.json`](skills/shadcn/evals/evals.json) |
-| 23 | ✓ | [`skills/shadcn/mcp.md`](skills/shadcn/mcp.md) |
-| 24 | ✓ | [`skills/shadcn/registry.md`](skills/shadcn/registry.md) |
-| 25 | ✓ | [`skills/shadcn/rules/base-vs-radix.md`](skills/shadcn/rules/base-vs-radix.md) |
-| 26 | ✓ | [`skills/shadcn/rules/chat.md`](skills/shadcn/rules/chat.md) |
-| 27 | ✓ | [`skills/shadcn/rules/composition.md`](skills/shadcn/rules/composition.md) |
-| 28 | ✓ | [`skills/shadcn/rules/forms.md`](skills/shadcn/rules/forms.md) |
-| 29 | ✓ | [`skills/shadcn/rules/icons.md`](skills/shadcn/rules/icons.md) |
-| 30 | ✓ | [`skills/shadcn/rules/styling.md`](skills/shadcn/rules/styling.md) |
-| 31 | ✓ | [`skills/shadcn/scripts/showcase-coverage.mjs`](skills/shadcn/scripts/showcase-coverage.mjs) |
-| 32 | ✓ | [`skills/shadcn/SKILL.md`](skills/shadcn/SKILL.md) |
-| 33 | ✓ | [`templates/next-app/AGENTS.md`](templates/next-app/AGENTS.md) |
-| 34 | ✓ | [`templates/next-app/CLAUDE.md`](templates/next-app/CLAUDE.md) |
-| 35 | ✓ | [`templates/next-monorepo/AGENTS.md`](templates/next-monorepo/AGENTS.md) |
-| 36 | ✓ | [`templates/next-monorepo/CLAUDE.md`](templates/next-monorepo/CLAUDE.md) |
+| 1 | ✓ | [`apps/v4/AGENTS.md`](apps/v4/AGENTS.md) |
+| 2 | ✓ | [`apps/v4/CLAUDE.md`](apps/v4/CLAUDE.md) |
+| 3 | ✓ | [`apps/v4/public/llms.txt`](apps/v4/public/llms.txt) |
+| 4 | ✓ | [`skills/migrate-radix-to-base/class-mapping.md`](skills/migrate-radix-to-base/class-mapping.md) |
+| 5 | ✓ | [`skills/migrate-radix-to-base/consumer-props.md`](skills/migrate-radix-to-base/consumer-props.md) |
+| 6 | ✓ | [`skills/migrate-radix-to-base/disclosure.md`](skills/migrate-radix-to-base/disclosure.md) |
+| 7 | ✓ | [`skills/migrate-radix-to-base/display-misc.md`](skills/migrate-radix-to-base/display-misc.md) |
+| 8 | ✓ | [`skills/migrate-radix-to-base/form-controls.md`](skills/migrate-radix-to-base/form-controls.md) |
+| 9 | ✓ | [`skills/migrate-radix-to-base/menus.md`](skills/migrate-radix-to-base/menus.md) |
+| 10 | ✓ | [`skills/migrate-radix-to-base/overlays.md`](skills/migrate-radix-to-base/overlays.md) |
+| 11 | ✓ | [`skills/migrate-radix-to-base/SKILL.md`](skills/migrate-radix-to-base/SKILL.md) |
+| 12 | ✓ | [`skills/migrate-radix-to-base/universal-patterns.md`](skills/migrate-radix-to-base/universal-patterns.md) |
+| 13 | ✓ | [`skills/migrate-radix-to-base/wrapper-shapes.md`](skills/migrate-radix-to-base/wrapper-shapes.md) |
+| 14 | ✓ | [`skills/shadcn/agents/openai.yml`](skills/shadcn/agents/openai.yml) |
+| 15 | ✓ | [`skills/shadcn/assets/shadcn-small.png`](skills/shadcn/assets/shadcn-small.png) |
+| 16 | ✓ | [`skills/shadcn/assets/shadcn.png`](skills/shadcn/assets/shadcn.png) |
+| 17 | ✓ | [`skills/shadcn/assets/showcase/color-pair.tsx`](skills/shadcn/assets/showcase/color-pair.tsx) |
+| 18 | ✓ | [`skills/shadcn/assets/showcase/preview-states.css`](skills/shadcn/assets/showcase/preview-states.css) |
+| 19 | ✓ | [`skills/shadcn/assets/showcase/state-matrix.tsx`](skills/shadcn/assets/showcase/state-matrix.tsx) |
+| 20 | ✓ | [`skills/shadcn/cli.md`](skills/shadcn/cli.md) |
+| 21 | ✓ | [`skills/shadcn/customization.md`](skills/shadcn/customization.md) |
+| 22 | ✓ | [`skills/shadcn/design-system-page.md`](skills/shadcn/design-system-page.md) |
+| 23 | ✓ | [`skills/shadcn/design-system.md`](skills/shadcn/design-system.md) |
+| 24 | ✓ | [`skills/shadcn/evals/evals.json`](skills/shadcn/evals/evals.json) |
+| 25 | ✓ | [`skills/shadcn/mcp.md`](skills/shadcn/mcp.md) |
+| 26 | ✓ | [`skills/shadcn/registry.md`](skills/shadcn/registry.md) |
+| 27 | ✓ | [`skills/shadcn/rules/base-vs-radix.md`](skills/shadcn/rules/base-vs-radix.md) |
+| 28 | ✓ | [`skills/shadcn/rules/chat.md`](skills/shadcn/rules/chat.md) |
+| 29 | ✓ | [`skills/shadcn/rules/composition.md`](skills/shadcn/rules/composition.md) |
+| 30 | ✓ | [`skills/shadcn/rules/forms.md`](skills/shadcn/rules/forms.md) |
+| 31 | ✓ | [`skills/shadcn/rules/icons.md`](skills/shadcn/rules/icons.md) |
+| 32 | ✓ | [`skills/shadcn/rules/styling.md`](skills/shadcn/rules/styling.md) |
+| 33 | ✓ | [`skills/shadcn/scripts/showcase-coverage.mjs`](skills/shadcn/scripts/showcase-coverage.mjs) |
+| 34 | ✓ | [`skills/shadcn/SKILL.md`](skills/shadcn/SKILL.md) |
+| 35 | ✓ | [`templates/next-app/AGENTS.md`](templates/next-app/AGENTS.md) |
+| 36 | ✓ | [`templates/next-app/CLAUDE.md`](templates/next-app/CLAUDE.md) |
+| 37 | ✓ | [`templates/next-monorepo/AGENTS.md`](templates/next-monorepo/AGENTS.md) |
+| 38 | ✓ | [`templates/next-monorepo/CLAUDE.md`](templates/next-monorepo/CLAUDE.md) |
 
 ---
 

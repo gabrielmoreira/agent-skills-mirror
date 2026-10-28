@@ -58,7 +58,7 @@ Bad example:
 
 ## Workflow Lane
 
-- Current lane: **Materials and visual summaries** (`show-reel`, `design-orchestration`, `apple-design`, `design-quality-gate`, `award-bar-score`, `frontend`, `accessibility-audit`, `visual-qa`, `+7 more`) - web, accessibility, visual QA, files, and packages.
+- Current lane: **Materials and visual summaries** (`show-reel`, `sprite-forge`, `design-orchestration`, `apple-design`, `design-quality-gate`, `award-bar-score`, `frontend`, `accessibility-audit`, `+8 more`) - web, accessibility, visual QA, files, and packages.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
 - Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 
@@ -66,7 +66,7 @@ Bad example:
 
 Use when web UI, decks, PDFs, posters, or visual packages must beat ordinary output on content, taste, layout, accessibility, and render QA.
 
-    Strong routing signals: `design-quality-gate`, `design quality gate`, `ui ux pro max`, `design pro max`, `frontend pro max`, `visual qa pro`, `premium design`, `high quality design`, `beautiful website`, `frontend publishing`, `publishing quality`, `layout validation`, `ppt design quality`, `pdf design quality`, `デザイン品質ゲート`, `公開品質のデザイン`, `デザインの品質基準`, `웹사이트 디자인`, `프론트엔드 퍼블리싱`, `레이아웃 검증`, `더 뛰어나게`, `고퀄`, `设计质量门禁`, `发布级设计`, `设计质量标准`, `pastikan desain memenuhi standar premium`, `tingkatkan kualitas desain sebelum publikasi`, `tolong poles desain sampai siap dipublikasikan`, `cek standar kualitas desain ini`, `rapikan konten dan tata letak agar layak terbit`, `đảm bảo thiết kế đạt tiêu chuẩn chất lượng cao`, `nâng cao chất lượng thiết kế trước khi xuất bản`, `hãy tinh chỉnh thiết kế cho sẵn sàng xuất bản`, `kiểm tra tiêu chuẩn chất lượng của thiết kế này`, `chỉnh sửa nội dung và bố cục cho đạt mức xuất bản`
+    Strong routing signals: `design-quality-gate`, `design quality gate`, `ui ux pro max`, `design pro max`, `frontend pro max`, `visual qa pro`, `premium design`, `high quality design`, `beautiful website`, `frontend publishing`, `publishing quality`, `layout validation`, `ppt design quality`, `pdf design quality`, `デザイン品質ゲート`, `公開品質のデザイン`, `デザインの品質基準`, `웹사이트 디자인`, `프론트엔드 퍼블리싱`, `레이아웃 검증`, `더 뛰어나게`, `고퀄`, `премиальный дизайн сайта`, `полировка дизайна`, `设计质量门禁`, `发布级设计`, `设计质量标准`, `pastikan desain memenuhi standar premium`, `tingkatkan kualitas desain sebelum publikasi`, `tolong poles desain sampai siap dipublikasikan`, `cek standar kualitas desain ini`, `rapikan konten dan tata letak agar layak terbit`, `đảm bảo thiết kế đạt tiêu chuẩn chất lượng cao`, `nâng cao chất lượng thiết kế trước khi xuất bản`, `hãy tinh chỉnh thiết kế cho sẵn sàng xuất bản`, `kiểm tra tiêu chuẩn chất lượng của thiết kế này`, `chỉnh sửa nội dung và bố cục cho đạt mức xuất bản`
 
 ## Catalog Metadata
 

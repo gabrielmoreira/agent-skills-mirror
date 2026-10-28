@@ -6,6 +6,7 @@ import { peekLoginState } from '../auth.js';
 import { fetchEnvOwnerUin, getCachedEnvId } from '../cloudbase-manager.js';
 import { CloudBaseOptions } from '../types.js';
 import { isCloudMode } from './cloud-mode.js';
+import { computeDeviceId } from './device-id.js';
 import { debug } from './logger.js';
 import { normalizeSite, resolveSiteAndRegion } from './site-map.js';
 
@@ -97,26 +98,24 @@ class TelemetryReporter {
 
     /**
      * 获取设备唯一标识
-     * 基于主机名、CPU信息和MAC地址生成匿名设备指纹
+     *
+     * 锚点与降级顺序见 `utils/device-id.ts`：优先系统级不可变标识（IOPlatformUUID /
+     * MachineGuid / machine-id），取不到才退到 hostname + CPU + 过滤后的物理网卡 MAC。
+     * 容器里 hostname 每次重建都变、macOS 私有 Wi-Fi 地址让 MAC 随 SSID 漂移，
+     * 两者都不能当锚点 —— 旧实现把它们全拼进去，同一台 Mac 一天能上报成几十个设备。
+     *
+     * 子进程（ioreg / reg）只在这里跑一次（构造时），1s 超时即降级。
      */
     private getDeviceId(): string {
         try {
-            // 获取设备信息组合
-            const deviceInfo = [
-                os.hostname(),
-                os.cpus().map((cpu) => cpu.model).join(','),
-                Object.values(os.networkInterfaces())
-                    .reduce((acc: any[], val) => acc.concat(val || []), [])
-                    .filter((nic: any) => nic && !nic.internal && nic.mac)
-                    .map((nic: any) => nic.mac)
-                    .join(',')
-            ].join('|');
-
-            // 生成SHA256哈希作为设备ID
-            return crypto.createHash('sha256').update(deviceInfo).digest('hex').substring(0, 32);
+            const { deviceId, source } = computeDeviceId();
+            debug('device_id_resolved', { source, deviceId: deviceId.substring(0, 8) + '...' });
+            return deviceId;
         } catch (err) {
-            // 如果获取设备信息失败，生成随机ID
-            return crypto.randomBytes(16).toString('hex');
+            // 走到这里说明连 hostname / CPU 都读不到：用固定串兜底，**绝不能**用随机数
+            // （随机数等于每次启动都是一台新设备，正是这次要消灭的行为）。
+            debug('获取设备标识失败，回落到固定串', err instanceof Error ? err : new Error(String(err)));
+            return crypto.createHash('sha256').update('cloudbase-mcp|no-device-signal').digest('hex').substring(0, 32);
         }
     }
 
@@ -897,7 +896,15 @@ export const reportToolkitLifecycle = async (params: {
     // 安全获取环境ID，优先使用传入的配置
     const { envId, envIdSource } = resolveEnvId(params.cloudBaseOptions);
     const siteRegion = resolveTelemetrySiteRegion(params.cloudBaseOptions);
-    const loginUin = await resolveLoginUin(params.cloudBaseOptions, { allowResolve: false });
+    // `start` 在进程最早期发出：此时既没有宿主注入的 uin，也还没人 warm 过本地登录态。
+    // 卡死 `allowResolve: false` 就只能读到空缓存 → 恒 'unknown'（2026-10-26 实测：这一列
+    // 有真实 uin 的行是 0）。start 允许解析：`warmLocalLoginState()` 进程内只跑一次
+    // （读本地 auth.json；临时密钥过期时可能续期一次，与工具调用本来就要付的开销同源），
+    // 不会挂到每次上报上。
+    // `exit` 仍保持不允许 —— 退出路径不能等，拿不到就是 unknown，`start` 那次已经把值带出去了。
+    const loginUin = await resolveLoginUin(params.cloudBaseOptions, {
+        allowResolve: params.event !== 'exit',
+    });
     debug('[telemetry] 生命周期事件 envId 获取结果', {
         event: params.event,
         envId,
@@ -989,7 +996,9 @@ export const reportToolkitSessionInitialized = async (params: {
 
     const { envId } = resolveEnvId(params.cloudBaseOptions);
     const siteRegion = resolveTelemetrySiteRegion(params.cloudBaseOptions);
-    const loginUin = await resolveLoginUin(params.cloudBaseOptions, { allowResolve: false });
+    // 与 `start` 同理：`initialized` 紧跟在 `start` 之后，也是不允许等的分支就会白报一条 unknown。
+    // 这里放开解析；若 `start` 已经 warm 过，这一句直接命中进程内缓存，零额外成本。
+    const loginUin = await resolveLoginUin(params.cloudBaseOptions);
 
     const eventData: { [key: string]: any } = {
         event: 'initialized',

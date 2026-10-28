@@ -33,11 +33,13 @@ bash scripts/self-host.sh
 脚本问五件事：域名（或 `local`）、给 Let's Encrypt 的邮箱、登录验证码怎么发出去、服务商的 URL 和 key、管理员密码，然后写出带一个新随机 `CLOUD_SECRET` 的 `cloud/.env`，启动 `docker compose`，等 `/healthz` 就绪，打印控制台和管理页的 URL。再跑一次会保留机密和账号，只是重新问一遍，把当前值作为默认值。只在这台机器上用、不要域名也不要 TLS：
 
 ```bash
-bash scripts/self-host.sh --local          # http://127.0.0.1:8787, codes in the relay's log
-bash scripts/self-host.sh --local --bind 0.0.0.0   # reachable from the phones on the same network
+bash scripts/self-host.sh --local          # 只给这台机器用：http://127.0.0.1:8787，验证码打在中继日志里
+bash scripts/self-host.sh --local --bind 0.0.0.0   # 同一网络里的手机也能用：各处 URL 写的是这台机器的局域网地址
 ```
 
-不用脚本、自己动手：`cd cloud && cp .env.example .env`，填上 `CLOUD_DOMAIN`、`PUBLIC_BASE`、`ACME_EMAIL`、`CLOUD_SECRET`、`CLOUD_ADMIN_TOKEN`、`UPSTREAM_KEY` 和发信设置，然后 `docker compose up -d`；或者不要 Caddy，`docker compose -f docker-compose.yml -f docker-compose.local.yml up -d`。中继在容器里以 uid 10001 运行，绑定挂载的数据目录 `cloud/data` 在宿主机上必须属于这个 uid：第一次启动前执行 `mkdir -p data && sudo chown -R 10001:10001 data`，从以 root 运行的旧镜像升级时再执行一次（脚本会替你做；写不了数据目录的中继会在启动时说明原因并停下）。
+加 `--bind 0.0.0.0` 时中继监听所有网卡，脚本会找出这台机器的局域网地址（比如 `192.168.1.20`），把它写进 `PUBLIC_BASE`、邀请链接和打印出来的 URL，因为手机是从这个地址连过来的；找不到时会提示一句，退回 `127.0.0.1`。`--bind` 后面给一个具体地址（比如 Tailscale 地址）时，端口只发布在这个地址上，URL 也照这个地址写。换一个 `--bind` 再跑一遍，URL 会跟着改。
+
+不用脚本、自己动手：`cd cloud && cp .env.example .env`，填上 `CLOUD_DOMAIN`、`PUBLIC_BASE`、`ACME_EMAIL`、`CLOUD_SECRET`、`CLOUD_ADMIN_TOKEN`、`UPSTREAM_KEY` 和发信设置，然后 `docker compose up -d`；或者不要 Caddy，`docker compose -f docker-compose.yml -f docker-compose.local.yml up -d`，要让别的机器也能连，就在 `cloud/.env` 里加上 `RELAY_BIND=0.0.0.0`（或这台机器的地址）和 `PUBLIC_BASE=http://<那个地址>:8787`。中继在容器里以 uid 10001 运行，绑定挂载的数据目录 `cloud/data` 在宿主机上必须属于这个 uid：第一次启动前执行 `mkdir -p data && sudo chown -R 10001:10001 data`，从以 root 运行的旧镜像升级时再执行一次（脚本会替你做；写不了数据目录的中继会在启动时说明原因并停下）。
 
 ### 登录验证码 {#sign-in-codes}
 

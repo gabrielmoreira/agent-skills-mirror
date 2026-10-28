@@ -332,7 +332,10 @@ back. The effective heap stays unestablished when either flag is present,
 including when an absolute `--max-old-space-size` is also on the command
 line or in the recovered `NODE_OPTIONS`. Node accepts the config path as
 `=` or the next argument.
-Literal mode retains Unicode casefold matching.
+Literal mode retains Python Unicode full case folding, which can expand a
+character into a sequence: for example, `ss` matches `ß`. This differs from
+REA's Unicode simple case folding used by other native search providers and
+Hopper regex mode.
 
 ## Bounded static traces
 

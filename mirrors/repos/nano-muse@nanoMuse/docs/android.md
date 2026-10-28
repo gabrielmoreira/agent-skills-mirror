@@ -234,6 +234,16 @@ models' word, as before. When no configured provider has a capability, the page 
 sentence (*Pictures need a provider with image models: Bailian, OpenAI, Gemini or
 OpenRouter.*) instead of failing.
 
+**Which video models a key has.** Bailian's `/models` list names no video models, so the app
+asks the host about each of the models this build knows (`VideoGen.KNOWN_DASHSCOPE_MODELS`,
+Wan 2.2 Flash first) with an empty task that bills nothing, and remembers the answer for a day.
+The *Video* picker offers that answer plus every model you listed on the provider yourself — an
+entry whose name says video (`t2v`, `i2v`, …) or whose output modalities say `video` in its
+details, whatever its name — as it is, probe or no probe. The remembered answer is asked again
+as soon as the models to ask about change (an entry you added, a build that knows a newer
+model), not only after the day is up. *Image & video models* keeps a field for typing any model
+id. ([#508](https://github.com/nano-muse/nanoMuse/issues/508))
+
 In the avatar studio, asking for a new set of candidates replaces the previous set. A picture
 or failure that finishes from the previous request cannot change the new set's tiles or files.
 Again starts the new request without waiting for the old picture to finish saving.
@@ -355,6 +365,24 @@ not taken for a private address. The same rule decides whether a relay of your o
 to other apps. Voice input through a provider's speech model keeps the microphone open only
 while a recording is on: stopping or cancelling the recording closes the recorder at once, and a
 cancelled recording's audio is dropped, never sent to the provider.
+
+**What the record is told beyond the turn itself** (relay 0.31). A chat request to nanoMuse
+Cloud carries, next to the device and the conversation, where the call sits: who started the
+turn (`X-NanoMuse-Run`: you, a scheduled task, the feed's routine, a goal's check, a task
+another device asked for through the hub), the turn's number in the conversation as the chat
+counts it, the call's number within the turn, the screen task's run and step while the hands
+work, and `X-NanoMuse-Platform: android`; a turn run on a key of your own goes up with the
+same fields ([cloud.md](cloud.md#provenance); `io.github.nanomuse.cloud.Provenance`, read
+from the chat's coroutine so a typed message, a retry, a routine's prompt, a hub task and a
+hands step all say the same). While signed in, the phone also sends short records of what
+happened around a turn (`POST /v1/events`, `io.github.nanomuse.cloud.ClientEvents`): what
+the risk gate decided on each shell command, browser tap or screen step and how its card was
+answered, each step of the hands and how the run closed, a turn stopped by hand or ended in
+an error, and the two thumbs under the newest reply and the one question after a Stop
+(*Why did you stop it?*, five one-word answers and *Skip*; a routine's or another device's turn
+is not asked about). Codes and numbers only — the tool's kind, the risk's tier, who answered,
+how long — never the command, the page, the screen or any words of the conversation
+([cloud.md](cloud.md#client-events)); *Data controls*' delete removes them with the turns.
 
 ## Building it yourself
 

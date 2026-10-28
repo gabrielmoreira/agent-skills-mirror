@@ -17,9 +17,18 @@ description: Use for ANY task in this repo. What past sessions worked out, decid
 # trail
 
 ## When to reach for trail
-- **Before exploring code**, run `trail ask "<task>" --source`. Learnings
-  from past sessions, yours and your teammates', on what was decided, tried
-  and ruled out print above the code. Read them first.
+- **Before exploring code**, run `trail ask "<task>" --source`, even for a
+  plain "where is" or "how does this work" question, before you grep or open
+  files. Learnings from past sessions, yours and your teammates', on what was
+  decided, tried and ruled out print above the code. Read them first.
+- **When you start from a ticket, an issue or a bug report**, run
+  `trail ask` with its words before you plan, so you start from what was
+  already decided about that area.
+- **When a test or command fails while you debug**, run `trail ask` on that
+  area before you try a fix: a past session may have tried and ruled out the
+  fix you're about to try.
+- **Before you change a file**, trail puts the learnings on it in front of
+  you. Read them before you write the edit.
 - **When the session finds what the code can't tell the next person**, save a
   learning with `trail note`, and commit it with the change. What counts is
   under Saving a learning below.
@@ -37,8 +46,9 @@ Save one when the session found what the code can't tell the next person:
 - the user correcting how something is done here.
 
 Save it before you commit or open the PR, so it ships with the change:
-`trail note --title "<the fact, not the task>"` with the text on stdin. Name
-the files or functions it's about, and give each choice its reason.
+`trail note --title
+"<the decision in plain words a teammate understands, no file names>"` with the text on stdin. Give each
+choice its reason. Put files, commands and values in the body under "In the code:".
 
 A learning is followed by default, and the person can say otherwise in the
 moment. When the user says one must hold even if someone asks otherwise
@@ -244,7 +254,7 @@ one saved you work, close your reply with one short line crediting it, e.g.
 and ~12 min`) only when trail prints that with it; claim nothing it doesn't.
 
 To save one (when is under Saving a learning above): `trail note --title
-"<the fact, not the task>"` with the text on stdin, under `## Decided`,
+"<the decision in plain words a teammate understands, no file names>"` with the text on stdin, under `## Decided`,
 `## Tried and ruled out` and `## Watch out`. A summary, never a transcript,
 and nothing secret.
 

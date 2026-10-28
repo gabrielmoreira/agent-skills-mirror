@@ -37,7 +37,7 @@ that toggles it, use `project-settings-cascade`.
 - **NEVER let the AI helper raise.** Every failure path returns the user's
   current value. Recon stdout tails into the webapp's SSE recon drawer, so an
   exception both breaks the scan and blanks the stream. Pattern:
-  [recon/helpers/ai_planner/nuclei_tags.py:94](../../recon/helpers/ai_planner/nuclei_tags.py#L94)
+  [recon/helpers/ai_planner/nuclei_tags.py](../../recon/helpers/ai_planner/nuclei_tags.py)
   ("Never raises -- returns `current_tags` on any failure").
 - **NEVER fall back to an empty list/string.** For tools where empty means "skip
   the work" (nuclei tags, ffuf extensions) that **silently turns detection off**.
@@ -96,7 +96,7 @@ that toggles it, use `project-settings-cascade`.
   pipeline AND partial recon.
 - **NEVER touch [webapp/src/lib/recon-presets/presets/](../../webapp/src/lib/recon-presets/):**
   the `aiInPipeline` cascade (`apply_ai_pipeline_overrides`,
-  [recon/project_settings.py:1968](../../recon/project_settings.py#L1968)) is the
+  in [recon/project_settings.py](../../recon/project_settings.py)) is the
   single source of truth for per-tool AI flags. Presets must not hard-code them;
   update the Zod schema instead.
 - **ALWAYS add a registry entry for the new `Project` column** `{tool}Ai{Feature}`
@@ -114,7 +114,7 @@ that toggles it, use `project-settings-cascade`.
   runs once and needs no cache.
 - **ALWAYS put the toggle in two places bound to the same field**
   `data.{tool}Ai{Feature}`: the master AI-in-Pipeline panel
-  ([TargetSection.tsx:695](../../webapp/src/components/projects/ProjectForm/sections/TargetSection.tsx#L695))
+  (the `aiInPipeline` block in [TargetSection.tsx](../../webapp/src/components/projects/ProjectForm/sections/TargetSection.tsx))
   and the tool's own section (e.g.
   [NucleiSection.tsx](../../webapp/src/components/projects/ProjectForm/sections/NucleiSection.tsx)).
   Read AND write the same field; **no copy-on-flip** (they stay in sync because

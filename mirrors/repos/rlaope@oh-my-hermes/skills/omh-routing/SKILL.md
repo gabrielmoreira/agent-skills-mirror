@@ -143,6 +143,7 @@ Load these only when exact detail matters:
 - `references/coding-handoff-progress-reporting.md` for active progress cadence, background executor watchdogs, PR head/merge verification, and memory/context collision pitfalls.
 - `references/evidence-boundaries.md` for prepared-vs-observed, target topology, memory, and compatibility rules.
 - `references/structural-code-search.md` for ast-grep structural code search patterns and the grep fallback.
+- `references/human-voice.md` before writing prose a person reads: AI-writing tells to remove, Korean habits, reply shape.
 
 ## Recovery
 

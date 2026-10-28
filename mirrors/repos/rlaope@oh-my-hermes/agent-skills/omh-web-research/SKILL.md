@@ -67,7 +67,7 @@ Bad example:
 
 Use when the answer depends on current external facts that one round of cited web retrieval can settle, with no reference-implementation study and no declared depth budget.
 
-    Strong routing signals: `web-research`, `web research`, `web search`, `search the web`, `internet search`, `look up`, `look up sources`, `latest sources`, `fresh sources`, `current sources`, `current web evidence`, `source-backed research`, `source search`, `find sources`, `find citations`, `citation check`, `evidence scan`, `source diversity`, `retrieval gap`, `best-practice-research`, `best practice`, `official docs`, `upstream guidance`, `what do the docs say`, `check the docs`, `웹서치`, `웹 서치`, `웹 검색`, `인터넷 검색`, `검색해줘`, `검색해서`, `최신 자료`, `최신 출처`, `자료 찾아`, `출처`
+    Strong routing signals: `web-research`, `web research`, `web search`, `search the web`, `internet search`, `look up`, `look up sources`, `latest sources`, `fresh sources`, `current sources`, `current web evidence`, `source-backed research`, `source search`, `find sources`, `find citations`, `citation check`, `evidence scan`, `source diversity`, `retrieval gap`, `best-practice-research`, `best practice`, `official docs`, `upstream guidance`, `what do the docs say`, `check the docs`, `웹서치`, `웹 서치`, `웹 검색`, `인터넷 검색`, `검색해줘`, `검색해서`, `최신 자료`, `최신 출처`, `자료 찾아`, `출처`, `поищи в интернете`, `поищи в сети`, `найди в интернете`, `загугли`, `посмотри в сети`, `веб ресерч`, `актуальная информация из сети`, `проверь в интернете`, `найди свежие источники`
 
 ## Catalog Metadata
 

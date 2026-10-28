@@ -39,7 +39,14 @@ written back until the user says so.
      too few it has both committed a worse rule and committed nothing at all.
    - `algorithm` (optional): a named method. Call `list_algorithms` (or
      `describe_algorithm` for one) before naming one; the same data is in
-     `agentdescent algorithms list` / `show`. Offer one only when the user asks
+     `agentdescent algorithms list` / `show`. Hosts that expose slash
+     commands also ship `/algorithms` (Claude `/agentdescent:algorithms`,
+     OpenCode `/agentdescent/algorithms`, Codex `/prompts:algorithms`) for
+     list / show / run. To compare methods on the user's
+     own spec, offer `agentdescent tournament <spec> --algorithm default
+     --algorithm NAME` (same budget per arm; the winner is the best mean over
+     seeds, and a tie is reported as a tie). Run its `--dry-run` first and quote
+     the total call estimate before starting. Offer one only when the user asks
      for a specific method or the artifact clearly fits it; the default recipe
      for the kind is otherwise the right answer. Never invent a name -- `plan`
      rejects it. The spec can carry parameters under
@@ -89,7 +96,10 @@ written back until the user says so.
    not seen is the one thing this procedure exists to prevent.
    To keep improving across sessions, offer `agentdescent campaign <spec>
    --sessions N`; it works on a copy, reports the workspace/final target and
-   never touches the live target. Run its `--dry-run` first.
+   never touches the live target. Run its `--dry-run` first. A campaign has no
+   run id: install its result with the MCP `apply` tool using `from`=<final_target>
+   and `to`=<target> (dry_run=true first, then after asking without), or the CLI
+   form `agentdescent apply --from <final_target> --to <target> --dry-run`.
 4. **`start`**. It replies with `host_model_route` when the spec uses
    `host_model` -- report the route it actually got (`sampling`, or a CLI name)
    rather than assuming; only the sampling route dies with this session.
@@ -103,13 +113,18 @@ written back until the user says so.
    a `phase` means alive. Judge liveness from `status`, not from `ps`: the
    busiest process on the machine is usually your own host. If you wait with a
    shell `sleep`, keep it under a minute -- host shell tools time out near two.
-5. When done, **`show`** with `diff=true`. Explain what changed and why using
+5. When done, **`show`** with `diff=true`. If the run learned little, call
+   `diagnose` first: it names the failure mode (agent failures, reflector
+   error, gate rejection, scoring mismatch) and the next step. Explain what changed and why using
    the `outcomes` histogram (`committed`, `below-threshold`, `oracle-rejected`
    ...). Do not paste the whole tree. If `final_reward` is low (or every outcome
    is a rejection), read `samples` (the worst rollouts, output vs gold) and
    `rejected` (the diffs the gate measured and refused) and say what went wrong
    -- the agent answered wrongly, the reflector proposed nothing useful, or the
    score is too strict -- before suggesting more rounds.
+   When the user asks whether the system is still getting better over time,
+   call `rsi` (it reads the consolidation archive, not a run store) rather than
+   extrapolating from one run.
 6. **Ask before `apply`.** It overwrites the target (`show` names it); it backs
    up first. Tell the user the backup path afterwards. If the result has
    `noop: true` (also visible in `show`'s `apply_plan` and `--dry-run`), the target

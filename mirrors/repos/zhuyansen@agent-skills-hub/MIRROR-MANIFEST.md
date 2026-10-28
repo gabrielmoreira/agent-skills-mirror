@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `zhuyansen/agent-skills-hub` — 26 default patterns, 0 followed patterns, 24 file(s) materialized.
+Mirror of `zhuyansen/agent-skills-hub` — 26 default patterns, 0 followed patterns, 26 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `zhuyansen/agent-skills-hub` — 26 default patterns, 0 followed patte
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 24 |
+| Files         | 26 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -83,6 +83,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 22 | ✓ | [`ops/skillmgr-runs/in/input/library/typo-finder/SKILL.md`](ops/skillmgr-runs/in/input/library/typo-finder/SKILL.md) |
 | 23 | ✓ | [`ops/skillmgr-runs/in/input/library/unit-test-scaffold/SKILL.md`](ops/skillmgr-runs/in/input/library/unit-test-scaffold/SKILL.md) |
 | 24 | ✓ | [`ops/skillmgr-runs/in/input/risky/pdf-tools-pro/SKILL.md`](ops/skillmgr-runs/in/input/risky/pdf-tools-pro/SKILL.md) |
+| 25 | ✓ | [`ops/workbuddy/backlink-guard/skills/backlink-guard/SKILL.md`](ops/workbuddy/backlink-guard/skills/backlink-guard/SKILL.md) |
+| 26 | ✓ | [`ops/workbuddy/new-term-radar/skills/new-term-radar/SKILL.md`](ops/workbuddy/new-term-radar/skills/new-term-radar/SKILL.md) |
 
 ---
 

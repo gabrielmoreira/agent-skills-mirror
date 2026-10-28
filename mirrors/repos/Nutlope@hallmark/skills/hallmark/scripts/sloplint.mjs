@@ -48,7 +48,7 @@ function collectFiles(paths) {
     const abs = resolve(p);
     if (seen.has(abs)) return;
     let st;
-    try { st = statSync(abs); } catch { console.error(`sloplint: cannot read ${p}`); return; }
+    try { st = statSync(abs); } catch { console.error(`sloplint: cannot read ${p}`); if (top) process.exit(2); return; }
     if (st.isDirectory()) {
       const base = basename(abs);
       if (base === 'node_modules' || base.startsWith('.') || (!top && BUILD_DIRS.has(base))) return;

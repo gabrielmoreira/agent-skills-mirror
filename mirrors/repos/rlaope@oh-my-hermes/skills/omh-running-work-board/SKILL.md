@@ -65,7 +65,7 @@ Bad example:
 
 Use when the user asks what coding work is running right now -- which unit, which runtime, which model, how long, how many tokens -- rather than asking to start, plan, or review work.
 
-    Strong routing signals: `running-work-board`, `running work board`, `which units are running`, `what models are running`, `지금 뭐 돌고 있어`, `뭐가 돌고 있어`, `어떤 모델로 돌고 있어`, `실행 중인 작업 보여줘`
+    Strong routing signals: `running-work-board`, `running work board`, `which units are running`, `what models are running`, `지금 뭐 돌고 있어`, `뭐가 돌고 있어`, `어떤 모델로 돌고 있어`, `실행 중인 작업 보여줘`, `что делают агенты`, `покажи что запущено`, `чем заняты агенты`, `что запущено сейчас`
 
 ## Catalog Metadata
 

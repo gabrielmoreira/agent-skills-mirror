@@ -176,6 +176,8 @@ Running one integration case, and what a `configCases/` case contains: [TESTING_
 
 **Cover every line you add or change** — a commit must not lower coverage (CI enforces patch coverage, target 90%+). Every new branch, fast path and fallback needs a test: `configCases/` when a real build reaches it, a focused `*.unittest.js` only when a config case can't reasonably drive it or adds nothing (e.g. tokenizer cold-path fallbacks, where fast and delegated branches each still need exercising). Check with `yarn cover:unit` or the PR's "patch" report until no changed line is missing.
 
+A language's syntax (`lib/{css,html,javascript,json}` tokenizer, parser, printer and minifier) is held to its **own** unit tests: `yarn test:syntax-coverage [css|html|javascript|json]` fails when what they never run grows past `tooling/syntax-coverage.json`; `--list` prints it, `--write` lowers the baseline once you covered more.
+
 **Don't lower type coverage either.** CI collects it (`yarn types:cover:report`) and reports the delta on the PR. Prefer real types over `EXPECTED_ANY` ([Type annotations](#type-annotations)), and run `yarn types:cover` if you widened any annotation.
 
 ### Read CI rather than re-running it
@@ -218,7 +220,7 @@ Produced by `yarn fix:special` — never edit by hand:
 - `types.d.ts` — from JSDoc + schemas.
 - `schemas/**/*.check.{js,d.ts}` — precompiled schema validators.
 - Generated runtime code under `lib/` (`tooling/generate-runtime-code.js`).
-- `lib/css/data.js`, `lib/html/data.js`, `lib/javascript/data.js`, `lib/javascript/syntax-printer-data.js` — every lookup table the CSS minifier, HTML parser/minifier and JS parser and printer read, by `tooling/generate-css-data.js`, `generate-html-data.js` and `generate-js-data.js`; `generate-html-data.js` also writes the `// #region html entities` block in `lib/html/syntax-parser.js`. Sources and contents: [docs/syntax.md](docs/syntax.md#generated-tables).
+- `lib/css/data.js`, `lib/html/data.js`, `lib/javascript/data.js`, `lib/javascript/syntax-printer-data.js`, `lib/javascript/parse-error-codes.js` — every lookup table the CSS minifier, HTML parser/minifier and JS parser and printer read, by `tooling/generate-css-data.js`, `generate-html-data.js` and `generate-js-data.js`; `generate-html-data.js` also writes the `// #region html entities` block in `lib/html/syntax-parser.js`. Sources and contents: [docs/syntax.md](docs/syntax.md#generated-tables).
 
 A `syntax-parser.js` or `syntax-printer.js` is algorithm only — a new lookup table belongs in the matching generator. Generator-written regions such as `// #region html entities` are the exception; `syntax.js` is a facade, neither.
 

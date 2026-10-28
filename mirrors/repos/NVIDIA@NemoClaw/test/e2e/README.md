@@ -550,7 +550,17 @@ cohort.
 
 The gateway restart fixture restarts the user service it stopped. If no service was selected, the candidate CLI startup code starts the registered gateway.
 
-Pi qualification preserves its hosted onboarding, rebuild, recovery, policy, and credential checks. After destroying that sandbox, the same target onboards a fresh Pi sandbox against an authenticated local compatible endpoint. A fresh Pi process must send the selected model to that endpoint. The target then rebuilds Pi and requires another authenticated request for the recorded model. The upstream credential must stay outside the sandbox, and public destroy must leave the sandbox absent. The hosted lifecycle retains its 90-minute allowance; the native phase adds 60 minutes for onboarding, two requests, a rebuild, isolation, and cleanup. The job adds 10 minutes of headroom. Operation deadlines and the target selector stay unchanged.
+Pi qualification keeps the hosted onboarding, rebuild, recovery, policy, and credential checks.
+After public destroy, the target onboards a fresh Pi sandbox against an authenticated local
+compatible endpoint. A fresh Pi process must send the selected model to that endpoint. The target
+rebuilds Pi and requires another authenticated request for the recorded model. The upstream
+credential must stay outside the sandbox, and public destroy must leave the sandbox absent.
+
+The hosted lifecycle retains its 90-minute allowance. The native phase adds 60 minutes for
+onboarding, two requests, a rebuild, isolation, and cleanup. Each of the three hosted Pi read tasks
+may retry once after a qualifying transient failure. Each attempt has a five-minute timeout, and a
+retry waits 10 seconds. The test allows 166 minutes, including 16 minutes for retries. The target
+allows 176 minutes, including 10 minutes of job headroom. The target selector stays unchanged.
 A selected service that cannot restart remains selected for cleanup; recovery does not switch to another startup path.
 Restart inputs are checked before stopping the gateway. A failed start ends the test before health polling. Sandbox readiness, retained state, and agent turns remain separate assertions.
 
@@ -2538,8 +2548,13 @@ Its separate environment, process, filesystem, and canary checks are replaced by
 support tests cover leak detection and control cleanup.
 
 OpenRouter onboards OpenClaw and starts a fresh agent process.
-The `hosted-inference-openrouter` target also onboards Deep Agents Code with the same
-OpenRouter key and model. Its six-assertion case checks onboarding, credential isolation,
+The `hosted-inference-openrouter` target also onboards Hermes and Deep Agents Code with the same
+OpenRouter key and model. The Hermes case requires a real turn before rebuild, a successful
+`connect --probe-only`, and an immediate real turn after rebuilding without a fresh host credential.
+If that turn fails, it records only bounded classifications of the sandbox credential environment,
+managed config slots, and OpenShell provider attachment. It checks the reply even when
+`hermes -z` exits zero.
+The Deep Agents Code six-assertion case checks onboarding, credential isolation,
 the native TOML route, and one fresh `dcode -n --json` response.
 The OpenClaw case checks the native endpoint, credential placeholder,
 selected adapter, response model, and nonempty answer.
@@ -2566,7 +2581,7 @@ sandbox isolation, restart, and failed-operation recovery.
 The smoke requires the approved `NEMOCLAW_OPENROUTER_MODEL`; it does not select a default model.
 Credentials remain in the test host environment and OpenShell provider store; artifacts redact them.
 The cleanup helper destroys each test sandbox. The Deep Agents Code case checks sandbox absence even if onboarding fails.
-The OpenClaw case checks absence after successful onboarding; failed onboarding uses best-effort cleanup.
+The OpenClaw and Hermes cases check absence after successful onboarding; failed onboarding uses best-effort cleanup.
 Neither path proves removal of credentials from the OpenShell provider store.
 Discard the approved disposable gateway after each run, including failed onboarding. Use a fresh gateway for a retry.
 

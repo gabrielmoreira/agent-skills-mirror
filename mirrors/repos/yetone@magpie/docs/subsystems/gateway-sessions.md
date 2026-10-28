@@ -537,6 +537,24 @@ for: `provider_test`, `api_detect` or `model_list`
   request page lists them as a chunk of their own (`probeChunk`) and adds
   them to no total, cell, group, chart or filter count; `?via=` other than
   all leaves them out.
+- **A model list answered is no row:** magpie fetches lists by itself
+  (start-up's `FetchNew`, the panel's and the Providers page's, and
+  `KeepListsFresh`, which asks a Remote magpie every 10 minutes), so a
+  `model_list` row with a 2xx/3xx status and no error is neither written
+  (`usage`'s `probelog.Sink`) nor read back from an older log
+  (`quietProbe`, in the index's parse): ferock on Discord, a Requests page
+  full of 0-token rows no agent sent. A list that failed is still a row,
+  under the Failed filter too, as is every Test and Detect APIs. Older
+  lines stay in `usage.jsonl`, read by nothing.
+  `TestAnsweredModelListIsNoRow` covers it.
+- **Whose:** a row recorded under its host, sent before its provider had
+  an id, is listed under the provider saved on that host now
+  (`Renames.ProbeOf`), and with none on it, a deleted one's, under the id
+  the log's calls to that host were made under (`logSnapshot.hosts`,
+  `probeProvider`). A host two providers are or were on stays the host,
+  lowercased (yyddbds and cybercaius on Discord).
+  `TestProbesOfAProviderBeingAddedListItOnce` and
+  `TestProbesOfADeletedProviderStayWithIt` cover it.
 - **Showing:** the row's badge is the kind's name ("Test", "Detect APIs",
   "Model list", from `purposeKinds`), and its tooltip and the "magpie's
   own" badge's say it counts in no total (`probeWhy` in

@@ -1,7 +1,7 @@
 ---
 type: Playbook
 title: Chunking Embeddings
-description: Xberg text chunking (ChunkerType, ChunkingConfig wire names), embedding generation and RAG integration. Use when changing chunking or embeddings code or config.
+description: "Xberg text chunking (ChunkerType, ChunkingConfig wire names), embeddings and RAG. Use when changing chunking or embeddings code or config."
 paths:
   - "crates/xberg/src/chunking/**"
   - "crates/xberg/src/embeddings/**"
@@ -115,4 +115,4 @@ WASM-safe.
 
 - **extraction-pipeline-patterns** — text extraction preceding chunking
 - **config-loading-precedence** — how `ChunkingConfig` is resolved and why typos are silent
-- **feature-flag-policy** — `embeddings` vs `static-embeddings` vs `embedding-presets`
+- **feature-flag-conventions** — `embeddings` vs `static-embeddings` vs `embedding-presets`

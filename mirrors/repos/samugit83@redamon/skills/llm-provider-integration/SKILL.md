@@ -35,8 +35,8 @@ For a non-LLM external API *tool*, use `agentic-tool-integration`.
   them. Do not thread a provider key through recon settings or container env.
 - **NEVER add a model id that is not prefix-routed.** Anything other than
   `claude-*` and bare OpenAI ids MUST carry a `provider/<model>` prefix, resolved by
-  `parse_model_provider()` at
-  [agentic/orchestrator_helpers/llm_setup.py:67](../../agentic/orchestrator_helpers/llm_setup.py#L67).
+  `parse_model_provider()` in
+  [agentic/orchestrator_helpers/llm_setup.py](../../agentic/orchestrator_helpers/llm_setup.py).
   An unprefixed id routes to the wrong provider silently.
 - **NEVER treat every `user_llm_providers` row as a chat LLM.** A non-chat type
   (today `jev`, the TypeSafe decision API) must be skipped by every path that
@@ -67,7 +67,7 @@ For a non-LLM external API *tool*, use `agentic-tool-integration`.
 | Invariant | Where | Failure if broken |
 | --- | --- | --- |
 | Keys only in Postgres + webapp<->agent transit | [webapp/prisma/schema.prisma](../../webapp/prisma/schema.prisma) `user_llm_providers`; agent settings fetch | key leaks into scan/MCP containers |
-| Model id prefix routing | `parse_model_provider()` [llm_setup.py:67](../../agentic/orchestrator_helpers/llm_setup.py#L67) | model routes to the wrong provider |
+| Model id prefix routing | `parse_model_provider()` in [llm_setup.py](../../agentic/orchestrator_helpers/llm_setup.py) | model routes to the wrong provider |
 
 ## Commands
 

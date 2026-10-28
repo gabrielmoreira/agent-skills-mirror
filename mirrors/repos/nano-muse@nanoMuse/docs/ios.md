@@ -238,7 +238,23 @@ Ours, in `NanoMuse/`:
   (`NanoMuseOwnTurns.swift`, wrapping the agent provider; never the key or the base URL), the
   hub's hello names what answers new chats (`device.llm`), and the face's clips travel with the
   face through the profile's `clips` (`NanoMuseProfile.swift`: a clip drawn here is put up for
-  the other devices, theirs land in the motion folder, so a face is animated once per account). **Reach** (`NanoMuseReach.swift`): a sheet per device
+  the other devices, theirs land in the motion folder, so a face is animated once per account).
+  **Where a call sits, and what happened around it** (relay 0.31; `NanoMuseProvenance.swift`,
+  `NanoMuseClientEvents.swift`, `NanoMuseFeedback.swift`, `NanoMuseGateEvents.swift`): a chat
+  request to the account also says who started the turn (`X-NanoMuse-Run`: you, a routine, the
+  feed, a goal's check, a task another device asked for through the hub), the turn's number as
+  the chat counts it, the call's number within the turn and `X-NanoMuse-Platform: ios`; a turn on
+  a key of your own goes up with the same fields ([cloud.md](cloud.md#provenance)). The agent
+  loop's provider is wrapped once more for this, and the headless runs (`NanoMuseHeadless.run`)
+  name their kind, so a typed message, a retry, a routine's prompt and a hub task all say the
+  same. While signed in, the phone also sends short records of what happened around a turn
+  (`POST /v1/events`): what the permission check decided on each `apple-*` command and how its
+  sheet was answered, a turn stopped by hand or ended in an error, and the two thumbs under the
+  newest reply and the one question after a Stop (*Why did you stop it?*, five one-word answers
+  and *Skip*; both sit above the composer; a routine's or another device's turn is not asked
+  about). Codes and numbers only: the command's name, its class, who answered, how long; never
+  its arguments or any words of the conversation ([cloud.md](cloud.md#client-events)); *Data
+  controls*' delete removes them with the turns. **Reach** (`NanoMuseReach.swift`): a sheet per device
   of the account (open a link, send a note, a shell line, a screenshot) over the hub.
   **A task for another device** (`NanoMuseDeviceMention.swift`, `NanoMuseRemoteApproval.swift`):
   a message that starts with `@〈device〉` goes to that device's Muse as a hub `task` (the `@` menu

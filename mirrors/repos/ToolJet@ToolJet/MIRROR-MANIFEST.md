@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ToolJet/ToolJet` — 26 default patterns, 0 followed patterns, 80 file(s) materialized.
+Mirror of `ToolJet/ToolJet` — 26 default patterns, 0 followed patterns, 81 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ToolJet/ToolJet` — 26 default patterns, 0 followed patterns, 80 fil
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 80 |
+| Files         | 81 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -134,11 +134,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 73 | ✓ | [`server/src/modules/git-sync/AGENTS.md`](server/src/modules/git-sync/AGENTS.md) |
 | 74 | ✓ | [`server/src/modules/group-permissions/AGENTS.md`](server/src/modules/group-permissions/AGENTS.md) |
 | 75 | ✓ | [`server/src/modules/licensing/AGENTS.md`](server/src/modules/licensing/AGENTS.md) |
-| 76 | ✓ | [`server/src/modules/organization-payments/AGENTS.md`](server/src/modules/organization-payments/AGENTS.md) |
-| 77 | ✓ | [`server/src/modules/personal-access-tokens/AGENTS.md`](server/src/modules/personal-access-tokens/AGENTS.md) |
-| 78 | ✓ | [`server/src/modules/templates/AGENTS.md`](server/src/modules/templates/AGENTS.md) |
-| 79 | ✓ | [`server/src/modules/versions/AGENTS.md`](server/src/modules/versions/AGENTS.md) |
-| 80 | ✓ | [`server/src/modules/workflows/AGENTS.md`](server/src/modules/workflows/AGENTS.md) |
+| 76 | ✓ | [`server/src/modules/mcp-oauth/AGENTS.md`](server/src/modules/mcp-oauth/AGENTS.md) |
+| 77 | ✓ | [`server/src/modules/organization-payments/AGENTS.md`](server/src/modules/organization-payments/AGENTS.md) |
+| 78 | ✓ | [`server/src/modules/personal-access-tokens/AGENTS.md`](server/src/modules/personal-access-tokens/AGENTS.md) |
+| 79 | ✓ | [`server/src/modules/templates/AGENTS.md`](server/src/modules/templates/AGENTS.md) |
+| 80 | ✓ | [`server/src/modules/versions/AGENTS.md`](server/src/modules/versions/AGENTS.md) |
+| 81 | ✓ | [`server/src/modules/workflows/AGENTS.md`](server/src/modules/workflows/AGENTS.md) |
 
 ---
 

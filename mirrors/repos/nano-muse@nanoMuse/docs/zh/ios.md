@@ -202,6 +202,17 @@ scripts/gen-ios-icons.py         App 图标和四款备选图标，来自 assets
   （作为文件）一起上传（`NanoMuseOwnTurns.swift`，包在 agent provider 外面；从不带 key 和 base URL），hub 的 hello
   说明新对话由什么模型回答（`device.llm`），头像的短片随头像经 profile 的 `clips` 走（`NanoMuseProfile.swift`：
   这里画出的短片传上去给其他设备，它们的落到本机的 motion 目录，一个头像每个账号只动画一次）。
+  **这次调用在对话里的位置，以及一轮前后发生的事**（中继 0.31；`NanoMuseProvenance.swift`、
+  `NanoMuseClientEvents.swift`、`NanoMuseFeedback.swift`、`NanoMuseGateEvents.swift`）：发给账号的聊天请求还会说明
+  这一轮是谁发起的（`X-NanoMuse-Run`：你本人、例行程序、动态、目标的检查、另一台设备通过 hub 托付的任务）、
+  按聊天自己的计数这是第几轮、这次调用是这一轮里的第几次，以及 `X-NanoMuse-Platform: ios`；用自己 key 跑的轮次
+  上传时带同样的字段（[cloud.md](cloud.md#provenance)）。为此 agent 的 provider 又包了一层，无头运行
+  （`NanoMuseHeadless.run`）会报上自己的种类，所以手打的消息、重试、例行程序的提示和 hub 任务说的都是同一套。
+  登录状态下，手机还会把一轮前后发生的事以短记录发上去（`POST /v1/events`）：权限检查对每条 `apple-*` 命令的判定
+  和那张确认页是怎么答的，一轮是被手动停下还是出错结束，以及最新回复下面的两个拇指和停止之后的那一个问题
+  （「为什么停下来？」，五个一词的答案加「跳过」；两者都在输入框上方；例行程序或另一台设备的那一轮不会问）。
+  只有代码和数字：命令名、它的类别、谁答的、等了多久；从不包含它的参数或对话里的任何一个字
+  （[cloud.md](cloud.md#client-events)）；*数据控制*里的删除会把它们和轮次一起删掉。
   **Reach**（`NanoMuseReach.swift`）：账号下每台设备一个面板（打开链接、发一条便条、
   跑一行 shell、截一张图），都通过 hub。
   **交给另一台设备的任务**（`NanoMuseDeviceMention.swift`、`NanoMuseRemoteApproval.swift`）：

@@ -69,10 +69,14 @@ runtime are content, not code comments - size them for the model, not this rule.
 
 ## TECH STACK
 
-Polyglot monorepo orchestrated by Docker Compose. Python 3.11 services (the
-agent, recon pipeline, recon orchestrator, MCP/kali-sandbox, scan tools) + a
-Next.js 16 / React 19 / TypeScript / Prisma webapp + Neo4j graph DB + Postgres. `redamon.sh`
-(bash) is the control plane for build/run/test.
+Polyglot monorepo orchestrated by Docker Compose. Python services on 3.11 (the
+agent, recon pipeline, recon orchestrator, plugin runner, the two supply-chain
+images) and 3.12 (the gvm, github-hunt, trufflehog, baddns, ai-attack-surface and
+capture-proxy scanners, the docker broker); the MCP/kali-sandbox runs whatever
+Python `kalilinux/kali-rolling:latest` ships, in `/opt/venv`, so check a pin
+against that, not 3.11. Plus a Next.js 16 / React 19 / TypeScript / Prisma
+webapp, Neo4j graph DB and Postgres. `redamon.sh` (bash) is the control plane
+for build/run/test.
 
 ## PROJECT STRUCTURE
 

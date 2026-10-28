@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.0-rc.100] - 2026-10-26
+
+**rc.100: faster autoindex and search, shaped by your field reports.** This
+release is about speed. Background merges skip the zstd-19 stored encode, so
+indexing under a memory cap runs at full speed again (#2441). Cold searches
+read stored fields about 6x faster and decode only the hits and fields they
+return (#2443, #2434, #2454, #2465). Search keeps its own share of the memory
+budget while merges run (#2484, #2485), autoindex plans large folders in
+bounded memory with fewer, larger datasets (#2417, #2430), and a
+`semantic_text` test segment shrinks from 20.1 MB to 1.8 MB on disk
+(#2471). Every release candidate now passes a performance gate with autoindex and search budgets
+and an Elasticsearch floor before it ships (#2432). Thank you to everyone
+who filed a field report: they shaped this release. The memory-ceiling work
+continues in #2427 and #1122, which stay open.
+
 ### Upgrade notes
 
 - **Stored `semantic_text` vectors** (PR
@@ -25,7 +40,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   them. Vectors from neural, ONNX or proxy embedders, and vectors supplied
   by the caller, were always kept and are not affected.
 
+- #2422: an existing autoindex keeps the datasets it already has. Later
+  runs on the same folder use the new rules only for new files. To get the
+  smaller set of indices, index the folder again with a new `--prefix` and a
+  new `--state-dir`, check it, then delete the old indices with
+  `xerj autoindex remove --prefix <old>`. `--fresh` does not do this for a
+  `--no-graph` run that has already committed: it refuses, as before (PR #2430).
+
 ### Added
+
+- `scripts/bench/neural-bulk-ab.sh CONTROL_SHA CANDIDATE_SHA [N]` is an
+  interleaved A/B harness for neural-embedding `_bulk` ingest. It builds each
+  SHA in a worktree, runs the real `xerj autoindex` client against a frozen
+  Okta corpus on a CPU-capped throwaway node, and reports median, p95 and the
+  control arm's spread per metric. It measures the harness only; no
+  performance claim is made. See `benchmarks/ingest-neural-bulk/README.md`.
 
 - `xerj sessions import --format claude-code --input FILE --output NEW.jsonl`
   prepares an explicit Claude Code JSONL transcript for ordinary `autoindex`.
@@ -37,7 +66,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   or a changed source refuse publication; existing output is never replaced.
   This covers one preparation format for #1793, not automatic session
   discovery, incremental synchronization or universal secret removal. See
-  [the import guide](tools/session-import/README.md).
+  [the import guide](tools/session-import/README.md) (PR #2406).
 
 - With `[cluster] enabled = true`, `POST /v1/indices/{name}/docs` (one
   document, or a JSON array with one document per element),
@@ -60,7 +89,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   A write still needs the primary. `[cluster] enabled = false` does not
   take this path (part of
   [#1170](https://github.com/xerj-org/xerj/issues/1170); the issue stays
-  open).
+  open) (PR #2380).
 
 - `xerj autoindex` names a file family in the run summary when every file of
   that family was junked, or when junked files are a strict majority
@@ -70,7 +99,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   document gain `family_junk_warnings` only when that happens; existing
   summary fields are unchanged and exit codes are unchanged. `xerj autoindex
   map` and the MCP `xerj_map` response include the same warnings
-  ([#2370](https://github.com/xerj-org/xerj/issues/2370)).
+  ([#2370](https://github.com/xerj-org/xerj/issues/2370)) (PR #2377).
 
 - `xerj autoindex map <folder>` previews a folder that has not been indexed.
   It runs the same discovery as `xerj autoindex <folder> --dry-run` (walk,
@@ -95,6 +124,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   [#1170](https://github.com/xerj-org/xerj/issues/1170); the issue stays
   open).
 
+- **Release performance gate** for autoindex and search. It adds
+  `gen_corpus.py`, `autoindex_release_gate.sh` and `gate.py`, with per-phase
+  budgets, an Elasticsearch floor and an rc.99 comparison harness, and it
+  runs before a release is cut (#2432). The live-tree memory follow-up is
+  tracked in #2433, which stays open.
+
+- `xerj init` prints the Kimi CLI MCP config path (`~/.kimi-code/mcp.json`),
+  and the README marks the Kimi CLI row as tested (#2386).
+
+- Read-only post-deployment agent-discovery verifier for final GET/HEAD Link
+  headers, documentation targets and optional public-skill digest checks.
+  CI exercises local HTTP fixtures rather than contacting production (PR #2299).
+
 ### Changed
 
 - A `semantic_text` field with the built-in lexical embedder no longer
@@ -112,6 +154,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- `xerj corpus add` accepts a local Windows path such as
+  `F:\Projects\Foo` (#2472). The repo name was the text after the last `/`,
+  so a `\`-separated path stayed whole and was refused as an unsafe repo
+  name; it now names the repo `Foo`, as `F:/Projects/Foo` already did.
+
 - `xerj code` shows the part of a long definition that matched the query,
   not its first `--full` characters (#2464). The matching text could sit
   thousands of characters below the signature, so a hit named the right
@@ -119,7 +166,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `... [function name: showing N of M chars from offset O, window centred on the match]`;
   the `@ line N` label and citations are unchanged, and a definition whose
   head is already the best window still ends `truncated at N chars`. Hub ask
-  passages (`xerj ask`) and hub search API hits change the same way.
+  passages (`xerj ask`) and hub search API hits change the same way (PR #2474).
 
 - A segment merge's output-write step (doc-values build, stored encode, FTS
   side-car build) is now charged to the merge budget before it starts, and a
@@ -131,7 +178,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the FTS build input, whichever is larger. An admitted step grows the
   batch's merge reservation, so concurrent merge admission sees it.
   `_forcemerge` batches are charged but never refused, and neither is a
-  small batch that the yield-streak rule (#2468) lets run to completion.
+  small batch that the yield-streak rule (#2468) lets run to completion (PR #2470).
 
 - The parent memory breaker no longer flaps, and background merges and flush
   finalizes are bounded while it is engaged (#2427). A 3,000 MB autoindex run
@@ -161,7 +208,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   input cap of later batches until batches complete again. On the 1 GB gate
   corpus one admitted batch (JSON segments that compress 10-20x) grew a
   3,072 MB `xerj autoindex` node to 8,122 MB in 18 s while writes were
-  getting 429s; plain `_bulk` into one index peaked at 4,967 MB.
+  getting 429s; plain `_bulk` into one index peaked at 4,967 MB (PR #2452).
 
 - `xerj autoindex` no longer aborts a long run with `Resource temporarily
   unavailable (os error 11)` when the machine refuses to start a thread. The
@@ -170,7 +217,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   workers once per replay and reuses them. Starting a replay worker or an
   indexing worker now retries with a short backoff when thread creation is
   refused, and the replay finishes on the calling thread if no worker can be
-  started, so a refusal is no longer fatal (#2428).
+  started, so a refusal is no longer fatal (#2428) (PR #2437).
 - `_bulk` now checks the memory limiter before it parses the request, not
   only when each index's batch is written. A bulk that arrived while the memory
   or memtable breaker was engaged still split and copied its whole body first.
@@ -179,14 +226,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   request now counts its body against live RSS plus every other in-flight
   reservation until its parse ends, and is answered with one HTTP 429 per action (top-level 429,
   `Retry-After: 1`) when that would reach the watermark or a breaker is
-  engaged, so clients back off and re-offer every record (part of #2427).
+  engaged, so clients back off and re-offer every record (part of #2427) (PR #2440).
 - `xerj autoindex` no longer runs out of memory while planning a large folder.
   It used to keep the sampled values of every file in memory at once before
   grouping them into datasets, and kept them all until the end of the run;
   on a 5 GB folder of about 146,000 files that was several GB on the client
   before anything was indexed. Files are now grouped as they are read, and only
   what the end-of-run key correlation needs is kept. The datasets and index
-  names it plans are unchanged (part of #1122).
+  names it plans are unchanged (part of #1122) (PR #2417).
 - `xerj autoindex` no longer fails a run because a dataset name built from a
   long path (for example a Go module path) is over the 255-character index name
   limit. Names longer than 128 characters are shortened and end in a short
@@ -197,11 +244,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   larger than the folder it indexed. Those copies are now deleted as soon as
   the file's prepared records are safely on disk; resume and crash recovery
   still replay from the verified prepared records. On a 344 MB test corpus the
-  state directory went from 503 MB to 242 MB after a sync (#2421).
+  state directory went from 503 MB to 242 MB after a sync (#2421) (PR #2435).
 - `xerj search` checks whether the index is stale while the search runs
   instead of after it. The check reads the autoindex catalog, which cost about
   0.3 s on the first search after a restart, and that time was added to every
-  cold search (#2422).
+  cold search (#2422) (PR #2443).
 - Cold searches read stored fields about 6x faster. Picking a few hits
   out of a stored segment read the compressed data one byte at a time; it
   now reads it in 64 KB chunks. Loading one hit from a 20,000-document
@@ -219,7 +266,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   cache is filled in the background. On a 344 MB autoindexed corpus the
   first `xerj search` after a restart went from about 2.6 s to about 1.4 s.
   `fields: ["_passage"]` no longer makes a filtered `_source` load the whole
-  document. (#2422, #2423)
+  document. (#2422, #2423) (PR #2434)
 
 - `autoindex` no longer turns a large nested array of mostly numbers, such
   as a flight trace or a coordinate matrix, into one long text field. The
@@ -251,7 +298,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     still go over 32 with those. Rows of large CSV, JSONL and log files are
     counted in full for this, not only the 500 rows read as a sample.
   - A file is moved whole or not at all, so a dataset that stays never
-    loses rows.
+    loses rows (PR #2430).
 
 - **Indexing is fast again under a memory cap** (issue
   [#2438](https://github.com/xerj-org/xerj/issues/2438), part of
@@ -263,7 +310,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   and drop documents. Background merges now use the normal compression level.
   An explicit `_forcemerge` still uses the slow, small one, so the force-merged
   size is unchanged; set `XERJ_MERGE_MAX_EFFORT=true` to use it for every
-  merge. No data format change.
+  merge. No data format change (PR #2441).
 - **The helper thread that frees memory now starts when memory is high.**
   `xerj-drain-free` was refused with "memory is at the governor watermark",
   which is exactly when it is needed.
@@ -274,7 +321,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   source and whether this launch created it. New-directory guidance points
   operators back to their previous `--data-dir` or `--config` when they expected
   existing indices/accounts. Defaults, flag precedence, auto-port relocation
-  and existing data are preserved; no other data directories are scanned (#2409).
+  and existing data are preserved; no other data directories are scanned (#2409) (PR #2414).
 
 - `POST /{index}/_search` applies `post_filter` to the hits, as
   Elasticsearch does. It used to be accepted and ignored: every document
@@ -285,7 +332,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the filtered hits and one for the aggregations. `post_filter` beside a
   hybrid query is still a 400 (#943). `_msearch`, async search, scroll and
   a `?q=` query still ignore `post_filter`
-  ([#2400](https://github.com/xerj-org/xerj/issues/2400)).
+  ([#2400](https://github.com/xerj-org/xerj/issues/2400)) (PR #2404).
 
 - `xerj mcp` no longer holds every message behind a slow tool call. Each
   `tools/call` runs on its own task, so `ping`, `tools/list` and other
@@ -295,7 +342,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   and no response is sent for that call, as the MCP spec asks; it used to
   be ignored. Replies can go out in any order (they are matched by `id`); a
   batch is still answered one line per request
-  ([#2390](https://github.com/xerj-org/xerj/issues/2390)).
+  ([#2390](https://github.com/xerj-org/xerj/issues/2390)) (PR #2394).
 
 - `xerj autoindex remove --root` also deletes indices an aborted or failed
   build of that folder left behind when the build never wrote a catalog run.
@@ -304,12 +351,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   abort preserved, and any index another folder still names. `xerj autoindex
   status` marks a live leftover of any prefix `ORPHAN` and prints the remove
   command
-  ([#2391](https://github.com/xerj-org/xerj/issues/2391)).
+  ([#2391](https://github.com/xerj-org/xerj/issues/2391)) (PR #2393).
 
 - `xerj mcp`: a proxied tool call whose response body cannot be read in
   full (the connection drops partway, or the request deadline fires
   mid-body) is now an error that names the URL and the cause. It used to
-  come back as an empty *successful* result, which reads as "no matches".
+  come back as an empty *successful* result, which reads as "no matches" (PR #2388).
 
 - MCP calls to a loopback node (`127.0.0.1`, `localhost`, `::1`) no longer
   follow `ALL_PROXY`, `HTTP_PROXY`, or `HTTPS_PROXY`. reqwest sends those
@@ -322,14 +369,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   connection to it fails, the tool error names the proxy (`request to …
   went through proxy http://…, which returned HTTP 503`) instead of
   `XERJ returned HTTP 503`
-  ([#2379](https://github.com/xerj-org/xerj/issues/2379)).
+  ([#2379](https://github.com/xerj-org/xerj/issues/2379)) (PR #2381).
 
 - `xerj mcp`: `xerj_code_search` now gives up on a node that does not
   answer. Its requests went through a fresh HTTP client without the 30 s
   deadline every other tool uses, so a node that accepted the connection
   and then stalled held the call forever, and with it every later request
   on the stdio connection. The call now fails with an error after 30 s,
-  like the other tools.
+  like the other tools (PR #2366).
 
 - `SpawnedThread` is `Send` and `Sync` on musl. `libc::pthread_t` is
   `*mut c_void` there and an integer on glibc, so the handle was `!Send`
@@ -448,6 +495,75 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   global-allocator abort (`memory allocation of N bytes failed`) is
   unchanged.
 
+- Search keeps its own share of the memory budget. Background merges now stop
+  at a merge-pool ceiling 20% below the process limit, bytes held by merges
+  are not charged to reads, and a search that arrives during a short memory
+  peak waits up to 3 s for the drain before it answers (#2484, part of
+  #2427, which stays open).
+
+- A lone background merge batch waits for headroom under the merge-pool
+  ceiling before it starts (at most 30 s; `_forcemerge` never waits), and
+  merges check whether to yield every 1,024 documents, so ingest stays
+  within its memory cap (#2485, part of #2427, which stays open).
+
+- Merges are reserved on their on-disk footprint and held `_source` trees are
+  released early, keeping the ingest node within its cap (#2462, part of
+  #2427, which stays open).
+
+- Cold full-text top-k walks on identities and hydrates only the winners on
+  the page (#2454).
+
+- The cold stored scan decodes only observable columns (#2465).
+
+- The full-text projection skips should-leaves on unmapped fields, so
+  queries that name unmapped fields stay fast (#2467).
+
+- ES compatibility: a `size:0` probe skips the zero-hit `unknown_value`
+  sample, so ingest time stays proportional to the files indexed (#2457,
+  #2451).
+
+- A comma-separated `--prefix a,b` gets a clear error instead of being
+  joined (#2418). This comes from field report #2405, which stays open.
+
+- A `timed_out` finalize-verify window is retried, so the run completes
+  (#2419).
+
+- `xerj autoindex` updates a brain's `nodes_index` when this run's dataset
+  indexes differ from the stored set, so `brain overview` lists the prefix
+  just indexed instead of a stale `ax-*` list left by an earlier run of the
+  same folder. `created_at` is kept. Code and SQL records also store
+  `start_line` (the same value as `line` on a symbol, `1` on the file
+  document) and `end_line`. `path` on a code symbol is the repo-relative
+  path already stored in `ax_path`; a log or CSV `path` column is left as
+  the source wrote it. A `_source` include of `path`, `start_line`, and
+  `end_line` locates records this version writes. `line` and `ax_path` stay.
+  `xerj autoindex map` and MCP `xerj_map` name those locator fields,
+  including for an index written by an older build
+  ([#2351](https://github.com/xerj-org/xerj/issues/2351)) (PR #2353).
+
+- Writing through a multi-index alias follows ES's write-index rule: one
+  backing index, or exactly one member carrying `is_write_index: true`; an
+  ambiguous alias is refused with `illegal_argument_exception` instead of
+  silently writing to the first backing index. The same resolution covers
+  `_bulk` items and the id-addressed GET/HEAD/DELETE, so a document written
+  through the alias is readable through it, and the response `_index` now
+  names the concrete index (PR #2326).
+
+- Site: Search Console 404s redirect to their pages, `/api/` is disallowed in
+  `robots.txt`, and installer and video assets carry `noindex` (#2425).
+
+### Security
+
+- zstd is bumped for RUSTSEC-2026-0391, RUSTSEC-2026-0398, RUSTSEC-2026-0403
+  and RUSTSEC-2026-0410 (#2466).
+
+<!-- notes-exempt: #2363 #2387 #2396 #2398 #2420 #2445 #2459 #2475 (CLA signatures) -->
+<!-- notes-exempt: #2385 #2397 #2408 #2444 #2477 #2480 (agent field reports / feedback docs) -->
+<!-- notes-exempt: #2295 (rc.99 blog post) -->
+<!-- notes-exempt: #2371 #2410 (site copy/nav only) -->
+<!-- notes-exempt: #2378 (server.json + Docker pin to rc.99, release infra) -->
+<!-- notes-exempt: #2273 #1808 #2332 #2436 #2490 (CI-only) -->
+
 ## [1.0.0-rc.99] - 2026-10-24
 
 Window since v1.0.0-rc.98: 116 merged pull requests. x86_64 release binaries
@@ -468,13 +584,6 @@ Jarvis636431, Tong-bit-art, redwolf2019, ArkNill, pallidev,
 samuelmbabhazi, elewashy, WYSTAF, kamwoh, mgtf, mariomarcolongo and Jun516.
 
 ### Upgrade notes
-
-- #2422: an existing autoindex keeps the datasets it already has. Later
-  runs on the same folder use the new rules only for new files. To get the
-  smaller set of indices, index the folder again with a new `--prefix` and a
-  new `--state-dir`, check it, then delete the old indices with
-  `xerj autoindex remove --prefix <old>`. `--fresh` does not do this for a
-  `--no-graph` run that has already committed: it refuses, as before.
 
 - **No downgrade after a case-distinguished field write** (PR
   [#2261](https://github.com/xerj-org/xerj/pull/2261)). Opening a data
@@ -772,24 +881,7 @@ samuelmbabhazi, elewashy, WYSTAF, kamwoh, mgtf, mariomarcolongo and Jun516.
   [#2137](https://github.com/xerj-org/xerj/pull/2137), Jarvis636431; the
   prefix half of #2080).
 
-- Read-only post-deployment agent-discovery verifier for final GET/HEAD Link
-  headers, documentation targets and optional public-skill digest checks.
-  CI exercises local HTTP fixtures rather than contacting production.
-
 ### Fixed
-
-- `xerj autoindex` updates a brain's `nodes_index` when this run's dataset
-  indexes differ from the stored set, so `brain overview` lists the prefix
-  just indexed instead of a stale `ax-*` list left by an earlier run of the
-  same folder. `created_at` is kept. Code and SQL records also store
-  `start_line` (the same value as `line` on a symbol, `1` on the file
-  document) and `end_line`. `path` on a code symbol is the repo-relative
-  path already stored in `ax_path`; a log or CSV `path` column is left as
-  the source wrote it. A `_source` include of `path`, `start_line`, and
-  `end_line` locates records this version writes. `line` and `ax_path` stay.
-  `xerj autoindex map` and MCP `xerj_map` name those locator fields,
-  including for an index written by an older build
-  ([#2351](https://github.com/xerj-org/xerj/issues/2351)).
 
 - `xerj autoindex` no longer junks every PDF on an OS that rejects
   `setrlimit(RLIMIT_AS)` (macOS 27 returns `EINVAL`; a hard limit below
@@ -899,14 +991,6 @@ samuelmbabhazi, elewashy, WYSTAF, kamwoh, mgtf, mariomarcolongo and Jun516.
   report `eta_quality=stalled` when a phase with a known total completes
   nothing (including 0/N), and when a phase with no total has been silent
   for 10 minutes.
-
-- Writing through a multi-index alias follows ES's write-index rule: one
-  backing index, or exactly one member carrying `is_write_index: true`; an
-  ambiguous alias is refused with `illegal_argument_exception` instead of
-  silently writing to the first backing index. The same resolution covers
-  `_bulk` items and the id-addressed GET/HEAD/DELETE, so a document written
-  through the alias is readable through it, and the response `_index` now
-  names the concrete index.
 
 - Semantic `xerj autoindex` against `--embed-mode proxy` resumes after a
   mid-run failure and does not re-embed documents already indexed, when the

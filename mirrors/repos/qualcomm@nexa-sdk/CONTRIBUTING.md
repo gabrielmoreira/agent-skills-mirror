@@ -39,7 +39,7 @@ git clone --recursive https://github.com/qualcomm/GenieX.git
   GENIEX_DEVICE_TEST=1 pytest tests                    # full matrix, Snapdragon only
   ```
 
-CI runs only the model-free shard on GitHub runners; the device matrix runs on real QDC hardware via [pr-check.yml](.github/workflows/pr-check.yml).
+GitHub runners cover the API and llama_cpp CPU cells. On real QDC hardware, PRs run a windows + android smoke tier via [pr-check.yml](.github/workflows/pr-check.yml); the full matrix (adds linux and the `nightly` models) runs nightly and on tags via [test.yml](.github/workflows/test.yml).
 
 ## Project structure
 

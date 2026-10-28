@@ -64,7 +64,7 @@ Bad example:
 
 Use when a change is ready to record and the user wants its commit message or pull-request body written: the repository's template and recent log read first, the subject and body in that convention, the trailers the repo requires, and a `Tested:` line that lists only commands observed to run, with everything prepared but not run under `Not-tested:`. OMH prepares the text; the commit, the push, and the PR are the user's or the executor's.
 
-    Strong routing signals: `commit-pr-authoring`, `commit message`, `commit messages`, `write the commit message`, `draft the commit message`, `commit body`, `squash message`, `pr body`, `pr description`, `pull request body`, `pull request description`, `draft the pr`, `write the pr`, `pr template`, `tested trailer`, `not-tested trailer`, `lore trailers`
+    Strong routing signals: `commit-pr-authoring`, `commit message`, `commit messages`, `write the commit message`, `draft the commit message`, `commit body`, `squash message`, `pr body`, `pr description`, `pull request body`, `pull request description`, `draft the pr`, `write the pr`, `pr template`, `tested trailer`, `not-tested trailer`, `lore trailers`, `напиши коммит`, `сообщение коммита`, `описание пул реквеста`, `текст коммита`
 
 ## Catalog Metadata
 

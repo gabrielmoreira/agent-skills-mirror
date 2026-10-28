@@ -9,6 +9,7 @@ import {
   reportResourceRead,
   reportToolCall,
   reportToolkitLifecycle,
+  reportToolkitSessionInitialized,
   telemetryReporter,
 } from "./telemetry.js";
 
@@ -267,6 +268,91 @@ describe("login_uin resolution", () => {
     await expect(
       resolveLoginUin({ uin: "123811017" } as any, { allowResolve: false }),
     ).resolves.toBe("123811017");
+  });
+});
+
+describe("lifecycle 的 login_uin 不再恒为 unknown", () => {
+  // 病根：`start` 在进程最早期发出，缓存必空，而这一处偏偏带了 `allowResolve: false`
+  // ⇒ 只能读到空缓存 ⇒ 恒 'unknown'（2026-10-26：96h 内有真实 uin 的行是 0）。
+  const loadFresh = async () => {
+    vi.resetModules();
+    const telemetry = await import("./telemetry.js");
+    const auth = await import("../auth.js");
+    const peekLoginState = vi.mocked(auth.peekLoginState);
+    peekLoginState.mockClear();
+    peekLoginState.mockResolvedValue({
+      secretId: "id",
+      secretKey: "key",
+      uin: 123811017,
+    } as any);
+    const reportSpy = vi
+      .spyOn(telemetry.telemetryReporter, "report")
+      .mockResolvedValue(undefined);
+    return { telemetry, peekLoginState, reportSpy };
+  };
+
+  it("start 事件解析本地登录态，带上真实 uin", async () => {
+    const { telemetry, peekLoginState, reportSpy } = await loadFresh();
+
+    await telemetry.reportToolkitLifecycle({ event: "start" });
+
+    expect(peekLoginState).toHaveBeenCalledTimes(1);
+    expect(reportSpy).toHaveBeenCalledWith(
+      "toolkit_lifecycle",
+      expect.objectContaining({ event: "start", login_uin: "123811017" }),
+    );
+  });
+
+  it("initialized 事件同样解析（否则握手后这条也是白报 unknown）", async () => {
+    const { telemetry, peekLoginState, reportSpy } = await loadFresh();
+
+    await telemetry.reportToolkitSessionInitialized({});
+
+    expect(peekLoginState).toHaveBeenCalledTimes(1);
+    expect(reportSpy).toHaveBeenCalledWith(
+      "toolkit_lifecycle",
+      expect.objectContaining({ event: "initialized", login_uin: "123811017" }),
+    );
+  });
+
+  it("exit 在没 warm 过的进程里不解析：退出路径不能等", async () => {
+    const { telemetry, peekLoginState, reportSpy } = await loadFresh();
+
+    await telemetry.reportToolkitLifecycle({ event: "exit", duration: 1 });
+
+    expect(peekLoginState).not.toHaveBeenCalled();
+    expect(reportSpy).toHaveBeenCalledWith(
+      "toolkit_lifecycle",
+      expect.objectContaining({ event: "exit", login_uin: "unknown" }),
+    );
+  });
+
+  it("exit 复用 start 已解析的值：有缓存就不再等第二次", async () => {
+    const { telemetry, peekLoginState, reportSpy } = await loadFresh();
+
+    await telemetry.reportToolkitLifecycle({ event: "start" });
+    await telemetry.reportToolkitLifecycle({ event: "exit", duration: 10 });
+
+    expect(peekLoginState).toHaveBeenCalledTimes(1);
+    expect(reportSpy).toHaveBeenLastCalledWith(
+      "toolkit_lifecycle",
+      expect.objectContaining({ event: "exit", login_uin: "123811017" }),
+    );
+  });
+
+  it("宿主注入的 uin 优先，且不触发本地登录态读取", async () => {
+    const { telemetry, peekLoginState, reportSpy } = await loadFresh();
+
+    await telemetry.reportToolkitLifecycle({
+      event: "start",
+      cloudBaseOptions: { uin: "999999" } as any,
+    });
+
+    expect(peekLoginState).not.toHaveBeenCalled();
+    expect(reportSpy).toHaveBeenCalledWith(
+      "toolkit_lifecycle",
+      expect.objectContaining({ login_uin: "999999" }),
+    );
   });
 });
 

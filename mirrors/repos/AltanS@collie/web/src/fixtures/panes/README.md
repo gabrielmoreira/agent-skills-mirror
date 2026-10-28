@@ -332,6 +332,20 @@ header row and a body row, as the bridge types a message (a newline between them
 | `pi--v130-powerline-editor-slash-model--w120.txt` | `/model` typed, pi's command list under the box | draft `/model`, modal none, the list is the command's own (the profile's `commandList`) |
 | `pi--v130-powerline-model-selector--w120.txt` | pi's `/model` selector, which takes the editor's place in column zero | modal unreadable, never free; the pi reader's modal |
 
+**Issue 594, live**, from the rig run of 2026-10-25: pi 1.3.0 with pi-powerline-footer 0.20.2,
+@baggiiiie/pi-context-chart 0.0.5 and a lab goal widget (a stand-in for the reporter's, drawn with
+`setWidget` over the editor as `🎯 active · … · turns N/∞ · Ns`, its seconds ticking once a second), 254
+columns, CRLF line ends as the bridge reads them, no trailing newline. The scratch project path in the
+cwd row was replaced by `~/project`. A fresh session draws pi's welcome splash at the top; the first key
+clears it.
+
+| Fixture | State | Reads as |
+| --- | --- | --- |
+| `pi--v130-powerline-goal-widget-idle--w254.txt` | Fresh session, idle: the splash, the goal widget row over the inset box, four rows under it | free (idle, modal none, empty) |
+| `pi--v130-powerline-goal-widget-running--w254.txt` | A running turn (`⠹ Working` in the top rule), the goal widget, five rows under the box (the prompt widget row and the context chart's four) | running, modal none, composer empty |
+| `pi--v130-powerline-welcome-idle--w254.txt` | Another fresh session before its first key, the splash at the top | free |
+| `pi--v130-powerline-welcome-gone--w254.txt` | The same pane after the probe character and its Backspace: the splash rows are blank | free; against the one before it the rows above only lost text (`idle.volatile.above.losesText`) |
+
 ## pi's permission gate on pi 0.87.1 (captured 2026-10-17, Herdr 0.9.4)
 
 Stock pi 0.87.1 with the example pi ships, `examples/extensions/permission-gate.ts` (`pi -e <path>`), in
@@ -2849,7 +2863,7 @@ through.
 | `pi--v0871-model-selector-empty--w120.txt` | pi 0.87.1, the selector `/model` opens. Labelled `dialog` |
 | `omp--v18-6-slash-model-list--w120.txt`, `--w80.txt` | omp 18.6.1, the box holds `/model`, under it ten entries from `❯ ⬢  model` to `↻  loop`, a scrollbar column; at 80 columns the descriptions wrap. Labelled `popup` |
 | `omp--v18-6-slash-settings-list--w120.txt`, `--w80.txt` | The box holds `/settings`, its list pointing at `settings`. Labelled `popup` |
-| `omp--v18-6-slash-mod-partial--w120.txt` | The box holds `/mod`, the pointer on `model`. Labelled `dialog` |
+| `omp--v18-6-slash-mod-partial--w120.txt` | The box holds `/mod`, the pointer on `model`. Labelled `popup` since 1.24.1 (omp's `leadOpens`, see the omp fuzzy list section below); `dialog` before |
 | `omp--v18-6-model-selector-empty--w120.txt` | The Models picker `/model` opens, a full-screen box with providers and models. Labelled `dialog` |
 | `omp--v18-6-settings-screen--w120.txt` | The settings screen `/settings` opens. Labelled `dialog` |
 
@@ -2984,6 +2998,46 @@ OMP's own words are `Goal mode paused.` and `Goal mode resumed.`. A `/goal pause
 into the box brings up the list of that command's arguments under the box, with the pointer on the
 argument typed (`commandList.argumentList`, `command-list.ts`).
 
+## omp 18.12.6 tool-approval panel (captured 2026-10-25, real omp, rig pane, issue batch 1.24.1)
+
+Two screens of a real omp 18.12.6 (`omp --version`) with its tool-approval panel up for a `bash` call
+(`echo gang-test`), under a Collie rig bridge (port 18703, `approval` mode, model `anthropic/claude-haiku-4.5`
+on OpenRouter, a scratch `HOME` and project folder under `~/.cache/collie-lab/`). Each is the rig's plain
+pane read, 120 columns, copied unchanged: the rig's read carries no SGR, so these two files hold no escape
+sequences (every other omp approval capture here does). The reader looks at text only, the pointer is the
+`❯` glyph, so the missing paint costs nothing. No user, host, key or token appears; the one path on a
+screen is the lab's own, cut to `…ng/04-dialogs/state/harness/omp/project` by omp.
+
+The panel is a new layout (the pi-tui overlay panel): no blank spacer rows, the choices under the body, a
+third row `Approve bash for this session`, a divider over a new footer (`↑/↓ choose · ⏎ select ·
+Ctrl+⏎/Ctrl+Q approve · ⎋ deny · Ctrl+O details · type to deny and steer`), and the composer's band (the
+status row and the empty `╰─`) still drawn under the box. Enter approves, Escape denies and Down then Enter
+approves for the session; all three were proved by raw keys in the lab. Before the reader of
+`web/src/lib/harness/omp/approval.ts` learned this shape the Surface said `modal: unreadable` on it and
+every send was refused `unconfirmed`.
+
+| Fixture | State / what's in it |
+|---|---|
+| `omp--v18-12-6-approval-bash--w120.txt` | A fresh session in its first turn: the `What's New` banner, the user line, the model's short reasoning, the finished `$ echo gang-test` tool box, and the panel with the pointer on `Approve`. Labelled `dialog`, lifts as `Approve`, `Approve bash for this session`, `Deny` |
+| `omp--v18-12-6-approval-bash-later--w120.txt` | The same panel 18 s into the turn, taken after a refused `Type here` tap: the reasoning's tail above a boxed tool call, the `⎋ Run echo gang-test` row with omp's title tag to its right, and the panel with the pointer still on `Approve`. Labelled `dialog` |
+
+No capture holds the pointer on another row, so the moved states in the tests are the capture with the `❯`
+moved (`bridge/surface/ask.test.ts`) or drawn the way the source lays the rows out (`approval.test.ts`).
+
+## omp skill chip and pasted image chip (captured 2026-10-25, real omp 18.6.1 and 18.12.6, rig pane)
+
+Plain pane reads from the same Collie rig as the approval panel above (no SGR, 120 columns), cut to whole
+rows. omp rewrites a box that holds `/skill:<name> <arg>` into a chip, `✦ <name> <arg>`, as soon as a space
+follows the name; a skill with no argument stays as typed. Before the profile's `collapse.pattern` knew the
+chip every skill with an argument ended `typed_not_submitted / mismatch`, on both versions. A pasted image
+path becomes a chip too, `🖼 #N` (U+1F5BC) on 18.6.1 and `📷 #N` (U+1F4F7) on 18.12.6; only the first matched.
+
+| Fixture | State / what's in it |
+|---|---|
+| `omp--v18-6-skill-chip--w120.txt` | omp 18.6.1, cut to its last two rows: the band (`π > ◒ Haiku 4.5 > 🗺 Plan ⏸ > … > $0.05 ▶──6%─…`) and the prompt row `╰─ ✦ darius-work-plan reply with the single word OK and call no tools`. Typed text was `/skill:darius-work-plan reply with the single word OK and call no tools`. Labelled `draft` |
+| `omp--v18-12-6-skill-chip--w120.txt` | The same on omp 18.12.6, cut to its last two rows: the band with no cost segment and the same chip row. The rows above held a 402 banner of the run, left out. Labelled `draft` |
+| `omp--v18-12-6-image-chip--w120.txt` | omp 18.12.6 after a bracketed paste of one image path: the title tag `🎨 COLOR: …` at the right, omp's image card `╭── 📷 #1 ───╮` with its `200x200` footer, the band, and the prompt row `╰─ 📷 #1`. CRLF normalised to LF. Labelled `draft` |
+
 ## Hermes corpus (captured 2026-10-16, Hermes Agent v0.22.2 classic CLI, Herdr 0.9.1, sandbox pane)
 
 `hermes--*.txt` come from one disposable Herdr pane running the installed `hermes --cli` with a
@@ -3074,3 +3128,340 @@ a path of the same length (OMP's shortened `…che/collie-lab/edge5fix-lab` beca
 | `claude--v2-1-309-interrupted-fresh-session--w120.txt` | `idle` | Claude Code 2.1.309 under the operator's fullscreen TUI (`"tui": "fullscreen"`), a fresh session (`/clear`): a Bash call (`find /usr /opt -type f \| xargs md5sum \| wc -l`) interrupted with Escape. The short transcript stands at the top, `⎿  Interrupted · What should Claude do instead?` on row 14, then blank rows down to the box on row 35: the stopped row stands outside the six-row band above the box. Second live pass; taken in a second private tmux server, no hooks, isolated `CLAUDE_CONFIG_DIR` |
 | `claude--v2-1-309-permission-denied-fresh-session--w120.txt` | `idle` | The same fresh fullscreen session: a Bash permission dialog answered `4. No`. `Ran 1 shell command`, the Interrupted row and `✻ Crunched for 2s` at the top, blank rows, then `◐ medium · /effort` over the box |
 | `claude--v2-1-309-stopped-prompt-restored--w120.txt` | `draft` | The same fresh fullscreen session: `Write 700 numbered lines, …` sent, Escape 1.2 s later, before the first token. Claude takes the turn back and puts the prompt into the box; no Interrupted row and no Stop hook. Only Collie's own Stop receipt tells the fold the turn ended |
+
+## The prompt echo over a running turn (captured 2026-10-25, Claude Code 2.1.310, 120 columns, Herdr)
+
+Claude Code echoes each sent prompt in the transcript as `❯ ` and the text, and a long prompt wraps to
+rows indented to column 2. The bridge's whole-screen cue read over a found box took that echo for a
+pointed list, and with a numbered list in the answer under it for a dialog: a phone send into the
+running turn was refused `not_free` and held until the turn ended, where it should have gone in with
+Enter for Claude's own queue (`idle.promptEchoes` in claude.json). Taken from a disposable pane in
+the harness lab's own Herdr session (collie-rig), read through its scratch bridge's
+`GET /api/pane/:id?lines=60`, ANSI kept, CRLF rows, Haiku, the operator's three-row statusline. The
+exec row's `/var/home/<user>` is replaced with `/home/demo/user`, a path of the same length; every
+other byte is as read. Each screen is the S0 read of a send that a turn running `for i in $(seq 1 40);
+do echo $i; sleep 1; done` took.
+
+| Fixture | State / what's in it |
+|---|---|
+| `claude--v2-1-310-working-echo-numbered--w120.txt` | A three-row echo (`❯ First reply with a numbered list of 6 colors…`, two rows at column 2), the answer's list `1.` to `6.`, the Bash call counting, the spinner over an empty box. Reads `running`, `none`, `empty`; the whole-screen cue read was strong (the send held), now weak (it queues). Labelled `running` |
+| `claude--v2-1-310-working-echo-bullets--w120.txt` | The held case with no number near the box: the earlier turns (the numbered one among them) above, then a three-row echo (`❯ First reply with a bullet list of 6 colors…`), a bullet list (`- red - …`), the Bash call and the spinner. The echo alone read as a pointed list of three rows: strong (the send held), now none. Labelled `running` |
+| `claude--v2-1-310-working-echo-one-line--w120.txt` | The same pane with a one-row echo (`❯ Run this exact bash command…`): the whole-screen read was already none and the send queued. Labelled `running` |
+
+## A walky talky message queued in a running turn (captured 2026-10-26, Claude Code 2.1.310, 120 columns, Herdr)
+
+Browser leg case 16: a walky talky message sent while a turn streams a numbered list. Claude queues it
+and draws it over the box in the echo's shape: `❯ ` and the header line, the body and
+`ctrl+enter to send now` at column 2, a blank row, then the box with the faint placeholder
+`Press up to edit queued messages`. The framed cue read took those three rows for a pointed list, so
+the Surface claimed `unreadable` at S2 and the send ended `unknown(dialog_after_enter)`; the framed read
+now leaves out an echo-shaped run too (cues.ts `readCuesFor`). Both are the Send Protocol's own reads of
+that send in the rig's scratch bridge, cut to the last 24 rows, ANSI and trailing blanks stripped. They
+live in `web/src/fixtures/surface/` and are pinned by `cues.test.ts` and
+`bridge/surface/protocol.claude-queued.test.ts` only.
+
+| Fixture | State / what's in it |
+|---|---|
+| `claude--v2-1-310-walky-turn-empty-box--w120.txt` | S0: the answer's list up to `15.`, the empty box, `⏸ manual mode on · esc to interrupt` under it. Reads `running`, `none`, `empty` |
+| `claude--v2-1-310-walky-queued-two-rows--w120.txt` | S2, after Enter: the list up to `18.`, the three-row queued block, a blank row, the box with the placeholder. Reads `running`, `none`, `empty`; it read `unreadable` before |
+
+## Several queued messages, and pickers with no box (captured 2026-10-26, Claude Code 2.1.310, 119 columns, Herdr)
+
+A throwaway Herdr server in its own `XDG_CONFIG_HOME`, a scratch git project under
+`~/.cache/collie-lab/claude-queued/`, a copied `CLAUDE_CONFIG_DIR` (credentials without the refresh token,
+deleted after the run), `claude --model haiku --permission-mode default --strict-mcp-config`, and
+`stty cols 119 rows 40` (the headless pane shows 119 columns). Messages were typed with
+`herdr pane send-text`, `ctrl+j` between lines, and Enter, while a turn streamed a numbered list of fruits.
+Each file is `herdr pane read --source visible`, cut to the last 24 rows, trailing blanks stripped; no
+path is on them.
+
+What 2.1.310 draws: each queued message is its own block, `❯ ` and its first line, the later lines at
+column 2, and a blank row between two blocks. Only the last block carries `ctrl+enter to send now`. While
+the answer streams the blocks stand straight over the box; while the model still thinks they stand over
+the spinner and its tip row. A `- [ ]` line is no checkbox to the cues (the dash comes first). A numbered
+line under the first line no longer makes the block a list (cues.ts `withoutPromptEchoes`: only the
+pointer row decides). Escape with messages queued ends the turn and sends them as the next prompt; Up
+puts them all back into the box, joined. `/resume` and the rewind list replace the box, as the 208 older
+Claude dialog captures do, so the echo rule never reads them. Pinned by `cues.test.ts` and
+`bridge/surface/protocol.claude-queued.test.ts`.
+
+| Fixture | State / what's in it |
+|---|---|
+| `claude--v2-1-310-queued-three-blocks--w119.txt` | Streaming: a two-line block, then `❯ Queued two: reply B.`, then `❯ Queued three: reply C.` with the hint, blank rows between, the box with the placeholder. Reads `running`, `none`, `empty` |
+| `claude--v2-1-310-queued-over-spinner--w119.txt` | Thinking, no answer yet: the turn's own prompt echo, then four queued blocks (two-line, one-line, a numbered body, a `- [ ]` body) over `✽ Wandering… (5s · thinking)` and a tip row. Reads `running`, `none`, `empty` |
+| `claude--v2-1-310-queued-checkbox-body--w119.txt` | Streaming, the last block `❯ Checklist:` over `  - [ ] reply F`, `  - [ ] reply G` and the hint. Reads `running`, `none`, `empty` |
+| `claude--v2-1-310-queued-numbered-body--w119.txt` | Streaming, the last block `❯ Please do these:` over `  1. reply D`, `  2. reply E` and the hint. Reads `running`, `none`, `empty`; it read `unreadable` before |
+| `claude--v2-1-310-queued-numbered-first--w119.txt` | The known limit: the last block `❯ 1. reply H first` over `  2. reply I second` and the hint, the shape of a dialog's pointer on its first option. Reads `running`, `unreadable`, `empty` |
+| `claude--v2-1-310-resume-two-sessions--w119.txt` | `/resume` with two past sessions: `  ❯ Fruit taste descriptions list` over `    1 minute ago · master · 196KB`, the second session, the two-row key footer. No box. Lifts an ask; the cues alone read strong |
+| `claude--v2-1-310-rewind--w119.txt` | Escape Escape on an empty box: `Rewind`, one earlier prompt, `  ❯ (current)`, `Enter to continue · Esc to cancel`. No box. Lifts an ask; the cues alone read strong |
+
+## omp fuzzy command list under the box (captured 2026-10-25, omp 18.6.1 and 18.12.6, omp-gang testers 01 and 02)
+
+Real pane reads from the testers' rig: a scratch Herdr with its own bridge, `omp` on `openrouter/anthropic/claude-haiku-4.5`,
+120 columns, read through `GET /api/pane/:id` and cut to the last 16 rows (`omp--v18-6-1-slash-open-tall--w120.txt` is the
+whole read). Rows are kept as read, with their CRLF line ends. The scratch working folder is already cut by omp's own `…`.
+omp draws a fuzzy list of up to ten rows under the open box for any text that starts with `/`: `/help`, which omp does not
+have, lists ten commands that match it in part, the pointer on the first; `/mo` points at `model`; `/` points at the
+skills row. Enter would run the pointed command, not the typed one. Until 1.24.1 the box past such a list was found only
+when the pointer rested on the typed text, so these read `unreadable/torn`. `commandList.leadOpens` makes the list the
+typed text's own popup.
+
+| Fixture | State | What it shows |
+| --- | --- | --- |
+| `omp--v18-6-1-slash-open-tall--w120.txt` | `popup` | 18.6.1, `/` typed: the whole read, ten rows from `✦ skill:` to `⤵ login`, a scroll bar column |
+| `omp--v18-6-1-slash-help-unlisted--w120.txt`, `omp--v18-12-6-slash-help-unlisted--w120.txt` | `popup` | `/help` typed (omp has no such command): ten rows, the pointer on `plan-review` |
+| `omp--v18-6-1-slash-mo-fuzzy--w120.txt`, `omp--v18-12-6-slash-mo-fuzzy--w120.txt` | `popup` | `/mo` typed: ten rows, the pointer on `model`, which a bare Enter runs (checked by hand on 18.6.1) |
+| `omp--v18-6-1-slash-nothere-fuzzy--w120.txt`, `omp--v18-12-6-slash-nothere-fuzzy--w120.txt` | `popup` | `/nothere` typed: nine rows, the pointer on `skills` |
+| `omp--v18-12-6-slash-comment-loop-row--w120.txt` | `popup` | 18.12.6, `//comment` typed in command mode: one row, `❯ ↻ loop`. The 402 notice's key id is zeros |
+| `omp--v18-12-6-stale-list-row-empty-box--w120.txt` | `idle` | 18.12.6 after a cancelled `//comment` (Ctrl+C): the box is empty and the last list row, `❯ ↻ loop`, stays under it. omp 18.6.1 redraws that row away; 18.12.6 keeps it until the next key. `commandList.staleWhenEmpty` leaves it out of the rows under the box that a send compares. The 402 notice's key id is zeros |
+
+## OMP drafts taller than the box (captured 2026-10-25, omp gang reports 06 and 07, OMP 18.6.1, Herdr rig)
+
+These two live in `fixtures/surface/`: the Send Protocol's tests read them (`idle.frame.scroll` in
+`omp.json`), and the phone's omp adapter corpus, which pins every capture in this folder, does not.
+OMP caps its editor at 17 draft rows on a pane of 30 rows or more and keeps the cursor's rows in view,
+so a long draft shows only its last rows. Plain text (the rig read the visible rows without SGR),
+transport CRLF normalized to LF, trailing blanks cut. The lab folder path is the rig's own scratch
+folder; no secrets were present.
+
+| Fixture | State | What it shows |
+| --- | --- | --- |
+| `omp--draft-scrolled-2000-chars--v18.6.1.txt` | `draft` | 33 rows: a 2,000-character draft Collie typed (`... w0 w1 ... w401  END`), left by `typed_not_submitted(mismatch)`. The box starts at `╰─ w7 w8 ...`; the head of the text is out of view (07 F1) |
+| `omp--draft-scrolled-26-lines--v18.6.1.txt` | `draft` | The last 45 rows of a 130x45 pane: a 26-line draft the person typed, at the 17-row cap, `draft line 2` to `draft line 18` in view. A Replace on this box once pressed 1,536 Backspaces and left 39 characters of the draft (06 C5) |
+
+## A queued message that Stop gives back to the box (captured 2026-10-25, OMP 18.6.1, Collie's rig, 119 columns, ADR 0122)
+
+Two screens of tester 03's case 0 (`~/.cache/collie-lab/omp-gang/03-running-turn/captures/c0-18.6.1.log`), read through
+the rig bridge's own pane read, so they are plain text with no SGR bytes. A slow plain-text turn ran ("List 120 different
+fruits"); `second message` was sent into it, and Collie queued it with Ctrl+Q (receipt `sent`, `queued: true`). Then Stop
+pressed Escape. OMP ended the turn and moved the queued text back into its input box, and it never became a prompt. The
+lab folder stands as OMP shortened it (`…-running-turn/state/harness/omp/project`); no user, host or key is in either file.
+
+| Fixture | State | What it shows |
+| --- | --- | --- |
+| `omp--v18-6-1-queued-before-stop--w119.txt` | `running` | The answer streams; `After yield · 1` / `1. second message` / `└ Alt+↑ to edit` over `⎋ Working…` and the spinner row; the `╰─` box is empty. Taken 3 s after the queued send |
+| `omp--v18-6-1-stop-returned--w119.txt` | `draft` | 1.5 s after Stop: the list and the Working row are gone, the status row is at rest (`π >`), and the box reads `╰─ second message`. The same screen 18 s later. The next plain send is refused `draft_present` |
+
+## A stale bottom frame below the live editor (captured 2026-10-25, OMP 18.6.1 under Herdr, 120 columns)
+
+One screen of Altan's own OMP pane on the dev lane, read through Herdr's pane read with its SGR bytes
+(`~/.cache/collie-lab/omp-gang/09-stale-frame/w78p5-stale-frame.ansi`). The file is byte-faithful in
+layout, not in content: every row, column, SGR sequence and frame character is as captured, and the
+conversation text, the project names and the folder in the status row are replaced with neutral text
+of the same length. A layout change never reached the pane in full: OMP drew its live editor higher
+up, on row 35, right under the answer, and the bottom two rows still show the status row and the box
+of the earlier layout, with an old draft in it. `xy` was typed before the capture, and it shows in the
+live editor, not in the bottom box.
+
+| Fixture | State | What it shows |
+| --- | --- | --- |
+| `omp--v18-6-1-stale-frame-below-live--w120.txt` | `draft` | Labelled as the reader reads it today: idle, no dialog, and a draft, because the box at rows 38-39 reads `╰─ and what about the design`. That box is a stale image and takes no keys; the live editor is the `╰─ xy` row 35 with no frame of its own. Every send on this screen was refused `draft_present`, and a Replace pressed 41 Backspaces into the live editor and ended `unknown`. The Send Protocol now probes a draft before it refuses or clears one; a probe that does not land in the box, on a screen that reads the same once more, ends `stale_screen` with nothing deleted |
+
+## OMP widget and status rows under the box (captured 2026-10-25, omp gang tester 15, OMP 18.6.1 and 18.12.6, Collie's rig)
+
+These live in `fixtures/surface/`: the Send Protocol's tests and the Surface's read read them
+(`idle.frame.maxWidgetRows` and `commandList.footer` in `omp.json`), and the phone's omp adapter corpus, which pins every capture in
+this folder, does not read a widget under the box. Plain text through the rig bridge's pane read, transport
+CRLF normalized to LF, the rig's header line cut. An extension's `ctx.ui.setWidget` with `placement:
+"belowEditor"` draws its rows straight under the box's `╰─` row, with no blank row; the lab folder is the
+rig's own scratch folder, and no secret was present.
+
+| Fixture | State | What it shows |
+| --- | --- | --- |
+| `omp--v18-12-6-widget-below-3.txt` | `idle` | 18.12.6, three widget rows under the box: within the tail bound, free before and after the change |
+| `omp--v18-12-6-widget-below-4.txt` | `idle` | 18.12.6, four widget rows: the read was `torn` and a send was held 30 minutes |
+| `omp--v18-6-1-widget-below-6.txt` | `idle` | 18.6.1, six widget rows under the box and the "Update Available" panel higher up |
+| `omp--v18-12-6-status-row-idle.txt` | `idle` | 18.12.6, an extension's `ctx.ui.setStatus` row (`PLAN 3/6`, flush left) directly under the empty box |
+| `omp--v18-12-6-status-row-palette-4.txt` | `popup` | 18.12.6, `/wx` typed: a four-row list, the pointer on `wx`, and the status row under the list. The read was unreadable and torn, and the send stopped at `modal_cue` |
+| `omp--v18-6-1-status-row-palette-4.txt` | `popup` | 18.6.1, the same four-row list and status row |
+| `omp--v18-12-6-status-row-palette-10.txt` | `popup` | 18.12.6, `/w` typed: ten list rows with a scrollbar column, the pointer on `wx`, the status row under the list |
+
+Gang three, 01-regression (captured 2026-10-26, omp 18.6.1 and 18.12.6, 120 columns; the status row's folder names the lab only): the same
+four-row `/wx` list over an extension's widget. A widget row is drawn with ONE leading space, so `commandList.footer` (`^ ?\S`, at most
+`idle.frame.maxWidgetRows` + 1 rows) takes it as it takes a flush-left status row. Before, the footer was `^\S` and four rows, and these read as a dialog.
+
+| Fixture | State | What it shows |
+| --- | --- | --- |
+| `omp--v18-6-1-palette-widget-below-6.txt`, `omp--v18-12-6-palette-widget-below-6.txt` | `popup` | `/wx` typed over `/wb 6`: the list, then six widget rows (` below row 1` to ` below row 6`) |
+| `omp--v18-6-1-palette-widget-and-status.txt`, `omp--v18-12-6-palette-widget-and-status.txt` | `popup` | The same, and the flush-left status row `PLAN 3/6` under the widget |
+| `omp--v18-6-1-palette-tick-below.txt`, `omp--v18-12-6-palette-tick-below.txt` | `popup` | `/wx` typed over `/tfb`: the list, then one ticking widget row |
+
+A pasted box drawing in the draft (gang three, 01-regression W1, same date and versions; in `fixtures/surface/`; the rows keep their padding to 120 columns, which is what tells the person's `│` from a border):
+
+| Fixture | State | What it shows |
+| --- | --- | --- |
+| `omp--v18-6-1-quoted-box-draft--w120.txt`, `omp--v18-12-6-quoted-box-draft--w120.txt` | `draft` | `Here is what omp showed me:` then a quoted `Allow tool: bash` box (`╭─ ... ─╮`, `│ ❯ Approve │`, `│   Deny │`, `╰──╯`) and `why did it ask?`. omp's box has no right border here, so every `│` and `╯` is the person's text. The row pattern named a trailing glyph as a border and cut it, so the Send Protocol saw `mismatch`; now `border` in `omp.json` is a border only when no white space follows it |
+
+omp's `claude` composer shape (`composer.shape: claude`: a prompt glyph on the first row of a draft, the others indented) with a two-line draft (gang three, 01-regression W2, same date and versions; in `fixtures/surface/`): the rows read as a pointed list, the Surface says `unreadable`, and the shape is a known gap. A plain send is refused `unconfirmed` and a Clear is refused `unreadable` (it was `dialog_open`, though nothing opened).
+
+| Fixture | State | What it shows |
+| --- | --- | --- |
+| `omp--v18-6-1-composer-claude-two-lines--w100.txt`, `omp--v18-12-6-composer-claude-two-lines--w100.txt` | `unreadable` | The rule, `❯ draft line 1`, `  draft line 2`, the rule and the status row. Cut to those six rows |
+
+## A pane that is still a shell while the agent starts (captured 2026-10-25, omp gang tester 15, OMP 18.12.6, Collie's rig)
+
+| Fixture | State | What it shows |
+| --- | --- | --- |
+| `shell--omp-launch-window.txt` | `screen` | 737 ms after the rig typed `exec '…/start.sh'` into a fresh shell: the image banner and the command table, then the typed line on the starship prompt row. omp is not up (it boots in about 20 s on 18.12.6), the multiplexer names no agent, and the box is not on screen. A send here went in blind (`sent`, Enter into the shell) and the text later sat as an unsent draft in omp's box |
+
+## omp file popup under a path typed in the box (captured 2026-10-25, omp 18.6.1 and 18.12.6, omp-gang testers 05 and 12)
+
+Real pane reads from the testers' rig, the same setup as the fuzzy list section above, cut to the last 16 rows (the
+`~` one is a fresh pane, cut to 12), rows kept as read with their CRLF line ends. A text that is a file path at the
+start of the box makes omp draw its file popup under it: one `❯ name.png` row for the path of one file, with no
+description. The phone sends an upload path as a command (it starts with `/`). A file name has the shape of a
+command name, so until 1.24.1 the row read as a command list pointing at another command and the send ended
+`typed_not_submitted (modal_cue)` (issue 497, part 5). `commandList.notForText` in `omp.json` says a path at the
+start of the box opens no command list. The testers' home folder `/var/home/<user>` became `/home/demo/lab1`, a path
+of the same length, so no row moves. Source (pi-tui `editor.ts`, 18.12.6): with this popup open and the typed path
+equal to its only entry, Enter cancels the popup and submits the text; the tester's own Enter on 18.6.1 did.
+
+| Fixture | State | What it shows |
+| --- | --- | --- |
+| `omp--v18-6-1-path-popup--w120.txt`, `omp--v18-12-6-path-popup--w120.txt` | `popup` | An upload path alone in the box, `❯ w2_p1-....png` under it |
+| `omp--v18-12-6-path-popup-two-paths--w120.txt` | `popup` | Two upload paths on two rows (the second wrapped), the popup for the last one |
+| `omp--v18-6-1-path-popup-tilde--w120.txt` | `popup` | 18.6.1, `~/.../x.png` typed in a fresh pane: `❯ x.png` under it. Read as a draft with no list. A plain send of it (it is no command) still stops at `changed`, as the row under the box is new |
+
+## omp 18.6.1 `Allow tool: goal` (captured 2026-10-25, omp-gang tester 02)
+
+| Fixture | State | What it shows |
+| --- | --- | --- |
+| `omp--v18-6-1-approval-goal--w120.txt` | `dialog` | The last 16 rows of a `/goal` turn: the transcript row `⏳ Goal: complete`, then `Allow tool: goal` with no body (two blank rows), `Approve` pointed, `Deny`, and the first shape's footer. Lifts as Approve, Deny, Cancel with no description on Approve (approval.ts, `BODYLESS_TOOLS`) |
+
+## omp 18.12.6 Ask with option previews (captured 2026-10-25, omp-gang tester 04)
+
+| Fixture | State | What it shows |
+| --- | --- | --- |
+| `omp--v18-12-6-ask-previews--w120.txt` | `dialog` | The echo block `╭─── Ask 1 questions`, then the panel: three options, each with a description row and a `│ ` preview row, `Other`, and the footer ending `Alt+H hide`. Pointer on the first row. Lifts with the preview on each option (ask.ts, OPTION PREVIEWS) |
+
+## omp's rewind picker, Esc Esc (captured 2026-10-25, omp-gang tester 04 case 7)
+
+| Fixture | State | What it shows |
+| --- | --- | --- |
+| `omp--v18-6-1-rewind-picker--w120.txt` | `dialog` | The last 22 rows of an 18.6.1 turn behind the picker: the transcript, a dashed `╭┄┄` frame holding the chosen turn, and the footer `64/64  ↑/↓ step  ←/→ user turns  f filter  ⏎ rewind  Ctrl+O expand  ⎋ cancel`. No box, no status row. Reads `unreadable` from `idle.overlayRows` in the profile |
+| `omp--v18-12-6-rewind-picker--w120.txt` | `dialog` | The same picker on 18.12.6 (`29/29`) |
+
+## omp 18.6.1 typeahead popups under the box (captured 2026-10-25, omp-gang tester 12)
+
+All are composers, labelled `popup`. The profile names them in `idle.volatile.below.popups` (rules `file`, `issue`, `emoji`, `path`, `actions`); the Surface leaves their rows out of the cue read and the Send Protocol out of its row count, and a send committed with Ctrl+Q goes out with the popup open (omp's key handler for it runs before the autocomplete handler). The emoji rule is written from omp 18.12.6's `emoji-autocomplete.ts` and has no capture yet.
+
+| Fixture | What it shows |
+| --- | --- |
+| `omp--v18-6-1-at-popup--w120.txt` | `please read @READ`, one popup row `❯ README.md   README.md` |
+| `omp--v18-6-1-at-popup-path--w120.txt` | `@/tmp/x.png`, one popup row `❯ x.png` |
+| `omp--v18-6-1-hash-popup--w120.txt` | `fix item #1`, two popup rows `PR #1` and `Issue #1`: a pointer list, the weak cue that read `modal: unknown` |
+| `omp--v18-6-1-hash-popup-single--w120.txt` | `see PR #12`, one popup row |
+| `omp--v18-6-1-hash-popup-stale--w120.txt` | an EMPTY box after Ctrl+C with `PR #1` and `Issue #1` still under it; they go with the next key |
+
+A text that ends in a bare `#` (`ends with hash #`) makes omp draw its editor-action list (`Copy current line`, a key-chord column, seven rows). That list is the `actions` rule (omp-gang three, 2026-10-26, omp 18.6.1 and 18.12.6, cut from the 120-column captures; the status row's path names the lab folder only):
+
+| Fixture | What it shows |
+| --- | --- |
+| `omp--v18-6-1-hash-end-actions--w120.txt` | `ends with hash #`, seven action rows, the pointer on `Copy current line` |
+| `omp--v18-12-6-hash-end-actions--w120.txt` | The same list on 18.12.6 |
+
+`tag:#abc` ends in a word, not a bare `#`: it opens no popup, and its screens read as before.
+
+## omp 18.6.1 a draft that quotes a dialog (captured 2026-10-25, omp-gang tester 12)
+
+| Fixture | State | What it shows |
+| --- | --- | --- |
+| `omp--v18-6-1-quoted-dialog-draft--w120.txt` | `draft` | A nine-row prompt in the box that asks for a permission box printed in a code fence (`╭─ Allow tool: bash`, `❯ Approve`, `Deny`, a footer), then `my notes`. The quoted rows are the person's text. omp draws the draft's rows under the prompt at three columns, which `idle.frame.draftIndent` says, so the modal cues (`dialogsInBox` reads the box rows) leave them out. A dialog omp draws in the box's place starts at the box's column and stays a dialog. The draft is taller than the bridge's tail window, so no prompt region binds (the sweep goes out unbound) |
+
+## omp 18.12.6 plan-mode Ask (captured 2026-10-25, omp-gang tester 14)
+
+| Fixture | State | What it shows |
+| --- | --- | --- |
+| `omp--v18-12-6-ask-plan-mode--w120.txt` | `dialog` | The last 20 rows when `x` was sent with plan mode on: a status row `⎋ Gather task for plan mode`, then the Ask panel `What work should I plan?` with four choices, each with a description row and a preview row, `Other (type your own)` and the footer ending `Alt+H hide`. Lifts like the previews dialog (ask.ts, OPTION PREVIEWS) |
+
+## Status rows the profile did not read (captured 2026-10-25, OMP 18.6.1 and 18.12.6, omp gang 11-geometry)
+
+Captures of tester 1 (`~/.cache/collie-lab/omp-gang/11-geometry/captures/1.3-*`), read through the rig bridge's pane read, so
+plain text with no SGR bytes, cut to the rows that matter (the last rows of the screen). The host name in the status row is
+replaced with `example`, a word of the same length. `config.yml` held `statusLine: {preset: full, separator: slash}` or
+`{preset: ascii, separator: ascii, symbolPreset: ascii}`. Until 1.24.1 `idle.frame.top` wanted a run of three rule glyphs in
+the status row and a symbol as its first token: the full preset at 80 columns draws `─5%─┃200K─` for its gauge, and the ascii
+preset starts on `[high]` and draws its rule with `-`. Both read `unknown/unknown/unknown`, and a send was refused `unconfirmed`.
+
+| Fixture | State | What it shows |
+| --- | --- | --- |
+| `omp--v18-12-6-status-full-slash-idle--w80.txt` | `idle` | 18.12.6, 80 columns, preset `full`, separator `slash`: the gauge keeps `─5%─┃200K─` |
+| `omp--v18-12-6-status-full-slash-draft--w80.txt` | `draft` | The same screen with `abc` typed |
+| `omp--v18-6-1-status-full-slash-idle--w80.txt` | `idle` | 18.6.1, the same preset, with the update notice over the box |
+| `omp--v18-12-6-status-ascii-idle--w130.txt` | `idle` | 18.12.6, preset `ascii`, symbols `ascii`: the first token is `[high]`, the rule is `-`, the compaction tick is `|` |
+| `omp--v18-12-6-status-ascii-draft--w80.txt` | `draft` | 18.12.6, the same preset at 80 columns with `abc` typed: `-5%------|200K-` |
+| `omp--v18-6-1-status-ascii-idle--w80.txt` | `idle` | 18.6.1, the same preset at 80 columns: `-4%------|200K-` |
+
+## The command list with `symbolPreset: ascii` (captured 2026-10-25, OMP 18.6.1 and 18.12.6, omp gang 11-geometry)
+
+`config.yml` held `symbolPreset: ascii`. `/session` typed in command mode, as the rig bridge's pane read it (plain text, no
+SGR), cut to the status row, the box and the list. The list draws its cursor with the theme's `nav.cursor`, which is `❯` in the
+unicode preset, U+F054 in the nerd preset and `>` in the ascii preset. Until 1.24.1 `commandList.pointer` knew the first two,
+so the list was no popup of the typed command, and `/session` ended `typed_not_submitted (modal_cue)` with its text left in
+the box.
+
+| Fixture | State | What it shows |
+| --- | --- | --- |
+| `omp--v18-12-6-ascii-symbols-session-list--w130.txt` | `popup` | 18.12.6, `/session` typed: the pointer row is `> session     Session management commands`, nine more rows under it |
+| `omp--v18-6-1-ascii-symbols-session-list--w130.txt` | `popup` | 18.6.1, the same list, status row `pi > [high] Haiku 4.5 > [D] ... >--4%----` |
+
+## Drafts the box wraps by cutting a token (captured 2026-10-25, OMP 18.6.1 and 18.12.6, omp gang 11-geometry)
+
+Typed through the rig bridge, then read from the pane at 80 columns, cut to the status row and the box. OMP wraps a draft at a
+break and drops the break. A token wider than a row, and a run of double-width cells, are cut where the row is full instead, so the
+draft has no space at that wrap. Until 1.24.1 the reader joined every wrap with a space (Clear's Restore text came back with one
+extra character).
+
+| Fixture | State | What it shows |
+| --- | --- | --- |
+| `omp--v18-6-1-draft-cjk-wrapped--w80.txt` | `draft` | 67 CJK characters, no spaces: the first row ends one cell short of the width |
+| `omp--v18-12-6-draft-url-wrapped--w80.txt` | `draft` | a 140-character URL: the first row is full, the cut is inside the token |
+
+## `composer.shape: field` (captured 2026-10-25, OMP 18.12.6, omp gang 11-geometry)
+
+The editor shape `field` has no rule and no border. Every draft row opens with the block `▐` and closes with `▌` on the last
+column, a blank row and the status row follow. The empty box is one `▐` row with the hint `⇧⇥ to change thinking effort` before
+the cap. The profile reads it as an interior frame under a blank row (`idle.frameAlternates`, the last one). The older chrome walk
+of the adapter does not read it, so `composerReady` stays false on these two.
+
+| Fixture | State | What it shows |
+| --- | --- | --- |
+| `omp--v18-12-6-composer-field-idle--w130.txt` | `idle` | the empty box with its effort hint |
+| `omp--v18-12-6-composer-field-two-lines--w130.txt` | `draft` | two typed lines, one `▐` row each |
+
+The shape `claude` (rule, `❯`, rule) reads empty and with one line, but not with two, and has no fixture here on purpose: a two-line draft reads `unreadable` because the cue reader takes the `❯` row and the indented row under it, between two rules, for a pointer on a listed row. `ownPrompt` is not safe on that edges entry. The wanted read is an expected-fail test, and the gap a `todo`, in `fold.pi-omp.test.ts` ("omp's composer.shape field"). Left for after 1.24.1.
+
+## omp: a path-like command over one fuzzy entry (captured 2026-10-26, omp 18.6.1 and 18.12.6, omp-gang three, tester 05)
+
+Two captures in `fixtures/surface/`, cut to the last 13 rows, the Send Protocol's tests read them (`bridge/surface/protocol.test.ts`, "a path-like command over a pointed list"). A path-like text sent as a command (`/tmp/x`, `/etc/hosts`, `/bin/sh`, `/exit/now`) makes omp 18.6.1 draw ONE fuzzy entry under the box, `❯ ↻ loop   Loop: off`, whatever the path is, and Enter runs `/loop` ("Loop mode enabled"). The profile's `commandList.notForText` keeps such a text's rows out of the Surface's read (the file popup stands there), so the check before Enter must not take its list from that read. Only the `/tmp/x` list was captured on 18.6.1: the tests type the other three paths into the same list. omp 18.12.6 draws no list for these texts; its capture is the screen after the send, an empty box, used as the base for a no-list scene.
+
+| Fixture | State | What it shows |
+| --- | --- | --- |
+| `omp--v18-6-1-path-like-loop-list--w120.txt` | `popup` | `/tmp/x` typed, `❯ ↻ loop        Loop: off` under it |
+| `omp--v18-12-6-path-like-no-list--w120.txt` | `idle` | 18.12.6, an empty box after `/tmp/x` went out as a message (no list is ever drawn for a path there) |
+
+## omp: the /model picker with Collie's probe in its search (captured 2026-10-25 and 2026-10-26, omp 18.6.1 and 18.12.6, omp-gang three, testers 12 and 5)
+
+Two captures in `fixtures/surface/`, the full 40-row screen as read, the Send Protocol's tests read them (`bridge/surface/protocol.test.ts`, "omp's /model picker owns the keyboard"). The picker is a full-screen `Models` box with a `🔍 >` search row, no input box and no frame. The Surface reads it `unknown / unreadable / unknown` with a strong cue, so a send ends `unconfirmed` with nothing typed. The 18.6.1 capture is tester 12's Type here run: the probe `⌁` stands in the search row. The 18.12.6 capture has an empty search. The tests derive the empty and the two-character search rows from them with the row's width kept.
+
+| Fixture | State | What it shows |
+| --- | --- | --- |
+| `omp--v18-6-1-model-picker-search-probe--w120.txt` | `screen` | `/model` open on 18.6.1, `🔍 > ⌁` in the search row |
+| `omp--v18-12-6-model-picker--w120.txt` | `screen` | `/model` open on 18.12.6, an empty search |
+
+## omp: a local shell line that is running (captured 2026-10-26, omp 18.6.1 and 18.12.6, omp-gang three, tester 5)
+
+Two captures in `fixtures/surface/`, the Surface's and the Stop's tests read them (`web/src/lib/surface/fold.pi-omp.test.ts`, `bridge/surface/stop.test.ts`). A `!` line (`!sleep 25`) runs in omp's own bash block, `$ sleep 25` and `⠋ Running… (⎋ to cancel)` between two rules, with no model turn on and nothing in the journal. `idle.runningRows` knew only the `Working…` rows, so the Surface read the turn idle and Stop was refused `turn_idle`; the row is now a running row, and Escape, which the row names, is the profile's interrupt key. The 18.12.6 capture is cut to its last 14 rows. The 18.6.1 capture is derived from tester 5's `during-local-bash` screen, which was taken after a plain message was sent during the command: the echo of that message (`sent during local bash`) and the lab's `401` notice were cut, because they stand between the Running block and the box and put the row out of the volatile band (`volatile.above.maxRows`, 6). That screen as taken still reads idle on 18.6.1: a row above the band is not seen, and the band is not widened for it.
+
+| Fixture | State | What it shows |
+| --- | --- | --- |
+| `omp--v18-6-1-local-bash-running--w120.txt` | `running` | 18.6.1, the Running block over the empty box (derived, see above) |
+| `omp--v18-12-6-local-bash-running--w120.txt` | `running` | 18.12.6, `$ sleep 40` and its Running row over the empty box |
+
+## omp: a desk draft with the queue prefix, painted (captured 2026-10-26, omp 18.6.1, omp-gang three, tester 5)
+
+One capture in `fixtures/surface/`, cut to its last 12 rows with its colours kept (`web/src/lib/surface/fold.pi-omp.test.ts`, "omp's queue-prefix draft"). A draft typed at the desk that starts with `->` or `=>` makes omp draw its `Queueing ➤` label on the box's first row, in the grey `rgb(107,114,128)`, and the body on the row under it. That grey is also the profile's `inlineHint` colour (the empty box's ghost hint), so the capture pins that the painted label is not taken for a hint: the Surface reads `draft` with the text `Queueing ➤ hello queue draft`. The tester's view said `empty` for several seconds after the draft was typed; the view (`/api/snapshot`) is the pane's last poll, and an idle pane polls every 12 s, so a desk edit shows late. The `=>` prefix draws the same label (omp-gang 13-drafts, case 35b). The 18.12.6 screens are `omp--draft-queueing-label--v18.12.6.txt` and `omp--draft-queueing-body--v18.12.6.txt`, listed above.
+
+| Fixture | State | What it shows |
+| --- | --- | --- |
+| `omp--v18-6-1-draft-queueing-painted--w120.txt` | `draft` | 18.6.1, `-> hello queue draft` typed at the desk, label and body painted |

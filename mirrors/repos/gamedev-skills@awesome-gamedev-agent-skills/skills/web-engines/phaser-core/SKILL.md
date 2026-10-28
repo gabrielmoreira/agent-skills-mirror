@@ -146,6 +146,11 @@ this.cameras.main.setZoom(1.5);
 
 ## Pitfalls
 
+- **A key works once, then stays down (or Left + Right cancel out)** → in Phaser
+  4.2.1, a `keyup` cancelled before the keyboard manager receives it is ignored
+  because `event.defaultPrevented` is set. Inspect host-page listeners and browser
+  extensions before changing movement code. Read the keyboard diagnosis and
+  capture-phase fallback contract in `references/scene-flow.md`.
 - **Assets are `undefined` in `create`/`update`** → you forgot to queue them in
   `preload`, or used the wrong key. The loader runs between `preload` and `create`.
 - **State leaks across a restart** → you set fields in the constructor. The Scene
@@ -188,7 +193,7 @@ this.cameras.main.setZoom(1.5);
 ## References
 
 - For the full scene state machine (pause/resume vs sleep/wake vs stop/start, the
-  restart-state bug, and removing/replacing scenes), read
+  restart-state bug, removing/replacing scenes, and stuck keyboard input), read
   `references/scene-flow.md`.
 
 ## Related skills

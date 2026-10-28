@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `oven-sh/bun` — 26 default patterns, 0 followed patterns, 27 file(s) materialized.
+Mirror of `oven-sh/bun` — 26 default patterns, 0 followed patterns, 28 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `oven-sh/bun` — 26 default patterns, 0 followed patterns, 27 file(s)
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 27 |
+| Files         | 28 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -75,17 +75,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 14 | ✓ | [`scripts/build/CLAUDE.md`](scripts/build/CLAUDE.md) |
 | 15 | ✓ | [`scripts/verify-baseline-static/CLAUDE.md`](scripts/verify-baseline-static/CLAUDE.md) |
 | 16 | ✓ | [`src/AGENTS.md`](src/AGENTS.md) |
-| 17 | ✓ | [`src/CLAUDE.md`](src/CLAUDE.md) |
-| 18 | ✓ | [`src/format/CLAUDE.md`](src/format/CLAUDE.md) |
-| 19 | ✓ | [`src/js/AGENTS.md`](src/js/AGENTS.md) |
-| 20 | ✓ | [`src/js/CLAUDE.md`](src/js/CLAUDE.md) |
-| 21 | ✓ | [`src/jsc/bindings/v8/AGENTS.md`](src/jsc/bindings/v8/AGENTS.md) |
-| 22 | ✓ | [`src/jsc/bindings/v8/CLAUDE.md`](src/jsc/bindings/v8/CLAUDE.md) |
-| 23 | ✓ | [`src/lint/CLAUDE.md`](src/lint/CLAUDE.md) |
-| 24 | ✓ | [`test/AGENTS.md`](test/AGENTS.md) |
-| 25 | ✓ | [`test/CLAUDE.md`](test/CLAUDE.md) |
-| 26 | ✓ | [`test/internal/source-lints/CLAUDE.md`](test/internal/source-lints/CLAUDE.md) |
-| 27 | ✓ | [`test/js/node/test/parallel/CLAUDE.md`](test/js/node/test/parallel/CLAUDE.md) |
+| 17 | ✓ | [`src/aot/CLAUDE.md`](src/aot/CLAUDE.md) |
+| 18 | ✓ | [`src/CLAUDE.md`](src/CLAUDE.md) |
+| 19 | ✓ | [`src/format/CLAUDE.md`](src/format/CLAUDE.md) |
+| 20 | ✓ | [`src/js/AGENTS.md`](src/js/AGENTS.md) |
+| 21 | ✓ | [`src/js/CLAUDE.md`](src/js/CLAUDE.md) |
+| 22 | ✓ | [`src/jsc/bindings/v8/AGENTS.md`](src/jsc/bindings/v8/AGENTS.md) |
+| 23 | ✓ | [`src/jsc/bindings/v8/CLAUDE.md`](src/jsc/bindings/v8/CLAUDE.md) |
+| 24 | ✓ | [`src/lint/CLAUDE.md`](src/lint/CLAUDE.md) |
+| 25 | ✓ | [`test/AGENTS.md`](test/AGENTS.md) |
+| 26 | ✓ | [`test/CLAUDE.md`](test/CLAUDE.md) |
+| 27 | ✓ | [`test/internal/source-lints/CLAUDE.md`](test/internal/source-lints/CLAUDE.md) |
+| 28 | ✓ | [`test/js/node/test/parallel/CLAUDE.md`](test/js/node/test/parallel/CLAUDE.md) |
 
 ---
 

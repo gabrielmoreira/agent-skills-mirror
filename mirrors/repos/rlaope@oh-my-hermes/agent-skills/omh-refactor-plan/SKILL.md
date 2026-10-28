@@ -60,7 +60,7 @@ Bad example:
 
 Use when a refactor that crosses module boundaries is already decided and needs its execution shaped: which files move in which phase, what verifies each phase, and where each phase rolls back to - before anything is edited.
 
-    Strong routing signals: `refactor-plan`, `refactor plan`, `plan this refactor`, `plan the refactor`, `refactor planning`, `refactor phases`, `phased refactor`, `refactor in phases`, `refactor rollback plan`, `blast radius`, `module restructure plan`, `restructure plan`, `dependency upgrade`, `major version upgrade`, `framework upgrade`, `upgrade to the next major`, `breaking change upgrade`, `lockfile`, `리팩터링 계획`, `리팩토링 계획`, `리팩터링 단계`, `단계별 리팩터링`, `리팩터링 계획 세워줘`, `리팩터링 롤백 계획`
+    Strong routing signals: `refactor-plan`, `refactor plan`, `plan this refactor`, `plan the refactor`, `refactor planning`, `refactor phases`, `phased refactor`, `refactor in phases`, `refactor rollback plan`, `blast radius`, `module restructure plan`, `restructure plan`, `dependency upgrade`, `major version upgrade`, `framework upgrade`, `upgrade to the next major`, `breaking change upgrade`, `lockfile`, `리팩터링 계획`, `리팩토링 계획`, `리팩터링 단계`, `단계별 리팩터링`, `리팩터링 계획 세워줘`, `리팩터링 롤백 계획`, `спланируй рефакторинг`, `план рефакторинга`, `рефакторинг по фазам`, `поэтапный рефакторинг`, `рефакторинг по шагам`
 
 ## Catalog Metadata
 

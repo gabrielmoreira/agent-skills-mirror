@@ -1,8 +1,8 @@
 # Installation
 
-Install the HAPI CLI and set up the hub. For phone client builds and pairing,
-see [Native apps (iOS / Android)](./native-apps.md); for browser installation,
-see [PWA](./pwa.md).
+Install the HAPI CLI and set up the hub. To install the paid phone apps and
+pair them, see [Native apps (iOS / Android)](./native-apps.md); for the free
+browser client, see [PWA](./pwa.md).
 
 ## Prerequisites
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `cLin-c/paper-skill` — 26 default patterns, 24 followed patterns, 27 file(s) materialized.
+Mirror of `cLin-c/paper-skill` — 26 default patterns, 25 followed patterns, 28 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `cLin-c/paper-skill` — 26 default patterns, 24 followed patterns, 27
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 24 |
-| Files         | 27 |
+| Followed pats | 25 |
+| Files         | 28 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -52,6 +52,7 @@ Mirror of `cLin-c/paper-skill` — 26 default patterns, 24 followed patterns, 27
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
 - `references/verification-policy.md`
+- `workflows/paper-system-eight-steps.md`
 - `references/paper-writing-prompts.md`
 - `workflows/literature-review.md`
 - `citation-integrity.md`
@@ -107,8 +108,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 23 | → | [`workflows/figure-audit.md`](workflows/figure-audit.md) |
 | 24 | → | [`workflows/full-verification.md`](workflows/full-verification.md) |
 | 25 | → | [`workflows/literature-review.md`](workflows/literature-review.md) |
-| 26 | → | [`workflows/reference-tools.md`](workflows/reference-tools.md) |
-| 27 | → | [`workflows/submission-package.md`](workflows/submission-package.md) |
+| 26 | → | [`workflows/paper-system-eight-steps.md`](workflows/paper-system-eight-steps.md) |
+| 27 | → | [`workflows/reference-tools.md`](workflows/reference-tools.md) |
+| 28 | → | [`workflows/submission-package.md`](workflows/submission-package.md) |
 
 ---
 

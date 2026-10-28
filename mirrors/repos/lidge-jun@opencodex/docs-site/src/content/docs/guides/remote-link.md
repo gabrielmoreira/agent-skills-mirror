@@ -27,6 +27,8 @@ The dashboard does not ask you to enter a token. It probes the host first, and i
 
 The Add Child sheet explains that the Child uses this Home's providers over SSH and lists the prerequisites above. Host aliases come from `~/.ssh/config` on the Home running OpenCodex, not necessarily the computer displaying the browser. If discovery succeeds with no hosts, add a `Host` entry like this, then choose **Rescan hosts**. You can also enter an existing alias manually; selecting or entering an alias enables **Test connection**. The sheet links to this guide.
 
+Host discovery also follows top-level `Include` directives. Parentheses and braces in an included filename stay literal when combined with wildcards: for example, `Include conf.d/*(1).conf` finds `backup(1).conf`, and `Include conf.d/shard-{1..3}-*.conf` looks for filenames containing `{1..3}`. An `Include` inside a `Host` or `Match` block is conditional and is not used for discovery.
+
 ```sshconfig
 Host devbox
   HostName devbox.example.com
@@ -48,6 +50,8 @@ On the computer that should use the Home's providers:
 Connecting restarts OpenCodex on this computer. Codex turns that are already running finish first, and new requests can fail for up to a minute while it restarts. The dashboard then reloads by itself and shows the Child link. Codex keeps using `http://127.0.0.1:<port>/v1` on this computer, with no token and no environment variable to set: the local OpenCodex relays each request to the Home, which serves it with its own providers and accounts.
 
 The Child waits for its configured port while the old process releases it. If a CLI-managed restart still fails, run `ocx start` on the Child and check `~/.opencodex/restart-handoff.log`. In the desktop app, the app starts and supervises the replacement automatically.
+
+`ocx stop` on a Child stops its proxy and leaves Codex routing, the catalog and the Grok config in place, so `ocx start` (or `ocx service start`) brings the Child back unchanged. If `ocx status` on the Child reports that Codex routing is native, run `ocx sync --restart-codex`; `ocx start` does not rewrite a Child's Codex routing.
 
 If **Child** says to pair this machine first, open this computer's configured literal-loopback HTTP dashboard, for example `http://127.0.0.1:<configured-port>`. The local pairing form appears only when pairing is missing and the dashboard and API use the same loopback origin. Copy the form's `ocx gui pair --origin "http://127.0.0.1:<configured-port>"` command, run it in a terminal on this computer, and paste the one-use code into the form. Use the exact origin shown in the form; a provider API key or admin token is not a pairing code. Missing pairing is separate from a configured-port mismatch.
 

@@ -1,7 +1,7 @@
 ---
 type: Playbook
 title: Test Corpus
-description: "The test_documents fixture corpus (submodule, bucket-fetched, not committed): read_test_fixture, missing fixtures, A/B controls, push order. Use before Rust tests on a fresh clone or when a fixture is missing."
+description: "The test_documents corpus (submodule, bucket-fetched): read_test_fixture, missing fixtures, A/B controls. Use on a fresh clone or a missing fixture."
 x-ai-rulez:
   kind: skill
   id: test-corpus
@@ -12,7 +12,7 @@ x-ai-rulez:
 # Test corpus
 
 `test_documents` is a git submodule (`.gitmodules` → `xberg-io/test_documents`). Its binary
-fixtures — 654 objects, ~581 MiB per `test_documents/corpus.lock.json` — are **not committed**.
+fixtures (about 1000 objects, ~0.6 GiB; see `test_documents/corpus.lock.json`) are **not committed**.
 They are materialised from a public GCS bucket over anonymous HTTPS, with no credentials and no
 SDK.
 
@@ -54,16 +54,17 @@ A `None` is **"not run"**, never "passed".
 vacuous control inverts the verdict. The tell is the runtime: `finished in 0.00s` means the
 binary did nothing.
 
-Two more worktree traps: a relative `[patch.crates-io]` path dependency (the root
-`Cargo.toml` currently patches `liter-llm` to `../liter-llm/…`) resolves relative to the
-*worktree*, not the main checkout; and a shared `CARGO_TARGET_DIR` will thrash.
+Two more worktree traps: a relative `[patch.crates-io]` path dependency, if one is ever added
+(the root `Cargo.toml` forbids out-of-tree overrides), resolves relative to the *worktree*, not
+the main checkout; and a shared `CARGO_TARGET_DIR` will thrash.
 
-Working setup:
+Working setup (worktrees live under the polyrepo root's `.worktrees/<repo>/<name>`):
 
 ```bash
-git worktree add /tmp/ctl <ref> --detach
-rmdir /tmp/ctl/test_documents && ln -sfn <main-tree>/test_documents /tmp/ctl/test_documents
-CARGO_TARGET_DIR=/tmp/ctl-target cargo test ...
+task worktree:add REPO=xberg BRANCH=ctl BASE=<ref>   # at the polyrepo root
+cd .worktrees/xberg/ctl
+rmdir test_documents && ln -sfn <main-tree>/test_documents test_documents
+CARGO_TARGET_DIR=<main-tree>/target/ctl cargo test ...
 ```
 
 When the goal is only build isolation, prefer a dedicated `CARGO_TARGET_DIR` in the main

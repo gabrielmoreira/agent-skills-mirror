@@ -5,6 +5,19 @@ import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
 import { createCloudBaseMcpServer } from "../server.js";
 import { reportToolkitSessionInitialized, telemetryReporter } from "./telemetry.js";
 
+// 会话级上报现在会解析本地登录态（`initialized` 与 `start` 同一道门）：
+// 单测里必须挡住真实凭证存储与网络，否则用例会读本机 `~/.config/.cloudbase/auth.json`，
+// 临时密钥恰好过期时还会触发一次续期 —— 测试不许出网。
+vi.mock("../auth.js", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../auth.js")>();
+  return { ...actual, peekLoginState: vi.fn(async () => null) };
+});
+
+vi.mock("../cloudbase-manager.js", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../cloudbase-manager.js")>();
+  return { ...actual, fetchEnvOwnerUin: vi.fn(async () => null) };
+});
+
 /**
  * 会话级上报（`toolkit_lifecycle` 的 `event: 'initialized'` 形态）的运行时测试。
  *

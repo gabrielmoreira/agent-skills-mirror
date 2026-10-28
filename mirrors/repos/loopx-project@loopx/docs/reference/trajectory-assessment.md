@@ -297,6 +297,45 @@ explicit analysis with separately recorded usage.
 显式数值编码 v2 要求把有来源语境支持的数量及其所指写成可读正文，仍保留原始标记和
 准确数值限制；未知所指不猜测，不能把支持材料的准备步骤补成原记录的新行动。这不是
 机器语义校验。旧编码及结果保持，新版本仅随明确分析生成并单独记账。
+
+The explicit `"source_text_aliases_with_literal_values_v3"` variant adds a
+generation-time fidelity pass over each row's permitted numeric spellings:
+leading signs, precision and percent suffixes stay exact, while spelled-out units
+are explained in the output language. An adjacent topic cannot resolve an
+ambiguous referent without supporting field-bound evidence. This remains model
+guidance; the exact-literal qualifier and original-text fallback are unchanged.
+Its frozen prompts and identities remain unchanged.
+
+显式数值编码 v3 增加生成时的逐项忠实性核对：正负号、精度和百分号按允许的原始写法
+保留，文字单位用目标语言解释；不能仅凭邻近主题补全含糊所指。这仍是模型指导，
+既有字面校验和原文回退不放宽，已保存的v3提示和身份保持。
+
+New CLI preparations and default pack registrations now select
+`"source_text_aliases_with_literal_values_v4"` when a captured display snapshot
+has no explicit encoding. It retains v3 fidelity guidance and asks for idiomatic
+prose with context-appropriate terminology: input groups, repeated measurements,
+relative percentages and percentage-point changes keep their distinct meanings.
+Explain established quantities directly, without commentary about source-token
+encoding or a duplicate English paraphrase. Preserve each required source token
+once, the complete meaning and any unresolved referent or unit.
+
+The normalized input saves this choice before analysis. Explicit encodings and
+configurations, including v3, and frozen inputs keep their exact prompts, keys,
+schemas and artifacts. Reading or refreshing them never upgrades or starts an
+analysis. This extends generation guidance in the existing analysis job; it
+adds no translation editor or revision workflow. Literal validation is unchanged
+and cannot certify terminology, semantic fidelity or comprehension. Original
+text remains available for comparison; model adherence and installed adoption
+require their own evidence.
+
+新CLI准备和默认pack登记在快照未指定编码时采用v4，先把选择保存到版本化输入。
+它保留v3忠实性指导，要求用自然语言说明有依据的数量，按语境区分样本组与执行队列、
+输入与重复测量、相对百分比与百分点；不再解释源标记如何编码或拆分，也不重复附英文
+释义。原始标记仍保留一次，完整含义、条件、失败和未明所指不省略。
+显式编码／配置和历史输入的提示、身份、结构及产物保持，浏览与刷新不升级或执行。
+译文改进沿既有分析生成，不增加编辑器或修订流程。字面校验不能证明术语、语义或理解
+质量；原文仍可核对，模型实际遵从和正式采用须另外验证。
+
 Translated prose is applied to decoded narrative fields; it is never serialized
 and reparsed as an Explore decision. Owner-format labels or list markers inside
 model text cannot change the original outcome, eligibility or list cardinality.
@@ -514,6 +553,20 @@ not establish fast-mode delivery or a speedup. The CLI uses an ephemeral session
 ignores user configuration/rules, disables shell tools and web search, and passes
 only the evidence pack in its prompt. It is not a security sandbox for hostile
 executables or an authorization to read arbitrary machine files.
+
+New CLI preparations and default pack registrations use
+`config.output_schema_revision: 2`. Their generation schema binds each metric
+row to a declared episode, its eligible metrics and its own source IDs. Display
+context remains separate evidence and cannot widen a metric's citation scope.
+Post-generation validation still checks ranges, completeness and claim evidence;
+schema acceptance does not prove a citation supports a judgment. Explicit frozen
+configurations without this revision retain their original schema, key and saved
+results. Selecting revision 2 creates a new analysis identity and needs explicit
+execution; reading never upgrades a job or reuses a failed artifact as success.
+
+新准备的 CLI 分析及默认登记采用输出格式版本 2，在生成时绑定片段、适用指标与该片段
+的来源范围。原有引用行范围和结果校验保留；格式通过不代表论据成立。旧配置、结果和
+失败记录保持原样，新版本须明确执行，普通读取不升级或启动分析。
 
 The command runs synchronously, with a default 900-second analysis timeout. A host
 may supervise it asynchronously and read its immediate receipt:

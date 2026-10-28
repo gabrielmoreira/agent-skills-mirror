@@ -74,3 +74,9 @@ Android 目前只收 H.264）。更长、更大或别的格式会被拒绝，并
 在旁边的 `own-clip.png`，和当前登录账号的其他文件归在一起；iOS 上在应用的
 `Application Support/nanomuse/avatar/own-clip.mp4`；桌面版在 `$DSH_HOME/nanomuse/avatar/own-clip.mp4`。
 换一张工作室的脸或者退回内置形象，它都还在。
+
+Android 上这个目录在 App 自己的存储里，文件管理器和 shell 都打不开，所以工作台的菜单里有「保存到相册」：
+把底图、各个状态的静态图、上一次生成的四张候选图、动起来的状态视频和你自己的视频复制到
+`Pictures/nanoMuse/avatar` 和 `Movies/nanoMuse/avatar`，每一批按保存的那一分钟命名，完成后告诉你存了几张图、
+几段视频。文件只到这台手机的相册，不去别处；清掉 App 数据或换手机之前，靠它把形象和视频留下来。
+（[#664](https://github.com/nano-muse/nanoMuse/issues/664)）

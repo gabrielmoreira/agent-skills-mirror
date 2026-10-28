@@ -139,7 +139,7 @@ speaking as nanoMuse through the `nanomuse` preset, with:
   `NODE_USE_ENV_PROXY=1`, which is what makes Node's fetch read them), so it takes effect
   after a restart; *Restart now* under the row restarts the Host with the window up, and
   asks first when a reply, the hands, a task from another device or an approval is under
-  way, as quitting does (the next bullet but one). A self-hosted relay is on
+  way, as quitting does (two bullets down). A self-hosted relay is on
   `NO_PROXY` when the shell was started with `NANOMUSE_CLOUD_URL`, the setting the plugin
   reads too. The
   phones have the same setting in the provider form, the web app in the own-key form, the
@@ -169,6 +169,39 @@ speaking as nanoMuse through the `nanomuse` preset, with:
   `POST /work/stop` (the confirmed end). *Restart now* under the proxy row and the restart
   macOS asks for after a Screen Recording grant go through the same question; the restart
   of the helper alone does not touch the Host's work.
+- **Each model call tells the account's record where it sat** (relay 0.31). The harness's
+  model adapter sends a provider's headers the same on every request, and a call's
+  provenance changes with each, so the `nanoMuse Cloud` provider row points at a loopback
+  door of the plugin's own (`http://127.0.0.1:<port>/v1`; the port is each start's, and the
+  row is pointed at it again at start). The door sends a request on only when it carries the
+  account's own key (anything else is a 401 here, as it would be at the relay), with the
+  device, the platform (`X-NanoMuse-Platform: desktop`) and what the `llm/stream` hook
+  announced for that call: who started the turn (`X-NanoMuse-Run`: `person`, `schedule`,
+  `goal`, or `hub` for a task another device asked for), the turn's number and the step's
+  within the conversation, and the hands' run and step while this computer's screen is being
+  operated. The relay's reply streams back as it came, and the id the relay gave the turn is
+  kept for the session. A turn run on a key of your own goes up afterwards with the same
+  fields ([cloud.md](cloud.md#provenance)). Around a turn the plugin sends the record codes,
+  never words (`POST /v1/events`): what was decided about each tool call and by whom (the
+  policy, a standing grant, the person on the card or the stage, another device, or nobody
+  in time) and whether the tool then ran; how long an approval waited; each step of the
+  hands (the action's kind, how it went, how long it took) and how the run closed; a turn
+  stopped by hand or ended in an error; and the thumb or the stop reason the browser half
+  sends through `POST /nanomuse/cloud/feedback` (`{session, vote: up | down | "", reason?,
+  turn_no?}` or `{session, stop_reason, turn_no?}`, the relay's words only, 400 for any
+  other). Notes go up in batches a few seconds apart while an account is signed in; signing
+  out empties the queue ([cloud.md](cloud.md#client-events)).
+- **A thumb beside each reply, and one question after a Stop.** While signed in, every
+  reply's tail carries a thumb up and a thumb down beside the quote button. A thumb down
+  opens five one-word reasons (*Wrong*, *Not helpful*, *Should not have done that*, *Too
+  slow*, *Something else*) and *Skip*; a second click on the same thumb takes the mark
+  back; a mark on an earlier reply names that reply's turn, counted from your messages
+  above it. Right after Stop, one line above the composer asks *Why did you stop it?* with
+  *It was going wrong*, *Too slow*, *Changed my mind*, *It was already done*, *Something
+  else* and *Skip*; the line goes with the answer, with Skip, with the next turn, or on
+  its own after a minute and a half (`live.stopped` carries the sessions still asked).
+  Each answer reaches the account's record as one word (`turn.feedback`, `turn.stopped`)
+  and nothing else; nothing is shown while signed out.
 
 ## When the allowance is used up, and the relay's other answers
 
@@ -639,7 +672,10 @@ warning in the iOS app fails its build: the helper is nanoMuse code.
   in that app only when that task runs, so the task stops asking while the same chat typed
   by hand still asks, and
   *Always in <app>* keeps them going in that app in every chat, until you revoke any of them
-  under Settings → Permissions. Text outside ASCII is typed through the clipboard
+  under Settings → Permissions. While a scheduled task runs, its cards also go to the
+  account's phones, since nobody may be at the computer: the phone offers *Allow once*,
+  *Always in this task* and *Deny*, the first answer anywhere decides, and the others close
+  ([hub.md](hub.md#a-computer-s-own-cards-on-the-phone)). Text outside ASCII is typed through the clipboard
   (`xclip`/`xsel` are not needed; Electron's clipboard is used) and Ctrl+V; the previous
   clipboard content is put back afterwards.
 - The log is `~/.nanomuse/desktop/desktop.log` (each operator action is a line, `operator:

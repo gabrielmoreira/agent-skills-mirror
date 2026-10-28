@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `openai/codex` — 26 default patterns, 0 followed patterns, 8 file(s) materialized.
+Mirror of `openai/codex` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `openai/codex` — 26 default patterns, 0 followed patterns, 8 file(s)
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 8 |
+| Files         | 9 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,14 +59,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`codex-rs/exec-server/src/sandbox_integrity/AGENTS.md`](codex-rs/exec-server/src/sandbox_integrity/AGENTS.md) |
-| 2 | ✓ | [`codex-rs/skills/src/assets/samples/imagegen/SKILL.md`](codex-rs/skills/src/assets/samples/imagegen/SKILL.md) |
-| 3 | ✓ | [`codex-rs/skills/src/assets/samples/openai-docs/SKILL.md`](codex-rs/skills/src/assets/samples/openai-docs/SKILL.md) |
-| 4 | ✓ | [`codex-rs/skills/src/assets/samples/review-agent/SKILL.md`](codex-rs/skills/src/assets/samples/review-agent/SKILL.md) |
-| 5 | ✓ | [`codex-rs/skills/src/assets/samples/skill-creator/SKILL.md`](codex-rs/skills/src/assets/samples/skill-creator/SKILL.md) |
-| 6 | ✓ | [`codex-rs/skills/src/assets/samples/skill-installer/SKILL.md`](codex-rs/skills/src/assets/samples/skill-installer/SKILL.md) |
-| 7 | ✓ | [`codex-rs/tui/src/bottom_pane/AGENTS.md`](codex-rs/tui/src/bottom_pane/AGENTS.md) |
-| 8 | ✓ | [`docs/skills.md`](docs/skills.md) |
+| 1 | ✓ | [`codex-rs/code-mode-host/AGENTS.md`](codex-rs/code-mode-host/AGENTS.md) |
+| 2 | ✓ | [`codex-rs/exec-server/src/sandbox_integrity/AGENTS.md`](codex-rs/exec-server/src/sandbox_integrity/AGENTS.md) |
+| 3 | ✓ | [`codex-rs/skills/src/assets/samples/imagegen/SKILL.md`](codex-rs/skills/src/assets/samples/imagegen/SKILL.md) |
+| 4 | ✓ | [`codex-rs/skills/src/assets/samples/openai-docs/SKILL.md`](codex-rs/skills/src/assets/samples/openai-docs/SKILL.md) |
+| 5 | ✓ | [`codex-rs/skills/src/assets/samples/review-agent/SKILL.md`](codex-rs/skills/src/assets/samples/review-agent/SKILL.md) |
+| 6 | ✓ | [`codex-rs/skills/src/assets/samples/skill-creator/SKILL.md`](codex-rs/skills/src/assets/samples/skill-creator/SKILL.md) |
+| 7 | ✓ | [`codex-rs/skills/src/assets/samples/skill-installer/SKILL.md`](codex-rs/skills/src/assets/samples/skill-installer/SKILL.md) |
+| 8 | ✓ | [`codex-rs/tui/src/bottom_pane/AGENTS.md`](codex-rs/tui/src/bottom_pane/AGENTS.md) |
+| 9 | ✓ | [`docs/skills.md`](docs/skills.md) |
 
 ---
 

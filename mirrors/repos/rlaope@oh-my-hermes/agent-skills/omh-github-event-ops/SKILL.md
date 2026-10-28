@@ -60,7 +60,7 @@ Bad example:
 
 Use when Hermes receives or is asked to reason about GitHub PR, issue, review, or CI events and must choose review, triage, or fix-handoff without claiming a bot ran.
 
-    Strong routing signals: `github-event-ops`, `github event ops`, `github ops`, `github triage`, `github pr`, `github review`, `github action`, `github actions`, `pr opened`, `pull request opened`, `pull request review`, `pr review`, `ci failed`, `check failed`, `checks failed`, `failing checks`, `issue opened`, `issue triage`, `pull request webhook`, `github webhook`, `github issue`, `github issue to pr`, `auto review pr`, `label issue`, `label pr`, `ci analysis`, `fix handoff`, `review handoff`, `깃허브`, `깃허브 pr`, `깃허브 이슈`, `github issue 들어온`, `이슈 라벨`, `pr 리뷰`, `리뷰 라벨`, `픽스 핸드오프`, `ci 실패`
+    Strong routing signals: `github-event-ops`, `github event ops`, `github ops`, `github triage`, `github pr`, `github review`, `github action`, `github actions`, `pr opened`, `pull request opened`, `pull request review`, `pr review`, `ci failed`, `check failed`, `checks failed`, `failing checks`, `issue opened`, `issue triage`, `pull request webhook`, `github webhook`, `github issue`, `github issue to pr`, `auto review pr`, `label issue`, `label pr`, `ci analysis`, `fix handoff`, `review handoff`, `깃허브`, `깃허브 pr`, `깃허브 이슈`, `github issue 들어온`, `이슈 라벨`, `pr 리뷰`, `리뷰 라벨`, `픽스 핸드오프`, `ci 실패`, `новый issue на гитхабе`, `событие гитхаба`, `следи за репозиторием`, `пр в репозитории`, `новый пул реквест`, `события github`
 
 ## Catalog Metadata
 

@@ -43,7 +43,9 @@ uncommitted changes and a graveyard of stashes.
   Pilot daemon already isolates via `pilot-worktree-GH-*` — leave those alone.
 - ✅ Base worktrees on `origin/main` (fresh), not on whatever the root
   happens to be pointing at.
-- ✅ Commit in your worktree branch; push it; open a PR. Never pile unrelated
+- ✅ Commit in your worktree branch and push it. Pilot-executor sessions never
+  run `gh pr create` or `gh pr merge` — Pilot opens the PR after the quality
+  gates (the gh guard denies both since #5877). Never pile unrelated
   work onto someone else's branch/PR.
 - ❌ Do not `git stash pop` blindly in the root — a pathspec-limited stash or
   a worktree is safer when other sessions may have uncommitted work there.

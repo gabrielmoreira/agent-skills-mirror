@@ -1248,10 +1248,21 @@ failures for such entries name this cause and the operation to rerun with
 Advertised input and output schemas contain no reachable recursive references.
 Input schemas inline repeated definitions before applying the selected
 presentation profile. Both `full` and `compact` start from this self-contained
-projection; output schemas can share schema-local definitions. Full inputs
-retain nested fields, descriptions and valid literal examples. The compatibility
+projection; output schemas can share schema-local definitions. Analyst-authored
+full inputs retain nested fields, descriptions and valid literal examples. The compatibility
 projections below can relax advertised constraints; canonical runtime validation
 still enforces the complete input contract.
+
+`compare_web_captures` declares its complete producer observations as object
+operands instead of repeating their full output schemas in the input catalog.
+Pass the original `inspect_web_page` normalized result in `before.inspection`
+and `after.inspection`, optional complete `discover_webmcp_tools` results in
+`webmcp`, or complete `capture_browser_scenario` results in the scenario fields.
+Do not construct partial observations from the abbreviated declaration: the
+server still validates every canonical field before comparison. Input groups
+and analyst-authored normalization rules remain explicit. This presentation
+changes no capture bytes, identity, completeness, or comparison semantics and
+does not reduce `inspect_analysis_view` selectors or other tools' declarations.
 
 When a host forwards input schemas to the model, their examples consume context.
 REA's advertised examples therefore never copy complete producer Evidence.
@@ -1491,6 +1502,8 @@ validates every result before delivery. On catalogs large enough that full
 input schemas alone approach the frame limit, keep the input profile at its
 `compact` default as well; with full input schemas the advertisement is
 dominated by the input side.
+The full input profile has no one-megabyte catalog-frame guarantee, including
+when output schemas are omitted.
 
 Only client-side schema discovery and validation are reduced or omitted, so
 hosts using these profiles should rely on REA's validation and retain their

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `lennney/stop-that-shit` — 26 default patterns, 0 followed patterns, 6 file(s) materialized.
+Mirror of `lennney/stop-that-shit` — 26 default patterns, 0 followed patterns, 8 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `lennney/stop-that-shit` — 26 default patterns, 0 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 6 |
+| Files         | 8 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,11 +60,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`.agents/plugins/marketplace.json`](.agents/plugins/marketplace.json) |
-| 2 | ✓ | [`skills/stop-that-shit/agents/openai.yaml`](skills/stop-that-shit/agents/openai.yaml) |
-| 3 | ✓ | [`skills/stop-that-shit/SKILL.md`](skills/stop-that-shit/SKILL.md) |
-| 4 | ✓ | [`skills/stss/agents/openai.yaml`](skills/stss/agents/openai.yaml) |
-| 5 | ✓ | [`skills/stss/references/examples.md`](skills/stss/references/examples.md) |
-| 6 | ✓ | [`skills/stss/SKILL.md`](skills/stss/SKILL.md) |
+| 2 | ✓ | [`codex-plugin/skills/stop-that-shit/SKILL.md`](codex-plugin/skills/stop-that-shit/SKILL.md) |
+| 3 | ✓ | [`codex-plugin/skills/stss/SKILL.md`](codex-plugin/skills/stss/SKILL.md) |
+| 4 | ✓ | [`skills/stop-that-shit/agents/openai.yaml`](skills/stop-that-shit/agents/openai.yaml) |
+| 5 | ✓ | [`skills/stop-that-shit/SKILL.md`](skills/stop-that-shit/SKILL.md) |
+| 6 | ✓ | [`skills/stss/agents/openai.yaml`](skills/stss/agents/openai.yaml) |
+| 7 | ✓ | [`skills/stss/references/examples.md`](skills/stss/references/examples.md) |
+| 8 | ✓ | [`skills/stss/SKILL.md`](skills/stss/SKILL.md) |
 
 ---
 

@@ -1234,8 +1234,14 @@ claude -p "/obsidian-daily"
 
 # Right - read the command file and execute its steps:
 cd "$VAULT" && claude --dangerously-skip-permissions \
+  --tools "Read,Write,Edit,Glob,Grep" \
   -p "Read ~/.claude/commands/obsidian-daily.md and carry out its instructions exactly."
 ```
+
+`--tools` limits which built-in tools exist in the run. Do not rely on `--allowedTools`
+alone: it only pre-approves tools, so with `--dangerously-skip-permissions` every other
+tool (Bash, web fetch, web search) would still be available. Widen the `--tools` list only
+if the command you schedule genuinely needs more.
 
 Because `~/.claude/commands/obsidian-daily.md` is symlinked from this repo (see Testing
 locally in the README), a scheduled run always uses the current command logic. Export an

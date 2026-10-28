@@ -155,11 +155,25 @@ The relay is the code in [`cloud/`](../cloud/README.md). It stores:
   file. With the turn: the model, the platform, the device and conversation
   the app named (`X-NanoMuse-Device`, `X-NanoMuse-Conversation`, 1.0.7 on),
   the token counts (from relay 0.31 with the cached part of the prompt), and
-  the address and client software like every request.
+  the address and client software like every request. From relay 0.31 also
+  where the turn came from as the app says it: who started it (a person, a
+  scheduled task, the feed's routine, a goal's check, another device), its
+  turn and step in the conversation, the screen-operation task and step it
+  belongs to, and the script of what the person wrote (one word: `zh`,
+  `latin`, `ja`, …; never the text itself). The section
+  [Provenance](#provenance) has the headers.
   It is the account's own data, so its devices can read it back and the
   operator can see a problem whole; it does not depend on either switch
   below. The section [The record](#the-record) says what is kept, who reads
   it and how it goes.
+
+- since relay 0.31, **what the apps report around a turn**: short records of
+  codes and numbers, never a message — what the Sentinel decided about a tool
+  call and at which risk, how an approval went, why a reply was stopped by
+  hand, a thumb up or down on an answer, how a screen-operation step went.
+  Each is tied to the turn's id when the app knows it; the section [Client
+  events](#client-events) lists them. They go with the kept turns when the
+  person deletes them, and with the account.
 
 Message content is kept as *The record*, *Data controls* and *Conversation
 sync* below say, and not otherwise: the request is forwarded to the
@@ -186,7 +200,13 @@ and language from the request headers, tied to the account id only, never the
 system prompt (your memory, SOUL and instructions), never what a tool returned
 (your files, your screen, what another app showed), never a picture, a clip or
 a voice note (a marker stands where one was). The point is a training set for
-the community's own open model. The page shows how many turns are kept; turn
+the community's own open model. From relay 0.31 a turn the app ran on a key
+of your own and sent up to the record (`POST /v1/turns`) is kept in the same
+training view when the switch is on — a turn is a turn whichever key answered
+it — and each kept turn says where it came from (`meta.source` `cloud` or
+`own`, `meta.run`, `meta.turn`, `meta.turn_id` naming the record's turn, the
+script of what you wrote; see [Provenance](#provenance)), so the app's later
+word on it (a thumb, why it was stopped) can be joined by the turn's id. The page shows how many turns are kept; turn
 the switch off at any time (nothing more is kept) and delete what was kept
 with one tap; deleting the account deletes it too. Nothing is credited for
 the switch either way. On `cloud.nanomuse.cn` the switch is **on for accounts
@@ -200,7 +220,12 @@ record](#the-record) either way, and the same delete tap removes both
 controls* panel (how many accounts have it on, turns by day, model and app,
 the newest turns, every account's kept conversations in full) and exports them
 as JSON lines without account ids or addresses (`GET /v1/admin/samples/export`,
-`?account_id=` for one account's). The relay does not receive a location (the
+`?account_id=` for one account's). From relay 0.31 each exported line carries
+`subject`, a pseudonym for the account (an HMAC of the account id under the
+relay's secret, 16 hex characters: the same account is the same subject in
+every export, and nothing recovers the account from it without the secret),
+and the [deletions ledger](#deletions) names the subjects whose data was
+deleted since, so a set built from an earlier export can drop them. The relay does not receive a location (the
 apps never send one), but from relay 0.10 it records the network address and
 the client software (`User-Agent`: the Android app and its version, the
 runtime on Windows / macOS / Linux, a browser) with each sign-in, request,
@@ -267,7 +292,16 @@ another device already sent it), then `POST /v1/turns` with `model`,
 `messages` (references, or data URLs inline), `response: {message, usage?}`,
 and `provider`, `ts`, `conversation`, `id` and `status` as the app has
 them (with `status: partial`, `ended` in the app's word: `aborted`, `error`,
-`abandoned`); the row says `source: own`. A reference to a file the account
+`abandoned`), and from relay 0.31 `run`, `turn`, `step`, `trajectory`,
+`trajectory_step` and `platform` as [Provenance](#provenance) defines them;
+the row says `source: own`. With *Help improve* on, the turn's training view
+is kept too, as for a turn the relay answered. The Python runtime does this
+for every model call that does not go to the relay — a configured provider,
+the ChatGPT sign-in, the hands' own model — while an account is signed in on
+the computer: the call is sent up afterwards from a queue in memory, with
+the request as it went (less the key), the reply, the usage and the
+provenance; pictures past two megabytes go as files first. Signing out
+drops the queue; nothing is sent without an account. A reference to a file the account
 never put up is a 400 `unknown_blob`. One account sends at most
 `RECORD_UPLOADS_PER_MINUTE` turns and files a minute (120; a 429
 `rate_limited` says to send the rest later) and holds at most
@@ -296,6 +330,123 @@ it is gone. `/v1/me.contribute.record` tells the apps what is held:
 shows the record (turns, own-key turns, files, how long the relay keeps
 them) above the *Help improve* switch, and offers the one delete whenever
 either holds anything.
+
+**Questions and calls (0.31).** A person's one message often takes the
+agent several model calls: it asks for a screenshot, taps, reads the screen
+again, answers. The record keeps one row per call, so counting rows
+overstates what people asked; the relay now counts both ways. Each row says
+whether it *opened a question* (`turn_start`): the app's `step` settles it
+(1 opens); without one, the last message of the request does — from the
+person it opens, from a tool or the assistant it continues; a request with
+no message of either kind opens. Every row carries `turn_key`, the id of the
+row that opened its question (a continuation finds it by the conversation's
+`turn` number, or failing that the nearest earlier opener in the same
+conversation), so the question's calls group in SQL; the training view's
+shape rows carry the same two fields. Rows from before get theirs from a
+backfill in the analytics loop, oldest first; until it reaches them they are
+counted in neither figure and `GET /v1/admin/record` reports them as
+`questions.pending`. The figures: `/v1/admin/record` has `questions` beside
+`n` for the whole, the period and each day, and a `questions` block (how
+many, how many carried a picture or ran the hands by the trajectory the app
+named, how many calls each took as buckets `1`, `2-3`, `4-7`, `8-15`,
+`16+`, and the mean); `/v1/admin/data` has `turns` beside `samples` in its
+totals, days, models, platforms, runs, sources and accounts.
+
+To read a question whole, `GET /v1/admin/record/turns` returns the newest
+questions first, each laid out once from its calls: the person's message,
+a step per call (the call's figures, what the model said or the tools it
+called, and what came back before the next call — tool results, the hands'
+screenshots, a message the person added), the reply the person saw, the
+tools in order, and the figures summed (`calls`, tokens, `media`, `models`,
+`sources`, `partial`). Texts over 4000 characters are cut with `truncated:
+true`; `GET /v1/admin/turns/{id}` has the whole call. Filters: `account_id`,
+`conversation`, `platform`, `run`, `source`, `model`, `script`, `media=1`
+(a picture somewhere in the question), `hands=1` (a trajectory named),
+`since`; pages of up to 100 with `before` (the question's last timestamp)
+and `before_key`. The console's *Question by question* page shows the same:
+the pictures and screenshots inline where they were sent (fetched with the
+admin token, so an `<img>` alone would not do), each tool call with its
+arguments folded, the final reply marked, and the whole call one click away;
+the *Data and sync* page shows questions beside calls everywhere it counted
+calls before.
+
+## Provenance
+
+A model call is one of many in a conversation, and the app knows things about
+it that the request body does not say. From relay 0.31 the apps say them in a
+few headers on the chat request, and in fields of the same names on a turn
+they send up from a key of their own (`POST /v1/turns`; the headers fill in
+what the body leaves out). Each is optional; an app from before sends none,
+and the relay stores *not said*, never a guess.
+
+| header | body field | what it says |
+| --- | --- | --- |
+| `X-NanoMuse-Run` | `run` | who started the turn: `person` (someone typed or tapped), `schedule` (a scheduled task), `feed` (the feed's daily routine), `goal` (a goal's check or evaluation), `hub` (this device ran it for another device's request). Lower case, `[a-z][a-z0-9_]{0,23}`; a word the relay has not met is kept as said |
+| `X-NanoMuse-Turn` | `turn` | the turn's number in the conversation, from 1: the person's first message is turn 1, the reply to their second message is turn 2 |
+| `X-NanoMuse-Step` | `step` | the model call's number within the turn, from 1: a turn that calls tools makes several |
+| `X-NanoMuse-Trajectory` | `trajectory` | the id of the screen-operation task this call belongs to (`[A-Za-z0-9_.:-]{1,80}`), the same on every step of it |
+| `X-NanoMuse-Trajectory-Step` | `trajectory_step` | the step's number within the task, from 1 |
+| `X-NanoMuse-Platform` | `platform` | the app's own word on its platform when its user agent would not say (the desktop's uploads go out from Node; the runtime's calls from an SDK): one of `android`, `ios`, `desktop`, `windows`, `macos`, `linux`, `runtime`, `browser`. Anything else is ignored and the user agent decides |
+
+`X-NanoMuse-Device` and `X-NanoMuse-Conversation` (1.0.7) are unchanged and
+go with these. The relay keeps the six in the turn's row of the record
+(`run`, `turn`, `step`, `trajectory`, `trajectory_step`, read back on `GET
+/v1/turns` when said), in the kept turn's meta when the switch is on, in the
+call's telemetry row (`run`, so the Usage and Platforms pages can tell a
+person's turn from a routine's) and in the training view's shape rows. The
+record's row also carries `script`, one word for the script of the person's
+last message (`zh`, `ja`, `ko`, `ru`, `ar`, `th`, `hi`, `he`, `el`, `latin`,
+or none), computed as the turn is written and kept instead of the
+`Accept-Language` header most apps leave empty.
+
+## Client events
+
+From relay 0.31 the apps report what happened around a turn that the request
+itself does not show, as short records of codes and numbers: `POST /v1/events`
+with `{"events": [{kind, ts?, turn?, conversation?, data}]}`, at most 100 per
+request and 60 requests a minute from one account (a 429 says to send the rest
+later); the answer is `202 {kept, dropped}`. `kind` is dotted lower case;
+`turn` is the record's id for the turn (the `x-nanomuse-request` header of a
+Cloud turn; an own-key turn's `id` with `"source": "own"` beside it, which the
+relay turns into the record's `own-…` form); `data` is a flat object of at
+most 16 short codes, numbers and booleans. A value that looks like prose (over
+120 characters, or not of `[A-Za-z0-9_.:/ -]`) is left out, a nested object is
+left out, an event of the wrong shape is dropped and counted, not refused:
+this is how the relay keeps the promise that no message travels here. The
+kinds and what their `data` holds:
+
+| kind | data |
+| --- | --- |
+| `sentinel.decision` | `tool`, `risk` (`safe`, `moderate`, `sensitive`, `critical`), `decision` (`allow`, `ask`, `deny`), `grant?` (`once`, `schedule`, `conversation`, `always`: the permission that covered it), `policy?` (what the policy said before anyone was asked), `by?` (who settled it: `policy`, `auto`, `grant`, `person`, `timeout`), `channel?`, `tainted?` (bool), `warnings?` (count), `ok?` (bool: whether the tool then ran without an error; the desktop sends it, the runtime does not), `class?` (the phone's own class of the step: Android's risk gate says `safe`, `install`, `destructive`, `outbound`, `remote` or `money`; the iPhone's permission check says `privacy`, `media` or `system`, the category of the `apple-*` command) |
+| `approval.result` | `tool?`, `risk?`, `allow` (bool), `scope?` (`once`, `schedule`, `conversation`, `always`), `by?` (`person`, `timeout`, `other_device`, `auto`: the app answered no itself, as the iPhone does for a hub task while it is not on screen), `waited_s?`, `channel?`, `warnings?` |
+| `turn.stopped` | `reason`: `wrong`, `slow`, `changed_mind`, `done`, `other`, `skipped` (the person stopped a reply and said, or did not say, why), `turn_no?` |
+| `turn.feedback` | `vote` (`up`, `down`, `none` when taken back), `reason?` (`wrong`, `unhelpful`, `unsafe`, `slow`, `other`), `turn_no?` |
+| `turn.ended` | `ended`: `aborted` (the person pressed Stop), `error`, `abandoned` (a turn kept short, in the app's word; the runtime sends `aborted` for every stopped run, whichever key it ran on), `turn_no?` |
+| `hands.step` | `trajectory`, `step`, `action` (the action's kind: `tap`, `type`, `open_app`, …; `end` closes the run), `outcome?` (`ok`, `failed`, `refused`, `stopped`, `handed_over`; on `end`, the run's status: `done`, `ask`, `blocked`, `stopped`, `failed`, `max_steps`), `latency_ms?` (the model's time on the step) |
+| `app.opened`, `screen.viewed` | `screen?` (a screen's code name) |
+
+The operator reads them at `GET /v1/admin/client-events` (newest first;
+`kind=` a comma list, `account_id=`, `before=` the last id shown), exports
+them as JSON lines with the `subject` pseudonym and no account id
+(`/v1/admin/client-events/export?since=`), and sees the figures on the admin
+page's *Data controls* panel (`/v1/admin/client-events/summary?days=`: by day
+and kind, and the split of each kind's codes: what the Sentinel decided, how
+approvals went, why replies were stopped, how the thumbs fell). *Settings →
+Data controls*' delete removes them with the turns; deleting the account
+removes them too.
+
+## Deletions
+
+A training set built from an export outlives the relay's rows: when a person
+deletes their kept data (`DELETE /v1/me/samples`) or their account (`POST
+/v1/auth/delete`), the relay writes one line to a ledger — the account's
+`subject` pseudonym, the time and the scope (`samples` or `account`) — and
+nothing else about them stays. `GET /v1/admin/deletions?since=` lists the
+lines, oldest first; whoever builds a set from the exports reads it before
+each build and drops every line of those subjects. The pseudonym names nobody
+without the relay's secret, and the ledger is all that outlives the account on
+purpose. The person console's *Data controls* page says so next to the delete,
+and the privacy page repeats it.
 
 ## Conversation sync
 

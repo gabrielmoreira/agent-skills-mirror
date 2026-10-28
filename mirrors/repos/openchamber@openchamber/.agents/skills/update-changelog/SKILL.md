@@ -62,6 +62,7 @@ Every release carries a one-line `title:` in its front matter. The website lists
 - **Plain words, sentence case**; product names keep their casing. No area prefix with a colon, no trailing period, no version number, no credit.
 - **Never a category alone** (`Fixes`, `Stability`, `Improvements`, `Polish`) and **never a bare area** (`Git`, `Chat`): the title has to teach the reader something.
 - Two headliners at most, joined with `and`, and only when the release really has two.
+- **A small joke that still names the change** is the tradition: `Warm sessions, cold diffs`, `Tea time for git`, `Our monthly sidebar redesign`. Self-irony about our own habits lands best. Offer the maintainer a few, with a recommendation.
 
 `oc-dev create-release` refuses a release without a title. In `unreleased.md` it sits at the top:
 

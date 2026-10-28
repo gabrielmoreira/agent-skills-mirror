@@ -26,6 +26,14 @@ Tier defaults and resolution rules are documented in
 lean Act run gets its tier's tools and prompt, and WebBrain skips its quality
 checks; see [lean mode](lean-mode.md).
 
+**Vision mode** (Settings → Advanced → Vision mode, Auto by default) replaces the
+tree, ref and selector tools of an Act run whose model takes images with
+coordinate tools (`click_at`, `scroll_at`, `hover_at`, `drag_at`, `zoom`,
+`take_screenshot`, `wait`) and a vision prompt; the run sees the page as a
+full frame and then patches of what changed. The matrix below is the
+accessibility-tree surface. See [vision mode](vision-mode.md) for the exact
+replacement list.
+
 ## Accessibility read budgets
 
 For complete HTML-table JSON, `extract_data({type:"tables", caption:"Exact caption",

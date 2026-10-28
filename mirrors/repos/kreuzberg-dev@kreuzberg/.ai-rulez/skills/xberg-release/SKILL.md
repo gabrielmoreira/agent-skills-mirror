@@ -1,7 +1,7 @@
 ---
 type: Playbook
 title: Xberg Release
-description: "Xberg release specifics on top of the shared release-workflow: version sync to bindings, integrations and the chart (task version:sync), and the CI/Publish dry-run/Benchmarks readiness audit. Use before bumping a version or cutting a release."
+description: "Xberg release on top of the shared release-workflow: task version:sync to bindings and chart, CI/Publish/Benchmarks readiness. Use before a release."
 x-ai-rulez:
   kind: skill
   id: xberg-release
@@ -31,10 +31,11 @@ a version in a package manifest.
    version = core version). Targets are listed in `alef.toml` `[workspace.sync] extra_paths`
    (packages/python, packages/ruby, crates/xberg-node, packages/go, cli-proxy, …).
 2. `python3 scripts/sync_integration_versions.py` — the **integrations** under
-   `integrations/`, the Helm chart, and `plugin/.ai-rulez/config.toml` `[plugin].version`.
+   `integrations/`, the Helm chart, and `plugin/.ai-rulez/config.plugins.toml` `[plugin].version`.
    These are NOT alef-managed, so alef never touches them.
-3. `ai-rulez generate --plugin` — regenerates the per-runtime coding-agent plugin bundles
-   under `plugin/` from the just-synced config.
+3. `task plugin:generate` — `ai-rulez generate --plugin` (bundles under `plugin/`) plus
+   `scripts/sync_public_skills.py` (root `skills/`). CI Lint fails on drift in either
+   (`task plugin:verify`).
 
 Bump/set helpers chain both automatically:
 `task version:bump:major|minor|patch`, `task version:set -- <version>`.
@@ -73,7 +74,6 @@ The llama-index dev aggregator (`integrations/python/llama-index/pyproject.toml`
 
 - Bump via `task version:bump:*` / `task version:set`, then commit the synced manifests
   together with the Cargo.toml change (atomic).
-- Run `task version:check` in CI to guarantee integration manifests never drift from core.
 
 ### Don't
 
@@ -111,14 +111,14 @@ same pushed SHA. A successful older run does not validate newer local commits.
 - Elixir musl smoke tests need the NIF and the directory containing its bundled native libraries. Passing only the
   NIF path is insufficient when dependent shared libraries are staged beside it.
 - Windows GNU Ruby builds must use the ORT-free feature set because the GNU ABI has no compatible ORT prebuilt.
+- Scoop (shared `scoop-distribution` skill): `xberg.exe` imports `onnxruntime.dll`, so the publish job must vendor
+  the DLL closure into the zip; the shim resolves DLLs from the app directory and no `depends` entry is needed.
+  Tesseract is looked up on `PATH` at runtime and belongs in the manifest's `notes`, not `depends`.
 
 ### Push and dispatch
 
-- Before pushing, `git fetch` and inspect divergence. Do not merge or rebase after committing without the user's
-  direction.
 - Push one coherent state. Do not repeatedly push while intentional CI is still running merely to get newer diagnostics.
-- After the push, dispatch CI, Publish Release with dry-run inputs, and Benchmarks against that pushed SHA. Follow the
-  repository's `gh-workflows` conventions for monitoring and retries.
+- After the push, dispatch CI, Publish Release with dry-run inputs, and Benchmarks against that pushed SHA.
 - Retry only after identifying and addressing the cause. Cancellation alone is not a defect; a repeated actual
   failure is.
 - Close addressed issues only after the fixing commit is reachable remotely, and state the intended release when

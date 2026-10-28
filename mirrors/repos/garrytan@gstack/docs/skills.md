@@ -22,6 +22,7 @@ Detailed guides for every gstack skill — philosophy, workflow, and examples.
 | [`/skillify`](#browse) | **Skill Codifier** | Fallback-browser skill: walks back through your conversation, finds the last `/scrape` prototype, synthesizes script + test + fixture, runs the test, asks before committing. On Aside, durable per-site automation belongs to Aside's own skills. |
 | [`/ship`](#ship) | **Release Engineer** | Sync main, run tests, explore changed behavior within a bound, audit coverage and docs before final verification, then push and open or update a PR. Bootstraps test frameworks when appropriate. |
 | [`/land-and-deploy`](#land-and-deploy) | **Release Engineer** | Merge the PR, wait for CI and deploy, verify production health. One command from "approved" to "verified in production." |
+| [`/modernize`](#modernize) | **Stale-PR Maintainer** | Bring an aging PR onto its current base and decide whether it should still exist: MODERNIZE, REWORK or CLOSE. Reads what moved under the PR for conflicts in meaning, proves the rebase with `git range-diff`, pushes with a lease pinned to the observed head, and never closes a PR on its own. |
 | [`/canary`](#canary) | **SRE** | Post-deploy monitoring loop. Watches for console errors, performance regressions, and page failures in your Aside browser. |
 | [`/benchmark`](#benchmark) | **Performance Engineer** | Baseline page load times, Core Web Vitals, and resource sizes. Compare before/after on every PR. Track trends over time. |
 | [`/ubicloud`](#ubicloud) | **Remote Runner** | Run a heavy suite, build or eval on an ephemeral 16-vCPU Ubicloud VM: TTL-named VMs with a reaper, quota preflight, a hang watchdog and one committed verify per repository. |
@@ -41,6 +42,7 @@ Detailed guides for every gstack skill — philosophy, workflow, and examples.
 | [`/context-restore`](#context-restore) | **Restore State** | Resume from a saved context, even across Conductor workspace handoffs. |
 | [`/health`](#health) | **Code Quality Dashboard** | Wraps type checker, linter, tests, dead code detection. Computes a weighted 0-10 score; tracks trends over time. |
 | [`/deslop-shared-libs`](#deslop-shared-libs) | **Shared Code Reviewer** | Find worthwhile shared-code extractions in recent work. Recommendations only. |
+| [`/write-skill`](#write-skill) | **Skill Editor** | Write or improve an agent skill without bloat: edit ladder, size per level, skill-to-bin drift check, full diets with a before/after test. |
 | [`/test-audit`](#test-audit) | **Test Auditor** | Sweep existing tests for low-value, implementation-coupled or duplicate tests. Report-only unless you approve a batch. |
 | [`/landing-report`](#landing-report) | **Ship Queue Dashboard** | Read-only snapshot of the workspace-aware ship queue. Which version slots are claimed, which sibling workspaces have WIP. |
 | [`/captain`](#captain) | **Crew Controller** | Run many coding agents from one controller. Lanes build and send a READY block; the controller validates it, merges through trains (stamp on call, verify, merge with the expected head, verify again), keeps the digest, relays approvals in three fixed shapes and runs a daily flaky-fix pass. Also answers to `/crew`. |
@@ -735,6 +737,17 @@ Every `/ship` run builds a code path map from your diff, searches for correspond
 
 A lot of branches die when the interesting work is done and only the boring release work is left. Humans procrastinate that part. AI should not.
 
+### The PR body
+
+`/ship` writes the PR body from the diff, the receipt and the review, and a reader who was not in the session decides the merge from it. On Capy (`CAPY_PR: on`) the body opens with four sections, in this order, before the standard Summary, Test plan and Documentation sections:
+
+1. **`## What changed`**: one to three captioned before/after images from `gstack-pr-shots` or a UI screenshot, highest-signal first, with a collapsed text version under each.
+2. **`## Why`**: two or three sentences. The first states the problem in the person's words (the issue, the message, the failing run), then the cause and the user-visible effect.
+3. **`## Blast radius`**: what else the change touches and the one fact that makes that safe, with the evidence-ladder rung that fact reached (a test that exercises the shared path, a grep over every caller, a measured run). A change to a shared helper, a generated file, a selection list or a policy default always has one; a leaf fix says so in one line.
+4. **`## Approvals`**: the table from `gstack-approvals render`, verbatim.
+
+Before the body is composed, `gstack-prose-lint` reads the Why, Summary and Blast radius drafts (`--sections 'Why,Summary,Blast radius' --gate`) and the CHANGELOG entry (`--base origin/<base> --gate`), and a `PROSE_LINT_FOUND` line names the sentence to rewrite; the rest of the body is advisory. The Captain's merge-ask template (`captain/templates/merge-ask.md`) carries the same four sections, so a READY report and its PR say the same thing.
+
 ### Versions: where `/ship` looks, and when it ships without one
 
 `/ship` bumps a version only when the project says where the version lives. It checks, in order:
@@ -789,6 +802,39 @@ Claude: Merging PR #42...
 
 ---
 
+## `/modernize`
+
+`/ship` merges the base into a branch you are working on. `/modernize` is for the other
+case: a pull request that has sat for weeks, often someone else's, where the real question
+is not "does it rebase" but "should it still exist".
+
+```
+You: /modernize 2187
+
+Claude: Claim: #2187 caches the skill census so `bun run skill:check` stops
+        re-reading 57 directories. It relies on the census being read once per run.
+
+        Moved under it: 41 base commits since the merge base; 3 touch its files.
+        Conceptual: a2f9c01 (v1.91.240.0) made the census a shared helper that
+        already memoizes per process. The cache the PR adds would be a second one.
+
+        Verdict: CLOSE. The base solves the problem another way (a2f9c01). Nothing
+        was pushed and the PR stays open; say "close it" and I will post the reason
+        and the superseding commit, with thanks to its author.
+```
+
+Three verdicts, one chosen before anything is pushed. **MODERNIZE**: the claim still
+holds, so the branch is rebased with the author's commits kept as theirs, `git
+range-diff` proves no intent was lost (every changed hunk gets a one-line reason), the
+repository's own tests run, and the push is `--force-with-lease=<branch>:<sha observed
+before the rebase>`, so a push someone else made meanwhile is refused rather than
+overwritten. **REWORK**: the problem is real but this diff is no longer the way to solve
+it; the skill says what the new change would be and pushes nothing. **CLOSE**: the
+problem is gone, solved another way, or decided against; the skill recommends closing
+with the superseding commit and leaves the PR open until someone with the authority says
+otherwise. A clean `git rebase` is not evidence the PR is current, and the age of a PR
+is not evidence either way.
+
 ## `/canary`
 
 This is my **post-deploy monitoring mode**.
@@ -840,6 +886,33 @@ checks do not run the history audit. Optional extractions are advisory and requi
 approval; they do not block a clean review or reduce its score. Actual defects
 keep their normal fix handling.
 
+## `/write-skill`
+
+Every skill is read in full each time it runs, so every extra line costs tokens on every run, and a skill that names a
+command the tool no longer has produces wrong calls that pass CI. `/write-skill` keeps skills lean and correct, for
+gstack's own templates and for any skill folder you own.
+
+- **Find the skill.** `gstack-skill-bill <name|folder>` resolves exact names only and says what you are holding: a
+  folder you own, a gstack checkout template (edit `SKILL.md.tmpl`, then `bun run gen:skill-docs`), or an installed
+  gstack skill, which it never edits because `gstack-upgrade` overwrites it.
+- **Edit ladder.** Stop at the first step that handles the change: fix the tool (a clearer error, a flag, a test);
+  add nothing a fresh session already does; edit the line that covers the idea instead of appending; put the fact on the
+  lowest level that reaches the agent in time (description, SKILL.md, `references/`, the tool's `--help`, the tool's
+  errors); write the rule and put the story in the commit message.
+- **Size.** `gstack-skill-bill` prints bytes and estimated tokens per level, and in a gstack checkout the skill's eval
+  task file (`EVAL TASKS:`). Commits carry
+  `Skill-Size: <before>→<after> bytes`; a skill more than 10% over its last `Skill-Diet:` commit is DUE, and a red
+  context-budget ratchet means diet, not a higher ceiling.
+- **Drift.** `test/skill-bin-drift.test.ts` fails when a template or rendered skill calls a gstack bin or flag that
+  does not exist (`bun run scripts/skill-bin-drift.ts --skill <name>` for one skill). Its allowlist only shrinks.
+- **Full diet.** Report first, write the eval tasks before any cut
+  (`test/fixtures/skill-evals/<skill>/tasks.json`), cut, then prove before vs after vs no skill with the shared skill
+  eval (`docs/designs/SKILL_EVAL_CONTRACT.md`). A diet ships only when no task that passed before fails after.
+
+`/write-skill` is not `/skillify`: `/skillify` codifies a browser scrape into a browser-skill. Adapted from
+[nicobailon/skill-diet](https://github.com/nicobailon/skill-diet) (MIT). The first diet, /learn, cut its template from
+5,797 to 2,955 bytes.
+
 ## `/test-audit`
 
 Find existing tests that cost more than they protect. `/review`, `/ship`, `/qa` and
@@ -890,12 +963,12 @@ This is my **performance engineer mode**.
 
 `/benchmark` establishes performance baselines for your pages: load time, Core Web Vitals (LCP, CLS, INP), resource counts, and total transfer size. Run it before and after a PR to catch regressions.
 
-It measures in your Aside browser — the page's own `performance` navigation and resource entries from a real load, not synthetic estimates. Multiple runs averaged. Results persist so you can track trends across PRs.
+It measures in your Aside browser — the page's own `performance` navigation and resource entries from a real load, not synthetic estimates. Each page runs five times and is reported as the median with its range (`--quick` is a single-run ballpark). Results persist so you can track trends across PRs.
 
 ```
 You:   /benchmark https://myapp.com
 
-Claude: Benchmarking 5 pages (3 runs each)...
+Claude: Benchmarking 5 pages (5 runs each)...
 
         /           load: 1.2s  LCP: 0.9s  CLS: 0.01  resources: 24 (890KB)
         /dashboard  load: 2.1s  LCP: 1.8s  CLS: 0.03  resources: 31 (1.4MB)
@@ -1197,7 +1270,7 @@ Claude: 23 learnings for this project (14 high confidence, 6 medium, 3 low)
 
         3 potentially stale (referenced files deleted):
         - "auth middleware uses JWT" — auth/middleware.ts was deleted
-        [Prune these? Y/N]
+        [Remove, keep, or update each one?]
 ```
 
 ---
@@ -1400,7 +1473,7 @@ this model disagree (squash or merge, who stamps, gate-ahead, the severe race, a
 id in the READY), the skill ships both as options for the crew rules file.
 
 Templates (CREW.md, AGENTS.md, NOTES.md, DIGEST.md, the flaky ledger, the lane report,
-the READY block, the slot call, the plan and merge asks, the daily automation prompt)
+the READY block, the slot call, the lane brief, the plan and merge asks, the daily automation prompt)
 live in `captain/templates/`; the team setup guide for Capy is [docs/captain.md](captain.md).
 
 ## `/gstack-upgrade`

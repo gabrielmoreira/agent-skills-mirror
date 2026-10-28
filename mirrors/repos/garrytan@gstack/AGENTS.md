@@ -29,6 +29,7 @@ Invoke them by name (e.g., `/office-hours`).
 |-------|-------------|
 | `/review` | Pre-landing PR review. Finds bugs that pass CI but break in prod; lists every gate edit for gate integrity. |
 | `/deslop-shared-libs` | Find worthwhile shared-code extractions in recent work. Recommendations only. |
+| `/write-skill` | Write or improve an agent skill without bloat: edit ladder, size per level (`gstack-skill-bill`), skill-to-bin drift check, full diets with a before/after test. |
 | `/test-audit` | Sweep existing tests for low-value, implementation-coupled or duplicate tests. Report-only unless you approve a batch. |
 | `/codex` | Second opinion via OpenAI Codex. Review, challenge, or consult modes. Available outside the Codex harness. |
 | `/claude-code` | Second opinion via Claude Code. Review, challenge, or consult modes. Available outside the Claude Code harness. |
@@ -49,6 +50,7 @@ Invoke them by name (e.g., `/office-hours`).
 |-------|-------------|
 | `/ship` | Run tests, review, gate integrity, push, open PR. Workspace-aware version queue. |
 | `/land-and-deploy` | Merge the PR, wait for CI and deploy, verify production health. |
+| `/modernize` | Bring an aging PR onto its current base and decide MODERNIZE, REWORK or CLOSE, with `git range-diff` proof before a pinned-lease push. Never closes a PR itself. |
 | `/canary` | Post-deploy monitoring loop in your Aside browser (or gstack's own when Aside is absent). |
 | `/landing-report` | Read-only dashboard for the workspace-aware ship queue. |
 | `/document-release` | Audit relevant docs before final verification on every ship; also supports standalone documentation updates. |

@@ -24,6 +24,7 @@ metadata:
 - Read `references/brief-and-locales.md` and `references/storyboard-and-evidence.md` before proposing visuals. Recover objective, audience, channel, duration, aspect ratio, fps, size cap, source/brand permissions, and tool availability from supplied context; honor explicit format and duration, ask only for irretrievable hard facts, and label reversible creative assumptions. A shot of a UI that exists is drawn from that product's own renderer output, never a look-alike, and every product fact on screen is copied from its canonical source and cited.
 - Resolve content language from current explicit user/audience/channel instructions, then applicable stable preferences, then user language. Keep reply_language under host persona and separate content_locale, onscreen_text, subtitle_text, pronunciation_text, voice_policy, font_policy, and direction_policy; never replace literal IDs, commands, URLs, or trademarks.
 - Compare at least 3 genuinely distinct concept candidates before selection; record the rubric, winner, rejected alternatives, and per-segment art direction. Read `references/craft-workflow.md` (the full upstream production method), `toolkit/README.md` under the loaded skill directory with a file reader, then `references/renderer-adapter.md` before choosing tools; a missing renderer means HOLD on a requested video, not a completed delivery.
+- If the reel is captured from a game or simulation instead of authored from static assets, read `references/game-capture.md` before capture and timeline authoring: run the simulate → capture → timeline.json → finish edit pipeline with `timeline.json` as the single source of truth for events, SFX cues and titles, pin and record the source game data version/build, map every gameplay event that needs SFX to a cue in timeline.json (an unmapped event is HOLD), apply the shorts defaults (1080x1920, black letterbox bars, centered white title, fade-in, tuned BGM start offset) only as brief-overridable defaults, and record voice provenance (source clip URL, sha256, excerpt range) for any real voice — never synthesizing an impersonation of a real voice actor or person and labeling timbre-alike or synthetic voice methods honestly in credits, with performer/IP permissions handled in the existing assets-and-rights flow.
 
 ## Production Method
 
@@ -54,7 +55,7 @@ Category: `design`. Phase: `motion-production`. Hermes role: `operator`. Quality
 
 ## Workflow Lane
 
-- Current lane: **Materials and visual summaries** (`show-reel`, `design-orchestration`, `apple-design`, `design-quality-gate`, `award-bar-score`, `frontend`, `accessibility-audit`, `visual-qa`, `+7 more`) - web, accessibility, visual QA, files, and packages.
+- Current lane: **Materials and visual summaries** (`show-reel`, `sprite-forge`, `design-orchestration`, `apple-design`, `design-quality-gate`, `award-bar-score`, `frontend`, `accessibility-audit`, `+8 more`) - web, accessibility, visual QA, files, and packages.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
 - Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 

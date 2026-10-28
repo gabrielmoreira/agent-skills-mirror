@@ -43,7 +43,8 @@ graph-write rules it depends on.
 - **NEVER unconditionally `SET` a field another tool owns.** Use `ON CREATE SET`
   for provenance/first-writer fields (e.g. `source`) so a later tool merging the
   same node does not clobber them; use plain `SET` only for this tool's own
-  enrichment fields. Reference: [graph_db/mixins/graphql_mixin.py:189](../../graph_db/mixins/graphql_mixin.py#L189).
+  enrichment fields. Reference: the `ON CREATE SET bu.source = 'graphql_scan'` merges in
+  [graph_db/mixins/graphql_mixin.py](../../graph_db/mixins/graphql_mixin.py).
 - **NEVER collect a field in a tool and not write it to the graph.** Every field
   in the tool's output dict must land on a node property or relationship, or it is
   silent data loss. If it fits no node, map it to the closest property or say why it is dropped.

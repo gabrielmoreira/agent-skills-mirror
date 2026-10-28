@@ -22,9 +22,33 @@ Every sentence tells the reader something that happened, something that is, or w
 
 ## Where the text goes
 
+- **Replies in a session.** Everything here, plus *Replies in a session* below.
 - **Docs, READMEs, UI text.** Explain what the reader sees and does. Plain, impersonal, no story, no first-person asides. Present tense for how things work.
 - **Comments on GitHub and messages the maintainer sends.** Written the way the maintainer types in chat: the point first, contractions, short. First person "I". Thanks and merge comments are one or two human sentences. Praise the help itself, never through numbers ("22 merged PRs").
 - **Stories: release notes, blog posts, announcements.** Everything here applies, plus *Telling a story* below.
+
+## Replies in a session
+
+A person reads your reply between other things, often after several sessions ran at once. A long reply doesn't get read; it gets skimmed, and the one line that needed a decision is lost in it.
+
+- **Conclusion first**, in short plain sentences. Explain a mechanism through what the reader sees in the app, and stand behind your conclusion: a recommendation, not a survey of options.
+- **Answer what was asked, in a few lines.** Context you gathered to get there stays with you. A reply must not take ten minutes to read; a fix summary is the outcome in a few lines, without sections of test details and manual steps.
+- **Each point opens with what it is for the reader:** a problem, a decision they need to make, or just how something works. Then only what makes that clear. No soft framings such as "a conscious limit" or "a caveat" that leave the verdict to them, and no explaining what they already know.
+- **Something you just found is introduced as new**, in one plain sentence, never referred to as if they already knew it.
+- **When you agree with what they just said, say so plainly** and build on it. Restating their point as your own advice sends them back through the thread looking for the disagreement.
+- **Say where a claim about people comes from.** Who did what, who is on the team, who owns something: stored memory, git evidence, or your own inference, kept apart.
+- **Scope, not time.** Size is "touches the toolbar only" or "the smaller of the two", never hours or days. Name the step instead of placing work in time ("yesterday we", "today's wave"), and drop urgency framing ("nothing is on fire", "not urgent").
+- **No trailing nudges.** Don't end with reminders they didn't ask for, such as committing or a growing list of files to commit.
+- **Plans and option maps** for a person to decide on are light: short sections, short table cells, no file paths or commit hashes unless needed.
+- **A message for them to send** to someone else goes in a code block, so it copies with its formatting.
+
+## What OpenChamber's public text says
+
+- **Closing an issue after its fix.** Name the commit or PR and the version it ships in ("Ships in 2.0.3", or "Ships in the next release" while the version isn't known), then "if it still happens there, comment and we'll reopen".
+- **Declining a feature.** The close comment says why the idea or the change is wrong or not needed. That is the whole reason: no process points, no other shape to try. The matching Ideas discussion gets a one-line close.
+- **A contributor's branch we reshaped.** The PR description stays theirs; what landed or was dropped goes in one comment.
+- **A contributor's fork with useful changes.** Don't ask them to open PRs for it. We pull what's useful ourselves, and the reply thanks them and covers their actual PR.
+- **A community reviewer's comment on a PR.** When we act on the PR, thank them and say whether we agree with their call and why, so their review visibly shaped the decision. Casual, short, a different phrase each time.
 
 ## Patterns to detect and fix
 

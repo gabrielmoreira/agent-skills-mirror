@@ -279,10 +279,16 @@ readable but create no work links; the literal prefix `action:` is not supported
 不创建、认领或授权任务。历史描述文本仍可读取，但不会形成工作关联；
 `action:` 不是可用动作前缀。
 
-With `evidence_conditioned_v1` enabled, when the captured history contains a prior
-accepted evidence-linked Vision path,
+When the captured history contains a prior accepted evidence-linked Vision path,
 `replan_context.decision_followthrough` returns that path with the later recorded
-progress references. It uses the existing Goal/Agent/Turn binding and immutable
+progress references. This read-only history projection also applies with stride
+`off`; it does not activate the stride strategy or its Explore basis.
+
+当历史中存在已接受且关联证据的 Vision 路径时，`decision_followthrough` 回读该路径
+及其后续进展。stride 为 `off` 时也保留这一只读历史投影，不会启用 stride 策略或
+其 Explore 上下文。
+
+The projection uses the existing Goal/Agent/Turn binding and immutable
 history source order; timestamps do not decide causality. The full local index
 supplies append positions. Compact newest-first carriers and the named
 `newest_first_runs` builder reverse those positions without reordering ordinary
@@ -1387,8 +1393,8 @@ rule uses existing acceptance/lineage facts regardless of the optional advisory
 relationships, and it grants no additional authority. Ownership, exclusions,
 capabilities, user gates, and quota remain independent execution constraints.
 
-For optional fallback advice, live quota takes one complete Todo source snapshot:
-canonical provider records after promotion, otherwise one legacy source read.
+For optional fallback advice, live quota takes one complete canonical Todo source
+snapshot. Uninitialized authority refuses the read rather than using Markdown.
 Only the declared targets/successors and one layer of direct resume dependencies
 are transported to the typed projection (at most 16 records, including archived
 prerequisites). Deeper chains do not expand the selection or add reads. No
@@ -1412,11 +1418,19 @@ cannot suppress the advisory. Archived completed prerequisites remain valid
 evidence. No fallback declaration is required to discover canonical work, and
 none grants execution, user-decision or settlement authority.
 
+Canonical read rows mark both completed and deferred items as checkbox-closed.
+A `deferred` status with positive resume evidence can still establish a valid
+wait; that presentation bit is not completion. An `open` row with a contradictory
+done flag and a deferred row without a valid condition remain unresolved.
+
 可选 fallback 提示从一次完整来源快照读取，最多输送 16 个直接相关记录，保留归档
 依赖；无声明不额外读取。按整条声明判断：一个可执行或有合法等待证据的候选即可
 消除该声明的提示，但不能替其他声明清账。候选顺序、另一个候选缺失或不确定不再
 误伤有效去向。等待复用 TS 的目标、generation 和仓库绑定正向证明；这仍是 advisory，
 不要求 Agent 为发现 canonical 工作额外维护声明，也不授予执行、审批或结算权限。
+未初始化的 authority 拒绝读取，不退回 Markdown。canonical 读模型将完成与暂缓项都
+标记为 checkbox-closed；`deferred` 配合正向恢复证据仍可建立合法等待，展示位不代表
+任务完成。`open` 与 done 标志矛盾、或暂缓但没有合法条件时，仍保留未解决提示。
 
 等待资格现在逐项检查已有 acceptance 的 Todo 关联，并在展示裁剪前从完整来源计算。
 A 的等待不能遮住尚未落实的 B；有可执行工作则继续，相关工作都具有合法等待证据才暂缓。

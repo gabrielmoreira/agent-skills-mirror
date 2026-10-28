@@ -625,7 +625,7 @@ The only outbound HTTP requests are:
    Icons are cached in memory while the panel is open, with bounded requests
    and response sizes. Local hosts, IP addresses, code, Markdown image syntax
    and download links do not trigger these requests. Strict Secret Mode disables
-   remote icon lookups; unavailable icons use a local globe.
+   remote icon lookups; a link whose icon is unavailable shows no icon.
 11. **Feedback trace attachments** uploaded by GitHub's native issue editor,
     only after the user chooses **Upload trace and open GitHub** in the extension.
     Preparing, viewing, and downloading the trace are local operations. The
@@ -895,7 +895,7 @@ CDP capture → JPEG/PNG data URL
 | User memory auto-learn | Controls whether post-turn extractor calls run |
 | Site adapters toggle | Controls whether site-specific guidance is prepended |
 | Research escalation | Off by default; when enabled, permits per-prompt consent requests for the visible ChatGPT helper flow |
-| Always allow API mutations / `/allow-api` | The persistent setting (on by default) or a per-conversation override waives permission prompts for write-method network egress |
+| Always allow API mutations / `/allow-api` | The persistent setting (on by default) allows write-method network egress without `/allow-api`; on a new install each host still gets the permission prompt. The per-conversation override waives those prompts |
 | CAPTCHA provider enabled checkboxes | Each controls whether that service participates in solving; a retained key alone does not enable it |
 | Cookie banners | Declines cookie-consent banners in tabs WebBrain acts in (default), on every website, or never. Bundled rules, no network requests; see `docs/cookie-banners.md` |
 

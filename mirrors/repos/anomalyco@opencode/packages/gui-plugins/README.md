@@ -224,13 +224,23 @@ SDK icon fields take an `IconName` from `@opencode/plugin/gui`: the names of the
 | [`LinkHandler`](../plugin/src/gui/registries.ts)  | window  | Opens local links, such as file paths in messages, and says whether their target exists                                                                             |
 | [`TitlebarItem`](../plugin/src/gui/registries.ts) | window  | A pill in the titlebar or the tabs footer                                                                                                                           |
 | [`ComposerPill`](../plugin/src/gui/registries.ts) | window  | A pill in the row above a session's composer, optionally opening a menu of rows                                                                                     |
-| [`Slot`](../plugin/src/gui/registries.ts)         | window  | Content for `window.bottom`, `session.header`, `session.location.menu`, `session.panel.end`; built-ins also fill `session.location.workspace` through `BuiltinSlot` |
+| [`Slot`](../plugin/src/gui/registries.ts)         | window  | Content for `window.bottom`, `session.header`, `session.location.menu`, `session.panel.end`; built-ins also fill `session.location.workspace`, `session.location.branch.menu` and `session.location.path.menu` through `BuiltinSlot` |
 | [`Style`](../plugin/src/gui/registries.ts)        | window  | CSS imported with `?inline`                                                                                                                                         |
 | [`MenubarItem`](../plugin/src/gui/main.ts)        | main    | An item of the native app menu                                                                                                                                      |
 
 `session.location.menu` contributes items after the project menu's location details. It receives the owning `screen`,
 the live `session`, and `shown`; keep data subscriptions active only while `shown` is true. Loading headers without an
 owning screen show the host's location details without this slot.
+
+`session.location.branch.menu` (built-ins only, through `BuiltinSlot`) contributes items after Copy branch name in
+the branch submenu, with the same `screen`, live `session`, and project-menu `shown` context. It renders only when a
+branch name and owning screen are available. Use it for actions on the branch's working directory, such as opening
+an integrated terminal.
+
+`session.location.path.menu` (built-ins only, through `BuiltinSlot`) contributes items after the host's copy and
+reveal actions in the session directory's path submenu. It receives the same session context and renders only with
+an owning screen. Use it for external-app actions on `session.directory` without duplicating the host's file-manager
+action.
 
 `session.location.workspace` (built-ins only, through `BuiltinSlot`) replaces the current location row with the same
 session context plus its `label` and `icon`; one contribution owns it. Without a contribution, the host keeps its
@@ -413,7 +423,7 @@ const saved = builtinMainContext(ctx).storage.store("servers", {
 - `Storage.remove(key, { from })` reads as `initial` again and never imports `from` again.
 - Renaming a built-in that has shipped moves three things: stored keys (`from`), command ids (the keybind rename map in `packages/app/src/settings/keybinds/migration.ts`), and panel keys (`BuiltinPanel.legacy`). Never drop user data. The enable setting starts again under the new id.
 
-A built-in always runs, whatever setting is saved under its id, and Settings › Plugins has no switch for it. For any other plugin, the setting saved under its id wins; with none, the plugin is enabled. A plugin from the config whose `os` leaves out this system never runs; Settings › Plugins keeps its row, without a switch, with "Not available on this system." Both desktop hosts use this rule (`pluginEnabled`). A failed startup snapshot is unknown, so the window waits for the manager list rather than running disabled plugins.
+A built-in always runs, whatever setting is saved under its id, so Extensions › Plugins does not list it, unless it failed: then its row shows the error and Reload, without a switch. For any other plugin, the setting saved under its id wins; with none, the plugin is enabled. A plugin from the config whose `os` leaves out this system never runs; Extensions › Plugins keeps its row, without a switch, with "Not available on this system." Both desktop hosts use this rule (`pluginEnabled`). A failed startup snapshot is unknown, so the window waits for the manager list rather than running disabled plugins.
 
 ## Runtime rules
 

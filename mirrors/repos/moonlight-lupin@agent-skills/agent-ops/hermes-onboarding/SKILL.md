@@ -470,7 +470,7 @@ Create 4 scheduled crons + document 1 triggered procedure:
 | Memory consolidation | Every 4 days, 02:00 | no_agent | `mnemosyne_sleep.sh` — working memory → episodic. Silent when done. |
 | Backup + update + health | Weekly (Sun, 03:00) | Agent | `hermes backup` (max 2 copies), then `hermes update`, then post-update health check (re-apply LAN patches if needed). Alert on failure. |
 | Weekly health check | Weekly (Sun, 06:00) | no_agent | `weekly_health_check.sh` — consolidated report: host status, disk usage, log anomalies, input token overhead. Silent when healthy. Alerts with breakdown when any check finds issues. |
-| Input token audit | Every 30 days, 09:30 | Agent | Run the `input-token-analysis` skill (`scripts/audit.py --days 30`): rank consumers, pre-check levers, report deltas vs the prior baseline, propose changes with verified config values. Delivers a full report each run — the deep audit the weekly check only samples. Requires the `input-token-analysis` skill installed (see Step 20). |
+| Input token audit | Every 30 days, 09:30 | Agent | Run the `input-token-overheads` skill's aggregate audit (`scripts/audit.py --days 30`): rank consumers, pre-check levers, report deltas vs the prior baseline, propose changes with verified config values. Delivers a full report each run — the deep audit the weekly check only samples. Requires the `input-token-overheads` skill installed (see Step 20). |
 | DonSeTch weekly update | Weekly (Mon, 09:00) | no_agent | `donsetch_update.sh` — release-binary self-updater. Gates on GitHub `releases/latest`, not tags. Silent when already latest. See Step 8e. |
 
 The backup+update cron runs in agent mode (not no_agent) because the post-update health check may need to re-apply dashboard patches that `hermes update` overwrites. A no_agent script cannot re-apply patches or run `skill_view`.
@@ -513,7 +513,7 @@ Create the input-token audit cron (agent mode — it needs `skill_view` and reas
 ```
 Prompt skeleton (adapt to the customer):
 
-"You are the input-token auditor. Load the `input-token-analysis` skill and run
+"You are the input-token auditor. Load the `input-token-overheads` skill and run
 its scripts/audit.py for the last 30 days. Compare against the previous audit's
 baseline (read it from the prior cron output if available, else establish this
 run as the first baseline). Pre-check every lever before proposing changes:
@@ -547,7 +547,7 @@ Schedule: every 30 days. Delivery: customer's home channel.
 | Browser | CDP browser opens and navigates |
 | Crons | `hermes cron list` shows 5 jobs (incl. DonSeTch weekly update) |
 | Weekly health check | `~/.hermes/scripts/weekly_health_check.sh` exists and is executable |
-| Input token audit | `hermes cron list` shows a 30-day audit job; `input-token-analysis` skill installed and `scripts/audit.py` runs |
+| Input token audit | `hermes cron list` shows a 30-day audit job; `input-token-overheads` skill installed and `scripts/audit.py` runs |
 | Timezone | `hermes config get timezone` matches customer input |
 | Approvals | `hermes config get approvals.mode` returns `smart` |
 | Terminal backend | `hermes config get terminal.backend` matches detection |
@@ -580,9 +580,9 @@ hermes skills search <use-case-keyword>
 
 Install customer's chosen skills: `hermes skills install <id>`
 
-Also install the `input-token-analysis` skill from this repo (`agent-ops/input-token-analysis`) — the 30-day audit cron from Step 18 depends on it.
+Also install the `input-token-overheads` skill from this repo (`agent-ops/input-token-overheads`) — the 30-day audit cron from Step 18 depends on it.
 
-**Done:** use case recorded. Relevant skills recommended and installed. Input-token-analysis skill installed for the Step 18 audit cron.
+**Done:** use case recorded. Relevant skills recommended and installed. `input-token-overheads` skill installed for the Step 18 audit cron.
 
 ## Common Pitfalls
 

@@ -61,7 +61,7 @@ Mirror of `seaworld008/Commonly-used-high-value-skills` — 26 default patterns,
 - `CONTRIBUTING.md`
 - `docs/sources/reports/skill-curation-2026-04-25.md`
 - `docs/maintenance-2026-08-31.md`
-- `docs/releases/v4.3.0.md`
+- `docs/releases/v5.0.0.md`
 - `docs/releases/v4.1.0.md`
 - `docs/maintenance-audit-2026-09-30.md`
 - `docs/maintenance-audit-2026-09-28.md`
@@ -5358,7 +5358,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 5284 | → | [`docs/maintenance-workflow.md`](docs/maintenance-workflow.md) |
 | 5285 | → | [`docs/nlpm-audit-usage.md`](docs/nlpm-audit-usage.md) |
 | 5286 | → | [`docs/releases/v4.1.0.md`](docs/releases/v4.1.0.md) |
-| 5287 | → | [`docs/releases/v4.3.0.md`](docs/releases/v4.3.0.md) |
+| 5287 | → | [`docs/releases/v5.0.0.md`](docs/releases/v5.0.0.md) |
 | 5288 | → | [`docs/sources/reports/skill-curation-2026-04-25.md`](docs/sources/reports/skill-curation-2026-04-25.md) |
 | 5289 | → | [`README.en.md`](README.en.md) |
 | 5290 | → | [`README.md`](README.md) |

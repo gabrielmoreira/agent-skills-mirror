@@ -114,7 +114,42 @@ lets every device of the account run things there without the card. Nobody there
 hears `not_allowed` when the card expires. `info` and `notify` never ask; a
 `task` runs under the device's own Sentinel, whose cards travel back to the
 caller as before. A device may `approve` only cards of its own runs that were
-sent to it, never the card asking whether it may run something.
+sent to it, never the card asking whether it may run something; the one exception is a
+computer's own card marked `any_device` ([below](#a-computer-s-own-cards-on-the-phone)), which
+any device of the account may answer.
+
+### A computer's own cards on the phone
+
+A scheduled task on nanoMuse Desktop runs while nobody may be at the computer, so the cards of
+its run also go to the account's phones. No call stands behind such a card, so it travels as a
+push (relay 0.31, [below](#frames)); the computer sends it only when `welcome.server.features`
+lists `event_push`, and the relay passes it only to devices whose `hello` announces
+`approve.any` (the Android app and the iPhone app):
+
+```
+→ event {to:"*", body:{stage:"approval", approval_id, preview, preview_zh, reason, app,
+                      task:{id, title}, chat, scopes:["once", "schedule"?], timeout, device,
+                      any_device:true}}
+← call  {action:"approve", args:{approval_id, allow, scope?:"once" | "schedule"}}   (to the computer)
+→ event {to:"*", body:{stage:"approval_result", approval_id, status, by?:{id, name}}}
+```
+
+`preview` and `preview_zh` say what the step does in English and in Chinese (the phone picks
+by its language), `app` is the app the hands would act in, `task` and `chat` name the task and
+the chat it lives in, `device` the computer, `timeout` is how many seconds the phone shows the
+card (600). `scopes` lists what the card may offer besides *Deny*: `schedule` (*Always in this
+task*) only for a hands step in a run of one task; that grant is kept on the computer, never on
+the phone. `any_device` says any device of the account may answer: the computer takes `approve`
+for this card from whichever device sends it first, where every other card is answered only by
+the device that started the run. The first answer, on the computer or on any phone, decides;
+the computer then pushes `approval_result` with `status` (`approved`, `denied`, or `cancelled`
+when the run let the card go) and `by`, the device that answered, and the phones drop the card.
+A phone where nobody answers in time only drops its own card and sends nothing, so the card on
+the computer keeps waiting. A card that hits a payment word goes too: only phones announce
+`approve.any`, and a phone answers behind its screen lock. Nothing runs on the phone, so the
+card is shown with *Let other devices operate this phone* off as well. In the background
+Android shows the card as a notification; iOS posts a notification while its hub connection is
+still open.
 
 ### Proposed `proxy_fetch`: the phone uses the computer's connection
 
@@ -176,12 +211,13 @@ the key in `hello` instead).
 → hello    {device:{id,name,kind,os,version,actions[],llm?}}   kind: phone | computer | web
            llm (relay 0.28, optional): {provider, model}, the ids the device runs its model under ("cloud",
            "openrouter", a model id); plain ids only, never a key or a URL; kept on the device row for the operator
-← welcome  {device_id, devices:[…], server:{version,frame_limit,time}}
+← welcome  {device_id, devices:[…], server:{version,frame_limit,time,features?}}   features (relay 0.31): ["event_push"]
 ← devices  {devices:[{id,name,kind,os,version,actions[],online,last_seen,controllable,ip}]}
 
 → call     {id, to, action, args}
 ← call     {id, from:{id,name,kind}, action, args}          (delivered to the target)
 → event    {id, body}          ← event  {id, from, body}    progress, approvals, images
+→ event    {to, body}          ← event  {from, body}        no id: a push to a device or "*" (relay 0.31, below)
 → result   {id, ok, body | error, message}                  ← result (to the caller)
 ← error    {code, message, id?}   device_offline · not_controllable · self_call · duplicate_call · unknown_call · timeout
                                   too_large · rate_limited · bad_frame · device_online · bad_key · bad_device
@@ -223,6 +259,18 @@ slept, a Wi-Fi that changed) hears no `pong`: the runtime's client uses the
 protocol's own ping with a 20 s timeout, the desktop's drops the socket when
 nothing at all arrived between two of its `ping` frames (about 50 s) and
 reconnects the same way.
+
+Since relay 0.31 an `event` may also be sent without an `id`: a push, not
+progress on a call. A computer uses it for its own approval cards, which no
+call stands behind, and for the word that one was answered. `to` is one
+device id or `"*"`, every device of the account; either way the relay passes
+the frame only to devices whose `hello` announced `approve.any`, never back to
+the sender, so the sender keeps no list and an older app never sees one. Only
+the stages `approval` and `approval_result` pass; any other is dropped and
+logged. One device may push 30 a minute (over that, `rate_limited`), each
+`body` 16 KB at most (over that, `too_large`). A relay that has this lists
+`event_push` in `welcome.server.features`; a client sends a push only when it
+sees that, so an older relay hears none.
 
 Frames the relay does not know (`type` it has no handler for, a text frame
 that is not a JSON object, a binary frame) are answered with
@@ -339,7 +387,9 @@ computer's own hands) is in [every-device.md](every-device.md).
   [`NanoMuseDeviceMention.swift`](../android/src/ios/NanoMuse/NanoMuseDeviceMention.swift))
   has its `approval` events answered on the phone's card
   ([`NanoMuseRemoteApproval.swift`](../android/src/ios/NanoMuse/NanoMuseRemoteApproval.swift))
-  and `approve` sent back; `approval_result` closes the card. The reply is drawn while that
+  and `approve` sent back; `approval_result` closes the card. A computer's pushed card
+  ([above](#a-computer-s-own-cards-on-the-phone)) lands on the same card with *Allow once*,
+  *Always in this task* and *Deny*. The reply is drawn while that
   device works ([`NanoMuseDeviceReply.swift`](../android/src/ios/NanoMuse/NanoMuseDeviceReply.swift)):
   `tool`/`tool_result` as step capsules, `text` as it comes; the chat's stop sends `stop {call}`.
 - Runtime (`nanomuse serve`): [`nanomuse/cloud.py`](../nanomuse/cloud.py)

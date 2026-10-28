@@ -65,7 +65,7 @@ Bad example:
 
 Use when the codebase's accumulated debt should be measured and ranked as a ledger - findings with file:line, severity, and effort, quick wins separated from big fixes - rather than judged as a diff or cleaned up on the spot.
 
-    Strong routing signals: `tech-debt-audit`, `tech debt`, `tech debt audit`, `technical debt`, `technical debt audit`, `tech debt ledger`, `debt ledger`, `audit our tech debt`, `tech debt report`, `code debt audit`, `where is our tech debt`, `기술부채`, `기술 부채`, `기술부채 감사`, `기술부채 감사해줘`, `기술부채 점검`, `기술부채 장부`, `부채 원장`
+    Strong routing signals: `tech-debt-audit`, `tech debt`, `tech debt audit`, `technical debt`, `technical debt audit`, `tech debt ledger`, `debt ledger`, `audit our tech debt`, `tech debt report`, `code debt audit`, `where is our tech debt`, `기술부채`, `기술 부채`, `기술부채 감사`, `기술부채 감사해줘`, `기술부채 점검`, `기술부채 장부`, `부채 원장`, `техдолг`, `технический долг`, `аудит техдолга`, `аудит технического долга`
 
 ## Catalog Metadata
 

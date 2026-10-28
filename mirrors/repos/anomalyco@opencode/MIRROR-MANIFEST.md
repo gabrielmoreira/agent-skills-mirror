@@ -7,7 +7,7 @@ ref: dev
 
 # Mirror Manifest
 
-Mirror of `anomalyco/opencode` — 26 default patterns, 2 followed patterns, 89 file(s) materialized.
+Mirror of `anomalyco/opencode` — 26 default patterns, 2 followed patterns, 91 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `anomalyco/opencode` — 26 default patterns, 2 followed patterns, 89 
 | Ref           | `dev` |
 | Default pats  | 26 |
 | Followed pats | 2 |
-| Files         | 89 |
+| Files         | 91 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -124,31 +124,33 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 62 | ✓ | [`packages/plugins/figma/skills/figma-use-slides/SKILL.md`](packages/plugins/figma/skills/figma-use-slides/SKILL.md) |
 | 63 | ✓ | [`packages/plugins/figma/skills/figma-use/SKILL.md`](packages/plugins/figma/skills/figma-use/SKILL.md) |
 | 64 | ✓ | [`packages/plugins/README.md`](packages/plugins/README.md) |
-| 65 | ✓ | [`packages/schema/AGENTS.md`](packages/schema/AGENTS.md) |
-| 66 | ✓ | [`packages/sdk/README.md`](packages/sdk/README.md) |
-| 67 | ✓ | [`packages/session-ui/AGENTS.md`](packages/session-ui/AGENTS.md) |
-| 68 | ✓ | [`packages/session-ui/performance/highlighting/README.md`](packages/session-ui/performance/highlighting/README.md) |
-| 69 | ✓ | [`packages/session-ui/performance/markdown-lifetime/README.md`](packages/session-ui/performance/markdown-lifetime/README.md) |
-| 70 | ✓ | [`packages/stats/AGENTS.md`](packages/stats/AGENTS.md) |
-| 71 | ✓ | [`packages/stats/README.md`](packages/stats/README.md) |
-| 72 | ✓ | [`packages/stories/playwright/README.md`](packages/stories/playwright/README.md) |
-| 73 | ✓ | [`packages/tui/AGENTS.md`](packages/tui/AGENTS.md) |
-| 74 | ✓ | [`packages/ui/AGENTS.md`](packages/ui/AGENTS.md) |
-| 75 | ✓ | [`packages/ui/src/motion/README.md`](packages/ui/src/motion/README.md) |
-| 76 | ✓ | [`packages/web/README.md`](packages/web/README.md) |
-| 77 | ✓ | [`salesforce/README.md`](salesforce/README.md) |
-| 78 | ✓ | [`script/ast-grep/effect-simplifications/README.md`](script/ast-grep/effect-simplifications/README.md) |
-| 79 | ✓ | [`sdks/vscode/README.md`](sdks/vscode/README.md) |
-| 80 | ✓ | [`services/changelog/README.md`](services/changelog/README.md) |
-| 81 | ✓ | [`services/files/README.md`](services/files/README.md) |
-| 82 | ✓ | [`services/README.md`](services/README.md) |
-| 83 | ✓ | [`services/update/README.md`](services/update/README.md) |
-| 84 | ✓ | [`services/www/AGENTS.md`](services/www/AGENTS.md) |
-| 85 | ✓ | [`services/www/README.md`](services/www/README.md) |
-| 86 | ✓ | [`services/www/src/docs/AGENTS.md`](services/www/src/docs/AGENTS.md) |
-| 87 | ✓ | [`specs/v2/README.md`](specs/v2/README.md) |
-| 88 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 89 | → | [`README.md`](README.md) |
+| 65 | ✓ | [`packages/process-daemon/AGENTS.md`](packages/process-daemon/AGENTS.md) |
+| 66 | ✓ | [`packages/process-daemon/README.md`](packages/process-daemon/README.md) |
+| 67 | ✓ | [`packages/schema/AGENTS.md`](packages/schema/AGENTS.md) |
+| 68 | ✓ | [`packages/sdk/README.md`](packages/sdk/README.md) |
+| 69 | ✓ | [`packages/session-ui/AGENTS.md`](packages/session-ui/AGENTS.md) |
+| 70 | ✓ | [`packages/session-ui/performance/highlighting/README.md`](packages/session-ui/performance/highlighting/README.md) |
+| 71 | ✓ | [`packages/session-ui/performance/markdown-lifetime/README.md`](packages/session-ui/performance/markdown-lifetime/README.md) |
+| 72 | ✓ | [`packages/stats/AGENTS.md`](packages/stats/AGENTS.md) |
+| 73 | ✓ | [`packages/stats/README.md`](packages/stats/README.md) |
+| 74 | ✓ | [`packages/stories/playwright/README.md`](packages/stories/playwright/README.md) |
+| 75 | ✓ | [`packages/tui/AGENTS.md`](packages/tui/AGENTS.md) |
+| 76 | ✓ | [`packages/ui/AGENTS.md`](packages/ui/AGENTS.md) |
+| 77 | ✓ | [`packages/ui/src/motion/README.md`](packages/ui/src/motion/README.md) |
+| 78 | ✓ | [`packages/web/README.md`](packages/web/README.md) |
+| 79 | ✓ | [`salesforce/README.md`](salesforce/README.md) |
+| 80 | ✓ | [`script/ast-grep/effect-simplifications/README.md`](script/ast-grep/effect-simplifications/README.md) |
+| 81 | ✓ | [`sdks/vscode/README.md`](sdks/vscode/README.md) |
+| 82 | ✓ | [`services/changelog/README.md`](services/changelog/README.md) |
+| 83 | ✓ | [`services/files/README.md`](services/files/README.md) |
+| 84 | ✓ | [`services/README.md`](services/README.md) |
+| 85 | ✓ | [`services/update/README.md`](services/update/README.md) |
+| 86 | ✓ | [`services/www/AGENTS.md`](services/www/AGENTS.md) |
+| 87 | ✓ | [`services/www/README.md`](services/www/README.md) |
+| 88 | ✓ | [`services/www/src/docs/AGENTS.md`](services/www/src/docs/AGENTS.md) |
+| 89 | ✓ | [`specs/v2/README.md`](specs/v2/README.md) |
+| 90 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 91 | → | [`README.md`](README.md) |
 
 ---
 

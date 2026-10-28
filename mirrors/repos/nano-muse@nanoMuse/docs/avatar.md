@@ -99,3 +99,11 @@ beside it as `own-clip.png`, filed with the signed-in account's other files; on 
 app's `Application Support/nanomuse/avatar/own-clip.mp4`; on the desktop under
 `$DSH_HOME/nanomuse/avatar/own-clip.mp4`. It survives a new studio face and a reset to the
 built-in one.
+
+On Android that folder is inside the app's own storage, which no file manager or shell can
+open, so the workbench's menu has *Save to gallery*: it copies the base picture, the mood stills,
+the four candidates of the last generation, the animated moods and your own clips to
+`Pictures/nanoMuse/avatar` and `Movies/nanoMuse/avatar`, each batch named by the minute it
+was saved, and says how many pictures and clips landed. Nothing goes anywhere but the gallery
+of the same phone; it is the way to keep a face or a clip before clearing the app's data or
+moving to a new phone. ([#664](https://github.com/nano-muse/nanoMuse/issues/664))

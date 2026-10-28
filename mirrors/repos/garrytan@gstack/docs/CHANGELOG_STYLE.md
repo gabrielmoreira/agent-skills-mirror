@@ -62,6 +62,9 @@ the user gets; the path to that system is invisible to them.
 **When to write the CHANGELOG entry:**
 - At `/ship` time (Step 13), not during development or mid-branch.
 - The entry covers ALL commits on this branch vs the base branch.
+- `/ship` lints the lines the branch added with `bin/gstack-prose-lint CHANGELOG.md --base origin/<base> --gate`,
+  and the Quality gate workflow gates the `## [Unreleased]` block the same way. Rewrite each `PROSE:` line
+  it names ([docs/troubleshooting.md](troubleshooting.md#prose-lint-found)).
 - Never fold new work into an existing CHANGELOG entry from a prior version that
   already landed on main. If main has v0.10.0.0 and your branch adds features,
   bump to v0.10.1.0 with a new entry — don't edit the v0.10.0.0 entry.

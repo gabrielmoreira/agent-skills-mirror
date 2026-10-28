@@ -4,6 +4,26 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.312](https://github.com/Piebald-AI/claude-code-system-prompts/commit/5350273)
+
+_-12,704 tokens_
+
+- **NEW:** Data: Windows protected path resolution denial — Explains refused writes when a Windows path may reach protected Claude Code files but cannot be resolved safely.
+- **NEW:** System Reminder: Attached machine idle disconnect notice — Explains idle disconnection and how to request the folder again, without polling or using the wrong machine.
+- **NEW:** System Reminder: Auto mode no verdict after another hook rewrite — Instructs Claude to retry the affected call alone after other results, and stop if it is denied again.
+- **NEW:** System Reminders: Staged file still copying and Staged files still copying — Explain that pending copies have not failed and guide waiting before reporting a delay.
+- **REMOVED:** Agent Prompt: Session title and branch generation — Removes the prompt for generating a short session title and Git branch name from the extracted collection.
+- **REMOVED:** Data: Artifact decision component HTML skeleton and Skill: Artifact components — Remove the decision component skeleton and its authoring instructions from the extracted collection.
+- **REMOVED:** Skills: Artifact data table, Artifact document, Artifact explainer, and Artifact report — Remove these artifact authoring instructions from the extracted collection.
+- **REMOVED:** Skills: Prototype description and Prototype runtime capabilities guidance — Remove prototype creation and real-data integration instructions from the extracted collection.
+- **REMOVED:** System Prompt: Plan mode interactive workshop offer and System Reminder: Plan mode prototype artifact option — Remove the instructions to offer these activities during planning.
+- Agent Prompt: Status line setup — Changes the five-hour usage limit wording from “session limit” to “limit” in the input description and example.
+- System Reminder: Plan mode approval tool enforcement — Removes the conditional third reason to end a planning turn associated with the interactive workshop.
+- Tool Descriptions: Artifact design skill loading guidance and Artifact page authoring and HTML skeleton — Remove the workshop document exception to the design-skill requirement.
+- Tool Description: Artifact line diff reading legend — Removes the note that document-page diff lines carry published block IDs that the local file may lack.
+- Tool Description: ListConnectors — Directs recommendations for uninstalled connectors to SearchMcpRegistry and SuggestConnectors, and clarifies that listing does not connect them.
+- Tool Descriptions: SearchMcpRegistry and SuggestConnectors — Tell Claude to suggest connecting relevant uninstalled results through claude.ai, while clarifying that neither tool connects them.
+
 # [2.1.311](https://github.com/Piebald-AI/claude-code-system-prompts/commit/62d66b7)
 
 _+4,096 tokens_

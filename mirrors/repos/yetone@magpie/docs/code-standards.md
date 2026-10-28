@@ -29,6 +29,7 @@ describe and review a change to a subsystem is in the
 | Tests use real inputs. | Fixtures look like real requests, real serialized output and real files on disk. That includes missing fields, empty values and defaults. |
 | Tests check behavior, not implementation. | Assert what the user or caller needs. Formatting changes and internal refactors shouldn't break a test, unless exact bytes are the requirement. |
 | A test that fails on `main` is a bug to fix now. | "Fails the same on origin/main" is not a baseline, and neither is "fails under the full run, passes alone". Fix it at its cause, or open an issue naming the cause, in a commit of its own, before shipping on top of it. From 10-05 to 10-07 dozens of commits shipped past red tests. Some were real bugs: a data race (a45b3e09), test order (bfe8bcaf), and click-scroll red since 5d871723 while dcbae2ef, 76d82528 and b2345078 shipped past it. Run `go test -race -count=20 -run X` before calling a Go test a flake. |
+| A red's issue is read to its last comment, and a patch on it is taken first. | Before filing, commenting on or shipping past a red, search its test's name and read every comment. "Seen again" is not work on it: take it, or say who has it. A patch posted there is reviewed and ported before anyone writes another. #1794 got four "seen again" comments before anyone took it (10-12). #2444 had ump45nose's patch for 22 hours while two sessions commented, until CI went red at f191d6423 (10-17). JoeyWu-tech's #3568 patch, with red-on-old tests, waited three days until 0a7633136's CI went red and 11c427eaa ported it (10-28). |
 | Tests stay out of the real machine. | Run them under a temp HOME with Go's caches pinned (see the snippet in [provider-plugins.md](subsystems/provider-plugins.md)). Never touch a real agent's config or `~/.config/magpie`. An agent's variable goes in `agentenv.Vars`, so the sandbox clears it. |
 | Whatever a test starts ends when the test does. | A fake process, a goroutine or an async refresh a test sets going is stopped or waited for before the test returns, or it writes into the next test's folder ("directory not empty") or spins for days. A package that isolates itself in its own `TestMain` instead of `testenv.Run` sets what testenv sets, `testenv.Marker` included. TestClaudeSignInByPaste's fake polled for 2 days (38a0f470). On 10-11 a CLI-identity ask outliving its test broke the next one (#1524): 4ee3a76b fixed it in internal/gateway only, 9c377231 for every package through the marker, which the gateway never set (a349de82). |
 | A timing test leaves room on both sides. | Never bound a test by wall-clock time a loaded runner can exceed, and keep a threshold classifier's fixture far from every threshold it has. Reproduce a timing failure by injecting the delay (a held write, a late first arrival), not by rerunning until it fails, and list every timing assumption in the test when fixing one. 319b72c7 fixed one of two loops sharing a 2000-line bound and the other went red 9h later (229ce19a). On 10-11 TestMaxRPM's flake was a real gap: a first request that reached the vendor late let the vendor see one too many in its minute (ce1ecaa4), and the queued-stream tests timed the client's clock under CPU starvation (3f4287e6). |
@@ -135,8 +136,12 @@ tag cover it. v0.1.1213 (hdiutil "Resource busy") and v0.1.1218 (notarising
 lost the network) were never published, and nobody noticed the first for
 1.5 hours (#1846). The same holds for a plugin version: `npm view
 <package>@<version> --prefer-online` before a mover's `min` or a reply
-names it. A PR that only adds tests doesn't get a
-release of its own.
+names it. A plugin version published for a moved subscription
+raises its mover's `min` to that version the same day, since
+`keepMovedCurrent` installs only `min`: zed 0.1.9 (10-18) and factory
+0.1.38 (10-24, raised 10-28 in 490c0a4ad) reached nobody until a review
+compared every mover with `npm view --prefer-online`. A PR that
+only adds tests doesn't get a release of its own.
 
 ## Reviewing a PR
 

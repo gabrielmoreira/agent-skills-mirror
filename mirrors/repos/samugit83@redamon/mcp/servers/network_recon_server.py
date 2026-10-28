@@ -693,10 +693,16 @@ def proxy_brain(code: str, _redamon_ctx: str = "") -> str:
       for r in redamon.fuzz(t.id, "id", ["1002","999999","1001'","1001 OR 1=1"]):
           print(r.payload, r.status, r.length, "SQLERR" if "SQL" in r.body else "")
 
-      # Access-control sweep (IDOR/BOLA)
+      # Access-control sweep (IDOR/BOLA): same data back for a weaker identity = broken
       for t in redamon.search(session="sess_alice"):
-          r = redamon.replay(t.id, mutate={"dropHeaders": ["Cookie"]})
-          if r.status == 200: redamon.finding("bola", t.id, evidence=r, severity="high")
+          base = redamon.replay(t.id, {})              # owner baseline
+          if base.status not in (200, 201):
+              continue                                 # only requests that returned data
+          r = redamon.replay(t.id, mutate={"dropHeaders": ["Cookie", "Authorization"]})
+          if r.status == base.status and r.body == base.body:
+              redamon.finding("bola", t.id, evidence=r, severity="high")
+      # A bare 200 is not a leak (a login or public page answers 200 too). Confirm
+      # the body carries the OTHER user's unique data; see redamon.manual("authz").
 
       # JWT forge
       tok = redamon.jwt("eyJ...")

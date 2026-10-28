@@ -26,7 +26,7 @@ When performing these actions, ALWAYS invoke the corresponding skill FIRST:
   container by default. It is **not baked** into the analyzer image (only the
   entrypoint is COPYed); every caller must **bind-mount** it at spawn, or the run
   dies with `ModuleNotFoundError: No module named 'supply_chain_common'` (see
-  [redamon.sh:2349](../../redamon.sh#L2349)).
+  the comment in `cmd_supply_chain_sync` in [redamon.sh](../../redamon.sh)).
 
 ---
 

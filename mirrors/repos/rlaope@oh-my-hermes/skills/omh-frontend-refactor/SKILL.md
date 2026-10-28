@@ -65,7 +65,7 @@ Bad example:
 
 Use when existing UI code needs restructuring without behavior change - an oversized component, boolean-flag state, effect chains, prop drilling - and the user wants a previewed, pass-ordered refactor plan rather than a new build or a verdict-only review.
 
-    Strong routing signals: `frontend-refactor`, `front-refactor`, `frontend refactor`, `refactor this component`, `refactor the component`, `refactor my component`, `component refactor`, `react refactor`, `refactor this hook`, `split this component`, `split the component`, `this component is too big`, `component is too large`, `state management review`, `state management`, `state colocation`, `too many useeffects`, `useeffect cleanup`, `clean up useeffect`, `prop drilling`, `컴포넌트 리팩터링`, `컴포넌트 리팩토링`, `컴포넌트 분리`, `컴포넌트가 너무 커`, `상태 관리 정리`, `상태 관리 리뷰`, `프론트 리팩터링`, `프론트엔드 리팩터링`, `useEffect 정리`
+    Strong routing signals: `frontend-refactor`, `front-refactor`, `frontend refactor`, `refactor this component`, `refactor the component`, `refactor my component`, `component refactor`, `react refactor`, `refactor this hook`, `split this component`, `split the component`, `this component is too big`, `component is too large`, `state management review`, `state management`, `state colocation`, `too many useeffects`, `useeffect cleanup`, `clean up useeffect`, `prop drilling`, `컴포넌트 리팩터링`, `컴포넌트 리팩토링`, `컴포넌트 분리`, `컴포넌트가 너무 커`, `상태 관리 정리`, `상태 관리 리뷰`, `프론트 리팩터링`, `프론트엔드 리팩터링`, `useEffect 정리`, `рефакторинг компонента`, `раздели компонент`, `компонент слишком большой`, `рефакторинг фронта`, `разбей компонент`
 
 ## Catalog Metadata
 

@@ -274,6 +274,38 @@ Two sibling structural ops reorder objects. Both live-verified 2026-07-20 on the
 - The event catalog lists sibling `tab.moved` / `workspace.moved` events (0.7.2); emission not
   observed here (no live subscription during the probe).
 
+## What Herdr should provide — a redraw of one pane (our ask, not a Collie capability)
+
+A program can keep the screen of an earlier layout after a resize, with a stale input box on its last
+rows (Altan's OMP 18.6.1 pane, 2026-10-25). Collie proves such a box stale with its probe and refuses
+the send with nothing deleted ([ADR 0048](.adr/0048-the-input-box-is-found-by-its-own-frame.md), the
+2026-10-25 addendum). It does not mend the pane: a pane's geometry is the operator's screen, and Collie
+does not write it ([ADR 0008](.adr/0008-collie-does-not-run-a-terminal-emulator.md)). What would let a
+client mend it without touching the layout:
+
+1. **A per-pane redraw**, for example `pane.redraw {pane_id}`: deliver `SIGWINCH` to the pane's
+   program, or resize its PTY by itself, with no change to any `rect`, focus or zoom.
+2. **Every PTY resize reaches background panes**, and the emulator and the program agree on the size
+   afterwards, so a stale screen does not happen in the first place.
+
+What we probed on herdr 0.9.5 (2026-10-25, a scratch session with its own `XDG_RUNTIME_DIR` and a
+small logger that printed every `SIGWINCH` it got). Collie calls neither method.
+
+| Method | Params | Returns |
+|---|---|---|
+| `pane.layout` | `{pane_id}` | `{layout: {area, panes: [{pane_id, focused, rect}], splits, zoomed}}`: the pane's tab, each pane's `rect` in cells |
+| `pane.resize` | `{pane_id, direction, amount}` | `{resize: {changed, layout}}`: `direction` is `up`, `down`, `left` or `right`, `amount` a ratio of the split |
+
+- **`changed` means the split's ratio moved, not the cells.** A ratio step of 0.01 answered
+  `changed: true` and left every `rect` as it was.
+- **A resize in a split reaches the program, even in a background workspace.** The pane's PTY gets
+  `SIGWINCH`, and focus stays where it was.
+- **A pane that fills its tab cannot be resized.** `pane.resize` and `pane.zoom` change nothing
+  there, and Herdr has no call that resizes one pane's PTY or sends it `SIGWINCH`.
+  `workspace.focus` would redraw it, but it moves the operator's desktop (ADR 0031).
+- On 0.9.5 a client resize also reached a background PTY, which differs from the 0.9.4 note in the
+  omp gang's tester 06 report. `pane.clear` exists in the schema, but it is not documented.
+
 ## Object shapes (observed)
 
 ```jsonc
@@ -324,7 +356,17 @@ not require a literal `done` from Herdr. See [ADR 0003](.adr/0003-one-shared-see
 > **Pane records now carry `scroll`** (new in 0.7.2, live-verified 2026-07-07): `pane.list`,
 > `pane.get`, `pane.current`, and `session.snapshot` panes all include
 > `scroll: {offset_from_bottom, max_offset_from_bottom, viewport_rows} | null` (all `uint64`;
-> `offset_from_bottom == 0` means the pane is scrolled to the bottom). Collie doesn't consume it yet.
+> `offset_from_bottom == 0` means the pane is scrolled to the bottom). The adapter's `viewport` read
+> uses it: `visible` follows the operator's scroll, `recent` does not.
+
+> **`visible` follows the operator's scroll; `recent` ends at the live screen** (live-probed
+> 2026-10-25, herdr 0.9.3, after `pane.scroll`): a shell pane scrolled 50 rows up read old rows
+> through `visible`, while `recent` with `lines` = `viewport_rows` in `ansi` was byte-identical to
+> `visible` at offset 0 (40 of 40 rows). A Claude Code pane scrolled 30 rows up read the same live
+> last row through `recent`; Herdr trimmed one trailing blank row from the live screen, so `recent`
+> carried one scrollback row above it. A Claude pane scrolled 405 rows up read old output with no
+> input box through `visible`, which is how phone sends failed "could not find the input box". So a
+> `viewport` read of a scrolled pane goes to `recent` (`bridge/mux/herdr/adapter.ts` `readLiveScreen`). The adapter asks `pane.get` once per pane per second (`SCROLL_STATE_MEMO_MS`), so the reads of one request share the answer.
 
 > **`revision` is a stub on Herdr 0.7.x** (live-verified 2026-07-05 on 0.7.0; reconfirmed unchanged
 > on 0.7.2, live-verified 2026-07-07): `pane.read`, `pane.list`, and `session.snapshot` all return

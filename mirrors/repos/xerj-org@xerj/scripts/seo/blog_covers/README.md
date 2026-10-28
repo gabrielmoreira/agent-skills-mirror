@@ -82,6 +82,7 @@ ink, yellow and ochre (`landing/brand.html`), copied into `TOKENS` in `covers.py
 | `network` | the-exploit-hub | PoC documents linked to the three CVEs of the eval |
 | `route` | corpus-hub-v2 | 251 packs, the 14 catalogue corpora, a question routed to lz4 |
 | `budget` | rc99-smart-autoindex-harness-tools | eight squares for the 8 GiB tier, two of them the 2 GiB memtable budget; eight small squares for the 8 MiB document ceiling; one outlined square for JSON streamed past 64 MiB |
+| `fieldgate` | autoindex-search-performance-improvements | 28 filled squares (people) and 217 small empty rings (agent field reports: 169 through the xerj.org API, 48 on GitHub), the squares joined by hairlines to 454 empty cells (rc.99's indices for one folder), beside 32 yellow cells (the dataset cap) at the same pitch; a gate of ink posts around Elasticsearch 9.05 and Lucene 25.4 MiB/s columns, an ochre floor at 0.5x Elasticsearch, and one empty yellow cell for XERJ's pending gate number |
 
 Inks: yellow fill (with ochre for its labels and hairlines) for the one
 result the post is about, grey-blue (day `--z-cmp`) for the comparison series

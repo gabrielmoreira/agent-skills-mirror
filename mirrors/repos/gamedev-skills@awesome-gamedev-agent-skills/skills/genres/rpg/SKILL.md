@@ -12,6 +12,11 @@ dialogue, and combat. This is a **compositional** skill: it ties data-driven con
 dialogue, and saving together. It does not re-teach those primitives; it defines the systems
 that make growth and choice feel meaningful, and points to the skills that implement each.
 
+These systems also apply to custom/proprietary engines. Keep the project's engine and bind
+the concepts below to its documented data, events, UI, and save interfaces. Inspect local
+source/SDK examples before choosing APIs; the router's custom-engine fallback guides that
+mapping. Godot/Unity bindings below are examples, not prerequisites.
+
 ## When to use
 
 - Use when building an RPG/JRPG/action-RPG: the player has **stats that grow**, an
@@ -109,7 +114,8 @@ def on_event(kind, data):
 - **Stacked buffs explode** → percent modifiers multiplied together. Sum percents within a layer
   unless a rule says otherwise (refs §1).
 - **Content as code** → every item/quest hardcoded. Define items, enemies, and quests as
-  **data** (`godot-resources` / `unity-scriptableobjects`).
+  **data** using the project's content schema/loader (`godot-resources` /
+  `unity-scriptableobjects` are catalog examples).
 - **Save format with no version field** → old saves break on update. Add a `version` and a
   migration path from day one (see `save-systems`).
 - **Choices without consequences** → dialogue branches that reconverge immediately feel hollow.
@@ -121,9 +127,12 @@ def on_event(kind, data):
 
 - **Dialogue:** `dialogue-systems` (Yarn Spinner / Ink) — branching lines, conditions, variables.
 - **Persistence:** `save-systems` — character, inventory, quest flags, world state, versioning.
-- **Content data:** `godot-resources` / `unity-scriptableobjects` — items, enemies, quests, skills as assets.
+- **Content data:** the engine's content schema/loader — items, enemies, quests, skills as assets;
+  `godot-resources` / `unity-scriptableobjects` when using those engines.
 - **Combat AI:** `game-ai` for enemy behavior; for turn order reuse the scheduler idea in `roguelike`.
-- **UI:** `game-ui-ux` for HUD/menu layout, resolution scaling, and controller/keyboard nav; `godot-ui-control` for the concrete inventory, quest log, character sheet, and dialogue box.
+- **UI:** `game-ui-ux` for HUD/menu layout, resolution scaling, and controller/keyboard nav;
+  the project's UI API for inventory, quest log, character sheet, and dialogue box
+  (`godot-ui-control` when using Godot).
 - **World:** `level-design` plus your engine's tilemap/3D skill (`godot-tilemap`, `godot-3d-essentials`).
 
 ## References

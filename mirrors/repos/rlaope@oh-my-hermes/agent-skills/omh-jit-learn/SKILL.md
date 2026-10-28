@@ -63,7 +63,7 @@ Bad example:
 
 Use when selecting the highest-leverage immediate learning target for an active blocker before preparing a source-backed Markdown brief for direct application.
 
-    Strong routing signals: `jit-learn`, `learn next`, `learn now`, `blocker-specific learning target`, `highest-leverage learning target`, `immediate learning payoff`, `immediately applicable learning brief`, `source-backed learning brief`, `학습 주제`, `도움 되는 학습 주제`, `당장 적용할 학습 목표`, `책 팟캐스트 크리에이터 강의 학습 브리프`
+    Strong routing signals: `jit-learn`, `learn next`, `learn now`, `blocker-specific learning target`, `highest-leverage learning target`, `immediate learning payoff`, `immediately applicable learning brief`, `source-backed learning brief`, `학습 주제`, `도움 되는 학습 주제`, `당장 적용할 학습 목표`, `책 팟캐스트 크리에이터 강의 학습 브리프`, `объясни с нуля`, `разжуй тему`, `выучи и расскажи`
 
 ## Catalog Metadata
 

@@ -500,6 +500,11 @@ Every capture requires `truncation_details`, with separate accounting for:
   An unreadable directory is recorded in `enumeration_omissions` with its
   root-aliased path and operating-system error code. Entries observed before
   that directory remain available, while descendants beneath it stay unknown.
+  A basename that is not valid UTF-8 is never looked up through replacement
+  characters. It consumes entry capacity and records an `unrepresentable_name`
+  omission at its containing directory, with exact basename bytes in
+  `raw_name_hex` and a null `system_code`. That root's enumeration remains
+  incomplete, so missing paths beneath it remain unknown.
   Each retained regular file without a digest has an aliased path, size,
   remaining budget and reason: `file_bytes_budget`,
   `file_changed_or_short_read`, or `file_unavailable`. Its `system_code` is
@@ -663,3 +668,11 @@ REA then preserves ownership uncertainty and can report `cleanup_incomplete`;
 it does not disable verification to continue. A sandbox that explicitly allows
 this read-only process inspector is a separate prerequisite from the compiler
 and cache settings.
+
+Symlink observations preserve their stored target bytes in `symlink_target_hex`
+(lowercase hexadecimal). `symlink_target` retains valid UTF-8 text and is `null`
+when the target bytes cannot be decoded as UTF-8. Filesystem effects compare
+these exact bytes without resolving the link. Older captures without the hex
+field still parse; a legacy target containing U+FFFD has ambiguous byte identity,
+so matching target text alone produces an `unknown` effect. Symlink descendants
+remain outside filesystem observation regardless of target encoding.

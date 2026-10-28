@@ -789,8 +789,14 @@ GET    /v1/admin/samples         ?account_id=&limit=&since=&before=&before_id=  
 GET    /v1/admin/samples/export  ?since=&account_id=    → the same as JSON lines, without account ids or addresses
 GET    /v1/admin/turns           ?account_id=&limit=&since=&before=&before_id=&conversation=   → the record (0.29): whole turns, newest first
 GET    /v1/admin/turns/export    ?since=&account_id=    → the record as JSON lines, account ids included (it is the account's data, not the training set)
-GET    /v1/admin/record          ?days=30        → what the record holds: turns and files in all and per day, the store against MEDIA_MAX_GB
+GET    /v1/admin/record          ?days=30        → what the record holds: calls and questions in all and per day, calls per question, the store against MEDIA_MAX_GB
+GET    /v1/admin/record/turns    ?account_id=&conversation=&platform=&run=&source=&model=&script=&media=&hands=&since=&limit=&before=&before_key=   → the record question by question (0.31): each laid out once from its calls
+GET    /v1/admin/turns/{id}                      → one call of the record in full
 GET    /v1/admin/blobs/{sha256}                  → one file of the record
+GET    /v1/admin/client-events   ?account_id=&kind=&since=&limit=&before=   → what the apps reported around turns (0.31): Sentinel decisions, approvals, stop reasons, thumbs; codes only
+GET    /v1/admin/client-events/export  ?since=&account_id=   → the same as JSON lines, with the subject pseudonym and no account id
+GET    /v1/admin/client-events/summary ?days=30  → by day and kind, and the split of each kind's codes
+GET    /v1/admin/deletions       ?since=         → the deletions ledger (0.31): the subject of every account that deleted its data or itself since
 GET    /v1/admin/sync                            → conversation sync in aggregate (never a text)
 GET    /v1/admin/catalog                         → the provider's models under the operator's key: which answer, which see, which were refused
 GET    /v1/admin/github          ?days=30        → stars, forks, watchers, open issues, release downloads by day
@@ -931,8 +937,19 @@ each picture first (raw body with its `Content-Type`; the hash is checked;
 answer says so too), then `POST /v1/turns` with `model`, `messages`
 (`blob:sha256:` references, or data URLs inline within `MAX_REQUEST_BYTES`),
 `response: {message, usage?}`, and `provider`, `ts`, `conversation`, `id`
-and `status` as the client has them; the row says `source: own`. A reference
-to a file the account never put up is a 400 `unknown_blob`. The same files
+and `status` as the client has them, and from 0.31 `run`, `turn`, `step`,
+`trajectory`, `trajectory_step` and `platform` (the provenance fields, the
+same as the `X-NanoMuse-*` headers of a Cloud turn; docs/cloud.md
+"Provenance"); the row says `source: own`, and with the account's *Help
+improve* switch on the turn's training view is kept as for a Cloud turn. A
+reference to a file the account never put up is a 400 `unknown_blob`. From
+0.31 the apps also send `POST /v1/events` with what happened around a turn
+(the Sentinel's decision, an approval's result, why a reply was stopped, a
+thumb up or down): codes and numbers tied to the turn's id, never a message
+(docs/cloud.md "Client events"); and every deletion of kept data or of an
+account writes the account's export pseudonym to a ledger
+(`GET /v1/admin/deletions`), so a training set built from an earlier export
+drops it (docs/cloud.md "Deletions"). The same files
 carry the face's clips between devices: a device that animated the drawn face
 puts the clips up and names them in the profile (`clips: {mood: {sha256,
 mime, bytes}}`, `PUT /v1/me/profile`); the others download them instead of

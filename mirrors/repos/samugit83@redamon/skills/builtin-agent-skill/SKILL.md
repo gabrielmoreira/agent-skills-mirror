@@ -46,7 +46,7 @@ For per-skill tunable defaults, use `project-settings-cascade`.
   "SQL" in an SSRF section) make both skills mis-route. Disambiguate in the
   "Key distinction" line of the section in [classification.py](../../agentic/prompts/classification.py).
 - **ALWAYS gate the workflow on the required tool** in the skill's branch of
-  `_build_builtin_skill_workflow_parts()` ([agentic/prompts/__init__.py:198](../../agentic/prompts/__init__.py#L198)),
+  `_build_builtin_skill_workflow_parts()` ([agentic/prompts/__init__.py](../../agentic/prompts/__init__.py)),
   which the think node (`_inject_builtin_skill_workflow()`), fireteam members and
   LATS all reach through `build_builtin_skill_workflow()`:
   `and "<tool>" in allowed_tools`. Without the guard the agent gets instructions

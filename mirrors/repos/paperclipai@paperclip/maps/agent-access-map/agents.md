@@ -139,9 +139,11 @@ environment, and consent checks as other edits. It adds no agent permission or
 credential fallback. Pool and externally managed agents use their existing
 configuration surfaces. Board browser verification does not qualify agent access.
 
-The existing-agent upgrade notice uses this configuration PATCH. It does not
+The existing-agent upgrade notice for Claude, Codex, and Grok Build uses this configuration PATCH. It does not
 grant configuration, account, or environment access. The server resolves the
-saved settings under normal company/configuration authorization. Obsolete Claude
+saved settings under normal company/configuration authorization. Grok migration preserves
+the effective legacy search setting. Task model/effort overrides retain the
+agent's account binding and tool policy without granting extra account access. Obsolete Claude
 tuning fields are removed with `configurationWarnings`; security incompatibilities
 remain errors. Unqualified sandbox upgrades first use the agent-scoped
 `POST /api/agents/{id}/qualify-runner` under the same `agent_config:update`

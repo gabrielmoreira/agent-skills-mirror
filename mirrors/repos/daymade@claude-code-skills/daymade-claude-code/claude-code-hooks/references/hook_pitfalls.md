@@ -3335,6 +3335,16 @@ this list and describe defects you reach by asking a different question):
 
 ## 64. skill-creator-guard's "loaded" verdict requires byte-verified Read coverage — Skill-tool invocation does not count, paged Reads leak seam lines, and parallel Reads race the ledger
 
+- **Codex Code Mode:** use Skill Creator's
+  [receipt recipe](https://github.com/daymade/claude-code-skills/blob/main/daymade-skill/skill-creator/references/stateful-script-verification.md#codex-code-mode-receipt),
+  whose execution contract says to emit source text separately from metadata.
+  An inner `model-facing-receipt-pending` notice is provisional until the outer
+  cell's received text is reconciled. Plain source text and recognized serialized
+  command receipts can both establish coverage; JSON wrapping alone is not the
+  failure criterion. Retain unknown for missing text or unsupported envelopes.
+- **Native Claude Code observations:** the mechanics and recovery below describe
+  the recorded native Read case; do not assume its numbered-Read-only workaround
+  applies to a Codex host without that tool.
 - **Symptom:** you loaded skill-creator this session — via the Skill
   tool, or by reading its SKILL.md in a few big paged Reads — yet the
   guard still blocks your SKILL.md edit with "load skill-creator
@@ -3443,6 +3453,19 @@ this list and describe defects you reach by asking a different question):
   following: the immediate prompt appears exactly once; the
   next prompt does not display it again; and the reminder body still enters
   the next model request.
+- **Verify model-context delivery at the receiver, not from the emission
+  records.** A `systemMessage`, hook stdout, or
+  `hook_additional_context` attachment alone does not prove that the model
+  received the context. In a current Claude transcript, require the exact
+  content in an `api-request-blob` with `message.role == "system"` and the
+  host's `hook additional context` projection, bound by its event/sequence
+  anchor rather than physical record order; a reminder quoted by a tool
+  result, source inspection, or assistant text is a different record. Keep the
+  result unknown when the anchor or later request projection is unavailable.
+  For `goal-reanchor`, use its operator SOP's three-state `--verify-delivery`
+  check. Do not migrate an event channel from user-interface invisibility or
+  one missing attachment: reproduce the original tool event and inspect its
+  actual request projection first.
 - **Real case:** `goal-reanchor`'s re-anchor reminder had injection and
   transcript evidence while ordinary-interface visibility remained a separate
   question. Checking one logical injection in the real host, rather than

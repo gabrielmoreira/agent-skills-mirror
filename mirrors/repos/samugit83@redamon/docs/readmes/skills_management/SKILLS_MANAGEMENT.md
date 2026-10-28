@@ -660,7 +660,7 @@ the matching file:
 
 A skill declares `scope` and `auto_invoke` in its frontmatter; nothing else decides where its rows
 land. **The declaration is the source; the table is a build artifact.** You change when a skill
-applies by editing the skill and re-running [sync.sh](../../skills/skill-sync/assets/sync.sh), never
+applies by editing the skill and re-running [sync.sh](../../../skills/skill-sync/assets/sync.sh), never
 by editing the table.
 
 ### The Third Tier: Rules That Cannot Wait to Be Selected
@@ -706,7 +706,7 @@ description never loads, which is the most common failure of all.
 * **Edit `skills/{name}/SKILL.md`.** That is the only copy.
 * `.claude/skills` is a **symlink** to `skills/`. Never edit through it.
 * The auto-invoke tables in every `AGENTS.md` are **generated output**. Never hand-edit them; they
-  are regenerated from skill metadata by [sync.sh](../../skills/skill-sync/assets/sync.sh), which reads
+  are regenerated from skill metadata by [sync.sh](../../../skills/skill-sync/assets/sync.sh), which reads
   `$REPO_ROOT/skills` only.
 
 ### Why Both `AGENTS.md` and `CLAUDE.md` Exist
@@ -902,7 +902,7 @@ slightly harder to select correctly.
 | It is a one-off, however painful | Write it in the commit message or a readme |
 | It is trivial or self-explanatory | Nothing |
 | It is under roughly 20 lines of rules | Add them to an existing skill **with the same trigger** |
-| It is process for work in flight | A readme under [readmes/](.) or [my_readmes/](../../my_readmes/) |
+| It is process for work in flight | A readme under [docs/readmes/](..) |
 | It restates framework or language defaults | Nothing; the model already knows |
 | You cannot name a failure it prevents | Nothing yet. Wait until it goes wrong a second time |
 | It would break silently in unrelated work | One line in the right `AGENTS.md`, not a skill |
@@ -985,7 +985,7 @@ thing that catches it. Use Action 5, widened to the whole area the programme tou
 
 In-flight process: branch names, "we are currently on phase 2.5", container policies for one
 programme, reporting formats for one series of pull requests. That belongs in a readme under
-[readmes/](.) or [my_readmes/](../../my_readmes/), and it expires.
+[docs/readmes/](..), and it expires.
 
 ### Delete or Merge When
 
@@ -1075,9 +1075,9 @@ branch with judgment.
 Every skill cites real paths and symbols. The check is simply: does this commit touch anything a
 skill mentions? Deterministic, no model, and advisory only. It never blocks a commit.
 
-The script is [skills/skill-sync/assets/citation-check.sh](../../skills/skill-sync/assets/citation-check.sh).
-It takes a changed-file list, skips `skills/` and documentation, greps every `SKILL.md` for each
-path and basename, prints what matched, and always exits 0.
+The script is [skills/skill-sync/assets/citation-check.sh](../../../skills/skill-sync/assets/citation-check.sh).
+It takes a changed-file list, skips `skills/` and documentation, greps every `SKILL.md` and every
+`AGENTS.md` for each path and basename, prints what matched, and always exits 0.
 
 It has **two modes, for two different jobs**:
 
@@ -1090,22 +1090,22 @@ Same grep, opposite intent. With no argument it reads `git diff --cached`, so ru
 outside a commit prints nothing - that is correct behaviour, not a broken script. Pass a range when
 you want it at review time.
 
-It is registered in [.pre-commit-config.yaml](../../.pre-commit-config.yaml) under the existing
-`repo: local` block:
+This repository uses no hook manager. The hook is the tracked script
+[tooling/hooks/pre-commit](../../../tooling/hooks/pre-commit), which
+[tooling/hooks/install-hooks.sh](../../../tooling/hooks/install-hooks.sh) copies into `.git/hooks/`
+(run it once per clone; `.git/hooks/` is not committed). It does two jobs:
 
-```yaml
-      - id: skill-citation-check
-        name: "Skills - citation check (advisory)"
-        entry: ./skills/skill-sync/assets/citation-check.sh
-        language: system
-        pass_filenames: false
-        always_run: true
-        verbose: true
-        priority: 90
-```
+* **Blocking:** when the commit stages a file a generator reads or writes (its `GENERATOR_AREAS`),
+  it runs the three generator checks, `python3 recon_settings/build.py --check`,
+  `python3 graph_db/node_filters/build.py --check` and
+  `python3 tooling/scripts/seed_schema_catalog.py --check`, and refuses the commit while a generated
+  artifact is stale. A commit that stages none of those files is never blocked, so one session's
+  half-finished regeneration does not stop another's unrelated commit.
+* **Advisory:** it runs `citation-check.sh` from an `EXIT` trap, so the notice runs last, prints
+  after everything else, and never changes the commit's status.
 
-`verbose: true` is required, otherwise the output is hidden on success. `priority: 90` runs it last,
-after the formatters, so the notice is the final thing on screen.
+For a repository that does use a hook manager (pre-commit, prek, husky, lefthook),
+[templates/hook-registration.md](templates/hook-registration.md) has the snippet for each.
 
 **Expected volume**: a handful of times per week, not per commit. If it fires on nearly every commit
 your skills are citing too broadly and should name specific files rather than directories.
@@ -1123,16 +1123,27 @@ hook in `.claude/settings.json` matching `Bash` calls containing `git commit`. U
 The citation hook catches changes as they happen. The drift audit catches everything that slipped
 through, including changes made outside a commit you were watching.
 
-The script is [skills/skill-sync/assets/drift-audit.sh](../../skills/skill-sync/assets/drift-audit.sh).
+The script is [skills/skill-sync/assets/drift-audit.sh](../../../skills/skill-sync/assets/drift-audit.sh).
 It extracts every markdown link target and backticked repository path from every `SKILL.md` and
-checks that each one still resolves. `--skill <name>` limits it to one skill.
+every `AGENTS.md` and checks that each one still resolves. `--skill <name>` limits it to one skill.
 
-**Why it tries several roots.** Skills cite paths relative to a *component* root, not the repository
-root rather than the repository root. A skill may cite `base_views.py` as `api/base_views.py` when
-the file actually lives at `api/src/main/api/base_views.py`, because that is how it is referred to
-inside that component. A reference counts as live if it resolves under the skill's own directory or
-under any configured component root. **The `ROOTS` array at the top of the script is the one thing to edit when installing this
-elsewhere.** Without it the audit reports a flood of false positives and stops being worth reading.
+**Why it tries several roots.** Skills cite paths relative to a *component* root rather than the
+repository root. A skill may cite `base_views.py` as `api/base_views.py` when the file actually
+lives at `api/src/main/api/base_views.py`, because that is how it is referred to inside that
+component. So a backticked path counts as live if it resolves under the citing file's own directory,
+the repository root or any configured component root. A markdown link is stricter: it must resolve
+from the citing file's directory, because that is where a renderer sends the click. Only the full
+cited path is tried, never its basename. **The `ROOTS` array at the top of the script is the one
+thing to edit when installing this elsewhere.** Without it the audit reports a flood of false
+positives and stops being worth reading.
+
+**`--docs` mode** audits every prose doc: `docs/readmes/**/*.md`, `README.md`, `CONTRIBUTING.md`,
+the `SKILL.md` and `AGENTS.md` files and the wiki pages. Its rules are stricter: fenced code is
+skipped, a path exists only if git would commit it, and anything under the gitignored `_local` folder
+is dead. In this repository [tests/docs_cited_paths_test.sh](../../../tests/docs_cited_paths_test.sh)
+runs it in the unit gate and compares its dead citations with the allowlists in
+`tests/fixtures/docs_paths_drift_{wiki,readmes,root}.json`, so a new dead path fails the gate and a
+fixed one must leave its allowlist.
 
 Schedule it weekly. Either plain cron:
 
@@ -1319,9 +1330,9 @@ git log -1 --format='%ad  %s' -- skills/<skill-name>/SKILL.md
 grep -L "auto_invoke" skills/*/SKILL.md
 ```
 
-**Related**: [skills/skill-creator/SKILL.md](../../skills/skill-creator/SKILL.md) for authoring
-conventions, [skills/skill-sync/SKILL.md](../../skills/skill-sync/SKILL.md) for the sync mechanism,
-[AGENTS.md](../../AGENTS.md) for the repository-wide rules and the full skill index.
+**Related**: [templates/](templates/) for the skill and `AGENTS.md` templates,
+[skills/skill-sync/assets/](../../../skills/skill-sync/assets/) for the sync, citation and drift
+scripts, [AGENTS.md](../../../AGENTS.md) for the repository-wide rules and the full skill index.
 
 ---
 

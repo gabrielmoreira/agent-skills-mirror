@@ -45,7 +45,8 @@ workflow, that is a Community Chat Skill (different flow).
   file path a command uses must exist in the image too.
 - **NEVER rebuild the agent for the `.md` alone.** `./agentic/community-skills` is
   volume-mounted **read-only** into the container
-  ([docker-compose.yml:903](../../docker-compose.yml#L903)); the `GET /community-skills`
+  (the agent's `./agentic/community-skills:/app/community-skills:ro` volume in
+  [docker-compose.yml](../../docker-compose.yml)); the `GET /community-skills`
   endpoint auto-discovers by globbing the directory. Drop the file and it is live
   on the next call. (This is the exception to "agentic/ changes need a rebuild" -
   that applies to baked Python, not the mounted skills dirs.) A skill that needs a

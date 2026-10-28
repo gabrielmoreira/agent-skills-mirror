@@ -34,7 +34,10 @@ they differ (the launch policy riding `session.create`, a detach for a close, a
 rewind as Hermes' revision-fenced `session.mutate`, a steer or a stop carrying
 the execution generation of the turn it acts on, images staged through
 Hermes' `image.attach_bytes`, approvals and clarify questions the gateway asks
-as events), and passes everything else as it is. On any other Hermes it runs
+as events, and a command the person typed that the gateway's `slash.exec`
+refuses but runs through a call of its own, `/compress` and `/undo` among
+them, sent as that call, as Ink sends it), and passes everything else as it
+is. On any other Hermes it runs
 Hermes' stdio entry in its own process, as before. Which one is decided by what
 imports in that Hermes, never by an error's wording. When that child exits on
 its own with a failure (never after a normal exit, after the person quits, or
@@ -202,16 +205,19 @@ its first or second byte is read as keys.
 
 The bot board (Ctrl+S, `/bots`, `src/tui/bot_board.py`) only reads. For the
 Hermes root the TUI runs under and each named profile beside it
-(`<root>/profiles/<name>/`), it reads `gateway_state.json` and `state.db`,
-the latter opened `mode=ro`, and immutable when no `-wal`, `-shm` or
+(`<root>/profiles/<name>/`), it reads `gateway_state.json`, `config.yaml`,
+`profile.yaml` (for Hermes' display name only), Hermes' `memories/MEMORY.md`
+and `USER.md` (each only as a regular file, at most 1 MiB), the directory listing of the OMH store's `memory/records/` when
+`config.yaml` names that store, and `state.db`, the latter opened `mode=ro`, and immutable when no `-wal`, `-shm` or
 `-journal` is beside it (no connection has it open), so SQLite creates no
 `-wal` or `-shm` there; with a connection open, the read takes its read mark
 in the existing `-shm`, as every reader of the store does. It never opens the
 store outside SQLite, since closing a descriptor on it would drop this
 process's SQLite locks on it. It probes the pid a gateway record names with
 signal 0 and reads that process's start time and state (`/proc` on Linux,
-`sysctl(KERN_PROC_PID)` on macOS); it sends no other signal, and nothing to the
-gateway. It reads on one thread for the session, never on the render path,
+`sysctl(KERN_PROC_PID)` on macOS) and, for a running gateway, its resident
+memory (`/proc/<pid>/statm`, or `proc_pidinfo`, which answers only for this
+user's processes); it sends no other signal, and nothing to the gateway. It reads on one thread for the session, never on the render path,
 and reads nothing while the board is closed.
 
 ## Sessions it refuses, and what it writes

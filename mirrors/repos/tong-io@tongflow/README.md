@@ -262,11 +262,11 @@ Aggregators — one key, many third-party models across labs:
 - [tongflow-modal-ace-step](https://github.com/tong-io/tongflow-modal-ace-step) — ACE-Step 1.5 music suite: text-to-music (sft / base / turbo selectable), repaint, cover, stem extraction, add-track, arrangement completion, music brief, and music understanding
 - [tongflow-modal-levo](https://github.com/tong-io/tongflow-modal-levo) — LeVo 2 / SongGeneration text-to-music (multilingual, commercial-grade)
 - [tongflow-modal-minimax-music3](https://github.com/tong-io/tongflow-modal-minimax-music3) — MiniMax-Music3 11B song generation: lyrics + description → complete song with vocals (up to ~5 min, 32 kHz stereo)
-- [tongflow-modal-yue2](https://github.com/tong-io/tongflow-modal-yue2) — YuE2 song generation: style + lyrics → editable score → full song with vocals (48 kHz stereo), plus covers via SheetSage2 transcription (weights CC BY-NC 4.0, non-commercial)
+- [tongflow-modal-yue2](https://github.com/tong-io/tongflow-modal-yue2) — YuE2 song generation: style + lyrics → editable score → full song with vocals (48 kHz stereo), plus instrumentals and covers via SheetSage2 transcription (weights CC BY-NC 4.0; individual creators may monetize outputs, companies need a commercial license)
 - [tongflow-modal-sam-audio](https://github.com/tong-io/tongflow-modal-sam-audio) — SAM-Audio text-prompted sound separation: noise reduction, vocal isolation, and free-text stem extraction ("the piano in the background")
 - [tongflow-modal-docling](https://github.com/tong-io/tongflow-modal-docling) — Docling document → text
 - [tongflow-modal-paddle](https://github.com/tong-io/tongflow-modal-paddle) — PaddleOCR document → text
-- [tongflow-modal-unlimited-ocr](https://github.com/tong-io/tongflow-modal-unlimited-ocr) — Unlimited-OCR long-horizon document / PDF → text
+- [tongflow-modal-unlimited-ocr](https://github.com/tong-io/tongflow-modal-unlimited-ocr) — Unlimited OCR 2 unlimited-horizon document / hundred-page PDF → text
 - [tongflow-modal-crawl4ai](https://github.com/tong-io/tongflow-modal-crawl4ai) — Crawl4AI URL / link → text
 - [tongflow-modal-scrapling](https://github.com/tong-io/tongflow-modal-scrapling) — Scrapling stealth-browser URL / link → text
 

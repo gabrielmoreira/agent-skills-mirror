@@ -142,6 +142,13 @@ proof of a broken build. A clean result proves neither API correctness nor
 quality. Run other relevant package tests too; on Linux, tests that initialize
 graphics need `xvfb-run -a`.
 
+The checker cannot infer Go receiver types. Ambiguous `.At()` calls in `Update`/`Draw`
+are informational notes, not warnings: ordinary grid/map lookups are fine; verify
+whether the receiver is actually an `ebiten.Image` before treating it as a GPU
+readback. `ReadPixels()` remains a warning. Notes never fail `--strict`; JSON adds
+`note_count` and `notes` to the shared schema. `--max-issues` caps warnings and notes
+together, showing warnings first while retaining both totals.
+
 For the starter, capture with `-demo -shot frame.png -shot-tick 240`. On Linux,
 use a virtual display and, if needed, null audio without changing HOME:
 

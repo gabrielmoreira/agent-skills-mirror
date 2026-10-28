@@ -184,7 +184,13 @@ protocol, never by a key's name.**
   never keeps anything under a tool call's arguments.
 - Test the exemption with the protected key placed where the user's data
   goes: tool arguments, message text, a nested object.
-- Seen 1× (2026-10-09).
+- 10-28: 3e96197da let an sk- value with no capital and no run of 16
+  between hyphens go unmasked, so SK hynix article addresses are no key.
+  Its tests held four key shapes, none of them the closest to a slug: sk-
+  and a UUID in lower case passed as words and went to the vendor
+  (bad05e1b7). An exemption by shape is tested with the real secret that
+  looks most like what it lets through.
+- Seen 2× (2026-10-09, 2026-10-28).
 
 **A security gap a doc names is an open bug, not a description.**
 - docs/subsystems/gateway-routing.md said "There is no `Host` check, so a
@@ -350,14 +356,6 @@ ok except gateway" stops being a normal run record.
   `tee` the log to a file of your own and grep it.
 - Seen 1× (2026-10-17).
 
-**A mover's min is npm's version when the change lands, not when the
-work started.**
-- 19e9fc47f (10-16) raised Cursor's min to 0.2.17 while npm already had
-  0.2.18, bumped an hour before it landed. 53009f81a then raised six mins
-  to `npm view --prefer-online` at landing, and left Factory a version
-  behind (#2557).
-- Seen 1× (2026-10-16).
-
 **Windows CI only compiles the tests, so a Windows-only red shows
 nowhere.** Run the package on the Windows box before calling a Windows
 failure "the same on main".
@@ -504,6 +502,35 @@ cause:
     subtest of the same test. 27 issues titled "under load" were opened
     on 10-16 and 10-17. Fix the class (wait on state, room on both sides) instead
     of filing one a test.
+  - 10-28: the same on a third day. JoeyWu-tech posted a patch for
+    #3568 (TestHandedOverGatewayFinishesItsStream, a real handover drop)
+    on 10-25, with a reproduction and red-on-old tests. Nobody ported it
+    for three days, and it went red on ubuntu CI again at 0a7633136. It
+    was ported unchanged as 11c427eaa. Now in the code standards (a
+    red's issue is read to its last comment, 77898391d).
+- 10-27: the #1794 pattern on a third day. internal/provider has died
+  on main since 10-25 in TestUnreadLoginsWriteErrorsKeepCredentials
+  (#3632, a synctest fatal, 2 of 2 on mote at 4b0a32e0f). The issue has
+  two complete patches (JoeyWu-tech's and skygunner's) and nine
+  comments, no owner. #3919 and #3924 have had JoeyWu-tech's patches
+  since 10-27 15:37 and 16:24, and #3854 has three TestFetch* reds.
+  Every tag since, to v0.1.1780, went out over them, and a provider
+  change can only pass its package with those tests skipped.
+  - A patch on a red issue is reviewed and merged, or answered with
+    why not, the day it is posted.
+  - A red that kills its package hides every new red behind it.
+    6eb510f78 (10-26) made a Codex ask of the models list that three
+    TestFetch* tests counted as a second ask; its provider run died at
+    #3632 first, it then ran `-run Codex`, and the three were filed
+    only later as #3854. With #3632 fixed (4842f69be), #3854 and #3906
+    merged too (759b3b8c4, ed49d1b38), internal/provider passed whole
+    on 10-28 for the first time since 10-25.
+  - A red step hides every step after it. CI's Race step runs only
+    when Test passes, so 9a888323a's allocation bound (#3472), red
+    every time under -race, first showed on 10-28 once Test was green
+    (#3956, fafce6545). A test that bounds bytes runs once under
+    -race before it lands: sync.Pool drops a quarter of what is put in
+    it there, and regexp and zstd take their state from one.
 - A cancelled run tests nothing. On 10-14 nine pushes in ten minutes
   cancelled each other's runs, and 3c4b4dc97 never had a run of its own;
   its red showed first at 84f14e555.
@@ -608,6 +635,17 @@ standards since 10-18, widened to a worktree and its logs. See
 
 ## Moved to the code standards
 
+- **A red's issue is read to its last comment, and a patch on it is
+  taken first** (10-12, 10-17, 10-27, 10-28). On 10-28 JoeyWu-tech's
+  #3568 patch sat three days until CI went red on it again (11c427eaa).
+- **A mover's min is npm's version when the change lands** (10-16,
+  10-18, 10-24). On 10-16 19e9fc47f raised Cursor's min a version behind
+  npm, and 53009f81a left Factory one behind (#2557). On 10-18 zed 0.1.9
+  was published with no min raised until the review's ccb2eea15.
+  On 10-24 factory 0.1.38 (plugins #349, an option a user asked for)
+  was published and the min stayed 0.1.37 for four days, until
+  490c0a4ad. The rule now also says a plugin version raises the min the
+  same day.
 These were seen on three or more days. The rules and their evidence are in
 [docs/code-standards.md](docs/code-standards.md); a review still checks
 each one.

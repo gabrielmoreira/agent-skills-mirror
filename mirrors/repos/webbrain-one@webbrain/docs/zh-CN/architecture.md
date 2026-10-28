@@ -53,7 +53,7 @@ WebBrain 是一个浏览器扩展，让 LLM 能够控制用户当前活动的浏
 │                                                      │
 │  accessibility-tree.js  — AX 树构建器 + ref_ids      │
 │  content.js             — DOM 读取器、点击器、输入器  │
-│  agent-visual-indicator.js — 脉冲边框 + 停止按钮      │
+│  agent-visual-indicator.js — 边缘效果 + 停止按钮      │
 └─────────────────────────────────────────────────────┘
 ```
 

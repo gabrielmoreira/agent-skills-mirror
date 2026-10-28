@@ -62,9 +62,9 @@ Mirror of `tiann/hapi` — 26 default patterns, 17 followed patterns, 33 file(s)
 - `relay/README.md`
 - `docs/guide/why-hapi.md`
 - `docs/guide/codex-shared-sessions.md`
+- `docs/guide/pwa.md`
 - `docs/guide/native-apps.md`
 - `docs/guide/installation.md`
-- `docs/guide/pwa.md`
 - `docs/guide/how-it-works.md`
 - `docs/guide/voice-assistant.md`
 - `docs/guide/faq.md`

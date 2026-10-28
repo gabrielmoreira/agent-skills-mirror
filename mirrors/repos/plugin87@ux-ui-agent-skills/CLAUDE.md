@@ -300,8 +300,8 @@ scripts/                  ← validate_tokens.py [file|dir] · contrast.py · va
                             · verify_interactive.mjs (a control that DECLARES aria-sort/pressed/expanded/
                               checked must change something on a real click. It catches the sort header that
                               draws a chevron and sorts nothing; `data-demo-state` opts a state rendering out)
-                            · verify_overflow.mjs (silently clipped text + overlapping controls; verify_spacing.mjs: rows share a height, nothing touches; both catch the
-                              failures that stay inside the page and survive a happy-path screenshot)
+                            · verify_overflow.mjs (silently clipped text + overlapping controls; verify_spacing.mjs: rows share a height, nothing touches;
+                              verify_thai.mjs: no Thai compound or count split at a line end, lines far enough apart for tone marks)
                             · render_framework_source.mjs (esbuild + react-dom/server against the real
                               stylesheets; every class it emits must resolve, then the render gates run on the
                               output. SSR only: what the components PRODUCE, not what they do on a click)

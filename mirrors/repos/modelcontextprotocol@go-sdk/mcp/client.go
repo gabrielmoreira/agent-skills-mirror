@@ -330,7 +330,7 @@ func (c *Client) Connect(ctx context.Context, t Transport, opts *ClientSessionOp
 			if err == nil {
 				cs.state.InitializeResult = discRes
 				if hc, ok := cs.mcpConn.(clientConnection); ok {
-					hc.sessionUpdated(cs.state)
+					hc.clientSessionUpdated(cs.state)
 				}
 				subscribeParams := &SubscriptionsListenParams{
 					Notifications: &NotificationSubscriptions{},
@@ -385,7 +385,12 @@ func (c *Client) Connect(ctx context.Context, t Transport, opts *ClientSessionOp
 		Capabilities:    c.capabilities(protocolVersion),
 	}
 	req := &InitializeRequest{Session: cs, Params: params}
-	res, err := handleSend[*InitializeResult](ctx, methodInitialize, req)
+	// No version is negotiated yet, so this request has no version of its own to
+	// state; a caller's value must not stand in for one. Cleared rather than sent,
+	// since a header a peer does not support fails the handshake the body would
+	// have negotiated down.
+	initializeCtx := context.WithValue(ctx, protocolVersionContextKey{}, "")
+	res, err := handleSend[*InitializeResult](initializeCtx, methodInitialize, req)
 	if err != nil {
 		_ = cs.Close()
 		return nil, err
@@ -396,7 +401,7 @@ func (c *Client) Connect(ctx context.Context, t Transport, opts *ClientSessionOp
 	}
 	cs.state.InitializeResult = res
 	if hc, ok := cs.mcpConn.(clientConnection); ok {
-		hc.sessionUpdated(cs.state)
+		hc.clientSessionUpdated(cs.state)
 	}
 	req2 := &initializedClientRequest{Session: cs, Params: &InitializedParams{}}
 	if err := handleNotify(ctx, notificationInitialized, req2); err != nil {

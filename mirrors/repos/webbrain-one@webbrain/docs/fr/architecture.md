@@ -53,7 +53,7 @@ Ce document couvre l'architecture partagée et signale où les builds divergent.
 │                                                      │
 │  accessibility-tree.js  — constructeur arbre AX      │
 │  content.js             — lecteur DOM, cliqueur,     │
-│  agent-visual-indicator.js — bordure clignotante     │
+│  agent-visual-indicator.js — effet de bordure + Stop │
 └─────────────────────────────────────────────────────┘
 ```
 

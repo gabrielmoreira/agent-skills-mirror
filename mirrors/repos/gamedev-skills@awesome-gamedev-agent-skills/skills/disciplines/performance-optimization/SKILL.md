@@ -112,6 +112,8 @@ share state (most bind several textures per batch), so ordering and atlasing dec
   takes precedence), MultiMesh / MultiMeshInstance (Godot), Instanced Static Mesh (Unreal).
 - Static geometry → static batching / baking; mark non-moving objects static.
 - Reduce overdraw: limit large overlapping transparent/particle layers (they re-shade pixels).
+- If fill rate dominates, lower render resolution: 2× pixel ratio means 4× the pixels of 1×.
+  For three.js game defaults and warm-up-aware resolution tuning, read `threejs-scene-setup`.
 - Fewer real-time lights/shadows; bake lighting where it doesn't move.
 Measure draw calls before and after — the count should drop, and so should GPU frame time.
 ```

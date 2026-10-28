@@ -235,9 +235,9 @@ Label `$B` output with the same evidence lines (`URL=`, `CONSOLE_ERRORS=`, `DIFF
 
 # /benchmark — Performance Regression Detection
 
-You are a **Performance Engineer** who has optimized apps serving millions of requests. You know that performance doesn't degrade in one big regression — it dies by a thousand paper cuts. Each PR adds 50ms here, 20KB there, and one day the app takes 8 seconds to load and nobody knows when it got slow.
+You are a **Performance Engineer**. Performance dies by a thousand paper cuts. Each PR adds 50ms here, 20KB there, until the app takes 8 seconds to load and nobody knows when it got slow.
 
-Your job is to measure, baseline, compare, and alert. You drive the Aside browser and read `performance.getEntries()` straight from the live page — real numbers from a real browser, not estimates.
+You measure, baseline, compare and alert, reading `performance.getEntries()` from the live page in the Aside browser: real numbers, not estimates.
 
 ## User-invocable
 When the user types `/benchmark`, run this skill.
@@ -245,10 +245,21 @@ When the user types `/benchmark`, run this skill.
 ## Arguments
 - `/benchmark <url>` — full performance audit with baseline comparison
 - `/benchmark <url> --baseline` — capture baseline (run before making changes)
-- `/benchmark <url> --quick` — single-pass timing check (no baseline needed)
+- `/benchmark <url> --quick` — one-run ballpark, no baseline
 - `/benchmark <url> --pages /,/dashboard,/api/health` — specify pages
 - `/benchmark --diff` — benchmark only pages affected by current branch
 - `/benchmark --trend` — show performance trends from historical data
+
+---
+## Section index — Read each section when its situation applies
+
+This skill is a decision-tree skeleton. The steps below point to on-demand
+sections. Read a section in full before doing its step; do not work from memory.
+
+| When | Read this section |
+|------|-------------------|
+| reporting a comparison, speedup or regression (Phase 5), or any measured delta | `sections/vet-the-number.md` |
+---
 
 ## Instructions
 
@@ -261,10 +272,9 @@ mkdir -p .gstack/benchmark-reports/baselines
 git update-index --refresh >/dev/null 2>&1 || true
 ```
 
-Run `git update-index --refresh` before timing anything that spawns git (a dev
-server's version stamp, a build step, `--diff` discovery) in a benchmark or bisect
-worktree: a stale index makes the first `git status`/`git diff` pay a full refresh,
-and that cost lands in the measurement.
+Run the refresh before timing anything that spawns git (a dev server's version stamp,
+a build step, `--diff` discovery): in a benchmark or bisect worktree a stale index makes
+the first git call pay a full refresh inside the timed region.
 
 ### Phase 2: Page Discovery
 
@@ -296,7 +306,7 @@ await closeTab(pg); console.log("GSTACK_STEP_OK");
 '
 ```
 
-`NAV=` is the navigation timing entry, `PAINT=` the paint entries (FCP lives here), `LCP=` the largest-contentful-paint start time (`null` if the page emitted no LCP entry within 3s), `RESOURCES=` the 15 slowest resources, `SCRIPTS=` / `CSS=` the bundle inventory, `SUMMARY=` request count, total transfer, and requests by type. A missing `GSTACK_STEP_OK` or a line starting with `[error` means the page did not load — record it as a failure, not a slow page.
+`NAV=` is the navigation timing entry, `PAINT=` the paint entries (FCP lives here), `LCP=` the largest-contentful-paint start time, `RESOURCES=` the 15 slowest resources, `SCRIPTS=` / `CSS=` the bundle inventory, `SUMMARY=` request count, total transfer, and requests by type. A missing `GSTACK_STEP_OK` or a line starting with `[error` means the page did not load — record it as a failure, not a slow page.
 
 Extract key metrics from the labelled lines (`NAV=` unless stated otherwise):
 - **TTFB** (Time to First Byte): `responseStart - requestStart`
@@ -306,7 +316,7 @@ Extract key metrics from the labelled lines (`NAV=` unless stated otherwise):
 - **DOM Complete**: `domComplete - startTime`
 - **Full Load**: `loadEventEnd - startTime`
 
-Load times jitter with the network. If the user wants stable numbers, run the script 3 times per page and take the median of each metric.
+Run the script 5 times per page; later phases use each metric's median and report the run count and range. `--quick` is the one-run ballpark, with absolute numbers and budgets and no comparison verdict.
 
 ### Phase 4: Baseline Capture (--baseline mode)
 
@@ -317,6 +327,7 @@ Save metrics to baseline file:
   "url": "<url>",
   "timestamp": "<ISO>",
   "branch": "<branch>",
+  "runs": 5,
   "pages": {
     "/": {
       "ttfb_ms": 120,
@@ -329,6 +340,7 @@ Save metrics to baseline file:
       "total_transfer_bytes": 1250000,
       "js_bundle_bytes": 450000,
       "css_bundle_bytes": 85000,
+      "range_ms": {"lcp": [760, 840], "full_load": [1350, 1480]},
       "largest_resources": [
         {"name": "main.js", "size": 320000, "duration": 180},
         {"name": "vendor.js", "size": 130000, "duration": 90}
@@ -338,23 +350,26 @@ Save metrics to baseline file:
 }
 ```
 
-Write to `.gstack/benchmark-reports/baselines/baseline.json`.
-Also retain an immutable `{UTC-timestamp}-baseline.json` beside it for trends. Without `--baseline`, never overwrite the comparison baseline; save current metrics in Phase 9 instead.
+Each `_ms` value is the median of `runs` runs; `range_ms` holds each timing metric's min and max (two shown). Write to `.gstack/benchmark-reports/baselines/baseline.json`.
+Also retain an immutable `{UTC-timestamp}-baseline.json` beside it for trends. Without `--baseline`, never overwrite it; Phase 9 saves the run.
 
 ### Phase 5: Comparison
 
-If baseline exists, compare current metrics against it:
-Without a baseline, report absolute measurements and budgets only, mark comparison unavailable, and recommend a `--baseline` run. Missing metrics remain N/A. A zero baseline makes percentage change N/A; absolute timing thresholds still apply.
+> **STOP.** Before reporting a comparison, speedup or regression (Phase 5), or any measured delta, Read `~/.claude/skills/gstack/benchmark/sections/vet-the-number.md` and execute it
+> in full. Do not work from memory — that section is the source of truth for this step.
+
+If baseline exists, compare current metrics against it. The baseline ran earlier, so question 5's alternation is unavailable; instead compare each delta with both sides' `range_ms` and name the limiter from the Phase 6 resources. A baseline without `runs` counts as one run; one run on either side, or an unnamed limiter, makes the verdict inconclusive (say which) and recommends a fresh `--baseline`.
+Without a baseline, report absolute numbers and budgets only, mark the comparison unavailable and recommend `--baseline`. Missing metrics remain N/A. A zero baseline makes percentage change N/A; absolute timing thresholds still apply.
 
 ```
 PERFORMANCE REPORT — [url]
 ══════════════════════════
+VERDICT: slower — LCP 800ms → 1600ms at the median, outside both ranges, bound by the hero image decode
 Branch: [current-branch] vs baseline ([baseline-branch])
+Runs: 5 per side (medians; ranges in the JSON report)
 
 Page: /
-─────────────────────────────────────────────────────
 Metric              Baseline    Current     Delta    Status
-────────            ────────    ───────     ─────    ──────
 TTFB                120ms       135ms       +15ms    OK
 FCP                 450ms       480ms       +30ms    OK
 LCP                 800ms       1600ms      +800ms   REGRESSION
@@ -367,10 +382,10 @@ JS Bundle           450KB       720KB       +270KB   REGRESSION
 CSS Bundle          85KB        88KB        +3KB     OK
 
 REGRESSIONS DETECTED: 4
-  [1] LCP doubled (800ms → 1600ms) — likely a large new image or blocking resource
-  [2] Total transfer +50% (1.2MB → 1.8MB) — check new JS bundles
-  [3] JS bundle +60% (450KB → 720KB) — new dependency or missing tree-shaking
-  [4] Full load +700ms (1400ms → 2100ms) — inspect the slowest resources
+  [1] LCP 800ms → 1600ms — a large new image or blocking resource
+  [2] Transfer 1.2MB → 1.8MB — new JS bundles
+  [3] JS 450KB → 720KB — new dependency or missing tree-shaking
+  [4] Full load 1400ms → 2100ms — see Phase 6
 ```
 
 **Regression thresholds:**
@@ -379,7 +394,7 @@ REGRESSIONS DETECTED: 4
 - Bundle size and total transfer: >25% increase = REGRESSION
 - Bundle size and total transfer: >10% increase = WARNING
 - Request count: >30% increase = WARNING (no separate regression threshold)
-Apply REGRESSION before WARNING; otherwise OK. Negative deltas are improvements.
+Apply REGRESSION before WARNING; otherwise OK. A delta smaller than either side's spread (`range_ms` max − min) is OK (no measurable difference) whatever threshold it crosses. Negative deltas are improvements.
 
 ### Phase 6: Slowest Resources
 
@@ -395,10 +410,12 @@ TOP 10 SLOWEST RESOURCES
 ...
 
 RECOMMENDATIONS:
-- vendor.chunk.js: Consider code-splitting — 320KB is large for initial load
-- analytics.js: Load async/defer — blocks rendering for 250ms
-- hero-image.webp: Add width/height to prevent CLS, consider lazy loading
+- vendor.chunk.js: code-split — 320KB on initial load
+- analytics.js: load async/defer — blocks rendering for 250ms
+- hero-image.webp: add width/height (CLS), lazy-load
 ```
+
+Third-party = any host but the page's origin. Each recommendation names a resource here or in a Phase 5 regression, the metric it moves and one remedy (split, defer, compress, lazy-load, cache).
 
 ### Phase 7: Performance Budget
 
@@ -409,7 +426,6 @@ For each available metric, FAIL at or above the budget, WARNING from 90% to belo
 PERFORMANCE BUDGET CHECK
 ════════════════════════
 Metric              Budget      Actual      Status
-────────            ──────      ──────      ──────
 FCP                 < 1.8s      0.48s       PASS
 LCP                 < 2.5s      1.6s        PASS
 Total JS            < 500KB     720KB       FAIL
@@ -417,12 +433,12 @@ Total CSS           < 100KB     88KB        PASS
 Total Transfer      < 2MB       1.8MB       WARNING (90%)
 HTTP Requests       < 50        58          FAIL
 
-Grade: B (4/6 passing)
+Grade: B (4/6 below budget: 3 PASS, 1 WARNING, 2 FAIL)
 ```
 
 ### Phase 8: Trend Analysis (--trend mode)
 
-Load historical baseline files and show trends:
+Load every `*-benchmark.json` and `baselines/*-baseline.json` under `.gstack/benchmark-reports/`, order by `timestamp`, show the last 5 per page: FCP and LCP medians, Bundle = `js_bundle_bytes`, Requests = `total_requests`, Grade = the file's `grade` (`-` for baseline files).
 
 ```
 PERFORMANCE TRENDS (last 5 benchmarks)
@@ -434,19 +450,19 @@ Date        FCP     LCP     Bundle    Requests    Grade
 2026-03-16  460ms   850ms   520KB     48          B
 2026-03-18  480ms   1600ms  720KB     58          B
 
-TREND: Performance degrading. LCP doubled in 8 days.
-       JS bundle growing 50KB/week. Investigate.
+TREND: degrading. LCP doubled in 8 days; JS bundle +50KB/week.
 ```
 
 ### Phase 9: Save Report
 
-Write to `.gstack/benchmark-reports/{date}-benchmark.md` and `.gstack/benchmark-reports/{date}-benchmark.json`.
+Write `.gstack/benchmark-reports/{UTC-timestamp}-benchmark.md` (the Phase 5–8 output) and `.json` beside it: the Phase 4 object plus, per page, `grade` (Phase 7) and, with a baseline, `verdict` and each metric's `status` (Phase 5).
 
 ## Important Rules
 
 - **Measure, don't guess.** Use actual performance.getEntries() data, not estimates.
-- **Baseline is essential.** Without a baseline, you can report absolute numbers but can't detect regressions. Always encourage baseline capture.
-- **Relative thresholds, not absolute.** 2000ms load time is fine for a complex dashboard, terrible for a landing page. Compare against YOUR baseline.
-- **Third-party scripts are context.** Flag them, but the user can't fix Google Analytics being slow. Focus recommendations on first-party resources.
-- **Bundle size is the leading indicator.** Load time varies with network. Bundle size is deterministic. Track it religiously.
+- **Vet every number before reporting it.** The seven questions in the section above decide whether a delta is a result, noise or an unmeasured limit; name the limiter or call the verdict inconclusive.
+- **Baseline is essential.** Without one you report absolute numbers and detect no regressions. Encourage one.
+- **Relative thresholds, not absolute.** 2000ms is fine for a complex dashboard, terrible for a landing page. Compare against YOUR baseline.
+- **Third-party scripts are context.** Flag them; the user can't fix a slow Google Analytics. Recommend first-party fixes.
+- **Bundle size is the leading indicator.** Load time varies with the network; bundle size is deterministic. Track it.
 - **Read-only.** Produce the report. Don't modify code unless explicitly asked.

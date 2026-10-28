@@ -29,7 +29,7 @@ plugins.json is the source of truth for which middleware is installed and on, in
 
 Each middleware gets one runtime for the whole request, so its hooks share `ctx.state`. Runtimes come from a per-middleware `sync.Pool` and modules are compiled once per load. Compiling a plugin's module (imports kept inside the plugin) is [`internal/jsmod`](../../internal/jsmod/jsmod.go), which agent plugins ([Agent wiring](agent-wiring.md)) share.
 
-Only requests agents send go through `serveAgent`. magpie's own requests (thread titles, the router's classifier, the search and vision stand-ins) call `serve` directly. Middleware sees bodies before redaction, which still applies upstream, through the `redact` plugin's masker; masking asked for with no masker serving sends nothing ([Plugin runtime](plugin-runtime.md)).
+Only requests agents send go through `serveAgent`. magpie's own requests (thread titles, the router's classifier, the search and vision stand-ins) call `serve` directly. A search or an image's description asked while an agent's request is served is made on that request's context, and takes the request's middleware off it (`ownAsk`): the runtimes are the request's, which one goroutine may use at a time (moejs), and `Run` has no lock to hold callers to it, and these asks go beside it and each other, so images described at once ran `onProvider` on one runtime and the gateway died of `concurrent map read and map write`. Nor does the hooks' `ctx` describe them: a description's body is Chat and a search's Anthropic, whatever `ctx.protocol` names, and `ctx.model` and `ctx.stream` are the agent's (#3695, `TestImagesDescribedWithoutTheAgentsMiddleware`, `TestSearchesWithoutTheAgentsMiddleware`). Middleware sees bodies before redaction, which still applies upstream, through the `redact` plugin's masker; masking asked for with no masker serving sends nothing ([Plugin runtime](plugin-runtime.md)).
 
 ## Routings and usage rows
 
@@ -59,7 +59,7 @@ go test -tags nogui -run 'TestParseRouting|TestPluginListSaysMiddleware' ./inter
 go test -tags nogui -run TestPluginRoutingKept ./internal/provider
 go test -tags nogui -run TestOnServesStrategies ./plugins/middleware
 node --test internal/gui/tests/routing-js.test.cjs
-go test -tags nogui -run 'TestMiddlewareThroughGateway|TestMiddlewareOnProviderPerTry' ./internal/gateway
+go test -tags nogui -run 'TestMiddlewareThroughGateway|TestMiddlewareOnProviderPerTry|WithoutTheAgentsMiddleware' ./internal/gateway
 go test -tags nogui -run TestPluginListSaysMiddleware .
 go test -tags nogui -run "TestSetOptionsShortName|TestBuiltinMarket" ./internal/plugin
 go test -tags nogui -bench Event ./internal/middleware

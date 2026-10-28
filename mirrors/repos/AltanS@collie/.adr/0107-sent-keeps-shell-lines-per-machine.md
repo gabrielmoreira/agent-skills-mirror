@@ -74,3 +74,102 @@ leaves no trace.**
   typed. The file sits at 0600 beside the audit log.
 - To revisit: if people want agent prompts searchable, the answer is a search over the agents' own
   logs, not a wider Sent.
+
+## Addendum 2026-10-26: a pane where an agent is starting is not a shell
+
+Point 1 takes a pane "the bridge reads as a bare shell", and the Send Protocol sends to such a pane
+blind: the text, then Enter. An agent is not up at once. OMP 18.12.6 takes about twenty seconds to draw
+its input box, and for the first seconds the multiplexer still names no agent. A send in that gap was
+typed into the shell, answered `sent`, and the text later sat in the agent's box as an unsent draft that
+refused the next sends `draft_present` (omp gang tester 15, and gang three S3 on 18.6.1 and 18.12.6).
+Commit fb3a0a87a closed it for an agent the bridge launched itself (`POST /api/launch`). A person typing
+`omp` in a shell, a crew script and the multiplexer's own launcher were left out, and that is the common
+case.
+
+**The launch window is a property of the pane's process, not of who started it.** `bridge/launch-window.ts`
+holds one window per pane, opened by any of three sources:
+
+1. **launch:** the bridge typed a harness's line into a pane it created. This covers the gap before the
+   process exists.
+2. **process:** a send to a pane with no profile of its own reads the pane's foreground processes
+   (`MuxAdapter.foregroundProcesses`, bounded at 1.5 s), and one of them is a harness binary. The
+   binaries are the profiles' `identity.binary`. A script run by an interpreter (`bun …/omp`) is
+   matched by its first plain argument.
+3. **agent:** a poll finds the multiplexer naming a harness on a pane it named otherwise, or did not list,
+   on the poll before. The first poll a bridge sees is a baseline and opens nothing.
+
+While the window is open, a send reads the screen with that harness's profile. With the harness's box on
+screen it runs the normal steps. With none it ends `refused(probe_failed)` before any key, probe
+included: "The pane shows no <harness> input box yet; it may still be starting. Nothing was typed." On a
+pane the multiplexer already names, a dialog its profile lifts keeps its own path. The window ends when
+the harness's box takes a key (a send's probe shows in it) or the poll's Surface reads the box, after
+120 s, or when the harness leaves the pane (a plain shell in the foreground after the process was seen,
+or the multiplexer no longer names it). A window that ended does not open again for the same harness on
+the same pane until it leaves. Nothing in `bridge/surface/` names a harness.
+
+**A drawn box is not yet a box that reads keys** (gang three tester 3, 2026-10-26). OMP 18.12.6 draws its
+box about twenty seconds before it reads a key. A send in that gap typed its probe character, the probe
+never showed, and once omp woke it showed the buffered `⌁` as a draft that refused every later send
+`draft_present`. So, in the window, every send is probed. A probe that never shows ends
+`refused(probe_failed)` with the window's words ("it may still be starting") and presses no Backspace,
+since a Backspace would wait in the terminal too and could land in a person's text later. The window
+stays open: the poll's box read no longer ends it, and a window that read had ended opens again inside the
+bound it opened with. The window counts the probe characters that may still show. Collie's probe
+character is Collie's own residue (`bridge/surface/probe-marker.ts`): a box whose whole text is one or
+more probe characters and nothing else is no person's draft. A send, a command, Add to it, Replace,
+Discard and Clear take out exactly those characters, one Backspace each, and go on from a read that shows
+the box empty, or stop with a refusal that says so. A probe character beside any other text is never
+taken out.
+
+**At most one probe character unaccounted for per pane** (live checks of 1.24.1, W2, 2026-10-26). On omp
+18.6.1 a send at +0.3 s and one at +0.7 s each typed a probe into a box that did not read keys yet, and
+the box later showed `⌁⌁`. A probe typed into the box of a harness that is starting, with no Backspace
+after it, now counts as pending in the window (`LaunchWindow.pending`): the deaf box, a probe that showed
+outside the box (the tty's echo), and a probe a stale-screen read never found. While one is pending, a
+send, a command, Add to it and Replace type no probe. A new request is refused `probe_failed` before any
+key, with the window's words and "Nothing was typed: Collie's earlier probe character has not shown in
+the box yet". A starting pane refuses a new send; it does not hold it. A send already held waits: the
+hold queue does not release while the character has not shown, and a release that meets the box still
+starting goes back to its place without spending a try. Once the character shows, the residue rule
+takes it out and the send goes. The count ends with the window: the first probe that shows, the 120 s
+bound, or the harness leaving. Each character also blocks for at most 30 s (the next paragraph).
+
+**A pending probe character blocks for 30 s, not for the window** (counsel review of 1.24.1,
+2026-10-26). A character that never shows (a program that flushes its input as it starts) kept every
+send refused and every held send waiting for the launch window's 120 s. Each pending character now
+blocks only for `PENDING_PROBE_MS`, 30 s from the moment it was typed (the deaf gap seen live was about
+20 s on omp 18.12.6). Past that the next send types one new probe, which is how Collie learns the box
+reads keys now, and a held send goes on the next free poll. The character still counts for the window:
+a box read alone does not end it, only a probe that shows or the 120 s bound. A character that shows
+later is still taken out by the residue rule, which never depended on the count. The count is memory:
+after a bridge restart it is 0, and a character that shows then is residue like any other.
+
+**A refusal after a Backspace no read confirmed says what is true** (live check W2, 9 of 14 runs). A
+send at +0.7 s typed its probe, the box showed it, Collie pressed Backspace, and no read in the probe's
+budget showed the box back; the refusal said "Backspace did not give the box back as it was", while the
+box read empty and idle a moment later. The decision stands: refused `probe_failed`, keys `[probe,
+Backspace]`. Where the reads are no proof the box is wrong (the pane is starting, or no read after
+Backspace found the box), the detail now says "Collie could not confirm the box was clean after its
+probe character (⌁). Nothing was sent. Send again in a moment." A pane that is not starting and whose
+box still shows the probe keeps the old words. The probe's budget (three reads, 900 ms, shared by the
+character and its Backspace) is the likely reason a starting box that redraws is not read back in time;
+widening it for a starting pane is not done here.
+
+**The multiplexer naming the agent mid-send is not another program.** A send reads the pane with a
+profile, from the pane itself or from the window. When the pane's generation then moves to an agent that
+profile names, for example shell to omp or a session id that resolves, the send goes on. Any other move
+still ends it `changed` (after the text) or `pane_gone` (before it): another harness, a shell again, the
+pane gone, or a pane with no profile.
+A held send follows the same rule while it waits: a pane that moves to an agent the held send's profile
+names keeps the hold, which takes the new generation and that agent as its harness, and any other move ends it `pane_gone`.
+
+**What stays on the blind road.** For about the first second after a person types the agent's command
+into a shell, the shell itself is still the pane's foreground process, so a send then is a blind send to
+a shell (gang three, rows u and u2: +0.2 to +0.8 s): there is no evidence yet that a harness is starting,
+and point 1 holds for a pane that reads as a shell.
+
+It fails open where the evidence is missing. A plain shell in the foreground keeps the blind send and
+its Sent record. A foreground read that fails, refuses or runs slow counts as none. tmux, zellij and
+tuios have no foreground read today, so on them only the launch and agent sources open a window. tmux's
+`pane_current_command` is the program's name, which is `bun` or `node` for a harness shipped as a script,
+so it is not used. A send refused in the window records nothing in Sent, as any refusal.

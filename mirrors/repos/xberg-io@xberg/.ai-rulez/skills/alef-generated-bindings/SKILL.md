@@ -1,7 +1,7 @@
 ---
 type: Playbook
 title: Alef Generated Bindings
-description: "Xberg specifics on top of the shared Alef workflow: generated output locations, alef.toml sections, core edits that break a regen, FFI bridge JSON marshalling. Use when editing bindings, extractors or trait methods, or regenerating."
+description: "Xberg on top of the shared Alef workflow: output locations, alef.toml sections, regen-breaking core edits, FFI JSON bridge. Use when editing bindings."
 paths:
   - "alef.toml"
   - "packages/**"
@@ -37,8 +37,8 @@ output also lands in `crates/xberg-py/`, `crates/xberg-php/`, `crates/xberg-jni/
 `crates/xberg-node/`, `crates/xberg-wasm/`, `crates/xberg-ffi/`, `packages/dart/rust/`,
 `packages/swift/rust/`, and `e2e/`.
 
-Alef tracks both sides under `.alef/`: `sources_hash.cache` (input hashes over the parsed
-Rust sources) and `.alef/hashes/xberg.<lang>.output_hashes` (per-file output content hashes).
+Each generated file carries an `// alef:hash:` header that `alef verify` recomputes; `.alef/`
+(`sources_hash.cache`, `hashes/`) is a gitignored local cache, empty in a new worktree.
 Neither makes a generated file safe to hand-fix — a regen restores it. Fix `alef.toml` or the
 Rust source, then regenerate and re-verify.
 
@@ -92,8 +92,8 @@ that churn rather than committing it.
 
 ## Which alef answered
 
-`task alef:generate` shells out to the globally installed `~/.cargo/bin/alef`, not a
-`cargo run` against a sibling checkout. A source fix there has zero effect until
-`cargo install --path . --force`. Generator fixes ship in order: land upstream → release alef
+`task alef:generate` runs whatever `alef` is first on `PATH`, not a `cargo run` against a
+sibling checkout; check `alef --version` against `alef.toml` `alef_version` before
+regenerating. A source fix in a sibling checkout has zero effect until it is installed. Generator fixes ship in order: land upstream → release alef
 → bump the pinned version → regen. Regenerating against a locally modified alef produces a
 tree the pinned version cannot reproduce.

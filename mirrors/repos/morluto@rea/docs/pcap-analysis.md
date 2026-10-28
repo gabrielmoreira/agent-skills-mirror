@@ -81,9 +81,13 @@ Its separate inferred truncation lengths do not replace that limit; an unset
 file-header limit remains `null`.
 
 Addresses count once per packet, including loopback and nested IP occurrences.
-DNS addresses are associated only with one question in the same response packet;
-additional records may be included, so this does not prove final resolution.
-Ambiguous addresses remain in a separate inventory. Protocol distribution counts
+DNS address attribution requires one question in one response and complete,
+consistent RR owner/type and section counts. Only answer-section A/AAAA records
+matching that question (or its unambiguous answer-section CNAME chain) are
+associated, with the requested address type respected. Authority, additional,
+unrelated, malformed, and ambiguous addresses remain in the unattributed
+inventory and make coverage partial. These packet-local relationships do not
+prove final resolution or destination authenticity. Protocol distribution counts
 exact nonempty `frame.protocols` stack strings. Frames for which TShark reports
 an empty stack, including zero-length packets, still contribute to the packet
 count without adding a protocol row. An all-empty stack inventory can have

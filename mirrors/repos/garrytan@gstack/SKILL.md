@@ -205,10 +205,12 @@ quality gates that produce better results than answering inline.
 - User asks to review code, check the diff, pre-landing review, "look at my changes" → invoke `/review`
 - User asks to find code worth sharing, shared-code extractions, or duplication worth consolidating → invoke `/deslop-shared-libs`
 - User asks to audit, prune or find low-value tests in the existing suite → invoke `/test-audit`
+- User asks to write a skill, improve or slim a skill, or add a lesson to a named skill → invoke `/write-skill`
 - User asks about visual polish, design audit of a live site, "this looks off" → invoke `/design-review`
 - User asks to audit the live developer experience, time-to-hello-world → invoke `/devex-review`
 - User asks to ship, deploy, push, create a PR, "let's land this", "send it" → invoke `/ship`
 - User asks to merge + deploy + verify as one flow → invoke `/land-and-deploy`
+- User asks to rebase or revive an old PR, "modernize this PR", whether a stale PR is still worth landing → invoke `/modernize`
 - User asks to configure deployment for the project → invoke `/setup-deploy`
 - User asks to monitor prod after shipping, post-deploy checks → invoke `/canary`
 - User asks to update docs after shipping → invoke `/document-release`

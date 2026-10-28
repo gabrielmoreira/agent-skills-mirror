@@ -22,7 +22,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s [terminal] %(message
 logger = logging.getLogger("terminal-server")
 
 PORT = int(os.getenv("TERMINAL_WS_PORT", "8016"))
-MAX_SESSIONS = int(os.getenv("TERMINAL_MAX_SESSIONS", "5"))
+MAX_SESSIONS = int(os.getenv("TERMINAL_MAX_SESSIONS") or "5")
 
 _active_sessions = 0
 _session_lock = asyncio.Lock()

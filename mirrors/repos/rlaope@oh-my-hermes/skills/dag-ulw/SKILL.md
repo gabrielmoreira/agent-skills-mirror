@@ -1,6 +1,6 @@
 ---
 name: "dag-ulw"
-description: "[omh] Large multi-part job to run on its own: plan it as a graph of small nodes, run the ready ones in parallel through Hermes' delegate_task, verify the goal with a separate node, and repair failed nodes before reporting. Use when the user says: dag-ulw, dag ulw, ulw dag, dag ultrawork, ultrawork dag."
+description: "[omh] Large multi-part job to run on its own: plan it as a graph of small nodes, run the ready ones in parallel through Hermes' delegate_task, verify the goal with a separate node, and repair failed nodes before reporting. Use when the user says: dag-ulw, dag ulw, ulw dag, dag ultrawork, ultrawork dag, даг ультраворк, граф задач, задачи графом."
 license: MIT
 author: "oh-my-hermes maintainers"
 metadata:
@@ -74,7 +74,7 @@ Bad example:
 
 Use when the request is a job of several parts that can run in parallel or in an order (a feature across modules, a migration, a broad cleanup, research then build then verify), or when the person says dag ulw.
 
-    Strong routing signals: `dag-ulw`, `$dag-ulw`, `dag ulw`, `ulw dag`, `dag ultrawork`, `ultrawork dag`
+    Strong routing signals: `dag-ulw`, `$dag-ulw`, `dag ulw`, `ulw dag`, `dag ultrawork`, `ultrawork dag`, `даг ультраворк`, `граф задач`, `задачи графом`
 
 ## Catalog Metadata
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Nutlope/hallmark` — 26 default patterns, 0 followed patterns, 178 file(s) materialized.
+Mirror of `Nutlope/hallmark` — 26 default patterns, 0 followed patterns, 182 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Nutlope/hallmark` — 26 default patterns, 0 followed patterns, 178 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 178 |
+| Files         | 182 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -176,67 +176,71 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 115 | ✓ | [`skills/hallmark/references/themes/piste.jpg`](skills/hallmark/references/themes/piste.jpg) |
 | 116 | ✓ | [`skills/hallmark/references/themes/piste.md`](skills/hallmark/references/themes/piste.md) |
 | 117 | ✓ | [`skills/hallmark/references/themes/README.md`](skills/hallmark/references/themes/README.md) |
-| 118 | ✓ | [`skills/hallmark/references/themes/ribbon.jpg`](skills/hallmark/references/themes/ribbon.jpg) |
-| 119 | ✓ | [`skills/hallmark/references/themes/ribbon.md`](skills/hallmark/references/themes/ribbon.md) |
-| 120 | ✓ | [`skills/hallmark/references/themes/rim.jpg`](skills/hallmark/references/themes/rim.jpg) |
-| 121 | ✓ | [`skills/hallmark/references/themes/rim.md`](skills/hallmark/references/themes/rim.md) |
-| 122 | ✓ | [`skills/hallmark/references/themes/riso.jpg`](skills/hallmark/references/themes/riso.jpg) |
-| 123 | ✓ | [`skills/hallmark/references/themes/riso.md`](skills/hallmark/references/themes/riso.md) |
-| 124 | ✓ | [`skills/hallmark/references/themes/solstice.jpg`](skills/hallmark/references/themes/solstice.jpg) |
-| 125 | ✓ | [`skills/hallmark/references/themes/solstice.md`](skills/hallmark/references/themes/solstice.md) |
-| 126 | ✓ | [`skills/hallmark/references/themes/specimen.jpg`](skills/hallmark/references/themes/specimen.jpg) |
-| 127 | ✓ | [`skills/hallmark/references/themes/specimen.md`](skills/hallmark/references/themes/specimen.md) |
-| 128 | ✓ | [`skills/hallmark/references/themes/spore.jpg`](skills/hallmark/references/themes/spore.jpg) |
-| 129 | ✓ | [`skills/hallmark/references/themes/spore.md`](skills/hallmark/references/themes/spore.md) |
-| 130 | ✓ | [`skills/hallmark/references/themes/sport.jpg`](skills/hallmark/references/themes/sport.jpg) |
-| 131 | ✓ | [`skills/hallmark/references/themes/sport.md`](skills/hallmark/references/themes/sport.md) |
-| 132 | ✓ | [`skills/hallmark/references/themes/squeeze.jpg`](skills/hallmark/references/themes/squeeze.jpg) |
-| 133 | ✓ | [`skills/hallmark/references/themes/squeeze.md`](skills/hallmark/references/themes/squeeze.md) |
-| 134 | ✓ | [`skills/hallmark/references/themes/sticker.jpg`](skills/hallmark/references/themes/sticker.jpg) |
-| 135 | ✓ | [`skills/hallmark/references/themes/sticker.md`](skills/hallmark/references/themes/sticker.md) |
-| 136 | ✓ | [`skills/hallmark/references/themes/studio.jpg`](skills/hallmark/references/themes/studio.jpg) |
-| 137 | ✓ | [`skills/hallmark/references/themes/studio.md`](skills/hallmark/references/themes/studio.md) |
-| 138 | ✓ | [`skills/hallmark/references/themes/terminal.jpg`](skills/hallmark/references/themes/terminal.jpg) |
-| 139 | ✓ | [`skills/hallmark/references/themes/terminal.md`](skills/hallmark/references/themes/terminal.md) |
-| 140 | ✓ | [`skills/hallmark/references/themes/terrazzo.jpg`](skills/hallmark/references/themes/terrazzo.jpg) |
-| 141 | ✓ | [`skills/hallmark/references/themes/terrazzo.md`](skills/hallmark/references/themes/terrazzo.md) |
-| 142 | ✓ | [`skills/hallmark/references/themes/ultraviolet.jpg`](skills/hallmark/references/themes/ultraviolet.jpg) |
-| 143 | ✓ | [`skills/hallmark/references/themes/ultraviolet.md`](skills/hallmark/references/themes/ultraviolet.md) |
-| 144 | ✓ | [`skills/hallmark/references/themes/vellum.jpg`](skills/hallmark/references/themes/vellum.jpg) |
-| 145 | ✓ | [`skills/hallmark/references/themes/vellum.md`](skills/hallmark/references/themes/vellum.md) |
-| 146 | ✓ | [`skills/hallmark/references/themes/wayfind.jpg`](skills/hallmark/references/themes/wayfind.jpg) |
-| 147 | ✓ | [`skills/hallmark/references/themes/wayfind.md`](skills/hallmark/references/themes/wayfind.md) |
-| 148 | ✓ | [`skills/hallmark/references/themes/werkstatt.jpg`](skills/hallmark/references/themes/werkstatt.jpg) |
-| 149 | ✓ | [`skills/hallmark/references/themes/werkstatt.md`](skills/hallmark/references/themes/werkstatt.md) |
-| 150 | ✓ | [`skills/hallmark/scripts/capture.mjs`](skills/hallmark/scripts/capture.mjs) |
-| 151 | ✓ | [`skills/hallmark/scripts/fixtures/exemplars/atmospheric.html`](skills/hallmark/scripts/fixtures/exemplars/atmospheric.html) |
-| 152 | ✓ | [`skills/hallmark/scripts/fixtures/exemplars/editorial.html`](skills/hallmark/scripts/fixtures/exemplars/editorial.html) |
-| 153 | ✓ | [`skills/hallmark/scripts/fixtures/exemplars/modern-minimal.html`](skills/hallmark/scripts/fixtures/exemplars/modern-minimal.html) |
-| 154 | ✓ | [`skills/hallmark/scripts/fixtures/exemplars/playful.html`](skills/hallmark/scripts/fixtures/exemplars/playful.html) |
-| 155 | ✓ | [`skills/hallmark/scripts/fixtures/eyebrow-fail/index.html`](skills/hallmark/scripts/fixtures/eyebrow-fail/index.html) |
-| 156 | ✓ | [`skills/hallmark/scripts/fixtures/eyebrow-pass/index.html`](skills/hallmark/scripts/fixtures/eyebrow-pass/index.html) |
-| 157 | ✓ | [`skills/hallmark/scripts/fixtures/kept/after.html`](skills/hallmark/scripts/fixtures/kept/after.html) |
-| 158 | ✓ | [`skills/hallmark/scripts/fixtures/kept/before.html`](skills/hallmark/scripts/fixtures/kept/before.html) |
-| 159 | ✓ | [`skills/hallmark/scripts/fixtures/slopped.html`](skills/hallmark/scripts/fixtures/slopped.html) |
-| 160 | ✓ | [`skills/hallmark/scripts/fixtures/tailwind-fail/Feature.vue`](skills/hallmark/scripts/fixtures/tailwind-fail/Feature.vue) |
-| 161 | ✓ | [`skills/hallmark/scripts/fixtures/tailwind-fail/Hero.tsx`](skills/hallmark/scripts/fixtures/tailwind-fail/Hero.tsx) |
-| 162 | ✓ | [`skills/hallmark/scripts/fixtures/tailwind-fail/index.html`](skills/hallmark/scripts/fixtures/tailwind-fail/index.html) |
-| 163 | ✓ | [`skills/hallmark/scripts/fixtures/tailwind-fail/style.css`](skills/hallmark/scripts/fixtures/tailwind-fail/style.css) |
-| 164 | ✓ | [`skills/hallmark/scripts/fixtures/tailwind-pass/Hero.tsx`](skills/hallmark/scripts/fixtures/tailwind-pass/Hero.tsx) |
-| 165 | ✓ | [`skills/hallmark/scripts/fixtures/tailwind-pass/index.html`](skills/hallmark/scripts/fixtures/tailwind-pass/index.html) |
-| 166 | ✓ | [`skills/hallmark/scripts/fixtures/tailwind-pass/style.css`](skills/hallmark/scripts/fixtures/tailwind-pass/style.css) |
-| 167 | ✓ | [`skills/hallmark/scripts/fixtures/waiver/index.html`](skills/hallmark/scripts/fixtures/waiver/index.html) |
-| 168 | ✓ | [`skills/hallmark/scripts/imagegen.mjs`](skills/hallmark/scripts/imagegen.mjs) |
-| 169 | ✓ | [`skills/hallmark/scripts/install-hook.mjs`](skills/hallmark/scripts/install-hook.mjs) |
-| 170 | ✓ | [`skills/hallmark/scripts/install.mjs`](skills/hallmark/scripts/install.mjs) |
-| 171 | ✓ | [`skills/hallmark/scripts/lint-hook.mjs`](skills/hallmark/scripts/lint-hook.mjs) |
-| 172 | ✓ | [`skills/hallmark/scripts/photos.json`](skills/hallmark/scripts/photos.json) |
-| 173 | ✓ | [`skills/hallmark/scripts/picture.mjs`](skills/hallmark/scripts/picture.mjs) |
-| 174 | ✓ | [`skills/hallmark/scripts/refcheck.mjs`](skills/hallmark/scripts/refcheck.mjs) |
-| 175 | ✓ | [`skills/hallmark/scripts/sloplint-render.mjs`](skills/hallmark/scripts/sloplint-render.mjs) |
-| 176 | ✓ | [`skills/hallmark/scripts/sloplint.mjs`](skills/hallmark/scripts/sloplint.mjs) |
-| 177 | ✓ | [`skills/hallmark/scripts/theme.mjs`](skills/hallmark/scripts/theme.mjs) |
-| 178 | ✓ | [`skills/hallmark/SKILL.md`](skills/hallmark/SKILL.md) |
+| 118 | ✓ | [`skills/hallmark/references/themes/refract.jpg`](skills/hallmark/references/themes/refract.jpg) |
+| 119 | ✓ | [`skills/hallmark/references/themes/refract.md`](skills/hallmark/references/themes/refract.md) |
+| 120 | ✓ | [`skills/hallmark/references/themes/ribbon.jpg`](skills/hallmark/references/themes/ribbon.jpg) |
+| 121 | ✓ | [`skills/hallmark/references/themes/ribbon.md`](skills/hallmark/references/themes/ribbon.md) |
+| 122 | ✓ | [`skills/hallmark/references/themes/rim.jpg`](skills/hallmark/references/themes/rim.jpg) |
+| 123 | ✓ | [`skills/hallmark/references/themes/rim.md`](skills/hallmark/references/themes/rim.md) |
+| 124 | ✓ | [`skills/hallmark/references/themes/riso.jpg`](skills/hallmark/references/themes/riso.jpg) |
+| 125 | ✓ | [`skills/hallmark/references/themes/riso.md`](skills/hallmark/references/themes/riso.md) |
+| 126 | ✓ | [`skills/hallmark/references/themes/solstice.jpg`](skills/hallmark/references/themes/solstice.jpg) |
+| 127 | ✓ | [`skills/hallmark/references/themes/solstice.md`](skills/hallmark/references/themes/solstice.md) |
+| 128 | ✓ | [`skills/hallmark/references/themes/specimen.jpg`](skills/hallmark/references/themes/specimen.jpg) |
+| 129 | ✓ | [`skills/hallmark/references/themes/specimen.md`](skills/hallmark/references/themes/specimen.md) |
+| 130 | ✓ | [`skills/hallmark/references/themes/spore.jpg`](skills/hallmark/references/themes/spore.jpg) |
+| 131 | ✓ | [`skills/hallmark/references/themes/spore.md`](skills/hallmark/references/themes/spore.md) |
+| 132 | ✓ | [`skills/hallmark/references/themes/sport.jpg`](skills/hallmark/references/themes/sport.jpg) |
+| 133 | ✓ | [`skills/hallmark/references/themes/sport.md`](skills/hallmark/references/themes/sport.md) |
+| 134 | ✓ | [`skills/hallmark/references/themes/squeeze.jpg`](skills/hallmark/references/themes/squeeze.jpg) |
+| 135 | ✓ | [`skills/hallmark/references/themes/squeeze.md`](skills/hallmark/references/themes/squeeze.md) |
+| 136 | ✓ | [`skills/hallmark/references/themes/sticker.jpg`](skills/hallmark/references/themes/sticker.jpg) |
+| 137 | ✓ | [`skills/hallmark/references/themes/sticker.md`](skills/hallmark/references/themes/sticker.md) |
+| 138 | ✓ | [`skills/hallmark/references/themes/studio.jpg`](skills/hallmark/references/themes/studio.jpg) |
+| 139 | ✓ | [`skills/hallmark/references/themes/studio.md`](skills/hallmark/references/themes/studio.md) |
+| 140 | ✓ | [`skills/hallmark/references/themes/terminal.jpg`](skills/hallmark/references/themes/terminal.jpg) |
+| 141 | ✓ | [`skills/hallmark/references/themes/terminal.md`](skills/hallmark/references/themes/terminal.md) |
+| 142 | ✓ | [`skills/hallmark/references/themes/terrazzo.jpg`](skills/hallmark/references/themes/terrazzo.jpg) |
+| 143 | ✓ | [`skills/hallmark/references/themes/terrazzo.md`](skills/hallmark/references/themes/terrazzo.md) |
+| 144 | ✓ | [`skills/hallmark/references/themes/ultraviolet.jpg`](skills/hallmark/references/themes/ultraviolet.jpg) |
+| 145 | ✓ | [`skills/hallmark/references/themes/ultraviolet.md`](skills/hallmark/references/themes/ultraviolet.md) |
+| 146 | ✓ | [`skills/hallmark/references/themes/vantage.jpg`](skills/hallmark/references/themes/vantage.jpg) |
+| 147 | ✓ | [`skills/hallmark/references/themes/vantage.md`](skills/hallmark/references/themes/vantage.md) |
+| 148 | ✓ | [`skills/hallmark/references/themes/vellum.jpg`](skills/hallmark/references/themes/vellum.jpg) |
+| 149 | ✓ | [`skills/hallmark/references/themes/vellum.md`](skills/hallmark/references/themes/vellum.md) |
+| 150 | ✓ | [`skills/hallmark/references/themes/wayfind.jpg`](skills/hallmark/references/themes/wayfind.jpg) |
+| 151 | ✓ | [`skills/hallmark/references/themes/wayfind.md`](skills/hallmark/references/themes/wayfind.md) |
+| 152 | ✓ | [`skills/hallmark/references/themes/werkstatt.jpg`](skills/hallmark/references/themes/werkstatt.jpg) |
+| 153 | ✓ | [`skills/hallmark/references/themes/werkstatt.md`](skills/hallmark/references/themes/werkstatt.md) |
+| 154 | ✓ | [`skills/hallmark/scripts/capture.mjs`](skills/hallmark/scripts/capture.mjs) |
+| 155 | ✓ | [`skills/hallmark/scripts/fixtures/exemplars/atmospheric.html`](skills/hallmark/scripts/fixtures/exemplars/atmospheric.html) |
+| 156 | ✓ | [`skills/hallmark/scripts/fixtures/exemplars/editorial.html`](skills/hallmark/scripts/fixtures/exemplars/editorial.html) |
+| 157 | ✓ | [`skills/hallmark/scripts/fixtures/exemplars/modern-minimal.html`](skills/hallmark/scripts/fixtures/exemplars/modern-minimal.html) |
+| 158 | ✓ | [`skills/hallmark/scripts/fixtures/exemplars/playful.html`](skills/hallmark/scripts/fixtures/exemplars/playful.html) |
+| 159 | ✓ | [`skills/hallmark/scripts/fixtures/eyebrow-fail/index.html`](skills/hallmark/scripts/fixtures/eyebrow-fail/index.html) |
+| 160 | ✓ | [`skills/hallmark/scripts/fixtures/eyebrow-pass/index.html`](skills/hallmark/scripts/fixtures/eyebrow-pass/index.html) |
+| 161 | ✓ | [`skills/hallmark/scripts/fixtures/kept/after.html`](skills/hallmark/scripts/fixtures/kept/after.html) |
+| 162 | ✓ | [`skills/hallmark/scripts/fixtures/kept/before.html`](skills/hallmark/scripts/fixtures/kept/before.html) |
+| 163 | ✓ | [`skills/hallmark/scripts/fixtures/slopped.html`](skills/hallmark/scripts/fixtures/slopped.html) |
+| 164 | ✓ | [`skills/hallmark/scripts/fixtures/tailwind-fail/Feature.vue`](skills/hallmark/scripts/fixtures/tailwind-fail/Feature.vue) |
+| 165 | ✓ | [`skills/hallmark/scripts/fixtures/tailwind-fail/Hero.tsx`](skills/hallmark/scripts/fixtures/tailwind-fail/Hero.tsx) |
+| 166 | ✓ | [`skills/hallmark/scripts/fixtures/tailwind-fail/index.html`](skills/hallmark/scripts/fixtures/tailwind-fail/index.html) |
+| 167 | ✓ | [`skills/hallmark/scripts/fixtures/tailwind-fail/style.css`](skills/hallmark/scripts/fixtures/tailwind-fail/style.css) |
+| 168 | ✓ | [`skills/hallmark/scripts/fixtures/tailwind-pass/Hero.tsx`](skills/hallmark/scripts/fixtures/tailwind-pass/Hero.tsx) |
+| 169 | ✓ | [`skills/hallmark/scripts/fixtures/tailwind-pass/index.html`](skills/hallmark/scripts/fixtures/tailwind-pass/index.html) |
+| 170 | ✓ | [`skills/hallmark/scripts/fixtures/tailwind-pass/style.css`](skills/hallmark/scripts/fixtures/tailwind-pass/style.css) |
+| 171 | ✓ | [`skills/hallmark/scripts/fixtures/waiver/index.html`](skills/hallmark/scripts/fixtures/waiver/index.html) |
+| 172 | ✓ | [`skills/hallmark/scripts/imagegen.mjs`](skills/hallmark/scripts/imagegen.mjs) |
+| 173 | ✓ | [`skills/hallmark/scripts/install-hook.mjs`](skills/hallmark/scripts/install-hook.mjs) |
+| 174 | ✓ | [`skills/hallmark/scripts/install.mjs`](skills/hallmark/scripts/install.mjs) |
+| 175 | ✓ | [`skills/hallmark/scripts/lint-hook.mjs`](skills/hallmark/scripts/lint-hook.mjs) |
+| 176 | ✓ | [`skills/hallmark/scripts/photos.json`](skills/hallmark/scripts/photos.json) |
+| 177 | ✓ | [`skills/hallmark/scripts/picture.mjs`](skills/hallmark/scripts/picture.mjs) |
+| 178 | ✓ | [`skills/hallmark/scripts/refcheck.mjs`](skills/hallmark/scripts/refcheck.mjs) |
+| 179 | ✓ | [`skills/hallmark/scripts/sloplint-render.mjs`](skills/hallmark/scripts/sloplint-render.mjs) |
+| 180 | ✓ | [`skills/hallmark/scripts/sloplint.mjs`](skills/hallmark/scripts/sloplint.mjs) |
+| 181 | ✓ | [`skills/hallmark/scripts/theme.mjs`](skills/hallmark/scripts/theme.mjs) |
+| 182 | ✓ | [`skills/hallmark/SKILL.md`](skills/hallmark/SKILL.md) |
 
 ---
 

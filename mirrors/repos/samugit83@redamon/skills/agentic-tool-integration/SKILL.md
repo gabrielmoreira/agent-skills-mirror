@@ -47,7 +47,7 @@ new attack *skill* (not a tool), use `builtin-agent-skill`.
   100-char minimum in [agentic/tests/test_tool_registry_completeness.py](../../agentic/tests/test_tool_registry_completeness.py),
   which fails on any unregistered or stub entry.
 - **NEVER forget the dispatch branch for a non-MCP / API tool.**
-  `PhaseAwareToolExecutor.execute()` at [agentic/tools.py:2070](../../agentic/tools.py#L2070)
+  `PhaseAwareToolExecutor.execute()` in [agentic/tools.py](../../agentic/tools.py)
   has hardcoded `if`/`elif` dispatch. A Type D (API) tool or an MCP tool needing
   key injection MUST add an `elif`; without it the tool is registered but never
   dispatched. MCP tools with no key injection go through the `else` branch automatically.
@@ -62,11 +62,20 @@ new attack *skill* (not a tool), use `builtin-agent-skill`.
   need a jsonb `UPDATE` or the agent never sees the tool there. See
   `project-settings-cascade`.
 - **ALWAYS add the tool to `TOOL_PHASE_MAP`** in [agentic/project_settings.py](../../agentic/project_settings.py).
-  If it sends attack traffic: also add it to `DANGEROUS_TOOLS` (frozenset,
-  [project_settings.py:22](../../agentic/project_settings.py#L22)), a per-tool
-  section in [agentic/prompts/stealth_rules.py](../../agentic/prompts/stealth_rules.py),
-  and the right list in `CATEGORY_TOOL_MAP` (`_check_roe_blocked`,
-  [execute_plan_node.py:47](../../agentic/orchestrator_helpers/nodes/execute_plan_node.py#L47)).
+  If it sends attack traffic: also add it to `DANGEROUS_TOOLS` (a frozenset in
+  the same file), a per-tool section in
+  [agentic/prompts/stealth_rules.py](../../agentic/prompts/stealth_rules.py), and
+  the right list in `CATEGORY_TOOL_MAP` in
+  [agentic/orchestrator_helpers/roe_gate.py](../../agentic/orchestrator_helpers/roe_gate.py);
+  a discovery/scanning tool also goes in `RECON_DISCOVERY_TOOLS` there, so the
+  recon budget can refuse it.
+- **NEVER add a RoE or budget check to one executor node.** `roe_gate.check_tool_call`
+  is the one pre-dispatch gate (the Rules of Engagement, then the recon budget),
+  and every executor path asks it: the single tool, the plan wave, and every
+  fireteam member, which reuses those two nodes. A rule on one path only is no
+  rule. [agentic/tests/test_roe_gate.py](../../agentic/tests/test_roe_gate.py)
+  fails when a path stops asking, or when a name in either list is not a
+  `TOOL_REGISTRY` key (a misspelt name refuses nothing).
 
 ---
 

@@ -33,8 +33,9 @@ For the Cypher itself, also follow `graph-db-writes`; for a new MCP tool,
 ## Critical Rules
 
 - **NOBODY writes a final score.** `triage_priority_score`, `triage_tier`,
-  `triage_tier_rule`, `triage_risk`, `triage_factors`, `triage_state` and
-  `triage_decided_by` (the mixin's `_FINAL_SET`) come ONLY from `score_model.combine_layers()`, reached through
+  `triage_tier_rule`, `triage_risk`, `triage_factors`, `triage_state`,
+  `triage_decided_by`, `triage_disposition` and `triage_blocker` (the mixin's
+  `_FINAL_SET`) come ONLY from `score_model.combine_layers()`, reached through
   `layers.combine_props()`. A writer changes ITS layer and asks `combine` for the
   final inside the same transaction. Setting a final directly is how a review or
   a verdict used to vanish at the next run.
@@ -78,7 +79,22 @@ For the Cypher itself, also follow `graph-db-writes`; for a new MCP tool,
   an upgrade adopts an unchanged review-v1 review through `build_bundle_legacy`,
   and unmute applies the same cleanup to muted nodes. Readers that branch on this:
   `score_model.finding_state`, `reportData.ts`, `projectRisk.ts`,
+  `webapp/src/lib/triage/reportable.ts`, `webapp/src/lib/triage/disposition.ts`,
   `tooling/scripts/triage_eval.py`.
+- **An AI review never removes a finding from a deliverable.** The report,
+  Insights and the MCP analytics count through `reportable.ts`: only a person's
+  `likely_noise` (with `triage_source = 'human'`) or a resolved state takes a
+  finding out of their numbers. A reviewer reads target-controlled text, so its
+  `false_positive` stays counted and is labelled. The same holds for a finding's
+  disposition (`disposition.ts`, built on `reportable.ts`): an AI false positive
+  is a `candidate` with a blocker, never `excluded` and never `reportable`.
+- **The stored disposition and the read-side one are one rule in two languages.**
+  `score_model.disposition_of` stores it; `disposition.ts` shows the stored
+  answer when it is whole and computes it otherwise. Change a rule, a gate or a
+  blocker's words in both, with the vector files they share
+  (`disposition.vectors.json`, `disposition.gates.vectors.json`): the parity
+  test, `agentic/tests/test_disposition_parity.py`, fails on a drift. A reader
+  decides "excluded" live (`reportable.ts`) before it trusts a stored answer.
 - **A new stored `triage_*` property goes in `TRIAGE_PROPS`** (triage_mixin.py),
   which feeds `triage_graph_migrate.py`, and in `TRIAGE_PROPERTIES`
   (`webapp/src/lib/triage/properties.ts`), which keeps it out of the Recon Delta.

@@ -494,6 +494,30 @@ for the same room), and the request isn't tried again after a moment. A
 member of the group at another provider answers it. Alone, the client gets
 the 503.
 
+### Which ones run (`ClaudeRunsPath`)
+
+Each run is two processes: Claude Code, and the MCP helper it starts for
+the caller's tools (`magpie claude-mcp-helper`, `internal/claudebridge`).
+Claude Code's parallel subagents are conversations of their own, so a
+session that starts eight has eight pairs running while they work and
+`idleMost` (6) pairs kept for an hour after. Those still waiting on tool
+calls stay for `runTimeout` (30 minutes) once their caller stops. A task
+manager names Claude Code by its version (its binary is
+`versions/2.1.311`), so on macOS Activity Monitor shows these as "2.1.311" and
+"magpie", with nothing to say what they are (@Candydidi3 on X).
+
+`GET /v1/magpie/claude-runs` (`claude_runs.go`, loopback only, as the
+heap profile) lists each run with its pid, model, account, `state`
+(`answering`, `idle` for its next turn, `tools` waiting on the caller's
+tools) and `since`. It also gives `ends`, when its timer lets it go
+(`endIn` records it at each reset), and Claude Code's RSS. `live` is
+`claudeRoom`'s count, one-off asks included. `magpie claude-code runs`
+prints the list under the bound and says what the processes are.
+On 10-27, a sandbox `magpie serve` with a made-up Claude sign-in and real
+Claude Code 2.1.311 against a mock API got 8 concurrent subagent-like
+requests. It kept 6 Claude Code and 6 helpers, and the list named the same
+6 pids that `ps` showed. Quitting magpie ended all 12 within a second.
+
 ## How large one Claude Code process may grow (`claudeRunBudget`, #3256)
 
 `claudeRoom` bounds how many Claude Code processes run, not how large each
@@ -755,7 +779,8 @@ go test -tags nogui ./internal/provider/ -run '^TestClaudeSignInBridgesASOCKSPro
 go test -tags nogui ./internal/netproxy/ -run '^TestEnvForBunWith' -count=1
 go test -tags nogui ./internal/gateway/ -run '^TestClaudeToolNamesComeBackAsDeclared$' -count=1
 go test -tags nogui ./internal/gateway/ -run 'TestClaudeRunsHeldToTheRoom|TestClaudeRoom|TestClaudeOneOffsTakeRoom|TestClaudeMemRuns|TestClaudeRunsMost|TestClaudeNoRoom' -count=1
-go test -tags nogui ./internal/cli/ -run '^TestClaudeCodeRunsSetsTheUsersOwn$' -count=1
+go test -tags nogui ./internal/cli/ -run '^TestClaudeCodeRuns' -count=1
+go test -tags nogui ./internal/gateway/ -run '^TestClaudeRunsNamesEachProcess$' -count=1
 go test -tags nogui ./internal/settings/ -run '^TestClaudeRunsMostIsMachineLocal$' -count=1
 go test -tags nogui ./internal/gateway/ -run 'ClaudeSubscriptionRunsTheDownloaded|ClaudeSubscriptionWithoutClaudeCode|ClaudeRewritten|LostMedia|ImagesTakenOut|RunLetGoWhenTheClientRewrote|ClaudeSessionTempFiles|ClaudeLetGo|ClaudeSessionFiles|ClaudeOldSessions|ClaudeSubscriptionReplySaysTheAllowance|ClaudeAllowanceHeaders|ClaudeForksAnsweringTheLeadsCalls|ClaudeTurnGivenUpOn|ClaudeToolResultsGivenUpOn|ClaudePromptMarksEarlierTurns|ClaudeHistoryCachedAcrossNewRuns|ClaudeUnloadableSession|ClaudeEndedRunSaysWhy|ClaudeIdle|ClaudeSideQuestion|ClaudeNoRunSaysWhy|ClaudeToolResultsNoRunSaysWhy|ClaudePromptToldUserText|ClaudePromptKeepsInstructions|ClaudeToolResultsGoOnWithTheUsersWords|ClaudeToolResultsKeepInstructions|ToolResultKeepsUserTextSentMidTurn|ClaudeTextToolCalls|ClaudeTextCallsHoldsOnlyTheLine|ClaudePromptSaysPastCallsAreARecord' -count=1
 go test -tags nogui ./internal/gateway/ -run 'TestClaudeTaskNotification|TestWithTaskNotices|TestClaudeTurnToldTheTaskNotification' -count=1

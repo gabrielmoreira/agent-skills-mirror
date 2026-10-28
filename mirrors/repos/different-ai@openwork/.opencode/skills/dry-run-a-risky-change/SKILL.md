@@ -72,10 +72,16 @@ migrations, performance on real volume). Ask the person first and name the
 cost and the data involved.
 
 Use the **Dry run on a copy of production data** workflow
-(`.github/workflows/prod-data-dry-run.yml`). It restores the latest production
-backup into a `dry-run-*` branch, runs one check, and deletes the branch when
-the job ends, also on failure or cancel. The PlanetScale MCP cannot do this
-(it has no branch or restore tools).
+(`.github/workflows/prod-data-dry-run.yml`). It seeds an isolated
+`dry-run-<run-id>-<attempt>` copy from the latest production backup (Data
+Branching), runs one read-only check, and attempts deletion when the job ends,
+including on failure or cancel. Verify absence after the run; cleanup can fail.
+Both `--restore` and `--seed-data` can create a branch classified as production.
+The token therefore needs read-only production connection and production-branch
+deletion permissions. The real source must be deletion-protected, and the job
+verifies that protection before creation, credentials and cleanup. The token
+cannot change branch protection or write production data. The PlanetScale MCP
+has no branch-creation tools.
 
 1. Write the check in `ee/apps/den-api/scripts/dry-run/<name>.ts` on your
    branch, using `connect.ts` (`dryRunDb`, `report`, `fail`, `finish`). It may
@@ -84,7 +90,7 @@ the job ends, also on failure or cancel. The PlanetScale MCP cannot do this
    log and summary are public. Start from `smoke.ts`.
 2. Push the branch, then run the workflow from GitHub Actions (or
    `gh workflow run prod-data-dry-run.yml --ref <branch> -f check=<name>.ts`).
-   Keep `writable` off unless the check applies a migration.
+   Database access is always read-only. This workflow cannot apply migrations.
 3. A required reviewer approves the run on the `prod-data-dry-run`
    environment after reading the check. Approve only checks that print
    aggregates.
@@ -94,9 +100,13 @@ the job ends, also on failure or cancel. The PlanetScale MCP cannot do this
 What the workflow needs (set once, by a person, never pasted in chat): on the
 `prod-data-dry-run` environment, a PlanetScale service token limited to the
 Den database with `read_database`, `read_branch`, `create_branch`,
-`delete_branch`, `connect_branch`, `read_backups` and
-`restore_production_branch_backup` (never `connect_production_branch` or
-`delete_production_branch`) as `PLANETSCALE_DRY_RUN_TOKEN_ID` /
+`delete_branch`, `connect_branch`, `read_backups`,
+`restore_production_branch_backup`, `connect_production_read_only_branch` and
+`delete_production_branch` (never `connect_production_branch` or `write_database`).
+The real source must be deletion-protected first. These scopes also allow
+read-only credentials on the live source and deleting other unprotected
+production branches in this database; run-name guards limit the workflow,
+not the underlying token. Store it only in the protected environment as `PLANETSCALE_DRY_RUN_TOKEN_ID` /
 `PLANETSCALE_DRY_RUN_TOKEN`, the PlanetScale organization and database names as
 variables `PLANETSCALE_DRY_RUN_ORG` and `PLANETSCALE_DRY_RUN_DATABASE`, and a restored branch costs as much as the production branch while
 it exists.

@@ -420,15 +420,27 @@ run and approval decision stays Hermes'; the screen is OMH's.
   then on that row says how many `/history` still shows.
 - That region holds, from the top: the prompt you just sent (while the
   turn runs, once the prompt itself has scrolled off, as `↳ you: …`, the
-  `↳ you:` in the running blue and your words dim, with no band behind them and a
-  dim `…` where they are cut), the tail of the reply that is still streaming, one slot for the
+  `↳ you:` in the running blue and your words dim, on your sent prompt's band
+  with a blank row above it, and a dim `…` where they are cut; a steer you
+  sent runs on the same band), the tail of the reply that is still streaming, one slot for the
   OMH plan (or a question Hermes asked, or the slash-command
   menu when it does not open under the composer), the prompts queued behind
   the running turn (`⧗`, up to three named and the rest counted), the
   composer between two full-width rules as Claude Code draws it (`───`,
   then `❯ …` rows, then `───`, with no side edges or corners),
   one dim info line under it, and, while there are subagents, the agent view
-  under that, always expanded (below). On a terminal 6 rows tall the composer keeps its
+  under that, always expanded (below). The region's last row, from 30 rows,
+  holds the session directory's git branch on the left (`branch:<name> | !3
+  ?128`: tracked files changed, then untracked, each only when not zero; a
+  detached HEAD by its short sha; nothing outside a repository), read by
+  `git status` off the screen's thread after each tool, each turn and every
+  15 seconds, and `[ ⚚ OMH Native ]` on the right edge in the launch look's
+  colours. As the row narrows the branch name is cut to `…` first, then the
+  badge goes, then the counts. A blank row stands between the reply and
+  the working row, between the working row's tip and the plan, and between
+  the plan and the composer's top rule, wherever the terminal has a row to
+  spare for it. Your sent prompt runs on a band to the right edge, a quiet
+  tint of the launch look's card edge. On a terminal 6 rows tall the composer keeps its
   top rule and drops its bottom one, so the slot above it still gets its
   two rows; from 7 rows it has both, and under 6 rows (or 20
   columns) the composer is a bare `❯ …` row with no rule. A `/name` you type
@@ -577,7 +589,9 @@ run and approval decision stays Hermes'; the screen is OMH's.
   under a command's echo, Hermes' own reason (`/undo` on an empty session:
   `No user messages to undo.`); otherwise what did not happen and why.
 - What Hermes' background review saved to memory or skills after a turn
-  (`💾 Self-improvement review: …`) is a line in the transcript. While a
+  is one dim row in the transcript, each skill named once with what it went
+  through (`💾 skill <name> · created · wrote references/a.md · patched`),
+  cut with `…` at the width rather than wrapped. While a
   `/goal` stands, the row above that notice says so as Hermes' own terminal
   does (`⊙ goal · 3/20 turns · <title>`, `⏳ goal parked · until 14:05 · …`,
   `⏸ goal paused · …`), until the goal is done or cleared. A mixture-of-agents
@@ -895,7 +909,8 @@ run and approval decision stays Hermes'; the screen is OMH's.
 - Motion and colour follow one rule set, so scrollback reads at a glance:
   - Each block hangs on a continuous `┃` rail with no fill behind it: grey
     for your prompt, the theme's accent for what Hermes said (which opens
-    with a bold `●` in the text colour), and a tool call's state colour for
+    with a header row, `⚚ Hermes · <model>`, bold in the rail's colour and
+    the model the reply was written under muted), and a tool call's state colour for
     the call. The accent is left on the banner's title and that rail only;
     the rest of the chrome (rules, marks, hints, a call's arguments and what
     it printed) is neutral grey, and words are the brightest text.
@@ -1049,6 +1064,7 @@ Esc closes it):
 | Ctrl+R | Searches the input history; Ctrl+R again finds an older match, Enter puts it in the composer, Esc leaves the composer as it was |
 | Ctrl+X | Opens the `/sessions` picker |
 | Ctrl+S | Opens the bot board, as `/bots` does: this machine's Hermes profiles, their gateways and sessions, read-only |
+| Ctrl+P | Folds the plan above the composer to its header and the item it is on, or expands it again, while a turn runs or between turns; the header says which on its right |
 | ↑ | On an empty composer with prompts queued, takes them back into the composer to edit; a queued shell line comes back on its own |
 | ↓ | On an empty composer while the agent view under the info line shows subagents, gives its rows the keys as the agent list; in a DAG run, to its folding tree |
 | ← / → | Move by a character; with Ctrl or Alt, by a word (Alt+B and Alt+F too) |
@@ -1200,10 +1216,24 @@ profile archive, not the transcript, so the first `/export` says so and the
 next one runs it), and `/reload-skills` (Hermes re-scans its
 skills for this session and the TUI reads its command list again, so a skill
 installed since the start, by `omh update` or `/skills install`, runs as
-`/<name>` without a restart). Claude Code's `/cost` and `/permissions` run
-Hermes' `/usage` and `/approvals`.
+`/<name>` without a restart). Claude Code's `/cost`, `/permissions` and
+`/compact` run Hermes' `/usage`, `/approvals` and `/compress` (`here [N]`, a
+focus topic, or `--preview`; Hermes refuses a compression while a turn runs,
+and the TUI says to run it again once the turn ends). Hermes' shared gateway,
+which a Hermes from v0.22 runs, does not take `/compress`, `/branch`,
+`/retry`, `/undo`, `/stop`, `/bg`, `/btw`, `/rollback`, `/reload`,
+`/reload-mcp`, `/tools`, bare `/plugins` or `/config` as a typed command. The
+TUI runs each one through the gateway call Hermes' own Ink TUI uses for it,
+and `/branch` then opens the new session. The shared gateway answers one call
+at a time, so while a `/compress` this TUI sent runs, a command, prompt or
+interrupt sent meanwhile waits until the compression ends; the TUI waits for
+its answer that long, at most 780 s in all.
+Commands that only Hermes' classic CLI runs (`/handoff`, `/worktree`,
+`/snapshot`, `/import`, `/hatch`, `/palette`) are left out of completion, and
+`/help` names them on one line. Typed, they go to Hermes, which says where to
+run each one.
 Commands whose screen exists only in Hermes' own terminal (`/voice`, `/pet`,
-`/agents`, the billing flows, `/save`, `/prompt`, ...) say so and name
+`/agents`, `/subscription`, `/save`, `/prompt`, ...) say so and name
 `hermes --tui`. Everything else goes to Hermes as it would from Hermes'
 terminal, except that bare `/skills`, whose screen there is an overlay,
 prints the help of Hermes' skills command here instead of opening the skills
@@ -1212,15 +1242,54 @@ the TUI opens, so a project's own skills are listed in its workspace, and
 completion also matches a part of a name: `/uml` finds `/omh-codebase-uml`.
 
 The bot board (Ctrl+S or `/bots`) shows this machine's Hermes bots, full
-screen, and changes nothing. Its first page lists the Hermes home the TUI runs
-under and every named profile beside it (`<root>/profiles/<name>/`), each with
-its gateway as `gateway_state.json` records it (state, pid, running agents and
-each platform's state), its stored sessions counted by source, how many were
-active in the last 24 hours, and when the last one was. Enter opens a
-profile's sessions, newest activity first (delegated subagent sessions are
-counted on the first page, not listed), and Enter again a session's last 40
-messages; ← or Esc goes back, q closes it from the first page, and r reads
-again at once. It reads again every 5 s by itself, off the screen's own thread.
+screen, and changes nothing. Every region on it is a rounded box, in the
+launch card's style, its columns divided by lines that meet the edges in
+joints. Its first page opens with a box of what every profile adds up to
+(gateways up, agents running, and the active sessions' tokens and cost), then
+lists the Hermes home the TUI runs under and every named profile beside it
+(`<root>/profiles/<name>/`), each in a full-width card, one to a row, every
+card's columns lined up with the next. A card's top edge carries
+its gateway's state as a coloured mark, the bot's name (with the display name
+Hermes keeps in `profile.yaml`, when it set one) and, on the right, the running
+gateway's uptime, agents and resident memory; its bottom edge carries what the
+gateway says when it is not plainly running, each platform as a chip coloured
+by its state (`!` when it needs attention or failed, `○` when the gateway that
+recorded it has since stopped or restarted) and a restart Hermes was asked
+for. Inside, at the left, is a small face drawn from the bot's name alone,
+the same on every run, then the bot's fields, in two columns where the
+terminal is about 117 columns or wider and stacked in one below that:
+`model`, the default
+model its `config.yaml` names (and the model its newest session ran, when that
+differs); `now`, its newest session but delegated children, its title cut to
+fit and its source and age at the right; `24 h`, a sparkline of the active sessions' tokens by the hour each
+was last active, how many were active, and how many are stored; `tokens`,
+their input, output and cache-read tokens; `cost`; `memory` and `user`, Hermes'
+`MEMORY.md` and `USER.md` as gauges against the limits its `config.yaml` sets
+(green below 70%, amber to 90%, red past it); and `OMH`, the record count of
+the OMH store its `config.yaml` names. The highlighted bot's card takes the
+theme's accent colour. Tokens and cost are each
+session's lifetime totals, since Hermes records no time per call, and the board
+labels them `lifetime` wherever it shows them; a cost
+appears only where Hermes priced it (`~` marks an estimate); sessions it did
+not price are counted as unpriced, never as $0. A store, config or memory
+file it cannot read is named as such, and a store without the token columns
+shows neither tokens nor a sparkline. A narrow terminal gives up the least
+important figures first (the top edge's figures, then the last chips and the
+face) and never wraps a row. Enter opens a profile's
+sessions under that profile's box, drawn as on the first page and holding
+the gateway record in full (state, pid, how old it is), each platform's error,
+each memory target's gauge with its exact entries and characters, and the
+sessions by source, a narrow box giving up whole fields rather than cutting
+words; the sessions follow in a table box of their own, newest activity
+first, under a header row and a rule: title, then, past one divider, model,
+input and output tokens, cost, source, last activity and message count,
+numbers right-aligned, the highlighted row banded from edge to edge; a narrow
+terminal gives up source, then
+cost, then tokens before the title runs short (delegated subagent sessions
+are counted on the first page, not listed), and Enter again a session's last 40 messages
+in a box beneath the session's own (its source, messages, age, model, tokens
+and cost), each message's time and role in a column of their own; ← or Esc goes back, q closes it from the
+first page, and r reads again at once. It reads again every 5 s by itself, off the screen's own thread.
 It counts sessions active in the last 24 hours rather than open ones, because a
 messaging gateway leaves every chat it served open, so a Slack bot idle for weeks
 would still show dozens. A gateway shows as running only while the process its
@@ -1228,8 +1297,10 @@ record names still runs and is the one that wrote the record (its start time
 is compared as Hermes compares it); a platform's state from a gateway that has
 since stopped or restarted shows as what was last recorded. Each `state.db` is
 opened read-only (and immutable when no connection has it open, so SQLite
-creates no file beside it), the only signal it sends is the signal-0 liveness
-probe, and it calls nothing in Hermes' gateway.
+creates no file beside it), `config.yaml` and the memory files are read only up
+to 1 MiB each (a larger one is reported by size), the OMH store's records are
+counted from its directory listing, the only signal it sends is the signal-0
+liveness probe, and it calls nothing in Hermes' gateway.
 
 When the OMH TUI cannot start, `omh` says why in one line on stderr and opens
 Hermes instead, so you lose the OMH screen, never the session. For a reason
@@ -1327,8 +1398,11 @@ and every rule or mark 3:1 (on the pager's footer, against its bar: the
 theme's own bar colour on a dark background, a light tint of it on a light
 one; the info line under the composer and the sticky prompt have no bar),
 and
-on a light background the diff bands are light tints. With no answer and no `COLORFGBG` that names one, the background is
-taken as dark, and nothing that would depend on knowing it is painted: your prompt gets no band, and a diff band names its own text colour
+on a light background the diff bands are light tints, their words at 4.5:1 on
+each. The menus (the completion menu, the pickers, choice prompts, the agent
+list, the delegation view and the bot board) have no band on any background:
+the highlighted row is a `❯` and its name bold in the skill hue, at 4.5:1. With no answer and no `COLORFGBG` that names one, the background is
+taken as dark, and nothing that would depend on knowing it is painted: your sent prompt gets no band, and a diff band names its own text colour
 rather than leave your terminal's on it. `/theme light` and `/theme dark` measure against a
 light or a dark background whatever the terminal said, `/theme auto` follows
 the terminal again, and each, like `/theme <name>`, redraws the screen in the
@@ -2809,8 +2883,23 @@ OMH-managed directories are retired; a directory you registered yourself
 stays where it is. A command that is not the installer-managed one (a
 checkout, a pip or uv tool install) registers its own `~/.omh/skills` and
 never retires the pointer, so it cannot move a machine backwards.
+
+A generation's own pack, `<managed root>/generations/<id>/skills`, is never
+registered: only the `current/skills` pointer is. An entry naming one (an
+older `omh setup` wrote the running generation's pack after the pointer) is
+the same files as the pointer on the day it is written and a second copy of
+every OMH skill once the next update moves the pointer, at which point
+Hermes lists no OMH skill at all. The installer-managed command's setup and
+update retire every such entry, from the primary home and every bot
+profile, whether the generation is still on disk or already collected, and
+a home naming only one is migrated to the pointer rather than read as the
+opt-out; `omh uninstall --registration-only` removes them too. Only
+absolute entries under the pointer's own managed root match: a `skills`
+directory under some other `generations/` directory, and any relative
+entry (Hermes anchors those at its own home), stay.
 `omh doctor` reports a home that still names two managed directories on
-disk as `external_dir_ambiguity` (one row per affected profile) and
+disk, an older generation's pack beside the pointer included, as
+`external_dir_ambiguity` (one row per affected profile) and
 promotes the row's `run \`omh update\`` to its headline next action; the
 update's own post-check re-reads every home after the write and warns in
 the same words, as a warning line only -- the update's exit code does not
@@ -3025,7 +3114,12 @@ plan `todo_list` holds the Desktop pane does not repeat its items: it shows a
 compact "in todo_list" plan summary only when OMH knows something Hermes
 does not show — an item waiting on a recorded reason, or a checklist
 unchanged past the stall threshold. The OMH TUI's plan panel draws the items
-whichever tool holds them.
+whichever tool holds them: the done ones quiet (a `✓` in the done colour,
+their words muted) and, when they do not all fit, folded into one `✓ N done`
+row before any item still to do is cut. Ctrl+P folds the plan to its header
+and the item it is on (`[Plan] │ 6/7 ▸ <item>`), or expands it again, for the
+rest of the session; the header says `ctrl+p fold` or `ctrl+p expand` on its
+right where there is room.
 
 A plan may be declared from a named phase template instead of from phases the
 model writes out itself. `omh_todo` with `action=set` and

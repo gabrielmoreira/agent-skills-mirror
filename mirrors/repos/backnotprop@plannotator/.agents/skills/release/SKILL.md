@@ -117,7 +117,7 @@ Write the draft to `RELEASE_NOTES_v<VERSION>.md` in the repo root and tell the u
 
 ## Phase 2: Version Bump
 
-Bump the version string in these **7 files** (and only these — other package.json files use stub versions):
+Bump the version string in these **8 files** (and only these — other package.json files use stub versions). `scripts/check-release-version.mjs` (run in CI and on the tag) fails if any of them disagrees:
 
 | File | Field |
 |------|-------|
@@ -126,12 +126,13 @@ Bump the version string in these **7 files** (and only these — other package.j
 | `apps/pi-extension/package.json` | `"version"` |
 | `apps/hook/.claude-plugin/plugin.json` | `"version"` |
 | `apps/copilot/plugin.json` | `"version"` |
+| `.github/plugin/marketplace.json` | `"version"` of the `plannotator-copilot` entry |
 | `openpackage.yml` (root) | `version:` |
 | `packages/server/package.json` | `"version"` |
 
-Read each file, confirm the current version matches expectations, then update all 7 atomically.
+Read each file, confirm the current version matches expectations, then update all 8 atomically.
 
-Do not bump the VS Code extension (`apps/vscode-extension/package.json`) — it has independent versioning.
+Do not bump the VS Code extension (`apps/vscode-extension/package.json`) — it has independent versioning. The Droid manifest (`apps/droid-plugin/.factory-plugin/plugin.json`) is exempt too: Droid tracks the plugin by the marketplace's git commit and treats `version` as metadata.
 
 ---
 
@@ -175,7 +176,7 @@ If anything is missing, fix it before proceeding to Phase 4. Common fixes:
    ```
    chore: bump version to X.Y.Z
    ```
-   Stage only the 7 version-bumped files. Do not stage the release notes file (it's untracked by design).
+   Stage only the 8 version-bumped files. Do not stage the release notes file (it's untracked by design).
 
 2. **Create and push the tag:**
    ```bash
@@ -255,7 +256,11 @@ If anything is missing, fix it before proceeding to Phase 4. Common fixes:
 ## Checklist
 
 Before tagging, verify:
-- [ ] All 7 version files bumped consistently
+- [ ] All 8 version files bumped consistently, `.github/plugin/marketplace.json` included (`bun run check:release-version` passes)
+- [ ] The published-package floor guard is green (`bun test tests/published-package-floors.test.ts`), and no `engines.node`/`npm`/`opencode`/`vscode`/`bun`, `os`, `cpu`, `libc` or host peer was added or changed on a published package without an `ALLOWED` entry the owner signed off (`engines.vscode` is pinned at `^1.85.0`: a raise stops updates for Cursor, Windsurf and older VS Code). npm silently installs an older version for anyone whose runtime misses such a field: 0.28.32's Pi Node floor kept older-Node users on 0.28.31
+- [ ] Sibling dependencies resolve: `bun run check:sibling-deps @plannotator/opencode @plannotator/pi-extension` passes (it reads npm). When `@plannotator/core` and `@plannotator/ui` ship, publish core before ui, and run it with every package going out (`bun run check:sibling-deps @plannotator/core @plannotator/ui`): ui pins an exact core, and a ui published first fails to install with ETARGET
+- [ ] Never `npm deprecate` the current `latest`: npm then picks the newest non-deprecated version for bare and range installs, so everyone silently stays behind. Ship a new version instead
+- [ ] Never reuse a version number once its bump commit is on `main`, even if the tag or publish failed: Claude Code caches plugins by version string, so a second build under the same number never reaches users who fetched the first. Bump again
 - [ ] Release notes drafted and reviewed
 - [ ] `bun run build:review` succeeded
 - [ ] `bun run build:hook` succeeded

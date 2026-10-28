@@ -1,7 +1,7 @@
 ---
 type: Playbook
 title: Mime Detection Routing
-description: "Xberg MIME detection and extractor routing in core/mime.rs: the FORMATS registry, path and bytes detection, priority selection, adding a format. Use when a file routes to the wrong extractor or a format is added."
+description: "Xberg MIME detection and extractor routing (core/mime.rs, FORMATS registry). Use when a file routes to the wrong extractor or a format is added."
 paths:
   - "crates/xberg/src/core/mime.rs"
   - "crates/xberg/src/core/mime/**"

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `mastra-ai/mastra` — 26 default patterns, 0 followed patterns, 102 file(s) materialized.
+Mirror of `mastra-ai/mastra` — 26 default patterns, 0 followed patterns, 104 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `mastra-ai/mastra` — 26 default patterns, 0 followed patterns, 102 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 102 |
+| Files         | 104 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -157,10 +157,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 96 | ✓ | [`templates/template-agent-harness/AGENTS.md`](templates/template-agent-harness/AGENTS.md) |
 | 97 | ✓ | [`templates/template-claw-assistant/workspace/skills/general-tasks/SKILL.md`](templates/template-claw-assistant/workspace/skills/general-tasks/SKILL.md) |
 | 98 | ✓ | [`templates/template-claw-assistant/workspace/skills/research-tasks/SKILL.md`](templates/template-claw-assistant/workspace/skills/research-tasks/SKILL.md) |
-| 99 | ✓ | [`templates/template-github-review-agent/workspace/skills/code-standards/SKILL.md`](templates/template-github-review-agent/workspace/skills/code-standards/SKILL.md) |
-| 100 | ✓ | [`templates/template-github-review-agent/workspace/skills/performance-review/SKILL.md`](templates/template-github-review-agent/workspace/skills/performance-review/SKILL.md) |
-| 101 | ✓ | [`templates/template-github-review-agent/workspace/skills/security-review/SKILL.md`](templates/template-github-review-agent/workspace/skills/security-review/SKILL.md) |
-| 102 | ✓ | [`templates/template-starter-agent/AGENTS.md`](templates/template-starter-agent/AGENTS.md) |
+| 99 | ✓ | [`templates/template-factory-self-hosted/AGENTS.md`](templates/template-factory-self-hosted/AGENTS.md) |
+| 100 | ✓ | [`templates/template-factory/AGENTS.md`](templates/template-factory/AGENTS.md) |
+| 101 | ✓ | [`templates/template-github-review-agent/workspace/skills/code-standards/SKILL.md`](templates/template-github-review-agent/workspace/skills/code-standards/SKILL.md) |
+| 102 | ✓ | [`templates/template-github-review-agent/workspace/skills/performance-review/SKILL.md`](templates/template-github-review-agent/workspace/skills/performance-review/SKILL.md) |
+| 103 | ✓ | [`templates/template-github-review-agent/workspace/skills/security-review/SKILL.md`](templates/template-github-review-agent/workspace/skills/security-review/SKILL.md) |
+| 104 | ✓ | [`templates/template-starter-agent/AGENTS.md`](templates/template-starter-agent/AGENTS.md) |
 
 ---
 

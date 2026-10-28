@@ -1,11 +1,10 @@
----
-name: variant-analyze
-description: "Audit existing sites, extract design tokens, generate style-matched pages. Runs consistency checks and Visual Quality Audit (40-item anti-slop checklist, Quality Score XX/100). Triggers on: analyze my site, audit this, match this style, extract tokens, what's wrong with this design, migrate, add a page to my site, compare old new"
----
+<!-- Sub-workflow of the variant-design skill, reached through the route table in ../../SKILL.md. It has no skill frontmatter on purpose: agents that scan folders recursively (Codex, `npx skills`) must not register it as a standalone skill, because its paths are relative to the skill root. -->
+
+> **variant-analyze**: Audit existing sites, extract design tokens, generate style-matched pages. Runs consistency checks and Visual Quality Audit (40-item anti-slop checklist, Quality Score XX/100). Triggers on: analyze my site, audit this, match this style, extract tokens, what's wrong with this design, migrate, add a page to my site, compare old new
 
 ## Site Analysis Mode
 
-When the user points to existing code (file paths, a directory, or says "analyze/audit/check my site"), switch from generation mode to analysis mode. Load `references/design-system/style-audit.md` for the full methodology and `references/quality-baseline.md` for shared mechanical and visual checks.
+When the user points to existing code (file paths, a directory, or says "analyze/audit/check my site"), switch from generation mode to analysis mode. Load `references/design-system/style-audit.md` for the full methodology and `references/workflow/quality-baseline.md` for shared mechanical and visual checks.
 
 ### Triggers
 
@@ -31,11 +30,11 @@ find . -name "*.html" -o -name "*.css" -o -name "*.tsx" -o -name "*.jsx" \
 # - tokens.css / variables.css / theme.* (existing token files)
 ```
 
-**Step 2: Extract** — Pull all design primitives following the Token Extraction schema in `style-audit.md`: colors, typography, spacing, components, transitions. Group by semantic role.
+**Step 2: Extract** — Pull all design primitives following the Token Extraction schema in `references/design-system/style-audit.md`: colors, typography, spacing, components, transitions. Group by semantic role.
 
-**Step 3: Detect** — Run all consistency checks from `style-audit.md` Section 2. For each finding, record severity (error/warning/info), the specific values, file locations, and a concrete fix.
+**Step 3: Detect** — Run all consistency checks from `references/design-system/style-audit.md` Section 2. For each finding, record severity (error/warning/info), the specific values, file locations, and a concrete fix.
 
-**Step 3.5: Visual Quality Audit** — Read `references/quality-baseline.md` and run the deterministic scanner against the scoped files:
+**Step 3.5: Visual Quality Audit** — Read `references/workflow/quality-baseline.md` and run the deterministic scanner against the scoped files:
 
 ```bash
 node <skill-root>/scripts/quality-gate.mjs <file-or-directory> --json
@@ -43,13 +42,13 @@ node <skill-root>/scripts/quality-gate.mjs <file-or-directory> --json
 
 Confirm every reported match in context before including it. Then inspect the rendered interface for hierarchy, typography, palette coherence, layout rhythm, responsive recomposition, and interaction feedback. Do not derive a numerical score from unchecked self-reporting; if the user requests a score, show the evidence and scoring rubric beside it.
 
-**Step 4: Report** — Present findings using the compact terminal format from `style-audit.md` Section 3. List priority fixes and distinguish mechanically detected evidence from visual judgment.
+**Step 4: Report** — Present findings using the compact terminal format from `references/design-system/style-audit.md` Section 3. List priority fixes and distinguish mechanically detected evidence from visual judgment.
 
 **Step 5: Act** — Based on what the user wants:
 - **Audit only**: Stop after the report. Offer to generate a token file or migration plan.
-- **Extract tokens**: Generate a `tokens.css` file consolidating all values (see `style-audit.md` Section 4).
+- **Extract tokens**: Generate a `tokens.css` file consolidating all values (see `references/design-system/style-audit.md` Section 4).
 - **Generate matching page**: Lock extracted tokens as constraints, generate new pages that match (see below).
-- **Migration plan**: Generate phased checklist for consolidating the codebase (see `style-audit.md` Section 6).
+- **Migration plan**: Generate phased checklist for consolidating the codebase (see `references/design-system/style-audit.md` Section 6).
 
 ### Style-Matched Generation
 

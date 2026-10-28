@@ -15,6 +15,40 @@
 
 ---
 
+### Primary-action instruction selection converges in TypeScript (2026-10-27)
+
+`work_item.interaction_execution.project` now selects the primary instruction
+alongside its existing mode, composing selection recovery before instruction
+construction. The three Python decision functions are retired; Python retains
+bounded scalar/label compatibility views, monitor text, resolution trace and
+final serialization; transported list facts are bounded to the first selectable
+row per source. Mode-only preflight, later overrides and persisted formats
+are unchanged. Production Python −185 lines, TS +109, net −76. All eight measured
+CLI outputs retain equal byte counts and normalized content; crossings remain
+1/3/3/75 for both binding counts. No latency improvement is claimed.
+The slice moves one `goal_boundary` prose token Python → TypeScript; lexical budgets move 30/2 → 29/3 with migration surfaces unchanged at 16/1, as recorded in the ledger; registry and anchor move together.
+Validation is complete for this slice: the final canary reports status:
+`passed`, ok: `true`, merge_gate_passed: `true`, manual_holds: `0` and 0 failures;
+all eight benchmark commands retain byte parity and unchanged crossings, with
+median regressions within the stated 5% rule. Remaining limits are the CI-only
+real PostgreSQL server, Node 22.22.3, Windows and browser lanes, plus inherited
+main failures tracked by #7433–#7436 and #7389. See the [ownership, economics and validation ledger](ledger/typescript-control-plane-migration-v0/2026-10-27-primary-action-instruction-selection.md)
+for negative cases, retained-code deletion conditions and code-only rollback.
+
+### Todo summary-display projection has one TypeScript owner (2026-10-26)
+
+The existing `todo.context.page` owns standalone summary/planning source
+selection, display normalization and handoff composition. Quota planning
+composes display in process; Python retains JSON/Python-value compatibility,
+bounded transport, mutable-row attachment and the text-revision codec.
+Completion and display share the registered scoped-decision receipt version;
+no persisted format or authority boundary changes. Both planning decisions
+remain. The [original source checkpoint](ledger/typescript-control-plane-migration-v0/2026-10-26-todo-summary-display-projection.md)
+retains its initial counts and unverified boundaries. The [follow-up qualification](ledger/typescript-control-plane-migration-v0/2026-10-27-todo-summary-qualification.md)
+records subsequent schema, recovery, packaging and matched-cost evidence at
+separate immutable revisions. Later results do not relabel historical failures
+or certify unrelated platform, large-Goal or long-run behavior.
+
 ### Goal agent-context delegation projection converges in TypeScript (2026-10-25)
 
 `capability_hook.agent_context.project`
@@ -226,6 +260,10 @@ Python retains registry, document/material IO, independent Vision-wait consumers
 and compatibility exports. Its replaced summary, filter and result coordination
 is retired. Persisted completion spellings use shared token data and compatibility codecs
 without scalar RPCs;
+Vision-wait state projection now composes typed resume planning, current-agent
+blocker eligibility, causal lineage coverage and result assembly in one TypeScript
+effect. Python retains source-snapshot encoding, result validation, historical
+wait-state decoding and independent consumers.
 `todo.summary.project`, `todo.completion_state.normalize` and
 `todo.completion_state.require_metadata` are retired after their production
 callers exit. Existing semantic owners execute in process inside the transaction.
@@ -2769,3 +2807,5 @@ Event replay and the reconciled cutover inventory: [2026-09-25](ledger/shared-go
 
 The native query now owns recovery lookup and completion capability evidence,
 with shared write/read status-phase checks. See the [2026-10-02 checkpoint](ledger/typescript-control-plane-migration-v0/2026-10-02-turn-journal-readback.md) for compatibility, measured cost, validation boundaries and facade exit.
+
+- Summary-display final-head qualification and preserved tail cohorts: [2026-10-27 follow-up](ledger/typescript-control-plane-migration-v0/2026-10-27-todo-summary-qualification.md).

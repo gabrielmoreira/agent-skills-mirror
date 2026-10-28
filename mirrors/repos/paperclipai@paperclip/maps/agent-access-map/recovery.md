@@ -17,8 +17,16 @@ Ordinary board Retry can reauthorize saved GitHub input for the same App after
 reconnect. It pins current runtime authority and preserves sender, repository,
 conversation and task checks. Pending input takes precedence over the older
 failed request and transfers once to the retry owner. This grants no new agent
-Retry API or stale webhook authority. Local PostgreSQL and HTTP-route regressions
+Retry API or stale webhook authority. Legacy input can use a server-owned,
+processed earlier response ledger to prove the same endpoint's App claim before
+that input. Company, conversation, agent and prior delivery/source linkage remain
+required. Explicit conflicting App IDs cannot use that fallback. Local PostgreSQL and HTTP-route regressions
 cover these transitions; hosted execution and delivery remain separate acceptance.
+Dispatch validates the exact claimed wake and resolved user-continuation receipt
+for the current successor. A later board Retry can follow that successor only
+when exact durable diagnostics and absent execution/resources prove it never
+started. This preserves the original sender/source and grants no agent Retry
+permission or accepted-result replay.
 
 Source revision: `3bbc2104b65caf9f7763938a01260a5673e12f7a`.
 
@@ -99,6 +107,14 @@ browser qualification do not establish hosted agent access or recovery.
 Review: `operation-reviewed`.
 
 Supported restoration and automatic attempts retain source/owner/attempt authority.
+
+Main-server replacement uses a private, encrypted Postgres controller journal
+and the runner's existing authenticated PRP connection. It adds no agent-facing
+mutation API. Controller generations and expiring execution leases fence writes;
+the runner retains its admitted artifact and active turn. Saved tool receipts
+can restore responses, safe reads recheck current authority, and uncertain
+mutations remain pending. The [remote continuity recipe](../../doc/testing-native-remote-continuity.md#replacing-the-main-server)
+separates real-process/scripted-provider evidence from hosted Daytona qualification.
 
 ### `observe-automatic-attempt`
 
@@ -247,6 +263,24 @@ retry deadlines. A duplicate request during physical preservation does not
 replace the owner's generation or revision. Resolved files-only recovery retains
 its no-replay restriction. The local PostgreSQL regression checks the producer,
 worker, and physical source receipt; it is not deployed provider acceptance.
+
+Connected board-message preparation failures use the canonical board Retry
+owner only after the exact unchanged comment, original user wake, accepted
+same-user identity and pre-provider settlement are certified. Admission and
+execution recheck the pinned source and claimed successor receipts. Repeated
+pre-provider failures retain the source only through each canonical intent,
+failed dispatch and accepted parent identity; cycles and chains beyond twenty
+links fail closed. This grants
+no external inbound authority or permission to replay a terminal result; an
+uncertifiable source directs the user to send a new task message. The real
+HTTP/queue regression proves this boundary locally, not hosted provider recovery.
+
+For external chat, the same canonical Retry owner may certify the structured
+isolated-directory binding failure that occurs before environment allocation.
+It requires exact task/source authority and trusted settlement with no process,
+lease, native result or unknown execution evidence. Other validation reasons and
+the older direct chat-retry entry point remain denied. Local HTTP/dispatch proof
+does not establish hosted provider completion.
 
 An authorized deliberate Retry also registers missing historical native
 preservation from an exact prepared descriptor and an unowned terminal

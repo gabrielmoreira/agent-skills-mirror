@@ -57,7 +57,7 @@ This doc covers the shared architecture and calls out where the builds diverge.
 │                                                      │
 │  accessibility-tree.js  — AX tree builder + ref_ids  │
 │  content.js             — DOM reader, clicker, typer │
-│  agent-visual-indicator.js — pulsing border + Stop   │
+│  agent-visual-indicator.js — edge effect + Stop      │
 └─────────────────────────────────────────────────────┘
 ```
 
@@ -324,7 +324,8 @@ background.js handleMessage('chat_start')
 ```
 _enrichUserMessageWithCurrentPage(tabId, messages, userMessage)
 
-  1. Collect URL + title via chrome.tabs.get(tabId)
+  1. Collect URL + title via chrome.tabs.get(tabId); quote them in the
+     [Current page context] note inside an <untrusted_page_content> box
   2. If persistent API permission or this tab's /allow-api is active → inject [API ALLOWED] preamble
   3. If site adapters enabled → getActiveAdapter(url) → inject adapter notes
   4. If provider supports vision (or dedicated vision model configured):
@@ -1498,7 +1499,8 @@ request bodies and a small allowlist of replay-safe headers behind an opaque
 `replayRequestId`; hidden form tokens are reused internally by `fetch_url` only
 for the same tab and origin, not printed into model context. Write methods are
 authorized by the persistent **Always allow API mutations** setting (on by
-default) or the conversation's `/allow-api` override. An unreadable persistent
+default; on a new install each host still gets the network permission prompt)
+or the conversation's `/allow-api` override. An unreadable persistent
 setting grants no authorization. GET requests and non-network capabilities still
 use the normal permission gate.
 
@@ -1600,7 +1602,7 @@ Key points:
 - Ask is read-only; Act and Dev are action modes. Dev adds source/style/page-debugging tools and is blocked for Compact-tier providers.
 - Plan before Act can require human approval before any action-mode tool call
 - An unanswered `clarify` question follows Settings → Budgets → "When a question times out": finish the task (default) or play it safe. Questions about deletion, money, credentials, the recipient, or an unrequested publication always time out to the safe answer (see `docs/security-model.md`).
-- The persistent **Always allow API mutations** setting (on by default) or the conversation's `/allow-api` override waives permission prompts for write-method `fetch_url` / `research_url` calls
+- The conversation's `/allow-api` override waives permission prompts for write-method `fetch_url` / `research_url` calls. The persistent **Always allow API mutations** setting (on by default) allows those calls; it also waives their prompts only on installs from before new installs started asking per host (`apiMutationSitePrompt`)
 - Tool results capped at 8 KB to limit prompt-injection surface
 - `strictSecretMode` instructs the model not to quote credentials in summaries, redacts known credential values (including short numeric PIN/CVV values) out of everything a cloud run publishes, and fails closed to scalar redaction if its bounded secret registry fills
 - Trace data is local-only (IndexedDB), never transmitted

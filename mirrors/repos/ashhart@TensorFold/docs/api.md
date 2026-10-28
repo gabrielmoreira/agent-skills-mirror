@@ -23,6 +23,39 @@ Replace the key file atomically to rotate keys. Its modification time is checked
 
 In the Python 0.6.6 engine's [control room](control.md), `tensorfold service install MODEL --api-key-file PATH` forwards the file to its server, and `tensorfold tui --url URL --token-env VARIABLE` sends that variable's value as a bearer key. The native binary has neither command. Prefer a restricted file over command-line keys, which can appear in the operating system's process list.
 
+### Key scopes
+
+A native key file can limit a key to some routes. Write the scopes in brackets after the label:
+
+```text
+app[inference]: APP_KEY
+grafana[read]: MONITOR_KEY
+notebook[inference,read]: ANOTHER_KEY
+ops[admin]: OPERATOR_KEY
+legacy: OLD_KEY
+```
+
+A key without brackets, from a plain file line, `--api-key` or `TENSORFOLD_API_KEY`, keeps every route, as before. `[admin]` is
+the same as no brackets. The other scopes are `inference`, `read` or both, comma-separated; an unknown, repeated or empty
+scope, or `admin` beside another, makes the file invalid. One key cannot carry two scope sets: a file that gives the same key
+different scopes, or scopes a key the flags or environment already give, is refused at startup and on reload.
+
+| Scope | Routes |
+| --- | --- |
+| `inference` | POST `/v1/chat/completions`, `/v1/completions`, `/v1/responses`, `/v1/messages`, `/v1/messages/count_tokens`, `/v1/tokenize`, `/v1/detokenize`, `/v1/audio/speech`, `/v1/embeddings`, `/v1/decisions`, `/v1/systemone`, and the same paths without `/v1` where the server has them; GET `/v1/models`, `/models`, `/v1/voices` |
+| `read` | GET `/metrics`, `/v1/metrics`, `/memory`, `/v1/memory`, `/stats`, `/dashboard`, `/v1/benchmark/manifest`, `/v1/models`, `/models`, `/v1/voices` |
+
+A scoped key reaches nothing else: not the stored Responses (GET or DELETE `/v1/responses/ID`), Recall, Sliding Weights,
+`/v1/imprint`, another method, or a suffix alias such as `/alt/completions` that the server answers for a full key. The route
+is matched exactly after the query and trailing slashes are cut. A refused route answers 403 with the code
+`insufficient_scope` (Messages routes: an Anthropic `permission_error`) and closes the connection before the body is read
+or a parked model reloads. The public routes stay public.
+
+The stored Responses belong to the server, not to a key, so a scoped key's `POST /v1/responses` must send `"store": false`
+and no `previous_response_id`, with the whole conversation in `input`; anything else answers 403 naming the field. A request
+keeps the scopes it was accepted with if the file changes while it runs. Scopes are authorization only: every key shares one
+model, its prompt cache and the metrics.
+
 
 ## Browser request headers
 
@@ -145,6 +178,7 @@ delete runs gets 503, an id that is not a number 400, and an id the graph does n
 | `chat_template_kwargs.enable_thinking` | Template thinking toggle; `chat_template_kwargs.thinking` (`true`/`false` or `{"type": "enabled"}`/`{"type": "disabled"}`, as DeepSeek-V4 clients send it) is read the same way when `enable_thinking` is absent; other values are ignored | Both |
 | `draft` | False selects the serial reference; CUDA rejects it if the engine has no serial switch | Both |
 | `response_format`, `guided_json`, `guided_regex`, `guided_choice`, `guided_grammar`, `structured_outputs` | A JSON schema, any JSON object, a regex, a choice or an EBNF grammar the reply must match | Both |
+| `grammar_budget` | Boolean, default false. Under a grammar (the fields above, or a required tool call), never draw a token after which the reply could no longer complete within `max_tokens`; see [Structured output](#structured-output) | Native |
 | `ignore_eos` | Disable model end-of-sequence stopping; the reply limit still applies | Both |
 | `stop` | Stop at a string or any string in a list; omit the matched text from the response | Both |
 | `reasoning_effort` | `none`, `minimal`, `low`, `medium`, `high`, `xhigh` or `max` | Both |
@@ -322,6 +356,22 @@ backend mask hook. A missing library or grammar compilation error is also refuse
 
 The native GLM CUDA backend also supports token grammars, gathering vocabulary rows before rank 0 masks and draws.
 
+`grammar_budget: true` (native server, off by default) keeps a constrained reply completable within its token limit, so
+a required tool call or a JSON value cut by `max_tokens` still parses. Before each draw, a token is masked when no
+continuation after it reaches a place where the grammar could end within the draws left (`max_tokens`, counted after
+the think block when the server reserves thinking tokens beyond it); the count includes that token and treats the place
+where the end token becomes allowed as complete, so a call that closes on the last token can still finish as
+`length`. Outputs change only where the budget binds: a token is masked only when every completion after it would
+overrun, so the reply equals its `grammar_budget: false` reply token for token up to the first draw where the limit
+binds. The mask depends only on the grammar's place and the tokens left, so
+drafted, `"draft": false` and concurrent replies stay the same with it on. When `max_tokens` is already below the
+grammar's shortest reply, the mask is not applied and the reply is cut as without it. The first request for a grammar
+explores its parser states over the tokenizer's tokens (on the request thread, then kept for the last eight grammars);
+a grammar with more than 16,384 such states is only masked where its explored states decide it, never beyond what
+completes. It is refused with HTTP 400 when the loaded `libtfgrammar` predates it, and for grammars with token-level,
+budgeted, captured or left-recursive rules. The masks follow from xgrammar's byte-level parse; with thinking on they
+start after the think end.
+
 HTTP 400 comes before any token for a malformed field, a grammar xgrammar cannot compile (with xgrammar's reason), a
 server without xgrammar (with the install command; on the native server, a server that cannot load `libtfgrammar`),
 a grammar sent with `tool_choice: "required"` or a named function, and `logprobs` with a grammar or tools. A reply whose
@@ -379,6 +429,26 @@ for at least 1,024 tokens, the period found from where the reasoning's last 32-t
 continues after the forced close, and reports `runtime.loop: {"period": N}` plus `loop=period:N` in the server log. The native engine refuses the flag on backends that do not enforce it, and prints that refusal as
 a startup error.
 
+`--loop-guard-stop` (off by default; it turns on `--loop-guard`) ends the reply where the guard fires instead. The engine
+writes no forced close and no answer: the stream finishes at the token that fired, and its lane and caches are released
+as for any finished reply. The reply carries the reasoning so far in `reasoning_content`, empty `content` and no
+`tool_calls`, and these marks a client can act on:
+
+- `finish_reason` is `content_filter`, the OpenAI value for a reply the server ended before its answer, which clients
+  that check the value against OpenAI's list accept; it is neither `tool_calls` nor `length`, so it asks no client to
+  run calls or continue a cut reply.
+- `runtime.loop` is `{"period": N, "stopped": true}` and the server log shows `finish=content_filter loop=period:N`.
+- The error object `{"message": "...", "type": "server_error", "param": null, "code": "reasoning_loop"}`: a whole chat
+  or completion reply (HTTP 200) carries it as a top-level `error` beside `choices`; a stream sends it as an
+  `{"error": ...}` event after the finish chunk and its usage, then `[DONE]`, so OpenAI's SDKs raise it after the
+  reasoning arrived.
+- `/v1/responses` replies with `status: "incomplete"` and `incomplete_details: {"reason": "content_filter"}` (streamed:
+  `response.incomplete`), its output the reasoning item alone; `/v1/messages` replies with `stop_reason: "refusal"`.
+
+Requests with tools or structured output end the same way: the guard watches only the think block, so no call is opened
+and no grammar starts. The setting is the server's: a request cannot turn it on or off. Without it, replies are
+unchanged.
+
 ## Context and errors
 
 The rendered prompt and reserved reply must fit the effective context. In 0.3.5, an explicit `max_tokens`
@@ -433,8 +503,8 @@ Native JSON replies also carry a `tensorfold` runtime block with `engine`, `enab
 `rounds`, `drafted`, `accepted`, `acceptance_rate`, and `tokens_per_round`. A request that sends
 `return_token_ids` adds `token_ids`, the reply's tokens, to the block — the tokens `token_sha` and
 `token_sha256` hash — on the whole reply and on the streamed finish event alike. A loop-guarded reply adds
-`runtime.loop.period`; these fields describe the native reply and are absent
-from Python replies that do not provide them.
+`runtime.loop.period`, and `runtime.loop.stopped` when `--loop-guard-stop` ended it; these fields describe the native
+reply and are absent from Python replies that do not provide them.
 In the native block, `seconds` is the reply's decode time, from the end of its prompt pass to its last token, and
 `tokens_per_second` divides the reply's tokens after the first by it. `prefill_seconds` is the prompt pass, and
 `time_to_first_token` counts from the request's arrival, so a queued or long prompt shows there, not in `seconds`.
@@ -492,6 +562,32 @@ An engine that keeps no prompt states leaves all three out.
 The native `--dashboard` flag adds a self-contained `/dashboard` page and its `/stats` JSON snapshot; both routes
 return 404 when the flag is off, and the page polls once per second without adding access-log noise.
 
+## Admission
+
+By default the native server takes every model request it can read and the engine queues them. On a server several people
+share, four flags can refuse requests early instead, each off at 0, its default:
+
+| Flag | Range | Meaning |
+| --- | --- | --- |
+| `--max-inflight N` | 0-128 | Model requests in progress at once, across all keys |
+| `--max-inflight-per-key N` | 0-128 | Model requests in progress at once for one key |
+| `--requests-per-second N` | 0-100000 | Model requests a key may start each second |
+| `--request-burst N` | 0-100000 | Requests a rested key may start at once; 0 takes the rate. Without a rate it does nothing |
+
+A model request is a POST to a completion, chat, Responses, Messages, speech, embeddings, decisions, System One, Sliding
+Weights learning or imprint route; tokenizing, listing models, health and metrics are never counted. A request is counted
+from the end of its headers, after the key check and before its body is read or a parked model reloads, until its reply
+ends, streams included. Each key counts apart, by its digest, whatever its label; a server without keys counts every
+request as one key. A refused request answers 429 with `Retry-After` and the route's error shape (`rate_limit_error`; the
+OpenAI-shaped `code` names the limit) and closes its connection without reading the body. A refusal spends no rate.
+
+The rate's buckets live in a table of 128 keys. A key's bucket stays until it has refilled, so cycling keys cannot reset a
+spent rate; with more than 128 keys starting requests within one refill, a further key is refused
+(`admission_capacity_exceeded`) until a bucket refills. With any of the flags set, `/metrics` adds
+`admission_inflight`, `admission_inflight_peak`, `admission_principals`, `admission_rate_buckets`,
+`admission_accepted_total` and `admission_rejected_total` with a fixed `reason` label (`global_limit`, `key_limit`,
+`principal_capacity`, `rate_limit`). With none set, nothing is counted and the replies and metrics are as before.
+
 ## Conversations on disk
 
 `--learn-conversations` (it implies `--learn`) writes every prompt state the server keeps in RAM to disk as well: a
@@ -502,13 +598,26 @@ cap below needs their room. After a restart, a crash or an eviction from RAM, th
 instead of reading the conversation again from its first token. Qwen3.8-27B, Nemotron, Flash Next and GLM-5.3-Flash on
 one Mac and Nemotron on CUDA keep them; other engines refuse the flag at startup.
 
-States go to disk while the engine is idle, a 16 MiB piece at a time, so a request that arrives meanwhile waits for one
-piece. A planned stop (SIGTERM or SIGINT) finishes what is waiting, within 20 seconds; a killed server loses only what
-its last turn had not written yet. Rows a stored state already holds for the same tokens are written once, so ten
+The engine stages an owned copy between rounds, and an I/O thread writes and fsyncs it. Staging has a 1 GiB byte
+permit and at most eight jobs; when either is full, the save is skipped. The copy waits for its GPU producers before
+RAM can be reused. A state becomes available for reuse only after all its files have been written and synced.
+A planned stop (SIGTERM or SIGINT) drains writes for up to 20 seconds, then cancels the remainder; a blocked syscall
+can finish later using only its private temporary files and staged bytes. A killed server loses unfinished saves.
+Rows a stored state already holds for the same tokens are written once, so ten
 conversations that share a long system prompt and tools store those rows once. A state is read back only when reading
 it takes less time than prefilling the tokens it covers, measured on this machine. Every piece read is checked against
 its hash; a damaged file is deleted, with the states that need it, and the turn prefills instead. A read-back state
 gives the same reply, token for token, as the state it was written from and as a fresh prompt pass.
+
+While other streams run, a queued request whose state is on disk has it read on an I/O thread into memory, with the
+same checks, and waits in the queue meanwhile; the engine thread then only copies it into place, so the other streams
+keep decoding through the read. A read that fails, or is not done within `TENSORFOLD_RESTORE_PREFETCH_MS` (30000 by
+default), is left and the state is read at admission as before. `TENSORFOLD_RESTORE_PREFETCH` caps the reads held at
+once (2 by default; 0 turns reading ahead off) and `TENSORFOLD_RESTORE_PREFETCH_GIB` their memory (16 by default); a
+request alone on the engine reads its state at admission as before. A queued request matching a staged save waits
+within the same timeout for the writer to publish it, then reads it ahead; a failed or late save falls back to the
+ordinary restore or fresh prefill. Read and write workers are separate, so a slow read does not block saves. Cancelled
+reads retain their memory permit until I/O returns, and close cancels reads within the same stop deadline as writes.
 
 States are kept per checkpoint, kernel build, OS build and chip: a macOS update or a new release that computes other
 bits starts a new set, and the old set is the first to go when the disk cap needs room. `--learn-gib` caps the disk
@@ -517,18 +626,25 @@ builds' sets go first, then the states worth least: the fewest tokens saved per 
 used. `--learn-min-free-gib` keeps free disk (4 GiB by default), and `--learn-daily-gib` caps what they write a day
 (32 GiB by default); past either, a state stays in RAM only, with a log line, and no reply changes.
 
-On a Mac, `--spill-gib N` writes a state to that store only when the prompt cache evicts it from RAM, up to N GiB
-under `~/.cache/tensorfold/spilled` for every model together, and reads it back as above: a later request whose prefix
-matches resumes from it, token for token as a fresh prompt pass, after a restart too. Nothing is written while the
-engine idles; the write is made on the engine thread at the eviction, before the request that needed the room goes on.
+On a Mac, `--spill-gib N` writes a state to that store when the prompt cache evicts it from RAM or the engine closes,
+up to N GiB under `~/.cache/tensorfold/spilled` for every model together, and reads it back as above: a later request whose prefix
+matches resumes from it, token for token as a fresh prompt pass, after a restart too. An eviction stages a copy before
+releasing RAM, then the engine continues while the I/O thread writes it. A full staging permit skips that save;
+the request prefills if it returns before a saved state is available. This changes cache hits, never reply tokens.
+An idle unload and a planned stop also save the states still in RAM, newest first, within the same disk cap and
+20-second stop budget. The next engine open scans those files and restores them through the same path as evictions.
+Older queued saves cannot evict states saved earlier in that close. States that exceed a staging permit, disk cap,
+daily budget or free-disk floor are skipped; unfinished writes are cancelled at the deadline.
 Past N GiB other models' spilled sets go first, then the state this server used least recently. A damaged file is
 deleted and its tokens are prefilled, and a write cut off midway leaves nothing a later turn or a restart reads.
 `--checkpoint-slots N` sets how many states stay in RAM beside the store, so the next one sends the oldest to disk; on a
 Mac it needs `--spill-gib` or `--learn-conversations`. With `--learn-conversations` too, every state is still written
-behind, an evicted state's write under way is finished instead of given up, and the cap is the smaller of `--learn-gib`
-and `--spill-gib`. `--learn-min-free-gib` and `--learn-daily-gib` apply to spilled states as well. The same four Mac
+behind, a staged write survives eviction of its RAM entry, and the cap is the smaller of `--learn-gib` and
+`--spill-gib`. `--learn-min-free-gib` and `--learn-daily-gib` apply to spilled states as well. The same four Mac
 families take both flags and the others refuse them at startup; without either flag nothing changes, and the routes
-below stay off.
+below stay off. `TENSORFOLD_ROWS_SYNC=1` selects the previous synchronous writer for comparisons; its block and state
+files have the same bytes. That comparison writer retains blocking I/O; the bounded disk wait uses the threaded writer.
+`TF_IMPRINT_VERIFY=1` reads threaded writes back against their owned staging before publication.
 
 Three routes let a client such as the Mac app ask about a conversation. Each takes the body of a chat completion
 (`messages`, `tools`, `chat_template_kwargs`), renders it as that request would be rendered, and answers on the engine's

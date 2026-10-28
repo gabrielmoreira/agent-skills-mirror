@@ -33,11 +33,13 @@ bash scripts/self-host.sh
 The script asks five things: the domain (or `local`), an e-mail for Let's Encrypt, how sign-in codes go out, the provider's URL and key, the admin password. It writes `cloud/.env` with a fresh random `CLOUD_SECRET`, starts `docker compose`, waits for `/healthz` and prints the console and admin URLs. Running it again keeps the secrets and the accounts and only re-asks, with the current values as defaults. For this machine only, no domain and no TLS:
 
 ```bash
-bash scripts/self-host.sh --local          # http://127.0.0.1:8787, codes in the relay's log
-bash scripts/self-host.sh --local --bind 0.0.0.0   # reachable from the phones on the same network
+bash scripts/self-host.sh --local          # this machine only: http://127.0.0.1:8787, codes in the relay's log
+bash scripts/self-host.sh --local --bind 0.0.0.0   # the phones on the same network too: the URLs carry this machine's LAN address
 ```
 
-By hand instead of the script: `cd cloud && cp .env.example .env`, fill in `CLOUD_DOMAIN`, `PUBLIC_BASE`, `ACME_EMAIL`, `CLOUD_SECRET`, `CLOUD_ADMIN_TOKEN`, `UPSTREAM_KEY` and the sender settings, then `docker compose up -d`; or, without Caddy, `docker compose -f docker-compose.yml -f docker-compose.local.yml up -d`. The relay runs as uid 10001 inside its container, and `cloud/data`, the bind-mounted data directory, must belong to that uid on the host: `mkdir -p data && sudo chown -R 10001:10001 data` before the first start, and once more when upgrading from a relay whose image ran as root (the script does this for you; a relay that cannot write the directory says so at start and stops).
+With `--bind 0.0.0.0` the relay listens on every interface and the script looks up the machine's LAN address (`192.168.1.20`, say) for `PUBLIC_BASE`, the invitation links and the URLs it prints, since that is the address the phones reach it at; when it cannot find one it says so and falls back to `127.0.0.1`. `--bind` with one address (a Tailscale address, for instance) publishes the port on that address only and uses it as given. Running the script again with another `--bind` moves the URLs along.
+
+By hand instead of the script: `cd cloud && cp .env.example .env`, fill in `CLOUD_DOMAIN`, `PUBLIC_BASE`, `ACME_EMAIL`, `CLOUD_SECRET`, `CLOUD_ADMIN_TOKEN`, `UPSTREAM_KEY` and the sender settings, then `docker compose up -d`; or, without Caddy, `docker compose -f docker-compose.yml -f docker-compose.local.yml up -d`, with `RELAY_BIND=0.0.0.0` (or the machine's address) and `PUBLIC_BASE=http://<that address>:8787` in `cloud/.env` when other machines are to reach it. The relay runs as uid 10001 inside its container, and `cloud/data`, the bind-mounted data directory, must belong to that uid on the host: `mkdir -p data && sudo chown -R 10001:10001 data` before the first start, and once more when upgrading from a relay whose image ran as root (the script does this for you; a relay that cannot write the directory says so at start and stops).
 
 Chat may use a different OpenAI-compatible provider while pictures and clips stay on
 Model Studio: put the chat endpoint and key in `UPSTREAM_BASE` / `UPSTREAM_KEY`, and

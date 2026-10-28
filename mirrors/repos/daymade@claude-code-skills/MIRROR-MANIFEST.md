@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `daymade/claude-code-skills` — 26 default patterns, 104 followed patterns, 255 file(s) materialized.
+Mirror of `daymade/claude-code-skills` — 26 default patterns, 105 followed patterns, 256 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `daymade/claude-code-skills` — 26 default patterns, 104 followed pat
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 104 |
-| Files         | 255 |
+| Followed pats | 105 |
+| Files         | 256 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -100,6 +100,7 @@ Mirror of `daymade/claude-code-skills` — 26 default patterns, 104 followed pat
 - `ghostty-use/references/automatic-snapshots.md`
 - `tibo-reset-codex/references/browser-session-migration.md`
 - `tibo-reset-codex/references/account-usage.md`
+- `tibo-reset-codex/references/signal-readings.md`
 - `tibo-reset-codex/references/next-reset-forecast.md`
 - `tibo-reset-codex/references/forecast-feedback.md`
 - `daymade-claude-code/claude-switch-models-setup/references/local-source-sync-architecture.md`
@@ -414,9 +415,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 250 | → | [`tibo-reset-codex/references/browser-session-migration.md`](tibo-reset-codex/references/browser-session-migration.md) |
 | 251 | → | [`tibo-reset-codex/references/forecast-feedback.md`](tibo-reset-codex/references/forecast-feedback.md) |
 | 252 | → | [`tibo-reset-codex/references/next-reset-forecast.md`](tibo-reset-codex/references/next-reset-forecast.md) |
-| 253 | → | [`tunnel-doctor/references/provider_account_suspension.md`](tunnel-doctor/references/provider_account_suspension.md) |
-| 254 | → | [`tunnel-doctor/references/proxy_conflict_reference.md`](tunnel-doctor/references/proxy_conflict_reference.md) |
-| 255 | → | [`youtube-downloader/references/internal-sop.md`](youtube-downloader/references/internal-sop.md) |
+| 253 | → | [`tibo-reset-codex/references/signal-readings.md`](tibo-reset-codex/references/signal-readings.md) |
+| 254 | → | [`tunnel-doctor/references/provider_account_suspension.md`](tunnel-doctor/references/provider_account_suspension.md) |
+| 255 | → | [`tunnel-doctor/references/proxy_conflict_reference.md`](tunnel-doctor/references/proxy_conflict_reference.md) |
+| 256 | → | [`youtube-downloader/references/internal-sop.md`](youtube-downloader/references/internal-sop.md) |
 
 ---
 

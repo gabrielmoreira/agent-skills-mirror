@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `gamedev-skills/awesome-gamedev-agent-skills` — 26 default patterns, 0 followed patterns, 214 file(s) materialized.
+Mirror of `gamedev-skills/awesome-gamedev-agent-skills` — 26 default patterns, 0 followed patterns, 221 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `gamedev-skills/awesome-gamedev-agent-skills` — 26 default patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 214 |
+| Files         | 221 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -215,64 +215,71 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 154 | ✓ | [`skills/other-engines/roblox-physics/agents/openai.yaml`](skills/other-engines/roblox-physics/agents/openai.yaml) |
 | 155 | ✓ | [`skills/other-engines/roblox-physics/references/queries-and-ownership.md`](skills/other-engines/roblox-physics/references/queries-and-ownership.md) |
 | 156 | ✓ | [`skills/other-engines/roblox-physics/SKILL.md`](skills/other-engines/roblox-physics/SKILL.md) |
-| 157 | ✓ | [`skills/other-engines/roblox-studio-workflow/agents/openai.yaml`](skills/other-engines/roblox-studio-workflow/agents/openai.yaml) |
-| 158 | ✓ | [`skills/other-engines/roblox-studio-workflow/references/studio-verification.md`](skills/other-engines/roblox-studio-workflow/references/studio-verification.md) |
-| 159 | ✓ | [`skills/other-engines/roblox-studio-workflow/SKILL.md`](skills/other-engines/roblox-studio-workflow/SKILL.md) |
-| 160 | ✓ | [`skills/other-engines/roblox-ui/agents/openai.yaml`](skills/other-engines/roblox-ui/agents/openai.yaml) |
-| 161 | ✓ | [`skills/other-engines/roblox-ui/assets/inventory-quality-test.model.json`](skills/other-engines/roblox-ui/assets/inventory-quality-test.model.json) |
-| 162 | ✓ | [`skills/other-engines/roblox-ui/assets/inventory-quality-test.project.json`](skills/other-engines/roblox-ui/assets/inventory-quality-test.project.json) |
-| 163 | ✓ | [`skills/other-engines/roblox-ui/references/input-navigation.md`](skills/other-engines/roblox-ui/references/input-navigation.md) |
-| 164 | ✓ | [`skills/other-engines/roblox-ui/references/responsive-layout.md`](skills/other-engines/roblox-ui/references/responsive-layout.md) |
-| 165 | ✓ | [`skills/other-engines/roblox-ui/SKILL.md`](skills/other-engines/roblox-ui/SKILL.md) |
-| 166 | ✓ | [`skills/README.md`](skills/README.md) |
-| 167 | ✓ | [`skills/unity/README.md`](skills/unity/README.md) |
-| 168 | ✓ | [`skills/unity/unity-animation/references/blend-trees-and-ik.md`](skills/unity/unity-animation/references/blend-trees-and-ik.md) |
-| 169 | ✓ | [`skills/unity/unity-animation/SKILL.md`](skills/unity/unity-animation/SKILL.md) |
-| 170 | ✓ | [`skills/unity/unity-build-pipeline/references/ci-build-script.md`](skills/unity/unity-build-pipeline/references/ci-build-script.md) |
-| 171 | ✓ | [`skills/unity/unity-build-pipeline/SKILL.md`](skills/unity/unity-build-pipeline/SKILL.md) |
-| 172 | ✓ | [`skills/unity/unity-csharp-scripting/references/lifecycle-and-coroutines.md`](skills/unity/unity-csharp-scripting/references/lifecycle-and-coroutines.md) |
-| 173 | ✓ | [`skills/unity/unity-csharp-scripting/scripts/check_unity_project.py`](skills/unity/unity-csharp-scripting/scripts/check_unity_project.py) |
-| 174 | ✓ | [`skills/unity/unity-csharp-scripting/SKILL.md`](skills/unity/unity-csharp-scripting/SKILL.md) |
-| 175 | ✓ | [`skills/unity/unity-input-system/references/rebinding.md`](skills/unity/unity-input-system/references/rebinding.md) |
-| 176 | ✓ | [`skills/unity/unity-input-system/SKILL.md`](skills/unity/unity-input-system/SKILL.md) |
-| 177 | ✓ | [`skills/unity/unity-navmesh/SKILL.md`](skills/unity/unity-navmesh/SKILL.md) |
-| 178 | ✓ | [`skills/unity/unity-physics/references/raycasting-and-joints.md`](skills/unity/unity-physics/references/raycasting-and-joints.md) |
-| 179 | ✓ | [`skills/unity/unity-physics/SKILL.md`](skills/unity/unity-physics/SKILL.md) |
-| 180 | ✓ | [`skills/unity/unity-scriptableobjects/references/event-channels.md`](skills/unity/unity-scriptableobjects/references/event-channels.md) |
-| 181 | ✓ | [`skills/unity/unity-scriptableobjects/SKILL.md`](skills/unity/unity-scriptableobjects/SKILL.md) |
-| 182 | ✓ | [`skills/unity/unity-tilemap-2d/SKILL.md`](skills/unity/unity-tilemap-2d/SKILL.md) |
-| 183 | ✓ | [`skills/unreal/README.md`](skills/unreal/README.md) |
-| 184 | ✓ | [`skills/unreal/unreal-behavior-trees/references/custom-bttask.md`](skills/unreal/unreal-behavior-trees/references/custom-bttask.md) |
-| 185 | ✓ | [`skills/unreal/unreal-behavior-trees/SKILL.md`](skills/unreal/unreal-behavior-trees/SKILL.md) |
-| 186 | ✓ | [`skills/unreal/unreal-blueprints/references/communication.md`](skills/unreal/unreal-blueprints/references/communication.md) |
-| 187 | ✓ | [`skills/unreal/unreal-blueprints/SKILL.md`](skills/unreal/unreal-blueprints/SKILL.md) |
-| 188 | ✓ | [`skills/unreal/unreal-cpp-gameplay/references/components-and-gc.md`](skills/unreal/unreal-cpp-gameplay/references/components-and-gc.md) |
-| 189 | ✓ | [`skills/unreal/unreal-cpp-gameplay/SKILL.md`](skills/unreal/unreal-cpp-gameplay/SKILL.md) |
-| 190 | ✓ | [`skills/unreal/unreal-enhanced-input/references/cpp-setup.md`](skills/unreal/unreal-enhanced-input/references/cpp-setup.md) |
-| 191 | ✓ | [`skills/unreal/unreal-enhanced-input/SKILL.md`](skills/unreal/unreal-enhanced-input/SKILL.md) |
-| 192 | ✓ | [`skills/unreal/unreal-niagara/SKILL.md`](skills/unreal/unreal-niagara/SKILL.md) |
-| 193 | ✓ | [`skills/unreal/unreal-packaging/SKILL.md`](skills/unreal/unreal-packaging/SKILL.md) |
-| 194 | ✓ | [`skills/web-engines/phaser-arcade-physics/references/bodies-and-collision.md`](skills/web-engines/phaser-arcade-physics/references/bodies-and-collision.md) |
-| 195 | ✓ | [`skills/web-engines/phaser-arcade-physics/SKILL.md`](skills/web-engines/phaser-arcade-physics/SKILL.md) |
-| 196 | ✓ | [`skills/web-engines/phaser-core/references/scene-flow.md`](skills/web-engines/phaser-core/references/scene-flow.md) |
-| 197 | ✓ | [`skills/web-engines/phaser-core/SKILL.md`](skills/web-engines/phaser-core/SKILL.md) |
-| 198 | ✓ | [`skills/web-engines/pixijs-rendering/references/assets-and-display.md`](skills/web-engines/pixijs-rendering/references/assets-and-display.md) |
-| 199 | ✓ | [`skills/web-engines/pixijs-rendering/SKILL.md`](skills/web-engines/pixijs-rendering/SKILL.md) |
-| 200 | ✓ | [`skills/web-engines/README.md`](skills/web-engines/README.md) |
-| 201 | ✓ | [`skills/web-engines/threejs-gltf-loading/references/loaders-and-animation.md`](skills/web-engines/threejs-gltf-loading/references/loaders-and-animation.md) |
-| 202 | ✓ | [`skills/web-engines/threejs-gltf-loading/SKILL.md`](skills/web-engines/threejs-gltf-loading/SKILL.md) |
-| 203 | ✓ | [`skills/web-engines/threejs-materials-lighting/references/materials-lights-table.md`](skills/web-engines/threejs-materials-lighting/references/materials-lights-table.md) |
-| 204 | ✓ | [`skills/web-engines/threejs-materials-lighting/SKILL.md`](skills/web-engines/threejs-materials-lighting/SKILL.md) |
-| 205 | ✓ | [`skills/web-engines/threejs-scene-setup/references/scene-graph.md`](skills/web-engines/threejs-scene-setup/references/scene-graph.md) |
-| 206 | ✓ | [`skills/web-engines/threejs-scene-setup/SKILL.md`](skills/web-engines/threejs-scene-setup/SKILL.md) |
-| 207 | ✓ | [`skills/workflows/game-jam/SKILL.md`](skills/workflows/game-jam/SKILL.md) |
-| 208 | ✓ | [`skills/workflows/itch-publish/references/butler-ci.md`](skills/workflows/itch-publish/references/butler-ci.md) |
-| 209 | ✓ | [`skills/workflows/itch-publish/SKILL.md`](skills/workflows/itch-publish/SKILL.md) |
-| 210 | ✓ | [`skills/workflows/prototype-fast/SKILL.md`](skills/workflows/prototype-fast/SKILL.md) |
-| 211 | ✓ | [`skills/workflows/README.md`](skills/workflows/README.md) |
-| 212 | ✓ | [`skills/workflows/steam-publish/references/steampipe-build-scripts.md`](skills/workflows/steam-publish/references/steampipe-build-scripts.md) |
-| 213 | ✓ | [`skills/workflows/steam-publish/scripts/check_steam_build.py`](skills/workflows/steam-publish/scripts/check_steam_build.py) |
-| 214 | ✓ | [`skills/workflows/steam-publish/SKILL.md`](skills/workflows/steam-publish/SKILL.md) |
+| 157 | ✓ | [`skills/other-engines/roblox-simulator-economy/agents/openai.yaml`](skills/other-engines/roblox-simulator-economy/agents/openai.yaml) |
+| 158 | ✓ | [`skills/other-engines/roblox-simulator-economy/references/formulas.md`](skills/other-engines/roblox-simulator-economy/references/formulas.md) |
+| 159 | ✓ | [`skills/other-engines/roblox-simulator-economy/references/server-patterns.md`](skills/other-engines/roblox-simulator-economy/references/server-patterns.md) |
+| 160 | ✓ | [`skills/other-engines/roblox-simulator-economy/scripts/balance.luau`](skills/other-engines/roblox-simulator-economy/scripts/balance.luau) |
+| 161 | ✓ | [`skills/other-engines/roblox-simulator-economy/scripts/economy_math.luau`](skills/other-engines/roblox-simulator-economy/scripts/economy_math.luau) |
+| 162 | ✓ | [`skills/other-engines/roblox-simulator-economy/scripts/test_economy_math.luau`](skills/other-engines/roblox-simulator-economy/scripts/test_economy_math.luau) |
+| 163 | ✓ | [`skills/other-engines/roblox-simulator-economy/SKILL.md`](skills/other-engines/roblox-simulator-economy/SKILL.md) |
+| 164 | ✓ | [`skills/other-engines/roblox-studio-workflow/agents/openai.yaml`](skills/other-engines/roblox-studio-workflow/agents/openai.yaml) |
+| 165 | ✓ | [`skills/other-engines/roblox-studio-workflow/references/studio-verification.md`](skills/other-engines/roblox-studio-workflow/references/studio-verification.md) |
+| 166 | ✓ | [`skills/other-engines/roblox-studio-workflow/SKILL.md`](skills/other-engines/roblox-studio-workflow/SKILL.md) |
+| 167 | ✓ | [`skills/other-engines/roblox-ui/agents/openai.yaml`](skills/other-engines/roblox-ui/agents/openai.yaml) |
+| 168 | ✓ | [`skills/other-engines/roblox-ui/assets/inventory-quality-test.model.json`](skills/other-engines/roblox-ui/assets/inventory-quality-test.model.json) |
+| 169 | ✓ | [`skills/other-engines/roblox-ui/assets/inventory-quality-test.project.json`](skills/other-engines/roblox-ui/assets/inventory-quality-test.project.json) |
+| 170 | ✓ | [`skills/other-engines/roblox-ui/references/input-navigation.md`](skills/other-engines/roblox-ui/references/input-navigation.md) |
+| 171 | ✓ | [`skills/other-engines/roblox-ui/references/responsive-layout.md`](skills/other-engines/roblox-ui/references/responsive-layout.md) |
+| 172 | ✓ | [`skills/other-engines/roblox-ui/SKILL.md`](skills/other-engines/roblox-ui/SKILL.md) |
+| 173 | ✓ | [`skills/README.md`](skills/README.md) |
+| 174 | ✓ | [`skills/unity/README.md`](skills/unity/README.md) |
+| 175 | ✓ | [`skills/unity/unity-animation/references/blend-trees-and-ik.md`](skills/unity/unity-animation/references/blend-trees-and-ik.md) |
+| 176 | ✓ | [`skills/unity/unity-animation/SKILL.md`](skills/unity/unity-animation/SKILL.md) |
+| 177 | ✓ | [`skills/unity/unity-build-pipeline/references/ci-build-script.md`](skills/unity/unity-build-pipeline/references/ci-build-script.md) |
+| 178 | ✓ | [`skills/unity/unity-build-pipeline/SKILL.md`](skills/unity/unity-build-pipeline/SKILL.md) |
+| 179 | ✓ | [`skills/unity/unity-csharp-scripting/references/lifecycle-and-coroutines.md`](skills/unity/unity-csharp-scripting/references/lifecycle-and-coroutines.md) |
+| 180 | ✓ | [`skills/unity/unity-csharp-scripting/scripts/check_unity_project.py`](skills/unity/unity-csharp-scripting/scripts/check_unity_project.py) |
+| 181 | ✓ | [`skills/unity/unity-csharp-scripting/SKILL.md`](skills/unity/unity-csharp-scripting/SKILL.md) |
+| 182 | ✓ | [`skills/unity/unity-input-system/references/rebinding.md`](skills/unity/unity-input-system/references/rebinding.md) |
+| 183 | ✓ | [`skills/unity/unity-input-system/SKILL.md`](skills/unity/unity-input-system/SKILL.md) |
+| 184 | ✓ | [`skills/unity/unity-navmesh/SKILL.md`](skills/unity/unity-navmesh/SKILL.md) |
+| 185 | ✓ | [`skills/unity/unity-physics/references/raycasting-and-joints.md`](skills/unity/unity-physics/references/raycasting-and-joints.md) |
+| 186 | ✓ | [`skills/unity/unity-physics/SKILL.md`](skills/unity/unity-physics/SKILL.md) |
+| 187 | ✓ | [`skills/unity/unity-scriptableobjects/references/event-channels.md`](skills/unity/unity-scriptableobjects/references/event-channels.md) |
+| 188 | ✓ | [`skills/unity/unity-scriptableobjects/SKILL.md`](skills/unity/unity-scriptableobjects/SKILL.md) |
+| 189 | ✓ | [`skills/unity/unity-tilemap-2d/SKILL.md`](skills/unity/unity-tilemap-2d/SKILL.md) |
+| 190 | ✓ | [`skills/unreal/README.md`](skills/unreal/README.md) |
+| 191 | ✓ | [`skills/unreal/unreal-behavior-trees/references/custom-bttask.md`](skills/unreal/unreal-behavior-trees/references/custom-bttask.md) |
+| 192 | ✓ | [`skills/unreal/unreal-behavior-trees/SKILL.md`](skills/unreal/unreal-behavior-trees/SKILL.md) |
+| 193 | ✓ | [`skills/unreal/unreal-blueprints/references/communication.md`](skills/unreal/unreal-blueprints/references/communication.md) |
+| 194 | ✓ | [`skills/unreal/unreal-blueprints/SKILL.md`](skills/unreal/unreal-blueprints/SKILL.md) |
+| 195 | ✓ | [`skills/unreal/unreal-cpp-gameplay/references/components-and-gc.md`](skills/unreal/unreal-cpp-gameplay/references/components-and-gc.md) |
+| 196 | ✓ | [`skills/unreal/unreal-cpp-gameplay/SKILL.md`](skills/unreal/unreal-cpp-gameplay/SKILL.md) |
+| 197 | ✓ | [`skills/unreal/unreal-enhanced-input/references/cpp-setup.md`](skills/unreal/unreal-enhanced-input/references/cpp-setup.md) |
+| 198 | ✓ | [`skills/unreal/unreal-enhanced-input/SKILL.md`](skills/unreal/unreal-enhanced-input/SKILL.md) |
+| 199 | ✓ | [`skills/unreal/unreal-niagara/SKILL.md`](skills/unreal/unreal-niagara/SKILL.md) |
+| 200 | ✓ | [`skills/unreal/unreal-packaging/SKILL.md`](skills/unreal/unreal-packaging/SKILL.md) |
+| 201 | ✓ | [`skills/web-engines/phaser-arcade-physics/references/bodies-and-collision.md`](skills/web-engines/phaser-arcade-physics/references/bodies-and-collision.md) |
+| 202 | ✓ | [`skills/web-engines/phaser-arcade-physics/SKILL.md`](skills/web-engines/phaser-arcade-physics/SKILL.md) |
+| 203 | ✓ | [`skills/web-engines/phaser-core/references/scene-flow.md`](skills/web-engines/phaser-core/references/scene-flow.md) |
+| 204 | ✓ | [`skills/web-engines/phaser-core/SKILL.md`](skills/web-engines/phaser-core/SKILL.md) |
+| 205 | ✓ | [`skills/web-engines/pixijs-rendering/references/assets-and-display.md`](skills/web-engines/pixijs-rendering/references/assets-and-display.md) |
+| 206 | ✓ | [`skills/web-engines/pixijs-rendering/SKILL.md`](skills/web-engines/pixijs-rendering/SKILL.md) |
+| 207 | ✓ | [`skills/web-engines/README.md`](skills/web-engines/README.md) |
+| 208 | ✓ | [`skills/web-engines/threejs-gltf-loading/references/loaders-and-animation.md`](skills/web-engines/threejs-gltf-loading/references/loaders-and-animation.md) |
+| 209 | ✓ | [`skills/web-engines/threejs-gltf-loading/SKILL.md`](skills/web-engines/threejs-gltf-loading/SKILL.md) |
+| 210 | ✓ | [`skills/web-engines/threejs-materials-lighting/references/materials-lights-table.md`](skills/web-engines/threejs-materials-lighting/references/materials-lights-table.md) |
+| 211 | ✓ | [`skills/web-engines/threejs-materials-lighting/SKILL.md`](skills/web-engines/threejs-materials-lighting/SKILL.md) |
+| 212 | ✓ | [`skills/web-engines/threejs-scene-setup/references/scene-graph.md`](skills/web-engines/threejs-scene-setup/references/scene-graph.md) |
+| 213 | ✓ | [`skills/web-engines/threejs-scene-setup/SKILL.md`](skills/web-engines/threejs-scene-setup/SKILL.md) |
+| 214 | ✓ | [`skills/workflows/game-jam/SKILL.md`](skills/workflows/game-jam/SKILL.md) |
+| 215 | ✓ | [`skills/workflows/itch-publish/references/butler-ci.md`](skills/workflows/itch-publish/references/butler-ci.md) |
+| 216 | ✓ | [`skills/workflows/itch-publish/SKILL.md`](skills/workflows/itch-publish/SKILL.md) |
+| 217 | ✓ | [`skills/workflows/prototype-fast/SKILL.md`](skills/workflows/prototype-fast/SKILL.md) |
+| 218 | ✓ | [`skills/workflows/README.md`](skills/workflows/README.md) |
+| 219 | ✓ | [`skills/workflows/steam-publish/references/steampipe-build-scripts.md`](skills/workflows/steam-publish/references/steampipe-build-scripts.md) |
+| 220 | ✓ | [`skills/workflows/steam-publish/scripts/check_steam_build.py`](skills/workflows/steam-publish/scripts/check_steam_build.py) |
+| 221 | ✓ | [`skills/workflows/steam-publish/SKILL.md`](skills/workflows/steam-publish/SKILL.md) |
 
 ---
 

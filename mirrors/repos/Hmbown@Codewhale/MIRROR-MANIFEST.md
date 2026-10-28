@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Hmbown/Codewhale` — 26 default patterns, 0 followed patterns, 84 file(s) materialized.
+Mirror of `Hmbown/Codewhale` — 26 default patterns, 0 followed patterns, 82 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Hmbown/Codewhale` — 26 default patterns, 0 followed patterns, 84 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 84 |
+| Files         | 82 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -115,34 +115,32 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 54 | ✓ | [`crates/tui/assets/skills/verify/SKILL.md`](crates/tui/assets/skills/verify/SKILL.md) |
 | 55 | ✓ | [`crates/tui/assets/skills/webapp-testing/SKILL.md`](crates/tui/assets/skills/webapp-testing/SKILL.md) |
 | 56 | ✓ | [`crates/tui/assets/skills/xlsx/SKILL.md`](crates/tui/assets/skills/xlsx/SKILL.md) |
-| 57 | ✓ | [`crates/tui/plugins/computer-use/skills/computer-use/SKILL.md`](crates/tui/plugins/computer-use/skills/computer-use/SKILL.md) |
-| 58 | ✓ | [`crates/tui/plugins/computer-use/skills/recording/SKILL.md`](crates/tui/plugins/computer-use/skills/recording/SKILL.md) |
-| 59 | ✓ | [`crates/tui/tests/fixtures/extension_host/native-dsh-composition/source/skills/receipt-check/SKILL.md`](crates/tui/tests/fixtures/extension_host/native-dsh-composition/source/skills/receipt-check/SKILL.md) |
-| 60 | ✓ | [`crates/tui/tests/fixtures/extension_host/raw-agent-presets-no-default/source/skills/a/preset-note/SKILL.md`](crates/tui/tests/fixtures/extension_host/raw-agent-presets-no-default/source/skills/a/preset-note/SKILL.md) |
-| 61 | ✓ | [`crates/tui/tests/fixtures/extension_host/raw-agent-presets-no-default/source/skills/b/preset-note/SKILL.md`](crates/tui/tests/fixtures/extension_host/raw-agent-presets-no-default/source/skills/b/preset-note/SKILL.md) |
-| 62 | ✓ | [`crates/tui/tests/fixtures/extension_host/raw-agent-presets/source/skills/a/preset-note/SKILL.md`](crates/tui/tests/fixtures/extension_host/raw-agent-presets/source/skills/a/preset-note/SKILL.md) |
-| 63 | ✓ | [`crates/tui/tests/fixtures/extension_host/raw-agent-presets/source/skills/b/preset-note/SKILL.md`](crates/tui/tests/fixtures/extension_host/raw-agent-presets/source/skills/b/preset-note/SKILL.md) |
-| 64 | ✓ | [`crates/tui/tests/fixtures/extension_host/raw-dsh-mcp/source/skills/mixed-check/SKILL.md`](crates/tui/tests/fixtures/extension_host/raw-dsh-mcp/source/skills/mixed-check/SKILL.md) |
-| 65 | ✓ | [`crates/tui/tests/fixtures/extension_host/skills-root/profiles/review-skills/quick-check/SKILL.md`](crates/tui/tests/fixtures/extension_host/skills-root/profiles/review-skills/quick-check/SKILL.md) |
-| 66 | ✓ | [`docs/examples/plugins/hello-codewhale/skills/hello/SKILL.md`](docs/examples/plugins/hello-codewhale/skills/hello/SKILL.md) |
-| 67 | ✓ | [`docs/skills/codew-release-qa-sweep/SKILL.md`](docs/skills/codew-release-qa-sweep/SKILL.md) |
-| 68 | ✓ | [`docs/skills/contributor-onboarding/SKILL.md`](docs/skills/contributor-onboarding/SKILL.md) |
-| 69 | ✓ | [`docs/skills/cw-dogfood/SKILL.md`](docs/skills/cw-dogfood/SKILL.md) |
-| 70 | ✓ | [`docs/skills/cw-gates/SKILL.md`](docs/skills/cw-gates/SKILL.md) |
-| 71 | ✓ | [`docs/skills/cw-handoff/SKILL.md`](docs/skills/cw-handoff/SKILL.md) |
-| 72 | ✓ | [`docs/skills/cw-land/SKILL.md`](docs/skills/cw-land/SKILL.md) |
-| 73 | ✓ | [`docs/skills/cw-orient/SKILL.md`](docs/skills/cw-orient/SKILL.md) |
-| 74 | ✓ | [`docs/skills/cw-slice/SKILL.md`](docs/skills/cw-slice/SKILL.md) |
-| 75 | ✓ | [`docs/skills/feedback/SKILL.md`](docs/skills/feedback/SKILL.md) |
-| 76 | ✓ | [`docs/skills/gh-assign-issues/SKILL.md`](docs/skills/gh-assign-issues/SKILL.md) |
-| 77 | ✓ | [`docs/skills/gh-close-issues/SKILL.md`](docs/skills/gh-close-issues/SKILL.md) |
-| 78 | ✓ | [`docs/skills/gh-compile-issues/SKILL.md`](docs/skills/gh-compile-issues/SKILL.md) |
-| 79 | ✓ | [`docs/skills/gh-credit-harvest/SKILL.md`](docs/skills/gh-credit-harvest/SKILL.md) |
-| 80 | ✓ | [`docs/skills/gh-file-issue/SKILL.md`](docs/skills/gh-file-issue/SKILL.md) |
-| 81 | ✓ | [`docs/skills/gh-find-prs/SKILL.md`](docs/skills/gh-find-prs/SKILL.md) |
-| 82 | ✓ | [`docs/skills/gh-treasure-hunt/SKILL.md`](docs/skills/gh-treasure-hunt/SKILL.md) |
-| 83 | ✓ | [`web/AGENTS.md`](web/AGENTS.md) |
-| 84 | ✓ | [`web/app/llms.txt/route.ts`](web/app/llms.txt/route.ts) |
+| 57 | ✓ | [`crates/tui/tests/fixtures/extension_host/native-dsh-composition/source/skills/receipt-check/SKILL.md`](crates/tui/tests/fixtures/extension_host/native-dsh-composition/source/skills/receipt-check/SKILL.md) |
+| 58 | ✓ | [`crates/tui/tests/fixtures/extension_host/raw-agent-presets-no-default/source/skills/a/preset-note/SKILL.md`](crates/tui/tests/fixtures/extension_host/raw-agent-presets-no-default/source/skills/a/preset-note/SKILL.md) |
+| 59 | ✓ | [`crates/tui/tests/fixtures/extension_host/raw-agent-presets-no-default/source/skills/b/preset-note/SKILL.md`](crates/tui/tests/fixtures/extension_host/raw-agent-presets-no-default/source/skills/b/preset-note/SKILL.md) |
+| 60 | ✓ | [`crates/tui/tests/fixtures/extension_host/raw-agent-presets/source/skills/a/preset-note/SKILL.md`](crates/tui/tests/fixtures/extension_host/raw-agent-presets/source/skills/a/preset-note/SKILL.md) |
+| 61 | ✓ | [`crates/tui/tests/fixtures/extension_host/raw-agent-presets/source/skills/b/preset-note/SKILL.md`](crates/tui/tests/fixtures/extension_host/raw-agent-presets/source/skills/b/preset-note/SKILL.md) |
+| 62 | ✓ | [`crates/tui/tests/fixtures/extension_host/raw-dsh-mcp/source/skills/mixed-check/SKILL.md`](crates/tui/tests/fixtures/extension_host/raw-dsh-mcp/source/skills/mixed-check/SKILL.md) |
+| 63 | ✓ | [`crates/tui/tests/fixtures/extension_host/skills-root/profiles/review-skills/quick-check/SKILL.md`](crates/tui/tests/fixtures/extension_host/skills-root/profiles/review-skills/quick-check/SKILL.md) |
+| 64 | ✓ | [`docs/examples/plugins/hello-codewhale/skills/hello/SKILL.md`](docs/examples/plugins/hello-codewhale/skills/hello/SKILL.md) |
+| 65 | ✓ | [`docs/skills/codew-release-qa-sweep/SKILL.md`](docs/skills/codew-release-qa-sweep/SKILL.md) |
+| 66 | ✓ | [`docs/skills/contributor-onboarding/SKILL.md`](docs/skills/contributor-onboarding/SKILL.md) |
+| 67 | ✓ | [`docs/skills/cw-dogfood/SKILL.md`](docs/skills/cw-dogfood/SKILL.md) |
+| 68 | ✓ | [`docs/skills/cw-gates/SKILL.md`](docs/skills/cw-gates/SKILL.md) |
+| 69 | ✓ | [`docs/skills/cw-handoff/SKILL.md`](docs/skills/cw-handoff/SKILL.md) |
+| 70 | ✓ | [`docs/skills/cw-land/SKILL.md`](docs/skills/cw-land/SKILL.md) |
+| 71 | ✓ | [`docs/skills/cw-orient/SKILL.md`](docs/skills/cw-orient/SKILL.md) |
+| 72 | ✓ | [`docs/skills/cw-slice/SKILL.md`](docs/skills/cw-slice/SKILL.md) |
+| 73 | ✓ | [`docs/skills/feedback/SKILL.md`](docs/skills/feedback/SKILL.md) |
+| 74 | ✓ | [`docs/skills/gh-assign-issues/SKILL.md`](docs/skills/gh-assign-issues/SKILL.md) |
+| 75 | ✓ | [`docs/skills/gh-close-issues/SKILL.md`](docs/skills/gh-close-issues/SKILL.md) |
+| 76 | ✓ | [`docs/skills/gh-compile-issues/SKILL.md`](docs/skills/gh-compile-issues/SKILL.md) |
+| 77 | ✓ | [`docs/skills/gh-credit-harvest/SKILL.md`](docs/skills/gh-credit-harvest/SKILL.md) |
+| 78 | ✓ | [`docs/skills/gh-file-issue/SKILL.md`](docs/skills/gh-file-issue/SKILL.md) |
+| 79 | ✓ | [`docs/skills/gh-find-prs/SKILL.md`](docs/skills/gh-find-prs/SKILL.md) |
+| 80 | ✓ | [`docs/skills/gh-treasure-hunt/SKILL.md`](docs/skills/gh-treasure-hunt/SKILL.md) |
+| 81 | ✓ | [`web/AGENTS.md`](web/AGENTS.md) |
+| 82 | ✓ | [`web/app/llms.txt/route.ts`](web/app/llms.txt/route.ts) |
 
 ---
 

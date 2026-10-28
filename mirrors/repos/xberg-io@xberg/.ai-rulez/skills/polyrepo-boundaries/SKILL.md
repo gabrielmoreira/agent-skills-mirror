@@ -1,7 +1,7 @@
 ---
 type: Playbook
 title: Polyrepo Boundaries
-description: Decide which xberg-io repository owns a cross-repository fix or API and coordinate compatible changes across sibling repos. Use when work spans sibling repositories, not for a self-contained Xberg edit.
+description: "Which xberg-io repo owns a cross-repo fix or API, and coordinating compatible sibling changes. Use when work spans sibling repositories."
 x-ai-rulez:
   kind: skill
   id: polyrepo-boundaries
@@ -12,8 +12,7 @@ x-ai-rulez:
 # Polyrepo boundaries
 
 Each sibling under the workspace root is an independent Git repository with its own history, release, CI, and
-governance. Never include changes from two repositories in one commit or assume pushing Xberg publishes a sibling
-dependency.
+governance. Pushing Xberg does not publish a sibling dependency.
 
 ## Ownership
 

@@ -19,6 +19,12 @@ Agent access: [companion](../agent-access-map/recovery.md).
   progress, and next action without requiring a raw-log interpretation.
 - `bounded-continuation`: `recovery/bounded-continuation` — supported interrupted work continues with preserved
   conversation context and bounded attempts, without blindly replaying tools.
+  Remote native runners can retain their active turn across main-server replacement
+  using the encrypted Postgres controller journal. See the five-minute contract
+  and qualification recipe in [remote continuity](../../doc/testing-native-remote-continuity.md#replacing-the-main-server).
+  Restart recovery respects live heartbeat preparation before workspace
+  synchronization finishes. PostgreSQL regressions cover unchanged ownership,
+  no duplicate dispatch, and later recovery after preparation leaves the registry.
 - `source-action`: `recovery/source-action` — source-scoped recovery actions remain attached to the task;
   independent repair work may have its own issue and return owner.
 - `exhaustion`: `recovery/exhaustion` — an exhausted infrastructure attempt offers ordinary Retry.
@@ -37,6 +43,9 @@ Agent access: [companion](../agent-access-map/recovery.md).
   for the same stop-and-save workflow before Retry admits another executor.
   Retry reconstructs missing preservation for historical failures only from an
   exact prepared source without a live finalization owner.
+  New messages and orphan cleanup can register missing preservation automatically
+  and wake the existing worker. Saved input still waits for verified stop and file
+  persistence, then enters ordinary admission once.
 - `unknown-outcome`: `recovery/unknown-outcome` — uncertain external side effects require inspection and
   an explicit decision, not automatic replay.
 - `user-continuation`: `recovery/user-continuation` — saved user messages after a stop are reconsidered once
@@ -75,12 +84,24 @@ fresh workspaces, bounded retries, historical adoption and service incidents.
 ### `run-detail`
 
 Open the agent's run (`/agents/:agentId/runs/:runId`) from activity or the task's
-run link. The run page hosts workspace recovery controls only for a failed run
+run link. The run page hosts workspace repair controls only for a failed run
 with error code `workspace_validation_failed` and a linked source task that still
 has a live `workspace_validation` recovery action. Use the source task for other
-stopped-run recovery checks.
+stopped-run recovery checks. Native workspace export failures also offer the
+read-only **Inspect recovery** control described in the
+[run diagnostic recipe](activity.md#activity-audit-1). It observes one selected
+source's recorded identity and does not retry, repair, or authorize execution.
 
 ### `operator-retry`
+
+The [connected-task regression](../../server/src/__tests__/chat-channels.integration.test.ts)
+uses HTTP Retry after an accepted board message fails before provider startup.
+It checks the canonical intent, same-user identity and actual queue dispatch,
+then repeats Retry after another contained preparation failure with the same
+source and a new certified successor;
+edited source, contradictory execution evidence and mismatched receipts refuse
+or wait. This local boundary probe deliberately stops before a provider call,
+so it does not establish hosted recovery of the task.
 
 Use the task's Retry action. It can create an isolated attempt after old execution
 is contained even when old-file preservation remains unresolved. Approval,
@@ -103,6 +124,15 @@ there must be one successor and no duplicate publication. A second reconnect
 after admission, changed App, revoked sender or changed repository must prevent
 dispatch. An unadmitted rejection keeps the follow-up available for another
 deliberate Retry. Historical deliveries must remain unchanged.
+Repeat with legacy input that has no saved App ID and was refused by a budget
+before acknowledgement. An earlier processed response from the same endpoint,
+conversation and agent can prove its App claim. Missing, late, unlinked or
+conflicting proof must reject Retry. Verify actual execution separately.
+At dispatch, confirm the admitted successor retains the same source and resolved
+continuation receipt. If it fails at Retry authorization before provider startup,
+use the next ordinary Retry against that newest failed run. It must retain the
+saved follow-up and create one successor; output, an allocated environment or an
+active controller must prevent treating that failure as never started.
 
 ### `post-stop-message`
 
@@ -196,6 +226,12 @@ uses the ten-second connection setup budget, clipped by the current lifecycle
 deadline. The cases also retain failed-welcome ticket fencing, identity checks,
 and reconnect replay without repeated provider effects. These transport cases
 do not establish hosted provider acceptance.
+
+The [native provider regression](../../packages/paperclip-runner/runner/crates/runner-core/tests/native_provider_backend.rs)
+sends malformed activity from a real ACPX sidecar process. It checks a structured
+transport error, one failed terminal, a closed session, and no provider reopening.
+It proves the error contract and retained failure boundary, not the cause of a
+historical provider outage or successful hosted task recovery.
 
 Active remote process supervision distinguishes a failed health read from a
 confirmed exit. The [executor tests](../../server/src/services/native-runtime/native-session-executor.test.ts)

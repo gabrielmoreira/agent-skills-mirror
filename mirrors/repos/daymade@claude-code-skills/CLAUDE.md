@@ -172,8 +172,9 @@ For customer-approved report forms, follow
 
 For Codex login, credential recovery, quota-query ownership or quota-driven continuation, enter
 [local-codex authentication](daymade-codex/local-codex/SKILL.md#authentication-chatgpt-oauth).
-For existing Ghostty Codex windows around an account switch, enter
-[ghostty-use's switch workflow](ghostty-use/SKILL.md#codex-account-switch).
+For existing unmanaged/legacy Ghostty Codex windows around a manual account switch, enter
+[ghostty-use's switch workflow](ghostty-use/SKILL.md#codex-account-switch). Minions
+`native_runtime` rows instead use the owning Account Manager, not that manual route.
 
 For rebuilding a paper form from an image, scan or screenshot as an editable
 XLSX with a printable layout, enter
@@ -246,7 +247,8 @@ For persistent Python service installation, environment reuse or startup, follow
 
 For rendered UI freshness, delayed editor/batch responses or deployment acceptance, enter
 [frontend-visual-qa](frontend-visual-qa/SKILL.md).
-For publication-wide clutter despite passing local checks, use its
+For publication-wide clutter or AI Slop despite passing local checks, including
+controls, deks and expanded summaries, use its
 [publication journey calibration](frontend-visual-qa/references/publication-journey-cases.md).
 For the pre-release ancillary-copy gate or density/layout comparisons, follow
 [information necessity](frontend-visual-qa/references/history-derived-checklist.md#information-necessity-before-layout).
@@ -495,6 +497,9 @@ owns complete Codex tool evidence, and
 owns indexed role/phrase filters. Keep commands and source-attribution rules in
 those owners rather than copying them here.
 
+For suspected batch or controller termination, enter
+[suspected termination evidence](daymade-claude-code/read-codex-history/SKILL.md#suspected-termination-evidence).
+
 For original Claude tool calls/results from a known Session, including a named
 Workflow subagent, use
 [read-claude-code-history's narrow evidence entry](daymade-claude-code/read-claude-code-history/SKILL.md#original-tool-callresult-evidence).
@@ -536,7 +541,7 @@ details belong in [the transport and receiver-evidence SOP](peer-message/referen
 Enter that SOP when diagnosing delayed Codex coordination or comparing live and queued receipts.
 Before asking about mutable ownership or a publication window, use the
 [fresh-state preflight](peer-message/references/coordination-and-learning-loop.md#51-发现别人的在制品先核实再问等一个有界窗口).
-For an inbound coordination envelope or a receive-integrity error, follow
+For an inbound coordination envelope, a native reply or a receive-integrity error, follow
 [receive, reply and closure](peer-message/references/local-coordination.md#收件回信和关闭).
 For oversized discovery responses or complete-title export, use its
 [discovery-output contract](peer-message/references/protocol-and-discovery.md#发现输出的范围).
@@ -554,14 +559,18 @@ Skill links.
 ### Ghostty Terminal Sessions
 
 For snapshotting, restoring or reconciling Claude Code / Codex sessions in Ghostty
-across reboots, enter [`ghostty-use`](ghostty-use/SKILL.md). Manual Codex account
+across reboots, enter [`ghostty-use`](ghostty-use/SKILL.md). Unmanaged/legacy manual Codex account
 switches and blocked/delegated reopening enter its
 [account-switch SOP](ghostty-use/references/codex-account-switch.md), including
-the original-set handoff and actual-continuation acceptance. Its bundled script owns
+the original-set handoff and actual-continuation acceptance. Minions `native_runtime`
+rows use the owning Account Manager instead. Its bundled script owns
 liveness classification and the paste-restore + auto-reconciliation loop; keep the
 storage-layout facts and macOS Ghostty limits in its references rather than here.
 For change-only automatic backups, use its
 [automatic workflow](ghostty-use/references/automatic-snapshots.md).
+
+For one-shot helper exits or attribution of an exited terminal, enter
+[helper terminals and original sessions](ghostty-use/SKILL.md#one-shot-helper-terminals-and-original-sessions).
 
 ### Codex Quota and Account Checks
 
@@ -589,11 +598,12 @@ owns candidate output. An unfulfilled
 reset promise, missing execution signals or deadline-bound quota work enters the Skill's
 [monitoring and stop contract](tibo-reset-codex/SKILL.md#监测轮从信息到可行动信号) and
 [output contract](tibo-reset-codex/SKILL.md#输出合同先给结论再交代边界).
-Before using a third-party date or Yes/No as a reset signal, check its source-post
-chronology (an operator-entered event cites no source post), whether it observes
-account quota changes or only classifies posts, and whether the monitor completed a
-plausible-time check. The Skill owns the
-detailed procedure.
+Before interpreting tracker timestamps, Yes/No labels or mixed X reply results,
+follow [signal readings](tibo-reset-codex/references/signal-readings.md).
+For recurring community queries, follow
+[community increments](tibo-reset-codex/references/forecast-feedback.md#社区增量读取);
+when preparing the next monitor invocation, follow
+[handoff carry-forward](tibo-reset-codex/references/forecast-feedback.md#交接结转).
 [Next-reset forecast](tibo-reset-codex/references/next-reset-forecast.md) owns
 date judgments; [forecast feedback](tibo-reset-codex/references/forecast-feedback.md)
 owns recording, review and withdrawal, with

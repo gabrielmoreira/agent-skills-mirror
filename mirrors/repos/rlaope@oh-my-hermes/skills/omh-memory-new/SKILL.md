@@ -82,7 +82,7 @@ Normal users use natural-language Hermes chat. `omh memory ...` commands are age
 
 Use when the user wants to assess one new project, product, or context fact for OMH-local memory. Capture a clear durable fact directly, or refuse or defer it.
 
-    Strong routing signals: `memory-new`, `new memory`, `project memory`, `product memory`, `remember this project`, `remember this product`, `do not save`, `do not save this token`, `memory capture`, `capture memory`, `save project memory`, `save product memory`, `project context memory`, `product context memory`, `add memory candidate`, `프로젝트 메모리 저장`, `제품 메모리 저장`, `프로젝트 기억`, `제품 기억`, `새 기억`, `기억 추가`, `메모리 캡처`
+    Strong routing signals: `memory-new`, `new memory`, `project memory`, `product memory`, `remember this project`, `remember this product`, `do not save`, `do not save this token`, `memory capture`, `capture memory`, `save project memory`, `save product memory`, `project context memory`, `product context memory`, `add memory candidate`, `프로젝트 메모리 저장`, `제품 메모리 저장`, `프로젝트 기억`, `제품 기억`, `새 기억`, `기억 추가`, `메모리 캡처`, `запомни это`, `сохрани в память`, `добавь в память`, `запиши в память`, `запомни на будущее`
 
 ## Catalog Metadata
 

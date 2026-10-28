@@ -11,6 +11,12 @@ can't reproduce, needs a design decision, too big for one focused change), the i
 investigation note instead. A third party's linked PR ends it only when it survives a full review.
 The skill lists the exact outcomes.
 
+A note is where the work ends because it can't go further here, not where it hands the next step
+back. "The next step should be adding logs to the dispatcher" describes work you can still do on
+this runner, so it isn't an outcome: add the logs, run it, and report what they showed. Bail when
+you've concluded you can't fix the issue, and say why; don't bail while you can still make progress
+towards a fix.
+
 ## Before you start an issue
 
 Read the whole thread with the GitHub MCP tools: the issue, every comment and its labels. The
@@ -53,9 +59,13 @@ already work), and a "[Bug]" is sometimes expected behaviour.
   finish with a PR. Otherwise write a note that surfaces the real design question. For small asks
   ("fail loudly instead of silently"), the best note includes an acceptance test: one spec asserting
   today's behaviour, with the desired behaviour alongside as a `fixme`.
-- **Upstream / environment**: a genuinely external owner, such as Node, a browser engine or a
-  website's own server config. Find the real owner and point at the real fix path in a note; don't
-  brute-force a repro. The Playwright family is **not** upstream, it's us: `@playwright/mcp` (its
+- **Browser bug**: the root cause is in Chromium, Firefox or WebKit, upstream or in the patches we
+  carry in `microsoft/playwright-browsers`. Reproduce it like a bug, and make sure it is the engine
+  and not Playwright's handling of it: browser divergence, a repro outside Playwright, or the
+  engine's own code. It ends in a browser bug report; the skill says how.
+- **Upstream / environment**: another genuinely external owner, such as Node or a website's own
+  server config. Find the real owner and point at the real fix path in a note; don't brute-force a
+  repro. The Playwright family is **not** upstream, it's us: `@playwright/mcp` (its
   source is in `microsoft/playwright` under `packages/playwright-core/src/tools/mcp/`), the CLI,
   `playwright-vscode`, `-python`, `-java`, `-dotnet`. Never tell a reporter to refile in another
   Playwright repo; that's internal routing, not their problem.
@@ -192,7 +202,8 @@ miss. In short:
   substitute individual checks.
 
 - **Root cause, not symptom.** Understand why it fails before changing code. A guard that hides the
-  failure is not a fix.
+  failure is not a fix. When you don't understand it yet, instrument the code and run it here; a
+  hypothesis in a note is not a result.
 - **The condensed repro becomes the regression test,** added to an existing test as described in
   [Condense the repro into a test](#condense-the-repro-into-a-test). Watch it fail without the fix
   and pass with it; a test that never failed proves nothing. Check this again right before you
@@ -217,9 +228,10 @@ miss. In short:
   and report that instead. A third-party PR you reviewed and found short of flawless doesn't block
   yours.
 
-One PR per issue. If the right fix needs an API or design decision, is bigger than one focused
-change, or lives in browser patches (`microsoft/playwright-browsers`), stop and write a note with the
-repro, the root cause and the fix you'd suggest.
+One PR per issue. If the right fix needs an API or design decision or is bigger than one focused
+change, stop and write a note with the repro, the root cause and the fix you'd suggest. If it lives
+in a browser or in its patches (`microsoft/playwright-browsers`), it's a browser bug report; the
+skill says how.
 
 ## Review a third-party PR
 
@@ -282,11 +294,20 @@ Write up what you found as a comment for the issue. The skill says what goes in 
 and how it gets posted.
 
 **Content.** Lead with a status that fits the issue: for a bug, reproduced / fixed-on-latest /
-cannot-reproduce / not-a-bug / duplicate of #N; for other kinds, a short verdict (already possible,
-valid request, upstream and owned by X). Back it with evidence: the exact versions and shas you
-tested, PRs and docs. For bugs, include the condensed repro and everything you ran, meaning the full
-matrix of browsers, versions and variations, not only the run that failed. That way the reader can
-trust the verdict without re-checking it. Call out any browser divergence.
+cannot-reproduce / not-a-bug / duplicate of #N / browser bug; for other kinds, a short verdict
+(already possible, valid request, upstream and owned by X). Back it with evidence: the exact
+versions and shas you tested, PRs and docs. For bugs, include the condensed repro and everything
+you ran, meaning the full matrix of browsers, versions and variations, not only the run that
+failed. That way the reader can trust the verdict without re-checking it. Call out any browser
+divergence.
+
+**No next steps you could take yourself.** A note that ends in "the next step would be to add
+logging to X", "someone should bisect this" or "worth checking whether Y" is unsatisfactory: that
+step is yours, and the runner is the place to take it. Add the logging, run the bisect, read the
+engine's source, try the variation, and come back with what it showed. Write the note only once you
+can't make progress any more: the repro needs something the runner doesn't have, the fix needs a
+design decision, the bug is in a browser, or every lead you had is exhausted. Then say what blocked
+you as a fact, with what you tried, not as a suggestion for someone else.
 
 **Voice.** The workflow posts the note as `github-actions`, so it speaks as the Playwright bot. Write
 it as [bot-voice.md](bot-voice.md) says: announce the bot in one line, verdict first, everything

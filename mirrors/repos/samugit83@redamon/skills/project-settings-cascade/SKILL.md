@@ -102,13 +102,15 @@ here rather than restating it. For the surrounding tool wiring, see
 | Layer | File | Form |
 | --- | --- | --- |
 | DB / schema | [webapp/prisma/schema.prisma](../../webapp/prisma/schema.prisma) | `katanaTimeout Int @default(3600) @map("katana_timeout")` |
-| Python default | [recon/project_settings.py:21](../../recon/project_settings.py#L21) `DEFAULT_SETTINGS` (or [agentic/project_settings.py](../../agentic/project_settings.py) `DEFAULT_AGENT_SETTINGS`) | `'KATANA_TIMEOUT': 3600` |
-| Fetch mapping | [recon/project_settings.py:863](../../recon/project_settings.py#L863) `fetch_project_settings` (or `fetch_agent_settings` in the agent module) | `settings['KATANA_TIMEOUT'] = project.get('katanaTimeout', DEFAULT_SETTINGS['KATANA_TIMEOUT'])` |
+| Python default | [recon/project_settings.py](../../recon/project_settings.py) `DEFAULT_SETTINGS` (or [agentic/project_settings.py](../../agentic/project_settings.py) `DEFAULT_AGENT_SETTINGS`) | `'KATANA_TIMEOUT': 3600` |
+| Fetch mapping | [recon/project_settings.py](../../recon/project_settings.py) `fetch_project_settings` (an agent setting instead gets an `AGENT_SETTING_COLUMNS` entry in the agent module, which `fetch_agent_settings` reads; a key missing there is never loaded) | `settings['KATANA_TIMEOUT'] = project.get('katanaTimeout', DEFAULT_SETTINGS['KATANA_TIMEOUT'])` (agent: `'OPENAI_MODEL': 'agentOpenaiModel'`) |
 | Registry | [recon_settings/registry.yaml](../../recon_settings/registry.yaml) | `katanaTimeout: { tool: katana, runtime_key: KATANA_TIMEOUT, unit: seconds, phase: resource_enum, traffic: active, roe_capped: false, mcp: settable, bounds: {...}, meaning: ... }` |
-| Served defaults | [recon_orchestrator/api.py](../../recon_orchestrator/api.py) `/defaults` | nothing to do: the payload and its exclusions are REGISTRY QUERIES now. A key with no column is excluded by `source: internal`, and the column name comes from the registry rather than a snake-to-camel guess (which could not recover an intercap, so nine settings never reached the form). |
+| Served defaults | [recon_orchestrator/api.py](../../recon_orchestrator/api.py) `/defaults` | nothing to do: the payload and its exclusions are REGISTRY QUERIES now. A key with no column is excluded by `source: internal`, and the column name comes from the registry rather than a snake-to-camel guess (which could not recover an intercap, so nine settings never reached the form). The agent's `/defaults` ([agentic/api.py](../../agentic/api.py)) names each default after its `AGENT_SETTING_COLUMNS` column, so the fetch-mapping entry covers it; there is no prefix rule. |
 | Frontend | the tool's `ProjectForm` section component | control with an `onChange` fallback equal to the default. Its `min`/`max` must not be WIDER than the registry bounds, or the form accepts a value the save refuses. |
 
-Agent-only settings use `DEFAULT_AGENT_SETTINGS` + `fetch_agent_settings`; recon-only
+Agent-only settings use `DEFAULT_AGENT_SETTINGS` + `AGENT_SETTING_COLUMNS` (read by
+`fetch_agent_settings`, checked against Prisma by
+[agentic/tests/test_agent_setting_columns.py](../../agentic/tests/test_agent_setting_columns.py)); recon-only
 use `DEFAULT_SETTINGS` + `fetch_project_settings`. There is no shared module.
 
 ## The registry reaches three services on three schedules

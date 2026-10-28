@@ -1,6 +1,6 @@
 ---
 name: loopx-pr-review
-description: Use for `/loopx-pr-review` or evidence-backed PR queue review. Run `loopx pr-review` first, execute the capability-owned review plan for each selected exact head, then publish complete reviews with English structure, concise Chinese explanation and an English verdict matching the verified findings. Use `loopx-pr-merge` for approval or merge actions.
+description: Use for `/loopx-pr-review` or evidence-backed PR queue review. Run `loopx pr-review` first, execute the capability-owned review plan for each selected exact head, then publish complete reviews primarily in Chinese, with accurate English technical terms and a concise English verdict matching the verified findings. Use `loopx-pr-merge` for approval or merge actions.
 ---
 
 # LoopX PR Review
@@ -141,14 +141,17 @@ bypass never overrides this gate, and author fallback needs user authority.
 
 Use each PR's current `review_template`, `reviewer_declaration` and
 `completion_gate.required_final_sections` to render a standalone full-PR review.
-Use the packet's bilingual headings (`动机 / Motivation`, `改动思路 / Approach`,
-`具体改动 / Changes`, `对主干的风险 / Risks`, `我的整体评价 / Verdict`), with short
-Chinese explanations and useful English structure throughout the body. Existing
-Chinese-only anchors remain valid; older installed checkers need those anchors
-with English subheadings until the shared parser is upgraded. Keep informative
-English finding titles and Problem / Evidence / Impact / Fix paragraphs, and
-PASS / FAIL / UNVERIFIED validation states. Avoid mechanical sentence-by-sentence
-translation, language ratios, dense paragraphs and repeated conclusions.
+Write the main narrative, problem analysis, evidence and conclusion in connected
+Chinese prose. Retain accurate English technical terms such as head, diff,
+checkpoint and resume where they help; explain unfamiliar terms once. The packet's
+bilingual headings (`动机 / Motivation`, `改动思路 / Approach`, `具体改动 / Changes`,
+`对主干的风险 / Risks`, `我的整体评价 / Verdict`) and short finding labels can aid
+navigation. Existing Chinese-only anchors remain valid and are the fallback for
+older installed checkers; this does not change the body's primary language.
+Optional Problem / Evidence / Impact / Fix labels organize Chinese explanations.
+Use PASS / FAIL / UNVERIFIED validation states. Do not expand English labels into
+long English passages or duplicate the analysis in both languages. Avoid language
+ratios, dense paragraphs and repeated conclusions.
 A findings-only or blocker-only body is incomplete. Cover every changed surface and key symbols according to the current
 plan, not just the main finding. Open with the visible `body_marker` matching
 `result.reviewer`. The **英文简短结论** starts with `English verdict:` and the bare

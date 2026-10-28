@@ -157,6 +157,13 @@ awaiting explicit requester consumption. The same read model is returned by
 private agenda contains current-purpose excerpts and explicit links, not source
 transcripts, result bodies or receiver rationale.
 
+Outgoing requests to an original project conversation use the same typed address
+reader as explicit peer returns. The agenda retains that conversation recipient
+and its current revision without inventing a Goal/Agent receiver. A changed
+requester or missing/conflicting original return route keeps coverage incomplete.
+Reading a result does not consume it, and observing the agenda never dispatches
+work or acknowledges a request.
+
 Each item names its request, receiving/source Agent where recorded, current
 revision, related Todo ids and the remaining receipt step. Counts are request
 records (`count_unit=request`), not distinct tasks: follow-up requests can link

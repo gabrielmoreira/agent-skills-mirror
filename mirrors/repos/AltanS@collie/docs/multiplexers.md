@@ -425,17 +425,19 @@ screen that changes between Collie's two reads, or a probe character that failed
 Backspace took back out of a box Collie read clean again. Such a message goes after five free polls over ten
 seconds, or after a turn Collie sees. A command there is still refused, and so is a send on a
 screen you confirmed with Type here. A send on a pane with no profile is never held. Collie keeps the text and shows a card that floats over the bottom of the terminal view: "Queued.
-Sends when the turn ends." The card shows the text and a Cancel button. Collie sends it after the turn ends, once the
+Sends when the turn ends." On an agent whose version Collie could not read, the card says so and
+points to `collie doctor`: Collie types into a running turn only on a version the agent reported. The card shows the text and a Cancel button. Collie sends it after the turn ends, once the
 pane reads free on two polls in a row, oldest first. Each later held send waits for the turn that
 the send before it started. If no turn shows, it goes after five free polls over ten seconds. A held
-command on pi, OMP or Codex sends Enter, and there Enter steers a turn. Such a command waits for a
-turn Collie sees, and so does any held command on an agent whose version Collie could not read. OMP
+command on pi, OMP or Codex sends Enter, and there Enter steers a turn. Such a command waits until
+the turn has ended, and so does any held command on an agent whose version Collie could not read: two
+free polls at least two seconds apart, or five over ten seconds if Collie saw no turn at all. OMP
 runs `/goal` at once during a turn, so Collie sends `/goal`, `/goal pause` or `/goal resume` right
 away with Enter. It never holds them, and they do not wait behind other held sends. A
 later message on that pane waits behind the held ones. A held text lasts 30 minutes, a held command
 10 minutes. After that the row says the message was not sent, and offers Resend. A walky talky
 message is also held over a draft, never typed into it, and its hold lasts 60 minutes
-([Walky talky](walky-talky.md)). Your own send over a draft is still refused, with Append and Replace. Some commands never
+([Walky talky](walky-talky.md)). Your own send over a draft is still refused, with Append and Replace. Before Collie refuses, adds to or clears a draft, it types one probe character and removes it, to prove that the box takes keys; when the box on the screen does not take keys, the send is refused and nothing is deleted. Focus that pane on the desktop or resize it, so the agent draws its screen again, then send again. Some commands never
 wait, and Collie refuses them during a turn. On Claude Code these are `/clear`, `/exit`, `/quit`,
 `/logout`, `/resume`, `/branch` and every `!` line. On Codex these are `/quit`, `/exit`, `/new`,
 `/resume`, `/logout` and every `!` line. On Hermes these are `/exit`, `/quit`, `/clear`, `/new`,
@@ -640,6 +642,9 @@ Collie checks that the character lands in the box, then removes it.
   OMP lists a queued message in an `After yield` block above the box.
   OMP can show a dim completion after your text.
   A send that meets one stops before the send key and leaves the text in the box.
+  In the open box, OMP shows at most 17 rows of a long message, the last ones. Collie then checks those
+  rows against the end of what it typed, and the receipt says so.
+  Replace refuses a draft that fills those 17 rows, because Collie cannot see its start. Nothing is deleted.
 
 - **Grok** draws a rounded box with a `❯` prompt row and a row of key hints under it.
   A tall draft shows a scroll bar at the right edge of the box.

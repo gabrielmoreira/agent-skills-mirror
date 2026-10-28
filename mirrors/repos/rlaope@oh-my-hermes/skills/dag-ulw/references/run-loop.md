@@ -5,10 +5,12 @@
 1. `omh_dag action=define run=<id> name=<short name> goal=<criteria> nodes=[...]`. A refusal names what to fix:
    a cycle, an unknown or self dependency, two nodes writing one path with no edge between them, more than
    48 nodes, an empty graph, a node whose prompt names none of TASK / DELIVERABLE / SCOPE / VERIFY /
-   STOP WHEN, and in a finite one-shot session (`hermes chat -q`) more nodes than
-   `delegation.oneshot_max_children` (default 2, 0 = unlimited; a value that is not a positive integer
-   uses the default; interactive sessions are never capped). If the host's one-shot detector itself
-   cannot be read, define is refused as `oneshot_detection_unavailable` rather than run uncapped.
+   STOP WHEN, and in a finite one-shot session (`hermes chat -q`) more nodes than the budget REMAINING in
+   this process: `delegation.oneshot_max_children` (default 2, 0 = unlimited; a value that is not a positive
+   integer uses the default; interactive sessions are never capped) minus the children already delegated
+   this run, including non-dag `delegate_task` calls. If the host's one-shot detector itself
+   cannot be read, define is refused as `oneshot_detection_unavailable` rather than run uncapped;
+   `ready`, `settle`, `repair` and `extend` refuse it the same way, and the record is untouched.
    Lint is advice: a partial prompt-marker set, no verification node, a producer the verification node does
    not depend on, every node `deep`, more than one `ultrabrain`, and a graph of 5+ nodes whose critical
    path is at least 80% of it (`serial_graph`: split it into parallel lanes where the work allows).
@@ -17,7 +19,12 @@
    `delegate_task` with its `tasks` unchanged. The goal ends with `[dag:<run>/<node>]`; that marker is how
    OMH ties the child to its node. A node after a repaired one is told to read the repair's handoff files.
 3. `calls` never exceeds the free background slots (`slots.free`): a call past them would run blocking.
-   `held_for_slots` lists ready nodes left for the next turn.
+   In a one-shot session, `calls` also never carries more tasks than the remaining one-shot budget;
+   nodes past it are listed in `held_for_slots`, and `slots.oneshot` shows the limit, the spent count
+   and the remaining. When the budget is spent, no call goes out: the held nodes come back as
+   `for_parent: [...]` and the say tells you to do each node yourself, write its handoff at the path
+   the say gives, and settle it, without `delegate_task` -- those nodes are never offered to a child again.
+   `held_for_slots` also lists ready nodes left for the next turn when no free background slot remains.
 4. End the turn with one status line. Each completion re-enters as a new turn.
 5. On a completion, read the node's handoff file, then `omh_dag action=settle node=<id> outcome=<...>`.
    `accepted` is refused while the handoff file is missing or when Hermes reported the child failed.
@@ -45,6 +52,8 @@ Verify, repair, extend, verify. The verification node runs the real command. Whe
   holds.
 - a node gets at most two repair cycles. After that the run state is `stopped`: report what is still
   open, and do not repair again.
+- In a one-shot session, repair and extend are refused as `oneshot_budget_exceeded` when they would need
+  more children than the remaining one-shot budget; the record is not changed by a refused call.
 
 When every node passed (`state: done`), check each node against its SCOPE and the goal criteria. When
 work is missing:

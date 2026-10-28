@@ -41,6 +41,45 @@ at the crown gets only the quarter — pass `--headroom 0.26` or more for an ove
 back before the strike); `--facing left` mirrors the wide layout. A still whose corners are not one flat colour
 is refused — a non-flat background cannot be extended without guessing.
 
+**A walk or run from the side keeps room around its still (`GAIT_ROOM`).** Filmed from the side, the stride
+reaches in front of the standing silhouette; behind it, the stride and a part that trails behind the body (a big
+tail, a long coat) swing past it, in the picture's plane. When either meets the left or right edge, `video-frames` refuses the
+clip ([section 3](#3-frames--extract-key-check-the-edges)). So the `walk` and `run` rows read the still's room
+(`canvas.gait_room`) when the view is `side`. The room is the empty columns between the silhouette and the left and right edges of the square the row
+makes of the still (`max(w, h)` wide, the still centred, so a still taller than it is wide gains room on either
+side). It is counted on two sides: in front of the subject (the way it faces) and behind it, each as a fraction of
+the silhouette's height. The silhouette is every pixel of the normalized still that is not the exact key
+(`canvas.subject_box`; on a `--key white` base, every pixel more than the corner tolerance off the corner colour).
+Each side keeps its `GAIT_ROOM`: 0.15 of the silhouette's height in front, for the stride, and 0.25 behind,
+for the stride and whatever trails behind the body. A side that keeps less gains the whole pixels it lacks, and the square grows by the same number of rows, all of them above the still. So the frame stays
+square and the still is never scaled. A still that leaves the room on both sides gets the canvas it got before, byte for byte.
+
+The square is widened rather than moved to the 16:9 wide row: a walk is filmed at 1:1, and the wide row
+(`GAIT_WIDE`, 0.28 in front and 0.20 behind) films a square still's subject at about two thirds of the height a
+1:1 clip gives it. Only the side view is read (`ROOM_VIEWS`): a diagonal walk strides half into the picture, and
+a front or back walk wholly into it. A run is read at the walk's bounds.
+
+The report's `room` records the view, the silhouette box on the still, `front_px` / `behind_px` and their
+fractions `front` / `behind`, `need` / `need_px` (each side's bound),
+`short` (the sides under the bound, front first), `added_px`
+(the columns each side gained) and `added_rows` (the rows the square gained above the still). A widened canvas's
+`why` says why. `video-set` passes each item's view and copies
+`room` into the item's `canvas` (with the `why` when the square was widened). `video-canvas` reads the room only
+with `--view side`; without `--view`, the canvas is the state's row as before. `--shape square` keeps the
+still's own square whatever its room, `--shape wide` frames a walk or run on `GAIT_WIDE` as before, and
+`--fit tight` adds no room.
+
+What the room takes from sprite-gen, and what is new:
+
+| Part | Taken from | Why |
+|---|---|---|
+| The silhouette on the still | `canvas.subject_box`: the reading `--fit tight` makes of the subject's rows, widened to its columns (`subject_rows` became `subject_box`; tight reads its rows from it, byte for byte) | One reading of where the subject is on a still the canvas normalized |
+| The background it is read on | `canvas.normalize_key`: the `cutout` matte's alpha-0 set repainted to the exact key, the pixels `video-frames` erases | The silhouette is what the clip's frames will keep |
+| The square it is read in, and the placement | The square row of `pad_canvas` (`max(w, h)`, the still centred and standing on the bottom edge) | The room is counted in the frame the clip is made from |
+| The view names | `handedness.VIEWS`, which `video-prompt --direction` and `video-set --base` take | One vocabulary for the view |
+| The gate the room keeps the clip off | `video-frames`' edge-contact check (`frames.edge_contact`, `frames.classify_edge_contact`), unchanged | The canvas cannot see the clip; the gate still judges it |
+| Written new: `gait_room`, `GAIT_ROOM`, `ROOM_VIEWS` | — | No engine function reads, before a clip exists, the room a motion needs around a still. `frames.extract.safe_area_fit` judges a finished frame's size against a sheet cell's safe area, a centred fit rather than the room on one side of a still. The edge check reads frames once the clip exists. |
+
 **`--fit tight` adds no room.** It is the framing for a fixed body height at a low
 clip resolution: the room above makes the subject a small part of the clip, and a
 `--body-height` target then has to upscale it. A motion that leaves the frame is clipped: pair it
@@ -123,11 +162,12 @@ rest, stage by stage, with the verbs `video-set` runs: `video-prompt` prints the
 would send, `video-frames` and `video-loop` cut each mp4 the agent saved, and for a walk or run cut in
 two or more directions `video-cycle-align` gives them one cycle length, each turned to start on a
 foot strike ([loop repair](loop-repair.md) section 4). `video-set` itself is not run on this route, so
-what it does for a set happens only when you run it. What crosses the boundary is a PNG, a prompt and
+what it does for a set happens only when you run it: `--view` names the still's view to `video-canvas`, as `video-set`
+does, so a side walk keeps its room ([section 1](#1-canvas--the-input-frame-decides-the-output-frame)). What crosses the boundary is a PNG, a prompt and
 an mp4.
 
 ```bash
-sprite-gen video-canvas --still still.png --state walk --facing right --out item/canvas.png --report item/canvas.report.json
+sprite-gen video-canvas --still still.png --state walk --facing right --view side --out item/canvas.png --report item/canvas.report.json
 sprite-gen video-prompt --direction side --state walk --facing right --no-last-frame --json > item/prompt.json
 # the agent, with its ZCRE tools and grok-imagine-video-1.5: prepare_upload for item/canvas.png and the
 # transfer it describes, query_zcre upload to confirm it, query_zcre quote with prompt.json's prompt and
@@ -326,13 +366,15 @@ Pass `--decontam off` to keep the matte as it is. Method, guards and measurement
 
 ## 3b. Canvas shape for raised limbs and wide costumes
 
-`video-set` picks the canvas from the state row alone. Two things that are not a jump or
+`video-set` picks the canvas from the state row, and for a walk or run from the side from its
+still's room too ([section 1](#1-canvas--the-input-frame-decides-the-output-frame), `GAIT_ROOM`). Two things that are not a jump or
 an attack still leave a 1:1 frame: limbs raised in a celebration, and a costume that is
 wider than the body (a skirt, a veil, a held object). Both fail `video-frames`'s
 edge-contact check — the clip was made, the frames were cut, and the run stops at the
 gate. The state table now routes `cheer`, `wave` and `celebrate` to the wide canvas, and
 `video-set --shape wide` forces it for every state of a batch when the costume is the
-reason.
+reason. A side walk or run whose still leaves a big tail or a wide costume too little room no longer needs
+`--shape wide`: its square is widened by the room the still lacks.
 
 ## Video Processing Pipeline and Terminal Gate
 

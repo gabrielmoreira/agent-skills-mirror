@@ -221,6 +221,10 @@ A Switch button sits at the belt's right end and opens the pane switcher. It dra
 alone, behind a hairline, and carries no word. A drag up, anywhere on the belt, opens the same
 switcher. A sideways drag scrolls the belt instead.
 
+The agents mark left of the Files button counts the pane's running subagents. For omp and Gentle
+Shell it counts their background jobs only while the pane's Chat is open on a phone; the Screen view
+does not count them.
+
 While the text box holds text or an attachment, an X sits at the belt's right end too, left of the
 Switch button. One tap empties the box and its saved draft, and sends nothing to the pane. The X then
 becomes Undo, which puts the text and the attachments back. Undo stays until your next act: a
@@ -265,6 +269,16 @@ three things under the box:
 | A refusal | Nothing was pressed. The sentence says why. |
 
 If the stop key opened a dialog instead, Collie says so and points you to its card.
+
+Some agents, OMP among them, put a queued message back into their input box when you stop the turn.
+When Collie sees it there right after the key, the receipt says so, for example "Stopped. 1 queued
+message is back in the agent as a draft." In Chat the message moves to a **Back in the box** card.
+Messages that came back together share one card.
+
+The card has two buttons, and both read the box again first. **Send** sends the draft only when the
+turn is idle and the box holds exactly that text. **Discard** empties the box only when it still
+holds that text; if you changed it, Discard removes the card and presses nothing. While the draft
+stands, a new message is refused, and the refusal points you to the card.
 
 Collie refuses before it presses when pressing could do harm:
 
@@ -859,6 +873,17 @@ mirror's layout holds. It catches high-confidence shapes only; the limits are in
 In a crew, the lead also masks the text its members send, by its own setting. A member's text
 reaches your phone unmasked only when the lead and that member both set `COLLIE_REDACT=off`.
 
+## Report a problem
+
+When three sends in a row on one pane fail for a reason that points at Collie, a card above the
+reply box offers to report it. **Settings → System → Offer a report when sending fails** turns the
+card off for that device (stored in the browser, on by default). The pane menu's **Report a problem**
+and the **Report a problem** button on the same card in Settings still open the sheet.
+
+Nothing leaves the phone until you tap **Open on GitHub** or **Copy report**, and Collie holds no
+GitHub token. What the report holds, and how to read it before you send it, is in
+[Troubleshooting](troubleshooting.md).
+
 ## Multi-session
 
 By default, one Collie instance serves every Herdr session it finds.
@@ -906,6 +931,8 @@ Each source reads a different thing.
 > **Note.** OpenCode Go and Grok follow the shape other tools use for these endpoints, and no live account has checked them yet. That is why they are off until you name them. pi and OMP show no windows here yet.
 
 `collie doctor` shows every source in its `account-windows` row: on or off, the file it reads and the host it asks. [Terminals](multiplexers.md#collie-writes-hooks-into-claudes-own-settings) has the statusLine road.
+
+The context dot needs no setting. For pi, OMP, Codex and OpenCode, Collie reads the tokens of the last turn from the session log. It reads the model's window from Codex's log, or from the harness's own model list on disk (pi's `models-store.json`, OMP's `models.db`, OpenCode's `~/.cache/opencode/models.json`). A model that list does not name gets no context dot; the model name still shows. The tag also shows the session's cost in dollars after the dots when the harness reports one: Claude Code through the wrapped status line, pi, OMP and OpenCode from their logs. Codex has none, so its tag shows no cost.
 
 ## Dark mode / light mode
 
@@ -1046,6 +1073,15 @@ When you queue a message while Claude Code works, Chat shows it on a **Waiting t
 the card's **Send now** button sends the whole queue to the running turn at once. Only Claude Code
 offers it, because the button presses Ctrl+Enter, the key that agent defines for this. The button is
 hidden on a read-only device and on a saved copy.
+
+Most other agents, OMP and pi among them, write nothing about a queued message into their log until
+the turn ends. For them Chat draws the messages Collie itself queued on the same **Waiting to send**
+card, until the agent's log shows each as a prompt. That card has no button. Collie cannot take a
+message out of the agent's queue, so there is no Cancel: to take it back, stop the turn.
+
+When Collie can no longer tell where a queued message went, the card says **Not confirmed** instead
+of disappearing. That happens when the agent sits idle with an empty box twice in a row, or after 30
+minutes without a running turn. Its **Discard** button removes the card and sends nothing.
 
 The display gear has a **Stretchtext replies** switch, off by default. With it on, Chat, the full reply card and History show a reply written with the cc-stretch plugin as its short form, and a tap on a phrase opens it. A `{{name}}` without a bar shows as `name`.
 

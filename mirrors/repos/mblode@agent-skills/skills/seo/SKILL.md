@@ -1,6 +1,7 @@
 ---
 name: seo
 description: Audits and fixes technical SEO, researches search demand, creates content briefs, and measures SEO, AEO and GEO performance. Use when asked to "audit SEO", "fix indexing", "improve AI visibility", "do AEO or GEO", "check keyword volume", "write an SEO brief", or "why did organic traffic drop". For Mintlify Agent Score, AFDocs, or Is Agentic reports use agent-ready. For writing the article use ghostwriter; for visual redesign use ui-design.
+compatibility: The prompt panel script needs Python 3.9+ and provider API keys in the environment.
 ---
 
 # SEO
@@ -47,19 +48,19 @@ For AI visibility, the owner builds crawl access, content and extractable struct
 |---|---|
 | [references/audit.md](references/audit.md) | Crawling, diagnosing or prioritizing a site audit; canonicals, redirects, exclusions and programmatic pages; hreflang; CDN, response headers or preview environments affecting discovery |
 | [references/nextjs-implementation.md](references/nextjs-implementation.md) | Implementing App Router metadata, sitemaps, rendering, status codes, Markdown twins, or schema; verify APIs against the installed Next.js docs |
-| [references/answer-engines.md](references/answer-engines.md) | SEO, AEO and GEO terms, AI visibility, crawler policies, owned versus earned coverage, Markdown alternatives or `llms.txt` |
+| [references/answer-engines.md](references/answer-engines.md) | SEO, AEO and GEO terms, AI visibility, which AI-search tactics have evidence, crawler policies, owned versus earned coverage, Markdown alternatives or `llms.txt` |
 | [references/metadata-copy.md](references/metadata-copy.md) | Writing or changing page titles, meta descriptions or social titles; deciding whether a metadata edit is mechanical or needs owner sign-off |
 | [references/validation-evidence.md](references/validation-evidence.md) | Verifying findings, a built page or a deployed correction |
 | [references/research-protocol.md](references/research-protocol.md) | Keyword/prompt metrics, opportunity selection and question maps |
 | [references/brief-template.md](references/brief-template.md) | Producing a writer brief |
-| [references/monitoring.md](references/monitoring.md) | Search/AI performance, attribution, anomalies or recurring work |
+| [references/monitoring.md](references/monitoring.md) | Search/AI performance, attribution, anomalies or recurring work; where AI visibility data comes from and what replaces a paid tracker |
 | [references/sources.md](references/sources.md) | A claim depends on current engine behavior, supported reports, or vendor research |
 
 ## Delivery
 
 Findings go in chat unless a file is requested. Writer briefs go to the requested project destination; retain prior dated briefs when producing a new revision. Keep scratch crawls and exports out of the repository. No em dashes in authored reports or briefs.
 
-Report what changed, why, exact verification evidence, and what remains unmeasured. A successful local build, ready deployment, public URL probe, Google index record and measured conversion are different evidence. Name the strongest state actually verified.
+For a measurement request, report per property: a table per source with the window and method, a `No data` list with each reason, and what the numbers mean for the next decision. For a fix, report what changed, why, exact verification evidence, and what remains unmeasured. A successful local build, ready deployment, public URL probe, Google index record and measured conversion are different evidence. Name the strongest state actually verified.
 
 Sending recaps to others, scheduling recurring work, spending on tools and production deployment follow the user's authorization and host rules. Reuse an existing matching monitor rather than creating another owner or schedule.
 
@@ -73,6 +74,7 @@ Sending recaps to others, scheduling recurring work, spending on tools and produ
 - DNS verification needs no invented meta token. Confirm scoped data access separately.
 - A crawler user-agent probe does not authenticate a bot IP or establish index inclusion. Treat CDN logs and engine inspection as separate evidence.
 - Prompt demand, measured citations, mentions, AI impressions and referral sessions are different quantities. Preserve engine, source, match type, scope and window.
+- A prompt panel run through vendor APIs measures the API, not the consumer app; the OpenAI API recovered about a quarter of the URLs ChatGPT cited in a 2026 study. Label each series by collection method. For keys, use what the user names or the current environment; do not search other projects' `.env` files for credentials.
 - One prompt run, or one score averaged across engines, is not a visibility measurement. Repeat each prompt, report per engine, and keep recall separate from citations.
 - Schema, `llms.txt` and fixed answer-block lengths are not measured citation levers. Keep them for their real consumers; do not sell them as AI visibility.
 - An audit PR that also rewrote titles on priority and campaign pages was sent back with those rewrites reverted, because the wording was the owner's positioning call. Ship mechanical metadata fixes and list the rest for the owner.

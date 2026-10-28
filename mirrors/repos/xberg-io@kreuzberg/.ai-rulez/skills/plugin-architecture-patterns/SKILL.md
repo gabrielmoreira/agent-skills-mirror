@@ -1,7 +1,7 @@
 ---
 type: Playbook
 title: Plugin Architecture Patterns
-description: Design, implement or diagnose Xberg plugin traits, typed registries, priority collisions, lifecycle, native extractors and Alef-generated Python plugin bridges. Use for plugin-system work, not ordinary parsing.
+description: "Xberg plugin traits, typed registries, priority collisions, lifecycle and Alef Python plugin bridges. Use for plugin-system work, not parsing."
 paths:
   - "crates/xberg/src/plugins/**"
   - "crates/xberg-py/src/**"

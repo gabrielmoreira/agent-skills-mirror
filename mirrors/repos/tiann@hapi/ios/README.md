@@ -4,6 +4,9 @@ Native SwiftUI/UIKit client for HAPI, independent of `web/` at the code level.
 It shares the [client protocol](../docs/api/client-contract/index.md) and
 web-generated golden fixtures in `shared/fixtures/`.
 
+End users: install HAPI from the [App Store](https://apps.apple.com/app/id6805699104).
+This README covers development builds.
+
 ## Current capabilities
 
 The app provides sessions/chat, approvals and questions, new sessions,
@@ -328,7 +331,18 @@ unconditionally: real translation edits must remain visible and committed.
 iPad uses a two-column `NavigationSplitView`: sessions in the sidebar and a
 separate detail navigation stack for chat → files/viewer/process pages. The
 sidebar requests 280–360pt (320pt ideal); the system collapses the same view
-hierarchy in compact windows. iPhone keeps its single `NavigationStack`.
+hierarchy in compact windows. Foldable iPhones (iPhone Duo) use the same split
+once `UIHingeInteraction` (iOS 27.1+) reports a hinge: unfolded shows both
+columns, folded collapses to the phone stack without recreating the chat. Other
+iPhones keep their single `NavigationStack`. A side-by-side sidebar drops its
+inline "Sessions" title and moves the filter beside the hub menu, because the
+system sidebar toggle shares the trailing edge. On the folded Duo's 678pt outer
+screen the system moves Back and toolbar actions into a vertical side bar, so
+the session list drops its "Sessions" title (the empty top bar disappears) and
+the chat uses the leading-aligned system title/subtitle instead of the centered
+custom header (no agent icon). The chat title minimizes once the reader scrolls
+toward newer output (restoring only at the transcript top), and the composer
+sits 16pt closer to the home indicator while the text field is unfocused.
 Cold starts and hub switches show **Select a session** until the user chooses
 one; notifications and new sessions can open an ID before its list row arrives.
 Selection and nested navigation are in memory, not restored across launches.
@@ -353,7 +367,12 @@ manifest. `SessionSplitPresentationTests` runs on an actual iPad simulator and
 uses the production split shell/list plus a real, non-networked chat specimen:
 selection, compact programmatic opening, nested Back, filtering, resizing,
 reading anchors, draft/attachment retention and surface/subscription lifetime.
-CI keeps the iPhone suite and adds iPad Air 11-inch (M2). Run it locally with:
+CI keeps the iPhone suite and adds iPad Air 11-inch (M2). Locally, the same
+tests also run on `iPhone-Duo` (iOS 27.1 runtime); the script boots it folded
+(outer 466×678pt, compact), and wide cases use the unfolded 951×669pt inner
+screen. On both screens the system shows a vertical status bar on one side
+(84pt horizontal safe area) and moves toolbar items into a vertical bar there.
+Run it locally with:
 
 ```sh
 HAPI_TEST_DEVICE_TYPE=com.apple.CoreSimulator.SimDeviceType.iPad-Air-11-inch-M2 \
