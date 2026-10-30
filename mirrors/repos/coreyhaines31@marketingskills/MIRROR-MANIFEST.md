@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `coreyhaines31/marketingskills` — 26 default patterns, 0 followed patterns, 414 file(s) materialized.
+Mirror of `coreyhaines31/marketingskills` — 26 default patterns, 0 followed patterns, 415 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `coreyhaines31/marketingskills` — 26 default patterns, 0 followed pa
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 414 |
+| Files         | 415 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -470,9 +470,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 409 | ✓ | [`skills/social/SKILL.md`](skills/social/SKILL.md) |
 | 410 | ✓ | [`skills/video/evals/evals.json`](skills/video/evals/evals.json) |
 | 411 | ✓ | [`skills/video/references/ai-video-prompting.md`](skills/video/references/ai-video-prompting.md) |
-| 412 | ✓ | [`skills/video/references/edit-anatomy.md`](skills/video/references/edit-anatomy.md) |
-| 413 | ✓ | [`skills/video/references/product-demo-recording.md`](skills/video/references/product-demo-recording.md) |
-| 414 | ✓ | [`skills/video/SKILL.md`](skills/video/SKILL.md) |
+| 412 | ✓ | [`skills/video/references/code-rendered-product-films.md`](skills/video/references/code-rendered-product-films.md) |
+| 413 | ✓ | [`skills/video/references/edit-anatomy.md`](skills/video/references/edit-anatomy.md) |
+| 414 | ✓ | [`skills/video/references/product-demo-recording.md`](skills/video/references/product-demo-recording.md) |
+| 415 | ✓ | [`skills/video/SKILL.md`](skills/video/SKILL.md) |
 
 ---
 

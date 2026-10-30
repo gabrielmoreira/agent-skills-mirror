@@ -29,6 +29,7 @@ import { isMessageKey, resolveInstanceLang, setInstanceLang, t, type Lang } from
 import { localizeZodSchemaShape } from "./i18n/schema.js";
 import { resolveServerInstructions } from "./prompts/server-instructions.js";
 import { enableCloudMode } from "./utils/cloud-mode.js";
+import { hasEnvSlot, runWithEnvSlot, type EnvSlot } from "./utils/env-binding.js";
 import { info } from './utils/logger.js';
 import { resolveSiteAndRegion, SITE_REGION_MAP } from "./utils/site-map.js";
 import { buildJsonToolResult, isToolPayloadError } from "./utils/tool-result.js";
@@ -229,6 +230,9 @@ export interface ExtendedMcpServer extends McpServer {
   /** Registered tools for external hosts (e.g. WeChat IDE) to re-register. */
   toolDefs: Array<{ name: string; description: string; inputSchema: any; handler: (input: any) => Promise<any> }>;
 
+  /** Process (stdio) or unused when the caller already opened a request slot. */
+  envSlot: EnvSlot;
+
   setLogger(logger: Logger): void;
 
   /**
@@ -351,6 +355,8 @@ export async function createCloudBaseMcpServer(options?: {
 
   // 初始化 toolDefs，用于外部提取工具列表（如微信 IDE）
   server.toolDefs = [];
+  const envSlot: EnvSlot = { binding: null };
+  server.envSlot = envSlot;
 
   // 实例语言解析（须在工具注册前完成：registerTool 包装层按 lang 解析词典 key 形式的 description）
   server.lang = instanceLang;
@@ -524,6 +530,24 @@ export async function createCloudBaseMcpServer(options?: {
     // 产物卡片：挂在三个部署类工具上，只读展示部署状态与访问地址，写意图一律交给会话。
     registerArtifactCardResource(server);
   }
+
+  const originalConnect = server.connect.bind(server);
+  server.connect = async (transport) => {
+    await originalConnect(transport);
+    const deliver = transport.onmessage;
+    if (!deliver) {
+      return;
+    }
+    transport.onmessage = (message, extra) => {
+      if (hasEnvSlot()) {
+        deliver(message, extra);
+        return;
+      }
+      runWithEnvSlot(envSlot, () => {
+        deliver(message, extra);
+      });
+    };
+  };
 
   return server;
 }

@@ -68,7 +68,7 @@ is never committed:
    and a fresh clone will not build.
 3. Every `docker/Dockerfile.*` must either `COPY crates/<name>/` or `sed`-exclude the member
    from the workspace list.
-4. Run `task verify:docker-crates`. It checks (1) and (3) in both directions — it also catches
+4. Run `mise run verify:docker-crates`. It checks (1) and (3) in both directions — it also catches
    a `COPY` line naming a crate that no longer exists. It does **not** look at `.gitignore`;
    verify that by hand.
 

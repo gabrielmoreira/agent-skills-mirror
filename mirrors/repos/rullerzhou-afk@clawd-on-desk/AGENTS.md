@@ -258,7 +258,7 @@ Copilot CLI 同步走 `<COPILOT_HOME 或 ~/.copilot>/hooks/hooks.json`，marker-
 - `miniTransitioning` 期间，所有窗口定位路径都必须先检查保护标志，否则 `setPosition()` 可能并发崩
 - DND 会屏蔽 hook 事件并压住 bubble，但**不应替用户做权限决定**：opencode 走 silent drop 回到 TUI 提示，Claude Code / CodeBuddy 走断连回到内置聊天/终端确认，Codex official hook 走 no-decision `{}` 回到原生审批提示；Pi 是 state-only，不进入权限审批链路
 - 隐藏桌宠（petHidden）≠ 免打扰：隐藏只收起宠物/HUD/update bubble/当时 pending 的权限气泡，**隐藏期间新到的权限请求仍照常弹气泡，这是有意设计、不要当 bug 修**；要静默权限气泡走 DND（见上条）。详见 `docs/project/theme-state-ui.md` State Machine 节
-- Session HUD 显示所有非 headless、非 sleeping 的 live session，包括 badge=Done 的 idle session；不要再按 `state !== "idle"` 过滤，否则完成后的 Claude Code 会话会从 HUD 消失
+- Session HUD 默认显示所有非 headless、非 sleeping 的 live session，包括 badge=Done 的 idle session；不要按 `state !== "idle"` 过滤。两个独立、默认关闭的显示偏好为 `sessionHudHideCompletedCodexEphemeral` 与 `sessionHudHideActiveCodexEphemeral`：用 snapshot 字段 `hudHiddenByPreference` 分别收起明确的本机 Codex 临时完成行，或 thinking/working 行，均可能包含普通侧边聊天。活动偏好还通过只读投影排除该活动对宠物状态/SVG 的驱动；保留已识别子代理、pending 权限/原生问题、错误和完成确认提示。完成偏好不屏蔽完成动画；仅开活动偏好时，完成行会重新显示。两者都不是后台来源识别，不删除 canonical 会话、不结束任务、不改变 Dashboard、系统 keep-awake、审批或小结；见运行时架构。
 - update bubble 跟随桌宠时要同时避让 Session HUD 和 permission stack；permission bubble 增删、测高、deny-and-focus 后都要触发 update bubble 重排
 - `mini-working` 是可选主题能力，缺失时必须优雅降级
 - `contextMenuOwner` 必须保留 `parent: win`；配合 `closable:false` 才不会把退出流程卡死
@@ -279,6 +279,8 @@ Copilot CLI 同步走 `<COPILOT_HOME 或 ~/.copilot>/hooks/hooks.json`，marker-
 - KiroCrew（`agentId: kirocrew`）仅用 `~/.kiro/crew/hooks.json` 的 AgentSpawn / UserPromptSubmit / PostToolUse / Stop 四个 state-only gateway events；不注册 PreToolUse 或 `/permission`。只有精确两 token Node + `kirocrew-hook.js` 命令（含本 PR 的 Windows `cmd /d /s /c` 预览形态）证明 Clawd 所有权，marker 子串不得授权更新或卸载。配置路径尊重 `KIROCREW_HOME`；payload 的 gateway cwd 不可信，不送入 Clawd。安装且启用后，startup 才自动同步 hooks。Install/Uninstall 必须 single-shot 持有 gateway.lock、POSIX KiroCrew home-directory anchor 与 hooks.json.lock（Windows 仅文件 locks）覆盖检查到原子写；遇锁明确失败，不能 busy-spin。hooks.json 新写入及已有文件收紧为 owner-only（POSIX 0600；Windows 在 payload 写入前设置 owner-only DACL）。store helper 仅用于本机安装/维护；事件 bridge 仍是纯 Node hook，KiroCrew 不进入 Remote SSH `HOOK_FILES`。
 - `src/renderer.js` 里给 `<img>` SVG 追加的 `?_t=` cache-bust query 不能删；Chromium 会复用同 URL SVG 的动画时间线，一次性动画会停在末帧
 - Windows 不要把完整主题配置塞进 renderer 进程命令行（命令行上限约 32,767 字符）；使用 `src/renderer-config-channel.js` 的同步 IPC，在创建窗口前设置，并在每次运行时 push 配置前也先 set
+
+- Codex official hook 的可选 `codex_client_ephemeral` 是导航约束，映射为 `codexClientEphemeral`，本身不授予隐藏或审批决定。只接受本机 official Codex typed bool；省略不清旧 true，false 须有同线程有效 official transcript 证据。已知临时线程默认保留 HUD（仅显式收起偏好可改变呈现），禁止恢复 URI 与 queue；`codex-app` 只走 Windows/macOS 已验证源映像/GUI 父链的 app-only activation，未知布局和 Linux 不可用，不运行 CLI/CMD、不按目录/标题/缓存猜窗口。live 事实优先于旧 fallback，不能因 app-only target 放开 Desktop 自动粘贴。未知旧记录保留既有首次持久会话导航；没有 transcript 不足以在消费者侧自行推断。见 `src/codex-session-persistence.js` / `src/process-app-focus.js`。
 
 ## Do Not Revisit
 

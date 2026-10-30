@@ -19,9 +19,9 @@
 
 ## 1. 准备生产配置
 
-先按[下载代码](../intro/quick-start.md#_1-下载代码)获取 `v0.8.0.beta3` 候选源码，后续命令均在仓库根目录执行。该标签用于试用，尚未正式发布。
+先按[下载代码](../intro/quick-start.md#_1-下载代码)获取 `v0.8.0.beta5` 测试版本源码，后续命令均在仓库根目录执行。该版本用于独立环境试用。
 
-Linux/macOS 可以使用初始化脚本准备 `.env.prod`。先通过安全环境注入提供模型 Key 和实际 Cube 节点配置，首次部署使用空状态目录和独立项目名：
+Linux/macOS 可以使用初始化脚本准备 `.env.prod`。默认使用 Container；先构建固定的沙盒镜像，再通过安全环境注入模型 Key。首次部署使用空状态目录和独立项目名：
 
 ```bash
 export YUXI_ENV_FILE=.env.prod
@@ -30,18 +30,18 @@ export COMPOSE_PROJECT_NAME=production
 export YUXI_STATE_DIR=./.yuxi/production/state
 export YUXI_INSTANCE_ID=Production
 export SILICONFLOW_API_KEY='<siliconflow-api-key>'
-export CUBE_API_URL='http://<private-node-address>:3000'
-export CUBE_PROXY_NODE_IP='<private-node-address>'
-export CUBE_NODE_USER_DATA_DIR=/data/shared/production/threads
-export CUBE_NODE_SKILL_PROJECTION_DIR=/data/shared/production/skill-projections
+export SANDBOX_BACKEND=container
+export SANDBOX_CONTAINER_IMAGE=yuxi-sandbox:0.8.0.beta5
+docker build -f docker/sandbox.Dockerfile -t "$SANDBOX_CONTAINER_IMAGE" .
+export SANDBOX_CONTAINER_IMAGE_DIGEST="$(docker image inspect "$SANDBOX_CONTAINER_IMAGE" --format '{{.Id}}')"
 YUXI_INIT_NON_INTERACTIVE=1 ./scripts/init.sh
 ```
 
 初始化脚本当前无条件要求 `SILICONFLOW_API_KEY`；即使生产使用其他供应商，也需提供该变量完成初始化，其他供应商在启动后于「智能体 → 模型供应商」接入。
 
-执行前须按[沙盒配置与运维](./sandbox-operations.md#原生执行节点)准备节点、模板和真实共享挂载。两个节点路径分别共享 `YUXI_STATE_DIR/yuxi/threads`、`YUXI_STATE_DIR/yuxi/skill-projections` 的底层文件；只填写路径不会建立共享。复用节点时为每套环境分配独立共享路径和实例标识，不能把开发环境的用户目录直接交给生产 API。Docker 项目名只接受小写字母、数字、连字符和下划线，因此显示名称 `Production` 对应项目名 `production`。
+Container 共享宿主内核，适用于单租户可信代码；生产必须固定镜像 digest。需要强隔离时显式设置 `SANDBOX_BACKEND=cube`，按[沙盒配置与运维](./sandbox-operations.md#原生执行节点)准备节点、模板和共享挂载，并配置 `CUBE_*` 连接与路径；Cube 启动命令去掉 `--profile container`。Docker 项目名只接受小写字母、数字、连字符和下划线，因此显示名称 `Production` 对应项目名 `production`。
 
-脚本接受环境变量覆盖，并生成缺失的 PostgreSQL、Neo4j、MinIO 凭据和两个独立应用安全密钥；已有非空安全密钥无效时明确失败，不自动轮换。重建时保留配置文件及原有密钥，避免用临时环境变量覆盖已有生产凭据。开关、优先级和模型 Key 输入见[常见配置](../intro/quick-start.md#常见配置)。
+脚本接受环境变量覆盖，并生成缺失的 PostgreSQL、Neo4j、MinIO 凭据、两个独立应用安全密钥及 runner 认证密钥；已有非空安全密钥无效时明确失败，不自动轮换。重建时保留配置文件及原有密钥，避免用临时环境变量覆盖已有生产凭据。开关、优先级和模型 Key 输入见[常见配置](../intro/quick-start.md#常见配置)。
 
 也可以复制模板，手动编辑 `.env.prod` 并设置文件权限：
 
@@ -59,14 +59,14 @@ MINIO_ACCESS_KEY=<strong-minio-access-key>
 MINIO_SECRET_KEY=<strong-minio-secret-key>
 JWT_SECRET_KEY=<random-value-at-least-32-characters>
 API_KEY_DERIVATION_SECRET=<another-random-value-at-least-32-characters>
-CUBE_API_URL=http://<private-node-address>:3000
-CUBE_PROXY_NODE_IP=<private-node-address>
-CUBE_NODE_USER_DATA_DIR=/absolute/yuxi/threads
-CUBE_NODE_SKILL_PROJECTION_DIR=/absolute/yuxi/skill-projections
+SANDBOX_BACKEND=container
+SANDBOX_RUNNER_TOKEN=<another-random-value-at-least-32-characters>
+SANDBOX_CONTAINER_IMAGE=<prebuilt-sandbox-image>
+SANDBOX_CONTAINER_IMAGE_DIGEST=sha256:<image-id>
 YUXI_INSTANCE_ID=<stable-instance-name>
 ```
 
-JWT 与 API Key 派生这两个应用安全密钥必须彼此不同、没有首尾空白，并在重建时保留原值。可以用下面的命令生成随机值，再把结果安全地写入 `.env.prod`；Cube 控制凭据由执行节点提供：
+JWT 与 API Key 派生这两个应用安全密钥必须彼此不同、没有首尾空白，并在重建时保留原值。可以用下面的命令生成随机值，再把结果安全地写入 `.env.prod`；runner 使用独立随机密钥，镜像准备见[Container 沙盒](./container-sandbox.md#配置)：
 
 ```bash
 openssl rand -hex 32
@@ -81,11 +81,11 @@ openssl rand -hex 32
 开发配置的容器环境文件默认为 `.env`，生产配置默认为 `.env.prod`。使用其他文件时，同时指定 `YUXI_ENV_FILE` 和 `--env-file`，让容器注入与 Compose 插值读取同一份配置：
 
 ```bash
-YUXI_ENV_FILE=.env.staging docker compose --env-file .env.staging -f docker-compose.prod.yml config --quiet
-YUXI_ENV_FILE=.env.staging docker compose --env-file .env.staging -f docker-compose.prod.yml up -d --build
+YUXI_ENV_FILE=.env.staging docker compose --env-file .env.staging -f docker-compose.prod.yml --profile container config --quiet
+YUXI_ENV_FILE=.env.staging docker compose --env-file .env.staging -f docker-compose.prod.yml --profile container up -d --build
 ```
 
-同机并行部署时，在各自的环境文件中设置不同的 `COMPOSE_PROJECT_NAME` 和 `YUXI_STATE_DIR`；项目名隔离应用容器、镜像与 Compose 网络，数据目录隔离持久文件。Cube 用户 VM 的引用保存在各自 PostgreSQL，节点共享路径需要另行隔离；Compose 项目名不会创建隔离的执行节点或共享挂载。默认数据目录为 `./docker/volumes`，同一目录只允许一套运行中的环境写入。已有部署更换项目名前，先停止接收任务、等待 Run 和命令清理并核对原 VM，再用旧配置执行 `docker compose down`（保留数据，不加 `-v`），用新配置启动；复用数据时保持状态目录、节点挂载、实例身份和密钥不变。
+同机并行部署时，在各自的环境文件中设置不同的 `COMPOSE_PROJECT_NAME` 和 `YUXI_STATE_DIR`；项目名隔离应用容器、镜像与 Compose 网络，数据目录隔离持久文件。Cube 用户 VM 的引用保存在各自 PostgreSQL，节点共享路径需要另行隔离；Compose 项目名不会创建隔离的执行节点或共享挂载。默认数据目录为 `./docker/volumes`，同一目录只允许一套运行中的环境写入。已有部署更换项目名前，先停止接收任务、等待 Run 和命令清理并核对原执行环境，再用旧配置执行 `docker compose down`（保留数据，不加 `-v`），用新配置启动；复用数据时保持状态目录、节点挂载、实例身份和密钥不变。
 
 生产 Web 端口通过 `YUXI_FRONTEND_PORT` 设置，默认 80；API 默认发布到 `127.0.0.1:6050`，管理服务端口也只绑定回环地址。具体默认值由 `docker-compose.prod.yml` 的 `ports` 定义；多套生产环境还需分别设置端口，启用 `all` profile 时包括 `YUXI_MINERU_PORT` 和 `YUXI_PADDLEX_PORT`。开发环境的端口隔离示例见[并行工作树与隔离运行环境](../develop-guides/parallel-worktree-environments.md)。
 
@@ -96,8 +96,8 @@ MinIO 将同一宿主数据目录挂载到容器 `/data`，Neo4j 将日志目录
 构建应用与存储初始化镜像，再启动完整拓扑：
 
 ```bash
-docker compose --env-file .env.prod -f docker-compose.prod.yml build api frontend minio storage-init
-docker compose --env-file .env.prod -f docker-compose.prod.yml up -d --no-build
+docker compose --env-file .env.prod -f docker-compose.prod.yml --profile container build api frontend minio storage-init
+docker compose --env-file .env.prod -f docker-compose.prod.yml --profile container up -d --no-build
 ```
 
 Compose 自动创建缺失的挂载目录，`storage-init` 在无网络、无平台凭据的轻量容器中设置以下挂载根的权限。API、worker 与 Milvus 必须等待其退出码为 0 才启动；初始化失败时，先检查目录是否只读、宿主文件系统是否允许修改属主，以及部署使用的 UID 映射。
@@ -114,7 +114,7 @@ API、Web 与 MinIO 的项目文件在构建时明确权限：源码和配置归
 需要本地 MinerU 或 PaddleX OCR 时，再启用 `all` profile：
 
 ```bash
-docker compose --env-file .env.prod -f docker-compose.prod.yml --profile all up -d --build
+docker compose --env-file .env.prod -f docker-compose.prod.yml --profile container --profile all up -d --build
 ```
 
 `app-init` 以 UID/GID 1000 运行，等待 PostgreSQL 健康与 `storage-init` 成功后，在数据库锁内完成 Schema 和共享内容初始化。它为确认空库建立 business 版本 1 与 knowledge 版本 2 基线，包含当前表、索引、约束和 LangGraph checkpoint 表；当前版本跳过建表，其他版本不匹配会明确失败。随后同步系统配置定义、内置模型供应商、Agent、MCP 和 Skill 来源文件，API 与 worker 等待全部步骤成功。应用启动不自动迁移历史数据。[版本 1 基线决定](../develop-guides/decisions/implemented/2026-10-19-schema-baseline-one.md)说明当前结构和历史升级路径的收敛；编号重置不代表旧库已完成结构变更，历史 `1/1` 标记也不能作为结构完整的证明。
@@ -124,17 +124,17 @@ docker compose --env-file .env.prod -f docker-compose.prod.yml --profile all up 
 知识库默认开启。需要停用知识库时，在同一项目叠加关闭配置；PostgreSQL、Redis、MinIO、代码和数据保持原位：
 
 ```bash
-docker compose --env-file .env.prod -f docker-compose.prod.yml -f docker-compose.no-knowledge.yml up -d --no-build
+docker compose --env-file .env.prod -f docker-compose.prod.yml --profile container -f docker-compose.no-knowledge.yml up -d --no-build
 ```
 
-开发环境使用 `docker compose -f docker-compose.yml -f docker-compose.no-knowledge.yml up -d`。关闭配置将 Milvus、etcd、Neo4j 的副本数设为 0，并为 API、worker 和初始化器设置 `YUXI_KNOWLEDGE_ENABLED=false`。同项目已有的三个容器也会停止，无需删除数据卷。切换前停止提交知识库任务，并等待正在执行的任务结束；意外中断的任务仍按已有租约恢复规则收敛，尚未执行的知识库任务和投影清理意图保留，重新开启后继续处理。
+开发环境使用 `docker compose --profile container -f docker-compose.yml -f docker-compose.no-knowledge.yml up -d`。关闭配置将 Milvus、etcd、Neo4j 的副本数设为 0，并为 API、worker 和初始化器设置 `YUXI_KNOWLEDGE_ENABLED=false`。同项目已有的三个容器也会停止，无需删除数据卷。切换前停止提交知识库任务，并等待正在执行的任务结束；意外中断的任务仍按已有租约恢复规则收敛，尚未执行的知识库任务和投影清理意图保留，重新开启后继续处理。
 
 关闭时，API 不初始化知识库执行器，不注册知识库管理、图谱、评估、公开知识库与 `/api/mcp` 路由；这些路径返回 404。系统能力发现报告知识库不可用，Agent、MCP 配置和 Skill 定义仍保留。Agent 实际使用知识库工具时会报告 MCP 不可用，普通对话不依赖知识库后端。初始化器仍建立、校验原有两域 Schema 并同步内置内容，不清理知识库记录。
 
 重新开启时使用原有完整命令，不叠加关闭配置：
 
 ```bash
-docker compose --env-file .env.prod -f docker-compose.prod.yml up -d --no-build
+docker compose --env-file .env.prod -f docker-compose.prod.yml --profile container up -d --no-build
 ```
 
 确认环境文件中的 `YUXI_KNOWLEDGE_ENABLED` 为 `true` 或未设置，然后检查就绪状态并检索已有文档。该开关不是热切换；修改后需要重新创建 API 和 worker。仅设置环境开关不会停止存储容器，停启本地容器应使用上面的 Compose 叠加配置。
@@ -148,12 +148,12 @@ API 与 worker 必须共享持久化的 `JWT_SECRET_KEY` 和 `YUXI_INSTANCE_ID`�
 更新镜像或开发环境的内置定义后，在没有活动任务时停止 API 和 worker，再重新运行应用初始化并启动消费者：
 
 ```bash
-docker compose --env-file .env.prod -f docker-compose.prod.yml stop api worker
-docker compose --env-file .env.prod -f docker-compose.prod.yml up --no-deps --force-recreate --exit-code-from app-init app-init
-docker compose --env-file .env.prod -f docker-compose.prod.yml up -d --no-build
+docker compose --env-file .env.prod -f docker-compose.prod.yml --profile container stop api worker
+docker compose --env-file .env.prod -f docker-compose.prod.yml --profile container up --no-deps --force-recreate --exit-code-from app-init app-init
+docker compose --env-file .env.prod -f docker-compose.prod.yml --profile container up -d --no-build
 ```
 
-上述更新步骤要求 PostgreSQL 已健康、`storage-init` 已成功且目标镜像已构建或拉取。每条命令成功后再执行下一条。初始化失败时查看 `docker compose --env-file .env.prod -f docker-compose.prod.yml logs app-init`，修正问题后重跑；不要直接启动消费者绕过失败。新空库建表失败会清理该初始化器的半成品；共享内容同步失败保留已完成步骤和已有数据，通过幂等重跑完成剩余内容。多个阶段包含独立事务和文件操作，不承诺整体原子回滚。
+上述更新步骤要求 PostgreSQL 已健康、`storage-init` 已成功且目标镜像已构建或拉取。每条命令成功后再执行下一条。初始化失败时查看 `docker compose --env-file .env.prod -f docker-compose.prod.yml --profile container logs app-init`，修正问题后重跑；不要直接启动消费者绕过失败。新空库建表失败会清理该初始化器的半成品；共享内容同步失败保留已完成步骤和已有数据，通过幂等重跑完成剩余内容。多个阶段包含独立事务和文件操作，不承诺整体原子回滚。
 
 API 和 worker 在各自进程内继续校验密钥及 Schema，创建连接、缓存并检查运行依赖。外部模型 Token 与可选集成按实际启用和使用验证，不要求所有供应商配置齐全。职责与验证见[应用初始化决策](../develop-guides/decisions/implemented/2026-10-18-app-initialization.md)。
 
@@ -167,14 +167,14 @@ API 和 worker 在各自进程内继续校验密钥及 Schema，创建连接、�
 
 应用不写入身份操作日志，初始 Schema 不创建 `operation_logs` 表。
 
-用户执行环境由专用 Linux/KVM 节点上的 Cube 提供。节点准备与 Workspace、Skills 共享目录要求见[沙盒配置与运维](./sandbox-operations.md)。
+默认执行环境由 Container runner 提供，Run 结束后清理容器并保留工作文件。选择 Cube 时，节点准备与 Workspace、Skills 共享目录要求见[沙盒配置与运维](./sandbox-operations.md)。
 
 ## 4. 验证部署
 
 先看容器状态：
 
 ```bash
-docker compose --env-file .env.prod -f docker-compose.prod.yml ps
+docker compose --env-file .env.prod -f docker-compose.prod.yml --profile container ps
 ```
 
 生产 Web 入口默认是 `http://<host>/`。部署在反向代理后并配置 TLS 后，应使用 HTTPS。
@@ -201,7 +201,8 @@ worker 的 Compose 健康检查通过 `python -m yuxi.workers.health` 轻量读�
 | --- | --- | --- |
 | 5173 | Web | 开发 Web 界面 |
 | 5050 | API | API 和 Swagger 文档 |
-| Cube 私网控制面/代理 | 专用 Linux/KVM 节点 | 由部署提供，仅 API/worker 访问 |
+| runner 8090（容器内网） | sandbox-runner | 默认 Container 执行，仅 API/worker 访问 |
+| Cube 私网控制面/代理 | 专用 Linux/KVM 节点 | 显式选择 Cube 时由部署提供 |
 | 7474 / 7687 | Neo4j | HTTP 管理界面 / Bolt |
 | 9000 / 9001 | MinIO | 对象 API / 管理控制台 |
 | 19530 / 9091 | Milvus | gRPC / 健康检查 |
@@ -235,24 +236,37 @@ YUXI_CORS_ORIGINS=https://a.example.com,https://b.example.com
 ### 查看日志
 
 ```bash
-docker compose --env-file .env.prod -f docker-compose.prod.yml logs --tail=200 api worker
-docker compose --env-file .env.prod -f docker-compose.prod.yml logs -f api worker
+docker compose --env-file .env.prod -f docker-compose.prod.yml --profile container logs --tail=200 api worker
+docker compose --env-file .env.prod -f docker-compose.prod.yml --profile container logs -f api worker
 ```
+
+### PostgreSQL 共享内存配额
+
+开发与生产 Compose 为 PostgreSQL 配置 `shm_size: 1g`，这是 `/dev/shm` 的使用上限，不是启动时预占内存。并行查询共享内存不足时，可能出现 `could not resize shared memory segment ... No space left on device`；该错误不等同于数据盘已满。
+
+已有部署修改该配置后需要重建 PostgreSQL 容器，`restart` 不会更新配额。重建会中断 API 与 worker 的数据库连接；在维护窗口停止接收任务、等待活动 Run 和后台作业收敛后执行：
+
+```bash
+docker compose --env-file .env.prod -f docker-compose.prod.yml --profile container up -d --no-deps --force-recreate postgres
+docker compose --env-file .env.prod -f docker-compose.prod.yml --profile container exec postgres df -h /dev/shm
+```
+
+确认 `/dev/shm` 容量为 1.0G、PostgreSQL 健康且 `/api/system/ready` 恢复后，再开放入口。开发环境使用同样的服务命令并去掉生产配置参数。
 
 ### Redis 重建后恢复 worker
 
 ARQ worker 不会在 Redis 容器重建后自动恢复连接。重建 Redis 后重启 worker：
 
 ```bash
-docker compose --env-file .env.prod -f docker-compose.prod.yml up -d redis
-docker compose --env-file .env.prod -f docker-compose.prod.yml restart worker
+docker compose --env-file .env.prod -f docker-compose.prod.yml --profile container up -d redis
+docker compose --env-file .env.prod -f docker-compose.prod.yml --profile container restart worker
 ```
 
 再次检查 `/api/system/ready`，确认 worker 健康租约恢复。
 
 ### 停机备份与恢复演练
 
-本节适用于同一版本、同一组组件版本的整套状态恢复。备份必须同时包含 PostgreSQL、MinIO、Milvus/etcd、Neo4j、Redis、用户 Workspace、Skills 来源及投影，并单独安全保存环境文件、两个应用安全密钥和镜像版本或 digest。应用目录不包含 Cube 节点磁盘和 VM Home；需要保留用户安装的软件与配置时，按[沙盒运维](./sandbox-operations.md#运维与验证)另行备份节点，保留实例身份与原挂载路径。
+本节适用于同一版本、同一组组件版本的整套状态恢复。备份必须同时包含 PostgreSQL、MinIO、Milvus/etcd、Neo4j、Redis、用户 Workspace、Skills 来源及投影，并单独安全保存环境文件、两个应用安全密钥和镜像版本或 digest。Container 的 Home 与临时软件不跨 Run 保留。显式选择 Cube 时，应用目录不包含节点磁盘和 VM Home；需要保留用户安装的软件与配置时，按[沙盒运维](./sandbox-operations.md#运维与验证)另行备份节点，保留实例身份与原挂载路径。
 
 1. 关闭外部入口，等待正在执行的 Run、待派发 Input、后台作业和沙盒命令收敛；暂停定时任务的触发来源。确认用户 VM 已空闲，按执行节点的停机规程保存节点状态。
 2. 停止 Web、API 和 worker，再停止全部本次部署的存储服务。不要复制仍在写入的 PostgreSQL、etcd、Neo4j 或对象目录。
@@ -267,8 +281,8 @@ STATE_DIR=/absolute/path/to/yuxi-state
 BACKUP_DIR=/absolute/path/to/backup
 RESTORE_DIR=/absolute/path/to/empty-restore-state
 
-docker compose --env-file .env.prod -f docker-compose.prod.yml stop frontend api worker
-docker compose --env-file .env.prod -f docker-compose.prod.yml stop
+docker compose --env-file .env.prod -f docker-compose.prod.yml --profile container stop frontend api worker
+docker compose --env-file .env.prod -f docker-compose.prod.yml --profile container stop
 sudo install -d -m 0700 "$BACKUP_DIR"
 sudo tar --numeric-owner --acls --xattrs -cpf "$BACKUP_DIR/state.tar" -C "$STATE_DIR" .
 sudo install -m 0600 .env.prod "$BACKUP_DIR/env.prod"
@@ -278,7 +292,7 @@ sudo install -d -m 0700 "$RESTORE_DIR"
 sudo tar --numeric-owner --acls --xattrs -xpf "$BACKUP_DIR/state.tar" -C "$RESTORE_DIR"
 ```
 
-恢复前复制出独立环境文件并把 `YUXI_STATE_DIR` 指向 `RESTORE_DIR`，同步准备 Cube 侧共享路径；通过 `YUXI_ENV_FILE` 和 `--env-file` 使用该文件。已有 VM 的挂载引用不会随环境变量自动改变，换路径或换节点时必须先验证其映射与节点恢复，不用重建空 VM 冒充保留原环境。完成上述业务回读前，不切换真实入口。合成数据的小规模演练只证明该版本的恢复链路，生产数据量下的恢复时间仍需现场测量。
+恢复前复制出独立环境文件并把 `YUXI_STATE_DIR` 指向 `RESTORE_DIR`，使用 Cube 时同步准备节点共享路径；通过 `YUXI_ENV_FILE` 和 `--env-file` 使用该文件。已有 VM 的挂载引用不会随环境变量自动改变，换路径或换节点时必须先验证其映射与节点恢复，不用重建空 VM 冒充保留原环境。完成上述业务回读前，不切换真实入口。合成数据的小规模演练只证明该版本的恢复链路，生产数据量下的恢复时间仍需现场测量。
 
 ### 轮换历史默认凭据
 
@@ -287,14 +301,14 @@ sudo tar --numeric-owner --acls --xattrs -xpf "$BACKUP_DIR/state.tar" -C "$RESTO
 PostgreSQL 可以在数据库容器内使用交互式命令修改，避免新密码出现在 shell 历史和进程参数中：
 
 ```bash
-docker compose --env-file .env.prod -f docker-compose.prod.yml \
+docker compose --env-file .env.prod -f docker-compose.prod.yml --profile container \
   exec postgres psql -U postgres -d yuxi -c '\password postgres'
 ```
 
 Neo4j 使用 `cypher-shell` 的当前用户密码修改流程；MinIO 使用 `mc admin` 或部署采用的密钥管理流程。完成轮换后，把新值写入 `.env.prod`，再重建依赖这些凭据的服务：
 
 ```bash
-docker compose --env-file .env.prod -f docker-compose.prod.yml \
+docker compose --env-file .env.prod -f docker-compose.prod.yml --profile container \
   up -d --force-recreate postgres graph minio api worker
 ```
 
@@ -353,9 +367,9 @@ services:
 启动或重建图谱服务时合并该文件，并先验证合并后的配置可解析：
 
 ```bash
-docker compose --env-file .env.prod -f docker-compose.prod.yml -f docker-compose.enterprise.yml config --quiet
-docker compose --env-file .env.prod -f docker-compose.prod.yml -f docker-compose.enterprise.yml up -d graph
-docker compose --env-file .env.prod -f docker-compose.prod.yml -f docker-compose.enterprise.yml logs --tail=100 graph
+docker compose --env-file .env.prod -f docker-compose.prod.yml --profile container -f docker-compose.enterprise.yml config --quiet
+docker compose --env-file .env.prod -f docker-compose.prod.yml --profile container -f docker-compose.enterprise.yml up -d graph
+docker compose --env-file .env.prod -f docker-compose.prod.yml --profile container -f docker-compose.enterprise.yml logs --tail=100 graph
 ```
 
 同时按 Neo4j 官方订阅协议确认许可范围；设置该变量表示部署方接受 Neo4j 商业许可，许可获取与合规由部署方负责。替换镜像不会自动迁移或改变现有数据卷。以上是工程侧边界，不构成法律意见；再分发、修改组件或对外托管前请让法务按具体版本和交付方式确认。

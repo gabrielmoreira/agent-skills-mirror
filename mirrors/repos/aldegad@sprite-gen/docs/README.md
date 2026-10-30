@@ -78,13 +78,13 @@ grouping is derived from `sprite_gen/_modules.py`, the one taxonomy table.
 
 | Doc | Owns |
 |---|---|
-| [gen.md](gen.md) | `sprite-gen gen` / `gen-set`: providers, default resolution and what a default codex that cannot run turns into, transparency strategy per provider, when a refused provider request is sent again, row usage |
+| [gen.md](gen.md) | `sprite-gen gen` / `gen-set`: providers, default resolution and what a default codex that cannot run turns into, transparency strategy per provider, where every direct provider call goes (`SPRITE_GEN_<PROVIDER>_BASE_URL`) and subscription logins off (`SPRITE_GEN_LOGINS`), when a refused provider request is sent again, row usage |
 | [`sprite-gen sound`](sound.md) | Generate normalized SFX and BGM audio assets with Opus and AAC encoding, SQLite raw request caching, and Web Audio loop metadata. |
 | [pixel-draw.md](pixel-draw.md) | `sprite-gen pixel-draw` (experimental): Claude Opus draws 8–48 px pixel art as a pixel grid — the inputs, the safe area, the style (`--style`), a set of up to 64 frames drawn four at a time and one motion (`--motion`), the run folder and its report, gates G1–G8, the row repair and the one redraw, the pick between candidates, Message Batches and `--resume`, re-rendering an edited `grid.txt` |
 | [logo.md](logo.md) | `sprite-gen logo`: a title logo or wordmark lettered by the model into a title screen or poster, only its lettering redrawn on a chroma key, cut out with its glow kept — the steps, files, report, text check and refusals, the key choice, the logo matte and its known limit |
 | [prompt-assembly.md](prompt-assembly.md) | What the engine adds to a still or clip prompt and when: the pieces, the 2.22.0 freeze without `--handed`, what counts as already said, and the notes on the caller's own words |
 | [video.md](video.md) | `sprite-gen video` / `video-extend` / `video-edit` / `video-resume`: stills and clips to mp4 through Grok Imagine (image-to-video, last-frame pin, references, extension, editing, asking again for an unfinished generation) with the user's own credential |
-| [video-pipeline.md](video-pipeline.md) | Pipeline B engine contract: state canvas, keyed frames, true-period and one-shot cycles, strip/GIF/WebP, the batch, a set's directions on one sheet, a walk or run's stop |
+| [video-pipeline.md](video-pipeline.md) | Pipeline B engine contract: state canvas, keyed frames, true-period and one-shot cycles, strip/GIF/WebP, a single play's root motion and its air retimed, the batch, a set's directions on one sheet, a walk or run's stop |
 | [loop-review.md](loop-review.md) | Automatic loop decisions, ambiguous gait review, visual evidence and explicit cut/alignment overrides |
 | [loop-repair.md](loop-repair.md) | RIFE (where it runs, cost, licences, `sprite-gen rife install`, what runs without it), jump-frame repair, the flow reading (frames off a walk's way), the eased retime (a part that rushes on its way), the overlapped wrap (a part on its own beat at a two-step cut's wrap), the part pop (a hand or a foot that jumps at the wrap), the jolt index and its gate, one cycle length per direction set |
 | [frame-interpolation.md](frame-interpolation.md) | Generative in-betweens for sprite frames, recorded as a take |
@@ -132,6 +132,7 @@ grouping is derived from `sprite_gen/_modules.py`, the one taxonomy table.
 
 | Doc | Owns |
 |---|---|
+| [capabilities.md](capabilities.md) | `sprite-gen capabilities`: every verb and argument as one JSON line read off the CLI's parser, the providers each verb may call and be billed by, the provider address and login variables |
 | [interpreter.md](interpreter.md) | Why the project venv is the only interpreter (no global `python3`, no NumPy fallback) |
 | [rename-gate.md](rename-gate.md) | What must move together when a vocabulary word or key is renamed |
 | [release.md](release.md) | How a vX.Y.Z tag becomes a release page, what the lane builds and the publisher attaches, and what stays manual |

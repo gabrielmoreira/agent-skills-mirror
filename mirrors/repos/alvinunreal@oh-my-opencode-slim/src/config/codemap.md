@@ -37,6 +37,19 @@ The config system follows a layered architecture:
 | `loadRawPluginConfigFromPath` | Shared layer validation for runtime and preset management, preserving editable preset syntax | loader.ts |
 | `RuntimeConfig` | Per-directory runtime config singleton with derived getters, host-config snapshot, and preset/model overrides | runtime.ts |
 
+## Shared Runtime Reads
+
+`snapshot.ts` owns a bounded merged-config cache keyed by the selected source
+paths, their device/inode/mtime/ctime/size fields and referenced `{env:NAME}`
+values. Setup and TUI readers reuse `{config,warnings,paths,fingerprint}`;
+`fresh` covers a known write that timestamp granularity cannot distinguish.
+Read failures are not cached. Preset editors keep their own raw/validated
+reads; uncached `loadPluginConfig` stays available.
+
+Shared JSONC parsing, locked atomic editing and path lookup live in `jsonc.ts`,
+`json-file.ts` and `paths.ts`, not the CLI. The full Marketplace manifest is not
+an eager config dependency: package-ID validation comes from `id-schema.ts`.
+
 ## Flow
 
 ### Configuration Loading Pipeline
@@ -188,6 +201,7 @@ This allows consumers to import directly from `src/config` rather than individua
 - `options`: Provider-specific model options
 - `displayName`: Custom display name for the agent
 - `color`: Agent display color as a six-digit hex value or OpenCode theme color
+- `primary`: Declare a custom agent as a peer primary orchestrator (SDK mode `primary`; ignored on built-in names)
 
 ### CouncilConfig
 - `presets`: Named council presets (map of councillor name → CouncillorConfig)
@@ -206,7 +220,7 @@ This allows consumers to import directly from `src/config` rather than individua
 
 ## Backward Compatibility
 
-- Removed keys (`REMOVED_CONFIG_KEYS` in `removed-keys.ts`: top-level `tmux`, `council.master*`, council preset `master` / `councillors`, `backgroundJobs.continueOnIdle`, `fallback.timeoutMs|retry_on_empty|runtimeOverride`, `multiplexer.zellij_pane_mode`): stripped from each raw layer before validation with a `removed-key` warning; the schema itself still rejects them
+- Removed keys (`REMOVED_CONFIG_KEYS` in `removed-keys.ts`: top-level `tmux`, `council.master*`, council preset `master` / `councillors`, `backgroundJobs.continueOnIdle`, `fallback.timeoutMs|retry_on_empty|runtimeOverride`, `multiplexer.zellij_pane_mode`, `webfetch.model`): stripped from each raw layer before validation with a `removed-key` warning; the schema itself still rejects them
 - Invalid `multiplexer` values disable pane management (`type: "none"`) with one diagnostic
 
 ## Error Handling

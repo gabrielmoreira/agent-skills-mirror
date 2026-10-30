@@ -1,6 +1,6 @@
 # Waza Agent Guide
 
-This file is the canonical agent guide for the Waza repository. `CLAUDE.md` is a symlink to it, so Claude Code and Codex see identical content. Edit this file; do not edit `CLAUDE.md`.
+This file is the canonical agent guide for the Waza repository. Claude Code and Codex both read it directly; there is no `CLAUDE.md`.
 
 ## Project
 

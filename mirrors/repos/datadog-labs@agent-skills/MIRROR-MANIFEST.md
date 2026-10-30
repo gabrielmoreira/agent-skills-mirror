@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `datadog-labs/agent-skills` — 26 default patterns, 0 followed patterns, 55 file(s) materialized.
+Mirror of `datadog-labs/agent-skills` — 26 default patterns, 0 followed patterns, 56 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `datadog-labs/agent-skills` — 26 default patterns, 0 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 55 |
+| Files         | 56 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -109,11 +109,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 48 | ✓ | [`dd-oci-integration/SKILL.md`](dd-oci-integration/SKILL.md) |
 | 49 | ✓ | [`dd-orchestrator/SKILL.md`](dd-orchestrator/SKILL.md) |
 | 50 | ✓ | [`dd-product-recommender/SKILL.md`](dd-product-recommender/SKILL.md) |
-| 51 | ✓ | [`dd-pup/SKILL.md`](dd-pup/SKILL.md) |
-| 52 | ✓ | [`dd-security/csm/ownership-agent/SKILL.md`](dd-security/csm/ownership-agent/SKILL.md) |
-| 53 | ✓ | [`dd-software-delivery/triage-flaky-test/SKILL.md`](dd-software-delivery/triage-flaky-test/SKILL.md) |
-| 54 | ✓ | [`dd-software-delivery/unblock-pr/SKILL.md`](dd-software-delivery/unblock-pr/SKILL.md) |
-| 55 | ✓ | [`SKILL.md`](SKILL.md) |
+| 51 | ✓ | [`dd-profiler-setup/SKILL.md`](dd-profiler-setup/SKILL.md) |
+| 52 | ✓ | [`dd-pup/SKILL.md`](dd-pup/SKILL.md) |
+| 53 | ✓ | [`dd-security/csm/ownership-agent/SKILL.md`](dd-security/csm/ownership-agent/SKILL.md) |
+| 54 | ✓ | [`dd-software-delivery/triage-flaky-test/SKILL.md`](dd-software-delivery/triage-flaky-test/SKILL.md) |
+| 55 | ✓ | [`dd-software-delivery/unblock-pr/SKILL.md`](dd-software-delivery/unblock-pr/SKILL.md) |
+| 56 | ✓ | [`SKILL.md`](SKILL.md) |
 
 ---
 

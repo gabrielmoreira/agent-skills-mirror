@@ -283,15 +283,27 @@ def admin_chain(pack: dict, item: dict) -> list[str]:
     return list(reversed(chain))
 
 
+def valid_alias(a) -> bool:
+    return isinstance(a, str) and bool(a.strip())
+
+
+def aliases(item: dict) -> list[str]:
+    """An item's aliases; a malformed field is ignored here (lint reports it), never split into characters."""
+    a = item.get("aliases")
+    return [x for x in a if valid_alias(x)] if isinstance(a, list) else []
+
+
 def admin_find(name: str, country: str | None = None) -> list[tuple[dict, dict]]:
-    """Exact name first, then a match ignoring the pack's generic suffixes (市/省/区/县 in CN). [(pack, item)]"""
+    """Exact name first, then a match on the name or an alias ignoring the pack's generic suffixes (市/省/区/县 in CN). [(pack, item)]"""
     pk = [resolve(country)] if country else list(packs().values())
     out = []
     for p in pk:
         if not p:
             continue
         items, by = admin_index(p)
-        hits = by.get(name) or [it for it in items if strip_suffix(it["name"], p) == strip_suffix(name, p)]
+        want = strip_suffix(name, p)
+        hits = by.get(name) or [it for it in items
+                                if want in {strip_suffix(n, p) for n in [it["name"], *aliases(it)]}]
         out += [(p, it) for it in hits]
     return out
 
@@ -492,6 +504,10 @@ def _lint_admin(pack: dict, errs: list) -> None:
     unknown = lv - set((pack.get("admin_levels") or {}).keys())
     if unknown:
         errs.append(f"{rel}: levels {sorted(unknown)} have no entry in admin_levels")
+    bad = [it.get("name") for it in items if "aliases" in it
+           and not (isinstance(it["aliases"], list) and all(valid_alias(a) for a in it["aliases"]))]
+    if bad:
+        errs.append(f"{rel}: aliases must be a list of non-empty strings (e.g. {bad[:3]})")
     orphans = [it["name"] for it in items if it.get("parent") and it["parent"] not in names]
     if orphans:
         errs.append(f"{rel}: {len(orphans)} items name a parent that isn't in the table (e.g. {orphans[:3]})")

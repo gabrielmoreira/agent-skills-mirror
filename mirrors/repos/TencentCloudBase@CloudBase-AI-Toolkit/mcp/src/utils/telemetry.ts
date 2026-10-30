@@ -6,6 +6,12 @@ import { peekLoginState } from '../auth.js';
 import { fetchEnvOwnerUin, getCachedEnvId } from '../cloudbase-manager.js';
 import { CloudBaseOptions } from '../types.js';
 import { isCloudMode } from './cloud-mode.js';
+import {
+    peekLocalEnvBinding,
+    readReportedEnv,
+    type EnvSlot,
+    type EnvSource,
+} from './env-binding.js';
 import { computeDeviceId } from './device-id.js';
 import { debug } from './logger.js';
 import { normalizeSite, resolveSiteAndRegion } from './site-map.js';
@@ -244,35 +250,41 @@ class TelemetryReporter {
 export const telemetryReporter = new TelemetryReporter();
 
 /**
- * 解析环境ID
- * 优先级：传入配置 > envManager缓存 > 环境变量 > unknown
+ * Reports read the current AsyncLocalStorage slot.
+ * They do not re-read envManager or CLOUDBASE_ENV_ID.
+ * An explicit envId on this call is only used when the slot is still empty
+ * (hosted initialized, before a resolver runs, when the request already carried one).
+ *
+ * The source list lives in `env-binding.ts` (`ENV_SOURCES`) — one definition only.
  */
-function resolveEnvId(cloudBaseOptions?: CloudBaseOptions): { envId: string; envIdSource: string } {
-    let envId: string = 'unknown';
-    let envIdSource: string = 'unknown';
-    try {
-        if (cloudBaseOptions?.envId) {
-            envId = cloudBaseOptions.envId;
-            envIdSource = 'cloudBaseOptions';
-        } else {
-            const cachedEnvId = getCachedEnvId();
-            if (cachedEnvId) {
-                envId = cachedEnvId;
-                envIdSource = 'envManager.cachedEnvId';
-            } else if (process.env.CLOUDBASE_ENV_ID) {
-                envId = process.env.CLOUDBASE_ENV_ID;
-                envIdSource = 'process.env.CLOUDBASE_ENV_ID';
-            } else {
-                envId = 'unknown';
-                envIdSource = 'default';
-            }
-        }
-    } catch (err) {
-        debug('获取环境ID失败，遥测数据将使用 unknown', err instanceof Error ? err : new Error(String(err)));
-        envId = 'unknown';
-        envIdSource = 'error';
+function resolveEnvId(cloudBaseOptions?: CloudBaseOptions): { envId: string; envIdSource: EnvSource } {
+    const reported = readReportedEnv();
+    if (reported.envIdSource !== "default") {
+        return reported;
     }
-    return { envId, envIdSource };
+    if (cloudBaseOptions?.envId) {
+        return { envId: cloudBaseOptions.envId, envIdSource: "cloudBaseOptions" };
+    }
+    return { envId: "unknown", envIdSource: "default" };
+}
+
+/**
+ * Stdio start: reuse the login warm (one peekLoginState per process) and one project-file read.
+ * Does not call setEnvId and does not list environments. Cloud mode does not read local files.
+ */
+export async function seedStdioEnvBinding(slot: EnvSlot): Promise<void> {
+    if (isCloudMode()) {
+        return;
+    }
+    await warmLocalLoginState();
+    const loginEnvId = typeof localLoginState?.envId === "string" ? localLoginState.envId : null;
+    const binding = peekLocalEnvBinding({
+        cachedEnvId: getCachedEnvId(),
+        loginEnvId,
+    });
+    if (binding.envId && binding.source !== "default") {
+        slot.binding = binding;
+    }
 }
 
 /** MCP initialize clientInfo fields available after handshake via Server.getClientVersion(). */
@@ -640,6 +652,13 @@ export const reportToolCall =  async (params: {
     client?: string; // 新增：MCP client 来源标识（hosted 场景由上游解析传入）
     mcpClientInfo?: McpClientInfo; // MCP initialize clientInfo
     mcpClientCapabilities?: McpClientCapabilities; // MCP initialize capabilities（本地支持矩阵的唯一来源）
+    /**
+     * `auth` 的「环境准备」结果（只有 auth 会给，其余工具恒为 undefined）。
+     * 为什么必须上报：无环境的用户到底卡在购买页、实名、还是 CAM 授权，
+     * payload 里分得很清楚，但没进埋点之前，三种情况在数据里长得一模一样。
+     */
+    envSetupStatus?: string;
+    envSetupFailReason?: string;
 }) => {
     const {
         nodeVersion,
@@ -669,6 +688,9 @@ export const reportToolCall =  async (params: {
         duration: params.duration !== undefined ? String(params.duration) : undefined,
         error: params.error ? params.error.substring(0, 200) : undefined ,// 限制错误信息长度
         envId: envId || 'unknown',
+        // 取值来源（cloudBaseOptions / envManager.cachedEnvId / process.env / default）：
+        // 这一列就是「envId 为什么是 unknown」的判据，别再靠猜
+        envIdSource,
         region: siteRegion.region,
         site: siteRegion.site,
         login_uin: loginUin,
@@ -682,6 +704,14 @@ export const reportToolCall =  async (params: {
     // 工具级 action：不再依赖 inputParams 前 500 字符去猜"做了什么"
     if (params.action !== undefined) {
         eventData.action = params.action;
+    }
+
+    // 环境准备结果：拿不到就不占列（与能力字段同一纪律，不写 unknown 假值）
+    if (params.envSetupStatus !== undefined) {
+        eventData.envSetupStatus = params.envSetupStatus;
+    }
+    if (params.envSetupFailReason !== undefined) {
+        eventData.envSetupFailReason = params.envSetupFailReason;
     }
 
     // 添加入参信息（如果提供）
@@ -920,6 +950,9 @@ export const reportToolkitLifecycle = async (params: {
         exitCode: params.exitCode !== undefined ? String(params.exitCode) : undefined,
         error: params.error ? params.error.substring(0, 200) : undefined, // 限制错误信息长度
         envId: envId || 'unknown',
+        // 取值来源（cloudBaseOptions / envManager.cachedEnvId / process.env / default）：
+        // 这一列就是「envId 为什么是 unknown」的判据，别再靠猜
+        envIdSource,
         region: siteRegion.region,
         site: siteRegion.site,
         login_uin: loginUin,
@@ -994,7 +1027,7 @@ export const reportToolkitSessionInitialized = async (params: {
         mcpVersion
     } = telemetryReporter.getUserAgent();
 
-    const { envId } = resolveEnvId(params.cloudBaseOptions);
+    const { envId, envIdSource } = resolveEnvId(params.cloudBaseOptions);
     const siteRegion = resolveTelemetrySiteRegion(params.cloudBaseOptions);
     // 与 `start` 同理：`initialized` 紧跟在 `start` 之后，也是不允许等的分支就会白报一条 unknown。
     // 这里放开解析；若 `start` 已经 warm 过，这一句直接命中进程内缓存，零额外成本。
@@ -1003,6 +1036,7 @@ export const reportToolkitSessionInitialized = async (params: {
     const eventData: { [key: string]: any } = {
         event: 'initialized',
         envId: envId || 'unknown',
+        envIdSource,
         region: siteRegion.region,
         site: siteRegion.site,
         login_uin: loginUin,

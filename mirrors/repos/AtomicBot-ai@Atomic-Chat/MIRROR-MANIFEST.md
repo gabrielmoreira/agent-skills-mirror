@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `AtomicBot-ai/Atomic-Chat` — 26 default patterns, 10 followed patterns, 511 file(s) materialized.
+Mirror of `AtomicBot-ai/Atomic-Chat` — 26 default patterns, 10 followed patterns, 542 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `AtomicBot-ai/Atomic-Chat` — 26 default patterns, 10 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 10 |
-| Files         | 511 |
+| Files         | 542 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -542,43 +542,74 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 472 | ✓ | [`docs/decisions/2026-10-23-run-the-first-run-flow-in-three-variants.md`](docs/decisions/2026-10-23-run-the-first-run-flow-in-three-variants.md) |
 | 473 | ✓ | [`docs/decisions/2026-10-23-split-new-installs-into-three-onboarding-cohorts.md`](docs/decisions/2026-10-23-split-new-installs-into-three-onboarding-cohorts.md) |
 | 474 | ✓ | [`docs/decisions/2026-10-23-stop-an-idle-server-at-the-first-run-endpoint-handoff.md`](docs/decisions/2026-10-23-stop-an-idle-server-at-the-first-run-endpoint-handoff.md) |
-| 475 | ✓ | [`docs/decisions/2026-10-26-ship-deb-rpm-and-aur-packages-from-the-appimage-build.md`](docs/decisions/2026-10-26-ship-deb-rpm-and-aur-packages-from-the-appimage-build.md) |
-| 476 | ✓ | [`docs/README.md`](docs/README.md) |
-| 477 | ✓ | [`extensions/assistant-extension/README.md`](extensions/assistant-extension/README.md) |
-| 478 | ✓ | [`foundation-models-server/README.md`](foundation-models-server/README.md) |
-| 479 | ✓ | [`mlx-server/README.md`](mlx-server/README.md) |
-| 480 | ✓ | [`scripts/concurrent-demo/README.md`](scripts/concurrent-demo/README.md) |
-| 481 | ✓ | [`src-tauri/resources/agent-skills/apple-calendar/SKILL.md`](src-tauri/resources/agent-skills/apple-calendar/SKILL.md) |
-| 482 | ✓ | [`src-tauri/resources/agent-skills/apple-notes/SKILL.md`](src-tauri/resources/agent-skills/apple-notes/SKILL.md) |
-| 483 | ✓ | [`src-tauri/resources/agent-skills/apple-reminders/SKILL.md`](src-tauri/resources/agent-skills/apple-reminders/SKILL.md) |
-| 484 | ✓ | [`src-tauri/resources/agent-skills/audio-transcribe/SKILL.md`](src-tauri/resources/agent-skills/audio-transcribe/SKILL.md) |
-| 485 | ✓ | [`src-tauri/resources/agent-skills/currency/SKILL.md`](src-tauri/resources/agent-skills/currency/SKILL.md) |
-| 486 | ✓ | [`src-tauri/resources/agent-skills/docker/SKILL.md`](src-tauri/resources/agent-skills/docker/SKILL.md) |
-| 487 | ✓ | [`src-tauri/resources/agent-skills/ffmpeg/SKILL.md`](src-tauri/resources/agent-skills/ffmpeg/SKILL.md) |
-| 488 | ✓ | [`src-tauri/resources/agent-skills/github/SKILL.md`](src-tauri/resources/agent-skills/github/SKILL.md) |
-| 489 | ✓ | [`src-tauri/resources/agent-skills/gog-workspace/SKILL.md`](src-tauri/resources/agent-skills/gog-workspace/SKILL.md) |
-| 490 | ✓ | [`src-tauri/resources/agent-skills/imagemagick/SKILL.md`](src-tauri/resources/agent-skills/imagemagick/SKILL.md) |
-| 491 | ✓ | [`src-tauri/resources/agent-skills/notion/SKILL.md`](src-tauri/resources/agent-skills/notion/SKILL.md) |
-| 492 | ✓ | [`src-tauri/resources/agent-skills/obsidian/SKILL.md`](src-tauri/resources/agent-skills/obsidian/SKILL.md) |
-| 493 | ✓ | [`src-tauri/resources/agent-skills/pandoc/SKILL.md`](src-tauri/resources/agent-skills/pandoc/SKILL.md) |
-| 494 | ✓ | [`src-tauri/resources/agent-skills/pdf/SKILL.md`](src-tauri/resources/agent-skills/pdf/SKILL.md) |
-| 495 | ✓ | [`src-tauri/resources/agent-skills/skill-creator/SKILL.md`](src-tauri/resources/agent-skills/skill-creator/SKILL.md) |
-| 496 | ✓ | [`src-tauri/resources/agent-skills/wikipedia/SKILL.md`](src-tauri/resources/agent-skills/wikipedia/SKILL.md) |
-| 497 | ✓ | [`src-tauri/resources/agent-skills/wttr-weather/SKILL.md`](src-tauri/resources/agent-skills/wttr-weather/SKILL.md) |
-| 498 | ✓ | [`src-tauri/resources/agent-skills/xlsx/SKILL.md`](src-tauri/resources/agent-skills/xlsx/SKILL.md) |
-| 499 | ✓ | [`web-app/README.md`](web-app/README.md) |
-| 500 | ✓ | [`web-app/src/lib/core-settings-schema/README.md`](web-app/src/lib/core-settings-schema/README.md) |
-| 501 | ✓ | [`web-app/src/services/AGENTS.md`](web-app/src/services/AGENTS.md) |
-| 502 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 503 | → | [`core/CONTRIBUTING.md`](core/CONTRIBUTING.md) |
-| 504 | → | [`DEVELOP.md`](DEVELOP.md) |
-| 505 | → | [`docs/decisions/INDEX.md`](docs/decisions/INDEX.md) |
-| 506 | → | [`docs/ui-layout-rules.md`](docs/ui-layout-rules.md) |
-| 507 | → | [`extensions/CONTRIBUTING.md`](extensions/CONTRIBUTING.md) |
-| 508 | → | [`README.md`](README.md) |
-| 509 | → | [`src-tauri/CONTRIBUTING.md`](src-tauri/CONTRIBUTING.md) |
-| 510 | → | [`src-tauri/plugins/CONTRIBUTING.md`](src-tauri/plugins/CONTRIBUTING.md) |
-| 511 | → | [`web-app/CONTRIBUTING.md`](web-app/CONTRIBUTING.md) |
+| 475 | ✓ | [`docs/decisions/2026-10-26-ask-before-removing-a-file-from-a-project.md`](docs/decisions/2026-10-26-ask-before-removing-a-file-from-a-project.md) |
+| 476 | ✓ | [`docs/decisions/2026-10-26-chat-with-the-team-through-a-support-relay.md`](docs/decisions/2026-10-26-chat-with-the-team-through-a-support-relay.md) |
+| 477 | ✓ | [`docs/decisions/2026-10-26-count-finished-files-on-resume-and-reopen-trickling-connections.md`](docs/decisions/2026-10-26-count-finished-files-on-resume-and-reopen-trickling-connections.md) |
+| 478 | ✓ | [`docs/decisions/2026-10-26-download-the-chat-model-before-image-and-video.md`](docs/decisions/2026-10-26-download-the-chat-model-before-image-and-video.md) |
+| 479 | ✓ | [`docs/decisions/2026-10-26-judge-an-image-model-against-the-ram-it-shares-on-a-mac.md`](docs/decisions/2026-10-26-judge-an-image-model-against-the-ram-it-shares-on-a-mac.md) |
+| 480 | ✓ | [`docs/decisions/2026-10-26-keep-a-slow-core-that-is-still-alive-attached.md`](docs/decisions/2026-10-26-keep-a-slow-core-that-is-still-alive-attached.md) |
+| 481 | ✓ | [`docs/decisions/2026-10-26-keep-the-activity-log-live-and-say-why-a-request-has-no-text.md`](docs/decisions/2026-10-26-keep-the-activity-log-live-and-say-why-a-request-has-no-text.md) |
+| 482 | ✓ | [`docs/decisions/2026-10-26-keep-unsent-drafts-across-a-relaunch.md`](docs/decisions/2026-10-26-keep-unsent-drafts-across-a-relaunch.md) |
+| 483 | ✓ | [`docs/decisions/2026-10-26-let-stop-end-a-voice-start-while-the-voice-model-loads.md`](docs/decisions/2026-10-26-let-stop-end-a-voice-start-while-the-voice-model-loads.md) |
+| 484 | ✓ | [`docs/decisions/2026-10-26-offer-back-to-setup-after-every-chat-handoff.md`](docs/decisions/2026-10-26-offer-back-to-setup-after-every-chat-handoff.md) |
+| 485 | ✓ | [`docs/decisions/2026-10-26-ship-deb-rpm-and-aur-packages-from-the-appimage-build.md`](docs/decisions/2026-10-26-ship-deb-rpm-and-aur-packages-from-the-appimage-build.md) |
+| 486 | ✓ | [`docs/decisions/2026-10-26-show-a-wait-screen-while-the-first-model-downloads.md`](docs/decisions/2026-10-26-show-a-wait-screen-while-the-first-model-downloads.md) |
+| 487 | ✓ | [`docs/decisions/2026-10-26-show-notifications-allowed-only-once-allowed-in-setup.md`](docs/decisions/2026-10-26-show-notifications-allowed-only-once-allowed-in-setup.md) |
+| 488 | ✓ | [`docs/decisions/2026-10-26-show-the-context-llama-cpp-fitted-not-the-one-asked-for.md`](docs/decisions/2026-10-26-show-the-context-llama-cpp-fitted-not-the-one-asked-for.md) |
+| 489 | ✓ | [`docs/decisions/2026-10-26-show-the-update-check-result-on-its-settings-row.md`](docs/decisions/2026-10-26-show-the-update-check-result-on-its-settings-row.md) |
+| 490 | ✓ | [`docs/decisions/2026-10-27-configure-the-servers-engine-from-its-picker.md`](docs/decisions/2026-10-27-configure-the-servers-engine-from-its-picker.md) |
+| 491 | ✓ | [`docs/decisions/2026-10-27-drop-the-auto-approve-note-from-the-access-menu.md`](docs/decisions/2026-10-27-drop-the-auto-approve-note-from-the-access-menu.md) |
+| 492 | ✓ | [`docs/decisions/2026-10-27-hide-the-email-reminder-until-it-is-delivered.md`](docs/decisions/2026-10-27-hide-the-email-reminder-until-it-is-delivered.md) |
+| 493 | ✓ | [`docs/decisions/2026-10-27-lay-out-an-audios-studio-in-dev-builds-only.md`](docs/decisions/2026-10-27-lay-out-an-audios-studio-in-dev-builds-only.md) |
+| 494 | ✓ | [`docs/decisions/2026-10-27-make-the-default-interface-denser.md`](docs/decisions/2026-10-27-make-the-default-interface-denser.md) |
+| 495 | ✓ | [`docs/decisions/2026-10-27-run-an-agent-from-its-server-card.md`](docs/decisions/2026-10-27-run-an-agent-from-its-server-card.md) |
+| 496 | ✓ | [`docs/decisions/2026-10-27-run-codex-on-its-own-profile-not-the-shared-config.md`](docs/decisions/2026-10-27-run-codex-on-its-own-profile-not-the-shared-config.md) |
+| 497 | ✓ | [`docs/decisions/2026-10-27-ship-only-upstream-llama-cpp-in-the-installer.md`](docs/decisions/2026-10-27-ship-only-upstream-llama-cpp-in-the-installer.md) |
+| 498 | ✓ | [`docs/decisions/2026-10-27-show-the-runtime-in-the-tray-and-open-its-picker-on-click.md`](docs/decisions/2026-10-27-show-the-runtime-in-the-tray-and-open-its-picker-on-click.md) |
+| 499 | ✓ | [`docs/decisions/2026-10-27-stack-the-corner-notifications-and-fold-them-after-three-seconds.md`](docs/decisions/2026-10-27-stack-the-corner-notifications-and-fold-them-after-three-seconds.md) |
+| 500 | ✓ | [`docs/decisions/2026-10-28-bound-support-writes-and-preserve-retry-identity.md`](docs/decisions/2026-10-28-bound-support-writes-and-preserve-retry-identity.md) |
+| 501 | ✓ | [`docs/decisions/2026-10-28-deliver-model-ready-email-reminders.md`](docs/decisions/2026-10-28-deliver-model-ready-email-reminders.md) |
+| 502 | ✓ | [`docs/decisions/2026-10-28-preserve-project-first-send-across-navigation.md`](docs/decisions/2026-10-28-preserve-project-first-send-across-navigation.md) |
+| 503 | ✓ | [`docs/decisions/2026-10-28-propagate-current-credentials-to-external-agents.md`](docs/decisions/2026-10-28-propagate-current-credentials-to-external-agents.md) |
+| 504 | ✓ | [`docs/decisions/2026-10-28-wait-for-analytics-readiness-and-recover-onboarding-assignments.md`](docs/decisions/2026-10-28-wait-for-analytics-readiness-and-recover-onboarding-assignments.md) |
+| 505 | ✓ | [`docs/decisions/2026-10-29-host-the-microsoft-store-installer-in-its-own-bucket.md`](docs/decisions/2026-10-29-host-the-microsoft-store-installer-in-its-own-bucket.md) |
+| 506 | ✓ | [`docs/decisions/2026-10-29-leave-the-first-runs-downloads-to-the-download-panel-after-setup.md`](docs/decisions/2026-10-29-leave-the-first-runs-downloads-to-the-download-panel-after-setup.md) |
+| 507 | ✓ | [`docs/README.md`](docs/README.md) |
+| 508 | ✓ | [`extensions/assistant-extension/README.md`](extensions/assistant-extension/README.md) |
+| 509 | ✓ | [`foundation-models-server/README.md`](foundation-models-server/README.md) |
+| 510 | ✓ | [`mlx-server/README.md`](mlx-server/README.md) |
+| 511 | ✓ | [`scripts/concurrent-demo/README.md`](scripts/concurrent-demo/README.md) |
+| 512 | ✓ | [`src-tauri/resources/agent-skills/apple-calendar/SKILL.md`](src-tauri/resources/agent-skills/apple-calendar/SKILL.md) |
+| 513 | ✓ | [`src-tauri/resources/agent-skills/apple-notes/SKILL.md`](src-tauri/resources/agent-skills/apple-notes/SKILL.md) |
+| 514 | ✓ | [`src-tauri/resources/agent-skills/apple-reminders/SKILL.md`](src-tauri/resources/agent-skills/apple-reminders/SKILL.md) |
+| 515 | ✓ | [`src-tauri/resources/agent-skills/audio-transcribe/SKILL.md`](src-tauri/resources/agent-skills/audio-transcribe/SKILL.md) |
+| 516 | ✓ | [`src-tauri/resources/agent-skills/currency/SKILL.md`](src-tauri/resources/agent-skills/currency/SKILL.md) |
+| 517 | ✓ | [`src-tauri/resources/agent-skills/docker/SKILL.md`](src-tauri/resources/agent-skills/docker/SKILL.md) |
+| 518 | ✓ | [`src-tauri/resources/agent-skills/ffmpeg/SKILL.md`](src-tauri/resources/agent-skills/ffmpeg/SKILL.md) |
+| 519 | ✓ | [`src-tauri/resources/agent-skills/github/SKILL.md`](src-tauri/resources/agent-skills/github/SKILL.md) |
+| 520 | ✓ | [`src-tauri/resources/agent-skills/gog-workspace/SKILL.md`](src-tauri/resources/agent-skills/gog-workspace/SKILL.md) |
+| 521 | ✓ | [`src-tauri/resources/agent-skills/imagemagick/SKILL.md`](src-tauri/resources/agent-skills/imagemagick/SKILL.md) |
+| 522 | ✓ | [`src-tauri/resources/agent-skills/notion/SKILL.md`](src-tauri/resources/agent-skills/notion/SKILL.md) |
+| 523 | ✓ | [`src-tauri/resources/agent-skills/obsidian/SKILL.md`](src-tauri/resources/agent-skills/obsidian/SKILL.md) |
+| 524 | ✓ | [`src-tauri/resources/agent-skills/pandoc/SKILL.md`](src-tauri/resources/agent-skills/pandoc/SKILL.md) |
+| 525 | ✓ | [`src-tauri/resources/agent-skills/pdf/SKILL.md`](src-tauri/resources/agent-skills/pdf/SKILL.md) |
+| 526 | ✓ | [`src-tauri/resources/agent-skills/skill-creator/SKILL.md`](src-tauri/resources/agent-skills/skill-creator/SKILL.md) |
+| 527 | ✓ | [`src-tauri/resources/agent-skills/wikipedia/SKILL.md`](src-tauri/resources/agent-skills/wikipedia/SKILL.md) |
+| 528 | ✓ | [`src-tauri/resources/agent-skills/wttr-weather/SKILL.md`](src-tauri/resources/agent-skills/wttr-weather/SKILL.md) |
+| 529 | ✓ | [`src-tauri/resources/agent-skills/xlsx/SKILL.md`](src-tauri/resources/agent-skills/xlsx/SKILL.md) |
+| 530 | ✓ | [`web-app/README.md`](web-app/README.md) |
+| 531 | ✓ | [`web-app/src/lib/core-settings-schema/README.md`](web-app/src/lib/core-settings-schema/README.md) |
+| 532 | ✓ | [`web-app/src/services/AGENTS.md`](web-app/src/services/AGENTS.md) |
+| 533 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 534 | → | [`core/CONTRIBUTING.md`](core/CONTRIBUTING.md) |
+| 535 | → | [`DEVELOP.md`](DEVELOP.md) |
+| 536 | → | [`docs/decisions/INDEX.md`](docs/decisions/INDEX.md) |
+| 537 | → | [`docs/ui-layout-rules.md`](docs/ui-layout-rules.md) |
+| 538 | → | [`extensions/CONTRIBUTING.md`](extensions/CONTRIBUTING.md) |
+| 539 | → | [`README.md`](README.md) |
+| 540 | → | [`src-tauri/CONTRIBUTING.md`](src-tauri/CONTRIBUTING.md) |
+| 541 | → | [`src-tauri/plugins/CONTRIBUTING.md`](src-tauri/plugins/CONTRIBUTING.md) |
+| 542 | → | [`web-app/CONTRIBUTING.md`](web-app/CONTRIBUTING.md) |
 
 ---
 

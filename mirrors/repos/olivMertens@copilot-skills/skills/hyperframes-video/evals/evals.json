@@ -1,0 +1,64 @@
+{
+  "skill_name": "hyperframes-video",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Prepare une demo HyperFrames de 45 secondes en francais pour des dirigeants, 16:9 et 9:16, avec voix et sous-titres. J'ai trois captures approuvees d'une app de demonstration et une musique autorisee. Montre saisie, revue puis resultat, synchronise les grands changements sur les beats et represente le traitement par un schema. Je fournirai les fichiers apres le brief. Pas d'envoi cloud. Montre-moi le storyboard avant de produire la video.",
+      "expected_output": "A focused intake that requests actual missing assets and voice decisions, an evidence-aware proposed storyboard distinguishing narrative beats from musical cues, and no fabricated analysis, remote generation or premature render.",
+      "files": [],
+      "assertions": [
+        "Requests the missing captures and music instead of inventing file paths or timestamps.",
+        "Treats no-cloud as a restriction on remote TTS/media processing as well as remote rendering.",
+        "Plans real UI and an editable explanatory diagram as distinct visual layers.",
+        "Plans separate layouts for 16:9 and 9:16, not just a crop of the finished movie.",
+        "Waits for storyboard approval and never claims a rendered video exists."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Dans mon projet HyperFrames, la musique commence a 1.5 s dans la composition et on retire les 8 premieres secondes du fichier source. Lecture a vitesse 1. L'analyse donne des beats source a 8.1, 8.6 et 9.1 s. Place trois apparitions UI dessus a 30 fps. Donne seulement les temps et frames, sans modifier de fichier ni lancer de commande.",
+      "expected_output": "Three composition cues: 1.6 s/frame 48, 2.1 s/frame 63, 2.6 s/frame 78, with no file writes or new analysis claims.",
+      "files": [],
+      "assertions": [
+        "Applies both the source trim offset and the composition start offset.",
+        "Returns zero-based frame indices 48, 63 and 78 at 30 fps.",
+        "Does not attempt rendering, editing or unnecessary analysis."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Create a 12-second HyperFrames motion graphic with the exact text 'Review before release'. No audio at all, no media files, no cloud services. Show an illustrative three-node approval flow with SVG and moderate movement, not a real product screenshot. I approve a local preview and render if the tools are available; otherwise report what is missing.",
+      "expected_output": "A deterministic editable HTML/SVG composition with explicit timing and registered paused animation, a truly silent output if rendering succeeds, or an honest tooling blocker. No unnecessary TTS, music generation or upload.",
+      "files": [],
+      "assertions": [
+        "Preserves the exact supplied copy and represents the flow as illustrative.",
+        "Omits music, narration, sound effects and music analysis.",
+        "Uses seekable animation rather than wall-clock timers or CSS animation.",
+        "Runs only locally permitted operations and reports an unavailable renderer honestly.",
+        "Checks the actual output before claiming completion."
+      ]
+    }
+  ],
+  "trigger_checks": [
+    {
+      "query": "Fais une video HyperFrames avec des captures UI et des cuts sur la musique.",
+      "should_trigger": true
+    },
+    {
+      "query": "Migrate this Remotion source composition to HyperFrames without overwriting it.",
+      "should_trigger": true
+    },
+    {
+      "query": "Fix the audio overlap in my existing Remotion composition; keep Remotion.",
+      "should_trigger": false
+    },
+    {
+      "query": "Create only a HeyGen avatar through its avatar API, not a composed video.",
+      "should_trigger": false
+    },
+    {
+      "query": "Build an interactive slide deck with speaker notes, not an MP4.",
+      "should_trigger": false
+    }
+  ]
+}

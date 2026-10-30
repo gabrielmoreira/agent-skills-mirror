@@ -58,9 +58,9 @@ This codemap covers the plugin repository itself and excludes the nested `openco
 | `src/skills/codemap/` | Repository-mapping skill package and codemap state-management script. | [View Map](src/skills/codemap/codemap.md) |
 | `src/skills/clonedeps/` | Workflow-only dependency source mirroring skill that routes discovery/ref resolution through explorer and direct orchestrator git operations. | [View Map](src/skills/clonedeps/codemap.md) |
 | `src/skills/simplify/` | Behavior-preserving simplification skill package. | [View Map](src/skills/simplify/codemap.md) |
-| `src/tools/` | Tool factory surface for AST-grep, smartfetch, ACP, and task lifecycle controls (cancel/message/status/result/revive/wait-for-user), plus shared task-status policy and activity trackers and on-disk preset-switching helpers. | [View Map](src/tools/codemap.md) |
+| `src/tools/` | Tool factory surface for AST-grep, smartfetch, ACP, and task lifecycle controls (cancel/status/result/revive/wait-for-user, plus the v1-only amendment channel `task_message`), plus shared task-status policy and activity trackers and on-disk preset-switching helpers. | [View Map](src/tools/codemap.md) |
 | `src/tools/ast-grep/` | AST-grep binary management and AST-aware search/replace tool flow. | [View Map](src/tools/ast-grep/codemap.md) |
-| `src/tools/smartfetch/` | Fetch/extract/cache pipeline for web content and secondary-model summarization. | [View Map](src/tools/smartfetch/codemap.md) |
+| `src/tools/smartfetch/` | Fetch/extract/cache pipeline for web content and binary persistence. | [View Map](src/tools/smartfetch/codemap.md) |
 | `src/utils/` | Cross-cutting helpers: logging, session metadata, background job board/store/coordinator/supervisor, live session-status reads, in-process opencode client access, task parsing, env, compat/zip, and client call-shape contracts. | [View Map](src/utils/codemap.md) |
 | `src/v2/` | OpenCode v2 (`opencode2`) adapter: bridges the v1 plugin factory into v2's promise-plugin transform/runtime-hook API. Loaded via `default.setup`; v1 uses `default.server` unchanged. | [View Map](src/v2/codemap.md) |
 | `scripts/` | Build/release validation and generated-artifact maintenance scripts. | [View Map](scripts/codemap.md) |
@@ -118,6 +118,24 @@ This codemap covers the plugin repository itself and excludes the nested `openco
   active-interview kickoff collapse, and `service.ts` handles quiet state turns
   plus `/implement` (including newest completed-spec fallback). The
   `interview_submit_state` tool is registered statically and bridged for v1/v2.
+
+## Runtime Reuse Seams
+
+- `src/config/snapshot.ts` owns bounded shared source reads, resolved config
+  outcomes and raw/validated preset catalog views. `jsonc.ts`, `json-file.ts`
+  and `paths.ts` sit below CLI and runtime callers; installer logic stays in CLI.
+- Agent registry/projection passes reuse override/model/MCP tables locally.
+  Marketplace admission receives the lazily loaded `registry-runtime.ts`
+  Implementation after its feature gate; schema primitives have small owners.
+- `src/hooks/message-transform-view.ts` is request-local, rebuilt after
+  structural transcript edits; injected bytes and hook ordering are unchanged.
+- `src/tui-state.ts` batches native-event recorder/projection work in an isolated
+  asynchronous scope and commits synchronously under the existing file lock.
+- v2 admission shares its validated record/identity with profile capture. Native
+  event filters freeze the required type union once; Interview has one owner.
+- Update facts use the existing native RPC seam. Optional implementations are
+  emitted as packaged ESM chunks; entry paths remain unchanged. See
+  [Runtime Efficiency](docs/runtime-efficiency.md) and release import checks.
 
 ## Root Assets
 

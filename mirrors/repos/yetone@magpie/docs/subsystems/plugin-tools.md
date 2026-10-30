@@ -32,7 +32,7 @@ A tool's answer goes back to the agent that called it, on this computer or on a 
 - A plugin's tool runs in the plugin host with the user's rights, as its provider code does. Installing a plugin is trusting it.
 - One host serves every plugin. A tool that never answers is answered at `ToolTimeout`, and its call's slot in the host is left for its own abort to end; the host goes on serving (`TestPluginTools`).
 - Names are stable for a given set of plugins on. Turning on a plugin earlier in plugins.json that gives a tool of the same MCP name renumbers the later one.
-- Wiring is the user's: the Plugins page copies the address, and magpie writes no agent's MCP config for it. There is no Library entry yet.
+- Wiring is the user's: the Plugins page copies the address, and magpie writes no agent's MCP config for it. There is no Library entry yet. The Library's own servers have an endpoint of the same kind beside this one, `/mcp/magpie/hub/<agent>`, which magpie does write into agents ([MCP hub](mcp-hub.md)); plugin tools aren't in it.
 
 ## Verification
 

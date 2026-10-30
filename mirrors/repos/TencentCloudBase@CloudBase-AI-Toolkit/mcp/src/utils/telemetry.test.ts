@@ -593,4 +593,70 @@ describe("client capabilities (本地支持矩阵的唯一来源)", () => {
       success: "true",
     });
   });
+
+  /* envIdSource 是「envId 为什么是 unknown」的唯一判据（2026-10-27 补）：
+     这一列不上报时，只能靠猜是哪条取值路径丢的。下面三条覆盖优先级与"字段没被丢"。 */
+  it("工具调用上报带 envIdSource，且传入的 envId 标记为 cloudBaseOptions", async () => {
+    const reportSpy = vi.spyOn(telemetryReporter, "report").mockResolvedValue(undefined);
+
+    await reportToolCall({
+      toolName: "readNoSqlDatabaseContent",
+      success: true,
+      cloudBaseOptions: { envId: "env-abc" } as any,
+    });
+
+    expect(payloadAt(reportSpy, 0)).toMatchObject({
+      envId: "env-abc",
+      envIdSource: "cloudBaseOptions",
+    });
+  });
+
+  it("没有槽时，上报不拿环境变量或缓存来填", async () => {
+    const reportSpy = vi.spyOn(telemetryReporter, "report").mockResolvedValue(undefined);
+    const prev = process.env.CLOUDBASE_ENV_ID;
+    process.env.CLOUDBASE_ENV_ID = "env-from-var";
+    try {
+      await reportToolCall({ toolName: "queryEnv", success: true });
+    } finally {
+      if (prev === undefined) delete process.env.CLOUDBASE_ENV_ID;
+      else process.env.CLOUDBASE_ENV_ID = prev;
+    }
+
+    expect(payloadAt(reportSpy, 0)).toMatchObject({
+      envId: "unknown",
+      envIdSource: "default",
+    });
+  });
+
+  it("槽是空的且这次调用也没带 envId 时，envId=unknown 且 envIdSource=default", async () => {
+    const reportSpy = vi.spyOn(telemetryReporter, "report").mockResolvedValue(undefined);
+    const prev = process.env.CLOUDBASE_ENV_ID;
+    delete process.env.CLOUDBASE_ENV_ID;
+    try {
+      await reportToolCall({ toolName: "queryEnv", success: true });
+    } finally {
+      if (prev !== undefined) process.env.CLOUDBASE_ENV_ID = prev;
+    }
+
+    expect(payloadAt(reportSpy, 0)).toMatchObject({
+      envId: "unknown",
+      envIdSource: "default",
+    });
+  });
+
+  it("生命周期上报也带 envIdSource（同一套取值逻辑，不能只修一半）", async () => {
+    const reportSpy = vi.spyOn(telemetryReporter, "report").mockResolvedValue(undefined);
+
+    await reportToolkitLifecycle({
+      event: "start",
+      cloudBaseOptions: { envId: "env-abc" } as any,
+    });
+
+    expect(reportSpy.mock.calls.map((c) => c[0])).toContain("toolkit_lifecycle");
+    const idx = reportSpy.mock.calls.findIndex((c) => c[0] === "toolkit_lifecycle");
+    expect(payloadAt(reportSpy, idx)).toMatchObject({
+      envId: "env-abc",
+      envIdSource: "cloudBaseOptions",
+    });
+  });
 });

@@ -41,6 +41,7 @@ Users may name a style in English, in Chinese, or by its folder. Find it here, t
 | One-line Drawing | 一笔画 | [`one-line`](one-line/STYLE.md) | *The Line That Never Lifted* |
 | Whiteboard Explainer | 白板讲解 | [`whiteboard`](whiteboard/STYLE.md) | *Einstein in Your Pocket* |
 | Urban Sketch · Pen & Wash | 钢笔淡彩 | [`urban-sketch`](urban-sketch/STYLE.md) | *Where the Wind Went* |
+| Chalkboard | 黑板粉笔 | [`chalkboard`](chalkboard/STYLE.md) | *The Story of Chinese Characters* |
 
 ## East Asian Traditions · 东方传统
 
@@ -60,6 +61,7 @@ Users may name a style in English, in Chinese, or by its folder. Find it here, t
 | Woodcut Print | 木刻版画 | [`woodcut`](woodcut/STYLE.md) | *The Bell Founder* |
 | Copperplate Engraving | 铜版画 | [`engraving`](engraving/STYLE.md) | *The Honeybee, Plate VII* |
 | Silkscreen Travel Poster | 丝印旅行海报 | [`silkscreen-poster`](silkscreen-poster/STYLE.md) | *Three Trails* |
+| Printed Long Take | 印刷长镜头 | [`printed-long-take`](printed-long-take/STYLE.md) | *Thirty-Three Cranes* |
 
 ## Graphic & Type · 图形与排版
 
@@ -82,6 +84,9 @@ Users may name a style in English, in Chinese, or by its folder. Find it here, t
 | Dark Tech Keynote | 暗色科技发布 | [`dark-keynote`](dark-keynote/STYLE.md) | *Room to Think* |
 | Living Screencast | 活体实机录屏 | [`living-screencast`](living-screencast/STYLE.md) | *Clawd Moves In* |
 | Sci-fi Hologram HUD | 科幻全息界面 | [`hologram-hud`](hologram-hud/STYLE.md) | *Volt · Spec Scan* |
+| Transit Map | 地铁线路图 | [`transit-map`](transit-map/STYLE.md) | *6 Kilometres* |
+| Isometric Picture Book | 等距绘本 | [`isometric-picture-book`](isometric-picture-book/STYLE.md) | *Seventy-Two Seats* |
+| Circuit Board | 电路板 | [`circuit-board`](circuit-board/STYLE.md) | *Seven Milliseconds* |
 
 ## Cartoon & Anime · 卡通与动画
 
@@ -117,3 +122,5 @@ Users may name a style in English, in Chinese, or by its folder. Find it here, t
 | Tilt-Shift Miniature | 移轴微缩 | [`tilt-shift`](tilt-shift/STYLE.md) | *Toy Town Rush Hour* |
 | Low-poly Isometric Island | 低多边形等距 | [`lowpoly-island`](lowpoly-island/STYLE.md) | *The Island That Grew* |
 | Glass Product Render | 玻璃质感产品 | [`glass-product`](glass-product/STYLE.md) | *Aura — Hear the Light* |
+| Memphis Diorama | 孟菲斯微缩景观 | [`memphis-diorama`](memphis-diorama/STYLE.md) | *Four Seasons in Pomelo Town* |
+| Desktop Flythrough | 桌面穿梭 | [`desktop-flythrough`](desktop-flythrough/STYLE.md) | *Before the Ding* |

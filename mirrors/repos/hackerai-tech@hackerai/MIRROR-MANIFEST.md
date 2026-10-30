@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `hackerai-tech/hackerai` — 26 default patterns, 2 followed patterns, 23 file(s) materialized.
+Mirror of `hackerai-tech/hackerai` — 26 default patterns, 2 followed patterns, 25 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `hackerai-tech/hackerai` — 26 default patterns, 2 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 2 |
-| Files         | 23 |
+| Files         | 25 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -79,10 +79,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 17 | ✓ | [`e2e/README.md`](e2e/README.md) |
 | 18 | ✓ | [`packages/desktop/README.md`](packages/desktop/README.md) |
 | 19 | ✓ | [`packages/local/README.md`](packages/local/README.md) |
-| 20 | ✓ | [`scripts/README.md`](scripts/README.md) |
-| 21 | ✓ | [`third_party/strix-skills/skills/README.md`](third_party/strix-skills/skills/README.md) |
-| 22 | → | [`docs/desktop-local-acceptance.md`](docs/desktop-local-acceptance.md) |
-| 23 | → | [`README.md`](README.md) |
+| 20 | ✓ | [`scripts/benchmarks/cve-bench/README.md`](scripts/benchmarks/cve-bench/README.md) |
+| 21 | ✓ | [`scripts/benchmarks/realvuln/README.md`](scripts/benchmarks/realvuln/README.md) |
+| 22 | ✓ | [`scripts/README.md`](scripts/README.md) |
+| 23 | ✓ | [`third_party/strix-skills/skills/README.md`](third_party/strix-skills/skills/README.md) |
+| 24 | → | [`docs/desktop-local-acceptance.md`](docs/desktop-local-acceptance.md) |
+| 25 | → | [`README.md`](README.md) |
 
 ---
 

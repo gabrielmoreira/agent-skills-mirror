@@ -1,0 +1,252 @@
+HYPERFRAMES CLI AND COMPOSITION CONTRACT
+
+Official docs/source consulted on 2026-09-25; documented release: 0.8.76.
+This is a versioned reference, not a promise about every installed release.
+Consult https://hyperframes.heygen.com/llms.txt and the relevant command --help
+when versions differ. Examples use relative paths; adapt separators and quoting
+to the user's shell. Run project commands from the video project directory.
+
+1. Preflight and installation
+
+User-facing package/binary: hyperframes. Node.js >=22 is required by the current
+CLI package. Local rendering needs Chrome, FFmpeg and FFprobe; Docker is optional.
+Prefer an existing project-pinned CLI. If it is absent, propose installation under
+the approved registry policy; npx can download packages and is not a harmless
+presence check. Do not install every optional generator/model up front.
+
+Documented commands (resolve/pin the version for reproducible work):
+  npx hyperframes --version
+  npx hyperframes doctor --json
+  npx hyperframes browser ensure
+  npx hyperframes init my-video --non-interactive --resolution landscape
+  npx hyperframes preview . --background --no-open --json
+
+Inspect doctor JSON's "ok" value, not just its exit status. browser ensure may
+download Chrome. Confirm the preview URL is responsive and keep the returned
+process identity for cleanup; never terminate unrelated browser/node processes.
+
+init can refresh official skills. To avoid implicit skill updates, set
+HYPERFRAMES_SKIP_SKILLS=1 in the current process before scaffolding. The documented
+--skip-skills flag is currently ignored. HYPERFRAMES_NO_UPDATE_CHECK=1 disables
+update checks; HYPERFRAMES_NO_TELEMETRY=1 disables telemetry.
+
+PowerShell example for process-scoped settings:
+  $env:HYPERFRAMES_SKIP_SKILLS = "1"
+  $env:HYPERFRAMES_NO_UPDATE_CHECK = "1"
+  $env:HYPERFRAMES_NO_TELEMETRY = "1"
+
+Official upstream skills are optional companions:
+  npx skills add heygen-com/hyperframes
+Review requested installation destinations and changes first. Never overwrite
+custom skills blindly. This skill does not require upstream skills just to render
+HTML; specialized helpers below do require their relevant upstream skill.
+
+Sources:
+https://hyperframes.heygen.com/packages/cli.md
+https://hyperframes.heygen.com/quickstart.md
+https://github.com/heygen-com/hyperframes/blob/main/packages/cli/package.json
+
+2. Minimal HTML/GSAP contract
+
+Use the scaffold's pinned runtime dependency. The sketch below assumes GSAP is
+already loaded; it is not a standalone project template:
+
+  <div id="root" data-composition-id="main" data-start="0"
+       data-duration="3" data-width="1920" data-height="1080">
+    <section id="card" class="clip" data-start="0" data-duration="3"
+             data-track-index="1">
+      <h1 id="title">Product, demonstrated.</h1>
+    </section>
+  </div>
+  <script>
+    window.__timelines = window.__timelines || {};
+    const tl = gsap.timeline({paused: true});
+    tl.fromTo("#title", {y: 40, opacity: 0},
+      {y: 0, opacity: 1, duration: 0.6, ease: "power3.out"}, 0);
+    window.__timelines.main = tl;
+  </script>
+
+Size the root in CSS as well as metadata, position it relatively, and clip overflow.
+Give positioned layers explicit geometry/z-index. data-track-index is a Studio
+lane, NOT stacking order and NOT automatic overlap prevention.
+
+The root's finite data-duration is read before scripts run; changing it only at
+runtime cannot safely extend a render. Register each paused finite timeline
+synchronously with the matching composition ID. Prefer fromTo and explicit
+positions. HyperFrames owns time, media playback and clip visibility.
+
+No setTimeout/setInterval, autonomous requestAnimationFrame loop, CSS keyframe
+animation, unseeded randomness, infinite repeat, or mid-render asset loading.
+Resolve local fonts/assets before capture. Raw HTML opened without HyperFrames
+will not automatically play a paused registered timeline.
+
+Nested scenes use a host with data-composition-src and matching composition ID;
+child content/styles/scripts belong in a template. Register the child's timeline
+separately; do not add it manually to the parent's GSAP timeline.
+
+Sources:
+https://hyperframes.heygen.com/reference/html-schema.md
+https://hyperframes.heygen.com/guides/gsap-animation.md
+https://hyperframes.heygen.com/concepts/determinism.md
+
+3. Music analysis: two different schemas
+
+A. Core CLI / Studio beat markers:
+  <audio id="music" src="./assets/music.wav" data-timeline-role="music"
+         data-start="0" data-duration="30"></audio>
+  npx hyperframes beats . --json
+
+The CLI finds the marked local music element and analyzes it in headless Chrome.
+For this asset it writes beats/assets/music.wav.json with the version-1 shape:
+  {"version":1,"audio":"assets/music.wav",
+   "beats":[{"time":2.027,"strength":0.924}]}
+
+time is SOURCE-audio seconds, strength is relative loudness 0..1. CLI JSON reports
+ok/file/count/bpm. Check success and that the array is nonempty. Generate markers
+before opening Studio. This file does NOT contain downbeats or structural sections.
+Core and Studio analysis can differ slightly; keep one reviewed cue source.
+
+B. Rich music analysis from the OPTIONAL official music-to-video skill:
+  python "<music-skill-dir>/scripts/analyze-beatgrid.py" track.mp3 -o audiomap.json --phrase-bars 4 --print
+
+Discover the installed helper path; do not invent it or assume it ships with the
+CLI. It requires Python, librosa, numpy, soundfile and FFmpeg/FFprobe. Its version-2
+audiomap includes grid.beats_sec, grid.downbeats_sec, tempo, phrases, energy_phases,
+events, key_moments, hard_stops, rolls and silences. Inspect the real output before
+parsing. It assumes four beats per bar and estimates downbeats: manually review
+non-4/4, syncopated, changing-tempo or sparse tracks. Current source uses onsetRate,
+not the onset_rate spelling found in some prose.
+
+Do not substitute one schema for the other. /music-to-video is a music-led workflow
+that excludes narration; reuse its analyzer selectively, not its whole policy,
+for narrated demos. Source-to-composition cue mapping is described in SKILL.md.
+
+Sources:
+https://hyperframes.heygen.com/packages/cli.md#beats
+https://hyperframes.heygen.com/prompting/music-and-slideshows.md
+https://github.com/heygen-com/hyperframes/blob/main/skills/music-to-video/scripts/analyze-beatgrid.py
+
+4. Captures, media, narration and mixing
+
+Optional public-site capture:
+  npx hyperframes capture https://example.com --output capture --skip-vision --json
+
+This extracts screenshots/design data, not an interaction recording or finished
+video. Inspect warnings and dropped assets. Browser automation is preferable for
+authenticated app journeys. --skip-vision avoids optional vision-provider uploads;
+do not assume capture is complete or that --max-screenshots limits it (currently
+accepted but ineffective).
+
+Audio/video trims use data-media-start; nested compositions use data-playback-start.
+Do not substitute the latter for a media trim: rendered audio can become misaligned.
+Use data-volume, data-fade-in and data-fade-out. Mute footage unless its audio is
+intended; audio contribution from video uses data-has-audio="true".
+
+Core CLI TTS is LOCAL Kokoro, not a generic selector for HeyGen/Azure voices:
+  npx hyperframes tts script.txt --voice bf_emma --output assets/narration.wav
+This is an English voice example, not a French default. Verify installed language
+and voice support; reuse another configured provider with permission when needed.
+Local models may require downloads. Never fall back to a remote provider silently.
+
+Example English transcription and subtitle conversion:
+  npx hyperframes transcribe assets/narration.wav --dir . --engine whisper --model medium.en --language en
+  npx hyperframes transcribe transcript.json --to srt --output captions.srt
+Use the actual generated transcript path. For French use a supported multilingual
+model and correct language, not an English-only .en model. Normalized transcript
+segments contain text/start/end; do not invent word timings.
+
+For music ducking, supported volume automation uses data-automation JSON:
+  {"version":1,"lanes":[{"target":"volume","points":[
+    {"t":0,"v":0.3},{"t":1,"v":0.12},{"t":8,"v":0.12},{"t":8.4,"v":0.3}
+  ]}]}
+Values/times above are illustrative, not a universal mix preset. Clip lanes use
+clip-local time; group lanes use composition-global time. Include a t=0 point.
+Volume automation takes precedence over GSAP volume tweens.
+
+Advanced frequency-specific voiceover carve is optional: discover the official
+audio skill's carve.mjs and its --help; begin with --comp index.html --dry-run.
+data-fx-carve alone does not duck audio; the helper must generate effects/lanes.
+
+Sources:
+https://hyperframes.heygen.com/packages/cli.md
+https://hyperframes.heygen.com/guides/voice-and-audio.md
+https://hyperframes.heygen.com/reference/html-schema.md
+https://hyperframes.heygen.com/reference/audio-effects.md
+
+5. Catalog and richer visuals
+
+  npx hyperframes catalog --query "animated chart" --json
+  npx hyperframes catalog --type block --tag transition --json
+  npx hyperframes add data-chart --dir . --no-clipboard --json
+
+add changes files/dependencies; inspect the selected block first and use its
+returned snippet rather than guessing IDs or variable schemas. Replace demo data.
+Verified examples to discover in the current catalog:
+- data-chart; code-typing, code-diff, code-highlight, code-scroll, code-morph.
+- vfx-iphone-device (experimental device models; verify renderer support).
+- whip-pan, cinematic-zoom, transitions-push, transitions-dissolve.
+- grain-overlay, shimmer-sweep, parallax-zoom.
+
+Use SVG/DOM for diagrams. Real Three.js scenes need seek-safe rendering (hf-seek /
+__hfThreeTime), not an independent animation loop. Experimental canvas/WebGPU
+effects require actual browser support; a flag cannot supply missing capability.
+Render a small sample and offer a disclosed simpler effect if unsupported.
+Catalog shader IDs may differ from shader API names; consult the actual API.
+
+Sources:
+https://hyperframes.heygen.com/packages/cli.md
+https://hyperframes.heygen.com/prompting/runtimes-and-3d.md
+https://hyperframes.heygen.com/guides/html-in-canvas.md
+https://hyperframes.heygen.com/packages/shader-transitions.md
+
+6. QA and rendering
+
+  npx hyperframes info . --json
+  npx hyperframes lint . --json
+  npx hyperframes check . --json --snapshots --at-transitions --strict
+  npx hyperframes snapshot . --at 0,0.3,1.5,2.9 --no-end --output snapshots --describe false
+  npx hyperframes keyframes . --selector "#title" --json
+  npx hyperframes render . --output renders/review.mp4 --quality draft --fps 30
+  npx hyperframes render . --output renders/final.mp4 --quality high --fps 30 --video-frame-format png --strict --no-best-effort
+
+Replace sample times/selector/FPS with the actual project. snapshot (not
+screenshot) is the command. --describe false disables optional remote frame
+descriptions. check replaces deprecated inspect/layout/validate in this release.
+Render --strict checks lint, not all browser QA; keep check as a separate step.
+Explicit quality avoids conflicting documented defaults. PNG source frames help
+preserve screen-recording/UI quality. Do not claim review from an unviewed image.
+
+For alpha output use transparent scene/body backgrounds and an appropriate format:
+  npx hyperframes render . --format webm --output renders/overlay.webm
+  npx hyperframes render . --format mov --output renders/overlay.mov
+  npx hyperframes render . --format png-sequence --output renders/frames
+These target VP9 alpha, ProRes 4444 and RGBA respectively. MP4 is opaque. Confirm
+alpha over a contrasting background, not only through ffprobe's pixel-format label.
+
+Sources:
+https://hyperframes.heygen.com/packages/cli.md
+https://hyperframes.heygen.com/guides/rendering.md
+
+7. Privacy, hosted services and migration
+
+Local render needs no HeyGen account/credits. cloud render uploads the project and
+is authenticated/billable. publish uploads an editable project; signed-out links
+can contain a claim token. Hosted MCP is a separate remote workflow. None is a
+fallback to invoke without permission.
+
+Before any authorized upload inspect the outgoing file set and .hyperframesignore,
+exclude credentials/private captures, and confirm destination/access. A dry-run
+does not authorize the subsequent upload. Never commit environment secrets or
+claim URLs. "Local" is not "offline": review package/model downloads, CDN assets,
+telemetry, vision descriptions and other optional provider calls.
+
+For an explicit Remotion migration, preserve original sources and output duration,
+FPS/dimensions. Map seekable animation into HyperFrames in a separate directory.
+Report stateful/history-dependent components, React UI kits and unsupported effects
+as blockers rather than claiming perfect conversion. Lambda deployment settings
+are not portable to HyperFrames. Compare representative renders and audio timing.
+
+Sources:
+https://hyperframes.heygen.com/guides/authentication.md
+https://hyperframes.heygen.com/guides/mcp.md
+https://hyperframes.heygen.com/prompting/remotion-migration.md

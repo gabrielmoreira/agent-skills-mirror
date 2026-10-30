@@ -3129,7 +3129,7 @@ Codex 上次做到一半中断了，读取 rollout 后把工作做完
 - 审计每个 worktree HEAD、脏 checkout、本地独有提交、stash 与悬空提交
 - 在清理前把悬空提交钉到 `refs/dangling-backup/`、避免被 gc 回收
 - 按内容验证分支是否已合并，破解 squash-merge 后“100 commits ahead”的幻觉
-- 删除 linked worktree 前证明其 HEAD 已被吸收，并把全部 refs 导出为校验过的 bundle
+- [退役前保全决策](./git-safety-net/references/merge_verification.md#preservation-before-retirement)
 - 高风险“是否真的全部合并了”场景可选对抗性多 agent 验证
 - 在开 PR 前抓出并行 session 的提交混入自己分支——分支级检查全绿也照样发生
 - 网络吞掉 push/merge 回执时，按内容而不是「远端 ref 动了」判定自己的写入是否落地
@@ -3214,13 +3214,13 @@ memory 膨胀了，把该共享的内容迁到文档里
 引擎。补上底层引擎没提供的那一层：面向中文正式文档、经过验证的
 markdown-to-docx 生成器,阻止两端对齐把甲方/乙方信息块和签字栏拉散的对齐
 分层规则,列表编号分组重启,中英文双字体槽位设置,以及强制的
-LibreOffice→PDF→PNG 视觉验证链（禁止用 qlmanage 缩略图——它恰恰会把真正
-要命的问题藏起来）。
+逐页渲染检查；[验收流程](daymade-docs/docx-creator/references/verification_protocol.md)
+同时定义原生 Word 就绪判断与待验收交接。
 
 **核心能力：**
 - 职责划分：OpenXML SDK 引擎留在 `minimax-docx`，本 skill 只管中文正式文档排版规则和 CLI-vs-C# 路径选择
 - 经过验证的 markdown-to-docx 生成器（`scripts/Program.cs`），适用于带甲乙方信息块、编号条款、签字栏、表格的合同/协议/公文
-- 强制的真实渲染视觉验证（LibreOffice → PDF → PNG），不是 Quick Look 缩略图
+- 逐页渲染检查；已有授权的原生 Word 路线可用时完成原生验收，不可用时保留待验状态并交付可审阅文件
 - 纯文字类文档路由给 minimax-docx CLI，不重复造轮子
 
 **使用示例：**
@@ -3234,21 +3234,22 @@ LibreOffice→PDF→PNG 视觉验证链（禁止用 qlmanage 缩略图——它�
 
 ---
 
-### **read-docx-review** - 读取 Word/WPS 审阅批注与修订
+### **read-docx-review** - 读取 Word/WPS 审阅并对比回稿
 
 > **安装**：`claude plugin install daymade-docs@daymade-skills`
 >（仅作为套件成员发布，调用方式 `daymade-docs:read-docx-review`）
 
 读取审阅后的 docx（Word/WPS），把批注与修订提取成可逐条裁决的对账表（markdown 或
 JSON）：谁批的、批在哪段、批了什么，外加修订模式的逐段增删。修订感知引擎走 OpenXML
-SDK——python-docx 裸读会漏掉修订插入（w:ins）、认不出整段删除（w:del），本 skill
-不漏。只读，不改对方文件。
+SDK，读取已支持的批注、段落增删与文本视图，具体范围见 Skill。只读，不改对方文件。
 
 **核心能力：**
 - 逐条对账表自带空白「处置」列，为逐条裁决而生
 - 捕获 python-docx 静默漏掉的 w:ins / w:del 修订
-- WPS 仅引用式批注锚点有 fallback，每条批注都可定位
+- WPS 仅引用式批注锚点有 body 段落 fallback；缺失锚点保留未定位
 - 零批注文件显式提示「无审阅痕迹」，不给静默空表
+- 比较明确指定的 DOCX 版本，包含零痕迹改稿；核对对方反馈须有准确已发基线。覆盖与移位/改写线索边界见[全文对比流程](daymade-docs/read-docx-review/references/full-comparison.md)
+- 新比较入口拒绝未决修订，原有修订感知读取 CLI 保留
 - 边界：生成／排版 docx → docx-creator 或 minimax-docx；PDF 批注不在范围
 
 **使用示例：**
@@ -3256,6 +3257,7 @@ SDK——python-docx 裸读会漏掉修订插入（w:ins）、认不出整段删
 提取这份 docx 的批注
 对方批注完的合同回来了，读一下审阅意见
 读一下修订，谁批了什么、批在哪
+这份回稿没有批注，用实际发出的版本核对改了什么
 ```
 
 ---
@@ -3546,6 +3548,8 @@ build or buy — evaluate the options
 请求上限为 100 万 token。该 Skill 会读取实时模型契约、解释常见的约 258K
 默认值、把自动压缩阈值设为可达窗口的 60%，同时保留无关 TOML；若 Codex
 严格配置校验失败，则精确回滚。
+查询本机当前值或只改压缩阈值时，使用 `show` 或 `set-compact --tokens N`，
+无需请求模型目录；后者保留窗口和其他配置，并分别报告保存结果与会话采用状态。
 
 **核心功能：**
 - 按模型上限计算，不把「1M」硬说成每个模型都能达到
@@ -3556,6 +3560,7 @@ build or buy — evaluate the options
 **使用示例：**
 ```text
 /daymade-codex:codex-1m-context-window-setup doctor
+只把 Codex 自动压缩阈值设为 400000 token
 把 Codex CLI 和 Desktop 配成当前模型可验证的最大上下文
 验证长上下文设置在升级或切换模型后是否仍然正确
 ```
@@ -3944,7 +3949,7 @@ rollout 身份、fork／compaction lineage 与 Codex-only 搜索使用
 - **read-codex-history**：参见 `daymade-claude-code/read-codex-history/references/storage_and_portability.md` 了解本地数据源选择、跨平台路径、隐私边界和诊断方法
 - **read-claude-code-history**：参见 `daymade-claude-code/read-claude-code-history/references/session_file_format.md` 了解 JSONL 结构和 `daymade-claude-code/read-claude-code-history/references/workflow_examples.md` 了解恢复工作流
 - **prior-work-retrieval**：参见 `daymade-claude-code/prior-work-retrieval/SKILL.md` 了解检索／核验工作流，参见 `daymade-claude-code/prior-work-retrieval/references/source-manifest.md` 了解显式载体清单契约
-- **codex-1m-context-window-setup**：参见 `daymade-codex/codex-1m-context-window-setup/SKILL.md` 了解 doctor/apply/verify 工作流，参见 `daymade-codex/codex-1m-context-window-setup/references/context_window_contract.md` 了解模型上限、可用窗口和压缩语义
+- **codex-1m-context-window-setup**：参见 `daymade-codex/codex-1m-context-window-setup/SKILL.md` 了解本机 show/set-compact 与扩容 doctor/apply/verify 工作流，参见 `daymade-codex/codex-1m-context-window-setup/references/context_window_contract.md` 了解模型上限、可用窗口和压缩语义
 - **docs-cleaner**：参见 `daymade-docs/docs-cleaner/SKILL.md` 了解整合工作流
 - **deep-research**：参见 `deep-research/references/research_report_template.md` 了解报告结构，并参见 `deep-research/references/source_quality_rubric.md` 了解来源分级标准
 - **tech-selection**：参见 `daymade-claude-code/tech-selection/references/decision-axes.md` 了解 13 条核心过滤轴，`daymade-claude-code/tech-selection/references/scoped-criteria.md` 了解范围限定补充判据，`daymade-claude-code/tech-selection/references/rejection-modes.md` 了解拒绝模式与反模式，以及 `daymade-claude-code/tech-selection/references/delegation-contract.md` 了解域归属与自主阈值

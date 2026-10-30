@@ -31,11 +31,20 @@ Each agent is a **prompt-driven specialist** with a factory function that create
 - **Skill permissions**: Per-agent MCP and tool access controlled via `getSkillPermissionsForAgent()`
 - **Council synthesis**: Uses `createSynthesisOnlyPermission()` to block tool calls while allowing synthesis from councillor responses
 
+### Pass-local Resolution
+
+SDK and registry projections derive merged agent overrides/model arrays once
+per pass. MCP consumers receive that same override view. Marketplace activation
+and agent construction arrive through `marketplace.implementation`, loaded by
+the asynchronous composition root only after its existing enabled gate; the
+registry remains synchronous. Permission policies and host precedence do not
+change. Shared capabilities/ID schemas do not load the full manifest graph.
+
 ### Agent Lifecycle
 
 1. **Agent creation**: `createAgents(config)` instantiates all agents with merged configuration
 2. **Dynamic councillors**: `buildCouncillorAgents()` (`council-agents.ts`) creates one `councillor-<name>` subagent per council preset seat, attaching `_modelArray` fallback chains for multi-model councillors
-3. **Permission application**: `applyDefaultPermissions()` denies `question`, task control, `wait_for_user` and marketplace tools for every agent except the orchestrator — a parked child question has no headless answerer, so only the orchestrator asks by default (explicit per-agent config wins) — and adds skill grants on top of each agent's map, preserving key order
+3. **Permission application**: `applyDefaultPermissions()` gives `question`, task tools, and interview submission to the orchestrator and declared primary agents (custom agents with `agents.<name>.primary: true`) and denies them for everyone else — a parked child question has no headless answerer, so only primaries ask by default (explicit per-agent config wins). `task_cancel`, `task_revive`, `wait_for_user` and the marketplace tools stay orchestrator-only until their runtime guards accept primaries (issue #1591). It also adds skill grants on top of each agent's map, preserving key order
 4. **Task-rejection instruction**: `appendTaskRejectionInstruction()` appends the "outside your role" instruction to specialist prompts (`task-rejection.ts`)
 5. **Display name injection**: Orchestrator prompt rewrites `@agent` mentions to user-configured display names
 6. **Configuration export**: `getAgentConfigs()` converts `AgentDefinition` to OpenCode SDK format with classification metadata
@@ -99,7 +108,7 @@ The council agent is a synthesis-only specialist:
 
 - **Priority arrays**: When `model` is configured as an array in user config, it's stored as `_modelArray`
 - **Explicit inheritance**: `inheritModelFrom: "session"` and `"orchestrator"` leave the agent model unset so OpenCode follows the live parent/orchestrator model, including later runtime fallback switches
-- **Runtime fallback**: ForegroundFallbackManager resolves models at runtime when API errors occur; independent specialist chains follow a real parent fallback through v2's per-call model/variant override or v1 prompt-claimed intentions: host state validates new children, while `task_id` and `task_revive` identify resumes; v1 `task_message` preserves transcript execution selection rather than stale session metadata
+- **Runtime fallback**: ForegroundFallbackManager resolves models at runtime when API errors occur; independent specialist chains follow a real parent fallback through v2's per-call model/variant override or v1 prompt-claimed intentions: host state validates new children, while `task_id` and `task_revive` identify resumes; v1 resumes pin the newest valid transcript selection rather than stale session metadata
 - **Preset overrides**: Runtime presets can override model/variant/temperature per agent
 
 ## Integration

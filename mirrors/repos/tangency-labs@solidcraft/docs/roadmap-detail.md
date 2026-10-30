@@ -390,6 +390,10 @@ completed drawings publish atomically. The browser still exports synchronously.
   top/bottom heading are preserved. Diagonals include 45-degree edge and isometric corner views.
 - Navigation bar overhaul (#6585): the viewport's Fit, Home, camera tools, Spin, visual style, Grid, Ground
   shadow and bar visibility are registered `view.*` commands, and Fit/Home follow the active canvas.
+- Navigation bar slots (#6585): stored order and appearance, command-driven controls, canvas availability and
+  single-row overflow.
+- Navigation bar customisation (#6585): approved light/dark bar and settings geometry, live position preview,
+  accessible reordering and per-menu display options.
 
 ## Known limitations
 

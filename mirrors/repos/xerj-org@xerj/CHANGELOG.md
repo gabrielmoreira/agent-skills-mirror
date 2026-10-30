@@ -7,6 +7,172 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `xerj autoindex --exclude <glob>` leaves matching paths out of the index
+  without editing an ignore file or deleting anything. Repeatable, same glob
+  syntax as `--stub` — a pattern without `/` matches a file name at any depth,
+  one with `/` is anchored at the root. The run reports how many paths it left
+  out (#2483).
+
+- Offline `xerj sessions import --format codex` exports a documented subset
+  of one archived Codex rollout through the existing text redactor. It skips
+  tools and reasoning, retains physical source locations and archive event
+  identities, and refuses unsupported formats without publishing output.
+
+- Corpus Hub manifest `paths` entries may name regular files as well as
+  directories (#2486). A file selection checks out that file without its
+  siblings; symlinks and submodules are refused.
+
+- MCP `xerj_status` reports node reachability, cluster health and visible
+  indices before a search. It distinguishes a missing autoindex catalog from
+  other indexed data and preserves failed or malformed probes as errors
+  rather than reporting a successful empty node (#2515).
+
+- Empty autoindex maps now explain that managed corpus slugs and autoindex
+  dataset/index names belong to separate discovery surfaces. CLI diagnostics,
+  MCP empty responses and the `xerj_map` description point to corpus discovery
+  without claiming a corpus exists. Missing catalogs remain errors; auth
+  refusals and successful dataset maps retain their behavior (#2412).
+
+- Public Agent Skills Discovery v0.2.0 index and a documentation-routing skill
+  at `/.well-known/agent-skills/`. The index is generated from the published
+  skill's metadata and exact-byte SHA-256, with a CI drift check.
+
+### Fixed
+
+- `xerj autoindex` and `xerj autoindex map`: when the node is unreachable at a `localhost` URL, the error now also suggests the same URL with `127.0.0.1`, since the node binds the IPv4 loopback by default and `localhost` can resolve to `::1` first (seen on Windows). (#2688)
+- The node binds its ES-compat and REST listeners before it opens its
+  indices, and on plain-HTTP ports answers every request with
+  `503 node_starting_exception` (with `Retry-After: 1`) until the engine is
+  up. `/health/live` answers 200 `{"status":"starting"}` and `/health/ready`
+  answers 503, so a health check during a long startup no longer sees
+  "connection refused" and takes the node for dead. TLS ports bind early and
+  queue connections until the node is ready (#2575).
+
+- A body sent without a JSON `Content-Type` (the `curl -d` default,
+  `application/x-www-form-urlencoded`) is still refused with 415, as
+  Elasticsearch 8 does, but the reason now names the fix:
+  `-H 'Content-Type: application/json'`. The curl recipes that left the
+  header out now send it (#2575).
+
+- `xerj autoindex` now says why a source file over the 2 MiB code cap is
+  skipped (#2483). Such a file (generated stubs, minified bundles) used to be
+  reported as "no records extracted (code candidate family, 1 junk lines)",
+  which read like a parse failure. The reason now names the cap, the file
+  size, and `.xerjignore` as the way to leave it out of the plan.
+
+- `_reindex` honours `dest.op_type: create`, `conflicts`, and `max_docs`
+  instead of silently dropping them. `create` no longer overwrites an
+  existing destination document: the default abort returns 409 with ES's
+  version-conflict failure, and `conflicts: proceed` skips and counts it.
+  `max_docs` caps successful writes (the query-parameter form is accepted
+  too); invalid values are refused before any source or destination work.
+
+- Boolean text queries with one `must` match now keep `filter` and `must_not`
+  clauses non-scoring before a flush and on mixed memory/segment indices.
+  Their retained hits use the same BM25 scores as the bare match (#2403).
+
+- Reindex preflights every source alias member before creating or writing the
+  destination. Aliases cannot hide a source/destination overlap; a missing
+  source, invalid query or source flush failure leaves destination data intact.
+  An alias with `is_write_index: false` refuses writes even with one member.
+
+- TS/JS factory constants exported by a separate local export clause or
+  default identifier now get definition records at their declaration lines
+  (refs #2579). Inline `export const` stays supported; private constants,
+  function-local bindings, type-only exports and remote re-exports stay out.
+  Existing unchanged files need re-extraction to gain these definitions.
+
+- Corpus cloning validates existing checkouts and serializes writers (#2453).
+  New checkouts are staged before publication. Ambiguous existing directories
+  are preserved for recovery rather than deleted or reset automatically.
+
+- MCP `xerj_search` advertises plain text in `query` and structured clauses
+  in `query_dsl`. Legacy object-valued `query` and omitted-query browsing
+  remain supported; conflicting fields fail before HTTP requests (#2549).
+- Search payloads and batch retrieval default to 8,000 UAX #29 words when
+  `max_tokens` is absent or null (#2491). This is not a byte or model-token
+  cap. Explicit larger budgets remain available; errors and mandatory
+  search staleness hints stay outside the payload budget.
+- GitHub field-report submission uses the supported explicit-repository
+  `gh repo fork --clone=false` invocation and adds the fork remote itself
+  (#2596). The rollback test now verifies that the report was committed
+  before a failed push, rather than passing after an earlier fork failure.
+- Local admin-key discovery reports the source of the selected key and warns
+  when its directory is outside the working tree (#2578). Packaged installs
+  have their own provenance, and MCP guidance names `XERJ_AUTH`. Discovery
+  priority and explicit credential overrides are unchanged.
+
+- `xerj autoindex` fails a run when one dataset index holds no documents
+  although the journal says records were written to it, even when the other
+  datasets are live (#2407, defect 2). The check summed live documents over
+  every dataset, so a populated `-json` index let a re-run print `ok: indexed
+  and searchable` over an empty `-docs` index. The error names each empty
+  index and its contributing files; record totals are reported only when
+  those files target that dataset alone. Unknown sibling counts do not hide
+  independently confirmed missing data.
+- SQL source extraction no longer slices statement heads inside a UTF-8
+  character, so unrecognized CJK statement/comment heads do not panic (#2547).
+- Short Markdown files with YAML frontmatter retain their prose body even
+  when bullets or `Key: value` lines also parse as YAML (#2447). Existing
+  frontmatter-title behavior and structured CSV/JSON body detection remain.
+- Empty files keep separate inventory identities instead of being reported
+  as content duplicates of unrelated paths (#2449). Non-empty byte-identical
+  files still deduplicate.
+- A search with both `query` and a top-level `knn` returns `size` hits, not
+  `k` (#2561). The page was widened to `k`, so `size: 5, k: 20` returned
+  20 hits. `k` still sets how many nearest neighbours join the candidate
+  set, and `from`/`size` page through the union, as in Elasticsearch.
+- Index deletion no longer waits for unrelated index statistics while
+  resolving its selectors. Index listings and health checks also release
+  their index-map locks before awaiting statistics, so a stalled schema
+  update does not hold those locks against DELETE (part of #2405; extracted
+  from #2489). Merge/flush cancellation and the process memory cap remain
+  separate follow-ups.
+- `xerj autoindex` compresses per-file phase-B stages with zstd level 1 and
+  uses temporary files cleaned up by the operating system when the client
+  exits (#2493, part of #2427). It finishes buffered compression before
+  deleting previous records, so a stage finalization error preserves the old
+  records and an ordinary resume can complete the replacement. Compression
+  savings depend on the data; this does not impose a disk or server-memory cap.
+- `autoindex` bulk back-pressure patience is now measured since the last
+  progress, not since the first round. A window the server drains a few
+  records at a time (per-item 429 `resource_exhausted` on an embedding
+  deadline or admission refusal) used to abort with `bulk backend failed`
+  once the rounds together passed the 600 s `THROTTLE_PATIENCE`, even though
+  every round settled records. Each round that settles at least one item now
+  restarts the patience clock and the backoff; rounds that settle nothing
+  still count, so a server that answers 429 forever fails at the same limits
+  as before.
+- `xerj autoindex` titles a prose file that opens with YAML frontmatter from
+  its `title:` key, or from the first line after the closing `---` when there
+  is none (#2556). Every such file (Jekyll, Hugo, Obsidian) used to be titled
+  `---`, its opening fence. A leading `---` block that is not parseable
+  frontmatter (unclosed, not a YAML mapping, over 64 KiB) takes the first line
+  that is not a bare `---`; the body, the frontmatter text in it and
+  `start_line` are unchanged. An unchanged file is not re-extracted, so re-index
+  with `xerj autoindex --fresh` to retitle documents already in an index.
+
+- A `--no-graph` re-index whose options differ from the committed generation
+  (for example `--sample` or `--follow-symlinks`) is refused before anything
+  is copied, and the error names the option. It used to copy and prepare the
+  whole folder, then report "could not derive generation N; the durable
+  generation state is not internally consistent", although the state was
+  intact and the original options still updated the corpus (#2577).
+
+- `xerj autoindex --no-graph --dry-run` now refuses a changed option the way
+  the real run does, naming the option, instead of printing a plan and exiting
+  0 for a run that would then be refused. The `--max-minutes` note on this
+  route recommends `--dry-run` as the way to check a plan first (#2684).
+
+- `xerj search` and `xerj def` with no hits on a prefix whose autoindex
+  indices exist but whose first run has not finished now say so: search again
+  once the run finishes, or rerun the same command if it stopped. They used to
+  print the node's other indices and "the catalog lists no prefixes; --prefix
+  is the index name before the dataset slug", which read as a wrong `--prefix`
+  (#2670).
+
 ## [1.0.0-rc.100] - 2026-10-26
 
 **rc.100: faster autoindex and search, shaped by your field reports.** This
@@ -17,8 +183,9 @@ return (#2443, #2434, #2454, #2465). Search keeps its own share of the memory
 budget while merges run (#2484, #2485), autoindex plans large folders in
 bounded memory with fewer, larger datasets (#2417, #2430), and a
 `semantic_text` test segment shrinks from 20.1 MB to 1.8 MB on disk
-(#2471). Every release candidate now passes a performance gate with autoindex and search budgets
-and an Elasticsearch floor before it ships (#2432). Thank you to everyone
+(#2471). A local performance harness adds autoindex and search budgets and an
+Elasticsearch floor (#2432); release-workflow integration remains open in
+#2433. Thank you to everyone
 who filed a field report: they shaped this release. The memory-ceiling work
 continues in #2427 and #1122, which stay open.
 
@@ -126,9 +293,9 @@ continues in #2427 and #1122, which stay open.
 
 - **Release performance gate** for autoindex and search. It adds
   `gen_corpus.py`, `autoindex_release_gate.sh` and `gate.py`, with per-phase
-  budgets, an Elasticsearch floor and an rc.99 comparison harness, and it
-  runs before a release is cut (#2432). The live-tree memory follow-up is
-  tracked in #2433, which stays open.
+  budgets, an Elasticsearch floor and an rc.99 comparison harness (#2432).
+  Release-workflow wiring and the live-tree memory follow-up remain pending
+  in #2433; the harness is currently available for local runs.
 
 - `xerj init` prints the Kimi CLI MCP config path (`~/.kimi-code/mcp.json`),
   and the README marks the Kimi CLI row as tested (#2386).
@@ -153,6 +320,37 @@ continues in #2427 and #1122, which stay open.
   [#2433](https://github.com/xerj-org/xerj/issues/2433)).
 
 ### Fixed
+
+- A `semantic_text` field declared without `dimensions` is now sized at the
+  width the server's embedding backend actually produces, when that width is
+  confirmed (#2407, defect 1). It used to be always 384, so behind a `proxy`
+  returning another width (768, 1024, …) every document failed ingest with
+  "embedding backend returned width N, mapping requires 384", and the new
+  index stayed green with no semantic documents. Index creation,
+  `PUT _mapping` and templates (including indices that `_bulk` creates
+  automatically) write the width into the mapping, so `GET _mapping` shows it.
+  An explicit `dimensions` still wins. Indices created before this change keep
+  their stored 384 mapping. Re-declaring a bare `semantic_text` on one of them
+  while running a backend of another width is now refused by the immutable
+  embedding contract. When the width cannot be confirmed, the field is still
+  sized at 384, and the server logs a warning.
+
+- `xerj search` names an unknown flag on one line and exits 2 instead of
+  following "unexpected argument" with the whole usage text (#2458). An
+  agent that guessed `--index` and `--max-hits` read the help dump as the
+  answer and gave up on the CLI. Those guesses, and `--size`, `--limit`,
+  `--top`, `--top-k`, `-n` and `-i`, now point at `--prefix <P>` or
+  `-k <N>`.
+- `xerj_batch_search` (and `xerj batch-search`) accept a plain string in
+  `queries` as shorthand for `{"query": <string>}` (#2497). A string item
+  used to fail alone with "arguments must be a JSON object", so an agent
+  that sent `["a", "b"]` lost a call; the advertised schema now allows it.
+- `_reindex` follows aliases on both sides: a source alias is searched across
+  every backing index and each member's alias filter is applied, and a
+  destination alias writes to its single write index (an ambiguous alias is
+  refused with `illegal_argument_exception`). Previously only the first
+  backing index was read or written and filters were ignored, so the call
+  reported success over the wrong data.
 
 - `xerj corpus add` accepts a local Windows path such as
   `F:\Projects\Foo` (#2472). The repo name was the text after the last `/`,

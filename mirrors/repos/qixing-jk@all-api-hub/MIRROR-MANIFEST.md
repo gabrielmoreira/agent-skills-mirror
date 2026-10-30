@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `qixing-jk/all-api-hub` — 26 default patterns, 7 followed patterns, 28 file(s) materialized.
+Mirror of `qixing-jk/all-api-hub` — 26 default patterns, 7 followed patterns, 30 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `qixing-jk/all-api-hub` — 26 default patterns, 7 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 7 |
-| Files         | 28 |
+| Files         | 30 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -68,31 +68,33 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`.agents/skills/add-app-language/agents/openai.yaml`](.agents/skills/add-app-language/agents/openai.yaml) |
 | 2 | ✓ | [`.agents/skills/add-app-language/SKILL.md`](.agents/skills/add-app-language/SKILL.md) |
 | 3 | ✓ | [`.agents/skills/add-site-integration/references/account-sites.md`](.agents/skills/add-site-integration/references/account-sites.md) |
-| 4 | ✓ | [`.agents/skills/add-site-integration/references/capability-assessment.md`](.agents/skills/add-site-integration/references/capability-assessment.md) |
-| 5 | ✓ | [`.agents/skills/add-site-integration/references/check-in.md`](.agents/skills/add-site-integration/references/check-in.md) |
-| 6 | ✓ | [`.agents/skills/add-site-integration/references/evidence-and-validation.md`](.agents/skills/add-site-integration/references/evidence-and-validation.md) |
-| 7 | ✓ | [`.agents/skills/add-site-integration/references/managed-site-checklist.md`](.agents/skills/add-site-integration/references/managed-site-checklist.md) |
-| 8 | ✓ | [`.agents/skills/add-site-integration/references/managed-sites.md`](.agents/skills/add-site-integration/references/managed-sites.md) |
-| 9 | ✓ | [`.agents/skills/add-site-integration/references/native-editor-parity.md`](.agents/skills/add-site-integration/references/native-editor-parity.md) |
-| 10 | ✓ | [`.agents/skills/add-site-integration/references/visual-previews.md`](.agents/skills/add-site-integration/references/visual-previews.md) |
-| 11 | ✓ | [`.agents/skills/add-site-integration/SKILL.md`](.agents/skills/add-site-integration/SKILL.md) |
-| 12 | ✓ | [`.agents/skills/live-extension-ui-automation/references/desktop-dev-recovery.md`](.agents/skills/live-extension-ui-automation/references/desktop-dev-recovery.md) |
-| 13 | ✓ | [`.agents/skills/live-extension-ui-automation/references/mobile-debugging.md`](.agents/skills/live-extension-ui-automation/references/mobile-debugging.md) |
-| 14 | ✓ | [`.agents/skills/live-extension-ui-automation/references/session-reuse.md`](.agents/skills/live-extension-ui-automation/references/session-reuse.md) |
-| 15 | ✓ | [`.agents/skills/live-extension-ui-automation/references/ui-visual-evidence.md`](.agents/skills/live-extension-ui-automation/references/ui-visual-evidence.md) |
-| 16 | ✓ | [`.agents/skills/live-extension-ui-automation/SKILL.md`](.agents/skills/live-extension-ui-automation/SKILL.md) |
-| 17 | ✓ | [`.agents/skills/sponsor-catalog/agents/openai.yaml`](.agents/skills/sponsor-catalog/agents/openai.yaml) |
-| 18 | ✓ | [`.agents/skills/sponsor-catalog/references/catalog-compatibility.md`](.agents/skills/sponsor-catalog/references/catalog-compatibility.md) |
-| 19 | ✓ | [`.agents/skills/sponsor-catalog/SKILL.md`](.agents/skills/sponsor-catalog/SKILL.md) |
-| 20 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 21 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 22 | → | [`.husky/README.md`](.husky/README.md) |
-| 23 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 24 | → | [`docs/agents/i18n.md`](docs/agents/i18n.md) |
-| 25 | → | [`docs/agents/product.md`](docs/agents/product.md) |
-| 26 | → | [`docs/agents/site-integrations.md`](docs/agents/site-integrations.md) |
-| 27 | → | [`docs/agents/storage.md`](docs/agents/storage.md) |
-| 28 | → | [`docs/agents/task-acceptance.md`](docs/agents/task-acceptance.md) |
+| 4 | ✓ | [`.agents/skills/add-site-integration/references/balance-semantics.md`](.agents/skills/add-site-integration/references/balance-semantics.md) |
+| 5 | ✓ | [`.agents/skills/add-site-integration/references/capability-assessment.md`](.agents/skills/add-site-integration/references/capability-assessment.md) |
+| 6 | ✓ | [`.agents/skills/add-site-integration/references/check-in.md`](.agents/skills/add-site-integration/references/check-in.md) |
+| 7 | ✓ | [`.agents/skills/add-site-integration/references/evidence-and-validation.md`](.agents/skills/add-site-integration/references/evidence-and-validation.md) |
+| 8 | ✓ | [`.agents/skills/add-site-integration/references/integration-acceptance.md`](.agents/skills/add-site-integration/references/integration-acceptance.md) |
+| 9 | ✓ | [`.agents/skills/add-site-integration/references/managed-site-checklist.md`](.agents/skills/add-site-integration/references/managed-site-checklist.md) |
+| 10 | ✓ | [`.agents/skills/add-site-integration/references/managed-sites.md`](.agents/skills/add-site-integration/references/managed-sites.md) |
+| 11 | ✓ | [`.agents/skills/add-site-integration/references/native-editor-parity.md`](.agents/skills/add-site-integration/references/native-editor-parity.md) |
+| 12 | ✓ | [`.agents/skills/add-site-integration/references/visual-previews.md`](.agents/skills/add-site-integration/references/visual-previews.md) |
+| 13 | ✓ | [`.agents/skills/add-site-integration/SKILL.md`](.agents/skills/add-site-integration/SKILL.md) |
+| 14 | ✓ | [`.agents/skills/live-extension-ui-automation/references/desktop-dev-recovery.md`](.agents/skills/live-extension-ui-automation/references/desktop-dev-recovery.md) |
+| 15 | ✓ | [`.agents/skills/live-extension-ui-automation/references/mobile-debugging.md`](.agents/skills/live-extension-ui-automation/references/mobile-debugging.md) |
+| 16 | ✓ | [`.agents/skills/live-extension-ui-automation/references/session-reuse.md`](.agents/skills/live-extension-ui-automation/references/session-reuse.md) |
+| 17 | ✓ | [`.agents/skills/live-extension-ui-automation/references/ui-visual-evidence.md`](.agents/skills/live-extension-ui-automation/references/ui-visual-evidence.md) |
+| 18 | ✓ | [`.agents/skills/live-extension-ui-automation/SKILL.md`](.agents/skills/live-extension-ui-automation/SKILL.md) |
+| 19 | ✓ | [`.agents/skills/sponsor-catalog/agents/openai.yaml`](.agents/skills/sponsor-catalog/agents/openai.yaml) |
+| 20 | ✓ | [`.agents/skills/sponsor-catalog/references/catalog-compatibility.md`](.agents/skills/sponsor-catalog/references/catalog-compatibility.md) |
+| 21 | ✓ | [`.agents/skills/sponsor-catalog/SKILL.md`](.agents/skills/sponsor-catalog/SKILL.md) |
+| 22 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 23 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 24 | → | [`.husky/README.md`](.husky/README.md) |
+| 25 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 26 | → | [`docs/agents/i18n.md`](docs/agents/i18n.md) |
+| 27 | → | [`docs/agents/product.md`](docs/agents/product.md) |
+| 28 | → | [`docs/agents/site-integrations.md`](docs/agents/site-integrations.md) |
+| 29 | → | [`docs/agents/storage.md`](docs/agents/storage.md) |
+| 30 | → | [`docs/agents/task-acceptance.md`](docs/agents/task-acceptance.md) |
 
 ---
 

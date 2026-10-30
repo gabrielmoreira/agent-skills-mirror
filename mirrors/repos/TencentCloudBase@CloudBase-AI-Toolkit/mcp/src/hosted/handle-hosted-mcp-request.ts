@@ -1,6 +1,7 @@
 import type { IncomingMessage, ServerResponse } from "node:http";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import { createCloudBaseMcpServer } from "../server.js";
+import { runWithEnvSlot, type EnvSlot } from "../utils/env-binding.js";
 import { hashCredentialParts } from "../utils/feedback-session.js";
 import {
   readHostedClientInfo,
@@ -138,38 +139,45 @@ export async function handleHostedMcpRequest(input: HostedMcpRequestInput): Prom
     void Promise.allSettled([transport?.close(), server?.close()]);
   };
 
+  const injectedEnvId = input.serverOptions.cloudBaseOptions?.envId;
+  const requestSlot: EnvSlot = {
+    binding: injectedEnvId
+      ? { envId: injectedEnvId, source: "cloudBaseOptions" }
+      : null,
+  };
+
   try {
-    server = await createCloudBaseMcpServer({
-      name: input.serverOptions.name,
-      version: input.serverOptions.version,
-      enableTelemetry: input.serverOptions.enableTelemetry,
-      cloudBaseOptions: input.serverOptions.cloudBaseOptions,
-      cloudMode: input.serverOptions.cloudMode ?? true,
-      ide: input.serverOptions.ide,
-      client: input.serverOptions.client,
-      clientInfo,
-      // 会话级遥测的身份来源：把**当前** transport 的 sessionId 交给 server（公开 getter）。
-      // 这里是无状态传输（本文件 `:165` `sessionIdGenerator: undefined`）⇒ 今天它恒为 undefined、
-      // 上报按"一个实例一个会话"计；将来若有状态化，sessionId 会自动出现在这里。
-      getSessionId: () => transport?.sessionId,
-      lang: input.serverOptions.lang,
-      pluginsEnabled: input.serverOptions.pluginsEnabled,
-      pluginsDisabled: input.serverOptions.pluginsDisabled,
-    });
-    input.logger?.({
-      type: "cloudbase-mcp-server-create",
-      timeCost: Date.now() - startedAt,
-    });
+    await runWithEnvSlot(requestSlot, async () => {
+      server = await createCloudBaseMcpServer({
+        name: input.serverOptions.name,
+        version: input.serverOptions.version,
+        enableTelemetry: input.serverOptions.enableTelemetry,
+        cloudBaseOptions: input.serverOptions.cloudBaseOptions,
+        cloudMode: input.serverOptions.cloudMode ?? true,
+        ide: input.serverOptions.ide,
+        client: input.serverOptions.client,
+        clientInfo,
+        // Session id comes from this transport. Stateless mode leaves it undefined.
+        getSessionId: () => transport?.sessionId,
+        lang: input.serverOptions.lang,
+        pluginsEnabled: input.serverOptions.pluginsEnabled,
+        pluginsDisabled: input.serverOptions.pluginsDisabled,
+      });
+      input.logger?.({
+        type: "cloudbase-mcp-server-create",
+        timeCost: Date.now() - startedAt,
+      });
 
-    transport = new StreamableHTTPServerTransport({
-      sessionIdGenerator: undefined,
-      enableJsonResponse: true,
-    });
-    input.res.on("close", closeBoth);
-    input.req.on("aborted", closeBoth);
+      transport = new StreamableHTTPServerTransport({
+        sessionIdGenerator: undefined,
+        enableJsonResponse: true,
+      });
+      input.res.on("close", closeBoth);
+      input.req.on("aborted", closeBoth);
 
-    await server.connect(transport);
-    await transport.handleRequest(input.req, input.res, input.body);
+      await server.connect(transport);
+      await transport.handleRequest(input.req, input.res, input.body);
+    });
   } catch (error) {
     await Promise.allSettled([transport?.close(), server?.close()]);
     input.logger?.({

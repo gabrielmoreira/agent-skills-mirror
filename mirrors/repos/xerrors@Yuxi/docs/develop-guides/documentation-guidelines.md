@@ -140,8 +140,8 @@ Yuxi 采用 [Diátaxis](https://diataxis.fr/) 的四类文档思路。现有目�
 至少运行：
 
 ```bash
-python3 scripts/verify_engineering_contracts.py
-python3 -m unittest scripts.test_verify_engineering_contracts
+python3 scripts/ci/verify_engineering_contracts.py
+python3 -m unittest scripts.ci.test_verify_engineering_contracts
 cd docs && pnpm run build
 git diff --check
 ```

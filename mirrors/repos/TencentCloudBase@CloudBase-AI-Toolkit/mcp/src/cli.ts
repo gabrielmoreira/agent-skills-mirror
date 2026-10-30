@@ -5,7 +5,9 @@ import { createCloudBaseMcpServer } from "./server.js";
 import {
   telemetryReporter,
   reportToolkitLifecycle,
+  seedStdioEnvBinding,
 } from "./utils/telemetry.js";
+import { runWithEnvSlot } from "./utils/env-binding.js";
 import { info, warn } from "./utils/logger.js";
 
 // 构建时注入的版本号
@@ -137,14 +139,22 @@ const server = createCloudBaseMcpServer({
   client,
 });
 
+async function reportLifecycle(
+  params: Parameters<typeof reportToolkitLifecycle>[0],
+): Promise<void> {
+  const mcpServer = await server;
+  await runWithEnvSlot(mcpServer.envSlot, () => reportToolkitLifecycle(params));
+}
+
 async function main() {
+  const mcpServer = await server;
+  await seedStdioEnvBinding(mcpServer.envSlot);
   const transport = new StdioServerTransport();
-  await (await server).connect(transport);
+  await mcpServer.connect(transport);
   info("TencentCloudBase MCP Server running on stdio");
 
-  // 上报启动信息
   if (telemetryReporter.isEnabled()) {
-    await reportToolkitLifecycle({
+    await reportLifecycle({
       event: "start",
       ide,
       client,
@@ -157,7 +167,7 @@ function setupExitHandlers() {
   const handleExit = async (exitCode: number, signal?: string) => {
     if (telemetryReporter.isEnabled()) {
       const duration = Date.now() - startTime;
-      await reportToolkitLifecycle({
+      await reportLifecycle({
         event: "exit",
         duration,
         exitCode,
@@ -211,7 +221,7 @@ main().catch(async (error) => {
   // 上报启动失败
   if (telemetryReporter.isEnabled()) {
     const duration = Date.now() - startTime;
-    await reportToolkitLifecycle({
+    await reportLifecycle({
       event: "exit",
       duration,
       exitCode: 1,

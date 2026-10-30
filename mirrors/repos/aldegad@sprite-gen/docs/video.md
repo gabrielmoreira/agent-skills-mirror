@@ -43,6 +43,10 @@ login wins**, even when `XAI_API_KEY` is set. `GROK_HOME` relocates `~/.grok`.
 Only when no login file exists can the configured API key use console credits.
 An expired, unreadable, corrupt or API-rejected login stops the request; it never
 switches to API credit.
+`SPRITE_GEN_LOGINS=off` reads no login and runs on `XAI_API_KEY` alone.
+`SPRITE_GEN_XAI_BASE_URL` sends the requests, polls and the clip's download through
+another address ([provider addresses](gen.md#provider-addresses) and
+[subscription logins off](gen.md#subscription-logins-off) in docs/gen.md).
 
 ### The login token expires — and this tool does not refresh it
 

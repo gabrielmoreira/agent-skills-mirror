@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `labring/FastGPT` — 26 default patterns, 0 followed patterns, 131 file(s) materialized.
+Mirror of `labring/FastGPT` — 26 default patterns, 0 followed patterns, 134 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `labring/FastGPT` — 26 default patterns, 0 followed patterns, 131 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 131 |
+| Files         | 134 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -106,90 +106,93 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 45 | ✓ | [`.agents/design/core/ai/sandbox/opensandbox-pvc-lifecycle.md`](.agents/design/core/ai/sandbox/opensandbox-pvc-lifecycle.md) |
 | 46 | ✓ | [`.agents/design/core/ai/sandbox/user-level-sandbox.md`](.agents/design/core/ai/sandbox/user-level-sandbox.md) |
 | 47 | ✓ | [`.agents/design/core/ai/skill/index.md`](.agents/design/core/ai/skill/index.md) |
-| 48 | ✓ | [`.agents/design/core/app/app-resource-permission.md`](.agents/design/core/app/app-resource-permission.md) |
-| 49 | ✓ | [`.agents/design/core/chat/chatbox-refactor.md`](.agents/design/core/chat/chatbox-refactor.md) |
-| 50 | ✓ | [`.agents/design/core/chat/input-draft-cache.md`](.agents/design/core/chat/input-draft-cache.md) |
-| 51 | ✓ | [`.agents/design/core/chat/markdown-html-rendering-design.md`](.agents/design/core/chat/markdown-html-rendering-design.md) |
-| 52 | ✓ | [`.agents/design/core/chat/stop.md`](.agents/design/core/chat/stop.md) |
-| 53 | ✓ | [`.agents/design/core/dataset/file-source-delayed-materialization.md`](.agents/design/core/dataset/file-source-delayed-materialization.md) |
-| 54 | ✓ | [`.agents/design/core/dataset/index.md`](.agents/design/core/dataset/index.md) |
-| 55 | ✓ | [`.agents/design/core/dataset/synonym-feature-design.md`](.agents/design/core/dataset/synonym-feature-design.md) |
-| 56 | ✓ | [`.agents/design/core/resource-list-pagination-frontend.md`](.agents/design/core/resource-list-pagination-frontend.md) |
-| 57 | ✓ | [`.agents/design/core/skill-edit-chat-source-type-tech-plan.md`](.agents/design/core/skill-edit-chat-source-type-tech-plan.md) |
-| 58 | ✓ | [`.agents/design/core/skill-edit-chat-source-type.md`](.agents/design/core/skill-edit-chat-source-type.md) |
-| 59 | ✓ | [`.agents/design/core/workflow/cpu-blocking-optimization.md`](.agents/design/core/workflow/cpu-blocking-optimization.md) |
-| 60 | ✓ | [`.agents/design/core/workflow/file-variable-runtime-store-split.md`](.agents/design/core/workflow/file-variable-runtime-store-split.md) |
-| 61 | ✓ | [`.agents/design/core/workflow/index.md`](.agents/design/core/workflow/index.md) |
-| 62 | ✓ | [`.agents/design/core/workflow/interactive-dynamic-options.md`](.agents/design/core/workflow/interactive-dynamic-options.md) |
-| 63 | ✓ | [`.agents/design/core/workflow/interactive.md`](.agents/design/core/workflow/interactive.md) |
-| 64 | ✓ | [`.agents/design/core/workflow/loop-run/development.md`](.agents/design/core/workflow/loop-run/development.md) |
-| 65 | ✓ | [`.agents/design/core/workflow/parallel-node/design.md`](.agents/design/core/workflow/parallel-node/design.md) |
-| 66 | ✓ | [`.agents/design/core/workflow/runtime.md`](.agents/design/core/workflow/runtime.md) |
-| 67 | ✓ | [`.agents/design/core/workflow/summary-and-node-response.md`](.agents/design/core/workflow/summary-and-node-response.md) |
-| 68 | ✓ | [`.agents/design/core/workflow/tool-params-custom-json-schema.md`](.agents/design/core/workflow/tool-params-custom-json-schema.md) |
-| 69 | ✓ | [`.agents/design/core/workflow/workflow-file-context.md`](.agents/design/core/workflow/workflow-file-context.md) |
-| 70 | ✓ | [`.agents/design/model/aiproxy-integration-and-branch-diff.md`](.agents/design/model/aiproxy-integration-and-branch-diff.md) |
-| 71 | ✓ | [`.agents/design/outlink/wechat-clawbot.md`](.agents/design/outlink/wechat-clawbot.md) |
-| 72 | ✓ | [`.agents/design/permission/app-resource-snapshot-migration-performance.md`](.agents/design/permission/app-resource-snapshot-migration-performance.md) |
-| 73 | ✓ | [`.agents/design/plugin/team-plugin-management.md`](.agents/design/plugin/team-plugin-management.md) |
-| 74 | ✓ | [`.agents/design/support/account-page-ui-redesign.md`](.agents/design/support/account-page-ui-redesign.md) |
-| 75 | ✓ | [`.agents/design/support/mcp-publish-auth.md`](.agents/design/support/mcp-publish-auth.md) |
-| 76 | ✓ | [`.agents/design/variable-update-type-ops/design.md`](.agents/design/variable-update-type-ops/design.md) |
-| 77 | ✓ | [`.agents/issue/agent-context-tool-compression-analysis.md`](.agents/issue/agent-context-tool-compression-analysis.md) |
-| 78 | ✓ | [`.agents/issue/dataset-search-query-extension-latency-analysis.md`](.agents/issue/dataset-search-query-extension-latency-analysis.md) |
-| 79 | ✓ | [`.agents/issue/implement-sealos-provider.md`](.agents/issue/implement-sealos-provider.md) |
-| 80 | ✓ | [`.agents/issue/pr-8155/local-integration-report.md`](.agents/issue/pr-8155/local-integration-report.md) |
-| 81 | ✓ | [`.agents/issue/pr-8155/local-integration-results.json`](.agents/issue/pr-8155/local-integration-results.json) |
-| 82 | ✓ | [`.agents/issue/s3-refactor-analysis.md`](.agents/issue/s3-refactor-analysis.md) |
-| 83 | ✓ | [`.agents/issue/sandbox/code-sandbox-queue-id-analysis.md`](.agents/issue/sandbox/code-sandbox-queue-id-analysis.md) |
-| 84 | ✓ | [`.agents/issue/sandbox/opensandbox-docker-security-review.md`](.agents/issue/sandbox/opensandbox-docker-security-review.md) |
-| 85 | ✓ | [`.agents/issue/workflow-and-chat-bug-fixes-analysis.md`](.agents/issue/workflow-and-chat-bug-fixes-analysis.md) |
-| 86 | ✓ | [`.agents/issue/workflow-deep-analysis.md`](.agents/issue/workflow-deep-analysis.md) |
-| 87 | ✓ | [`.agents/issue/workflow-form-input-restore-bug.md`](.agents/issue/workflow-form-input-restore-bug.md) |
-| 88 | ✓ | [`.agents/issue/workflow-judge-loop-interactive-render-analysis.md`](.agents/issue/workflow-judge-loop-interactive-render-analysis.md) |
-| 89 | ✓ | [`.agents/issue/workflow-thread-blocking-analysis.md`](.agents/issue/workflow-thread-blocking-analysis.md) |
-| 90 | ✓ | [`.agents/issue/workflow-variable-replace-cpu-blocking-analysis.md`](.agents/issue/workflow-variable-replace-cpu-blocking-analysis.md) |
-| 91 | ✓ | [`.agents/skills/core/ai/prompt_optimize/SKILL.md`](.agents/skills/core/ai/prompt_optimize/SKILL.md) |
-| 92 | ✓ | [`.agents/skills/core/workflow/deprecate_workflow_node/SKILL.md`](.agents/skills/core/workflow/deprecate_workflow_node/SKILL.md) |
-| 93 | ✓ | [`.agents/skills/doc/i18n/SKILL.md`](.agents/skills/doc/i18n/SKILL.md) |
-| 94 | ✓ | [`.agents/skills/support/permission/add-permission/checklist.md`](.agents/skills/support/permission/add-permission/checklist.md) |
-| 95 | ✓ | [`.agents/skills/support/permission/add-permission/guides/full-integration.md`](.agents/skills/support/permission/add-permission/guides/full-integration.md) |
-| 96 | ✓ | [`.agents/skills/support/permission/add-permission/guides/quick-start.md`](.agents/skills/support/permission/add-permission/guides/quick-start.md) |
-| 97 | ✓ | [`.agents/skills/support/permission/add-permission/reference/auth-function.md`](.agents/skills/support/permission/add-permission/reference/auth-function.md) |
-| 98 | ✓ | [`.agents/skills/support/permission/add-permission/reference/core-concepts.md`](.agents/skills/support/permission/add-permission/reference/core-concepts.md) |
-| 99 | ✓ | [`.agents/skills/support/permission/add-permission/reference/inheritance.md`](.agents/skills/support/permission/add-permission/reference/inheritance.md) |
-| 100 | ✓ | [`.agents/skills/support/permission/add-permission/reference/permission-class.md`](.agents/skills/support/permission/add-permission/reference/permission-class.md) |
-| 101 | ✓ | [`.agents/skills/support/permission/add-permission/reference/pro-collaborator.md`](.agents/skills/support/permission/add-permission/reference/pro-collaborator.md) |
-| 102 | ✓ | [`.agents/skills/support/permission/add-permission/reference/pro-owner-transfer.md`](.agents/skills/support/permission/add-permission/reference/pro-owner-transfer.md) |
-| 103 | ✓ | [`.agents/skills/support/permission/add-permission/reference/README.md`](.agents/skills/support/permission/add-permission/reference/README.md) |
-| 104 | ✓ | [`.agents/skills/support/permission/add-permission/SKILL.md`](.agents/skills/support/permission/add-permission/SKILL.md) |
-| 105 | ✓ | [`.agents/skills/system/api-development/SKILL.md`](.agents/skills/system/api-development/SKILL.md) |
-| 106 | ✓ | [`.agents/skills/system/ci-workflow-sync/SKILL.md`](.agents/skills/system/ci-workflow-sync/SKILL.md) |
-| 107 | ✓ | [`.agents/skills/system/i18n-translate/agents/openai.yaml`](.agents/skills/system/i18n-translate/agents/openai.yaml) |
-| 108 | ✓ | [`.agents/skills/system/i18n-translate/references/fastgpt-glossary.json`](.agents/skills/system/i18n-translate/references/fastgpt-glossary.json) |
-| 109 | ✓ | [`.agents/skills/system/i18n-translate/references/translation-guidelines.md`](.agents/skills/system/i18n-translate/references/translation-guidelines.md) |
-| 110 | ✓ | [`.agents/skills/system/i18n-translate/scripts/validate-namespace.mjs`](.agents/skills/system/i18n-translate/scripts/validate-namespace.mjs) |
-| 111 | ✓ | [`.agents/skills/system/i18n-translate/SKILL.md`](.agents/skills/system/i18n-translate/SKILL.md) |
-| 112 | ✓ | [`.agents/skills/system/pr-review/agents/openai.yaml`](.agents/skills/system/pr-review/agents/openai.yaml) |
-| 113 | ✓ | [`.agents/skills/system/pr-review/backend-quality/error-handling.md`](.agents/skills/system/pr-review/backend-quality/error-handling.md) |
-| 114 | ✓ | [`.agents/skills/system/pr-review/backend-quality/performance.md`](.agents/skills/system/pr-review/backend-quality/performance.md) |
-| 115 | ✓ | [`.agents/skills/system/pr-review/backend-quality/security.md`](.agents/skills/system/pr-review/backend-quality/security.md) |
-| 116 | ✓ | [`.agents/skills/system/pr-review/frontend-quality/react-performance.md`](.agents/skills/system/pr-review/frontend-quality/react-performance.md) |
-| 117 | ✓ | [`.agents/skills/system/pr-review/frontend-quality/typescript.md`](.agents/skills/system/pr-review/frontend-quality/typescript.md) |
-| 118 | ✓ | [`.agents/skills/system/pr-review/references/publishing.md`](.agents/skills/system/pr-review/references/publishing.md) |
-| 119 | ✓ | [`.agents/skills/system/pr-review/SKILL.md`](.agents/skills/system/pr-review/SKILL.md) |
-| 120 | ✓ | [`.agents/skills/system/pr-review/style/db.md`](.agents/skills/system/pr-review/style/db.md) |
-| 121 | ✓ | [`.agents/skills/system/pr-review/style/front.md`](.agents/skills/system/pr-review/style/front.md) |
-| 122 | ✓ | [`.agents/skills/system/pr-review/style/logger.md`](.agents/skills/system/pr-review/style/logger.md) |
-| 123 | ✓ | [`.agents/skills/system/pr-review/style/package.md`](.agents/skills/system/pr-review/style/package.md) |
-| 124 | ✓ | [`.agents/skills/system/pr-review/style/service-decoupling.md`](.agents/skills/system/pr-review/style/service-decoupling.md) |
-| 125 | ✓ | [`.agents/skills/system/system-migration-development/SKILL.md`](.agents/skills/system/system-migration-development/SKILL.md) |
-| 126 | ✓ | [`.agents/skills/system/test-case/SKILL.md`](.agents/skills/system/test-case/SKILL.md) |
-| 127 | ✓ | [`.agents/test/workflow/connection-rules.md`](.agents/test/workflow/connection-rules.md) |
-| 128 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 129 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 130 | ✓ | [`document/app/[lang]/llms.txt/route.ts`](document/app/[lang]/llms.txt/route.ts) |
-| 131 | ✓ | [`document/public/deploy/SKILL.md`](document/public/deploy/SKILL.md) |
+| 48 | ✓ | [`.agents/design/core/ai/workflow-builder-continuous-delivery.md`](.agents/design/core/ai/workflow-builder-continuous-delivery.md) |
+| 49 | ✓ | [`.agents/design/core/app/app-resource-permission.md`](.agents/design/core/app/app-resource-permission.md) |
+| 50 | ✓ | [`.agents/design/core/chat/chatbox-refactor.md`](.agents/design/core/chat/chatbox-refactor.md) |
+| 51 | ✓ | [`.agents/design/core/chat/input-draft-cache.md`](.agents/design/core/chat/input-draft-cache.md) |
+| 52 | ✓ | [`.agents/design/core/chat/markdown-html-rendering-design.md`](.agents/design/core/chat/markdown-html-rendering-design.md) |
+| 53 | ✓ | [`.agents/design/core/chat/stop.md`](.agents/design/core/chat/stop.md) |
+| 54 | ✓ | [`.agents/design/core/dataset/file-source-delayed-materialization.md`](.agents/design/core/dataset/file-source-delayed-materialization.md) |
+| 55 | ✓ | [`.agents/design/core/dataset/index.md`](.agents/design/core/dataset/index.md) |
+| 56 | ✓ | [`.agents/design/core/dataset/synonym-feature-design.md`](.agents/design/core/dataset/synonym-feature-design.md) |
+| 57 | ✓ | [`.agents/design/core/resource-list-pagination-frontend.md`](.agents/design/core/resource-list-pagination-frontend.md) |
+| 58 | ✓ | [`.agents/design/core/skill-edit-chat-source-type-tech-plan.md`](.agents/design/core/skill-edit-chat-source-type-tech-plan.md) |
+| 59 | ✓ | [`.agents/design/core/skill-edit-chat-source-type.md`](.agents/design/core/skill-edit-chat-source-type.md) |
+| 60 | ✓ | [`.agents/design/core/workflow/cpu-blocking-optimization.md`](.agents/design/core/workflow/cpu-blocking-optimization.md) |
+| 61 | ✓ | [`.agents/design/core/workflow/file-variable-runtime-store-split.md`](.agents/design/core/workflow/file-variable-runtime-store-split.md) |
+| 62 | ✓ | [`.agents/design/core/workflow/index.md`](.agents/design/core/workflow/index.md) |
+| 63 | ✓ | [`.agents/design/core/workflow/interactive-dynamic-options.md`](.agents/design/core/workflow/interactive-dynamic-options.md) |
+| 64 | ✓ | [`.agents/design/core/workflow/interactive.md`](.agents/design/core/workflow/interactive.md) |
+| 65 | ✓ | [`.agents/design/core/workflow/loop-run/development.md`](.agents/design/core/workflow/loop-run/development.md) |
+| 66 | ✓ | [`.agents/design/core/workflow/parallel-node/design.md`](.agents/design/core/workflow/parallel-node/design.md) |
+| 67 | ✓ | [`.agents/design/core/workflow/runtime.md`](.agents/design/core/workflow/runtime.md) |
+| 68 | ✓ | [`.agents/design/core/workflow/summary-and-node-response.md`](.agents/design/core/workflow/summary-and-node-response.md) |
+| 69 | ✓ | [`.agents/design/core/workflow/tool-params-custom-json-schema.md`](.agents/design/core/workflow/tool-params-custom-json-schema.md) |
+| 70 | ✓ | [`.agents/design/core/workflow/workflow-file-context.md`](.agents/design/core/workflow/workflow-file-context.md) |
+| 71 | ✓ | [`.agents/design/model/aiproxy-integration-and-branch-diff.md`](.agents/design/model/aiproxy-integration-and-branch-diff.md) |
+| 72 | ✓ | [`.agents/design/outlink/wechat-clawbot.md`](.agents/design/outlink/wechat-clawbot.md) |
+| 73 | ✓ | [`.agents/design/permission/app-resource-snapshot-migration-performance.md`](.agents/design/permission/app-resource-snapshot-migration-performance.md) |
+| 74 | ✓ | [`.agents/design/plugin/team-plugin-management.md`](.agents/design/plugin/team-plugin-management.md) |
+| 75 | ✓ | [`.agents/design/support/account-page-ui-redesign.md`](.agents/design/support/account-page-ui-redesign.md) |
+| 76 | ✓ | [`.agents/design/support/mcp-publish-auth.md`](.agents/design/support/mcp-publish-auth.md) |
+| 77 | ✓ | [`.agents/design/variable-update-type-ops/design.md`](.agents/design/variable-update-type-ops/design.md) |
+| 78 | ✓ | [`.agents/issue/agent-context-tool-compression-analysis.md`](.agents/issue/agent-context-tool-compression-analysis.md) |
+| 79 | ✓ | [`.agents/issue/dataset-search-query-extension-latency-analysis.md`](.agents/issue/dataset-search-query-extension-latency-analysis.md) |
+| 80 | ✓ | [`.agents/issue/implement-sealos-provider.md`](.agents/issue/implement-sealos-provider.md) |
+| 81 | ✓ | [`.agents/issue/pr-8155/local-integration-report.md`](.agents/issue/pr-8155/local-integration-report.md) |
+| 82 | ✓ | [`.agents/issue/pr-8155/local-integration-results.json`](.agents/issue/pr-8155/local-integration-results.json) |
+| 83 | ✓ | [`.agents/issue/s3-refactor-analysis.md`](.agents/issue/s3-refactor-analysis.md) |
+| 84 | ✓ | [`.agents/issue/sandbox/code-sandbox-queue-id-analysis.md`](.agents/issue/sandbox/code-sandbox-queue-id-analysis.md) |
+| 85 | ✓ | [`.agents/issue/sandbox/opensandbox-docker-security-review.md`](.agents/issue/sandbox/opensandbox-docker-security-review.md) |
+| 86 | ✓ | [`.agents/issue/workflow-and-chat-bug-fixes-analysis.md`](.agents/issue/workflow-and-chat-bug-fixes-analysis.md) |
+| 87 | ✓ | [`.agents/issue/workflow-deep-analysis.md`](.agents/issue/workflow-deep-analysis.md) |
+| 88 | ✓ | [`.agents/issue/workflow-form-input-restore-bug.md`](.agents/issue/workflow-form-input-restore-bug.md) |
+| 89 | ✓ | [`.agents/issue/workflow-judge-loop-interactive-render-analysis.md`](.agents/issue/workflow-judge-loop-interactive-render-analysis.md) |
+| 90 | ✓ | [`.agents/issue/workflow-thread-blocking-analysis.md`](.agents/issue/workflow-thread-blocking-analysis.md) |
+| 91 | ✓ | [`.agents/issue/workflow-variable-replace-cpu-blocking-analysis.md`](.agents/issue/workflow-variable-replace-cpu-blocking-analysis.md) |
+| 92 | ✓ | [`.agents/skills/core/ai/prompt_optimize/SKILL.md`](.agents/skills/core/ai/prompt_optimize/SKILL.md) |
+| 93 | ✓ | [`.agents/skills/core/workflow/deprecate_workflow_node/SKILL.md`](.agents/skills/core/workflow/deprecate_workflow_node/SKILL.md) |
+| 94 | ✓ | [`.agents/skills/doc/fastgpt-release-docs/agents/openai.yaml`](.agents/skills/doc/fastgpt-release-docs/agents/openai.yaml) |
+| 95 | ✓ | [`.agents/skills/doc/fastgpt-release-docs/SKILL.md`](.agents/skills/doc/fastgpt-release-docs/SKILL.md) |
+| 96 | ✓ | [`.agents/skills/doc/i18n/SKILL.md`](.agents/skills/doc/i18n/SKILL.md) |
+| 97 | ✓ | [`.agents/skills/support/permission/add-permission/checklist.md`](.agents/skills/support/permission/add-permission/checklist.md) |
+| 98 | ✓ | [`.agents/skills/support/permission/add-permission/guides/full-integration.md`](.agents/skills/support/permission/add-permission/guides/full-integration.md) |
+| 99 | ✓ | [`.agents/skills/support/permission/add-permission/guides/quick-start.md`](.agents/skills/support/permission/add-permission/guides/quick-start.md) |
+| 100 | ✓ | [`.agents/skills/support/permission/add-permission/reference/auth-function.md`](.agents/skills/support/permission/add-permission/reference/auth-function.md) |
+| 101 | ✓ | [`.agents/skills/support/permission/add-permission/reference/core-concepts.md`](.agents/skills/support/permission/add-permission/reference/core-concepts.md) |
+| 102 | ✓ | [`.agents/skills/support/permission/add-permission/reference/inheritance.md`](.agents/skills/support/permission/add-permission/reference/inheritance.md) |
+| 103 | ✓ | [`.agents/skills/support/permission/add-permission/reference/permission-class.md`](.agents/skills/support/permission/add-permission/reference/permission-class.md) |
+| 104 | ✓ | [`.agents/skills/support/permission/add-permission/reference/pro-collaborator.md`](.agents/skills/support/permission/add-permission/reference/pro-collaborator.md) |
+| 105 | ✓ | [`.agents/skills/support/permission/add-permission/reference/pro-owner-transfer.md`](.agents/skills/support/permission/add-permission/reference/pro-owner-transfer.md) |
+| 106 | ✓ | [`.agents/skills/support/permission/add-permission/reference/README.md`](.agents/skills/support/permission/add-permission/reference/README.md) |
+| 107 | ✓ | [`.agents/skills/support/permission/add-permission/SKILL.md`](.agents/skills/support/permission/add-permission/SKILL.md) |
+| 108 | ✓ | [`.agents/skills/system/api-development/SKILL.md`](.agents/skills/system/api-development/SKILL.md) |
+| 109 | ✓ | [`.agents/skills/system/ci-workflow-sync/SKILL.md`](.agents/skills/system/ci-workflow-sync/SKILL.md) |
+| 110 | ✓ | [`.agents/skills/system/i18n-translate/agents/openai.yaml`](.agents/skills/system/i18n-translate/agents/openai.yaml) |
+| 111 | ✓ | [`.agents/skills/system/i18n-translate/references/fastgpt-glossary.json`](.agents/skills/system/i18n-translate/references/fastgpt-glossary.json) |
+| 112 | ✓ | [`.agents/skills/system/i18n-translate/references/translation-guidelines.md`](.agents/skills/system/i18n-translate/references/translation-guidelines.md) |
+| 113 | ✓ | [`.agents/skills/system/i18n-translate/scripts/validate-namespace.mjs`](.agents/skills/system/i18n-translate/scripts/validate-namespace.mjs) |
+| 114 | ✓ | [`.agents/skills/system/i18n-translate/SKILL.md`](.agents/skills/system/i18n-translate/SKILL.md) |
+| 115 | ✓ | [`.agents/skills/system/pr-review/agents/openai.yaml`](.agents/skills/system/pr-review/agents/openai.yaml) |
+| 116 | ✓ | [`.agents/skills/system/pr-review/backend-quality/error-handling.md`](.agents/skills/system/pr-review/backend-quality/error-handling.md) |
+| 117 | ✓ | [`.agents/skills/system/pr-review/backend-quality/performance.md`](.agents/skills/system/pr-review/backend-quality/performance.md) |
+| 118 | ✓ | [`.agents/skills/system/pr-review/backend-quality/security.md`](.agents/skills/system/pr-review/backend-quality/security.md) |
+| 119 | ✓ | [`.agents/skills/system/pr-review/frontend-quality/react-performance.md`](.agents/skills/system/pr-review/frontend-quality/react-performance.md) |
+| 120 | ✓ | [`.agents/skills/system/pr-review/frontend-quality/typescript.md`](.agents/skills/system/pr-review/frontend-quality/typescript.md) |
+| 121 | ✓ | [`.agents/skills/system/pr-review/references/publishing.md`](.agents/skills/system/pr-review/references/publishing.md) |
+| 122 | ✓ | [`.agents/skills/system/pr-review/SKILL.md`](.agents/skills/system/pr-review/SKILL.md) |
+| 123 | ✓ | [`.agents/skills/system/pr-review/style/db.md`](.agents/skills/system/pr-review/style/db.md) |
+| 124 | ✓ | [`.agents/skills/system/pr-review/style/front.md`](.agents/skills/system/pr-review/style/front.md) |
+| 125 | ✓ | [`.agents/skills/system/pr-review/style/logger.md`](.agents/skills/system/pr-review/style/logger.md) |
+| 126 | ✓ | [`.agents/skills/system/pr-review/style/package.md`](.agents/skills/system/pr-review/style/package.md) |
+| 127 | ✓ | [`.agents/skills/system/pr-review/style/service-decoupling.md`](.agents/skills/system/pr-review/style/service-decoupling.md) |
+| 128 | ✓ | [`.agents/skills/system/system-migration-development/SKILL.md`](.agents/skills/system/system-migration-development/SKILL.md) |
+| 129 | ✓ | [`.agents/skills/system/test-case/SKILL.md`](.agents/skills/system/test-case/SKILL.md) |
+| 130 | ✓ | [`.agents/test/workflow/connection-rules.md`](.agents/test/workflow/connection-rules.md) |
+| 131 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 132 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 133 | ✓ | [`document/app/[lang]/llms.txt/route.ts`](document/app/[lang]/llms.txt/route.ts) |
+| 134 | ✓ | [`document/public/deploy/SKILL.md`](document/public/deploy/SKILL.md) |
 
 ---
 

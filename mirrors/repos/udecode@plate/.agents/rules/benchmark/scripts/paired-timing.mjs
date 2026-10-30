@@ -1,15 +1,13 @@
 #!/usr/bin/env node
-// Runs paired timing arms in mirrored packet pairs and judges one frozen ratio
+// Runs paired timing arms in mirrored packet pairs and judges one frozen budget
 // line per cohort. A cohort is inconclusive when a planted arm does not exceed
-// the budget by more than the same-code noise, or when that noise reaches the
+// the budget by more than the noise, or when that noise reaches the
 // candidate's distance to the budget. It is also inconclusive when a planted
 // arm reads further from the ratio it plants than that ratio's distance to the
 // budget plus the noise, because the line then measured something other than
 // the plant. The run fails when the candidate misses any conclusive cohort, and
 // passes only when every cohort is conclusive and passes. Host load never
-// decides a verdict, because interleaved arms share it and the same-code noise
-// measures what it costs this run. The runner records the one-minute load
-// beside each run.
+// decides a verdict. The runner records the one-minute load beside each run.
 //
 // Usage:
 //   node paired-timing.mjs <config.json> <measurements.json>
@@ -26,6 +24,10 @@
 //     "sameCode": { "<arm>": ["<cohort>", ...] }
 //   }
 // `budget` is one ratio for every cohort, or an object with one for each cohort.
+// `budgetLaw`, such as `{ "ratio": 1.25, "ms": 16 }`, replaces `budget` for a
+// metric in milliseconds: each cohort's budget is the larger of that ratio and
+// 1 plus that many ms over the median of base's six values in the run judged.
+// A planted ratio must pass the law's ratio.
 // Every run has six packets, three mirrored pairs. Every cohort needs a
 // planted arm and a same-code arm. No arm is both, and base and candidate are
 // neither. A planted arm carries a deliberate slowdown on its cohorts and names,
@@ -49,10 +51,12 @@
 // pair of packets gives an arm one ratio per cohort, the geometric mean of its
 // two ratios over base, which cancels steadily compounding drift exactly and
 // linear drift to first order. An arm's statistic is the median of its three
-// pair ratios. A same-code arm's noise is the larger of two gaps to the
+// pair ratios. A same-code arm's gap is the larger of two gaps to the
 // candidate: between their statistics, and the median over pairs of the gap
-// between their pair ratios. A cohort's noise is the largest across its
-// same-code arms.
+// between their pair ratios. A cohort's noise is the larger of its largest
+// same-code gap and the furthest any pair of the candidate or a same-code arm
+// reads from that arm's statistic, so a cohort decides only when every pair of
+// the candidate lies on the same side of the budget as its statistic.
 import { execFileSync } from 'node:child_process';
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { cpus, loadavg } from 'node:os';
@@ -66,20 +70,29 @@ const isPositive = (value) => Number.isFinite(value) && value > 0;
 
 const PACKETS = 6;
 
-const median = (values) => [...values].sort((a, b) => a - b)[Math.floor(values.length / 2)];
+const median = (values) => {
+  const sorted = [...values].sort((a, b) => a - b);
+  const middle = Math.floor(sorted.length / 2);
+  return sorted.length % 2 === 0 ? (sorted[middle - 1] + sorted[middle]) / 2 : sorted[middle];
+};
 
 const readConfig = (configPath) => {
   const config = JSON.parse(readFileSync(configPath, 'utf8'));
   const stamp = structuredClone(config);
   const base = path.dirname(path.resolve(configPath));
-  const { arms, budget, cohorts, metric, planted, sameCode } = config;
+  const { arms, budget, budgetLaw, cohorts, metric, planted, sameCode } = config;
 
   if (typeof metric !== 'string') fail('config.metric must name the measured field');
   if (Object.hasOwn(config, 'loadLimit')) fail('config.loadLimit is gone; host load never gates a run, so drop the field');
   if (!Array.isArray(cohorts) || cohorts.length === 0 || new Set(cohorts).size !== cohorts.length) {
     fail('config.cohorts must list each judged cohort once');
   }
-  const budgets = typeof budget === 'number' ? Object.fromEntries(cohorts.map((cohort) => [cohort, budget])) : (budget ?? {});
+  if (budgetLaw !== undefined) {
+    if (budget !== undefined) fail('config.budget and config.budgetLaw exclude each other; give one');
+    if (!isPositive(budgetLaw?.ratio) || !isPositive(budgetLaw?.ms)) fail('config.budgetLaw needs a positive ratio and a positive ms');
+  }
+  const fixed = budgetLaw === undefined ? budget : budgetLaw.ratio;
+  const budgets = typeof fixed === 'number' ? Object.fromEntries(cohorts.map((cohort) => [cohort, fixed])) : (fixed ?? {});
   for (const cohort of cohorts) {
     if (!isPositive(budgets[cohort])) {
       fail(typeof budget === 'number' ? 'config.budget must be a positive ratio' : `config.budget.${cohort} must be a positive ratio`);
@@ -215,6 +228,12 @@ const judge = (config, { runs }) => {
     });
   const sameCodeOn = (cohort) => Object.keys(config.sameCode).filter((arm) => config.sameCode[arm].includes(cohort));
   const plantedOn = (cohort) => Object.keys(config.planted).filter((arm) => Object.hasOwn(config.planted[arm], cohort));
+  const reach = ({ pairs, statistic }) => Math.max(Math.max(...pairs) - statistic, statistic - Math.min(...pairs));
+  const budgetOf = (cohort) => {
+    if (config.budgetLaw === undefined) return { budget: config.budgets[cohort] };
+    const baseMedian = median(Array.from({ length: PACKETS }, (_, packet) => value('base', packet, cohort)));
+    return { baseMedian, budget: Math.max(config.budgetLaw.ratio, 1 + config.budgetLaw.ms / baseMedian) };
+  };
 
   const cohorts = config.cohorts.map((cohort) => {
     const rows = Object.keys(config.arms)
@@ -225,7 +244,7 @@ const judge = (config, { runs }) => {
       });
     const row = (arm) => rows.find((entry) => entry.arm === arm);
     const candidate = row('candidate');
-    const noise = Math.max(
+    const sameCodeGap = Math.max(
       ...sameCodeOn(cohort).map((arm) =>
         Math.max(
           Math.abs(row(arm).statistic - candidate.statistic),
@@ -233,7 +252,9 @@ const judge = (config, { runs }) => {
         )
       )
     );
-    const budget = config.budgets[cohort];
+    const spread = Math.max(reach(candidate), ...sameCodeOn(cohort).map((arm) => reach(row(arm))));
+    const noise = Math.max(sameCodeGap, spread);
+    const { baseMedian, budget } = budgetOf(cohort);
     const margin = Math.abs(budget - candidate.statistic);
     const reasons = [];
     for (const arm of plantedOn(cohort)) {
@@ -241,18 +262,18 @@ const judge = (config, { runs }) => {
       const plant = config.planted[arm][cohort];
       if (statistic - budget <= noise) {
         reasons.push(
-          `planted ${arm} scored ${statistic.toFixed(3)}, not past the budget ${budget} by more than the same-code noise ${noise.toFixed(3)}, so the line could not fail there`
+          `planted ${arm} scored ${statistic.toFixed(3)}, not past the budget ${+budget.toFixed(4)} by more than the noise ${noise.toFixed(3)}, so the line could not fail there`
         );
       } else if (Math.abs(statistic - plant) > plant - budget + noise) {
         reasons.push(
-          `planted ${arm} scored ${statistic.toFixed(3)}, further from the ${plant} it plants than that ratio's distance to the budget ${budget} plus the same-code noise ${noise.toFixed(3)}, so the line measured something other than the plant`
+          `planted ${arm} scored ${statistic.toFixed(3)}, further from the ${plant} it plants than that ratio's distance to the budget ${+budget.toFixed(4)} plus the noise ${noise.toFixed(3)}, so the line measured something other than the plant`
         );
       }
     }
     if (noise >= margin) {
-      reasons.push(`the same-code noise ${noise.toFixed(3)} reaches the candidate's margin ${margin.toFixed(3)} to the budget`);
+      reasons.push(`the noise ${noise.toFixed(3)} reaches the candidate's margin ${margin.toFixed(3)} to the budget`);
     }
-    return { cohort, rows, noise, reasons, passes: candidate.statistic <= budget };
+    return { cohort, rows, noise, sameCodeGap, spread, budget, baseMedian, reasons, passes: candidate.statistic <= budget };
   });
 
   const maxLoad = Math.max(...runs.map((run) => run.load));
@@ -290,19 +311,24 @@ const main = (argv) => {
     console.log(`measurements written to ${measurementsPath}`);
   }
   const result = judge(config, measurements);
-  for (const { cohort, rows, noise } of result.cohorts) {
+  for (const { cohort, rows, noise, sameCodeGap, spread, budget, baseMedian } of result.cohorts) {
     for (const row of rows) {
       console.log(
         `${cohort} ${row.arm}: median pair ${row.statistic.toFixed(3)} [${row.pairs.map((pair) => pair.toFixed(3)).join(' ')}]`
       );
     }
-    console.log(`${cohort} same-code noise ${noise.toFixed(3)}`);
+    console.log(
+      `${cohort} noise ${noise.toFixed(3)}: same-code gap ${sameCodeGap.toFixed(3)}, furthest pair from its arm's median ${spread.toFixed(3)}`
+    );
+    console.log(
+      `${cohort} budget ${budget.toFixed(4)}${baseMedian === undefined ? '' : ` from a base median of ${baseMedian.toFixed(2)} ms`}`
+    );
   }
   console.log(`max one-minute load ${result.maxLoad.toFixed(2)}`);
   if (result.status === 'fail') console.error(`the candidate fails on ${result.misses.join(', ')}`);
   if (result.status !== 'pass' && result.inconclusive.length > 0) console.error(`inconclusive: ${result.inconclusive.join('; ')}`);
   if (result.status === 'pass') {
-    console.log('the candidate passes every cohort; every planted arm failed past the same-code noise, and that noise stayed within the margin');
+    console.log('the candidate passes every cohort; every planted arm failed past the noise, and that noise stayed within the margin');
   }
   if (replay) {
     console.error(`replay: the verdict under this config is ${result.status}, and a replay exits 3 because it never decides`);

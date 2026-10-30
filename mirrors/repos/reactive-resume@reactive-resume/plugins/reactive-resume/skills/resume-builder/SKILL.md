@@ -1,6 +1,6 @@
 ---
 name: resume-builder
-description: Builds a complete resume from scratch as Reactive Resume JSON that conforms to the schema and imports at https://rxresu.me. Asks for each missing detail instead of inventing it, then produces valid JSON (UUIDs, HTML descriptions, template and layout). Use when the user wants to create, build or generate a new resume, turn their work history into Reactive Resume JSON, or asks about the Reactive Resume schema, sections, templates or layout. For what belongs on a resume or a resume audit use resume-content-guide; for rewriting bullets, resume-bullet-writer; for fitting one job posting, resume-tailor; for tracking applications, job-application-manager; for interviews, interview-prep or mock-interview.
+description: Builds a complete resume as Reactive Resume JSON that conforms to the schema and imports at https://rxresu.me. Asks for missing facts, then produces valid JSON with UUIDs, HTML descriptions, template and layout. Use when the user requests importable JSON, creation in Reactive Resume, or help with its schema, sections, templates or layout. Use resume-writer for a general text draft, resume-content-guide for a content audit, resume-bullet-writer for bullets and resume-tailor for one posting.
 ---
 
 # Resume Builder for Reactive Resume
@@ -18,6 +18,7 @@ Build professional resumes through conversational AI for [Reactive Resume](https
 
 This skill builds the document. Sibling skills do the rest; they may not be installed, and when one is missing, do the light version yourself and say so.
 
+- **resume-writer:** a general resume as copy-ready text, including headlines and summaries. Role-specific resume skills, entry-level-resume, career-change-resume and academic-cv help choose and write the content before this skill turns it into JSON.
 - **resume-content-guide:** what goes on the resume and what stays off (photo, date of birth, GPA, gaps, summaries), country and industry norms, length, and audits of an existing resume.
 - **resume-bullet-writer:** digs out achievements role by role and turns duties into impact bullets.
 - **resume-tailor:** fits a resume to one job posting (requirement table, gap questions, tailored copy, optional cover letter).
@@ -63,7 +64,7 @@ Ask about preferences:
 
 ### Step 4: Generate Valid JSON
 
-Output must conform to the Reactive Resume schema. See [references/schema.md](references/schema.md) for the complete schema structure.
+Output must conform to the schema of the intended Reactive Resume installation. When connected, read its `resume://_meta/schema` MCP resource; otherwise fetch `/schema.json` from that installation ([hosted schema](https://rxresu.me/schema.json)). Both are generated from the schema that the server accepts. Use [references/schema.md](references/schema.md) as an offline reference snapshot, not as proof of current compatibility; if the current schema is unavailable, label validation as pending instead of claiming the JSON is verified for import.
 
 Key requirements:
 
@@ -78,7 +79,7 @@ Key requirements:
 
 For deeper content work, hand off to resume-content-guide (what to include, country norms, audits) and resume-bullet-writer (achievement bullets). If neither is installed, apply these core rules:
 
-- **Achievements, not duties**: start each bullet with a plain past-tense verb and say what changed. Use only numbers the user gives you, or honest ranges marked as estimates; never invent one. No "I", "my" or "we".
+- **Achievements, not duties**: start each bullet with a plain verb: past tense for completed work, present tense for ongoing duties in a current role. Say what changed or describe supported scope. Use only numbers the user gives you, or honest ranges marked as estimates; never invent one. No "I", "my" or "we".
 - **Bullets per role**: 3–6 for recent roles, 1–3 for older ones.
 - **Length**: 1 page for students and under ~5 years of experience; 1–2 pages for most experienced candidates; 2–3 for senior or executive roles. US federal (USAJOBS) resumes are 2 pages maximum as of 2026.
 - **Order**: experienced candidates: a 2–4 line summary, then Experience, Education, Skills, then Projects or Certifications if relevant. Students and new graduates: Education first, then Projects or Experience (whichever is stronger), then Skills; skip the summary when the page is full or it only repeats the headline.
@@ -103,7 +104,7 @@ Example minimal structure:
 }
 ```
 
-For the complete schema, see [references/schema.md](references/schema.md).
+Check the complete output against the current schema from step 4; [references/schema.md](references/schema.md) is the offline snapshot.
 
 ## MCP Application Tracking
 

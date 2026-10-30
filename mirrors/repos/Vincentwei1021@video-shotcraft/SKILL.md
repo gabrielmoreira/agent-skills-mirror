@@ -1,16 +1,25 @@
 ---
 name: video-shotcraft
-description: Create cinematic product videos from shot recipe cards, a validated template, and code/audio assets (Remotion + real page screenshots + 2.5D camera moves + beat-synced cuts + sound design). Use when the user asks to turn a frontend project or webpage into a product video, says "use video-shotcraft to make a video/promo", names the Ink Press template or asks to reproduce its effect, or wants a single shot card's motion. 用镜头配方卡 + 已验收模板 + 代码/音频资产制作电影感产品视频（Remotion + 真实页面截图 + 2.5D 运镜 + 节奏卡点 + 声音设计）。当用户要求"用 video-shotcraft 做视频/宣传片"、把前端项目/网页做成产品视频、点名 Ink Press 模板或要求复刻模板片效果，或要用镜头卡做单个动效镜头时使用。
+description: Create cinematic product videos from frontend projects or webpages with Remotion, real page captures, shot cards, the Ink Press template, beat sync and sound design. Use for full product promos, reproducing Ink Press, single shot-card effects, or finding, adding, replacing and aligning sound effects in an existing product video or shot, including candidate-only SFX searches. 用真实页面、镜头卡与 Ink Press 模板制作产品宣传片；用户要求用 video-shotcraft 做视频、复刻模板、制作单镜头，或给已完成的产品片/镜头找音效候选、加音效、换音效、对齐声音时使用。
 ---
 
 # video-shotcraft：电影感产品视频制作
 
 一个自包含的制作能力库：124 张镜头配方卡（附 demo 实现源码与动态样片
-画廊）、一支已验收的完整宣传片模板、可复用组件与音频资产、六阶段工作流。
+画廊）、一支已验收的完整宣传片模板、可复用组件、Freesound 音效选材工具与 BGM 备选、六阶段工作流。
 当前 focus 是 web/桌面产品宣传片，但镜头卡本身是通用动效词汇——
 也可以单独抽卡做任意视频里的单个镜头。
 
-## 调用时先判断模式
+## 调用时先判断任务范围
+
+**仅处理已有视频或镜头的音效**：直接读 `references/sound-design.md` 与
+`references/sfx-sourcing.md`，进入声音选材、分析或对齐步骤，无需重新选择整片创作模式。
+只要候选时执行 `sfx-source.py search` 并给出素材页/试听入口，不下载、不改画面、不渲染；
+动作、材质、目标时长和许可要求已足够搜索时，不要求用户先提供完整视频工程。
+用户已指定音频时沿用该文件，需要测量则执行 `analyze`，不自动搜索替代声音。
+单纯调整 BGM 走 sound-design 的 BGM 流程；静音或明确不要音效时不触发 SFX 搜索。
+
+**新制作完整宣传片**时，再按以下模式继续。
 
 完整宣传片有三种互不合并的模式。在开始素材采集、分镜或实现前，先判断用户
 是否已经明确选择；已经选择时直接执行，不重复询问，也不要改成另一种模式。
@@ -165,7 +174,7 @@ SFX；只有完整分镜确认后才进入最终素材采集。用户从 Gallery
 镜头映射和分镜确认，再从流水线阶段 4 的最终素材采集继续，不得重复提问或重新设计。
 阶段 2–3 扫 `references/shots/` 各卡 frontmatter 按能量曲线选镜头；阶段 5–7 持续
 对照 `references/aesthetic-rules.md` 自检；阶段 6 读
-`references/sound-design.md`；卡点片全程贴 `references/music-beat-sync.md`。
+`references/sound-design.md` 与 `references/sfx-sourcing.md`，从 Freesound 按需下载 SFX；卡点片全程贴 `references/music-beat-sync.md`。
 
 ### 交付收尾（所有模式共用）
 
@@ -220,7 +229,7 @@ node workbench/scripts/open.mjs <成片工程目录>   # 链接工程 → 起 de
 | 走模板路线 | template/TEMPLATE.md 全文 |
 | 分镜设计 | sequences/ 桥段模板（全片骨架先填空）；shots/ 全部 frontmatter；选中的卡读全文 |
 | 逐镜头实现 | 该镜头卡全文 + 按“参考实现”定位的准确 demo 源码全文 + assets/lib/ 对应组件 |
-| 声音设计 | sound-design.md + assets/audio/ |
+| 声音设计 | sound-design.md + sfx-sourcing.md（Freesound 选材、下载、许可与来源记录） |
 | 验收 | final-review.md + aesthetic-rules.md 全文过 checklist（独立 subagent 执行） |
 | 逐镜头实现时写 `src/workbench.ts` 清单 / 镜头 props+schema | workbench.md §2–3（范例 `template/src/workbench.ts`） |
 | 成片交付后（打开动效工作台） | workbench.md（`node workbench/scripts/open.mjs <工程>`；工作台自身文档 `workbench/README.md`） |
@@ -237,14 +246,14 @@ node workbench/scripts/open.mjs <成片工程目录>   # 链接工程 → 起 de
   helpers(rand/shake/camera/motion)。FlatPanel 与 helpers/camera 需要
   `three` + `@react-three/fiber` + `@remotion/three` 依赖，其余仅需 remotion。
 - `assets/scripts/capture-template.mjs` 复制后改顶部 CONFIG（BASE/路由/选择器）。
-- `assets/audio/` 音效直接复制使用（免费商用授权，见 audio/ATTRIBUTION.md）：
-  `audio/bgm/` 是节奏感强的 BGM 备选；`audio/sfx/<类别>/` 149 个音效按场景分 16 类
-  （transition impact riser camera ui text paper film light data scifi mech
-  glass fluid crowd counter），找音先进类别目录，清单见 sound-design.md。
-  词汇表 sparkle 的目录名是 `light/`（无 `sparkle/`）；S1 禁音色不禁动作——
-  画面真有点击/开关就该配拟音，但 `ui/` 里一半是合成反馈音（tone/bleep/
-  notification）需逐个试听、不可整目录放行（名单见 sound-design 3.3）；
-  长样本与轻音素材各有名单需特殊处理（sound-design 4.1）。
+- **SFX 直接使用 Freesound**：读 `references/sfx-sourcing.md`，用
+  `assets/scripts/sfx-source.py` 搜索、下载到当前视频工程 `public/audio/sfx/`。
+  默认 CC0，允许署名时可选 CC BY；下载时复核详情页许可，自动生成来源清单、
+  署名文件、哈希和音频测量。下载的是 MP3 预览，不能标成原始无损音频。
+  渲染只读工程内固定文件。共享本地 SFX 库已移除；模板历史音频只用于原样运行，
+  新产品即使采用模板也从 Freesound 选音，保留动作语义并重新对齐。
+- `assets/audio/bgm/` 保留 5 首 BGM 备选，授权见 `assets/audio/ATTRIBUTION.md`；
+  SFX 选材规则不替代 BGM 选曲。用户明确指定的音乐或音效始终优先。
 - `demos/` 各卡实现源码：自包含的成片级 demo（共享件在 `demos/_fixtures/`：`Look.tsx` 视觉系统、
   `Polish.tsx` 质感件、`Brand.tsx` 品牌件等，个别 import `demos/_textures/` 的真实页面纹理），
   copy 进 Remotion 项目即可跑；画面里的 logo / 品牌文案是 video-shotcraft 自己，给用户产品用时
@@ -259,6 +268,7 @@ node workbench/scripts/open.mjs <成片工程目录>   # 链接工程 → 起 de
   - demo 渲染冒烟：`python3 assets/scripts/smoke-render-demos.py` 渲染每个
     带时长导出 demo 的首帧断言不崩（需 `cd template && npm ci` +
     motion-blur，详见 `demos/README.md` 测试与验证一节）。
+  - Freesound 离线回归：`python3 -m unittest discover -s assets/scripts -p "test_sfx_source.py"`（许可、来源保存、失败处理和音频测量）。
   - CI（`pr-checks.yml`）已自动跑：tsc 严格编译全部 demo + vitest + 冒烟渲染。
 - `jianying-export/` 剪映工程导出模块：`mac_draft.py`（Mac 剪映 11.2
   实测通过）、`windows_draft.py`（按上游支持路径实现，未真机验证）、

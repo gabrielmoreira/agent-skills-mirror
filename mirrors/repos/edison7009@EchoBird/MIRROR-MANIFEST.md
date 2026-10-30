@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `edison7009/EchoBird` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
+Mirror of `edison7009/EchoBird` — 26 default patterns, 0 followed patterns, 1 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `edison7009/EchoBird` — 26 default patterns, 0 followed patterns, 3 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 3 |
+| Files         | 1 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,8 +60,6 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`tools/reversi/default-skills/reversi-master/SKILL.md`](tools/reversi/default-skills/reversi-master/SKILL.md) |
-| 3 | ✓ | [`tools/reversi/default-skills/trash-talk/SKILL.md`](tools/reversi/default-skills/trash-talk/SKILL.md) |
 
 ---
 

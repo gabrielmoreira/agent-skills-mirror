@@ -132,6 +132,8 @@ Skillshare 配置中。schema 是仓库中的 `schemas/mcp.schema.json`。
 Client ID 有 `claude`、`codex`、`cursor`、`vscode`、`opencode`、`kilocode`、
 `grok`、`antigravity`、`amp`、`claude-desktop`、`cline`、`copilot`、`factory`、`gemini`、
 `goose`、`junie`、`kiro`、`lmstudio`、`warp`、`windsurf`、`pi` 和 `omp`。
+`--target` 和 `--from` 也接受 `agy` 和 `antigravity-cli`（其他命令对 Antigravity CLI 的称呼），
+并将它们视为 `antigravity`；source 中保存的是 `antigravity`。
 `grok` 指的是官方的 xAI Grok CLI。Server 名称使用字母、
 数字、点、下划线和连字符。一个 server 在同步之前，必须
 直接或通过 `mcp.targets` 选择至少一个 client，除非它自己的

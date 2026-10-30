@@ -1,5 +1,5 @@
 import type { RequestId } from "@modelcontextprotocol/sdk/types.js";
-import { getCachedEnvId } from "../cloudbase-manager.js";
+import { readDisplayedEnvId } from "./env-binding.js";
 import { t } from "../i18n/index.js";
 import { isFormElicitationSupported, requestChoiceElicitation } from "./elicitation.js";
 import { destructiveConfirmationKeys, resolveDestructiveAction } from "./destructive-actions.js";
@@ -116,15 +116,7 @@ export function readAutoApprovePolicy(): "allow" | "block" {
 }
 
 function resolveEnvId(server: ConfirmationServer): string {
-    const fromOptions = server.cloudBaseOptions?.envId;
-    if (typeof fromOptions === "string" && fromOptions.length > 0) {
-        return fromOptions;
-    }
-    try {
-        return getCachedEnvId() ?? t("confirmation.message.unknownEnv");
-    } catch {
-        return t("confirmation.message.unknownEnv");
-    }
+    return readDisplayedEnvId(server.cloudBaseOptions?.envId) ?? t("confirmation.message.unknownEnv");
 }
 
 function blockedText(

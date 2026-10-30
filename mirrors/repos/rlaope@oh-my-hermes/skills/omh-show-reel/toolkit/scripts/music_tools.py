@@ -32,6 +32,7 @@ Note: artist, composer or song names ("Hans Zimmer style" and the like) are reje
 """
 import argparse
 import json
+import math
 import subprocess
 import sys
 from pathlib import Path
@@ -65,7 +66,7 @@ ENERGY_WORDS = {   # words per energy step for each mood (so a tech mood never g
 def numpy():
     try:
         import numpy as np
-    except ImportError:
+    except ModuleNotFoundError:
         raise SystemExit("HOLD: this command needs numpy in the interpreter you run it with; nothing is installed for you")
     return np
 
@@ -186,6 +187,164 @@ def decode(path, ffmpeg, sr=22050):
     return np.frombuffer(raw, np.float32)
 
 
+def _positive_number(value, label, *, zero=False):
+    value = float(value)
+    if not math.isfinite(value) or value < 0 or (not zero and value == 0):
+        raise ValueError(f"{label} must be finite and {'nonnegative' if zero else 'positive'}")
+    return value
+
+
+def _alternatives(bpm):
+    return [round(b, 2) for b in (bpm * 2, bpm / 2) if 60 <= b <= 200]
+
+
+def _legacy_tempo(values, rate):
+    """The original 60..180 BPM autocorrelation, interpolated and folded to 75..165."""
+    mean = sum(values) / len(values)
+    centered = [v - mean for v in values]
+    first, last = max(1, math.ceil(rate / 3)), min(len(values) - 2, math.floor(rate))
+    if first > last or not any(centered):
+        return 120.0
+    ac = {lag: sum(centered[i] * centered[i + lag] for i in range(len(values) - lag))
+          for lag in range(max(0, first - 1), last + 2)}
+    lag = max(range(first, last + 1), key=ac.__getitem__)
+    y0, y1, y2 = ac[lag - 1], ac[lag], ac[lag + 1]
+    den = y0 - 2 * y1 + y2
+    refined = lag + (0.5 * (y0 - y2) / den if den else 0)
+    bpm = 60 * rate / refined
+    while bpm < 75:
+        bpm *= 2
+    while bpm > 165:
+        bpm /= 2
+    return bpm
+
+
+def _phase_fit(values, rate, bpm):
+    """Mean onset support on a grid; missing beats lower the score, not just its sum."""
+    step = 60 * rate / bpm
+    best, phase = -1.0, 0.0
+    # Half-frame phase resolution; evaluate the grid rather than snap detected peaks.
+    for k in range(max(1, math.ceil(2 * step))):
+        p = k / 2
+        total, count, t = 0.0, 0, p
+        while t < len(values) - 0.5:
+            total += values[int(t + 0.5)]
+            count += 1
+            t += step
+        score = total / count if count else 0.0
+        if score > best:
+            best, phase = score, p / rate
+    return max(0.0, best), phase
+
+
+def fit_grid(envelope, frame_rate, *, bpm_hint=None, start=0, window=0):
+    """Fit a periodic onset envelope, returning bpm, phase (seconds) and evidence.
+
+    The hint limits the search to +/-8%, without octave folding. start/window select
+    only the fitting stretch; phase remains relative to the original envelope's zero.
+    grid_strength is baseline-subtracted onset support per predicted beat (0..1),
+    not an artistic judgment or a probability that the meter is correct.
+    """
+    rate = _positive_number(frame_rate, "frame_rate")
+    start = _positive_number(start, "start", zero=True)
+    window = _positive_number(window, "window", zero=True)
+    hint = _positive_number(bpm_hint, "bpm_hint") if bpm_hint is not None else None
+    values = [float(v) for v in envelope]
+    if not values or any(not math.isfinite(v) or v < 0 for v in values):
+        raise ValueError("envelope must contain finite nonnegative samples")
+    if start >= len(values) / rate:
+        raise ValueError("start is outside the envelope")
+    if hint is not None and hint * 1.08 > 60 * rate:
+        raise ValueError("bpm_hint exceeds the envelope's frame resolution")
+    lo = math.ceil(start * rate)
+    hi = min(len(values), math.ceil((start + window) * rate)) if window else len(values)
+    selected = values[lo:hi]
+    if not selected:
+        raise ValueError("fit window contains no frames")
+    baseline = math.fsum(selected) / len(selected)
+    # Rounding noise is not an onset: a flat envelope must leave no peaks on any
+    # interpreter (float sum() rounds differently before Python 3.12).
+    noise = 1e-9 * max(1.0, max(selected))
+    evidence = [v - baseline if v - baseline > noise else 0.0 for v in selected]
+    peaks = sorted(v for v in evidence if v > 0)
+    scale = peaks[min(len(peaks) - 1, int(0.95 * len(peaks)))] if peaks else 1.0
+    evidence = [min(1.0, v / scale) for v in evidence]
+    legacy = _legacy_tempo(selected, rate)
+    if hint is None:
+        bpm = legacy
+        score, phase = _phase_fit(evidence, rate, bpm)
+    else:
+        lower, upper = hint * 0.92, hint * 1.08
+        # Coarse search followed by a centi-BPM refinement. The hint is one
+        # candidate, not the answer: timing evidence chooses the result.
+        step = max(0.05, (upper - lower) / 600)
+        candidates = [lower + i * step for i in range(int((upper - lower) / step) + 1)] + [hint, upper]
+        score, phase, bpm = -1.0, 0.0, hint
+        if peaks:
+            for candidate in candidates:
+                strength, ph = _phase_fit(evidence, rate, candidate)
+                if strength > score:
+                    score, phase, bpm = strength, ph, candidate
+            center = bpm
+            for i in range(-10, 11):
+                candidate = center + i * step / 10
+                if lower <= candidate <= upper:
+                    strength, ph = _phase_fit(evidence, rate, candidate)
+                    if strength > score:
+                        score, phase, bpm = strength, ph, candidate
+        else:
+            score = 0.0
+    period = 60 / bpm
+    result = {"bpm": bpm, "phase": (phase + lo / rate) % period,
+              "grid_strength": max(0.0, min(1.0, score)), "alternatives": _alternatives(bpm)}
+    if hint is not None and peaks:
+        unconstrained, _ = _phase_fit(evidence, rate, legacy)
+        if unconstrained > score * 1.5 and unconstrained - score > 0.15:
+            result["warning"] = "tempo hint disagrees with the track"
+    return result
+
+
+def find_drops(rms, frame_rate, downbeats, bpm):
+    """Rank up to three sustained loudness rises at downbeats, then return by time.
+
+    rise is mean RMS in the following two bars / mean RMS in the preceding bar.
+    Only full windows qualify. A local maximum prevents the lookahead window
+    from labelling the bar *before* a rise as another drop. Bar numbers are 1-based.
+    """
+    rate = _positive_number(frame_rate, "frame_rate")
+    bpm = _positive_number(bpm, "bpm")
+    values = [float(v) for v in rms]
+    if any(not math.isfinite(v) or v < 0 for v in values):
+        raise ValueError("rms must contain finite nonnegative samples")
+    times = [float(t) for t in downbeats]
+    if any(not math.isfinite(t) or t < 0 for t in times) or any(b <= a for a, b in zip(times, times[1:])):
+        raise ValueError("downbeats must be finite, nonnegative and strictly increasing")
+    if not values:
+        return []
+    bar = 240 / bpm
+    prefix = [0.0]
+    for value in values:
+        prefix.append(prefix[-1] + value)
+    candidates = []
+    floor = max(max(values) * 0.01, 1e-12)
+    for i, t in enumerate(times):
+        left, mid, right = (round(s * rate) for s in (t - bar, t, t + 2 * bar))
+        if left < 0 or right > len(values) or not left < mid < right:
+            continue
+        before = (prefix[mid] - prefix[left]) / (mid - left)
+        after = (prefix[right] - prefix[mid]) / (right - mid)
+        rise = after / max(before, floor)
+        if rise >= 1.5 and after > floor:
+            candidates.append({"t": round(t, 3), "rise": round(rise, 3), "bar": i + 1})
+    selected = []
+    for item in sorted(candidates, key=lambda d: (-d["rise"], d["t"])):
+        if all(abs(item["t"] - d["t"]) > bar * 1.01 for d in selected):
+            selected.append(item)
+            if len(selected) == 3:
+                break
+    return sorted(selected, key=lambda d: d["t"])
+
+
 def cmd_analyze(a):
     np = numpy()
     sr = 22050
@@ -227,6 +386,14 @@ def cmd_analyze(a):
         sc = (2.0 * lflux[idx] + flux[idx]).sum()
         if sc > best:
             best, ph_best = sc, ph
+    hint = getattr(a, "bpm", None)
+    start, window = getattr(a, "start", 0), getattr(a, "window", 0)
+    grid = fit_grid(2 * lflux + flux if hint is not None else flux, sr / h,
+                    bpm_hint=hint, start=start, window=window)
+    if hint is not None or start or window:
+        bpm = grid["bpm"]
+        period = 60 / bpm
+        ph_best = (grid["phase"] + n / (2 * sr)) % period
     beats = np.arange(ph_best, ft[-1], period)
     # downbeat: the one of four beats with the most low-band energy
     low = (S[:, : int(150 / (sr / n))] ** 2).sum(1)
@@ -249,7 +416,11 @@ def cmd_analyze(a):
     energy = [[round(i * h / sr, 2), round(float(20 * np.log10(rms[i:i + hop_half].mean() + 1e-9)), 1)] for i in range(0, len(rms), hop_half)]
     res = {"file": str(a.file), "duration": round(len(x) / sr, 3), "bpm": round(float(bpm), 2),
            "beats": [round(float(b), 3) for b in beats], "downbeats": [round(float(b), 3) for b in downbeats],
-           "hits": hits, "energy": energy}
+           "hits": hits, "energy": energy, "grid_strength": round(grid["grid_strength"], 4),
+           "alternatives": _alternatives(bpm),
+           "drops": find_drops(rms, sr / h, downbeats, bpm)}
+    if "warning" in grid:
+        res["warning"] = grid["warning"]
     out = new_output(a.out if a.out else Path(a.file).with_name("analysis.json"))
     out.write_text(json.dumps(res, ensure_ascii=False), encoding="utf-8")
     print(f"{out}\nlength {res['duration']}s | tempo {res['bpm']} BPM (beat {period:.3f}s, bar {period * 4:.3f}s) | first downbeat {downbeats[0] if len(downbeats) else 0:.2f}s")
@@ -347,6 +518,9 @@ def main():
     sp = ap.add_subparsers(dest="cmd", required=True)
     p = sp.add_parser("plan"); p.add_argument("spec"); p.add_argument("--out"); p.set_defaults(fn=cmd_plan)
     p = sp.add_parser("analyze"); p.add_argument("file"); p.add_argument("--out"); p.set_defaults(fn=cmd_analyze)
+    p.add_argument("--bpm", type=float, help="tempo hint; search within +/-8%% without octave folding")
+    p.add_argument("--window", type=float, default=0, help="seconds to fit (0: to the end)")
+    p.add_argument("--start", type=float, default=0, help="start of the fitting stretch, in seconds")
     p = sp.add_parser("splice"); p.add_argument("src"); p.add_argument("out"); p.add_argument("--segments", required=True)
     p.add_argument("--xfade", type=float, default=0.006); p.add_argument("--snap"); p.set_defaults(fn=cmd_splice)
     p = sp.add_parser("fit"); p.add_argument("src"); p.add_argument("out"); p.add_argument("--dur", type=float, required=True)

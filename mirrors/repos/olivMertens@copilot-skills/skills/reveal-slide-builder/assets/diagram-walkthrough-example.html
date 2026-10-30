@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Guided diagram walkthrough: example</title>
+  <!-- Offline: copy reveal.js dist/ into vendor/reveal.js/dist/ (npm pack reveal.js, then extract package/dist). -->
+  <link rel="stylesheet" href="vendor/reveal.js/dist/reset.css">
+  <link rel="stylesheet" href="vendor/reveal.js/dist/reveal.css">
+  <link rel="stylesheet" href="vendor/reveal.js/dist/theme/white.css">
+  <link rel="stylesheet" href="diagram-walkthrough.css">
+  <style>
+    .reveal { font-family: "Segoe UI", system-ui, Arial, sans-serif; }
+    .reveal h1, .reveal h2 { font-family: inherit; text-transform: none; letter-spacing: -0.01em; }
+    .reveal .eyebrow { display: block; font-size: 0.45em; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--r-link-color); }
+  </style>
+</head>
+<body>
+<div class="reveal">
+  <div class="slides">
+
+    <section>
+      <h1>Follow one request</h1>
+      <p>A guided walkthrough of an architecture diagram, one step at a time.</p>
+      <aside class="notes">Introduce the goal: by the end, everyone can retell the path of one request.</aside>
+    </section>
+
+    <!-- ===== Guided diagram walkthrough ===== -->
+    <section class="dw-slide" id="request-flow" aria-label="Request flow, step by step"
+             data-keep="c-platform" data-fail-label="unavailable">
+      <span class="eyebrow">Architecture · step by step</span>
+      <h2>Follow one request through the governed path</h2>
+
+      <div class="dw-stage">
+        <svg class="dw-svg" data-diagram="demo" viewBox="0 0 1200 660" role="img"
+             aria-labelledby="demo-title" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+          <title id="demo-title">Request flow: customer, web app, API gateway, agent, identity, model, orders API, database and monitoring</title>
+          <defs>
+            <marker id="demo-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" fill="#1b1f24"/>
+            </marker>
+            <style>
+              .t { font: 600 16px "Segoe UI", system-ui, Arial, sans-serif; fill: #1b1f24; }
+              .s { font: 400 13px "Segoe UI", system-ui, Arial, sans-serif; fill: #57606a; }
+              .c { font: 600 13px "Segoe UI", system-ui, Arial, sans-serif; fill: #57606a; }
+              .box { fill: #fff; stroke: #1b1f24; stroke-width: 1.4; }
+              .zone { fill: #f6f8fa; stroke: #8c959f; stroke-width: 1.4; stroke-dasharray: 8 4; }
+              .wire { fill: none; stroke: #1b1f24; stroke-width: 1.6; }
+            </style>
+          </defs>
+
+          <!-- Containers: KEY-c-<name> -->
+          <g id="demo-c-observe"><rect class="zone" x="420" y="20" width="360" height="104"/><text class="c" x="432" y="40">Observability</text></g>
+          <g id="demo-c-users"><rect class="zone" x="20" y="160" width="230" height="470"/><text class="c" x="32" y="180">Users</text></g>
+          <g id="demo-c-platform"><rect class="zone" x="290" y="160" width="600" height="470"/><text class="c" x="302" y="180">Application platform</text></g>
+          <g id="demo-c-backend"><rect class="zone" x="940" y="160" width="240" height="470"/><text class="c" x="952" y="180">Back-end systems</text></g>
+
+          <!-- Connectors: KEY-e-<name>, with data-from / data-to -->
+          <path id="demo-e-user-app" data-from="user" data-to="app" class="wire" d="M220,302 H316" marker-end="url(#demo-arrow)"/>
+          <path id="demo-e-app-gateway" data-from="app" data-to="gateway" class="wire" d="M500,302 H556" marker-end="url(#demo-arrow)"/>
+          <path id="demo-e-gateway-agent" data-from="gateway" data-to="agent" class="wire" d="M650,334 V416" marker-end="url(#demo-arrow)"/>
+          <path id="demo-e-agent-identity" data-from="agent" data-to="identity" class="wire" d="M560,452 H504" marker-end="url(#demo-arrow)"/>
+          <path id="demo-e-agent-model" data-from="agent" data-to="model" class="wire" d="M740,440 H850 V302 H966" marker-end="url(#demo-arrow)"/>
+          <path id="demo-e-agent-orders" data-from="agent" data-to="orders" class="wire" d="M740,464 H966" marker-end="url(#demo-arrow)"/>
+          <path id="demo-e-orders-db" data-from="orders" data-to="db" class="wire" d="M1060,496 V536" marker-end="url(#demo-arrow)"/>
+          <path id="demo-e-gateway-monitor" data-from="gateway" data-to="monitor" class="wire" d="M650,270 V113" marker-end="url(#demo-arrow)"/>
+
+          <!-- Components: KEY-<node> -->
+          <g id="demo-monitor"><rect class="box" x="510" y="45" width="180" height="64" rx="6"/><text class="t" x="524" y="72">Monitoring</text><text class="s" x="524" y="92">traces · logs</text></g>
+          <g id="demo-user"><rect class="box" x="40" y="270" width="180" height="64" rx="6"/><text class="t" x="54" y="297">Customer</text><text class="s" x="54" y="317">web or chat</text></g>
+          <g id="demo-app"><rect class="box" x="320" y="270" width="180" height="64" rx="6"/><text class="t" x="334" y="297">Web app</text><text class="s" x="334" y="317">front end</text></g>
+          <g id="demo-gateway"><rect class="box" x="560" y="270" width="180" height="64" rx="6"/><text class="t" x="574" y="297">API gateway</text><text class="s" x="574" y="317">auth · quotas · logs</text></g>
+          <g id="demo-identity"><rect class="box" x="320" y="420" width="180" height="64" rx="6"/><text class="t" x="334" y="447">Identity provider</text><text class="s" x="334" y="467">agent identity</text></g>
+          <g id="demo-agent"><rect class="box" x="560" y="420" width="180" height="64" rx="6"/><text class="t" x="574" y="447">Agent service</text><text class="s" x="574" y="467">plans and calls tools</text></g>
+          <g id="demo-model"><rect class="box" x="970" y="270" width="180" height="64" rx="6"/><text class="t" x="984" y="297">Language model</text><text class="s" x="984" y="317">two regions</text></g>
+          <g id="demo-orders"><rect class="box" x="970" y="432" width="180" height="64" rx="6"/><text class="t" x="984" y="459">Orders API</text><text class="s" x="984" y="479">read · update</text></g>
+          <g id="demo-db"><rect class="box" x="970" y="540" width="180" height="64" rx="6"/><text class="t" x="984" y="567">Orders database</text><text class="s" x="984" y="587">system of record</text></g>
+
+          <!-- Legend: KEY-legend… (always kept as context) -->
+          <g id="demo-legend"><path class="wire" d="M40,600 H90" marker-end="url(#demo-arrow)"/><text class="s" x="100" y="604">call</text></g>
+        </svg>
+      </div>
+
+      <div class="dw-steps r-stack" aria-live="polite">
+        <p class="dw-intro">The whole picture first · press <kbd>→</kbd> or <kbd>Space</kbd> to follow the flow, one step at a time</p>
+
+        <div class="fragment fade-in-then-out dw-step" data-focus="user app">
+          <span class="n">1</span>A customer asks about an order in the web app.
+          <aside class="notes">
+            <p><b>~30 s · Point at:</b> Customer, then Web app.</p>
+            <p><b>Say:</b> Everything starts with one plain question. Keep this request in mind: we follow it end to end.</p>
+            <p><b>Next:</b> "Where does the request go first?"</p>
+          </aside>
+        </div>
+
+        <div class="fragment fade-in-then-out dw-step" data-focus="app gateway agent">
+          <span class="n">2</span>Every call goes through the API gateway before it reaches the agent.
+          <aside class="notes">
+            <p><b>~40 s · Point at:</b> the gateway, between the app and the agent.</p>
+            <p><b>Say:</b> One door in. Authentication, quotas and logs are enforced here, not in each service.</p>
+            <p><b>Ask the room:</b> "Where are these controls applied today?"</p>
+            <p><b>Next:</b> the agent needs to prove who it is.</p>
+          </aside>
+        </div>
+
+        <div class="fragment fade-in-then-out dw-step" data-focus="agent identity">
+          <span class="n">3</span>The agent signs in with its own identity, not a shared secret.
+          <aside class="notes">
+            <p><b>~30 s · Point at:</b> Agent service, Identity provider.</p>
+            <p><b>Say:</b> The agent is a first-class identity: it can be audited, limited and revoked.</p>
+            <p><b>Next:</b> now it can do the work.</p>
+          </aside>
+        </div>
+
+        <div class="fragment fade-in-then-out dw-step" data-focus="agent model orders db">
+          <span class="n">4</span>It reasons with the model and reads the order from the system of record.
+          <aside class="notes">
+            <p><b>~40 s · Point at:</b> the two arrows to the right.</p>
+            <p><b>Say:</b> The model proposes; the Orders API is the source of truth. The database stays where it is.</p>
+            <p><b>Next:</b> "What if the model is down?"</p>
+          </aside>
+        </div>
+
+        <div class="fragment fade-in-then-out dw-step" data-focus="gateway agent" data-fail="model">
+          <span class="n">5</span>If the model is unavailable, the gateway switches the agent to a degraded answer.
+          <aside class="notes">
+            <p><b>~40 s · Point at:</b> the red model.</p>
+            <p><b>Say:</b> Failure is designed in: the customer gets an honest, degraded answer, not an error page.</p>
+            <p><b>Ask the room:</b> "What is an acceptable degraded answer for you?"</p>
+          </aside>
+        </div>
+
+        <div class="fragment fade-in-then-out dw-step" data-focus="gateway monitor">
+          <span class="n">6</span>Each call is traced, with the agent's identity, in one place.
+          <aside class="notes">
+            <p><b>~30 s · Point at:</b> Monitoring.</p>
+            <p><b>Say:</b> One trace per request: who called what, when, with which identity.</p>
+            <p><b>Next:</b> step back to the whole picture.</p>
+          </aside>
+        </div>
+
+        <div class="fragment fade-in dw-step" data-focus="">
+          <span class="n">7</span>One governed path: one door, one identity, one trace.
+          <aside class="notes">
+            <p><b>~30 s · Recap</b> on the whole diagram. Pause for questions before moving on.</p>
+          </aside>
+        </div>
+      </div>
+
+      <aside class="notes">
+        <p><b>Before step 1 (~20 s):</b> show the whole picture. Name the four zones from left to right, then press → to follow one request.</p>
+      </aside>
+    </section>
+
+    <section>
+      <h2>Questions?</h2>
+    </section>
+
+  </div>
+</div>
+
+<script src="vendor/reveal.js/dist/reveal.js"></script>
+<script src="vendor/reveal.js/dist/plugin/notes.js"></script>
+<script>
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  Reveal.initialize({
+    hash: true,
+    fragmentInURL: true,
+    width: 1280,
+    height: 720,
+    margin: 0.05,
+    center: false,
+    slideNumber: 'h.v',
+    transition: reduceMotion ? 'none' : 'fade',
+    backgroundTransition: 'none',
+    plugins: [RevealNotes]
+  });
+</script>
+<script src="diagram-walkthrough.js"></script>
+</body>
+</html>

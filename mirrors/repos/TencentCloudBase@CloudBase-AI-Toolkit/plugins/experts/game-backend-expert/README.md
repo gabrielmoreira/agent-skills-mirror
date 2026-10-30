@@ -14,7 +14,7 @@
 
 | 层 | 内容 | 来源 |
 | --- | --- | --- |
-| 核心 | 平台总览与路由 / **PG 数据库** / 云函数 / 建模 | `cloudbase-platform`、`postgresql-development-cloudbase`、`cloud-functions`、`data-model-creation` |
+| 核心 | 平台总览与路由 / **PG 数据库** / 云函数 / 建模 | `cloudbase-platform`、`postgresql-development-cloudbase`、`cloud-functions` |
 | 数据库 | **非小游戏场景以 PostgreSQL 为核心**（`app.rdb()` / PG REST / RLS / pgstore）；微信小游戏侧走文档数据库 | `postgresql-development-cloudbase`、`http-api-cloudbase`、`cloudbase-document-database-in-wechat-miniprogram` |
 | 其他能力 | 素材存储 / 长连接与常驻服务 / 引擎侧 HTTP / 登录凭据 / 小游戏 | `cloud-storage-web`、`cloudrun-development`、`http-api-cloudbase`、`auth-tool-cloudbase`、`miniprogram-development` |
 | 包内 | 数据模型建议、排行榜三档做法、防作弊、引擎侧调用样例与接入层写法、存档与内购的幂等要点、联机分档、两个成品骨架 | `references/game-backend-playbook.md`、`references/game-backend-recipes.md` |

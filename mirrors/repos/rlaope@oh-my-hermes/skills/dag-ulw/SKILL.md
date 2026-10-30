@@ -26,7 +26,7 @@ This is a Hermes-native `dag-ulw` workflow skill.
 - Start at once; there is no plan approval. Write the goal criteria in one line.
 - Plan the graph and call `omh_dag action=define` with the complete run `goal` and each node's id, label, category, prompt, depends_on and write_scope; fix every refusal and read the lint before going on. Never `delegate_task` before `define` returns its calls. The saved goal reaches every native task; local VERIFY does not replace goal acceptance.
 - Keep the plan todo as the run's layers in ONE tool: `todo_list` when `todo_list` is in your tool list or tool_search finds it (OMH mirrors it), else `omh_todo`. One item per layer, named for what it delivers, never a list of its nodes (the panel draws those); advance it as each layer settles.
-- For each call `omh_dag` returns, run its route (`omh_delegate_route`, set or fallback as given), then `delegate_task` with the tasks unchanged; never more calls than it returned. Then end the turn with one status line; never wait or poll.
+- For each call `omh_dag` returns, run its route (`omh_delegate_route`, set or fallback as given), then `delegate_task` with the tasks unchanged; never more calls than it returned. A call whose route names a `backend` (Hermes' model_map or profile_routes) runs no route tool: its tasks already carry what that backend takes. Then end the turn with one status line; never wait or poll.
 - On each completion read the node's handoff file and call `omh_dag action=settle` (accepted, failed, or blocked; a provider error is failed with provider_error). Dispatch what it returns in the same turn.
 - When the run reports done, check each node against its SCOPE and the goal criteria: extend the run when work is missing, otherwise report.
 

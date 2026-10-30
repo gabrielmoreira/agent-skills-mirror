@@ -25,6 +25,10 @@
 
 不要因为测试文件少或执行快就把 integration 降成 unit；测试层级反映它依赖的真实边界。
 
+新增测试时说明它能独立发现什么失败，优先扩展已有参数化用例；既有证据已覆盖目标时可以不新增测试。不同层只补充各自独立的边界，不为相同断言重复堆叠用例。删除测试时说明替代证据或已退役的契约；长期全绿本身不足以证明测试可以删除。覆盖率用于定位未观察区域，测试数量和覆盖率不作为增长目标。
+
+前端行为测试通过现有 `frontend/test/helpers/createTestServer.js` 加载完整模块或 Vue 组件，替身放在 API、浏览器和其他外部依赖边界；需要客户端模板时正常编译完整 SFC。不要截取源码函数、删除 import 或改写编译结果再执行。静态资源、样式和架构规则仍检查对应静态事实；SSR 和自定义 renderer 的断言不冒充真实浏览器验证。多个测试需要相同业务装配时复用领域 fixture，避免建立第二套通用测试框架。
+
 ## 命名和结构
 
 文件名使用 `test_<domain>_<target>.py`，一个文件围绕一个清晰主题。测试函数使用 `test_<行为>_<预期结果>`，名称直接表达业务语义：
@@ -44,6 +48,8 @@ test_agent_bubble_sort_run_creates_expected_artifacts
 不要只断言 `status_code == 200`。根据风险回读数据库行、文件、对象、DOM、SSE 游标或协议 payload。失败信息应指出目标和实际值。
 
 每个新 guard 都要有负向案例：恢复目标缺陷或制造非法状态后，测试必须因正确原因失败。Fixture、snapshot 和 expected output 只能显式更新并进入 diff，CI 不得一边生成 oracle 一边验证它。
+
+关键 guard 应定向注入目标故障并确认正确原因导致失败。偶发失败要定位责任并修复，保留可重放输入或状态；不能用重试掩盖失败，也不能隔离掉核心契约的唯一证据。
 
 ## Fixture 和测试数据
 
@@ -87,10 +93,12 @@ test_agent_bubble_sort_run_creates_expected_artifacts
 先启动开发环境：
 
 ```bash
-docker compose up -d
-docker compose ps
-docker compose logs --tail=100 api
+docker compose --profile container up -d
+docker compose --profile container ps
+docker compose --profile container logs --tail=100 api
 ```
+
+默认 Container 需启用 `container` profile；显式选择 Cube 时去掉该参数并先准备执行节点。`make up` 同样默认启用 Container，Cube 可用 `make COMPOSE="docker compose" up`。
 
 后端按 unit、integration/api、其余 integration 子树、E2E 分批运行。各套件的模块和 helper 按当前目录加载；脚本的 `integration` 与 `all` 同样分批执行。确定性 E2E 的用例集合由 `backend/test/run_tests.sh` 唯一维护，CI 复用此入口，避免重复执行相同文件。涉及不兼容 Schema 时，先使用[独立槽位](./parallel-worktree-environments.md)装配完整环境，再运行测试；脚本只负责选择和执行套件。
 
@@ -156,8 +164,8 @@ npm run pack:check
 工程契约、文档构建和补丁检查：
 
 ```bash
-python3 scripts/verify_engineering_contracts.py
-python3 -m unittest scripts.test_verify_engineering_contracts
+python3 scripts/ci/verify_engineering_contracts.py
+python3 -m unittest scripts.ci.test_verify_engineering_contracts
 cd docs && pnpm run build
 git diff --check
 ```
@@ -172,27 +180,33 @@ make audit-licenses
 Docker 镜像与挂载权限回归在仓库宿主执行，需要可用的 Docker Engine。测试使用临时合成文件与独立 Compose project，不挂载生产数据；受限构建输入、历史文件保留、只读存储失败与负向镜像均由真实容器结果验证。API 容器无需访问 Docker daemon。
 
 ```bash
-python3 -m unittest scripts.test_docker_build_context scripts.test_container_permissions
+python3 -m unittest scripts.ci.test_docker_build_context scripts.ci.test_container_permissions
 ```
 
 Windows 初始化脚本的安全行为需要在 Windows 或 PowerShell 7 环境中验证：
 
 ```powershell
-pwsh -NoProfile -File scripts/test_init_security.ps1
+pwsh -NoProfile -File scripts/ci/test_init_security.ps1
 ```
 
 这些命令的实际 workflow 和 selector 由仓库 `.github/workflows` 与 `Makefile` 维护；文档不复制一份会漂移的 CI 配置。
 
 ## CI 环境与依赖
 
-常规质量检查和独立服务集成测试使用 GitHub 托管执行器，无需维护公网服务器。测试选择器由对应 workflow 和脚本拥有：
+常规质量检查和独立服务集成测试使用 GitHub 托管执行器，无需维护公网服务器。CI 准备、检查、探针与测试集中在 `scripts/ci/`；用户初始化、拉镜像和版本入口留在 `scripts/`，评估脚本位于 `scripts/eval/`。测试选择器由对应 workflow 和脚本拥有：
+
+PR 由无路径过滤的 `.github/workflows/ci.yml` 调用可复用质量工作流，粗粒度选择由 `scripts/ci/gate.py` 拥有；共享或无法分类的变更保守扩大检查。各工作流通过 `workflow_call` 复用既有测试主体，保留原有 push、tag 和手动入口。汇总检查名为 `CI required`，选择失败、必需结果缺失、失败、取消或意外跳过均不能通过。仓库接线本身不启用 GitHub required 规则：须先部署 workflow 并产生真实检查，再配置规则并验证远端行为。
+
+顶层选择系统测试时，两个系统 job 执行完整测试，并由 `check-jobs` 汇总；缺失、失败、取消或意外跳过均不能通过。push、tag 和手动入口沿用各自触发条件。远端执行耗时尚未验证。
+
+测试运行脚本在显式设置 `CI_TEST_REPORT_DIR` 时输出独立 JUnit 报告和慢测试信息；目录相对于 pytest 进程的工作目录，不设置时原有命令行为不变。workflow 直接调用 pytest 时显式传入独立报告路径。CI 测试报告 artifact 保留 7 天，失败与 skip 仍须分别审查。
 
 | 检查范围 | 实际依赖 | 执行入口 |
 |---|---|---|
 | 工程契约、Ruff、后端 unit、前端、文档、依赖审计 | 执行器上的语言工具链 | `.github/workflows` 中对应质量工作流 |
-| 初始化、Schema/关系约束、Input/FIFO、Run lease、反馈、协作持久化、OAuth 和局部 HTTP | 临时 PostgreSQL、Redis、文件与测试自建 HTTP 服务 | `service-integration.yml` → `scripts/ci_run_service_integration.sh` |
+| 初始化、Schema/关系约束、Input/FIFO、Run lease、反馈、协作持久化、OAuth 和局部 HTTP | 临时 PostgreSQL、Redis、文件与测试自建 HTTP 服务 | `service-integration.yml` → `scripts/ci/run_service_integration.sh` |
 | 附件服务持久化与对象读写 | PostgreSQL、MinIO 与文件系统；测试主体无需 VM | `system-tests.yml` 中附件服务步骤，随完整拓扑执行 |
-| 完整 API readiness、正式 worker 启动恢复、Agent E2E 和沙盒隔离 | 完整 Compose 拓扑、container runner 与 sandbox 镜像 | `system-tests.yml` 的两个 ubuntu-24.04 job，使用 `container` profile |
+| API readiness、正式 worker 启动恢复、Agent E2E 和沙盒隔离 | 完整 Compose 拓扑、container runner 与 sandbox 镜像 | `system-tests.yml` 的两个 ubuntu-24.04 job，使用 `container` profile，执行完整测试 |
 | GitHub 托管机器的 KVM/Cube 兼容性探针 | KVM、临时 XFS、Cube 安装、正式模板和共享挂载 | `cube-hosted-probe.yml`，仅手动运行 |
 
 独立服务 job 使用一次性数据库，运行应用初始化并创建基线测试管理员后执行已有集成测试；显式选择 container 配置，共享 API、container runner 与 Cube 地址固定为不可达，用真实数据库结果证明独立性。该入口会写入数据库及 Skill 目录，本地复用时必须提供独立的 `POSTGRES_URL`、`REDIS_URL` 与 `YUXI_SKILL_DATA_DIR`，并使用没有 `backend/.env` 的干净 checkout，禁止指向运行中的业务环境。基线管理员保留在临时库中，测试账号的创建、修改和清理继续受数据库的最后管理员约束保护。

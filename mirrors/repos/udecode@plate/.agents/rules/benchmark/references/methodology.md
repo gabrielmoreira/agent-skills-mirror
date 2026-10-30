@@ -46,12 +46,19 @@ Record before measuring:
 - the host's core count, and its load average beside each measured run;
 - target-specific materiality and noise rule. Reuse an existing budget when it
   is honest; otherwise predeclare both an absolute and relative delta against
-  observed baseline variability before reading the candidate result.
+  observed baseline variability before reading the candidate result. A paired
+  wall-clock line with both parts gives them to `scripts/paired-timing.mjs` as
+  `budgetLaw`, so each run works out its ratio from its own base; a ratio
+  worked out from another run's base is not that budget.
 
 Host load never gates a timing line, and no run waits for a quiet host. A
 timing verdict compares arms interleaved in one run, as
-`scripts/paired-timing.mjs` does, so load hits every arm alike, and a same-code
-arm measures the noise that load leaves. Only that noise and a planted arm
+`scripts/paired-timing.mjs` does, so load hits every arm alike. A same-code
+arm measures the noise that load leaves in the candidate. Noise in base moves
+every arm in a packet together, so no same-code gap sees it. The furthest pair
+from its arm's median shows how far noise that differs from pair to pair, base's
+included, moves one ratio. Noise that every pair shares stays unmeasured.
+Only that noise and a planted arm
 decide whether a line is conclusive, and a planted arm that reads far from
 the ratio it plants shows the line measured something other than the plant.
 Compare only ratios within one run, because absolute medians drift between

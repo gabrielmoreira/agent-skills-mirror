@@ -726,6 +726,19 @@ Stated so nobody reads this document as a description of a clean tree.
    new token, which is a new schema version (§13). These are not closed in M57, because that
    milestone's exit test is a zero pixel diff of the current theme, and each fix needs its own
    proof that it stays at zero.
+7. **`box-text-block.tsx:11` — the Authentication card's links are inline, below §6's 44px
+   floor.** A login URL sits inside the command's own sentence, so the card links it where it
+   stands, the way the mirror does: the same `py-[0.35em]` reach (`ansi-output.tsx:170` holds
+   the measurement), about 22px on a phone. Two different links can sit on neighbouring lines
+   of one card, which makes a mis-tap the cost. Closing it means a layout that pulls each link
+   out of its sentence onto a full-height row, and the sentence then no longer reads as the
+   command printed it.
+8. **The Authentication card leaves with keyboard focus inside it.** When the login finishes
+   the box goes, the card unmounts, and a link that held keyboard focus takes it to `<body>`.
+   Handing focus to the composer was tried and taken back: a tapped link holds focus too on
+   Android, so the hand-off opened the soft keyboard over a phone that had just come back from
+   the login tab, the case `focusFromMirror` (in `agent-chat.tsx`) declines for the mirror's
+   own links. Closing it needs a target that takes focus without raising the keyboard.
 
 ---
 
@@ -867,8 +880,8 @@ On a phone the edge swipe is history back, so the history stack must be the leve
 ([ADR 0067](./.adr/0067-back-goes-up-one-level.md)). Navigate through `useNav()`
 (`web/src/hooks/use-nav.ts`), never a bare `navigate(path)`:
 
-- **Down** (`nav.down`) pushes and records `from`. Opening a space, a pane, History, Changes,
-  Settings, Crew, Updates, New.
+- **Down** (`nav.down`) pushes and records `from`. Opening a space, a pane, History, Changes, the
+  zoomed output, Settings, Crew, Updates, New.
 - **Sideways** (`nav.side`) replaces and carries `from`. Pane to pane, tab to tab, space chip to
   space chip, the machine and session switchers. `nav.open` picks down or sideways for a new pane.
 - **Up** (`nav.up(parent)`, `nav.upTo(parent)`) steps back when the entry behind is a legitimate
@@ -876,10 +889,13 @@ On a phone the edge swipe is history back, so the history stack must be the leve
   and every automatic exit. Never push a parent.
 - **A new route** gets its place in `ancestorsOf` and `parentChain` (`web/src/lib/nav.ts`) in the
   same change.
-- **A sheet owns no history entry.** It opens and closes without navigating.
+- **A sheet owns no history entry.** It opens and closes without navigating. A full-screen view that
+  the phone's back must close is not a sheet. It is a level with its own path. The zoomed output is
+  `/pane/:id/zoom`, a child of the pane route, so the pane stays mounted under it.
 - **On phones, a screen below a pane repeats its Back at the bottom on the thumb side.** The header
-  arrow is out of reach of a thumb on a large phone. The bottom Back (`ui/bottom-bar.tsx`) takes the
-  same handler and the same name as the arrow, from one object, so the two cannot drift; it sits at
+  arrow is out of reach of a thumb on a large phone. The bottom Back (`BackBar`, in
+  `components/back-bar.tsx`, built on `ui/bottom-bar.tsx`) takes the same handler and the same name
+  as the arrow, from one object, so the two cannot drift; it sits at
   the right end, or the left with the `hand` pref on `left`, and it hides while the keyboard is up.
   The arrow stays at every width.
 

@@ -60,6 +60,8 @@ schema: [`recolor.md`](recolor.md).
 
 The webview UI is bilingual (English / Korean). Pass `--lang en|ko` to match the user's language (it is also toggleable in the app); default is `en`. For isometric sets imported with `--pngs-dir`, a sibling `meta.json` tile/anchor adds a ground-grid overlay for aligning furniture with the shear handle.
 
+A video-loop `cycle/` imported with `--pngs-dir` labels each card of a cell the held fill made `(made)` and of a cell still showing the picture before it `(held)` ([loop-repair](loop-repair.md#7-held-cells-a-picture-shown-again-and-a-cut-at-a-higher-rate)).
+
 ## Editing a finished sprite sheet (no `frames/` source)
 
 When only the combined sheet survives (a deployed asset whose run dir is gone), rebuild a curator-ready run dir with the inverse step before curating:

@@ -168,6 +168,16 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   something stalls there. Use `tools/tv.py --reboot`: it sends the reboot through ADB's own service
   and returns once the request is accepted. The TV is still restarting at that point, so let it
   answer again (`tools/tv.py --probe`) before the next command.
+- **Every `dumpsys` answers `Service dumps disabled due to hung system process.`**, and `tools/disable.sh`
+  skips every package in the list with "the TV's dumpsys shows neither a requested nor a granted permission
+  block". That message names Android 5.x, but the cause here is another one: Android's watchdog turns service
+  dumps off once it has seen `system_server` hang, and they stay off until `system_server` restarts.
+  `dumpsys activity` and `dumpsys connectivity` print nothing useful either, so the Home check cannot read the
+  focused app. On a Xiaomi Mi TV 4A (MiTV-MOOQ1, Android TV 11, `RTM4.220307.164.8277`) that had been up for
+  almost eight days, the load average was around 62 and `logcat` held repeated watchdog lines from
+  `system_server`. Reboot before changing anything (`tools/tv.py --reboot`); `dumpsys` worked again straight
+  after. Do not get past the skips with `TVINPUT_ALLOW=1`: the check could not run, which is not the same as
+  passing.
 - **A `logcat` without the line you expected is not proof that nothing happened.** On a TCL 55C728
   (`G05_4K_GB`, Google TV 11) the main buffer is 1 MiB (`persist.logd.size.main`), and the TV's own
   HDMI, ARC and media logging fills it in well under a minute; around power-on it held about 30
@@ -382,6 +392,14 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   launcher that cannot be installed, not the lists. If the `Failure [...]` line names
   `INSTALL_FAILED_VERIFICATION_FAILURE` instead, that is the bullet above - the firmware's installer
   verifier, not the API level.
+- **App info opens half-width with a dark rectangle** from a tile's long-press menu on a TCL G07
+  (`55P61B`, Android 11, [#1696](https://github.com/Gathin23/cleanyourtv/issues/1696)). The TV's
+  `AppManagementActivity` renders the same way when opened by the standard
+  `android.settings.APPLICATION_DETAILS_SETTINGS` intent from `adb`, with the launcher out of the
+  path. To view an app's details on this firmware, open TV Settings > Apps and select the app there:
+  Settings uses its `AppsActivity` with an embedded detail pane, which the owner checked renders at
+  full width. Changing the launcher's intent flags would not address this firmware's standalone
+  App info screen.
 - **Screenshots come out empty** while Live TV, an HDMI input or Netflix is on screen, seen on TCL
   and a [Sony KDL-49W800G](https://github.com/Gathin23/cleanyourtv/issues/92). Press Home before
   `screencap`. An empty capture means nothing about the ADB connection or playback; check those
@@ -486,6 +504,16 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   `FallbackHome`. An opt-in application-ID build worked with the stock launcher still enabled;
   see the [device notes and rollback steps](devices/xiaomi-mitv-aetp0-dofus.md). This is different
   from a missing default-home picker or a remote that emits ALL_APPS.
+- **China-market Xiaomi refuses the new launcher as Home outright**, seen on a Laser Cinema 2 4K
+  (`nemo`, Android 9, firmware `2.1.3.4134`): `cmd package set-home-activity` answers `cannot be
+  home on user 0`, while the APK does declare `MAIN`/`HOME`/`DEFAULT` and is installed and enabled.
+  This firmware's `PackageManagerService.applyPostResolutionFilter` removes every HOME candidate that
+  is not `FLAG_SYSTEM` when `ro.formovie.launcher_type` is not `AndroidTV` (it reads `Patchwall`
+  here, and a shell `setprop` is refused), so this is a flag test rather than the package-name
+  allowlist above and the alternate application ID it accepted does not help. `query-activities -c
+  android.intent.category.HOME` lists only PatchWall and `FallbackHome`. Keep the stock launcher
+  enabled - disabling it leaves only `FallbackHome` - and see the
+  [device notes](devices/xiaomi-nemo-laser-cinema2.md) for the queries and the firmware code.
 - **The new launcher still doesn't own Home** after the stock one is disabled, seen on Google TV
   (Xiaomi MiTV-MOOR2). Another system app answers HOME: `com.google.android.tungsten.setupwraith`,
   with `.MainActivity` at intent-filter priority 4 and `.RecoveryActivity` at priority 1. You
@@ -683,7 +711,8 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   own Chromecast hardware (`boreal`) and, with the same log lines, on a Google TV Streamer
   (`kirkwood`, `UTTK.260317.003`), where the `CastInfoProvider` also lives inside the setupwraith
   APK; the Xiaomi Mi Box S 2nd gen list says casting from a Pixel still works there with
-  setupwraith off.
+  setupwraith off. A TCL 65Q7CX1 (G08, Google TV 14, `UTT2.250416.001 AU02`) casts with it off as well: its
+  receiver signs with `jni_client_auth_creds_mediadrm` (`examples/tcl-q7c-google-tv`, eighth unit).
 - **Casting disappears although the Cast receiver is still running**, seen on a TCL 75QM751G (QM7,
   Google TV 14) after its list, and the same "alive is not discoverable" conclusion on a TCL
   BeyondTV2 (Android TV 9, R851T02 V660) in the same thread. Phones and a PC stop seeing the TV,
@@ -879,6 +908,11 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   (Philips 65OLED706, Android TV 11): the firmware only resumes the `org.droidtv.playtv` window it left, which
   sends its window event once the input has a picture, if at all. Set `power_on_home_always` too: Home comes
   up about a second after the screen turns on, whatever is in front (an input, Live TV or an app).
+- **BBC iPlayer, ITVX, Channel 4 and 5 vanished after the debloat** (Sony KD-65XH9296, UK, `BRAVIA_VH1`, Android 12):
+  `com.youview.poa`, the Freeview Play app behind the "Live TV & Catch Up" tile, runs them as web apps in Sony's HbbTV
+  player. They are not packages of their own, so only that package leaves with it. `pm enable com.youview.poa` brought
+  them back. How each one launches, and how to give each a Home tile, is in
+  [the Sony UK catch-up note](devices/sony-youview-uk-catchup.md).
 
 ## Accessibility helper enabled but the remote button does nothing
 
@@ -984,6 +1018,16 @@ running back on the list the next time it starts; a helper turned off in Setting
   `config.xml`, or in a theme's `app_keys` (find `<scancode>` with `getevent -lt` while pressing the button,
   as the `scan:` bullet above does for a Sony remote). A keycode entry cannot: `"176:..."` is
   `KEYCODE_SETTINGS`, which the helper takes itself before it looks at any app key.
+- **The gear does nothing after the stock launcher is disabled** (onn 4K Streaming Box, `YOC`, Google TV 14,
+  `URO4.260304.011.B1.15051976`, and Hisense SmartTV 4K, `lushan` / `his9603`, Google TV 12,
+  `STT2.230929.001.092`). The app buttons and the mic can keep working while this one does not: on the onn
+  box `com.gretzky.GlobalKey` still has those, and the gear used to be answered by launcherx. Reinstall
+  with `HOME_KEY_SERVICE=1`, set `settings_key_panel` (config.xml or a theme) and put `83` in
+  `settings_key_keycodes`. `83` is `KEYCODE_NOTIFICATION`, the code the stock Google TV home turned into
+  its quick settings panel. The gear then opens the launcher's panel (TV settings, Display, Network, Apps,
+  Launcher settings) from Home or another app, and the helper was still bound after a reboot on both sets.
+  Press the real button; a key injected over ADB does not reach the helper. Holding volume may step only
+  once while the helper is bound, which is the usual trade on these two boards.
 - **The list still names the helper but `accessibility_enabled` is `0`**, so nothing is bound and the
   button does nothing (not the force stop below): on a TCL C6K Pro (`G08`, Android 14,
   [#1047](https://github.com/Gathin23/cleanyourtv/issues/1047)) a reboot left
@@ -1167,7 +1211,13 @@ path that drops the repeats, before an app sees them; the launcher's own helpers
 they do not map, so they are not consuming the volume key. The same was reported on a Xiaomi MiTV-MOSR4
 (`irobot`, Android 11, `RTM5.220609.003.1265`) with the launcher's own helpers, both and `InputKeyService`
 alone (#944), where the empty list was not tried because it also unhooks the buttons the helpers were
-installed for. An onn 4K Streaming Box (`YOC`, Google TV 14, `URO4.260304.011.B1.15051976`) does the same with
+installed for. A Xiaomi Mi TV 4A (`MiTV-MOOQ1`, `tarzan`, MediaTek, Android TV 10, `QTG3.200305.006.6148`, #2446)
+does the same with `InputKeyService` alone, and the empty list was run there: holding Volume Up ramped again with
+`accessibility_enabled 0`, and the helper written back stepped it once more. On that set the helper is also what
+answers Input, because the firmware's `GlobalKey` starts `VIEW_INPUTS` with the component
+`com.google.android.tvlauncher/.inputs.InputsPanelActivity` written into it, so once launcherx is gone that
+press is dead; `INPUT_KEY_SERVICE=1` with `handle_view_inputs` brings the button back by consuming the Input
+key and starting a new component-free `VIEW_INPUTS` intent, not by answering the firmware's explicit one. An onn 4K Streaming Box (`YOC`, Google TV 14, `URO4.260304.011.B1.15051976`) does the same with
 `HomeKeyService` alone; there `key_filter` false (config.xml or a theme) brought the repeat back with the helper
 still bound, so a helper kept for something other than keys need not cost it. A Hisense 75U75N (`hengshan`,
 Google TV 12, `STT2.230310.002`) with `HomeKeyService` alone does it too, and its log shows where the repeat goes:
@@ -1212,6 +1262,39 @@ launcherx enabled, `stock_home_redirect` set to it, `key_filter` false and `Home
 the ramp and the new Home together ([the VU3 notes](../examples/sony-bravia-vu3/README.md)).
 
 A [Sony KD-55X9000H PA-firmware follow-up](devices/sony-kd-55x9000h.md#later-remote-key-follow-up-24-october-2026) on Android 12 reproduced the same filter/repeat conflict with a personal fork. Its simultaneous kernel/callback capture saw held Volume in hardware but neither Volume direction in the helper. A separate saved-layout experiment retained Apps and native Volume without key filtering; it requires that fork's companion and Library entry, reserves an application-launch category, and has not been tested across restart/sleep/reconnect. It is not a stock upstream option.
+
+The same setup works on a Google TV Streamer (YouTube is a global key to launcherx there) and on a Philips Google
+TV TA5, with one more step on the Philips: see the next entry.
+
+## App buttons stopped working after launcherx was re-enabled for the redirect
+
+- **Netflix, YouTube and Prime Video did nothing once launcherx was enabled again**, while they worked with it
+  disabled. Seen on a Philips Google TV TA5 (`PH1M_WW_9972`, Google TV 14, `UKN2.241117.001`): with launcherx
+  enabled, `org.droidtv.GlobalKey` hands those launches to launcherx, and Android blocks them as background
+  activity starts while this launcher is in front. `logcat` shows `START u0 ... com.netflix.ninja ... from uid
+  <launcherx> (BAL_BLOCK) result code=102`. Allowing launcherx to draw over apps exempts it:
+  `appops set com.google.android.apps.tv.launcherx SYSTEM_ALERT_WINDOW allow` brought all three back, and it
+  stays after a reboot. Undo with `appops set ... SYSTEM_ALERT_WINDOW default`.
+- **A button that sends `android.intent.action.ALL_APPS` now shows a chooser**, because launcherx answers the
+  action too. Pick the one you want with "Always" once.
+
+## A toast at every power-on, and the system will not let you block it
+
+- **"Switching to audio system. We recommend using an Ultra High Speed HDMI cable."** for two seconds at every
+  power-on, with a soundbar on HDMI eARC, whatever the cable. Seen on a Philips Google TV TA5 (`PH1M_WW_9972`,
+  Google TV 14, `UKN2.241117.001`). It comes from `org.droidtv.tv.tpvaudiomanager`, whose notification importance
+  is fixed (`fixedImportance=true` in `dumpsys notification`), so its channel cannot be turned off;
+  `appops set <pkg> POST_NOTIFICATION ignore` and Do Not Disturb did not stop it either. On Google TV launcherx
+  draws such toasts. Taking it out of `android.app.role.SYSTEM_TELEVISION_NOTIFICATION_HANDLER`
+  (`cmd role remove-role-holder`) hid the toast until the next boot, when the role came back. Revoking
+  launcherx's notification listener stayed across reboots:
+
+  ```bash
+  TV_HOST=<tv ip> tools/venv/bin/python -I tools/tv.py 'cmd notification disallow_listener com.google.android.apps.tv.launcherx/com.google.android.apps.tv.launcherx.coreservices.notificationlistener.TvNotificationListenerService'
+  ```
+
+  Every other on-screen notification from Google TV goes with it. Undo with `allow_listener` and the same
+  component. With launcherx disabled for this launcher, check first whether the toast appears at all.
 
 ## The power key does not wake the TV while the key helper is bound
 

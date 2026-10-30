@@ -233,137 +233,30 @@ is to review and improve the plan's design decisions with maximum rigor.
 
 ### The gstack designer
 
-Use the **gstack designer** by default to turn design briefs into real visual mockups.
-
-When the plan has UI and the designer is available, generate mockups without asking
-first: the user and implementer need to see the design before it is coded, and a text
-description of what a screen "could look like" doesn't settle the decision. Skip them
-only under the Step 0.5 conditions (no UI scope, designer unavailable, or the user asks).
-
-Commands: `generate` (single mockup), `variants` (multiple directions), `compare`
-(side-by-side review board), `iterate` (refine with feedback), `check` (cross-model
-quality gate via OpenAI vision), `evolve` (improve from screenshot).
-
-Setup is handled by the DESIGN SETUP section below. If `DESIGN_READY` is printed,
-the designer is available and you should use it.
+When the plan has UI and DESIGN SETUP prints `DESIGN_READY`, generate mockups with the gstack designer
+without asking (Step 0.5): a text description of a screen does not settle the decision.
 
 ## Design Principles
 
-1. Empty states are features. "No items found." is not a design. Every empty state needs warmth, a primary action, and context.
-2. Every screen has a hierarchy. What does the user see first, second, third? If everything competes, nothing wins.
-3. Specificity over vibes. "Clean, modern UI" is not a design decision. Name the font, the spacing scale, the interaction pattern.
-4. Edge cases are user experiences. 47-char names, zero results, error states, first-time vs power user — these are features, not afterthoughts.
-5. AI slop is the enemy. Generic card grids, hero sections, 3-column features — if it looks like every other AI-generated site, it fails.
-6. Responsive is not "stacked on mobile." Each viewport gets intentional design.
-7. Accessibility is not optional. Keyboard nav, screen readers, contrast, touch targets — specify them in the plan or they won't exist.
-8. Subtraction default. If a UI element doesn't earn its pixels, cut it. Feature bloat kills products faster than missing features.
-9. Trust is earned at the pixel level. Every interface decision either builds or erodes user trust.
+1. Empty states are features: warmth, a primary action, context.
+2. Every screen has a hierarchy: first, second, third.
+3. Specificity over vibes: name the font, spacing scale and interaction pattern.
+4. Edge cases are user experiences: long names, zero results, errors, first-time vs power user.
+5. AI slop is the enemy: generic card grids, hero sections, 3-column features fail.
+6. Responsive means intentional design per viewport, not "stacked on mobile".
+7. Accessibility is specified in the plan (keyboard, screen readers, contrast, touch targets) or it won't exist.
+8. Subtraction default: an element that doesn't earn its pixels is cut.
+9. Trust is earned at the pixel level.
 
-## Cognitive Patterns — How Great Designers See
+How users behave (Krug): they scan, they don't read, so each screen is a billboard with one obvious
+next step; they satisfice and muddle through, so the default path must be the right one; every page
+passes the trunk test (where am I, what's here, what can I do, how do I get back) and navigation is
+wayfinding; clickable things look clickable, conventions beat novelty, and happy talk and
+instructions get cut; each confusion drains the goodwill reservoir; mobile raises every stake (thumb reach,
+44px targets, no hover).
 
-These aren't a checklist — they're how you see. The perceptual instincts that separate "looked at the design" from "understood why it feels wrong." Let them run automatically as you review.
-
-1. **Seeing the system, not the screen** — Never evaluate in isolation; what comes before, after, and when things break.
-2. **Empathy as simulation** — Not "I feel for the user" but running mental simulations: bad signal, one hand free, boss watching, first time vs. 1000th time.
-3. **Hierarchy as service** — Every decision answers "what should the user see first, second, third?" Respecting their time, not prettifying pixels.
-4. **Constraint worship** — Limitations force clarity. "If I can only show 3 things, which 3 matter most?"
-5. **The question reflex** — First instinct is questions, not opinions. "Who is this for? What did they try before this?"
-6. **Edge case paranoia** — What if the name is 47 chars? Zero results? Network fails? Colorblind? RTL language?
-7. **The "Would I notice?" test** — Invisible = perfect. The highest compliment is not noticing the design.
-8. **Principled taste** — "This feels wrong" is traceable to a broken principle. Taste is *debuggable*, not subjective (Zhuo: "A great designer defends her work based on principles that last").
-9. **Subtraction default** — "As little design as possible" (Rams). "Subtract the obvious, add the meaningful" (Maeda).
-10. **Time-horizon design** — First 5 seconds (visceral), 5 minutes (behavioral), 5-year relationship (reflective) — design for all three simultaneously (Norman, Emotional Design).
-11. **Design for trust** — Every design decision either builds or erodes trust. Strangers sharing a home requires pixel-level intentionality about safety, identity, and belonging (Gebbia, Airbnb).
-12. **Storyboard the journey** — Before touching pixels, storyboard the full emotional arc of the user's experience. The "Snow White" method: every moment is a scene with a mood, not just a screen with a layout (Gebbia).
-
-Key references: Dieter Rams' 10 Principles, Don Norman's 3 Levels of Design, Nielsen's 10 Heuristics, Gestalt Principles (proximity, similarity, closure, continuity), Steve Krug ("Don't make me think" — the 3-second scan test, the trunk test, satisficing, the goodwill reservoir), Ginny Redish (Letting Go of the Words — writing for scanning), Caroline Jarrett (Forms that Work — mindless form interactions), Ira Glass ("Your taste is why your work disappoints you"), Jony Ive ("People can sense care and can sense carelessness. Different and new is relatively easy. Doing something that's genuinely better is very hard."), Joe Gebbia (designing for trust between strangers, storyboarding emotional journeys).
-
-When reviewing a plan, empathy as simulation runs automatically. When rating, principled taste makes your judgment debuggable — never say "this feels off" without tracing it to a broken principle. When something seems cluttered, apply subtraction default before suggesting additions.
-
-## UX Principles: How Users Actually Behave
-
-These principles govern how real humans interact with interfaces. They are observed
-behavior, not preferences. Apply them before, during, and after every design decision.
-
-### The Three Laws of Usability
-
-1. **Don't make me think.** Every page should be self-evident. If a user stops
-   to think "What do I click?" or "What does this mean?", the design has failed.
-   Self-evident > self-explanatory > requires explanation.
-
-2. **Clicks don't matter, thinking does.** Three mindless, unambiguous clicks
-   beat one click that requires thought. Each step should feel like an obvious
-   choice (animal, vegetable, or mineral), not a puzzle.
-
-3. **Omit, then omit again.** Get rid of half the words on each page, then get
-   rid of half of what's left. Happy talk (self-congratulatory text) must die.
-   Instructions must die. If they need reading, the design has failed.
-
-### How Users Actually Behave
-
-- **Users scan, they don't read.** Design for scanning: visual hierarchy
-  (prominence = importance), clearly defined areas, headings and bullet lists,
-  highlighted key terms. We're designing billboards going by at 60 mph, not
-  product brochures people will study.
-- **Users satisfice.** They pick the first reasonable option, not the best.
-  Make the right choice the most visible choice.
-- **Users muddle through.** They don't figure out how things work. They wing
-  it. If they accomplish their goal by accident, they won't seek the "right" way.
-  Once they find something that works, no matter how badly, they stick to it.
-- **Users don't read instructions.** They dive in. Guidance must be brief,
-  timely, and unavoidable, or it won't be seen.
-
-### Billboard Design for Interfaces
-
-- **Use conventions.** Logo top-left, nav top/left, search = magnifying glass.
-  Don't innovate on navigation to be clever. Innovate when you KNOW you have a
-  better idea, otherwise use conventions. Even across languages and cultures,
-  web conventions let people identify the logo, nav, search, and main content.
-- **Visual hierarchy is everything.** Related things are visually grouped. Nested
-  things are visually contained. More important = more prominent. If everything
-  shouts, nothing is heard. Start with the assumption everything is visual noise,
-  guilty until proven innocent.
-- **Make clickable things obviously clickable.** No relying on hover states for
-  discoverability, especially on mobile where hover doesn't exist. Shape, location,
-  and formatting (color, underlining) must signal clickability without interaction.
-- **Eliminate noise.** Three sources: too many things shouting for attention
-  (shouting), things not organized logically (disorganization), and too much stuff
-  (clutter). Fix noise by removal, not addition.
-- **Clarity trumps consistency.** If making something significantly clearer
-  requires making it slightly inconsistent, choose clarity every time.
-
-### Navigation as Wayfinding
-
-Users on the web have no sense of scale, direction, or location. Navigation
-must always answer: What site is this? What page am I on? What are the major
-sections? What are my options at this level? Where am I? How can I search?
-
-Persistent navigation on every page. Breadcrumbs for deep hierarchies.
-Current section visually indicated. The "trunk test": cover everything except
-the navigation. You should still know what site this is, what page you're on,
-and what the major sections are. If not, the navigation has failed.
-
-### The Goodwill Reservoir
-
-Users start with a reservoir of goodwill. Every friction point depletes it.
-
-**Deplete faster:** Hiding info users want (pricing, contact, shipping). Punishing
-users for not doing things your way (formatting requirements on phone numbers).
-Asking for unnecessary information. Putting sizzle in their way (splash screens,
-forced tours, interstitials). Unprofessional or sloppy appearance.
-
-**Replenish:** Know what users want to do and make it obvious. Tell them what they
-want to know upfront. Save them steps wherever possible. Make it easy to recover
-from errors. When in doubt, apologize.
-
-### Mobile: Same Rules, Higher Stakes
-
-All the above applies on mobile, just more so. Real estate is scarce, but never
-sacrifice usability for space savings. Affordances must be VISIBLE: no cursor
-means no hover-to-discover. Touch targets must be big enough (44px minimum).
-Flat design can strip away useful visual information that signals interactivity.
-Prioritize ruthlessly: things needed in a hurry go close at hand, everything
-else a few taps away with an obvious path to get there.
+Trace every judgment to a broken principle; never "this feels off" without one. Simulate the user
+(bad signal, one hand, first vs 1000th time) and storyboard the journey, not single screens.
 
 ## Priority hierarchy
 
@@ -498,9 +391,7 @@ sections. Read a section in full before doing its step; do not work from memory.
 ## Step 0: Design Scope Assessment
 
 ### 0A. Initial Design Rating
-Rate the plan's overall design completeness 0-10.
-- "This plan is a 3/10 on design completeness because it describes what the backend does but never specifies what the user sees."
-- "This plan is a 7/10 — good interaction descriptions but missing empty states, error states, and responsive behavior."
+Rate the plan's overall design completeness 0-10 with the reason, for example "3/10: it says what the backend does but never what the user sees."
 
 Explain what a 10 looks like for THIS plan.
 
@@ -518,14 +409,10 @@ AskUserQuestion: "I've rated this plan {N}/10 on design completeness. The bigges
 
 ## Step 0.5: Visual Mockups (DEFAULT when DESIGN_READY)
 
-If the plan involves any UI — screens, pages, components, visual changes — AND the
-gstack designer is available (`DESIGN_READY` was printed during setup), **generate
-mockups immediately.** Do not ask permission. This is the default behavior.
+If the plan has any UI and `DESIGN_READY` was printed, **generate mockups now** without asking,
+and tell the user you are generating them.
 
-Tell the user: "Generating visual mockups with the gstack designer. This is how we
-review design — real visuals, not text descriptions."
-
-The ONLY time you skip mockups is when:
+Skip mockups only when:
 - `DESIGN_NOT_AVAILABLE` was printed (designer binary not found)
 - The first `$D` generation command fails before producing an image (for
   example `No OpenAI API key found`): treat it exactly as `DESIGN_NOT_AVAILABLE`
@@ -533,13 +420,8 @@ The ONLY time you skip mockups is when:
 
 If the user explicitly says "skip mockups" or "text only", respect that. Otherwise, generate.
 
-**PLAN MODE EXCEPTION — ALWAYS RUN:** These commands write design artifacts to
-`$GSTACK_STATE_ROOT/projects/$SLUG/designs/` (the configured state directory).
-Mockups are design artifacts that inform the plan, not code changes. The gstack
-designer outputs PNGs and HTML comparison boards for human review during the
-planning phase. Generating mockups during planning is the whole point.
-
-Allowed commands under this exception:
+**PLAN MODE EXCEPTION — ALWAYS RUN:** mockups are design artifacts under
+`$GSTACK_STATE_ROOT/projects/$SLUG/designs/`, not code changes. Allowed in plan mode:
 - `mkdir -p "$GSTACK_STATE_ROOT/projects/$SLUG/designs/..."`
 - `$D generate`, `$D variants`, `$D compare`, `$D iterate`, `$D evolve`, `$D check`
 - Writing `board-images.json` and `approved.json`, and archiving `feedback.json`, inside `$_DESIGN_DIR`
@@ -555,10 +437,7 @@ mkdir -p "$_DESIGN_DIR"
 echo "DESIGN_DIR: $_DESIGN_DIR"
 ```
 
-Replace `<screen-name>` with a descriptive kebab-case name (e.g., `homepage-variants`, `settings-page`, `onboarding-flow`).
-
-**Generate mockups one screen at a time in this skill.** The inline review flow generates
-fewer variants and benefits from sequential control; /design-shotgun is the parallel flow.
+Replace `<screen-name>` with a kebab-case screen name. Generate one screen at a time.
 
 For each UI screen/section in scope, construct a design brief from the plan's description (and DESIGN.md if present) and write it into a private file:
 
@@ -593,10 +472,7 @@ $D check --image "<first path from the printed saved list>" --brief "$(cat "$BRI
 
 Flag any variants that fail the quality check. Offer to regenerate failures.
 
-**Do NOT show variants inline via Read tool and ask for preferences.** Proceed
-directly to the Comparison Board + Feedback Loop section below. The comparison board
-IS the chooser — it has rating controls, comments, remix/regenerate, and structured
-feedback output. Showing mockups inline is a degraded experience.
+Do not show variants inline and ask for preferences: the comparison board below is the chooser.
 
 ### Comparison Board + Feedback Loop
 
@@ -728,9 +604,9 @@ fi
 
 Note which direction was approved. This becomes the visual reference for all subsequent review passes.
 
-**Multiple variants/screens:** If the user asked for multiple variants (e.g., "5 versions of the homepage"), generate ALL as separate variant sets with their own comparison boards. Each screen/variant set gets its own subdirectory under `designs/`. Complete all mockup generation and user selection before starting review passes.
+**Multiple screens or variant sets:** each gets its own subdirectory under `designs/` and its own board; finish all selection before the review passes.
 
-**If `DESIGN_NOT_AVAILABLE`:** Tell the user: "The gstack designer isn't set up yet. Run `$D setup` to enable visual mockups. Proceeding with text-only review, but you're missing the best part." Then proceed to review passes with text-based review. Do not substitute hand-built HTML/CSS wireframes, screenshots or a comparison board of your own: they delay the first review question by minutes and are not designer output.
+**If `DESIGN_NOT_AVAILABLE`:** tell the user the designer isn't set up (`$D setup` enables it) and continue text-only. Do not substitute hand-built HTML/CSS wireframes, screenshots or a board of your own.
 
 ## Design Outside Voices (independent)
 
@@ -923,9 +799,7 @@ Re-run loop: invoke /plan-design-review again → re-rate → sections at 8+ get
 
 ### "Show me what 10/10 looks like" (requires design binary)
 
-If `DESIGN_READY` was printed during setup AND a dimension rates below 7/10,
-offer to generate a visual mockup showing what the improved version would look like.
-Write the description of what 10/10 looks like for this dimension into a private file:
+If `DESIGN_READY` and a dimension rates below 7/10, offer a mockup of its 10/10 version. Write that description into a private file:
 
 ```bash
 _GT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)/.gstack/tmp"
@@ -952,11 +826,7 @@ _OUT=$("$D" generate --brief "$(cat "$BRIEF_FILE")" --output "$_DESIGN_DIR/ideal
 printf '%s\n' "$_OUT"; echo "EXIT: $_RC"; [ "$_RC" != 0 ] || rm -f "$BRIEF_FILE"
 ```
 
-Exit 0: show the image at the printed `outputPath` (it may be bumped, never overwritten) to the user via the Read tool. Exit 2 or 3: report `failures` and continue text-only. This makes the gap between
-"what the plan describes" and "what it should look like" visceral, not abstract.
-
-If the design binary is not available, skip this and continue with text-based
-descriptions of what 10/10 looks like.
+Exit 0: show the image at the printed `outputPath` via the Read tool. Exit 2 or 3: report `failures` and continue text-only. Without the designer, describe the 10/10 in text.
 
 > **STOP.** Before running the 7 design passes, required outputs, and review report (only after Step 0 scope is agreed), Read `~/.claude/skills/gstack/plan-design-review/sections/review-sections.md` and execute it
 > in full. Do not work from memory — that section is the source of truth for this step.

@@ -1,6 +1,5 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { ToolAnnotations as SdkToolAnnotations } from "@modelcontextprotocol/sdk/types.js";
-import { getCachedEnvId } from '../cloudbase-manager.js';
 import { ExtendedMcpServer } from "../server.js";
 import { shouldRegisterTool } from './cloud-mode.js';
 import { debug } from './logger.js';
@@ -100,8 +99,55 @@ function contributionHint(server: ExtendedMcpServer): string {
 }
 
 /**
- * 创建包装后的处理函数，添加数据上报功能
+ * 从 `auth` 的返回里取出「环境准备」的结果，供遥测上报。
+ *
+ * 为什么要从返回体里抠：`env_setup_status` / `env_setup_failure.reason` 只存在于
+ * `auth` 的 payload 里，不是 `reportToolCall` 的入参。而工具 wrapper 是唯一同时
+ * 看得见 args 和 result 的地方。
+ *
+ * 现状（2026-10-27）：这两项只回给模型、没进埋点，于是「无环境的用户卡在购买页、
+ * 实名、还是 CAM 授权」在数据里长得一模一样，加文案也无法验收。
  */
+function readEnvSetupOutcome(
+    result: unknown,
+): { status?: string; reason?: string } | undefined {
+    const rec = result as Record<string, unknown> | null | undefined;
+    if (!rec || typeof rec !== 'object') return undefined;
+
+    // 优先 structuredContent（MCP 规范位），退到 content[0].text 里的 JSON
+    const candidates: unknown[] = [];
+    if (rec.structuredContent) candidates.push(rec.structuredContent);
+    const content = Array.isArray(rec.content) ? rec.content : [];
+    for (const item of content) {
+        const text = (item as { text?: unknown })?.text;
+        if (typeof text === 'string' && text.trim().startsWith('{')) {
+            try {
+                candidates.push(JSON.parse(text));
+            } catch {
+                /* 不是 JSON 就跳过，不要因为解析失败影响正常返回 */
+            }
+        }
+    }
+
+    for (const payload of candidates) {
+        const p = payload as Record<string, unknown>;
+        const status = typeof p?.env_setup_status === 'string' ? p.env_setup_status : undefined;
+        if (!status) continue;
+        const failure = p?.env_setup_failure as Record<string, unknown> | undefined;
+        const reason = typeof failure?.reason === 'string' ? failure.reason : undefined;
+        // 把两个布尔压进 reason 的后缀：一列就能看清「卡在哪」，
+        // 单看 reason 只知道「建环境失败」，不知道是实名还是 CAM 授权拦住的
+        const gates: string[] = [];
+        if (failure?.need_real_name_auth === true) gates.push('realname');
+        if (failure?.need_cam_auth === true) gates.push('cam');
+        return {
+            status,
+            reason: reason ? (gates.length ? `${reason}+${gates.join('+')}` : reason) : undefined,
+        };
+    }
+    return undefined;
+}
+
 /**
  * 工具自己返回的失败：结构化 `{ success: false }`（`isBusinessFailureToolResult` 已覆盖
  * 顶层 / structuredContent / JSON 文本三种挂法），**或**已经显式带 `isError: true` 的回执。
@@ -201,12 +247,18 @@ function withEnhancedFailureText(
     return result;
 }
 
+/**
+ * 创建包装后的处理函数，添加数据上报功能
+ */
 function createWrappedHandler(name: string, handler: any, server: ExtendedMcpServer) {
     return async (args: any, extra?: { requestId?: unknown; signal?: unknown }) => {
         const startTime = Date.now();
         let success = false;
         let errorMessage: string | undefined;
         let requestId: string | undefined;
+        // 提到 try 外：finally 里要读 auth 的环境准备结果（env_setup_status / failure.reason）。
+        // 护栏拦截的早退路径不会赋值，finally 里按 undefined 处理。
+        let result: any;
 
         try {
             debug(`开始执行工具: ${name}`, { args: sanitizeArgs(args) });
@@ -243,7 +295,7 @@ function createWrappedHandler(name: string, handler: any, server: ExtendedMcpSer
             }
 
             // 执行原始处理函数（extra 一并透传，工具可据此拿到在途请求 id）
-            const result = await handler(args, extra);
+            result = await handler(args, extra);
 
             // 工具**自己返回**的失败（`{ success: false }` 结构化载荷，或已经带 `isError: true` 的
             // 失败回执）与"抛错"是同一件事：遥测要按失败记，文案要吃同一套收尾（增强 + RequestId +
@@ -340,26 +392,20 @@ function createWrappedHandler(name: string, handler: any, server: ExtendedMcpSer
             
             if (!isTestEnvironment) {
                 const duration = Date.now() - startTime;
-                
-                // 如果 server.cloudBaseOptions 为空或没有 envId，尝试从缓存获取并更新
-                let cloudBaseOptions = server.cloudBaseOptions;
-                if (!cloudBaseOptions?.envId) {
-                    const cachedEnvId = getCachedEnvId();
-                    if (cachedEnvId) {
-                        cloudBaseOptions = { ...cloudBaseOptions, envId: cachedEnvId };
-                    }
-                }
-                
+                const envSetup = name === 'auth' ? readEnvSetupOutcome(result) : undefined;
+
                 // 异步上报，不阻塞工具返回
                 reportToolCall({
                     toolName: name,
+                    envSetupStatus: envSetup?.status,
+                    envSetupFailReason: envSetup?.reason,
                     success,
                     requestId,
                     duration,
                     error: errorMessage,
                     inputParams: sanitizeArgs(args), // 添加入参上报
                     action: args?.action, // 工具级 action（如 auth 的 status/set_env）
-                    cloudBaseOptions: cloudBaseOptions, // 传递 CloudBase 配置（可能已更新）
+                    cloudBaseOptions: server.cloudBaseOptions,
                     ide: server.ide || process.env.INTEGRATION_IDE, // 传递集成IDE信息
                     client: server.client || process.env.CLOUDBASE_MCP_CLIENT, // 传递 MCP client 来源标识
                     mcpClientInfo: readMcpClientInfoFromServer(server),

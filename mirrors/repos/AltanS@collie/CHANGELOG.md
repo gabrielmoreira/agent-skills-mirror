@@ -23,13 +23,232 @@ Running a crew? Update the lead first; members follow on their own. Details:
 
 ## [Unreleased]
 
+## [1.25.0] - 2026-10-29
+
+### Added
+
+- **`collie doctor --instance <name>` reads one lane without an exported variable.** The flag wins
+  over `COLLIE_INSTANCE`, ignores a `HERDR_PLUGIN_CONFIG_DIR`, `COLLIE_STATE_DIR` or `COLLIE_PORT`
+  exported for another lane, and `--instance default` reads the unsuffixed lane. An unknown name
+  exits 2 before any check and lists the instances on this machine. Only `doctor` takes the flag.
+- **The command palette now finds the skills and commands of seven more agents on disk.** Codex, opencode, pi, omp, Grok, Antigravity and Muse each get their own loader, which reads the folders that agent reads and offers what it finds as searchable rows. Tapping a row stages it in the composer, as for Claude Code, and a Codex skill is spelled `$name`. Thanks @GGGODLIN (#584).
+- **The phone asks for found commands on every agent pane, and the bridge alone decides which agents have a loader.** The web app no longer keeps a closed list of agent names, a pane with no agent still makes no request, and the Antigravity alias now lives with the loaders in `bridge/agent-skills.ts`.
+- **dsh-tui panes get Chat and History.** Collie reads the zstd compressed or plain session log that DeepSeek Harness writes under `~/.dsh/sessions`. You see your prompts, replies, reasoning, tool calls with their results, refused approvals, slash commands, finished background jobs and compaction summaries. dsh-tui names no session to Herdr, so Collie finds the log through the session lock that the pane's foreground process holds. This works on Linux only. On other systems the pane keeps its terminal view. Set the root with `dsh_root` or `COLLIE_DSH_ROOT`, or let `$DSH_HOME` name it. `collie doctor` counts the new root, and the New sheet can start dsh-tui. Thanks @hubrix (#604).
+- **A dsh-tui session log cannot swell past a fixed size when it is read.** Collie now stops a compressed frame that expands beyond 64 MiB, twice the 32 MB cap on the log itself, and treats it like a frame that does not decode: the reader stops at that frame and never stitches rows across it. Nothing throws. (#604)
+- **Chat draws the pictures Claude's tools return, and attached images.** A `Read` of a screenshot, or a screenshot tool, now shows the picture inside its tool card, and an attached image opens in a sheet instead of a bare link. Thanks @SergioGhisler (#590).
+- **A huge picture in a tool result no longer bloats the chat.** One inline picture over 4 MiB of base64 text (about 3 MB of picture, enough for a phone screenshot as PNG) is now left out of the transcript, in every harness reader, and the tool card keeps its text.
+- **A picture left out of the chat for size now says so.** In place of the picture, the same tool card or message shows the line "Picture too large to show here (N MB)", with the size of the picture, so you can see that something was left out. The line is English only. The cap counts the base64 text, not the decoded bytes.
+- **The installed app's icon counts the panes blocked on you.** The count also includes finished panes you have not opened, while the Finished preference is on. The herd push sets it in the service worker, and the open dashboard sets it too. A browser without the Badging API keeps no count. Thanks @SergioGhisler (#591).
+- **The open dashboard sets the icon's count only when it shows every session.** On one session of several it writes nothing, because the pushes count every session and machine and would overwrite a smaller number.
+- **Changes lets you pick lines in a diff and comment on them as one batch.** Tap diff lines to
+  select them, add a note, and keep adding notes across files. One tap then stages every note, with
+  the lines it is about, into the agent's draft in the pane. In a space with several agents you pick
+  which one gets them. Thanks @GGGODLIN (#561).
+- **Diff comments survive leaving Changes.** The batch is kept for the tab, so a Back and a return
+  restores it, and staging it into the agent's draft clears it. On a crew the agent that gets the
+  batch is found by its full address, so a twin pane id on another machine is never picked. The
+  pill on a commented line shows an icon instead of an emoji.
+- **collie doctor says whether sends reach each agent program.** A `sends-<harness>` row per
+  program counts its sends by outcome over its newest 50 of the last 7 days, read from the send
+  receipts. It warns when 3 or more sends ended and none went through, or when 5 or more ended and
+  at least 30 percent were lost for a reason Report a problem counts, and turns red at 10 or more
+  with none through. A red row makes `collie doctor` exit 1 but leaves `collie update --check` amber,
+  because an update is often the fix. The `surface-*` rows no longer warn on refusals after ten
+  sends, which never caught a program with no send through at all (#594).
+- **collie doctor lists the held sends and counts the stale screens.** A `holds-<harness>` row lists
+  each send still held for a program, oldest first, with its age in minutes, the reason the phone
+  shows and its request id, and never the held text. It warns when a hold has waited more than 10
+  minutes. A `screen-<harness>` row counts the sends that met a stale screen and the other probe
+  failures over the same window as the `sends-*` row, and warns when 3 or more in a row ended that
+  way. Both read files only and keep the `collie doctor` write-nothing rule.
+- **Report a problem carries the doctor's send rows.** The setup block of an issue filed from the
+  phone lists the `sends-<harness>`, `holds-<harness>` and `screen-<harness>` rows `collie doctor`
+  prints for the pane's agent, one line each with the status, the check and the detail. From
+  Settings it lists every row that says more than "nothing here". The bridge reads them from its own
+  state folder when the sheet opens, and never adds a remedy, a held text or a typed line. When the
+  link is too long, these rows go after the screen and before the oldest sends, and the sheet says
+  how many it left out.
+- **`collie doctor` treats sends from a shell pane as information only.** The `sends--`, `holds--` and
+  `screen--` rows, for receipts with no agent program, always print `ok` with their counts. A shell
+  has no agent to confirm a submit, so its outcomes say nothing about whether sends reach an agent
+  program, and no warn or error rule reads them.
+- **Labels and a default folder per terminal session, in an operator file.** You name a session
+  with a label of your own and the switcher shows it, and you name a folder where a launch from the
+  dashboard opens when nothing else names one. A label is display-only and links keep the session
+  name. Thanks @eseninik (#539).
+- **The operator file for space labels and folders is `spaces.toml`.** In Collie's words a session is
+  one agent conversation and a terminal grouping on the phone is a space, so the file that labels
+  your Herdr sessions, which the phone shows as spaces, carries the phone's word. The reader
+  module, the config key and the docs follow, and the `[labels]` and `[folders]` tables keep the
+  Herdr session names as keys. Thanks @eseninik (#539).
+- **collie start and collie doctor name any missing setup in plain words.** Tailscale not installed
+  or not signed in, MagicDNS or HTTPS off, the operator flag on Linux, no multiplexer or several
+  without COLLIE_MUX, and the PATH line. `collie start` prints one `setup:` line per missing piece
+  with its fix and never stops for it; `collie doctor` adds the rows `tailscale`, `tailnet-https`
+  and `tailscale-operator`, which warn and never hold back an update, and its `path-link` row now
+  warns when no `collie` is on PATH. ([94ec3cc](https://github.com/AltanS/collie/commit/94ec3cc))
+- **A Zoom button on the belt opens a pane's output full screen.** It sits just left of the Switch
+  button. A pinch zooms up to 6x, one finger pans, a double tap toggles between 1x and 2.5x, and the
+  text keeps updating. Lines never wrap in this view, so a pinch does not reflow them. It is a level
+  below the pane (`/pane/:paneId/zoom`), so the pane and its draft stay mounted and the phone's back
+  closes it. It is read-only and never resizes the pane. Closing it returns focus to the Zoom button, a tap on a printed web address opens nothing, and the browser's own Ctrl zoom keys leave the view alone. Thanks @neuralyze (#536). ([9bfd276](https://github.com/AltanS/collie/commit/9bfd276)) ([649fdcb](https://github.com/AltanS/collie/commit/649fdcb)) ([4a896ce](https://github.com/AltanS/collie/commit/4a896ce))
+
+### Changed
+
+- **Opening a finished pane retracts its alert.** The bridge drops the alert once the pane has been opened (`retractSeen` in `bridge/notifications.ts`), which also removes its lock-screen notification. A blocked pane's alert stays until you answer it.
+- **Windows: collie start publishes the tailnet front door.** It runs `tailscale serve` through the
+  same code as Linux and macOS, records the mapping, and removes only that mapping on
+  `collie uninstall`. A mapping made by hand from the old Windows guide is adopted and recorded on
+  the first `collie start`, and `collie doctor` warns about it until then. An adopted mapping is
+  removed by `collie uninstall` or `collie unserve` like any mapping Collie recorded. `COLLIE_PUBLIC_HOSTS`
+  and `COLLIE_PUBLIC_URL` are no longer needed for the default setup. ([e9d7970](https://github.com/AltanS/collie/commit/e9d7970)) ([0c6b6e6](https://github.com/AltanS/collie/commit/0c6b6e6)) ([24044c5](https://github.com/AltanS/collie/commit/24044c5))
+
 ### Fixed
 
+- **Codex at Ultra effort no longer blocks sends from the phone.** Codex 0.164 and 0.165 draw the
+  composer prompt as `»` at Ultra effort and as `›` at Max. Both readers knew only `›`, so Collie
+  could not find the input box and asked you to confirm a send by hand. Both glyphs now count, in
+  the Codex profile and in the Codex reader. The reader keeps one list of the two glyphs, and a test
+  checks that the profile spells the same pair. A numbered option row is still not a prompt. (#615)
+  Thanks @Skydev0h for the diagnosis.
+- **An update no longer fails because the release download is slow.** The release download had a 20
+  second total deadline, so on a link under about 23 Mbit/s the 57 MB asset timed out and Collie said
+  it could not reach github.com. The download now stops only when no bytes arrive for 60 seconds, and
+  the error then says the download stalled, with how much had arrived. Connecting and the small release
+  lookups keep their 20 second limit. If your update already fails with "could not reach github.com",
+  run `curl -fsSL https://colliepwa.dev/install.sh | COLLIE_TAG=v1.24.3 sh` once by hand (the Stable
+  patch that carries this fix); after that updates work from the phone again, on Stable and on Edge.
+  ([#613](https://github.com/AltanS/collie/issues/613)) Thanks @mglasner for the diagnosis.
+- **A very slow release download now ends after 30 minutes instead of trickling on.** A server that
+  sends a few bytes just inside each 60 second window never counts as stalled, so the download has a
+  total cap of 30 minutes (about 32 KB/s for the 57 MB asset). The error says the download took longer
+  than 30 minutes and how much had arrived, and nothing is changed. ([#613](https://github.com/AltanS/collie/issues/613))
+- **The service worker ignores a push with a malformed tag instead of failing the push.** A push whose tag is missing, null or not a string no longer throws out of the push handler, so the notification still shows and the icon count is left as it was.
+- **`collie doctor` prints every row in full at any width.** The plain output sizes the label column to the longest check id in its section, wraps a long value at the terminal width (80 when piped) with its next lines under the value, and breaks a path longer than the line at the edge. The terminal view wraps its detail and remedy the same way and never cuts one.
+- **The done line no longer repeats when a crew's machines share a pane id.** Two machines can both
+  hold `w6:p1`, and the line that says an agent finished compared panes by that bare id, so the pair
+  traded places on every poll and the line came back each time. It now keys a pane by its full
+  address, host and session included, and silences only the pane you have open, not its twin on
+  another machine. Thanks @OowhitecatoO (#614).
+- **The done line's open-pane lookup has a test.** The root layout resolves the pane on screen to a
+  row key through the route's own scope, so a shell pane, which is no agent row, silences nothing.
+- **The Authentication box Claude prints during an awsAuthRefresh login lifts as a card.** On Bedrock, Claude shows a sign-in link inside a box while it refreshes AWS credentials. Collie now lifts that box as a card with the sign-in link. The link opens only on a tap, and nothing is typed into the pane. Thanks @cooldaemon (#542, #585).
+- **The detector drift guard now knows the Authentication box.** The Claude dialog list names the auth box, so the guard no longer fails on its fixtures.
+- **A Muse draft typed over several lines no longer reads as a dialog.** Muse's prompt glyph and the
+  draft's lines under it looked like a pointed list between two rules, so Collie showed an unread
+  dialog and held Send. Thanks @jpcarranza94 (#552).
+- **A Muse draft of several lines reads as a draft only when no list is in the box.** Muse's
+  profile now says its dialogs never point with its prompt glyph `❯`, so the lines under it are the
+  draft's own, unless a row holds an option, a key hint or the slash palette. pi and omp draw menus
+  with the same glyph and keep holding Send there. (#552)
+- **Collie never waits on a stuck Tailscale.** Every read-only `tailscale` call the CLI makes is
+  bounded to three seconds inside Collie itself. Publishing and removing a mapping still wait for
+  Tailscale, because killing a half-done change is worse than waiting. Before, the ACL probe went
+  through an external `timeout` command, which on Windows is a wait command, so `collie start` and
+  `collie doctor` could stall or skip the check. ([796255e](https://github.com/AltanS/collie/commit/796255e)) ([51597d8](https://github.com/AltanS/collie/commit/51597d8))
+- **Doctor no longer blames the certificates when Tailscale is signed out.** The `front-door` row now
+  reads the Tailscale state first and says the check cannot run yet, instead of "this tailnet has no
+  HTTPS certificates". ([b547bdc](https://github.com/AltanS/collie/commit/b547bdc))
+- **`collie start` says "your phone cannot reach it yet" only when that is true.** The closing sentence
+  now follows the Tailscale rows alone; a missing PATH link no longer triggers it. When the front
+  door did not come up, the banner's tailnet row says so instead of printing a working-looking
+  address. ([5c27867](https://github.com/AltanS/collie/commit/5c27867))
+- **`collie status`, `collie doctor` and `collie serve` no longer hang on a stuck Tailscale.** Their
+  reads of the serve configuration, and the bridge's check before it removes a mapping, give up after
+  three seconds. ([51597d8](https://github.com/AltanS/collie/commit/51597d8))
+- **A slow Tailscale is reported as slow, not as signed out.** When `tailscale status` does not answer
+  within three seconds, `collie start` and `collie doctor` now say that Tailscale did not answer and
+  to run `tailscale status` by hand, instead of telling you to sign in or blaming the HTTPS
+  certificates. ([7689a80](https://github.com/AltanS/collie/commit/7689a80))
+- **Doctor names a hand-made tailnet mapping on another port that still points at Collie.** The
+  `front-door` row warns when a root mount on a port Collie does not manage, such as port 80 from the
+  old Headscale recipe, proxies to Collie, and names the `tailscale serve ... off` command that
+  removes it. `collie serve` in http mode prints a note about such a mapping and still publishes. ([7689a80](https://github.com/AltanS/collie/commit/7689a80))
+- **Send waits for a launched agent's first screen.** The draft stays editable and is never sent on
+  its own, so a workspace-trust dialog shows before any text reaches the agent. Send reads Starting…
+  until the agent's first screen is read, the agent leaves the pane, or two minutes pass. The page
+  also polls faster for the first 20 seconds after a launch, so the pane appears sooner. A launch that
+  fell back to a plain shell no longer keeps Send on Starting… for two minutes, and the large-screen
+  launcher has the same gate. Thanks @aahung (#574). ([198d00c](https://github.com/AltanS/collie/commit/198d00c)) ([00b6fe1](https://github.com/AltanS/collie/commit/00b6fe1))
+
+### Docs
+
+- **A docs fix can reach colliepwa.dev before the next release.** A branch `docs/<tag>`, named for the
+  newest release tag, carries docs-only commits, and the website quotes it in place of the tag until
+  the next release is tagged. `bun scripts/docs-line.ts <commit>...` cherry-picks the commits onto it
+  with `-x` and pushes it. It refuses a commit that touches a path outside `docs/` and `README.md`,
+  checks that the tag is an ancestor of the result, and lists older `docs/v*` branches with the
+  command to delete each one. A push to the branch asks the website to re-sync, and its daily run
+  picks the branch up too. ([8569959](https://github.com/AltanS/collie/commit/8569959))
+- **The docs line says when the site must be synced by hand.** A `docs/<tag>` branch based on an old
+  tag may lack `docs-line.yml`, so its push does not tell the site. The script then prints the
+  `gh workflow run sync-docs.yml` command, and a dry run says it would be needed. ([fea7c61](https://github.com/AltanS/collie/commit/fea7c61))
+
+## [1.24.3] - 2026-10-29
+
+A bugfix release, not urgent. You need it if you update Collie over a slow link, or if you run Codex at Ultra effort.
+
+### Fixed
+
+- **Codex at Ultra effort no longer blocks sends from the phone.** Codex 0.164 and 0.165 draw the
+  composer prompt as `»` at Ultra effort and as `›` at Max. Both readers knew only `›`, so Collie
+  could not find the input box and asked you to confirm a send by hand. Both glyphs now count, in
+  the Codex profile and in the Codex reader. The reader keeps one list of the two glyphs, and a test
+  checks that the profile spells the same pair. A numbered option row is still not a prompt. (#615)
+  Thanks @Skydev0h for the diagnosis.
+- **An update no longer fails because the release download is slow.** The release download had a 20
+  second total deadline, so on a link under about 23 Mbit/s the 57 MB asset timed out and Collie said
+  it could not reach github.com. The download now stops only when no bytes arrive for 60 seconds, and
+  the error then says the download stalled, with how much had arrived. Connecting and the small release
+  lookups keep their 20 second limit. If your update already fails with "could not reach github.com",
+  run `curl -fsSL https://colliepwa.dev/install.sh | COLLIE_TAG=v1.24.3 sh` once by hand (the Stable
+  patch that carries this fix); after that updates work from the phone again, on Stable and on Edge.
+  ([#613](https://github.com/AltanS/collie/issues/613)) Thanks @mglasner for the diagnosis.
+- **A very slow release download now ends after 30 minutes instead of trickling on.** A server that
+  sends a few bytes just inside each 60 second window never counts as stalled, so the download has a
+  total cap of 30 minutes (about 32 KB/s for the 57 MB asset). The error says the download took longer
+  than 30 minutes and how much had arrived, and nothing is changed. ([#613](https://github.com/AltanS/collie/issues/613))
+
+## [1.24.2] - 2026-10-28
+
+**Urgent.** A slow disk could end a send "typed, not submitted". Also fixed: slash commands under a live widget, pi on WSL, the Update tap.
+
+### Added
+
+- **The browser leg can answer pi and omp from recorded model streams (M67).** A local stand-in for OpenRouter replays a recorded turn with its recorded pacing, so the real pi and omp still draw every screen the phone taps. A request the recording does not hold gets a "cassette mismatch" answer, never a nearby one. `bun run e2e:recordings:check` in `web/` fails when a recording holds a key, a bearer token, an Authorization header or a home folder path. ([558d01d](https://github.com/AltanS/collie/commit/558d01d))
+- **The browser leg replays pi and omp when it has their recordings, and records them when a version is new (M67).** Each run reads the pi and omp versions. With recordings for that version, model and walky talky skill text, the harness replays and gets no key at all; without them it runs live and records, so the next run replays. `COLLIE_RIG_MODEL=replay` stops a run that has no recording, and `COLLIE_RIG_LIVE=pi,omp` or `all` forces live. Claude Code stays live. The leg ends with the tier of each harness, the live turn count and the number of requests sent to OpenRouter, and the nightly ledger row keeps the tiers. ([558d01d](https://github.com/AltanS/collie/commit/558d01d))
+
+### Fixed
+
+- **A slash command sent from the phone during a Codex turn is no longer refused.** Codex 0.163.0 can draw a warning segment after wide spacing on its idle footer row (`? for shortcuts` then `⚠ 1 warning · f2 to view`). Collie did not know that row as a hint, so when the footer became `tab to queue message` in the turn, the send read it as a change outside the box and ended "The probe character changed more than the box". The Codex profile now accepts the trailing segment on both `? for shortcuts` hint rows. ([92ad108](https://github.com/AltanS/collie/commit/92ad108))
+- **On a host with a named instance, the Update tap could update the default instance instead.** The
+  phone's updater ran without the instance keys and took the default service, moved its checkout and
+  rewrote its unit. The updater now carries `COLLIE_INSTANCE`, `COLLIE_MUX` and `COLLIE_CONFIG_DIR`, as
+  the CLI's own runner does. ([411c0a4](https://github.com/AltanS/collie/commit/411c0a4))
+- **pi under WSL sends with Ctrl+Q, as on Windows.** pi 1.4.0 in WSL reports Linux but takes Ctrl+Q to send, so every send ended "The submit key went out, but the box did not show it was taken". The bridge now picks the profile keys by a `wsl` platform when it runs under WSL (the `WSL_DISTRO_NAME` or `WSL_INTEROP` variable, or Microsoft in `/proc/version`), and pi's profile names Ctrl+Q for it. Other agents keep their keys. Reported by @npo-mmenke (#594). ([1864b81](https://github.com/AltanS/collie/commit/1864b81))
 - **The install scripts end with the steps the install guide gives.** `install.sh` no longer asks
   you to copy `.env.example`, which a later `cp` turned into a trap: it names Tailscale with HTTPS,
   starts the multiplexer, runs `COLLIE_MUX=herdr collie start`, opens the phone with `collie qr`,
   and pairs inside the home screen app. Its PATH note prints the exact line to add.
-  `install.ps1` points to the Windows guide on the web, not to a local page with no Windows steps.
+  `install.ps1` points to the Windows guide on the web, not to a local page with no Windows steps. ([5cb4204](https://github.com/AltanS/collie/commit/5cb4204))
+- **A send could end "typed, not submitted" with the text left in the box when the disk was slow.** Collie wrote the send record before the submit key, and that write could use up the key's 150 ms window. The window now starts after the write. ([2efc568](https://github.com/AltanS/collie/commit/2efc568))
+- **A microphone stays beside Attach while the box holds a draft.** The round button turns into Send
+  as soon as you type or attach something, which left no way to dictate a second clip into a draft.
+  A small microphone now sits next to Attach then, opens the same voice screen, and the words land
+  at the caret. It steps aside while the round button reads "Answer the dialog" or "Really send?".
+  Thanks @viniciosrab (#573). ([0ccd97e](https://github.com/AltanS/collie/commit/0ccd97e))
+- **A question from an agent Collie cannot read is no longer hidden behind Chat.** An agent with no screen reader in Collie, such as OpenClaw, asks in a dialog Chat cannot draw as a card, so a pane with a readable session sent a "needs your answer" notification and opened on a Chat that did not show the question. While such a pane asks, it now shows the terminal, and it goes back to Chat when it stops asking. Thanks @hubrix (#605). ([12e094d](https://github.com/AltanS/collie/commit/12e094d))
+- **An OpenCode 2 pane recognizes its question dialogs again.** opencode 2.1 paints its own `Questions` title above the dialog, marks the pointed row with an accent ink instead of a background chip, ends the tab row with `Submit` and draws the active chip bold, and drops the `Review` heading from the confirm screen. Collie now reads all of that, so a single question, a multi-select list and a several-question wizard lift into cards again, and the open free-text input still shows the card with Escape. Thanks @butzist (#607). ([17f96b3](https://github.com/AltanS/collie/commit/17f96b3))
+- **History reads a session from before an OpenCode 2.1 upgrade.** 2.1 renames the `session` table to `session_v2` and copies an older session's turns into `session_message` only when OpenCode itself opens that session. A session row in `session_v2` therefore no longer means the conversation is there; Collie picks the store by where the turns actually are, so an upgraded pane shows its history instead of "no transcript". Thanks @butzist (#607). ([aa20a79](https://github.com/AltanS/collie/commit/aa20a79))
+- **A long answer to a question card is typed whole.** The answer field no longer shares the plan row's 240-character cap: an answer up to 4000 characters is typed and proved while the dialog fits the pane, and one that would not fit is refused before any key, pointing at Chat about this. Thanks @eseninik (#606). ([090eee2](https://github.com/AltanS/collie/commit/090eee2))
+- **A Hermes pane with an interactive session id reads its history again.** Hermes 0.22 names interactive sessions `local-` followed by 64 hex digits, and Collie only knew the dated and subagent ids, so the pane fell back to the terminal view with no records. Collie now accepts the `local-` id (fixes #601). Thanks @NCheuk (#602). ([372438c](https://github.com/AltanS/collie/commit/372438c))
+- **Linked git worktrees fold under their open root workspace on the dashboard.** The workspace filter lists the root checkout instead of each linked worktree separately, and choosing a root workspace shows its worktrees' panes under the root heading with each worktree named on its row while keeping separate working-tree rows on the Files tab (fixes #587). Thanks @GGGODLIN (#608). ([6f42a72](https://github.com/AltanS/collie/commit/6f42a72))
+- **A slash command reaches omp and pi under a live widget.** An extension's widget over the input
+  box that ticks a spinner, a clock or a counter no longer makes a `/command` or a two-tap Send
+  refuse with "The probe character changed more than the box" or "The screen moved since you
+  looked". A row that changes its words, or a new row, still stops the send. A command on a fresh
+  Codex screen is no longer left typed when Codex hides its welcome picture. ([ea58062](https://github.com/AltanS/collie/commit/ea58062))
+- **The "Collie cannot read this dialog" card can report the screen it could not read.** The card now has Report a problem, which opens the same sheet as the pane menu. The report names the dialog in its title, and instead of sends it lists each of the agent's dialog readers with what it answered on that screen: found, null, or the error it threw. "Include the screen" starts on for this report, and the preview shows the masked rows before anything leaves. The setup adds the app and bridge builds, the browser, the viewport and whether the app runs installed. Nothing new is stored and no new route is asked. Thanks @leftos (#554). ([efc69b6](https://github.com/AltanS/collie/commit/efc69b6))
 
 ## [1.24.1] - 2026-10-27
 

@@ -7,7 +7,7 @@ ref: dev
 
 # Mirror Manifest
 
-Mirror of `0xJacky/nginx-ui` — 26 default patterns, 0 followed patterns, 29 file(s) materialized.
+Mirror of `0xJacky/nginx-ui` — 26 default patterns, 0 followed patterns, 31 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `0xJacky/nginx-ui` — 26 default patterns, 0 followed patterns, 29 fi
 | Ref           | `dev` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 29 |
+| Files         | 31 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -74,20 +74,22 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 13 | ✓ | [`mcp/config/config_mkdir.go`](mcp/config/config_mkdir.go) |
 | 14 | ✓ | [`mcp/config/config_modify.go`](mcp/config/config_modify.go) |
 | 15 | ✓ | [`mcp/config/config_rename.go`](mcp/config/config_rename.go) |
-| 16 | ✓ | [`mcp/config/config_validation_test.go`](mcp/config/config_validation_test.go) |
-| 17 | ✓ | [`mcp/config/managed_test.go`](mcp/config/managed_test.go) |
-| 18 | ✓ | [`mcp/config/register.go`](mcp/config/register.go) |
-| 19 | ✓ | [`mcp/http_auth_test.go`](mcp/http_auth_test.go) |
-| 20 | ✓ | [`mcp/nginx/register.go`](mcp/nginx/register.go) |
-| 21 | ✓ | [`mcp/nginx/reload.go`](mcp/nginx/reload.go) |
-| 22 | ✓ | [`mcp/nginx/restart.go`](mcp/nginx/restart.go) |
-| 23 | ✓ | [`mcp/nginx/status.go`](mcp/nginx/status.go) |
-| 24 | ✓ | [`mcp/register.go`](mcp/register.go) |
-| 25 | ✓ | [`mcp/router_test.go`](mcp/router_test.go) |
-| 26 | ✓ | [`mcp/router.go`](mcp/router.go) |
-| 27 | ✓ | [`mcp/service_tokens_test.go`](mcp/service_tokens_test.go) |
-| 28 | ✓ | [`mcp/service_tokens.go`](mcp/service_tokens.go) |
-| 29 | ✓ | [`mcp/transport_test.go`](mcp/transport_test.go) |
+| 16 | ✓ | [`mcp/config/config_tokenizer_security_test.go`](mcp/config/config_tokenizer_security_test.go) |
+| 17 | ✓ | [`mcp/config/config_validation_test.go`](mcp/config/config_validation_test.go) |
+| 18 | ✓ | [`mcp/config/managed_test.go`](mcp/config/managed_test.go) |
+| 19 | ✓ | [`mcp/config/register.go`](mcp/config/register.go) |
+| 20 | ✓ | [`mcp/http_auth_test.go`](mcp/http_auth_test.go) |
+| 21 | ✓ | [`mcp/nginx/register.go`](mcp/nginx/register.go) |
+| 22 | ✓ | [`mcp/nginx/reload.go`](mcp/nginx/reload.go) |
+| 23 | ✓ | [`mcp/nginx/restart.go`](mcp/nginx/restart.go) |
+| 24 | ✓ | [`mcp/nginx/status.go`](mcp/nginx/status.go) |
+| 25 | ✓ | [`mcp/read_only_security_test.go`](mcp/read_only_security_test.go) |
+| 26 | ✓ | [`mcp/register.go`](mcp/register.go) |
+| 27 | ✓ | [`mcp/router_test.go`](mcp/router_test.go) |
+| 28 | ✓ | [`mcp/router.go`](mcp/router.go) |
+| 29 | ✓ | [`mcp/service_tokens_test.go`](mcp/service_tokens_test.go) |
+| 30 | ✓ | [`mcp/service_tokens.go`](mcp/service_tokens.go) |
+| 31 | ✓ | [`mcp/transport_test.go`](mcp/transport_test.go) |
 
 ---
 

@@ -71,6 +71,19 @@ across two machines. A `review` block in the input manifest (see
 [`hub/README.md`](hub/README.md)) is preserved for every repo that lands at its
 recorded SHA.
 
+New clones are prepared in a private temporary directory and published only
+when checkout succeeds (#2453). An ordinary failure cleans that attempt's
+stage; a hard kill can leave a hidden `.xerj-clone-*` directory, but a retry
+uses a new stage instead of treating it as a completed checkout. One
+`corpus add` per corpus runs at a time; a second is refused.
+
+An existing checkout with an unreadable commit, a missing index, or an
+`index.lock` is preserved and refused. These states do not prove it is safe
+to delete the directory or overwrite local edits. Wait for active Git
+operations; for an incomplete checkout, move the directory to an unused
+backup location and rerun the original command. The backup retains local
+files for review. Completed linked worktrees remain reusable.
+
 A local path (`/path/to/checkout` or `file:///path/to/checkout`) is cloned the
 same way. Git checks out committed files only, so a root `.xerjignore` that is
 untracked or has uncommitted edits would never reach the clone, and the index

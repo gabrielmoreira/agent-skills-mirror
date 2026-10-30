@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `luongnv89/claude-howto` — 26 default patterns, 0 followed patterns, 36 file(s) materialized.
+Mirror of `luongnv89/claude-howto` — 26 default patterns, 1 followed patterns, 41 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `luongnv89/claude-howto` — 26 default patterns, 0 followed patterns,
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 36 |
+| Followed pats | 1 |
+| Files         | 41 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,7 @@ Mirror of `luongnv89/claude-howto` — 26 default patterns, 0 followed patterns,
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `STYLE_GUIDE.md`
 
 ## File Index
 
@@ -75,26 +75,31 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 14 | ✓ | [`ja/03-skills/doc-generator/SKILL.md`](ja/03-skills/doc-generator/SKILL.md) |
 | 15 | ✓ | [`ja/03-skills/refactor/SKILL.md`](ja/03-skills/refactor/SKILL.md) |
 | 16 | ✓ | [`ja/CLAUDE.md`](ja/CLAUDE.md) |
-| 17 | ✓ | [`prompts/remotion-video.md`](prompts/remotion-video.md) |
-| 18 | ✓ | [`uk/03-skills/blog-draft/SKILL.md`](uk/03-skills/blog-draft/SKILL.md) |
-| 19 | ✓ | [`uk/03-skills/brand-voice/SKILL.md`](uk/03-skills/brand-voice/SKILL.md) |
-| 20 | ✓ | [`uk/03-skills/claude-md/SKILL.md`](uk/03-skills/claude-md/SKILL.md) |
-| 21 | ✓ | [`uk/03-skills/code-review-specialist/SKILL.md`](uk/03-skills/code-review-specialist/SKILL.md) |
-| 22 | ✓ | [`uk/03-skills/doc-generator/SKILL.md`](uk/03-skills/doc-generator/SKILL.md) |
-| 23 | ✓ | [`uk/03-skills/refactor/SKILL.md`](uk/03-skills/refactor/SKILL.md) |
-| 24 | ✓ | [`uk/CLAUDE.md`](uk/CLAUDE.md) |
-| 25 | ✓ | [`vi/03-skills/blog-draft/SKILL.md`](vi/03-skills/blog-draft/SKILL.md) |
-| 26 | ✓ | [`vi/03-skills/brand-voice/SKILL.md`](vi/03-skills/brand-voice/SKILL.md) |
-| 27 | ✓ | [`vi/03-skills/claude-md/SKILL.md`](vi/03-skills/claude-md/SKILL.md) |
-| 28 | ✓ | [`vi/03-skills/code-review-specialist/SKILL.md`](vi/03-skills/code-review-specialist/SKILL.md) |
-| 29 | ✓ | [`vi/03-skills/refactor/SKILL.md`](vi/03-skills/refactor/SKILL.md) |
-| 30 | ✓ | [`vi/CLAUDE.md`](vi/CLAUDE.md) |
-| 31 | ✓ | [`zh/03-skills/blog-draft/SKILL.md`](zh/03-skills/blog-draft/SKILL.md) |
-| 32 | ✓ | [`zh/03-skills/brand-voice/SKILL.md`](zh/03-skills/brand-voice/SKILL.md) |
-| 33 | ✓ | [`zh/03-skills/claude-md/SKILL.md`](zh/03-skills/claude-md/SKILL.md) |
-| 34 | ✓ | [`zh/03-skills/code-review-specialist/SKILL.md`](zh/03-skills/code-review-specialist/SKILL.md) |
-| 35 | ✓ | [`zh/03-skills/doc-generator/SKILL.md`](zh/03-skills/doc-generator/SKILL.md) |
-| 36 | ✓ | [`zh/03-skills/refactor/SKILL.md`](zh/03-skills/refactor/SKILL.md) |
+| 17 | ✓ | [`ja/STYLE_GUIDE.md`](ja/STYLE_GUIDE.md) |
+| 18 | ✓ | [`prompts/remotion-video.md`](prompts/remotion-video.md) |
+| 19 | ✓ | [`uk/03-skills/blog-draft/SKILL.md`](uk/03-skills/blog-draft/SKILL.md) |
+| 20 | ✓ | [`uk/03-skills/brand-voice/SKILL.md`](uk/03-skills/brand-voice/SKILL.md) |
+| 21 | ✓ | [`uk/03-skills/claude-md/SKILL.md`](uk/03-skills/claude-md/SKILL.md) |
+| 22 | ✓ | [`uk/03-skills/code-review-specialist/SKILL.md`](uk/03-skills/code-review-specialist/SKILL.md) |
+| 23 | ✓ | [`uk/03-skills/doc-generator/SKILL.md`](uk/03-skills/doc-generator/SKILL.md) |
+| 24 | ✓ | [`uk/03-skills/refactor/SKILL.md`](uk/03-skills/refactor/SKILL.md) |
+| 25 | ✓ | [`uk/CLAUDE.md`](uk/CLAUDE.md) |
+| 26 | ✓ | [`uk/STYLE_GUIDE.md`](uk/STYLE_GUIDE.md) |
+| 27 | ✓ | [`vi/03-skills/blog-draft/SKILL.md`](vi/03-skills/blog-draft/SKILL.md) |
+| 28 | ✓ | [`vi/03-skills/brand-voice/SKILL.md`](vi/03-skills/brand-voice/SKILL.md) |
+| 29 | ✓ | [`vi/03-skills/claude-md/SKILL.md`](vi/03-skills/claude-md/SKILL.md) |
+| 30 | ✓ | [`vi/03-skills/code-review-specialist/SKILL.md`](vi/03-skills/code-review-specialist/SKILL.md) |
+| 31 | ✓ | [`vi/03-skills/refactor/SKILL.md`](vi/03-skills/refactor/SKILL.md) |
+| 32 | ✓ | [`vi/CLAUDE.md`](vi/CLAUDE.md) |
+| 33 | ✓ | [`vi/STYLE_GUIDE.md`](vi/STYLE_GUIDE.md) |
+| 34 | ✓ | [`zh/03-skills/blog-draft/SKILL.md`](zh/03-skills/blog-draft/SKILL.md) |
+| 35 | ✓ | [`zh/03-skills/brand-voice/SKILL.md`](zh/03-skills/brand-voice/SKILL.md) |
+| 36 | ✓ | [`zh/03-skills/claude-md/SKILL.md`](zh/03-skills/claude-md/SKILL.md) |
+| 37 | ✓ | [`zh/03-skills/code-review-specialist/SKILL.md`](zh/03-skills/code-review-specialist/SKILL.md) |
+| 38 | ✓ | [`zh/03-skills/doc-generator/SKILL.md`](zh/03-skills/doc-generator/SKILL.md) |
+| 39 | ✓ | [`zh/03-skills/refactor/SKILL.md`](zh/03-skills/refactor/SKILL.md) |
+| 40 | ✓ | [`zh/STYLE_GUIDE.md`](zh/STYLE_GUIDE.md) |
+| 41 | → | [`STYLE_GUIDE.md`](STYLE_GUIDE.md) |
 
 ---
 

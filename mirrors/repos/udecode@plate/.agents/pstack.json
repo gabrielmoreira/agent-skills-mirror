@@ -1,10 +1,14 @@
 {
-  "tag": "v0.9.101",
+  "tag": "v0.9.110",
   "branch": "next",
   "protected": "main",
   "delivery": "trunk",
   "lintFix": "pnpm lint:task --allow-ignored",
   "check": "pnpm check",
+  "freshEnv": [
+    "TURBO_FORCE=true",
+    "FAST_CHECK_SEED=random"
+  ],
   "maxEffort": "xhigh",
   "sourceless": [
     "zbeyens",
@@ -56,7 +60,11 @@
     ]
   },
   "triage": {
-    "repo": "udecode/plate",
+    "repos": [
+      "udecode/plate",
+      "udecode/plate-private"
+    ],
+    "milestone": "v54",
     "floor": [
       "claude-opus-5 @xhigh",
       "gpt-6.1-sol @xhigh"
@@ -66,12 +74,23 @@
     ],
     "rev": 1
   },
+  "notify": {
+    "channel": "1080884840884346941",
+    "role": "1026229447751376996",
+    "people": {
+      "felixfeng33": "1199232580394946581",
+      "natamox": "1129788480059359232",
+      "sin6626": "1559894481027989572",
+      "zbeyens": "275762728738750486"
+    }
+  },
   "plans": "docs/plans",
   "companion": {
     "dir": ".git-private",
     "list": ".gitprivate",
     "migrate": "node \"$(git rev-parse --path-format=absolute --git-common-dir)/../tooling/scripts/git-private.mjs\" migrate",
-    "detach": "node tooling/scripts/git-private.mjs detach"
+    "detach": "node tooling/scripts/git-private.mjs detach",
+    "restore": "node tooling/scripts/git-private.mjs restore"
   },
   "proof": "verify",
   "skiller": true,
@@ -84,6 +103,11 @@
         "apps/www/public/r/**"
       ],
       "command": "pnpm --filter www build:registry"
+    },
+    {
+      "paths": ["apps/www/src/registry/changelog/*.json"],
+      "command": "node tooling/scripts/generate-ui-changelog-entries.mjs --write",
+      "always": true
     }
   ],
   "skip": [],
@@ -122,7 +146,7 @@
     "verify-plate"
   ],
   "synced": {
-    "block": "ec2277cef225ecd33d63da56472d467b23c461a8ef9bc827228f51f74c421334",
+    "block": "05773dd1af2a96598da78501ccaf8e5b7539e5b442ee9392e6c7058bb4635182",
     "files": {
       ".agents/pstack/codex-browser.mjs": "6528eec4bc067814940f7cfcebf4f7c07fceff68dbe47bf46f7d898307a51283",
       ".agents/pstack/codex-isolation.mjs": "4185d2e9ab96a67a2e8ac1ddb8970bf0aae3a21442e7e05aa3a29e4a9b670dea",
@@ -136,7 +160,7 @@
       ".agents/pstack/reread.mjs": "398a9f0f0d300ee59e37618308f6ff9801f562167d18051d38edd15c6f866276",
       ".agents/pstack/seats.mjs": "5a410124323f879282ef1670074f66ba1cc86a3e0c61115c887b3b935e919c1a",
       ".agents/pstack/title.mjs": "2c530dd09c7f545393939aa7446f362c8fb7ffc9ea4a3f0f597d31c302bbdc84",
-      ".agents/pstack/decisions-check.mjs": "00c1f6e478cd095eef01c8cdcbccb32fc2231c0c77de969887990d965aabed71",
+      ".agents/pstack/decisions-check.mjs": "43d20efa5b735a9411981f1899808fca943c4e45370aca5e0f528b80d06259a1",
       ".agents/pstack/levels.mjs": "4b36a62ce038b7448050956707364f250754252a6903cffc239959c5b9df8aab",
       ".agents/pstack/plan-open.mjs": "03e9a563204c17ddff8b4057ecfa1a11eaebdcf2f054f6f5c2fe6fd9deb99372",
       ".agents/pstack/page-stop.mjs": "8ebbb290e3e8f58d87d132b35136007fb840b60399df2616a3353c6721ac84e0",
@@ -145,24 +169,24 @@
       ".agents/pstack/tasks.mjs": "d0e90f9435599dc67d57fb51516827dd9defda9b2d46e8dbee742dbc1810ed0a",
       ".agents/pstack/scorecard.mjs": "e465d0d769214a47d5b3ab5941b5155ce2c60896ed165098906ffeb85059e449",
       ".agents/pstack/guard.mjs": "07aae225da979ed4935cd1436b8d0b0d018ce9ee7eff9757476cd4cc7d958cde",
-      ".agents/pstack/land.mjs": "3a738d574ecbf044604529eb3f9c9a6d953d1ef64a68a0d8371177700137d4bd",
+      ".agents/pstack/land.mjs": "5dfcccec6248c8c0fa6a645aad8971faffbac4eaa0ca3b420c6aa9d1eda30fb9",
       ".agents/pstack/review.mjs": "1520685eb02ac26af18f23cf3f29df81dd4576df4fc5487c746c5b4d9af50188",
       ".agents/pstack/setup.mjs": "a494538d03dbd67b9cb929512330303f8ac2c5816321cadea25e96abe188efe7",
       ".agents/pstack/rules/browser.md": "203448f902ae52896b555894d8a5686db05b3a226e655a40df0f5bfd7766a401",
       ".agents/pstack/rules/chips.md": "2c907faf6ca07e0e579d69ff1c1b48883619058d0140021b63418a6feaf2ce9a",
       ".agents/pstack/rules/fast.md": "b829f6f1623fbd096472d9dcda36cfb59b456a0c4544929b8384fca368764439",
-      ".agents/pstack/rules/land.md": "cfd32595aa39f508416256be4f6991cbe69364d483156f4de11d19ce6eda572f",
+      ".agents/pstack/rules/land.md": "79e078217c7dbe89476f5dadefa35649654e4c11651b4fd8666ad96c169ce8f2",
       ".agents/pstack/rules/linked.md": "414bb3823bc3719af5303941eb5a028092e815dacbe61ba83ce95697c99dae70",
-      ".agents/pstack/rules/long-runs.md": "f815ce962a05f3ce655ca90bd14a78eb5d5a59a3c5e1f076e799f11f6fa23f7d",
+      ".agents/pstack/rules/long-runs.md": "b67e7155cb5e00be088ef1a62cac9e7c4fcafcb443baa70af47b6d4524c1f6ed",
       ".agents/pstack/rules/messages.md": "8255347259c81bc8cbd364c36140304cf033df0efaad59531d23c9cb4e18dd3e",
-      ".agents/pstack/rules/pages.md": "14ae9f0b916762e834bf471f011d484367a1a6684de2ddb3a7ed46359e69c0a6",
-      ".agents/pstack/rules/panel.md": "e4dbbc8613f4a641abe469452d86d1ba81725f7cbf084314587ccdf177b2db2f",
-      ".agents/pstack/rules/reflect.md": "02778c440a41de15f11fb2bb3c2d0b7ebfd43ea9264cab06b0191b48b37e7961",
+      ".agents/pstack/rules/pages.md": "67ae8bc8cbd08444a5881679cca679f9e881719fae8b96d6173689de139a9762",
+      ".agents/pstack/rules/panel.md": "f22f75a0c5d9d388466596adf576a85b40e890a00fbf405cac9bfdc72ade4afc",
+      ".agents/pstack/rules/reflect.md": "5aca6b1b750d77b4be13ef7fc04819df76bec40c59aceb5b93056738ef20ed7a",
       ".agents/pstack/rules/tests.md": "3aab5d539a2288532771a3c472b00a4135a0077dd21af6d06f29112cd66a1414",
       ".agents/pstack/rules/time.md": "fc132ef7a8f0cbec135a00c882911f0c849d9b49bf84db599ee8a6b86d32d6ba",
-      ".agents/pstack/rules/title.md": "0d9c60481b39315c64a190ed31d3a1beea8cdb01aaa5b6173bf9c1512709a4e2"
+      ".agents/pstack/rules/title.md": "a0dac949d37293ab77e089a0f439623ab014605e49297c4c980c41a6be52a1c4"
     },
-    "source": "dd7bd59ae4bb598cffc553f797711ad3e2cee680"
+    "source": "7e71c409f9db3dc4190c75c53c43aae36cc6a8c7"
   },
   "pageTopic": {
     "field": "review_scopes",

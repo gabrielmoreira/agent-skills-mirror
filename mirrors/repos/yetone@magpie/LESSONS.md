@@ -248,6 +248,26 @@ nor the vendor's limits.**
   ban risk, so a prompt change gets the same care as a header change.
 - Seen 1× (2026-10-12).
 
+**A new reader of a live object reads each field the way its writer
+writes it.**
+- 7f827b3b0 (10-27) added /v1/magpie/claude-runs, which lists every
+  run and calls pid() on each. pid() read cmd.Process without a lock
+  while a run's launch was still in cmd.Start writing it. It was red
+  under -race on ubuntu CI at 6104e88aa only (run 40698575099), since
+  most runs were cancelled by the next push. 983fff23d reads the run's
+  tree under mu first; it was red with a 50ms sleep injected at launch,
+  and not in 30 runs without it.
+- Before adding a list or status route, find who writes each field it
+  reads and under which lock. Run its test under -race with a delay
+  injected into the writer.
+- The fix moved when the pid shows, and the test waiting on it wasn't
+  re-read: TestClaudeRunsNamesEachProcess took a listing, then read the
+  fake's hang.pid, and could end on a list made before the tree was set
+  (PID 0), red on CI at 5bfd76cd8. 3dd59428e waits for a run listed
+  with that pid; red 3 of 3 with a sleep injected in the listing before.
+  A change to when a value appears re-reads every wait on it.
+- Seen 1× (2026-10-28).
+
 **A bit or enum value has one owner.**
 - d4c2512d2 (#1874) gave a usage row's Flags bit 256 to rowOwnCost while
   a rebase of #1463 gave it to rowReasoningHidden, so every reported cost
@@ -354,7 +374,13 @@ ok except gateway" stops being a normal run record.
 - 5b12407e8 (10-17) piped a full run through tail, lost which
   internal/gateway test failed at 2559s, and shipped with an unnamed red.
   `tee` the log to a file of your own and grep it.
-- Seen 1× (2026-10-17).
+- 10-28: ca9b5048e (#3764) recorded "531 ok and 5 red when this was
+  written (the run goes on)". Its 200px steps box, which scrolls on its
+  own, took reader.cjs's wheel, and routing-model-rest went 20 of 20 red,
+  which isn't among the five it names (a8098a886). Write the record once
+  the run has ended. A change that adds a box that scrolls on its own
+  runs every GUI file that wheels the page (`reach`, `wheelTo`).
+- Seen 2× (2026-10-17, 2026-10-28).
 
 **Windows CI only compiles the tests, so a Windows-only red shows
 nowhere.** Run the package on the Windows box before calling a Windows
@@ -531,9 +557,23 @@ cause:
     (#3956, fafce6545). A test that bounds bytes runs once under
     -race before it lands: sync.Pool drops a quarter of what is put in
     it there, and regexp and zstd take their state from one.
+  - A red assertion hides every assertion after it. #3410 (routing-pause)
+    was filed on 10-23 and failed at its first press, from 91b0be836's
+    motion. On 10-25 c888ef272 saved a rule's hours with a zone, and the
+    fixture's later expectation, without a zone, stayed wrong unseen
+    until 7b007e986 fixed the press on 10-28. #3408 to #3411 sat five
+    days with no owner, and #3104 (usage-ledger) has had none since
+    10-20. A filed red is still a test that checks nothing after its
+    first failure.
 - A cancelled run tests nothing. On 10-14 nine pushes in ten minutes
   cancelled each other's runs, and 3c4b4dc97 never had a run of its own;
   its red showed first at 84f14e555.
+  - 10-28: of main's last 58 Test runs, 49 were cancelled by the next
+    push. 0b99b8fbe's new allocation bound went red in macOS's Race job
+    (sync.Pool lets go under -race) at 25df3187b, the first run after it
+    that finished, and sat red until d3f3f3381. A test that bounds
+    allocations or a pool's savings checks `raceOn` (race_on_test.go)
+    and is run once with -race before it is pushed.
 - Done right: 2bd49cc5's race was fixed at its cause in 25 minutes
   (28049bd2, -race -count=40 -cpu 1,2). 60f87223, b1cba654, 443f1cbc and
   395c4bc5 fixed flakes at their cause instead of retrying. 06420a71 fixed
@@ -579,6 +619,19 @@ before the merge, are in the code standards.)
   set.
 - Seen 1× (2026-10-17).
 
+**A release published after a newer one takes Latest, and with it the
+update feed and the tap, unless the publish step checks.**
+- 10-15: v0.1.1255 was published 25 minutes after v0.1.1256, and
+  GitHub marked the older one Latest (moved back by hand then).
+- 10-28: v0.1.1891 finished 16s after v0.1.1892. 1891 became Latest,
+  which usemagpie.ai's /api/latest serves, and the Homebrew tap went from
+  1892 back to 1891 (tap 1d47b64). v0.1.1890, still notarising, would
+  have done it again. magpie-releases ee73d7a now passes `make_latest`
+  only to the highest version and runs the tap update only then.
+- A fix made by hand once is a fix for that release only. When it comes
+  back, fix the step that does it.
+- Seen 2× (2026-10-15, 2026-10-28).
+
 **A publish run that stays red for one known package hides every new
 failure behind it.**
 - think-tags 0.1.1 can't publish (E404, publish.yml isn't its trusted
@@ -597,14 +650,8 @@ it doesn't.**
   open for the reporter.
 - Seen 1× (2026-10-05).
 
-**One commit, one goal.**
-- 653cb8ee bundled ZCode sign-in with WSL session deletion.
-- 5464a362 capped six pages at 1200px when #860 asked for a speed display.
-- A fix found on the way goes in its own commit. 1e0829b1 hid the ja/de fix
-  inside a Usage change, beside two issues (#925, #928).
-- 76dc5aed bundled a Routing animation fix, a scrollbar fix and bringing the
-  GUI tests up to date.
-- Seen 2× (2026-10-05, 2026-10-06).
+**One commit, one goal** is in the code standards since 10-28. See
+[Moved to the code standards](#moved-to-the-code-standards).
 
 **A squash merge's message is written, not GitHub's default.** Give
 `gh pr merge --squash` a `--subject` and a `--body-file` holding the PR's
@@ -650,6 +697,10 @@ These were seen on three or more days. The rules and their evidence are in
 [docs/code-standards.md](docs/code-standards.md); a review still checks
 each one.
 
+- **One commit, one goal** (10-05, 10-06, 10-28). On 10-28 6e080ca04
+  answered psikent (/v1/models says every model takes tools) and windy
+  (a group's Context hint names the member a longer conversation skips)
+  under one subject that names only the first.
 - **Never let magpie's default override a value the user set themselves**
   (10-05, 10-10, 10-17). On 10-17 5a2414acd brought every plugins.yml
   without `settled` up once, Essentials to All. A user who had run

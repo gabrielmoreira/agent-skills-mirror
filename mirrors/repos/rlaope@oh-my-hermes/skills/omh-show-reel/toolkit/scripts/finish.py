@@ -91,7 +91,7 @@ def main():
     if not a.no_web:
         web = od / f"{a.name}_share.mp4"
         cmd = [a.ffmpeg, "-v", "error", "-nostdin", "-n", "-i", str(master), "-c:v", "libx264", "-preset", "slow", "-crf", "23",
-               "-maxrate", "8M", "-bufsize", "16M", "-pix_fmt", "yuv420p", "-colorspace", "bt709", "-color_primaries", "bt709",
+               "-maxrate", "8M", "-bufsize", "16M", *(["-level:v", "4.2"] if int(probe(master)[0].get("height") or 0) <= 1080 else []), "-pix_fmt", "yuv420p", "-colorspace", "bt709", "-color_primaries", "bt709",
                "-color_trc", "bt709", "-color_range", "tv"]
         if a.audio:
             cmd += ["-c:a", "aac", "-b:a", "192k"]

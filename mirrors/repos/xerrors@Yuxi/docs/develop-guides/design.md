@@ -79,6 +79,8 @@ Yuxi 是知识库、知识图谱与 Agent 开发平台，界面应保持克制�
 
 Yuxi 通过 `:root.dark` 覆盖同名 token。新增 UI 必须使用 CSS 变量，禁止固定浅色值，并检查浅色、暗色两套表现。
 
+暗色优先使用页面底与低阶灰表面区分区域，普通卡片、输入区不使用装饰阴影；背景已能区分时不增加描边。`--gray-10` 到 `--gray-50` 提供较细的背景与交互过渡，普通卡片使用 `--border-surface` 和 `--border-surface-hover` 适配描边。键盘焦点、错误和拖拽提示保留明确反馈。聊天输入框通过背景变化表达悬停与聚焦，发送按钮使用白底深色图标，禁用时降低不透明度。
+
 新增组件时至少检查：
 
 - 背景、卡片、输入框不出现纯白硬编码导致的暗色穿帮。
@@ -174,7 +176,7 @@ Ant 按钮的图标与文字由 `assets/css/antd.less` 统一居中排列，默�
 
 Yuxi 的信息界面以配置卡片、列表和表格为主，默认使用轻量分层：
 
-- 普通卡片：`background: var(--gray-0); border: 1px solid var(--gray-150); border-radius: 8px;`
+- 普通卡片：`background: var(--gray-0); border: 1px solid var(--border-surface); border-radius: 8px;`
 - 次级区域：可使用 `var(--gray-10)` / `var(--gray-25)` 做轻背景。
 - 点击态列表行：hover 只改变背景或边框，不使用 `transform`。
 - 表格行内操作保持紧凑，避免每行出现多个高权重按钮。

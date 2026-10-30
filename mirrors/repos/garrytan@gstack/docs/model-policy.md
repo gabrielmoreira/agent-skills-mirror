@@ -154,6 +154,22 @@ set, because a higher effort would spend the time the gate is sized for.
 `gstack-models list` prints the effective effort and where it came from
 (`--json`: `codexEffort`). The Claude Code runner takes no effort setting.
 
+### Review effort tiers
+
+Every reviewer that can block a ship runs at `full` effort on the lane's
+model: the core checklist, each specialist, the Red Team, the native
+adversarial pass and the fix-check. `gstack-review-plan` names each
+dispatch's effort, and `host` for the outside voice (its provider and
+`codex_effort` above). Only work that cannot block runs `light`, the same
+model at a medium or low setting and never a cheaper model family: the coverage,
+plan-completion and docs audits, decision-trail reviewers and watchers
+(`AUDIT_EFFORT:` in the plan's output). A paid replay showed why reviewers stay
+at full: a medium-effort fix-check missed a fail-open in gate code that the same
+check at full effort caught. A host that cannot set a subagent's effort runs it
+at its default. `gstack-config set review_effort_tiers off` (default `on`)
+runs the audits and watchers at the host default too
+([review-policy.md](review-policy.md#review-depth)).
+
 ## Which workflows use the tiers?
 
 The plan-review role applies to autoplan's CEO, design, DX and engineering

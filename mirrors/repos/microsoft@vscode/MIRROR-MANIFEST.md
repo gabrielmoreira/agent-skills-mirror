@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `microsoft/vscode` — 26 default patterns, 0 followed patterns, 143 file(s) materialized.
+Mirror of `microsoft/vscode` — 26 default patterns, 0 followed patterns, 144 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `microsoft/vscode` — 26 default patterns, 0 followed patterns, 143 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 143 |
+| Files         | 144 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -76,77 +76,77 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 15 | ✓ | [`.github/instructions/accessibility.instructions.md`](.github/instructions/accessibility.instructions.md) |
 | 16 | ✓ | [`.github/instructions/agent-host-interoperability.instructions.md`](.github/instructions/agent-host-interoperability.instructions.md) |
 | 17 | ✓ | [`.github/instructions/agentHostTesting.instructions.md`](.github/instructions/agentHostTesting.instructions.md) |
-| 18 | ✓ | [`.github/instructions/ai-customization.instructions.md`](.github/instructions/ai-customization.instructions.md) |
-| 19 | ✓ | [`.github/instructions/automation-dialog.instructions.md`](.github/instructions/automation-dialog.instructions.md) |
-| 20 | ✓ | [`.github/instructions/best-practices.instructions.md`](.github/instructions/best-practices.instructions.md) |
-| 21 | ✓ | [`.github/instructions/buildNext.instructions.md`](.github/instructions/buildNext.instructions.md) |
-| 22 | ✓ | [`.github/instructions/chat.instructions.md`](.github/instructions/chat.instructions.md) |
-| 23 | ✓ | [`.github/instructions/coding-guidelines.instructions.md`](.github/instructions/coding-guidelines.instructions.md) |
-| 24 | ✓ | [`.github/instructions/committing.instructions.md`](.github/instructions/committing.instructions.md) |
-| 25 | ✓ | [`.github/instructions/css-best-practices.instructions.md`](.github/instructions/css-best-practices.instructions.md) |
-| 26 | ✓ | [`.github/instructions/design-philosophy.instructions.md`](.github/instructions/design-philosophy.instructions.md) |
-| 27 | ✓ | [`.github/instructions/design-tokens.instructions.md`](.github/instructions/design-tokens.instructions.md) |
-| 28 | ✓ | [`.github/instructions/disposable.instructions.md`](.github/instructions/disposable.instructions.md) |
-| 29 | ✓ | [`.github/instructions/interactive.instructions.md`](.github/instructions/interactive.instructions.md) |
-| 30 | ✓ | [`.github/instructions/kusto.instructions.md`](.github/instructions/kusto.instructions.md) |
-| 31 | ✓ | [`.github/instructions/language-model-tool-descriptions.instructions.md`](.github/instructions/language-model-tool-descriptions.instructions.md) |
-| 32 | ✓ | [`.github/instructions/learnings.instructions.md`](.github/instructions/learnings.instructions.md) |
-| 33 | ✓ | [`.github/instructions/notebook.instructions.md`](.github/instructions/notebook.instructions.md) |
-| 34 | ✓ | [`.github/instructions/observables.instructions.md`](.github/instructions/observables.instructions.md) |
-| 35 | ✓ | [`.github/instructions/oss-third-party-notices.instructions.md`](.github/instructions/oss-third-party-notices.instructions.md) |
-| 36 | ✓ | [`.github/instructions/oss.instructions.md`](.github/instructions/oss.instructions.md) |
-| 37 | ✓ | [`.github/instructions/resources/interactive/interactive.editor.drawio.svg`](.github/instructions/resources/interactive/interactive.editor.drawio.svg) |
-| 38 | ✓ | [`.github/instructions/resources/interactive/interactive.eh.drawio.svg`](.github/instructions/resources/interactive/interactive.eh.drawio.svg) |
-| 39 | ✓ | [`.github/instructions/resources/interactive/interactive.model.resolution.drawio.svg`](.github/instructions/resources/interactive/interactive.model.resolution.drawio.svg) |
-| 40 | ✓ | [`.github/instructions/resources/notebook/cell-resize-above-viewport.drawio.svg`](.github/instructions/resources/notebook/cell-resize-above-viewport.drawio.svg) |
-| 41 | ✓ | [`.github/instructions/resources/notebook/hybrid-find.drawio.svg`](.github/instructions/resources/notebook/hybrid-find.drawio.svg) |
-| 42 | ✓ | [`.github/instructions/resources/notebook/viewport-rendering.drawio.svg`](.github/instructions/resources/notebook/viewport-rendering.drawio.svg) |
-| 43 | ✓ | [`.github/instructions/sessions.instructions.md`](.github/instructions/sessions.instructions.md) |
-| 44 | ✓ | [`.github/instructions/source-code-organization.instructions.md`](.github/instructions/source-code-organization.instructions.md) |
-| 45 | ✓ | [`.github/instructions/telemetry.instructions.md`](.github/instructions/telemetry.instructions.md) |
-| 46 | ✓ | [`.github/instructions/tree-widgets.instructions.md`](.github/instructions/tree-widgets.instructions.md) |
-| 47 | ✓ | [`.github/instructions/writing-tests.instructions.md`](.github/instructions/writing-tests.instructions.md) |
-| 48 | ✓ | [`.github/skills/accessibility/SKILL.md`](.github/skills/accessibility/SKILL.md) |
-| 49 | ✓ | [`.github/skills/agent-host-chat-contributions/SKILL.md`](.github/skills/agent-host-chat-contributions/SKILL.md) |
-| 50 | ✓ | [`.github/skills/agent-host-e2e-tests/SKILL.md`](.github/skills/agent-host-e2e-tests/SKILL.md) |
-| 51 | ✓ | [`.github/skills/agent-host-logs/SKILL.md`](.github/skills/agent-host-logs/SKILL.md) |
-| 52 | ✓ | [`.github/skills/author-contributions/SKILL.md`](.github/skills/author-contributions/SKILL.md) |
-| 53 | ✓ | [`.github/skills/auto-perf-optimize/SKILL.md`](.github/skills/auto-perf-optimize/SKILL.md) |
-| 54 | ✓ | [`.github/skills/azure-pipelines/SKILL.md`](.github/skills/azure-pipelines/SKILL.md) |
-| 55 | ✓ | [`.github/skills/build-champ-triage/SKILL.md`](.github/skills/build-champ-triage/SKILL.md) |
-| 56 | ✓ | [`.github/skills/chat-customizations-editor/SKILL.md`](.github/skills/chat-customizations-editor/SKILL.md) |
-| 57 | ✓ | [`.github/skills/chat-perf/SKILL.md`](.github/skills/chat-perf/SKILL.md) |
-| 58 | ✓ | [`.github/skills/chat-pet-sprite-creation/SKILL.md`](.github/skills/chat-pet-sprite-creation/SKILL.md) |
-| 59 | ✓ | [`.github/skills/ci-artifact-testing/SKILL.md`](.github/skills/ci-artifact-testing/SKILL.md) |
-| 60 | ✓ | [`.github/skills/code-oss-logs/SKILL.md`](.github/skills/code-oss-logs/SKILL.md) |
-| 61 | ✓ | [`.github/skills/code-review/SKILL.md`](.github/skills/code-review/SKILL.md) |
-| 62 | ✓ | [`.github/skills/codenotify/SKILL.md`](.github/skills/codenotify/SKILL.md) |
-| 63 | ✓ | [`.github/skills/component-fixtures/SKILL.md`](.github/skills/component-fixtures/SKILL.md) |
-| 64 | ✓ | [`.github/skills/component/SKILL.md`](.github/skills/component/SKILL.md) |
-| 65 | ✓ | [`.github/skills/context-menus/SKILL.md`](.github/skills/context-menus/SKILL.md) |
-| 66 | ✓ | [`.github/skills/cpu-profile-analysis/SKILL.md`](.github/skills/cpu-profile-analysis/SKILL.md) |
-| 67 | ✓ | [`.github/skills/customizations-in-the-agent-host/SKILL.md`](.github/skills/customizations-in-the-agent-host/SKILL.md) |
-| 68 | ✓ | [`.github/skills/design-philosophy/SKILL.md`](.github/skills/design-philosophy/SKILL.md) |
-| 69 | ✓ | [`.github/skills/doc-comments/SKILL.md`](.github/skills/doc-comments/SKILL.md) |
-| 70 | ✓ | [`.github/skills/experiments/SKILL.md`](.github/skills/experiments/SKILL.md) |
-| 71 | ✓ | [`.github/skills/feature-tryouts/SKILL.md`](.github/skills/feature-tryouts/SKILL.md) |
-| 72 | ✓ | [`.github/skills/feedback-learning/SKILL.md`](.github/skills/feedback-learning/SKILL.md) |
-| 73 | ✓ | [`.github/skills/fix-ci-failures/SKILL.md`](.github/skills/fix-ci-failures/SKILL.md) |
-| 74 | ✓ | [`.github/skills/fixissueno/SKILL.md`](.github/skills/fixissueno/SKILL.md) |
-| 75 | ✓ | [`.github/skills/flaky-smoke-tests/SKILL.md`](.github/skills/flaky-smoke-tests/SKILL.md) |
-| 76 | ✓ | [`.github/skills/heap-snapshot-analysis/SKILL.md`](.github/skills/heap-snapshot-analysis/SKILL.md) |
-| 77 | ✓ | [`.github/skills/hover/SKILL.md`](.github/skills/hover/SKILL.md) |
-| 78 | ✓ | [`.github/skills/integrated-browser/SKILL.md`](.github/skills/integrated-browser/SKILL.md) |
-| 79 | ✓ | [`.github/skills/integration-tests/SKILL.md`](.github/skills/integration-tests/SKILL.md) |
-| 80 | ✓ | [`.github/skills/issue-grouping/SKILL.md`](.github/skills/issue-grouping/SKILL.md) |
-| 81 | ✓ | [`.github/skills/memory-leak-audit/SKILL.md`](.github/skills/memory-leak-audit/SKILL.md) |
-| 82 | ✓ | [`.github/skills/migrate-issues/SKILL.md`](.github/skills/migrate-issues/SKILL.md) |
-| 83 | ✓ | [`.github/skills/otel/SKILL.md`](.github/skills/otel/SKILL.md) |
-| 84 | ✓ | [`.github/skills/policy-and-managed-settings/extension-policy.md`](.github/skills/policy-and-managed-settings/extension-policy.md) |
-| 85 | ✓ | [`.github/skills/policy-and-managed-settings/github-managed-settings.md`](.github/skills/policy-and-managed-settings/github-managed-settings.md) |
-| 86 | ✓ | [`.github/skills/policy-and-managed-settings/legacy-permission-policy.md`](.github/skills/policy-and-managed-settings/legacy-permission-policy.md) |
-| 87 | ✓ | [`.github/skills/policy-and-managed-settings/local-testing.md`](.github/skills/policy-and-managed-settings/local-testing.md) |
-| 88 | ✓ | [`.github/skills/policy-and-managed-settings/mixed-policy.md`](.github/skills/policy-and-managed-settings/mixed-policy.md) |
+| 18 | ✓ | [`.github/instructions/agents-inbox-telemetry.instructions.md`](.github/instructions/agents-inbox-telemetry.instructions.md) |
+| 19 | ✓ | [`.github/instructions/ai-customization.instructions.md`](.github/instructions/ai-customization.instructions.md) |
+| 20 | ✓ | [`.github/instructions/automation-dialog.instructions.md`](.github/instructions/automation-dialog.instructions.md) |
+| 21 | ✓ | [`.github/instructions/best-practices.instructions.md`](.github/instructions/best-practices.instructions.md) |
+| 22 | ✓ | [`.github/instructions/buildNext.instructions.md`](.github/instructions/buildNext.instructions.md) |
+| 23 | ✓ | [`.github/instructions/chat.instructions.md`](.github/instructions/chat.instructions.md) |
+| 24 | ✓ | [`.github/instructions/coding-guidelines.instructions.md`](.github/instructions/coding-guidelines.instructions.md) |
+| 25 | ✓ | [`.github/instructions/committing.instructions.md`](.github/instructions/committing.instructions.md) |
+| 26 | ✓ | [`.github/instructions/css-best-practices.instructions.md`](.github/instructions/css-best-practices.instructions.md) |
+| 27 | ✓ | [`.github/instructions/design-philosophy.instructions.md`](.github/instructions/design-philosophy.instructions.md) |
+| 28 | ✓ | [`.github/instructions/design-tokens.instructions.md`](.github/instructions/design-tokens.instructions.md) |
+| 29 | ✓ | [`.github/instructions/disposable.instructions.md`](.github/instructions/disposable.instructions.md) |
+| 30 | ✓ | [`.github/instructions/interactive.instructions.md`](.github/instructions/interactive.instructions.md) |
+| 31 | ✓ | [`.github/instructions/kusto.instructions.md`](.github/instructions/kusto.instructions.md) |
+| 32 | ✓ | [`.github/instructions/language-model-tool-descriptions.instructions.md`](.github/instructions/language-model-tool-descriptions.instructions.md) |
+| 33 | ✓ | [`.github/instructions/learnings.instructions.md`](.github/instructions/learnings.instructions.md) |
+| 34 | ✓ | [`.github/instructions/notebook.instructions.md`](.github/instructions/notebook.instructions.md) |
+| 35 | ✓ | [`.github/instructions/observables.instructions.md`](.github/instructions/observables.instructions.md) |
+| 36 | ✓ | [`.github/instructions/oss-third-party-notices.instructions.md`](.github/instructions/oss-third-party-notices.instructions.md) |
+| 37 | ✓ | [`.github/instructions/oss.instructions.md`](.github/instructions/oss.instructions.md) |
+| 38 | ✓ | [`.github/instructions/resources/interactive/interactive.editor.drawio.svg`](.github/instructions/resources/interactive/interactive.editor.drawio.svg) |
+| 39 | ✓ | [`.github/instructions/resources/interactive/interactive.eh.drawio.svg`](.github/instructions/resources/interactive/interactive.eh.drawio.svg) |
+| 40 | ✓ | [`.github/instructions/resources/interactive/interactive.model.resolution.drawio.svg`](.github/instructions/resources/interactive/interactive.model.resolution.drawio.svg) |
+| 41 | ✓ | [`.github/instructions/resources/notebook/cell-resize-above-viewport.drawio.svg`](.github/instructions/resources/notebook/cell-resize-above-viewport.drawio.svg) |
+| 42 | ✓ | [`.github/instructions/resources/notebook/hybrid-find.drawio.svg`](.github/instructions/resources/notebook/hybrid-find.drawio.svg) |
+| 43 | ✓ | [`.github/instructions/resources/notebook/viewport-rendering.drawio.svg`](.github/instructions/resources/notebook/viewport-rendering.drawio.svg) |
+| 44 | ✓ | [`.github/instructions/sessions.instructions.md`](.github/instructions/sessions.instructions.md) |
+| 45 | ✓ | [`.github/instructions/source-code-organization.instructions.md`](.github/instructions/source-code-organization.instructions.md) |
+| 46 | ✓ | [`.github/instructions/telemetry.instructions.md`](.github/instructions/telemetry.instructions.md) |
+| 47 | ✓ | [`.github/instructions/tree-widgets.instructions.md`](.github/instructions/tree-widgets.instructions.md) |
+| 48 | ✓ | [`.github/instructions/writing-tests.instructions.md`](.github/instructions/writing-tests.instructions.md) |
+| 49 | ✓ | [`.github/skills/accessibility/SKILL.md`](.github/skills/accessibility/SKILL.md) |
+| 50 | ✓ | [`.github/skills/agent-host-chat-contributions/SKILL.md`](.github/skills/agent-host-chat-contributions/SKILL.md) |
+| 51 | ✓ | [`.github/skills/agent-host-e2e-tests/SKILL.md`](.github/skills/agent-host-e2e-tests/SKILL.md) |
+| 52 | ✓ | [`.github/skills/agent-host-logs/SKILL.md`](.github/skills/agent-host-logs/SKILL.md) |
+| 53 | ✓ | [`.github/skills/author-contributions/SKILL.md`](.github/skills/author-contributions/SKILL.md) |
+| 54 | ✓ | [`.github/skills/auto-perf-optimize/SKILL.md`](.github/skills/auto-perf-optimize/SKILL.md) |
+| 55 | ✓ | [`.github/skills/azure-pipelines/SKILL.md`](.github/skills/azure-pipelines/SKILL.md) |
+| 56 | ✓ | [`.github/skills/build-champ-triage/SKILL.md`](.github/skills/build-champ-triage/SKILL.md) |
+| 57 | ✓ | [`.github/skills/chat-customizations-editor/SKILL.md`](.github/skills/chat-customizations-editor/SKILL.md) |
+| 58 | ✓ | [`.github/skills/chat-perf/SKILL.md`](.github/skills/chat-perf/SKILL.md) |
+| 59 | ✓ | [`.github/skills/chat-pet-sprite-creation/SKILL.md`](.github/skills/chat-pet-sprite-creation/SKILL.md) |
+| 60 | ✓ | [`.github/skills/ci-artifact-testing/SKILL.md`](.github/skills/ci-artifact-testing/SKILL.md) |
+| 61 | ✓ | [`.github/skills/code-oss-logs/SKILL.md`](.github/skills/code-oss-logs/SKILL.md) |
+| 62 | ✓ | [`.github/skills/code-review/SKILL.md`](.github/skills/code-review/SKILL.md) |
+| 63 | ✓ | [`.github/skills/codenotify/SKILL.md`](.github/skills/codenotify/SKILL.md) |
+| 64 | ✓ | [`.github/skills/component-fixtures/SKILL.md`](.github/skills/component-fixtures/SKILL.md) |
+| 65 | ✓ | [`.github/skills/component/SKILL.md`](.github/skills/component/SKILL.md) |
+| 66 | ✓ | [`.github/skills/context-menus/SKILL.md`](.github/skills/context-menus/SKILL.md) |
+| 67 | ✓ | [`.github/skills/cpu-profile-analysis/SKILL.md`](.github/skills/cpu-profile-analysis/SKILL.md) |
+| 68 | ✓ | [`.github/skills/customizations-in-the-agent-host/SKILL.md`](.github/skills/customizations-in-the-agent-host/SKILL.md) |
+| 69 | ✓ | [`.github/skills/design-philosophy/SKILL.md`](.github/skills/design-philosophy/SKILL.md) |
+| 70 | ✓ | [`.github/skills/doc-comments/SKILL.md`](.github/skills/doc-comments/SKILL.md) |
+| 71 | ✓ | [`.github/skills/experiments/SKILL.md`](.github/skills/experiments/SKILL.md) |
+| 72 | ✓ | [`.github/skills/feature-tryouts/SKILL.md`](.github/skills/feature-tryouts/SKILL.md) |
+| 73 | ✓ | [`.github/skills/feedback-learning/SKILL.md`](.github/skills/feedback-learning/SKILL.md) |
+| 74 | ✓ | [`.github/skills/fix-ci-failures/SKILL.md`](.github/skills/fix-ci-failures/SKILL.md) |
+| 75 | ✓ | [`.github/skills/fixissueno/SKILL.md`](.github/skills/fixissueno/SKILL.md) |
+| 76 | ✓ | [`.github/skills/flaky-smoke-tests/SKILL.md`](.github/skills/flaky-smoke-tests/SKILL.md) |
+| 77 | ✓ | [`.github/skills/heap-snapshot-analysis/SKILL.md`](.github/skills/heap-snapshot-analysis/SKILL.md) |
+| 78 | ✓ | [`.github/skills/hover/SKILL.md`](.github/skills/hover/SKILL.md) |
+| 79 | ✓ | [`.github/skills/integrated-browser/SKILL.md`](.github/skills/integrated-browser/SKILL.md) |
+| 80 | ✓ | [`.github/skills/integration-tests/SKILL.md`](.github/skills/integration-tests/SKILL.md) |
+| 81 | ✓ | [`.github/skills/issue-grouping/SKILL.md`](.github/skills/issue-grouping/SKILL.md) |
+| 82 | ✓ | [`.github/skills/memory-leak-audit/SKILL.md`](.github/skills/memory-leak-audit/SKILL.md) |
+| 83 | ✓ | [`.github/skills/migrate-issues/SKILL.md`](.github/skills/migrate-issues/SKILL.md) |
+| 84 | ✓ | [`.github/skills/otel/SKILL.md`](.github/skills/otel/SKILL.md) |
+| 85 | ✓ | [`.github/skills/policy-and-managed-settings/extension-policy.md`](.github/skills/policy-and-managed-settings/extension-policy.md) |
+| 86 | ✓ | [`.github/skills/policy-and-managed-settings/github-managed-settings.md`](.github/skills/policy-and-managed-settings/github-managed-settings.md) |
+| 87 | ✓ | [`.github/skills/policy-and-managed-settings/legacy-permission-policy.md`](.github/skills/policy-and-managed-settings/legacy-permission-policy.md) |
+| 88 | ✓ | [`.github/skills/policy-and-managed-settings/local-testing.md`](.github/skills/policy-and-managed-settings/local-testing.md) |
 | 89 | ✓ | [`.github/skills/policy-and-managed-settings/policy-support-maintenance.md`](.github/skills/policy-and-managed-settings/policy-support-maintenance.md) |
 | 90 | ✓ | [`.github/skills/policy-and-managed-settings/sdk-runtime-policy.md`](.github/skills/policy-and-managed-settings/sdk-runtime-policy.md) |
 | 91 | ✓ | [`.github/skills/policy-and-managed-settings/SKILL.md`](.github/skills/policy-and-managed-settings/SKILL.md) |
@@ -179,29 +179,30 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 118 | ✓ | [`extensions/copilot/assets/prompts/skills/create-skill/SKILL.md`](extensions/copilot/assets/prompts/skills/create-skill/SKILL.md) |
 | 119 | ✓ | [`extensions/copilot/assets/prompts/skills/init/SKILL.md`](extensions/copilot/assets/prompts/skills/init/SKILL.md) |
 | 120 | ✓ | [`extensions/copilot/assets/prompts/skills/migrate-customizations/SKILL.md`](extensions/copilot/assets/prompts/skills/migrate-customizations/SKILL.md) |
-| 121 | ✓ | [`extensions/copilot/assets/prompts/skills/troubleshoot/SKILL.md`](extensions/copilot/assets/prompts/skills/troubleshoot/SKILL.md) |
-| 122 | ✓ | [`extensions/copilot/src/extension/chatSessions/copilotcli/AGENTS.md`](extensions/copilot/src/extension/chatSessions/copilotcli/AGENTS.md) |
-| 123 | ✓ | [`extensions/copilot/src/platform/authentication/common/AGENTS.md`](extensions/copilot/src/platform/authentication/common/AGENTS.md) |
-| 124 | ✓ | [`src/vs/platform/agentHost/AGENTS.md`](src/vs/platform/agentHost/AGENTS.md) |
-| 125 | ✓ | [`src/vs/platform/agentHost/common/state/AGENTS.md`](src/vs/platform/agentHost/common/state/AGENTS.md) |
-| 126 | ✓ | [`src/vs/platform/agentHost/node/copilot/prompts/AGENTS.md`](src/vs/platform/agentHost/node/copilot/prompts/AGENTS.md) |
-| 127 | ✓ | [`src/vs/platform/agentHost/PERFORMANCE.md`](src/vs/platform/agentHost/PERFORMANCE.md) |
-| 128 | ✓ | [`src/vs/platform/agentHost/test/node/AGENTS.md`](src/vs/platform/agentHost/test/node/AGENTS.md) |
-| 129 | ✓ | [`src/vs/sessions/skills/act-on-feedback/SKILL.md`](src/vs/sessions/skills/act-on-feedback/SKILL.md) |
-| 130 | ✓ | [`src/vs/sessions/skills/code-review/SKILL.md`](src/vs/sessions/skills/code-review/SKILL.md) |
-| 131 | ✓ | [`src/vs/sessions/skills/commit/SKILL.md`](src/vs/sessions/skills/commit/SKILL.md) |
-| 132 | ✓ | [`src/vs/sessions/skills/create-draft-pr/SKILL.md`](src/vs/sessions/skills/create-draft-pr/SKILL.md) |
-| 133 | ✓ | [`src/vs/sessions/skills/create-pr/SKILL.md`](src/vs/sessions/skills/create-pr/SKILL.md) |
-| 134 | ✓ | [`src/vs/sessions/skills/fix-ci/SKILL.md`](src/vs/sessions/skills/fix-ci/SKILL.md) |
-| 135 | ✓ | [`src/vs/sessions/skills/generate-chat-background/SKILL.md`](src/vs/sessions/skills/generate-chat-background/SKILL.md) |
-| 136 | ✓ | [`src/vs/sessions/skills/generate-run-commands/SKILL.md`](src/vs/sessions/skills/generate-run-commands/SKILL.md) |
-| 137 | ✓ | [`src/vs/sessions/skills/merge/SKILL.md`](src/vs/sessions/skills/merge/SKILL.md) |
-| 138 | ✓ | [`src/vs/sessions/skills/sync-upstream/SKILL.md`](src/vs/sessions/skills/sync-upstream/SKILL.md) |
-| 139 | ✓ | [`src/vs/sessions/skills/sync/SKILL.md`](src/vs/sessions/skills/sync/SKILL.md) |
-| 140 | ✓ | [`src/vs/sessions/skills/troubleshoot/SKILL.md`](src/vs/sessions/skills/troubleshoot/SKILL.md) |
-| 141 | ✓ | [`src/vs/sessions/skills/update-pr/SKILL.md`](src/vs/sessions/skills/update-pr/SKILL.md) |
-| 142 | ✓ | [`src/vs/sessions/skills/update-skills/SKILL.md`](src/vs/sessions/skills/update-skills/SKILL.md) |
-| 143 | ✓ | [`src/vs/workbench/contrib/imageCarousel/AGENTS.md`](src/vs/workbench/contrib/imageCarousel/AGENTS.md) |
+| 121 | ✓ | [`extensions/copilot/assets/prompts/skills/record-video/SKILL.md`](extensions/copilot/assets/prompts/skills/record-video/SKILL.md) |
+| 122 | ✓ | [`extensions/copilot/assets/prompts/skills/troubleshoot/SKILL.md`](extensions/copilot/assets/prompts/skills/troubleshoot/SKILL.md) |
+| 123 | ✓ | [`extensions/copilot/src/extension/chatSessions/copilotcli/AGENTS.md`](extensions/copilot/src/extension/chatSessions/copilotcli/AGENTS.md) |
+| 124 | ✓ | [`extensions/copilot/src/platform/authentication/common/AGENTS.md`](extensions/copilot/src/platform/authentication/common/AGENTS.md) |
+| 125 | ✓ | [`src/vs/platform/agentHost/AGENTS.md`](src/vs/platform/agentHost/AGENTS.md) |
+| 126 | ✓ | [`src/vs/platform/agentHost/common/state/AGENTS.md`](src/vs/platform/agentHost/common/state/AGENTS.md) |
+| 127 | ✓ | [`src/vs/platform/agentHost/node/copilot/prompts/AGENTS.md`](src/vs/platform/agentHost/node/copilot/prompts/AGENTS.md) |
+| 128 | ✓ | [`src/vs/platform/agentHost/PERFORMANCE.md`](src/vs/platform/agentHost/PERFORMANCE.md) |
+| 129 | ✓ | [`src/vs/platform/agentHost/test/node/AGENTS.md`](src/vs/platform/agentHost/test/node/AGENTS.md) |
+| 130 | ✓ | [`src/vs/sessions/skills/act-on-feedback/SKILL.md`](src/vs/sessions/skills/act-on-feedback/SKILL.md) |
+| 131 | ✓ | [`src/vs/sessions/skills/code-review/SKILL.md`](src/vs/sessions/skills/code-review/SKILL.md) |
+| 132 | ✓ | [`src/vs/sessions/skills/commit/SKILL.md`](src/vs/sessions/skills/commit/SKILL.md) |
+| 133 | ✓ | [`src/vs/sessions/skills/create-draft-pr/SKILL.md`](src/vs/sessions/skills/create-draft-pr/SKILL.md) |
+| 134 | ✓ | [`src/vs/sessions/skills/create-pr/SKILL.md`](src/vs/sessions/skills/create-pr/SKILL.md) |
+| 135 | ✓ | [`src/vs/sessions/skills/fix-ci/SKILL.md`](src/vs/sessions/skills/fix-ci/SKILL.md) |
+| 136 | ✓ | [`src/vs/sessions/skills/generate-chat-background/SKILL.md`](src/vs/sessions/skills/generate-chat-background/SKILL.md) |
+| 137 | ✓ | [`src/vs/sessions/skills/generate-run-commands/SKILL.md`](src/vs/sessions/skills/generate-run-commands/SKILL.md) |
+| 138 | ✓ | [`src/vs/sessions/skills/merge/SKILL.md`](src/vs/sessions/skills/merge/SKILL.md) |
+| 139 | ✓ | [`src/vs/sessions/skills/sync-upstream/SKILL.md`](src/vs/sessions/skills/sync-upstream/SKILL.md) |
+| 140 | ✓ | [`src/vs/sessions/skills/sync/SKILL.md`](src/vs/sessions/skills/sync/SKILL.md) |
+| 141 | ✓ | [`src/vs/sessions/skills/troubleshoot/SKILL.md`](src/vs/sessions/skills/troubleshoot/SKILL.md) |
+| 142 | ✓ | [`src/vs/sessions/skills/update-pr/SKILL.md`](src/vs/sessions/skills/update-pr/SKILL.md) |
+| 143 | ✓ | [`src/vs/sessions/skills/update-skills/SKILL.md`](src/vs/sessions/skills/update-skills/SKILL.md) |
+| 144 | ✓ | [`src/vs/workbench/contrib/imageCarousel/AGENTS.md`](src/vs/workbench/contrib/imageCarousel/AGENTS.md) |
 
 ---
 

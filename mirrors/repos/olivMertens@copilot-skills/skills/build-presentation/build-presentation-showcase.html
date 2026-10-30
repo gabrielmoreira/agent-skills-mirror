@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Build Presentation Skill — Icon Systems & Design Guide</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --navy: #203859;
+            --teal: #61c1b6;
+            --amber: #d97b1a;
+            --white: #fafaf8;
+            --muted: #8a8a8a;
+            --paper: #f4f0e8;
+        }
+
+        html[data-theme="dark"] {
+            --white: #1a1a18;
+            --paper: #2a2a28;
+            --muted: #7a7a7a;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--paper);
+            color: var(--navy);
+            line-height: 1.5;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--paper);
+        }
+
+        .slide {
+            width: 100%;
+            height: 100%;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 4rem;
+            text-align: center;
+            background: linear-gradient(135deg, var(--paper) 0%, var(--white) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slide.active {
+            display: flex;
+        }
+
+        .slide-title {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--navy);
+        }
+
+        .slide-subtitle {
+            font-size: 1.5rem;
+            color: var(--muted);
+            margin-bottom: 2rem;
+            max-width: 90cqw;
+        }
+
+        .slide-content {
+            font-size: 1.25rem;
+            max-width: 90cqw;
+            margin: 1rem auto;
+            line-height: 1.8;
+        }
+
+        .slide-content p {
+            margin: 1rem 0;
+        }
+
+        .icon-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 2rem;
+            margin: 2rem auto;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .icon-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .icon {
+            width: 48px;
+            height: 48px;
+            stroke: var(--navy);
+            stroke-width: 1.7;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            fill: none;
+        }
+
+        .icon-label {
+            font-size: 0.9rem;
+            color: var(--muted);
+            font-weight: 500;
+        }
+
+        .slide-accent {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: var(--teal);
+            opacity: 0.1;
+            pointer-events: none;
+        }
+
+        .nav-dots {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 1rem;
+            z-index: 100;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--muted);
+            opacity: 0.5;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .dot.active {
+            background: var(--navy);
+            opacity: 1;
+            width: 24px;
+            border-radius: 6px;
+        }
+
+        .keyboard-hint {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            font-size: 0.9rem;
+            color: var(--muted);
+            pointer-events: none;
+        }
+
+        @media (max-width: 768px) {
+            .slide {
+                padding: 2rem;
+            }
+            .slide-title {
+                font-size: 1.8rem;
+            }
+            .slide-subtitle {
+                font-size: 1rem;
+            }
+            .icon-grid {
+                grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="keyboard-hint">← → or Space to navigate</div>
+
+    <div class="slide-container">
+        <!-- Slide 1: Title -->
+        <section class="slide active">
+            <div class="slide-accent"></div>
+            <h1 class="slide-title">Build Presentation</h1>
+            <p class="slide-subtitle">Create brand-aware HTML and PowerPoint presentations with icon systems, design coherence, and professional typography</p>
+            <p style="margin-top: 2rem; font-size: 1.1rem; color: var(--muted);">A comprehensive skill for Copilot Studio</p>
+        </section>
+
+        <!-- Slide 2: Overview -->
+        <section class="slide">
+            <div class="slide-accent"></div>
+            <h2 class="slide-title">What's Included</h2>
+            <div class="slide-content">
+                <p>✓ Complete design system with semantic tokens</p>
+                <p>✓ Standalone HTML starter template (16:9, offline-first)</p>
+                <p>✓ HTML-to-PowerPoint conversion guide</p>
+                <p>✓ Three icon systems: Lucide, Vendor Icons, Brand Marks</p>
+                <p>✓ Responsive typography and layout patterns</p>
+                <p>✓ Accessibility guidelines (WCAG 2.1 AA)</p>
+            </div>
+        </section>
+
+        <!-- Slide 3: Lucide Icons -->
+        <section class="slide">
+            <div class="slide-accent"></div>
+            <h2 class="slide-title">Lucide Icons</h2>
+            <div class="slide-content">
+                <p><strong>5000+ free outline icons • ISC License • No CDN required</strong></p>
+                <p style="margin-top: 1rem; font-size: 1rem;">Embedded inline, offline-first, perfect for concepts & workflows</p>
+            </div>
+            <div class="icon-grid">
+                <div class="icon-item">
+                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                        <ellipse cx="12" cy="5" rx="9" ry="3"/>
+                        <path d="M3 5v14a9 3 0 0 0 18 0V5"/>
+                    </svg>
+                    <span class="icon-label">Database</span>
+                </div>
+                <div class="icon-item">
+                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        <path d="m9 12 2 2 4-4"/>
+                    </svg>
+                    <span class="icon-label">ShieldCheck</span>
+                </div>
+                <div class="icon-item">
+                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                    </svg>
+                    <span class="icon-label">Zap</span>
+                </div>
+                <div class="icon-item">
+                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                    </svg>
+                    <span class="icon-label">MessageSquare</span>
+                </div>
+                <div class="icon-item">
+                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                        <polyline points="23 6 13.5 15.5 8.5 10.5 1 17"/>
+                        <polyline points="17 6 23 6 23 12"/>
+                    </svg>
+                    <span class="icon-label">TrendingUp</span>
+                </div>
+                <div class="icon-item">
+                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                        <circle cx="12" cy="12" r="10"/>
+                        <polyline points="12 6 12 12 16 14"/>
+                    </svg>
+                    <span class="icon-label">History</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 4: Vendor Icons -->
+        <section class="slide">
+            <div class="slide-accent"></div>
+            <h2 class="slide-title">Vendor & Product Icons</h2>
+            <div class="slide-content">
+                <p><strong>Official Microsoft Azure Icons</strong></p>
+                <p>Find at: learn.microsoft.com/en-us/azure/architecture/icons</p>
+                <p style="margin-top: 1.5rem;"><strong>Google Cloud, AWS, Apple Icons</strong></p>
+                <p>Official sources: cloud.google.com • aws.amazon.com • apple.com</p>
+                <p style="margin-top: 1.5rem; font-size: 1rem; color: var(--muted);">Mix generic concepts with brand-specific product icons for authority</p>
+            </div>
+        </section>
+
+        <!-- Slide 5: Design System -->
+        <section class="slide">
+            <div class="slide-accent"></div>
+            <h2 class="slide-title">Design System</h2>
+            <div class="slide-content">
+                <p><strong>Semantic Color Tokens</strong></p>
+                <p>Navy (#203859), Teal (#61c1b6), Amber (#d97b1a)</p>
+                <p style="margin-top: 1.5rem;"><strong>Typography Scale</strong></p>
+                <p>Hero (18–30px), Body (14–16px), Caption (12px)</p>
+                <p style="margin-top: 1.5rem;"><strong>Radius & Spacing</strong></p>
+                <p>4px, 6px, 8px, 10px, 12px | 16px base unit grid</p>
+            </div>
+        </section>
+
+        <!-- Slide 6: Key Features -->
+        <section class="slide">
+            <div class="slide-accent"></div>
+            <h2 class="slide-title">Key Features</h2>
+            <div class="slide-content">
+                <p>🎨 <strong>Offline-first:</strong> All assets embedded locally</p>
+                <p>📱 <strong>Responsive:</strong> Container queries, 16:9 slides</p>
+                <p>🌓 <strong>Dark mode:</strong> Automatic theme detection</p>
+                <p>♿ <strong>Accessible:</strong> WCAG 2.1 AA compliant</p>
+                <p>🔄 <strong>Editable:</strong> HTML or PowerPoint source</p>
+            </div>
+        </section>
+
+        <!-- Slide 7: Getting Started -->
+        <section class="slide">
+            <div class="slide-accent"></div>
+            <h2 class="slide-title">Getting Started</h2>
+            <div class="slide-content">
+                <p style="font-size: 1.1rem; margin: 1rem 0;"><strong>In Copilot Studio:</strong></p>
+                <p>Use the trigger: <code style="background: var(--paper); padding: 0.25rem 0.5rem; border-radius: 4px;">"create a presentation"</code></p>
+                <p style="font-size: 1rem; margin-top: 1rem;">The skill will guide you through:
+                    <br/>1. Design identity (brand or neutral)
+                    <br/>2. Slide creation with semantic markup
+                    <br/>3. Icon selection and placement
+                    <br/>4. Output as HTML or PowerPoint
+                </p>
+            </div>
+        </section>
+
+        <!-- Slide 8: Icon Reference -->
+        <section class="slide">
+            <div class="slide-accent"></div>
+            <h2 class="slide-title">Icon Reference Guide</h2>
+            <div class="slide-content">
+                <p><strong>30+ Common Icons by Concept</strong></p>
+                <p>📊 Data/Storage (Database, Server)</p>
+                <p>⚙️ Process & Workflows (Workflow, Cog)</p>
+                <p>💬 Communication (MessageSquare, MessageCircle)</p>
+                <p>🔒 Security (ShieldCheck, KeyRound)</p>
+                <p>🔍 Discovery (FileSearch, Search)</p>
+                <p style="margin-top: 1.5rem; font-size: 1rem;">Full reference: <code style="background: var(--paper); padding: 0.25rem 0.5rem; border-radius: 4px;">lucide-icons-reference.md</code></p>
+            </div>
+        </section>
+
+        <!-- Slide 9: References -->
+        <section class="slide">
+            <div class="slide-accent"></div>
+            <h2 class="slide-title">Complete Documentation</h2>
+            <div class="slide-content">
+                <p>📖 <strong>Workflow Guide</strong> — Step-by-step presentation creation</p>
+                <p>🎨 <strong>Design System</strong> — Colors, typography, spacing, accessibility</p>
+                <p>🔀 <strong>HTML-to-PowerPoint</strong> — Conversion best practices</p>
+                <p>🎯 <strong>Lucide Icons</strong> — 30+ copy-ready icons organized by concept</p>
+                <p style="margin-top: 2rem; font-size: 1.1rem;">All in: <code style="background: var(--paper); padding: 0.25rem 0.5rem; border-radius: 4px;">references/</code></p>
+            </div>
+        </section>
+    </div>
+
+    <div class="nav-dots" id="navDots"></div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const navDots = document.getElementById('navDots');
+
+        // Create navigation dots
+        slides.forEach((_, index) => {
+            const dot = document.createElement('div');
+            dot.className = 'dot' + (index === 0 ? ' active' : '');
+            dot.addEventListener('click', () => goToSlide(index));
+            navDots.appendChild(dot);
+        });
+
+        function updateSlide() {
+            slides.forEach((s, i) => s.classList.toggle('active', i === currentSlide));
+            document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === currentSlide));
+        }
+
+        function goToSlide(n) {
+            currentSlide = (n + slides.length) % slides.length;
+            updateSlide();
+        }
+
+        function nextSlide() {
+            goToSlide(currentSlide + 1);
+        }
+
+        function prevSlide() {
+            goToSlide(currentSlide - 1);
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') nextSlide();
+            if (e.key === 'ArrowLeft') prevSlide();
+        });
+
+        // Check for dark theme preference
+        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.setAttribute('data-theme', 'dark');
+        }
+
+        // Detect theme changes
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+        });
+    </script>
+</body>
+</html>

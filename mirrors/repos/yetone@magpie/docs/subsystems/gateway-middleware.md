@@ -1,6 +1,6 @@
 # Gateway middleware
 
-A plugin can be a JS gateway plugin: JavaScript that magpie runs inside its gateway on the requests agents send and the replies they get back (middleware), on the order a pool's accounts or keys are tried in (`strategies`), and on each usage row (`onUsage`), whatever provider serves them. It is separate from the provider plugins in [Provider and plugin ownership](provider-plugins.md), which run on Bun in the plugin host. Middleware runs in the gateway's own process on [moejs](https://github.com/Calcium-Ion/moejs), a JavaScript engine written in Go, because it sits on every request and every streamed event.
+A plugin can be a JS gateway plugin: JavaScript that magpie runs inside its gateway on the requests agents send and the replies they get back (middleware), on the order a pool's accounts or keys are tried in (`strategies`), and on each usage row (`onUsage`), whatever provider serves them. It is separate from the provider plugins in [Provider and plugin ownership](provider-plugins.md), which run on Bun in the plugin host. Middleware runs in the gateway's own process on [moejs](https://github.com/MoeForge/moejs), a JavaScript engine written in Go, because it sits on every request and every streamed event.
 
 ## Responsibilities and sources of truth
 

@@ -18,6 +18,11 @@
    goes in a call of its own): run its `route` with `omh_delegate_route` (`set`, or `fallback`), then one
    `delegate_task` with its `tasks` unchanged. The goal ends with `[dag:<run>/<node>]`; that marker is how
    OMH ties the child to its node. A node after a repaired one is told to read the repair's handoff files.
+   When Hermes (0.22.5+) runs a delegation backend other than `default`, the route names that `backend`
+   instead and no route tool runs. Under `model_map` each task carries the user's `option` for its category
+   (a retry takes the category's next option; a category no option matches carries none and runs on the
+   backend's default). Under `profile_routes` OMH picks no profile: the tasks go as they are. Views name the
+   option Hermes reports the child ran on, and a lane keeps its category only when that is the option handed out.
 3. `calls` never exceeds the free background slots (`slots.free`): a call past them would run blocking.
    In a one-shot session, `calls` also never carries more tasks than the remaining one-shot budget;
    nodes past it are listed in `held_for_slots`, and `slots.oneshot` shows the limit, the spent count

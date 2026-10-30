@@ -103,6 +103,8 @@ Add、edit、remove、import では、**Save and sync** または **Save only** 
 クライアント ID は `claude`、`codex`、`cursor`、`vscode`、`opencode`、`kilocode`、
 `grok`、`antigravity`、`amp`、`claude-desktop`、`cline`、`copilot`、`factory`、`gemini`、
 `goose`、`junie`、`kiro`、`lmstudio`、`warp`、`windsurf`、`pi`、`omp` です。
+`--target` と `--from` は、他のコマンドが Antigravity CLI に使う名前 `agy` と `antigravity-cli` も
+`antigravity` として受け付けます。source には `antigravity` が保存されます。
 `grok` は公式の xAI Grok CLI を意味します。サーバー名には文字、
 数字、ドット、アンダースコア、ハイフンを使用します。サーバーは同期前に、直接または
 `mcp.targets` 経由で少なくとも 1 つのクライアントを選択する必要があります。ただし、サーバー自身の

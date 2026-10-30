@@ -414,4 +414,136 @@ describe("wrapServerWithTelemetry", () => {
       expect(message).not.toContain("body=");
     });
   });
+
+  /*
+   * `auth` 的环境准备结果上报（2026-10-27 补）。
+   * 背景：`env_setup_status` / `env_setup_failure.reason` 只回给模型、没进埋点，
+   * 于是「卡在购买页 / 实名 / CAM 授权」三种情况在数据里长得一模一样。
+   */
+  describe("auth 环境准备结果上报", () => {
+    function makeServer(handler: (args: any) => Promise<any>) {
+      let wrappedHandler: ((args: any) => Promise<any>) | undefined;
+      const server = {
+        registerTool: vi.fn((_name: string, _meta: any, h: (args: any) => Promise<any>) => {
+          wrappedHandler = h;
+          return undefined;
+        }),
+        logger: vi.fn(),
+        cloudBaseOptions: undefined,
+        ide: "Cursor",
+        client: "cursor",
+      } as any;
+      wrapServerWithTelemetry(server);
+      server.registerTool("auth", {}, handler);
+      return () => wrappedHandler;
+    }
+
+    it("ACTION_REQUIRED + 建环境失败 + 需实名 → 两个字段都带上", async () => {
+      await withTelemetryEnabled(async () => {
+        const getHandler = makeServer(async () => ({
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify({
+                current_env_id: null,
+                env_status: "NONE",
+                env_setup_status: "ACTION_REQUIRED",
+                env_setup_failure: {
+                  reason: "env_creation_failed",
+                  error_code: "ENV_CREATION_FAILED",
+                  message: "需要先完成实名认证",
+                  need_real_name_auth: true,
+                },
+              }),
+            },
+          ],
+        }));
+
+        await getHandler()?.({ action: "status" });
+
+        expect(vi.mocked(reportToolCall)).toHaveBeenLastCalledWith(
+          expect.objectContaining({
+            toolName: "auth",
+            envSetupStatus: "ACTION_REQUIRED",
+            envSetupFailReason: "env_creation_failed+realname",
+          }),
+        );
+      });
+    });
+
+    it("两个 gate 同时命中时后缀靠 + 串起来，顺序稳定", async () => {
+      await withTelemetryEnabled(async () => {
+        const getHandler = makeServer(async () => ({
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify({
+                env_setup_status: "ACTION_REQUIRED",
+                env_setup_failure: {
+                  reason: "tcb_init_failed",
+                  need_real_name_auth: true,
+                  need_cam_auth: true,
+                },
+              }),
+            },
+          ],
+        }));
+
+        await getHandler()?.({ action: "status" });
+
+        expect(vi.mocked(reportToolCall)).toHaveBeenLastCalledWith(
+          expect.objectContaining({ envSetupFailReason: "tcb_init_failed+realname+cam" }),
+        );
+      });
+    });
+
+    it("正常有环境（NOT_NEEDED）时只带 status，不臆造 reason", async () => {
+      await withTelemetryEnabled(async () => {
+        const getHandler = makeServer(async () => ({
+          content: [{ type: "text", text: JSON.stringify({ env_setup_status: "NOT_NEEDED" }) }],
+        }));
+
+        await getHandler()?.({ action: "status" });
+
+        const call = vi.mocked(reportToolCall).mock.calls.at(-1)?.[0] as any;
+        expect(call.envSetupStatus).toBe("NOT_NEEDED");
+        expect(call.envSetupFailReason).toBeUndefined();
+      });
+    });
+
+    it("非 auth 工具即使返回体里有同名字段也不带（避免误读别的工具的 payload）", async () => {
+      await withTelemetryEnabled(async () => {
+        let wrappedHandler: ((args: any) => Promise<any>) | undefined;
+        const server = {
+          registerTool: vi.fn((_name: string, _meta: any, h: (args: any) => Promise<any>) => {
+            wrappedHandler = h;
+            return undefined;
+          }),
+          logger: vi.fn(),
+          cloudBaseOptions: undefined,
+        } as any;
+        wrapServerWithTelemetry(server);
+        server.registerTool("queryEnv", {}, async () => ({
+          content: [{ type: "text", text: JSON.stringify({ env_setup_status: "NOT_NEEDED" }) }],
+        }));
+
+        await wrappedHandler?.({});
+
+        const call = vi.mocked(reportToolCall).mock.calls.at(-1)?.[0] as any;
+        expect(call.envSetupStatus).toBeUndefined();
+      });
+    });
+
+    it("返回体不是 JSON 时不上报、也不抛（不能因为解析失败影响工具返回）", async () => {
+      await withTelemetryEnabled(async () => {
+        const getHandler = makeServer(async () => ({
+          content: [{ type: "text", text: "已登录。当前环境：env-abc" }],
+        }));
+
+        await expect(getHandler()?.({ action: "status" })).resolves.toBeTruthy();
+        const call = vi.mocked(reportToolCall).mock.calls.at(-1)?.[0] as any;
+        expect(call.envSetupStatus).toBeUndefined();
+      });
+    });
+  });
 });

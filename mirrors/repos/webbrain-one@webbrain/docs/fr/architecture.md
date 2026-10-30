@@ -337,7 +337,7 @@ Le principal chemin d'interaction avec la page. Produit un arbre textuel indent�
 
 Enveloppe l'API `chrome.debugger` pour :
 - **Événements de confiance** — `Input.dispatchMouseEvent`, `Input.dispatchKeyEvent` (event.isTrusted === true)
-- **Captures d'écran** — `Page.captureScreenshot` avec contrôle de recadrage/échelle
+- **Captures d'écran** — `Page.captureScreenshot` de la surface de l'onglet telle qu'elle est à l'écran, recadrée et mise à l'échelle localement (un recadrage CDP redimensionnerait l'onglet visible pendant la capture) ; les tuiles pleine page gardent leur recadrage
 - **Requêtes DOM** — `Runtime.evaluate` pour la percée du shadow DOM, `DOM.getDocument` pour les racines fermées
 
 Sans CDP (Firefox), tous les événements sont synthétiques (`el.click()`, `new KeyboardEvent()`).

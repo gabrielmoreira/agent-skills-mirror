@@ -40,6 +40,7 @@ import {
   TCB_QUERY_REGIONS,
 } from "../utils/site-map.js";
 import { readProjectEnvId, writeProjectConfig } from "../utils/project-config.js";
+import { buildDescribeEnvsFilter } from "../utils/describe-envs-query.js";
 import { normalizeLang, t, type Lang } from "../i18n/index.js";
 import {
   buildAuthNextStep,
@@ -65,6 +66,7 @@ import {
 import type { EnvCreditsPayload, EnvMetricsPayload } from "../resources/env-credits.js";
 import type { CreateEnvParams } from "@cloudbase/manager-node/types/interfaces/tcb.interface.js";
 import { isMcpUiEnabled, mcpUiMeta } from "../utils/mcp-ui.js";
+import { TCB_PURCHASE_URL } from "./env-setup.js";
 
 /**
  * Resources accepted by CreateEnv. Matches Cloud API / Manager SDK contract.
@@ -1075,7 +1077,7 @@ async function prepareAuthEnvironment(params: {
           reason: "tcb_init_failed",
           errorCode: "TCB_INIT_FAILED",
           message: t("env.prepare.tcbInitFailed"),
-          helpUrl: "https://buy.cloud.tencent.com/lowcode?buyType=tcb&channel=mcp",
+          helpUrl: TCB_PURCHASE_URL,
         });
 
     return {
@@ -1133,7 +1135,7 @@ async function prepareAuthEnvironment(params: {
         reason: "env_creation_failed",
         errorCode: "ENV_CREATION_FAILED",
         message: t("env.prepare.envCreateFailed"),
-        helpUrl: "https://buy.cloud.tencent.com/lowcode?buyType=tcb&channel=mcp",
+        helpUrl: TCB_PURCHASE_URL,
       });
 
   const failureMessage = userNotice
@@ -3193,11 +3195,8 @@ export function registerEnvTools(server: ExtendedMcpServer) {
                 // Filter parameters match the reference conditions provided by user
                 result = await cloudbaseList.commonService("tcb", "2018-06-08").call({
                   Action: "DescribeEnvs",
-                  Param: {
-                    EnvTypes: ["weda", "baas"], // Include weda and baas (normal) environments
-                    IsVisible: false, // Filter out invisible environments
-                    Channels: ["dcloud", "iotenable", "tem", "scene_module"], // Filter special channels
-                  },
+                  // 过滤口径与 cloudbase-manager 共用一份，别在这里另写白名单
+                  Param: buildDescribeEnvsFilter(),
                 });
                 logCloudBaseResult(server.logger, result);
                 // Transform response format to match original listEnvs() format

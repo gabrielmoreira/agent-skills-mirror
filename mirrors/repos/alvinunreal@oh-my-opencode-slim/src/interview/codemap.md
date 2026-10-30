@@ -153,7 +153,11 @@
 
 ## Integration
 
-- Used by `src/index.ts` as the interview plugin module.
+- v1 loads `manager.ts`; v2 loads only its Interview bridge. Both reuse the
+  same Interview Implementation rather than constructing two owners on v2.
+- Native v2 text observations use `session.text.started/delta/ended` and the
+  host's `assistantMessageID`; full text-ended values remain distinct from
+  lifecycle idle boundaries.
 - Uses OpenCode SDK session APIs for messages, prompts, and status events.
 - Uses local HTTP server contracts for:
   - dashboard browsing,

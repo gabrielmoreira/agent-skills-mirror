@@ -4,6 +4,30 @@ title: "Roadmap"
 
 Go Micro is a framework for building **agents and services** in Go. An agent is a distributed system — it discovers services, calls them, holds state, and recovers from failure — so building an agent is building a service. The roadmap has two jobs: make **agentic development** excellent, and make the **developer experience** around it excellent. Nothing else.
 
+This page is the **canonical roadmap**. `ROADMAP.md` is a repository overview
+that links here; when the two differ, this page governs prioritization.
+
+## How roadmap work is tracked
+
+Every accepted roadmap item must have an owning issue, acceptance criteria, a
+target release or "no release commitment", a v6-compatible or v7-breaking
+classification, and its required tests and documentation. Status is one of
+proposed, accepted, in progress, shipped, or deferred.
+
+Issue proposals must also identify effects on service-only applications,
+agents, flows, gateways, provider plugins, and stored run/checkpoint formats.
+Service-only use remains first-class and must not acquire an AI dependency to
+receive framework fixes.
+
+| Workstream | Status | Compatibility | Commitment |
+| --- | --- | --- | --- |
+| x402 buyer in the agent runtime | Shipped | v6-compatible | v6 |
+| AP2 mandate foundation ([#3552](https://github.com/micro/go-micro/issues/3552)) | Proposed | v6-compatible | No release commitment |
+| gRPC-reflection MCP | Proposed | v6-compatible | No release commitment |
+| Kubernetes operator and CRDs | Proposed | v6-compatible | No release commitment |
+| v7 execution contract ([#5044](https://github.com/micro/go-micro/issues/5044)) | Shipped design baseline | mixed; see contract matrix | v6 documentation |
+| Restartable service-agent-flow composition ([#5049](https://github.com/micro/go-micro/issues/5049)) | Shipped | v6-compatible fixture | v6 |
+
 ## Towards v7 — proposal
 
 A [v7 proposal](v7.md) explores a consistent model/agent execution contract and
@@ -35,13 +59,36 @@ These constrain everything below:
 4. **Interaction is as important as running.** Talking to an agent, inspecting runs and history — end to end, not just "it starts."
 5. **Battle-tested.** Works across every provider, fails safely, and is observable.
 
-## Now — hardening ("functional on every level")
+## Shipped flagship capability
 
-The priority is that what exists works everywhere, under real conditions.
+**Agents that pay (x402 buyer in the runtime).** The opt-in `AgentPayer` and
+`AgentBudget` APIs handle payment-required tool results, enforce approval before
+payment, settle within a per-run budget, retry the request, and emit spend
+events. Key-free tests cover successful payment, retries, missing payers, and
+over-budget refusal.
 
-- **Cross-provider conformance.** Each of the seven providers implements its own tool-call loop; today only the mock and one live provider are exercised. A suite that runs the same agent scenario (tool-calling, multi-step, plan/delegate, guardrails) across every provider, gated on keys, on a schedule.
-- **Failure & resilience.** Provider timeouts, rate limits, and cancellation mid-run; deadline/`context` propagation through the agent loop; retry and backoff at the model call.
-- **The getting-started contract.** Define and CI-verify the 0→1 and 0→hero flows so they can't silently break.
+The provider-free `examples/agent-x402-buyer` program documents the complete
+local path without live funds. Remaining follow-up is broader interactive
+approval UX and provider/gateway conformance when another integration exposes a
+gap; it is not grounds to describe the runtime capability as unimplemented.
+
+AP2 mandate work remains a separate proposed foundation and is not a second
+flagship milestone.
+
+## Shipped — complete composition
+
+The execution-contract audit, provider-free recovery gate, and single
+restartable service-agent-flow composition tracked by
+[#5049](https://github.com/micro/go-micro/issues/5049) are shipped. The fixture
+calls real services, dispatches bounded agent work through service tools, pauses
+for durable approval, and completes one idempotent final operation while
+preserving inspectable lineage across replacement hosts. The race-enabled,
+key-free fixture is a v6-compatible acceptance gate, not permission to begin
+the breaking model/agent split.
+
+The [contract matrix](project/execution-contract.md) remains the compatibility
+baseline. gRPC-reflection MCP and Kubernetes deployment remain candidates for
+the next net-new capability; neither is accepted as a simultaneous flagship.
 
 ## Shipped agent depth
 
@@ -52,21 +99,29 @@ The priority is that what exists works everywhere, under real conditions.
   agent runs, model turns, tool calls, retries, delegation lineage, and resume
   checkpoints so production runs are traceable.
 
-## Next — agentic depth
+## Next — reach and deployment
 
-- **Streaming.** Broaden provider-backed `model.Stream` coverage and keep chat plus A2A `message/stream` working end to end for real chat and long-task UX.
-- **Resume operations polish.** Keep improving CLI/docs breadcrumbs for finding
-  pending agent runs and deciding whether to call resume, resume-input, or stream
-  resume in production.
-- **Observability hardening.** Keep span attributes and run inspection coherent
-  across agents, flows, and gateways as more providers and workflow paths are
-  exercised.
+- **gRPC-reflection MCP.** Derive MCP tools from external gRPC services through
+  server reflection rather than requiring go-micro-native handlers.
+- **Kubernetes operator and CRDs.** Reconcile `Agent`, `Service`, and `Flow`
+  resources into deployments connected to the registry.
 
 ## Later
 
+- **Runtime-fitness loop** — exercise a persistent dogfood application against
+  runtime latency, error, and cost signals with canary and rollback boundaries.
 - **Memory management** — summarization and retrieval (RAG) beyond a fixed buffer.
 - **Human-in-the-loop** — broaden pause/resume UX around `input-required` runs and approvals.
 - **A2A** — richer live-stream reconnection (`tasks/resubscribe`) and `input-required` handoffs.
+
+## Ongoing — capped maintenance and developer experience
+
+Cross-provider conformance, cancellation, retry/backoff, streaming,
+observability, and the scaffold → run → chat → inspect → deploy loop continue,
+but do not compete with the flagship capability as equal roadmap priorities.
+The 0→1 and 0→hero paths, mock provider conformance, and deterministic harness
+are release gates. Live-provider conformance runs on a schedule when credentials
+are available.
 
 ## Developer experience (ongoing)
 
@@ -78,6 +133,10 @@ The priority is that what exists works everywhere, under real conditions.
 ## How it's sustained
 
 The framework is the product. It's funded by **sponsorship** from the people and companies who run it — not a hosted service, not an enterprise tier, not venture funding. The model is deliberate: keep refining the framework, aligned users adopt and depend on it, and that dependence funds the work. (See [Bringing an OSS project back from the dead](/blog/2026/06/18/bringing-an-open-source-project-back-from-the-dead.html) for why.)
+
+See [Adoption and Sustainability](project/adoption.md) for the no-runtime-
+telemetry baseline and quarterly aggregate review, and [Version Support](project/version-support.md)
+for the release and backport policy.
 
 ## Feedback
 

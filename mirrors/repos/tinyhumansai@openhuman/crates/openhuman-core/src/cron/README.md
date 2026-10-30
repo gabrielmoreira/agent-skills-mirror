@@ -3,8 +3,10 @@
 The cron domain exposes the `cron.*` RPC controllers and agent tools that
 create and manage scheduled jobs. The core service drives scheduler dispatch,
 publishes health transitions, and supplies the host job handlers and delivery
-callbacks. Agents reach it through the `cron` and `schedule` tools, and the
-desktop UI through the `cron` RPC namespace.
+callbacks. Agents reach it through the `scheduling` pack's per-operation
+tools (`cron_add`, `cron_list`, `cron_update`, `cron_remove`, `cron_run`,
+`cron_runs`; the collapsed `cron` stays registered, deferred) and the
+`schedule` tool, and the desktop UI through the `cron` RPC namespace.
 
 Scheduling itself is not in core. The `tinyflows` loadable module owns the
 scheduler runtime (poll pass, process-wide run claims, retry with backoff,

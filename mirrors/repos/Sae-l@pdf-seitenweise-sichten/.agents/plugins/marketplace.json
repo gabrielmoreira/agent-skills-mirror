@@ -1,0 +1,20 @@
+{
+  "name": "sae-l-skills",
+  "interface": {
+    "displayName": "Sae-l Skills"
+  },
+  "plugins": [
+    {
+      "name": "pdf-seitenweise-sichten",
+      "source": {
+        "source": "local",
+        "path": "./plugins/pdf-seitenweise-sichten"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
+import { noteEnvBinding, runInEnvSlot } from "../utils/env-binding.js";
 import { t } from "../i18n/index.js";
 import {
   ENV_CREDITS_CONSOLE_LINK_KEYS,
@@ -224,18 +225,27 @@ describe("env-credits 面板 HTML", () => {
 });
 
 describe("env-credits 兜底解析", () => {
-  it("环境 ID 按优先级取值：实例配置 > 环境变量 > 缓存 > 降级为空", () => {
+  it("环境 ID 读当前槽；这次请求自己带的 envId 优先；槽外不读环境变量", () => {
     const previous = process.env.CLOUDBASE_ENV_ID;
     try {
       process.env.CLOUDBASE_ENV_ID = "unit-env-1";
-      const fromEnvVar = resolveEnvCreditsFallback({
+      const outside = resolveEnvCreditsFallback({
         cloudBaseOptions: {},
       } as never);
-      expect(fromEnvVar.envId).toBe("unit-env-1");
+      expect(outside.envId).toBeNull();
 
-      const fromOptions = resolveEnvCreditsFallback({
-        cloudBaseOptions: { envId: "unit-env-2" },
-      } as never);
+      const fromSlot = runInEnvSlot(() => {
+        noteEnvBinding({ envId: "env-from-login", source: "login_state" });
+        return resolveEnvCreditsFallback({ cloudBaseOptions: {} } as never);
+      });
+      expect(fromSlot.envId).toBe("env-from-login");
+
+      const fromOptions = runInEnvSlot(() => {
+        noteEnvBinding({ envId: "env-from-login", source: "login_state" });
+        return resolveEnvCreditsFallback({
+          cloudBaseOptions: { envId: "unit-env-2" },
+        } as never);
+      });
       expect(fromOptions.envId).toBe("unit-env-2");
     } finally {
       if (previous === undefined) {

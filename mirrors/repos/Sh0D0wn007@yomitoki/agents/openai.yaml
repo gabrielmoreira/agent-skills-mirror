@@ -1,0 +1,4 @@
+interface:
+  display_name: "yomitoki"
+  short_description: "命名・制御フロー・責務を見直し、挙動を保ちながらコードを読みやすくする"
+  default_prompt: "$yomitoki を使って、対象コードの挙動を保ちながら理解しやすく整えてください。"

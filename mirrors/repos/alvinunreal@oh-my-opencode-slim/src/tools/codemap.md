@@ -29,7 +29,7 @@ Each tool is implemented as a factory function that returns a `ToolDefinition` r
 
 | Tool Family | Purpose | Key Components |
 |------------|---------|----------------|
-| **Task Management** | Background task communication, cancellation, status, results, revival, and HITL continuation control | `task-message.ts`, `cancel-task.ts`, `task-status.ts`, `task-revive.ts`, `wait-for-user.ts` |
+| **Task Management** | Background task cancellation, status, results, revival, and HITL continuation control | `cancel-task.ts`, `task-status.ts`, `task-revive.ts`, `wait-for-user.ts`; v1-only `task-message.ts` (v2 steers natively) uses the board's shared amendment fence. See [diagnostic attribution](../../docs/tools.md#diagnostic-attribution). |
 | **Task Policy & Activity** | Shared live-status policy and activity tracking consumed by `task_status` and event wiring | `task-policy.ts` (`summarizeTaskStatus`), `task-activity.ts` (`TaskActivityTracker`) |
 | **Retained Adoption** | Shared resolve-or-adopt seam for untracked host sessions, consumed by `task_revive` and the v2 subagent continuation bridge | `retained-adoption.ts` (`resolveOrAdoptUntrackedTask`) |
 | **ACP Integration** | External agent protocol execution with live progress streaming to the parent TUI (`ctx.metadata`) | `acp-run.ts`, ACP client implementation |
@@ -82,14 +82,7 @@ Each tool is implemented as a factory function that returns a `ToolDefinition` r
    ├─> Marks job as cancelled in BackgroundJobBoard
    └─> Returns cancellation confirmation while retaining the child session
 
-2. Orchestrator invokes task_message
-   ├─> Resolves task_id to a live BackgroundJobBoard entry
-   ├─> Acquires a generation-scoped message lease
-   ├─> For v2 steering, verifies the tracked queued revival's exact user prompt is in the host transcript; absence or unreadable evidence refuses the write
-   ├─> Queues a bounded no-reply message without interrupting or resuming the child (v2: optional `delivery` — `queue` waits for an idle boundary, `steer` offers it at the next supported step boundary; acceptance ≠ consumption)
-   └─> Returns transport-confirmed queue status (v2 steer: acceptance at the next supported step boundary)
-
-3. Managed parent invokes task_revive (including Build/custom primary agents)
+2. Managed parent invokes task_revive (including Build/custom primary agents)
    ├─> Resolves the retained BackgroundJobBoard entry
    ├─> Cancels a running generation when necessary
    ├─> Launches a new prompt in the existing child session
@@ -194,7 +187,6 @@ Each tool is implemented as a factory function that returns a `ToolDefinition` r
 ```
 Tools Layer → Background Layer
 ├─ task_cancel → BackgroundJobBoard.resolve() → abortSessionWithTimeout()
-├─ task_message → BackgroundJobBoard.resolve() → no-reply prompt transport
 ├─ task_revive → BackgroundJobBoard.resolve() → retained-session relaunch
 ├─ task_status → BackgroundJobBoard.resolve() → live session-status snapshot
 └─> Returns lifecycle, transport, or status report
@@ -237,7 +229,6 @@ export { createAcpRunTool } from './acp-run';
 export { ast_grep_replace, ast_grep_search } from './ast-grep';
 export { createCancelTaskTool } from './cancel-task';
 export { createWebfetchTool } from './smartfetch';
-export { createTaskMessageTool } from './task-message';
 export { createTaskReviveTool } from './task-revive';
 export { createTaskStatusTool } from './task-status';
 export { createWaitForUserTool } from './wait-for-user';

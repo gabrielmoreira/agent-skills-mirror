@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ModelTC/LightLLM` — 26 default patterns, 0 followed patterns, 15 file(s) materialized.
+Mirror of `ModelTC/LightLLM` — 26 default patterns, 0 followed patterns, 16 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ModelTC/LightLLM` — 26 default patterns, 0 followed patterns, 15 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 15 |
+| Files         | 16 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -64,16 +64,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3 | ✓ | [`skills/test_model/deepseekr1-mtp-ep/SKILL.md`](skills/test_model/deepseekr1-mtp-ep/SKILL.md) |
 | 4 | ✓ | [`skills/test_model/deepseekr1-mtp-tp/SKILL.md`](skills/test_model/deepseekr1-mtp-tp/SKILL.md) |
 | 5 | ✓ | [`skills/test_model/deepseekv32-ep/SKILL.md`](skills/test_model/deepseekv32-ep/SKILL.md) |
-| 6 | ✓ | [`skills/test_model/qwen2.5-14b-fp8kv-gsm8k/SKILL.md`](skills/test_model/qwen2.5-14b-fp8kv-gsm8k/SKILL.md) |
-| 7 | ✓ | [`skills/test_model/qwen3-8b-gsm8k-scenarios/SKILL.md`](skills/test_model/qwen3-8b-gsm8k-scenarios/SKILL.md) |
-| 8 | ✓ | [`skills/test_model/qwen3-8b-pd-nixl/check_nvidia_peermem.sh`](skills/test_model/qwen3-8b-pd-nixl/check_nvidia_peermem.sh) |
-| 9 | ✓ | [`skills/test_model/qwen3-8b-pd-nixl/SKILL.md`](skills/test_model/qwen3-8b-pd-nixl/SKILL.md) |
-| 10 | ✓ | [`skills/test_model/qwen3-vl-8b-mmmu-val/SKILL.md`](skills/test_model/qwen3-vl-8b-mmmu-val/SKILL.md) |
-| 11 | ✓ | [`skills/test_model/qwen3-vl-8b-vit-sep-mode/SKILL.md`](skills/test_model/qwen3-vl-8b-vit-sep-mode/SKILL.md) |
-| 12 | ✓ | [`skills/test_model/qwen3.5-0.8b-gsm8k-scenarios/SKILL.md`](skills/test_model/qwen3.5-0.8b-gsm8k-scenarios/SKILL.md) |
-| 13 | ✓ | [`skills/test_model/qwen3.5-0.8b-pd-nixl/check_nvidia_peermem.sh`](skills/test_model/qwen3.5-0.8b-pd-nixl/check_nvidia_peermem.sh) |
-| 14 | ✓ | [`skills/test_model/qwen3.5-0.8b-pd-nixl/SKILL.md`](skills/test_model/qwen3.5-0.8b-pd-nixl/SKILL.md) |
-| 15 | ✓ | [`skills/test_model/SKILL.md`](skills/test_model/SKILL.md) |
+| 6 | ✓ | [`skills/test_model/glm5.3-flash-fp8kv-scenarios/SKILL.md`](skills/test_model/glm5.3-flash-fp8kv-scenarios/SKILL.md) |
+| 7 | ✓ | [`skills/test_model/qwen2.5-14b-fp8kv-gsm8k/SKILL.md`](skills/test_model/qwen2.5-14b-fp8kv-gsm8k/SKILL.md) |
+| 8 | ✓ | [`skills/test_model/qwen3-8b-gsm8k-scenarios/SKILL.md`](skills/test_model/qwen3-8b-gsm8k-scenarios/SKILL.md) |
+| 9 | ✓ | [`skills/test_model/qwen3-8b-pd-nixl/check_nvidia_peermem.sh`](skills/test_model/qwen3-8b-pd-nixl/check_nvidia_peermem.sh) |
+| 10 | ✓ | [`skills/test_model/qwen3-8b-pd-nixl/SKILL.md`](skills/test_model/qwen3-8b-pd-nixl/SKILL.md) |
+| 11 | ✓ | [`skills/test_model/qwen3-vl-8b-mmmu-val/SKILL.md`](skills/test_model/qwen3-vl-8b-mmmu-val/SKILL.md) |
+| 12 | ✓ | [`skills/test_model/qwen3-vl-8b-vit-sep-mode/SKILL.md`](skills/test_model/qwen3-vl-8b-vit-sep-mode/SKILL.md) |
+| 13 | ✓ | [`skills/test_model/qwen3.5-0.8b-gsm8k-scenarios/SKILL.md`](skills/test_model/qwen3.5-0.8b-gsm8k-scenarios/SKILL.md) |
+| 14 | ✓ | [`skills/test_model/qwen3.5-0.8b-pd-nixl/check_nvidia_peermem.sh`](skills/test_model/qwen3.5-0.8b-pd-nixl/check_nvidia_peermem.sh) |
+| 15 | ✓ | [`skills/test_model/qwen3.5-0.8b-pd-nixl/SKILL.md`](skills/test_model/qwen3.5-0.8b-pd-nixl/SKILL.md) |
+| 16 | ✓ | [`skills/test_model/SKILL.md`](skills/test_model/SKILL.md) |
 
 ---
 

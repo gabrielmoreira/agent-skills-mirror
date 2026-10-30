@@ -201,6 +201,6 @@ Never request or publish cookie values, passwords, identity or profile text, ses
 
 ## Platform boundaries
 
-Dia is macOS-only. Keychain approval is the user's choice. Database retries are bounded; permission denial needs user action, not repeated prompts.
+Keychain approval is the user's choice. Database retries are bounded; permission denial needs user action, not repeated prompts.
 
 Windows supports DPAPI-compatible cookies, not all App-Bound Encryption; native extraction stays disabled pending qualification. Closing Chrome cannot bypass Chrome 136+ default-directory protection, including numbered profiles. No TCP fallback or real-profile copies. Offer headed manual sign-in only with a display available.

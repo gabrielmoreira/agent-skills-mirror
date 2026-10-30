@@ -4055,7 +4055,10 @@ The adopted helper boundaries are intentionally narrow:
   valid out-of-loop marker (kurone-kito/idd-skill#3328 -- see the
   [Out-of-loop marker contract](#out-of-loop-marker-contract)), pass
   `--claimless` instead of `--claim-issue`/`--claim-id` (#2616, mirrors
-  `pre-merge-readiness.mjs`'s `--claimless`, #2017).
+  `pre-merge-readiness.mjs`'s `--claimless`, #2017). An empty
+  `closingIssuesReferences` is claimless only when the head branch does not
+  name an issue, or names one with no active claim and a valid out-of-loop
+  marker; see the fail-closed bullet below (kurone-kito/idd-skill#4735).
 - Maps `--comment-id` (the review comment's REST id) to its owning review
   thread by matching it against the `databaseId` of the comments inside each
   GraphQL `reviewThreads` node (both the threads and the nested comments
@@ -4111,6 +4114,16 @@ The adopted helper boundaries are intentionally narrow:
   the active claim's branch to equal the PR's head branch. `--claimless`
   itself fails closed against a non-empty `closingIssuesReferences`
   unless a valid out-of-loop marker applies (kurone-kito/idd-skill#3328).
+  With an empty `closingIssuesReferences`, the PR's head branch decides
+  (kurone-kito/idd-skill#4735): a name that does not start with `issue/`
+  stays claimless with no viewer-identity lookup; an `issue/<n>-...` name is
+  checked against issue `<n>`'s claim, as if it were the closing issue, so an
+  active claim refuses `--claimless`, and the refusal names the claim-bound
+  route `--claim-issue <n> --claim-id <claim-id>`; with no active claim, a
+  valid trusted out-of-loop marker on the PR still applies (the bootstrap
+  exception). An empty, unreadable, or malformed name (not a valid branch name,
+  or an issue number that is not a safe integer), or incomplete claim
+  evidence, fails closed.
   GraphQL `errors` fail fast rather than masquerading as a missing thread,
   and a partial apply (reply posted, resolve not confirmed) still reports
   the posted `replyId`.
@@ -9014,9 +9027,12 @@ same as `AW4`/`AW5`.
 - `callSiteRouting` (required object): the next step for each call site.
   `eBranchSync` is `proceed-to-f1`, `sync-path`, `retry`, or `hold`; `e11`
   is `skip-merge` or `merge-development-branch`; `f1` is `proceed-to-f2`,
-  `return-to-e-phase-branch-sync`, `retry`, or `hold`. Each call site reads
-  its own key, and the phase files do not restate the routing.
-- Routing table (the single statement of branch-state routing).
+  `return-to-e-phase-branch-sync`, `retry`, or `hold`. Other helper call sites
+  read their own key. E11 instead makes its documented live PR-base and Git checks:
+  this helper reflects the last pushed head, not unpushed fixes, so
+  `callSiteRouting.e11` remains compatibility output (kurone-kito/idd-skill#4759).
+- The routing table is authoritative for the other branch-state call sites;
+  E11's routing is defined in the review-fix phase file.
   `requiresUpToDateHead` is not emitted. The helper derives it from the base
   branch's policy, and a failed or unreadable read counts as `true`, which is
   fail closed.
@@ -9554,13 +9570,35 @@ and that helper detail is the next action.
     does not require an up-to-date head, with `mergeable` resolved to
     `MERGEABLE`, is listed, so a conflicting, blocked, unstable,
     still-computing, or draft head is not.
-    A pull request that closes no issue is checked with `--claimless`;
-    otherwise each same-repository closing issue is tried as
-    `--claim-issue`, with no `--claim-id`. Each check also receives this
-    run's `--trusted-marker-logins`, `--advisory-bot-logins`, and
+    A pull request that closes no issue is checked with `--claimless` when
+    its head branch is not blank and does not start with `issue/`, after
+    optional leading whitespace, in any ASCII letter case. When the closing
+    references are
+    empty and the head branch is the
+    canonical lowercase `issue/<number>-...`, the pull request is checked
+    with `--claim-issue <number>` instead (issue `#4734`). GitHub can leave
+    the closing references empty for a claimed issue branch on a non-default
+    base (issue `#4697`, observed 2026-10-23), so an empty field does not
+    show that no claim exists. A head branch that is missing, that starts
+    with `issue/` in another ASCII letter case or after leading whitespace,
+    or that starts with the canonical `issue/` without a parseable issue
+    number, is listed in `openReadyUncheckedPrs` with a `reason`, because a
+    claimless check would skip the claim on it. Otherwise
+    each same-repository closing issue is tried as `--claim-issue`, with no
+    `--claim-id`. Each check also receives this run's
+    `--trusted-marker-logins`, `--advisory-bot-logins`, and
     `--idd-agent-logins` values when they are given. Readiness still
     requires an active claim on that issue, so a pull request whose claim
-    was released reads as not ready and is not listed. A pull request that
+    was released reads as not ready and is not listed. For a head branch
+    with empty closing references this narrows the list deliberately: an
+    issue branch with no active claim was listed through `--claimless`
+    before. The check confirms only that an active claim exists on that
+    issue. It does not compare the claim's recorded branch with the pull
+    request head, and without `--claim-id` it does not check the claim's
+    agent or nonce. On a default-branch base the expected closing set is
+    that issue, so a pull request without a closing keyword reads as not
+    ready, and a `none` claimless waiver does not bind on this path. A pull
+    request that
     closes an issue but merges out of loop under a valid out-of-loop marker
     is not tried with `--claimless`, so it is not listed either. A pull
     request whose readiness check fails, or whose closing references
@@ -9982,23 +10020,73 @@ a destructive re-run.
 
 ## Signed-Commit Merge Wrapper (Shared Git Procedure)
 
-`idd-review-triage.instructions.md`'s E-phase sync path and
-`idd-review-fix.instructions.md`'s E11 both merge `{development-branch}`
-into the feature branch:
+The fetch and merge procedure below is specific to review-fix E11. The shared
+SSH-signing guidance also applies to ordinary B3 commits, as shown in the B3
+`git commit` example below.
+
+`idd-review-fix.instructions.md`'s E11 merges `{development-branch}` into
+the feature branch. It reads the PR base and current Git refs before each
+fix push, so a conflict-free sync rides with that push instead of creating
+a sync-only push; its helper field remains for compatibility because the
+helper sees the last pushed head (kurone-kito/idd-skill#4759).
+
+For a conflict, unresolved threads, unreplied comments, or a
+`CHANGES_REQUESTED` review require explicit confirmation before merging,
+resolving, and completing; without confirmation, leave the branch unchanged
+and hold. Then use this wrapper for both the merge and `git merge --continue`.
+If a confirmed conflict cannot be resolved cleanly,
+run `git merge --abort`, report the failure, and hold without pushing
+(observed 2026-10-28 in PR #4774 review comment #4396449337). After a wrapper
+timeout, terminate and wait for its full process tree before aborting; if it
+remains live or its exit is unconfirmed, hold without aborting or pushing.
+
+E11 first fetches the target with this exact refspec:
 
 ```sh
-git fetch origin +refs/heads/{development-branch}:refs/remotes/origin/{development-branch} \
-  && git merge origin/{development-branch}
+git fetch origin +refs/heads/{development-branch}:refs/remotes/origin/{development-branch}
+```
+
+Capture the fetched commit once in `target_sha`:
+
+```sh
+target_sha=$(git rev-parse --verify 'origin/{development-branch}^{commit}')
+```
+
+Compare `git merge-base HEAD "$target_sha"` with `"$target_sha"`; equality
+skips the merge. When behind, probe with:
+
+```sh
+git merge-tree --write-tree HEAD "$target_sha"
+```
+
+Exit 0 means no conflict; 1 means conflict. This `--write-tree` mode
+requires Git 2.38 or later; on older Git, an unsupported-option error is one
+likely unknown result. Every other unexpected exit remains unknown: report
+and hold without merge or push (PR #4774 review comment #4396614907,
+2026-10-28; preventive; no older-Git failure observed). A failed fetch,
+capture, or comparison also holds. Use the captured SHA for both the probe
+and merge below; do not fetch or resolve the branch ref again. Keep
+`target_sha` available across E11, or pass its recorded value if commands
+run in separate shells.
+
+```sh
+git merge --no-ff \
+  -m "chore: merge origin/{development-branch} into the claimed branch" \
+  "$target_sha"
 ```
 
 On a repo whose primary commit signing is non-interactive-hostile (GPG
 pinentry / hardware-touch) and that configures a fallback signing wrapper for
 arbitrary git subcommands, run the **merge** step — including a
 `--continue` after conflict resolution — through that wrapper, never the
-plain command (`git fetch` creates no commit and needs no signing):
+plain merge command (the separate `git fetch` creates no commit and needs no
+signing):
 
 ```sh
-git -c gpg.format=ssh -c user.signingkey=<abs-path> -c commit.gpgsign=true merge -m "chore: merge origin/{development-branch} into the claimed branch" origin/{development-branch}
+git -c gpg.format=ssh -c user.signingkey=<abs-path> \
+  -c commit.gpgsign=true merge --no-ff \
+  -m "chore: merge origin/{development-branch} into the claimed branch" \
+  "$target_sha"
 # resolve conflicts if any, then:
 git -c gpg.format=ssh -c user.signingkey=<abs-path> -c commit.gpgsign=true merge --continue
 ```
@@ -10594,8 +10682,8 @@ node scripts/claimed-push.mjs --issue <n> --claim-id <id> [--nonce <nonce>] [--a
   creates a commit. D2 runs its normal push through the helper; the
   `--force-with-lease` route that D2 allows after publication stays a
   manual route, which checks `assert`, `location`, and `scope` with the
-  helper's dry run first. Adopting the helper in the E-phase push steps is
-  a separate change, because those bundles are size-budgeted.
+  helper's dry run first. E12's push adopts the helper through issue
+  `#4564`; its instructions-only checks are in the E12 bullet below.
 - **Known limit**: git resolves the branch argument of the push when the
   push starts, after the `reassert` step has compared HEAD and the branch
   tip. The helper keeps the branch argument because a SHA source does not
@@ -10610,6 +10698,18 @@ node scripts/claimed-push.mjs --issue <n> --claim-id <id> [--nonce <nonce>] [--a
   to the helper's own process therefore does not reach the admitted gate,
   which keeps the validation slot until it ends. Making the helper forward
   signals is not part of issue `#4525`.
+- **E12 under `instructions-only`**: without the helper, E12's push checks
+  the active claim, the location, and the scope, then runs
+  **pre-push-validate** and pushes normally. Re-read the issue and confirm
+  the active claim still uses your `{claim-id}`. Confirm the worktree is
+  the claimed sibling path and its current branch is the claimed branch,
+  using the cwd-vs-claim check in the
+  [claim revalidation gate](../.github/instructions/idd-overview-core.instructions.md#claim-revalidation-gate).
+  Apply the `effort-candidate-file-limit` check that the scope step runs:
+  count the issue's parsed Candidate files and the canonical changed paths
+  separately, apply B3's canonical-path exclusions, and stop without
+  pushing when either count fails. Commit any validation or formatter
+  output first, so the tree is clean.
 
 ## Dead-export audit (kurone-kito/idd-skill#3478)
 

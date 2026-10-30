@@ -39,7 +39,6 @@ Source: https://github.com/LLM-Coding/Semantic-Anchors
 - **Proponents:** Taiichi Ohno, Toyota Motor Corporation
 - **Core:** A signal nobody can miss, a cord anyone may pull, and a guaranteed response. The radical part is the authority, not the hardware; a rising pull count early on signals that problems are surfacing rather than hiding
 
-
 ### TDD, London School
 - **Also known as:** Mockist TDD, Outside-In TDD
 - **Proponents:** Steve Freeman, Nat Pryce
@@ -554,7 +553,6 @@ Source: https://github.com/LLM-Coding/Semantic-Anchors
 - **Proponents:** G.K. Chesterton (*The Thing*, 1929, "The Drift from Domesticity")
 - **Core:** Before removing something whose purpose you cannot see, establish why it is there — the odd-looking check is the one most likely to be load-bearing. Not a veto: once a timeboxed, good-faith search turns up nothing, removal is earned, provided it is reversible and observed. Runs *backwards* from an artifact already standing, where Second-Order Thinking runs forwards from a change you are about to make
 
-
 ### DMADV
 - **Also known as:** DFSS, Design for Six Sigma
 - **Proponents:** Motorola, General Electric
@@ -603,7 +601,6 @@ Source: https://github.com/LLM-Coding/Semantic-Anchors
 - **Also known as:** continuous improvement; kaizen event, kaizen blitz; contrast kaikaku
 - **Proponents:** Masaaki Imai (1986), Taiichi Ohno, Toyota Motor Corporation
 - **Core:** Small, frequent, low-risk changes by the people doing the work; standardise the gain, then improve from the new standard. Kaikaku is the deliberate contrast — radical, discontinuous change
-
 
 ### First Principles Thinking
 - **Also known as:** Reasoning from First Principles, Reasoning from Fundamentals
@@ -702,7 +699,6 @@ Source: https://github.com/LLM-Coding/Semantic-Anchors
 - **Also known as:** Quality Function Deployment; Blitz QFD
 - **Proponents:** Yoji Akao, Shigeru Mizuno, Glenn Mazur
 - **Core:** A method that deploys customer needs through design, process and production decisions. Its best-known *tool* — not a second name for it — is the House of Quality, a matrix mapping needs (WHATs) to technical characteristics (HOWs) with a correlation "roof" showing where two characteristics reinforce or conflict; that conflict view is what neither Pugh Matrix nor Kano Model carries. Mazur calls HoQ-only QFD "a most common myth"; in Blitz QFD the House may be skipped entirely. Standardised as ISO 16355
-
 
 ### Cockburn Use Cases
 - **Also known as:** Fully Dressed Use Cases, Goal-Level Use Cases
@@ -858,16 +854,6 @@ Source: https://github.com/LLM-Coding/Semantic-Anchors
 - **Also known as:** Communication Gap, Encoding-Decoding Gap, Sender-Empfänger-Diskrepanz
 - **Proponents:** Claude Shannon & Warren Weaver, Friedemann Schulz von Thun, Stuart Hall, Herbert H. Clark & Susan E. Brennan (umbrella — no single proponent)
 - **Core:** Intended meaning ≠ received meaning; the sender encodes and the receiver decodes through independent cognitive processes, so the reconstructed meaning is not guaranteed to match the intent. Cause-agnostic umbrella over Shannon-Weaver (noise in channel), Schulz von Thun (four-sides mismatched ears), Hall (active decoding positions), and Clark (insufficient common ground); names the phenomenon before choosing a diagnostic framework. Candidate contract rather than single-proponent anchor.
-
-### Tufte Style
-- **Also known as:** Tufte's principles of information design; shipped as `theme_tufte` (ggthemes), Tufte CSS, tufte-latex, matplotlib-tufte
-- **Proponents:** Edward R. Tufte
-- **Core:** Information-design principles for charts, dashboards and reports — maximize the data-ink ratio, remove chartjunk, keep graphical integrity (lie factor ≈ 1), use small multiples on shared axes, sparklines inline in text, and direct labels instead of legends; density is the goal, not emptiness (remove waste, then spend the space on more information); the name also covers the sidenote page layout of Tufte CSS/tufte-latex, so say which you mean
-
-### Swiss Style (International Typographic Style)
-- **Also known as:** International Typographic Style, Swiss design, Swiss typography
-- **Proponents:** Ernst Keller, Josef Müller-Brockmann (Grid Systems in Graphic Design, 1981), Armin Hofmann, Emil Ruder (Zurich and Basel schools, 1950s)
-- **Core:** Grid-based graphic design — a modular grid set before anything is placed, sans-serif type (Akzidenz-Grotesk, Helvetica) in few sizes, flush-left ragged-right text, asymmetric composition with active white space, objective photography or geometric forms instead of illustration, hierarchy from scale and position rather than ornament; not minimalism and not just Helvetica
 
 ### Crisis and Emergency Risk Communication (CERC)
 - **Also known as:** CERC -- but the bare acronym does not carry the meaning; spell it out
@@ -1124,3 +1110,115 @@ Source: https://github.com/LLM-Coding/Semantic-Anchors
 - **Also known as:** 起承転結, Four-Act Eastern Structure, Ki-Shō-Ten-Ketsu
 - **Proponents:** Classical Chinese and Japanese narrative tradition, Tzvetan Todorov
 - **Core:** Ki (introduce) → Shō (develop) → Ten (twist/recontextualise) → Ketsu (reconcile); no protagonist-antagonist conflict required; tension arises from juxtaposition and revelation; used in manga, haiku, and Nintendo game design
+
+## UX & Visual Design
+
+### Swiss Style (International Typographic Style)
+- **Also known as:** International Typographic Style, Swiss design, Swiss typography
+- **Proponents:** Ernst Keller, Josef Müller-Brockmann (Grid Systems in Graphic Design, 1981), Armin Hofmann, Emil Ruder (Zurich and Basel schools, 1950s)
+- **Core:** Grid-based graphic design — a modular grid set before anything is placed, sans-serif type (Akzidenz-Grotesk, Helvetica) in few sizes, flush-left ragged-right text, asymmetric composition with active white space, objective photography or geometric forms instead of illustration, hierarchy from scale and position rather than ornament; not minimalism and not just Helvetica
+
+### Tufte Style
+- **Also known as:** Tufte's principles of information design; shipped as `theme_tufte` (ggthemes), Tufte CSS, tufte-latex, matplotlib-tufte
+- **Proponents:** Edward R. Tufte
+- **Core:** Information-design principles for charts, dashboards and reports — maximize the data-ink ratio, remove chartjunk, keep graphical integrity (lie factor ≈ 1), use small multiples on shared axes, sparklines inline in text, and direct labels instead of legends; density is the goal, not emptiness (remove waste, then spend the space on more information); the name also covers the sidenote page layout of Tufte CSS/tufte-latex, so say which you mean
+
+### Bauhaus
+- **Also known as:** Bauhaus design, Staatliches Bauhaus
+- **Proponents:** Walter Gropius (founder, 1919), Hannes Meyer, Ludwig Mies van der Rohe; Weimar 1919, Dessau 1925, Berlin until 1933
+- **Core:** Design school and style — form follows function, circle/square/triangle, primary colours, geometric sans-serif type (Futura, Herbert Bayer's universal alphabet), unity of art, craft and industry; asked for a page "in Bauhaus design", models drop illustration for geometric composition
+
+### Dieter Rams' 10 Principles of Good Design
+- **Also known as:** Ten principles for good design, "Less, but better" (Weniger, aber besser)
+- **Proponents:** Dieter Rams (Braun, Vitsœ)
+- **Core:** Good design is innovative, useful, aesthetic, understandable, unobtrusive, honest, long-lasting, thorough down to the last detail, environmentally friendly, and as little design as possible; removes the unnecessary rather than imitating a minimal look; makes products durable and repairable
+
+### Nielsen's 10 Usability Heuristics
+- **Also known as:** Nielsen heuristics, heuristic evaluation (Nielsen & Molich)
+- **Proponents:** Jakob Nielsen, Rolf Molich (1990; revised set 1994)
+- **Core:** Visibility of system status; match with the real world; user control and freedom; consistency and standards; error prevention; recognition rather than recall; flexibility and efficiency; aesthetic and minimalist design; help users recover from errors; help and documentation — broad rules of thumb for expert UI reviews with several evaluators, not a substitute for user testing
+
+### Gestalt Principles
+- **Also known as:** Gestalt laws of perceptual organization, Gestaltgesetze
+- **Proponents:** Max Wertheimer (1923), Wolfgang Köhler, Kurt Koffka
+- **Core:** Proximity, similarity, common fate, closure, continuity, figure–ground, common region (later addition) — how people group visual elements; used to fix layout and grouping; say "Gestalt principles", because the bare "Gestalt" pulls towards psychology and therapy
+
+### Laws of UX
+- **Also known as:** lawsofux.com
+- **Proponents:** Jon Yablonski (site 2018; book O'Reilly 2020, 2nd ed. 2024)
+- **Core:** Curated psychology for interface design — Fitts's Law, Hick's Law, Jakob's Law, Miller's Law, Doherty Threshold, Tesler's Law, Von Restorff Effect, Peak-End Rule, Aesthetic-Usability Effect, Goal-Gradient, Zeigarnik, Serial Position; a mix of models, effects and heuristics, not laws of nature
+
+### 8-Point Grid
+- **Also known as:** 8pt grid, 8dp grid, 8-point spacing system
+- **Proponents:** Bryn Jackson (spec.fm guide, ~2016), Google Material Design (8dp baseline grid)
+- **Core:** All spacing and component sizes in multiples of 8, with 4 as a half-step for type and icons; soft grid (spacing between elements) vs hard grid (snapping to an 8px background grid); a spacing scale, not a column grid
+
+### Modular Scale
+- **Also known as:** Typographic scale, type scale from a ratio
+- **Proponents:** Tim Brown ("More Meaningful Typography", A List Apart 2011; modularscale.com with Scott Kellum), after Robert Bringhurst
+- **Core:** Type sizes derived from a base size and one ratio (1.2 minor third, 1.25 major third, 1.333 perfect fourth, 1.618 golden section); in CSS a ratio custom property with sizes computed from it; a pool of sizes to pick from, often a different ratio per viewport
+
+### The Elements of Typographic Style (Bringhurst)
+- **Also known as:** Bringhurst, The Elements of Typographic Style
+- **Proponents:** Robert Bringhurst (1992; version 4.0, 2012)
+- **Core:** Classic book typography — measure of 45–75 characters, leading, old-style figures in running text, small caps for abbreviations, indent paragraphs instead of spacing them, hanging punctuation, letterspaced capitals, a scale of sizes; print-born, so screen-specific advice is thin
+
+### Every Layout
+- **Also known as:** Every Layout layout primitives
+- **Proponents:** Heydon Pickering, Andy Bell (2019; 3rd edition)
+- **Core:** Intrinsic CSS layout primitives — Stack, Box, Center, Cluster, Sidebar, Switcher, Cover, Grid, Frame, Reel, Imposter, Icon, Container — that adapt to content and available space without media queries or magic numbers; a modular spacing scale in custom properties; CSS reasoning, not a component library
+
+### Atomic Design
+- **Also known as:** Atomic design methodology
+- **Proponents:** Brad Frost (2013 post, 2016 book; Pattern Lab)
+- **Core:** Five levels of UI composition — atoms, molecules, organisms, templates, pages — for building design systems and component libraries; a mental model to move back and forth between levels, not a mandatory folder structure
+
+### Material Design 3
+- **Also known as:** M3, Material You, Material 3 Expressive (2025 update)
+- **Proponents:** Google (Matías Duarte)
+- **Core:** Google's design system — colour roles (primary, surface, surface containers, on-* colours), tonal palettes and dynamic colour from a source colour, design tokens, type scale (Display/Headline/Title/Body/Label), shape scale, tonal elevation, dp units on a 4/8dp grid, components such as top app bar, navigation bar, FAB; Expressive (2025) adds shape, motion and emphasis
+
+### Apple Human Interface Guidelines
+- **Also known as:** HIG, Apple HIG
+- **Proponents:** Apple (since 1987; one cross-platform document since 2022; Liquid Glass since 2025)
+- **Core:** Apple's platform design guidance — 44×44 pt minimum hit regions (60×60 pt in visionOS), SF Pro and SF Symbols, Dynamic Type, large titles, navigation and tab bars, inset grouped lists, safe areas, system colours and dark mode, accessibility; the prior serves the pre-2025 flat look, so ask for Liquid Glass explicitly if wanted
+
+### GOV.UK Design System
+- **Also known as:** GDS design system, GOV.UK Frontend
+- **Proponents:** Government Digital Service (UK, 2018; "one thing per page", Tim Paul 2015)
+- **Core:** Public-service patterns — start page with "Start now", one question per page, labels above fields, error summary plus inline errors, check answers page, confirmation page with reference number, plain English; the Service Standard and Service Manual are separate; brand and typeface are restricted to UK government
+
+### Design Tokens (W3C DTCG)
+- **Also known as:** Design Tokens Format Module, DTCG format, .tokens.json
+- **Proponents:** Jina Anne, Jon Levine (Salesforce), W3C Design Tokens Community Group (first stable version 2025.10)
+- **Core:** Design decisions as platform-neutral JSON data — tokens with `$value` and `$type`, groups, aliases in `{group.token}` form, `$description`; converted to CSS, iOS, Android by tools such as Style Dictionary; a Community Group report, not a W3C Recommendation
+
+### Refactoring UI
+- **Also known as:** Refactoring UI book
+- **Proponents:** Adam Wathan, Steve Schoger (2018)
+- **Core:** Visual design tactics for developers — hierarchy through weight and colour, not size alone; de-emphasise secondary content; a predefined spacing and type scale; fewer borders (space, background, shadow instead); full colour palettes with shades; shadows for elevation; strong on Sonnet/Opus, a softer nudge on Haiku
+
+### WCAG 2.2 AA
+- **Also known as:** Web Content Accessibility Guidelines 2.2, Level AA
+- **Proponents:** W3C Web Accessibility Initiative (Recommendation, October 2023)
+- **Core:** POUR principles and testable success criteria; AA = all A and AA criteria — 1.4.3 contrast 4.5:1, 1.4.11 non-text contrast, 1.4.10 reflow, 2.4.7 focus visible, 3.3.1/3.3.2 errors and labels; new in 2.2: 2.4.11 Focus Not Obscured, 2.5.7 Dragging Movements, 2.5.8 Target Size (24×24 px), 3.2.6 Consistent Help, 3.3.7 Redundant Entry, 3.3.8 Accessible Authentication; naming the version makes models cite criteria by number
+
+### Mobile First
+- **Also known as:** Mobile-first design
+- **Proponents:** Luke Wroblewski (2009; book, A Book Apart 2011)
+- **Core:** Design for the smallest screen first — constraints force focus on what matters, then progressive enhancement for larger screens; in CSS base styles for small screens and `min-width` media queries, never `max-width` overrides; a strategy of priorities, not "mobile only"
+
+### Neo-Brutalism
+- **Also known as:** Neobrutalism, neubrutalism
+- **Proponents:** No single originator (community trend); defined by Nielsen Norman Group (Hayat Sheikh, 2025)
+- **Core:** Web/UI style — thick black outlines, hard offset shadows without blur, flat saturated colours, blocky visible structure, heavy grotesque or monospace type, but with a grid and clear hierarchy (unlike raw brutalist web design); say "neo-brutalism", because the bare "brutalism" resolves to architecture
+
+### Bento Grid
+- **Also known as:** Bento box layout, bento UI
+- **Proponents:** No single originator; often attributed to Apple's promotional videos and keynote summary slides (Microsoft Metro tiles as precursor)
+- **Core:** Rounded tiles of different sizes on one grid (2×2 hero tile, 2×1 and 1×1 tiles), one idea per tile, size carries the hierarchy, even gaps, built on CSS Grid and collapsing to a stack on phones; say "bento grid", because the bare "bento" resolves to food
+
+### Glassmorphism
+- **Also known as:** Frosted glass UI, glass UI
+- **Proponents:** Michał Malewicz (named it, UX Collective, 2020)
+- **Core:** Translucent panels with background blur (`backdrop-filter`), floating layers, a vivid background to show through, a subtle light border, soft shadows and rounded corners; check text contrast against the busiest area behind the glass; Apple's Liquid Glass (2025) is a later, distinct variant

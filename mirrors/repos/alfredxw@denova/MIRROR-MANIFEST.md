@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `alfredxw/denova` — 26 default patterns, 0 followed patterns, 35 file(s) materialized.
+Mirror of `alfredxw/denova` — 26 default patterns, 0 followed patterns, 36 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `alfredxw/denova` — 26 default patterns, 0 followed patterns, 35 fil
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 35 |
+| Files         | 36 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -68,32 +68,33 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 7 | ✓ | [`skills/configuration/references/game-planning.md`](skills/configuration/references/game-planning.md) |
 | 8 | ✓ | [`skills/configuration/references/image-preset.md`](skills/configuration/references/image-preset.md) |
 | 9 | ✓ | [`skills/configuration/references/lore-index.md`](skills/configuration/references/lore-index.md) |
-| 10 | ✓ | [`skills/configuration/references/narrative-style.md`](skills/configuration/references/narrative-style.md) |
-| 11 | ✓ | [`skills/configuration/references/rule-system.md`](skills/configuration/references/rule-system.md) |
-| 12 | ✓ | [`skills/configuration/references/skill.md`](skills/configuration/references/skill.md) |
-| 13 | ✓ | [`skills/configuration/references/state-system.md`](skills/configuration/references/state-system.md) |
-| 14 | ✓ | [`skills/configuration/references/style-reference.md`](skills/configuration/references/style-reference.md) |
-| 15 | ✓ | [`skills/configuration/SKILL.md`](skills/configuration/SKILL.md) |
-| 16 | ✓ | [`skills/extension-development/references/api.md`](skills/extension-development/references/api.md) |
-| 17 | ✓ | [`skills/extension-development/SKILL.md`](skills/extension-development/SKILL.md) |
-| 18 | ✓ | [`skills/game-craft/references/character-personality.md`](skills/game-craft/references/character-personality.md) |
-| 19 | ✓ | [`skills/game-craft/references/opening-and-diagnosis.md`](skills/game-craft/references/opening-and-diagnosis.md) |
-| 20 | ✓ | [`skills/game-craft/references/planning-and-scenes.md`](skills/game-craft/references/planning-and-scenes.md) |
-| 21 | ✓ | [`skills/game-craft/references/state-and-rules.md`](skills/game-craft/references/state-and-rules.md) |
-| 22 | ✓ | [`skills/game-craft/references/web-novel-patterns.md`](skills/game-craft/references/web-novel-patterns.md) |
-| 23 | ✓ | [`skills/game-craft/references/world-and-cast.md`](skills/game-craft/references/world-and-cast.md) |
-| 24 | ✓ | [`skills/game-craft/SKILL.md`](skills/game-craft/SKILL.md) |
-| 25 | ✓ | [`skills/interactive-image/SKILL.md`](skills/interactive-image/SKILL.md) |
-| 26 | ✓ | [`skills/novel-craft/references/character-personality.md`](skills/novel-craft/references/character-personality.md) |
-| 27 | ✓ | [`skills/novel-craft/references/characters-and-rules.md`](skills/novel-craft/references/characters-and-rules.md) |
-| 28 | ✓ | [`skills/novel-craft/references/long-form.md`](skills/novel-craft/references/long-form.md) |
-| 29 | ✓ | [`skills/novel-craft/references/premise-and-outline.md`](skills/novel-craft/references/premise-and-outline.md) |
-| 30 | ✓ | [`skills/novel-craft/references/scene-and-payoff.md`](skills/novel-craft/references/scene-and-payoff.md) |
-| 31 | ✓ | [`skills/novel-craft/SKILL.md`](skills/novel-craft/SKILL.md) |
-| 32 | ✓ | [`skills/novel-lite/SKILL.md`](skills/novel-lite/SKILL.md) |
-| 33 | ✓ | [`skills/novel-standard/SKILL.md`](skills/novel-standard/SKILL.md) |
-| 34 | ✓ | [`skills/web-research/agents/openai.yaml`](skills/web-research/agents/openai.yaml) |
-| 35 | ✓ | [`skills/web-research/SKILL.md`](skills/web-research/SKILL.md) |
+| 10 | ✓ | [`skills/configuration/references/narrative-import.md`](skills/configuration/references/narrative-import.md) |
+| 11 | ✓ | [`skills/configuration/references/narrative-style.md`](skills/configuration/references/narrative-style.md) |
+| 12 | ✓ | [`skills/configuration/references/rule-system.md`](skills/configuration/references/rule-system.md) |
+| 13 | ✓ | [`skills/configuration/references/skill.md`](skills/configuration/references/skill.md) |
+| 14 | ✓ | [`skills/configuration/references/state-system.md`](skills/configuration/references/state-system.md) |
+| 15 | ✓ | [`skills/configuration/references/style-reference.md`](skills/configuration/references/style-reference.md) |
+| 16 | ✓ | [`skills/configuration/SKILL.md`](skills/configuration/SKILL.md) |
+| 17 | ✓ | [`skills/extension-development/references/api.md`](skills/extension-development/references/api.md) |
+| 18 | ✓ | [`skills/extension-development/SKILL.md`](skills/extension-development/SKILL.md) |
+| 19 | ✓ | [`skills/game-craft/references/character-personality.md`](skills/game-craft/references/character-personality.md) |
+| 20 | ✓ | [`skills/game-craft/references/opening-and-diagnosis.md`](skills/game-craft/references/opening-and-diagnosis.md) |
+| 21 | ✓ | [`skills/game-craft/references/planning-and-scenes.md`](skills/game-craft/references/planning-and-scenes.md) |
+| 22 | ✓ | [`skills/game-craft/references/state-and-rules.md`](skills/game-craft/references/state-and-rules.md) |
+| 23 | ✓ | [`skills/game-craft/references/web-novel-patterns.md`](skills/game-craft/references/web-novel-patterns.md) |
+| 24 | ✓ | [`skills/game-craft/references/world-and-cast.md`](skills/game-craft/references/world-and-cast.md) |
+| 25 | ✓ | [`skills/game-craft/SKILL.md`](skills/game-craft/SKILL.md) |
+| 26 | ✓ | [`skills/interactive-image/SKILL.md`](skills/interactive-image/SKILL.md) |
+| 27 | ✓ | [`skills/novel-craft/references/character-personality.md`](skills/novel-craft/references/character-personality.md) |
+| 28 | ✓ | [`skills/novel-craft/references/characters-and-rules.md`](skills/novel-craft/references/characters-and-rules.md) |
+| 29 | ✓ | [`skills/novel-craft/references/long-form.md`](skills/novel-craft/references/long-form.md) |
+| 30 | ✓ | [`skills/novel-craft/references/premise-and-outline.md`](skills/novel-craft/references/premise-and-outline.md) |
+| 31 | ✓ | [`skills/novel-craft/references/scene-and-payoff.md`](skills/novel-craft/references/scene-and-payoff.md) |
+| 32 | ✓ | [`skills/novel-craft/SKILL.md`](skills/novel-craft/SKILL.md) |
+| 33 | ✓ | [`skills/novel-lite/SKILL.md`](skills/novel-lite/SKILL.md) |
+| 34 | ✓ | [`skills/novel-standard/SKILL.md`](skills/novel-standard/SKILL.md) |
+| 35 | ✓ | [`skills/web-research/agents/openai.yaml`](skills/web-research/agents/openai.yaml) |
+| 36 | ✓ | [`skills/web-research/SKILL.md`](skills/web-research/SKILL.md) |
 
 ---
 

@@ -182,10 +182,28 @@ Goal visibility are checked before and after reading. Original-Chat delivery
 and explicit peer-return consumption remain different receipt paths. The list
 does not mark reads, accept work, start an Agent or certify an overall outcome.
 Unreadable/missing sources and incomplete scans keep counts visibly partial.
+When the typed lifecycle proves a matching original source/route but finds a
+conflicting handoff receipt, coverage includes at most 12 diagnostic
+request/Goal/Agent identities. This is a refusal readback, not a readable brief,
+cancellation or completion. The App's warning glyph exposes that cause on demand;
+other unreadable sources remain unknown. Refresh rechecks the original owners;
+the read neither repairs historical receipts nor grants execution/return authority.
+
+For native-bound steward inventory, one fresh provider selection supplies both
+Session validation and Goal visibility at each opening/closing check. The read
+still revalidates before returning content; no observation is cached between
+checks or requests. Custom scope resolvers keep their existing validation path.
 
 管家标题栏提供常驻委派入口，按接收方查看待跟进请求，并可展开当前交办内容、关联
 工作和原对话。同一来源的较早会话不会因重开会话而丢失；其它用户、来源、群聊和
 项目会话不混入。结论已回传与成果已验收不是同一事实，历史记录仍可回看。
+来源与原路匹配但发送回执冲突时，保留不完整计数，以警示小符号按需提供至多 12 条
+具体请求身份和原因；不展示未获读取资格的交办正文，不推定已取消或完成。刷新重新
+核验原 owner，不修改历史回执，也不解除执行或返回权限；其它读取缺口继续保持未知。
+
+原生绑定管家的每次读取，在开始和结束时各验证一次 provider 身份，同一检查点的
+会话和 Goal 范围复用该次选择；检查点及请求之间不缓存权限。自定义范围解析器沿用
+原验证路径。
 
 The automatic agenda is a partial read (`read_complete=false`): it cannot fulfill
 the full Inbox read or replace its requirements. Before acting, read the current
@@ -380,11 +398,17 @@ The page does not expose host addresses or read host stores; `view=agent_route`
 remains the exact-identity, current-observation path. A registration or binding
 does not prove presence, execution readiness or delivery authority.
 
-Repeated role names alone do not require an owner question. The conversation's
-explicit identity corrections, established assignment, project and declared
-responsibilities guide recipient selection; binding metadata can support that
-context but cannot override an explicit identity or grant. Preserve both Goal
-and Agent identity. Forwarded requests retain their original speaker/addressee
+Repeated role names alone do not require an owner question. Resolve the subject,
+project, purpose and destination before matching a role alias or Agent id.
+Compare plausible recipients by conversation, current work and responsibilities;
+when the user refers to recent research, inspect relevant recent deliveries.
+A previous send proves delivery, not subject ownership: recheck a challenged
+route rather than preserving an earlier mistake. Explicit identity corrections
+take precedence; binding metadata cannot override them or a grant. Preserve both
+Goal and Agent identity. Correcting delivery does not retract an old misroute:
+reuse verified receipts and send only a still-needed bounded ownership correction
+through the existing path. Never claim cancellation or adoption from delivery.
+Forwarded requests retain their original speaker/addressee
 in the existing collaboration brief rather than redefining every “you” as the
 receiver. Clarify only competing interpretations that still change the action.
 

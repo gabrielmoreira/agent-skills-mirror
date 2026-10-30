@@ -7,6 +7,47 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.14.3] - 2026-10-29 — Access-review evidence, MCP OAuth triage, community fixes
+
+Two new skills and five fixes, three of them from community contributors. The six plugins whose
+files changed move to 2.14.3: `access-lifecycle` (new), `ra-qm-skills`, `engineering-advanced-skills`,
+`engineering-skills`, `pw` and `markdown-html-skills`.
+
+### Added
+
+- **access-lifecycle** (`ra-qm-team/access-lifecycle/`, also bundled in `ra-qm-skills`). Produces the
+  user-access-review evidence that `soc2-compliance` and the ISO 27001 skills only describe. Three stdlib
+  scripts with blocking exit codes: `access_diff.py` joins the HR roster to account exports and blocks on
+  leavers still enabled or used after their exit date, privileged orphans and ownerless privileged service
+  accounts; `access_review_campaign.py` blocks on accounts the campaign never covered, undecided lines,
+  self-review and revokes not removed inside the policy window, and flags rubber-stamping as a signal;
+  `control_evidence_mapper.py` maps findings to SOC 2, ISO 27001, NIST 800-53, PCI DSS, HIPAA and SOX IPE
+  controls with no PASS status. Inactivity and remediation periods are required flags, not defaults.
+  Ships `cs-access-reviewer`, `/cs-access-review`, `/cs-access-diff`, three references with confidence
+  markers and a sign-off template.
+
+- **mcp-oauth-triage** (`engineering/skills/mcp-oauth-triage/`, in `engineering-advanced-skills`; #1057,
+  contributed by @Ben-Home). Diagnoses an OAuth-backed MCP connector that authenticated before and now
+  returns 401s. `oauth_triage.py` classifies the fault from a token record and a connector log as envelope
+  mismatch, expiry semantics, rotation clobber, binding fault or poisoned negative cache, then names one next
+  probe; `run_fixtures.py` replays six shipped fixtures. Both take `--sample` for gate G9. Standard library only,
+  no network calls.
+
+### Fixed
+
+- **Install docs named plugins that do not exist** (#1058, #1061). README and INSTALLATION.md listed
+  `/plugin install` commands for eight names missing from `marketplace.json`; they now use real standalone
+  plugin names and explain that bundled skills come with their bundle.
+- **`convert.sh` dropped `assets/`** (#1059, contributed by @giriadityatheplankton). Converted integrations
+  now copy `assets/` like `scripts/`, `references/` and `templates/`, removing 47 dead links across 19 skills.
+- **md-slides failed to load in Antigravity** (#1060, contributed by @giriadityatheplankton). Its description
+  contained a literal `---`, which Antigravity's loader treats as the end of the frontmatter.
+- **epic-design pointed at asset files that never existed** (#1051). `SKILL.md` sent agents to
+  `assets/hero-section.html/.css/.js`; the pointers now name the references that hold that material
+  (`examples.md`, `depth-system.md`, `motion-system.md`).
+- **playwright-pro's router skill name did not match its folder** (#1051). `skills/pw/SKILL.md` now
+  declares `name: "pw"`, as the Agent Skills spec requires and as every mirror index already used.
+
 ## [2.14.2] - 2026-10-26 — Skills that trigger, OWASP 2025, blocking JSON gate
 
 Remaining P2 items from the v2.14.0 real-state audit. The 43 plugins whose files changed move to 2.14.2.

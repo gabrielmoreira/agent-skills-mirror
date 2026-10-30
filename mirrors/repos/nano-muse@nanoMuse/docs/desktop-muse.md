@@ -619,7 +619,12 @@ serves `/nanomuse/rooms/*` and streams changes to the browser half:
   `~/nanoMuse/Library`, `构件` in Chinese, with the workspace-write preset), *Recent*
   and a card grid; a viewer and a Markdown editor for text (restoring IDENTITY.md or SOUL.md
   to the stock text asks first), pictures and media inline, *Open* / *Show in folder* for the rest. Everything the agent delivers with `present`
-  lands here, and `library_add` lists a file without delivering it.
+  lands here, and `library_add` lists a file without delivering it. Documents of your own
+  need no model: the menu beside *Create* has *Blank document* (an empty `Untitled.md` in
+  the Library folder, opened in the editor) and *Import Markdown files…* (`.md`, `.markdown`
+  and `.txt` files you pick are copied into the folder and listed under Documents; a taken
+  name gets a number, a file over 2 MB or of another kind is named as skipped). Other
+  formats wait for a conversion to Markdown.
 
 Rooms need a model that answers; signed out, they say so. The chat the feed is written in
 is the agent's working room: the chats column and search leave it out while it runs

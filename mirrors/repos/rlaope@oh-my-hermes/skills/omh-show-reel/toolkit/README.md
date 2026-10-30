@@ -46,10 +46,12 @@ python $S/contact_sheet.py --video PROJECT/out/draft.mp4 --every 1 --out PROJECT
 node $S/render.mjs --dir PROJECT/reel --out PROJECT/out/video.mp4 --sub 4 $TOOLS
 python $S/synth_music.py toolkit/examples/music-spec.json --out PROJECT/audio/music/score.wav
 python $S/music_tools.py analyze PROJECT/audio/music/score.wav
+python $S/music_tools.py analyze PROJECT/audio/music/track.wav --bpm 174 --start 0 --window 40 --out PROJECT/audio/music/analysis.json
 python $S/mix.py PROJECT/mix-spec.json --out PROJECT/audio/mix.wav --ffmpeg /explicit/ffmpeg
 python $S/finish.py --video PROJECT/out/video.mp4 --audio PROJECT/audio/mix.wav --name "Title_60s" --outdir PROJECT/out/final
-python $S/qa_check.py PROJECT/out/final/Title_60s.mp4 --audio-mode music-only --ffmpeg /explicit/ffmpeg --ffprobe /explicit/ffprobe
-python $S/motion_check.py PROJECT/out/draft.mp4 --ffmpeg /explicit/ffmpeg --holds PROJECT/intentional-holds.json
+python $S/qa_check.py PROJECT/out/final/Title_60s.mp4 --audio-mode music-only --policy PROJECT/qa-policy.json --ffmpeg /explicit/ffmpeg --ffprobe /explicit/ffprobe
+python $S/motion_check.py PROJECT/out/draft.mp4 --ffmpeg /explicit/ffmpeg --ffprobe /explicit/ffprobe --profile general --holds PROJECT/intentional-holds.json
+python $S/motion_check.py PROJECT/out/final/Title_60s.mp4 --ffmpeg /explicit/ffmpeg --profile kinetic --endcard 3 --reference PROJECT/research/reference.mp4
 ```
 
 `$TOOLS` stands for `--browser /explicit/chrome-headless-shell --dependency-root
@@ -77,6 +79,15 @@ you add an image, a split scene file or a library under `reel/lib/`, add its
 project-relative path to `render_files` (and to `input_sha256` when you want the
 digest pinned). `project.json` width, height, duration and fps must equal
 `REEL.config`; the renderer compares them.
+
+`project.json` can also declare `cuts`, at most 4096 strictly increasing numeric
+seconds inside `(0, duration)`. Keep hard-cut scene boundaries at exactly these
+times. The cut-aware `--sub`/`--shutter` sampler slides the shutter window inside
+the shot of each output time (and shrinks it for a shorter shot), so samples
+cannot blend across declared cuts. An output exactly at a cut belongs to the new
+shot. With no cuts, centered shutter sampling is unchanged; success receipts
+record the `cuts` count. No engine asset changes or half-frame cut shifts are
+needed.
 
 ## Upstream command map
 
@@ -170,8 +181,17 @@ certify shaping, cultural copy, legibility or native-language correctness.
 `tick`/`boom`/`whoosh` events; it is a modest local score, not a licensed
 orchestral track. `music_tools.py analyze` reads tempo, downbeats and hits from
 any chosen track (`analysis.json`); `timeline.py script.json --music-analysis`
-turns them into `barN`/`music.hitN` cues and writes `timeline.json` plus
-`reel/timeline.js`. Narration lines in `script.json` need per-line clips and
+turns them into `barN`/`music.hitN`/`music.dropN` cues and writes `timeline.json`
+plus `reel/timeline.js`. `analyze FILE --bpm HINT --start SECONDS --window SECONDS`
+fits a bounded passage with a tempo/phase search within ±8% of the hint, without
+slow-tempo folding. Without a hint it retains existing tempo behavior and adds
+`alternatives` (half/double candidates within 60–200 BPM). Inspect `grid_strength`
+(0..1), any `warning: "tempo hint disagrees with the track"`, and `drops` (up to
+three time-ordered `{t, rise, bar}` rows; rise compares two bars after a downbeat
+to one bar before it). Timeline drop cues shift by the music start offset just
+like bar cues; `--start`/`--window` limit fitting, not source trimming.
+
+Narration lines in `script.json` need per-line clips and
 character alignment in `audio/vo/` first; without them timeline.py reports the
 missing lines and exits 1. The opt-in `narrate.py` produces them with your own
 key. An approved local recording can be supplied by hand in the same shapes:
@@ -201,11 +221,61 @@ normalize. Measure the **final AAC** with QA and the chosen `--policy` JSON
 
 ## Independent acceptance
 
-Technical QA binds SHA256 and full decode to measured checks. Motion QA samples
-low-resolution movement/brightness, with authored intentional-hold intervals
-`[{"start":0,"end":1,"reason":"reading hold reviewed in storyboard"}]`.
-A freeze is not automatically an intentional hold, and brightness heuristics
-are not flash/accessibility certification. Strict issues exit nonzero.
+Use `references/kinetic-type.md` only when the selected concept is kinetic
+typography for a hype launch or teaser, never for an explainer or evidence film.
+For reference-led work, measure the approved reference first with the same motion
+method, keep its hash and active range, then pass `--reference REF.mp4` when
+checking the candidate. Reference metrics never alter the candidate verdict.
+
+`motion_check.py VIDEO --ffmpeg PATH [--ffprobe PATH] --profile general|kinetic`
+measures native fps (capped at 60), area-scaled 320x180 gray frames. `change_area`
+is the fraction of pixels whose luma moved >24 since the prior frame. A still
+frame is below 0.015; a cut is above 0.45 with an absolute mean-luma jump >18 or
+area >0.6. Receipts include still share/runs, longest unannotated still, cuts per
+10 s, mean change area, high-motion share (area >0.12), and flash-pair count.
+These heuristics are not optical flow or a median-flow gate.
+
+- `--profile general` (default): REVISE for an unannotated still run >1.0 s.
+- `--profile kinetic`: REVISE for `still_share > 0.40` or an unannotated still
+  run >0.6 s. Do not use it as a universal explainer pacing rule.
+- `--endcard SECONDS` excludes the final seconds from **every** metric; the
+  example `--endcard 3` is not a required end-card length.
+- `--holds FILE` accepts authored intervals such as
+  `[{"start":0,"end":1,"reason":"reading hold reviewed in storyboard"}]`.
+  A nonempty reason is required. Only the covered part of a still run is exempt;
+  holds do not exempt aggregate still share or flash review.
+- Flashes are opposing mean-luma jumps >40 counted as pairs (up/down or down/up),
+  not individual changes. `max_flashes_per_s` is the largest pair count in a
+  one-second window. A ground flip without a return is not a flash. Both profiles
+  REVISE with `flash_review_required` when that count is >3. Brightness heuristics
+  never certify photosensitivity or accessibility safety.
+
+Motion JSON binds `artifact_sha256` to `profile`, `metrics`, `policy`, `issues`,
+`limitations` and `artistic: "not_observed"`. `--reference` adds a reference path,
+hash and metrics. A freeze needs review, not a post-hoc intentional-hold label.
+Strict issues exit nonzero.
+
+Technical QA binds SHA256 and full decode to measured checks. Put delivery
+constraints in the JSON passed to `qa_check.py --policy`, including
+`max_h264_level` and `hardware_decode` when required; these are policy keys, not
+standalone CLI flags. For example:
+
+```json
+{"max_h264_level": 42, "hardware_decode": true}
+```
+
+`max_h264_level` checks ffprobe stream `level` (42 for Level 4.2, 52 for Level
+5.2; choose for the intended 1080p/4K delivery). A non-H.264 stream fails this
+policy; measurements add `h264_level`. With `hardware_decode: true`, macOS fully
+decodes using FFmpeg `-hwaccel videotoolbox` and any error line is REVISE. On
+other OS the check is HOLD, "not observable on this host", so overall cannot be
+PASS. Software decode and level compliance alone do not certify target playback.
+
+The mix report adds `buried_hits: [{"at": 1, "file": "hit.wav", "sfx_db": -18,
+"bed_db": -12}]` when a placed SFX's first 100 ms RMS is below the music bed in
+the same interval, after bed automation and ducking. No SFX or muted mode yields
+`[]`. This is a diagnostic, never automatic gain adjustment: review cue and level
+choices, edit the authored mix, and remeasure final AAC. It is not listening.
 
 A technical PASS never fills artistic, full-speed playback, listening, STT or
 native-language approval. Open every contact sheet you make and look at it.

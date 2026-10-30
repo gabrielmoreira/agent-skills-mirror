@@ -18,8 +18,9 @@ copies upstream's engine unmodified: `reel/engine.js` (`REEL`), `reel/fx.js`
 - `REEL.config`, `REEL.scene({id,start,end,setup,render})`, `REEL.overlay`,
   `REEL.preload`/`REEL.img`, `REEL.cue`/`bar`/`beat`/`level`/`charTimes` read
   `reel/timeline.js`. Put times on cues, not literals, so re-timed audio carries
-  the picture with it. Put hard cuts at `cue - 0.5 / fps` so the `--sub` shutter
-  does not blend both states into the cue frame.
+  the picture with it. Declare hard-cut seconds in `project.json` `cuts` at the
+  actual scene boundaries; the cut-aware `--sub` shutter stays inside each shot,
+  so the old `cue - 0.5 / fps` placement workaround is not needed.
 - `window.__seek(t)`, `__ready` and `__meta` are the host capture contract, not a
   runtime RPC. The adapter refuses running animations, page errors, external
   requests, undeclared files and glyphs the declared fonts do not cover.

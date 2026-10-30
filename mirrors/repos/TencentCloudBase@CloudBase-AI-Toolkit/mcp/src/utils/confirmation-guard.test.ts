@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { ErrorCode, McpError } from "@modelcontextprotocol/sdk/types.js";
 import { t } from "../i18n/index.js";
+import { noteEnvBinding, runInEnvSlot } from "./env-binding.js";
 import {
     AUTO_APPROVE_ENV_NAME,
     AUTO_ANSWER_THRESHOLD_MS,
@@ -139,6 +140,16 @@ describe("破坏性动作执行前确认", () => {
         const message = unnamed.elicitInput.mock.calls[0][0].message as string;
         expect(message).toContain("当前环境的 MySQL 实例");
         expect(message).not.toContain("未能从参数中取到资源名");
+    });
+
+    it("没有实例 envId 时，确认文案用槽里记下的登录态环境", async () => {
+        const { server, elicitInput } = makeServer({ action: "accept", content: { confirm: CONFIRM_LABEL } });
+        server.cloudBaseOptions = {};
+        await runInEnvSlot(async () => {
+            noteEnvBinding({ envId: "env-from-login", source: "login_state" });
+            await guardDestructiveAction(server, { toolName: "manageFunctions", args: DELETE_ARGS });
+        });
+        expect(elicitInput.mock.calls[0][0].message).toContain("env-from-login");
     });
 
     it("用户在确认框里确认后放行，且文案带目标与受控选项", async () => {

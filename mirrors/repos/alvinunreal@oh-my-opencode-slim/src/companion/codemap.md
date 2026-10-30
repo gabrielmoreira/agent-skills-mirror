@@ -42,6 +42,15 @@ interface CompanionSession {
 }
 ```
 
+### Unchanged-input Fast Paths
+
+`manager.ts` revalidates state-file identity before using its bounded parsed
+memo; mutators work on isolated values and only successful rename publication
+becomes the new memo. Native preset requests still poll every 250ms. The
+once-per-second config refresh reuses shared config snapshots and skips
+unchanged derivation. `status.ts` owns the dependency-free busy/idle normalization
+used by the root without eagerly loading Companion machinery.
+
 ### State Management
 
 - Uses the shared PID/token lock implementation for `companion-state.json.lock`, including stale-owner recovery instead of an unowned mkdir-only lock

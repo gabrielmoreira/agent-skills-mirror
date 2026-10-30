@@ -424,6 +424,11 @@ refused here.
    said on stderr before the first request leaves.
 3. Neither is a refusal naming both, before the run folder is made.
 
+`SPRITE_GEN_LOGINS=off` skips the first step: `claude` is not run and the key is the one route
+([subscription logins off](gen.md#subscription-logins-off)). `SPRITE_GEN_ANTHROPIC_BASE_URL` sends the
+messages, the batches and a batch's results file through another address
+([provider addresses](gen.md#provider-addresses)).
+
 The child never sees `ANTHROPIC_API_KEY` or `ANTHROPIC_AUTH_TOKEN` — in print mode the binary uses a
 key whenever one is present — nor the calling Claude Code session's own variables. A login that is
 here but refuses a call, has expired or has reached its usage limit fails that call as it came; the

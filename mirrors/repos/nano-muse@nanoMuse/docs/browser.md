@@ -34,6 +34,8 @@ timeout_ms = 30000
 
 `NANOMUSE_BROWSER_ENABLED=1` switches the tool on; `NANOMUSE_BROWSER_BACKEND` picks the backend. On the phone (`NANOMUSE_DEVICE=android`) the tool is on by default.
 
+A program that embeds the runtime and brings a browser of its own (a remote browser service, say) does not need a third setting: it gives the `Browser` tool a `backend_factory`, a callable returning a `BrowserBackend` (`nanomuse/tools/browser_backends.py`, the interface the two built-in backends implement). A new session then takes that backend instead of Playwright or the phone, and from there nothing differs: the same actions drive it, the app shows its frames and can take it over, `close` and the tool's cleanup close it, and the Sentinel sees every URL before it is opened. Until the first session the app is told the kind `custom`; after that, the backend's own `kind`. The factory is asked again only after its backend was closed, so one session keeps one backend.
+
 ## What the agent can do
 
 The tool's actions, identical on both backends:

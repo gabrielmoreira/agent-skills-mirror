@@ -264,7 +264,7 @@ describe("env tools - auth", () => {
         createEnvError: {
           code: "NoPromotionalActivity",
           message: "当前账号不符合免费环境创建条件，请手动创建环境",
-          helpUrl: "https://buy.cloud.tencent.com/lowcode?buyType=tcb&channel=mcp",
+          helpUrl: "https://buy.cloud.tencent.com/CloudBase?buyType=tcb&region=ap-shanghai&sqlType=pg",
         },
       },
     }));
@@ -607,7 +607,7 @@ describe("env tools - auth", () => {
       initTcbError: {
         code: "RealNameAuthRequired",
         message: "当前账号需要先完成实名认证",
-        helpUrl: "https://buy.cloud.tencent.com/lowcode?buyType=tcb&channel=mcp",
+        helpUrl: "https://buy.cloud.tencent.com/CloudBase?buyType=tcb&region=ap-shanghai&sqlType=pg",
         needRealNameAuth: true,
       },
     }));
@@ -623,7 +623,7 @@ describe("env tools - auth", () => {
         reason: "tcb_init_failed",
         error_code: "RealNameAuthRequired",
         need_real_name_auth: true,
-        help_url: "https://buy.cloud.tencent.com/lowcode?buyType=tcb&channel=mcp",
+        help_url: "https://buy.cloud.tencent.com/CloudBase?buyType=tcb&region=ap-shanghai&sqlType=pg",
       },
     });
     expect(payload.env_setup_actions).toEqual(
@@ -649,7 +649,7 @@ describe("env tools - auth", () => {
       env_setup_failure: {
         reason: "env_creation_failed",
         error_code: "NoPromotionalActivity",
-        help_url: "https://buy.cloud.tencent.com/lowcode?buyType=tcb&channel=mcp",
+        help_url: "https://buy.cloud.tencent.com/CloudBase?buyType=tcb&region=ap-shanghai&sqlType=pg",
       },
     });
   });

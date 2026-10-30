@@ -507,6 +507,25 @@ includes one a `/model` switch made cold with time still left.
 > second window. A five-minute cache, Codex, OpenCode, pi and omp, warns about two and a half minutes
 > before it goes cold instead.
 
+### The count on the app icon
+
+The installed app's icon shows how many alerts are waiting on you: every pane blocked on you, and,
+with Finished switched on, every finished pane you have not opened yet. It follows the same switches
+as the pushes, so it counts exactly what notifies you.
+
+Opening a finished pane in Collie retracts its alert, from the lock screen and from the count. A
+blocked pane's alert stays until you answer it.
+
+Each herd push carries the count for its session, and the phone adds up every session and machine in
+the crew. Opening the dashboard sets it again from what is on screen when it shows every session, and
+unpairing the device clears it. A dashboard that shows one session of several leaves the count to the
+pushes, because it cannot see the others.
+
+> **Note.** The count needs a browser with the Badging API and an installed app: on an iPhone,
+> iOS 16.4 or later, Collie added to the Home Screen, and notifications allowed. With every kind of
+> agent alert switched off, no push carries a count, so the icon changes only when you open the
+> dashboard.
+
 Stale subscriptions can accumulate over time because home-screen reinstalls and service-worker
 resets create new endpoints without always returning an HTTP 410. Collie updates the record when a
 device re-registers. You can view and delete stored endpoints directly:
@@ -516,6 +535,40 @@ device re-registers. You can view and delete stored endpoints directly:
 bin/collie push list
 bin/collie push forget <substring>   # or: push forget --all
 ```
+
+### iPhone and iPad
+
+**Why does Settings say "This browser doesn't support push notifications"?** iOS and iPadOS 16.4
+and newer allow Web Push only for a web app that you added to the home screen and opened from its
+icon. In a Safari tab, **Settings → Alerts** shows that line. See
+[Put it on your phone](install.md#iphone-and-ipad) for the steps to add Collie.
+
+**I added the icon. Do I set up again?** Yes. The home screen app keeps its own storage, separate
+from Safari. Pair it again in the app (`collie pair` on the host, then **Settings → System → Paired
+devices**, see [Pair a device](security.md#pair-a-device--the-write-credential)). Then turn on push in
+**Settings → Alerts** in that app.
+
+**Why does the switch say "Unavailable over plain HTTP"?** Push needs HTTPS. Over plain HTTP, for
+example with `COLLIE_SERVE_MODE=http` or a Headscale tailnet without certificates, the switch stays
+off with "Serve Collie over HTTPS to enable push." See the secure-context paragraph above and
+[Front doors](deployment.md#front-doors-one-product-at-a-time).
+
+**Why does Settings say "Notifications are blocked for this site"?** The browser reports that
+notifications are denied for the app. Allow notifications for Collie in iOS **Settings → Notifications**, under the name of
+the home screen app. That list is Apple's, not Collie's. Then open Collie again.
+
+**The switch is on, but nothing arrives.** Run `collie push-test` on the host. If it says it
+sent to a device, look at Focus and Do Not Disturb on the phone. If it reports no subscribed devices,
+turn push on again in the app. `collie push list` shows one line for each device that has a
+subscription.
+
+**I removed the icon and added it again. What now?** iOS treats it as a new app, so it has new
+storage and a new subscription. Pair it again if Collie asks, and turn push on again. The old
+subscription stays in the list until a send to it fails. Remove it sooner with
+`collie push forget <substring>`.
+
+These answers follow Apple's rules for home screen web apps. Collie's maintainers have not checked
+every step on an iPhone yet.
 
 ### Pushes from a durable agent
 

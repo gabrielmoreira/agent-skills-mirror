@@ -352,6 +352,17 @@ named, how many calls each took as buckets `1`, `2-3`, `4-7`, `8-15`,
 `16+`, and the mean); `/v1/admin/data` has `turns` beside `samples` in its
 totals, days, models, platforms, runs, sources and accounts.
 
+**What that costs.** A turn's row carries its request, and the columns the
+figures sum sit after it in the row, so a sum that read them walked every
+body: half a minute for a week of turns on a 30 GB file, more with the
+cache cold. The figures and the question-by-question list read an index of
+those columns instead (`turns_figures`, built at the first start after the
+upgrade in one pass over the record) and answer in well under a second. The
+backfill reads and rewrites the record's rows a hundred at a time, writes
+them twenty-five per transaction, and pauses after each page for as long as
+the page took, so the console and the apps keep their share of the disk
+while it runs: an hour or so for a hundred thousand calls.
+
 To read a question whole, `GET /v1/admin/record/turns` returns the newest
 questions first, each laid out once from its calls: the person's message,
 a step per call (the call's figures, what the model said or the tools it
@@ -368,7 +379,8 @@ the pictures and screenshots inline where they were sent (fetched with the
 admin token, so an `<img>` alone would not do), each tool call with its
 arguments folded, the final reply marked, and the whole call one click away;
 the *Data and sync* page shows questions beside calls everywhere it counted
-calls before.
+calls before, and an account's *Kept turns* tab (one row per call) links to
+the same page filtered to that account.
 
 ## Provenance
 
@@ -484,7 +496,13 @@ travels: side chats stay on the device that made them, and a device pulls with
 (a second switch under *Data controls*, off by default, **per device**; the
 relay has no account-wide setting for it) turns that around for the device it is
 flipped on: its side chats go up, the other devices' side chats come down, and
-the first pull after the flip starts over from zero. The first pull of a fresh
+the first pull after the flip starts over from zero. Two kinds of chat never
+travel, switch or no switch: a chat the desktop runs for another device's task
+(*From Pixel 8*, that device's conversation) and a chat the desktop's rooms run
+for themselves, the feed's daily batch among them (*Feed · <date>*, archived
+when it is done) — those are the agent's workbench, not conversations of the
+person's, and through 1.0.9 the batches did reach the phones as side chats
+once a day ([#713](https://github.com/nano-muse/nanoMuse/issues/713)). The first pull of a fresh
 sign-in asks for the **tail**, the newest 300 messages with the conversations
 they belong to, so a long history opens at once instead of paging from the
 start; the older messages it skipped stay on the relay and are not pulled. While a

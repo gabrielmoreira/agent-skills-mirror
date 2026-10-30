@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `jgravelle/jcodemunch-mcp` — 26 default patterns, 0 followed patterns, 12 file(s) materialized.
+Mirror of `jgravelle/jcodemunch-mcp` — 26 default patterns, 0 followed patterns, 13 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `jgravelle/jcodemunch-mcp` — 26 default patterns, 0 followed pattern
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 12 |
+| Files         | 13 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -71,6 +71,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 10 | ✓ | [`.claude/skills/version-scheme/SKILL.md`](.claude/skills/version-scheme/SKILL.md) |
 | 11 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 12 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 13 | ✓ | [`plugin/jcodemunch/skills/jcodemunch/SKILL.md`](plugin/jcodemunch/skills/jcodemunch/SKILL.md) |
 
 ---
 

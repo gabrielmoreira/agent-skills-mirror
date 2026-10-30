@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `lidge-jun/opencodex` — 26 default patterns, 5 followed patterns, 85 file(s) materialized.
+Mirror of `lidge-jun/opencodex` — 26 default patterns, 5 followed patterns, 86 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `lidge-jun/opencodex` — 26 default patterns, 5 followed patterns, 85
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 5 |
-| Files         | 85 |
+| Files         | 86 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -125,29 +125,30 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 60 | ✓ | [`structure/config.md`](structure/config.md) |
 | 61 | ✓ | [`structure/dashboard-and-usage.md`](structure/dashboard-and-usage.md) |
 | 62 | ✓ | [`structure/design-methodology.md`](structure/design-methodology.md) |
-| 63 | ✓ | [`structure/desktop-shell.md`](structure/desktop-shell.md) |
-| 64 | ✓ | [`structure/desktop-start-at-login.md`](structure/desktop-start-at-login.md) |
-| 65 | ✓ | [`structure/desktop-terminal-command.md`](structure/desktop-terminal-command.md) |
-| 66 | ✓ | [`structure/fallback-policy.md`](structure/fallback-policy.md) |
-| 67 | ✓ | [`structure/gui-and-management-api.md`](structure/gui-and-management-api.md) |
-| 68 | ✓ | [`structure/local-messaging.md`](structure/local-messaging.md) |
-| 69 | ✓ | [`structure/overview.md`](structure/overview.md) |
-| 70 | ✓ | [`structure/pricing.md`](structure/pricing.md) |
-| 71 | ✓ | [`structure/provider-completion-diagnostic.md`](structure/provider-completion-diagnostic.md) |
-| 72 | ✓ | [`structure/providers-and-adapters.md`](structure/providers-and-adapters.md) |
-| 73 | ✓ | [`structure/quota-pool.md`](structure/quota-pool.md) |
-| 74 | ✓ | [`structure/quota-snapshots.md`](structure/quota-snapshots.md) |
-| 75 | ✓ | [`structure/remote-link.md`](structure/remote-link.md) |
-| 76 | ✓ | [`structure/remote-messaging.md`](structure/remote-messaging.md) |
-| 77 | ✓ | [`structure/remote-workspace.md`](structure/remote-workspace.md) |
-| 78 | ✓ | [`structure/runtime.md`](structure/runtime.md) |
-| 79 | ✓ | [`structure/subagent-capacity.md`](structure/subagent-capacity.md) |
-| 80 | ✓ | [`structure/subagents.md`](structure/subagents.md) |
-| 81 | → | [`AGENTS_INSTALL.md`](AGENTS_INSTALL.md) |
-| 82 | → | [`CREDITS.md`](CREDITS.md) |
-| 83 | → | [`MAINTAINERS.md`](MAINTAINERS.md) |
-| 84 | → | [`SECURITY.md`](SECURITY.md) |
-| 85 | → | [`structure/INDEX.md`](structure/INDEX.md) |
+| 63 | ✓ | [`structure/desktop-recovery.md`](structure/desktop-recovery.md) |
+| 64 | ✓ | [`structure/desktop-shell.md`](structure/desktop-shell.md) |
+| 65 | ✓ | [`structure/desktop-start-at-login.md`](structure/desktop-start-at-login.md) |
+| 66 | ✓ | [`structure/desktop-terminal-command.md`](structure/desktop-terminal-command.md) |
+| 67 | ✓ | [`structure/fallback-policy.md`](structure/fallback-policy.md) |
+| 68 | ✓ | [`structure/gui-and-management-api.md`](structure/gui-and-management-api.md) |
+| 69 | ✓ | [`structure/local-messaging.md`](structure/local-messaging.md) |
+| 70 | ✓ | [`structure/overview.md`](structure/overview.md) |
+| 71 | ✓ | [`structure/pricing.md`](structure/pricing.md) |
+| 72 | ✓ | [`structure/provider-completion-diagnostic.md`](structure/provider-completion-diagnostic.md) |
+| 73 | ✓ | [`structure/providers-and-adapters.md`](structure/providers-and-adapters.md) |
+| 74 | ✓ | [`structure/quota-pool.md`](structure/quota-pool.md) |
+| 75 | ✓ | [`structure/quota-snapshots.md`](structure/quota-snapshots.md) |
+| 76 | ✓ | [`structure/remote-link.md`](structure/remote-link.md) |
+| 77 | ✓ | [`structure/remote-messaging.md`](structure/remote-messaging.md) |
+| 78 | ✓ | [`structure/remote-workspace.md`](structure/remote-workspace.md) |
+| 79 | ✓ | [`structure/runtime.md`](structure/runtime.md) |
+| 80 | ✓ | [`structure/subagent-capacity.md`](structure/subagent-capacity.md) |
+| 81 | ✓ | [`structure/subagents.md`](structure/subagents.md) |
+| 82 | → | [`AGENTS_INSTALL.md`](AGENTS_INSTALL.md) |
+| 83 | → | [`CREDITS.md`](CREDITS.md) |
+| 84 | → | [`MAINTAINERS.md`](MAINTAINERS.md) |
+| 85 | → | [`SECURITY.md`](SECURITY.md) |
+| 86 | → | [`structure/INDEX.md`](structure/INDEX.md) |
 
 ---
 

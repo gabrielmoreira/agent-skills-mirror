@@ -35,13 +35,13 @@
 ## 导航、预算与验证
 
 - 新增正式页面时更新 `.vitepress/config.mts` 的正确父级和阅读顺序；内部 `AGENTS.md`、decision 与 postmortem 不因位于 `docs/` 就自动成为用户导航入口。
-- `scripts/verify_engineering_contracts.py` 的 AGENTS 字符预算是 standing-order guardrail。超限时先下沉示例、背景和专题解释，再压缩重复；确需提高预算时同步更新 decision 和 gate，不能静默删掉必要约束或关闭检查。
+- `scripts/ci/verify_engineering_contracts.py` 的 AGENTS 字符预算是 standing-order guardrail。超限时先下沉示例、背景和专题解释，再压缩重复；确需提高预算时同步更新 decision 和 gate，不能静默删掉必要约束或关闭检查。
 - 修改配置、API、状态、权限或机制说明时检查相关测试；文档构建只证明 Markdown、导航和链接有效，不证明语义正确。Reviewer 必须逐页对照当前源码、配置和风险相称的 oracle。
 - 构建失败要修正文档、锚点或导航，不扩大 `ignoreDeadLinks` 掩盖问题。报告只写实际执行的命令、结果和未验证范围。
 
 ```bash
-python3 scripts/verify_engineering_contracts.py
-python3 -m unittest scripts.test_verify_engineering_contracts
+python3 scripts/ci/verify_engineering_contracts.py
+python3 -m unittest scripts.ci.test_verify_engineering_contracts
 cd docs && pnpm run build
 git diff --check
 ```

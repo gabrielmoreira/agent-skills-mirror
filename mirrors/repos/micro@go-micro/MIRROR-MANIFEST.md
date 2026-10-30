@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `micro/go-micro` — 26 default patterns, 11 followed patterns, 16 file(s) materialized.
+Mirror of `micro/go-micro` — 26 default patterns, 13 followed patterns, 18 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `micro/go-micro` — 26 default patterns, 11 followed patterns, 16 fil
 | Ref Type      | `branch` |
 | Ref           | `master` |
 | Default pats  | 26 |
-| Followed pats | 11 |
-| Files         | 16 |
+| Followed pats | 13 |
+| Files         | 18 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,6 +59,8 @@ Mirror of `micro/go-micro` — 26 default patterns, 11 followed patterns, 16 fil
 - `internal/website/content/en/docs/roadmap.md`
 - `internal/website/content/en/docs/v7.md`
 - `internal/website/content/en/docs/guides/durability.md`
+- `internal/website/content/en/docs/project/version-support.md`
+- `internal/website/content/en/docs/project/adoption.md`
 - `internal/docs/CONTINUOUS_IMPROVEMENT.md`
 - `internal/website/README.md`
 - `.github/ISSUE_TEMPLATE/question.md`
@@ -81,10 +83,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 10 | → | [`internal/docs/CONTINUOUS_IMPROVEMENT.md`](internal/docs/CONTINUOUS_IMPROVEMENT.md) |
 | 11 | → | [`internal/docs/IMPLEMENTATION_SUMMARY.md`](internal/docs/IMPLEMENTATION_SUMMARY.md) |
 | 12 | → | [`internal/website/content/en/docs/guides/durability.md`](internal/website/content/en/docs/guides/durability.md) |
-| 13 | → | [`internal/website/content/en/docs/roadmap.md`](internal/website/content/en/docs/roadmap.md) |
-| 14 | → | [`internal/website/content/en/docs/v7.md`](internal/website/content/en/docs/v7.md) |
-| 15 | → | [`internal/website/README.md`](internal/website/README.md) |
-| 16 | → | [`ROADMAP.md`](ROADMAP.md) |
+| 13 | → | [`internal/website/content/en/docs/project/adoption.md`](internal/website/content/en/docs/project/adoption.md) |
+| 14 | → | [`internal/website/content/en/docs/project/version-support.md`](internal/website/content/en/docs/project/version-support.md) |
+| 15 | → | [`internal/website/content/en/docs/roadmap.md`](internal/website/content/en/docs/roadmap.md) |
+| 16 | → | [`internal/website/content/en/docs/v7.md`](internal/website/content/en/docs/v7.md) |
+| 17 | → | [`internal/website/README.md`](internal/website/README.md) |
+| 18 | → | [`ROADMAP.md`](ROADMAP.md) |
 
 ---
 

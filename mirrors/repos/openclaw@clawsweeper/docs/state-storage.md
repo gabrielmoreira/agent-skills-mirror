@@ -157,6 +157,17 @@ an incomplete run by copying `nextCursor` into `storage_cursor`; each result
 reports totals only for that run's scanned range. Failed runs print their last
 completed page's totals and cursor before failing.
 
+For webhook item, comment or activity payloads, use
+`storage_cursor={"retention":true}` to also measure `eligibleRows` and
+`eligibleStoredBytes`: payloads the existing pruner would retire if selected.
+Each page examines at most 64 raw rows and reuses the owner's due-time,
+placeholder-protection and family-idleness checks. It returns no bodies and
+performs no writes. Copy the whole `nextCursor` to preserve the time cutoff
+and upper row identity when resuming. The cutoff is fixed, but concurrent
+writes can change eligibility; this is an observation, not a historical snapshot.
+Eligible bytes count stored bodies, not reclaimed pages; retirement leaves `{}`.
+Production deployment and census execution require separate operator approval.
+
 The census fixes the initial upper row identity; inserts above that bound are excluded.
 Concurrent updates and deletions mean pages are not one atomic snapshot.
 Numeric values, indexes, row headers and unused pages are excluded; these are

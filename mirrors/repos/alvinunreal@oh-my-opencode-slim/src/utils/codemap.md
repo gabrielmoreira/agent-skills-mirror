@@ -34,6 +34,17 @@ Centralized utilities and shared abstractions used across the oh-my-opencode-sli
 - **JSDOM Probe** (`jsdom.ts`): JSDOM runtime detection without making it a prerequisite
 - **Redact** (`redact.ts`): Shape-based secret redaction for logging and task output structure masking
 
+### Reuse and Publication
+
+Board lookup/boolean queries iterate directly without sorting; ordered list and
+history semantics remain unchanged, including historical alias collisions.
+`tui-reusable-projection.ts` reads one board snapshot and defers repeated
+mutations within `withTuiSnapshotBatch` to one final projection. Ownership is
+updated only after commit, and disposed publishes cannot reappear.
+`package-root.ts` finds the running package by its ancestor chain (including
+nested chunks), never sibling cache entries. `version.ts` shares numeric
+comparison without merging callers' distinct parsing/update policies.
+
 ### Session & Task Utilities
 
 - **Session** (`session.ts`): Timeout handling, session abort coordination, and model reference parsing

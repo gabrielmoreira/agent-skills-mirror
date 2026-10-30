@@ -60,13 +60,13 @@ OpenCode Core → Plugin Initialization (index.ts)
 
 ### Plugin Initialization Flow (index.ts)
 
-1. **Config Loading**: `loadPluginConfig()` reads and validates plugin configuration; `RuntimeConfig` singleton seeded and host config captured
+1. **Config Loading**: `readPluginConfigSnapshot()` shares validated source outcomes across setup; `RuntimeConfig` is seeded from an isolated snapshot and host config captured before mutation
 2. **Agent Creation**: `createAgents()` instantiates agent definitions (incl. dynamic councillors) with prompts and permissions
 3. **Agent Configuration**: `getAgentConfigs()` merges defaults with user overrides and runtime presets
-4. **Tool Registration**: Tools are created conditionally based on config (task_cancel, task_message, task_revive, task_status, wait_for_user, webfetch, AST-grep, acp_run)
+4. **Tool Registration**: Tools are created conditionally based on config (task_cancel, task_revive, task_status, wait_for_user, webfetch, AST-grep, acp_run)
 5. **MCP Registration**: Built-in MCPs are created (context7, gh_grep)
 6. **Hook Initialization**: Auto-update checker, phase reminders, skill filters, task-session manager, cache monitor, orchestrator-wake scheduler, etc.
-7. **Runtime Model Resolution**: Resolves model arrays to startup primaries; independent children leave their primary provider only when the parent's confirmed fallback records it in `downProviders`, choosing the first healthy entry in their own chain. Inherited children follow the live parent for either error scope. v1 `task` and `task_revive` share prompt-claimed intentions, `task_message` pins transcript execution selection excluding compaction summaries, and v2 uses per-call `model#variant` overrides; internal v1 completions still follow the continuation policy
+7. **Runtime Model Resolution**: Resolves model arrays to startup primaries; independent children leave their primary provider only when the parent's confirmed fallback has a live mark for it in `getActiveFallback().downProviders` (30-minute expiry), choosing the first healthy entry in their own chain. Inherited children follow the live parent for either error scope. v1 `task` and `task_revive` share prompt-claimed intentions, and v2 uses per-call `model#variant` overrides; internal v1 completions still follow the continuation policy
 8. **TUI State Sync**: `recordTuiAgentModels()` captures resolved models/variants for TUI display
 9. **Health Check**: Validates agent/tool/MCP counts against `HEALTH_CHECK` thresholds, adjusted for disabled baseline tools via `minimumExpectedToolCount`
 10. **Companion Management**: Ensures companion version compatibility
@@ -106,8 +106,10 @@ lifecycle lives in the TUI entry's dependency graph (`multiplexer/client/`).
    - `recordTuiAgentActivity()`: Tracks active agents by session so concurrent
      runs of the same agent remain visible until all runs finish
    - `clearTuiAgentActivities()`: Removes stale activity during startup
-3. **Atomic Writes**: Cross-process file locking serializes each read → mutate →
-   atomic rename transaction, with dead-owner and aged-lock recovery
+3. **Atomic Writes**: Cross-process file locking serializes read → mutate →
+   atomic rename transactions. `withTuiSnapshotBatch` coalesces recorders and
+   Board projections within one native event; standalone calls remain immediate.
+   A shared stat-key cache preserves reader isolation and parent insertion order.
 4. **Error Handling**: All operations are best-effort; failures don't crash plugin
 5. **Instance Cleanup**: On shutdown, each plugin instance removes only sessions
    it marked active, preserving activity owned by other running instances

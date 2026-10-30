@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `HKUDS/nanobot` — 26 default patterns, 11 followed patterns, 29 file(s) materialized.
+Mirror of `HKUDS/nanobot` — 26 default patterns, 11 followed patterns, 28 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `HKUDS/nanobot` — 26 default patterns, 11 followed patterns, 29 file
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 11 |
-| Files         | 29 |
+| Files         | 28 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -83,21 +83,20 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 12 | ✓ | [`nanobot/skills/skill-creator/SKILL.md`](nanobot/skills/skill-creator/SKILL.md) |
 | 13 | ✓ | [`nanobot/skills/summarize/SKILL.md`](nanobot/skills/summarize/SKILL.md) |
 | 14 | ✓ | [`nanobot/skills/tmux/SKILL.md`](nanobot/skills/tmux/SKILL.md) |
-| 15 | ✓ | [`nanobot/skills/update-setup/SKILL.md`](nanobot/skills/update-setup/SKILL.md) |
-| 16 | ✓ | [`nanobot/skills/weather/SKILL.md`](nanobot/skills/weather/SKILL.md) |
-| 17 | ✓ | [`nanobot/templates/AGENTS.md`](nanobot/templates/AGENTS.md) |
-| 18 | ✓ | [`webui/COMPONENTS.md`](webui/COMPONENTS.md) |
-| 19 | → | [`.agent/copywriting.md`](.agent/copywriting.md) |
-| 20 | → | [`.agent/design.md`](.agent/design.md) |
-| 21 | → | [`.agent/gotchas.md`](.agent/gotchas.md) |
-| 22 | → | [`.agent/review-guide.md`](.agent/review-guide.md) |
-| 23 | → | [`.agent/security.md`](.agent/security.md) |
-| 24 | → | [`.agent/simplify.md`](.agent/simplify.md) |
-| 25 | → | [`.agent/workflow.md`](.agent/workflow.md) |
-| 26 | → | [`COMMUNICATION.md`](COMMUNICATION.md) |
-| 27 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 28 | → | [`docs/releasing.md`](docs/releasing.md) |
-| 29 | → | [`webui/README.md`](webui/README.md) |
+| 15 | ✓ | [`nanobot/skills/weather/SKILL.md`](nanobot/skills/weather/SKILL.md) |
+| 16 | ✓ | [`nanobot/templates/AGENTS.md`](nanobot/templates/AGENTS.md) |
+| 17 | ✓ | [`webui/COMPONENTS.md`](webui/COMPONENTS.md) |
+| 18 | → | [`.agent/copywriting.md`](.agent/copywriting.md) |
+| 19 | → | [`.agent/design.md`](.agent/design.md) |
+| 20 | → | [`.agent/gotchas.md`](.agent/gotchas.md) |
+| 21 | → | [`.agent/review-guide.md`](.agent/review-guide.md) |
+| 22 | → | [`.agent/security.md`](.agent/security.md) |
+| 23 | → | [`.agent/simplify.md`](.agent/simplify.md) |
+| 24 | → | [`.agent/workflow.md`](.agent/workflow.md) |
+| 25 | → | [`COMMUNICATION.md`](COMMUNICATION.md) |
+| 26 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 27 | → | [`docs/releasing.md`](docs/releasing.md) |
+| 28 | → | [`webui/README.md`](webui/README.md) |
 
 ---
 

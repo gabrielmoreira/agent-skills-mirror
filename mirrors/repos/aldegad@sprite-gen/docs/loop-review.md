@@ -170,7 +170,13 @@ The script searches a grid in the upper part of the foreground for two separated
 textured regions. It ranks their normalized cross-correlation across time and
 requires both to track throughout the sequence. These are stable image regions,
 not semantic detections of a face, torso, species or limb. Untrackable patches are
-counted as rejected candidates; absence of a usable pair is an explicit failure.
+counted as rejected candidates; absence of a usable pair is an explicit failure. Where the pair is
+absent from the whole clip, the clip is read once more after the fewest frames it opens on, fewer than
+the window's shortest cut, with which a pair tracks through the rest (`auto_motion.analyse_after_opening`):
+a clip filmed from a still opens on that still and on the standing pose the body sets off from, where the
+regions of the walk may be out of reach. Those frames are left out of the search as a lead-in is
+([video-pipeline.md](video-pipeline.md) section 4), the report says so in `untracked_opening` and a
+warning line, and where no such opening leaves a pair tracked the clip is refused as before.
 The correlation at every offset of a search window comes out of FFTs: per channel,
 the masked patch sum, its squared sum and its product with the centered reference are
 window correlations, so the masked patch is never copied out once per offset. The

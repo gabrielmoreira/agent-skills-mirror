@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `NanmiCoder/cc-haha` — 26 default patterns, 5 followed patterns, 29 file(s) materialized.
+Mirror of `NanmiCoder/cc-haha` — 26 default patterns, 5 followed patterns, 30 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `NanmiCoder/cc-haha` — 26 default patterns, 5 followed patterns, 29 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 5 |
-| Files         | 29 |
+| Files         | 30 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -70,28 +70,29 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 5 | ✓ | [`.agents/skills/release-announcement/scripts/release_poster.py`](.agents/skills/release-announcement/scripts/release_poster.py) |
 | 6 | ✓ | [`.agents/skills/release-announcement/scripts/test_release_poster.py`](.agents/skills/release-announcement/scripts/test_release_poster.py) |
 | 7 | ✓ | [`.agents/skills/release-announcement/SKILL.md`](.agents/skills/release-announcement/SKILL.md) |
-| 8 | ✓ | [`.github/AGENTS.md`](.github/AGENTS.md) |
-| 9 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 10 | ✓ | [`adapters/AGENTS.md`](adapters/AGENTS.md) |
-| 11 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 12 | ✓ | [`desktop/AGENTS.md`](desktop/AGENTS.md) |
-| 13 | ✓ | [`desktop/src/components/AGENTS.md`](desktop/src/components/AGENTS.md) |
-| 14 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
-| 15 | ✓ | [`docs/desktop/skills.md`](docs/desktop/skills.md) |
-| 16 | ✓ | [`docs/en/desktop/skills.md`](docs/en/desktop/skills.md) |
-| 17 | ✓ | [`docs/en/internals/skills.md`](docs/en/internals/skills.md) |
-| 18 | ✓ | [`docs/internals/skills.md`](docs/internals/skills.md) |
-| 19 | ✓ | [`mobile/AGENTS.md`](mobile/AGENTS.md) |
-| 20 | ✓ | [`site/AGENTS.md`](site/AGENTS.md) |
-| 21 | ✓ | [`src/AGENTS.md`](src/AGENTS.md) |
-| 22 | ✓ | [`src/skills/bundled/claude-api/SKILL.md`](src/skills/bundled/claude-api/SKILL.md) |
-| 23 | ✓ | [`src/skills/bundled/imagegen/SKILL.md`](src/skills/bundled/imagegen/SKILL.md) |
-| 24 | ✓ | [`src/skills/bundled/verify/SKILL.md`](src/skills/bundled/verify/SKILL.md) |
-| 25 | → | [`.github/pull_request_template.md`](.github/pull_request_template.md) |
-| 26 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 27 | → | [`docs/internals/contributing.md`](docs/internals/contributing.md) |
-| 28 | → | [`LICENSING.md`](LICENSING.md) |
-| 29 | → | [`THIRD_PARTY_LICENSES.md`](THIRD_PARTY_LICENSES.md) |
+| 8 | ✓ | [`.agents/workflows/issue-router.md`](.agents/workflows/issue-router.md) |
+| 9 | ✓ | [`.github/AGENTS.md`](.github/AGENTS.md) |
+| 10 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
+| 11 | ✓ | [`adapters/AGENTS.md`](adapters/AGENTS.md) |
+| 12 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 13 | ✓ | [`desktop/AGENTS.md`](desktop/AGENTS.md) |
+| 14 | ✓ | [`desktop/src/components/AGENTS.md`](desktop/src/components/AGENTS.md) |
+| 15 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
+| 16 | ✓ | [`docs/desktop/skills.md`](docs/desktop/skills.md) |
+| 17 | ✓ | [`docs/en/desktop/skills.md`](docs/en/desktop/skills.md) |
+| 18 | ✓ | [`docs/en/internals/skills.md`](docs/en/internals/skills.md) |
+| 19 | ✓ | [`docs/internals/skills.md`](docs/internals/skills.md) |
+| 20 | ✓ | [`mobile/AGENTS.md`](mobile/AGENTS.md) |
+| 21 | ✓ | [`site/AGENTS.md`](site/AGENTS.md) |
+| 22 | ✓ | [`src/AGENTS.md`](src/AGENTS.md) |
+| 23 | ✓ | [`src/skills/bundled/claude-api/SKILL.md`](src/skills/bundled/claude-api/SKILL.md) |
+| 24 | ✓ | [`src/skills/bundled/imagegen/SKILL.md`](src/skills/bundled/imagegen/SKILL.md) |
+| 25 | ✓ | [`src/skills/bundled/verify/SKILL.md`](src/skills/bundled/verify/SKILL.md) |
+| 26 | → | [`.github/pull_request_template.md`](.github/pull_request_template.md) |
+| 27 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 28 | → | [`docs/internals/contributing.md`](docs/internals/contributing.md) |
+| 29 | → | [`LICENSING.md`](LICENSING.md) |
+| 30 | → | [`THIRD_PARTY_LICENSES.md`](THIRD_PARTY_LICENSES.md) |
 
 ---
 

@@ -1,4 +1,4 @@
-# Community PRs: what is closed unreviewed, and who is blocked
+# Community PRs: what is closed unreviewed, who is credited, and who is blocked
 
 magpie merges community PRs through agents. Two things keep that from
 wearing the project down: a PR that could harm users is caught before any
@@ -34,6 +34,22 @@ Close with a short reason, without running it, a PR that:
 - is a resubmission of a PR closed for its idea, with nothing new to answer
   the reason it was closed;
 - is one of several near-identical PRs opened seconds apart.
+
+## Credit what a reporter gave
+
+PRs are open to collaborators only, so a reporter's fix often arrives in
+an issue. Whoever uses it credits it in the commit:
+
+- A fix branch on the reporter's fork is merged with their commits as they
+  are, authored by them. The look-for-harm check above applies to it
+  first. What has to change goes in a commit of our own on top, and the
+  issue says what changed and why.
+- A fix that uses the reporter's patch, test fixture, request body, error
+  text or root cause carries `Co-authored-by: <login> <email>` for them.
+  Use their noreply address, `<id>+<login>@users.noreply.github.com`
+  (`gh api users/<login> --jq .id`), when no other address is known.
+- A report that only says something is broken is named in the body
+  (`#<n>, <login>`), with no trailer.
 
 ## Blocking an author
 

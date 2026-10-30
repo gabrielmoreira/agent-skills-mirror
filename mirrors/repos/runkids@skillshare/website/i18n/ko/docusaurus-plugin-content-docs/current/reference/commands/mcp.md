@@ -130,6 +130,8 @@ source가 한 번 저장되기 전에 검증되며, 이후의 네이티브 파�
 Client ID는 `claude`, `codex`, `cursor`, `vscode`, `opencode`, `kilocode`,
 `grok`, `antigravity`, `amp`, `claude-desktop`, `cline`, `copilot`, `factory`, `gemini`,
 `goose`, `junie`, `kiro`, `lmstudio`, `warp`, `windsurf`, `pi`, `omp`입니다.
+`--target`과 `--from`은 다른 명령이 Antigravity CLI를 부르는 이름인 `agy`와 `antigravity-cli`도
+`antigravity`로 받으며, source에는 `antigravity`가 저장됩니다.
 `grok`은 공식 xAI Grok CLI를 의미합니다. 서버 이름은 문자, 숫자, 점, 밑줄, 하이픈을
 사용합니다. 서버는 동기화 전에 직접 또는 `mcp.targets`를 통해 최소 하나의 client를
 선택해야 합니다. 단, 서버 자체의 `targets`가 빈 목록인 경우는 예외입니다.

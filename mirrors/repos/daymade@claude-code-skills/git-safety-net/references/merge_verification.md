@@ -20,14 +20,14 @@ The only trustworthy question is: **is the branch's content already contained in
 
 `scripts/git_verify_branch_merged.sh <branch> [base]` answers that question with Git's own merge
 machinery instead of per-file guesses. It rejects the base ref itself as a deletion target, then
-runs two checks in order:
+runs these checks in order:
 
 1. **Ancestor** — the branch is literally in the base's history:
    ```bash
    git merge-base --is-ancestor origin/<branch> origin/main && echo "MERGED (ancestor)"
    ```
 
-2. **Content-contained** — do a trial 3-way merge of the branch *into* the base, in memory, and
+2. **Content-contained** — do a trial 3-way merge of the branch *into* the base, without checkout, and
    ask whether it changes anything. If merging the branch produces the base's exact tree, the
    branch adds nothing the base lacks — which is precisely the squash/rebase case where the count
    says "ahead" but the content is already upstream:
@@ -190,7 +190,7 @@ whatever base did afterward (the same double-apply hazard SKILL.md's troubleshoo
 already warns about for a mis-timed rescue); the right response is to find and understand the
 regression, not to re-ship.
 
-**Two ways to find it, in order of how targeted the loss is:**
+**Find it in order of how targeted the loss is:**
 
 1. **Walk base's own history for the regression, first-parent, comparing one tracked value per
    commit.** Useful whenever the lost content is (or is summarized by) an orderable or
@@ -465,6 +465,40 @@ active and ownership cannot transfer, hosting/API and existing immutable-object 
 what is already known, but the inability to refresh authority is a reported gap, not permission to
 fetch concurrently.
 
+For a selected or delegated classification batch, the task owner freezes the named canonical
+repository's common directory and exact ref/OID pairs alongside that snapshot. Pass both to the
+reviewer; the receiver must not rebuild the expected identity or target list from its own cwd.
+Two independent clones may share the same remote and base but hold different local refs.
+
+```bash
+# REPO is the already authorized canonical checkout; TASK_DIR is its existing external scratch.
+(
+COMMON_DIR=$(git -C "$REPO" rev-parse --path-format=absolute --git-common-dir) || exit 2
+BASE=$(git -C "$REPO" rev-parse --verify 'origin/main^{commit}') || exit 2
+# Replace this explicit list with the selected, inspect-authorized refs; a missing ref is an error.
+for ref in refs/heads/feature-a refs/heads/feature-b; do
+  oid=$(git -C "$REPO" rev-parse --verify "$ref") || exit 2
+  printf '%s\t%s\n' "$ref" "$oid" || exit 2
+done > "$TASK_DIR/targets.tsv" || exit 2
+(cd "$REPO" && bash "$SKILL_DIR/scripts/git_classify_refs.sh" --base "$BASE" \
+  --expected-common-dir "$COMMON_DIR" --target-manifest "$TASK_DIR/targets.tsv")
+)
+```
+
+The task owner runs this recipe with absolute input paths. Its checked prerequisites stop the
+subshell before classification when repository/base resolution or manifest creation fails;
+an old manifest must not become a successful substitute. Trial merges can write unreferenced
+Git objects, so this is not a repository-read-only probe: refs, index and working files stay
+unchanged, but existing sole-writer coordination still applies.
+
+Bound mode requires both options and nonempty two-column TSV with
+full refnames and 40-hex OIDs; it cannot be combined with `--all-namespaces`. Missing, moved or
+invalid targets return 2 instead of disappearing from the inventory; classification errors return 1.
+Exit 0 means the selected objects were classified, including any `NEEDS-REVIEW` rows. Read
+`expected`, `examined`, `needs-review`, `errors` and `scope_complete`; `classification_only=true`
+never closes keeper adoption, worktree/ref retirement or the terminal-state checks below. There is
+no mechanism here that judges an arbitrary agent's completion claim. Re-freeze before deletion.
+
 Classify each change-authorized non-main ref by content. Use the trial-merge verdict first. For
 NEEDS REVIEW refs, walk the supersession ladder above and open distinctive code/tests at authority.
 `git cherry` may surface candidates, but every `+` after a squash merge is still only a hypothesis.
@@ -516,8 +550,9 @@ This section creates refs, objects, external backups, or hosted state. Run it on
 exclusive writer window from Step 1 remains valid. If another writer resumes, stop before the next
 mutation; the frozen evidence remains useful, but it does not authorize continuing.
 
-Create a repository-external bundle containing only the branches/refs whose deletion is authorized,
-then verify it. The bundle is the ref manifest: immediately before deletion run:
+Freeze each authorized ref and full tip SHA independently of any backup. Apply
+[the preservation decision](#preservation-before-retirement) to select the retained carrier or
+required export. When an export is required, create and verify a repository-external bundle:
 
 ```bash
 scripts/git_export_before_drop.sh \
@@ -526,7 +561,7 @@ scripts/git_export_before_drop.sh \
 scripts/git_export_before_drop.sh --verify-current <external-backup-dir>/branches.bundle
 ```
 
-For an authorized linked worktree on a branch, export that branch. For an authorized detached HEAD,
+For a linked worktree requiring export, select its branch. For a detached HEAD requiring export,
 create one collision-checked recovery ref pointing at the recorded HEAD, then export that ref:
 
 ```bash
@@ -560,9 +595,10 @@ restore the complete verified WIP set after materializing the new base.
 ### 4. Re-freeze immediately before deletion
 
 While retaining exclusive writer ownership, fetch again, re-query hosting branches/PRs, and
-re-enumerate local refs. Compare the result with the
-bundle heads. A new branch, changed tip, or late PR inside the change-authorized set is new evidence:
-stop, classify its unique behavior, and rebuild the bundle. A newly discovered collaborator object
+re-enumerate local refs. Compare each tip with the frozen ref manifest and, when present, the verified
+bundle heads. Recheck that the retained remote carrier still contains each exempted exact commit.
+A new branch, changed tip, lost carrier, or late PR inside the change-authorized set is new evidence:
+stop and reclassify; rebuild a recovery export only when the new threatened state needs one. A newly discovered collaborator object
 does not silently join that set; record it as inspect-only or excluded and rebuild only if the next
 authorized destructive action could reach it. This is not an optional "final check"; it is the only
 check that covers work created after the first audit.
@@ -742,6 +778,36 @@ If the clone must remain active instead of being retired, stop this procedure. F
 use the official dissociation path (`git repack -a`) and verify it no longer depends on alternates;
 that is a different outcome from clone retirement and should not be smuggled into cleanup.
 
+## Preservation before retirement
+
+Use this decision for named branch/worktree retirement, including the convergence procedure above.
+It does not exempt independent clone metadata, submodule repositories, stashes or unique uncommitted
+bytes from their own preservation procedures.
+
+1. Freeze the authorized ref (or detached HEAD), its full 40-hex tip and the retained carrier's
+   identity. Refresh the exact remote main, resolve it locally, verify its hosted SHA with a separate
+   remote query, and require `git merge-base --is-ancestor <tip> <verified-main-sha>` to exit 0.
+   Check command errors separately from a genuine non-ancestor result.
+2. When that exact commit remains reachable through the retained remote main, and the checkout's
+   tracked, untracked and ignored inventories contain no unique bytes threatened by removal, skip
+   the redundant history bundle. Record the refs and SHAs in the existing task manifest instead.
+   This is exact-object preservation: squash/content-only containment does not establish it.
+3. Otherwise preserve the unique state through its existing recovery procedure. A content-contained
+   squash tip whose exact identity is still required needs a durable ref or verified export; do not
+   infer that the replacement commit preserves every original object. Preserve dirty/ignored bytes
+   separately because a Git bundle cannot capture them.
+4. `git_export_before_drop.sh --branch <ref>` includes all reachable ancestors, even for a tiny
+   branch diff. Before a required export, inspect the selected revision/object set and its size
+   (for example `git rev-list --disk-usage --objects <full-ref>`; this is an estimate of selected
+   stored objects, not the final bundle size), destination reserve and restore dependencies. Do not
+   call `--branch` incremental. An explicitly selected incremental bundle requires its prerequisite
+   objects at restore time; verify that recovery before relying on it. Do not silently change the
+   existing helper's self-contained export contract.
+5. Immediately before deletion, require the current authorized tip to equal the frozen SHA and
+   independently recheck the retained carrier. A moved ref or lost carrier reopens classification;
+   the absence of a bundle does not remove this final gate. After removal, verify the commit still
+   resolves through its retained carrier or required recovery artifact.
+
 ## Worktree retirement — prove the checkout is disposable before removal
 
 A linked worktree is both a checkout and a ref boundary. A clean branch elsewhere does not prove
@@ -779,7 +845,8 @@ the worktree itself has no uncommitted files, and a detached worktree HEAD is ab
    important. Real case: a retirement pass that named 22 paths (a few credentials and plan files)
    missed that the actual `!!` set was 8092 entries and roughly 200MB, including 13 build-output
    directories that existed only in that worktree. For every regular leaf, record
-   `git hash-object --no-filters -- <path>`; for every symlink, record its `readlink` output. Stop on
+   `git hash-object --no-filters -- <path>`; use the [batch example](#batch-regular-file-hashes-without-dropping-manifest-entries)
+   for a large regular-file set. For every symlink, record its `readlink` output. Stop on
    an unsupported special-file type. An entry is disposable on one of two grounds only: the primary
    checkout has the same relative path with byte-identical content (the same `git hash-object`
    output), or a named tool rebuilds it from tracked inputs alone (dependency caches, bytecode,
@@ -795,16 +862,17 @@ the worktree itself has no uncommitted files, and a detached worktree HEAD is ab
 4. **Record the exact identity:** copy `git -C <worktree-path> rev-parse HEAD` and
    `git -C <worktree-path> branch --show-current`. An empty branch means detached HEAD, not "no
    work". Confirm the recorded HEAD resolves as a commit; when a branch is present, require that
-   branch to resolve to the same SHA. The targeted bundle in step 6 preserves this exact identity.
+   branch to resolve to the same SHA. Step 6 selects the carrier for this exact identity.
 5. **Prove containment against a fresh base:** fetch the maintained repository, then run
    `scripts/git_verify_branch_merged.sh <recorded-head> <base>`. An
    ancestor/content-contained verdict proves the committed state is on the base; NEEDS REVIEW
    requires manual supersession triage or preserving the commit under a branch/ref.
-6. **Back up before deletion:** export the worktree's named branch with `--branch`. For a detached
-   HEAD, create one collision-checked `refs/recovery/<worktree-id>` ref at the recorded HEAD and
-   export that ref. Verify the targeted bundle; do not pin unrelated danglers or use `--all-refs`
-   unless the Outcome contract separately authorizes every captured ref. Keep any ignored-file
-   copies from step 3 beside this backup—the bundle does not contain them.
+6. **Preserve threatened state:** apply [Preservation before retirement](#preservation-before-retirement).
+   Retain the exact ref-to-SHA manifest even when no bundle is needed. When export is required,
+   select the named branch or create one collision-checked `refs/recovery/<worktree-id>` at the
+   detached HEAD, then verify its export. Do not pin unrelated danglers or use `--all-refs` unless
+   separately authorized. Keep unique ignored-file copies from step 3 outside the worktree—the
+   bundle does not contain them.
    For every local submodule repository threatened by removal, obtain preservation authority for
    that exact repository and preserve it independently. A superproject bundle records a gitlink,
    not the module's objects. Freeze its HEAD, refs/symbolic targets, reflogs and all local objects
@@ -851,6 +919,73 @@ the worktree itself has no uncommitted files, and a detached worktree HEAD is ab
 The recovery artifacts created in step 6 may later follow § Retire task-owned temporary recovery
 artifacts. A copied ignored path that exists only in that backup keeps the artifact ineligible.
 
+### Batch regular-file hashes without dropping manifest entries
+
+Use this read-only Python 3.10+ example for the regular-file subset of the complete
+ignored inventory. Pass the authorized checkout root, its frozen relative paths
+and the absolute path of the installed Git binary already checked with
+`git --version`. Keep symlinks and their `readlink` targets in the full manifest;
+do not pass symlinks, directories or special files to this function.
+
+```python
+import stat
+import subprocess
+from pathlib import Path, PurePosixPath
+
+
+def hash_regular_files(root, paths, git_binary):
+    root = Path(root).resolve(strict=True)
+    paths = tuple(paths)
+    if not Path(git_binary).is_absolute() or len(set(paths)) != len(paths):
+        raise ValueError("Require an absolute Git binary and unique paths")
+
+    def stamp(rel):
+        parts = PurePosixPath(rel)
+        if not parts.parts or parts.is_absolute() or ".." in parts.parts or str(parts) != rel:
+            raise ValueError("Require normalized relative paths")
+        entry = root / rel
+        if entry.resolve(strict=True) != entry:
+            raise ValueError("Keep symlinks outside the regular-file batch")
+        info = entry.lstat()
+        if not stat.S_ISREG(info.st_mode):
+            raise ValueError("Require a regular file")
+        return (info.st_dev, info.st_ino, info.st_mode, info.st_size,
+                info.st_mtime_ns, info.st_ctime_ns)
+
+    result = {}
+    for offset in range(0, len(paths), 16):
+        batch = paths[offset:offset + 16]
+        before = [stamp(rel) for rel in batch]
+        run = subprocess.run(
+            [git_binary, "-C", str(root), "hash-object", "--no-filters", "--", *batch],
+            check=True, capture_output=True, text=True,
+        )
+        hashes = run.stdout.splitlines()
+        if len(hashes) != len(batch) or any(
+            len(value) not in (40, 64) or any(c not in "0123456789abcdef" for c in value)
+            for value in hashes
+        ):
+            raise RuntimeError("Incomplete or invalid hash output")
+        if before != [stamp(rel) for rel in batch]:
+            raise RuntimeError("File identity or metadata changed during hashing")
+        result.update(zip(batch, hashes))
+    return result
+```
+
+Preserve every returned path/hash pair in the existing manifest; require its key
+set to equal the supplied regular-file set, not just a sample or total. An empty
+mapping proves no inventory completeness by itself. Run the same recipe at each
+source/backup root in the same Git object format, then compare corresponding
+paths. Argument vectors preserve spaces, Unicode and newlines without shell
+splitting; command errors abort the batch without returning a partial manifest.
+
+Keep the original retirement gates: classify every physical leaf, preserve unique
+bytes, check symlink targets, then re-freeze the full inventory immediately before
+removal. Metadata checks do not lock files or make hashing atomic; detected change
+requires a new manifest, and a possible writer still blocks retirement. Use batches
+to reduce Git process launches, not to claim a measured speedup or permission to
+delete anything.
+
 ### Clean-submodule exception — one force flag after a specific normal refusal
 
 The [official `git worktree remove` contract](https://git-scm.com/docs/git-worktree#_commands)
@@ -888,18 +1023,25 @@ session this skill was distilled from: a solo pass mis-judged a genuine 2-line f
 merged" by matching the wrong call site; a fan-out of independent agents caught it). For a
 high-stakes "is *everything* merged?" verdict, fan out:
 
+Before fan-out, the coordinated sole writer produces trial-merge classifications against the
+frozen snapshot. Supply that report and its exact input OIDs to the read-only reviewers;
+`merge-tree --write-tree` is not a read-only reviewer command. Missing trial-merge evidence
+leaves containment unverified until the sole writer supplies it.
+
 1. **Partition** the branches across N agents (e.g. large feature-adding branches, small fix
-   branches, local-only-history branches, plus one agent that independently re-runs the loss
-   check and re-derives the "should this old branch be merged?" verdict from content).
+   branches, local-only-history branches, plus one agent that independently reviews the supplied
+   scoped loss inventory and re-derives the "should this old branch be merged?" verdict from content).
 2. **Frame each agent adversarially**: "Default to the assumption that these branches still have
-   unmerged unique content, and try to *prove* it. Judge by content (the trial-merge check above),
+   unmerged unique content, and try to *prove* it. Judge by content using the supplied trial-merge
+   report and immutable objects,
    never by commit count. Report per branch: MERGED / **UNMERGED / NEEDS REVIEW (with the file(s)
    the trial merge would change)**."
 3. **Lock them read-only** (see rules below) so concurrent agents don't corrupt each other's tree.
-   The sole writer refreshes authority first and hands them frozen SHAs; reviewers never fetch.
+   The sole writer refreshes authority first and hands them frozen SHAs and trial-merge evidence;
+   reviewers never fetch or run trial merges in that shared repository.
 4. **Counter-review every finding yourself.** An agent's "UNMERGED" is a *hypothesis*: re-run the
-   trial-merge / inspect the specific files before believing it (agents produce false positives
-   too). An agent's "all merged" is only as good as its method — spot-check that it judged by
+   trial merge as the sole writer, or inspect the specific immutable files before believing it
+   (agents produce false positives too). An agent's "all merged" is only as good as its method — spot-check that it judged by
    content, not counts.
 5. **Converge**: everything merged across all agents = strong confirmation; any single
    content-backed UNMERGED finding = a real gap to land.
@@ -911,13 +1053,14 @@ a subagent cannot spawn subagents.
 
 Put these in every agent's prompt — they are what make parallel verification safe and correct:
 
-- **Read-only, always.** Only `merge-base`, `merge-tree`, `diff`, `log`, `show`, `cat-file`,
+- **Read-only, always.** Only `merge-base`, `diff`, `log`, `show`, `cat-file`,
   `rev-list`, `rev-parse`, `ls-tree`, `for-each-ref`, `branch -r --contains`. **Never** `fetch`,
   `checkout`, `switch`, `reset`, `rebase`, `commit`, `push`, `update-ref`, or `gc`. The sole writer
   refreshes once before fan-out and supplies immutable SHAs; a reviewer does not move even a
-  remote-tracking ref.
+  remote-tracking ref or create trial-merge objects. Trial merges belong to the sole writer.
 - **Explicit frozen SHAs first.** Use the supplied immutable object IDs for conclusions. Named refs
   (`origin/main`, `origin/<branch>`) may be displayed for attribution but are not merge authority.
-- **Judge by content via the trial merge, not by counts** — restate the check in the prompt.
+- **Judge by content via the supplied trial-merge evidence, not by counts** — restate the
+  check and its evidence source in the prompt.
 - **Return structured per-branch verdicts with the file(s) the trial merge would change for any
   UNMERGED**, not prose.

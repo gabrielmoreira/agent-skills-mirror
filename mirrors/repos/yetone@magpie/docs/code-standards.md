@@ -218,6 +218,15 @@ left two GUI tests red, found by 2dcc51417 the same evening. When a
 community commit is applied without a body, the review commit says what
 was run against that author's code.
 
+One commit has one goal. Two reports fixed together are two commits,
+each with its own record, so a revert takes back one and keeps the other,
+and a review can tell which test guards which change. A fix found on the
+way goes in a commit of its own. 653cb8ee bundled ZCode sign-in with WSL
+session deletion, and 1e0829b1 hid a ja/de fix inside a Usage change. On
+10-28 6e080ca04 put psikent's /v1/models tools flag and windy's routing
+group Context hint, two reports in two layers (gateway, GUI), under one
+subject that names only the first.
+
 A checkout, a worktree and the logs in it belong to the session that made
 them. Work in a worktree of your own (`git worktree add --detach`), never
 check out, commit from or clean another session's, and after committing

@@ -90,7 +90,10 @@ harness 保留外部下载方式。不带软件内更新能力的版本，需先
   （邮箱、日历、通讯录）经同一个服务器送过来，「设置 → 连接器」里有每一个的设置方法；
 - **房间**：动态、点子、目标和资源库，和手机上的一样，由 Host 保存在
   `nanomuse/rooms.json` 里，由智能体在隐藏聊天里写（动态和点子）或在各自的聊天里写（目标，
-  自动化部分用 harness 的日程插件；资源库里的作品放在 `~/nanoMuse/Library` 下），再加上记忆：
+  自动化部分用 harness 的日程插件；资源库里的作品放在 `~/nanoMuse/Library` 下；插件开的每一段聊天，
+  不管是给人的、自己的一批还是别的设备发来的任务，都从 `~/nanoMuse` 这个工作区开始，绝不直接落在
+  用户主目录——Windows 上，工作区若是整个用户目录，`workspace-write` 的命令一条也跑不了，因为沙箱的
+  临时目录就在它里面，[#705](https://github.com/nano-muse/nanoMuse/issues/705)），再加上记忆：
   它对你的了解，每段聊天都会读进去（[desktop-muse.md](desktop-muse.md#rail-rooms)）；
 - **Reach**：这台电脑出现在账号的设备列表里，走 [hub](hub.md)（设备互联）；`devices`、
   `device_screen`、`device_shell`、`device_files`、`device_open`、`device_notify` 和 `delegate`

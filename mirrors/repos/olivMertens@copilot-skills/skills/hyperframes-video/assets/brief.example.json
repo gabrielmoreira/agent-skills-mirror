@@ -1,0 +1,69 @@
+{
+  "_note": "Optional planning example, NOT a native HyperFrames configuration. Null values require a decision. Durations and dimensions below are proposals.",
+  "objective": null,
+  "audience": null,
+  "callToAction": null,
+  "sources": {
+    "appUrl": null,
+    "repository": null,
+    "approvedAssets": []
+  },
+  "output": {
+    "durationSeconds": 45,
+    "width": 1920,
+    "height": 1080,
+    "fps": 30,
+    "format": "mp4",
+    "additionalAspectRatios": []
+  },
+  "brand": {
+    "reference": null,
+    "logo": null,
+    "palette": [],
+    "exactCopy": []
+  },
+  "audio": {
+    "narration": {
+      "enabled": null,
+      "language": null,
+      "voice": null,
+      "voices": [],
+      "provider": null
+    },
+    "music": {
+      "_modeOptions": ["supplied", "generated", "reuseNamedPriorTrack", "none"],
+      "allowReuseWithoutAsking": false,
+      "mode": null,
+      "file": null,
+      "licenseEvidence": null,
+      "analysisFile": null,
+      "compositionStartSeconds": 0,
+      "sourceTrimStartSeconds": 0,
+      "playbackRate": 1,
+      "cues": []
+    },
+    "captions": {
+      "_deliveryOptions": ["burn-in", "sidecar", "both", "none"],
+      "enabled": null,
+      "language": null,
+      "burnIn": null,
+      "sidecar": null
+    }
+  },
+  "visuals": {
+    "motionIntensity": "moderate",
+    "mustShow": [],
+    "mustNotShow": [],
+    "shots": []
+  },
+  "permissions": {
+    "remoteTextOrMediaProcessing": false,
+    "cloudRendering": false,
+    "publication": false
+  },
+  "review": {
+    "approveStoryboard": true,
+    "approveRepresentativeFrames": true,
+    "fullRenderApproved": false
+  }
+}

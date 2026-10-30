@@ -102,6 +102,8 @@ Add、edit、remove 與 import 在 **Save and sync** 或 **Save only** 之前會
 Client ID 有 `claude`、`codex`、`cursor`、`vscode`、`opencode`、`kilocode`、
 `grok`、`antigravity`、`amp`、`claude-desktop`、`cline`、`copilot`、`factory`、`gemini`、
 `goose`、`junie`、`kiro`、`lmstudio`、`warp`、`windsurf`、`pi` 與 `omp`。
+`--target` 與 `--from` 也接受 `agy` 與 `antigravity-cli`（其他指令對 Antigravity CLI 的稱呼），
+並視為 `antigravity`；source 中儲存的是 `antigravity`。
 `grok` 指的是官方的 xAI Grok CLI。Server 名稱使用字母、
 數字、點、底線與連字號。一個 server 必須直接或透過 `mcp.targets`
 選擇至少一個 client 才能同步，除非它自己的 `targets` 是空清單。

@@ -85,17 +85,38 @@ test('passes a candidate within budget when the planted arm fails past the noise
   assert.match(run.stdout, /the candidate passes every cohort/);
 });
 
-test('fails a candidate over budget in two of its three packet pairs', (t) => {
-  const slow = [11, 11, 11, 11, 10, 10];
-  const run = analyze(t, baseConfig, small({ base: flat(10), candidate: slow, planted: flat(11.5), copy: slow }));
+test('fails a candidate whose every pair reads past the budget', (t) => {
+  const slow = pairs(1.08, 1.12, 1.16);
+  const run = analyze(t, baseConfig, small({ base: flat(10), candidate: slow, planted: flat(13), copy: slow }));
   assert.equal(run.status, 1, run.stderr);
   assert.match(run.stderr, /the candidate fails on small/);
 });
 
-test('passes a candidate over budget in one packet pair of three', (t) => {
-  const slow = [10, 10, 10, 10, 11, 11];
-  const run = analyze(t, baseConfig, small({ base: flat(10), candidate: slow, planted: flat(11.5), copy: slow }));
-  assert.equal(run.status, 0, run.stderr);
+for (const [shape, candidate, copy, message] of [
+  ['identical code over the budget in two pairs of three', [0.905, 1.158, 1.114], [0.905, 1.158, 1.114], /the noise 0\.209 reaches the candidate's margin 0\.064/],
+  ['a median under the budget beside one pair far over it', [0.99, 0.99, 1.13], [0.99, 0.99, 1.13], /the noise 0\.140 reaches the candidate's margin 0\.060/],
+  ['two failing pairs beside one far under the budget', [1.04, 1.2, 1.21], [1.05, 1.19, 1.22], /the noise 0\.160 reaches the candidate's margin 0\.150/],
+  ['one pair at base beside two over the budget', [1, 1.2, 1.21], [1, 1.2, 1.21], /the noise 0\.200 reaches the candidate's margin 0\.150/],
+  ['one pair just under the budget beside two past it', [1.04, 1.12, 1.13], [1.04, 1.12, 1.13], /the noise 0\.080 reaches the candidate's margin 0\.070/],
+]) {
+  test(`reports a candidate as inconclusive while one of its pairs reads across the budget: ${shape}`, (t) => {
+    const run = analyze(t, baseConfig, small({ base: flat(10), candidate: pairs(...candidate), planted: flat(13), copy: pairs(...copy) }));
+    assert.equal(run.status, 3, run.stderr);
+    assert.match(run.stderr, message);
+  });
+}
+
+test('judges the same measurements alike whichever same-code copy is labelled the candidate', (t) => {
+  const steady = pairs(1.1, 1.11, 1.12);
+  const wild = pairs(1.1, 1.11, 1.3);
+  for (const [candidate, copy] of [
+    [steady, wild],
+    [wild, steady],
+  ]) {
+    const run = analyze(t, baseConfig, small({ base: flat(10), candidate, planted: flat(13), copy }));
+    assert.equal(run.status, 3, run.stderr);
+    assert.match(run.stderr, /the noise 0\.190 reaches the candidate's margin 0\.060/);
+  }
 });
 
 test('reports a line whose planted slowdown passes as inconclusive, never as a pass', (t) => {
@@ -104,17 +125,17 @@ test('reports a line whose planted slowdown passes as inconclusive, never as a p
   assert.match(run.stderr, /small: planted planted scored 1\.020, not past the budget 1\.05/);
 });
 
-test('reports a planted arm that fails by no more than the same-code noise as inconclusive', (t) => {
+test('reports a planted arm that fails by no more than the noise as inconclusive', (t) => {
   const run = analyze(t, baseConfig, small({ base: flat(10), candidate: flat(10), planted: flat(10.8), copy: flat(10.4) }));
   assert.equal(run.status, 3, run.stderr);
-  assert.match(run.stderr, /planted planted scored 1\.080, not past the budget 1\.05 by more than the same-code noise 0\.040/);
+  assert.match(run.stderr, /planted planted scored 1\.080, not past the budget 1\.05 by more than the noise 0\.040/);
   assert.doesNotMatch(run.stderr, /reaches the candidate's margin/);
 });
 
 test('reports a planted arm that reads far past the ratio it plants as inconclusive', (t) => {
   const run = analyze(t, baseConfig, small({ base: flat(10), candidate: flat(10.1), planted: flat(30), copy: flat(10.1) }));
   assert.equal(run.status, 3, run.stderr);
-  assert.match(run.stderr, /planted planted scored 3\.000, further from the 1\.2 it plants than that ratio's distance to the budget 1\.05 plus the same-code noise 0\.000/);
+  assert.match(run.stderr, /planted planted scored 3\.000, further from the 1\.2 it plants than that ratio's distance to the budget 1\.05 plus the noise 0\.000/);
 });
 
 test('passes a planted arm that reads near the ratio it plants on either side', (t) => {
@@ -124,33 +145,43 @@ test('passes a planted arm that reads near the ratio it plants on either side', 
   }
 });
 
+test("widens a planted arm's distance from the ratio it plants by the noise and no further", (t) => {
+  const quiet = pairs(0.95, 0.98, 1.01);
+  const within = analyze(t, baseConfig, small({ base: flat(10), candidate: quiet, planted: flat(13.7), copy: quiet }));
+  assert.equal(within.status, 0, within.stderr);
+  const beyond = analyze(t, baseConfig, small({ base: flat(10), candidate: quiet, planted: flat(13.9), copy: quiet }));
+  assert.equal(beyond.status, 3, beyond.stderr);
+  assert.match(beyond.stderr, /planted planted scored 1\.390, further from the 1\.2 it plants than that ratio's distance to the budget 1\.05 plus the noise 0\.030/);
+});
+
 test('reports a passing candidate as inconclusive when its same-code copy fails', (t) => {
   const run = analyze(t, baseConfig, small({ base: flat(10), candidate: flat(10.2), planted: flat(11), copy: flat(10.8) }));
   assert.equal(run.status, 3, run.stderr);
-  assert.match(run.stderr, /the same-code noise 0\.060 reaches the candidate's margin 0\.030/);
+  assert.match(run.stderr, /the noise 0\.060 reaches the candidate's margin 0\.030/);
 });
 
 test('measures same-code noise pair by pair, not between summary ranks', (t) => {
   const run = analyze(
     t,
     baseConfig,
-    small({ base: flat(10), candidate: pairs(0.95, 1.04, 1.06), planted: flat(12), copy: pairs(1.04, 1.06, 0.95) })
+    small({ base: flat(10), candidate: pairs(1.07, 1.11, 1.15), planted: flat(12), copy: pairs(1.15, 1.11, 1.07) })
   );
   assert.equal(run.status, 3, run.stderr);
-  assert.match(run.stderr, /the same-code noise 0\.090 reaches the candidate's margin 0\.010/);
+  assert.match(run.stderr, /the noise 0\.080 reaches the candidate's margin 0\.060/);
 });
 
 test('reports inconclusive when two passing copies of the same code differ by the margin', (t) => {
   const run = analyze(t, baseConfig, small({ base: flat(10), candidate: flat(10.46), planted: flat(11), copy: flat(10.4) }));
   assert.equal(run.status, 3, run.stderr);
-  assert.match(run.stderr, /the same-code noise 0\.006 reaches the candidate's margin 0\.004/);
+  assert.match(run.stderr, /the noise 0\.006 reaches the candidate's margin 0\.004/);
 });
 
 for (const [shape, candidate, copy, message] of [
-  ['a passing candidate beside a copy over the budget', [1, 1.1, 1.04], [1, 1.1, 1.2], /the same-code noise 0\.060 reaches the candidate's margin 0\.010/],
-  ['a failing candidate beside a copy under the budget', [1, 1.1, 1.06], [1, 1.1, 0.9], /the same-code noise 0\.060 reaches the candidate's margin 0\.010/],
-  ['one disagreeing pair that sets both medians', [1, 1, 1.1], [1, 1.1, 1.1], /the same-code noise 0\.100 reaches the candidate's margin 0\.050/],
-  ['a small disagreement across the budget', [1.04, 1.04, 1.06], [1.04, 1.06, 1.06], /the same-code noise 0\.020 reaches the candidate's margin 0\.010/],
+  ['a passing candidate beside a copy over the budget', [1, 1.1, 1.04], [1, 1.1, 1.2], /the noise 0\.100 reaches the candidate's margin 0\.010/],
+  ['a failing candidate beside a copy under the budget', [1, 1.1, 1.06], [1, 1.1, 0.9], /the noise 0\.100 reaches the candidate's margin 0\.010/],
+  ['a copy whose median sits apart while each arm keeps its pairs close', [1, 1, 1.03], [1.03, 1.06, 1.06], /the noise 0\.060 reaches the candidate's margin 0\.050/],
+  ['one disagreeing pair that sets both medians', [1, 1, 1.1], [1, 1.1, 1.1], /the noise 0\.100 reaches the candidate's margin 0\.050/],
+  ['a small disagreement across the budget', [1.04, 1.04, 1.06], [1.04, 1.06, 1.06], /the noise 0\.020 reaches the candidate's margin 0\.010/],
 ]) {
   test(`reports inconclusive when the copy's median differs from the candidate's though most pairs match: ${shape}`, (t) => {
     const run = analyze(t, baseConfig, small({ base: flat(10), candidate: pairs(...candidate), planted: flat(13), copy: pairs(...copy) }));
@@ -167,7 +198,7 @@ test('takes the noisiest of several same-code arms', (t) => {
     measurementsFrom(config, { small: { base: flat(10), candidate: flat(10.2), planted: flat(12), copy: flat(10.2), copy2: flat(10.6) } })
   );
   assert.equal(run.status, 3, run.stderr);
-  assert.match(run.stderr, /the same-code noise 0\.040 reaches the candidate's margin 0\.030/);
+  assert.match(run.stderr, /the noise 0\.040 reaches the candidate's margin 0\.030/);
 });
 
 test('requires every planted arm on a cohort to fail past the noise', (t) => {
@@ -193,14 +224,14 @@ test('checks the planted arms on every cohort, not only the first', (t) => {
   assert.match(run.stderr, /large: planted planted scored 1\.020/);
 });
 
-test('checks the same-code noise on every cohort, not only the first', (t) => {
+test('checks the noise on every cohort, not only the first', (t) => {
   const run = analyze(
     t,
     twoCohorts,
     measurementsFrom(twoCohorts, { small: steadySmall, large: { base: flat(10), candidate: flat(10.2), planted: flat(12), copy: flat(10.6) } })
   );
   assert.equal(run.status, 3, run.stderr);
-  assert.match(run.stderr, /large: the same-code noise 0\.040 reaches/);
+  assert.match(run.stderr, /large: the noise 0\.040 reaches/);
 });
 
 test('refuses a flag where the measurements path belongs instead of measuring into it', (t) => {
@@ -436,3 +467,59 @@ test('reverses the arm order every odd packet, saves every run with its config, 
   assert.equal(second.status, 2);
   assert.match(second.stderr, /exists; write each attempt to a new file/);
 });
+
+const lawConfig = (ratio) => ({ ...baseConfig, budget: undefined, budgetLaw: { ratio: 1.25, ms: 16 }, planted: { planted: { small: ratio } } });
+
+test('sets a budget law cohort to 1 plus its ms over the run base median when that passes a candidate the ratio alone fails', (t) => {
+  const config = lawConfig(3);
+  const values = { base: flat(10), candidate: flat(20), planted: flat(30), copy: flat(20.1) };
+  const run = analyze(t, config, measurementsFrom(config, { small: values }));
+  assert.equal(run.status, 0, run.stderr);
+  assert.match(run.stdout, /small budget 2\.6000 from a base median of 10\.00 ms/);
+  const ratioOnly = { ...baseConfig, budget: 1.25, planted: { planted: { small: 3 } } };
+  assert.equal(analyze(t, ratioOnly, measurementsFrom(ratioOnly, { small: values })).status, 1);
+});
+
+test('fails under the budget law a candidate from 20 to 45 ms that a ratio fixed from another run passes', (t) => {
+  const config = lawConfig(3.5);
+  const values = { base: flat(20), candidate: flat(45), planted: flat(70), copy: flat(45.1) };
+  const run = analyze(t, config, measurementsFrom(config, { small: values }));
+  assert.equal(run.status, 1, run.stderr);
+  assert.match(run.stdout, /small budget 1\.8000 from a base median of 20\.00 ms/);
+  const stale = { ...baseConfig, budget: 2.7877, planted: { planted: { small: 3.5 } } };
+  assert.equal(analyze(t, stale, measurementsFrom(stale, { small: values })).status, 0);
+});
+
+test('reads a budget law cohort as inconclusive when the base moved so far that its planted ratio no longer crosses the budget', (t) => {
+  const config = lawConfig(1.5);
+  const run = analyze(t, config, measurementsFrom(config, { small: { base: flat(10), candidate: flat(11), planted: flat(15), copy: flat(10.1) } }));
+  assert.equal(run.status, 3, run.stderr);
+  assert.match(run.stderr, /planted planted scored 1\.500, not past the budget 2\.6 by more than the noise/);
+});
+
+test('takes the budget law base median as the mean of the two middle base values, not the upper one', (t) => {
+  const config = lawConfig(3);
+  const base = [10, 12, 10, 12, 10, 12];
+  const run = analyze(t, config, measurementsFrom(config, { small: { base, candidate: flat(26.3), planted: flat(32.9), copy: flat(26.4) } }));
+  assert.equal(run.status, 0, run.stderr);
+  assert.match(run.stdout, /small budget 2\.4545 from a base median of 11\.00 ms/);
+});
+
+test('keeps the budget law ratio as a floor when 1 plus its ms over the base median falls below it', (t) => {
+  const config = lawConfig(3);
+  const run = analyze(t, config, measurementsFrom(config, { small: { base: flat(80), candidate: flat(98), planted: flat(240), copy: flat(98.1) } }));
+  assert.equal(run.status, 0, run.stderr);
+  assert.match(run.stdout, /small budget 1\.2500 from a base median of 80\.00 ms/);
+});
+
+for (const [shape, config, message] of [
+  ['a planted ratio at the law ratio', lawConfig(1.25), /config\.planted\.planted\.small must be a ratio past the budget 1\.25/],
+  ['both budget and budgetLaw', { ...lawConfig(3), budget: 1.25 }, /config\.budget and config\.budgetLaw exclude each other/],
+  ['a law with no ms', { ...lawConfig(3), budgetLaw: { ratio: 1.25 } }, /config\.budgetLaw needs a positive ratio and a positive ms/],
+]) {
+  test(`refuses a budget law config with ${shape}`, (t) => {
+    const run = analyze(t, config, measurementsFrom(config, { small: { base: flat(10), candidate: flat(10), planted: flat(30), copy: flat(10) } }));
+    assert.equal(run.status, 2, run.stderr);
+    assert.match(run.stderr, message);
+  });
+}

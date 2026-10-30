@@ -7,7 +7,7 @@ ref: dev
 
 # Mirror Manifest
 
-Mirror of `home-assistant/core` — 26 default patterns, 1 followed patterns, 15 file(s) materialized.
+Mirror of `home-assistant/core` — 26 default patterns, 1 followed patterns, 18 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `home-assistant/core` — 26 default patterns, 1 followed patterns, 15
 | Ref           | `dev` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 15 |
+| Files         | 18 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,19 +61,22 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`.claude/skills/bump-dependency/SKILL.md`](.claude/skills/bump-dependency/SKILL.md) |
 | 2 | ✓ | [`.claude/skills/custom-integration-sources/SKILL.md`](.claude/skills/custom-integration-sources/SKILL.md) |
-| 3 | ✓ | [`.claude/skills/ha-integration-knowledge/platform-device-tracker.md`](.claude/skills/ha-integration-knowledge/platform-device-tracker.md) |
-| 4 | ✓ | [`.claude/skills/ha-integration-knowledge/platform-diagnostics.md`](.claude/skills/ha-integration-knowledge/platform-diagnostics.md) |
-| 5 | ✓ | [`.claude/skills/ha-integration-knowledge/platform-repairs.md`](.claude/skills/ha-integration-knowledge/platform-repairs.md) |
-| 6 | ✓ | [`.claude/skills/ha-integration-knowledge/SKILL.md`](.claude/skills/ha-integration-knowledge/SKILL.md) |
-| 7 | ✓ | [`.claude/skills/ha-merge-queue/SKILL.md`](.claude/skills/ha-merge-queue/SKILL.md) |
-| 8 | ✓ | [`.claude/skills/ha-pr-comment-audit/SKILL.md`](.claude/skills/ha-pr-comment-audit/SKILL.md) |
-| 9 | ✓ | [`.claude/skills/ha-pr-reviewer/SKILL.md`](.claude/skills/ha-pr-reviewer/SKILL.md) |
-| 10 | ✓ | [`.claude/skills/ha-quality-scale-verify/SKILL.md`](.claude/skills/ha-quality-scale-verify/SKILL.md) |
-| 11 | ✓ | [`.claude/skills/ha-review/SKILL.md`](.claude/skills/ha-review/SKILL.md) |
-| 12 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 13 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 14 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 15 | → | [`AI_POLICY.md`](AI_POLICY.md) |
+| 3 | ✓ | [`.claude/skills/ha-deprecation-cleanup/SKILL.md`](.claude/skills/ha-deprecation-cleanup/SKILL.md) |
+| 4 | ✓ | [`.claude/skills/ha-integration-knowledge/platform-device-tracker.md`](.claude/skills/ha-integration-knowledge/platform-device-tracker.md) |
+| 5 | ✓ | [`.claude/skills/ha-integration-knowledge/platform-diagnostics.md`](.claude/skills/ha-integration-knowledge/platform-diagnostics.md) |
+| 6 | ✓ | [`.claude/skills/ha-integration-knowledge/platform-repairs.md`](.claude/skills/ha-integration-knowledge/platform-repairs.md) |
+| 7 | ✓ | [`.claude/skills/ha-integration-knowledge/SKILL.md`](.claude/skills/ha-integration-knowledge/SKILL.md) |
+| 8 | ✓ | [`.claude/skills/ha-merge-queue/SKILL.md`](.claude/skills/ha-merge-queue/SKILL.md) |
+| 9 | ✓ | [`.claude/skills/ha-pr-comment-audit/SKILL.md`](.claude/skills/ha-pr-comment-audit/SKILL.md) |
+| 10 | ✓ | [`.claude/skills/ha-pr-reviewer/SKILL.md`](.claude/skills/ha-pr-reviewer/SKILL.md) |
+| 11 | ✓ | [`.claude/skills/ha-quality-scale-verify/SKILL.md`](.claude/skills/ha-quality-scale-verify/SKILL.md) |
+| 12 | ✓ | [`.claude/skills/ha-review/SKILL.md`](.claude/skills/ha-review/SKILL.md) |
+| 13 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
+| 14 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 15 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 16 | ✓ | [`packages/hassfest/AGENTS.md`](packages/hassfest/AGENTS.md) |
+| 17 | ✓ | [`script/hassfest/AGENTS.md`](script/hassfest/AGENTS.md) |
+| 18 | → | [`AI_POLICY.md`](AI_POLICY.md) |
 
 ---
 

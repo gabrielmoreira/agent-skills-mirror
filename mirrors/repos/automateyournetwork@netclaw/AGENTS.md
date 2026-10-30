@@ -155,6 +155,14 @@ When unsure about severity or approach: escalate. Say "I'd recommend verifying t
 - Claw Plans live where the user chooses (deployment workspace or a private setup folder) and contain no secrets. Setup-run journals remain authoritative in a private state root outside source/runtime homes; after creation, `<runtime-home>/netclaw-hud/setup/` contains only an owned reference and sanitized evidence (R7). All of these use 0700 directories and 0600 files. Secrets go only to runtime or member environment files through existing writers. Editor state holds only non-secret wizard answers and run references. (153-ide-installer)
 - Python 3.10+ standard library for setup engine/catalog/validation; TypeScript 5.9 and existing browser JavaScript for VS Code. + Existing VS Code APIs, esbuild, JSON Schema subset validator, Python unittest, Node test runner and existing runtime CLIs. No new UI framework or general shell endpoint. (155-border-channel-setup)
 - Non-secret schema-1 plans; private per-installation environment/configuration; existing external setup-run journal and owned artifact records. No bulk environment import or credential values in frontend state. (155-border-channel-setup)
+- Python 3.10+ standard library; existing TypeScript 5.9 extension. + Existing JSON, dotenv writer, installer and native config contracts. (156-openclaw-env-defaults)
+- Source JSON defaults; existing private runtime configuration and environment. (156-openclaw-env-defaults)
+- Existing JavaScript ESM/Node24.19.0. + Express and existing private atomic writer. (157-hermes-canvas-retry)
+- Existing owner-private JSON bindings,30-day expiry,8MiB read/write bound. (157-hermes-canvas-retry)
+- JavaScript ESM/React18; Node24.19 tests. + Existing React, Web Crypto SHA-256, esbuild/JSDOM test harness. (158-hermes-chat-recovery)
+- Existing installation-scoped sessionStorage pending record and sanitized chat/archive. (158-hermes-chat-recovery)
+- Python 3.10+ bridge and JavaScript ESM/React; HUD Node24.19+ + Existing SQLite, httpx/FastMCP, Express, React; no new dependency (159-hermes-uncertain-capacity)
+- Existing private HUD ledger and owner bindings; additive release table (159-hermes-uncertain-capacity)
 
 - Spec 148 implementation: JavaScript ESM/Express/React HUD; HUD Node >=24.19 <25 or >=26.1; isolated bridge/tool Python 3.12 and companion Python 3.14; official MCP Node client 2.3.1 and isolated FastMCP 4.0.11/MCP Python SDK 2.3.0. General OpenClaw installer Node policy remains >=24.16 <25 or >=26.1.
 - Qualified Hermes baseline: v0.21.6, source 818c13be1dc4fd28987e1e881a9408224afd4535. Private MCP bridge/protected companion, schema-2 owned HUD bindings, SQLite admission/evidence records and installation-scoped browser storage. Mac and Ubuntu 26.04 WSL live/browser qualification is recorded in specs/148-hermes-hud-integration/closure.md; broader tool and platform qualification is not implied.

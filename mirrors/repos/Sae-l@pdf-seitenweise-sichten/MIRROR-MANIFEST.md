@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Sae-l/pdf-seitenweise-sichten` — 26 default patterns, 1 followed patterns, 3 file(s) materialized.
+Mirror of `Sae-l/pdf-seitenweise-sichten` — 26 default patterns, 4 followed patterns, 10 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `Sae-l/pdf-seitenweise-sichten` — 26 default patterns, 1 followed pa
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 1 |
-| Files         | 3 |
+| Followed pats | 4 |
+| Files         | 10 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,10 @@ Mirror of `Sae-l/pdf-seitenweise-sichten` — 26 default patterns, 1 followed pa
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
+- `docs/installation.md`
+- `CONTRIBUTING.md`
 - `references/gezielte-nutzung.md`
+- `docs/repository-konfiguration.md`
 
 ## File Index
 
@@ -59,9 +62,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.github/skills/pdf-seitenweise-sichten/SKILL.md`](.github/skills/pdf-seitenweise-sichten/SKILL.md) |
-| 2 | ✓ | [`SKILL.md`](SKILL.md) |
-| 3 | → | [`references/gezielte-nutzung.md`](references/gezielte-nutzung.md) |
+| 1 | ✓ | [`.agents/plugins/marketplace.json`](.agents/plugins/marketplace.json) |
+| 2 | ✓ | [`.github/skills/pdf-seitenweise-sichten/SKILL.md`](.github/skills/pdf-seitenweise-sichten/SKILL.md) |
+| 3 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 4 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 5 | ✓ | [`plugins/pdf-seitenweise-sichten/skills/pdf-seitenweise-sichten/SKILL.md`](plugins/pdf-seitenweise-sichten/skills/pdf-seitenweise-sichten/SKILL.md) |
+| 6 | ✓ | [`SKILL.md`](SKILL.md) |
+| 7 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 8 | → | [`docs/installation.md`](docs/installation.md) |
+| 9 | → | [`docs/repository-konfiguration.md`](docs/repository-konfiguration.md) |
+| 10 | → | [`references/gezielte-nutzung.md`](references/gezielte-nutzung.md) |
 
 ---
 

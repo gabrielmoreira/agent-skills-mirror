@@ -73,6 +73,15 @@ the finalized agent/session permissions: hidden skills are denied and
 discoverable skills require permission approval. The plugin does not rewrite
 `<available_skills>` in conversation text.
 
+### Request-local Message View
+
+`message-transform-view.ts` collects valid/user message references and source
+indices once per request. Parts remain live and image extraction is memoized
+only within that view. Root wiring shares it with task, phase and council
+transforms, then rebuilds after structural Interview/board edits. Goal placement
+remains trailing-most. `stripTaggedContents` removes multiple compaction tags
+with one equivalent pass; the cache-safety harness mirrors this wiring.
+
 ### Hook Registration
 
 ```

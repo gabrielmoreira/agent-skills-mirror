@@ -171,7 +171,7 @@ their conflicting local edits were saved there and relay the `Inspect`,
 checkout with `git apply -3`, never `stash apply` in the install;
 `unmerged=1` means the rescue needs manual resolution).
 On `FF_STOPPED`, STOP and relay the reason: nothing was changed.
-On `AHEAD_OF_STABLE`, STOP: the checkout is already past the weekly release, so nothing changes until the next cut (`gstack-config set update_channel main` follows every merge). On a `fetching origin/stable failed` line above, STOP and relay it; nothing was changed.
+On `AHEAD_OF_STABLE`, STOP: the checkout is already past the latest stable release, so nothing changes until the next cut (`gstack-config set update_channel main` follows every merge). On a `fetching origin/stable failed` line above, STOP and relay it; nothing was changed.
 `ff-busy` means another gstack update is running (retry in a minute);
 `autostash-unrecoverable` names what is in the way (an untracked file the
 release adds, or another git command); `index-unreadable` means the checkout's

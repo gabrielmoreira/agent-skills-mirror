@@ -67,6 +67,22 @@ export function validateConfig(c) {
   if(!finite(c.duration,1/60,600)||!finite(c.fps,1,60)||!Number.isInteger(c.duration*c.fps)||c.duration*c.fps>36000)throw Error('invalid duration/fps/frames');
   if(![c.width,c.height].every(x=>finite(x,16,4096)&&Number.isInteger(x)&&x%2===0)||c.width*c.height*c.duration*c.fps>20e9)throw Error('invalid dimensions/pixel budget');
   if(!Array.isArray(c.render_files)||!c.render_files.length||c.render_files.length>512||new Set(c.render_files.map(x=>x.toLowerCase())).size!==c.render_files.length)throw Error('explicit unique render_files required');
+  if(c.cuts!==undefined&&(!Array.isArray(c.cuts)||c.cuts.length>4096||
+    c.cuts.some((cut,i)=>!finite(cut,0,c.duration)||cut<=0||cut>=c.duration||(i>0&&cut<=c.cuts[i-1]))))throw Error('invalid cuts: strictly increasing numbers inside duration required (max 4096)');
+}
+
+export function shutterTimes(t, fps, sub, shutter, cuts, end) {
+  // Preserve the original arithmetic and edge clamping for projects without cuts.
+  if(!cuts?.length)return Array.from({length:sub},(_,k)=>Math.max(0,Math.min(end-1e-4,t+((k+.5)/sub-.5)*shutter/fps)));
+  let start=0,stop=end;
+  for(const cut of cuts){if(cut<=t)start=cut;else {stop=Math.min(stop,cut);break;}}
+  // Move the whole exposure, not individual samples, to preserve uniform spacing.
+  // A short shot uses its full interval; equality at a cut belongs to the new shot.
+  const width=Math.min(shutter/fps,stop-start);
+  const left=Math.max(start,Math.min(stop-width,t-width/2));
+  // The guard keeps rounded midpoints strictly below a cut, even for tiny shots.
+  const upper=Math.max(start,Math.min(end-1e-4,stop-Number.EPSILON*Math.max(1,Math.abs(stop))));
+  return Array.from({length:sub},(_,k)=>Math.max(start,Math.min(upper,left+(k+.5)*width/sub)));
 }
 
 export function captureSettings(options,config) {
@@ -114,8 +130,8 @@ export async function render(options) {
   else if(options.every){const step=Number(options.every);if(!Number.isFinite(step)||step<=0)throw Error('invalid --every');times=[];for(let t=capture.from;t<capture.to-1e-6&&times.length<=36000;t+=step)times.push(Number(t.toFixed(3)));}
   else times=Array.from({length:frames},(_,i)=>(first+i)/config.fps);
   if(!times.length||times.length>36000||times.some(t=>!Number.isFinite(t)||t<0||t>=config.duration))throw Error('invalid still times');
-  // Upstream shutter: each frame averages `sub` captures spread over `shutter` of the frame interval.
-  const shots=stills?times:times.flatMap(t=>Array.from({length:capture.sub},(_,k)=>Math.max(0,Math.min(capture.to-1e-4,t+(capture.sub>1?((k+.5)/capture.sub-.5)*capture.shutter:0)/config.fps))));
+  // Average sub-frame captures within the output frame's own shot, never across a cut.
+  const shots=stills?times:times.flatMap(t=>shutterTimes(t,config.fps,capture.sub,capture.shutter,config.cuts,capture.to));
   fs.mkdirSync(path.dirname(out),{recursive:true});
   const partial=fs.mkdtempSync(out+'.partial-');
   let server,browser,child,encoder,encoderDone,deadline,timeoutReject,launching;
@@ -247,6 +263,7 @@ export async function render(options) {
     fs.writeFileSync(out+'.failure.json',JSON.stringify({status:'HOLD',error:String(error),partial,source_sha256:sourceDigest,cleanup,browser_pid:browserPid,loopback_port:loopbackPort},null,2)+'\n',{flag:'wx'});
     throw error;
   }
+  receipt.cuts=config.cuts?.length??0;
   receipt.cleanup=cleanup;
   if(stills)fs.renameSync(partial,out);
   else {fs.renameSync(path.join(partial,'encoded.mp4'),out);fs.rmdirSync(partial);}

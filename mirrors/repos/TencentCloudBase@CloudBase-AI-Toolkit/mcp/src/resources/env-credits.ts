@@ -1,7 +1,7 @@
 import { ResourceTemplate } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { ExtendedMcpServer } from "../server.js";
 import { getInstanceLang, t, type Lang, type MessageKey } from "../i18n/index.js";
-import { getCachedEnvId } from "../cloudbase-manager.js";
+import { readDisplayedEnvId } from "../utils/env-binding.js";
 import {
   SITE_IDS,
   SITE_REGION_MAP,
@@ -181,18 +181,12 @@ export function buildEnvCreditsConsoleUrl(
 }
 
 /**
- * 从 server 实例派生静态兜底值。
- *
- * 环境 ID 的取值优先级（与 get-started 同口径，新增来源时同步两处）：
- *   ① 本次工具结果携带（面板侧覆盖，见 EnvCreditsPayload）
- *   → ② `server.cloudBaseOptions.envId` / `process.env.CLOUDBASE_ENV_ID`
- *   → ③ 进程缓存 `getCachedEnvId()`
- *   → ④ 降级：不显示 ID
- * hosted 是无状态的，进程缓存不可靠，因此 ③ 只是本地兜底；面板永远以工具结果为准。
+ * Static fallback until a tool result arrives.
+ * Explicit `cloudBaseOptions.envId` wins. Otherwise the current slot.
+ * Does not read `CLOUDBASE_ENV_ID` or the process cache.
  */
 export function resolveEnvCreditsFallback(server: ExtendedMcpServer): EnvCreditsFallback {
-  const envId =
-    server.cloudBaseOptions?.envId || process.env.CLOUDBASE_ENV_ID || getCachedEnvId() || null;
+  const envId = readDisplayedEnvId(server.cloudBaseOptions?.envId);
   const { site, region } = resolveSiteAndRegion({
     site: server.cloudBaseOptions?.site,
     region: server.cloudBaseOptions?.region,

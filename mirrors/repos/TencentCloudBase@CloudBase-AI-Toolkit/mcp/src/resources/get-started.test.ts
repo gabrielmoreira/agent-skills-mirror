@@ -4,10 +4,12 @@ import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
 import { createCloudBaseMcpServer } from "../server.js";
 import { t } from "../i18n/index.js";
 import { debug } from "../utils/logger.js";
+import { noteEnvBinding, runInEnvSlot } from "../utils/env-binding.js";
 import {
   GET_STARTED_MIME_TYPE,
   GET_STARTED_RESOURCE_URI,
   buildGetStartedHtml,
+  resolveGetStartedStatus,
   type GetStartedStatus,
 } from "./get-started.js";
 
@@ -51,6 +53,24 @@ function visibleMarkup(html: string): string {
     .replace(/<script>[\s\S]*?<\/script>/gi, "")
     .replace(/<details[\s\S]*?<\/details>/gi, "");
 }
+
+describe("get-started 兜底解析", () => {
+  it("登录态记在槽里时面板能看到；这次请求自己带的 envId 优先", () => {
+    const fromSlot = runInEnvSlot(() => {
+      noteEnvBinding({ envId: "env-from-login", source: "login_state" });
+      return resolveGetStartedStatus({ cloudBaseOptions: {} } as never);
+    });
+    expect(fromSlot.envId).toBe("env-from-login");
+
+    const fromOptions = runInEnvSlot(() => {
+      noteEnvBinding({ envId: "env-from-login", source: "login_state" });
+      return resolveGetStartedStatus({
+        cloudBaseOptions: { envId: "env-from-options" },
+      } as never);
+    });
+    expect(fromOptions.envId).toBe("env-from-options");
+  });
+});
 
 describe("get-started 面板 HTML", () => {
   it("零外链：不加载任何外部资源；地址只作为 ui/open-link 的目标出现在表里", () => {

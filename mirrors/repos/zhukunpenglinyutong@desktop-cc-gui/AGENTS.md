@@ -8,6 +8,7 @@
 - 沿调用链阅读受影响的实现、调用方和测试；只扩展到与目标行为有关的范围，不机械遍历全仓或顺手重构无关模块。
 - 代码、测试和文档不一致时查明依据，不把现有实现自动当作正确设计。不确定性先通过源码和可逆实验消解，必须由用户决定的取舍再具体询问。
 - 长任务保留目标、关键证据、已排除方案、当前状态和下一步；恢复时先核对现有改动，避免重复已证伪的尝试。
+- **排查"改了却没生效"时，先确认应用在用哪个数据 home**：开发模式可能走**便携模式**——`src-tauri/target/debug/portable-data.json`（release 构建对应 `target/release/`）的 `appHome` 会把会话库、设置、插件整体重定向到别处（本机曾被指到一个非默认目录，形如 `D:\<便携数据目录>`），此时 `~/.ccgui-next/app.db` 是**另一个旧库**；看错库会得出完全相反的结论（本项目真实发生过：据此误判"分叉标题从未写入"，浪费一轮）。另外 `app.db` 走 WAL，写入先进 `app.db-wal`、checkpoint 时才回写主库，**主库文件 mtime 不随每次写入更新**，不能用它判断库是否活跃（要看 `app.db-wal`）。该文件在 `target/` 下，`cargo clean` 会删掉它并切回默认 home。
 
 ## 项目边界
 
@@ -41,7 +42,7 @@
 - 常用验证入口按需选用：
   - `pnpm build`：前端类型检查和构建。
   - `pnpm exec vitest run <相关测试路径>`：Vitest 测试；核对实际发现及执行的用例。
-  - `node --experimental-strip-types --test tests/*.test.ts`：流式调度、Markdown 与缓存回归，需使用支持该参数的 Node。
+  - `pnpm test:node`（`pnpm test` 会先跑它）：`tests/*.test.ts` 下的流式调度、Markdown 与缓存回归，需 Node 22.13+。
   - 在 `src-tauri` 下执行 `cargo test <相关过滤条件>`；发送与中断链路可用 `cargo test --test send_path`。
   - 真实 React 提交与定时器交错验证见 `tests/browser/README.md`。
 - 报告实际通过、失败、跳过和未覆盖项；不能仅凭退出码为零或构建通过，就声称用户问题已经解决。

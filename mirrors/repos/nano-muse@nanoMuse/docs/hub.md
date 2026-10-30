@@ -124,7 +124,12 @@ A scheduled task on nanoMuse Desktop runs while nobody may be at the computer, s
 its run also go to the account's phones. No call stands behind such a card, so it travels as a
 push (relay 0.31, [below](#frames)); the computer sends it only when `welcome.server.features`
 lists `event_push`, and the relay passes it only to devices whose `hello` announces
-`approve.any` (the Android app and the iPhone app):
+`approve.any` (the Android app and the iPhone app). That is the whole of it: a card of a
+chat somebody is typing in on the computer or in the web console stays where it was asked (a
+person is there), a card inside a task another device sent goes back to that device inside the
+call ([above](#what-you-can-say)), and the Python runtime (`nanomuse serve`) pushes nothing yet — its
+scheduled tasks' cards wait in the web app
+([#704](https://github.com/nano-muse/nanoMuse/issues/704)):
 
 ```
 → event {to:"*", body:{stage:"approval", approval_id, preview, preview_zh, reason, app,

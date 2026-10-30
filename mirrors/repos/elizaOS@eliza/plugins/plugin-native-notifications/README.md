@@ -59,6 +59,31 @@ The test grants and revokes access for its own listener, posts synthetic notific
 and dismisses one exact row. Uninstall all four APKs afterward. This does not
 certify physical-device behavior or a product's foreground policy.
 
+## Capacitor host plugin
+
+`NotificationsHostPlugin` (in `android/src/capacitor`, compiled only when the host Gradle build
+has a `:capacitor-android` project) is the whole renderer bridge for a phone host's notifications.
+A host subclasses it with its own `@CapacitorPlugin(name=...)`, as with `DataResetPlugin`, and
+supplies installed identities only: `appLabel()`, `scope()`, `noticeStorage()` (durable slots that
+commit before returning), `deliveryConfig()`, `routesConfig()`, `posterConfig()`, optionally its
+`mirror()` for cross-app access and `noticeKind(channel)` for its own channels. Hosts may return a
+subclass from `routes()` with the same configuration.
+
+It provides `status`, `openChannelSettings`, `list`, `open`, `dismiss`, `clear`, the cross-app
+`crossAppStatus`, `notificationApps`, `setNotificationPolicy`, `resumeCrossApp`,
+`openNotificationAccess`, `notificationHistory` and `clearNotificationHistory`, workflow taps
+(`pendingWorkflowTap`, `consumeWorkflowTap`, event `pendingWorkflowTap`) and workflow notices
+(`postWorkflow`, `workflowReceipt`, `workflowPresentationCapabilities`). Durable notice work runs
+on one bounded `NoticeWorker` behind `ForegroundNoticeGate`; every other owner action requires the
+focused, unlocked activity. `postWorkflow` resolves the ledger status and never reports `posted`
+for a notice that was only recorded. A tap's question excerpt comes only from the exact,
+still-posted own notice on its expected channel, never from a secret one. Row identifiers are
+opaque (`NoticeIds`) and are forgotten on pause, when the mirror is also redacted.
+
+`test/native-host/android-compile.node.mjs` compiles it against the SDK platform and a minimal
+Capacitor surface; `NoticeIdsTest` covers identifiers and the worker on the JVM. Neither
+is device evidence.
+
 ## Host notification receipts
 
 `NoticeDelivery` is a native-only ledger for the host's own notifications. It does
@@ -79,9 +104,78 @@ for the configured maximum approval lifetime; it needs no missing binding or con
 A known receipt retains its original expiry. Both forms prevent delayed publication. Expiry removes approval receipts. Step receipts are bounded at 512
 and approval receipts at 256; reaching capacity refuses new entries.
 
+## Host notice routes, owner fence and recovery
+
+The host-level pieces around the ledger are shared too; a host supplies only its deployed
+identifiers, channels, icon and launch actions:
+
+- `NoticeRoutes` keeps one encrypted, bounded route per notice (`Config`: route and owner slot
+  names, the ledger `Config`, and the host's route identifier fields). A tap or Ask is captured
+  durably and opens only while the notice's receipt is posted and its owner is current; it is a read
+  request, never a decision.
+- `NoticeOwner` is the owner identity (origin, owner, agent). `NoticeCoordinator` posts and withdraws
+  approval notices with their routes, persists the owner fence before touching OS notices (approvals
+  of another owner are suspended, results withdrawn) and reposts a suspended approval quietly with a
+  rotated route after the host revalidated it for its returning owner.
+- `NoticeRecovery` promotes an admitted action-journal attempt of a workflow notification step only
+  from its original receipt; nothing is posted again.
+- `HostNoticePoster` posts step and approval notices on the host's channels (`Config`: channel IDs,
+  names and descriptions, small icon, tag prefix, open/Ask actions, route URI prefix, lock-screen
+  titles, Ask label, quiet group and step timeout). Keep these values stable across upgrades.
+- `NoticeTapInbox` captures taps on those notices from the host's launch intents (open and Ask
+  actions, route URI prefix) into the route ledger: each intent object is retained once until its
+  capture commits, a failed write keeps it for retry and is reported as unavailable rather than "no
+  tap", an Ask whose notice is gone settles into a plain open, and consumption needs the exact pending
+  tap and the foreground. Retain/release run on the UI thread; everything else on one storage worker.
+
+`test/native-host/notices.node.mjs` runs the synthetic JVM checks for routes, the owner fence,
+approval coordination, recovery and the tap inbox (org.json from `ELIZA_ORG_JSON_JAR` or the Gradle cache).
+
 `NoticeDeliveryTest` in the Android consumer exercises actual NotificationManager
 posting, dismissal, receipt reopening, digest mismatch, approval withdrawal and
 expiry. Grant the host `POST_NOTIFICATIONS` in its disposable test user and run
 that class with `-e disposableMirrorFixture 1`. It uses synthetic data and removes
 its channels, notifications and preference file. Reopening a ledger in this test
 is not process-death or product integration acceptance.
+
+## Background new-mail notices
+
+`MailBackgroundDelivery` runs a host's periodic new-mail check against the Eliza Cloud
+owner Gmail history route (`/api/v1/eliza/google/gmail/history`) with the host's
+existing encrypted Cloud key. `MailHistoryReconciliation` is its durable engine and
+`MailNoticePoster` its content-free Android poster. The renderer half is
+`createMailBackground` in `@elizaos/plugin-inbox/mailbox`.
+
+The host supplies:
+
+- `MailBackgroundDelivery.Host`: one process lock shared with its credential writers,
+  read/write/remove of the encrypted state slot, the raw Cloud credential, its pending
+  data-reset flag and Cloud identity verification. The state slot name is
+  migration-sensitive: keep the name installed devices already use.
+- `MailBackgroundDelivery.Scheduler`: constrained ordinary background work (WorkManager
+  periodic plus one catch-up job, network required). The job calls `sync(generation, stopped)`
+  and retries when it returns false; a `SecurityException` means the job is stale.
+- `MailNoticePoster.Config`: channel, tap action, open/Ask route prefixes, tag prefix,
+  icon, redacted text and the host activity. These names are migration-sensitive.
+- Its own bridge (Capacitor or otherwise) under its installed plugin name. The bridge
+  calls `configure` only from a foreground selection, `capture` for launch intents that
+  `MailNoticePoster.tap` recognises, and `pending`/`consume`/`releaseQuestion` behind a
+  foreground fence such as `ForegroundNoticeGate`; it calls `resume` on resume and
+  `withdraw(null)` whenever the Cloud credential is replaced or removed.
+
+Admission is bound to the signed-in Cloud credential and the owner the foreground UI
+names, not to the agent's inference provider. The check only reads Cloud Gmail routes
+with the Cloud key; native verifies that owner and the `google.gmail.triage` grant with
+Cloud before saving a selection and before every history page, and pins the exact
+credential bytes locally. An earlier host design required the Cloud inference provider
+only to borrow that provider's owner snapshot; the Cloud credential and the verified
+owner are sufficient, so a phone whose agent infers through another provider can enable
+background checks too.
+
+Semantics: continuations keep the original decimal history ID and only a final page
+advances it; a baseline or expired history starts future observation quietly and reports
+incomplete catch-up; only hydrated INBOX+UNREAD arrivals (not Sent, Spam or Trash) notify;
+dispatch is reserved before posting and an uncertain post is never replayed; at most 1,000
+unresolved notice identities are kept and overflow refuses the page instead of truncating
+it. Notices name no sender, subject or body; a tap carries only a ledger key and opens no
+message. `node --test test/native-host/mail.node.mjs` runs the JVM checks.

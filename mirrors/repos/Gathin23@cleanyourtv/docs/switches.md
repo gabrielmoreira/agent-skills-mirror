@@ -29,6 +29,7 @@ fits the rules; keys from before the rule sit on its wanted list until a screens
 | `sky_intensity` | <img src="sky-sunset.jpg" width="320" alt="sky_intensity on a TV"> |
 | `wallpaper_rotation_minutes` | <img src="../themes/scenes/screenshot.jpg" width="320" alt="wallpaper_rotation_minutes on a TV"> |
 | `festival` | <img src="../themes/dussehra/screenshot.jpg" width="320" alt="festival on a TV"> |
+| `seasonal_skin` | <img src="../themes/halloween/screenshot.jpg" width="320" alt="seasonal_skin on a TV"> |
 | `settings_key_panel` | <img src="quick-settings-panel.jpg" width="320" alt="settings_key_panel on a TV"> |
 | `home_idle_clock_minutes` | <img src="clock-screensaver.png" width="320" alt="home_idle_clock_minutes on a TV"> |
 | `gamepad_passthrough` | <img src="switches/gamepad_passthrough.jpg" width="320" alt="gamepad_passthrough on a TV"> |
@@ -55,6 +56,7 @@ fits the rules; keys from before the rule sit on its wanted list until a screens
 | `power_on_home` | <img src="switches/power_on_home.jpg" width="320" alt="power_on_home on a TV"> |
 | `home_long_press_home` | <img src="switches/home_long_press_home.jpg" width="320" alt="home_long_press_home on a TV"> |
 | `vpn_pill` | <img src="switches/vpn_pill.jpg" width="320" alt="vpn_pill on a TV"> <img src="switches/vpn_pill_rest.jpg" width="320" alt="vpn_pill at rest: the pill outlined in red, focus on a tile"> |
+| `icon_only_vpn` | <img src="switches/icon_only_vpn.jpg" width="320" alt="icon_only_vpn with no VPN up: an open lock on the plain round button, between Wi-Fi and Settings"> <img src="switches/icon_only_vpn_on.jpg" width="320" alt="icon_only_vpn with a VPN up: the closed lock in a green outline, focus on a tile"> |
 | `power_on_home_always` | <img src="switches/power_on_home_always.jpg" width="320" alt="power_on_home_always on a TV"> |
 | `inputs_connected_only` | <img src="switches/inputs_connected_only.jpg" width="320" alt="inputs_connected_only on a TV"> |
 | `icon_tiles` | <img src="switches/icon_tiles.jpg" width="320" alt="icon_tiles: an app drawn from its icon in the grid on a TV"> |

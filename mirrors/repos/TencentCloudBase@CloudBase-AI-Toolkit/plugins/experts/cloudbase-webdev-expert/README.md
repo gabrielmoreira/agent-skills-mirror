@@ -13,7 +13,7 @@ CloudBase 全栈单专家（主推，四个专家里覆盖场景最广）。定�
 | 层 | 内容 | 来源 |
 | --- | --- | --- |
 | 核心 | 平台总览 / Web 开发部署 / PG / 前端直连 PG / MCP 建表 | `cloudbase-platform`、`cloudbase-sites-runtime`、`postgresql-development-cloudbase`、`relational-database-web-cloudbase`、`relational-database-mcp-cloudbase` |
-| 补充 | 云函数 / 鉴权 / 存储 / 大模型 / 建模 / UI | `cloud-functions`、`auth-web-cloudbase`、`cloud-storage-web`、`ai-model-web`、`data-model-creation`、`ui-design` |
+| 补充 | 云函数 / 鉴权 / 存储 / 大模型 / 建模 / UI | `cloud-functions`、`auth-web-cloudbase`、`cloud-storage-web`、`ai-model-web`、`postgresql-development-cloudbase`、`ui-design` |
 | 包内 | 企业落地模式、需求描述模板、安全红线、场景适配判断 | `references/enterprise-web-toolkit-playbook.md` |
 | 逃生通道 | 包内未列的其他 CloudBase 能力（文档数据库、CloudRun、网关等） | 先查 `cloudbase-platform` 路由到对应官方 skill，未安装按 https://docs.cloudbase.net/skill.md 接入；无 skill 时查 docs.cloudbase.net |
 

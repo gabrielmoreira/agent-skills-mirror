@@ -32,6 +32,17 @@ suivantes de la racine du document contiennent des lignes de boîte de réceptio
 sans rapport et ne comptent pas. **Collapse all** doit aussi confirmer séparément
 que Gmail a développé la conversation.
 
+## Lecture d'une longue page avec `read_page`
+
+`read_page` renvoie la prose d'une page par fenêtres d'au plus 6 000 caractères
+et signale la suite avec `hasMore` et `continuationArgs`. Une fenêtre qui
+ajoute du texte non lu de la même page fait avancer la lecture : elle ne compte
+pas dans le point de contrôle de livraison, déclenché après huit observations
+sans progrès, si bien que **Summarize this page** peut lire un long article ou
+README jusqu'au bout. La première fenêtre de chaque page, les relectures et les
+autres observations comptent toujours, et une exécution dispose d'au plus 16
+fenêtres non comptées (`document-read-progress.js`).
+
 ## Matrice des outils
 
 Légende : **Oui** = disponible · **-** = indisponible · **C** = Chrome

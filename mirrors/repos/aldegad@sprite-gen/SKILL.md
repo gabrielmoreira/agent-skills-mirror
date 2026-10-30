@@ -1,6 +1,6 @@
 ---
 name: sprite-gen
-version: 3.5.0
+version: 3.10.0
 description: "Generates images and game sprites through GPT or Grok with guided provider choices, separate saved defaults, automatic cleanup and optional curation. Handles sprite requests, ordinary image generation/editing, typography logos (로고, 타이포그래피, 타이틀 글자, 타이틀 로고, wordmark, logo, title lettering: a title screen drawn with the title in it, its lettering lifted out transparent), standalone image-to-video clips (i2v, animate this still, 그록 영상, 이매진 비디오, 스틸 움직여줘, first/last frame, reference-to-video, 영상 이어붙이기, 영상 편집, extend/edit a clip), clips from a video MCP on the agent (ZCRE, 지크 MCP), chroma removal, animation atlases, video loops, 큐레이션뷰, image candidates, 팔레트 스왑, palette swap, recolor, engine exports, repeating backgrounds, projected shadows, talking face layers over body motions (말하는 얼굴, 입 맞추기, 얼굴 층, lip sync, face pack), motion/contact inspection and optional scene composition from existing assets."
 license: Apache-2.0
 depends_on:
@@ -112,7 +112,7 @@ front-facing observations also remain unchanged. Mirroring does not preserve lef
 | Curation view or existing image candidates | `curation`, `unpack-atlas --pngs-dir` | [curation](docs/curation.md) |
 | Uniform background removal or imported sheets | `cutout`, `slice-sheet` | [sheet-slicing](docs/sheet-slicing.md) |
 | Palette swap | `sprite-gen recolor-palette`, `sprite-gen recolor` | [recolor](docs/recolor.md) |
-| Idle breathing as a post-processing layer (the Breathe layer): pixel (default, pixel art) or smooth (large illustrations, video frames: head fixed, chest breathes, shoulders follow; facing values for a turned body); smooth can choose a beat that misses the hands with `--avoid-region`, and a way in or out of a loop carries on its breath with `--loop-cells`, `--start-cell` and `--reference` | curation sidecar, baked by compose; or `sprite-gen breathe <frames> <out>` on a folder of loop frames | [breathing](docs/breathing.md) |
+| Idle breathing as a post-processing layer (the Breathe layer): pixel (default, pixel art) or smooth (large illustrations, video frames: head fixed, chest breathes, shoulders follow; facing values for a turned body); smooth can choose a beat that misses the hands with `--avoid-region`, and a way in or out of a loop carries on its breath with `--loop-cells`, `--start-cell` and `--reference`; pixel can breathe round from the chest with the arms moving sideways (`--chest-round`, `--arms-x`), cells held still (`--hold-mask`), what the arms hold moving whole with them (`--props-mask`), what the arms hold behind the body (a shield hung at the back) moves the same way with the body staying in front (`--props-behind-mask`), and pieces painted one colour move together (`--props-groups colour`, so a sword's reflection follows the sword) | curation sidecar, baked by compose; or `sprite-gen breathe <frames> <out>` on a folder of loop frames | [breathing](docs/breathing.md) |
 | Engine exports | `export-aseprite`, `export-pngs` | [engine-export](docs/engine-export.md) |
 | Background recipe or repeating tile | existing `gen` / `cutout`, then optional `background-tile` | [asset-tools](docs/asset-tools.md#background-recipe) |
 | Ground tile that repeats both ways | `gen` (opaque), then `background-tile --axis xy` | [asset-tools](docs/asset-tools.md#both-axes-a-ground-tile) |
@@ -122,6 +122,7 @@ front-facing observations also remain unchanged. Mirroring does not preserve lef
 | Standalone projected shadow | `shadow` | [asset-tools](docs/asset-tools.md#projected-shadows) |
 | Duplicate poses, foot contact and stride measurement | `inspect-motion` | [asset-tools](docs/asset-tools.md#motion-and-contact-evidence) |
 | Optional scene placement, lighting, camera and render | `scene-render`, `scene-inspect` | [scene](docs/scene.md) |
+| What the engine can do, for an agent or a tool to read once: every verb and argument, the providers each may call and be billed by (one JSON line, a quarter of every `--help`); a sandbox that reaches the providers through a relay: `SPRITE_GEN_<PROVIDER>_BASE_URL` (`OPENAI`, `XAI`, `ANTHROPIC`, `ELEVENLABS`) moves a provider's calls and the files it hands back, `SPRITE_GEN_LOGINS=off` runs every call on its API key | `capabilities` | [capabilities](docs/capabilities.md), [provider addresses](docs/gen.md#provider-addresses) |
 | Defaults | `defaults show`, `defaults save` (`--codex-unavailable ask\|grok\|openai`: what to do when codex cannot run), `defaults clear` | [user-workflow](docs/user-workflow.md#one-settings-owner) |
 
 Say a thing once: what an option says, leave out of the prompt. `--direction`, `--facing`, `--handed`, the key background and `video --direction side` each add their own sentence after your text, in one place. Your prompt carries the subject, its design and its pose. Text that says the opposite of an option ("facing left" with `--facing right`, the item on the other wrist) is sent as written with a warning (`extra.prompt_notes`, `video-prompt`'s `warnings`): fix the prompt, do not send it — [prompt-assembly](docs/prompt-assembly.md).
@@ -129,6 +130,10 @@ Say a thing once: what an option says, leave out of the prompt. `--direction`, `
 Use existing automatic pipeline stages for background removal, extraction, alignment and export. Do not ask users to select each script. For a direct utility request, run that utility; no unrelated generation questions are needed. Preserve the row pipeline and component extraction for image sprites. One-shot grid generation and fixed cell cutting are not an alternative sprite-generation route.
 
 For attack repeat coverage, observed one-shot returns and structured loop failure reports, follow [video-pipeline](docs/video-pipeline.md#one-shot-actions----cycle-autoperiodicone-shot).
+
+Every cut is read for held cells (neighbour cells showing the same picture), and by default they are filled with RIFE's frames between and the cut read again (`video-loop --fill-held auto`; `off` cuts as filmed). Tell the user each motion's poses over cells in one line from `held_fill` (`poses/cells`, before and after, e.g. `24/27` to `27/27`). A cut wanted above its clip's rate is given with `--out-fps`, frames between, never repeats. Details in [loop repair](docs/loop-repair.md#7-held-cells-a-picture-shown-again-and-a-cut-at-a-higher-rate).
+
+A move played once (a jump, a vault: `once`, `once-return`, `one-shot`) carries its root motion in the strip sidecar by default, the cells unchanged: `root_motion` gives each cell's root (the body's mass centre, cell px), what it stands on, and each air's take-off, landing, seconds and apex; a game reads `root` to place each cell and moves the body on its own physics. A move cut out of a longer motion is named with `video-loop --cycle once --start S --length L`, a hand on something the clip does not draw with `--contact hand=A:B`, metres with `--meters-per-px`. To give the air its own length, gravity and speed, `--air-retime gravity=G,air=T,speed=V` redraws it on that parabola with RIFE's frames between; contacts and the take-off and landing stay as filmed. Tell the user each air in one line, its seconds and its apex (the summary's `air`, e.g. `air 0.42 s, apex 0.21 m`). Details in [video-pipeline](docs/video-pipeline.md#root-motion--a-cut-played-once-where-the-body-is-what-it-stands-on-its-air).
 
 A pinned idle or attack whose last frame the video model drew again has its wrap blended by default (`video-loop --wrap-blend auto`, a redraw only; `off` cuts as filmed), with details in [loop repair](docs/loop-repair.md#6-the-redrawn-wrap-a-pinned-clip-whose-last-frame-the-model-drew-again).
 
@@ -140,7 +145,7 @@ Scene creation consumes finished assets and remains optional. Asset metadata own
 
 ## RIFE for walk and run loops
 
-Without RIFE, tell the user which loops went unrepaired and offer the install; after it, cut those loops again and run `video-cycle-align`. [loop-repair](docs/loop-repair.md).
+Without RIFE, tell the user which loops went unrepaired, which motions' held cells were not filled (`held_fill.unmade`, or `--out-fps` not met) and which airs were not retimed (`air_retime.why`), and offer the install; after it, cut those loops again and run `video-cycle-align`. [loop-repair](docs/loop-repair.md).
 
 ## Contracts and advanced tools
 

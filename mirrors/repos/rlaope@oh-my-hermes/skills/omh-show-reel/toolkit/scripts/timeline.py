@@ -181,8 +181,11 @@ def compose(script_path, music_analysis=None, ffmpeg="ffmpeg"):
             cues[f"music.hit{k + 1}"] = h
         for k, b in enumerate(an.get("downbeats", [])):
             cues[f"bar{k + 1}"] = round(b + off, 3)
+        drops = [{**drop, "t": round(drop["t"] + off, 3)} for drop in an.get("drops", [])]
+        for k, drop in enumerate(drops):
+            cues[f"music.drop{k + 1}"] = drop["t"]
         music_tl = {"bpm": an.get("bpm"), "hits": hits, "beats": [round(b + off, 3) for b in an.get("beats", [])],
-                    "downbeats": [round(b + off, 3) for b in an.get("downbeats", [])]}
+                    "downbeats": [round(b + off, 3) for b in an.get("downbeats", [])], "drops": drops}
 
     vo = []
     prev_end = None

@@ -1,26 +1,26 @@
 ---
 name: ffmpeg-skill
-description: 'Edit video and audio with local FFmpeg from natural-language requests: cut, trim, join, resize/reframe (9:16, 1:1), speed change, captions and subtitles (SRT/ASS, animated, karaoke), logos and text overlays, lower-thirds and titles, silence removal, multicam and external-mic sync, loudness normalisation, HDR/Dolby Vision to SDR, LUTs, background music with ducking, platform exports (YouTube, Reels, TikTok, X), compliance checks, scene detection and highlight reels, contact sheets to inspect results, and whole-edit project files. Use this skill whenever the user mentions a video or audio file (mp4, mov, mkv, wav, m4a), footage, a clip, captions, subtitles, a reel or short, YouTube/Instagram/TikTok delivery, LUFS, sync, transcoding, ffmpeg, or asks to make something "60 seconds", "vertical", "louder", "captioned" — even when they do not say "edit". Python 3.10+ standard library only (3.9 deprecated), no cloud, no API keys.'
+description: 'Edit video and audio with local FFmpeg from natural-language requests: cut, trim, join, resize/reframe (9:16, 1:1), speed change, captions and subtitles (SRT/ASS, animated, karaoke), logos and text overlays, lower-thirds and titles, silence removal, multicam and external-mic sync, loudness normalisation, HDR/Dolby Vision to SDR, LUTs, background music with ducking, platform exports (YouTube, Reels, TikTok, X), compliance checks, scene detection and highlight reels, contact sheets to inspect results, and whole-edit project files. Use this skill whenever the user mentions a video or audio file (mp4, mov, mkv, wav, m4a), footage, a clip, captions, subtitles, a reel or short, YouTube/Instagram/TikTok delivery, LUFS, sync, transcoding, ffmpeg, or asks to make something "60 seconds", "vertical", "louder", "captioned" — even when they do not say "edit". FFmpeg 6.1+ and Python 3.10+ (5.x/3.9 deprecated), stdlib only, no cloud, no API keys.'
 ---
 
 # ffmpeg-skill
 
-Scripts live in `scripts/` next to this file; run them with `python3 <skill-dir>/scripts/<name>.py`, and delivery templates in `templates/`. This file is enough to do a job: the table below routes the request, and `--help` on the script about to run is the cheapest full flag list. A reference file costs as much as this one; open one only for a question you have: `references/scripts.md` (every flag of all 42 scripts), `references/devices.md` (iPhone HDR, GoPro, DJI, screen recordings, Zoom), `references/gotchas.md` (the long form of the one-line rules at the end). MCP: `tools/list` shows only the core 12 by default; the other 30 (per this table) stay callable by name via `tools/call`, described by `contract --json`; set `FFMPEG_SKILL_MCP_FULL=1` for all 42.
+Scripts live in `scripts/` next to this file; run them with `python3 <skill-dir>/scripts/<name>.py`, and delivery templates in `templates/`. This file is enough to do a job: the table below routes the request, and `--help` on the script about to run is the cheapest full flag list. A reference file costs as much as this one; open one only for a question you have: `references/scripts.md` (most flags; `--help` lists all), `references/devices.md` (iPhone HDR, GoPro, DJI, screen recordings, Zoom), `references/gotchas.md` (the long form of the one-line rules at the end). MCP: `tools/list` shows only the core 12 by default; the other 30 (per this table) stay callable by name via `tools/call`, described by `contract --json`; set `FFMPEG_SKILL_MCP_FULL=1` for all 42.
 
-Shared flags (every script): `--dry-run`; `--json` (output path, its probe, the commands run); `--json-brief` (status/output/verified + a `summary`; prefer on writing steps); `--fast` (preview quality); `--progress` (percent/ETA); `--timeout SECONDS` (`kind: timeout`, default 1800; `0` for hour-long encodes); `--overwrite` (step 7); `--plan FILE` (a dry run `render.py FILE` runs later; refuses if an input changed). Re-encoding tools also take `--hw` (Apple Silicon GPU, big files; `FFMPEG_SKILL_HW=1` = default, not export), `--codec h264|hevc|av1|prores` and `--quality N`: unset, SDR is x264 (`cut.py --keep-hevc`: HEVC source stays HEVC), HDR is x265 Main10; `prores` needs `-o NAME.mov`, `h264` refuses HDR (`color.py --to-sdr` first).
+Shared flags (every script): `--dry-run`; `--json` (output path, its probe, the commands run); `--json-brief` (status/output/verified + a `summary`; for writing steps); `--fast` (preview quality); `--progress` (%/ETA); `--timeout SECONDS` (`kind: timeout`, default 1800; `0` for hour-long encodes); `--overwrite` (step 7); `--plan FILE` (a dry run `render.py FILE` runs later; refuses a changed input). Re-encoding tools also take `--hw` (Apple Silicon GPU, big files; `FFMPEG_SKILL_HW=1` = default, not export), `--codec h264|hevc|av1|prores` and `--quality N`: unset, SDR is x264 (`cut.py --keep-hevc`: HEVC source stays HEVC), HDR is x265 Main10; `prores` needs `-o NAME.mov`, `h264` refuses HDR (`color.py --to-sdr` first).
 
 Writing tools run nothing under `--dry-run`; the measuring tools (`probe`, `check`, `sync`, `multicam`, `scenes`, `cropdetect`, `report`, `silence`, `loudness`, `stabilize`; `overlay` for a multi-line `--text` on FFmpeg 8.0-8.1.0) may still run ffmpeg/ffprobe, skipping artifacts/side files (`--edl`, `--sheet`, a generated `.ass`); `verify` ignores the flag. Per tool: `contract --json` `dry_run`.
 
 ## Workflow (in this order)
 
-0. **Environment, only on failure.** Never start a job with `doctor`: a broken machine fails with `kind: missing_tool` or an ffmpeg error naming the filter/encoder. Run `python3 <skill-dir>/scripts/_contract.py doctor` (or `npx ffmpeg-skill doctor`) after such a failure, or when asked what the machine can do: read `ok`/`usable`, report the missing capability. `contract --json`'s tool schema is for a *planning* agent, not this workflow.
+0. **Environment, only on failure.** Never start a job with `doctor`: a broken machine fails with `kind: missing_tool` or an ffmpeg error naming the filter/encoder. Run `python3 <skill-dir>/scripts/_contract.py doctor` (the installed copy) after such a failure, or when asked what the machine can do: read `ok`/`usable`, report the missing capability. `contract --json`'s tool schema is for a *planning* agent, not this workflow.
 1. **Probe what you must plan from.** Run `probe.py` on each input you plan from — duration, fps, resolution, codecs, channels, `variable_frame_rate_suspected` — and whenever the user asks about a file. No separate probe before every edit: every writing tool's `--json` already carries its input and a probe of the output. Plan from real numbers, never assumptions.
 2. **Prefer lossless.** If the request can be met without re-encoding (plain cuts on keyframes, remuxing, audio-only changes), do not re-encode. `cut.py` and `loudness.py` stream-copy video by default; `--accurate` on `cut.py` only for frame-exact cuts.
-3. **Plan with `--dry-run --json`, then execute.** Trust `--json`, not a dry run's summary line, for any number in the plan (a dimension there can be a placeholder). Use before long encodes, to report facts. Never point `-o` at a file you did not create in this job unless the user asked for it to be replaced; pass `--overwrite` only then.
+3. **Plan with `--dry-run --json`, then execute.** Trust `--json`, not a dry run's summary line, for any number in the plan (a dimension there can be a placeholder). Use before long encodes, to report facts.
 4. **Chain in a sensible order.** A delivery request with no other editing is one template run (`render.py --template NAME INPUT`), not a hand-built chain. Otherwise: colour (HDR→SDR / LUT) → cut → join → silence → fit → caption/overlay → sync → audio → loudness → export. Frame changes before captions, so text is sized for the final frame. Re-encode as few times as possible: intermediates at CRF 18, `export.py` last. **Three or more steps: `render.py` with a project.json.**
 5. **Check the deliverable.** Before reporting, run `check.py OUTPUT --platform X` for the destination named (a template run already does). Format rows (codec, pixel format, size, true peak, colour tags, VFR) are safe to fix. Judgement rows change content: duration (cut loses material), aspect (crop loses edges), fps (drops motion), loudness (ambience must not be boosted) — fix only when the request implies the answer, else state the choice and its cost. Mention WARNs; do not chase them.
 6. **Verify the output.** Confirm duration, resolution, fps and audio match the request, from the writing tool's `--json`/`--json-brief` probe or `probe.py`, and report those numbers ("final.mp4: 59.98 s, 1080x1920, 30 fps, AAC stereo"). A step is done only when the script exited 0 and the output probes as expected: a non-zero exit, a missing or empty file, or a probe that contradicts the request is a failure reported with the script's error message.
-7. **Keep the user's originals.** Never overwrite the source; write new files next to input or where asked. An existing output path is refused (`kind: input`); `--overwrite` is the one way to say "yes, replace it".
+7. **Keep the user's originals.** Never overwrite the source; write new files next to input or where asked. An existing output path is refused (`kind: input`); pass `--overwrite` only for a file this job made or the user asked to replace.
 8. **Look at the picture.** Whenever the picture changed (captions, overlays, graphics, crop/pad, resize, colour, transitions, a `join.py` scaling a clip to the first clip's frame, `color.py --to-sdr`) run `look.py OUTPUT --tiles 3x2` (or `--at T` for one frame) and view the PNG (4x3 for whole-clip layout). Not finished until `Look:` names that PNG — a probe cannot see a caption on a face. Audio-only: `Look: not needed`. What to look for splits like `check.py`'s rows in step 5:
    - **Mechanical (this skill's own job to verify and report):** the specified text/logo is at the specified position, subtitles appear at the specified timestamps, dimensions are even. Letterboxing from `fit.py --fit pad` is the *correct* result of that mode, never a defect to flag.
    - **Judgement (report it, don't silently pass or fail):** whether a subject or face is cut off, text sits over a face, colours look washed out, a transition lands. These need deciding what the subject *is*, the calling agent's call — say what you see in one line; they judge.
@@ -34,7 +34,7 @@ Ask a short question only when the answer changes the output materially and the 
 - **Duration** ("make it 60 s") without a method: speed up for ≤1.5× changes, trim otherwise, say which. Ask when the content is a talk (trimming loses words) and the change is large.
 - **Captions** without a text source: `--transcribe` if a local engine exists, else ask for the text or a timed file; never invent dialogue.
 - **Fonts and brand**: if the user mentions a brand, colours or "our font", ask for or create `brand.json` once, reuse it.
-- **CJK / non-Latin text**: let the tool pick the font by script (`--font` turns it off); `--lang ja|ko` for Han-only text. `doctor --json` `.fonts.scripts` says what renders here. Tofu is a failed job.
+- **CJK / non-Latin text**: let the tool pick the font by script (`--font` turns it off); `--lang ja|ko|zh-TW` for Han-only text. `doctor --json` `.fonts.scripts` says what renders here. Tofu is a failed job.
 - **Crop position** for `--fit crop`: centre by default, but when the request or the source names an off-centre subject ("keep the product on the right", someone visibly off-centre in the sheet) use `--crop-x`/`--crop-y` (0=left/top, 1=right/bottom) instead of guessing centre, or ask which edge to keep.
 - Anything else (transition type, caption style): pick the conventional default, say what you picked, offer the alternative in one line.
 
@@ -150,13 +150,11 @@ Timestamp flags (`--start`, `--end`, `--at`, `--from`, `--duration`, `--offset`,
 | "where does the subject move, so I can crop it myself" | `cropdetect.py input.mp4 --motion-centre` — motion centroid per second, report-only; the calling agent picks the crop |
 | "does it look like Log / S-Log?" | `probe.py clip.mp4 --analyze` (`looks_like_log`) then `color.py --lut` |
 | "test the tool on my real files" | `verify.py ~/Footage --report verify.md` |
-| "show me progress", "quick preview first" | any encoding script with `--progress` and/or `--fast` |
 | "it's a phone video with variable frame rate" | nothing extra: re-encodes conform VFR to constant fps; `fit.py --fps 30` picks the rate |
 
 ## Audio-only files
 
 Audio is a first-class input: `probe`, `cut`, `silence`, `loudness`, `audio`, `sync`, `check --platform podcast`, `render --template podcast` take WAV, FLAC, MP3, M4A/AAC, OGG, Opus; output extension picks the format. Scripts needing a picture (`fit`, `caption`, `overlay`, `graphics`, `color`, `export`, `scenes`, `look`) refuse audio with "input has no video stream" — don't force a video wrapper. Recipes: `references/gotchas.md#audio-only-files`.
-
 
 ## Report format
 
@@ -182,7 +180,7 @@ Look: final_sheet.png（字幕はセーフエリア内、ロゴは右上）
 Notes: 元は VFR だったので 30 fps に揃えた。音声はモノラルだったのでステレオにした
 ```
 
-Keep it to those five lines plus anything the user must decide. Never report success without the output probe; never describe a fix you did not run.
+Keep it to those five lines plus anything the user must decide. Never describe a fix you did not run. `verified` covers only what was measured: in `Notes:` name any `unverified` item the user would assume checked. Report a step with `attribution: unresolved`; do not re-run it.
 
 When a step fails, replace `Done:` with `Failed:` and keep the rest honest:
 
@@ -197,9 +195,7 @@ Notes: send a valid .cube, or say if you want the clip left as is
 Those filler lines are sentences, not labels: the same report for a Japanese request ends
 `Check: 検証するものなし` / `Look: 不要`.
 
-A refusal uses the same shape: `Failed:` names what was refused and why, `Steps:` lists what did run, `Look: not needed`. A partial result is `Done:` with the shortfall in `Notes:`; a refusal that still delivers something is `Failed:` — never a third label like `Done (partially):`. Quote a failure's `error.hint` in `Notes:`.
-
-A failure's `--json` is `status: failed` plus `error.kind` and `error.message`; quote the message, never paraphrase it.
+A refusal uses the same shape: `Failed:` names what was refused and why, `Steps:` lists what did run, `Look: not needed`. A partial result is `Done:` with the shortfall in `Notes:`; a refusal that still delivers something is `Failed:` — never a third label like `Done (partially):`. A failure's `--json` is `status: failed` plus `error.kind`, `error.message` and `error.hint`: quote the message in `Failed:`, never paraphrase it, and the hint in `Notes:`.
 
 ## Things that look right but are wrong
 

@@ -17,6 +17,7 @@ Read the selected skill's `SKILL.md` first, then load references as it directs.
 - Adversarial review: `story-review`
 - Import an existing story: `story-import`
 - Cover generation: `story-cover`
+- Publishing preparation (book title, synopsis, platform tags): `story-publish`
 - Ambiguous story intent: `story`
 - Project deployment/update: `story-setup`
 - Reuse an authenticated Chrome session: `browser-cdp`

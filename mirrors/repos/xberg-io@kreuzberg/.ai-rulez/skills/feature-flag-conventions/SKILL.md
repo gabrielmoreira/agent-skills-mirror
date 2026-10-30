@@ -117,7 +117,7 @@ descriptions for a specific feature.
 
 ### CI parity guard (GH#1443)
 
-`task verify:feature-parity` runs
+`mise run verify:feature-parity` runs
 `python3 scripts/ci/check-feature-parity.py crates/xberg/Cargo.toml`.
 
 It compares only **code-bearing** features — those whose definition pulls a `dep:`, or whose

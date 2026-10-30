@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `pbakaus/impeccable` — 26 default patterns, 0 followed patterns, 594 file(s) materialized.
+Mirror of `pbakaus/impeccable` — 26 default patterns, 0 followed patterns, 596 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `pbakaus/impeccable` — 26 default patterns, 0 followed patterns, 594
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 594 |
+| Files         | 596 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -591,68 +591,70 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 530 | ✓ | [`skill/agents/impeccable-documenter.md`](skill/agents/impeccable-documenter.md) |
 | 531 | ✓ | [`skill/agents/impeccable-finish-reviewer.md`](skill/agents/impeccable-finish-reviewer.md) |
 | 532 | ✓ | [`skill/agents/impeccable-manual-edit-applier.md`](skill/agents/impeccable-manual-edit-applier.md) |
-| 533 | ✓ | [`skill/reference/adapt.md`](skill/reference/adapt.md) |
-| 534 | ✓ | [`skill/reference/adapt.native.md`](skill/reference/adapt.native.md) |
-| 535 | ✓ | [`skill/reference/android.md`](skill/reference/android.md) |
-| 536 | ✓ | [`skill/reference/animate.md`](skill/reference/animate.md) |
-| 537 | ✓ | [`skill/reference/audit.md`](skill/reference/audit.md) |
-| 538 | ✓ | [`skill/reference/audit.native.md`](skill/reference/audit.native.md) |
-| 539 | ✓ | [`skill/reference/bolder.md`](skill/reference/bolder.md) |
-| 540 | ✓ | [`skill/reference/clarify.md`](skill/reference/clarify.md) |
-| 541 | ✓ | [`skill/reference/colorize.md`](skill/reference/colorize.md) |
-| 542 | ✓ | [`skill/reference/component-review.md`](skill/reference/component-review.md) |
-| 543 | ✓ | [`skill/reference/craft-floor.md`](skill/reference/craft-floor.md) |
-| 544 | ✓ | [`skill/reference/craft.md`](skill/reference/craft.md) |
-| 545 | ✓ | [`skill/reference/critique.md`](skill/reference/critique.md) |
-| 546 | ✓ | [`skill/reference/delight.md`](skill/reference/delight.md) |
-| 547 | ✓ | [`skill/reference/distill.md`](skill/reference/distill.md) |
-| 548 | ✓ | [`skill/reference/doctor.md`](skill/reference/doctor.md) |
-| 549 | ✓ | [`skill/reference/document.md`](skill/reference/document.md) |
-| 550 | ✓ | [`skill/reference/extract.md`](skill/reference/extract.md) |
-| 551 | ✓ | [`skill/reference/generate.md`](skill/reference/generate.md) |
-| 552 | ✓ | [`skill/reference/harden.md`](skill/reference/harden.md) |
-| 553 | ✓ | [`skill/reference/hooks.md`](skill/reference/hooks.md) |
-| 554 | ✓ | [`skill/reference/init.md`](skill/reference/init.md) |
-| 555 | ✓ | [`skill/reference/ios.md`](skill/reference/ios.md) |
-| 556 | ✓ | [`skill/reference/layout.md`](skill/reference/layout.md) |
-| 557 | ✓ | [`skill/reference/live-setup.md`](skill/reference/live-setup.md) |
-| 558 | ✓ | [`skill/reference/live.md`](skill/reference/live.md) |
-| 559 | ✓ | [`skill/reference/mode-operate.md`](skill/reference/mode-operate.md) |
-| 560 | ✓ | [`skill/reference/mode-persuade.md`](skill/reference/mode-persuade.md) |
-| 561 | ✓ | [`skill/reference/mode-read.md`](skill/reference/mode-read.md) |
-| 562 | ✓ | [`skill/reference/new-work.md`](skill/reference/new-work.md) |
-| 563 | ✓ | [`skill/reference/onboard.md`](skill/reference/onboard.md) |
-| 564 | ✓ | [`skill/reference/operate.md`](skill/reference/operate.md) |
-| 565 | ✓ | [`skill/reference/optimize.md`](skill/reference/optimize.md) |
-| 566 | ✓ | [`skill/reference/overdrive.md`](skill/reference/overdrive.md) |
-| 567 | ✓ | [`skill/reference/polish.md`](skill/reference/polish.md) |
-| 568 | ✓ | [`skill/reference/quieter.md`](skill/reference/quieter.md) |
-| 569 | ✓ | [`skill/reference/region-map.md`](skill/reference/region-map.md) |
-| 570 | ✓ | [`skill/reference/routing.md`](skill/reference/routing.md) |
-| 571 | ✓ | [`skill/reference/shape.md`](skill/reference/shape.md) |
-| 572 | ✓ | [`skill/reference/typeset.md`](skill/reference/typeset.md) |
-| 573 | ✓ | [`skill/reference/visualize.md`](skill/reference/visualize.md) |
-| 574 | ✓ | [`skill/scripts/command-metadata.json`](skill/scripts/command-metadata.json) |
-| 575 | ✓ | [`skill/scripts/data/font-index-failures.json`](skill/scripts/data/font-index-failures.json) |
-| 576 | ✓ | [`skill/scripts/data/font-index.json`](skill/scripts/data/font-index.json) |
-| 577 | ✓ | [`skill/scripts/engine-checksums.txt`](skill/scripts/engine-checksums.txt) |
-| 578 | ✓ | [`skill/scripts/impeccable`](skill/scripts/impeccable) |
-| 579 | ✓ | [`skill/scripts/impeccable.cmd`](skill/scripts/impeccable.cmd) |
-| 580 | ✓ | [`skill/scripts/live-browser-dom.js`](skill/scripts/live-browser-dom.js) |
-| 581 | ✓ | [`skill/scripts/live-browser-ignores.js`](skill/scripts/live-browser-ignores.js) |
-| 582 | ✓ | [`skill/scripts/live-browser-session.js`](skill/scripts/live-browser-session.js) |
-| 583 | ✓ | [`skill/scripts/live-browser.js`](skill/scripts/live-browser.js) |
-| 584 | ✓ | [`skill/scripts/modern-screenshot.umd.js`](skill/scripts/modern-screenshot.umd.js) |
-| 585 | ✓ | [`skill/scripts/VERSION`](skill/scripts/VERSION) |
-| 586 | ✓ | [`skill/SKILL.src.md`](skill/SKILL.src.md) |
-| 587 | ✓ | [`tests/fixtures/mode-rules-skill-partial/reference/mode-operate.md`](tests/fixtures/mode-rules-skill-partial/reference/mode-operate.md) |
-| 588 | ✓ | [`tests/fixtures/mode-rules-skill/reference/mode-operate.md`](tests/fixtures/mode-rules-skill/reference/mode-operate.md) |
-| 589 | ✓ | [`tests/fixtures/mode-rules-skill/reference/mode-persuade.md`](tests/fixtures/mode-rules-skill/reference/mode-persuade.md) |
-| 590 | ✓ | [`tests/fixtures/mode-rules-skill/reference/mode-read.md`](tests/fixtures/mode-rules-skill/reference/mode-read.md) |
-| 591 | ✓ | [`tests/oracle/workspaces/ctx-pin/.agents/skills/impeccable/SKILL.md`](tests/oracle/workspaces/ctx-pin/.agents/skills/impeccable/SKILL.md) |
-| 592 | ✓ | [`tests/oracle/workspaces/ctx-pin/.claude/skills/audit/SKILL.md`](tests/oracle/workspaces/ctx-pin/.claude/skills/audit/SKILL.md) |
-| 593 | ✓ | [`tests/oracle/workspaces/ctx-pin/.claude/skills/impeccable/SKILL.md`](tests/oracle/workspaces/ctx-pin/.claude/skills/impeccable/SKILL.md) |
-| 594 | ✓ | [`tests/oracle/workspaces/ctx-pin/.cursor/skills/impeccable/SKILL.md`](tests/oracle/workspaces/ctx-pin/.cursor/skills/impeccable/SKILL.md) |
+| 533 | ✓ | [`skill/hermes-plugin/__init__.py`](skill/hermes-plugin/__init__.py) |
+| 534 | ✓ | [`skill/hermes-plugin/plugin.yaml`](skill/hermes-plugin/plugin.yaml) |
+| 535 | ✓ | [`skill/reference/adapt.md`](skill/reference/adapt.md) |
+| 536 | ✓ | [`skill/reference/adapt.native.md`](skill/reference/adapt.native.md) |
+| 537 | ✓ | [`skill/reference/android.md`](skill/reference/android.md) |
+| 538 | ✓ | [`skill/reference/animate.md`](skill/reference/animate.md) |
+| 539 | ✓ | [`skill/reference/audit.md`](skill/reference/audit.md) |
+| 540 | ✓ | [`skill/reference/audit.native.md`](skill/reference/audit.native.md) |
+| 541 | ✓ | [`skill/reference/bolder.md`](skill/reference/bolder.md) |
+| 542 | ✓ | [`skill/reference/clarify.md`](skill/reference/clarify.md) |
+| 543 | ✓ | [`skill/reference/colorize.md`](skill/reference/colorize.md) |
+| 544 | ✓ | [`skill/reference/component-review.md`](skill/reference/component-review.md) |
+| 545 | ✓ | [`skill/reference/craft-floor.md`](skill/reference/craft-floor.md) |
+| 546 | ✓ | [`skill/reference/craft.md`](skill/reference/craft.md) |
+| 547 | ✓ | [`skill/reference/critique.md`](skill/reference/critique.md) |
+| 548 | ✓ | [`skill/reference/delight.md`](skill/reference/delight.md) |
+| 549 | ✓ | [`skill/reference/distill.md`](skill/reference/distill.md) |
+| 550 | ✓ | [`skill/reference/doctor.md`](skill/reference/doctor.md) |
+| 551 | ✓ | [`skill/reference/document.md`](skill/reference/document.md) |
+| 552 | ✓ | [`skill/reference/extract.md`](skill/reference/extract.md) |
+| 553 | ✓ | [`skill/reference/generate.md`](skill/reference/generate.md) |
+| 554 | ✓ | [`skill/reference/harden.md`](skill/reference/harden.md) |
+| 555 | ✓ | [`skill/reference/hooks.md`](skill/reference/hooks.md) |
+| 556 | ✓ | [`skill/reference/init.md`](skill/reference/init.md) |
+| 557 | ✓ | [`skill/reference/ios.md`](skill/reference/ios.md) |
+| 558 | ✓ | [`skill/reference/layout.md`](skill/reference/layout.md) |
+| 559 | ✓ | [`skill/reference/live-setup.md`](skill/reference/live-setup.md) |
+| 560 | ✓ | [`skill/reference/live.md`](skill/reference/live.md) |
+| 561 | ✓ | [`skill/reference/mode-operate.md`](skill/reference/mode-operate.md) |
+| 562 | ✓ | [`skill/reference/mode-persuade.md`](skill/reference/mode-persuade.md) |
+| 563 | ✓ | [`skill/reference/mode-read.md`](skill/reference/mode-read.md) |
+| 564 | ✓ | [`skill/reference/new-work.md`](skill/reference/new-work.md) |
+| 565 | ✓ | [`skill/reference/onboard.md`](skill/reference/onboard.md) |
+| 566 | ✓ | [`skill/reference/operate.md`](skill/reference/operate.md) |
+| 567 | ✓ | [`skill/reference/optimize.md`](skill/reference/optimize.md) |
+| 568 | ✓ | [`skill/reference/overdrive.md`](skill/reference/overdrive.md) |
+| 569 | ✓ | [`skill/reference/polish.md`](skill/reference/polish.md) |
+| 570 | ✓ | [`skill/reference/quieter.md`](skill/reference/quieter.md) |
+| 571 | ✓ | [`skill/reference/region-map.md`](skill/reference/region-map.md) |
+| 572 | ✓ | [`skill/reference/routing.md`](skill/reference/routing.md) |
+| 573 | ✓ | [`skill/reference/shape.md`](skill/reference/shape.md) |
+| 574 | ✓ | [`skill/reference/typeset.md`](skill/reference/typeset.md) |
+| 575 | ✓ | [`skill/reference/visualize.md`](skill/reference/visualize.md) |
+| 576 | ✓ | [`skill/scripts/command-metadata.json`](skill/scripts/command-metadata.json) |
+| 577 | ✓ | [`skill/scripts/data/font-index-failures.json`](skill/scripts/data/font-index-failures.json) |
+| 578 | ✓ | [`skill/scripts/data/font-index.json`](skill/scripts/data/font-index.json) |
+| 579 | ✓ | [`skill/scripts/engine-checksums.txt`](skill/scripts/engine-checksums.txt) |
+| 580 | ✓ | [`skill/scripts/impeccable`](skill/scripts/impeccable) |
+| 581 | ✓ | [`skill/scripts/impeccable.cmd`](skill/scripts/impeccable.cmd) |
+| 582 | ✓ | [`skill/scripts/live-browser-dom.js`](skill/scripts/live-browser-dom.js) |
+| 583 | ✓ | [`skill/scripts/live-browser-ignores.js`](skill/scripts/live-browser-ignores.js) |
+| 584 | ✓ | [`skill/scripts/live-browser-session.js`](skill/scripts/live-browser-session.js) |
+| 585 | ✓ | [`skill/scripts/live-browser.js`](skill/scripts/live-browser.js) |
+| 586 | ✓ | [`skill/scripts/modern-screenshot.umd.js`](skill/scripts/modern-screenshot.umd.js) |
+| 587 | ✓ | [`skill/scripts/VERSION`](skill/scripts/VERSION) |
+| 588 | ✓ | [`skill/SKILL.src.md`](skill/SKILL.src.md) |
+| 589 | ✓ | [`tests/fixtures/mode-rules-skill-partial/reference/mode-operate.md`](tests/fixtures/mode-rules-skill-partial/reference/mode-operate.md) |
+| 590 | ✓ | [`tests/fixtures/mode-rules-skill/reference/mode-operate.md`](tests/fixtures/mode-rules-skill/reference/mode-operate.md) |
+| 591 | ✓ | [`tests/fixtures/mode-rules-skill/reference/mode-persuade.md`](tests/fixtures/mode-rules-skill/reference/mode-persuade.md) |
+| 592 | ✓ | [`tests/fixtures/mode-rules-skill/reference/mode-read.md`](tests/fixtures/mode-rules-skill/reference/mode-read.md) |
+| 593 | ✓ | [`tests/oracle/workspaces/ctx-pin/.agents/skills/impeccable/SKILL.md`](tests/oracle/workspaces/ctx-pin/.agents/skills/impeccable/SKILL.md) |
+| 594 | ✓ | [`tests/oracle/workspaces/ctx-pin/.claude/skills/audit/SKILL.md`](tests/oracle/workspaces/ctx-pin/.claude/skills/audit/SKILL.md) |
+| 595 | ✓ | [`tests/oracle/workspaces/ctx-pin/.claude/skills/impeccable/SKILL.md`](tests/oracle/workspaces/ctx-pin/.claude/skills/impeccable/SKILL.md) |
+| 596 | ✓ | [`tests/oracle/workspaces/ctx-pin/.cursor/skills/impeccable/SKILL.md`](tests/oracle/workspaces/ctx-pin/.cursor/skills/impeccable/SKILL.md) |
 
 ---
 

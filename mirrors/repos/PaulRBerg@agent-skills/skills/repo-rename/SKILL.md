@@ -25,8 +25,9 @@ Preview the complete GitHub, Git, filesystem, and agent-continuity mutation set 
 - Only when the repository has an active Claude Code or Codex transcript, update literal old paths in
   `~/.claude/projects`, `~/claude/projects` when present, `~/.codex/sessions`, and `~/.codex/config.toml`. This
   continuity update does not apply to repos with no active transcripts.
-- Update constrained literal old-name references inside the repository, excluding VCS, dependencies (including Python
-  virtual environments), caches, and generated build directories.
+- Update absolute repository paths, exact name fields, whole-line repository names or headings, and GitHub URLs for the
+  repository. Preserve other old-name occurrences, including imports, prose, and command selectors. Exclude VCS,
+  dependencies (including Python virtual environments), caches, and generated build directories.
 - For a same-name move, replace only the old absolute repository path inside repository files.
 - By default, use tracked repository files and skip `PROMPT.md`, `TODO.md`, and symlinks before reading replacement
   candidates. Prune excluded directories during discovery. When the user explicitly authorizes updating notes,
@@ -69,16 +70,15 @@ Preview the complete GitHub, Git, filesystem, and agent-continuity mutation set 
 3. If `--dry-run` was requested, return the preview and stop. A successful dry run must not change the GitHub repo,
    remote, folder, config, transcripts, or repository files.
 
-4. Otherwise present the complete preview and require explicit confirmation in a subsequent user message. Explain that
-   the confirmation authorizes the GitHub rename, local folder move, Claude project-folder move when enabled, origin
-   update, and every listed continuity/repository replacement. For a local-only preview, state that no GitHub or
-   `origin` change occurs. Lead with `### ⚠️ Rename preview — no changes made`. Show GitHub, folder, origin, replacement
-   counts, and rollback coverage in compact tables, then the exhaustive file/count list. Put the exact confirmation
-   token alone in code formatting. If any preview fact changes, regenerate it and ask again.
+4. Otherwise present the complete preview, then continue in the same turn. Treat the rename request as authorization for
+   the listed mutations. Do not require a separate confirmation message. For a local-only preview, state that no GitHub
+   or `origin` change occurs. Lead with `### 🔎 Rename preview — no changes made`. Show GitHub, folder, origin,
+   replacement counts, and rollback coverage in compact tables, then the exhaustive file/count list. If any preview fact
+   changes, regenerate the preview and continue within the requested scope.
 
    For same-name moves, show the unchanged GitHub identity and `origin`, plus each parent directory to create.
 
-5. After confirmation, pass the preview's exact token:
+5. Pass the preview's exact token to the helper internally:
 
    ```sh
    uv run <skill-dir>/scripts/repo-rename.py <new-name> --apply --confirm '<owner/old->owner/new>'
@@ -87,10 +87,13 @@ Preview the complete GitHub, Git, filesystem, and agent-continuity mutation set 
    For a same-name move, pass both paths and the preview's `move:` token instead.
 
    The helper re-runs preflight, backs up every replacement file, applies deterministic literal replacements, and
-   attempts rollback on failure. Never bypass its clean-tree, target-path, or confirmation checks.
+   attempts rollback on failure. Never bypass its clean-tree, target-path, or token checks.
 
 6. Verify the helper's result with `gh repo view`, `git remote get-url origin`, `pwd -P`, and a search for remaining old
    absolute-path/name references in the listed scope. Report intentional remaining matches separately.
+
+   If a moved Python environment retains old paths, reinstall its locked packages with the project's existing package
+   manager. Then rerun the repository's test command.
 
 ## Completion
 

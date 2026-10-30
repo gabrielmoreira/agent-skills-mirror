@@ -16,12 +16,16 @@ Runtime model fallback system for foreground (interactive) agent sessions. When 
 - Maintains per-session state tracking:
   - `sessionModel`: Maps sessionID → current model string ("providerID/modelID")
   - `activeFallback`: Maps sessionID → `{ model, downProviders }` from a
-    confirmed switch. `commitSwitch` copies the previous set, adds the failed
+    confirmed switch, with `downProviders` mapping providers to recording times.
+    `commitSwitch` copies the previous map, records or refreshes the failed
     source provider only for provider-scoped failures and removes the target
     provider, including same-provider and sticky switches. Synthetic admissions
     cannot overwrite it implicitly. Continuations and external turns retain it
     when their model is unknown or matches: v1 normally returns to the primary, while
     v2's persistent switch keeps the record live across turns.
+    `getActiveFallback` exposes only provider marks younger than 30 minutes
+    (`PROVIDER_MARK_TTL_MS`), without expiring the model. Recovery on another
+    provider does not clear these marks.
     OpenCode v1 internal continuation and lifecycle selection consults
     `fallback.continuationPolicy`: retry the primary by default or retain this
     confirmed fallback for an internal continuation.
@@ -51,7 +55,7 @@ Runtime model fallback system for foreground (interactive) agent sessions. When 
 - **Agent-specific chains**: Each agent defines an ordered list of fallback models via `modelArrays`, preserving per-entry variants
 - **Chain generations**: The published table (`foregroundFallbackChains`) is swapped atomically by registry finalize and every successful v2 profile refresh (`buildChainGeneration`/`publishChainGeneration` in `src/index.ts`); each session pins the generation in effect at registration (`pinSessionChains`, fired by the v2 profile bridge at profile freeze) and finishes its descent against it — a swap mid-descent never changes what counts as untried
 - Selection scans from index 0, skipping tried entries and the union of this
-  session's and its parent's `activeFallback.downProviders`. Other models on
+  session's and its parent's live `getActiveFallback().downProviders`. Other models on
   the failing provider remain eligible until a confirmed switch leaves it.
 - **Chain lookup**: Resolves the correct chain using:
   1. Agent name (primary) → exact match
@@ -100,7 +104,7 @@ Runtime model fallback system for foreground (interactive) agent sessions. When 
 - Stage 1 retries `chain[last]` once, ignoring provider exclusions and retaining
   tried models; a failure of that sticky retry reaches stage 2 without reopening
   the chain.
-- `noteExternalTurn` cancels the initial-delay trigger, clears retry/dedup/backoff state and increments `turnEpoch`, retaining `replayMessageIds`. `isKnownInternalReplayUserMessage` checks retained IDs and event parts; `isInternalReplayUserMessage` probes the transcript when parts are missing. Duplicate user-message updates are inert. `userEventSequence` fences out-of-order probes, and `isCurrentTurn` prevents superseded replay work from claiming a switch. `rearmIfFreshDescent` clears tried/exhaustion state only after an observed return to the configured primary outside our committed fallback; a fallback onto the head keeps its descent state.
+- `noteExternalTurn` cancels the initial-delay trigger, clears retry/dedup/backoff state and increments `turnEpoch`, retaining `replayMessageIds`. `isKnownInternalReplayUserMessage` synchronously checks retained IDs, shared internal admissions recorded by `chat.message`, and event parts (Slim markers or strict native background-task notifications) before advancing `userEventSequence`; `isInternalReplayUserMessage` probes the transcript for Slim markers when parts are missing. Duplicate user-message updates are inert. `userEventSequence` fences out-of-order probes, and `isCurrentTurn` prevents superseded replay work from claiming a switch. `rearmIfFreshDescent` clears tried/exhaustion state only after an observed return to the configured primary outside our committed fallback; a fallback onto the head keeps its descent state.
 
 ### Deduplication (identity-based)
 - No error-text-only time-window heuristic: identical text can be the next real failure. The one-shot cross-event bridge requires an exact payload, current model, current turn, and short time-window match.
@@ -146,7 +150,8 @@ Log fallback event
 ### Consumers
 - **Primary**: Main plugin initialization (`src/index.ts`) creates ForegroundFallbackManager instance
 - **Delegation routing**: Main plugin reads `getActiveFallback`. Independent
-  children move only if their primary provider is in `downProviders`, taking
+  children move only if their primary provider has an unexpired mark in
+  `downProviders`, taking
   their first chain entry outside that set. Inherited children follow the
   record's live model even after request-scoped failures. Manual model choices
   do not create a fallback record. A child's later fallback picks also skip

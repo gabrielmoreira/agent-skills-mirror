@@ -40,22 +40,29 @@ CLI 登录的那一个账号；多账号查询按下一节选通道，不为查�
 
 **触发**：多个账号同时 unknown / 查询超时 / provider_error，或任何一条查询通道返回「全部失败」。
 
-**第一步是最小可证伪动作，不是深入协议层**：
+**第一步先确定实际 consumer 与其出口**：从当前部署的 `accounts.usage_command` 判断查询在本机还是
+远端执行；若为 SSH argv，以下探针必须在同一远端节点运行，并沿用该 provider 已配置的 `proxy_env`。
+只在进程内应用这些配置，不打印认证内容，也不拿本机或其他节点的代理替代。随后对真实 Usage 端点
+`/backend-api/wham/usage` 做最小可证伪探测；只有 consumer 就在本机且使用当前 shell 出口时，才可把
+`https://chatgpt.com` 首页当作本机 HTTP 边界探针：
 
 ```bash
-curl -sS -m 8 -o /dev/null -w 'http=%{http_code} elapsed=%{time_total}s\n' https://chatgpt.com
+# 在 actual consumer 节点、沿用其实际 provider 的进程级代理配置后执行：
+curl -sS -m 8 -o /dev/null -w 'http=%{http_code} elapsed=%{time_total}s\n' \
+  https://chatgpt.com/backend-api/wham/usage
 # 紧接上一条执行，保留 curl 的传输退出码：
 printf 'curl_exit=%s\n' "$?"
 ```
 
 - **`000` / 未取得 HTTP 响应**：结合退出码与 stderr 区分 DNS、连接、TLS、超时等失败，
-  转 `tunnel-doctor` 做最小链路排查；不能仅凭这一读数断言出口中断或账号异常。
+  转 `tunnel-doctor` 排查实际 consumer 的最小链路；不能仅凭这一读数断言出口中断或账号异常。
 - **已取得 HTTP 响应（含 200、401、403、429、5xx）**：只证明到达了某个 HTTP 边界，
   不证明正确的 Usage 端点、登录身份、额度或完整出口健康。非 2xx 不自动归为网络或认证单一根因；
   检查响应来源与必要的错误正文，区分站点、代理、WAF/挑战或服务端拒绝，再选对应排查路径。
   首页 401/403 不能当作 Usage 请求已成功或 token 已失效的证据。
 - **继续原查询**：用已核实账号的正确请求或官网 Usage 页验证实际读数；只有该请求返回预期字段，
-  才能报告对应账号额度。链路问题保留来源与未核字段，不用反复切号或重登来试网络。
+  才能报告对应账号额度。链路问题保留来源与未核字段，不用反复切号、重登或复制认证来试网络。
+  临时出口成功只证明该次路径；正式验收仍须通过正常 consumer 入口。
 
 该探针用于选择下一步，不是完整健康检查。`000` 的边界见
 [curl 响应码说明](https://curl.se/libcurl/c/CURLINFO_RESPONSE_CODE.html)：未收到服务端响应码时为零。
@@ -83,7 +90,17 @@ GitHub 写入主体检查由 `github-ops` 执行；本 SOP 不以 `gh` 身份替
 uv run python scripts/query_usage.py --help
 uv run python scripts/query_usage.py
 uv run python scripts/query_usage.py --auth-file /path/to/authorized/auth.json --expected-email account@example.com
+# 一次查询同时保存去邮箱原读数并追加 finding；两个目录用绝对路径，output-dir 必须尚不存在
+uv run python scripts/query_usage.py --auth-file /path/to/authorized/auth.json \
+  --output-dir /path/to/private/new-usage-read --finding-state-dir /path/to/private/tibo-state
 ```
+
+带 `--output-dir` 时，脚本以 0700 新建目录、以 0600 独占创建 `usage.json`，只保存明确列出的
+非敏感读数、原查询时刻和 `account_ref`，不保存邮箱、token 或完整服务端响应；终端只返回路径、
+账号句柄和可选 finding 回执。已存在的输出路径在请求前拒绝，不覆盖旧文件。finding 失败时退出 1，
+已保存的 `usage_file` 仍可读回，不能把落盘成功当作记账成功；先核查 journal 再用既有 `finding`
+入口补记该文件，不重复查数冒充同一次查询。`partial` 读数仍会保存并退出 2，未知字段不补值。
+不带新参数时保留原 stdout 接口。此路径只发原有 GET，不 refresh、登录、切号或兑换。
 
 显式参数示例需替换为用户明确授权的文件和邮箱；有符合帮助要求的 Python 时可省略 `uv run`。
 Windows 未实测。请求、认证文件默认位置、参数和退出行为的可执行 SSOT 是
@@ -99,6 +116,14 @@ Windows 未实测。请求、认证文件默认位置、参数和退出行为的
 | `rate_limit_reset_credits.available_count` | 保存的备用重置数量 |
 | `rate_limit_reset_credits.applicable_available_count` | 此刻可适用的数量；不替代保存总数 |
 | `credits.balance` / `has_credits` | 购买的额外 credits；不能据此判断备用重置 |
+
+**分母变化：百分比变多不等于 reset。**
+
+在同一账号、同一窗口、已用绝对量不变的前提下，设旧限额为 L、原剩余 11%，则已用为
+0.89L；总限额翻倍为 2L 后，剩余为 `1 - 0.89L / (2L) = 55.5%`。这组数值是合成例子。
+这种变化仅与增容相容，不能证明该账号已实际采用新限额，更不能证明 reset；仍需核对实际
+限额、身份、观测时刻和窗口连续性。只有百分比、身份不明或观察时刻不明时，原因保持 unknown，
+继续按下文机械归因判据核验，不将产品增容公告当作该账号的采用回执。
 
 实测同一响应可以同时出现 `available_count: 2`、`applicable_available_count: 0`、
 `credits.balance: "0"`。这仍然是存着两次备用重置。不要把“现在不能适用”或“购买余额为零”
@@ -262,6 +287,9 @@ resume 出来的进程 argv 不带会话 ID，argv 比对会把多个会话错�
 Day13 global 的 660f4c7f 到账核查即关闭；切回账号重登是官网 SOP 的常规查询手段，但监测轮不为此
 调度切回。）监测轮发现官宣在途时趁账号未切尽早取同账号基线；复查条件只写当前登录账号的到账，
 不给已切走的账号虚设 followup 任务。
+按[预测反馈的关闭入口](forecast-feedback.md#关闭或恢复账号追查)记录 `status=closed`、
+依据与原始 finding，读回待查队列；到账是否明确仍保持原值。用户明确要求恢复核查时再写
+`status=open`，不靠手写交接文字代替队列状态。
 
 ## 官网：复用 Google 登录，逐个查完
 
@@ -318,6 +346,9 @@ URL，不从聊天记录、浏览器 Cookie 库或旧工具回执中搜 token �
 用隔离 profile（`~/.chrome-profiles/tibo-codex-{a,b}`）+ Playwright `connectOverCDP` 自动
 查询时，逐条是踩过的可执行事实，不是通用教程：
 
+- **Playwright 由 `read-usage-profile.cjs` 自动解析**：优先使用普通安装；未安装时回退到
+  `~/.chrome-profiles/tibo-cdp/node_modules/playwright`。其他宿主用 `TIBO_PLAYWRIGHT_PATH`
+  指向 playwright 包的绝对路径，不需要手工设置 `NODE_PATH`；加载失败会明确报告依赖路径。
 - **`open -na "Google Chrome"` 不继承 macOS 系统代理**。必须显式 `--proxy-server=…`
   （本机 `http://127.0.0.1:1082`），否则 chatgpt.com 直连挂起或 403。日常 Chrome 走系统
   代理正常，隔离 Chrome 不共享这份设置。
@@ -327,8 +358,11 @@ URL，不从聊天记录、浏览器 Cookie 库或旧工具回执中搜 token �
   先导航到 `/auth/login` 再点 SSO 按钮，别在首页点 Log in。按钮 `disabled:false`、
   `pointer-events:auto`、坐标在视口内也可能点了没反应——换入口比调坐标有用。
 - **登录态判据用正面证据，不猜 URL**：解析到邮箱或 `Weekly usage limit` 文本才算已登录。
-  登出时 usage 页可能留在 `/` 首页（有 Log in/Sign up）、也可能重定向到 `/auth/login`，
-  两种 URL 都得覆盖，只认 `/auth/` 会漏掉首页登出态。
+  `page.goto()` 抛错或超时、`chrome-error://` 与 `about:blank` 都是本次读取失败/unknown，
+  不是登出；即使浏览器仍保留上一张 HTTPS 页面，其中的旧用量或登录文案也不能作为本次账号
+  状态证据，必须停止登出与登录驱动分支。只有成功导航后的非错误页面缺少这些正面证据时才
+  进入登出分支。登出时 usage 页可能留在 `/` 首页（有 Log in/Sign up）、也可能重定向到
+  `/auth/login`，两种 URL 都得覆盖，只认 `/auth/` 会漏掉首页登出态。
 - **当次隔离 profile 没有可用的 Google 会话 token**。当时 `import-google-cookies.py` 只搬到
   `ACCOUNT_CHOOSER`（账号记忆列表）+ `LSOLH` + 分析类 cookie，实测 `SID`/`__Secure-1PSID`/
   `__Secure-3PSID`/`HSID`/`SSID`/`SAPISID` 全无。Google 账号选择器会列出全部账号但**每个都

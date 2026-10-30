@@ -1,0 +1,136 @@
+/* Guided diagram walkthrough for reveal.js: pairs with diagram-walkthrough.js.
+   Theme it with the custom properties on .dw-slide (accent, failure, line and muted colours, stage height). */
+
+.reveal .dw-slide {
+  --dw-accent: var(--r-link-color, #0f6cbd);
+  --dw-fail: #b42318;
+  --dw-fail-bg: #fdecea;
+  --dw-alert: #b54708;
+  --dw-line: #d0d7de;
+  --dw-muted: #57606a;
+  --dw-stage-bg: #fff;
+  --dw-stage-h: 470px;
+  --dw-steps-h: 84px;
+  text-align: left;
+}
+
+.reveal .dw-slide h2 { font-size: 1.15em; margin-bottom: 0.25em; }
+
+/* ---------- Stage: the diagram, plus an evidence card on the steps that carry one */
+.reveal .dw-stage {
+  height: var(--dw-stage-h);
+  border: 1px solid var(--dw-line);
+  border-radius: 10px;
+  background: var(--dw-stage-bg);
+  overflow: hidden;
+}
+.reveal .dw-stage.has-evidence { display: grid; grid-template-columns: minmax(0, 1fr) 36%; grid-template-rows: minmax(0, 1fr); }
+.reveal .dw-svg { width: 100%; height: 100%; display: block; }
+
+/* ---------- Diagram states (set by the script) */
+.reveal .dw-svg .dw-on,
+.reveal .dw-svg .dw-ctx,
+.reveal .dw-svg .dw-dim { transition: opacity 0.45s ease; }
+.reveal .dw-svg .dw-dim { opacity: 0.12; }
+.reveal .dw-svg .dw-ctx { opacity: 0.55; }
+.reveal .dw-svg .dw-on { opacity: 1; }
+
+/* Shape of a focused node or container: the first shape child of its group. !important beats the
+   id-scoped styles that Mermaid embeds in its SVG. */
+.reveal .dw-svg g.dw-on > :is(rect, polygon, circle, ellipse, path):first-child {
+  stroke: var(--dw-accent) !important;
+  stroke-width: 2.6px !important;
+}
+.reveal .dw-svg g.dw-alert > :is(rect, polygon, circle, ellipse, path):first-child {
+  stroke: var(--dw-alert) !important;
+  stroke-width: 3px !important;
+}
+.reveal .dw-svg g.dw-fail > :is(rect, polygon, circle, ellipse, path):first-child {
+  fill: var(--dw-fail-bg) !important;
+  stroke: var(--dw-fail) !important;
+  stroke-width: 3px !important;
+}
+.reveal .dw-svg path.dw-on { stroke: var(--dw-accent) !important; }
+.reveal .dw-svg path.dw-fail { stroke: var(--dw-fail) !important; stroke-dasharray: 6 6; }
+.reveal .dw-svg .dw-fail-label {
+  font: 700 15px "Segoe UI", system-ui, Arial, sans-serif;
+  fill: var(--dw-fail);
+  paint-order: stroke;
+  stroke: #fff;
+  stroke-width: 4px;
+  stroke-linejoin: round;
+}
+
+/* Moving flow drawn over an active connector */
+.reveal .dw-svg .dw-flow {
+  fill: none;
+  stroke: var(--dw-accent);
+  stroke-width: 3.2;
+  stroke-linecap: round;
+  stroke-dasharray: 10 14;
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .reveal .dw-svg .dw-flow { animation: dw-flow 1s linear infinite; }
+}
+@keyframes dw-flow { to { stroke-dashoffset: -24; } }
+
+/* ---------- Steps: one sentence at a time under the diagram (stacked with r-stack) */
+.reveal .dw-steps { height: var(--dw-steps-h); margin-top: 0.45em; padding-right: 110px; }
+.reveal .dw-steps > * { width: 100%; margin: 0; font-size: 0.74em; line-height: 1.35; }
+.reveal .dw-step { display: flex; align-items: center; gap: 0.6em; }
+.reveal .dw-step .n {
+  flex: none;
+  width: 1.7em;
+  height: 1.7em;
+  border-radius: 50%;
+  background: var(--dw-accent);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.9em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.reveal .dw-intro { color: var(--dw-muted); transition: opacity 0.3s; }
+.reveal .dw-slide.dw-started .dw-intro { opacity: 0; }
+.reveal .dw-intro kbd {
+  font: 600 0.8em/1 ui-monospace, Consolas, monospace;
+  padding: 0.15em 0.4em;
+  border: 1px solid var(--dw-line);
+  border-radius: 4px;
+  background: #f6f8fa;
+}
+
+/* ---------- Evidence card (data-evidence on a step) */
+.reveal .dw-evidence {
+  margin: 0;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  justify-content: center;
+  border-left: 1px solid var(--dw-line);
+  background: #f6f8fa;
+  min-height: 0;
+}
+.reveal .dw-evidence[hidden] { display: none; }
+.reveal .dw-evidence-tag { font-size: 0.4em; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--dw-accent); }
+.reveal .dw-evidence img { max-width: 100%; max-height: 300px; object-fit: contain; margin: 0; border: 1px solid var(--dw-line); border-radius: 6px; cursor: zoom-in; }
+.reveal .dw-evidence figcaption { font-size: 0.44em; line-height: 1.35; }
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal .dw-svg .dw-on, .reveal .dw-svg .dw-ctx, .reveal .dw-svg .dw-dim, .reveal .dw-intro { transition: none; }
+}
+
+/* ---------- PDF export (?print-pdf): the whole diagram, then every step as a numbered list */
+html.print-pdf .reveal .dw-slide { --dw-stage-h: 400px; }
+html.print-pdf .reveal .dw-intro { display: none !important; }
+html.print-pdf .reveal .dw-steps { height: auto; padding-right: 0; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: none; gap: 0.2em 1.2em; }
+html.print-pdf .reveal .dw-steps > .dw-step {
+  grid-area: auto !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: none !important;
+  font-size: 0.48em;
+}

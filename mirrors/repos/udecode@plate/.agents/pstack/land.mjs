@@ -12,11 +12,10 @@
 // is a fork rebases onto upstream and opens the PR there from the fork. The PR
 // body is the page `plan-page.mjs <plan> --pr` renders, with each frame it
 // prints attached, when the task changes exactly one dated plan, and the
-// commit body otherwise; a refused render stops before the push. A commit
-// body that becomes a PR body needs a `## Why` and a `## Verification`
-// section, each with text, as pstack's Opening a PR asks. When <branch>'s
-// rules require an approval that a later push dismisses, it then arms GitHub
-// auto-merge, so the PR merges once a reviewer approves its latest push.
+// commit body otherwise; a refused render stops before the push. When
+// <branch>'s rules require an approval that a later push dismisses, it then
+// arms GitHub auto-merge, so the PR merges once a reviewer approves its latest
+// push.
 // Without --message it keeps the message of the task's last commit, so a run
 // stopped by a conflict or a failed check reruns as is.
 // When every path a rebase of this checkout conflicts on matches the globs of
@@ -25,12 +24,17 @@
 // stages what the command wrote and continues the rebase. A failed command
 // puts the conflicts back, and a write outside the entry's globs, staged or
 // not, stops it with the rebase in progress, as any other conflict does.
+// land.mjs also runs an `always` entry's command after every rebase that did
+// not already run it, and folds what it wrote into the task's commit. The
+// config's `landChecks` run before each --check on every land.
 // When the config names a `companion` whose git directory `companion.dir` is
 // in the checkout, that repository tracks the files this checkout's git
 // ignores through `companion.list`, and the task's changes there land in push
 // mode, the default there, as a second commit with the same message. Every
 // land rebases the companion onto its origin/<branch> and checks both halves
-// together. The companion commit pushes after the first, with a `Lands-With:`
+// together. A companion file missing from disk stops the land until it is put
+// back, with `companion.restore` when the config names it, or its deletion is
+// staged. The companion commit pushes after the first, with a `Lands-With:`
 // line naming the commit it landed with; a refused companion push exits 75,
 // and the rerun rebases, checks and pushes it. A checkout whose config names a
 // companion it lacks refuses to land in push mode. A branch cut before
@@ -42,7 +46,7 @@
 // this repository or its companion, a card in the suggested-task ledger, or a
 // dated plan in the plans directory that exists.
 
-import { spawnSync } from 'node:child_process';
+import { spawn, spawnSync } from 'node:child_process';
 import { copyFileSync, existsSync, mkdtempSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { availableParallelism, devNull, tmpdir } from 'node:os';
 import { basename, dirname, join } from 'node:path';
@@ -110,7 +114,12 @@ const messageText = messageFile === null ? null : readFileSync(messageFile, 'utf
 
 process.chdir(must('rev-parse', '--show-toplevel'));
 const config = JSON.parse(readFileSync('.agents/pstack.json', 'utf8'));
-const { branch, protected: guarded, lintFix, plans = 'docs/plans', companion, generated = [] } = config;
+const { branch, protected: guarded, lintFix, plans = 'docs/plans', companion, generated = [], freshEnv = [], landChecks = [] } = config;
+checks.splice(0, checks.length, ...new Set([...landChecks, ...checks]));
+const fresh = freshEnv.find((assignment) => {
+  const at = assignment.indexOf('=');
+  return process.env[assignment.slice(0, at)] === assignment.slice(at + 1);
+});
 if (!branch) fail('.agents/pstack.json names no branch');
 const pair = companion?.dir && existsSync(companion.dir) ? companion : null;
 const delivery = git('config', '--get', 'pstack.delivery').stdout.trim();
@@ -144,15 +153,28 @@ if (pair && stopped(cgit)) fail(`a rebase or merge is in progress in ${pair.dir}
 const dirty = () => must('status', '--porcelain', '--untracked-files=all') !== '';
 const sideDirty = () => pair !== null && cmust('status', '--porcelain', '--untracked-files=no') !== '';
 
-function fetch() {
-  must('fetch', '--quiet', canonical, `+refs/heads/${branch}:${upstream}`);
-  if (pair) cmust('fetch', '--quiet', 'origin', `+refs/heads/${branch}:${cupstream}`);
+const gitAsync = (args) =>
+  new Promise((resolve) => {
+    const child = spawn('git', args, { stdio: ['ignore', 'ignore', 'pipe'] });
+    let stderr = '';
+    child.stderr.setEncoding('utf8').on('data', (chunk) => (stderr += chunk));
+    child.on('close', (status) => resolve({ status, stderr }));
+  });
+
+// Each half's fetch is a network round trip of a second or two, so both run at once.
+async function fetch() {
+  const own = ['fetch', '--quiet', canonical, `+refs/heads/${branch}:${upstream}`];
+  const theirs = ['fetch', '--quiet', 'origin', `+refs/heads/${branch}:${cupstream}`];
+  const [run, crun] = await Promise.all([gitAsync(own), pair ? gitAsync([...side, ...theirs]) : null]);
+  if (run.status !== 0) fail(`git ${own.join(' ')} failed: ${run.stderr.trim()}`);
+  if (crun && crun.status !== 0) fail(`git ${theirs.join(' ')} in ${pair.dir} failed: ${crun.stderr.trim()}`);
 }
 
 function rebase(inCompanion = false) {
   const run = inCompanion ? cgit : git;
   const onto = inCompanion ? cupstream : upstream;
   const where = inCompanion ? `${pair.dir}'s origin/${branch}` : target;
+  if (!inCompanion) rebuilt.clear();
   if (run('merge-base', '--is-ancestor', onto, 'HEAD').status === 0) return;
   let rebased = run('rebase', '--quiet', onto);
   while (rebased.status !== 0) {
@@ -183,6 +205,8 @@ const nul = (text) => text.split('\0').filter(Boolean);
 const literal = (paths) => paths.map((path) => `:(literal)${path}`);
 const unmerged = (run, globs) => nul(run('diff', '-z', '--name-only', '--diff-filter=U', ...(globs ? ['--', ...globs.map((glob) => `:(glob)${glob}`)] : [])).stdout);
 let rebuildTime = 0;
+let refreshTime = 0;
+const rebuilt = new Set();
 
 function worktreeTree() {
   const index = join(mkdtempSync(join(tmpdir(), 'land-')), 'index');
@@ -202,31 +226,61 @@ function rebuild(paths, owners) {
   if (kept.length > 0) must('checkout', 'HEAD', '--', ...literal(kept));
   if (gone.length > 0) must('rm', '--quiet', '--force', '--', ...literal(gone));
   const started = performance.now();
+  const written = regenerate(
+    owners,
+    (command) => {
+      git('checkout', '--merge', '--', ...literal(paths));
+      fail(`${command} failed, so land.mjs put the conflicts back. The rebase is still in progress. Fix the cause, resolve the conflicts, \`git add\` them, ${resume}`);
+    },
+    `The rebase is still in progress. Add or discard those files, ${resume}`
+  );
+  rebuildTime = performance.now() - started;
+  for (const entry of owners) rebuilt.add(entry);
+  if (written.length > 0) must('add', '--all', '--', ...literal(written));
+  return spawnSync('git', ['rebase', '--continue'], { encoding: 'utf8', env: { ...process.env, GIT_EDITOR: 'true' } });
+}
+
+// A clean rebase can still leave an `always` entry's output stale, such as when origin/<branch> changed the sources it reads.
+function refresh() {
+  const owners = generated.filter((entry) => entry.always && !rebuilt.has(entry));
+  if (!landing.own || owners.length === 0) return;
+  const rerun = 'then run land.mjs again without --message.';
+  const started = performance.now();
+  const written = regenerate(owners, (command) => fail(`${command} failed while rebuilding its generated paths after the rebase. Fix the cause, ${rerun}`), `Add or discard those files, ${rerun}`);
+  refreshTime = performance.now() - started;
+  if (written.length === 0) return;
+  console.log(`land.mjs rebuilt ${written.join(', ')} after the rebase and folds the output into the commit`);
+  must('add', '--all', '--', ...literal(written));
+  must('commit', '--quiet', '--amend', '--no-edit');
+}
+
+function regenerate(owners, failed, outsideHint) {
   const release = reserve(Math.ceil(availableParallelism() / 2), 'land.mjs rebuild');
   const written = [];
   let before = worktreeTree();
   for (const { command, paths: globs } of owners) {
     console.log(`$ ${command}`);
-    if (spawnSync(command, { shell: true, stdio: 'inherit' }).status !== 0) {
-      git('checkout', '--merge', '--', ...literal(paths));
-      fail(`${command} failed, so land.mjs put the conflicts back. The rebase is still in progress. Fix the cause, resolve the conflicts, \`git add\` them, ${resume}`);
-    }
+    if (spawnSync(command, { shell: true, stdio: 'inherit' }).status !== 0) failed(command);
     const after = worktreeTree();
     const outside = nul(git('diff', '-z', '--name-only', before, after, '--', '.', ...globs.map((glob) => `:(exclude,glob)${glob}`)).stdout);
-    if (outside.length > 0) {
-      fail(`${command} also changed files outside its generated paths:\n${outside.map((path) => `  ${path}`).join('\n')}\nThe rebase is still in progress. Add or discard those files, ${resume}`);
-    }
+    if (outside.length > 0) fail(`${command} also changed files outside its generated paths:\n${outside.map((path) => `  ${path}`).join('\n')}\n${outsideHint}`);
     written.push(...nul(git('diff', '-z', '--name-only', before, after).stdout));
     before = after;
   }
   release();
-  rebuildTime = performance.now() - started;
-  if (written.length > 0) must('add', '--all', '--', ...literal(written));
-  return spawnSync('git', ['rebase', '--continue'], { encoding: 'utf8', env: { ...process.env, GIT_EDITOR: 'true' } });
+  return written;
 }
 
 // The companion's git never reads this clone's .git/info/exclude, so a path only that file ignores is local, not companion work.
 function stageCompanion() {
+  const missing = nul(cgit('ls-files', '-z', '--deleted').stdout);
+  if (missing.length > 0) {
+    const one = missing.length === 1;
+    fail(
+      `${missing.length} ${one ? 'file' : 'files'} that ${pair.dir} tracks ${one ? 'is' : 'are'} missing from disk, such as ${missing[0]}, and land.mjs never lands a missing file as a deletion. ` +
+        `Put ${one ? 'it' : 'them'} back with \`${pair.restore ?? `git --git-dir=${pair.dir} --work-tree=. checkout -- <path>`}\`, or stage each deletion the task makes with \`git --git-dir=${pair.dir} --work-tree=. rm --cached -- <path>\`, then run land.mjs again.`
+    );
+  }
   cmust('add', '--update');
   const tracked = new Set(nul(git('ls-files', '-z').stdout));
   const others = nul(cgit('ls-files', '-z', '--others', '--exclude-standard').stdout).filter((path) => !tracked.has(path));
@@ -417,7 +471,7 @@ function squash({ subject, body }) {
   const missing = mode === 'pr' && !paged(plan) ? missingSections(body) : [];
   if (missing.length > 0) {
     fail(
-      `a PR whose body is the commit body needs ${missing.map((name) => `a \`## ${name}\` section`).join(' and ')} with text, as pstack's Opening a PR asks; ` +
+      `a PR whose body is the commit body needs ${missing.map((name) => `a \`## ${name}\` section`).join(' and ')} with text; ` +
         'add the missing text to the message and run land.mjs again with --message, or change exactly one dated plan so its page becomes the body'
     );
   }
@@ -440,7 +494,7 @@ function squash({ subject, body }) {
   return { plan, lead, own: own.length > 0, theirs: theirs.length > 0 };
 }
 
-fetch();
+await fetch();
 // <branch>'s config, because a task could loosen its own copy, and a branch cut before the split still carries the config from before it.
 const settled = JSON.parse(git('show', `${upstream}:.agents/pstack.json`).stdout || '{}');
 const { sourceless } = settled;
@@ -461,6 +515,7 @@ const message = validate(messageText ?? (ahead > 0 ? must('log', '-1', '--format
 const landing = squash(message);
 const { plan, lead } = landing;
 rebase();
+refresh();
 if (pair) rebase(true);
 
 const record = must('rev-parse', '--git-path', 'pstack-land-checked');
@@ -510,7 +565,10 @@ function check(rebased = false) {
   checkTime = performance.now() - started;
 }
 
-if (existsSync(record) && readFileSync(record, 'utf8') === stamp()) {
+if (fresh) {
+  console.log(`${fresh} is set, so land.mjs runs the checks again whatever it recorded.`);
+  check();
+} else if (existsSync(record) && readFileSync(record, 'utf8') === stamp()) {
   console.log('land.mjs recorded this commit in an earlier run, so it pushes without running the checks again.');
 } else {
   check();
@@ -525,7 +583,7 @@ if (mode === 'push') {
     const moved = /\[rejected\]|fetch first|non-fast-forward/u.test(run.stderr);
     const declined = declinedWithoutReason(run.stderr);
     const wait = DECLINED_WAITS[declines];
-    if (moved && moves < RETRIES && performance.now() + checkTime + rebuildTime > DEADLINE) {
+    if (moved && moves < RETRIES && performance.now() + checkTime + rebuildTime + refreshTime > DEADLINE) {
       fail(
         `origin/${branch} moved, and checking the rebased commit again would end past ${DEADLINE / MINUTE} minutes into the run. ` +
           'The squashed commit stays local, so run land.mjs again with the same --check options and no --message; it rebases and checks it.',
@@ -534,8 +592,9 @@ if (mode === 'push') {
     } else if (moved && moves < RETRIES) {
       moves += 1;
       console.log(`origin/${branch} moved; rebasing and pushing again (retry ${moves} of ${RETRIES})`);
-      fetch();
+      await fetch();
       rebase();
+      refresh();
       if (pair) rebase(true);
       check(true);
     } else if (declined && wait !== undefined && performance.now() + wait * MINUTE <= DEADLINE) {

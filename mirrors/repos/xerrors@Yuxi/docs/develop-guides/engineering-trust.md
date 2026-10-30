@@ -23,10 +23,10 @@ Yuxi 不维护可独立编辑的中央 risk/claim inventory，也不要求 claim
 
 ## 派生审计投影
 
-`scripts/verify_engineering_contracts.py` 从当前 Owner-local 材料检查 decision lifecycle、workflow 接线、路径覆盖、分层 AGENTS 指令的链接/标题/预算和可机械判断的架构边界，并可临时输出审计投影：
+`scripts/ci/verify_engineering_contracts.py` 从当前 Owner-local 材料检查 decision lifecycle、workflow 接线、路径覆盖、分层 AGENTS 指令的链接/标题/预算和可机械判断的架构边界，并可临时输出审计投影：
 
 ```bash
-python3 scripts/verify_engineering_contracts.py --report
+python3 scripts/ci/verify_engineering_contracts.py --report
 ```
 
 该输出由仓库事实重新生成，不提交、不手工编辑，也不反向定义事实。删除投影后应能从同一代码、测试、decision 和 workflow 得到相同结果。Verifier 只证明引用、接线和部分边界检查真实存在；router/frontend 边界检查只覆盖静态可判部分，service 层事务、锁与 lease 语义仍由真实 PostgreSQL integration 证明。它也不判断目标是否值得、测试断言是否正确、oracle 是否真正独立、远端是否把检查设为 required，或某个 diff 是否被错误归类为 trivial。这些语义仍由 Reviewer 结合真实系统证据裁决。
@@ -42,7 +42,7 @@ python3 scripts/verify_engineering_contracts.py --report
 | Real probe | 外部模型、浏览器或部署实例的现实校准 | 低噪声、每 PR 都可执行的阻塞 gate |
 | Semantic Review | 目标、取舍、oracle 独立性和 expected-output 语义 | 可机械判断的格式、引用、选择器和构建错误 |
 
-每个 guard 都要证明目标缺陷会让它变红。Snapshot、fixture 和 expected output 只能显式更新，CI 只读验证。随机/并发测试失败必须保留可重放输入、seed 或数据库事实，不能用重试掩盖。
+每个 guard 都要证明目标缺陷会让它变红，关键 guard 定向注入目标故障并确认失败原因。Snapshot、fixture 和 expected output 只能显式更新，CI 只读验证。随机/并发测试失败必须保留可重放输入、seed 或数据库事实；偶发失败要归责修复，不能用重试掩盖，也不能隔离核心契约的唯一证据。新增或删除测试的证据要求见[测试规范](./testing-guidelines.md)。
 
 ## 决策记忆
 
@@ -53,11 +53,13 @@ python3 scripts/verify_engineering_contracts.py --report
 ## Gate 的运行与维护
 
 ```bash
-python3 scripts/verify_engineering_contracts.py
-python3 -m unittest scripts.test_verify_engineering_contracts
+python3 scripts/ci/verify_engineering_contracts.py
+python3 -m unittest scripts.ci.test_verify_engineering_contracts
 ```
 
-Gate 必须只读、失败可诊断、拥有明确 Owner，并保持有限延迟。低成本只读检查（`trust.yml`）在每个 PR 运行；它是否阻止合并由 GitHub 分支保护的 required 设置决定，workflow 本身不保证这一点。真实 Compose integration/E2E（`system-tests.yml` 等按路径触发）只在匹配高风险范围时运行。高风险 Agent 主链路使用无外部密钥的 deterministic assembled-path E2E 阻断，`real-provider-probe.yml` 手工探针负责外部 provider 校准；两者不能互相冒充。Workflow、selector、skip 或 expected-output 更新都按生产代码审查；长期 flake、误报、绕过或无 consumer 的 gate 应及时修复或退役，禁止用新增规则掩盖既有缺陷。
+Gate 必须只读、失败可诊断、拥有明确 Owner，并保持有限延迟。每个 PR 的 `ci.yml` 汇总检查按粗粒度选择可复用工作流；未知或共享变更扩大检查，必需结果缺失、失败、取消或意外跳过均拒绝通过。高风险 Agent 主链路使用无外部密钥的 deterministic assembled-path E2E，`real-provider-probe.yml` 手工探针负责外部 provider 校准；两者不能互相冒充。`CI required` 是否阻止合并由 GitHub required 规则决定：仓库接线部署并产生真实检查后才能启用该规则，远端生效须另行验证。选择和报告细节见[测试规范](./testing-guidelines.md)。Workflow、selector、skip 或 expected-output 更新都按生产代码审查；长期 flake、误报、绕过或无 consumer 的 gate 应及时修复或退役，禁止用新增规则掩盖既有缺陷。
+
+[CodeQL 工作流](https://github.com/xerrors/Yuxi/blob/main/.github/workflows/codeql.yml) 在 PR、主分支或开发分支更新、版本 tag、每周计划和手工触发时分析当前源码，分别上传 Python、JavaScript/TypeScript 和 Actions 结果。扫描成功只证明分析和上传完成。PR 新增结果不等于完整基线；恢复或调整扫描装配时，先用手工触发在交付分支执行完整分析，并回读该提交的全部结果。合并后再核对默认分支的分析提交和未关闭告警；误报按实际数据流和约束逐条解释，不整体关闭安全规则。
 
 运行时当前事实属于 `ARCHITECTURE.md`、对应代码 Owner 与测试；本页不复制 readiness、Run 或 checkpoint 契约。相关非显然取舍保存在 [工程决策记录](./decisions/README.md) 的聚焦 implemented records 中，审计时从这些局部 Owner 派生，不维护另一份手工状态表。
 

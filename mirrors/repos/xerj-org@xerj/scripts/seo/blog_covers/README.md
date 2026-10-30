@@ -89,3 +89,20 @@ result the post is about, grey-blue (day `--z-cmp`) for the comparison series
 and never for XERJ, ink for structure, and mute/line for annotation and empty
 cells. Every motif is built from squares on a grid: `dot()` draws a filled
 cell, `ring()` an empty one.
+
+## Milestone posters
+
+A POSTS entry that sets `poster` skips the motif and renders `poster.py`
+instead. The `100-contributors` poster puts the people first: "100
+contributors" in Big Shoulders Display, "12,000 stars in 12 days" on the
+yellow highlight, the repository's real star curve
+(`data/xerj-stargazers.json`, every page of the stargazers API) and a mosaic
+of the 100 contributors' avatars. The hero keeps its numbers, because a
+milestone cover is the numbers.
+
+Before you render:
+
+1. `python3 scripts/seo/blog_covers/contributors.py` (needs `gh` and the
+   network) rebuilds `landing/blog/covers/100-contributors-people.webp` and
+   `data/xerj-contributors.json`. The post shows the same mosaic.
+2. Re-read `stargazers_count` and set the entry's `stars`.

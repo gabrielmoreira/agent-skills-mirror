@@ -91,7 +91,7 @@ pnpm db:studio
 - `pnpm dev:web` starts only Vite; API workflows still need a server. If ports are busy, change `PORT` and `SERVER_PORT` consistently in `.env.local`; keep the email preview's `3002` port free when running all dev tasks.
 - Server startup applies migrations before initializing auth and serving traffic. `pnpm db:migrate` applies them without starting the app; `pnpm db:studio` opens the database UI.
 - After adding user-facing strings, use Lingui macros and run `pnpm lingui:extract`. Catalogs live in `apps/web/locales/*.po`; `pnpm pdf:translations` regenerates PDF translations. Root build/check scripts run PDF translation generation automatically.
-- `pnpm docs:gen` regenerates the OpenAPI spec and semantic CSS reference. Use it when changing those public surfaces.
+- `pnpm docs:gen` regenerates the OpenAPI spec. Use it when changing that public surface.
 - Career/workspace changes: update the mapped user guides and fictional screenshots in the same change. Use `docs/contributing/career-platform.mdx` → **Keep product guides current**; verify UI labels, opt-ins, context, timezone and voice fallback against current code.
 
 ## Ownership map

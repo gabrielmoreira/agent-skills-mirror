@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `mex-memory/mex` — 26 default patterns, 0 followed patterns, 31 file(s) materialized.
+Mirror of `mex-memory/mex` — 26 default patterns, 0 followed patterns, 61 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `mex-memory/mex` — 26 default patterns, 0 followed patterns, 31 file
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 31 |
+| Files         | 61 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -82,14 +82,44 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 21 | ✓ | [`skills/mex-relay/agents/openai.yaml`](skills/mex-relay/agents/openai.yaml) |
 | 22 | ✓ | [`skills/mex-relay/references/cli-workflows.md`](skills/mex-relay/references/cli-workflows.md) |
 | 23 | ✓ | [`skills/mex-relay/SKILL.md`](skills/mex-relay/SKILL.md) |
-| 24 | ✓ | [`templates/.tool-configs/.cursorrules`](templates/.tool-configs/.cursorrules) |
-| 25 | ✓ | [`templates/.tool-configs/.windsurfrules`](templates/.tool-configs/.windsurfrules) |
-| 26 | ✓ | [`templates/.tool-configs/CLAUDE.md`](templates/.tool-configs/CLAUDE.md) |
-| 27 | ✓ | [`templates/.tool-configs/copilot-instructions.md`](templates/.tool-configs/copilot-instructions.md) |
-| 28 | ✓ | [`templates/agent-memory/AGENTS.md`](templates/agent-memory/AGENTS.md) |
-| 29 | ✓ | [`templates/AGENTS.md`](templates/AGENTS.md) |
-| 30 | ✓ | [`test/fixtures/wiki-migration/tier1/AGENTS.md`](test/fixtures/wiki-migration/tier1/AGENTS.md) |
-| 31 | ✓ | [`test/fixtures/wiki/scaffold/AGENTS.md`](test/fixtures/wiki/scaffold/AGENTS.md) |
+| 24 | ✓ | [`skills/mex-statechart/agents/openai.yaml`](skills/mex-statechart/agents/openai.yaml) |
+| 25 | ✓ | [`skills/mex-statechart/PROVENANCE.md`](skills/mex-statechart/PROVENANCE.md) |
+| 26 | ✓ | [`skills/mex-statechart/references/artifact.md`](skills/mex-statechart/references/artifact.md) |
+| 27 | ✓ | [`skills/mex-statechart/references/example.json`](skills/mex-statechart/references/example.json) |
+| 28 | ✓ | [`skills/mex-statechart/references/toolchain.md`](skills/mex-statechart/references/toolchain.md) |
+| 29 | ✓ | [`skills/mex-statechart/references/upstream-workflow.md`](skills/mex-statechart/references/upstream-workflow.md) |
+| 30 | ✓ | [`skills/mex-statechart/SKILL.md`](skills/mex-statechart/SKILL.md) |
+| 31 | ✓ | [`skills/mex-statechart/upstream/LICENSE`](skills/mex-statechart/upstream/LICENSE) |
+| 32 | ✓ | [`skills/mex-statechart/upstream/scripts/bug-states.mjs`](skills/mex-statechart/upstream/scripts/bug-states.mjs) |
+| 33 | ✓ | [`skills/mex-statechart/upstream/scripts/chart-edges.mjs`](skills/mex-statechart/upstream/scripts/chart-edges.mjs) |
+| 34 | ✓ | [`skills/mex-statechart/upstream/scripts/chart-parts.mjs`](skills/mex-statechart/upstream/scripts/chart-parts.mjs) |
+| 35 | ✓ | [`skills/mex-statechart/upstream/scripts/chart-to-tla.mjs`](skills/mex-statechart/upstream/scripts/chart-to-tla.mjs) |
+| 36 | ✓ | [`skills/mex-statechart/upstream/scripts/compare-charts.mjs`](skills/mex-statechart/upstream/scripts/compare-charts.mjs) |
+| 37 | ✓ | [`skills/mex-statechart/upstream/scripts/lib.mjs`](skills/mex-statechart/upstream/scripts/lib.mjs) |
+| 38 | ✓ | [`skills/mex-statechart/upstream/scripts/map-view.mjs`](skills/mex-statechart/upstream/scripts/map-view.mjs) |
+| 39 | ✓ | [`skills/mex-statechart/upstream/scripts/property-loop.mjs`](skills/mex-statechart/upstream/scripts/property-loop.mjs) |
+| 40 | ✓ | [`skills/mex-statechart/upstream/scripts/read-check.mjs`](skills/mex-statechart/upstream/scripts/read-check.mjs) |
+| 41 | ✓ | [`skills/mex-statechart/upstream/scripts/regions-chart.mjs`](skills/mex-statechart/upstream/scripts/regions-chart.mjs) |
+| 42 | ✓ | [`skills/mex-statechart/upstream/scripts/render.mjs`](skills/mex-statechart/upstream/scripts/render.mjs) |
+| 43 | ✓ | [`skills/mex-statechart/upstream/scripts/rule-book.mjs`](skills/mex-statechart/upstream/scripts/rule-book.mjs) |
+| 44 | ✓ | [`skills/mex-statechart/upstream/scripts/second-replay.mjs`](skills/mex-statechart/upstream/scripts/second-replay.mjs) |
+| 45 | ✓ | [`skills/mex-statechart/upstream/scripts/snapshot.mjs`](skills/mex-statechart/upstream/scripts/snapshot.mjs) |
+| 46 | ✓ | [`skills/mex-statechart/upstream/scripts/spec-text.mjs`](skills/mex-statechart/upstream/scripts/spec-text.mjs) |
+| 47 | ✓ | [`skills/mex-statechart/upstream/scripts/statechart-help.mjs`](skills/mex-statechart/upstream/scripts/statechart-help.mjs) |
+| 48 | ✓ | [`skills/mex-statechart/upstream/scripts/statechart.mjs`](skills/mex-statechart/upstream/scripts/statechart.mjs) |
+| 49 | ✓ | [`skills/mex-statechart/upstream/scripts/tlc-to-chart-args.mjs`](skills/mex-statechart/upstream/scripts/tlc-to-chart-args.mjs) |
+| 50 | ✓ | [`skills/mex-statechart/upstream/scripts/tlc-to-chart.mjs`](skills/mex-statechart/upstream/scripts/tlc-to-chart.mjs) |
+| 51 | ✓ | [`skills/mex-statechart/upstream/scripts/tlc-tools.mjs`](skills/mex-statechart/upstream/scripts/tlc-tools.mjs) |
+| 52 | ✓ | [`skills/mex-statechart/upstream/scripts/ways-in.mjs`](skills/mex-statechart/upstream/scripts/ways-in.mjs) |
+| 53 | ✓ | [`skills/mex-statechart/upstream/SHA256.json`](skills/mex-statechart/upstream/SHA256.json) |
+| 54 | ✓ | [`templates/.tool-configs/.cursorrules`](templates/.tool-configs/.cursorrules) |
+| 55 | ✓ | [`templates/.tool-configs/.windsurfrules`](templates/.tool-configs/.windsurfrules) |
+| 56 | ✓ | [`templates/.tool-configs/CLAUDE.md`](templates/.tool-configs/CLAUDE.md) |
+| 57 | ✓ | [`templates/.tool-configs/copilot-instructions.md`](templates/.tool-configs/copilot-instructions.md) |
+| 58 | ✓ | [`templates/agent-memory/AGENTS.md`](templates/agent-memory/AGENTS.md) |
+| 59 | ✓ | [`templates/AGENTS.md`](templates/AGENTS.md) |
+| 60 | ✓ | [`test/fixtures/wiki-migration/tier1/AGENTS.md`](test/fixtures/wiki-migration/tier1/AGENTS.md) |
+| 61 | ✓ | [`test/fixtures/wiki/scaffold/AGENTS.md`](test/fixtures/wiki/scaffold/AGENTS.md) |
 
 ---
 

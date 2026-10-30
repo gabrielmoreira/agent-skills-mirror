@@ -100,7 +100,8 @@ When an implementation-ready software plan is warranted, these sections are
 present. They carry the contracts downstream consumers depend on.
 
 - **Goal Capsule** — objective, means (only when an approach is fixed),
-  authority hierarchy, stop conditions, execution profile, and who
+  authority hierarchy, stop conditions, execution profile (including
+  whether the work ships as one PR or several), and who
   finishes and ships the work. This is the fastest way for an executor to avoid drifting from
   the plan. A reader who has not read the rest of the plan must be able to
   hold the Objective as the goal. Remaining-true constraints live on their
@@ -145,7 +146,11 @@ present. They carry the contracts downstream consumers depend on.
 - **Implementation Units** (with stable U-IDs) — discrete work packets sized so
   each is independently executable. Each unit names Goal, Requirements,
   Files, Approach, Test Scenarios, and Verification. `ce-work` and other
-  executors consume these units.
+  executors consume these units. When the work ships as several PRs, the
+  units are grouped by PR. Each group has a `Waits on:` line. For each PR it
+  waits on, the line says whether that PR only has to merge first or has to
+  merge or deploy before the group can start. It also names any deployment
+  that must be live before the group merges.
   - **Unit Index (large plans only, ~10+ units).** When the plan has roughly
     ten or more units, open the section with a compact navigation table — one
     row per unit: **U-ID · one-line title · files touched · depends-on**. It
@@ -284,6 +289,10 @@ them apply.
   learnings keep the ordinary path citation, so a reader can tell a
   prescriptive pack rule from a retrospective learning.
 
+## Prototype sources
+
+When a kept prototype informed this artifact, record its absolute run-directory path in Sources and identify `decisions.md` and the selected screens or states relevant to the requirements. Label the citation machine-local and best effort while the original checkout or temporary directory exists. State in the citation that a missing prototype is not a blocker and the artifact's requirements govern any disagreement. Do not copy the prototype or capsule into the repository. An undone overlay has no surviving prototype to cite.
+
 ## Agent agency
 
 The catalog is a floor, not a ceiling. When the plan's content doesn't fit
@@ -299,7 +308,8 @@ The agent also picks per artifact:
   anchor on them. (Scoped by artifact contract, not by depth — a `Lightweight`
   plan can still be implementation-ready.)
 - Sub-groupings (Requirements by capability, KTDs by component, Units phased
-  into milestones)
+  into milestones). When the work ships as several PRs, the PR groups are the
+  only grouping of units
 - How much detail each section carries
 - Whether HTD has one diagram, several, or none — and whether visualizations
   live in HTD or embedded in other sections
@@ -376,8 +386,8 @@ replace the duplicate with its owning ID.
 Every plan carries a small set of stable metadata fields that downstream
 tooling depends on. The contract is format-independent: in markdown these
 fields appear as YAML frontmatter at the top of the file; in HTML they
-appear as visible header text (typically a `<dl>` of `<dt>`/`<dd>` pairs or
-a stats strip). Field names and semantics are the same across both formats
+appear as visible text placed as `references/html-rendering.md` describes.
+Field names and semantics are the same across both formats
 so consumers can locate them without knowing which format produced the
 plan.
 
@@ -441,8 +451,7 @@ These apply regardless of rendering format.
   authored implementation-ready plans, and in an existing plan whenever a
   KTD is added, split, or first cited by a unit. Untouched unnumbered KTDs
   in legacy plans stay as they are — readable by label, no mass renumbering.
-- **Repo-relative paths.** Always. Never absolute paths in plan content;
-  they break portability across machines, worktrees, teammates.
+- **File paths** follow the policy in `references/output-mode.md`.
 - **No record of the planning process.** No "captured at Phase X" notes, no `## Next Steps`
   pointing to the next skill, no italic provenance lines. Engineering process
   metadata belongs in commit messages and tool output, not the artifact.

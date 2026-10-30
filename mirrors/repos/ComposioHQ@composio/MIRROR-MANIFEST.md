@@ -7,7 +7,7 @@ ref: next
 
 # Mirror Manifest
 
-Mirror of `ComposioHQ/composio` — 26 default patterns, 0 followed patterns, 64 file(s) materialized.
+Mirror of `ComposioHQ/composio` — 26 default patterns, 0 followed patterns, 67 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ComposioHQ/composio` — 26 default patterns, 0 followed patterns, 64
 | Ref           | `next` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 64 |
+| Files         | 67 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -105,24 +105,27 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 44 | ✓ | [`.agents/skills/typescript-testing/references/effect-v4-cli.md`](.agents/skills/typescript-testing/references/effect-v4-cli.md) |
 | 45 | ✓ | [`.agents/skills/typescript-testing/references/test-commands.md`](.agents/skills/typescript-testing/references/test-commands.md) |
 | 46 | ✓ | [`.agents/skills/typescript-testing/SKILL.md`](.agents/skills/typescript-testing/SKILL.md) |
-| 47 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 48 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 49 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
-| 50 | ✓ | [`docs/app/llms.txt/route.ts`](docs/app/llms.txt/route.ts) |
-| 51 | ✓ | [`docs/CLAUDE.md`](docs/CLAUDE.md) |
-| 52 | ✓ | [`docs/content/toolkits/faq/gemini.md`](docs/content/toolkits/faq/gemini.md) |
-| 53 | ✓ | [`python/AGENTS.md`](python/AGENTS.md) |
-| 54 | ✓ | [`python/providers/AGENTS.md`](python/providers/AGENTS.md) |
-| 55 | ✓ | [`skills/composio/references/errors.md`](skills/composio/references/errors.md) |
-| 56 | ✓ | [`skills/composio/references/for-you.md`](skills/composio/references/for-you.md) |
-| 57 | ✓ | [`skills/composio/references/platform.md`](skills/composio/references/platform.md) |
-| 58 | ✓ | [`skills/composio/SKILL.md`](skills/composio/SKILL.md) |
-| 59 | ✓ | [`ts/AGENTS.md`](ts/AGENTS.md) |
-| 60 | ✓ | [`ts/e2e-tests/AGENTS.md`](ts/e2e-tests/AGENTS.md) |
-| 61 | ✓ | [`ts/packages/cli/AGENTS.md`](ts/packages/cli/AGENTS.md) |
-| 62 | ✓ | [`ts/packages/cli/CLAUDE.md`](ts/packages/cli/CLAUDE.md) |
-| 63 | ✓ | [`ts/packages/core/AGENTS.md`](ts/packages/core/AGENTS.md) |
-| 64 | ✓ | [`ts/packages/providers/AGENTS.md`](ts/packages/providers/AGENTS.md) |
+| 47 | ✓ | [`.agents/skills/verify-change/references/verification-map.md`](.agents/skills/verify-change/references/verification-map.md) |
+| 48 | ✓ | [`.agents/skills/verify-change/SKILL.md`](.agents/skills/verify-change/SKILL.md) |
+| 49 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 50 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 51 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
+| 52 | ✓ | [`docs/app/llms.txt/route.ts`](docs/app/llms.txt/route.ts) |
+| 53 | ✓ | [`docs/CLAUDE.md`](docs/CLAUDE.md) |
+| 54 | ✓ | [`docs/content/toolkits/faq/gemini.md`](docs/content/toolkits/faq/gemini.md) |
+| 55 | ✓ | [`python/AGENTS.md`](python/AGENTS.md) |
+| 56 | ✓ | [`python/providers/AGENTS.md`](python/providers/AGENTS.md) |
+| 57 | ✓ | [`skills/composio/references/errors.md`](skills/composio/references/errors.md) |
+| 58 | ✓ | [`skills/composio/references/for-you.md`](skills/composio/references/for-you.md) |
+| 59 | ✓ | [`skills/composio/references/platform.md`](skills/composio/references/platform.md) |
+| 60 | ✓ | [`skills/composio/SKILL.md`](skills/composio/SKILL.md) |
+| 61 | ✓ | [`ts/AGENTS.md`](ts/AGENTS.md) |
+| 62 | ✓ | [`ts/e2e-tests/AGENTS.md`](ts/e2e-tests/AGENTS.md) |
+| 63 | ✓ | [`ts/packages/cli/AGENTS.md`](ts/packages/cli/AGENTS.md) |
+| 64 | ✓ | [`ts/packages/cli/CLAUDE.md`](ts/packages/cli/CLAUDE.md) |
+| 65 | ✓ | [`ts/packages/cli/GLOSSARY.md`](ts/packages/cli/GLOSSARY.md) |
+| 66 | ✓ | [`ts/packages/core/AGENTS.md`](ts/packages/core/AGENTS.md) |
+| 67 | ✓ | [`ts/packages/providers/AGENTS.md`](ts/packages/providers/AGENTS.md) |
 
 ---
 

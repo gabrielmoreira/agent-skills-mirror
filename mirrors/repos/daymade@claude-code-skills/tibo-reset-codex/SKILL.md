@@ -76,17 +76,26 @@ stdin/heredoc 及 Python/Node 子进程调用却可能报 `Failed to start ego l
   追查兑现状态和原因；这不是上轮漏报归因，不能只重放旧 findings。
 - 裸调用（没带具体问题，只想知道现在什么情况）→ 组合执行：台账回看 → 公告线（Radar 索引 +
   独立的 Tibo 主帖时间线 + 有界 reply 发现，按 §1 各路径）+ 故障线（§1）→
-  本机落地状态（§2 脚本）→ [监测轮的线索决策](#监测轮从信息到可行动信号)与台账回填。
+  当前已核身份的实时用量与 banked（`scripts/query_usage.py`，见账号 SOP）→
+  [监测轮的线索决策](#监测轮从信息到可行动信号)与台账回填。
+  先完成能回答当前问题的读取。仅在用户要求历史复盘、需要解释窗口异常，或未兑现承诺的
+  发生区间确实需要匿名快照补证时执行 §2；按相关事件选择回溯天数，不默认重建七天曲线。
+  匿名快照仍不能替账号补身份或独自证明到账。到期未决项继续按 `followup` 逐项核验，
+  不因当前事件已有完成帖而清除旧问题；追加来源不能改变当前有界结论时停止扩查。
   按输出合同先给当前重置状态结论，再按预测路径给出下一步时间判断；没有可支持的日期窗口时，
   给出等待是否值得的判断，不为填满格式调用 `record` 造窗。公告线、故障线与
   本机扫描的每次实际抓取先落 findings 记录，回填时用
-  evidence_refs 挂链（见[预测反馈的 findings 节](references/forecast-feedback.md)）。**§2 之后必须再跑一次实时 banked 查询**（`scripts/query_usage.py`，读法与字段表见
-  [账号 SOP](references/account-usage.md)）——§2 的 rollout 快照结构上没有备用重置字段，不跑就
-  答不全「现在什么情况」这个最常被问的维度；只取 banked 一个数即可，并把输出里的 `account_ref` 一起记进 findings（记录规则见 forecast-feedback.md 的隐私契约，banked 计数的可比范围见账号 SOP）；本条其余部分仍只管重置状态。
-  ⚠️ **scan 与 banked 不要 `&&` 串联**：scan_rollouts 无快照时 exit 1，`&&` 会把 banked 查询直接
-  短路掉——表面上全套像跑过了，实际少一维（2026-09-19 实测）。两条分开跑，或串联时给 scan
-  加 `|| true`。**循环场景下 skill 里的裸命令被 `same-cmd-resend-guard` 拦**（端点抖动失败一次
-  后逐字节重发即拦）——命令开头加 `cd <skill 绝对路径> &&` 换结构即放行（2026-09-19 实测）。
+  evidence_refs 挂链（见[预测反馈的 findings 节](references/forecast-feedback.md)）。
+  **实时 banked 查询不能被 §2 替代**：rollout 快照结构上没有备用重置字段。本轮已有身份
+  核实、时间仍适用的实时读数时直接复用；缺失、查询期间发生切号或新事件使旧读数失效时，
+  再运行 `scripts/query_usage.py` 补查。用账号 SOP 的 `--output-dir` + `--finding-state-dir` 单次命令
+  将去邮箱读数与 `account_ref` 直接保存、记进 findings；无需手抄 stdout 或另写记账脚本。计数的可比范围
+  与字段读法见[账号 SOP](references/account-usage.md)。本条不授权切号或兑换备用。
+  **scan 与 banked 独立执行并分别记录退出状态**：`scan_rollouts.py` 无快照时退出非零，
+  只表示所选窗口没有观测，不能据此认定没有重置，也不能短路实时 banked 查询。参数、
+  读取或运行错误仍保留失败／unknown；不要用 `|| true` 吞掉错误。
+  宿主提示重复失败时，先核对失败原因和重试依据，再按提示处理；绝对路径只用于纠正
+  已证实的 cwd 问题，不为改变命令文本而绕过提示。修复依赖或取得新证据后再作有依据的重试。
   定时循环（如 `/loop`）重复触发时，若距上次检查间隔很短（<10 分钟）且上轮无改判信号，可只跑
   公告线确认无新官宣、跳过 incidents/banked/本机扫描全套；这是降成本的取舍，未查的维度
   仍标 uncovered。间隔正常、台账里的线索到达复查条件，或上轮出现过新信号时仍跑全套。
@@ -134,8 +143,10 @@ stdin/heredoc 及 Python/Node 子进程调用却可能报 `Failed to start ego l
   先按 [Cookie Copy 接入](references/browser-session-migration.md) 准备依赖；
   `scripts/launch-usage-profile.sh <a|b>` 建/开隔离 Chrome profile，关闭目标后用
   `scripts/import-google-cookies.py --profile <a|b>` 搬运 `.google.com` 系 Cookie。
-- 想**自动**驱动隔离 Chrome 查第二账号用量 → `node scripts/read-usage-profile.cjs`（依赖
-  `~/.chrome-profiles/tibo-cdp/` 的 playwright；默认 profile a）。读模式直接解析当前登录账号
+- 想**自动**驱动隔离 Chrome 查第二账号用量 → `node scripts/read-usage-profile.cjs`（默认 profile a）。
+  脚本先解析普通 playwright 安装；未安装时回退到 `~/.chrome-profiles/tibo-cdp/node_modules/playwright`，
+  可用 `TIBO_PLAYWRIGHT_PATH` 指定其他 playwright 包路径，不需要手工设置 `NODE_PATH`。
+  读模式直接解析当前登录账号
   usage；加 `--drive-login` 在未登录时自动点 `Continue with Google` 驱动到 Google 账号选择器
   并列出全部账号。**实测边界（2026-09-16）**：隔离 profile 无 Google 会话 token，账号选择器
   每个账号都标 `Signed out`；这只说明当次 Google 路线未取得活会话，不否定上面的
@@ -149,6 +160,12 @@ stdin/heredoc 及 Python/Node 子进程调用却可能报 `Failed to start ego l
 
 - 第一段第一句必须给出当前证据支持的**唯一最强结论**，禁止用「可能是 A/B/C、请你再看」
   把分类责任交还用户。
+- **已核信息先交付。** 执行者在任一检查环节核实了会改变当前用量或时限决策的信息，先按
+  宿主现有交付合同报告结论、原始来源、带时区的时限及仍未知的范围或到账状态，再继续不影响
+  该提示成立的补证与收尾；不等全套检查、轮末台账或最终长答。应用托管的只读研究任务只向
+  宿主提交约定产物；宿主不支持中途提交时，及时交付当前足以支持决策的结果，把剩余补证条件
+  留给下一轮。沿用已有通知与重试策略，不因本条新增外送、电话或重复提醒；提交或发送回执
+  不证明送达本人或取得 ACK。没有新增可行动事实时，仍按原合同报告覆盖与边界。
 - 不确定性用于**收窄结论的属性**，不是取消结论：
   - 只证实一个账户的当前读数 → 「当前账户剩余 X%；Next reset 为 …；是否发生重置未核实」。
   - 同一 `account_ref` 的前后读数出现用量下降与锚点变化，但没有直接事件证据 → 「两个观测点之间窗口发生变化；原因未核实」。端点身份相同不能排除中间 A→B→A，不能写成「该账户已经重置」。
@@ -199,21 +216,28 @@ stdin/heredoc 及 Python/Node 子进程调用却可能报 `Failed to start ego l
 到达复查条件时升级为正常轮。每轮按以下顺序执行，停止于证据已足够改变或维持当前行动、
 且下一次需要什么新信息已经写清，而不是停止于固定端点返回空值。
 
-1. **接上上轮的问题。** 读 `forecast_log.py summary --compact`（审计或需要完整叙述时读 `summary`；compact 保留本步全部决策字段），先看 `due_for_followup`（窗口已过期或
+1. **接上上轮的问题。** 读 `forecast_log.py activity`，按首轮 `view_id` 和 `next_cursor` 翻完全部页
+   （有界大小、异常恢复与原件读取见[本地预测反馈](references/forecast-feedback.md#每次调用先回看)；
+   旧 `summary --compact` 保留兼容）。先看 `due_for_followup`（窗口已过期或
    即将关闭、尚无定论的预测——到期跟进项从这里第一眼读，不用翻 rationale；closing_soon 的
    阈值定义见 forecast-feedback.md）；若有 `withdrawal_conflicts`，先核对冲突的撤回与旧版核验；
    若有 `recent_withdrawn`，先排除已撤回的旧窗口；也看 `snapshot.status`——`lagging` 表示台账
    的 git 快照落后（原因与处置见 forecast-feedback.md 的 findings 节），要在本轮汇报里说明；
-   再从同一 state-dir 运行 `forecast_log.py handoff`
-   读取最新一条 `invocation=monitor` 的完整原始行；`findings` 子命令的紧凑列表不显示
-   `notes`，不能用它代替交接正文。`handoff` 返回 `null` 表示尚无监测交接，不能推断此前
+   activity 的 `handoff_notes` 逐条保留最新有效交接；需完整 readings 时，从同一 state-dir 用
+   `show --id <handoff_id>` 或 `handoff` 读取原行，大输出先落新的私有文件再分段读完。
+   `findings` 子命令的紧凑列表不显示 `notes`，不能用它代替交接正文。`handoff_id` 或 `handoff`
+   返回 `null` 表示尚无监测交接，不能推断此前
    没有值得追的线索。
    其中的 `notes` 记录上轮尚未解决的具体问题、候选来源、下一次复查条件和用户反馈。上轮
    没有记录就从当前问题与现有预测的 `revision_trigger` 建立这些项，不把空台账说成已覆盖。
    本轮即使只做降频查询，也要在新 finding 的 `notes` 里结转未决项或写明已由哪条证据关闭，
    使它始终能从最新轮次读回；逐字读数仍只放 `readings`，判断不得伪装成原始数据。
-   同一 state-dir 再运行 `forecast_log.py followup`，执行其 `event_tasks` 与
-   `account_tasks`，不要把输出清单当成已经查过。`confirmed_unscored` 表示事件已经确认、
+   只纠正一条现有交接事实时，按[安全纠错入口](references/forecast-feedback.md#findings原始读数层)
+   使用 `correct-handoff` 绑定当前完整 ID，继承其余未决项、账号和游标后逐字替换完整 note，
+   不另写一条只有纠正内容的 monitor。
+   按 activity 的到期事件与 `account_followup` 逐项取证；需现有问题与来源配方时，再运行同一
+   state-dir 的 `forecast_log.py followup`，完整输出先落私有文件，按目标 ID 读取其 `event_tasks`
+   与 `account_tasks`，不重复把整份交接塞进上下文，也不把输出清单当成已经查过。`confirmed_unscored` 表示事件已经确认、
    预测仍不可评分，不为它继续问「重置发生了吗」；`account_followup` 单独保留已绑定账号的
    未到账项。官宣的具体时刻用 `announce` 保存，字段与状态读
    [本地预测反馈](references/forecast-feedback.md#官宣单点时间与事件账号状态)。
@@ -229,7 +253,7 @@ stdin/heredoc 及 Python/Node 子进程调用却可能报 `Failed to start ego l
    不是承诺与产品相矛盾；也不能据此断言后端尚未执行或已在其他账户到账。
    从帖子引用、回复对象、官方事故、独立账户观测和用户已授权的社区记录中选最有辨别力的
    下一跳。用户已指出「VIP 1群|一支烟花社区」是本案有效的补充发现源；正常轮若尚无该群
-   的新鲜覆盖，就按[社区增量读取](references/forecast-feedback.md#社区增量读取)调用现有
+   的新鲜覆盖且该缺口会改变当前未决判断，就按[社区增量读取](references/forecast-feedback.md#社区增量读取)调用现有
    `read-wechat-messages`，包含所选片段的纯图片与语音，随后回原帖
    核验。读取成功后，在本地 handoff 写明平台、成功部署标签、完整群名、talker、时间/seq
    游标与媒体覆盖；下一轮先复用这次成功定位，失败再检查部署或换源。私有 talker 只写本地
@@ -252,9 +276,11 @@ stdin/heredoc 及 Python/Node 子进程调用却可能报 `Failed to start ego l
    「本轮已覆盖范围内无新增可行动信息」，连同 uncovered / unknown 与下一复查条件报告，
    不说全域无信号。若本轮有新判断，用原帖、上下文和产品观测说明它比上轮多了什么，
    以及是否要通知、等待或改变用量策略；不能把发送回执当用户 ACK。
-   **反向同样成立：官方已明文预告 global 在途时，先等落地再动备用**——global 落地即全员回满，
-   此刻兑现备用等于白扔库存（2026-10-11 实测：4 账号全空 + EOD 官宣在途，官宣后 5h45m 落地、
-   距 EOD 上限仍提前 ~3h，2 次备用保住未花）。
+   官方已明文预告 global 在途时，通常先保留 banked，并核对已确认的账号适用范围、当前余额、
+   到账状态，以及原本有价值工作的硬截止或延迟成本。预告上限不是保证可安全等待的窗口，
+   重置可能提前；官宣也不证明本人账号已到账。工作可以等待时建议保留备用；延迟成本明确
+   超过保存一张备用的价值时，给出使用备用完成原任务的条件建议及库存代价。账号状态或成本
+   未核实就保留未知，不断言兑现等于浪费，也不自动兑换备用。
 5. **把下一轮要接的状态落下。** 在本轮最后追加一条 `invocation=monitor` 的交接 finding；
    `query` 写当前监测问题，`endpoints=[]`、`readings={}`，按[交接结转](references/forecast-feedback.md#交接结转)
    保留本轮判断、带观测时刻的来源状态、未决问题、下次触发条件及用户纠偏。重要判断另按预测路径保存或

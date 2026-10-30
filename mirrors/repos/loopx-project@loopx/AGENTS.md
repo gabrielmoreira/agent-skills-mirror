@@ -41,6 +41,10 @@ Codex discovery budget, and do not eagerly import linked detail documents.
 See [loading and maintenance](docs/development/README.md#agent-instruction-loading-and-maintenance)
 for host-specific checks; delivery does not prove model compliance.
 
+Prefer [progressive context](docs/development/README.md#progressive-context-for-development):
+current goals, constraints and acceptance criteria first; supporting evidence and
+procedures on demand under their owning read/recovery contract.
+
 ## Goal-Oriented Development
 
 Before selecting non-trivial work, resolve the current requested outcome from
@@ -192,6 +196,11 @@ public docs and commit/push workflows):
 4. Stage explicit pathspecs only; never `git add .`.
 5. Split by reviewer logic: runtime/API behavior, public docs/protocol notes,
    and focused validation/cleanup. Push reviewable batches as branch PRs.
+
+Before staging generated media or capture manifests, follow
+[visual evidence retention](docs/development/documentation-layout.md#visual-evidence-retention).
+Attach PR evidence; commit only assets with a current consumer or an explicit
+versioned fixture contract.
 
 ### Merge Authority And Validation
 

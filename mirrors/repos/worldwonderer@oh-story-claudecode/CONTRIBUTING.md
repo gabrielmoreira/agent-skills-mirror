@@ -88,21 +88,21 @@ PR 自动运行 `.github/workflows/cross-platform.yml`。static-check job 跑以
 - `python3 scripts/test-scan-aggregate.py` — 扫榜聚合脚本的解析、去重、分布与抽样行为回归
 - `scripts/check-story-setup-deployment.sh` — story-setup 部署完整性
 - `python3 scripts/test-plugin-packaging.py` — 通过公开 CLI 对 catalog/manifest 做黑盒变异回归
-- `scripts/check-claude-adapter.sh` — Claude marketplace、根 plugin manifest 与 13 个 skill 自动发现检查；可选真实 CLI 生命周期
+- `scripts/check-claude-adapter.sh` — Claude marketplace、根 plugin manifest 与 14 个 skill 自动发现检查；可选真实 CLI 生命周期
 - `scripts/check-opencode-adapter.sh` — OpenCode adapter 同步、commands/agents 结构与 plugin 真实行为检查
 - `scripts/check-openclaw-skills.sh` — OpenClaw 单行 frontmatter、`metadata.openclaw` 与可选真实 CLI 发现检查
 - `scripts/check-codex-adapter.sh` — Codex repo skills symlink、custom-agent TOML、hook 生成确定性与 launcher 契约
 - `scripts/test-codex-hooks.sh` — Codex hooks 合成事件测试
 - `scripts/check-antigravity-adapter.sh` — Antigravity 项目 Skills 物化、Markdown agents、Always-On Rule、named-group Hooks 与合并/行为回归
 - `node scripts/test-antigravity-hooks.mjs` — Antigravity 官方 Hook I/O、artifact 桥接和 Stop 单次续跑测试
-- `scripts/check-zcode-adapter.sh` — ZCode plugin/marketplace、13 Skills/Commands、受支持 Hook 事件与部署锚点检查
+- `scripts/check-zcode-adapter.sh` — ZCode plugin/marketplace、14 Skills/Commands、受支持 Hook 事件与部署锚点检查
 - `scripts/test-zcode-hooks.sh` — ZCode 严格 JSON Hook 契约、正文守卫、连续性与跨平台 Node runner 测试
 - `python3 scripts/test-storyctl.py` — `visible_chars_v1` 计数、双层区间、结构化 CLI 与 demo 同口径证据的运行时行为回归
 - 采集脚本 `node --check` 语法校验
 
 以上为代表性列举；**强制清单按 `.github/workflows/cross-platform.yml` 为准**，每个脚本的用途与触发时机见 [scripts/README.md](scripts/README.md)。另有 `.github/workflows/cli-compat.yml` 在相关 PR、每周定时和手动触发时安装官方当前版本，真实运行 Claude Code、Codex、OpenCode、OpenClaw 的无鉴权 smoke。
 
-另有 windows / macos job 跑 `python3 scripts/check-plugin-packaging.py`（Claude/ZCode catalog、原生 manifest、统一 bundle 身份、版本与 13 个根 Skills 检查）与跨平台回归，并验证 cdp-utils 加载与 setup 脚本 dry-run。
+另有 windows / macos job 跑 `python3 scripts/check-plugin-packaging.py`（Claude/ZCode catalog、原生 manifest、统一 bundle 身份、版本与 14 个根 Skills 检查）与跨平台回归，并验证 cdp-utils 加载与 setup 脚本 dry-run。
 
 提交前建议按 Linux CI 的强制清单本地跑一遍：
 
@@ -220,7 +220,7 @@ fork → branch → commit → PR → review → merge
 
 ## Plugin 打包与版本锚点
 
-Claude Code 与 ZCode 都发布单一 `oh-story` bundle，bundle 从仓库根暴露全部 13 个 Skills；不要恢复按 Skill 拆成 13 个 catalog 条目的旧结构。两个 marketplace 自身的名字按平台保持不同：Claude 为 `oh-story-skills`，ZCode 根 catalog 为 `oh-story-zcode`。两边 catalog 都只能有一个 `name: oh-story`、`source: ./` 的条目，其版本须与对应原生 manifest 一致。
+Claude Code 与 ZCode 都发布单一 `oh-story` bundle，bundle 从仓库根暴露全部 14 个 Skills；不要恢复按 Skill 拆成 13 个 catalog 条目的旧结构。两个 marketplace 自身的名字按平台保持不同：Claude 为 `oh-story-skills`，ZCode 根 catalog 为 `oh-story-zcode`。两边 catalog 都只能有一个 `name: oh-story`、`source: ./` 的条目，其版本须与对应原生 manifest 一致。
 
 `agents_version` 在 release 时取上一个发布 tag 的值加 1；开发分支已提前使用该目标值时保持不变，不随 PR 合并次数累加。发布前核对 `scripts/current-contract.json`、部署提示与生成模板的一致性。
 
@@ -280,11 +280,11 @@ bash scripts/test-opencode-cli-e2e.sh  # 可选：需要本机已安装 OpenCode
 1. 将 `templates/agents/` 下的 Claude Code agent 转换为 opencode 格式，写入 `opencode/agents/`
 2. 将 `CLAUDE.md.tmpl` 复制到 `opencode/AGENTS.md.tmpl`，替换 `.claude/` 路径引用
 3. 输出同步结果摘要
-4. 可选真实 CLI e2e 在临时项目里验证 13 个 skills / slash commands、7 个 agents、`story-hooks.ts` 插件状态为 active，并用 mock 模型在真实运行时验证写正文守卫、写后兜底与压缩前注入
+4. 可选真实 CLI e2e 在临时项目里验证 14 个 skills / slash commands、7 个 agents、`story-hooks.ts` 插件状态为 active，并用 mock 模型在真实运行时验证写正文守卫、写后兜底与压缩前注入
 
 ### CI 检测
 
-PR 中如果修改了 Claude Code 模板文件，CI 会自动检测 opencode 模板是否同步，并额外检查 13 个 command、7 个 agent 的结构以及 `plugin.ts` 的实际守卫/收尾行为。`cli-compat.yml` 安装 `@opencode/cli@latest` 跑真实 CLI e2e 与运行时权限测试。如果 CI 报错，请在本地运行同步脚本和 `bash scripts/check-opencode-adapter.sh`，再提交结果。
+PR 中如果修改了 Claude Code 模板文件，CI 会自动检测 opencode 模板是否同步，并额外检查 14 个 command、7 个 agent 的结构以及 `plugin.ts` 的实际守卫/收尾行为。`cli-compat.yml` 安装 `@opencode/cli@latest` 跑真实 CLI e2e 与运行时权限测试。如果 CI 报错，请在本地运行同步脚本和 `bash scripts/check-opencode-adapter.sh`，再提交结果。
 
 ### 手动维护的部分
 
@@ -337,7 +337,7 @@ bash scripts/check-openclaw-skills.sh
 OPENCLAW_REAL_CHECK=1 bash scripts/check-openclaw-skills.sh  # 本机安装 openclaw 时可选
 ```
 
-`OPENCLAW_REAL_CHECK=1` 会用临时 profile + 临时 workspace 创建隔离 agent，确认 OpenClaw CLI 能从 workspace `skills/` 发现 13 个 story skill；脚本结束后清理临时 profile。
+`OPENCLAW_REAL_CHECK=1` 会用临时 profile + 临时 workspace 创建隔离 agent，确认 OpenClaw CLI 能从 workspace `skills/` 发现 14 个 story skill；脚本结束后清理临时 profile。
 
 ### OpenClaw 已知边界
 
@@ -349,7 +349,7 @@ OPENCLAW_REAL_CHECK=1 bash scripts/check-openclaw-skills.sh  # 本机安装 open
 
 Antigravity 2.0 与 `agy` CLI 共用 `.agents/` workspace customization，但发版前仍建议分别实机 smoke test。支持面全部由 `story-setup` 部署到写作项目，部署器不写 `~/.gemini/`：
 
-- 13 个 Skills 物化到真实 `.agents/skills/{name}/`。`deploy-antigravity-skills.py` 只替换已知名称、保留用户 Skills；现有 symlink 默认 fail-closed，只有用户明确同意才迁移，且不得沿链接写到目标目录。
+- 14 个 Skills 物化到真实 `.agents/skills/{name}/`。`deploy-antigravity-skills.py` 只替换已知名称、保留用户 Skills；现有 symlink 默认 fail-closed，只有用户明确同意才迁移，且不得沿链接写到目标目录。
 - 7 个 custom subagents 由 Claude Markdown 真源在部署时生成到 `.agents/agents/agent-name/agent.md`（`agent-name` 替换为实际名称）。工具名必须来自官方清单，调用用 `invoke_subagent` + 同名 `TypeName`；生成器只替换 7 个已知定义并保留其他用户 agent。
 - Always-On Rule 固定为 `.agents/rules/oh-story.md`，文件必须小于 12,000 字符。它负责 skill 路由和 compact 后重新读取 `追踪/上下文.md`；不要假设 Antigravity 有 Claude 的 PreCompact/PostCompact。
 - `.agents/hooks.json` 是顶层 named-group mapping。合并器只替换 `oh-story` group，保留所有用户 groups。当前注册 `PreToolUse`、`PostToolUse`、`PreInvocation`、`Stop`：PreToolUse 必须输出 `decision`，PostToolUse 必须精确输出 `{}`；写后 findings 存到本会话 `artifactDirectoryPath`，下一次 PreInvocation 注入，Stop 最多强制 continue 一次。
@@ -364,13 +364,13 @@ python3 scripts/test-antigravity-hook-merge.py
 node scripts/test-antigravity-hooks.mjs
 ```
 
-若本机装有当前 Antigravity 2.0 / `agy`，再在临时写作项目运行一次 `story-setup`，新开 conversation，用 `/skills`、`/agents`、`/hooks` 验发现，并分别验证 IDE 与交互式 CLI。print 模式 `agy -p` 必须带 `--add-dir "$PWD"`：实测 agy 1.2.10 带上它会加载工作区 `.agents/`（13 个 skills、7 个 agents 与 hooks），不带则都不加载，可能把普通模型输出写进 `~/.gemini/antigravity-cli/scratch/`。测试后检查并清理意外 scratch 产物。自动化不读写用户 global customization，也不替代这个实机步骤。
+若本机装有当前 Antigravity 2.0 / `agy`，再在临时写作项目运行一次 `story-setup`，新开 conversation，用 `/skills`、`/agents`、`/hooks` 验发现，并分别验证 IDE 与交互式 CLI。print 模式 `agy -p` 必须带 `--add-dir "$PWD"`：实测 agy 1.2.10 带上它会加载工作区 `.agents/`（14 个 skills、7 个 agents 与 hooks），不带则都不加载，可能把普通模型输出写进 `~/.gemini/antigravity-cli/scratch/`。测试后检查并清理意外 scratch 产物。自动化不读写用户 global customization，也不替代这个实机步骤。
 
 ## ZCode 适配维护
 
 ZCode 采用「原生 plugin + `story-setup` workspace 部署」双入口：
 
-- `.zcode-plugin/plugin.json` 与根 `marketplace.json` 以同名同版本的单一 `oh-story` bundle 暴露 13 Skills、13 Commands、7 个插件角色和 ZCode Hooks；catalog 自身名保持 `oh-story-zcode`，条目的插件版本必须与 `skills/story/VERSION` 同步。
+- `.zcode-plugin/plugin.json` 与根 `marketplace.json` 以同名同版本的单一 `oh-story` bundle 暴露 14 Skills、14 Commands、7 个插件角色和 ZCode Hooks；catalog 自身名保持 `oh-story-zcode`，条目的插件版本必须与 `skills/story/VERSION` 同步。
 - `skills/story-setup/references/zcode/` 是 workspace 部署模板，包含 `AGENTS.md.tmpl`、Commands、生成的插件 Agents、`config.json.patch` 与无第三方依赖的 Node Hook runner。
 - ZCode 3.3.4 只支持 `SessionStart`、`UserPromptSubmit`、`PreToolUse`、`PermissionRequest`、`PostToolUse`、`PostToolUseFailure`、`Stop`。不要复制 Claude 的 `PreCompact`、`PostCompact`、`SessionEnd`、`SubagentStop` 或 `Notification`。
 - Hook stdout 为空表示放行；只要非空就必须满足严格 JSON schema。诊断只写 stderr，异常 fail-open；优先使用 `process` + `node`，不要引入 shell/Python launcher 的跨平台分支。
@@ -393,8 +393,8 @@ bash scripts/test-prose-net-parity.sh
 Reasonix（DeepSeek-Reasonix CLI）当前支持 skills + 原生 plugin manifest + skills-only 的项目级 `story-setup` 部署；hooks 与 custom agents 留待后续阶段（涉及专业 Agent 的 Skill 走 solo/direct fallback）：
 
 - 根 `reasonix-plugin.json` 是 plugin manifest；`version` 必须与 `skills/story/VERSION` 同步（`check-reasonix-adapter.sh` 守卫）。
-- Reasonix 原生扫描项目 skill root（`.agents/skills` 等，指向 `skills/` 的 symlink，与 Codex 共用）发现 13 个 skill。
-- `story-setup` 的 `target_cli=reasonix` 走 skills-only 部署：复制 13 个 skill 到项目 `skills/`、写入 `references/reasonix/AGENTS.md.tmpl`，不部署 hooks/agents（与 OpenClaw / generic 同构，由 `check-story-setup-deployment.sh` 守卫）。改动 Reasonix 部署路径或模板时同步该守卫。
+- Reasonix 原生扫描项目 skill root（`.agents/skills` 等，指向 `skills/` 的 symlink，与 Codex 共用）发现 14 个 skill。
+- `story-setup` 的 `target_cli=reasonix` 走 skills-only 部署：复制 14 个 skill 到项目 `skills/`、写入 `references/reasonix/AGENTS.md.tmpl`，不部署 hooks/agents（与 OpenClaw / generic 同构，由 `check-story-setup-deployment.sh` 守卫）。改动 Reasonix 部署路径或模板时同步该守卫。
 - 真实 CLI 校验 `reasonix doctor capabilities` 不在 CI 内，发版前可手动跑。
 
 ### Reasonix 检查步骤

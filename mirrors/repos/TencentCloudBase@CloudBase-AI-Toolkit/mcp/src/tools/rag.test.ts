@@ -131,19 +131,41 @@ describe("rag tools", () => {
   });
 
   it("every skillName example in the description is a real enum value", async () => {
-    const { server, tools } = createMockServer();
-
-    await registerRagTools(server);
-
-    const meta = tools.searchKnowledgeBase.meta;
-    const options: string[] = meta.inputSchema.skillName.unwrap().options;
-    // 描述里以 `skillName=<值>` 形式的示例，模型会照抄，因此必须都在枚举里
-    const examples = [...String(meta.description).matchAll(/skillName=([a-z0-9-]+)/g)].map(
-      (match) => match[1],
+    /**
+     * 枚举来自磁盘上的 skills 源，而 `resolveSkillSearchRoots` 用 `process.argv[1]`
+     * 往上两级推仓库根 —— vitest 的 argv[1] 指向 `node_modules` 深处，推出来的根
+     * 找不到 `config/source/skills`，于是只剩「下载来的 web-template」这一条兜底。
+     * 那条兜底要走网络：CI 上偶发失败时枚举就是空的（症状是 `options` undefined，
+     * 不是断言不等）。
+     *
+     * 这里显式把 argv[1] 指向 `<repo>/.probe/sub/probe.js`，让仓库根算对，
+     * 这条断言就只依赖仓库里的源文件。
+     */
+    const prevArgv1 = process.argv[1];
+    process.argv[1] = path.resolve(
+      path.dirname(new URL(import.meta.url).pathname),
+      "../../../.probe/sub/probe.js",
     );
+    try {
+      const { server, tools } = createMockServer();
 
-    expect(examples.length).toBeGreaterThan(0);
-    expect(examples.filter((name) => !options.includes(name))).toEqual([]);
+      await registerRagTools(server);
+
+      const meta = tools.searchKnowledgeBase.meta;
+      const options: string[] = meta.inputSchema.skillName.unwrap().options;
+      // 描述里以 `skillName=<值>` 形式的示例，模型会照抄，因此必须都在枚举里
+      const examples = [...String(meta.description).matchAll(/skillName=([a-z0-9-]+)/g)].map(
+        (match) => match[1],
+      );
+
+      expect(examples.length).toBeGreaterThan(0);
+      // 先确认枚举真的建起来了：扫不到 skills 时这里会给 undefined，报错信息会误导成断言问题
+      expect(Array.isArray(options)).toBe(true);
+      expect(options.length).toBeGreaterThan(0);
+      expect(examples.filter((name) => !options.includes(name))).toEqual([]);
+    } finally {
+      process.argv[1] = prevArgv1;
+    }
   });
 
   it("searchKnowledgeBase should expose docs mode and official app.docs actions", async () => {

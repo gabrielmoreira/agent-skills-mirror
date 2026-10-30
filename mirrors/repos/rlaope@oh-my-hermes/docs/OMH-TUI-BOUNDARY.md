@@ -143,16 +143,19 @@ nothing and turns only plan mode on and off.
 A steer (Ctrl+Enter, `/steer`, or what the person sends from the composer the
 tell row opened) sends into the running turn only text the person typed and
 sent that way, and the tell row's text goes as an ordinary prompt once the turn
-has ended; the TUI never steers on its own, and a queued prompt is never turned
-into a steer. A steer Hermes does not take waits in the TUI's own queue for the
-running turn to end, whatever the busy mode, so it never interrupts that turn.
-A steer Hermes does not answer within 120 s goes back to the composer and is
-never re-sent.
+has ended; the TUI never steers on its own, and a queued prompt becomes a steer
+only when the person presses the send-now key (Ctrl+Enter or Ctrl+J on an empty
+composer), which takes the oldest one. A steer Hermes does not take waits in
+the TUI's own queue for the running turn to end, whatever the busy mode, so it
+never interrupts that turn. A steer Hermes does not answer within its answer
+budget (120 s, longer when held behind a /compress) goes back to the composer
+and is never re-sent.
 
 ## Look
 
 Its look is the rail and kind colours the owner picked on 2026-10-22: each
-transcript block on a `┃` rail with no fill (grey for the person's prompt, the
+transcript block on a rail with no fill, one cell painted in the rail's colour
+that holds a space so a selection copies no bar (grey for the person's prompt, the
 skin's accent for a reply, a call's state colour for the call), a call's state
 in its mark's glyph and colour as the dag view draws it (running blue `○`, done
 green `●`, failed red `✗`), its name in its tool family's hue at 4.5:1 on dark
@@ -192,9 +195,18 @@ queued prompt that happens to start with `!`. A rewind (Esc Esc on an empty
 composer, `/rewind`) cuts the session's history before the prompt the person
 picked, and only when they send the prompt that replaces it (`prompt.submit`
 with `truncate_before_row_id` and `confirm_truncate`). Mouse reporting is on in
-one state only, the agent list open, and off in every other and on every exit.
-A plain left click on an agent opens its log, one on the list's `main` row
-leaves the list, and every other report does nothing. A report that starts
+two states only, the agent list open and a pager on the alternate screen
+(which has no scrollback to take away; there it also reports a held button's
+motion, mode 1002, never 1003), and off in every other and on every exit. A
+plain left click on an agent opens its log, one on the list's `main` row
+leaves the list, and every other report there does nothing. In a pager the
+wheel scrolls, and a drag, a double click or a triple click copies what it
+selected, rails and a reply's margin left out: as OSC 52 to a terminal that
+honours it as it ships (kitty, Ghostty, WezTerm, Alacritty, outside tmux),
+through `pbcopy` on a Mac with no SSH between it and the screen (inside tmux,
+only once a fixed `tmux show-environment SSH_CONNECTION` answers within 1 s
+that the variable is not set), and otherwise as OSC 52 the footer says was
+only sent. A report that starts
 while reporting is on, or within 0.5 s after it goes off, types nothing if it
 arrives whole within 0.8 s of its first byte. If 300 ms pass after that byte
 without the next, the byte is read as Esc, and the rest is dropped only if it
@@ -231,7 +243,14 @@ Hermes' own input history, `$HERMES_HOME/.hermes_history`, the file `hermes
 timestamp line). It only appends there (opened `O_APPEND` and `O_NOFOLLOW`,
 created mode 0600), reads at most the file's last 1 MiB and only when it is a
 regular file (no symlink or FIFO), and never writes an answer to a question
-Hermes asked or masked input there. The other files it writes are metadata: the
+Hermes asked or masked input there. An image the person attaches (Ctrl+V, a
+drop, `/image`) is a file Hermes stages and names; the TUI reads that file
+once, only when it is a regular file of at most 20 MB (opened `O_NOFOLLOW`
+and `O_NONBLOCK`), keeps its bytes in memory and nowhere else, and has
+Hermes let go of it (`image.detach`). A prompt that goes with the image
+stages those bytes again through Hermes' `image.attach_bytes`, the call
+Hermes' own remote clients use, and nothing else is staged until Hermes has
+taken them. The other files it writes are metadata: the
 launcher's active-session file (the session id); when `omh` launched it, the
 file `omh` named in `OMH_TUI_SESSION_FILE`, in `omh`'s private 0700 launch
 directory (opened `O_NOFOLLOW`, mode 0600), holding the open session's id, the

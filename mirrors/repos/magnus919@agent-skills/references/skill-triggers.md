@@ -4,6 +4,7 @@ Each skill's `description` field is the canonical routing contract. This conveni
 
 | User says... | Load skill |
 |---|---|
+| "camera hacking", "custom camera firmware", "camera feature unlock", "Fujifilm X hack", "Ricoh GR patch", "camera protocol reverse engineering", "Magic Lantern compatibility", "camera recovery experiment" | [camera-hacking](../camera-hacking/SKILL.md) |
 | "Amazon memo", "six-pager", "narrative decision memo", "PR/FAQ", "working-backwards proposal", "short decision brief", "revise AI-heavy memo prose", "silent-reading review" | [amazon-memo](../amazon-memo/SKILL.md) |
 | "community guide", "neighborhood handbook", "mutual support workshop", "adapt this guide for our community", "revise our community program" | [community-guides](../community-guides/SKILL.md) |
 | "CryptPad", "CryptDrive", "CryptPadAPI", "CryptPad embedding", "onNewKey", "CryptPad export" | [cryptpad](../cryptpad/SKILL.md) |
@@ -141,3 +142,4 @@ Each skill's `description` field is the canonical routing contract. This conveni
 | "semantic spacetime", "semantic drift", "shared meaning", "world model divergence", "semantic ground", "temporal blindness", "gamma(3,4)" | [semantic-spacetime](../semantic-spacetime/SKILL.md) |
 
 | "job interview", "mock interview", "critique my interview transcript", "interview candidates", "hiring scorecard", "interviewer coaching" | [job-interview-coaching](../job-interview-coaching/SKILL.md) |
+| "solarpunk", "hopeful ecological futures", "solarpunk fiction", "solarpunk image prompts", "solarpunk living", "solarpunk adaptive reuse" | [solarpunk](../solarpunk/SKILL.md) |

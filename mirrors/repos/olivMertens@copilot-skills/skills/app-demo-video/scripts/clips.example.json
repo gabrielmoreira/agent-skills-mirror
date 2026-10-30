@@ -1,0 +1,9 @@
+[
+  { "id": "narr_hook_fr",       "lang": "fr-FR", "text": "Remplacez ce texte par la narration de la scène d'ouverture." },
+  { "id": "narr_feature_fr",    "lang": "fr-FR", "text": "Une phrase par scène : le pourquoi, le comment, la valeur — sans paraphraser le texte à l'écran." },
+  { "id": "narr_outro_fr",      "lang": "fr-FR", "text": "Phrase de clôture. Le nom du produit, propulsé par la plateforme." },
+
+  { "id": "narr_hook_en",       "lang": "en-GB", "text": "Replace this with the opening-scene narration." },
+  { "id": "narr_feature_en",    "lang": "en-GB", "text": "One sentence per scene: the why, the how, the value — never paraphrasing on-screen text." },
+  { "id": "narr_outro_en",      "lang": "en-GB", "text": "Closing line. The product name, powered by the platform." }
+]

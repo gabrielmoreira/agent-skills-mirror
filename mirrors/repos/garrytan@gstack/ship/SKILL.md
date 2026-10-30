@@ -194,6 +194,11 @@ its absolute path, with these headings so a paused run can resume:
 - **Documentation:** candidate/id, attempts used, accepted hashes or named blocked exception.
 - **Next steps:** one ordered work list, with the current step marked.
 
+**Budget** (docs/ship-budget.md): `--token-cap <n|none>` (or GSTACK_SHIP_TOKEN_CAP); `--resume <record>`
+or `--continue <handoff>` re-attach. Step 1 runs `gstack-ship-budget start --record <record>`. With a cap,
+read `~/.claude/skills/gstack/ship/sections/budget-handoff.md`, `check` at each step boundary and dispatch
+batch, obey `verdict=`, `close` before Step 22.
+
 A **receipt** is saved evidence of a check's command, result and consumed content.
 A review's **start token** is the opaque value returned by `gstack-review-log --start`
 before it reads the diff. Keep `REVIEW_START` for Step 9, a separate `PASS_START` for
@@ -202,12 +207,12 @@ token; `--finish` stamps the binding fields automatically. Never borrow or repla
 `gstack-wtree` prints a Git tree hash covering tracked and non-ignored untracked files,
 not a commit ID. Use `git diff <old-tree> <new-tree>` to compare these snapshots.
 
-**Review policy** (docs/review-policy.md): a finding blocks another review pass
-only when it would fail a test, break production, or lose data or secrets;
-everything below that floor ships as a named note in the PR body. Pass 1 reviews
-the diff; later passes read only the range since the previous pass; three passes
-is the cap. `NO FINDINGS` is a complete reviewer result. The ship receipt's
-`review_loop` counters record the outcome; `ship: review_scope` (Step 3) is the knob.
+**Review policy** (docs/review-policy.md): only a finding that would fail a test,
+break production, or lose data or secrets blocks a pass; the rest is a PR-body
+note. Step 9's plan sets both reviews' depth (`--depth-floor standard|full` only
+raises it). Pass 1 reads the diff, later passes the range; the cap is two full
+passes and a fix-check. `NO FINDINGS` is complete. `ship: review_scope` (Step 3)
+is the knob; the receipt's `review_loop` records the outcome.
 
 ### Ship control flow
 
@@ -257,6 +262,7 @@ sections. Read a section in full before doing its step; do not work from memory.
 | preparing the title and creating or updating the PR/MR with the verified documentation outcome (Steps 18-19) | `sections/pr-body.md` |
 | Step 19 printed CAPY_PR: on (a Capy session, GSTACK_CAPY=1) — read before composing the PR body | `sections/capy-pr.md` |
 | handing the branch to a coordinator instead of opening a PR (--no-pr or an automation lane; Step 18) | `sections/handoff.md` |
+| a token cap is set or verdict=delegate printed (Step 1 on) | `sections/budget-handoff.md` |
 
 ---
 
@@ -328,12 +334,11 @@ repository-landing asks, including on Apple repos.
    `git log origin/<base>..HEAD --oneline`.
 
 4. **Carry check.** If `gh pr list --head <branch-name> --state open --json number`
-   names a PR, run `~/.claude/skills/gstack/bin/gstack-ship-receipt carry --pr <n> --base <base>`.
-   `CARRY: carried` means the product diff against `origin/<base>` has the same
-   patch-id as the reviewed head's (only a base merge, tests or release metadata
-   changed; the receipt's `carry` object holds the range-diff evidence): the receipt
-   now binds HEAD and the run is complete at its `GSTACK_RESULT` line, so stop.
-   `CARRY: refused` or `current` continues; a product change always re-runs Steps 2–16.
+   names a PR, run `~/.claude/skills/gstack/bin/gstack-ship-receipt carry --pr <n> --base <base> --dry-run`.
+   `CARRY: would carry` (base merge committed, same product patch-id): skip review, fix
+   what it broke (CHANGELOG, size caps), run `gstack-pregate --allow-repo-commands`, then carry
+   without `--dry-run` plus `--pregate .gstack/tmp/pregate.json`. `CARRY: carried` binds HEAD and
+   ends the run. A failed check, HEAD moving after pregate, `refused` or `current` re-runs Steps 2–16.
 
 5. Display historical readiness using the dashboard below, then finish Step 1.
    Prior CLEAR reviews or dashboard skips never replace Step 9's gates.
@@ -397,8 +402,7 @@ This verdict never skips Step 9 or its finding, approval and convergence gates. 
 Other rows provide context, not a substitute for Eng Review:
 - Recommend CEO Review for product/business or scope decisions, not routine fixes or cleanup.
 - Recommend Design Review for UI/UX work, not backend, infrastructure or prompt-only work.
-- Adversarial review always includes a native pass. Available, enabled outside
-  challenges supplement it; diffs of 200+ lines also get the structured P1 gate.
+- Step 9's review plan decides the adversarial passes (Step 11).
 - Outside Voice is the default-on plan review after CEO/Eng review. `codex_reviews`
   disables that extra step. Provider failure uses native fallback and records
   missing outside coverage; this dashboard row never gates shipping.
@@ -506,12 +510,14 @@ repeat Step 2 (decisions included) on the merged content, then Step 4.
 ## Step 11.5: Bind the reviews
 
 1. **Select the two reviews.** Run `~/.claude/skills/gstack/bin/gstack-review-read`.
-   Select this invocation's final Step 9.4 record (`skill:"review"`, `via:"ship"`)
-   and Step 11 native record (`skill:"adversarial-review"`). Match each to its saved
+   Select this invocation's final Step 9 record (`skill:"review"`, `via:"ship"`, or a
+   last 3.5 `review-fix-check`) and Step 11 native record (`skill:"adversarial-review"`;
+   none after `ADVERSARIAL: skipped`). Match each to its saved
    handle, original token and source; reject outside-provider or older records.
-2. **Compare their content.** Require the native record's `review_binding.state`
-   to be `verified`. All three snapshots must match: its `wtree`, Step 9.4's
-   `review_binding.start_wtree` and `review_binding.end_wtree`. A mismatch or missing
+2. **Compare their content.** All three snapshots must match: the native record's
+   `wtree` (its `review_binding.state` `verified`), the Step 9 record's
+   `review_binding.start_wtree` and `review_binding.end_wtree`; after a planned skip, the
+   last two with `review_freshness` `CURRENT`. A mismatch or a missing required
    record/field blocks release preparation: report **Review records missing or mismatched**
    and insert `9 → 10 → 11 → 11.5` before Step 12. Bind the new records at 11.5.
    Never attach new tokens to old work.
@@ -751,7 +757,7 @@ command, result/counts, timestamp and log, never resample. Mandatory reviews sti
 `--allow-paths` exempts only release metadata. A `package.json` version-only edit
 can qualify; scripts, dependencies and runtime configuration require live tests.
 Uncertain edits cannot be exempted. Docs, TODO edits, new/generated tests and fixes
-make evidence STALE even without a new code review. Use this example only once
+make evidence STALE even without a new code review; a Step 14 TODOS.md edit reruns them. Use this example only once
 every allowed edit is release metadata:
 
 ```bash

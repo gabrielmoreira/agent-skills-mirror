@@ -97,9 +97,15 @@ route_available() {
 # Protocol and prints the JSON-RPC stream, so one parser covers every CLI.
 # The calling worker supplies route_available, route_model, and log.
 ACPX_VERSION="0.21.0"
+# 0.18.0 fixes approve-reads allowing ambiguous destructive permission requests.
+ACPX_MIN_VERSION="0.18.0"
 ACPX_UNAVAILABLE=""   # pre-egress reason; ACPX_SCOPE says whether every route shares it
 ACPX_SCOPE=""
 ACPX_NPM_REFRESH=false
+
+acpx_package_spec() {
+  printf 'acpx@>=%s <=%s' "$ACPX_MIN_VERSION" "$ACPX_VERSION"
+}
 
 acpx_agent() {   # <route> -> acpx built-in agent name
   case "$1" in
@@ -196,19 +202,23 @@ acpx_claude_wrapper() {   # <private-dir> -> wrapper path
   printf '%s' "$wrapper"
 }
 
-# npm resolves offline-first, so cached metadata older than the acpx pin or a
-# version an adapter's dependencies need fails with ETARGET before anything is
-# sent. One launch with fresh metadata heals the cache. npm ignores
-# prefer_online while prefer_offline is set, so the refresh turns it off.
-acpx_stale_npm_metadata() {   # <stderr-log> <stream-log>
+acpx_npm_failure_reason() {
+  if grep -qE 'No matching version found for .* with a date before ' "$1" 2>/dev/null; then
+    printf '%s' "npm could not resolve $(acpx_package_spec) or a dependency before its date cutoff; check min-release-age/before policy or wait for the cooldown"
+  else
+    grep -m1 '^npm error' "$1" 2>/dev/null
+  fi
+}
+
+# ETARGET is ambiguous: refresh metadata once while preserving npm's date policy.
+# npm ignores prefer_online while prefer_offline is set, so refresh disables it.
+acpx_npm_resolution_retryable() {   # <stderr-log> <stream-log>
   [ "$ACPX_NPM_REFRESH" = true ] && return 1
   grep -qE 'ETARGET|notarget|No matching version found' "$1" "$2" 2>/dev/null
 }
 
-# Prints the NUL-delimited argv prefix through `npx acpx@<pin>` and its global
-# flags; the worker appends permission flags, `--model`, the agent, and exec options.
 # The codex and claude adapters are pointed at the installed CLIs so the pin
-# governs the transport, not which models the agent can serve.
+# bounds the transport version, not which models the agent can serve.
 acpx_base_argv() {   # <route> <cwd> <mcp-config> <timeout-secs> <claude-wrapper> <gemini-home>
   printf '%s\0' env
   # An ambient Google API key or cloud project would bill it instead of the
@@ -228,7 +238,8 @@ acpx_base_argv() {   # <route> <cwd> <mcp-config> <timeout-secs> <claude-wrapper
     claude) printf '%s\0' "CLAUDE_CODE_EXECUTABLE=$5" ;;
     antigravity) printf '%s\0' "GEMINI_HOME=$6" "ANTIGRAVITY_HARNESS_PATH=$(acpx_antigravity_helper)" ;;
   esac
-  printf '%s\0' npx -y "acpx@$ACPX_VERSION" --cwd "$2" --format json --mcp-config "$3" --timeout "$4"
+  # Explicit --package avoids npx reusing a global binary that violates npm age policy.
+  printf '%s\0' npx -y --package "$(acpx_package_spec)" -- acpx --cwd "$2" --format json --mcp-config "$3" --timeout "$4"
 }
 
 acpx_agent_argv() {   # <route>
@@ -423,7 +434,7 @@ if [ "${1:-}" = "--emit-adapter" ]; then
   exit 0
 fi
 
-SIGN_IN_STALL_REASON="transport unavailable (pre-egress, route): Antigravity is waiting for a Google sign-in; the agy CLI's sign-in does not carry over, so sign the ACP runtime in once: put {\"auth\":{\"type\":\"oauth-personal\"}} in ${GEMINI_HOME:-~/.gemini}/antigravity-acp/settings.json, run npx acpx@$ACPX_VERSION antigravity exec ok in a terminal and finish the browser sign-in, then retry"
+SIGN_IN_STALL_REASON="transport unavailable (pre-egress, route): Antigravity is waiting for a Google sign-in; the agy CLI's sign-in does not carry over, so sign the ACP runtime in once: put {\"auth\":{\"type\":\"oauth-personal\"}} in ${GEMINI_HOME:-~/.gemini}/antigravity-acp/settings.json, run npx -y --package '$(acpx_package_spec)' -- acpx antigravity exec ok in a terminal and finish the browser sign-in, then retry"
 
 # --check-model antigravity <model>: acpx checks --model against the models the
 # session advertises before any prompt, so opening a session answers whether the
@@ -486,19 +497,20 @@ if [ "${1:-}" = "--check-model" ]; then
     CHECK_EXIT=$?
   }
   open_check_session
-  if [ "$CHECK_EXIT" -ne 0 ] && acpx_stale_npm_metadata "$CHECK_DIR/stderr" "$CHECK_DIR/stdout"; then
-    log "npm resolved against stale cached package metadata; retrying the model check once with fresh metadata"
+  if [ "$CHECK_EXIT" -ne 0 ] && acpx_npm_resolution_retryable "$CHECK_DIR/stderr" "$CHECK_DIR/stdout"; then
+    log "npm could not resolve a package; retrying the model check once with fresh metadata (npm policy unchanged)"
     ACPX_NPM_REFRESH=true
     open_check_session
   fi
   RECORD_ID="$(jq -r 'select(.action? == "session_ensured") | .acpxRecordId // empty' "$CHECK_DIR/stdout" 2>/dev/null | tail -1)"
   case "$RECORD_ID" in ''|*[!A-Za-z0-9-]*) ;; *) rm -f "$ACPX_STATE/sessions/$RECORD_ID.json" ;; esac
   [ "$CHECK_EXIT" -eq 0 ] && exit 0
-  REASON="$(grep -m1 '^npm error' "$CHECK_DIR/stderr" 2>/dev/null)"
+  REASON="$(acpx_npm_failure_reason "$CHECK_DIR/stderr")"
   if [ -n "$REASON" ]; then
     printf 'transport unavailable (pre-egress, shared): %s\n' "${REASON:0:200}" >&2
   else
-    REASON="$(acpx_failure_evidence "$CHECK_DIR/stdout")"
+    REASON="$(acpx_npm_failure_reason "$CHECK_DIR/stdout")"
+    [ -n "$REASON" ] || REASON="$(acpx_failure_evidence "$CHECK_DIR/stdout")"
     [ -n "$REASON" ] || REASON="$(grep -m1 -e 'did not advertise' -e 'Error' "$CHECK_DIR/stderr" 2>/dev/null)"
     printf 'transport unavailable (pre-egress, route): %s\n' "${REASON:-acpx exited $CHECK_EXIT while opening a session}" >&2
   fi
@@ -1081,10 +1093,10 @@ MIN_ENV=(env -i "PATH=$PATH" "PYTHONDONTWRITEBYTECODE=1")
 [ -n "${LANG:-}" ] && MIN_ENV+=("LANG=$LANG")
 [ -n "${LC_ALL:-}" ] && MIN_ENV+=("LC_ALL=$LC_ALL")
 [ -n "${XDG_CONFIG_HOME:-}" ] && MIN_ENV+=("XDG_CONFIG_HOME=$XDG_CONFIG_HOME")
-# npx reaches the user's npm cache, registry, and user config by these
-# locations. npm auth token values are never forwarded; npm reads its own
-# config file for them.
-for name in npm_config_cache NPM_CONFIG_CACHE npm_config_registry NPM_CONFIG_REGISTRY npm_config_userconfig NPM_CONFIG_USERCONFIG; do
+# npm reads its config file for authentication.
+for name in npm_config_cache NPM_CONFIG_CACHE npm_config_registry NPM_CONFIG_REGISTRY npm_config_userconfig NPM_CONFIG_USERCONFIG \
+  npm_config_min_release_age NPM_CONFIG_MIN_RELEASE_AGE npm_config_before NPM_CONFIG_BEFORE \
+  npm_config_min_release_age_exclude NPM_CONFIG_MIN_RELEASE_AGE_EXCLUDE; do
   [ -n "${!name:-}" ] && MIN_ENV+=("$name=${!name}")
 done
 # Preserve route-specific config-directory pointers so existing CLI-native login
@@ -1190,10 +1202,10 @@ launch_route() {
 }
 LAUNCH_STARTED="$(date +%s)"
 launch_route
-if acpx_stale_npm_metadata "$RAW_STDERR" "$RAW_STDOUT" && [ "$(acpx_outcome "$RAW_STDOUT")" = not-sent ]; then
+if acpx_npm_resolution_retryable "$RAW_STDERR" "$RAW_STDOUT" && [ "$(acpx_outcome "$RAW_STDOUT")" = not-sent ]; then
   REMAINING=$(( ACPX_TIMEOUT - ( $(date +%s) - LAUNCH_STARTED ) ))
   if [ "$REMAINING" -gt 0 ]; then
-    log "npm resolved against stale cached package metadata; retrying the same route once with fresh metadata in the ${REMAINING}s left (nothing was sent)"
+    log "npm could not resolve a package; retrying the same route once with fresh metadata in the ${REMAINING}s left (nothing was sent; npm policy unchanged)"
     ACPX_NPM_REFRESH=true
     ACPX_TIMEOUT="$REMAINING"
     ARGS=()
@@ -1228,7 +1240,7 @@ case "$OUTCOME" in
   not-sent)
     # Nothing reached the provider: npm could not fetch acpx (every route fails
     # alike), or the adapter refused before the prompt (this route only).
-    REASON="$(grep -m1 '^npm error' "$RAW_STDERR" 2>/dev/null)"
+    REASON="$(acpx_npm_failure_reason "$RAW_STDERR")"
     if [ -n "$REASON" ]; then
       REASON="transport unavailable (pre-egress, shared): ${REASON:0:200}"
     elif [ -f "$SESSION_STALL_MARKER" ]; then
@@ -1238,7 +1250,8 @@ case "$OUTCOME" in
       if [ -n "$node_line" ]; then
         REASON="transport unavailable (pre-egress, route): ${node_line:0:200}"
       else
-        REASON="$(acpx_failure_evidence "$STREAM")"
+        REASON="$(acpx_npm_failure_reason "$RAW_STDOUT")"
+        [ -n "$REASON" ] || REASON="$(acpx_failure_evidence "$STREAM")"
         REASON="transport unavailable (pre-egress, route): ${REASON:-acpx exited $ROUTE_EXIT before sending the prompt}"
       fi
     fi

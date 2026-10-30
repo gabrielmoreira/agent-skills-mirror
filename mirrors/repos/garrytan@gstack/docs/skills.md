@@ -31,7 +31,7 @@ Detailed guides for every gstack skill — philosophy, workflow, and examples.
 | [`/document-generate`](#document-generate) | **Technical Writer** | Generate Diataxis docs (tutorial / how-to / reference / explanation) for a feature from code. |
 | [`/retro`](#retro) | **Eng Manager** | Team-aware weekly retro. Per-person breakdowns, shipping streaks, test health trends, growth opportunities. |
 | [`/browse`](#browse) | **QA Engineer** | Give the agent eyes. Drives your Aside browser first — real sessions, real clicks, real screenshots — through deterministic `aside repl` scripts, and falls back to gstack's own Chromium (~100ms per command) when Aside isn't there. |
-| [`/setup-browser-cookies`](#setup-browser-cookies) | **Session Manager** | Copy selected cookies from Chrome, Chromium, Brave, Edge, Windows-only Opera and Opera GX, or macOS-only Comet, Arc, and Dia into the fallback browser. Choose your profile and domains; check sign-in separately. Unnecessary on Aside, which already has your sessions. |
+| [`/setup-browser-cookies`](#setup-browser-cookies) | **Session Manager** | Copy selected cookies from Chrome, Chromium, Brave, Edge, Windows-only Opera and Opera GX, or macOS-only Comet and Arc into the fallback browser. Choose your profile and domains; check sign-in separately. Unnecessary on Aside, which already has your sessions. |
 | [`/autoplan`](#autoplan) | **Review Pipeline** | One command, fully reviewed plan. Runs CEO → design → DX → eng review automatically (eng always last, so the shipping gate reviews the final amended plan) with encoded decision principles. Surfaces only taste decisions for your approval. |
 | [`/plan-devex-review`](#plan-devex-review) | **DX Reviewer** | Plan-stage DX review. TTHW (time-to-hello-world), magical moments, friction points, persona traces, and error messages scored for the agents that read them ([agent-ready errors](agent-ready-errors.md)). Three modes: Expansion, Polish, Triage. |
 | [`/devex-review`](#devex-review) | **DX Reviewer (live)** | Live developer experience audit. Walks the actual onboarding flow, measures TTHW, catches the docs lies, and triggers CLI errors the way an agent meets them (no terminal, contained, redacted) through `gstack-error-capture`. |
@@ -445,7 +445,7 @@ Claude: [Runs full 80-item visual audit on the live site]
         Design Score: C → B+  |  AI Slop Score: D → A
         9 fixes applied (8 verified, 1 best-effort). 3 deferred.
 
-        [Report with before/after screenshots saved to .gstack/design-reports/]
+        [Report with before/after screenshots saved to ~/.gstack/projects/<slug>/designs/design-audit-<date>/]
 ```
 
 Nine commits, each touching one concern. The AI Slop score went from D to A because the three most recognizable patterns (gradient hero, 3-column grid, uniform radius) are gone.
@@ -906,8 +906,10 @@ gstack's own templates and for any skill folder you own.
 - **Drift.** `test/skill-bin-drift.test.ts` fails when a template or rendered skill calls a gstack bin or flag that
   does not exist (`bun run scripts/skill-bin-drift.ts --skill <name>` for one skill). Its allowlist only shrinks.
 - **Full diet.** Report first, write the eval tasks before any cut
-  (`test/fixtures/skill-evals/<skill>/tasks.json`), cut, then prove before vs after vs no skill with the shared skill
-  eval (`docs/designs/SKILL_EVAL_CONTRACT.md`). A diet ships only when no task that passed before fails after.
+  (`test/fixtures/skill-evals/<skill>/tasks.json`), lock them (`gstack-evals skill-eval --lock`, then commit
+  `tasks.lock.json`; the shared eval refuses a paid run without it), cut, then prove before vs after vs no skill with
+  the shared skill eval (`docs/designs/SKILL_EVAL_CONTRACT.md`). A diet ships only when no task that passed before
+  fails after.
 
 `/write-skill` is not `/skillify`: `/skillify` codifies a browser scrape into a browser-skill. Adapted from
 [nicobailon/skill-diet](https://github.com/nicobailon/skill-diet) (MIT). The first diet, /learn, cut its template from
@@ -1179,7 +1181,7 @@ This is my **session manager mode** — for the fallback browser. With Aside ope
 
 For authenticated testing on gstack's own browser, `/setup-browser-cookies` copies selected cookies from your daily browser. Sites may also need storage or a fresh login, so copying cookies is not proof that the session works.
 
-The picker detects Chrome, Chromium, Brave, Edge, Windows-only Opera and Opera GX, and macOS-only Comet, Arc, and Dia. Choose the browser, account/profile, and domains. Profile labels use the current `Local State` name with a directory discriminator, so renamed profiles and duplicate names are distinguishable. No cookie values are displayed; source/profile labels are still sensitive.
+The picker detects Chrome, Chromium, Brave, Edge, Windows-only Opera and Opera GX, and macOS-only Comet and Arc. Choose the browser, account/profile, and domains. Profile labels use the current `Local State` name with a directory discriminator, so renamed profiles and duplicate names are distinguishable. No cookie values are displayed; source/profile labels are still sensitive.
 
 ```
 You:   /setup-browser-cookies

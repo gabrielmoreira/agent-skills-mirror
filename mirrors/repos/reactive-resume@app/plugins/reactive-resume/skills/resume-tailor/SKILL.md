@@ -156,6 +156,10 @@ Term rules:
 
 ### 9. Cover letter (optional)
 
+If the posting or form forbids AI assistance or requires an unaided statement, do not draft, rewrite, edit, outline or choose content for it; explain the restriction and offer only help the employer's rules permit. This also applies to form answers in step 10.
+
+For a standalone letter request, use cover-letter-writer if installed. When tailoring a resume and letter together, keep this workflow and reuse the same evidence table; do not make the user repeat intake. Application-answers handles longer supporting statements and form limits if installed. These skills are optional, and the fallbacks below still apply.
+
 Write one when it is required or the user asks for it, for a career change, relocation or gap, for a stretch on a weight-3 must, or for a referral, small company or named hiring manager. For an optional high-volume portal, suggest skipping it or keeping it under ~180 words; skip it when the posting says no cover letters (tell the user if they asked for one).
 
 When a letter is wanted, add up to 2 letter questions to the gap batch (still at most 5 in total): "What draws you to this team specifically: something you read, used or heard?" and "Hiring manager's name, start date or relocation details to mention?" With no real reason given, open with the strongest evidence paragraph; never invent motivation.
@@ -169,7 +173,7 @@ Read [references/cover-letter.md](references/cover-letter.md) before drafting: t
 Sibling skills may not be installed; when one is missing, do the light version yourself and say so.
 
 - **Facts learned.** List each newly confirmed fact with the answer it came from, then ask: "Want these added to your master resume so we don't ask again?" With MCP: read the master, show a separate before/after, and on a yes call `apply_resume_patch` on the master. Without MCP: give a block the user can paste into their master.
-- **Application form.** Offer: "Does the form have questions? Paste them and I'll draft truthful answers from the same table." Numeric years answers match the resume's dates exactly; free-text answers follow the letter rules (specific, verifiable, at most 150 words each).
+- **Application form.** Check whether the employer permits AI assistance before offering to draft answers from the same table; apply step 9's restriction to any unaided statement or attestation. Numeric years answers use the actual duration of the relevant experience without double-counting overlapping roles; free-text answers follow the letter rules and the form's own limits (specific, verifiable, at most 150 words each when no other limit is given).
 - **Tracking, follow-ups and recording which version was sent:** the job-application-manager skill if available; otherwise remind the user to note which copy went out.
 - **Interviews:** weight-3 rows still at Adjacent or None are what interviewers will probe; hand them to interview-prep and mock-interview if available.
 - Weak bullets beyond this job: resume-bullet-writer. Country or section norms: resume-content-guide.

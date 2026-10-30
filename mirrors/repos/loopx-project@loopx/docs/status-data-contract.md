@@ -2421,7 +2421,12 @@ context without new usage cannot relabel that snapshot. A snapshot without a
 preceding model context is rejected. This binding does not allocate cumulative
 session usage across models. The session must be bound explicitly; there is no
 automatic session discovery, because guessing a concurrent session risks
-attributing one session's spend to another run. A host that measures usage
+attributing one session's spend to another run. The first `session_meta` must
+identify the session before any cumulative usage is accepted. Missing ids or
+conflicting later ids refuse the booking instead of rebinding earlier counters.
+Repeated metadata for the same id preserves the first session clock, so it
+cannot change an already-booked snapshot's duration on replay.
+A host that measures usage
 itself can instead pass one finished per-run
 measurement with `--usage-json`. Without either flag, usage stays unknown.
 

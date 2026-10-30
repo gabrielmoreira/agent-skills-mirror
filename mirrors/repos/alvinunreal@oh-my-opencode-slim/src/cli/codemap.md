@@ -24,9 +24,9 @@ The CLI follows a command pattern with two primary commands:
 
 ### Configuration Management Pattern
 
-- **config-manager.ts**: Barrel re-exporting `config-io`, `paths`, `providers`, and `system` for a single import surface
-- **config-io.ts**: Handles reading, parsing, and writing configuration files (supports both .json and .jsonc)
-- **paths.ts**: Resolves configuration file paths across different environments (XDG_CONFIG_HOME, custom paths, defaults)
+- **config-manager.ts**: Barrel for installer-facing `config-io`, `providers` and `system`
+- **config-io.ts**: Installer/config generation workflows; shared JSONC parsing and locked atomic writes are imported from `src/config/`
+- **../config/paths.ts**: Canonical user/project config path lookup used by both CLI and runtime; no CLI forwarding path Module
 - **providers.ts**: Generates configuration presets and manages model mappings for different providers
 - **system.ts**: Resolves the `opencode` binary path (Windows-aware `where`/`which` + shell handling) and related system checks
 
@@ -69,7 +69,7 @@ The CLI follows a command pattern with two primary commands:
 OpenCode's built-in `general`/`explore` subagents are disabled at runtime by
 the plugin itself (#1582); the installer no longer writes config entries.
 
-### Configuration Resolution Flow (paths.ts)
+### Configuration Resolution Flow (../config/paths.ts)
 
 ```
 1. Determine config directory:

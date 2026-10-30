@@ -1,6 +1,6 @@
 # `sprite-gen gen` — provider-backed image generation (engine SSoT)
 
-> Owns: `sprite-gen gen` / `gen-set`: providers, default resolution and what a default codex that cannot run turns into, transparency strategy per provider, the billed knobs (`--quality`, `--resolution`), when a refused provider request is sent again (every direct provider call), row usage · Index: [docs/README.md](README.md)
+> Owns: `sprite-gen gen` / `gen-set`: providers, default resolution and what a default codex that cannot run turns into, transparency strategy per provider, the billed knobs (`--quality`, `--resolution`), where every direct provider call goes (`SPRITE_GEN_<PROVIDER>_BASE_URL`) and turning subscription logins off (`SPRITE_GEN_LOGINS`), when a refused provider request is sent again (every direct provider call), row usage · Index: [docs/README.md](README.md)
 
 Generation is a first-class engine module (`sprite_gen/gen/`). One call = a prompt (+ optional reference images) → one **verified** PNG on
 disk, with an optional transparent output whose strategy is decided per provider
@@ -142,6 +142,63 @@ readable PNG, JPEG or WebP fails before upload, and parts are named by position,
 by the local filename.
 
 API contract: [OpenAI Images](https://developers.openai.com/api/images/).
+
+## Provider addresses
+
+sprite-gen calls four providers over HTTP itself, with no SDK. Each provider's calls go
+to one base address, and one environment variable replaces it. The variable is read
+when each request is made, not at import, so a process that sets or changes it after
+importing the engine is followed. Unset, empty or blank is the documented address, as
+before. Any other value must be an `http://` or `https://` address with no query or
+fragment, or the call stops naming the variable.
+
+| Provider | Variable | Default | Calls |
+|---|---|---|---|
+| OpenAI | `SPRITE_GEN_OPENAI_BASE_URL` | `https://api.openai.com/v1` | `gen --provider openai` images and edits, its vision checks (facing, the logo's text) |
+| xAI | `SPRITE_GEN_XAI_BASE_URL` | `https://api.x.ai/v1` | `gen --provider grok` images and edits, its vision checks, the video facing check, `video` / `video-extend` / `video-edit` requests and polls, `video-resume` polls, the clip's download |
+| Anthropic | `SPRITE_GEN_ANTHROPIC_BASE_URL` | `https://api.anthropic.com/v1` | `pixel-draw` messages, Message Batches, a batch's results file |
+| ElevenLabs | `SPRITE_GEN_ELEVENLABS_BASE_URL` | `https://api.elevenlabs.io/v1` | `sound` effects and music |
+
+The value is the API root with its version path, as the default is: a request for
+`/images/generations` goes to `<value>/images/generations` with the same method,
+headers and body it would have sent to the provider. The verbs that run others as
+child processes (`gen-set`, `video-set`, the curation view's reroll and in-between
+buttons) pass the environment on, so their children follow it too.
+
+A URL the provider hands back to be fetched points at the provider's own hosts: the
+finished clip xAI names, and the results file of an Anthropic Message Batch. With the
+provider's variable set it is fetched through the same base, as
+`GET <value>/sprite-gen/fetch?url=<the URL, percent-encoded>`, with the headers it
+would have carried: the clip first without a token and once more with the bearer
+token after a 401 or 403, the results file with the API key. A relay that forwards
+the provider's API forwards these too, so a sandbox with no network of its own needs
+nothing else. Without the variable the URL is fetched where it points, as before.
+
+The variables reach the engine's own calls. A subscription login (`codex`, `claude`)
+runs in its own binary on its own network and does not read them; with
+`SPRITE_GEN_LOGINS=off` none is used ([below](#subscription-logins-off)). The one
+place that builds these URLs is `sprite_gen/gen/address.py`, and no other module
+names a provider's address (`tests/gen/test_provider_address.py`).
+
+Whoever sets a variable sends that provider's key, or the grok login's token, to the
+address it names. Leave them unset unless a relay you run is there.
+
+## Subscription logins off
+
+`SPRITE_GEN_LOGINS=off` reads no subscription login, so every provider call runs on
+its API key, as in a container that holds a key and no login. Unset or empty is `on`,
+the order as before; any other value stops the call naming the variable.
+
+| Route | `on` (unset) | `off` |
+|---|---|---|
+| xAI (`gen --provider grok`, the video verbs, Grok vision) | the grok login file first (`~/.grok/auth.json`, `GROK_HOME`); `XAI_API_KEY` only without one | `XAI_API_KEY`; the login file and `GROK_HOME` are not looked at |
+| Anthropic (`pixel-draw`) | `claude auth status` first; `ANTHROPIC_API_KEY` only without a subscription login, and for `--batch` | `ANTHROPIC_API_KEY`; `claude` is not run |
+| codex (`gen --provider codex`, its vision checks) | `codex login status`, then `codex exec` | not usable: `codex login status` is not run; a default codex [asks, or runs what you chose](#when-codex-cannot-run--ask-or-what-you-chose), naming `SPRITE_GEN_LOGINS=off`; `--provider codex` stops |
+| OpenAI (`gen --provider openai`), ElevenLabs (`sound`) | the key; neither has a login | the same |
+
+Each key keeps its own rule either way: set but empty is refused naming it, and a
+missing key stops the call naming the key (and, with `off`, the variable). A login
+that is there is never traded for the key while logins are on.
 
 ## A refused request sent again
 

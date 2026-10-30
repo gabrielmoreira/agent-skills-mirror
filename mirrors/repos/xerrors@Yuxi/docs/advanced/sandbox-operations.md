@@ -1,6 +1,6 @@
 # 沙盒配置与运维
 
-本页供部署管理员准备和维护默认的 Cube 用户 VM。没有 Linux/KVM 节点时，使用 [Container 沙盒](container-sandbox.md)；它提供单租户轻量执行环境，不替代 Cube 的强隔离。Yuxi 固定使用 CubeSandbox v0.7.3，应用服务使用 Compose，执行节点需要专用 Linux/KVM；Yuxi 与 Cube 的 Workspace/Skills 挂载必须指向同一份文件。运行时只装配当前 `SANDBOX_BACKEND`，节点或实例故障会明确失败。
+本页供部署管理员准备和维护显式选择的 Cube 用户 VM（`SANDBOX_BACKEND=cube`）。默认部署使用 [Container 沙盒](container-sandbox.md)；它提供单租户轻量执行环境，不替代 Cube 的强隔离。Yuxi 固定使用 CubeSandbox v0.7.3，应用服务使用 Compose，执行节点需要专用 Linux/KVM；Yuxi 与 Cube 的 Workspace/Skills 挂载必须指向同一份文件。运行时只装配当前 `SANDBOX_BACKEND`，节点或实例故障会明确失败。
 
 ## 原生执行节点
 
@@ -65,7 +65,7 @@ docker compose exec -T api uv run --no-sync --group test pytest test/e2e/test_cu
 # 可重放的并发 I/O 与命令 fuzz，JUnit properties 保存每组延迟与吞吐
 docker compose exec -T api uv run --no-sync --group test pytest test/integration/sandbox/test_cube_shared_mount_fuzz.py -q -o junit_family=legacy --junitxml=/tmp/cube-fuzz-results.xml
 # 仅在无其他用户活动的独立测试拓扑中运行两 worker 崩溃恢复测试
-CUBE_TEST_ISOLATED_TOPOLOGY=1 bash scripts/test_cube_worker_recovery.sh
+CUBE_TEST_ISOLATED_TOPOLOGY=1 bash scripts/ci/test_cube_worker_recovery.sh
 ```
 
 共享挂载持续阻塞时，核对执行节点的 `mount` 进程是否处于 D 状态，以及调用栈是否停在 FUSE 请求等待。节点进程存活和控制面健康只证明服务在线；恢复验收需执行文件和命令并回读产物。维护前停止接收新任务，核对活动 Run 和命令，保存用户环境引用、共享文件备份与字节校验，并在节点停止后备份其磁盘。恢复节点后，核对原实例标识和代次，验证 Home、Workspace、休眠和唤醒，保持已有用户 VM 的软件与配置。

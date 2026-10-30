@@ -31,10 +31,28 @@ provides its product name, builtin key prefix, icons and CSS theme tokens; the
 component does not choose a native adapter or storage namespace. AOSP
 `LauncherSurface` uses the same component for registered views and Android apps.
 
+`@elizaos/ui/mobile-shell` is the resident shell of a branded mobile product:
+Home with host notices, a card row and the app grid, All apps over the
+installed-app launcher, lazy domain views and one navigation reducer for the
+open view, Back stack, drawer and the assistant's pill, composer, sheet or full
+detent. A product supplies only a versioned registration (schema
+`elizaos.mobile-product`): identity, a `ThemeDefinition` with shell chrome and
+declared stylesheet aliases, icons, Home backgrounds, view order and labels,
+older view ids and the installed storage names it keeps reading. Validate it
+with `defineMobileProductRegistration`. Views use canonical ids (the ids of
+the agent's `VIEWS` action); a product's older ids resolve through the
+registry, and the launcher join migrates them once in the installed favorites
+before its first read. `@elizaos/ui/mobile-shell/core` is the same model
+without React components for runtime code such as agent navigation. Neither
+entry loads the package root.
+
 `@elizaos/ui/api/transport` exposes the browser-safe request helpers and
 `SseEventFramer`. It preserves event lines across fragmented network reads;
 hosts retain UTF-8 decoding policy, limits, cancellation, validation and receipts.
 The Eliza chat client uses it without a pending-event rescan on each chunk.
+It also declares `ElizaClientFetch`, the JSON request surface `ElizaClient`
+implements, so plugin clients can accept a session-bound fetch without importing
+the client class.
 
 The app owns renderer composition and native transport selection. Consumers render
 domain DTOs imported from `@elizaos/contracts`; business logic belongs to domain services. Use `bun run --cwd packages/ui storybook` for
@@ -126,6 +144,14 @@ reply/error/settled observers. Interrupted work never publishes or replays. A ne
 send waits for an earlier room abort; failed aborts discard that room and report
 failure before an explicit retry can create another. `reset` invalidates ownership
 and teardown callbacks. A stop receipt does not prove an external action was undone.
+`bind` lets a resident client adopt a conversation it already owns; it stops any
+in-flight turn first. `reset` and `bind` advance a generation, and `fence()` gives
+hosts the same staleness check. Each turn hands the transport a `clientMessageId`,
+an `AbortSignal` and `current()`. Declined sends are typed `ConversationTurnRefusal`s
+(`busy`, `stop-unconfirmed`, `invalid-identity`), and failures say whether the request
+was `dispatched`. The last stopped dispatched turn is kept in `stopped`, and
+`findStoppedUserTurn` finds its user row in a later conversation read. The leaf
+export `@elizaos/ui/api/conversation-turn-controller` loads it without the package root.
 
 Browser speech lifecycle APIs are available from the package root.
 `DeviceSpeechController` owns device

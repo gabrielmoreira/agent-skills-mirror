@@ -43,7 +43,7 @@ multiplexer-specific command translation.
     `ORCA_TERMINAL_HANDLE` + `TERM_PROGRAM=Orca`, layout mapped to split
     direction only (no layout primitives), soft split timeout
 - **Client lifecycle core** (`client/`): see below.
-- **Shared Utilities** (`shared.ts`): `quoteShellArg`,
+- **Shared Utilities** (`shared.ts`): `quoteShellArg`, `PaneShell`,
   `buildOpencodeAttachCommand`, `buildShellLaunchArgs`, `findBinary`,
   `resolveHostOpencodeBinary`, `gracefulClosePane`.
 - **Factory** (`factory.ts`): Creates the appropriate multiplexer instance
@@ -361,7 +361,7 @@ has no cwd flag (the split inherits the anchor's working directory).
 |------|---------|
 | `index.ts` | Public API exports |
 | `types.ts` | Core interfaces (`Multiplexer`, `PaneResult`, `PaneSpawnOptions`) |
-| `shared.ts` | Shared infrastructure (quoteShellArg, buildOpencodeAttachCommand, buildShellLaunchArgs, findBinary, resolveHostOpencodeBinary, gracefulClosePane) |
+| `shared.ts` | Shared infrastructure (quoteShellArg, PaneShell, buildOpencodeAttachCommand, buildShellLaunchArgs, findBinary, resolveHostOpencodeBinary, gracefulClosePane) |
 | `factory.ts` | Multiplexer instance creation and environment detection |
 | `client/index.ts` | Client lifecycle submodule exports |
 | `client/lifecycle.ts` | Per-client pane lifecycle core (FR-3/4/6/7/10/11) |

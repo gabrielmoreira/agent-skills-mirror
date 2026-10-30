@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 // Judges each linked worktree of a repository, and each Next.js cache folder
 // within four levels of its checkout and of each worktree not marked safe, as
-// safe, ask or keep.
+// safe, ask or keep. A build output stays, and its dev and cache folders are
+// judged instead.
 //
-//   node scan.mjs [--repo <checkout>] [--sessions <file>] [--json] [--no-sizes] [--delete]
+//   node scan.mjs [--repo <checkout> | --repos <folder>] [--sessions <file>] [--json] [--no-sizes] [--delete]
 //   node scan.mjs --brief [--repo <checkout>]
 //   node scan.mjs --landed <worktree>
 //   node scan.mjs [--repo <checkout>] --remove <worktree>...
@@ -28,6 +29,16 @@
 // config names a `companion` and a worktree holds `companion.dir`, removing
 // that worktree first runs `companion.detach` in it, which saves the
 // companion repository's uncommitted work there; a failed detach keeps it.
+// --repos runs the scan, or --delete, on each checkout directly in a folder
+// that has linked worktrees.
+// In a pstack project the scan also judges each run folder in
+// <plans>/artifacts/, and in any checkout each folder in an ignored .tmp/:
+// --delete strips its installs and builds once nothing wrote it for a day and
+// deletes it once nothing wrote it for a week, unless the ledger or a decision
+// log changed that week names it or a clone in it holds commits no remote has
+// or git cannot list its commits.
+// Before deleting it, --delete saves each clone's uncommitted changes as a
+// patch, as it does for a worktree.
 // --brief prints one line, or nothing, counting the unlocked agent worktrees and
 // the checkout caches cleanup could remove that show no git or cache writes for
 // three days. --landed exits 0 only when every change and ignored file of one
@@ -39,19 +50,21 @@
 // checkout lacks as a patch as --delete does, saves each commit no branch, tag
 // or remote reaches as a second patch, and removes it. It keeps a worktree git
 // does not list, a locked one, one outside the folders agents make worktrees
-// in, one holding another worktree, the one it runs in, one whose commits git
-// cannot list, one whose processes lsof cannot list and one git refuses to
-// remove, and exits 1 when it keeps any.
+// in, one holding another worktree, the one it runs in, one that lost its .git
+// file while holding files, one whose commits git cannot list, one whose
+// processes lsof cannot list and one git refuses to remove, and exits 1 when it
+// keeps any.
 import { execFileSync, execSync } from 'node:child_process';
 import { existsSync, lstatSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, readlinkSync, realpathSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { homedir, tmpdir } from 'node:os';
-import { basename, dirname, isAbsolute, join, resolve, sep } from 'node:path';
+import { basename, dirname, isAbsolute, join, relative, resolve, sep } from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 
 const HOUR = 3_600_000;
 const WEEK = 7 * 24;
 const BUILD_OUTPUT = /^\.next(-plite)?$/u;
+const BUILD_PARTS = ['dev', 'cache'];
 const PORT_CACHE = /^\.next(-plite)?-\d+$/u;
 const CACHE = /^\.next(-|$)/u;
 const SKIP_DIRS = new Set(['node_modules', '.git', '.claude', '.turbo']);
@@ -68,6 +81,15 @@ const git = (cwd, args) =>
     stdio: ['ignore', 'pipe', 'pipe'],
   }).replace(/\n+$/u, '');
 
+const resolves = (cwd, ref) => {
+  try {
+    git(cwd, ['rev-parse', '--verify', '--quiet', ref]);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
 const real = (path) => (existsSync(path) ? realpathSync.native(path) : resolve(path));
 const within = (path, root) => path === root || path.startsWith(root + sep);
 const statOrNull = (path) => {
@@ -78,7 +100,30 @@ const statOrNull = (path) => {
   }
 };
 const newestMtime = (paths) => Math.max(0, ...paths.map(statOrNull).filter(Boolean).map((stat) => stat.mtimeMs));
-const adminMtime = (admin) => newestMtime([join(admin, 'index'), join(admin, 'HEAD'), join(admin, 'logs', 'HEAD')]);
+const entriesOf = (dir) => {
+  try {
+    return readdirSync(dir).map((name) => join(dir, name));
+  } catch {
+    return [];
+  }
+};
+// git gc's reflog expire rewrites the logs/HEAD of every worktree at once, so
+// the clock reads the time of its newest entry rather than the file's.
+function reflogTime(admin) {
+  try {
+    const last = readFileSync(join(admin, 'logs', 'HEAD'), 'utf8').trimEnd().split('\n').at(-1);
+    return Number(/> (\d+) [+-]\d{4}(\t|$)/u.exec(last)?.[1] ?? 0) * 1000;
+  } catch {
+    return 0;
+  }
+}
+const adminMtime = (admin) => Math.max(newestMtime([join(admin, 'index'), join(admin, 'HEAD')]), reflogTime(admin));
+// A symlink, such as a linked node_modules, holds no work, and removal deletes
+// only the link.
+const holdsFiles = (path) => readdirSync(path, { withFileTypes: true }).some((entry) => entry.isFile() || (entry.isDirectory() && holdsFiles(join(path, entry.name))));
+// git marks a worktree prunable once its folder lost the .git link, and a git
+// command run there reads whichever repository encloses the folder instead.
+const unlinked = (entry) => 'prunable' in entry && existsSync(entry.path);
 
 function cwdProcesses() {
   try {
@@ -123,6 +168,7 @@ function usageVerdict(facts) {
   if (!facts.session && facts.scratchHoursQuiet === null && facts.hoursIdle < 24) return ['keep', 'no session claims it, and it changed in the last day'];
   if (!facts.agentMade) return ['ask', 'it sits outside the folders agents make worktrees in'];
   if (facts.nested) return ['ask', `another worktree lives inside it: ${facts.nested}`];
+  if (facts.unlinked) return facts.empty ? ['safe', 'git lost its link to it and it holds no files'] : ['ask', 'git lost its link to it, so the scan cannot read the files in it'];
   return null;
 }
 
@@ -155,7 +201,7 @@ export function classifyCache(facts) {
   const name = basename(facts.path);
   if (facts.held === null) return ['keep', 'lsof could not tell whether a server holds it'];
   if (facts.held) return ['keep', 'a running server holds its lock'];
-  if (BUILD_OUTPUT.test(name)) return ['keep', 'a build output, which next start may serve'];
+  if (isBuildPart(facts.path)) return facts.hoursIdle < 24 ? ['keep', 'used in the last day'] : ['safe', 'next dev or next build recreates it, and nothing used it for a day'];
   if (facts.production && facts.hoursIdle < WEEK) return ['keep', 'a production build used this week, which next start may serve'];
   if (PORT_CACHE.test(name) && facts.hoursIdle < WEEK) return ['keep', 'the next dev server on its port reuses it'];
   if (facts.hoursIdle < 1) return ['keep', 'written in the last hour'];
@@ -324,15 +370,27 @@ function findCaches(root, depth, worktrees) {
   return found;
 }
 
-const cacheLocks = (path) => [join(path, 'dev', 'lock'), join(path, 'lock')];
+const isBuildPart = (path) => BUILD_PARTS.includes(basename(path)) && BUILD_OUTPUT.test(basename(dirname(path)));
+
+// next start serves a build output's own files, so only its dev and cache
+// folders, which Next recreates, can go.
+const cacheRows = (path) => (BUILD_OUTPUT.test(basename(path)) ? BUILD_PARTS.map((part) => join(path, part)).filter(existsSync) : [path]);
+
+const cacheLocks = (path) => {
+  const owner = isBuildPart(path) ? dirname(path) : path;
+  return [join(owner, 'dev', 'lock'), join(owner, 'lock')];
+};
+
+function cacheMtime(path) {
+  if (!isBuildPart(path)) return newestMtime([path, join(path, 'dev'), join(path, 'BUILD_ID'), ...cacheLocks(path)]);
+  // A dev server rewrites its manifests up to two levels down, which leaves
+  // the folder's own mtime alone.
+  const children = entriesOf(path);
+  return newestMtime([path, ...children, ...children.flatMap(entriesOf), join(dirname(path), 'BUILD_ID'), ...cacheLocks(path)]);
+}
 
 function cacheFacts(path, now) {
-  return {
-    path,
-    held: held(cacheLocks(path)),
-    production: existsSync(join(path, 'BUILD_ID')),
-    hoursIdle: (now - newestMtime([path, join(path, 'dev'), join(path, 'BUILD_ID'), ...cacheLocks(path)])) / HOUR,
-  };
+  return { path, held: held(cacheLocks(path)), production: existsSync(join(path, 'BUILD_ID')), hoursIdle: (now - cacheMtime(path)) / HOUR };
 }
 
 function sessionFor(path, sessions) {
@@ -366,6 +424,8 @@ function usageFacts(main, entry, context) {
   return {
     locked: 'locked' in entry ? entry.locked : null,
     missing,
+    unlinked: unlinked(entry),
+    empty: unlinked(entry) && !holdsFiles(path),
     invoking: context.here.some((dir) => within(dir, path)),
     processes: context.cwds === null ? null : context.cwds.filter((cwd) => within(cwd, path)).length,
     session: sessionFor(path, context.sessions),
@@ -384,7 +444,7 @@ function heldCaches(path, worktrees) {
 // Removing a worktree deletes its HEAD reflog, so a commit made on a detached
 // HEAD and left behind by a later switch or reset is lost unless a ref reaches it.
 function unreachedList(main, entry, options, reflog = true) {
-  const history = reflog ? execFileSync('git', ['--no-optional-locks', 'reflog', 'show', '--format=%H', 'HEAD'], { cwd: entry.path, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }) : '';
+  const history = reflog && !unlinked(entry) ? execFileSync('git', ['--no-optional-locks', 'reflog', 'show', '--format=%H', 'HEAD'], { cwd: entry.path, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }) : '';
   const tips = [...new Set([entry.HEAD, ...history.split('\n')].filter(Boolean))];
   const input = [...tips, '--not', '--branches', '--tags', '--remotes', ''].join('\n');
   return execFileSync('git', ['--no-optional-locks', 'rev-list', ...options, '--ignore-missing', '--stdin'], { cwd: main, encoding: 'utf8', input, stdio: ['pipe', 'pipe', 'ignore'] });
@@ -405,14 +465,7 @@ function unlandedCommits(main, entry, reflog = true) {
   try {
     const commits = unreachedList(main, entry, ['--no-merges'], reflog).split('\n').filter(Boolean);
     if (commits.length === 0) return 0;
-    const bases = ['HEAD', '@{upstream}'].filter((ref) => {
-      try {
-        git(main, ['rev-parse', '--verify', '--quiet', ref]);
-        return true;
-      } catch {
-        return false;
-      }
-    });
+    const bases = ['HEAD', '@{upstream}'].filter((ref) => resolves(main, ref));
     const trees = bases.map((ref) => new Map(git(main, ['ls-tree', '-r', '-z', ref]).split('\0').filter(Boolean).map((line) => [line.slice(line.indexOf('\t') + 1), line.split(' ')[2].split('\t')[0]])));
     return commits.filter((sha) => {
       const date = git(main, ['show', '-s', '--format=%cI', sha]).trim();
@@ -440,6 +493,88 @@ function saveUnreached(main, entry) {
   writeFileSync(file, commits.map((sha) => git(main, ['format-patch', '-1', '--stdout', '--binary', sha])).join('\n') + '\n');
   return file;
 }
+
+const RUN_BUILDS = /^(node_modules|\.turbo|\.next(-.*)?)$/u;
+
+const ignoresTmp = (main) => {
+  try {
+    git(main, ['check-ignore', '-q', '.tmp/']);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
+// The run folders sit in the main checkout so they outlive the worktrees that
+// write them. The suggested-task ledger beside them names the ones an open
+// task still reads, and a decision log changed this week names the ones a new
+// row may still cite as proof, which decisions-check requires to exist.
+function runFolders(main, now) {
+  const root = runRoot(main);
+  const roots = [root, ignoresTmp(main) ? '.tmp' : null].filter((each) => each && existsSync(join(main, each)));
+  const folders = roots.flatMap((each) => readdirSync(join(main, each), { withFileTypes: true }).filter((entry) => entry.isDirectory()).map((entry) => join(main, each, entry.name)));
+  if (!roots.includes(root)) return { main, folders, cited: '' };
+  const dir = join(main, root);
+  const ledgers = readdirSync(dir, { withFileTypes: true }).filter((entry) => entry.isFile() && entry.name.endsWith('.tsv')).map((entry) => join(dir, entry.name));
+  const plans = join(main, dirname(root));
+  const logs = readdirSync(plans).filter((name) => name.endsWith('.decisions.tsv')).map((name) => join(plans, name)).filter((path) => now - (statOrNull(path)?.mtimeMs ?? 0) < WEEK * HOUR);
+  const cited = [...ledgers, ...logs].map((path) => readFileSync(path, 'utf8')).join('\n');
+  return { main, folders, cited };
+}
+
+// Files only, because removing an install changes its parent folder's mtime.
+function runWalk(path) {
+  const builds = [];
+  const repos = [];
+  let newest = statOrNull(path)?.mtimeMs ?? 0;
+  const visit = (dir) => {
+    for (const entry of readdirSync(dir, { withFileTypes: true })) {
+      const child = join(dir, entry.name);
+      if (entry.name === '.git') repos.push(dir);
+      if (entry.isDirectory() && RUN_BUILDS.test(entry.name)) builds.push(child);
+      else if (entry.isDirectory() && entry.name !== '.git') visit(child);
+      else newest = Math.max(newest, statOrNull(child)?.mtimeMs ?? 0);
+    }
+  };
+  visit(path);
+  return { builds, newest, repos };
+}
+
+function holdReason(repo) {
+  try {
+    return Number(git(repo, ['rev-list', '--count', '--all', '--not', '--remotes'])) > 0 ? `a clone in it holds commits no remote has: ${repo}` : null;
+  } catch {
+    return `git cannot list the commits of a clone in it: ${repo}`;
+  }
+}
+
+function runFacts(path, context, run) {
+  const { builds, newest, repos } = runWalk(path);
+  return {
+    builds,
+    cited: run.cited.includes(relative(run.main, path)),
+    hoursQuiet: (context.now - newest) / HOUR,
+    nested: nestedIn(path, context.worktrees),
+    processes: context.cwds === null ? null : context.cwds.filter((cwd) => within(cwd, path)).length,
+    held: repos.map(holdReason).filter(Boolean),
+    repos,
+  };
+}
+
+export function classifyRun(facts) {
+  const expires = facts.hoursQuiet >= WEEK && !facts.cited;
+  if (!expires && facts.builds.length === 0) return null;
+  if (facts.nested) return ['keep', `a worktree lives inside it: ${facts.nested}`];
+  if (facts.processes === null) return ['keep', 'lsof could not list the processes working in it'];
+  if (facts.processes > 0) return ['keep', `${facts.processes} running processes work in it`];
+  if (facts.hoursQuiet < 24) return ['keep', 'something wrote it in the last day'];
+  const hold = facts.held[0];
+  if (expires && !hold) return ['safe', 'nothing wrote it for a week, and neither the ledger nor a decision log changed this week names it', 'expire'];
+  if (facts.builds.length > 0) return ['safe', hold ? `its installs and builds go; it stays, because ${hold}` : 'its installs and builds go; its logs stay', 'strip'];
+  return ['ask', `nothing wrote it for a week, but ${hold}`];
+}
+
+const runBytes = (path, action, builds) => (action === 'strip' ? builds.reduce((sum, build) => sum + (sizeOf(build) ?? 0), 0) : sizeOf(path));
 
 const cleanupFacts = (main, entry, worktrees) => ({ heldCaches: heldCaches(entry.path, worktrees), repos: nestedRepos(entry.path, statusEntries(entry.path)), unreached: unlandedCommits(main, entry) });
 
@@ -475,11 +610,19 @@ export function scan({ repo, sessions = [], sizes = true, now = Date.now() }) {
   const items = [];
   for (const entry of context.worktrees) {
     const [verdict, reason] = judgeWorktree(main, entry, context);
-    items.push({ kind: 'worktree', path: entry.path, verdict, reason, bytes: sizes && existsSync(entry.path) ? sizeOf(entry.path) : null });
+    items.push({ kind: 'worktree', path: entry.path, verdict, reason, bytes: sizes && existsSync(entry.path) ? sizeOf(entry.path) : null, unlinked: unlinked(entry) });
   }
-  const goes = items.filter((item) => item.verdict === 'safe').map((item) => item.path);
+  const run = runFolders(main, now);
+  for (const path of run.folders) {
+    const facts = runFacts(path, context, run);
+    const verdict = classifyRun(facts);
+    if (!verdict) continue;
+    const [kept, reason, action] = verdict;
+    items.push({ kind: 'run', path, verdict: kept, reason, action, bytes: sizes ? runBytes(path, action, facts.builds) : null });
+  }
+  const goes = items.filter((item) => item.kind === 'worktree' && item.verdict === 'safe').map((item) => item.path);
   const roots = [main, ...context.worktrees.filter((entry) => existsSync(entry.path) && !goes.includes(entry.path)).map((entry) => entry.path)];
-  for (const path of new Set(roots.flatMap((root) => findCaches(root, 3, context.worktrees)))) {
+  for (const path of new Set(roots.flatMap((root) => findCaches(root, 3, context.worktrees)).flatMap(cacheRows))) {
     const [verdict, reason] = classifyCache(cacheFacts(path, now));
     items.push({ kind: 'cache', path, verdict, reason, bytes: sizes ? sizeOf(path) : null });
   }
@@ -495,9 +638,9 @@ function savePatch(main, path) {
   const env = { ...process.env, GIT_INDEX_FILE: `${name}.index` };
   const run = (args) => execFileSync('git', ['--no-optional-locks', ...args], { cwd: path, encoding: 'utf8', env, maxBuffer: Number.POSITIVE_INFINITY, stdio: ['ignore', 'pipe', 'pipe'] });
   try {
-    run(['read-tree', 'HEAD']);
+    if (resolves(path, 'HEAD')) run(['read-tree', 'HEAD']);
     run(['add', '-A']);
-    const patch = run(['diff', '--cached', '--binary', 'HEAD']);
+    const patch = run(['diff', '--cached', '--binary']);
     if (!patch) return null;
     writeFileSync(`${name}.patch`, patch);
     return `${name}.patch`;
@@ -509,7 +652,9 @@ function savePatch(main, path) {
 // A card's landing patch already holds what the checkout matches, so only a
 // worktree with changes the checkout lacks gets a patch.
 function removeFolder(main, item) {
-  if (item.kind === 'worktree' && existsSync(item.path)) item.patch = compareWithCheckout(main, item.path, new Map()).unlanded > 0 ? savePatch(main, item.path) : null;
+  if (item.kind === 'worktree' && existsSync(item.path) && !item.unlinked) item.patch = compareWithCheckout(main, item.path, new Map()).unlanded > 0 ? savePatch(main, item.path) : null;
+  // git refuses to remove a folder without its .git link but drops the record of a gone one.
+  if (item.unlinked) rmSync(item.path, { force: true, recursive: true });
   if (item.kind === 'worktree') {
     const companion = companionOf(main);
     if (companion?.dir && companion.detach && existsSync(join(item.path, companion.dir))) execSync(companion.detach, { cwd: item.path, stdio: ['ignore', 'pipe', 'pipe'] });
@@ -538,7 +683,26 @@ function rejudgeWorktree(repo, main, sessions, path) {
 export function deleteSafe({ repo, sessions = [], now = Date.now() }) {
   const { main, items } = scan({ repo, sessions, sizes: false, now });
   const removed = [];
+  const run = runFolders(main, Date.now());
   for (const item of items.filter((each) => each.verdict === 'safe')) {
+    if (item.kind === 'run') {
+      const facts = runFacts(item.path, contextFor(repo, main, sessions, Date.now()), run);
+      const [verdict, reason, action] = classifyRun(facts) ?? ['keep', 'nothing left to remove'];
+      if (verdict !== 'safe') {
+        Object.assign(item, { verdict, reason: `kept at removal: ${reason}` });
+        continue;
+      }
+      Object.assign(item, { action, reason, bytes: runBytes(item.path, action, facts.builds) });
+      try {
+        if (action === 'expire') item.patches = facts.repos.map((repo) => savePatch(main, repo)).filter(Boolean);
+        for (const path of action === 'strip' ? facts.builds : [item.path]) rmSync(path, { force: true, recursive: true });
+      } catch (error) {
+        Object.assign(item, { verdict: 'ask', reason: `removal failed: ${String(error.message).split('\n')[0]}` });
+        continue;
+      }
+      removed.push(item);
+      continue;
+    }
     item.bytes = sizeOf(item.path);
     const [verdict, reason] = item.kind === 'cache' ? classifyCache(cacheFacts(item.path, Date.now())) : rejudgeWorktree(repo, main, sessions, item.path);
     if (verdict !== 'safe') {
@@ -596,6 +760,7 @@ function removalRefusal(main, listed, path) {
   const nested = nestedIn(path, listed);
   if (nested) return `another worktree lives inside it: ${nested}`;
   if (within(real(process.cwd()), path)) return 'this command runs in it';
+  if (unlinked(entry) && holdsFiles(path)) return 'git lost its link to it, so it cannot save the files in it';
   if (unreachedCommits(main, entry) === null) return unreachedReason(null);
   return null;
 }
@@ -610,7 +775,7 @@ export function removeLanded({ repo, worktrees }) {
     const pids = processesIn(path);
     if (pids === null) return { path, removed: false, reason: 'lsof could not list the processes working in it' };
     stopProcesses(pids);
-    const item = { kind: 'worktree', path };
+    const item = { kind: 'worktree', path, unlinked: unlinked(listed.find((each) => each.path === path)) };
     try {
       const commits = saveUnreached(main, listed.find((each) => each.path === path));
       removeFolder(main, item);
@@ -632,6 +797,20 @@ export function landed({ worktree }) {
   return landedVerdict(contentFacts(main, entry, worktrees));
 }
 
+// A folder that is itself a linked worktree holds a .git file, not a folder.
+export function checkoutsIn(dir) {
+  return readdirSync(dir, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory() && statOrNull(join(dir, entry.name, '.git'))?.isDirectory())
+    .map((entry) => real(join(dir, entry.name)))
+    .filter((main) => {
+      try {
+        return listWorktrees(main).length > 0;
+      } catch {
+        return false;
+      }
+    });
+}
+
 export function brief({ repo, now = Date.now(), days = 3 }) {
   const main = checkoutOf(repo);
   const stale = (mtime) => now - mtime > days * 24 * HOUR;
@@ -641,8 +820,8 @@ export function brief({ repo, now = Date.now(), days = 3 }) {
     const admin = !('locked' in entry) && existsSync(entry.path) && roots.some((root) => within(entry.path, root)) ? adminDir(entry.path) : null;
     return admin && stale(adminMtime(admin));
   }).length;
-  const caches = findCaches(main, 3, worktrees).filter((path) => {
-    const mtime = newestMtime([path, join(path, 'dev'), join(path, 'BUILD_ID')]);
+  const caches = findCaches(main, 3, worktrees).flatMap(cacheRows).filter((path) => {
+    const mtime = cacheMtime(path);
     return stale(mtime) && classifyCache({ path, held: false, production: existsSync(join(path, 'BUILD_ID')), hoursIdle: (now - mtime) / HOUR })[0] === 'safe';
   }).length;
   if (idle + caches === 0) return '';
@@ -662,9 +841,11 @@ function render({ items, removed }) {
     return sized.length === 0 ? `${group.length}` : `${group.length} (${gib(sized.reduce((sum, item) => sum + item.bytes, 0))})`;
   };
   lines.push('', `safe ${total('safe')}, ask ${total('ask')}, keep ${total('keep')}`);
-  if (removed) lines.push(`removed ${removed.length} items, ${gib(removed.reduce((sum, item) => sum + (item.bytes ?? 0), 0))} by du, which counts shared hard links again`);
+  if (removed) lines.push(`removed ${removed.length} items, ${gib(removed.reduce((sum, item) => sum + (item.bytes ?? 0), 0))} by du, which counts shared hard links and APFS clones again`);
   const patches = (removed ?? []).filter((item) => item.patch);
   if (patches.length > 0) lines.push(`saved the uncommitted changes of ${patches.length} worktrees as patches in ${dirname(patches[0].patch)}`);
+  const clones = (removed ?? []).flatMap((item) => item.patches ?? []);
+  if (clones.length > 0) lines.push(`saved the uncommitted changes of ${clones.length} clones as patches in ${dirname(clones[0])}`);
   const commits = (removed ?? []).filter((item) => item.commits);
   if (commits.length > 0) lines.push(`saved the unreached commits of ${commits.length} worktrees as patches in ${dirname(commits[0].commits)}`);
   return lines.join('\n');
@@ -699,10 +880,12 @@ function main(argv) {
   }
   const sessionsFile = value('--sessions');
   const sessions = sessionsFile ? JSON.parse(readFileSync(sessionsFile, 'utf8')) : [];
-  const result = argv.includes('--delete')
-    ? deleteSafe({ repo, sessions })
-    : scan({ repo, sessions, sizes: !argv.includes('--no-sizes') });
-  console.log(argv.includes('--json') ? JSON.stringify(result, null, 2) : render(result));
+  const many = argv.includes('--repos');
+  const results = (many ? checkoutsIn(resolve(value('--repos'))) : [repo]).map((each) =>
+    argv.includes('--delete') ? deleteSafe({ repo: each, sessions }) : scan({ repo: each, sessions, sizes: !argv.includes('--no-sizes') })
+  );
+  if (argv.includes('--json')) console.log(JSON.stringify(many ? results : results[0], null, 2));
+  else console.log(results.map((result) => (many ? `## ${result.main}\n${render(result)}` : render(result))).join('\n\n'));
   return 0;
 }
 

@@ -83,7 +83,7 @@ def mix(spec, root):
     if mode == "muted":
         if any(spec.get(k) for k in ("music", "narration", "sfx")):
             raise ValueError("muted mode cannot silently discard requested tracks")
-        return empty(), {"narration": voice, "bed": music, "sfx": sfx}, {"mode": mode, "loudness": "not_applicable_muted"}
+        return empty(), {"narration": voice, "bed": music, "sfx": sfx}, {"mode": mode, "loudness": "not_applicable_muted", "buried_hits": []}
     required = ["music"] if mode == "music-only" else ["narration"] if mode == "narration" else ["narration", "music"]
     for key in required:
         if not isinstance(spec.get(key), dict) or not spec[key].get("file"):
@@ -112,13 +112,19 @@ def mix(spec, root):
             if t <= b[0]:
                 return 10**((a[1]+(b[1]-a[1])*(t-a[0])/(b[0]-a[0]))/20)
         return 10**(points[-1][1]/20)
+    placed = []
     for event, clip in effects:
         at = event.get("at")
         if isinstance(at, str):
             if at not in spec.get("cues", {}):
                 raise ValueError("unknown sound cue")
             at = spec["cues"][at]
-        place(sfx, clip, number(at, "SFX at", 0, duration), rate, 10**(number(event.get("gain_db", -9), "SFX dB", -80, 12)/20), event.get("align", "start"))
+        at, gain = number(at, "SFX at", 0, duration), 10**(number(event.get("gain_db", -9), "SFX dB", -80, 12)/20)
+        place(sfx, clip, at, rate, gain, event.get("align", "start"))
+        frames = len(clip) // 2
+        align = event.get("align", "start")
+        offset = 0 if align == "start" else frames if align == "end" else max(range(frames), key=lambda i: abs(clip[2*i]) + abs(clip[2*i+1]))
+        placed.append((at, event["file"], clip, gain, round(at * rate) - offset))
     hop = max(1, rate // 100)
     active = [max(abs(v) for v in voice[i:i+2*hop]) > 10**(-42/20) for i in range(0, len(voice), 2*hop)]
     envelope = 0.
@@ -135,10 +141,25 @@ def mix(spec, root):
         for ch in (0, 1):
             index = 2*frame+ch
             bed[index] = music[index]*duck*auto
+    buried = []
+    window = max(1, round(rate * .1))
+    def rms_db(buffer, first, last):
+        values = buffer[2*first:2*last]
+        power = sum(v*v for v in values) / len(values) if values else 0
+        return 20*math.log10(math.sqrt(power)) if power > 0 else -math.inf
+    for at, name, clip, gain, start in placed:
+        # The window opens where the clip's first sample lands (same offset rule as place()).
+        first, last = max(0, start), min(count, start + min(len(clip) // 2, window))
+        if last <= first:
+            continue
+        hit = array.array("f", (v * gain for v in clip[2*(first-start):2*(last-start)]))
+        sfx_db, bed_db = rms_db(hit, 0, last-first), rms_db(bed, first, last)
+        if sfx_db < bed_db:
+            buried.append({"at": at, "file": name, "sfx_db": round(sfx_db, 2), "bed_db": round(bed_db, 2)})
     ceiling = 10**(-1/20)
     output = array.array("f", (max(-ceiling, min(ceiling, v+b+s)) for v, b, s in zip(voice, bed, sfx)))
     peak = max(abs(v) for v in output)
-    return output, {"narration": voice, "bed": bed, "sfx": sfx}, {"mode": mode, "speech_active_samples": active_samples, "sample_peak_dbfs": 20*math.log10(peak) if peak else None, "loudness": "not_measured", "listening": "not_observed"}
+    return output, {"narration": voice, "bed": bed, "sfx": sfx}, {"mode": mode, "speech_active_samples": active_samples, "sample_peak_dbfs": 20*math.log10(peak) if peak else None, "loudness": "not_measured", "listening": "not_observed", "buried_hits": buried}
 
 
 def main():

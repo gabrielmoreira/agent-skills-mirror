@@ -23,6 +23,8 @@ lavapipe 에서는 첫 업로드에서 죽는다 — 그래서 그런 호스트�
 제외하는 빠른 묶음이다. `tests/release/test_fast_bundle.py` 는 레인의 각 `pytest` 호출에 `--full` 이 있는지
 확인한다.
 
+같은 픽셀이라도 zlib 차이로 리눅스와 macOS에서 PNG 파일 바이트가 달라 macOS에서 파일 바이트를 재서 박은 시험이 리눅스 레인에서 아무것도 안 바뀐 채 실패한 적이 있으므로, 기계 사이에 고정하는 sha256 값은 출력 파일의 바이트가 아니라 `tests/picture_digest.py`의 `picture_digest`를 써서 디코딩한 그림(모든 프레임을 RGBA로 디코딩한 픽셀과 각 프레임의 크기, 프레임 개수)으로 박는다. 손실 압축 파일(JPEG, 손실 WebP)은 디코더 빌드에 따라 픽셀도 달라질 수 있으니 값을 박지 말고 같은 실행 안에서 만든 짝과 비교한다.
+
 실제 rife-ncnn-vulkan 을 돌리는 시험은 `real_rife` 표시를 단다(`pyproject.toml` 이 등록하고,
 `tests/conftest.py` 가 RIFE 를 못 찾으면 그 표시가 붙은 시험을 건너뛴다). `--rife-unmeasured` 는
 RIFE 가 닿는 곳이 하나도 없는 상태로 스위트 전체를 돌려 그 시험들이 이 이유로 건너뛰어지고,

@@ -50,7 +50,10 @@ a pipe, file, systemd journal, or CI runner, falls back to raw line output.
 name in `COLLIE_INSTANCE`) and the state directory it reads. If you run two lanes on one machine,
 check that line before you trust the rest, because a shell with the wrong `COLLIE_INSTANCE` reads
 the wrong lane. `--json` gives the same two values as `instance` and `stateDir` on the `collie`
-entry.
+entry. To read a lane without exporting anything, run `collie doctor --instance <name>`. It reads
+that lane and wins over `COLLIE_INSTANCE`; `--instance default` reads the unsuffixed one. A name
+this machine has no config for stops with exit 2 and lists the instances it does have. Only
+`doctor` takes the flag. Every other command still reads `COLLIE_INSTANCE`.
 
 **`collie doctor` lists your agent programs.** Each program Collie has an input profile for gets
 one `harness-<name>` row: the file Collie would run on your login shell's `PATH`, the version it
@@ -64,6 +67,29 @@ that is not installed shows `not installed`. In `--json` each row also carries `
 The row names the copy on your `PATH`, because `collie doctor` has no pane to look at. A send on
 Herdr asks the program that runs in its pane, so a pane that runs another copy, started by its full
 path or installed in a project, shows that copy's version on its receipts.
+
+**`collie doctor` says whether sends reach each agent program.** Each program gets one
+`sends-<harness>` row that counts its sends by outcome, over its newest 50 sends of the last 7 days.
+A send you discarded or cancelled, or one still held, does not count. The row warns when 3 or more
+sends ended and none went through, or when 5 or more ended and at least 30 percent were `unknown` or
+`typed_not_submitted` for a reason that points at Collie, the same reasons that offer Report a
+problem on the phone. It turns red when 10 or more ended and none went through. A red row makes
+`collie doctor` exit 1, but it does not hold back an update, because an update is often the fix.
+
+Two more kinds of row follow the `sends-*` rows. A `holds-<harness>` row lists the sends still held
+for that program, oldest first, each with how long it has waited, the reason the phone shows
+(`a running turn`, `something open at the box`, `a draft in the box`) and its request id. It never
+prints the held text. It warns when a hold has waited more than 10 minutes, and says to open the pane
+on the phone and send or cancel it. With no hold open, one `holds` row says so. A `screen-<harness>`
+row counts, over the same window as the sends row, the sends that met a screen Collie could not type
+into (a stale screen) and the other probe failures. It warns when 3 or more in a row ended that way
+with no other send between them. In `--json` both carry `harness`, and a holds row also carries a
+`holds` array of `requestId`, `cause`, `ageMs` and `state`.
+
+Receipts with no agent program, which come from a plain shell pane, make a separate `-` group
+(`sends--`, `holds--`, `screen--`). Those rows only show counts and always print `ok`. A shell has no
+agent to confirm that a send was submitted, so its outcomes say nothing about whether sends reach an
+agent program.
 
 
 ## Put `collie` on your PATH

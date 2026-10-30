@@ -20,7 +20,7 @@ The test of a kernel fills a `contract.spec.Spec` and hands the harness a few ho
   and the magnitude of the terms each output sums, and can replay the sums in another accumulator.
 - Its served envelope: the shapes the engine calls it at, and for each dimension its tile, the step a valid size
   moves by and the least valid size.
-- Its accumulator (`f32` for every kernel here) and the depth of its longest chain of roundings at a shape, plus any
+- Its accumulator (`f32` where a kernel sums) and the depth of its longest chain of roundings at a shape, plus any
   fp32 operations after the sums (`ops`) and intermediate roundings to the output type (`mids`).
 - Whether it may write in place. If it replaces another kernel, the kernel whose bits it must equal.
 - Its NaN rule: `propagate` (as float64 arithmetic on its formula does), or a stated rule the test checks itself
@@ -28,7 +28,8 @@ The test of a kernel fills a `contract.spec.Spec` and hands the harness a few ho
 - For gate 5, its launch in `zig/src/core/contract/registry.zig`: threads a group and threadgroup bytes (the source's,
   and any its encoder sets) on Metal, or symbol, image, threads a block, dynamic shared bytes and cluster width on CUDA,
   with the limits its compiles recorded. HIP launches are in `zig/src/core/contract/hip_records.zig`: symbol, code
-  object, threads a workgroup and dynamic LDS bytes.
+  object, threads a workgroup and dynamic LDS bytes. The seam's records are in `metal_pair_records.zig`, which
+  `registry.zig` concatenates.
 
 ## The gates
 
@@ -99,7 +100,8 @@ The program exits 1 on any failed gate, any control that stayed green, or any li
    the inputs for a shape and a gate's fill (usually through an input family), `run` launches once and waits, `count`
    and `reference` give the outputs and their float64 values, `simulate` replays the sums for gate 4.
 2. Add it to the runner's list, with its served shapes and tiles.
-3. Add its launches to `registry.zig`, and fill the records from `--offline` (Metal) or `kernel-contract-limits`
+3. Add its launches to `registry.zig`, or to a records file it concatenates as the seam's are, and fill them from
+   `--offline` (Metal) or `kernel-contract-limits`
    (CUDA: nvcc 13.0's in `cuda`, and each later release's set where that release compiles it differently); a HIP
    kernel's go to `hip_records.zig`, filled from `hip-kernel-contract-limits`.
 4. Post the `SUMMARY` lines from each backend you ran in the pull request, and say which chips you could not run.
@@ -127,8 +129,8 @@ float64 output class, without an inherited exception.
 
 ## Coverage
 
-Metal: softmax, RMS norm, bf16 top-k, the row projection (3, 4, 6 and 8 bits), affine_mm (4 and 8 bits), simd_qmm
-(4 bits) and simd_qmm_bits (3, 6 and 8 bits), and the lane projection (6-bit groups of 32 on every chip; 4- and 8-bit
+Metal: softmax, RMS norm, bf16 top-k, the row projection (3, 4, 6 and 8 bits), affine_mm (4 and 8 bits), simd_qmm (4
+bits) and simd_qmm_bits (3, 6 and 8 bits), and the lane projection (6-bit groups of 32 on every chip; 4- and 8-bit
 formats on the M5's tensor units, where its reg kernel must equal the cooperative one bit for bit), and tile_qmm's
 prompt tiles and their decode twin (4, 6 and 8 bits; the twin bit-equal to the tiles). Gate 5 also holds the rest of
 tile_qmm's pipelines and GLM-5.3-Flash's hc_expand_10.
@@ -141,6 +143,13 @@ Metal also checks Nemotron's routed experts on the engine's route tables, one ro
 against float64 at tf_load16's bf16 x sums (up's relu2 as an interval over its two bf16 roundings), and the rows2, rows4
 and six geometry pipelines of each projection bit-equal to them (two controls: member rows read from one row, and
 w3's x sums without their bf16 steps).
+The row-split seam's four kernels (`pair_rows.metal`, launched by `pair_rows.zig`) move bf16 frames, never sums:
+`pair_stage` copies this rank's half of a frame row into the slot the relay sends, and `pair_gather` writes both halves
+of every row, its own natively and the peer's from the relayed frame. `pair_argmax` flags a row whose logits are not
+finite (its id word carries bit 31, its value word a NaN) and takes the lower id on a tie; `pair_pick` turns a flagged
+rank's word into the id sentinel, so both Macs refuse a non-finite round where one Mac does. Six controls edit the
+source: a stage reading the peer's half, a gather writing its own half twice, and an argmax or pick tie to the higher
+id must go red at `shapes`, and an argmax or pick that does not flag at `nonfinite`.
 CUDA: the RMS norm rows (16-byte form and the fp32-out tree), the bf16 residual's norm tails (MLX's rounded rows and
 the once-rounded ones, each checked on its residual and its output, with four controls each dropping a rounding point), Nemotron's router logits (and their 128-row tiles,
 bit-equal to them) and top-k, the latent top-k's decode form (bit-equal to `tf_super_topk`), the latent combine and
@@ -182,7 +191,9 @@ CUDA also checks GLM-5.3-Flash's KV page kernels on a page table out of order: t
 (`tf_glm_lat_write`, `tf_glm_pool_keys`), the index scores and the selected tokens' rows (`tf_glm_scores`,
 `tf_glm_dsa_tokens`), and the MLA chunks through their merge (`tf_glm_chunks_16` and `tf_glm_chunks_32`, dense and
 sparse). Its prompt indexer (`tf_glm_index_scores`, `tf_glm_index_pools`) is bit-equal to `tf_glm_scores` and
-`tf_glm_select_rows`; the pools' stated rule ranks any NaN above +inf, as the GPU's `s + 0` makes every NaN one positive NaN.
+`tf_glm_select_rows`, and its decode select at a 1,024-thread block a row (`tf_glm_select_rows_wide`) to
+`tf_glm_select_rows`; both stated rules rank any NaN above +inf, as the GPU's `s + 0` makes every NaN one
+positive NaN.
 
 GLM's Metal window projections register narrow and wide rows at 2, 3, 4, 5, 6 and 8 bits, plus both gathered paths.
 Independent FP64 linear cases accompany byte replacements against frozen pre-window-optimization kernels.
@@ -203,7 +214,7 @@ and FP32-output paths, FP8G's 32-row cluster tile with FP32 output, the common E
 decode-sized latent top-k and NVFP4 up experts, the Mamba scan and Super's NVFP4 prompt down kernels, three of
 GLM-5.3-Flash's packed matmuls and three of its DFlash2 launches, and the training launches it compiles differently,
 and nvcc 13.3 keeps 13.2's and changes `tf_nemo_topk` on sm_120 and sm_121, four of GLM-5.3-Flash's KV page
-launches and its two prompt-indexer launches. `kernel-contract` and
+launches, its two prompt-indexer launches and its wide decode select. `kernel-contract` and
 `kernel-contract-limits` read the release from each image's `.note.nv.tkinfo`, check the image against the newest set
 at or below that release (13.0's when an image names none), and print which set they used. A release with no set of
 its own is checked against the one below it, so its differences show as stale records: re-derive them with

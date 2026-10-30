@@ -95,3 +95,41 @@ Notes from this unit:
   working; Netflix, YouTube, Prime, TCL and Disney did nothing. The owner kept the volume ramp and enabled no key
   helper; held volume ramps normally that way.
 - `wm size` shows the same factory override of 1920x1080, density 320.
+
+## Compatibility report: TCL 65P8L-UK, Wi-Fi
+
+Confirmed on 28 October 2026: TCL 65P8L-UK, device `G08`, product `G08_4K_GB`, Google TV 14
+(SDK 34), firmware `UTT2.250416.001 AU02`. The reference launcher installed successfully and remained
+Home after reboot, including a final restart with debugging disabled. The owner confirmed streaming
+playback, Google Cast, AirPlay, Miracast, the Google TV phone remote, Assistant, Live TV and HDMI worked.
+
+The saved Wi-Fi belonged to setupwraith; forgetting and rejoining it through Settings transferred
+ownership before the launcher handover. `InputKeyService` restored Netflix (4062), Prime Video (4099),
+YouTube (190) and Settings (83), at the cost of held-volume repeat; the owner accepted that tradeoff.
+Network ADB was confirmed closed after the final restart. This is a single-session compatibility
+report, not confirmation that the full debloat list above was applied or tested for several days.
+
+## Fourth unit: 65P89L, EU, Ethernet
+
+TCL 65P89L, product `G08_4K_GB`, MediaTek `tcl9618` / `mt5896`, SoC MT9689, same `UTT2.250416.001 AU02`
+(software `V8-T653T01-LF1V641`, client type `TCL-EU-MT9653-S1`), about 2.4 GB RAM, on Ethernet. Set up on
+27 October 2026 with this list as the starting point, then the launcher with `build-and-install.sh`, and rebooted
+three times: Home, Ethernet and the Clock screensaver came back, the Input button opened TCL's source panel, and
+logcat showed no `FATAL EXCEPTION`.
+
+**Different choices from the UK unit:** Google Assistant kept (`katniss` commented out). No `HomeKeyService`.
+
+Notes from this unit:
+
+- **setupwraith and Ethernet**: `disable.sh` skipped setupwraith with "could not check which app owns the saved
+  Wi-Fi networks": `dumpsys wifi` printed no `cname=` on this build. `cmd wifi list-networks` said "No networks"
+  and the TV was on `eth0`, so `FORCE_SETUPWRAITH=1` disabled it and ADB stayed up.
+- **dreamx came back after a reboot**: twice the TV was rebooted within seconds of `pm disable-user` on
+  `com.google.android.apps.tv.dreamx`, and both times it booted enabled (`enabled=0`) and ran from
+  `BackdropBootReceiver`. Disabled again, waited two minutes, then rebooted: it stayed off. The setting had
+  not been written to disk yet. Nothing on the TV re-enables it.
+- **logkit's boot service**: `GeorgedebugLogkitInputEvent` (`/system_ext/etc/init/hw/logkit.rc`, runs
+  `/system_ext/bin/LogkitInputEvent` as root) runs at every boot with `com.tcl.logkit` disabled. It watches
+  `/dev/input` for the key sequence that opens `com.tcl.logkit/.MainActivity`. `logkit.sh` has no network
+  code (it copies to USB or `/data/tcl_log`), `persist.sys.normallog`, `persist.sys.usblog` and
+  `persist.sys.perfettolog` are unset, and `ro.feature.user_logkit` is `false`.

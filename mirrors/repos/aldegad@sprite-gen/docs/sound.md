@@ -15,7 +15,7 @@ sprite-gen sound --kind sfx|bgm --prompt TEXT (or --prompt-file PATH) --duration
 - `--cache-dir`: Defaults to `$XDG_CACHE_HOME/sprite-gen/audio` or `~/.cache/sprite-gen/audio` (never inside `--out-dir`; local by default but can be copied; no cross-cache-directory or cross-machine duplicate-request guarantee).
 - `--target-lufs`: Target integrated loudness within `-36..-9` LUFS.
 - `--crossfade`: Overlap duration in seconds.
-- **Environment & PATH**: `ELEVENLABS_API_KEY` is required only for new paid requests (offline work needs none); ElevenLabs has no subscription login, so every new request is billed per call and says so on stderr before it leaves (`[gen] elevenlabs: running on ELEVENLABS_API_KEY — this is a per-call API charge …`, the line every metered route prints), and the receipt records `auth_source`. `ffmpeg` (with `libopus` and `aac` encoders) and `ffprobe` are required on `PATH` and checked before paid calls.
+- **Environment & PATH**: `ELEVENLABS_API_KEY` is required only for new paid requests (offline work needs none); ElevenLabs has no subscription login, so every new request is billed per call and says so on stderr before it leaves (`[gen] elevenlabs: running on ELEVENLABS_API_KEY — this is a per-call API charge …`, the line every metered route prints), and the receipt records `auth_source`. `SPRITE_GEN_ELEVENLABS_BASE_URL` sends new requests through another address ([provider addresses](gen.md#provider-addresses)). `ffmpeg` (with `libopus` and `aac` encoders) and `ffprobe` are required on `PATH` and checked before paid calls.
 
 ## Provider APIs and Cost Accounting
 

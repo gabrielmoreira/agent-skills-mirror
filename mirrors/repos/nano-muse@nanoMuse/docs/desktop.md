@@ -115,7 +115,11 @@ speaking as nanoMuse through the `nanomuse` preset, with:
 - **the rooms**: Feed, Ideas, Goals and Library as the phone has them, kept by the host in
   `nanomuse/rooms.json` and written by the agent in hidden chats (feed and ideas) or
   chats of their own (goals, with the harness's schedule plugin for their automations;
-  Library creations under `~/nanoMuse/Library`), plus memory: what it remembers about
+  Library creations under `~/nanoMuse/Library`; every chat the plugin opens, for the person,
+  for a batch of its own or for a task another device sent, starts in the `~/nanoMuse`
+  workspace, never in the bare home folder — on Windows a workspace that is the whole profile
+  folder cannot run a `workspace-write` command at all, since the sandbox's temp root lies
+  inside it, [#705](https://github.com/nano-muse/nanoMuse/issues/705)), plus memory: what it remembers about
   you, read into every chat ([desktop-muse.md](desktop-muse.md#rail-rooms));
 - **Reach**: this computer on the account's device list over the [hub](hub.md); the
   tools `devices`, `device_screen`, `device_shell`, `device_files`, `device_open`,
@@ -172,8 +176,12 @@ speaking as nanoMuse through the `nanomuse` preset, with:
 - **Each model call tells the account's record where it sat** (relay 0.31). The harness's
   model adapter sends a provider's headers the same on every request, and a call's
   provenance changes with each, so the `nanoMuse Cloud` provider row points at a loopback
-  door of the plugin's own (`http://127.0.0.1:<port>/v1`; the port is each start's, and the
-  row is pointed at it again at start). The door sends a request on only when it carries the
+  door of the plugin's own (`http://127.0.0.1:<port>/v1`). The door asks for the port it had
+  at the last start (kept in the plugin's state as `doorPort`), so the row is right as it is;
+  when that port is taken, or the row was written by 1.0.7 and names the relay itself, the row
+  is pointed at today's door once the Host is up — not while the plugins are still starting,
+  where waiting for the write held the Host before it announced its address (1.0.8, #701).
+  The door sends a request on only when it carries the
   account's own key (anything else is a 401 here, as it would be at the relay), with the
   device, the platform (`X-NanoMuse-Platform: desktop`) and what the `llm/stream` hook
   announced for that call: who started the turn (`X-NanoMuse-Run`: `person`, `schedule`,

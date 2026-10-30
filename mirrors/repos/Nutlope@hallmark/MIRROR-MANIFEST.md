@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Nutlope/hallmark` — 26 default patterns, 0 followed patterns, 182 file(s) materialized.
+Mirror of `Nutlope/hallmark` — 26 default patterns, 0 followed patterns, 183 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Nutlope/hallmark` — 26 default patterns, 0 followed patterns, 182 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 182 |
+| Files         | 183 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -240,7 +240,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 179 | ✓ | [`skills/hallmark/scripts/sloplint-render.mjs`](skills/hallmark/scripts/sloplint-render.mjs) |
 | 180 | ✓ | [`skills/hallmark/scripts/sloplint.mjs`](skills/hallmark/scripts/sloplint.mjs) |
 | 181 | ✓ | [`skills/hallmark/scripts/theme.mjs`](skills/hallmark/scripts/theme.mjs) |
-| 182 | ✓ | [`skills/hallmark/SKILL.md`](skills/hallmark/SKILL.md) |
+| 182 | ✓ | [`skills/hallmark/scripts/theme.test.mjs`](skills/hallmark/scripts/theme.test.mjs) |
+| 183 | ✓ | [`skills/hallmark/SKILL.md`](skills/hallmark/SKILL.md) |
 
 ---
 

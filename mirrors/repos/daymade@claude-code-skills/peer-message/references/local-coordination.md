@@ -125,6 +125,12 @@ CLI；旧 CLI 能继续处理原 notice/request/reply，但不提供新状态模
 
 ## 原生跨会话通信
 
+宿主同时继承 Claude 与 Codex 身份时，在每个写入型 `coord` 子命令后传
+`--actor codex:<完整 UUID>` 或 `--actor claude-session:<完整 UUID>`，明确当前宿主。
+它必须逐字匹配所选产品的环境身份；同产品身份冲突、缺失或空值仍拒绝。
+`prepare` 的 `--from` 也受同一校验；后续 `commit/receive/finish/claim/release`
+继续传相同的 `--actor`。原生发送仍由宿主事件独立校验，不能用该参数选择另一会话。
+
 在安装或源路径、解释器绑定变化时，从实际安装入口运行：
 
 ```bash
@@ -220,6 +226,59 @@ python3 "$PEER_SKILL_ROOT/scripts/peer.py" coord commit \
 发送状态未知时，发送者仍需原通道读回，不能自行 finish 抹掉未知；实际已收件
 并领取的接收者可在处理后关闭。旧协调库升级保留原领取和关闭事实。
 错误身份、损坏库或未知 schema 明确报错并保留数据，不另建空库制造“无人负责”。
+
+### 从 Codex 入站原件接收
+
+只有已知自身 message ID 的脚本 `peer-message` 信封使用此配方。先按
+[按自身 ID 只读查看入站信封](protocol-and-discovery.md#按自身-id-只读查看入站信封)
+核对支持范围和当前 help；原生工具覆盖的通信仍走原生机制，不能把任意原生
+`codex_delegation` 包装拼成脚本信封。
+
+执行 Agent 将 `INBOX_TARGET` 设为当前宿主实际的 `codex:<完整 UUID>`，
+`INBOUND_MESSAGE_ID` 设为该入站信封自身的精确 ID，再执行整段。它只从 JSON 的
+`.message.envelope` 保存原文，不补标题、协调字段或换行；继承双产品身份时由
+现有 `--actor` 校验本次 Codex 身份，不删除环境变量来绕过身份检查。
+
+```bash
+(
+  set -eu
+  umask 077
+  : "${PEER_SKILL_ROOT:?Set to the loaded peer-message directory}"
+  : "${INBOX_TARGET:?Set to the exact current Codex host address}"
+  : "${INBOUND_MESSAGE_ID:?Set to the exact inbound envelope ID}"
+  inbound_dir=$(mktemp -d "${TMPDIR:-/tmp}/peer-inbound.XXXXXXXX")
+  printf 'Inbound evidence: %s\n' "$inbound_dir"
+  python3 "$PEER_SKILL_ROOT/scripts/peer.py" inspect-inbound "$INBOX_TARGET" \
+    --message-id "$INBOUND_MESSAGE_ID" --json > "$inbound_dir/inspection.json"
+  python3 - "$inbound_dir/inspection.json" "$inbound_dir/received.txt" \
+    "$INBOX_TARGET" "$INBOUND_MESSAGE_ID" <<'PY'
+import json, sys
+from pathlib import Path
+source, output, target, message_id = sys.argv[1:]
+result = json.loads(Path(source).read_text(encoding="utf-8"))
+message = result.get("message") if isinstance(result, dict) else None
+if not (isinstance(result, dict) and result.get("target") == target
+        and result.get("message_id") == message_id
+        and result.get("inspection_status") == "found"
+        and type(result.get("message_count")) is int and result["message_count"] == 1
+        and result.get("errors") == [] and isinstance(message, dict)
+        and message.get("message_id") == message_id
+        and message.get("envelope_type") == "peer-message"):
+    raise SystemExit("Inbound inspection is not one exact supported match; retain evidence and stop")
+envelope = message.get("envelope")
+if not isinstance(envelope, str) or not envelope.strip():
+    raise SystemExit("Inbound envelope is missing or empty; retain evidence and stop")
+with open(output, "xb") as saved:
+    saved.write(envelope.encode("utf-8"))
+PY
+  python3 "$PEER_SKILL_ROOT/scripts/peer.py" coord receive "$inbound_dir/received.txt" \
+    --actor "$INBOX_TARGET"
+)
+```
+
+查询失败、无匹配、没有适用 store、必需字段缺失、冲突或不支持的格式时，在 `receive` 前停止，保留
+查询输出与错误，不从截断显示或摘要重建信封，也不自动重查、重发或恢复 session。
+`receive` 的结果继续按本节分流；找到原件或领取成功都不证明模型已读、业务完成或用户授权。
 
 ## 覆盖与验收
 

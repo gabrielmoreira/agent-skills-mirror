@@ -16,7 +16,7 @@
     "README.md": {
       "classification": "original_omh",
       "license": "MIT",
-      "local_sha256": "ea4b359f18d7ea3d3fd6819439c6b4f139611f7bf33a7ae339a1da575464d94b",
+      "local_sha256": "639495d48ce2c1da710f4a0673fd3365cff00f61ce084434eabbc41fa4fc9c43",
       "modification_notice": "Original OMH companion guidance/helper/example",
       "upstream": []
     },
@@ -140,8 +140,8 @@
     "scripts/finish.py": {
       "classification": "modified_derivative",
       "license": "MIT",
-      "local_sha256": "e5a2ace0345754485773375bdc785b67b6fdef4859cff4a8204bf9a88fcdd48e",
-      "modification_notice": "English messages and suffixes, tool paths overridable (default from PATH), outputs must be new, failing spec exits 1",
+      "local_sha256": "2b59d88edd2d79649048e1d1c788a6eddf1eb4ee0de1285aacd3cf6a8bf30e24",
+      "modification_notice": "English messages and suffixes, tool paths overridable (default from PATH), outputs must be new, failing spec exits 1, 1080p share copy pinned to H.264 level 4.2",
       "upstream": [
         {
           "path": "scripts/finish.py",
@@ -159,8 +159,8 @@
     "scripts/mix.py": {
       "classification": "modified_derivative",
       "license": "MIT",
-      "local_sha256": "dcfc3f01d9ceda45bfa41f53073144985673093cefaefcbf638cdacd199e3643",
-      "modification_notice": "Cue placement, speech ducking and gain automation adapted to stdlib PCM; required tracks fail closed",
+      "local_sha256": "481664087918ed94757bb917bfcc794c159531ea292bb136fb0333085145635a",
+      "modification_notice": "Cue placement, speech ducking and gain automation adapted to stdlib PCM; required tracks fail closed; reports SFX buried under the bed",
       "upstream": [
         {
           "path": "scripts/mix.py",
@@ -171,8 +171,8 @@
     "scripts/motion_check.py": {
       "classification": "modified_derivative",
       "license": "MIT",
-      "local_sha256": "828956f1469cea52ec368bcdb1cdb11e97b035b226194b435831fda62dfaf61f",
-      "modification_notice": "Freeze/flash heuristics with authored intentional holds; stdlib",
+      "local_sha256": "7996fd01f8576cea033bc25028c1f53d443749f5f529349f65f719d3a3dcde98",
+      "modification_notice": "Native-fps change-area stills, cuts and opposing-pair flashes with general/kinetic profiles, end-card exclusion, reference comparison and authored intentional holds; stdlib",
       "upstream": [
         {
           "path": "scripts/motion_check.py",
@@ -183,8 +183,8 @@
     "scripts/music_tools.py": {
       "classification": "modified_derivative",
       "license": "MIT",
-      "local_sha256": "f1e6a54ac66e264920a2933964cdd06ff708d464053dfb4b8d33f5f540899c9e",
-      "modification_notice": "English messages, tool paths overridable (default from PATH), outputs must be new, numpy only for analyze/gap, synth_music event keys accepted, gap writes 16-bit PCM for mix.py",
+      "local_sha256": "3b73212027c6cb51e12f6f59f137174cd3acc8052ebaa85b03b7af905ad8c915",
+      "modification_notice": "English messages, tool paths overridable (default from PATH), outputs must be new, numpy only for analyze/gap, synth_music event keys accepted, gap writes 16-bit PCM for mix.py; analyze takes a tempo hint and fit window and reports grid strength, alternatives and drops",
       "upstream": [
         {
           "path": "scripts/music_tools.py",
@@ -243,8 +243,8 @@
     "scripts/qa_check.py": {
       "classification": "modified_derivative",
       "license": "MIT",
-      "local_sha256": "f8fd7935a5a0cfec1833439b0097ba2633179a44d50a8a7813a3bcb8a97c752a",
-      "modification_notice": "Audio-mode-aware decode and measurements; no STT client",
+      "local_sha256": "218868658a6bc45132b2ed9e8880547742d56b8c80629208fd56cf9a4c761834",
+      "modification_notice": "Audio-mode-aware decode and measurements; H.264 level ceiling and macOS hardware-decode policy keys; no STT client",
       "upstream": [
         {
           "path": "scripts/qa_check.py",
@@ -255,8 +255,8 @@
     "scripts/render.mjs": {
       "classification": "modified_derivative",
       "license": "MIT",
-      "local_sha256": "e90a5e6de48291295825964c8f7ea757289cd8b400fe244be0724f729a9696e4",
-      "modification_notice": "Puppeteer adapter with a realpath allowlist server; keeps upstream --scale/--sub/--shutter/--crf 16/--preset/--from/--to/--every; serial capture piped to FFmpeg",
+      "local_sha256": "8630c8e6eea113d888dbb9df820cc1fa48e2a25303efbbb8d323a4cb3acc3bec",
+      "modification_notice": "Puppeteer adapter with a realpath allowlist server; keeps upstream --scale/--sub/--shutter/--crf 16/--preset/--from/--to/--every; serial capture piped to FFmpeg; project.json cuts keep sub-frame samples inside each shot",
       "upstream": [
         {
           "path": "scripts/render.mjs",
@@ -279,8 +279,8 @@
     "scripts/timeline.py": {
       "classification": "modified_derivative",
       "license": "MIT",
-      "local_sha256": "511bbd685c1965f807369516eff97e080963c8951cf03fd4880eb79a60a5cfaa",
-      "modification_notice": "Explicit cue graph plus the upstream script.json composition with a stdlib envelope",
+      "local_sha256": "595ba11069d52668c04ca17e85c7a5aa1e80b9d0c338aa7c58896ac1ab667313",
+      "modification_notice": "Explicit cue graph plus the upstream script.json composition with a stdlib envelope; music.dropN cues from the analysis",
       "upstream": [
         {
           "path": "scripts/timeline.py",

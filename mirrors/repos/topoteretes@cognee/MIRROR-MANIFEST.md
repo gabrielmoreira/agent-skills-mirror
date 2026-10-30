@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `topoteretes/cognee` — 26 default patterns, 0 followed patterns, 27 file(s) materialized.
+Mirror of `topoteretes/cognee` — 26 default patterns, 0 followed patterns, 29 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `topoteretes/cognee` — 26 default patterns, 0 followed patterns, 27 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 27 |
+| Files         | 29 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -76,16 +76,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 15 | ✓ | [`.agents/skills/cognee-server/SKILL.md`](.agents/skills/cognee-server/SKILL.md) |
 | 16 | ✓ | [`.agents/skills/company-brain-company-qa/SKILL.md`](.agents/skills/company-brain-company-qa/SKILL.md) |
 | 17 | ✓ | [`.agents/skills/company-brain-follow-up-agent/SKILL.md`](.agents/skills/company-brain-follow-up-agent/SKILL.md) |
-| 18 | ✓ | [`.agents/skills/personalized-email/SKILL.md`](.agents/skills/personalized-email/SKILL.md) |
-| 19 | ✓ | [`.agents/skills/self-hosted-companion/SKILL.md`](.agents/skills/self-hosted-companion/SKILL.md) |
-| 20 | ✓ | [`.github/prompts/docs_edit.md`](.github/prompts/docs_edit.md) |
-| 21 | ✓ | [`.github/prompts/docs_issue_edit.md`](.github/prompts/docs_issue_edit.md) |
-| 22 | ✓ | [`.github/prompts/docs_scope_plan.md`](.github/prompts/docs_scope_plan.md) |
-| 23 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 24 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 25 | ✓ | [`examples/demos/feedback/skill_feedback_loop/skills/diff-risk-explainer/SKILL.md`](examples/demos/feedback/skill_feedback_loop/skills/diff-risk-explainer/SKILL.md) |
-| 26 | ✓ | [`examples/demos/feedback/skill_feedback_loop/skills/pr-comment-evaluator/SKILL.md`](examples/demos/feedback/skill_feedback_loop/skills/pr-comment-evaluator/SKILL.md) |
-| 27 | ✓ | [`examples/demos/feedback/skill_feedback_loop/skills/skill-feedback-writer/SKILL.md`](examples/demos/feedback/skill_feedback_loop/skills/skill-feedback-writer/SKILL.md) |
+| 18 | ✓ | [`.agents/skills/google-workspace-memory/SKILL.md`](.agents/skills/google-workspace-memory/SKILL.md) |
+| 19 | ✓ | [`.agents/skills/multiagent-memory-setup/SKILL.md`](.agents/skills/multiagent-memory-setup/SKILL.md) |
+| 20 | ✓ | [`.agents/skills/personalized-email/SKILL.md`](.agents/skills/personalized-email/SKILL.md) |
+| 21 | ✓ | [`.agents/skills/self-hosted-companion/SKILL.md`](.agents/skills/self-hosted-companion/SKILL.md) |
+| 22 | ✓ | [`.github/prompts/docs_edit.md`](.github/prompts/docs_edit.md) |
+| 23 | ✓ | [`.github/prompts/docs_issue_edit.md`](.github/prompts/docs_issue_edit.md) |
+| 24 | ✓ | [`.github/prompts/docs_scope_plan.md`](.github/prompts/docs_scope_plan.md) |
+| 25 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 26 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 27 | ✓ | [`examples/demos/feedback/skill_feedback_loop/skills/diff-risk-explainer/SKILL.md`](examples/demos/feedback/skill_feedback_loop/skills/diff-risk-explainer/SKILL.md) |
+| 28 | ✓ | [`examples/demos/feedback/skill_feedback_loop/skills/pr-comment-evaluator/SKILL.md`](examples/demos/feedback/skill_feedback_loop/skills/pr-comment-evaluator/SKILL.md) |
+| 29 | ✓ | [`examples/demos/feedback/skill_feedback_loop/skills/skill-feedback-writer/SKILL.md`](examples/demos/feedback/skill_feedback_loop/skills/skill-feedback-writer/SKILL.md) |
 
 ---
 

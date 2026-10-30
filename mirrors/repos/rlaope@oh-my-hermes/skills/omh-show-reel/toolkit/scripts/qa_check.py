@@ -12,6 +12,7 @@ import json
 import math
 from pathlib import Path
 import subprocess
+import sys
 
 from mix import MODES, measure_loudness
 from new_project import no_links
@@ -23,6 +24,13 @@ def run_tool(command):
     if len(result.stdout) + len(result.stderr) > 2_097_152:
         raise ValueError("tool diagnostic output limit exceeded")
     return result.stdout.decode("utf-8", errors="strict")
+
+
+def decode_errors(command):
+    """Run a decode and return its error text; a nonzero exit always yields text."""
+    result = subprocess.run([str(v) for v in command], capture_output=True, check=False, timeout=300)
+    text = result.stderr.decode("utf-8", errors="replace")[:65536].strip()
+    return text or (f"decoder exited {result.returncode}" if result.returncode else "")
 
 
 def inspect(artifact, *, audio_mode, ffprobe="ffprobe", ffmpeg="ffmpeg", policy=None):
@@ -51,6 +59,7 @@ def inspect(artifact, *, audio_mode, ffprobe="ffprobe", ffmpeg="ffmpeg", policy=
         run_tool([ffmpeg, "-v", "error", "-xerror", "-nostdin", "-i", path, "-f", "null", "-"])
         measurements = {"duration": duration, "fps": fps, "frames": frames, "bytes": path.stat().st_size,
                         "width": video["width"], "height": video["height"], "codec": video["codec_name"],
+                        "h264_level": video.get("level") if video["codec_name"] == "h264" and isinstance(video.get("level"), int) and video["level"] > 0 else None,
                         "color": {k: video.get(k) for k in ("color_range", "color_space", "color_transfer", "color_primaries")}}
         report["measurements"] = measurements
         report["checks"].append({"name": "full_decode", "status": "PASS"})
@@ -66,9 +75,26 @@ def inspect(artifact, *, audio_mode, ffprobe="ffprobe", ffmpeg="ffmpeg", policy=
             loudness = measure_loudness(path, ffmpeg)
             report["audio"] = {"sample_rate": int(audio["sample_rate"]), "codec": audio["codec_name"], "loudness": loudness}
             measurements.update(lufs=loudness["input_i"], true_peak=loudness["input_tp"])
+        holds = []
         for key, expected in (policy or {}).items():
             actual = measurements.get(key)
-            if key == "max_bytes":
+            if key == "max_h264_level":
+                level = measurements["h264_level"]
+                if level is None or level > expected:
+                    failures.append("max_h264_level")
+            elif key == "hardware_decode":
+                if expected is not True:
+                    raise ValueError("hardware_decode policy must be true when present")
+                if sys.platform != "darwin":
+                    holds.append({"name": "hardware_decode", "status": "HOLD", "reason": "not observable on this host"})
+                    continue
+                errors = decode_errors([ffmpeg, "-v", "error", "-nostdin", "-hwaccel", "videotoolbox", "-i", path, "-f", "null", "-"])
+                if errors:
+                    failures.append("hardware_decode")
+                    report["hardware_decode_errors"] = errors.splitlines()[:20]
+                else:
+                    report["checks"].append({"name": "hardware_decode", "status": "PASS"})
+            elif key == "max_bytes":
                 if measurements["bytes"] > expected:
                     failures.append("max_bytes")
             elif key == "lufs":
@@ -80,7 +106,8 @@ def inspect(artifact, *, audio_mode, ffprobe="ffprobe", ffmpeg="ffmpeg", policy=
             elif actual is None or abs(actual-expected) > (1/fps if key == "duration" else 1e-6):
                 failures.append(key)
         report["checks"].extend({"name": v, "status": "REVISE"} for v in failures)
-        report["verdict"] = "REVISE" if failures else "PASS"
+        report["checks"].extend(holds)
+        report["verdict"] = "REVISE" if failures else "HOLD" if holds else "PASS"
     except (OSError, ValueError, KeyError, TypeError, ZeroDivisionError, subprocess.SubprocessError) as exc:
         report["measurements"] = None
         report["checks"].append({"name": "probe_decode_measure", "status": "HOLD", "reason": str(exc)})

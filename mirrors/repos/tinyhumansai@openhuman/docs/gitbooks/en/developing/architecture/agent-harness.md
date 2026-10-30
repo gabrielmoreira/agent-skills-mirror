@@ -318,7 +318,7 @@ once (`session_rule_set`); each turn evaluates them in its own context
 Long tool-calling chains can blow past the context window. Two layers handle that:
 
 - Tool-result budget: every tool result is checked against a per-call byte budget, enforced as tinyagents tool middleware. Anything over is hard-truncated with an explanatory marker so the model knows it didn't see the full output.
-- Microcompact / autocompact: when total history is creeping toward the context window, tinyagents middleware (message trimming + the compression hooks installed in `tinyagents/middleware.rs` and `tinyagents/context_wiring.rs`, with ladder order and sizing owned by `tinyagents-harness` `ContextLadder`) compacts older turns into summaries before the next provider call. The compacted history keeps the system prompt and the most recent turns intact (KV-cache stability) and rewrites the middle.
+- Microcompact / autocompact: when total history is creeping toward the context window, tinyagents middleware (message trimming + the compression hooks installed in `tinyagents/middleware.rs` and `tinyagents/context_wiring.rs`, with ladder order and sizing owned by `tinyagents-harness` `ContextLadder`) compacts older turns into summaries before the next provider call. The compacted history keeps the system prompt and the most recent turns intact (KV-cache stability) and rewrites the middle. The summary is written by the turn's own model unless `[context] summarizer_model` (`OPENHUMAN_CONTEXT_SUMMARIZER_MODEL`) names another; that model is called on the turn's provider route, with the same credentials and endpoint (`inference/turn_models.rs`). Each turn logs its choice at debug as `[context_compression] summarizer model=<id> source=config|turn`. A failed summary falls back to a deterministic trim, not to the turn's model.
 
 ### Oversized tool results: the summarizer detour
 
@@ -519,6 +519,7 @@ Two hook surfaces wrap the loop, on opposite ends:
 Stop hooks fire between iterations of the tool-call loop. They're the policy lever for budget caps, rate limits, and custom kill switches. Built-in hooks:
 
 - Budget stop hook: caps cumulative turn cost in USD using the per-iteration cost accumulator.
+- Per-call spend budget: each provider call reserves a conservative bound on the turn's shared ledger before it is sent and settles from measured usage. It is applied beneath attachment rendering, so a photo, sticker or document turn is admitted on its rendered text and the image readout is charged to the same ledger. While a budget is active, models receive image readouts and extracted document text rather than native media.
 - Max-iterations stop hook: caps iteration count from outside the agent's persistent config.
 - Action budget policy: `SecurityPolicy` enforces `config.autonomy.max_actions_per_hour` for side-effecting tool operations. Users can tune it in Settings, Advanced, Agent autonomy, or operators can override it with `OPENHUMAN_MAX_ACTIONS_PER_HOUR`.
 

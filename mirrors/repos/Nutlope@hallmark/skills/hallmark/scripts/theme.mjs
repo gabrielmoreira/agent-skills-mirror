@@ -36,7 +36,7 @@ function usage() {
 }
 
 function parseHeader(src, file) {
-  const m = /^---\n([\s\S]*?)\n---/.exec(src);
+  const m = /^---\r?\n([\s\S]*?)\r?\n---/.exec(src);
   if (!m) throw new Error(`${file}: no header block`);
   const h = {};
   for (const line of m[1].split('\n')) {

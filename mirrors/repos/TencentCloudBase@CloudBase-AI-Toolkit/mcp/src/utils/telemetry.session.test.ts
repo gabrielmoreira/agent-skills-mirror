@@ -31,6 +31,7 @@ vi.mock("../cloudbase-manager.js", async (importOriginal) => {
 const ALLOWED_KEYS = [
   "event",
   "envId",
+  "envIdSource",
   "region",
   "site",
   "login_uin",

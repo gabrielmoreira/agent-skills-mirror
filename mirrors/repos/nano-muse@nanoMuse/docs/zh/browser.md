@@ -32,6 +32,8 @@ timeout_ms = 30000
 
 `NANOMUSE_BROWSER_ENABLED=1` 打开这个工具；`NANOMUSE_BROWSER_BACKEND` 选后端。在手机上（`NANOMUSE_DEVICE=android`）这个工具默认是开着的。
 
+把运行时嵌进自己程序、又自带浏览器（比如一个远程浏览器服务）的，不需要第三个配置项：给 `Browser` 工具一个 `backend_factory`，也就是一个返回 `BrowserBackend` 的可调用对象（`nanomuse/tools/browser_backends.py`，两个内建后端实现的就是这个接口）。新开会话时工具用它给的后端，不再去找 Playwright 或手机，之后一切照旧：同一套动作驱动它，App 显示它的画面、可以接管，`close` 和工具的清理会关掉它，每个 URL 打开前都先过 Sentinel。第一次会话之前 App 看到的后端名是 `custom`，之后是这个后端自己的 `kind`。只有它的后端被关掉之后才会再次调用工厂，所以一个会话始终只有一个后端。
+
 ## 智能体能做什么 {#what-the-agent-can-do}
 
 工具的动作，两个后端完全一样：

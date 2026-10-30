@@ -44,6 +44,13 @@ export type {
 
 export { isCloudMode, enableCloudMode, getCloudModeStatus, shouldRegisterTool } from "./utils/cloud-mode.js";
 
+/**
+ * 环境绑定槽。外部宿主（自己起 transport 的那种）要上报真实的 envId，
+ * 就得在自己的一次 run 里跑 server 的消息处理，否则上报恒为 `default`。
+ */
+export { ENV_SOURCES, runWithEnvSlot } from "./utils/env-binding.js";
+export type { EnvBinding, EnvSlot, EnvSource } from "./utils/env-binding.js";
+
 export {
   getCloudBaseManager,
   getEnvId,

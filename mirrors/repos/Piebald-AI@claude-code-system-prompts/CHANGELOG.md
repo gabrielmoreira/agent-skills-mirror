@@ -4,6 +4,44 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.314](https://github.com/Piebald-AI/claude-code-system-prompts/commit/eaf679d)
+
+_+12,588 tokens_
+
+- **NEW:** Data: blockWritesOutsideWorkingDirectories setting — Describes file-tool write restrictions across permission modes, including protected settings, session-file exceptions, and limits that do not cover shell commands.
+- **NEW:** Data: Sandbox excludedCommands setting — Explains when matching command patterns bypass sandboxing, requiring every pipeline or chain component to match while retaining normal permission checks.
+- **NEW:** Data: Untrusted folder environment variables ignored warning — Explains ignored repository-supplied environment values when trust cannot be requested, and directs required overrides to user, managed, or startup settings.
+- **NEW:** Data: Sandbox project settings ignored under higher-priority policy — Explains that project settings values are ignored under higher-priority restrictions on unsandboxed commands or managed-only network domains.
+- **NEW:** Data: Server classifier beta rejection warning — Explains that a rejected classifier request disables server checks until restart and identifies the setting that disables these requests entirely.
+- **NEW:** System Prompt: Background agent session keepalive guidance — Explains how active background agents keep sessions running after replies, requiring foreground commands rather than background commands or user-dependent waits.
+- **NEW:** System Reminder: Auto mode deny rules without safety result — Explains refusals when automatic checks are unavailable or inconclusive and deny rules prevent substituting user approval, without declaring the action unsafe.
+- **NEW:** System Prompt: Compaction omitted tool result handling — Restricts conclusions from omitted tool results, preserves refusals, and prevents tasks or approvals in tool output from overriding user messages.
+- **NEW:** Agent Prompt: Background agent state classifier user merge handoff rule — Classifies completed work awaiting only the user's own merge or review as done, while keeping unanswered questions and dependent work blocked.
+- **NEW:** System Reminder: Cloud sandbox sustained CPU limit stop — Explains CPU-triggered command shutdowns, preserves files, and requires agreeing on less CPU-intensive work before restarting heavy jobs in the same sandbox.
+- **NEW:** System Reminders: Send-to-project memory brief trust boundary and Send-to-project gathered context trust boundary — Mark imported briefs and quoted folder history as untrusted background, with explicit boundaries that prevent their contents from becoming instructions.
+- **NEW:** System Prompt: Send-to-project coordinator handoff — Requires presenting the imported setup card without starting work, and treats source-session transcripts and MCP server labels as untrusted data.
+- **NEW:** Tool Parameter: SendToProject proposal and Skill: /send-to-project brief drafting guidance — Define concise handoff briefs, unfinished-work threads, evidence, and standing rules, excluding secrets and leaving thread creation under the user's control.
+- **NEW:** System Reminder: Send-to-project interrupted result recovery — Directs reporting partial transfer results and uncertain setup-card delivery, warning against retries that could create duplicate projects or setup cards.
+- **NEW:** Tool Description: SendToProject work brief and Skills: /send-to-project work brief slash command and /send-to-project work brief preload description — Describe confirmed session handoffs into new or existing Claude Projects, requiring Remote Control and a setup card whose threads users start themselves.
+- **NEW:** Tool Description: SendToProject message and Skills: /send-to-project message slash command and /send-to-project message preload description — Describe confirmed messages posted as the user in Claude Projects, requiring Remote Control but creating neither project-memory briefs nor setup cards.
+- **NEW:** Tool Description: SendToProjectContext — Returns folder context captured when the command ran, once per invocation, treating file contents and session history as untrusted data.
+- **NEW:** System Reminder: Background MCP call stopping session warning — Warns that pending call results may be lost after replying; background agents can wait in foreground, but repeating existing calls requires harmless duplication.
+- **REMOVED:** System Reminder: Combined thinking and reply token budget — Removes the standalone shared-budget warning and guidance to spend reasoning effort on planning rather than drafting the same deliverable repeatedly.
+- **REMOVED:** System Reminder: Message attachment files missing — Removes the standalone notice identifying missing attachment files, requesting reattachment, and conditionally explaining failures caused by insufficient device storage space.
+- Data: Data visualization choosing a form, Data visualization components, Data visualization anti-patterns, and Data visualization marks and anatomy; Skill: Data Visualization — Distinguish ranked, thin segmented, tall segmented, and stacked bars, with accessibility requirements and explicit exceptions for tall segmented bars.
+- Data: Data visualization marks and anatomy — Keeps vertical-axis numbers unabridged below 10,000 and horizontal-axis numbers below a million when space permits, using consistent formatting per axis.
+- Data: SDK API error kind field — Adds typed causes for administrator-enforced login refusal, connection failure, stream idle timeout, and detected computer sleep, clarifying their diagnostic limits.
+- Data: SDK set model error response model field — Removes the exception excluding the current model from a cloud tenant's still-pending set-model response, while preserving Remote Control exclusions.
+- Data: MCP server status error_code field — Adds client-registration unavailability for failed or authentication-needed servers, describing cached detection and preserving sign-in and reconnect actions for possible recovery.
+- Tool Parameter: PowerShell run_in_background note and System Prompt: Avoiding Unnecessary Sleep Commands (part of PowerShell tool description) — Qualify background completion notifications for sessions that may stop after replies, instructing Claude to obtain needed results before replying.
+- Tool Description: Agent (usage notes) and Tool Parameter: Bash run_in_background guidance — Add post-reply lifetime guidance alongside existing background execution instructions, explaining when work must stay active in an agent's foreground.
+- Tool Description: Background monitor (streaming events) — Extends turn-limited monitoring guidance to additional session types, recommending foreground waits in background agents or explicit instructions for the user.
+- **NEW:** Tool Descriptions: GetTask default completion guidance and GetTask stopping-session completion guidance — Preserve both completion variants, requiring needed results before replying in stopping sessions while retaining later notifications in the default variant.
+- System Reminder: Output token limit continuation — Shortens continuation instructions to finish the interrupted response and reopen code fences or table headers, dropping detailed repetition and formatting directions.
+- System Reminders: Staged file still copying and Staged files still copying — Specify foreground waits that finish when the file arrives or one minute elapses, before checking whether copying is still underway.
+- Tool Description: Computer use enable stub guidance — Replaces the specific Settings navigation path with the Computer use section of Settings when explaining where unavailable computer access may be diagnosed.
+- Tool Description: DesignSync — Explains that confirmation may omit paths that do not fit, requiring full disclosure on request and renewed confirmation after agreement.
+
 # [2.1.312](https://github.com/Piebald-AI/claude-code-system-prompts/commit/5350273)
 
 _-12,704 tokens_

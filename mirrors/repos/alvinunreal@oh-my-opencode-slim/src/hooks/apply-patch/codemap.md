@@ -2,11 +2,11 @@
 
 ## Purpose
 
-Preflights `apply_patch` calls before OpenCode's native tool runs. It validates the patch, guards target paths, simulates hunks against in-memory file state, and rewrites patches when paths or matched content need canonicalization. The hook does not apply or roll back changes on disk.
+Preflights patch-tool calls before OpenCode's native tool runs: v1's `apply_patch` and v2's native `patch` (same `{ patchText }` input). It validates the patch, guards target paths, simulates hunks against in-memory file state, and rewrites patches when paths or matched content need canonicalization. The hook does not apply or roll back changes on disk.
 
 ## Entry point and contract
 
-- `index.ts` exports `createApplyPatchHook(ctx)` for `tool.execute.before`. Only calls with `input.tool === 'apply_patch'` and a string `output.args.patchText` are processed.
+- `index.ts` exports `createApplyPatchHook(ctx)` for `tool.execute.before`. Only calls with `input.tool === 'apply_patch'` (v1) or `input.tool === 'patch'` (v2 native) and a string `output.args.patchText` are processed; the v2 tool bridge (`src/v2/setup.ts`) forwards the v2 name unchanged.
 - Rewrites mutate `output.args.patchText` on the original args object; the hook never replaces `output.args`. Frozen or read-only args pass through unchanged.
 - The root is `input.directory || ctx.directory || process.cwd()`; the worktree is `ctx.worktree || root`.
 - An unchanged patch keeps the original args and bytes.
@@ -24,7 +24,7 @@ Preflights `apply_patch` calls before OpenCode's native tool runs. It validates 
 
 - The hook has no `ApplyPatchRuntimeOptions`: prefix/suffix and LCS rescue are always enabled. There is no prepared-changes/rollback engine or disk-applying operation in production; the test helper applies simulated steps with plain filesystem calls.
 - `errors.ts` also exports `getErrorMessage`, consumed by `src/companion/updater.ts` to report fetch and install failures.
-- The preflight checks paths against the real root and worktree before reading; non-regular files are rejected without reading. Missing `@@` context is removed and rewritten when the remaining chunk is resolvable. Ambiguous rescues, unsupported moves, and overlapping chunks fail closed. Only the native `apply_patch` tool writes files.
+- The preflight checks paths against the real root and worktree before reading; non-regular files are rejected without reading. Missing `@@` context is removed and rewritten when the remaining chunk is resolvable. Ambiguous rescues, unsupported moves, and overlapping chunks fail closed. Only the native patch tool writes files (v1 `apply_patch`, v2 `patch`).
 - The only external dependency of the hook beyond OpenCode's plugin context is the shared structured logger (`src/utils/logger.ts`).
 
 ## Verification

@@ -2243,6 +2243,7 @@ signature.
 | `muse--palette-partial.txt` | Slash palette open under partial input: `❯ /us` + the `/usage` suggestion. The read stays polluted on purpose — Enter would accept the suggestion, so verifying the typed text would bless another command (#276) | `idle` |
 | `muse--draft-single.txt` | Stranded one-line draft on the `❯` row | `idle` |
 | `muse--draft-wrapped.txt` | Long draft soft-wrapped onto a 2-space-indented continuation row (breaks at the hyphen in `soft-wrap`) | `idle` |
+| `muse--draft-multiline-live.txt` | Live Muse 1.4.11 capture (2026-10-21): three-line prose draft typed but not sent, prompt row plus soft-wrapped continuation rows over the bottom rule. The frame is whole (the titled top rule is in view); before #552 the down-box dialog scan read `❯` and the rows under it as a pointed list (`unreadable`, Enter withheld). Muse's layout names `frame.draftLines` (its dialogs point with `›` and `⟩`, never with `❯`), so rows under the glyph with no option row, no key hint and no named command list read as the draft's own lines: `modal: none` / `composer: draft` (#552) | `idle` |
 | `muse--draft-paste-token.txt` | A 3003-char single line collapsed to `[Pasted Content 3003 chars]` — per-LINE collapse (a 3300-char burst of short lines stayed literal), N in code points, threshold in (1000, 1200] | `idle` |
 | `muse--draft-blank-row.txt` | Two-paragraph draft: a blank row between the `❯` head and the continuation. The tail walk steps over it, so the prompt binds, the draft folds, and no card draws (#274) | `idle` |
 | `muse--draft-image-chip.txt` | An attached image path converted in place to `[Image #1]` (N in attach order). The read stays verbatim; the attach grammar maps it back for verify (#278) | `idle` |
@@ -2442,6 +2443,29 @@ The last seven rows were captured on opencode 1.18.34, the rest of this corpus o
 `idle`, not `blocked`, under the question dialogs probed in round two (see "Round two" in
 `QUESTION_NOTES.md`). Each of the seven was checked for user and host names, home paths, tokens and
 session ids and holds only probe strings and the model name.
+
+## opencode 2.1 question corpus (captured 2026-10-27, opencode 2.1.1, throwaway tmux pane)
+
+Captures of the same `question` tool dialog on **opencode 2.1.1**, in a throwaway tmux session at
+120 by 40, `OPENCODE_DISABLE_AUTOUPDATE=1`, with the prompts sent by hand. Read with
+`tmux capture-pane -p -e`. Byte-faithful; the only text above the dialog is the probe prompts and
+the model's own short replies. The differences from 1.18 are measured in
+`web/src/lib/harness/opencode/QUESTION_NOTES.md` → "Round three": a `Questions` title row, the
+pointer painted as an accent ink rather than a chip, `Submit` in place of `Confirm`, a bold active
+chip, a review body with no `Review` heading, and a checkbox on the free-text row.
+
+| Fixture | State / what's in it | Herdr status |
+| --- | --- | --- |
+| `oc--v211-question--single.txt` | One single-select question, `Which colour?`, three options with descriptions plus `4. Type your own answer`, `Questions` title above, pointer (accent ink on the digit and label) on `1. Red`, footer `↑↓ select  enter submit  esc dismiss` | not read |
+| `oc--v211-question--single--moved.txt` | After one `Down`: the accent ink is on `2. Green`, nothing else changed | not read |
+| `oc--v211-question--multi.txt` | One multi-select question, four options: tab bar `Toppings  Submit`, `[ ]` boxes, the free-text row reads `5. [ ] Type your own answer`, footer `⇆ tab  ↑↓ select  enter toggle  esc dismiss` | not read |
+| `oc--v211-question--multi--toggled.txt` | After `Enter` on `1. [ ] Ham` and one `Down`: `1. [✓] Ham` (accent box, bright label, grey digit) and the pointer's accent ink on `2. Olives` | not read |
+| `oc--v211-question--multi--review.txt` | The `Submit` tab of a lone multi call: `Toppings: Ham, extra` with no `Review` heading, footer `⇆ tab  enter submit  esc dismiss` | not read |
+| `oc--v211-question--two.txt` | Two questions in one call: tab bar `Colour  Size  Submit`, `Colour` active (bold), footer `⇆ tab  ↑↓ select  enter confirm  esc dismiss` | not read |
+| `oc--v211-question--two--answered.txt` | Back on `Colour` after answering it: `1. Red ✓`, the pointer on it, `Size` still unanswered | not read |
+| `oc--v211-question--two--review.txt` | The `Submit` tab with both answered: `Colour: Red` and `Size: Small` on consecutive rows, no `Review` heading | not read |
+| `oc--v211-question--multi--free-text.txt` | The free-text input OPEN: the row reads `5. [✓] <typed>`, the list's footer gives way to `⇆ tab  enter done  esc close`. Stays raw; the card with Escape covers it | not read |
+
 
 ## Claude Code box table with a VS16 emoji (captured 2026-10-13, Claude Code 2.1.296, herdr 0.9.0, sandbox pane)
 
@@ -3286,6 +3310,24 @@ four-row `/wx` list over an extension's widget. A widget row is drawn with ONE l
 | `omp--v18-6-1-palette-widget-and-status.txt`, `omp--v18-12-6-palette-widget-and-status.txt` | `popup` | The same, and the flush-left status row `PLAN 3/6` under the widget |
 | `omp--v18-6-1-palette-tick-below.txt`, `omp--v18-12-6-palette-tick-below.txt` | `popup` | `/wx` typed over `/tfb`: the list, then one ticking widget row |
 
+A live band over the box (captured 2026-10-28, OMP 18.13.1 and Codex 0.163.0, Collie's rig; in `fixtures/surface/`; the folder names
+the lab only). The OMP pair is plain text; the Codex pair keeps its SGR, so the empty box's faint placeholder reads as one. A lab
+extension's eight-row widget over the editor ticks its top row every 100 ms, seven rows over the status row and outside
+`idle.volatile.above.maxRows`: every `/command` refused `probe_failed` and a message went in, until `idle.volatile.above.ticks`.
+
+| Fixture | State | What it shows |
+| --- | --- | --- |
+| `omp--v18-13-1-live-band-8.txt` | `idle` | The widget's rows (`⠦ waiting on 1 job · 15.3s · 962 tok/s · 2938 tok`, then `band row 2 of 8` to `band row 8 of 8`) over the status row and the empty box |
+| `codex--v0-163-0-welcome-idle.txt` | `idle` | A fresh Codex: the header, the braille welcome picture, the empty box |
+| `codex--v0-163-0-welcome-slash-status.txt` | `popup` | The same with `/status` typed: the picture's rows went blank and the command list stands over the box. A command here was left typed (`changed`) until its S1 compare took `idle.volatile.above.losesText` |
+
+A Codex 0.163.0 idle footer with a warning (captured 2026-10-28 in Collie's rig; in `fixtures/surface/`; plain text, so the empty box's placeholder carries no faint paint, and the cwd became `~/project`). The footer row reads `? for shortcuts` and, after wide spacing, `⚠ 1 warning · f2 to view`. A command sent in a turn was refused `probe_failed` ("The probe character changed more than the box") until `idle.volatile.below.hints` took that trailing segment, because the footer then becomes `tab to queue message`.
+
+| Fixture | State | What it shows |
+| --- | --- | --- |
+| `codex--v0-163-0-idle-warning.txt` | `idle` | A turn's `Waiting for background terminal` row over the empty box; the footer row carries the warning segment |
+| `codex--v0-163-0-in-turn-probe.txt` | `idle` | The same screen with the probe character typed: `› ⌁`, and the footer row now `tab to queue message` |
+
 A pasted box drawing in the draft (gang three, 01-regression W1, same date and versions; in `fixtures/surface/`; the rows keep their padding to 120 columns, which is what tells the person's `│` from a border):
 
 | Fixture | State | What it shows |
@@ -3465,3 +3507,45 @@ One capture in `fixtures/surface/`, cut to its last 12 rows with its colours kep
 | Fixture | State | What it shows |
 | --- | --- | --- |
 | `omp--v18-6-1-draft-queueing-painted--w120.txt` | `draft` | 18.6.1, `-> hello queue draft` typed at the desk, label and body painted |
+
+## Claude Code Authentication box (2.1.307, 2.1.309 and 2.1.310, issue 542)
+
+The box Claude Code draws above its live input box while its `awsAuthRefresh` command runs, filled with
+what the command prints. The 2.1.307 capture comes from a Herdr pane (SGR truecolour, no OSC 8), cut to
+the last status row. The 2.1.309 captures come from detached tmux panes running a stand-in command that
+prints device-code style output with fake codes (`ABCD-EFGH`) and `example.awsapps.com` addresses: tmux
+256-colour SGR, OSC 8 hyperlinks around the addresses (Herdr strips them), and trailing blank rows cut.
+tmux's own `tmux focus-events off` hint stays under the statusline as a third status row.
+
+The three 2.1.310 captures come from a private tmux pane 52 columns wide, with the same kind of stand-in
+command, after a message (`hi`) was sent while the box was up: Claude Code then draws its turn spinner row
+between the box's bottom edge and the input box's rule, with a blank row on each side of it. The temporary
+folder in the header was replaced with a same-length placeholder.
+
+The files are named for the width they were drawn at, which is the input box's rule, not the box's own
+edge: `output--w61` is a 61-wide edge (57 content cells) and `output--w120` a 113-wide edge (109 content
+cells) on a 120-column pane. Every path that showed this machine's temporary folder in Claude Code's
+header was replaced with a neutral path of the same length, and the `…`-shortened copy of it with the
+same characters, so no rule or box width moves.
+
+| Fixture suffix | State |
+| --- | --- |
+| `v2307-auth-refresh-output--w61` | Filled box, both mid-word breaks (`ABCD` / `-EFGH`, `https://ex` / `ample...`) |
+| `v2307-auth-refresh-before-output--w61` | Title-only box before the command prints: three rows, 18 cells wide (the box shrinks to its title), over the 61-wide input rule |
+| `v2309-auth-refresh-output--w40` | Filled box, 36 content cells: two addresses broken next to a `/` one column short of the edge (`.../start/#` / `/device?...`, 35 of 36) among the mid-word breaks that fill the row |
+| `v2309-auth-refresh-output--w52` | Filled box, 48 content cells: an address broken right after a `/` one column short of the edge (`https://example.awsapps.com/` / `start/#/...`, 47 of 48) beside two mid-word breaks |
+| `v2309-auth-refresh-output--w64` | Filled box, 60 content cells: three addresses broken mid-word at the last column (`https://examp` / `le...`, `https://example.awsapps` / `.com/...`, `.../lat` / `est/...`) |
+| `v2309-auth-refresh-output--w120` | Filled box, no break: four addresses, a 113-wide edge on a 120-column pane |
+| `v2309-auth-refresh-locked--w{52,80,120}` | Another Claude Code process runs the command: text only, no address |
+| `v2310-auth-refresh-before-output-spinner--w52` | Title-only box after a message was sent, `✢ Whirlpooling… ` (no timer yet) under it: a turn runs, and the surface reads it free because the running sign needs the timer |
+| `v2310-auth-refresh-output-spinner--w52` | Filled box, 48 content cells, `✶ Garnishing… ` (no timer yet) under it: the same free read of a running turn |
+| `v2310-auth-refresh-output-spinner-timer--w52` | Filled box, `✻ Moonwalking… (49s)` under it: the timer is drawn, and the surface reads the turn as running |
+
+## Codex Ultra prompt glyph (derived 2026-10-29, issue 615)
+
+Codex 0.164.0 and 0.165.0 draw the composer prompt as `»` (U+00BB) at Ultra effort and `›` (U+203A) at Max. The reporter's capture is not attached, so these two are **derived, not captured**: each is a copy of the named original with ONLY the composer row's leading `›` swapped for `»`. Every other byte is unchanged. Replace them with the reporter's capture when it arrives.
+
+| Fixture | State | What it shows |
+| --- | --- | --- |
+| `codex--v0165-ultra-empty--w120.txt` | `idle` | Derived from `codex--v0164-queue-done--w120.txt`: the empty dim `» Ask Codex to do anything` composer under a finished turn (the `› ` echoes in the transcript stay as they were), status row and hint row. Both readers must find the box and report it empty and free |
+| `codex--v0165-ultra-draft.txt` | `draft` | Derived from `codex--v0156-headless-draft.txt`: the draft `» hello from the phone probe` over the status row. The draft must read back |

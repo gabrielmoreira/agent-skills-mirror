@@ -14,7 +14,7 @@ mix (duck, compress, balance) ──► mux with ffmpeg, two-pass loudnorm −14
 
 ## 1. Requirements and install
 
-System tools, which the user installs: **Node 20+**, **ffmpeg**, and **Python 3.11+** or [uv](https://docs.astral.sh/uv/). Developed on macOS (Apple silicon); Linux should work; on Windows use WSL. 3D and shader-heavy styles want a GPU.
+System tools, which the user installs: **Node 20+**, **ffmpeg 7+** (6.x under-reports audio length through `loudnorm`, and `mux.sh` then rejects the file as cut off), and **Python 3.11+** or [uv](https://docs.astral.sh/uv/). Developed on macOS (Apple silicon); Linux should work; on Windows use WSL. 3D and shader-heavy styles want a GPU.
 
 Everything else installs in tiers, from the library root (`$LIB` in skill mode). Install a tier only when the film needs it:
 
@@ -98,7 +98,7 @@ A small script (`cuecheck.py`, in `styles/<slug>/demo/tools/` of several demos) 
   - **English**: [Kokoro](https://github.com/thewh1teagle/kokoro-onnx), local, many voices (an unknown `voice` name makes `tts.py` print the full list; `af_` / `am_` are American, `bf_` / `bm_` British; cast the narrator for this film, not the demo's). `core/tts/tts.py lines.json out/` writes one WAV per line and a durations file. Its Chinese voices (`"lang": "cmn"`) work offline but sound plain.
   - **Chinese**: `core/tts/tts_zh.py lines.json out/` uses [edge-tts](https://github.com/rany2/edge-tts) with Microsoft's neural voices (`zh-CN-XiaoxiaoNeural`, `zh-CN-YunxiNeural`…), with the same outputs as `tts.py`, a rate per line and the silence trimmed. **It needs a network connection.**
 - Spell numbers out in the TTS text and write them as digits in the subtitles.
-- **Check every line**: `core/tts/asr_check.py` transcribes each WAV with faster-whisper and compares it with the script (`--lang zh`: character by character); re-generate until it exits 0. A misheard character in a short Chinese line is normal: listen, and if it is right, put what the model heard in the line's `asr` field. It also writes word timestamps for placing lines and subtitles.
+- **Check every line**: `core/tts/asr_check.py` transcribes each WAV with faster-whisper and compares it with the script (`--lang zh`: numbers by value, so 十九 matches 19, and the rest character by character); re-generate until it exits 0. A misheard character in a short Chinese line is normal: listen, and if it is right, put what the model heard in the line's `asr` field. It also writes word timestamps for placing lines and subtitles.
 - **Before mixing**: TTS has a high peak-to-average ratio. Compress the voice first, then balance by RMS: voice about 10 dB above the music.
 
 ## 5. Music

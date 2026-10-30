@@ -58,6 +58,10 @@ tensorfold-native serve /path/to/checkpoint --temperature 0
 - `--parallel N` admits N streams. Each stream's caches are its own: about 110 MiB of DeltaNet state and the n-gram
   tail, plus 28 KiB a token of keys, values and indexer keys, and with drafts its MTP head's cache.
 - `--no-drafts` serves without the MTP head; `"draft": false` on a request does the same for that request.
+- `TF_FLASHNEXT_CHUNK` (1 to 16,384, default 1,536) caps the rows of one prompt pass. Every pass reads the weights
+  of every expert its rows route to, so fewer, larger passes cost less a token; but a pass runs to its end, so a
+  stream decoding during a pass waits up to the whole pass for its next token. See
+  [Prompt chunk size](#prompt-chunk-size).
 - `TF_FLASHNEXT_DRAFTS` (1 to 15, default 6) and `TF_FLASHNEXT_CONFIDENCE` (default 0.60) set the head's chain.
 - `TF_FLASHNEXT_LOAD_THREADS` (1 to 32, default 8) packs the routed NVFP4 experts on that many threads at load, staged
   through at most 192 MiB of pinned memory: every layer on one GPU, and the MTP head's layer on rank 0 at `--tp 2`.
@@ -192,6 +196,20 @@ The engine holds 73.2 GiB and keeps a 12.2 GiB reserve. A 32,768-token window th
 and a 131,136-token window (the cold prompts above) 2 of 4.03 GiB; a 262,144-token stream takes 7.79 GiB, which fitted
 in one start of four on this machine. After the 131,072-token prompt the process had peaked at 6.5 GB of host and
 83.0 GB of device memory. Absolute speeds on this machine moved by about a tenth between sessions.
+
+### Prompt chunk size
+
+`TF_FLASHNEXT_CHUNK` sets how many prompt rows one pass takes. A prompt of N rows runs in ceil(N / chunk) passes: a
+1,922-row prompt is two passes at the default 1,536 and one at 8,192.
+
+- **For:** every pass reads the gate, up and down weights of each routed expert its rows route to (1.84 MB of gate and
+  up weights an expert, 512 experts a layer). Fewer passes read each expert fewer times, so a prompt longer than one
+  chunk gets faster as the chunk grows.
+- **Against:** a pass is not interrupted, so a stream that is decoding waits up to the whole pass for its next token,
+  and a pass's time grows with its rows. The prompt scratch grows with the chunk too, and at 16,384 rows the n-gram
+  tables of the MLX 4-bit checkpoint page (see `docs/known-issues.md`).
+- One stream at a time (an agent loop, a single user): a larger chunk shortens every prompt longer than the default
+  chunk. Several streams that decode while others send long prompts: the default keeps each wait to one short pass.
 
 ## Not yet
 

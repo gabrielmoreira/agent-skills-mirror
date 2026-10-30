@@ -1,6 +1,6 @@
 # Loop repair — RIFE in-betweens for jump frames, the jolt index, one cycle per set
 
-> Owns: Where RIFE runs and what it costs, which model and augmentation it runs with, its two backends (the binary and PyTorch, the latter in this process or on a GPU elsewhere), how it is installed and what runs without it, jump-frame repair in `video-loop`, the flow reading (frames off a walk's way), the eased retime (a part that rushes on its way), the part pop (a hand or a foot that jumps at the wrap), the seam bridge (the wrap of a loop that is not a walk), the jolt index and its gate, cycle alignment across a direction set, the redrawn wrap of a pinned clip (`--wrap-blend`) · Index: [docs/README.md](README.md)
+> Owns: Where RIFE runs and what it costs, which model and augmentation it runs with, its two backends (the binary and PyTorch, the latter in this process or on a GPU elsewhere), how it is installed and what runs without it, jump-frame repair in `video-loop`, the flow reading (frames off a walk's way), the eased retime (a part that rushes on its way), the part pop (a hand or a foot that jumps at the wrap), the seam bridge (the wrap of a loop that is not a walk), the jolt index and its gate, cycle alignment across a direction set, the redrawn wrap of a pinned clip (`--wrap-blend`), held cells (a picture shown again) and a cut given above its clip's rate (`--fill-held`, `--out-fps`) · Index: [docs/README.md](README.md)
 
 A walk loop cut from a generated clip can look right in every still and still hitch when it
 plays: the video model redraws thin hair a little differently every frame, and now and then
@@ -1414,7 +1414,10 @@ not whole — a cycle of 23.5 frames cut at 24 repeats better at 47, being whole
 only names the cut, and the count comes from whoever looks at the loop (how often each foot lands:
 by eye, or a vision call). Its images, `strip.json`, warnings and stderr are what they were without
 it; the report's `cycle`, and the summary `video-loop` prints, gain `step_screen`. A twice-the-cut
-lag past the clip (fewer than 4 pairs) is not read: `lag` null, not a suspect. The synthetic walker
+lag past the clip (fewer than 4 pairs) is not read: `lag` null, not a suspect. A cut under the gait
+floor is the exception: it is one step by its length, and the clip is asked whether it holds two about
+the doubled cut's wrap, on the frames as filmed — not over the whole clip — and cut two lengths long
+where it does ([video pipeline](video-pipeline.md) section 4, "A cut under the gait floor"). The synthetic walker
 of `tests/video/test_one_step_cut.py` — a 42-frame cycle, legs drawn alike and arms shaded apart, 73
 frames, its feet read as unseen — is cut at 21 (`ratio` 0.48, a suspect); the same drawing on a
 25-frame cycle is cut at 25 (`ratio` 1.53), and on 23.5 frames at 24 (`ratio` 0.66: a suspect that is a
@@ -1433,7 +1436,9 @@ the cut it takes without `--steps` holds.
   cut all the same — the count stands for the repeat — at the window whose wrap the clip plays
   (`method: "counted-window-v1"`, `unseen` saying why the search found none). `cycle.steps` is
   `{"count": 2, "by": "given", "given": 1, "first_cut": {start, length}, "window": [lo, hi]}`, with
-  `counted_window` beside `window` where an explicit window left only part of [2L − 1, 2L + 1].
+  `counted_window` beside `window` where an explicit window left only part of [2L − 1, 2L + 1]. A cut
+  under the gait floor that the clip itself gives two steps is cut the same way, one length at a time,
+  and recorded `"by": "two-lengths"` without `given`.
 - **`--steps 2`**: the cut is a cycle already; it is kept, and recorded `{"count": 2, "by":
   "given", "given": 2}`.
 
@@ -2740,6 +2745,99 @@ Limits (what the gate reads as a redraw, and so ramps):
 The loop report records `wrap_blend` on every pinned cut: `applied`, `why`, `K`, `cells` (the cells changed), `residual_ratio`, `wrap_ratio_before`, `wrap_ratio_after`, `ramp_step_max_ratio`, `bound_ratio` (all over the median step), `pose_share` (the share of the figure the two ends hold apart), `presence_share` (of the figure, what the presence test holds), `never_settled` (the share of the figure that never stands where the pin stands in the ramp), `equalize` (`sigma`, `blurred`: "still", "pin" or "none"), `after_check` ("passed" or "refused"), and `seconds`. Where it was not tried, `applied` is false and `why` records the reason ("--wrap-blend off", "--anchor body moves the cells off the place the pinned frame holds", or "the pin does not close: the clip is refused on it"). Other cuts (auto, periodic, fixed, one-shot, once, once-return, lifetime) are not read and their report has no `wrap_blend`. Strip metadata (`<name>.strip.json`) carries `wrap_blend: {cells, K}` where it applied, and the CLI summary carries `wrap_blend` (`applied`, `why`, `residual_ratio`, `wrap_ratio_before`, `wrap_ratio_after`). Because `source_projection` records the cut before the blend, reading a strip whose cells were changed by the blend is reported as processing that cannot be reproduced (`source-processing-unsupported`).
 
 A `video-loop: warning:` line is emitted under two conditions. When the after check refuses the blend because a step into or through the ramp exceeds the bound or the wrap does not shrink, the cut is written as filmed, `wrap_blend.after_check` is set to "refused", and the warning states that the wrap blend was not used, why, and the measured numbers. When the wrap remains over `--seam-max` after blending because the two ends hold a part apart, the blend is applied anyway and a warning line reports that condition along with the share of the figure held as filmed.
+
+## 7. Held cells: a picture shown again, and a cut at a higher rate
+
+A clip can show one frame two or three times in a row: a video model that stalls, a rate carried to another by
+repeating frames (20 fps carried at 24 repeats one frame in six), or a cut mapped to a higher rate by taking the
+nearer frame. Played, the motion stops on that picture and jumps on. `video-loop` reads every cut it makes for held
+cells (loops that are periodic, fixed, or pinned; one-shot, once, and once-return cuts; and so every cut `video-set`
+makes and every clip of `video` cut through `video-frames` and `video-loop`). By default, it makes those cells again
+as the frames between the pose before them and the pose after (`sprite_gen/video/held_fill.py`). The default step
+of the pipeline is: find the held cells, fill them, read the cut again; the cut's line to the person is its poses
+over its cells.
+
+### The reading
+
+| Rule | Value | Why |
+|---|---|---|
+| The same picture | A step where at most `CHANGED_MAX` 0.5 % of the subject's pixels change by more than `PIXEL_SAME` 0.1 (premultiplied RGBA). This is read twice: on the analysis thumbnail used to choose the cut (96 px on the longer side) and on the frames as cut. It is the same picture only where both readings say so. | A textured synthetic figure, each pose shown three times, is encoded by libx264 at crf 18, 23 and 28 and keyed by `video-frames`. A frame shown again changes no thumbnail pixel by more than 0.008, 0.020 and 0.051, and changes 0.012 %, 0.049 % and 0.11 % of the frame's subject pixels by more than 0.1. An arm 8 px thick on a 120 x 140 figure grown by one pixel changes 1.2 % of the thumbnail's subject pixels over 0.1 and 0.38 % of the frame's: the thumbnail separates it. |
+| Not a distance over the mass | `nonloop.STABLE_MAX` (0.025), the once cut's settled end, is not the rule | The arm's pixel reads 0.003 of the subject's mass: under it, so the rule would call it held. |
+| Where read | On the cut's frames as loaded, before an anchor moves each frame apart, and again on the cells delivered | An anchor shifts each frame of a pair by its own amount: a picture shown again would no longer read as one. |
+| Not read across the wrap | A loop's last cell and its first are not a run | The wrap is the seam gate's, not a hold. |
+| A move under a thumbnail pixel | A whole figure that moves less than a thumbnail pixel is read on the frame as cut. It is not the same picture. A small part moved a pixel or so reads as the same picture on both. | A synthetic walker moving away in a frame 280 px wide changes 4.9 % of the frame's subject pixels over 0.1 in a step that changes none of the thumbnail's. Two or three pixels of a hand on a large frame play as a hold. Made again between its neighbours, it plays the same. |
+
+The record, `held_fill` in the loop report and in the strip metadata (the strip's without each try): `cells`,
+`poses` (the cells less the ones showing the picture before them) and `held_runs` (each run's first cell and how
+many) of the cells as delivered; `before`, the same of the cut as filmed with each run `filled` or `why` not (and
+the `faults` its frames between were refused for); `made`, the cells made; `unmade`, the cells left for want of
+RIFE with the install line; `out_fps`, the rate asked (below). `video-loop` prints `held_fill.poses_cells` (`27/27`)
+and `before` in its summary; `video-set` puts `loop.poses` on each item. In the curation view (a loop's `cycle/`
+imported with `unpack-atlas --pngs-dir`), the card of each cell made says `(made)` and of each cell still showing the
+picture before it `(held)`. A stop (`video-stop`) is read the same way and records `held_fill` with `mode` off: it
+plays the clip's filmed frames, none made between two others, and names a run it shows in a warning.
+
+### The fill: `--fill-held auto` (default), `off`
+
+| Rule | Value | Why |
+|---|---|---|
+| A run's cells made | Cell c of a run from cell a to the next pose b, at t = (c - a)/(b - a) between a and b: a run of two half way, of three a third and two thirds | The cut keeps its length, its beat, its first and last cells and its wrap: a made cell stands where a held cell stood, on its own time. |
+| Kept: a hold the motion means | A run longer than `HOLD_MAX` 3 cells | A drawing held on threes is three frames ([held.py](../sprite_gen/video/held.py)); longer is a pause the motion makes. A shorter pause meant as one is filled: `--fill-held off` keeps it. |
+| Kept: a cut drawn on twos or threes (`drawn`) | Every run, where the cut's held-drawings reading (`cycle_drawings`, else the clip's `drawings`: [held.py](../sprite_gen/video/held.py), which `video-cycle-align` reads) gives a hold of 2 or 3 and every run is that many cells, but one cut short at the cut's first or last cell | Limited animation: each drawing shown as long as the next, played at its own rate as filmed (section 4). A clip carried to a higher rate by repeating frames reads a hold too (a synthetic walk at 24 fps carried to 60 by the frame under each time reads a hold of 2), but its runs are two and three cells by turns: it is filled (60 poses over 60 cells). A clip that stalls now and then reads no hold (hold 1). |
+| Kept: the ends of a cut played once | A run that opens or closes a one-shot, once or once-return cut | The rest before the action and the pose it ends on are the cut's. |
+| Kept: a loop's last cells | A run that ends on a loop's last cell | Its next pose is across the wrap: made, the last cell would change and with it the wrap. A run that opens a loop is made (its first cell stays). A periodic cut chooses its wrap where the steps either side read alike, so a held run seldom closes it; a fixed cut whose last cells are held keeps them, and its wrap then steps from a held picture (cut it elsewhere, or `--fill-held off` to keep the whole cut as filmed). |
+| A frame made, judged | `align.measure_made` and `interpolation_quality.faults` (smear, outline, ghost, hole, doubled), the alignment's own | One acceptance policy for every frame RIFE makes (section 4). |
+| A part standing still, kept still (`still_kept`) | The outline pixels both frames draw in one place in one colour (solid at alpha 128, within 24 levels) must be drawn there in the frame made, within a pixel, for at least `STILL_KEPT_MIN` 0.8 of them in every window a tenth of the body high that holds 12 or more; else the fault `contact` | A foot planted or a hand on a ledge stays where it stood. A synthetic in-between that drags a planted foot 3 px along the floor keeps 0.50 of its window; one off by a pixel, 1.00. |
+| A frame refused | Made again at the fraction of `RETIME_T` nearest its own within half a cell of it, its ghost band under `RETIME_WINDOW_MAX` (section 4's bar for a frame made off its time); else the run is kept as filmed, with a warning naming the cells and the faults | A frame half way that RIFE cannot draw is often clean nearer one side. |
+| Whole or not at all | A run is made whole or kept whole | Half made, it would step back to the held picture and on again. |
+| Order | After the anchor and `source_projection`, before the ghost screen, the wrap blend, the part pop and the jump repair | Everything that reads the flow and the wrap reads the cut as it will play. |
+| No RIFE | The held cells are delivered as filmed, the cut passes, and a `warning:` line names the motion, the cells and `sprite-gen rife install`; `held_fill.unmade` records them | Never a failure, never silent. |
+| `--fill-held off` | Cut as filmed, byte for byte as before; the reading is recorded all the same | |
+| Byte for byte | A cut with no held cell is delivered as before: six synthetic cuts (a fixed and a periodic walk, a one-shot hop, a pinned swing, a once fall, a once-return swing) are pinned to their decoded pictures on the engine before the change (commit 886936e): every frame of the strip PNG, the GIF, the WebP and the `cycle/` cells, decoded to RGBA, with each frame's size and the frame count. The test no longer pins the file bytes because the same pixels are written as different PNG bytes on Linux and on macOS (zlib differs), though on each platform the engine before the change and this one still write identical files (`tests/video/test_held_fill.py`). | |
+
+A cut whose cells were made is read by the seam gate on its rendered cells (`seam_measurement`), restoration from
+the source frames (`video-loop-repair`) reads it as `source-processing-unsupported`, and `video-cycle-align` reads
+its drawings on its own cells, not on the clip's hold.
+
+### A rate above the clip's: `--out-fps F`
+
+`video-loop --out-fps F` (and `video-set --out-fps F`) gives the cut at F, above the clip's `--fps`: every cell at a
+time of its own, made by RIFE between the frames beside it, judged as the fill's frames are, never showing a frame
+again. A loop has round(L x F / fps) cells over its cycle's seconds, at times k x L / cells; a cut played once runs
+from its first frame to its last, round((L - 1) x F / fps) + 1 cells, each 1/F. A cell on a frame's time is that
+frame; one between two frames showing one picture (a hold kept) is that picture; one no frame made is taken for is
+the nearer frame, named (`out_fps.shown_again`). `cycle/` holds every cell; the strip holds them up to its cell and
+width caps, subsampled past them as any strip is (`subsampled`). The strip metadata says `out_fps` and `source_fps`,
+and `source_cut.times` in place of `samples`. With no RIFE the cut is delivered at its own rate with a `warning:` line
+and `out_fps.applied` false. `video-cycle-align` and `video-stop` refuse such a loop (each makes its own frames
+between from the cut at the clip's rate), and restoration reads it as `source-processing-unsupported`.
+
+Where sprite-gen gives frames at a higher rate than it was given them:
+
+| Path | Before | Now |
+|---|---|---|
+| `video-loop --gif-fps`, `--n-out` | The GIF and WebP never hold more frames than the cut (a higher request is capped at the cut's frames, never repeated) | The same; `--out-fps` makes the cells themselves at the higher rate |
+| `video-cycle-align --length` | RIFE's frames between; a frame shown again only with `--between nearest`, or where a frame made is refused and the nearer source frame is taken (named) | Unchanged: it already makes frames between |
+| `video-loop --out-fps` (new) | None | RIFE's frames between, never a frame shown again |
+| `scene-render` at a scene rate above an asset's | A cell of the asset shown over several scene frames | Unchanged: give the asset at the scene's rate (`--out-fps`) |
+| `video-stop --fps` | The rate of the frames given, not an output rate | Unchanged |
+
+### What it takes from sprite-gen
+
+| Part | Taken from | Why a part is its own |
+|---|---|---|
+| The thumbnail the steps are read on | `loop._small_features`, the analysis thumbnail the cut is chosen by | |
+| What a drawing held on threes is | `held.HOLDS` | |
+| Whether the cut is drawn on twos or threes | `held.measure_cycle` (`cycle_drawings`), `held.measure` (`drawings`) | |
+| The judgement of a frame made | `align.measure_made`, `interpolation_quality.faults`, `looks` | |
+| A frame made again at another fraction | `align.RETIME_T`, `align.RETIME_WINDOW_MAX` | |
+| RIFE located only once a frame is made; no RIFE as a warning | The pattern of `_repair_jumps` and `_bridge_seam` | |
+| The ghost screen's reading | `interpolation_quality.ghost_screen` | |
+| Solid pixels | `legs.LOW_ALPHA` | |
+| The window a tenth of the body high | `rife.GHOST_BAND` | |
+| The same picture (`same_steps`) | New | A distance over the mass (`nonloop.STABLE_MAX`, `held.measure`'s steps) reads a one-pixel move of a small part as held; `held.measure` reads a rhythm of redrawn drawings, not a frame shown again. |
+| A part standing still (`still_kept`) | New | `rife.hole` reads a hole through a limb, `inspect-motion` a foot's place in spans a person marks; neither reads whether an in-between keeps what both its frames hold still. |
+| The times of a higher rate (`times`, `upsample`) | New | `align.resample` resamples a loop as a ring to a length; a cut played once runs from its first frame to its last. |
 
 ## Related
 

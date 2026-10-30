@@ -97,6 +97,7 @@ Directories come first, in alphabetical order, then the individual files worth t
 
 - **Purpose**: Focuses on Webpack’s Hot Module Replacement (HMR) functionality.
 - **Usage**: Ensures live reloading and hot updates work correctly.
+- **Every HMR change is covered twice**: a case for the default output (JSONP on `web`, `require` on `node`, `importScripts` on `webworker`) and a twin under `hotCases/esm-output/` with `output.module: true` and `chunkFormat: "module"`. The ES module hot update wraps runtime code in a function, so it breaks in ways the default output never shows. A Worker twin there needs `publicPath: "auto"`: a Node ES module worker can't import the harness's `https://` default.
 
 ### `hotPlayground/`
 
@@ -107,6 +108,16 @@ Directories come first, in alphabetical order, then the individual files worth t
 
 - **Purpose**: Contains test cases related to memory limits.
 - **Usage**: Ensures Webpack doesn’t exceed memory constraints.
+
+### `sizeCoreReports/`
+
+- **Purpose**: Whole applications for `yarn test:size` ([below](#codesizetestcasessizejs)), whose report gives each one's total download in a **Sample apps** table.
+- **A case** is a directory with a `webpack.config.mjs` (or `.js`; an array builds one compiler per entry, each reported on its own row) and, optionally, an `options.mjs` whose exported `setup()` runs first to generate or install its sources (into `generated/`, which git ignores). The harness sets only `context`, `output.path`, `mode: "production"` when unset and quiet logging; everything else is the application's own configuration.
+- **Today**, each target with script (or CommonJS) and ES module output (`-esm`):
+  - `web`: `react-100`, `react-1k`, `react-5k` and `react-1k-esm`, React apps of that many components (lazy routes, CSS modules, JSON, SVG) from the `realistic-app` benchmark's generator (`test/harness/benchmark/create-app.mjs`).
+  - `node`: `node-ssr` and `node-ssr-esm`, that app rendered on the server by an `http` server with `react-dom/server` (`test/harness/size/create-server.mjs`).
+  - `webworker`: `webworker` and `webworker-esm`, a message loop lazily loading 40 data tasks built on `lodash-es` and `date-fns` (`test/harness/size/create-worker.mjs`).
+  - `library`: one small library built once per `output.library.type`, the types read from the schema.
 
 ### `specCases/`
 
@@ -152,8 +163,8 @@ Directories come first, in alphabetical order, then the individual files worth t
 ### `CodeSizeTestCases.size.js`
 
 - **Purpose**: Measures how large the code webpack generates is, so a change to `lib/` that grows (or shrinks) every bundle is visible.
-- **Usage**: `yarn test:size` builds every `configCases/` case — one plain Node.js process, outside jest, no worker pool — and writes a JSON report of what each case emitted: the raw, gzip, brotli and zstd size of every asset, plus a per-runtime-module breakdown (total bytes over the suite, how many cases emit it, the biggest single instance) — which is what shows _which_ runtime grew, which is no longer emitted at all, and which one is simply large. The CI job (`.github/workflows/code-size.yml`) compares the report against the one `main` last uploaded, posts it as a pull request comment (updated in place on every push) and repeats it in the job summary.
-- **What the comparison shows**: how many cases, runtime modules and assets are changed / new / deleted / unchanged, then **one row per changed asset** — raw before → after, and the percentage each of gzip, brotli and zstd moved. A suite-wide total is deliberately not reported: a single number over 1400 cases hides which file moved, which is the only actionable part. With no baseline to compare against, the same table ranks the biggest assets instead.
+- **Usage**: `yarn test:size` builds every `configCases/` case, plus every application in [`sizeCoreReports/`](#sizecorereports) (reported as `apps/<case>`) — one plain Node.js process, outside jest, no worker pool — and writes a JSON report of what each case emitted: the raw, gzip, brotli and zstd size of every asset, plus a per-runtime-module breakdown (total bytes over the suite, how many cases emit it, the biggest single instance) — which is what shows _which_ runtime grew, which is no longer emitted at all, and which one is simply large. The CI job (`.github/workflows/code-size.yml`) compares the report against the one `main` last uploaded, posts it as a pull request comment (updated in place on every push) and repeats it in the job summary.
+- **What the comparison shows**: how many cases, runtime modules and assets are changed / new / deleted / unchanged, then **one row per changed asset** — raw before → after, and the percentage each of gzip, brotli and zstd moved. A suite-wide total is deliberately not reported: a single number over 1400 cases hides which file moved, which is the only actionable part. The applications are the exception: a **Sample apps** table gives each one's whole download (gzip and raw, summed over its assets), which per-asset rows hide once code moves between chunks. With no baseline to compare against, the same table ranks the biggest assets instead.
 - **It never fails.** There is nothing to assert here and no size budget to breach: a growing bundle is information, not a defect. Cases whose expected result _is_ a build error emit nothing and are reported as such, with the reason, rather than counted as failures.
 - **Options**: `--output <file>` (report path), `--baseline <file>` (report to compare against), `--summary <file>` (append the markdown comparison, e.g. `$GITHUB_STEP_SUMMARY`), `--filter` / `--negative-filter` (regexps matched against `<category>/<case>`, also read from `FILTER` / `NEGATIVE_FILTER`).
 - **Note**: the cases are built with the defaults a user gets — minification on, no `output.pathinfo` — not with the `ConfigTestCases` ones. Needs Node.js >= 22.15 for zstd.
@@ -197,7 +208,7 @@ During the test run, webpack compiles this project and compares the result with 
 
 ### Splitting one file across workers
 
-Jest runs each file in one worker, so a long suite in one file leaves the runner's other cores idle. `--parts=<n>` (read by `jest.config.js`) runs every matched file in `n` workers at once, as `n` projects whose coverage merges as usual; global setup and teardown run once. A file splits its own work with `test/helpers/testParts.js`: `isInPart(key)` tells whether this part runs the work named `key`, by a hash of the name, so nothing to measure or store; `claimInPart(key)` gives the work to the first part that asks, so a part that ends early takes more and the parts end together even where costs vary; and `currentPart()` returns `[part, parts]`, e.g. to run a check once in part 1. Without the flag a file is one part and runs everything; a file that doesn't use the helper runs whole in every part, so pass the flag only where it runs files using it — e.g. CI's `yarn cover:spec --parts=3`. CI's `spec` job also runs the CSS, HTML and XML suites, which take a minute together and so run whole in every part.
+Jest runs each file in one worker, so a long suite in one file leaves the runner's other cores idle. `--parts=<n>` (read by `jest.config.js`) runs every matched file in `n` workers at once, as `n` projects whose coverage merges as usual; global setup and teardown run once. A file splits its own work with `test/helpers/testParts.js`: `isInPart(key)` tells whether this part runs the work named `key`, by a hash of the name, so nothing to measure or store; `claimInPart(key)` gives the work to the first part that asks, so a part that ends early takes more and the parts end together even where costs vary; and `currentPart()` returns `[part, parts]`, e.g. to run a check once in part 1. Without the flag a file is one part and runs everything; a file that doesn't use the helper runs whole in every part, so pass the flag only where it runs files using it — e.g. CI's `yarn cover:spec --parts=auto --maxWorkers=100%`, where `auto` takes one part per core and `100%` one Jest worker per core, as Jest's default leaves one core idle. CI's `spec` job also runs the CSS, HTML and XML suites, which take a minute together and so run whole in every part.
 
 ### Suites that drive a real browser
 
@@ -238,10 +249,8 @@ Every engine is the build the lockfile pins: the ones the installed
 a new engine arrives in one pull request, and a defect or quirk it fixes fails
 there rather than under unrelated changes.
 
-They are excluded from `test:bun` / `test:deno` (see the `--testPathIgnorePatterns`
-in those scripts). They were left out while `puppeteer-core`, which these suites
-used before, could not load under either runtime; `playwright-core` has not been
-tried there yet.
+`test:bun` and `test:deno` run the Chrome-driven `ProfilingPlugin.unittest.js`
+and `WebpackDevServer.longtest.js` too, on the same pinned Chrome.
 
 ### Generated code is held to `output.environment`
 

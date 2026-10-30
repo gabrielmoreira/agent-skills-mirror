@@ -44,10 +44,12 @@ chore/<topic>     工程辅助
 Yuxi 的开发拓扑以 Docker Compose 为准。首次启动前，根据 `.env.template` 准备 `.env`，再运行：
 
 ```bash
-docker compose up -d
-docker compose ps
-docker compose logs --tail=100 api
+docker compose --profile container up -d
+docker compose --profile container ps
+docker compose --profile container logs --tail=100 api
 ```
+
+默认 Container 需启用 `container` profile；显式选择 Cube 时去掉该参数并先准备执行节点。`make up` 同样默认启用 Container，Cube 可用 `make COMPOSE="docker compose" up`。
 
 `frontend` 使用 Vite 热更新。`api` 与 `worker` 保留源码挂载，源码修改通过显式重启生效。重启前检查活动任务，避免中断正在执行的 Run；按改动范围选择服务，例如后端公共代码修改后运行：
 
@@ -139,8 +141,8 @@ make format
 提交前至少运行仓库信任检查、其单元测试和后端 unit：
 
 ```bash
-python3 scripts/verify_engineering_contracts.py
-python3 -m unittest scripts.test_verify_engineering_contracts
+python3 scripts/ci/verify_engineering_contracts.py
+python3 -m unittest scripts.ci.test_verify_engineering_contracts
 docker compose exec api uv run --no-sync --group test pytest test/unit -m "not slow"
 git diff --check
 ```
@@ -229,8 +231,8 @@ npm run pack:check
 文档变更至少运行：
 
 ```bash
-python3 scripts/verify_engineering_contracts.py
-python3 -m unittest scripts.test_verify_engineering_contracts
+python3 scripts/ci/verify_engineering_contracts.py
+python3 -m unittest scripts.ci.test_verify_engineering_contracts
 cd docs && pnpm run build
 git diff --check
 ```

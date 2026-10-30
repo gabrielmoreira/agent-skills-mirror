@@ -134,6 +134,8 @@ Skillshare config. The schema is `schemas/mcp.schema.json` in the repository.
 Client IDs are `claude`, `codex`, `cursor`, `vscode`, `opencode`, `kilocode`,
 `grok`, `antigravity`, `amp`, `claude-desktop`, `cline`, `copilot`, `factory`, `gemini`,
 `goose`, `junie`, `kiro`, `lmstudio`, `warp`, `windsurf`, `pi`, and `omp`.
+`--target` and `--from` also take `agy` and `antigravity-cli`, the names other
+commands use for the Antigravity CLI, as `antigravity`; the source stores `antigravity`.
 `grok` means the official xAI Grok CLI. Server names use letters,
 digits, dots, underscores and hyphens. A server must select at least one client
 either directly or through `mcp.targets` before synchronization, unless its own

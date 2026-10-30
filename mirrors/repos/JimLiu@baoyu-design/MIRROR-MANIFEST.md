@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `JimLiu/baoyu-design` — 26 default patterns, 0 followed patterns, 200 file(s) materialized.
+Mirror of `JimLiu/baoyu-design` — 26 default patterns, 0 followed patterns, 267 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `JimLiu/baoyu-design` — 26 default patterns, 0 followed patterns, 20
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 200 |
+| Files         | 267 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -259,6 +259,73 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 198 | ✓ | [`skills/baoyu-design/starter-components/x-shell.js`](skills/baoyu-design/starter-components/x-shell.js) |
 | 199 | ✓ | [`skills/baoyu-design/starter-components/youtube-shell.js`](skills/baoyu-design/starter-components/youtube-shell.js) |
 | 200 | ✓ | [`skills/baoyu-design/system-prompt.md`](skills/baoyu-design/system-prompt.md) |
+| 201 | ✓ | [`skills/claude-dashboard/artifact-type/reference/design-defaults.md`](skills/claude-dashboard/artifact-type/reference/design-defaults.md) |
+| 202 | ✓ | [`skills/claude-dashboard/artifact-type/reference/exporting.md`](skills/claude-dashboard/artifact-type/reference/exporting.md) |
+| 203 | ✓ | [`skills/claude-dashboard/artifact-type/reference/features.md`](skills/claude-dashboard/artifact-type/reference/features.md) |
+| 204 | ✓ | [`skills/claude-dashboard/scripts/artifact.mjs`](skills/claude-dashboard/scripts/artifact.mjs) |
+| 205 | ✓ | [`skills/claude-dashboard/scripts/editor/assets/index-CNbhOv0A.css`](skills/claude-dashboard/scripts/editor/assets/index-CNbhOv0A.css) |
+| 206 | ✓ | [`skills/claude-dashboard/scripts/editor/assets/index-DxjUSSTG.js`](skills/claude-dashboard/scripts/editor/assets/index-DxjUSSTG.js) |
+| 207 | ✓ | [`skills/claude-dashboard/scripts/editor/index.html`](skills/claude-dashboard/scripts/editor/index.html) |
+| 208 | ✓ | [`skills/claude-dashboard/scripts/editor/local-host.js`](skills/claude-dashboard/scripts/editor/local-host.js) |
+| 209 | ✓ | [`skills/claude-dashboard/SKILL.md`](skills/claude-dashboard/SKILL.md) |
+| 210 | ✓ | [`skills/claude-design-system/artifact-type/demo.json`](skills/claude-design-system/artifact-type/demo.json) |
+| 211 | ✓ | [`skills/claude-design-system/artifact-type/reference/cover.md`](skills/claude-design-system/artifact-type/reference/cover.md) |
+| 212 | ✓ | [`skills/claude-design-system/artifact-type/reference/craft.md`](skills/claude-design-system/artifact-type/reference/craft.md) |
+| 213 | ✓ | [`skills/claude-design-system/artifact-type/reference/format.md`](skills/claude-design-system/artifact-type/reference/format.md) |
+| 214 | ✓ | [`skills/claude-design-system/artifact-type/reference/from-code.md`](skills/claude-design-system/artifact-type/reference/from-code.md) |
+| 215 | ✓ | [`skills/claude-design-system/artifact-type/reference/from-design-tool.md`](skills/claude-design-system/artifact-type/reference/from-design-tool.md) |
+| 216 | ✓ | [`skills/claude-design-system/artifact-type/reference/sample-seazar-tokens.json`](skills/claude-design-system/artifact-type/reference/sample-seazar-tokens.json) |
+| 217 | ✓ | [`skills/claude-design-system/scripts/artifact.mjs`](skills/claude-design-system/scripts/artifact.mjs) |
+| 218 | ✓ | [`skills/claude-design-system/scripts/editor/artifact-type/run.html`](skills/claude-design-system/scripts/editor/artifact-type/run.html) |
+| 219 | ✓ | [`skills/claude-design-system/scripts/editor/artifact-type/vendor/react-dom.production.min.js`](skills/claude-design-system/scripts/editor/artifact-type/vendor/react-dom.production.min.js) |
+| 220 | ✓ | [`skills/claude-design-system/scripts/editor/artifact-type/vendor/react.production.min.js`](skills/claude-design-system/scripts/editor/artifact-type/vendor/react.production.min.js) |
+| 221 | ✓ | [`skills/claude-design-system/scripts/editor/assets/index-BjevoxAx.js`](skills/claude-design-system/scripts/editor/assets/index-BjevoxAx.js) |
+| 222 | ✓ | [`skills/claude-design-system/scripts/editor/assets/index-D-vhHP3y.css`](skills/claude-design-system/scripts/editor/assets/index-D-vhHP3y.css) |
+| 223 | ✓ | [`skills/claude-design-system/scripts/editor/index.html`](skills/claude-design-system/scripts/editor/index.html) |
+| 224 | ✓ | [`skills/claude-design-system/scripts/editor/third-party-licenses.txt`](skills/claude-design-system/scripts/editor/third-party-licenses.txt) |
+| 225 | ✓ | [`skills/claude-design-system/scripts/server.mjs`](skills/claude-design-system/scripts/server.mjs) |
+| 226 | ✓ | [`skills/claude-design-system/SKILL.md`](skills/claude-design-system/SKILL.md) |
+| 227 | ✓ | [`skills/claude-design/artifact-type/reference/brand-colors.md`](skills/claude-design/artifact-type/reference/brand-colors.md) |
+| 228 | ✓ | [`skills/claude-design/artifact-type/reference/brand-typography.md`](skills/claude-design/artifact-type/reference/brand-typography.md) |
+| 229 | ✓ | [`skills/claude-design/artifact-type/reference/craft.md`](skills/claude-design/artifact-type/reference/craft.md) |
+| 230 | ✓ | [`skills/claude-design/artifact-type/reference/design-system-components.md`](skills/claude-design/artifact-type/reference/design-system-components.md) |
+| 231 | ✓ | [`skills/claude-design/artifact-type/reference/diagrams.md`](skills/claude-design/artifact-type/reference/diagrams.md) |
+| 232 | ✓ | [`skills/claude-design/artifact-type/reference/format.md`](skills/claude-design/artifact-type/reference/format.md) |
+| 233 | ✓ | [`skills/claude-design/artifact-type/reference/print.md`](skills/claude-design/artifact-type/reference/print.md) |
+| 234 | ✓ | [`skills/claude-design/artifact-type/reference/questions.md`](skills/claude-design/artifact-type/reference/questions.md) |
+| 235 | ✓ | [`skills/claude-design/artifact-type/reference/view-state.md`](skills/claude-design/artifact-type/reference/view-state.md) |
+| 236 | ✓ | [`skills/claude-design/scripts/artifact.mjs`](skills/claude-design/scripts/artifact.mjs) |
+| 237 | ✓ | [`skills/claude-design/scripts/editor/artifact-type/babel.min.js`](skills/claude-design/scripts/editor/artifact-type/babel.min.js) |
+| 238 | ✓ | [`skills/claude-design/scripts/editor/artifact-type/dc-runtime.js`](skills/claude-design/scripts/editor/artifact-type/dc-runtime.js) |
+| 239 | ✓ | [`skills/claude-design/scripts/editor/artifact-type/fast-edit-worker.js`](skills/claude-design/scripts/editor/artifact-type/fast-edit-worker.js) |
+| 240 | ✓ | [`skills/claude-design/scripts/editor/assets/index-Bg_3s49b.js`](skills/claude-design/scripts/editor/assets/index-Bg_3s49b.js) |
+| 241 | ✓ | [`skills/claude-design/scripts/editor/assets/index-BsVLmftX.css`](skills/claude-design/scripts/editor/assets/index-BsVLmftX.css) |
+| 242 | ✓ | [`skills/claude-design/scripts/editor/index.html`](skills/claude-design/scripts/editor/index.html) |
+| 243 | ✓ | [`skills/claude-design/scripts/editor/third-party-licenses.txt`](skills/claude-design/scripts/editor/third-party-licenses.txt) |
+| 244 | ✓ | [`skills/claude-design/scripts/server.mjs`](skills/claude-design/scripts/server.mjs) |
+| 245 | ✓ | [`skills/claude-design/SKILL.md`](skills/claude-design/SKILL.md) |
+| 246 | ✓ | [`skills/claude-slides/artifact-type/reference/craft.md`](skills/claude-slides/artifact-type/reference/craft.md) |
+| 247 | ✓ | [`skills/claude-slides/artifact-type/reference/deck-files.md`](skills/claude-slides/artifact-type/reference/deck-files.md) |
+| 248 | ✓ | [`skills/claude-slides/artifact-type/reference/diagram-recipes.md`](skills/claude-slides/artifact-type/reference/diagram-recipes.md) |
+| 249 | ✓ | [`skills/claude-slides/artifact-type/reference/diagrams.md`](skills/claude-slides/artifact-type/reference/diagrams.md) |
+| 250 | ✓ | [`skills/claude-slides/artifact-type/reference/fonts.md`](skills/claude-slides/artifact-type/reference/fonts.md) |
+| 251 | ✓ | [`skills/claude-slides/artifact-type/reference/format.md`](skills/claude-slides/artifact-type/reference/format.md) |
+| 252 | ✓ | [`skills/claude-slides/artifact-type/reference/images.md`](skills/claude-slides/artifact-type/reference/images.md) |
+| 253 | ✓ | [`skills/claude-slides/artifact-type/reference/layout.md`](skills/claude-slides/artifact-type/reference/layout.md) |
+| 254 | ✓ | [`skills/claude-slides/artifact-type/reference/photo-library.md`](skills/claude-slides/artifact-type/reference/photo-library.md) |
+| 255 | ✓ | [`skills/claude-slides/artifact-type/reference/questions.md`](skills/claude-slides/artifact-type/reference/questions.md) |
+| 256 | ✓ | [`skills/claude-slides/artifact-type/reference/styles.md`](skills/claude-slides/artifact-type/reference/styles.md) |
+| 257 | ✓ | [`skills/claude-slides/artifact-type/reference/view-state.md`](skills/claude-slides/artifact-type/reference/view-state.md) |
+| 258 | ✓ | [`skills/claude-slides/scripts/artifact.mjs`](skills/claude-slides/scripts/artifact.mjs) |
+| 259 | ✓ | [`skills/claude-slides/scripts/editor/assets/anthropicons-fizzy-lake-BMTqiSTL.woff2`](skills/claude-slides/scripts/editor/assets/anthropicons-fizzy-lake-BMTqiSTL.woff2) |
+| 260 | ✓ | [`skills/claude-slides/scripts/editor/assets/index-DS0DS7fb.js`](skills/claude-slides/scripts/editor/assets/index-DS0DS7fb.js) |
+| 261 | ✓ | [`skills/claude-slides/scripts/editor/assets/index-gmufp1nC.css`](skills/claude-slides/scripts/editor/assets/index-gmufp1nC.css) |
+| 262 | ✓ | [`skills/claude-slides/scripts/editor/index.html`](skills/claude-slides/scripts/editor/index.html) |
+| 263 | ✓ | [`skills/claude-slides/scripts/editor/node/compiler.cjs`](skills/claude-slides/scripts/editor/node/compiler.cjs) |
+| 264 | ✓ | [`skills/claude-slides/scripts/editor/node/third-party-licenses.txt`](skills/claude-slides/scripts/editor/node/third-party-licenses.txt) |
+| 265 | ✓ | [`skills/claude-slides/scripts/editor/third-party-licenses.txt`](skills/claude-slides/scripts/editor/third-party-licenses.txt) |
+| 266 | ✓ | [`skills/claude-slides/scripts/server.mjs`](skills/claude-slides/scripts/server.mjs) |
+| 267 | ✓ | [`skills/claude-slides/SKILL.md`](skills/claude-slides/SKILL.md) |
 
 ---
 

@@ -127,3 +127,56 @@ turns off the card only; the pane menu and Settings still open the sheet.
 ADR 0034 stands. This adds no outbound call from Collie and no collection: the person opens GitHub's
 form in their own browser and submits it, the same channel as the bug form, made easier to fill.
 0034 now points here.
+
+## Amendment, 2026-10-28: a fourth door on the unread-dialog card
+
+Issue #554 (@leftos) asked for a way to capture what the phone saw when it shows "Collie cannot read
+this dialog" ([ADR 0053](./0053-an-unread-dialog-still-has-a-way-out.md)). The card now has Report a problem, which
+opens this sheet with the target `kind: "unread-dialog"`. The sheet above counted three doors (the card
+after failed sends, the pane menu, Settings); this is the fourth, and like the pane menu it shows on
+this machine's panes only.
+
+- **The trouble is the screen, not a send.** The title reads `Cannot read a dialog: <harness>
+  <version>, <mux>`. The trouble field holds the card's reason line, the key it offers, and what
+  each of the adapter's dialog detectors answered on that screen: `found`, `null` or
+  `threw: <message>`. Each adapter names its own detectors (`HarnessAdapter.dialogDetectors`), and
+  the unread-dialog pass runs them on the screen it gives a card and keeps the answers on the card's
+  model (`UnreadDialogModel.verdicts`). Shared code holds no harness name. The signature is
+  `collie-sig: dialog/unread/<harness>@<version>/<mux>`.
+- **"Include the screen" starts on for this door.** A reader bug needs the screen. The screen is the
+  one the route above answers, always masked, and the preview shows it in full before anything
+  leaves; the person can switch it off. The rows the phone itself parsed are not added: they did not
+  pass the bridge's mask, and the phone has no copy of it.
+- **The setup adds what only the phone knows:** the app's build id, the bridge's build id as the
+  phone last saw it, the user agent, the viewport and whether the app runs installed. Reports about
+  sends keep their setup as before.
+- **Phone only.** No new disk write, no new route, no new verb: the issue's proposed report folder
+  under the state directory, a `collie reports` verb and a per-harness verdict probe on the bridge are
+  not taken. The existing read-gated `GET /api/report/context` is the one read.
+- The issue form's second field is now labelled "What went wrong", since it holds either the sends or
+  the dialog. Its id `sends` stays, so the prefill and older links still fill it.
+
+## Amendment, 2026-10-29: the setup block carries the doctor's send rows
+
+M71 spec 05. A maintainer reading an issue about failed sends needed `collie doctor --json` from the
+reporter to see why. The setup block now carries those facts itself.
+
+- **What it carries.** The doctor's `sends-<harness>`, `holds-<harness>` and `screen-<harness>` rows,
+  one line each, `<status> <check>: <detail>`, under a `doctor` key, in the doctor's order. From a
+  pane, every such row for the pane's harness (a bare shell is the doctor's `-`). From Settings, with
+  no pane, every such row that says more than "nothing here" (a harness with no sends, no hold open,
+  no stale screen is left out). The row that says no hold is open is never carried.
+- **Where it comes from.** The one route above, `GET /api/report/context`, answers an optional
+  `doctor` array of `{ check, status, detail, harness }`. The bridge builds it with the same function
+  `collie doctor` calls (`cli/send-findings.ts`), over its own state dir, when the route is called and
+  never on a poll. It reads files only and spawns no `collie doctor`, which would probe the network
+  and the crew. A bridge with the Send Protocol off, or a read that throws, leaves the field out and
+  answers as before. An older phone ignores the field.
+- **What it never carries.** No text, no held text and no typed line: the held files keep the text
+  in plain form, and the rows name a hold by its age, cause and request id only. No remedy, because a
+  remedy is advice for the person at the machine. The `collie doctor --json` array keeps its shape.
+- **The person reads them.** The rows sit in the preview like every other line of the setup, before
+  anything leaves. No new route, form field or collection.
+- **The link's length.** `fitLink` cuts these rows after the screen and before the oldest sends:
+  `screen-*` rows first, then `holds-*`, then `sends-*`. The sheet says how many it left out, and
+  Copy report keeps all of them.

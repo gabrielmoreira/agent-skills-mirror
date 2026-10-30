@@ -42,6 +42,19 @@ loopback assets served from the project root, no external requests or range acce
 no resume/chunks/workers; `--sub N` averages N sub-frame captures per frame (shutter
 blur), `--scale` above 1 supersamples back to the page size, CRF defaults to 16.
 Without FFmpeg zscale pass `--color swscale` (upstream's matrix/range conversion).
+
+Declare hard cuts in the project root's `project.json`: `"cuts": [1.5, 3.0]`,
+for example, is valid only when both times fall strictly inside the duration.
+`cuts` must contain strictly increasing numbers in `(0, duration)`, at most 4096;
+invalid declarations refuse before capture. Keep scene boundaries and this array
+in sync. With `--sub N --shutter S`, samples belong to the shot containing output
+time `t`: `[last cut <= t, next cut > t)`. The cut-aware shutter slides its window
+inside that shot and shrinks it only when the shot is shorter than the window;
+no sample crosses a declared cut. Without cuts the existing centered shutter
+sampling is unchanged. A success receipt records the `cuts` count, not a visual
+review of the transitions. This replaces the old half-frame hard-cut workaround;
+the engine assets themselves are unchanged.
+
 Partial frames are never a final success. Tested capture execution is macOS with explicitly supplied
 Chrome headless-shell; Linux/Windows execution is HOLD, while installation of the
 text data stays portable. Full Chrome headless surface capture stalled on the

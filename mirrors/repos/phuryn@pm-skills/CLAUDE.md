@@ -44,7 +44,7 @@ pm-skills/                           <- repo root
 | `pm-go-to-market` | GTM strategy, growth loops, motions, beachhead segments, ICPs |
 | `pm-marketing-growth` | Marketing ideas, value-prop statements, North Star metrics, naming, positioning |
 | `pm-toolkit` | Resume review, NDA drafting, privacy policy, grammar/flow checking |
-| `pm-ai-shipping` | AI Shipping Kit: document a vibe-coded app, map test coverage, audit security/performance against intended behavior, compile a shipping packet |
+| `pm-ai-shipping` | Moved to phuryn/product-engineering (its `ai-shipping` plugin); each skill and command here only points there |
 
 ## Key Design Rules
 

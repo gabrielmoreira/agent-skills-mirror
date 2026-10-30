@@ -17,6 +17,18 @@ opinion from the source. Reviewing the implementation by reading what
 was supposed to produce it is working blind; the capture, not the
 diff, is the surface under review.
 
+## During implementation
+
+The loop below judges a finished surface. Before it, every change that
+affects what renders gets its own look: after the change, capture the
+affected page, state, or (for a 3D or canvas scene) the default camera and
+each declared preset, and read the capture before making the next change. A
+batch of unseen edits compounds: a shifted layout, a wrong colour, or a
+broken frame hides behind the next edit, and the final loop then has to
+unwind several defects at once. A change that was not looked at is not done.
+This does not replace the loop: the 1440/768/375 pass still runs once the
+work lands.
+
 ## The loop
 
 1. Implement against `DESIGN.md` (the contract from

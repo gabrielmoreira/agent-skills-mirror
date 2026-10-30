@@ -44,32 +44,33 @@ Release body source for GitHub release:
 
 <!-- RELEASE_BODY_START v2.18.4 -->
 
-This release adds group chats, OpenUI in chats, better attachment support across agents, and support for OpenCode 2.x alongside 1.x.
+This release adds group chats, OpenUI in chats, better attachment support across agents (images/videos/files if supported), and support for OpenCode 2.x alongside 1.x.
 
 ### What's New
 
-- Create group chats with selected teammates.
+- Create named group chats with selected teammates, or ask an agent to create one.
 - View OpenUI charts and tables, plus Mermaid diagrams, directly in chats.
-- Use OpenCode 2.x or keep using your existing OpenCode 1.x installation.
+- Link tasks to group chats and open their tasks on the board.
+- Open tasks in separate tabs, with edits and drafts shared across views.
 - Organize tasks in folders with drag-and-drop.
-- Choose an Anthropic subscription, API key, or compatible endpoint.
-- Choose gateway providers for individual teammates and see their usage.
+- Create and edit team drafts through installed Claude Code or Codex.
 
 ### Improvements
 
+- Use OpenCode 2.x or keep using 1.x; install V2 from the app when OpenCode is missing.
+- Choose from eight team templates, including sales, support, operations, and learning.
 - Queue messages with Cmd or Ctrl+Enter, then edit, send, or remove them.
-- Install OpenCode V2 from the app when OpenCode is missing.
+- Choose an Anthropic subscription, API key, or compatible endpoint, and use your configured default model.
+- Choose gateway providers for individual teammates and see their usage.
 - Give slow OpenCode connections more time to finish setup.
-- Use your configured Anthropic model when no model is selected.
-- Keep new Codex messages in context across replies and agent restarts.
 
 ### Fixes
 
 - Fix attachment handling in chats with different agents, including supported images and videos.
 - Restore OpenCode task delivery and replies after relaunches or temporary connection failures.
 - Reduce background CPU usage and stop leftover OpenCode processes when quitting.
-- Prevent repeated group replies and incorrect errors when stopping teams.
-- Show new group messages at the bottom and reactions in message corners.
+- Restore saved team drafts after canceling a launch; prevent incorrect errors when stopping teams.
+- Prevent repeated group replies, show new messages at the bottom, and place reactions in message corners.
 - Include security updates for Electron and dependencies.
 
 ### macOS installation
@@ -2348,7 +2349,8 @@ gh run watch <RUN_ID> --repo 777genius/agent_teams_orchestrator
 ```
 
 After the draft build succeeds, follow the runtime repository's
-`docs/release-flow.md`: verify the exact seven draft assets, manifest source,
+`docs/release-flow.md`: verify the complete draft asset roster derived from the
+generated manifest (base archives, optional V2 support archives, manifest and checksums), source,
 archive checksums, and payload `VERSION`/`COMMIT_SHA`. Retain the verified draft
 release ID and asset identities. With owner authorization covering this release,
 promote that exact draft without rebuilding:
@@ -2390,6 +2392,8 @@ After publication succeeds, update this repo's `runtime.lock.json`:
 - `opencodeV2`: copy verbatim from the published manifest's `opencodeV2` (the runtime's
   supported OpenCode V2 range and qualified versions). The app derives V2 recognition
   and eligibility only from it.
+- `opencodeV2Delivery`, when present: copy the published platform descriptors verbatim,
+  including archive and manifest hashes. Do not invent descriptors for unqualified platforms.
 
 Then verify the lock points at real uploaded assets:
 
@@ -2412,7 +2416,8 @@ node scripts/stage-runtime.mjs
 Do not create standalone runtime releases in the frontend repository. The source tag is in the
 private `777genius/agent_teams_orchestrator` repository, while the downloadable release is in
 public `777genius/agent_teams_orchestrator_binaries`. The frontend release workflow stages those
-archives into packaged app installers.
+base archives into packaged app installers. Separately pinned V2 support archives
+are downloaded by the installer when needed; they are not embedded in the app.
 
 Local `pnpm dev` downloads the pinned runtime anonymously from the public binary repository. GitHub
 CLI authentication is not required. A local runtime override remains available through

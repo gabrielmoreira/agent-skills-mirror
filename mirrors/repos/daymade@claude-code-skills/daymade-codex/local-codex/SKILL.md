@@ -23,7 +23,7 @@ Delegate coding tasks to the local OpenAI Codex CLI agent using the authorized C
 **CRITICAL**: Use ChatGPT OAuth through the selected credential store. **Do NOT set `OPENAI_API_KEY` or pass API keys** for this workflow. Keep the authentication route separate from the account's allowance and extra Credit policy; OAuth does not guarantee that long work cannot consume extra Credit.
 
 - Resolve the actual `CODEX_HOME` and store; the desktop app and CLI can share credentials.
-- Before login, account switching or token recovery, read [the OAuth guide](references/oauth-guide.md) and follow its [recovery recipe](references/oauth-guide.md#remote-account-switch-and-expired-login-recovery). Use fresh empty stores for independent grants, retain explicitly authorized single-owner transfers, and verify actual access and existing-process adoption separately.
+- Before login, account switching or token recovery, read [the OAuth guide](references/oauth-guide.md). For a running native owner, [compare its account with the saved login first](references/oauth-guide.md#existing-native-owner-recovery); choose saved-login adoption, token recovery or new authorization from the observed state. Retain [independent-grant recovery](references/oauth-guide.md#remote-account-switch-and-expired-login-recovery), explicit single-owner transfers and separate access, process-adoption and business-continuation checks.
 - Before a native quota query, read [refresh ownership](references/oauth-guide.md#bind-refresh-ownership-before-native-queries); a nominally read-only query can refresh credentials.
 - For quota-driven continuation on another authorized account, use [the included-usage check](references/oauth-guide.md#quota-driven-continuation) before substantial execution; cached login or a new default file is not that check.
 
@@ -63,6 +63,31 @@ zsh, inspect with `/bin/zsh -lic 'command -v codex; codex --version'`, then run
 process: `gtimeout … codex` resolves an executable and cannot call a shell function.
 The bundled Python wrapper does not reproduce shell initialization or support
 every native flag; use native CLI invocation when those capabilities are required.
+
+### Executable identity baseline (opt-in)
+
+Before an expensive build, resume or recovery claim that depends on *which*
+codex entry is in play, freeze the identity once and compare it at claim time;
+never refresh a baseline to make a comparison pass.
+
+```bash
+# Freeze once, before the work (add --watch-file for owner-selected configs):
+python3 scripts/entry_identity.py snapshot --output <task-owned-baseline.json>
+# Compare before the expensive claim:
+python3 scripts/entry_identity.py check --baseline <task-owned-baseline.json>
+```
+
+The check separates the owning-shell dispatch entry (what `/bin/zsh -lic`
+resolves `codex` to: external, function, alias) from the wrapper-selected
+external executable (the `CODEX_BIN` > PATH > app-bundle order above). Exit
+codes: `0` unchanged, `1` drift, `2` unknown, `3` usage or baseline error.
+`unchanged` is identity-only evidence — it never proves wrapper downstream
+runtime, authentication, quota or model health. When the dispatch entry is a
+function or alias, its consumer stays opaque (the definition is hashed, never
+executed). Verify its downstream executable through the launcher's owner;
+setting `CODEX_BIN` selects the wrapper and does not prove where a function runs.
+Read [entry-identity.md](references/entry-identity.md) for
+fields, failure shapes and a startup-report example.
 
 Before attributing an account, quota, error, or process state to a session, apply
 the [existing-session evidence recipe](references/oauth-guide.md#check-existing-sessions-separately).

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `openclaw/openclaw` — 26 default patterns, 21 followed patterns, 692 file(s) materialized.
+Mirror of `openclaw/openclaw` — 26 default patterns, 22 followed patterns, 693 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `openclaw/openclaw` — 26 default patterns, 21 followed patterns, 692
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 21 |
-| Files         | 692 |
+| Followed pats | 22 |
+| Files         | 693 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -53,6 +53,7 @@ Mirror of `openclaw/openclaw` — 26 default patterns, 21 followed patterns, 692
 
 - `THIRD_PARTY_NOTICES.md`
 - `VISION.md`
+- `docs/plugins/sdk-provider-plugins/model-catalogs.md`
 - `docs/plugins/sdk-channel-plugins.md`
 - `docs/reference/database-schemas.md`
 - `docs/gateway/doctor/config-migrations.md`
@@ -664,9 +665,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 583 | ✓ | [`skills/control-ui/references/dashboards.md`](skills/control-ui/references/dashboards.md) |
 | 584 | ✓ | [`skills/control-ui/references/hosting.md`](skills/control-ui/references/hosting.md) |
 | 585 | ✓ | [`skills/control-ui/SKILL.md`](skills/control-ui/SKILL.md) |
-| 586 | ✓ | [`skills/create-claw/references/draft-format.md`](skills/create-claw/references/draft-format.md) |
-| 587 | ✓ | [`skills/create-claw/scripts/cli.mjs`](skills/create-claw/scripts/cli.mjs) |
-| 588 | ✓ | [`skills/create-claw/SKILL.md`](skills/create-claw/SKILL.md) |
+| 586 | ✓ | [`skills/create-template/references/draft-format.md`](skills/create-template/references/draft-format.md) |
+| 587 | ✓ | [`skills/create-template/scripts/cli.mjs`](skills/create-template/scripts/cli.mjs) |
+| 588 | ✓ | [`skills/create-template/SKILL.md`](skills/create-template/SKILL.md) |
 | 589 | ✓ | [`skills/diagram-maker/references/excalidraw-patterns.md`](skills/diagram-maker/references/excalidraw-patterns.md) |
 | 590 | ✓ | [`skills/diagram-maker/references/svg-template.md`](skills/diagram-maker/references/svg-template.md) |
 | 591 | ✓ | [`skills/diagram-maker/SKILL.md`](skills/diagram-maker/SKILL.md) |
@@ -762,15 +763,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 681 | → | [`docs/install/node.md`](docs/install/node.md) |
 | 682 | → | [`docs/plugins/codex-harness.md`](docs/plugins/codex-harness.md) |
 | 683 | → | [`docs/plugins/sdk-channel-plugins.md`](docs/plugins/sdk-channel-plugins.md) |
-| 684 | → | [`docs/reference/database-schemas.md`](docs/reference/database-schemas.md) |
-| 685 | → | [`docs/reference/pull-request-review-flow.md`](docs/reference/pull-request-review-flow.md) |
-| 686 | → | [`docs/reference/RELEASING.md`](docs/reference/RELEASING.md) |
-| 687 | → | [`docs/security/incident-response.md`](docs/security/incident-response.md) |
-| 688 | → | [`docs/tools/plugin.md`](docs/tools/plugin.md) |
-| 689 | → | [`README.md`](README.md) |
-| 690 | → | [`SECURITY.md`](SECURITY.md) |
-| 691 | → | [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) |
-| 692 | → | [`VISION.md`](VISION.md) |
+| 684 | → | [`docs/plugins/sdk-provider-plugins/model-catalogs.md`](docs/plugins/sdk-provider-plugins/model-catalogs.md) |
+| 685 | → | [`docs/reference/database-schemas.md`](docs/reference/database-schemas.md) |
+| 686 | → | [`docs/reference/pull-request-review-flow.md`](docs/reference/pull-request-review-flow.md) |
+| 687 | → | [`docs/reference/RELEASING.md`](docs/reference/RELEASING.md) |
+| 688 | → | [`docs/security/incident-response.md`](docs/security/incident-response.md) |
+| 689 | → | [`docs/tools/plugin.md`](docs/tools/plugin.md) |
+| 690 | → | [`README.md`](README.md) |
+| 691 | → | [`SECURITY.md`](SECURITY.md) |
+| 692 | → | [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) |
+| 693 | → | [`VISION.md`](VISION.md) |
 
 ---
 

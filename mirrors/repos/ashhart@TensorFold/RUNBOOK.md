@@ -19,7 +19,7 @@ For an archive installation, download the arm64 asset and its companion checksum
 [latest release](https://github.com/ashhart/TensorFold/releases/latest), with `V` set to its version:
 
 ```sh
-V=1.1.7
+V=1.1.9
 curl -fLO https://github.com/ashhart/TensorFold/releases/download/v$V/tensorfold-$V-macos-arm64.tar.gz
 curl -fLO https://github.com/ashhart/TensorFold/releases/download/v$V/tensorfold-$V-macos-arm64.tar.gz.sha256
 shasum -a 256 -c tensorfold-$V-macos-arm64.tar.gz.sha256
@@ -134,6 +134,37 @@ and `live.waiting`, the queued requests. Subtract waiting from connections to ge
 For example, 8 connections with 4 waiting means 4 active and 4 queued.
 When API authentication is enabled, `/health` returns only status.
 
+## Prompt prefill share and budget
+
+The native server reads two environment variables when it opens its lane host.
+Both are optional. Set them before starting the server.
+`TENSORFOLD_PREFILL_SHARE` takes a number from 0.01 to 1.
+The default is 1. Any other text gives the default.
+It is the share of wall time long prompt steps get while other streams are decoding.
+A step of length t at share p owes the decoders t (1 - p) / p of decode time.
+The debt grows after each step and falls after each decode round.
+A long prompt's next step runs only when no debt is owed or no stream can decode.
+At the default 1 no debt is recorded, so the only waiting is the ordinary turn-taking: the host runs at most one step of a long prompt each time it turns to it, and chunked prompts still interleave with the decoding streams' rounds.
+Lower values add that debt, finish the long prompt later and leave more time for decoding streams.
+A prompt whose whole uncached pass is at most 512 rows runs outside the share as one call.
+The check compares the prompt's length with the cached state, not how far the fill has reached, so a long prompt whose last rows remain does not become exempt when its unfilled tail is small.
+
+`TENSORFOLD_PREFILL_BUDGET` takes a whole number of prompt rows from 1 to 4,294,967,295.
+The default is 0, which means none.
+Empty text, 0, a negative number, a fractional form, a value above the range or any other text gives 0, which removes the cap.
+It caps the prompt rows filled in one pass while a stream is ready to decode.
+The cap counts only rows filled while such a stream waits.
+A call that reports no progress spends the allowance anyway and yields, so unknown or stale progress never holds the cap open.
+When a cap is set, one step of a long prompt that has waited long enough goes first.
+When the cap is reached the host stops prompt work for that pass.
+The decoders then take their next round before more prompt rows are filled.
+A single prompt call is never split, so one call can pass the cap.
+Raising the cap lets more prompt work run per pass.
+That delays the decoding streams' next round.
+Lowering it gives those streams their next round sooner.
+That costs more passes to finish the prompts.
+With the default 0 no cap applies: short prompts run as one burst beside decoders, bounded at a lane's worth of newly begun prompts while other work waits.
+
 ## Linux and CUDA
 
 For source builds with `zig build native` (including `--prefix` installs): Structured output and required tool calls need the release archive's `lib/` or `zig build grammar -Dxgrammar=DIR`; prepare DIR with `git clone --branch v0.2.8 --recurse-submodules https://github.com/mlc-ai/xgrammar` (use the native build's same `--prefix` for grammar).
@@ -149,7 +180,7 @@ Flash Next also serves on CUDA from its MLX 4-bit checkpoint, on the built-in ke
 On a GB10 arm64 host (an x86_64 host uses `linux-x86_64` in the same commands):
 
 ```sh
-V=1.1.7
+V=1.1.9
 curl -fLO https://github.com/ashhart/TensorFold/releases/download/v$V/tensorfold-$V-linux-aarch64.tar.gz
 curl -fLO https://github.com/ashhart/TensorFold/releases/download/v$V/tensorfold-$V-linux-aarch64.tar.gz.sha256
 sha256sum -c tensorfold-$V-linux-aarch64.tar.gz.sha256

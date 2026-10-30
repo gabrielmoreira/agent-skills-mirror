@@ -14,7 +14,7 @@
  *      注入；`t()` 在 read 回调里求值，晚于 `setInstanceLang`，英文实例自动出英文。
  *      注入分两路：HTML 文本走 `escapeHtml`，脚本里的字符串走 `jsLiteral`（JSON 转义 +
  *      转义 `<`，避免 `</script>` 截断）。
- *   3. **只读无密钥**：状态值只来自 `server.cloudBaseOptions` / 环境变量 / 缓存 / 站点解析，
+ *   3. **只读无密钥**：环境 ID 来自这次调用槽；槽是空的才用 `server.cloudBaseOptions.envId`。不读环境变量和缓存。站点仍走站点解析。
  *      读资源时不发网络请求；面板自己只会发两类调用——只读的
  *      `auth(action:"status")`（「重新检查」）和只改本地绑定的
  *      `auth(action:"set_env")`（点「可选环境」里的一行）。两者都不动云端资源，也不碰密钥。
@@ -36,7 +36,7 @@
 import { ResourceTemplate } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { ExtendedMcpServer } from "../server.js";
 import { getInstanceLang, t, type Lang, type MessageKey } from "../i18n/index.js";
-import { getCachedEnvId } from "../cloudbase-manager.js";
+import { readDisplayedEnvId } from "../utils/env-binding.js";
 import { resolveSiteAndRegion } from "../utils/site-map.js";
 import { debug } from "../utils/logger.js";
 import {
@@ -99,13 +99,9 @@ function jsLiteral(value: string): string {
   return JSON.stringify(value).replace(/</g, "\\u003c");
 }
 
-/** 从 server 实例派生静态兜底状态；只读本地状态，不发起任何请求。 */
+/** Static fallback for the panel. Reads the current slot, then this server's explicit envId. No network. */
 export function resolveGetStartedStatus(server: ExtendedMcpServer): GetStartedStatus {
-  const envId =
-    server.cloudBaseOptions?.envId ||
-    process.env.CLOUDBASE_ENV_ID ||
-    getCachedEnvId() ||
-    null;
+  const envId = readDisplayedEnvId(server.cloudBaseOptions?.envId);
   const { site, region } = resolveSiteAndRegion({
     site: server.cloudBaseOptions?.site,
     region: server.cloudBaseOptions?.region,

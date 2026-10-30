@@ -47,6 +47,20 @@ session resumes in (`SessionTerminal`) and what the menu bar shows. Launch at
 login is the system's own setting (`internal/autostart`) and the listen
 address is `MAGPIE_ADDR`, so neither is in a bundle.
 
+The Usage page's clears (`usageCleared`, see
+[gateway sessions](gateway-sessions.md)) are a preference, not a computer's
+own, so they ride the settings part: a model cleared on one computer is
+cleared on the others, their shared usage days included. The usage files
+themselves are never rewritten by a clear.
+
+The providers part works the same way for which account an agent is kept
+signed in to (`KeepLogin`, `KeepLoginAs`, `SwitchOnly`): one person keeps a
+personal account at home and a work account at the office, and sync set
+each computer to the other's every day (YsiCing on X). `provider.Mirror` keeps
+this computer's values for a provider it has, and brings a new one without
+`KeepLoginAs`, an account signed in on the other computer; `hashes` blanks
+all three (`TestMirrorKeepsKeepLogin`, `TestKeepLoginIsNoChange`).
+
 Sharing turned on at one computer never turns it on or off at another
 (Lullaby on Discord). A backup restored onto a new computer leaves sharing as
 that computer has it, off on a fresh one: sharing opens the gateway to the
@@ -167,6 +181,20 @@ repository can keep the token. The branch is part of the sync state key.
   disk, and `RequestArchive` synced from a computer with a bucket keeps
   nothing on one without (`TestArchiveNeverOnDiskUnasked`,
   `TestRequestArchiveLocalIsThisComputers`).
+
+A library skill turned off on one computer (`OffHere`, see
+[library](library.md)) stays off there alone: the library part never carries
+it, and putting another computer's library keeps it, so the others keep the
+skill on and a sync from them doesn't turn it on here
+(`TestSkillOffHereThroughSync`, two computers through the fake S3).
+
+An MCP server kept to one computer (`Server.Local`, see
+[library](library.md)) is never in the library part, so it never reaches
+another computer by sync or backup file. Putting another computer's library
+keeps it, and a server of the same name from there goes to `Library.Away`,
+given to no agent here and carried on unchanged, so neither computer's sync
+removes or replaces the other's (`TestLocalServerThroughSync`, two computers
+through the fake S3; `TestRestoreKeepsLocalServer` for a backup file).
 
 ## Verification
 

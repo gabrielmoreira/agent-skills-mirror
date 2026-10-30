@@ -1,0 +1,137 @@
+STORYBOARD AND VISUAL DIRECTION
+
+These are editorial recommendations, not HyperFrames APIs or mandatory effects.
+Choose a small coherent visual vocabulary for each film.
+
+1. Write a usable shot
+
+For every shot record:
+- Narrative purpose and the single fact the viewer should retain.
+- Exact visible copy and narration, separately.
+- Source/evidence and permission for each asset.
+- Starting state, viewer focus, change to show and ending state.
+- Source pixel dimensions and focal rectangle for captured UI.
+- Element IDs, positions, layers, font sizes, colors and safe area.
+- Entrance/hold/exit times, musical cue if any, and the next-shot seam.
+- Accessibility/caption space and any disclosure.
+
+Start with seconds, then quantize the agreed timeline to output frames. Record
+absolute cut times to avoid accumulated rounding drift. Include transition
+overlaps explicitly rather than summing scene durations blindly.
+
+2. Choose what to show
+
+Meaning                     Useful representation
+User performs an action     Real UI + cursor + one focused callout
+System produces a result   Before/after state + highlighted changed region
+Workflow / architecture    Named nodes + ordered connector draws + packet motion
+Code change                Short real excerpt + line focus / honest diff
+Evidence / measurement     Chart with units, source, timeframe and stable axes
+Comparison                 Consistent split view with equivalent scale
+Sequence / progression     Timeline, milestones or discrete state changes
+One important number       Simple counter ending exactly at the supported value
+Location / movement        Map with accurate geography and labeled routes
+Product hero               Real screen in a restrained browser/device frame
+Abstract idea              Clearly illustrative geometry, layers or generated art
+Closing action             Short readable action + verified destination
+
+Numbers are not springs: no overshoot to values the source never supported.
+A mock cursor must point to the actual control at the instant the state changes.
+If footage is sped up or waiting time removed, disclose it when performance could
+otherwise be misrepresented. Never present a staged spinner as measured latency.
+
+3. UI capture and readability
+
+Capture the full context first, then crop to the useful interaction. Compute crops
+from actual pixel dimensions, not remembered viewport dimensions. Preserve aspect
+ratio and a visible anchor so viewers know where they are. Use transform origins
+inside the focal region and ensure zooming does not remove the result or CTA.
+
+Reserve separate bands for headings, visuals and captions; leave breathing room
+above screenshot cards. Check the result at target playback size, not just at
+full-resolution desktop zoom. Long tables and complete dashboards rarely remain
+legible on mobile: focus a row or metric rather than shrinking the whole screen.
+
+For vertical output, reflow the story: place heading above UI, crop to the action,
+move supporting labels and keep captions clear of platform interface overlays.
+Ask for platform-specific safe-area requirements rather than claiming one set of
+pixel margins works everywhere.
+
+4. Beat sheet and pacing
+
+Example of narrative structure for an approximately 45-second product film:
+0-4:   Immediate problem or outcome; an intelligible first-frame promise.
+4-11:  Show the user's context and first action.
+11-25: Demonstrate the mechanism in two readable steps.
+25-37: Show real proof and explain the supported value.
+37-45: Close with one action and enough time to read it.
+
+These ranges are planning examples, not music analysis. Replace them with actual
+narration durations and measured musical cues. One shot can span several bars.
+Use a downbeat/section for a major reveal, a beat for an accent, and quiet musical
+space for dense explanation. Preserve story clarity when the nearest beat would
+force an unreadable hold or cut speech.
+
+For each musical cue store source seconds, composition seconds, frame number,
+event, analysis provenance and confidence/review status. Listen to sample cues
+near the start, middle and end to detect offsets or tempo drift.
+
+5. Motion and transitions
+
+Subtle: short opacity/position entrances, restrained focus changes, long holds.
+Moderate: focused push-ins, staggered supporting labels, match cuts, line draws.
+Dynamic: phrase-aligned cuts and occasional impact accents; preserve reading time.
+
+Use motion to reveal actual information, not to imply nonexistent live updates.
+Overlap supporting entrances when they form one thought. Do not delay the focal
+element. A camera move should reveal a relationship, not merely traverse empty
+space. Avoid continuous movement that makes code or captions difficult to read.
+
+Choose each seam deliberately:
+- Cut for a clear change of idea or strong musical accent.
+- Match cut / shared object for continuity between related views.
+- Short dissolve for a genuine passage or gentle change.
+- Wipe / mask / catalog transition for a justified spatial or stylistic move.
+- Shader, shatter, liquid glass or 3D only when it serves the story and renders.
+
+No rapid full-frame flashes, arbitrary glitch effects, constant bouncing, or
+alternating zoom directions without purpose. Never use every available effect
+just to demonstrate the catalog.
+
+6. Voice, captions and reusable variants
+
+Write native language copy. Voice explains significance; UI supplies evidence.
+Short caption chunks follow actual speech and retain punctuation and accents.
+Do not use a decorative highlight color on every word. Keep caption placement
+stable except when deliberately moved away from essential UI.
+
+Parameterize product name, exact headlines, logo, palette, screenshots, locale
+and closing action only where useful. Validate every variant independently.
+Use the installed HyperFrames variable contract, not the brief's custom JSON
+shape, as the renderer's configuration.
+
+7. Prompt pattern
+
+Use this complete shape when delegating a shot or a film:
+Route / output spec / timed narrative beats / exact copy / evidence and elements /
+motion techniques / audio and music cues / constraints / review and delivery.
+
+Example (fictional public demo; not a claim about a real product):
+"Create a 30-second HyperFrames product demo in French, 16:9 at 30 fps.
+Use my approved demo captures and licensed track. Show input, review, then result.
+Analyze the music before setting cuts; favor section changes over every beat.
+Keep the table's selected row readable. Draw the workflow with labeled nodes.
+Use moderate motion, intelligible narration and French captions. No invented
+metrics, no avatars, no cloud upload. Show the storyboard and three frames first."
+
+8. Official references
+
+Consult the current version when a technique or behavior is uncertain:
+https://hyperframes.heygen.com/prompting/anatomy.md
+https://hyperframes.heygen.com/prompting/storyboards.md
+https://hyperframes.heygen.com/prompting/visual-specs.md
+https://hyperframes.heygen.com/prompting/motion.md
+https://hyperframes.heygen.com/prompting/product-launch.md
+https://hyperframes.heygen.com/prompting/data-and-maps.md
+https://hyperframes.heygen.com/prompting/code-blocks.md
+https://hyperframes.heygen.com/prompting/transitions.md

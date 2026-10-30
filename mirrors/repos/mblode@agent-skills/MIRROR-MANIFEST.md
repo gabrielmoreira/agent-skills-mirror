@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `mblode/agent-skills` — 26 default patterns, 1 followed patterns, 534 file(s) materialized.
+Mirror of `mblode/agent-skills` — 26 default patterns, 1 followed patterns, 541 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `mblode/agent-skills` — 26 default patterns, 1 followed patterns, 53
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 534 |
+| Files         | 541 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -560,39 +560,46 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 499 | ✓ | [`skills/ui-design/rules/slop-affordance-mismatch.md`](skills/ui-design/rules/slop-affordance-mismatch.md) |
 | 500 | ✓ | [`skills/ui-design/rules/slop-decoration-no-role.md`](skills/ui-design/rules/slop-decoration-no-role.md) |
 | 501 | ✓ | [`skills/ui-design/rules/slop-decorative-ordinals.md`](skills/ui-design/rules/slop-decorative-ordinals.md) |
-| 502 | ✓ | [`skills/ui-design/rules/slop-external-arrow-internal-link.md`](skills/ui-design/rules/slop-external-arrow-internal-link.md) |
-| 503 | ✓ | [`skills/ui-design/rules/slop-eyebrow-overuse.md`](skills/ui-design/rules/slop-eyebrow-overuse.md) |
-| 504 | ✓ | [`skills/ui-design/rules/slop-fact-padding.md`](skills/ui-design/rules/slop-fact-padding.md) |
-| 505 | ✓ | [`skills/ui-design/rules/slop-faux-product-chrome.md`](skills/ui-design/rules/slop-faux-product-chrome.md) |
-| 506 | ✓ | [`skills/ui-design/rules/slop-invented-behaviour.md`](skills/ui-design/rules/slop-invented-behaviour.md) |
-| 507 | ✓ | [`skills/ui-design/rules/slop-near-duplicate-scale.md`](skills/ui-design/rules/slop-near-duplicate-scale.md) |
-| 508 | ✓ | [`skills/ui-design/rules/slop-slogan-headings.md`](skills/ui-design/rules/slop-slogan-headings.md) |
-| 509 | ✓ | [`skills/ui-design/rules/slop-token-drift.md`](skills/ui-design/rules/slop-token-drift.md) |
-| 510 | ✓ | [`skills/ui-design/rules/slop-unverifiable-proof.md`](skills/ui-design/rules/slop-unverifiable-proof.md) |
-| 511 | ✓ | [`skills/ui-design/rules/states-layout-shift.md`](skills/ui-design/rules/states-layout-shift.md) |
-| 512 | ✓ | [`skills/ui-design/rules/states-no-empty-state.md`](skills/ui-design/rules/states-no-empty-state.md) |
-| 513 | ✓ | [`skills/ui-design/rules/states-no-error-state.md`](skills/ui-design/rules/states-no-error-state.md) |
-| 514 | ✓ | [`skills/ui-design/rules/type-hover-weight-shift.md`](skills/ui-design/rules/type-hover-weight-shift.md) |
-| 515 | ✓ | [`skills/ui-design/rules/type-readable-scale.md`](skills/ui-design/rules/type-readable-scale.md) |
-| 516 | ✓ | [`skills/ui-design/SKILL.md`](skills/ui-design/SKILL.md) |
-| 517 | ✓ | [`skills/ui-verification/evals/evals.json`](skills/ui-verification/evals/evals.json) |
-| 518 | ✓ | [`skills/ui-verification/evals/files/billing.html`](skills/ui-verification/evals/files/billing.html) |
-| 519 | ✓ | [`skills/ui-verification/evals/files/onboarding.html`](skills/ui-verification/evals/files/onboarding.html) |
-| 520 | ✓ | [`skills/ui-verification/probes/axe-scan.md`](skills/ui-verification/probes/axe-scan.md) |
-| 521 | ✓ | [`skills/ui-verification/probes/console-network.md`](skills/ui-verification/probes/console-network.md) |
-| 522 | ✓ | [`skills/ui-verification/probes/failure-injection.md`](skills/ui-verification/probes/failure-injection.md) |
-| 523 | ✓ | [`skills/ui-verification/probes/focus-walk.md`](skills/ui-verification/probes/focus-walk.md) |
-| 524 | ✓ | [`skills/ui-verification/probes/layout-shift.md`](skills/ui-verification/probes/layout-shift.md) |
-| 525 | ✓ | [`skills/ui-verification/probes/target-size.md`](skills/ui-verification/probes/target-size.md) |
-| 526 | ✓ | [`skills/ui-verification/probes/theme-locale-matrix.md`](skills/ui-verification/probes/theme-locale-matrix.md) |
-| 527 | ✓ | [`skills/ui-verification/probes/viewport-stress.md`](skills/ui-verification/probes/viewport-stress.md) |
-| 528 | ✓ | [`skills/ui-verification/probes/web-vitals.md`](skills/ui-verification/probes/web-vitals.md) |
-| 529 | ✓ | [`skills/ui-verification/references/evidence-output.md`](skills/ui-verification/references/evidence-output.md) |
-| 530 | ✓ | [`skills/ui-verification/references/rule-coverage.md`](skills/ui-verification/references/rule-coverage.md) |
-| 531 | ✓ | [`skills/ui-verification/references/session-setup.md`](skills/ui-verification/references/session-setup.md) |
-| 532 | ✓ | [`skills/ui-verification/references/visual-review.md`](skills/ui-verification/references/visual-review.md) |
-| 533 | ✓ | [`skills/ui-verification/SKILL.md`](skills/ui-verification/SKILL.md) |
-| 534 | → | [`LICENSE.md`](LICENSE.md) |
+| 502 | ✓ | [`skills/ui-design/rules/slop-emoji-in-copy.md`](skills/ui-design/rules/slop-emoji-in-copy.md) |
+| 503 | ✓ | [`skills/ui-design/rules/slop-external-arrow-internal-link.md`](skills/ui-design/rules/slop-external-arrow-internal-link.md) |
+| 504 | ✓ | [`skills/ui-design/rules/slop-eyebrow-overuse.md`](skills/ui-design/rules/slop-eyebrow-overuse.md) |
+| 505 | ✓ | [`skills/ui-design/rules/slop-fact-padding.md`](skills/ui-design/rules/slop-fact-padding.md) |
+| 506 | ✓ | [`skills/ui-design/rules/slop-faux-product-chrome.md`](skills/ui-design/rules/slop-faux-product-chrome.md) |
+| 507 | ✓ | [`skills/ui-design/rules/slop-invented-behaviour.md`](skills/ui-design/rules/slop-invented-behaviour.md) |
+| 508 | ✓ | [`skills/ui-design/rules/slop-italic-accent-word.md`](skills/ui-design/rules/slop-italic-accent-word.md) |
+| 509 | ✓ | [`skills/ui-design/rules/slop-left-accent-border.md`](skills/ui-design/rules/slop-left-accent-border.md) |
+| 510 | ✓ | [`skills/ui-design/rules/slop-mono-overuse.md`](skills/ui-design/rules/slop-mono-overuse.md) |
+| 511 | ✓ | [`skills/ui-design/rules/slop-near-duplicate-scale.md`](skills/ui-design/rules/slop-near-duplicate-scale.md) |
+| 512 | ✓ | [`skills/ui-design/rules/slop-opacity-ladder.md`](skills/ui-design/rules/slop-opacity-ladder.md) |
+| 513 | ✓ | [`skills/ui-design/rules/slop-pulse-dot.md`](skills/ui-design/rules/slop-pulse-dot.md) |
+| 514 | ✓ | [`skills/ui-design/rules/slop-slogan-headings.md`](skills/ui-design/rules/slop-slogan-headings.md) |
+| 515 | ✓ | [`skills/ui-design/rules/slop-token-drift.md`](skills/ui-design/rules/slop-token-drift.md) |
+| 516 | ✓ | [`skills/ui-design/rules/slop-trending-display-serif.md`](skills/ui-design/rules/slop-trending-display-serif.md) |
+| 517 | ✓ | [`skills/ui-design/rules/slop-unverifiable-proof.md`](skills/ui-design/rules/slop-unverifiable-proof.md) |
+| 518 | ✓ | [`skills/ui-design/rules/states-layout-shift.md`](skills/ui-design/rules/states-layout-shift.md) |
+| 519 | ✓ | [`skills/ui-design/rules/states-no-empty-state.md`](skills/ui-design/rules/states-no-empty-state.md) |
+| 520 | ✓ | [`skills/ui-design/rules/states-no-error-state.md`](skills/ui-design/rules/states-no-error-state.md) |
+| 521 | ✓ | [`skills/ui-design/rules/type-hover-weight-shift.md`](skills/ui-design/rules/type-hover-weight-shift.md) |
+| 522 | ✓ | [`skills/ui-design/rules/type-readable-scale.md`](skills/ui-design/rules/type-readable-scale.md) |
+| 523 | ✓ | [`skills/ui-design/SKILL.md`](skills/ui-design/SKILL.md) |
+| 524 | ✓ | [`skills/ui-verification/evals/evals.json`](skills/ui-verification/evals/evals.json) |
+| 525 | ✓ | [`skills/ui-verification/evals/files/billing.html`](skills/ui-verification/evals/files/billing.html) |
+| 526 | ✓ | [`skills/ui-verification/evals/files/onboarding.html`](skills/ui-verification/evals/files/onboarding.html) |
+| 527 | ✓ | [`skills/ui-verification/probes/axe-scan.md`](skills/ui-verification/probes/axe-scan.md) |
+| 528 | ✓ | [`skills/ui-verification/probes/console-network.md`](skills/ui-verification/probes/console-network.md) |
+| 529 | ✓ | [`skills/ui-verification/probes/failure-injection.md`](skills/ui-verification/probes/failure-injection.md) |
+| 530 | ✓ | [`skills/ui-verification/probes/focus-walk.md`](skills/ui-verification/probes/focus-walk.md) |
+| 531 | ✓ | [`skills/ui-verification/probes/layout-shift.md`](skills/ui-verification/probes/layout-shift.md) |
+| 532 | ✓ | [`skills/ui-verification/probes/target-size.md`](skills/ui-verification/probes/target-size.md) |
+| 533 | ✓ | [`skills/ui-verification/probes/theme-locale-matrix.md`](skills/ui-verification/probes/theme-locale-matrix.md) |
+| 534 | ✓ | [`skills/ui-verification/probes/viewport-stress.md`](skills/ui-verification/probes/viewport-stress.md) |
+| 535 | ✓ | [`skills/ui-verification/probes/web-vitals.md`](skills/ui-verification/probes/web-vitals.md) |
+| 536 | ✓ | [`skills/ui-verification/references/evidence-output.md`](skills/ui-verification/references/evidence-output.md) |
+| 537 | ✓ | [`skills/ui-verification/references/rule-coverage.md`](skills/ui-verification/references/rule-coverage.md) |
+| 538 | ✓ | [`skills/ui-verification/references/session-setup.md`](skills/ui-verification/references/session-setup.md) |
+| 539 | ✓ | [`skills/ui-verification/references/visual-review.md`](skills/ui-verification/references/visual-review.md) |
+| 540 | ✓ | [`skills/ui-verification/SKILL.md`](skills/ui-verification/SKILL.md) |
+| 541 | → | [`LICENSE.md`](LICENSE.md) |
 
 ---
 

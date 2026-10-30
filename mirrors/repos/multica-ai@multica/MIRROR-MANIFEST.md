@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `multica-ai/multica` — 26 default patterns, 10 followed patterns, 32 file(s) materialized.
+Mirror of `multica-ai/multica` — 26 default patterns, 10 followed patterns, 33 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `multica-ai/multica` — 26 default patterns, 10 followed patterns, 32
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 10 |
-| Files         | 32 |
+| Files         | 33 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -68,38 +68,39 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.agents/skills/web-design-guidelines/SKILL.md`](.agents/skills/web-design-guidelines/SKILL.md) |
-| 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 3 | ✓ | [`apps/mobile/AGENTS.md`](apps/mobile/AGENTS.md) |
-| 4 | ✓ | [`apps/mobile/CLAUDE.md`](apps/mobile/CLAUDE.md) |
-| 5 | ✓ | [`apps/ui-lab/README.md`](apps/ui-lab/README.md) |
-| 6 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 7 | ✓ | [`e2e/perf/README.md`](e2e/perf/README.md) |
-| 8 | ✓ | [`examples/plugins/deploy-sentinel/README.md`](examples/plugins/deploy-sentinel/README.md) |
-| 9 | ✓ | [`examples/plugins/deploy-sentinel/skills/incident-response/SKILL.md`](examples/plugins/deploy-sentinel/skills/incident-response/SKILL.md) |
-| 10 | ✓ | [`examples/plugins/hello-panel/README.md`](examples/plugins/hello-panel/README.md) |
-| 11 | ✓ | [`examples/plugins/schedule-pulse/README.md`](examples/plugins/schedule-pulse/README.md) |
-| 12 | ✓ | [`examples/plugins/triage-notify/README.md`](examples/plugins/triage-notify/README.md) |
-| 13 | ✓ | [`packages/plugin-sdk/README.md`](packages/plugin-sdk/README.md) |
-| 14 | ✓ | [`server/cmd/backfill_issue_last_activity/README.md`](server/cmd/backfill_issue_last_activity/README.md) |
-| 15 | ✓ | [`server/cmd/migrate/README.md`](server/cmd/migrate/README.md) |
-| 16 | ✓ | [`server/cmd/qoder-runtime/README.md`](server/cmd/qoder-runtime/README.md) |
-| 17 | ✓ | [`server/internal/entitlement/README.md`](server/internal/entitlement/README.md) |
-| 18 | ✓ | [`server/internal/service/builtin_skills_legacy/multica-working-on-issues/SKILL.md`](server/internal/service/builtin_skills_legacy/multica-working-on-issues/SKILL.md) |
-| 19 | ✓ | [`server/internal/service/builtin_skills/multica-onboarding/SKILL.md`](server/internal/service/builtin_skills/multica-onboarding/SKILL.md) |
-| 20 | ✓ | [`server/internal/service/builtin_skills/multica-platform/SKILL.md`](server/internal/service/builtin_skills/multica-platform/SKILL.md) |
-| 21 | ✓ | [`server/pkg/composio/README.md`](server/pkg/composio/README.md) |
-| 22 | ✓ | [`server/pkg/publicapi/v1/README.md`](server/pkg/publicapi/v1/README.md) |
-| 23 | → | [`.github/RELEASING.md`](.github/RELEASING.md) |
-| 24 | → | [`apps/mobile/README.md`](apps/mobile/README.md) |
-| 25 | → | [`CLI_AND_DAEMON.md`](CLI_AND_DAEMON.md) |
-| 26 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 27 | → | [`README.md`](README.md) |
-| 28 | → | [`README.zh.md`](README.zh.md) |
-| 29 | → | [`SELF_HOSTING_ADVANCED.md`](SELF_HOSTING_ADVANCED.md) |
-| 30 | → | [`SELF_HOSTING.md`](SELF_HOSTING.md) |
-| 31 | → | [`VISION.md`](VISION.md) |
-| 32 | → | [`VISION.zh.md`](VISION.zh.md) |
+| 1 | ✓ | [`.agents/skills/multica-icons/SKILL.md`](.agents/skills/multica-icons/SKILL.md) |
+| 2 | ✓ | [`.agents/skills/web-design-guidelines/SKILL.md`](.agents/skills/web-design-guidelines/SKILL.md) |
+| 3 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 4 | ✓ | [`apps/mobile/AGENTS.md`](apps/mobile/AGENTS.md) |
+| 5 | ✓ | [`apps/mobile/CLAUDE.md`](apps/mobile/CLAUDE.md) |
+| 6 | ✓ | [`apps/ui-lab/README.md`](apps/ui-lab/README.md) |
+| 7 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 8 | ✓ | [`e2e/perf/README.md`](e2e/perf/README.md) |
+| 9 | ✓ | [`examples/plugins/deploy-sentinel/README.md`](examples/plugins/deploy-sentinel/README.md) |
+| 10 | ✓ | [`examples/plugins/deploy-sentinel/skills/incident-response/SKILL.md`](examples/plugins/deploy-sentinel/skills/incident-response/SKILL.md) |
+| 11 | ✓ | [`examples/plugins/hello-panel/README.md`](examples/plugins/hello-panel/README.md) |
+| 12 | ✓ | [`examples/plugins/schedule-pulse/README.md`](examples/plugins/schedule-pulse/README.md) |
+| 13 | ✓ | [`examples/plugins/triage-notify/README.md`](examples/plugins/triage-notify/README.md) |
+| 14 | ✓ | [`packages/plugin-sdk/README.md`](packages/plugin-sdk/README.md) |
+| 15 | ✓ | [`server/cmd/backfill_issue_last_activity/README.md`](server/cmd/backfill_issue_last_activity/README.md) |
+| 16 | ✓ | [`server/cmd/migrate/README.md`](server/cmd/migrate/README.md) |
+| 17 | ✓ | [`server/cmd/qoder-runtime/README.md`](server/cmd/qoder-runtime/README.md) |
+| 18 | ✓ | [`server/internal/entitlement/README.md`](server/internal/entitlement/README.md) |
+| 19 | ✓ | [`server/internal/service/builtin_skills_legacy/multica-working-on-issues/SKILL.md`](server/internal/service/builtin_skills_legacy/multica-working-on-issues/SKILL.md) |
+| 20 | ✓ | [`server/internal/service/builtin_skills/multica-onboarding/SKILL.md`](server/internal/service/builtin_skills/multica-onboarding/SKILL.md) |
+| 21 | ✓ | [`server/internal/service/builtin_skills/multica-platform/SKILL.md`](server/internal/service/builtin_skills/multica-platform/SKILL.md) |
+| 22 | ✓ | [`server/pkg/composio/README.md`](server/pkg/composio/README.md) |
+| 23 | ✓ | [`server/pkg/publicapi/v1/README.md`](server/pkg/publicapi/v1/README.md) |
+| 24 | → | [`.github/RELEASING.md`](.github/RELEASING.md) |
+| 25 | → | [`apps/mobile/README.md`](apps/mobile/README.md) |
+| 26 | → | [`CLI_AND_DAEMON.md`](CLI_AND_DAEMON.md) |
+| 27 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 28 | → | [`README.md`](README.md) |
+| 29 | → | [`README.zh.md`](README.zh.md) |
+| 30 | → | [`SELF_HOSTING_ADVANCED.md`](SELF_HOSTING_ADVANCED.md) |
+| 31 | → | [`SELF_HOSTING.md`](SELF_HOSTING.md) |
+| 32 | → | [`VISION.md`](VISION.md) |
+| 33 | → | [`VISION.zh.md`](VISION.zh.md) |
 
 ---
 

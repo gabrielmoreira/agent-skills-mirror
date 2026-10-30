@@ -9,6 +9,10 @@ Maintain repository-level build, packaging, and release validation automation. G
 - `generate-schema.ts`
   - Imports PluginConfigSchema from src/config/schema.ts and emits canonical JSON Schema via z.toJSONSchema.
   - Writes oh-my-opencode-slim.schema.json with explicit $schema, title, and plugin description.
+- `package-imports.ts`
+  - Uses Bun's import scanner to verify all static/dynamic relative targets are
+    inside packed `dist/`, including hashed ESM chunks and nested edges.
+  - Focused fixture tests live in `package-imports.test.ts`.
 - `verify-release-artifact.ts`
   - Uses spawnSync + npm pack --json --ignore-scripts.
   - Scans dist/**/* for leaked machine paths (/Users/*, /home/*).

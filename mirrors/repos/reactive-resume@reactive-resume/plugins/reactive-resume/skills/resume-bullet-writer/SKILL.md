@@ -1,6 +1,6 @@
 ---
 name: resume-bullet-writer
-description: Turns resume duties into truthful impact bullets. Questions the user role by role to dig out achievements, asks for real numbers or honest ranges (never invents them), and writes concise bullets in XYZ, CAR, scope or qualitative form. Use when the user says "rewrite my bullets", "make this bullet stronger", "quantify my resume", "turn my duties into achievements", "improve my experience section", "my resume sounds boring", "I don't have any numbers", pastes resume lines for feedback, or works in a low-number job (nursing, teaching, care, trades, admin, creative). With the Reactive Resume MCP server connected, it edits experience, project, volunteer and education descriptions with apply_resume_patch after the user approves. Use resume-content-guide instead for which sections or details belong and for summaries or headlines, resume-tailor to fit one job posting, interview-prep or mock-interview for interview stories and practice, and resume-builder to build a resume from scratch.
+description: Turns resume duties into truthful impact bullets, asking for real evidence and preserving estimates. Use for rewriting bullets, quantifying achievements or improving an experience section, including work without numeric outcomes. With Reactive Resume MCP, edits descriptions after approval. Use accomplishment-inventory for a reusable evidence bank, resume-writer for a complete text draft or summary, resume-content-guide for what belongs, resume-tailor for one posting and resume-builder for JSON.
 ---
 
 # Resume Bullet Writer
@@ -235,7 +235,7 @@ I have enough for this bullet. Two more questions could add a second one; want t
 
 ## Situations that change the rules
 
-Read [references/situations.md](references/situations.md) when the user is in a care, teaching, creative or other low-number role, works under an NDA or professional confidentiality (law, healthcare, education, cleared government work), shared credit with a team, is a manager or executive, a student, or is writing an academic CV, a US federal resume, or a CV for the UK, Japan or Germany. For whole-document questions (which sections, what to omit, length, photos, country norms, summaries and headlines) hand off to resume-content-guide.
+Read [references/situations.md](references/situations.md) when the user is in a care, teaching, creative or other low-number role, works under an NDA or professional confidentiality (law, healthcare, education, cleared government work), shared credit with a team, is a manager or executive, a student, or is writing an academic CV, a US federal resume, or a CV for the UK, Japan or Germany. For whole-document questions (which sections, what to omit, length, photos, country norms, whether to include a summary or headline) hand off to resume-content-guide. For headline and summary rewrites, use resume-writer when available.
 
 Read [references/examples.md](references/examples.md) only when unsure what a finished table or walkthrough looks like for a matching situation (ICU nurse, multi-role rewrite over MCP, team credit, confidential figures, a fabrication request, the fast path). Copy its shape, never its facts, units, devices or question wording.
 
@@ -302,7 +302,9 @@ Skip this section unless Reactive Resume tools such as `read_resume` are availab
 
 Sibling skills may not be installed; when one is missing, do the light version yourself and say so.
 
-- **resume-content-guide:** which sections and details belong, what to leave off, summaries and headlines, job titles, length and country norms.
+- **accomplishment-inventory:** a reusable evidence bank when the user wants to recover experience before drafting, rather than rewrite existing bullets.
+- **resume-writer** and the role-specific resume skills: a complete text resume or headline and summary rewrites; **resume-proofreader:** final wording and consistency. Use resume-builder for importable JSON.
+- **resume-content-guide:** which sections and details belong, what to leave off, whether to include a summary or headline, job titles, length and country norms.
 - **resume-tailor:** fitting the resume to one posting, including a job-specific copy.
 - **interview-prep** and **mock-interview:** confirmed achievements become five-part stories (Situation, Task, Action, Result, Reflection); pass along the facts ledger and flag the 2–3 bullets most likely to draw interview questions. Leave Result blank where the user couldn't support an outcome.
 - **resume-builder:** building a whole resume from scratch as Reactive Resume JSON.

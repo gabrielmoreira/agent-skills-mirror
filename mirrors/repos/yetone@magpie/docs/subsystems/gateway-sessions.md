@@ -43,11 +43,37 @@ user's own llm-deepseek row pointed at magpie relies on (#3298,
 `TestDshMarksOnEveryRoute`).
 
 When the same identity is present in a native session, the native session wins
-and the gateway projection is omitted. On `/api/sessions/manage`, in its
+and the gateway projection is omitted. A native session can stand for more
+than its own key (`sessions.GatewayKeys`): Raft's (slock's raft-computer)
+agents run Pi in their folders under `$SLOCK_HOME` (else `~/.slock`,
+`%USERPROFILE%\.slock` on Windows), `agents/<id>/.pi-sessions/` and
+`.builtin-sessions/`, Pi's SDK files read as agent `raft`
+([`raft.go`](../../internal/sessions/raft.go)). Raft's Pi reads the user's
+own Pi folder, so through magpie it says it is Pi, and a Raft session is
+the gateway's `pi|<id>` too: in `MergeExternal`, the stats' native keys,
+the GUI's list and Via, and `NativeIDs` for `pi`. Raft's sessions are
+listed, read and deleted as Pi's (one file to the trash, nothing beside
+it; Raft starts afresh without it), with no resume command, no carry and
+no trace export (the gateway's Pi identity has those calls). Verification:
+`TestRaftSessions`, `TestRaftIsPiToTheGateway`, `TestRaftDeleteRestore`,
+`TestRaftSlockHome`. On `/api/sessions/manage`, in its
 counts as in its list, and on `/api/sessions/delete`, a native session is any
 session file the agent keeps, one nothing was said in too, with no limit
 (`sessions.NativeIDs`); one pass over the agents' files (`sessions.Manage`)
 reads only the agent shown and the agents with gateway sessions (#2776).
+It answers before a first read of a long history (hey_boyce on X: the page
+stood on its placeholder rows on its first open). A file it would read whole
+(no parse kept, an older index, a file written over, or a Claude Code or
+Codex parse that can't be read on after a restart) is read behind the
+answer once more than `quickBytes` (32 MB) of them is waiting; until then its
+row stands on the parse kept, or on a glance at its first 256 KB (id,
+folder, first prompt, start) and, for Claude Code, the titles in its last
+64 KB, with its last activity the file's time. Such a row has `pending:
+true` and no counts, the page asks again every 1.5 s until none is, and a
+glance is never saved in the index (`savable`) nor taken by a refresh as a
+parse (`parsed`). See
+[`internal/sessions/manage_quick.go`](../../internal/sessions/manage_quick.go),
+`TestManageAnswersBeforeFirstReads` and `sessions-pending-fill.test.cjs`.
 Gateway projections have no path,
 resume command or terminal action: the agent's own files of them are not on
 this computer. Their rows carry `gateway: true`; the Sessions page groups them
@@ -73,6 +99,28 @@ before any lock, and an unreadable settings.json keeps the last aliases read.
 Requests, the Requests ledger and model lists keep each call's own id.
 Verification: `TestUsageAliasCountsTwoIdsAsOne`,
 `TestSessionsCountAliasedModelsAsOne`, `TestAliasStatsLeavesItsInputAlone`.
+
+The Usage page can clear its figures (CrazyMouse_TT on X): a model's row's
+"…" has "Clear usage…", and "Clear all usage…" sits under the lists. Each
+asks first, then `POST /api/usage/clear` adds a mark to `usageCleared` in
+settings.json ([`settings.ClearUsage`](../../internal/settings/settings.go)):
+a provider and model as the Models list names them (the alias, the
+provider's shown id), or neither for everything, and the time in Unix
+milliseconds. usage.jsonl is never rewritten. The usage pages leave out
+each call at or before a mark that matches it
+([`cleared.go`](../../internal/usage/cleared.go)): the Overview
+(`summarizeFrom`), and the Requests page, its heatmap and the CSV through
+`Filter.keepsRow`; the request index keys its meta on the marks
+(`clearedKey`), so a cached page is read again. Gateway keys' spending
+limits, the allowances' window holds and Codex's reads go by `usage.Visit`
+and the raw log, so they still count every cleared call: a clear never
+lifts a limit, and the confirmation says so. The marks ride the settings
+part of a sync, so a clear holds on the computers it syncs with, over
+their shared days and the agents' session-file rows too, and a later clear
+of the same model or of everything takes an earlier one's place. Usage ›
+Sessions is not cleared. Verification: `TestClearedUsageLeavesThePages`,
+`TestClearUsageKeepsOneMarkAModel`, `TestUsageClearRoute`,
+`usage-clear.test.cjs`.
 
 Claude Desktop gateway rows can have a local name even without a CLI
 transcript (#1675). [`DesktopTitles`](../../internal/sessions/desktop_titles.go)
@@ -119,6 +167,24 @@ list the session), and `HasGatewayConversations` counts it.
 Implementation: [`internal/sessions/gateway_delete.go`](../../internal/sessions/gateway_delete.go),
 `Restore` in [`internal/sessions/manage.go`](../../internal/sessions/manage.go), and
 [`internal/gui/sessions_manage.go`](../../internal/gui/sessions_manage.go).
+A deleted Codex session also leaves the Codex app's list (zhuddan on Discord).
+The app (ChatGPT.app's Codex, 26.x) lists threads from its own catalog,
+`<CODEX_HOME>/sqlite/codex.db` (`codex-dev.db` for a non-prod build), table
+`local_thread_catalog`, and drops a row only on the app-server's
+`thread/deleted` or `thread/archived`; after its first full sweep it takes in
+only threads newer than its watermark. Delete removes the local host's rows of
+threads whose rollout is gone from that Codex folder's `sessions` and
+`archived_sessions` (named by Codex's state database, neither the file nor its
+packed twin there; a file that can't be looked at counts as there) and raises
+`catalog_revision`, in one `BEGIN IMMEDIATE` transaction that waits for the
+app's own. The removed rows go into the trash note (`codex_catalog`), and
+Restore puts them back. `/api/sessions/manage` does the same once a run
+(`TidyCodexCatalog`) for threads deleted before this. Implementation:
+[`internal/sessions/codex_catalog.go`](../../internal/sessions/codex_catalog.go);
+verification: `TestDeleteForgetsCodexAppCatalog`,
+`TestTidyCodexCatalogForgetsEarlierDeletes`,
+`TestTidyCodexCatalogKeepsWhatItCantJudge`, with schemas from Codex 26.1023 in
+`internal/sessions/testdata/codex-app/`.
 All-time statistics include gateway history older than native files. Calendar
 activity and output totals use each session's actual request dates, including
 intermediate dates; extending the range rebases existing native calendar indices.
@@ -126,6 +192,63 @@ intermediate dates; extending the range rebases existing native calendar indices
 Implementation: [`internal/usage/gateway_sessions.go`](../../internal/usage/gateway_sessions.go),
 [`internal/sessions/external.go`](../../internal/sessions/external.go), and
 [`internal/gui/sessions.go`](../../internal/gui/sessions.go).
+
+## Which agents' sessions magpie reads
+
+An agent's own session files are read only when the user allows that
+agent (RustCats on X: a new install showed every agent's history before
+anyone agreed). `sessions.Reads(agent)` in
+[`access.go`](../../internal/sessions/access.go) is the one gate, from
+`settings.SessionReads` (`Asked`, `All`, `Agents`; an agent named in
+`Agents` wins, the others follow `All`). Every lister asks it at its
+entry (`ccFiles`, `codexFiles`, `openCodeFiles`, `piFilesIn`, ... down to
+`geminiTraceFiles`), the aggregators filter by it again (`allFiles`,
+`callFilesWith`, `callSourcesWith`, `traceLineFiles`, `wslFiles`, and
+`DesktopDataDirs`, which Usage's Desktop readers take), and the readers
+that take a session already listed (`TranscriptOf`, `ContentOf`,
+`SearchSession`, `SubagentTranscript`, `CarryOver`, `ReadCallSource`)
+return `ErrNotRead`, so a cache from before a switch was turned off is
+read no further. So the Sessions page and list, stats, the overview, the
+call and trace indexes, Usage's agent-file calls and the Codex and Pi
+title readers all go through it.
+
+`SettleReads` decides once, for an install with no `SessionReads`: one
+that kept a sessions cache (`sessions.json`) or a call cache
+(`calls-v*`) read sessions before, and keeps reading every agent
+(`Asked`, `All`); a fresh one reads none, not asked. The decision is
+saved, so a cache written later never turns it into "all", and a value
+already saved is never replaced. `settings.save` keeps the stored value
+and sync and restore keep it (`KeepOwn`); only `SetSessionReads` writes
+it. A settings.json that can't be written leaves this run reading
+nothing. In a test binary nothing settled reads everything and nothing
+is written (`readsAllInTests`).
+
+`/api/sessions/reads` (GET; POST `{all, agents}`) in
+[`sessions_reads.go`](../../internal/gui/sessions_reads.go) gives the
+choice and the agents found (`sessions.Found`, by a stat of each agent's
+folder, nothing in it read; WSL distros are not looked into, Allow all
+covers them), and `sessions/manage` carries the same as `reads`. While
+`asked` is false the Sessions page shows the consent (`consentCard` in
+the sessions plugin): each agent found with a switch, off; Allow selected
+saves `all: false` with each agent picked or not, Allow all `all: true`.
+Settings › Privacy, *Agents' session history* (`renderSessionReads` in
+the sessions plugin's `settings.js`), has *Agents found later* (`all`, sent with each listed agent
+at the value its row shows) and a row per agent.
+`magpie sessions read [on|off all|<agent>…]` shows and changes the same
+choice from the CLI (`sessionReadsTo`); while it is not asked,
+`magpie sessions` says so on stderr and the TUI's empty Sessions page
+says how (`sessNothing`). Tests: `TestSessionsRead`,
+`TestSessionsNotAskedSaysHow`.
+
+What is read either way: the gateway's own usage ledger, its
+projections and the conversations it recorded (they are magpie's own),
+the agents' config and sign-in files, Claude Code's and Codex's
+`history.jsonl` last-used time and a session file's mtime for a quota's first use, and
+Codex's newest rollout's last line before magpie restarts Codex
+(`codexTurnOpen`), none of which lists or shows a session. Tests:
+`TestFreshInstallReadsNoAgentUntilAllowed`,
+`TestSettleReadsKeepsWhatWasThere`, `TestSessionReadsRoutes`,
+`sessions-reads.test.cjs`.
 
 ## Local Gateway Conversation Recording
 
@@ -383,8 +506,8 @@ Code's (#1779; its sessions are on the Sessions page too, from the same
 `projects/<cwd>/<id>.jsonl` files read as WorkBuddy's, resumed with
 `codebuddy --resume <id>` and deletable, #2657: `TestCodeBuddy`,
 `TestCodeBuddySessionsListedUnderTheirName`), MiniMax Code's (#1605), Kimi Code's (#1607,
-[`calls_kimi.go`](../../internal/sessions/calls_kimi.go)) and Pi's and
-omp's, here and in WSL (#1951,
+[`calls_kimi.go`](../../internal/sessions/calls_kimi.go)) and Pi's,
+Raft's Pi agents' and omp's, here and in WSL (#1951,
 [`calls_pi.go`](../../internal/sessions/calls_pi.go)). Each skips the
 calls the agent made through magpie's own entry, which the gateway logged
 with the account that answered: Kimi Code's are the ones whose
@@ -546,7 +669,14 @@ for: `provider_test`, `api_detect` or `model_list`
   full of 0-token rows no agent sent. A list that failed is still a row,
   under the Failed filter too, as is every Test and Detect APIs. Older
   lines stay in `usage.jsonl`, read by nothing.
-  `TestAnsweredModelListIsNoRow` covers it.
+  `TestAnsweredModelListIsNoRow` covers it. A request that is only a step
+  towards a list is no row either (`probelog.Taken`): an Antigravity
+  account's `fetchAvailableModels` with its tier named, which Google
+  answers 400 for a Google AI Pro account before the request without one
+  lists its models (ferock4669 on Discord, a 400 "Model list" row beside
+  every list). That tier isn't named again for a day (`tierRefusedFor`);
+  the request without one is written down as any list.
+  `TestAntigravityRefusedTierAskedOnceAndNoRow`.
 - **Whose:** a row recorded under its host, sent before its provider had
   an id, is listed under the provider saved on that host now
   (`Renames.ProbeOf`), and with none on it, a deleted one's, under the id
@@ -604,7 +734,35 @@ establishes them, `parent_session` and `root_session`. A child whose root is not
 known keeps an empty `root_session`; Codex entries without explicit identity
 metadata, gateway-only entries and conflicting identities set `role` to
 `unknown` and do not acquire a guessed parent or root. These fields are omitted
-for other agents. This is Codex-specific (#1591).
+for other agents, except a Claude-format branch (below). This is Codex-specific
+(#1591).
+
+Claude Code copies a conversation into a new session file when it forks one
+(`--resume <id> --fork-session`, the Agent SDK's `forkSession`, `/branch`):
+every message again, under the same uuids, with the new session id; after a
+compaction the copy starts at the compaction's summary
+([`cc_copies.go`](../../internal/sessions/cc_copies.go), `ccFamily`). Files
+are grouped by their first message and their compactions' summaries. A file
+whose last message and first message another file of the group holds is a
+copy: not listed, its id in `Copies`, counted in the stats only for what the
+keeper doesn't hold (`ccRest`). A file that holds what came before the
+other's start (the compaction the fork started after) is never that one's
+copy. What is left of the group went on apart and is one conversation: the
+head is the file that holds the others' first message as they don't hold
+its, else the one a `/branch` names in `forkedFrom`, else the earliest, then
+the lowest key. Each other one is a branch: listed with `role` `branch` and
+`parent_session` the head's id, its transcript (`TranscriptOf`, Markdown
+export) is the head's from its start up to the last message the two share,
+then the branch's own lines (`branchTranscript`), and the stats count only
+its own lines. A search reads the branch's own file. Neo (#feedback, after
+v0.1.1809): a client that ran each task in a fork of a compacted session
+showed a row per task, each opening on the summary and that one task, while
+the session itself was hidden as a fork's copy. See
+`TestClaudeForksAfterCompactAreBranches`,
+`TestClaudeSlashBranchAfterCompactIsABranch`,
+`TestClaudeBranchNamesItsSession` and
+`TestClaudeCopyBeforeACompactionIsCounted`; the fixtures in
+`testdata/claude-forks` are Claude Code 2.1.312's own files.
 
 A session whose agent keeps its subagents' conversations beside its own
 lists them in `subagents` on the sessions API (`/api/sessions`, `one`, `manage`; #2261,
@@ -661,7 +819,9 @@ kind, set in under the subagent that started it, and a click shows its
 conversation (`sub=`). A Codex thread whose `parent_session` chain reaches a
 listed session is drawn, as a session with its own details, Resume and
 Delete, under its parent in the same fold; a loop of parents, a chain deeper
-than eight or a parent not listed leaves it on top. The folder's count and
+than eight or a parent not listed leaves it on top. A Claude branch is drawn
+under its session the same way, and the fold names them apart ("2
+branches · 1 subagent"). The folder's count and
 checkbox cover the sessions under others. See `sessions-subagents.test.cjs`.
 
 Codex keeps the existing session-title precedence. Only when that leaves the

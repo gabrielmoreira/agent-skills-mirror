@@ -74,6 +74,14 @@ contains unrelated inbox rows and does not count. Expansion is independent:
 messages and returns a clear limitation; Act/Dev can use **Expand all** and then
 re-read the trusted conversation subtree from page 1.
 
+`read_page` returns a page's prose in windows of at most 6,000 characters and
+reports `hasMore` and `continuationArgs` for the rest. Reading further into the
+same page is progress through it: a window that adds unread text of the page
+does not count toward the eight-observation delivery checkpoint, so **Summarize
+this page** can read a long article or README to its end. The first window of
+each page, rereads and other observations still count, and a run gets at most
+16 uncounted windows (`document-read-progress.js`).
+
 ## Tool matrix
 
 Legend: **Yes** = available · **-** = not available · **C** = Chrome only ·

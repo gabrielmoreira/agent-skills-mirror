@@ -4,6 +4,114 @@ All notable changes to Clawd Cursor will be documented in this file.
 
 ## [Unreleased]
 
+### Changed
+- **A step the agent may not take is handed over, not the whole task.** Agents
+  turned down whole tasks (an APNs key, an App Store review account, notarization)
+  because one step was something their own rules forbid: creating an account,
+  downloading a private key, entering a secret. The MCP instructions, the
+  `pause_for_user` description and the skill now say that such a step is a
+  roadblock like a sign-in: hand over that step, as wide as the agent's rules draw
+  it, and do the rest they allow. When a secret must go into a field or a terminal
+  prompt, the agent puts the cursor there and asks only for the paste ("Paste your
+  app-specific password, press Enter, then click Resume"),
+  then passes the saved key's file path or keychain profile name, never the secret.
+- **The daemon binds `127.0.0.1` only, and `--allow-remote` is gone (#293).**
+  `server.host` in the config was never read, so the daemon always bound
+  loopback and `--allow-remote` never did anything. Rather than open the
+  desktop-control port to the network, the flag and the `server.host` setting
+  are removed. To drive clawdcursor from another machine, tunnel the port:
+  `ssh -L 3847:127.0.0.1:3847 user@host`.
+
+### Fixed
+
+- **A stop really stops, and keys go only to the agent's window (#294).** An
+  agent queued a batch: wait 30 s, then Ctrl+L and paste a URL with Enter.
+  During the wait the user stopped clawdcursor and switched to the Claude app.
+  The keys and the URL landed in the Claude app, and every step said ok. There
+  were three causes:
+  - "Stop" was not a state. The pill's double-click ended the stdio server, and
+    the host started a fresh one on the agent's next call, which knew nothing of
+    the stop. `clawdcursor stop` could not reach stdio servers at all.
+  - Nothing checked which window was in front before a key, a paste or a click.
+  - The pill hides 30 s after the last action, and a wait is not an action, so
+    during the wait there was no pill to double-click.
+
+  Now a stop (the pill, `clawdcursor stop`, or the dashboard's Stop) is shared by
+  every clawdcursor process and survives a restart:
+  - every call answers "stopped by the user", a running `wait` ends at once, the
+    rest of a batch does not run, and a call already running is refused at its
+    next key, click, element action, window change or page action;
+  - only the user gives control back: their Resume on the agent's next
+    `pause_for_user` prompt, `clawdcursor resume`, or starting the daemon. The
+    daemon no longer exits on a double-click.
+
+  Every key, paste, click, drag and scroll first checks that the window in front
+  is still the one the agent was working in. If it is not, nothing is sent and
+  the agent is told "foreground changed: you were working in msedge, but claude
+  is in front now". A new window within 5 s of the agent's own click, Return or
+  shortcut is the agent's own doing; a change after a longer gap is the user's.
+  `window focus` binds the agent to a window on purpose.
+
+  A batch that acts at any step shows the pill from its start, and the pill
+  stays up while a call is still running.
+- **macOS: a capture without Screen Recording is refused on every install,
+  and `doctor` asks the same question (#276).** 1.5.24 said every capture is
+  checked first, but it checked only when the screenshot helper was built.
+  An npm install without the Xcode Command Line Tools has no helper, so the
+  check was skipped and screenshots and OCR still returned the wallpaper and
+  menu bar. With no helper, macOS's own permission check
+  (`CGPreflightScreenCaptureAccess`) is now asked through `osascript`, which
+  needs no Command Line Tools and captures nothing (no prompt, no flash). A
+  denial is `CAPTURE_DENIED`. A grant is remembered for the process, so
+  captures no longer each start a check. A denial, a check that could not
+  answer, and a helper that would not run are never remembered, and a failed
+  helper capture forgets the grant. When the check cannot answer, the capture
+  still goes ahead, and the `computer screenshot` and `zoom` replies now say
+  that Screen Recording could not be checked: the stderr warning never
+  reached an MCP agent. `doctor` and status asked
+  ClawdCursor.app's own entry, which captures never use: on a real Mac they
+  printed "DENIED ... enable ClawdCursor" while captures worked. They now
+  run the capture check, say "could not check" when it cannot answer, and
+  name the app to enable: the app running clawdcursor. `doctor` notes that
+  its answer is for its own terminal, and that the MCP server captures as its
+  host app (e.g. Claude), which needs its own grant. The denial says that a server started
+  without an app (launchd, ssh) needs node and screenshot-helper enabled
+  instead. The build hint no longer says `cd native && ./build.sh`, which
+  fails from an npm install: it names `xcode-select --install` and the
+  package's own build script by its full path.
+- **`server.port` in the config is used (#293).** The daemon only read a flat
+  `"port"`, and `--port` always defaulted to 3847, which outranked the config
+  file. `{"server":{"port":N}}` and `{"port":N}` now both work, `--port` still
+  wins when given, and the "port already in use" check looks at the port the
+  daemon will really bind. The files are read in layer order, so a flat `port`
+  in the project's `.clawdcursor-config.json` outranks a nested `server.port`
+  in `~/.clawdcursor/config.json`. `stop`, `resume` and `task` find the daemon
+  on the port it recorded in its own lock file (`~/.clawdcursor/start.pid`,
+  used only while that process is alive), else 3847. Like the token file, the
+  lock is mode 0600 on macOS and Linux; on Windows it inherits your user
+  profile's permissions. They never
+  read the port from a config file, so a repo you run them in cannot redirect
+  the bearer token to another port. A `--port` that is not a whole number from
+  1 to 65535 is refused with "Invalid port number" on every command.
+- **`--no-vision` keeps screenshots from every model.** The flag (and
+  `CLAWD_DISABLE_VISION=1` / `"disableVision": true`) was read and then
+  ignored, so screenshots still went to the model. Now the built-in agent is
+  not offered a screenshot tool, even inside a batch, its instructions no
+  longer mention screenshots, and it never sends an image. The MCP surface
+  (HTTP daemon, and stdio for the env var or config key) refuses any call or
+  batch step that would return an image. Accessibility and OCR still work. The unused
+  `CLAWD_DISABLE_VERIFIER` / `disableVerifier` setting is removed; the
+  verifier it switched off no longer exists.
+- **macOS: `window list` says which apps have windows on another desktop
+  Space (#278).** The accessibility API only sees the windows of the Space on
+  screen. With one hop to a full-screen Space, the list read "Windows (2)"
+  while a whole desktop of windows sat on Desktop 1, and nothing said the
+  list was incomplete. The helper now finds those windows with CGWindowList
+  plus the WindowServer's Spaces lookup. The list ends with a line naming the
+  apps whose windows are on another Space, and it notes that `window focus`
+  on one of them switches the screen to that Space. On a macOS where the
+  Spaces lookup isn't available, nothing is claimed either way.
+
 ## [1.5.24] - 2026-10-26
 
 ### Fixed

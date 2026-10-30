@@ -39,7 +39,7 @@ hub 上传递两类请求：
 
 ### 电脑自己的卡片送到手机上 {#a-computer-s-own-cards-on-the-phone}
 
-nanoMuse 桌面版上的定时任务运行时，电脑旁边可能没人，所以这次运行的审批卡片也会送到账号下的手机上。这种卡片背后没有调用，所以作为推送发出（中继 0.31，见[帧](#frames)）：电脑只在 `welcome.server.features` 列出 `event_push` 时才发，中继只转给在 `hello` 里声明了 `approve.any` 的设备（Android 和 iPhone 的 App）：
+nanoMuse 桌面版上的定时任务运行时，电脑旁边可能没人，所以这次运行的审批卡片也会送到账号下的手机上。这种卡片背后没有调用，所以作为推送发出（中继 0.31，见[帧](#frames)）：电脑只在 `welcome.server.features` 列出 `event_push` 时才发，中继只转给在 `hello` 里声明了 `approve.any` 的设备（Android 和 iPhone 的 App）。推送的就只有这些：有人正在电脑上或网页控制台里聊着的那条会话，它的卡片留在发问的地方（人就在那里）；别的设备发来的任务里的卡片，顺着那次调用回到发起的设备（见[上文](#what-you-can-say)）；Python 运行时（`nanomuse serve`）目前不推送，它的定时任务的卡片留在网页版里等着（[#704](https://github.com/nano-muse/nanoMuse/issues/704)）：
 
 ```
 → event {to:"*", body:{stage:"approval", approval_id, preview, preview_zh, reason, app,

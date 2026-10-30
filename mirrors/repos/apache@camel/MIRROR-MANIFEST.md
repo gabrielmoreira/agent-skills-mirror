@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `apache/camel` — 26 default patterns, 2 followed patterns, 13 file(s) materialized.
+Mirror of `apache/camel` — 26 default patterns, 3 followed patterns, 14 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `apache/camel` — 26 default patterns, 2 followed patterns, 13 file(s
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 2 |
-| Files         | 13 |
+| Followed pats | 3 |
+| Files         | 14 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,6 +51,7 @@ Mirror of `apache/camel` — 26 default patterns, 2 followed patterns, 13 file(s
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
+- `.oss-ai-helper-rules/project-guidelines.md`
 - `SECURITY.md`
 - `.oss-ai-helper-rules/project-standards.md`
 
@@ -71,8 +72,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 9 | ✓ | [`dsl/camel-jbang/camel-jbang-core/CLAUDE.md`](dsl/camel-jbang/camel-jbang-core/CLAUDE.md) |
 | 10 | ✓ | [`dsl/camel-jbang/camel-jbang-plugin-tui/AGENTS.md`](dsl/camel-jbang/camel-jbang-plugin-tui/AGENTS.md) |
 | 11 | ✓ | [`dsl/camel-jbang/camel-jbang-plugin-tui/CLAUDE.md`](dsl/camel-jbang/camel-jbang-plugin-tui/CLAUDE.md) |
-| 12 | → | [`.oss-ai-helper-rules/project-standards.md`](.oss-ai-helper-rules/project-standards.md) |
-| 13 | → | [`SECURITY.md`](SECURITY.md) |
+| 12 | → | [`.oss-ai-helper-rules/project-guidelines.md`](.oss-ai-helper-rules/project-guidelines.md) |
+| 13 | → | [`.oss-ai-helper-rules/project-standards.md`](.oss-ai-helper-rules/project-standards.md) |
+| 14 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

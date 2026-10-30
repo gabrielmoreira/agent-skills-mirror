@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `youdotcom-oss/agent-skills` — 26 default patterns, 0 followed patterns, 19 file(s) materialized.
+Mirror of `youdotcom-oss/agent-skills` — 26 default patterns, 0 followed patterns, 24 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `youdotcom-oss/agent-skills` — 26 default patterns, 0 followed patte
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 19 |
+| Files         | 24 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -70,14 +70,19 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 9 | ✓ | [`.agents/skills/tdd/SKILL.md`](.agents/skills/tdd/SKILL.md) |
 | 10 | ✓ | [`.claude/CLAUDE.md`](.claude/CLAUDE.md) |
 | 11 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 12 | ✓ | [`skills/you-discover/references/x402-direct-client.md`](skills/you-discover/references/x402-direct-client.md) |
-| 13 | ✓ | [`skills/you-discover/SKILL.md`](skills/you-discover/SKILL.md) |
-| 14 | ✓ | [`skills/you-finance/references/coinbase-payments-mcp.md`](skills/you-finance/references/coinbase-payments-mcp.md) |
-| 15 | ✓ | [`skills/you-finance/SKILL.md`](skills/you-finance/SKILL.md) |
-| 16 | ✓ | [`skills/you-research/references/coinbase-payments-mcp.md`](skills/you-research/references/coinbase-payments-mcp.md) |
-| 17 | ✓ | [`skills/you-research/SKILL.md`](skills/you-research/SKILL.md) |
-| 18 | ✓ | [`skills/you-web/references/free-profile.md`](skills/you-web/references/free-profile.md) |
-| 19 | ✓ | [`skills/you-web/SKILL.md`](skills/you-web/SKILL.md) |
+| 12 | ✓ | [`skills/you-discover/assets/decisions-record-template.md`](skills/you-discover/assets/decisions-record-template.md) |
+| 13 | ✓ | [`skills/you-discover/assets/seed-implementation-pattern.md`](skills/you-discover/assets/seed-implementation-pattern.md) |
+| 14 | ✓ | [`skills/you-discover/references/agent-search-runtime.md`](skills/you-discover/references/agent-search-runtime.md) |
+| 15 | ✓ | [`skills/you-discover/references/search-contents-integration.md`](skills/you-discover/references/search-contents-integration.md) |
+| 16 | ✓ | [`skills/you-discover/references/worked-example.md`](skills/you-discover/references/worked-example.md) |
+| 17 | ✓ | [`skills/you-discover/references/x402-direct-client.md`](skills/you-discover/references/x402-direct-client.md) |
+| 18 | ✓ | [`skills/you-discover/SKILL.md`](skills/you-discover/SKILL.md) |
+| 19 | ✓ | [`skills/you-finance/references/coinbase-payments-mcp.md`](skills/you-finance/references/coinbase-payments-mcp.md) |
+| 20 | ✓ | [`skills/you-finance/SKILL.md`](skills/you-finance/SKILL.md) |
+| 21 | ✓ | [`skills/you-research/references/coinbase-payments-mcp.md`](skills/you-research/references/coinbase-payments-mcp.md) |
+| 22 | ✓ | [`skills/you-research/SKILL.md`](skills/you-research/SKILL.md) |
+| 23 | ✓ | [`skills/you-web/references/free-profile.md`](skills/you-web/references/free-profile.md) |
+| 24 | ✓ | [`skills/you-web/SKILL.md`](skills/you-web/SKILL.md) |
 
 ---
 
